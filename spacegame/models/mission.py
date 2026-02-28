@@ -1,0 +1,302 @@
+"""
+Mission system models.
+
+Defines mission objectives, rewards, and the MissionManager state machine
+that tracks mission lifecycle: available -> active -> completed.
+"""
+
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any, Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from spacegame.models.player import Player
+
+
+class ObjectiveType(Enum):
+    """Types of mission objectives."""
+
+    REACH_SYSTEM = "reach_system"
+    TALK_TO_NPC = "talk_to_npc"
+    HAVE_CREDITS = "have_credits"
+    COLLECT_CARGO = "collect_cargo"
+
+
+class MissionStatus(Enum):
+    """Lifecycle status of a mission."""
+
+    UNAVAILABLE = "unavailable"
+    AVAILABLE = "available"
+    ACTIVE = "active"
+    COMPLETED = "completed"
+
+
+@dataclass
+class MissionObjective:
+    """A single objective within a mission."""
+
+    type: ObjectiveType
+    target_id: str
+    target_quantity: int = 1
+    description: str = ""
+
+    def to_dict(self) -> dict[str, Any]:
+        """Serialize to dict."""
+        return {
+            "type": self.type.value,
+            "target_id": self.target_id,
+            "target_quantity": self.target_quantity,
+            "description": self.description,
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "MissionObjective":
+        """Deserialize from dict."""
+        return cls(
+            type=ObjectiveType(data["type"]),
+            target_id=data["target_id"],
+            target_quantity=data.get("target_quantity", 1),
+            description=data.get("description", ""),
+        )
+
+
+@dataclass
+class MissionReward:
+    """A reward granted on mission completion."""
+
+    reward_type: str
+    amount: int
+    target_id: str = ""
+
+    def to_dict(self) -> dict[str, Any]:
+        """Serialize to dict."""
+        d: dict[str, Any] = {"reward_type": self.reward_type, "amount": self.amount}
+        if self.target_id:
+            d["target_id"] = self.target_id
+        return d
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "MissionReward":
+        """Deserialize from dict."""
+        return cls(
+            reward_type=data["reward_type"],
+            amount=data["amount"],
+            target_id=data.get("target_id", ""),
+        )
+
+
+@dataclass
+class AcceptCargo:
+    """Cargo granted to the player when a mission is accepted."""
+
+    commodity_id: str
+    quantity: int
+
+    def to_dict(self) -> dict[str, Any]:
+        """Serialize to dict."""
+        return {"commodity_id": self.commodity_id, "quantity": self.quantity}
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "AcceptCargo":
+        """Deserialize from dict."""
+        return cls(commodity_id=data["commodity_id"], quantity=data["quantity"])
+
+
+@dataclass
+class Mission:
+    """A mission definition with objectives, rewards, and prerequisites."""
+
+    id: str
+    name: str
+    description: str
+    objectives: list[MissionObjective] = field(default_factory=list)
+    rewards: list[MissionReward] = field(default_factory=list)
+    prerequisites: list[str] = field(default_factory=list)
+    on_accept_cargo: list[AcceptCargo] = field(default_factory=list)
+
+    def get_target_system_ids(self) -> list[str]:
+        """Get system IDs referenced by reach_system objectives."""
+        return [obj.target_id for obj in self.objectives if obj.type == ObjectiveType.REACH_SYSTEM]
+
+    def to_dict(self) -> dict[str, Any]:
+        """Serialize to dict."""
+        d: dict[str, Any] = {
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
+            "objectives": [obj.to_dict() for obj in self.objectives],
+            "rewards": [r.to_dict() for r in self.rewards],
+            "prerequisites": list(self.prerequisites),
+        }
+        if self.on_accept_cargo:
+            d["on_accept_cargo"] = [c.to_dict() for c in self.on_accept_cargo]
+        return d
+
+
+class MissionManager:
+    """Manages mission lifecycle: available -> active -> completed.
+
+    Holds mission definitions as immutable templates and tracks runtime state
+    (status, objective progress) separately. Provides get_state/load_state
+    for save/load persistence.
+    """
+
+    def __init__(self, missions: list[Mission]) -> None:
+        """Initialize with mission definitions.
+
+        Args:
+            missions: All mission definitions from data loader.
+        """
+        self._missions: dict[str, Mission] = {m.id: m for m in missions}
+        self._status: dict[str, MissionStatus] = {m.id: MissionStatus.UNAVAILABLE for m in missions}
+        self._progress: dict[str, list[bool]] = {
+            m.id: [False] * len(m.objectives) for m in missions
+        }
+
+    def update_availability(self) -> list[str]:
+        """Check prerequisites and mark eligible missions as AVAILABLE.
+
+        Returns:
+            List of mission IDs that just became available.
+        """
+        completed_ids = self.get_completed_ids()
+        newly_available: list[str] = []
+        for mid, mission in self._missions.items():
+            if self._status[mid] != MissionStatus.UNAVAILABLE:
+                continue
+            if all(pid in completed_ids for pid in mission.prerequisites):
+                self._status[mid] = MissionStatus.AVAILABLE
+                newly_available.append(mid)
+        return newly_available
+
+    def accept_mission(self, mission_id: str) -> tuple[bool, str]:
+        """Move a mission from AVAILABLE to ACTIVE.
+
+        Args:
+            mission_id: Mission to accept.
+
+        Returns:
+            Tuple of (success, message).
+        """
+        if mission_id not in self._missions:
+            return (False, "Mission not found")
+        if self._status[mission_id] != MissionStatus.AVAILABLE:
+            return (False, f"Mission is {self._status[mission_id].value}, not available")
+        self._status[mission_id] = MissionStatus.ACTIVE
+        return (True, f"Accepted: {self._missions[mission_id].name}")
+
+    def check_objectives(self, player: "Player") -> list[str]:
+        """Check all active mission objectives against current player state.
+
+        Args:
+            player: Current player state.
+
+        Returns:
+            List of mission IDs that just completed (all objectives met).
+        """
+        newly_completed: list[str] = []
+        for mid, mission in self._missions.items():
+            if self._status[mid] != MissionStatus.ACTIVE:
+                continue
+
+            for i, obj in enumerate(mission.objectives):
+                if self._progress[mid][i] and obj.type != ObjectiveType.COLLECT_CARGO:
+                    continue  # Skip completed (except cargo — must re-evaluate)
+                self._progress[mid][i] = self._check_single_objective(obj, player)
+
+            if all(self._progress[mid]):
+                self._status[mid] = MissionStatus.COMPLETED
+                newly_completed.append(mid)
+
+        return newly_completed
+
+    def _check_single_objective(self, obj: MissionObjective, player: "Player") -> bool:
+        """Evaluate a single objective against player state."""
+        if obj.type == ObjectiveType.REACH_SYSTEM:
+            return player.current_system_id == obj.target_id
+        elif obj.type == ObjectiveType.TALK_TO_NPC:
+            return player.dialogue_flags.get(f"talked_to_{obj.target_id}", False)
+        elif obj.type == ObjectiveType.HAVE_CREDITS:
+            return player.credits >= obj.target_quantity
+        elif obj.type == ObjectiveType.COLLECT_CARGO:
+            return player.ship.get_cargo_quantity(obj.target_id) >= obj.target_quantity
+        return False
+
+    def apply_rewards(self, mission_id: str, player: "Player") -> list[str]:
+        """Apply all rewards from a mission to the player.
+
+        Args:
+            mission_id: The mission whose rewards to apply.
+            player: Player to receive rewards.
+
+        Returns:
+            List of human-readable reward descriptions.
+        """
+        mission = self._missions.get(mission_id)
+        if not mission:
+            return []
+        messages: list[str] = []
+        for reward in mission.rewards:
+            if reward.reward_type == "credits":
+                player.add_credits(reward.amount)
+                messages.append(f"+{reward.amount:,} Credits")
+            elif reward.reward_type == "xp":
+                player.progression.add_xp(reward.amount)
+                messages.append(f"+{reward.amount} XP")
+            elif reward.reward_type == "deduct_credits":
+                player.deduct_credits(reward.amount)
+                messages.append(f"-{reward.amount:,} Credits")
+            elif reward.reward_type == "remove_cargo":
+                player.ship.remove_cargo(reward.target_id, reward.amount)
+                messages.append(f"Delivered {reward.amount} {reward.target_id}")
+        return messages
+
+    def get_mission(self, mission_id: str) -> Optional[Mission]:
+        """Get a mission definition by ID."""
+        return self._missions.get(mission_id)
+
+    def get_missions_by_status(self, status: MissionStatus) -> list[Mission]:
+        """Get all missions with a given status."""
+        return [self._missions[mid] for mid, s in self._status.items() if s == status]
+
+    def get_objective_progress(self, mission_id: str) -> list[bool]:
+        """Get objective completion flags for a mission."""
+        return list(self._progress.get(mission_id, []))
+
+    def get_active_target_systems(self) -> set[str]:
+        """Get system IDs targeted by incomplete reach_system objectives in active missions."""
+        systems: set[str] = set()
+        for mid, mission in self._missions.items():
+            if self._status[mid] != MissionStatus.ACTIVE:
+                continue
+            for i, obj in enumerate(mission.objectives):
+                if obj.type == ObjectiveType.REACH_SYSTEM and not self._progress[mid][i]:
+                    systems.add(obj.target_id)
+        return systems
+
+    def get_completed_ids(self) -> set[str]:
+        """Get IDs of all completed missions."""
+        return {mid for mid, s in self._status.items() if s == MissionStatus.COMPLETED}
+
+    def get_state(self) -> dict[str, Any]:
+        """Serialize all mission runtime state for saving."""
+        return {
+            "status": {mid: s.value for mid, s in self._status.items()},
+            "progress": {mid: list(p) for mid, p in self._progress.items()},
+        }
+
+    def load_state(self, data: dict[str, Any]) -> None:
+        """Restore mission runtime state from saved data.
+
+        Args:
+            data: Dict from get_state().
+        """
+        status_data = data.get("status", {})
+        progress_data = data.get("progress", {})
+        for mid in self._missions:
+            if mid in status_data:
+                self._status[mid] = MissionStatus(status_data[mid])
+            if mid in progress_data:
+                saved_progress = progress_data[mid]
+                for i in range(min(len(saved_progress), len(self._progress[mid]))):
+                    self._progress[mid][i] = saved_progress[i]

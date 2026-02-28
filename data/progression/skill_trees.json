@@ -1,0 +1,235 @@
+{
+  "skill_trees": {
+    "trading": {
+      "name": "Trading Mastery",
+      "description": "Skills that improve your trading efficiency and market knowledge.",
+      "skills": [
+        {
+          "id": "negotiator",
+          "name": "Negotiator",
+          "description": "-2% purchase price per level",
+          "max_level": 3,
+          "bonus_type": "buy_price_reduction",
+          "bonus_per_level": 0.02,
+          "prerequisite_id": null
+        },
+        {
+          "id": "market_eye",
+          "name": "Market Eye",
+          "description": "See price trend details at current system",
+          "max_level": 1,
+          "bonus_type": "trend_visibility",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": "negotiator"
+        },
+        {
+          "id": "bulk_trader",
+          "name": "Bulk Trader",
+          "description": "-5% price when buying 10+ units per level",
+          "max_level": 2,
+          "bonus_type": "bulk_discount",
+          "bonus_per_level": 0.05,
+          "prerequisite_id": "negotiator"
+        },
+        {
+          "id": "trade_network",
+          "name": "Trade Network",
+          "description": "+10% sell price at high-rep systems per level",
+          "max_level": 2,
+          "bonus_type": "sell_price_bonus",
+          "bonus_per_level": 0.10,
+          "prerequisite_id": "market_eye"
+        },
+        {
+          "id": "market_insider",
+          "name": "Market Insider",
+          "description": "See price info for remote systems",
+          "max_level": 1,
+          "bonus_type": "remote_prices",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": "trade_network"
+        }
+      ]
+    },
+    "gathering": {
+      "name": "Resource Gathering",
+      "description": "Skills that improve mining, salvaging, and resource extraction.",
+      "skills": [
+        {
+          "id": "efficient_drills",
+          "name": "Efficient Drills",
+          "description": "-15% drill time per level",
+          "max_level": 3,
+          "bonus_type": "drill_speed",
+          "bonus_per_level": 0.15,
+          "prerequisite_id": null
+        },
+        {
+          "id": "keen_scanner",
+          "name": "Keen Scanner",
+          "description": "+1 scan charge per level",
+          "max_level": 3,
+          "bonus_type": "extra_scan_charges",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": "efficient_drills"
+        },
+        {
+          "id": "rich_veins",
+          "name": "Rich Veins",
+          "description": "+25% rare ore chance per level",
+          "max_level": 2,
+          "bonus_type": "rare_ore_chance",
+          "bonus_per_level": 0.25,
+          "prerequisite_id": "efficient_drills"
+        },
+        {
+          "id": "master_extractor",
+          "name": "Master Extractor",
+          "description": "-20% extraction time per level",
+          "max_level": 3,
+          "bonus_type": "extract_speed",
+          "bonus_per_level": 0.20,
+          "prerequisite_id": "keen_scanner"
+        },
+        {
+          "id": "refining_knowledge",
+          "name": "Refining Knowledge",
+          "description": "Unlocks advanced refining recipes",
+          "max_level": 1,
+          "bonus_type": "advanced_recipes",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": "master_extractor"
+        }
+      ]
+    },
+    "mining": {
+      "name": "Mining Mastery",
+      "description": "Skills that improve click mining, drones, and ore yields.",
+      "skills": [
+        {
+          "id": "click_power",
+          "name": "Click Power",
+          "description": "+25% click drill power per level",
+          "max_level": 3,
+          "bonus_type": "click_drill_power",
+          "bonus_per_level": 0.25,
+          "prerequisite_id": null
+        },
+        {
+          "id": "passive_drill",
+          "name": "Passive Drill",
+          "description": "+10% passive drill speed per level",
+          "max_level": 2,
+          "bonus_type": "passive_drill_speed",
+          "bonus_per_level": 0.10,
+          "prerequisite_id": "click_power"
+        },
+        {
+          "id": "deep_scan",
+          "name": "Deep Scan",
+          "description": "+50% rare ore chance in mining fields per level",
+          "max_level": 2,
+          "bonus_type": "mining_rare_chance",
+          "bonus_per_level": 0.50,
+          "prerequisite_id": "passive_drill"
+        },
+        {
+          "id": "drone_bay_1",
+          "name": "Drone Bay I",
+          "description": "Unlocks 1 drone slot and grants a Tier 1 drone",
+          "max_level": 1,
+          "bonus_type": "drone_slot",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": "click_power"
+        },
+        {
+          "id": "drone_bay_2",
+          "name": "Drone Bay II",
+          "description": "Unlocks 2nd drone slot and grants a Tier 2 drone",
+          "max_level": 1,
+          "bonus_type": "drone_slot",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": "drone_bay_1"
+        },
+        {
+          "id": "drone_bay_3",
+          "name": "Drone Bay III",
+          "description": "Unlocks 3rd drone slot and grants a Tier 3 drone",
+          "max_level": 1,
+          "bonus_type": "drone_slot",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": "drone_bay_2"
+        },
+        {
+          "id": "drone_efficiency",
+          "name": "Drone Efficiency",
+          "description": "+20% drone mining speed per level",
+          "max_level": 3,
+          "bonus_type": "drone_mining_speed",
+          "bonus_per_level": 0.20,
+          "prerequisite_id": "drone_bay_1"
+        },
+        {
+          "id": "ore_targeting",
+          "name": "Ore Targeting",
+          "description": "Drones can be set to prefer specific ore types",
+          "max_level": 1,
+          "bonus_type": "drone_targeting",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": "drone_efficiency"
+        }
+      ]
+    },
+    "leadership": {
+      "name": "Leadership & Operations",
+      "description": "Skills that improve crew management, diplomacy, and faction relations.",
+      "skills": [
+        {
+          "id": "crew_manager",
+          "name": "Crew Manager",
+          "description": "+1 crew slot",
+          "max_level": 1,
+          "bonus_type": "crew_slot_bonus",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": null
+        },
+        {
+          "id": "diplomatic_relations",
+          "name": "Diplomatic Relations",
+          "description": "+1 reputation per trade per level",
+          "max_level": 2,
+          "bonus_type": "reputation_gain_bonus",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": "crew_manager"
+        },
+        {
+          "id": "inspiring_leader",
+          "name": "Inspiring Leader",
+          "description": "+1 crew loyalty per trade per level",
+          "max_level": 2,
+          "bonus_type": "crew_loyalty_bonus",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": "crew_manager"
+        },
+        {
+          "id": "tariff_negotiation",
+          "name": "Tariff Negotiation",
+          "description": "-5% faction tariff per level",
+          "max_level": 2,
+          "bonus_type": "tariff_reduction",
+          "bonus_per_level": 0.05,
+          "prerequisite_id": "diplomatic_relations"
+        },
+        {
+          "id": "crew_mentor",
+          "name": "Crew Mentor",
+          "description": "+2 crew XP per event per level",
+          "max_level": 2,
+          "bonus_type": "crew_xp_bonus",
+          "bonus_per_level": 2.0,
+          "prerequisite_id": "inspiring_leader"
+        }
+      ]
+    }
+  }
+}

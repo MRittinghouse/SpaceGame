@@ -1,0 +1,32 @@
+{
+  "factions": [
+    {
+      "id": "commerce_guild",
+      "name": "Commerce Guild",
+      "description": "A powerful consortium of traders and merchants controlling major trade routes.",
+      "color": [100, 150, 255],
+      "rivalry": "miners_union"
+    },
+    {
+      "id": "miners_union",
+      "name": "Miners Union",
+      "description": "A rugged alliance of miners and resource extractors working the frontier.",
+      "color": [200, 150, 50],
+      "rivalry": "commerce_guild"
+    },
+    {
+      "id": "science_collective",
+      "name": "Science Collective",
+      "description": "An academic coalition pursuing knowledge and technological advancement.",
+      "color": [150, 100, 200],
+      "rivalry": "frontier_alliance"
+    },
+    {
+      "id": "frontier_alliance",
+      "name": "Frontier Alliance",
+      "description": "A coalition of settlers, farmers, and frontier communities.",
+      "color": [100, 200, 100],
+      "rivalry": "science_collective"
+    }
+  ]
+}

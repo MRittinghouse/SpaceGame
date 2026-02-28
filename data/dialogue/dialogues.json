@@ -1,0 +1,262 @@
+{
+  "dialogues": [
+    {
+      "id": "elena_intro",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "elena_reeves",
+          "text": "Welcome to Nexus Prime, Captain. The name's Elena Reeves \u2014 freelance navigator. I've seen you running cargo through the trade lanes. Not bad for a newcomer.",
+          "responses": [
+            {"text": "Thanks. You seem to know your way around.", "next_node_id": "about_elena"},
+            {"text": "Any tips for a trader starting out?", "next_node_id": "trading_tips"},
+            {"text": "Just passing through. See you around.", "next_node_id": null}
+          ]
+        },
+        {
+          "id": "about_elena",
+          "speaker_id": "elena_reeves",
+          "text": "I've been charting jump routes across the sector for fifteen years. There isn't a system I can't find a shortcut through. Used to run with a merchant fleet before... well, that's a story for another time.",
+          "responses": [
+            {"text": "Sounds like you have experience. Got any advice?", "next_node_id": "trading_tips"},
+            {"text": "Interesting. I'll keep that in mind.", "next_node_id": null}
+          ]
+        },
+        {
+          "id": "trading_tips",
+          "speaker_id": "elena_reeves",
+          "text": "Best advice I can give? Watch the market trends. Buy where things are cheap \u2014 agricultural worlds for food, mining colonies for ore \u2014 and sell where they're scarce. And keep an eye on market events. A disaster can tank prices, but a boom? That's where the real credits are.",
+          "responses": [
+            {"text": "Good to know. Thanks, Elena.", "next_node_id": "farewell", "set_flag": "elena_gave_tips"},
+            {"text": "I'll figure it out myself.", "next_node_id": null}
+          ]
+        },
+        {
+          "id": "farewell",
+          "speaker_id": "elena_reeves",
+          "text": "Anytime, Captain. You know where to find me. And if you ever need a navigator... well, let's just say I'm between contracts.",
+          "responses": []
+        }
+      ]
+    },
+    {
+      "id": "marcus_intro",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "marcus_jin",
+          "text": "Hey there, spacer. Name's Marcus Jin. I run the mining operations here at Breakstone. If you're looking to crack some rocks, you've come to the right place.",
+          "responses": [
+            {"text": "What kind of mining do you do here?", "next_node_id": "mining_info"},
+            {"text": "Is there good money in mining?", "next_node_id": "mining_profit"},
+            {"text": "Not interested. Thanks anyway.", "next_node_id": null}
+          ]
+        },
+        {
+          "id": "mining_info",
+          "speaker_id": "marcus_jin",
+          "text": "Breakstone's got some of the richest asteroid fields in the sector. Iron, titanium, even rare quantum crystals if you know where to look. We've got the equipment \u2014 you bring the muscle.",
+          "responses": [
+            {"text": "What about the money?", "next_node_id": "mining_profit"},
+            {"text": "I'll check it out.", "next_node_id": null, "set_flag": "marcus_mining_intro"}
+          ]
+        },
+        {
+          "id": "mining_profit",
+          "speaker_id": "marcus_jin",
+          "text": "Better than hauling cargo, I'll tell you that. Raw ore sells decent, but if you can get it refined? That's where the real margins are. Forgeworks and Axiom Labs will pay top credit for processed materials.",
+          "responses": [
+            {"text": "Thanks for the tip, Marcus.", "next_node_id": null, "set_flag": "marcus_mining_intro"}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "yara_intro",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "dr_yara_osei",
+          "text": "Ah, a visitor. Dr. Yara Osei, Research Director at Axiom Labs. We don't get many traders who venture this far into the research corridor. What brings you here?",
+          "responses": [
+            {"text": "Just looking for good trade opportunities.", "next_node_id": "trade_talk"},
+            {"text": "What kind of research do you do?", "next_node_id": "research_info"},
+            {"text": "Just passing through.", "next_node_id": null}
+          ]
+        },
+        {
+          "id": "trade_talk",
+          "speaker_id": "dr_yara_osei",
+          "text": "Mmm. We're always in need of raw materials for our experiments. Quantum crystals, refined alloys \u2014 bring those and you'll find generous buyers here. We also produce some rather valuable research outputs, if you have the cargo space.",
+          "responses": [
+            {"text": "Good to know. What about the research?", "next_node_id": "research_info"},
+            {"text": "I'll keep that in mind. Thanks.", "next_node_id": null, "set_flag": "yara_trade_info"}
+          ]
+        },
+        {
+          "id": "research_info",
+          "speaker_id": "dr_yara_osei",
+          "text": "Cutting-edge materials science, mostly. We're working on next-generation ship alloys and fuel catalysts. Dangerous work \u2014 half our funding comes from the Science Collective, the other half from... let's call them interested parties.",
+          "responses": [
+            {"text": "Sounds like there's a story there.", "next_node_id": "hint"},
+            {"text": "Fascinating. Good luck with the research.", "next_node_id": null}
+          ]
+        },
+        {
+          "id": "hint",
+          "speaker_id": "dr_yara_osei",
+          "text": "Perhaps. But stories are earned, not given. Come back when you've proven you can be trusted. The frontier has a way of revealing character.",
+          "responses": []
+        }
+      ]
+    },
+    {
+      "id": "kael_intro",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "kael_drifter",
+          "text": "Well, well. A new face at Haven's Rest. I'm Kael \u2014 most folks call me Drifter. I scout the frontier routes, mapping safe passages and... not so safe ones.",
+          "responses": [
+            {"text": "What's it like on the frontier?", "next_node_id": "frontier_life"},
+            {"text": "Any dangerous routes I should avoid?", "next_node_id": "danger_info"},
+            {"text": "Nice to meet you. Gotta run.", "next_node_id": null}
+          ]
+        },
+        {
+          "id": "frontier_life",
+          "speaker_id": "kael_drifter",
+          "text": "It's quiet, mostly. Wide open space, scattered settlements. But that quiet can turn deadly fast \u2014 pirate ambushes, ion storms, nav hazards that don't show up on standard charts. That's why the Frontier Alliance keeps scouts like me busy.",
+          "responses": [
+            {"text": "What about the dangerous routes?", "next_node_id": "danger_info"},
+            {"text": "Sounds like a tough life.", "next_node_id": null, "set_flag": "kael_frontier_talk"}
+          ]
+        },
+        {
+          "id": "danger_info",
+          "speaker_id": "kael_drifter",
+          "text": "Crimson Reach is the big one. Rich pickings if you make it through, but the danger level's no joke. Higher risk systems mean better prices, though \u2014 supply and demand. Just make sure your ship can handle the trip.",
+          "responses": [
+            {"text": "Thanks for the warning, Kael.", "next_node_id": null, "set_flag": "kael_danger_warning"}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "intro_narration",
+      "start_node_id": "intro_1",
+      "nodes": [
+        {
+          "id": "intro_1",
+          "speaker_id": "narrator",
+          "text": "You are the child of an assistant foreman for an asteroid mining operation in the orbit of Nexus Prime. You grew up in an impoverished community, bled dry by corporate greed and wage slavery. As a child, you watched your father pull 16 hour shifts consistently, working himself into an early grave.",
+          "responses": [
+            {"text": "[Continue]", "next_node_id": "intro_2"}
+          ]
+        },
+        {
+          "id": "intro_2",
+          "speaker_id": "narrator",
+          "text": "Between the stress and the poor air conditioning systems in your colony ship, your father passed away six months ago, at the age of 43. You had only just celebrated your 16th birthday. You have no path forward in life \u2014 no education, no family, no prospects.",
+          "responses": [
+            {"text": "[Continue]", "next_node_id": "intro_3"}
+          ]
+        },
+        {
+          "id": "intro_3",
+          "speaker_id": "narrator",
+          "text": "You consider staying aboard the colony ship, taking on some menial position. But without anyone to take you in, you'd merely be sinking into the same wage slavery that killed your father. At night, as you toss and turn weighing your options, it torments you to know that nothing gets better. Nothing will improve.",
+          "responses": [
+            {"text": "[Continue]", "next_node_id": "intro_4"}
+          ]
+        },
+        {
+          "id": "intro_4",
+          "speaker_id": "narrator",
+          "text": "Perhaps there is another path. With the last of your father's savings, you spend a few days cleaning up his possessions before pawning them off at the ship's trading post. You can barely afford the hull of a broken shuttle. A neighbor in maintenance helps you source an engine. As your credits dry out, you only just barely manage to get the shuttle working and charge the fuel rods.",
+          "responses": [
+            {"text": "[Continue]", "next_node_id": "intro_5"}
+          ]
+        },
+        {
+          "id": "intro_5",
+          "speaker_id": "narrator",
+          "text": "Departing from the colony ship, you find yourself in the orbit of Nexus Prime, with the system at your disposal. You have 2,000 credits to your name. You are woefully unaware of the system, its politics, its people. Your goal is simple \u2014 to survive and find new horizons. Anywhere away from here.",
+          "responses": []
+        }
+      ]
+    },
+    {
+      "id": "larsen_customs",
+      "start_node_id": "greeting",
+      "nodes": [
+        {
+          "id": "greeting",
+          "speaker_id": "officer_larsen",
+          "text": "I need your bill of landing, and your registration, sir.",
+          "responses": [
+            {"text": "Here is my registration, but I don't have a bill of landing.", "next_node_id": "no_bill"}
+          ]
+        },
+        {
+          "id": "no_bill",
+          "speaker_id": "officer_larsen",
+          "text": "Then I'm afraid we'll be confiscating any goods in your hull, as you are not cleared to import goods at this time.",
+          "responses": [
+            {"text": "The only items in the hull are personal living supplies.", "next_node_id": "personal_supplies"}
+          ]
+        },
+        {
+          "id": "personal_supplies",
+          "speaker_id": "officer_larsen",
+          "text": "You'll be able to reclaim those once you pay the 250 credit fee to acquire your bill of landing.",
+          "responses": [
+            {"text": "I'll pay the 250 credits.", "next_node_id": "payment_accepted"}
+          ]
+        },
+        {
+          "id": "payment_accepted",
+          "speaker_id": "officer_larsen",
+          "text": "Please wait in your shuttle for an hour while we process the paperwork for you.",
+          "responses": [
+            {"text": "[Wait]", "next_node_id": "bill_granted"}
+          ]
+        },
+        {
+          "id": "bill_granted",
+          "speaker_id": "officer_larsen",
+          "text": "With your bill of landing in hand, you'll now be able to trade freely and import or export goods from our port.",
+          "responses": []
+        }
+      ]
+    },
+    {
+      "id": "merchant_delivery",
+      "start_node_id": "offer",
+      "nodes": [
+        {
+          "id": "offer",
+          "speaker_id": "delivery_merchant",
+          "text": "You there. I'll give you 500 credits to ship this iron ore off to Forgeworks. I just bought it, and I've been told that my carrier is full up. I need it there within the week.",
+          "responses": [
+            {"text": "Tell me more about the job.", "next_node_id": "details"},
+            {"text": "I'll consider it.", "next_node_id": null}
+          ]
+        },
+        {
+          "id": "details",
+          "speaker_id": "delivery_merchant",
+          "text": "It's 10 units of iron ore. Simple delivery run to Forgeworks \u2014 they're expecting it. Drop it off, and someone in a matching blue uniform will pay you on the spot. Check your mission log if you're interested.",
+          "responses": [
+            {"text": "Sounds straightforward enough.", "next_node_id": null},
+            {"text": "I'll think about it.", "next_node_id": null}
+          ]
+        }
+      ]
+    }
+  ]
+}

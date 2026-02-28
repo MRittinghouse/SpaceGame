@@ -1,0 +1,28 @@
+{
+  "salvage_configs": [
+    {
+      "system_id": "forgeworks",
+      "grid_size": 5,
+      "max_charges": 10,
+      "charge_regen_seconds": 5.0,
+      "item_density": 0.40,
+      "item_distribution": {
+        "scrap_metal": 0.50,
+        "salvaged_electronics": 0.35,
+        "rare_parts": 0.15
+      }
+    },
+    {
+      "system_id": "crimson_reach",
+      "grid_size": 6,
+      "max_charges": 12,
+      "charge_regen_seconds": 4.0,
+      "item_density": 0.50,
+      "item_distribution": {
+        "scrap_metal": 0.30,
+        "salvaged_electronics": 0.40,
+        "rare_parts": 0.30
+      }
+    }
+  ]
+}

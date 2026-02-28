@@ -1,0 +1,200 @@
+{
+  "missions": [
+    {
+      "id": "getting_started",
+      "name": "Getting Started",
+      "description": "Visit the Breakstone mining colony to explore new opportunities beyond Nexus Prime.",
+      "prerequisites": [],
+      "objectives": [
+        {
+          "type": "reach_system",
+          "target_id": "breakstone",
+          "target_quantity": 1,
+          "description": "Travel to Breakstone"
+        }
+      ],
+      "rewards": [
+        {"reward_type": "credits", "amount": 200},
+        {"reward_type": "xp", "amount": 25}
+      ]
+    },
+    {
+      "id": "making_friends",
+      "name": "Making Friends",
+      "description": "Introduce yourself to Elena Reeves, a navigator stationed at Nexus Prime.",
+      "prerequisites": [],
+      "objectives": [
+        {
+          "type": "talk_to_npc",
+          "target_id": "elena_reeves",
+          "target_quantity": 1,
+          "description": "Talk to Elena Reeves"
+        }
+      ],
+      "rewards": [
+        {"reward_type": "credits", "amount": 300},
+        {"reward_type": "xp", "amount": 30}
+      ]
+    },
+    {
+      "id": "building_capital",
+      "name": "Building Capital",
+      "description": "Accumulate 5,000 credits to establish yourself as a serious trader in the sector.",
+      "prerequisites": ["getting_started"],
+      "objectives": [
+        {
+          "type": "have_credits",
+          "target_id": "",
+          "target_quantity": 5000,
+          "description": "Have at least 5,000 credits"
+        }
+      ],
+      "rewards": [
+        {"reward_type": "xp", "amount": 50}
+      ]
+    },
+    {
+      "id": "supply_run",
+      "name": "Supply Run",
+      "description": "The Verdant colony is in need of medical supplies. Acquire some and deliver them.",
+      "prerequisites": ["making_friends"],
+      "objectives": [
+        {
+          "type": "collect_cargo",
+          "target_id": "medical",
+          "target_quantity": 5,
+          "description": "Acquire 5 Medical Supplies"
+        },
+        {
+          "type": "reach_system",
+          "target_id": "verdant",
+          "target_quantity": 1,
+          "description": "Deliver to Verdant"
+        }
+      ],
+      "rewards": [
+        {"reward_type": "credits", "amount": 500},
+        {"reward_type": "xp", "amount": 50}
+      ]
+    },
+    {
+      "id": "recruit_navigator",
+      "name": "Recruit Navigator",
+      "description": "Elena Reeves has offered to join your crew as a navigator. Return to Nexus Prime to finalize the arrangement.",
+      "prerequisites": ["making_friends"],
+      "objectives": [
+        {
+          "type": "reach_system",
+          "target_id": "nexus_prime",
+          "target_quantity": 1,
+          "description": "Return to Nexus Prime"
+        }
+      ],
+      "rewards": [
+        {"reward_type": "crew", "amount": 0, "target_id": "elena_reeves"},
+        {"reward_type": "xp", "amount": 50}
+      ]
+    },
+    {
+      "id": "recruit_engineer",
+      "name": "Recruit Engineer",
+      "description": "Marcus Jin is impressed by your initiative. Visit Breakstone to bring him aboard as your ship's engineer.",
+      "prerequisites": ["getting_started"],
+      "objectives": [
+        {
+          "type": "reach_system",
+          "target_id": "breakstone",
+          "target_quantity": 1,
+          "description": "Return to Breakstone"
+        }
+      ],
+      "rewards": [
+        {"reward_type": "crew", "amount": 0, "target_id": "marcus_jin"},
+        {"reward_type": "xp", "amount": 50}
+      ]
+    },
+    {
+      "id": "recruit_scientist",
+      "name": "Recruit Scientist",
+      "description": "Dr. Yara Osei is looking for field research opportunities. Travel to Axiom Labs to recruit her.",
+      "prerequisites": ["building_capital"],
+      "objectives": [
+        {
+          "type": "reach_system",
+          "target_id": "axiom_labs",
+          "target_quantity": 1,
+          "description": "Travel to Axiom Labs"
+        }
+      ],
+      "rewards": [
+        {"reward_type": "crew", "amount": 0, "target_id": "dr_yara_osei"},
+        {"reward_type": "xp", "amount": 50}
+      ]
+    },
+    {
+      "id": "recruit_trader",
+      "name": "Recruit Trader",
+      "description": "Kael Drifter wants to partner up. Head to Haven's Rest to seal the deal.",
+      "prerequisites": ["supply_run"],
+      "objectives": [
+        {
+          "type": "reach_system",
+          "target_id": "havens_rest",
+          "target_quantity": 1,
+          "description": "Travel to Haven's Rest"
+        }
+      ],
+      "rewards": [
+        {"reward_type": "crew", "amount": 0, "target_id": "kael_drifter"},
+        {"reward_type": "xp", "amount": 50}
+      ]
+    },
+    {
+      "id": "bill_of_landing",
+      "name": "Bill of Landing",
+      "description": "Acquire a trade permit to buy and sell goods at Nexus Prime. Speak with the customs officer to obtain your bill of landing.",
+      "prerequisites": [],
+      "objectives": [
+        {
+          "type": "talk_to_npc",
+          "target_id": "officer_larsen",
+          "target_quantity": 1,
+          "description": "Speak with Customs Officer Larsen"
+        }
+      ],
+      "rewards": [
+        {"reward_type": "deduct_credits", "amount": 250},
+        {"reward_type": "trade_permit", "amount": 0, "target_id": "current_system"},
+        {"reward_type": "xp", "amount": 20}
+      ]
+    },
+    {
+      "id": "iron_delivery",
+      "name": "Iron Ore Delivery",
+      "description": "A cargo broker needs 10 iron ore delivered to Forgeworks. He'll pay 500 credits on delivery.",
+      "prerequisites": ["bill_of_landing"],
+      "on_accept_cargo": [
+        {"commodity_id": "iron_ore", "quantity": 10}
+      ],
+      "objectives": [
+        {
+          "type": "collect_cargo",
+          "target_id": "iron_ore",
+          "target_quantity": 10,
+          "description": "Have 10 Iron Ore in cargo"
+        },
+        {
+          "type": "reach_system",
+          "target_id": "forgeworks",
+          "target_quantity": 1,
+          "description": "Deliver to Forgeworks"
+        }
+      ],
+      "rewards": [
+        {"reward_type": "credits", "amount": 500},
+        {"reward_type": "remove_cargo", "amount": 10, "target_id": "iron_ore"},
+        {"reward_type": "xp", "amount": 40}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+.venv/
+ENV/
+env/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# PyGame
+*.pyc
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Logs
+logs/
+*.log
+
+# Game data
+spacegame/data/saves/*.json
+!spacegame/data/saves/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db
+nul
+
+# Tool workspace files
+.claude/
+.qodo/
+scratch/

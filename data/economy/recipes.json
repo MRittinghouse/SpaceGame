@@ -1,0 +1,59 @@
+{
+  "recipes": [
+    {
+      "id": "smelt_iron",
+      "name": "Smelt Iron",
+      "description": "Melt down raw ore into usable common metals.",
+      "inputs": {"raw_ore": 10},
+      "outputs": {"common_metals": 2},
+      "processing_time": 5.0,
+      "location_ids": ["forgeworks", "iron_depths"]
+    },
+    {
+      "id": "refine_crystal",
+      "name": "Refine Crystal",
+      "description": "Process crystal ore into valuable rare metals.",
+      "inputs": {"crystal_ore": 5},
+      "outputs": {"rare_metals": 1},
+      "processing_time": 8.0,
+      "location_ids": ["axiom_labs", "nova_research"]
+    },
+    {
+      "id": "process_electronics",
+      "name": "Process Electronics",
+      "description": "Combine rare and common metals into electronic components.",
+      "inputs": {"rare_metals": 3, "common_metals": 2},
+      "outputs": {"electronics": 2},
+      "processing_time": 12.0,
+      "location_ids": ["axiom_labs", "nova_research"]
+    },
+    {
+      "id": "craft_medical",
+      "name": "Craft Medical Supplies",
+      "description": "Create medical supplies from crystal ore and electronics.",
+      "inputs": {"crystal_ore": 2, "electronics": 1},
+      "outputs": {"medical": 1},
+      "processing_time": 15.0,
+      "location_ids": ["axiom_labs", "nova_research"],
+      "requires_skill": "refining_knowledge"
+    },
+    {
+      "id": "salvage_to_metals",
+      "name": "Process Scrap",
+      "description": "Convert scrap metal into usable common metals.",
+      "inputs": {"scrap_metal": 8},
+      "outputs": {"common_metals": 1},
+      "processing_time": 4.0,
+      "location_ids": ["forgeworks"]
+    },
+    {
+      "id": "refine_iron",
+      "name": "Refine Iron Ore",
+      "description": "Purify iron ore into high-quality common metals.",
+      "inputs": {"iron_ore": 6},
+      "outputs": {"common_metals": 3},
+      "processing_time": 6.0,
+      "location_ids": ["forgeworks", "iron_depths"]
+    }
+  ]
+}

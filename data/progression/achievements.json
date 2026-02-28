@@ -1,0 +1,235 @@
+{
+  "achievements": [
+    {
+      "id": "first_trade",
+      "name": "Novice Trader",
+      "description": "Complete your first trade.",
+      "category": "trading",
+      "stat_key": "trades_completed",
+      "threshold": 1,
+      "reward_type": "xp",
+      "reward_value": 50,
+      "hidden": false
+    },
+    {
+      "id": "ten_trades",
+      "name": "Seasoned Trader",
+      "description": "Complete 10 trades.",
+      "category": "trading",
+      "stat_key": "trades_completed",
+      "threshold": 10,
+      "reward_type": "credits",
+      "reward_value": 500,
+      "hidden": false
+    },
+    {
+      "id": "fifty_trades",
+      "name": "Trade Baron",
+      "description": "Complete 50 trades.",
+      "category": "trading",
+      "stat_key": "trades_completed",
+      "threshold": 50,
+      "reward_type": "skill_point",
+      "reward_value": 1,
+      "hidden": false
+    },
+    {
+      "id": "first_profit",
+      "name": "First Profit",
+      "description": "Earn 1,000 credits in lifetime earnings.",
+      "category": "trading",
+      "stat_key": "credits_earned_lifetime",
+      "threshold": 1000,
+      "reward_type": "xp",
+      "reward_value": 75,
+      "hidden": false
+    },
+    {
+      "id": "big_earner",
+      "name": "Big Earner",
+      "description": "Earn 50,000 credits in lifetime earnings.",
+      "category": "wealth",
+      "stat_key": "credits_earned_lifetime",
+      "threshold": 50000,
+      "reward_type": "credits",
+      "reward_value": 2000,
+      "hidden": false
+    },
+    {
+      "id": "whale",
+      "name": "Space Whale",
+      "description": "Earn 200,000 credits in lifetime earnings.",
+      "category": "wealth",
+      "stat_key": "credits_earned_lifetime",
+      "threshold": 200000,
+      "reward_type": "skill_point",
+      "reward_value": 1,
+      "hidden": false
+    },
+    {
+      "id": "big_spender",
+      "name": "Big Spender",
+      "description": "Spend 25,000 credits total.",
+      "category": "wealth",
+      "stat_key": "credits_spent_lifetime",
+      "threshold": 25000,
+      "reward_type": "xp",
+      "reward_value": 100,
+      "hidden": false
+    },
+    {
+      "id": "jackpot_trade",
+      "name": "Jackpot Trade",
+      "description": "Make 2,000+ credits profit on a single sale.",
+      "category": "trading",
+      "stat_key": "largest_single_profit",
+      "threshold": 2000,
+      "reward_type": "xp",
+      "reward_value": 150,
+      "hidden": false
+    },
+    {
+      "id": "first_jump",
+      "name": "First Jump",
+      "description": "Travel to another system.",
+      "category": "exploration",
+      "stat_key": "jumps_traveled",
+      "threshold": 1,
+      "reward_type": "xp",
+      "reward_value": 50,
+      "hidden": false
+    },
+    {
+      "id": "frequent_flyer",
+      "name": "Frequent Flyer",
+      "description": "Make 20 jumps between systems.",
+      "category": "exploration",
+      "stat_key": "jumps_traveled",
+      "threshold": 20,
+      "reward_type": "credits",
+      "reward_value": 1000,
+      "hidden": false
+    },
+    {
+      "id": "galaxy_tourist",
+      "name": "Galaxy Tourist",
+      "description": "Visit 5 different systems.",
+      "category": "exploration",
+      "stat_key": "systems_discovered",
+      "threshold": 5,
+      "reward_type": "xp",
+      "reward_value": 200,
+      "hidden": false
+    },
+    {
+      "id": "galaxy_explorer",
+      "name": "Galaxy Explorer",
+      "description": "Visit all 10 systems.",
+      "category": "exploration",
+      "stat_key": "systems_discovered",
+      "threshold": 10,
+      "reward_type": "skill_point",
+      "reward_value": 1,
+      "hidden": false
+    },
+    {
+      "id": "fuel_guzzler",
+      "name": "Fuel Guzzler",
+      "description": "Consume 500 units of fuel.",
+      "category": "exploration",
+      "stat_key": "fuel_consumed",
+      "threshold": 500,
+      "reward_type": "xp",
+      "reward_value": 100,
+      "hidden": false
+    },
+    {
+      "id": "first_ore",
+      "name": "Prospector",
+      "description": "Mine your first ore.",
+      "category": "mining",
+      "stat_key": "ore_mined",
+      "threshold": 1,
+      "reward_type": "xp",
+      "reward_value": 50,
+      "hidden": false
+    },
+    {
+      "id": "mining_veteran",
+      "name": "Mining Veteran",
+      "description": "Mine 50 units of ore.",
+      "category": "mining",
+      "stat_key": "ore_mined",
+      "threshold": 50,
+      "reward_type": "credits",
+      "reward_value": 1000,
+      "hidden": false
+    },
+    {
+      "id": "first_salvage",
+      "name": "Scavenger",
+      "description": "Salvage your first item.",
+      "category": "salvage",
+      "stat_key": "items_salvaged",
+      "threshold": 1,
+      "reward_type": "xp",
+      "reward_value": 50,
+      "hidden": false
+    },
+    {
+      "id": "salvage_veteran",
+      "name": "Salvage Veteran",
+      "description": "Salvage 30 items.",
+      "category": "salvage",
+      "stat_key": "items_salvaged",
+      "threshold": 30,
+      "reward_type": "credits",
+      "reward_value": 1000,
+      "hidden": false
+    },
+    {
+      "id": "first_refine",
+      "name": "Apprentice Refiner",
+      "description": "Refine your first item.",
+      "category": "mining",
+      "stat_key": "items_refined",
+      "threshold": 1,
+      "reward_type": "xp",
+      "reward_value": 50,
+      "hidden": false
+    },
+    {
+      "id": "refining_master",
+      "name": "Refining Master",
+      "description": "Refine 20 items.",
+      "category": "mining",
+      "stat_key": "items_refined",
+      "threshold": 20,
+      "reward_type": "credits",
+      "reward_value": 1500,
+      "hidden": false
+    },
+    {
+      "id": "level_5",
+      "name": "Rising Star",
+      "description": "Reach level 5.",
+      "category": "progression",
+      "stat_key": "level",
+      "threshold": 5,
+      "reward_type": "credits",
+      "reward_value": 3000,
+      "hidden": false
+    },
+    {
+      "id": "level_10",
+      "name": "Space Legend",
+      "description": "Reach level 10.",
+      "category": "progression",
+      "stat_key": "level",
+      "threshold": 10,
+      "reward_type": "skill_point",
+      "reward_value": 2,
+      "hidden": true
+    }
+  ]
+}

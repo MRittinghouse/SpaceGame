@@ -1,0 +1,49 @@
+{
+  "upgrades": [
+    {
+      "id": "cargo_bay_ext",
+      "name": "Cargo Bay Extension",
+      "description": "Expands cargo hold by 20 units.",
+      "price": 5000,
+      "slot_type": "cargo",
+      "bonus_type": "cargo_bonus",
+      "bonus_value": 20.0
+    },
+    {
+      "id": "fuel_tank_upgrade",
+      "name": "Fuel Tank Upgrade",
+      "description": "Increases fuel capacity by 30 units.",
+      "price": 3000,
+      "slot_type": "fuel",
+      "bonus_type": "fuel_bonus",
+      "bonus_value": 30.0
+    },
+    {
+      "id": "efficient_engines",
+      "name": "Efficient Engines",
+      "description": "Reduces fuel consumption per jump by 2.",
+      "price": 8000,
+      "slot_type": "engine",
+      "bonus_type": "fuel_efficiency_bonus",
+      "bonus_value": 2.0
+    },
+    {
+      "id": "mining_drill_mk2",
+      "name": "Mining Drill Mk2",
+      "description": "Reduces drill time by 20%.",
+      "price": 6000,
+      "slot_type": "mining",
+      "bonus_type": "drill_speed_bonus",
+      "bonus_value": 0.20
+    },
+    {
+      "id": "advanced_scanner",
+      "name": "Advanced Scanner",
+      "description": "Grants 2 additional scan charges for salvaging.",
+      "price": 7000,
+      "slot_type": "scanner",
+      "bonus_type": "scan_charge_bonus",
+      "bonus_value": 2.0
+    }
+  ]
+}

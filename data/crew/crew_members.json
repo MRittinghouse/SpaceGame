@@ -1,0 +1,120 @@
+{
+  "crew_templates": [
+    {
+      "id": "elena_reeves",
+      "name": "Elena Reeves",
+      "role": "navigator",
+      "description": "Former Fleet navigator with an eye for efficient routes. Elena knows every shortcut and fuel-saving trajectory in the sector.",
+      "portrait_color": [100, 180, 255],
+      "max_level": 5,
+      "xp_thresholds": [0, 50, 150, 350, 700],
+      "abilities": [
+        {
+          "bonus_type": "fuel_efficiency_bonus",
+          "bonus_value": 2.0,
+          "description": "Efficient Routing",
+          "unlock_level": 1
+        },
+        {
+          "bonus_type": "fuel_efficiency_bonus",
+          "bonus_value": 3.0,
+          "description": "Advanced Navigation",
+          "unlock_level": 3
+        },
+        {
+          "bonus_type": "fuel_bonus",
+          "bonus_value": 20.0,
+          "description": "Fleet Support",
+          "unlock_level": 5
+        }
+      ]
+    },
+    {
+      "id": "marcus_jin",
+      "name": "Marcus Jin",
+      "role": "engineer",
+      "description": "Breakstone mining engineer who knows ships inside out. Marcus can coax extra capacity out of any cargo hold or fuel tank.",
+      "portrait_color": [200, 160, 60],
+      "max_level": 5,
+      "xp_thresholds": [0, 50, 150, 350, 700],
+      "abilities": [
+        {
+          "bonus_type": "cargo_bonus",
+          "bonus_value": 15.0,
+          "description": "Cargo Optimization",
+          "unlock_level": 1
+        },
+        {
+          "bonus_type": "fuel_bonus",
+          "bonus_value": 15.0,
+          "description": "Fuel Tank Mods",
+          "unlock_level": 3
+        },
+        {
+          "bonus_type": "cargo_bonus",
+          "bonus_value": 20.0,
+          "description": "Master Engineer",
+          "unlock_level": 5
+        }
+      ]
+    },
+    {
+      "id": "dr_yara_osei",
+      "name": "Dr. Yara Osei",
+      "role": "scientist",
+      "description": "Axiom Labs researcher specializing in material analysis. Her expertise improves scanning, extraction, and rare material identification.",
+      "portrait_color": [160, 120, 210],
+      "max_level": 5,
+      "xp_thresholds": [0, 50, 150, 350, 700],
+      "abilities": [
+        {
+          "bonus_type": "extra_scan_charges",
+          "bonus_value": 1.0,
+          "description": "Enhanced Scanners",
+          "unlock_level": 1
+        },
+        {
+          "bonus_type": "extract_speed",
+          "bonus_value": 0.15,
+          "description": "Efficient Extraction",
+          "unlock_level": 3
+        },
+        {
+          "bonus_type": "mining_rare_chance",
+          "bonus_value": 0.05,
+          "description": "Rare Material Expert",
+          "unlock_level": 5
+        }
+      ]
+    },
+    {
+      "id": "kael_drifter",
+      "name": "Kael Drifter",
+      "role": "trader",
+      "description": "Frontier trader with connections in every port. Kael's network of contacts gets you better deals on both sides of the counter.",
+      "portrait_color": [110, 210, 120],
+      "max_level": 5,
+      "xp_thresholds": [0, 50, 150, 350, 700],
+      "abilities": [
+        {
+          "bonus_type": "buy_price_reduction",
+          "bonus_value": 0.03,
+          "description": "Trade Contacts",
+          "unlock_level": 1
+        },
+        {
+          "bonus_type": "sell_price_bonus",
+          "bonus_value": 0.03,
+          "description": "Sales Network",
+          "unlock_level": 3
+        },
+        {
+          "bonus_type": "buy_price_reduction",
+          "bonus_value": 0.02,
+          "description": "Master Trader",
+          "unlock_level": 5
+        }
+      ]
+    }
+  ]
+}

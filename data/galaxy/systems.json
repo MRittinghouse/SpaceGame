@@ -1,0 +1,308 @@
+{
+  "systems": [
+    {
+      "id": "nexus_prime",
+      "name": "Nexus Prime",
+      "type": "trade_hub",
+      "description": "The galaxy's premier trading hub where all major trade routes converge. A bustling center of commerce and diplomacy.",
+      "coordinates": {
+        "x": 0,
+        "y": 0
+      },
+      "danger_level": "safe",
+      "faction": "Nexus Trade Consortium",
+      "stations": [
+        {
+          "id": "nexus_central_exchange",
+          "name": "Central Exchange",
+          "type": "major",
+          "description": "The largest trading station in known space, offering every commodity and service imaginable.",
+          "docking_fee": 100,
+          "market_variety": "full"
+        },
+        {
+          "id": "nexus_freight_depot",
+          "name": "Freight Depot",
+          "type": "minor",
+          "description": "A secondary station specializing in bulk cargo and wholesale trading.",
+          "docking_fee": 50,
+          "market_variety": "industrial"
+        }
+      ],
+      "economy": {
+        "production_tags": ["manufactured_goods", "electronics"],
+        "consumption_tags": ["food", "raw_materials", "luxury"],
+        "tariff_rate": 0.02
+      },
+      "rest_cost": 150
+    },
+    {
+      "id": "verdant",
+      "name": "Verdant",
+      "type": "agricultural",
+      "description": "Lush garden worlds covered in endless fields and hydroponic towers. The sector's agricultural heartland.",
+      "coordinates": {
+        "x": 80,
+        "y": 40
+      },
+      "danger_level": "safe",
+      "faction": "Verdant Agricultural Cooperative",
+      "stations": [
+        {
+          "id": "verdant_agri_hub",
+          "name": "Agri-Hub One",
+          "type": "major",
+          "description": "Central distribution hub for agricultural products, fresh produce, and organic goods.",
+          "docking_fee": 75,
+          "market_variety": "agricultural"
+        }
+      ],
+      "economy": {
+        "production_tags": ["food", "textiles", "organic"],
+        "consumption_tags": ["machinery", "fuel", "manufactured_goods"],
+        "tariff_rate": 0.01
+      },
+      "rest_cost": 75
+    },
+    {
+      "id": "forgeworks",
+      "name": "Forgeworks",
+      "type": "industrial",
+      "description": "A world of towering factories and orbital shipyards. Smoke and steel define this industrial powerhouse.",
+      "coordinates": {
+        "x": -70,
+        "y": 50
+      },
+      "danger_level": "moderate",
+      "faction": "Forgeworks Industrial Syndicate",
+      "stations": [
+        {
+          "id": "forgeworks_main_foundry",
+          "name": "Main Foundry",
+          "type": "major",
+          "description": "Massive industrial complex producing machinery, starships, and heavy equipment around the clock.",
+          "docking_fee": 150,
+          "market_variety": "industrial"
+        },
+        {
+          "id": "forgeworks_scrapyard",
+          "name": "Salvage Yards",
+          "type": "minor",
+          "description": "Recycling and salvage station dealing in scrap metal, used parts, and refurbished equipment.",
+          "docking_fee": 25,
+          "market_variety": "basic"
+        }
+      ],
+      "economy": {
+        "production_tags": ["machinery", "manufactured_goods", "common_metals"],
+        "consumption_tags": ["food", "fuel", "raw_materials"],
+        "tariff_rate": 0.03
+      },
+      "rest_cost": 100
+    },
+    {
+      "id": "breakstone",
+      "name": "Breakstone",
+      "type": "mining",
+      "description": "A lawless frontier system where fortune-seekers brave the asteroid belts for precious ores and rare metals.",
+      "coordinates": {
+        "x": 40,
+        "y": -80
+      },
+      "danger_level": "dangerous",
+      "faction": "Independent Miners Guild",
+      "stations": [
+        {
+          "id": "breakstone_rock_haven",
+          "name": "Rock Haven",
+          "type": "major",
+          "description": "Rough-and-tumble mining station where ore is processed and deals are struck at gunpoint.",
+          "docking_fee": 100,
+          "market_variety": "mining"
+        }
+      ],
+      "economy": {
+        "production_tags": ["common_metals", "rare_metals", "raw_materials"],
+        "consumption_tags": ["food", "machinery", "fuel"],
+        "tariff_rate": 0.02
+      },
+      "rest_cost": 50
+    },
+    {
+      "id": "axiom_labs",
+      "name": "Axiom Labs",
+      "type": "research",
+      "description": "Gleaming research facilities orbiting pristine worlds. The cutting edge of science and medical advancement.",
+      "coordinates": {
+        "x": -45,
+        "y": -70
+      },
+      "danger_level": "moderate",
+      "faction": "Axiom Research Institute",
+      "stations": [
+        {
+          "id": "axiom_research_station",
+          "name": "Research Station Alpha",
+          "type": "major",
+          "description": "State-of-the-art research facility developing breakthrough technology and advanced medicine.",
+          "docking_fee": 200,
+          "market_variety": "high_tech"
+        }
+      ],
+      "economy": {
+        "production_tags": ["electronics", "medical", "luxury"],
+        "consumption_tags": ["rare_metals", "food", "raw_materials"],
+        "tariff_rate": 0.04
+      },
+      "rest_cost": 200
+    },
+    {
+      "id": "havens_rest",
+      "name": "Haven's Rest",
+      "type": "agricultural",
+      "description": "A tranquil system of lush worlds and orbital gardens. Known for its peaceful atmosphere and abundant food production.",
+      "coordinates": {
+        "x": 100,
+        "y": -30
+      },
+      "danger_level": "safe",
+      "faction": "Haven Pastoral Alliance",
+      "stations": [
+        {
+          "id": "havens_rest_market",
+          "name": "Harvest Market",
+          "type": "major",
+          "description": "A sprawling open market selling the finest organic produce in the sector.",
+          "docking_fee": 50,
+          "market_variety": "agricultural"
+        }
+      ],
+      "economy": {
+        "production_tags": ["food", "organic", "textiles", "agricultural"],
+        "consumption_tags": ["machinery", "electronics", "fuel"],
+        "tariff_rate": 0.01
+      },
+      "rest_cost": 50
+    },
+    {
+      "id": "crimson_reach",
+      "name": "Crimson Reach",
+      "type": "frontier",
+      "description": "A lawless frontier system littered with wreckage from ancient battles. Salvagers risk everything for rare finds.",
+      "coordinates": {
+        "x": -100,
+        "y": -40
+      },
+      "danger_level": "dangerous",
+      "faction": "Free Salvagers Union",
+      "stations": [
+        {
+          "id": "crimson_reach_outpost",
+          "name": "Wrecker's Outpost",
+          "type": "major",
+          "description": "A ramshackle station built from salvaged hull plates. The best place to sell recovered parts.",
+          "docking_fee": 75,
+          "market_variety": "industrial"
+        }
+      ],
+      "economy": {
+        "production_tags": ["industrial", "raw_materials"],
+        "consumption_tags": ["food", "fuel", "medical"],
+        "tariff_rate": 0.01
+      },
+      "rest_cost": 75
+    },
+    {
+      "id": "stellaris_port",
+      "name": "Stellaris Port",
+      "type": "trade_hub",
+      "description": "A massive orbital mega-station that serves as the galaxy's luxury goods hub. If it can be bought, it's sold here.",
+      "coordinates": {
+        "x": 60,
+        "y": 80
+      },
+      "danger_level": "safe",
+      "faction": "Stellaris Commerce Guild",
+      "stations": [
+        {
+          "id": "stellaris_grand_bazaar",
+          "name": "Grand Bazaar",
+          "type": "major",
+          "description": "Three-level trading complex with the best prices on luxury goods in known space.",
+          "docking_fee": 200,
+          "market_variety": "full"
+        },
+        {
+          "id": "stellaris_warehouse",
+          "name": "Warehouse District",
+          "type": "minor",
+          "description": "Bulk storage and wholesale trading for serious merchants.",
+          "docking_fee": 100,
+          "market_variety": "industrial"
+        }
+      ],
+      "economy": {
+        "production_tags": ["luxury", "trade_hub", "manufactured_goods"],
+        "consumption_tags": ["food", "raw_materials", "common_metals"],
+        "tariff_rate": 0.03
+      },
+      "rest_cost": 250
+    },
+    {
+      "id": "iron_depths",
+      "name": "Iron Depths",
+      "type": "mining",
+      "description": "A dense asteroid cluster rich in heavy metals and rare minerals. Mining operations here are dangerous but incredibly lucrative.",
+      "coordinates": {
+        "x": -30,
+        "y": 100
+      },
+      "danger_level": "dangerous",
+      "faction": "Deep Core Mining Corp",
+      "stations": [
+        {
+          "id": "iron_depths_core_station",
+          "name": "Core Station",
+          "type": "major",
+          "description": "Heavily fortified mining station at the heart of the asteroid field.",
+          "docking_fee": 125,
+          "market_variety": "mining"
+        }
+      ],
+      "economy": {
+        "production_tags": ["common_metals", "rare_metals", "raw_materials", "mining"],
+        "consumption_tags": ["food", "machinery", "fuel", "medical"],
+        "tariff_rate": 0.02
+      },
+      "rest_cost": 75
+    },
+    {
+      "id": "nova_research",
+      "name": "Nova Research",
+      "type": "research",
+      "description": "A secretive research consortium pushing the boundaries of science. Their advanced refineries can produce goods no one else can.",
+      "coordinates": {
+        "x": -90,
+        "y": 80
+      },
+      "danger_level": "moderate",
+      "faction": "Nova Science Collective",
+      "stations": [
+        {
+          "id": "nova_research_lab",
+          "name": "Nova Laboratory",
+          "type": "major",
+          "description": "Cutting-edge research facility with advanced refining capabilities.",
+          "docking_fee": 250,
+          "market_variety": "high_tech"
+        }
+      ],
+      "economy": {
+        "production_tags": ["electronics", "medical", "high_tech", "research"],
+        "consumption_tags": ["rare_metals", "food", "raw_materials", "common_metals"],
+        "tariff_rate": 0.05
+      },
+      "rest_cost": 225
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "npcs": [
+    {
+      "id": "elena_reeves",
+      "name": "Elena Reeves",
+      "title": "Navigator",
+      "portrait_color": [100, 180, 255],
+      "home_system_id": "nexus_prime",
+      "dialogue_id": "elena_intro",
+      "faction_id": "commerce_guild"
+    },
+    {
+      "id": "marcus_jin",
+      "name": "Marcus Jin",
+      "title": "Mining Foreman",
+      "portrait_color": [200, 160, 60],
+      "home_system_id": "breakstone",
+      "dialogue_id": "marcus_intro",
+      "faction_id": "miners_union"
+    },
+    {
+      "id": "dr_yara_osei",
+      "name": "Dr. Yara Osei",
+      "title": "Research Director",
+      "portrait_color": [160, 120, 210],
+      "home_system_id": "axiom_labs",
+      "dialogue_id": "yara_intro",
+      "faction_id": "science_collective"
+    },
+    {
+      "id": "kael_drifter",
+      "name": "Kael Drifter",
+      "title": "Frontier Scout",
+      "portrait_color": [110, 210, 120],
+      "home_system_id": "havens_rest",
+      "dialogue_id": "kael_intro",
+      "faction_id": "frontier_alliance"
+    },
+    {
+      "id": "officer_larsen",
+      "name": "Officer Larsen",
+      "title": "Customs Officer",
+      "portrait_color": [140, 160, 180],
+      "home_system_id": "nexus_prime",
+      "dialogue_id": "larsen_customs",
+      "faction_id": ""
+    },
+    {
+      "id": "delivery_merchant",
+      "name": "Cargo Broker",
+      "title": "Trade Courier",
+      "portrait_color": [80, 130, 220],
+      "home_system_id": "nexus_prime",
+      "dialogue_id": "merchant_delivery",
+      "faction_id": ""
+    }
+  ]
+}
