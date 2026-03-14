@@ -1,0 +1,18 @@
+{
+  "id": "faction_crimson_reach",
+  "name": "Crimson Reach",
+  "colors": {
+    "primary_red": [160, 30, 30],
+    "primary_charcoal": [50, 45, 50],
+    "primary_black": [20, 18, 22],
+    "mid_red": [200, 50, 40],
+    "dark_black": [10, 8, 12],
+    "accent_purple": [140, 50, 160],
+    "accent_toxic": [120, 200, 40],
+    "highlight": [255, 80, 60],
+    "shadow": [15, 10, 18],
+    "skin_light": [200, 180, 170],
+    "skin_mid": [170, 145, 130],
+    "outline": [10, 5, 12]
+  }
+}

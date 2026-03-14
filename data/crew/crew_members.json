@@ -6,6 +6,7 @@
       "role": "navigator",
       "description": "Former Fleet navigator with an eye for efficient routes. Elena knows every shortcut and fuel-saving trajectory in the sector.",
       "portrait_color": [100, 180, 255],
+      "base_attributes": {"com": 2, "acu": 3, "res": 1, "ing": 1, "syn": 1},
       "max_level": 5,
       "xp_thresholds": [0, 50, 150, 350, 700],
       "abilities": [
@@ -27,7 +28,14 @@
           "description": "Fleet Support",
           "unlock_level": 5
         }
-      ]
+      ],
+      "combat_move": {
+        "id": "evasive_maneuvers",
+        "name": "Evasive Maneuvers",
+        "description": "Elena plots evasive maneuvers, granting +20 evasion for 2 turns.",
+        "effects": [{"type": "evasion_mod", "value": 20.0, "duration": 2, "target": "self"}],
+        "energy_cost": 0
+      }
     },
     {
       "id": "marcus_jin",
@@ -35,6 +43,7 @@
       "role": "engineer",
       "description": "Breakstone mining engineer who knows ships inside out. Marcus can coax extra capacity out of any cargo hold or fuel tank.",
       "portrait_color": [200, 160, 60],
+      "base_attributes": {"com": 1, "acu": 1, "res": 2, "ing": 3, "syn": 1},
       "max_level": 5,
       "xp_thresholds": [0, 50, 150, 350, 700],
       "abilities": [
@@ -56,14 +65,22 @@
           "description": "Master Engineer",
           "unlock_level": 5
         }
-      ]
+      ],
+      "combat_move": {
+        "id": "emergency_repairs",
+        "name": "Emergency Repairs",
+        "description": "Marcus patches hull damage, restoring 20 hull points.",
+        "effects": [{"type": "hull_restore", "value": 20.0, "target": "self"}],
+        "energy_cost": 0
+      }
     },
     {
-      "id": "dr_yara_osei",
-      "name": "Dr. Yara Osei",
+      "id": "dr_priya_osei",
+      "name": "Dr. Priya Osei",
       "role": "scientist",
       "description": "Axiom Labs researcher specializing in material analysis. Her expertise improves scanning, extraction, and rare material identification.",
       "portrait_color": [160, 120, 210],
+      "base_attributes": {"com": 1, "acu": 2, "res": 1, "ing": 3, "syn": 1},
       "max_level": 5,
       "xp_thresholds": [0, 50, 150, 350, 700],
       "abilities": [
@@ -85,14 +102,22 @@
           "description": "Rare Material Expert",
           "unlock_level": 5
         }
-      ]
+      ],
+      "combat_move": {
+        "id": "analyze_weakness",
+        "name": "Analyze Weakness",
+        "description": "Priya analyzes the enemy, reducing their evasion by 15 for 2 turns.",
+        "effects": [{"type": "evasion_mod", "value": -15.0, "duration": 2}],
+        "energy_cost": 0
+      }
     },
     {
-      "id": "kael_drifter",
-      "name": "Kael Drifter",
+      "id": "tomas_drifter",
+      "name": "Tomas Drifter",
       "role": "trader",
-      "description": "Frontier trader with connections in every port. Kael's network of contacts gets you better deals on both sides of the counter.",
+      "description": "Frontier trader with connections in every port. Tomas's network of contacts gets you better deals on both sides of the counter.",
       "portrait_color": [110, 210, 120],
+      "base_attributes": {"com": 3, "acu": 1, "res": 1, "ing": 1, "syn": 2},
       "max_level": 5,
       "xp_thresholds": [0, 50, 150, 350, 700],
       "abilities": [
@@ -114,7 +139,14 @@
           "description": "Master Trader",
           "unlock_level": 5
         }
-      ]
+      ],
+      "combat_move": {
+        "id": "smooth_talking",
+        "name": "Smooth Talking",
+        "description": "Tomas talks the enemy down, making negotiation easier. Reduces negotiate difficulty by 1.",
+        "effects": [{"type": "accuracy_mod", "value": 5.0, "duration": 2, "target": "self"}],
+        "energy_cost": 0
+      }
     }
   ]
 }

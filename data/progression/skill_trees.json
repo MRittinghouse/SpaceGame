@@ -99,6 +99,24 @@
           "bonus_type": "advanced_recipes",
           "bonus_per_level": 1.0,
           "prerequisite_id": "master_extractor"
+        },
+        {
+          "id": "efficient_refining",
+          "name": "Efficient Refining",
+          "description": "-15% refining time per level",
+          "max_level": 3,
+          "bonus_type": "refine_speed",
+          "bonus_per_level": 0.15,
+          "prerequisite_id": "master_extractor"
+        },
+        {
+          "id": "yield_mastery",
+          "name": "Yield Mastery",
+          "description": "+10% bonus yield chance per level",
+          "max_level": 2,
+          "bonus_type": "refine_yield",
+          "bonus_per_level": 0.10,
+          "prerequisite_id": "master_extractor"
         }
       ]
     },
@@ -177,6 +195,15 @@
           "bonus_type": "drone_targeting",
           "bonus_per_level": 1.0,
           "prerequisite_id": "drone_efficiency"
+        },
+        {
+          "id": "chain_reaction",
+          "name": "Chain Reaction",
+          "description": "+10% chain detonation chance per level",
+          "max_level": 3,
+          "bonus_type": "chain_chance",
+          "bonus_per_level": 0.10,
+          "prerequisite_id": "deep_scan"
         }
       ]
     },

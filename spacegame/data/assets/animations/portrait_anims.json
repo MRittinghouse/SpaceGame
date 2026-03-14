@@ -1,0 +1,65 @@
+{
+  "idle": {
+    "name": "idle",
+    "frames": [
+      0,
+      1
+    ],
+    "frame_duration": 0.8,
+    "loop": true
+  },
+  "neutral": {
+    "name": "neutral",
+    "frames": [
+      0,
+      1
+    ],
+    "frame_duration": 0.8,
+    "loop": true
+  },
+  "happy": {
+    "name": "happy",
+    "frames": [
+      2,
+      3
+    ],
+    "frame_duration": 0.8,
+    "loop": true
+  },
+  "confident": {
+    "name": "confident",
+    "frames": [
+      2,
+      3
+    ],
+    "frame_duration": 0.8,
+    "loop": true
+  },
+  "angry": {
+    "name": "angry",
+    "frames": [
+      4,
+      5
+    ],
+    "frame_duration": 0.8,
+    "loop": true
+  },
+  "stern": {
+    "name": "stern",
+    "frames": [
+      4,
+      5
+    ],
+    "frame_duration": 0.8,
+    "loop": true
+  },
+  "surprised": {
+    "name": "surprised",
+    "frames": [
+      6,
+      7
+    ],
+    "frame_duration": 0.8,
+    "loop": true
+  }
+}

@@ -1,0 +1,114 @@
+{
+  "investment_configs": [
+    {
+      "system_id": "nexus_prime",
+      "investment_type": "trade_office",
+      "name": "Meridian Trade Office",
+      "description": "Fund a trade desk that profits from the constant flow of goods through Nexus Prime's markets.",
+      "tiers": [
+        {"tier": 1, "cost": 1000, "daily_return_amount": 20, "returns_type": "credits"},
+        {"tier": 2, "cost": 5000, "daily_return_amount": 80, "returns_type": "credits"},
+        {"tier": 3, "cost": 15000, "daily_return_amount": 300, "returns_type": "credits"}
+      ]
+    },
+    {
+      "system_id": "stellaris_port",
+      "investment_type": "trade_office",
+      "name": "Stellaris Brokerage",
+      "description": "Back a luxury goods brokerage catering to Stellaris Port's affluent clientele.",
+      "tiers": [
+        {"tier": 1, "cost": 1000, "daily_return_amount": 25, "returns_type": "credits"},
+        {"tier": 2, "cost": 5000, "daily_return_amount": 100, "returns_type": "credits"},
+        {"tier": 3, "cost": 15000, "daily_return_amount": 350, "returns_type": "credits"}
+      ]
+    },
+    {
+      "system_id": "axiom_labs",
+      "investment_type": "research_grant",
+      "name": "Axiom Research Grant",
+      "description": "Fund a research initiative that pays dividends from patent licensing.",
+      "tiers": [
+        {"tier": 1, "cost": 1000, "daily_return_amount": 20, "returns_type": "credits"},
+        {"tier": 2, "cost": 5000, "daily_return_amount": 80, "returns_type": "credits"},
+        {"tier": 3, "cost": 15000, "daily_return_amount": 300, "returns_type": "credits"}
+      ]
+    },
+    {
+      "system_id": "nova_research",
+      "investment_type": "research_grant",
+      "name": "Nova Applied Sciences Fund",
+      "description": "Support cutting-edge research with commercial applications. Returns paid in licensing fees.",
+      "tiers": [
+        {"tier": 1, "cost": 1000, "daily_return_amount": 22, "returns_type": "credits"},
+        {"tier": 2, "cost": 5000, "daily_return_amount": 90, "returns_type": "credits"},
+        {"tier": 3, "cost": 15000, "daily_return_amount": 320, "returns_type": "credits"}
+      ]
+    },
+    {
+      "system_id": "forgeworks",
+      "investment_type": "refining_contract",
+      "name": "Forgeworks Refining Contract",
+      "description": "Lease capacity at a Union smelter. Returns paid in processed metals.",
+      "tiers": [
+        {"tier": 1, "cost": 1000, "daily_return_amount": 5, "returns_type": "commodity", "returns_commodity": "common_metals"},
+        {"tier": 2, "cost": 5000, "daily_return_amount": 20, "returns_type": "commodity", "returns_commodity": "common_metals"},
+        {"tier": 3, "cost": 15000, "daily_return_amount": 60, "returns_type": "commodity", "returns_commodity": "common_metals"}
+      ]
+    },
+    {
+      "system_id": "breakstone",
+      "investment_type": "mining_rig",
+      "name": "Breakstone Mining Rig",
+      "description": "Fund an automated drilling rig in the asteroid fields. Returns paid in raw ore.",
+      "tiers": [
+        {"tier": 1, "cost": 1000, "daily_return_amount": 8, "returns_type": "commodity", "returns_commodity": "raw_ore"},
+        {"tier": 2, "cost": 5000, "daily_return_amount": 40, "returns_type": "commodity", "returns_commodity": "raw_ore"},
+        {"tier": 3, "cost": 15000, "daily_return_amount": 150, "returns_type": "commodity", "returns_commodity": "raw_ore"}
+      ]
+    },
+    {
+      "system_id": "iron_depths",
+      "investment_type": "mining_rig",
+      "name": "Iron Depths Deep Drill",
+      "description": "Invest in deep-core mining operations. High yield iron ore extraction.",
+      "tiers": [
+        {"tier": 1, "cost": 1000, "daily_return_amount": 6, "returns_type": "commodity", "returns_commodity": "iron_ore"},
+        {"tier": 2, "cost": 5000, "daily_return_amount": 30, "returns_type": "commodity", "returns_commodity": "iron_ore"},
+        {"tier": 3, "cost": 15000, "daily_return_amount": 120, "returns_type": "commodity", "returns_commodity": "iron_ore"}
+      ]
+    },
+    {
+      "system_id": "verdant",
+      "investment_type": "farm_subsidy",
+      "name": "Verdant Agricultural Co-op",
+      "description": "Buy shares in a farming cooperative. Returns paid in food supplies.",
+      "tiers": [
+        {"tier": 1, "cost": 1000, "daily_return_amount": 6, "returns_type": "commodity", "returns_commodity": "food_supplies"},
+        {"tier": 2, "cost": 5000, "daily_return_amount": 30, "returns_type": "commodity", "returns_commodity": "food_supplies"},
+        {"tier": 3, "cost": 15000, "daily_return_amount": 120, "returns_type": "commodity", "returns_commodity": "food_supplies"}
+      ]
+    },
+    {
+      "system_id": "havens_rest",
+      "investment_type": "farm_subsidy",
+      "name": "Haven's Rest Hydroponics",
+      "description": "Fund a hydroponic farming operation in a frontier community. Steady food production.",
+      "tiers": [
+        {"tier": 1, "cost": 1000, "daily_return_amount": 6, "returns_type": "commodity", "returns_commodity": "food_supplies"},
+        {"tier": 2, "cost": 5000, "daily_return_amount": 28, "returns_type": "commodity", "returns_commodity": "food_supplies"},
+        {"tier": 3, "cost": 15000, "daily_return_amount": 110, "returns_type": "commodity", "returns_commodity": "food_supplies"}
+      ]
+    },
+    {
+      "system_id": "crimson_reach",
+      "investment_type": "salvage_operation",
+      "name": "Crimson Reach Salvage Op",
+      "description": "Sponsor a salvage crew working the debris fields. Returns paid in scrap metal.",
+      "tiers": [
+        {"tier": 1, "cost": 1000, "daily_return_amount": 6, "returns_type": "commodity", "returns_commodity": "scrap_metal"},
+        {"tier": 2, "cost": 5000, "daily_return_amount": 30, "returns_type": "commodity", "returns_commodity": "scrap_metal"},
+        {"tier": 3, "cost": 15000, "daily_return_amount": 120, "returns_type": "commodity", "returns_commodity": "scrap_metal"}
+      ]
+    }
+  ]
+}

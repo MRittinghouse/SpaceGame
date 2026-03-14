@@ -4,7 +4,7 @@ Refining system models.
 Process raw materials into valuable goods through recipes and job queues.
 """
 
-import time
+import random
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Tuple
 
@@ -44,24 +44,29 @@ class ActiveJob:
     """A refining job in progress."""
 
     recipe: Recipe
-    start_time: float  # time.time() when started
-    progress: float = 0.0  # 0.0 to 1.0
+    effective_time: float  # processing_time * speed factor
+    elapsed_time: float = 0.0
+
+    def advance(self, dt: float) -> None:
+        """Advance job progress by delta time."""
+        self.elapsed_time += dt
 
     @property
-    def elapsed(self) -> float:
-        """Get elapsed time since job started."""
-        return time.time() - self.start_time
+    def progress(self) -> float:
+        """Get completion fraction (0.0 to 1.0)."""
+        if self.effective_time <= 0:
+            return 1.0
+        return min(1.0, self.elapsed_time / self.effective_time)
 
     @property
     def remaining_time(self) -> float:
         """Get remaining time in seconds."""
-        elapsed = self.elapsed
-        return max(0.0, self.recipe.processing_time - elapsed)
+        return max(0.0, self.effective_time - self.elapsed_time)
 
     @property
     def is_complete(self) -> bool:
         """Check if job is finished."""
-        return self.progress >= 1.0
+        return self.elapsed_time >= self.effective_time
 
 
 @dataclass
@@ -82,17 +87,27 @@ class RefiningSession:
 
     MAX_QUEUE_SIZE = 5
 
-    def __init__(self, recipes: List[Recipe], system_id: str):
+    def __init__(
+        self,
+        recipes: List[Recipe],
+        system_id: str,
+        speed_bonus: float = 0.0,
+        yield_bonus: float = 0.0,
+    ):
         """
         Initialize refining session.
 
         Args:
             recipes: Available recipes at this location
             system_id: Current system ID
+            speed_bonus: Skill-based speed multiplier (0.0 = no bonus)
+            yield_bonus: Chance per output unit to produce +1 extra (0.0 to 1.0)
         """
         self.available_recipes = [r for r in recipes if system_id in r.location_ids]
         self.job_queue: List[ActiveJob] = []
         self.total_refined: Dict[str, int] = {}
+        self.speed_bonus = speed_bonus
+        self.yield_bonus = yield_bonus
 
     def start_job(self, recipe: Recipe, inventory: Dict[str, int]) -> Tuple[bool, str]:
         """
@@ -120,9 +135,49 @@ class RefiningSession:
                 del inventory[commodity_id]
 
         # Add job to queue
-        job = ActiveJob(recipe=recipe, start_time=time.time())
+        effective_time = recipe.processing_time * max(0.1, 1.0 - self.speed_bonus)
+        job = ActiveJob(recipe=recipe, effective_time=effective_time)
         self.job_queue.append(job)
         return (True, f"Started: {recipe.name}")
+
+    def start_batch(
+        self, recipe: Recipe, inventory: Dict[str, int], count: int
+    ) -> Tuple[bool, str]:
+        """
+        Queue multiple copies of a recipe atomically.
+
+        Args:
+            recipe: Recipe to process
+            inventory: Player's cargo (modified on success)
+            count: Number of jobs to queue
+
+        Returns:
+            Tuple of (success, message)
+        """
+        if count <= 0:
+            return (False, "Count must be at least 1")
+
+        available_slots = self.MAX_QUEUE_SIZE - len(self.job_queue)
+        if count > available_slots:
+            return (False, f"Only {available_slots} queue slots available")
+
+        # Check materials for full batch
+        for cid, qty in recipe.inputs.items():
+            if inventory.get(cid, 0) < qty * count:
+                return (False, f"Need {qty * count} {cid}, have {inventory.get(cid, 0)}")
+
+        # Consume all inputs atomically
+        for cid, qty in recipe.inputs.items():
+            inventory[cid] = inventory.get(cid, 0) - qty * count
+            if inventory[cid] <= 0:
+                del inventory[cid]
+
+        # Queue individual jobs
+        effective_time = recipe.processing_time * max(0.1, 1.0 - self.speed_bonus)
+        for _ in range(count):
+            self.job_queue.append(ActiveJob(recipe=recipe, effective_time=effective_time))
+
+        return (True, f"Queued {count}x {recipe.name}")
 
     def update(self, dt: float) -> List[RefiningResult]:
         """
@@ -138,19 +193,21 @@ class RefiningSession:
         completed_indices = []
 
         for i, job in enumerate(self.job_queue):
-            elapsed = job.elapsed
-            job.progress = min(1.0, elapsed / job.recipe.processing_time)
+            job.advance(dt)
 
             if job.is_complete:
+                outputs = dict(job.recipe.outputs)
+                if self.yield_bonus > 0:
+                    outputs = self._apply_yield_bonus(outputs)
                 result = RefiningResult(
                     recipe_id=job.recipe.id,
-                    outputs=dict(job.recipe.outputs),
+                    outputs=outputs,
                 )
                 results.append(result)
                 completed_indices.append(i)
 
                 # Track totals
-                for cid, qty in job.recipe.outputs.items():
+                for cid, qty in outputs.items():
                     self.total_refined[cid] = self.total_refined.get(cid, 0) + qty
 
         # Remove completed jobs (reverse order to preserve indices)
@@ -158,6 +215,14 @@ class RefiningSession:
             self.job_queue.pop(i)
 
         return results
+
+    def _apply_yield_bonus(self, outputs: Dict[str, int]) -> Dict[str, int]:
+        """Roll per-unit bonus yield chance."""
+        boosted: Dict[str, int] = {}
+        for cid, qty in outputs.items():
+            bonus = sum(1 for _ in range(qty) if random.random() < self.yield_bonus)
+            boosted[cid] = qty + bonus
+        return boosted
 
     def get_queue_size(self) -> int:
         """Get number of jobs in queue."""

@@ -1,0 +1,17 @@
+{
+  "id": "faction_miners_union",
+  "name": "Miners Union",
+  "colors": {
+    "primary_rust": [180, 80, 30],
+    "primary_brown": [120, 70, 40],
+    "primary_gray": [80, 80, 80],
+    "mid_orange": [200, 120, 50],
+    "dark_gray": [45, 45, 50],
+    "accent_yellow": [240, 200, 40],
+    "highlight": [255, 180, 80],
+    "shadow": [30, 25, 20],
+    "skin_light": [210, 175, 140],
+    "skin_mid": [180, 140, 100],
+    "outline": [20, 15, 10]
+  }
+}

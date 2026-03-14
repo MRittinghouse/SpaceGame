@@ -311,23 +311,23 @@ class TestCrewRosterXP:
 class TestCrewRosterLoyalty:
     """Tests for crew loyalty system."""
 
-    def test_loyalty_starts_at_50(self) -> None:
+    def test_loyalty_starts_at_30(self) -> None:
         roster = _make_roster()
         roster.recruit("elena_reeves", crew_slots=3)
         state = roster.get_member_state("elena_reeves")
-        assert state is not None and state["loyalty"] == 50
+        assert state is not None and state["loyalty"] == 30
 
     def test_adjust_loyalty_increase_capped_at_100(self) -> None:
         roster = _make_roster()
         roster.recruit("elena_reeves", crew_slots=3)
-        roster.adjust_loyalty("elena_reeves", 60)  # 50 + 60 = 110 -> capped at 100
+        roster.adjust_loyalty("elena_reeves", 80)  # 30 + 80 = 110 -> capped at 100
         state = roster.get_member_state("elena_reeves")
         assert state is not None and state["loyalty"] == 100
 
     def test_adjust_loyalty_decrease_floored_at_0(self) -> None:
         roster = _make_roster()
         roster.recruit("elena_reeves", crew_slots=3)
-        roster.adjust_loyalty("elena_reeves", -80)  # 50 - 80 = -30 -> floored at 0
+        roster.adjust_loyalty("elena_reeves", -80)  # 30 - 80 = -50 -> floored at 0
         state = roster.get_member_state("elena_reeves")
         assert state is not None and state["loyalty"] == 0
 
@@ -358,7 +358,7 @@ class TestCrewRosterSerialization:
         assert elena is not None
         assert elena["level"] == 2
         assert elena["xp"] == 60
-        assert elena["loyalty"] == 60  # 50 + 10
+        assert elena["loyalty"] == 40  # 30 + 10
 
         marcus = roster2.get_member_state("marcus_jin")
         assert marcus is not None
@@ -372,7 +372,7 @@ class TestCrewRosterSerialization:
 
         # Inject unknown template ID into saved state
         saved["recruited"].append("unknown_crew")
-        saved["members"]["unknown_crew"] = {"level": 1, "xp": 0, "loyalty": 50}
+        saved["members"]["unknown_crew"] = {"level": 1, "xp": 0, "loyalty": 30}
 
         roster2 = _make_roster()
         roster2.load_state(saved)
@@ -413,13 +413,13 @@ class TestCrewRosterIntegration:
     def test_crew_bonus_stacks_with_progression_bonus(self) -> None:
         """Verify crew buy_price_reduction stacks with skill buy_price_reduction."""
         trader_template = _make_template(
-            "kael_drifter",
-            "Kael Drifter",
+            "tomas_drifter",
+            "Tomas Drifter",
             "trader",
             [_make_ability("buy_price_reduction", 0.03, "Trade Contacts", 1)],
         )
-        roster = CrewRoster({"kael_drifter": trader_template})
-        roster.recruit("kael_drifter", crew_slots=3)
+        roster = CrewRoster({"tomas_drifter": trader_template})
+        roster.recruit("tomas_drifter", crew_slots=3)
         crew_discount = roster.get_bonus("buy_price_reduction")  # 0.03
 
         # Progression bonuses are tested separately — just verify additive stacking

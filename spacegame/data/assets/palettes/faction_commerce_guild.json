@@ -1,0 +1,17 @@
+{
+  "id": "faction_commerce_guild",
+  "name": "Commerce Guild",
+  "colors": {
+    "primary_gold": [220, 180, 40],
+    "primary_cream": [240, 230, 200],
+    "primary_navy": [20, 30, 60],
+    "mid_gold": [180, 140, 30],
+    "dark_navy": [10, 15, 35],
+    "accent_red": [180, 40, 40],
+    "highlight": [255, 220, 80],
+    "shadow": [12, 18, 40],
+    "skin_light": [230, 190, 150],
+    "skin_mid": [200, 160, 120],
+    "outline": [8, 10, 25]
+  }
+}

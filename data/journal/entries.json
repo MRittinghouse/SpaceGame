@@ -1,0 +1,137 @@
+{
+  "journal_entries": [
+    {
+      "entry_id": "auto_m01_permit",
+      "text": "Acquired a bill of landing at Nexus Prime. Cost 250 credits for the privilege of docking and trading. Officer Larsen warned about unarmed travel through dangerous systems.",
+      "trigger_flag": "talked_to_officer_larsen",
+      "system_id": "nexus_prime",
+      "mission_id": "bill_of_landing"
+    },
+    {
+      "entry_id": "auto_m02_delivery",
+      "text": "Delivered 10 units of iron ore to Forgeworks for a cargo broker at Nexus Prime. 500 credits earned. First completed contract.",
+      "trigger_flag": "talked_to_cargo_broker",
+      "system_id": "nexus_prime",
+      "mission_id": "iron_ore_delivery"
+    },
+    {
+      "entry_id": "auto_m03_elena",
+      "text": "Met Elena Reeves at Nexus Prime. Freelance navigator, ex-Commerce Guild. Offered to optimize routes in exchange for a berth on the ship.",
+      "trigger_flag": "talked_to_elena_reeves",
+      "system_id": "nexus_prime",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_m04_breakstone",
+      "text": "Earned trade access at Breakstone by delivering food to the miners' commissary. Hanna Voss runs the docks here. The Union judges people by what they do, not what they say.",
+      "trigger_flag": "breakstone_permit_earned",
+      "system_id": "breakstone",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_m05_marcus",
+      "text": "Met Marcus Jin at Breakstone. Mining foreman, twenty years on station. He filed an engineering report about the air recyclers on the Nexus Prime orbital. The report was buried. Six months later, my father was dead.",
+      "trigger_flag": "met_marcus_jin",
+      "system_id": "breakstone",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_m06_priya",
+      "text": "Transported Dr. Priya Osei to Axiom Labs with time-sensitive research samples. She studies resource extraction economics. Describes working conditions as data sets. Axiom Labs is clinical and precise — nothing like Breakstone.",
+      "trigger_flag": "met_priya_osei",
+      "system_id": "axiom_labs",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_m07_tomas_accepted",
+      "text": "Met Tomas Drifter at Haven's Rest. Accepted a gray-market trade — rerouting supplies past Guild tariffs to people who need them. Haven's Rest runs on handshakes and trust.",
+      "trigger_flag": "accepted_drifter_deal",
+      "system_id": "havens_rest",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_m07_tomas_declined",
+      "text": "Met Tomas Drifter at Haven's Rest. Declined his offer to reroute supplies around Guild tariffs. The rules exist for a reason, even if the reasons are not always fair.",
+      "trigger_flag": "declined_drifter_deal",
+      "system_id": "havens_rest",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_m08_helped",
+      "text": "Responded to a distress signal from a freighter under pirate attack. Met Captain Reva Sato, Guild military escort. Three convoy attacks this month, same pattern. Someone knows the patrol routes.",
+      "trigger_flag": "helped_freighter",
+      "system_id": "",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_m08_ignored",
+      "text": "Passed a freighter sending a distress signal. Later heard Captain Reva Sato arrived too late. Three convoy attacks this month. The pattern is impossible to ignore.",
+      "trigger_flag": "ignored_distress",
+      "system_id": "",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_m09_dex",
+      "text": "Dex Halloran, information broker, approached at the Nexus Prime cantina. Offered intel on the pirate attacks in exchange for a delivery to Crimson Reach. No questions asked.",
+      "trigger_flag": "met_dex_halloran",
+      "system_id": "nexus_prime",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_m10_crimson",
+      "text": "Delivered a package to Malia Torres at Crimson Reach. She says whoever is backing the pirates has serious resources — real money, real ships, real intelligence. This is not random raiding.",
+      "trigger_flag": "delivered_dex_chip",
+      "system_id": "crimson_reach",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_m11_summit",
+      "text": "Attended faction summit at Axiom Labs. All four factions present. No agreement reached. Guild wants military response, Union wants solidarity, Collective wants data, Alliance wants independence.",
+      "trigger_flag": "summit_deadlock",
+      "system_id": "axiom_labs",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_m12_attack",
+      "text": "Ambushed by pirates during travel. Survived the attack. Their ships were well-equipped — better than any frontier raiders should be.",
+      "trigger_flag": "survived_pirate_attack",
+      "system_id": "",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_m13_oren",
+      "text": "Found Oren Tak in Breakstone's mining tunnels. Retired miner, paranoid but observant. He has seen unmarked ships docking at a hidden facility near Iron Depths. Guild-class hulls.",
+      "trigger_flag": "oren_revealed_base",
+      "system_id": "breakstone",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_m14_scan",
+      "text": "Located a pirate command base near Iron Depths. Scan data confirms it is an active operations center. Hard evidence.",
+      "trigger_flag": "pirate_base_confirmed",
+      "system_id": "iron_depths",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_m15_decision",
+      "text": "Presented evidence of the pirate base to faction leaders. Chose an ally for the operation ahead.",
+      "trigger_flag": "m15_decision_made",
+      "system_id": "",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_m16_ledger",
+      "text": "The pirate operation is funded by a rogue faction within the Commerce Guild. They call themselves The Ledger. Goal: destabilize shipping, monopolize security, control the Expanse. Base neutralized. Leaders escaped.",
+      "trigger_flag": "ledger_discovered",
+      "system_id": "",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_m17_horizon",
+      "text": "Act One concluded. The Ledger is exposed but not destroyed. Uncharted coordinates recovered from the base point to more operations beyond the Expanse's borders. The factions are talking. It is a start.",
+      "trigger_flag": "act_one_complete",
+      "system_id": "",
+      "mission_id": ""
+    }
+  ]
+}

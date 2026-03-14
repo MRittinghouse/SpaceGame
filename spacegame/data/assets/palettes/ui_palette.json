@@ -1,0 +1,20 @@
+{
+  "id": "ui_palette",
+  "name": "Ship Interface",
+  "colors": {
+    "bg_dark": [12, 18, 32],
+    "bg_mid": [24, 36, 64],
+    "bg_light": [40, 58, 96],
+    "accent_primary": [60, 120, 200],
+    "accent_bright": [100, 180, 255],
+    "energy_dim": [180, 100, 20],
+    "energy_bright": [255, 160, 40],
+    "energy_hot": [255, 80, 20],
+    "text_primary": [220, 230, 245],
+    "text_dim": [140, 155, 180],
+    "health_full": [40, 200, 80],
+    "health_mid": [220, 200, 40],
+    "health_low": [220, 60, 40],
+    "shield_color": [60, 200, 255]
+  }
+}

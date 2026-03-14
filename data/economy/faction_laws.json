@@ -1,0 +1,32 @@
+{
+  "faction_laws": [
+    {
+      "faction_id": "commerce_guild",
+      "inspection_chance": 0.20,
+      "restricted_penalty": "fine",
+      "illegal_penalty": "confiscate",
+      "fine_multiplier": 0.5
+    },
+    {
+      "faction_id": "science_collective",
+      "inspection_chance": 0.15,
+      "restricted_penalty": "confiscate",
+      "illegal_penalty": "ban",
+      "fine_multiplier": 0.4
+    },
+    {
+      "faction_id": "miners_union",
+      "inspection_chance": 0.10,
+      "restricted_penalty": "warn",
+      "illegal_penalty": "fine",
+      "fine_multiplier": 0.3
+    },
+    {
+      "faction_id": "frontier_alliance",
+      "inspection_chance": 0.05,
+      "restricted_penalty": "warn",
+      "illegal_penalty": "fine",
+      "fine_multiplier": 0.2
+    }
+  ]
+}

@@ -1,0 +1,132 @@
+{
+    "id": "mission_13_breakstone_tunnels",
+    "name": "Breakstone Mining Tunnels",
+    "width": 30,
+    "height": 25,
+    "mission_type": "infiltration",
+    "difficulty": "moderate",
+    "faction_id": "miners_union",
+
+    "tiles": [
+        ["W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","X","F","F","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","F","F","F","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","D","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","N","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","F","W","W","W","F","F","F","F","F","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","F","W","W","W","F","W","W","W","F","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","F","N","F","F","F","F","F","F","W","W","F","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","F","W","W","W","W","W","W","W","W","W","F","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","F","W","W","W","W","W","W","W","W","W","F","W","W","W","W","W","F","F","F","F","F","W","W","W","W","W","W","W","W"],
+        ["W","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","W","W"],
+        ["W","F","W","W","W","W","W","W","W","W","W","W","W","F","W","W","W","W","W","W","W","W","W","W","W","W","F","W","W","W"],
+        ["W","F","W","W","W","W","W","W","W","W","W","W","W","F","W","W","W","W","W","W","W","W","W","W","W","W","F","W","W","W"],
+        ["W","F","F","F","F","F","F","W","W","W","W","W","W","F","W","W","W","W","W","W","W","W","F","F","F","F","F","F","W","W"],
+        ["W","W","W","W","W","W","F","W","W","W","W","W","W","F","W","W","W","W","W","W","W","W","F","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","D","W","W","W","W","W","W","D","W","W","W","W","W","W","W","W","D","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","W","F","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","W","F","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","W","F","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","W","F","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","F","F","F","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","F","F","F","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","E","F","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"]
+    ],
+
+    "entrance": [12, 23],
+    "exit": [2, 1],
+
+    "enemies": [
+        {
+            "id": "checkpoint_guard",
+            "template_id": "union_worker",
+            "x": 10, "y": 16,
+            "facing": "right",
+            "speed": 1,
+            "patrol_route": [[7, 16], [21, 16]]
+        },
+        {
+            "id": "shaft_sentry",
+            "template_id": "union_worker",
+            "x": 13, "y": 18,
+            "facing": "down",
+            "speed": 1,
+            "patrol_route": [[13, 17], [13, 19]]
+        },
+        {
+            "id": "gallery_patrol",
+            "template_id": "guild_security",
+            "x": 14, "y": 10,
+            "facing": "right",
+            "speed": 2,
+            "patrol_route": [[3, 10], [25, 10]]
+        },
+        {
+            "id": "tunnel_worker",
+            "template_id": "union_worker",
+            "x": 5, "y": 7,
+            "facing": "left",
+            "speed": 1,
+            "patrol_route": [[2, 7], [7, 7]]
+        },
+        {
+            "id": "deep_watcher",
+            "template_id": "guild_security",
+            "x": 3, "y": 6,
+            "facing": "up",
+            "speed": 1,
+            "patrol_route": [[3, 5], [3, 7]]
+        }
+    ],
+
+    "interactables": [
+        {
+            "x": 9, "y": 5,
+            "type": "loot_container",
+            "loot_credits": 45,
+            "description": "A locked tool cabinet. Inside: bore bits, seismic charges, and a calibration kit worth good credits on any station."
+        },
+        {
+            "x": 19, "y": 9,
+            "type": "loot_container",
+            "loot_credits": 60,
+            "description": "Ore sample crates stamped with Union quality seals. Grade-A refined ore — someone's been skimming the yield reports."
+        },
+        {
+            "x": 3, "y": 13,
+            "type": "loot_container",
+            "loot_credits": 35,
+            "description": "A supply locker with a broken lock. Ration packs, chemical lamps, and a first-aid kit. Standard Union tunnel gear."
+        }
+    ],
+
+    "story_triggers": [
+        {
+            "x": 13, "y": 20,
+            "type": "atmosphere",
+            "text": "The access shaft drops away beneath reinforced struts. Rock dust hangs in recycled air that tastes of iron and machine oil. Hand-painted signs in Union blue mark depth levels. You're heading where visitors don't go."
+        },
+        {
+            "x": 15, "y": 16,
+            "type": "atmosphere",
+            "text": "A security station built from welded freight containers. Union insignia above the gate, shift rosters on a clipboard. The guards here know every face that works these tunnels. Yours isn't one of them."
+        },
+        {
+            "x": 12, "y": 10,
+            "type": "atmosphere",
+            "text": "The main gallery opens into a cathedral of carved rock. Heavy drilling rigs sit idle between shifts, ventilation fans humming where the machinery should roar. Thousands of tons of ore have passed through here — Breakstone's lifeblood, cut from the asteroid one blast at a time."
+        },
+        {
+            "x": 1, "y": 8,
+            "type": "atmosphere",
+            "text": "The worked stone gives way to rough-cut rock. The air is colder here, and the ventilation barely reaches. Old mining rails disappear into darkness ahead. These tunnels haven't seen a work crew in years."
+        },
+        {
+            "x": 3, "y": 5,
+            "type": "atmosphere",
+            "text": "Something shifts in the darkness ahead. A faint light — chemical, not electric — flickers beyond a sealed door. Someone lives down here by choice. Someone who doesn't want to be found."
+        }
+    ]
+}

@@ -1,7 +1,7 @@
 """
 Screen transition effects between game states.
 
-Supports fade, warp distortion, and slide transitions.
+Supports fade, warp distortion, slide, and pixelate transitions.
 """
 
 import pygame
@@ -15,6 +15,7 @@ class TransitionType(Enum):
     FADE = "fade"
     WARP = "warp"
     SLIDE = "slide"
+    PIXELATE = "pixelate"
 
 
 class TransitionManager:
@@ -105,6 +106,8 @@ class TransitionManager:
             self._render_warp(screen, progress, w, h)
         elif self.transition_type == TransitionType.SLIDE:
             self._render_slide(screen, progress, w, h)
+        elif self.transition_type == TransitionType.PIXELATE:
+            self._render_pixelate(screen, progress, w, h)
 
     def _render_fade(self, screen: pygame.Surface, progress: float, w: int, h: int) -> None:
         """Fade through black."""
@@ -172,3 +175,34 @@ class TransitionManager:
                 temp = screen.copy()
                 screen.fill((0, 0, 0))
                 screen.blit(temp, (-offset, 0))
+
+    def _render_pixelate(self, screen: pygame.Surface, progress: float,
+                         w: int, h: int) -> None:
+        """Pixelation effect — screen resolves to blocky pixels then back.
+
+        Uses nearest-neighbor downscale then upscale to create a retro
+        pixel mosaic effect that peaks at midpoint.
+        """
+        if progress < 0.5:
+            intensity = progress * 2  # 0 -> 1
+        else:
+            intensity = (1.0 - progress) * 2  # 1 -> 0
+
+        if intensity < 0.02:
+            return
+
+        # Scale factor: 1 (no effect) to 16 (very blocky)
+        # Use exponential curve for pleasing ramp
+        max_block = 16
+        block_size = max(1, int(1 + (max_block - 1) * (intensity ** 1.5)))
+
+        if block_size <= 1:
+            return
+
+        small_w = max(1, w // block_size)
+        small_h = max(1, h // block_size)
+
+        # Downscale (smooth) then upscale (nearest-neighbor = blocky)
+        small = pygame.transform.smoothscale(screen, (small_w, small_h))
+        pixelated = pygame.transform.scale(small, (w, h))
+        screen.blit(pixelated, (0, 0))

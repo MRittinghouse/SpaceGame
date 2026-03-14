@@ -194,6 +194,142 @@ STAR_TWINKLE = ParticleConfig(
 )
 
 
+# Combat presets
+LASER_HIT = ParticleConfig(
+    count=15,
+    speed_min=60,
+    speed_max=150,
+    life_min=0.15,
+    life_max=0.4,
+    color_start=(255, 150, 50),
+    color_end=(255, 50, 0),
+    gravity=60.0,
+    spread=360.0,
+    glow=True,
+)
+
+MISSILE_EXPLOSION = ParticleConfig(
+    count=30,
+    speed_min=80,
+    speed_max=200,
+    life_min=0.2,
+    life_max=0.6,
+    color_start=(255, 200, 80),
+    color_end=(200, 50, 0),
+    size_start=3.0,
+    size_end=1.0,
+    gravity=40.0,
+    spread=360.0,
+    glow=True,
+)
+
+SHIELD_IMPACT = ParticleConfig(
+    count=12,
+    speed_min=40,
+    speed_max=100,
+    life_min=0.2,
+    life_max=0.5,
+    color_start=(100, 200, 255),
+    color_end=(40, 100, 200),
+    gravity=0.0,
+    spread=360.0,
+    glow=True,
+)
+
+HEAL_SPARKLE = ParticleConfig(
+    count=10,
+    speed_min=20,
+    speed_max=60,
+    life_min=0.3,
+    life_max=0.8,
+    color_start=(100, 255, 150),
+    color_end=(50, 200, 100),
+    gravity=-30.0,
+    spread=360.0,
+    glow=True,
+)
+
+SHIELD_RESTORE = ParticleConfig(
+    count=8,
+    speed_min=30,
+    speed_max=70,
+    life_min=0.3,
+    life_max=0.6,
+    color_start=(80, 180, 255),
+    color_end=(40, 80, 200),
+    gravity=-20.0,
+    spread=360.0,
+    glow=True,
+)
+
+
+MINING_CHAIN = ParticleConfig(
+    count=20,
+    speed_min=80,
+    speed_max=200,
+    life_min=0.3,
+    life_max=0.7,
+    color_start=(255, 180, 40),
+    color_end=(200, 80, 20),
+    gravity=0.0,
+    spread=360.0,
+    glow=True,
+)
+
+ENERGY_REGEN = ParticleConfig(
+    count=6,
+    speed_min=20,
+    speed_max=50,
+    life_min=0.4,
+    life_max=0.8,
+    color_start=(100, 220, 255),
+    color_end=(40, 100, 200),
+    gravity=-60.0,
+    spread=60.0,
+    direction=90.0,
+    glow=True,
+)
+
+SALVAGE_SCAN = ParticleConfig(
+    count=12,
+    speed_min=40,
+    speed_max=100,
+    life_min=0.3,
+    life_max=0.6,
+    color_start=(80, 150, 255),
+    color_end=(30, 60, 180),
+    gravity=0.0,
+    spread=360.0,
+    glow=True,
+)
+
+SALVAGE_CORRUPT = ParticleConfig(
+    count=8,
+    speed_min=10,
+    speed_max=40,
+    life_min=0.5,
+    life_max=1.0,
+    color_start=(220, 40, 40),
+    color_end=(100, 20, 20),
+    gravity=50.0,
+    spread=120.0,
+    direction=270.0,
+)
+
+REFINE_COMPLETE = ParticleConfig(
+    count=15,
+    speed_min=50,
+    speed_max=120,
+    life_min=0.3,
+    life_max=0.6,
+    color_start=(50, 220, 100),
+    color_end=(20, 100, 40),
+    gravity=-30.0,
+    spread=360.0,
+    glow=True,
+)
+
+
 class ParticlePool:
     """Fixed-size particle pool with recycling."""
 

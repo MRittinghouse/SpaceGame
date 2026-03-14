@@ -59,6 +59,15 @@ SALVAGE_ITEM_CONFIGS = {
 }
 
 
+class QualityTier(Enum):
+    """Visual quality tier for salvage items."""
+
+    POOR = "poor"  # 0.80 - 0.99
+    NORMAL = "normal"  # 1.00 - 1.19
+    GOOD = "good"  # 1.20 - 1.39
+    EXCELLENT = "excellent"  # 1.40 - 1.50
+
+
 class CellState(Enum):
     """State of a salvage grid cell."""
 
@@ -66,6 +75,7 @@ class CellState(Enum):
     SCANNED = "scanned"
     EXTRACTING = "extracting"
     EXTRACTED = "extracted"
+    CORRUPTED = "corrupted"
 
 
 @dataclass
@@ -77,6 +87,9 @@ class SalvageCell:
     item_type: SalvageItemType
     state: CellState = CellState.HIDDEN
     extract_progress: float = 0.0  # 0.0 to 1.0
+    adjacent_count: Optional[int] = None  # Set on scan for empty cells
+    quality: float = 1.0  # Quality modifier [0.8, 1.5]
+    corrupted: bool = False  # True if cell was corrupted before scanning
 
     @property
     def has_item(self) -> bool:
@@ -87,6 +100,23 @@ class SalvageCell:
         if self.item_type == SalvageItemType.EMPTY:
             return None
         return SALVAGE_ITEM_CONFIGS[self.item_type]
+
+    @property
+    def quality_tier(self) -> QualityTier:
+        """Get the display quality tier."""
+        if self.quality < 1.0:
+            return QualityTier.POOR
+        if self.quality < 1.2:
+            return QualityTier.NORMAL
+        if self.quality < 1.4:
+            return QualityTier.GOOD
+        return QualityTier.EXCELLENT
+
+    def get_effective_extraction_time(self) -> float:
+        """Extraction time scaled by quality (higher quality = slower)."""
+        if not self.config:
+            return 0.0
+        return self.config.extraction_time * (0.5 + self.quality * 0.5)
 
     def scan(self) -> bool:
         """Reveal this cell's contents. Returns True if state changed."""
@@ -112,15 +142,59 @@ class SalvageCell:
         if self.state != CellState.EXTRACTING or not self.config:
             return None
 
-        extract_rate = (1.0 / self.config.extraction_time) * speed_bonus
+        effective_time = self.get_effective_extraction_time()
+        extract_rate = (1.0 / effective_time) * speed_bonus
         self.extract_progress += extract_rate * dt
 
         if self.extract_progress >= 1.0:
             self.extract_progress = 1.0
             self.state = CellState.EXTRACTED
-            return random.randint(self.config.min_yield, self.config.max_yield)
+            if self.corrupted and random.random() < 0.5:
+                return 0
+            base_yield = random.randint(self.config.min_yield, self.config.max_yield)
+            return max(1, round(base_yield * self.quality))
 
         return None
+
+
+@dataclass
+class DerelictType:
+    """A type of derelict hull to salvage."""
+
+    id: str
+    name: str
+    grid_size: int
+    item_density: float
+    item_distribution: Dict[str, float]
+    corruption_seconds: float = 90.0
+
+
+DERELICT_TYPES: List[DerelictType] = [
+    DerelictType(
+        id="cargo_bay",
+        name="Cargo Bay",
+        grid_size=5,
+        item_density=0.50,
+        item_distribution={"scrap_metal": 0.60, "salvaged_electronics": 0.30, "rare_parts": 0.10},
+        corruption_seconds=90.0,
+    ),
+    DerelictType(
+        id="lab_module",
+        name="Lab Module",
+        grid_size=4,
+        item_density=0.45,
+        item_distribution={"scrap_metal": 0.20, "salvaged_electronics": 0.50, "rare_parts": 0.30},
+        corruption_seconds=75.0,
+    ),
+    DerelictType(
+        id="engine_room",
+        name="Engine Room",
+        grid_size=5,
+        item_density=0.30,
+        item_distribution={"scrap_metal": 0.30, "salvaged_electronics": 0.20, "rare_parts": 0.50},
+        corruption_seconds=100.0,
+    ),
+]
 
 
 @dataclass
@@ -150,6 +224,7 @@ class SalvageResult:
     commodity_id: str
     quantity: int
     item_type: SalvageItemType
+    corrupted: bool = False
 
 
 class SalvageSession:
@@ -160,7 +235,12 @@ class SalvageSession:
     """
 
     def __init__(
-        self, config: SalvageConfig, extract_speed_bonus: float = 1.0, extra_charges: int = 0
+        self,
+        config: SalvageConfig,
+        extract_speed_bonus: float = 1.0,
+        extra_charges: int = 0,
+        derelict_type: Optional[DerelictType] = None,
+        extra_parallel: int = 0,
     ):
         """
         Initialize salvage session.
@@ -169,24 +249,33 @@ class SalvageSession:
             config: Salvage configuration for current system
             extract_speed_bonus: Skill-based extraction speed multiplier
             extra_charges: Additional scan charges from skills
+            derelict_type: Type of derelict hull (random if None)
+            extra_parallel: Additional parallel extraction slots from skills
         """
         self.config = config
+        self.derelict_type = derelict_type or random.choice(DERELICT_TYPES)
         self.extract_speed_bonus = extract_speed_bonus
         self.charges = config.max_charges + extra_charges
         self.max_charges = config.max_charges + extra_charges
         self.charge_regen_timer: float = 0.0
         self.charge_regen_rate: float = config.charge_regen_seconds
+        self.max_parallel: int = 2 + extra_parallel
+        self.corruption_seconds: float = self.derelict_type.corruption_seconds
+        self.corruption_timer: float = self.corruption_seconds
+        self.corruption_started: bool = False
+        self.is_corrupted: bool = False
         self.grid: List[SalvageCell] = []
-        self.active_cell: Optional[SalvageCell] = None
+        self.active_extractions: List[SalvageCell] = []
         self.total_salvaged: Dict[str, int] = {}
         self._generate_grid()
 
     def _generate_grid(self) -> None:
         """Generate the salvage grid with hidden items."""
         self.grid.clear()
-        size = self.config.grid_size
+        dt = self.derelict_type
+        size = dt.grid_size
         total_cells = size * size
-        item_count = int(total_cells * self.config.item_density)
+        item_count = int(total_cells * dt.item_density)
 
         # Determine which cells have items
         all_positions = [(x, y) for x in range(size) for y in range(size)]
@@ -195,10 +284,10 @@ class SalvageSession:
             chosen = random.sample(all_positions, min(item_count, total_cells))
             item_positions = set(chosen)
 
-        # Build weighted item type list
+        # Build weighted item type list from derelict type distribution
         item_types = []
         weights = []
-        for type_name, weight in self.config.item_distribution.items():
+        for type_name, weight in dt.item_distribution.items():
             for sit in SalvageItemType:
                 if sit.value == type_name:
                     item_types.append(sit)
@@ -213,13 +302,16 @@ class SalvageSession:
             for x in range(size):
                 if (x, y) in item_positions:
                     item_type = random.choices(item_types, weights=weights, k=1)[0]
+                    quality = round(random.uniform(0.8, 1.5), 2)
                 else:
                     item_type = SalvageItemType.EMPTY
+                    quality = 1.0
                 self.grid.append(
                     SalvageCell(
                         grid_x=x,
                         grid_y=y,
                         item_type=item_type,
+                        quality=quality,
                     )
                 )
 
@@ -229,6 +321,18 @@ class SalvageSession:
             if cell.grid_x == grid_x and cell.grid_y == grid_y:
                 return cell
         return None
+
+    def get_adjacent_item_count(self, grid_x: int, grid_y: int) -> int:
+        """Count items in 8 neighbors of the given cell."""
+        count = 0
+        for dx in (-1, 0, 1):
+            for dy in (-1, 0, 1):
+                if dx == 0 and dy == 0:
+                    continue
+                neighbor = self.get_cell_at(grid_x + dx, grid_y + dy)
+                if neighbor and neighbor.has_item:
+                    count += 1
+        return count
 
     def scan_cell(self, grid_x: int, grid_y: int) -> Tuple[bool, str]:
         """
@@ -245,6 +349,18 @@ class SalvageSession:
         if cell is None:
             return (False, "Invalid position")
 
+        if cell.state == CellState.CORRUPTED:
+            # Corrupted cells cost 2 charges to scan
+            if self.charges < 2:
+                return (False, "Need 2 charges for corrupted cell")
+            self.charges -= 2
+            cell.state = CellState.SCANNED
+            if cell.has_item:
+                return (True, f"Found: {cell.item_type.value.replace('_', ' ').title()}")
+            else:
+                cell.adjacent_count = self.get_adjacent_item_count(grid_x, grid_y)
+                return (True, "Empty - nothing here")
+
         if cell.state != CellState.HIDDEN:
             return (False, "Cell already scanned")
 
@@ -254,9 +370,13 @@ class SalvageSession:
         self.charges -= 1
         cell.scan()
 
+        if not self.corruption_started:
+            self.corruption_started = True
+
         if cell.has_item:
             return (True, f"Found: {cell.item_type.value.replace('_', ' ').title()}")
         else:
+            cell.adjacent_count = self.get_adjacent_item_count(grid_x, grid_y)
             return (True, "Empty - nothing here")
 
     def start_extract(self, grid_x: int, grid_y: int) -> Tuple[bool, str]:
@@ -274,8 +394,8 @@ class SalvageSession:
         if cell is None:
             return (False, "Invalid position")
 
-        if self.active_cell and self.active_cell.state == CellState.EXTRACTING:
-            return (False, "Already extracting another item")
+        if len(self.active_extractions) >= self.max_parallel:
+            return (False, f"All {self.max_parallel} extraction slots in use")
 
         if cell.state != CellState.SCANNED:
             return (False, "Cell must be scanned first")
@@ -284,10 +404,10 @@ class SalvageSession:
             return (False, "No item to extract")
 
         cell.start_extract()
-        self.active_cell = cell
+        self.active_extractions.append(cell)
         return (True, f"Extracting {cell.item_type.value.replace('_', ' ')}...")
 
-    def update(self, dt: float) -> Optional[SalvageResult]:
+    def update(self, dt: float) -> List[SalvageResult]:
         """
         Update salvage session (charge regen, extraction progress).
 
@@ -295,24 +415,40 @@ class SalvageSession:
             dt: Delta time in seconds
 
         Returns:
-            SalvageResult if extraction completed, None otherwise
+            List of completed SalvageResults (may be empty).
         """
-        result = None
+        results: List[SalvageResult] = []
+        completed: List[SalvageCell] = []
 
-        # Update active extraction
-        if self.active_cell and self.active_cell.state == CellState.EXTRACTING:
-            yield_amount = self.active_cell.update_extract(dt, self.extract_speed_bonus)
-            if yield_amount is not None:
-                commodity_id = self.active_cell.config.commodity_id
-                result = SalvageResult(
-                    commodity_id=commodity_id,
-                    quantity=yield_amount,
-                    item_type=self.active_cell.item_type,
-                )
-                self.total_salvaged[commodity_id] = (
-                    self.total_salvaged.get(commodity_id, 0) + yield_amount
-                )
-                self.active_cell = None
+        # Update all active extractions
+        for cell in self.active_extractions:
+            if cell.state == CellState.EXTRACTING:
+                yield_amount = cell.update_extract(dt, self.extract_speed_bonus)
+                if yield_amount is not None:
+                    commodity_id = cell.config.commodity_id
+                    results.append(
+                        SalvageResult(
+                            commodity_id=commodity_id,
+                            quantity=yield_amount,
+                            item_type=cell.item_type,
+                            corrupted=cell.corrupted,
+                        )
+                    )
+                    self.total_salvaged[commodity_id] = (
+                        self.total_salvaged.get(commodity_id, 0) + yield_amount
+                    )
+                    completed.append(cell)
+
+        for cell in completed:
+            self.active_extractions.remove(cell)
+
+        # Corruption countdown
+        if self.corruption_started and not self.is_corrupted:
+            self.corruption_timer -= dt
+            if self.corruption_timer <= 0:
+                self.corruption_timer = 0
+                self.is_corrupted = True
+                self._apply_corruption()
 
         # Regenerate charges
         if self.charges < self.max_charges:
@@ -321,7 +457,14 @@ class SalvageSession:
                 self.charge_regen_timer -= self.charge_regen_rate
                 self.charges = min(self.charges + 1, self.max_charges)
 
-        return result
+        return results
+
+    def _apply_corruption(self) -> None:
+        """Mark all remaining HIDDEN cells as CORRUPTED."""
+        for cell in self.grid:
+            if cell.state == CellState.HIDDEN:
+                cell.state = CellState.CORRUPTED
+                cell.corrupted = True
 
     def get_hidden_count(self) -> int:
         """Get count of cells not yet scanned."""
@@ -338,4 +481,4 @@ class SalvageSession:
     def regenerate_grid(self) -> None:
         """Regenerate the salvage grid (between sessions)."""
         self._generate_grid()
-        self.active_cell = None
+        self.active_extractions.clear()

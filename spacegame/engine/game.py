@@ -15,14 +15,21 @@ from spacegame.config import (
     FPS_TARGET,
     FULLSCREEN,
     VSYNC,
+    STARTING_CREDITS,
+    MIXER_FREQUENCY,
+    MIXER_SIZE,
+    MIXER_CHANNELS,
+    MIXER_BUFFER,
     Colors,
     GameState,
 )
+from spacegame.engine.audio_manager import get_audio_manager
 from spacegame.engine.state_manager import StateManager
 from spacegame.engine.input_handler import InputHandler
 from spacegame.engine.activity_registry import create_default_registry
 from spacegame.engine.transitions import TransitionManager, TransitionType
 from spacegame.engine.screen_effects import Vignette, ScreenShake
+from spacegame.engine.fonts import FontCache
 from spacegame.data_loader import get_data_loader
 from spacegame.models.player import Player
 from spacegame.models.ship import Ship
@@ -32,6 +39,7 @@ from spacegame.models.faction import generate_faction_assignments
 from spacegame.achievement_manager import AchievementManager
 from spacegame.tutorial_manager import TutorialManager
 from spacegame.save_manager import SaveManager
+from spacegame.engine.startup_timer import StartupTimer
 from spacegame.utils.logger import logger
 import time
 
@@ -50,11 +58,25 @@ class Game:
     def __init__(self) -> None:
         """Initialize the game engine."""
         logger.info("Initializing Space Trader game...")
+        timer = StartupTimer()
+
+        # Initialize audio mixer before pygame.init() for correct format
+        timer.begin("mixer_preinit")
+        pygame.mixer.pre_init(
+            frequency=MIXER_FREQUENCY,
+            size=MIXER_SIZE,
+            channels=MIXER_CHANNELS,
+            buffer=MIXER_BUFFER,
+        )
+        timer.end("mixer_preinit")
 
         # Initialize PyGame
+        timer.begin("pygame_init")
         pygame.init()
+        timer.end("pygame_init")
 
         # Create window
+        timer.begin("display_setup")
         flags = pygame.SCALED
         if FULLSCREEN:
             flags |= pygame.FULLSCREEN
@@ -64,6 +86,16 @@ class Game:
         )
         pygame.display.set_caption(WINDOW_TITLE)
 
+        # Custom pixel art cursor
+        self._set_pixel_cursor()
+        timer.end("display_setup")
+
+        # Audio system
+        timer.begin("audio_init")
+        self.audio_manager = get_audio_manager()
+        self._last_audio_state: Optional[GameState] = None
+        timer.end("audio_init")
+
         # Core systems
         self.clock = pygame.time.Clock()
         self.running = False
@@ -71,6 +103,7 @@ class Game:
         self.input_handler = InputHandler()
 
         # pygame_gui UI manager with custom theme
+        timer.begin("ui_manager")
         from spacegame.config import DATA_DIR
 
         theme_path = DATA_DIR / "theme.json"
@@ -82,9 +115,12 @@ class Game:
         else:
             self.ui_manager = pygame_gui.UIManager((WINDOW_WIDTH, WINDOW_HEIGHT))
             logger.info("No theme.json found, using default pygame_gui theme")
+        timer.end("ui_manager")
 
         # Game data
+        timer.begin("data_loading")
         self.data_loader = get_data_loader()
+        timer.end("data_loading")
         self.player: Optional[Player] = None
 
         # Event generator (initialized after data is loaded)
@@ -105,6 +141,12 @@ class Game:
         self.save_manager = SaveManager()
         self.playtime_start = time.time()
         self.total_playtime_seconds = 0
+
+        # Restore persisted audio settings
+        saved_settings = self.save_manager.load_settings()
+        if "audio" in saved_settings:
+            from spacegame.engine.audio_manager import AudioConfig
+            self.audio_manager.set_config(AudioConfig.from_dict(saved_settings["audio"]))
 
         # Markets (system_id -> Market)
         self.markets: dict[str, Market] = {}
@@ -148,12 +190,30 @@ class Game:
         self.achievements_view = None
         self.dialogue_view = None
         self.name_input_view = None
+        self.character_creation_view = None
+        self.character_view = None
+        self.combat_view = None
+        self.encounter_view = None
+        self.ground_briefing_view = None
+        self.ground_exploration_view = None
+        self.ground_result_view = None
+        self.investment_view = None
+
+        # Investment system
+        from spacegame.models.investment import InvestmentManager
+
+        self.investment_manager: Optional[InvestmentManager] = None
 
         # Dialogue system
         from spacegame.models.dialogue import DialogueManager
+        from spacegame.models.social import SocialManager
+        from spacegame.models.attributes import AttributeSheet
 
         self.dialogue_manager = DialogueManager()
+        self.social_manager = SocialManager()
+        self.dialogue_manager.set_social_manager(self.social_manager)
         self._last_dialogue_npc_id: Optional[str] = None
+        self.attribute_sheet = AttributeSheet()
 
         # Mission system
         from spacegame.models.mission import MissionManager
@@ -166,6 +226,10 @@ class Game:
         self._mission_notify_timer: float = 0.0
         self._current_mission_msg: str = ""
 
+        # Bounty hunter system
+        self._bounty_immunity_until: int = 0
+        self._pending_bounty_combat_ids: list[str] = []
+
         # Crew system
         from spacegame.models.crew import CrewRoster
 
@@ -174,8 +238,33 @@ class Game:
         self._crew_last_trades: int = 0
         self._crew_last_jumps: int = 0
 
+        # Journal system
+        from spacegame.models.journal import Journal
+
+        self.journal: Optional[Journal] = None
+        self.journal_view = None
+
+        # Ground contract system
+        from spacegame.models.ground_contracts import GroundContractManager
+
+        self.ground_contract_manager: Optional[GroundContractManager] = None
+
+        # Smuggling contract system
+        from spacegame.models.smuggling import SmugglingContractManager
+
+        self.smuggling_contract_manager: Optional[SmugglingContractManager] = None
+
+        # Political system
+        from spacegame.models.politics import PoliticsManager
+
+        self.politics_manager: Optional[PoliticsManager] = None
+
+        # Day-advance tracking for market event generation
+        self._last_known_day: int = 0
+
         logger.info(f"Window created: {WINDOW_WIDTH}x{WINDOW_HEIGHT}")
         logger.info(f"Target FPS: {FPS_TARGET}")
+        timer.log_summary()
 
     def initialize_new_game(self, player_name: str = "Captain") -> None:
         """Initialize a new game with starting conditions.
@@ -190,8 +279,13 @@ class Game:
         starting_ship = Ship(ship_type=shuttle_type, current_fuel=shuttle_type.fuel_capacity)
 
         self.player = Player(
-            name=player_name, credits=2000, current_system_id="nexus_prime", ship=starting_ship
+            name=player_name, credits=STARTING_CREDITS, current_system_id="nexus_prime", ship=starting_ship
         )
+
+        # Sync upgrade manager slots from ship type (default_factory doesn't know ship type)
+        self.player.upgrade_manager._weapon_slots = shuttle_type.weapon_slots
+        self.player.upgrade_manager._defense_slots = shuttle_type.defense_slots
+        self.player.upgrade_manager._utility_slots = shuttle_type.utility_slots
 
         logger.info(f"Player created: {self.player.name} at {self.player.current_system_id}")
         logger.info(f"Starting credits: {self.player.credits} CR")
@@ -216,7 +310,7 @@ class Game:
         from spacegame.models.mission import MissionManager
 
         self.mission_manager = MissionManager(self.data_loader.missions)
-        self.mission_manager.update_availability()
+        self.mission_manager.update_availability(self.player.dialogue_flags)
 
         # Auto-start campaign mission: bill of landing
         self.mission_manager.accept_mission("bill_of_landing")
@@ -228,6 +322,101 @@ class Game:
         self.player.ship.set_crew_roster(self.crew_roster)
         self._crew_last_trades = 0
         self._crew_last_jumps = 0
+
+        # Initialize attribute system
+        from spacegame.models.attributes import AttributeSheet
+
+        self.attribute_sheet = AttributeSheet(unspent_points=5)
+        self.social_manager.set_progression(self.player.progression)
+        self.social_manager.set_attribute_sheet(self.attribute_sheet)
+
+        # Initialize journal system
+        from spacegame.models.journal import Journal
+
+        self.journal = Journal(auto_templates=self.data_loader.journal_entries)
+
+        # Initialize ground contract system
+        from spacegame.models.ground_contracts import GroundContractManager
+
+        self.ground_contract_manager = GroundContractManager()
+
+        # Initialize investment system
+        from spacegame.models.investment import InvestmentManager
+
+        self.investment_manager = InvestmentManager(
+            templates=dict(self.data_loader.investment_templates)
+        )
+
+        # Initialize smuggling contract system
+        from spacegame.models.smuggling import SmugglingContractManager
+
+        self.smuggling_contract_manager = SmugglingContractManager()
+
+        # Initialize political system
+        self._initialize_politics_manager()
+
+        # Track starting day for event generation
+        self._last_known_day = self.player.game_day
+
+    def _set_pixel_cursor(self) -> None:
+        """Set a custom 16x16 pixel art cursor matching the game aesthetic."""
+        # 16x16 arrow cursor in blue accent colors
+        # . = transparent, X = outline (dark), B = bright accent, A = mid accent
+        cursor_art = [
+            "X...............",
+            "XBX.............",
+            "XBBX............",
+            "XBBBX...........",
+            "XBBBBX..........",
+            "XBBBBBX.........",
+            "XBBBBBBX........",
+            "XBBBBBBBX.......",
+            "XBBBBBBBBX......",
+            "XBBBBBXXX.......",
+            "XBBXBBX.........",
+            "XBX.XBX.........",
+            "XX..XBBX........",
+            "X....XBX........",
+            ".....XBX........",
+            "......X.........",
+        ]
+        colors = {
+            ".": (0, 0, 0, 0),
+            "X": (10, 10, 15, 255),
+            "B": (100, 180, 255, 255),
+            "A": (60, 120, 200, 255),
+        }
+        surf = pygame.Surface((16, 16), pygame.SRCALPHA)
+        for y, row in enumerate(cursor_art):
+            for x, ch in enumerate(row):
+                c = colors.get(ch)
+                if c and c[3] > 0:
+                    surf.set_at((x, y), c)
+        cursor = pygame.cursors.Cursor((0, 0), surf)
+        pygame.mouse.set_cursor(cursor)
+
+    def _initialize_politics_manager(self, political_state: Optional[dict] = None) -> None:
+        """Initialize or restore the PoliticsManager.
+
+        Args:
+            political_state: Saved political state dict, or None for fresh defaults.
+        """
+        from spacegame.models.politics import PoliticsManager, FactionRelationship
+
+        factions = {f.id: f for f in self.data_loader.get_all_factions()}
+        if political_state:
+            self.politics_manager = PoliticsManager.from_dict(political_state, factions)
+        else:
+            relationships = list(self.data_loader.faction_relationships)
+            self.politics_manager = PoliticsManager(
+                relationships=relationships, factions=factions
+            )
+
+        # Wire politics into dialogue system for faction_reputation_changes
+        if self.politics_manager and self.player:
+            self.dialogue_manager.set_politics_manager(
+                self.politics_manager, self.player
+            )
 
     def _apply_faction_assignments(self) -> None:
         """Apply faction assignments to star system objects.
@@ -300,6 +489,65 @@ class Game:
 
         logger.info("Game states initialized")
 
+    # === State → Music/Ambient mapping ===
+
+    _STATE_MUSIC: dict[GameState, str] = {
+        GameState.MAIN_MENU: "main_theme",
+        GameState.GALAXY_MAP: "galaxy_exploration",
+        GameState.TRADING: "station_hub",
+        GameState.STATION_HUB: "station_hub",
+        GameState.REPAIR_BAY: "station_hub",
+        GameState.SHIPYARD: "station_hub",
+        GameState.INVESTMENT: "station_hub",
+        GameState.SALVAGING: "station_hub",
+        GameState.REFINING: "station_hub",
+        GameState.COMBAT: "combat_intense",
+        GameState.ENCOUNTER: "combat_intense",
+        GameState.MINING: "mining_rhythm",
+        GameState.GROUND_BRIEFING: "ground_stealth",
+        GameState.GROUND_EXPLORATION: "ground_stealth",
+        GameState.GROUND_RESULT: "ground_stealth",
+        GameState.DIALOGUE: "dialogue_intimate",
+    }
+
+    _STATE_AMBIENT: dict[GameState, str] = {
+        GameState.GALAXY_MAP: "ambient_space",
+        GameState.TRADING: "ambient_station",
+        GameState.STATION_HUB: "ambient_station",
+        GameState.REPAIR_BAY: "ambient_station",
+        GameState.SHIPYARD: "ambient_station",
+        GameState.INVESTMENT: "ambient_station",
+        GameState.SALVAGING: "ambient_station",
+        GameState.REFINING: "ambient_station",
+        GameState.COMBAT: "ambient_combat",
+        GameState.ENCOUNTER: "ambient_combat",
+        GameState.GROUND_BRIEFING: "ambient_ground",
+        GameState.GROUND_EXPLORATION: "ambient_ground",
+        GameState.GROUND_RESULT: "ambient_ground",
+    }
+
+    def _update_audio_for_state(self) -> None:
+        """Update music and ambient sounds when game state changes."""
+        current = self.state_manager.current_state
+        if current == self._last_audio_state:
+            return
+        self._last_audio_state = current
+
+        if current is None:
+            return
+
+        # Music
+        music_id = self._STATE_MUSIC.get(current)
+        if music_id:
+            self.audio_manager.play_music(music_id)
+        # Don't stop music for unmapped states (skill tree, stats, etc.)
+        # — they inherit the parent state's music
+
+        # Ambient
+        ambient_id = self._STATE_AMBIENT.get(current)
+        if ambient_id:
+            self.audio_manager.play_ambient(ambient_id)
+
     def _start_transition(self, transition_type: TransitionType, duration: float, callback) -> None:
         """Start a visual transition then execute callback at midpoint."""
         if self.transition_manager.active:
@@ -323,9 +571,8 @@ class Game:
 
                 def _do():
                     if not self.player:
-                        # New game: go to name input first
-                        self._ensure_name_input_view()
-                        self.state_manager.change_state(GameState.NAME_INPUT)
+                        # New game: start intro narration first
+                        self._start_intro_narration(return_state=GameState.NAME_INPUT)
                     else:
                         self.state_manager.change_state(GameState.GALAXY_MAP)
 
@@ -347,7 +594,25 @@ class Game:
                 player_name = self.name_input_view.get_player_name()
                 self.initialize_new_game(player_name)
                 self._create_gameplay_views()
-                self._start_intro_narration()
+
+                # Go to character creation for attribute allocation
+                def _do():
+                    self._ensure_character_creation_view()
+                    self.state_manager.change_state(GameState.CHARACTER_CREATION)
+
+                self._start_transition(TransitionType.FADE, 0.3, _do)
+
+        # Check character creation view for transitions
+        if hasattr(self, "character_creation_view") and self.character_creation_view:
+            if self.character_creation_view.active:
+                next_state = self.character_creation_view.get_next_state()
+                if next_state == GameState.GALAXY_MAP:
+                    self.character_creation_view.next_state = None
+
+                    def _do():
+                        self.state_manager.change_state(GameState.GALAXY_MAP)
+
+                    self._start_transition(TransitionType.FADE, 0.3, _do)
 
         # Check galaxy map for transitions
         if self.galaxy_map_view and self.galaxy_map_view.active:
@@ -357,30 +622,99 @@ class Game:
                 self.auto_save()
                 self._mission_notifications.append("Game Saved")
 
+            # Handle arrival notification
+            if getattr(self.galaxy_map_view, "arrival_message", None):
+                self._mission_notifications.append(self.galaxy_map_view.arrival_message)
+                self.galaxy_map_view.arrival_message = None
+
+            # Check for NPC auto-trigger dialogues at current system
+            self._check_auto_triggers()
+            if self.dialogue_view and self.dialogue_view.active:
+                return  # Auto-trigger fired, skip galaxy map processing
+
             next_state = self.galaxy_map_view.get_next_state()
             if next_state == GameState.TRADING:
                 self.galaxy_map_view.next_state = None
 
-                # Auto-trigger campaign dialogue at Nexus Prime
+                # Auto-trigger campaign dialogue at Nexus Prime (one-time only)
                 if (
                     self.player
                     and self.player.current_system_id == "nexus_prime"
                     and not self.player.dialogue_flags.get("talked_to_officer_larsen", False)
                 ):
-                    self.start_dialogue("officer_larsen")
+                    # Set flag immediately so the trigger can never re-fire,
+                    # even if the dialogue is interrupted or game exits early.
+                    self.player.dialogue_flags["talked_to_officer_larsen"] = True
+                    self.dialogue_manager.set_flag("talked_to_officer_larsen")
+                    self.start_dialogue("officer_larsen", return_state=GameState.STATION_HUB)
+                    return
+
+                # Check for bounty hunter encounter on arrival
+                if self._check_bounty_hunter_encounter():
+                    return
+
+                # Check for customs inspection on arrival
+                if self._check_customs_inspection():
+                    return
+
+                # Check for campaign ground mission trigger on arrival
+                if self._check_ground_mission_trigger():
                     return
 
                 def _do():
                     self.auto_save()
-                    self.state_manager.change_state(GameState.TRADING)
+                    self._ensure_station_hub_view()
+                    self.state_manager.change_state(GameState.STATION_HUB)
 
                 self._start_transition(TransitionType.FADE, 0.3, _do)
-            elif next_state == GameState.SKILL_TREE:
+            elif next_state == GameState.COMBAT:
+                self.galaxy_map_view.next_state = None
+                pending = getattr(self.galaxy_map_view, "_pending_encounter", None)
+                if pending:
+                    self.galaxy_map_view._pending_encounter = None
+                    self.screen_shake.trigger(intensity=5.0, duration=0.3)
+                    encounter = self._resolve_encounter_ref(pending)
+                    if encounter:
+                        self.start_combat(
+                            encounter,
+                            return_state=GameState.STATION_HUB,
+                            transition_type=TransitionType.WARP,
+                        )
+                        return
+                # Fallback: safe landing
+                def _do():
+                    self.auto_save()
+                    self._ensure_station_hub_view()
+                    self.state_manager.change_state(GameState.STATION_HUB)
+
+                self._start_transition(TransitionType.FADE, 0.3, _do)
+            elif next_state == GameState.ENCOUNTER:
+                self.galaxy_map_view.next_state = None
+                enc_ref = getattr(self.galaxy_map_view, "_pending_encounter_ref", None)
+                if enc_ref:
+                    self.galaxy_map_view._pending_encounter_ref = None
+                    defn = self._resolve_encounter_definition(enc_ref)
+                    if defn:
+                        self._ensure_encounter_view(defn, enc_ref)
+
+                        def _do():
+                            self.state_manager.change_state(GameState.ENCOUNTER)
+
+                        self._start_transition(TransitionType.FADE, 0.4, _do)
+                        return
+                # Fallback: no definition found → go to station hub
+                def _do():
+                    self.auto_save()
+                    self._ensure_station_hub_view()
+                    self.state_manager.change_state(GameState.STATION_HUB)
+
+                self._start_transition(TransitionType.FADE, 0.3, _do)
+            elif next_state == GameState.CHARACTER:
                 self.galaxy_map_view.next_state = None
 
                 def _do():
-                    self._ensure_skill_tree_view()
-                    self.state_manager.change_state(GameState.SKILL_TREE)
+                    self._ensure_character_view()
+                    self.state_manager.change_state(GameState.CHARACTER)
 
                 self._start_transition(TransitionType.FADE, 0.3, _do)
             elif next_state == GameState.SHIPYARD:
@@ -430,6 +764,25 @@ class Game:
                     self.state_manager.change_state(GameState.CREW_ROSTER)
 
                 self._start_transition(TransitionType.FADE, 0.3, _do)
+            elif next_state == GameState.JOURNAL:
+                self.galaxy_map_view.next_state = None
+
+                def _do():
+                    self._ensure_journal_view()
+                    self.state_manager.change_state(GameState.JOURNAL)
+
+                self._start_transition(TransitionType.FADE, 0.3, _do)
+
+        # Check journal view for transitions
+        if self.journal_view and self.journal_view.active:
+            next_state = self.journal_view.get_next_state()
+            if next_state == GameState.GALAXY_MAP:
+                self.journal_view.next_state = None
+
+                def _do():
+                    self.state_manager.change_state(GameState.GALAXY_MAP)
+
+                self._start_transition(TransitionType.FADE, 0.3, _do)
 
         # Check crew roster view for transitions
         if self.crew_roster_view and self.crew_roster_view.active:
@@ -449,6 +802,34 @@ class Game:
                     self.state_manager.change_state(GameState.GALAXY_MAP)
 
                 self._start_transition(TransitionType.FADE, 0.3, _do)
+
+        # Check character view for transitions
+        if hasattr(self, "character_view") and self.character_view:
+            if self.character_view.active:
+                next_state = self.character_view.get_next_state()
+                if next_state == GameState.GALAXY_MAP:
+                    self.character_view.next_state = None
+
+                    def _do():
+                        self.state_manager.change_state(GameState.GALAXY_MAP)
+
+                    self._start_transition(TransitionType.FADE, 0.3, _do)
+                elif next_state == GameState.SKILL_TREE:
+                    self.character_view.next_state = None
+
+                    def _do():
+                        self._ensure_skill_tree_view()
+                        self.state_manager.change_state(GameState.SKILL_TREE)
+
+                    self._start_transition(TransitionType.FADE, 0.3, _do)
+                elif next_state == GameState.CREW_ROSTER:
+                    self.character_view.next_state = None
+
+                    def _do():
+                        self._ensure_crew_roster_view()
+                        self.state_manager.change_state(GameState.CREW_ROSTER)
+
+                    self._start_transition(TransitionType.FADE, 0.3, _do)
 
         # Check mission log view for transitions
         if self.mission_log_view and self.mission_log_view.active:
@@ -474,10 +855,13 @@ class Game:
                         self._mission_notifications.append(f"Mission Accepted: {name}")
 
                 def _do():
-                    # Update galaxy map mission markers
+                    # Update galaxy map mission markers and forced encounters
                     if self.galaxy_map_view and self.mission_manager:
                         self.galaxy_map_view.mission_target_systems = (
                             self.mission_manager.get_active_target_systems()
+                        )
+                        self.galaxy_map_view.forced_encounters = (
+                            self.mission_manager.get_active_forced_encounters()
                         )
                     self.state_manager.change_state(GameState.GALAXY_MAP)
 
@@ -486,44 +870,15 @@ class Game:
         # Check trading view for transitions
         if self.trading_view and self.trading_view.active:
             next_state = self.trading_view.get_next_state()
-            if next_state == GameState.GALAXY_MAP:
+            if next_state == GameState.STATION_HUB:
                 self.trading_view.next_state = None
 
                 def _do():
                     self.market = None
-                    self.state_manager.change_state(GameState.GALAXY_MAP)
+                    self._ensure_station_hub_view()
+                    self.state_manager.change_state(GameState.STATION_HUB)
 
                 self._start_transition(TransitionType.FADE, 0.3, _do)
-            elif next_state == GameState.MINING:
-                self.trading_view.next_state = None
-
-                def _do():
-                    self._ensure_mining_view()
-                    self.state_manager.change_state(GameState.MINING)
-
-                self._start_transition(TransitionType.SLIDE, 0.3, _do)
-            elif next_state == GameState.SALVAGING:
-                self.trading_view.next_state = None
-
-                def _do():
-                    self._ensure_salvage_view()
-                    self.state_manager.change_state(GameState.SALVAGING)
-
-                self._start_transition(TransitionType.SLIDE, 0.3, _do)
-            elif next_state == GameState.REFINING:
-                self.trading_view.next_state = None
-
-                def _do():
-                    self._ensure_refining_view()
-                    self.state_manager.change_state(GameState.REFINING)
-
-                self._start_transition(TransitionType.SLIDE, 0.3, _do)
-            elif next_state == GameState.DIALOGUE:
-                self.trading_view.next_state = None
-                npc_id = getattr(self.trading_view, "pending_npc_id", None)
-                if npc_id:
-                    self.trading_view.pending_npc_id = None
-                    self.start_dialogue(npc_id)
 
         # Check dialogue view for transitions (generic — supports any return state)
         if self.dialogue_view and self.dialogue_view.active:
@@ -531,9 +886,10 @@ class Game:
             if next_state is not None:
                 self.dialogue_view.next_state = None
 
-                # Sync dialogue flags back to player for save persistence
+                # Sync dialogue flags and social state back to player
                 if self.player:
                     self.player.dialogue_flags = self.dialogue_manager.get_flags()
+                    self.player.social_state = self.social_manager.get_state()
 
                     # Set talked_to flag for mission objectives
                     if self._last_dialogue_npc_id:
@@ -542,9 +898,16 @@ class Game:
                         self.dialogue_manager.set_flag(flag_key)
                         self._last_dialogue_npc_id = None
 
+                    # Check for journal auto-entries triggered by new flags
+                    self._check_journal_triggers()
+
                 target = next_state
 
                 def _do():
+                    if target == GameState.NAME_INPUT:
+                        self._ensure_name_input_view()
+                    elif target == GameState.STATION_HUB:
+                        self._ensure_station_hub_view()
                     self.state_manager.change_state(target)
 
                 self._start_transition(TransitionType.FADE, 0.3, _do)
@@ -556,7 +919,8 @@ class Game:
                 self.mining_view.next_state = None
 
                 def _do():
-                    self.state_manager.change_state(GameState.TRADING)
+                    self._ensure_station_hub_view()
+                    self.state_manager.change_state(GameState.STATION_HUB)
 
                 self._start_transition(TransitionType.SLIDE, 0.3, _do)
 
@@ -567,7 +931,8 @@ class Game:
                 self.salvage_view.next_state = None
 
                 def _do():
-                    self.state_manager.change_state(GameState.TRADING)
+                    self._ensure_station_hub_view()
+                    self.state_manager.change_state(GameState.STATION_HUB)
 
                 self._start_transition(TransitionType.SLIDE, 0.3, _do)
 
@@ -578,18 +943,30 @@ class Game:
                 self.refining_view.next_state = None
 
                 def _do():
-                    self.state_manager.change_state(GameState.TRADING)
+                    self._ensure_station_hub_view()
+                    self.state_manager.change_state(GameState.STATION_HUB)
 
                 self._start_transition(TransitionType.SLIDE, 0.3, _do)
 
         # Check skill tree for transitions
         if self.skill_tree_view and self.skill_tree_view.active:
             next_state = self.skill_tree_view.get_next_state()
-            if next_state == GameState.GALAXY_MAP:
+            if next_state == GameState.CHARACTER:
                 self.skill_tree_view.next_state = None
 
                 def _do():
                     # Sync drone fleet after skill tree changes
+                    from spacegame.models.drone import apply_drone_skill_effects
+
+                    apply_drone_skill_effects(self.player)
+                    self._ensure_character_view()
+                    self.state_manager.change_state(GameState.CHARACTER)
+
+                self._start_transition(TransitionType.FADE, 0.3, _do)
+            elif next_state == GameState.GALAXY_MAP:
+                self.skill_tree_view.next_state = None
+
+                def _do():
                     from spacegame.models.drone import apply_drone_skill_effects
 
                     apply_drone_skill_effects(self.player)
@@ -619,6 +996,151 @@ class Game:
 
                 self._start_transition(TransitionType.FADE, 0.3, _do)
 
+        # Check combat view for transitions
+        if self.combat_view and self.combat_view.active:
+            next_state = self.combat_view.get_next_state()
+            if next_state:
+                self.combat_view.next_state = None
+                self._apply_combat_result()
+                target = next_state
+
+                def _do():
+                    self.state_manager.change_state(target)
+
+                self._start_transition(TransitionType.FADE, 0.3, _do)
+
+        # Check encounter view for transitions
+        if self.encounter_view and self.encounter_view.active:
+            next_state = self.encounter_view.get_next_state()
+            if next_state:
+                self.encounter_view.next_state = None
+                if self.encounter_view.pending_combat:
+                    # Combat from encounter choice: resolve and start combat
+                    enc_ref = self.encounter_view.encounter_ref
+                    combat_encounter = self._resolve_encounter_ref(enc_ref)
+                    if combat_encounter:
+                        self._apply_encounter_result()
+                        self.start_combat(
+                            combat_encounter,
+                            return_state=GameState.TRADING,
+                            transition_type=TransitionType.WARP,
+                        )
+                        return
+                # Non-combat: apply rewards and go to trading
+                self._apply_encounter_result()
+
+                # Check if encounter result triggered bounty combat
+                if self._pending_bounty_combat_ids:
+                    enemy_ids = self._pending_bounty_combat_ids
+                    self._pending_bounty_combat_ids = []
+                    bounty_combat = self._resolve_bounty_combat(enemy_ids)
+                    if bounty_combat:
+                        self.start_combat(
+                            bounty_combat,
+                            return_state=GameState.TRADING,
+                            transition_type=TransitionType.WARP,
+                        )
+                        return
+
+                def _do():
+                    self.auto_save()
+                    self.state_manager.change_state(GameState.TRADING)
+
+                self._start_transition(TransitionType.FADE, 0.3, _do)
+
+        # Check ground briefing for transitions
+        if self.ground_briefing_view and self.ground_briefing_view.active:
+            next_state = self.ground_briefing_view.get_next_state()
+            if next_state == GameState.GROUND_EXPLORATION:
+                self.ground_briefing_view.next_state = None
+                crew_ids = list(self.ground_briefing_view.selected_crew)
+                config = self.ground_briefing_view.mission_config
+
+                def _do():
+                    from spacegame.models.ground_mapgen import (
+                        MapGenConfig,
+                        GroundMapGenerator,
+                    )
+                    from spacegame.models.ground_crew import GroundCrewBonuses
+
+                    crew_bonuses = GroundCrewBonuses.compute(
+                        crew_ids,
+                        self.attribute_sheet if self.player else None,
+                    )
+
+                    gen_result = self._build_ground_map(config)
+                    mission_state = gen_result.build_mission_state(
+                        crew_bonuses,
+                        self.attribute_sheet if self.player else None,
+                        self.player.progression if self.player else None,
+                    )
+                    from spacegame.views.ground_exploration_view import (
+                        GroundExplorationView,
+                    )
+
+                    self.ground_exploration_view = GroundExplorationView(
+                        self.ui_manager,
+                        mission_state.ground_map,
+                        mission_state.player,
+                        mission_state,
+                        mission_config=config,
+                    )
+                    self.ground_exploration_view._crew_ids = crew_ids
+                    self.state_manager.register_state(
+                        GameState.GROUND_EXPLORATION,
+                        self.ground_exploration_view,
+                    )
+                    self.state_manager.change_state(GameState.GROUND_EXPLORATION)
+
+                self._start_transition(TransitionType.PIXELATE, 0.5, _do)
+            elif next_state is not None:
+                # Cancel — return to previous state
+                self.ground_briefing_view.next_state = None
+                target = next_state
+
+                def _do():
+                    self.state_manager.change_state(target)
+
+                self._start_transition(TransitionType.FADE, 0.3, _do)
+
+        # Check ground exploration for transitions
+        if self.ground_exploration_view and self.ground_exploration_view.active:
+            next_state = self.ground_exploration_view.get_next_state()
+            if next_state == GameState.GROUND_RESULT:
+                self.ground_exploration_view.next_state = None
+                outcome = self.ground_exploration_view._mission_outcome
+                if outcome:
+                    result = self.ground_exploration_view.get_mission_result(outcome)
+                    if result:
+                        self._apply_ground_result(result)
+                        self._ensure_ground_result_view(result)
+
+                        def _do():
+                            self.state_manager.change_state(GameState.GROUND_RESULT)
+
+                        self._start_transition(TransitionType.FADE, 0.3, _do)
+            elif next_state == GameState.GALAXY_MAP:
+                # No-config exit (backward compatibility)
+                self.ground_exploration_view.next_state = None
+
+                def _do():
+                    self.state_manager.change_state(GameState.GALAXY_MAP)
+
+                self._start_transition(TransitionType.FADE, 0.3, _do)
+
+        # Check ground result for transitions
+        if self.ground_result_view and self.ground_result_view.active:
+            next_state = self.ground_result_view.get_next_state()
+            if next_state is not None:
+                self.ground_result_view.next_state = None
+                target = next_state
+
+                def _do():
+                    self.auto_save()
+                    self.state_manager.change_state(target)
+
+                self._start_transition(TransitionType.FADE, 0.3, _do)
+
         # Check shipyard for transitions
         if self.shipyard_view and self.shipyard_view.active:
             next_state = self.shipyard_view.get_next_state()
@@ -626,9 +1148,109 @@ class Game:
                 self.shipyard_view.next_state = None
 
                 def _do():
-                    self.state_manager.change_state(GameState.GALAXY_MAP)
+                    self._ensure_station_hub_view()
+                    self.state_manager.change_state(GameState.STATION_HUB)
 
                 self._start_transition(TransitionType.FADE, 0.3, _do)
+
+        # Check station hub view for transitions
+        if hasattr(self, "station_hub_view") and self.station_hub_view:
+            if self.station_hub_view.active:
+                next_state = self.station_hub_view.get_next_state()
+                if next_state == GameState.GALAXY_MAP:
+                    self.station_hub_view.next_state = None
+
+                    def _do():
+                        self.state_manager.change_state(GameState.GALAXY_MAP)
+
+                    self._start_transition(TransitionType.FADE, 0.3, _do)
+                elif next_state == GameState.TRADING:
+                    self.station_hub_view.next_state = None
+
+                    def _do():
+                        self.state_manager.change_state(GameState.TRADING)
+
+                    self._start_transition(TransitionType.FADE, 0.3, _do)
+                elif next_state == GameState.REPAIR_BAY:
+                    self.station_hub_view.next_state = None
+
+                    def _do():
+                        self._ensure_repair_bay_view()
+                        self.state_manager.change_state(GameState.REPAIR_BAY)
+
+                    self._start_transition(TransitionType.FADE, 0.3, _do)
+                elif next_state == GameState.INVESTMENT:
+                    self.station_hub_view.next_state = None
+
+                    def _do():
+                        self._ensure_investment_view()
+                        self.state_manager.change_state(GameState.INVESTMENT)
+
+                    self._start_transition(TransitionType.FADE, 0.3, _do)
+                elif next_state == GameState.MINING:
+                    self.station_hub_view.next_state = None
+
+                    def _do():
+                        self._ensure_mining_view()
+                        self.state_manager.change_state(GameState.MINING)
+
+                    self._start_transition(TransitionType.SLIDE, 0.3, _do)
+                elif next_state == GameState.SALVAGING:
+                    self.station_hub_view.next_state = None
+
+                    def _do():
+                        self._ensure_salvage_view()
+                        self.state_manager.change_state(GameState.SALVAGING)
+
+                    self._start_transition(TransitionType.SLIDE, 0.3, _do)
+                elif next_state == GameState.REFINING:
+                    self.station_hub_view.next_state = None
+
+                    def _do():
+                        self._ensure_refining_view()
+                        self.state_manager.change_state(GameState.REFINING)
+
+                    self._start_transition(TransitionType.SLIDE, 0.3, _do)
+                elif next_state == GameState.SHIPYARD:
+                    self.station_hub_view.next_state = None
+
+                    def _do():
+                        self._ensure_shipyard_view()
+                        self.state_manager.change_state(GameState.SHIPYARD)
+
+                    self._start_transition(TransitionType.FADE, 0.3, _do)
+                elif next_state == GameState.DIALOGUE:
+                    self.station_hub_view.next_state = None
+                    npc_id = getattr(self.station_hub_view, "pending_npc_id", None)
+                    if npc_id:
+                        self.station_hub_view.pending_npc_id = None
+                        self.start_dialogue(npc_id, return_state=GameState.STATION_HUB)
+
+        # Check repair bay view for transitions
+        if hasattr(self, "repair_bay_view") and self.repair_bay_view:
+            if self.repair_bay_view.active:
+                next_state = self.repair_bay_view.get_next_state()
+                if next_state == GameState.STATION_HUB:
+                    self.repair_bay_view.next_state = None
+
+                    def _do():
+                        self._ensure_station_hub_view()
+                        self.state_manager.change_state(GameState.STATION_HUB)
+
+                    self._start_transition(TransitionType.FADE, 0.3, _do)
+
+        # Check investment view for transitions
+        if self.investment_view:
+            if self.investment_view.active:
+                next_state = self.investment_view.get_next_state()
+                if next_state == GameState.STATION_HUB:
+                    self.investment_view.next_state = None
+
+                    def _do():
+                        self._ensure_station_hub_view()
+                        self.state_manager.change_state(GameState.STATION_HUB)
+
+                    self._start_transition(TransitionType.FADE, 0.3, _do)
 
     def _create_gameplay_views(self) -> None:
         """Create all gameplay views after new game or load."""
@@ -643,7 +1265,11 @@ class Game:
             self.player,
             systems,
             active_events=self.active_events,
+            politics_manager=self.politics_manager,
         )
+        # Wire journal for quick-add overlay
+        if self.journal:
+            self.galaxy_map_view.journal = self.journal
         self.trading_view = TradingView(
             self.ui_manager,
             self.player,
@@ -651,6 +1277,8 @@ class Game:
             commodities,
             activity_registry=self.activity_registry,
             active_events=self.active_events,
+            smuggling_contract_manager=self.smuggling_contract_manager,
+            politics_manager=self.politics_manager,
         )
 
         self.state_manager.register_state(GameState.GALAXY_MAP, self.galaxy_map_view)
@@ -667,6 +1295,69 @@ class Game:
         self.shipyard_view = None
         self.statistics_view = None
         self.achievements_view = None
+        self.combat_view = None
+        self.encounter_view = None
+        self.journal_view = None
+        self.ground_briefing_view = None
+        self.ground_exploration_view = None
+        self.ground_result_view = None
+        self.station_hub_view = None
+        self.repair_bay_view = None
+
+    def _ensure_station_hub_view(self) -> None:
+        """Create or recreate station hub view for current system."""
+        from spacegame.views.station_hub_view import StationHubView
+
+        system = self.data_loader.get_system(self.player.current_system_id)
+        locations = self.data_loader.get_locations_for_system(self.player.current_system_id)
+        self.station_hub_view = StationHubView(
+            self.ui_manager,
+            self.player,
+            system,
+            locations,
+            activity_registry=self.activity_registry,
+            data_loader=self.data_loader,
+            politics_manager=self.politics_manager,
+        )
+        self.state_manager.register_state(GameState.STATION_HUB, self.station_hub_view)
+
+    def _ensure_repair_bay_view(self) -> None:
+        """Create or recreate repair bay view for current system."""
+        from spacegame.views.repair_bay_view import RepairBayView
+
+        locations = self.data_loader.get_locations_for_system(self.player.current_system_id)
+        cost_per_hp = 10  # default
+        location_name = "Repair Bay"
+        location_flavor = ""
+        for loc in locations:
+            if loc.location_type == "repair_bay":
+                if loc.repair_cost_per_hp > 0:
+                    cost_per_hp = loc.repair_cost_per_hp
+                location_name = loc.name
+                location_flavor = loc.flavor_text
+                break
+        self.repair_bay_view = RepairBayView(
+            self.ui_manager,
+            self.player,
+            cost_per_hp=cost_per_hp,
+            location_name=location_name,
+            location_flavor=location_flavor,
+        )
+        self.state_manager.register_state(GameState.REPAIR_BAY, self.repair_bay_view)
+
+    def _ensure_investment_view(self) -> None:
+        """Create or recreate investment view for current system."""
+        from spacegame.views.investment_view import InvestmentView
+
+        if not self.investment_manager:
+            return
+        self.investment_view = InvestmentView(
+            ui_manager=self.ui_manager,
+            player=self.player,
+            investment_manager=self.investment_manager,
+            system_id=self.player.current_system_id,
+        )
+        self.state_manager.register_state(GameState.INVESTMENT, self.investment_view)
 
     def _ensure_mining_view(self) -> None:
         """Create or recreate mining view for current system."""
@@ -721,6 +1412,30 @@ class Game:
         )
         self.state_manager.register_state(GameState.SKILL_TREE, self.skill_tree_view)
 
+    def _ensure_character_creation_view(self) -> None:
+        """Create character creation view for attribute allocation."""
+        from spacegame.views.character_creation_view import CharacterCreationView
+
+        self.character_creation_view = CharacterCreationView(
+            self.ui_manager,
+            self.attribute_sheet,
+        )
+        self.state_manager.register_state(
+            GameState.CHARACTER_CREATION, self.character_creation_view
+        )
+
+    def _ensure_character_view(self) -> None:
+        """Create or recreate character screen view."""
+        from spacegame.views.character_view import CharacterView
+
+        self.character_view = CharacterView(
+            self.ui_manager,
+            self.player,
+            self.attribute_sheet,
+            self.social_manager,
+        )
+        self.state_manager.register_state(GameState.CHARACTER, self.character_view)
+
     def _ensure_statistics_view(self) -> None:
         """Create or recreate statistics view."""
         from spacegame.views.statistics_view import StatisticsView
@@ -743,7 +1458,9 @@ class Game:
         """Create or recreate dialogue view."""
         from spacegame.views.dialogue_view import DialogueView
 
-        self.dialogue_view = DialogueView(self.ui_manager, self.dialogue_manager, self.data_loader)
+        self.dialogue_view = DialogueView(
+            self.ui_manager, self.dialogue_manager, self.data_loader, self.social_manager
+        )
         self.state_manager.register_state(GameState.DIALOGUE, self.dialogue_view)
 
     def _ensure_mission_log_view(self) -> None:
@@ -752,6 +1469,19 @@ class Game:
 
         self.mission_log_view = MissionLogView(self.ui_manager, self.mission_manager)
         self.state_manager.register_state(GameState.MISSION_LOG, self.mission_log_view)
+
+    def _ensure_journal_view(self) -> None:
+        """Create or recreate journal view."""
+        from spacegame.views.journal_view import JournalView
+
+        self.journal_view = JournalView(
+            self.ui_manager,
+            self.journal,
+            self.player.game_day if self.player else 1,
+            self.player.current_system_id if self.player else "",
+            mission_manager=self.mission_manager,
+        )
+        self.state_manager.register_state(GameState.JOURNAL, self.journal_view)
 
     def _ensure_crew_roster_view(self) -> None:
         """Create or recreate crew roster view."""
@@ -786,9 +1516,22 @@ class Game:
         # Track NPC for mission talk_to_npc objectives
         self._last_dialogue_npc_id = npc_id
 
-        # Sync flags from player before starting
+        # Sync flags and social state from player before starting
         self.dialogue_manager.load_flags(self.player.dialogue_flags)
-        self.dialogue_manager.start_dialogue(tree)
+        self.social_manager.load_state(self.player.social_state)
+
+        # Apply faction-based disposition modifier to NPC
+        if self.politics_manager and npc.faction_id:
+            disp_mod = self.politics_manager.get_npc_disposition_modifier(
+                self.player, npc.faction_id
+            )
+            if disp_mod != 0:
+                self.social_manager.modify_disposition(npc_id, disp_mod)
+                logger.info(
+                    f"Applied faction disposition modifier to {npc_id}: {disp_mod:+d}"
+                )
+
+        self.dialogue_manager.start_dialogue(tree, npc_id=npc_id)
         self._ensure_dialogue_view()
         self.dialogue_view._return_state = return_state
 
@@ -798,13 +1541,21 @@ class Game:
         self._start_transition(TransitionType.FADE, 0.3, _do)
         logger.info(f"Starting dialogue with {npc.name}")
 
-    def _start_intro_narration(self) -> None:
-        """Start the intro backstory narration sequence after new game creation."""
+    def _start_intro_narration(
+        self, return_state: GameState = GameState.GALAXY_MAP
+    ) -> None:
+        """Start the intro backstory narration sequence.
+
+        Args:
+            return_state: State to transition to when narration ends.
+        """
         tree = self.data_loader.get_dialogue("intro_narration")
         if not tree:
-            # Fallback: skip narration, go straight to galaxy map
+            # Fallback: skip narration, go to return state directly
             def _do() -> None:
-                self.state_manager.change_state(GameState.GALAXY_MAP)
+                if return_state == GameState.NAME_INPUT:
+                    self._ensure_name_input_view()
+                self.state_manager.change_state(return_state)
 
             self._start_transition(TransitionType.FADE, 0.5, _do)
             return
@@ -812,7 +1563,7 @@ class Game:
         self._last_dialogue_npc_id = None  # No NPC for narration
         self.dialogue_manager.start_dialogue(tree)
         self._ensure_dialogue_view()
-        self.dialogue_view._return_state = GameState.GALAXY_MAP
+        self.dialogue_view._return_state = return_state
 
         def _do() -> None:
             self.state_manager.change_state(GameState.DIALOGUE)
@@ -827,6 +1578,860 @@ class Game:
         self.name_input_view = NameInputView(self.ui_manager)
         self.state_manager.register_state(GameState.NAME_INPUT, self.name_input_view)
 
+    def _ensure_combat_view(
+        self, engine: "CombatEngine", return_state: GameState = GameState.TRADING
+    ) -> None:
+        """Create combat view with a prepared engine.
+
+        Args:
+            engine: CombatEngine instance with initialized state.
+            return_state: State to return to when combat ends.
+        """
+        from spacegame.views.combat_view import CombatView
+
+        self.combat_view = CombatView(
+            self.ui_manager, engine, self.player, self.social_manager
+        )
+        self.combat_view._return_state = return_state
+        if self.player:
+            self.combat_view._bribe_credits_available = self.player.credits
+        self.state_manager.register_state(GameState.COMBAT, self.combat_view)
+
+    def start_combat(
+        self,
+        encounter: "CombatEncounter",
+        return_state: GameState = GameState.TRADING,
+        transition_type: TransitionType = TransitionType.FADE,
+    ) -> None:
+        """Initialize and enter a combat encounter.
+
+        Args:
+            encounter: CombatEncounter defining enemies and seed.
+            return_state: State to return to when combat ends.
+            transition_type: Visual transition to use (FADE or WARP).
+        """
+        from spacegame.models.combat import (
+            CombatState,
+            EnemyShip,
+            build_player_combat_state,
+        )
+        from spacegame.models.combat_engine import CombatEngine
+
+        crew_moves = self._get_crew_combat_moves()
+        player_state = build_player_combat_state(
+            self.player.ship,
+            self.player.upgrade_manager,
+            self.crew_roster,
+            crew_moves,
+        )
+        enemies = [EnemyShip.from_template(t) for t in encounter.enemy_templates]
+        combat_state = CombatState(
+            player=player_state,
+            enemies=enemies,
+            encounter=encounter,
+            combat_log=[],
+        )
+        engine = CombatEngine(combat_state, seed=encounter.encounter_seed)
+        self._ensure_combat_view(engine, return_state)
+
+        def _do() -> None:
+            self.state_manager.change_state(GameState.COMBAT)
+
+        duration = 0.6 if transition_type == TransitionType.WARP else 0.4
+        self._start_transition(transition_type, duration, _do)
+        logger.info("Starting combat encounter")
+
+    def _resolve_encounter_ref(self, ref: "EncounterRef") -> Optional["CombatEncounter"]:
+        """Resolve an EncounterRef (template IDs) into a full CombatEncounter.
+
+        Args:
+            ref: EncounterRef with enemy template IDs and seed.
+
+        Returns:
+            CombatEncounter with resolved templates, or None if templates missing.
+        """
+        from spacegame.models.combat import CombatEncounter
+
+        templates = []
+        for tid in ref.enemy_template_ids:
+            template = self.data_loader.enemy_templates.get(tid)
+            if template:
+                templates.append(template)
+
+        if not templates:
+            return None
+
+        return CombatEncounter(
+            enemy_templates=templates,
+            encounter_seed=ref.encounter_seed,
+        )
+
+    def _resolve_bounty_combat(
+        self, enemy_ids: list[str]
+    ) -> Optional["CombatEncounter"]:
+        """Resolve bounty hunter enemy IDs into a CombatEncounter.
+
+        Args:
+            enemy_ids: List of bounty hunter enemy template IDs.
+
+        Returns:
+            CombatEncounter or None if templates missing.
+        """
+        from spacegame.models.combat import CombatEncounter
+
+        templates = []
+        for tid in enemy_ids:
+            template = self.data_loader.enemy_templates.get(tid)
+            if template:
+                templates.append(template)
+
+        if not templates:
+            return None
+
+        seed = hash(f"{self.player.game_day}_bounty_combat") & 0xFFFFFFFF
+        return CombatEncounter(
+            enemy_templates=templates,
+            encounter_seed=seed,
+        )
+
+    def _resolve_encounter_definition(
+        self, ref: "EncounterRef"
+    ) -> Optional["EncounterDefinition"]:
+        """Select an encounter definition for a non-hostile encounter.
+
+        Args:
+            ref: EncounterRef with type and seed.
+
+        Returns:
+            EncounterDefinition or None if no definitions match.
+        """
+        from spacegame.models.encounter import (
+            EncounterDefinition,
+            lookup_encounter_definition,
+            select_encounter_definition,
+        )
+
+        # Direct lookup by ID (scripted/forced encounters)
+        if ref.encounter_def_id:
+            defn = lookup_encounter_definition(
+                self.data_loader.encounter_definitions,
+                ref.encounter_def_id,
+            )
+            if defn:
+                return defn
+
+        # Random weighted selection (procedural encounters)
+        danger = "moderate"
+        if self.player:
+            system = self.data_loader.systems.get(self.player.current_system_id)
+            if system:
+                danger = getattr(system, "danger_level", "moderate")
+
+        defn = select_encounter_definition(
+            self.data_loader.encounter_definitions,
+            ref.encounter_type,
+            danger,
+            ref.encounter_seed,
+        )
+        if defn:
+            ref.encounter_def_id = defn.id
+        return defn
+
+    def _ensure_encounter_view(
+        self,
+        encounter_def: "EncounterDefinition",
+        encounter_ref: "EncounterRef",
+    ) -> None:
+        """Create encounter view for a non-hostile encounter.
+
+        Args:
+            encounter_def: The selected encounter definition.
+            encounter_ref: The encounter reference from travel.
+        """
+        from spacegame.views.encounter_view import EncounterView
+
+        self.encounter_view = EncounterView(
+            self.ui_manager, encounter_def, encounter_ref
+        )
+        self.state_manager.register_state(GameState.ENCOUNTER, self.encounter_view)
+
+    def _check_bounty_hunter_encounter(self) -> bool:
+        """Check for and trigger a bounty hunter encounter on arrival.
+
+        Evaluates criminal heat against bounty hunter thresholds. If triggered,
+        builds a pre-combat encounter with surrender/fight/negotiate/bribe choices.
+
+        Returns:
+            True if bounty hunter encounter was triggered.
+        """
+        if not self.player:
+            return False
+
+        # Check bounty immunity
+        if self.player.game_day < self._bounty_immunity_until:
+            return False
+
+        system_id = self.player.current_system_id
+
+        has_signal_jammer = self.player.upgrade_manager.has_upgrade("signal_jammer")
+        has_false_transponder = self.player.upgrade_manager.has_upgrade("false_transponder")
+
+        from spacegame.models.smuggling import (
+            should_trigger_bounty_hunter,
+            get_bounty_hunter_tier,
+            build_bounty_hunter_encounter,
+        )
+
+        triggered = should_trigger_bounty_hunter(
+            criminal_heat=self.player.criminal_heat,
+            game_day=self.player.game_day,
+            system_id=system_id,
+            has_signal_jammer=has_signal_jammer,
+            has_false_transponder=has_false_transponder,
+        )
+
+        if not triggered:
+            return False
+
+        tier = get_bounty_hunter_tier(self.player.criminal_heat)
+        if tier is None:
+            return False
+
+        # Get persuasion level
+        persuasion_level = 0
+        if self.social_manager:
+            p_skill = self.social_manager.get_skill("persuasion")
+            if p_skill:
+                persuasion_level = p_skill.level
+
+        seed = hash(f"{self.player.game_day}_{system_id}_bounty") & 0xFFFFFFFF
+
+        encounter_def = build_bounty_hunter_encounter(
+            tier=tier,
+            criminal_heat=self.player.criminal_heat,
+            player_credits=self.player.credits,
+            persuasion_level=persuasion_level,
+            seed=seed,
+        )
+
+        from spacegame.models.encounter import EncounterRef
+
+        encounter_ref = EncounterRef(
+            enemy_template_ids=[],
+            encounter_seed=seed,
+            encounter_type="bounty_hunter",
+        )
+
+        self._ensure_encounter_view(encounter_def, encounter_ref)
+
+        def _do() -> None:
+            self.state_manager.change_state(GameState.ENCOUNTER)
+
+        self._start_transition(TransitionType.FADE, 0.4, _do)
+        logger.info(
+            f"Bounty hunter encounter triggered at {system_id} "
+            f"(heat={self.player.criminal_heat}, tier={tier.value})"
+        )
+        return True
+
+    def _check_customs_inspection(self) -> bool:
+        """Check for and trigger a customs inspection on arrival.
+
+        Evaluates the local faction's law enforcement rules against the
+        player's cargo, criminal heat, upgrades, and skills. If an inspection
+        triggers, builds a dynamic encounter and routes to ENCOUNTER state.
+
+        Returns:
+            True if inspection was triggered (caller should return early).
+        """
+        if not self.player or not self.data_loader:
+            return False
+
+        system_id = self.player.current_system_id
+        faction_id = self.player.get_faction_for_system(system_id)
+        if not faction_id:
+            return False
+
+        faction_law = self.data_loader.faction_laws.get(faction_id)
+        if not faction_law or faction_law.inspection_chance <= 0:
+            return False
+
+        # Determine cargo legality
+        cargo = dict(self.player.ship.current_cargo)
+        if not cargo:
+            return False  # Nothing to inspect
+
+        legality_map: dict[str, "Legality"] = {}
+        has_restricted = False
+        has_illegal = False
+        for commodity_id in cargo:
+            commodity = self.data_loader.commodities.get(commodity_id)
+            if commodity:
+                from spacegame.models.commodity import Legality
+
+                legality_map[commodity_id] = commodity.legality
+                if commodity.legality == Legality.RESTRICTED:
+                    has_restricted = True
+                elif commodity.legality == Legality.ILLEGAL:
+                    has_illegal = True
+            else:
+                legality_map[commodity_id] = Legality.LEGAL
+
+        # Check upgrade modifiers
+        has_hidden_compartment = self.player.upgrade_manager.has_upgrade("hidden_compartment")
+        has_signal_jammer = self.player.upgrade_manager.has_upgrade("signal_jammer")
+        has_false_transponder = self.player.upgrade_manager.has_upgrade("false_transponder")
+
+        # Get observation skill level
+        observation_level = 0
+        if self.social_manager:
+            obs_skill = self.social_manager.get_skill("observation")
+            if obs_skill:
+                observation_level = obs_skill.level
+
+        faction_reputation = self.player.get_reputation(faction_id)
+
+        from spacegame.models.smuggling import should_trigger_inspection
+
+        triggered = should_trigger_inspection(
+            faction_law=faction_law,
+            criminal_heat=self.player.criminal_heat,
+            has_restricted=has_restricted,
+            has_illegal=has_illegal,
+            has_hidden_compartment=has_hidden_compartment,
+            has_signal_jammer=has_signal_jammer,
+            has_false_transponder=has_false_transponder,
+            observation_level=observation_level,
+            faction_reputation=faction_reputation,
+            game_day=self.player.game_day,
+            system_id=system_id,
+        )
+
+        if not triggered:
+            return False
+
+        # Build price map for fine calculation
+        price_map: dict[str, int] = {}
+        for commodity_id in cargo:
+            commodity = self.data_loader.commodities.get(commodity_id)
+            if commodity:
+                price_map[commodity_id] = commodity.base_price
+
+        # Get social skill levels
+        persuasion_level = 0
+        intimidation_level = 0
+        if self.social_manager:
+            p_skill = self.social_manager.get_skill("persuasion")
+            if p_skill:
+                persuasion_level = p_skill.level
+            i_skill = self.social_manager.get_skill("intimidation")
+            if i_skill:
+                intimidation_level = i_skill.level
+
+        # Get faction display name
+        faction = self.data_loader.factions.get(faction_id)
+        faction_name = faction.name if faction else faction_id
+
+        from spacegame.models.smuggling import build_inspection_encounter
+
+        encounter_def = build_inspection_encounter(
+            faction_law=faction_law,
+            faction_name=faction_name,
+            cargo=cargo,
+            legality_map=legality_map,
+            price_map=price_map,
+            player_credits=self.player.credits,
+            persuasion_level=persuasion_level,
+            intimidation_level=intimidation_level,
+        )
+
+        from spacegame.models.encounter import EncounterRef
+
+        encounter_ref = EncounterRef(
+            enemy_template_ids=[],
+            encounter_seed=hash(f"{self.player.game_day}_{system_id}_customs") & 0xFFFFFFFF,
+            encounter_type="customs_inspection",
+        )
+
+        self._ensure_encounter_view(encounter_def, encounter_ref)
+
+        def _do() -> None:
+            self.state_manager.change_state(GameState.ENCOUNTER)
+
+        self._start_transition(TransitionType.FADE, 0.4, _do)
+        logger.info(f"Customs inspection triggered at {system_id}")
+        return True
+
+    def _check_ground_mission_trigger(self) -> bool:
+        """Check if an active campaign mission has a ground mission at the current system.
+
+        Queries MissionManager for ground mission triggers matching the
+        current system. If found, builds a GroundMissionConfig and launches
+        the briefing screen.
+
+        Returns:
+            True if a ground mission was triggered, False otherwise.
+        """
+        if not self.player or not self.mission_manager:
+            return False
+
+        trigger = self.mission_manager.get_ground_mission_trigger(
+            self.player.current_system_id,
+            self.player.dialogue_flags,
+        )
+        if not trigger:
+            return False
+
+        ground_mission_id, complete_flag = trigger
+
+        # Build config from campaign data
+        from spacegame.models.ground_mission import (
+            DifficultyTier,
+            GroundMissionConfig,
+            GroundMissionRewards,
+            MissionType,
+        )
+
+        # Look up the parent mission for metadata
+        from spacegame.models.mission import MissionStatus
+
+        parent_mission = None
+        for m in self.mission_manager.get_missions_by_status(
+            MissionStatus.ACTIVE
+        ):
+            if m.ground_mission_id == ground_mission_id:
+                parent_mission = m
+                break
+
+        name = parent_mission.name if parent_mission else ground_mission_id
+        description = (
+            parent_mission.description if parent_mission else "Campaign ground mission."
+        )
+
+        # Determine faction from system
+        system = self.data_loader.systems.get(self.player.current_system_id)
+        faction_id = getattr(system, "faction_id", "") if system else ""
+
+        config = GroundMissionConfig(
+            id=ground_mission_id,
+            name=name,
+            description=description,
+            mission_type=MissionType.INFILTRATION,
+            difficulty=DifficultyTier.MODERATE,
+            faction_id=faction_id,
+            objectives=[f"Complete {name}"],
+            intel_hints=[],
+            rewards=GroundMissionRewards(credits=0, xp=0),
+            campaign_mission_id=parent_mission.id if parent_mission else None,
+        )
+
+        self.start_ground_mission(config)
+        logger.info(
+            "Ground mission triggered: %s at %s",
+            ground_mission_id,
+            self.player.current_system_id,
+        )
+        return True
+
+    def _apply_encounter_result(self) -> None:
+        """Apply rewards from a completed encounter to player state."""
+        if not self.encounter_view or not self.player:
+            return
+
+        outcome = self.encounter_view.chosen_outcome
+        if not outcome:
+            return
+
+        for reward in outcome.rewards:
+            if reward.reward_type == "credits":
+                self.player.credits += reward.amount
+                logger.info(f"Encounter reward: +{reward.amount} credits")
+            elif reward.reward_type == "deduct_credits":
+                amount = reward.amount
+                if self.player.credits >= amount:
+                    self.player.credits -= amount
+                    logger.info(f"Encounter cost: -{amount} credits")
+                else:
+                    logger.info("Encounter: insufficient credits — waived")
+            elif reward.reward_type == "xp":
+                xp_msgs = self.player.progression.add_xp(reward.amount)
+                for msg in xp_msgs:
+                    self._mission_notifications.append(msg)
+                logger.info(f"Encounter reward: +{reward.amount} XP")
+            elif reward.reward_type == "set_flag":
+                if reward.target_id:
+                    self.player.dialogue_flags[reward.target_id] = True
+                    if self.dialogue_manager:
+                        self.dialogue_manager.set_flag(reward.target_id)
+                    logger.info(f"Encounter flag set: {reward.target_id}")
+            elif reward.reward_type == "add_criminal_heat":
+                self.player.add_criminal_heat(reward.amount)
+                self.player.times_caught_smuggling += 1
+                logger.info(f"Encounter: +{reward.amount} criminal heat")
+            elif reward.reward_type == "modify_reputation":
+                if reward.target_id:
+                    if self.politics_manager:
+                        self.politics_manager.apply_reputation_with_spillover(
+                            self.player, reward.target_id, reward.amount
+                        )
+                    else:
+                        self.player.modify_reputation(reward.target_id, reward.amount)
+                    logger.info(
+                        f"Encounter: {reward.amount} reputation with {reward.target_id}"
+                    )
+            elif reward.reward_type == "confiscate_cargo":
+                if reward.target_id:
+                    qty = self.player.ship.get_cargo_quantity(reward.target_id)
+                    remove_qty = min(qty, reward.amount)
+                    if remove_qty > 0:
+                        self.player.ship.remove_cargo(reward.target_id, remove_qty)
+                        logger.info(
+                            f"Encounter: confiscated {remove_qty} {reward.target_id}"
+                        )
+            elif reward.reward_type == "reduce_criminal_heat":
+                self.player.decay_criminal_heat(reward.amount)
+                logger.info(f"Encounter: -{reward.amount} criminal heat")
+            elif reward.reward_type == "bounty_immunity":
+                self._bounty_immunity_until = self.player.game_day + reward.amount
+                logger.info(
+                    f"Encounter: bounty immunity for {reward.amount} days"
+                )
+            elif reward.reward_type == "start_bounty_combat":
+                # Transition to combat with bounty hunter enemies
+                self._pending_bounty_combat_ids = (
+                    reward.target_id.split(",") if reward.target_id else []
+                )
+                logger.info("Encounter: starting bounty hunter combat")
+
+    def _get_crew_combat_moves(self) -> dict:
+        """Build crew_template_id -> CombatMove mapping from active crew."""
+        from spacegame.models.combat import CombatMove
+
+        moves: dict[str, CombatMove] = {}
+        if self.crew_roster:
+            for template, _state in self.crew_roster.get_recruited_members():
+                if template.combat_move:
+                    move = self.data_loader._parse_combat_move(template.combat_move)
+                    moves[template.id] = move
+        return moves
+
+    def _apply_combat_result(self) -> None:
+        """Apply combat outcome to persistent player state.
+
+        Syncs hull/shields, awards XP, generates and distributes loot,
+        handles bribe costs, negotiation outcomes, or applies defeat penalties.
+        """
+        if not self.combat_view or not self.player:
+            return
+
+        from spacegame.models.combat import CombatResult
+        from spacegame.views.combat_view import _roll_loot
+
+        state = self.combat_view.engine.get_state()
+        result = state.result
+
+        # Sync hull/shields back to player's ship
+        self.player.ship.current_hull = state.player.hull
+        self.player.ship.current_shields = state.player.shields
+
+        if result == CombatResult.VICTORY:
+            self.player.combats_won += 1
+            total_xp = sum(e.template.xp_reward for e in state.enemies)
+            xp_msgs = self.player.progression.add_xp(total_xp)
+            for msg in xp_msgs:
+                self._mission_notifications.append(msg)
+
+            # Distribute loot to player cargo
+            for enemy in state.enemies:
+                if not enemy.is_alive and enemy.template.loot_table:
+                    loot = _roll_loot(
+                        enemy.template.loot_table,
+                        seed=state.encounter.encounter_seed + hash(enemy.template.id),
+                    )
+                    for commodity_id, qty in loot.items():
+                        self.player.ship.add_cargo(commodity_id, qty)
+                        logger.info(f"Combat loot: +{qty} {commodity_id}")
+
+            logger.info(f"Combat victory: +{total_xp} XP")
+
+        elif result == CombatResult.DEFEAT:
+            safe_system = self.player.current_system_id
+            self.player.apply_combat_defeat(safe_system)
+            logger.info("Combat defeat: cargo lost, retreated")
+
+        elif result == CombatResult.FLED:
+            self.player.combats_fled += 1
+            logger.info("Combat: player fled")
+
+        elif result == CombatResult.NEGOTIATED:
+            self.player.combats_won += 1
+
+            # Enhanced negotiate: partial loot (50% of normal loot)
+            if state.negotiate_partial_loot:
+                for enemy in state.enemies:
+                    if enemy.template.loot_table:
+                        loot = _roll_loot(
+                            enemy.template.loot_table,
+                            seed=state.encounter.encounter_seed + hash(enemy.template.id),
+                        )
+                        for commodity_id, qty in loot.items():
+                            half_qty = max(1, qty // 2)
+                            self.player.ship.add_cargo(commodity_id, half_qty)
+                            logger.info(f"Negotiated partial loot: +{half_qty} {commodity_id}")
+
+            # Enhanced negotiate: rival faction rep from intimidation
+            if state.negotiate_rival_rep and self.politics_manager:
+                # Intimidation success earns +2 rep with the enemy's faction
+                enemy_faction = state.enemies[0].template.faction_id if state.enemies else None
+                if enemy_faction:
+                    self.politics_manager.apply_reputation_with_spillover(
+                        self.player, enemy_faction, 2
+                    )
+                    logger.info(
+                        f"Combat: intimidation success — +2 rep with {enemy_faction}"
+                    )
+                else:
+                    logger.info("Combat: intimidation success — no faction to reward")
+
+            logger.info("Combat: negotiated resolution")
+
+        elif result == CombatResult.BRIBED:
+            # Deduct bribe cost from player credits
+            bribe_cost = getattr(self.combat_view, "_bribe_cost", 0)
+            if bribe_cost > 0:
+                self.player.credits -= bribe_cost
+                logger.info(f"Combat: bribed enemies for {bribe_cost} CR")
+            else:
+                logger.info("Combat: bribed (no cost)")
+
+            # Bribing an enemy faction earns -1 rep (you're funding them)
+            if self.politics_manager:
+                enemy_faction = state.enemies[0].template.faction_id if state.enemies else None
+                if enemy_faction:
+                    self.politics_manager.apply_reputation_with_spillover(
+                        self.player, enemy_faction, -1
+                    )
+                    logger.info(f"Combat: bribe — -1 rep with {enemy_faction}")
+
+    # === Ground Mission Methods ===
+
+    def _ensure_ground_briefing_view(self, config: "GroundMissionConfig") -> None:
+        """Create and register the ground briefing view.
+
+        Args:
+            config: Ground mission configuration for briefing display.
+        """
+        from spacegame.views.ground_briefing_view import GroundBriefingView
+
+        skill_levels: dict[str, int] = {}
+        if self.social_manager:
+            for sid in ("observation", "persuasion", "intimidation"):
+                skill_levels[sid] = self.social_manager.get_skill_level(sid)
+        self.ground_briefing_view = GroundBriefingView(
+            self.ui_manager,
+            config,
+            self.crew_roster if self.crew_roster else self._make_empty_crew_roster(),
+            skill_levels,
+        )
+        self.state_manager.register_state(
+            GameState.GROUND_BRIEFING, self.ground_briefing_view
+        )
+
+    def _ensure_ground_result_view(self, result: "GroundMissionResult") -> None:
+        """Create and register the ground result view.
+
+        Args:
+            result: Ground mission result to display.
+        """
+        from spacegame.views.ground_result_view import GroundResultView
+
+        self.ground_result_view = GroundResultView(
+            self.ui_manager, result
+        )
+        self.state_manager.register_state(
+            GameState.GROUND_RESULT, self.ground_result_view
+        )
+
+    def get_ground_contracts(self) -> list:
+        """Get available ground contracts at the current system.
+
+        Generates contracts if none exist for this system/day combo,
+        then returns non-expired, non-completed contracts.
+
+        Returns:
+            List of available GroundContract instances.
+        """
+        if not self.player or not self.ground_contract_manager:
+            return []
+
+        system_id = self.player.current_system_id
+        game_day = self.player.game_day
+        faction_id = self.player.faction_assignments.get(system_id, "independent")
+        level = self.player.progression.level
+
+        # Check if we already have contracts for this system+day
+        available = self.ground_contract_manager.get_available(system_id, game_day)
+        if not available:
+            # Generate new contracts for this visit
+            self.ground_contract_manager.generate_contracts(
+                system_id, faction_id, game_day, level
+            )
+            available = self.ground_contract_manager.get_available(system_id, game_day)
+
+        return available
+
+    def accept_ground_contract(self, contract_id: str) -> None:
+        """Accept a ground contract and launch the mission.
+
+        Args:
+            contract_id: ID of the contract to accept.
+        """
+        if not self.ground_contract_manager:
+            return
+
+        for c in self.ground_contract_manager.active_contracts:
+            if c.id == contract_id and not c.completed:
+                self.start_ground_mission(c.config)
+                return
+
+    def start_ground_mission(self, config: "GroundMissionConfig") -> None:
+        """Launch a ground mission by opening the briefing screen.
+
+        Args:
+            config: Ground mission configuration.
+        """
+        self._ensure_ground_briefing_view(config)
+        self.state_manager.change_state(GameState.GROUND_BRIEFING)
+        logger.info("Starting ground mission: %s", config.name)
+
+    def _apply_ground_result(self, result: "GroundMissionResult") -> None:
+        """Apply ground mission outcome to persistent player state.
+
+        Awards credits, XP, crew XP on success. Applies consequence
+        curve penalties on failure. Extraction keeps loot only.
+
+        Args:
+            result: The completed mission result.
+        """
+        if not self.player:
+            return
+
+        from spacegame.models.ground_mission import (
+            MissionOutcome,
+            GHOST_RUN_BONUS_PERCENT,
+        )
+
+        outcome = result.outcome
+
+        if outcome == MissionOutcome.SUCCESS:
+            # Mission reward + loot
+            total = result.config.rewards.credits + result.loot_credits
+            # Ghost bonus
+            if result.is_ghost_run:
+                total += int(result.config.rewards.credits * GHOST_RUN_BONUS_PERCENT / 100)
+            self.player.credits += total
+
+            # XP
+            if result.config.rewards.xp > 0:
+                xp_msgs = self.player.progression.add_xp(result.config.rewards.xp)
+                for msg in xp_msgs:
+                    self._mission_notifications.append(msg)
+
+            # Crew XP — award to participating crew members
+            if result.crew_ids and result.config.rewards.crew_xp > 0 and self.crew_roster:
+                for crew_id in result.crew_ids:
+                    state = self.crew_roster._state.get(crew_id)
+                    if state is not None:
+                        state["xp"] = state.get("xp", 0) + result.config.rewards.crew_xp
+
+            # Reputation
+            for faction_id, rep in result.config.rewards.reputation.items():
+                if hasattr(self.player, "faction_reputation"):
+                    self.player.faction_reputation.modify(faction_id, rep)
+
+            # Complete associated contract (awards bonus credits)
+            if self.ground_contract_manager:
+                ok, msg = self.ground_contract_manager.complete_contract(result.config.id)
+                if ok:
+                    # Find the contract to get bonus amount
+                    for gc in self.ground_contract_manager.active_contracts:
+                        if gc.id == result.config.id:
+                            self.player.credits += gc.bonus_credits
+                            total += gc.bonus_credits
+                            break
+
+            logger.info(
+                "Ground mission success: +%d CR, +%d XP",
+                total,
+                result.config.rewards.xp,
+            )
+
+        elif outcome == MissionOutcome.EXTRACTED:
+            # Keep loot, no mission reward
+            self.player.credits += result.loot_credits
+            logger.info("Ground mission extracted: +%d CR loot", result.loot_credits)
+
+        elif outcome.is_failure:
+            # Apply consequence curve penalties
+            penalties = result.calculate_penalties()
+            credit_loss = int(self.player.credits * penalties["credit_loss_percent"] / 100)
+            self.player.credits -= credit_loss
+
+            # Partial loot
+            kept_loot = int(result.loot_credits * penalties["loot_kept_percent"] / 100)
+            self.player.credits += kept_loot
+
+            # XP penalty
+            if penalties["xp_penalty"] > 0:
+                self.player.progression.add_xp(-penalties["xp_penalty"])
+
+            logger.info(
+                "Ground mission %s: -%d CR penalty, +%d CR loot kept",
+                outcome.value,
+                credit_loss,
+                kept_loot,
+            )
+
+    def _build_ground_map(self, config: "GroundMissionConfig") -> "MapGenResult":
+        """Build a ground map, using campaign map if available.
+
+        Checks DataLoader for a hand-authored campaign map matching
+        the config ID. Falls back to procedural generation.
+
+        Args:
+            config: Ground mission configuration.
+
+        Returns:
+            MapGenResult ready for play.
+        """
+        # Check for campaign map
+        campaign_data = self.data_loader.campaign_ground_maps.get(config.id)
+        if campaign_data:
+            from spacegame.models.campaign_map import (
+                CampaignMapBuilder,
+                CampaignMapData,
+            )
+
+            parsed = CampaignMapData.from_dict(campaign_data)
+            return CampaignMapBuilder.build(parsed)
+
+        # Procedural fallback
+        from spacegame.models.ground_mapgen import MapGenConfig, GroundMapGenerator
+
+        gen_config = MapGenConfig(
+            mission_type=config.mission_type,
+            difficulty=config.difficulty,
+            seed=config.seed or hash(config.id),
+            faction_id=config.faction_id,
+        )
+        return GroundMapGenerator().generate(gen_config)
+
+    def _make_empty_crew_roster(self) -> "CrewRoster":
+        """Create an empty crew roster for ground briefing fallback."""
+        from spacegame.models.crew import CrewRoster
+
+        return CrewRoster(self.data_loader.crew_templates)
+
     def _ensure_shipyard_view(self) -> None:
         """Create or recreate shipyard view."""
         from spacegame.views.shipyard_view import ShipyardView
@@ -836,6 +2441,7 @@ class Game:
             self.player,
             self.data_loader.upgrades,
             self.player.upgrade_manager,
+            all_ship_types=self.data_loader.ship_types,
         )
         self.state_manager.register_state(GameState.SHIPYARD, self.shipyard_view)
 
@@ -847,6 +2453,7 @@ class Game:
         if not self.pause_menu_view:
             self.pause_menu_view = PauseMenuView(self.ui_manager)
             self.pause_menu_view.on_enter()
+        self.audio_manager.pause_music()
         logger.info("Game paused")
 
     def _close_pause_menu(self) -> None:
@@ -854,6 +2461,7 @@ class Game:
         self.paused = False
         if self.pause_menu_view:
             self.pause_menu_view.on_exit()
+        self.audio_manager.resume_music()
         logger.info("Game resumed")
 
     def _handle_pause_menu(self) -> None:
@@ -954,6 +2562,13 @@ class Game:
                     self.save_manager = SaveManager(new_save_dir)
                     logger.info(f"Save directory changed to: {new_save_dir}")
 
+                # Persist audio config
+                audio_cfg = self.settings_view.get_audio_config()
+                if audio_cfg:
+                    settings = self.save_manager.load_settings()
+                    settings["audio"] = audio_cfg.to_dict()
+                    self.save_manager.save_settings(settings)
+
             # Close dialog
             self.settings_view.on_exit()
             self.settings_view = None
@@ -980,6 +2595,29 @@ class Game:
         if self.crew_roster:
             self.player.crew_state = self.crew_roster.get_state()
 
+        # Sync social state to player before saving
+        self.player.social_state = self.social_manager.get_state()
+
+        # Sync attribute state to player before saving
+        if hasattr(self, "attribute_sheet"):
+            self.player.attribute_state = self.attribute_sheet.to_dict()
+
+        # Sync journal state to player before saving
+        if self.journal:
+            self.player.journal_state = self.journal.get_state()
+
+        # Sync ground contract state to player before saving
+        if self.ground_contract_manager:
+            self.player.ground_contract_state = self.ground_contract_manager.to_dict()
+
+        # Sync smuggling contract state to player before saving
+        if self.smuggling_contract_manager:
+            self.player.smuggling_contract_state = self.smuggling_contract_manager.to_dict()
+
+        # Sync political state to player before saving
+        if self.politics_manager:
+            self.player.political_state = self.politics_manager.to_dict()
+
         # Calculate total playtime
         current_playtime = time.time() - self.playtime_start
         total_playtime = self.total_playtime_seconds + int(current_playtime)
@@ -992,6 +2630,7 @@ class Game:
             playtime_seconds=total_playtime,
             event_log=self.event_log,
             tutorial_state=self.tutorial_manager.to_dict(),
+            investment_manager=self.investment_manager,
         )
 
         if success:
@@ -1045,8 +2684,9 @@ class Game:
                 self.player.faction_reputation = {fid: 0 for fid in faction_ids}
         self._apply_faction_assignments()
 
-        # Sync dialogue flags from player
+        # Sync dialogue flags and social state from player
         self.dialogue_manager.load_flags(self.player.dialogue_flags)
+        self.social_manager.load_state(self.player.social_state)
 
         # Restore mission manager
         from spacegame.models.mission import MissionManager
@@ -1055,7 +2695,7 @@ class Game:
         if self.player.mission_state:
             self.mission_manager.load_state(self.player.mission_state)
         else:
-            self.mission_manager.update_availability()
+            self.mission_manager.update_availability(self.player.dialogue_flags)
 
         # Restore crew roster
         from spacegame.models.crew import CrewRoster
@@ -1066,6 +2706,65 @@ class Game:
         self.player.ship.set_crew_roster(self.crew_roster)
         self._crew_last_trades = self.player.trades_completed
         self._crew_last_jumps = self.player.jumps_traveled
+
+        # Restore attribute system
+        from spacegame.models.attributes import AttributeSheet
+
+        self.attribute_sheet = AttributeSheet.from_dict(self.player.attribute_state)
+        self.social_manager.set_progression(self.player.progression)
+        self.social_manager.set_attribute_sheet(self.attribute_sheet)
+
+        # Restore journal system
+        from spacegame.models.journal import Journal
+
+        self.journal = Journal(auto_templates=self.data_loader.journal_entries)
+        if self.player.journal_state:
+            self.journal.load_state(self.player.journal_state)
+
+        # Restore ground contract system
+        from spacegame.models.ground_contracts import GroundContractManager
+
+        if self.player.ground_contract_state:
+            self.ground_contract_manager = GroundContractManager.from_dict(
+                self.player.ground_contract_state
+            )
+        else:
+            self.ground_contract_manager = GroundContractManager()
+
+        # Restore smuggling contract system
+        from spacegame.models.smuggling import SmugglingContractManager as _SCM
+
+        if self.player.smuggling_contract_state:
+            self.smuggling_contract_manager = _SCM.from_dict(
+                self.player.smuggling_contract_state
+            )
+        else:
+            self.smuggling_contract_manager = _SCM()
+
+        # Restore investment system
+        from spacegame.models.investment import InvestmentManager
+
+        investment_state = save_data.get("investment_state", None)
+        if investment_state:
+            self.investment_manager = InvestmentManager.from_dict(
+                investment_state, self.data_loader.investment_templates
+            )
+        else:
+            self.investment_manager = InvestmentManager(
+                templates=dict(self.data_loader.investment_templates)
+            )
+
+        # Restore political system
+        self._initialize_politics_manager(self.player.political_state or None)
+
+        # Track day for event generation
+        self._last_known_day = self.player.game_day
+
+        # Recreate event generator if needed
+        if not self.event_generator:
+            commodity_ids = [c.id for c in self.data_loader.get_all_commodities()]
+            system_ids = [s.id for s in self.data_loader.get_all_systems()]
+            self.event_generator = EventGenerator(commodity_ids, system_ids)
 
         # Recreate gameplay views with loaded player
         self._create_gameplay_views()
@@ -1119,6 +2818,68 @@ class Game:
             if not self._tutorial_overlay:
                 self._tutorial_overlay = TutorialOverlay(self.tutorial_manager)
             self._tutorial_overlay.show()
+
+    def _check_day_advance(self) -> None:
+        """Check if game day advanced and trigger market event generation.
+
+        Compares current game day against _last_known_day. When a day
+        advance is detected, tries to generate a market event and cleans
+        up expired events from active_events.
+        """
+        if not self.player:
+            return
+        current_day = self.player.game_day
+        if current_day == self._last_known_day:
+            return
+
+        self._last_known_day = current_day
+
+        # Try to generate a new market event
+        self.try_generate_market_event()
+
+        # Clean up expired events
+        expired = [
+            sid for sid, ev in self.active_events.items()
+            if not ev.is_active(current_day)
+        ]
+        for sid in expired:
+            del self.active_events[sid]
+
+        # Clean up expired ground contracts
+        if self.ground_contract_manager:
+            self.ground_contract_manager.advance_day(current_day)
+
+        # Decay criminal heat (1 point per day)
+        self.player.decay_criminal_heat(1)
+
+        # Check expired smuggling contracts
+        if self.smuggling_contract_manager:
+            expired = self.smuggling_contract_manager.get_expired_contracts(current_day)
+            for contract in expired:
+                self.player.deduct_credits(contract.penalty_on_failure)
+                self._mission_notifications.append(
+                    f"Smuggling contract expired: {contract.client_name} — "
+                    f"Penalty: {contract.penalty_on_failure} CR"
+                )
+
+        # Advance political events — relationship drift and event generation
+        if self.politics_manager:
+            new_event = self.politics_manager.try_generate_event(current_day)
+            if new_event:
+                self._mission_notifications.append(
+                    f"Political: {new_event.description}"
+                )
+            self.politics_manager.advance_day(current_day)
+
+        # Advance investments — accumulate returns, apply disaster/pirate effects
+        if self.investment_manager:
+            systems = self.data_loader.get_all_systems()
+            danger_levels = {s.id: s.danger_level for s in systems}
+            notifications = self.investment_manager.advance_day(
+                current_day, self.active_events, danger_levels
+            )
+            for msg in notifications:
+                self._mission_notifications.append(msg)
 
     def check_achievements(self) -> None:
         """Check for newly unlocked achievements and queue notifications."""
@@ -1187,18 +2948,46 @@ class Game:
 
                     # Trade permit
                     if reward.reward_type == "trade_permit" and reward.target_id:
-                        if reward.target_id == "current_system":
-                            faction_id = self.player.get_faction_for_system(
-                                self.player.current_system_id
+                        dl = get_data_loader()
+                        if reward.target_id == "all":
+                            # Universal permit — grant for all factions
+                            for fid in dl.factions:
+                                self.player.grant_trade_permit(fid)
+                            self._mission_notifications.append(
+                                "Trade Permit Acquired: Universal Bill of Landing"
                             )
                         else:
                             faction_id = reward.target_id
-                        if faction_id:
                             self.player.grant_trade_permit(faction_id)
-                            dl = get_data_loader()
                             faction = dl.get_faction(faction_id)
                             fname = faction.name if faction else faction_id
-                            self._mission_notifications.append(f"Trade Permit Acquired: {fname}")
+                            self._mission_notifications.append(
+                                f"Trade Permit Acquired: {fname}"
+                            )
+
+                    # Reputation reward (routed through centralized spillover)
+                    if reward.reward_type == "reputation" and reward.target_id:
+                        if self.politics_manager:
+                            changes = self.politics_manager.apply_reputation_with_spillover(
+                                self.player, reward.target_id, reward.amount
+                            )
+                            dl = get_data_loader()
+                            for fid, amt in changes:
+                                faction = dl.get_faction(fid)
+                                fname = faction.name if faction else fid
+                                sign = "+" if amt >= 0 else ""
+                                self._mission_notifications.append(
+                                    f"{sign}{amt} Rep: {fname}"
+                                )
+                        else:
+                            self.player.modify_reputation(reward.target_id, reward.amount)
+                            dl = get_data_loader()
+                            faction = dl.get_faction(reward.target_id)
+                            fname = faction.name if faction else reward.target_id
+                            sign = "+" if reward.amount >= 0 else ""
+                            self._mission_notifications.append(
+                                f"{sign}{reward.amount} Rep: {fname}"
+                            )
 
             # Grant crew XP and loyalty on mission completion
             if self.crew_roster:
@@ -1207,18 +2996,100 @@ class Game:
                 for msg in levelup_msgs:
                     self._mission_notifications.append(msg)
 
+        # Check for journal auto-entries triggered by mission rewards
+        if completed_ids:
+            self._check_journal_triggers()
+
         # Update availability (new missions may unlock from completed prereqs)
         if completed_ids:
-            newly_available = self.mission_manager.update_availability()
+            newly_available = self.mission_manager.update_availability(
+                self.player.dialogue_flags
+            )
             for mid in newly_available:
                 mission = self.mission_manager.get_mission(mid)
                 if mission:
                     self._mission_notifications.append(f"New Mission Available: {mission.name}")
-            # Update galaxy map markers
+            # Update galaxy map markers and forced encounters
             if self.galaxy_map_view:
                 self.galaxy_map_view.mission_target_systems = (
                     self.mission_manager.get_active_target_systems()
                 )
+                self.galaxy_map_view.forced_encounters = (
+                    self.mission_manager.get_active_forced_encounters()
+                )
+
+    def _check_journal_triggers(self) -> None:
+        """Scan dialogue flags for new journal auto-entries to trigger."""
+        if not self.journal or not self.player:
+            return
+        for flag, value in self.player.dialogue_flags.items():
+            if value:
+                entry = self.journal.trigger_auto_entry(
+                    flag, self.player.game_day, self.player.current_system_id
+                )
+                if entry:
+                    self._mission_notifications.append("Journal updated")
+
+    def _check_auto_triggers(self) -> None:
+        """Check all NPCs for auto-trigger dialogues at current system."""
+        if not self.player:
+            return
+        for npc in self.data_loader.npcs.values():
+            if not npc.auto_trigger_gate_flag:
+                continue
+            if self.player.dialogue_flags.get(npc.auto_trigger_gate_flag, False):
+                continue
+            if self.player.current_system_id != npc.home_system_id:
+                continue
+            if not all(
+                self.player.dialogue_flags.get(f, False)
+                for f in npc.auto_trigger_prerequisites
+            ):
+                continue
+            # Pre-set gate flag to prevent re-fire
+            self.player.dialogue_flags[npc.auto_trigger_gate_flag] = True
+            self.dialogue_manager.set_flag(npc.auto_trigger_gate_flag)
+            self.start_dialogue(npc.id, return_state=GameState.GALAXY_MAP)
+            return  # One trigger per frame
+
+    def check_attribute_milestones(self) -> None:
+        """Check and award attribute milestones and level-up points."""
+        if not self.player or not hasattr(self, "attribute_sheet"):
+            return
+
+        # Level-up attribute points: award at levels 3, 5, 7, 9
+        level = self.player.progression.level
+        level_milestones = {3: "level_3", 5: "level_5", 7: "level_7", 9: "level_9"}
+        for lvl, milestone_id in level_milestones.items():
+            if level >= lvl and not self.attribute_sheet.has_milestone(milestone_id):
+                self.attribute_sheet._awarded_milestones.add(milestone_id)
+                self.attribute_sheet.add_points(1)
+                self._mission_notifications.append(
+                    f"Level {lvl} reached — +1 attribute point!"
+                )
+
+        # Gameplay milestones
+        if self.player.trades_completed >= 1:
+            success, msg = self.attribute_sheet.award_milestone("first_trade")
+            if success:
+                self._mission_notifications.append(msg)
+
+        if len(self.player.systems_visited) >= 5:
+            success, msg = self.attribute_sheet.award_milestone("explorer_5")
+            if success:
+                self._mission_notifications.append(msg)
+
+        if self.player.ore_mined >= 50:
+            success, msg = self.attribute_sheet.award_milestone("miner_50")
+            if success:
+                self._mission_notifications.append(msg)
+
+        if self.mission_manager:
+            completed = self.mission_manager.get_completed_ids()
+            if completed:
+                success, msg = self.attribute_sheet.award_milestone("first_mission")
+                if success:
+                    self._mission_notifications.append(msg)
 
     def _handle_event_notifications(self, dt: float) -> None:
         """Handle pending event notifications and banner timer."""
@@ -1251,7 +3122,7 @@ class Game:
             return
 
         if self._banner_font is None:
-            self._banner_font = pygame.font.Font(None, 24)
+            self._banner_font = FontCache.get(24)
 
         # Fade out in last second
         alpha = 255
@@ -1284,12 +3155,13 @@ class Game:
             if self._achievement_notifications:
                 self._current_achievement_msg = self._achievement_notifications.pop(0)
                 self._achievement_notify_timer = 4.0
+                self.audio_manager.play_sfx("achievement")
 
         if self._achievement_notify_timer <= 0:
             return
 
         if self._banner_font is None:
-            self._banner_font = pygame.font.Font(None, 24)
+            self._banner_font = FontCache.get(24)
 
         msg = getattr(self, "_current_achievement_msg", "")
         if not msg:
@@ -1328,7 +3200,7 @@ class Game:
             return
 
         if self._banner_font is None:
-            self._banner_font = pygame.font.Font(None, 24)
+            self._banner_font = FontCache.get(24)
 
         msg = self._current_mission_msg
         if not msg:
@@ -1422,6 +3294,7 @@ class Game:
             # Handle state transitions
             self._handle_state_transitions()
             self._check_tutorial_triggers()
+            self._update_audio_for_state()
 
             # Handle pause menu and dialogs
             if self.paused:
@@ -1440,9 +3313,11 @@ class Game:
             # Update game state (only if not paused)
             if not self.paused:
                 self.state_manager.update(dt)
+                self._check_day_advance()
                 self.check_achievements()
                 self.check_missions()
                 self.check_crew_xp()
+                self.check_attribute_milestones()
 
             # Update achievement notification timer
             if self._achievement_notify_timer > 0:
@@ -1455,6 +3330,9 @@ class Game:
             # Update visual effects
             self.transition_manager.update(dt)
             self.screen_shake.update(dt)
+
+            # Update audio
+            self.audio_manager.update(dt)
 
             # Render to intermediate surface for screen shake
             render_surface = self.screen
@@ -1516,6 +3394,7 @@ class Game:
     def quit(self) -> None:
         """Clean shutdown of the game."""
         logger.info("Shutting down game...")
+        self.audio_manager.shutdown()
         pygame.quit()
         sys.exit()
 

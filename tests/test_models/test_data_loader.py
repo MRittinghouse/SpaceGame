@@ -24,8 +24,8 @@ def test_load_systems() -> None:
     loader = DataLoader()
     systems = loader.load_systems()
 
-    # Should have 10 systems (5 original + 5 expansion)
-    assert len(systems) == 10, "Should load exactly 10 systems"
+    # Should have 11 systems (5 original + 5 expansion + 1 fulcrum)
+    assert len(systems) == 11, "Should load exactly 11 systems"
 
     # Check Nexus Prime system exists and has correct properties
     assert "nexus_prime" in systems, "Nexus Prime system should exist"
@@ -44,8 +44,8 @@ def test_load_commodities() -> None:
     loader = DataLoader()
     commodities = loader.load_commodities()
 
-    # Should have 19 commodities (12 original + 7 new ore/salvage types)
-    assert len(commodities) == 19, "Should load exactly 19 commodities"
+    # Should have 27 commodities (12 original + 7 ore/salvage + 2 refined + 5 contraband + 1 quest)
+    assert len(commodities) == 27, "Should load exactly 27 commodities"
 
     # Check a basic commodity
     assert "food" in commodities
@@ -62,8 +62,8 @@ def test_load_ship_types() -> None:
     loader = DataLoader()
     ship_types = loader.load_ship_types()
 
-    # Should have 6 ship types
-    assert len(ship_types) == 6, "Should load exactly 6 ship types"
+    # Should have 9 ship types
+    assert len(ship_types) == 9, "Should load exactly 9 ship types"
 
     # Check starter ship
     assert "shuttle" in ship_types

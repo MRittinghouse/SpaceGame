@@ -241,3 +241,120 @@ class TestPlayerReputation:
         success, msg = player.modify_reputation("nonexistent", 5)
         assert success
         assert player.faction_reputation["nonexistent"] == 5
+
+
+# ============================================================================
+# Total Profit Tracking Tests
+# ============================================================================
+
+
+class TestTotalProfitTracking:
+    """Tests for total_profit tracking actual profit, not revenue."""
+
+    def test_total_profit_tracks_actual_profit(self) -> None:
+        """total_profit should track price_per_unit - avg_cost, not revenue."""
+        loader = DataLoader()
+        loader.load_all()
+        ship_type = loader.get_ship_type("shuttle")
+        ship = Ship(ship_type=ship_type, current_fuel=ship_type.fuel_capacity)
+        volumes = {c.id: c.volume_per_unit for c in loader.get_all_commodities()}
+
+        player = Player("Test", 5000, "nexus_prime", ship)
+        # Buy 10 food at 50 CR (avg cost = 50)
+        player.buy_commodity("food", 10, 50, volumes)
+        # Sell 10 food at 80 CR (profit = (80-50)*10 = 300)
+        player.sell_commodity("food", 10, 80)
+
+        assert player.total_profit == 300, f"Expected 300, got {player.total_profit}"
+
+    def test_total_profit_negative_trade(self) -> None:
+        """Selling below purchase price should decrease total_profit."""
+        loader = DataLoader()
+        loader.load_all()
+        ship_type = loader.get_ship_type("shuttle")
+        ship = Ship(ship_type=ship_type, current_fuel=ship_type.fuel_capacity)
+        volumes = {c.id: c.volume_per_unit for c in loader.get_all_commodities()}
+
+        player = Player("Test", 5000, "nexus_prime", ship)
+        player.buy_commodity("food", 10, 80, volumes)
+        player.sell_commodity("food", 10, 50)
+
+        assert player.total_profit == -300, f"Expected -300, got {player.total_profit}"
+
+    def test_total_profit_accumulates(self) -> None:
+        """Multiple trades should accumulate correctly."""
+        loader = DataLoader()
+        loader.load_all()
+        ship_type = loader.get_ship_type("shuttle")
+        ship = Ship(ship_type=ship_type, current_fuel=ship_type.fuel_capacity)
+        volumes = {c.id: c.volume_per_unit for c in loader.get_all_commodities()}
+
+        player = Player("Test", 10000, "nexus_prime", ship)
+        # Trade 1: buy at 50, sell at 80 = +300
+        player.buy_commodity("food", 10, 50, volumes)
+        player.sell_commodity("food", 10, 80)
+        # Trade 2: buy at 100, sell at 90 = -100
+        player.buy_commodity("food", 10, 100, volumes)
+        player.sell_commodity("food", 10, 90)
+
+        assert player.total_profit == 200, f"Expected 200, got {player.total_profit}"
+
+
+class TestPlayerRepairAtStation:
+    """Tests for hull repair at station service."""
+
+    def _make_player(self, credits: int = 5000) -> Player:
+        loader = DataLoader()
+        loader.load_all()
+        ship_type = loader.get_ship_type("shuttle")
+        ship = Ship(ship_type=ship_type, current_fuel=ship_type.fuel_capacity)
+        # Set hull to half max
+        ship.current_hull = ship_type.combat_hull
+        return Player("Test", credits, "nexus_prime", ship)
+
+    def test_repair_at_station_success(self) -> None:
+        player = self._make_player(credits=5000)
+        player.ship.current_hull = 30  # max is 60 for shuttle
+        success, msg = player.repair_at_station(cost_per_hp=10)
+        assert success
+        assert player.ship.current_hull == player.ship.ship_type.combat_hull
+        # Cost: (60 - 30) * 10 = 300
+        assert player.credits == 4700
+
+    def test_repair_at_station_hull_already_full(self) -> None:
+        player = self._make_player()
+        player.ship.current_hull = player.ship.ship_type.combat_hull
+        success, msg = player.repair_at_station(cost_per_hp=10)
+        assert not success
+        assert "full" in msg.lower() or "no" in msg.lower()
+
+    def test_repair_at_station_insufficient_credits(self) -> None:
+        player = self._make_player(credits=100)
+        player.ship.current_hull = 10  # needs (60-10)*10 = 500 CR
+        success, msg = player.repair_at_station(cost_per_hp=10)
+        assert not success
+        assert "credits" in msg.lower() or "afford" in msg.lower()
+
+    def test_repair_at_station_deducts_exact_cost(self) -> None:
+        player = self._make_player(credits=1000)
+        player.ship.current_hull = 55  # 5 HP to repair
+        success, msg = player.repair_at_station(cost_per_hp=12)
+        assert success
+        # Cost: (60 - 55) * 12 = 60
+        assert player.credits == 940
+
+    def test_repair_at_station_zero_cost_per_hp(self) -> None:
+        """Free repair should still work."""
+        player = self._make_player(credits=0)
+        player.ship.current_hull = 30
+        success, msg = player.repair_at_station(cost_per_hp=0)
+        assert success
+        assert player.ship.current_hull == player.ship.ship_type.combat_hull
+        assert player.credits == 0
+
+    def test_repair_at_station_returns_amount_repaired_in_message(self) -> None:
+        player = self._make_player(credits=5000)
+        player.ship.current_hull = 40  # 20 HP to repair
+        success, msg = player.repair_at_station(cost_per_hp=10)
+        assert success
+        assert "20" in msg  # Should mention amount repaired

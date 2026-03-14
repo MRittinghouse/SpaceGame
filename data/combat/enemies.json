@@ -1,0 +1,1295 @@
+{
+  "enemy_templates": [
+    {
+      "id": "pirate_scout",
+      "name": "Pirate Scout",
+      "description": "A fast, lightly armed scout vessel. Prefers to flee when outmatched.",
+      "behavior": "cowardly",
+      "hull": 50,
+      "shields": 15,
+      "energy": 8,
+      "energy_regen": 3,
+      "speed": 14,
+      "evasion": 30,
+      "accuracy": 60,
+      "negotiate_difficulty": 2,
+      "flee_threshold": 0.4,
+      "xp_reward": 15,
+      "faction_id": "",
+      "danger_tier": "low",
+      "bribe_cost": 50,
+      "moves": [
+        {
+          "id": "scout_blaster",
+          "name": "Light Blaster",
+          "description": "A quick, low-power blaster shot.",
+          "effects": [{"type": "damage", "value": 8.0}],
+          "energy_cost": 2,
+          "accuracy_modifier": 5
+        }
+      ],
+      "loot_table": [
+        {"commodity_id": "metals", "min_qty": 1, "max_qty": 3, "chance": 0.6},
+        {"commodity_id": "electronics", "min_qty": 1, "max_qty": 2, "chance": 0.3}
+      ]
+    },
+    {
+      "id": "pirate_raider",
+      "name": "Pirate Raider",
+      "description": "A well-armed raider that attacks aggressively and without mercy.",
+      "behavior": "aggressive",
+      "hull": 90,
+      "shields": 30,
+      "energy": 10,
+      "energy_regen": 3,
+      "speed": 8,
+      "evasion": 15,
+      "accuracy": 70,
+      "negotiate_difficulty": 3,
+      "flee_threshold": 0.2,
+      "xp_reward": 25,
+      "faction_id": "",
+      "danger_tier": "moderate",
+      "bribe_cost": 150,
+      "moves": [
+        {
+          "id": "raider_cannon",
+          "name": "Raider Cannon",
+          "description": "A heavy-hitting cannon favored by pirates.",
+          "effects": [{"type": "damage", "value": 15.0}],
+          "energy_cost": 3,
+          "accuracy_modifier": 0
+        },
+        {
+          "id": "raider_missile",
+          "name": "Concussion Missile",
+          "description": "An explosive missile with area damage potential.",
+          "effects": [{"type": "damage", "value": 25.0}],
+          "energy_cost": 5,
+          "cooldown": 2,
+          "accuracy_modifier": -10
+        }
+      ],
+      "loot_table": [
+        {"commodity_id": "metals", "min_qty": 2, "max_qty": 5, "chance": 0.8},
+        {"commodity_id": "weapons", "min_qty": 1, "max_qty": 2, "chance": 0.4},
+        {"commodity_id": "electronics", "min_qty": 1, "max_qty": 3, "chance": 0.5}
+      ]
+    },
+    {
+      "id": "pirate_heavy",
+      "name": "Pirate Heavy",
+      "description": "A heavily armored pirate vessel that fights defensively, shielding allies.",
+      "behavior": "defensive",
+      "hull": 180,
+      "shields": 50,
+      "energy": 12,
+      "energy_regen": 4,
+      "speed": 4,
+      "evasion": 5,
+      "accuracy": 65,
+      "negotiate_difficulty": 4,
+      "flee_threshold": 0.15,
+      "xp_reward": 40,
+      "faction_id": "",
+      "danger_tier": "dangerous",
+      "bribe_cost": 400,
+      "moves": [
+        {
+          "id": "heavy_turret",
+          "name": "Twin Turret",
+          "description": "Dual turret fire.",
+          "effects": [{"type": "damage", "value": 20.0}],
+          "energy_cost": 4,
+          "accuracy_modifier": -5
+        },
+        {
+          "id": "heavy_shield_boost",
+          "name": "Shield Boost",
+          "description": "Restores shields and reduces incoming damage.",
+          "effects": [
+            {"type": "shield_restore", "value": 25.0, "target": "self"},
+            {"type": "damage_reduction", "value": 0.15, "duration": 2, "target": "self"}
+          ],
+          "energy_cost": 4,
+          "cooldown": 2
+        }
+      ],
+      "loot_table": [
+        {"commodity_id": "metals", "min_qty": 3, "max_qty": 8, "chance": 0.9},
+        {"commodity_id": "weapons", "min_qty": 1, "max_qty": 3, "chance": 0.6},
+        {"commodity_id": "luxury_goods", "min_qty": 1, "max_qty": 2, "chance": 0.3}
+      ]
+    },
+    {
+      "id": "smuggler",
+      "name": "Smuggler",
+      "description": "A nimble smuggler vessel. Will flee rather than fight if given the chance.",
+      "behavior": "cowardly",
+      "hull": 60,
+      "shields": 20,
+      "energy": 10,
+      "energy_regen": 3,
+      "speed": 12,
+      "evasion": 25,
+      "accuracy": 65,
+      "negotiate_difficulty": 2,
+      "flee_threshold": 0.5,
+      "xp_reward": 20,
+      "faction_id": "",
+      "danger_tier": "low",
+      "bribe_cost": 100,
+      "moves": [
+        {
+          "id": "smuggler_blaster",
+          "name": "Concealed Blaster",
+          "description": "A hidden weapon for emergencies.",
+          "effects": [{"type": "damage", "value": 12.0}],
+          "energy_cost": 2,
+          "accuracy_modifier": 5
+        },
+        {
+          "id": "smuggler_chaff",
+          "name": "Chaff Burst",
+          "description": "Releases chaff to improve evasion.",
+          "effects": [
+            {"type": "evasion_mod", "value": 20.0, "duration": 2, "target": "self"}
+          ],
+          "energy_cost": 3,
+          "cooldown": 3
+        }
+      ],
+      "loot_table": [
+        {"commodity_id": "luxury_goods", "min_qty": 2, "max_qty": 5, "chance": 0.7},
+        {"commodity_id": "spice", "min_qty": 1, "max_qty": 3, "chance": 0.5}
+      ]
+    },
+    {
+      "id": "patrol_vessel",
+      "name": "Patrol Vessel",
+      "description": "A well-maintained patrol ship. Fights defensively and hard to negotiate with.",
+      "behavior": "defensive",
+      "hull": 120,
+      "shields": 40,
+      "energy": 12,
+      "energy_regen": 4,
+      "speed": 7,
+      "evasion": 12,
+      "accuracy": 72,
+      "negotiate_difficulty": 4,
+      "flee_threshold": 0.2,
+      "xp_reward": 35,
+      "faction_id": "",
+      "danger_tier": "moderate",
+      "bribe_cost": 250,
+      "moves": [
+        {
+          "id": "patrol_laser",
+          "name": "Military Laser",
+          "description": "Standard-issue military laser.",
+          "effects": [{"type": "damage", "value": 16.0}],
+          "energy_cost": 3,
+          "accuracy_modifier": 5
+        },
+        {
+          "id": "patrol_shield_regen",
+          "name": "Shield Regenerator",
+          "description": "Restores shields.",
+          "effects": [
+            {"type": "shield_restore", "value": 20.0, "target": "self"}
+          ],
+          "energy_cost": 3,
+          "cooldown": 2
+        }
+      ],
+      "loot_table": [
+        {"commodity_id": "electronics", "min_qty": 2, "max_qty": 4, "chance": 0.7},
+        {"commodity_id": "metals", "min_qty": 2, "max_qty": 5, "chance": 0.6}
+      ]
+    },
+    {
+      "id": "guild_enforcer",
+      "name": "Guild Enforcer",
+      "description": "A Commerce Guild patrol ship enforcing trade regulations. Well-shielded and methodical.",
+      "behavior": "defensive",
+      "hull": 100,
+      "shields": 35,
+      "energy": 10,
+      "energy_regen": 3,
+      "speed": 7,
+      "evasion": 10,
+      "accuracy": 68,
+      "negotiate_difficulty": 4,
+      "flee_threshold": 0.25,
+      "xp_reward": 25,
+      "faction_id": "commerce_guild",
+      "danger_tier": "moderate",
+      "bribe_cost": 200,
+      "moves": [
+        {
+          "id": "enforcer_laser",
+          "name": "Regulation Laser",
+          "description": "Standard-issue Guild enforcement weapon.",
+          "effects": [{"type": "damage", "value": 14.0}],
+          "energy_cost": 3,
+          "accuracy_modifier": 5
+        },
+        {
+          "id": "enforcer_shield_boost",
+          "name": "Trade Shield",
+          "description": "Reinforced shields issued to Guild enforcement vessels.",
+          "effects": [{"type": "shield_restore", "value": 20.0, "target": "self"}],
+          "energy_cost": 3,
+          "cooldown": 2
+        }
+      ],
+      "loot_table": [
+        {"commodity_id": "electronics", "min_qty": 2, "max_qty": 4, "chance": 0.7},
+        {"commodity_id": "manufactured_goods", "min_qty": 1, "max_qty": 3, "chance": 0.5}
+      ]
+    },
+    {
+      "id": "guild_dreadnought",
+      "name": "Guild Dreadnought",
+      "description": "A Commerce Guild capital-class enforcer. Heavily armed and drains enemy systems.",
+      "behavior": "aggressive",
+      "hull": 200,
+      "shields": 60,
+      "energy": 14,
+      "energy_regen": 4,
+      "speed": 4,
+      "evasion": 5,
+      "accuracy": 72,
+      "negotiate_difficulty": 4,
+      "flee_threshold": 0.1,
+      "xp_reward": 50,
+      "faction_id": "commerce_guild",
+      "danger_tier": "dangerous",
+      "bribe_cost": 500,
+      "moves": [
+        {
+          "id": "dreadnought_battery",
+          "name": "Trade Battery",
+          "description": "A devastating broadside from Guild-issue cannons.",
+          "effects": [{"type": "damage", "value": 22.0}],
+          "energy_cost": 4,
+          "accuracy_modifier": 0
+        },
+        {
+          "id": "dreadnought_drain",
+          "name": "System Disruptor",
+          "description": "Drains enemy energy reserves while dealing light damage.",
+          "effects": [
+            {"type": "damage", "value": 8.0},
+            {"type": "energy_drain", "value": 4.0}
+          ],
+          "energy_cost": 3,
+          "cooldown": 2,
+          "accuracy_modifier": 5
+        }
+      ],
+      "loot_table": [
+        {"commodity_id": "electronics", "min_qty": 3, "max_qty": 6, "chance": 0.8},
+        {"commodity_id": "rare_metals", "min_qty": 1, "max_qty": 3, "chance": 0.5},
+        {"commodity_id": "luxury_goods", "min_qty": 1, "max_qty": 2, "chance": 0.3}
+      ]
+    },
+    {
+      "id": "union_brawler",
+      "name": "Union Brawler",
+      "description": "A rugged Miners' Union combat vessel. Hits hard with improvised mining weapons.",
+      "behavior": "aggressive",
+      "hull": 110,
+      "shields": 20,
+      "energy": 10,
+      "energy_regen": 3,
+      "speed": 6,
+      "evasion": 8,
+      "accuracy": 65,
+      "negotiate_difficulty": 3,
+      "flee_threshold": 0.2,
+      "xp_reward": 25,
+      "faction_id": "miners_union",
+      "danger_tier": "moderate",
+      "bribe_cost": 175,
+      "moves": [
+        {
+          "id": "brawler_drill",
+          "name": "Mining Drill Ram",
+          "description": "A repurposed mining drill used as a close-range weapon.",
+          "effects": [{"type": "damage", "value": 18.0}],
+          "energy_cost": 3,
+          "accuracy_modifier": -5
+        },
+        {
+          "id": "brawler_armor",
+          "name": "Ore Plating",
+          "description": "Reinforces hull with compressed ore plating.",
+          "effects": [{"type": "damage_reduction", "value": 0.20, "duration": 2, "target": "self"}],
+          "energy_cost": 2,
+          "cooldown": 3
+        }
+      ],
+      "loot_table": [
+        {"commodity_id": "iron_ore", "min_qty": 3, "max_qty": 6, "chance": 0.8},
+        {"commodity_id": "common_metals", "min_qty": 2, "max_qty": 4, "chance": 0.6},
+        {"commodity_id": "raw_ore", "min_qty": 1, "max_qty": 3, "chance": 0.4}
+      ]
+    },
+    {
+      "id": "union_crusher",
+      "name": "Union Crusher",
+      "description": "A massive Miners' Union warship built from salvaged mining rigs. Deals devastating damage.",
+      "behavior": "aggressive",
+      "hull": 220,
+      "shields": 30,
+      "energy": 12,
+      "energy_regen": 4,
+      "speed": 3,
+      "evasion": 3,
+      "accuracy": 62,
+      "negotiate_difficulty": 4,
+      "flee_threshold": 0.1,
+      "xp_reward": 50,
+      "faction_id": "miners_union",
+      "danger_tier": "dangerous",
+      "bribe_cost": 450,
+      "moves": [
+        {
+          "id": "crusher_slam",
+          "name": "Asteroid Hammer",
+          "description": "A massive kinetic strike from a converted mining arm.",
+          "effects": [{"type": "damage", "value": 30.0}],
+          "energy_cost": 5,
+          "accuracy_modifier": -10
+        },
+        {
+          "id": "crusher_repair",
+          "name": "Field Repairs",
+          "description": "Quick hull patching from spare mining materials.",
+          "effects": [{"type": "hull_restore", "value": 20.0, "target": "self"}],
+          "energy_cost": 3,
+          "cooldown": 3
+        }
+      ],
+      "loot_table": [
+        {"commodity_id": "iron_ore", "min_qty": 4, "max_qty": 8, "chance": 0.9},
+        {"commodity_id": "rare_ore", "min_qty": 1, "max_qty": 3, "chance": 0.5},
+        {"commodity_id": "scrap_metal", "min_qty": 2, "max_qty": 4, "chance": 0.6}
+      ]
+    },
+    {
+      "id": "science_probe",
+      "name": "Science Probe",
+      "description": "A Science Collective autonomous probe. Drains shields and evades with advanced technology.",
+      "behavior": "evasive",
+      "hull": 70,
+      "shields": 50,
+      "energy": 12,
+      "energy_regen": 4,
+      "speed": 12,
+      "evasion": 28,
+      "accuracy": 75,
+      "negotiate_difficulty": 2,
+      "flee_threshold": 0.35,
+      "xp_reward": 25,
+      "faction_id": "science_collective",
+      "danger_tier": "moderate",
+      "bribe_cost": 150,
+      "moves": [
+        {
+          "id": "probe_beam",
+          "name": "Analysis Beam",
+          "description": "A precise energy beam that disrupts shields.",
+          "effects": [
+            {"type": "damage", "value": 10.0},
+            {"type": "shield_drain", "value": 12.0}
+          ],
+          "energy_cost": 3,
+          "accuracy_modifier": 10
+        },
+        {
+          "id": "probe_evasion",
+          "name": "Phase Shift",
+          "description": "Temporarily shifts out of phase, greatly increasing evasion.",
+          "effects": [{"type": "evasion_mod", "value": 30.0, "duration": 1, "target": "self"}],
+          "energy_cost": 3,
+          "cooldown": 2
+        }
+      ],
+      "loot_table": [
+        {"commodity_id": "electronics", "min_qty": 2, "max_qty": 5, "chance": 0.8},
+        {"commodity_id": "salvaged_electronics", "min_qty": 1, "max_qty": 3, "chance": 0.5},
+        {"commodity_id": "rare_parts", "min_qty": 1, "max_qty": 2, "chance": 0.3}
+      ]
+    },
+    {
+      "id": "science_sentinel",
+      "name": "Science Sentinel",
+      "description": "A Science Collective guardian vessel. Uses advanced technology for damage reduction and accuracy disruption.",
+      "behavior": "defensive",
+      "hull": 150,
+      "shields": 70,
+      "energy": 14,
+      "energy_regen": 5,
+      "speed": 6,
+      "evasion": 15,
+      "accuracy": 78,
+      "negotiate_difficulty": 4,
+      "flee_threshold": 0.15,
+      "xp_reward": 50,
+      "faction_id": "science_collective",
+      "danger_tier": "dangerous",
+      "bribe_cost": 400,
+      "moves": [
+        {
+          "id": "sentinel_disruptor",
+          "name": "Neural Disruptor",
+          "description": "Disrupts targeting systems, reducing enemy accuracy.",
+          "effects": [
+            {"type": "damage", "value": 12.0},
+            {"type": "accuracy_mod", "value": -15.0, "duration": 2}
+          ],
+          "energy_cost": 4,
+          "accuracy_modifier": 5
+        },
+        {
+          "id": "sentinel_barrier",
+          "name": "Energy Barrier",
+          "description": "Projects an energy barrier, reducing incoming damage and restoring shields.",
+          "effects": [
+            {"type": "shield_restore", "value": 30.0, "target": "self"},
+            {"type": "damage_reduction", "value": 0.15, "duration": 2, "target": "self"}
+          ],
+          "energy_cost": 5,
+          "cooldown": 2
+        }
+      ],
+      "loot_table": [
+        {"commodity_id": "electronics", "min_qty": 3, "max_qty": 6, "chance": 0.8},
+        {"commodity_id": "rare_parts", "min_qty": 1, "max_qty": 3, "chance": 0.6},
+        {"commodity_id": "medical", "min_qty": 1, "max_qty": 2, "chance": 0.4}
+      ]
+    },
+    {
+      "id": "frontier_raider",
+      "name": "Frontier Raider",
+      "description": "A fast Frontier Alliance strike craft. Relies on speed and precision.",
+      "behavior": "aggressive",
+      "hull": 90,
+      "shields": 25,
+      "energy": 10,
+      "energy_regen": 3,
+      "speed": 12,
+      "evasion": 22,
+      "accuracy": 72,
+      "negotiate_difficulty": 3,
+      "flee_threshold": 0.3,
+      "xp_reward": 25,
+      "faction_id": "frontier_alliance",
+      "danger_tier": "moderate",
+      "bribe_cost": 175,
+      "moves": [
+        {
+          "id": "frontier_rapid_fire",
+          "name": "Rapid Fire",
+          "description": "A quick burst of energy bolts from frontier-modified weapons.",
+          "effects": [{"type": "damage", "value": 14.0}],
+          "energy_cost": 2,
+          "accuracy_modifier": 10
+        },
+        {
+          "id": "frontier_boost",
+          "name": "Thruster Boost",
+          "description": "Engages afterburners for increased evasion.",
+          "effects": [{"type": "evasion_mod", "value": 20.0, "duration": 1, "target": "self"}],
+          "energy_cost": 2,
+          "cooldown": 2
+        }
+      ],
+      "loot_table": [
+        {"commodity_id": "fuel", "min_qty": 2, "max_qty": 5, "chance": 0.7},
+        {"commodity_id": "food", "min_qty": 2, "max_qty": 4, "chance": 0.6},
+        {"commodity_id": "textiles", "min_qty": 1, "max_qty": 3, "chance": 0.4}
+      ]
+    },
+    {
+      "id": "frontier_gunship",
+      "name": "Frontier Gunship",
+      "description": "A heavily armed Frontier Alliance warship. Fast and devastating with multiple weapon systems.",
+      "behavior": "aggressive",
+      "hull": 170,
+      "shields": 40,
+      "energy": 12,
+      "energy_regen": 4,
+      "speed": 9,
+      "evasion": 15,
+      "accuracy": 70,
+      "negotiate_difficulty": 4,
+      "flee_threshold": 0.15,
+      "xp_reward": 50,
+      "faction_id": "frontier_alliance",
+      "danger_tier": "dangerous",
+      "bribe_cost": 425,
+      "moves": [
+        {
+          "id": "gunship_barrage",
+          "name": "Weapons Barrage",
+          "description": "Fires all weapon systems simultaneously.",
+          "effects": [{"type": "damage", "value": 25.0}],
+          "energy_cost": 5,
+          "accuracy_modifier": 0
+        },
+        {
+          "id": "gunship_strafe",
+          "name": "Strafing Run",
+          "description": "A high-speed attack pass dealing moderate damage.",
+          "effects": [
+            {"type": "damage", "value": 12.0},
+            {"type": "evasion_mod", "value": 15.0, "duration": 1, "target": "self"}
+          ],
+          "energy_cost": 3,
+          "cooldown": 1,
+          "accuracy_modifier": 5
+        }
+      ],
+      "loot_table": [
+        {"commodity_id": "fuel", "min_qty": 3, "max_qty": 6, "chance": 0.8},
+        {"commodity_id": "common_metals", "min_qty": 2, "max_qty": 5, "chance": 0.6},
+        {"commodity_id": "exotic_goods", "min_qty": 1, "max_qty": 2, "chance": 0.3}
+      ]
+    },
+    {
+      "id": "guild_revenue_cutter",
+      "name": "Guild Revenue Cutter",
+      "description": "A light Commerce Guild patrol craft. Revenue Cutters enforce trade regulations and inspect cargo manifests. Lightly armed but persistent — their job is to detain, not destroy.",
+      "behavior": "defensive",
+      "hull": 65,
+      "shields": 25,
+      "energy": 10,
+      "energy_regen": 3,
+      "speed": 10,
+      "evasion": 15,
+      "accuracy": 70,
+      "negotiate_difficulty": 2,
+      "flee_threshold": 0.35,
+      "xp_reward": 15,
+      "faction_id": "commerce_guild",
+      "danger_tier": "low",
+      "bribe_cost": 100,
+      "moves": [
+        {
+          "id": "cutter_scanner",
+          "name": "Regulation Scanner",
+          "description": "A targeting scan that marks the vessel for enforcement. Disrupts evasive maneuvers.",
+          "effects": [
+            {"type": "damage", "value": 8.0},
+            {"type": "evasion_mod", "value": -10.0, "duration": 2}
+          ],
+          "energy_cost": 3,
+          "accuracy_modifier": 10
+        },
+        {
+          "id": "cutter_warning",
+          "name": "Warning Shot",
+          "description": "A low-power deterrent blast. Standard Guild enforcement protocol.",
+          "effects": [{"type": "damage", "value": 10.0}],
+          "energy_cost": 2,
+          "accuracy_modifier": 5
+        }
+      ],
+      "loot_table": [
+        {"commodity_id": "electronics", "min_qty": 1, "max_qty": 3, "chance": 0.6},
+        {"commodity_id": "manufactured_goods", "min_qty": 1, "max_qty": 2, "chance": 0.4}
+      ]
+    },
+    {
+      "id": "union_picket",
+      "name": "Union Picket",
+      "description": "A converted mining skiff pressed into convoy escort duty. Small and tough, crewed by miners who decided shooting pirates beats drilling rock. Armed with improvised weapons powered by engines built to haul ten times their weight.",
+      "behavior": "aggressive",
+      "hull": 75,
+      "shields": 10,
+      "energy": 8,
+      "energy_regen": 3,
+      "speed": 7,
+      "evasion": 8,
+      "accuracy": 62,
+      "negotiate_difficulty": 2,
+      "flee_threshold": 0.3,
+      "xp_reward": 15,
+      "faction_id": "miners_union",
+      "danger_tier": "low",
+      "bribe_cost": 75,
+      "moves": [
+        {
+          "id": "picket_slag",
+          "name": "Slag Launcher",
+          "description": "Fires superheated mining slag. Inaccurate but packs a punch.",
+          "effects": [{"type": "damage", "value": 14.0}],
+          "energy_cost": 2,
+          "accuracy_modifier": -5
+        },
+        {
+          "id": "picket_plating",
+          "name": "Reinforced Plating",
+          "description": "Activates compressed-ore hull reinforcement.",
+          "effects": [{"type": "damage_reduction", "value": 0.15, "duration": 2, "target": "self"}],
+          "energy_cost": 2,
+          "cooldown": 3
+        }
+      ],
+      "loot_table": [
+        {"commodity_id": "iron_ore", "min_qty": 2, "max_qty": 4, "chance": 0.7},
+        {"commodity_id": "common_metals", "min_qty": 1, "max_qty": 3, "chance": 0.5},
+        {"commodity_id": "scrap_metal", "min_qty": 1, "max_qty": 2, "chance": 0.4}
+      ]
+    },
+    {
+      "id": "science_surveyor",
+      "name": "Science Surveyor",
+      "description": "A Collective research vessel repurposed for patrol duty. High sensor resolution and excellent shields, but minimal weapons. Prefers to scan, analyze, and evade — but its analysis beam strips shields with clinical precision.",
+      "behavior": "evasive",
+      "hull": 50,
+      "shields": 40,
+      "energy": 10,
+      "energy_regen": 4,
+      "speed": 11,
+      "evasion": 25,
+      "accuracy": 72,
+      "negotiate_difficulty": 2,
+      "flee_threshold": 0.4,
+      "xp_reward": 15,
+      "faction_id": "science_collective",
+      "danger_tier": "low",
+      "bribe_cost": 125,
+      "moves": [
+        {
+          "id": "surveyor_scan",
+          "name": "Scan Pulse",
+          "description": "A focused energy scan that disrupts shield harmonics.",
+          "effects": [
+            {"type": "damage", "value": 6.0},
+            {"type": "shield_drain", "value": 10.0}
+          ],
+          "energy_cost": 3,
+          "accuracy_modifier": 10
+        },
+        {
+          "id": "surveyor_evasion",
+          "name": "Evasion Protocol",
+          "description": "Engages automated evasion subroutines.",
+          "effects": [{"type": "evasion_mod", "value": 25.0, "duration": 1, "target": "self"}],
+          "energy_cost": 2,
+          "cooldown": 2
+        }
+      ],
+      "loot_table": [
+        {"commodity_id": "electronics", "min_qty": 1, "max_qty": 3, "chance": 0.7},
+        {"commodity_id": "salvaged_electronics", "min_qty": 1, "max_qty": 2, "chance": 0.4}
+      ]
+    },
+    {
+      "id": "frontier_skirmisher",
+      "name": "Frontier Skirmisher",
+      "description": "A fast Alliance interceptor built for hit-and-run tactics. Light, agile, and crewed by the best seat-of-the-pants flyers in the Expanse. Armed with quick-firing modified weapons that compensate for low power with high accuracy.",
+      "behavior": "aggressive",
+      "hull": 60,
+      "shields": 15,
+      "energy": 8,
+      "energy_regen": 3,
+      "speed": 14,
+      "evasion": 28,
+      "accuracy": 68,
+      "negotiate_difficulty": 2,
+      "flee_threshold": 0.35,
+      "xp_reward": 15,
+      "faction_id": "frontier_alliance",
+      "danger_tier": "low",
+      "bribe_cost": 50,
+      "moves": [
+        {
+          "id": "skirmisher_burst",
+          "name": "Quick Burst",
+          "description": "A rapid volley from frontier-modified blasters.",
+          "effects": [{"type": "damage", "value": 10.0}],
+          "energy_cost": 2,
+          "accuracy_modifier": 10
+        },
+        {
+          "id": "skirmisher_afterburn",
+          "name": "Afterburn",
+          "description": "Hard thruster burn for evasive repositioning.",
+          "effects": [{"type": "evasion_mod", "value": 20.0, "duration": 1, "target": "self"}],
+          "energy_cost": 2,
+          "cooldown": 2
+        }
+      ],
+      "loot_table": [
+        {"commodity_id": "fuel", "min_qty": 1, "max_qty": 3, "chance": 0.6},
+        {"commodity_id": "food", "min_qty": 1, "max_qty": 2, "chance": 0.5},
+        {"commodity_id": "scrap_metal", "min_qty": 1, "max_qty": 2, "chance": 0.4}
+      ]
+    },
+    {
+      "id": "reach_rustrunner",
+      "name": "Reach Rust Runner",
+      "description": "A fast, light harassment vessel built from courier wreckage in the scrapyards of Crimson Reach. Armed with corrosive slug-throwers that eat through hull plating. Its job is to harry and harass, not to stand and fight.",
+      "behavior": "cowardly",
+      "hull": 55,
+      "shields": 10,
+      "energy": 8,
+      "energy_regen": 3,
+      "speed": 15,
+      "evasion": 30,
+      "accuracy": 60,
+      "negotiate_difficulty": 2,
+      "flee_threshold": 0.4,
+      "xp_reward": 15,
+      "faction_id": "",
+      "danger_tier": "low",
+      "bribe_cost": 75,
+      "moves": [
+        {
+          "id": "rustrunner_slug",
+          "name": "Corrosive Slug",
+          "description": "A corroded metal slug laced with reactor coolant. Eats through shields.",
+          "effects": [
+            {"type": "damage", "value": 8.0},
+            {"type": "shield_drain", "value": 8.0}
+          ],
+          "energy_cost": 2,
+          "accuracy_modifier": 0
+        },
+        {
+          "id": "rustrunner_jink",
+          "name": "Scrapyard Jink",
+          "description": "Erratic evasive maneuver learned from dodging debris in the Reach.",
+          "effects": [{"type": "evasion_mod", "value": 20.0, "duration": 1, "target": "self"}],
+          "energy_cost": 2,
+          "cooldown": 2
+        }
+      ],
+      "loot_table": [
+        {"commodity_id": "scrap_metal", "min_qty": 2, "max_qty": 4, "chance": 0.8},
+        {"commodity_id": "salvaged_electronics", "min_qty": 1, "max_qty": 2, "chance": 0.4},
+        {"commodity_id": "fuel", "min_qty": 1, "max_qty": 3, "chance": 0.5}
+      ]
+    },
+    {
+      "id": "reach_wrecker",
+      "name": "Reach Wrecker",
+      "description": "A medium combat vessel built from salvaged military hulls in Crimson Reach. Equipped with grapple launchers and a reinforced ram prow — Reach combat doctrine favors getting close and tearing ships apart for salvage. Why destroy what you can repurpose?",
+      "behavior": "aggressive",
+      "hull": 110,
+      "shields": 25,
+      "energy": 10,
+      "energy_regen": 3,
+      "speed": 6,
+      "evasion": 8,
+      "accuracy": 65,
+      "negotiate_difficulty": 3,
+      "flee_threshold": 0.2,
+      "xp_reward": 30,
+      "faction_id": "",
+      "danger_tier": "moderate",
+      "bribe_cost": 200,
+      "moves": [
+        {
+          "id": "wrecker_ram",
+          "name": "Grapple Ram",
+          "description": "Closes distance and rams with a reinforced prow. Devastating but hard to aim.",
+          "effects": [{"type": "damage", "value": 22.0}],
+          "energy_cost": 4,
+          "accuracy_modifier": -10
+        },
+        {
+          "id": "wrecker_ripper",
+          "name": "Hull Ripper",
+          "description": "Cutting torches repurposed for combat. Strips shields and scores hull.",
+          "effects": [
+            {"type": "damage", "value": 10.0},
+            {"type": "shield_drain", "value": 12.0}
+          ],
+          "energy_cost": 3,
+          "accuracy_modifier": 0
+        },
+        {
+          "id": "wrecker_plating",
+          "name": "Salvage Plating",
+          "description": "Welds scrap plating over damaged sections mid-combat.",
+          "effects": [{"type": "damage_reduction", "value": 0.15, "duration": 2, "target": "self"}],
+          "energy_cost": 2,
+          "cooldown": 3
+        }
+      ],
+      "loot_table": [
+        {"commodity_id": "scrap_metal", "min_qty": 3, "max_qty": 6, "chance": 0.9},
+        {"commodity_id": "common_metals", "min_qty": 2, "max_qty": 4, "chance": 0.6},
+        {"commodity_id": "rare_parts", "min_qty": 1, "max_qty": 2, "chance": 0.3}
+      ]
+    },
+    {
+      "id": "reach_dreadwreck",
+      "name": "Reach Dreadwreck",
+      "description": "A massive amalgamation of ship carcasses welded into a single hulking combat platform. Slow, poorly shielded, but absurdly durable and bristling with weapons salvaged from a dozen different sources. Each Dreadwreck is unique and terrifying.",
+      "behavior": "aggressive",
+      "hull": 200,
+      "shields": 35,
+      "energy": 12,
+      "energy_regen": 3,
+      "speed": 3,
+      "evasion": 3,
+      "accuracy": 60,
+      "negotiate_difficulty": 4,
+      "flee_threshold": 0.1,
+      "xp_reward": 50,
+      "faction_id": "",
+      "danger_tier": "dangerous",
+      "bribe_cost": 500,
+      "moves": [
+        {
+          "id": "dreadwreck_barrage",
+          "name": "Scrapyard Barrage",
+          "description": "Fires every weapon simultaneously — a chaotic storm of mismatched ordnance.",
+          "effects": [{"type": "damage", "value": 28.0}],
+          "energy_cost": 5,
+          "accuracy_modifier": -10
+        },
+        {
+          "id": "dreadwreck_overcharge",
+          "name": "Toxic Overcharge",
+          "description": "Vents unshielded reactor exhaust at the target. Damages hull and drains energy systems.",
+          "effects": [
+            {"type": "damage", "value": 12.0},
+            {"type": "energy_drain", "value": 4.0}
+          ],
+          "energy_cost": 4,
+          "cooldown": 2,
+          "accuracy_modifier": 0
+        },
+        {
+          "id": "dreadwreck_ablative",
+          "name": "Ablative Wreckage",
+          "description": "Sacrifices outer hull plating to absorb damage and effect emergency repairs.",
+          "effects": [{"type": "hull_restore", "value": 25.0, "target": "self"}],
+          "energy_cost": 3,
+          "cooldown": 3
+        }
+      ],
+      "loot_table": [
+        {"commodity_id": "scrap_metal", "min_qty": 4, "max_qty": 8, "chance": 0.9},
+        {"commodity_id": "rare_parts", "min_qty": 1, "max_qty": 3, "chance": 0.5},
+        {"commodity_id": "common_metals", "min_qty": 3, "max_qty": 6, "chance": 0.7},
+        {"commodity_id": "weapons", "min_qty": 1, "max_qty": 2, "chance": 0.4}
+      ]
+    },
+    {
+      "id": "bounty_tracker",
+      "name": "Freelance Tracker",
+      "description": "A fast, lightly armed bounty tracking vessel. Relies on speed to catch targets, but flees when outgunned.",
+      "behavior": "cowardly",
+      "hull": 70,
+      "shields": 25,
+      "energy": 10,
+      "energy_regen": 3,
+      "speed": 14,
+      "evasion": 28,
+      "accuracy": 72,
+      "negotiate_difficulty": 3,
+      "flee_threshold": 0.35,
+      "xp_reward": 25,
+      "faction_id": "",
+      "danger_tier": "moderate",
+      "bribe_cost": 0,
+      "moves": [
+        {
+          "id": "tracker_pulse",
+          "name": "Tracking Pulse",
+          "description": "A precise targeting pulse that reduces evasion.",
+          "effects": [
+            {"type": "damage", "value": 10.0},
+            {"type": "evasion_mod", "value": -10.0, "duration": 2}
+          ],
+          "energy_cost": 3,
+          "accuracy_modifier": 10
+        },
+        {
+          "id": "tracker_boost",
+          "name": "Pursuit Burn",
+          "description": "Hard engine burn for evasion while closing distance.",
+          "effects": [{"type": "evasion_mod", "value": 20.0, "duration": 1, "target": "self"}],
+          "energy_cost": 2,
+          "cooldown": 2
+        }
+      ],
+      "loot_table": [
+        {"commodity_id": "electronics", "min_qty": 2, "max_qty": 4, "chance": 0.7},
+        {"commodity_id": "fuel", "min_qty": 2, "max_qty": 5, "chance": 0.6},
+        {"commodity_id": "rare_metals", "min_qty": 1, "max_qty": 2, "chance": 0.3}
+      ]
+    },
+    {
+      "id": "bounty_enforcer",
+      "name": "Bounty Enforcer",
+      "description": "A well-armed bounty hunter ship. Balanced loadout optimized for disabling targets.",
+      "behavior": "aggressive",
+      "hull": 120,
+      "shields": 40,
+      "energy": 12,
+      "energy_regen": 4,
+      "speed": 9,
+      "evasion": 15,
+      "accuracy": 74,
+      "negotiate_difficulty": 3,
+      "flee_threshold": 0.2,
+      "xp_reward": 35,
+      "faction_id": "",
+      "danger_tier": "moderate",
+      "bribe_cost": 0,
+      "moves": [
+        {
+          "id": "enforcer_cannon",
+          "name": "Disabling Cannon",
+          "description": "A heavy shot designed to cripple engines and drain shields.",
+          "effects": [
+            {"type": "damage", "value": 16.0},
+            {"type": "shield_drain", "value": 10.0}
+          ],
+          "energy_cost": 4,
+          "accuracy_modifier": 5
+        },
+        {
+          "id": "enforcer_net",
+          "name": "Tractor Net",
+          "description": "Deploys an electromagnetic net that reduces target evasion.",
+          "effects": [
+            {"type": "damage", "value": 5.0},
+            {"type": "evasion_mod", "value": -15.0, "duration": 2}
+          ],
+          "energy_cost": 3,
+          "cooldown": 2,
+          "accuracy_modifier": 10
+        }
+      ],
+      "loot_table": [
+        {"commodity_id": "electronics", "min_qty": 3, "max_qty": 5, "chance": 0.8},
+        {"commodity_id": "weapons", "min_qty": 1, "max_qty": 3, "chance": 0.5},
+        {"commodity_id": "rare_metals", "min_qty": 1, "max_qty": 3, "chance": 0.4}
+      ]
+    },
+    {
+      "id": "bounty_vanguard",
+      "name": "Bounty Vanguard",
+      "description": "A heavily shielded bounty hunting vessel. Absorbs punishment while wearing down targets with sustained fire.",
+      "behavior": "defensive",
+      "hull": 180,
+      "shields": 70,
+      "energy": 14,
+      "energy_regen": 4,
+      "speed": 5,
+      "evasion": 8,
+      "accuracy": 70,
+      "negotiate_difficulty": 4,
+      "flee_threshold": 0.15,
+      "xp_reward": 45,
+      "faction_id": "",
+      "danger_tier": "dangerous",
+      "bribe_cost": 0,
+      "moves": [
+        {
+          "id": "vanguard_barrage",
+          "name": "Suppression Barrage",
+          "description": "Sustained weapons fire that chips at hull and accuracy.",
+          "effects": [
+            {"type": "damage", "value": 14.0},
+            {"type": "accuracy_mod", "value": -10.0, "duration": 2}
+          ],
+          "energy_cost": 4,
+          "accuracy_modifier": 0
+        },
+        {
+          "id": "vanguard_shield_wall",
+          "name": "Shield Wall",
+          "description": "Maximizes shield output and reduces incoming damage.",
+          "effects": [
+            {"type": "shield_restore", "value": 35.0, "target": "self"},
+            {"type": "damage_reduction", "value": 0.20, "duration": 2, "target": "self"}
+          ],
+          "energy_cost": 5,
+          "cooldown": 2
+        }
+      ],
+      "loot_table": [
+        {"commodity_id": "electronics", "min_qty": 3, "max_qty": 6, "chance": 0.8},
+        {"commodity_id": "weapons", "min_qty": 2, "max_qty": 4, "chance": 0.6},
+        {"commodity_id": "luxury_goods", "min_qty": 1, "max_qty": 3, "chance": 0.4}
+      ]
+    },
+    {
+      "id": "bounty_ace",
+      "name": "Bounty Ace",
+      "description": "An elite freelance hunter flying a custom interceptor. Extremely fast and accurate — almost impossible to outrun.",
+      "behavior": "evasive",
+      "hull": 100,
+      "shields": 45,
+      "energy": 14,
+      "energy_regen": 4,
+      "speed": 16,
+      "evasion": 35,
+      "accuracy": 82,
+      "negotiate_difficulty": 4,
+      "flee_threshold": 0.25,
+      "xp_reward": 50,
+      "faction_id": "",
+      "danger_tier": "dangerous",
+      "bribe_cost": 0,
+      "moves": [
+        {
+          "id": "ace_precision_shot",
+          "name": "Precision Shot",
+          "description": "A carefully aimed shot that bypasses evasion. High accuracy, moderate damage.",
+          "effects": [{"type": "damage", "value": 18.0}],
+          "energy_cost": 3,
+          "accuracy_modifier": 20
+        },
+        {
+          "id": "ace_afterburner",
+          "name": "Afterburner Strafe",
+          "description": "High-speed attack run dealing damage while boosting evasion.",
+          "effects": [
+            {"type": "damage", "value": 12.0},
+            {"type": "evasion_mod", "value": 25.0, "duration": 1, "target": "self"}
+          ],
+          "energy_cost": 4,
+          "cooldown": 1,
+          "accuracy_modifier": 5
+        },
+        {
+          "id": "ace_tracking_shot",
+          "name": "Tracking Shot",
+          "description": "Locks onto the target's engine signature. Unavoidable but lower damage.",
+          "effects": [
+            {"type": "damage", "value": 10.0},
+            {"type": "evasion_mod", "value": -20.0, "duration": 2}
+          ],
+          "energy_cost": 5,
+          "cooldown": 3,
+          "accuracy_modifier": 30
+        }
+      ],
+      "loot_table": [
+        {"commodity_id": "electronics", "min_qty": 3, "max_qty": 6, "chance": 0.9},
+        {"commodity_id": "rare_metals", "min_qty": 2, "max_qty": 4, "chance": 0.6},
+        {"commodity_id": "luxury_goods", "min_qty": 1, "max_qty": 3, "chance": 0.5}
+      ]
+    },
+    {
+      "id": "faction_enforcer",
+      "name": "Sector Authority Enforcer",
+      "description": "A top-tier enforcement vessel deployed by the sector council. Three weapon systems, heavy armor, and zero tolerance for criminals.",
+      "behavior": "aggressive",
+      "hull": 220,
+      "shields": 80,
+      "energy": 16,
+      "energy_regen": 5,
+      "speed": 7,
+      "evasion": 12,
+      "accuracy": 78,
+      "negotiate_difficulty": 5,
+      "flee_threshold": 0.1,
+      "xp_reward": 65,
+      "faction_id": "",
+      "danger_tier": "dangerous",
+      "bribe_cost": 0,
+      "moves": [
+        {
+          "id": "authority_lance",
+          "name": "Authority Lance",
+          "description": "A devastating directed-energy weapon reserved for sector enforcement.",
+          "effects": [{"type": "damage", "value": 25.0}],
+          "energy_cost": 4,
+          "accuracy_modifier": 10
+        },
+        {
+          "id": "authority_disabler",
+          "name": "System Disabler",
+          "description": "Targeted EMP burst that drains energy and shields simultaneously.",
+          "effects": [
+            {"type": "damage", "value": 10.0},
+            {"type": "shield_drain", "value": 20.0},
+            {"type": "energy_drain", "value": 5.0}
+          ],
+          "energy_cost": 5,
+          "cooldown": 2,
+          "accuracy_modifier": 5
+        },
+        {
+          "id": "authority_lockdown",
+          "name": "Pursuit Lockdown",
+          "description": "Deploys a tracking field that makes fleeing nearly impossible.",
+          "effects": [
+            {"type": "evasion_mod", "value": -25.0, "duration": 3},
+            {"type": "damage", "value": 8.0}
+          ],
+          "energy_cost": 4,
+          "cooldown": 3,
+          "accuracy_modifier": 15
+        }
+      ],
+      "loot_table": [
+        {"commodity_id": "electronics", "min_qty": 4, "max_qty": 8, "chance": 0.9},
+        {"commodity_id": "weapons", "min_qty": 2, "max_qty": 5, "chance": 0.7},
+        {"commodity_id": "rare_metals", "min_qty": 2, "max_qty": 4, "chance": 0.6},
+        {"commodity_id": "luxury_goods", "min_qty": 1, "max_qty": 3, "chance": 0.4}
+      ]
+    },
+    {
+      "id": "ledger_raider",
+      "name": "Unmarked Raider",
+      "description": "A heavily armed raider with military-grade weapons and coordinated tactics. The hull markings have been scrubbed, but the drive core is unmistakably Guild-pattern.",
+      "behavior": "aggressive",
+      "hull": 110,
+      "shields": 45,
+      "energy": 12,
+      "energy_regen": 4,
+      "speed": 10,
+      "evasion": 20,
+      "accuracy": 72,
+      "negotiate_difficulty": 4,
+      "flee_threshold": 0.15,
+      "xp_reward": 35,
+      "faction_id": "",
+      "danger_tier": "moderate",
+      "bribe_cost": 250,
+      "moves": [
+        {
+          "id": "military_blaster",
+          "name": "Military Blaster",
+          "description": "A precision weapon with Guild-standard targeting systems.",
+          "effects": [{"type": "damage", "value": 18.0}],
+          "energy_cost": 3,
+          "accuracy_modifier": 5
+        },
+        {
+          "id": "precision_strike",
+          "name": "Precision Strike",
+          "description": "A focused burst that bypasses shield harmonics.",
+          "effects": [
+            {"type": "damage", "value": 22.0},
+            {"type": "shield_drain", "value": 10.0}
+          ],
+          "energy_cost": 5,
+          "cooldown": 2,
+          "accuracy_modifier": 0
+        }
+      ],
+      "loot_table": [
+        {"commodity_id": "weapons_components", "min_qty": 1, "max_qty": 3, "chance": 0.7},
+        {"commodity_id": "electronics", "min_qty": 2, "max_qty": 4, "chance": 0.6},
+        {"commodity_id": "rare_metals", "min_qty": 1, "max_qty": 2, "chance": 0.3}
+      ]
+    },
+    {
+      "id": "ledger_striker",
+      "name": "Unmarked Striker",
+      "description": "A fast, evasive interceptor running unmarked. The engine signature matches military-spec thruster arrays — hardware that doesn't appear on any civilian market.",
+      "behavior": "evasive",
+      "hull": 60,
+      "shields": 35,
+      "energy": 14,
+      "energy_regen": 5,
+      "speed": 60,
+      "evasion": 45,
+      "accuracy": 58,
+      "negotiate_difficulty": 4,
+      "flee_threshold": 0.3,
+      "xp_reward": 30,
+      "faction_id": "",
+      "danger_tier": "moderate",
+      "bribe_cost": 200,
+      "moves": [
+        {
+          "id": "quick_burst",
+          "name": "Quick Burst",
+          "description": "Rapid fire from concealed weapon mounts.",
+          "effects": [{"type": "damage", "value": 12.0}],
+          "energy_cost": 2,
+          "accuracy_modifier": 10
+        },
+        {
+          "id": "afterburn_jink",
+          "name": "Afterburn Jink",
+          "description": "Military-grade thruster burst that makes the ship nearly impossible to track.",
+          "effects": [{"type": "evasion_mod", "value": 25.0, "duration": 2}],
+          "energy_cost": 4,
+          "cooldown": 3,
+          "accuracy_modifier": 0
+        }
+      ],
+      "loot_table": [
+        {"commodity_id": "fuel", "min_qty": 3, "max_qty": 6, "chance": 0.6},
+        {"commodity_id": "electronics", "min_qty": 1, "max_qty": 3, "chance": 0.5},
+        {"commodity_id": "weapons_components", "min_qty": 1, "max_qty": 2, "chance": 0.4}
+      ]
+    },
+    {
+      "id": "ledger_vanguard",
+      "name": "Ledger Vanguard",
+      "description": "The Ledger's elite interceptor. Purpose-built from Guild military prototypes, piloted by the Inner Ledger's most experienced operative. Fast, heavily armed, and utterly committed to preventing anyone from reaching the warp gate.",
+      "behavior": "aggressive",
+      "hull": 140,
+      "shields": 60,
+      "energy": 16,
+      "energy_regen": 5,
+      "speed": 50,
+      "evasion": 30,
+      "accuracy": 72,
+      "negotiate_difficulty": 8,
+      "flee_threshold": 0.1,
+      "xp_reward": 60,
+      "faction_id": "",
+      "danger_tier": "dangerous",
+      "bribe_cost": 0,
+      "moves": [
+        {
+          "id": "convergence_lance",
+          "name": "Convergence Lance",
+          "description": "A focused energy weapon derived from gravitational lensing technology. Devastating at close range.",
+          "effects": [{"type": "damage", "value": 25.0}],
+          "energy_cost": 4,
+          "accuracy_modifier": 5
+        },
+        {
+          "id": "shield_shatter",
+          "name": "Shield Shatter",
+          "description": "Targeted pulse designed to overwhelm defensive systems.",
+          "effects": [
+            {"type": "damage", "value": 15.0},
+            {"type": "shield_drain", "value": 20.0}
+          ],
+          "energy_cost": 5,
+          "cooldown": 2,
+          "accuracy_modifier": 0
+        },
+        {
+          "id": "command_override",
+          "name": "Command Override",
+          "description": "Activates hardened armor plating and targeting calibration.",
+          "effects": [
+            {"type": "damage_reduction", "value": 10.0, "duration": 2},
+            {"type": "accuracy_mod", "value": 15.0, "duration": 2}
+          ],
+          "energy_cost": 6,
+          "cooldown": 3,
+          "accuracy_modifier": 0
+        }
+      ],
+      "loot_table": [
+        {"commodity_id": "weapons_components", "min_qty": 3, "max_qty": 5, "chance": 0.8},
+        {"commodity_id": "electronics", "min_qty": 2, "max_qty": 4, "chance": 0.7},
+        {"commodity_id": "rare_metals", "min_qty": 2, "max_qty": 3, "chance": 0.5}
+      ]
+    }
+  ]
+}

@@ -16,6 +16,8 @@ class SkillTreeType(Enum):
     GATHERING = "gathering"
     MINING = "mining"
     LEADERSHIP = "leadership"
+    SOCIAL = "social"
+    GROUND = "ground"
 
 
 @dataclass
@@ -107,8 +109,10 @@ class PlayerProgression:
             ]  # level is 1-indexed, threshold list is 0-indexed
             if self.xp >= next_threshold:
                 self.level += 1
-                self.skill_points += 1
-                messages.append(f"Level up! Now level {self.level}. +1 skill point!")
+                points = 2 if self.level in (5, 10) else 1
+                self.skill_points += points
+                sp_text = f"+{points} skill point{'s' if points > 1 else ''}!"
+                messages.append(f"Level up! Now level {self.level}. {sp_text}")
             else:
                 break
 
@@ -454,6 +458,97 @@ def create_default_skills() -> Dict[str, SkillNode]:
         prerequisite_id="inspiring_leader",
         bonus_type="crew_xp_bonus",
         bonus_per_level=2.0,
+    )
+
+    # === SOCIAL TREE ===
+    skills["silver_tongue"] = SkillNode(
+        id="silver_tongue",
+        name="Silver Tongue",
+        description="+1 Persuasion level per level",
+        tree=SkillTreeType.SOCIAL,
+        max_level=2,
+        bonus_type="persuasion_bonus",
+        bonus_per_level=1.0,
+    )
+    skills["commanding_presence"] = SkillNode(
+        id="commanding_presence",
+        name="Commanding Presence",
+        description="+1 Intimidation level per level",
+        tree=SkillTreeType.SOCIAL,
+        max_level=2,
+        prerequisite_id="silver_tongue",
+        bonus_type="intimidation_bonus",
+        bonus_per_level=1.0,
+    )
+    skills["keen_insight"] = SkillNode(
+        id="keen_insight",
+        name="Keen Insight",
+        description="+1 Observation level per level",
+        tree=SkillTreeType.SOCIAL,
+        max_level=2,
+        prerequisite_id="silver_tongue",
+        bonus_type="observation_bonus",
+        bonus_per_level=1.0,
+    )
+
+    # === GROUND COMBAT TREE ===
+    skills["scrapper"] = SkillNode(
+        id="scrapper",
+        name="Scrapper",
+        description="+1 to ground attack rolls",
+        tree=SkillTreeType.GROUND,
+        max_level=1,
+        bonus_type="ground_attack_bonus",
+        bonus_per_level=1.0,
+    )
+    skills["tough_hide"] = SkillNode(
+        id="tough_hide",
+        name="Tough Hide",
+        description="+2 max HP on ground missions",
+        tree=SkillTreeType.GROUND,
+        max_level=1,
+        bonus_type="ground_hp_bonus",
+        bonus_per_level=2.0,
+    )
+    skills["quick_reflexes"] = SkillNode(
+        id="quick_reflexes",
+        name="Quick Reflexes",
+        description="Once per ground combat, re-roll any die",
+        tree=SkillTreeType.GROUND,
+        max_level=1,
+        prerequisite_id="scrapper",
+        bonus_type="ground_reroll",
+        bonus_per_level=1.0,
+    )
+    skills["intimidating_presence"] = SkillNode(
+        id="intimidating_presence",
+        name="Intimidating Presence",
+        description="First exchange: enemy rolls at -2",
+        tree=SkillTreeType.GROUND,
+        max_level=1,
+        prerequisite_id="quick_reflexes",
+        bonus_type="ground_intimidating_presence",
+        bonus_per_level=1.0,
+    )
+    skills["last_stand"] = SkillNode(
+        id="last_stand",
+        name="Last Stand",
+        description="Below 25% HP: +3 to all rolls",
+        tree=SkillTreeType.GROUND,
+        max_level=1,
+        prerequisite_id="tough_hide",
+        bonus_type="ground_last_stand",
+        bonus_per_level=1.0,
+    )
+    skills["veteran"] = SkillNode(
+        id="veteran",
+        name="Veteran",
+        description="+1 re-roll per combat, +1 max HP",
+        tree=SkillTreeType.GROUND,
+        max_level=1,
+        prerequisite_id="intimidating_presence",
+        bonus_type="ground_veteran",
+        bonus_per_level=1.0,
     )
 
     return skills

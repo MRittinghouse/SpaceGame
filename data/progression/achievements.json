@@ -230,6 +230,248 @@
       "reward_type": "skill_point",
       "reward_value": 2,
       "hidden": true
+    },
+    {
+      "id": "deep_delver",
+      "name": "Deep Delver",
+      "description": "Reach mining depth 4.",
+      "category": "mining",
+      "stat_key": "max_mining_depth",
+      "threshold": 4,
+      "reward_type": "xp",
+      "reward_value": 200,
+      "hidden": false
+    },
+    {
+      "id": "chain_master",
+      "name": "Chain Master",
+      "description": "Trigger 10 chain detonations.",
+      "category": "mining",
+      "stat_key": "total_chains_triggered",
+      "threshold": 10,
+      "reward_type": "credits",
+      "reward_value": 1000,
+      "hidden": false
+    },
+    {
+      "id": "master_prospector",
+      "name": "Master Prospector",
+      "description": "Mine 500 units of ore.",
+      "category": "mining",
+      "stat_key": "ore_mined",
+      "threshold": 500,
+      "reward_type": "skill_point",
+      "reward_value": 1,
+      "hidden": false
+    },
+    {
+      "id": "rare_collector",
+      "name": "Rare Collector",
+      "description": "Mine 100 rare ores.",
+      "category": "mining",
+      "stat_key": "rare_ores_mined",
+      "threshold": 100,
+      "reward_type": "credits",
+      "reward_value": 1500,
+      "hidden": false
+    },
+    {
+      "id": "salvage_expert",
+      "name": "Salvage Expert",
+      "description": "Salvage 200 items.",
+      "category": "salvage",
+      "stat_key": "items_salvaged",
+      "threshold": 200,
+      "reward_type": "skill_point",
+      "reward_value": 1,
+      "hidden": false
+    },
+    {
+      "id": "derelict_hunter",
+      "name": "Derelict Hunter",
+      "description": "Complete 20 salvage sessions.",
+      "category": "salvage",
+      "stat_key": "salvage_sessions_completed",
+      "threshold": 20,
+      "reward_type": "xp",
+      "reward_value": 500,
+      "hidden": false
+    },
+    {
+      "id": "corruption_survivor",
+      "name": "Corruption Survivor",
+      "description": "Extract 20 items from corrupted cells.",
+      "category": "salvage",
+      "stat_key": "corrupted_items_extracted",
+      "threshold": 20,
+      "reward_type": "credits",
+      "reward_value": 1500,
+      "hidden": false
+    },
+    {
+      "id": "refining_mogul",
+      "name": "Refining Mogul",
+      "description": "Complete 100 refining jobs.",
+      "category": "mining",
+      "stat_key": "refining_jobs_completed",
+      "threshold": 100,
+      "reward_type": "skill_point",
+      "reward_value": 1,
+      "hidden": false
+    },
+    {
+      "id": "alchemist",
+      "name": "Alchemist",
+      "description": "Craft 5 different recipes.",
+      "category": "mining",
+      "stat_key": "unique_recipes_crafted",
+      "threshold": 5,
+      "reward_type": "credits",
+      "reward_value": 2000,
+      "hidden": false
+    },
+    {
+      "id": "batch_crafter",
+      "name": "Batch Crafter",
+      "description": "Queue 50 batch refining jobs.",
+      "category": "mining",
+      "stat_key": "batch_jobs_queued",
+      "threshold": 50,
+      "reward_type": "credits",
+      "reward_value": 1000,
+      "hidden": false
+    },
+    {
+      "id": "ground_first_mission",
+      "name": "First Steps",
+      "description": "Complete your first ground mission.",
+      "category": "ground",
+      "stat_key": "ground_missions_completed",
+      "threshold": 1,
+      "reward_type": "xp",
+      "reward_value": 75,
+      "hidden": false
+    },
+    {
+      "id": "ground_ghost_run",
+      "name": "Ghost",
+      "description": "Complete a ground mission without being detected.",
+      "category": "ground",
+      "stat_key": "ground_undetected_completions",
+      "threshold": 1,
+      "reward_type": "xp",
+      "reward_value": 150,
+      "hidden": false
+    },
+    {
+      "id": "ground_veteran",
+      "name": "Ground Veteran",
+      "description": "Complete 10 ground missions.",
+      "category": "ground",
+      "stat_key": "ground_missions_completed",
+      "threshold": 10,
+      "reward_type": "credits",
+      "reward_value": 2000,
+      "hidden": false
+    },
+    {
+      "id": "ground_scrapper",
+      "name": "Scrapper",
+      "description": "Defeat 25 enemies in ground combat.",
+      "category": "ground",
+      "stat_key": "ground_enemies_defeated",
+      "threshold": 25,
+      "reward_type": "xp",
+      "reward_value": 200,
+      "hidden": false
+    },
+    {
+      "id": "ground_silver_tongue",
+      "name": "Silver Tongue",
+      "description": "Talk past 15 enemies in ground encounters.",
+      "category": "ground",
+      "stat_key": "ground_enemies_talked",
+      "threshold": 15,
+      "reward_type": "credits",
+      "reward_value": 1500,
+      "hidden": false
+    },
+    {
+      "id": "ground_explorer",
+      "name": "Cartographer",
+      "description": "Discover 500 ground tiles across all missions.",
+      "category": "ground",
+      "stat_key": "ground_tiles_explored",
+      "threshold": 500,
+      "reward_type": "xp",
+      "reward_value": 200,
+      "hidden": false
+    },
+    {
+      "id": "ground_campaign_all",
+      "name": "Deep Cover",
+      "description": "Complete all campaign ground missions.",
+      "category": "ground",
+      "stat_key": "ground_campaign_missions_completed",
+      "threshold": 3,
+      "reward_type": "skill_point",
+      "reward_value": 1,
+      "hidden": true
+    },
+    {
+      "id": "investor",
+      "name": "Investor",
+      "description": "Own investments in 5 or more systems.",
+      "category": "economy",
+      "stat_key": "investments_owned",
+      "threshold": 5,
+      "reward_type": "credits",
+      "reward_value": 2000,
+      "hidden": false
+    },
+    {
+      "id": "efficiency_expert",
+      "name": "Efficiency Expert",
+      "description": "Earn an S-rank session rating.",
+      "category": "general",
+      "stat_key": "s_ranks_earned",
+      "threshold": 1,
+      "reward_type": "xp",
+      "reward_value": 100,
+      "hidden": false
+    },
+    {
+      "id": "first_smuggle",
+      "name": "Contraband Runner",
+      "description": "Successfully smuggle your first goods.",
+      "category": "smuggling",
+      "stat_key": "goods_smuggled",
+      "threshold": 1,
+      "reward_type": "xp",
+      "reward_value": 100,
+      "hidden": false
+    },
+    {
+      "id": "heat_survivor",
+      "name": "Heat Survivor",
+      "description": "Reach 75 criminal heat and live to tell the tale.",
+      "category": "smuggling",
+      "stat_key": "max_criminal_heat_reached",
+      "threshold": 75,
+      "reward_type": "credits",
+      "reward_value": 2000,
+      "hidden": false
+    },
+    {
+      "id": "clean_getaway",
+      "name": "Clean Getaway",
+      "description": "Pass a customs inspection while carrying contraband.",
+      "category": "smuggling",
+      "stat_key": "inspections_passed_with_contraband",
+      "threshold": 1,
+      "reward_type": "xp",
+      "reward_value": 150,
+      "hidden": true
     }
   ]
 }

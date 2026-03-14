@@ -12,7 +12,11 @@ from typing import Optional
 from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState
 from spacegame.views.base_view import BaseView
 from spacegame.models.crew import CrewRoster, CrewTemplate
+from spacegame.models.attributes import AttributeId, ATTRIBUTE_DEFINITIONS
 from spacegame.engine.backgrounds import AnimatedBackground
+from spacegame.engine.draw_utils import draw_bar, draw_panel
+from spacegame.engine.fonts import FontCache
+from spacegame.engine.sprites import AnimatedSprite, get_sprite_manager
 from spacegame.utils.logger import logger
 
 # Layout constants
@@ -46,13 +50,13 @@ class _CrewItem:
 
     def render(self, screen: pygame.Surface) -> None:
         if self.selected:
-            bg = (40, 55, 90)
+            bg = Colors.ROW_HIGHLIGHT
             text_color = Colors.TEXT_HIGHLIGHT
         elif self.hovered:
-            bg = (30, 40, 65)
+            bg = Colors.ROW_BG
             text_color = Colors.TEXT_PRIMARY
         else:
-            bg = (22, 30, 50)
+            bg = Colors.ROW_DETAIL
             text_color = Colors.TEXT_SECONDARY
 
         pygame.draw.rect(screen, bg, self.rect, border_radius=3)
@@ -131,12 +135,12 @@ class CrewRosterView(BaseView):
         self._scroll_offset: int = 0
 
         # Fonts
-        self._title_font = pygame.font.Font(None, 40)
-        self._name_font = pygame.font.Font(None, 24)
-        self._desc_font = pygame.font.Font(None, 20)
-        self._detail_title_font = pygame.font.Font(None, 28)
-        self._label_font = pygame.font.Font(None, 22)
-        self._slot_font = pygame.font.Font(None, 24)
+        self._title_font = FontCache.get(40)
+        self._name_font = FontCache.get(24)
+        self._desc_font = FontCache.get(20)
+        self._detail_title_font = FontCache.get(28)
+        self._label_font = FontCache.get(22)
+        self._slot_font = FontCache.get(24)
 
         # UI
         self.back_button: Optional[pygame_gui.elements.UIButton] = None
@@ -144,6 +148,11 @@ class CrewRosterView(BaseView):
         # Manual widgets
         self._crew_items: list[_CrewItem] = []
         self._dismiss_btn: Optional[_DismissButton] = None
+        self._attr_plus_rects: dict[str, pygame.Rect] = {}
+
+        # Sprite manager for crew portraits
+        self._sprite_mgr = get_sprite_manager()
+        self._portrait_cache: dict[str, Optional[AnimatedSprite]] = {}
 
         # Background
         self.background = AnimatedBackground("deep_space", WINDOW_WIDTH, WINDOW_HEIGHT, seed=88)
@@ -241,12 +250,30 @@ class CrewRosterView(BaseView):
                 self.next_state = GameState.GALAXY_MAP
                 return
 
+        # Attribute allocation buttons
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            for attr_id, rect in self._attr_plus_rects.items():
+                if rect.collidepoint(event.pos) and self._selected_crew_id:
+                    success, msg = self.crew_roster.allocate_crew_attribute(
+                        self._selected_crew_id, attr_id
+                    )
+                    if success:
+                        self._refresh_list()
+                        self._select_crew(self._selected_crew_id)
+                    return
+
         # Scroll
         if event.type == pygame.MOUSEWHEEL:
             self._scroll_offset = max(0, self._scroll_offset - event.y * 20)
 
     def update(self, dt: float) -> None:
         self.background.update(dt)
+
+        # Update portrait animations
+        for portrait in self._portrait_cache.values():
+            if portrait is not None:
+                portrait.update(dt)
+
         mouse_pos = pygame.mouse.get_pos()
         for item in self._crew_items:
             item.update_hover(mouse_pos)
@@ -270,8 +297,7 @@ class CrewRosterView(BaseView):
 
         # List panel background
         list_rect = pygame.Rect(PANEL_LEFT, PANEL_TOP, LIST_WIDTH, LIST_HEIGHT)
-        pygame.draw.rect(screen, (15, 20, 35), list_rect, border_radius=4)
-        pygame.draw.rect(screen, Colors.UI_BORDER, list_rect, 1, border_radius=4)
+        draw_panel(screen, list_rect, alpha=255)
 
         # Crew items (clipped to list panel)
         clip_prev = screen.get_clip()
@@ -298,8 +324,7 @@ class CrewRosterView(BaseView):
         # Detail panel
         detail_x = PANEL_LEFT + LIST_WIDTH + 30
         detail_rect = pygame.Rect(detail_x, PANEL_TOP, DETAIL_WIDTH, LIST_HEIGHT)
-        pygame.draw.rect(screen, (15, 20, 35), detail_rect, border_radius=4)
-        pygame.draw.rect(screen, Colors.UI_BORDER, detail_rect, 1, border_radius=4)
+        draw_panel(screen, detail_rect, alpha=255)
 
         self._render_detail_panel(screen, detail_x, PANEL_TOP)
 
@@ -310,6 +335,7 @@ class CrewRosterView(BaseView):
     def _render_detail_panel(self, screen: pygame.Surface, x: int, y: int) -> None:
         """Render the selected crew member's details."""
         if not self._selected_crew_id or not self.crew_roster:
+            self._attr_plus_rects.clear()
             # Empty state
             no_sel = self._desc_font.render(
                 "Select a crew member to view details.", True, Colors.TEXT_SECONDARY
@@ -325,18 +351,31 @@ class CrewRosterView(BaseView):
         pad_x = x + 20
         cur_y = y + 18
 
-        # Portrait: colored rectangle with first letter of name
-        portrait_rect = pygame.Rect(pad_x, cur_y, 40, 40)
+        # Portrait: sprite with colored fallback
+        portrait_size = 40
+        portrait_rect = pygame.Rect(pad_x, cur_y, portrait_size, portrait_size)
         portrait_color = (
             tuple(template.portrait_color) if template.portrait_color else (80, 80, 120)
         )
-        pygame.draw.rect(screen, portrait_color, portrait_rect, border_radius=4)
+
+        # Try sprite
+        if template.id not in self._portrait_cache:
+            self._portrait_cache[template.id] = self._sprite_mgr.get_portrait_animated(
+                template.id, scale=1
+            )
+        anim = self._portrait_cache[template.id]
+        sprite = anim.get_surface() if anim else None
+        if sprite:
+            scaled = pygame.transform.scale(sprite, (portrait_size, portrait_size))
+            screen.blit(scaled, (pad_x, cur_y))
+        else:
+            pygame.draw.rect(screen, portrait_color, portrait_rect, border_radius=4)
+            initial_surf = self._detail_title_font.render(
+                template.name[0].upper(), True, Colors.TEXT_PRIMARY
+            )
+            initial_rect = initial_surf.get_rect(center=portrait_rect.center)
+            screen.blit(initial_surf, initial_rect)
         pygame.draw.rect(screen, Colors.UI_BORDER, portrait_rect, 1, border_radius=4)
-        initial_surf = self._detail_title_font.render(
-            template.name[0].upper(), True, Colors.TEXT_PRIMARY
-        )
-        initial_rect = initial_surf.get_rect(center=portrait_rect.center)
-        screen.blit(initial_surf, initial_rect)
 
         # Name (to the right of portrait)
         name_surf = self._detail_title_font.render(template.name, True, Colors.TEXT_HIGHLIGHT)
@@ -376,33 +415,18 @@ class CrewRosterView(BaseView):
         loyalty_label = self._label_font.render(f"Loyalty:", True, Colors.TEXT_PRIMARY)
         screen.blit(loyalty_label, (pad_x, cur_y))
 
-        # Bar dimensions
-        bar_x = pad_x + 70
-        bar_width = 160
-        bar_height = 14
-        bar_y = cur_y + 3
-
-        # Bar background
-        bar_bg_rect = pygame.Rect(bar_x, bar_y, bar_width, bar_height)
-        pygame.draw.rect(screen, (30, 30, 45), bar_bg_rect, border_radius=3)
-
-        # Bar fill
-        fill_width = int(bar_width * (loyalty / 100.0))
+        # Loyalty bar color based on thresholds
         if loyalty >= 70:
             bar_color = Colors.GREEN
         elif loyalty >= 40:
             bar_color = Colors.YELLOW
         else:
             bar_color = Colors.RED
-        if fill_width > 0:
-            fill_rect = pygame.Rect(bar_x, bar_y, fill_width, bar_height)
-            pygame.draw.rect(screen, bar_color, fill_rect, border_radius=3)
-
-        pygame.draw.rect(screen, Colors.UI_BORDER, bar_bg_rect, 1, border_radius=3)
-
-        # Loyalty value
-        loyalty_val_surf = self._desc_font.render(str(loyalty), True, Colors.TEXT_SECONDARY)
-        screen.blit(loyalty_val_surf, (bar_x + bar_width + 8, cur_y + 2))
+        draw_bar(
+            screen, pad_x + 70, cur_y + 3, 160, 14,
+            current=loyalty, maximum=100, color=bar_color,
+            font=self._desc_font, show_value=True,
+        )
         cur_y += 32
 
         # Abilities section
@@ -426,6 +450,44 @@ class CrewRosterView(BaseView):
             ability_surf = self._desc_font.render(ability_text, True, color)
             screen.blit(ability_surf, (pad_x + 10, cur_y))
             cur_y += 22
+
+        # Attributes section
+        cur_y += 10
+        attr_header = self._label_font.render("Attributes:", True, Colors.TEXT_PRIMARY)
+        screen.blit(attr_header, (pad_x, cur_y))
+        cur_y += 24
+
+        attrs = self.crew_roster.get_member_attributes(self._selected_crew_id)
+        attr_points = self.crew_roster.get_member_attribute_points(self._selected_crew_id)
+
+        if attr_points > 0:
+            pts_surf = self._desc_font.render(
+                f"Points Available: {attr_points}", True, Colors.YELLOW
+            )
+            screen.blit(pts_surf, (pad_x, cur_y))
+            cur_y += 20
+
+        self._attr_plus_rects.clear()
+        mouse_pos = pygame.mouse.get_pos()
+        for attr in AttributeId:
+            defn = ATTRIBUTE_DEFINITIONS[attr.value]
+            val = attrs.get(attr.value, 1)
+            attr_surf = self._desc_font.render(
+                f"{defn['name']}: {val}", True, Colors.TEXT
+            )
+            screen.blit(attr_surf, (pad_x + 10, cur_y))
+
+            if attr_points > 0:
+                plus_rect = pygame.Rect(pad_x + 180, cur_y - 2, 22, 20)
+                self._attr_plus_rects[attr.value] = plus_rect
+                hovered = plus_rect.collidepoint(mouse_pos)
+                bg = (50, 80, 50) if hovered else (40, 60, 40)
+                pygame.draw.rect(screen, bg, plus_rect, border_radius=2)
+                pygame.draw.rect(screen, Colors.GREEN, plus_rect, 1, border_radius=2)
+                plus_surf = self._desc_font.render("+", True, Colors.GREEN)
+                screen.blit(plus_surf, plus_surf.get_rect(center=plus_rect.center))
+
+            cur_y += 20
 
     def _render_wrapped(
         self,

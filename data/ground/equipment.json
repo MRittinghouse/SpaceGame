@@ -1,0 +1,51 @@
+{
+    "ground_equipment": [
+        {
+            "id": "personal_shield",
+            "name": "Personal Shield Module",
+            "description": "Generates a localized energy barrier. Absorbs the first hit taken and grants +2 HP.",
+            "slot": "defense",
+            "effects": {
+                "hp_bonus": 2,
+                "absorb_first_hit": 1
+            }
+        },
+        {
+            "id": "noise_dampener",
+            "name": "Noise Dampener",
+            "description": "Acoustic suppression field that reduces noise from all movement and actions.",
+            "slot": "utility",
+            "effects": {
+                "noise_reduction": 1
+            }
+        },
+        {
+            "id": "vision_enhancer",
+            "name": "Vision Enhancer",
+            "description": "Thermal-optical overlay that extends visual range through walls and around corners.",
+            "slot": "utility",
+            "effects": {
+                "vision_bonus": 2
+            }
+        },
+        {
+            "id": "lockpick_set",
+            "name": "Lockpick Set",
+            "description": "Precision tools for bypassing electronic locks. Opens locked doors silently.",
+            "slot": "utility",
+            "effects": {
+                "lockpick": 1,
+                "silent_doors": 1
+            }
+        },
+        {
+            "id": "emp_grenade",
+            "name": "EMP Grenade",
+            "description": "Electromagnetic pulse device. Disables one automated enemy for 5 turns.",
+            "slot": "utility",
+            "effects": {
+                "emp_disable_turns": 5
+            }
+        }
+    ]
+}

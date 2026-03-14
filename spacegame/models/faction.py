@@ -19,12 +19,30 @@ class ReputationTier(Enum):
     ALLIED = "Allied"
 
 
+class TensionLevel(Enum):
+    """Faction-to-faction relationship standing."""
+
+    HOSTILE = "Hostile"
+    STRAINED = "Strained"
+    NEUTRAL = "Neutral"
+    COOPERATIVE = "Cooperative"
+    ALLIED = "Allied"
+
+
 # Tier thresholds: (min_rep, tier)
 _TIER_THRESHOLDS: list[tuple[int, ReputationTier]] = [
     (50, ReputationTier.ALLIED),
     (20, ReputationTier.FRIENDLY),
     (-19, ReputationTier.NEUTRAL),
     (-49, ReputationTier.UNFRIENDLY),
+]
+
+# Tension thresholds: (min_value, level)
+_TENSION_THRESHOLDS: list[tuple[int, TensionLevel]] = [
+    (50, TensionLevel.ALLIED),
+    (20, TensionLevel.COOPERATIVE),
+    (-19, TensionLevel.NEUTRAL),
+    (-49, TensionLevel.STRAINED),
 ]
 
 # Tariff modifiers per tier
@@ -63,6 +81,21 @@ def get_tariff_modifier(rep: int) -> float:
     """
     tier = get_reputation_tier(rep)
     return _TARIFF_MODIFIERS[tier]
+
+
+def get_tension_level(value: int) -> TensionLevel:
+    """Get the tension level for a faction-to-faction relationship value.
+
+    Args:
+        value: Relationship value (-100 to +100).
+
+    Returns:
+        The corresponding TensionLevel.
+    """
+    for threshold, level in _TENSION_THRESHOLDS:
+        if value >= threshold:
+            return level
+    return TensionLevel.HOSTILE
 
 
 @dataclass

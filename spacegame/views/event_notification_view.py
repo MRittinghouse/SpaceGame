@@ -12,6 +12,7 @@ from typing import Optional
 from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors
 from spacegame.models.event import MarketEvent
 from spacegame.views.base_view import BaseView
+from spacegame.engine.fonts import FontCache
 from spacegame.utils.logger import logger
 
 
@@ -25,9 +26,9 @@ class EventNotificationView(BaseView):
         self.dismissed = False
 
         # Fonts
-        self.title_font = pygame.font.Font(None, 40)
-        self.body_font = pygame.font.Font(None, 26)
-        self.detail_font = pygame.font.Font(None, 22)
+        self.title_font = FontCache.get(40)
+        self.body_font = FontCache.get(26)
+        self.detail_font = FontCache.get(22)
 
         # UI Elements
         self.ok_button: Optional[pygame_gui.elements.UIButton] = None

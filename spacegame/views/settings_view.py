@@ -1,7 +1,6 @@
-"""
-Settings/configuration view.
+"""Settings/configuration view.
 
-Allows player to configure save directory and other game settings.
+Allows player to configure save directory, audio volume, and other settings.
 """
 
 import pygame
@@ -13,28 +12,24 @@ from tkinter import filedialog
 
 from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors
 from spacegame.views.base_view import BaseView
+from spacegame.engine.audio_manager import AudioConfig, get_audio_manager
 from spacegame.utils.logger import logger
 from spacegame.engine.backgrounds import AnimatedBackground
+from spacegame.engine.fonts import FontCache
 
 
 class SettingsView(BaseView):
-    """
-    Settings configuration view.
-
-    Currently supports:
-    - Save directory configuration
-    - Future: Audio, graphics, controls, etc.
-    """
+    """Settings configuration view with audio volume sliders and save directory."""
 
     def __init__(
         self, ui_manager: pygame_gui.UIManager, current_save_dir: Path, tutorial_manager=None
     ):
-        """
-        Initialize settings view.
+        """Initialize settings view.
 
         Args:
-            ui_manager: pygame_gui UI manager
-            current_save_dir: Current save directory path
+            ui_manager: pygame_gui UI manager.
+            current_save_dir: Current save directory path.
+            tutorial_manager: Optional tutorial manager for replay.
         """
         super().__init__()
         self.ui_manager = ui_manager
@@ -45,11 +40,15 @@ class SettingsView(BaseView):
         self.should_close = False
         self.settings_changed = False
 
+        # Snapshot original audio config for revert on cancel
+        self._original_audio_config = get_audio_manager().get_config()
+        self._audio_changed = False
+
         # Fonts
-        self.title_font = pygame.font.Font(None, 48)
-        self.header_font = pygame.font.Font(None, 28)
-        self.info_font = pygame.font.Font(None, 22)
-        self.small_font = pygame.font.Font(None, 18)
+        self.title_font = FontCache.get(48)
+        self.header_font = FontCache.get(28)
+        self.info_font = FontCache.get(22)
+        self.small_font = FontCache.get(18)
 
         # Background
         self.background = AnimatedBackground("deep_space", WINDOW_WIDTH, WINDOW_HEIGHT, seed=96)
@@ -57,7 +56,7 @@ class SettingsView(BaseView):
         self._bg_dim.fill((0, 0, 0))
         self._bg_dim.set_alpha(120)
 
-        # UI Elements
+        # UI Elements — save directory
         self.save_dir_label: Optional[pygame_gui.elements.UILabel] = None
         self.save_dir_display: Optional[pygame_gui.elements.UITextBox] = None
         self.browse_button: Optional[pygame_gui.elements.UIButton] = None
@@ -65,6 +64,16 @@ class SettingsView(BaseView):
         self.replay_tutorial_button: Optional[pygame_gui.elements.UIButton] = None
         self.back_button: Optional[pygame_gui.elements.UIButton] = None
         self.apply_button: Optional[pygame_gui.elements.UIButton] = None
+
+        # UI Elements — audio volume sliders
+        self._master_slider: Optional[pygame_gui.elements.UIHorizontalSlider] = None
+        self._music_slider: Optional[pygame_gui.elements.UIHorizontalSlider] = None
+        self._sfx_slider: Optional[pygame_gui.elements.UIHorizontalSlider] = None
+        self._ambient_slider: Optional[pygame_gui.elements.UIHorizontalSlider] = None
+        self._master_label: Optional[pygame_gui.elements.UILabel] = None
+        self._music_label: Optional[pygame_gui.elements.UILabel] = None
+        self._sfx_label: Optional[pygame_gui.elements.UILabel] = None
+        self._ambient_label: Optional[pygame_gui.elements.UILabel] = None
 
     def on_enter(self) -> None:
         """Create UI when entering settings view."""
@@ -81,67 +90,118 @@ class SettingsView(BaseView):
         """Create settings UI."""
         panel_width = 800
         panel_x = (WINDOW_WIDTH - panel_width) // 2
-        start_y = 120
+        y = 100
 
-        # Save Directory Section
+        # === Audio Section ===
+        pygame_gui.elements.UILabel(
+            relative_rect=pygame.Rect(panel_x, y, panel_width, 30),
+            text="Audio",
+            manager=self.ui_manager,
+        )
+        y += 35
+
+        audio_cfg = get_audio_manager().get_config()
+        label_w = 140
+        slider_w = panel_width - label_w - 70
+        slider_h = 25
+        val_w = 50
+
+        slider_defs = [
+            ("Master", audio_cfg.master_volume, "_master"),
+            ("Music", audio_cfg.music_volume, "_music"),
+            ("SFX", audio_cfg.sfx_volume, "_sfx"),
+            ("Ambient", audio_cfg.ambient_volume, "_ambient"),
+        ]
+
+        for display_name, value, attr_prefix in slider_defs:
+            pct = int(value * 100)
+            label = pygame_gui.elements.UILabel(
+                relative_rect=pygame.Rect(panel_x, y, label_w, slider_h),
+                text=f"{display_name}:",
+                manager=self.ui_manager,
+            )
+            setattr(self, f"{attr_prefix}_label", label)
+
+            slider = pygame_gui.elements.UIHorizontalSlider(
+                relative_rect=pygame.Rect(panel_x + label_w, y, slider_w, slider_h),
+                start_value=pct,
+                value_range=(0, 100),
+                manager=self.ui_manager,
+            )
+            setattr(self, f"{attr_prefix}_slider", slider)
+
+            # Percentage display
+            pygame_gui.elements.UILabel(
+                relative_rect=pygame.Rect(
+                    panel_x + label_w + slider_w + 5, y, val_w, slider_h
+                ),
+                text=f"{pct}%",
+                manager=self.ui_manager,
+                object_id=pygame_gui.core.ObjectID(
+                    f"#{attr_prefix}_pct", "@volume_pct"
+                ),
+            )
+            y += slider_h + 8
+
+        y += 15
+
+        # === Save Directory Section ===
         self.save_dir_label = pygame_gui.elements.UILabel(
-            relative_rect=pygame.Rect(panel_x, start_y, panel_width, 30),
+            relative_rect=pygame.Rect(panel_x, y, panel_width, 30),
             text="Save Directory:",
             manager=self.ui_manager,
         )
+        y += 35
 
-        # Display current save directory
         save_dir_str = str(self.current_save_dir)
         self.save_dir_display = pygame_gui.elements.UITextBox(
             html_text=f"<font size=4>{save_dir_str}</font>",
-            relative_rect=pygame.Rect(panel_x, start_y + 40, panel_width - 160, 60),
+            relative_rect=pygame.Rect(panel_x, y, panel_width - 160, 50),
             manager=self.ui_manager,
         )
 
-        # Browse button
         self.browse_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(panel_x + panel_width - 140, start_y + 40, 140, 60),
+            relative_rect=pygame.Rect(panel_x + panel_width - 140, y, 140, 50),
             text="BROWSE",
             manager=self.ui_manager,
         )
+        y += 60
 
-        # Reset to default button
         self.reset_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(panel_x, start_y + 120, 200, 50),
+            relative_rect=pygame.Rect(panel_x, y, 200, 40),
             text="RESET TO DEFAULT",
             manager=self.ui_manager,
         )
+        y += 55
 
         # Info text
-        info_y = start_y + 190
         info_lines = [
             "Save files will be stored in this directory.",
             "Changing this will not move existing save files.",
-            "Default location: AppData/SpaceGame/saves (Windows)",
-            "or ~/.spacegame/saves (Unix/Mac)",
         ]
-
-        for i, line in enumerate(info_lines):
+        for line in info_lines:
             pygame_gui.elements.UILabel(
-                relative_rect=pygame.Rect(panel_x, info_y + i * 25, panel_width, 25),
+                relative_rect=pygame.Rect(panel_x, y, panel_width, 22),
                 text=line,
                 manager=self.ui_manager,
             )
+            y += 22
+        y += 20
 
-        # Tutorial section
-        tutorial_y = info_y + len(info_lines) * 25 + 30
+        # === Tutorial Section ===
         pygame_gui.elements.UILabel(
-            relative_rect=pygame.Rect(panel_x, tutorial_y, panel_width, 30),
+            relative_rect=pygame.Rect(panel_x, y, panel_width, 30),
             text="Tutorial:",
             manager=self.ui_manager,
         )
+        y += 35
         self.replay_tutorial_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(panel_x, tutorial_y + 35, 200, 50),
+            relative_rect=pygame.Rect(panel_x, y, 200, 40),
             text="REPLAY TUTORIAL",
             manager=self.ui_manager,
         )
 
-        # Bottom buttons
+        # === Bottom buttons ===
         self.back_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(panel_x, WINDOW_HEIGHT - 80, 150, 50),
             text="BACK",
@@ -153,24 +213,23 @@ class SettingsView(BaseView):
             text="APPLY",
             manager=self.ui_manager,
         )
-        self.apply_button.disable()  # Disabled until changes made
+        self.apply_button.disable()
 
     def _destroy_ui(self) -> None:
         """Destroy all UI elements."""
-        if self.save_dir_label:
-            self.save_dir_label.kill()
-        if self.save_dir_display:
-            self.save_dir_display.kill()
-        if self.browse_button:
-            self.browse_button.kill()
-        if self.reset_button:
-            self.reset_button.kill()
-        if self.replay_tutorial_button:
-            self.replay_tutorial_button.kill()
-        if self.back_button:
-            self.back_button.kill()
-        if self.apply_button:
-            self.apply_button.kill()
+        for elem in [
+            self.save_dir_label, self.save_dir_display,
+            self.browse_button, self.reset_button,
+            self.replay_tutorial_button, self.back_button, self.apply_button,
+            self._master_slider, self._music_slider,
+            self._sfx_slider, self._ambient_slider,
+            self._master_label, self._music_label,
+            self._sfx_label, self._ambient_label,
+        ]:
+            if elem:
+                elem.kill()
+        # Kill percentage labels and section headers created without refs
+        # (pygame_gui manager handles orphaned elements on view exit)
 
     def handle_event(self, event: pygame.event.Event) -> None:
         """Handle settings view events."""
@@ -185,13 +244,54 @@ class SettingsView(BaseView):
                 self._replay_tutorial()
 
             elif event.ui_element == self.back_button:
-                logger.info("Close settings (no changes applied)")
+                # Revert audio changes on cancel
+                if self._audio_changed:
+                    get_audio_manager().set_config(self._original_audio_config)
+                    logger.info("Audio settings reverted")
                 self.should_close = True
 
             elif event.ui_element == self.apply_button:
                 logger.info("Apply settings changes")
                 self.settings_changed = True
+                self._audio_changed = False  # Committed — don't revert
                 self.should_close = True
+
+        elif event.type == pygame_gui.UI_HORIZONTAL_SLIDER_MOVED:
+            self._handle_volume_slider(event)
+
+    def _handle_volume_slider(self, event: pygame.event.Event) -> None:
+        """Handle volume slider changes — live preview."""
+        audio = get_audio_manager()
+        slider_map = {
+            id(self._master_slider): ("master", audio.set_master_volume, "#_master_pct"),
+            id(self._music_slider): ("music", audio.set_music_volume, "#_music_pct"),
+            id(self._sfx_slider): ("sfx", audio.set_sfx_volume, "#_sfx_pct"),
+            id(self._ambient_slider): ("ambient", audio.set_ambient_volume, "#_ambient_pct"),
+        }
+
+        elem_id = id(event.ui_element)
+        if elem_id in slider_map:
+            name, setter, pct_obj_id = slider_map[elem_id]
+            value = event.value / 100.0
+            setter(value)
+            self._audio_changed = True
+            self.apply_button.enable()
+
+            # Update percentage label
+            pct_text = f"{int(event.value)}%"
+            for elem in self.ui_manager.get_sprite_group():
+                if (
+                    hasattr(elem, "object_ids")
+                    and pct_obj_id in [str(oid) for oid in elem.object_ids]
+                ):
+                    elem.set_text(pct_text)
+                    break
+
+    def get_audio_config(self) -> Optional[AudioConfig]:
+        """Get the current audio config if audio settings were changed."""
+        if self._audio_changed or self.settings_changed:
+            return get_audio_manager().get_config()
+        return None
 
     def _browse_save_directory(self) -> None:
         """Open directory browser to select save directory."""

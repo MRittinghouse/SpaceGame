@@ -11,6 +11,7 @@ from typing import Optional
 from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState
 from spacegame.views.base_view import BaseView
 from spacegame.engine.backgrounds import AnimatedBackground
+from spacegame.engine.fonts import FontCache
 from spacegame.utils.logger import logger
 
 
@@ -23,8 +24,8 @@ class NameInputView(BaseView):
         self.next_state: Optional[GameState] = None
 
         # Fonts
-        self.title_font = pygame.font.Font(None, 48)
-        self.subtitle_font = pygame.font.Font(None, 28)
+        self.title_font = FontCache.get(48)
+        self.subtitle_font = FontCache.get(28)
 
         # UI elements (created in _create_ui)
         self.name_input: Optional[pygame_gui.elements.UITextEntryLine] = None

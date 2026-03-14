@@ -6,7 +6,7 @@
 > - **Ship purchase**: COMPLETE — buy/compare ships at the shipyard, trade-in value system — `views/shipyard_view.py`
 > - **Ship upgrades**: COMPLETE — 5 upgrades with 3-slot limit, flat bonuses (simplified from the 15+ tiered upgrades in this spec) — `data/ships/upgrades.json`, `models/upgrades.py`
 > - **Cargo management**: COMPLETE — volume-based cargo with capacity limits
-> - **Fleet management**: NOT IMPLEMENTED — single ship only, no multi-ship ownership
+> - **Fleet management**: NOT IMPLEMENTED — deferred to Campaign Act Two (Cycle 5.3.1), single ship only during Act One
 > - **Crew slots**: Defined in ship data but non-functional — crew system is Phase 2+
 > - **Spec note**: The upgrade system was simplified to 5 flat-bonus upgrades with a 3-slot cap, rather than the tiered percentage-based upgrades in this document.
 
@@ -240,7 +240,9 @@ Upgrade {
 }
 ```
 
-## 6. Fleet Management (Post-MVP)
+## 6. Fleet Management (Campaign Act Two)
+
+> **Design Note**: Fleet management is deferred to Campaign Act Two (Cycle 5.3.1). Narratively, the player's growing influence and expanded operations in Act Two justify acquiring and managing multiple ships. Single-ship gameplay throughout Act One keeps the early experience focused.
 
 ### 6.1 Multiple Ship Ownership
 

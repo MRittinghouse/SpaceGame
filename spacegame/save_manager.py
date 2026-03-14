@@ -55,6 +55,39 @@ class SaveManager:
         """Get the file path for a save slot."""
         return self.save_dir / f"save_slot_{slot}.json"
 
+    @property
+    def _settings_path(self) -> Path:
+        """Path to the global settings file."""
+        return self.save_dir / "settings.json"
+
+    def save_settings(self, settings: Dict[str, Any]) -> None:
+        """Save global settings (audio, etc.) to settings.json.
+
+        Args:
+            settings: Settings dict to persist.
+        """
+        try:
+            with open(self._settings_path, "w") as f:
+                json.dump(settings, f, indent=2)
+            logger.info("Settings saved")
+        except OSError as e:
+            logger.error(f"Failed to save settings: {e}")
+
+    def load_settings(self) -> Dict[str, Any]:
+        """Load global settings from settings.json.
+
+        Returns:
+            Settings dict, or empty dict if file doesn't exist.
+        """
+        if not self._settings_path.exists():
+            return {}
+        try:
+            with open(self._settings_path, "r") as f:
+                return json.load(f)
+        except (json.JSONDecodeError, OSError) as e:
+            logger.error(f"Failed to load settings: {e}")
+            return {}
+
     def save_game(
         self,
         slot: int,
@@ -65,6 +98,10 @@ class SaveManager:
         save_name: Optional[str] = None,
         event_log: Optional[List[Dict[str, Any]]] = None,
         tutorial_state: Optional[Dict[str, Any]] = None,
+        price_history: Optional[Any] = None,
+        trade_routes: Optional[Any] = None,
+        trade_contracts: Optional[Any] = None,
+        investment_manager: Optional[Any] = None,
     ) -> bool:
         """
         Save the current game state to a slot.
@@ -76,6 +113,9 @@ class SaveManager:
             active_events: Dictionary of system_id -> MarketEvent
             playtime_seconds: Total playtime in seconds
             save_name: Optional custom name for the save
+            price_history: Optional PriceHistory tracker.
+            trade_routes: Optional TradeRouteTracker.
+            trade_contracts: Optional TradeContractManager.
 
         Returns:
             True if save successful, False otherwise
@@ -89,6 +129,10 @@ class SaveManager:
                 save_name,
                 event_log=event_log,
                 tutorial_state=tutorial_state,
+                price_history=price_history,
+                trade_routes=trade_routes,
+                trade_contracts=trade_contracts,
+                investment_manager=investment_manager,
             )
 
             save_path = self.get_save_file_path(slot)
@@ -228,6 +272,10 @@ class SaveManager:
         save_name: Optional[str],
         event_log: Optional[List[Dict[str, Any]]] = None,
         tutorial_state: Optional[Dict[str, Any]] = None,
+        price_history: Optional[Any] = None,
+        trade_routes: Optional[Any] = None,
+        trade_contracts: Optional[Any] = None,
+        investment_manager: Optional[Any] = None,
     ) -> Dict[str, Any]:
         """Serialize game state to dictionary for JSON saving."""
         # Get current system name for metadata
@@ -239,7 +287,7 @@ class SaveManager:
 
         timestamp = datetime.now().isoformat()
 
-        return {
+        result = {
             "version": self.SAVE_VERSION,
             "metadata": {
                 "name": save_name or f"Save {timestamp}",
@@ -257,9 +305,30 @@ class SaveManager:
             "playtime_seconds": playtime_seconds,
         }
 
+        # Phase 3 trading data (optional, backward-compatible)
+        if price_history:
+            result["price_history"] = price_history.to_dict()
+        if trade_routes:
+            result["trade_routes"] = trade_routes.to_dict()
+        if trade_contracts:
+            result["trade_contracts"] = trade_contracts.to_dict()
+        if investment_manager:
+            result["investment_state"] = investment_manager.to_dict()
+
+        # Market supply/demand modifiers
+        market_supply_demand = {}
+        for system_id, market in markets.items():
+            sd = getattr(market, "_player_supply_demand", {})
+            if sd:
+                market_supply_demand[system_id] = dict(sd)
+        if market_supply_demand:
+            result["market_supply_demand"] = market_supply_demand
+
+        return result
+
     def _deserialize_game_state(self, save_data: Dict[str, Any]) -> Dict[str, Any]:
         """Deserialize game state from loaded JSON."""
-        return {
+        result = {
             "player": self._deserialize_player(save_data["player"]),
             "markets": self._deserialize_markets(save_data["markets"]),
             "active_events": self._deserialize_events(save_data.get("active_events", {})),
@@ -268,6 +337,31 @@ class SaveManager:
             "playtime_seconds": save_data.get("playtime_seconds", 0),
             "metadata": save_data.get("metadata", {}),
         }
+
+        # Phase 3 trading data (optional, backward-compatible defaults)
+        if "price_history" in save_data:
+            from spacegame.models.market import PriceHistory
+            result["price_history"] = PriceHistory.from_dict(save_data["price_history"])
+        else:
+            result["price_history"] = None
+
+        if "trade_routes" in save_data:
+            from spacegame.models.trade_route import TradeRouteTracker
+            result["trade_routes"] = TradeRouteTracker.from_dict(save_data["trade_routes"])
+        else:
+            result["trade_routes"] = None
+
+        if "trade_contracts" in save_data:
+            from spacegame.models.trade_contract import TradeContractManager
+            result["trade_contracts"] = TradeContractManager.from_dict(save_data["trade_contracts"])
+        else:
+            result["trade_contracts"] = None
+
+        result["investment_state"] = save_data.get("investment_state", None)
+
+        result["market_supply_demand"] = save_data.get("market_supply_demand", {})
+
+        return result
 
     def _serialize_player(self, player: Player) -> Dict[str, Any]:
         """Serialize Player object."""
@@ -291,13 +385,45 @@ class SaveManager:
             "items_salvaged": player.items_salvaged,
             "items_refined": player.items_refined,
             "unlocked_achievements": player.unlocked_achievements,
+            "max_mining_depth": player.max_mining_depth,
+            "total_chains_triggered": player.total_chains_triggered,
+            "rare_ores_mined": player.rare_ores_mined,
+            "salvage_sessions_completed": player.salvage_sessions_completed,
+            "corrupted_items_extracted": player.corrupted_items_extracted,
+            "refining_jobs_completed": player.refining_jobs_completed,
+            "batch_jobs_queued": player.batch_jobs_queued,
+            "recipes_crafted": list(player.recipes_crafted),
+            "investments_owned": player.investments_owned,
+            "s_ranks_earned": player.s_ranks_earned,
             "drone_fleet": player.drone_fleet.to_dict(),
             "faction_reputation": player.faction_reputation,
             "faction_assignments": player.faction_assignments,
             "dialogue_flags": player.dialogue_flags,
             "trade_permits": list(player.trade_permits),
+            "black_market_access": list(player.black_market_access),
             "mission_state": player.mission_state,
             "crew_state": player.crew_state,
+            "social_state": player.social_state,
+            "attribute_state": player.attribute_state,
+            "journal_state": player.journal_state,
+            "ground_equipment": list(player.ground_equipment),
+            "hidden_compartment": player.hidden_compartment.to_dict() if player.hidden_compartment else None,
+            "smuggling_contract_state": player.smuggling_contract_state,
+            "ground_contract_state": player.ground_contract_state,
+            "political_state": player.political_state,
+            "criminal_heat": player.criminal_heat,
+            "goods_smuggled": player.goods_smuggled,
+            "smuggling_contracts_completed": player.smuggling_contracts_completed,
+            "times_caught_smuggling": player.times_caught_smuggling,
+            "inspections_passed_with_contraband": player.inspections_passed_with_contraband,
+            "max_criminal_heat_reached": player.max_criminal_heat_reached,
+            "ground_missions_completed": player.ground_missions_completed,
+            "ground_missions_failed": player.ground_missions_failed,
+            "ground_enemies_defeated": player.ground_enemies_defeated,
+            "ground_enemies_talked": player.ground_enemies_talked,
+            "ground_tiles_explored": player.ground_tiles_explored,
+            "ground_undetected_completions": player.ground_undetected_completions,
+            "ground_campaign_missions_completed": player.ground_campaign_missions_completed,
         }
         return result
 
@@ -342,6 +468,18 @@ class SaveManager:
         player.items_refined = data.get("items_refined", 0)
         player.unlocked_achievements = data.get("unlocked_achievements", [])
 
+        # Restore minigame stats
+        player.max_mining_depth = data.get("max_mining_depth", 0)
+        player.total_chains_triggered = data.get("total_chains_triggered", 0)
+        player.rare_ores_mined = data.get("rare_ores_mined", 0)
+        player.salvage_sessions_completed = data.get("salvage_sessions_completed", 0)
+        player.corrupted_items_extracted = data.get("corrupted_items_extracted", 0)
+        player.refining_jobs_completed = data.get("refining_jobs_completed", 0)
+        player.batch_jobs_queued = data.get("batch_jobs_queued", 0)
+        player.recipes_crafted = set(data.get("recipes_crafted", []))
+        player.investments_owned = data.get("investments_owned", 0)
+        player.s_ranks_earned = data.get("s_ranks_earned", 0)
+
         # Restore drone fleet
         if "drone_fleet" in data:
             from spacegame.models.drone import MiningDroneFleet
@@ -363,11 +501,63 @@ class SaveManager:
             # Legacy save: grant all permits for backward compatibility
             player.trade_permits = set(player.faction_reputation.keys())
 
+        # Restore black market access permits
+        player.black_market_access = set(data.get("black_market_access", []))
+
         # Restore mission state
         player.mission_state = data.get("mission_state", {})
 
         # Restore crew state
         player.crew_state = data.get("crew_state", {})
+
+        # Restore social state
+        player.social_state = data.get("social_state", {})
+
+        # Restore attribute state
+        player.attribute_state = data.get("attribute_state", {})
+
+        # Restore journal state
+        player.journal_state = data.get("journal_state", {})
+
+        # Restore ground equipment inventory
+        player.ground_equipment = data.get("ground_equipment", [])
+
+        # Restore hidden compartment
+        hidden_data = data.get("hidden_compartment")
+        if hidden_data:
+            from spacegame.models.smuggling import HiddenCompartment
+
+            player.hidden_compartment = HiddenCompartment.from_dict(hidden_data)
+        else:
+            player.hidden_compartment = None
+
+        # Restore ground contract state
+        player.ground_contract_state = data.get("ground_contract_state", {})
+
+        # Restore smuggling contract state
+        player.smuggling_contract_state = data.get("smuggling_contract_state", {})
+
+        # Restore political state
+        player.political_state = data.get("political_state", {})
+
+        # Restore smuggling stats
+        player.criminal_heat = data.get("criminal_heat", 0)
+        player.goods_smuggled = data.get("goods_smuggled", 0)
+        player.smuggling_contracts_completed = data.get("smuggling_contracts_completed", 0)
+        player.times_caught_smuggling = data.get("times_caught_smuggling", 0)
+        player.inspections_passed_with_contraband = data.get("inspections_passed_with_contraband", 0)
+        player.max_criminal_heat_reached = data.get("max_criminal_heat_reached", 0)
+
+        # Restore ground exploration stats
+        player.ground_missions_completed = data.get("ground_missions_completed", 0)
+        player.ground_missions_failed = data.get("ground_missions_failed", 0)
+        player.ground_enemies_defeated = data.get("ground_enemies_defeated", 0)
+        player.ground_enemies_talked = data.get("ground_enemies_talked", 0)
+        player.ground_tiles_explored = data.get("ground_tiles_explored", 0)
+        player.ground_undetected_completions = data.get("ground_undetected_completions", 0)
+        player.ground_campaign_missions_completed = data.get(
+            "ground_campaign_missions_completed", 0
+        )
 
         return player
 
@@ -383,6 +573,8 @@ class SaveManager:
             "current_fuel": ship.current_fuel,
             "current_cargo": ship.current_cargo,
             "cargo_purchase_prices": ship.cargo_purchase_prices,
+            "current_hull": ship.current_hull,
+            "current_shields": ship.current_shields,
         }
 
     def _deserialize_ship(self, data: Dict[str, Any]) -> Ship:
@@ -393,12 +585,18 @@ class SaveManager:
 
         ship_type = data_loader.get_ship_type(data["ship_type_id"])
 
-        return Ship(
+        ship = Ship(
             ship_type=ship_type,
             current_fuel=data["current_fuel"],
             current_cargo=data.get("current_cargo", {}),
             cargo_purchase_prices=data.get("cargo_purchase_prices", {}),
         )
+        # Restore hull/shields if saved (backward compat: defaults from __post_init__)
+        if "current_hull" in data:
+            ship.current_hull = data["current_hull"]
+        if "current_shields" in data:
+            ship.current_shields = data["current_shields"]
+        return ship
 
     def _serialize_markets(self, markets: Dict[str, Market]) -> Dict[str, Any]:
         """Serialize markets dictionary."""

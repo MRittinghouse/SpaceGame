@@ -1,5 +1,6 @@
 """Tests for event display, event log, and event serialization."""
 
+from unittest.mock import patch
 from spacegame.models.event import MarketEvent, EventType, EventGenerator
 
 
@@ -194,3 +195,109 @@ class TestMarketEventSerialization:
         assert restored.duration_days == event.duration_days
         assert restored.day_started == event.day_started
         assert restored.description == event.description
+
+
+# ============================================================================
+# Day-Advance Event Generation Tests
+# ============================================================================
+
+
+class TestDayAdvanceEventGeneration:
+    """Tests for event generation triggered by day advances."""
+
+    def _make_generator(self) -> EventGenerator:
+        return EventGenerator(
+            commodities=["food", "iron_ore", "fuel"],
+            systems=["nexus_prime", "verdant", "forgeworks"],
+        )
+
+    def test_event_generator_produces_event_when_rng_hits(self) -> None:
+        """EventGenerator should produce event when random < EVENT_CHANCE."""
+        gen = self._make_generator()
+        names = {"food": "Food", "iron_ore": "Iron Ore", "fuel": "Fuel"}
+        # Force random.random() to return 0.0 (always below EVENT_CHANCE)
+        with patch("spacegame.models.event.random.random", return_value=0.0):
+            event = gen.try_generate_event(5, names)
+        assert event is not None
+        assert event.day_started == 5
+
+    def test_event_generator_no_event_when_rng_misses(self) -> None:
+        """EventGenerator should return None when random > EVENT_CHANCE."""
+        gen = self._make_generator()
+        names = {"food": "Food", "iron_ore": "Iron Ore", "fuel": "Fuel"}
+        # Force random.random() to return 1.0 (always above EVENT_CHANCE)
+        with patch("spacegame.models.event.random.random", return_value=1.0):
+            event = gen.try_generate_event(5, names)
+        assert event is None
+
+    def test_event_expires_after_duration(self) -> None:
+        """Event should expire after its duration passes."""
+        event = MarketEvent(
+            event_type=EventType.SHORTAGE,
+            commodity_id="food",
+            system_id="nexus_prime",
+            price_multiplier=2.0,
+            duration_days=3,
+            day_started=5,
+            description="Test shortage",
+        )
+        assert event.is_active(5)  # Day started
+        assert event.is_active(7)  # Last active day
+        assert not event.is_active(8)  # Expired
+
+    def test_event_multiplier_affects_market_price(self) -> None:
+        """Market should apply event price multiplier to affected commodity."""
+        from spacegame.data_loader import DataLoader
+        from spacegame.models.market import Market
+
+        loader = DataLoader()
+        loader.load_all()
+        nexus = loader.get_system("nexus_prime")
+        commodities = loader.get_all_commodities()
+
+        # Create market without event
+        market_no_event = Market(nexus, commodities, game_day=1)
+        normal_price = market_no_event.get_price("food")
+
+        # Create market with a 2x shortage event on food
+        market_with_event = Market(nexus, commodities, game_day=1)
+        event = MarketEvent(
+            event_type=EventType.SHORTAGE,
+            commodity_id="food",
+            system_id="nexus_prime",
+            price_multiplier=2.0,
+            duration_days=5,
+            day_started=1,
+            description="Test shortage",
+        )
+        market_with_event.apply_event(event)
+        event_price = market_with_event.get_price("food")
+
+        assert event_price > normal_price, (
+            f"Event price ({event_price}) should exceed normal ({normal_price})"
+        )
+
+    def test_expired_events_cleaned_from_active_dict(self) -> None:
+        """Expired events should be removed from active_events dict."""
+        active_events: dict[str, MarketEvent] = {}
+        event = MarketEvent(
+            event_type=EventType.SURPLUS,
+            commodity_id="fuel",
+            system_id="verdant",
+            price_multiplier=0.5,
+            duration_days=3,
+            day_started=1,
+            description="Test surplus",
+        )
+        active_events["verdant"] = event
+
+        # Simulate cleanup logic (mirrors Game._check_day_advance)
+        current_day = 5  # After duration
+        expired = [
+            sid for sid, ev in active_events.items()
+            if not ev.is_active(current_day)
+        ]
+        for sid in expired:
+            del active_events[sid]
+
+        assert len(active_events) == 0, "Expired event should be removed"

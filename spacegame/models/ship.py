@@ -29,6 +29,17 @@ class ShipType:
     crew_slots: int
     special_abilities: List[str]
     availability: str  # common, uncommon, rare
+    # Combat stats (default 0 for backward compat)
+    combat_hull: int = 0
+    combat_shields: int = 0
+    combat_energy: int = 0
+    combat_energy_regen: int = 0
+    combat_speed: int = 0
+    combat_evasion: int = 0
+    combat_accuracy: int = 0
+    weapon_slots: int = 0
+    defense_slots: int = 0
+    utility_slots: int = 3
 
     def can_afford(self, credits: int) -> bool:
         """
@@ -58,9 +69,11 @@ class Ship:
         default_factory=dict
     )  # commodity_id -> total_cost_paid
     damage_level: int = 0  # 0-100, future feature
+    current_hull: int = 0
+    current_shields: int = 0
 
     def __post_init__(self) -> None:
-        """Initialize ship with full fuel if not specified."""
+        """Initialize ship with full fuel and combat stats if not specified."""
         # Optional references to bonus sources (set by Player/Game after init)
         if not hasattr(self, "_upgrade_manager"):
             self._upgrade_manager = None
@@ -68,6 +81,11 @@ class Ship:
             self._crew_roster = None
         if self.current_fuel == 0:
             self.current_fuel = self.ship_type.fuel_capacity
+        # Auto-init hull/shields from ship type if not explicitly set
+        if self.current_hull == 0 and self.ship_type.combat_hull > 0:
+            self.current_hull = self.ship_type.combat_hull
+        if self.current_shields == 0 and self.ship_type.combat_shields > 0:
+            self.current_shields = self.ship_type.combat_shields
 
     def set_upgrade_manager(self, manager) -> None:
         """Link an upgrade manager for bonus calculations."""
@@ -283,6 +301,25 @@ class Ship:
         actual_amount = min(amount, space_available)
         self.current_fuel += actual_amount
         return actual_amount
+
+    def repair_hull(self, amount: int) -> int:
+        """Repair hull damage, capped at max hull.
+
+        Args:
+            amount: Hull points to repair.
+
+        Returns:
+            Actual amount repaired.
+        """
+        max_hull = self.ship_type.combat_hull
+        space = max_hull - self.current_hull
+        actual = min(amount, space)
+        self.current_hull += actual
+        return actual
+
+    def restore_shields(self) -> None:
+        """Restore shields to maximum (e.g., on docking)."""
+        self.current_shields = self.ship_type.combat_shields
 
     def get_fuel_percentage(self) -> float:
         """

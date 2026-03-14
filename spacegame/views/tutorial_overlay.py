@@ -9,6 +9,7 @@ manager layer, ensuring it is never buried beneath other views.
 
 import pygame
 from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors
+from spacegame.engine.fonts import FontCache
 from spacegame.tutorial_manager import TutorialManager, TUTORIAL_STEPS
 from spacegame.utils.logger import logger
 
@@ -56,10 +57,10 @@ class TutorialOverlay:
         self.active = False
 
         # Fonts
-        self.title_font = pygame.font.Font(None, 36)
-        self.body_font = pygame.font.Font(None, 22)
-        self.step_font = pygame.font.Font(None, 18)
-        self.btn_font = pygame.font.Font(None, 24)
+        self.title_font = FontCache.get(36)
+        self.body_font = FontCache.get(22)
+        self.step_font = FontCache.get(18)
+        self.btn_font = FontCache.get(24)
 
         # Panel geometry (computed once)
         self.panel_x = (WINDOW_WIDTH - self.PANEL_WIDTH) // 2

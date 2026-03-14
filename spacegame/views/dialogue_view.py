@@ -2,7 +2,8 @@
 Dialogue view for NPC conversations.
 
 Displays NPC portrait placeholder, dialogue text with typewriter effect,
-and clickable player response options.
+and clickable player response options. Supports skill check indicators
+and pass/fail feedback for social skill checks.
 """
 
 import pygame
@@ -15,22 +16,35 @@ from spacegame.config import (
     GameState,
     DIALOGUE_TEXT_SPEED,
     DIALOGUE_PORTRAIT_SIZE,
+    SOCIAL_CHECK_FEEDBACK_DURATION,
 )
 from spacegame.views.base_view import BaseView
 from spacegame.models.dialogue import DialogueManager, NPC
+from spacegame.models.social import SocialManager
 from spacegame.data_loader import DataLoader
 from spacegame.engine.backgrounds import AnimatedBackground
+from spacegame.engine.draw_utils import draw_panel
+from spacegame.engine.sprites import AnimatedSprite, get_sprite_manager
+from spacegame.engine.fonts import FontCache
 from spacegame.utils.logger import logger
+from spacegame.engine.audio_manager import get_audio_manager
 
 
 class _ResponseButton:
     """Manually-rendered response button for the dialogue view."""
 
-    def __init__(self, rect: pygame.Rect, text: str, font: pygame.font.Font) -> None:
+    def __init__(
+        self,
+        rect: pygame.Rect,
+        text: str,
+        font: pygame.font.Font,
+        check_info: Optional[dict] = None,
+    ) -> None:
         self.rect = rect
         self.text = text
         self.font = font
         self.hovered = False
+        self.check_info = check_info  # {skill, difficulty, effective, can_pass}
 
     def update_hover(self, mouse_pos: tuple[int, int]) -> None:
         """Update hover state from current mouse position."""
@@ -45,11 +59,42 @@ class _ResponseButton:
         pygame.draw.rect(screen, bg_color, self.rect, border_radius=4)
         pygame.draw.rect(screen, border_color, self.rect, 1, border_radius=4)
 
-        # Arrow prefix
+        # Skill check stripe and prefix
+        if self.check_info:
+            self._render_check_indicator(screen)
+
+        # Arrow prefix — clip text to button width
         prefix = "\u25b8 " if self.hovered else "  "
-        text_surf = self.font.render(prefix + self.text, True, text_color)
+        display_text = self.text
+        max_text_w = self.rect.width - 24  # 12px padding each side
+        text_surf = self.font.render(prefix + display_text, True, text_color)
+        if text_surf.get_width() > max_text_w:
+            while len(display_text) > 3 and text_surf.get_width() > max_text_w:
+                display_text = display_text[:-1]
+            display_text = display_text.rstrip() + ".."
+            text_surf = self.font.render(prefix + display_text, True, text_color)
         text_rect = text_surf.get_rect(midleft=(self.rect.x + 12, self.rect.centery))
         screen.blit(text_surf, text_rect)
+
+    def _render_check_indicator(self, screen: pygame.Surface) -> None:
+        """Render the color-coded skill check stripe on the left edge."""
+        info = self.check_info
+        if not info:
+            return
+
+        effective = info["effective"]
+        difficulty = info["difficulty"]
+
+        if effective >= difficulty:
+            color = Colors.CHECK_PASS
+        elif effective == difficulty - 1:
+            color = Colors.CHECK_MARGINAL
+        else:
+            color = Colors.CHECK_FAIL
+
+        # Left stripe
+        stripe_rect = pygame.Rect(self.rect.x, self.rect.y, 4, self.rect.height)
+        pygame.draw.rect(screen, color, stripe_rect, border_radius=2)
 
     def was_clicked(self, event: pygame.event.Event) -> bool:
         """Check if this button was clicked."""
@@ -76,19 +121,22 @@ class DialogueView(BaseView):
         ui_manager: object,
         dialogue_manager: DialogueManager,
         data_loader: DataLoader,
+        social_manager: Optional[SocialManager] = None,
     ) -> None:
         super().__init__()
         self.ui_manager = ui_manager
         self.dialogue_manager = dialogue_manager
         self.data_loader = data_loader
+        self.social_manager = social_manager
         self.next_state: Optional[GameState] = None
 
         # Fonts
-        self.name_font = pygame.font.Font(None, 30)
-        self.title_font = pygame.font.Font(None, 22)
-        self.body_font = pygame.font.Font(None, 24)
-        self.response_font = pygame.font.Font(None, 22)
-        self.initial_font = pygame.font.Font(None, 48)
+        self.name_font = FontCache.get(30)
+        self.title_font = FontCache.get(22)
+        self.body_font = FontCache.get(24)
+        self.response_font = FontCache.get(22)
+        self.initial_font = FontCache.get(48)
+        self.feedback_font = FontCache.get(32)
 
         # Panel geometry
         self.panel_x = (WINDOW_WIDTH - self.PANEL_WIDTH) // 2
@@ -115,9 +163,17 @@ class DialogueView(BaseView):
         # Return state when dialogue ends (configurable per dialogue)
         self._return_state: GameState = GameState.TRADING
 
+        # Skill check feedback overlay
+        self._check_feedback: Optional[dict] = None  # {text, timer, success}
+
+        # Sprite manager for NPC portraits
+        self._sprite_mgr = get_sprite_manager()
+        self._portrait_cache: dict[str, Optional[AnimatedSprite]] = {}
+
     def on_enter(self) -> None:
         super().on_enter()
         logger.info("Entered dialogue view")
+        self._check_feedback = None
         self._load_current_node()
 
     def on_exit(self) -> None:
@@ -144,6 +200,14 @@ class DialogueView(BaseView):
         self._text_timer = 0.0
         self._text_complete = DIALOGUE_TEXT_SPEED <= 0
 
+        # Update portrait expression based on dialogue node
+        if self._current_npc:
+            portrait = self._get_portrait(self._current_npc.id)
+            if portrait is not None and node.expression:
+                portrait.play(node.expression)
+            elif portrait is not None:
+                portrait.play("idle")
+
         # Build response buttons (only shown when text is complete)
         self._build_response_buttons()
 
@@ -158,13 +222,30 @@ class DialogueView(BaseView):
         if not responses:
             # Terminal node — show a "[Continue]" button to end
             responses_text = ["[Continue]"]
-            is_terminal = True
+            check_infos: list[Optional[dict]] = [None]
         else:
-            responses_text = [r.text for r in responses]
-            is_terminal = False
+            responses_text = []
+            check_infos = []
+            for r in responses:
+                if r.skill_check and self.social_manager:
+                    sc = r.skill_check
+                    npc_id = self.dialogue_manager._current_npc_id or ""
+                    effective = self.social_manager.get_effective_level(sc.skill, npc_id)
+                    can_pass = self.social_manager.can_pass_check(sc.skill, sc.difficulty, npc_id)
+                    skill_name = sc.skill.capitalize()
+                    display_text = f"[{skill_name}: {effective}/{sc.difficulty}] {r.text}"
+                    responses_text.append(display_text)
+                    check_infos.append({
+                        "skill": sc.skill,
+                        "difficulty": sc.difficulty,
+                        "effective": effective,
+                        "can_pass": can_pass,
+                    })
+                else:
+                    responses_text.append(r.text)
+                    check_infos.append(None)
 
         # Calculate vertical position for responses
-        # We'll position them at the bottom portion of the panel
         text_area_bottom = self.panel_y + self.PANEL_HEIGHT - 20
         total_response_height = len(responses_text) * (self.RESPONSE_HEIGHT + self.RESPONSE_GAP)
         response_start_y = text_area_bottom - total_response_height
@@ -175,7 +256,7 @@ class DialogueView(BaseView):
         for i, text in enumerate(responses_text):
             btn_y = response_start_y + i * (self.RESPONSE_HEIGHT + self.RESPONSE_GAP)
             rect = pygame.Rect(btn_x, btn_y, btn_width, self.RESPONSE_HEIGHT)
-            btn = _ResponseButton(rect, text, self.response_font)
+            btn = _ResponseButton(rect, text, self.response_font, check_infos[i])
             self._response_buttons.append(btn)
 
     def handle_event(self, event: pygame.event.Event) -> None:
@@ -202,6 +283,7 @@ class DialogueView(BaseView):
 
     def _on_response_selected(self, index: int) -> None:
         """Handle a response button click."""
+        get_audio_manager().play_sfx("ui_confirm")
         node = self.dialogue_manager.get_current_node()
         if not node:
             return
@@ -214,12 +296,25 @@ class DialogueView(BaseView):
             return
 
         next_node = self.dialogue_manager.select_response(index)
+
+        # Check for skill check result feedback
+        check_result = self.dialogue_manager.get_last_check_result()
+        if check_result is not None:
+            success, msg = check_result
+            self._check_feedback = {
+                "text": "Check Passed!" if success else "Check Failed.",
+                "timer": SOCIAL_CHECK_FEEDBACK_DURATION,
+                "success": success,
+            }
+            logger.info(f"Skill check: {msg}")
+
         if next_node is None:
             # Dialogue ended via response
             self.next_state = self._return_state
             logger.info("Dialogue ended (end response)")
         else:
             # Advance to next node
+            get_audio_manager().play_sfx("ui_click")
             self._load_current_node()
 
     def update(self, dt: float) -> None:
@@ -235,19 +330,26 @@ class DialogueView(BaseView):
             else:
                 self._revealed_chars = chars_to_show
 
+        # Update portrait animation
+        if self._current_npc:
+            portrait = self._get_portrait(self._current_npc.id)
+            if portrait is not None:
+                portrait.update(dt)
+
+        # Skill check feedback timer
+        if self._check_feedback:
+            self._check_feedback["timer"] -= dt
+            if self._check_feedback["timer"] <= 0:
+                self._check_feedback = None
+
     def render(self, screen: pygame.Surface) -> None:
         # Background
         self.background.render(screen)
         screen.blit(self._bg_dim, (0, 0))
 
         # Panel
-        panel_surf = pygame.Surface((self.PANEL_WIDTH, self.PANEL_HEIGHT), pygame.SRCALPHA)
-        panel_surf.fill((*Colors.PANEL, 230))
-        screen.blit(panel_surf, (self.panel_x, self.panel_y))
-
-        # Panel border
         panel_rect = pygame.Rect(self.panel_x, self.panel_y, self.PANEL_WIDTH, self.PANEL_HEIGHT)
-        pygame.draw.rect(screen, Colors.UI_BORDER, panel_rect, 2)
+        draw_panel(screen, panel_rect, alpha=230, bg_color=Colors.PANEL, border_radius=4)
 
         if self._current_npc:
             # NPC dialogue mode
@@ -276,30 +378,50 @@ class DialogueView(BaseView):
                 btn.update_hover(mouse_pos)
                 btn.render(screen)
 
+        # Skill check feedback overlay
+        if self._check_feedback:
+            self._render_check_feedback(screen)
+
+    def _get_portrait(self, npc_id: str) -> Optional[AnimatedSprite]:
+        """Get a cached animated portrait for an NPC."""
+        if npc_id not in self._portrait_cache:
+            self._portrait_cache[npc_id] = self._sprite_mgr.get_portrait_animated(
+                npc_id, scale=2
+            )
+        return self._portrait_cache[npc_id]
+
     def _render_portrait(self, screen: pygame.Surface) -> None:
-        """Render the NPC portrait placeholder."""
+        """Render the NPC portrait (sprite with colored fallback)."""
         npc = self._current_npc
         if not npc:
             return
 
         px = self.panel_x + 25
         py = self.panel_y + 25
-
-        # Colored rectangle
         portrait_rect = pygame.Rect(px, py, self.PORTRAIT_W, self.PORTRAIT_H)
-        portrait_surf = pygame.Surface((self.PORTRAIT_W, self.PORTRAIT_H), pygame.SRCALPHA)
-        portrait_surf.fill((*npc.portrait_color, 180))
-        screen.blit(portrait_surf, (px, py))
 
-        # Border (lighter shade)
+        # Try sprite first
+        anim = self._get_portrait(npc.id)
+        sprite = anim.get_surface() if anim else None
+        if sprite:
+            # Scale sprite to fit portrait area
+            scaled = pygame.transform.scale(sprite, (self.PORTRAIT_W, self.PORTRAIT_H))
+            screen.blit(scaled, (px, py))
+        else:
+            # Fallback: colored rectangle with initials
+            portrait_surf = pygame.Surface(
+                (self.PORTRAIT_W, self.PORTRAIT_H), pygame.SRCALPHA
+            )
+            portrait_surf.fill((*npc.portrait_color, 180))
+            screen.blit(portrait_surf, (px, py))
+            initials = "".join(word[0].upper() for word in npc.name.split() if word)
+            initials_surf = self.initial_font.render(initials, True, Colors.WHITE)
+            initials_rect = initials_surf.get_rect(center=portrait_rect.center)
+            screen.blit(initials_surf, initials_rect)
+
+        # Border
         border_color = tuple(min(c + 60, 255) for c in npc.portrait_color)
         pygame.draw.rect(screen, border_color, portrait_rect, 2)
-
-        # Initials centered on portrait
-        initials = "".join(word[0].upper() for word in npc.name.split() if word)
-        initials_surf = self.initial_font.render(initials, True, Colors.WHITE)
-        initials_rect = initials_surf.get_rect(center=portrait_rect.center)
-        screen.blit(initials_surf, initials_rect)
 
     def _render_speaker_info(self, screen: pygame.Surface) -> None:
         """Render NPC name and title next to portrait."""
@@ -382,6 +504,26 @@ class DialogueView(BaseView):
                 surf = self.body_font.render(current_line, True, color)
                 screen.blit(surf, (x, current_y))
                 current_y += 24
+
+    def _render_check_feedback(self, screen: pygame.Surface) -> None:
+        """Render skill check result feedback overlay."""
+        feedback = self._check_feedback
+        if not feedback:
+            return
+
+        # Fade based on remaining time
+        alpha = min(255, int(255 * feedback["timer"] / SOCIAL_CHECK_FEEDBACK_DURATION * 2))
+        color = Colors.CHECK_PASS if feedback["success"] else Colors.CHECK_FAIL
+
+        text_surf = self.feedback_font.render(feedback["text"], True, color)
+        text_surf.set_alpha(alpha)
+
+        # Center above the panel
+        text_rect = text_surf.get_rect(
+            centerx=self.panel_x + self.PANEL_WIDTH // 2,
+            bottom=self.panel_y - 10,
+        )
+        screen.blit(text_surf, text_rect)
 
     def _get_response_area_top(self) -> int:
         """Get the Y coordinate where response buttons start."""

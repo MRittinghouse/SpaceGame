@@ -14,6 +14,53 @@ from spacegame.models.player import Player
 from spacegame.achievement_manager import AchievementManager
 from spacegame.utils.logger import logger
 from spacegame.engine.backgrounds import AnimatedBackground
+from spacegame.engine.draw_utils import draw_bar
+from spacegame.engine.fonts import FontCache
+
+# Category badge colors and symbols
+_BADGE_COLORS: dict[str, tuple[int, int, int]] = {
+    "trading": (220, 180, 40),    # Gold
+    "mining": (180, 100, 30),     # Rust
+    "salvage": (100, 160, 200),   # Steel blue
+    "exploration": (80, 180, 120),  # Green
+    "ground": (200, 80, 80),      # Red
+    "wealth": (255, 215, 0),      # Bright gold
+    "smuggling": (140, 50, 160),  # Purple
+    "progression": (100, 180, 255),  # Blue
+    "economy": (200, 160, 50),    # Amber
+    "general": (160, 170, 190),   # Silver
+}
+
+# Pre-rendered badge cache
+_badge_cache: dict[str, pygame.Surface] = {}
+
+
+def _get_badge(category: str, unlocked: bool) -> pygame.Surface:
+    """Get a 16x16 procedural badge icon for an achievement category."""
+    key = f"{category}_{unlocked}"
+    if key in _badge_cache:
+        return _badge_cache[key]
+
+    color = _BADGE_COLORS.get(category, (160, 170, 190))
+    if not unlocked:
+        # Dim the color for locked achievements
+        color = (color[0] // 3, color[1] // 3, color[2] // 3)
+
+    surf = pygame.Surface((16, 16), pygame.SRCALPHA)
+
+    # Shield/badge shape
+    outline = (min(255, color[0] + 60), min(255, color[1] + 60), min(255, color[2] + 60))
+    # Outer shape: hexagonal badge
+    points = [(8, 0), (15, 4), (15, 12), (8, 16), (1, 12), (1, 4)]
+    pygame.draw.polygon(surf, color, points)
+    pygame.draw.polygon(surf, outline, points, 1)
+
+    # Inner highlight dot
+    if unlocked:
+        pygame.draw.circle(surf, (255, 255, 255, 200), (8, 8), 2)
+
+    _badge_cache[key] = surf
+    return surf
 
 
 class AchievementsView(BaseView):
@@ -35,10 +82,10 @@ class AchievementsView(BaseView):
         self.scroll_offset = 0
 
         # Fonts
-        self.title_font = pygame.font.Font(None, 40)
-        self.name_font = pygame.font.Font(None, 26)
-        self.desc_font = pygame.font.Font(None, 20)
-        self.progress_font = pygame.font.Font(None, 18)
+        self.title_font = FontCache.get(40)
+        self.name_font = FontCache.get(26)
+        self.desc_font = FontCache.get(20)
+        self.progress_font = FontCache.get(18)
 
         # UI
         self.back_button: Optional[pygame_gui.elements.UIButton] = None
@@ -163,13 +210,19 @@ class AchievementsView(BaseView):
             name_text = achievement.name
             desc_text = achievement.description
 
+        # Category badge
+        badge = _get_badge(achievement.category, is_unlocked)
+        badge_x = x + 8
+        badge_y = y + 8
+        screen.blit(badge, (badge_x, badge_y))
+
         name_color = Colors.GREEN if is_unlocked else Colors.TEXT_PRIMARY
         name_surf = self.name_font.render(name_text, True, name_color)
-        screen.blit(name_surf, (x + 10, y + 8))
+        screen.blit(name_surf, (x + 30, y + 8))
 
         # Description
         desc_surf = self.desc_font.render(desc_text, True, Colors.TEXT_SECONDARY)
-        screen.blit(desc_surf, (x + 10, y + 32))
+        screen.blit(desc_surf, (x + 30, y + 32))
 
         # Progress bar (for incomplete achievements)
         if not is_unlocked and not (achievement.hidden and progress == 0):
@@ -177,10 +230,11 @@ class AchievementsView(BaseView):
             bar_y = y + height - 16
             bar_w = width - 120
             bar_h = 8
-            pygame.draw.rect(screen, (30, 30, 45), (bar_x, bar_y, bar_w, bar_h))
-            fill_w = int(bar_w * progress)
-            pygame.draw.rect(screen, Colors.TEXT_HIGHLIGHT, (bar_x, bar_y, fill_w, bar_h))
-            pygame.draw.rect(screen, Colors.UI_BORDER, (bar_x, bar_y, bar_w, bar_h), 1)
+            draw_bar(
+                screen, bar_x, bar_y, bar_w, bar_h,
+                current=progress, maximum=1.0,
+                color=Colors.TEXT_HIGHLIGHT, show_value=False,
+            )
 
             # Progress text
             pct_text = f"{int(progress * 100)}%"
@@ -193,10 +247,12 @@ class AchievementsView(BaseView):
         reward_surf = self.progress_font.render(reward_text, True, reward_color)
         screen.blit(reward_surf, (x + width - 100, y + 10))
 
-        # Checkmark for unlocked
+        # Checkmark for unlocked (pixel art tick)
         if is_unlocked:
-            check_surf = self.name_font.render("OK", True, Colors.GREEN)
-            screen.blit(check_surf, (x + width - 40, y + 35))
+            cx = x + width - 28
+            cy = y + 42
+            pygame.draw.line(screen, Colors.GREEN, (cx, cy), (cx + 4, cy + 4), 2)
+            pygame.draw.line(screen, Colors.GREEN, (cx + 4, cy + 4), (cx + 12, cy - 6), 2)
 
     def _reward_text(self, achievement) -> str:
         """Get display text for an achievement's reward."""

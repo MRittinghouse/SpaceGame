@@ -13,10 +13,40 @@ from spacegame.views.base_view import BaseView
 from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState
 from spacegame.models.system import StarSystem
 from spacegame.models.player import Player
+from spacegame.models.encounter import (
+    EncounterRef,
+    check_travel_encounter,
+    calculate_encounter_chance,
+    filter_enemies_for_system,
+)
 from spacegame.utils.logger import logger
 from spacegame.engine.backgrounds import AnimatedBackground
+from spacegame.engine.fonts import FontCache
 from spacegame.engine.procedural import generate_planet
 from spacegame.engine.particles import ParticlePool, SCAN_PULSE, WARP_TRAIL
+from spacegame.engine.sprites import AnimatedSprite, get_sprite_manager
+from spacegame.models.faction import ReputationTier
+from spacegame.engine.audio_manager import get_audio_manager
+
+
+# Standing pip color per reputation tier (None = no indicator)
+_STANDING_COLORS: dict[ReputationTier, Optional[tuple[int, int, int]]] = {
+    ReputationTier.HOSTILE: (200, 50, 50),
+    ReputationTier.UNFRIENDLY: (220, 150, 50),
+    ReputationTier.NEUTRAL: None,
+    ReputationTier.FRIENDLY: (80, 180, 220),
+    ReputationTier.ALLIED: (50, 200, 100),
+}
+
+
+def _get_standing_color(
+    tier: ReputationTier,
+) -> Optional[tuple[int, int, int]]:
+    """Get standing indicator color for a reputation tier.
+
+    Returns None for Neutral (no indicator displayed).
+    """
+    return _STANDING_COLORS.get(tier)
 
 
 class GalaxyMapView(BaseView):
@@ -33,12 +63,14 @@ class GalaxyMapView(BaseView):
         player: Player,
         systems: Dict[str, StarSystem],
         active_events: Optional[Dict] = None,
+        politics_manager: object = None,
     ):
         super().__init__()
         self.ui_manager = ui_manager
         self.player = player
         self.systems = systems
         self.active_events: Dict = active_events or {}
+        self.politics_manager = politics_manager
 
         # Map visualization settings
         self.map_center_x = WINDOW_WIDTH // 2
@@ -51,15 +83,16 @@ class GalaxyMapView(BaseView):
         self.next_state: Optional[GameState] = None
 
         # Fonts
-        self.system_font = pygame.font.Font(None, 24)
-        self.info_font = pygame.font.Font(None, 20)
-        self.title_font = pygame.font.Font(None, 32)
+        self.system_font = FontCache.get(24)
+        self.info_font = FontCache.get(20)
+        self.title_font = FontCache.get(32)
 
         # UI buttons
         self.trade_button: Optional[pygame_gui.elements.UIButton] = None
         self.travel_button: Optional[pygame_gui.elements.UIButton] = None
         self.skills_button: Optional[pygame_gui.elements.UIButton] = None
         self.missions_button: Optional[pygame_gui.elements.UIButton] = None
+        self.journal_button: Optional[pygame_gui.elements.UIButton] = None
         self.crew_button: Optional[pygame_gui.elements.UIButton] = None
         self.shipyard_button: Optional[pygame_gui.elements.UIButton] = None
         self.save_button: Optional[pygame_gui.elements.UIButton] = None
@@ -69,13 +102,38 @@ class GalaxyMapView(BaseView):
         # Save request flag (consumed by game.py)
         self.save_requested: bool = False
 
+        # Arrival notification (consumed by game.py)
+        self.arrival_message: Optional[str] = None
+
+        # Travel confirmation overlay
+        self._showing_travel_confirm: bool = False
+        self._confirm_button: Optional[pygame_gui.elements.UIButton] = None
+        self._cancel_button: Optional[pygame_gui.elements.UIButton] = None
+        self._confirm_dest_id: Optional[str] = None
+
+        # Non-hostile encounter ref (consumed by game.py → EncounterView)
+        self._pending_encounter_ref: Optional[EncounterRef] = None
+
+        # Journal quick-add overlay
+        self.journal: Optional["Journal"] = None
+        self._showing_journal_quick_add: bool = False
+        self._quick_add_text_entry: Optional[pygame_gui.elements.UITextEntryLine] = None
+        self._quick_add_confirm_btn: Optional[pygame_gui.elements.UIButton] = None
+        self._quick_add_cancel_btn: Optional[pygame_gui.elements.UIButton] = None
+        self._quick_add_tag: str = ""
+
         # Mission markers
         self.mission_target_systems: set[str] = set()
+        self.forced_encounters: list = []
 
         # Animated background
         self.background = AnimatedBackground("trade_routes", WINDOW_WIDTH, WINDOW_HEIGHT, seed=20)
 
-        # Procedural planet surfaces (cached)
+        # Sprite manager (needed before planet thumbnails)
+        self._sprite_mgr = get_sprite_manager()
+        self._player_ship_anim: Optional[AnimatedSprite] = None
+
+        # System portrait surfaces (cached)
         self._planet_surfaces: Dict[str, pygame.Surface] = {}
         self._generate_planet_thumbnails()
 
@@ -86,17 +144,41 @@ class GalaxyMapView(BaseView):
         self._glow_time = 0.0
         self._dash_offset = 0.0
 
+        # Travel animation
+        self._travel_animating: bool = False
+        self._travel_origin_id: Optional[str] = None
+        self._travel_dest_id: Optional[str] = None
+        self._travel_progress: float = 0.0
+        self._travel_duration: float = 0.0
+        self._travel_encounter: Optional[EncounterRef] = None
+        self._travel_encounter_stop: float = 1.0
+        self._travel_alert_showing: bool = False
+        self._travel_alert_timer: float = 0.0
+        self._pending_encounter: Optional[EncounterRef] = None
+
     def _generate_planet_thumbnails(self) -> None:
-        """Generate procedural planet thumbnails for each system."""
+        """Load system portrait sprites or generate procedural fallbacks."""
         for i, (sys_id, system) in enumerate(self.systems.items()):
-            planet_type = system.type if system.type else "terran"
-            surface = generate_planet(12, planet_type, seed=hash(sys_id) % 10000)
-            self._planet_surfaces[sys_id] = surface
+            # Try system portrait sprite first
+            portrait = self._sprite_mgr.get_system_portrait(sys_id)
+            if portrait:
+                self._planet_surfaces[sys_id] = portrait
+            else:
+                # Procedural fallback
+                planet_type = system.type if system.type else "terran"
+                surface = generate_planet(12, planet_type, seed=hash(sys_id) % 10000)
+                self._planet_surfaces[sys_id] = surface
 
     def on_enter(self) -> None:
         super().on_enter()
         logger.info("Entered Galaxy Map")
         self.selected_system = self.player.current_system_id
+        self.arrival_message = None
+        # Load/refresh player ship sprite (scale=1 = 32x32 for map display)
+        if self.player and self.player.ship:
+            self._player_ship_anim = self._sprite_mgr.get_ship_animated(
+                self.player.ship.ship_type.id, category="player", scale=1
+            )
         self._create_ui()
 
     def on_exit(self) -> None:
@@ -107,8 +189,8 @@ class GalaxyMapView(BaseView):
         button_width = 150
         button_height = 40
         button_x = WINDOW_WIDTH - button_width - 20
-        start_y = WINDOW_HEIGHT - 294
-        spacing = 34
+        start_y = WINDOW_HEIGHT - 298
+        spacing = 30
 
         self.trade_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(button_x, start_y, button_width, button_height),
@@ -122,7 +204,7 @@ class GalaxyMapView(BaseView):
         )
         self.skills_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(button_x, start_y + spacing * 2, button_width, button_height),
-            text="Skills",
+            text="Character",
             manager=self.ui_manager,
         )
         self.missions_button = pygame_gui.elements.UIButton(
@@ -130,23 +212,28 @@ class GalaxyMapView(BaseView):
             text="Missions",
             manager=self.ui_manager,
         )
-        self.crew_button = pygame_gui.elements.UIButton(
+        self.journal_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(button_x, start_y + spacing * 4, button_width, button_height),
+            text="Journal",
+            manager=self.ui_manager,
+        )
+        self.crew_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(button_x, start_y + spacing * 5, button_width, button_height),
             text="Crew",
             manager=self.ui_manager,
         )
         self.shipyard_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(button_x, start_y + spacing * 5, button_width, button_height),
+            relative_rect=pygame.Rect(button_x, start_y + spacing * 6, button_width, button_height),
             text="Shipyard",
             manager=self.ui_manager,
         )
         self.save_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(button_x, start_y + spacing * 6, button_width, button_height),
+            relative_rect=pygame.Rect(button_x, start_y + spacing * 7, button_width, button_height),
             text="Save",
             manager=self.ui_manager,
         )
         self.menu_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(button_x, start_y + spacing * 7, button_width, button_height),
+            relative_rect=pygame.Rect(button_x, start_y + spacing * 8, button_width, button_height),
             text="Main Menu",
             manager=self.ui_manager,
         )
@@ -158,10 +245,16 @@ class GalaxyMapView(BaseView):
             self.travel_button,
             self.skills_button,
             self.missions_button,
+            self.journal_button,
             self.crew_button,
             self.shipyard_button,
             self.save_button,
             self.menu_button,
+            self._confirm_button,
+            self._cancel_button,
+            self._quick_add_text_entry,
+            self._quick_add_confirm_btn,
+            self._quick_add_cancel_btn,
         ]:
             if btn:
                 btn.kill()
@@ -208,14 +301,47 @@ class GalaxyMapView(BaseView):
     def _get_system_at_mouse(self, mouse_pos: tuple[int, int]) -> Optional[str]:
         for system_id, system in self.systems.items():
             screen_pos = self._world_to_screen(system.coordinates.x, system.coordinates.y)
-            distance = (
-                (mouse_pos[0] - screen_pos[0]) ** 2 + (mouse_pos[1] - screen_pos[1]) ** 2
-            ) ** 0.5
-            if distance < 20:
+            # Use portrait-aware hit rect (80x60 if portrait, 24x24 if procedural)
+            planet_surf = self._planet_surfaces.get(system_id)
+            if planet_surf:
+                hw = planet_surf.get_width() // 2
+                hh = planet_surf.get_height() // 2
+            else:
+                hw = hh = 12
+            dx = abs(mouse_pos[0] - screen_pos[0])
+            dy = abs(mouse_pos[1] - screen_pos[1])
+            if dx <= hw + 4 and dy <= hh + 4:
                 return system_id
         return None
 
     def handle_event(self, event: pygame.event.Event) -> None:
+        # Block all input during travel animation
+        if self._travel_animating:
+            return
+
+        # Confirmation overlay: only handle confirm/cancel buttons
+        if self._showing_travel_confirm:
+            if event.type == pygame_gui.UI_BUTTON_PRESSED:
+                if event.ui_element == self._confirm_button:
+                    self._on_travel_confirm()
+                elif event.ui_element == self._cancel_button:
+                    self._on_travel_cancel()
+            return
+
+        # Journal quick-add overlay: only handle confirm/cancel/escape
+        if self._showing_journal_quick_add:
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    self._on_quick_add_cancel()
+                elif event.key == pygame.K_RETURN:
+                    self._on_quick_add_confirm()
+            elif event.type == pygame_gui.UI_BUTTON_PRESSED:
+                if event.ui_element == self._quick_add_confirm_btn:
+                    self._on_quick_add_confirm()
+                elif event.ui_element == self._quick_add_cancel_btn:
+                    self._on_quick_add_cancel()
+            return
+
         if event.type == pygame.MOUSEMOTION:
             self.hovered_system = self._get_system_at_mouse(event.pos)
 
@@ -230,6 +356,7 @@ class GalaxyMapView(BaseView):
                     self.systems[clicked_system].coordinates.y,
                 )
                 self.particles.emit(pos[0], pos[1], SCAN_PULSE)
+                get_audio_manager().play_sfx("nav_select")
                 logger.debug(f"Selected system: {clicked_system}")
 
         elif event.type == pygame_gui.UI_BUTTON_PRESSED:
@@ -237,11 +364,13 @@ class GalaxyMapView(BaseView):
                 logger.info("Opening trade interface")
                 self.next_state = GameState.TRADING
             elif event.ui_element == self.travel_button:
-                self._execute_travel()
+                self._on_travel_button()
             elif event.ui_element == self.skills_button:
-                self.next_state = GameState.SKILL_TREE
+                self.next_state = GameState.CHARACTER
             elif event.ui_element == self.missions_button:
                 self.next_state = GameState.MISSION_LOG
+            elif event.ui_element == self.journal_button:
+                self.next_state = GameState.JOURNAL
             elif event.ui_element == self.crew_button:
                 self.next_state = GameState.CREW_ROSTER
             elif event.ui_element == self.shipyard_button:
@@ -251,9 +380,33 @@ class GalaxyMapView(BaseView):
             elif event.ui_element == self.menu_button:
                 self.next_state = GameState.MAIN_MENU
 
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_j and self.journal:
+                self._show_journal_quick_add()
+
+    def _check_forced_encounters(self) -> Optional[EncounterRef]:
+        """Check for scripted encounters from active missions."""
+        for fe in self.forced_encounters:
+            if fe.trigger_flag and self.player.dialogue_flags.get(fe.trigger_flag, False):
+                continue  # Already triggered
+            if fe.trigger_flag:
+                self.player.dialogue_flags[fe.trigger_flag] = True
+            return EncounterRef(
+                enemy_template_ids=list(fe.enemy_template_ids),
+                encounter_seed=hash(fe.trigger_flag) & 0xFFFFFFFF,
+                encounter_type=fe.encounter_type,
+                encounter_def_id=fe.encounter_def_id,
+            )
+        return None
+
     def _execute_travel(self) -> None:
         if not self.selected_system or self.selected_system == self.player.current_system_id:
             return
+
+        origin_id = self.player.current_system_id
+        origin_system = self.systems[origin_id]
+        dest_system = self.systems[self.selected_system]
+        distance = origin_system.distance_to(dest_system)
 
         fuel_cost = self._calculate_fuel_cost(self.selected_system)
         success, msg = self.player.travel_to_system(self.selected_system, fuel_cost)
@@ -261,17 +414,286 @@ class GalaxyMapView(BaseView):
         logger.info(f"Travel result: {msg}")
         if success:
             from spacegame.config import XP_PER_TRAVEL
+            from spacegame.data_loader import get_data_loader
 
             xp_msgs = self.player.progression.add_xp(XP_PER_TRAVEL)
             for m in xp_msgs:
                 logger.info(m)
+
+            # Check for forced encounters from active missions first
+            encounter = self._check_forced_encounters()
+            if encounter is None:
+                # Fall back to random encounter roll
+                dl = get_data_loader()
+                danger = getattr(dest_system, "danger_level", "moderate")
+                faction_id = self.player.get_faction_for_system(self.selected_system) or ""
+                enemy_ids = filter_enemies_for_system(dl.enemy_templates, faction_id, danger)
+
+                # Get reputation-based encounter modifiers
+                enc_mods: dict = {}
+                if self.politics_manager:
+                    enc_mods = self.politics_manager.get_encounter_modifier(
+                        self.player, self.selected_system
+                    )
+
+                encounter = check_travel_encounter(
+                    system_danger=danger,
+                    enemy_template_ids=enemy_ids,
+                    game_day=self.player.game_day,
+                    system_id=self.selected_system,
+                    distance=distance,
+                )
+
+                # Apply reputation modifiers to encounter
+                if encounter and enc_mods:
+                    # Scale shakedown demands by reputation multiplier
+                    if encounter.shakedown_demand > 0:
+                        mult = enc_mods.get("shakedown_multiplier", 1.0)
+                        encounter = EncounterRef(
+                            enemy_template_ids=encounter.enemy_template_ids,
+                            encounter_seed=encounter.encounter_seed,
+                            encounter_type=encounter.encounter_type,
+                            shakedown_demand=int(encounter.shakedown_demand * mult),
+                        )
+
+                    # Allied/friendly protection: chance to cancel hostile encounter
+                    protection = enc_mods.get("protection_chance", 0)
+                    if protection > 0 and encounter.encounter_type == "hostile":
+                        import hashlib
+                        seed_str = f"{self.player.game_day}_{self.selected_system}_protection"
+                        seed = int(hashlib.md5(seed_str.encode()).hexdigest()[:8], 16)
+                        if (seed % 100) < protection:
+                            encounter = None  # Faction patrol escorts you safely
+
+            # Start travel animation
+            get_audio_manager().play_sfx("nav_jump")
+            self._travel_animating = True
+            self._travel_origin_id = origin_id
+            self._travel_dest_id = self.selected_system
+            self._travel_progress = 0.0
+            self._travel_duration = 0.5 + distance / 180.0
+            self._travel_encounter = encounter
+            self._travel_alert_showing = False
+            self._travel_alert_timer = 0.0
+
+            if encounter:
+                # Stop at 40-80% of route (deterministic from seed)
+                import random as _rng
+
+                rng = _rng.Random(encounter.encounter_seed)
+                self._travel_encounter_stop = 0.4 + rng.random() * 0.4
+                logger.info(
+                    f"Encounter will trigger at {self._travel_encounter_stop:.0%} of route"
+                )
+            else:
+                self._travel_encounter_stop = 1.0
+
             self._update_button_states()
+
+    def _on_travel_button(self) -> None:
+        """Handle Travel button press: show confirmation overlay."""
+        if not self.selected_system or self.selected_system == self.player.current_system_id:
+            return
+        self._show_travel_confirmation()
+
+    def _show_travel_confirmation(self) -> None:
+        """Create and display the travel confirmation overlay."""
+        self._showing_travel_confirm = True
+        self._confirm_dest_id = self.selected_system
+
+        center_x = WINDOW_WIDTH // 2
+        center_y = WINDOW_HEIGHT // 2
+        btn_width = 120
+        btn_height = 36
+        gap = 20
+
+        self._confirm_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(
+                center_x - btn_width - gap // 2, center_y + 60,
+                btn_width, btn_height,
+            ),
+            text="Confirm",
+            manager=self.ui_manager,
+        )
+        self._cancel_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(
+                center_x + gap // 2, center_y + 60,
+                btn_width, btn_height,
+            ),
+            text="Cancel",
+            manager=self.ui_manager,
+        )
+
+    def _dismiss_travel_confirmation(self) -> None:
+        """Destroy confirmation overlay UI elements."""
+        if self._confirm_button:
+            self._confirm_button.kill()
+            self._confirm_button = None
+        if self._cancel_button:
+            self._cancel_button.kill()
+            self._cancel_button = None
+        self._showing_travel_confirm = False
+        self._confirm_dest_id = None
+
+    def _on_travel_confirm(self) -> None:
+        """Player confirmed travel: execute it."""
+        self._dismiss_travel_confirmation()
+        self._execute_travel()
+
+    def _on_travel_cancel(self) -> None:
+        """Player cancelled travel: dismiss overlay."""
+        self._dismiss_travel_confirmation()
+
+    # === Journal Quick-Add Overlay ===
+
+    def _show_journal_quick_add(self) -> None:
+        """Create and display the journal quick-add overlay."""
+        self._showing_journal_quick_add = True
+        self._quick_add_tag = ""
+
+        center_x = WINDOW_WIDTH // 2
+        center_y = WINDOW_HEIGHT // 2
+
+        self._quick_add_text_entry = pygame_gui.elements.UITextEntryLine(
+            relative_rect=pygame.Rect(center_x - 190, center_y - 20, 380, 36),
+            manager=self.ui_manager,
+        )
+        from spacegame.models.journal import PLAYER_ENTRY_MAX_LENGTH
+        self._quick_add_text_entry.set_text_length_limit(PLAYER_ENTRY_MAX_LENGTH)
+
+        btn_width = 100
+        btn_height = 34
+        gap = 16
+        self._quick_add_confirm_btn = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(
+                center_x - btn_width - gap // 2, center_y + 30,
+                btn_width, btn_height,
+            ),
+            text="Save",
+            manager=self.ui_manager,
+        )
+        self._quick_add_cancel_btn = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(
+                center_x + gap // 2, center_y + 30,
+                btn_width, btn_height,
+            ),
+            text="Cancel",
+            manager=self.ui_manager,
+        )
+
+    def _dismiss_journal_quick_add(self) -> None:
+        """Destroy quick-add overlay UI elements."""
+        if self._quick_add_text_entry:
+            self._quick_add_text_entry.kill()
+            self._quick_add_text_entry = None
+        if self._quick_add_confirm_btn:
+            self._quick_add_confirm_btn.kill()
+            self._quick_add_confirm_btn = None
+        if self._quick_add_cancel_btn:
+            self._quick_add_cancel_btn.kill()
+            self._quick_add_cancel_btn = None
+        self._showing_journal_quick_add = False
+
+    def _on_quick_add_confirm(self) -> None:
+        """Save the quick-add entry."""
+        text = ""
+        if self._quick_add_text_entry:
+            text = self._quick_add_text_entry.get_text().strip()
+        if text and self.journal:
+            self.journal.add_player_entry(
+                text=text,
+                game_day=self.player.game_day,
+                system_id=self.player.current_system_id,
+                tag=self._quick_add_tag,
+            )
+        self._dismiss_journal_quick_add()
+
+    def _on_quick_add_cancel(self) -> None:
+        """Cancel the quick-add without saving."""
+        self._dismiss_journal_quick_add()
 
     def update(self, dt: float) -> None:
         self.background.update(dt)
         self.particles.update(dt)
         self._glow_time += dt
         self._dash_offset += 30 * dt  # scrolling dash offset
+
+        if self._player_ship_anim:
+            self._player_ship_anim.update(dt)
+
+        if self._travel_animating:
+            self._update_travel_animation(dt)
+
+    def _update_travel_animation(self, dt: float) -> None:
+        """Advance travel animation: ship moves, encounters trigger mid-route."""
+        if self._travel_alert_showing:
+            self._travel_alert_timer -= dt
+            if self._travel_alert_timer <= 0:
+                self._travel_animating = False
+                self._travel_origin_id = None
+                self._travel_dest_id = None
+                enc = self._travel_encounter
+                if enc and enc.encounter_type == "hostile":
+                    # Hostile: transition to combat
+                    self._pending_encounter = enc
+                    self.next_state = GameState.COMBAT
+                    logger.info("Travel encounter: transitioning to combat")
+                elif enc:
+                    # Non-hostile: route to EncounterView
+                    self._pending_encounter_ref = enc
+                    self.next_state = GameState.ENCOUNTER
+                    logger.info(f"Travel encounter: {enc.encounter_type} — routing to ENCOUNTER")
+            return
+
+        # Advance progress
+        if self._travel_duration > 0:
+            self._travel_progress += dt / self._travel_duration
+
+        # Emit warp trail particles at ship position
+        if self._travel_origin_id and self._travel_dest_id:
+            origin = self.systems[self._travel_origin_id]
+            dest = self.systems[self._travel_dest_id]
+            t = min(self._travel_progress, self._travel_encounter_stop)
+            ox, oy = self._world_to_screen(origin.coordinates.x, origin.coordinates.y)
+            dx, dy = self._world_to_screen(dest.coordinates.x, dest.coordinates.y)
+            ship_x = ox + (dx - ox) * t
+            ship_y = oy + (dy - oy) * t
+            self.particles.emit(ship_x, ship_y, WARP_TRAIL)
+
+        # Check if encounter triggers mid-route
+        if (
+            self._travel_encounter
+            and self._travel_progress >= self._travel_encounter_stop
+            and not self._travel_alert_showing
+        ):
+            self._travel_alert_showing = True
+            self._travel_alert_timer = 1.2
+            self._travel_progress = self._travel_encounter_stop
+            # Burst particles at encounter point
+            self.particles.emit(ship_x, ship_y, SCAN_PULSE)
+            enc_type = self._travel_encounter.encounter_type if self._travel_encounter else "hostile"
+            if enc_type == "hostile":
+                logger.info("Travel encounter: HOSTILE CONTACT!")
+            else:
+                logger.info(f"Travel encounter: {enc_type.upper().replace('_', ' ')} DETECTED!")
+            return
+
+        # No encounter — animation complete
+        if self._travel_progress >= 1.0:
+            self._travel_animating = False
+
+            # Arrival feedback: particle burst + notification
+            if self._travel_dest_id:
+                dest = self.systems[self._travel_dest_id]
+                dx, dy = self._world_to_screen(dest.coordinates.x, dest.coordinates.y)
+                self.particles.emit(dx, dy, SCAN_PULSE)
+                get_audio_manager().play_sfx("nav_arrive")
+                self.arrival_message = f"Arrived at {dest.name}"
+
+            self._travel_origin_id = None
+            self._travel_dest_id = None
+            self.next_state = GameState.TRADING
+            logger.info("Travel complete: landing at destination")
 
     def render(self, screen: pygame.Surface) -> None:
         # Animated background
@@ -283,14 +705,21 @@ class GalaxyMapView(BaseView):
 
         # Player stats
         stats_y = 60
-        stats_text = [
-            f"Day: {self.player.game_day}  |  Level: {self.player.progression.level}",
-            f"Credits: {self.player.credits:,} CR",
-            f"Ship: {self.player.ship.name}",
-            f"Fuel: {self.player.ship.current_fuel}/{self.player.ship.max_fuel}",
+        stats_text: list[tuple[str, tuple[int, int, int]]] = [
+            (f"Day: {self.player.game_day}  |  Level: {self.player.progression.level}", Colors.TEXT),
+            (f"Credits: {self.player.credits:,} CR", Colors.TEXT),
+            (f"Ship: {self.player.ship.name}", Colors.TEXT),
+            (f"Fuel: {self.player.ship.current_fuel}/{self.player.ship.max_fuel}", Colors.TEXT),
         ]
-        for i, text in enumerate(stats_text):
-            surf = self.info_font.render(text, True, Colors.TEXT)
+        # Criminal heat indicator (only shown when > 0)
+        from spacegame.config import get_heat_display_color
+
+        heat_color = get_heat_display_color(self.player.criminal_heat)
+        if heat_color:
+            stats_text.append((f"Heat: {self.player.criminal_heat}", heat_color))
+
+        for i, (text, color) in enumerate(stats_text):
+            surf = self.info_font.render(text, True, color)
             screen.blit(surf, (20, stats_y + i * 25))
 
         # Draw travel lines from current system (animated dashes)
@@ -303,42 +732,102 @@ class GalaxyMapView(BaseView):
             if system.id == self.player.current_system_id:
                 continue
             target_pos = self._world_to_screen(system.coordinates.x, system.coordinates.y)
-            self._draw_dashed_line(screen, (40, 45, 65), current_pos, target_pos)
+            route_color = self._get_danger_route_color(system.danger_level)
+            self._draw_dashed_line(screen, route_color, current_pos, target_pos)
+
+        # Highlight active travel route
+        if self._travel_animating and self._travel_origin_id and self._travel_dest_id:
+            origin = self.systems[self._travel_origin_id]
+            dest = self.systems[self._travel_dest_id]
+            o_pos = self._world_to_screen(origin.coordinates.x, origin.coordinates.y)
+            d_pos = self._world_to_screen(dest.coordinates.x, dest.coordinates.y)
+            pygame.draw.line(screen, Colors.TEXT_HIGHLIGHT, o_pos, d_pos, 2)
 
         # Draw systems
         for system_id, system in self.systems.items():
             screen_x, screen_y = self._world_to_screen(system.coordinates.x, system.coordinates.y)
 
-            # Pulsing glow ring on current system
-            if system_id == self.player.current_system_id:
-                glow_alpha = int(120 + 80 * math.sin(self._glow_time * 3))
-                glow_surf = pygame.Surface((60, 60), pygame.SRCALPHA)
-                pygame.draw.circle(glow_surf, (*Colors.TEXT_HIGHLIGHT, glow_alpha), (30, 30), 25, 3)
-                screen.blit(glow_surf, (screen_x - 30, screen_y - 30))
-
-            # Selected system highlight
-            if system_id == self.selected_system:
-                pygame.draw.circle(screen, Colors.TEXT, (screen_x, screen_y), 22, 2)
-
-            # Hovered system highlight
-            if system_id == self.hovered_system:
-                pygame.draw.circle(screen, (255, 255, 255), (screen_x, screen_y), 20, 1)
-
-            # Draw procedural planet thumbnail
+            # Determine portrait extents for indicator placement
             planet_surf = self._planet_surfaces.get(system_id)
             if planet_surf:
                 pw, ph = planet_surf.get_size()
-                screen.blit(planet_surf, (screen_x - pw // 2, screen_y - ph // 2))
+                half_w = pw // 2
+                half_h = ph // 2
+            else:
+                half_w = half_h = 12
+
+            # Pulsing glow ring on current system
+            if system_id == self.player.current_system_id:
+                glow_alpha = int(120 + 80 * math.sin(self._glow_time * 3))
+                gw = half_w * 2 + 14
+                gh = half_h * 2 + 14
+                glow_surf = pygame.Surface((gw, gh), pygame.SRCALPHA)
+                pygame.draw.rect(
+                    glow_surf, (*Colors.TEXT_HIGHLIGHT, glow_alpha),
+                    (0, 0, gw, gh), 3, border_radius=4,
+                )
+                screen.blit(glow_surf, (screen_x - gw // 2, screen_y - gh // 2))
+
+            # Selected system highlight
+            if system_id == self.selected_system:
+                sw = half_w * 2 + 8
+                sh = half_h * 2 + 8
+                pygame.draw.rect(
+                    screen, Colors.TEXT,
+                    (screen_x - sw // 2, screen_y - sh // 2, sw, sh), 2, border_radius=3,
+                )
+
+            # Hovered system highlight
+            if system_id == self.hovered_system:
+                hw = half_w * 2 + 4
+                hh = half_h * 2 + 4
+                pygame.draw.rect(
+                    screen, (255, 255, 255),
+                    (screen_x - hw // 2, screen_y - hh // 2, hw, hh), 1, border_radius=2,
+                )
+
+            # Draw system portrait or procedural planet thumbnail
+            if planet_surf:
+                screen.blit(planet_surf, (screen_x - half_w, screen_y - half_h))
             else:
                 # Fallback colored circle
                 pygame.draw.circle(screen, (150, 150, 150), (screen_x, screen_y), 12)
 
-            # Faction-colored ring
+            # Faction-colored border (rectangle for portraits, ring for circles)
             faction_color = self._get_faction_color(system.faction)
             if faction_color:
-                ring_surf = pygame.Surface((44, 44), pygame.SRCALPHA)
-                pygame.draw.circle(ring_surf, (*faction_color, 160), (22, 22), 18, 2)
-                screen.blit(ring_surf, (screen_x - 22, screen_y - 22))
+                border_w = half_w * 2 + 6
+                border_h = half_h * 2 + 6
+                border_surf = pygame.Surface((border_w, border_h), pygame.SRCALPHA)
+                if half_w > 20:  # Portrait — draw rectangle border
+                    pygame.draw.rect(
+                        border_surf, (*faction_color, 160),
+                        (0, 0, border_w, border_h), 2, border_radius=3,
+                    )
+                else:  # Procedural — draw circle ring
+                    r = min(border_w, border_h) // 2
+                    pygame.draw.circle(
+                        border_surf, (*faction_color, 160),
+                        (border_w // 2, border_h // 2), r, 2,
+                    )
+                screen.blit(border_surf, (screen_x - border_w // 2, screen_y - border_h // 2))
+
+            # Danger level indicator dot (top-right of portrait)
+            danger_dot_color = self._get_danger_dot_color(system.danger_level)
+            if danger_dot_color:
+                dot_surf = pygame.Surface((10, 10), pygame.SRCALPHA)
+                pygame.draw.circle(dot_surf, danger_dot_color, (5, 5), 4)
+                screen.blit(dot_surf, (screen_x + half_w - 2, screen_y - half_h - 2))
+
+            # Reputation standing indicator (colored pip, bottom-left)
+            faction_id = self.player.get_faction_for_system(system_id)
+            if faction_id:
+                tier = self.player.get_reputation_tier(faction_id)
+                standing_color = _get_standing_color(tier)
+                if standing_color:
+                    pip_surf = pygame.Surface((10, 10), pygame.SRCALPHA)
+                    pygame.draw.circle(pip_surf, (*standing_color, 200), (5, 5), 4)
+                    screen.blit(pip_surf, (screen_x - half_w - 4, screen_y + half_h - 4))
 
             # Event indicator (pulsing warning dot)
             active_event = self.active_events.get(system_id)
@@ -351,7 +840,24 @@ class GalaxyMapView(BaseView):
                 pygame.draw.circle(
                     indicator_surf, (*Colors.RED, min(255, indicator_alpha // 2)), (8, 8), 6, 2
                 )
-                screen.blit(indicator_surf, (screen_x + 14, screen_y - 20))
+                screen.blit(indicator_surf, (screen_x + half_w - 2, screen_y - half_h - 12))
+
+            # Political event indicator (pulsing shield icon — cyan/purple)
+            if self.politics_manager and faction_id:
+                for pe in self.politics_manager.get_active_events():
+                    if pe.faction_a_id == faction_id or pe.faction_b_id == faction_id:
+                        pe_alpha = int(120 + 80 * math.sin(self._glow_time * 3.5))
+                        pe_surf = pygame.Surface((14, 14), pygame.SRCALPHA)
+                        # Small diamond shape in cyan
+                        pe_points = [(7, 1), (13, 7), (7, 13), (1, 7)]
+                        pygame.draw.polygon(
+                            pe_surf, (100, 200, 255, min(255, pe_alpha)), pe_points
+                        )
+                        pygame.draw.polygon(
+                            pe_surf, (180, 140, 255, min(255, pe_alpha // 2)), pe_points, 1
+                        )
+                        screen.blit(pe_surf, (screen_x - half_w - 8, screen_y - half_h - 8))
+                        break  # One indicator per system
 
             # Mission destination marker (pulsing diamond)
             if system_id in self.mission_target_systems:
@@ -363,15 +869,30 @@ class GalaxyMapView(BaseView):
                     (*Colors.TEXT_HIGHLIGHT, min(255, m_alpha)),
                     points,
                 )
-                screen.blit(marker_surf, (screen_x - 20, screen_y - 7))
+                screen.blit(marker_surf, (screen_x - half_w - 12, screen_y - 7))
 
             # System name
             name_surf = self.system_font.render(system.name, True, Colors.TEXT)
-            name_rect = name_surf.get_rect(center=(screen_x, screen_y - 25))
+            name_rect = name_surf.get_rect(center=(screen_x, screen_y - half_h - 8))
             screen.blit(name_surf, name_rect)
+
+        # Ship icon
+        self._draw_ship(screen)
 
         # Particles on top of systems
         self.particles.render(screen)
+
+        # Encounter alert overlay
+        if self._travel_alert_showing:
+            self._draw_encounter_alert(screen)
+
+        # Travel confirmation overlay
+        if self._showing_travel_confirm:
+            self._draw_travel_confirmation(screen)
+
+        # Journal quick-add overlay
+        if self._showing_journal_quick_add:
+            self._draw_journal_quick_add(screen)
 
         # Selected system info panel
         if self.selected_system:
@@ -416,6 +937,205 @@ class GalaxyMapView(BaseView):
                 ey = int(start[1] + ny * seg_end)
                 pygame.draw.line(screen, color, (sx, sy), (ex, ey), 1)
             pos += total
+
+    def _get_ship_position(self) -> tuple[float, float, float]:
+        """Get current ship screen position and travel angle.
+
+        Returns:
+            (screen_x, screen_y, angle_degrees) where angle points in travel direction.
+        """
+        if self._travel_animating and self._travel_origin_id and self._travel_dest_id:
+            origin = self.systems[self._travel_origin_id]
+            dest = self.systems[self._travel_dest_id]
+            t = min(self._travel_progress, self._travel_encounter_stop)
+            ox, oy = self._world_to_screen(origin.coordinates.x, origin.coordinates.y)
+            dx, dy = self._world_to_screen(dest.coordinates.x, dest.coordinates.y)
+            ship_x = ox + (dx - ox) * t
+            ship_y = oy + (dy - oy) * t
+            angle = math.degrees(math.atan2(-(dy - oy), dx - ox))
+            return ship_x, ship_y, angle
+
+        # Idle: ship at current system
+        current = self.systems[self.player.current_system_id]
+        sx, sy = self._world_to_screen(current.coordinates.x, current.coordinates.y)
+        return float(sx), float(sy), 0.0
+
+    def _draw_ship(self, screen: pygame.Surface) -> None:
+        """Draw ship sprite (or fallback chevron) at current position."""
+        ship_x, ship_y, angle = self._get_ship_position()
+
+        # Try sprite first
+        player_ship_surface = self._player_ship_anim.get_surface() if self._player_ship_anim else None
+        if player_ship_surface is not None:
+            # Rotate sprite to match travel direction (pygame rotates CCW)
+            rotated = pygame.transform.rotate(player_ship_surface, angle)
+            ship_w = rotated.get_width()
+            ship_h = rotated.get_height()
+            # Offset above system node when idle, centered when travelling
+            y_offset = -16 if not self._travel_animating else 0
+            sprite_x = int(ship_x - ship_w // 2)
+            sprite_y = int(ship_y - ship_h // 2 + y_offset)
+
+            # Glow behind ship
+            glow_radius = max(ship_w, ship_h) // 2 + 4
+            glow_size = glow_radius * 2
+            glow_surf = pygame.Surface((glow_size, glow_size), pygame.SRCALPHA)
+            pygame.draw.circle(
+                glow_surf, (*Colors.TEXT_HIGHLIGHT, 60),
+                (glow_radius, glow_radius), glow_radius,
+            )
+            screen.blit(
+                glow_surf,
+                (int(ship_x) - glow_radius, int(ship_y + y_offset) - glow_radius),
+            )
+
+            screen.blit(rotated, (sprite_x, sprite_y))
+            return
+
+        # Fallback: chevron
+        rad = math.radians(angle)
+        size = 8
+        tip_x = ship_x + math.cos(rad) * size
+        tip_y = ship_y - math.sin(rad) * size
+        back_angle = math.pi * 0.75
+        bl_x = ship_x + math.cos(rad + back_angle) * size * 0.7
+        bl_y = ship_y - math.sin(rad + back_angle) * size * 0.7
+        br_x = ship_x + math.cos(rad - back_angle) * size * 0.7
+        br_y = ship_y - math.sin(rad - back_angle) * size * 0.7
+
+        points = [(tip_x, tip_y), (bl_x, bl_y), (br_x, br_y)]
+
+        # Glow behind ship
+        glow_surf = pygame.Surface((24, 24), pygame.SRCALPHA)
+        pygame.draw.circle(glow_surf, (*Colors.TEXT_HIGHLIGHT, 60), (12, 12), 10)
+        screen.blit(glow_surf, (int(ship_x) - 12, int(ship_y) - 12))
+
+        # Ship body
+        pygame.draw.polygon(screen, Colors.TEXT_HIGHLIGHT, points)
+        pygame.draw.polygon(screen, (255, 255, 255), points, 1)
+
+    def _draw_travel_confirmation(self, screen: pygame.Surface) -> None:
+        """Draw travel confirmation overlay with destination info and risk."""
+        if not self._confirm_dest_id:
+            return
+
+        dest = self.systems[self._confirm_dest_id]
+        origin = self.systems[self.player.current_system_id]
+        distance = origin.distance_to(dest)
+        fuel_cost = self._calculate_fuel_cost(self._confirm_dest_id)
+
+        # Encounter risk %
+        base_chance = {
+            "safe": 0, "moderate": 15, "dangerous": 30,
+        }.get(dest.danger_level, 15)
+        risk_pct = calculate_encounter_chance(base_chance, distance)
+
+        # Dim overlay
+        overlay = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 120))
+        screen.blit(overlay, (0, 0))
+
+        # Panel
+        panel_w, panel_h = 320, 200
+        px = (WINDOW_WIDTH - panel_w) // 2
+        py = (WINDOW_HEIGHT - panel_h) // 2 - 20
+        panel_surf = pygame.Surface((panel_w, panel_h), pygame.SRCALPHA)
+        panel_surf.fill((15, 18, 35, 220))
+        screen.blit(panel_surf, (px, py))
+        pygame.draw.rect(screen, Colors.UI_BORDER, (px, py, panel_w, panel_h), 1)
+
+        # Title
+        title = self.title_font.render("Confirm Travel", True, Colors.TEXT_HIGHLIGHT)
+        screen.blit(title, (px + (panel_w - title.get_width()) // 2, py + 12))
+
+        # Info lines
+        info_y = py + 50
+        line_h = 24
+        lines = [
+            (f"Destination: {dest.name}", Colors.TEXT),
+            (f"Distance: {distance:.0f} u", Colors.TEXT),
+            (f"Fuel Cost: {fuel_cost}", Colors.TEXT),
+        ]
+        # Risk line — red if > 20%
+        risk_color = Colors.RED if risk_pct > 20 else Colors.TEXT
+        lines.append((f"Encounter Risk: {risk_pct:.0f}%", risk_color))
+
+        for text, color in lines:
+            surf = self.info_font.render(text, True, color)
+            screen.blit(surf, (px + 20, info_y))
+            info_y += line_h
+
+    def _draw_encounter_alert(self, screen: pygame.Surface) -> None:
+        """Draw pulsing alert when encounter triggers mid-route."""
+        enc = self._travel_encounter
+        enc_type = enc.encounter_type if enc else "hostile"
+
+        # Dim overlay
+        overlay = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 100))
+        screen.blit(overlay, (0, 0))
+
+        # Pulsing text
+        pulse = 0.5 + 0.5 * math.sin(self._glow_time * 8)
+        alpha = int(180 + 75 * pulse)
+        alert_font = FontCache.get(48)
+
+        # Type-specific alert styling
+        _ALERT_STYLES: dict[str, tuple[str, tuple[int, int, int], tuple[int, int, int, int]]] = {
+            "hostile": ("HOSTILE CONTACT", (220, 60, 60), (40, 0, 0, 180)),
+            "distress_signal": ("DISTRESS SIGNAL", (220, 200, 60), (40, 30, 0, 180)),
+            "shakedown": ("SHAKEDOWN", (255, 160, 60), (40, 20, 0, 180)),
+            "derelict": ("DERELICT DETECTED", (180, 140, 80), (30, 20, 0, 180)),
+            "merchant": ("MERCHANT HAIL", (100, 150, 220), (0, 15, 40, 180)),
+            "debris": ("DEBRIS FIELD", (160, 160, 160), (20, 20, 20, 180)),
+            "anomaly": ("ANOMALY DETECTED", (180, 100, 220), (25, 0, 35, 180)),
+        }
+        label, color, bg_base = _ALERT_STYLES.get(
+            enc_type, ("ENCOUNTER", (200, 200, 200), (20, 20, 20, 180))
+        )
+        text_surf = alert_font.render(label, True, color)
+        bg_color = (bg_base[0], bg_base[1], bg_base[2], min(255, alpha))
+
+        # Center on screen
+        text_rect = text_surf.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2))
+
+        # Background behind text
+        bg_rect = text_rect.inflate(40, 20)
+        bg_surf = pygame.Surface((bg_rect.width, bg_rect.height), pygame.SRCALPHA)
+        bg_surf.fill(bg_color)
+        screen.blit(bg_surf, bg_rect.topleft)
+
+        # Text with alpha
+        alpha_surf = pygame.Surface(text_surf.get_size(), pygame.SRCALPHA)
+        alpha_surf.blit(text_surf, (0, 0))
+        alpha_surf.set_alpha(min(255, alpha))
+        screen.blit(alpha_surf, text_rect)
+
+    def _draw_journal_quick_add(self, screen: pygame.Surface) -> None:
+        """Draw journal quick-add overlay."""
+        # Dim overlay
+        overlay = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 120))
+        screen.blit(overlay, (0, 0))
+
+        # Panel
+        panel_w, panel_h = 420, 140
+        px = (WINDOW_WIDTH - panel_w) // 2
+        py = (WINDOW_HEIGHT - panel_h) // 2 - 20
+        panel_surf = pygame.Surface((panel_w, panel_h), pygame.SRCALPHA)
+        panel_surf.fill((15, 18, 35, 220))
+        screen.blit(panel_surf, (px, py))
+        pygame.draw.rect(screen, Colors.TEXT_HIGHLIGHT, (px, py, panel_w, panel_h), 1)
+
+        # Title
+        title = self.title_font.render("Quick Note", True, Colors.TEXT_HIGHLIGHT)
+        screen.blit(title, (px + (panel_w - title.get_width()) // 2, py + 10))
+
+        # Hint
+        hint = self.info_font.render(
+            "Press Enter to save, Escape to cancel", True, Colors.TEXT_SECONDARY
+        )
+        screen.blit(hint, (px + (panel_w - hint.get_width()) // 2, py + panel_h - 24))
 
     def _draw_system_info(self, screen: pygame.Surface, system_id: str) -> None:
         system = self.systems[system_id]
@@ -467,10 +1187,31 @@ class GalaxyMapView(BaseView):
             current = self.systems[self.player.current_system_id]
             distance = current.distance_to(system)
             fuel_cost = self._calculate_fuel_cost(system_id)
+
+            # Calculate encounter risk based on danger and distance
+            from spacegame.models.encounter import (
+                ENCOUNTER_CHANCE_SAFE,
+                ENCOUNTER_CHANCE_MODERATE,
+                ENCOUNTER_CHANCE_DANGEROUS,
+            )
+
+            base_chance = {
+                "safe": ENCOUNTER_CHANCE_SAFE,
+                "moderate": ENCOUNTER_CHANCE_MODERATE,
+                "dangerous": ENCOUNTER_CHANCE_DANGEROUS,
+            }.get(system.danger_level, 0)
+            enc_chance = calculate_encounter_chance(base_chance, distance)
+
+            if enc_chance > 0:
+                risk_text = f"Encounter Risk: {enc_chance:.0f}%"
+            else:
+                risk_text = "Encounter Risk: None"
+
             info_lines.extend(
                 [
                     f"Distance: {distance:.1f} units",
                     f"Fuel Cost: {fuel_cost} units",
+                    risk_text,
                 ]
             )
 
@@ -487,10 +1228,38 @@ class GalaxyMapView(BaseView):
             info_lines.append(f"Event: {active_event.event_type.value.upper()}")
             info_lines.append(f"  {commodity_name} ({days_left}d)")
 
+        # Political event info
+        if self.politics_manager and faction_id:
+            for pe in self.politics_manager.get_active_events():
+                if pe.faction_a_id == faction_id or pe.faction_b_id == faction_id:
+                    days_left = pe.days_remaining(self.player.game_day)
+                    info_lines.append("")
+                    info_lines.append(f"Political: {pe.event_type.value.replace('_', ' ').title()}")
+                    info_lines.append(f"  {pe.description[:40]}... ({days_left}d)")
+                    break
+
         for line in info_lines:
             surf = self.info_font.render(line, True, Colors.TEXT)
             screen.blit(surf, (panel_x + 10, y_offset))
             y_offset += line_height
+
+    @staticmethod
+    def _get_danger_route_color(danger_level: str) -> tuple[int, int, int]:
+        """Get route line color based on destination danger level."""
+        return {
+            "safe": (40, 65, 45),
+            "moderate": (65, 55, 30),
+            "dangerous": (65, 35, 35),
+        }.get(danger_level, (40, 45, 65))
+
+    @staticmethod
+    def _get_danger_dot_color(danger_level: str) -> Optional[tuple[int, int, int, int]]:
+        """Get danger indicator dot color (RGBA) for a system."""
+        return {
+            "safe": (80, 200, 100, 200),
+            "moderate": (220, 180, 60, 200),
+            "dangerous": (220, 60, 60, 200),
+        }.get(danger_level)
 
     def get_next_state(self) -> Optional[GameState]:
         return self.next_state

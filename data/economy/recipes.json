@@ -54,6 +54,36 @@
       "outputs": {"common_metals": 3},
       "processing_time": 6.0,
       "location_ids": ["forgeworks", "iron_depths"]
+    },
+    {
+      "id": "forge_alloy",
+      "name": "Forge Alloy Composite",
+      "description": "Combine common and rare metals into a high-strength alloy.",
+      "inputs": {"common_metals": 5, "rare_metals": 2},
+      "outputs": {"alloy_composite": 2},
+      "processing_time": 10.0,
+      "location_ids": ["forgeworks", "iron_depths"],
+      "requires_skill": "refining_knowledge"
+    },
+    {
+      "id": "purify_crystal",
+      "name": "Purify Crystal",
+      "description": "Refine raw crystal ore into ultra-pure crystalline material.",
+      "inputs": {"crystal_ore": 8},
+      "outputs": {"purified_crystal": 1},
+      "processing_time": 12.0,
+      "location_ids": ["axiom_labs", "nova_research"],
+      "requires_skill": "refining_knowledge"
+    },
+    {
+      "id": "advanced_electronics",
+      "name": "Advanced Electronics",
+      "description": "Craft high-grade electronics from purified crystals and salvaged components.",
+      "inputs": {"purified_crystal": 1, "salvaged_electronics": 4},
+      "outputs": {"electronics": 3},
+      "processing_time": 14.0,
+      "location_ids": ["axiom_labs", "nova_research"],
+      "requires_skill": "refining_knowledge"
     }
   ]
 }

@@ -1,0 +1,17 @@
+{
+  "id": "faction_frontier_alliance",
+  "name": "Frontier Alliance",
+  "colors": {
+    "primary_green": [50, 120, 60],
+    "primary_tan": [180, 160, 120],
+    "primary_brown": [100, 80, 50],
+    "mid_green": [70, 150, 80],
+    "dark_earth": [50, 40, 30],
+    "accent_sky": [100, 180, 240],
+    "highlight": [140, 210, 140],
+    "shadow": [25, 30, 20],
+    "skin_light": [215, 185, 155],
+    "skin_mid": [185, 150, 115],
+    "outline": [15, 20, 10]
+  }
+}

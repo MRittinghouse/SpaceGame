@@ -1,0 +1,222 @@
+{
+  "ambient": {
+    "ambient_combat": {
+      "file": "ambient/ambient_combat.wav",
+      "volume": 0.5
+    },
+    "ambient_ground": {
+      "file": "ambient/ambient_ground.wav",
+      "volume": 0.4
+    },
+    "ambient_space": {
+      "file": "ambient/ambient_space.wav",
+      "volume": 0.4
+    },
+    "ambient_station": {
+      "file": "ambient/ambient_station.wav",
+      "volume": 0.5
+    }
+  },
+  "music": {
+    "combat_intense": {
+      "file": "music/combat_intense.mp3"
+    },
+    "defeat_somber": {
+      "file": "music/defeat_somber.mp3"
+    },
+    "dialogue_intimate": {
+      "file": "music/dialogue_intimate.mp3"
+    },
+    "frontier_danger": {
+      "file": "music/frontier_danger.mp3"
+    },
+    "galaxy_exploration": {
+      "file": "music/galaxy_exploration.mp3"
+    },
+    "ground_stealth": {
+      "file": "music/ground_stealth.mp3"
+    },
+    "main_theme": {
+      "file": "music/main_theme.mp3"
+    },
+    "mining_rhythm": {
+      "file": "music/mining_rhythm.mp3"
+    },
+    "station_hub": {
+      "file": "music/station_hub.mp3"
+    },
+    "victory_fanfare": {
+      "file": "music/victory_fanfare.mp3"
+    }
+  },
+  "sfx": {
+    "achievement": {
+      "file": "sfx/activity/achievement.wav",
+      "volume": 0.8
+    },
+    "combat_defeat": {
+      "file": "sfx/combat/combat_defeat.wav",
+      "volume": 0.8
+    },
+    "combat_explosion": {
+      "file": "sfx/combat/combat_explosion.wav",
+      "volume": 0.9
+    },
+    "combat_hit": {
+      "file": "sfx/combat/combat_hit.wav",
+      "volume": 0.9
+    },
+    "combat_laser": {
+      "file": "sfx/combat/combat_laser.wav",
+      "volume": 0.9
+    },
+    "combat_missile": {
+      "file": "sfx/combat/combat_missile.wav",
+      "volume": 0.8
+    },
+    "combat_shield": {
+      "file": "sfx/combat/combat_shield.wav",
+      "volume": 0.8
+    },
+    "combat_victory": {
+      "file": "sfx/combat/combat_victory.wav",
+      "volume": 0.8
+    },
+    "ground_alert": {
+      "file": "sfx/ground/ground_alert.wav",
+      "volume": 0.7
+    },
+    "ground_combat": {
+      "file": "sfx/ground/ground_combat.wav",
+      "volume": 0.8
+    },
+    "ground_door": {
+      "file": "sfx/ground/ground_door.wav",
+      "volume": 0.6
+    },
+    "ground_pickup": {
+      "file": "sfx/ground/ground_pickup.wav",
+      "volume": 0.7
+    },
+    "ground_step": {
+      "file": "sfx/ground/ground_step.wav",
+      "volume": 0.5
+    },
+    "mine_break": {
+      "file": "sfx/mining/mine_break.wav",
+      "volume": 0.8
+    },
+    "mine_chain": {
+      "file": "sfx/mining/mine_chain.wav",
+      "volume": 0.8
+    },
+    "mine_click": {
+      "file": "sfx/mining/mine_click.wav",
+      "volume": 0.8
+    },
+    "mine_collect": {
+      "file": "sfx/mining/mine_collect.wav",
+      "volume": 0.7
+    },
+    "mine_drill": {
+      "file": "sfx/mining/mine_drill.wav",
+      "volume": 0.5
+    },
+    "mine_energy": {
+      "file": "sfx/mining/mine_energy.wav",
+      "volume": 0.6
+    },
+    "nav_arrive": {
+      "file": "sfx/navigation/nav_arrive.wav",
+      "volume": 0.7
+    },
+    "nav_dock": {
+      "file": "sfx/navigation/nav_dock.wav",
+      "volume": 0.7
+    },
+    "nav_encounter": {
+      "file": "sfx/navigation/nav_encounter.wav",
+      "volume": 0.8
+    },
+    "nav_jump": {
+      "file": "sfx/navigation/nav_jump.wav",
+      "volume": 0.8
+    },
+    "nav_select": {
+      "file": "sfx/navigation/nav_select.wav",
+      "volume": 0.6
+    },
+    "refine_complete": {
+      "file": "sfx/activity/refine_complete.wav",
+      "volume": 0.7
+    },
+    "refine_start": {
+      "file": "sfx/activity/refine_start.wav",
+      "volume": 0.5
+    },
+    "repair_weld": {
+      "file": "sfx/activity/repair_weld.wav",
+      "volume": 0.6
+    },
+    "salvage_corrupt": {
+      "file": "sfx/salvage/salvage_corrupt.wav",
+      "volume": 0.6
+    },
+    "salvage_extract": {
+      "file": "sfx/salvage/salvage_extract.wav",
+      "volume": 0.7
+    },
+    "salvage_reveal": {
+      "file": "sfx/salvage/salvage_reveal.wav",
+      "volume": 0.7
+    },
+    "salvage_scan": {
+      "file": "sfx/salvage/salvage_scan.wav",
+      "volume": 0.7
+    },
+    "skill_unlock": {
+      "file": "sfx/activity/skill_unlock.wav",
+      "volume": 0.8
+    },
+    "trade_buy": {
+      "file": "sfx/trading/trade_buy.wav",
+      "volume": 0.8
+    },
+    "trade_fail": {
+      "file": "sfx/trading/trade_fail.wav",
+      "volume": 0.7
+    },
+    "trade_refuel": {
+      "file": "sfx/trading/trade_refuel.wav",
+      "volume": 0.5
+    },
+    "trade_sell": {
+      "file": "sfx/trading/trade_sell.wav",
+      "volume": 0.8
+    },
+    "ui_cancel": {
+      "file": "sfx/ui/ui_cancel.wav",
+      "volume": 0.7
+    },
+    "ui_click": {
+      "file": "sfx/ui/ui_click.wav",
+      "volume": 0.7
+    },
+    "ui_confirm": {
+      "file": "sfx/ui/ui_confirm.wav",
+      "volume": 0.7
+    },
+    "ui_error": {
+      "file": "sfx/ui/ui_error.wav",
+      "volume": 0.6
+    },
+    "ui_hover": {
+      "file": "sfx/ui/ui_hover.wav",
+      "volume": 0.4
+    },
+    "ui_scroll": {
+      "file": "sfx/ui/ui_scroll.wav",
+      "volume": 0.3
+    }
+  }
+}

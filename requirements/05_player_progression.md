@@ -299,8 +299,8 @@ Achievement-based perks that complement skill trees:
 - **Tax Haven**: -2% tariffs universally
 - **Black Market Contact**: Access to black markets
 
-#### Fleet Perks
-- **Fleet Commander**: Unlock fleet management
+#### Fleet Perks (Act Two)
+- **Fleet Commander**: Unlock fleet management (Campaign Act Two)
 - **Automated Trading**: AI ships earn 50% normal profit
 - **Logistics Master**: +10% cargo on all ships
 

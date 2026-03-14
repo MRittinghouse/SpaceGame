@@ -1,0 +1,513 @@
+{
+  "locations": {
+    "nexus_prime": [
+      {
+        "id": "nexus_market",
+        "name": "Central Exchange",
+        "location_type": "market",
+        "description": "The largest trading floor in the Expanse. Three stories of holographic price boards and broker offices.",
+        "flavor_text": "The hum of commerce never stops here. Freight drones weave between the price boards overhead."
+      },
+      {
+        "id": "nexus_repair",
+        "name": "Dockside Repair Bay",
+        "location_type": "repair_bay",
+        "description": "Guild-certified repair facilities with standardized pricing and thorough diagnostics.",
+        "flavor_text": "Technicians in crisp blue coveralls run systematic hull inspections. Everything is logged, filed, and billed.",
+        "repair_cost_per_hp": 12
+      },
+      {
+        "id": "nexus_cantina",
+        "name": "The Aurelia's Rest",
+        "location_type": "cantina",
+        "description": "A cantina in the old Aurelia Core. Where every faction rubs shoulders over cheap drinks.",
+        "flavor_text": "Union work songs leak from the back room. An Alliance farmer argues prices with a Guild broker. The bartender has heard it all."
+      },
+      {
+        "id": "nexus_shipyard",
+        "name": "Meridian Shipworks",
+        "location_type": "shipyard",
+        "description": "Full-service shipyard offering upgrades, modifications, and equipment installation.",
+        "flavor_text": "Holographic catalogs display the latest Guild-approved modifications at Guild-approved prices."
+      },
+      {
+        "id": "nexus_financial_exchange",
+        "name": "Meridian Financial Exchange",
+        "location_type": "unique",
+        "description": "The Expanse's financial heart. Commodity futures, shipping contracts, and insurance policies change hands by the second.",
+        "flavor_text": "Numbers scroll across floor-to-ceiling displays. Fortunes are made and lost between lunch and dinner."
+      },
+      {
+        "id": "nexus_prime_investment",
+        "name": "Meridian Trade Office",
+        "location_type": "investment",
+        "description": "Fund a trade desk that profits from the constant flow of goods through Nexus Prime's markets.",
+        "flavor_text": "A small office wedged between two broker firms, its holographic sign already cycling projected returns. The location alone is worth the investment."
+      }
+    ],
+    "stellaris_port": [
+      {
+        "id": "stellaris_market",
+        "name": "The Grand Bazaar",
+        "location_type": "market",
+        "description": "A three-level commercial complex of polished composite and soft lighting. High-end trade for high-end clients.",
+        "flavor_text": "The air smells faintly of imported perfume. A merchant displays fabrics that cost more than most ships."
+      },
+      {
+        "id": "stellaris_repair",
+        "name": "Premium Docking Services",
+        "location_type": "repair_bay",
+        "description": "White-glove repair service. Your ship will look better than when you bought it.",
+        "flavor_text": "The repair techs wear uniforms nicer than most traders' dress clothes. The waiting lounge has real leather seats.",
+        "repair_cost_per_hp": 14
+      },
+      {
+        "id": "stellaris_cantina",
+        "name": "The Gilt Nebula Lounge",
+        "location_type": "cantina",
+        "description": "An upscale establishment where deals happen over drinks that cost a day's wages.",
+        "flavor_text": "Crystal glasses clink. Somebody laughs too loudly at a joke that wasn't funny. The wine list is longer than some trade contracts."
+      },
+      {
+        "id": "stellaris_shipyard",
+        "name": "Stellaris Outfitters",
+        "location_type": "shipyard",
+        "description": "Premium ship upgrades and modifications. If it exists, they stock it — for a price.",
+        "flavor_text": "Display models of high-end weapon systems rotate slowly behind glass cases."
+      },
+      {
+        "id": "stellaris_auction_house",
+        "name": "Stellaris Auction House",
+        "location_type": "unique",
+        "description": "Rare goods, antiquities, and items of uncertain provenance find new owners here. Cash only, no questions asked.",
+        "flavor_text": "A Core System painting goes for 50,000 credits. The buyer doesn't blink."
+      },
+      {
+        "id": "stellaris_port_investment",
+        "name": "Stellaris Brokerage",
+        "location_type": "investment",
+        "description": "Back a luxury goods brokerage catering to Stellaris Port's affluent clientele.",
+        "flavor_text": "The office features real wood furniture and a client list that reads like a who's who of the Expanse. Discretion is the primary service."
+      }
+    ],
+    "breakstone": [
+      {
+        "id": "breakstone_market",
+        "name": "Rock Haven Market",
+        "location_type": "market",
+        "description": "Functional trading floor built into a converted cargo bay. No frills, fair prices.",
+        "flavor_text": "Ore dust hangs in the air. A miner haggles over drill bits with the same intensity she'd bring to a Council vote."
+      },
+      {
+        "id": "breakstone_repair",
+        "name": "Patch & Weld",
+        "location_type": "repair_bay",
+        "description": "Union repair crews who learned their trade fixing mining rigs. Fast, cheap, and solid.",
+        "flavor_text": "The lead mechanic has more weld burns than hair. She'll fix your hull and tell you what you did wrong. Both free of charge.",
+        "repair_cost_per_hp": 8
+      },
+      {
+        "id": "breakstone_cantina",
+        "name": "The Drift Bar",
+        "location_type": "cantina",
+        "description": "A rowdy miners' bar where shift changes bring waves of thirsty regulars.",
+        "flavor_text": "Someone's scratched Union slogans into every table. The jukebox plays work songs. The beer is strong and the opinions stronger."
+      },
+      {
+        "id": "breakstone_mining",
+        "name": "Asteroid Belt Operations",
+        "location_type": "mining",
+        "description": "Rich asteroid fields surrounding the system. Common metals and iron for the taking.",
+        "flavor_text": "Mining skiffs drift between the rocks like fireflies. Breakstone's belts have been worked for a century and still haven't run dry."
+      },
+      {
+        "id": "breakstone_shipyard",
+        "name": "Union Dry Dock",
+        "location_type": "shipyard",
+        "description": "No-nonsense ship modifications. Union engineers build things to last.",
+        "flavor_text": "The upgrade catalog is shorter than the Guild's but everything on it has been field-tested by miners."
+      },
+      {
+        "id": "breakstone_deep_mines",
+        "name": "The Deep Shafts",
+        "location_type": "unique",
+        "description": "The oldest mining tunnels in Breakstone. Section 3 preserves the cargo bay where the Uprising began.",
+        "flavor_text": "The walls here are scarred with a century of drill marks. A bronze plaque marks where Sora Takahashi spoke. Miners still leave flowers."
+      },
+      {
+        "id": "breakstone_investment",
+        "name": "Breakstone Mining Rig",
+        "location_type": "investment",
+        "description": "Fund an automated drilling rig in the asteroid fields. Returns paid in raw ore.",
+        "flavor_text": "A Union foreman shows you the rig schematics over a beer. Solid engineering, proven yields, and the miners' cooperative takes a fair cut."
+      }
+    ],
+    "iron_depths": [
+      {
+        "id": "iron_depths_market",
+        "name": "Core Station Exchange",
+        "location_type": "market",
+        "description": "DCMC-operated trading post. Efficient, regulated, and focused on bulk mineral trade.",
+        "flavor_text": "Digital manifests scroll across wall-mounted screens. Everything is weighed, assayed, and documented in triplicate."
+      },
+      {
+        "id": "iron_depths_repair",
+        "name": "DCMC Maintenance Bay",
+        "location_type": "repair_bay",
+        "description": "Corporate-grade repair facilities built to service heavy mining equipment. Your ship qualifies.",
+        "flavor_text": "The maintenance bay runs on schedules, not requests. Get in line, get fixed, get out.",
+        "repair_cost_per_hp": 8
+      },
+      {
+        "id": "iron_depths_cantina",
+        "name": "The Quiet Shift",
+        "location_type": "cantina",
+        "description": "A subdued canteen where DCMC miners decompress between shifts. Quieter than Breakstone's bars.",
+        "flavor_text": "Miners eat in near-silence, exhausted from twelve-hour shifts in the deep core. The coffee is industrial-strength."
+      },
+      {
+        "id": "iron_depths_mining",
+        "name": "Deep Core Operations",
+        "location_type": "mining",
+        "description": "Dense, unstable asteroid clusters rich in rare metals and heavy isotopes. High risk, high reward.",
+        "flavor_text": "Gravitational anomalies make every approach vector an adventure. The minerals here are worth the danger. Mostly."
+      },
+      {
+        "id": "iron_depths_restricted_zone",
+        "name": "Restricted Sector 7",
+        "location_type": "unique",
+        "description": "DCMC has quietly increased patrols around this sector. The official reason is 'geological instability.'",
+        "flavor_text": "Warning beacons flash at the perimeter. Whatever's in there, DCMC doesn't want you seeing it."
+      },
+      {
+        "id": "iron_depths_investment",
+        "name": "Iron Depths Deep Drill",
+        "location_type": "investment",
+        "description": "Invest in deep-core mining operations. High yield iron ore extraction.",
+        "flavor_text": "The DCMC prospectus is clinical and precise. Core samples line the office wall like trophies, each one richer than the last."
+      }
+    ],
+    "forgeworks": [
+      {
+        "id": "forgeworks_market",
+        "name": "Foundry Exchange",
+        "location_type": "market",
+        "description": "Industrial trading floor where raw materials become manufactured goods and everyone takes a cut.",
+        "flavor_text": "The floor vibrates faintly from the smelters two levels below. Trade here smells like hot metal."
+      },
+      {
+        "id": "forgeworks_repair",
+        "name": "Syndicate Repair Dock",
+        "location_type": "repair_bay",
+        "description": "Independent repair facility run by the Forgeworks Industrial Syndicate. Competent and politically neutral.",
+        "flavor_text": "The techs here fix Guild cruisers and Union haulers with equal proficiency. Credits are credits.",
+        "repair_cost_per_hp": 10
+      },
+      {
+        "id": "forgeworks_cantina",
+        "name": "The Neutral Ground",
+        "location_type": "cantina",
+        "description": "A bar where Guild executives and Union foremen drink under the same roof. Arguments are frequent but knives stay sheathed.",
+        "flavor_text": "A sign behind the bar reads: 'No politics before the third round.' Nobody obeys it, but the bartender appreciates the gesture."
+      },
+      {
+        "id": "forgeworks_salvaging",
+        "name": "Salvage Yards",
+        "location_type": "salvaging",
+        "description": "Scrap metal, used parts, and refurbished equipment. The scrappier side of Forgeworks.",
+        "flavor_text": "Mountains of hull plating and engine components, sorted by alloy and age. One person's wreck is another's inventory."
+      },
+      {
+        "id": "forgeworks_refining",
+        "name": "Main Foundry Refinery",
+        "location_type": "refining",
+        "description": "Process raw materials in the Expanse's largest industrial refinery. Three shifts, never stops.",
+        "flavor_text": "The glow of the smelters paints everything in amber. Ore goes in one end, alloys come out the other."
+      },
+      {
+        "id": "forgeworks_shipyard",
+        "name": "Orbital Shipyards",
+        "location_type": "shipyard",
+        "description": "Where the Expanse's ships are built and modified. The Syndicate's pride and primary revenue source.",
+        "flavor_text": "A half-finished freighter hangs in dry dock, its skeleton exposed like an anatomy lesson in steel."
+      },
+      {
+        "id": "forgeworks_investment",
+        "name": "Forgeworks Refining Contract",
+        "location_type": "investment",
+        "description": "Lease capacity at a Union smelter. Returns paid in processed metals.",
+        "flavor_text": "The Syndicate broker slides a contract across the table, still warm from the printer. The smelter runs three shifts and never sits idle."
+      }
+    ],
+    "axiom_labs": [
+      {
+        "id": "axiom_market",
+        "name": "Research Supply Exchange",
+        "location_type": "market",
+        "description": "Specialized market focused on medical tech, electronics, and research materials.",
+        "flavor_text": "Everything is labeled with chemical formulas and batch numbers. The traders here have doctorates."
+      },
+      {
+        "id": "axiom_repair",
+        "name": "Engineering Department Bay",
+        "location_type": "repair_bay",
+        "description": "Collective engineers who treat ship repair like a research problem. Thorough but methodical.",
+        "flavor_text": "They'll scan your hull with instruments that cost more than your ship, then explain exactly what's wrong in terms you won't understand.",
+        "repair_cost_per_hp": 10
+      },
+      {
+        "id": "axiom_cantina",
+        "name": "The Faculty Lounge",
+        "location_type": "cantina",
+        "description": "Where Axiom's researchers unwind. Conversations tend toward the technical even after hours.",
+        "flavor_text": "A biologist and a physicist argue about quantum entanglement. The bartender, who has a master's degree, pours drinks and corrects their math."
+      },
+      {
+        "id": "axiom_refining",
+        "name": "Materials Science Lab",
+        "location_type": "refining",
+        "description": "Advanced refining processes developed by Collective researchers. Precision over volume.",
+        "flavor_text": "Centrifuges hum in clean rooms. The yield is lower than Forgeworks, but the purity is unmatched."
+      },
+      {
+        "id": "axiom_shipyard",
+        "name": "Engineering Workshop",
+        "location_type": "shipyard",
+        "description": "Ship modifications informed by cutting-edge materials science. Expensive but elegant.",
+        "flavor_text": "The upgrade catalog includes things other stations haven't heard of yet."
+      },
+      {
+        "id": "axiom_research_wing",
+        "name": "Okafor Institute Medical Wing",
+        "location_type": "unique",
+        "description": "The Collective's premier medical facility. Dr. Okafor's legacy: 'Knowledge that does not heal is knowledge wasted.'",
+        "flavor_text": "A bronze plaque gleams beside the entrance. Inside, researchers work on breakthroughs that could change everything — if the patents don't bury them first."
+      },
+      {
+        "id": "axiom_labs_investment",
+        "name": "Axiom Research Grant",
+        "location_type": "investment",
+        "description": "Fund a research initiative that pays dividends from patent licensing.",
+        "flavor_text": "The grant proposal is dense with jargon but the licensing projections are clear. Collective research has a way of finding commercial applications."
+      }
+    ],
+    "nova_research": [
+      {
+        "id": "nova_market",
+        "name": "Nova Trading Terminal",
+        "location_type": "market",
+        "description": "Restricted trading access. High-tech goods at premium prices, with export controls on sensitive items.",
+        "flavor_text": "The manifest forms require three signatures and a non-disclosure agreement. Welcome to Nova."
+      },
+      {
+        "id": "nova_repair",
+        "name": "NAS Technical Services",
+        "location_type": "repair_bay",
+        "description": "Corporate repair facility. Professional, expensive, and they'll scan your ship while they fix it.",
+        "flavor_text": "The techs are polite and efficient. You try not to think about what their diagnostic scanners are recording.",
+        "repair_cost_per_hp": 12
+      },
+      {
+        "id": "nova_cantina",
+        "name": "The Clean Room",
+        "location_type": "cantina",
+        "description": "A sterile, quiet bar where NAS employees speak in careful euphemisms about their work.",
+        "flavor_text": "The drinks are expensive and the conversations are guarded. Everyone here has signed something they can't talk about."
+      },
+      {
+        "id": "nova_refining",
+        "name": "Advanced Processing Lab",
+        "location_type": "refining",
+        "description": "Proprietary refining processes that produce the sector's most advanced materials. Results classified.",
+        "flavor_text": "The yields here defy published theoretical limits. NAS isn't sharing how."
+      },
+      {
+        "id": "nova_shipyard",
+        "name": "NAS Systems Integration",
+        "location_type": "shipyard",
+        "description": "Cutting-edge ship systems available nowhere else. Security clearance may be required.",
+        "flavor_text": "Some of these modifications aren't in any public catalog. The prices aren't public either."
+      },
+      {
+        "id": "nova_restricted_labs",
+        "name": "Restricted Research Wing",
+        "location_type": "unique",
+        "description": "Entire sections of Nova are off-limits. Armed guards, biometric locks, and persistent rumors about what's inside.",
+        "flavor_text": "A researcher hurries past with a sealed container. She doesn't make eye contact. The guard watches you watch her."
+      },
+      {
+        "id": "nova_research_investment",
+        "name": "Nova Applied Sciences Fund",
+        "location_type": "investment",
+        "description": "Support cutting-edge research with commercial applications. Returns paid in licensing fees.",
+        "flavor_text": "The NAS investment officer speaks in carefully hedged language. The returns column, however, speaks for itself."
+      }
+    ],
+    "havens_rest": [
+      {
+        "id": "havens_market",
+        "name": "Harvest Market",
+        "location_type": "market",
+        "description": "An open market where farmers sell directly to traders. Fresh bread competes with engine exhaust.",
+        "flavor_text": "A farmer samples her own cheese for a skeptical trader. Three stalls down, someone is selling honey from actual bees."
+      },
+      {
+        "id": "havens_repair",
+        "name": "Community Repair Cooperative",
+        "location_type": "repair_bay",
+        "description": "Volunteer mechanics and shared tools. They'll fix what they can and teach you to fix the rest.",
+        "flavor_text": "A teenager with grease-stained hands explains hull patching technique with the confidence of someone twice her age.",
+        "repair_cost_per_hp": 10
+      },
+      {
+        "id": "havens_cantina",
+        "name": "The Long Table",
+        "location_type": "cantina",
+        "description": "More community kitchen than cantina. Everyone eats together. Strangers become regulars fast.",
+        "flavor_text": "The soup is homemade and the bread is still warm. An old farmer tells a story about the first harvest. Nobody rushes."
+      },
+      {
+        "id": "havens_shipyard",
+        "name": "Frontier Outfitters",
+        "location_type": "shipyard",
+        "description": "Practical modifications from Alliance engineers. Nothing fancy, everything works.",
+        "flavor_text": "The catalog is hand-written on a whiteboard. The engineer crosses things out and adds them back as stock changes."
+      },
+      {
+        "id": "havens_congress_hall",
+        "name": "Alliance Congress Hall",
+        "location_type": "unique",
+        "description": "Where the Annual Congress meets. Delegates from every Alliance community come to argue, negotiate, and share meals.",
+        "flavor_text": "The walls are covered in banners from every Alliance settlement. The table seats two hundred. The arguments can last longer than the dinners."
+      },
+      {
+        "id": "havens_rest_investment",
+        "name": "Haven's Rest Hydroponics",
+        "location_type": "investment",
+        "description": "Fund a hydroponic farming operation in a frontier community. Steady food production.",
+        "flavor_text": "The cooperative elder walks you through the greenhouse plans, pointing out each growing rack with quiet pride. Frontier folk repay their debts."
+      }
+    ],
+    "verdant": [
+      {
+        "id": "verdant_market",
+        "name": "Agri-Hub Exchange",
+        "location_type": "market",
+        "description": "Distribution center connecting surface farms to interstellar trade. Specialty crops at premium prices.",
+        "flavor_text": "Crates of organic produce line the loading bays. The quality labels here actually mean something."
+      },
+      {
+        "id": "verdant_repair",
+        "name": "Farmstead Mechanics",
+        "location_type": "repair_bay",
+        "description": "Agricultural engineers who fix everything from irrigation pumps to starship hulls. Practical and affordable.",
+        "flavor_text": "The mechanic adjusts her approach from tractor to spacecraft without missing a beat. A hull is a hull.",
+        "repair_cost_per_hp": 10
+      },
+      {
+        "id": "verdant_cantina",
+        "name": "The Greenhouse",
+        "location_type": "cantina",
+        "description": "A cantina surrounded by actual growing plants. The drinks feature locally-grown ingredients.",
+        "flavor_text": "Vines climb the walls and real sunlight filters through the dome. The cider is made from Verdant apples. It's unreasonably good."
+      },
+      {
+        "id": "verdant_shipyard",
+        "name": "Verdant Docking Services",
+        "location_type": "shipyard",
+        "description": "Basic ship modifications focused on cargo hauling and fuel efficiency. Built for working traders.",
+        "flavor_text": "The upgrade options prioritize reliability over flash. These people know what a working ship needs."
+      },
+      {
+        "id": "verdant_mayors_council",
+        "name": "Mayors' Council Chamber",
+        "location_type": "unique",
+        "description": "The most organized governing body in the Alliance. Where Verdant's uncomfortable success gets debated.",
+        "flavor_text": "Minutes from the last session are posted on the wall. The agenda item 'modernization proposal' has been tabled for the fourth time."
+      },
+      {
+        "id": "verdant_investment",
+        "name": "Verdant Agricultural Co-op",
+        "location_type": "investment",
+        "description": "Buy shares in a farming cooperative. Returns paid in food supplies.",
+        "flavor_text": "The co-op's ledger is handwritten and meticulous. Verdant soil yields three harvests a year, and the farmers have never missed a dividend."
+      }
+    ],
+    "crimson_reach": [
+      {
+        "id": "crimson_market",
+        "name": "Wrecker's Bazaar",
+        "location_type": "market",
+        "description": "Salvaged parts, refurbished electronics, and goods of ambiguous origin. No questions, no receipts.",
+        "flavor_text": "A market that doesn't recognize the concept of contraband. If it's on the table, it's for sale."
+      },
+      {
+        "id": "crimson_repair",
+        "name": "Jury-Rig Junction",
+        "location_type": "repair_bay",
+        "description": "They'll fix your ship with whatever's on hand. Unconventional methods, surprisingly effective results.",
+        "flavor_text": "The mechanic welds a hull plate that clearly came from a different ship. It fits. Don't ask how.",
+        "repair_cost_per_hp": 6
+      },
+      {
+        "id": "crimson_cantina",
+        "name": "The Rust Bucket",
+        "location_type": "cantina",
+        "description": "A salvager's bar built from three different ships welded together. The drinks are strong and the stories are stronger.",
+        "flavor_text": "Someone is arm-wrestling for salvage rights. The bartender, who is also the bouncer, watches with professional disinterest."
+      },
+      {
+        "id": "crimson_salvaging",
+        "name": "Debris Field Operations",
+        "location_type": "salvaging",
+        "description": "The richest salvage grounds in the Expanse. Old battles and abandoned stations provide endless material.",
+        "flavor_text": "Wrecker crews launch at dawn and return at dusk with holds full of history. One person's wreck is another's livelihood."
+      },
+      {
+        "id": "crimson_wreckers_guild",
+        "name": "Wrecker's Guild Hall",
+        "location_type": "unique",
+        "description": "The only structure resembling authority in Crimson Reach. Safety standards, dispute mediation, and a shared database of derelict locations.",
+        "flavor_text": "Malia Torres's reputation keeps the peace better than any law could. The derelict map on the wall is worth more than most ships."
+      },
+      {
+        "id": "crimson_reach_investment",
+        "name": "Crimson Reach Salvage Op",
+        "location_type": "investment",
+        "description": "Sponsor a salvage crew working the debris fields. Returns paid in scrap metal.",
+        "flavor_text": "The crew captain spreads a star chart across the bar, circling derelict sites with a grease pencil. Every wreck out there is money waiting to be claimed."
+      }
+    ],
+    "the_fulcrum": [
+      {
+        "id": "fulcrum_supply_cache",
+        "name": "Seized Supply Cache",
+        "location_type": "market",
+        "description": "Military supply crates stacked in a cargo hold. Not a market in any real sense, but there are goods here that could be useful.",
+        "flavor_text": "Everything is stamped with Guild logistics codes. Most of it is weapons components, but there are rations and fuel cells mixed in."
+      },
+      {
+        "id": "fulcrum_docking",
+        "name": "Maintenance Docking Port",
+        "location_type": "cantina",
+        "description": "A neglected docking port on the station's lower ring. Colonial-era construction, never updated. The only approach that avoids the automated defense perimeter.",
+        "flavor_text": "Emergency lighting flickers in the airlock. The station hums with power that has no business being here."
+      },
+      {
+        "id": "fulcrum_repair",
+        "name": "Emergency Repair Bay",
+        "location_type": "repair_bay",
+        "description": "A functional repair bay built into the original colonial infrastructure. Basic but operational.",
+        "flavor_text": "Spare parts are scattered across workbenches. Everything here has been stripped from Guild military vessels.",
+        "repair_cost_per_hp": 20
+      },
+      {
+        "id": "fulcrum_core",
+        "name": "Assembly Core",
+        "location_type": "unique",
+        "description": "The heart of The Fulcrum. Massive gravitational lensing arrays hang in zero-gravity assembly cradles, their curved surfaces gleaming under industrial floodlights. A warp gate frame dominates the far wall.",
+        "flavor_text": "The scale is breathtaking. Each array is larger than your ship. And the warp gate behind them glows with a faint blue light \u2014 already powered, already waiting."
+      }
+    ]
+  }
+}

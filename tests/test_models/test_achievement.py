@@ -278,3 +278,174 @@ class TestAchievementProgress:
         manager = AchievementManager([])
         progress = manager.get_progress(player, "nonexistent")
         assert progress == 0.0
+
+
+# ============================================================================
+# Minigame stats tests (Cycle D)
+# ============================================================================
+
+
+class TestMinigameStats:
+    """Tests for new minigame statistic fields on Player."""
+
+    def test_player_has_max_mining_depth(self) -> None:
+        """Player should have max_mining_depth defaulting to 0."""
+        player = _make_player()
+        assert player.max_mining_depth == 0
+
+    def test_player_has_total_chains_triggered(self) -> None:
+        """Player should have total_chains_triggered defaulting to 0."""
+        player = _make_player()
+        assert player.total_chains_triggered == 0
+
+    def test_player_has_rare_ores_mined(self) -> None:
+        """Player should have rare_ores_mined defaulting to 0."""
+        player = _make_player()
+        assert player.rare_ores_mined == 0
+
+    def test_player_has_salvage_sessions_completed(self) -> None:
+        """Player should have salvage_sessions_completed defaulting to 0."""
+        player = _make_player()
+        assert player.salvage_sessions_completed == 0
+
+    def test_player_has_corrupted_items_extracted(self) -> None:
+        """Player should have corrupted_items_extracted defaulting to 0."""
+        player = _make_player()
+        assert player.corrupted_items_extracted == 0
+
+    def test_player_has_refining_jobs_completed(self) -> None:
+        """Player should have refining_jobs_completed defaulting to 0."""
+        player = _make_player()
+        assert player.refining_jobs_completed == 0
+
+    def test_player_has_batch_jobs_queued(self) -> None:
+        """Player should have batch_jobs_queued defaulting to 0."""
+        player = _make_player()
+        assert player.batch_jobs_queued == 0
+
+    def test_player_has_recipes_crafted_set(self) -> None:
+        """Player should have recipes_crafted as empty set by default."""
+        player = _make_player()
+        assert player.recipes_crafted == set()
+        assert isinstance(player.recipes_crafted, set)
+
+    def test_unique_recipes_stat_resolution(self) -> None:
+        """AchievementManager should resolve unique_recipes_crafted to len(recipes_crafted)."""
+        player = _make_player()
+        player.recipes_crafted = {"smelt_iron", "refine_crystal", "forge_alloy"}
+        ach = _make_achievement(stat_key="unique_recipes_crafted", threshold=3)
+        manager = AchievementManager([ach])
+
+        unlocked = manager.check_achievements(player)
+        assert len(unlocked) == 1, "Should unlock when recipes_crafted has 3 entries"
+
+    def test_new_stats_serialize_roundtrip(self) -> None:
+        """New minigame stats should survive save/load cycle."""
+        from spacegame.save_manager import SaveManager
+        from spacegame.data_loader import get_data_loader
+        import tempfile
+        from pathlib import Path
+
+        # Ensure data is loaded
+        dl = get_data_loader()
+        dl.load_all()
+
+        player = _make_player()
+        player.max_mining_depth = 5
+        player.total_chains_triggered = 12
+        player.rare_ores_mined = 30
+        player.salvage_sessions_completed = 8
+        player.corrupted_items_extracted = 4
+        player.refining_jobs_completed = 25
+        player.batch_jobs_queued = 10
+        player.recipes_crafted = {"smelt_iron", "refine_crystal"}
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            sm = SaveManager(save_directory=Path(tmpdir))
+            sm.save_game(0, player, {}, {}, 100)
+            loaded = sm.load_game(0)
+            assert loaded is not None
+
+            p2 = loaded["player"]
+            assert p2.max_mining_depth == 5
+            assert p2.total_chains_triggered == 12
+            assert p2.rare_ores_mined == 30
+            assert p2.salvage_sessions_completed == 8
+            assert p2.corrupted_items_extracted == 4
+            assert p2.refining_jobs_completed == 25
+            assert p2.batch_jobs_queued == 10
+            assert p2.recipes_crafted == {"smelt_iron", "refine_crystal"}
+
+
+# ============================================================================
+# Minigame achievements tests (Cycle D)
+# ============================================================================
+
+
+class TestMinigameAchievements:
+    """Tests for new minigame-focused achievements."""
+
+    def test_ten_new_achievements_loaded(self) -> None:
+        """Total achievement count should be 43 (40 existing + 3 smuggling)."""
+        from spacegame.data_loader import get_data_loader
+
+        dl = get_data_loader()
+        dl.load_all()
+        assert len(dl.achievements) == 43
+
+    def test_deep_delver_triggers(self) -> None:
+        """deep_delver should unlock when max_mining_depth >= 4."""
+        player = _make_player()
+        ach = _make_achievement("deep_delver", stat_key="max_mining_depth", threshold=4)
+        manager = AchievementManager([ach])
+
+        player.max_mining_depth = 3
+        assert len(manager.check_achievements(player)) == 0
+
+        player.max_mining_depth = 4
+        assert len(manager.check_achievements(player)) == 1
+
+    def test_chain_master_triggers(self) -> None:
+        """chain_master should unlock when total_chains_triggered >= 10."""
+        player = _make_player()
+        ach = _make_achievement("chain_master", stat_key="total_chains_triggered", threshold=10)
+        manager = AchievementManager([ach])
+
+        player.total_chains_triggered = 10
+        assert len(manager.check_achievements(player)) == 1
+
+    def test_master_prospector_triggers(self) -> None:
+        """master_prospector should unlock when ore_mined >= 500."""
+        player = _make_player()
+        ach = _make_achievement("master_prospector", stat_key="ore_mined", threshold=500)
+        manager = AchievementManager([ach])
+
+        player.ore_mined = 500
+        assert len(manager.check_achievements(player)) == 1
+
+    def test_salvage_expert_triggers(self) -> None:
+        """salvage_expert should unlock when items_salvaged >= 200."""
+        player = _make_player()
+        ach = _make_achievement("salvage_expert", stat_key="items_salvaged", threshold=200)
+        manager = AchievementManager([ach])
+
+        player.items_salvaged = 200
+        assert len(manager.check_achievements(player)) == 1
+
+    def test_refining_mogul_triggers(self) -> None:
+        """refining_mogul should unlock when refining_jobs_completed >= 100."""
+        player = _make_player()
+        ach = _make_achievement("refining_mogul", stat_key="refining_jobs_completed", threshold=100)
+        manager = AchievementManager([ach])
+
+        player.refining_jobs_completed = 100
+        assert len(manager.check_achievements(player)) == 1
+
+    def test_alchemist_triggers(self) -> None:
+        """alchemist should unlock when unique_recipes_crafted >= 5."""
+        player = _make_player()
+        ach = _make_achievement("alchemist", stat_key="unique_recipes_crafted", threshold=5)
+        manager = AchievementManager([ach])
+
+        player.recipes_crafted = {"a", "b", "c", "d", "e"}
+        assert len(manager.check_achievements(player)) == 1

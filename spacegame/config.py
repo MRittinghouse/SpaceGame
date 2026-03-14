@@ -7,6 +7,7 @@ display settings, colors, timing, and game rules.
 
 from enum import Enum
 import pathlib
+import sys
 
 # ============================================================================
 # DISPLAY SETTINGS
@@ -50,8 +51,27 @@ class Colors:
     YELLOW = (255, 200, 50)  # Warning/neutral
     BLUE = (80, 150, 255)  # Info
 
-    # Panel
+    # Panel & card backgrounds
     PANEL = (20, 25, 40)  # Same as UI_PANEL
+    PANEL_BG = (15, 20, 35)  # Content panel background (darker)
+    CARD_BG = (20, 28, 45)  # Card / inactive tab background
+
+    # Bar rendering
+    BAR_BG = (30, 30, 40)  # Progress bar track background
+    BAR_BG_LIGHT = (40, 40, 50)  # Lighter bar track variant
+    BAR_EDGE = (200, 240, 255)  # Leading edge highlight on filled bars
+
+    # List row backgrounds
+    ROW_BG = (30, 40, 65)  # Normal list/table row background
+    ROW_HIGHLIGHT = (40, 55, 90)  # Selected/hovered row background
+    ROW_DETAIL = (22, 30, 50)  # Detail panel inside list row
+
+    # Accent colors
+    GOLD = (255, 215, 0)  # Gold highlight / achievement color
+
+    # Scrollbar
+    SCROLLBAR_TRACK = (30, 35, 55)  # Scrollbar track background
+    SCROLLBAR_THUMB = (80, 90, 120)  # Scrollbar thumb
 
     # Convenience aliases
     SUCCESS = GREEN
@@ -69,6 +89,31 @@ class Colors:
     FACTION_MINERS = (200, 150, 50)  # Orange/gold - Miners Union
     FACTION_SCIENCE = (150, 100, 200)  # Purple - Science Collective
     FACTION_FRONTIER = (100, 200, 100)  # Green - Frontier Alliance
+
+    # Skill check colors
+    CHECK_PASS = (80, 220, 120)  # Green - will pass
+    CHECK_MARGINAL = (220, 200, 60)  # Yellow - borderline
+    CHECK_FAIL = (200, 80, 80)  # Red - will fail
+
+    # Attribute colors
+    ATTR_HIGHLIGHT = (180, 160, 255)  # Soft purple for attribute display
+
+    # Ground exploration tile colors (placeholder)
+    GROUND_FLOOR = (60, 65, 75)
+    GROUND_WALL = (35, 35, 45)
+    GROUND_DOOR_CLOSED = (100, 80, 50)
+    GROUND_DOOR_OPEN = (80, 70, 55)
+    GROUND_EXIT = (50, 200, 100)
+    GROUND_ENTRANCE = (80, 150, 255)
+    GROUND_PLAYER = (255, 220, 80)
+    GROUND_ENEMY = (220, 60, 60)
+    GROUND_ENEMY_SUSPICIOUS = (220, 160, 40)
+    GROUND_ENEMY_ALERT = (255, 40, 40)
+    GROUND_NOISY_FLOOR = (70, 65, 60)
+    GROUND_TERMINAL = (60, 180, 200)  # Cyan — interactive data terminal
+    GROUND_HAZARD = (200, 80, 40)  # Orange-red — environmental hazard
+    GROUND_VENT = (120, 130, 140)  # Grey-blue — steam vent (blocks vision)
+    GROUND_FOG_EXPLORED_ALPHA = 140  # Semi-transparent overlay for explored tiles
 
 
 # ============================================================================
@@ -106,39 +151,82 @@ class GameState(Enum):
     MISSION_BRIEFING = "mission_briefing"
     CREW_ROSTER = "crew_roster"
     NAME_INPUT = "name_input"
+    CHARACTER_CREATION = "character_creation"
+    CHARACTER = "character"
+    JOURNAL = "journal"
+
+    # Station states
+    STATION_HUB = "station_hub"
+    REPAIR_BAY = "repair_bay"
+    INVESTMENT = "investment"
+
+    # Combat states
+    COMBAT = "combat"
+    ENCOUNTER = "encounter"
+
+    # Ground exploration states
+    GROUND_BRIEFING = "ground_briefing"
+    GROUND_EXPLORATION = "ground_exploration"
+    GROUND_RESULT = "ground_result"
 
 
 # ============================================================================
 # PATHS
 # ============================================================================
 
+def _resolve_root() -> pathlib.Path:
+    """Resolve project root, handling both dev and frozen (PyInstaller) modes."""
+    if getattr(sys, "frozen", False):
+        return pathlib.Path(sys._MEIPASS)  # type: ignore[attr-defined]
+    return pathlib.Path(__file__).parent.parent
+
+
 # Base paths
-PROJECT_ROOT = pathlib.Path(__file__).parent.parent
+PROJECT_ROOT = _resolve_root()
 DATA_DIR = PROJECT_ROOT / "spacegame" / "data"
 ASSETS_DIR = DATA_DIR / "assets"
 FONTS_DIR = ASSETS_DIR / "fonts"
 IMAGES_DIR = ASSETS_DIR / "images"
-SAVES_DIR = DATA_DIR / "saves"
+
+# Audio directories
+AUDIO_DIR = ASSETS_DIR / "audio"
+MUSIC_DIR = AUDIO_DIR / "music"
+SFX_DIR = AUDIO_DIR / "sfx"
+AMBIENT_DIR = AUDIO_DIR / "ambient"
 
 # Image subdirectories
 SYSTEMS_IMAGE_DIR = IMAGES_DIR / "systems"
 BACKGROUNDS_IMAGE_DIR = IMAGES_DIR / "backgrounds"
 
-# Ensure directories exist
-SAVES_DIR.mkdir(parents=True, exist_ok=True)
-SYSTEMS_IMAGE_DIR.mkdir(parents=True, exist_ok=True)
-BACKGROUNDS_IMAGE_DIR.mkdir(parents=True, exist_ok=True)
+# Ensure directories exist (skip in frozen builds — bundled assets are read-only)
+if not getattr(sys, "frozen", False):
+    SYSTEMS_IMAGE_DIR.mkdir(parents=True, exist_ok=True)
+    BACKGROUNDS_IMAGE_DIR.mkdir(parents=True, exist_ok=True)
 
 # ============================================================================
 # GAME RULES (Placeholder - will expand)
 # ============================================================================
 
 # Starting conditions
-STARTING_CREDITS = 5000
+STARTING_CREDITS = 3000
 STARTING_FUEL = 100
 
 # Game timing (if using turn-based or timed mechanics)
 AUTOSAVE_INTERVAL = 300  # seconds (5 minutes)
+
+# ============================================================================
+# COMBAT CONSTANTS
+# ============================================================================
+
+COMBAT_FLEE_BASE_CHANCE = 30
+COMBAT_FLEE_SPEED_FACTOR = 3
+COMBAT_FLEE_MIN_CHANCE = 10
+COMBAT_FLEE_MAX_CHANCE = 90
+COMBAT_FLEE_ACCURACY_PENALTY = 20
+COMBAT_HIT_CHANCE_MIN = 5
+COMBAT_HIT_CHANCE_MAX = 95
+COMBAT_DEFEAT_CARGO_LOSS_PERCENT = 30
+COMBAT_DEFEAT_HULL_REMAINING_PERCENT = 25
 
 # ============================================================================
 # MINING CONSTANTS
@@ -162,9 +250,9 @@ SALVAGE_CHARGE_REGEN_SECONDS = 5.0
 # ============================================================================
 
 XP_PER_TRADE = 15
-XP_PER_MINING = 5
-XP_PER_SALVAGE = 5
-XP_PER_REFINE = 10
+XP_PER_MINING = 10
+XP_PER_SALVAGE = 10
+XP_PER_REFINE = 12
 XP_PER_TRAVEL = 10
 MAX_LEVEL = 10
 
@@ -172,10 +260,22 @@ MAX_LEVEL = 10
 # FACTION REPUTATION CONSTANTS
 # ============================================================================
 
-REP_PER_TRADE = 2
-REP_RIVAL_PENALTY_RATIO = 0.5  # Rival loses half what you gain
+REP_PER_TRADE = 1
 REP_MIN = -100
 REP_MAX = 100
+
+# === POLITICAL SYSTEM ===
+REP_SPILLOVER_RATIO = 0.30  # Rival loses 30% of rep you gain (centralized)
+POLITICAL_EVENT_DAILY_CHANCE = 0.08  # 8% per game day
+POLITICAL_EVENT_MIN_DURATION = 3
+POLITICAL_EVENT_MAX_DURATION = 7
+FACTION_RELATIONSHIP_MIN = -100
+FACTION_RELATIONSHIP_MAX = 100
+INTEL_BASE_VALUE = 50
+INTEL_RIVAL_BONUS_MULTIPLIER = 2.0
+REP_HOSTILE_ATTACK_CHANCE = 40
+REP_FRIENDLY_DISPOSITION_BONUS = 10
+REP_UNFRIENDLY_DISPOSITION_PENALTY = -10
 
 # ============================================================================
 # DIALOGUE CONSTANTS
@@ -183,6 +283,86 @@ REP_MAX = 100
 
 DIALOGUE_TEXT_SPEED = 40  # Characters per second for typewriter effect (0 = instant)
 DIALOGUE_PORTRAIT_SIZE = (100, 120)
+SOCIAL_CHECK_FEEDBACK_DURATION = 1.5  # Seconds to show check result overlay
+
+# ============================================================================
+# GROUND EXPLORATION CONSTANTS
+# ============================================================================
+
+GROUND_TILE_SIZE = 48  # Pixels per tile
+GROUND_VIEWPORT_TILES_X = 15  # Visible tiles horizontally
+GROUND_VIEWPORT_TILES_Y = 12  # Visible tiles vertically
+GROUND_CAMERA_LERP_SPEED = 8.0  # Camera smoothing factor
+GROUND_BASE_VISION_RADIUS = 5  # Player base vision in tiles
+GROUND_DEFAULT_MAP_WIDTH = 20
+GROUND_DEFAULT_MAP_HEIGHT = 25
+
+# Stealth & detection
+GROUND_SUSPICIOUS_DECAY_TURNS = 5  # Turns for SUSPICIOUS → UNDETECTED
+GROUND_ALERT_DECAY_TURNS = 8  # Turns of broken LOS for ALERT → SUSPICIOUS
+GROUND_DEFAULT_ENEMY_VISION = 5  # Default enemy vision range
+GROUND_ENEMY_VISION_CONE_ANGLE = 90  # Degrees, centered on facing direction
+GROUND_NOISE_DOOR_OPEN = 2  # Noise radius for opening a door
+GROUND_NOISE_NOISY_FLOOR = 3  # Noise radius for stepping on noisy tile
+GROUND_NOISE_SPRINT = 4  # Noise radius for sprinting
+
+# Ground combat — "Dice & Grit"
+GROUND_COMBAT_BASE_HP = 10  # Player base HP on ground
+GROUND_COMBAT_ENGAGE_RANGE = 2  # Tiles from player to pull enemies into combat
+GROUND_COMBAT_RETREAT_BASE_DIFFICULTY = 4  # Base retreat roll target
+GROUND_COMBAT_AMBUSH_BONUS = 3  # Attack bonus on ambush first exchange
+GROUND_COMBAT_DISADVANTAGED_PENALTY = 2  # Penalty when caught in the open
+GROUND_COMBAT_OUTNUMBERED_PENALTY = 1  # Per enemy beyond the first
+GROUND_COMBAT_MOMENTUM_THRESHOLD = 2  # Consecutive wins needed for bonus
+GROUND_COMBAT_MOMENTUM_BONUS = 2  # Attack bonus from momentum
+GROUND_COMBAT_LAST_STAND_BONUS = 3  # Bonus when below 25% HP
+GROUND_COMBAT_INTIMIDATION_KILL_BONUS = 2  # Talk bonus after defeating an enemy
+GROUND_COMBAT_CRIT_MULTIPLIER = 2  # Damage multiplier on natural 6
+GROUND_COMBAT_INTIMIDATING_PRESENCE_DEBUFF = 2  # Enemy debuff on first exchange
+GROUND_COMBAT_PANEL_HEIGHT = 220  # Pixel height of combat overlay panel
+GROUND_COMBAT_DICE_ANIM_DURATION = 0.6  # Seconds for dice roll animation
+GROUND_COMBAT_RESULT_DISPLAY_DURATION = 1.5  # Seconds to show exchange result
+
+# ============================================================================
+# CRIMINAL HEAT DISPLAY
+# ============================================================================
+
+
+def get_heat_display_color(heat: int) -> tuple[int, int, int] | None:
+    """Get the display color for a criminal heat value.
+
+    Args:
+        heat: Criminal heat (0-100).
+
+    Returns:
+        RGB tuple for the heat indicator, or None if heat is 0.
+    """
+    if heat <= 0:
+        return None
+    if heat <= 10:
+        return (255, 255, 255)  # White — low
+    if heat <= 25:
+        return (255, 255, 0)  # Yellow — moderate
+    if heat <= 50:
+        return (255, 165, 0)  # Orange — high
+    return (255, 50, 50)  # Red — critical
+
+
+# ============================================================================
+# AUDIO SETTINGS
+# ============================================================================
+
+MIXER_FREQUENCY = 44100
+MIXER_SIZE = -16  # 16-bit signed
+MIXER_CHANNELS = 2  # Stereo
+MIXER_BUFFER = 1024
+
+DEFAULT_MASTER_VOLUME = 1.0
+DEFAULT_MUSIC_VOLUME = 0.7
+DEFAULT_SFX_VOLUME = 0.9
+DEFAULT_AMBIENT_VOLUME = 0.6
+
+MUSIC_FADE_MS = 1000  # Default music cross-fade in milliseconds
 
 # ============================================================================
 # IMAGE ASSET NAMES

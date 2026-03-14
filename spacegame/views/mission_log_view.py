@@ -13,6 +13,8 @@ from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState
 from spacegame.views.base_view import BaseView
 from spacegame.models.mission import MissionManager, MissionStatus, Mission
 from spacegame.engine.backgrounds import AnimatedBackground
+from spacegame.engine.draw_utils import draw_panel
+from spacegame.engine.fonts import FontCache
 from spacegame.utils.logger import logger
 
 # Layout constants
@@ -41,15 +43,15 @@ class _TabButton:
 
     def render(self, screen: pygame.Surface) -> None:
         if self.active:
-            bg = (40, 55, 90)
+            bg = Colors.ROW_HIGHLIGHT
             border = Colors.TEXT_HIGHLIGHT
             text_color = Colors.TEXT_HIGHLIGHT
         elif self.hovered:
-            bg = (30, 40, 65)
+            bg = Colors.ROW_BG
             border = Colors.UI_BORDER
             text_color = Colors.TEXT_PRIMARY
         else:
-            bg = (20, 28, 45)
+            bg = Colors.CARD_BG
             border = Colors.UI_BORDER
             text_color = Colors.TEXT_SECONDARY
 
@@ -80,13 +82,13 @@ class _MissionItem:
 
     def render(self, screen: pygame.Surface) -> None:
         if self.selected:
-            bg = (40, 55, 90)
+            bg = Colors.ROW_HIGHLIGHT
             text_color = Colors.TEXT_HIGHLIGHT
         elif self.hovered:
-            bg = (30, 40, 65)
+            bg = Colors.ROW_BG
             text_color = Colors.TEXT_PRIMARY
         else:
-            bg = (22, 30, 50)
+            bg = Colors.ROW_DETAIL
             text_color = Colors.TEXT_SECONDARY
 
         pygame.draw.rect(screen, bg, self.rect, border_radius=3)
@@ -156,12 +158,12 @@ class MissionLogView(BaseView):
         self._scroll_offset: int = 0
 
         # Fonts
-        self._title_font = pygame.font.Font(None, 40)
-        self._tab_font = pygame.font.Font(None, 22)
-        self._name_font = pygame.font.Font(None, 24)
-        self._desc_font = pygame.font.Font(None, 20)
-        self._detail_title_font = pygame.font.Font(None, 28)
-        self._label_font = pygame.font.Font(None, 22)
+        self._title_font = FontCache.get(40)
+        self._tab_font = FontCache.get(22)
+        self._name_font = FontCache.get(24)
+        self._desc_font = FontCache.get(20)
+        self._detail_title_font = FontCache.get(28)
+        self._label_font = FontCache.get(22)
 
         # UI
         self.back_button: Optional[pygame_gui.elements.UIButton] = None
@@ -324,8 +326,7 @@ class MissionLogView(BaseView):
 
         # List panel background
         list_rect = pygame.Rect(PANEL_LEFT, PANEL_TOP, LIST_WIDTH, LIST_HEIGHT)
-        pygame.draw.rect(screen, (15, 20, 35), list_rect, border_radius=4)
-        pygame.draw.rect(screen, Colors.UI_BORDER, list_rect, 1, border_radius=4)
+        draw_panel(screen, list_rect, alpha=255)
 
         # Mission items (clipped to list panel)
         clip_prev = screen.get_clip()
@@ -344,8 +345,7 @@ class MissionLogView(BaseView):
         # Detail panel
         detail_x = PANEL_LEFT + LIST_WIDTH + 30
         detail_rect = pygame.Rect(detail_x, PANEL_TOP, DETAIL_WIDTH, LIST_HEIGHT)
-        pygame.draw.rect(screen, (15, 20, 35), detail_rect, border_radius=4)
-        pygame.draw.rect(screen, Colors.UI_BORDER, detail_rect, 1, border_radius=4)
+        draw_panel(screen, detail_rect, alpha=255)
 
         self._render_detail_panel(screen, detail_x, PANEL_TOP)
 

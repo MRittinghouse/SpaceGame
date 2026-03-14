@@ -8,6 +8,7 @@ from spacegame.models.mission import (
     MissionReward,
     Mission,
     MissionManager,
+    ForcedEncounter,
 )
 from spacegame.models.player import Player
 from spacegame.models.ship import Ship, ShipType
@@ -74,6 +75,7 @@ def _make_mission(
     objectives: list[MissionObjective] | None = None,
     rewards: list[MissionReward] | None = None,
     prerequisites: list[str] | None = None,
+    required_flags: list[str] | None = None,
 ) -> Mission:
     return Mission(
         id=mission_id,
@@ -82,6 +84,7 @@ def _make_mission(
         objectives=objectives or [_make_objective()],
         rewards=rewards or [_make_reward()],
         prerequisites=prerequisites or [],
+        required_flags=required_flags or [],
     )
 
 
@@ -447,6 +450,200 @@ class TestMissionManagerObjectives:
 
 
 # ============================================================================
+# New Objective Types Tests
+# ============================================================================
+
+
+class TestNewObjectiveTypes:
+    """Tests for HAS_FLAG, COMPLETE_TRADE, WIN_COMBAT objective types."""
+
+    def test_has_flag_true(self) -> None:
+        """has_flag objective passes when dialogue flag is set."""
+        m1 = _make_mission(
+            "m1",
+            objectives=[_make_objective(ObjectiveType.HAS_FLAG, "quest_started")],
+        )
+        mgr = MissionManager([m1])
+        mgr.update_availability()
+        mgr.accept_mission("m1")
+        player = _make_player()
+        player.dialogue_flags["quest_started"] = True
+        completed = mgr.check_objectives(player)
+        assert "m1" in completed
+
+    def test_has_flag_false(self) -> None:
+        """has_flag objective fails when flag is not set."""
+        m1 = _make_mission(
+            "m1",
+            objectives=[_make_objective(ObjectiveType.HAS_FLAG, "quest_started")],
+        )
+        mgr = MissionManager([m1])
+        mgr.update_availability()
+        mgr.accept_mission("m1")
+        player = _make_player()
+        completed = mgr.check_objectives(player)
+        assert "m1" not in completed
+
+    def test_has_flag_sticky(self) -> None:
+        """has_flag stays completed once met (sticky behavior)."""
+        m1 = _make_mission(
+            "m1",
+            objectives=[
+                _make_objective(ObjectiveType.HAS_FLAG, "quest_started"),
+                _make_objective(ObjectiveType.REACH_SYSTEM, "breakstone"),
+            ],
+        )
+        mgr = MissionManager([m1])
+        mgr.update_availability()
+        mgr.accept_mission("m1")
+        player = _make_player(current_system_id="nexus_prime")
+        player.dialogue_flags["quest_started"] = True
+        mgr.check_objectives(player)
+        progress = mgr.get_objective_progress("m1")
+        assert progress[0] is True
+        # Remove flag — progress should stay True (sticky)
+        player.dialogue_flags["quest_started"] = False
+        mgr.check_objectives(player)
+        progress = mgr.get_objective_progress("m1")
+        assert progress[0] is True, "has_flag should be sticky"
+
+    def test_complete_trade_threshold(self) -> None:
+        """complete_trade passes when trades_completed meets target."""
+        m1 = _make_mission(
+            "m1",
+            objectives=[
+                _make_objective(ObjectiveType.COMPLETE_TRADE, "", target_quantity=5)
+            ],
+        )
+        mgr = MissionManager([m1])
+        mgr.update_availability()
+        mgr.accept_mission("m1")
+        player = _make_player()
+        player.trades_completed = 5
+        completed = mgr.check_objectives(player)
+        assert "m1" in completed
+
+    def test_complete_trade_insufficient(self) -> None:
+        """complete_trade fails when trades_completed is below target."""
+        m1 = _make_mission(
+            "m1",
+            objectives=[
+                _make_objective(ObjectiveType.COMPLETE_TRADE, "", target_quantity=5)
+            ],
+        )
+        mgr = MissionManager([m1])
+        mgr.update_availability()
+        mgr.accept_mission("m1")
+        player = _make_player()
+        player.trades_completed = 3
+        completed = mgr.check_objectives(player)
+        assert "m1" not in completed
+
+    def test_win_combat_threshold(self) -> None:
+        """win_combat passes when combats_won meets target."""
+        m1 = _make_mission(
+            "m1",
+            objectives=[
+                _make_objective(ObjectiveType.WIN_COMBAT, "", target_quantity=2)
+            ],
+        )
+        mgr = MissionManager([m1])
+        mgr.update_availability()
+        mgr.accept_mission("m1")
+        player = _make_player()
+        player.combats_won = 2
+        completed = mgr.check_objectives(player)
+        assert "m1" in completed
+
+    def test_win_combat_zero(self) -> None:
+        """win_combat fails when combats_won is zero."""
+        m1 = _make_mission(
+            "m1",
+            objectives=[
+                _make_objective(ObjectiveType.WIN_COMBAT, "", target_quantity=1)
+            ],
+        )
+        mgr = MissionManager([m1])
+        mgr.update_availability()
+        mgr.accept_mission("m1")
+        player = _make_player()
+        completed = mgr.check_objectives(player)
+        assert "m1" not in completed
+
+    def test_mixed_objectives_with_new_types(self) -> None:
+        """Mission with mix of old and new objective types."""
+        m1 = _make_mission(
+            "m1",
+            objectives=[
+                _make_objective(ObjectiveType.HAS_FLAG, "intro_done"),
+                _make_objective(ObjectiveType.COMPLETE_TRADE, "", target_quantity=3),
+                _make_objective(ObjectiveType.REACH_SYSTEM, "breakstone"),
+            ],
+        )
+        mgr = MissionManager([m1])
+        mgr.update_availability()
+        mgr.accept_mission("m1")
+        player = _make_player(current_system_id="breakstone")
+        player.dialogue_flags["intro_done"] = True
+        player.trades_completed = 3
+        completed = mgr.check_objectives(player)
+        assert "m1" in completed
+
+
+# ============================================================================
+# Flag-Based Prerequisites Tests
+# ============================================================================
+
+
+class TestFlagBasedPrerequisites:
+    """Tests for required_flags on Mission."""
+
+    def test_flag_not_met_stays_unavailable(self) -> None:
+        """Mission with required flag stays UNAVAILABLE when flag is not set."""
+        m1 = _make_mission("m1", prerequisites=[], required_flags=["intro_done"])
+        mgr = MissionManager([m1])
+        newly = mgr.update_availability(player_flags={})
+        assert "m1" not in newly
+
+    def test_flag_met_becomes_available(self) -> None:
+        """Mission with required flag becomes AVAILABLE when flag is set."""
+        m1 = _make_mission("m1", prerequisites=[], required_flags=["intro_done"])
+        mgr = MissionManager([m1])
+        newly = mgr.update_availability(player_flags={"intro_done": True})
+        assert "m1" in newly
+
+    def test_flag_plus_prereq_both_needed(self) -> None:
+        """Both prerequisite missions AND required flags must be met."""
+        m1 = _make_mission("m1", prerequisites=[])
+        m2 = _make_mission("m2", prerequisites=["m1"], required_flags=["special_flag"])
+        mgr = MissionManager([m1, m2])
+        mgr.update_availability()
+        mgr.accept_mission("m1")
+        player = _make_player(current_system_id="breakstone")
+        mgr.check_objectives(player)
+        # m1 completed, but flag not set
+        newly = mgr.update_availability(player_flags={})
+        assert "m2" not in newly
+        # Now set the flag
+        newly = mgr.update_availability(player_flags={"special_flag": True})
+        assert "m2" in newly
+
+    def test_no_flags_unchanged_behavior(self) -> None:
+        """Mission without required_flags works as before (backward compat)."""
+        m1 = _make_mission("m1", prerequisites=[])
+        mgr = MissionManager([m1])
+        newly = mgr.update_availability()
+        assert "m1" in newly
+
+    def test_empty_flag_list_unchanged(self) -> None:
+        """Empty required_flags list has no effect."""
+        m1 = _make_mission("m1", prerequisites=[], required_flags=[])
+        mgr = MissionManager([m1])
+        newly = mgr.update_availability(player_flags={})
+        assert "m1" in newly
+
+
+# ============================================================================
 # MissionManager Rewards Tests
 # ============================================================================
 
@@ -530,3 +727,179 @@ class TestMissionManagerSerialization:
         progress2 = mgr2.get_objective_progress("m1")
         assert progress2[0] is True
         assert progress2[1] is False
+
+
+# ============================================================================
+# Forced Encounter Tests
+# ============================================================================
+
+
+class TestForcedEncounter:
+    """Tests for mission-triggered scripted encounters."""
+
+    def test_creation(self) -> None:
+        fe = ForcedEncounter(
+            encounter_type="hostile",
+            enemy_template_ids=["pirate_scout", "pirate_raider"],
+            trigger_flag="m12_ambush_triggered",
+        )
+        assert fe.encounter_type == "hostile"
+        assert fe.enemy_template_ids == ["pirate_scout", "pirate_raider"]
+        assert fe.trigger_flag == "m12_ambush_triggered"
+
+    def test_mission_with_forced_encounter(self) -> None:
+        fe = ForcedEncounter(
+            encounter_type="distress_signal",
+            enemy_template_ids=["debris_field"],
+            trigger_flag="m08_distress_seen",
+        )
+        m = _make_mission("m1", objectives=[_make_objective()])
+        m.forced_encounter = fe
+        assert m.forced_encounter is not None
+        assert m.forced_encounter.encounter_type == "distress_signal"
+
+    def test_mission_without_defaults_none(self) -> None:
+        m = _make_mission("m1")
+        assert m.forced_encounter is None
+
+    def test_to_dict(self) -> None:
+        fe = ForcedEncounter(
+            encounter_type="hostile",
+            enemy_template_ids=["pirate_scout"],
+            trigger_flag="ambush_done",
+        )
+        d = fe.to_dict()
+        assert d["encounter_type"] == "hostile"
+        assert d["enemy_template_ids"] == ["pirate_scout"]
+        assert d["trigger_flag"] == "ambush_done"
+
+    def test_from_dict(self) -> None:
+        data = {
+            "encounter_type": "distress_signal",
+            "enemy_template_ids": ["raider_a", "raider_b"],
+            "trigger_flag": "distress_triggered",
+        }
+        fe = ForcedEncounter.from_dict(data)
+        assert fe.encounter_type == "distress_signal"
+        assert fe.enemy_template_ids == ["raider_a", "raider_b"]
+        assert fe.trigger_flag == "distress_triggered"
+
+    def test_get_active_forced_encounters(self) -> None:
+        fe = ForcedEncounter(
+            encounter_type="hostile",
+            enemy_template_ids=["pirate"],
+            trigger_flag="ambush_done",
+        )
+        m1 = _make_mission("m1", objectives=[_make_objective()])
+        m1.forced_encounter = fe
+        m2 = _make_mission("m2", objectives=[_make_objective()])
+        # m2 has no forced encounter
+
+        mgr = MissionManager([m1, m2])
+        mgr.update_availability()
+        mgr.accept_mission("m1")
+        mgr.accept_mission("m2")
+
+        encounters = mgr.get_active_forced_encounters()
+        assert len(encounters) == 1
+        assert encounters[0].encounter_type == "hostile"
+
+
+# ============================================================================
+# Auto-Accept Mission Tests
+# ============================================================================
+
+
+class TestAutoAcceptMission:
+    """Tests for auto_accept field on missions."""
+
+    def test_auto_accept_defaults_false(self) -> None:
+        m = _make_mission("m1")
+        assert m.auto_accept is False
+
+    def test_auto_accept_mission_transitions_to_active(self) -> None:
+        """auto_accept mission goes UNAVAILABLE → AVAILABLE → ACTIVE in one call."""
+        m1 = Mission(
+            id="m1",
+            name="Auto Mission",
+            description="Completes automatically.",
+            objectives=[_make_objective(ObjectiveType.HAS_FLAG, "some_flag")],
+            rewards=[_make_reward()],
+            auto_accept=True,
+        )
+        mgr = MissionManager([m1])
+        newly = mgr.update_availability()
+        assert "m1" in newly
+        # Should be ACTIVE, not just AVAILABLE
+        active = mgr.get_missions_by_status(MissionStatus.ACTIVE)
+        assert len(active) == 1
+        assert active[0].id == "m1"
+        available = mgr.get_missions_by_status(MissionStatus.AVAILABLE)
+        assert len(available) == 0
+
+    def test_non_auto_accept_stays_available(self) -> None:
+        """Normal mission stays AVAILABLE (not auto-accepted)."""
+        m1 = Mission(
+            id="m1",
+            name="Normal Mission",
+            description="Must be manually accepted.",
+            objectives=[_make_objective()],
+            rewards=[_make_reward()],
+            auto_accept=False,
+        )
+        mgr = MissionManager([m1])
+        mgr.update_availability()
+        available = mgr.get_missions_by_status(MissionStatus.AVAILABLE)
+        assert len(available) == 1
+        active = mgr.get_missions_by_status(MissionStatus.ACTIVE)
+        assert len(active) == 0
+
+    def test_auto_accept_with_prereqs(self) -> None:
+        """auto_accept mission respects prerequisites before accepting."""
+        m1 = _make_mission("m1", prerequisites=[])
+        m2 = Mission(
+            id="m2",
+            name="Gated Auto Mission",
+            description="Auto-accepts only after m1.",
+            objectives=[_make_objective(ObjectiveType.HAS_FLAG, "done")],
+            rewards=[_make_reward()],
+            prerequisites=["m1"],
+            auto_accept=True,
+        )
+        mgr = MissionManager([m1, m2])
+        mgr.update_availability()
+        # m2 should still be UNAVAILABLE (prereq m1 not completed)
+        assert len(mgr.get_missions_by_status(MissionStatus.ACTIVE)) == 0
+
+        # Complete m1
+        mgr.accept_mission("m1")
+        player = _make_player(current_system_id="breakstone")
+        mgr.check_objectives(player)
+        mgr.update_availability()
+
+        # Now m2 should be auto-accepted → ACTIVE
+        active = mgr.get_missions_by_status(MissionStatus.ACTIVE)
+        assert len(active) == 1
+        assert active[0].id == "m2"
+
+    def test_auto_accept_full_lifecycle(self) -> None:
+        """auto_accept mission can auto-accept and then complete normally."""
+        m1 = Mission(
+            id="m1",
+            name="Auto Then Complete",
+            description="Auto-accept, then complete via flag.",
+            objectives=[_make_objective(ObjectiveType.HAS_FLAG, "trigger_flag")],
+            rewards=[MissionReward(reward_type="xp", amount=50)],
+            auto_accept=True,
+        )
+        mgr = MissionManager([m1])
+        mgr.update_availability()
+        # Should be ACTIVE
+        assert len(mgr.get_missions_by_status(MissionStatus.ACTIVE)) == 1
+
+        # Set the flag and check objectives
+        player = _make_player()
+        player.dialogue_flags["trigger_flag"] = True
+        completed = mgr.check_objectives(player)
+        assert "m1" in completed
+        assert len(mgr.get_missions_by_status(MissionStatus.COMPLETED)) == 1

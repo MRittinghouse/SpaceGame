@@ -1,0 +1,10 @@
+{
+  "relationships": [
+    {"faction_a": "commerce_guild",     "faction_b": "miners_union",        "value": -30},
+    {"faction_a": "commerce_guild",     "faction_b": "science_collective",  "value": 15},
+    {"faction_a": "commerce_guild",     "faction_b": "frontier_alliance",   "value": -5},
+    {"faction_a": "miners_union",       "faction_b": "science_collective",  "value": 5},
+    {"faction_a": "miners_union",       "faction_b": "frontier_alliance",   "value": 20},
+    {"faction_a": "science_collective", "faction_b": "frontier_alliance",   "value": -25}
+  ]
+}

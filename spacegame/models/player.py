@@ -6,7 +6,7 @@ Tracks player credits, location, ship, and game progress.
 
 from dataclasses import dataclass, field
 from typing import Optional
-from spacegame.models.ship import Ship
+from spacegame.models.ship import Ship, ShipType
 from spacegame.models.progression import PlayerProgression
 from spacegame.models.upgrades import ShipUpgradeManager
 from spacegame.models.drone import MiningDroneFleet
@@ -43,11 +43,59 @@ class Player:
     # Trade permit system (bills of landing)
     trade_permits: set[str] = field(default_factory=set)
 
+    # Black market access permits (earned through narrative events)
+    black_market_access: set[str] = field(default_factory=set)
+
     # Mission system
     mission_state: dict = field(default_factory=dict)
 
     # Crew system
     crew_state: dict = field(default_factory=dict)
+
+    # Social skill system
+    social_state: dict = field(default_factory=dict)
+
+    # Attribute system
+    attribute_state: dict = field(default_factory=dict)
+
+    # Journal system
+    journal_state: dict = field(default_factory=dict)
+
+    # Hidden compartment (installed via upgrade)
+    hidden_compartment: Optional["HiddenCompartment"] = None
+
+    # Ground equipment inventory (equipment IDs owned)
+    ground_equipment: list[str] = field(default_factory=list)
+
+    # Smuggling contract manager state
+    smuggling_contract_state: dict = field(default_factory=dict)
+
+    # Ground contract manager state
+    ground_contract_state: dict = field(default_factory=dict)
+
+    # Political system state
+    political_state: dict = field(default_factory=dict)
+
+    # Smuggling system
+    criminal_heat: int = 0
+    goods_smuggled: int = 0
+    smuggling_contracts_completed: int = 0
+    times_caught_smuggling: int = 0
+    inspections_passed_with_contraband: int = 0
+    max_criminal_heat_reached: int = 0
+
+    # Ground exploration statistics
+    ground_missions_completed: int = 0
+    ground_missions_failed: int = 0
+    ground_enemies_defeated: int = 0
+    ground_enemies_talked: int = 0
+    ground_tiles_explored: int = 0
+    ground_undetected_completions: int = 0
+    ground_campaign_missions_completed: int = 0
+
+    # Combat statistics
+    combats_won: int = 0
+    combats_fled: int = 0
 
     # Lifetime statistics for achievements
     credits_earned_lifetime: int = 0
@@ -59,6 +107,20 @@ class Player:
     items_salvaged: int = 0
     items_refined: int = 0
     unlocked_achievements: list[str] = field(default_factory=list)
+
+    # Minigame statistics for achievements
+    max_mining_depth: int = 0
+    total_chains_triggered: int = 0
+    rare_ores_mined: int = 0
+    salvage_sessions_completed: int = 0
+    corrupted_items_extracted: int = 0
+    refining_jobs_completed: int = 0
+    batch_jobs_queued: int = 0
+    recipes_crafted: set[str] = field(default_factory=set)
+
+    # Investment + rating stats
+    investments_owned: int = 0
+    s_ranks_earned: int = 0
 
     def __post_init__(self) -> None:
         """Initialize visited systems with starting location."""
@@ -164,7 +226,7 @@ class Player:
         self.ship.remove_cargo(commodity_id, quantity)
         self.add_credits(total_revenue)
         self.trades_completed += 1
-        self.total_profit += total_revenue  # Simplified - doesn't track buy price
+        self.total_profit += profit
         self.credits_earned_lifetime += total_revenue
         if profit > self.largest_single_profit:
             self.largest_single_profit = profit
@@ -191,6 +253,7 @@ class Player:
         self.current_system_id = system_id
         self.systems_visited.add(system_id)
         self.game_day += 1  # Turn-based: each jump is one day
+        self.decay_criminal_heat(1)
         self.jumps_traveled += 1
         self.fuel_consumed += fuel_cost
 
@@ -213,8 +276,99 @@ class Player:
         # Execute rest
         self.deduct_credits(rest_cost)
         self.game_day += 1  # Advance time (triggers market changes)
+        self.decay_criminal_heat(1)
 
         return (True, f"Rested for {rest_cost:,} CR. Day {self.game_day}. Markets have changed!")
+
+    def repair_at_station(self, cost_per_hp: int) -> tuple[bool, str]:
+        """Repair ship hull to full at a station repair bay.
+
+        Args:
+            cost_per_hp: Credits charged per hull point repaired.
+
+        Returns:
+            Tuple of (success, message).
+        """
+        max_hull = self.ship.ship_type.combat_hull
+        damage = max_hull - self.ship.current_hull
+        if damage <= 0:
+            return (False, "Hull is already at full integrity.")
+        total_cost = damage * cost_per_hp
+        if total_cost > 0 and not self.can_afford(total_cost):
+            return (
+                False,
+                f"Insufficient credits. Repair costs {total_cost:,} CR, "
+                f"have {self.credits:,} CR.",
+            )
+        self.deduct_credits(total_cost)
+        repaired = self.ship.repair_hull(damage)
+        return (True, f"Repaired {repaired} hull points for {total_cost:,} CR.")
+
+    def swap_ship(self, new_type: ShipType) -> tuple[bool, str]:
+        """Purchase a new ship, trading in the current one.
+
+        The current ship is sold at its resale value. Cargo is transferred
+        up to the new ship's capacity; excess is lost. The new ship starts
+        with full fuel and full hull/shields.
+
+        Args:
+            new_type: The ShipType to purchase.
+
+        Returns:
+            Tuple of (success, message).
+        """
+        if new_type.id == self.ship.ship_type.id:
+            return (False, "You already own this ship type.")
+
+        resale = self.ship.ship_type.resale_value
+        net_cost = new_type.purchase_price - resale
+        if net_cost > self.credits:
+            return (
+                False,
+                f"Cannot afford. Need {net_cost:,} CR after trade-in, "
+                f"have {self.credits:,} CR.",
+            )
+
+        # Save references to transfer
+        old_cargo = dict(self.ship.current_cargo)
+        old_prices = dict(self.ship.cargo_purchase_prices)
+        upgrade_mgr = getattr(self.ship, "_upgrade_manager", None)
+        crew_roster = getattr(self.ship, "_crew_roster", None)
+
+        # Create new ship
+        new_ship = Ship(
+            ship_type=new_type,
+            current_fuel=new_type.fuel_capacity,
+        )
+
+        # Transfer cargo up to new capacity
+        cargo_lost = 0
+        for commodity_id, quantity in old_cargo.items():
+            transferable = min(quantity, new_type.cargo_capacity)
+            if transferable > 0:
+                new_ship.add_cargo(commodity_id, transferable)
+                if commodity_id in old_prices and quantity > 0:
+                    proportion = transferable / quantity
+                    new_ship.cargo_purchase_prices[commodity_id] = int(
+                        old_prices.get(commodity_id, 0) * proportion
+                    )
+            if transferable < quantity:
+                cargo_lost += quantity - transferable
+
+        # Re-link bonus sources
+        if upgrade_mgr:
+            new_ship.set_upgrade_manager(upgrade_mgr)
+        if crew_roster:
+            new_ship.set_crew_roster(crew_roster)
+
+        # Commit transaction
+        self.credits = self.credits + resale - new_type.purchase_price
+        self.ship = new_ship
+
+        msg = f"Purchased {new_type.name}!"
+        if cargo_lost > 0:
+            msg += f" Warning: {cargo_lost} units of cargo could not fit."
+        return (True, msg)
 
     def refuel_ship(self, fuel_quantity: int, price_per_unit: int) -> tuple[bool, str]:
         """
@@ -244,6 +398,36 @@ class Player:
             return (True, f"Added {actual_added} fuel (tank full) for {actual_cost:,} CR")
         else:
             return (True, f"Added {actual_added} fuel for {actual_cost:,} CR")
+
+    def apply_combat_defeat(self, safe_system_id: str) -> None:
+        """Apply consequences of losing combat.
+
+        Loses 30% of each cargo type (min 1 per type), sets hull to 25%
+        of max, shields to 0, and moves player to a safe system.
+        Credits are not affected.
+
+        Args:
+            safe_system_id: System to retreat to.
+        """
+        from spacegame.config import (
+            COMBAT_DEFEAT_CARGO_LOSS_PERCENT,
+            COMBAT_DEFEAT_HULL_REMAINING_PERCENT,
+        )
+
+        # Lose cargo
+        for commodity_id, quantity in list(self.ship.current_cargo.items()):
+            loss = max(1, int(quantity * COMBAT_DEFEAT_CARGO_LOSS_PERCENT / 100))
+            self.ship.remove_cargo(commodity_id, loss)
+
+        # Set hull to 25% of max
+        max_hull = self.ship.ship_type.combat_hull
+        self.ship.current_hull = max(1, int(max_hull * COMBAT_DEFEAT_HULL_REMAINING_PERCENT / 100))
+
+        # Shields to 0
+        self.ship.current_shields = 0
+
+        # Move to safe system
+        self.current_system_id = safe_system_id
 
     def get_net_worth(self) -> int:
         """
@@ -285,7 +469,35 @@ class Player:
             "level": self.progression.level,
             "xp": self.progression.xp,
             "skill_points_spent": self.progression.skill_points_spent,
+            "ground_missions_completed": self.ground_missions_completed,
+            "ground_missions_failed": self.ground_missions_failed,
+            "ground_enemies_defeated": self.ground_enemies_defeated,
+            "ground_enemies_talked": self.ground_enemies_talked,
+            "ground_tiles_explored": self.ground_tiles_explored,
+            "ground_undetected_completions": self.ground_undetected_completions,
+            "criminal_heat": self.criminal_heat,
+            "goods_smuggled": self.goods_smuggled,
+            "smuggling_contracts_completed": self.smuggling_contracts_completed,
+            "times_caught_smuggling": self.times_caught_smuggling,
         }
+
+    def add_criminal_heat(self, amount: int) -> None:
+        """Add criminal heat, capped at 100.
+
+        Args:
+            amount: Heat points to add.
+        """
+        self.criminal_heat = min(100, self.criminal_heat + amount)
+        if self.criminal_heat > self.max_criminal_heat_reached:
+            self.max_criminal_heat_reached = self.criminal_heat
+
+    def decay_criminal_heat(self, amount: int) -> None:
+        """Decay criminal heat, floored at 0.
+
+        Args:
+            amount: Heat points to remove.
+        """
+        self.criminal_heat = max(0, self.criminal_heat - amount)
 
     def has_trade_permit(self, faction_id: str) -> bool:
         """Check if player has a trade permit for a faction.
@@ -305,6 +517,25 @@ class Player:
             faction_id: Faction to grant permit for.
         """
         self.trade_permits.add(faction_id)
+
+    def has_black_market_access(self, system_id: str) -> bool:
+        """Check if player has black market access for a system.
+
+        Args:
+            system_id: System to check.
+
+        Returns:
+            True if player has earned access to this system's black market.
+        """
+        return system_id in self.black_market_access
+
+    def grant_black_market_access(self, system_id: str) -> None:
+        """Grant black market access for a system.
+
+        Args:
+            system_id: System to grant access for.
+        """
+        self.black_market_access.add(system_id)
 
     def get_faction_for_system(self, system_id: str) -> Optional[str]:
         """Get the faction ID controlling a system.

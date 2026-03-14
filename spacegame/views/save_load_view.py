@@ -14,6 +14,7 @@ from spacegame.views.base_view import BaseView
 from spacegame.save_manager import SaveManager
 from spacegame.utils.logger import logger
 from spacegame.engine.backgrounds import AnimatedBackground
+from spacegame.engine.fonts import FontCache
 
 
 class SaveLoadView(BaseView):
@@ -49,10 +50,10 @@ class SaveLoadView(BaseView):
         self.should_execute = False  # True when save/load should happen
 
         # Fonts
-        self.title_font = pygame.font.Font(None, 48)
-        self.header_font = pygame.font.Font(None, 24)
-        self.info_font = pygame.font.Font(None, 20)
-        self.small_font = pygame.font.Font(None, 18)
+        self.title_font = FontCache.get(48)
+        self.header_font = FontCache.get(24)
+        self.info_font = FontCache.get(20)
+        self.small_font = FontCache.get(18)
 
         # UI Elements
         self.slot_buttons: List[pygame_gui.elements.UIButton] = []

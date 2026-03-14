@@ -20,6 +20,9 @@ class ObjectiveType(Enum):
     TALK_TO_NPC = "talk_to_npc"
     HAVE_CREDITS = "have_credits"
     COLLECT_CARGO = "collect_cargo"
+    HAS_FLAG = "has_flag"
+    COMPLETE_TRADE = "complete_trade"
+    WIN_COMBAT = "win_combat"
 
 
 class MissionStatus(Enum):
@@ -103,6 +106,37 @@ class AcceptCargo:
 
 
 @dataclass
+class ForcedEncounter:
+    """A scripted encounter triggered during travel when a mission is active."""
+
+    encounter_type: str  # "hostile" or "distress_signal"
+    enemy_template_ids: list[str] = field(default_factory=list)
+    trigger_flag: str = ""  # Set after trigger to prevent repeat
+    encounter_def_id: str = ""  # Direct reference to EncounterDefinition.id
+
+    def to_dict(self) -> dict[str, Any]:
+        """Serialize to dict."""
+        d: dict[str, Any] = {
+            "encounter_type": self.encounter_type,
+            "enemy_template_ids": list(self.enemy_template_ids),
+            "trigger_flag": self.trigger_flag,
+        }
+        if self.encounter_def_id:
+            d["encounter_def_id"] = self.encounter_def_id
+        return d
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "ForcedEncounter":
+        """Deserialize from dict."""
+        return cls(
+            encounter_type=data["encounter_type"],
+            enemy_template_ids=data.get("enemy_template_ids", []),
+            trigger_flag=data.get("trigger_flag", ""),
+            encounter_def_id=data.get("encounter_def_id", ""),
+        )
+
+
+@dataclass
 class Mission:
     """A mission definition with objectives, rewards, and prerequisites."""
 
@@ -113,6 +147,13 @@ class Mission:
     rewards: list[MissionReward] = field(default_factory=list)
     prerequisites: list[str] = field(default_factory=list)
     on_accept_cargo: list[AcceptCargo] = field(default_factory=list)
+    required_flags: list[str] = field(default_factory=list)
+    forced_encounter: Optional[ForcedEncounter] = None
+    auto_accept: bool = False
+    hint: str = ""
+    ground_mission_id: str = ""
+    ground_mission_system_id: str = ""
+    ground_mission_complete_flag: str = ""
 
     def get_target_system_ids(self) -> list[str]:
         """Get system IDs referenced by reach_system objectives."""
@@ -128,8 +169,18 @@ class Mission:
             "rewards": [r.to_dict() for r in self.rewards],
             "prerequisites": list(self.prerequisites),
         }
+        if self.hint:
+            d["hint"] = self.hint
         if self.on_accept_cargo:
             d["on_accept_cargo"] = [c.to_dict() for c in self.on_accept_cargo]
+        if self.required_flags:
+            d["required_flags"] = list(self.required_flags)
+        if self.forced_encounter:
+            d["forced_encounter"] = self.forced_encounter.to_dict()
+        if self.ground_mission_id:
+            d["ground_mission_id"] = self.ground_mission_id
+            d["ground_mission_system_id"] = self.ground_mission_system_id
+            d["ground_mission_complete_flag"] = self.ground_mission_complete_flag
         return d
 
 
@@ -153,20 +204,30 @@ class MissionManager:
             m.id: [False] * len(m.objectives) for m in missions
         }
 
-    def update_availability(self) -> list[str]:
-        """Check prerequisites and mark eligible missions as AVAILABLE.
+    def update_availability(
+        self, player_flags: Optional[dict[str, bool]] = None
+    ) -> list[str]:
+        """Check prerequisites and flags, mark eligible missions as AVAILABLE.
+
+        Args:
+            player_flags: Current dialogue flags from player state.
 
         Returns:
             List of mission IDs that just became available.
         """
         completed_ids = self.get_completed_ids()
+        flags = player_flags or {}
         newly_available: list[str] = []
         for mid, mission in self._missions.items():
             if self._status[mid] != MissionStatus.UNAVAILABLE:
                 continue
-            if all(pid in completed_ids for pid in mission.prerequisites):
+            prereqs_met = all(pid in completed_ids for pid in mission.prerequisites)
+            flags_met = all(flags.get(f, False) for f in mission.required_flags)
+            if prereqs_met and flags_met:
                 self._status[mid] = MissionStatus.AVAILABLE
                 newly_available.append(mid)
+                if mission.auto_accept:
+                    self.accept_mission(mid)
         return newly_available
 
     def accept_mission(self, mission_id: str) -> tuple[bool, str]:
@@ -220,6 +281,12 @@ class MissionManager:
             return player.credits >= obj.target_quantity
         elif obj.type == ObjectiveType.COLLECT_CARGO:
             return player.ship.get_cargo_quantity(obj.target_id) >= obj.target_quantity
+        elif obj.type == ObjectiveType.HAS_FLAG:
+            return player.dialogue_flags.get(obj.target_id, False)
+        elif obj.type == ObjectiveType.COMPLETE_TRADE:
+            return player.trades_completed >= obj.target_quantity
+        elif obj.type == ObjectiveType.WIN_COMBAT:
+            return player.combats_won >= obj.target_quantity
         return False
 
     def apply_rewards(self, mission_id: str, player: "Player") -> list[str]:
@@ -249,6 +316,12 @@ class MissionManager:
             elif reward.reward_type == "remove_cargo":
                 player.ship.remove_cargo(reward.target_id, reward.amount)
                 messages.append(f"Delivered {reward.amount} {reward.target_id}")
+            elif reward.reward_type == "set_flag":
+                player.dialogue_flags[reward.target_id] = True
+                messages.append(f"Progress: {reward.target_id}")
+            elif reward.reward_type == "black_market_access":
+                player.grant_black_market_access(reward.target_id)
+                messages.append(f"Black Market Access: {reward.target_id}")
         return messages
 
     def get_mission(self, mission_id: str) -> Optional[Mission]:
@@ -273,6 +346,53 @@ class MissionManager:
                 if obj.type == ObjectiveType.REACH_SYSTEM and not self._progress[mid][i]:
                     systems.add(obj.target_id)
         return systems
+
+    def get_active_forced_encounters(self) -> list[ForcedEncounter]:
+        """Get forced encounters from all active missions."""
+        return [
+            m.forced_encounter
+            for m in self.get_missions_by_status(MissionStatus.ACTIVE)
+            if m.forced_encounter
+        ]
+
+    def get_ground_mission_trigger(
+        self,
+        current_system_id: str,
+        dialogue_flags: dict[str, bool],
+    ) -> Optional[tuple[str, str]]:
+        """Check if an active mission has a ground mission at the current system.
+
+        Args:
+            current_system_id: The system the player just arrived at.
+            dialogue_flags: Player's dialogue flags for checking completion.
+
+        Returns:
+            Tuple of (ground_mission_id, complete_flag), or None.
+        """
+        for mission in self.get_missions_by_status(MissionStatus.ACTIVE):
+            if (
+                mission.ground_mission_id
+                and mission.ground_mission_system_id == current_system_id
+                and not dialogue_flags.get(mission.ground_mission_complete_flag, False)
+            ):
+                return (mission.ground_mission_id, mission.ground_mission_complete_flag)
+        return None
+
+    def get_current_hint(self) -> Optional[tuple[str, str]]:
+        """Get the hint for the current primary mission.
+
+        Prioritizes active missions over available ones. Skips missions
+        with no hint text.
+
+        Returns:
+            Tuple of (mission_name, hint_text), or None if no hinted mission.
+        """
+        # Check active missions first, then available
+        for status in (MissionStatus.ACTIVE, MissionStatus.AVAILABLE):
+            for mid, mission in self._missions.items():
+                if self._status[mid] == status and mission.hint:
+                    return (mission.name, mission.hint)
+        return None
 
     def get_completed_ids(self) -> set[str]:
         """Get IDs of all completed missions."""

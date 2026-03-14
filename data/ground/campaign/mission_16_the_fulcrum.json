@@ -1,0 +1,167 @@
+{
+    "id": "mission_16_the_fulcrum",
+    "name": "The Fulcrum",
+    "width": 35,
+    "height": 30,
+    "mission_type": "infiltration",
+    "difficulty": "high",
+    "faction_id": "commerce_guild",
+
+    "tiles": [
+        ["W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","F","F","F","F","F","X","F","F","F","F","F","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","F","F","F","F","F","F","F","F","F","F","F","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","F","F","F","F","F","F","F","F","F","F","F","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","D","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","F","F","F","F","F","W","W","W","W","W","W","W","W","W","F","W","W","W","W","W","W","W","W","W","F","F","F","F","F","W","W","W"],
+        ["W","W","W","F","F","F","F","F","W","W","W","W","W","W","W","W","W","F","W","W","W","W","W","W","W","W","W","F","F","F","F","F","W","W","W"],
+        ["W","W","W","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","W","W","W"],
+        ["W","W","W","F","F","F","F","F","W","W","W","W","W","W","W","W","W","F","W","W","W","W","W","W","W","W","W","F","F","F","F","F","W","W","W"],
+        ["W","W","W","F","F","F","F","F","W","W","W","W","W","W","W","W","W","F","W","W","W","W","W","W","W","W","W","F","F","F","F","F","W","W","W"],
+        ["W","W","W","F","F","F","F","F","W","W","W","W","W","W","W","W","W","F","W","W","W","W","W","W","W","W","W","F","F","F","F","F","W","W","W"],
+        ["W","W","W","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","W","W","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","F","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","D","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","W","W","W","W","W"],
+        ["W","W","W","W","W","F","F","F","F","F","F","W","W","W","F","F","F","F","F","F","F","W","W","W","F","F","F","F","F","F","W","W","W","W","W"],
+        ["W","W","W","W","W","F","F","F","F","F","F","W","W","W","F","F","F","F","F","F","F","W","W","W","F","F","F","F","F","F","W","W","W","W","W"],
+        ["W","W","W","W","W","F","F","F","F","F","F","W","W","W","F","F","F","F","F","F","F","W","W","W","F","F","F","F","F","F","W","W","W","W","W"],
+        ["W","W","W","W","W","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","D","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","F","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","F","F","F","F","F","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","F","F","F","N","N","N","F","F","F","F","F","F","F","N","N","N","F","F","F","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","F","F","F","F","F","W","W","W","W","F","W","W","W","W","F","F","F","F","F","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","F","F","F","F","F","W","W","W","W","F","W","W","W","W","F","F","F","F","F","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","F","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","W","W","F","F","F","F","F","F","F","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","W","W","F","F","F","F","F","F","F","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","W","W","E","F","F","F","F","F","F","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"]
+    ],
+
+    "entrance": [14, 28],
+    "exit": [17, 1],
+
+    "enemies": [
+        {
+            "id": "dock_sentry",
+            "template_id": "station_sentry",
+            "x": 17, "y": 27,
+            "facing": "up",
+            "speed": 1,
+            "patrol_route": [[15, 27], [19, 27]]
+        },
+        {
+            "id": "service_corridor_sentry",
+            "template_id": "station_sentry",
+            "x": 14, "y": 22,
+            "facing": "right",
+            "speed": 1,
+            "patrol_route": [[9, 22], [25, 22]]
+        },
+        {
+            "id": "barracks_guard_west",
+            "template_id": "guild_security",
+            "x": 7, "y": 15,
+            "facing": "right",
+            "speed": 1,
+            "patrol_route": [[5, 15], [10, 15]]
+        },
+        {
+            "id": "barracks_guard_east",
+            "template_id": "guild_security",
+            "x": 26, "y": 16,
+            "facing": "left",
+            "speed": 1,
+            "patrol_route": [[24, 16], [29, 16]]
+        },
+        {
+            "id": "ops_deck_patrol",
+            "template_id": "crimson_enforcer",
+            "x": 15, "y": 11,
+            "facing": "right",
+            "speed": 2,
+            "patrol_route": [[5, 11], [30, 11]]
+        },
+        {
+            "id": "ops_deck_guard",
+            "template_id": "crimson_enforcer",
+            "x": 5, "y": 8,
+            "facing": "down",
+            "speed": 1,
+            "patrol_route": [[5, 7], [5, 10]]
+        },
+        {
+            "id": "assembly_core_guard",
+            "template_id": "elite_guard",
+            "x": 17, "y": 6,
+            "facing": "up",
+            "speed": 2,
+            "patrol_route": [[17, 5], [17, 7]]
+        },
+        {
+            "id": "warp_gate_elite",
+            "template_id": "elite_guard",
+            "x": 17, "y": 2,
+            "facing": "down",
+            "speed": 1,
+            "patrol_route": [[13, 2], [21, 2]]
+        }
+    ],
+
+    "interactables": [
+        {
+            "x": 10, "y": 23,
+            "type": "loot_container",
+            "loot_credits": 40,
+            "description": "Maintenance supply crates stamped with colonial-era serial numbers, but the contents are brand new. Hull sealant, wiring harnesses, replacement filters. Someone has been keeping this station running for years."
+        },
+        {
+            "x": 5, "y": 9,
+            "type": "loot_container",
+            "loot_credits": 80,
+            "description": "A weapons locker sealed with a military-grade cipher. Inside: energy cell packs, targeting modules, reinforced body armor. Guild military specification. Every serial number has been filed off."
+        },
+        {
+            "x": 27, "y": 16,
+            "type": "loot_container",
+            "loot_credits": 50,
+            "description": "A personal locker, left unlocked. Credits, a star chart with coordinates outside the Expanse circled in red, and a letter that begins: 'When this is over, I'll find you. They promised us passage through the gate.'"
+        },
+        {
+            "x": 29, "y": 6,
+            "type": "loot_container",
+            "loot_credits": 70,
+            "description": "Data drives in shielded cases. Assembly logs, power routing schedules, and a deployment timeline. The final entry is dated three days from now: 'Array deployment complete. Convergence activation window: 72 hours.'"
+        }
+    ],
+
+    "story_triggers": [
+        {
+            "x": 17, "y": 26,
+            "type": "atmosphere",
+            "text": "The maintenance port groans as you pressurize the airlock. Colonial-era construction — riveted plates, manual overrides, emergency signage in a language standard that hasn't been used in decades. But the power conduits running along the ceiling are new. Military grade. Enough energy to power a small city."
+        },
+        {
+            "x": 17, "y": 22,
+            "type": "atmosphere",
+            "text": "The deck plates vibrate with a deep, steady pulse from generators buried in the station's core. Through a viewport in the service corridor, you see it for the first time — gravitational lensing arrays, sixteen of them, hanging in zero-gravity assembly cradles. Each one is enormous. Each one is nearly complete."
+        },
+        {
+            "x": 17, "y": 15,
+            "type": "atmosphere",
+            "text": "Crew quarters with military precision. A duty roster lists rotating shifts for 'Convergence Assembly Teams.' Status boards track array completion percentages — fourteen of sixteen read 100%. The last two show 94% and 97%. Days. Maybe hours."
+        },
+        {
+            "x": 17, "y": 12,
+            "type": "atmosphere",
+            "text": "The corridor narrows beyond reinforced blast doors, amber warning lights pulsing. A console on the wall displays real-time telemetry — energy readings from the Aurelia star, gravitational field calculations, array positioning data. Everything is green. The system is ready. They're just waiting for the order."
+        },
+        {
+            "x": 17, "y": 3,
+            "type": "atmosphere",
+            "text": "The command center opens into the assembly core's upper platform. Below, the arrays gleam under floodlights. But your eyes are drawn to the far wall — a warp gate frame, thirty meters across, already powered. Blue light pulses along its edges. This is the Ledger's escape route. When the star collapses, they walk through this gate and leave the Expanse behind. It's the only way out. And right now, it's yours."
+        }
+    ]
+}

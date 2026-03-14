@@ -1,158 +1,10 @@
 {
   "missions": [
     {
-      "id": "getting_started",
-      "name": "Getting Started",
-      "description": "Visit the Breakstone mining colony to explore new opportunities beyond Nexus Prime.",
-      "prerequisites": [],
-      "objectives": [
-        {
-          "type": "reach_system",
-          "target_id": "breakstone",
-          "target_quantity": 1,
-          "description": "Travel to Breakstone"
-        }
-      ],
-      "rewards": [
-        {"reward_type": "credits", "amount": 200},
-        {"reward_type": "xp", "amount": 25}
-      ]
-    },
-    {
-      "id": "making_friends",
-      "name": "Making Friends",
-      "description": "Introduce yourself to Elena Reeves, a navigator stationed at Nexus Prime.",
-      "prerequisites": [],
-      "objectives": [
-        {
-          "type": "talk_to_npc",
-          "target_id": "elena_reeves",
-          "target_quantity": 1,
-          "description": "Talk to Elena Reeves"
-        }
-      ],
-      "rewards": [
-        {"reward_type": "credits", "amount": 300},
-        {"reward_type": "xp", "amount": 30}
-      ]
-    },
-    {
-      "id": "building_capital",
-      "name": "Building Capital",
-      "description": "Accumulate 5,000 credits to establish yourself as a serious trader in the sector.",
-      "prerequisites": ["getting_started"],
-      "objectives": [
-        {
-          "type": "have_credits",
-          "target_id": "",
-          "target_quantity": 5000,
-          "description": "Have at least 5,000 credits"
-        }
-      ],
-      "rewards": [
-        {"reward_type": "xp", "amount": 50}
-      ]
-    },
-    {
-      "id": "supply_run",
-      "name": "Supply Run",
-      "description": "The Verdant colony is in need of medical supplies. Acquire some and deliver them.",
-      "prerequisites": ["making_friends"],
-      "objectives": [
-        {
-          "type": "collect_cargo",
-          "target_id": "medical",
-          "target_quantity": 5,
-          "description": "Acquire 5 Medical Supplies"
-        },
-        {
-          "type": "reach_system",
-          "target_id": "verdant",
-          "target_quantity": 1,
-          "description": "Deliver to Verdant"
-        }
-      ],
-      "rewards": [
-        {"reward_type": "credits", "amount": 500},
-        {"reward_type": "xp", "amount": 50}
-      ]
-    },
-    {
-      "id": "recruit_navigator",
-      "name": "Recruit Navigator",
-      "description": "Elena Reeves has offered to join your crew as a navigator. Return to Nexus Prime to finalize the arrangement.",
-      "prerequisites": ["making_friends"],
-      "objectives": [
-        {
-          "type": "reach_system",
-          "target_id": "nexus_prime",
-          "target_quantity": 1,
-          "description": "Return to Nexus Prime"
-        }
-      ],
-      "rewards": [
-        {"reward_type": "crew", "amount": 0, "target_id": "elena_reeves"},
-        {"reward_type": "xp", "amount": 50}
-      ]
-    },
-    {
-      "id": "recruit_engineer",
-      "name": "Recruit Engineer",
-      "description": "Marcus Jin is impressed by your initiative. Visit Breakstone to bring him aboard as your ship's engineer.",
-      "prerequisites": ["getting_started"],
-      "objectives": [
-        {
-          "type": "reach_system",
-          "target_id": "breakstone",
-          "target_quantity": 1,
-          "description": "Return to Breakstone"
-        }
-      ],
-      "rewards": [
-        {"reward_type": "crew", "amount": 0, "target_id": "marcus_jin"},
-        {"reward_type": "xp", "amount": 50}
-      ]
-    },
-    {
-      "id": "recruit_scientist",
-      "name": "Recruit Scientist",
-      "description": "Dr. Yara Osei is looking for field research opportunities. Travel to Axiom Labs to recruit her.",
-      "prerequisites": ["building_capital"],
-      "objectives": [
-        {
-          "type": "reach_system",
-          "target_id": "axiom_labs",
-          "target_quantity": 1,
-          "description": "Travel to Axiom Labs"
-        }
-      ],
-      "rewards": [
-        {"reward_type": "crew", "amount": 0, "target_id": "dr_yara_osei"},
-        {"reward_type": "xp", "amount": 50}
-      ]
-    },
-    {
-      "id": "recruit_trader",
-      "name": "Recruit Trader",
-      "description": "Kael Drifter wants to partner up. Head to Haven's Rest to seal the deal.",
-      "prerequisites": ["supply_run"],
-      "objectives": [
-        {
-          "type": "reach_system",
-          "target_id": "havens_rest",
-          "target_quantity": 1,
-          "description": "Travel to Haven's Rest"
-        }
-      ],
-      "rewards": [
-        {"reward_type": "crew", "amount": 0, "target_id": "kael_drifter"},
-        {"reward_type": "xp", "amount": 50}
-      ]
-    },
-    {
       "id": "bill_of_landing",
       "name": "Bill of Landing",
       "description": "Acquire a trade permit to buy and sell goods at Nexus Prime. Speak with the customs officer to obtain your bill of landing.",
+      "hint": "Speak with Customs Officer Larsen at the Nexus Prime cantina to get your trade permit.",
       "prerequisites": [],
       "objectives": [
         {
@@ -164,7 +16,7 @@
       ],
       "rewards": [
         {"reward_type": "deduct_credits", "amount": 250},
-        {"reward_type": "trade_permit", "amount": 0, "target_id": "current_system"},
+        {"reward_type": "trade_permit", "amount": 0, "target_id": "all"},
         {"reward_type": "xp", "amount": 20}
       ]
     },
@@ -172,6 +24,7 @@
       "id": "iron_delivery",
       "name": "Iron Ore Delivery",
       "description": "A cargo broker needs 10 iron ore delivered to Forgeworks. He'll pay 500 credits on delivery.",
+      "hint": "Deliver 10 Iron Ore to Forgeworks for the cargo broker. Talk to the broker at Nexus Prime first.",
       "prerequisites": ["bill_of_landing"],
       "on_accept_cargo": [
         {"commodity_id": "iron_ore", "quantity": 10}
@@ -191,9 +44,555 @@
         }
       ],
       "rewards": [
-        {"reward_type": "credits", "amount": 500},
+        {"reward_type": "credits", "amount": 600},
         {"reward_type": "remove_cargo", "amount": 10, "target_id": "iron_ore"},
-        {"reward_type": "xp", "amount": 40}
+        {"reward_type": "xp", "amount": 40},
+        {"reward_type": "set_flag", "amount": 0, "target_id": "iron_ore_delivered"}
+      ]
+    },
+    {
+      "id": "footing_the_bill",
+      "name": "Footing the Bill",
+      "description": "Elena Reeves at the Nexus Prime cantina offered trading advice. She seems to know more than she's sharing.",
+      "hint": "Elena Reeves will appear at Nexus Prime after completing the iron delivery. Listen to her trading advice.",
+      "prerequisites": ["iron_delivery"],
+      "required_flags": ["talked_to_elena_cantina"],
+      "auto_accept": true,
+      "objectives": [
+        {
+          "type": "has_flag",
+          "target_id": "elena_gave_trading_tips",
+          "description": "Learn trading basics from Elena"
+        }
+      ],
+      "rewards": [
+        {"reward_type": "credits", "amount": 150},
+        {"reward_type": "xp", "amount": 50}
+      ]
+    },
+    {
+      "id": "union_territory",
+      "name": "Union Territory",
+      "description": "Hanna Voss, the Breakstone dock boss, wants proof you're not another Guild vulture. Deliver 5 units of food to the miners' commissary.",
+      "hint": "Buy 5 food and deliver it to Breakstone to earn the miners' trust. Hanna Voss is waiting.",
+      "prerequisites": ["footing_the_bill"],
+      "required_flags": ["met_hanna_voss"],
+      "objectives": [
+        {
+          "type": "collect_cargo",
+          "target_id": "food",
+          "target_quantity": 5,
+          "description": "Acquire 5 units of food"
+        },
+        {
+          "type": "reach_system",
+          "target_id": "breakstone",
+          "target_quantity": 1,
+          "description": "Deliver food to Breakstone commissary"
+        }
+      ],
+      "rewards": [
+        {"reward_type": "remove_cargo", "amount": 5, "target_id": "food"},
+        {"reward_type": "trade_permit", "amount": 0, "target_id": "miners_union"},
+        {"reward_type": "set_flag", "amount": 0, "target_id": "breakstone_permit_earned"},
+        {"reward_type": "xp", "amount": 75}
+      ]
+    },
+    {
+      "id": "the_foremans_son",
+      "name": "The Foreman's Son",
+      "description": "Marcus Jin at Breakstone recognized your name. He knew your father \u2014 or at least, he knew what happened to the report that might have saved him.",
+      "hint": "Talk to Marcus Jin at Breakstone. He knows something about your father.",
+      "prerequisites": ["union_territory"],
+      "required_flags": ["met_marcus_jin"],
+      "auto_accept": true,
+      "objectives": [
+        {
+          "type": "has_flag",
+          "target_id": "learned_father_story",
+          "description": "Learn what Marcus knows about your father"
+        }
+      ],
+      "rewards": [
+        {"reward_type": "credits", "amount": 200},
+        {"reward_type": "set_flag", "amount": 0, "target_id": "completed_mining_tutorial"},
+        {"reward_type": "xp", "amount": 60}
+      ]
+    },
+    {
+      "id": "the_scholars_errand",
+      "name": "The Scholar's Errand",
+      "description": "Dr. Priya Osei needs transport to Axiom Labs. Her chartered vessel was reassigned and her research samples are time-sensitive.",
+      "hint": "Transport Dr. Priya Osei to Axiom Labs. She's waiting at Nexus Prime.",
+      "prerequisites": ["union_territory"],
+      "required_flags": ["met_priya_osei"],
+      "auto_accept": true,
+      "objectives": [
+        {
+          "type": "reach_system",
+          "target_id": "axiom_labs",
+          "target_quantity": 1,
+          "description": "Transport Dr. Osei to Axiom Labs"
+        }
+      ],
+      "rewards": [
+        {"reward_type": "credits", "amount": 350},
+        {"reward_type": "set_flag", "amount": 0, "target_id": "escorted_priya_axiom"},
+        {"reward_type": "set_flag", "amount": 0, "target_id": "visited_axiom_labs"},
+        {"reward_type": "xp", "amount": 80}
+      ]
+    },
+    {
+      "id": "the_drifters_deal",
+      "name": "The Drifter's Deal",
+      "description": "Tomas Drifter at Haven's Rest proposed a creative arrangement involving Guild tariffs and Alliance textiles.",
+      "hint": "Meet Tomas Drifter at Haven's Rest. He has a proposition for you.",
+      "prerequisites": ["union_territory"],
+      "required_flags": ["met_tomas_drifter"],
+      "auto_accept": true,
+      "objectives": [
+        {
+          "type": "has_flag",
+          "target_id": "drifter_deal_resolved",
+          "description": "Resolve the drifter's proposal"
+        }
+      ],
+      "rewards": [
+        {"reward_type": "credits", "amount": 100},
+        {"reward_type": "xp", "amount": 50}
+      ]
+    },
+    {
+      "id": "drifters_delivery",
+      "name": "Drifter's Delivery",
+      "description": "Sell Tomas's textiles at Stellaris Port under your bill of landing. Split the profits.",
+      "hint": "Travel to Stellaris Port and sell Tomas's textiles at the market.",
+      "prerequisites": ["the_drifters_deal"],
+      "required_flags": ["accepted_drifter_deal"],
+      "on_accept_cargo": [
+        {"commodity_id": "textiles", "quantity": 5}
+      ],
+      "objectives": [
+        {
+          "type": "reach_system",
+          "target_id": "stellaris_port",
+          "target_quantity": 1,
+          "description": "Travel to Stellaris Port"
+        },
+        {
+          "type": "complete_trade",
+          "target_id": "",
+          "target_quantity": 1,
+          "description": "Sell the textiles"
+        }
+      ],
+      "rewards": [
+        {"reward_type": "remove_cargo", "amount": 5, "target_id": "textiles"},
+        {"reward_type": "credits", "amount": 300},
+        {"reward_type": "set_flag", "amount": 0, "target_id": "tomas_friendship"},
+        {"reward_type": "set_flag", "amount": 0, "target_id": "drifter_deal_resolved"},
+        {"reward_type": "xp", "amount": 80}
+      ]
+    },
+    {
+      "id": "recruit_navigator",
+      "name": "Recruit Navigator",
+      "description": "Elena Reeves has shown interest in joining your crew as a navigator. Return to Nexus Prime to make the offer.",
+      "hint": "Return to Nexus Prime to recruit Elena Reeves as your navigator.",
+      "prerequisites": ["footing_the_bill"],
+      "required_flags": ["talked_to_elena_cantina"],
+      "objectives": [
+        {
+          "type": "reach_system",
+          "target_id": "nexus_prime",
+          "target_quantity": 1,
+          "description": "Return to Nexus Prime"
+        }
+      ],
+      "rewards": [
+        {"reward_type": "crew", "amount": 0, "target_id": "elena_reeves"},
+        {"reward_type": "xp", "amount": 50}
+      ]
+    },
+    {
+      "id": "recruit_engineer",
+      "name": "Recruit Engineer",
+      "description": "Marcus Jin could be a valuable addition to your crew. Return to Breakstone to bring him aboard as your ship's engineer.",
+      "hint": "Return to Breakstone to recruit Marcus Jin as your engineer.",
+      "prerequisites": ["the_foremans_son"],
+      "required_flags": ["met_marcus_jin"],
+      "objectives": [
+        {
+          "type": "reach_system",
+          "target_id": "breakstone",
+          "target_quantity": 1,
+          "description": "Return to Breakstone"
+        }
+      ],
+      "rewards": [
+        {"reward_type": "crew", "amount": 0, "target_id": "marcus_jin"},
+        {"reward_type": "xp", "amount": 50}
+      ]
+    },
+    {
+      "id": "recruit_scientist",
+      "name": "Recruit Scientist",
+      "description": "Dr. Priya Osei is looking for field research opportunities. Return to Axiom Labs to recruit her.",
+      "hint": "Travel to Axiom Labs to recruit Dr. Priya Osei as your scientist.",
+      "prerequisites": ["the_scholars_errand"],
+      "required_flags": ["met_priya_osei"],
+      "objectives": [
+        {
+          "type": "reach_system",
+          "target_id": "axiom_labs",
+          "target_quantity": 1,
+          "description": "Travel to Axiom Labs"
+        }
+      ],
+      "rewards": [
+        {"reward_type": "crew", "amount": 0, "target_id": "dr_priya_osei"},
+        {"reward_type": "xp", "amount": 50}
+      ]
+    },
+    {
+      "id": "recruit_trader",
+      "name": "Recruit Trader",
+      "description": "Tomas Drifter wants to partner up. Head to Haven's Rest to finalize the arrangement.",
+      "hint": "Travel to Haven's Rest to recruit Tomas Drifter as your trader.",
+      "prerequisites": ["the_drifters_deal"],
+      "required_flags": ["met_tomas_drifter"],
+      "objectives": [
+        {
+          "type": "reach_system",
+          "target_id": "havens_rest",
+          "target_quantity": 1,
+          "description": "Travel to Haven's Rest"
+        }
+      ],
+      "rewards": [
+        {"reward_type": "crew", "amount": 0, "target_id": "tomas_drifter"},
+        {"reward_type": "xp", "amount": 50}
+      ]
+    },
+    {
+      "id": "cargo_lost",
+      "name": "Cargo Lost",
+      "description": "A Guild supply run to Nova Research has gone wrong. Electronics are needed at the station, but convoy raids have escalated along the route. Someone has to make the delivery.",
+      "hint": "Deliver 5 electronics to Nova Research. Beware of pirates on the route.",
+      "prerequisites": ["the_scholars_errand"],
+      "on_accept_cargo": [
+        {"commodity_id": "electronics", "quantity": 5}
+      ],
+      "forced_encounter": {
+        "encounter_type": "distress_signal",
+        "trigger_flag": "cargo_lost_distress_triggered",
+        "encounter_def_id": "cargo_lost_distress"
+      },
+      "objectives": [
+        {
+          "type": "collect_cargo",
+          "target_id": "electronics",
+          "target_quantity": 5,
+          "description": "Have 5 electronics in cargo"
+        },
+        {
+          "type": "reach_system",
+          "target_id": "nova_research",
+          "target_quantity": 1,
+          "description": "Deliver electronics to Nova Research"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "cargo_lost_resolved",
+          "description": "Speak with Captain Sato at Nova Research"
+        }
+      ],
+      "rewards": [
+        {"reward_type": "credits", "amount": 600},
+        {"reward_type": "remove_cargo", "amount": 5, "target_id": "electronics"},
+        {"reward_type": "xp", "amount": 100},
+        {"reward_type": "reputation", "amount": 5, "target_id": "commerce_guild"},
+        {"reward_type": "set_flag", "amount": 0, "target_id": "cargo_lost_complete"}
+      ]
+    },
+    {
+      "id": "whispers_at_the_bar",
+      "name": "Whispers at the Bar",
+      "description": "A man named Dex Halloran approached you at the Nexus Prime cantina. He seems to know more about the convoy raids than he's letting on.",
+      "hint": "Dex Halloran will find you at Nexus Prime. He has intel on the pirate attacks.",
+      "prerequisites": ["cargo_lost"],
+      "required_flags": ["met_dex_halloran"],
+      "auto_accept": true,
+      "objectives": [
+        {
+          "type": "has_flag",
+          "target_id": "dex_favor_accepted",
+          "description": "Decide whether to help Dex"
+        }
+      ],
+      "rewards": [
+        {"reward_type": "xp", "amount": 50},
+        {"reward_type": "set_flag", "amount": 0, "target_id": "whispers_complete"}
+      ]
+    },
+    {
+      "id": "the_crimson_run",
+      "name": "The Crimson Run",
+      "description": "Dex Halloran entrusted you with an encrypted data chip. Deliver it to Malia Torres at Crimson Reach — she's the only one who can crack it.",
+      "hint": "Travel to Crimson Reach and deliver Dex's data chip to Malia Torres.",
+      "prerequisites": ["whispers_at_the_bar"],
+      "required_flags": ["dex_favor_accepted"],
+      "ground_mission_id": "mission_10_crimson_reach",
+      "ground_mission_system_id": "crimson_reach",
+      "ground_mission_complete_flag": "crimson_run_ground_complete",
+      "on_accept_cargo": [
+        {"commodity_id": "data_chip", "quantity": 1}
+      ],
+      "objectives": [
+        {
+          "type": "reach_system",
+          "target_id": "crimson_reach",
+          "target_quantity": 1,
+          "description": "Travel to Crimson Reach"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "crimson_run_ground_complete",
+          "description": "Complete the ground operation"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "met_malia_torres",
+          "description": "Meet Malia Torres"
+        }
+      ],
+      "rewards": [
+        {"reward_type": "credits", "amount": 400},
+        {"reward_type": "remove_cargo", "amount": 1, "target_id": "data_chip"},
+        {"reward_type": "xp", "amount": 120},
+        {"reward_type": "reputation", "amount": 3, "target_id": "frontier_alliance"},
+        {"reward_type": "black_market_access", "amount": 0, "target_id": "crimson_reach"}
+      ]
+    },
+    {
+      "id": "embassy_visit",
+      "name": "Embassy Visit",
+      "description": "Dr. Priya Osei has arranged for you to attend a faction summit at Axiom Labs. The Governing Council wants a coordinated response to the pirate threat \u2014 but coordination requires trust.",
+      "hint": "Travel to Axiom Labs to attend the faction summit arranged by Dr. Osei.",
+      "prerequisites": ["the_crimson_run"],
+      "auto_accept": true,
+      "objectives": [
+        {
+          "type": "reach_system",
+          "target_id": "axiom_labs",
+          "target_quantity": 1,
+          "description": "Travel to Axiom Labs for the summit"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "attended_embassy_summit",
+          "description": "Attend the faction summit"
+        }
+      ],
+      "rewards": [
+        {"reward_type": "xp", "amount": 100},
+        {"reward_type": "set_flag", "amount": 0, "target_id": "embassy_complete"}
+      ]
+    },
+    {
+      "id": "under_fire",
+      "name": "Under Fire",
+      "description": "While traveling, you were ambushed by well-equipped pirates \u2014 military-grade weapons, coordinated tactics, and unmarked hulls. Their drive cores match Guild-pattern specifications. Whoever is arming these raiders has deep pockets and access to hardware that doesn't appear on any civilian market.",
+      "hint": "Pirates are hunting you. Travel between systems and be ready to fight.",
+      "prerequisites": ["embassy_visit"],
+      "auto_accept": true,
+      "forced_encounter": {
+        "encounter_type": "hostile",
+        "enemy_template_ids": ["ledger_raider", "ledger_striker"],
+        "trigger_flag": "under_fire_ambush"
+      },
+      "objectives": [
+        {
+          "type": "has_flag",
+          "target_id": "under_fire_ambush",
+          "description": "Survive the pirate ambush"
+        }
+      ],
+      "rewards": [
+        {"reward_type": "xp", "amount": 80},
+        {"reward_type": "set_flag", "amount": 0, "target_id": "under_fire_complete"},
+        {"reward_type": "set_flag", "amount": 0, "target_id": "guild_hardware_discovered"}
+      ]
+    },
+    {
+      "id": "the_favor_returned",
+      "name": "The Favor Returned",
+      "description": "Dex Halloran has a new lead \u2014 a retired miner named Oren Tak at Breakstone who saw something in the deep tunnels near Iron Depths. A hidden facility with Guild freight codes, sealed up and buried. Find Oren and learn what he knows.",
+      "hint": "Travel to Breakstone and find Oren Tak in the mining tunnels. Dex sent you.",
+      "prerequisites": ["under_fire"],
+      "required_flags": ["dex_tunnel_briefing_heard"],
+      "auto_accept": true,
+      "ground_mission_id": "mission_13_breakstone_tunnels",
+      "ground_mission_system_id": "breakstone",
+      "ground_mission_complete_flag": "favor_ground_complete",
+      "objectives": [
+        {
+          "type": "reach_system",
+          "target_id": "breakstone",
+          "target_quantity": 1,
+          "description": "Travel to Breakstone"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "favor_ground_complete",
+          "description": "Navigate the Breakstone tunnels"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "oren_intel_received",
+          "description": "Learn what Oren Tak knows about the facility"
+        }
+      ],
+      "rewards": [
+        {"reward_type": "xp", "amount": 120},
+        {"reward_type": "reputation", "amount": 3, "target_id": "miners_union"},
+        {"reward_type": "set_flag", "amount": 0, "target_id": "favor_returned_complete"},
+        {"reward_type": "set_flag", "amount": 0, "target_id": "hidden_facility_discovered"}
+      ]
+    },
+    {
+      "id": "iron_depths_investigation",
+      "name": "Iron Depths",
+      "description": "Oren Tak described a hidden facility beneath Iron Depths \u2014 reinforced bulkheads, cargo lifts, and hundreds of crates stamped with Commerce Guild freight codes. Whatever they're building down there, it's bigger than weapons smuggling. Time to see it for yourself.",
+      "hint": "Travel to Iron Depths and infiltrate the hidden Guild facility.",
+      "prerequisites": ["the_favor_returned"],
+      "required_flags": ["hidden_facility_discovered"],
+      "auto_accept": true,
+      "ground_mission_id": "mission_14_iron_depths_facility",
+      "ground_mission_system_id": "iron_depths",
+      "ground_mission_complete_flag": "iron_depths_ground_complete",
+      "objectives": [
+        {
+          "type": "reach_system",
+          "target_id": "iron_depths",
+          "target_quantity": 1,
+          "description": "Travel to Iron Depths"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "iron_depths_ground_complete",
+          "description": "Infiltrate the hidden facility"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "facility_intel_gathered",
+          "description": "Learn what the facility is manufacturing"
+        }
+      ],
+      "rewards": [
+        {"reward_type": "xp", "amount": 150},
+        {"reward_type": "reputation", "amount": 5, "target_id": "miners_union"},
+        {"reward_type": "set_flag", "amount": 0, "target_id": "iron_depths_complete"},
+        {"reward_type": "set_flag", "amount": 0, "target_id": "singularity_weapon_discovered"}
+      ]
+    },
+    {
+      "id": "the_ledger",
+      "name": "The Ledger",
+      "description": "You have hard evidence of Project Convergence \u2014 a Commerce Guild operation to collapse the Aurelia star using gravitational lensing arrays. Dr. Osei can verify the data. But the Guild's institutional power may make official channels useless. Someone needs to find where the arrays are being assembled.",
+      "hint": "Bring the Convergence data to Dr. Osei at Axiom Labs for verification.",
+      "prerequisites": ["iron_depths_investigation"],
+      "required_flags": ["singularity_weapon_discovered"],
+      "auto_accept": true,
+      "objectives": [
+        {
+          "type": "reach_system",
+          "target_id": "axiom_labs",
+          "target_quantity": 1,
+          "description": "Bring the Convergence data to Dr. Osei at Axiom Labs"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "convergence_data_verified",
+          "description": "Have Dr. Osei verify the Project Convergence data"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "assembly_location_known",
+          "description": "Find the location of the array assembly site"
+        }
+      ],
+      "rewards": [
+        {"reward_type": "xp", "amount": 100},
+        {"reward_type": "reputation", "amount": 3, "target_id": "science_collective"},
+        {"reward_type": "set_flag", "amount": 0, "target_id": "ledger_complete"}
+      ]
+    },
+    {
+      "id": "point_of_no_return",
+      "name": "Point of No Return",
+      "description": "The Fulcrum. A decommissioned station in deep space where the Commerce Guild's Inner Ledger is assembling sixteen gravitational lensing arrays \u2014 the components of Project Convergence. If the arrays deploy, the Aurelia star collapses and everything in the Expanse dies. There may be a way to stop it. Or there may only be a way out.",
+      "hint": "Travel to The Fulcrum and infiltrate the Ledger's assembly station. This is it.",
+      "prerequisites": ["the_ledger"],
+      "required_flags": ["assembly_location_known"],
+      "auto_accept": true,
+      "ground_mission_id": "mission_16_the_fulcrum",
+      "ground_mission_system_id": "the_fulcrum",
+      "ground_mission_complete_flag": "fulcrum_ground_complete",
+      "objectives": [
+        {
+          "type": "reach_system",
+          "target_id": "the_fulcrum",
+          "target_quantity": 1,
+          "description": "Travel to The Fulcrum"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "fulcrum_ground_complete",
+          "description": "Infiltrate the assembly station"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "warp_gate_discovered",
+          "description": "Find a way to stop Convergence \u2014 or a way out"
+        }
+      ],
+      "rewards": [
+        {"reward_type": "xp", "amount": 200},
+        {"reward_type": "set_flag", "amount": 0, "target_id": "point_of_no_return_complete"},
+        {"reward_type": "set_flag", "amount": 0, "target_id": "convergence_active"},
+        {"reward_type": "set_flag", "amount": 0, "target_id": "warp_gate_discovered"}
+      ]
+    },
+    {
+      "id": "the_collapse",
+      "name": "The Collapse",
+      "description": "The arrays have deployed. The Aurelia star is dying. Project Convergence is active and irreversible. The only escape is the warp gate at The Fulcrum \u2014 but the Ledger's forces are between you and salvation. Fight through, reach the gate, and pray it takes you somewhere survivable.",
+      "hint": "Fight through the Ledger blockade and escape through the warp gate. Now or never.",
+      "prerequisites": ["point_of_no_return"],
+      "required_flags": ["convergence_active"],
+      "auto_accept": true,
+      "forced_encounter": {
+        "encounter_type": "hostile",
+        "enemy_template_ids": ["ledger_vanguard", "ledger_raider", "ledger_striker"],
+        "trigger_flag": "escape_combat_survived"
+      },
+      "objectives": [
+        {
+          "type": "has_flag",
+          "target_id": "escape_combat_survived",
+          "description": "Fight through the Ledger blockade"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "expanse_collapsed",
+          "description": "Escape through the warp gate"
+        }
+      ],
+      "rewards": [
+        {"reward_type": "xp", "amount": 250},
+        {"reward_type": "set_flag", "amount": 0, "target_id": "act_one_complete"},
+        {"reward_type": "set_flag", "amount": 0, "target_id": "escaped_through_warp_gate"}
       ]
     }
   ]

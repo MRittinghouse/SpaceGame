@@ -11,6 +11,7 @@ from dataclasses import dataclass, field
 from typing import Optional
 
 from spacegame.config import Colors
+from spacegame.engine.fonts import FontCache
 
 # Horizontal padding inside each cell
 CELL_PAD = 6
@@ -55,12 +56,13 @@ class TableWidget:
         self.rect = pygame.Rect(rect)
         self.columns = columns
         self.row_height = row_height
-        self.font = font or pygame.font.Font(None, 20)
-        self.header_font = header_font or pygame.font.Font(None, 22)
+        self.font = font or FontCache.get(20)
+        self.header_font = header_font or FontCache.get(22)
         self.empty_message = empty_message
 
         # Row data: each row is list[str | tuple[str, tuple]] for per-cell color
         self._rows: list[list[str | tuple[str, tuple]]] = []
+        self._row_icons: Optional[list[Optional[pygame.Surface]]] = None
         self._selected_index: Optional[int] = None
         self._hovered_index: Optional[int] = None
         self._scroll_offset: int = 0
@@ -85,17 +87,24 @@ class TableWidget:
 
         # Scrollbar
         self._scrollbar_width = 6
-        self._scrollbar_track_color = (30, 35, 55)
-        self._scrollbar_thumb_color = (80, 90, 120)
+        self._scrollbar_track_color = Colors.SCROLLBAR_TRACK
+        self._scrollbar_thumb_color = Colors.SCROLLBAR_THUMB
 
-    def set_data(self, rows: list[list[str | tuple[str, tuple]]]) -> None:
+    def set_data(
+        self,
+        rows: list[list[str | tuple[str, tuple]]],
+        row_icons: Optional[list[Optional[pygame.Surface]]] = None,
+    ) -> None:
         """Replace all row data.
 
         Args:
             rows: List of rows. Each row is a list of cells where each cell
                   is either a plain string or a (string, color) tuple.
+            row_icons: Optional list of surfaces (one per row) to render
+                  at the left edge of the first column. None entries skip.
         """
         self._rows = rows
+        self._row_icons = row_icons
         # Clamp selection
         if self._selected_index is not None and self._selected_index >= len(rows):
             self._selected_index = None
@@ -257,6 +266,17 @@ class TableWidget:
     def _draw_row_cells(self, screen: pygame.Surface, index: int, y: int) -> None:
         row = self._rows[index]
         x = self.rect.x
+
+        # Render icon in first column if provided
+        icon_offset = 0
+        if self._row_icons and index < len(self._row_icons):
+            icon = self._row_icons[index]
+            if icon is not None:
+                icon_x = x + CELL_PAD
+                icon_y = y + (self.row_height - icon.get_height()) // 2
+                screen.blit(icon, (icon_x, icon_y))
+                icon_offset = icon.get_width() + 4  # icon width + gap
+
         for col_idx, col in enumerate(self.columns):
             if col_idx < len(row):
                 cell = row[col_idx]
@@ -271,12 +291,15 @@ class TableWidget:
 
             text_surf = self.font.render(text, True, color)
 
+            # First column text shifts right to make room for icon
+            col_icon_offset = icon_offset if col_idx == 0 else 0
+
             # Truncate with ellipsis if text is wider than column
-            max_width = col.width - CELL_PAD * 2
+            max_width = col.width - CELL_PAD * 2 - col_icon_offset
             if text_surf.get_width() > max_width:
                 text_surf = self._truncate_text(text, color, max_width)
 
-            tx = self._align_x(text_surf, x, col.width, col.align)
+            tx = self._align_x(text_surf, x + col_icon_offset, col.width - col_icon_offset, col.align)
             # Vertically center text in the row
             ty = y + (self.row_height - text_surf.get_height()) // 2
             screen.blit(text_surf, (tx, ty))

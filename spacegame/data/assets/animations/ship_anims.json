@@ -1,0 +1,22 @@
+{
+  "idle": {
+    "name": "idle",
+    "frames": [
+      0,
+      1
+    ],
+    "frame_duration": 0.5,
+    "loop": true
+  },
+  "destroy": {
+    "name": "destroy",
+    "frames": [
+      2,
+      3,
+      4,
+      5
+    ],
+    "frame_duration": 0.12,
+    "loop": false
+  }
+}

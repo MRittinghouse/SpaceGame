@@ -1,0 +1,146 @@
+{
+    "id": "mission_14_iron_depths_facility",
+    "name": "Iron Depths Hidden Facility",
+    "width": 30,
+    "height": 25,
+    "mission_type": "infiltration",
+    "difficulty": "moderate",
+    "faction_id": "commerce_guild",
+
+    "tiles": [
+        ["W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","F","F","X","F","F","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","F","F","F","F","F","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","W","W","D","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","W","W","W","W","W","W"],
+        ["W","W","W","W","W","F","W","W","W","W","W","W","W","F","W","W","W","W","W","W","W","W","W","F","W","W","W","W","W","W"],
+        ["W","W","W","W","W","F","W","F","F","F","F","F","W","F","W","F","F","F","F","F","F","W","W","F","W","W","W","W","W","W"],
+        ["W","W","W","W","W","F","W","F","W","W","W","F","W","F","W","F","W","W","W","W","F","W","W","F","W","W","W","W","W","W"],
+        ["W","W","W","W","W","F","W","F","W","W","W","F","W","N","W","F","W","W","W","W","F","F","F","F","W","W","W","W","W","W"],
+        ["W","W","W","W","W","D","W","F","F","F","F","F","W","F","W","F","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","F","W","W","W","W","W","W","W","F","W","F","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","W","W"],
+        ["W","F","W","W","W","W","W","W","W","W","W","W","W","F","W","W","W","W","W","W","W","W","W","W","W","W","W","F","W","W"],
+        ["W","F","W","W","W","W","W","W","W","W","W","W","W","F","W","W","W","W","W","W","W","W","W","W","W","W","W","F","W","W"],
+        ["W","F","F","F","F","F","W","W","W","W","W","W","W","D","W","W","W","W","W","W","W","F","F","F","F","F","F","F","W","W"],
+        ["W","W","W","W","W","F","W","W","W","W","W","W","W","F","W","W","W","W","W","W","W","F","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","D","W","W","W","W","W","W","W","F","W","W","W","W","W","W","W","D","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","W","F","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","W","F","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","W","N","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","F","F","F","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","F","F","F","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","F","E","F","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"]
+    ],
+
+    "entrance": [13, 23],
+    "exit": [14, 1],
+
+    "enemies": [
+        {
+            "id": "tunnel_entrance_guard",
+            "template_id": "union_worker",
+            "x": 13, "y": 19,
+            "facing": "down",
+            "speed": 1,
+            "patrol_route": [[13, 18], [13, 20]]
+        },
+        {
+            "id": "corridor_patrol",
+            "template_id": "guild_security",
+            "x": 10, "y": 17,
+            "facing": "right",
+            "speed": 2,
+            "patrol_route": [[6, 17], [20, 17]]
+        },
+        {
+            "id": "main_gallery_sentry",
+            "template_id": "guild_security",
+            "x": 8, "y": 11,
+            "facing": "right",
+            "speed": 1,
+            "patrol_route": [[2, 11], [26, 11]]
+        },
+        {
+            "id": "lab_wing_guard",
+            "template_id": "guild_security",
+            "x": 9, "y": 6,
+            "facing": "left",
+            "speed": 1,
+            "patrol_route": [[7, 6], [11, 6]]
+        },
+        {
+            "id": "assembly_drone",
+            "template_id": "collective_drone",
+            "x": 18, "y": 6,
+            "facing": "right",
+            "speed": 1,
+            "patrol_route": [[16, 6], [20, 6]]
+        },
+        {
+            "id": "cargo_lift_guard",
+            "template_id": "elite_guard",
+            "x": 14, "y": 4,
+            "facing": "down",
+            "speed": 1,
+            "patrol_route": [[6, 4], [22, 4]]
+        }
+    ],
+
+    "interactables": [
+        {
+            "x": 3, "y": 14,
+            "type": "loot_container",
+            "loot_credits": 55,
+            "description": "A supply crate marked with Guild logistics codes. Inside: precision tools, calibration instruments, and a manifest listing components shipped from six different systems."
+        },
+        {
+            "x": 23, "y": 8,
+            "type": "loot_container",
+            "loot_credits": 70,
+            "description": "A sealed container with a cracked environmental seal. Rare metal alloys machined to specifications you've never seen — curved panels designed to focus energy along precise trajectories."
+        },
+        {
+            "x": 9, "y": 9,
+            "type": "loot_container",
+            "loot_credits": 80,
+            "description": "An engineering workstation with data crystals scattered across it. Partial schematics glow on a dormant screen — concentric ring structures with gravitational field calculations in the margins."
+        },
+        {
+            "x": 24, "y": 14,
+            "type": "loot_container",
+            "loot_credits": 45,
+            "description": "A footlocker beneath a bunk. Personal effects: a Guild engineer's journal. The last entry reads: 'Third shipment this month. Nobody tells us what we're building. Nobody asks.'"
+        }
+    ],
+
+    "story_triggers": [
+        {
+            "x": 13, "y": 20,
+            "type": "atmosphere",
+            "text": "The mining tunnel narrows as you descend past the marked depth levels. The rock changes color here — darker, denser. A sealed blast door ahead has been retrofitted with a modern access panel. Someone has been maintaining infrastructure that officially doesn't exist."
+        },
+        {
+            "x": 13, "y": 17,
+            "type": "atmosphere",
+            "text": "Beyond the blast door, everything changes. Rough-hewn rock gives way to fabricated walls — clean alloy panels, recessed lighting, atmospheric scrubbers humming at frequencies you associate with orbital stations, not mining tunnels. This is no storage depot. This is a manufacturing floor."
+        },
+        {
+            "x": 5, "y": 11,
+            "type": "atmosphere",
+            "text": "The main corridor stretches the width of the facility. Through reinforced windows, you see assembly bays where curved metal panels are being shaped by automated presses. The scale is staggering — whatever they're building requires components measured in meters, not centimeters."
+        },
+        {
+            "x": 8, "y": 7,
+            "type": "atmosphere",
+            "text": "A research bay lined with holographic displays. Most are powered down, but one still cycles through structural simulations — concentric rings focusing energy inward toward a central point. The math scrolling alongside is beyond your training, but the diagram looks like a lens. A very large lens."
+        },
+        {
+            "x": 14, "y": 4,
+            "type": "atmosphere",
+            "text": "The cargo lift at the facility's heart descends into darkness. Crate after crate lines the walls — all stamped with Commerce Guild freight codes, all addressed to recipients that don't appear in any public registry. The shipping dates span eighteen months. This operation has been running for longer than anyone suspected."
+        }
+    ]
+}

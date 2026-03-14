@@ -303,6 +303,34 @@
         "tariff_rate": 0.05
       },
       "rest_cost": 225
+    },
+    {
+      "id": "the_fulcrum",
+      "name": "The Fulcrum",
+      "type": "military",
+      "description": "A decommissioned colonial-era refueling platform in deep space, far beyond standard trade lanes. Officially scrapped thirty years ago. Unofficially, rebuilt into something far worse.",
+      "coordinates": {
+        "x": 120,
+        "y": -60
+      },
+      "danger_level": "dangerous",
+      "faction": "Commerce Guild",
+      "stations": [
+        {
+          "id": "fulcrum_platform",
+          "name": "Fulcrum Platform",
+          "type": "major",
+          "description": "A heavily fortified orbital assembly facility. The original colonial refueling structure has been rebuilt around a military-grade core.",
+          "docking_fee": 0,
+          "market_variety": "none"
+        }
+      ],
+      "economy": {
+        "production_tags": [],
+        "consumption_tags": [],
+        "tariff_rate": 0.0
+      },
+      "rest_cost": 0
     }
   ]
 }

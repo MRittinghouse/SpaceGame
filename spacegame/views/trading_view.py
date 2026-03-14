@@ -19,6 +19,10 @@ from spacegame.models.faction import get_tariff_modifier
 from spacegame.utils.logger import logger
 from spacegame.engine.backgrounds import AnimatedBackground
 from spacegame.engine.particles import ParticlePool, COLLECT_SPARKLE, ParticleConfig
+from spacegame.engine.sprites import get_sprite_manager
+from spacegame.engine.draw_utils import draw_bar
+from spacegame.engine.fonts import FontCache
+from spacegame.engine.audio_manager import get_audio_manager
 
 # Red flash for failed transactions
 FAIL_FLASH = ParticleConfig(
@@ -38,13 +42,20 @@ FAIL_FLASH = ParticleConfig(
     glow=True,
 )
 
-# Trend text colors
+# Trend text colors (supply/demand-based)
 _TREND_COLORS: dict[str, tuple[int, int, int]] = {
     "Very Low": Colors.GREEN,
     "Low": (100, 200, 130),
     "Normal": Colors.TEXT_SECONDARY,
     "High": Colors.YELLOW,
     "Very High": Colors.RED,
+}
+
+# Price history trend display
+_HISTORY_TREND_DISPLAY: dict[str, tuple[str, tuple[int, int, int]]] = {
+    "rising": ("\u25b2 Rising", Colors.GREEN),
+    "falling": ("\u25bc Falling", Colors.RED),
+    "stable": ("- Stable", Colors.TEXT_SECONDARY),
 }
 
 
@@ -59,6 +70,10 @@ class TradingView(BaseView):
         commodities: dict[str, Commodity],
         activity_registry=None,
         active_events: Optional[dict] = None,
+        price_history=None,
+        black_market_name: Optional[str] = None,
+        smuggling_contract_manager=None,
+        politics_manager=None,
     ):
         super().__init__()
         self.ui_manager = ui_manager
@@ -68,6 +83,14 @@ class TradingView(BaseView):
         self.market: Optional[Market] = None
         self.activity_registry = activity_registry
         self.active_events: dict = active_events or {}
+        self.price_history = price_history
+        self.smuggling_contracts = smuggling_contract_manager
+        self.politics_manager = politics_manager
+
+        # Black market mode — resolved dynamically in on_enter()
+        self._black_market_name: Optional[str] = black_market_name
+        self._black_market_mode: bool = False
+        self._has_black_market: bool = black_market_name is not None
 
         # UI state
         self.selected_commodity: Optional[str] = None
@@ -77,9 +100,9 @@ class TradingView(BaseView):
         self.next_state: Optional[GameState] = None
 
         # Fonts
-        self.title_font = pygame.font.Font(None, 32)
-        self.header_font = pygame.font.Font(None, 24)
-        self.info_font = pygame.font.Font(None, 20)
+        self.title_font = FontCache.get(32)
+        self.header_font = FontCache.get(24)
+        self.info_font = FontCache.get(20)
 
         # Table widgets (created in _create_ui, rendered manually)
         self.market_table: Optional[TableWidget] = None
@@ -99,6 +122,11 @@ class TradingView(BaseView):
         self.activity_buttons: dict[str, pygame_gui.elements.UIButton] = {}
         self.talk_buttons: dict[str, pygame_gui.elements.UIButton] = {}
         self.pending_npc_id: Optional[str] = None
+        self.black_market_button: Optional[pygame_gui.elements.UIButton] = None
+        self.hide_cargo_button: Optional[pygame_gui.elements.UIButton] = None
+        self.retrieve_cargo_button: Optional[pygame_gui.elements.UIButton] = None
+        self._contract_buttons: list[pygame_gui.elements.UIButton] = []
+        self._displayed_contracts: list = []  # SmugglingContract list
 
         # Animated background (dimmed)
         self.background = AnimatedBackground("trade_routes", WINDOW_WIDTH, WINDOW_HEIGHT, seed=30)
@@ -106,16 +134,36 @@ class TradingView(BaseView):
         self._bg_dim.fill((0, 0, 0))
         self._bg_dim.set_alpha(120)
 
+        # Trade reputation: once per landing
+        self._trade_rep_awarded: bool = False
+
+        # Sprite manager for commodity icons
+        self._sprite_mgr = get_sprite_manager()
+        self._commodity_icons: dict[str, Optional[pygame.Surface]] = {}
+
         # Particles
         self.particles = ParticlePool(100)
 
     def on_enter(self) -> None:
         super().on_enter()
+        self._trade_rep_awarded = False
         logger.info(f"Entered trading at {self.player.current_system_id}")
 
         current_system = self.systems[self.player.current_system_id]
         all_commodities = list(self.commodities.values())
         self.market = Market(current_system, all_commodities, self.player.game_day)
+
+        # Resolve black market access for current system
+        from spacegame.models.smuggling import get_black_market_name
+
+        system_id = self.player.current_system_id
+        if self.player.has_black_market_access(system_id):
+            self._black_market_name = get_black_market_name(system_id)
+            self._has_black_market = self._black_market_name is not None
+        else:
+            self._black_market_name = None
+            self._has_black_market = False
+        self._black_market_mode = False
 
         self._create_ui()
 
@@ -178,47 +226,34 @@ class TradingView(BaseView):
             relative_rect=pygame.Rect(540, 408, 100, 36), text="REST", manager=self.ui_manager
         )
 
+        # Activity and NPC buttons have moved to StationHubView
         self.activity_buttons.clear()
-        btn_y = 452
-        if self.activity_registry:
-            current_system = self.systems[self.player.current_system_id]
-            activities = self.activity_registry.get_activities_for_system(
-                self.player.current_system_id, current_system.type
-            )
-            for activity in activities:
-                btn = pygame_gui.elements.UIButton(
-                    relative_rect=pygame.Rect(540, btn_y, 100, 35),
-                    text=activity.button_text,
-                    manager=self.ui_manager,
-                )
-                self.activity_buttons[activity.id] = btn
-                btn_y += 40
-        elif self.player.current_system_id == "breakstone":
-            self.mine_button = pygame_gui.elements.UIButton(
-                relative_rect=pygame.Rect(540, btn_y, 100, 35), text="MINE", manager=self.ui_manager
-            )
-            btn_y += 40
-
-        # NPC talk buttons
-        from spacegame.data_loader import get_data_loader
-
-        dl = get_data_loader()
         self.talk_buttons.clear()
-        npcs_here = dl.get_npcs_at_system(self.player.current_system_id)
-        for npc in npcs_here:
-            # Truncate name to fit button
-            label = f"TALK: {npc.name}"
-            if len(label) > 14:
-                label = f"TALK: {npc.name.split()[0]}"
-            btn = pygame_gui.elements.UIButton(
-                relative_rect=pygame.Rect(540, btn_y, 100, 35), text=label, manager=self.ui_manager
-            )
-            self.talk_buttons[npc.id] = btn
-            btn_y += 40
 
         self.back_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(540, btn_y, 100, 40), text="BACK", manager=self.ui_manager
+            relative_rect=pygame.Rect(540, 452, 100, 40), text="BACK", manager=self.ui_manager
         )
+
+        # Hidden compartment transfer buttons (when upgrade installed)
+        if self.player.hidden_compartment:
+            self.hide_cargo_button = pygame_gui.elements.UIButton(
+                relative_rect=pygame.Rect(WINDOW_WIDTH - 420, 510, 95, 28),
+                text="HIDE \u2192",
+                manager=self.ui_manager,
+            )
+            self.retrieve_cargo_button = pygame_gui.elements.UIButton(
+                relative_rect=pygame.Rect(WINDOW_WIDTH - 320, 510, 95, 28),
+                text="\u2190 RETRIEVE",
+                manager=self.ui_manager,
+            )
+
+        # Black market toggle (only shown when player has access)
+        if self._has_black_market:
+            self.black_market_button = pygame_gui.elements.UIButton(
+                relative_rect=pygame.Rect(540, 496, 100, 36),
+                text="BLACK MKT",
+                manager=self.ui_manager,
+            )
 
     def _destroy_ui(self) -> None:
         # Tables are plain objects — no .kill() needed
@@ -235,6 +270,9 @@ class TradingView(BaseView):
             self.rest_button,
             self.mine_button,
             self.back_button,
+            self.black_market_button,
+            self.hide_cargo_button,
+            self.retrieve_cargo_button,
         ]:
             if elem:
                 elem.kill()
@@ -244,25 +282,52 @@ class TradingView(BaseView):
         for btn in self.talk_buttons.values():
             btn.kill()
         self.talk_buttons.clear()
+        for btn in self._contract_buttons:
+            btn.kill()
+        self._contract_buttons.clear()
 
     def _build_market_rows(self) -> tuple[list[list[str | tuple[str, tuple]]], list[str]]:
         """Build market table rows and parallel commodity ID list."""
+        from spacegame.models.commodity import Legality
+
         rows: list[list[str | tuple[str, tuple]]] = []
         ids: list[str] = []
+        system_id = self.player.current_system_id
 
         for commodity_id, commodity in self.commodities.items():
-            price = self.market.get_price(commodity_id)
-            report = self.market.get_market_report(commodity_id)
-            trend = report["trend"]
+            # Skip quest items (base_price=0) from market display
+            if commodity.base_price <= 0:
+                continue
+            if self._black_market_mode:
+                price = self._get_black_market_buy_price(commodity_id)
+            else:
+                price = self.market.get_price(commodity_id)
             weight = commodity.volume_per_unit
-            trend_color = _TREND_COLORS.get(trend, Colors.TEXT_SECONDARY)
+
+            # Prefer price history trend over supply/demand trend
+            if self.price_history:
+                history_trend = self.price_history.get_trend(system_id, commodity_id)
+                trend_text, trend_color = _HISTORY_TREND_DISPLAY.get(
+                    history_trend, ("- Stable", Colors.TEXT_SECONDARY)
+                )
+            else:
+                report = self.market.get_market_report(commodity_id)
+                trend_text = report["trend"]
+                trend_color = _TREND_COLORS.get(trend_text, Colors.TEXT_SECONDARY)
+
+            # Legality indicator
+            name_display: str | tuple[str, tuple] = commodity.name
+            if commodity.legality == Legality.RESTRICTED:
+                name_display = (f"{commodity.name} [R]", Colors.YELLOW)
+            elif commodity.legality == Legality.ILLEGAL:
+                name_display = (f"{commodity.name} [!]", Colors.RED)
 
             rows.append(
                 [
-                    commodity.name,
+                    name_display,
                     f"{price:,} CR",
                     str(weight),
-                    (trend, trend_color),
+                    (trend_text, trend_color),
                 ]
             )
             ids.append(commodity_id)
@@ -293,16 +358,29 @@ class TradingView(BaseView):
 
         return rows, ids
 
+    def _get_commodity_icon(self, commodity_id: str) -> Optional[pygame.Surface]:
+        """Get a cached commodity icon surface, scaled to fit table rows."""
+        if commodity_id not in self._commodity_icons:
+            # Scale=1 gives native 16x16, which fits nicely in 26px row height
+            self._commodity_icons[commodity_id] = self._sprite_mgr.get_commodity_icon(
+                commodity_id, scale=1
+            )
+        return self._commodity_icons.get(commodity_id)
+
+    def _build_row_icons(self, commodity_ids: list[str]) -> list[Optional[pygame.Surface]]:
+        """Build icon list matching row order for table widget."""
+        return [self._get_commodity_icon(cid) for cid in commodity_ids]
+
     def _refresh_tables(self) -> None:
         """Rebuild data for both tables."""
         if self.market_table:
             rows, ids = self._build_market_rows()
-            self.market_table.set_data(rows)
+            self.market_table.set_data(rows, row_icons=self._build_row_icons(ids))
             self._market_commodity_ids = ids
 
         if self.cargo_table:
             rows, ids = self._build_cargo_rows()
-            self.cargo_table.set_data(rows)
+            self.cargo_table.set_data(rows, row_icons=self._build_row_icons(ids))
             self._cargo_commodity_ids = ids
 
     def _get_selected_market_commodity(self) -> Optional[str]:
@@ -353,8 +431,12 @@ class TradingView(BaseView):
         return max(1, int(adjusted))
 
     def _apply_trade_reputation(self) -> None:
-        """Apply reputation changes after a successful trade."""
-        from spacegame.config import REP_PER_TRADE, REP_RIVAL_PENALTY_RATIO
+        """Apply reputation change once per landing after a successful trade."""
+        if self._trade_rep_awarded:
+            return
+        self._trade_rep_awarded = True
+
+        from spacegame.config import REP_PER_TRADE
         from spacegame.data_loader import get_data_loader
 
         faction_id = self.player.get_faction_for_system(self.player.current_system_id)
@@ -365,28 +447,178 @@ class TradingView(BaseView):
         rep_bonus = int(self.player.progression.get_bonus("reputation_gain_bonus"))
         rep_gain = REP_PER_TRADE + rep_bonus
 
-        # Gain rep with current system's faction
-        self.player.modify_reputation(faction_id, rep_gain)
         dl = get_data_loader()
-        faction = dl.get_faction(faction_id)
-        if faction:
-            self._show_message(f"+{rep_gain} {faction.name}")
 
-            # Lose rep with rival faction
-            if faction.rivalry:
-                rival_penalty = -int(rep_gain * REP_RIVAL_PENALTY_RATIO)
-                if rival_penalty != 0:
-                    self.player.modify_reputation(faction.rivalry, rival_penalty)
-                    rival = dl.get_faction(faction.rivalry)
-                    if rival:
-                        self._show_message(f"{rival_penalty} {rival.name}")
+        if self.politics_manager:
+            # Centralized spillover handles rival penalty
+            changes = self.politics_manager.apply_reputation_with_spillover(
+                self.player, faction_id, rep_gain
+            )
+            for fid, amt in changes:
+                faction = dl.get_faction(fid)
+                fname = faction.name if faction else fid
+                sign = "+" if amt > 0 else ""
+                self._show_message(f"{sign}{amt} {fname}")
+        else:
+            # Fallback: direct reputation change (no spillover)
+            self.player.modify_reputation(faction_id, rep_gain)
+            faction = dl.get_faction(faction_id)
+            if faction:
+                self._show_message(f"+{rep_gain} {faction.name}")
 
     def _has_trade_permit(self) -> bool:
         """Check if the player has a trade permit for the current system's faction."""
+        if self._black_market_mode:
+            return True  # Black market bypasses trade permits
         faction_id = self.player.get_faction_for_system(self.player.current_system_id)
         if not faction_id:
             return True  # Unassigned system — no permit needed
         return self.player.has_trade_permit(faction_id)
+
+    def _toggle_black_market_mode(self) -> None:
+        """Toggle between normal trading and black market mode."""
+        self._black_market_mode = not self._black_market_mode
+        if self.black_market_button:
+            self.black_market_button.set_text(
+                "NORMAL" if self._black_market_mode else "BLACK MKT"
+            )
+        self._refresh_tables()
+        self._refresh_contract_buttons()
+
+    def _refresh_contract_buttons(self) -> None:
+        """Rebuild smuggling contract accept buttons for black market mode."""
+        # Clear old buttons
+        for btn in self._contract_buttons:
+            btn.kill()
+        self._contract_buttons.clear()
+        self._displayed_contracts.clear()
+
+        if not self._black_market_mode or not self.smuggling_contracts:
+            return
+
+        system_id = self.player.current_system_id
+
+        # Generate contracts if needed
+        self.smuggling_contracts.generate_contracts(
+            system_id, self.player.game_day, self.player.progression.level
+        )
+
+        available = self.smuggling_contracts.get_available_contracts(system_id)
+        active = self.smuggling_contracts.get_active_contracts()
+
+        # Show available contracts as accept buttons
+        base_y = 540
+        for i, contract in enumerate(available[:3]):
+            already_active = contract.id in [c.id for c in active]
+            label = (
+                f"{contract.commodity_id}: {contract.quantity}x → "
+                f"{contract.destination_system} | {contract.payment} CR"
+            )
+            if already_active:
+                label = f"[ACTIVE] {label}"
+            btn = pygame_gui.elements.UIButton(
+                relative_rect=pygame.Rect(20, base_y + i * 30, 500, 26),
+                text=label,
+                manager=self.ui_manager,
+            )
+            if already_active:
+                btn.disable()
+            self._contract_buttons.append(btn)
+            self._displayed_contracts.append(contract)
+
+    def _handle_contract_accept(self, button_index: int) -> None:
+        """Accept a smuggling contract."""
+        if not self.smuggling_contracts:
+            return
+        if button_index >= len(self._displayed_contracts):
+            return
+
+        contract = self._displayed_contracts[button_index]
+        success, msg = self.smuggling_contracts.accept_contract(
+            contract.id, accepted_day=self.player.game_day
+        )
+        self._show_message(msg if not success else f"Contract accepted: {contract.client_name}")
+        self._refresh_contract_buttons()
+
+    def _execute_hide_cargo(self) -> None:
+        """Move selected cargo to hidden hold."""
+        if not self.player.hidden_compartment:
+            return
+        commodity_id = self._get_selected_cargo_commodity()
+        if not commodity_id:
+            self._show_message("Select cargo to hide")
+            return
+        try:
+            quantity = int(self.quantity_input.get_text())
+            if quantity <= 0:
+                raise ValueError()
+        except ValueError:
+            quantity = 1
+
+        # Check player has enough in main hold
+        main_qty = self.player.ship.get_cargo_quantity(commodity_id)
+        quantity = min(quantity, main_qty)
+        if quantity <= 0:
+            self._show_message("No cargo to hide")
+            return
+
+        success, msg = self.player.hidden_compartment.add_to_hidden(commodity_id, quantity)
+        if success:
+            self.player.ship.remove_cargo(commodity_id, quantity)
+            self._refresh_tables()
+        self._show_message(msg)
+
+    def _execute_retrieve_cargo(self) -> None:
+        """Move cargo from hidden hold back to main hold."""
+        if not self.player.hidden_compartment:
+            return
+        # Find first hidden cargo item (or use selected)
+        commodity_id = self._get_selected_cargo_commodity()
+        if not commodity_id and self.player.hidden_compartment.hidden_cargo:
+            commodity_id = next(iter(self.player.hidden_compartment.hidden_cargo))
+        if not commodity_id:
+            self._show_message("No hidden cargo to retrieve")
+            return
+        try:
+            quantity = int(self.quantity_input.get_text())
+            if quantity <= 0:
+                raise ValueError()
+        except ValueError:
+            quantity = 1
+
+        hidden_qty = self.player.hidden_compartment.hidden_cargo.get(commodity_id, 0)
+        quantity = min(quantity, hidden_qty)
+        if quantity <= 0:
+            self._show_message(f"No {commodity_id} in hidden hold")
+            return
+
+        success, msg = self.player.hidden_compartment.remove_from_hidden(commodity_id, quantity)
+        if success:
+            self.player.ship.add_cargo(commodity_id, quantity, 0)
+            self._refresh_tables()
+        self._show_message(msg)
+
+    def _get_black_market_buy_price(self, commodity_id: str) -> int:
+        """Get buy price in black market mode (modifier-based, no tariff)."""
+        from spacegame.models.smuggling import get_black_market_price_modifier
+
+        base_price = self.market.get_price(commodity_id)
+        commodity = self.commodities.get(commodity_id)
+        if not commodity:
+            return base_price
+        modifier = get_black_market_price_modifier(commodity.legality)
+        return max(1, int(base_price * (1.0 + modifier)))
+
+    def _get_black_market_sell_price(self, commodity_id: str) -> int:
+        """Get sell price in black market mode (modifier-based, no tariff)."""
+        from spacegame.models.smuggling import get_black_market_price_modifier
+
+        base_price = self.market.get_sell_price(commodity_id)
+        commodity = self.commodities.get(commodity_id)
+        if not commodity:
+            return base_price
+        modifier = get_black_market_price_modifier(commodity.legality)
+        return max(1, int(base_price * (1.0 + modifier)))
 
     def _execute_buy(self) -> None:
         if not self._has_trade_permit():
@@ -406,7 +638,10 @@ class TradingView(BaseView):
             self._show_message("Enter a valid quantity to buy")
             return
 
-        price_per_unit = self._get_adjusted_buy_price(commodity_id, quantity)
+        if self._black_market_mode:
+            price_per_unit = self._get_black_market_buy_price(commodity_id)
+        else:
+            price_per_unit = self._get_adjusted_buy_price(commodity_id, quantity)
         commodity_volumes = {c.id: c.volume_per_unit for c in self.commodities.values()}
 
         success, msg = self.player.buy_commodity(
@@ -415,15 +650,18 @@ class TradingView(BaseView):
         self._show_message(msg)
 
         if success:
+            get_audio_manager().play_sfx("trade_buy")
             self.particles.emit(WINDOW_WIDTH // 2, WINDOW_HEIGHT - 50, COLLECT_SPARKLE)
             from spacegame.config import XP_PER_TRADE
 
             xp_msgs = self.player.progression.add_xp(XP_PER_TRADE)
             for m in xp_msgs:
                 self._show_message(m)
-            self._apply_trade_reputation()
+            if not self._black_market_mode:
+                self._apply_trade_reputation()
             self._refresh_tables()
         else:
+            get_audio_manager().play_sfx("trade_fail")
             self.particles.emit(WINDOW_WIDTH // 2, WINDOW_HEIGHT - 50, FAIL_FLASH)
 
     def _execute_sell(self) -> None:
@@ -444,20 +682,26 @@ class TradingView(BaseView):
             self._show_message("Enter a valid quantity to sell")
             return
 
-        price_per_unit = self._get_adjusted_sell_price(commodity_id)
+        if self._black_market_mode:
+            price_per_unit = self._get_black_market_sell_price(commodity_id)
+        else:
+            price_per_unit = self._get_adjusted_sell_price(commodity_id)
         success, msg = self.player.sell_commodity(commodity_id, quantity, price_per_unit)
         self._show_message(msg)
 
         if success:
+            get_audio_manager().play_sfx("trade_sell")
             self.particles.emit(WINDOW_WIDTH // 2, WINDOW_HEIGHT - 50, COLLECT_SPARKLE)
             from spacegame.config import XP_PER_TRADE
 
             xp_msgs = self.player.progression.add_xp(XP_PER_TRADE)
             for m in xp_msgs:
                 self._show_message(m)
-            self._apply_trade_reputation()
+            if not self._black_market_mode:
+                self._apply_trade_reputation()
             self._refresh_tables()
         else:
+            get_audio_manager().play_sfx("trade_fail")
             self.particles.emit(WINDOW_WIDTH // 2, WINDOW_HEIGHT - 50, FAIL_FLASH)
 
     def _execute_buy_max(self) -> None:
@@ -471,7 +715,10 @@ class TradingView(BaseView):
             return
 
         commodity = self.commodities[commodity_id]
-        price_per_unit = self._get_adjusted_buy_price(commodity_id, 10)
+        if self._black_market_mode:
+            price_per_unit = self._get_black_market_buy_price(commodity_id)
+        else:
+            price_per_unit = self._get_adjusted_buy_price(commodity_id, 10)
         if price_per_unit <= 0:
             return
 
@@ -491,26 +738,33 @@ class TradingView(BaseView):
                 self._show_message("Not enough credits")
             else:
                 self._show_message("Not enough cargo space")
+            get_audio_manager().play_sfx("trade_fail")
             self.particles.emit(WINDOW_WIDTH // 2, WINDOW_HEIGHT - 50, FAIL_FLASH)
             return
 
         # Re-calculate price with actual quantity (bulk discount threshold)
-        price_per_unit = self._get_adjusted_buy_price(commodity_id, quantity)
+        if self._black_market_mode:
+            price_per_unit = self._get_black_market_buy_price(commodity_id)
+        else:
+            price_per_unit = self._get_adjusted_buy_price(commodity_id, quantity)
         success, msg = self.player.buy_commodity(
             commodity_id, quantity, price_per_unit, commodity_volumes
         )
         self._show_message(msg)
 
         if success:
+            get_audio_manager().play_sfx("trade_buy")
             self.particles.emit(WINDOW_WIDTH // 2, WINDOW_HEIGHT - 50, COLLECT_SPARKLE)
             from spacegame.config import XP_PER_TRADE
 
             xp_msgs = self.player.progression.add_xp(XP_PER_TRADE)
             for m in xp_msgs:
                 self._show_message(m)
-            self._apply_trade_reputation()
+            if not self._black_market_mode:
+                self._apply_trade_reputation()
             self._refresh_tables()
         else:
+            get_audio_manager().play_sfx("trade_fail")
             self.particles.emit(WINDOW_WIDTH // 2, WINDOW_HEIGHT - 50, FAIL_FLASH)
 
     def _execute_sell_max(self) -> None:
@@ -529,7 +783,14 @@ class TradingView(BaseView):
         self._show_message(msg)
 
         if success:
+            get_audio_manager().play_sfx("trade_sell")
             self.particles.emit(WINDOW_WIDTH // 2, WINDOW_HEIGHT - 50, COLLECT_SPARKLE)
+            from spacegame.config import XP_PER_TRADE
+
+            xp_msgs = self.player.progression.add_xp(XP_PER_TRADE)
+            for m in xp_msgs:
+                self._show_message(m)
+            self._apply_trade_reputation()
             self._refresh_tables()
 
     def _execute_refuel(self) -> None:
@@ -548,6 +809,8 @@ class TradingView(BaseView):
 
         fuel_price = self.market.get_price("fuel")
         success, msg = self.player.refuel_ship(quantity, fuel_price)
+        if success:
+            get_audio_manager().play_sfx("trade_refuel")
         self._show_message(msg)
 
     def _execute_rest(self) -> None:
@@ -590,21 +853,18 @@ class TradingView(BaseView):
                 logger.info("Opening mining mini-game")
                 self.next_state = GameState.MINING
             elif event.ui_element == self.back_button:
-                self.next_state = GameState.GALAXY_MAP
+                self.next_state = GameState.STATION_HUB
+            elif event.ui_element == self.black_market_button:
+                self._toggle_black_market_mode()
+            elif event.ui_element == self.hide_cargo_button:
+                self._execute_hide_cargo()
+            elif event.ui_element == self.retrieve_cargo_button:
+                self._execute_retrieve_cargo()
             else:
-                for activity_id, btn in self.activity_buttons.items():
+                # Check contract accept buttons
+                for i, btn in enumerate(self._contract_buttons):
                     if event.ui_element == btn:
-                        if self.activity_registry:
-                            activity = self.activity_registry.get_activity(activity_id)
-                            if activity:
-                                logger.info(f"Opening activity: {activity.name}")
-                                self.next_state = activity.game_state
-                        break
-                for npc_id, btn in self.talk_buttons.items():
-                    if event.ui_element == btn:
-                        logger.info(f"Opening dialogue with NPC: {npc_id}")
-                        self.pending_npc_id = npc_id
-                        self.next_state = GameState.DIALOGUE
+                        self._handle_contract_accept(i)
                         break
 
     def update(self, dt: float) -> None:
@@ -621,9 +881,13 @@ class TradingView(BaseView):
         current_system = self.systems[self.player.current_system_id]
 
         # Title
-        title = self.title_font.render(
-            f"TRADING - {current_system.name}", True, Colors.TEXT_HIGHLIGHT
-        )
+        if self._black_market_mode and self._black_market_name:
+            title_text = f"{self._black_market_name} - {current_system.name}"
+            title_color = Colors.GOLD  # Gold for black market
+        else:
+            title_text = f"TRADING - {current_system.name}"
+            title_color = Colors.TEXT_HIGHLIGHT
+        title = self.title_font.render(title_text, True, title_color)
         screen.blit(title, (20, 20))
 
         # Player stats
@@ -637,12 +901,13 @@ class TradingView(BaseView):
             if faction:
                 tier = self.player.get_reputation_tier(faction_id)
                 faction_info = f" | {faction.name}: {tier.value}"
-        stats_text = [
-            f"Credits: {self.player.credits:,} CR | Day: {self.player.game_day} | Ship: {self.player.ship.name}{faction_info}",
-        ]
-        for text in stats_text:
-            surf = self.info_font.render(text, True, Colors.TEXT)
-            screen.blit(surf, (20, stats_y))
+        stats_line = f"Credits: {self.player.credits:,} CR | Day: {self.player.game_day} | Ship: {self.player.ship.name}{faction_info}"
+        surf = self.info_font.render(stats_line, True, Colors.TEXT)
+        # Truncate if too wide for screen
+        if surf.get_width() > WINDOW_WIDTH - 40:
+            stats_line = f"Credits: {self.player.credits:,} CR | Day: {self.player.game_day} | {self.player.ship.name}"
+            surf = self.info_font.render(stats_line, True, Colors.TEXT)
+        screen.blit(surf, (20, stats_y))
 
         # Active event banner for current system
         event = self.active_events.get(self.player.current_system_id)
@@ -689,29 +954,45 @@ class TradingView(BaseView):
         bar_w = 400
         bar_h = 8
         fill_pct = used_cargo / self.player.ship.max_cargo if self.player.ship.max_cargo > 0 else 0
-        pygame.draw.rect(screen, (30, 30, 45), (bar_x, bar_y, bar_w, bar_h))
-        fill_w = int(bar_w * fill_pct)
         fill_color = Colors.TEXT_HIGHLIGHT if fill_pct < 0.9 else Colors.RED
-        pygame.draw.rect(screen, fill_color, (bar_x, bar_y, fill_w, bar_h))
-        pygame.draw.rect(screen, Colors.UI_BORDER, (bar_x, bar_y, bar_w, bar_h), 1)
+        draw_bar(
+            screen, bar_x, bar_y, bar_w, bar_h,
+            used_cargo, self.player.ship.max_cargo, fill_color,
+            show_value=False,
+        )
+
+        # Hidden compartment status (when upgrade installed)
+        if self.player.hidden_compartment:
+            hc = self.player.hidden_compartment
+            hidden_text = f"Hidden Hold: {hc.hidden_used}/{hc.hidden_capacity}"
+            hidden_surf = self.info_font.render(hidden_text, True, (180, 140, 200))
+            screen.blit(hidden_surf, (WINDOW_WIDTH - 220, bar_y + 14))
 
         # Action label
         action_label = self.header_font.render("Quantity:", True, Colors.TEXT)
         screen.blit(action_label, (540, 120))
 
-        # Trading tips
+        # Trading tips (normal) or active contracts (black market)
         tip_y = 520
-        tip_lines = [
-            "TRADING TIPS:",
-            "- Buy LOW and Sell HIGH",
-            "- Prices change when you TRAVEL or REST",
-            f"- REST here: {current_system.rest_cost} CR (updates market)",
-            "- Use quantity input for partial refueling",
-        ]
-        for i, tip in enumerate(tip_lines):
-            color = Colors.TEXT_HIGHLIGHT if i == 0 else Colors.TEXT_SECONDARY
-            tip_surf = self.info_font.render(tip, True, color)
-            screen.blit(tip_surf, (20, tip_y + i * 20))
+        if self._black_market_mode and self.smuggling_contracts:
+            active = self.smuggling_contracts.get_active_contracts()
+            header = self.header_font.render(
+                f"SMUGGLING CONTRACTS ({len(active)}/3 active)", True, Colors.GOLD
+            )
+            screen.blit(header, (20, tip_y))
+            # Contract list buttons are rendered by pygame_gui below the header
+        else:
+            tip_lines = [
+                "TRADING TIPS:",
+                "- Buy LOW and Sell HIGH",
+                "- Prices change when you TRAVEL or REST",
+                f"- REST here: {current_system.rest_cost} CR (updates market)",
+                "- Use quantity input for partial refueling",
+            ]
+            for i, tip in enumerate(tip_lines):
+                color = Colors.TEXT_HIGHLIGHT if i == 0 else Colors.TEXT_SECONDARY
+                tip_surf = self.info_font.render(tip, True, color)
+                screen.blit(tip_surf, (20, tip_y + i * 20))
 
         # Particles
         self.particles.render(screen)

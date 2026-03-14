@@ -20,7 +20,7 @@ class TestPlayerProgression:
         assert prog.xp == 0
         assert prog.level == 1
         assert prog.skill_points == 0
-        assert len(prog.skills) == 23  # 5 trading + 5 gathering + 8 mining + 5 leadership
+        assert len(prog.skills) == 32  # 5 trading + 5 gathering + 8 mining + 5 leadership + 3 social + 6 ground
 
     def test_add_xp(self):
         prog = PlayerProgression()
@@ -291,3 +291,72 @@ class TestLeadershipTree:
         success, msg = prog.level_up_skill("diplomatic_relations")
         assert not success
         assert "Requires" in msg
+
+
+class TestSocialTree:
+    """Tests for the Social skill tree."""
+
+    def test_social_tree_type_exists(self):
+        assert SkillTreeType.SOCIAL.value == "social"
+
+    def test_social_skills_exist(self):
+        prog = PlayerProgression()
+        expected = ["silver_tongue", "commanding_presence", "keen_insight"]
+        for skill_id in expected:
+            assert skill_id in prog.skills, f"{skill_id} missing from skills"
+
+    def test_silver_tongue_is_root(self):
+        prog = PlayerProgression()
+        skill = prog.skills["silver_tongue"]
+        assert skill.prerequisite_id is None
+        assert skill.max_level == 2
+        assert skill.tree == SkillTreeType.SOCIAL
+        assert skill.bonus_type == "persuasion_bonus"
+
+    def test_commanding_presence_prereq(self):
+        prog = PlayerProgression()
+        skill = prog.skills["commanding_presence"]
+        assert skill.prerequisite_id == "silver_tongue"
+        assert skill.max_level == 2
+        assert skill.bonus_type == "intimidation_bonus"
+
+    def test_keen_insight_prereq(self):
+        prog = PlayerProgression()
+        skill = prog.skills["keen_insight"]
+        assert skill.prerequisite_id == "silver_tongue"
+        assert skill.max_level == 2
+        assert skill.bonus_type == "observation_bonus"
+
+    def test_social_tree_count(self):
+        prog = PlayerProgression()
+        social_skills = prog.get_skill_tree(SkillTreeType.SOCIAL)
+        assert len(social_skills) == 3
+
+    def test_social_skill_bonuses(self):
+        prog = PlayerProgression()
+        prog.add_xp(5200)  # Max level for plenty of points
+        prog.level_up_skill("silver_tongue")
+        prog.level_up_skill("silver_tongue")
+        assert prog.get_bonus("persuasion_bonus") == pytest.approx(2.0)
+
+    def test_social_prereq_blocks(self):
+        """Cannot invest in commanding_presence without silver_tongue."""
+        prog = PlayerProgression()
+        prog.add_xp(5200)
+        success, msg = prog.level_up_skill("commanding_presence")
+        assert not success
+        assert "Requires" in msg
+
+    def test_serialization_backward_compatible(self):
+        """Old saves without social skills should load with level 0 defaults."""
+        data = {
+            "xp": 500,
+            "level": 4,
+            "skill_points": 3,
+            "skill_points_spent": 1,
+            "skills": {"negotiator": 1},
+        }
+        prog = PlayerProgression.from_dict(data)
+        assert prog.skills["silver_tongue"].current_level == 0
+        assert prog.skills["commanding_presence"].current_level == 0
+        assert prog.skills["keen_insight"].current_level == 0

@@ -1,0 +1,221 @@
+"""
+Character creation view for attribute allocation.
+
+Shown once after name input during new game setup. Player distributes
+5 attribute points across the 5 character attributes.
+"""
+
+import pygame
+import pygame_gui
+from typing import Optional
+
+from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState
+from spacegame.views.base_view import BaseView
+from spacegame.models.attributes import (
+    AttributeId,
+    AttributeSheet,
+    ATTRIBUTE_DEFINITIONS,
+)
+from spacegame.engine.backgrounds import AnimatedBackground
+from spacegame.engine.fonts import FontCache
+from spacegame.utils.logger import logger
+
+
+class CharacterCreationView(BaseView):
+    """Attribute allocation screen for new game character creation."""
+
+    def __init__(
+        self,
+        ui_manager: pygame_gui.UIManager,
+        attribute_sheet: AttributeSheet,
+    ) -> None:
+        super().__init__()
+        self.ui_manager = ui_manager
+        self.attribute_sheet = attribute_sheet
+        self.next_state: Optional[GameState] = None
+
+        # Fonts
+        self.title_font = FontCache.get(48)
+        self.subtitle_font = FontCache.get(24)
+        self.attr_font = FontCache.get(28)
+        self.desc_font = FontCache.get(20)
+        self.value_font = FontCache.get(36)
+        self.points_font = FontCache.get(30)
+
+        # UI elements
+        self.plus_buttons: dict[str, pygame_gui.elements.UIButton] = {}
+        self.minus_buttons: dict[str, pygame_gui.elements.UIButton] = {}
+        self.confirm_button: Optional[pygame_gui.elements.UIButton] = None
+
+        # Visual
+        self.background = AnimatedBackground(
+            "deep_space", WINDOW_WIDTH, WINDOW_HEIGHT, seed=42
+        )
+        self._bg_dim = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
+        self._bg_dim.fill((0, 0, 0))
+        self._bg_dim.set_alpha(140)
+
+    def on_enter(self) -> None:
+        super().on_enter()
+        logger.info("Entered character creation view")
+        self._create_ui()
+
+    def on_exit(self) -> None:
+        super().on_exit()
+        self._destroy_ui()
+
+    def _create_ui(self) -> None:
+        cx = WINDOW_WIDTH // 2
+        start_y = 220
+        row_height = 60
+
+        for i, attr in enumerate(AttributeId):
+            y = start_y + i * row_height
+
+            # Minus button
+            self.minus_buttons[attr.value] = pygame_gui.elements.UIButton(
+                relative_rect=pygame.Rect(cx + 80, y, 36, 36),
+                text="-",
+                manager=self.ui_manager,
+            )
+
+            # Plus button
+            self.plus_buttons[attr.value] = pygame_gui.elements.UIButton(
+                relative_rect=pygame.Rect(cx + 160, y, 36, 36),
+                text="+",
+                manager=self.ui_manager,
+            )
+
+        # Confirm button
+        btn_width = 220
+        self.confirm_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(
+                cx - btn_width // 2, start_y + 5 * row_height + 30, btn_width, 45
+            ),
+            text="CONFIRM & BEGIN",
+            manager=self.ui_manager,
+        )
+
+        self._update_button_states()
+
+    def _destroy_ui(self) -> None:
+        for btn in self.plus_buttons.values():
+            btn.kill()
+        for btn in self.minus_buttons.values():
+            btn.kill()
+        if self.confirm_button:
+            self.confirm_button.kill()
+        self.plus_buttons.clear()
+        self.minus_buttons.clear()
+        self.confirm_button = None
+
+    def _update_button_states(self) -> None:
+        has_points = self.attribute_sheet.unspent_points > 0
+
+        for attr in AttributeId:
+            plus_btn = self.plus_buttons.get(attr.value)
+            minus_btn = self.minus_buttons.get(attr.value)
+            val = self.attribute_sheet.get_value(attr.value)
+
+            if plus_btn:
+                if has_points and val < 10:
+                    plus_btn.enable()
+                else:
+                    plus_btn.disable()
+
+            if minus_btn:
+                if val > 1:
+                    minus_btn.enable()
+                else:
+                    minus_btn.disable()
+
+        if self.confirm_button:
+            if self.attribute_sheet.unspent_points == 0:
+                self.confirm_button.enable()
+            else:
+                self.confirm_button.disable()
+
+    def handle_event(self, event: pygame.event.Event) -> None:
+        if not self.active:
+            return
+
+        if event.type == pygame_gui.UI_BUTTON_PRESSED:
+            # Check plus buttons
+            for attr_id, btn in self.plus_buttons.items():
+                if event.ui_element == btn:
+                    self.attribute_sheet.allocate_point(attr_id)
+                    self._update_button_states()
+                    return
+
+            # Check minus buttons
+            for attr_id, btn in self.minus_buttons.items():
+                if event.ui_element == btn:
+                    self.attribute_sheet.deallocate_point(attr_id)
+                    self._update_button_states()
+                    return
+
+            # Confirm button
+            if event.ui_element == self.confirm_button:
+                if self.attribute_sheet.unspent_points == 0:
+                    logger.info(
+                        f"Character creation confirmed: {self.attribute_sheet.get_all_values()}"
+                    )
+                    self.next_state = GameState.GALAXY_MAP
+
+    def update(self, dt: float) -> None:
+        self.background.update(dt)
+
+    def render(self, screen: pygame.Surface) -> None:
+        self.background.render(screen)
+        screen.blit(self._bg_dim, (0, 0))
+
+        cx = WINDOW_WIDTH // 2
+
+        # Title
+        title_surf = self.title_font.render(
+            "ALLOCATE ATTRIBUTES", True, Colors.ATTR_HIGHLIGHT
+        )
+        screen.blit(title_surf, title_surf.get_rect(center=(cx, 100)))
+
+        # Subtitle
+        sub_surf = self.subtitle_font.render(
+            "Distribute 5 points across your attributes. Each starts at 1.",
+            True,
+            Colors.TEXT_SECONDARY,
+        )
+        screen.blit(sub_surf, sub_surf.get_rect(center=(cx, 145)))
+
+        # Points remaining
+        pts = self.attribute_sheet.unspent_points
+        pts_color = Colors.YELLOW if pts > 0 else Colors.SUCCESS
+        pts_surf = self.points_font.render(
+            f"Points Remaining: {pts}", True, pts_color
+        )
+        screen.blit(pts_surf, pts_surf.get_rect(center=(cx, 185)))
+
+        # Attribute rows
+        start_y = 220
+        row_height = 60
+
+        for i, attr in enumerate(AttributeId):
+            y = start_y + i * row_height
+            defn = ATTRIBUTE_DEFINITIONS[attr.value]
+            val = self.attribute_sheet.get_value(attr.value)
+
+            # Attribute name (left-aligned)
+            name_surf = self.attr_font.render(defn["name"], True, Colors.TEXT_HIGHLIGHT)
+            screen.blit(name_surf, (cx - 280, y + 4))
+
+            # Description
+            desc_surf = self.desc_font.render(
+                defn["description"], True, Colors.TEXT_SECONDARY
+            )
+            screen.blit(desc_surf, (cx - 280, y + 28))
+
+            # Value (between minus and plus buttons)
+            val_surf = self.value_font.render(str(val), True, Colors.TEXT)
+            val_rect = val_surf.get_rect(center=(cx + 138, y + 18))
+            screen.blit(val_surf, val_rect)
+
+    def get_next_state(self) -> Optional[GameState]:
+        return self.next_state

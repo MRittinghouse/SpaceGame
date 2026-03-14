@@ -5,10 +5,111 @@ Implements dynamic pricing based on supply/demand, system economy, and random va
 """
 
 import random
+from dataclasses import dataclass, field
 from typing import Dict, List, Optional
 from spacegame.models.commodity import Commodity
 from spacegame.models.system import StarSystem
 from spacegame.models.event import MarketEvent
+
+
+@dataclass
+class PriceHistory:
+    """Tracks per-system, per-commodity price history over recent days.
+
+    Used to show price trend indicators in the trading view.
+    """
+
+    _history: dict[str, dict[str, list[tuple[int, int]]]] = field(
+        default_factory=dict
+    )
+    max_days: int = 7
+
+    def record(self, system_id: str, commodity_id: str, day: int, price: int) -> None:
+        """Record a price data point.
+
+        Args:
+            system_id: System where the price was observed.
+            commodity_id: Commodity being tracked.
+            day: Game day of the observation.
+            price: The observed price.
+        """
+        if system_id not in self._history:
+            self._history[system_id] = {}
+        if commodity_id not in self._history[system_id]:
+            self._history[system_id][commodity_id] = []
+
+        entries = self._history[system_id][commodity_id]
+        entries.append((day, price))
+
+        # Trim to max_days most recent
+        if len(entries) > self.max_days:
+            self._history[system_id][commodity_id] = entries[-self.max_days:]
+
+    def get_history(
+        self, system_id: str, commodity_id: str
+    ) -> list[tuple[int, int]]:
+        """Get price history for a system/commodity pair.
+
+        Args:
+            system_id: System to look up.
+            commodity_id: Commodity to look up.
+
+        Returns:
+            List of (day, price) tuples, oldest first.
+        """
+        return self._history.get(system_id, {}).get(commodity_id, [])
+
+    def get_trend(self, system_id: str, commodity_id: str) -> str:
+        """Determine price trend from recent history.
+
+        Args:
+            system_id: System to analyze.
+            commodity_id: Commodity to analyze.
+
+        Returns:
+            "rising", "falling", or "stable".
+        """
+        entries = self.get_history(system_id, commodity_id)
+        if len(entries) < 2:
+            return "stable"
+
+        first_price = entries[0][1]
+        last_price = entries[-1][1]
+        diff_pct = (last_price - first_price) / max(1, first_price)
+
+        if diff_pct > 0.05:
+            return "rising"
+        elif diff_pct < -0.05:
+            return "falling"
+        return "stable"
+
+    def to_dict(self) -> dict:
+        """Serialize to dictionary."""
+        return {
+            "max_days": self.max_days,
+            "history": self._history,
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "PriceHistory":
+        """Deserialize from dictionary.
+
+        Args:
+            data: Dictionary with max_days and history.
+
+        Returns:
+            PriceHistory instance.
+        """
+        ph = cls(max_days=data.get("max_days", 7))
+        raw = data.get("history", {})
+        # Convert nested lists back to list of tuples
+        for sys_id, commodities in raw.items():
+            ph._history[sys_id] = {}
+            for com_id, entries in commodities.items():
+                ph._history[sys_id][com_id] = [
+                    (e[0], e[1]) for e in entries
+                ]
+        return ph
 
 
 class Market:
@@ -21,6 +122,11 @@ class Market:
     - Random variance
     - Game events (future feature)
     """
+
+    # Player activity impact per unit bought/sold
+    _PLAYER_MODIFIER_PER_UNIT = 0.02
+    _PLAYER_MODIFIER_CAP = 0.30
+    _PLAYER_MODIFIER_DECAY = 0.70  # Retain 70% per day (30% decay)
 
     def __init__(self, system: StarSystem, commodities: List[Commodity], game_day: int = 1):
         """
@@ -36,6 +142,7 @@ class Market:
         self.game_day = game_day
         self._price_cache: Dict[str, int] = {}
         self.active_event: Optional[MarketEvent] = None  # Current market event
+        self._player_supply_demand: Dict[str, float] = {}
         self._generate_prices()
 
     def _generate_prices(self) -> None:
@@ -66,8 +173,11 @@ class Market:
         # Random variance (small fluctuation)
         random_mod = self._get_random_variance(commodity)
 
+        # Player activity modifier
+        player_mod = self._player_supply_demand.get(commodity.id, 0.0)
+
         # Calculate base final price
-        total_modifier = 1.0 + supply_demand_mod + random_mod
+        total_modifier = 1.0 + supply_demand_mod + random_mod + player_mod
         final_price = int(base_price * total_modifier)
 
         # Apply event multiplier if active event affects this commodity
@@ -185,7 +295,10 @@ class Market:
         base_price = commodity.base_price
 
         # Calculate how current price compares to base
-        price_diff_pct = ((current_price - base_price) / base_price) * 100
+        if base_price > 0:
+            price_diff_pct = ((current_price - base_price) / base_price) * 100
+        else:
+            price_diff_pct = 0.0
 
         # Determine trend
         if price_diff_pct < -15:
@@ -222,17 +335,53 @@ class Market:
             "is_consumed_here": is_consumed,
         }
 
+    def record_buy(self, commodity_id: str, quantity: int) -> None:
+        """Record player buying, increasing demand pressure.
+
+        Args:
+            commodity_id: Commodity bought.
+            quantity: Amount purchased.
+        """
+        current = self._player_supply_demand.get(commodity_id, 0.0)
+        new_mod = current + quantity * self._PLAYER_MODIFIER_PER_UNIT
+        self._player_supply_demand[commodity_id] = min(
+            new_mod, self._PLAYER_MODIFIER_CAP
+        )
+
+    def record_sell(self, commodity_id: str, quantity: int) -> None:
+        """Record player selling, increasing supply pressure.
+
+        Args:
+            commodity_id: Commodity sold.
+            quantity: Amount sold.
+        """
+        current = self._player_supply_demand.get(commodity_id, 0.0)
+        new_mod = current - quantity * self._PLAYER_MODIFIER_PER_UNIT
+        self._player_supply_demand[commodity_id] = max(
+            new_mod, -self._PLAYER_MODIFIER_CAP
+        )
+
     def update_day(self, new_day: int) -> None:
         """
         Update market for a new game day.
 
         Regenerates prices with new random variance.
+        Decays player supply/demand modifiers.
         Checks if active event has expired.
 
         Args:
             new_day: New game day number
         """
         self.game_day = new_day
+
+        # Decay player supply/demand modifiers
+        expired_keys = []
+        for cid in self._player_supply_demand:
+            self._player_supply_demand[cid] *= self._PLAYER_MODIFIER_DECAY
+            if abs(self._player_supply_demand[cid]) < 0.001:
+                expired_keys.append(cid)
+        for cid in expired_keys:
+            del self._player_supply_demand[cid]
 
         # Clear expired events
         if self.active_event and not self.active_event.is_active(new_day):
@@ -260,3 +409,21 @@ class Market:
         if self.active_event and self.active_event.is_active(self.game_day):
             return self.active_event
         return None
+
+    def to_dict(self) -> dict:
+        """Serialize player-driven supply/demand state.
+
+        Returns:
+            Dictionary with player_supply_demand data.
+        """
+        return {
+            "player_supply_demand": dict(self._player_supply_demand),
+        }
+
+    def load_supply_demand(self, data: dict) -> None:
+        """Restore player supply/demand from saved data.
+
+        Args:
+            data: Dictionary from to_dict().
+        """
+        self._player_supply_demand = dict(data.get("player_supply_demand", {}))

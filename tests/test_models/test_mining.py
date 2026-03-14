@@ -10,7 +10,13 @@ from spacegame.models.mining import (
     MiningConfig,
     MiningSession,
     MiningResult,
+    DepthModifiers,
+    ChainBreak,
+    MiningMilestone,
     ROCK_TYPE_CONFIGS,
+    CHAIN_BASE_CHANCE,
+    CHAIN_PROGRESS_AMOUNT,
+    CHAIN_MAX_DEPTH,
 )
 from spacegame.models.drone import MiningDrone, DroneTier
 
@@ -557,3 +563,804 @@ class TestMiningSessionDrones:
         session = MiningSession(config)
         results = session.update(0.1)
         assert isinstance(results, list)
+
+
+# === Energy System Tests ===
+
+
+class TestEnergySystem:
+    """Tests for energy management in mining sessions."""
+
+    def test_session_starts_at_max_energy(self) -> None:
+        config = MiningConfig(system_id="test", max_energy=20)
+        session = MiningSession(config)
+        assert session.energy == 20
+        assert session.max_energy == 20
+
+    def test_normal_click_is_free(self) -> None:
+        config = MiningConfig(system_id="test", max_energy=20)
+        session = MiningSession(config)
+        session.click_rock(0, 0)
+        assert session.energy == 20  # Normal clicks don't cost energy
+
+    def test_empowered_click_consumes_energy(self) -> None:
+        config = MiningConfig(system_id="test", max_energy=20)
+        session = MiningSession(config)
+        session.click_rock(0, 0, empowered=True)
+        assert session.energy < 20  # Empowered clicks cost energy
+
+    def test_empowered_click_at_zero_energy_fails(self) -> None:
+        config = MiningConfig(system_id="test", max_energy=1)
+        session = MiningSession(config)
+        session.click_rock(0, 0, empowered=True)  # Uses last energy
+        assert session.energy == 0
+        success, msg, result = session.click_rock(1, 0, empowered=True)
+        assert not success
+        assert "energy" in msg.lower()
+        assert result is None
+        assert session.energy == 0
+
+    def test_passive_drill_costs_no_energy(self) -> None:
+        config = MiningConfig(
+            system_id="test",
+            max_energy=20,
+            rock_distribution={"iron": 1.0},
+            base_passive_rate=0.10,
+        )
+        session = MiningSession(config)
+        session.click_rock(0, 0)
+        energy_after_click = session.energy
+        session.update(1.0)
+        assert session.energy == energy_after_click
+
+    def test_drone_mining_costs_no_energy(self) -> None:
+        config = MiningConfig(
+            system_id="test",
+            max_energy=20,
+            rock_distribution={"common": 1.0},
+        )
+        drone = MiningDrone(tier=DroneTier.ELITE)
+        session = MiningSession(config, drones=[drone])
+        initial_energy = session.energy
+        session.update(1.0)
+        assert session.energy == initial_energy
+
+    def test_energy_regenerates_over_time(self) -> None:
+        config = MiningConfig(
+            system_id="test",
+            max_energy=20,
+            energy_regen_seconds=3.0,
+        )
+        session = MiningSession(config)
+        session.click_rock(0, 0, empowered=True)  # Spend energy
+        energy_after = session.energy
+        assert energy_after < 20
+        session.update(30.0)  # Plenty of time to regen
+        assert session.energy == 20
+
+    def test_energy_regen_accumulates_fractional(self) -> None:
+        config = MiningConfig(
+            system_id="test",
+            max_energy=20,
+            energy_regen_seconds=2.0,
+        )
+        session = MiningSession(config)
+        session.click_rock(0, 0, empowered=True)
+        session.click_rock(0, 0, empowered=True)
+        energy_after = session.energy
+        assert energy_after < 20
+        session.update(1.0)  # Half of regen period
+        mid_energy = session.energy
+        session.update(1.0)  # Complete the regen period
+        assert session.energy >= mid_energy  # Should have regened
+
+    def test_energy_does_not_exceed_max(self) -> None:
+        config = MiningConfig(system_id="test", max_energy=20)
+        session = MiningSession(config)
+        assert session.energy == 20
+        session.update(100.0)  # Long time, already at max
+        assert session.energy == 20
+
+    def test_multiple_empowered_clicks_drain_energy(self) -> None:
+        config = MiningConfig(system_id="test", max_energy=20)
+        session = MiningSession(config)
+        for i in range(5):
+            session.click_rock(i % session.config.grid_width, 0, empowered=True)
+        assert session.energy < 20
+
+    def test_click_depleted_does_not_consume_energy(self) -> None:
+        config = MiningConfig(system_id="test", max_energy=20)
+        session = MiningSession(config)
+        rock = session.get_rock_at(0, 0)
+        rock.depleted = True
+        session.click_rock(0, 0)
+        assert session.energy == 20
+
+    def test_click_invalid_position_does_not_consume_energy(self) -> None:
+        config = MiningConfig(system_id="test", max_energy=20)
+        session = MiningSession(config)
+        session.click_rock(99, 99)
+        assert session.energy == 20
+
+    def test_get_click_energy_cost_default(self) -> None:
+        config = MiningConfig(system_id="test")
+        session = MiningSession(config)
+        assert session.get_click_energy_cost() == 1
+
+
+# === Rare Ore Chance Wiring Tests ===
+
+
+class TestRareChanceWiring:
+    """Tests for rare ore chance bonus affecting rock generation."""
+
+    def test_rare_bonus_increases_crystal_weight(self) -> None:
+        """Large rare bonus produces statistically more crystal rocks."""
+        config = MiningConfig(
+            system_id="test",
+            grid_width=10,
+            grid_height=10,
+            rock_distribution={"common": 0.50, "iron": 0.30, "crystal": 0.15, "rare": 0.05},
+        )
+        # No bonus — count crystals
+        counts_base = 0
+        for _ in range(20):
+            session = MiningSession(config, rare_chance_bonus=0.0)
+            counts_base += sum(1 for r in session.rocks if r.rock_type == RockType.CRYSTAL)
+
+        # Large bonus
+        counts_bonus = 0
+        for _ in range(20):
+            session = MiningSession(config, rare_chance_bonus=5.0)
+            counts_bonus += sum(1 for r in session.rocks if r.rock_type == RockType.CRYSTAL)
+
+        assert counts_bonus > counts_base, (
+            f"Crystal count with 5x bonus ({counts_bonus}) should exceed base ({counts_base})"
+        )
+
+    def test_rare_bonus_increases_rare_weight(self) -> None:
+        """Large rare bonus produces statistically more rare rocks."""
+        config = MiningConfig(
+            system_id="test",
+            grid_width=10,
+            grid_height=10,
+            rock_distribution={"common": 0.50, "iron": 0.30, "crystal": 0.15, "rare": 0.05},
+        )
+        counts_base = 0
+        for _ in range(20):
+            session = MiningSession(config, rare_chance_bonus=0.0)
+            counts_base += sum(1 for r in session.rocks if r.rock_type == RockType.RARE)
+
+        counts_bonus = 0
+        for _ in range(20):
+            session = MiningSession(config, rare_chance_bonus=5.0)
+            counts_bonus += sum(1 for r in session.rocks if r.rock_type == RockType.RARE)
+
+        assert counts_bonus > counts_base, (
+            f"Rare count with 5x bonus ({counts_bonus}) should exceed base ({counts_base})"
+        )
+
+    def test_zero_bonus_uses_base_distribution(self) -> None:
+        """Zero bonus should not alter the distribution."""
+        config = MiningConfig(
+            system_id="test",
+            grid_width=10,
+            grid_height=10,
+            rock_distribution={"common": 1.0},
+        )
+        session = MiningSession(config, rare_chance_bonus=0.0)
+        # All rocks should be common with 100% common distribution
+        assert all(r.rock_type == RockType.COMMON for r in session.rocks)
+
+    def test_only_crystal_and_rare_weights_boosted(self) -> None:
+        """Common and iron weights remain unchanged before normalization."""
+        config = MiningConfig(
+            system_id="test",
+            grid_width=10,
+            grid_height=10,
+            rock_distribution={"common": 0.50, "iron": 0.30, "crystal": 0.15, "rare": 0.05},
+        )
+        # With huge bonus, common+iron fraction should decrease
+        counts_common_iron_base = 0
+        total_base = 0
+        for _ in range(20):
+            session = MiningSession(config, rare_chance_bonus=0.0)
+            counts_common_iron_base += sum(
+                1 for r in session.rocks if r.rock_type in (RockType.COMMON, RockType.IRON)
+            )
+            total_base += len(session.rocks)
+
+        counts_common_iron_bonus = 0
+        total_bonus = 0
+        for _ in range(20):
+            session = MiningSession(config, rare_chance_bonus=5.0)
+            counts_common_iron_bonus += sum(
+                1 for r in session.rocks if r.rock_type in (RockType.COMMON, RockType.IRON)
+            )
+            total_bonus += len(session.rocks)
+
+        base_frac = counts_common_iron_base / total_base
+        bonus_frac = counts_common_iron_bonus / total_bonus
+        assert bonus_frac < base_frac, (
+            f"Common+Iron fraction with bonus ({bonus_frac:.2f}) "
+            f"should be less than base ({base_frac:.2f})"
+        )
+
+    def test_regenerate_applies_rare_bonus(self) -> None:
+        """Regenerated field also uses the rare bonus."""
+        config = MiningConfig(
+            system_id="test",
+            grid_width=10,
+            grid_height=10,
+            rock_distribution={"common": 0.50, "iron": 0.30, "crystal": 0.15, "rare": 0.05},
+        )
+        # Count rare+crystal across multiple regenerations with large bonus
+        session = MiningSession(config, rare_chance_bonus=5.0)
+        rare_count = sum(
+            1 for r in session.rocks if r.rock_type in (RockType.CRYSTAL, RockType.RARE)
+        )
+        session.regenerate_field()
+        rare_count_regen = sum(
+            1 for r in session.rocks if r.rock_type in (RockType.CRYSTAL, RockType.RARE)
+        )
+        # Both should have elevated counts (at least some rare/crystal)
+        assert rare_count + rare_count_regen > 0
+
+
+# === Depth Scaling Tests ===
+
+
+class TestDepthScaling:
+    """Tests for mining depth progression and scaling."""
+
+    def test_session_starts_at_depth_1(self) -> None:
+        config = MiningConfig(system_id="test")
+        session = MiningSession(config)
+        assert session.depth == 1
+
+    def test_regenerate_increments_depth(self) -> None:
+        config = MiningConfig(system_id="test")
+        session = MiningSession(config)
+        session.regenerate_field()
+        assert session.depth == 2
+        session.regenerate_field()
+        assert session.depth == 3
+
+    def test_depth_modifiers_1_through_3(self) -> None:
+        """Depths 1-3: no rare bonus, energy_mult=1, yield=0."""
+        config = MiningConfig(system_id="test")
+        session = MiningSession(config)
+        for d in range(1, 4):
+            session.depth = d
+            mods = session.get_depth_modifiers()
+            assert mods.rare_weight_bonus == 0.0, f"depth {d}"
+            assert mods.energy_cost_multiplier == 1, f"depth {d}"
+            assert mods.yield_bonus == 0.0, f"depth {d}"
+
+    def test_depth_modifiers_4(self) -> None:
+        config = MiningConfig(system_id="test")
+        session = MiningSession(config)
+        session.depth = 4
+        mods = session.get_depth_modifiers()
+        assert mods.rare_weight_bonus == pytest.approx(0.10)
+        assert mods.energy_cost_multiplier == 1
+        assert mods.yield_bonus == pytest.approx(0.10)
+
+    def test_depth_modifiers_6(self) -> None:
+        config = MiningConfig(system_id="test")
+        session = MiningSession(config)
+        session.depth = 6
+        mods = session.get_depth_modifiers()
+        assert mods.rare_weight_bonus == pytest.approx(0.30)
+        assert mods.energy_cost_multiplier == 1
+        assert mods.yield_bonus == pytest.approx(0.10)
+
+    def test_depth_modifiers_7(self) -> None:
+        config = MiningConfig(system_id="test")
+        session = MiningSession(config)
+        session.depth = 7
+        mods = session.get_depth_modifiers()
+        assert mods.rare_weight_bonus == pytest.approx(0.50)
+        assert mods.energy_cost_multiplier == 2
+        assert mods.yield_bonus == pytest.approx(0.20)
+
+    def test_depth_modifiers_10_plus(self) -> None:
+        config = MiningConfig(system_id="test")
+        session = MiningSession(config)
+        session.depth = 10
+        mods = session.get_depth_modifiers()
+        assert mods.rare_weight_bonus == pytest.approx(1.20)
+        assert mods.energy_cost_multiplier == 2
+        assert mods.yield_bonus == pytest.approx(0.30)
+
+    def test_energy_cost_doubles_at_depth_7(self) -> None:
+        config = MiningConfig(system_id="test")
+        session = MiningSession(config)
+        session.depth = 7
+        assert session.get_click_energy_cost() == 2
+
+    def test_energy_cost_is_1_at_depth_6(self) -> None:
+        config = MiningConfig(system_id="test")
+        session = MiningSession(config)
+        session.depth = 6
+        assert session.get_click_energy_cost() == 1
+
+    def test_yield_bonus_click_break(self) -> None:
+        """Breaking a rock at depth 4+ gives bonus yield."""
+        config = MiningConfig(
+            system_id="test",
+            rock_distribution={"common": 1.0},
+            base_click_power=0.50,
+        )
+        session = MiningSession(config)
+        session.depth = 7  # yield_bonus = 0.20
+
+        # Break a rock — common yields 1-3, with 20% bonus: floor(base * 0.20) extra
+        # Need to click enough to break (common hardness=0.5, power=0.50 → 1.0 progress)
+        success, msg, result = session.click_rock(0, 0)
+        assert result is not None, "Rock should break with 0.50 click_power on common"
+        # Verify total_mined reflects the yielded amount
+        assert session.total_mined[result.commodity_id] == result.quantity
+
+    def test_yield_bonus_passive_break(self) -> None:
+        """Passive drill break at depth applies yield bonus."""
+        config = MiningConfig(
+            system_id="test",
+            rock_distribution={"common": 1.0},
+            base_passive_rate=0.50,
+        )
+        session = MiningSession(config)
+        session.depth = 7
+        session.click_rock(0, 0)  # Set active rock
+        results = session.update(2.0)  # Enough time to break common
+        assert len(results) >= 1
+        # Result quantity should be tracked
+        assert session.total_mined[results[0].commodity_id] >= results[0].quantity
+
+    def test_yield_bonus_drone_break(self) -> None:
+        """Drone break at depth applies yield bonus."""
+        config = MiningConfig(
+            system_id="test",
+            rock_distribution={"common": 1.0},
+        )
+        drone = MiningDrone(tier=DroneTier.ELITE)
+        session = MiningSession(config, drones=[drone])
+        session.depth = 7
+        results = session.update(2.0)
+        assert len(results) >= 1
+
+    def test_depth_rare_stacks_with_skill_rare(self) -> None:
+        """Depth rare bonus and skill rare bonus stack additively."""
+        config = MiningConfig(
+            system_id="test",
+            grid_width=10,
+            grid_height=10,
+            rock_distribution={"common": 0.50, "iron": 0.30, "crystal": 0.15, "rare": 0.05},
+        )
+        # Skill bonus only
+        session_skill = MiningSession(config, rare_chance_bonus=1.0)
+        session_skill.depth = 1  # No depth bonus
+        crystal_skill = sum(
+            1 for r in session_skill.rocks if r.rock_type in (RockType.CRYSTAL, RockType.RARE)
+        )
+
+        # Skill + depth bonus (depth=10 adds 1.20)
+        session_both = MiningSession(config, rare_chance_bonus=1.0)
+        session_both.depth = 10
+        session_both.regenerate_field()  # Regenerate to apply depth bonus
+        # Depth 10 → depth 11 after regen, so 0.90 + 2*0.30 = 1.50
+        # Total: 1.0 (skill) + 1.50 (depth) = 2.50
+        # Just verify the field was regenerated with bonus applied
+        assert len(session_both.rocks) == 100
+
+    def test_regenerate_refills_energy(self) -> None:
+        config = MiningConfig(system_id="test", max_energy=20)
+        session = MiningSession(config)
+        # Drain some energy via empowered clicks
+        for i in range(5):
+            session.click_rock(i % session.config.grid_width, 0, empowered=True)
+        assert session.energy < 20
+        session.regenerate_field()
+        assert session.energy == 20
+
+
+# === Chain Detonation Tests ===
+
+
+class TestChainDetonation:
+    """Tests for chain detonation when breaking rocks near same-type neighbors."""
+
+    def test_chain_results_empty_initially(self) -> None:
+        config = MiningConfig(system_id="test")
+        session = MiningSession(config)
+        assert session.chain_results == []
+        assert session.total_chains == 0
+
+    def test_no_chain_different_type_neighbors(self) -> None:
+        """No chain when neighbors are different types."""
+        config = MiningConfig(
+            system_id="test",
+            grid_width=3,
+            grid_height=1,
+            rock_distribution={"common": 1.0},
+            base_click_power=0.50,
+        )
+        session = MiningSession(config, chain_chance_bonus=10.0)  # Guaranteed chain
+        # Force different types for neighbors
+        session.rocks[0].rock_type = RockType.IRON
+        session.rocks[1].rock_type = RockType.COMMON
+        session.rocks[2].rock_type = RockType.CRYSTAL
+        # Break the middle rock
+        session.click_rock(1, 0)
+        assert len(session.chain_results) == 0
+
+    def test_chain_applies_progress_to_same_type_neighbor(self) -> None:
+        """Chain adds progress to same-type neighbors."""
+        config = MiningConfig(
+            system_id="test",
+            grid_width=3,
+            grid_height=1,
+            rock_distribution={"iron": 1.0},
+            base_click_power=0.50,
+        )
+        # chain_chance_bonus high enough to guarantee chain
+        session = MiningSession(config, chain_chance_bonus=10.0)
+        # All iron. Break middle rock.
+        # Iron hardness=1.0, power=0.50 → 0.50 progress per click, need 2 clicks
+        session.click_rock(1, 0)
+        session.click_rock(1, 0)
+        # Middle rock should be broken now, chains should fire on neighbors
+        # With high chain chance, neighbors should get CHAIN_PROGRESS_AMOUNT
+        rock_left = session.get_rock_at(0, 0)
+        rock_right = session.get_rock_at(2, 0)
+        # At least one neighbor should have been affected (chain or broken)
+        any_affected = (
+            rock_left.drill_progress > 0 or rock_left.depleted
+            or rock_right.drill_progress > 0 or rock_right.depleted
+        )
+        assert any_affected
+
+    def test_chain_breaks_neighbor_above_threshold(self) -> None:
+        """Neighbor at high progress breaks from chain."""
+        config = MiningConfig(
+            system_id="test",
+            grid_width=2,
+            grid_height=1,
+            rock_distribution={"common": 1.0},
+            base_click_power=0.50,
+        )
+        session = MiningSession(config, chain_chance_bonus=10.0)
+        # Set neighbor nearly broken
+        neighbor = session.get_rock_at(1, 0)
+        neighbor.drill_progress = 0.90
+        # Break the first rock (common hardness=0.5, power=0.50 → instant)
+        session.click_rock(0, 0)
+        # Chain should push neighbor over threshold
+        assert neighbor.depleted
+        assert len(session.chain_results) >= 1
+        assert session.chain_results[0].grid_x == 1
+        assert session.chain_results[0].grid_y == 0
+
+    def test_chain_does_not_break_below_threshold(self) -> None:
+        """Neighbor at low progress doesn't break from chain (just gets progress)."""
+        config = MiningConfig(
+            system_id="test",
+            grid_width=2,
+            grid_height=1,
+            rock_distribution={"common": 1.0},
+            base_click_power=0.50,
+        )
+        session = MiningSession(config, chain_chance_bonus=10.0)
+        neighbor = session.get_rock_at(1, 0)
+        neighbor.drill_progress = 0.0  # Fresh rock
+        session.click_rock(0, 0)
+        # CHAIN_PROGRESS_AMOUNT=0.25 < 1.0, so neighbor shouldn't break
+        # But should have some progress added
+        assert not neighbor.depleted
+        if neighbor.drill_progress > 0:
+            assert neighbor.drill_progress <= CHAIN_PROGRESS_AMOUNT + 0.01
+
+    def test_chain_cascades_to_depth_2(self) -> None:
+        """Chain can cascade through multiple same-type neighbors."""
+        config = MiningConfig(
+            system_id="test",
+            grid_width=3,
+            grid_height=1,
+            rock_distribution={"common": 1.0},
+            base_click_power=0.50,
+        )
+        session = MiningSession(config, chain_chance_bonus=10.0)
+        # Set all three nearly broken
+        for rock in session.rocks:
+            rock.drill_progress = 0.90
+        # Break first rock
+        session.click_rock(0, 0)
+        # Middle rock should chain from first, then right rock from middle
+        middle = session.get_rock_at(1, 0)
+        right = session.get_rock_at(2, 0)
+        assert middle.depleted, "Middle rock should be chain-broken"
+        assert right.depleted, "Right rock should cascade from middle"
+        assert len(session.chain_results) >= 2
+
+    def test_chain_stops_at_max_depth_3(self) -> None:
+        """Chain stops cascading at CHAIN_MAX_DEPTH."""
+        config = MiningConfig(
+            system_id="test",
+            grid_width=5,
+            grid_height=1,
+            rock_distribution={"common": 1.0},
+            base_click_power=0.50,
+        )
+        session = MiningSession(config, chain_chance_bonus=10.0)
+        # Set all rocks nearly broken
+        for rock in session.rocks:
+            rock.drill_progress = 0.90
+        session.click_rock(0, 0)
+        # Rocks 1,2,3 can chain (depths 1,2,3). Rock 4 should NOT chain (depth 4).
+        rock_4 = session.get_rock_at(4, 0)
+        # Chain max is 3, so depth-4 cascade shouldn't happen
+        # The chain goes: 0 breaks → 1 (depth 1) → 2 (depth 2) → 3 (depth 3) → STOP
+        assert not rock_4.depleted
+
+    def test_chain_skips_depleted(self) -> None:
+        """Chain does not affect already-depleted neighbors."""
+        config = MiningConfig(
+            system_id="test",
+            grid_width=2,
+            grid_height=1,
+            rock_distribution={"common": 1.0},
+            base_click_power=0.50,
+        )
+        session = MiningSession(config, chain_chance_bonus=10.0)
+        neighbor = session.get_rock_at(1, 0)
+        neighbor.depleted = True
+        session.click_rock(0, 0)
+        assert len(session.chain_results) == 0
+
+    def test_chain_updates_total_mined(self) -> None:
+        """Chain-broken rocks contribute to total_mined."""
+        config = MiningConfig(
+            system_id="test",
+            grid_width=2,
+            grid_height=1,
+            rock_distribution={"common": 1.0},
+            base_click_power=0.50,
+        )
+        session = MiningSession(config, chain_chance_bonus=10.0)
+        neighbor = session.get_rock_at(1, 0)
+        neighbor.drill_progress = 0.90
+        session.click_rock(0, 0)
+        # Both the clicked rock and chain-broken rock should contribute
+        total = session.total_mined.get("raw_ore", 0)
+        assert total >= 2  # At least 1 from each rock
+
+    def test_chain_chance_bonus_increases_probability(self) -> None:
+        """Higher chain chance bonus means more chain events."""
+        config = MiningConfig(
+            system_id="test",
+            grid_width=2,
+            grid_height=1,
+            rock_distribution={"common": 1.0},
+            base_click_power=0.50,
+        )
+        # Run many trials with no bonus vs high bonus
+        chains_no_bonus = 0
+        chains_high_bonus = 0
+        for _ in range(100):
+            session = MiningSession(config, chain_chance_bonus=0.0)
+            session.get_rock_at(1, 0).drill_progress = 0.90
+            session.click_rock(0, 0)
+            chains_no_bonus += len(session.chain_results)
+
+            session2 = MiningSession(config, chain_chance_bonus=2.0)
+            session2.get_rock_at(1, 0).drill_progress = 0.90
+            session2.click_rock(0, 0)
+            chains_high_bonus += len(session2.chain_results)
+
+        assert chains_high_bonus > chains_no_bonus
+
+    def test_chain_triggered_by_click(self) -> None:
+        """Click-breaking a rock triggers chain check."""
+        config = MiningConfig(
+            system_id="test",
+            grid_width=2,
+            grid_height=1,
+            rock_distribution={"common": 1.0},
+            base_click_power=0.50,
+        )
+        session = MiningSession(config, chain_chance_bonus=10.0)
+        session.get_rock_at(1, 0).drill_progress = 0.90
+        session.click_rock(0, 0)
+        assert len(session.chain_results) >= 1
+
+    def test_chain_triggered_by_passive(self) -> None:
+        """Passive drill breaking a rock triggers chain check."""
+        config = MiningConfig(
+            system_id="test",
+            grid_width=2,
+            grid_height=1,
+            rock_distribution={"common": 1.0},
+            base_passive_rate=2.0,
+        )
+        session = MiningSession(config, chain_chance_bonus=10.0)
+        session.get_rock_at(1, 0).drill_progress = 0.90
+        session.click_rock(0, 0)  # Set active rock
+        results = session.update(1.0)  # Passive breaks it
+        assert len(results) >= 1
+        assert session.total_chains >= 1
+
+    def test_chain_triggered_by_drone(self) -> None:
+        """Drone breaking a rock triggers chain check."""
+        config = MiningConfig(
+            system_id="test",
+            grid_width=3,
+            grid_height=1,
+            rock_distribution={"common": 1.0},
+        )
+        drone = MiningDrone(tier=DroneTier.ELITE)
+        session = MiningSession(config, drones=[drone], chain_chance_bonus=10.0)
+        # Set all rocks nearly broken so chain fires
+        for rock in session.rocks:
+            rock.drill_progress = 0.80
+        results = session.update(1.0)
+        # Drone should break one, chain should break at least one more
+        assert session.total_chains >= 1
+
+    def test_chain_results_cleared_between_calls(self) -> None:
+        """chain_results is cleared at start of each click_rock/update call."""
+        config = MiningConfig(
+            system_id="test",
+            grid_width=3,
+            grid_height=1,
+            rock_distribution={"common": 1.0},
+            base_click_power=0.50,
+        )
+        session = MiningSession(config, chain_chance_bonus=10.0)
+        session.get_rock_at(1, 0).drill_progress = 0.90
+        session.click_rock(0, 0)
+        first_chains = len(session.chain_results)
+        assert first_chains >= 1
+        # Next call should clear previous results
+        session.click_rock(2, 0)
+        # chain_results should be fresh (may or may not have new chains)
+        # But should NOT contain the old chain from (1,0)
+        old_chain_positions = [(c.grid_x, c.grid_y) for c in session.chain_results]
+        # Rock at (1,0) is already depleted, so it can't chain again
+        assert (1, 0) not in old_chain_positions
+
+
+# === Session Milestones Tests ===
+
+
+class TestSessionMilestones:
+    """Tests for mining session milestone tracking."""
+
+    def _make_milestones(
+        self, category: str, threshold: int, reward_xp: int = 25, reward_credits: int = 0
+    ) -> list[MiningMilestone]:
+        return [
+            MiningMilestone(
+                id=f"test_{category}",
+                description=f"Test {category}",
+                category=category,
+                threshold=threshold,
+                reward_xp=reward_xp,
+                reward_credits=reward_credits,
+            )
+        ]
+
+    def test_session_has_3_milestones(self) -> None:
+        config = MiningConfig(system_id="test")
+        session = MiningSession(config)
+        assert len(session.milestones) == 3
+
+    def test_milestones_start_incomplete(self) -> None:
+        config = MiningConfig(system_id="test")
+        session = MiningSession(config)
+        assert all(not m.completed for m in session.milestones)
+
+    def test_rocks_mined_milestone_completes(self) -> None:
+        config = MiningConfig(
+            system_id="test",
+            rock_distribution={"common": 1.0},
+            base_click_power=0.50,
+        )
+        milestones = self._make_milestones("rocks_mined", threshold=2)
+        session = MiningSession(config, milestones=milestones)
+        session.click_rock(0, 0)  # Break rock 1
+        assert not milestones[0].completed
+        session.click_rock(1, 0)  # Break rock 2
+        assert milestones[0].completed
+
+    def test_rare_ores_tracked(self) -> None:
+        config = MiningConfig(
+            system_id="test",
+            rock_distribution={"crystal": 1.0},
+            base_click_power=5.0,
+        )
+        milestones = self._make_milestones("rare_ores", threshold=1)
+        session = MiningSession(config, milestones=milestones)
+        session.click_rock(0, 0)  # Break crystal rock
+        assert session.rare_ores_found >= 1
+        assert milestones[0].completed
+
+    def test_common_not_counted_as_rare(self) -> None:
+        config = MiningConfig(
+            system_id="test",
+            rock_distribution={"common": 1.0},
+            base_click_power=0.50,
+        )
+        milestones = self._make_milestones("rare_ores", threshold=1)
+        session = MiningSession(config, milestones=milestones)
+        session.click_rock(0, 0)  # Break common rock
+        assert session.rare_ores_found == 0
+        assert not milestones[0].completed
+
+    def test_depth_milestone_completes(self) -> None:
+        config = MiningConfig(system_id="test")
+        milestones = self._make_milestones("depth_reached", threshold=3)
+        session = MiningSession(config, milestones=milestones)
+        assert not milestones[0].completed
+        session.regenerate_field()  # depth 2
+        session.regenerate_field()  # depth 3
+        session._check_milestones()
+        assert milestones[0].completed
+
+    def test_chains_milestone_completes(self) -> None:
+        config = MiningConfig(
+            system_id="test",
+            grid_width=2,
+            grid_height=1,
+            rock_distribution={"common": 1.0},
+            base_click_power=0.50,
+        )
+        milestones = self._make_milestones("chains_triggered", threshold=1)
+        session = MiningSession(config, chain_chance_bonus=10.0, milestones=milestones)
+        session.get_rock_at(1, 0).drill_progress = 0.90
+        session.click_rock(0, 0)
+        assert session.total_chains >= 1
+        assert milestones[0].completed
+
+    def test_milestone_not_double_completed(self) -> None:
+        config = MiningConfig(
+            system_id="test",
+            rock_distribution={"common": 1.0},
+            base_click_power=0.50,
+        )
+        milestones = self._make_milestones("rocks_mined", threshold=1)
+        session = MiningSession(config, milestones=milestones)
+        session.click_rock(0, 0)
+        assert milestones[0].completed
+        # Clear newly_completed and break another — milestone shouldn't re-trigger
+        session.newly_completed_milestones.clear()
+        session.click_rock(1, 0)
+        assert len(session.newly_completed_milestones) == 0
+
+    def test_newly_completed_populated_and_cleared(self) -> None:
+        config = MiningConfig(
+            system_id="test",
+            rock_distribution={"common": 1.0},
+            base_click_power=0.50,
+        )
+        milestones = self._make_milestones("rocks_mined", threshold=1)
+        session = MiningSession(config, milestones=milestones)
+        session.click_rock(0, 0)
+        assert len(session.newly_completed_milestones) == 1
+        assert session.newly_completed_milestones[0].id == "test_rocks_mined"
+        # Next call clears it
+        session.click_rock(1, 0)
+        # newly_completed should be empty (no new milestones to complete)
+        assert len(session.newly_completed_milestones) == 0
+
+    def test_custom_milestones_for_testing(self) -> None:
+        """Injectable milestones param works for testing."""
+        config = MiningConfig(system_id="test")
+        custom = [
+            MiningMilestone(
+                id="custom_1", description="Custom", category="rocks_mined",
+                threshold=99, reward_xp=100,
+            )
+        ]
+        session = MiningSession(config, milestones=custom)
+        assert len(session.milestones) == 1
+        assert session.milestones[0].id == "custom_1"

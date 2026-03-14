@@ -13,6 +13,7 @@ from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState
 from spacegame.models.player import Player
 from spacegame.utils.logger import logger
 from spacegame.engine.backgrounds import AnimatedBackground
+from spacegame.engine.fonts import FontCache
 
 
 class StatisticsView(BaseView):
@@ -25,9 +26,9 @@ class StatisticsView(BaseView):
         self.next_state: Optional[GameState] = None
 
         # Fonts
-        self.title_font = pygame.font.Font(None, 40)
-        self.category_font = pygame.font.Font(None, 28)
-        self.stat_font = pygame.font.Font(None, 22)
+        self.title_font = FontCache.get(40)
+        self.category_font = FontCache.get(28)
+        self.stat_font = FontCache.get(22)
 
         # UI
         self.back_button: Optional[pygame_gui.elements.UIButton] = None

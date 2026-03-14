@@ -6,8 +6,10 @@
       "title": "Navigator",
       "portrait_color": [100, 180, 255],
       "home_system_id": "nexus_prime",
-      "dialogue_id": "elena_intro",
-      "faction_id": "commerce_guild"
+      "dialogue_id": "elena_cantina",
+      "faction_id": "commerce_guild",
+      "auto_trigger_gate_flag": "talked_to_elena_cantina",
+      "auto_trigger_prerequisites": ["iron_ore_delivered"]
     },
     {
       "id": "marcus_jin",
@@ -15,26 +17,43 @@
       "title": "Mining Foreman",
       "portrait_color": [200, 160, 60],
       "home_system_id": "breakstone",
-      "dialogue_id": "marcus_intro",
-      "faction_id": "miners_union"
+      "dialogue_id": "marcus_recognition",
+      "faction_id": "miners_union",
+      "auto_trigger_gate_flag": "met_marcus_jin",
+      "auto_trigger_prerequisites": ["breakstone_permit_earned"]
     },
     {
-      "id": "dr_yara_osei",
-      "name": "Dr. Yara Osei",
+      "id": "dr_priya_osei",
+      "name": "Dr. Priya Osei",
       "title": "Research Director",
       "portrait_color": [160, 120, 210],
-      "home_system_id": "axiom_labs",
-      "dialogue_id": "yara_intro",
-      "faction_id": "science_collective"
+      "home_system_id": "nexus_prime",
+      "dialogue_id": "priya_stranded",
+      "faction_id": "science_collective",
+      "auto_trigger_gate_flag": "met_priya_osei",
+      "auto_trigger_prerequisites": ["breakstone_permit_earned"]
     },
     {
-      "id": "kael_drifter",
-      "name": "Kael Drifter",
+      "id": "tomas_drifter",
+      "name": "Tomas Drifter",
       "title": "Frontier Scout",
       "portrait_color": [110, 210, 120],
       "home_system_id": "havens_rest",
-      "dialogue_id": "kael_intro",
-      "faction_id": "frontier_alliance"
+      "dialogue_id": "tomas_havens",
+      "faction_id": "frontier_alliance",
+      "auto_trigger_gate_flag": "met_tomas_drifter",
+      "auto_trigger_prerequisites": ["breakstone_permit_earned"]
+    },
+    {
+      "id": "hanna_voss",
+      "name": "Hanna Voss",
+      "title": "Dock Boss",
+      "portrait_color": [180, 140, 90],
+      "home_system_id": "breakstone",
+      "dialogue_id": "hanna_voss_dock",
+      "faction_id": "miners_union",
+      "auto_trigger_gate_flag": "met_hanna_voss",
+      "auto_trigger_prerequisites": ["talked_to_elena_cantina"]
     },
     {
       "id": "officer_larsen",
@@ -43,7 +62,8 @@
       "portrait_color": [140, 160, 180],
       "home_system_id": "nexus_prime",
       "dialogue_id": "larsen_customs",
-      "faction_id": ""
+      "faction_id": "",
+      "hide_after_flag": "larsen_permit_complete"
     },
     {
       "id": "delivery_merchant",
@@ -53,6 +73,114 @@
       "home_system_id": "nexus_prime",
       "dialogue_id": "merchant_delivery",
       "faction_id": ""
+    },
+    {
+      "id": "reva_sato",
+      "name": "Captain Reva Sato",
+      "title": "Guild Convoy Escort",
+      "portrait_color": [220, 80, 80],
+      "home_system_id": "nova_research",
+      "dialogue_id": "reva_distress",
+      "faction_id": "commerce_guild"
+    },
+    {
+      "id": "dex_halloran",
+      "name": "Dex Halloran",
+      "title": "Information Broker",
+      "portrait_color": [180, 160, 100],
+      "home_system_id": "nexus_prime",
+      "dialogue_id": "dex_cantina",
+      "faction_id": "",
+      "auto_trigger_gate_flag": "met_dex_halloran",
+      "auto_trigger_prerequisites": ["cargo_lost_resolved"]
+    },
+    {
+      "id": "malia_torres",
+      "name": "Malia Torres",
+      "title": "Salvage Boss",
+      "portrait_color": [160, 100, 60],
+      "home_system_id": "crimson_reach",
+      "dialogue_id": "torres_underground",
+      "faction_id": "frontier_alliance",
+      "auto_trigger_gate_flag": "met_malia_torres",
+      "auto_trigger_prerequisites": ["crimson_run_ground_complete"]
+    },
+    {
+      "id": "embassy_summit_host",
+      "name": "Dr. Priya Osei",
+      "title": "Summit Chairperson",
+      "portrait_color": [160, 120, 210],
+      "home_system_id": "axiom_labs",
+      "dialogue_id": "embassy_summit",
+      "faction_id": "science_collective",
+      "auto_trigger_gate_flag": "attended_embassy_summit",
+      "auto_trigger_prerequisites": ["crimson_underground_access"]
+    },
+    {
+      "id": "dex_tunnel_contact",
+      "name": "Dex Halloran",
+      "title": "Information Broker",
+      "portrait_color": [180, 160, 100],
+      "home_system_id": "nexus_prime",
+      "dialogue_id": "dex_tunnel_briefing",
+      "faction_id": "",
+      "auto_trigger_gate_flag": "dex_tunnel_briefing_heard",
+      "auto_trigger_prerequisites": ["guild_hardware_discovered"]
+    },
+    {
+      "id": "oren_tak",
+      "name": "Oren Tak",
+      "title": "Retired Miner",
+      "portrait_color": [160, 130, 80],
+      "home_system_id": "breakstone",
+      "dialogue_id": "oren_tak_meeting",
+      "faction_id": "miners_union",
+      "auto_trigger_gate_flag": "met_oren_tak",
+      "auto_trigger_prerequisites": ["favor_ground_complete"]
+    },
+    {
+      "id": "sienna_vek",
+      "name": "Sienna Vek",
+      "title": "Systems Engineer",
+      "portrait_color": [200, 100, 130],
+      "home_system_id": "iron_depths",
+      "dialogue_id": "sienna_vek_warning",
+      "faction_id": "commerce_guild",
+      "auto_trigger_gate_flag": "met_sienna_vek",
+      "auto_trigger_prerequisites": ["iron_depths_ground_complete"]
+    },
+    {
+      "id": "priya_analyst",
+      "name": "Dr. Priya Osei",
+      "title": "Research Director",
+      "portrait_color": [160, 120, 210],
+      "home_system_id": "axiom_labs",
+      "dialogue_id": "priya_convergence_analysis",
+      "faction_id": "science_collective",
+      "auto_trigger_gate_flag": "convergence_data_verified",
+      "auto_trigger_prerequisites": ["singularity_weapon_discovered"]
+    },
+    {
+      "id": "dex_final_lead",
+      "name": "Dex Halloran",
+      "title": "Information Broker",
+      "portrait_color": [180, 160, 100],
+      "home_system_id": "nexus_prime",
+      "dialogue_id": "dex_assembly_intel",
+      "faction_id": "",
+      "auto_trigger_gate_flag": "assembly_location_known",
+      "auto_trigger_prerequisites": ["convergence_data_verified"]
+    },
+    {
+      "id": "collapse_witness",
+      "name": "The Collapse",
+      "title": "",
+      "portrait_color": [255, 60, 30],
+      "home_system_id": "the_fulcrum",
+      "dialogue_id": "the_collapse_sequence",
+      "faction_id": "",
+      "auto_trigger_gate_flag": "expanse_collapsed",
+      "auto_trigger_prerequisites": ["escape_combat_survived"]
     }
   ]
 }

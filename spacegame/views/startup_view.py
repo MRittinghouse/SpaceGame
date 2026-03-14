@@ -8,6 +8,7 @@ message and responds to input.
 import pygame
 from spacegame.views.base_view import BaseView
 from spacegame.config import Colors, WINDOW_WIDTH, WINDOW_HEIGHT
+from spacegame.engine.fonts import FontCache
 from spacegame.utils.logger import logger
 
 
@@ -23,8 +24,8 @@ class StartupView(BaseView):
         super().__init__()
 
         # Create a default font
-        self.font_large = pygame.font.Font(None, 72)
-        self.font_small = pygame.font.Font(None, 32)
+        self.font_large = FontCache.get(72)
+        self.font_small = FontCache.get(32)
 
         # Track mouse position for interaction demo
         self.mouse_pos = (0, 0)

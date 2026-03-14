@@ -1,148 +1,696 @@
 {
   "dialogues": [
     {
-      "id": "elena_intro",
+      "id": "elena_cantina",
       "start_node_id": "start",
       "nodes": [
         {
           "id": "start",
           "speaker_id": "elena_reeves",
-          "text": "Welcome to Nexus Prime, Captain. The name's Elena Reeves \u2014 freelance navigator. I've seen you running cargo through the trade lanes. Not bad for a newcomer.",
+          "text": "You've been staring at those boards for twenty minutes. Either you're trying to memorize them or you're hoping they'll start making sense on their own. They won't.",
           "responses": [
-            {"text": "Thanks. You seem to know your way around.", "next_node_id": "about_elena"},
-            {"text": "Any tips for a trader starting out?", "next_node_id": "trading_tips"},
-            {"text": "Just passing through. See you around.", "next_node_id": null}
-          ]
+            {
+              "text": "I'm trying to learn. Any advice?",
+              "next_node_id": "lesson"
+            },
+            {
+              "text": "Mind your own business.",
+              "next_node_id": "bristle"
+            },
+            {
+              "text": "Can you help me understand them?",
+              "next_node_id": "lesson_warm"
+            }
+          ],
+          "expression": "confident"
         },
         {
-          "id": "about_elena",
+          "id": "bristle",
           "speaker_id": "elena_reeves",
-          "text": "I've been charting jump routes across the sector for fifteen years. There isn't a system I can't find a shortcut through. Used to run with a merchant fleet before... well, that's a story for another time.",
+          "text": "Fair enough. But those boards won't explain themselves, and neither will the margins. If you change your mind, I'll be at this table.",
           "responses": [
-            {"text": "Sounds like you have experience. Got any advice?", "next_node_id": "trading_tips"},
-            {"text": "Interesting. I'll keep that in mind.", "next_node_id": null}
-          ]
+            {
+              "text": "Actually... what do you mean by margins?",
+              "next_node_id": "lesson"
+            },
+            {
+              "text": "I'll figure it out myself.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "lesson_warm",
+          "speaker_id": "elena_reeves",
+          "text": "Elena Reeves. Navigator, currently between contracts. Sit down — I'll walk you through it.",
+          "responses": [
+            {
+              "text": "[Sit down]",
+              "next_node_id": "lesson"
+            }
+          ],
+          "expression": "happy"
+        },
+        {
+          "id": "lesson",
+          "speaker_id": "elena_reeves",
+          "text": "See food listed at 80 here? Breakstone's a mining colony — workers burning four thousand calories a day underground. Food sells for 140 there on a quiet day. That's your margin. Buy here, sell there. Do it enough times, you can afford better cargo.",
+          "responses": [
+            {
+              "text": "That's... actually straightforward.",
+              "next_node_id": "trading_tips",
+              "set_flag": "elena_gave_trading_tips"
+            },
+            {
+              "text": "What else should I know?",
+              "next_node_id": "trading_tips",
+              "set_flag": "elena_gave_trading_tips"
+            }
+          ],
+          "expression": "confident"
         },
         {
           "id": "trading_tips",
           "speaker_id": "elena_reeves",
-          "text": "Best advice I can give? Watch the market trends. Buy where things are cheap \u2014 agricultural worlds for food, mining colonies for ore \u2014 and sell where they're scarce. And keep an eye on market events. A disaster can tank prices, but a boom? That's where the real credits are.",
+          "text": "Watch the event feeds. A mining boom means ore prices drop — buy cheap, sell at stations that process it. A crop failure means food prices spike at the affected system. The boards tell you what's happening. Your job is to be where the demand is before everyone else.",
           "responses": [
-            {"text": "Good to know. Thanks, Elena.", "next_node_id": "farewell", "set_flag": "elena_gave_tips"},
-            {"text": "I'll figure it out myself.", "next_node_id": null}
-          ]
+            {
+              "text": "You seem to know a lot. What's your story?",
+              "next_node_id": "about_elena"
+            },
+            {
+              "text": "Thanks, Elena. I appreciate it.",
+              "next_node_id": "farewell"
+            }
+          ],
+          "expression": "confident"
+        },
+        {
+          "id": "about_elena",
+          "speaker_id": "elena_reeves",
+          "text": "I'm between contracts. Let's leave it at that.",
+          "responses": [
+            {
+              "text": "Come on, there's got to be more to it.",
+              "next_node_id": "press_further"
+            },
+            {
+              "text": "Fair enough. Thanks for the trading lesson.",
+              "next_node_id": "farewell"
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "press_further",
+          "speaker_id": "elena_reeves",
+          "text": "I used to navigate for a Guild shipping company. Route planning, fuel optimization — the boring stuff that keeps convoys on schedule. I left. Reasons are my own.",
+          "responses": [
+            {
+              "text": "I understand. Thanks for the help, Elena.",
+              "next_node_id": "farewell"
+            }
+          ],
+          "expression": "stern"
         },
         {
           "id": "farewell",
           "speaker_id": "elena_reeves",
-          "text": "Anytime, Captain. You know where to find me. And if you ever need a navigator... well, let's just say I'm between contracts.",
-          "responses": []
+          "text": "Good luck out there, Captain. The boards get easier once you stop trying to read them and start trying to read the people buying from them.",
+          "responses": [],
+          "expression": "happy"
         }
       ]
     },
     {
-      "id": "marcus_intro",
+      "id": "hanna_voss_dock",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "hanna_voss",
+          "text": "So you're the one running cargo out of Nexus. I read your docking manifest. Light cargo, light weapons, light on experience. Let's see what you're made of.",
+          "responses": [
+            {
+              "text": "I'm here to trade.",
+              "next_node_id": "union_way"
+            },
+            {
+              "text": "How do things work at Breakstone?",
+              "next_node_id": "union_way"
+            },
+            {
+              "text": "Who are you?",
+              "next_node_id": "voss_intro"
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "voss_intro",
+          "speaker_id": "hanna_voss",
+          "text": "Hanna Voss. Dock boss. I decide who trades here and who doesn't. The Guild sends traders through with paperwork and permits — we don't care about paperwork.",
+          "responses": [
+            {
+              "text": "Then how do I earn trading rights?",
+              "next_node_id": "union_way"
+            }
+          ],
+          "expression": "confident"
+        },
+        {
+          "id": "union_way",
+          "speaker_id": "hanna_voss",
+          "text": "We don't hand out permits to strangers. You want to trade at Breakstone? Prove you're not another Guild vulture looking to squeeze us. Bring five units of food to the miners' commissary. Feed my people. Then we'll talk about your trading rights.",
+          "responses": [
+            {
+              "text": "Five units of food. I can do that.",
+              "next_node_id": "food_task"
+            },
+            {
+              "text": "Why food specifically?",
+              "next_node_id": "food_reason"
+            },
+            {
+              "text": "Tell me about those murals on the walls.",
+              "next_node_id": "optional_chat",
+              "set_flag": "talked_to_voss"
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "food_reason",
+          "speaker_id": "hanna_voss",
+          "text": "Because my miners eat in shifts. Four thousand calories a day, hauling rock in pressure suits. We grow nothing here. Every meal comes from off-station. So when a trader shows up, the first question is — are you here to help or to take?",
+          "responses": [
+            {
+              "text": "I'll bring the food.",
+              "next_node_id": "food_task"
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "optional_chat",
+          "speaker_id": "hanna_voss",
+          "text": "The founding strike. Seventy years ago, Breakstone miners walked off the job because a Guild contractor cut their air recycler maintenance budget. Three people died before the Union organized. Those murals make sure we don't forget.",
+          "responses": [
+            {
+              "text": "I'll bring the food.",
+              "next_node_id": "food_task"
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "food_task",
+          "speaker_id": "hanna_voss",
+          "text": "Good. Buy it at Nexus Prime or wherever you like. Bring it back here. No fee, no forms. Just show me you're not wasting my time. Get moving.",
+          "responses": [],
+          "expression": "confident"
+        }
+      ]
+    },
+    {
+      "id": "marcus_recognition",
       "start_node_id": "start",
       "nodes": [
         {
           "id": "start",
           "speaker_id": "marcus_jin",
-          "text": "Hey there, spacer. Name's Marcus Jin. I run the mining operations here at Breakstone. If you're looking to crack some rocks, you've come to the right place.",
+          "text": "What did you say your name was?",
           "responses": [
-            {"text": "What kind of mining do you do here?", "next_node_id": "mining_info"},
-            {"text": "Is there good money in mining?", "next_node_id": "mining_profit"},
-            {"text": "Not interested. Thanks anyway.", "next_node_id": null}
-          ]
+            {
+              "text": "I didn't. Why do you ask?",
+              "next_node_id": "recognition"
+            },
+            {
+              "text": "[Give your name]",
+              "next_node_id": "recognition"
+            }
+          ],
+          "expression": "neutral"
         },
         {
-          "id": "mining_info",
+          "id": "recognition",
           "speaker_id": "marcus_jin",
-          "text": "Breakstone's got some of the richest asteroid fields in the sector. Iron, titanium, even rare quantum crystals if you know where to look. We've got the equipment \u2014 you bring the muscle.",
+          "text": "You related to someone who worked the Nexus Prime orbital? Mining crew, maybe eight, nine years back?",
           "responses": [
-            {"text": "What about the money?", "next_node_id": "mining_profit"},
-            {"text": "I'll check it out.", "next_node_id": null, "set_flag": "marcus_mining_intro"}
-          ]
+            {
+              "text": "That was my father.",
+              "next_node_id": "father_story"
+            },
+            {
+              "text": "How did you know that?",
+              "next_node_id": "father_story"
+            }
+          ],
+          "expression": "neutral"
         },
         {
-          "id": "mining_profit",
+          "id": "father_story",
           "speaker_id": "marcus_jin",
-          "text": "Better than hauling cargo, I'll tell you that. Raw ore sells decent, but if you can get it refined? That's where the real margins are. Forgeworks and Axiom Labs will pay top credit for processed materials.",
+          "text": "Your father worked a contract rotation through Breakstone before transferring to the Nexus orbital. He filed a complaint about the air recycler units on the station. Complaint came to my engineering team. I flagged it. Wrote a report. Recommended immediate inspection.",
           "responses": [
-            {"text": "Thanks for the tip, Marcus.", "next_node_id": null, "set_flag": "marcus_mining_intro"}
-          ]
+            {
+              "text": "What happened to the report?",
+              "next_node_id": "report_buried",
+              "set_flag": "learned_father_story"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "report_buried",
+          "speaker_id": "marcus_jin",
+          "text": "Nothing. Got filed. Got buried. Six months later your father's dead and three other workers are in medical with lung damage. I've been carrying that for years.",
+          "responses": [
+            {
+              "text": "That's not your fault.",
+              "next_node_id": "not_your_fault"
+            },
+            {
+              "text": "Why didn't you push harder?",
+              "next_node_id": "why_didnt_push"
+            },
+            {
+              "text": "[Say nothing]",
+              "next_node_id": "silence"
+            }
+          ],
+          "expression": "angry"
+        },
+        {
+          "id": "not_your_fault",
+          "speaker_id": "marcus_jin",
+          "text": "Doesn't matter whose fault it is. What matters is nobody fixed it. The system decided it was cheaper to replace workers than repair equipment. That's the math they do.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": "mining_offer"
+            }
+          ],
+          "expression": "angry"
+        },
+        {
+          "id": "why_didnt_push",
+          "speaker_id": "marcus_jin",
+          "text": "Because I was twenty-four and I thought filing a report meant something. I know better now. You file, they file it. You escalate, they reassign you. That's how it works.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": "mining_offer"
+            }
+          ],
+          "expression": "angry"
+        },
+        {
+          "id": "silence",
+          "speaker_id": "marcus_jin",
+          "text": "Yeah. I don't have a good answer either.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": "mining_offer"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "mining_offer",
+          "speaker_id": "marcus_jin",
+          "text": "Look — you're pulling contracts at a mining station and you don't know how to mine. That's going to get you killed or broke. Probably both. Let me show you the basics.",
+          "responses": [
+            {
+              "text": "I'd appreciate that.",
+              "next_node_id": "mining_lesson"
+            },
+            {
+              "text": "Why would you help me?",
+              "next_node_id": "why_help"
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "why_help",
+          "speaker_id": "marcus_jin",
+          "text": "Because I couldn't help your father. And I don't want to see another green pilot get themselves killed on dead rock because nobody taught them to read a vein.",
+          "responses": [
+            {
+              "text": "[Accept the lesson]",
+              "next_node_id": "mining_lesson"
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "mining_lesson",
+          "speaker_id": "marcus_jin",
+          "text": "Rule one: your suit is your life. Check your seals twice before you go out. Rule two: see that discoloration on the rock? Dark streaks are iron sulfide — worthless. Follow the vein left and you'll hit magnetite. That's money. Rule three: don't get greedy. Fill your hold, get back to station, sell.",
+          "responses": [
+            {
+              "text": "Got it. Seals, veins, don't get greedy.",
+              "next_node_id": "parting",
+              "set_flag": "completed_mining_tutorial"
+            }
+          ],
+          "expression": "confident"
+        },
+        {
+          "id": "parting",
+          "speaker_id": "marcus_jin",
+          "text": "The system doesn't care about people like your father. Doesn't care about people like me, either. We file reports, we flag problems, and the people with the money decide it's cheaper to replace us than fix what's broken. You've got your own ship. That's more than most people out here ever get. Don't waste it.",
+          "responses": [],
+          "expression": "stern"
         }
       ]
     },
     {
-      "id": "yara_intro",
+      "id": "priya_stranded",
       "start_node_id": "start",
       "nodes": [
         {
           "id": "start",
-          "speaker_id": "dr_yara_osei",
-          "text": "Ah, a visitor. Dr. Yara Osei, Research Director at Axiom Labs. We don't get many traders who venture this far into the research corridor. What brings you here?",
+          "speaker_id": "dr_priya_osei",
+          "text": "Excuse me. Dr. Priya Osei, Research Director, Materials Analysis Division, Axiom Research Institute. I require transport to Axiom Labs. My chartered vessel has been reassigned, citing pirate risk. These research samples are time-sensitive. You appear to have a functioning ship and a current bill of landing.",
           "responses": [
-            {"text": "Just looking for good trade opportunities.", "next_node_id": "trade_talk"},
-            {"text": "What kind of research do you do?", "next_node_id": "research_info"},
-            {"text": "Just passing through.", "next_node_id": null}
-          ]
+            {
+              "text": "I can take you there. What's the pay?",
+              "next_node_id": "agree_transport"
+            },
+            {
+              "text": "What kind of research samples?",
+              "next_node_id": "sample_info"
+            },
+            {
+              "text": "Sorry, I've got other plans.",
+              "next_node_id": "decline"
+            }
+          ],
+          "expression": "stern"
         },
         {
-          "id": "trade_talk",
-          "speaker_id": "dr_yara_osei",
-          "text": "Mmm. We're always in need of raw materials for our experiments. Quantum crystals, refined alloys \u2014 bring those and you'll find generous buyers here. We also produce some rather valuable research outputs, if you have the cargo space.",
+          "id": "sample_info",
+          "speaker_id": "dr_priya_osei",
+          "text": "Mineral composition samples from three separate extraction sites. The isotope ratios degrade within seventy-two hours of collection. If I cannot deliver them to the laboratory, six months of fieldwork becomes... statistically insignificant.",
           "responses": [
-            {"text": "Good to know. What about the research?", "next_node_id": "research_info"},
-            {"text": "I'll keep that in mind. Thanks.", "next_node_id": null, "set_flag": "yara_trade_info"}
-          ]
+            {
+              "text": "I'll take you. How much are you offering?",
+              "next_node_id": "agree_transport"
+            },
+            {
+              "text": "That sounds urgent. Let's go.",
+              "next_node_id": "agree_transport"
+            }
+          ],
+          "expression": "stern"
         },
         {
-          "id": "research_info",
-          "speaker_id": "dr_yara_osei",
-          "text": "Cutting-edge materials science, mostly. We're working on next-generation ship alloys and fuel catalysts. Dangerous work \u2014 half our funding comes from the Science Collective, the other half from... let's call them interested parties.",
-          "responses": [
-            {"text": "Sounds like there's a story there.", "next_node_id": "hint"},
-            {"text": "Fascinating. Good luck with the research.", "next_node_id": null}
-          ]
+          "id": "decline",
+          "speaker_id": "dr_priya_osei",
+          "text": "I... understand. If you reconsider, I will be here. For approximately another four hours, after which the samples become unusable.",
+          "responses": [],
+          "expression": "surprised"
         },
         {
-          "id": "hint",
-          "speaker_id": "dr_yara_osei",
-          "text": "Perhaps. But stories are earned, not given. Come back when you've proven you can be trusted. The frontier has a way of revealing character.",
-          "responses": []
+          "id": "agree_transport",
+          "speaker_id": "dr_priya_osei",
+          "text": "Thank you. I can offer 200 credits upon arrival. The Collective values fair compensation for services rendered. Shall we depart? I should mention — I may have questions during the transit. Your lived experience constitutes a primary data source that peer-reviewed literature consistently underrepresents.",
+          "responses": [
+            {
+              "text": "What kind of questions?",
+              "next_node_id": "transit_talk"
+            },
+            {
+              "text": "Sure, ask away.",
+              "next_node_id": "transit_talk"
+            }
+          ],
+          "expression": "happy"
+        },
+        {
+          "id": "transit_talk",
+          "speaker_id": "dr_priya_osei",
+          "text": "I study resource extraction economics. The relationship between infrastructure investment and worker mortality in orbital mining operations. Your father worked a mining orbital near Nexus Prime, yes? The air recycler failures there were — statistically speaking — a predictable outcome of inadequate infrastructure investment.",
+          "responses": [
+            {
+              "text": "He wasn't a statistic. He was my father.",
+              "next_node_id": "push_back"
+            },
+            {
+              "text": "Go on.",
+              "next_node_id": "let_slide"
+            },
+            {
+              "text": "What about you? Why study mining economics?",
+              "next_node_id": "about_priya"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "push_back",
+          "speaker_id": "dr_priya_osei",
+          "text": "I — yes. Of course. I apologize. That was... imprecise. I meant the system failed him. Not that he was — I am sorry. The Collective values precision, sometimes at the cost of... other things. I did not intend offense.",
+          "responses": [
+            {
+              "text": "It's okay. I know you meant well.",
+              "next_node_id": "arrival",
+              "set_flag": "priya_apologized"
+            },
+            {
+              "text": "Just... be more careful with your words.",
+              "next_node_id": "arrival",
+              "set_flag": "priya_apologized"
+            }
+          ],
+          "expression": "surprised"
+        },
+        {
+          "id": "let_slide",
+          "speaker_id": "dr_priya_osei",
+          "text": "The Collective has published extensive research on orbital safety standards. The failure rate at facilities like the one your father worked at is forty-seven times the published acceptable rate. My paper aims to demonstrate that the economic model incentivizes neglect. Fascinating from a systems perspective — devastating from a human one.",
+          "responses": [
+            {
+              "text": "[Continue to Axiom Labs]",
+              "next_node_id": "arrival"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "about_priya",
+          "speaker_id": "dr_priya_osei",
+          "text": "I grew up on Axiom Labs. I have never visited a mining station. I have studied these systems for years from the inside of a laboratory. I am beginning to suspect that I did not understand what I was studying. I think... I think that matters.",
+          "responses": [
+            {
+              "text": "[Continue to Axiom Labs]",
+              "next_node_id": "arrival"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "arrival",
+          "speaker_id": "dr_priya_osei",
+          "text": "We have arrived. Thank you, Captain. Your compensation, as promised. I want you to know — Dr. Okafor, who founded this institute, said 'Knowledge that does not heal is knowledge wasted.' I hope my research can live up to that. I hope you will return. I would like to continue our conversation.",
+          "responses": [
+            {
+              "text": "I might take you up on that.",
+              "next_node_id": null,
+              "set_flag": "escorted_priya_axiom"
+            },
+            {
+              "text": "Good luck with the research, Dr. Osei.",
+              "next_node_id": null,
+              "set_flag": "escorted_priya_axiom"
+            }
+          ],
+          "expression": "happy"
         }
       ]
     },
     {
-      "id": "kael_intro",
+      "id": "tomas_havens",
       "start_node_id": "start",
       "nodes": [
         {
           "id": "start",
-          "speaker_id": "kael_drifter",
-          "text": "Well, well. A new face at Haven's Rest. I'm Kael \u2014 most folks call me Drifter. I scout the frontier routes, mapping safe passages and... not so safe ones.",
+          "speaker_id": "tomas_drifter",
+          "text": "Well, well. A new face at Haven's Rest. Sit down, eat something — you look like you've been living on ration bars. There's flatbread and stew. Alliance rules: you feed strangers first, ask questions later.",
           "responses": [
-            {"text": "What's it like on the frontier?", "next_node_id": "frontier_life"},
-            {"text": "Any dangerous routes I should avoid?", "next_node_id": "danger_info"},
-            {"text": "Nice to meet you. Gotta run.", "next_node_id": null}
-          ]
+            {
+              "text": "[Sit down and eat]",
+              "next_node_id": "stories"
+            },
+            {
+              "text": "Thanks. I'm Tomas?",
+              "next_node_id": "stories"
+            }
+          ],
+          "expression": "happy"
         },
         {
-          "id": "frontier_life",
-          "speaker_id": "kael_drifter",
-          "text": "It's quiet, mostly. Wide open space, scattered settlements. But that quiet can turn deadly fast \u2014 pirate ambushes, ion storms, nav hazards that don't show up on standard charts. That's why the Frontier Alliance keeps scouts like me busy.",
+          "id": "stories",
+          "speaker_id": "tomas_drifter",
+          "text": "Tomas. Most folks call me Drifter. I scout the frontier routes — mapping safe passages, charting jump corridors, finding the shortcuts nobody else bothers with. Way I see it, the stars don't care about your schedule. You learn to work with them, not against them.",
           "responses": [
-            {"text": "What about the dangerous routes?", "next_node_id": "danger_info"},
-            {"text": "Sounds like a tough life.", "next_node_id": null, "set_flag": "kael_frontier_talk"}
-          ]
+            {
+              "text": "What's Haven's Rest like?",
+              "next_node_id": "havens_rest_info"
+            },
+            {
+              "text": "You mentioned you're a scout. Good money in that?",
+              "next_node_id": "tariff_pitch"
+            }
+          ],
+          "expression": "happy"
         },
         {
-          "id": "danger_info",
-          "speaker_id": "kael_drifter",
-          "text": "Crimson Reach is the big one. Rich pickings if you make it through, but the danger level's no joke. Higher risk systems mean better prices, though \u2014 supply and demand. Just make sure your ship can handle the trip.",
+          "id": "havens_rest_info",
+          "speaker_id": "tomas_drifter",
+          "text": "Built from salvaged freighter hulls. No two corridors look alike. Farmers sell produce at the Harvest Market, kids run through the corridors, people barter face-to-face. Handshakes close deals here. First place where people knew my name and it wasn't a problem.",
           "responses": [
-            {"text": "Thanks for the warning, Kael.", "next_node_id": null, "set_flag": "kael_danger_warning"}
-          ]
+            {
+              "text": "Sounds like you've been running for a while.",
+              "next_node_id": "tariff_pitch"
+            },
+            {
+              "text": "Nice place. So what do you need?",
+              "next_node_id": "tariff_pitch"
+            }
+          ],
+          "expression": "happy"
+        },
+        {
+          "id": "tariff_pitch",
+          "speaker_id": "tomas_drifter",
+          "text": "Here's the thing. The Guild raised tariffs on Alliance goods — again. My textiles would sell for 200 a bale at Stellaris Port, but after the tariff, I'd clear maybe 30 credits. That's not trade. That's charity. And I don't take charity.",
+          "responses": [
+            {
+              "text": "What are you proposing?",
+              "next_node_id": "deal_proposal"
+            }
+          ],
+          "expression": "angry"
+        },
+        {
+          "id": "deal_proposal",
+          "speaker_id": "tomas_drifter",
+          "text": "You've got a bill of landing — Guild rate on the tariff. Take my textiles to Stellaris Port, sell them under your license. We split the profits. Fair deal, and a farmer on Verdant gets to feed her kids this month.",
+          "responses": [
+            {
+              "text": "Is this legal?",
+              "next_node_id": "is_it_legal"
+            },
+            {
+              "text": "Why should I trust you?",
+              "next_node_id": "why_trust"
+            },
+            {
+              "text": "What if I get caught?",
+              "next_node_id": "what_if_caught"
+            },
+            {
+              "text": "You've got a deal.",
+              "next_node_id": "accept",
+              "set_flag": "accepted_drifter_deal",
+              "excluded_flags": [
+                "declined_drifter_deal"
+              ]
+            },
+            {
+              "text": "Sorry, I don't bend rules.",
+              "next_node_id": "decline",
+              "set_flag": "declined_drifter_deal",
+              "excluded_flags": [
+                "accepted_drifter_deal"
+              ]
+            }
+          ],
+          "expression": "confident"
+        },
+        {
+          "id": "is_it_legal",
+          "speaker_id": "tomas_drifter",
+          "text": "It's... creative interpretation. You have a license to trade. I have goods to sell. The Guild writes rules to protect the Guild. I don't feel real obligated to help them do that. A closed door's just an invitation to find a window.",
+          "responses": [
+            {
+              "text": "Fair point. I'll do it.",
+              "next_node_id": "accept",
+              "set_flag": "accepted_drifter_deal"
+            },
+            {
+              "text": "I appreciate the honesty, but no.",
+              "next_node_id": "decline",
+              "set_flag": "declined_drifter_deal"
+            }
+          ],
+          "expression": "confident"
+        },
+        {
+          "id": "why_trust",
+          "speaker_id": "tomas_drifter",
+          "text": "You shouldn't. Not yet. Trust is earned, not given. But I'm offering you a fair split on a deal that hurts nobody and helps both of us. That's the best pitch I've got.",
+          "responses": [
+            {
+              "text": "Good enough. Let's do it.",
+              "next_node_id": "accept",
+              "set_flag": "accepted_drifter_deal"
+            },
+            {
+              "text": "I need to think about it. Not right now.",
+              "next_node_id": "decline",
+              "set_flag": "declined_drifter_deal"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "what_if_caught",
+          "speaker_id": "tomas_drifter",
+          "text": "You won't. But if you did? Your bill of landing is legitimate. You're selling textiles at Stellaris Port. That's what traders do. Nobody's going to audit a small-time captain moving five bales.",
+          "responses": [
+            {
+              "text": "Alright. I'm in.",
+              "next_node_id": "accept",
+              "set_flag": "accepted_drifter_deal"
+            },
+            {
+              "text": "I'm not comfortable with this.",
+              "next_node_id": "decline",
+              "set_flag": "declined_drifter_deal"
+            }
+          ],
+          "expression": "confident"
+        },
+        {
+          "id": "accept",
+          "speaker_id": "tomas_drifter",
+          "text": "Good. Take the textiles to Stellaris Port and sell them. Your cut will be waiting when it's done. Nobody gets hurt. The Guild still gets their tariff — just less of it. And a farmer gets to eat.",
+          "responses": [
+            {
+              "text": "I'll get it done.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "happy"
+        },
+        {
+          "id": "decline",
+          "speaker_id": "tomas_drifter",
+          "text": "Fair enough. You've got your own line. I respect that. Most people out here draw theirs in different places — doesn't make yours wrong. If you ever change your mind, you know where to find me.",
+          "responses": [
+            {
+              "text": "Thanks for the food, Tomas.",
+              "next_node_id": null,
+              "set_flag": "drifter_deal_resolved"
+            }
+          ],
+          "expression": "neutral"
         }
       ]
     },
@@ -155,38 +703,55 @@
           "speaker_id": "narrator",
           "text": "You are the child of an assistant foreman for an asteroid mining operation in the orbit of Nexus Prime. You grew up in an impoverished community, bled dry by corporate greed and wage slavery. As a child, you watched your father pull 16 hour shifts consistently, working himself into an early grave.",
           "responses": [
-            {"text": "[Continue]", "next_node_id": "intro_2"}
-          ]
+            {
+              "text": "[Continue]",
+              "next_node_id": "intro_2"
+            }
+          ],
+          "expression": "neutral"
         },
         {
           "id": "intro_2",
           "speaker_id": "narrator",
-          "text": "Between the stress and the poor air conditioning systems in your colony ship, your father passed away six months ago, at the age of 43. You had only just celebrated your 16th birthday. You have no path forward in life \u2014 no education, no family, no prospects.",
+          "text": "Between the stress and the poor air conditioning systems in your colony ship, your father passed away six months ago, at the age of 43. You had only just celebrated your 16th birthday. You have no path forward in life — no education, no family, no prospects.",
           "responses": [
-            {"text": "[Continue]", "next_node_id": "intro_3"}
-          ]
+            {
+              "text": "[Continue]",
+              "next_node_id": "intro_3"
+            }
+          ],
+          "expression": "neutral"
         },
         {
           "id": "intro_3",
           "speaker_id": "narrator",
           "text": "You consider staying aboard the colony ship, taking on some menial position. But without anyone to take you in, you'd merely be sinking into the same wage slavery that killed your father. At night, as you toss and turn weighing your options, it torments you to know that nothing gets better. Nothing will improve.",
           "responses": [
-            {"text": "[Continue]", "next_node_id": "intro_4"}
-          ]
+            {
+              "text": "[Continue]",
+              "next_node_id": "intro_4"
+            }
+          ],
+          "expression": "neutral"
         },
         {
           "id": "intro_4",
           "speaker_id": "narrator",
           "text": "Perhaps there is another path. With the last of your father's savings, you spend a few days cleaning up his possessions before pawning them off at the ship's trading post. You can barely afford the hull of a broken shuttle. A neighbor in maintenance helps you source an engine. As your credits dry out, you only just barely manage to get the shuttle working and charge the fuel rods.",
           "responses": [
-            {"text": "[Continue]", "next_node_id": "intro_5"}
-          ]
+            {
+              "text": "[Continue]",
+              "next_node_id": "intro_5"
+            }
+          ],
+          "expression": "neutral"
         },
         {
           "id": "intro_5",
           "speaker_id": "narrator",
-          "text": "Departing from the colony ship, you find yourself in the orbit of Nexus Prime, with the system at your disposal. You have 2,000 credits to your name. You are woefully unaware of the system, its politics, its people. Your goal is simple \u2014 to survive and find new horizons. Anywhere away from here.",
-          "responses": []
+          "text": "Departing from the colony ship, you find yourself in the orbit of Nexus Prime, with the system at your disposal. You have 2,000 credits to your name. You are woefully unaware of the system, its politics, its people. Your goal is simple — to survive and find new horizons. Anywhere away from here.",
+          "responses": [],
+          "expression": "neutral"
         }
       ]
     },
@@ -199,38 +764,113 @@
           "speaker_id": "officer_larsen",
           "text": "I need your bill of landing, and your registration, sir.",
           "responses": [
-            {"text": "Here is my registration, but I don't have a bill of landing.", "next_node_id": "no_bill"}
-          ]
+            {
+              "text": "Here is my registration, but I don't have a bill of landing.",
+              "next_node_id": "no_bill"
+            }
+          ],
+          "expression": "stern"
         },
         {
           "id": "no_bill",
           "speaker_id": "officer_larsen",
           "text": "Then I'm afraid we'll be confiscating any goods in your hull, as you are not cleared to import goods at this time.",
           "responses": [
-            {"text": "The only items in the hull are personal living supplies.", "next_node_id": "personal_supplies"}
-          ]
+            {
+              "text": "The only items in the hull are personal living supplies.",
+              "next_node_id": "personal_supplies"
+            }
+          ],
+          "expression": "stern"
         },
         {
           "id": "personal_supplies",
           "speaker_id": "officer_larsen",
           "text": "You'll be able to reclaim those once you pay the 250 credit fee to acquire your bill of landing.",
           "responses": [
-            {"text": "I'll pay the 250 credits.", "next_node_id": "payment_accepted"}
-          ]
+            {
+              "text": "I'll pay the 250 credits.",
+              "next_node_id": "payment_accepted"
+            }
+          ],
+          "expression": "neutral"
         },
         {
           "id": "payment_accepted",
           "speaker_id": "officer_larsen",
           "text": "Please wait in your shuttle for an hour while we process the paperwork for you.",
           "responses": [
-            {"text": "[Wait]", "next_node_id": "bill_granted"}
-          ]
+            {
+              "text": "[Wait]",
+              "next_node_id": "bill_granted"
+            }
+          ],
+          "expression": "neutral"
         },
         {
           "id": "bill_granted",
           "speaker_id": "officer_larsen",
           "text": "With your bill of landing in hand, you'll now be able to trade freely and import or export goods from our port.",
-          "responses": []
+          "responses": [
+            {
+              "text": "Thank you, Officer.",
+              "next_node_id": "shuttle_warning"
+            }
+          ],
+          "expression": "happy"
+        },
+        {
+          "id": "shuttle_warning",
+          "speaker_id": "officer_larsen",
+          "text": "One more thing. I had a look at your shuttle while we processed the paperwork. That thing has no weapons mounted — not even a basic pulse cannon. You've got a weapon slot, but it's empty.",
+          "responses": [
+            {
+              "text": "Is that a problem?",
+              "next_node_id": "danger_warning"
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "danger_warning",
+          "speaker_id": "officer_larsen",
+          "text": "It will be if you wander into the wrong part of space. The routes around Nexus Prime are safe enough, but systems marked as dangerous? Pirates, raiders — they don't ask questions. Without a weapon, you can't fight back. You'd be a sitting target.",
+          "responses": [
+            {
+              "text": "What should I do?",
+              "next_node_id": "advice"
+            },
+            {
+              "text": "I'll be careful.",
+              "next_node_id": "farewell"
+            }
+          ],
+          "expression": "angry"
+        },
+        {
+          "id": "advice",
+          "speaker_id": "officer_larsen",
+          "text": "Stick to the safe trade lanes for now — Nexus Prime, Forgeworks, places like that. Build up some credits trading, and visit the Shipyard when you can afford to outfit your shuttle properly. A basic weapon makes all the difference when trouble finds you.",
+          "responses": [
+            {
+              "text": "Understood. Thanks for the warning.",
+              "next_node_id": "farewell"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "farewell",
+          "speaker_id": "officer_larsen",
+          "text": "Good luck out there, Captain. Space doesn't care how young you are — it'll chew you up just the same. Fly smart.",
+          "responses": [
+            {
+              "text": "[Leave]",
+              "next_node_id": null,
+              "set_flag": "larsen_permit_complete"
+            }
+          ],
+          "expression": "neutral"
         }
       ]
     },
@@ -243,18 +883,1610 @@
           "speaker_id": "delivery_merchant",
           "text": "You there. I'll give you 500 credits to ship this iron ore off to Forgeworks. I just bought it, and I've been told that my carrier is full up. I need it there within the week.",
           "responses": [
-            {"text": "Tell me more about the job.", "next_node_id": "details"},
-            {"text": "I'll consider it.", "next_node_id": null}
-          ]
+            {
+              "text": "Tell me more about the job.",
+              "next_node_id": "details"
+            },
+            {
+              "text": "I'll consider it.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "confident"
         },
         {
           "id": "details",
           "speaker_id": "delivery_merchant",
-          "text": "It's 10 units of iron ore. Simple delivery run to Forgeworks \u2014 they're expecting it. Drop it off, and someone in a matching blue uniform will pay you on the spot. Check your mission log if you're interested.",
+          "text": "It's 10 units of iron ore. Simple delivery run to Forgeworks — they're expecting it. Drop it off, and someone in a matching blue uniform will pay you on the spot. Check your mission log if you're interested.",
           "responses": [
-            {"text": "Sounds straightforward enough.", "next_node_id": null},
-            {"text": "I'll think about it.", "next_node_id": null}
-          ]
+            {
+              "text": "Sounds straightforward enough.",
+              "next_node_id": null
+            },
+            {
+              "text": "I'll think about it.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "reva_distress",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "reva_sato",
+          "text": "You. I recognize your transponder signature.",
+          "responses": [
+            {
+              "text": "Captain Sato? From the distress signal?",
+              "next_node_id": "grateful_path",
+              "required_flags": [
+                "helped_reva_sato"
+              ]
+            },
+            {
+              "text": "Do I know you?",
+              "next_node_id": "cold_path",
+              "required_flags": [
+                "ignored_distress_signal"
+              ]
+            },
+            {
+              "text": "I don't think we've met.",
+              "next_node_id": "cold_path",
+              "excluded_flags": [
+                "helped_reva_sato",
+                "ignored_distress_signal"
+              ]
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "grateful_path",
+          "speaker_id": "reva_sato",
+          "text": "You answered my distress call when nobody else would. Three Guild escorts passed me by — their cargo was more valuable than my crew, apparently. But you stopped. That means something out here.",
+          "responses": [
+            {
+              "text": "Anyone would have done the same.",
+              "next_node_id": "grateful_info"
+            },
+            {
+              "text": "What happened to your convoy?",
+              "next_node_id": "grateful_info"
+            }
+          ],
+          "expression": "happy"
+        },
+        {
+          "id": "cold_path",
+          "speaker_id": "reva_sato",
+          "text": "I sent a distress signal three days ago. My convoy was hit — raiders disabled my engines and scattered the escort. Your ship was in range. You kept flying.",
+          "responses": [
+            {
+              "text": "I had my own problems.",
+              "next_node_id": "cold_info"
+            },
+            {
+              "text": "I didn't think I could help.",
+              "next_node_id": "cold_info"
+            }
+          ],
+          "expression": "angry"
+        },
+        {
+          "id": "grateful_info",
+          "speaker_id": "reva_sato",
+          "text": "That's the third convoy hit this quarter on the Nova corridor. Used to be one, maybe two raids a year. Now it's every other week. And the raiders — they knew exactly where we'd be. Timing, heading, cargo manifest. Someone is feeding them information.",
+          "responses": [
+            {
+              "text": "That sounds like more than random piracy.",
+              "next_node_id": "pattern"
+            },
+            {
+              "text": "Do you have proof?",
+              "next_node_id": "pattern"
+            },
+            {
+              "text": "[Persuasion 2] Any idea who's behind the leaks?",
+              "next_node_id": null,
+              "skill_check": {
+                "skill": "persuasion",
+                "difficulty": 2,
+                "success_node_id": "patrol_data",
+                "failure_node_id": "pattern",
+                "set_flag_on_success": "reva_shared_patrol_data"
+              }
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "cold_info",
+          "speaker_id": "reva_sato",
+          "text": "I'm not here to guilt you. I'm here because my convoy was the third hit this quarter. Used to be rare — now it's every other week. The raiders knew our route, our timing, our cargo. That's not luck. That's intelligence.",
+          "responses": [
+            {
+              "text": "Someone's feeding them information?",
+              "next_node_id": "pattern"
+            },
+            {
+              "text": "Why are you telling me this?",
+              "next_node_id": "pattern"
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "pattern",
+          "speaker_id": "reva_sato",
+          "text": "I filed reports with the Guild. They said they'd investigate. That was six weeks ago. Nothing. I've been running escort for twelve years and I've never seen the Guild drag their feet on piracy. Something doesn't add up.",
+          "responses": [
+            {
+              "text": "What are you going to do about it?",
+              "next_node_id": "resolve"
+            },
+            {
+              "text": "Maybe the Guild is involved.",
+              "next_node_id": "resolve"
+            }
+          ],
+          "expression": "angry"
+        },
+        {
+          "id": "patrol_data",
+          "speaker_id": "reva_sato",
+          "text": "You're sharp. I pulled the patrol rotation schedules before my last run. The gaps in coverage — they're not random. Someone is adjusting the patrol windows right before each attack. I've got the timestamps saved. Take them. Maybe they'll mean something to the right person.",
+          "responses": [
+            {
+              "text": "I'll hold onto this.",
+              "next_node_id": "resolve",
+              "set_flag": "has_patrol_data"
+            },
+            {
+              "text": "Who should I show this to?",
+              "next_node_id": "resolve",
+              "set_flag": "has_patrol_data"
+            }
+          ],
+          "expression": "confident"
+        },
+        {
+          "id": "resolve",
+          "speaker_id": "reva_sato",
+          "text": "I'm going to keep running convoys. Someone has to. But if you hear anything — from the bars, the docks, the places I can't go in a Guild uniform — I want to know. The people on those freighters are counting on someone to figure this out.",
+          "responses": [
+            {
+              "text": "I'll keep my ears open, Captain.",
+              "next_node_id": null,
+              "set_flag": "cargo_lost_resolved"
+            },
+            {
+              "text": "Good luck out there, Sato.",
+              "next_node_id": null,
+              "set_flag": "cargo_lost_resolved"
+            }
+          ],
+          "expression": "stern"
+        }
+      ]
+    },
+    {
+      "id": "dex_cantina",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "dex_halloran",
+          "text": "Easy, easy. Don't look around like that — you'll draw attention. Sit down. Buy a drink. Look bored. That's the first rule of Nexus Prime cantinas.",
+          "responses": [
+            {
+              "text": "Who are you?",
+              "next_node_id": "intro"
+            },
+            {
+              "text": "Why are you talking to me?",
+              "next_node_id": "why_me"
+            }
+          ],
+          "expression": "confident"
+        },
+        {
+          "id": "intro",
+          "speaker_id": "dex_halloran",
+          "text": "Dex Halloran. I sell information. Buy it, too, when the price is right. I know every trader, smuggler, and customs officer between here and Crimson Reach. And I know you've been asking questions about missing convoys.",
+          "responses": [
+            {
+              "text": "How do you know what I've been asking about?",
+              "next_node_id": "tension"
+            },
+            {
+              "text": "What kind of information?",
+              "next_node_id": "tension"
+            }
+          ],
+          "expression": "confident"
+        },
+        {
+          "id": "why_me",
+          "speaker_id": "dex_halloran",
+          "text": "Because you helped Reva Sato, and that puts you on a very short list of people in this system who actually give a damn. I'm Dex. I deal in information. And right now, I've got a problem that requires someone who isn't me.",
+          "responses": [
+            {
+              "text": "I'm listening.",
+              "next_node_id": "tension"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "tension",
+          "speaker_id": "dex_halloran",
+          "text": "See that table in the corner? Union dockworker and a Guild freight auditor, sharing a pitcher like old friends. Six months ago they would have spit in each other's drinks. Something's changed. Money is moving through channels I can't trace, and people who should be enemies are suddenly cooperating.",
+          "responses": [
+            {
+              "text": "What does that have to do with the convoy raids?",
+              "next_node_id": "the_favor"
+            },
+            {
+              "text": "[Persuasion 3] What do you think is really going on?",
+              "next_node_id": null,
+              "skill_check": {
+                "skill": "persuasion",
+                "difficulty": 3,
+                "success_node_id": "chip_truth",
+                "failure_node_id": "the_favor"
+              }
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "chip_truth",
+          "speaker_id": "dex_halloran",
+          "text": "I think someone is bankrolling the raids. Not pirates — pirates don't have this kind of coordination. Someone with real resources and real reach. I intercepted a data chip last week from a courier who didn't know what he was carrying. Encrypted, military-grade. I can't crack it, but I know someone at Crimson Reach who might.",
+          "responses": [
+            {
+              "text": "You want me to deliver the chip.",
+              "next_node_id": "accept_path"
+            },
+            {
+              "text": "Why can't you take it yourself?",
+              "next_node_id": "why_not_you"
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "the_favor",
+          "speaker_id": "dex_halloran",
+          "text": "Maybe everything. Maybe nothing. I intercepted a data chip last week — encrypted, heavy-duty. I need someone to run it to Crimson Reach. There's a woman there, Malia Torres, who can crack anything. I can't go myself — I have too many eyes on me right now.",
+          "responses": [
+            {
+              "text": "What's on the chip?",
+              "next_node_id": "accept_path"
+            },
+            {
+              "text": "Why should I help you?",
+              "next_node_id": "why_not_you"
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "why_not_you",
+          "speaker_id": "dex_halloran",
+          "text": "Because I'm watched. Every dock, every gate. I'm useful to a lot of people, which means a lot of people are paying attention to where I go. A nobody captain running cargo? That's invisible. No offense.",
+          "responses": [
+            {
+              "text": "None taken. What's in it for me?",
+              "next_node_id": "accept_path"
+            },
+            {
+              "text": "I don't like being called invisible.",
+              "next_node_id": "accept_path"
+            }
+          ],
+          "expression": "confident"
+        },
+        {
+          "id": "accept_path",
+          "speaker_id": "dex_halloran",
+          "text": "Take the chip to Malia Torres at Crimson Reach. She runs salvage operations out of the lower decks. Tell her Dex sent you. She'll know what to do with it. And Captain — don't try to read it yourself. The encryption has a wipe trigger. Open it wrong and you lose everything.",
+          "responses": [
+            {
+              "text": "I'll do it.",
+              "next_node_id": "accepted",
+              "set_flag": "dex_favor_accepted"
+            },
+            {
+              "text": "I don't want to get involved.",
+              "next_node_id": "declined"
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "accepted",
+          "speaker_id": "dex_halloran",
+          "text": "Smart choice. I'll owe you one — and in this business, a favor from Dex Halloran is worth more than credits. Stay safe out there. The people behind this aren't amateurs.",
+          "responses": [
+            {
+              "text": "I'll be careful.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "happy"
+        },
+        {
+          "id": "declined",
+          "speaker_id": "dex_halloran",
+          "text": "Your call. But whatever's on that chip, it's connected to the convoy raids, the money, all of it. If you change your mind, you know where to find me. I'm always at this table. Third stool from the left.",
+          "responses": [
+            {
+              "text": "[Leave]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "torres_underground",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "malia_torres",
+          "text": "You're the one Dex sent? Figured he'd send someone eventually. Come on — not here. Too many ears in the main bay. Follow me.",
+          "responses": [
+            {
+              "text": "[Follow her]",
+              "next_node_id": "workshop"
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "workshop",
+          "speaker_id": "malia_torres",
+          "text": "Malia Torres. I run salvage operations — the official ones, anyway. Down here, I crack open things people don't want cracked. Your chip. Hand it over.",
+          "responses": [
+            {
+              "text": "[Hand over the data chip]",
+              "next_node_id": "analysis"
+            },
+            {
+              "text": "How do I know I can trust you?",
+              "next_node_id": "trust"
+            }
+          ],
+          "expression": "confident"
+        },
+        {
+          "id": "trust",
+          "speaker_id": "malia_torres",
+          "text": "You don't. But Dex does, and that's why you're here. I've lived on Crimson Reach for fifteen years. I know every bolt and weld on this station. If I wanted to screw you over, I'd have done it before you walked through that door.",
+          "responses": [
+            {
+              "text": "[Hand over the data chip]",
+              "next_node_id": "analysis"
+            }
+          ],
+          "expression": "confident"
+        },
+        {
+          "id": "analysis",
+          "speaker_id": "malia_torres",
+          "text": "Give me a second... military-grade, like he said. But the header — this isn't raider encryption. This is corporate. Commerce Guild standard, Series-7 cipher. Someone inside the Guild encrypted this.",
+          "responses": [
+            {
+              "text": "Can you read it?",
+              "next_node_id": "partial_read"
+            },
+            {
+              "text": "The Guild is behind the raids?",
+              "next_node_id": "partial_read"
+            }
+          ],
+          "expression": "surprised"
+        },
+        {
+          "id": "partial_read",
+          "speaker_id": "malia_torres",
+          "text": "Parts of it. Shipping routes, patrol schedules, convoy manifests — everything a raider would need to hit a target clean. And payment records. Someone with serious resources is funding this. The amounts are... this isn't petty piracy. This is organized. Planned. Bankrolled.",
+          "responses": [
+            {
+              "text": "Who's behind it?",
+              "next_node_id": "conspiracy"
+            },
+            {
+              "text": "What do we do with this?",
+              "next_node_id": "conspiracy"
+            }
+          ],
+          "expression": "surprised"
+        },
+        {
+          "id": "conspiracy",
+          "speaker_id": "malia_torres",
+          "text": "The names are scrubbed. Whoever set this up knew what they were doing. But I can tell you this — the money trail runs through three systems, and it always circles back to the same place. Someone high up. Someone who benefits from chaos on the shipping lanes. That's all I can pull for now.",
+          "responses": [
+            {
+              "text": "This is bigger than I thought.",
+              "next_node_id": "offer"
+            },
+            {
+              "text": "Reva Sato's convoys were hit because of this.",
+              "next_node_id": "offer"
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "offer",
+          "speaker_id": "malia_torres",
+          "text": "Look. Crimson Reach doesn't play by Guild rules. Down here, we take care of our own. If you want to dig into this, I can help. I've got contacts, tools, and access to channels the Guild doesn't know about. But you'll need to earn your way in.",
+          "responses": [
+            {
+              "text": "What do you mean?",
+              "next_node_id": "underground_access"
+            }
+          ],
+          "expression": "confident"
+        },
+        {
+          "id": "underground_access",
+          "speaker_id": "malia_torres",
+          "text": "The underground market. Gear, information, jobs the Guild pretends don't exist. You've proven you're not a Guild stooge. That's enough for now. Welcome to the lower decks, Captain.",
+          "responses": [
+            {
+              "text": "I won't let you down.",
+              "next_node_id": "farewell",
+              "set_flag": "met_malia_torres"
+            },
+            {
+              "text": "Just point me in the right direction.",
+              "next_node_id": "farewell",
+              "set_flag": "met_malia_torres"
+            }
+          ],
+          "expression": "confident"
+        },
+        {
+          "id": "farewell",
+          "speaker_id": "malia_torres",
+          "text": "One more thing. Keep this quiet. The people behind these raids have eyes everywhere. If they find out what we know, this whole operation goes dark — and so do we.",
+          "responses": [
+            {
+              "text": "[Nod and leave]",
+              "next_node_id": null,
+              "set_flag": "crimson_underground_access"
+            }
+          ],
+          "expression": "stern"
+        }
+      ]
+    },
+    {
+      "id": "embassy_summit",
+      "start_node_id": "arrival",
+      "nodes": [
+        {
+          "id": "arrival",
+          "speaker_id": "dr_priya_osei",
+          "text": "Welcome to Axiom Labs. The Governing Council has convened an emergency summit on the pirate threat. Representatives from all four factions are here. I've arranged a seat for you as a neutral observer — you've dealt with each faction, and frankly, none of them trust each other enough to accept anyone else.",
+          "responses": [
+            {
+              "text": "Who's representing each faction?",
+              "next_node_id": "faction_reps"
+            },
+            {
+              "text": "Let's get started.",
+              "next_node_id": "guild_opens"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "faction_reps",
+          "speaker_id": "dr_priya_osei",
+          "text": "The Commerce Guild sent Captain Reva Sato and two trade consuls. The Miners Union delegation is led by Hanna Voss — she insisted on coming personally. The Alliance sent Tomas Drifter and another representative who've been arguing in the corridor for twenty minutes. And I'm chairing the session on behalf of the Collective.",
+          "responses": [
+            {
+              "text": "Quite the mix.",
+              "next_node_id": "guild_opens"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "guild_opens",
+          "speaker_id": "reva_sato",
+          "text": "The Commerce Guild proposes a Joint Patrol Initiative. Guild-funded escort corvettes on every major trade route. Standardized transponder protocols. Centralized threat reporting through Guild communications infrastructure. We have the ships, the training, and the logistics network. The pirate threat demands a professional military response.",
+          "responses": [
+            {
+              "text": "That gives the Guild a lot of control.",
+              "next_node_id": "union_responds"
+            },
+            {
+              "text": "Go on.",
+              "next_node_id": "union_responds"
+            }
+          ],
+          "expression": "confident"
+        },
+        {
+          "id": "union_responds",
+          "speaker_id": "hanna_voss",
+          "text": "'Professional military response.' That's a nice way of saying Guild warships in every system. Last time we let the Guild 'protect' our shipping lanes, they charged us triple tariffs for the privilege. We'll arm our own convoys. The Union doesn't need Guild oversight to defend our workers.",
+          "responses": [
+            {
+              "text": "She has a point.",
+              "next_node_id": "collective_proposes"
+            },
+            {
+              "text": "Divided defense is weaker.",
+              "next_node_id": "collective_proposes"
+            }
+          ],
+          "expression": "angry"
+        },
+        {
+          "id": "collective_proposes",
+          "speaker_id": "dr_priya_osei",
+          "text": "If I may — the Collective proposes a compromise. A sector-wide sensor network. Real-time tracking of all vessel movements through shared telemetry. No single faction controls the data — it feeds into a neutral analysis system here at Axiom Labs. We identify pirate patterns, we predict strikes, we respond faster.",
+          "responses": [
+            {
+              "text": "Surveillance of every ship in the Expanse?",
+              "next_node_id": "alliance_objects"
+            },
+            {
+              "text": "That could work.",
+              "next_node_id": "alliance_objects"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "alliance_objects",
+          "speaker_id": "tomas_drifter",
+          "text": "With respect, Doctor — and I mean that loosely — you're asking every independent pilot in the Expanse to broadcast their position to a Collective database. Half the Alliance makes a living because nobody tracks where we go or what we carry. You want to end piracy? Arm the stations, share intel voluntarily, and stop trying to build systems that watch everyone.",
+          "responses": [
+            {
+              "text": "Every proposal has problems.",
+              "next_node_id": "summit_deadlock"
+            },
+            {
+              "text": "Is there any common ground here?",
+              "next_node_id": "summit_deadlock"
+            }
+          ],
+          "expression": "angry"
+        },
+        {
+          "id": "summit_deadlock",
+          "speaker_id": "dr_priya_osei",
+          "text": "The session has reached an impasse. The Guild won't fund patrols without oversight authority. The Union won't accept oversight. The Collective won't share sensor technology without data governance rights. The Alliance won't participate in any centralized system. The charter on the wall behind me reads 'Together We Build' — but today, together seems very far away.",
+          "responses": [
+            {
+              "text": "[Persuasion] May I address the delegates?",
+              "next_node_id": "observation_moment",
+              "skill_check": {
+                "skill": "persuasion",
+                "difficulty": 3,
+                "success_node_id": "player_speaks",
+                "failure_node_id": "speech_fails"
+              }
+            },
+            {
+              "text": "Maybe they need to fail before they'll cooperate.",
+              "next_node_id": "observation_moment"
+            },
+            {
+              "text": "I've seen enough.",
+              "next_node_id": "observation_moment"
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "player_speaks",
+          "speaker_id": "dr_priya_osei",
+          "text": "The room goes quiet as you stand. You speak plainly — about the convoy you saw burning, about the escalating attacks, about what happens if the factions let pride override survival. For a moment, the delegates listen. Reva nods slowly. Hanna crosses her arms but doesn't interrupt. It won't change the vote today. But they heard you.",
+          "responses": [
+            {
+              "text": "It was worth saying.",
+              "next_node_id": "observation_moment",
+              "set_flag": "spoke_at_summit",
+              "faction_reputation_changes": [
+                {
+                  "commerce_guild": -1
+                },
+                {
+                  "miners_union": 1
+                },
+                {
+                  "frontier_alliance": 1
+                }
+              ]
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "speech_fails",
+          "speaker_id": "dr_priya_osei",
+          "text": "You stand to address the room, but one of the Guild consuls cuts you off — 'This is a session for faction representatives, not freelance pilots.' Priya tries to intercede, but the moment passes. The delegates return to their entrenched positions.",
+          "responses": [
+            {
+              "text": "[Sit back down]",
+              "next_node_id": "observation_moment"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "observation_moment",
+          "speaker_id": "dr_priya_osei",
+          "text": "The session winds down. Delegates gather their materials and exchange stiff courtesies. As the room empties, you have a last chance to observe.",
+          "responses": [
+            {
+              "text": "[Observation] Watch the delegates carefully.",
+              "next_node_id": "missed_signal",
+              "skill_check": {
+                "skill": "observation",
+                "difficulty": 2,
+                "success_node_id": "noticed_signal",
+                "failure_node_id": "missed_signal"
+              }
+            },
+            {
+              "text": "Time to go.",
+              "next_node_id": "missed_signal"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "noticed_signal",
+          "speaker_id": "dr_priya_osei",
+          "text": "Your eye catches it — barely. One of the Guild trade consuls palms a small data chip to someone in the observation gallery. Plain clothes, no faction insignia. They pocket it and slip through a service corridor. The consul rejoins the Guild delegation as if nothing happened. You glance at Priya. She's watching the door they left through. She saw it too.",
+          "responses": [
+            {
+              "text": "Did you see that?",
+              "next_node_id": "summit_farewell",
+              "set_flag": "noticed_guild_signal",
+              "faction_reputation_changes": [
+                {
+                  "commerce_guild": -2
+                },
+                {
+                  "frontier_alliance": 1
+                }
+              ]
+            },
+            {
+              "text": "[Say nothing]",
+              "next_node_id": "summit_farewell",
+              "set_flag": "noticed_guild_signal",
+              "faction_reputation_changes": [
+                {
+                  "commerce_guild": -2
+                },
+                {
+                  "frontier_alliance": 1
+                }
+              ]
+            }
+          ],
+          "expression": "surprised"
+        },
+        {
+          "id": "missed_signal",
+          "speaker_id": "dr_priya_osei",
+          "text": "The summit concludes with formal statements of 'continued dialogue' — diplomatic language for failure. Something about the proceedings nags at you, but you can't place it. Priya frowns at something across the room, then shakes her head. 'Did you see...' She trails off. 'Never mind. Probably nothing.'",
+          "responses": [
+            {
+              "text": "Maybe next time.",
+              "next_node_id": "summit_farewell"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "summit_farewell",
+          "speaker_id": "dr_priya_osei",
+          "text": "Thank you for coming. I know this wasn't encouraging. But having someone in the room who isn't aligned with any faction matters more than any of them realize. Whatever comes next, at least one person saw the full picture today.",
+          "responses": [
+            {
+              "text": "[Leave the summit]",
+              "next_node_id": null,
+              "set_flag": "attended_embassy_summit"
+            }
+          ],
+          "expression": "happy"
+        }
+      ]
+    },
+    {
+      "id": "dex_tunnel_briefing",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "dex_halloran",
+          "text": "You again. Sit down — and don't look at me like that. I heard about the ambush. Military-grade hardware on unmarked hulls. That ring any bells?",
+          "responses": [
+            {
+              "text": "Guild hardware. I saw the markings.",
+              "next_node_id": "guild_confirmation"
+            },
+            {
+              "text": "How do you know about that?",
+              "next_node_id": "dex_sources"
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "dex_sources",
+          "speaker_id": "dex_halloran",
+          "text": "I know because it's my business to know. And because I'm not the only one asking questions. The Guild supply ledgers don't add up — hardware is disappearing off the books. Someone inside is diverting it.",
+          "responses": [
+            {
+              "text": "Who?",
+              "next_node_id": "guild_confirmation"
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "guild_confirmation",
+          "speaker_id": "dex_halloran",
+          "text": "I don't have a name yet. But I have a lead. There's a man at Breakstone — Oren Tak, retired miner. Used to run the deep tunnels near Iron Depths before they sealed them. He saw something down there, something the Union covered up. A facility that shouldn't exist.",
+          "responses": [
+            {
+              "text": "Why would a miner know about Guild weapons?",
+              "next_node_id": "connection"
+            },
+            {
+              "text": "What kind of facility?",
+              "next_node_id": "connection"
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "connection",
+          "speaker_id": "dex_halloran",
+          "text": "The tunnels connect to old freight routes — pre-Union infrastructure that predates the current maps. If someone wanted to move contraband without hitting customs checkpoints, those tunnels would be perfect. Oren can tell you more, but he won't talk to just anyone. You'll need to earn his trust. Head to Breakstone and find him in the lower docks.",
+          "responses": [
+            {
+              "text": "I'll find him.",
+              "next_node_id": null,
+              "set_flag": "dex_tunnel_briefing_heard",
+              "faction_reputation_changes": [
+                {
+                  "frontier_alliance": 1
+                }
+              ]
+            },
+            {
+              "text": "Why should I trust you?",
+              "next_node_id": "dex_motive"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "dex_motive",
+          "speaker_id": "dex_halloran",
+          "text": "You shouldn't. But I gave you the Crimson Run lead and it panned out, didn't it? I'm not doing this out of charity. Whoever is arming those pirates is bad for everyone — including my business. Oren Tak, lower docks, Breakstone. Don't keep him waiting; he spooks easy.",
+          "responses": [
+            {
+              "text": "Understood.",
+              "next_node_id": null,
+              "set_flag": "dex_tunnel_briefing_heard",
+              "faction_reputation_changes": [
+                {
+                  "frontier_alliance": 1
+                }
+              ]
+            }
+          ],
+          "expression": "confident"
+        }
+      ]
+    },
+    {
+      "id": "oren_tak_meeting",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "oren_tak",
+          "text": "You're not Union. I can tell from the way you walk — no dust on your boots, no calluses. What do you want with an old tunneler?",
+          "responses": [
+            {
+              "text": "Dex Halloran sent me. He said you saw something in the deep tunnels.",
+              "next_node_id": "suspicious"
+            },
+            {
+              "text": "I'm just passing through.",
+              "next_node_id": "dismissive"
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "dismissive",
+          "speaker_id": "oren_tak",
+          "text": "Then pass through. I've got nothing to say to tourists.",
+          "responses": [
+            {
+              "text": "Actually — Dex sent me. About the tunnels near Iron Depths.",
+              "next_node_id": "suspicious"
+            },
+            {
+              "text": "[Leave]",
+              "next_node_id": null,
+              "set_flag": "met_oren_tak"
+            }
+          ],
+          "expression": "angry"
+        },
+        {
+          "id": "suspicious",
+          "speaker_id": "oren_tak",
+          "text": "Dex. That name buys you thirty seconds. The tunnels are sealed for a reason, and I sealed my mouth about them for a reason too. Union brass made that very clear when they pensioned me off early.",
+          "responses": [
+            {
+              "text": "[Persuasion] Whatever you saw, it's connected to the pirate attacks. People are dying on those convoy routes.",
+              "next_node_id": "refuse",
+              "skill_check": {
+                "skill": "persuasion",
+                "difficulty": 2,
+                "success_node_id": "trust_earned",
+                "failure_node_id": "refuse"
+              }
+            },
+            {
+              "text": "What did the Union threaten you with?",
+              "next_node_id": "union_threat"
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "union_threat",
+          "speaker_id": "oren_tak",
+          "text": "Threaten? Nothing so dramatic. They just made my pension conditional on my silence. Forty years in the tunnels, and my retirement depends on pretending I never saw what I saw. You think I'm going to throw that away for Dex Halloran?",
+          "responses": [
+            {
+              "text": "[Persuasion] People are being killed with military weapons that shouldn't exist. Your pension won't mean much if the whole sector falls apart.",
+              "next_node_id": "refuse",
+              "skill_check": {
+                "skill": "persuasion",
+                "difficulty": 2,
+                "success_node_id": "trust_earned",
+                "failure_node_id": "refuse"
+              }
+            },
+            {
+              "text": "I understand. I won't push.",
+              "next_node_id": "refuse"
+            }
+          ],
+          "expression": "angry"
+        },
+        {
+          "id": "refuse",
+          "speaker_id": "oren_tak",
+          "text": "Look, I can see you mean well. But I'm not ready to stick my neck out. Not yet. Maybe if things get worse... come find me again. I'm not going anywhere.",
+          "responses": [
+            {
+              "text": "I'll be back.",
+              "next_node_id": null,
+              "set_flag": "met_oren_tak"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "trust_earned",
+          "speaker_id": "oren_tak",
+          "text": "Oren stares at the table for a long moment. His jaw works like he's chewing something bitter. Then he leans forward and lowers his voice.",
+          "responses": [
+            {
+              "text": "[Listen]",
+              "next_node_id": "revelation"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "revelation",
+          "speaker_id": "oren_tak",
+          "text": "Three years ago, my crew broke through into a side gallery near Iron Depths — Sublevel 7, beyond the mapped sections. There was a facility down there. Not Union-built. The architecture was wrong — too clean, too modern. Reinforced bulkheads, atmospheric scrubbers, cargo lifts that went deeper than anything on the official schematics. And crates. Hundreds of crates, all stamped with Commerce Guild freight codes.",
+          "responses": [
+            {
+              "text": "Guild crates in a Union mine?",
+              "next_node_id": "details"
+            },
+            {
+              "text": "What was in them?",
+              "next_node_id": "details"
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "details",
+          "speaker_id": "oren_tak",
+          "text": "I didn't get to open them — foreman pulled us out within the hour and the tunnel was sealed by morning. But I recognized the freight codes. They were the same format used for military procurement. Weapons, ship components, drive cores. Whatever that facility is, it's a staging point. And someone with both Guild access and Union cooperation built it right under Breakstone.",
+          "responses": [
+            {
+              "text": "That's the connection. Thank you, Oren.",
+              "next_node_id": "farewell",
+              "set_flag": "oren_intel_received",
+              "faction_reputation_changes": [
+                {
+                  "miners_union": 2
+                },
+                {
+                  "commerce_guild": -1
+                }
+              ]
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "farewell",
+          "speaker_id": "oren_tak",
+          "text": "Don't thank me. Just... be careful who you tell. The people running that facility has friends in high places — maybe in every faction. And if they find out I talked... He trails off and stares into his drink. Iron Depths, Sublevel 7. That's all I know.",
+          "responses": [
+            {
+              "text": "Your secret's safe.",
+              "next_node_id": null,
+              "set_flag": "met_oren_tak"
+            }
+          ],
+          "expression": "angry"
+        }
+      ]
+    },
+    {
+      "id": "sienna_vek_warning",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "sienna_vek",
+          "text": "A woman in a Guild logistics uniform slides into the seat across from you. Her eyes are bloodshot and her hands are shaking. She glances at the cantina door before speaking. You came out of the sealed sections. I saw you on the security feeds before I wiped them. We need to talk.",
+          "responses": [
+            {
+              "text": "Who are you?",
+              "next_node_id": "introduction"
+            },
+            {
+              "text": "You wiped the feeds? Why?",
+              "next_node_id": "why_help"
+            }
+          ],
+          "expression": "angry"
+        },
+        {
+          "id": "introduction",
+          "speaker_id": "sienna_vek",
+          "text": "Sienna Vek. Systems engineer, Commerce Guild Logistics Division. I was transferred here fourteen months ago to maintain environmental controls for what I was told was a deep-core mining research project. It's not a research project.",
+          "responses": [
+            {
+              "text": "What is it?",
+              "next_node_id": "revelation"
+            },
+            {
+              "text": "Why should I trust a Guild engineer?",
+              "next_node_id": "why_help"
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "why_help",
+          "speaker_id": "sienna_vek",
+          "text": "Because I've been watching shipments come through that facility for over a year and the manifests don't match the cargo. Because three engineers who asked questions were reassigned to stations that don't appear on any Guild directory. And because last week I found schematics on the secure network that made me stop sleeping.",
+          "responses": [
+            {
+              "text": "What kind of schematics?",
+              "next_node_id": "revelation"
+            }
+          ],
+          "expression": "angry"
+        },
+        {
+          "id": "revelation",
+          "speaker_id": "sienna_vek",
+          "text": "Gravitational lensing arrays. Sixteen of them, each the size of a cargo shuttle. The design specs reference something called Project Convergence. The arrays are designed to focus gravitational force into a single point — an artificial singularity. Not a weapon in any conventional sense. A singularity would collapse everything within its gravitational radius. Ships, stations, asteroids. The star itself.",
+          "responses": [
+            {
+              "text": "They're building a weapon that could destroy the entire Expanse?",
+              "next_node_id": "scale"
+            },
+            {
+              "text": "That's impossible. You can't just create a black hole.",
+              "next_node_id": "not_impossible"
+            }
+          ],
+          "expression": "angry"
+        },
+        {
+          "id": "not_impossible",
+          "speaker_id": "sienna_vek",
+          "text": "That's what I thought. Then I checked the energy calculations. The Aurelia star outputs enough energy to bootstrap the process — you don't create the singularity from nothing, you use the star's own mass against it. The arrays redirect gravitational force inward. Once it starts, it's self-sustaining. The star collapses, and everything in orbit goes with it.",
+          "responses": [
+            {
+              "text": "Why would the Guild destroy the system they profit from?",
+              "next_node_id": "scale"
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "scale",
+          "speaker_id": "sienna_vek",
+          "text": "That's what I can't figure out. The Guild's entire operation depends on the Expanse. Tariffs, trade routes, mining concessions — all of it gone. Unless they have somewhere else to go. The schematics reference coordinates outside the Expanse. Another system, maybe multiple systems. Whoever authorized Project Convergence isn't planning to be here when it fires.",
+          "responses": [
+            {
+              "text": "[Persuasion] I need copies of those schematics. Everything you have on Project Convergence.",
+              "next_node_id": "refuse_data",
+              "skill_check": {
+                "skill": "persuasion",
+                "difficulty": 3,
+                "success_node_id": "share_data",
+                "failure_node_id": "refuse_data"
+              }
+            },
+            {
+              "text": "Who authorized this? Who in Guild leadership signed off?",
+              "next_node_id": "leadership"
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "leadership",
+          "speaker_id": "sienna_vek",
+          "text": "The authorization codes trace to the Guild's Inner Ledger — the executive council that handles off-book operations. No individual names on the documents I've seen, just Ledger seals. But the logistics chain runs through Nexus Prime. That's where the coordination happens.",
+          "responses": [
+            {
+              "text": "[Persuasion] Give me the data. Schematics, authorization codes, everything. I'll make sure the right people see it.",
+              "next_node_id": "refuse_data",
+              "skill_check": {
+                "skill": "persuasion",
+                "difficulty": 3,
+                "success_node_id": "share_data",
+                "failure_node_id": "refuse_data"
+              }
+            },
+            {
+              "text": "Come with me. You're not safe here.",
+              "next_node_id": "cant_leave"
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "cant_leave",
+          "speaker_id": "sienna_vek",
+          "text": "I can't. If I disappear, they'll know someone talked. Right now I'm just another engineer running atmosphere scrubbers. I'm more useful here, watching. But I can give you what I've found so far.",
+          "responses": [
+            {
+              "text": "Then give me everything you have.",
+              "next_node_id": "share_data"
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "share_data",
+          "speaker_id": "sienna_vek",
+          "text": "She slides a data chip across the table. It's smaller than a thumbnail. Encrypted schematics, energy calculations, shipping manifests, authorization seals. Everything I could pull without tripping the access logs. Project Convergence. Sixteen gravitational lensing arrays. An artificial singularity pointed at the heart of the Aurelia Expanse. Someone has to stop this.",
+          "responses": [
+            {
+              "text": "I'll stop it.",
+              "next_node_id": "farewell",
+              "set_flag": "facility_intel_gathered",
+              "faction_reputation_changes": [
+                {
+                  "science_collective": 3
+                },
+                {
+                  "commerce_guild": -3
+                }
+              ]
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "refuse_data",
+          "speaker_id": "sienna_vek",
+          "text": "She hesitates, fingers tightening around the data chip in her pocket. I want to trust you. But if this gets intercepted, I'm dead. The people running this project don't leave witnesses. She pauses. I'll tell you what I know. But the raw data stays with me until I'm sure you can actually do something with it.",
+          "responses": [
+            {
+              "text": "Tell me what you can.",
+              "next_node_id": "partial_intel"
+            }
+          ],
+          "expression": "angry"
+        },
+        {
+          "id": "partial_intel",
+          "speaker_id": "sienna_vek",
+          "text": "Project Convergence. Sixteen gravitational lensing arrays being assembled in sections across the Expanse. The Guild's Inner Ledger authorized it. The arrays are designed to collapse the Aurelia star into an artificial singularity. I don't know the timeline, but the manufacturing pace has accelerated in the last two months. Whatever they're planning, it's soon.",
+          "responses": [
+            {
+              "text": "That's enough. I know what to look for now.",
+              "next_node_id": "farewell",
+              "set_flag": "facility_intel_gathered",
+              "faction_reputation_changes": [
+                {
+                  "science_collective": 1
+                },
+                {
+                  "commerce_guild": -2
+                }
+              ]
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "farewell",
+          "speaker_id": "sienna_vek",
+          "text": "Be careful. The Ledger has people in every faction — that's how they built this facility on Union territory without anyone asking questions. Don't assume anyone is clean. She stands, straightens her uniform, and walks out of the cantina without looking back.",
+          "responses": [
+            {
+              "text": "[Watch her go]",
+              "next_node_id": null,
+              "set_flag": "met_sienna_vek"
+            }
+          ],
+          "expression": "stern"
+        }
+      ]
+    },
+    {
+      "id": "priya_convergence_analysis",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "dr_priya_osei",
+          "text": "Priya is waiting in her lab when you arrive. The holographic displays are dark except for one, cycling through structural diagrams you recognize from the facility. She looks like she hasn't slept. I've been running the numbers since you sent the preliminary data. Tell me you brought more.",
+          "responses": [
+            {
+              "text": "[Hand over the data chip]",
+              "next_node_id": "analysis"
+            },
+            {
+              "text": "I found a Guild engineer. She confirmed everything.",
+              "next_node_id": "analysis"
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "analysis",
+          "speaker_id": "dr_priya_osei",
+          "text": "She slots the chip into her terminal. Data cascades across every display in the lab. Her hands move through holographic schematics, pulling apart the array designs layer by layer. After several minutes of silence, she sits down heavily. It's real. The energy calculations are elegant, actually — whoever designed this understood stellar mechanics better than anyone in the Collective. Sixteen gravitational lensing arrays, positioned in a Dyson configuration around the Aurelia star. When activated, they redirect the star's own gravitational output inward. The collapse is self-sustaining within minutes.",
+          "responses": [
+            {
+              "text": "How long until they can activate it?",
+              "next_node_id": "timeline"
+            },
+            {
+              "text": "Can we warn the other factions?",
+              "next_node_id": "political_attempt"
+            }
+          ],
+          "expression": "surprised"
+        },
+        {
+          "id": "timeline",
+          "speaker_id": "dr_priya_osei",
+          "text": "Based on the manufacturing data from Iron Depths, they've been building components for at least eighteen months. The shipping manifests show accelerated delivery schedules over the last two months. If the assembly site is operational... weeks. Maybe less. We need to act now.",
+          "responses": [
+            {
+              "text": "Can we take this to the Governing Council?",
+              "next_node_id": "political_attempt"
+            },
+            {
+              "text": "Where are they assembling it?",
+              "next_node_id": "assembly_question"
+            }
+          ],
+          "expression": "angry"
+        },
+        {
+          "id": "political_attempt",
+          "speaker_id": "dr_priya_osei",
+          "text": "I already tried. The moment I flagged an emergency session, the Guild trade consul invoked Article 7 — a security veto. They blocked the session before I could present a single data point. When I went directly to the Union delegation, Hanna Voss refused to meet. The facility was on Union territory. She's terrified of being implicated.",
+          "responses": [
+            {
+              "text": "What about the Frontier Alliance?",
+              "next_node_id": "alliance_response"
+            },
+            {
+              "text": "So nobody will act.",
+              "next_node_id": "nobody_acts"
+            }
+          ],
+          "expression": "angry"
+        },
+        {
+          "id": "alliance_response",
+          "speaker_id": "dr_priya_osei",
+          "text": "Malia Torres listened. She believes us. But the Alliance doesn't have the ships or the political weight to move against the Guild unilaterally. And without the Union or the Collective backing them officially, any Alliance action would be treated as piracy. The Guild has spent decades building exactly this kind of institutional paralysis.",
+          "responses": [
+            {
+              "text": "Then the official channels are useless.",
+              "next_node_id": "nobody_acts",
+              "faction_reputation_changes": [
+                {
+                  "frontier_alliance": 1
+                },
+                {
+                  "science_collective": 1
+                }
+              ]
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "nobody_acts",
+          "speaker_id": "dr_priya_osei",
+          "text": "Priya stares at the holographic star model rotating above her desk. Every faction has a reason not to act. The Guild controls the narrative. The Union is compromised. The Collective won't move without consensus. And the Alliance is too small. She looks up at you. That leaves us. If we can find where they're assembling the arrays, we might be able to disable them before activation.",
+          "responses": [
+            {
+              "text": "The shipping manifests might have coordinates.",
+              "next_node_id": "assembly_question"
+            },
+            {
+              "text": "I know someone who can find it.",
+              "next_node_id": "dex_reference"
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "assembly_question",
+          "speaker_id": "dr_priya_osei",
+          "text": "The manifests reference a relay point — cargo is shipped to Iron Depths, processed, then forwarded to coordinates listed only as 'Fulcrum Station.' The name doesn't appear in any public registry. But the coordinate format is consistent with deep-space installations, beyond the standard trade lanes. Someone with the right contacts might be able to triangulate the exact position.",
+          "responses": [
+            {
+              "text": "Dex Halloran. He found the Iron Depths lead. He can find this.",
+              "next_node_id": "dex_reference"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "dex_reference",
+          "speaker_id": "dr_priya_osei",
+          "text": "Your information broker? At this point, I'll take help from anyone who isn't actively trying to collapse a star. Go. Find the assembly site. I'll keep working on the data — there might be a way to disable the arrays remotely if we can access the control systems. And... be careful. If the Ledger knows we have this data, they'll come for all of us.",
+          "responses": [
+            {
+              "text": "I'll find it.",
+              "next_node_id": null,
+              "set_flag": "convergence_data_verified"
+            }
+          ],
+          "expression": "stern"
+        }
+      ]
+    },
+    {
+      "id": "dex_assembly_intel",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "dex_halloran",
+          "text": "Dex is already at your usual table when you walk into the cantina. He's not smiling. I heard what happened at Axiom Labs. The Guild blocked the emergency session before your scientist could open her mouth. That's not standard procedure — that's a cover-up at the highest level.",
+          "responses": [
+            {
+              "text": "I need to find Fulcrum Station.",
+              "next_node_id": "fulcrum_search"
+            },
+            {
+              "text": "How did you hear about Axiom Labs already?",
+              "next_node_id": "dex_network"
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "dex_network",
+          "speaker_id": "dex_halloran",
+          "text": "I have ears in every station in the Expanse. It's what keeps me alive. And right now, those ears are telling me that Guild security teams are being redeployed from trade lane patrols to an undisclosed location. Whatever you found at Iron Depths has them spooked. They're accelerating.",
+          "responses": [
+            {
+              "text": "Then we need to find Fulcrum Station. Now.",
+              "next_node_id": "fulcrum_search"
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "fulcrum_search",
+          "speaker_id": "dex_halloran",
+          "text": "He pulls out a navigation chart and unfolds it across the table. I've been cross-referencing the shipping manifests from Iron Depths with drive signature data from my contacts along the freight lanes. Every shipment that leaves Iron Depths with Fulcrum routing passes through a gravity shadow near the outer ring — a region where sensor coverage is minimal.",
+          "responses": [
+            {
+              "text": "You found it.",
+              "next_node_id": "location_reveal"
+            }
+          ],
+          "expression": "confident"
+        },
+        {
+          "id": "location_reveal",
+          "speaker_id": "dex_halloran",
+          "text": "He taps a point on the chart, deep in the outer ring, far from any established trade route. The Fulcrum. A decommissioned refueling platform from the early colonial period. Officially, it was scrapped thirty years ago. Unofficially, someone rebuilt it into a full orbital assembly facility. That's where they're putting the arrays together. And based on the traffic volume I'm seeing, they're nearly done.",
+          "responses": [
+            {
+              "text": "How heavily guarded is it?",
+              "next_node_id": "defenses"
+            },
+            {
+              "text": "Can I get there without being detected?",
+              "next_node_id": "approach"
+            }
+          ],
+          "expression": "confident"
+        },
+        {
+          "id": "defenses",
+          "speaker_id": "dex_halloran",
+          "text": "Guild security corvettes on rotation. At least four, maybe more. Automated defense platforms around the perimeter. And the station itself will have internal security — the same kind of hardware those unmarked raiders were carrying. This isn't a smuggler's den. It's a military installation disguised as a scrapyard.",
+          "responses": [
+            {
+              "text": "I've been through worse.",
+              "next_node_id": "approach"
+            },
+            {
+              "text": "Any way to thin out the patrols?",
+              "next_node_id": "approach"
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "approach",
+          "speaker_id": "dex_halloran",
+          "text": "He folds the chart and slides it across to you. There's a maintenance corridor on the station's lower ring — original colonial construction, never updated. If you can get past the perimeter patrols, that's your way in. I've loaded the coordinates and the approach vector onto this chip. He pauses. This is the end of the road for me. I deal in information, not suicide missions. Whatever happens at the Fulcrum, you're on your own.",
+          "responses": [
+            {
+              "text": "You've done enough. Thank you, Dex.",
+              "next_node_id": "farewell"
+            },
+            {
+              "text": "If I don't come back, make sure people know what happened.",
+              "next_node_id": "farewell"
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "farewell",
+          "speaker_id": "dex_halloran",
+          "text": "He stands and straightens his jacket. For what it's worth — I hope you stop them. The Expanse isn't perfect, but it's home. He walks out of the cantina without looking back. On the table, the navigation chip blinks with coordinates to a station that doesn't officially exist.",
+          "responses": [
+            {
+              "text": "[Take the chip]",
+              "next_node_id": null,
+              "set_flag": "assembly_location_known",
+              "faction_reputation_changes": [
+                {
+                  "commerce_guild": -1
+                },
+                {
+                  "frontier_alliance": 1
+                }
+              ]
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "the_collapse_sequence",
+      "start_node_id": "alarm",
+      "nodes": [
+        {
+          "id": "alarm",
+          "speaker_id": "elena_reeves",
+          "text": "Every alarm on the ship fires at once. Elena's voice cuts through the noise, sharp with controlled terror. The arrays are moving into position. All sixteen. I'm reading gravitational distortions across every sensor band — the star is already responding. Captain, this is happening now.",
+          "responses": [
+            {
+              "text": "How long do we have?",
+              "next_node_id": "timeline"
+            },
+            {
+              "text": "Get us to the warp gate.",
+              "next_node_id": "warp_prep"
+            }
+          ],
+          "expression": "angry"
+        },
+        {
+          "id": "timeline",
+          "speaker_id": "elena_reeves",
+          "text": "She pulls up the nav display. The Aurelia star pulses wrong on the hologram — a rhythmic contraction that makes your eyes ache. Minutes. The arrays are creating a feedback loop with the star's own gravity. Once it passes the cascade threshold, nothing stops it. Nothing.",
+          "responses": [
+            {
+              "text": "Then we use the gate. Now.",
+              "next_node_id": "warp_prep"
+            }
+          ],
+          "expression": "angry"
+        },
+        {
+          "id": "warp_prep",
+          "speaker_id": "marcus_jin",
+          "text": "Marcus is already at the engineering console, rerouting every spare watt to the engines. The gate's powered but not calibrated. If we jump blind, we could come out anywhere — inside an asteroid, in the corona of a star, in empty space a thousand light-years from anything. He looks up. But we stay here, we die for certain.",
+          "responses": [
+            {
+              "text": "Can anyone improve those odds?",
+              "next_node_id": "calibration_check"
+            },
+            {
+              "text": "We jump blind if we have to. Spin up the gate.",
+              "next_node_id": "gate_activation"
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "calibration_check",
+          "speaker_id": "marcus_jin",
+          "text": "Marcus shakes his head. Not from here. We'd need someone who understands the Convergence schematics — the same math that collapses the star could calculate a stable exit point. And we'd need friends on the other side of that gate.",
+          "responses": [
+            {
+              "text": "Priya — you studied the Convergence data. Can you calibrate the jump?",
+              "next_node_id": "priya_calibrates",
+              "required_flags": [
+                "convergence_data_verified"
+              ]
+            },
+            {
+              "text": "Spin up the gate. We're out of time.",
+              "next_node_id": "gate_activation"
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "priya_calibrates",
+          "speaker_id": "dr_priya_osei",
+          "text": "Priya is already moving, pulling up the Convergence schematics on her terminal. She speaks without looking up. The array positioning data includes spatial coordinates — reference points for the gravitational field calculations. I can invert the model. Instead of collapsing space, we use it to navigate. Give me ninety seconds. Her fingers blur across the console. Seventy-eight seconds later, she looks up. I have a stable exit point. A star system, outside the Expanse. Atmosphere readings suggest habitable planets. It's not random — it's where the Ledger was planning to go.",
+          "responses": [
+            {
+              "text": "They were building an escape to a new home.",
+              "next_node_id": "gate_activation",
+              "set_flag": "priya_calibrated_jump"
+            }
+          ],
+          "expression": "confident"
+        },
+        {
+          "id": "gate_activation",
+          "speaker_id": "elena_reeves",
+          "text": "The warp gate flares to life. Blue light floods the viewport, intensifying until it hurts to look at. Through the cockpit windows, the Aurelia star shudders visibly — a sphere of fire pulling inward on itself, its surface rippling like water in a storm. The arrays are fully deployed now, sixteen points of light arranged in a perfect sphere around the dying star. Elena's voice is barely a whisper. It's beautiful. It's the most terrible thing I've ever seen.",
+          "responses": [
+            {
+              "text": "Tomas — hail the Alliance. Tell them to follow us through.",
+              "next_node_id": "alliance_escort",
+              "required_flags": [
+                "tomas_friendship"
+              ]
+            },
+            {
+              "text": "Take us through. Now.",
+              "next_node_id": "the_jump"
+            }
+          ],
+          "expression": "surprised"
+        },
+        {
+          "id": "alliance_escort",
+          "speaker_id": "tomas_drifter",
+          "text": "Tomas is already on the comm. Malia? It's Tomas. Open channel, broadband. Bring everyone. Static. Then Malia Torres's voice, rough with static and fear. We see it. The whole Frontier fleet is burning hard for your position. Don't you dare close that gate before we're through. On the sensors, a cluster of drive signatures converges on the warp gate. Small ships, civilian hulls, everything the Alliance has.",
+          "responses": [
+            {
+              "text": "Hold the gate. Everyone comes through.",
+              "next_node_id": "the_jump",
+              "set_flag": "alliance_followed"
+            }
+          ],
+          "expression": "angry"
+        },
+        {
+          "id": "the_jump",
+          "speaker_id": "elena_reeves",
+          "text": "The ship hits the gate threshold and reality folds. For an instant that lasts forever, there is no ship, no crew, no star — just light, and pressure, and the sensation of being pulled apart and reassembled in a place the universe hasn't decided exists yet. Then it's over. Dark. Silent. Stars, but wrong stars. Different constellations, different colors. A yellow sun hangs in the viewport, steady and calm and utterly alien.",
+          "responses": [
+            {
+              "text": "[Turn and look back]",
+              "next_node_id": "looking_back"
+            }
+          ],
+          "expression": "surprised"
+        },
+        {
+          "id": "looking_back",
+          "speaker_id": "elena_reeves",
+          "text": "Through the rear sensors, the warp gate still glows. And beyond it, through the narrowing aperture, you can see the Aurelia Expanse for the last time. The star is gone. Where it burned for billions of years, there is a point of absolute darkness — a wound in space that swallows light. The stations, the trade lanes, the asteroid fields, Nexus Prime, Breakstone, Axiom Labs, Iron Depths, Crimson Reach — all of it spiraling inward. Hanna Voss. Officer Larsen. Oren Tak. Sienna Vek. Dex. Everyone who stayed. The gate flickers. Then closes.",
+          "responses": [
+            {
+              "text": "[Silence]",
+              "next_node_id": "crew_silence"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "crew_silence",
+          "speaker_id": "marcus_jin",
+          "text": "Nobody speaks for a long time. Marcus is the first. His voice is flat, mechanical, the voice of a man putting one word in front of the other because stopping means falling. Hull integrity nominal. Life support stable. Fuel reserves at forty-two percent. He swallows. We're alive.",
+          "responses": [
+            {
+              "text": "Where are we?",
+              "next_node_id": "new_horizon"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "new_horizon",
+          "speaker_id": "elena_reeves",
+          "text": "Elena pulls up the nav display. It's empty. No mapped systems, no trade routes, no faction boundaries. Just raw sensor data painting an unknown sky. But the yellow star ahead is stable. Three planets in the habitable zone. And the sensors are picking up structures — artificial, orbital, cold. Someone was here before us. Someone built something and left. She turns to you. Captain. We made it. We're somewhere no one in the Expanse has ever been. Her hand trembles on the console. What do we do now?",
+          "responses": [
+            {
+              "text": "We survive. We explore. And we find out who built this place.",
+              "next_node_id": "act_one_end",
+              "set_flag": "expanse_collapsed"
+            },
+            {
+              "text": "We remember what we lost. And we make sure it meant something.",
+              "next_node_id": "act_one_end",
+              "set_flag": "expanse_collapsed"
+            }
+          ],
+          "expression": "surprised"
+        },
+        {
+          "id": "act_one_end",
+          "speaker_id": "elena_reeves",
+          "text": "Elena nods. She enters the first coordinates into the nav computer — the yellow star, the habitable zone, the silent structures waiting in the dark. The engines hum. The ship turns toward an unknown sun. Behind you, the gate is gone. The Aurelia Expanse is gone. Everything you knew is gone. But your crew is here. Your ship is here. And ahead of you, in the light of a star that has no name, something new is beginning.",
+          "responses": [
+            {
+              "text": "[End of Act One]",
+              "next_node_id": null,
+              "set_flag": "act_one_complete"
+            }
+          ],
+          "expression": "neutral"
         }
       ]
     }

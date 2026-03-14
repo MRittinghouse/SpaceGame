@@ -1,0 +1,452 @@
+{
+  "encounters": [
+    {
+      "id": "distress_medical_01",
+      "encounter_type": "distress_signal",
+      "name": "Medical Emergency",
+      "description": "Your comms crackle with a distress call: a small freighter reports a crew member suffering acute radiation exposure. They're requesting any medical supplies you can spare.",
+      "icon_color": [100, 200, 100],
+      "weight": 10,
+      "danger_levels": ["moderate", "dangerous"],
+      "choices": [
+        {
+          "id": "help",
+          "label": "Provide Aid",
+          "description": "Offer medical assistance and supplies.",
+          "outcome": {
+            "description": "You transmit emergency treatment protocols and dock briefly to transfer supplies. The freighter captain thanks you profusely and insists on paying for the help.",
+            "rewards": [
+              {"reward_type": "credits", "amount": 75},
+              {"reward_type": "xp", "amount": 15}
+            ]
+          }
+        },
+        {
+          "id": "ignore",
+          "label": "Continue On",
+          "description": "You can't help everyone out here.",
+          "outcome": {
+            "description": "You log the distress coordinates for the next patrol and continue on your route. The signal fades behind you.",
+            "rewards": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "distress_engine_01",
+      "encounter_type": "distress_signal",
+      "name": "Engine Failure",
+      "description": "A cargo hauler is adrift with a blown fuel converter. The pilot sounds panicked — their orbit is decaying toward an asteroid field. They're offering credits for a tow to the nearest station.",
+      "icon_color": [100, 200, 100],
+      "weight": 10,
+      "danger_levels": ["moderate", "dangerous"],
+      "choices": [
+        {
+          "id": "tow",
+          "label": "Tow Them",
+          "description": "Burn extra fuel to tow the hauler to safety.",
+          "outcome": {
+            "description": "The tow takes time and fuel, but the pilot's relief is palpable. They transfer payment the moment you reach the station.",
+            "rewards": [
+              {"reward_type": "credits", "amount": 120},
+              {"reward_type": "xp", "amount": 10}
+            ]
+          }
+        },
+        {
+          "id": "relay",
+          "label": "Relay Signal",
+          "description": "Boost their distress signal and move on.",
+          "outcome": {
+            "description": "You amplify their signal to reach local patrols. It's the best you can do without losing time. Hopefully help arrives in time.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 5}
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "distress_nav_01",
+      "encounter_type": "distress_signal",
+      "name": "Navigation Error",
+      "description": "A civilian transport has drifted off course after a nav computer malfunction. Their passengers are getting anxious, and the pilot is too proud to admit they're lost.",
+      "icon_color": [100, 200, 100],
+      "weight": 8,
+      "danger_levels": ["moderate"],
+      "choices": [
+        {
+          "id": "guide",
+          "label": "Share Nav Data",
+          "description": "Transmit your navigation charts to get them back on course.",
+          "outcome": {
+            "description": "The pilot accepts your data with minimal embarrassment. A grateful passenger sends you a small tip through the ship's comm channel.",
+            "rewards": [
+              {"reward_type": "credits", "amount": 50},
+              {"reward_type": "xp", "amount": 10}
+            ]
+          }
+        },
+        {
+          "id": "ignore",
+          "label": "Not Your Problem",
+          "description": "They'll figure it out eventually.",
+          "outcome": {
+            "description": "You leave them to sort out their own heading. Space is big, but the lanes are well-charted. They'll manage.",
+            "rewards": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "derelict_freighter_01",
+      "encounter_type": "derelict",
+      "name": "Abandoned Freighter",
+      "description": "Your sensors detect a derelict freighter drifting in the void. No life signs, no active transponder. The cargo bay appears partially intact — there could be salvageable goods aboard.",
+      "icon_color": [180, 140, 80],
+      "weight": 10,
+      "danger_levels": ["moderate", "dangerous"],
+      "choices": [
+        {
+          "id": "salvage",
+          "label": "Board and Salvage",
+          "description": "Dock with the wreck and search for anything valuable.",
+          "outcome": {
+            "description": "You pick through the wreckage carefully. Most of the cargo is ruined, but you find a sealed crate of trade goods and some spare parts worth selling.",
+            "rewards": [
+              {"reward_type": "credits", "amount": 150},
+              {"reward_type": "xp", "amount": 10}
+            ]
+          }
+        },
+        {
+          "id": "scan",
+          "label": "Scan Only",
+          "description": "Run a deep scan but don't risk boarding.",
+          "outcome": {
+            "description": "Your sensors map the wreck's layout and log the debris pattern. The data might be useful to salvage companies. You tag the location for later.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 15}
+            ]
+          }
+        },
+        {
+          "id": "pass",
+          "label": "Move On",
+          "description": "Dead ships are bad luck.",
+          "outcome": {
+            "description": "You give the derelict a wide berth and continue on your route. Someone else can deal with it.",
+            "rewards": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "derelict_wreck_01",
+      "encounter_type": "derelict",
+      "name": "Battle-Scarred Wreck",
+      "description": "A ship bearing heavy weapons damage floats dead ahead. Scorch marks suggest a recent firefight. The wreck could hold valuable components — but whatever hit this ship might still be nearby.",
+      "icon_color": [180, 140, 80],
+      "weight": 8,
+      "danger_levels": ["dangerous"],
+      "choices": [
+        {
+          "id": "risk_it",
+          "label": "Risk Salvage",
+          "description": "Board quickly and grab what you can.",
+          "outcome": {
+            "description": "You work fast, stripping the ship of its remaining weapons components and emergency fuel reserves. No sign of whoever did this — today is your lucky day.",
+            "rewards": [
+              {"reward_type": "credits", "amount": 200},
+              {"reward_type": "xp", "amount": 15}
+            ]
+          }
+        },
+        {
+          "id": "avoid",
+          "label": "Steer Clear",
+          "description": "Fresh battle damage means trouble nearby.",
+          "outcome": {
+            "description": "Discretion wins out. You alter course and put distance between yourself and whatever happened here. The wreck shrinks on your rear sensors.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 5}
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "merchant_trader_01",
+      "encounter_type": "merchant",
+      "name": "Traveling Merchant",
+      "description": "A small trading vessel hails you with a friendly ping. The captain identifies herself as an independent trader running surplus goods between systems. She offers a discount if you're buying.",
+      "icon_color": [100, 150, 220],
+      "weight": 10,
+      "danger_levels": ["moderate", "dangerous"],
+      "choices": [
+        {
+          "id": "trade",
+          "label": "Browse Wares",
+          "description": "See what she has for sale.",
+          "outcome": {
+            "description": "After a quick negotiation, you pick up some goods at well below market rate. The trader waves as she undocks and continues on her route.",
+            "rewards": [
+              {"reward_type": "credits", "amount": 100},
+              {"reward_type": "xp", "amount": 5}
+            ]
+          }
+        },
+        {
+          "id": "decline",
+          "label": "Decline",
+          "description": "No time for shopping.",
+          "outcome": {
+            "description": "You exchange polite farewells and go your separate ways. Space is lonely enough without being rude about it.",
+            "rewards": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "merchant_convoy_01",
+      "encounter_type": "merchant",
+      "name": "Supply Convoy",
+      "description": "A Guild-flagged supply convoy is making a scheduled fuel run. The convoy leader offers to top off your reserves at cost — professional courtesy between spacers.",
+      "icon_color": [100, 150, 220],
+      "weight": 8,
+      "danger_levels": ["moderate"],
+      "choices": [
+        {
+          "id": "accept",
+          "label": "Accept Offer",
+          "description": "Take them up on the fuel.",
+          "outcome": {
+            "description": "The convoy docks briefly and transfers fuel to your tanks. The crew chief tips his cap as they disengage. Good people still fly these lanes.",
+            "rewards": [
+              {"reward_type": "credits", "amount": 60},
+              {"reward_type": "xp", "amount": 5}
+            ]
+          }
+        },
+        {
+          "id": "chat",
+          "label": "Exchange Intel",
+          "description": "Trade route information instead of goods.",
+          "outcome": {
+            "description": "You swap navigation data and market tips. The convoy leader marks a few profitable routes on your charts. Knowledge is currency out here.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 20}
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "debris_cargo_01",
+      "encounter_type": "debris",
+      "name": "Scattered Cargo",
+      "description": "Your proximity sensors light up — a cargo container has broken apart, scattering crates across your flight path. Looks like someone lost a shipment. Finders keepers?",
+      "icon_color": [160, 160, 160],
+      "weight": 10,
+      "danger_levels": ["moderate", "dangerous"],
+      "choices": [
+        {
+          "id": "collect",
+          "label": "Collect Cargo",
+          "description": "Slow down and scoop up what you can.",
+          "outcome": {
+            "description": "You maneuver through the debris field, snagging intact crates with your cargo grapple. A few are damaged, but most contain sellable goods.",
+            "rewards": [
+              {"reward_type": "credits", "amount": 80},
+              {"reward_type": "xp", "amount": 5}
+            ]
+          }
+        },
+        {
+          "id": "avoid",
+          "label": "Fly Around",
+          "description": "Debris fields aren't worth the hull damage.",
+          "outcome": {
+            "description": "You plot a course around the floating junk and continue on your way. Not every opportunity is worth the risk.",
+            "rewards": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "debris_ghost_01",
+      "encounter_type": "debris",
+      "name": "Sensor Ghost",
+      "description": "Your sensors register a brief anomalous reading — mass signature, thermal spike, then nothing. Could be debris, could be a sensor glitch, could be something more interesting.",
+      "icon_color": [160, 160, 160],
+      "weight": 8,
+      "danger_levels": ["moderate", "dangerous"],
+      "choices": [
+        {
+          "id": "investigate",
+          "label": "Investigate",
+          "description": "Alter course to check the reading.",
+          "outcome": {
+            "description": "You spend time chasing the signal. Turns out it was a chunk of ice sublimating near a heat vent. Not exciting, but you learn to calibrate your sensors better.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 20}
+            ]
+          }
+        },
+        {
+          "id": "ignore",
+          "label": "Ignore It",
+          "description": "Sensor ghosts aren't worth investigating.",
+          "outcome": {
+            "description": "You log the anomaly and move on. Your nav computer files it under 'unexplained readings' — a list that grows longer every week.",
+            "rewards": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "anomaly_energy_01",
+      "encounter_type": "anomaly",
+      "name": "Energy Phenomenon",
+      "description": "An unusual energy signature pulses ahead — a swirling pattern of charged particles that doesn't match any known natural formation. Collective research buoys mark the area as 'under study.'",
+      "icon_color": [180, 100, 220],
+      "weight": 10,
+      "danger_levels": ["dangerous"],
+      "choices": [
+        {
+          "id": "scan",
+          "label": "Run Deep Scan",
+          "description": "Collect detailed sensor data on the phenomenon.",
+          "outcome": {
+            "description": "Your instruments record exotic particle interactions that push the boundaries of known physics. The Collective would pay well for this data.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 30},
+              {"reward_type": "set_flag", "amount": 1, "target_id": "anomaly_observed"}
+            ]
+          }
+        },
+        {
+          "id": "distance",
+          "label": "Keep Distance",
+          "description": "Unknown energy signatures are best observed from afar.",
+          "outcome": {
+            "description": "You log the coordinates and give the phenomenon a respectful berth. Some things are better left to the specialists.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 10}
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "shakedown_pirate_01",
+      "encounter_type": "shakedown",
+      "name": "Pirate Toll",
+      "description": "A scarred gunship drops out of hiding and locks weapons on your hull. The pilot's voice is bored but firm: \"Standard toll for passing through. {shakedown_demand} credits, and you fly on. Refuse, and we do this the hard way.\"",
+      "icon_color": [220, 80, 80],
+      "weight": 10,
+      "danger_levels": ["dangerous"],
+      "choices": [
+        {
+          "id": "pay",
+          "label": "Pay the Toll",
+          "description": "Hand over the credits and avoid a fight.",
+          "outcome": {
+            "description": "You transfer the credits. The pirate grunts acknowledgment and peels away. Cheaper than repairs, you tell yourself.",
+            "rewards": [
+              {"reward_type": "deduct_credits", "amount": -1}
+            ]
+          }
+        },
+        {
+          "id": "fight",
+          "label": "Refuse",
+          "description": "Nobody shakes you down.",
+          "outcome": {
+            "description": "You power up weapons and angle your shields. The pirate grins — they were hoping you'd say that.",
+            "rewards": [],
+            "leads_to_combat": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "shakedown_enforcer_01",
+      "encounter_type": "shakedown",
+      "name": "Sector Enforcer",
+      "description": "A heavily armed patrol vessel intercepts you. The captain claims this sector is under their protection and demands a {shakedown_demand} credit \"security fee.\" Their weapons are hot.",
+      "icon_color": [220, 80, 80],
+      "weight": 8,
+      "danger_levels": ["dangerous"],
+      "choices": [
+        {
+          "id": "pay",
+          "label": "Pay Fee",
+          "description": "Pay the fee and move along.",
+          "outcome": {
+            "description": "The enforcer accepts payment without ceremony. They mark your transponder as 'cleared' — whatever that means out here.",
+            "rewards": [
+              {"reward_type": "deduct_credits", "amount": -1}
+            ]
+          }
+        },
+        {
+          "id": "fight",
+          "label": "Stand Your Ground",
+          "description": "Call their bluff.",
+          "outcome": {
+            "description": "You hold course and charge weapons. The enforcer's professional demeanor cracks — they expected compliance, not resistance.",
+            "rewards": [],
+            "leads_to_combat": true
+          }
+        },
+        {
+          "id": "bluff",
+          "label": "Claim Authority",
+          "description": "Insist you have official clearance.",
+          "outcome": {
+            "description": "You transmit a confident-sounding string of authorization codes. The enforcer hesitates, then backs off — they can't risk tangling with someone who might have real backing.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 20}
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "cargo_lost_distress",
+      "encounter_type": "distress_signal",
+      "name": "Distress Signal — Disabled Convoy Escort",
+      "description": "Your comms light up with a repeating distress signal. A Guild convoy escort is adrift — engines disabled, life support failing. The captain is broadcasting on an open channel: 'This is Captain Sato of the Guild escort Heron. We were hit by raiders. Engines are gone. Life support has maybe six hours. If anyone can hear this...'",
+      "icon_color": [220, 80, 80],
+      "weight": 0,
+      "danger_levels": ["moderate", "dangerous"],
+      "choices": [
+        {
+          "id": "answer_signal",
+          "label": "Answer the Signal",
+          "description": "Divert from your route to assist the disabled escort. It will cost time and fuel, but someone's life is at stake.",
+          "outcome": {
+            "description": "You pull alongside the Heron and patch your fuel line into their auxiliary systems. Captain Sato's voice comes through, steady but exhausted: 'I owe you one, Captain. The raiders took everything — cargo, navigation data, even the crew manifests. This wasn't random. They knew exactly where we'd be.' She transfers a small credit bounty from the escort's emergency fund.",
+            "rewards": [
+              {"reward_type": "credits", "amount": 150},
+              {"reward_type": "xp", "amount": 25},
+              {"reward_type": "set_flag", "amount": 0, "target_id": "helped_reva_sato"}
+            ]
+          }
+        },
+        {
+          "id": "press_on",
+          "label": "Press On",
+          "description": "You have cargo to deliver and a schedule to keep. Someone else will answer the signal.",
+          "outcome": {
+            "description": "You silence the distress channel and continue on course. The signal fades behind you. Somewhere out there, Captain Sato is counting the hours on her life support.",
+            "rewards": [
+              {"reward_type": "set_flag", "amount": 0, "target_id": "ignored_distress_signal"}
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

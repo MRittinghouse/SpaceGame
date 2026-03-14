@@ -55,6 +55,10 @@ spacegame/data/saves/*.json
 Thumbs.db
 nul
 
+# Environment / secrets
+.env
+.env.*
+
 # Tool workspace files
 .claude/
 .qodo/

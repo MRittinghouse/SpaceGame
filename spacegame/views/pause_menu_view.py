@@ -13,6 +13,8 @@ from typing import Optional
 
 from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState
 from spacegame.views.base_view import BaseView
+from spacegame.engine.fonts import FontCache
+from spacegame.engine.draw_utils import draw_panel
 from spacegame.utils.logger import logger
 
 
@@ -29,8 +31,8 @@ class PauseMenuView(BaseView):
         self.show_settings_dialog = False
 
         # Fonts
-        self.title_font = pygame.font.Font(None, 48)
-        self.button_font = pygame.font.Font(None, 32)
+        self.title_font = FontCache.get(48)
+        self.button_font = FontCache.get(32)
 
         # UI Elements
         self.resume_button: Optional[pygame_gui.elements.UIButton] = None
@@ -180,9 +182,12 @@ class PauseMenuView(BaseView):
         panel_x = (WINDOW_WIDTH - panel_width) // 2
         panel_y = (WINDOW_HEIGHT - panel_height) // 2
 
-        panel_surface = pygame.Surface((panel_width, panel_height), pygame.SRCALPHA)
-        panel_surface.fill((*Colors.PANEL, 240))
-        screen.blit(panel_surface, (panel_x, panel_y))
+        draw_panel(
+            screen,
+            pygame.Rect(panel_x, panel_y, panel_width, panel_height),
+            alpha=240,
+            bg_color=Colors.PANEL,
+        )
 
         # Pulsing border glow
         glow_alpha = int(120 + 80 * math.sin(self._glow_time * 3))

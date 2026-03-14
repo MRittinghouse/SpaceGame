@@ -15,40 +15,60 @@ from spacegame.models.progression import PlayerProgression, SkillNode, SkillTree
 from spacegame.utils.logger import logger
 from spacegame.engine.backgrounds import AnimatedBackground
 from spacegame.engine.particles import ParticlePool, COLLECT_SPARKLE
+from spacegame.engine.draw_utils import draw_bar, draw_panel
+from spacegame.engine.fonts import FontCache
+from spacegame.engine.sprites import get_sprite_manager
+from spacegame.engine.audio_manager import get_audio_manager
 
 # Node positions for rendering (tree_type -> {skill_id: (x, y)})
-# 4 trees distributed across 1280px: Trading, Gathering, Mining, Leadership
+# 6 trees distributed across 1280px
 SKILL_POSITIONS = {
     SkillTreeType.TRADING: {
-        "negotiator": (160, 200),
-        "market_eye": (80, 340),
-        "bulk_trader": (240, 340),
-        "trade_network": (80, 480),
-        "market_insider": (80, 620),
+        "negotiator": (100, 200),
+        "market_eye": (40, 340),
+        "bulk_trader": (160, 340),
+        "trade_network": (40, 480),
+        "market_insider": (40, 620),
     },
     SkillTreeType.GATHERING: {
-        "efficient_drills": (460, 200),
-        "keen_scanner": (380, 340),
-        "rich_veins": (540, 340),
-        "master_extractor": (380, 480),
-        "refining_knowledge": (380, 620),
+        "efficient_drills": (310, 200),
+        "keen_scanner": (250, 340),
+        "rich_veins": (370, 340),
+        "master_extractor": (250, 480),
+        "refining_knowledge": (250, 620),
+        "efficient_refining": (185, 620),
+        "yield_mastery": (310, 620),
     },
     SkillTreeType.MINING: {
-        "click_power": (740, 200),
-        "passive_drill": (660, 340),
-        "deep_scan": (660, 480),
-        "drone_bay_1": (820, 340),
-        "drone_bay_2": (880, 480),
-        "drone_bay_3": (880, 620),
-        "drone_efficiency": (740, 480),
-        "ore_targeting": (740, 620),
+        "click_power": (530, 200),
+        "passive_drill": (460, 340),
+        "deep_scan": (460, 480),
+        "drone_bay_1": (600, 340),
+        "drone_bay_2": (635, 480),
+        "drone_bay_3": (635, 620),
+        "drone_efficiency": (530, 480),
+        "ore_targeting": (530, 620),
+        "chain_reaction": (460, 620),
     },
     SkillTreeType.LEADERSHIP: {
-        "crew_manager": (1080, 200),
-        "diplomatic_relations": (1000, 340),
-        "inspiring_leader": (1160, 340),
-        "tariff_negotiation": (1000, 480),
-        "crew_mentor": (1160, 480),
+        "crew_manager": (730, 200),
+        "diplomatic_relations": (670, 340),
+        "inspiring_leader": (790, 340),
+        "tariff_negotiation": (670, 480),
+        "crew_mentor": (790, 480),
+    },
+    SkillTreeType.SOCIAL: {
+        "silver_tongue": (920, 200),
+        "commanding_presence": (860, 340),
+        "keen_insight": (980, 340),
+    },
+    SkillTreeType.GROUND: {
+        "scrapper": (1080, 200),
+        "tough_hide": (1180, 200),
+        "quick_reflexes": (1080, 340),
+        "last_stand": (1180, 340),
+        "intimidating_presence": (1080, 480),
+        "veteran": (1130, 620),
     },
 }
 
@@ -66,14 +86,17 @@ class SkillTreeView(BaseView):
         self.hovered_skill: Optional[str] = None
 
         # Fonts
-        self.title_font = pygame.font.Font(None, 36)
-        self.header_font = pygame.font.Font(None, 28)
-        self.info_font = pygame.font.Font(None, 22)
-        self.small_font = pygame.font.Font(None, 18)
-        self.node_font = pygame.font.Font(None, 16)
+        self.title_font = FontCache.get(36)
+        self.header_font = FontCache.get(28)
+        self.info_font = FontCache.get(22)
+        self.small_font = FontCache.get(18)
+        self.node_font = FontCache.get(16)
 
         # UI
         self.back_button: Optional[pygame_gui.elements.UIButton] = None
+
+        # Sprites
+        self._sprite_mgr = get_sprite_manager()
 
         # Message
         self.message: str = ""
@@ -88,9 +111,11 @@ class SkillTreeView(BaseView):
         self.particles = ParticlePool(100)
         self._glow_time = 0.0
         self._energy_dot_offset = 0.0
+        self._node_surface_cache: Dict[str, pygame.Surface] = {}
 
     def on_enter(self) -> None:
         super().on_enter()
+        self._build_node_cache()
         self._create_ui()
 
     def on_exit(self) -> None:
@@ -107,6 +132,32 @@ class SkillTreeView(BaseView):
     def _destroy_ui(self) -> None:
         if self.back_button:
             self.back_button.kill()
+
+    def _build_node_cache(self) -> None:
+        """Pre-render radial gradient node surfaces for each visual state."""
+        states = {
+            "maxed": (50, 150, 50),
+            "unlocked": (40, 80, 140),
+            "available": (60, 60, 30),
+            "locked": Colors.BAR_BG,
+        }
+        self._node_surface_cache.clear()
+        for state_name, color in states.items():
+            self._node_surface_cache[state_name] = self._make_node_surface(color)
+            hover_color = tuple(min(255, c + 30) for c in color)
+            self._node_surface_cache[f"{state_name}_hover"] = self._make_node_surface(hover_color)
+
+    def _make_node_surface(self, fill_color: tuple) -> pygame.Surface:
+        """Create a radial gradient circle surface for a node."""
+        node_surf = pygame.Surface((NODE_RADIUS * 2 + 4, NODE_RADIUS * 2 + 4), pygame.SRCALPHA)
+        center = NODE_RADIUS + 2
+        for r in range(NODE_RADIUS, 0, -1):
+            t = 1.0 - (r / NODE_RADIUS)
+            gr = int(fill_color[0] + (min(255, fill_color[0] + 40) - fill_color[0]) * t)
+            gg = int(fill_color[1] + (min(255, fill_color[1] + 40) - fill_color[1]) * t)
+            gb = int(fill_color[2] + (min(255, fill_color[2] + 40) - fill_color[2]) * t)
+            pygame.draw.circle(node_surf, (gr, gg, gb, 255), (center, center), r)
+        return node_surf
 
     def _get_skill_at_pos(self, pos: tuple) -> Optional[str]:
         mx, my = pos
@@ -127,6 +178,7 @@ class SkillTreeView(BaseView):
                 success, msg = self.progression.level_up_skill(skill_id)
                 self._show_message(msg)
                 if success:
+                    get_audio_manager().play_sfx("skill_unlock")
                     # Level-up particle burst from node
                     for tree_type, positions in SKILL_POSITIONS.items():
                         if skill_id in positions:
@@ -135,7 +187,7 @@ class SkillTreeView(BaseView):
 
         elif event.type == pygame_gui.UI_BUTTON_PRESSED:
             if event.ui_element == self.back_button:
-                self.next_state = GameState.GALAXY_MAP
+                self.next_state = GameState.CHARACTER
 
     def _show_message(self, msg: str) -> None:
         self.message = msg
@@ -176,27 +228,30 @@ class SkillTreeView(BaseView):
         bar_w = 400
         bar_h = 12
         progress = self.progression.get_xp_progress()
-        pygame.draw.rect(screen, (30, 30, 40), (bar_x, bar_y, bar_w, bar_h))
-        fill_w = int(bar_w * progress)
-        pygame.draw.rect(screen, Colors.TEXT_HIGHLIGHT, (bar_x, bar_y, fill_w, bar_h))
-        if fill_w > 2:
-            pygame.draw.rect(screen, (200, 240, 255), (bar_x + fill_w - 2, bar_y, 2, bar_h))
-        pygame.draw.rect(screen, Colors.TEXT_SECONDARY, (bar_x, bar_y, bar_w, bar_h), 1)
-
-        # Tree headers
-        trading_header = self.header_font.render("TRADING MASTERY", True, Colors.FACTION_COMMERCE)
-        screen.blit(trading_header, trading_header.get_rect(center=(160, 150)))
-
-        gathering_header = self.header_font.render(
-            "RESOURCE GATHERING", True, Colors.FACTION_FRONTIER
+        xp_max = xp_next if xp_next else 1
+        xp_current_in_level = int(xp_max * progress)
+        draw_bar(
+            screen, bar_x, bar_y, bar_w, bar_h,
+            xp_current_in_level, xp_max,
+            Colors.TEXT_HIGHLIGHT,
+            show_value=False,
+            border_color=Colors.TEXT_SECONDARY,
         )
-        screen.blit(gathering_header, gathering_header.get_rect(center=(460, 150)))
 
-        mining_header = self.header_font.render("MINING MASTERY", True, Colors.GLOW_ORANGE)
-        screen.blit(mining_header, mining_header.get_rect(center=(740, 150)))
-
-        leadership_header = self.header_font.render("LEADERSHIP", True, Colors.FACTION_SCIENCE)
-        screen.blit(leadership_header, leadership_header.get_rect(center=(1080, 150)))
+        # Tree headers with attribute subtitles
+        _headers = [
+            ("TRADING MASTERY", "Commerce", 100, Colors.FACTION_COMMERCE),
+            ("RESOURCE GATHERING", "Acuity", 310, Colors.FACTION_FRONTIER),
+            ("MINING MASTERY", "Resolve", 530, Colors.GLOW_ORANGE),
+            ("LEADERSHIP", "Ingenuity", 730, Colors.FACTION_SCIENCE),
+            ("SOCIAL ARTS", "Synergy", 920, Colors.ATTR_HIGHLIGHT),
+            ("GROUND COMBAT", "Resolve", 1130, Colors.RED),
+        ]
+        for header_text, attr_name, hx, color in _headers:
+            h_surf = self.header_font.render(header_text, True, color)
+            screen.blit(h_surf, h_surf.get_rect(center=(hx, 140)))
+            a_surf = self.small_font.render(attr_name, True, Colors.TEXT_SECONDARY)
+            screen.blit(a_surf, a_surf.get_rect(center=(hx, 162)))
 
         # Draw connection lines first
         self._draw_connections(screen)
@@ -282,33 +337,28 @@ class SkillTreeView(BaseView):
         unlocked = {sid: s for sid, s in self.progression.skills.items() if s.is_unlocked}
         can_level = skill.can_level_up(self.progression.get_available_skill_points(), unlocked)
 
-        # Determine colors
+        # Determine state key and border color
         if skill.is_maxed:
-            fill_color = (50, 150, 50)
+            state_key = "maxed"
             border_color = Colors.SUCCESS
         elif skill.is_unlocked:
-            fill_color = (40, 80, 140)
+            state_key = "unlocked"
             border_color = Colors.TEXT_HIGHLIGHT
         elif can_level:
-            fill_color = (60, 60, 30)
+            state_key = "available"
             border_color = Colors.YELLOW
         else:
-            fill_color = (30, 30, 40)
+            state_key = "locked"
             border_color = (60, 60, 70)
 
         if is_hovered:
-            fill_color = tuple(min(255, c + 30) for c in fill_color)
+            state_key += "_hover"
 
-        # Radial gradient fill (lighter center)
-        node_surf = pygame.Surface((NODE_RADIUS * 2 + 4, NODE_RADIUS * 2 + 4), pygame.SRCALPHA)
-        center = NODE_RADIUS + 2
-        for r in range(NODE_RADIUS, 0, -1):
-            t = 1.0 - (r / NODE_RADIUS)  # 0 at edge, 1 at center
-            gr = int(fill_color[0] + (min(255, fill_color[0] + 40) - fill_color[0]) * t)
-            gg = int(fill_color[1] + (min(255, fill_color[1] + 40) - fill_color[1]) * t)
-            gb = int(fill_color[2] + (min(255, fill_color[2] + 40) - fill_color[2]) * t)
-            pygame.draw.circle(node_surf, (gr, gg, gb, 255), (center, center), r)
-        screen.blit(node_surf, (x - center, y - center))
+        # Use pre-rendered radial gradient surface
+        node_surf = self._node_surface_cache.get(state_key)
+        if node_surf:
+            center = NODE_RADIUS + 2
+            screen.blit(node_surf, (x - center, y - center))
 
         # Maxed nodes: persistent glow halo
         if skill.is_maxed:
@@ -332,16 +382,25 @@ class SkillTreeView(BaseView):
             # Standard border
             pygame.draw.circle(screen, border_color, (x, y), NODE_RADIUS, 2)
 
-        # Skill name (wrapped)
-        words = skill.name.split()
-        if len(words) > 1:
-            line1 = self.node_font.render(words[0], True, Colors.TEXT)
-            line2 = self.node_font.render(" ".join(words[1:]), True, Colors.TEXT)
-            screen.blit(line1, line1.get_rect(center=(x, y - 8)))
-            screen.blit(line2, line2.get_rect(center=(x, y + 8)))
-        else:
+        # Skill icon (centered in node, text shifts below)
+        icon = self._sprite_mgr.get_skill_icon(skill_id, scale=2)
+        if icon:
+            icon_rect = icon.get_rect(center=(x, y - 6))
+            screen.blit(icon, icon_rect)
+            # Compact name below icon
             name_surf = self.node_font.render(skill.name, True, Colors.TEXT)
-            screen.blit(name_surf, name_surf.get_rect(center=(x, y)))
+            screen.blit(name_surf, name_surf.get_rect(center=(x, y + 18)))
+        else:
+            # Fallback: text-only layout
+            words = skill.name.split()
+            if len(words) > 1:
+                line1 = self.node_font.render(words[0], True, Colors.TEXT)
+                line2 = self.node_font.render(" ".join(words[1:]), True, Colors.TEXT)
+                screen.blit(line1, line1.get_rect(center=(x, y - 8)))
+                screen.blit(line2, line2.get_rect(center=(x, y + 8)))
+            else:
+                name_surf = self.node_font.render(skill.name, True, Colors.TEXT)
+                screen.blit(name_surf, name_surf.get_rect(center=(x, y)))
 
         # Level indicator below
         level_str = f"{skill.current_level}/{skill.max_level}"
@@ -359,10 +418,14 @@ class SkillTreeView(BaseView):
         ty = min(my + 15, WINDOW_HEIGHT - th - 10)
 
         # Background
-        tooltip_surf = pygame.Surface((tw, th), pygame.SRCALPHA)
-        tooltip_surf.fill((12, 12, 28, 230))
-        screen.blit(tooltip_surf, (tx, ty))
-        pygame.draw.rect(screen, Colors.TEXT_HIGHLIGHT, (tx, ty, tw, th), 1)
+        draw_panel(
+            screen,
+            pygame.Rect(tx, ty, tw, th),
+            alpha=230,
+            bg_color=(12, 12, 28),
+            border_color=Colors.TEXT_HIGHLIGHT,
+            border_radius=4,
+        )
 
         # Content
         name = self.info_font.render(skill.name, True, Colors.TEXT_HIGHLIGHT)

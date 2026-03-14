@@ -23,6 +23,8 @@ from spacegame.models.mining import (
     ROCK_TYPE_CONFIGS,
 )
 from spacegame.models.drone import MiningDroneFleet
+from spacegame.models.rating import calculate_rating, MINING_THRESHOLDS, RATING_COLORS
+from spacegame.engine.draw_utils import draw_bar, draw_summary_overlay
 from spacegame.utils.logger import logger
 from spacegame.engine.backgrounds import AnimatedBackground
 from spacegame.engine.particles import (
@@ -32,7 +34,12 @@ from spacegame.engine.particles import (
     COLLECT_SPARKLE,
     CLICK_HIT,
     DRONE_SPARK,
+    MINING_CHAIN,
+    ENERGY_REGEN,
 )
+from spacegame.engine.sprites import get_sprite_manager
+from spacegame.engine.fonts import FontCache
+from spacegame.engine.audio_manager import get_audio_manager
 
 
 class MiningView(BaseView):
@@ -67,10 +74,10 @@ class MiningView(BaseView):
         self.next_state: Optional[GameState] = None
 
         # Fonts
-        self.title_font = pygame.font.Font(None, 36)
-        self.info_font = pygame.font.Font(None, 24)
-        self.small_font = pygame.font.Font(None, 20)
-        self.cell_font = pygame.font.Font(None, 18)
+        self.title_font = FontCache.get(36)
+        self.info_font = FontCache.get(24)
+        self.small_font = FontCache.get(20)
+        self.cell_font = FontCache.get(18)
 
         # UI buttons
         self.back_button: Optional[pygame_gui.elements.UIButton] = None
@@ -96,8 +103,25 @@ class MiningView(BaseView):
         # White flash overlay for rock break
         self._flash_alpha = 0.0
 
-        # Procedural rock shapes (cached per-cell)
+        # Procedural rock shapes (cached per-cell, used as fallback)
         self._rock_shapes: Dict[tuple, list] = {}
+
+        # Ore icon sprites (commodity_id -> Surface at 3x scale = 48x48)
+        self._sprite_mgr = get_sprite_manager()
+        self._ore_icons: Dict[str, Optional[pygame.Surface]] = {}
+        for cfg in ROCK_TYPE_CONFIGS.values():
+            self._ore_icons[cfg.commodity_id] = self._sprite_mgr.get_commodity_icon(
+                cfg.commodity_id, scale=3
+            )
+
+        # Session summary overlay
+        self._show_summary: bool = False
+        self._summary_xp: int = 0
+        self._session_elapsed: float = 0.0
+        self._session_rating: str = "D"
+        self._summary_font = FontCache.get(32)
+        self._summary_title_font = FontCache.get(44)
+        self._rating_font = FontCache.get(72)
 
     def _generate_rock_shape(self, gx: int, gy: int, w: int, h: int) -> list:
         """Generate irregular polygon points for a rock shape."""
@@ -130,11 +154,15 @@ class MiningView(BaseView):
         drone_speed_bonus = 0.0
         rare_chance_bonus = 0.0
 
+        chain_chance_bonus = 0.0
+
         if self.progression:
             click_power_bonus = self.progression.get_bonus("click_drill_power")
             passive_drill_bonus = self.progression.get_bonus("passive_drill_speed")
             drone_speed_bonus = self.progression.get_bonus("drone_mining_speed")
             rare_chance_bonus = self.progression.get_bonus("mining_rare_chance")
+            rare_chance_bonus += self.progression.get_bonus("rare_ore_chance")
+            chain_chance_bonus = self.progression.get_bonus("chain_chance")
 
         # Get active drones
         active_drones = self.drone_fleet.get_active_drones() if self.drone_fleet else []
@@ -145,6 +173,7 @@ class MiningView(BaseView):
             passive_drill_bonus=passive_drill_bonus,
             drone_speed_bonus=drone_speed_bonus,
             rare_chance_bonus=rare_chance_bonus,
+            chain_chance_bonus=chain_chance_bonus,
             drones=active_drones,
         )
         self._rock_shapes.clear()
@@ -185,13 +214,25 @@ class MiningView(BaseView):
         return None
 
     def handle_event(self, event: pygame.event.Event) -> None:
-        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+        # Summary dismiss: click or key
+        if self._show_summary:
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                self.next_state = GameState.TRADING
+            elif event.type == pygame.KEYDOWN and event.key in (
+                pygame.K_RETURN, pygame.K_ESCAPE, pygame.K_SPACE,
+            ):
+                self.next_state = GameState.TRADING
+            return
+
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button in (1, 3):
             cell = self._get_grid_cell(event.pos)
             if cell:
-                self._click_rock(cell[0], cell[1])
+                empowered = event.button == 3  # Right-click = empowered
+                self._click_rock(cell[0], cell[1], empowered=empowered)
 
         elif event.type == pygame_gui.UI_BUTTON_PRESSED:
             if event.ui_element == self.back_button:
+                xp = 0
                 if self.session and self.progression:
                     total = sum(self.session.total_mined.values())
                     if total > 0:
@@ -201,14 +242,20 @@ class MiningView(BaseView):
                         msgs = self.progression.add_xp(xp)
                         for m in msgs:
                             logger.info(m)
-                self.next_state = GameState.TRADING
+                self._summary_xp = xp
+                self._calculate_rating()
+                self._show_summary = True
+                self._destroy_ui()
             elif event.ui_element == self.regen_button:
                 if self.session:
                     self.session.regenerate_field()
+                    self.player.max_mining_depth = max(
+                        self.player.max_mining_depth, self.session.depth
+                    )
                     self._rock_shapes.clear()
                     self._show_message("Asteroid field regenerated!")
 
-    def _click_rock(self, gx: int, gy: int) -> None:
+    def _click_rock(self, gx: int, gy: int, empowered: bool = False) -> None:
         if not self.session:
             return
 
@@ -217,16 +264,19 @@ class MiningView(BaseView):
             self._show_message("Cargo hold full!")
             return
 
-        success, msg, result = self.session.click_rock(gx, gy)
+        success, msg, result = self.session.click_rock(gx, gy, empowered=empowered)
 
         if success:
             # Click hit particles at rock position
             fx = self.GRID_OFFSET_X + gx * self.CELL_SIZE + self.CELL_SIZE // 2
             fy = self.GRID_OFFSET_Y + gy * self.CELL_SIZE + self.CELL_SIZE // 2
             self.particles.emit(fx, fy, CLICK_HIT)
+            get_audio_manager().play_sfx("mine_click")
 
             if result:
                 self._handle_mine_result(result, gx, gy)
+            self._process_chain_results()
+            self._process_milestones()
         else:
             self._show_message(msg)
 
@@ -240,6 +290,8 @@ class MiningView(BaseView):
     def update(self, dt: float) -> None:
         self.background.update(dt)
         self.particles.update(dt)
+        if not self._show_summary:
+            self._session_elapsed += dt
 
         if self.message_timer > 0:
             self.message_timer -= dt
@@ -283,14 +335,26 @@ class MiningView(BaseView):
                         random.uniform(-shake_intensity, shake_intensity),
                     )
 
-            results = self.session.update(dt)
+            prev_energy = self.session.energy
+            commodity_volumes = {c.id: c.volume_per_unit for c in self.commodities.values()}
+            cargo_full = self.player.ship.get_available_cargo(commodity_volumes) <= 0
+            results = self.session.update(dt, cargo_full=cargo_full)
+            if self.session.energy > prev_energy:
+                bar_x = self.GRID_OFFSET_X + 100
+                bar_y = self.GRID_OFFSET_Y + self.mining_config.grid_height * self.CELL_SIZE + 25
+                self.particles.emit(bar_x, bar_y, ENERGY_REGEN)
+                get_audio_manager().play_sfx("mine_energy")
             for result in results:
                 self._handle_mine_result_from_update(result)
+            self._process_chain_results()
+            self._process_milestones()
 
     def _handle_mine_result(self, result: MiningResult, gx: int, gy: int) -> None:
         """Handle a mining result from a player click that broke a rock."""
         self.player.ship.add_cargo(result.commodity_id, result.quantity, price_per_unit=0)
         self.player.ore_mined += result.quantity
+        if result.commodity_id == "rare_ore":
+            self.player.rare_ores_mined += result.quantity
 
         commodity = self.commodities.get(result.commodity_id)
         name = commodity.name if commodity else result.commodity_id
@@ -302,14 +366,54 @@ class MiningView(BaseView):
         self.particles.emit(fx, fy, COLLECT_SPARKLE)
         self._flash_alpha = 80.0
         self._rock_shakes.pop((gx, gy), None)
+        get_audio_manager().play_sfx("mine_break")
+        get_audio_manager().play_sfx("mine_collect")
 
         self._add_feedback(f"+{result.quantity} {name}", fx, fy)
         logger.debug(f"Mined {result.quantity} {name}")
+
+    def _process_chain_results(self) -> None:
+        """Handle chain-broken rocks: add cargo, emit particles, show feedback."""
+        if not self.session:
+            return
+        self.player.total_chains_triggered += len(self.session.chain_results)
+        for chain in self.session.chain_results:
+            self.player.ship.add_cargo(chain.commodity_id, chain.quantity, price_per_unit=0)
+            self.player.ore_mined += chain.quantity
+            if chain.commodity_id == "rare_ore":
+                self.player.rare_ores_mined += chain.quantity
+            fx = self.GRID_OFFSET_X + chain.grid_x * self.CELL_SIZE + self.CELL_SIZE // 2
+            fy = self.GRID_OFFSET_Y + chain.grid_y * self.CELL_SIZE + self.CELL_SIZE // 2
+            self.particles.emit(fx, fy, MINING_CHAIN)
+            get_audio_manager().play_sfx("mine_chain")
+            commodity = self.commodities.get(chain.commodity_id)
+            name = commodity.name if commodity else chain.commodity_id
+            self._add_feedback(f"+{chain.quantity} {name}", fx, fy, Colors.YELLOW)
+            self._rock_shakes.pop((chain.grid_x, chain.grid_y), None)
+
+    def _process_milestones(self) -> None:
+        """Apply rewards for newly completed milestones."""
+        if not self.session:
+            return
+        for ms in self.session.newly_completed_milestones:
+            if ms.reward_xp > 0 and self.progression:
+                msgs = self.progression.add_xp(ms.reward_xp)
+                for m in msgs:
+                    logger.info(m)
+                self._add_feedback(f"+{ms.reward_xp} XP", WINDOW_WIDTH - 200, 80, Colors.BLUE)
+            if ms.reward_credits > 0:
+                self.player.credits += ms.reward_credits
+                self._add_feedback(
+                    f"+{ms.reward_credits} CR", WINDOW_WIDTH - 200, 100, Colors.GREEN
+                )
+            logger.info(f"Mining milestone complete: {ms.description}")
 
     def _handle_mine_result_from_update(self, result: MiningResult) -> None:
         """Handle a mining result from update() (passive drill or drone)."""
         self.player.ship.add_cargo(result.commodity_id, result.quantity, price_per_unit=0)
         self.player.ore_mined += result.quantity
+        if result.commodity_id == "rare_ore":
+            self.player.rare_ores_mined += result.quantity
 
         commodity = self.commodities.get(result.commodity_id)
         name = commodity.name if commodity else result.commodity_id
@@ -327,6 +431,8 @@ class MiningView(BaseView):
         self.particles.emit(fx, fy, MINING_DUST)
         self.particles.emit(fx, fy, COLLECT_SPARKLE)
         self._flash_alpha = 60.0
+        get_audio_manager().play_sfx("mine_break")
+        get_audio_manager().play_sfx("mine_collect")
 
         self._add_feedback(f"+{result.quantity} {name}", fx, fy)
         logger.debug(f"Mined {result.quantity} {name} (auto)")
@@ -346,18 +452,26 @@ class MiningView(BaseView):
 
         # Instructions
         instr = self.small_font.render(
-            "Click rocks to mine! Drones mine automatically.", True, Colors.TEXT_SECONDARY
+            "Left-click: mine  |  Right-click: empowered (3x, uses energy)  |  Drones mine automatically",
+            True,
+            Colors.TEXT_SECONDARY,
         )
         screen.blit(instr, (self.GRID_OFFSET_X, 55))
 
         # Draw grid
         self._render_grid(screen)
 
+        # Draw energy bar below grid
+        self._render_energy_bar(screen)
+
         # Draw stats panel
         self._render_stats(screen)
 
         # Draw drone panel
         self._render_drone_panel(screen)
+
+        # Draw milestone panel
+        self._render_milestones(screen)
 
         # Particles on top
         self.particles.render(screen)
@@ -379,6 +493,10 @@ class MiningView(BaseView):
             msg_surf = self.info_font.render(self.message, True, Colors.YELLOW)
             msg_rect = msg_surf.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT - 90))
             screen.blit(msg_surf, msg_rect)
+
+        # Summary overlay (drawn last, on top of everything)
+        if self._show_summary:
+            self._render_summary(screen)
 
     def _render_grid(self, screen: pygame.Surface) -> None:
         mouse_pos = pygame.mouse.get_pos()
@@ -411,52 +529,63 @@ class MiningView(BaseView):
                 label = self.cell_font.render("empty", True, (50, 52, 60))
                 screen.blit(label, label.get_rect(center=rect.center))
             else:
-                # Procedural rock shape
                 color = rock.config.color
-                rock_points = self._generate_rock_shape(rock.grid_x, rock.grid_y, w, h)
-                # Offset points to screen position
-                offset_points = [(p[0] + sx, p[1] + sy) for p in rock_points]
-                pygame.draw.polygon(screen, color, offset_points)
+                icon = self._ore_icons.get(rock.config.commodity_id)
 
-                # Crack lines (darker version of rock color)
-                dark_color = (max(0, color[0] - 40), max(0, color[1] - 40), max(0, color[2] - 40))
-                rng = random.Random(hash((rock.grid_x, rock.grid_y)))
-                for _ in range(2):
-                    i1 = rng.randint(0, len(offset_points) - 1)
-                    cx, cy = rect.centerx + rng.randint(-5, 5), rect.centery + rng.randint(-5, 5)
-                    pygame.draw.line(screen, dark_color, offset_points[i1], (cx, cy), 1)
+                if icon is not None:
+                    # Tinted cell background (rock color, dimmed)
+                    bg_color = (color[0] // 4, color[1] // 4, color[2] // 4)
+                    pygame.draw.rect(screen, bg_color, rect)
 
-                # Hover highlight
-                if hover_cell and hover_cell[0] == rock.grid_x and hover_cell[1] == rock.grid_y:
-                    pygame.draw.polygon(screen, Colors.TEXT_HIGHLIGHT, offset_points, 2)
+                    # Ore icon in upper portion of cell
+                    icon_x = rect.centerx - icon.get_width() // 2
+                    icon_y = rect.top + 4
+                    screen.blit(icon, (icon_x, icon_y))
+
+                    # Hover / normal border
+                    if hover_cell and hover_cell[0] == rock.grid_x and hover_cell[1] == rock.grid_y:
+                        pygame.draw.rect(screen, Colors.TEXT_HIGHLIGHT, rect, 2)
+                    else:
+                        border_color = (color[0] // 2, color[1] // 2, color[2] // 2)
+                        pygame.draw.rect(screen, border_color, rect, 1)
                 else:
-                    pygame.draw.polygon(screen, (180, 180, 180), offset_points, 1)
+                    # Fallback: procedural polygon (no sprite available)
+                    rock_points = self._generate_rock_shape(rock.grid_x, rock.grid_y, w, h)
+                    offset_points = [(p[0] + sx, p[1] + sy) for p in rock_points]
+                    pygame.draw.polygon(screen, color, offset_points)
+                    if hover_cell and hover_cell[0] == rock.grid_x and hover_cell[1] == rock.grid_y:
+                        pygame.draw.polygon(screen, Colors.TEXT_HIGHLIGHT, offset_points, 2)
+                    else:
+                        pygame.draw.polygon(screen, (180, 180, 180), offset_points, 1)
 
-                # Rock type label
+                # Rock type label (below icon, above hardness/bar)
                 label = self.cell_font.render(rock.rock_type.value.upper(), True, Colors.TEXT)
-                screen.blit(label, label.get_rect(center=(rect.centerx, rect.centery - 8)))
+                label_y = rect.top + 52 if icon is not None else rect.centery - 6
+                screen.blit(label, label.get_rect(center=(rect.centerx, label_y)))
 
                 # Drill progress bar (shown when drilling via click or drone)
                 if rock.drilling or rock.drill_progress > 0:
                     bar_y = rect.bottom - 12
-                    bar_rect = pygame.Rect(sx + 4, bar_y, w - 8, 8)
-                    pygame.draw.rect(screen, (40, 40, 40), bar_rect)
-                    fill_width = int((w - 8) * rock.drill_progress)
                     # Orange for player, blue for drone
                     is_drone_target = (rock.grid_x, rock.grid_y) in drone_target_positions
                     bar_color = (80, 160, 255) if is_drone_target else Colors.TEXT_HIGHLIGHT
-                    fill_rect = pygame.Rect(sx + 4, bar_y, fill_width, 8)
-                    pygame.draw.rect(screen, bar_color, fill_rect)
-                    if fill_width > 2:
-                        pygame.draw.rect(
-                            screen, (200, 240, 255), (sx + 4 + fill_width - 2, bar_y, 2, 8)
-                        )
+                    draw_bar(
+                        screen,
+                        sx + 4,
+                        bar_y,
+                        w - 8,
+                        8,
+                        rock.drill_progress * 100,
+                        100,
+                        bar_color,
+                        show_value=False,
+                    )
                 else:
                     hard_text = self.cell_font.render(
                         f"{rock.hardness:.1f}s", True, Colors.TEXT_SECONDARY
                     )
                     screen.blit(
-                        hard_text, hard_text.get_rect(center=(rect.centerx, rect.centery + 10))
+                        hard_text, hard_text.get_rect(center=(rect.centerx, rect.bottom - 10))
                     )
 
                 # Drone indicator dot (blue dot top-right corner)
@@ -564,7 +693,10 @@ class MiningView(BaseView):
         screen.blit(legend, (panel_x, y))
         y += 25
 
+        max_legend_y = WINDOW_HEIGHT - 80  # Leave room for buttons
         for rt, cfg in ROCK_TYPE_CONFIGS.items():
+            if y >= max_legend_y:
+                break
             pygame.draw.rect(screen, cfg.color, (panel_x, y + 2, 14, 14))
             pygame.draw.rect(screen, Colors.TEXT_SECONDARY, (panel_x, y + 2, 14, 14), 1)
             commodity = self.commodities.get(cfg.commodity_id)
@@ -573,6 +705,128 @@ class MiningView(BaseView):
             surf = self.small_font.render(text, True, Colors.TEXT_SECONDARY)
             screen.blit(surf, (panel_x + 20, y))
             y += 20
+
+    def _render_energy_bar(self, screen: pygame.Surface) -> None:
+        """Render energy bar below the mining grid."""
+        if not self.session:
+            return
+        bar_y = self.GRID_OFFSET_Y + self.mining_config.grid_height * self.CELL_SIZE + 10
+        bar_width = self.mining_config.grid_width * self.CELL_SIZE
+        bar_height = 20
+        bar_x = self.GRID_OFFSET_X
+
+        # Dynamic color based on energy ratio
+        ratio = self.session.energy / max(1, self.session.max_energy)
+        if ratio > 0.5:
+            bar_color = Colors.BLUE
+        elif ratio > 0.25:
+            bar_color = Colors.YELLOW
+        else:
+            bar_color = Colors.RED
+        draw_bar(
+            screen, bar_x, bar_y, bar_width, bar_height,
+            self.session.energy, self.session.max_energy, bar_color,
+            show_value=False,
+        )
+
+        # Custom text with empowered click cost info
+        cost = self.session.get_click_energy_cost()
+        label = f"ENERGY: {self.session.energy}/{self.session.max_energy}  |  R-click: 3x ({cost} energy)"
+        surf = self.small_font.render(label, True, Colors.TEXT)
+        # Clip label to bar width
+        if surf.get_width() > bar_width - 16:
+            # Fall back to shorter label
+            label = f"ENERGY: {self.session.energy}/{self.session.max_energy}"
+            surf = self.small_font.render(label, True, Colors.TEXT)
+        screen.blit(surf, (bar_x + 8, bar_y + 2))
+
+        # Depth indicator right of energy bar
+        depth_label = f"DEPTH {self.session.depth}"
+        depth_intensity = min(255, 150 + self.session.depth * 10)
+        depth_color = (depth_intensity, depth_intensity, 255)
+        depth_surf = self.info_font.render(depth_label, True, depth_color)
+        screen.blit(depth_surf, (bar_x + bar_width + 20, bar_y))
+
+    def _render_milestones(self, screen: pygame.Surface) -> None:
+        """Render milestone progress panel."""
+        if not self.session or not self.session.milestones:
+            return
+
+        panel_x = self.GRID_OFFSET_X
+        panel_y = (
+            self.GRID_OFFSET_Y
+            + self.mining_config.grid_height * self.CELL_SIZE
+            + 40
+        )
+
+        header = self.small_font.render("MILESTONES", True, Colors.TEXT_HIGHLIGHT)
+        screen.blit(header, (panel_x, panel_y))
+        y = panel_y + 20
+
+        for ms in self.session.milestones:
+            value = self.session._get_milestone_value(ms.category)
+            progress = min(1.0, value / max(1, ms.threshold))
+
+            # Checkmark or progress
+            if ms.completed:
+                mark = self.small_font.render("[DONE]", True, Colors.GREEN)
+            else:
+                mark = self.small_font.render(
+                    f"[{value}/{ms.threshold}]", True, Colors.TEXT_SECONDARY
+                )
+            screen.blit(mark, (panel_x, y))
+
+            # Description
+            desc_surf = self.small_font.render(ms.description, True, Colors.TEXT)
+            screen.blit(desc_surf, (panel_x + 80, y))
+
+            # Small progress bar
+            bar_x = panel_x + 80
+            bar_y_pos = y + 16
+            bar_w = 150
+            bar_h = 4
+            color = Colors.GREEN if ms.completed else Colors.BLUE
+            draw_bar(
+                screen, bar_x, bar_y_pos, bar_w, bar_h,
+                value, ms.threshold, color,
+                show_value=False, bg_color=Colors.BAR_BG_LIGHT,
+            )
+
+            y += 28
+
+    def _calculate_rating(self) -> None:
+        """Calculate session performance rating."""
+        if self.session and self._session_elapsed > 0:
+            total_ore = sum(self.session.total_mined.values())
+            ore_per_min = total_ore / (self._session_elapsed / 60.0)
+            self._session_rating = calculate_rating(ore_per_min, MINING_THRESHOLDS)
+            if self._session_rating == "S":
+                self.player.s_ranks_earned += 1
+        else:
+            self._session_rating = "D"
+
+    def _render_summary(self, screen: pygame.Surface) -> None:
+        """Render session summary overlay."""
+        stats: list[tuple[str, str]] = []
+        if self.session:
+            total_ore = sum(self.session.total_mined.values())
+            completed = sum(1 for ms in self.session.milestones if ms.completed)
+            stats = [
+                ("Rocks Mined", str(self.session.rocks_broken)),
+                ("Total Ore", str(total_ore)),
+                ("Rare Ores", str(self.session.rare_ores_found)),
+                ("Max Depth", str(self.session.depth)),
+                ("Chains Triggered", str(self.session.total_chains)),
+                ("Milestones", f"{completed} / {len(self.session.milestones)}"),
+            ]
+        draw_summary_overlay(
+            screen,
+            title="MINING COMPLETE",
+            stats=stats,
+            xp_earned=self._summary_xp,
+            rating_letter=self._session_rating,
+            rating_color=RATING_COLORS.get(self._session_rating, Colors.TEXT_SECONDARY),
+        )
 
     def get_next_state(self) -> Optional[GameState]:
         return self.next_state

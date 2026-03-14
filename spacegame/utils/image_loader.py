@@ -73,7 +73,7 @@ class ImageLoader:
 
             # Scale if requested
             if scale_to:
-                image = pygame.transform.smoothscale(image, scale_to)
+                image = pygame.transform.scale(image, scale_to)
 
             # Cache and return
             self._cache[cache_key] = image

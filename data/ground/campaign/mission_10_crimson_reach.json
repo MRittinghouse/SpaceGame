@@ -1,0 +1,114 @@
+{
+    "id": "mission_10_crimson_reach",
+    "name": "Wrecker's Outpost",
+    "width": 25,
+    "height": 20,
+    "mission_type": "infiltration",
+    "difficulty": "low",
+    "faction_id": "frontier_alliance",
+
+    "tiles": [
+        ["W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","F","F","F","F","F","W","W","W","F","F","F","F","F","F","F","F","F","F","F","F","X","F","F","W"],
+        ["W","F","F","F","F","F","W","W","W","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","W"],
+        ["W","W","W","D","W","W","W","W","W","W","W","W","W","W","D","W","W","W","W","W","W","W","W","W","W"],
+        ["W","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","D","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","W"],
+        ["W","F","F","F","W","W","W","W","F","F","F","F","F","F","F","W","W","W","W","W","F","F","F","F","W"],
+        ["W","F","N","F","W","F","F","W","F","F","F","F","F","F","F","W","F","F","F","W","F","F","F","F","W"],
+        ["W","N","F","F","W","F","F","W","F","F","F","F","F","F","F","W","F","F","F","W","F","F","F","F","W"],
+        ["W","F","F","F","W","W","D","W","F","F","F","F","F","F","F","W","W","D","W","W","F","F","F","F","W"],
+        ["W","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","D","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","W"],
+        ["W","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","W"],
+        ["W","F","F","F","F","F","F","F","F","W","W","W","W","W","W","F","F","F","F","F","F","F","F","F","W"],
+        ["W","F","F","F","F","F","F","F","F","W","W","W","W","W","W","F","F","F","F","F","F","F","F","F","W"],
+        ["W","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","W"],
+        ["W","W","E","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"]
+    ],
+
+    "entrance": [2, 18],
+    "exit": [21, 1],
+
+    "enemies": [
+        {
+            "id": "guild_watch_1",
+            "template_id": "alliance_scrapper",
+            "x": 11, "y": 13,
+            "facing": "right",
+            "speed": 1,
+            "patrol_route": [[4, 13], [18, 13]]
+        },
+        {
+            "id": "guild_watch_2",
+            "template_id": "alliance_scrapper",
+            "x": 2, "y": 7,
+            "facing": "down",
+            "speed": 1,
+            "patrol_route": [[2, 7], [2, 10]]
+        },
+        {
+            "id": "market_guard",
+            "template_id": "pirate_thug",
+            "x": 21, "y": 7,
+            "facing": "down",
+            "speed": 1,
+            "patrol_route": [[21, 7], [21, 10], [22, 10], [22, 7]]
+        },
+        {
+            "id": "workshop_sentry",
+            "template_id": "crimson_enforcer",
+            "x": 13, "y": 4,
+            "facing": "down",
+            "speed": 2,
+            "patrol_route": [[10, 4], [16, 4]]
+        }
+    ],
+
+    "interactables": [
+        {
+            "x": 3, "y": 16,
+            "type": "loot_container",
+            "loot_credits": 40,
+            "description": "A crate of salvaged components, half-catalogued."
+        },
+        {
+            "x": 5, "y": 8,
+            "type": "loot_container",
+            "loot_credits": 55,
+            "description": "Refurbished electronics stacked behind a vendor's counter — origin unknown, quality decent."
+        },
+        {
+            "x": 3, "y": 1,
+            "type": "loot_container",
+            "loot_credits": 65,
+            "description": "Spare parts in a labeled bin: actuators, gaskets, hull sealant. Someone keeps a tidy backroom."
+        }
+    ],
+
+    "story_triggers": [
+        {
+            "x": 5, "y": 17,
+            "type": "atmosphere",
+            "text": "Wrecker's Outpost doesn't look like much from the airlock — welded hull plates, exposed conduit, a hand-painted sign reading WELCOME in six languages. But the air recyclers work, and nobody asks your name."
+        },
+        {
+            "x": 12, "y": 11,
+            "type": "atmosphere",
+            "text": "The corridor opens into Wrecker's Market. Cargo containers welded end-to-end serve as vendor stalls, hull plating in three different alloys forming the walls. Everything here was something else once. Nobody asks where it came from."
+        },
+        {
+            "x": 1, "y": 9,
+            "type": "atmosphere",
+            "text": "Loose deck plating shifts and rings underfoot — mismatched panels from salvaged freighters, not quite flush. Each step announces itself to the corridor."
+        },
+        {
+            "x": 12, "y": 4,
+            "type": "atmosphere",
+            "text": "The market smells give way to solder flux and hydraulic fluid. Tools hang on magnetic strips along walls of mismatched alloy panels. Someone runs a serious operation back here."
+        }
+    ]
+}

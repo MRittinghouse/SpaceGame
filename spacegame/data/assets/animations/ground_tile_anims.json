@@ -1,0 +1,11 @@
+{
+  "idle": {
+    "name": "idle",
+    "frames": [
+      0,
+      1
+    ],
+    "frame_duration": 0.6,
+    "loop": true
+  }
+}

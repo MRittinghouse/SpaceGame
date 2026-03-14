@@ -28,6 +28,15 @@
       "bonus_value": 2.0
     },
     {
+      "id": "emergency_thrusters",
+      "name": "Emergency Thrusters",
+      "description": "Emergency boost system. +15% flee chance in combat.",
+      "price": 2000,
+      "slot_type": "engine",
+      "bonus_type": "flee_bonus",
+      "bonus_value": 15.0
+    },
+    {
       "id": "mining_drill_mk2",
       "name": "Mining Drill Mk2",
       "description": "Reduces drill time by 20%.",
@@ -44,6 +53,245 @@
       "slot_type": "scanner",
       "bonus_type": "scan_charge_bonus",
       "bonus_value": 2.0
+    },
+    {
+      "id": "salvaged_pulse_emitter",
+      "name": "Salvaged Pulse Emitter",
+      "description": "A jury-rigged energy weapon pulled from scrap. Weak but functional \u2014 better than nothing.",
+      "price": 500,
+      "slot_type": "weapon",
+      "bonus_type": "",
+      "bonus_value": 0.0,
+      "combat_move": {
+        "id": "salvaged_pulse_emitter",
+        "name": "Pulse Shot",
+        "description": "A flickering energy pulse. Low damage, but it gets the job done.",
+        "effects": [{"type": "damage", "value": 6.0}],
+        "energy_cost": 1,
+        "accuracy_modifier": 0
+      }
+    },
+    {
+      "id": "mining_laser_retrofit",
+      "name": "Mining Laser Retrofit",
+      "description": "A repurposed mining laser that deals moderate damage. Cheap and reliable.",
+      "price": 3000,
+      "slot_type": "weapon",
+      "bonus_type": "",
+      "bonus_value": 0.0,
+      "combat_move": {
+        "id": "mining_laser_retrofit",
+        "name": "Mining Laser",
+        "description": "A repurposed mining laser. Decent accuracy, moderate damage.",
+        "effects": [{"type": "damage", "value": 12.0}],
+        "energy_cost": 2,
+        "accuracy_modifier": 5
+      }
+    },
+    {
+      "id": "laser_cannon",
+      "name": "Laser Cannon",
+      "description": "Standard combat laser with good accuracy and consistent damage output.",
+      "price": 10000,
+      "slot_type": "weapon",
+      "bonus_type": "",
+      "bonus_value": 0.0,
+      "combat_move": {
+        "id": "laser_cannon",
+        "name": "Laser Cannon",
+        "description": "A focused laser beam. Accurate and reliable.",
+        "effects": [{"type": "damage", "value": 18.0}],
+        "energy_cost": 3,
+        "accuracy_modifier": 10
+      }
+    },
+    {
+      "id": "dual_laser",
+      "name": "Dual Laser Array",
+      "description": "Twin-mounted laser system with synchronized fire control for increased damage.",
+      "price": 14000,
+      "slot_type": "weapon",
+      "bonus_type": "",
+      "bonus_value": 0.0,
+      "combat_move": {
+        "id": "dual_laser",
+        "name": "Dual Laser Burst",
+        "description": "Fires both lasers in a focused burst.",
+        "effects": [{"type": "damage", "value": 24.0}],
+        "energy_cost": 4,
+        "accuracy_modifier": 5
+      }
+    },
+    {
+      "id": "missile_launcher",
+      "name": "Missile Launcher",
+      "description": "High-damage explosive missiles with a cooldown between salvos.",
+      "price": 18000,
+      "slot_type": "weapon",
+      "bonus_type": "",
+      "bonus_value": 0.0,
+      "combat_move": {
+        "id": "missile_launcher",
+        "name": "Missile Salvo",
+        "description": "Launches an explosive missile. High damage, low accuracy.",
+        "effects": [{"type": "damage", "value": 30.0}],
+        "energy_cost": 4,
+        "cooldown": 2,
+        "accuracy_modifier": -10
+      }
+    },
+    {
+      "id": "ion_disruptor",
+      "name": "Ion Disruptor",
+      "description": "Drains enemy shields while dealing light damage. Effective against shielded targets.",
+      "price": 15000,
+      "slot_type": "weapon",
+      "bonus_type": "",
+      "bonus_value": 0.0,
+      "combat_move": {
+        "id": "ion_disruptor",
+        "name": "Ion Blast",
+        "description": "Disrupts shields and deals light damage.",
+        "effects": [
+          {"type": "damage", "value": 8.0},
+          {"type": "shield_drain", "value": 15.0}
+        ],
+        "energy_cost": 3,
+        "cooldown": 1,
+        "accuracy_modifier": 5
+      }
+    },
+    {
+      "id": "plasma_torpedo",
+      "name": "Plasma Torpedo",
+      "description": "Devastating plasma charge. Extremely powerful but energy-hungry with a long cooldown.",
+      "price": 30000,
+      "slot_type": "weapon",
+      "bonus_type": "",
+      "bonus_value": 0.0,
+      "combat_move": {
+        "id": "plasma_torpedo",
+        "name": "Plasma Torpedo",
+        "description": "A devastating plasma charge.",
+        "effects": [{"type": "damage", "value": 45.0}],
+        "energy_cost": 6,
+        "cooldown": 3,
+        "accuracy_modifier": 0
+      }
+    },
+    {
+      "id": "basic_shield_gen",
+      "name": "Basic Shield Generator",
+      "description": "Restores 20 shield points when activated.",
+      "price": 5000,
+      "slot_type": "defense",
+      "bonus_type": "",
+      "bonus_value": 0.0,
+      "combat_move": {
+        "id": "basic_shield_gen",
+        "name": "Shield Restore",
+        "description": "Restores 20 shield points.",
+        "effects": [{"type": "shield_restore", "value": 20.0, "target": "self"}],
+        "energy_cost": 2
+      }
+    },
+    {
+      "id": "armor_plating",
+      "name": "Armor Plating",
+      "description": "Activates reinforced armor, reducing incoming damage by 15% for 2 turns.",
+      "price": 8000,
+      "slot_type": "defense",
+      "bonus_type": "",
+      "bonus_value": 0.0,
+      "combat_move": {
+        "id": "armor_plating",
+        "name": "Reinforce Armor",
+        "description": "+15% damage reduction for 2 turns.",
+        "effects": [{"type": "damage_reduction", "value": 0.15, "duration": 2, "target": "self"}],
+        "energy_cost": 2
+      }
+    },
+    {
+      "id": "point_defense",
+      "name": "Point Defense System",
+      "description": "Activates point defense, granting +25 evasion for 1 turn.",
+      "price": 15000,
+      "slot_type": "defense",
+      "bonus_type": "",
+      "bonus_value": 0.0,
+      "combat_move": {
+        "id": "point_defense",
+        "name": "Point Defense",
+        "description": "+25 evasion for 1 turn.",
+        "effects": [{"type": "evasion_mod", "value": 25.0, "duration": 1, "target": "self"}],
+        "energy_cost": 3
+      }
+    },
+    {
+      "id": "emergency_repair",
+      "name": "Emergency Repair Kit",
+      "description": "Restores 25 hull points. Has a 3-turn cooldown.",
+      "price": 12000,
+      "slot_type": "defense",
+      "bonus_type": "",
+      "bonus_value": 0.0,
+      "combat_move": {
+        "id": "emergency_repair",
+        "name": "Emergency Repair",
+        "description": "Restores 25 hull points.",
+        "effects": [{"type": "hull_restore", "value": 25.0, "target": "self"}],
+        "energy_cost": 3,
+        "cooldown": 3
+      }
+    },
+    {
+      "id": "advanced_shield",
+      "name": "Advanced Shield Array",
+      "description": "Restores 40 shields and grants 10% damage reduction for 2 turns.",
+      "price": 25000,
+      "slot_type": "defense",
+      "bonus_type": "",
+      "bonus_value": 0.0,
+      "combat_move": {
+        "id": "advanced_shield",
+        "name": "Advanced Shields",
+        "description": "Restores 40 shields + 10% damage reduction for 2 turns.",
+        "effects": [
+          {"type": "shield_restore", "value": 40.0, "target": "self"},
+          {"type": "damage_reduction", "value": 0.10, "duration": 2, "target": "self"}
+        ],
+        "energy_cost": 4
+      }
+    },
+    {
+      "id": "hidden_compartment",
+      "name": "Hidden Compartment",
+      "description": "Conceals 30% of cargo capacity in a hidden hold. Lower detection during customs inspections, but double penalties if found.",
+      "price": 2500,
+      "slot_type": "smuggling",
+      "bonus_type": "hidden_compartment",
+      "bonus_value": 0.30,
+      "requires_black_market": true
+    },
+    {
+      "id": "signal_jammer",
+      "name": "Signal Jammer",
+      "description": "Disrupts scanning frequencies. -5% inspection chance on arrival, -3% bounty hunter encounter chance.",
+      "price": 1500,
+      "slot_type": "smuggling",
+      "bonus_type": "signal_jammer",
+      "bonus_value": 1.0,
+      "requires_black_market": true
+    },
+    {
+      "id": "false_transponder",
+      "name": "False Transponder",
+      "description": "Broadcasts a fake ship ID. -8% inspection chance on arrival, -5% bounty hunter encounter chance.",
+      "price": 3000,
+      "slot_type": "smuggling",
+      "bonus_type": "false_transponder",
+      "bonus_value": 1.0,
+      "requires_black_market": true
     }
   ]
 }

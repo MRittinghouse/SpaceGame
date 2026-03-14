@@ -9,7 +9,7 @@
 > - **Mining/Salvaging/Refining**: COMPLETE — all three mini-game systems operational
 > - **Save/Load**: COMPLETE — 12 save slots with autosave
 > - **Secondary RPG/narrative loop**: NOT STARTED — campaign, crew, factions, dialogue are Phase 2+
-> - **Fleet management**: NOT STARTED — single-ship only currently
+> - **Fleet management**: NOT STARTED — deferred to Campaign Act Two (Cycle 5.3.1)
 > - **Spec note**: Some systems were simplified from this document's vision during implementation (2 skill trees instead of 3, 10 levels instead of 20). See `11_implementation_roadmap.md` for details.
 
 ## 1. Game Overview

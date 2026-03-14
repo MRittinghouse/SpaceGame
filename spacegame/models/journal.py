@@ -1,0 +1,251 @@
+"""Journal system models.
+
+Tracks auto-generated story entries and player-written notes,
+with tag-based filtering and chronological organization.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+from typing import Any, Optional
+
+
+# Valid tags for player entries
+VALID_TAGS: frozenset[str] = frozenset({"people", "places", "suspicions", "goals", ""})
+
+PLAYER_ENTRY_MAX_LENGTH: int = 500
+
+
+@dataclass
+class JournalEntry:
+    """A single journal entry, either auto-generated or player-written."""
+
+    entry_id: str
+    text: str
+    game_day: int
+    system_id: str
+    source: str = "auto"        # "auto" or "player"
+    tag: str = ""               # "people", "places", "suspicions", "goals", or ""
+    trigger_flag: str = ""      # For auto entries: the flag that triggers this entry
+    mission_id: str = ""        # Which mission triggered this (auto entries only)
+    created_at: int = 0         # Monotonic counter for stable sort within a day
+
+    def __post_init__(self) -> None:
+        """Validate entry constraints."""
+        if self.source == "player" and len(self.text) > PLAYER_ENTRY_MAX_LENGTH:
+            self.text = self.text[:PLAYER_ENTRY_MAX_LENGTH]
+        if self.tag not in VALID_TAGS:
+            self.tag = ""
+
+    def to_dict(self) -> dict[str, Any]:
+        """Serialize to dict."""
+        return {
+            "entry_id": self.entry_id,
+            "text": self.text,
+            "game_day": self.game_day,
+            "system_id": self.system_id,
+            "source": self.source,
+            "tag": self.tag,
+            "trigger_flag": self.trigger_flag,
+            "mission_id": self.mission_id,
+            "created_at": self.created_at,
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> JournalEntry:
+        """Deserialize from dict."""
+        return cls(
+            entry_id=data["entry_id"],
+            text=data["text"],
+            game_day=data["game_day"],
+            system_id=data.get("system_id", ""),
+            source=data.get("source", "auto"),
+            tag=data.get("tag", ""),
+            trigger_flag=data.get("trigger_flag", ""),
+            mission_id=data.get("mission_id", ""),
+            created_at=data.get("created_at", 0),
+        )
+
+
+class Journal:
+    """Container for journal entries with filtering, editing, and persistence.
+
+    Holds auto-entry templates (loaded from data) and runtime entries
+    (both triggered auto entries and player-written notes).
+    """
+
+    def __init__(self, auto_templates: Optional[list[JournalEntry]] = None) -> None:
+        self._auto_templates: dict[str, JournalEntry] = {}
+        if auto_templates:
+            for t in auto_templates:
+                if t.trigger_flag:
+                    self._auto_templates[t.trigger_flag] = t
+        self._entries: list[JournalEntry] = []
+        self._triggered_flags: set[str] = set()
+        self._next_player_id: int = 1
+        self._created_counter: int = 0
+
+    def trigger_auto_entry(
+        self, trigger_flag: str, game_day: int, system_id: str = ""
+    ) -> Optional[JournalEntry]:
+        """Trigger an auto entry by its flag. Returns the entry if newly triggered.
+
+        Args:
+            trigger_flag: The dialogue flag that triggers this entry.
+            game_day: Current in-game day.
+            system_id: Current system location.
+
+        Returns:
+            The new JournalEntry, or None if already triggered or unknown flag.
+        """
+        if trigger_flag in self._triggered_flags:
+            return None
+        template = self._auto_templates.get(trigger_flag)
+        if not template:
+            return None
+        self._created_counter += 1
+        entry = JournalEntry(
+            entry_id=template.entry_id,
+            text=template.text,
+            game_day=game_day,
+            system_id=system_id or template.system_id,
+            source="auto",
+            trigger_flag=trigger_flag,
+            mission_id=template.mission_id,
+            created_at=self._created_counter,
+        )
+        self._entries.append(entry)
+        self._triggered_flags.add(trigger_flag)
+        return entry
+
+    def add_player_entry(
+        self,
+        text: str,
+        game_day: int,
+        system_id: str = "",
+        tag: str = "",
+    ) -> JournalEntry:
+        """Create and add a player-written journal entry.
+
+        Args:
+            text: Entry text (truncated to 500 chars).
+            game_day: Current in-game day.
+            system_id: Current system location.
+            tag: Optional tag for filtering.
+
+        Returns:
+            The new JournalEntry.
+        """
+        entry_id = f"player_{self._next_player_id:04d}"
+        self._next_player_id += 1
+        self._created_counter += 1
+        entry = JournalEntry(
+            entry_id=entry_id,
+            text=text,
+            game_day=game_day,
+            system_id=system_id,
+            source="player",
+            tag=tag,
+            created_at=self._created_counter,
+        )
+        self._entries.append(entry)
+        return entry
+
+    def edit_player_entry(
+        self,
+        entry_id: str,
+        text: Optional[str] = None,
+        tag: Optional[str] = None,
+    ) -> tuple[bool, str]:
+        """Edit a player entry's text and/or tag.
+
+        Args:
+            entry_id: ID of the entry to edit.
+            text: New text (optional, truncated to 500 chars).
+            tag: New tag (optional).
+
+        Returns:
+            Tuple of (success, message).
+        """
+        entry = self._find_entry(entry_id)
+        if not entry:
+            return (False, "Entry not found")
+        if entry.source == "auto":
+            return (False, "Cannot edit auto entries")
+        if text is not None:
+            entry.text = text[:PLAYER_ENTRY_MAX_LENGTH]
+        if tag is not None:
+            entry.tag = tag if tag in VALID_TAGS else ""
+        return (True, "Entry updated")
+
+    def delete_player_entry(self, entry_id: str) -> tuple[bool, str]:
+        """Delete a player entry.
+
+        Args:
+            entry_id: ID of the entry to delete.
+
+        Returns:
+            Tuple of (success, message).
+        """
+        entry = self._find_entry(entry_id)
+        if not entry:
+            return (False, "Entry not found")
+        if entry.source == "auto":
+            return (False, "Cannot delete auto entries")
+        self._entries.remove(entry)
+        return (True, "Entry deleted")
+
+    def get_entries(
+        self,
+        tag_filter: Optional[str] = None,
+        source_filter: Optional[str] = None,
+    ) -> list[JournalEntry]:
+        """Get entries in chronological order, optionally filtered.
+
+        Args:
+            tag_filter: If set, only entries with this tag (empty string matches untagged).
+            source_filter: If set, only "auto" or "player" entries.
+
+        Returns:
+            List of matching entries in chronological order.
+        """
+        result = self._entries
+        if tag_filter is not None and tag_filter != "":
+            result = [e for e in result if e.tag == tag_filter]
+        if source_filter is not None and source_filter != "":
+            result = [e for e in result if e.source == source_filter]
+        return list(result)
+
+    def get_entry_count(self) -> int:
+        """Get total number of entries."""
+        return len(self._entries)
+
+    def _find_entry(self, entry_id: str) -> Optional[JournalEntry]:
+        """Find an entry by ID."""
+        for entry in self._entries:
+            if entry.entry_id == entry_id:
+                return entry
+        return None
+
+    def get_state(self) -> dict[str, Any]:
+        """Serialize journal state for saving."""
+        return {
+            "entries": [e.to_dict() for e in self._entries],
+            "triggered_flags": sorted(self._triggered_flags),
+            "next_player_id": self._next_player_id,
+            "created_counter": self._created_counter,
+        }
+
+    def load_state(self, data: dict[str, Any]) -> None:
+        """Restore journal state from saved data.
+
+        Args:
+            data: State dict from get_state().
+        """
+        self._entries.clear()
+        self._triggered_flags.clear()
+        for ed in data.get("entries", []):
+            self._entries.append(JournalEntry.from_dict(ed))
+        self._triggered_flags = set(data.get("triggered_flags", []))
+        self._next_player_id = data.get("next_player_id", 1)
+        self._created_counter = data.get("created_counter", 0)

@@ -44,8 +44,8 @@ ROCK_TYPE_CONFIGS = {
     RockType.COMMON: RockTypeConfig(
         rock_type=RockType.COMMON,
         hardness=0.5,
-        min_yield=1,
-        max_yield=3,
+        min_yield=2,
+        max_yield=4,
         commodity_id="raw_ore",
         color=(120, 110, 100),
     ),
@@ -53,7 +53,7 @@ ROCK_TYPE_CONFIGS = {
         rock_type=RockType.IRON,
         hardness=1.0,
         min_yield=1,
-        max_yield=3,
+        max_yield=4,
         commodity_id="iron_ore",
         color=(160, 80, 60),
     ),
@@ -61,7 +61,7 @@ ROCK_TYPE_CONFIGS = {
         rock_type=RockType.CRYSTAL,
         hardness=2.0,
         min_yield=1,
-        max_yield=2,
+        max_yield=3,
         commodity_id="crystal_ore",
         color=(100, 180, 220),
     ),
@@ -69,7 +69,7 @@ ROCK_TYPE_CONFIGS = {
         rock_type=RockType.RARE,
         hardness=3.0,
         min_yield=1,
-        max_yield=2,
+        max_yield=3,
         commodity_id="rare_ore",
         color=(200, 100, 255),
     ),
@@ -197,6 +197,113 @@ class MiningConfig:
 
 
 @dataclass
+class DepthModifiers:
+    """Modifiers for the current mining depth level."""
+
+    rare_weight_bonus: float
+    energy_cost_multiplier: int
+    yield_bonus: float
+
+
+# Chain detonation constants
+CHAIN_BASE_CHANCE = 0.15
+CHAIN_PROGRESS_AMOUNT = 0.25
+CHAIN_MAX_DEPTH = 3
+
+
+@dataclass
+class ChainBreak:
+    """A rock broken by chain detonation."""
+
+    grid_x: int
+    grid_y: int
+    rock_type: RockType
+    commodity_id: str
+    quantity: int
+    chain_depth: int
+
+
+@dataclass
+class MiningMilestone:
+    """A session milestone with progress tracking and rewards."""
+
+    id: str
+    description: str
+    category: str  # "rocks_mined", "rare_ores", "depth_reached", "chains_triggered"
+    threshold: int
+    reward_xp: int = 0
+    reward_credits: int = 0
+    completed: bool = False
+
+
+MILESTONE_POOL: list[dict] = [
+    {
+        "id": "rocks_10",
+        "description": "Mine 10 rocks",
+        "category": "rocks_mined",
+        "threshold": 10,
+        "reward_xp": 25,
+    },
+    {
+        "id": "rocks_20",
+        "description": "Mine 20 rocks",
+        "category": "rocks_mined",
+        "threshold": 20,
+        "reward_xp": 50,
+    },
+    {
+        "id": "rare_3",
+        "description": "Find 3 rare ores",
+        "category": "rare_ores",
+        "threshold": 3,
+        "reward_xp": 40,
+    },
+    {
+        "id": "rare_5",
+        "description": "Find 5 rare ores",
+        "category": "rare_ores",
+        "threshold": 5,
+        "reward_credits": 100,
+    },
+    {
+        "id": "depth_3",
+        "description": "Reach depth 3",
+        "category": "depth_reached",
+        "threshold": 3,
+        "reward_xp": 30,
+    },
+    {
+        "id": "depth_5",
+        "description": "Reach depth 5",
+        "category": "depth_reached",
+        "threshold": 5,
+        "reward_xp": 60,
+    },
+    {
+        "id": "depth_10",
+        "description": "Reach depth 10",
+        "category": "depth_reached",
+        "threshold": 10,
+        "reward_credits": 200,
+    },
+    {
+        "id": "chains_3",
+        "description": "Trigger 3 chain detonations",
+        "category": "chains_triggered",
+        "threshold": 3,
+        "reward_xp": 35,
+    },
+    {
+        "id": "chains_10",
+        "description": "Trigger 10 chain detonations",
+        "category": "chains_triggered",
+        "threshold": 10,
+        "reward_credits": 150,
+    },
+]
+
+
+@dataclass
 class MiningResult:
     """Result of a single mining action."""
 
@@ -221,7 +328,9 @@ class MiningSession:
         passive_drill_bonus: float = 0.0,
         drone_speed_bonus: float = 0.0,
         rare_chance_bonus: float = 0.0,
+        chain_chance_bonus: float = 0.0,
         drones: Optional[list[MiningDrone]] = None,
+        milestones: Optional[list[MiningMilestone]] = None,
     ):
         """
         Initialize mining session.
@@ -232,7 +341,8 @@ class MiningSession:
             click_power_bonus: Fractional bonus to click power (0.0 = no bonus).
             passive_drill_bonus: Fractional bonus to passive drill rate.
             drone_speed_bonus: Fractional bonus to drone mining speed.
-            rare_chance_bonus: Fractional bonus to rare ore chance (future use).
+            rare_chance_bonus: Fractional bonus to rare ore chance.
+            chain_chance_bonus: Fractional bonus to chain detonation chance.
             drones: List of active MiningDrone instances.
         """
         self.config = config
@@ -241,7 +351,26 @@ class MiningSession:
         self.passive_drill_bonus = passive_drill_bonus
         self.drone_speed_bonus = drone_speed_bonus
         self.rare_chance_bonus = rare_chance_bonus
+        self.chain_chance_bonus = chain_chance_bonus
         self.drones: list[MiningDrone] = drones or []
+
+        # Energy state
+        self.energy: int = config.max_energy
+        self.max_energy: int = config.max_energy
+        self._energy_regen_timer: float = 0.0
+
+        # Depth state
+        self.depth: int = 1
+
+        # Chain detonation state
+        self.chain_results: list[ChainBreak] = []
+        self.total_chains: int = 0
+
+        # Milestone tracking
+        self.rocks_broken: int = 0
+        self.rare_ores_found: int = 0
+        self.milestones: list[MiningMilestone] = milestones if milestones is not None else self._select_milestones()
+        self.newly_completed_milestones: list[MiningMilestone] = []
 
         self.rocks: List[AsteroidRock] = []
         self.active_rock: Optional[AsteroidRock] = None
@@ -270,6 +399,14 @@ class MiningSession:
             rock_types = [RockType.COMMON]
             weights = [1.0]
 
+        # Boost crystal and rare weights based on combined rare bonuses
+        depth_mods = self.get_depth_modifiers()
+        effective_rare = self.rare_chance_bonus + depth_mods.rare_weight_bonus
+        if effective_rare > 0:
+            for i, rt in enumerate(rock_types):
+                if rt in (RockType.CRYSTAL, RockType.RARE):
+                    weights[i] *= 1 + effective_rare
+
         for y in range(self.config.grid_height):
             for x in range(self.config.grid_width):
                 rock_type = random.choices(rock_types, weights=weights, k=1)[0]
@@ -288,19 +425,48 @@ class MiningSession:
                 return rock
         return None
 
-    def click_rock(self, grid_x: int, grid_y: int) -> tuple[bool, str, Optional[MiningResult]]:
+    def get_depth_modifiers(self) -> DepthModifiers:
+        """Get modifiers for the current mining depth."""
+        d = self.depth
+        if d <= 3:
+            return DepthModifiers(0.0, 1, 0.0)
+        elif d <= 6:
+            return DepthModifiers((d - 3) * 0.10, 1, 0.10)
+        elif d <= 9:
+            return DepthModifiers(0.30 + (d - 6) * 0.20, 2, 0.20)
+        else:
+            return DepthModifiers(0.90 + (d - 9) * 0.30, 2, 0.30)
+
+    def get_click_energy_cost(self) -> int:
+        """Get energy cost per click at current depth."""
+        return self.get_depth_modifiers().energy_cost_multiplier
+
+    def _apply_yield_bonus(self, base_yield: int) -> int:
+        """Apply depth yield bonus to a base yield amount."""
+        bonus = self.get_depth_modifiers().yield_bonus
+        if bonus <= 0:
+            return base_yield
+        return base_yield + math.floor(base_yield * bonus)
+
+    def click_rock(
+        self, grid_x: int, grid_y: int, empowered: bool = False
+    ) -> tuple[bool, str, Optional[MiningResult]]:
         """Click a rock to mine it.
 
-        Applies click power to the rock. Switches active_rock if clicking
-        a different rock (no lock-out). Increments total_clicks.
+        Normal clicks are free and unlimited. Empowered clicks cost energy
+        but deal triple damage.
 
         Args:
             grid_x: Grid X coordinate.
             grid_y: Grid Y coordinate.
+            empowered: If True, spend energy for 3x click power.
 
         Returns:
             Tuple of (success, message, result_if_rock_broke).
         """
+        self.chain_results.clear()
+        self.newly_completed_milestones.clear()
+
         rock = self.get_rock_at(grid_x, grid_y)
         if rock is None:
             return (False, "No rock at that position", None)
@@ -308,25 +474,37 @@ class MiningSession:
         if rock.depleted:
             return (False, "Rock is already depleted", None)
 
+        # Empowered clicks require energy
+        if empowered:
+            energy_cost = self.get_click_energy_cost()
+            if self.energy < energy_cost:
+                return (False, "Not enough energy for empowered click!", None)
+            self.energy -= energy_cost
+
         # Switch active rock (old rock keeps progress)
         self.active_rock = rock
         self.total_clicks += 1
 
-        # Apply click
-        effective_power = self.config.base_click_power * (1 + self.click_power_bonus)
+        # Apply click — empowered clicks deal 3x damage
+        power_multiplier = 3.0 if empowered else 1.0
+        effective_power = self.config.base_click_power * (1 + self.click_power_bonus) * power_multiplier
         yield_amount = rock.apply_click(effective_power)
 
         if yield_amount is not None:
+            final_yield = self._apply_yield_bonus(yield_amount)
             result = MiningResult(
                 commodity_id=rock.commodity_id,
-                quantity=yield_amount,
+                quantity=final_yield,
                 rock_type=rock.rock_type,
             )
             self.total_mined[rock.commodity_id] = (
-                self.total_mined.get(rock.commodity_id, 0) + yield_amount
+                self.total_mined.get(rock.commodity_id, 0) + final_yield
             )
             self.active_rock = None
-            return (True, f"Mined {yield_amount} {rock.commodity_id}!", result)
+            self._on_rock_broken(rock)
+            self._check_chain_detonation(rock)
+            self._check_milestones()
+            return (True, f"Mined {final_yield} {rock.commodity_id}!", result)
 
         return (True, f"Drilling {rock.rock_type.value} rock...", None)
 
@@ -343,16 +521,34 @@ class MiningSession:
         success, msg, _ = self.click_rock(grid_x, grid_y)
         return (success, msg)
 
-    def update(self, dt: float) -> list[MiningResult]:
+    def update(self, dt: float, cargo_full: bool = False) -> list[MiningResult]:
         """Update mining session: passive drill and drone mining.
 
         Args:
             dt: Delta time in seconds.
+            cargo_full: If True, skip passive drill and drone mining (cargo hold full).
 
         Returns:
             List of MiningResult for rocks broken this frame.
         """
+        self.chain_results.clear()
+        self.newly_completed_milestones.clear()
         results: list[MiningResult] = []
+
+        # Energy regeneration
+        if self.energy < self.max_energy:
+            self._energy_regen_timer += dt
+            while (
+                self._energy_regen_timer >= self.config.energy_regen_seconds
+                and self.energy < self.max_energy
+            ):
+                self.energy += 1
+                self._energy_regen_timer -= self.config.energy_regen_seconds
+
+        # Skip auto-mining when cargo is full
+        if cargo_full:
+            self._check_milestones()
+            return results
 
         # Passive drill on active rock
         if self.active_rock and not self.active_rock.depleted:
@@ -366,7 +562,7 @@ class MiningSession:
                 self.active_rock.drill_progress = 1.0
                 self.active_rock.drilling = False
                 self.active_rock.depleted = True
-                yield_amount = self.active_rock.get_yield()
+                yield_amount = self._apply_yield_bonus(self.active_rock.get_yield())
                 result = MiningResult(
                     commodity_id=self.active_rock.commodity_id,
                     quantity=yield_amount,
@@ -376,12 +572,16 @@ class MiningSession:
                     self.total_mined.get(self.active_rock.commodity_id, 0) + yield_amount
                 )
                 results.append(result)
+                broken_rock = self.active_rock
                 self.active_rock = None
+                self._on_rock_broken(broken_rock)
+                self._check_chain_detonation(broken_rock)
 
         # Drone mining
         drone_results = self._update_drones(dt)
         results.extend(drone_results)
 
+        self._check_milestones()
         return results
 
     def _update_drones(self, dt: float) -> list[MiningResult]:
@@ -419,9 +619,9 @@ class MiningSession:
                 target.drilling = False
                 target.depleted = True
                 base_yield = target.get_yield()
-                # Apply drone yield bonus
+                # Apply drone yield bonus + depth yield bonus
                 bonus_yield = math.floor(base_yield * drone.yield_bonus)
-                final_yield = base_yield + bonus_yield
+                final_yield = self._apply_yield_bonus(base_yield + bonus_yield)
                 result = MiningResult(
                     commodity_id=target.commodity_id,
                     quantity=final_yield,
@@ -432,6 +632,8 @@ class MiningSession:
                 )
                 results.append(result)
                 self.drone_targets.pop(i, None)
+                self._on_rock_broken(target)
+                self._check_chain_detonation(target)
 
         return results
 
@@ -469,8 +671,102 @@ class MiningSession:
         # Fall back to any available rock
         return random.choice(available)
 
+    def _select_milestones(self) -> list[MiningMilestone]:
+        """Select 3 random milestones (one per category, then sample 3)."""
+        by_category: dict[str, list[dict]] = {}
+        for m in MILESTONE_POOL:
+            by_category.setdefault(m["category"], []).append(m)
+        candidates = [random.choice(v) for v in by_category.values()]
+        selected = random.sample(candidates, min(3, len(candidates)))
+        return [MiningMilestone(**m) for m in selected]
+
+    def _on_rock_broken(self, rock: AsteroidRock) -> None:
+        """Track stats when any rock breaks (click, passive, drone, chain)."""
+        self.rocks_broken += 1
+        if rock.rock_type in (RockType.CRYSTAL, RockType.RARE):
+            self.rare_ores_found += 1
+
+    def _check_milestones(self) -> None:
+        """Check and complete any milestones that have reached their threshold."""
+        for ms in self.milestones:
+            if ms.completed:
+                continue
+            value = self._get_milestone_value(ms.category)
+            if value >= ms.threshold:
+                ms.completed = True
+                self.newly_completed_milestones.append(ms)
+
+    def _get_milestone_value(self, category: str) -> int:
+        """Get current value for a milestone category."""
+        if category == "rocks_mined":
+            return self.rocks_broken
+        if category == "rare_ores":
+            return self.rare_ores_found
+        if category == "depth_reached":
+            return self.depth
+        if category == "chains_triggered":
+            return self.total_chains
+        return 0
+
+    def _get_neighbors(self, gx: int, gy: int) -> list[AsteroidRock]:
+        """Get adjacent rocks (8 directions)."""
+        neighbors = []
+        for dx in (-1, 0, 1):
+            for dy in (-1, 0, 1):
+                if dx == 0 and dy == 0:
+                    continue
+                rock = self.get_rock_at(gx + dx, gy + dy)
+                if rock is not None:
+                    neighbors.append(rock)
+        return neighbors
+
+    def _check_chain_detonation(self, broken_rock: AsteroidRock, depth: int = 1) -> None:
+        """Check for chain detonation from a broken rock.
+
+        Same-type undepleted neighbors have a chance to receive progress.
+        If that pushes them past 1.0, they break and cascade.
+
+        Args:
+            broken_rock: The rock that just broke.
+            depth: Current chain depth (stops at CHAIN_MAX_DEPTH).
+        """
+        if depth > CHAIN_MAX_DEPTH:
+            return
+        chain_chance = CHAIN_BASE_CHANCE + self.chain_chance_bonus
+        neighbors = self._get_neighbors(broken_rock.grid_x, broken_rock.grid_y)
+        for neighbor in neighbors:
+            if neighbor.depleted or neighbor.rock_type != broken_rock.rock_type:
+                continue
+            if random.random() < chain_chance:
+                neighbor.drill_progress += CHAIN_PROGRESS_AMOUNT
+                if neighbor.drill_progress >= 1.0:
+                    neighbor.drill_progress = 1.0
+                    neighbor.depleted = True
+                    neighbor.drilling = False
+                    yield_amount = self._apply_yield_bonus(neighbor.get_yield())
+                    commodity = ROCK_TYPE_CONFIGS[neighbor.rock_type].commodity_id
+                    self.total_mined[commodity] = (
+                        self.total_mined.get(commodity, 0) + yield_amount
+                    )
+                    self._on_rock_broken(neighbor)
+                    self.chain_results.append(
+                        ChainBreak(
+                            grid_x=neighbor.grid_x,
+                            grid_y=neighbor.grid_y,
+                            rock_type=neighbor.rock_type,
+                            commodity_id=commodity,
+                            quantity=yield_amount,
+                            chain_depth=depth,
+                        )
+                    )
+                    self.total_chains += 1
+                    self._check_chain_detonation(neighbor, depth + 1)
+
     def regenerate_field(self) -> None:
-        """Regenerate the asteroid field (between sessions)."""
+        """Regenerate the asteroid field and advance to next depth."""
+        self.depth += 1
+        self.energy = self.max_energy
+        self._energy_regen_timer = 0.0
         self._generate_field()
         self.active_rock = None
         self.drone_targets.clear()

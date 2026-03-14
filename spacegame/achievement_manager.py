@@ -36,6 +36,8 @@ class AchievementManager:
             return len(player.systems_visited)
         if stat_key == "level":
             return player.progression.level
+        if stat_key == "unique_recipes_crafted":
+            return len(player.recipes_crafted)
         return getattr(player, stat_key, 0)
 
     def check_achievements(self, player: Player) -> list[Achievement]:

@@ -1,0 +1,167 @@
+{
+    "id": "mission_16_pirate_base",
+    "name": "The Ledger's Nest",
+    "width": 35,
+    "height": 30,
+    "mission_type": "infiltration",
+    "difficulty": "high",
+    "faction_id": "commerce_guild",
+
+    "tiles": [
+        ["W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","F","F","F","F","F","X","F","F","F","F","F","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","F","F","F","F","F","F","F","F","F","F","F","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","F","F","F","F","F","F","F","F","F","F","F","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","D","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","F","F","F","F","F","W","W","W","W","W","W","W","W","W","F","W","W","W","W","W","W","W","W","W","F","F","F","F","F","W","W","W"],
+        ["W","W","W","F","F","F","F","F","W","W","W","W","W","W","W","W","W","F","W","W","W","W","W","W","W","W","W","F","F","F","F","F","W","W","W"],
+        ["W","W","W","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","W","W","W"],
+        ["W","W","W","F","F","F","F","F","W","W","W","W","W","W","W","W","W","F","W","W","W","W","W","W","W","W","W","F","F","F","F","F","W","W","W"],
+        ["W","W","W","F","F","F","F","F","W","W","W","W","W","W","W","W","W","F","W","W","W","W","W","W","W","W","W","F","F","F","F","F","W","W","W"],
+        ["W","W","W","F","F","F","F","F","W","W","W","W","W","W","W","W","W","F","W","W","W","W","W","W","W","W","W","F","F","F","F","F","W","W","W"],
+        ["W","W","W","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","W","W","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","F","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","D","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","W","W","W","W","W"],
+        ["W","W","W","W","W","F","F","F","F","F","F","W","W","W","F","F","F","F","F","F","F","W","W","W","F","F","F","F","F","F","W","W","W","W","W"],
+        ["W","W","W","W","W","F","F","F","F","F","F","W","W","W","F","F","F","F","F","F","F","W","W","W","F","F","F","F","F","F","W","W","W","W","W"],
+        ["W","W","W","W","W","F","F","F","F","F","F","W","W","W","F","F","F","F","F","F","F","W","W","W","F","F","F","F","F","F","W","W","W","W","W"],
+        ["W","W","W","W","W","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","D","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","F","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","F","F","F","F","F","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","F","F","F","N","N","N","F","F","F","F","F","F","F","N","N","N","F","F","F","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","F","F","F","F","F","W","W","W","W","F","W","W","W","W","F","F","F","F","F","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","F","F","F","F","F","W","W","W","W","F","W","W","W","W","F","F","F","F","F","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","F","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","W","W","F","F","F","F","F","F","F","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","W","W","F","F","F","F","F","F","F","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","W","W","E","F","F","F","F","F","F","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+        ["W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"]
+    ],
+
+    "entrance": [14, 28],
+    "exit": [17, 1],
+
+    "enemies": [
+        {
+            "id": "dock_sentry",
+            "template_id": "station_sentry",
+            "x": 17, "y": 27,
+            "facing": "up",
+            "speed": 1,
+            "patrol_route": [[15, 27], [19, 27]]
+        },
+        {
+            "id": "service_sentry",
+            "template_id": "station_sentry",
+            "x": 14, "y": 22,
+            "facing": "right",
+            "speed": 1,
+            "patrol_route": [[9, 22], [25, 22]]
+        },
+        {
+            "id": "barracks_guard_l",
+            "template_id": "pirate_thug",
+            "x": 7, "y": 15,
+            "facing": "right",
+            "speed": 1,
+            "patrol_route": [[5, 15], [10, 15]]
+        },
+        {
+            "id": "barracks_guard_r",
+            "template_id": "pirate_thug",
+            "x": 26, "y": 16,
+            "facing": "left",
+            "speed": 1,
+            "patrol_route": [[24, 16], [29, 16]]
+        },
+        {
+            "id": "ops_patrol",
+            "template_id": "crimson_enforcer",
+            "x": 15, "y": 11,
+            "facing": "right",
+            "speed": 2,
+            "patrol_route": [[5, 11], [30, 11]]
+        },
+        {
+            "id": "ops_guard",
+            "template_id": "crimson_enforcer",
+            "x": 5, "y": 8,
+            "facing": "down",
+            "speed": 1,
+            "patrol_route": [[5, 7], [5, 10]]
+        },
+        {
+            "id": "command_guard",
+            "template_id": "elite_guard",
+            "x": 17, "y": 6,
+            "facing": "up",
+            "speed": 2,
+            "patrol_route": [[17, 5], [17, 7]]
+        },
+        {
+            "id": "command_elite",
+            "template_id": "elite_guard",
+            "x": 17, "y": 2,
+            "facing": "down",
+            "speed": 1,
+            "patrol_route": [[13, 2], [21, 2]]
+        }
+    ],
+
+    "interactables": [
+        {
+            "x": 10, "y": 23,
+            "type": "loot_container",
+            "loot_credits": 40,
+            "description": "Maintenance supply crates — hull sealant, wiring harnesses, replacement filters. Everything brand new. This base is well-funded."
+        },
+        {
+            "x": 5, "y": 9,
+            "type": "loot_container",
+            "loot_credits": 80,
+            "description": "A weapons locker sealed with a military-grade cipher. Inside: energy cell packs, targeting modules, reinforced body armor. Guild military specification. Every serial number filed off."
+        },
+        {
+            "x": 27, "y": 16,
+            "type": "loot_container",
+            "loot_credits": 50,
+            "description": "A personal locker, left unlocked. Credits, a worn star chart, a letter half-written and never sent. Even pirates have someone waiting somewhere."
+        },
+        {
+            "x": 29, "y": 6,
+            "type": "loot_container",
+            "loot_credits": 70,
+            "description": "Data drives stacked in shielded cases. Financial records, patrol schedules, communications logs — encrypted, but Priya could crack these in her sleep."
+        }
+    ],
+
+    "story_triggers": [
+        {
+            "x": 17, "y": 26,
+            "type": "atmosphere",
+            "text": "The maintenance port is dark and cold — emergency lighting only, the air stale from minimal life support. Tomas checks his sidearm and grins. 'Unused maintenance port, they said. Nobody watches it, they said. Let's prove them right.'"
+        },
+        {
+            "x": 17, "y": 22,
+            "type": "atmosphere",
+            "text": "The deck plates vibrate underfoot — a deep, steady pulse from generators buried in the asteroid's core. Someone spent a fortune building this place. Power generation, atmosphere processing, communications arrays. This isn't a hideout. It's an installation."
+        },
+        {
+            "x": 17, "y": 15,
+            "type": "atmosphere",
+            "text": "Mess trays on tables, bunks made with military precision. A duty roster on the wall lists rotating shifts, watch assignments, even a kitchen schedule. These people don't think of themselves as pirates. They think they're soldiers."
+        },
+        {
+            "x": 17, "y": 12,
+            "type": "atmosphere",
+            "text": "The corridor narrows beyond reinforced blast doors, the lighting shifting from standard white to amber. Operational security zone. Whatever they're protecting up there, they've built three levels of base around it."
+        },
+        {
+            "x": 17, "y": 3,
+            "type": "atmosphere",
+            "text": "Holo-projectors line the walls. Star charts showing every system in the Expanse, shipping lanes marked in red, patrol routes highlighted with timestamps. And there — in the center of the command table — a network map. Lines connecting this base to nodes across the sector. Each labeled with a code name. This is The Ledger's command structure, laid bare."
+        }
+    ]
+}

@@ -70,8 +70,8 @@ class EventGenerator:
     but create significant market opportunities when they do.
     """
 
-    # Event probability per day (2.5%)
-    EVENT_CHANCE = 0.025
+    # Event probability per day (5%)
+    EVENT_CHANCE = 0.05
 
     # Event duration ranges (in days)
     MIN_DURATION = 3

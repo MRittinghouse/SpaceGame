@@ -1,0 +1,17 @@
+{
+  "id": "faction_science_collective",
+  "name": "Science Collective",
+  "colors": {
+    "primary_white": [230, 240, 245],
+    "primary_steel": [140, 170, 200],
+    "primary_teal": [40, 160, 180],
+    "mid_blue": [100, 130, 170],
+    "dark_steel": [60, 80, 110],
+    "accent_green": [40, 220, 120],
+    "highlight": [200, 240, 255],
+    "shadow": [30, 45, 65],
+    "skin_light": [220, 195, 170],
+    "skin_mid": [190, 160, 130],
+    "outline": [20, 30, 50]
+  }
+}

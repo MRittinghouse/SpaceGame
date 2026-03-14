@@ -1,0 +1,104 @@
+{
+    "contract_templates": {
+        "infiltration": {
+            "names": [
+                "Data Extraction",
+                "Silent Breach",
+                "Secure Access",
+                "Ghost Protocol"
+            ],
+            "descriptions": [
+                "Intelligence suggests a {faction} facility on {system} holds valuable data. A clean extraction is worth serious credits.",
+                "A contact needs someone to slip into the {faction} compound at {system}. Reach the terminal, grab the data, get out.",
+                "Security logs at {system} indicate a vulnerability in the {faction} network. Get in, download what you can, and leave no trace.",
+                "The {faction} facility at {system} has been running dark for weeks. Someone needs to find out why."
+            ],
+            "objectives": [
+                "Reach the target terminal and download data",
+                "Access the restricted area undetected",
+                "Infiltrate the secure wing and retrieve intel",
+                "Reach the control room and extract records"
+            ]
+        },
+        "retrieval": {
+            "names": [
+                "Package Recovery",
+                "Lost Cargo",
+                "Asset Retrieval",
+                "Priority Salvage"
+            ],
+            "descriptions": [
+                "A valuable package was lost inside a {faction} warehouse at {system}. Retrieve it before they catalog it.",
+                "Our client needs a prototype recovered from the {faction} facility at {system}. High value, higher risk.",
+                "A shipment went missing at {system}. The {faction} claim ignorance, but we know it's inside their compound.",
+                "There's something valuable hidden deep in the {faction} storage complex at {system}. Find it and bring it back."
+            ],
+            "objectives": [
+                "Locate and retrieve the target item",
+                "Find the lost cargo container",
+                "Recover the prototype from the secured vault",
+                "Extract the package from deep storage"
+            ]
+        },
+        "sabotage": {
+            "names": [
+                "System Disruption",
+                "Critical Shutdown",
+                "Silent Strike",
+                "Infrastructure Hit"
+            ],
+            "descriptions": [
+                "A rival operation needs the {faction} communications array at {system} taken offline. Clean work pays double.",
+                "The {faction} security grid at {system} is overdue for an upgrade. Help them with an unscheduled shutdown.",
+                "Someone wants the power relays at the {faction} facility on {system} disabled. Temporarily, of course.",
+                "The {faction} surveillance network at {system} needs to go dark for a few hours. Make it happen."
+            ],
+            "objectives": [
+                "Disable the primary communications array",
+                "Shut down the security grid control nodes",
+                "Sabotage the power distribution relays",
+                "Disable surveillance systems at multiple locations"
+            ]
+        },
+        "exploration": {
+            "names": [
+                "Sector Survey",
+                "Recon Mission",
+                "Deep Scan",
+                "Pathfinder"
+            ],
+            "descriptions": [
+                "We need a full survey of the {faction} sector at {system}. Map everything and report back.",
+                "Nobody's been deep inside the {faction} complex at {system} in years. Time to change that.",
+                "A client wants detailed maps of the {faction} lower levels at {system}. Standard recon, good pay.",
+                "The {faction} compound at {system} has expanded recently. We need eyes on the new sections."
+            ],
+            "objectives": [
+                "Map the facility and reach the extraction point",
+                "Survey all accessible areas of the compound",
+                "Explore the lower levels and document findings",
+                "Complete a full reconnaissance of the facility"
+            ]
+        },
+        "extraction": {
+            "names": [
+                "Personnel Recovery",
+                "Contact Extraction",
+                "Safe Passage",
+                "Rescue Operation"
+            ],
+            "descriptions": [
+                "One of our contacts is stuck inside the {faction} facility at {system}. Get them out safely.",
+                "A defector from the {faction} at {system} wants out. Reach them and guide them to extraction.",
+                "An operative went dark inside the {faction} compound at {system}. Find them and bring them home.",
+                "A worker at the {faction} facility on {system} has critical information. Escort them to safety."
+            ],
+            "objectives": [
+                "Locate the contact and escort them to the exit",
+                "Find the defector and guide them to extraction",
+                "Reach the operative and secure an exit route",
+                "Escort the informant safely out of the facility"
+            ]
+        }
+    }
+}
