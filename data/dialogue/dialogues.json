@@ -964,34 +964,40 @@
     },
     {
       "id": "reva_distress",
-      "start_node_id": "start",
+      "start_node_id": "greet",
       "nodes": [
         {
-          "id": "start",
+          "id": "greet",
           "speaker_id": "reva_sato",
-          "text": "You. I recognize your transponder signature.",
+          "text": "*Captain Sato stands near the viewport, watching docking traffic.*",
           "responses": [
             {
               "text": "Captain Sato? From the distress signal?",
               "next_node_id": "grateful_path",
-              "required_flags": [
-                "helped_reva_sato"
-              ]
+              "required_flags": ["helped_reva_sato"],
+              "excluded_flags": ["cargo_lost_resolved"]
             },
             {
               "text": "Do I know you?",
               "next_node_id": "cold_path",
-              "required_flags": [
-                "ignored_distress_signal"
-              ]
+              "required_flags": ["ignored_distress_signal"],
+              "excluded_flags": ["cargo_lost_resolved"]
             },
             {
               "text": "I don't think we've met.",
               "next_node_id": "cold_path",
-              "excluded_flags": [
-                "helped_reva_sato",
-                "ignored_distress_signal"
-              ]
+              "excluded_flags": ["helped_reva_sato", "ignored_distress_signal", "cargo_lost_resolved"]
+            },
+            {
+              "text": "Captain. Any news on the convoy raids?",
+              "next_node_id": "followup",
+              "required_flags": ["cargo_lost_resolved"],
+              "excluded_flags": ["met_dex_halloran"]
+            },
+            {
+              "text": "Sato. I've been digging into those convoy raids.",
+              "next_node_id": "investigation_update",
+              "required_flags": ["cargo_lost_resolved", "met_dex_halloran"]
             }
           ],
           "expression": "stern"
@@ -1122,6 +1128,30 @@
             }
           ],
           "expression": "stern"
+        },
+        {
+          "id": "followup",
+          "speaker_id": "reva_sato",
+          "text": "Nothing new. Filed another report with the Guild — same dead end as the last three. Another convoy hit last week on the Breakstone corridor. Same pattern. They know when the patrols thin out. I keep running the routes because someone has to, but whoever's pulling the strings hasn't slowed down.",
+          "responses": [
+            {
+              "text": "I'm still asking around. I'll find something.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "investigation_update",
+          "speaker_id": "reva_sato",
+          "text": "I can see it in your face — you've learned something. I won't ask who you've been talking to. The less I know about your sources, the less I have to put in a Guild report. Just... be careful. Whatever this is, it's bigger than convoy raids.",
+          "responses": [
+            {
+              "text": "I'll watch my back. You do the same.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "concerned"
         }
       ]
     },
