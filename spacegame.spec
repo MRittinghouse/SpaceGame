@@ -52,7 +52,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon="spacegame/data/assets/images/icon.ico",
+    icon=("spacegame/data/assets/images/icon.ico" if os.path.exists("spacegame/data/assets/images/icon.ico") else None),
 )
 
 coll = COLLECT(

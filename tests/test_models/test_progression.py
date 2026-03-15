@@ -9,6 +9,7 @@ from spacegame.models.progression import (
     SkillTreeType,
     LEVEL_XP_THRESHOLDS,
     create_default_skills,
+    get_xp_threshold,
 )
 
 
@@ -20,7 +21,7 @@ class TestPlayerProgression:
         assert prog.xp == 0
         assert prog.level == 1
         assert prog.skill_points == 0
-        assert len(prog.skills) == 32  # 5 trading + 5 gathering + 8 mining + 5 leadership + 3 social + 6 ground
+        assert len(prog.skills) == 63  # 9 trees after R5 expansion
 
     def test_add_xp(self):
         prog = PlayerProgression()
@@ -31,7 +32,7 @@ class TestPlayerProgression:
 
     def test_level_up(self):
         prog = PlayerProgression()
-        messages = prog.add_xp(100)
+        messages = prog.add_xp(get_xp_threshold(2))
         assert prog.level == 2
         assert prog.skill_points == 1
         assert len(messages) == 1
@@ -39,7 +40,7 @@ class TestPlayerProgression:
 
     def test_multiple_level_ups(self):
         prog = PlayerProgression()
-        messages = prog.add_xp(500)
+        messages = prog.add_xp(get_xp_threshold(4))
         assert prog.level == 4
         assert prog.skill_points == 3
 
@@ -51,14 +52,13 @@ class TestPlayerProgression:
 
     def test_xp_for_next_level(self):
         prog = PlayerProgression()
-        assert prog.get_xp_for_next_level() == 100
+        assert prog.get_xp_for_next_level() == get_xp_threshold(2)
 
-    def test_max_level(self):
+    def test_no_level_cap(self):
         prog = PlayerProgression()
-        prog.add_xp(10000)
-        assert prog.level == 10
-        assert prog.get_xp_for_next_level() is None
-        assert prog.get_xp_progress() == 1.0
+        prog.add_xp(50000)
+        assert prog.level > 10, "No level cap — should level past 10"
+        assert prog.get_xp_for_next_level() is not None
 
 
 class TestSkillNode:
@@ -112,7 +112,7 @@ class TestSkillInvestment:
 
     def test_level_up_skill(self):
         prog = PlayerProgression()
-        prog.add_xp(100)  # Level 2, 1 skill point
+        prog.add_xp(get_xp_threshold(2))  # Level 2, 1 skill point
         success, msg = prog.level_up_skill("negotiator")
         assert success
         assert prog.skills["negotiator"].current_level == 1
@@ -125,21 +125,21 @@ class TestSkillInvestment:
 
     def test_prerequisite_required(self):
         prog = PlayerProgression()
-        prog.add_xp(250)  # Level 3, 2 skill points
+        prog.add_xp(get_xp_threshold(3))  # Level 3, 2 skill points
         success, msg = prog.level_up_skill("market_eye")
         assert not success
         assert "Requires" in msg
 
     def test_prerequisite_met(self):
         prog = PlayerProgression()
-        prog.add_xp(250)  # Level 3, 2 skill points
+        prog.add_xp(get_xp_threshold(3))  # Level 3, 2 skill points
         prog.level_up_skill("negotiator")
         success, msg = prog.level_up_skill("market_eye")
         assert success
 
     def test_maxed_skill(self):
         prog = PlayerProgression()
-        prog.add_xp(5200)  # Max level, lots of points
+        prog.add_xp(get_xp_threshold(15))  # Lots of points
         prog.level_up_skill("negotiator")
         prog.level_up_skill("negotiator")
         prog.level_up_skill("negotiator")
@@ -149,7 +149,7 @@ class TestSkillInvestment:
 
     def test_get_bonus(self):
         prog = PlayerProgression()
-        prog.add_xp(250)  # Level 3, 2 skill points
+        prog.add_xp(get_xp_threshold(3))  # Level 3, 2 skill points
         prog.level_up_skill("negotiator")
         prog.level_up_skill("negotiator")
         bonus = prog.get_bonus("buy_price_reduction")
@@ -160,9 +160,9 @@ class TestSkillInvestment:
         trading_skills = prog.get_skill_tree(SkillTreeType.TRADING)
         gathering_skills = prog.get_skill_tree(SkillTreeType.GATHERING)
         leadership_skills = prog.get_skill_tree(SkillTreeType.LEADERSHIP)
-        assert len(trading_skills) == 5
+        assert len(trading_skills) == 8
         assert len(gathering_skills) == 5
-        assert len(leadership_skills) == 5
+        assert len(leadership_skills) == 8
 
 
 class TestProgressionSerialization:
@@ -170,10 +170,10 @@ class TestProgressionSerialization:
 
     def test_to_dict(self):
         prog = PlayerProgression()
-        prog.add_xp(200)
+        prog.add_xp(get_xp_threshold(2))
         prog.level_up_skill("negotiator")
         data = prog.to_dict()
-        assert data["xp"] == 200
+        assert data["xp"] == get_xp_threshold(2)
         assert data["level"] == 2
         assert data["skills"]["negotiator"] == 1
 
@@ -254,13 +254,13 @@ class TestLeadershipTree:
 
     def test_crew_manager_bonus(self):
         prog = PlayerProgression()
-        prog.add_xp(5200)  # Max level for plenty of points
+        prog.add_xp(get_xp_threshold(15))  # Plenty of points
         prog.level_up_skill("crew_manager")
         assert prog.get_bonus("crew_slot_bonus") == pytest.approx(1.0)
 
     def test_diplomatic_relations_bonus(self):
         prog = PlayerProgression()
-        prog.add_xp(5200)
+        prog.add_xp(get_xp_threshold(15))
         prog.level_up_skill("crew_manager")
         prog.level_up_skill("diplomatic_relations")
         prog.level_up_skill("diplomatic_relations")
@@ -268,7 +268,7 @@ class TestLeadershipTree:
 
     def test_tariff_negotiation_bonus(self):
         prog = PlayerProgression()
-        prog.add_xp(5200)
+        prog.add_xp(get_xp_threshold(15))
         prog.level_up_skill("crew_manager")
         prog.level_up_skill("diplomatic_relations")
         prog.level_up_skill("tariff_negotiation")
@@ -277,7 +277,7 @@ class TestLeadershipTree:
 
     def test_crew_mentor_bonus(self):
         prog = PlayerProgression()
-        prog.add_xp(5200)
+        prog.add_xp(get_xp_threshold(15))
         prog.level_up_skill("crew_manager")
         prog.level_up_skill("inspiring_leader")
         prog.level_up_skill("crew_mentor")
@@ -287,7 +287,7 @@ class TestLeadershipTree:
     def test_prerequisite_blocks_investment(self):
         """Cannot invest in diplomatic_relations without crew_manager."""
         prog = PlayerProgression()
-        prog.add_xp(5200)
+        prog.add_xp(get_xp_threshold(15))
         success, msg = prog.level_up_skill("diplomatic_relations")
         assert not success
         assert "Requires" in msg
@@ -330,11 +330,11 @@ class TestSocialTree:
     def test_social_tree_count(self):
         prog = PlayerProgression()
         social_skills = prog.get_skill_tree(SkillTreeType.SOCIAL)
-        assert len(social_skills) == 3
+        assert len(social_skills) == 8
 
     def test_social_skill_bonuses(self):
         prog = PlayerProgression()
-        prog.add_xp(5200)  # Max level for plenty of points
+        prog.add_xp(get_xp_threshold(15))  # Plenty of points
         prog.level_up_skill("silver_tongue")
         prog.level_up_skill("silver_tongue")
         assert prog.get_bonus("persuasion_bonus") == pytest.approx(2.0)
@@ -342,7 +342,7 @@ class TestSocialTree:
     def test_social_prereq_blocks(self):
         """Cannot invest in commanding_presence without silver_tongue."""
         prog = PlayerProgression()
-        prog.add_xp(5200)
+        prog.add_xp(get_xp_threshold(15))
         success, msg = prog.level_up_skill("commanding_presence")
         assert not success
         assert "Requires" in msg

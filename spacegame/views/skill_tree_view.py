@@ -29,6 +29,9 @@ SKILL_POSITIONS = {
         "bulk_trader": (160, 340),
         "trade_network": (40, 480),
         "market_insider": (40, 620),
+        "commodity_specialist": (100, 620),
+        "smuggler_contacts": (160, 480),
+        "market_manipulation": (100, 750),
     },
     SkillTreeType.GATHERING: {
         "efficient_drills": (310, 200),
@@ -56,11 +59,19 @@ SKILL_POSITIONS = {
         "inspiring_leader": (790, 340),
         "tariff_negotiation": (670, 480),
         "crew_mentor": (790, 480),
+        "veteran_command": (730, 340),
+        "crisis_management": (670, 620),
+        "fleet_coordinator": (790, 620),
     },
     SkillTreeType.SOCIAL: {
         "silver_tongue": (920, 200),
         "commanding_presence": (860, 340),
         "keen_insight": (980, 340),
+        "master_negotiator": (860, 480),
+        "streetwise": (980, 480),
+        "empathic_read": (1040, 480),
+        "silver_lining": (860, 620),
+        "faction_diplomat": (920, 620),
     },
     SkillTreeType.GROUND: {
         "scrapper": (1080, 200),
@@ -70,13 +81,43 @@ SKILL_POSITIONS = {
         "intimidating_presence": (1080, 480),
         "veteran": (1130, 620),
     },
+    SkillTreeType.COMBAT: {
+        "weapons_training": (1360, 200),
+        "evasive_maneuvers": (1480, 200),
+        "precision_targeting": (1300, 340),
+        "combat_veteran": (1420, 340),
+        "shield_mastery": (1540, 340),
+        "tactical_retreat": (1540, 480),
+        "broadside": (1300, 480),
+    },
+    SkillTreeType.EXPLORATION: {
+        "fuel_efficiency": (1700, 200),
+        "stellar_cartography": (1820, 200),
+        "efficient_routing": (1640, 340),
+        "salvage_instinct": (1760, 340),
+        "hazard_scanner": (1820, 340),
+        "long_range_scanner": (1880, 340),
+        "explorer_reputation": (1880, 480),
+    },
+    SkillTreeType.SMUGGLING: {
+        "hidden_compartments": (2060, 200),
+        "bribe_mastery": (2000, 340),
+        "scan_jamming": (2120, 340),
+        "black_market_access": (2000, 480),
+        "heat_management": (2120, 480),
+        "ghost_runner": (2060, 620),
+    },
 }
 
 NODE_RADIUS = 35
 
+# Total content width (rightmost node + padding)
+SCROLL_MAX = 1000  # Maximum scroll offset (content extends to ~2200px)
+SCROLL_SPEED = 300  # Pixels per second for smooth scrolling
+
 
 class SkillTreeView(BaseView):
-    """Visual skill tree with two branches and enhanced visuals."""
+    """Visual skill tree with scrollable branches and enhanced visuals."""
 
     def __init__(self, ui_manager: pygame_gui.UIManager, progression: PlayerProgression):
         super().__init__()
@@ -84,6 +125,10 @@ class SkillTreeView(BaseView):
         self.progression = progression
         self.next_state: Optional[GameState] = None
         self.hovered_skill: Optional[str] = None
+
+        # Horizontal scroll
+        self._scroll_x: float = 0.0
+        self._scroll_target: float = 0.0
 
         # Fonts
         self.title_font = FontCache.get(36)
@@ -94,6 +139,8 @@ class SkillTreeView(BaseView):
 
         # UI
         self.back_button: Optional[pygame_gui.elements.UIButton] = None
+        self.scroll_left_btn: Optional[pygame_gui.elements.UIButton] = None
+        self.scroll_right_btn: Optional[pygame_gui.elements.UIButton] = None
 
         # Sprites
         self._sprite_mgr = get_sprite_manager()
@@ -128,10 +175,21 @@ class SkillTreeView(BaseView):
             text="Back",
             manager=self.ui_manager,
         )
+        self.scroll_left_btn = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(10, WINDOW_HEIGHT // 2 - 20, 40, 40),
+            text="<",
+            manager=self.ui_manager,
+        )
+        self.scroll_right_btn = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(WINDOW_WIDTH - 50, WINDOW_HEIGHT // 2 - 20, 40, 40),
+            text=">",
+            manager=self.ui_manager,
+        )
 
     def _destroy_ui(self) -> None:
-        if self.back_button:
-            self.back_button.kill()
+        for elem in [self.back_button, self.scroll_left_btn, self.scroll_right_btn]:
+            if elem:
+                elem.kill()
 
     def _build_node_cache(self) -> None:
         """Pre-render radial gradient node surfaces for each visual state."""
@@ -161,9 +219,11 @@ class SkillTreeView(BaseView):
 
     def _get_skill_at_pos(self, pos: tuple) -> Optional[str]:
         mx, my = pos
+        offset = int(self._scroll_x)
         for tree_type, positions in SKILL_POSITIONS.items():
             for skill_id, (sx, sy) in positions.items():
-                dist = ((mx - sx) ** 2 + (my - sy) ** 2) ** 0.5
+                screen_x = sx - offset
+                dist = ((mx - screen_x) ** 2 + (my - sy) ** 2) ** 0.5
                 if dist <= NODE_RADIUS:
                     return skill_id
         return None
@@ -185,8 +245,18 @@ class SkillTreeView(BaseView):
                             sx, sy = positions[skill_id]
                             self.particles.emit(sx, sy, COLLECT_SPARKLE)
 
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_LEFT:
+                self._scroll_target = max(0, self._scroll_target - 400)
+            elif event.key == pygame.K_RIGHT:
+                self._scroll_target = min(SCROLL_MAX, self._scroll_target + 400)
+
         elif event.type == pygame_gui.UI_BUTTON_PRESSED:
-            if event.ui_element == self.back_button:
+            if event.ui_element == self.scroll_left_btn:
+                self._scroll_target = max(0, self._scroll_target - 400)
+            elif event.ui_element == self.scroll_right_btn:
+                self._scroll_target = min(SCROLL_MAX, self._scroll_target + 400)
+            elif event.ui_element == self.back_button:
                 self.next_state = GameState.CHARACTER
 
     def _show_message(self, msg: str) -> None:
@@ -198,6 +268,13 @@ class SkillTreeView(BaseView):
         self.particles.update(dt)
         self._glow_time += dt
         self._energy_dot_offset += dt * 0.3  # Speed of energy flow dots
+
+        # Smooth scroll toward target
+        diff = self._scroll_target - self._scroll_x
+        if abs(diff) > 1:
+            self._scroll_x += diff * min(1.0, dt * 8.0)
+        else:
+            self._scroll_x = self._scroll_target
 
         if self.message_timer > 0:
             self.message_timer -= dt
@@ -213,7 +290,7 @@ class SkillTreeView(BaseView):
 
         # Player stats bar
         xp_next = self.progression.get_xp_for_next_level()
-        xp_str = f"{self.progression.xp}/{xp_next}" if xp_next else f"{self.progression.xp} (MAX)"
+        xp_str = f"{self.progression.xp}/{xp_next}"
         stats = self.info_font.render(
             f"Level {self.progression.level}  |  XP: {xp_str}  |  "
             f"Skill Points: {self.progression.get_available_skill_points()}",
@@ -228,7 +305,7 @@ class SkillTreeView(BaseView):
         bar_w = 400
         bar_h = 12
         progress = self.progression.get_xp_progress()
-        xp_max = xp_next if xp_next else 1
+        xp_max = xp_next
         xp_current_in_level = int(xp_max * progress)
         draw_bar(
             screen, bar_x, bar_y, bar_w, bar_h,
@@ -239,6 +316,7 @@ class SkillTreeView(BaseView):
         )
 
         # Tree headers with attribute subtitles
+        offset = int(self._scroll_x)
         _headers = [
             ("TRADING MASTERY", "Commerce", 100, Colors.FACTION_COMMERCE),
             ("RESOURCE GATHERING", "Acuity", 310, Colors.FACTION_FRONTIER),
@@ -246,12 +324,22 @@ class SkillTreeView(BaseView):
             ("LEADERSHIP", "Ingenuity", 730, Colors.FACTION_SCIENCE),
             ("SOCIAL ARTS", "Synergy", 920, Colors.ATTR_HIGHLIGHT),
             ("GROUND COMBAT", "Resolve", 1130, Colors.RED),
+            ("COMBAT & TACTICS", "Combat", 1420, Colors.RED),
+            ("EXPLORATION", "Acuity", 1760, Colors.FACTION_FRONTIER),
+            ("SMUGGLING", "Ingenuity", 2060, Colors.GLOW_ORANGE),
         ]
         for header_text, attr_name, hx, color in _headers:
-            h_surf = self.header_font.render(header_text, True, color)
-            screen.blit(h_surf, h_surf.get_rect(center=(hx, 140)))
-            a_surf = self.small_font.render(attr_name, True, Colors.TEXT_SECONDARY)
-            screen.blit(a_surf, a_surf.get_rect(center=(hx, 162)))
+            screen_hx = hx - offset
+            if -200 < screen_hx < WINDOW_WIDTH + 200:
+                h_surf = self.header_font.render(header_text, True, color)
+                screen.blit(h_surf, h_surf.get_rect(center=(screen_hx, 140)))
+                a_surf = self.small_font.render(attr_name, True, Colors.TEXT_SECONDARY)
+                screen.blit(a_surf, a_surf.get_rect(center=(screen_hx, 162)))
+
+        # Scroll indicator
+        if self._scroll_target < SCROLL_MAX:
+            hint = self.small_font.render("Arrow keys or < > to scroll", True, Colors.TEXT_SECONDARY)
+            screen.blit(hint, hint.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT - 85)))
 
         # Draw connection lines first
         self._draw_connections(screen)
@@ -259,7 +347,9 @@ class SkillTreeView(BaseView):
         # Draw nodes
         for tree_type, positions in SKILL_POSITIONS.items():
             for skill_id, (sx, sy) in positions.items():
-                self._draw_node(screen, skill_id, sx, sy)
+                screen_x = sx - offset
+                if -NODE_RADIUS < screen_x < WINDOW_WIDTH + NODE_RADIUS:
+                    self._draw_node(screen, skill_id, screen_x, sy)
 
         # Particles on top
         self.particles.render(screen)
@@ -277,32 +367,40 @@ class SkillTreeView(BaseView):
             )
 
     def _draw_connections(self, screen: pygame.Surface) -> None:
+        offset = int(self._scroll_x)
         for tree_type, positions in SKILL_POSITIONS.items():
             for skill_id, (sx, sy) in positions.items():
                 skill = self.progression.skills.get(skill_id)
                 if skill and skill.prerequisite_id:
                     prereq_pos = positions.get(skill.prerequisite_id)
                     if prereq_pos:
+                        # Apply scroll offset to both endpoints
+                        screen_sx = sx - offset
+                        screen_px = prereq_pos[0] - offset
+                        # Cull off-screen connections
+                        if max(screen_sx, screen_px) < -50 or min(screen_sx, screen_px) > WINDOW_WIDTH + 50:
+                            continue
+
                         prereq_skill = self.progression.skills.get(skill.prerequisite_id)
                         is_unlocked = prereq_skill and prereq_skill.is_unlocked
 
+                        start = (screen_px, prereq_pos[1])
+                        end = (screen_sx, sy)
+
                         if is_unlocked:
-                            # Glowing connection line
-                            glow_alpha = int(60 + 30 * math.sin(self._glow_time * 2))
                             color = (60, 180, 80)
-                            pygame.draw.line(screen, color, prereq_pos, (sx, sy), 2)
+                            pygame.draw.line(screen, color, start, end, 2)
 
                             # Energy flow dot
                             dot_t = self._energy_dot_offset % 1.0
-                            dot_x = int(prereq_pos[0] + (sx - prereq_pos[0]) * dot_t)
-                            dot_y = int(prereq_pos[1] + (sy - prereq_pos[1]) * dot_t)
+                            dot_x = int(start[0] + (end[0] - start[0]) * dot_t)
+                            dot_y = int(start[1] + (end[1] - start[1]) * dot_t)
                             dot_surf = pygame.Surface((8, 8), pygame.SRCALPHA)
                             pygame.draw.circle(dot_surf, (100, 255, 150, 200), (4, 4), 3)
                             pygame.draw.circle(dot_surf, (100, 255, 150, 80), (4, 4), 4)
                             screen.blit(dot_surf, (dot_x - 4, dot_y - 4))
                         else:
-                            # Dashed locked line
-                            self._draw_dashed_connection(screen, prereq_pos, (sx, sy), (35, 35, 45))
+                            self._draw_dashed_connection(screen, start, end, (35, 35, 45))
 
     def _draw_dashed_connection(
         self,

@@ -18,6 +18,9 @@ class SkillTreeType(Enum):
     LEADERSHIP = "leadership"
     SOCIAL = "social"
     GROUND = "ground"
+    COMBAT = "combat"
+    EXPLORATION = "exploration"
+    SMUGGLING = "smuggling"
 
 
 @dataclass
@@ -58,19 +61,37 @@ class SkillNode:
         return True
 
 
-# XP thresholds for each level (cumulative)
+# Legacy fixed thresholds (kept for reference/migration)
 LEVEL_XP_THRESHOLDS = [
     0,  # Level 1 (starting)
     100,  # Level 2
-    250,  # Level 3
-    500,  # Level 4
-    850,  # Level 5
-    1300,  # Level 6
-    1900,  # Level 7
-    2700,  # Level 8
-    3800,  # Level 9
-    5200,  # Level 10
+    240,  # Level 3
+    420,  # Level 4
+    640,  # Level 5
+    900,  # Level 6
+    1200,  # Level 7
+    1540,  # Level 8
+    1920,  # Level 9
+    2340,  # Level 10
 ]
+
+
+def get_xp_threshold(level: int) -> int:
+    """Get cumulative XP needed to reach a given level.
+
+    Uses a gentle quadratic formula with no cap.
+    Level 1 = 0 XP (starting).
+
+    Args:
+        level: Target level (1-based).
+
+    Returns:
+        Cumulative XP required.
+    """
+    if level <= 1:
+        return 0
+    n = level - 1  # number of level-ups completed
+    return 60 * n + 20 * n * (n + 1)
 
 
 @dataclass
@@ -93,6 +114,9 @@ class PlayerProgression:
         """
         Add XP and check for level ups.
 
+        No level cap — XP thresholds scale via formula.
+        Every 5th level is a milestone granting 2 skill points instead of 1.
+
         Args:
             amount: XP to add
 
@@ -102,14 +126,12 @@ class PlayerProgression:
         self.xp += amount
         messages = []
 
-        # Check for level ups
-        while self.level < len(LEVEL_XP_THRESHOLDS):
-            next_threshold = LEVEL_XP_THRESHOLDS[
-                self.level
-            ]  # level is 1-indexed, threshold list is 0-indexed
+        # Check for level ups (no cap)
+        while True:
+            next_threshold = get_xp_threshold(self.level + 1)
             if self.xp >= next_threshold:
                 self.level += 1
-                points = 2 if self.level in (5, 10) else 1
+                points = 2 if self.level % 5 == 0 else 1
                 self.skill_points += points
                 sp_text = f"+{points} skill point{'s' if points > 1 else ''}!"
                 messages.append(f"Level up! Now level {self.level}. {sp_text}")
@@ -118,18 +140,18 @@ class PlayerProgression:
 
         return messages
 
-    def get_xp_for_next_level(self) -> Optional[int]:
-        """Get XP needed for next level, or None if max."""
-        if self.level >= len(LEVEL_XP_THRESHOLDS):
-            return None
-        return LEVEL_XP_THRESHOLDS[self.level]
+    def get_xp_for_next_level(self) -> int:
+        """Get cumulative XP needed for next level.
+
+        Returns:
+            XP threshold for next level (always has a next level).
+        """
+        return get_xp_threshold(self.level + 1)
 
     def get_xp_progress(self) -> float:
         """Get progress to next level as 0.0-1.0."""
-        next_xp = self.get_xp_for_next_level()
-        if next_xp is None:
-            return 1.0
-        prev_xp = LEVEL_XP_THRESHOLDS[self.level - 1] if self.level > 1 else 0
+        next_xp = get_xp_threshold(self.level + 1)
+        prev_xp = get_xp_threshold(self.level)
         if next_xp == prev_xp:
             return 1.0
         return (self.xp - prev_xp) / (next_xp - prev_xp)
@@ -275,6 +297,38 @@ def create_default_skills() -> Dict[str, SkillNode]:
         prerequisite_id="trade_network",
         bonus_type="remote_prices",
         bonus_per_level=1.0,
+    )
+
+    # --- New Trading skills ---
+    skills["commodity_specialist"] = SkillNode(
+        id="commodity_specialist",
+        name="Commodity Specialist",
+        description="+5% sell price on specialty goods per level",
+        tree=SkillTreeType.TRADING,
+        max_level=2,
+        prerequisite_id="trade_network",
+        bonus_type="specialty_sell_bonus",
+        bonus_per_level=0.05,
+    )
+    skills["market_manipulation"] = SkillNode(
+        id="market_manipulation",
+        name="Market Manipulation",
+        description="Player buy/sell has 50% less price impact per level",
+        tree=SkillTreeType.TRADING,
+        max_level=2,
+        prerequisite_id="market_insider",
+        bonus_type="market_impact_reduction",
+        bonus_per_level=0.50,
+    )
+    skills["smuggler_contacts"] = SkillNode(
+        id="smuggler_contacts",
+        name="Smuggler Contacts",
+        description="-10% off-market sell penalty per level",
+        tree=SkillTreeType.TRADING,
+        max_level=2,
+        prerequisite_id="bulk_trader",
+        bonus_type="off_market_bonus",
+        bonus_per_level=0.10,
     )
 
     # === RESOURCE GATHERING TREE ===
@@ -460,6 +514,38 @@ def create_default_skills() -> Dict[str, SkillNode]:
         bonus_per_level=2.0,
     )
 
+    # --- New Leadership skills ---
+    skills["fleet_coordinator"] = SkillNode(
+        id="fleet_coordinator",
+        name="Fleet Coordinator",
+        description="+10% crew task effectiveness per level",
+        tree=SkillTreeType.LEADERSHIP,
+        max_level=2,
+        prerequisite_id="crew_mentor",
+        bonus_type="crew_effectiveness",
+        bonus_per_level=0.10,
+    )
+    skills["crisis_management"] = SkillNode(
+        id="crisis_management",
+        name="Crisis Management",
+        description="-5% hull damage taken per level",
+        tree=SkillTreeType.LEADERSHIP,
+        max_level=3,
+        prerequisite_id="tariff_negotiation",
+        bonus_type="hull_damage_reduction",
+        bonus_per_level=0.05,
+    )
+    skills["veteran_command"] = SkillNode(
+        id="veteran_command",
+        name="Veteran Command",
+        description="+2% XP gain from all sources per level",
+        tree=SkillTreeType.LEADERSHIP,
+        max_level=3,
+        prerequisite_id="crew_manager",
+        bonus_type="xp_gain_bonus",
+        bonus_per_level=0.02,
+    )
+
     # === SOCIAL TREE ===
     skills["silver_tongue"] = SkillNode(
         id="silver_tongue",
@@ -488,6 +574,58 @@ def create_default_skills() -> Dict[str, SkillNode]:
         max_level=2,
         prerequisite_id="silver_tongue",
         bonus_type="observation_bonus",
+        bonus_per_level=1.0,
+    )
+
+    # --- New Social skills ---
+    skills["master_negotiator"] = SkillNode(
+        id="master_negotiator",
+        name="Master Negotiator",
+        description="Unlock special dialogue options in negotiations",
+        tree=SkillTreeType.SOCIAL,
+        max_level=1,
+        prerequisite_id="commanding_presence",
+        bonus_type="special_dialogue",
+        bonus_per_level=1.0,
+    )
+    skills["streetwise"] = SkillNode(
+        id="streetwise",
+        name="Streetwise",
+        description="+1 to black market checks per level",
+        tree=SkillTreeType.SOCIAL,
+        max_level=2,
+        prerequisite_id="keen_insight",
+        bonus_type="black_market_bonus",
+        bonus_per_level=1.0,
+    )
+    skills["empathic_read"] = SkillNode(
+        id="empathic_read",
+        name="Empathic Read",
+        description="See NPC disposition during dialogue",
+        tree=SkillTreeType.SOCIAL,
+        max_level=1,
+        prerequisite_id="keen_insight",
+        bonus_type="npc_disposition_visible",
+        bonus_per_level=1.0,
+    )
+    skills["silver_lining"] = SkillNode(
+        id="silver_lining",
+        name="Silver Lining",
+        description="+10% better random encounter outcomes per level",
+        tree=SkillTreeType.SOCIAL,
+        max_level=2,
+        prerequisite_id="master_negotiator",
+        bonus_type="encounter_outcome_bonus",
+        bonus_per_level=0.10,
+    )
+    skills["faction_diplomat"] = SkillNode(
+        id="faction_diplomat",
+        name="Faction Diplomat",
+        description="+1 faction rep per diplomatic action per level",
+        tree=SkillTreeType.SOCIAL,
+        max_level=2,
+        prerequisite_id="master_negotiator",
+        bonus_type="diplomatic_rep_bonus",
         bonus_per_level=1.0,
     )
 
@@ -548,6 +686,207 @@ def create_default_skills() -> Dict[str, SkillNode]:
         max_level=1,
         prerequisite_id="intimidating_presence",
         bonus_type="ground_veteran",
+        bonus_per_level=1.0,
+    )
+
+    # === COMBAT & TACTICS TREE ===
+    skills["weapons_training"] = SkillNode(
+        id="weapons_training",
+        name="Weapons Training",
+        description="+5% weapon damage per level",
+        tree=SkillTreeType.COMBAT,
+        max_level=3,
+        bonus_type="weapon_damage",
+        bonus_per_level=0.05,
+    )
+    skills["evasive_maneuvers"] = SkillNode(
+        id="evasive_maneuvers",
+        name="Evasive Maneuvers",
+        description="+5% dodge chance per level",
+        tree=SkillTreeType.COMBAT,
+        max_level=3,
+        bonus_type="dodge_chance",
+        bonus_per_level=0.05,
+    )
+    skills["shield_mastery"] = SkillNode(
+        id="shield_mastery",
+        name="Shield Mastery",
+        description="+10% shield effectiveness per level",
+        tree=SkillTreeType.COMBAT,
+        max_level=2,
+        prerequisite_id="evasive_maneuvers",
+        bonus_type="shield_bonus",
+        bonus_per_level=0.10,
+    )
+    skills["precision_targeting"] = SkillNode(
+        id="precision_targeting",
+        name="Precision Targeting",
+        description="+5% critical hit chance per level",
+        tree=SkillTreeType.COMBAT,
+        max_level=2,
+        prerequisite_id="weapons_training",
+        bonus_type="crit_chance",
+        bonus_per_level=0.05,
+    )
+    skills["tactical_retreat"] = SkillNode(
+        id="tactical_retreat",
+        name="Tactical Retreat",
+        description="+10% flee chance per level",
+        tree=SkillTreeType.COMBAT,
+        max_level=2,
+        prerequisite_id="evasive_maneuvers",
+        bonus_type="flee_bonus",
+        bonus_per_level=0.10,
+    )
+    skills["broadside"] = SkillNode(
+        id="broadside",
+        name="Broadside",
+        description="+15% damage with heavy weapons per level",
+        tree=SkillTreeType.COMBAT,
+        max_level=2,
+        prerequisite_id="precision_targeting",
+        bonus_type="heavy_weapon_damage",
+        bonus_per_level=0.15,
+    )
+    skills["combat_veteran"] = SkillNode(
+        id="combat_veteran",
+        name="Combat Veteran",
+        description="+10% combat XP per level",
+        tree=SkillTreeType.COMBAT,
+        max_level=3,
+        prerequisite_id="weapons_training",
+        bonus_type="combat_xp_bonus",
+        bonus_per_level=0.10,
+    )
+
+    # === EXPLORATION & PILOTING TREE ===
+    skills["fuel_efficiency"] = SkillNode(
+        id="fuel_efficiency",
+        name="Fuel Efficiency",
+        description="-5% fuel consumption per level",
+        tree=SkillTreeType.EXPLORATION,
+        max_level=3,
+        bonus_type="fuel_reduction",
+        bonus_per_level=0.05,
+    )
+    skills["stellar_cartography"] = SkillNode(
+        id="stellar_cartography",
+        name="Stellar Cartography",
+        description="Reveal additional map info per level",
+        tree=SkillTreeType.EXPLORATION,
+        max_level=2,
+        bonus_type="map_reveal",
+        bonus_per_level=1.0,
+    )
+    skills["hazard_scanner"] = SkillNode(
+        id="hazard_scanner",
+        name="Hazard Scanner",
+        description="-10% travel event danger per level",
+        tree=SkillTreeType.EXPLORATION,
+        max_level=2,
+        prerequisite_id="stellar_cartography",
+        bonus_type="travel_danger_reduction",
+        bonus_per_level=0.10,
+    )
+    skills["long_range_scanner"] = SkillNode(
+        id="long_range_scanner",
+        name="Long Range Scanner",
+        description="+1 system scan range per level",
+        tree=SkillTreeType.EXPLORATION,
+        max_level=2,
+        prerequisite_id="stellar_cartography",
+        bonus_type="scan_range",
+        bonus_per_level=1.0,
+    )
+    skills["efficient_routing"] = SkillNode(
+        id="efficient_routing",
+        name="Efficient Routing",
+        description="-5% travel time per level",
+        tree=SkillTreeType.EXPLORATION,
+        max_level=3,
+        prerequisite_id="fuel_efficiency",
+        bonus_type="travel_speed",
+        bonus_per_level=0.05,
+    )
+    skills["salvage_instinct"] = SkillNode(
+        id="salvage_instinct",
+        name="Salvage Instinct",
+        description="+15% salvage yield per level",
+        tree=SkillTreeType.EXPLORATION,
+        max_level=2,
+        prerequisite_id="fuel_efficiency",
+        bonus_type="salvage_yield",
+        bonus_per_level=0.15,
+    )
+    skills["explorer_reputation"] = SkillNode(
+        id="explorer_reputation",
+        name="Explorer Reputation",
+        description="+1 rep with frontier systems per level",
+        tree=SkillTreeType.EXPLORATION,
+        max_level=2,
+        prerequisite_id="long_range_scanner",
+        bonus_type="frontier_rep_bonus",
+        bonus_per_level=1.0,
+    )
+
+    # === SMUGGLING & SUBTERFUGE TREE ===
+    skills["hidden_compartments"] = SkillNode(
+        id="hidden_compartments",
+        name="Hidden Compartments",
+        description="+2 contraband cargo slots per level",
+        tree=SkillTreeType.SMUGGLING,
+        max_level=3,
+        bonus_type="contraband_slots",
+        bonus_per_level=2.0,
+    )
+    skills["bribe_mastery"] = SkillNode(
+        id="bribe_mastery",
+        name="Bribe Mastery",
+        description="-15% bribe cost per level",
+        tree=SkillTreeType.SMUGGLING,
+        max_level=2,
+        prerequisite_id="hidden_compartments",
+        bonus_type="bribe_reduction",
+        bonus_per_level=0.15,
+    )
+    skills["scan_jamming"] = SkillNode(
+        id="scan_jamming",
+        name="Scan Jamming",
+        description="-10% detection chance per level",
+        tree=SkillTreeType.SMUGGLING,
+        max_level=3,
+        prerequisite_id="hidden_compartments",
+        bonus_type="scan_evasion",
+        bonus_per_level=0.10,
+    )
+    skills["black_market_access"] = SkillNode(
+        id="black_market_access",
+        name="Black Market Access",
+        description="+10% contraband sell price per level",
+        tree=SkillTreeType.SMUGGLING,
+        max_level=2,
+        prerequisite_id="bribe_mastery",
+        bonus_type="contraband_sell_bonus",
+        bonus_per_level=0.10,
+    )
+    skills["heat_management"] = SkillNode(
+        id="heat_management",
+        name="Heat Management",
+        description="-10% criminal heat gain per level",
+        tree=SkillTreeType.SMUGGLING,
+        max_level=3,
+        prerequisite_id="scan_jamming",
+        bonus_type="heat_reduction",
+        bonus_per_level=0.10,
+    )
+    skills["ghost_runner"] = SkillNode(
+        id="ghost_runner",
+        name="Ghost Runner",
+        description="Maximum evasion: -25% detection, -25% heat gain",
+        tree=SkillTreeType.SMUGGLING,
+        max_level=1,
+        prerequisite_id="heat_management",
+        bonus_type="ghost_runner",
         bonus_per_level=1.0,
     )
 

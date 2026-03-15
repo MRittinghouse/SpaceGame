@@ -32,6 +32,10 @@ _TREE_ATTRIBUTE_MAP = {
     SkillTreeType.MINING: "Resolve",
     SkillTreeType.LEADERSHIP: "Ingenuity",
     SkillTreeType.SOCIAL: "Synergy",
+    SkillTreeType.GROUND: "Resolve",
+    SkillTreeType.COMBAT: "Combat",
+    SkillTreeType.EXPLORATION: "Acuity",
+    SkillTreeType.SMUGGLING: "Ingenuity",
 }
 
 
@@ -216,7 +220,7 @@ class CharacterView(BaseView):
         # Level and XP
         prog = self.player.progression
         xp_next = prog.get_xp_for_next_level()
-        xp_str = f"{prog.xp}/{xp_next}" if xp_next else f"{prog.xp} (MAX)"
+        xp_str = f"{prog.xp}/{xp_next}"
         level_surf = self.info_font.render(
             f"Level {prog.level}  |  XP: {xp_str}", True, Colors.TEXT
         )
@@ -305,6 +309,10 @@ class CharacterView(BaseView):
             SkillTreeType.MINING: Colors.GLOW_ORANGE,
             SkillTreeType.LEADERSHIP: Colors.FACTION_SCIENCE,
             SkillTreeType.SOCIAL: Colors.ATTR_HIGHLIGHT,
+            SkillTreeType.GROUND: Colors.RED,
+            SkillTreeType.COMBAT: Colors.RED,
+            SkillTreeType.EXPLORATION: Colors.FACTION_FRONTIER,
+            SkillTreeType.SMUGGLING: Colors.GLOW_ORANGE,
         }
 
         for tree_type in SkillTreeType:

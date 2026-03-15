@@ -110,14 +110,13 @@ class TestMarketEventFrequency:
 
 
 class TestSkillPointProgression:
-    """Verify bonus skill points at levels 5 and 10."""
+    """Verify bonus skill points at milestone levels."""
 
     def test_level_5_grants_bonus_skill_point(self) -> None:
-        from spacegame.models.progression import PlayerProgression, LEVEL_XP_THRESHOLDS
+        from spacegame.models.progression import PlayerProgression, get_xp_threshold
 
         prog = PlayerProgression()
-        # Level up from 1 to 5 (need 850 XP)
-        prog.add_xp(850)
+        prog.add_xp(get_xp_threshold(5))
         assert prog.level == 5
         # Levels 2,3,4 = 1 each, level 5 = 2 → total 5
         assert prog.skill_points == 5, (
@@ -125,24 +124,25 @@ class TestSkillPointProgression:
         )
 
     def test_level_10_grants_bonus_skill_point(self) -> None:
-        from spacegame.models.progression import PlayerProgression
+        from spacegame.models.progression import PlayerProgression, get_xp_threshold
 
         prog = PlayerProgression()
-        prog.add_xp(5200)
+        prog.add_xp(get_xp_threshold(10))
         assert prog.level == 10
-        # Levels 2-4: 3×1, Level 5: 2, Levels 6-9: 4×1, Level 10: 2 → total 11
+        # Levels 2-4,6-9: 7×1, milestones 5,10: 2×2 → total 11
         assert prog.skill_points == 11, (
             f"Should have 11 skill points at level 10, got {prog.skill_points}"
         )
 
-    def test_total_skill_points_at_max_level(self) -> None:
-        """11 total skill points across 10 levels (bonus at 5 and 10)."""
-        from spacegame.models.progression import PlayerProgression
+    def test_skill_points_at_level_20(self) -> None:
+        """23 total skill points across 20 levels (milestone every 5th)."""
+        from spacegame.models.progression import PlayerProgression, get_xp_threshold
 
         prog = PlayerProgression()
-        prog.add_xp(10000)  # Way past max
-        assert prog.level == 10
-        assert prog.skill_points == 11
+        prog.add_xp(get_xp_threshold(20))
+        assert prog.level == 20
+        # 19 level-ups: milestones at 5,10,15,20 = 4*2=8, normal 15*1=15 → total 23
+        assert prog.skill_points == 23
 
 
 class TestCrewLoyalty:
@@ -370,7 +370,7 @@ class TestDualLaserWeapon:
         loader = _make_loader()
         loader.load_upgrades()
         weapons = [u for u in loader.upgrades.values() if u.slot_type == "weapon"]
-        assert len(weapons) == 7, f"Should have 7 weapons (was 6), got {len(weapons)}"
+        assert len(weapons) == 10, f"Should have 10 weapons, got {len(weapons)}"
 
 
 class TestEnemyNegotiateDifficulty:

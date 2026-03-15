@@ -40,6 +40,10 @@ class ShipType:
     weapon_slots: int = 0
     defense_slots: int = 0
     utility_slots: int = 3
+    # Faction/quest gating (optional)
+    faction_required: str | None = None
+    faction_rep_required: int = 0
+    unlock_condition: str | None = None
 
     def can_afford(self, credits: int) -> bool:
         """

@@ -138,7 +138,17 @@ class Market:
             game_day: Current game day (for seeding variance)
         """
         self.system = system
-        self.commodities = {c.id: c for c in commodities}
+        self._all_commodities = {c.id: c for c in commodities}
+
+        # Filter to only commodities available at this system
+        available = system.economy.available_commodities
+        if available is not None:
+            self.commodities = {
+                cid: c for cid, c in self._all_commodities.items() if cid in available
+            }
+        else:
+            self.commodities = self._all_commodities
+
         self.game_day = game_day
         self._price_cache: Dict[str, int] = {}
         self.active_event: Optional[MarketEvent] = None  # Current market event
@@ -191,12 +201,18 @@ class Market:
         # Ensure minimum price of 1 CR (events can push outside normal range)
         return max(1, final_price)
 
+    # Specialty pricing modifiers (stacks with production/consumption tags)
+    _SPECIALTY_EXPORT_MODIFIER = -0.15  # 15% additional discount
+    _SPECIALTY_IMPORT_MODIFIER = 0.15  # 15% additional premium
+
     def _get_supply_demand_modifier(self, commodity: Commodity) -> float:
         """
         Calculate supply/demand modifier based on system economy.
 
-        Production systems (supply) → Lower prices (-20% to -30%)
-        Consumption systems (demand) → Higher prices (+20% to +30%)
+        Production systems (supply) → Lower prices (-25%)
+        Consumption systems (demand) → Higher prices (+25%)
+        Specialty exports → Additional -15% (stacks with production)
+        Specialty imports → Additional +15% (stacks with consumption)
 
         Args:
             commodity: Commodity to evaluate
@@ -213,6 +229,14 @@ class Market:
         # Check if system consumes this commodity (increases price)
         if commodity.is_consumed_by(self.system.economy.consumption_tags):
             modifier += 0.25  # 25% premium
+
+        # Specialty export: this system is known for selling this cheap
+        if commodity.id in self.system.economy.specialty_exports:
+            modifier += self._SPECIALTY_EXPORT_MODIFIER
+
+        # Specialty import: this system has high demand for this
+        if commodity.id in self.system.economy.specialty_imports:
+            modifier += self._SPECIALTY_IMPORT_MODIFIER
 
         return modifier
 
@@ -254,19 +278,32 @@ class Market:
         """
         return self._price_cache.get(commodity_id, 0)
 
+    # Penalty applied when selling goods the local market doesn't normally stock
+    _OFF_MARKET_SELL_PENALTY = 0.50  # 50% of base price
+
     def get_sell_price(self, commodity_id: str) -> int:
         """
         Get price player receives when selling.
 
-        Currently same as buy price. Could add spread/fee in future.
+        If the commodity is available at this market, returns the market price.
+        If not available (off-market sale), returns base price × 50% penalty —
+        the player can always sell cargo, but gets a poor deal at the wrong port.
 
         Args:
             commodity_id: ID of commodity
 
         Returns:
-            Sell price
+            Sell price (always >= 1 for valid commodities)
         """
-        return self.get_price(commodity_id)
+        market_price = self.get_price(commodity_id)
+        if market_price > 0:
+            return market_price
+
+        # Off-market sale: commodity not stocked here, but player can still sell
+        commodity = self._all_commodities.get(commodity_id)
+        if commodity and commodity.base_price > 0:
+            return max(1, int(commodity.base_price * self._OFF_MARKET_SELL_PENALTY))
+        return 0
 
     def get_all_prices(self) -> Dict[str, int]:
         """
@@ -315,9 +352,15 @@ class Market:
         # Market analysis
         is_produced = commodity.is_produced_by(self.system.economy.production_tags)
         is_consumed = commodity.is_consumed_by(self.system.economy.consumption_tags)
+        is_specialty_export = commodity_id in self.system.economy.specialty_exports
+        is_specialty_import = commodity_id in self.system.economy.specialty_imports
 
-        if is_produced:
+        if is_specialty_export:
+            analysis = "Regional specialty - Excellent for buying"
+        elif is_produced:
             analysis = "Local production - Good for buying"
+        elif is_specialty_import:
+            analysis = "High local demand - Excellent for selling"
         elif is_consumed:
             analysis = "High demand - Good for selling"
         else:
@@ -333,6 +376,8 @@ class Market:
             "analysis": analysis,
             "is_produced_here": is_produced,
             "is_consumed_here": is_consumed,
+            "is_specialty_export": is_specialty_export,
+            "is_specialty_import": is_specialty_import,
         }
 
     def record_buy(self, commodity_id: str, quantity: int) -> None:

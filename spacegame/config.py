@@ -254,7 +254,7 @@ XP_PER_MINING = 10
 XP_PER_SALVAGE = 10
 XP_PER_REFINE = 12
 XP_PER_TRAVEL = 10
-MAX_LEVEL = 10
+MAX_LEVEL = 999  # Effectively uncapped — formula-based XP scaling
 
 # ============================================================================
 # FACTION REPUTATION CONSTANTS

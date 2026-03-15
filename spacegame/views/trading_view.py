@@ -294,7 +294,10 @@ class TradingView(BaseView):
         ids: list[str] = []
         system_id = self.player.current_system_id
 
-        for commodity_id, commodity in self.commodities.items():
+        # Use market's filtered commodity list (regional availability)
+        market_commodities = self.market.commodities if self.market else self.commodities
+
+        for commodity_id, commodity in market_commodities.items():
             # Skip quest items (base_price=0) from market display
             if commodity.base_price <= 0:
                 continue
@@ -321,6 +324,15 @@ class TradingView(BaseView):
                 name_display = (f"{commodity.name} [R]", Colors.YELLOW)
             elif commodity.legality == Legality.ILLEGAL:
                 name_display = (f"{commodity.name} [!]", Colors.RED)
+
+            # Specialty indicator (shows player where the good deals are)
+            report = self.market.get_market_report(commodity_id)
+            if report.get("is_specialty_export"):
+                trend_text = "BUY HERE"
+                trend_color = Colors.GREEN
+            elif report.get("is_specialty_import"):
+                trend_text = "SELL HERE"
+                trend_color = Colors.YELLOW
 
             rows.append(
                 [

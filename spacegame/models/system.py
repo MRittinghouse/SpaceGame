@@ -5,7 +5,7 @@ Represents star systems, their coordinates, stations, and economic properties.
 """
 
 from dataclasses import dataclass, field
-from typing import List
+from typing import List, Optional
 import math
 
 
@@ -48,6 +48,9 @@ class Economy:
     production_tags: List[str]
     consumption_tags: List[str]
     tariff_rate: float  # Percentage as decimal (e.g., 0.02 = 2%)
+    available_commodities: Optional[List[str]] = None  # None = all available
+    specialty_exports: List[str] = field(default_factory=list)  # Cheaper to buy here
+    specialty_imports: List[str] = field(default_factory=list)  # More expensive here (high demand)
 
 
 @dataclass

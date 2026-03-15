@@ -62,8 +62,8 @@ def test_load_ship_types() -> None:
     loader = DataLoader()
     ship_types = loader.load_ship_types()
 
-    # Should have 9 ship types
-    assert len(ship_types) == 9, "Should load exactly 9 ship types"
+    # Should have 24 ship types
+    assert len(ship_types) == 24, "Should load exactly 24 ship types"
 
     # Check starter ship
     assert "shuttle" in ship_types

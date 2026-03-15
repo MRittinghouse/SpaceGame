@@ -171,10 +171,14 @@ class DataLoader:
             for s in data["stations"]
         ]
 
+        econ_data = data["economy"]
         economy = Economy(
-            production_tags=data["economy"]["production_tags"],
-            consumption_tags=data["economy"]["consumption_tags"],
-            tariff_rate=data["economy"]["tariff_rate"],
+            production_tags=econ_data["production_tags"],
+            consumption_tags=econ_data["consumption_tags"],
+            tariff_rate=econ_data["tariff_rate"],
+            available_commodities=econ_data.get("available_commodities"),
+            specialty_exports=econ_data.get("specialty_exports", []),
+            specialty_imports=econ_data.get("specialty_imports", []),
         )
 
         return StarSystem(
@@ -274,6 +278,9 @@ class DataLoader:
             weapon_slots=data.get("weapon_slots", 0),
             defense_slots=data.get("defense_slots", 0),
             utility_slots=data.get("utility_slots", 3),
+            faction_required=data.get("faction_required"),
+            faction_rep_required=data.get("faction_rep_required", 0),
+            unlock_condition=data.get("unlock_condition"),
         )
 
     def load_mining_configs(self) -> Dict[str, MiningConfig]:
@@ -377,6 +384,11 @@ class DataLoader:
                 bonus_value=upgrade_data.get("bonus_value", 0.0),
                 combat_move=upgrade_data.get("combat_move"),
                 requires_black_market=upgrade_data.get("requires_black_market", False),
+                max_mark=upgrade_data.get("max_mark", 3),
+                tuning_options=upgrade_data.get("tuning_options", []),
+                faction_required=upgrade_data.get("faction_required"),
+                faction_rep_required=upgrade_data.get("faction_rep_required", 0),
+                unlock_condition=upgrade_data.get("unlock_condition"),
             )
             self.upgrades[upgrade.id] = upgrade
 

@@ -32,7 +32,15 @@
       "economy": {
         "production_tags": ["manufactured_goods", "electronics"],
         "consumption_tags": ["food", "raw_materials", "luxury"],
-        "tariff_rate": 0.02
+        "tariff_rate": 0.02,
+        "available_commodities": [
+          "food", "textiles", "common_metals", "fuel", "machinery", "electronics",
+          "rare_metals", "manufactured_goods", "precious_metals", "art",
+          "medical", "raw_ore", "iron_ore", "scrap_metal", "salvaged_electronics",
+          "alloy_composite", "purified_crystal"
+        ],
+        "specialty_exports": ["manufactured_goods", "electronics"],
+        "specialty_imports": []
       },
       "rest_cost": 150
     },
@@ -60,7 +68,13 @@
       "economy": {
         "production_tags": ["food", "textiles", "organic"],
         "consumption_tags": ["machinery", "fuel", "manufactured_goods"],
-        "tariff_rate": 0.01
+        "tariff_rate": 0.01,
+        "available_commodities": [
+          "food", "textiles", "fuel", "machinery", "electronics",
+          "manufactured_goods", "medical", "common_metals"
+        ],
+        "specialty_exports": ["food", "textiles"],
+        "specialty_imports": ["machinery", "electronics"]
       },
       "rest_cost": 75
     },
@@ -96,7 +110,15 @@
       "economy": {
         "production_tags": ["machinery", "manufactured_goods", "common_metals"],
         "consumption_tags": ["food", "fuel", "raw_materials"],
-        "tariff_rate": 0.03
+        "tariff_rate": 0.03,
+        "available_commodities": [
+          "food", "fuel", "common_metals", "iron_ore", "raw_ore",
+          "machinery", "manufactured_goods", "alloy_composite",
+          "scrap_metal", "salvaged_electronics", "rare_metals",
+          "medical", "textiles"
+        ],
+        "specialty_exports": ["machinery", "alloy_composite", "manufactured_goods"],
+        "specialty_imports": ["food", "rare_metals"]
       },
       "rest_cost": 100
     },
@@ -124,7 +146,14 @@
       "economy": {
         "production_tags": ["common_metals", "rare_metals", "raw_materials"],
         "consumption_tags": ["food", "machinery", "fuel"],
-        "tariff_rate": 0.02
+        "tariff_rate": 0.02,
+        "available_commodities": [
+          "food", "fuel", "common_metals", "rare_metals", "raw_ore",
+          "iron_ore", "crystal_ore", "scrap_metal", "machinery",
+          "medical", "manufactured_goods"
+        ],
+        "specialty_exports": ["raw_ore", "iron_ore", "common_metals"],
+        "specialty_imports": ["food", "medical", "electronics"]
       },
       "rest_cost": 50
     },
@@ -152,7 +181,14 @@
       "economy": {
         "production_tags": ["electronics", "medical", "luxury"],
         "consumption_tags": ["rare_metals", "food", "raw_materials"],
-        "tariff_rate": 0.04
+        "tariff_rate": 0.04,
+        "available_commodities": [
+          "food", "fuel", "electronics", "medical", "rare_metals",
+          "crystal_ore", "rare_ore", "purified_crystal",
+          "manufactured_goods", "alloy_composite", "contraband_medicine"
+        ],
+        "specialty_exports": ["electronics", "medical", "purified_crystal"],
+        "specialty_imports": ["rare_metals", "crystal_ore", "rare_ore"]
       },
       "rest_cost": 200
     },
@@ -180,7 +216,13 @@
       "economy": {
         "production_tags": ["food", "organic", "textiles", "agricultural"],
         "consumption_tags": ["machinery", "electronics", "fuel"],
-        "tariff_rate": 0.01
+        "tariff_rate": 0.01,
+        "available_commodities": [
+          "food", "textiles", "fuel", "medical",
+          "manufactured_goods", "common_metals"
+        ],
+        "specialty_exports": ["food", "textiles"],
+        "specialty_imports": ["machinery", "medical"]
       },
       "rest_cost": 50
     },
@@ -208,7 +250,15 @@
       "economy": {
         "production_tags": ["industrial", "raw_materials"],
         "consumption_tags": ["food", "fuel", "medical"],
-        "tariff_rate": 0.01
+        "tariff_rate": 0.01,
+        "available_commodities": [
+          "food", "fuel", "scrap_metal", "salvaged_electronics", "rare_parts",
+          "common_metals", "weapons_components", "combat_stims",
+          "stolen_data", "restricted_tech", "medical",
+          "manufactured_goods"
+        ],
+        "specialty_exports": ["scrap_metal", "salvaged_electronics", "rare_parts"],
+        "specialty_imports": ["food", "fuel", "medical"]
       },
       "rest_cost": 75
     },
@@ -244,7 +294,15 @@
       "economy": {
         "production_tags": ["luxury", "trade_hub", "manufactured_goods"],
         "consumption_tags": ["food", "raw_materials", "common_metals"],
-        "tariff_rate": 0.03
+        "tariff_rate": 0.03,
+        "available_commodities": [
+          "food", "textiles", "fuel", "common_metals", "machinery",
+          "electronics", "manufactured_goods", "precious_metals", "art",
+          "exotic_goods", "medical", "purified_crystal", "alloy_composite",
+          "rare_metals"
+        ],
+        "specialty_exports": ["art", "exotic_goods", "precious_metals"],
+        "specialty_imports": ["common_metals", "raw_ore", "rare_metals"]
       },
       "rest_cost": 250
     },
@@ -272,7 +330,14 @@
       "economy": {
         "production_tags": ["common_metals", "rare_metals", "raw_materials", "mining"],
         "consumption_tags": ["food", "machinery", "fuel", "medical"],
-        "tariff_rate": 0.02
+        "tariff_rate": 0.02,
+        "available_commodities": [
+          "food", "fuel", "common_metals", "rare_metals", "raw_ore",
+          "iron_ore", "crystal_ore", "rare_ore", "machinery",
+          "medical", "scrap_metal"
+        ],
+        "specialty_exports": ["rare_metals", "crystal_ore", "rare_ore"],
+        "specialty_imports": ["food", "medical", "machinery"]
       },
       "rest_cost": 75
     },
@@ -300,7 +365,14 @@
       "economy": {
         "production_tags": ["electronics", "medical", "high_tech", "research"],
         "consumption_tags": ["rare_metals", "food", "raw_materials", "common_metals"],
-        "tariff_rate": 0.05
+        "tariff_rate": 0.05,
+        "available_commodities": [
+          "food", "fuel", "electronics", "medical", "rare_metals",
+          "crystal_ore", "rare_ore", "purified_crystal", "restricted_tech",
+          "alloy_composite", "common_metals", "salvaged_electronics"
+        ],
+        "specialty_exports": ["medical", "restricted_tech", "electronics"],
+        "specialty_imports": ["rare_metals", "crystal_ore", "common_metals"]
       },
       "rest_cost": 225
     },
@@ -328,7 +400,14 @@
       "economy": {
         "production_tags": [],
         "consumption_tags": [],
-        "tariff_rate": 0.0
+        "tariff_rate": 0.0,
+        "available_commodities": [
+          "fuel", "scrap_metal", "weapons_components", "combat_stims",
+          "stolen_data", "restricted_tech", "rare_parts",
+          "salvaged_electronics", "medical", "food"
+        ],
+        "specialty_exports": ["weapons_components", "combat_stims", "stolen_data"],
+        "specialty_imports": ["fuel", "food", "medical"]
       },
       "rest_cost": 0
     }

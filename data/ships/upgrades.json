@@ -7,7 +7,11 @@
       "price": 5000,
       "slot_type": "cargo",
       "bonus_type": "cargo_bonus",
-      "bonus_value": 20.0
+      "bonus_value": 20.0,
+      "tuning_options": [
+        {"id": "reinforced", "name": "Reinforced", "description": "+10 hull HP", "bonus_type": "hull_bonus", "bonus_value": 10.0},
+        {"id": "optimized", "name": "Optimized", "description": "+5 cargo", "bonus_type": "cargo_bonus", "bonus_value": 5.0}
+      ]
     },
     {
       "id": "fuel_tank_upgrade",
@@ -16,7 +20,11 @@
       "price": 3000,
       "slot_type": "fuel",
       "bonus_type": "fuel_bonus",
-      "bonus_value": 30.0
+      "bonus_value": 30.0,
+      "tuning_options": [
+        {"id": "insulated", "name": "Insulated", "description": "+10 fuel capacity", "bonus_type": "fuel_bonus", "bonus_value": 10.0},
+        {"id": "lightweight", "name": "Lightweight", "description": "+0.1 speed", "bonus_type": "speed_bonus", "bonus_value": 0.1}
+      ]
     },
     {
       "id": "efficient_engines",
@@ -25,7 +33,11 @@
       "price": 8000,
       "slot_type": "engine",
       "bonus_type": "fuel_efficiency_bonus",
-      "bonus_value": 2.0
+      "bonus_value": 2.0,
+      "tuning_options": [
+        {"id": "overdrive", "name": "Overdrive", "description": "+0.15 speed", "bonus_type": "speed_bonus", "bonus_value": 0.15},
+        {"id": "economizer", "name": "Economizer", "description": "-1 fuel per jump", "bonus_type": "fuel_efficiency_bonus", "bonus_value": 1.0}
+      ]
     },
     {
       "id": "emergency_thrusters",
@@ -34,7 +46,11 @@
       "price": 2000,
       "slot_type": "engine",
       "bonus_type": "flee_bonus",
-      "bonus_value": 15.0
+      "bonus_value": 15.0,
+      "tuning_options": [
+        {"id": "afterburner", "name": "Afterburner", "description": "+10% flee chance", "bonus_type": "flee_bonus", "bonus_value": 10.0},
+        {"id": "reactive", "name": "Reactive", "description": "+8 evasion in combat", "bonus_type": "evasion_bonus", "bonus_value": 8.0}
+      ]
     },
     {
       "id": "mining_drill_mk2",
@@ -43,7 +59,11 @@
       "price": 6000,
       "slot_type": "mining",
       "bonus_type": "drill_speed_bonus",
-      "bonus_value": 0.20
+      "bonus_value": 0.20,
+      "tuning_options": [
+        {"id": "deep_core", "name": "Deep Core", "description": "+15% rare ore chance", "bonus_type": "rare_ore_bonus", "bonus_value": 0.15},
+        {"id": "rapid_extract", "name": "Rapid Extract", "description": "+10% drill speed", "bonus_type": "drill_speed_bonus", "bonus_value": 0.10}
+      ]
     },
     {
       "id": "advanced_scanner",
@@ -52,16 +72,21 @@
       "price": 7000,
       "slot_type": "scanner",
       "bonus_type": "scan_charge_bonus",
-      "bonus_value": 2.0
+      "bonus_value": 2.0,
+      "tuning_options": [
+        {"id": "deep_scan", "name": "Deep Scan", "description": "+1 scan charge", "bonus_type": "scan_charge_bonus", "bonus_value": 1.0},
+        {"id": "analyzer", "name": "Analyzer", "description": "+10% salvage yield", "bonus_type": "salvage_yield_bonus", "bonus_value": 0.10}
+      ]
     },
     {
       "id": "salvaged_pulse_emitter",
       "name": "Salvaged Pulse Emitter",
-      "description": "A jury-rigged energy weapon pulled from scrap. Weak but functional \u2014 better than nothing.",
+      "description": "A jury-rigged energy weapon pulled from scrap. Weak but functional.",
       "price": 500,
       "slot_type": "weapon",
       "bonus_type": "",
       "bonus_value": 0.0,
+      "max_mark": 1,
       "combat_move": {
         "id": "salvaged_pulse_emitter",
         "name": "Pulse Shot",
@@ -79,6 +104,10 @@
       "slot_type": "weapon",
       "bonus_type": "",
       "bonus_value": 0.0,
+      "tuning_options": [
+        {"id": "focused", "name": "Focused Beam", "description": "+4 damage", "bonus_type": "damage_bonus", "bonus_value": 4.0},
+        {"id": "wide_beam", "name": "Wide Beam", "description": "+8 accuracy", "bonus_type": "accuracy_bonus", "bonus_value": 8.0}
+      ],
       "combat_move": {
         "id": "mining_laser_retrofit",
         "name": "Mining Laser",
@@ -96,6 +125,10 @@
       "slot_type": "weapon",
       "bonus_type": "",
       "bonus_value": 0.0,
+      "tuning_options": [
+        {"id": "overcharged", "name": "Overcharged", "description": "+4 damage", "bonus_type": "damage_bonus", "bonus_value": 4.0},
+        {"id": "precision", "name": "Precision", "description": "+15 accuracy", "bonus_type": "accuracy_bonus", "bonus_value": 15.0}
+      ],
       "combat_move": {
         "id": "laser_cannon",
         "name": "Laser Cannon",
@@ -113,6 +146,10 @@
       "slot_type": "weapon",
       "bonus_type": "",
       "bonus_value": 0.0,
+      "tuning_options": [
+        {"id": "synchronized", "name": "Synchronized", "description": "+6 damage", "bonus_type": "damage_bonus", "bonus_value": 6.0},
+        {"id": "staggered", "name": "Staggered Fire", "description": "+12 accuracy", "bonus_type": "accuracy_bonus", "bonus_value": 12.0}
+      ],
       "combat_move": {
         "id": "dual_laser",
         "name": "Dual Laser Burst",
@@ -130,6 +167,10 @@
       "slot_type": "weapon",
       "bonus_type": "",
       "bonus_value": 0.0,
+      "tuning_options": [
+        {"id": "heavy_warhead", "name": "Heavy Warhead", "description": "+8 damage", "bonus_type": "damage_bonus", "bonus_value": 8.0},
+        {"id": "guided", "name": "Guided", "description": "+15 accuracy", "bonus_type": "accuracy_bonus", "bonus_value": 15.0}
+      ],
       "combat_move": {
         "id": "missile_launcher",
         "name": "Missile Salvo",
@@ -148,6 +189,10 @@
       "slot_type": "weapon",
       "bonus_type": "",
       "bonus_value": 0.0,
+      "tuning_options": [
+        {"id": "cascade", "name": "Cascade", "description": "+5 shield drain", "bonus_type": "shield_drain_bonus", "bonus_value": 5.0},
+        {"id": "ionized", "name": "Ionized", "description": "+4 damage", "bonus_type": "damage_bonus", "bonus_value": 4.0}
+      ],
       "combat_move": {
         "id": "ion_disruptor",
         "name": "Ion Blast",
@@ -169,6 +214,10 @@
       "slot_type": "weapon",
       "bonus_type": "",
       "bonus_value": 0.0,
+      "tuning_options": [
+        {"id": "superheated", "name": "Superheated", "description": "+10 damage", "bonus_type": "damage_bonus", "bonus_value": 10.0},
+        {"id": "compact_charge", "name": "Compact Charge", "description": "+10 accuracy", "bonus_type": "accuracy_bonus", "bonus_value": 10.0}
+      ],
       "combat_move": {
         "id": "plasma_torpedo",
         "name": "Plasma Torpedo",
@@ -187,6 +236,10 @@
       "slot_type": "defense",
       "bonus_type": "",
       "bonus_value": 0.0,
+      "tuning_options": [
+        {"id": "rapid_cycle", "name": "Rapid Cycle", "description": "-1 energy cost", "bonus_type": "energy_discount", "bonus_value": 1.0},
+        {"id": "overcharge", "name": "Overcharge", "description": "+10 shield restore", "bonus_type": "shield_restore_bonus", "bonus_value": 10.0}
+      ],
       "combat_move": {
         "id": "basic_shield_gen",
         "name": "Shield Restore",
@@ -203,6 +256,10 @@
       "slot_type": "defense",
       "bonus_type": "",
       "bonus_value": 0.0,
+      "tuning_options": [
+        {"id": "hardened", "name": "Hardened", "description": "+10 hull", "bonus_type": "hull_bonus", "bonus_value": 10.0},
+        {"id": "ablative", "name": "Ablative", "description": "+5% damage reduction", "bonus_type": "damage_reduction_bonus", "bonus_value": 0.05}
+      ],
       "combat_move": {
         "id": "armor_plating",
         "name": "Reinforce Armor",
@@ -219,6 +276,10 @@
       "slot_type": "defense",
       "bonus_type": "",
       "bonus_value": 0.0,
+      "tuning_options": [
+        {"id": "tracking", "name": "Tracking", "description": "+10 evasion", "bonus_type": "evasion_bonus", "bonus_value": 10.0},
+        {"id": "counterfire", "name": "Counterfire", "description": "+5 accuracy on next attack", "bonus_type": "accuracy_bonus", "bonus_value": 5.0}
+      ],
       "combat_move": {
         "id": "point_defense",
         "name": "Point Defense",
@@ -235,6 +296,10 @@
       "slot_type": "defense",
       "bonus_type": "",
       "bonus_value": 0.0,
+      "tuning_options": [
+        {"id": "nano_repair", "name": "Nano Repair", "description": "+8 hull restore", "bonus_type": "hull_restore_bonus", "bonus_value": 8.0},
+        {"id": "quick_patch", "name": "Quick Patch", "description": "+5 shield restore", "bonus_type": "shield_restore_bonus", "bonus_value": 5.0}
+      ],
       "combat_move": {
         "id": "emergency_repair",
         "name": "Emergency Repair",
@@ -252,6 +317,10 @@
       "slot_type": "defense",
       "bonus_type": "",
       "bonus_value": 0.0,
+      "tuning_options": [
+        {"id": "capacitor", "name": "Capacitor", "description": "+15 shield restore", "bonus_type": "shield_restore_bonus", "bonus_value": 15.0},
+        {"id": "reflective", "name": "Reflective", "description": "+5% damage reduction", "bonus_type": "damage_reduction_bonus", "bonus_value": 0.05}
+      ],
       "combat_move": {
         "id": "advanced_shield",
         "name": "Advanced Shields",
@@ -271,7 +340,11 @@
       "slot_type": "smuggling",
       "bonus_type": "hidden_compartment",
       "bonus_value": 0.30,
-      "requires_black_market": true
+      "requires_black_market": true,
+      "tuning_options": [
+        {"id": "ghost_lining", "name": "Ghost Lining", "description": "-5% scan detection", "bonus_type": "scan_evasion_bonus", "bonus_value": 0.05},
+        {"id": "expanded", "name": "Expanded", "description": "+10% hidden cargo", "bonus_type": "hidden_compartment", "bonus_value": 0.10}
+      ]
     },
     {
       "id": "signal_jammer",
@@ -281,7 +354,11 @@
       "slot_type": "smuggling",
       "bonus_type": "signal_jammer",
       "bonus_value": 1.0,
-      "requires_black_market": true
+      "requires_black_market": true,
+      "tuning_options": [
+        {"id": "broadband", "name": "Broadband", "description": "-3% inspection chance", "bonus_type": "inspection_evasion", "bonus_value": 0.03},
+        {"id": "targeted", "name": "Targeted", "description": "-3% bounty hunter chance", "bonus_type": "bounty_evasion", "bonus_value": 0.03}
+      ]
     },
     {
       "id": "false_transponder",
@@ -291,7 +368,319 @@
       "slot_type": "smuggling",
       "bonus_type": "false_transponder",
       "bonus_value": 1.0,
-      "requires_black_market": true
+      "requires_black_market": true,
+      "tuning_options": [
+        {"id": "rotating", "name": "Rotating IDs", "description": "-4% inspection chance", "bonus_type": "inspection_evasion", "bonus_value": 0.04},
+        {"id": "deep_cover", "name": "Deep Cover", "description": "-5% bounty hunter chance", "bonus_type": "bounty_evasion", "bonus_value": 0.05}
+      ]
+    },
+    {
+      "id": "nav_computer",
+      "name": "Navigation Computer",
+      "description": "Advanced route calculation reduces fuel consumption by 3 per jump.",
+      "price": 12000,
+      "slot_type": "engine",
+      "bonus_type": "fuel_efficiency_bonus",
+      "bonus_value": 3.0,
+      "tuning_options": [
+        {"id": "predictive", "name": "Predictive", "description": "-1 fuel per jump", "bonus_type": "fuel_efficiency_bonus", "bonus_value": 1.0},
+        {"id": "adaptive", "name": "Adaptive", "description": "+0.1 speed", "bonus_type": "speed_bonus", "bonus_value": 0.1}
+      ]
+    },
+    {
+      "id": "tractor_beam",
+      "name": "Tractor Beam",
+      "description": "Precision field manipulator that increases salvage yields by 20%.",
+      "price": 10000,
+      "slot_type": "scanner",
+      "bonus_type": "salvage_yield_bonus",
+      "bonus_value": 0.20,
+      "tuning_options": [
+        {"id": "wide_field", "name": "Wide Field", "description": "+10% salvage yield", "bonus_type": "salvage_yield_bonus", "bonus_value": 0.10},
+        {"id": "precise", "name": "Precise", "description": "+1 scan charge", "bonus_type": "scan_charge_bonus", "bonus_value": 1.0}
+      ]
+    },
+    {
+      "id": "refining_module",
+      "name": "Refining Module",
+      "description": "On-board refinery increases refining yields by 15%.",
+      "price": 14000,
+      "slot_type": "mining",
+      "bonus_type": "refining_yield_bonus",
+      "bonus_value": 0.15,
+      "tuning_options": [
+        {"id": "catalyst", "name": "Catalyst", "description": "+10% refining yield", "bonus_type": "refining_yield_bonus", "bonus_value": 0.10},
+        {"id": "speed_refine", "name": "Speed Refine", "description": "+10% drill speed", "bonus_type": "drill_speed_bonus", "bonus_value": 0.10}
+      ]
+    },
+    {
+      "id": "crew_quarters",
+      "name": "Crew Quarters Expansion",
+      "description": "Additional crew berths allow one more crew member aboard.",
+      "price": 20000,
+      "slot_type": "cargo",
+      "bonus_type": "crew_slot_bonus",
+      "bonus_value": 1.0,
+      "tuning_options": [
+        {"id": "comfort", "name": "Comfort", "description": "+5 crew loyalty", "bonus_type": "loyalty_bonus", "bonus_value": 5.0},
+        {"id": "training", "name": "Training", "description": "+1 crew XP per event", "bonus_type": "crew_xp_bonus", "bonus_value": 1.0}
+      ]
+    },
+    {
+      "id": "sensor_array",
+      "name": "Long-Range Sensor Array",
+      "description": "Reveals additional system information at range.",
+      "price": 15000,
+      "slot_type": "scanner",
+      "bonus_type": "map_reveal_bonus",
+      "bonus_value": 1.0,
+      "tuning_options": [
+        {"id": "deep_scan", "name": "Deep Scan", "description": "+1 reveal range", "bonus_type": "map_reveal_bonus", "bonus_value": 1.0},
+        {"id": "threat_detect", "name": "Threat Detection", "description": "-10% ambush chance", "bonus_type": "ambush_evasion", "bonus_value": 0.10}
+      ]
+    },
+    {
+      "id": "cargo_compressor",
+      "name": "Cargo Compressor",
+      "description": "Industrial compression system adds 35 cargo capacity.",
+      "price": 18000,
+      "slot_type": "cargo",
+      "bonus_type": "cargo_bonus",
+      "bonus_value": 35.0,
+      "tuning_options": [
+        {"id": "industrial", "name": "Industrial", "description": "+15 cargo", "bonus_type": "cargo_bonus", "bonus_value": 15.0},
+        {"id": "shielded", "name": "Shielded", "description": "+15 hull", "bonus_type": "hull_bonus", "bonus_value": 15.0}
+      ]
+    },
+    {
+      "id": "hull_reinforcement",
+      "name": "Hull Reinforcement",
+      "description": "Structural reinforcement adds 25 hull points.",
+      "price": 16000,
+      "slot_type": "engine",
+      "bonus_type": "hull_bonus",
+      "bonus_value": 25.0,
+      "tuning_options": [
+        {"id": "ablative_hull", "name": "Ablative", "description": "+5% damage reduction", "bonus_type": "damage_reduction_bonus", "bonus_value": 0.05},
+        {"id": "dense", "name": "Dense", "description": "+15 hull", "bonus_type": "hull_bonus", "bonus_value": 15.0}
+      ]
+    },
+    {
+      "id": "autocannon",
+      "name": "Autocannon",
+      "description": "Rapid-fire ballistic weapon. Low damage per shot but high accuracy and no cooldown.",
+      "price": 7000,
+      "slot_type": "weapon",
+      "bonus_type": "",
+      "bonus_value": 0.0,
+      "tuning_options": [
+        {"id": "burst_fire", "name": "Burst Fire", "description": "+5 damage", "bonus_type": "damage_bonus", "bonus_value": 5.0},
+        {"id": "tracer", "name": "Tracer", "description": "+10 accuracy", "bonus_type": "accuracy_bonus", "bonus_value": 10.0}
+      ],
+      "combat_move": {
+        "id": "autocannon",
+        "name": "Autocannon Burst",
+        "description": "A rapid burst of ballistic rounds.",
+        "effects": [{"type": "damage", "value": 10.0}],
+        "energy_cost": 2,
+        "accuracy_modifier": 15
+      }
+    },
+    {
+      "id": "rail_gun",
+      "name": "Rail Gun",
+      "description": "Electromagnetic accelerator fires a devastating slug. High damage and accuracy but energy-hungry with a cooldown.",
+      "price": 25000,
+      "slot_type": "weapon",
+      "bonus_type": "",
+      "bonus_value": 0.0,
+      "tuning_options": [
+        {"id": "accelerator", "name": "Accelerator", "description": "+10 damage", "bonus_type": "damage_bonus", "bonus_value": 10.0},
+        {"id": "armor_piercing", "name": "Armor Piercing", "description": "Ignores 15% shields", "bonus_type": "shield_pierce", "bonus_value": 0.15}
+      ],
+      "combat_move": {
+        "id": "rail_gun",
+        "name": "Rail Shot",
+        "description": "A hypervelocity slug that punches through armor.",
+        "effects": [{"type": "damage", "value": 40.0}],
+        "energy_cost": 5,
+        "cooldown": 2,
+        "accuracy_modifier": 20
+      }
+    },
+    {
+      "id": "flak_battery",
+      "name": "Flak Battery",
+      "description": "Area-effect weapon that fills space with shrapnel. Wide spread, no cooldown.",
+      "price": 20000,
+      "slot_type": "weapon",
+      "bonus_type": "",
+      "bonus_value": 0.0,
+      "tuning_options": [
+        {"id": "shrapnel", "name": "Shrapnel", "description": "+8 damage", "bonus_type": "damage_bonus", "bonus_value": 8.0},
+        {"id": "suppressive", "name": "Suppressive", "description": "-10 enemy evasion", "bonus_type": "evasion_debuff", "bonus_value": 10.0}
+      ],
+      "combat_move": {
+        "id": "flak_battery",
+        "name": "Flak Barrage",
+        "description": "A wide spread of shrapnel. Hard to dodge, moderate damage.",
+        "effects": [{"type": "damage", "value": 15.0}],
+        "energy_cost": 3,
+        "accuracy_modifier": -5
+      }
+    },
+    {
+      "id": "reactive_armor",
+      "name": "Reactive Armor",
+      "description": "Passive +20 hull. Active ability: 20% damage reduction for 2 turns.",
+      "price": 18000,
+      "slot_type": "defense",
+      "bonus_type": "hull_bonus",
+      "bonus_value": 20.0,
+      "tuning_options": [
+        {"id": "composite", "name": "Composite", "description": "+10 hull", "bonus_type": "hull_bonus", "bonus_value": 10.0},
+        {"id": "explosive_reactive", "name": "Explosive", "description": "5 damage to attacker on hit", "bonus_type": "reflect_damage", "bonus_value": 5.0}
+      ],
+      "combat_move": {
+        "id": "reactive_armor",
+        "name": "Reactive Armor",
+        "description": "Activates reactive plating. 20% damage reduction for 2 turns.",
+        "effects": [{"type": "damage_reduction", "value": 0.20, "duration": 2, "target": "self"}],
+        "energy_cost": 3
+      }
+    },
+    {
+      "id": "ecm_suite",
+      "name": "ECM Suite",
+      "description": "Electronic countermeasures grant +30 evasion for 2 turns.",
+      "price": 22000,
+      "slot_type": "defense",
+      "bonus_type": "",
+      "bonus_value": 0.0,
+      "tuning_options": [
+        {"id": "jamming", "name": "Jamming", "description": "-10 enemy accuracy", "bonus_type": "accuracy_debuff", "bonus_value": 10.0},
+        {"id": "ghost_ecm", "name": "Ghost", "description": "-5% scan detection", "bonus_type": "scan_evasion_bonus", "bonus_value": 0.05}
+      ],
+      "combat_move": {
+        "id": "ecm_suite",
+        "name": "ECM Burst",
+        "description": "Electronic countermeasures. +30 evasion for 2 turns.",
+        "effects": [{"type": "evasion_mod", "value": 30.0, "duration": 2, "target": "self"}],
+        "energy_cost": 3
+      }
+    },
+    {
+      "id": "nexus_trade_beacon",
+      "name": "Nexus Trade Beacon",
+      "description": "Consortium trade network uplink. +8% sell prices at all stations.",
+      "price": 25000,
+      "slot_type": "cargo",
+      "bonus_type": "sell_price_bonus",
+      "bonus_value": 0.08,
+      "faction_required": "nexus_trade",
+      "faction_rep_required": 20,
+      "tuning_options": [
+        {"id": "broadcast", "name": "Broadcast", "description": "+3% sell price", "bonus_type": "sell_price_bonus", "bonus_value": 0.03},
+        {"id": "network", "name": "Network", "description": "See remote prices (+1 range)", "bonus_type": "price_reveal_bonus", "bonus_value": 1.0}
+      ]
+    },
+    {
+      "id": "forge_plating",
+      "name": "Forge-Hardened Plating",
+      "description": "Industrial-grade hull plating forged in the Forgeworks foundries. +30 hull.",
+      "price": 30000,
+      "slot_type": "defense",
+      "bonus_type": "hull_bonus",
+      "bonus_value": 30.0,
+      "faction_required": "forgeworks_industrial",
+      "faction_rep_required": 20,
+      "tuning_options": [
+        {"id": "tempered", "name": "Tempered", "description": "+15 hull", "bonus_type": "hull_bonus", "bonus_value": 15.0},
+        {"id": "reflective_forge", "name": "Reflective", "description": "+10% shield regen", "bonus_type": "shield_regen_bonus", "bonus_value": 0.10}
+      ]
+    },
+    {
+      "id": "frontier_salvage_array",
+      "name": "Frontier Salvage Array",
+      "description": "Union-spec salvage array. +30% salvage yield from wrecks and debris.",
+      "price": 22000,
+      "slot_type": "scanner",
+      "bonus_type": "salvage_yield_bonus",
+      "bonus_value": 0.30,
+      "faction_required": "free_salvagers",
+      "faction_rep_required": 20,
+      "tuning_options": [
+        {"id": "field_array", "name": "Field Array", "description": "+15% salvage yield", "bonus_type": "salvage_yield_bonus", "bonus_value": 0.15},
+        {"id": "field_analyzer", "name": "Analyzer", "description": "+2 scan charges", "bonus_type": "scan_charge_bonus", "bonus_value": 2.0}
+      ]
+    },
+    {
+      "id": "axiom_scanner",
+      "name": "Axiom Quantum Scanner",
+      "description": "Cutting-edge quantum sensor technology. +3 scan charges.",
+      "price": 35000,
+      "slot_type": "scanner",
+      "bonus_type": "scan_charge_bonus",
+      "bonus_value": 3.0,
+      "faction_required": "axiom_research",
+      "faction_rep_required": 20,
+      "tuning_options": [
+        {"id": "quantum", "name": "Quantum", "description": "+2 scan charges", "bonus_type": "scan_charge_bonus", "bonus_value": 2.0},
+        {"id": "spectral", "name": "Spectral", "description": "Reveal rare resources (+15% rare yield)", "bonus_type": "rare_ore_bonus", "bonus_value": 0.15}
+      ]
+    },
+    {
+      "id": "prototype_shields",
+      "name": "Prototype Shield Matrix",
+      "description": "Experimental Axiom shield technology. Restores 50 shields and grants 15% damage reduction for 3 turns.",
+      "price": 40000,
+      "slot_type": "defense",
+      "bonus_type": "",
+      "bonus_value": 0.0,
+      "unlock_condition": "quest_axiom_defense",
+      "tuning_options": [
+        {"id": "resonant", "name": "Resonant", "description": "+20 shield restore", "bonus_type": "shield_restore_bonus", "bonus_value": 20.0},
+        {"id": "adaptive_matrix", "name": "Adaptive", "description": "+5% damage reduction", "bonus_type": "damage_reduction_bonus", "bonus_value": 0.05}
+      ],
+      "combat_move": {
+        "id": "prototype_shields",
+        "name": "Prototype Shield Matrix",
+        "description": "Experimental shields. 50 restore + 15% reduction for 3 turns.",
+        "effects": [
+          {"type": "shield_restore", "value": 50.0, "target": "self"},
+          {"type": "damage_reduction", "value": 0.15, "duration": 3, "target": "self"}
+        ],
+        "energy_cost": 5
+      }
+    },
+    {
+      "id": "ancient_drive",
+      "name": "Ancient Drive Core",
+      "description": "Recovered pre-Collapse drive technology. -5 fuel per jump and +0.3 speed multiplier.",
+      "price": 50000,
+      "slot_type": "engine",
+      "bonus_type": "fuel_efficiency_bonus",
+      "bonus_value": 5.0,
+      "unlock_condition": "quest_deep_ruins",
+      "tuning_options": [
+        {"id": "resonance", "name": "Resonance", "description": "+0.2 speed", "bonus_type": "speed_bonus", "bonus_value": 0.2},
+        {"id": "harmonics", "name": "Harmonics", "description": "-2 fuel per jump", "bonus_type": "fuel_efficiency_bonus", "bonus_value": 2.0}
+      ]
+    },
+    {
+      "id": "black_sun_jammer",
+      "name": "Black Sun Jammer",
+      "description": "Military-grade jamming suite from the Fulcrum network. -15% detection, -10% heat gain, -8% bounty chance.",
+      "price": 35000,
+      "slot_type": "smuggling",
+      "bonus_type": "scan_evasion_bonus",
+      "bonus_value": 0.15,
+      "unlock_condition": "quest_fulcrum_chain",
+      "requires_black_market": true,
+      "tuning_options": [
+        {"id": "deep_jamming", "name": "Deep Jamming", "description": "-8% detection", "bonus_type": "scan_evasion_bonus", "bonus_value": 0.08},
+        {"id": "cold_running", "name": "Cold Running", "description": "-5% heat gain", "bonus_type": "heat_reduction", "bonus_value": 0.05}
+      ]
     }
   ]
 }

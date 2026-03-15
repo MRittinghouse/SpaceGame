@@ -219,13 +219,13 @@ class TestCombatUpgradeLoading:
         loader = _make_loader()
         loader.load_upgrades()
         weapons = [u for u in loader.upgrades.values() if u.slot_type == "weapon"]
-        assert len(weapons) == 7
+        assert len(weapons) == 10
 
     def test_defense_upgrades_loaded(self) -> None:
         loader = _make_loader()
         loader.load_upgrades()
         defenses = [u for u in loader.upgrades.values() if u.slot_type == "defense"]
-        assert len(defenses) == 5
+        assert len(defenses) == 9
 
     def test_weapon_has_combat_move(self) -> None:
         loader = _make_loader()

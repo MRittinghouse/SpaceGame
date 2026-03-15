@@ -1,240 +1,172 @@
-# Space Trader - A Narrative-Driven Space Trading RPG
+# Space Trader — A Narrative-Driven Space Trading RPG
 
-A Python-based space trading game built with PyGame, featuring economic strategy, character progression, crew management, and a compelling campaign narrative.
+A single-player space trading RPG set in the Aurelia Expanse, year 2335. Trade commodities across star systems, build your ship, recruit crew, navigate faction politics, and uncover a conspiracy that threatens the frontier.
 
-## Project Status
+Built with Python, pygame-ce, and pygame_gui.
 
-**Current Phase**: Foundation Complete (Day 1-2 ✅)
+## Playing the Game
 
-The core game engine and architecture are now in place!
+### Option A: Standalone Build (Recommended for Playtesters)
 
-## What's Been Built
-
-### ✅ Complete Foundation
-- Full project structure following best practices
-- PyGame game loop with state management
-- Input handling system (keyboard + mouse)
-- Logging and configuration systems
-- Base view/screen architecture
-- Unit testing framework
-
-### 📁 Project Structure
+No Python required. Download the latest build and run:
 
 ```
-SpaceGame/
-├── requirements/              # 10 comprehensive requirement documents
-├── spacegame/                 # Main game package
-│   ├── engine/               # Core game loop, state manager, input handler
-│   ├── views/                # UI screens (startup view implemented)
-│   ├── utils/                # Logging and utilities
-│   ├── data/                 # Assets and save data
-│   ├── config.py             # Game constants and configuration
-│   └── main.py               # Entry point
-└── tests/                    # Unit tests
-
+dist/SpaceGame/SpaceGame.exe
 ```
 
-### Files Created (15+ files)
-- ✅ Project directory structure
-- ✅ Updated pyproject.toml with dependencies
-- ✅ .gitignore
-- ✅ config.py (game constants, colors, game states)
-- ✅ utils/logger.py (logging system)
-- ✅ engine/input_handler.py (keyboard/mouse input)
-- ✅ engine/state_manager.py (screen/state transitions)
-- ✅ engine/game.py (main game loop)
-- ✅ views/base_view.py (base class for all screens)
-- ✅ views/startup_view.py (test screen with interactive demo)
-- ✅ main.py (application entry point)
-- ✅ tests/test_engine/test_game.py (initial unit tests)
-- ✅ All __init__.py files
+Double-click `SpaceGame.exe` and play. Save files are stored in `%APPDATA%/SpaceGame/saves/`.
 
-## Installation
+### Option B: Install from Source (Windows)
 
-### Requirements
+1. Install [Python 3.13+](https://www.python.org/downloads/) — check **"Add Python to PATH"** during install
+2. Double-click **`install.bat`** — creates a virtual environment and installs dependencies
+3. Double-click **`play.bat`** to launch
 
-- **Python 3.13** (Recommended) or Python 3.11-3.12
-- **Note**: Python 3.14 is not yet supported by pygame
-
-### Installation Steps
-
-1. **Clone the repository**
-   ```bash
-   git clone <repo-url>
-   cd SpaceGame
-   ```
-
-2. **Create virtual environment** (recommended)
-   ```bash
-   python -m venv .venv
-
-   # On Windows:
-   .venv\Scripts\activate
-
-   # On Unix/macOS:
-   source .venv/bin/activate
-   ```
-
-3. **Install dependencies**
-   ```bash
-   # If you have Python 3.13:
-   pip install pygame pygame-gui pytest pytest-cov black pylint mypy
-
-   # Or install everything:
-   pip install -e ".[dev]"
-   ```
-
-## Running the Game
-
-### Method 1: Using the Launcher (Easiest)
-
-**Windows:**
-```bash
-# Double-click run.bat, or from terminal:
-run.bat
-```
-
-**Any Platform:**
-```bash
-python run.py
-```
-
-### Method 2: Run as Module (Recommended)
-
-From the **project root directory** (SpaceGame/):
+### Option C: Manual Setup
 
 ```bash
-# With virtual environment
-.venv\Scripts\python.exe -m spacegame.main
-
-# Or if venv is activated
-python -m spacegame.main
-```
-
-### Method 3: Install Package First
-
-```bash
+git clone <repo-url>
+cd SpaceGame
+python -m venv .venv
+.venv\Scripts\activate       # Windows
 pip install -e .
 python -m spacegame.main
 ```
 
-**⚠️ Important**: Don't run `spacegame/main.py` directly! Always run from the project root using one of the methods above.
+## Controls
 
-**✅ You should see:**
-- A 1280x720 window titled "Space Trader"
-- "SPACE TRADER" title in bright blue
-- "PyGame Foundation Test" screen
-- Mouse position tracking (updates in real-time)
-- Click counter
-- Smooth 60 FPS rendering
-- Press ESC to quit
+| Key | Action |
+|-----|--------|
+| Mouse | Navigate menus, click buttons, select items |
+| Arrow keys | Navigate lists and skill trees |
+| Escape | Back / Cancel |
+| Number keys | Quick-select dialogue options |
 
-**Status**: ✅ **WORKING** - Game successfully runs on Python 3.13!
+## Game Overview
 
-## Running Tests
+You start with a Shuttle and a handful of credits at Nexus Prime. From there, the galaxy is yours.
+
+### Core Systems
+
+- **Trading** — Buy low, sell high across 11 star systems. Each system produces and consumes different commodities. 27 trade goods with dynamic pricing.
+- **Combat** — Turn-based tactical combat with energy management, weapons, shields, and special moves. 28 enemy templates from pirates to military patrols.
+- **Mining & Salvage** — Grid-based mini-games for extracting ore and scavenging wrecks. Refine raw materials into valuable goods.
+- **Crew** — Recruit up to 17 unique NPCs with their own personalities and skill bonuses. Assign them to roles, manage loyalty, build relationships.
+- **Progression** — Uncapped leveling with 9 skill trees (63 skills). Milestone bonus points every 5 levels. Specialize in trading, combat, exploration, smuggling, and more.
+- **Ships** — 24 ships across 5 tiers from a tin-can Shuttle to faction prestige vessels. Each ship is a statement of intent with distinct trade-offs.
+- **Upgrades** — 40 upgrades with a Mk1-Mk3 enhancement system. At Mk2, choose a tuning specialization that defines your build identity.
+- **Campaign** — 22 story missions across Act One. Faction politics, ground exploration, dialogue choices that matter.
+- **Ground Exploration** — Tile-based exploration of planetary surfaces with encounters, hazards, and discoveries.
+
+### Ships & Progression
+
+Your ship defines your role:
+
+| Path | Early Ship | Late Ship | Key Trait |
+|------|-----------|-----------|-----------|
+| Trade | Light Freighter | Bulk Hauler | Max cargo capacity |
+| Combat | Patrol Cutter | War Frigate | 4 weapon + 3 defense slots |
+| Exploration | Scout Vessel | Deep Explorer | 500 fuel, 5 utility slots |
+| Mining | Prospector | Industrial Titan | 6 utility slots, 0 weapons |
+| Smuggling | Smuggler's Sloop | Phantom | Fastest ship (2.2x), stealth |
+| Diplomacy | — | Diplomatic Cruiser | 6 crew, rep bonus |
+
+Four **faction ships** reward deep reputation with unique abilities like tariff immunity, hull regeneration, double salvage yields, and quantum sensors.
+
+### Enhancement System
+
+Every upgrade can be enhanced from Mk1 to Mk3:
+
+- **Mk1** — Base stats (purchase price)
+- **Mk2** — +25% effectiveness, choose a tuning specialization (+100% base price)
+- **Mk3** — +50% effectiveness, tuning bonus doubles (+200% base price)
+
+Two players with the same Laser Cannon can have completely different builds: one overcharged for raw damage, another precision-tuned to never miss.
+
+## For Developers
+
+### Requirements
+
+- Python 3.13+
+- pygame-ce 2.5+
+- pygame_gui 0.6.9+
+
+### Dev Setup
 
 ```bash
-pytest tests/ -v
+pip install -e ".[dev]"    # Includes pytest, black, mypy, pylint, pyinstaller
 ```
 
-With coverage:
-```bash
-pytest --cov=spacegame --cov-report=html tests/
-```
-
-## Code Quality Tools
+### Quick Commands
 
 ```bash
-# Format code
-black spacegame/
-
-# Lint
-pylint spacegame/
-
-# Type checking
-mypy spacegame/
+python -m spacegame.main                    # Run the game
+pytest                                      # Run all tests (3415+)
+pytest tests/test_models/test_market.py     # Run a single test file
+black spacegame/ tests/                     # Format code
+mypy spacegame/                             # Type check
 ```
 
-## What's Next
+### Building a Standalone Executable
 
-### Immediate Next Steps (Days 3-5):
-1. **Data Layer** - Create JSON files for galaxies, commodities, and ships
-2. **Galaxy Map View** - Simple node-based star system visualization
-3. **Basic Navigation** - Travel between systems
-4. **Market Data Models** - Commodity and pricing structures
-
-### Phase 1 Goals (Weeks 2-4):
-- Complete trading MVP (galaxy map, market interface, player state)
-- Save/load functionality
-- Playable trading game loop
-
-### Phase 2 Goals (Weeks 5-8):
-- Character progression (captain skills)
-- Crew system (3-5 initial crew members)
-- Simple campaign (Act I story missions)
-
-## Requirements Documents
-
-Comprehensive design documents are available in the `requirements/` folder:
-
-1. **Game Design Document** - Core gameplay vision and pillars
-2. **Economic System** - Trading mechanics and market simulation
-3. **Galaxy Map** - Star systems, travel, and exploration
-4. **Ships & Fleet** - Ship types, progression, and crew positions
-5. **Player Progression** - Character skills, XP, and advancement
-6. **UI/UX** - Screen layouts and interaction patterns
-7. **Technical Architecture** - Code structure and implementation
-8. **Content Requirements** - Specific game content (15 systems, 12 commodities, crew)
-9. **Coding Principles** - OOP, TDD, SOLID, Clean Code standards
-10. **Campaign, RPG & Crew** - Story structure, character progression, crew management
-
-## Contributing
-
-This project follows:
-- **Test-Driven Development** (TDD)
-- **SOLID Principles**
-- **Clean Code** practices
-- **Object-Oriented Programming**
-
-See [requirements/09_coding_principles.md](requirements/09_coding_principles.md) for detailed standards.
-
-## Architecture Highlights
-
-### Game Loop (60 FPS)
-```python
-while running:
-    dt = clock.tick(60) / 1000.0
-    handle_input(events)
-    update(dt)
-    render(screen)
+```bash
+python -m PyInstaller spacegame.spec --noconfirm
 ```
 
-### State Management
-- Clean state transitions (Menu → Galaxy Map → Trading → etc.)
-- Stack-based overlays for pause menus and modals
-- Each state is self-contained (update/render methods)
+Output: `dist/SpaceGame/SpaceGame.exe` (~340MB with all assets)
 
-### Input Handling
-- Centralized event processing
-- Callback system for custom key bindings
-- Mouse and keyboard support
+### Project Structure
+
+```
+SpaceGame/
+  spacegame/              # Main game package
+    config.py             # Constants, colors, game state enum, paths
+    data_loader.py        # JSON data loading singleton
+    save_manager.py       # Save/load with 12 slots
+    main.py               # Entry point
+    engine/               # Game loop, state manager, particles, transitions, audio
+    models/               # Data + logic (@dataclass), no rendering code
+    views/                # 34 BaseView subclasses, one per game screen
+    utils/                # Logger
+    data/                 # Theme config, assets (sprites, audio)
+  data/                   # JSON content files (economy, galaxy, ships, progression)
+  tests/                  # pytest tests mirroring spacegame/ structure
+  requirements/           # Game design and spec documents
+  spacegame.spec          # PyInstaller build config
+  install.bat             # Automated installer for from-source players
+  play.bat                # Quick launcher (after install.bat)
+```
+
+### Architecture
+
+- **TDD**: Tests written first, 3415+ tests covering models, data, views
+- **Models**: `@dataclass` classes with business logic, `tuple[bool, str]` for failable ops
+- **Views**: Strict `BaseView` lifecycle with `_create_ui`/`_destroy_ui` pairing
+- **Data-driven**: All game content is JSON files in `data/`, not hardcoded
+- **Composition over inheritance**: Player has Ship, Ship has ShipType, Player has Progression
+
+See `CLAUDE.md` for comprehensive architecture and coding conventions.
+
+### Content Stats
+
+| Category | Count |
+|----------|-------|
+| Tests | 3,415+ |
+| Views | 34 |
+| Ships | 24 (5 tiers) |
+| Upgrades | 40 (with tuning) |
+| Commodities | 27 |
+| Skill Trees | 9 (63 skills) |
+| Story Missions | 22 |
+| NPCs | 17 |
+| Enemy Templates | 28 |
+| Star Systems | 11 |
+| Factions | 4 + Crimson Reach |
+
+## Credits
+
+Built with [pygame-ce](https://pyga.me/), [pygame_gui](https://pygame-gui.readthedocs.io/), and Python 3.13+.
 
 ## License
 
 [To be determined]
-
-## Credits
-
-Built with:
-- **PyGame** - 2D game framework
-- **pygame-gui** - UI components
-- **Python 3.13+** - Programming language
-
----
-
-**Game Design Philosophy**: "Trading First, Story Enhances"
-- Core gameplay: Space trading simulation
-- RPG layer: Character progression and crew management
-- Narrative: Campaign that complements (not replaces) trading
-
-**Status**: Foundation complete ✅ | Ready for core gameplay development 🚀
