@@ -360,6 +360,7 @@ class TestCampaignMissions:
                 MissionReward(reward_type="xp", amount=40),
             ],
             prerequisites=["bill_of_landing"],
+            auto_accept=True,
             on_accept_cargo=[AcceptCargo(commodity_id="iron_ore", quantity=10)],
         )
 

@@ -70,6 +70,47 @@ TUTORIAL_STEPS = [
 ]
 
 
+# Contextual hints shown once per mini-game (independent of the 5-step tutorial)
+MINIGAME_HINTS: dict[str, dict[str, str]] = {
+    "mining": {
+        "title": "Asteroid Mining",
+        "description": (
+            "Click rocks to mine them! Each rock has a hardness rating "
+            "that determines how long it takes to break.\n\n"
+            "LEFT-CLICK: Free click — mine at normal power.\n"
+            "RIGHT-CLICK: Empowered click — uses energy, deals 3x damage.\n\n"
+            "The energy bar refills over time. Drones (if unlocked) mine automatically. "
+            "When your cargo hold is full, mining stops.\n\n"
+            "Use 'Regenerate Field' to dig deeper for rarer ores."
+        ),
+    },
+    "salvage": {
+        "title": "Salvage Operations",
+        "description": (
+            "Explore derelict hulls to find valuable salvage!\n\n"
+            "SCAN MODE: Click cells to reveal their contents. Each scan costs a charge "
+            "(charges regenerate over time). Numbers show how many items are nearby.\n\n"
+            "EXTRACT MODE: Click revealed items to begin extraction. "
+            "Extraction takes time — multiple items can extract in parallel.\n\n"
+            "Watch out for corruption! Once triggered, a timer counts down "
+            "and corrupted cells are lost forever."
+        ),
+    },
+    "refining": {
+        "title": "Refining",
+        "description": (
+            "Process raw materials into valuable refined goods.\n\n"
+            "Select a recipe from the list on the left. "
+            "Recipes show what materials are NEEDED and what they MAKE.\n\n"
+            "Click 'Start' to queue a job. Jobs process in real-time — "
+            "you can queue multiple jobs and watch them complete. "
+            "Use +/- to batch multiple copies of the same recipe.\n\n"
+            "Refined goods sell for much more than raw materials!"
+        ),
+    },
+}
+
+
 class TutorialManager:
     """Manages the tutorial progression and state."""
 
@@ -153,6 +194,28 @@ class TutorialManager:
         if self.current_step >= len(TUTORIAL_STEPS):
             return None
         return TUTORIAL_STEPS[self.current_step]
+
+    def should_show_hint(self, hint_id: str) -> bool:
+        """Check if a contextual hint should show.
+
+        Args:
+            hint_id: ID of the hint (e.g., 'mining', 'salvage', 'refining').
+
+        Returns:
+            True if the hint exists and hasn't been dismissed yet.
+        """
+        return hint_id in MINIGAME_HINTS and hint_id not in self.hints_dismissed
+
+    def get_hint(self, hint_id: str) -> Optional[dict]:
+        """Get hint content by ID.
+
+        Args:
+            hint_id: ID of the hint.
+
+        Returns:
+            Hint dict with 'title' and 'description', or None.
+        """
+        return MINIGAME_HINTS.get(hint_id)
 
     def dismiss_hint(self, hint_id: str) -> None:
         """Mark a contextual hint as dismissed.

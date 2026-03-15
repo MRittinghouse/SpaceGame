@@ -1,6 +1,6 @@
-"""Tests for tutorial system: progression, skip, reset, serialization."""
+"""Tests for tutorial system: progression, skip, reset, serialization, mini-game hints."""
 
-from spacegame.tutorial_manager import TutorialManager, TUTORIAL_STEPS
+from spacegame.tutorial_manager import TutorialManager, TUTORIAL_STEPS, MINIGAME_HINTS
 
 
 class TestTutorialProgression:
@@ -210,3 +210,81 @@ class TestHintsDismissed:
         tm.dismiss_hint("test_hint")
         tm.dismiss_hint("test_hint")
         assert len(tm.hints_dismissed) == 1
+
+
+class TestMinigameHints:
+    """Tests for per-mini-game contextual hints."""
+
+    def test_minigame_hints_defined(self) -> None:
+        """All three mini-game hints should be defined."""
+        assert "mining" in MINIGAME_HINTS
+        assert "salvage" in MINIGAME_HINTS
+        assert "refining" in MINIGAME_HINTS
+
+    def test_hints_have_title_and_description(self) -> None:
+        """Each hint should have title and description."""
+        for hint_id, hint in MINIGAME_HINTS.items():
+            assert "title" in hint, f"{hint_id} missing title"
+            assert "description" in hint, f"{hint_id} missing description"
+            assert len(hint["title"]) > 0
+            assert len(hint["description"]) > 0
+
+    def test_should_show_hint_first_time(self) -> None:
+        """Hint should show when not yet dismissed."""
+        tm = TutorialManager()
+        assert tm.should_show_hint("mining")
+        assert tm.should_show_hint("salvage")
+        assert tm.should_show_hint("refining")
+
+    def test_should_not_show_hint_after_dismiss(self) -> None:
+        """Hint should not show after being dismissed."""
+        tm = TutorialManager()
+        tm.dismiss_hint("mining")
+        assert not tm.should_show_hint("mining")
+        # Other hints still show
+        assert tm.should_show_hint("salvage")
+
+    def test_should_not_show_unknown_hint(self) -> None:
+        """Unknown hint IDs should return False."""
+        tm = TutorialManager()
+        assert not tm.should_show_hint("nonexistent")
+
+    def test_get_hint_returns_data(self) -> None:
+        """get_hint should return hint dict for known IDs."""
+        tm = TutorialManager()
+        hint = tm.get_hint("mining")
+        assert hint is not None
+        assert hint["title"] == "Asteroid Mining"
+
+    def test_get_hint_unknown_returns_none(self) -> None:
+        """get_hint should return None for unknown IDs."""
+        tm = TutorialManager()
+        assert tm.get_hint("nonexistent") is None
+
+    def test_hints_persist_across_serialization(self) -> None:
+        """Dismissed hints should survive save/load."""
+        tm = TutorialManager()
+        tm.dismiss_hint("mining")
+        tm.dismiss_hint("salvage")
+
+        data = tm.to_dict()
+        restored = TutorialManager.from_dict(data)
+
+        assert not restored.should_show_hint("mining")
+        assert not restored.should_show_hint("salvage")
+        assert restored.should_show_hint("refining")
+
+    def test_hints_independent_of_tutorial(self) -> None:
+        """Hints should work even when tutorial is completed or skipped."""
+        tm = TutorialManager()
+        tm.reset_tutorial()
+        tm.skip_tutorial()
+
+        # Hints should still show despite tutorial being skipped
+        assert tm.should_show_hint("mining")
+
+    def test_hints_independent_of_tutorial_inactive(self) -> None:
+        """Hints should work even when tutorial was never activated."""
+        tm = TutorialManager()
+        assert not tm.active
+        assert tm.should_show_hint("mining")

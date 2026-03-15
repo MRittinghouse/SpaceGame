@@ -2784,16 +2784,35 @@ class Game:
             logger.info("Auto-save completed")
 
     def _check_tutorial_triggers(self) -> None:
-        """Check if a tutorial step should trigger based on current game state."""
+        """Check if a tutorial step or mini-game hint should trigger."""
+        # Don't show anything if overlay is already active
+        if self._tutorial_overlay and self._tutorial_overlay.active:
+            return
+
+        from spacegame.views.tutorial_overlay import TutorialOverlay
+
+        if not self._tutorial_overlay:
+            self._tutorial_overlay = TutorialOverlay(self.tutorial_manager)
+
+        # --- Mini-game contextual hints (shown once per game, independent of tutorial) ---
+        current_state = self.state_manager.current_state
+        hint_map = {
+            GameState.MINING: "mining",
+            GameState.SALVAGING: "salvage",
+            GameState.REFINING: "refining",
+        }
+        hint_id = hint_map.get(current_state)
+        if hint_id and self.tutorial_manager.should_show_hint(hint_id):
+            self._tutorial_overlay.show_hint(hint_id)
+            return
+
+        # --- 5-step tutorial (only when tutorial is active) ---
         if not self.tutorial_manager.active or self.tutorial_manager.completed:
             return
         if self.tutorial_manager.is_showing():
             return
-        if self._tutorial_overlay and self._tutorial_overlay.active:
-            return
 
         # Determine current trigger context
-        current_state = self.state_manager.current_state
         trigger = None
 
         if current_state == GameState.GALAXY_MAP:
@@ -2813,10 +2832,6 @@ class Game:
 
         if trigger and self.tutorial_manager.should_show_step(trigger):
             self.tutorial_manager.start_step()
-            from spacegame.views.tutorial_overlay import TutorialOverlay
-
-            if not self._tutorial_overlay:
-                self._tutorial_overlay = TutorialOverlay(self.tutorial_manager)
             self._tutorial_overlay.show()
 
     def _check_day_advance(self) -> None:
@@ -3008,7 +3023,23 @@ class Game:
             for mid in newly_available:
                 mission = self.mission_manager.get_mission(mid)
                 if mission:
-                    self._mission_notifications.append(f"New Mission Available: {mission.name}")
+                    # Auto-accepted missions grant on_accept_cargo immediately
+                    if mission.auto_accept and mission.on_accept_cargo:
+                        for cargo in mission.on_accept_cargo:
+                            self.player.ship.add_cargo(
+                                cargo.commodity_id, cargo.quantity, 0
+                            )
+                            self._mission_notifications.append(
+                                f"Cargo Loaded: {cargo.quantity} {cargo.commodity_id}"
+                            )
+                    if mission.auto_accept:
+                        self._mission_notifications.append(
+                            f"Mission Accepted: {mission.name}"
+                        )
+                    else:
+                        self._mission_notifications.append(
+                            f"New Mission Available: {mission.name}"
+                        )
             # Update galaxy map markers and forced encounters
             if self.galaxy_map_view:
                 self.galaxy_map_view.mission_target_systems = (

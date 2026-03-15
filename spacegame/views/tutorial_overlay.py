@@ -10,7 +10,7 @@ manager layer, ensuring it is never buried beneath other views.
 import pygame
 from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors
 from spacegame.engine.fonts import FontCache
-from spacegame.tutorial_manager import TutorialManager, TUTORIAL_STEPS
+from spacegame.tutorial_manager import TutorialManager, TUTORIAL_STEPS, MINIGAME_HINTS
 from spacegame.utils.logger import logger
 
 
@@ -56,6 +56,11 @@ class TutorialOverlay:
         self.tutorial_manager = tutorial_manager
         self.active = False
 
+        # Hint mode: shows a contextual hint instead of a tutorial step
+        self._hint_mode: bool = False
+        self._hint_data: Optional[dict] = None
+        self._hint_id: Optional[str] = None
+
         # Fonts
         self.title_font = FontCache.get(36)
         self.body_font = FontCache.get(22)
@@ -78,6 +83,14 @@ class TutorialOverlay:
             "SKIP TUTORIAL",
             self.btn_font,
         )
+        # "GOT IT" button for hint mode (centered)
+        self.got_it_button = _Button(
+            pygame.Rect(
+                self.panel_x + (self.PANEL_WIDTH - 150) // 2, btn_y, 150, 40
+            ),
+            "GOT IT",
+            self.btn_font,
+        )
 
         # Pre-render the dim overlay surface once
         self._dim_surface = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA)
@@ -87,29 +100,60 @@ class TutorialOverlay:
         """Show the tutorial overlay with current step."""
         if self.active:
             return
+        self._hint_mode = False
         self.active = True
         logger.info(f"Tutorial step {self.tutorial_manager.current_step} shown")
+
+    def show_hint(self, hint_id: str) -> None:
+        """Show a contextual mini-game hint overlay.
+
+        Args:
+            hint_id: ID of the hint (e.g., 'mining', 'salvage', 'refining').
+        """
+        if self.active:
+            return
+        hint_data = self.tutorial_manager.get_hint(hint_id)
+        if not hint_data:
+            return
+        self._hint_mode = True
+        self._hint_data = hint_data
+        self._hint_id = hint_id
+        self.active = True
+        logger.info(f"Mini-game hint shown: {hint_id}")
 
     def hide(self) -> None:
         """Hide the tutorial overlay."""
         self.active = False
+        self._hint_mode = False
+        self._hint_data = None
+        self._hint_id = None
 
     def handle_event(self, event: pygame.event.Event) -> bool:
         """Handle input events. Returns True if the event was consumed."""
         if not self.active:
             return False
 
-        if self.next_button.was_clicked(event):
-            logger.info("Tutorial: Next clicked")
-            self.hide()
-            self.tutorial_manager.advance_step()
-            return True
+        if self._hint_mode:
+            # Hint mode: single "GOT IT" button
+            if self.got_it_button.was_clicked(event):
+                logger.info(f"Hint dismissed: {self._hint_id}")
+                hint_id = self._hint_id
+                self.hide()
+                if hint_id:
+                    self.tutorial_manager.dismiss_hint(hint_id)
+                return True
+        else:
+            if self.next_button.was_clicked(event):
+                logger.info("Tutorial: Next clicked")
+                self.hide()
+                self.tutorial_manager.advance_step()
+                return True
 
-        if self.skip_button.was_clicked(event):
-            logger.info("Tutorial: Skip clicked")
-            self.hide()
-            self.tutorial_manager.skip_tutorial()
-            return True
+            if self.skip_button.was_clicked(event):
+                logger.info("Tutorial: Skip clicked")
+                self.hide()
+                self.tutorial_manager.skip_tutorial()
+                return True
 
         # Consume all mouse clicks so they don't leak through to the view below
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -122,6 +166,48 @@ class TutorialOverlay:
         if not self.active:
             return
 
+        if self._hint_mode:
+            self._render_hint(screen)
+        else:
+            self._render_tutorial_step(screen)
+
+    def _render_hint(self, screen: pygame.Surface) -> None:
+        """Render a contextual mini-game hint panel."""
+        if not self._hint_data:
+            return
+
+        mouse_pos = pygame.mouse.get_pos()
+        self.got_it_button.update_hover(mouse_pos)
+
+        # Full-screen dim overlay
+        screen.blit(self._dim_surface, (0, 0))
+
+        # Panel background
+        panel_rect = pygame.Rect(self.panel_x, self.panel_y, self.PANEL_WIDTH, self.PANEL_HEIGHT)
+        panel_surf = pygame.Surface((self.PANEL_WIDTH, self.PANEL_HEIGHT), pygame.SRCALPHA)
+        panel_surf.fill((*Colors.PANEL, 240))
+        screen.blit(panel_surf, (self.panel_x, self.panel_y))
+        pygame.draw.rect(screen, Colors.TEXT_HIGHLIGHT, panel_rect, 2)
+
+        # Title
+        title_surf = self.title_font.render(self._hint_data["title"], True, Colors.TEXT_HIGHLIGHT)
+        title_rect = title_surf.get_rect(midtop=(WINDOW_WIDTH // 2, self.panel_y + 20))
+        screen.blit(title_surf, title_rect)
+
+        # Description (word-wrapped)
+        self._render_wrapped_text(
+            screen,
+            self._hint_data["description"],
+            self.panel_x + 25,
+            self.panel_y + 65,
+            self.PANEL_WIDTH - 50,
+        )
+
+        # GOT IT button
+        self.got_it_button.render(screen)
+
+    def _render_tutorial_step(self, screen: pygame.Surface) -> None:
+        """Render a tutorial step panel."""
         step = self.tutorial_manager.get_current_step()
         if not step:
             return

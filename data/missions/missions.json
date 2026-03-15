@@ -26,6 +26,7 @@
       "description": "A cargo broker needs 10 iron ore delivered to Forgeworks. He'll pay 500 credits on delivery.",
       "hint": "Deliver 10 Iron Ore to Forgeworks for the cargo broker. Talk to the broker at Nexus Prime first.",
       "prerequisites": ["bill_of_landing"],
+      "auto_accept": true,
       "on_accept_cargo": [
         {"commodity_id": "iron_ore", "quantity": 10}
       ],
