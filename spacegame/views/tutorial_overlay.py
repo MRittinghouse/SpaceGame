@@ -119,6 +119,9 @@ class TutorialOverlay:
         """
         if self.active:
             return
+        # Guard: don't show if already dismissed
+        if not self.tutorial_manager.should_show_hint(hint_id):
+            return
         hint_data = self.tutorial_manager.get_hint(hint_id)
         if not hint_data:
             return

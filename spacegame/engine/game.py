@@ -2665,6 +2665,9 @@ class Game:
         tutorial_data = save_data.get("tutorial", {})
         if tutorial_data:
             self.tutorial_manager = TutorialManager.from_dict(tutorial_data)
+        # Keep overlay's reference in sync after replacing the manager
+        if self._tutorial_overlay:
+            self._tutorial_overlay.tutorial_manager = self.tutorial_manager
 
         # Recreate markets (they need to be reconstructed with current game state)
         self.markets = {}
@@ -2799,6 +2802,9 @@ class Game:
 
         if not self._tutorial_overlay:
             self._tutorial_overlay = TutorialOverlay(self.tutorial_manager)
+        # Ensure overlay always references the current manager (may change on load)
+        elif self._tutorial_overlay.tutorial_manager is not self.tutorial_manager:
+            self._tutorial_overlay.tutorial_manager = self.tutorial_manager
 
         # --- Mini-game contextual hints (shown once per game, independent of tutorial) ---
         current_state = self.state_manager.current_state
