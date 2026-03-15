@@ -876,8 +876,32 @@
     },
     {
       "id": "merchant_delivery",
-      "start_node_id": "offer",
+      "start_node_id": "greet",
       "nodes": [
+        {
+          "id": "greet",
+          "speaker_id": "delivery_merchant",
+          "text": "*The cargo broker sorts through shipping manifests behind the counter.*",
+          "responses": [
+            {
+              "text": "I heard you have a delivery job.",
+              "next_node_id": "offer",
+              "excluded_flags": ["talked_to_cargo_broker"]
+            },
+            {
+              "text": "Any word on the ore shipment?",
+              "next_node_id": "waiting",
+              "required_flags": ["talked_to_cargo_broker"],
+              "excluded_flags": ["iron_ore_delivered"]
+            },
+            {
+              "text": "The iron ore's been delivered to Forgeworks.",
+              "next_node_id": "thanks",
+              "required_flags": ["iron_ore_delivered"]
+            }
+          ],
+          "expression": "neutral"
+        },
         {
           "id": "offer",
           "speaker_id": "delivery_merchant",
@@ -885,11 +909,13 @@
           "responses": [
             {
               "text": "Tell me more about the job.",
-              "next_node_id": "details"
+              "next_node_id": "details",
+              "set_flag": "talked_to_cargo_broker"
             },
             {
               "text": "I'll consider it.",
-              "next_node_id": null
+              "next_node_id": null,
+              "set_flag": "talked_to_cargo_broker"
             }
           ],
           "expression": "confident"
@@ -897,7 +923,7 @@
         {
           "id": "details",
           "speaker_id": "delivery_merchant",
-          "text": "It's 10 units of iron ore. Simple delivery run to Forgeworks — they're expecting it. Drop it off, and someone in a matching blue uniform will pay you on the spot. Check your mission log if you're interested.",
+          "text": "It's 10 units of iron ore. Simple delivery run to Forgeworks — they're expecting it. Drop it off, and someone in a matching blue uniform will pay you on the spot. The ore's already loaded in your hold.",
           "responses": [
             {
               "text": "Sounds straightforward enough.",
@@ -905,6 +931,30 @@
             },
             {
               "text": "I'll think about it.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "waiting",
+          "speaker_id": "delivery_merchant",
+          "text": "Still waiting on confirmation from Forgeworks. You do still have my ore, right? Ten units — don't go selling it off on me. I've got a buyer on the other end counting on this.",
+          "responses": [
+            {
+              "text": "It'll get there.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "concerned"
+        },
+        {
+          "id": "thanks",
+          "speaker_id": "delivery_merchant",
+          "text": "Forgeworks confirmed receipt — all ten units accounted for. Credits already transferred to your account. Clean work. I might have more runs down the line, if you're interested.",
+          "responses": [
+            {
+              "text": "You know where to find me.",
               "next_node_id": null
             }
           ],
