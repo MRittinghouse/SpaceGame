@@ -165,6 +165,7 @@ class Game:
         # Tutorial system
         self.tutorial_manager = TutorialManager()
         self._tutorial_overlay = None
+        self._tutorial_cooldown: int = 0  # frames to wait before next overlay
 
         # Pause menu state
         self.paused = False
@@ -2789,6 +2790,11 @@ class Game:
         if self._tutorial_overlay and self._tutorial_overlay.active:
             return
 
+        # Brief cooldown after dismissing an overlay to avoid jarring back-to-back dialogs
+        if self._tutorial_cooldown > 0:
+            self._tutorial_cooldown -= 1
+            return
+
         from spacegame.views.tutorial_overlay import TutorialOverlay
 
         if not self._tutorial_overlay:
@@ -3289,23 +3295,27 @@ class Game:
 
             # Pass events to UI manager and current state
             for event in events:
-                # Check for ESC key to toggle pause (only during gameplay)
-                if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                    if self.player and not self.paused:
-                        self._open_pause_menu()
-                    elif self.paused:
-                        self._close_pause_menu()
-
                 # Tutorial overlay uses raw mouse events (not pygame_gui) so
                 # it can render on top of everything.  Intercept events here
                 # before they reach the UI manager to prevent click-through.
                 if self._tutorial_overlay and self._tutorial_overlay.active:
                     consumed = self._tutorial_overlay.handle_event(event)
                     if consumed:
+                        # If the overlay just closed, add cooldown to prevent
+                        # immediate back-to-back dialogs (e.g. hint then tutorial)
+                        if not self._tutorial_overlay.active:
+                            self._tutorial_cooldown = 30  # ~0.5s at 60fps
                         continue
                     # Still let non-consumed events (e.g. KEYDOWN) through
                     self.ui_manager.process_events(event)
                     continue
+
+                # Check for ESC key to toggle pause (only during gameplay)
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                    if self.player and not self.paused:
+                        self._open_pause_menu()
+                    elif self.paused:
+                        self._close_pause_menu()
 
                 self.ui_manager.process_events(event)
 
