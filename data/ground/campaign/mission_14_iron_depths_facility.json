@@ -100,12 +100,14 @@
             "x": 23, "y": 8,
             "type": "loot_container",
             "loot_credits": 70,
+            "loot_commodities": {"anomalous_sample": 1},
             "description": "A sealed container with a cracked environmental seal. Rare metal alloys machined to specifications you've never seen — curved panels designed to focus energy along precise trajectories."
         },
         {
             "x": 9, "y": 9,
             "type": "loot_container",
             "loot_credits": 80,
+            "loot_commodities": {"anomalous_sample": 2},
             "description": "An engineering workstation with data crystals scattered across it. Partial schematics glow on a dormant screen — concentric ring structures with gravitational field calculations in the margins."
         },
         {

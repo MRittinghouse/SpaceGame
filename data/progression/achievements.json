@@ -472,6 +472,215 @@
       "reward_type": "xp",
       "reward_value": 150,
       "hidden": true
+    },
+    {
+      "id": "first_combat_win",
+      "name": "First Blood",
+      "description": "Win your first combat.",
+      "category": "combat",
+      "stat_key": "combats_won",
+      "threshold": 1,
+      "reward_type": "xp",
+      "reward_value": 75,
+      "hidden": false
+    },
+    {
+      "id": "combat_veteran",
+      "name": "Combat Veteran",
+      "description": "Win 10 combats.",
+      "category": "combat",
+      "stat_key": "combats_won",
+      "threshold": 10,
+      "reward_type": "credits",
+      "reward_value": 1500,
+      "hidden": false
+    },
+    {
+      "id": "combat_ace",
+      "name": "Combat Ace",
+      "description": "Win 25 combats.",
+      "category": "combat",
+      "stat_key": "combats_won",
+      "threshold": 25,
+      "reward_type": "skill_point",
+      "reward_value": 1,
+      "hidden": false
+    },
+    {
+      "id": "smooth_talker",
+      "name": "Smooth Talker",
+      "description": "Negotiate your way out of 3 combats.",
+      "category": "combat",
+      "stat_key": "combats_negotiated",
+      "threshold": 3,
+      "reward_type": "credits",
+      "reward_value": 500,
+      "hidden": false
+    },
+    {
+      "id": "money_talks",
+      "name": "Money Talks",
+      "description": "Bribe your way out of 3 combats.",
+      "category": "combat",
+      "stat_key": "combats_bribed",
+      "threshold": 3,
+      "reward_type": "credits",
+      "reward_value": 500,
+      "hidden": false
+    },
+    {
+      "id": "first_side_quest",
+      "name": "Freelancer",
+      "description": "Complete your first side mission.",
+      "category": "side_quest",
+      "stat_key": "side_missions_completed",
+      "threshold": 1,
+      "reward_type": "xp",
+      "reward_value": 75,
+      "hidden": false
+    },
+    {
+      "id": "side_hustler",
+      "name": "Side Hustler",
+      "description": "Complete 5 side missions.",
+      "category": "side_quest",
+      "stat_key": "side_missions_completed",
+      "threshold": 5,
+      "reward_type": "credits",
+      "reward_value": 1000,
+      "hidden": false
+    },
+    {
+      "id": "helping_hand",
+      "name": "Helping Hand",
+      "description": "Complete 15 side missions.",
+      "category": "side_quest",
+      "stat_key": "side_missions_completed",
+      "threshold": 15,
+      "reward_type": "skill_point",
+      "reward_value": 1,
+      "hidden": false
+    },
+    {
+      "id": "trusted_companion",
+      "name": "Trusted Companion",
+      "description": "Complete 3 crew member personal quests.",
+      "category": "side_quest",
+      "stat_key": "crew_quests_completed",
+      "threshold": 3,
+      "reward_type": "credits",
+      "reward_value": 2000,
+      "hidden": false
+    },
+    {
+      "id": "encounter_survivor",
+      "name": "Seasoned Traveler",
+      "description": "Survive 10 encounters.",
+      "category": "exploration",
+      "stat_key": "encounters_survived",
+      "threshold": 10,
+      "reward_type": "credits",
+      "reward_value": 500,
+      "hidden": false
+    },
+    {
+      "id": "seen_it_all",
+      "name": "Seen It All",
+      "description": "Survive 50 encounters.",
+      "category": "exploration",
+      "stat_key": "encounters_survived",
+      "threshold": 50,
+      "reward_type": "skill_point",
+      "reward_value": 1,
+      "hidden": false
+    },
+    {
+      "id": "all_systems",
+      "name": "Cartographer Supreme",
+      "description": "Discover all 11 systems.",
+      "category": "exploration",
+      "stat_key": "systems_discovered",
+      "threshold": 11,
+      "reward_type": "credits",
+      "reward_value": 2000,
+      "hidden": false
+    },
+    {
+      "id": "smuggling_veteran",
+      "name": "Shadow Trader",
+      "description": "Smuggle 10 goods successfully.",
+      "category": "smuggling",
+      "stat_key": "goods_smuggled",
+      "threshold": 10,
+      "reward_type": "credits",
+      "reward_value": 1500,
+      "hidden": false
+    },
+    {
+      "id": "smuggling_mogul",
+      "name": "Underworld King",
+      "description": "Smuggle 50 goods successfully.",
+      "category": "smuggling",
+      "stat_key": "goods_smuggled",
+      "threshold": 50,
+      "reward_type": "skill_point",
+      "reward_value": 1,
+      "hidden": true
+    },
+    {
+      "id": "tactical_retreat",
+      "name": "Live to Fight Another Day",
+      "description": "Flee from 5 combats.",
+      "category": "combat",
+      "stat_key": "combats_fled",
+      "threshold": 5,
+      "reward_type": "xp",
+      "reward_value": 200,
+      "hidden": false
+    },
+    {
+      "id": "pacifist",
+      "name": "Diplomat",
+      "description": "Negotiate your way out of 10 combats.",
+      "category": "combat",
+      "stat_key": "combats_negotiated",
+      "threshold": 10,
+      "reward_type": "skill_point",
+      "reward_value": 1,
+      "hidden": true
+    },
+    {
+      "id": "fleet_destroyer",
+      "name": "Fleet Destroyer",
+      "description": "Win 50 combats.",
+      "category": "combat",
+      "stat_key": "combats_won",
+      "threshold": 50,
+      "reward_type": "skill_point",
+      "reward_value": 1,
+      "hidden": true
+    },
+    {
+      "id": "level_15",
+      "name": "Seasoned Captain",
+      "description": "Reach level 15.",
+      "category": "progression",
+      "stat_key": "level",
+      "threshold": 15,
+      "reward_type": "credits",
+      "reward_value": 5000,
+      "hidden": false
+    },
+    {
+      "id": "level_20",
+      "name": "Living Legend",
+      "description": "Reach level 20.",
+      "category": "progression",
+      "stat_key": "level",
+      "threshold": 20,
+      "reward_type": "skill_point",
+      "reward_value": 2,
+      "hidden": true
     }
   ]
 }

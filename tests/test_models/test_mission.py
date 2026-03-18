@@ -210,6 +210,26 @@ class TestMission:
         )
         assert mission.get_target_system_ids() == []
 
+    def test_discovery_text_default_empty(self) -> None:
+        """Discovery text defaults to empty string."""
+        mission = _make_mission()
+        assert mission.discovery_text == ""
+
+    def test_discovery_text_round_trip(self) -> None:
+        """Discovery text survives to_dict/from_dict."""
+        mission = _make_mission()
+        mission.discovery_text = "Overheard talk of work at the docks."
+        data = mission.to_dict()
+        assert data["discovery_text"] == "Overheard talk of work at the docks."
+        restored = Mission.from_dict(data)
+        assert restored.discovery_text == "Overheard talk of work at the docks."
+
+    def test_discovery_text_omitted_when_empty(self) -> None:
+        """Empty discovery text is not included in to_dict output."""
+        mission = _make_mission()
+        data = mission.to_dict()
+        assert "discovery_text" not in data
+
     def test_to_dict(self) -> None:
         mission = _make_mission()
         data = mission.to_dict()

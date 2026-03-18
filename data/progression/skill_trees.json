@@ -37,7 +37,7 @@
           "description": "+10% sell price at high-rep systems per level",
           "max_level": 2,
           "bonus_type": "sell_price_bonus",
-          "bonus_per_level": 0.10,
+          "bonus_per_level": 0.1,
           "prerequisite_id": "market_eye"
         },
         {
@@ -48,6 +48,51 @@
           "bonus_type": "remote_prices",
           "bonus_per_level": 1.0,
           "prerequisite_id": "trade_network"
+        },
+        {
+          "id": "commodity_specialist",
+          "name": "Commodity Specialist",
+          "description": "+5% sell price on specialty goods per level",
+          "max_level": 2,
+          "bonus_type": "specialty_sell_bonus",
+          "bonus_per_level": 0.05,
+          "prerequisite_id": "trade_network"
+        },
+        {
+          "id": "market_manipulation",
+          "name": "Market Manipulation",
+          "description": "Player buy/sell has 50% less price impact per level",
+          "max_level": 2,
+          "bonus_type": "market_impact_reduction",
+          "bonus_per_level": 0.5,
+          "prerequisite_id": "market_insider"
+        },
+        {
+          "id": "smuggler_contacts",
+          "name": "Smuggler Contacts",
+          "description": "-10% off-market sell penalty per level",
+          "max_level": 2,
+          "bonus_type": "off_market_bonus",
+          "bonus_per_level": 0.1,
+          "prerequisite_id": "bulk_trader"
+        },
+        {
+          "id": "supply_chain_mastery",
+          "name": "Supply Chain Mastery",
+          "description": "-10% price variance at visited systems per level",
+          "max_level": 2,
+          "bonus_type": "price_variance_reduction",
+          "bonus_per_level": 0.1,
+          "prerequisite_id": "commodity_specialist"
+        },
+        {
+          "id": "trade_magnate",
+          "name": "Trade Magnate",
+          "description": "All buy/sell bonuses doubled at systems where you are ALLIED",
+          "max_level": 1,
+          "bonus_type": "trade_magnate",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": "market_manipulation"
         }
       ]
     },
@@ -88,7 +133,7 @@
           "description": "-20% extraction time per level",
           "max_level": 3,
           "bonus_type": "extract_speed",
-          "bonus_per_level": 0.20,
+          "bonus_per_level": 0.2,
           "prerequisite_id": "keen_scanner"
         },
         {
@@ -103,20 +148,29 @@
         {
           "id": "efficient_refining",
           "name": "Efficient Refining",
-          "description": "-15% refining time per level",
-          "max_level": 3,
-          "bonus_type": "refine_speed",
-          "bonus_per_level": 0.15,
-          "prerequisite_id": "master_extractor"
+          "description": "-10% refining time per level",
+          "max_level": 2,
+          "bonus_type": "refining_speed",
+          "bonus_per_level": 0.1,
+          "prerequisite_id": "refining_knowledge"
         },
         {
           "id": "yield_mastery",
           "name": "Yield Mastery",
-          "description": "+10% bonus yield chance per level",
+          "description": "+10% all gathering yields per level",
           "max_level": 2,
-          "bonus_type": "refine_yield",
-          "bonus_per_level": 0.10,
-          "prerequisite_id": "master_extractor"
+          "bonus_type": "gathering_yield_bonus",
+          "bonus_per_level": 0.1,
+          "prerequisite_id": "rich_veins"
+        },
+        {
+          "id": "master_prospector",
+          "name": "Master Prospector",
+          "description": "Guaranteed rare resource on every 3rd extraction",
+          "max_level": 1,
+          "bonus_type": "guaranteed_rare",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": "efficient_refining"
         }
       ]
     },
@@ -139,7 +193,7 @@
           "description": "+10% passive drill speed per level",
           "max_level": 2,
           "bonus_type": "passive_drill_speed",
-          "bonus_per_level": 0.10,
+          "bonus_per_level": 0.1,
           "prerequisite_id": "click_power"
         },
         {
@@ -148,7 +202,7 @@
           "description": "+50% rare ore chance in mining fields per level",
           "max_level": 2,
           "bonus_type": "mining_rare_chance",
-          "bonus_per_level": 0.50,
+          "bonus_per_level": 0.5,
           "prerequisite_id": "passive_drill"
         },
         {
@@ -184,7 +238,7 @@
           "description": "+20% drone mining speed per level",
           "max_level": 3,
           "bonus_type": "drone_mining_speed",
-          "bonus_per_level": 0.20,
+          "bonus_per_level": 0.2,
           "prerequisite_id": "drone_bay_1"
         },
         {
@@ -199,11 +253,29 @@
         {
           "id": "chain_reaction",
           "name": "Chain Reaction",
-          "description": "+10% chain detonation chance per level",
-          "max_level": 3,
-          "bonus_type": "chain_chance",
-          "bonus_per_level": 0.10,
+          "description": "+15% chance adjacent cells break on drill per level",
+          "max_level": 2,
+          "bonus_type": "chain_break_chance",
+          "bonus_per_level": 0.15,
           "prerequisite_id": "deep_scan"
+        },
+        {
+          "id": "pressure_venting",
+          "name": "Pressure Venting",
+          "description": "-15% overheat penalty per level",
+          "max_level": 2,
+          "bonus_type": "overheat_reduction",
+          "bonus_per_level": 0.15,
+          "prerequisite_id": "passive_drill"
+        },
+        {
+          "id": "strip_miner",
+          "name": "Strip Miner",
+          "description": "Drones extract all visible resources when mining session ends",
+          "max_level": 1,
+          "bonus_type": "strip_miner",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": "ore_targeting"
         }
       ]
     },
@@ -255,6 +327,531 @@
           "bonus_type": "crew_xp_bonus",
           "bonus_per_level": 2.0,
           "prerequisite_id": "inspiring_leader"
+        },
+        {
+          "id": "fleet_coordinator",
+          "name": "Fleet Coordinator",
+          "description": "+10% crew task effectiveness per level",
+          "max_level": 2,
+          "bonus_type": "crew_effectiveness",
+          "bonus_per_level": 0.1,
+          "prerequisite_id": "crew_mentor"
+        },
+        {
+          "id": "crisis_management",
+          "name": "Crisis Management",
+          "description": "-5% hull damage taken per level",
+          "max_level": 3,
+          "bonus_type": "hull_damage_reduction",
+          "bonus_per_level": 0.05,
+          "prerequisite_id": "tariff_negotiation"
+        },
+        {
+          "id": "veteran_command",
+          "name": "Veteran Command",
+          "description": "+2% XP gain from all sources per level",
+          "max_level": 3,
+          "bonus_type": "xp_gain_bonus",
+          "bonus_per_level": 0.02,
+          "prerequisite_id": "crew_manager"
+        },
+        {
+          "id": "morale_officer",
+          "name": "Morale Officer",
+          "description": "+5% crew skill effectiveness per level",
+          "max_level": 2,
+          "bonus_type": "crew_skill_bonus",
+          "bonus_per_level": 0.05,
+          "prerequisite_id": "inspiring_leader"
+        },
+        {
+          "id": "legendary_captain",
+          "name": "Legendary Captain",
+          "description": "+2 crew slots; crew loyalty never decays",
+          "max_level": 1,
+          "bonus_type": "legendary_captain",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": "fleet_coordinator"
+        }
+      ]
+    },
+    "social": {
+      "name": "Social & Influence",
+      "description": "Skills that improve social interactions, persuasion, and faction diplomacy.",
+      "skills": [
+        {
+          "id": "silver_tongue",
+          "name": "Silver Tongue",
+          "description": "+1 Persuasion level per level",
+          "max_level": 2,
+          "bonus_type": "persuasion_bonus",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": null
+        },
+        {
+          "id": "commanding_presence",
+          "name": "Commanding Presence",
+          "description": "+1 Intimidation level per level",
+          "max_level": 2,
+          "bonus_type": "intimidation_bonus",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": "silver_tongue"
+        },
+        {
+          "id": "keen_insight",
+          "name": "Keen Insight",
+          "description": "+1 Observation level per level",
+          "max_level": 2,
+          "bonus_type": "observation_bonus",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": "silver_tongue"
+        },
+        {
+          "id": "master_negotiator",
+          "name": "Master Negotiator",
+          "description": "Unlock special dialogue options in negotiations",
+          "max_level": 1,
+          "bonus_type": "special_dialogue",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": "commanding_presence"
+        },
+        {
+          "id": "streetwise",
+          "name": "Streetwise",
+          "description": "+1 to black market checks per level",
+          "max_level": 2,
+          "bonus_type": "black_market_bonus",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": "keen_insight"
+        },
+        {
+          "id": "empathic_read",
+          "name": "Empathic Read",
+          "description": "See NPC disposition during dialogue",
+          "max_level": 1,
+          "bonus_type": "npc_disposition_visible",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": "keen_insight"
+        },
+        {
+          "id": "silver_lining",
+          "name": "Silver Lining",
+          "description": "+10% better random encounter outcomes per level",
+          "max_level": 2,
+          "bonus_type": "encounter_outcome_bonus",
+          "bonus_per_level": 0.1,
+          "prerequisite_id": "master_negotiator"
+        },
+        {
+          "id": "faction_diplomat",
+          "name": "Faction Diplomat",
+          "description": "+1 faction rep per diplomatic action per level",
+          "max_level": 2,
+          "bonus_type": "diplomatic_rep_bonus",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": "master_negotiator"
+        },
+        {
+          "id": "cultural_savant",
+          "name": "Cultural Savant",
+          "description": "+1 to all social checks in faction-aligned systems per level",
+          "max_level": 2,
+          "bonus_type": "faction_social_bonus",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": "empathic_read"
+        },
+        {
+          "id": "voice_of_the_expanse",
+          "name": "Voice of the Expanse",
+          "description": "Unlock unique peaceful resolutions to any hostile encounter",
+          "max_level": 1,
+          "bonus_type": "peaceful_resolution",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": "silver_lining"
+        }
+      ]
+    },
+    "ground": {
+      "name": "Ground Combat",
+      "description": "Skills that improve ground mission combat effectiveness and survival.",
+      "skills": [
+        {
+          "id": "scrapper",
+          "name": "Scrapper",
+          "description": "+1 to ground attack rolls per level",
+          "max_level": 3,
+          "bonus_type": "ground_attack_bonus",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": null
+        },
+        {
+          "id": "tough_hide",
+          "name": "Tough Hide",
+          "description": "+2 max HP on ground missions per level",
+          "max_level": 3,
+          "bonus_type": "ground_hp_bonus",
+          "bonus_per_level": 2.0,
+          "prerequisite_id": null
+        },
+        {
+          "id": "quick_reflexes",
+          "name": "Quick Reflexes",
+          "description": "+1 re-roll per ground combat per level",
+          "max_level": 2,
+          "bonus_type": "ground_reroll",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": "scrapper"
+        },
+        {
+          "id": "intimidating_presence",
+          "name": "Intimidating Presence",
+          "description": "First exchange: enemy rolls at -2 per level",
+          "max_level": 2,
+          "bonus_type": "ground_intimidating_presence",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": "quick_reflexes"
+        },
+        {
+          "id": "last_stand",
+          "name": "Last Stand",
+          "description": "Below 25% HP: +3 to all rolls per level",
+          "max_level": 2,
+          "bonus_type": "ground_last_stand",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": "tough_hide"
+        },
+        {
+          "id": "field_medic",
+          "name": "Field Medic",
+          "description": "+1 HP healed between ground encounters per level",
+          "max_level": 2,
+          "bonus_type": "ground_heal_between",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": "tough_hide"
+        },
+        {
+          "id": "terrain_reader",
+          "name": "Terrain Reader",
+          "description": "Preview enemy stats before engaging",
+          "max_level": 1,
+          "bonus_type": "ground_enemy_preview",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": "quick_reflexes"
+        },
+        {
+          "id": "adaptive_fighter",
+          "name": "Adaptive Fighter",
+          "description": "+1 attack per consecutive hit in same combat per level",
+          "max_level": 2,
+          "bonus_type": "ground_momentum",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": "intimidating_presence"
+        },
+        {
+          "id": "combat_scavenger",
+          "name": "Combat Scavenger",
+          "description": "+15% ground loot quality per level",
+          "max_level": 2,
+          "bonus_type": "ground_loot_bonus",
+          "bonus_per_level": 0.15,
+          "prerequisite_id": "field_medic"
+        },
+        {
+          "id": "veteran",
+          "name": "Veteran",
+          "description": "+1 re-roll per combat, +1 max HP",
+          "max_level": 1,
+          "bonus_type": "ground_veteran",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": "intimidating_presence"
+        },
+        {
+          "id": "battle_hardened",
+          "name": "Battle-Hardened",
+          "description": "Start ground missions at full HP; +2 to all rolls on first exchange",
+          "max_level": 1,
+          "bonus_type": "ground_battle_hardened",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": "veteran"
+        }
+      ]
+    },
+    "combat": {
+      "name": "Combat & Tactics",
+      "description": "Skills that improve ship combat, weapons, and defensive systems.",
+      "skills": [
+        {
+          "id": "weapons_training",
+          "name": "Weapons Training",
+          "description": "+5% weapon damage per level",
+          "max_level": 3,
+          "bonus_type": "weapon_damage",
+          "bonus_per_level": 0.05,
+          "prerequisite_id": null
+        },
+        {
+          "id": "evasive_maneuvers",
+          "name": "Evasive Maneuvers",
+          "description": "+5% dodge chance per level",
+          "max_level": 3,
+          "bonus_type": "dodge_chance",
+          "bonus_per_level": 0.05,
+          "prerequisite_id": null
+        },
+        {
+          "id": "shield_mastery",
+          "name": "Shield Mastery",
+          "description": "+10% shield effectiveness per level",
+          "max_level": 2,
+          "bonus_type": "shield_bonus",
+          "bonus_per_level": 0.1,
+          "prerequisite_id": "evasive_maneuvers"
+        },
+        {
+          "id": "precision_targeting",
+          "name": "Precision Targeting",
+          "description": "+5% critical hit chance per level",
+          "max_level": 2,
+          "bonus_type": "crit_chance",
+          "bonus_per_level": 0.05,
+          "prerequisite_id": "weapons_training"
+        },
+        {
+          "id": "tactical_retreat",
+          "name": "Tactical Retreat",
+          "description": "+10% flee chance per level",
+          "max_level": 2,
+          "bonus_type": "flee_bonus",
+          "bonus_per_level": 0.1,
+          "prerequisite_id": "evasive_maneuvers"
+        },
+        {
+          "id": "broadside",
+          "name": "Broadside",
+          "description": "+15% damage with heavy weapons per level",
+          "max_level": 2,
+          "bonus_type": "heavy_weapon_damage",
+          "bonus_per_level": 0.15,
+          "prerequisite_id": "precision_targeting"
+        },
+        {
+          "id": "combat_veteran",
+          "name": "Combat Veteran",
+          "description": "+10% combat XP per level",
+          "max_level": 3,
+          "bonus_type": "combat_xp_bonus",
+          "bonus_per_level": 0.1,
+          "prerequisite_id": "weapons_training"
+        },
+        {
+          "id": "rapid_fire",
+          "name": "Rapid Fire",
+          "description": "+10% attack speed per level",
+          "max_level": 2,
+          "bonus_type": "attack_speed",
+          "bonus_per_level": 0.1,
+          "prerequisite_id": "precision_targeting"
+        },
+        {
+          "id": "hull_reinforcement",
+          "name": "Hull Reinforcement",
+          "description": "+5% max hull HP per level",
+          "max_level": 3,
+          "bonus_type": "hull_hp_bonus",
+          "bonus_per_level": 0.05,
+          "prerequisite_id": "shield_mastery"
+        },
+        {
+          "id": "ace_pilot",
+          "name": "Ace Pilot",
+          "description": "First round of combat: double damage, double dodge chance",
+          "max_level": 1,
+          "bonus_type": "ace_pilot",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": "broadside"
+        }
+      ]
+    },
+    "exploration": {
+      "name": "Exploration & Piloting",
+      "description": "Skills that improve navigation, fuel efficiency, and discovery.",
+      "skills": [
+        {
+          "id": "fuel_efficiency",
+          "name": "Fuel Efficiency",
+          "description": "-5% fuel consumption per level",
+          "max_level": 3,
+          "bonus_type": "fuel_reduction",
+          "bonus_per_level": 0.05,
+          "prerequisite_id": null
+        },
+        {
+          "id": "stellar_cartography",
+          "name": "Stellar Cartography",
+          "description": "Reveal additional map info per level",
+          "max_level": 2,
+          "bonus_type": "map_reveal",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": null
+        },
+        {
+          "id": "hazard_scanner",
+          "name": "Hazard Scanner",
+          "description": "-10% travel event danger per level",
+          "max_level": 2,
+          "bonus_type": "travel_danger_reduction",
+          "bonus_per_level": 0.1,
+          "prerequisite_id": "stellar_cartography"
+        },
+        {
+          "id": "long_range_scanner",
+          "name": "Long Range Scanner",
+          "description": "+1 system scan range per level",
+          "max_level": 2,
+          "bonus_type": "scan_range",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": "stellar_cartography"
+        },
+        {
+          "id": "efficient_routing",
+          "name": "Efficient Routing",
+          "description": "-5% travel time per level",
+          "max_level": 3,
+          "bonus_type": "travel_speed",
+          "bonus_per_level": 0.05,
+          "prerequisite_id": "fuel_efficiency"
+        },
+        {
+          "id": "salvage_instinct",
+          "name": "Salvage Instinct",
+          "description": "+15% salvage yield per level",
+          "max_level": 2,
+          "bonus_type": "salvage_yield",
+          "bonus_per_level": 0.15,
+          "prerequisite_id": "fuel_efficiency"
+        },
+        {
+          "id": "explorer_reputation",
+          "name": "Explorer Reputation",
+          "description": "+1 rep with frontier systems per level",
+          "max_level": 2,
+          "bonus_type": "frontier_rep_bonus",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": "long_range_scanner"
+        },
+        {
+          "id": "anomaly_detector",
+          "name": "Anomaly Detector",
+          "description": "+10% chance to discover hidden events per level",
+          "max_level": 2,
+          "bonus_type": "anomaly_chance",
+          "bonus_per_level": 0.1,
+          "prerequisite_id": "hazard_scanner"
+        },
+        {
+          "id": "field_repairs",
+          "name": "Field Repairs",
+          "description": "Restore 5% hull between jumps per level",
+          "max_level": 2,
+          "bonus_type": "jump_hull_restore",
+          "bonus_per_level": 0.05,
+          "prerequisite_id": "efficient_routing"
+        },
+        {
+          "id": "trailblazer",
+          "name": "Trailblazer",
+          "description": "First visit to any system grants bonus XP and reveals all prices",
+          "max_level": 1,
+          "bonus_type": "trailblazer",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": "explorer_reputation"
+        }
+      ]
+    },
+    "smuggling": {
+      "name": "Smuggling & Subterfuge",
+      "description": "Skills that improve contraband handling, evasion, and black market access.",
+      "skills": [
+        {
+          "id": "hidden_compartments",
+          "name": "Hidden Compartments",
+          "description": "+2 contraband cargo slots per level",
+          "max_level": 3,
+          "bonus_type": "contraband_slots",
+          "bonus_per_level": 2.0,
+          "prerequisite_id": null
+        },
+        {
+          "id": "bribe_mastery",
+          "name": "Bribe Mastery",
+          "description": "-15% bribe cost per level",
+          "max_level": 2,
+          "bonus_type": "bribe_reduction",
+          "bonus_per_level": 0.15,
+          "prerequisite_id": "hidden_compartments"
+        },
+        {
+          "id": "scan_jamming",
+          "name": "Scan Jamming",
+          "description": "-10% detection chance per level",
+          "max_level": 3,
+          "bonus_type": "scan_evasion",
+          "bonus_per_level": 0.1,
+          "prerequisite_id": "hidden_compartments"
+        },
+        {
+          "id": "black_market_access",
+          "name": "Black Market Access",
+          "description": "+10% contraband sell price per level",
+          "max_level": 2,
+          "bonus_type": "contraband_sell_bonus",
+          "bonus_per_level": 0.1,
+          "prerequisite_id": "bribe_mastery"
+        },
+        {
+          "id": "heat_management",
+          "name": "Heat Management",
+          "description": "-10% criminal heat gain per level",
+          "max_level": 3,
+          "bonus_type": "heat_reduction",
+          "bonus_per_level": 0.1,
+          "prerequisite_id": "scan_jamming"
+        },
+        {
+          "id": "ghost_runner",
+          "name": "Ghost Runner",
+          "description": "Maximum evasion: -25% detection, -25% heat gain",
+          "max_level": 1,
+          "bonus_type": "ghost_runner",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": "heat_management"
+        },
+        {
+          "id": "false_manifest",
+          "name": "False Manifest",
+          "description": "Contraband appears as legal cargo to basic scans per level",
+          "max_level": 2,
+          "bonus_type": "manifest_forgery",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": "scan_jamming"
+        },
+        {
+          "id": "underworld_rep",
+          "name": "Underworld Reputation",
+          "description": "+10% contraband buy discount per level",
+          "max_level": 2,
+          "bonus_type": "contraband_buy_discount",
+          "bonus_per_level": 0.1,
+          "prerequisite_id": "black_market_access"
+        },
+        {
+          "id": "phantom",
+          "name": "Phantom",
+          "description": "Criminal heat decays 50% faster; bribes always succeed",
+          "max_level": 1,
+          "bonus_type": "phantom",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": "ghost_runner"
         }
       ]
     }

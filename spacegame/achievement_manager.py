@@ -21,6 +21,7 @@ class AchievementManager:
             achievements: All achievement definitions from data loader.
         """
         self.achievements = {a.id: a for a in achievements}
+        self._rewarded_ids: set[str] = set()
 
     def _get_stat_value(self, player: Player, stat_key: str) -> int:
         """Get a player stat value by key name.
@@ -69,13 +70,20 @@ class AchievementManager:
     def apply_reward(self, player: Player, achievement: Achievement) -> str:
         """Apply achievement reward to player.
 
+        Guards against double-reward: tracks which achievements have already
+        had their reward applied via _rewarded_ids set.
+
         Args:
             player: Player to receive reward.
             achievement: Achievement whose reward to apply.
 
         Returns:
-            Human-readable reward description.
+            Human-readable reward description, or empty string if already rewarded.
         """
+        if achievement.id in self._rewarded_ids:
+            return ""
+        self._rewarded_ids.add(achievement.id)
+
         if achievement.reward_type == "xp":
             player.progression.add_xp(achievement.reward_value)
             return f"+{achievement.reward_value} XP"

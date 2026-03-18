@@ -29,11 +29,11 @@ from spacegame.engine.fonts import FontCache
 from spacegame.utils.logger import logger
 from spacegame.engine.audio_manager import get_audio_manager
 
-
 # Location type → GameState mapping
 _LOCATION_STATE_MAP: dict[str, GameState] = {
     "market": GameState.TRADING,
     "repair_bay": GameState.REPAIR_BAY,
+    "cantina": GameState.CANTINA,
     "mining": GameState.MINING,
     "salvaging": GameState.SALVAGING,
     "refining": GameState.REFINING,
@@ -76,21 +76,41 @@ _FACTION_COLORS: dict[str, tuple[int, int, int]] = {
 }
 
 # Layout constants
-HEADER_Y = 20
-HEADER_H = 100
-CARD_AREA_Y = HEADER_Y + HEADER_H + 10
-CARD_W = 350
-CARD_H = 70
-CARD_PAD = 8
+HEADER_CARD_Y = 10
+HEADER_CARD_H = 105
+HEADER_CARD_MARGIN_X = 80
+
+CARD_W = 370
+CARD_H = 80
+CARD_PAD = 10
 CARDS_PER_ROW = 3
 CARD_AREA_X = (WINDOW_WIDTH - (CARDS_PER_ROW * CARD_W + (CARDS_PER_ROW - 1) * CARD_PAD)) // 2
+
+CHATTER_CARD_X = 80
+CHATTER_CARD_Y = 535
+CHATTER_CARD_W = 960
+CHATTER_CARD_H = 75
+
 BACK_BUTTON_W = 140
 BACK_BUTTON_H = 40
 DETAIL_PANEL_X = 60
-DETAIL_PANEL_Y = CARD_AREA_Y
 DETAIL_PANEL_W = WINDOW_WIDTH - 120
-DETAIL_PANEL_H = WINDOW_HEIGHT - DETAIL_PANEL_Y - 80
-FLAVOR_ROTATION_INTERVAL = 6.0  # Seconds between flavor text changes
+FLAVOR_ROTATION_INTERVAL = 10.0  # Seconds between flavor text changes
+
+# Station atmosphere descriptions — evocative one-liners per system
+STATION_ATMOSPHERE: dict[str, str] = {
+    "nexus_prime": "The hum of commerce never stops. Credits change hands faster than handshakes.",
+    "forgeworks": "Soot-stained corridors and the constant clang of metal on metal. This place builds things.",
+    "breakstone": "Dust in the air, ore in the holds. Miners drink hard and work harder.",
+    "stellaris_port": "Polished floors and curated art. Everything here costs more than it should.",
+    "iron_depths": "Deep below the surface, where the lights flicker and the walls groan.",
+    "verdant": "Green spaces and open skies on the observation deck. A breath of something real.",
+    "havens_rest": "Quiet corridors, warm lights. The frontier's idea of civilization.",
+    "axiom_labs": "Sterile halls and sealed doors. Whatever they're researching, it's not for you.",
+    "nova_research": "Screens glow in every corner. The people here talk in equations.",
+    "crimson_reach": "Keep your hand on your wallet and your back to the wall.",
+    "the_fulcrum": "Military checkpoints and the distant thrum of patrol engines. Eyes everywhere.",
+}
 
 
 class StationHubView(BaseView):
@@ -109,6 +129,9 @@ class StationHubView(BaseView):
         activity_registry: ActivityRegistry,
         data_loader: object,
         politics_manager: object = None,
+        crew_roster: object = None,
+        station_chatter: object = None,
+        mission_manager: object = None,
     ) -> None:
         """Initialize station hub view.
 
@@ -120,6 +143,9 @@ class StationHubView(BaseView):
             activity_registry: For resolving activity availability.
             data_loader: DataLoader instance for NPC lookups.
             politics_manager: Optional PoliticsManager for docking checks.
+            crew_roster: Optional CrewRoster for re-recruitment at cantina.
+            station_chatter: Optional StationChatterManager for ambient text.
+            mission_manager: Optional MissionManager for station board contracts.
         """
         super().__init__()
         self.ui_manager = ui_manager
@@ -129,6 +155,9 @@ class StationHubView(BaseView):
         self.activity_registry = activity_registry
         self.data_loader = data_loader
         self.politics_manager = politics_manager
+        self.crew_roster = crew_roster
+        self.station_chatter = station_chatter
+        self.mission_manager = mission_manager
         self.next_state: Optional[GameState] = None
         self.docking_denied = False
         self._docking_denied_msg = ""
@@ -136,6 +165,8 @@ class StationHubView(BaseView):
         # Cantina state
         self.cantina_expanded = False
         self.pending_npc_id: Optional[str] = None
+        self.pending_rerecruit_id: Optional[str] = None
+        self.pending_hire_id: Optional[str] = None
 
         # Detail panel (for unique locations)
         self._detail_location: Optional[Location] = None
@@ -144,9 +175,7 @@ class StationHubView(BaseView):
         self._faction_color = _FACTION_COLORS.get(system.faction, Colors.TEXT_HIGHLIGHT)
 
         # Flavor text rotation
-        self._flavor_texts = [
-            loc.flavor_text for loc in locations if loc.flavor_text
-        ]
+        self._flavor_texts = [loc.flavor_text for loc in locations if loc.flavor_text]
         self._flavor_index = 0
         self._flavor_timer = 0.0
         if self._flavor_texts:
@@ -157,18 +186,27 @@ class StationHubView(BaseView):
         self.title_font = FontCache.get(36)
         self.subtitle_font = FontCache.get(24)
         self.flavor_font = FontCache.get(20)
-        self.card_name_font = FontCache.get(26)
-        self.card_desc_font = FontCache.get(20)
+        self.card_name_font = FontCache.get(28)
+        self.card_desc_font = FontCache.get(22)
+        self.card_detail_font = FontCache.get(17)
         self.card_label_font = FontCache.get(16)
         self.detail_title_font = FontCache.get(30)
         self.detail_font = FontCache.get(22)
         self.npc_font = FontCache.get(22)
+        self.chatter_font = FontCache.get(22)
+
+        # Dynamic card grid Y (computed in _create_ui for vertical centering)
+        self._card_area_y = 0
 
         # UI element refs
         self.back_button: Optional[pygame_gui.elements.UIButton] = None
         self._card_buttons: list[pygame_gui.elements.UIButton] = []
         self._card_locations: list[Location] = []
         self._npc_buttons: dict[str, pygame_gui.elements.UIButton] = {}
+        self._rerecruit_buttons: dict[str, pygame_gui.elements.UIButton] = {}
+        self._hire_buttons: dict[str, pygame_gui.elements.UIButton] = {}
+        self._contract_buttons: dict[str, pygame_gui.elements.UIButton] = {}
+        self.pending_contract_id: Optional[str] = None
         self._detail_close_button: Optional[pygame_gui.elements.UIButton] = None
 
         # Sprite manager for faction emblems
@@ -194,9 +232,7 @@ class StationHubView(BaseView):
         self.docking_denied = False
         self._docking_denied_msg = ""
         if self.politics_manager:
-            allowed, msg = self.politics_manager.get_docking_allowed(
-                self.player, self.system.id
-            )
+            allowed, msg = self.politics_manager.get_docking_allowed(self.player, self.system.id)
             if not allowed:
                 self.docking_denied = True
                 self._docking_denied_msg = msg
@@ -206,6 +242,19 @@ class StationHubView(BaseView):
 
         # Docking restores shields
         self.player.ship.restore_shields()
+
+        # Inject station chatter into flavor text pool
+        if self.station_chatter:
+            try:
+                rep = 0
+                if hasattr(self.player, "faction_reputation"):
+                    rep = self.player.faction_reputation.get(self.system.faction, 0)
+                chatter_lines = self.station_chatter.get_chatter(self.system.id, rep, [], count=3)
+                if chatter_lines:
+                    self._flavor_texts = chatter_lines + self._flavor_texts
+                    self._flavor_index = 0
+            except Exception:
+                pass  # Chatter is non-critical ambient flavor
 
         self.cantina_expanded = False
         self.pending_npc_id = None
@@ -224,21 +273,28 @@ class StationHubView(BaseView):
         # Back button (bottom-left)
         self.back_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
-                20, WINDOW_HEIGHT - BACK_BUTTON_H - 20,
-                BACK_BUTTON_W, BACK_BUTTON_H,
+                20,
+                WINDOW_HEIGHT - BACK_BUTTON_H - 20,
+                BACK_BUTTON_W,
+                BACK_BUTTON_H,
             ),
             text="UNDOCK",
             manager=self.ui_manager,
         )
 
-        # Create card buttons for each location
+        # Create card buttons for each location, vertically centered
         self._card_buttons = []
         self._card_locations = []
+        num_rows = (len(self.locations) + CARDS_PER_ROW - 1) // CARDS_PER_ROW
+        grid_h = num_rows * CARD_H + max(0, num_rows - 1) * CARD_PAD
+        available_top = HEADER_CARD_Y + HEADER_CARD_H + 10
+        available_bottom = CHATTER_CARD_Y - 10
+        self._card_area_y = available_top + (available_bottom - available_top - grid_h) // 2
         for i, loc in enumerate(self.locations):
             row = i // CARDS_PER_ROW
             col = i % CARDS_PER_ROW
             x = CARD_AREA_X + col * (CARD_W + CARD_PAD)
-            y = CARD_AREA_Y + row * (CARD_H + CARD_PAD)
+            y = self._card_area_y + row * (CARD_H + CARD_PAD)
             btn = pygame_gui.elements.UIButton(
                 relative_rect=pygame.Rect(x, y, CARD_W, CARD_H),
                 text=loc.name,
@@ -276,28 +332,129 @@ class StationHubView(BaseView):
             self._detail_close_button = None
 
     def _destroy_npc_buttons(self) -> None:
-        """Kill cantina NPC buttons."""
+        """Kill cantina NPC, re-recruit, hire, and contract buttons."""
         for btn in self._npc_buttons.values():
             btn.kill()
         self._npc_buttons = {}
+        for btn in self._rerecruit_buttons.values():
+            btn.kill()
+        self._rerecruit_buttons = {}
+        for btn in self._hire_buttons.values():
+            btn.kill()
+        self._hire_buttons = {}
+        for btn in self._contract_buttons.values():
+            btn.kill()
+        self._contract_buttons = {}
+
+    def _get_crew_slots(self) -> int:
+        """Get total crew slots including skill bonuses."""
+        return self.player.ship.ship_type.crew_slots + int(
+            self.player.progression.get_bonus("crew_slot_bonus")
+        )
+
+    def _get_current_crew_count(self) -> int:
+        """Get number of currently recruited crew members."""
+        if self.crew_roster and hasattr(self.crew_roster, "_recruited"):
+            return len(self.crew_roster._recruited)
+        return 0
 
     def _create_npc_buttons(self) -> None:
-        """Create NPC talk buttons for expanded cantina."""
+        """Create NPC talk, re-recruit, and hire buttons for expanded cantina."""
         self._destroy_npc_buttons()
         npcs = self._get_cantina_npcs()
         # Position below the card area
-        base_y = CARD_AREA_Y + (
-            (len(self.locations) // CARDS_PER_ROW + 1) * (CARD_H + CARD_PAD)
-        ) + 10
-        for i, npc in enumerate(npcs):
+        base_y = (
+            self._card_area_y + ((len(self.locations) // CARDS_PER_ROW + 1) * (CARD_H + CARD_PAD)) + 10
+        )
+        btn_index = 0
+        for npc in npcs:
             btn = pygame_gui.elements.UIButton(
                 relative_rect=pygame.Rect(
-                    CARD_AREA_X, base_y + i * 38, 300, 34,
+                    CARD_AREA_X,
+                    base_y + btn_index * 38,
+                    300,
+                    34,
                 ),
                 text=f"Talk: {npc.name}",
                 manager=self.ui_manager,
             )
             self._npc_buttons[npc.id] = btn
+            btn_index += 1
+
+        # Dismissed crew available for re-recruitment at this system
+        if self.crew_roster and hasattr(self.crew_roster, "get_dismissed_at_system"):
+            dismissed = self.crew_roster.get_dismissed_at_system(self.system.id)
+            for template, _state in dismissed:
+                cost = self.crew_roster.get_recruit_cost(template.id)
+                cost_text = f"{cost:,} cr" if cost > 0 else "Free"
+                btn = pygame_gui.elements.UIButton(
+                    relative_rect=pygame.Rect(
+                        CARD_AREA_X,
+                        base_y + btn_index * 38,
+                        300,
+                        34,
+                    ),
+                    text=f"Re-recruit: {template.name} ({cost_text})",
+                    manager=self.ui_manager,
+                )
+                # Disable if can't afford or no crew slots
+                crew_slots = self._get_crew_slots()
+                current_crew = self._get_current_crew_count()
+                if self.player.credits < cost or current_crew >= crew_slots:
+                    btn.disable()
+                self._rerecruit_buttons[template.id] = btn
+                btn_index += 1
+
+        # Available crew for first-time hire at this system
+        if self.crew_roster and hasattr(self.crew_roster, "get_available_crew_at_system"):
+            available = self.crew_roster.get_available_crew_at_system(self.system.id)
+            if available:
+                crew_slots = self._get_crew_slots()
+                current_crew = self._get_current_crew_count()
+                for template in available:
+                    role_label = template.role.title()
+                    btn = pygame_gui.elements.UIButton(
+                        relative_rect=pygame.Rect(
+                            CARD_AREA_X,
+                            base_y + btn_index * 38,
+                            300,
+                            34,
+                        ),
+                        text=f"Hire: {template.name} ({role_label})",
+                        manager=self.ui_manager,
+                    )
+                    if current_crew >= crew_slots:
+                        btn.disable()
+                    self._hire_buttons[template.id] = btn
+                    btn_index += 1
+
+        # Station board contracts (procedural missions)
+        if self.mission_manager and hasattr(self.mission_manager, "get_available_at_system"):
+            board_missions = [
+                m
+                for m in self.mission_manager.get_available_at_system(self.system.id)
+                if m.discovery_method == "station_board"
+            ]
+            if board_missions:
+                btn_index += 1  # Gap before contracts section
+                for mission in board_missions[:5]:  # Cap at 5 visible
+                    reward_text = ""
+                    for r in mission.rewards:
+                        if r.reward_type == "credits":
+                            reward_text = f" — {r.amount:,} CR"
+                            break
+                    btn = pygame_gui.elements.UIButton(
+                        relative_rect=pygame.Rect(
+                            CARD_AREA_X,
+                            base_y + btn_index * 38,
+                            300,
+                            34,
+                        ),
+                        text=f"Contract: {mission.name[:30]}{reward_text}",
+                        manager=self.ui_manager,
+                    )
+                    self._contract_buttons[mission.id] = btn
+                    btn_index += 1
 
     def handle_event(self, event: pygame.event.Event) -> None:
         """Handle card clicks and navigation."""
@@ -326,6 +483,24 @@ class StationHubView(BaseView):
             for npc_id, btn in self._npc_buttons.items():
                 if event.ui_element == btn:
                     self._select_npc(npc_id)
+                    return
+
+            # Check re-recruit buttons
+            for crew_id, btn in self._rerecruit_buttons.items():
+                if event.ui_element == btn:
+                    self._handle_rerecruit(crew_id)
+                    return
+
+            # Check hire buttons
+            for crew_id, btn in self._hire_buttons.items():
+                if event.ui_element == btn:
+                    self._handle_hire(crew_id)
+                    return
+
+            # Check contract buttons (station board)
+            for mission_id, btn in self._contract_buttons.items():
+                if event.ui_element == btn:
+                    self._handle_accept_contract(mission_id)
                     return
 
         # Keyboard: Escape to undock
@@ -362,15 +537,8 @@ class StationHubView(BaseView):
         # Card descriptions (below each button)
         self._render_card_descriptions(screen)
 
-        # Cantina NPC list label
-        if self.cantina_expanded and self._npc_buttons:
-            base_y = CARD_AREA_Y + (
-                (len(self.locations) // CARDS_PER_ROW + 1) * (CARD_H + CARD_PAD)
-            )
-            label = self.subtitle_font.render(
-                "Available Contacts:", True, Colors.TEXT_HIGHLIGHT
-            )
-            screen.blit(label, (CARD_AREA_X, base_y - 6))
+        # Station chatter (bottom card)
+        self._render_chatter(screen)
 
         # Detail panel for unique locations
         if self._detail_location:
@@ -385,45 +553,53 @@ class StationHubView(BaseView):
         cy = WINDOW_HEIGHT // 2
 
         # System name
-        title = self.title_font.render(
-            self.system.name.upper(), True, Colors.RED
-        )
+        title = self.title_font.render(self.system.name.upper(), True, Colors.RED)
         screen.blit(title, (cx - title.get_width() // 2, cy - 80))
 
         # Denial message
-        msg = self.subtitle_font.render(
-            self._docking_denied_msg, True, Colors.TEXT
-        )
+        msg = self.subtitle_font.render(self._docking_denied_msg, True, Colors.TEXT)
         screen.blit(msg, (cx - msg.get_width() // 2, cy - 30))
 
         # Help text
         help_text = self.card_desc_font.render(
             "Your reputation is too low to dock here.",
-            True, Colors.TEXT_SECONDARY,
+            True,
+            Colors.TEXT_SECONDARY,
         )
         screen.blit(help_text, (cx - help_text.get_width() // 2, cy + 10))
 
     def _render_header(self, screen: pygame.Surface) -> None:
-        """Render system name, faction info, and rotating flavor text."""
+        """Render header card with system name, description, atmosphere, and faction."""
         fc = self._faction_color
+        card_x = HEADER_CARD_MARGIN_X
+        card_y = HEADER_CARD_Y
+        card_w = WINDOW_WIDTH - HEADER_CARD_MARGIN_X * 2
+        card_h = HEADER_CARD_H
 
-        # Thin faction-colored line across top
-        pygame.draw.line(screen, fc, (40, HEADER_Y - 2), (WINDOW_WIDTH - 40, HEADER_Y - 2), 1)
+        # Semi-transparent header card
+        draw_panel(screen, (card_x, card_y, card_w, card_h), alpha=180)
+
+        # Faction accent line at top of card
+        pygame.draw.rect(screen, fc, (card_x, card_y, card_w, 2))
 
         # System name in faction color
-        title = self.title_font.render(
-            f"DOCKED — {self.system.name.upper()}", True, fc
-        )
-        screen.blit(title, (WINDOW_WIDTH // 2 - title.get_width() // 2, HEADER_Y))
+        title = self.title_font.render(f"DOCKED \u2014 {self.system.name.upper()}", True, fc)
+        screen.blit(title, (WINDOW_WIDTH // 2 - title.get_width() // 2, card_y + 8))
 
         # Station description
         station = self.system.get_main_station()
         if station:
-            desc = self.subtitle_font.render(
-                station.description, True, Colors.TEXT_SECONDARY
-            )
+            desc = self.subtitle_font.render(station.description, True, Colors.TEXT_SECONDARY)
+            screen.blit(desc, (WINDOW_WIDTH // 2 - desc.get_width() // 2, card_y + 38))
+
+        # Atmosphere description
+        atmosphere = STATION_ATMOSPHERE.get(self.system.id, "")
+        if atmosphere:
+            atmo_surf = self.card_desc_font.render(atmosphere, True, fc)
+            atmo_surf.set_alpha(160)
             screen.blit(
-                desc, (WINDOW_WIDTH // 2 - desc.get_width() // 2, HEADER_Y + 34)
+                atmo_surf,
+                (WINDOW_WIDTH // 2 - atmo_surf.get_width() // 2, card_y + 58),
             )
 
         # Faction + danger with faction color dot
@@ -431,35 +607,13 @@ class StationHubView(BaseView):
         info_text = f"{faction_name}  |  Danger: {self.system.danger_level.title()}"
         info = self.card_desc_font.render(info_text, True, Colors.TEXT_SECONDARY)
         info_x = WINDOW_WIDTH // 2 - info.get_width() // 2
-        screen.blit(info, (info_x, HEADER_Y + 56))
+        screen.blit(info, (info_x, card_y + 78))
         # Faction emblem or small color dot before faction name
         if self._faction_emblem:
-            emblem_rect = self._faction_emblem.get_rect(
-                midright=(info_x - 6, HEADER_Y + 56 + 7)
-            )
+            emblem_rect = self._faction_emblem.get_rect(midright=(info_x - 6, card_y + 78 + 10))
             screen.blit(self._faction_emblem, emblem_rect)
         else:
-            pygame.draw.circle(screen, fc, (info_x - 10, HEADER_Y + 56 + 7), 4)
-
-        # Rotating flavor text
-        if self._flavor_texts:
-            flavor = self._flavor_texts[self._flavor_index]
-            # Truncate if too long for screen
-            max_chars = 110
-            if len(flavor) > max_chars:
-                flavor = flavor[:max_chars - 3] + "..."
-            flavor_surf = self.flavor_font.render(flavor, True, Colors.TEXT_SECONDARY)
-            # Slight fade effect based on timer position
-            alpha = 255
-            if self._flavor_timer < 0.5:
-                alpha = int(255 * (self._flavor_timer / 0.5))
-            elif self._flavor_timer > FLAVOR_ROTATION_INTERVAL - 0.5:
-                alpha = int(255 * ((FLAVOR_ROTATION_INTERVAL - self._flavor_timer) / 0.5))
-            flavor_surf.set_alpha(alpha)
-            screen.blit(
-                flavor_surf,
-                (WINDOW_WIDTH // 2 - flavor_surf.get_width() // 2, HEADER_Y + 78),
-            )
+            pygame.draw.circle(screen, fc, (info_x - 10, card_y + 78 + 10), 4)
 
     def _render_card_accents(self, screen: pygame.Surface) -> None:
         """Render colored accent bars and type labels on location cards."""
@@ -467,7 +621,7 @@ class StationHubView(BaseView):
             row = i // CARDS_PER_ROW
             col = i % CARDS_PER_ROW
             x = CARD_AREA_X + col * (CARD_W + CARD_PAD)
-            y = CARD_AREA_Y + row * (CARD_H + CARD_PAD)
+            y = self._card_area_y + row * (CARD_H + CARD_PAD)
             color = _LOCATION_COLORS.get(loc.location_type, Colors.TEXT_SECONDARY)
             # Left accent stripe (wider)
             pygame.draw.rect(screen, color, (x, y, 5, CARD_H))
@@ -490,14 +644,17 @@ class StationHubView(BaseView):
             row = i // CARDS_PER_ROW
             col = i % CARDS_PER_ROW
             x = CARD_AREA_X + col * (CARD_W + CARD_PAD)
-            y = CARD_AREA_Y + row * (CARD_H + CARD_PAD)
-            # Description below the name (inside button area)
-            desc = self.card_desc_font.render(
-                loc.description[:55] + ("..." if len(loc.description) > 55 else ""),
-                True,
-                Colors.TEXT_SECONDARY,
-            )
-            screen.blit(desc, (x + 12, y + CARD_H - 22))
+            y = self._card_area_y + row * (CARD_H + CARD_PAD)
+            # Description in smaller font inside the card, below the button text
+            max_desc_w = CARD_W - 24
+            desc_text = loc.description
+            # Truncate to fit card width
+            while self.card_detail_font.size(desc_text + "...")[0] > max_desc_w and len(desc_text) > 10:
+                desc_text = desc_text[:-1]
+            if len(desc_text) < len(loc.description):
+                desc_text += "..."
+            desc = self.card_detail_font.render(desc_text, True, Colors.TEXT_SECONDARY)
+            screen.blit(desc, (x + 12, y + CARD_H - 20))
 
     def _render_detail_panel(self, screen: pygame.Surface) -> None:
         """Render detail panel for unique/expanded locations."""
@@ -511,8 +668,10 @@ class StationHubView(BaseView):
 
         # Semi-transparent panel
         draw_panel(
-            screen, (DETAIL_PANEL_X, panel_y, DETAIL_PANEL_W, panel_h),
-            alpha=230, border_color=accent,
+            screen,
+            (DETAIL_PANEL_X, panel_y, DETAIL_PANEL_W, panel_h),
+            alpha=230,
+            border_color=accent,
         )
         # Top accent bar
         pygame.draw.rect(screen, accent, (DETAIL_PANEL_X, panel_y, DETAIL_PANEL_W, 3))
@@ -524,8 +683,10 @@ class StationHubView(BaseView):
         # Divider line
         div_y = panel_y + 42
         pygame.draw.line(
-            screen, Colors.UI_BORDER,
-            (DETAIL_PANEL_X + 20, div_y), (DETAIL_PANEL_X + DETAIL_PANEL_W - 20, div_y),
+            screen,
+            Colors.UI_BORDER,
+            (DETAIL_PANEL_X + 20, div_y),
+            (DETAIL_PANEL_X + DETAIL_PANEL_W - 20, div_y),
         )
 
         # Word-wrapped description
@@ -533,16 +694,26 @@ class StationHubView(BaseView):
         content_w = DETAIL_PANEL_W - 40
         y_cursor = div_y + 10
         y_cursor = self._render_wrapped_text(
-            screen, loc.description, self.detail_font,
-            Colors.TEXT_PRIMARY, content_x, y_cursor, content_w,
+            screen,
+            loc.description,
+            self.detail_font,
+            Colors.TEXT_PRIMARY,
+            content_x,
+            y_cursor,
+            content_w,
         )
 
         # Flavor text (italic feel via secondary color + indent)
         if loc.flavor_text:
             y_cursor += 8
             self._render_wrapped_text(
-                screen, f'"{loc.flavor_text}"', self.detail_font,
-                Colors.TEXT_SECONDARY, content_x + 12, y_cursor, content_w - 24,
+                screen,
+                f'"{loc.flavor_text}"',
+                self.detail_font,
+                Colors.TEXT_SECONDARY,
+                content_x + 12,
+                y_cursor,
+                content_w - 24,
             )
 
         # Close button
@@ -587,6 +758,49 @@ class StationHubView(BaseView):
             line_y += font.get_linesize()
         return line_y
 
+    def _render_chatter(self, screen: pygame.Surface) -> None:
+        """Render station chatter in a card at the bottom of the screen."""
+        if not self._flavor_texts:
+            return
+
+        card_x = CHATTER_CARD_X
+        card_y = CHATTER_CARD_Y
+        card_w = CHATTER_CARD_W
+        card_h = CHATTER_CARD_H
+
+        draw_panel(screen, (card_x, card_y, card_w, card_h), alpha=160)
+
+        flavor = self._flavor_texts[self._flavor_index]
+
+        # Fade effect on rotation
+        alpha = 255
+        if self._flavor_timer < 0.5:
+            alpha = int(255 * (self._flavor_timer / 0.5))
+        elif self._flavor_timer > FLAVOR_ROTATION_INTERVAL - 0.5:
+            alpha = int(255 * ((FLAVOR_ROTATION_INTERVAL - self._flavor_timer) / 0.5))
+
+        # Word-wrap chatter text into up to 3 lines
+        words = flavor.split()
+        lines: list[str] = []
+        line = ""
+        max_w = card_w - 32
+        for word in words:
+            test = f"{line} {word}".strip()
+            if self.chatter_font.size(test)[0] > max_w and line:
+                lines.append(line)
+                line = word
+            else:
+                line = test
+        if line:
+            lines.append(line)
+
+        y = card_y + 10
+        for text_line in lines[:3]:
+            surf = self.chatter_font.render(text_line, True, Colors.TEXT_SECONDARY)
+            surf.set_alpha(alpha)
+            screen.blit(surf, (card_x + 16, y))
+            y += self.chatter_font.get_linesize()
+
     def _render_status_bar(self, screen: pygame.Surface) -> None:
         """Render ship status readout at bottom-right."""
         ship = self.player.ship
@@ -595,7 +809,11 @@ class StationHubView(BaseView):
 
         # Status items: (label, value, color)
         hull_ratio = ship.current_hull / max_hull if max_hull > 0 else 1.0
-        hull_color = Colors.GREEN if hull_ratio > 0.5 else (Colors.YELLOW if hull_ratio > 0.25 else Colors.RED)
+        hull_color = (
+            Colors.GREEN
+            if hull_ratio > 0.5
+            else (Colors.YELLOW if hull_ratio > 0.25 else Colors.RED)
+        )
         items = [
             ("Credits", f"{self.player.credits:,} CR", Colors.TEXT_HIGHLIGHT),
             ("Hull", f"{ship.current_hull}/{max_hull}", hull_color),
@@ -641,15 +859,6 @@ class StationHubView(BaseView):
         Args:
             location_type: The type of location selected.
         """
-        # Cantina toggles NPC panel
-        if location_type == "cantina":
-            self.cantina_expanded = not self.cantina_expanded
-            if self.cantina_expanded:
-                self._create_npc_buttons()
-            else:
-                self._destroy_npc_buttons()
-            return
-
         # Unique locations show detail panel (no state transition)
         if location_type == "unique":
             return
@@ -667,6 +876,65 @@ class StationHubView(BaseView):
         """
         self.pending_npc_id = npc_id
         self.next_state = GameState.DIALOGUE
+
+    def _handle_rerecruit(self, crew_id: str) -> None:
+        """Process re-recruitment of a dismissed crew member.
+
+        Args:
+            crew_id: Template ID of the crew member to re-recruit.
+        """
+        if not self.crew_roster:
+            return
+        cost = self.crew_roster.get_recruit_cost(crew_id)
+        if self.player.credits < cost:
+            return
+        crew_slots = self._get_crew_slots()
+        self.player.credits -= cost
+        success, msg = self.crew_roster.recruit(crew_id, crew_slots)
+        if success:
+            self.pending_rerecruit_id = crew_id
+            get_audio_manager().play_sfx("ui_confirm")
+            # Refresh cantina buttons to remove the re-recruited crew
+            self._create_npc_buttons()
+        else:
+            # Refund if recruit failed
+            self.player.credits += cost
+
+    def _handle_hire(self, crew_id: str) -> None:
+        """Process first-time hire of a crew member.
+
+        Args:
+            crew_id: Template ID of the crew member to hire.
+        """
+        if not self.crew_roster:
+            return
+        crew_slots = self._get_crew_slots()
+        success, msg = self.crew_roster.recruit(crew_id, crew_slots)
+        if success:
+            self.pending_hire_id = crew_id
+            get_audio_manager().play_sfx("ui_confirm")
+            # Refresh cantina buttons to remove the hired crew
+            self._create_npc_buttons()
+
+    def _handle_accept_contract(self, mission_id: str) -> None:
+        """Accept a station board contract mission.
+
+        Args:
+            mission_id: ID of the procedural mission to accept.
+        """
+        if not self.mission_manager:
+            return
+        success, msg = self.mission_manager.accept_mission(mission_id)
+        if success:
+            self.pending_contract_id = mission_id
+            # Grant on_accept_cargo if any
+            mission = self.mission_manager.get_mission(mission_id)
+            if mission and mission.on_accept_cargo:
+                for cargo in mission.on_accept_cargo:
+                    self.player.ship.add_cargo(cargo.commodity_id, cargo.quantity, 0)
+            get_audio_manager().play_sfx("ui_confirm")
+            # Refresh buttons to remove the accepted contract
+            self._create_npc_buttons()
 
     def _get_cantina_npcs(self) -> list:
         """Get NPCs available at the current system.

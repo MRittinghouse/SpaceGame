@@ -1,0 +1,1175 @@
+{
+  "chatter_lines": [
+    {
+      "id": "np_ovr_01",
+      "system_id": "nexus_prime",
+      "text": "...futures on purified crystal are up three points. Director Huang wants the position closed by end of cycle.",
+      "category": "overheard",
+      "faction_id": "commerce_guild",
+      "weight": 10
+    },
+    {
+      "id": "np_ovr_02",
+      "system_id": "nexus_prime",
+      "text": "Two cargo manifests flagged in customs today. Somebody's running contraband through the express lane.",
+      "category": "overheard",
+      "faction_id": "commerce_guild",
+      "weight": 10
+    },
+    {
+      "id": "np_ann_01",
+      "system_id": "nexus_prime",
+      "text": "NOTICE: All independent traders must present updated bills of landing at Customs Bay 4 before offloading.",
+      "category": "announcement",
+      "faction_id": "commerce_guild",
+      "weight": 8
+    },
+    {
+      "id": "np_atm_01",
+      "system_id": "nexus_prime",
+      "text": "The polished floors of the Commerce Exchange reflect holographic price tickers streaming overhead.",
+      "category": "atmosphere",
+      "faction_id": "commerce_guild",
+      "weight": 8
+    },
+    {
+      "id": "np_ovr_03",
+      "system_id": "nexus_prime",
+      "text": "The Guild Arbiter denied three license renewals yesterday. Standards are tightening.",
+      "category": "overheard",
+      "faction_id": "commerce_guild",
+      "weight": 9
+    },
+    {
+      "id": "np_ovr_04",
+      "system_id": "nexus_prime",
+      "text": "I heard the Stellaris Port delegation wants to renegotiate tariff brackets. Again.",
+      "category": "overheard",
+      "faction_id": "commerce_guild",
+      "weight": 8
+    },
+    {
+      "id": "np_atm_02",
+      "system_id": "nexus_prime",
+      "text": "Suited clerks move between terminals with practiced efficiency. Everything here runs on schedule.",
+      "category": "atmosphere",
+      "faction_id": "commerce_guild",
+      "weight": 7
+    },
+    {
+      "id": "np_ovr_05",
+      "system_id": "nexus_prime",
+      "text": "The quarterly audit reports are due. Half the dock managers look like they haven't slept.",
+      "category": "overheard",
+      "faction_id": "commerce_guild",
+      "weight": 8
+    },
+    {
+      "id": "np_evt_embargo",
+      "system_id": "nexus_prime",
+      "text": "The embargo has every independent hauler sweating. Legitimate cargo can't move without triple inspections.",
+      "category": "overheard",
+      "faction_id": "commerce_guild",
+      "requires_event_type": "embargo",
+      "weight": 12
+    },
+    {
+      "id": "np_evt_festival",
+      "system_id": "nexus_prime",
+      "text": "The Trade Fair brings out every collector and speculator in the sector. Watch your wallet. And your margins.",
+      "category": "overheard",
+      "faction_id": "commerce_guild",
+      "requires_event_type": "festival",
+      "weight": 12
+    },
+    {
+      "id": "np_ovr_06",
+      "system_id": "nexus_prime",
+      "text": "...she got fired for flagging the discrepancy. Fourteen years on the trading floor. Gone in an afternoon.",
+      "category": "overheard",
+      "faction_id": "commerce_guild",
+      "weight": 9
+    },
+    {
+      "id": "np_ovr_07",
+      "system_id": "nexus_prime",
+      "text": "Residential B-7 filed another air quality complaint. Management forwarded it to a subcommittee. The subcommittee meets quarterly.",
+      "category": "overheard",
+      "faction_id": "commerce_guild",
+      "weight": 8
+    },
+    {
+      "id": "np_atm_03",
+      "system_id": "nexus_prime",
+      "text": "A dock worker eats lunch on a cargo crate, staring at the holographic price tickers scrolling overhead. Different worlds, same station.",
+      "category": "atmosphere",
+      "faction_id": "commerce_guild",
+      "weight": 8
+    },
+    {
+      "id": "np_ntc_01",
+      "system_id": "nexus_prime",
+      "text": "NOTICE: Oxygen supplement fees adjusted effective immediately. See Billing Office, Deck 4. Bring documentation.",
+      "category": "notice",
+      "faction_id": "commerce_guild",
+      "weight": 7
+    },
+
+    {
+      "id": "sp_ovr_01",
+      "system_id": "stellaris_port",
+      "text": "The Kerensky collection sold for eight thousand. The buyer didn't even inspect in person.",
+      "category": "overheard",
+      "faction_id": "commerce_guild",
+      "weight": 10
+    },
+    {
+      "id": "sp_ovr_02",
+      "system_id": "stellaris_port",
+      "text": "I've been to twelve systems and I still can't find a decent vintage of Verdant Black Label anywhere.",
+      "category": "overheard",
+      "faction_id": "commerce_guild",
+      "weight": 9
+    },
+    {
+      "id": "sp_ann_01",
+      "system_id": "stellaris_port",
+      "text": "GALLERY HOURS: The Aurelia Heritage Exhibition is open on Promenade Level 3. Entry by appointment.",
+      "category": "announcement",
+      "faction_id": "commerce_guild",
+      "weight": 8
+    },
+    {
+      "id": "sp_atm_01",
+      "system_id": "stellaris_port",
+      "text": "Crystal chandeliers throw fragmented light across the promenade. The station smells faintly of sandalwood.",
+      "category": "atmosphere",
+      "faction_id": "commerce_guild",
+      "weight": 8
+    },
+    {
+      "id": "sp_ovr_03",
+      "system_id": "stellaris_port",
+      "text": "Someone offered me three times market rate for exotic goods. I don't ask where the money comes from.",
+      "category": "overheard",
+      "faction_id": "commerce_guild",
+      "weight": 9
+    },
+    {
+      "id": "sp_ovr_04",
+      "system_id": "stellaris_port",
+      "text": "The financial advisors on Level 2 are booked solid. Everyone's repositioning after the last market swing.",
+      "category": "overheard",
+      "faction_id": "commerce_guild",
+      "weight": 8
+    },
+    {
+      "id": "sp_atm_02",
+      "system_id": "stellaris_port",
+      "text": "Soft music drifts from a private lounge. A waiter moves between tables carrying something that costs more than your fuel.",
+      "category": "atmosphere",
+      "faction_id": "commerce_guild",
+      "weight": 7
+    },
+    {
+      "id": "sp_ovr_05",
+      "system_id": "stellaris_port",
+      "text": "I heard Nexus Prime is tightening customs enforcement. Might be time to route through Forgeworks instead.",
+      "category": "overheard",
+      "faction_id": "commerce_guild",
+      "weight": 8
+    },
+    {
+      "id": "sp_evt_embargo",
+      "system_id": "stellaris_port",
+      "text": "The embargo is making the luxury trade... interesting. Supply is low, prices are climbing, and nobody's complaining but the buyers.",
+      "category": "overheard",
+      "faction_id": "commerce_guild",
+      "requires_event_type": "embargo",
+      "weight": 12
+    },
+    {
+      "id": "sp_ovr_elena_hint_01",
+      "system_id": "stellaris_port",
+      "text": "...that woman by the market boards again. Just standing there, correcting the price projections under her breath. Somebody should hire her or ask her to leave.",
+      "category": "overheard",
+      "faction_id": "commerce_guild",
+      "weight": 8
+    },
+    {
+      "id": "sp_ovr_elena_hint_02",
+      "system_id": "stellaris_port",
+      "text": "A navigator got fired from Kershaw Logistics last month. Word is she flagged a fuel routing error that would've saved the company millions, and cost the route manager his bonus. Guess who kept their job.",
+      "category": "overheard",
+      "faction_id": "commerce_guild",
+      "weight": 7
+    },
+    {
+      "id": "sp_ovr_06",
+      "system_id": "stellaris_port",
+      "text": "The service staff live four to a cabin on the lower decks. But the promenade suites? One occupant each. Priorities.",
+      "category": "overheard",
+      "faction_id": "commerce_guild",
+      "weight": 9
+    },
+    {
+      "id": "sp_ovr_07",
+      "system_id": "stellaris_port",
+      "text": "A woman in the lounge is crying into a very expensive drink. The waiter pretends not to notice. So does everyone else.",
+      "category": "overheard",
+      "faction_id": "commerce_guild",
+      "weight": 8
+    },
+    {
+      "id": "sp_atm_03",
+      "system_id": "stellaris_port",
+      "text": "Behind the promenade, a maintenance corridor. Flickering lights, peeling paint, a janitor's cart. The station behind the station.",
+      "category": "atmosphere",
+      "faction_id": "commerce_guild",
+      "weight": 7
+    },
+
+    {
+      "id": "bs_ovr_01",
+      "system_id": "breakstone",
+      "text": "Second shift just clocked in. Someone's whistling the old Shaft 7 ballad, the one about Kovacs and the cave-in.",
+      "category": "overheard",
+      "faction_id": "miners_union",
+      "weight": 10
+    },
+    {
+      "id": "bs_ovr_02",
+      "system_id": "breakstone",
+      "text": "Did you see the new safety regs? The Union rep made them put it up in every corridor. In three languages.",
+      "category": "overheard",
+      "faction_id": "miners_union",
+      "weight": 9
+    },
+    {
+      "id": "bs_ann_01",
+      "system_id": "breakstone",
+      "text": "SHIFT CHANGE: All third-shift crews report to Loading Bay 2. Equipment inspection in twenty minutes.",
+      "category": "announcement",
+      "faction_id": "miners_union",
+      "weight": 8
+    },
+    {
+      "id": "bs_atm_01",
+      "system_id": "breakstone",
+      "text": "The corridors vibrate with the deep thrum of machinery. Rock dust settles on everything. Even the meal trays.",
+      "category": "atmosphere",
+      "faction_id": "miners_union",
+      "weight": 8
+    },
+    {
+      "id": "bs_ovr_03",
+      "system_id": "breakstone",
+      "text": "Old Reiko retired last week. Forty years pulling crystal ore. They gave her a plaque and a pension.",
+      "category": "overheard",
+      "faction_id": "miners_union",
+      "weight": 9
+    },
+    {
+      "id": "bs_ovr_04",
+      "system_id": "breakstone",
+      "text": "The community kitchen is serving double portions tonight. Something about celebrating a yield record.",
+      "category": "overheard",
+      "faction_id": "miners_union",
+      "weight": 8
+    },
+    {
+      "id": "bs_atm_02",
+      "system_id": "breakstone",
+      "text": "Someone has chalked union slogans near Cargo Bay 3. Nobody's erased them. Nobody ever does.",
+      "category": "atmosphere",
+      "faction_id": "miners_union",
+      "weight": 7
+    },
+    {
+      "id": "bs_ovr_05",
+      "system_id": "breakstone",
+      "text": "The apprentice miners are singing work songs in the mess hall. Off-key, but nobody minds.",
+      "category": "overheard",
+      "faction_id": "miners_union",
+      "weight": 8
+    },
+    {
+      "id": "bs_evt_strike",
+      "system_id": "breakstone",
+      "text": "The drills are quiet. Picket signs at every cargo bay. 'Our Rock, Our Terms.' The silence is louder than any machine.",
+      "category": "overheard",
+      "faction_id": "miners_union",
+      "requires_event_type": "labor_strike",
+      "weight": 12
+    },
+    {
+      "id": "bs_evt_festival",
+      "system_id": "breakstone",
+      "text": "Founders' Day bunting hangs from every corridor beam. Someone's set up a dance floor in Cargo Bay 7.",
+      "category": "overheard",
+      "faction_id": "miners_union",
+      "requires_event_type": "festival",
+      "weight": 12
+    },
+    {
+      "id": "bs_ovr_marcus_hint_01",
+      "system_id": "breakstone",
+      "text": "There's a mechanic in Bay 9 who fixed the ventilation loop when three certified engineers said it couldn't be done. Works alone, doesn't talk much. Hands like he's been in a few fights.",
+      "category": "overheard",
+      "faction_id": "miners_union",
+      "weight": 8
+    },
+    {
+      "id": "bs_ovr_marcus_hint_02",
+      "system_id": "breakstone",
+      "text": "...heard he used to work the orbitals at Nexus Prime. Left after some kind of incident. Nobody talks about it. He doesn't either.",
+      "category": "overheard",
+      "faction_id": "miners_union",
+      "weight": 7
+    },
+    {
+      "id": "bs_ovr_06",
+      "system_id": "breakstone",
+      "text": "Kid on the mess hall bench doing homework. Math problems about ore yields. They start them young here.",
+      "category": "overheard",
+      "faction_id": "miners_union",
+      "weight": 8
+    },
+    {
+      "id": "bs_ovr_07",
+      "system_id": "breakstone",
+      "text": "...third time this month the medical bay ran out of cough suppressant. The dust gets into everything. The lungs, the budget, everything.",
+      "category": "overheard",
+      "faction_id": "miners_union",
+      "weight": 9
+    },
+    {
+      "id": "bs_atm_03",
+      "system_id": "breakstone",
+      "text": "A memorial board near the cantina entrance. Names, dates, shaft numbers. Fresh flowers in a recycled coolant jar.",
+      "category": "atmosphere",
+      "faction_id": "miners_union",
+      "weight": 8
+    },
+    {
+      "id": "bs_ovr_08",
+      "system_id": "breakstone",
+      "text": "Two miners arguing about whose shift pulled more tonnage. It's not really about the tonnage. It's never about the tonnage.",
+      "category": "overheard",
+      "faction_id": "miners_union",
+      "weight": 8
+    },
+
+    {
+      "id": "id_ovr_01",
+      "system_id": "iron_depths",
+      "text": "DCMC revised the extraction targets again. Third time this quarter. Nobody's smiling.",
+      "category": "overheard",
+      "faction_id": "miners_union",
+      "weight": 10
+    },
+    {
+      "id": "id_ovr_02",
+      "system_id": "iron_depths",
+      "text": "Core temperature readings are climbing on Level 7. Safety board says it's 'within parameters.' Workers say otherwise.",
+      "category": "overheard",
+      "faction_id": "miners_union",
+      "weight": 9
+    },
+    {
+      "id": "id_ann_01",
+      "system_id": "iron_depths",
+      "text": "CORPORATE MEMO: All deep-core personnel must complete updated hazard certification by end of cycle.",
+      "category": "announcement",
+      "faction_id": "miners_union",
+      "weight": 8
+    },
+    {
+      "id": "id_atm_01",
+      "system_id": "iron_depths",
+      "text": "The station groans under pressure changes. Fluorescent lights flicker in the deeper corridors. You get used to it.",
+      "category": "atmosphere",
+      "faction_id": "miners_union",
+      "weight": 8
+    },
+    {
+      "id": "id_ovr_03",
+      "system_id": "iron_depths",
+      "text": "Someone's chalked 'SORA WAS RIGHT' on the bulkhead near Shaft 12. Again.",
+      "category": "overheard",
+      "faction_id": "miners_union",
+      "weight": 9
+    },
+    {
+      "id": "id_ovr_04",
+      "system_id": "iron_depths",
+      "text": "The DCMC liaison held another 'productivity seminar.' Half the crew didn't show up.",
+      "category": "overheard",
+      "faction_id": "miners_union",
+      "weight": 8
+    },
+    {
+      "id": "id_atm_02",
+      "system_id": "iron_depths",
+      "text": "Rare metals gleam under work lights in the sorting bay. Every gram is tagged, weighed, and logged three times.",
+      "category": "atmosphere",
+      "faction_id": "miners_union",
+      "weight": 7
+    },
+    {
+      "id": "id_ovr_05",
+      "system_id": "iron_depths",
+      "text": "A foreman compares notes with a union steward in hushed tones. Neither looks happy.",
+      "category": "overheard",
+      "faction_id": "miners_union",
+      "weight": 8
+    },
+    {
+      "id": "id_evt_strike",
+      "system_id": "iron_depths",
+      "text": "Core Station's normally busy corridors feel abandoned. Even the corporate managers look nervous.",
+      "category": "overheard",
+      "faction_id": "miners_union",
+      "requires_event_type": "labor_strike",
+      "weight": 12
+    },
+    {
+      "id": "id_ovr_06",
+      "system_id": "iron_depths",
+      "text": "New worker orientation takes eight hours. Six of those hours are signing liability waivers.",
+      "category": "overheard",
+      "faction_id": "miners_union",
+      "weight": 9
+    },
+    {
+      "id": "id_ovr_07",
+      "system_id": "iron_depths",
+      "text": "The clinic on Level 3 has a waiting list. The clinic on Level 9 has availability. And a reputation.",
+      "category": "overheard",
+      "faction_id": "miners_union",
+      "weight": 8
+    },
+    {
+      "id": "id_atm_03",
+      "system_id": "iron_depths",
+      "text": "A miner sits alone in the corridor, helmet off, staring at nothing. Thirty-minute break. Twenty-eight minutes left.",
+      "category": "atmosphere",
+      "faction_id": "miners_union",
+      "weight": 8
+    },
+    {
+      "id": "id_ovr_08",
+      "system_id": "iron_depths",
+      "text": "DCMC's 'Employee of the Month' plaque has the same name three months running. Nobody else wants the attention.",
+      "category": "overheard",
+      "faction_id": "miners_union",
+      "weight": 7
+    },
+
+    {
+      "id": "fw_ovr_01",
+      "system_id": "forgeworks",
+      "text": "The foundry's running triple shifts. You can feel the deck plates vibrating from here.",
+      "category": "overheard",
+      "weight": 10
+    },
+    {
+      "id": "fw_ovr_02",
+      "system_id": "forgeworks",
+      "text": "Guild quality inspectors rejected an entire batch of alloy composite. The fabricators are furious.",
+      "category": "overheard",
+      "weight": 9
+    },
+    {
+      "id": "fw_ann_01",
+      "system_id": "forgeworks",
+      "text": "SAFETY REMINDER: Thermal suits are mandatory in Foundry Sectors C through F. No exceptions.",
+      "category": "announcement",
+      "weight": 8
+    },
+    {
+      "id": "fw_atm_01",
+      "system_id": "forgeworks",
+      "text": "Heat shimmer rises from the manufacturing floor. The air tastes like ozone and hot metal.",
+      "category": "atmosphere",
+      "weight": 8
+    },
+    {
+      "id": "fw_ovr_03",
+      "system_id": "forgeworks",
+      "text": "Guild and Union workers eat at separate tables in the canteen. But they share the same complaints about the food.",
+      "category": "overheard",
+      "weight": 9
+    },
+    {
+      "id": "fw_ovr_04",
+      "system_id": "forgeworks",
+      "text": "New machinery orders are backed up three months. Breakstone can't ship ore fast enough to keep up.",
+      "category": "overheard",
+      "weight": 8
+    },
+    {
+      "id": "fw_atm_02",
+      "system_id": "forgeworks",
+      "text": "Sparks cascade from an overhead welding rig. A supervisor shouts something lost in the noise.",
+      "category": "atmosphere",
+      "weight": 7
+    },
+    {
+      "id": "fw_ovr_05",
+      "system_id": "forgeworks",
+      "text": "The swing shift foreman says production is at 90%. Guild wants 100%. Union says they're pushing too hard.",
+      "category": "overheard",
+      "weight": 8
+    },
+    {
+      "id": "fw_evt_strike",
+      "system_id": "forgeworks",
+      "text": "The foundries have gone dark for the first time in years. The station feels wrong without the vibration.",
+      "category": "overheard",
+      "requires_event_type": "labor_strike",
+      "weight": 12
+    },
+    {
+      "id": "fw_ovr_06",
+      "system_id": "forgeworks",
+      "text": "A fabricator lost three fingers last week. Back on shift in four days. Can't afford the recovery time, she said.",
+      "category": "overheard",
+      "weight": 9
+    },
+    {
+      "id": "fw_ovr_07",
+      "system_id": "forgeworks",
+      "text": "...the Guild inspector passed the batch after the foreman bought him dinner. Quality standards, right.",
+      "category": "overheard",
+      "weight": 8
+    },
+    {
+      "id": "fw_atm_03",
+      "system_id": "forgeworks",
+      "text": "Burn scars on every third pair of hands in the canteen. Worn like proof of something. Nobody covers them up.",
+      "category": "atmosphere",
+      "weight": 8
+    },
+
+    {
+      "id": "al_ovr_01",
+      "system_id": "axiom_labs",
+      "text": "Dr. Vasquez's latest paper has seventeen citations in the first week. The Biochem department is not handling this gracefully.",
+      "category": "overheard",
+      "faction_id": "science_collective",
+      "weight": 10
+    },
+    {
+      "id": "al_ovr_02",
+      "system_id": "axiom_labs",
+      "text": "Grant review season is coming up. You can smell the desperation in the research wings.",
+      "category": "overheard",
+      "faction_id": "science_collective",
+      "weight": 9
+    },
+    {
+      "id": "al_ann_01",
+      "system_id": "axiom_labs",
+      "text": "PEER REVIEW NOTICE: All submissions for the Quarterly Journal must be filed by end of cycle. No extensions.",
+      "category": "announcement",
+      "faction_id": "science_collective",
+      "weight": 8
+    },
+    {
+      "id": "al_atm_01",
+      "system_id": "axiom_labs",
+      "text": "Researchers in color-coded lab coats crowd every corridor, debating in technical shorthand over synthesized coffee.",
+      "category": "atmosphere",
+      "faction_id": "science_collective",
+      "weight": 8
+    },
+    {
+      "id": "al_ovr_03",
+      "system_id": "axiom_labs",
+      "text": "The Okafor Institute is hosting visiting scholars again. Every lab bench is double-booked.",
+      "category": "overheard",
+      "faction_id": "science_collective",
+      "weight": 9
+    },
+    {
+      "id": "al_ovr_04",
+      "system_id": "axiom_labs",
+      "text": "Someone in Materials Science cracked a new alloy synthesis process. The patent office is working overtime.",
+      "category": "overheard",
+      "faction_id": "science_collective",
+      "weight": 8
+    },
+    {
+      "id": "al_atm_02",
+      "system_id": "axiom_labs",
+      "text": "Holographic molecular models rotate slowly above workstations. The hum of centrifuges is constant.",
+      "category": "atmosphere",
+      "faction_id": "science_collective",
+      "weight": 7
+    },
+    {
+      "id": "al_ovr_05",
+      "system_id": "axiom_labs",
+      "text": "A medical trial passed phase three. The lead researcher cried in the hallway. Happy tears, apparently.",
+      "category": "overheard",
+      "faction_id": "science_collective",
+      "weight": 8
+    },
+    {
+      "id": "al_evt_breakthrough",
+      "system_id": "axiom_labs",
+      "text": "The breakthrough has the whole station buzzing. People are shaking hands in corridors. The patent office, for once, is sharing.",
+      "category": "overheard",
+      "faction_id": "science_collective",
+      "requires_event_type": "research_breakthrough",
+      "weight": 12
+    },
+    {
+      "id": "al_evt_symposium",
+      "system_id": "axiom_labs",
+      "text": "Poster sessions line the atrium. The smell of synthesized coffee is overwhelming. Someone's arguing about p-values.",
+      "category": "overheard",
+      "faction_id": "science_collective",
+      "requires_event_type": "festival",
+      "weight": 12
+    },
+    {
+      "id": "al_ovr_priya_hint_01",
+      "system_id": "axiom_labs",
+      "text": "Dr. Osei's requesting independent transport again. Says she doesn't trust the Collective's shuttle schedule. Says a lot of things, actually. Brilliant, though. Nobody disputes that.",
+      "category": "overheard",
+      "faction_id": "science_collective",
+      "weight": 8
+    },
+    {
+      "id": "al_ovr_priya_hint_02",
+      "system_id": "axiom_labs",
+      "text": "...published three papers in one cycle. The review board barely had time to read them. She's pushing for field access, wants to see the mines herself, not just the data. Unusual for a lab researcher.",
+      "category": "overheard",
+      "faction_id": "science_collective",
+      "weight": 7
+    },
+    {
+      "id": "al_ovr_06",
+      "system_id": "axiom_labs",
+      "text": "A postdoc is sleeping at their desk again. Third night in a row. The grant deadline is tomorrow and nobody's going to say anything.",
+      "category": "overheard",
+      "faction_id": "science_collective",
+      "weight": 9
+    },
+    {
+      "id": "al_ovr_07",
+      "system_id": "axiom_labs",
+      "text": "...her entire dataset was retracted. Three years of work. The review board wouldn't even tell her which methodology they objected to.",
+      "category": "overheard",
+      "faction_id": "science_collective",
+      "weight": 8
+    },
+    {
+      "id": "al_atm_03",
+      "system_id": "axiom_labs",
+      "text": "A whiteboard outside Lab 7 is covered in equations, half-erased and rewritten over each other. A sticky note reads: 'DO NOT CLEAN.'",
+      "category": "atmosphere",
+      "faction_id": "science_collective",
+      "weight": 7
+    },
+
+    {
+      "id": "nr_ovr_01",
+      "system_id": "nova_research",
+      "text": "NOTICE: Section 4-C remains under intellectual property quarantine. Unauthorized personnel will have credentials revoked.",
+      "category": "notice",
+      "faction_id": "science_collective",
+      "weight": 10
+    },
+    {
+      "id": "nr_ovr_02",
+      "system_id": "nova_research",
+      "text": "They changed the access codes to the Applied Physics wing again. Third time this month.",
+      "category": "overheard",
+      "faction_id": "science_collective",
+      "weight": 9
+    },
+    {
+      "id": "nr_ann_01",
+      "system_id": "nova_research",
+      "text": "RESTRICTED: Personnel clearance Level 3+ required beyond this point. Submit badge for verification.",
+      "category": "announcement",
+      "faction_id": "science_collective",
+      "weight": 8
+    },
+    {
+      "id": "nr_atm_01",
+      "system_id": "nova_research",
+      "text": "The corridors here are quieter than most stations. Soundproofing, or just fewer people willing to talk.",
+      "category": "atmosphere",
+      "faction_id": "science_collective",
+      "weight": 8
+    },
+    {
+      "id": "nr_ovr_03",
+      "system_id": "nova_research",
+      "text": "Nova's already-tight security has been upgraded. Visitors get three IDs checked and a pat-down.",
+      "category": "overheard",
+      "faction_id": "science_collective",
+      "weight": 9
+    },
+    {
+      "id": "nr_ovr_04",
+      "system_id": "nova_research",
+      "text": "Patent filing deadlines are looming. The legal team looks even more stressed than the researchers.",
+      "category": "overheard",
+      "faction_id": "science_collective",
+      "weight": 8
+    },
+    {
+      "id": "nr_atm_02",
+      "system_id": "nova_research",
+      "text": "A researcher hurries past with a sealed case marked PROPRIETARY. They don't make eye contact.",
+      "category": "atmosphere",
+      "faction_id": "science_collective",
+      "weight": 7
+    },
+    {
+      "id": "nr_ovr_05",
+      "system_id": "nova_research",
+      "text": "The cafeteria serves the same three meals every day. Nobody comes here for the food.",
+      "category": "overheard",
+      "faction_id": "science_collective",
+      "weight": 8
+    },
+    {
+      "id": "nr_evt_embargo",
+      "system_id": "nova_research",
+      "text": "The tech export ban has the patent office in meltdown. Licensing agreements are being shredded left and right.",
+      "category": "overheard",
+      "faction_id": "science_collective",
+      "requires_event_type": "embargo",
+      "weight": 12
+    },
+    {
+      "id": "nr_ovr_06",
+      "system_id": "nova_research",
+      "text": "A researcher was escorted out yesterday. Badge revoked on the spot. Nobody knows what she found. Nobody's asking.",
+      "category": "overheard",
+      "faction_id": "science_collective",
+      "weight": 9
+    },
+    {
+      "id": "nr_ovr_07",
+      "system_id": "nova_research",
+      "text": "The NDA for Section 4-C is eleven pages. The work description is one sentence. That ratio tells you everything.",
+      "category": "overheard",
+      "faction_id": "science_collective",
+      "weight": 8
+    },
+    {
+      "id": "nr_atm_03",
+      "system_id": "nova_research",
+      "text": "A camera tracks you down the corridor. Not security. Research observation, according to the small print on the wall. Same difference.",
+      "category": "atmosphere",
+      "faction_id": "science_collective",
+      "weight": 7
+    },
+
+    {
+      "id": "hr_ovr_01",
+      "system_id": "havens_rest",
+      "text": "The tomatoes came in early this cycle. Someone on the community council is already arguing about surplus allocation.",
+      "category": "overheard",
+      "faction_id": "frontier_alliance",
+      "weight": 10
+    },
+    {
+      "id": "hr_ovr_02",
+      "system_id": "havens_rest",
+      "text": "Ma Chen's trading post has fresh textiles from Verdant. She says they're the nicest this season.",
+      "category": "overheard",
+      "faction_id": "frontier_alliance",
+      "weight": 9
+    },
+    {
+      "id": "hr_ann_01",
+      "system_id": "havens_rest",
+      "text": "COMMUNITY NOTICE: Town hall meeting this evening. Topic: water recycling upgrades. All welcome.",
+      "category": "announcement",
+      "faction_id": "frontier_alliance",
+      "weight": 8
+    },
+    {
+      "id": "hr_atm_01",
+      "system_id": "havens_rest",
+      "text": "The hydroponics bay fills the air with the smell of fresh herbs. Children chase each other between the planting beds.",
+      "category": "atmosphere",
+      "faction_id": "frontier_alliance",
+      "weight": 8
+    },
+    {
+      "id": "hr_ovr_03",
+      "system_id": "havens_rest",
+      "text": "Granny Park's been teaching the kids how to graft fruit trees again. She says it's 'essential knowledge.'",
+      "category": "overheard",
+      "faction_id": "frontier_alliance",
+      "weight": 9
+    },
+    {
+      "id": "hr_ovr_04",
+      "system_id": "havens_rest",
+      "text": "A newcomer family arrived last week. The welcome committee had dinner ready before they'd finished docking.",
+      "category": "overheard",
+      "faction_id": "frontier_alliance",
+      "weight": 8
+    },
+    {
+      "id": "hr_atm_02",
+      "system_id": "havens_rest",
+      "text": "Wind chimes made from recycled hull plating sing in the ventilation currents. It's oddly beautiful.",
+      "category": "atmosphere",
+      "faction_id": "frontier_alliance",
+      "weight": 7
+    },
+    {
+      "id": "hr_ovr_05",
+      "system_id": "havens_rest",
+      "text": "The community kitchen is packed tonight. Somebody made a batch of the good bread.",
+      "category": "overheard",
+      "faction_id": "frontier_alliance",
+      "weight": 8
+    },
+    {
+      "id": "hr_evt_festival",
+      "system_id": "havens_rest",
+      "text": "Long tables stretch through the commons, heavy with food nobody's charging for. A storyteller holds a circle of children rapt.",
+      "category": "overheard",
+      "faction_id": "frontier_alliance",
+      "requires_event_type": "festival",
+      "weight": 12
+    },
+    {
+      "id": "hr_evt_embargo",
+      "system_id": "havens_rest",
+      "text": "The food export ban has the community on edge. 'Feed our own first,' they say, but the traders aren't happy.",
+      "category": "overheard",
+      "faction_id": "frontier_alliance",
+      "requires_event_type": "embargo",
+      "weight": 12
+    },
+    {
+      "id": "hr_ovr_tomas_hint_01",
+      "system_id": "havens_rest",
+      "text": "That trader at the corner table knows every back route in the sector. Buys everyone drinks, tells stories, never quite explains how he affords any of it. Charming, though. Dangerously charming.",
+      "category": "overheard",
+      "faction_id": "frontier_alliance",
+      "weight": 8
+    },
+    {
+      "id": "hr_ovr_tomas_hint_02",
+      "system_id": "havens_rest",
+      "text": "...his mother ran the noodle stand on Deck Seven. Everyone knew her. He left for a while, years maybe, came back different. Sharper. Still buys from the same vendors, though.",
+      "category": "overheard",
+      "faction_id": "frontier_alliance",
+      "weight": 7
+    },
+    {
+      "id": "hr_ovr_06",
+      "system_id": "havens_rest",
+      "text": "The newcomer family from Iron Depths, their kid hasn't stopped coughing since they arrived. The medic says it'll pass. Eventually.",
+      "category": "overheard",
+      "faction_id": "frontier_alliance",
+      "weight": 9
+    },
+    {
+      "id": "hr_ovr_07",
+      "system_id": "havens_rest",
+      "text": "Someone at the council meeting asked where the funding goes. Simple question. Three people left the room.",
+      "category": "overheard",
+      "faction_id": "frontier_alliance",
+      "weight": 8
+    },
+    {
+      "id": "hr_atm_03",
+      "system_id": "havens_rest",
+      "text": "An old woman tends a single orchid in a cracked pot by the viewport. She talks to it like it understands. Maybe it does.",
+      "category": "atmosphere",
+      "faction_id": "frontier_alliance",
+      "weight": 7
+    },
+
+    {
+      "id": "vd_ovr_01",
+      "system_id": "verdant",
+      "text": "Verdant's third season broke yield records. The old-timers say it's the new soil treatment. The scientists say it's them.",
+      "category": "overheard",
+      "faction_id": "frontier_alliance",
+      "weight": 10
+    },
+    {
+      "id": "vd_ovr_02",
+      "system_id": "verdant",
+      "text": "The modernization debate is heating up again. Half the council wants automated planters, the other half wants tradition.",
+      "category": "overheard",
+      "faction_id": "frontier_alliance",
+      "weight": 9
+    },
+    {
+      "id": "vd_ann_01",
+      "system_id": "verdant",
+      "text": "SEASONAL ADVISORY: Pollination schedules shifting. All greenhouse sectors should adjust ventilation accordingly.",
+      "category": "announcement",
+      "faction_id": "frontier_alliance",
+      "weight": 8
+    },
+    {
+      "id": "vd_atm_01",
+      "system_id": "verdant",
+      "text": "Rows of green stretch as far as the eye can see through the observation windows. The station breathes.",
+      "category": "atmosphere",
+      "faction_id": "frontier_alliance",
+      "weight": 8
+    },
+    {
+      "id": "vd_ovr_03",
+      "system_id": "verdant",
+      "text": "The artisan weavers have a new loom design. Their textiles are fetching premium prices at Stellaris Port.",
+      "category": "overheard",
+      "faction_id": "frontier_alliance",
+      "weight": 9
+    },
+    {
+      "id": "vd_ovr_04",
+      "system_id": "verdant",
+      "text": "A farmer stops to chat by the water recycler. 'Good season,' he says, and means it.",
+      "category": "overheard",
+      "faction_id": "frontier_alliance",
+      "weight": 8
+    },
+    {
+      "id": "vd_atm_02",
+      "system_id": "verdant",
+      "text": "Dappled light from the grow-lamps filters through canopy leaves. It almost feels like standing under a real sky.",
+      "category": "atmosphere",
+      "faction_id": "frontier_alliance",
+      "weight": 7
+    },
+    {
+      "id": "vd_ovr_05",
+      "system_id": "verdant",
+      "text": "Fresh produce stacks are marked with little handwritten labels. Someone draws a tiny flower on each one.",
+      "category": "overheard",
+      "faction_id": "frontier_alliance",
+      "weight": 8
+    },
+    {
+      "id": "vd_evt_festival",
+      "system_id": "verdant",
+      "text": "The harvest festival has the whole station smiling. Tables groan with food. Musicians play between the greenhouses.",
+      "category": "overheard",
+      "faction_id": "frontier_alliance",
+      "requires_event_type": "festival",
+      "weight": 12
+    },
+    {
+      "id": "vd_ovr_06",
+      "system_id": "verdant",
+      "text": "The Commerce Guild wants exclusive export rights. The council said no. The Guild smiled and said they'd ask again next quarter.",
+      "category": "overheard",
+      "faction_id": "frontier_alliance",
+      "weight": 9
+    },
+    {
+      "id": "vd_ovr_07",
+      "system_id": "verdant",
+      "text": "A field worker stopped mid-row and just... stood there. Staring at the grow-lamps. Sometimes you forget they're not real sunlight.",
+      "category": "overheard",
+      "faction_id": "frontier_alliance",
+      "weight": 8
+    },
+    {
+      "id": "vd_atm_03",
+      "system_id": "verdant",
+      "text": "Abundance here, scarcity two jumps away. The surplus crates are stamped FOR EXPORT. Not FOR THOSE WHO NEED IT.",
+      "category": "atmosphere",
+      "faction_id": "frontier_alliance",
+      "weight": 8
+    },
+
+    {
+      "id": "cr_ovr_01",
+      "system_id": "crimson_reach",
+      "text": "A figure at the end of the bar catches your eye, then looks away. The bartender suddenly becomes very interested in cleaning a glass.",
+      "category": "overheard",
+      "weight": 10
+    },
+    {
+      "id": "cr_ovr_02",
+      "system_id": "crimson_reach",
+      "text": "Don't ask names. Don't ask origins. Don't ask what's in the crates. You'll do fine here.",
+      "category": "overheard",
+      "weight": 9
+    },
+    {
+      "id": "cr_ann_01",
+      "system_id": "crimson_reach",
+      "text": "No official notices here. Just a torn flyer: 'CARGO HANDLERS WANTED. No questions. Pay in advance.'",
+      "category": "notice",
+      "weight": 8
+    },
+    {
+      "id": "cr_atm_01",
+      "system_id": "crimson_reach",
+      "text": "Dim lighting and exposed pipes. Every surface has a patina of grease and secrecy.",
+      "category": "atmosphere",
+      "weight": 8
+    },
+    {
+      "id": "cr_ovr_03",
+      "system_id": "crimson_reach",
+      "text": "Someone slid a datapad across the table. Credits changed hands under it. Nobody else noticed. Or pretended not to.",
+      "category": "overheard",
+      "weight": 9
+    },
+    {
+      "id": "cr_ovr_04",
+      "system_id": "crimson_reach",
+      "text": "The salvage haulers came back with full holds and empty eyes. Whatever they found out there, they're not talking.",
+      "category": "overheard",
+      "weight": 8
+    },
+    {
+      "id": "cr_atm_02",
+      "system_id": "crimson_reach",
+      "text": "The station's life-support makes a worrying rattle every few minutes. Nobody seems to care.",
+      "category": "atmosphere",
+      "weight": 7
+    },
+    {
+      "id": "cr_ovr_05",
+      "system_id": "crimson_reach",
+      "text": "Weapons are technically prohibited on-station. Technically.",
+      "category": "overheard",
+      "weight": 8
+    },
+    {
+      "id": "cr_evt_pirate",
+      "system_id": "crimson_reach",
+      "text": "Pirate chatter is up on every frequency. The smart money stays docked. The rest? They'll learn.",
+      "category": "overheard",
+      "requires_event_type": "pirate_surge",
+      "weight": 12
+    },
+    {
+      "id": "cr_ovr_06",
+      "system_id": "crimson_reach",
+      "text": "A pilot at the bar is buying rounds for everyone. Celebrating something. Nobody asks what. That's the etiquette.",
+      "category": "overheard",
+      "weight": 9
+    },
+    {
+      "id": "cr_ovr_07",
+      "system_id": "crimson_reach",
+      "text": "Someone scratched 'KOVAC PAID HIS DEBT' into the bulkhead near Bay 6. The letters are old. The warning isn't.",
+      "category": "overheard",
+      "weight": 8
+    },
+    {
+      "id": "cr_atm_03",
+      "system_id": "crimson_reach",
+      "text": "A child sits cross-legged by a cargo bay door, watching ships dock. No parent in sight. Someone's left a ration pack beside them.",
+      "category": "atmosphere",
+      "weight": 8
+    },
+    {
+      "id": "cr_ovr_08",
+      "system_id": "crimson_reach",
+      "text": "The station medic works for tips. She lost her license years ago, keeps zero records, and never asks how you got hurt. Best care in the Reach, if you can find her.",
+      "category": "overheard",
+      "weight": 8
+    },
+
+    {
+      "id": "fu_ovr_01",
+      "system_id": "the_fulcrum",
+      "text": "The corridors are too clean. Too quiet. Whatever happens here, they don't want witnesses.",
+      "category": "overheard",
+      "weight": 10
+    },
+    {
+      "id": "fu_ovr_02",
+      "system_id": "the_fulcrum",
+      "text": "Military-grade security scanners at every junction. Your weapons permit got checked twice before you reached the dock.",
+      "category": "overheard",
+      "weight": 9
+    },
+    {
+      "id": "fu_ann_01",
+      "system_id": "the_fulcrum",
+      "text": "CLASSIFIED: Movement beyond authorized zones is prohibited. Violators will be detained without warning.",
+      "category": "announcement",
+      "weight": 8
+    },
+    {
+      "id": "fu_atm_01",
+      "system_id": "the_fulcrum",
+      "text": "Uniformed personnel move with rigid efficiency. No idle chatter. No lingering. Everything here has a purpose.",
+      "category": "atmosphere",
+      "weight": 8
+    },
+    {
+      "id": "fu_ovr_03",
+      "system_id": "the_fulcrum",
+      "text": "The few civilians here move quickly and don't make eye contact. This isn't a place for conversation.",
+      "category": "overheard",
+      "weight": 9
+    },
+    {
+      "id": "fu_ovr_04",
+      "system_id": "the_fulcrum",
+      "text": "Heavy blast doors seal entire sections. What's behind them is anyone's guess, and nobody's guessing out loud.",
+      "category": "overheard",
+      "weight": 8
+    },
+    {
+      "id": "fu_atm_02",
+      "system_id": "the_fulcrum",
+      "text": "The hum of power conduits is the only sound. Even footsteps seem muffled here.",
+      "category": "atmosphere",
+      "weight": 7
+    },
+    {
+      "id": "fu_ovr_05",
+      "system_id": "the_fulcrum",
+      "text": "A guard checks your credentials for the third time. Their expression suggests they'd rather you weren't here at all.",
+      "category": "overheard",
+      "weight": 8
+    },
+    {
+      "id": "fu_ovr_06",
+      "system_id": "the_fulcrum",
+      "text": "A civilian contractor whispers to another: 'Don't go past Deck 12. I don't care what your badge says.'",
+      "category": "overheard",
+      "weight": 9
+    },
+    {
+      "id": "fu_ovr_07",
+      "system_id": "the_fulcrum",
+      "text": "The personnel rotation here is every six months. Nobody does a second tour. Nobody explains why.",
+      "category": "overheard",
+      "weight": 8
+    },
+    {
+      "id": "fu_atm_03",
+      "system_id": "the_fulcrum",
+      "text": "A faint vibration from somewhere deep in the station. Not engines. Not life support. Something else. It stops when you try to locate it.",
+      "category": "atmosphere",
+      "weight": 8
+    },
+    {
+      "id": "fu_ntc_01",
+      "system_id": "the_fulcrum",
+      "text": "NOTICE: Recording devices are prohibited in all sections. This includes personal logs. Compliance is not optional.",
+      "category": "notice",
+      "weight": 7
+    }
+  ]
+}

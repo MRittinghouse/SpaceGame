@@ -32,6 +32,8 @@ SKILL_POSITIONS = {
         "commodity_specialist": (100, 620),
         "smuggler_contacts": (160, 480),
         "market_manipulation": (100, 750),
+        "supply_chain_mastery": (160, 750),
+        "trade_magnate": (100, 870),
     },
     SkillTreeType.GATHERING: {
         "efficient_drills": (310, 200),
@@ -40,7 +42,8 @@ SKILL_POSITIONS = {
         "master_extractor": (250, 480),
         "refining_knowledge": (250, 620),
         "efficient_refining": (185, 620),
-        "yield_mastery": (310, 620),
+        "yield_mastery": (370, 480),
+        "master_prospector": (185, 750),
     },
     SkillTreeType.MINING: {
         "click_power": (530, 200),
@@ -52,6 +55,8 @@ SKILL_POSITIONS = {
         "drone_efficiency": (530, 480),
         "ore_targeting": (530, 620),
         "chain_reaction": (460, 620),
+        "pressure_venting": (390, 480),
+        "strip_miner": (530, 750),
     },
     SkillTreeType.LEADERSHIP: {
         "crew_manager": (730, 200),
@@ -62,6 +67,8 @@ SKILL_POSITIONS = {
         "veteran_command": (730, 340),
         "crisis_management": (670, 620),
         "fleet_coordinator": (790, 620),
+        "morale_officer": (850, 480),
+        "legendary_captain": (730, 750),
     },
     SkillTreeType.SOCIAL: {
         "silver_tongue": (920, 200),
@@ -72,6 +79,8 @@ SKILL_POSITIONS = {
         "empathic_read": (1040, 480),
         "silver_lining": (860, 620),
         "faction_diplomat": (920, 620),
+        "cultural_savant": (1040, 620),
+        "voice_of_the_expanse": (920, 750),
     },
     SkillTreeType.GROUND: {
         "scrapper": (1080, 200),
@@ -79,7 +88,12 @@ SKILL_POSITIONS = {
         "quick_reflexes": (1080, 340),
         "last_stand": (1180, 340),
         "intimidating_presence": (1080, 480),
-        "veteran": (1130, 620),
+        "field_medic": (1180, 480),
+        "terrain_reader": (1020, 480),
+        "adaptive_fighter": (1080, 620),
+        "combat_scavenger": (1180, 620),
+        "veteran": (1130, 720),
+        "battle_hardened": (1130, 840),
     },
     SkillTreeType.COMBAT: {
         "weapons_training": (1360, 200),
@@ -89,6 +103,9 @@ SKILL_POSITIONS = {
         "shield_mastery": (1540, 340),
         "tactical_retreat": (1540, 480),
         "broadside": (1300, 480),
+        "rapid_fire": (1300, 620),
+        "hull_reinforcement": (1540, 620),
+        "ace_pilot": (1420, 620),
     },
     SkillTreeType.EXPLORATION: {
         "fuel_efficiency": (1700, 200),
@@ -98,6 +115,9 @@ SKILL_POSITIONS = {
         "hazard_scanner": (1820, 340),
         "long_range_scanner": (1880, 340),
         "explorer_reputation": (1880, 480),
+        "anomaly_detector": (1820, 480),
+        "field_repairs": (1640, 480),
+        "trailblazer": (1820, 620),
     },
     SkillTreeType.SMUGGLING: {
         "hidden_compartments": (2060, 200),
@@ -106,23 +126,32 @@ SKILL_POSITIONS = {
         "black_market_access": (2000, 480),
         "heat_management": (2120, 480),
         "ghost_runner": (2060, 620),
+        "false_manifest": (2120, 620),
+        "underworld_rep": (2000, 620),
+        "phantom": (2060, 750),
     },
 }
 
 NODE_RADIUS = 35
 
 # Total content width (rightmost node + padding)
-SCROLL_MAX = 1000  # Maximum scroll offset (content extends to ~2200px)
+SCROLL_MAX = 1100  # Maximum scroll offset (content extends to ~2200px)
 SCROLL_SPEED = 300  # Pixels per second for smooth scrolling
 
 
 class SkillTreeView(BaseView):
     """Visual skill tree with scrollable branches and enhanced visuals."""
 
-    def __init__(self, ui_manager: pygame_gui.UIManager, progression: PlayerProgression):
+    def __init__(
+        self,
+        ui_manager: pygame_gui.UIManager,
+        progression: PlayerProgression,
+        player: Optional["Player"] = None,
+    ):
         super().__init__()
         self.ui_manager = ui_manager
         self.progression = progression
+        self._player = player
         self.next_state: Optional[GameState] = None
         self.hovered_skill: Optional[str] = None
 
@@ -139,6 +168,7 @@ class SkillTreeView(BaseView):
 
         # UI
         self.back_button: Optional[pygame_gui.elements.UIButton] = None
+        self.respec_button: Optional[pygame_gui.elements.UIButton] = None
         self.scroll_left_btn: Optional[pygame_gui.elements.UIButton] = None
         self.scroll_right_btn: Optional[pygame_gui.elements.UIButton] = None
 
@@ -171,8 +201,13 @@ class SkillTreeView(BaseView):
 
     def _create_ui(self) -> None:
         self.back_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(WINDOW_WIDTH // 2 - 75, WINDOW_HEIGHT - 60, 150, 40),
+            relative_rect=pygame.Rect(WINDOW_WIDTH // 2 - 160, WINDOW_HEIGHT - 60, 150, 40),
             text="Back",
+            manager=self.ui_manager,
+        )
+        self.respec_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(WINDOW_WIDTH // 2 + 10, WINDOW_HEIGHT - 60, 150, 40),
+            text="Respec Skills",
             manager=self.ui_manager,
         )
         self.scroll_left_btn = pygame_gui.elements.UIButton(
@@ -187,7 +222,7 @@ class SkillTreeView(BaseView):
         )
 
     def _destroy_ui(self) -> None:
-        for elem in [self.back_button, self.scroll_left_btn, self.scroll_right_btn]:
+        for elem in [self.back_button, self.respec_button, self.scroll_left_btn, self.scroll_right_btn]:
             if elem:
                 elem.kill()
 
@@ -256,6 +291,21 @@ class SkillTreeView(BaseView):
                 self._scroll_target = max(0, self._scroll_target - 400)
             elif event.ui_element == self.scroll_right_btn:
                 self._scroll_target = min(SCROLL_MAX, self._scroll_target + 400)
+            elif event.ui_element == self.respec_button:
+                if self.progression.skill_points_spent == 0:
+                    self._show_message("No skills invested to reset")
+                else:
+                    level = self.progression.level
+                    credits = self._player.credits if self._player else 0
+                    success, msg = self.progression.respec_skills(
+                        player_level=level, player_credits=credits,
+                    )
+                    self._show_message(msg)
+                    if success and self._player:
+                        from spacegame.models.progression import RESPEC_COST_PER_LEVEL
+                        self._player.deduct_credits(RESPEC_COST_PER_LEVEL * level)
+                        self._node_surface_cache.clear()
+                        self._build_node_cache()
             elif event.ui_element == self.back_button:
                 self.next_state = GameState.CHARACTER
 

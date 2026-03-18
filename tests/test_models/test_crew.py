@@ -81,6 +81,7 @@ def _make_template(
         abilities=abilities,
         max_level=max_level,
         xp_thresholds=[0, 50, 150, 350, 700],
+        is_companion=True,
     )
 
 

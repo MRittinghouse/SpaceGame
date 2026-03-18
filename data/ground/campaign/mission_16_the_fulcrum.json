@@ -121,6 +121,7 @@
             "x": 5, "y": 9,
             "type": "loot_container",
             "loot_credits": 80,
+            "loot_commodities": {"anomalous_sample": 1},
             "description": "A weapons locker sealed with a military-grade cipher. Inside: energy cell packs, targeting modules, reinforced body armor. Guild military specification. Every serial number has been filed off."
         },
         {
@@ -133,6 +134,7 @@
             "x": 29, "y": 6,
             "type": "loot_container",
             "loot_credits": 70,
+            "loot_commodities": {"anomalous_sample": 2},
             "description": "Data drives in shielded cases. Assembly logs, power routing schedules, and a deployment timeline. The final entry is dated three days from now: 'Array deployment complete. Convergence activation window: 72 hours.'"
         }
     ],

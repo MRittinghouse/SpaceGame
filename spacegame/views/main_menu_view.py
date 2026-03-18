@@ -183,8 +183,8 @@ class MainMenuView(BaseView):
         ship_surf = self._ship_anim.get_surface() if self._ship_anim else None
         if ship_surf is not None:
             bob_y = self._ship_y + math.sin(self._ship_bob_phase) * 4
-            # Rotate so nose points right
-            rotated = pygame.transform.rotate(ship_surf, -90)
+            # Rotate so nose points forward (into the drift direction)
+            rotated = pygame.transform.rotate(ship_surf, 135)
             # Dim the ship so it feels ambient, not focal
             rotated.set_alpha(100)
             rect = rotated.get_rect(center=(int(self._ship_x), int(bob_y)))

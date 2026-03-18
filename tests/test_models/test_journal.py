@@ -233,6 +233,58 @@ class TestJournalAutoEntries:
         assert entry is None
 
 
+class TestJournalAutoEntryProgrammatic:
+    """Tests for add_auto_entry (programmatic, not flag-triggered)."""
+
+    def test_add_auto_entry_creates_entry(self) -> None:
+        """Adding a programmatic auto entry stores it."""
+        journal = Journal()
+        entry = journal.add_auto_entry(
+            entry_id="mission_discover_test",
+            text="Heard about some work.",
+            game_day=3,
+            system_id="nexus_prime",
+            tag="goals",
+            mission_id="test_mission",
+        )
+        assert entry.entry_id == "mission_discover_test"
+        assert entry.text == "Heard about some work."
+        assert entry.source == "auto"
+        assert entry.tag == "goals"
+        assert entry.mission_id == "test_mission"
+        assert entry.game_day == 3
+        assert journal.get_entry_count() == 1
+
+    def test_add_auto_entry_increments_counter(self) -> None:
+        """Each programmatic entry gets a unique created_at counter."""
+        journal = Journal()
+        e1 = journal.add_auto_entry("e1", "First", game_day=1)
+        e2 = journal.add_auto_entry("e2", "Second", game_day=1)
+        assert e2.created_at > e1.created_at
+
+    def test_add_auto_entry_appears_in_get_entries(self) -> None:
+        """Programmatic auto entries are returned by get_entries."""
+        journal = Journal()
+        journal.add_auto_entry("e1", "Test entry", game_day=1, tag="goals")
+        entries = journal.get_entries(tag_filter="goals")
+        assert len(entries) == 1
+        assert entries[0].entry_id == "e1"
+
+    def test_add_auto_entry_survives_serialization(self) -> None:
+        """Programmatic auto entries round-trip through save/load."""
+        journal = Journal()
+        journal.add_auto_entry(
+            "disc_1", "Found work.", game_day=5, mission_id="iron_delivery"
+        )
+        state = journal.get_state()
+        journal2 = Journal()
+        journal2.load_state(state)
+        entries = journal2.get_entries()
+        assert len(entries) == 1
+        assert entries[0].entry_id == "disc_1"
+        assert entries[0].mission_id == "iron_delivery"
+
+
 class TestJournalPlayerEntries:
     """Tests for player-written entries."""
 

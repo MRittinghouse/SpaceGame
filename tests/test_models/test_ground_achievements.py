@@ -301,7 +301,7 @@ class TestGroundAchievementData:
 
         dl = get_data_loader()
         dl.load_all()
-        assert len(dl.achievements) == 43
+        assert len(dl.achievements) == 62
 
     def test_ground_category_achievements_loaded(self) -> None:
         """Should have 7 ground-category achievements."""

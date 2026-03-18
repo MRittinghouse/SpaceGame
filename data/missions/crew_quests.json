@@ -1,0 +1,565 @@
+{
+  "missions": [
+    {
+      "id": "elena_old_charts",
+      "name": "Old Charts",
+      "description": "Elena hasn't talked about Captain Koren in years. But she kept the coordinates, his last known position scrawled on a nav chip she carries everywhere. The Guild archives at Stellaris Port might fill in the blanks. Or confirm what she already suspects.",
+      "hint": "Travel to Stellaris Port and help Elena access the Guild navigation archives.",
+      "mission_type": "crew",
+      "available_at": [],
+      "available_after": "",
+      "available_before": "",
+      "discovery_method": "automatic",
+      "repeatable": false,
+      "prerequisites": [],
+      "required_flags": [
+        "crew_loyalty_elena_reeves_50"
+      ],
+      "auto_accept": true,
+      "on_accept_cargo": [],
+      "objectives": [
+        {
+          "type": "reach_system",
+          "target_id": "stellaris_port",
+          "target_quantity": 1,
+          "description": "Travel to Stellaris Port with Elena"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "elena_archives_accessed",
+          "target_quantity": 1,
+          "description": "Help Elena access the Guild navigation archives"
+        }
+      ],
+      "rewards": [
+        {
+          "reward_type": "credits",
+          "amount": 500
+        },
+        {
+          "reward_type": "xp",
+          "amount": 80
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "elena_quest_stage1_complete"
+        }
+      ],
+      "crew_member_id": "elena_reeves"
+    },
+    {
+      "id": "elena_wreck_meridian",
+      "name": "The Wreck of the Meridian",
+      "description": "The archives gave Elena what she asked for. The Meridian's final coordinates put the wreck near Iron Depths, deep enough that nobody stumbles on it by accident, shallow enough that someone should have found it by now. Elena's hands were steady when she read the data. Her voice wasn't.",
+      "hint": "Travel to Iron Depths and investigate the Meridian wreck site.",
+      "mission_type": "crew",
+      "available_at": [],
+      "available_after": "",
+      "available_before": "",
+      "discovery_method": "automatic",
+      "repeatable": false,
+      "prerequisites": [],
+      "required_flags": [
+        "elena_quest_stage1_complete",
+        "crew_loyalty_elena_reeves_70"
+      ],
+      "auto_accept": true,
+      "on_accept_cargo": [],
+      "objectives": [
+        {
+          "type": "reach_system",
+          "target_id": "iron_depths",
+          "target_quantity": 1,
+          "description": "Travel to Iron Depths to find the Meridian"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "elena_wreck_found",
+          "target_quantity": 1,
+          "description": "Investigate the Meridian wreck site"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "elena_choice_made",
+          "target_quantity": 1,
+          "description": "Decide what to recover from the wreck"
+        }
+      ],
+      "rewards": [
+        {
+          "reward_type": "xp",
+          "amount": 120
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "elena_quest_stage2_complete"
+        }
+      ],
+      "crew_member_id": "elena_reeves"
+    },
+    {
+      "id": "elena_charting_stars",
+      "name": "Charting New Stars",
+      "description": "The Meridian's nav data was corrupted but not destroyed. Elena's been working through it every night shift, piecing together a route that Captain Koren started charting before he died. Finishing his work won't bring him back. But it might mean he didn't die for nothing.",
+      "hint": "Help Elena chart and test the new navigation route.",
+      "mission_type": "crew",
+      "available_at": [],
+      "available_after": "",
+      "available_before": "",
+      "discovery_method": "automatic",
+      "repeatable": false,
+      "prerequisites": [],
+      "required_flags": [
+        "elena_quest_stage2_complete",
+        "crew_loyalty_elena_reeves_85"
+      ],
+      "auto_accept": true,
+      "on_accept_cargo": [],
+      "objectives": [
+        {
+          "type": "has_flag",
+          "target_id": "elena_route_charted",
+          "target_quantity": 1,
+          "description": "Help Elena chart the new route"
+        }
+      ],
+      "rewards": [
+        {
+          "reward_type": "credits",
+          "amount": 800
+        },
+        {
+          "reward_type": "xp",
+          "amount": 200
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "elena_quest_stage3_complete"
+        }
+      ],
+      "crew_member_id": "elena_reeves"
+    },
+    {
+      "id": "marcus_old_debts",
+      "name": "Old Debts",
+      "description": "Marcus filed that safety report three years ago. Faulty hull welds, skipped inspections, pressure seals rated for half the depth they were running. Management buried it. Two people have died since. He's been carrying that number in his head like a debt. Time to go back to Breakstone and pull the receipts.",
+      "hint": "Travel to Breakstone and help Marcus gather evidence of safety violations.",
+      "mission_type": "crew",
+      "available_at": [],
+      "available_after": "",
+      "available_before": "",
+      "discovery_method": "automatic",
+      "repeatable": false,
+      "prerequisites": [],
+      "required_flags": [
+        "crew_loyalty_marcus_jin_50"
+      ],
+      "auto_accept": true,
+      "on_accept_cargo": [],
+      "objectives": [
+        {
+          "type": "reach_system",
+          "target_id": "breakstone",
+          "target_quantity": 1,
+          "description": "Travel to Breakstone with Marcus"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "marcus_evidence_gathered",
+          "target_quantity": 1,
+          "description": "Help Marcus gather evidence of safety violations"
+        }
+      ],
+      "rewards": [
+        {
+          "reward_type": "credits",
+          "amount": 300
+        },
+        {
+          "reward_type": "xp",
+          "amount": 80
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "marcus_quest_stage1_complete"
+        }
+      ],
+      "crew_member_id": "marcus_jin"
+    },
+    {
+      "id": "marcus_the_inspector",
+      "name": "The Inspector",
+      "description": "Marcus has the evidence. Logged maintenance records, falsified inspection dates, timestamps that don't lie even when people do. A Union safety inspector at Forgeworks has the authority to force an investigation. The question is whether the inspector answers to the Union or to the people who sign the Union's contracts.",
+      "hint": "Travel to Forgeworks and present the evidence to the Union inspector.",
+      "mission_type": "crew",
+      "available_at": [],
+      "available_after": "",
+      "available_before": "",
+      "discovery_method": "automatic",
+      "repeatable": false,
+      "prerequisites": [],
+      "required_flags": [
+        "marcus_quest_stage1_complete",
+        "crew_loyalty_marcus_jin_70"
+      ],
+      "auto_accept": true,
+      "on_accept_cargo": [],
+      "objectives": [
+        {
+          "type": "reach_system",
+          "target_id": "forgeworks",
+          "target_quantity": 1,
+          "description": "Travel to Forgeworks to find the inspector"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "marcus_inspector_resolved",
+          "target_quantity": 1,
+          "description": "Deal with the compromised inspector"
+        }
+      ],
+      "rewards": [
+        {
+          "reward_type": "xp",
+          "amount": 120
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "marcus_quest_stage2_complete"
+        }
+      ],
+      "crew_member_id": "marcus_jin"
+    },
+    {
+      "id": "marcus_steel_holds",
+      "name": "Steel Holds",
+      "description": "Word travels fast in mining towns. The shipyard owner knows about the investigation, and he's burning files, reassigning witnesses, and making threats that don't sound like threats until you think about them later. Marcus has one window to confront the man who covered up the deaths before the evidence disappears for good.",
+      "hint": "Return to Breakstone and help Marcus confront the shipyard owner.",
+      "mission_type": "crew",
+      "available_at": [],
+      "available_after": "",
+      "available_before": "",
+      "discovery_method": "automatic",
+      "repeatable": false,
+      "prerequisites": [],
+      "required_flags": [
+        "marcus_quest_stage2_complete",
+        "crew_loyalty_marcus_jin_85"
+      ],
+      "auto_accept": true,
+      "on_accept_cargo": [],
+      "objectives": [
+        {
+          "type": "reach_system",
+          "target_id": "breakstone",
+          "target_quantity": 1,
+          "description": "Return to Breakstone for the confrontation"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "marcus_confrontation_resolved",
+          "target_quantity": 1,
+          "description": "Confront the shipyard owner"
+        }
+      ],
+      "rewards": [
+        {
+          "reward_type": "credits",
+          "amount": 600
+        },
+        {
+          "reward_type": "xp",
+          "amount": 200
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "marcus_quest_stage3_complete"
+        }
+      ],
+      "crew_member_id": "marcus_jin"
+    },
+    {
+      "id": "priya_retracted_paper",
+      "name": "The Retracted Paper",
+      "description": "Priya's face went white when the data node alert came through. Her suppressed research paper, the one her rival claimed credit for, the one the Collective quietly erased, has resurfaced at Axiom Labs. Either someone wants the truth out, or someone is setting a trap. She needs to get there before the evidence vanishes again.",
+      "hint": "Travel to Axiom Labs and help Priya retrieve her research paper.",
+      "mission_type": "crew",
+      "available_at": [],
+      "available_after": "",
+      "available_before": "",
+      "discovery_method": "automatic",
+      "repeatable": false,
+      "prerequisites": [],
+      "required_flags": [
+        "crew_loyalty_dr_priya_osei_50"
+      ],
+      "auto_accept": true,
+      "on_accept_cargo": [],
+      "objectives": [
+        {
+          "type": "reach_system",
+          "target_id": "axiom_labs",
+          "target_quantity": 1,
+          "description": "Travel to Axiom Labs with Priya"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "priya_paper_retrieved",
+          "target_quantity": 1,
+          "description": "Help Priya retrieve her research paper"
+        }
+      ],
+      "rewards": [
+        {
+          "reward_type": "credits",
+          "amount": 400
+        },
+        {
+          "reward_type": "xp",
+          "amount": 80
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "priya_quest_stage1_complete"
+        }
+      ],
+      "crew_member_id": "dr_priya_osei"
+    },
+    {
+      "id": "priya_peer_review",
+      "name": "Peer Review",
+      "description": "The timestamps don't lie. Priya's original data predates her rival's publication by eleven months. She has proof of plagiarism, the kind that ends careers and reopens grants. The Collective's review board sits at Nova Research. Walking in there means burning bridges with powerful people. Not walking in means they got away with it.",
+      "hint": "Travel to Nova Research and help Priya present her case to the review board.",
+      "mission_type": "crew",
+      "available_at": [],
+      "available_after": "",
+      "available_before": "",
+      "discovery_method": "automatic",
+      "repeatable": false,
+      "prerequisites": [],
+      "required_flags": [
+        "priya_quest_stage1_complete",
+        "crew_loyalty_dr_priya_osei_70"
+      ],
+      "auto_accept": true,
+      "on_accept_cargo": [],
+      "objectives": [
+        {
+          "type": "reach_system",
+          "target_id": "nova_research",
+          "target_quantity": 1,
+          "description": "Travel to Nova Research for the review board hearing"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "priya_confrontation_resolved",
+          "target_quantity": 1,
+          "description": "Help Priya resolve the plagiarism dispute"
+        }
+      ],
+      "rewards": [
+        {
+          "reward_type": "xp",
+          "amount": 120
+        },
+        {
+          "reward_type": "modify_reputation",
+          "amount": 3,
+          "target_id": "science_collective"
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "priya_quest_stage2_complete"
+        }
+      ],
+      "crew_member_id": "dr_priya_osei"
+    },
+    {
+      "id": "priya_the_theorem",
+      "name": "The Theorem",
+      "description": "The review board ruled in Priya's favor. Her name is back on her own work. But vindication was never the point. The science was. And the science is pointing somewhere extraordinary. She's found a pattern in the gravitational data that shouldn't exist. A field test could validate a theorem that rewrites the textbooks. Or prove she's chasing ghosts.",
+      "hint": "Help Priya conduct her field test and validate the theorem.",
+      "mission_type": "crew",
+      "available_at": [],
+      "available_after": "",
+      "available_before": "",
+      "discovery_method": "automatic",
+      "repeatable": false,
+      "prerequisites": [],
+      "required_flags": [
+        "priya_quest_stage2_complete",
+        "crew_loyalty_dr_priya_osei_85"
+      ],
+      "auto_accept": true,
+      "on_accept_cargo": [],
+      "objectives": [
+        {
+          "type": "has_flag",
+          "target_id": "priya_theorem_validated",
+          "target_quantity": 1,
+          "description": "Help Priya validate her theorem through field testing"
+        }
+      ],
+      "rewards": [
+        {
+          "reward_type": "credits",
+          "amount": 700
+        },
+        {
+          "reward_type": "xp",
+          "amount": 200
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "priya_quest_stage3_complete"
+        }
+      ],
+      "crew_member_id": "dr_priya_osei"
+    },
+    {
+      "id": "tomas_name_from_past",
+      "name": "A Name from the Past",
+      "description": "Tomas doesn't talk about his family's trading company. Not the good years, not the collapse, and especially not Ren Castillo. The charming bastard who forged their contracts, drained their accounts, and vanished. But someone at Haven's Rest just said that name out loud, and Tomas hasn't unclenched his jaw since.",
+      "hint": "Travel to Haven's Rest and help Tomas follow the lead on Ren Castillo.",
+      "mission_type": "crew",
+      "available_at": [],
+      "available_after": "",
+      "available_before": "",
+      "discovery_method": "automatic",
+      "repeatable": false,
+      "prerequisites": [],
+      "required_flags": [
+        "crew_loyalty_tomas_drifter_50"
+      ],
+      "auto_accept": true,
+      "on_accept_cargo": [],
+      "objectives": [
+        {
+          "type": "reach_system",
+          "target_id": "havens_rest",
+          "target_quantity": 1,
+          "description": "Travel to Haven's Rest with Tomas"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "tomas_lead_found",
+          "target_quantity": 1,
+          "description": "Help Tomas track down the lead on Ren Castillo"
+        }
+      ],
+      "rewards": [
+        {
+          "reward_type": "credits",
+          "amount": 350
+        },
+        {
+          "reward_type": "xp",
+          "amount": 80
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "tomas_quest_stage1_complete"
+        }
+      ],
+      "crew_member_id": "tomas_drifter"
+    },
+    {
+      "id": "tomas_fulcrum_job",
+      "name": "The Fulcrum Job",
+      "description": "Ren Castillo is alive, well, and running a new scheme at The Fulcrum. Same charm, different marks. Tomas has a plan to con the con artist, an elaborate bit of poetic justice that's either brilliant or the kind of thing that gets you spaced. There might be a cleaner way to handle this. Tomas isn't interested in clean.",
+      "hint": "Travel to The Fulcrum and confront Ren Castillo.",
+      "mission_type": "crew",
+      "available_at": [],
+      "available_after": "",
+      "available_before": "",
+      "discovery_method": "automatic",
+      "repeatable": false,
+      "prerequisites": [],
+      "required_flags": [
+        "tomas_quest_stage1_complete",
+        "crew_loyalty_tomas_drifter_70"
+      ],
+      "auto_accept": true,
+      "on_accept_cargo": [],
+      "objectives": [
+        {
+          "type": "reach_system",
+          "target_id": "the_fulcrum",
+          "target_quantity": 1,
+          "description": "Travel to The Fulcrum to find Ren Castillo"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "tomas_confrontation_resolved",
+          "target_quantity": 1,
+          "description": "Decide how to handle Ren Castillo"
+        }
+      ],
+      "rewards": [
+        {
+          "reward_type": "xp",
+          "amount": 120
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "tomas_quest_stage2_complete"
+        }
+      ],
+      "crew_member_id": "tomas_drifter"
+    },
+    {
+      "id": "tomas_new_ledger",
+      "name": "New Ledger",
+      "description": "The thing about revenge is that it doesn't fill the hole. Tomas got what he wanted from Ren Castillo, and now he's sitting in the cargo bay staring at his father's old manifest ledger. The family business is gone. The man who destroyed it is dealt with. What's left is the question Tomas has been avoiding: what kind of trader does he want to be when he's not chasing ghosts?",
+      "hint": "Help Tomas resolve his past and chart a new course.",
+      "mission_type": "crew",
+      "available_at": [],
+      "available_after": "",
+      "available_before": "",
+      "discovery_method": "automatic",
+      "repeatable": false,
+      "prerequisites": [],
+      "required_flags": [
+        "tomas_quest_stage2_complete",
+        "crew_loyalty_tomas_drifter_85"
+      ],
+      "auto_accept": true,
+      "on_accept_cargo": [],
+      "objectives": [
+        {
+          "type": "has_flag",
+          "target_id": "tomas_past_resolved",
+          "target_quantity": 1,
+          "description": "Help Tomas resolve his past"
+        }
+      ],
+      "rewards": [
+        {
+          "reward_type": "credits",
+          "amount": 750
+        },
+        {
+          "reward_type": "xp",
+          "amount": 200
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "tomas_quest_stage3_complete"
+        }
+      ],
+      "crew_member_id": "tomas_drifter"
+    }
+  ]
+}

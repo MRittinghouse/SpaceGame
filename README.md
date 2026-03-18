@@ -151,14 +151,17 @@ See `CLAUDE.md` for comprehensive architecture and coding conventions.
 
 | Category | Count |
 |----------|-------|
-| Tests | 3,415+ |
+| Tests | 3,515+ |
 | Views | 34 |
 | Ships | 24 (5 tiers) |
 | Upgrades | 40 (with tuning) |
 | Commodities | 27 |
+| Random Encounters | 131 (11 types) |
 | Skill Trees | 9 (63 skills) |
-| Story Missions | 22 |
-| NPCs | 17 |
+| Campaign Missions | 22 |
+| Side Missions | 21 |
+| NPCs | 28 |
+| Dialogue Trees | 29 |
 | Enemy Templates | 28 |
 | Star Systems | 11 |
 | Factions | 4 + Crimson Reach |

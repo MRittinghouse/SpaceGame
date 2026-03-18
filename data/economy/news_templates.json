@@ -1,0 +1,788 @@
+{
+  "news_templates": [
+    {
+      "id": "ge_embargo_01",
+      "template": "TRADE ALERT: {faction} imposes trade embargo — {description}",
+      "trigger": "galaxy_event_embargo",
+      "priority": 8,
+      "faction_id": ""
+    },
+    {
+      "id": "ge_embargo_02",
+      "template": "COMMERCE: Embargo restricts trade at {system} — smuggling premiums spike",
+      "trigger": "galaxy_event_embargo",
+      "priority": 7,
+      "faction_id": ""
+    },
+    {
+      "id": "ge_embargo_03",
+      "template": "EDITORIAL: {faction} embargo enters second week. Independent haulers bear the cost. As usual.",
+      "trigger": "galaxy_event_embargo",
+      "priority": 7,
+      "faction_id": ""
+    },
+    {
+      "id": "ge_embargo_04",
+      "template": "COMMERCE: Stations near {system} report empty shelves on essential goods. {faction} calls shortages 'temporary adjustments.'",
+      "trigger": "galaxy_event_embargo",
+      "priority": 8,
+      "faction_id": ""
+    },
+    {
+      "id": "ge_embargo_05",
+      "template": "SECURITY: Three cargo vessels seized near {system} under embargo enforcement. Crews detained pending review.",
+      "trigger": "galaxy_event_embargo",
+      "priority": 8,
+      "faction_id": ""
+    },
+    {
+      "id": "ge_embargo_06",
+      "template": "MARKETS: Black market prices near {system} triple overnight. Official channels remain 'fully operational,' per {faction} spokesperson.",
+      "trigger": "galaxy_event_embargo",
+      "priority": 7,
+      "faction_id": ""
+    },
+    {
+      "id": "ge_festival_01",
+      "template": "CULTURE: {description}",
+      "trigger": "galaxy_event_festival",
+      "priority": 6,
+      "faction_id": ""
+    },
+    {
+      "id": "ge_festival_02",
+      "template": "MARKETS: Festival at {system} drives luxury demand — traders flock to the exchange",
+      "trigger": "galaxy_event_festival",
+      "priority": 6,
+      "faction_id": ""
+    },
+    {
+      "id": "ge_festival_03",
+      "template": "CULTURE: Celebrations at {system} draw thousands. Local merchants extend hours. Pickpocket reports also up.",
+      "trigger": "galaxy_event_festival",
+      "priority": 6,
+      "faction_id": ""
+    },
+    {
+      "id": "ge_festival_04",
+      "template": "COMMERCE: Festival at {system} boosts local economy. Workers granted half-shift holiday — unpaid, naturally.",
+      "trigger": "galaxy_event_festival",
+      "priority": 5,
+      "faction_id": ""
+    },
+    {
+      "id": "ge_festival_05",
+      "template": "CULTURE: Festivities at {system}. For one day, everyone pretends the sector's problems don't exist. Almost works.",
+      "trigger": "galaxy_event_festival",
+      "priority": 5,
+      "faction_id": ""
+    },
+    {
+      "id": "ge_festival_06",
+      "template": "MARKETS: Luxury goods demand surges around {system}. Profiteering complaints filed and immediately shelved.",
+      "trigger": "galaxy_event_festival",
+      "priority": 6,
+      "faction_id": ""
+    },
+    {
+      "id": "ge_strike_01",
+      "template": "LABOR: {description}",
+      "trigger": "galaxy_event_labor_strike",
+      "priority": 8,
+      "faction_id": ""
+    },
+    {
+      "id": "ge_strike_02",
+      "template": "SUPPLY CHAIN: Production halt at {system} expected to impact downstream systems",
+      "trigger": "galaxy_event_labor_strike",
+      "priority": 7,
+      "faction_id": ""
+    },
+    {
+      "id": "ge_strike_03",
+      "template": "LABOR: Workers at {system} demand updated safety equipment. Management offers 'a review committee.' Strike continues.",
+      "trigger": "galaxy_event_labor_strike",
+      "priority": 8,
+      "faction_id": ""
+    },
+    {
+      "id": "ge_strike_04",
+      "template": "COMMERCE: Strike at {system} chokes supply lines. Three downstream stations report critical shortages. Nobody's blinking yet.",
+      "trigger": "galaxy_event_labor_strike",
+      "priority": 7,
+      "faction_id": ""
+    },
+    {
+      "id": "ge_strike_05",
+      "template": "EDITORIAL: Strike at {system} enters new phase. Corporate press calls it 'disruption.' Workers call it 'survival.'",
+      "trigger": "galaxy_event_labor_strike",
+      "priority": 7,
+      "faction_id": ""
+    },
+    {
+      "id": "ge_strike_06",
+      "template": "LABOR: Independent contractors hired to replace striking workers at {system}. Union warns of 'consequences for scabs.'",
+      "trigger": "galaxy_event_labor_strike",
+      "priority": 8,
+      "faction_id": ""
+    },
+    {
+      "id": "ge_breakthrough_01",
+      "template": "SCIENCE: {description}",
+      "trigger": "galaxy_event_research_breakthrough",
+      "priority": 7,
+      "faction_id": ""
+    },
+    {
+      "id": "ge_breakthrough_02",
+      "template": "MARKETS: Research breakthrough at {system} sends commodity prices tumbling",
+      "trigger": "galaxy_event_research_breakthrough",
+      "priority": 6,
+      "faction_id": ""
+    },
+    {
+      "id": "ge_breakthrough_03",
+      "template": "SCIENCE: Breakthrough at {system} hailed as 'generational advance.' Patent filings indicate someone plans to profit generationally too.",
+      "trigger": "galaxy_event_research_breakthrough",
+      "priority": 6,
+      "faction_id": ""
+    },
+    {
+      "id": "ge_breakthrough_04",
+      "template": "COMMERCE: New research from {system} renders existing tech obsolete. Investors scramble. Warehouse owners panic.",
+      "trigger": "galaxy_event_research_breakthrough",
+      "priority": 6,
+      "faction_id": ""
+    },
+    {
+      "id": "ge_breakthrough_05",
+      "template": "SCIENCE: Rival labs dispute priority on {system} breakthrough. The discovery belongs to everyone, say the people who didn't fund it.",
+      "trigger": "galaxy_event_research_breakthrough",
+      "priority": 5,
+      "faction_id": ""
+    },
+    {
+      "id": "ge_breakthrough_06",
+      "template": "EDITORIAL: Research breakthrough at {system}. The Collective celebrates. The rest of the sector asks: 'Can we afford it?'",
+      "trigger": "galaxy_event_research_breakthrough",
+      "priority": 6,
+      "faction_id": ""
+    },
+    {
+      "id": "ge_pirate_01",
+      "template": "SECURITY: {description}",
+      "trigger": "galaxy_event_pirate_surge",
+      "priority": 8,
+      "faction_id": ""
+    },
+    {
+      "id": "ge_pirate_02",
+      "template": "WARNING: Pirate activity near {system} — independent traders advised to travel armed",
+      "trigger": "galaxy_event_pirate_surge",
+      "priority": 7,
+      "faction_id": ""
+    },
+    {
+      "id": "ge_pirate_03",
+      "template": "SECURITY: Convoy losses near {system} mount. Insurance underwriters refuse new policies for the corridor.",
+      "trigger": "galaxy_event_pirate_surge",
+      "priority": 8,
+      "faction_id": ""
+    },
+    {
+      "id": "ge_pirate_04",
+      "template": "DISTRESS: Two freighters lost near {system} in 48 hours. Debris recovered. Crews not.",
+      "trigger": "galaxy_event_pirate_surge",
+      "priority": 8,
+      "faction_id": ""
+    },
+    {
+      "id": "ge_pirate_05",
+      "template": "SECURITY: Authorities near {system} issue 'travel at own risk' advisory. Patrol vessels reassigned to protect 'priority assets.'",
+      "trigger": "galaxy_event_pirate_surge",
+      "priority": 7,
+      "faction_id": ""
+    },
+    {
+      "id": "ge_pirate_06",
+      "template": "COMMERCE: Shipping rates near {system} surge as carriers demand hazard premiums. Small haulers priced out entirely.",
+      "trigger": "galaxy_event_pirate_surge",
+      "priority": 7,
+      "faction_id": ""
+    },
+    {
+      "id": "me_shortage_01",
+      "template": "MARKETS: {description}",
+      "trigger": "market_event",
+      "priority": 5,
+      "faction_id": ""
+    },
+    {
+      "id": "me_surge_01",
+      "template": "COMMERCE: {commodity} prices surge at {system} — traders report unusual activity",
+      "trigger": "market_event",
+      "priority": 5,
+      "faction_id": ""
+    },
+    {
+      "id": "me_surge_02",
+      "template": "MARKETS: {commodity} shortage at {system}. Prices climbing. The people who need it most can afford it least.",
+      "trigger": "market_event",
+      "priority": 5,
+      "faction_id": ""
+    },
+    {
+      "id": "me_surge_03",
+      "template": "COMMERCE: Speculation drives {commodity} volatility at {system}. Regulators call for calm. Speculators call their brokers.",
+      "trigger": "market_event",
+      "priority": 5,
+      "faction_id": ""
+    },
+    {
+      "id": "me_surplus_01",
+      "template": "MARKETS: {commodity} surplus floods {system}. Sellers undercut each other. Buyers wait for the bottom.",
+      "trigger": "market_event",
+      "priority": 5,
+      "faction_id": ""
+    },
+    {
+      "id": "pe_01",
+      "template": "POLITICS: {description}",
+      "trigger": "political_event",
+      "priority": 6,
+      "faction_id": ""
+    },
+    {
+      "id": "pe_02",
+      "template": "POLITICS: {description} — analysts predict fallout will reshape trade routes for months.",
+      "trigger": "political_event",
+      "priority": 6,
+      "faction_id": ""
+    },
+    {
+      "id": "pe_03",
+      "template": "EDITORIAL: {description} Official statements emphasize stability. Docking bay conversations suggest otherwise.",
+      "trigger": "political_event",
+      "priority": 5,
+      "faction_id": ""
+    },
+    {
+      "id": "pe_04",
+      "template": "POLITICS: {description} Independent traders brace for policy shifts. Again.",
+      "trigger": "political_event",
+      "priority": 5,
+      "faction_id": ""
+    },
+    {
+      "id": "pm_01",
+      "template": "COMMERCE: {description}",
+      "trigger": "player_milestone",
+      "priority": 4,
+      "faction_id": ""
+    },
+    {
+      "id": "pm_02",
+      "template": "LOCAL: {description} — one more name the sector won't forget.",
+      "trigger": "player_milestone",
+      "priority": 4,
+      "faction_id": ""
+    },
+    {
+      "id": "pm_03",
+      "template": "TRADE: {description} Registry offices take note.",
+      "trigger": "player_milestone",
+      "priority": 4,
+      "faction_id": ""
+    },
+    {
+      "id": "pa_trade_01",
+      "template": "COMMERCE: Independent captain {player} records major sale at {system}. {amount} CR transaction turns heads on the trading floor.",
+      "trigger": "player_action",
+      "priority": 6,
+      "faction_id": ""
+    },
+    {
+      "id": "pa_trade_02",
+      "template": "MARKETS: The {ship} docks at {system} with a hold full of {commodity}. Local prices adjust accordingly.",
+      "trigger": "player_action",
+      "priority": 6,
+      "faction_id": ""
+    },
+    {
+      "id": "pa_trade_03",
+      "template": "LOCAL: Hauler {player} spotted moving bulk {commodity} through {system}. Competitors take notice.",
+      "trigger": "player_action",
+      "priority": 5,
+      "faction_id": ""
+    },
+    {
+      "id": "pa_mining_01",
+      "template": "MINING: Captain {player} reaches depth {detail} in {system} asteroid field. Deep core specialists impressed.",
+      "trigger": "player_action",
+      "priority": 6,
+      "faction_id": ""
+    },
+    {
+      "id": "pa_mining_02",
+      "template": "LOCAL: The {ship} returns from {system} belt with a record ore haul. Smelters lining up.",
+      "trigger": "player_action",
+      "priority": 5,
+      "faction_id": ""
+    },
+    {
+      "id": "pa_salvage_01",
+      "template": "SALVAGE: The {ship} strips a derelict hull clean near {system}. Nothing left but framework and regret.",
+      "trigger": "player_action",
+      "priority": 5,
+      "faction_id": ""
+    },
+    {
+      "id": "pa_combat_01",
+      "template": "SECURITY: Captain {player} survives hostile engagement near {system}. Authorities note the wreckage.",
+      "trigger": "player_action",
+      "priority": 6,
+      "faction_id": ""
+    },
+    {
+      "id": "pa_refine_01",
+      "template": "INDUSTRY: The forge aboard the {ship} runs hot. Captain {player} reportedly mastering advanced recipes at {system}.",
+      "trigger": "player_action",
+      "priority": 5,
+      "faction_id": ""
+    },
+    {
+      "id": "pa_rank_01",
+      "template": "LOCAL: Captain {player} earns top marks at {system}. Station officials call the performance 'exemplary.'",
+      "trigger": "player_action",
+      "priority": 7,
+      "faction_id": ""
+    },
+    {
+      "id": "pa_smuggle_01",
+      "template": "SECURITY: Customs officers at {system} report 'suspicious cargo patterns' from a vessel matching the {ship}'s profile.",
+      "trigger": "player_action",
+      "priority": 6,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_01",
+      "template": "Forgeworks foundry output reaches 12-month high",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_02",
+      "template": "Nexus Prime customs reports a record number of inspections this quarter",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_03",
+      "template": "Stellaris Port art auction sets new price record for pre-Expansion ceramics",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_04",
+      "template": "Breakstone miners celebrate production milestone with community feast",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_05",
+      "template": "Iron Depths safety board publishes quarterly incident report — numbers improving",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_06",
+      "template": "Axiom Labs announces open call for research proposals — record applications expected",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_07",
+      "template": "Nova Research patents three new manufacturing processes in a single cycle",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_08",
+      "template": "Haven's Rest community garden wins sector-wide agricultural award",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_09",
+      "template": "Verdant textile cooperative signs export agreement with Commerce Guild outlets",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_10",
+      "template": "Shipping lane congestion reported between Nexus Prime and Forgeworks",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_11",
+      "template": "Commerce Guild issues advisory on counterfeit bills of landing circulating in outer systems",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_12",
+      "template": "Crimson Reach salvage haul yields pre-Expansion navigational data — historians intrigued",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_13",
+      "template": "Fuel cell efficiency standards under review — Collective researchers call for industry-wide upgrade",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_14",
+      "template": "Alliance community councils vote to expand cooperative trade agreements with independent haulers",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_15",
+      "template": "Union leadership lauds declining injury rates — credits improved safety training programs",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_16",
+      "template": "Interstellar shipping insurance rates climb for the fourth consecutive quarter",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_17",
+      "template": "The Fulcrum denies rumors of expanded military operations — 'routine exercises only'",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_18",
+      "template": "Medical supply demand up 15% sector-wide — Collective attributes rise to aging infrastructure",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_19",
+      "template": "Rare ore prospecting report: new crystal deposits detected in deep-core surveys",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_20",
+      "template": "Independent traders association calls for reduced docking fees at Guild-operated stations",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_21",
+      "template": "Breakstone ore shipments running ahead of schedule — Guild procurement pleased",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_22",
+      "template": "New restaurant opens on Stellaris Port promenade — reservations already backed up three weeks",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_23",
+      "template": "Verdant harvest yields break previous records — surplus earmarked for Alliance distribution",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_24",
+      "template": "DCMC quarterly earnings beat projections — Iron Depths operations cited as key driver",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_25",
+      "template": "The Aurelia Heritage Foundation acquires new artifacts from pre-Expansion era dig site",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_26",
+      "template": "Crimson Reach pilots report unusual debris field — origin unknown, salvage opportunities expected",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_27",
+      "template": "Science Collective publishes annual 'State of Research' report — funding requests up across all departments",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_28",
+      "template": "Miners' Union apprenticeship program sees highest enrollment in a decade",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_29",
+      "template": "Alliance storyteller circuit announces new season — performances scheduled across frontier systems",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_30",
+      "template": "Commerce Guild arbitration court settles long-running tariff dispute — both sides claim victory",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_31",
+      "template": "Nexus Prime Atmospheric Services reminds residents that recycling surcharges reflect operational costs, not policy decisions",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_32",
+      "template": "Frontier Alliance reports 14% decrease in missing vessel filings — down to 340 this quarter",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_33",
+      "template": "DCMC quarterly safety report: zero fatalities in Iron Depths Shafts 1-6. Shafts 7-12 data pending review.",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_34",
+      "template": "Commerce Guild reminds independent haulers that unlicensed freight carries a minimum 2,000 CR fine per unit",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_35",
+      "template": "PERSONAL: Seeking crew of the freighter Callaway's Fortune, last seen Crimson Reach corridor. Contact Stellaris Port registry.",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_36",
+      "template": "BOUNTY POSTED: 4,500 CR for information on cargo theft ring operating between Forgeworks and Breakstone",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_37",
+      "template": "Oxygen tariffs at Nexus Prime increase for third consecutive quarter — Guild cites 'infrastructure investment'",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_38",
+      "template": "Iron Depths miners' petition for updated ventilation equipment enters fourth month without response",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_39",
+      "template": "REDACTED — [Content removed by Commerce Guild Information Bureau pending review] — filed under Administrative Order 7-14",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_40",
+      "template": "Stellaris Port docking wait times exceed 9 hours — port authority blames 'seasonal volume'",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_41",
+      "template": "Crimson Reach beacon network offline for scheduled maintenance. Duration: indefinite.",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_42",
+      "template": "PERSONAL: To the pilot who docked in Bay 14 on Forgeworks last cycle — you left your manifest. And your reputation.",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_43",
+      "template": "Science Collective denies reports of anomalous readings near Nova Research — 'instrumentation error, nothing more'",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_44",
+      "template": "Breakstone water reclamation plant operating at 214% rated capacity. Maintenance window: none scheduled.",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_45",
+      "template": "Three unregistered vessels found derelict along Nexus-Forgeworks corridor. No crew recovered.",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_46",
+      "template": "Commerce Guild issues statement: 'Price adjustments reflect supply fundamentals, not speculation.' Market analysts disagree.",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_47",
+      "template": "Haven's Rest food cooperative reports eighth consecutive month of caloric surplus. Neighboring stations less fortunate.",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_48",
+      "template": "OBITUARY: Captain Ren Vasik, independent hauler, 41. Lost with all hands between Crimson Reach and The Fulcrum.",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_49",
+      "template": "Miners' Union pension fund audit delayed for second time — Union leadership calls timing 'coincidental'",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_50",
+      "template": "BOUNTY POSTED: 8,000 CR — armed pirate vessel 'Scorched Policy' — approach with extreme caution",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_51",
+      "template": "Verdant agricultural output exceeds projections. Commerce Guild expedites exclusive distribution agreement.",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_52",
+      "template": "Medical supply shipment to Breakstone rerouted through Guild customs. Estimated delay: 11 days.",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_53",
+      "template": "The Fulcrum garrison strength increased to 'precautionary levels.' No further comment from military command.",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_54",
+      "template": "PERSONAL: Selling pre-Expansion star charts, provenance unverified. Serious inquiries only. Crimson Reach cantina, ask for Dex.",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_55",
+      "template": "Axiom Labs requests volunteers for 'routine cognitive study.' Compensation: 200 CR. Side effects described as 'manageable.'",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_56",
+      "template": "Shipping insurance claims in the Crimson Reach corridor up 40% year-over-year. Underwriters consider exclusion zones.",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_57",
+      "template": "SIGNAL INTERCEPT [PARTIAL]: ...do not approach... coordinates...compromised... [END FRAGMENT]",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_58",
+      "template": "Nexus Prime residential sector B-7 reports third consecutive month of air quality violations. Guild cites 'ongoing remediation.'",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_59",
+      "template": "Independent traders association membership drops 12%. Spokesperson: 'The ones who left aren't trading anymore.'",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    },
+    {
+      "id": "flavor_60",
+      "template": "CORRECTION: Yesterday's report on Forgeworks foundry conditions contained errors. The corrected version has been classified.",
+      "trigger": "flavor",
+      "priority": 2,
+      "faction_id": ""
+    }
+  ]
+}

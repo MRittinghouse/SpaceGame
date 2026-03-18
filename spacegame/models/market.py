@@ -128,6 +128,12 @@ class Market:
     _PLAYER_MODIFIER_CAP = 0.30
     _PLAYER_MODIFIER_DECAY = 0.70  # Retain 70% per day (30% decay)
 
+    # Stock levels by production relationship
+    _STOCK_PRODUCED = 100
+    _STOCK_CONSUMED = 30
+    _STOCK_NEUTRAL = 10
+    _STOCK_REGEN_RATE = 0.30  # 30% of base stock regenerated per day
+
     def __init__(self, system: StarSystem, commodities: List[Commodity], game_day: int = 1):
         """
         Initialize market for a system.
@@ -152,7 +158,10 @@ class Market:
         self.game_day = game_day
         self._price_cache: Dict[str, int] = {}
         self.active_event: Optional[MarketEvent] = None  # Current market event
+        self.galaxy_events: list = []  # Active GalaxyEvent instances at this system
         self._player_supply_demand: Dict[str, float] = {}
+        self._stock: Dict[str, int] = {}
+        self._base_stock: Dict[str, int] = {}
         self._generate_prices()
 
     def _generate_prices(self) -> None:
@@ -198,7 +207,28 @@ class Market:
         ):
             final_price = int(final_price * self.active_event.price_multiplier)
 
+        # Apply galaxy event effects (embargo, festival, breakthrough, strike)
+        for ge in self.galaxy_events:
+            if not ge.is_active(self.game_day):
+                continue
+
+            # EMBARGO: blocked commodities cannot be traded legally
+            if commodity.id in ge.blocked_commodities:
+                return 0
+
+            # FESTIVAL / BREAKTHROUGH: apply price modifiers
+            if commodity.id in ge.price_modifiers:
+                final_price = int(final_price * ge.price_modifiers[commodity.id])
+
+            # LABOR_STRIKE: production shutdown raises prices at producing systems
+            if ge.shutdown_tags:
+                for tag in ge.shutdown_tags:
+                    if tag in self.system.economy.production_tags:
+                        if commodity.is_produced_by([tag]):
+                            final_price = int(final_price * 1.25)
+
         # Ensure minimum price of 1 CR (events can push outside normal range)
+        # Except for embargoed commodities (returned 0 above)
         return max(1, final_price)
 
     # Specialty pricing modifiers (stacks with production/consumption tags)
@@ -406,6 +436,82 @@ class Market:
             new_mod, -self._PLAYER_MODIFIER_CAP
         )
 
+    def initialize_stock(
+        self, system: StarSystem, commodities: List[Commodity]
+    ) -> None:
+        """Initialize stock levels based on system production/consumption.
+
+        Args:
+            system: The star system.
+            commodities: All commodities (used for tag checking).
+        """
+        self._stock.clear()
+        self._base_stock.clear()
+
+        for commodity_id, commodity in self.commodities.items():
+            if commodity.base_price <= 0:
+                continue  # Skip quest items
+            is_produced = commodity.is_produced_by(system.economy.production_tags)
+            is_consumed = commodity.is_consumed_by(system.economy.consumption_tags)
+
+            if is_produced:
+                base = self._STOCK_PRODUCED
+            elif is_consumed:
+                base = self._STOCK_CONSUMED
+            else:
+                base = self._STOCK_NEUTRAL
+
+            self._base_stock[commodity_id] = base
+            self._stock[commodity_id] = base
+
+    def get_stock(self, commodity_id: str) -> int:
+        """Get current stock of a commodity.
+
+        Args:
+            commodity_id: Commodity to check.
+
+        Returns:
+            Current stock level, 0 if not stocked.
+        """
+        return self._stock.get(commodity_id, 0)
+
+    def get_base_stock(self, commodity_id: str) -> int:
+        """Get base (maximum) stock of a commodity.
+
+        Args:
+            commodity_id: Commodity to check.
+
+        Returns:
+            Base stock level, 0 if not stocked.
+        """
+        return self._base_stock.get(commodity_id, 0)
+
+    def deplete_stock(self, commodity_id: str, quantity: int) -> tuple[bool, str]:
+        """Deplete stock when player buys.
+
+        Args:
+            commodity_id: Commodity being purchased.
+            quantity: Amount to deplete.
+
+        Returns:
+            Tuple of (success, message).
+        """
+        current = self._stock.get(commodity_id, 0)
+        if quantity > current:
+            return (False, f"Only {current} units in stock")
+        self._stock[commodity_id] = current - quantity
+        return (True, f"Stock depleted: {current - quantity} remaining")
+
+    def regenerate_stock(self) -> None:
+        """Regenerate stock for all commodities (called daily).
+
+        Restores 30% of base stock per day, capped at base.
+        """
+        for commodity_id, base in self._base_stock.items():
+            current = self._stock.get(commodity_id, 0)
+            regen = int(base * self._STOCK_REGEN_RATE)
+            self._stock[commodity_id] = min(base, current + regen)
+
     def update_day(self, new_day: int) -> None:
         """
         Update market for a new game day.
@@ -456,19 +562,25 @@ class Market:
         return None
 
     def to_dict(self) -> dict:
-        """Serialize player-driven supply/demand state.
+        """Serialize player-driven supply/demand and stock state.
 
         Returns:
-            Dictionary with player_supply_demand data.
+            Dictionary with player_supply_demand and stock data.
         """
         return {
             "player_supply_demand": dict(self._player_supply_demand),
+            "stock": dict(self._stock),
+            "base_stock": dict(self._base_stock),
         }
 
     def load_supply_demand(self, data: dict) -> None:
-        """Restore player supply/demand from saved data.
+        """Restore player supply/demand and stock from saved data.
 
         Args:
             data: Dictionary from to_dict().
         """
         self._player_supply_demand = dict(data.get("player_supply_demand", {}))
+        if "stock" in data:
+            self._stock = dict(data["stock"])
+        if "base_stock" in data:
+            self._base_stock = dict(data["base_stock"])

@@ -44,7 +44,6 @@ from spacegame.engine.sprites import AnimatedSprite, get_sprite_manager
 from spacegame.engine.audio_manager import get_audio_manager
 from spacegame.utils.logger import logger
 
-
 # ============================================================================
 # Constants
 # ============================================================================
@@ -158,8 +157,7 @@ ARENA_Y = 55
 ARENA_W = 800
 ARENA_H = 465
 PLAYER_SHIP_POS = (380, 280)  # Player ship center in arena
-ENEMY_SHIP_POS = (900, 280)   # Enemy ship center in arena
-
+ENEMY_SHIP_POS = (900, 280)  # Enemy ship center in arena
 
 
 def _roll_loot(loot_table: list[dict], seed: int = 0) -> dict[str, int]:
@@ -184,7 +182,6 @@ def _roll_loot(loot_table: list[dict], seed: int = 0) -> dict[str, int]:
             result[commodity] = result.get(commodity, 0) + qty
 
     return result
-
 
 
 # ============================================================================
@@ -279,9 +276,7 @@ class CombatView(BaseView):
         self._ship_sprite_cache: dict[str, Optional[AnimatedSprite]] = {}
 
         # Visual systems
-        self.background = AnimatedBackground(
-            "deep_space", WINDOW_WIDTH, WINDOW_HEIGHT, seed=100
-        )
+        self.background = AnimatedBackground("deep_space", WINDOW_WIDTH, WINDOW_HEIGHT, seed=100)
         self._bg_dim = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
         self._bg_dim.fill((0, 0, 0))
         self._bg_dim.set_alpha(140)
@@ -340,9 +335,7 @@ class CombatView(BaseView):
     def _create_ui(self) -> None:
         """Create pygame_gui elements."""
         self.continue_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(
-                WINDOW_WIDTH // 2 - 80, WINDOW_HEIGHT // 2 + 100, 160, 45
-            ),
+            relative_rect=pygame.Rect(WINDOW_WIDTH // 2 - 80, WINDOW_HEIGHT // 2 + 100, 160, 45),
             text="Continue",
             manager=self.ui_manager,
         )
@@ -498,7 +491,8 @@ class CombatView(BaseView):
         """Handle keyboard shortcuts."""
         # Enter/Return: continue from combat over screen
         if self.phase == CombatPhase.COMBAT_OVER and event.key in (
-            pygame.K_RETURN, pygame.K_KP_ENTER
+            pygame.K_RETURN,
+            pygame.K_KP_ENTER,
         ):
             self._on_continue_pressed()
             return
@@ -509,7 +503,9 @@ class CombatView(BaseView):
         # Negotiate sub-menu is open — handle skill selection or cancel
         if self._negotiate_menu_open:
             skill_keys = {
-                pygame.K_1: 0, pygame.K_2: 1, pygame.K_3: 2,
+                pygame.K_1: 0,
+                pygame.K_2: 1,
+                pygame.K_3: 2,
             }
             if event.key in skill_keys:
                 idx = skill_keys[event.key]
@@ -523,7 +519,10 @@ class CombatView(BaseView):
 
         # Number keys 1-4: execute equipment moves
         key_to_idx = {
-            pygame.K_1: 0, pygame.K_2: 1, pygame.K_3: 2, pygame.K_4: 3,
+            pygame.K_1: 0,
+            pygame.K_2: 1,
+            pygame.K_3: 2,
+            pygame.K_4: 3,
         }
         if event.key in key_to_idx:
             idx = key_to_idx[event.key]
@@ -564,17 +563,17 @@ class CombatView(BaseView):
                     return
 
             # Flee button area
-            flee_rect = pygame.Rect(
-                FLEE_BTN_X, SPECIAL_BTN_Y, SPECIAL_BTN_W, SPECIAL_BTN_H
-            )
+            flee_rect = pygame.Rect(FLEE_BTN_X, SPECIAL_BTN_Y, SPECIAL_BTN_W, SPECIAL_BTN_H)
             if flee_rect.collidepoint(pos):
                 self._attempt_flee()
                 return
 
             # Negotiate button area
             neg_rect = pygame.Rect(
-                NEGOTIATE_BTN_X, SPECIAL_BTN_Y,
-                SPECIAL_BTN_W + 20, SPECIAL_BTN_H,
+                NEGOTIATE_BTN_X,
+                SPECIAL_BTN_Y,
+                SPECIAL_BTN_W + 20,
+                SPECIAL_BTN_H,
             )
             if neg_rect.collidepoint(pos):
                 self._attempt_negotiate_menu()
@@ -582,8 +581,10 @@ class CombatView(BaseView):
 
             # Bribe button area
             bribe_rect = pygame.Rect(
-                BRIBE_BTN_X, SPECIAL_BTN_Y,
-                SPECIAL_BTN_W, SPECIAL_BTN_H,
+                BRIBE_BTN_X,
+                SPECIAL_BTN_Y,
+                SPECIAL_BTN_W,
+                SPECIAL_BTN_H,
             )
             if bribe_rect.collidepoint(pos):
                 self._attempt_bribe()
@@ -595,7 +596,8 @@ class CombatView(BaseView):
                     skill_rect = pygame.Rect(
                         NEGOTIATE_BTN_X,
                         SPECIAL_BTN_Y - (len(self._negotiate_skills) - i) * 30 - 5,
-                        SPECIAL_BTN_W + 20, 26,
+                        SPECIAL_BTN_W + 20,
+                        26,
                     )
                     if skill_rect.collidepoint(pos):
                         self._select_negotiate_skill(skill)
@@ -605,9 +607,7 @@ class CombatView(BaseView):
             state = self.engine.get_state()
             for i, enemy in enumerate(state.enemies):
                 card_y = ENEMY_PANEL_Y + i * (ENEMY_CARD_H + ENEMY_CARD_GAP)
-                card_rect = pygame.Rect(
-                    ENEMY_PANEL_X, card_y, ENEMY_PANEL_W, ENEMY_CARD_H
-                )
+                card_rect = pygame.Rect(ENEMY_PANEL_X, card_y, ENEMY_PANEL_W, ENEMY_CARD_H)
                 if card_rect.collidepoint(pos) and enemy.is_alive and not enemy.is_fled:
                     self.select_target(i)
                     return
@@ -633,9 +633,7 @@ class CombatView(BaseView):
             self._auto_advance_target()
             # Snapshot dead enemies so we can detect new deaths this round
             state = self.engine.get_state()
-            self._previously_dead = {
-                i for i, e in enumerate(state.enemies) if not e.is_alive
-            }
+            self._previously_dead = {i for i, e in enumerate(state.enemies) if not e.is_alive}
         elif new_phase == CombatPhase.ANIMATING_CREW:
             self._start_crew_phase()
         elif new_phase == CombatPhase.ANIMATING_ENEMIES:
@@ -707,23 +705,17 @@ class CombatView(BaseView):
         state = self.engine.get_state()
         player_speed = state.player.speed
 
-        living_enemies = [
-            e for e in state.enemies if e.is_alive and not e.is_fled
-        ]
+        living_enemies = [e for e in state.enemies if e.is_alive and not e.is_fled]
         if not living_enemies:
             return FLEE_MAX_CHANCE
 
-        avg_enemy_speed = sum(
-            e.template.speed for e in living_enemies
-        ) / len(living_enemies)
+        avg_enemy_speed = sum(e.template.speed for e in living_enemies) / len(living_enemies)
 
         return max(
             FLEE_MIN_CHANCE,
             min(
                 FLEE_MAX_CHANCE,
-                FLEE_BASE_CHANCE + int(
-                    (player_speed - avg_enemy_speed) * FLEE_SPEED_FACTOR
-                ),
+                FLEE_BASE_CHANCE + int((player_speed - avg_enemy_speed) * FLEE_SPEED_FACTOR),
             ),
         )
 
@@ -770,9 +762,7 @@ class CombatView(BaseView):
     def _select_negotiate_skill(self, skill_id: str) -> None:
         """Execute negotiate with the chosen social skill."""
         self._negotiate_menu_open = False
-        success, msg, logs = self.engine.attempt_negotiate(
-            skill_id, self.social_manager
-        )
+        success, msg, logs = self.engine.attempt_negotiate(skill_id, self.social_manager)
         for log in logs:
             self._enqueue_animation(log, source="player")
             self._append_log_line(log)
@@ -793,9 +783,7 @@ class CombatView(BaseView):
         if not self._is_bribe_available():
             return
 
-        success, cost, logs = self.engine.attempt_bribe(
-            self._bribe_credits_available
-        )
+        success, cost, logs = self.engine.attempt_bribe(self._bribe_credits_available)
         for log in logs:
             self._enqueue_animation(log, source="player")
             self._append_log_line(log)
@@ -821,11 +809,13 @@ class CombatView(BaseView):
         state = self.engine.get_state()
         result = []
         for move in state.player.crew_moves:
-            result.append({
-                "id": move.id,
-                "name": move.name,
-                "skipped": move.id in self.skip_crew_ids,
-            })
+            result.append(
+                {
+                    "id": move.id,
+                    "name": move.name,
+                    "skipped": move.id in self.skip_crew_ids,
+                }
+            )
         return result
 
     def _toggle_skip_crew(self, move_id: str) -> None:
@@ -880,9 +870,7 @@ class CombatView(BaseView):
 
     def _enqueue_animation(self, log_entry: CombatLogEntry, source: str) -> None:
         """Add an animation event to the queue."""
-        self.animation_queue.append(
-            AnimationEvent(log_entry=log_entry, source=source)
-        )
+        self.animation_queue.append(AnimationEvent(log_entry=log_entry, source=source))
 
     def _process_animation_queue(self, dt: float) -> None:
         """Process the animation queue one event at a time."""
@@ -921,15 +909,17 @@ class CombatView(BaseView):
         if log.hit:
             # Floating damage/effect text from log effects
             for effect_text in log.effects_applied:
-                self.floating_texts.append({
-                    "text": effect_text,
-                    "x": target_x,
-                    "y": target_y,
-                    "color": Colors.RED if is_player_source else Colors.YELLOW,
-                    "timer": 0.8,
-                    "max_timer": 0.8,
-                    "vy": -40.0,
-                })
+                self.floating_texts.append(
+                    {
+                        "text": effect_text,
+                        "x": target_x,
+                        "y": target_y,
+                        "color": Colors.RED if is_player_source else Colors.YELLOW,
+                        "timer": 0.8,
+                        "max_timer": 0.8,
+                        "vy": -40.0,
+                    }
+                )
                 target_y -= 20  # Stack multiple effects
 
             # Screen shake on hit
@@ -938,8 +928,12 @@ class CombatView(BaseView):
             # Particle effects based on action type
             action_lower = log.action.lower()
             has_shield_text = any("shield" in e.lower() for e in log.effects_applied)
-            has_hull_text = any("hull" in e.lower() and "restore" in e.lower() for e in log.effects_applied)
-            has_shield_restore = any("shield" in e.lower() and "restore" in e.lower() for e in log.effects_applied)
+            has_hull_text = any(
+                "hull" in e.lower() and "restore" in e.lower() for e in log.effects_applied
+            )
+            has_shield_restore = any(
+                "shield" in e.lower() and "restore" in e.lower() for e in log.effects_applied
+            )
 
             if has_hull_text:
                 self.particles.emit(target_x, target_y, HEAL_SPARKLE)
@@ -986,15 +980,17 @@ class CombatView(BaseView):
             self._arena_action_timer = 0.5
         else:
             # Miss — show "MISS" text
-            self.floating_texts.append({
-                "text": "MISS",
-                "x": target_x,
-                "y": target_y,
-                "color": Colors.TEXT_SECONDARY,
-                "timer": 0.6,
-                "max_timer": 0.6,
-                "vy": -30.0,
-            })
+            self.floating_texts.append(
+                {
+                    "text": "MISS",
+                    "x": target_x,
+                    "y": target_y,
+                    "color": Colors.TEXT_SECONDARY,
+                    "timer": 0.6,
+                    "max_timer": 0.6,
+                    "vy": -30.0,
+                }
+            )
 
     def _check_enemy_deaths(self) -> None:
         """Check if any enemies just died and trigger destroy animations."""
@@ -1012,23 +1008,17 @@ class CombatView(BaseView):
                     anim.play("destroy")
                     # Use the enemy's visual slot position
                     living_before = sum(
-                        1 for ii in range(idx)
+                        1
+                        for ii in range(idx)
                         if state.enemies[ii].is_alive and not state.enemies[ii].is_fled
                     )
-                    living_total = sum(
-                        1 for e in state.enemies if e.is_alive and not e.is_fled
-                    )
+                    living_total = sum(1 for e in state.enemies if e.is_alive and not e.is_fled)
                     enemy_x = ENEMY_SHIP_POS[0]
-                    enemy_y = (
-                        ENEMY_SHIP_POS[1]
-                        + (living_before - living_total // 2) * 80
-                    )
+                    enemy_y = ENEMY_SHIP_POS[1] + (living_before - living_total // 2) * 80
                     self._destroying_enemies[idx] = (enemy_x, enemy_y, anim)
 
                     # Explosion particles + SFX
-                    self.particles.emit(
-                        float(enemy_x), float(enemy_y), MISSILE_EXPLOSION
-                    )
+                    self.particles.emit(float(enemy_x), float(enemy_y), MISSILE_EXPLOSION)
                     get_audio_manager().play_sfx("combat_explosion")
                     self.screen_shake.trigger(intensity=5.0, duration=0.25)
 
@@ -1132,6 +1122,7 @@ class CombatView(BaseView):
 
         xp_gained = 0
         loot: dict[str, int] = {}
+        rare_loot: dict[str, int] = {}
         if result == CombatResult.VICTORY:
             xp_gained = sum(e.template.xp_reward for e in state.enemies)
             # Roll loot from all defeated enemies
@@ -1143,6 +1134,14 @@ class CombatView(BaseView):
                     )
                     for cid, qty in enemy_loot.items():
                         loot[cid] = loot.get(cid, 0) + qty
+                # Roll rare loot separately
+                if not enemy.is_alive and enemy.template.rare_loot:
+                    enemy_rare = _roll_loot(
+                        enemy.template.rare_loot,
+                        seed=state.encounter.encounter_seed + hash(enemy.template.id) + 7919,
+                    )
+                    for cid, qty in enemy_rare.items():
+                        rare_loot[cid] = rare_loot.get(cid, 0) + qty
 
         return {
             "result": result,
@@ -1150,13 +1149,10 @@ class CombatView(BaseView):
             "color": color_map.get(result, Colors.TEXT_PRIMARY),
             "xp_gained": xp_gained,
             "loot": loot,
+            "rare_loot": rare_loot,
             "rounds": state.round_number,
-            "enemies_defeated": sum(
-                1 for e in state.enemies if not e.is_alive
-            ),
-            "enemies_fled": sum(
-                1 for e in state.enemies if e.is_fled
-            ),
+            "enemies_defeated": sum(1 for e in state.enemies if not e.is_alive),
+            "enemies_fled": sum(1 for e in state.enemies if e.is_fled),
         }
 
     # ------------------------------------------------------------------
@@ -1243,21 +1239,22 @@ class CombatView(BaseView):
 
         # Panel background
         draw_panel(
-            screen, (px, py, PLAYER_PANEL_W, PLAYER_PANEL_H),
-            alpha=200, bg_color=(15, 20, 40), border_radius=4,
+            screen,
+            (px, py, PLAYER_PANEL_W, PLAYER_PANEL_H),
+            alpha=200,
+            bg_color=(15, 20, 40),
+            border_radius=4,
         )
 
         # Flash overlay on hit
         if self._player_flash_timer > 0:
             flash_alpha = int(80 * (self._player_flash_timer / 0.15))
-            flash_surf = pygame.Surface(
-                (PLAYER_PANEL_W, PLAYER_PANEL_H), pygame.SRCALPHA
-            )
+            flash_surf = pygame.Surface((PLAYER_PANEL_W, PLAYER_PANEL_H), pygame.SRCALPHA)
             flash_surf.fill((220, 50, 50, flash_alpha))
             screen.blit(flash_surf, (px, py))
 
         # Ship name header
-        ship_name = "YOUR SHIP"
+        ship_name = self.player.display_ship_name
         name_surf = self.header_font.render(ship_name, True, Colors.TEXT_HIGHLIGHT)
         name_rect = name_surf.get_rect(centerx=px + PLAYER_PANEL_W // 2, top=py + 8)
         screen.blit(name_surf, name_rect)
@@ -1265,8 +1262,10 @@ class CombatView(BaseView):
         # Separator line
         sep_y = py + 32
         pygame.draw.line(
-            screen, Colors.UI_BORDER,
-            (px + 8, sep_y), (px + PLAYER_PANEL_W - 8, sep_y),
+            screen,
+            Colors.UI_BORDER,
+            (px + 8, sep_y),
+            (px + PLAYER_PANEL_W - 8, sep_y),
         )
 
         # Bars start below header
@@ -1276,15 +1275,19 @@ class CombatView(BaseView):
 
         # Hull bar
         hull_ratio = (
-            self._displayed_player_hull / state.player.max_hull
-            if state.player.max_hull > 0
-            else 0
+            self._displayed_player_hull / state.player.max_hull if state.player.max_hull > 0 else 0
         )
         hull_color = _bar_color_for_ratio(hull_ratio)
         self._render_bar(
-            screen, bar_x, y, bar_w, BAR_HEIGHT,
-            self._displayed_player_hull, state.player.max_hull,
-            hull_color, "Hull",
+            screen,
+            bar_x,
+            y,
+            bar_w,
+            BAR_HEIGHT,
+            self._displayed_player_hull,
+            state.player.max_hull,
+            hull_color,
+            "Hull",
         )
         y += BAR_HEIGHT + 10
 
@@ -1295,25 +1298,35 @@ class CombatView(BaseView):
             else 0
         )
         self._render_bar(
-            screen, bar_x, y, bar_w, BAR_HEIGHT,
-            self._displayed_player_shields, state.player.max_shields,
-            SHIELD_COLOR, "Shld",
+            screen,
+            bar_x,
+            y,
+            bar_w,
+            BAR_HEIGHT,
+            self._displayed_player_shields,
+            state.player.max_shields,
+            SHIELD_COLOR,
+            "Shld",
         )
         y += BAR_HEIGHT + 10
 
         # Energy bar
         self._render_bar(
-            screen, bar_x, y, bar_w, BAR_HEIGHT,
-            self._displayed_player_energy, state.player.max_energy,
-            ENERGY_COLOR, "Engy",
+            screen,
+            bar_x,
+            y,
+            bar_w,
+            BAR_HEIGHT,
+            self._displayed_player_energy,
+            state.player.max_energy,
+            ENERGY_COLOR,
+            "Engy",
         )
         y += BAR_HEIGHT + 16
 
         # Active effects badges (icon + text)
         if state.player.active_effects:
-            effects_label = self.small_font.render(
-                "Effects:", True, Colors.TEXT_SECONDARY
-            )
+            effects_label = self.small_font.render("Effects:", True, Colors.TEXT_SECONDARY)
             screen.blit(effects_label, (bar_x, y))
             y += 18
             for effect, turns_left in state.player.active_effects:
@@ -1328,22 +1341,16 @@ class CombatView(BaseView):
                 y += 16
 
         # Cooldowns
-        active_cds = {
-            k: v for k, v in state.player.cooldowns.items() if v > 0
-        }
+        active_cds = {k: v for k, v in state.player.cooldowns.items() if v > 0}
         if active_cds:
             y += 4
-            cd_label = self.small_font.render(
-                "Cooldowns:", True, Colors.TEXT_SECONDARY
-            )
+            cd_label = self.small_font.render("Cooldowns:", True, Colors.TEXT_SECONDARY)
             screen.blit(cd_label, (bar_x, y))
             y += 18
             for move_id, turns in active_cds.items():
                 move_name = self._find_move_name(move_id, state)
                 cd_text = f"{move_name}: {turns}t"
-                cd_surf = self.small_font.render(
-                    cd_text, True, Colors.TEXT_SECONDARY
-                )
+                cd_surf = self.small_font.render(cd_text, True, Colors.TEXT_SECONDARY)
                 screen.blit(cd_surf, (bar_x + 4, y))
                 y += 16
 
@@ -1369,16 +1376,18 @@ class CombatView(BaseView):
 
         # Card background
         draw_panel(
-            screen, (x, y, ENEMY_PANEL_W, ENEMY_CARD_H),
-            alpha=200, bg_color=(15, 20, 40), border_color=None, border_radius=4,
+            screen,
+            (x, y, ENEMY_PANEL_W, ENEMY_CARD_H),
+            alpha=200,
+            bg_color=(15, 20, 40),
+            border_color=None,
+            border_radius=4,
         )
 
         # Flash overlay on hit
         if idx < len(self._enemy_flash_timers) and self._enemy_flash_timers[idx] > 0:
             flash_alpha = int(80 * (self._enemy_flash_timers[idx] / 0.15))
-            flash_surf = pygame.Surface(
-                (ENEMY_PANEL_W, ENEMY_CARD_H), pygame.SRCALPHA
-            )
+            flash_surf = pygame.Surface((ENEMY_PANEL_W, ENEMY_CARD_H), pygame.SRCALPHA)
             flash_surf.fill((220, 50, 50, flash_alpha))
             screen.blit(flash_surf, (x, y))
 
@@ -1387,20 +1396,22 @@ class CombatView(BaseView):
             pulse_alpha = int(180 + 60 * math.sin(self.phase_timer * 5))
             border_color = (*Colors.TEXT_HIGHLIGHT[:3],)
             # Glow border via SRCALPHA surface
-            glow_surf = pygame.Surface(
-                (ENEMY_PANEL_W + 4, ENEMY_CARD_H + 4), pygame.SRCALPHA
-            )
+            glow_surf = pygame.Surface((ENEMY_PANEL_W + 4, ENEMY_CARD_H + 4), pygame.SRCALPHA)
             pygame.draw.rect(
                 glow_surf,
                 (*border_color, pulse_alpha),
                 (0, 0, ENEMY_PANEL_W + 4, ENEMY_CARD_H + 4),
-                2, border_radius=4,
+                2,
+                border_radius=4,
             )
             screen.blit(glow_surf, (x - 2, y - 2))
         else:
             pygame.draw.rect(
-                screen, Colors.UI_BORDER,
-                (x, y, ENEMY_PANEL_W, ENEMY_CARD_H), 1, border_radius=4,
+                screen,
+                Colors.UI_BORDER,
+                (x, y, ENEMY_PANEL_W, ENEMY_CARD_H),
+                1,
+                border_radius=4,
             )
 
         # Defeated / fled overlay
@@ -1419,16 +1430,12 @@ class CombatView(BaseView):
             screen.blit(card_sprite, sprite_rect)
 
         # Enemy name
-        name_surf = self.info_font.render(
-            enemy.template.name, True, Colors.TEXT_PRIMARY
-        )
+        name_surf = self.info_font.render(enemy.template.name, True, Colors.TEXT_PRIMARY)
         screen.blit(name_surf, (x + 8, y + 6))
 
         # Behavior tag
         behavior_text = enemy.template.behavior.value.capitalize()
-        behavior_surf = self.small_font.render(
-            behavior_text, True, Colors.TEXT_SECONDARY
-        )
+        behavior_surf = self.small_font.render(behavior_text, True, Colors.TEXT_SECONDARY)
         screen.blit(behavior_surf, (x + 8, y + 26))
 
         # Bars
@@ -1442,13 +1449,18 @@ class CombatView(BaseView):
             if idx < len(self._displayed_enemy_hulls)
             else float(enemy.current_hull)
         )
-        hull_ratio = (
-            displayed_hull / enemy.template.hull if enemy.template.hull > 0 else 0
-        )
+        hull_ratio = displayed_hull / enemy.template.hull if enemy.template.hull > 0 else 0
         hull_color = _bar_color_for_ratio(hull_ratio)
         self._render_bar(
-            screen, bar_x, bar_y, bar_w, BAR_HEIGHT - 2,
-            displayed_hull, enemy.template.hull, hull_color, "Hull",
+            screen,
+            bar_x,
+            bar_y,
+            bar_w,
+            BAR_HEIGHT - 2,
+            displayed_hull,
+            enemy.template.hull,
+            hull_color,
+            "Hull",
         )
         bar_y += BAR_HEIGHT + 6
 
@@ -1460,8 +1472,15 @@ class CombatView(BaseView):
                 else float(enemy.current_shields)
             )
             self._render_bar(
-                screen, bar_x, bar_y, bar_w, BAR_HEIGHT - 2,
-                displayed_shields, enemy.template.shields, SHIELD_COLOR, "Shld",
+                screen,
+                bar_x,
+                bar_y,
+                bar_w,
+                BAR_HEIGHT - 2,
+                displayed_shields,
+                enemy.template.shields,
+                SHIELD_COLOR,
+                "Shld",
             )
             bar_y += BAR_HEIGHT + 6
 
@@ -1488,17 +1507,13 @@ class CombatView(BaseView):
     ) -> None:
         """Render a defeated/fled overlay on an enemy card."""
         # Dim the card
-        dim_surf = pygame.Surface(
-            (ENEMY_PANEL_W, ENEMY_CARD_H), pygame.SRCALPHA
-        )
+        dim_surf = pygame.Surface((ENEMY_PANEL_W, ENEMY_CARD_H), pygame.SRCALPHA)
         dim_surf.fill((0, 0, 0, 120))
         screen.blit(dim_surf, (x, y))
 
         # Centered text
         text_surf = self.header_font.render(text, True, color)
-        text_rect = text_surf.get_rect(
-            center=(x + ENEMY_PANEL_W // 2, y + ENEMY_CARD_H // 2)
-        )
+        text_rect = text_surf.get_rect(center=(x + ENEMY_PANEL_W // 2, y + ENEMY_CARD_H // 2))
         screen.blit(text_surf, text_rect)
 
     # ------------------------------------------------------------------
@@ -1519,8 +1534,16 @@ class CombatView(BaseView):
     ) -> None:
         """Render a labeled health/shield/energy bar with fill and highlight edge."""
         draw_bar(
-            screen, x, y, width, height, current, maximum, color,
-            label=label, font=self.small_font,
+            screen,
+            x,
+            y,
+            width,
+            height,
+            current,
+            maximum,
+            color,
+            label=label,
+            font=self.small_font,
         )
 
     # ------------------------------------------------------------------
@@ -1595,8 +1618,7 @@ class CombatView(BaseView):
                 dy = rng.randint(-12, 12)
                 alpha = rng.randint(50, 90)
                 crack_surf = pygame.Surface((size, size), pygame.SRCALPHA)
-                pygame.draw.line(crack_surf, (20, 15, 10, alpha),
-                                 (x1, y1), (x1 + dx, y1 + dy), 1)
+                pygame.draw.line(crack_surf, (20, 15, 10, alpha), (x1, y1), (x1 + dx, y1 + dy), 1)
                 surf.blit(crack_surf, (0, 0))
 
         else:  # heavy
@@ -1616,8 +1638,7 @@ class CombatView(BaseView):
                 dy = rng.randint(-18, 18)
                 alpha = rng.randint(70, 130)
                 crack_surf = pygame.Surface((size, size), pygame.SRCALPHA)
-                pygame.draw.line(crack_surf, (15, 10, 5, alpha),
-                                 (x1, y1), (x1 + dx, y1 + dy), 2)
+                pygame.draw.line(crack_surf, (15, 10, 5, alpha), (x1, y1), (x1 + dx, y1 + dy), 2)
                 surf.blit(crack_surf, (0, 0))
 
             # Orange/yellow spark dots
@@ -1625,18 +1646,18 @@ class CombatView(BaseView):
                 x = rng.randint(12, size - 12)
                 y = rng.randint(12, size - 12)
                 r = rng.randint(1, 3)
-                color = rng.choice([
-                    (255, 160, 40, 140),
-                    (255, 200, 60, 120),
-                    (255, 120, 20, 100),
-                ])
+                color = rng.choice(
+                    [
+                        (255, 160, 40, 140),
+                        (255, 200, 60, 120),
+                        (255, 120, 20, 100),
+                    ]
+                )
                 pygame.draw.circle(surf, color, (x, y), r)
 
         return surf
 
-    def _apply_damage_overlay(
-        self, surface: pygame.Surface, hull_ratio: float
-    ) -> pygame.Surface:
+    def _apply_damage_overlay(self, surface: pygame.Surface, hull_ratio: float) -> pygame.Surface:
         """Composite damage overlay onto a ship sprite based on hull ratio.
 
         Args:
@@ -1679,7 +1700,9 @@ class CombatView(BaseView):
         hull_ratio = state.player.hull / state.player.max_hull if state.player.max_hull > 0 else 0
 
         player_ship_id = self.player.ship.ship_type.id if self.player else None
-        player_anim = self._get_ship_sprite(player_ship_id, "player", scale=3) if player_ship_id else None
+        player_anim = (
+            self._get_ship_sprite(player_ship_id, "player", scale=3) if player_ship_id else None
+        )
         player_sprite = player_anim.get_surface() if player_anim else None
         if player_sprite:
             # Rotate 90° so nose points right
@@ -1714,19 +1737,28 @@ class CombatView(BaseView):
                 )
                 sc = shimmer_r + 2
                 pygame.draw.circle(
-                    shimmer_surf, (80, 200, 255, shimmer_alpha),
-                    (sc, sc), shimmer_r, 3,
+                    shimmer_surf,
+                    (80, 200, 255, shimmer_alpha),
+                    (sc, sc),
+                    shimmer_r,
+                    3,
                 )
                 screen.blit(shimmer_surf, (player_x - sc, player_y - sc))
         else:
-            self._draw_ship_silhouette(screen, player_x, player_y, facing_right=True, hull_ratio=hull_ratio)
+            self._draw_ship_silhouette(
+                screen, player_x, player_y, facing_right=True, hull_ratio=hull_ratio
+            )
 
         # Enemy ships (right side, facing left)
-        living_enemies = [(i, e) for i, e in enumerate(state.enemies) if e.is_alive and not e.is_fled]
+        living_enemies = [
+            (i, e) for i, e in enumerate(state.enemies) if e.is_alive and not e.is_fled
+        ]
         for j, (idx, enemy) in enumerate(living_enemies[:3]):
             enemy_x = ENEMY_SHIP_POS[0] + ox
             enemy_y = ENEMY_SHIP_POS[1] + oy + (j - len(living_enemies) // 2) * 80
-            e_hull_ratio = enemy.current_hull / enemy.template.hull if enemy.template.hull > 0 else 0
+            e_hull_ratio = (
+                enemy.current_hull / enemy.template.hull if enemy.template.hull > 0 else 0
+            )
 
             enemy_anim = self._get_ship_sprite(enemy.template.id, "enemy", scale=3)
             enemy_sprite = enemy_anim.get_surface() if enemy_anim else None
@@ -1759,10 +1791,16 @@ class CombatView(BaseView):
                         glow_surf,
                         (*Colors.TEXT_HIGHLIGHT, pulse),
                         glow_surf.get_rect(),
-                        2, border_radius=4,
+                        2,
+                        border_radius=4,
                     )
-                    screen.blit(glow_surf, (enemy_x - rotated.get_width() // 2 - 4,
-                                            enemy_y - rotated.get_height() // 2 - 4))
+                    screen.blit(
+                        glow_surf,
+                        (
+                            enemy_x - rotated.get_width() // 2 - 4,
+                            enemy_y - rotated.get_height() // 2 - 4,
+                        ),
+                    )
                 rect = rotated.get_rect(center=(enemy_x, enemy_y))
                 screen.blit(rotated, rect)
                 # Shield shimmer: cyan glow ring around ship
@@ -1775,13 +1813,20 @@ class CombatView(BaseView):
                     )
                     sc = shimmer_r + 2
                     pygame.draw.circle(
-                        shimmer_surf, (80, 200, 255, shimmer_alpha),
-                        (sc, sc), shimmer_r, 3,
+                        shimmer_surf,
+                        (80, 200, 255, shimmer_alpha),
+                        (sc, sc),
+                        shimmer_r,
+                        3,
                     )
                     screen.blit(shimmer_surf, (enemy_x - sc, enemy_y - sc))
             else:
                 self._draw_ship_silhouette(
-                    screen, enemy_x, enemy_y, facing_right=False, hull_ratio=e_hull_ratio,
+                    screen,
+                    enemy_x,
+                    enemy_y,
+                    facing_right=False,
+                    hull_ratio=e_hull_ratio,
                     is_selected=(idx == self.selected_target_idx),
                 )
 
@@ -1805,9 +1850,7 @@ class CombatView(BaseView):
                 self._arena_action_text, True, Colors.TEXT_HIGHLIGHT
             )
             action_surf.set_alpha(alpha)
-            action_rect = action_surf.get_rect(
-                center=(WINDOW_WIDTH // 2 + ox, 180 + oy)
-            )
+            action_rect = action_surf.get_rect(center=(WINDOW_WIDTH // 2 + ox, 180 + oy))
             screen.blit(action_surf, action_rect)
 
         # Phase banner (centered)
@@ -1821,9 +1864,7 @@ class CombatView(BaseView):
             banner_alpha = min(255, int(self.phase_timer * 800))
             banner_surf = self.title_font.render(phase_text, True, Colors.TEXT_HIGHLIGHT)
             banner_surf.set_alpha(banner_alpha)
-            banner_rect = banner_surf.get_rect(
-                center=(WINDOW_WIDTH // 2 + ox, 90 + oy)
-            )
+            banner_rect = banner_surf.get_rect(center=(WINDOW_WIDTH // 2 + ox, 90 + oy))
             screen.blit(banner_surf, banner_rect)
 
     def _draw_ship_silhouette(
@@ -1850,16 +1891,16 @@ class CombatView(BaseView):
         # Wedge points
         if facing_right:
             points = [
-                (4, cy - h // 3),      # Top-left
-                (w - 4, cy),            # Nose (right)
-                (4, cy + h // 3),       # Bottom-left
+                (4, cy - h // 3),  # Top-left
+                (w - 4, cy),  # Nose (right)
+                (4, cy + h // 3),  # Bottom-left
             ]
             engine_x = 6
         else:
             points = [
-                (w, cy - h // 3),       # Top-right
-                (8, cy),                # Nose (left)
-                (w, cy + h // 3),       # Bottom-right
+                (w, cy - h // 3),  # Top-right
+                (8, cy),  # Nose (left)
+                (w, cy + h // 3),  # Bottom-right
             ]
             engine_x = w - 2
 
@@ -1881,16 +1922,20 @@ class CombatView(BaseView):
     def _render_action_panel(self, screen: pygame.Surface, ox: int, oy: int) -> None:
         """Render action panel with move buttons, flee, negotiate, and crew info."""
         # Panel background
-        panel_rect = pygame.Rect(
-            0 + ox, ACTION_PANEL_Y + oy, 720, ACTION_PANEL_H
-        )
+        panel_rect = pygame.Rect(0 + ox, ACTION_PANEL_Y + oy, 720, ACTION_PANEL_H)
         draw_panel(
-            screen, panel_rect,
-            alpha=200, bg_color=(12, 16, 32), border_color=None, border_radius=0,
+            screen,
+            panel_rect,
+            alpha=200,
+            bg_color=(12, 16, 32),
+            border_color=None,
+            border_radius=0,
         )
         pygame.draw.line(
-            screen, Colors.UI_BORDER,
-            (ox, ACTION_PANEL_Y + oy), (720 + ox, ACTION_PANEL_Y + oy),
+            screen,
+            Colors.UI_BORDER,
+            (ox, ACTION_PANEL_Y + oy),
+            (720 + ox, ACTION_PANEL_Y + oy),
         )
 
         # "ACTIONS" header
@@ -1906,9 +1951,14 @@ class CombatView(BaseView):
         flee_chance = self._get_flee_chance()
         flee_text = f"Flee ({flee_chance}%)"
         self._render_special_button(
-            screen, FLEE_BTN_X + ox, SPECIAL_BTN_Y + oy,
-            SPECIAL_BTN_W, SPECIAL_BTN_H,
-            flee_text, is_input, Colors.YELLOW,
+            screen,
+            FLEE_BTN_X + ox,
+            SPECIAL_BTN_Y + oy,
+            SPECIAL_BTN_W,
+            SPECIAL_BTN_H,
+            flee_text,
+            is_input,
+            Colors.YELLOW,
         )
 
         # Negotiate button
@@ -1916,9 +1966,14 @@ class CombatView(BaseView):
         neg_text = "Negotiate" if neg_available else "Negotiate (Used)"
         neg_color = Colors.TEXT_HIGHLIGHT if neg_available else Colors.TEXT_SECONDARY
         self._render_special_button(
-            screen, NEGOTIATE_BTN_X + ox, SPECIAL_BTN_Y + oy,
-            SPECIAL_BTN_W + 20, SPECIAL_BTN_H,
-            neg_text, neg_available, neg_color,
+            screen,
+            NEGOTIATE_BTN_X + ox,
+            SPECIAL_BTN_Y + oy,
+            SPECIAL_BTN_W + 20,
+            SPECIAL_BTN_H,
+            neg_text,
+            neg_available,
+            neg_color,
         )
 
         # Bribe button
@@ -1930,9 +1985,14 @@ class CombatView(BaseView):
             bribe_text = "Bribe (Used)"
         bribe_color = Colors.YELLOW if bribe_available else Colors.TEXT_SECONDARY
         self._render_special_button(
-            screen, BRIBE_BTN_X + ox, SPECIAL_BTN_Y + oy,
-            SPECIAL_BTN_W, SPECIAL_BTN_H,
-            bribe_text, bribe_available, bribe_color,
+            screen,
+            BRIBE_BTN_X + ox,
+            SPECIAL_BTN_Y + oy,
+            SPECIAL_BTN_W,
+            SPECIAL_BTN_H,
+            bribe_text,
+            bribe_available,
+            bribe_color,
         )
 
         # Target indicator
@@ -1940,9 +2000,7 @@ class CombatView(BaseView):
         if state.enemies:
             target = state.enemies[self.selected_target_idx]
             target_text = f"Target: {target.template.name}"
-            target_surf = self.small_font.render(
-                target_text, True, Colors.TEXT_HIGHLIGHT
-            )
+            target_surf = self.small_font.render(target_text, True, Colors.TEXT_HIGHLIGHT)
             screen.blit(
                 target_surf,
                 (BRIBE_BTN_X + SPECIAL_BTN_W + 16 + ox, SPECIAL_BTN_Y + 10 + oy),
@@ -1951,12 +2009,7 @@ class CombatView(BaseView):
         # Negotiate sub-menu (skill options above the Negotiate button)
         if self._negotiate_menu_open and is_input:
             for i, skill in enumerate(self._negotiate_skills):
-                skill_y = (
-                    SPECIAL_BTN_Y
-                    - (len(self._negotiate_skills) - i) * 30
-                    - 5
-                    + oy
-                )
+                skill_y = SPECIAL_BTN_Y - (len(self._negotiate_skills) - i) * 30 - 5 + oy
                 skill_x = NEGOTIATE_BTN_X + ox
                 skill_w = SPECIAL_BTN_W + 20
                 skill_h = 26
@@ -1966,18 +2019,17 @@ class CombatView(BaseView):
                 sk_surf.fill((25, 35, 60, 230))
                 screen.blit(sk_surf, (skill_x, skill_y))
                 pygame.draw.rect(
-                    screen, Colors.TEXT_HIGHLIGHT,
-                    (skill_x, skill_y, skill_w, skill_h), 1, border_radius=2,
+                    screen,
+                    Colors.TEXT_HIGHLIGHT,
+                    (skill_x, skill_y, skill_w, skill_h),
+                    1,
+                    border_radius=2,
                 )
 
                 # Key hint + label
                 label = f"[{i + 1}] {skill.capitalize()}"
-                label_surf = self.small_font.render(
-                    label, True, Colors.TEXT_HIGHLIGHT
-                )
-                label_rect = label_surf.get_rect(
-                    centery=skill_y + skill_h // 2, left=skill_x + 6
-                )
+                label_surf = self.small_font.render(label, True, Colors.TEXT_HIGHLIGHT)
+                label_rect = label_surf.get_rect(centery=skill_y + skill_h // 2, left=skill_x + 6)
                 screen.blit(label_surf, label_rect)
 
         # Crew moves info
@@ -2026,9 +2078,7 @@ class CombatView(BaseView):
         pygame.draw.rect(screen, border_color, (bx, by, bw, bh), 1, border_radius=3)
 
         # Move type icon
-        has_damage = any(
-            e.type.value == "damage" for e in btn.move.effects
-        )
+        has_damage = any(e.type.value == "damage" for e in btn.move.effects)
         icon = "ATK" if has_damage else "DEF"
         icon_color = Colors.RED if has_damage else Colors.TEXT_HIGHLIGHT
         icon_surf = self.small_font.render(icon, True, icon_color)
@@ -2131,9 +2181,7 @@ class CombatView(BaseView):
         alpha = int(255 * (1.0 - abs(2 * t - 1)))
         text_surf = self.banner_font.render("COMBAT!", True, Colors.RED)
         text_surf.set_alpha(alpha)
-        text_rect = text_surf.get_rect(
-            center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 - 30)
-        )
+        text_rect = text_surf.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 - 30))
         screen.blit(text_surf, text_rect)
 
         # Show enemy name
@@ -2142,9 +2190,7 @@ class CombatView(BaseView):
             names = ", ".join(e.template.name for e in state.enemies)
             name_surf = self.header_font.render(names, True, Colors.TEXT_PRIMARY)
             name_surf.set_alpha(alpha)
-            name_rect = name_surf.get_rect(
-                center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 + 20)
-            )
+            name_rect = name_surf.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 + 20))
             screen.blit(name_surf, name_rect)
 
     def _render_combat_over_overlay(self, screen: pygame.Surface) -> None:
@@ -2163,25 +2209,26 @@ class CombatView(BaseView):
 
         # Panel background
         draw_panel(
-            screen, (panel_x, panel_y, panel_w, panel_h),
-            alpha=240, bg_color=(12, 16, 32),
-            border_color=summary["color"], border_radius=6,
+            screen,
+            (panel_x, panel_y, panel_w, panel_h),
+            alpha=240,
+            bg_color=(12, 16, 32),
+            border_color=summary["color"],
+            border_radius=6,
         )
 
         # Title
-        title_surf = self.banner_font.render(
-            summary["title"], True, summary["color"]
-        )
-        title_rect = title_surf.get_rect(
-            centerx=WINDOW_WIDTH // 2, top=panel_y + 20
-        )
+        title_surf = self.banner_font.render(summary["title"], True, summary["color"])
+        title_rect = title_surf.get_rect(centerx=WINDOW_WIDTH // 2, top=panel_y + 20)
         screen.blit(title_surf, title_rect)
 
         # Separator
         sep_y = panel_y + 70
         pygame.draw.line(
-            screen, Colors.UI_BORDER,
-            (panel_x + 20, sep_y), (panel_x + panel_w - 20, sep_y),
+            screen,
+            Colors.UI_BORDER,
+            (panel_x + 20, sep_y),
+            (panel_x + panel_w - 20, sep_y),
         )
 
         # Stats
@@ -2195,21 +2242,23 @@ class CombatView(BaseView):
         ]
 
         if summary["enemies_fled"] > 0:
-            stats.append(
-                (f"Enemies fled: {summary['enemies_fled']}", Colors.TEXT_SECONDARY)
-            )
+            stats.append((f"Enemies fled: {summary['enemies_fled']}", Colors.TEXT_SECONDARY))
 
         if summary["result"] == CombatResult.VICTORY and summary["xp_gained"] > 0:
-            stats.append(
-                (f"XP gained: +{summary['xp_gained']}", Colors.TEXT_HIGHLIGHT)
-            )
+            stats.append((f"XP gained: +{summary['xp_gained']}", Colors.TEXT_HIGHLIGHT))
 
         if summary["result"] == CombatResult.VICTORY and summary["loot"]:
             loot_items = ", ".join(
-                f"{qty}x {cid.replace('_', ' ').title()}"
-                for cid, qty in summary["loot"].items()
+                f"{qty}x {cid.replace('_', ' ').title()}" for cid, qty in summary["loot"].items()
             )
             stats.append((f"Loot: {loot_items}", Colors.GREEN))
+
+        if summary["result"] == CombatResult.VICTORY and summary.get("rare_loot"):
+            rare_items = ", ".join(
+                f"{qty}x {cid.replace('_', ' ').title()}"
+                for cid, qty in summary["rare_loot"].items()
+            )
+            stats.append((f"RARE! {rare_items}", Colors.YELLOW))
 
         if summary["result"] == CombatResult.DEFEAT:
             stats.append(("Cargo lost: 30%", Colors.RED))

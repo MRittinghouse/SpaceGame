@@ -133,6 +133,7 @@
             "x": 29, "y": 6,
             "type": "loot_container",
             "loot_credits": 70,
+            "loot_commodities": {"anomalous_sample": 1},
             "description": "Data drives stacked in shielded cases. Financial records, patrol schedules, communications logs — encrypted, but Priya could crack these in her sleep."
         }
     ],

@@ -67,13 +67,24 @@ class _TabButton:
         return False
 
 
+_SIDE_BADGE_COLOR = (80, 140, 180)
+_CAMPAIGN_BADGE_COLOR = (180, 140, 60)
+
+
 class _MissionItem:
     """Clickable mission list entry."""
 
-    def __init__(self, rect: pygame.Rect, mission: Mission, font: pygame.font.Font) -> None:
+    def __init__(
+        self,
+        rect: pygame.Rect,
+        mission: Mission,
+        font: pygame.font.Font,
+        badge_font: pygame.font.Font,
+    ) -> None:
         self.rect = rect
         self.mission = mission
         self.font = font
+        self.badge_font = badge_font
         self.selected = False
         self.hovered = False
 
@@ -95,6 +106,19 @@ class _MissionItem:
         text_surf = self.font.render(self.mission.name, True, text_color)
         text_rect = text_surf.get_rect(midleft=(self.rect.x + 14, self.rect.centery))
         screen.blit(text_surf, text_rect)
+
+        # Type badge on the right
+        if self.mission.mission_type == "side":
+            badge_text = "SIDE"
+            badge_color = _SIDE_BADGE_COLOR
+        else:
+            badge_text = "MAIN"
+            badge_color = _CAMPAIGN_BADGE_COLOR
+        badge_surf = self.badge_font.render(badge_text, True, badge_color)
+        badge_rect = badge_surf.get_rect(
+            midright=(self.rect.right - 10, self.rect.centery)
+        )
+        screen.blit(badge_surf, badge_rect)
 
     def was_clicked(self, event: pygame.event.Event) -> bool:
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -164,6 +188,7 @@ class MissionLogView(BaseView):
         self._desc_font = FontCache.get(20)
         self._detail_title_font = FontCache.get(28)
         self._label_font = FontCache.get(22)
+        self._badge_font = FontCache.get(16)
 
         # UI
         self.back_button: Optional[pygame_gui.elements.UIButton] = None
@@ -236,6 +261,8 @@ class MissionLogView(BaseView):
         }
         status = status_map.get(self._current_tab, MissionStatus.ACTIVE)
         missions = self.mission_manager.get_missions_by_status(status)
+        # Sort: campaign missions first, then side missions
+        missions.sort(key=lambda m: (0 if m.mission_type == "campaign" else 1, m.name))
 
         for i, mission in enumerate(missions):
             rect = pygame.Rect(
@@ -244,7 +271,7 @@ class MissionLogView(BaseView):
                 LIST_WIDTH - 8,
                 ITEM_HEIGHT,
             )
-            item = _MissionItem(rect, mission, self._name_font)
+            item = _MissionItem(rect, mission, self._name_font, self._badge_font)
             self._mission_items.append(item)
 
         # Auto-select first if available
@@ -370,6 +397,17 @@ class MissionLogView(BaseView):
         pad_x = x + 20
         cur_y = y + 18
 
+        # Mission type label
+        if mission.mission_type == "side":
+            type_label = "SIDE MISSION"
+            type_color = _SIDE_BADGE_COLOR
+        else:
+            type_label = "CAMPAIGN MISSION"
+            type_color = _CAMPAIGN_BADGE_COLOR
+        type_surf = self._badge_font.render(type_label, True, type_color)
+        screen.blit(type_surf, (pad_x, cur_y))
+        cur_y += 18
+
         # Mission name
         name_surf = self._detail_title_font.render(mission.name, True, Colors.TEXT_HIGHLIGHT)
         screen.blit(name_surf, (pad_x, cur_y))
@@ -417,6 +455,12 @@ class MissionLogView(BaseView):
             elif reward.reward_type == "xp":
                 rew_text = f"+{reward.amount} XP"
                 color = Colors.BLUE
+            elif reward.reward_type == "modify_reputation":
+                sign = "+" if reward.amount > 0 else ""
+                rew_text = f"{sign}{reward.amount} {reward.target_id} rep"
+                color = Colors.GREEN if reward.amount > 0 else Colors.RED
+            elif reward.reward_type in ("set_flag", "remove_cargo", "deduct_credits"):
+                continue  # Don't show internal flags or deductions in UI
             else:
                 rew_text = f"+{reward.amount} {reward.reward_type}"
                 color = Colors.TEXT_SECONDARY

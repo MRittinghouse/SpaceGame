@@ -184,6 +184,8 @@ class EnemyShipTemplate:
     faction_id: str = ""
     danger_tier: str = "moderate"
     bribe_cost: int = 0
+    credit_reward: int = 0
+    rare_loot: list[dict] = field(default_factory=list)
 
 
 @dataclass
@@ -420,6 +422,7 @@ def build_player_combat_state(
     upgrade_manager: ShipUpgradeManager,
     crew_roster: Optional[CrewRoster],
     crew_combat_moves: dict[str, CombatMove],
+    player_level: int = 0,
 ) -> PlayerCombatState:
     """Build PlayerCombatState from existing game objects.
 
@@ -431,10 +434,13 @@ def build_player_combat_state(
         upgrade_manager: Installed upgrades (provides equipment combat moves).
         crew_roster: Recruited crew (provides crew move IDs). May be None.
         crew_combat_moves: Mapping of crew template_id to their CombatMove.
+        player_level: Current player level (early-game flee bonus applied).
 
     Returns:
         Fully initialized PlayerCombatState.
     """
+    from spacegame.models.encounter import EARLY_GAME_FLEE_BONUS, EARLY_GAME_LEVEL
+
     st = ship.ship_type
 
     # Equipment moves from installed upgrades
@@ -446,6 +452,10 @@ def build_player_combat_state(
         for template, _state in crew_roster.get_recruited_members():
             if template.id in crew_combat_moves:
                 crew_moves.append(crew_combat_moves[template.id])
+
+    flee_bonus = int(upgrade_manager.get_bonus("flee_bonus"))
+    if player_level < EARLY_GAME_LEVEL:
+        flee_bonus += EARLY_GAME_FLEE_BONUS
 
     return PlayerCombatState(
         hull=ship.current_hull,
@@ -462,5 +472,5 @@ def build_player_combat_state(
         crew_moves=crew_moves,
         active_effects=[],
         cooldowns={},
-        flee_bonus=int(upgrade_manager.get_bonus("flee_bonus")),
+        flee_bonus=flee_bonus,
     )

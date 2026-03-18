@@ -63,4 +63,4 @@ class TestNewAchievements:
 
         loader = DataLoader()
         loader.load_all()
-        assert len(loader.achievements) == 43  # 40 + 3 smuggling
+        assert len(loader.achievements) == 62  # 43 original + 19 new

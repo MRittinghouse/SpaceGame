@@ -92,6 +92,7 @@
             "x": 19, "y": 9,
             "type": "loot_container",
             "loot_credits": 60,
+            "loot_commodities": {"anomalous_sample": 1},
             "description": "Ore sample crates stamped with Union quality seals. Grade-A refined ore — someone's been skimming the yield reports."
         },
         {

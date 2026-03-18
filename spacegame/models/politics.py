@@ -704,6 +704,78 @@ class PoliticsManager:
         }
         return _DISPOSITION_MAP.get(tier, 0)
 
+    # --- Faction Perks ---
+
+    def set_faction_perks(
+        self, faction_perks: dict[str, dict[str, list]]
+    ) -> None:
+        """Set faction perks data from DataLoader.
+
+        Args:
+            faction_perks: Nested dict of faction_id -> tier -> perk list.
+        """
+        self._faction_perks = faction_perks
+
+    def get_active_perks(
+        self, player: Any, system_id: str
+    ) -> list:
+        """Get all active faction perks for the player at a system.
+
+        Args:
+            player: Player instance.
+            system_id: Current system ID.
+
+        Returns:
+            List of FactionPerk instances the player qualifies for.
+        """
+        from spacegame.models.faction_perks import get_active_perks
+
+        if not hasattr(self, "_faction_perks"):
+            return []
+
+        faction_id = player.get_faction_for_system(system_id)
+        if not faction_id:
+            return []
+
+        tier = player.get_reputation_tier(faction_id)
+        return get_active_perks(self._faction_perks, faction_id, tier)
+
+    def get_perk_bonus(
+        self, player: Any, system_id: str, perk_type: str
+    ) -> float:
+        """Get total numeric bonus from active perks of a given type.
+
+        Args:
+            player: Player instance.
+            system_id: Current system ID.
+            perk_type: Perk type to sum (e.g. "buy_price_bonus").
+
+        Returns:
+            Total bonus as a float.
+        """
+        from spacegame.models.faction_perks import get_perk_bonus
+
+        active = self.get_active_perks(player, system_id)
+        return get_perk_bonus(active, perk_type)
+
+    def has_perk(
+        self, player: Any, system_id: str, perk_type: str
+    ) -> bool:
+        """Check if a boolean perk is active at the given system.
+
+        Args:
+            player: Player instance.
+            system_id: Current system ID.
+            perk_type: Perk type to check (e.g. "free_repairs").
+
+        Returns:
+            True if the perk is active.
+        """
+        from spacegame.models.faction_perks import has_perk
+
+        active = self.get_active_perks(player, system_id)
+        return has_perk(active, perk_type)
+
     # --- Serialization ---
 
     def to_dict(self) -> dict[str, Any]:

@@ -1,0 +1,112 @@
+{
+  "faction_perks": {
+    "commerce_guild": {
+      "friendly": [
+        {
+          "id": "cg_buy_discount",
+          "type": "buy_price_bonus",
+          "value": 0.05,
+          "name": "Trade Insider",
+          "description": "5% discount on purchases at Guild stations"
+        }
+      ],
+      "allied": [
+        {
+          "id": "cg_sell_bonus",
+          "type": "sell_price_bonus",
+          "value": 0.05,
+          "name": "Preferred Seller",
+          "description": "+5% sell prices at Guild stations"
+        },
+        {
+          "id": "cg_free_docking",
+          "type": "free_repairs",
+          "value": true,
+          "name": "Guild Berth",
+          "description": "Free repairs at Guild stations"
+        }
+      ]
+    },
+    "miners_union": {
+      "friendly": [
+        {
+          "id": "mu_mining_bonus",
+          "type": "mining_yield_bonus",
+          "value": 0.10,
+          "name": "Union Card",
+          "description": "+10% mining yields at Union systems"
+        }
+      ],
+      "allied": [
+        {
+          "id": "mu_mining_bonus_2",
+          "type": "mining_yield_bonus",
+          "value": 0.05,
+          "name": "Master Miner",
+          "description": "Additional +5% mining yields (stacks)"
+        },
+        {
+          "id": "mu_free_repairs",
+          "type": "free_repairs",
+          "value": true,
+          "name": "Union Drydock",
+          "description": "Free repairs at Union stations"
+        }
+      ]
+    },
+    "science_collective": {
+      "friendly": [
+        {
+          "id": "sc_buy_discount",
+          "type": "buy_price_bonus",
+          "value": 0.05,
+          "name": "Research Partner",
+          "description": "5% discount at Collective stations"
+        }
+      ],
+      "allied": [
+        {
+          "id": "sc_salvage_bonus",
+          "type": "salvage_yield_bonus",
+          "value": 0.15,
+          "name": "Lab Analyst",
+          "description": "+15% salvage yields at Collective systems"
+        },
+        {
+          "id": "sc_free_fuel",
+          "type": "free_fuel",
+          "value": true,
+          "name": "Reactor Tap",
+          "description": "Free refueling at Collective stations"
+        }
+      ]
+    },
+    "frontier_alliance": {
+      "friendly": [
+        {
+          "id": "fa_sell_bonus",
+          "type": "sell_price_bonus",
+          "value": 0.05,
+          "name": "Frontier Trader",
+          "description": "+5% sell prices at Alliance stations"
+        }
+      ],
+      "allied": [
+        {
+          "id": "fa_sell_bonus_2",
+          "type": "sell_price_bonus",
+          "value": 0.05,
+          "name": "Alliance Partner",
+          "description": "Additional +5% sell prices (stacks)"
+        },
+        {
+          "id": "fa_safe_passage",
+          "type": "safe_passage",
+          "value": true,
+          "name": "Alliance Escort",
+          "description": "No hostile encounters in Alliance systems"
+        }
+      ]
+    }
+  }
+}

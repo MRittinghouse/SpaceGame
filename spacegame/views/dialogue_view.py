@@ -200,12 +200,10 @@ class DialogueView(BaseView):
         self._text_timer = 0.0
         self._text_complete = DIALOGUE_TEXT_SPEED <= 0
 
-        # Update portrait expression based on dialogue node
+        # Keep portrait on idle — expression frame swaps are too jarring
         if self._current_npc:
             portrait = self._get_portrait(self._current_npc.id)
-            if portrait is not None and node.expression:
-                portrait.play(node.expression)
-            elif portrait is not None:
+            if portrait is not None:
                 portrait.play("idle")
 
         # Build response buttons (only shown when text is complete)
@@ -218,7 +216,7 @@ class DialogueView(BaseView):
         if not node:
             return
 
-        responses = node.responses
+        responses = self.dialogue_manager.get_available_responses()
         if not responses:
             # Terminal node — show a "[Continue]" button to end
             responses_text = ["[Continue]"]
@@ -288,7 +286,8 @@ class DialogueView(BaseView):
         if not node:
             return
 
-        if not node.responses:
+        available = self.dialogue_manager.get_available_responses()
+        if not available:
             # Terminal node — "[Continue]" was clicked
             self.dialogue_manager.end_dialogue()
             self.next_state = self._return_state

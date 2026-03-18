@@ -12,8 +12,8 @@
         "id": "nexus_repair",
         "name": "Dockside Repair Bay",
         "location_type": "repair_bay",
-        "description": "Guild-certified repair facilities with standardized pricing and thorough diagnostics.",
-        "flavor_text": "Technicians in crisp blue coveralls run systematic hull inspections. Everything is logged, filed, and billed.",
+        "description": "Guild-certified repair bay where the diagnostics take longer than the repairs. Thorough, by-the-book, and they charge for every minute.",
+        "flavor_text": "Technicians in crisp blue coveralls poke at your hull with scanners that cost more than your cargo. They'll find problems you didn't know you had, then quote you for each one.",
         "repair_cost_per_hp": 12
       },
       {
@@ -27,8 +27,8 @@
         "id": "nexus_shipyard",
         "name": "Meridian Shipworks",
         "location_type": "shipyard",
-        "description": "Full-service shipyard offering upgrades, modifications, and equipment installation.",
-        "flavor_text": "Holographic catalogs display the latest Guild-approved modifications at Guild-approved prices."
+        "description": "The Guild's flagship shipyard. If the modification exists and the paperwork clears, they'll bolt it on.",
+        "flavor_text": "Holographic catalogs rotate slowly in glass cases. The prices all end in nines. A sales rep hovers the moment you slow down."
       },
       {
         "id": "nexus_financial_exchange",
@@ -72,7 +72,7 @@
         "id": "stellaris_shipyard",
         "name": "Stellaris Outfitters",
         "location_type": "shipyard",
-        "description": "Premium ship upgrades and modifications. If it exists, they stock it — for a price.",
+        "description": "Premium ship upgrades and modifications. If it exists, they stock it. For a price.",
         "flavor_text": "Display models of high-end weapon systems rotate slowly behind glass cases."
       },
       {
@@ -154,8 +154,8 @@
         "id": "iron_depths_repair",
         "name": "DCMC Maintenance Bay",
         "location_type": "repair_bay",
-        "description": "Corporate-grade repair facilities built to service heavy mining equipment. Your ship qualifies.",
-        "flavor_text": "The maintenance bay runs on schedules, not requests. Get in line, get fixed, get out.",
+        "description": "DCMC maintenance facility built to service heavy mining rigs. They'll work on your ship the same way, whether you like it or not.",
+        "flavor_text": "The intake clerk assigns you a bay number without looking up. The queue board has twelve ships ahead of you. Nobody complains. Complaining doesn't move the queue.",
         "repair_cost_per_hp": 8
       },
       {
@@ -169,8 +169,8 @@
         "id": "iron_depths_mining",
         "name": "Deep Core Operations",
         "location_type": "mining",
-        "description": "Dense, unstable asteroid clusters rich in rare metals and heavy isotopes. High risk, high reward.",
-        "flavor_text": "Gravitational anomalies make every approach vector an adventure. The minerals here are worth the danger. Mostly."
+        "description": "Dense, unstable asteroid clusters where the rare metals grow heavier the deeper you drill. The kind of place that pays well because it kills occasionally.",
+        "flavor_text": "Gravitational anomalies twist your approach vector sideways. Veteran pilots read the field by instinct. Rookies read it by hull damage."
       },
       {
         "id": "iron_depths_restricted_zone",
@@ -273,15 +273,15 @@
         "id": "axiom_shipyard",
         "name": "Engineering Workshop",
         "location_type": "shipyard",
-        "description": "Ship modifications informed by cutting-edge materials science. Expensive but elegant.",
-        "flavor_text": "The upgrade catalog includes things other stations haven't heard of yet."
+        "description": "Ship modifications designed by people who publish papers about them. The alloys are lighter, the circuits are faster, and the invoices are eye-watering.",
+        "flavor_text": "A researcher explains the molecular bonding process for your new hull plating. You nod politely. The performance specs, at least, speak for themselves."
       },
       {
         "id": "axiom_research_wing",
         "name": "Okafor Institute Medical Wing",
         "location_type": "unique",
         "description": "The Collective's premier medical facility. Dr. Okafor's legacy: 'Knowledge that does not heal is knowledge wasted.'",
-        "flavor_text": "A bronze plaque gleams beside the entrance. Inside, researchers work on breakthroughs that could change everything — if the patents don't bury them first."
+        "flavor_text": "A bronze plaque gleams beside the entrance. Inside, researchers work on breakthroughs that could change everything, if the patents don't bury them first."
       },
       {
         "id": "axiom_labs_investment",
@@ -325,8 +325,8 @@
         "id": "nova_shipyard",
         "name": "NAS Systems Integration",
         "location_type": "shipyard",
-        "description": "Cutting-edge ship systems available nowhere else. Security clearance may be required.",
-        "flavor_text": "Some of these modifications aren't in any public catalog. The prices aren't public either."
+        "description": "Ship systems that don't appear in any commercial database. The installation techs have clearances higher than most station commanders.",
+        "flavor_text": "The catalog is a locked terminal. You scroll past weapons systems with redacted names and shield configurations labeled 'experimental.' The tech watches what you linger on."
       },
       {
         "id": "nova_restricted_labs",
@@ -370,8 +370,8 @@
         "id": "havens_shipyard",
         "name": "Frontier Outfitters",
         "location_type": "shipyard",
-        "description": "Practical modifications from Alliance engineers. Nothing fancy, everything works.",
-        "flavor_text": "The catalog is hand-written on a whiteboard. The engineer crosses things out and adds them back as stock changes."
+        "description": "Alliance engineers who learned their trade keeping colony ships flying past their expiration date. Nothing fancy, everything works.",
+        "flavor_text": "The catalog is hand-written on a whiteboard in three colors of marker. The engineer crosses things out and adds them back as stock changes. She apologizes for the mess. The work, however, is spotless."
       },
       {
         "id": "havens_congress_hall",
@@ -415,8 +415,8 @@
         "id": "verdant_shipyard",
         "name": "Verdant Docking Services",
         "location_type": "shipyard",
-        "description": "Basic ship modifications focused on cargo hauling and fuel efficiency. Built for working traders.",
-        "flavor_text": "The upgrade options prioritize reliability over flash. These people know what a working ship needs."
+        "description": "Practical ship modifications from people who've actually flown the routes. Cargo hauling and fuel efficiency, nothing more.",
+        "flavor_text": "The mechanic tests your thruster alignment by ear before checking the instruments. She recommends the cheaper option. It's also the better one."
       },
       {
         "id": "verdant_mayors_council",
@@ -438,7 +438,7 @@
         "id": "crimson_market",
         "name": "Wrecker's Bazaar",
         "location_type": "market",
-        "description": "Salvaged parts, refurbished electronics, and goods of ambiguous origin. No questions, no receipts.",
+        "description": "Salvaged parts, refurbished electronics, and goods of ambiguous origin. Questions aren't welcome and receipts don't exist.",
         "flavor_text": "A market that doesn't recognize the concept of contraband. If it's on the table, it's for sale."
       },
       {
@@ -506,7 +506,7 @@
         "name": "Assembly Core",
         "location_type": "unique",
         "description": "The heart of The Fulcrum. Massive gravitational lensing arrays hang in zero-gravity assembly cradles, their curved surfaces gleaming under industrial floodlights. A warp gate frame dominates the far wall.",
-        "flavor_text": "The scale is breathtaking. Each array is larger than your ship. And the warp gate behind them glows with a faint blue light \u2014 already powered, already waiting."
+        "flavor_text": "The scale is breathtaking. Each array is larger than your ship. And the warp gate behind them glows with a faint blue light, already powered, already waiting."
       }
     ]
   }

@@ -1,0 +1,1166 @@
+{
+  "dialogues": [
+    {
+      "id": "elena_old_charts_dialogue",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "elena_reeves",
+          "text": "Captain, I need to ask something. You know I left the Guild, that part I've told you. What I haven't told you is why the coordinates I kept matter. My old captain, Koren, went missing running uncharted routes. The Guild archives at Stellaris Port have her last filed navigation logs.",
+          "responses": [
+            {
+              "text": "We'll set course for Stellaris Port.",
+              "next_node_id": "grateful"
+            },
+            {
+              "text": "What do you expect to find?",
+              "next_node_id": "explain"
+            }
+          ],
+          "expression": "serious"
+        },
+        {
+          "id": "explain",
+          "speaker_id": "elena_reeves",
+          "text": "This isn't sentiment. Koren was the best navigator I've ever known. If her last logs show what I think they show, there are routes out there that could cut transit times in half. The Guild buried them because uncharted means unregulated, and unregulated means untaxed.",
+          "responses": [
+            {
+              "text": "Sounds like it's worth investigating.",
+              "next_node_id": "grateful"
+            },
+            {
+              "text": "And if it's just a dead end?",
+              "next_node_id": "dead_end"
+            }
+          ],
+          "expression": "determined"
+        },
+        {
+          "id": "dead_end",
+          "speaker_id": "elena_reeves",
+          "text": "Then at least I'll know. The ledger doesn't lie, Captain. Neither do navigation logs. Whatever happened to Koren, the data will tell the truth.",
+          "responses": [
+            {
+              "text": "Let's find out. Setting course for Stellaris Port.",
+              "next_node_id": "grateful"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "grateful",
+          "speaker_id": "elena_reeves",
+          "text": "Thank you. The archive terminal is in the Guild Quarter. I still have my old access codes, assuming they haven't been revoked.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "grateful"
+        }
+      ]
+    },
+    {
+      "id": "elena_archives_dialogue",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "elena_reeves",
+          "text": "The access codes still work. Koren's last filed route was toward Iron Depths, she was mapping fuel-efficient approaches to the mining corridors. The last entry cuts off mid-calculation. Her ship, the Meridian, never filed a return.",
+          "responses": [
+            {
+              "text": "We should look for the Meridian.",
+              "next_node_id": "resolve",
+              "set_flag": "elena_archives_accessed"
+            },
+            {
+              "text": "What do you think happened?",
+              "next_node_id": "theory"
+            }
+          ],
+          "expression": "serious"
+        },
+        {
+          "id": "theory",
+          "speaker_id": "elena_reeves",
+          "text": "The route she was mapping passes through an asteroid corridor with poor sensor coverage. If she hit debris at speed... the Meridian would have drifted. Recoverable, maybe. If someone knew where to look.",
+          "responses": [
+            {
+              "text": "Now someone does. Let's find it.",
+              "next_node_id": "resolve",
+              "set_flag": "elena_archives_accessed"
+            }
+          ],
+          "expression": "hopeful"
+        },
+        {
+          "id": "resolve",
+          "speaker_id": "elena_reeves",
+          "text": "Iron Depths. That's where we need to go next. When we're ready.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "determined"
+        }
+      ]
+    },
+    {
+      "id": "elena_wreck_dialogue",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "elena_reeves",
+          "text": "Scanners are picking up wreckage matching the Meridian's signature. Hull breach, long cold. She's been here a while. I'm reading two salvageable compartments, the cargo hold has refined fuel crystals worth a small fortune. The other is Koren's navigation console with her personal logs.",
+          "responses": [
+            {
+              "text": "We take the cargo. Fuel crystals are too valuable to leave.",
+              "next_node_id": "cargo_choice",
+              "set_flag": "elena_wreck_found"
+            },
+            {
+              "text": "We recover Koren's logs. That's why we came.",
+              "next_node_id": "logs_choice",
+              "set_flag": "elena_wreck_found"
+            },
+            {
+              "text": "Can we take both?",
+              "next_node_id": "both"
+            }
+          ],
+          "expression": "serious"
+        },
+        {
+          "id": "both",
+          "speaker_id": "elena_reeves",
+          "text": "Structural integrity is failing. We have time for one extraction before the hull collapses. I wish we could, Captain, but it's one or the other.",
+          "responses": [
+            {
+              "text": "The cargo, then. We need the credits.",
+              "next_node_id": "cargo_choice"
+            },
+            {
+              "text": "Koren's logs. That's what matters.",
+              "next_node_id": "logs_choice"
+            }
+          ],
+          "expression": "tense"
+        },
+        {
+          "id": "cargo_choice",
+          "speaker_id": "elena_reeves",
+          "text": "...Right. The practical choice. Koren would have made the same call, probably. The crystals will cover our fuel costs for months. I just. I'd hoped to read those logs.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null,
+              "set_flag": "elena_choice_made",
+              "crew_loyalty_changes": {
+                "elena_reeves": -5
+              }
+            }
+          ],
+          "expression": "disappointed"
+        },
+        {
+          "id": "logs_choice",
+          "speaker_id": "elena_reeves",
+          "text": "Captain... thank you. These logs contain her final calculations. Routes she never filed. This is, this is more than I expected to find. She was brilliant. The data here could change how we navigate the entire sector.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null,
+              "set_flag": "elena_choice_made",
+              "crew_loyalty_changes": {
+                "elena_reeves": 10
+              }
+            }
+          ],
+          "expression": "emotional"
+        }
+      ]
+    },
+    {
+      "id": "elena_charting_dialogue",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "elena_reeves",
+          "text": "I've been going through Koren's route calculations. She was mapping fuel-optimal paths that the Guild never published. With our current nav systems, I think I can complete what she started. Chart a route that puts her name on the star maps where it belongs.",
+          "responses": [
+            {
+              "text": "Let's do it. What do you need?",
+              "next_node_id": "calibrate"
+            },
+            {
+              "text": "This is important to you.",
+              "next_node_id": "personal"
+            }
+          ],
+          "expression": "determined"
+        },
+        {
+          "id": "personal",
+          "speaker_id": "elena_reeves",
+          "text": "She taught me everything. Not just navigation, how to read a crew, when to push through and when to hold steady. I left the Guild because they buried her work. This makes it matter again.",
+          "responses": [
+            {
+              "text": "Then let's make it count.",
+              "next_node_id": "calibrate"
+            }
+          ],
+          "expression": "reflective"
+        },
+        {
+          "id": "calibrate",
+          "speaker_id": "elena_reeves",
+          "text": "I need to run calibration passes through the corridor she mapped. It'll take precise timing, one miscalculation and we're off by light-minutes. Are you ready?",
+          "responses": [
+            {
+              "text": "[Attempt the calibration]",
+              "next_node_id": null,
+              "set_flag": "elena_route_charted",
+              "crew_loyalty_changes": {
+                "elena_reeves": 25
+              },
+              "skill_check": {
+                "skill": "acu",
+                "difficulty": 4,
+                "success_node_id": "success",
+                "failure_node_id": "partial"
+              }
+            }
+          ]
+        },
+        {
+          "id": "success",
+          "speaker_id": "elena_reeves",
+          "text": "Perfect calibration. The route is solid, fuel efficiency gains of fifteen percent through this corridor. Captain Koren's legacy, completed. And mine begins. Thank you for everything.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null,
+              "set_flag": "elena_route_charted"
+            }
+          ],
+          "expression": "proud"
+        },
+        {
+          "id": "partial",
+          "speaker_id": "elena_reeves",
+          "text": "Close, but I had to compensate manually for the drift. Still, the route works. It's not perfect, but it's real. Koren would have laughed and said 'Good enough is good enough.' Thank you, Captain.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null,
+              "set_flag": "elena_route_charted"
+            }
+          ],
+          "expression": "satisfied"
+        }
+      ]
+    },
+    {
+      "id": "marcus_old_debts_dialogue",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "marcus_jin",
+          "text": "Captain, I need to tell you something. The shipyard I left on Breakstone. Hargan Yards. I didn't just walk out over a disagreement. Three workers died in a hull collapse because management skipped the reinforcement protocols. I reported it. They buried the report.",
+          "responses": [
+            {
+              "text": "That's a serious accusation.",
+              "next_node_id": "evidence"
+            },
+            {
+              "text": "What do you want to do about it?",
+              "next_node_id": "plan"
+            }
+          ],
+          "expression": "angry"
+        },
+        {
+          "id": "evidence",
+          "speaker_id": "marcus_jin",
+          "text": "It's not an accusation. It's a fact. Steel holds or it doesn't. And theirs didn't. I have the original specs showing where they cut corners, but I need the inspection records from the yard itself to prove the cover-up. Those records are still on Breakstone.",
+          "responses": [
+            {
+              "text": "Then let's go get them.",
+              "next_node_id": "grateful"
+            }
+          ],
+          "expression": "determined"
+        },
+        {
+          "id": "plan",
+          "speaker_id": "marcus_jin",
+          "text": "The inspection records at Hargan Yards will show the violations. If I can get my hands on them, the Union's safety board can't ignore it. Those records are still on Breakstone, digital copies in the yard's archive terminal.",
+          "responses": [
+            {
+              "text": "We'll get you there.",
+              "next_node_id": "grateful"
+            }
+          ],
+          "expression": "determined"
+        },
+        {
+          "id": "grateful",
+          "speaker_id": "marcus_jin",
+          "text": "I appreciate it, Captain. This isn't just about me. There are workers still on those lines. Steel holds or it doesn't, and right now, it doesn't.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "grateful"
+        }
+      ]
+    },
+    {
+      "id": "marcus_evidence_dialogue",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "marcus_jin",
+          "text": "I found the archive terminal. Records go back three years, every missed inspection, every substituted material, every shortcut. It's all here. Foreman Dask signed off on every one of them.",
+          "responses": [
+            {
+              "text": "Download everything. We need it all.",
+              "next_node_id": "downloaded",
+              "set_flag": "marcus_evidence_gathered"
+            },
+            {
+              "text": "Is this enough to make a case?",
+              "next_node_id": "enough"
+            }
+          ],
+          "expression": "grim"
+        },
+        {
+          "id": "enough",
+          "speaker_id": "marcus_jin",
+          "text": "More than enough. The Union safety board at Forgeworks will have to act on this. An inspector named Lira Feng handles the mining sector. She has a reputation for being thorough.",
+          "responses": [
+            {
+              "text": "Then let's bring it to Forgeworks.",
+              "next_node_id": "downloaded",
+              "set_flag": "marcus_evidence_gathered"
+            }
+          ],
+          "expression": "determined"
+        },
+        {
+          "id": "downloaded",
+          "speaker_id": "marcus_jin",
+          "text": "Got it. Every last record. Forgeworks next. Inspector Feng will know what to do with this.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "resolved"
+        }
+      ]
+    },
+    {
+      "id": "marcus_inspector_dialogue",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "lira_feng",
+          "text": "Marcus Jin. I know who you are, and I know about Hargan Yards. Before you show me those records, you should know that Foreman Dask has friends on the safety board. Friends who pay well.",
+          "responses": [
+            {
+              "text": "Are you saying you're compromised?",
+              "next_node_id": "compromised"
+            },
+            {
+              "text": "What do you want?",
+              "next_node_id": "deal"
+            }
+          ],
+          "expression": "cautious"
+        },
+        {
+          "id": "compromised",
+          "speaker_id": "lira_feng",
+          "text": "I'm saying the system is compromised. I file this report, it disappears. Dask keeps cutting corners. Unless someone makes it impossible to bury.",
+          "responses": [
+            {
+              "text": "What if we make the evidence public? Post it on the Union bulletin boards.",
+              "next_node_id": "public",
+              "set_flag": "marcus_inspector_resolved",
+              "crew_loyalty_changes": {
+                "marcus_jin": 5
+              }
+            },
+            {
+              "text": "What would it cost to make this report stick?",
+              "next_node_id": "bribe"
+            },
+            {
+              "text": "There must be someone else who can handle this. Someone clean.",
+              "next_node_id": "alternate",
+              "set_flag": "marcus_inspector_resolved"
+            }
+          ],
+          "expression": "frank"
+        },
+        {
+          "id": "deal",
+          "speaker_id": "lira_feng",
+          "text": "Honestly? To be able to do my job without Dask's people breathing down my neck. The board won't act unless there's pressure from outside.",
+          "responses": [
+            {
+              "text": "We'll go public. The evidence speaks for itself.",
+              "next_node_id": "public",
+              "set_flag": "marcus_inspector_resolved",
+              "crew_loyalty_changes": {
+                "marcus_jin": 5
+              }
+            },
+            {
+              "text": "What if we greased the right wheels? How much?",
+              "next_node_id": "bribe"
+            }
+          ],
+          "expression": "tired"
+        },
+        {
+          "id": "public",
+          "speaker_id": "marcus_jin",
+          "text": "Good call, Captain. The Union was built on transparency. If we post this on every bulletin board from here to Breakstone, they can't bury it. Let the workers see what Dask has been doing to their safety.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null,
+              "set_flag": "marcus_went_public"
+            }
+          ],
+          "expression": "fierce"
+        },
+        {
+          "id": "bribe",
+          "speaker_id": "marcus_jin",
+          "text": "Captain... paying off an inspector to do the right thing? That's exactly what Dask does. We'd be no better than him.",
+          "responses": [
+            {
+              "text": "You're right. We'll go public instead.",
+              "next_node_id": "public",
+              "set_flag": "marcus_inspector_resolved",
+              "crew_loyalty_changes": {
+                "marcus_jin": 5
+              }
+            },
+            {
+              "text": "Sometimes you have to work the system to fix it.",
+              "next_node_id": "bribe_accept",
+              "set_flag": "marcus_inspector_resolved",
+              "crew_loyalty_changes": {
+                "marcus_jin": -5
+              }
+            }
+          ],
+          "expression": "conflicted"
+        },
+        {
+          "id": "bribe_accept",
+          "speaker_id": "lira_feng",
+          "text": "Two thousand credits and I'll fast-track the investigation. Dask won't know until the inspectors are at his door.",
+          "responses": [
+            {
+              "text": "[Pay 2000 credits]",
+              "next_node_id": null,
+              "set_flag": "marcus_bribed_inspector"
+            }
+          ],
+          "expression": "business"
+        },
+        {
+          "id": "alternate",
+          "speaker_id": "marcus_jin",
+          "text": "The chief inspector at Nexus Prime. Ogun Adebayo. He's Union old guard. Incorruptible. It's a longer path, but it's the right one.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null,
+              "set_flag": "marcus_alternate_inspector"
+            }
+          ],
+          "expression": "thoughtful"
+        }
+      ]
+    },
+    {
+      "id": "marcus_confrontation_dialogue",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "marcus_jin",
+          "text": "Word is Foreman Dask knows about the investigation. He's scrambling to destroy records at the yard. If we don't get back to Breakstone now, he'll burn the physical evidence and claim the digital copies were fabricated.",
+          "responses": [
+            {
+              "text": "Then we move. Now.",
+              "next_node_id": "confront"
+            }
+          ],
+          "expression": "urgent"
+        },
+        {
+          "id": "confront",
+          "speaker_id": "marcus_jin",
+          "text": "There he is. Dask, you cut every corner in this yard and three people paid for it. It stops today.",
+          "responses": [
+            {
+              "text": "[Back Marcus up, stand firm]",
+              "next_node_id": null,
+              "set_flag": "marcus_confrontation_resolved",
+              "crew_loyalty_changes": {
+                "marcus_jin": 25
+              },
+              "skill_check": {
+                "skill": "res",
+                "difficulty": 4,
+                "success_node_id": "success",
+                "failure_node_id": "partial"
+              }
+            }
+          ]
+        },
+        {
+          "id": "success",
+          "speaker_id": "marcus_jin",
+          "text": "He backed down. Inspectors are already en route. Captain, I've been carrying this for years. Steel holds, and today, it held. Thank you. For everything.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null,
+              "set_flag": "marcus_confrontation_resolved"
+            }
+          ],
+          "expression": "relieved"
+        },
+        {
+          "id": "partial",
+          "speaker_id": "marcus_jin",
+          "text": "He tried to bluster his way out, but the evidence is already filed. Doesn't matter what he says now. It's done. I can finally put this behind me. Thank you, Captain.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null,
+              "set_flag": "marcus_confrontation_resolved"
+            }
+          ],
+          "expression": "resolved"
+        }
+      ]
+    },
+    {
+      "id": "priya_retracted_paper_dialogue",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "dr_priya_osei",
+          "text": "Captain, I've intercepted a data node reference from Axiom Labs. My retracted paper, the one the Collective buried, has resurfaced in the public archive index. It shouldn't be there. Someone is either trying to restore it or trying to confirm its destruction.",
+          "responses": [
+            {
+              "text": "Why was it retracted?",
+              "next_node_id": "backstory"
+            },
+            {
+              "text": "We should get there before anyone else does.",
+              "next_node_id": "urgency"
+            }
+          ],
+          "expression": "concerned"
+        },
+        {
+          "id": "backstory",
+          "speaker_id": "dr_priya_osei",
+          "text": "I proposed a materials synthesis technique that contradicted Senior Researcher Voss's published framework. Every datum tells a story, and my data told one the Collective didn't want to hear. Voss had my paper retracted and my lab access revoked.",
+          "responses": [
+            {
+              "text": "Then it's time to set the record straight.",
+              "next_node_id": "urgency"
+            }
+          ],
+          "expression": "bitter"
+        },
+        {
+          "id": "urgency",
+          "speaker_id": "dr_priya_osei",
+          "text": "If my paper is genuinely in the public archive, I need to copy it before Voss can have it scrubbed again. Axiom Labs, Captain. As soon as possible.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "determined"
+        }
+      ]
+    },
+    {
+      "id": "priya_paper_dialogue",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "dr_priya_osei",
+          "text": "The archive terminal is still active. My paper is here, complete, with my original dataset intact. But there's something else. Cross-referencing the timestamps... Voss published a paper six months after mine was retracted. The methodology is identical. He took my work.",
+          "responses": [
+            {
+              "text": "That's plagiarism. We need to report this.",
+              "next_node_id": "resolve",
+              "set_flag": "priya_paper_retrieved"
+            },
+            {
+              "text": "Download everything. We'll figure out next steps.",
+              "next_node_id": "resolve",
+              "set_flag": "priya_paper_retrieved"
+            }
+          ],
+          "expression": "shocked"
+        },
+        {
+          "id": "resolve",
+          "speaker_id": "dr_priya_osei",
+          "text": "I have the original timestamps, the unedited dataset, everything. The Collective's review board at Nova Research handles academic disputes. If I present this evidence there, Voss will have to answer for it.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "resolute"
+        }
+      ]
+    },
+    {
+      "id": "priya_peer_review_dialogue",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "dr_priya_osei",
+          "text": "The review board is in session. Voss is here, and he's confident. He thinks his reputation will carry the day. I need to present the evidence clearly, but I could use help. Either we find hard proof of the timeline discrepancy, or we convince his research partner, Dr. Amara Okonkwo, to testify.",
+          "responses": [
+            {
+              "text": "[Examine the data timestamps for proof] (Acuity check)",
+              "next_node_id": null,
+              "skill_check": {
+                "skill": "acu",
+                "difficulty": 4,
+                "success_node_id": "data_success",
+                "failure_node_id": "data_fail",
+                "set_flag_on_success": "priya_confrontation_resolved"
+              }
+            },
+            {
+              "text": "[Convince Dr. Okonkwo to speak up] (Communication check)",
+              "next_node_id": null,
+              "skill_check": {
+                "skill": "com",
+                "difficulty": 3,
+                "success_node_id": "witness_success",
+                "failure_node_id": "witness_fail",
+                "set_flag_on_success": "priya_confrontation_resolved"
+              }
+            }
+          ],
+          "expression": "nervous"
+        },
+        {
+          "id": "data_success",
+          "speaker_id": "dr_priya_osei",
+          "text": "The metadata is unambiguous, my paper predates his by six months, down to the version hashes. The board has no choice. Voss's paper is being retracted, and mine will be restored to the archive. Every datum told its story after all.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null,
+              "set_flag": "priya_confrontation_resolved",
+              "crew_loyalty_changes": {
+                "dr_priya_osei": 15
+              }
+            }
+          ],
+          "expression": "triumphant"
+        },
+        {
+          "id": "data_fail",
+          "speaker_id": "dr_priya_osei",
+          "text": "The metadata is ambiguous, the timestamps are close enough that Voss can claim parallel development. But the board has noted the concern. They're ordering a full review. It's not the victory I wanted, but it's a start.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null,
+              "set_flag": "priya_confrontation_resolved",
+              "crew_loyalty_changes": {
+                "dr_priya_osei": 10
+              }
+            }
+          ],
+          "expression": "resigned"
+        },
+        {
+          "id": "witness_success",
+          "speaker_id": "amara_okonkwo",
+          "text": "I should have spoken sooner. Priya's work was original. I was there when she presented the initial findings. Voss pressured me to stay silent, but the Collective is supposed to value truth above politics.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null,
+              "set_flag": "priya_confrontation_resolved",
+              "crew_loyalty_changes": {
+                "dr_priya_osei": 15
+              }
+            }
+          ],
+          "expression": "brave"
+        },
+        {
+          "id": "witness_fail",
+          "speaker_id": "dr_priya_osei",
+          "text": "Okonkwo wouldn't budge. Voss still has too much influence. But the board has seen my original data. They'll order a formal inquiry. Slower than I'd like, but the wheels are turning.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null,
+              "set_flag": "priya_confrontation_resolved",
+              "crew_loyalty_changes": {
+                "dr_priya_osei": 10
+              }
+            }
+          ],
+          "expression": "patient"
+        }
+      ]
+    },
+    {
+      "id": "priya_theorem_dialogue",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "dr_priya_osei",
+          "text": "My original research has been validated, and it's led somewhere I didn't expect. The materials synthesis technique, if my calculations are correct, can be applied to improve scanning resolution by an order of magnitude. I need to run a field test to prove it.",
+          "responses": [
+            {
+              "text": "What does the test involve?",
+              "next_node_id": "test_explain"
+            },
+            {
+              "text": "Let's do it.",
+              "next_node_id": "test_run"
+            }
+          ],
+          "expression": "excited"
+        },
+        {
+          "id": "test_explain",
+          "speaker_id": "dr_priya_osei",
+          "text": "I need to calibrate the ship's scanners using the new synthesis parameters and run a deep-field scan. If the resolution improves as predicted, the theorem holds. Simple in theory. Technically demanding in practice.",
+          "responses": [
+            {
+              "text": "Let's prove your theorem.",
+              "next_node_id": "test_run"
+            }
+          ],
+          "expression": "focused"
+        },
+        {
+          "id": "test_run",
+          "speaker_id": "dr_priya_osei",
+          "text": "Calibrating now. I need precise instrument adjustments during the scan window. Captain, can you handle the secondary controls?",
+          "responses": [
+            {
+              "text": "[Assist with calibration] (Ingenuity check)",
+              "next_node_id": null,
+              "skill_check": {
+                "skill": "ing",
+                "difficulty": 4,
+                "success_node_id": "success",
+                "failure_node_id": "partial",
+                "set_flag_on_success": "priya_theorem_validated"
+              }
+            }
+          ]
+        },
+        {
+          "id": "success",
+          "speaker_id": "dr_priya_osei",
+          "text": "Resolution increase of three hundred percent. The theorem holds. Captain, this changes everything, for materials science, for scanning technology, for... for me. My work matters. Thank you for believing in it when the Collective didn't.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null,
+              "set_flag": "priya_theorem_validated",
+              "crew_loyalty_changes": {
+                "dr_priya_osei": 25
+              }
+            }
+          ],
+          "expression": "overjoyed"
+        },
+        {
+          "id": "partial",
+          "speaker_id": "dr_priya_osei",
+          "text": "Resolution increase of one hundred and fifty percent. Not the full prediction, but significant. The theorem holds in principle. I'll need to refine the calibration parameters. But the foundation is proven. Thank you, Captain. This is the beginning of something.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null,
+              "set_flag": "priya_theorem_validated",
+              "crew_loyalty_changes": {
+                "dr_priya_osei": 25
+              }
+            }
+          ],
+          "expression": "satisfied"
+        }
+      ]
+    },
+    {
+      "id": "tomas_name_past_dialogue",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "tomas_drifter",
+          "text": "Captain, I just heard a name I haven't heard in a long time. Ren Castillo. The void provides, but it also takes, and Castillo took everything my family had. Ran a shipping fraud that bankrupted my parents' trading operation. I heard they're working out of Haven's Rest now.",
+          "responses": [
+            {
+              "text": "What happened with your family?",
+              "next_node_id": "backstory"
+            },
+            {
+              "text": "Want to check it out?",
+              "next_node_id": "lets_go"
+            }
+          ],
+          "expression": "tense"
+        },
+        {
+          "id": "backstory",
+          "speaker_id": "tomas_drifter",
+          "text": "My parents ran a legitimate shipping business. Small, but honest. Castillo posed as a bulk buyer, placed orders, took the shipments, and vanished. Left my parents holding debt they couldn't cover. We lost the ship, the business, everything. I was sixteen.",
+          "responses": [
+            {
+              "text": "I'm sorry. Let's go find them.",
+              "next_node_id": "lets_go"
+            }
+          ],
+          "expression": "painful"
+        },
+        {
+          "id": "lets_go",
+          "speaker_id": "tomas_drifter",
+          "text": "Haven's Rest. That's where the trail starts. I need to see if it's really them, and figure out what I'm going to do about it.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "determined"
+        }
+      ]
+    },
+    {
+      "id": "tomas_lead_dialogue",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "tomas_drifter",
+          "text": "My mother ran a noodle stand on Deck Seven. Best laksa in the sector. Haven't been back since we lost everything. But the word is good. Castillo was seen here three days ago, asking about freight contracts at The Fulcrum.",
+          "responses": [
+            {
+              "text": "The Fulcrum. That's our next stop.",
+              "next_node_id": "plan",
+              "set_flag": "tomas_lead_found"
+            },
+            {
+              "text": "What's your plan when we find them?",
+              "next_node_id": "plan_question"
+            }
+          ],
+          "expression": "focused"
+        },
+        {
+          "id": "plan_question",
+          "speaker_id": "tomas_drifter",
+          "text": "That's... a good question. Part of me wants to con them back. Give them a taste of what they did to us. Part of me just wants answers. I'll figure it out when I'm looking them in the eye.",
+          "responses": [
+            {
+              "text": "We'll figure it out together. The Fulcrum it is.",
+              "next_node_id": "plan",
+              "set_flag": "tomas_lead_found"
+            }
+          ],
+          "expression": "uncertain"
+        },
+        {
+          "id": "plan",
+          "speaker_id": "tomas_drifter",
+          "text": "The Fulcrum. Let's go.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "resolved"
+        }
+      ]
+    },
+    {
+      "id": "tomas_fulcrum_dialogue",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "tomas_drifter",
+          "text": "There. That's Castillo, older, but I'd know that face anywhere. They're running another scheme, Captain. Selling phantom cargo contracts to independent traders. Same trick, different port. I want to con them back, set up a fake deal and leave them holding the debt. How does that sound?",
+          "responses": [
+            {
+              "text": "I like it. Let's give them a taste of their own medicine.",
+              "next_node_id": "con_plan",
+              "crew_loyalty_changes": {
+                "tomas_drifter": 5
+              }
+            },
+            {
+              "text": "Let's just confront them directly.",
+              "next_node_id": "direct"
+            },
+            {
+              "text": "Maybe there's another way. What if we talked to them first?",
+              "next_node_id": "peace"
+            }
+          ],
+          "expression": "intense"
+        },
+        {
+          "id": "con_plan",
+          "speaker_id": "tomas_drifter",
+          "text": "We set up a shell cargo contract. Castillo takes the bait, commits their own credits, and we pull the rug. Poetic, right? The void provides.",
+          "responses": [
+            {
+              "text": "[Execute the con]",
+              "next_node_id": "con_result",
+              "set_flag": "tomas_confrontation_resolved",
+              "skill_check": {
+                "skill": "com",
+                "difficulty": 3,
+                "success_node_id": "con_success",
+                "failure_node_id": "con_fail"
+              }
+            }
+          ],
+          "expression": "scheming"
+        },
+        {
+          "id": "con_success",
+          "speaker_id": "tomas_drifter",
+          "text": "They fell for it. Every credit they had, gone. Just like my parents. I thought this would feel better, Captain. It feels... hollow. But it's done.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null,
+              "set_flag": "tomas_confrontation_resolved",
+              "crew_loyalty_changes": {
+                "tomas_drifter": 10
+              }
+            }
+          ],
+          "expression": "bittersweet"
+        },
+        {
+          "id": "con_fail",
+          "speaker_id": "tomas_drifter",
+          "text": "They spotted the play. Castillo's good, better than I expected. But they know we're onto them. They won't be running this scheme here anymore. That's... something.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null,
+              "set_flag": "tomas_confrontation_resolved",
+              "crew_loyalty_changes": {
+                "tomas_drifter": 5
+              }
+            }
+          ],
+          "expression": "frustrated"
+        },
+        {
+          "id": "con_result",
+          "speaker_id": "tomas_drifter",
+          "text": "It's done.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null,
+              "set_flag": "tomas_confrontation_resolved"
+            }
+          ]
+        },
+        {
+          "id": "direct",
+          "speaker_id": "tomas_drifter",
+          "text": "Straight to the point. I can respect that. Let's see how Castillo handles a face they recognize.",
+          "responses": [
+            {
+              "text": "[Confront Castillo]",
+              "next_node_id": "direct_result",
+              "set_flag": "tomas_confrontation_resolved",
+              "crew_loyalty_changes": {
+                "tomas_drifter": 5
+              }
+            }
+          ],
+          "expression": "steeled"
+        },
+        {
+          "id": "direct_result",
+          "speaker_id": "tomas_drifter",
+          "text": "Castillo tried to deny it. But they knew. I could see it in their eyes. Told them I'd report their current scheme to station security unless they left The Fulcrum permanently. They agreed. It's not justice, exactly. But they won't hurt anyone else here.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null,
+              "set_flag": "tomas_direct_confrontation"
+            }
+          ],
+          "expression": "grim_satisfied"
+        },
+        {
+          "id": "peace",
+          "speaker_id": "tomas_drifter",
+          "text": "Talk? To the person who destroyed my family? Captain, I... actually, you know what? Maybe you're right. Maybe I need to hear what they have to say before I decide what comes next.",
+          "responses": [
+            {
+              "text": "[Approach Castillo peacefully]",
+              "next_node_id": "peace_result",
+              "set_flag": "tomas_confrontation_resolved",
+              "crew_loyalty_changes": {
+                "tomas_drifter": 10
+              }
+            }
+          ],
+          "expression": "conflicted"
+        },
+        {
+          "id": "peace_result",
+          "speaker_id": "tomas_drifter",
+          "text": "Castillo recognized me. They... apologized. Said they were desperate, that it wasn't personal. It doesn't fix anything, but I believe them. They agreed to stop the current scheme. Maybe that's enough. The void provides, Captain. Sometimes it provides closure.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null,
+              "set_flag": "tomas_chose_peace"
+            }
+          ],
+          "expression": "reflective"
+        }
+      ]
+    },
+    {
+      "id": "tomas_new_ledger_dialogue",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "tomas_drifter",
+          "text": "Captain, I've been thinking about Castillo, about my parents, about what kind of trader I want to be. I spent years running from what happened. This crew, this ship, it's the first honest thing I've had since I was sixteen. I want to make it count.",
+          "responses": [
+            {
+              "text": "It already counts, Tomas.",
+              "next_node_id": "emotional"
+            },
+            {
+              "text": "What are you thinking?",
+              "next_node_id": "plan"
+            }
+          ],
+          "expression": "vulnerable"
+        },
+        {
+          "id": "emotional",
+          "speaker_id": "tomas_drifter",
+          "text": "You know, nobody's said that to me in a long time. My mother used to say: a new ledger starts with the first honest entry. I'd like to make mine.",
+          "responses": [
+            {
+              "text": "What did you have in mind?",
+              "next_node_id": "plan"
+            }
+          ],
+          "expression": "grateful"
+        },
+        {
+          "id": "plan",
+          "speaker_id": "tomas_drifter",
+          "text": "I want to use my contacts, the real ones, the network I've built on this crew, to establish a legitimate trade route. Something that puts good faith credits in people's pockets. I know the margins, I know the ports. I just need someone to vouch for me.",
+          "responses": [
+            {
+              "text": "[Vouch for Tomas, help negotiate] (Synergy check)",
+              "next_node_id": null,
+              "skill_check": {
+                "skill": "syn",
+                "difficulty": 3,
+                "success_node_id": "success",
+                "failure_node_id": "partial",
+                "set_flag_on_success": "tomas_past_resolved"
+              }
+            }
+          ]
+        },
+        {
+          "id": "success",
+          "speaker_id": "tomas_drifter",
+          "text": "They bought in. First contract signed, legitimate, documented, everyone profits. My mother would be proud. Captain, you've given me something I thought I'd lost. A new ledger. I won't waste it.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null,
+              "set_flag": "tomas_past_resolved",
+              "crew_loyalty_changes": {
+                "tomas_drifter": 25
+              }
+            }
+          ],
+          "expression": "proud"
+        },
+        {
+          "id": "partial",
+          "speaker_id": "tomas_drifter",
+          "text": "Not everyone was convinced, but enough were. The first contract is small, but it's real. That's what matters. New ledger, first honest entry. Thank you, Captain.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null,
+              "set_flag": "tomas_past_resolved",
+              "crew_loyalty_changes": {
+                "tomas_drifter": 25
+              }
+            }
+          ],
+          "expression": "hopeful"
+        }
+      ]
+    }
+  ]
+}

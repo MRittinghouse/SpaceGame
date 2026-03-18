@@ -4,13 +4,17 @@
 
 This roadmap tracks the implementation status of SpaceGame, organized into completed work and future phases. Each future phase builds on the previous, expanding from the current core trading game into RPG/campaign systems.
 
-**Last Updated**: 2026-03-13
+**Last Updated**: 2026-03-16
 
 ---
 
 ## Current Status
 
-The game is feature-complete through Act One. Phases 1-5 are all complete — trading, exploration, progression, RPG systems, combat, social skills, attributes, ground exploration, smuggling, political systems, and the full Act One campaign (22 missions across 5 chapters). The visual overhaul infrastructure (Phase A) is complete with sprite generation and view wiring done for ships, portraits, commodities, faction emblems, upgrade icons, and ground tiles. The project has 2948 tests across 34 views.
+**Phases 1-6 are COMPLETE.** The game is feature-complete through Act One with full visual overhaul, sprites, animations, and UI chrome. The Refinement Roadmap (`requirements/16_refinement_roadmap.md`) is now the active development document — it tracks the work to transform Act One from a linear narrative demo into a living, replayable universe with strategic depth. Act Two, Act Three, and Fleet Management remain future work (Phase 7).
+
+The project has 3,680 tests across 34 views. See the refinement roadmap for current cycle status.
+
+> **Note**: This document is now a historical record of Phases 1-6. For active development tracking, see `requirements/16_refinement_roadmap.md`.
 
 ### What's Built
 
@@ -670,10 +674,10 @@ All Act One chapters implemented — 22 missions total (see Cycle 3.6 for full d
 
 ---
 
-## Phase 6 (Next): Visual Overhaul & Polish
+## Phase 6 (Complete): Visual Overhaul & Polish
 
 **Goal**: Transform the game from "functional with sprites" into a visually polished, cohesive 16-bit pixel art experience. This phase is prioritized BEFORE Act Two content.
-**Status**: IN PROGRESS — Infrastructure, sprite generation, and view wiring complete. Sprite sheet animations active (75 sheets). UI chrome largely done (9-slice panels, cursor, skill/hub icons, ground characters via DALL-E). Remaining: audio, additional animation frames, bar frames, system portraits.
+**Status**: COMPLETE — Infrastructure, sprite generation, view wiring, sprite sheet animations (75 sheets), UI chrome (9-slice panels, cursor, skill/hub icons, ground characters). Audio and remaining minor visual items deferred to polish passes.
 **Ref**: See `requirements/15_visual_overhaul.md` for full specification
 
 ### Cycle 6.1: Visual Overhaul Phase A (Infrastructure)
@@ -857,8 +861,9 @@ Ongoing throughout all phases:
 
 ---
 
-**Document Status**: v16.0
-**Last Updated**: 2026-03-13
+**Document Status**: v17.0
+**Last Updated**: 2026-03-16
+**v17.0**: Phase 6 marked COMPLETE. Implementation Roadmap retired as active development tracker — Refinement Roadmap (`16_refinement_roadmap.md`) is now the primary development document. Updated counts: 3,680 tests, 34 views, 55 missions (22 campaign + 21 side + 12 crew quests), 131 encounters, 28 NPCs, 24 ship types, 40 upgrades, 43 achievements, 4 crew members with loyalty system. Phase 7 (Act Two, Act Three, Fleet Management) remains future work.
 **v16.0**: Major status update — Phase 5 marked COMPLETE (Political Systems 5.2, Campaign Act One 5.3 with 22 missions, 17 NPCs). Visual Overhaul infrastructure (Phase A) and sprite generation/wiring (Phase B) complete: all ship, portrait, commodity, faction, upgrade, and ground tile sprites generated and integrated into views. Mini-Game Overhaul Cycle E (Investment system) confirmed COMPLETE. Roadmap reorganized: Visual Overhaul & Polish promoted to Phase 6 (next priority), Campaign Acts Two & Three deferred to Phase 7. Updated counts: 2948 tests, 34 views, 22 missions, 17 NPCs, 28 enemy templates, 27 commodities, 9 ship types, 43 achievements, 6 skill trees with 32 skills.
 **v14.0**: Ground Exploration and Political Systems split into separate cycles (5.1 and 5.2). Ground Exploration fully specified in new `requirements/13_ground_exploration.md` — turn-based stealth-first grid roguelike with "Dice & Grit" combat, procedural generation, crew integration, voluntary extraction, bell-curve failure consequences, and 6 implementation phases (A-F). Phase 5 renumbered: Ground Exploration (5.1), Political Systems (5.2), Act One Completion (5.3), Act Two + Fleet (5.4/5.4.1), Act Three (5.5).
 **v13.0**: Fleet Management moved from Cycle 5.1 to Act Two feature (Cycle 5.3.1) — narratively tied to player's growing influence. Phase 5 renumbered: Ground Exploration (5.1), Act One Completion (5.2), Act Two + Fleet (5.3/5.3.1), Act Three (5.4). Phase 5 title updated from "Campaign Expansion & Fleet" to "Campaign Expansion".

@@ -18,19 +18,35 @@
       "faction_id": "",
       "danger_tier": "low",
       "bribe_cost": 50,
+      "credit_reward": 10,
       "moves": [
         {
           "id": "scout_blaster",
           "name": "Light Blaster",
           "description": "A quick, low-power blaster shot.",
-          "effects": [{"type": "damage", "value": 8.0}],
+          "effects": [
+            {
+              "type": "damage",
+              "value": 8.0
+            }
+          ],
           "energy_cost": 2,
           "accuracy_modifier": 5
         }
       ],
       "loot_table": [
-        {"commodity_id": "metals", "min_qty": 1, "max_qty": 3, "chance": 0.6},
-        {"commodity_id": "electronics", "min_qty": 1, "max_qty": 2, "chance": 0.3}
+        {
+          "commodity_id": "common_metals",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.6
+        },
+        {
+          "commodity_id": "electronics",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.3
+        }
       ]
     },
     {
@@ -51,12 +67,18 @@
       "faction_id": "",
       "danger_tier": "moderate",
       "bribe_cost": 150,
+      "credit_reward": 50,
       "moves": [
         {
           "id": "raider_cannon",
           "name": "Raider Cannon",
           "description": "A heavy-hitting cannon favored by pirates.",
-          "effects": [{"type": "damage", "value": 15.0}],
+          "effects": [
+            {
+              "type": "damage",
+              "value": 15.0
+            }
+          ],
           "energy_cost": 3,
           "accuracy_modifier": 0
         },
@@ -64,16 +86,42 @@
           "id": "raider_missile",
           "name": "Concussion Missile",
           "description": "An explosive missile with area damage potential.",
-          "effects": [{"type": "damage", "value": 25.0}],
+          "effects": [
+            {
+              "type": "damage",
+              "value": 25.0
+            }
+          ],
           "energy_cost": 5,
           "cooldown": 2,
           "accuracy_modifier": -10
         }
       ],
       "loot_table": [
-        {"commodity_id": "metals", "min_qty": 2, "max_qty": 5, "chance": 0.8},
-        {"commodity_id": "weapons", "min_qty": 1, "max_qty": 2, "chance": 0.4},
-        {"commodity_id": "electronics", "min_qty": 1, "max_qty": 3, "chance": 0.5}
+        {
+          "commodity_id": "common_metals",
+          "min_qty": 2,
+          "max_qty": 5,
+          "chance": 0.8
+        },
+        {
+          "commodity_id": "weapons_components",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.4
+        },
+        {
+          "commodity_id": "electronics",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.5
+        },
+        {
+          "commodity_id": "combat_salvage",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.4
+        }
       ]
     },
     {
@@ -94,12 +142,18 @@
       "faction_id": "",
       "danger_tier": "dangerous",
       "bribe_cost": 400,
+      "credit_reward": 100,
       "moves": [
         {
           "id": "heavy_turret",
           "name": "Twin Turret",
           "description": "Dual turret fire.",
-          "effects": [{"type": "damage", "value": 20.0}],
+          "effects": [
+            {
+              "type": "damage",
+              "value": 20.0
+            }
+          ],
           "energy_cost": 4,
           "accuracy_modifier": -5
         },
@@ -108,17 +162,61 @@
           "name": "Shield Boost",
           "description": "Restores shields and reduces incoming damage.",
           "effects": [
-            {"type": "shield_restore", "value": 25.0, "target": "self"},
-            {"type": "damage_reduction", "value": 0.15, "duration": 2, "target": "self"}
+            {
+              "type": "shield_restore",
+              "value": 25.0,
+              "target": "self"
+            },
+            {
+              "type": "damage_reduction",
+              "value": 0.15,
+              "duration": 2,
+              "target": "self"
+            }
           ],
           "energy_cost": 4,
           "cooldown": 2
         }
       ],
       "loot_table": [
-        {"commodity_id": "metals", "min_qty": 3, "max_qty": 8, "chance": 0.9},
-        {"commodity_id": "weapons", "min_qty": 1, "max_qty": 3, "chance": 0.6},
-        {"commodity_id": "luxury_goods", "min_qty": 1, "max_qty": 2, "chance": 0.3}
+        {
+          "commodity_id": "common_metals",
+          "min_qty": 3,
+          "max_qty": 8,
+          "chance": 0.9
+        },
+        {
+          "commodity_id": "weapons_components",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.6
+        },
+        {
+          "commodity_id": "exotic_goods",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.3
+        },
+        {
+          "commodity_id": "combat_salvage",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.6
+        }
+      ],
+      "rare_loot": [
+        {
+          "commodity_id": "exotic_goods",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.1
+        },
+        {
+          "commodity_id": "weapons_components",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.08
+        }
       ]
     },
     {
@@ -139,12 +237,18 @@
       "faction_id": "",
       "danger_tier": "low",
       "bribe_cost": 100,
+      "credit_reward": 15,
       "moves": [
         {
           "id": "smuggler_blaster",
           "name": "Concealed Blaster",
           "description": "A hidden weapon for emergencies.",
-          "effects": [{"type": "damage", "value": 12.0}],
+          "effects": [
+            {
+              "type": "damage",
+              "value": 12.0
+            }
+          ],
           "energy_cost": 2,
           "accuracy_modifier": 5
         },
@@ -153,15 +257,30 @@
           "name": "Chaff Burst",
           "description": "Releases chaff to improve evasion.",
           "effects": [
-            {"type": "evasion_mod", "value": 20.0, "duration": 2, "target": "self"}
+            {
+              "type": "evasion_mod",
+              "value": 20.0,
+              "duration": 2,
+              "target": "self"
+            }
           ],
           "energy_cost": 3,
           "cooldown": 3
         }
       ],
       "loot_table": [
-        {"commodity_id": "luxury_goods", "min_qty": 2, "max_qty": 5, "chance": 0.7},
-        {"commodity_id": "spice", "min_qty": 1, "max_qty": 3, "chance": 0.5}
+        {
+          "commodity_id": "exotic_goods",
+          "min_qty": 2,
+          "max_qty": 5,
+          "chance": 0.7
+        },
+        {
+          "commodity_id": "contraband_medicine",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.5
+        }
       ]
     },
     {
@@ -182,12 +301,18 @@
       "faction_id": "",
       "danger_tier": "moderate",
       "bribe_cost": 250,
+      "credit_reward": 60,
       "moves": [
         {
           "id": "patrol_laser",
           "name": "Military Laser",
           "description": "Standard-issue military laser.",
-          "effects": [{"type": "damage", "value": 16.0}],
+          "effects": [
+            {
+              "type": "damage",
+              "value": 16.0
+            }
+          ],
           "energy_cost": 3,
           "accuracy_modifier": 5
         },
@@ -196,15 +321,35 @@
           "name": "Shield Regenerator",
           "description": "Restores shields.",
           "effects": [
-            {"type": "shield_restore", "value": 20.0, "target": "self"}
+            {
+              "type": "shield_restore",
+              "value": 20.0,
+              "target": "self"
+            }
           ],
           "energy_cost": 3,
           "cooldown": 2
         }
       ],
       "loot_table": [
-        {"commodity_id": "electronics", "min_qty": 2, "max_qty": 4, "chance": 0.7},
-        {"commodity_id": "metals", "min_qty": 2, "max_qty": 5, "chance": 0.6}
+        {
+          "commodity_id": "electronics",
+          "min_qty": 2,
+          "max_qty": 4,
+          "chance": 0.7
+        },
+        {
+          "commodity_id": "common_metals",
+          "min_qty": 2,
+          "max_qty": 5,
+          "chance": 0.6
+        },
+        {
+          "commodity_id": "combat_salvage",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.4
+        }
       ]
     },
     {
@@ -225,12 +370,18 @@
       "faction_id": "commerce_guild",
       "danger_tier": "moderate",
       "bribe_cost": 200,
+      "credit_reward": 40,
       "moves": [
         {
           "id": "enforcer_laser",
           "name": "Regulation Laser",
           "description": "Standard-issue Guild enforcement weapon.",
-          "effects": [{"type": "damage", "value": 14.0}],
+          "effects": [
+            {
+              "type": "damage",
+              "value": 14.0
+            }
+          ],
           "energy_cost": 3,
           "accuracy_modifier": 5
         },
@@ -238,14 +389,36 @@
           "id": "enforcer_shield_boost",
           "name": "Trade Shield",
           "description": "Reinforced shields issued to Guild enforcement vessels.",
-          "effects": [{"type": "shield_restore", "value": 20.0, "target": "self"}],
+          "effects": [
+            {
+              "type": "shield_restore",
+              "value": 20.0,
+              "target": "self"
+            }
+          ],
           "energy_cost": 3,
           "cooldown": 2
         }
       ],
       "loot_table": [
-        {"commodity_id": "electronics", "min_qty": 2, "max_qty": 4, "chance": 0.7},
-        {"commodity_id": "manufactured_goods", "min_qty": 1, "max_qty": 3, "chance": 0.5}
+        {
+          "commodity_id": "electronics",
+          "min_qty": 2,
+          "max_qty": 4,
+          "chance": 0.7
+        },
+        {
+          "commodity_id": "manufactured_goods",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.5
+        },
+        {
+          "commodity_id": "combat_salvage",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.4
+        }
       ]
     },
     {
@@ -266,12 +439,18 @@
       "faction_id": "commerce_guild",
       "danger_tier": "dangerous",
       "bribe_cost": 500,
+      "credit_reward": 150,
       "moves": [
         {
           "id": "dreadnought_battery",
           "name": "Trade Battery",
           "description": "A devastating broadside from Guild-issue cannons.",
-          "effects": [{"type": "damage", "value": 22.0}],
+          "effects": [
+            {
+              "type": "damage",
+              "value": 22.0
+            }
+          ],
           "energy_cost": 4,
           "accuracy_modifier": 0
         },
@@ -280,8 +459,14 @@
           "name": "System Disruptor",
           "description": "Drains enemy energy reserves while dealing light damage.",
           "effects": [
-            {"type": "damage", "value": 8.0},
-            {"type": "energy_drain", "value": 4.0}
+            {
+              "type": "damage",
+              "value": 8.0
+            },
+            {
+              "type": "energy_drain",
+              "value": 4.0
+            }
           ],
           "energy_cost": 3,
           "cooldown": 2,
@@ -289,9 +474,44 @@
         }
       ],
       "loot_table": [
-        {"commodity_id": "electronics", "min_qty": 3, "max_qty": 6, "chance": 0.8},
-        {"commodity_id": "rare_metals", "min_qty": 1, "max_qty": 3, "chance": 0.5},
-        {"commodity_id": "luxury_goods", "min_qty": 1, "max_qty": 2, "chance": 0.3}
+        {
+          "commodity_id": "electronics",
+          "min_qty": 3,
+          "max_qty": 6,
+          "chance": 0.8
+        },
+        {
+          "commodity_id": "rare_metals",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.5
+        },
+        {
+          "commodity_id": "exotic_goods",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.3
+        },
+        {
+          "commodity_id": "combat_salvage",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.6
+        }
+      ],
+      "rare_loot": [
+        {
+          "commodity_id": "restricted_tech",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.1
+        },
+        {
+          "commodity_id": "precious_metals",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.12
+        }
       ]
     },
     {
@@ -312,12 +532,18 @@
       "faction_id": "miners_union",
       "danger_tier": "moderate",
       "bribe_cost": 175,
+      "credit_reward": 40,
       "moves": [
         {
           "id": "brawler_drill",
           "name": "Mining Drill Ram",
           "description": "A repurposed mining drill used as a close-range weapon.",
-          "effects": [{"type": "damage", "value": 18.0}],
+          "effects": [
+            {
+              "type": "damage",
+              "value": 18.0
+            }
+          ],
           "energy_cost": 3,
           "accuracy_modifier": -5
         },
@@ -325,15 +551,43 @@
           "id": "brawler_armor",
           "name": "Ore Plating",
           "description": "Reinforces hull with compressed ore plating.",
-          "effects": [{"type": "damage_reduction", "value": 0.20, "duration": 2, "target": "self"}],
+          "effects": [
+            {
+              "type": "damage_reduction",
+              "value": 0.2,
+              "duration": 2,
+              "target": "self"
+            }
+          ],
           "energy_cost": 2,
           "cooldown": 3
         }
       ],
       "loot_table": [
-        {"commodity_id": "iron_ore", "min_qty": 3, "max_qty": 6, "chance": 0.8},
-        {"commodity_id": "common_metals", "min_qty": 2, "max_qty": 4, "chance": 0.6},
-        {"commodity_id": "raw_ore", "min_qty": 1, "max_qty": 3, "chance": 0.4}
+        {
+          "commodity_id": "iron_ore",
+          "min_qty": 3,
+          "max_qty": 6,
+          "chance": 0.8
+        },
+        {
+          "commodity_id": "common_metals",
+          "min_qty": 2,
+          "max_qty": 4,
+          "chance": 0.6
+        },
+        {
+          "commodity_id": "raw_ore",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.4
+        },
+        {
+          "commodity_id": "combat_salvage",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.4
+        }
       ]
     },
     {
@@ -354,12 +608,18 @@
       "faction_id": "miners_union",
       "danger_tier": "dangerous",
       "bribe_cost": 450,
+      "credit_reward": 125,
       "moves": [
         {
           "id": "crusher_slam",
           "name": "Asteroid Hammer",
           "description": "A massive kinetic strike from a converted mining arm.",
-          "effects": [{"type": "damage", "value": 30.0}],
+          "effects": [
+            {
+              "type": "damage",
+              "value": 30.0
+            }
+          ],
           "energy_cost": 5,
           "accuracy_modifier": -10
         },
@@ -367,15 +627,56 @@
           "id": "crusher_repair",
           "name": "Field Repairs",
           "description": "Quick hull patching from spare mining materials.",
-          "effects": [{"type": "hull_restore", "value": 20.0, "target": "self"}],
+          "effects": [
+            {
+              "type": "hull_restore",
+              "value": 20.0,
+              "target": "self"
+            }
+          ],
           "energy_cost": 3,
           "cooldown": 3
         }
       ],
       "loot_table": [
-        {"commodity_id": "iron_ore", "min_qty": 4, "max_qty": 8, "chance": 0.9},
-        {"commodity_id": "rare_ore", "min_qty": 1, "max_qty": 3, "chance": 0.5},
-        {"commodity_id": "scrap_metal", "min_qty": 2, "max_qty": 4, "chance": 0.6}
+        {
+          "commodity_id": "iron_ore",
+          "min_qty": 4,
+          "max_qty": 8,
+          "chance": 0.9
+        },
+        {
+          "commodity_id": "rare_ore",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.5
+        },
+        {
+          "commodity_id": "scrap_metal",
+          "min_qty": 2,
+          "max_qty": 4,
+          "chance": 0.6
+        },
+        {
+          "commodity_id": "combat_salvage",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.6
+        }
+      ],
+      "rare_loot": [
+        {
+          "commodity_id": "rare_ore",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.12
+        },
+        {
+          "commodity_id": "crystal_ore",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.1
+        }
       ]
     },
     {
@@ -396,14 +697,21 @@
       "faction_id": "science_collective",
       "danger_tier": "moderate",
       "bribe_cost": 150,
+      "credit_reward": 45,
       "moves": [
         {
           "id": "probe_beam",
           "name": "Analysis Beam",
           "description": "A precise energy beam that disrupts shields.",
           "effects": [
-            {"type": "damage", "value": 10.0},
-            {"type": "shield_drain", "value": 12.0}
+            {
+              "type": "damage",
+              "value": 10.0
+            },
+            {
+              "type": "shield_drain",
+              "value": 12.0
+            }
           ],
           "energy_cost": 3,
           "accuracy_modifier": 10
@@ -412,15 +720,43 @@
           "id": "probe_evasion",
           "name": "Phase Shift",
           "description": "Temporarily shifts out of phase, greatly increasing evasion.",
-          "effects": [{"type": "evasion_mod", "value": 30.0, "duration": 1, "target": "self"}],
+          "effects": [
+            {
+              "type": "evasion_mod",
+              "value": 30.0,
+              "duration": 1,
+              "target": "self"
+            }
+          ],
           "energy_cost": 3,
           "cooldown": 2
         }
       ],
       "loot_table": [
-        {"commodity_id": "electronics", "min_qty": 2, "max_qty": 5, "chance": 0.8},
-        {"commodity_id": "salvaged_electronics", "min_qty": 1, "max_qty": 3, "chance": 0.5},
-        {"commodity_id": "rare_parts", "min_qty": 1, "max_qty": 2, "chance": 0.3}
+        {
+          "commodity_id": "electronics",
+          "min_qty": 2,
+          "max_qty": 5,
+          "chance": 0.8
+        },
+        {
+          "commodity_id": "salvaged_electronics",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.5
+        },
+        {
+          "commodity_id": "rare_parts",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.3
+        },
+        {
+          "commodity_id": "combat_salvage",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.4
+        }
       ]
     },
     {
@@ -441,14 +777,22 @@
       "faction_id": "science_collective",
       "danger_tier": "dangerous",
       "bribe_cost": 400,
+      "credit_reward": 150,
       "moves": [
         {
           "id": "sentinel_disruptor",
           "name": "Neural Disruptor",
           "description": "Disrupts targeting systems, reducing enemy accuracy.",
           "effects": [
-            {"type": "damage", "value": 12.0},
-            {"type": "accuracy_mod", "value": -15.0, "duration": 2}
+            {
+              "type": "damage",
+              "value": 12.0
+            },
+            {
+              "type": "accuracy_mod",
+              "value": -15.0,
+              "duration": 2
+            }
           ],
           "energy_cost": 4,
           "accuracy_modifier": 5
@@ -458,17 +802,61 @@
           "name": "Energy Barrier",
           "description": "Projects an energy barrier, reducing incoming damage and restoring shields.",
           "effects": [
-            {"type": "shield_restore", "value": 30.0, "target": "self"},
-            {"type": "damage_reduction", "value": 0.15, "duration": 2, "target": "self"}
+            {
+              "type": "shield_restore",
+              "value": 30.0,
+              "target": "self"
+            },
+            {
+              "type": "damage_reduction",
+              "value": 0.15,
+              "duration": 2,
+              "target": "self"
+            }
           ],
           "energy_cost": 5,
           "cooldown": 2
         }
       ],
       "loot_table": [
-        {"commodity_id": "electronics", "min_qty": 3, "max_qty": 6, "chance": 0.8},
-        {"commodity_id": "rare_parts", "min_qty": 1, "max_qty": 3, "chance": 0.6},
-        {"commodity_id": "medical", "min_qty": 1, "max_qty": 2, "chance": 0.4}
+        {
+          "commodity_id": "electronics",
+          "min_qty": 3,
+          "max_qty": 6,
+          "chance": 0.8
+        },
+        {
+          "commodity_id": "rare_parts",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.6
+        },
+        {
+          "commodity_id": "medical",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.4
+        },
+        {
+          "commodity_id": "combat_salvage",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.6
+        }
+      ],
+      "rare_loot": [
+        {
+          "commodity_id": "restricted_tech",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.12
+        },
+        {
+          "commodity_id": "purified_crystal",
+          "min_qty": 1,
+          "max_qty": 1,
+          "chance": 0.08
+        }
       ]
     },
     {
@@ -489,12 +877,18 @@
       "faction_id": "frontier_alliance",
       "danger_tier": "moderate",
       "bribe_cost": 175,
+      "credit_reward": 40,
       "moves": [
         {
           "id": "frontier_rapid_fire",
           "name": "Rapid Fire",
           "description": "A quick burst of energy bolts from frontier-modified weapons.",
-          "effects": [{"type": "damage", "value": 14.0}],
+          "effects": [
+            {
+              "type": "damage",
+              "value": 14.0
+            }
+          ],
           "energy_cost": 2,
           "accuracy_modifier": 10
         },
@@ -502,15 +896,43 @@
           "id": "frontier_boost",
           "name": "Thruster Boost",
           "description": "Engages afterburners for increased evasion.",
-          "effects": [{"type": "evasion_mod", "value": 20.0, "duration": 1, "target": "self"}],
+          "effects": [
+            {
+              "type": "evasion_mod",
+              "value": 20.0,
+              "duration": 1,
+              "target": "self"
+            }
+          ],
           "energy_cost": 2,
           "cooldown": 2
         }
       ],
       "loot_table": [
-        {"commodity_id": "fuel", "min_qty": 2, "max_qty": 5, "chance": 0.7},
-        {"commodity_id": "food", "min_qty": 2, "max_qty": 4, "chance": 0.6},
-        {"commodity_id": "textiles", "min_qty": 1, "max_qty": 3, "chance": 0.4}
+        {
+          "commodity_id": "fuel",
+          "min_qty": 2,
+          "max_qty": 5,
+          "chance": 0.7
+        },
+        {
+          "commodity_id": "food",
+          "min_qty": 2,
+          "max_qty": 4,
+          "chance": 0.6
+        },
+        {
+          "commodity_id": "textiles",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.4
+        },
+        {
+          "commodity_id": "combat_salvage",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.4
+        }
       ]
     },
     {
@@ -531,12 +953,18 @@
       "faction_id": "frontier_alliance",
       "danger_tier": "dangerous",
       "bribe_cost": 425,
+      "credit_reward": 125,
       "moves": [
         {
           "id": "gunship_barrage",
           "name": "Weapons Barrage",
           "description": "Fires all weapon systems simultaneously.",
-          "effects": [{"type": "damage", "value": 25.0}],
+          "effects": [
+            {
+              "type": "damage",
+              "value": 25.0
+            }
+          ],
           "energy_cost": 5,
           "accuracy_modifier": 0
         },
@@ -545,8 +973,16 @@
           "name": "Strafing Run",
           "description": "A high-speed attack pass dealing moderate damage.",
           "effects": [
-            {"type": "damage", "value": 12.0},
-            {"type": "evasion_mod", "value": 15.0, "duration": 1, "target": "self"}
+            {
+              "type": "damage",
+              "value": 12.0
+            },
+            {
+              "type": "evasion_mod",
+              "value": 15.0,
+              "duration": 1,
+              "target": "self"
+            }
           ],
           "energy_cost": 3,
           "cooldown": 1,
@@ -554,15 +990,50 @@
         }
       ],
       "loot_table": [
-        {"commodity_id": "fuel", "min_qty": 3, "max_qty": 6, "chance": 0.8},
-        {"commodity_id": "common_metals", "min_qty": 2, "max_qty": 5, "chance": 0.6},
-        {"commodity_id": "exotic_goods", "min_qty": 1, "max_qty": 2, "chance": 0.3}
+        {
+          "commodity_id": "fuel",
+          "min_qty": 3,
+          "max_qty": 6,
+          "chance": 0.8
+        },
+        {
+          "commodity_id": "common_metals",
+          "min_qty": 2,
+          "max_qty": 5,
+          "chance": 0.6
+        },
+        {
+          "commodity_id": "exotic_goods",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.3
+        },
+        {
+          "commodity_id": "combat_salvage",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.6
+        }
+      ],
+      "rare_loot": [
+        {
+          "commodity_id": "exotic_goods",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.1
+        },
+        {
+          "commodity_id": "precious_metals",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.08
+        }
       ]
     },
     {
       "id": "guild_revenue_cutter",
       "name": "Guild Revenue Cutter",
-      "description": "A light Commerce Guild patrol craft. Revenue Cutters enforce trade regulations and inspect cargo manifests. Lightly armed but persistent — their job is to detain, not destroy.",
+      "description": "A light Commerce Guild patrol craft. Revenue Cutters enforce trade regulations and inspect cargo manifests. Lightly armed but persistent â€” their job is to detain, not destroy.",
       "behavior": "defensive",
       "hull": 65,
       "shields": 25,
@@ -577,14 +1048,22 @@
       "faction_id": "commerce_guild",
       "danger_tier": "low",
       "bribe_cost": 100,
+      "credit_reward": 10,
       "moves": [
         {
           "id": "cutter_scanner",
           "name": "Regulation Scanner",
           "description": "A targeting scan that marks the vessel for enforcement. Disrupts evasive maneuvers.",
           "effects": [
-            {"type": "damage", "value": 8.0},
-            {"type": "evasion_mod", "value": -10.0, "duration": 2}
+            {
+              "type": "damage",
+              "value": 8.0
+            },
+            {
+              "type": "evasion_mod",
+              "value": -10.0,
+              "duration": 2
+            }
           ],
           "energy_cost": 3,
           "accuracy_modifier": 10
@@ -593,14 +1072,29 @@
           "id": "cutter_warning",
           "name": "Warning Shot",
           "description": "A low-power deterrent blast. Standard Guild enforcement protocol.",
-          "effects": [{"type": "damage", "value": 10.0}],
+          "effects": [
+            {
+              "type": "damage",
+              "value": 10.0
+            }
+          ],
           "energy_cost": 2,
           "accuracy_modifier": 5
         }
       ],
       "loot_table": [
-        {"commodity_id": "electronics", "min_qty": 1, "max_qty": 3, "chance": 0.6},
-        {"commodity_id": "manufactured_goods", "min_qty": 1, "max_qty": 2, "chance": 0.4}
+        {
+          "commodity_id": "electronics",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.6
+        },
+        {
+          "commodity_id": "manufactured_goods",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.4
+        }
       ]
     },
     {
@@ -621,12 +1115,18 @@
       "faction_id": "miners_union",
       "danger_tier": "low",
       "bribe_cost": 75,
+      "credit_reward": 10,
       "moves": [
         {
           "id": "picket_slag",
           "name": "Slag Launcher",
           "description": "Fires superheated mining slag. Inaccurate but packs a punch.",
-          "effects": [{"type": "damage", "value": 14.0}],
+          "effects": [
+            {
+              "type": "damage",
+              "value": 14.0
+            }
+          ],
           "energy_cost": 2,
           "accuracy_modifier": -5
         },
@@ -634,21 +1134,43 @@
           "id": "picket_plating",
           "name": "Reinforced Plating",
           "description": "Activates compressed-ore hull reinforcement.",
-          "effects": [{"type": "damage_reduction", "value": 0.15, "duration": 2, "target": "self"}],
+          "effects": [
+            {
+              "type": "damage_reduction",
+              "value": 0.15,
+              "duration": 2,
+              "target": "self"
+            }
+          ],
           "energy_cost": 2,
           "cooldown": 3
         }
       ],
       "loot_table": [
-        {"commodity_id": "iron_ore", "min_qty": 2, "max_qty": 4, "chance": 0.7},
-        {"commodity_id": "common_metals", "min_qty": 1, "max_qty": 3, "chance": 0.5},
-        {"commodity_id": "scrap_metal", "min_qty": 1, "max_qty": 2, "chance": 0.4}
+        {
+          "commodity_id": "iron_ore",
+          "min_qty": 2,
+          "max_qty": 4,
+          "chance": 0.7
+        },
+        {
+          "commodity_id": "common_metals",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.5
+        },
+        {
+          "commodity_id": "scrap_metal",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.4
+        }
       ]
     },
     {
       "id": "science_surveyor",
       "name": "Science Surveyor",
-      "description": "A Collective research vessel repurposed for patrol duty. High sensor resolution and excellent shields, but minimal weapons. Prefers to scan, analyze, and evade — but its analysis beam strips shields with clinical precision.",
+      "description": "A Collective research vessel repurposed for patrol duty. High sensor resolution and excellent shields, but minimal weapons. Prefers to scan, analyze, and evade â€” but its analysis beam strips shields with clinical precision.",
       "behavior": "evasive",
       "hull": 50,
       "shields": 40,
@@ -663,14 +1185,21 @@
       "faction_id": "science_collective",
       "danger_tier": "low",
       "bribe_cost": 125,
+      "credit_reward": 15,
       "moves": [
         {
           "id": "surveyor_scan",
           "name": "Scan Pulse",
           "description": "A focused energy scan that disrupts shield harmonics.",
           "effects": [
-            {"type": "damage", "value": 6.0},
-            {"type": "shield_drain", "value": 10.0}
+            {
+              "type": "damage",
+              "value": 6.0
+            },
+            {
+              "type": "shield_drain",
+              "value": 10.0
+            }
           ],
           "energy_cost": 3,
           "accuracy_modifier": 10
@@ -679,14 +1208,31 @@
           "id": "surveyor_evasion",
           "name": "Evasion Protocol",
           "description": "Engages automated evasion subroutines.",
-          "effects": [{"type": "evasion_mod", "value": 25.0, "duration": 1, "target": "self"}],
+          "effects": [
+            {
+              "type": "evasion_mod",
+              "value": 25.0,
+              "duration": 1,
+              "target": "self"
+            }
+          ],
           "energy_cost": 2,
           "cooldown": 2
         }
       ],
       "loot_table": [
-        {"commodity_id": "electronics", "min_qty": 1, "max_qty": 3, "chance": 0.7},
-        {"commodity_id": "salvaged_electronics", "min_qty": 1, "max_qty": 2, "chance": 0.4}
+        {
+          "commodity_id": "electronics",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.7
+        },
+        {
+          "commodity_id": "salvaged_electronics",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.4
+        }
       ]
     },
     {
@@ -707,12 +1253,18 @@
       "faction_id": "frontier_alliance",
       "danger_tier": "low",
       "bribe_cost": 50,
+      "credit_reward": 10,
       "moves": [
         {
           "id": "skirmisher_burst",
           "name": "Quick Burst",
           "description": "A rapid volley from frontier-modified blasters.",
-          "effects": [{"type": "damage", "value": 10.0}],
+          "effects": [
+            {
+              "type": "damage",
+              "value": 10.0
+            }
+          ],
           "energy_cost": 2,
           "accuracy_modifier": 10
         },
@@ -720,15 +1272,37 @@
           "id": "skirmisher_afterburn",
           "name": "Afterburn",
           "description": "Hard thruster burn for evasive repositioning.",
-          "effects": [{"type": "evasion_mod", "value": 20.0, "duration": 1, "target": "self"}],
+          "effects": [
+            {
+              "type": "evasion_mod",
+              "value": 20.0,
+              "duration": 1,
+              "target": "self"
+            }
+          ],
           "energy_cost": 2,
           "cooldown": 2
         }
       ],
       "loot_table": [
-        {"commodity_id": "fuel", "min_qty": 1, "max_qty": 3, "chance": 0.6},
-        {"commodity_id": "food", "min_qty": 1, "max_qty": 2, "chance": 0.5},
-        {"commodity_id": "scrap_metal", "min_qty": 1, "max_qty": 2, "chance": 0.4}
+        {
+          "commodity_id": "fuel",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.6
+        },
+        {
+          "commodity_id": "food",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.5
+        },
+        {
+          "commodity_id": "scrap_metal",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.4
+        }
       ]
     },
     {
@@ -749,14 +1323,21 @@
       "faction_id": "",
       "danger_tier": "low",
       "bribe_cost": 75,
+      "credit_reward": 10,
       "moves": [
         {
           "id": "rustrunner_slug",
           "name": "Corrosive Slug",
           "description": "A corroded metal slug laced with reactor coolant. Eats through shields.",
           "effects": [
-            {"type": "damage", "value": 8.0},
-            {"type": "shield_drain", "value": 8.0}
+            {
+              "type": "damage",
+              "value": 8.0
+            },
+            {
+              "type": "shield_drain",
+              "value": 8.0
+            }
           ],
           "energy_cost": 2,
           "accuracy_modifier": 0
@@ -765,21 +1346,43 @@
           "id": "rustrunner_jink",
           "name": "Scrapyard Jink",
           "description": "Erratic evasive maneuver learned from dodging debris in the Reach.",
-          "effects": [{"type": "evasion_mod", "value": 20.0, "duration": 1, "target": "self"}],
+          "effects": [
+            {
+              "type": "evasion_mod",
+              "value": 20.0,
+              "duration": 1,
+              "target": "self"
+            }
+          ],
           "energy_cost": 2,
           "cooldown": 2
         }
       ],
       "loot_table": [
-        {"commodity_id": "scrap_metal", "min_qty": 2, "max_qty": 4, "chance": 0.8},
-        {"commodity_id": "salvaged_electronics", "min_qty": 1, "max_qty": 2, "chance": 0.4},
-        {"commodity_id": "fuel", "min_qty": 1, "max_qty": 3, "chance": 0.5}
+        {
+          "commodity_id": "scrap_metal",
+          "min_qty": 2,
+          "max_qty": 4,
+          "chance": 0.8
+        },
+        {
+          "commodity_id": "salvaged_electronics",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.4
+        },
+        {
+          "commodity_id": "fuel",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.5
+        }
       ]
     },
     {
       "id": "reach_wrecker",
       "name": "Reach Wrecker",
-      "description": "A medium combat vessel built from salvaged military hulls in Crimson Reach. Equipped with grapple launchers and a reinforced ram prow — Reach combat doctrine favors getting close and tearing ships apart for salvage. Why destroy what you can repurpose?",
+      "description": "A medium combat vessel built from salvaged military hulls in Crimson Reach. Equipped with grapple launchers and a reinforced ram prow â€” Reach combat doctrine favors getting close and tearing ships apart for salvage. Why destroy what you can repurpose?",
       "behavior": "aggressive",
       "hull": 110,
       "shields": 25,
@@ -794,12 +1397,18 @@
       "faction_id": "",
       "danger_tier": "moderate",
       "bribe_cost": 200,
+      "credit_reward": 50,
       "moves": [
         {
           "id": "wrecker_ram",
           "name": "Grapple Ram",
           "description": "Closes distance and rams with a reinforced prow. Devastating but hard to aim.",
-          "effects": [{"type": "damage", "value": 22.0}],
+          "effects": [
+            {
+              "type": "damage",
+              "value": 22.0
+            }
+          ],
           "energy_cost": 4,
           "accuracy_modifier": -10
         },
@@ -808,8 +1417,14 @@
           "name": "Hull Ripper",
           "description": "Cutting torches repurposed for combat. Strips shields and scores hull.",
           "effects": [
-            {"type": "damage", "value": 10.0},
-            {"type": "shield_drain", "value": 12.0}
+            {
+              "type": "damage",
+              "value": 10.0
+            },
+            {
+              "type": "shield_drain",
+              "value": 12.0
+            }
           ],
           "energy_cost": 3,
           "accuracy_modifier": 0
@@ -818,15 +1433,43 @@
           "id": "wrecker_plating",
           "name": "Salvage Plating",
           "description": "Welds scrap plating over damaged sections mid-combat.",
-          "effects": [{"type": "damage_reduction", "value": 0.15, "duration": 2, "target": "self"}],
+          "effects": [
+            {
+              "type": "damage_reduction",
+              "value": 0.15,
+              "duration": 2,
+              "target": "self"
+            }
+          ],
           "energy_cost": 2,
           "cooldown": 3
         }
       ],
       "loot_table": [
-        {"commodity_id": "scrap_metal", "min_qty": 3, "max_qty": 6, "chance": 0.9},
-        {"commodity_id": "common_metals", "min_qty": 2, "max_qty": 4, "chance": 0.6},
-        {"commodity_id": "rare_parts", "min_qty": 1, "max_qty": 2, "chance": 0.3}
+        {
+          "commodity_id": "scrap_metal",
+          "min_qty": 3,
+          "max_qty": 6,
+          "chance": 0.9
+        },
+        {
+          "commodity_id": "common_metals",
+          "min_qty": 2,
+          "max_qty": 4,
+          "chance": 0.6
+        },
+        {
+          "commodity_id": "rare_parts",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.3
+        },
+        {
+          "commodity_id": "combat_salvage",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.4
+        }
       ]
     },
     {
@@ -847,12 +1490,18 @@
       "faction_id": "",
       "danger_tier": "dangerous",
       "bribe_cost": 500,
+      "credit_reward": 150,
       "moves": [
         {
           "id": "dreadwreck_barrage",
           "name": "Scrapyard Barrage",
-          "description": "Fires every weapon simultaneously — a chaotic storm of mismatched ordnance.",
-          "effects": [{"type": "damage", "value": 28.0}],
+          "description": "Fires every weapon simultaneously â€” a chaotic storm of mismatched ordnance.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 28.0
+            }
+          ],
           "energy_cost": 5,
           "accuracy_modifier": -10
         },
@@ -861,8 +1510,14 @@
           "name": "Toxic Overcharge",
           "description": "Vents unshielded reactor exhaust at the target. Damages hull and drains energy systems.",
           "effects": [
-            {"type": "damage", "value": 12.0},
-            {"type": "energy_drain", "value": 4.0}
+            {
+              "type": "damage",
+              "value": 12.0
+            },
+            {
+              "type": "energy_drain",
+              "value": 4.0
+            }
           ],
           "energy_cost": 4,
           "cooldown": 2,
@@ -872,16 +1527,62 @@
           "id": "dreadwreck_ablative",
           "name": "Ablative Wreckage",
           "description": "Sacrifices outer hull plating to absorb damage and effect emergency repairs.",
-          "effects": [{"type": "hull_restore", "value": 25.0, "target": "self"}],
+          "effects": [
+            {
+              "type": "hull_restore",
+              "value": 25.0,
+              "target": "self"
+            }
+          ],
           "energy_cost": 3,
           "cooldown": 3
         }
       ],
       "loot_table": [
-        {"commodity_id": "scrap_metal", "min_qty": 4, "max_qty": 8, "chance": 0.9},
-        {"commodity_id": "rare_parts", "min_qty": 1, "max_qty": 3, "chance": 0.5},
-        {"commodity_id": "common_metals", "min_qty": 3, "max_qty": 6, "chance": 0.7},
-        {"commodity_id": "weapons", "min_qty": 1, "max_qty": 2, "chance": 0.4}
+        {
+          "commodity_id": "scrap_metal",
+          "min_qty": 4,
+          "max_qty": 8,
+          "chance": 0.9
+        },
+        {
+          "commodity_id": "rare_parts",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.5
+        },
+        {
+          "commodity_id": "common_metals",
+          "min_qty": 3,
+          "max_qty": 6,
+          "chance": 0.7
+        },
+        {
+          "commodity_id": "weapons_components",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.4
+        },
+        {
+          "commodity_id": "combat_salvage",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.6
+        }
+      ],
+      "rare_loot": [
+        {
+          "commodity_id": "rare_parts",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.15
+        },
+        {
+          "commodity_id": "weapons_components",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.1
+        }
       ]
     },
     {
@@ -902,14 +1603,22 @@
       "faction_id": "",
       "danger_tier": "moderate",
       "bribe_cost": 0,
+      "credit_reward": 35,
       "moves": [
         {
           "id": "tracker_pulse",
           "name": "Tracking Pulse",
           "description": "A precise targeting pulse that reduces evasion.",
           "effects": [
-            {"type": "damage", "value": 10.0},
-            {"type": "evasion_mod", "value": -10.0, "duration": 2}
+            {
+              "type": "damage",
+              "value": 10.0
+            },
+            {
+              "type": "evasion_mod",
+              "value": -10.0,
+              "duration": 2
+            }
           ],
           "energy_cost": 3,
           "accuracy_modifier": 10
@@ -918,15 +1627,43 @@
           "id": "tracker_boost",
           "name": "Pursuit Burn",
           "description": "Hard engine burn for evasion while closing distance.",
-          "effects": [{"type": "evasion_mod", "value": 20.0, "duration": 1, "target": "self"}],
+          "effects": [
+            {
+              "type": "evasion_mod",
+              "value": 20.0,
+              "duration": 1,
+              "target": "self"
+            }
+          ],
           "energy_cost": 2,
           "cooldown": 2
         }
       ],
       "loot_table": [
-        {"commodity_id": "electronics", "min_qty": 2, "max_qty": 4, "chance": 0.7},
-        {"commodity_id": "fuel", "min_qty": 2, "max_qty": 5, "chance": 0.6},
-        {"commodity_id": "rare_metals", "min_qty": 1, "max_qty": 2, "chance": 0.3}
+        {
+          "commodity_id": "electronics",
+          "min_qty": 2,
+          "max_qty": 4,
+          "chance": 0.7
+        },
+        {
+          "commodity_id": "fuel",
+          "min_qty": 2,
+          "max_qty": 5,
+          "chance": 0.6
+        },
+        {
+          "commodity_id": "rare_metals",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.3
+        },
+        {
+          "commodity_id": "combat_salvage",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.4
+        }
       ]
     },
     {
@@ -947,14 +1684,21 @@
       "faction_id": "",
       "danger_tier": "moderate",
       "bribe_cost": 0,
+      "credit_reward": 60,
       "moves": [
         {
           "id": "enforcer_cannon",
           "name": "Disabling Cannon",
           "description": "A heavy shot designed to cripple engines and drain shields.",
           "effects": [
-            {"type": "damage", "value": 16.0},
-            {"type": "shield_drain", "value": 10.0}
+            {
+              "type": "damage",
+              "value": 16.0
+            },
+            {
+              "type": "shield_drain",
+              "value": 10.0
+            }
           ],
           "energy_cost": 4,
           "accuracy_modifier": 5
@@ -964,8 +1708,15 @@
           "name": "Tractor Net",
           "description": "Deploys an electromagnetic net that reduces target evasion.",
           "effects": [
-            {"type": "damage", "value": 5.0},
-            {"type": "evasion_mod", "value": -15.0, "duration": 2}
+            {
+              "type": "damage",
+              "value": 5.0
+            },
+            {
+              "type": "evasion_mod",
+              "value": -15.0,
+              "duration": 2
+            }
           ],
           "energy_cost": 3,
           "cooldown": 2,
@@ -973,9 +1724,30 @@
         }
       ],
       "loot_table": [
-        {"commodity_id": "electronics", "min_qty": 3, "max_qty": 5, "chance": 0.8},
-        {"commodity_id": "weapons", "min_qty": 1, "max_qty": 3, "chance": 0.5},
-        {"commodity_id": "rare_metals", "min_qty": 1, "max_qty": 3, "chance": 0.4}
+        {
+          "commodity_id": "electronics",
+          "min_qty": 3,
+          "max_qty": 5,
+          "chance": 0.8
+        },
+        {
+          "commodity_id": "weapons_components",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.5
+        },
+        {
+          "commodity_id": "rare_metals",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.4
+        },
+        {
+          "commodity_id": "combat_salvage",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.4
+        }
       ]
     },
     {
@@ -996,14 +1768,22 @@
       "faction_id": "",
       "danger_tier": "dangerous",
       "bribe_cost": 0,
+      "credit_reward": 125,
       "moves": [
         {
           "id": "vanguard_barrage",
           "name": "Suppression Barrage",
           "description": "Sustained weapons fire that chips at hull and accuracy.",
           "effects": [
-            {"type": "damage", "value": 14.0},
-            {"type": "accuracy_mod", "value": -10.0, "duration": 2}
+            {
+              "type": "damage",
+              "value": 14.0
+            },
+            {
+              "type": "accuracy_mod",
+              "value": -10.0,
+              "duration": 2
+            }
           ],
           "energy_cost": 4,
           "accuracy_modifier": 0
@@ -1013,23 +1793,67 @@
           "name": "Shield Wall",
           "description": "Maximizes shield output and reduces incoming damage.",
           "effects": [
-            {"type": "shield_restore", "value": 35.0, "target": "self"},
-            {"type": "damage_reduction", "value": 0.20, "duration": 2, "target": "self"}
+            {
+              "type": "shield_restore",
+              "value": 35.0,
+              "target": "self"
+            },
+            {
+              "type": "damage_reduction",
+              "value": 0.2,
+              "duration": 2,
+              "target": "self"
+            }
           ],
           "energy_cost": 5,
           "cooldown": 2
         }
       ],
       "loot_table": [
-        {"commodity_id": "electronics", "min_qty": 3, "max_qty": 6, "chance": 0.8},
-        {"commodity_id": "weapons", "min_qty": 2, "max_qty": 4, "chance": 0.6},
-        {"commodity_id": "luxury_goods", "min_qty": 1, "max_qty": 3, "chance": 0.4}
+        {
+          "commodity_id": "electronics",
+          "min_qty": 3,
+          "max_qty": 6,
+          "chance": 0.8
+        },
+        {
+          "commodity_id": "weapons_components",
+          "min_qty": 2,
+          "max_qty": 4,
+          "chance": 0.6
+        },
+        {
+          "commodity_id": "exotic_goods",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.4
+        },
+        {
+          "commodity_id": "combat_salvage",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.6
+        }
+      ],
+      "rare_loot": [
+        {
+          "commodity_id": "precious_metals",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.12
+        },
+        {
+          "commodity_id": "restricted_tech",
+          "min_qty": 1,
+          "max_qty": 1,
+          "chance": 0.08
+        }
       ]
     },
     {
       "id": "bounty_ace",
       "name": "Bounty Ace",
-      "description": "An elite freelance hunter flying a custom interceptor. Extremely fast and accurate — almost impossible to outrun.",
+      "description": "An elite freelance hunter flying a custom interceptor. Extremely fast and accurate â€” almost impossible to outrun.",
       "behavior": "evasive",
       "hull": 100,
       "shields": 45,
@@ -1044,12 +1868,18 @@
       "faction_id": "",
       "danger_tier": "dangerous",
       "bribe_cost": 0,
+      "credit_reward": 175,
       "moves": [
         {
           "id": "ace_precision_shot",
           "name": "Precision Shot",
           "description": "A carefully aimed shot that bypasses evasion. High accuracy, moderate damage.",
-          "effects": [{"type": "damage", "value": 18.0}],
+          "effects": [
+            {
+              "type": "damage",
+              "value": 18.0
+            }
+          ],
           "energy_cost": 3,
           "accuracy_modifier": 20
         },
@@ -1058,8 +1888,16 @@
           "name": "Afterburner Strafe",
           "description": "High-speed attack run dealing damage while boosting evasion.",
           "effects": [
-            {"type": "damage", "value": 12.0},
-            {"type": "evasion_mod", "value": 25.0, "duration": 1, "target": "self"}
+            {
+              "type": "damage",
+              "value": 12.0
+            },
+            {
+              "type": "evasion_mod",
+              "value": 25.0,
+              "duration": 1,
+              "target": "self"
+            }
           ],
           "energy_cost": 4,
           "cooldown": 1,
@@ -1070,8 +1908,15 @@
           "name": "Tracking Shot",
           "description": "Locks onto the target's engine signature. Unavoidable but lower damage.",
           "effects": [
-            {"type": "damage", "value": 10.0},
-            {"type": "evasion_mod", "value": -20.0, "duration": 2}
+            {
+              "type": "damage",
+              "value": 10.0
+            },
+            {
+              "type": "evasion_mod",
+              "value": -20.0,
+              "duration": 2
+            }
           ],
           "energy_cost": 5,
           "cooldown": 3,
@@ -1079,9 +1924,44 @@
         }
       ],
       "loot_table": [
-        {"commodity_id": "electronics", "min_qty": 3, "max_qty": 6, "chance": 0.9},
-        {"commodity_id": "rare_metals", "min_qty": 2, "max_qty": 4, "chance": 0.6},
-        {"commodity_id": "luxury_goods", "min_qty": 1, "max_qty": 3, "chance": 0.5}
+        {
+          "commodity_id": "electronics",
+          "min_qty": 3,
+          "max_qty": 6,
+          "chance": 0.9
+        },
+        {
+          "commodity_id": "rare_metals",
+          "min_qty": 2,
+          "max_qty": 4,
+          "chance": 0.6
+        },
+        {
+          "commodity_id": "exotic_goods",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.5
+        },
+        {
+          "commodity_id": "combat_salvage",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.6
+        }
+      ],
+      "rare_loot": [
+        {
+          "commodity_id": "exotic_goods",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.12
+        },
+        {
+          "commodity_id": "crystal_ore",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.1
+        }
       ]
     },
     {
@@ -1102,12 +1982,18 @@
       "faction_id": "",
       "danger_tier": "dangerous",
       "bribe_cost": 0,
+      "credit_reward": 200,
       "moves": [
         {
           "id": "authority_lance",
           "name": "Authority Lance",
           "description": "A devastating directed-energy weapon reserved for sector enforcement.",
-          "effects": [{"type": "damage", "value": 25.0}],
+          "effects": [
+            {
+              "type": "damage",
+              "value": 25.0
+            }
+          ],
           "energy_cost": 4,
           "accuracy_modifier": 10
         },
@@ -1116,9 +2002,18 @@
           "name": "System Disabler",
           "description": "Targeted EMP burst that drains energy and shields simultaneously.",
           "effects": [
-            {"type": "damage", "value": 10.0},
-            {"type": "shield_drain", "value": 20.0},
-            {"type": "energy_drain", "value": 5.0}
+            {
+              "type": "damage",
+              "value": 10.0
+            },
+            {
+              "type": "shield_drain",
+              "value": 20.0
+            },
+            {
+              "type": "energy_drain",
+              "value": 5.0
+            }
           ],
           "energy_cost": 5,
           "cooldown": 2,
@@ -1129,8 +2024,15 @@
           "name": "Pursuit Lockdown",
           "description": "Deploys a tracking field that makes fleeing nearly impossible.",
           "effects": [
-            {"type": "evasion_mod", "value": -25.0, "duration": 3},
-            {"type": "damage", "value": 8.0}
+            {
+              "type": "evasion_mod",
+              "value": -25.0,
+              "duration": 3
+            },
+            {
+              "type": "damage",
+              "value": 8.0
+            }
           ],
           "energy_cost": 4,
           "cooldown": 3,
@@ -1138,10 +2040,50 @@
         }
       ],
       "loot_table": [
-        {"commodity_id": "electronics", "min_qty": 4, "max_qty": 8, "chance": 0.9},
-        {"commodity_id": "weapons", "min_qty": 2, "max_qty": 5, "chance": 0.7},
-        {"commodity_id": "rare_metals", "min_qty": 2, "max_qty": 4, "chance": 0.6},
-        {"commodity_id": "luxury_goods", "min_qty": 1, "max_qty": 3, "chance": 0.4}
+        {
+          "commodity_id": "electronics",
+          "min_qty": 4,
+          "max_qty": 8,
+          "chance": 0.9
+        },
+        {
+          "commodity_id": "weapons_components",
+          "min_qty": 2,
+          "max_qty": 5,
+          "chance": 0.7
+        },
+        {
+          "commodity_id": "rare_metals",
+          "min_qty": 2,
+          "max_qty": 4,
+          "chance": 0.6
+        },
+        {
+          "commodity_id": "exotic_goods",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.4
+        },
+        {
+          "commodity_id": "combat_salvage",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.6
+        }
+      ],
+      "rare_loot": [
+        {
+          "commodity_id": "restricted_tech",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.12
+        },
+        {
+          "commodity_id": "precious_metals",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.1
+        }
       ]
     },
     {
@@ -1162,12 +2104,18 @@
       "faction_id": "",
       "danger_tier": "moderate",
       "bribe_cost": 250,
+      "credit_reward": 65,
       "moves": [
         {
           "id": "military_blaster",
           "name": "Military Blaster",
           "description": "A precision weapon with Guild-standard targeting systems.",
-          "effects": [{"type": "damage", "value": 18.0}],
+          "effects": [
+            {
+              "type": "damage",
+              "value": 18.0
+            }
+          ],
           "energy_cost": 3,
           "accuracy_modifier": 5
         },
@@ -1176,8 +2124,14 @@
           "name": "Precision Strike",
           "description": "A focused burst that bypasses shield harmonics.",
           "effects": [
-            {"type": "damage", "value": 22.0},
-            {"type": "shield_drain", "value": 10.0}
+            {
+              "type": "damage",
+              "value": 22.0
+            },
+            {
+              "type": "shield_drain",
+              "value": 10.0
+            }
           ],
           "energy_cost": 5,
           "cooldown": 2,
@@ -1185,15 +2139,36 @@
         }
       ],
       "loot_table": [
-        {"commodity_id": "weapons_components", "min_qty": 1, "max_qty": 3, "chance": 0.7},
-        {"commodity_id": "electronics", "min_qty": 2, "max_qty": 4, "chance": 0.6},
-        {"commodity_id": "rare_metals", "min_qty": 1, "max_qty": 2, "chance": 0.3}
+        {
+          "commodity_id": "weapons_components",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.7
+        },
+        {
+          "commodity_id": "electronics",
+          "min_qty": 2,
+          "max_qty": 4,
+          "chance": 0.6
+        },
+        {
+          "commodity_id": "rare_metals",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.3
+        },
+        {
+          "commodity_id": "combat_salvage",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.4
+        }
       ]
     },
     {
       "id": "ledger_striker",
       "name": "Unmarked Striker",
-      "description": "A fast, evasive interceptor running unmarked. The engine signature matches military-spec thruster arrays — hardware that doesn't appear on any civilian market.",
+      "description": "A fast, evasive interceptor running unmarked. The engine signature matches military-spec thruster arrays â€” hardware that doesn't appear on any civilian market.",
       "behavior": "evasive",
       "hull": 60,
       "shields": 35,
@@ -1208,12 +2183,18 @@
       "faction_id": "",
       "danger_tier": "moderate",
       "bribe_cost": 200,
+      "credit_reward": 50,
       "moves": [
         {
           "id": "quick_burst",
           "name": "Quick Burst",
           "description": "Rapid fire from concealed weapon mounts.",
-          "effects": [{"type": "damage", "value": 12.0}],
+          "effects": [
+            {
+              "type": "damage",
+              "value": 12.0
+            }
+          ],
           "energy_cost": 2,
           "accuracy_modifier": 10
         },
@@ -1221,16 +2202,43 @@
           "id": "afterburn_jink",
           "name": "Afterburn Jink",
           "description": "Military-grade thruster burst that makes the ship nearly impossible to track.",
-          "effects": [{"type": "evasion_mod", "value": 25.0, "duration": 2}],
+          "effects": [
+            {
+              "type": "evasion_mod",
+              "value": 25.0,
+              "duration": 2
+            }
+          ],
           "energy_cost": 4,
           "cooldown": 3,
           "accuracy_modifier": 0
         }
       ],
       "loot_table": [
-        {"commodity_id": "fuel", "min_qty": 3, "max_qty": 6, "chance": 0.6},
-        {"commodity_id": "electronics", "min_qty": 1, "max_qty": 3, "chance": 0.5},
-        {"commodity_id": "weapons_components", "min_qty": 1, "max_qty": 2, "chance": 0.4}
+        {
+          "commodity_id": "fuel",
+          "min_qty": 3,
+          "max_qty": 6,
+          "chance": 0.6
+        },
+        {
+          "commodity_id": "electronics",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.5
+        },
+        {
+          "commodity_id": "weapons_components",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.4
+        },
+        {
+          "commodity_id": "combat_salvage",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.4
+        }
       ]
     },
     {
@@ -1251,12 +2259,18 @@
       "faction_id": "",
       "danger_tier": "dangerous",
       "bribe_cost": 0,
+      "credit_reward": 175,
       "moves": [
         {
           "id": "convergence_lance",
           "name": "Convergence Lance",
           "description": "A focused energy weapon derived from gravitational lensing technology. Devastating at close range.",
-          "effects": [{"type": "damage", "value": 25.0}],
+          "effects": [
+            {
+              "type": "damage",
+              "value": 25.0
+            }
+          ],
           "energy_cost": 4,
           "accuracy_modifier": 5
         },
@@ -1265,8 +2279,14 @@
           "name": "Shield Shatter",
           "description": "Targeted pulse designed to overwhelm defensive systems.",
           "effects": [
-            {"type": "damage", "value": 15.0},
-            {"type": "shield_drain", "value": 20.0}
+            {
+              "type": "damage",
+              "value": 15.0
+            },
+            {
+              "type": "shield_drain",
+              "value": 20.0
+            }
           ],
           "energy_cost": 5,
           "cooldown": 2,
@@ -1277,8 +2297,16 @@
           "name": "Command Override",
           "description": "Activates hardened armor plating and targeting calibration.",
           "effects": [
-            {"type": "damage_reduction", "value": 10.0, "duration": 2},
-            {"type": "accuracy_mod", "value": 15.0, "duration": 2}
+            {
+              "type": "damage_reduction",
+              "value": 10.0,
+              "duration": 2
+            },
+            {
+              "type": "accuracy_mod",
+              "value": 15.0,
+              "duration": 2
+            }
           ],
           "energy_cost": 6,
           "cooldown": 3,
@@ -1286,9 +2314,44 @@
         }
       ],
       "loot_table": [
-        {"commodity_id": "weapons_components", "min_qty": 3, "max_qty": 5, "chance": 0.8},
-        {"commodity_id": "electronics", "min_qty": 2, "max_qty": 4, "chance": 0.7},
-        {"commodity_id": "rare_metals", "min_qty": 2, "max_qty": 3, "chance": 0.5}
+        {
+          "commodity_id": "weapons_components",
+          "min_qty": 3,
+          "max_qty": 5,
+          "chance": 0.8
+        },
+        {
+          "commodity_id": "electronics",
+          "min_qty": 2,
+          "max_qty": 4,
+          "chance": 0.7
+        },
+        {
+          "commodity_id": "rare_metals",
+          "min_qty": 2,
+          "max_qty": 3,
+          "chance": 0.5
+        },
+        {
+          "commodity_id": "combat_salvage",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.6
+        }
+      ],
+      "rare_loot": [
+        {
+          "commodity_id": "restricted_tech",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.15
+        },
+        {
+          "commodity_id": "exotic_goods",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.1
+        }
       ]
     }
   ]

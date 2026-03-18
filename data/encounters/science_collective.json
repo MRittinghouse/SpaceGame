@@ -1,0 +1,586 @@
+{
+  "encounters": [
+    {
+      "id": "collective_specimen_01",
+      "encounter_type": "anomaly",
+      "name": "Biological Sample Collection",
+      "description": "An Axiom Research Institute vessel hails you, its hull bristling with sensor arrays. Dr. Vasik, a xenobiologist with impeccable diction, explains: 'We have detected viable biological specimens in the nearby debris field — extremophile microorganisms, if our spectral analysis is correct. Our collection drones are, regrettably, non-functional. We require manual retrieval. Compensation will be provided, naturally.'",
+      "icon_color": [160, 100, 200],
+      "weight": 10,
+      "danger_levels": ["moderate", "dangerous"],
+      "required_faction": "science_collective",
+      "tone": "neutral",
+      "category": "faction",
+      "choices": [
+        {
+          "id": "collect_samples",
+          "label": "Collect Specimens",
+          "description": "Navigate the debris field and gather biological samples for the research team.",
+          "outcome": {
+            "description": "You spend an hour carefully extracting sealed sample containers from the wreckage. Dr. Vasik catalogs each one with visible excitement — or what passes for excitement among Axiom researchers. 'Remarkable preservation. You have contributed to a peer-reviewed study, Captain. Your name will appear in the acknowledgments section.'",
+            "rewards": [
+              {"reward_type": "credits", "amount": 120},
+              {"reward_type": "xp", "amount": 25},
+              {"reward_type": "modify_reputation", "amount": 8, "target_id": "science_collective"}
+            ]
+          }
+        },
+        {
+          "id": "sell_data",
+          "label": "Sell Scan Data",
+          "description": "Run your own scans and offer the data instead — less risk, less reward.",
+          "outcome": {
+            "description": "You transmit your sensor readings of the debris field. Dr. Vasik accepts the data with a curt nod. 'Secondary source material. Useful for corroboration, though not a substitute for direct sampling. We will compensate you at the standard consultation rate.'",
+            "rewards": [
+              {"reward_type": "credits", "amount": 60},
+              {"reward_type": "xp", "amount": 15},
+              {"reward_type": "modify_reputation", "amount": 3, "target_id": "science_collective"}
+            ]
+          }
+        },
+        {
+          "id": "decline_specimen",
+          "label": "Decline",
+          "description": "Debris fields are hazardous. Pass on this one.",
+          "outcome": {
+            "description": "Dr. Vasik accepts your refusal with clinical detachment. 'Understood. Risk-averse behavior is statistically rational given the mortality rates in uncharted debris fields. We will source alternative assistance.' The research vessel resumes its holding pattern.",
+            "rewards": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "collective_experiment_01",
+      "encounter_type": "anomaly",
+      "name": "Erratic Research Probe",
+      "description": "An Axiom deep-space probe is tumbling through the sector, emitting bursts of data on frequencies it was never programmed to use. Researcher Okonkwo contacts you from a monitoring station: 'Probe AX-7741 has deviated from its programmed trajectory by 14.7 degrees and is broadcasting anomalous telemetry. We require close-range sensor data from a ship in proximity. Your current position is... optimal.'",
+      "icon_color": [180, 120, 220],
+      "weight": 10,
+      "danger_levels": ["moderate", "dangerous"],
+      "required_faction": "science_collective",
+      "tone": "mysterious",
+      "category": "faction",
+      "choices": [
+        {
+          "id": "approach_probe",
+          "label": "Approach the Probe",
+          "description": "Get close and record detailed sensor data on the malfunctioning probe.",
+          "outcome": {
+            "description": "As you close range, your instruments record a cascade of data — the probe appears to be reacting to something your sensors cannot detect. Researcher Okonkwo's voice drops to a whisper: 'These readings are... inconsistent with any known phenomenon. This will require a full review board. Your data is invaluable, Captain. We are transmitting payment and flagging your contribution as Priority One.'",
+            "rewards": [
+              {"reward_type": "credits", "amount": 150},
+              {"reward_type": "xp", "amount": 30},
+              {"reward_type": "modify_reputation", "amount": 10, "target_id": "science_collective"}
+            ]
+          }
+        },
+        {
+          "id": "observe_distance",
+          "label": "Observe From Distance",
+          "description": "Record what you can from a safe range.",
+          "outcome": {
+            "description": "Your long-range scans capture the probe's erratic behavior but lack the resolution Okonkwo hoped for. 'Peripheral data. Better than nothing, I suppose. We will need to dispatch a dedicated recovery team.' A modest payment arrives.",
+            "rewards": [
+              {"reward_type": "credits", "amount": 70},
+              {"reward_type": "xp", "amount": 15},
+              {"reward_type": "modify_reputation", "amount": 5, "target_id": "science_collective"}
+            ]
+          }
+        },
+        {
+          "id": "ignore_probe",
+          "label": "Keep Moving",
+          "description": "Malfunctioning probes are someone else's problem.",
+          "outcome": {
+            "description": "You leave the tumbling probe behind. On your rear sensors, it continues its strange broadcast, spinning slowly against the stars.",
+            "rewards": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "collective_data_buy_01",
+      "encounter_type": "merchant",
+      "name": "Navigation Data Purchase",
+      "description": "A small Collective survey ship pulls alongside and hails you. Professor Tanaka, a cartographer with the Axiom Institute, is characteristically direct: 'Good day. I am compiling a gravitational variance map of this corridor. Your recent navigation logs would reduce my margin of error by approximately 4.2 percent. I am authorized to purchase raw telemetry data at standard Collective rates.'",
+      "icon_color": [160, 100, 200],
+      "weight": 10,
+      "danger_levels": ["moderate"],
+      "required_faction": "science_collective",
+      "tone": "neutral",
+      "category": "faction",
+      "choices": [
+        {
+          "id": "sell_full_logs",
+          "label": "Sell Full Logs",
+          "description": "Hand over your complete navigation data — routes, stops, and all.",
+          "outcome": {
+            "description": "Professor Tanaka reviews your logs with the quiet satisfaction of someone who has just found a missing dataset. 'Comprehensive. Your route through the Pell Drift is particularly useful — few captains transit that corridor. Payment has been authorized. You have my thanks, and a citation in my next publication.'",
+            "rewards": [
+              {"reward_type": "credits", "amount": 180},
+              {"reward_type": "xp", "amount": 20},
+              {"reward_type": "modify_reputation", "amount": 7, "target_id": "science_collective"}
+            ]
+          }
+        },
+        {
+          "id": "sell_partial",
+          "label": "Sell Partial Data",
+          "description": "Share only non-sensitive route information.",
+          "outcome": {
+            "description": "You strip your logs of anything commercially sensitive before transmitting. Tanaka accepts the redacted data without complaint. 'Incomplete, but usable. I appreciate the contribution, Captain. Partial data is infinitely more valuable than no data.'",
+            "rewards": [
+              {"reward_type": "credits", "amount": 90},
+              {"reward_type": "xp", "amount": 10},
+              {"reward_type": "modify_reputation", "amount": 3, "target_id": "science_collective"}
+            ]
+          }
+        },
+        {
+          "id": "decline_data",
+          "label": "Decline Sale",
+          "description": "Your routes are your business.",
+          "outcome": {
+            "description": "Tanaka nods curtly. 'Your prerogative. Navigation data is a competitive advantage — I understand the reluctance. Safe travels, Captain.' The survey ship peels away and resumes its meticulous charting.",
+            "rewards": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "collective_quarantine_01",
+      "encounter_type": "patrol",
+      "name": "Okafor Quarantine Zone",
+      "description": "An Okafor Institute medical frigate blocks your path, running a quarantine perimeter around a contaminated wreck. Dr. Mwenzi broadcasts on all channels: 'Attention all vessels. This area is under Okafor Institute medical quarantine — biosafety level four. A derelict freighter is leaking an unidentified compound with mutagenic properties. We require all traffic to divert. If you have hazmat capability, we could use additional containment support.'",
+      "icon_color": [160, 100, 200],
+      "weight": 8,
+      "danger_levels": ["moderate", "dangerous"],
+      "required_faction": "science_collective",
+      "tone": "neutral",
+      "category": "faction",
+      "choices": [
+        {
+          "id": "assist_containment",
+          "label": "Assist Containment",
+          "description": "Help the medical team seal the contamination.",
+          "outcome": {
+            "description": "You work alongside the Okafor team, using your ship's systems to help map the contamination spread while their drones deploy sealant charges. Dr. Mwenzi is brisk but grateful: 'Your thermal imaging data saved us approximately three hours of sweep time. The Okafor Institute does not forget those who assist in public health emergencies.' She authorizes a field stipend from the Institute's emergency fund.",
+            "rewards": [
+              {"reward_type": "credits", "amount": 140},
+              {"reward_type": "xp", "amount": 25},
+              {"reward_type": "modify_reputation", "amount": 8, "target_id": "science_collective"}
+            ]
+          }
+        },
+        {
+          "id": "comply_divert",
+          "label": "Comply and Divert",
+          "description": "Respect the quarantine and reroute around the area.",
+          "outcome": {
+            "description": "You adjust course without argument. Dr. Mwenzi notes your compliance with a brief acknowledgment: 'Thank you for your cooperation. The diversion adds approximately twelve minutes to standard transit. We anticipate clearing the quarantine within forty-eight hours.'",
+            "rewards": [
+              {"reward_type": "xp", "amount": 5},
+              {"reward_type": "modify_reputation", "amount": 2, "target_id": "science_collective"}
+            ]
+          }
+        },
+        {
+          "id": "push_through",
+          "label": "Push Through",
+          "description": "You have places to be. Try to slip past the quarantine perimeter.",
+          "outcome": {
+            "description": "The Okafor frigate tracks you with its sensor array as you attempt to bypass the zone. Dr. Mwenzi's voice turns cold: 'Quarantine violation logged. Your transponder has been flagged. I strongly advise against exposure to the contaminant — symptoms include progressive neural degradation.' You clear the zone, but not without consequence.",
+            "rewards": [
+              {"reward_type": "modify_reputation", "amount": -8, "target_id": "science_collective"}
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "collective_ethics_01",
+      "encounter_type": "comm_intercept",
+      "name": "Intercepted Nova Transmission",
+      "description": "Your comms array picks up a partially encrypted transmission on a Nova Applied Sciences frequency. Through the static, you piece together fragments: '...subject response exceeds predicted parameters by 340 percent... ethics board clearance was not... Dr. Hargrove insists we proceed to phase three before the quarterly review...' The transmission includes coordinates for a Nova research station.",
+      "icon_color": [180, 120, 220],
+      "weight": 8,
+      "danger_levels": ["moderate", "dangerous"],
+      "required_faction": "science_collective",
+      "tone": "mysterious",
+      "category": "faction",
+      "choices": [
+        {
+          "id": "report_axiom",
+          "label": "Report to Axiom",
+          "description": "Forward the intercept to the Axiom Research Institute — they take ethics seriously.",
+          "outcome": {
+            "description": "You transmit the intercept to an Axiom oversight channel. The response is swift and formal: 'This is Axiom Ethics Review Board, Case Officer Lindgren. Your report has been logged under Protocol 7-C. If the contents are verified, Nova Applied Sciences will face a formal inquiry. The Collective thanks you for your vigilance. A reporting stipend has been authorized.'",
+            "rewards": [
+              {"reward_type": "credits", "amount": 100},
+              {"reward_type": "xp", "amount": 20},
+              {"reward_type": "modify_reputation", "amount": 10, "target_id": "science_collective"}
+            ]
+          }
+        },
+        {
+          "id": "sell_nova",
+          "label": "Sell Back to Nova",
+          "description": "Contact Nova and let them know their comms leaked. They will pay for discretion.",
+          "outcome": {
+            "description": "A Nova representative responds within minutes — unusually fast. 'We appreciate your... discretion, Captain. Communications security is a priority for all Collective affiliates. Please accept this consulting fee for your assistance in identifying our encryption vulnerability.' The credits are generous. The implications are uncomfortable.",
+            "rewards": [
+              {"reward_type": "credits", "amount": 250},
+              {"reward_type": "xp", "amount": 10}
+            ]
+          }
+        },
+        {
+          "id": "delete_intercept",
+          "label": "Delete and Forget",
+          "description": "Wipe the intercept. Internal Collective politics are not your concern.",
+          "outcome": {
+            "description": "You purge the transmission from your comm logs and continue on your way. Whatever Nova is doing behind closed doors, it is not your problem. Probably.",
+            "rewards": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "collective_calibration_01",
+      "encounter_type": "merchant",
+      "name": "Calibration Reference Request",
+      "description": "A Collective survey team hails you with an unusual request. Researcher Pellegrini sounds mildly embarrassed: 'Captain, this will sound peculiar. We are calibrating a new long-range mass spectrometer and require a vessel of known mass to serve as a reference point. Your ship's registry lists your gross tonnage. Would you be willing to hold position for approximately thirty seconds while we take readings? We will compensate you for the inconvenience. It is... not a glamorous contribution to science.'",
+      "icon_color": [160, 100, 200],
+      "weight": 10,
+      "danger_levels": ["moderate"],
+      "required_faction": "science_collective",
+      "tone": "humorous",
+      "category": "faction",
+      "choices": [
+        {
+          "id": "hold_still",
+          "label": "Hold Position",
+          "description": "Sit still for thirty seconds. Easiest credits you will ever make.",
+          "outcome": {
+            "description": "You kill your engines and drift. Researcher Pellegrini counts down with clinical precision: 'Twenty-two... twenty-three... hold steady please... twenty-eight... twenty-nine... calibration complete. Deviation from expected mass: 0.003 percent. Acceptable.' A payment notification arrives. 'Thank you, Captain. You are now a footnote in instrument calibration history.'",
+            "rewards": [
+              {"reward_type": "credits", "amount": 80},
+              {"reward_type": "xp", "amount": 10},
+              {"reward_type": "modify_reputation", "amount": 5, "target_id": "science_collective"}
+            ]
+          }
+        },
+        {
+          "id": "negotiate_more",
+          "label": "Negotiate Higher Fee",
+          "description": "Your time is valuable. Ask for more.",
+          "outcome": {
+            "description": "Pellegrini sighs audibly. 'I suppose thirty seconds of your trajectory does have an opportunity cost. Fine — I will file for the enhanced consultation rate.' The payment is slightly better. Pellegrini mutters something about 'budget allocation for non-academic personnel' before cutting the channel.",
+            "rewards": [
+              {"reward_type": "credits", "amount": 130},
+              {"reward_type": "xp", "amount": 5}
+            ]
+          }
+        },
+        {
+          "id": "decline_calibration",
+          "label": "No Time",
+          "description": "You have a schedule to keep.",
+          "outcome": {
+            "description": "Pellegrini accepts with a resigned nod. 'Understood. We will wait for the next vessel. Statistically, one should pass within... four to six hours.' The survey ship returns to its patient vigil.",
+            "rewards": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "collective_peer_review_01",
+      "encounter_type": "comm_intercept",
+      "name": "Peer Review Dispute",
+      "description": "Your comms pick up an open-channel argument between two Collective researchers. Dr. Farouk is incensed: 'Your sample size is seventeen! You cannot extrapolate system-wide geological trends from seventeen core samples!' Dr. Christensen fires back: 'The statistical model accounts for sampling bias — which you would know if you had read Appendix C instead of skimming the abstract!' The argument has apparently been going on for some time.",
+      "icon_color": [160, 100, 200],
+      "weight": 10,
+      "danger_levels": ["moderate"],
+      "required_faction": "science_collective",
+      "tone": "humorous",
+      "category": "faction",
+      "choices": [
+        {
+          "id": "side_farouk",
+          "label": "Side With Farouk",
+          "description": "Seventeen samples does seem low.",
+          "outcome": {
+            "description": "You chime in on the open channel. Dr. Farouk is delighted: 'You see? Even a civilian recognizes inadequate methodology!' Dr. Christensen sputters. Farouk sends you a small payment 'for demonstrating that common sense is not limited to academia.' Christensen vows to expand the sample size, muttering about 'statistically illiterate interference.'",
+            "rewards": [
+              {"reward_type": "credits", "amount": 75},
+              {"reward_type": "xp", "amount": 15},
+              {"reward_type": "modify_reputation", "amount": 5, "target_id": "science_collective"}
+            ]
+          }
+        },
+        {
+          "id": "side_christensen",
+          "label": "Side With Christensen",
+          "description": "The statistical model might be sound. Support the methodology.",
+          "outcome": {
+            "description": "You weigh in on Christensen's behalf. Dr. Christensen beams: 'Thank you, Captain. Bayesian inference is perfectly valid with small samples given proper priors — as my colleague would know if they kept current with the literature.' Dr. Farouk goes silent. Christensen transfers a tip 'for restoring my faith in informed discourse.'",
+            "rewards": [
+              {"reward_type": "credits", "amount": 75},
+              {"reward_type": "xp", "amount": 20},
+              {"reward_type": "modify_reputation", "amount": 5, "target_id": "science_collective"}
+            ]
+          }
+        },
+        {
+          "id": "ignore_argument",
+          "label": "Change Frequency",
+          "description": "Academic arguments are not your department.",
+          "outcome": {
+            "description": "You switch channels and leave the researchers to their dispute. As the signal fades, you catch Dr. Farouk shouting something about 'confidence intervals' and Dr. Christensen responding with what sounds like a citation from memory.",
+            "rewards": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "collective_medevac_01",
+      "encounter_type": "distress_signal",
+      "name": "Okafor Emergency Transport",
+      "description": "An Okafor Institute medical transport broadcasts an urgent escort request. Dr. Adeyemi's voice is steady but tense: 'This is Okafor Transport Mercy-Seven. We are carrying critical organ preservation units to a transplant facility in the adjacent system. Our escort was diverted to another emergency and we are transiting through a high-threat corridor unprotected. We require armed escort. The patients cannot wait.'",
+      "icon_color": [160, 100, 200],
+      "weight": 8,
+      "danger_levels": ["dangerous"],
+      "required_faction": "science_collective",
+      "tone": "neutral",
+      "category": "faction",
+      "choices": [
+        {
+          "id": "escort_mercy",
+          "label": "Provide Escort",
+          "description": "Fly alongside the medical transport through dangerous space.",
+          "outcome": {
+            "description": "You match speed with Mercy-Seven and run interference through the corridor. Your presence deters two contacts that were shadowing the transport. Dr. Adeyemi exhales audibly as you clear the danger zone: 'Four patients will receive transplants today because of your decision, Captain. The Okafor Institute is transferring an escort stipend, but the debt is larger than credits can express.'",
+            "rewards": [
+              {"reward_type": "credits", "amount": 200},
+              {"reward_type": "xp", "amount": 25},
+              {"reward_type": "modify_reputation", "amount": 10, "target_id": "science_collective"}
+            ]
+          }
+        },
+        {
+          "id": "partial_escort",
+          "label": "Escort Partway",
+          "description": "Fly with them until your routes diverge, then break off.",
+          "outcome": {
+            "description": "You accompany Mercy-Seven through the worst stretch before peeling off at the junction. Dr. Adeyemi thanks you: 'Even partial coverage improves our survival probability by an estimated 60 percent. Every kilometer counts.' A partial stipend arrives.",
+            "rewards": [
+              {"reward_type": "credits", "amount": 100},
+              {"reward_type": "xp", "amount": 15},
+              {"reward_type": "modify_reputation", "amount": 5, "target_id": "science_collective"}
+            ]
+          }
+        },
+        {
+          "id": "decline_escort",
+          "label": "Cannot Assist",
+          "description": "You are not equipped or willing to play escort through hostile space.",
+          "outcome": {
+            "description": "Dr. Adeyemi accepts without recrimination. 'Understood, Captain. We will increase speed and hope the corridor is clear. Mercy-Seven out.' The transport accelerates past you, running dark, organ units humming in the hold.",
+            "rewards": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "collective_artifact_01",
+      "encounter_type": "merchant",
+      "name": "Pre-Colony Artifact Transport",
+      "description": "An Axiom archaeology team has made a significant find: a sealed container of pre-colony origin, its markings unlike anything in the current database. Professor Okoro contacts you from the dig site ship: 'Captain, we have recovered an artifact of considerable scientific significance. Our vessel lacks the environmental controls for safe transport. We require a ship with sealed cargo systems to deliver this to Axiom Labs. The artifact must remain at precisely 2.7 degrees Celsius. Can you maintain that tolerance?'",
+      "icon_color": [180, 120, 220],
+      "weight": 8,
+      "danger_levels": ["moderate", "dangerous"],
+      "required_faction": "science_collective",
+      "tone": "mysterious",
+      "category": "faction",
+      "choices": [
+        {
+          "id": "transport_artifact",
+          "label": "Accept Transport Job",
+          "description": "Take the artifact aboard and deliver it to Axiom Labs.",
+          "outcome": {
+            "description": "Professor Okoro supervises the transfer with meticulous care, checking your cargo bay temperature three times before releasing the container. 'The artifact predates all known settlement in this region by approximately two hundred years. What it implies about pre-colony exploration is... significant. Transport fee and a research bonus have been authorized. Handle it gently, Captain.'",
+            "rewards": [
+              {"reward_type": "credits", "amount": 220},
+              {"reward_type": "xp", "amount": 25},
+              {"reward_type": "modify_reputation", "amount": 8, "target_id": "science_collective"}
+            ]
+          }
+        },
+        {
+          "id": "ask_about_artifact",
+          "label": "Ask What It Is",
+          "description": "Get more details before committing to anything.",
+          "outcome": {
+            "description": "Okoro hesitates, then relents: 'Preliminary analysis suggests it is a data storage medium of unknown design. We cannot read it — yet. The materials are unlike any alloy in our database. That is all I can share before peer review.' The information is fascinating, but Okoro needs an answer. You pass on the job, filing away the details.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 15}
+            ]
+          }
+        },
+        {
+          "id": "decline_artifact",
+          "label": "Decline",
+          "description": "Unknown pre-colony artifacts make you nervous.",
+          "outcome": {
+            "description": "Okoro nods stiffly. 'A cautious response. Not unreasonable, given the unknowns. We will arrange alternative transport.' The dig site ship powers up its comms array to search for another willing captain.",
+            "rewards": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "collective_radiation_01",
+      "encounter_type": "distress_signal",
+      "name": "Leaking Research Buoy",
+      "description": "A Collective research buoy is broadcasting an automated hazard warning — its radioisotope power cell has cracked, leaking ionizing radiation into a shipping corridor. Researcher Holm contacts you from a remote monitoring station: 'The buoy's shielding failed approximately six hours ago. We have dispatched a recovery team, but their ETA is fourteen hours. If someone on-site could manually trigger the emergency shutdown sequence, it would reduce cumulative exposure for all traffic in the corridor by a factor of twelve.'",
+      "icon_color": [160, 100, 200],
+      "weight": 10,
+      "danger_levels": ["moderate", "dangerous"],
+      "required_faction": "science_collective",
+      "tone": "neutral",
+      "category": "faction",
+      "choices": [
+        {
+          "id": "shutdown_buoy",
+          "label": "Shut Down Buoy",
+          "description": "Approach the buoy and execute the emergency shutdown procedure.",
+          "outcome": {
+            "description": "Following Holm's precise instructions, you maneuver alongside the buoy and transmit the shutdown code sequence. The buoy's power cell goes dormant, radiation levels dropping immediately. Holm's relief is audible despite the clinical delivery: 'Shutdown confirmed. Radiation output now at background levels. You have potentially prevented acute exposure for dozens of transiting vessels. Hazard mitigation payment authorized. Thank you, Captain.'",
+            "rewards": [
+              {"reward_type": "credits", "amount": 160},
+              {"reward_type": "xp", "amount": 20},
+              {"reward_type": "modify_reputation", "amount": 8, "target_id": "science_collective"}
+            ]
+          }
+        },
+        {
+          "id": "broadcast_warning",
+          "label": "Broadcast Warning",
+          "description": "Boost the hazard signal so other ships can avoid the area.",
+          "outcome": {
+            "description": "You amplify the buoy's warning signal and add your own transponder data to mark the hazard zone. Holm acknowledges: 'A practical interim measure. It will not eliminate the exposure risk, but informed avoidance is the next best outcome. We have noted your assistance.'",
+            "rewards": [
+              {"reward_type": "xp", "amount": 15},
+              {"reward_type": "modify_reputation", "amount": 4, "target_id": "science_collective"}
+            ]
+          }
+        },
+        {
+          "id": "avoid_radiation",
+          "label": "Steer Clear",
+          "description": "Radiation exposure is not in your job description.",
+          "outcome": {
+            "description": "You plot a course well around the leaking buoy. Holm sighs: 'Noted. The recovery team will arrive when they arrive. In the meantime, the corridor remains hazardous.' The automated warning continues its monotone broadcast.",
+            "rewards": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "collective_grant_01",
+      "encounter_type": "merchant",
+      "name": "Field Research Grant",
+      "description": "Professor Ibanez, a jovial astrophysicist by Collective standards, contacts you on an open channel: 'Captain! I have a proposition. I have secured funding for a gravitational lensing survey, but my grant does not cover dedicated ship time. If you are traveling through the adjacent sectors regardless, I can upload a passive sensor package to your array. It runs in the background — you will not even notice it. In return, I am authorized to issue a field research stipend. Essentially, I am paying you to fly where you were already going.'",
+      "icon_color": [160, 100, 200],
+      "weight": 10,
+      "danger_levels": ["moderate"],
+      "required_faction": "science_collective",
+      "tone": "neutral",
+      "category": "faction",
+      "choices": [
+        {
+          "id": "accept_grant",
+          "label": "Accept the Grant",
+          "description": "Let the professor install the passive sensor package.",
+          "outcome": {
+            "description": "The sensor package uploads seamlessly. Professor Ibanez is visibly pleased: 'Excellent. The package will collect gravitational variance data along your route and transmit it to my lab automatically. You are now a contributing researcher in the Ibanez Lensing Survey — admittedly in an unpaid capacity, but the stipend should cover the inconvenience. If you pass through any high-mass systems, the data will be particularly valuable.'",
+            "rewards": [
+              {"reward_type": "credits", "amount": 150},
+              {"reward_type": "xp", "amount": 20},
+              {"reward_type": "modify_reputation", "amount": 7, "target_id": "science_collective"}
+            ]
+          }
+        },
+        {
+          "id": "negotiate_grant",
+          "label": "Ask for More",
+          "description": "The stipend seems low for use of your sensor array.",
+          "outcome": {
+            "description": "Ibanez winces. 'Captain, I am an astrophysicist. My entire annual budget would not cover your fuel costs for a week. But... I can add a data-sharing clause. You will receive a copy of the processed survey results — gravitational maps of every system you transit. That data has commercial value.' The maps could indeed be useful for navigation.",
+            "rewards": [
+              {"reward_type": "credits", "amount": 100},
+              {"reward_type": "xp", "amount": 25},
+              {"reward_type": "modify_reputation", "amount": 5, "target_id": "science_collective"}
+            ]
+          }
+        },
+        {
+          "id": "decline_grant",
+          "label": "Decline",
+          "description": "You prefer to keep your sensor array clean.",
+          "outcome": {
+            "description": "Ibanez deflates slightly. 'Fair enough. Unknown software on your array — I understand the hesitation. Security-conscious thinking. I will find another willing captain. They are... not as common as you might think.'",
+            "rewards": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "collective_nova_test_01",
+      "encounter_type": "anomaly",
+      "name": "Nova Shield Harmonics Test",
+      "description": "A Nova Applied Sciences cruiser hails you with the logo prominently displayed on every surface. Project Lead Strand speaks with the enthusiasm of someone spending someone else's money: 'Captain! Nova Applied Sciences is conducting field trials of our next-generation shield harmonics array. We need a vessel to fly through our test field so we can measure the interaction between our emitters and standard civilian shielding. Completely safe. Probably. The simulation data is very promising — 94 percent confidence interval on non-lethality.'",
+      "icon_color": [180, 120, 220],
+      "weight": 8,
+      "danger_levels": ["moderate", "dangerous"],
+      "required_faction": "science_collective",
+      "tone": "humorous",
+      "category": "faction",
+      "choices": [
+        {
+          "id": "volunteer",
+          "label": "Volunteer",
+          "description": "Ninety-four percent is pretty good odds. Fly through the test field.",
+          "outcome": {
+            "description": "You fly through Nova's test field while your shields crackle and hum in unfamiliar harmonics. Your hull temperature spikes briefly — then normalizes. Project Lead Strand is ecstatic: 'Beautiful data! The resonance cascade was within predicted parameters. Mostly. We will need to investigate that thermal anomaly, but your ship is fine. Probably run a diagnostic later. Payment is being processed — and if you experience any unusual shield behavior in the next 48 hours, do contact us.'",
+            "rewards": [
+              {"reward_type": "credits", "amount": 200},
+              {"reward_type": "xp", "amount": 20},
+              {"reward_type": "modify_reputation", "amount": 5, "target_id": "science_collective"}
+            ]
+          }
+        },
+        {
+          "id": "ask_details",
+          "label": "Request Full Specs",
+          "description": "Ask for the complete technical specifications before agreeing to anything.",
+          "outcome": {
+            "description": "Strand shares the test parameters with visible reluctance. You notice the simulation was run only three times, the 'non-lethality' metric has a creative definition, and the fine print mentions 'acceptable hull micro-fracturing.' You pass. Strand shrugs: 'Your loss, Captain. Science requires bold participants.' The Nova cruiser begins scanning for the next passing ship.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 15}
+            ]
+          }
+        },
+        {
+          "id": "decline_nova",
+          "label": "Hard Pass",
+          "description": "Six percent chance of lethality is six percent too many.",
+          "outcome": {
+            "description": "Strand waves dismissively. 'Conservative risk assessment. Noted.' As you pull away, you overhear Strand on an open mic: 'Log it — another declination. That brings our volunteer rate to... twelve percent. Adjust the compensation package upward.'",
+            "rewards": []
+          }
+        }
+      ]
+    }
+  ]
+}

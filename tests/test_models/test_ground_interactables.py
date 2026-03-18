@@ -84,7 +84,7 @@ class TestGroundInteractable:
     def test_loot_marks_looted(self):
         """Collecting loot marks the interactable as looted."""
         obj = GroundInteractable(x=1, y=1, interact_type="loot_container", loot_credits=30)
-        credits = obj.loot()
+        credits, _commodities = obj.loot()
         assert credits == 30
         assert obj.looted is True
 
@@ -92,7 +92,7 @@ class TestGroundInteractable:
         """Looting a second time returns 0."""
         obj = GroundInteractable(x=1, y=1, interact_type="loot_container", loot_credits=30)
         obj.loot()
-        assert obj.loot() == 0
+        assert obj.loot() == (0, {})
 
     def test_default_credits_zero(self):
         """Default loot credits is 0."""

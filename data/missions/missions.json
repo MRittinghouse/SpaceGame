@@ -3,7 +3,7 @@
     {
       "id": "bill_of_landing",
       "name": "Bill of Landing",
-      "description": "Acquire a trade permit to buy and sell goods at Nexus Prime. Speak with the customs officer to obtain your bill of landing.",
+      "description": "Nobody trades in the Expanse without paperwork. Customs Officer Larsen at Nexus Prime can issue a bill of landing, assuming you can cover the filing fee and don't mind the way she looks at your ship.",
       "hint": "Speak with Customs Officer Larsen at the Nexus Prime cantina to get your trade permit.",
       "prerequisites": [],
       "objectives": [
@@ -23,9 +23,11 @@
     {
       "id": "iron_delivery",
       "name": "Iron Ore Delivery",
-      "description": "A cargo broker needs 10 iron ore delivered to Forgeworks. He'll pay 500 credits on delivery.",
-      "hint": "Deliver 10 Iron Ore to Forgeworks for the cargo broker. Talk to the broker at Nexus Prime first.",
+      "description": "A cargo broker at Nexus Prime needs ten units of iron ore moved to Forgeworks. Straightforward hauling work, the kind that keeps your fuel tank full and your name on the reliable list. Every trader in the Expanse started with a run like this.",
+      "hint": "Talk to the cargo broker at Nexus Prime, then fly the iron ore to the intake clerk at the Neutral Ground on Forgeworks.",
+      "discovery_text": "Overheard a cargo broker near the docks looking for someone to haul iron ore to Forgeworks. Sounded like steady work for a new permit holder.",
       "prerequisites": ["bill_of_landing"],
+      "required_flags": ["talked_to_cargo_broker"],
       "auto_accept": true,
       "on_accept_cargo": [
         {"commodity_id": "iron_ore", "quantity": 10}
@@ -38,10 +40,10 @@
           "description": "Have 10 Iron Ore in cargo"
         },
         {
-          "type": "reach_system",
-          "target_id": "forgeworks",
+          "type": "talk_to_npc",
+          "target_id": "forgeworks_clerk",
           "target_quantity": 1,
-          "description": "Deliver to Forgeworks"
+          "description": "Deliver the ore to the intake clerk at Forgeworks"
         }
       ],
       "rewards": [
@@ -54,7 +56,7 @@
     {
       "id": "footing_the_bill",
       "name": "Footing the Bill",
-      "description": "Elena Reeves at the Nexus Prime cantina offered trading advice. She seems to know more than she's sharing.",
+      "description": "A woman named Elena Reeves flagged you down at the Nexus Prime cantina. Former Guild navigator, sharp eyes, sharper tongue. She offered trading advice like she was doing you a favor, and she probably was. But nobody gives something for nothing out here.",
       "hint": "Elena Reeves will appear at Nexus Prime after completing the iron delivery. Listen to her trading advice.",
       "prerequisites": ["iron_delivery"],
       "required_flags": ["talked_to_elena_cantina"],
@@ -74,7 +76,7 @@
     {
       "id": "union_territory",
       "name": "Union Territory",
-      "description": "Hanna Voss, the Breakstone dock boss, wants proof you're not another Guild vulture. Deliver 5 units of food to the miners' commissary.",
+      "description": "Hanna Voss runs the Breakstone docks with a wrench in one hand and a grudge against the Commerce Guild in the other. She'll let you trade here, but only after you prove you're not another profiteer. Five units of food for the miners' commissary. Fair price for trust.",
       "hint": "Buy 5 food and deliver it to Breakstone to earn the miners' trust. Hanna Voss is waiting.",
       "prerequisites": ["footing_the_bill"],
       "required_flags": ["met_hanna_voss"],
@@ -102,11 +104,10 @@
     {
       "id": "the_foremans_son",
       "name": "The Foreman's Son",
-      "description": "Marcus Jin at Breakstone recognized your name. He knew your father \u2014 or at least, he knew what happened to the report that might have saved him.",
+      "description": "Marcus Jin went quiet when he heard your name. The Breakstone engineer knew your father. Or at least, he knew about the safety report that could have saved him. The one that got buried. He's carrying something, and it's not just guilt.",
       "hint": "Talk to Marcus Jin at Breakstone. He knows something about your father.",
       "prerequisites": ["union_territory"],
       "required_flags": ["met_marcus_jin"],
-      "auto_accept": true,
       "objectives": [
         {
           "type": "has_flag",
@@ -123,11 +124,10 @@
     {
       "id": "the_scholars_errand",
       "name": "The Scholar's Errand",
-      "description": "Dr. Priya Osei needs transport to Axiom Labs. Her chartered vessel was reassigned and her research samples are time-sensitive.",
+      "description": "Dr. Priya Osei's chartered transport was quietly reassigned. She suspects political pressure, though she's too polite to say it outright. Her research samples degrade by the hour, and Axiom Labs is the only facility that can process them. She needs a ride. You need a reason to visit Science Collective space.",
       "hint": "Transport Dr. Priya Osei to Axiom Labs. She's waiting at Nexus Prime.",
       "prerequisites": ["union_territory"],
       "required_flags": ["met_priya_osei"],
-      "auto_accept": true,
       "objectives": [
         {
           "type": "reach_system",
@@ -146,11 +146,10 @@
     {
       "id": "the_drifters_deal",
       "name": "The Drifter's Deal",
-      "description": "Tomas Drifter at Haven's Rest proposed a creative arrangement involving Guild tariffs and Alliance textiles.",
+      "description": "Tomas Drifter has a smile that could sell atmo to a fish. He cornered you at Haven's Rest with a proposal involving Alliance textiles, Guild tariff loopholes, and what he calls 'creative commerce.' The profit margins are real. The legality is... interpretive.",
       "hint": "Meet Tomas Drifter at Haven's Rest. He has a proposition for you.",
       "prerequisites": ["union_territory"],
       "required_flags": ["met_tomas_drifter"],
-      "auto_accept": true,
       "objectives": [
         {
           "type": "has_flag",
@@ -166,7 +165,7 @@
     {
       "id": "drifters_delivery",
       "name": "Drifter's Delivery",
-      "description": "Sell Tomas's textiles at Stellaris Port under your bill of landing. Split the profits.",
+      "description": "Five bolts of Alliance textiles, your bill of landing, and Stellaris Port's premium buyers. Tomas can't sell there himself. He's got the wrong paperwork, the wrong reputation, and the wrong answers for customs. You're the clean hands in this arrangement. Sell the goods, split the take, and try not to think too hard about the tariff codes.",
       "hint": "Travel to Stellaris Port and sell Tomas's textiles at the market.",
       "prerequisites": ["the_drifters_deal"],
       "required_flags": ["accepted_drifter_deal"],
@@ -198,7 +197,7 @@
     {
       "id": "recruit_navigator",
       "name": "Recruit Navigator",
-      "description": "Elena Reeves has shown interest in joining your crew as a navigator. Return to Nexus Prime to make the offer.",
+      "description": "Elena's been stuck at Nexus Prime running freight projections for ships that aren't hers. She's too good for dock work and she knows it. Return to Nexus Prime and offer her a berth before someone else does.",
       "hint": "Return to Nexus Prime to recruit Elena Reeves as your navigator.",
       "prerequisites": ["footing_the_bill"],
       "required_flags": ["talked_to_elena_cantina"],
@@ -218,7 +217,7 @@
     {
       "id": "recruit_engineer",
       "name": "Recruit Engineer",
-      "description": "Marcus Jin could be a valuable addition to your crew. Return to Breakstone to bring him aboard as your ship's engineer.",
+      "description": "Marcus keeps that engine bay at Breakstone running on spit and stubbornness, but the shipyard has nothing left to teach him. He's ready to leave. He just needs someone to ask. Return to Breakstone before the mines swallow another good mechanic.",
       "hint": "Return to Breakstone to recruit Marcus Jin as your engineer.",
       "prerequisites": ["the_foremans_son"],
       "required_flags": ["met_marcus_jin"],
@@ -238,7 +237,7 @@
     {
       "id": "recruit_scientist",
       "name": "Recruit Scientist",
-      "description": "Dr. Priya Osei is looking for field research opportunities. Return to Axiom Labs to recruit her.",
+      "description": "Priya's lab at Axiom is pristine, well-funded, and slowly killing her curiosity. She needs field data, not simulations. A ship with cargo space and a captain who doesn't flinch at uncharted readings is worth more to her than tenure.",
       "hint": "Travel to Axiom Labs to recruit Dr. Priya Osei as your scientist.",
       "prerequisites": ["the_scholars_errand"],
       "required_flags": ["met_priya_osei"],
@@ -258,7 +257,7 @@
     {
       "id": "recruit_trader",
       "name": "Recruit Trader",
-      "description": "Tomas Drifter wants to partner up. Head to Haven's Rest to finalize the arrangement.",
+      "description": "Tomas has been working solo since his family's business collapsed. He's good at reading people, better at reading markets, and tired of sleeping in transit berths. He proposed a partnership at Haven's Rest. His contacts, your ship. Worst case, you get a decent card player.",
       "hint": "Travel to Haven's Rest to recruit Tomas Drifter as your trader.",
       "prerequisites": ["the_drifters_deal"],
       "required_flags": ["met_tomas_drifter"],
@@ -278,7 +277,7 @@
     {
       "id": "cargo_lost",
       "name": "Cargo Lost",
-      "description": "A Guild supply run to Nova Research has gone wrong. Electronics are needed at the station, but convoy raids have escalated along the route. Someone has to make the delivery.",
+      "description": "The last three Guild convoys to Nova Research never arrived. Electronics shipments, vanished between jump points. The station's running on backup systems and borrowed time. Someone has to make the run, and someone has to find out why the pirates always know the route.",
       "hint": "Deliver 5 electronics to Nova Research. Beware of pirates on the route.",
       "prerequisites": ["the_scholars_errand"],
       "on_accept_cargo": [
@@ -319,7 +318,7 @@
     {
       "id": "whispers_at_the_bar",
       "name": "Whispers at the Bar",
-      "description": "A man named Dex Halloran approached you at the Nexus Prime cantina. He seems to know more about the convoy raids than he's letting on.",
+      "description": "Dex Halloran found you at the Nexus Prime cantina. Not the other way around. He bought a drink he didn't touch and started talking about the convoy raids like he'd read the incident reports. Nobody has that kind of intel unless they're law, press, or involved. He's none of those things. Or maybe all three.",
       "hint": "Dex Halloran will find you at Nexus Prime. He has intel on the pirate attacks.",
       "prerequisites": ["cargo_lost"],
       "required_flags": ["met_dex_halloran"],
@@ -339,7 +338,7 @@
     {
       "id": "the_crimson_run",
       "name": "The Crimson Run",
-      "description": "Dex Halloran entrusted you with an encrypted data chip. Deliver it to Malia Torres at Crimson Reach — she's the only one who can crack it.",
+      "description": "Dex pressed an encrypted data chip into your hand like it was a grenade with the pin pulled. Whatever's on it, he can't decrypt it himself, and he trusts exactly one person in the Expanse to try: Malia Torres at Crimson Reach. A salvage tech in lawless space. This is either the break you need or the kind of favor that gets people killed.",
       "hint": "Travel to Crimson Reach and deliver Dex's data chip to Malia Torres.",
       "prerequisites": ["whispers_at_the_bar"],
       "required_flags": ["dex_favor_accepted"],
@@ -378,7 +377,7 @@
     {
       "id": "embassy_visit",
       "name": "Embassy Visit",
-      "description": "Dr. Priya Osei has arranged for you to attend a faction summit at Axiom Labs. The Governing Council wants a coordinated response to the pirate threat \u2014 but coordination requires trust.",
+      "description": "Dr. Osei pulled strings to get you a seat at the faction summit. The Governing Council wants a unified response to the pirate raids, but three factions in one room means three different definitions of 'unified.' You're there as an independent voice. Or a useful scapegoat, depending on how the vote goes.",
       "hint": "Travel to Axiom Labs to attend the faction summit arranged by Dr. Osei.",
       "prerequisites": ["the_crimson_run"],
       "auto_accept": true,
@@ -403,7 +402,7 @@
     {
       "id": "under_fire",
       "name": "Under Fire",
-      "description": "While traveling, you were ambushed by well-equipped pirates \u2014 military-grade weapons, coordinated tactics, and unmarked hulls. Their drive cores match Guild-pattern specifications. Whoever is arming these raiders has deep pockets and access to hardware that doesn't appear on any civilian market.",
+      "description": "They dropped out of warp already firing. Military-grade weapons, coordinated formation tactics, unmarked hulls running Guild-pattern drive cores. These aren't pirates scraping by on salvage. Someone with deep pockets and access to hardware that doesn't exist on any civilian market is building an army. And they just put you on the target list.",
       "hint": "Pirates are hunting you. Travel between systems and be ready to fight.",
       "prerequisites": ["embassy_visit"],
       "auto_accept": true,
@@ -428,7 +427,7 @@
     {
       "id": "the_favor_returned",
       "name": "The Favor Returned",
-      "description": "Dex Halloran has a new lead \u2014 a retired miner named Oren Tak at Breakstone who saw something in the deep tunnels near Iron Depths. A hidden facility with Guild freight codes, sealed up and buried. Find Oren and learn what he knows.",
+      "description": "Dex called in a marker. A retired miner named Oren Tak saw something in the deep tunnels near Iron Depths: a sealed facility running Guild freight codes, buried under a hundred meters of rock and silence. Oren went quiet after that. People who ask about the tunnels tend to. Find him at Breakstone before someone else does.",
       "hint": "Travel to Breakstone and find Oren Tak in the mining tunnels. Dex sent you.",
       "prerequisites": ["under_fire"],
       "required_flags": ["dex_tunnel_briefing_heard"],
@@ -464,7 +463,7 @@
     {
       "id": "iron_depths_investigation",
       "name": "Iron Depths",
-      "description": "Oren Tak described a hidden facility beneath Iron Depths \u2014 reinforced bulkheads, cargo lifts, and hundreds of crates stamped with Commerce Guild freight codes. Whatever they're building down there, it's bigger than weapons smuggling. Time to see it for yourself.",
+      "description": "Reinforced bulkheads. Industrial cargo lifts. Hundreds of crates stamped with Commerce Guild freight codes, deep beneath Iron Depths where no auditor would ever look. Oren Tak described a facility that shouldn't exist, built by people who want to keep it that way. Whatever they're manufacturing down there, it's bigger than weapons smuggling. Time to see it with your own eyes.",
       "hint": "Travel to Iron Depths and infiltrate the hidden Guild facility.",
       "prerequisites": ["the_favor_returned"],
       "required_flags": ["hidden_facility_discovered"],
@@ -500,7 +499,7 @@
     {
       "id": "the_ledger",
       "name": "The Ledger",
-      "description": "You have hard evidence of Project Convergence \u2014 a Commerce Guild operation to collapse the Aurelia star using gravitational lensing arrays. Dr. Osei can verify the data. But the Guild's institutional power may make official channels useless. Someone needs to find where the arrays are being assembled.",
+      "description": "You have hard evidence of Project Convergence, a Commerce Guild operation to collapse the Aurelia star using gravitational lensing arrays. Dr. Osei can verify the data. But the Guild's institutional power may make official channels useless. Someone needs to find where the arrays are being assembled.",
       "hint": "Bring the Convergence data to Dr. Osei at Axiom Labs for verification.",
       "prerequisites": ["iron_depths_investigation"],
       "required_flags": ["singularity_weapon_discovered"],
@@ -532,7 +531,7 @@
     {
       "id": "point_of_no_return",
       "name": "Point of No Return",
-      "description": "The Fulcrum. A decommissioned station in deep space where the Commerce Guild's Inner Ledger is assembling sixteen gravitational lensing arrays \u2014 the components of Project Convergence. If the arrays deploy, the Aurelia star collapses and everything in the Expanse dies. There may be a way to stop it. Or there may only be a way out.",
+      "description": "The Fulcrum. A decommissioned station in deep space where the Commerce Guild's Inner Ledger is assembling sixteen gravitational lensing arrays, the components of Project Convergence. If the arrays deploy, the Aurelia star collapses and everything in the Expanse dies. There may be a way to stop it. Or there may only be a way out.",
       "hint": "Travel to The Fulcrum and infiltrate the Ledger's assembly station. This is it.",
       "prerequisites": ["the_ledger"],
       "required_flags": ["assembly_location_known"],
@@ -555,7 +554,7 @@
         {
           "type": "has_flag",
           "target_id": "warp_gate_discovered",
-          "description": "Find a way to stop Convergence \u2014 or a way out"
+          "description": "Find a way to stop Convergence, or find a way out"
         }
       ],
       "rewards": [
@@ -568,7 +567,7 @@
     {
       "id": "the_collapse",
       "name": "The Collapse",
-      "description": "The arrays have deployed. The Aurelia star is dying. Project Convergence is active and irreversible. The only escape is the warp gate at The Fulcrum \u2014 but the Ledger's forces are between you and salvation. Fight through, reach the gate, and pray it takes you somewhere survivable.",
+      "description": "The arrays have deployed. The Aurelia star is dying. Project Convergence is active and irreversible. The only escape is the warp gate at The Fulcrum, but the Ledger's forces are between you and salvation. Fight through, reach the gate, and pray it takes you somewhere survivable.",
       "hint": "Fight through the Ledger blockade and escape through the warp gate. Now or never.",
       "prerequisites": ["point_of_no_return"],
       "required_flags": ["convergence_active"],

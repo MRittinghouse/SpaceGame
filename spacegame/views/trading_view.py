@@ -152,6 +152,7 @@ class TradingView(BaseView):
         current_system = self.systems[self.player.current_system_id]
         all_commodities = list(self.commodities.values())
         self.market = Market(current_system, all_commodities, self.player.game_day)
+        self.market.initialize_stock(current_system, all_commodities)
 
         # Resolve black market access for current system
         from spacegame.models.smuggling import get_black_market_name
@@ -174,12 +175,13 @@ class TradingView(BaseView):
     def _create_ui(self) -> None:
         # Market table — fixed-column widget (not pygame_gui)
         self.market_table = TableWidget(
-            rect=pygame.Rect(20, 100, 500, 400),
+            rect=pygame.Rect(20, 100, 560, 400),
             columns=[
-                ColumnDef("COMMODITY", 190, "left"),
-                ColumnDef("PRICE", 110, "right"),
-                ColumnDef("WT", 60, "right"),
-                ColumnDef("TREND", 140, "left"),
+                ColumnDef("COMMODITY", 170, "left"),
+                ColumnDef("PRICE", 100, "right"),
+                ColumnDef("STOCK", 70, "right"),
+                ColumnDef("WT", 50, "right"),
+                ColumnDef("TREND", 130, "left"),
             ],
             font=self.info_font,
             header_font=self.header_font,
@@ -203,27 +205,27 @@ class TradingView(BaseView):
         self._refresh_tables()
 
         self.quantity_input = pygame_gui.elements.UITextEntryLine(
-            relative_rect=pygame.Rect(540, 150, 100, 40), manager=self.ui_manager
+            relative_rect=pygame.Rect(590, 150, 100, 40), manager=self.ui_manager
         )
         self.quantity_input.set_text("1")
 
         self.buy_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(540, 200, 100, 36), text="BUY", manager=self.ui_manager
+            relative_rect=pygame.Rect(590, 200, 100, 36), text="BUY", manager=self.ui_manager
         )
         self.buy_max_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(540, 240, 100, 36), text="BUY MAX", manager=self.ui_manager
+            relative_rect=pygame.Rect(590, 240, 100, 36), text="BUY MAX", manager=self.ui_manager
         )
         self.sell_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(540, 284, 100, 36), text="SELL", manager=self.ui_manager
+            relative_rect=pygame.Rect(590, 284, 100, 36), text="SELL", manager=self.ui_manager
         )
         self.sell_max_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(540, 324, 100, 36), text="SELL MAX", manager=self.ui_manager
+            relative_rect=pygame.Rect(590, 324, 100, 36), text="SELL MAX", manager=self.ui_manager
         )
         self.refuel_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(540, 368, 100, 36), text="REFUEL", manager=self.ui_manager
+            relative_rect=pygame.Rect(590, 368, 100, 36), text="REFUEL", manager=self.ui_manager
         )
         self.rest_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(540, 408, 100, 36), text="REST", manager=self.ui_manager
+            relative_rect=pygame.Rect(590, 408, 100, 36), text="REST", manager=self.ui_manager
         )
 
         # Activity and NPC buttons have moved to StationHubView
@@ -231,7 +233,9 @@ class TradingView(BaseView):
         self.talk_buttons.clear()
 
         self.back_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(540, 452, 100, 40), text="BACK", manager=self.ui_manager
+            relative_rect=pygame.Rect(590, WINDOW_HEIGHT - 60, 100, 40),
+            text="BACK",
+            manager=self.ui_manager,
         )
 
         # Hidden compartment transfer buttons (when upgrade installed)
@@ -250,7 +254,7 @@ class TradingView(BaseView):
         # Black market toggle (only shown when player has access)
         if self._has_black_market:
             self.black_market_button = pygame_gui.elements.UIButton(
-                relative_rect=pygame.Rect(540, 496, 100, 36),
+                relative_rect=pygame.Rect(590, 496, 100, 36),
                 text="BLACK MKT",
                 manager=self.ui_manager,
             )
@@ -308,7 +312,11 @@ class TradingView(BaseView):
             weight = commodity.volume_per_unit
 
             # Prefer price history trend over supply/demand trend
-            if self.price_history:
+            has_trend_skill = self.player.progression.get_bonus("trend_visibility") > 0
+            if not has_trend_skill:
+                trend_text = "?"
+                trend_color = Colors.TEXT_SECONDARY
+            elif self.price_history:
                 history_trend = self.price_history.get_trend(system_id, commodity_id)
                 trend_text, trend_color = _HISTORY_TREND_DISPLAY.get(
                     history_trend, ("- Stable", Colors.TEXT_SECONDARY)
@@ -334,10 +342,44 @@ class TradingView(BaseView):
                 trend_text = "SELL HERE"
                 trend_color = Colors.YELLOW
 
+            # Stock display
+            stock = self.market.get_stock(commodity_id)
+            base_stock = self.market.get_base_stock(commodity_id)
+            if base_stock > 0:
+                stock_color = (
+                    Colors.GREEN
+                    if stock > base_stock * 0.5
+                    else (Colors.YELLOW if stock > 0 else Colors.RED)
+                )
+                stock_text: str | tuple[str, tuple] = (f"{stock}/{base_stock}", stock_color)
+            else:
+                stock_text = "-"
+
+            # Player impact indicator on price
+            player_mod = 0.0
+            try:
+                raw = self.market._player_supply_demand.get(commodity_id, 0.0)
+                if isinstance(raw, (int, float)):
+                    player_mod = raw
+            except (AttributeError, TypeError):
+                pass
+            if abs(player_mod) >= 0.01:
+                pct = int(player_mod * 100)
+                if pct > 0:
+                    price_display: str | tuple[str, tuple] = (
+                        f"{price:,} CR (+{pct}%)",
+                        Colors.RED,
+                    )
+                else:
+                    price_display = (f"{price:,} CR ({pct}%)", Colors.GREEN)
+            else:
+                price_display = f"{price:,} CR"
+
             rows.append(
                 [
                     name_display,
-                    f"{price:,} CR",
+                    price_display,
+                    stock_text,
                     str(weight),
                     (trend_text, trend_color),
                 ]
@@ -418,12 +460,26 @@ class TradingView(BaseView):
             return 0.0
         return get_tariff_modifier(self.player.get_reputation(faction_id))
 
+    def _get_route_bonus(self) -> float:
+        """Get trade route efficiency bonus for current route."""
+        if not self.player.previous_system_id:
+            return 0.0
+        return self.player.trade_route_tracker.get_efficiency_bonus(
+            self.player.previous_system_id, self.player.current_system_id
+        )
+
     def _get_adjusted_buy_price(self, commodity_id: str, quantity: int) -> int:
         base_price = self.market.get_price(commodity_id)
         discount = self.player.progression.get_bonus("buy_price_reduction")
         discount += self.player.ship.get_crew_bonus("buy_price_reduction")
+        discount += self._get_route_bonus()
         if quantity >= 10:
             discount += self.player.progression.get_bonus("bulk_discount")
+        # Faction perk buy discount
+        if self.politics_manager:
+            discount += self.politics_manager.get_perk_bonus(
+                self.player, self.player.current_system_id, "buy_price_bonus"
+            )
         tariff = self._get_faction_tariff()
         # Leadership tariff reduction only reduces penalties, not discounts
         if tariff > 0:
@@ -435,6 +491,12 @@ class TradingView(BaseView):
         base_price = self.market.get_sell_price(commodity_id)
         bonus = self.player.progression.get_bonus("sell_price_bonus")
         bonus += self.player.ship.get_crew_bonus("sell_price_bonus")
+        bonus += self._get_route_bonus()
+        # Faction perk sell bonus
+        if self.politics_manager:
+            bonus += self.politics_manager.get_perk_bonus(
+                self.player, self.player.current_system_id, "sell_price_bonus"
+            )
         tariff = self._get_faction_tariff()
         # Leadership tariff reduction only reduces penalties, not discounts
         if tariff > 0:
@@ -491,9 +553,7 @@ class TradingView(BaseView):
         """Toggle between normal trading and black market mode."""
         self._black_market_mode = not self._black_market_mode
         if self.black_market_button:
-            self.black_market_button.set_text(
-                "NORMAL" if self._black_market_mode else "BLACK MKT"
-            )
+            self.black_market_button.set_text("NORMAL" if self._black_market_mode else "BLACK MKT")
         self._refresh_tables()
         self._refresh_contract_buttons()
 
@@ -650,6 +710,16 @@ class TradingView(BaseView):
             self._show_message("Enter a valid quantity to buy")
             return
 
+        # Check stock availability
+        stock = self.market.get_stock(commodity_id)
+        if stock > 0 and quantity > stock:
+            quantity = stock
+        elif stock == 0 and self.market.get_base_stock(commodity_id) > 0:
+            self._show_message("Out of stock — check back tomorrow")
+            get_audio_manager().play_sfx("trade_fail")
+            self.particles.emit(WINDOW_WIDTH // 2, WINDOW_HEIGHT - 50, FAIL_FLASH)
+            return
+
         if self._black_market_mode:
             price_per_unit = self._get_black_market_buy_price(commodity_id)
         else:
@@ -671,6 +741,8 @@ class TradingView(BaseView):
                 self._show_message(m)
             if not self._black_market_mode:
                 self._apply_trade_reputation()
+            self.market.record_buy(commodity_id, quantity)
+            self.market.deplete_stock(commodity_id, quantity)
             self._refresh_tables()
         else:
             get_audio_manager().play_sfx("trade_fail")
@@ -711,6 +783,7 @@ class TradingView(BaseView):
                 self._show_message(m)
             if not self._black_market_mode:
                 self._apply_trade_reputation()
+            self.market.record_sell(commodity_id, quantity)
             self._refresh_tables()
         else:
             get_audio_manager().play_sfx("trade_fail")
@@ -744,9 +817,16 @@ class TradingView(BaseView):
             available_space // commodity.volume_per_unit if commodity.volume_per_unit > 0 else 0
         )
 
-        quantity = min(max_afford, max_cargo)
+        # Clamp to available stock
+        stock = self.market.get_stock(commodity_id)
+        if stock > 0:
+            quantity = min(max_afford, max_cargo, stock)
+        else:
+            quantity = min(max_afford, max_cargo)
         if quantity <= 0:
-            if max_afford <= 0:
+            if stock == 0 and self.market.get_base_stock(commodity_id) > 0:
+                self._show_message("Out of stock — check back tomorrow")
+            elif max_afford <= 0:
                 self._show_message("Not enough credits")
             else:
                 self._show_message("Not enough cargo space")
@@ -774,6 +854,8 @@ class TradingView(BaseView):
                 self._show_message(m)
             if not self._black_market_mode:
                 self._apply_trade_reputation()
+            self.market.record_buy(commodity_id, quantity)
+            self.market.deplete_stock(commodity_id, quantity)
             self._refresh_tables()
         else:
             get_audio_manager().play_sfx("trade_fail")
@@ -803,6 +885,7 @@ class TradingView(BaseView):
             for m in xp_msgs:
                 self._show_message(m)
             self._apply_trade_reputation()
+            self.market.record_sell(commodity_id, quantity)
             self._refresh_tables()
 
     def _execute_refuel(self) -> None:
@@ -820,6 +903,11 @@ class TradingView(BaseView):
             quantity = fuel_needed
 
         fuel_price = self.market.get_price("fuel")
+        # Free fuel perk
+        if self.politics_manager and self.politics_manager.has_perk(
+            self.player, self.player.current_system_id, "free_fuel"
+        ):
+            fuel_price = 0
         success, msg = self.player.refuel_ship(quantity, fuel_price)
         if success:
             get_audio_manager().play_sfx("trade_refuel")
@@ -834,6 +922,7 @@ class TradingView(BaseView):
 
         if success:
             self.market.update_day(self.player.game_day)
+            self.market.regenerate_stock()
             self._refresh_tables()
 
     def _show_message(self, message: str) -> None:
@@ -902,6 +991,14 @@ class TradingView(BaseView):
         title = self.title_font.render(title_text, True, title_color)
         screen.blit(title, (20, 20))
 
+        # Route bonus indicator
+        route_bonus = self._get_route_bonus()
+        if route_bonus > 0:
+            bonus_pct = int(route_bonus * 100)
+            bonus_text = f"Route Bonus: {bonus_pct}%"
+            bonus_surf = self.info_font.render(bonus_text, True, Colors.GREEN)
+            screen.blit(bonus_surf, (20, 42))
+
         # Player stats
         stats_y = 55
         faction_id = self.player.get_faction_for_system(self.player.current_system_id)
@@ -944,6 +1041,16 @@ class TradingView(BaseView):
         market_label = self.header_font.render("MARKET PRICES", True, Colors.TEXT_HIGHLIGHT)
         screen.blit(market_label, (20, market_label_y))
 
+        # Player impact hint (only show when player has had an effect)
+        has_impact = False
+        if self.market and hasattr(self.market, "_player_supply_demand"):
+            has_impact = any(abs(v) >= 0.01 for v in self.market._player_supply_demand.values())
+        if has_impact:
+            impact_hint = self.info_font.render(
+                "Your trades are affecting local prices", True, Colors.TEXT_SECONDARY
+            )
+            screen.blit(impact_hint, (160, market_label_y + 4))
+
         cargo_label = self.header_font.render("YOUR CARGO", True, Colors.TEXT_HIGHLIGHT)
         screen.blit(cargo_label, (WINDOW_WIDTH - 420, 75))
 
@@ -968,8 +1075,14 @@ class TradingView(BaseView):
         fill_pct = used_cargo / self.player.ship.max_cargo if self.player.ship.max_cargo > 0 else 0
         fill_color = Colors.TEXT_HIGHLIGHT if fill_pct < 0.9 else Colors.RED
         draw_bar(
-            screen, bar_x, bar_y, bar_w, bar_h,
-            used_cargo, self.player.ship.max_cargo, fill_color,
+            screen,
+            bar_x,
+            bar_y,
+            bar_w,
+            bar_h,
+            used_cargo,
+            self.player.ship.max_cargo,
+            fill_color,
             show_value=False,
         )
 
@@ -982,7 +1095,7 @@ class TradingView(BaseView):
 
         # Action label
         action_label = self.header_font.render("Quantity:", True, Colors.TEXT)
-        screen.blit(action_label, (540, 120))
+        screen.blit(action_label, (590, 120))
 
         # Trading tips (normal) or active contracts (black market)
         tip_y = 520

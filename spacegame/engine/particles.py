@@ -31,6 +31,7 @@ class Particle:
     gravity: float = 0.0
     alive: bool = False
     glow: bool = False
+    blend_add: bool = False
 
 
 @dataclass
@@ -52,6 +53,7 @@ class ParticleConfig:
     spread: float = 360.0  # degrees of spread (360 = full circle)
     direction: float = 0.0  # base direction in degrees (0 = right)
     glow: bool = False
+    blend_add: bool = False  # Use BLEND_ADD for additive glow (fire, energy)
 
 
 # Preset configurations
@@ -330,6 +332,168 @@ REFINE_COMPLETE = ParticleConfig(
 )
 
 
+# === Phase C visual overhaul presets ===
+
+ROCK_BREAK = ParticleConfig(
+    count=18,
+    speed_min=80,
+    speed_max=200,
+    life_min=0.2,
+    life_max=0.5,
+    color_start=(160, 140, 100),
+    color_end=(80, 60, 40),
+    alpha_start=255,
+    alpha_end=0,
+    size_start=2.5,
+    size_end=0.5,
+    gravity=120.0,
+    spread=360.0,
+    glow=False,
+)
+
+SCAN_RIPPLE = ParticleConfig(
+    count=16,
+    speed_min=60,
+    speed_max=140,
+    life_min=0.3,
+    life_max=0.6,
+    color_start=(80, 180, 255),
+    color_end=(30, 80, 180),
+    alpha_start=200,
+    alpha_end=0,
+    size_start=1.5,
+    size_end=0.5,
+    gravity=0.0,
+    spread=360.0,
+    glow=True,
+)
+
+FORGE_FLAME = ParticleConfig(
+    count=12,
+    speed_min=15,
+    speed_max=50,
+    life_min=0.3,
+    life_max=0.8,
+    color_start=(255, 200, 60),
+    color_end=(200, 60, 10),
+    alpha_start=220,
+    alpha_end=0,
+    size_start=2.5,
+    size_end=1.0,
+    gravity=-40.0,
+    spread=80.0,
+    direction=270.0,  # upward
+    glow=True,
+    blend_add=True,
+)
+
+CORRUPTION_CRACKLE = ParticleConfig(
+    count=10,
+    speed_min=20,
+    speed_max=60,
+    life_min=0.2,
+    life_max=0.5,
+    color_start=(255, 60, 40),
+    color_end=(120, 20, 20),
+    alpha_start=240,
+    alpha_end=0,
+    size_start=2.0,
+    size_end=0.5,
+    gravity=0.0,
+    spread=180.0,
+    direction=270.0,
+    glow=True,
+)
+
+EXTRACTION_SPARK = ParticleConfig(
+    count=8,
+    speed_min=30,
+    speed_max=80,
+    life_min=0.15,
+    life_max=0.4,
+    color_start=(255, 220, 100),
+    color_end=(200, 150, 50),
+    alpha_start=255,
+    alpha_end=0,
+    size_start=1.5,
+    size_end=0.5,
+    gravity=40.0,
+    spread=360.0,
+    glow=True,
+)
+
+CHAIN_SHOCKWAVE = ParticleConfig(
+    count=24,
+    speed_min=100,
+    speed_max=250,
+    life_min=0.15,
+    life_max=0.35,
+    color_start=(255, 220, 80),
+    color_end=(255, 120, 20),
+    alpha_start=255,
+    alpha_end=0,
+    size_start=2.0,
+    size_end=0.5,
+    gravity=0.0,
+    spread=360.0,
+    glow=True,
+)
+
+EMPOWERED_BURST = ParticleConfig(
+    count=20,
+    speed_min=60,
+    speed_max=160,
+    life_min=0.2,
+    life_max=0.5,
+    color_start=(220, 180, 255),
+    color_end=(140, 80, 220),
+    alpha_start=255,
+    alpha_end=0,
+    size_start=2.5,
+    size_end=0.5,
+    gravity=0.0,
+    spread=360.0,
+    glow=True,
+    blend_add=True,
+)
+
+FORGE_COMPLETE_FLASH = ParticleConfig(
+    count=25,
+    speed_min=40,
+    speed_max=120,
+    life_min=0.3,
+    life_max=0.7,
+    color_start=(255, 255, 220),
+    color_end=(200, 180, 80),
+    alpha_start=255,
+    alpha_end=0,
+    size_start=3.0,
+    size_end=1.0,
+    gravity=-20.0,
+    spread=360.0,
+    glow=True,
+    blend_add=True,
+)
+
+DEPTH_TRANSITION = ParticleConfig(
+    count=30,
+    speed_min=20,
+    speed_max=80,
+    life_min=0.4,
+    life_max=1.0,
+    color_start=(100, 140, 200),
+    color_end=(30, 50, 100),
+    alpha_start=180,
+    alpha_end=0,
+    size_start=2.0,
+    size_end=1.0,
+    gravity=60.0,
+    spread=120.0,
+    direction=90.0,  # downward
+    glow=False,
+)
+
+
 class ParticlePool:
     """Fixed-size particle pool with recycling."""
 
@@ -368,6 +532,7 @@ class ParticlePool:
             p.gravity = config.gravity
             p.alive = True
             p.glow = config.glow
+            p.blend_add = config.blend_add
             spawned += 1
 
     def update(self, dt: float) -> None:
@@ -425,7 +590,14 @@ class ParticlePool:
 
                 particle_color = (color[0], color[1], color[2], alpha)
                 pygame.draw.circle(surf, particle_color, (center, center), isize)
-                screen.blit(surf, (ix - center, iy - center))
+                if p.blend_add:
+                    screen.blit(
+                        surf,
+                        (ix - center, iy - center),
+                        special_flags=pygame.BLEND_ADD,
+                    )
+                else:
+                    screen.blit(surf, (ix - center, iy - center))
 
     def clear(self) -> None:
         """Kill all particles."""

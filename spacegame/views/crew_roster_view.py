@@ -66,11 +66,15 @@ class _CrewItem:
         name_rect = name_surf.get_rect(midleft=(self.rect.x + 14, self.rect.centery))
         screen.blit(name_surf, name_rect)
 
-        # Level on right
-        level = self.state.get("level", 1)
-        level_surf = self.font.render(f"Lv {level}", True, Colors.TEXT_SECONDARY)
-        level_rect = level_surf.get_rect(midright=(self.rect.right - 14, self.rect.centery))
-        screen.blit(level_surf, level_rect)
+        # Level on right (companions show level, crew show "Crew")
+        if self.template.is_companion:
+            level = self.state.get("level", 1)
+            badge_text = f"Lv {level}"
+        else:
+            badge_text = "Crew"
+        badge_surf = self.font.render(badge_text, True, Colors.TEXT_SECONDARY)
+        badge_rect = badge_surf.get_rect(midright=(self.rect.right - 14, self.rect.centery))
+        screen.blit(badge_surf, badge_rect)
 
     def was_clicked(self, event: pygame.event.Event) -> bool:
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -86,9 +90,11 @@ class _DismissButton:
         self.font = font
         self.hovered = False
         self.visible = False
+        self.disabled = False
+        self.disabled_reason = ""
 
     def update_hover(self, mouse_pos: tuple[int, int]) -> None:
-        if self.visible:
+        if self.visible and not self.disabled:
             self.hovered = self.rect.collidepoint(mouse_pos)
         else:
             self.hovered = False
@@ -96,16 +102,26 @@ class _DismissButton:
     def render(self, screen: pygame.Surface) -> None:
         if not self.visible:
             return
-        bg = (80, 40, 40) if self.hovered else (60, 30, 30)
-        border = Colors.RED if self.hovered else (100, 50, 50)
+        if self.disabled:
+            bg = (40, 40, 40)
+            border = (80, 80, 80)
+            text_color = (100, 100, 100)
+        elif self.hovered:
+            bg = (80, 40, 40)
+            border = Colors.RED
+            text_color = Colors.RED
+        else:
+            bg = (60, 30, 30)
+            border = (100, 50, 50)
+            text_color = Colors.RED
         pygame.draw.rect(screen, bg, self.rect, border_radius=4)
         pygame.draw.rect(screen, border, self.rect, 1, border_radius=4)
-        text_surf = self.font.render("DISMISS", True, Colors.RED)
+        text_surf = self.font.render("DISMISS", True, text_color)
         text_rect = text_surf.get_rect(center=self.rect.center)
         screen.blit(text_surf, text_rect)
 
     def was_clicked(self, event: pygame.event.Event) -> bool:
-        if not self.visible:
+        if not self.visible or self.disabled:
             return False
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             return self.rect.collidepoint(event.pos)
@@ -120,11 +136,13 @@ class CrewRosterView(BaseView):
         ui_manager: pygame_gui.UIManager,
         crew_roster: Optional[CrewRoster],
         crew_slots: int,
+        active_mission_ids: Optional[list[str]] = None,
     ) -> None:
         super().__init__()
         self.ui_manager = ui_manager
         self.crew_roster = crew_roster
         self.crew_slots = crew_slots
+        self._active_mission_ids: list[str] = active_mission_ids or []
         self.next_state: Optional[GameState] = None
 
         # Selection state
@@ -231,6 +249,15 @@ class CrewRosterView(BaseView):
             item.selected = item.template.id == crew_id
         if self._dismiss_btn:
             self._dismiss_btn.visible = self._selected_crew_id is not None
+            # Check dismiss blocking
+            if self.crew_roster and self._selected_crew_id:
+                can, reason = self.crew_roster.can_dismiss(
+                    self._selected_crew_id, self._active_mission_ids
+                )
+                self._dismiss_btn.disabled = not can
+                self._dismiss_btn.disabled_reason = reason
+            else:
+                self._dismiss_btn.disabled = False
 
     def handle_event(self, event: pygame.event.Event) -> None:
         if event.type == pygame_gui.UI_BUTTON_PRESSED:
@@ -245,9 +272,13 @@ class CrewRosterView(BaseView):
 
         # Dismiss button
         if self._dismiss_btn and self._dismiss_btn.was_clicked(event):
-            if self._selected_crew_id:
-                self.pending_dismiss_id = self._selected_crew_id
-                self.next_state = GameState.GALAXY_MAP
+            if self._selected_crew_id and self.crew_roster:
+                can, _reason = self.crew_roster.can_dismiss(
+                    self._selected_crew_id, self._active_mission_ids
+                )
+                if can:
+                    self.pending_dismiss_id = self._selected_crew_id
+                    self.next_state = GameState.GALAXY_MAP
                 return
 
         # Attribute allocation buttons
@@ -381,8 +412,10 @@ class CrewRosterView(BaseView):
         name_surf = self._detail_title_font.render(template.name, True, Colors.TEXT_HIGHLIGHT)
         screen.blit(name_surf, (pad_x + 54, cur_y + 2))
 
-        # Role subtitle
-        role_surf = self._label_font.render(template.role, True, Colors.TEXT_SECONDARY)
+        # Role subtitle with companion/crew label
+        type_label = "Companion" if template.is_companion else "Crew"
+        role_text = f"{template.role}  ({type_label})"
+        role_surf = self._label_font.render(role_text, True, Colors.TEXT_SECONDARY)
         screen.blit(role_surf, (pad_x + 54, cur_y + 24))
         cur_y += 56
 
@@ -398,36 +431,57 @@ class CrewRosterView(BaseView):
         )
         cur_y += 20
 
-        # Level and XP
+        # Level and XP (companions only — crew are level 1 with no XP)
         level = state.get("level", 1)
-        xp = state.get("xp", 0)
-        if level < template.max_level and level < len(template.xp_thresholds):
-            xp_threshold = template.xp_thresholds[level]
-            xp_text = f"Level: {level}  XP: {xp}/{xp_threshold}"
-        else:
-            xp_text = f"Level: {level}  XP: MAX"
-        xp_surf = self._label_font.render(xp_text, True, Colors.TEXT_PRIMARY)
-        screen.blit(xp_surf, (pad_x, cur_y))
-        cur_y += 28
+        if template.is_companion:
+            xp = state.get("xp", 0)
+            if level < template.max_level and level < len(template.xp_thresholds):
+                xp_threshold = template.xp_thresholds[level]
+                xp_text = f"Level: {level}  XP: {xp}/{xp_threshold}"
+            else:
+                xp_text = f"Level: {level}  XP: MAX"
+            xp_surf = self._label_font.render(xp_text, True, Colors.TEXT_PRIMARY)
+            screen.blit(xp_surf, (pad_x, cur_y))
+            cur_y += 28
 
-        # Loyalty bar
-        loyalty = state.get("loyalty", 50)
-        loyalty_label = self._label_font.render(f"Loyalty:", True, Colors.TEXT_PRIMARY)
-        screen.blit(loyalty_label, (pad_x, cur_y))
+        # Loyalty (companions get a bar with tiers; crew show "Reliable")
+        if template.is_companion:
+            loyalty = state.get("loyalty", 50)
+            loyalty_label = self._label_font.render("Loyalty:", True, Colors.TEXT_PRIMARY)
+            screen.blit(loyalty_label, (pad_x, cur_y))
 
-        # Loyalty bar color based on thresholds
-        if loyalty >= 70:
-            bar_color = Colors.GREEN
-        elif loyalty >= 40:
-            bar_color = Colors.YELLOW
+            tier = self.crew_roster.get_loyalty_tier(template.id)
+            if tier:
+                from spacegame.models.crew import LoyaltyTier
+                tier_names = {
+                    LoyaltyTier.DISCONTENTED: ("Discontented", Colors.RED),
+                    LoyaltyTier.WARY: ("Wary", Colors.YELLOW),
+                    LoyaltyTier.NEUTRAL: ("Neutral", Colors.TEXT_SECONDARY),
+                    LoyaltyTier.WARM: ("Warm", Colors.YELLOW),
+                    LoyaltyTier.LOYAL: ("Loyal", Colors.GREEN),
+                    LoyaltyTier.DEVOTED: ("Devoted", Colors.GREEN),
+                }
+                tier_name, bar_color = tier_names.get(
+                    tier, ("", Colors.TEXT_SECONDARY)
+                )
+            else:
+                bar_color = Colors.TEXT_SECONDARY
+                tier_name = ""
+
+            draw_bar(
+                screen, pad_x + 70, cur_y + 3, 140, 14,
+                current=loyalty, maximum=100, color=bar_color,
+                font=self._desc_font, show_value=True,
+            )
+            if tier_name:
+                tier_surf = self._desc_font.render(tier_name, True, bar_color)
+                screen.blit(tier_surf, (pad_x + 218, cur_y + 3))
+            cur_y += 32
         else:
-            bar_color = Colors.RED
-        draw_bar(
-            screen, pad_x + 70, cur_y + 3, 160, 14,
-            current=loyalty, maximum=100, color=bar_color,
-            font=self._desc_font, show_value=True,
-        )
-        cur_y += 32
+            # Crew: static "Reliable" label instead of loyalty bar
+            reliable_surf = self._label_font.render("Status: Reliable", True, Colors.GREEN)
+            screen.blit(reliable_surf, (pad_x, cur_y))
+            cur_y += 28
 
         # Abilities section
         abilities_header = self._label_font.render("Abilities:", True, Colors.TEXT_PRIMARY)
@@ -451,43 +505,57 @@ class CrewRosterView(BaseView):
             screen.blit(ability_surf, (pad_x + 10, cur_y))
             cur_y += 22
 
-        # Attributes section
-        cur_y += 10
-        attr_header = self._label_font.render("Attributes:", True, Colors.TEXT_PRIMARY)
-        screen.blit(attr_header, (pad_x, cur_y))
-        cur_y += 24
+        # Bonus abilities from quest rewards
+        bonus_abilities = state.get("bonus_abilities", [])
+        if bonus_abilities:
+            for ba in bonus_abilities:
+                bonus_sign = "+" if ba.get("bonus_value", 0) >= 0 else ""
+                bv = ba.get("bonus_value", 0)
+                if bv == int(bv):
+                    bv = int(bv)
+                ba_text = f"\u2605 {ba.get('description', '?')} ({bonus_sign}{bv})"
+                ba_surf = self._desc_font.render(ba_text, True, (255, 215, 0))
+                screen.blit(ba_surf, (pad_x + 10, cur_y))
+                cur_y += 22
 
-        attrs = self.crew_roster.get_member_attributes(self._selected_crew_id)
-        attr_points = self.crew_roster.get_member_attribute_points(self._selected_crew_id)
-
-        if attr_points > 0:
-            pts_surf = self._desc_font.render(
-                f"Points Available: {attr_points}", True, Colors.YELLOW
-            )
-            screen.blit(pts_surf, (pad_x, cur_y))
-            cur_y += 20
-
+        # Attributes section (companions only — crew don't level or allocate)
         self._attr_plus_rects.clear()
-        mouse_pos = pygame.mouse.get_pos()
-        for attr in AttributeId:
-            defn = ATTRIBUTE_DEFINITIONS[attr.value]
-            val = attrs.get(attr.value, 1)
-            attr_surf = self._desc_font.render(
-                f"{defn['name']}: {val}", True, Colors.TEXT
-            )
-            screen.blit(attr_surf, (pad_x + 10, cur_y))
+        if template.is_companion:
+            cur_y += 10
+            attr_header = self._label_font.render("Attributes:", True, Colors.TEXT_PRIMARY)
+            screen.blit(attr_header, (pad_x, cur_y))
+            cur_y += 24
+
+            attrs = self.crew_roster.get_member_attributes(self._selected_crew_id)
+            attr_points = self.crew_roster.get_member_attribute_points(self._selected_crew_id)
 
             if attr_points > 0:
-                plus_rect = pygame.Rect(pad_x + 180, cur_y - 2, 22, 20)
-                self._attr_plus_rects[attr.value] = plus_rect
-                hovered = plus_rect.collidepoint(mouse_pos)
-                bg = (50, 80, 50) if hovered else (40, 60, 40)
-                pygame.draw.rect(screen, bg, plus_rect, border_radius=2)
-                pygame.draw.rect(screen, Colors.GREEN, plus_rect, 1, border_radius=2)
-                plus_surf = self._desc_font.render("+", True, Colors.GREEN)
-                screen.blit(plus_surf, plus_surf.get_rect(center=plus_rect.center))
+                pts_surf = self._desc_font.render(
+                    f"Points Available: {attr_points}", True, Colors.YELLOW
+                )
+                screen.blit(pts_surf, (pad_x, cur_y))
+                cur_y += 20
 
-            cur_y += 20
+            mouse_pos = pygame.mouse.get_pos()
+            for attr in AttributeId:
+                defn = ATTRIBUTE_DEFINITIONS[attr.value]
+                val = attrs.get(attr.value, 1)
+                attr_surf = self._desc_font.render(
+                    f"{defn['name']}: {val}", True, Colors.TEXT
+                )
+                screen.blit(attr_surf, (pad_x + 10, cur_y))
+
+                if attr_points > 0:
+                    plus_rect = pygame.Rect(pad_x + 180, cur_y - 2, 22, 20)
+                    self._attr_plus_rects[attr.value] = plus_rect
+                    hovered = plus_rect.collidepoint(mouse_pos)
+                    bg = (50, 80, 50) if hovered else (40, 60, 40)
+                    pygame.draw.rect(screen, bg, plus_rect, border_radius=2)
+                    pygame.draw.rect(screen, Colors.GREEN, plus_rect, 1, border_radius=2)
+                    plus_surf = self._desc_font.render("+", True, Colors.GREEN)
+                    screen.blit(plus_surf, plus_surf.get_rect(center=plus_rect.center))
+
+                cur_y += 20
 
     def _render_wrapped(
         self,

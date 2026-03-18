@@ -262,9 +262,10 @@ class GroundMissionResult:
     enemies_talked: int
     loot_credits: int
     loot_items: list[str]
-    progress_percent: float
-    crew_ids: list[str]
-    detected: bool
+    loot_commodities: dict[str, int] = field(default_factory=dict)
+    progress_percent: float = 0.0
+    crew_ids: list[str] = field(default_factory=list)
+    detected: bool = False
 
     @property
     def is_ghost_run(self) -> bool:
@@ -367,6 +368,7 @@ class GroundMissionResult:
             "enemies_talked": self.enemies_talked,
             "loot_credits": self.loot_credits,
             "loot_items": list(self.loot_items),
+            "loot_commodities": dict(self.loot_commodities),
             "progress_percent": self.progress_percent,
             "crew_ids": list(self.crew_ids),
             "detected": self.detected,
@@ -392,6 +394,7 @@ class GroundMissionResult:
             enemies_talked=data["enemies_talked"],
             loot_credits=data["loot_credits"],
             loot_items=data.get("loot_items", []),
+            loot_commodities=data.get("loot_commodities", {}),
             progress_percent=data["progress_percent"],
             crew_ids=data.get("crew_ids", []),
             detected=data.get("detected", False),

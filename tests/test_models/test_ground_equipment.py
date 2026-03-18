@@ -348,6 +348,10 @@ class TestDataLoaderEquipment:
             "vision_enhancer",
             "lockpick_set",
             "emp_grenade",
+            "thermal_visor",
+            "breaching_charge",
+            "adrenal_compound",
+            "deep_scan_probe",
         }
         loaded_ids = set(dl.ground_equipment.keys())
         assert expected.issubset(loaded_ids), f"Missing: {expected - loaded_ids}"

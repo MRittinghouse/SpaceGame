@@ -951,7 +951,8 @@ class TestDepthScaling:
         # Depth 10 → depth 11 after regen, so 0.90 + 2*0.30 = 1.50
         # Total: 1.0 (skill) + 1.50 (depth) = 2.50
         # Just verify the field was regenerated with bonus applied
-        assert len(session_both.rocks) == 100
+        # Rocks + hazards should total the grid size (hazards replace rocks at depth 10+)
+        assert len(session_both.rocks) + len(session_both.hazards) == 100
 
     def test_regenerate_refills_energy(self) -> None:
         config = MiningConfig(system_id="test", max_energy=20)

@@ -174,7 +174,7 @@ class TestCombatTree:
     def test_combat_tree_count(self) -> None:
         prog = PlayerProgression()
         combat_skills = prog.get_skill_tree(SkillTreeType.COMBAT)
-        assert len(combat_skills) == 7
+        assert len(combat_skills) == 10
 
     def test_weapons_training_is_root(self) -> None:
         prog = PlayerProgression()
@@ -232,7 +232,7 @@ class TestExplorationTree:
     def test_exploration_tree_count(self) -> None:
         prog = PlayerProgression()
         skills = prog.get_skill_tree(SkillTreeType.EXPLORATION)
-        assert len(skills) == 7
+        assert len(skills) == 10
 
     def test_fuel_efficiency_is_root(self) -> None:
         prog = PlayerProgression()
@@ -278,7 +278,7 @@ class TestSmugglingTree:
     def test_smuggling_tree_count(self) -> None:
         prog = PlayerProgression()
         skills = prog.get_skill_tree(SkillTreeType.SMUGGLING)
-        assert len(skills) == 6
+        assert len(skills) == 9
 
     def test_hidden_compartments_is_root(self) -> None:
         prog = PlayerProgression()
@@ -312,7 +312,7 @@ class TestExpandedTradingTree:
     def test_trading_tree_expanded(self) -> None:
         prog = PlayerProgression()
         trading_skills = prog.get_skill_tree(SkillTreeType.TRADING)
-        assert len(trading_skills) == 8
+        assert len(trading_skills) == 10
 
     def test_commodity_specialist_exists(self) -> None:
         prog = PlayerProgression()
@@ -339,7 +339,7 @@ class TestExpandedLeadershipTree:
     def test_leadership_tree_expanded(self) -> None:
         prog = PlayerProgression()
         leadership_skills = prog.get_skill_tree(SkillTreeType.LEADERSHIP)
-        assert len(leadership_skills) == 8
+        assert len(leadership_skills) == 10
 
     def test_fleet_coordinator_exists(self) -> None:
         prog = PlayerProgression()
@@ -366,7 +366,7 @@ class TestExpandedSocialTree:
     def test_social_tree_expanded(self) -> None:
         prog = PlayerProgression()
         social_skills = prog.get_skill_tree(SkillTreeType.SOCIAL)
-        assert len(social_skills) == 8
+        assert len(social_skills) == 10
 
     def test_master_negotiator_exists(self) -> None:
         prog = PlayerProgression()
@@ -408,9 +408,9 @@ class TestTotalSkillCount:
     """Verify overall skill count after expansion."""
 
     def test_total_skill_count(self) -> None:
-        """Should have ~63 skills across 9 trees."""
+        """Should have 89 skills across 9 trees after expansion."""
         skills = create_default_skills()
-        assert len(skills) == 63
+        assert len(skills) == 89
 
     def test_all_trees_have_skills(self) -> None:
         prog = PlayerProgression()

@@ -1,0 +1,601 @@
+{
+  "encounters": [
+    {
+      "id": "alliance_harvest_01",
+      "encounter_type": "distress_signal",
+      "name": "Overloaded Harvest Transport",
+      "description": "A battered cargo hauler is listing badly, its stabilizers whining under the strain. The pilot's voice crackles over comms — unhurried, even now. 'Hey there. Name's Fen. Got a little ambitious with the soywheat this season and she's riding about two tons past her limit. Don't suppose you could help me shift some weight before I spin out?'",
+      "icon_color": [80, 180, 100],
+      "weight": 10,
+      "danger_levels": ["safe", "moderate"],
+      "required_faction": "frontier_alliance",
+      "tone": "neutral",
+      "category": "faction",
+      "choices": [
+        {
+          "id": "take_cargo",
+          "label": "Haul Extra Cargo",
+          "description": "Take some of the excess harvest in your hold and fly alongside to the station.",
+          "outcome": {
+            "description": "You dock up and Fen's crew slings crates across with practiced ease. 'My grandmother used to say a full hold and an empty tank still beats the other way round,' Fen laughs. He insists you keep a few crates for the trouble.",
+            "rewards": [
+              {"reward_type": "credits", "amount": 60},
+              {"reward_type": "xp", "amount": 10},
+              {"reward_type": "modify_reputation", "amount": 5, "target_id": "frontier_alliance"}
+            ]
+          }
+        },
+        {
+          "id": "stabilize",
+          "label": "Lend Stabilizers",
+          "description": "Slave your maneuvering thrusters to his ship to balance the load.",
+          "outcome": {
+            "description": "It takes careful flying, but between your thrusters and his, the hauler straightens out. Fen transmits a thank-you along with some Verdant Cooperative trade vouchers. 'Tell 'em Fen sent you. They'll treat you right.'",
+            "rewards": [
+              {"reward_type": "credits", "amount": 40},
+              {"reward_type": "xp", "amount": 15},
+              {"reward_type": "modify_reputation", "amount": 8, "target_id": "frontier_alliance"}
+            ]
+          }
+        },
+        {
+          "id": "pass",
+          "label": "Wish Him Luck",
+          "description": "You have your own schedule to keep.",
+          "outcome": {
+            "description": "Fen nods without judgment. 'Fair enough, friend. Fly safe.' His hauler groans onward, listing but stubborn. Frontier folk manage.",
+            "rewards": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "alliance_refugee_family_01",
+      "encounter_type": "refugee",
+      "name": "Crimson Reach Refugees",
+      "description": "A patchwork ship limps toward you, hull plates mismatched like a quilt stitched from three different vessels. A woman's voice comes through, steady but tired. 'This is Dara Okonjo. Got my family aboard — two kids, my brother, his wife. We left the Reach after raiders hit our station. Looking for Haven's Rest. Can you point us right?'",
+      "icon_color": [100, 200, 120],
+      "weight": 10,
+      "danger_levels": ["moderate", "dangerous"],
+      "required_faction": "frontier_alliance",
+      "tone": "neutral",
+      "category": "faction",
+      "choices": [
+        {
+          "id": "escort",
+          "label": "Escort Them",
+          "description": "Fly with them to ensure they reach Haven's Rest safely.",
+          "outcome": {
+            "description": "You match speed with their limping ship and fly escort through the lane. Dara's kids wave at you through the viewport. At Haven's Rest, the community council logs your good deed. Dara shakes your hand at the dock. 'Way I see it, people who help strangers ain't really strangers.'",
+            "rewards": [
+              {"reward_type": "xp", "amount": 20},
+              {"reward_type": "modify_reputation", "amount": 10, "target_id": "frontier_alliance"}
+            ]
+          }
+        },
+        {
+          "id": "supplies",
+          "label": "Share Supplies",
+          "description": "Transfer some fuel and rations to help them on their way.",
+          "outcome": {
+            "description": "You send over fuel cells and food packs. Dara's brother nods through the viewport — a man of few words, but the gratitude is plain. 'We won't forget this,' Dara says. 'Alliance folk remember kindness.'",
+            "rewards": [
+              {"reward_type": "credits", "amount": -40},
+              {"reward_type": "xp", "amount": 15},
+              {"reward_type": "modify_reputation", "amount": 7, "target_id": "frontier_alliance"}
+            ]
+          }
+        },
+        {
+          "id": "directions",
+          "label": "Send Coordinates",
+          "description": "Transmit nav data for Haven's Rest and move on.",
+          "outcome": {
+            "description": "You beam over the safest route you know. Dara thanks you quietly and the patchwork ship putters onward. It is not much, but out here, a good heading is worth more than most realize.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 5}
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "alliance_wrecker_01",
+      "encounter_type": "derelict",
+      "name": "Wrecker's Quarrel",
+      "description": "Two Wrecker's Guild salvage ships are circling a drifting hulk, their comms hot with argument. One pilot — a gruff woman named Tomoko — hails you. 'Hey, outsider. Tell this fool I tagged this wreck first. He says his beacon was here yesterday but I don't see no beacon, do you?' The other pilot, Brannick, cuts in: 'Because your crew scraped it off the hull!'",
+      "icon_color": [80, 180, 100],
+      "weight": 9,
+      "danger_levels": ["moderate", "dangerous"],
+      "required_faction": "frontier_alliance",
+      "tone": "dark_humor",
+      "category": "faction",
+      "choices": [
+        {
+          "id": "side_tomoko",
+          "label": "Back Tomoko",
+          "description": "No beacon means no claim. Simple as that.",
+          "outcome": {
+            "description": "Brannick grumbles but backs off — Wrecker's Guild rules are clear on unmarked salvage. Tomoko splits a finder's fee with you. 'Appreciate the honesty. My old man always said the best judge is the one passing through.'",
+            "rewards": [
+              {"reward_type": "credits", "amount": 90},
+              {"reward_type": "xp", "amount": 10},
+              {"reward_type": "modify_reputation", "amount": 5, "target_id": "frontier_alliance"}
+            ]
+          }
+        },
+        {
+          "id": "side_brannick",
+          "label": "Back Brannick",
+          "description": "He says he was here first. Benefit of the doubt.",
+          "outcome": {
+            "description": "Tomoko spits a curse but peels off. Brannick docks with the wreck and tosses you a cut from the first crate. 'You got good instincts, friend. Drinks on me next time you're at Haven's Rest.'",
+            "rewards": [
+              {"reward_type": "credits", "amount": 80},
+              {"reward_type": "xp", "amount": 10},
+              {"reward_type": "modify_reputation", "amount": 5, "target_id": "frontier_alliance"}
+            ]
+          }
+        },
+        {
+          "id": "split",
+          "label": "Suggest a Split",
+          "description": "Tell them to share the wreck and stop wasting daylight.",
+          "outcome": {
+            "description": "They both grumble, but neither wants to lose the whole haul over pride. They divide the wreck down the middle and each toss you a small cut for playing peacemaker. 'Guess that's fair enough,' Tomoko admits.",
+            "rewards": [
+              {"reward_type": "credits", "amount": 70},
+              {"reward_type": "xp", "amount": 15},
+              {"reward_type": "modify_reputation", "amount": 8, "target_id": "frontier_alliance"}
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "alliance_moonshine_01",
+      "encounter_type": "smuggler",
+      "name": "Homemade Coolant Run",
+      "description": "An ancient prospector ship putters alongside you, engine note uneven but cheerful. The pilot — a weathered old-timer who introduces himself as Uncle Szabo — is hauling unlabeled drums. 'Engine coolant,' he says with a wink. 'My own recipe. Works just as good as the brand name stuff at a quarter the price. Guild inspectors don't appreciate the craftsmanship, though, so I keep a low profile. You look like someone who appreciates a bargain.'",
+      "icon_color": [100, 200, 120],
+      "weight": 8,
+      "danger_levels": ["safe", "moderate"],
+      "required_faction": "frontier_alliance",
+      "tone": "humorous",
+      "category": "faction",
+      "choices": [
+        {
+          "id": "buy",
+          "label": "Buy Some",
+          "description": "A bargain is a bargain. What could go wrong?",
+          "outcome": {
+            "description": "Uncle Szabo loads two drums into your hold with a gap-toothed grin. 'Now, she might smell a little funny at first, but once she heats up? Smooth as silk. My grandmother's recipe — well, she used it for soup, but the principle's the same.' The coolant actually works surprisingly well.",
+            "rewards": [
+              {"reward_type": "credits", "amount": 80},
+              {"reward_type": "xp", "amount": 10},
+              {"reward_type": "add_criminal_heat", "amount": 5}
+            ]
+          }
+        },
+        {
+          "id": "chat",
+          "label": "Just Chat",
+          "description": "Hear the old man's stories but skip the purchase.",
+          "outcome": {
+            "description": "Szabo talks your ear off for twenty minutes about coolant chemistry, his grandmother's soup, and a fish he once caught on Verdant that was 'big as a shuttle, I swear it.' You learn nothing useful but somehow feel better about your day.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 10}
+            ]
+          }
+        },
+        {
+          "id": "report",
+          "label": "Warn Him Off",
+          "description": "Tell him he is going to get himself arrested running unregistered chemicals.",
+          "outcome": {
+            "description": "Szabo scratches his chin. 'Son, I been running this route since before your ship was scrap metal. But I appreciate the concern.' He putters off, unbothered. You get the feeling this conversation happens to him weekly.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 5}
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "alliance_barter_01",
+      "encounter_type": "merchant",
+      "name": "Frontier Barter",
+      "description": "A squat trading vessel hails you with a hand-painted Frontier Alliance flag on the hull. The captain, a broad-shouldered woman named Ines, is apologetic. 'Look, I'll be straight with you — I'm cash-dry. But I got a hold full of Verdant sweetroot and Haven's Rest alloy that's worth twice what I'm asking. Straight swap for fuel cells or spare parts. No middlemen, no Guild fees.'",
+      "icon_color": [80, 180, 100],
+      "weight": 10,
+      "danger_levels": ["safe", "moderate"],
+      "required_faction": "frontier_alliance",
+      "tone": "neutral",
+      "category": "faction",
+      "choices": [
+        {
+          "id": "trade",
+          "label": "Make the Swap",
+          "description": "Barter goods directly. Credits are overrated anyway.",
+          "outcome": {
+            "description": "Ines grins as the cargo grapples do their work. 'This is how trade ought to be. Two people, two holds, everybody walks away happy.' The goods she traded are genuinely worth more than what you gave. Honest dealing, Alliance style.",
+            "rewards": [
+              {"reward_type": "credits", "amount": 120},
+              {"reward_type": "xp", "amount": 10},
+              {"reward_type": "modify_reputation", "amount": 5, "target_id": "frontier_alliance"}
+            ]
+          }
+        },
+        {
+          "id": "haggle",
+          "label": "Haggle Hard",
+          "description": "She is desperate. Push for a better deal.",
+          "outcome": {
+            "description": "Ines's expression cools. She agrees to the lopsided terms, but her voice is flat when she says goodbye. Word travels fast on the frontier — you got the better deal, but it may cost you later.",
+            "rewards": [
+              {"reward_type": "credits", "amount": 180},
+              {"reward_type": "xp", "amount": 5},
+              {"reward_type": "modify_reputation", "amount": -5, "target_id": "frontier_alliance"}
+            ]
+          }
+        },
+        {
+          "id": "decline",
+          "label": "Decline Trade",
+          "description": "Not interested in barter right now.",
+          "outcome": {
+            "description": "Ines nods. 'No hard feelings. Safe travels, friend.' Her ship drifts on to find another willing trader. Out here, persistence is survival.",
+            "rewards": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "alliance_community_01",
+      "encounter_type": "refugee",
+      "name": "Community Supply Run",
+      "description": "A converted passenger liner flying Haven's Rest colors crosses your path. The ship is dented but clean, every patch carefully welded. A calm voice identifies them as the community council supply ship. 'This is Coordinator Priya aboard the Common Good. We're collecting donations for station hull repairs. Pressure seal on deck seven's been patched four times now — fifth time, we need real plating. Anything you can spare helps.'",
+      "icon_color": [100, 200, 120],
+      "weight": 9,
+      "danger_levels": ["safe", "moderate"],
+      "required_faction": "frontier_alliance",
+      "tone": "neutral",
+      "category": "faction",
+      "choices": [
+        {
+          "id": "donate",
+          "label": "Donate Generously",
+          "description": "Contribute credits and materials to the repair fund.",
+          "outcome": {
+            "description": "Priya logs your contribution with quiet gratitude. 'The council will post your name on the donor wall, if you like. Or not — some folks prefer quiet giving. Either way, deck seven thanks you.' You feel good about this one.",
+            "rewards": [
+              {"reward_type": "credits", "amount": -60},
+              {"reward_type": "xp", "amount": 20},
+              {"reward_type": "modify_reputation", "amount": 10, "target_id": "frontier_alliance"}
+            ]
+          }
+        },
+        {
+          "id": "small_help",
+          "label": "Give a Little",
+          "description": "Contribute what you can without stretching thin.",
+          "outcome": {
+            "description": "'Every bit counts,' Priya says, and means it. 'My mother used to say a wall's only as strong as the hands that built it — and we got a lot of hands.' The Common Good trundles onward, hold slowly filling.",
+            "rewards": [
+              {"reward_type": "credits", "amount": -20},
+              {"reward_type": "xp", "amount": 10},
+              {"reward_type": "modify_reputation", "amount": 5, "target_id": "frontier_alliance"}
+            ]
+          }
+        },
+        {
+          "id": "decline",
+          "label": "Pass This Time",
+          "description": "You cannot afford to give right now.",
+          "outcome": {
+            "description": "Priya nods without resentment. 'Understood. Times are tight for everyone. If your path brings you to Haven's Rest, you're still welcome at the communal table.' That is the Alliance way — no one keeps score out loud.",
+            "rewards": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "alliance_patrol_volunteer_01",
+      "encounter_type": "patrol",
+      "name": "Volunteer Patrol",
+      "description": "Two armed frontier ships pull alongside, transponders broadcasting Alliance Volunteer Patrol tags. The lead pilot sounds young but serious. 'Hey there, Captain. Name's Gil. We're running transponder checks on account of pirate scouts been spoofing civilian IDs out here. Mind if we do a quick scan? Won't take but a minute. Just keeping the lanes safe for everybody.'",
+      "icon_color": [80, 180, 100],
+      "weight": 10,
+      "danger_levels": ["safe", "moderate"],
+      "required_faction": "frontier_alliance",
+      "tone": "neutral",
+      "category": "faction",
+      "choices": [
+        {
+          "id": "comply",
+          "label": "Allow the Scan",
+          "description": "Let them check your transponder. Nothing to hide.",
+          "outcome": {
+            "description": "Gil's scanner sweeps your ship in seconds. 'Clean as creek water. Appreciate the cooperation, Captain.' His wingmate tips a salute. 'You see anything suspicious out there, broadcast on channel seven. We'll come running.' Good folks doing thankless work.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 10},
+              {"reward_type": "modify_reputation", "amount": 5, "target_id": "frontier_alliance"}
+            ]
+          }
+        },
+        {
+          "id": "refuse",
+          "label": "Decline the Scan",
+          "description": "Volunteers have no legal authority over your ship.",
+          "outcome": {
+            "description": "Gil frowns but nods. 'Your right, Captain. Just know that folks who refuse scans tend to get remembered out here. Fly safe.' The patrol moves on, but you notice them logging your transponder ID. The frontier has a long memory.",
+            "rewards": [
+              {"reward_type": "modify_reputation", "amount": -3, "target_id": "frontier_alliance"}
+            ]
+          }
+        },
+        {
+          "id": "intel",
+          "label": "Share Pirate Intel",
+          "description": "You spotted suspicious ships earlier. Pass along what you know.",
+          "outcome": {
+            "description": "Gil's eyes light up. 'Now that's useful. We been tracking a pattern but missing a piece — this fills the gap.' He transmits a small bounty from the patrol's community fund. 'You ever need a favor out here, you got friends on channel seven.'",
+            "rewards": [
+              {"reward_type": "credits", "amount": 50},
+              {"reward_type": "xp", "amount": 15},
+              {"reward_type": "modify_reputation", "amount": 8, "target_id": "frontier_alliance"}
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "alliance_distress_crop_01",
+      "encounter_type": "distress_signal",
+      "name": "Dying Harvest",
+      "description": "A Verdant Agricultural Cooperative transport is broadcasting on an open channel, voice tight with worry. 'This is Nabil, VAC transport Furrow's Promise. Refrigeration unit just died and I got forty tons of flashfruit in the hold. This crop feeds three stations for a month. I got maybe two hours before it all rots. Anybody out there got coolant, parts — anything?'",
+      "icon_color": [100, 200, 120],
+      "weight": 10,
+      "danger_levels": ["safe", "moderate"],
+      "required_faction": "frontier_alliance",
+      "tone": "neutral",
+      "category": "faction",
+      "choices": [
+        {
+          "id": "repair",
+          "label": "Help Fix It",
+          "description": "Dock and try to repair the refrigeration unit with spare parts.",
+          "outcome": {
+            "description": "You pull alongside and your toolkit does the rest — a cracked coolant line and a burned relay. Two hours of sweaty work in Nabil's engine bay, but the unit hums back to life. 'You just saved a season's worth of food,' Nabil says, voice thick. 'The cooperative will hear about this. That's a promise, not a proverb.'",
+            "rewards": [
+              {"reward_type": "credits", "amount": 100},
+              {"reward_type": "xp", "amount": 20},
+              {"reward_type": "modify_reputation", "amount": 10, "target_id": "frontier_alliance"}
+            ]
+          }
+        },
+        {
+          "id": "take_cargo",
+          "label": "Split the Cargo",
+          "description": "Take half the crop in your own hold to save what you can.",
+          "outcome": {
+            "description": "You split the flashfruit between both ships. Your hold can keep it cool enough. Half a harvest saved is better than none, and Nabil insists you sell your share. 'It's honest pay for honest help. That's how we do things.'",
+            "rewards": [
+              {"reward_type": "credits", "amount": 140},
+              {"reward_type": "xp", "amount": 10},
+              {"reward_type": "modify_reputation", "amount": 7, "target_id": "frontier_alliance"}
+            ]
+          }
+        },
+        {
+          "id": "pass",
+          "label": "Move On",
+          "description": "Not your problem and not your crop.",
+          "outcome": {
+            "description": "Nabil's voice fades behind you, still calling on the open channel. Somewhere, three stations will have a lean month. The frontier remembers who showed up and who kept flying.",
+            "rewards": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "alliance_storyteller_01",
+      "encounter_type": "comm_intercept",
+      "name": "The Old Spacer's Tale",
+      "description": "Your comms pick up a slow, unhurried broadcast on a social frequency. An old spacer in a battered runabout is talking to no one in particular. 'Any pilots in the lane tonight? Name's Oksana. Got a flask of Verdant apple brandy and a story about the time I outran a Crimson Reach warlord in a ship held together with adhesive tape. Interested?'",
+      "icon_color": [80, 180, 100],
+      "weight": 8,
+      "danger_levels": ["safe", "moderate"],
+      "required_faction": "frontier_alliance",
+      "tone": "humorous",
+      "category": "faction",
+      "choices": [
+        {
+          "id": "listen",
+          "label": "Tune In",
+          "description": "Pour yourself a drink and listen to the story.",
+          "outcome": {
+            "description": "Oksana's story is long, meandering, and absolutely riveting. The warlord, the adhesive tape, a detour through an asteroid field, and a punchline involving a goat that somehow got aboard at Verdant. You laugh until your sides hurt. 'Best part is, every word's true,' she says. 'Except the goat. The goat was two goats.' You feel sharper somehow — good stories do that.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 25},
+              {"reward_type": "modify_reputation", "amount": 5, "target_id": "frontier_alliance"}
+            ]
+          }
+        },
+        {
+          "id": "trade_stories",
+          "label": "Swap Stories",
+          "description": "Share one of your own tales in return.",
+          "outcome": {
+            "description": "You trade stories back and forth for an hour, each one taller than the last. Oksana declares yours 'not bad for a youngster' and transmits a set of nav shortcuts she has collected over forty years of frontier flying. 'Knowledge should flow like brandy — freely and often.'",
+            "rewards": [
+              {"reward_type": "xp", "amount": 20},
+              {"reward_type": "credits", "amount": 40},
+              {"reward_type": "modify_reputation", "amount": 7, "target_id": "frontier_alliance"}
+            ]
+          }
+        },
+        {
+          "id": "decline",
+          "label": "Keep Flying",
+          "description": "No time for stories tonight.",
+          "outcome": {
+            "description": "Oksana chuckles. 'Suit yourself, friend. The brandy'll keep.' Her broadcast continues, drifting through the void for anyone willing to listen. Some nights the void talks back.",
+            "rewards": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "alliance_smuggler_medicine_01",
+      "encounter_type": "smuggler",
+      "name": "Medicine Runner",
+      "description": "A fast, unmarked courier drops to your speed and opens a tight-beam channel. The pilot speaks quickly, glancing at her sensors. 'Name's Reeta. I'm running medical supplies to Haven's Rest — antibiotics, surgical kits, the works. Guild tariffs make the legal price three times what these people can pay. I'm cutting out the middlemen. Problem is, I picked up a patrol shadow two systems back. Could use a ship flying casual nearby to make me look like regular traffic.'",
+      "icon_color": [100, 200, 120],
+      "weight": 9,
+      "danger_levels": ["moderate", "dangerous"],
+      "required_faction": "frontier_alliance",
+      "tone": "neutral",
+      "category": "faction",
+      "choices": [
+        {
+          "id": "cover",
+          "label": "Provide Cover",
+          "description": "Fly alongside and make it look like a normal convoy.",
+          "outcome": {
+            "description": "You match course with Reeta, broadcasting routine trade chatter. The patrol shadow loses interest in a two-ship convoy and peels off. Reeta exhales. 'People at Haven's Rest clinic needed this a week ago. You just helped more folks than you know.' She sends over a cut of her payment — modest, but earned.",
+            "rewards": [
+              {"reward_type": "credits", "amount": 80},
+              {"reward_type": "xp", "amount": 15},
+              {"reward_type": "modify_reputation", "amount": 8, "target_id": "frontier_alliance"},
+              {"reward_type": "add_criminal_heat", "amount": 10}
+            ]
+          }
+        },
+        {
+          "id": "buy_some",
+          "label": "Buy Supplies",
+          "description": "Purchase some of the medical supplies for yourself at her discount price.",
+          "outcome": {
+            "description": "Reeta sells you a crate of medical supplies at cost — well below what any station pharmacy charges. 'Sell it, use it, give it away — I don't care. Just don't tell the Guild where you got it.' Practical goods at a practical price.",
+            "rewards": [
+              {"reward_type": "credits", "amount": 100},
+              {"reward_type": "xp", "amount": 10},
+              {"reward_type": "add_criminal_heat", "amount": 5}
+            ]
+          }
+        },
+        {
+          "id": "refuse",
+          "label": "Stay Clear",
+          "description": "Getting involved with smugglers is asking for trouble.",
+          "outcome": {
+            "description": "Reeta nods curtly and accelerates away. 'Understood. No judgment — everybody's got their own line.' Her ship vanishes into the lane traffic. You wonder if those supplies will reach Haven's Rest in time.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 5}
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "alliance_salvage_claim_01",
+      "encounter_type": "derelict",
+      "name": "Claimed Salvage",
+      "description": "You drop out near a derelict hauler and start scanning when a Wrecker's Guild beacon lights up on your console. A moment later, a grizzled salvager in a tugboat hails you. 'Easy there, Captain. Name's Haddek. That wreck's mine — tagged her fair and square two days ago. Guild rules. No hard feelings, but I'd appreciate it if you moved along. Plenty of scrap in the void for everybody.'",
+      "icon_color": [80, 180, 100],
+      "weight": 9,
+      "danger_levels": ["moderate", "dangerous"],
+      "required_faction": "frontier_alliance",
+      "tone": "neutral",
+      "category": "faction",
+      "choices": [
+        {
+          "id": "respect",
+          "label": "Respect the Claim",
+          "description": "His beacon, his wreck. Back off.",
+          "outcome": {
+            "description": "Haddek tips an imaginary hat. 'Appreciate that, Captain. Lot of folks don't bother with Wrecker's rules anymore. Tell you what — I pulled some nav data off her computers. Trade routes, fuel cache locations. Take a copy. One good turn deserves another.' He transmits the data with a weathered smile.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 15},
+              {"reward_type": "modify_reputation", "amount": 8, "target_id": "frontier_alliance"}
+            ]
+          }
+        },
+        {
+          "id": "contest",
+          "label": "Contest the Claim",
+          "description": "You were here first today. Possession is nine-tenths.",
+          "outcome": {
+            "description": "Haddek's expression hardens. 'That ain't how we do things out here, friend.' He holds his ground, and within minutes two more Wrecker ships drop in — Guild members stick together. You back off, but the damage is done. Word spreads fast among salvagers.",
+            "rewards": [
+              {"reward_type": "modify_reputation", "amount": -8, "target_id": "frontier_alliance"}
+            ]
+          }
+        },
+        {
+          "id": "offer_help",
+          "label": "Offer to Help",
+          "description": "His tug is small. Offer muscle for a cut.",
+          "outcome": {
+            "description": "Haddek eyes your ship and grins. 'Now that's the frontier spirit. My tug can't haul the engine block alone — you pull it free, we split the heavy salvage sixty-forty. My claim, my rules, but fair's fair.' The work is hard but the payout is honest.",
+            "rewards": [
+              {"reward_type": "credits", "amount": 110},
+              {"reward_type": "xp", "amount": 15},
+              {"reward_type": "modify_reputation", "amount": 5, "target_id": "frontier_alliance"}
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "alliance_festival_01",
+      "encounter_type": "merchant",
+      "name": "Spacer's Festival",
+      "description": "Your sensors pick up an unusual cluster of ships ahead — dozens of them, arranged in a loose ring with running lights blazing in patterns. Music bleeds through on open comms. A cheerful voice broadcasts: 'You're invited to the Forty-Third Annual Drifter's Gathering! Food, music, trading, and the best zero-G dancing this side of Verdant. Come on over, stranger — there's room for one more!'",
+      "icon_color": [100, 200, 120],
+      "weight": 8,
+      "danger_levels": ["safe"],
+      "required_faction": "frontier_alliance",
+      "tone": "humorous",
+      "category": "faction",
+      "choices": [
+        {
+          "id": "join",
+          "label": "Join the Party",
+          "description": "Dock up and enjoy the festival. You have earned a break.",
+          "outcome": {
+            "description": "You squeeze into the ring of ships and are immediately handed a bowl of Verdant stew and something fizzy in a tin cup. The music is homemade and loud. A kid challenges you to a zero-G somersault contest. You lose badly. Traders swap goods at festival prices — generous to a fault. By the time you undock, your spirits are high and your hold has a few new treasures picked up for cheap.",
+            "rewards": [
+              {"reward_type": "credits", "amount": 60},
+              {"reward_type": "xp", "amount": 20},
+              {"reward_type": "modify_reputation", "amount": 8, "target_id": "frontier_alliance"}
+            ]
+          }
+        },
+        {
+          "id": "trade_only",
+          "label": "Browse the Market",
+          "description": "Check out the festival traders but skip the festivities.",
+          "outcome": {
+            "description": "You stick to the trading ships on the ring's edge. Festival pricing is real — these folks sell at cost during the Gathering as a point of pride. You pick up good cargo at rock-bottom prices. A fiddler on a nearby ship serenades you through the open channel whether you asked for it or not.",
+            "rewards": [
+              {"reward_type": "credits", "amount": 100},
+              {"reward_type": "xp", "amount": 10},
+              {"reward_type": "modify_reputation", "amount": 5, "target_id": "frontier_alliance"}
+            ]
+          }
+        },
+        {
+          "id": "pass",
+          "label": "Fly On Past",
+          "description": "Festivals are not really your thing.",
+          "outcome": {
+            "description": "You wave politely through the viewport and continue on your route. The music fades behind you, replaced by the hum of your engines. Somewhere in the ring, someone raises a tin cup to the stranger who kept flying. No judgment — just a little sadness.",
+            "rewards": []
+          }
+        }
+      ]
+    }
+  ]
+}

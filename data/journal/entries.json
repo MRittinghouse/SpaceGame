@@ -132,6 +132,13 @@
       "trigger_flag": "act_one_complete",
       "system_id": "",
       "mission_id": ""
+    },
+    {
+      "entry_id": "auto_iron_betrayal",
+      "text": "Sold the cargo broker's iron ore instead of delivering it to Forgeworks. Odom flagged my permit with a freight violation. Word will spread among the brokers. Not the reputation I wanted to build on my first week in the Expanse.",
+      "trigger_flag": "iron_delivery_failed",
+      "system_id": "nexus_prime",
+      "mission_id": "iron_delivery"
     }
   ]
 }

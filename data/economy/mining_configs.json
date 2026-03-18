@@ -29,6 +29,51 @@
         "crystal": 0.25,
         "rare": 0.15
       }
+    },
+    {
+      "system_id": "forgeworks",
+      "grid_width": 5,
+      "grid_height": 4,
+      "max_energy": 18,
+      "energy_regen_seconds": 3.5,
+      "base_click_power": 0.10,
+      "base_passive_rate": 0.04,
+      "rock_distribution": {
+        "common": 0.60,
+        "iron": 0.25,
+        "crystal": 0.10,
+        "rare": 0.05
+      }
+    },
+    {
+      "system_id": "verdant",
+      "grid_width": 5,
+      "grid_height": 3,
+      "max_energy": 15,
+      "energy_regen_seconds": 4.0,
+      "base_click_power": 0.10,
+      "base_passive_rate": 0.04,
+      "rock_distribution": {
+        "common": 0.30,
+        "iron": 0.10,
+        "crystal": 0.45,
+        "rare": 0.15
+      }
+    },
+    {
+      "system_id": "the_fulcrum",
+      "grid_width": 6,
+      "grid_height": 4,
+      "max_energy": 22,
+      "energy_regen_seconds": 2.5,
+      "base_click_power": 0.14,
+      "base_passive_rate": 0.06,
+      "rock_distribution": {
+        "common": 0.45,
+        "iron": 0.35,
+        "crystal": 0.10,
+        "rare": 0.10
+      }
     }
   ]
 }

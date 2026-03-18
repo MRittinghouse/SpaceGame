@@ -1,0 +1,49 @@
+{
+  "forge_upgrades": [
+    {
+      "id": "forge_buffer",
+      "name": "Forge Storage",
+      "description": "Expands output buffer capacity",
+      "max_level": 5,
+      "costs": [5, 10, 18, 28, 42],
+      "effect_type": "output_buffer_bonus",
+      "effect_per_level": 30.0
+    },
+    {
+      "id": "thermal_efficiency",
+      "name": "Thermal Efficiency",
+      "description": "Reduces processing time",
+      "max_level": 5,
+      "costs": [6, 12, 20, 32, 48],
+      "effect_type": "processing_speed_bonus",
+      "effect_per_level": 0.08
+    },
+    {
+      "id": "catalyst_resonance",
+      "name": "Catalyst Resonance",
+      "description": "Increases yield bonus",
+      "max_level": 3,
+      "costs": [10, 22, 40],
+      "effect_type": "forge_yield_bonus",
+      "effect_per_level": 0.05
+    },
+    {
+      "id": "queue_expansion",
+      "name": "Queue Expansion",
+      "description": "Adds additional queue slots",
+      "max_level": 2,
+      "costs": [15, 35],
+      "effect_type": "queue_size_bonus",
+      "effect_per_level": 1.0
+    },
+    {
+      "id": "material_insight",
+      "name": "Material Insight",
+      "description": "Increases Forge Token earn rate",
+      "max_level": 3,
+      "costs": [8, 18, 35],
+      "effect_type": "token_earn_bonus",
+      "effect_per_level": 0.10
+    }
+  ]
+}

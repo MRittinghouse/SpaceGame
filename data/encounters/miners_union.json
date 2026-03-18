@@ -1,0 +1,589 @@
+{
+  "encounters": [
+    {
+      "id": "union_cave_in_01",
+      "encounter_type": "distress_signal",
+      "name": "Shaft Collapse — Emergency Supplies Needed",
+      "description": "A crackling distress signal breaks through on the emergency band. 'This is Tomek, Breakstone Shaft 14. We got a full cave-in down here — seventeen crew trapped below the rubble line. We're breathing recycled air and it ain't getting fresher. Anyone out there with cutting torches, med kits, or oxygen canisters, we'll take whatever you've got.'",
+      "icon_color": [200, 180, 80],
+      "weight": 10,
+      "danger_levels": ["moderate", "dangerous"],
+      "required_faction": "miners_union",
+      "tone": "neutral",
+      "category": "faction",
+      "choices": [
+        {
+          "id": "supply_aid",
+          "label": "Send Supplies",
+          "description": "Transfer emergency supplies and assist with the rescue effort.",
+          "outcome": {
+            "description": "You dock at the shaft's emergency port and offload everything you can spare. Tomek grips your hand hard enough to bruise. 'We don't forget this. None of us do.' Twelve hours later, all seventeen come up alive. The co-op wires you compensation from the emergency fund.",
+            "rewards": [
+              {"reward_type": "credits", "amount": 150},
+              {"reward_type": "xp", "amount": 20},
+              {"reward_type": "modify_reputation", "amount": 8, "target_id": "miners_union"}
+            ]
+          }
+        },
+        {
+          "id": "relay_signal",
+          "label": "Boost Their Signal",
+          "description": "Amplify the distress call to reach Union rescue teams faster.",
+          "outcome": {
+            "description": "You patch their signal through your long-range array. Union rescue ships respond within the hour. Tomek's voice comes back on comms: 'Appreciate it, friend. Every minute counts down here.'",
+            "rewards": [
+              {"reward_type": "xp", "amount": 10},
+              {"reward_type": "modify_reputation", "amount": 3, "target_id": "miners_union"}
+            ]
+          }
+        },
+        {
+          "id": "move_on",
+          "label": "Continue On",
+          "description": "You can't stop for every distress call.",
+          "outcome": {
+            "description": "You log the coordinates and keep flying. The signal fades behind you, but Tomek's voice stays in your head longer than you'd like.",
+            "rewards": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "union_picket_01",
+      "encounter_type": "patrol",
+      "name": "Union Picket Line",
+      "description": "A loose formation of mining haulers blocks the shipping lane ahead, running lights blazing gold. A woman's voice cuts across all channels: 'This is Roz, shop steward for DCMC Local 9. Deep Core's been cutting safety regs and pocketing the difference. Nobody moves cargo through here until they come to the table. That means you too, Captain.'",
+      "icon_color": [220, 190, 60],
+      "weight": 10,
+      "danger_levels": ["moderate", "dangerous"],
+      "required_faction": "miners_union",
+      "tone": "aggressive",
+      "category": "faction",
+      "choices": [
+        {
+          "id": "honor_picket",
+          "label": "Honor the Line",
+          "description": "Shut down engines and wait it out in solidarity.",
+          "outcome": {
+            "description": "You power down and drift with the picket ships. Roz sends over a thermos of coffee via drone — strong enough to strip hull paint. 'You're alright,' she says. The strike settles after a few hours, and the Union remembers who stood with them.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 15},
+              {"reward_type": "modify_reputation", "amount": 10, "target_id": "miners_union"}
+            ]
+          }
+        },
+        {
+          "id": "negotiate_passage",
+          "label": "Ask for Passage",
+          "description": "Explain you're independent and ask to pass through.",
+          "outcome": {
+            "description": "Roz chews it over. 'You ain't Deep Core, I'll give you that. Alright — go around the back side, quiet-like. And if anyone asks, you never saw us.' She transmits an alternate route through the asteroid scatter.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 10},
+              {"reward_type": "credits", "amount": 50}
+            ]
+          }
+        },
+        {
+          "id": "force_through",
+          "label": "Push Through",
+          "description": "You've got deliveries to make, picket line or not.",
+          "outcome": {
+            "description": "You gun the engines and thread through the formation. Roz's voice follows you, cold as vacuum: 'We'll remember that, Captain. We remember everything.' The Union won't forget this insult easily.",
+            "rewards": [
+              {"reward_type": "modify_reputation", "amount": -8, "target_id": "miners_union"}
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "union_mutual_aid_01",
+      "encounter_type": "refugee",
+      "name": "Mutual Aid Distribution Ship",
+      "description": "A battered cargo hauler with 'MUTUAL AID NETWORK' hand-painted across the hull sits stationary, surrounded by smaller vessels. A man named Dev hails you on open comms: 'Hey there. We're running emergency rations to the outer shaft communities — crop failure hit 'em hard this cycle. You need supplies, take some. You got extra, leave some. That's how it works.'",
+      "icon_color": [200, 180, 80],
+      "weight": 10,
+      "danger_levels": ["moderate", "dangerous"],
+      "required_faction": "miners_union",
+      "tone": "neutral",
+      "category": "faction",
+      "choices": [
+        {
+          "id": "donate",
+          "label": "Donate Supplies",
+          "description": "Contribute credits toward the aid effort.",
+          "outcome": {
+            "description": "Dev waves you in to dock. You transfer what you can afford. He claps you on the shoulder: 'We're all breathing the same recycled air, right? This'll keep folks fed for another week.' Word of your generosity spreads through Union channels.",
+            "rewards": [
+              {"reward_type": "credits", "amount": -75},
+              {"reward_type": "xp", "amount": 20},
+              {"reward_type": "modify_reputation", "amount": 8, "target_id": "miners_union"}
+            ]
+          }
+        },
+        {
+          "id": "take_rations",
+          "label": "Accept Rations",
+          "description": "Take what's offered — no shame in need.",
+          "outcome": {
+            "description": "Dev loads a crate of rations into your cargo bay without a second glance. 'That's what it's here for. Pass it on when you can.' Simple as that. No ledger, no debt. Just community.",
+            "rewards": [
+              {"reward_type": "credits", "amount": 60},
+              {"reward_type": "xp", "amount": 5}
+            ]
+          }
+        },
+        {
+          "id": "pass_by",
+          "label": "Wave and Go",
+          "description": "You're fine for now. Let someone who needs it more take the help.",
+          "outcome": {
+            "description": "Dev gives you a nod through the viewport. 'Safe travels, friend.' You fly on past the cluster of aid ships, a little warmer for having seen them.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 5}
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "union_derelict_drill_01",
+      "encounter_type": "derelict",
+      "name": "Abandoned Mining Rig",
+      "description": "Your sensors pick up a massive structure tumbling slowly through the asteroid field — an old Breakstone drilling platform, decommissioned and left to drift. The hull reads 'ORCA-7' in faded gold lettering. Scans show the main drill assembly is still intact, and the parts locker might have salvageable components.",
+      "icon_color": [200, 180, 80],
+      "weight": 9,
+      "danger_levels": ["moderate", "dangerous"],
+      "required_faction": "miners_union",
+      "tone": "neutral",
+      "category": "faction",
+      "choices": [
+        {
+          "id": "salvage_drill",
+          "label": "Salvage Components",
+          "description": "Board the rig and strip what you can carry.",
+          "outcome": {
+            "description": "The rig's interior is eerie — lunch trays still on the mess table, a mural of Breakstone's founding half-finished on one wall. You pull three intact drill heads and a crate of industrial cutting tips. These'll fetch good money at any Union station.",
+            "rewards": [
+              {"reward_type": "credits", "amount": 180},
+              {"reward_type": "xp", "amount": 15}
+            ]
+          }
+        },
+        {
+          "id": "report_location",
+          "label": "Report to Union",
+          "description": "Log the coordinates and notify the Breakstone Workers' Cooperative.",
+          "outcome": {
+            "description": "The co-op dispatcher sounds genuinely grateful. 'ORCA-7! We thought she'd drifted into the belt for good. We'll send a recovery crew. Appreciate you flagging it, Captain.' They wire a finder's fee to your account.",
+            "rewards": [
+              {"reward_type": "credits", "amount": 100},
+              {"reward_type": "xp", "amount": 10},
+              {"reward_type": "modify_reputation", "amount": 6, "target_id": "miners_union"}
+            ]
+          }
+        },
+        {
+          "id": "leave_it",
+          "label": "Leave It Be",
+          "description": "Old rigs can be structurally unstable. Not worth the risk.",
+          "outcome": {
+            "description": "You give ORCA-7 a wide berth. She keeps tumbling, slow and silent, a monument to someone's abandoned ambitions.",
+            "rewards": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "union_scab_01",
+      "encounter_type": "distress_signal",
+      "name": "Non-Union Hauler Breakdown",
+      "description": "Two signals overlap on your comms. First: a non-union ore hauler broadcasting a standard distress — blown reactor coolant, drifting without power. Second: a Union crew on a nearby vessel, debating loudly on an open channel. 'That's Harlan's rig. He undercut our rates last quarter.' 'Yeah, but he's still a person, Jess.' 'Didn't say he wasn't. Just said I'm not in a rush.'",
+      "icon_color": [220, 190, 60],
+      "weight": 9,
+      "danger_levels": ["moderate", "dangerous"],
+      "required_faction": "miners_union",
+      "tone": "dark_humor",
+      "category": "faction",
+      "choices": [
+        {
+          "id": "help_hauler",
+          "label": "Help the Hauler",
+          "description": "Assist the non-union hauler yourself.",
+          "outcome": {
+            "description": "You tow Harlan's rig to a safe orbit and patch his coolant line with sealant tape. He's sheepish about the whole thing. Jess's voice crackles over comms: 'Well, at least someone's got a conscience. Tell Harlan his invoice is in the mail.' Both sides grudgingly respect the call.",
+            "rewards": [
+              {"reward_type": "credits", "amount": 100},
+              {"reward_type": "xp", "amount": 15},
+              {"reward_type": "modify_reputation", "amount": 3, "target_id": "miners_union"}
+            ]
+          }
+        },
+        {
+          "id": "convince_union",
+          "label": "Talk Union Into It",
+          "description": "Remind the Union crew that solidarity doesn't come with conditions.",
+          "outcome": {
+            "description": "Jess goes quiet for a long moment. Then: 'Yeah, alright. You're right and I hate it.' The Union crew moves in to help. Later, Harlan quietly asks Jess about membership rates. She pretends not to smile.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 20},
+              {"reward_type": "modify_reputation", "amount": 7, "target_id": "miners_union"}
+            ]
+          }
+        },
+        {
+          "id": "stay_out",
+          "label": "Not Your Problem",
+          "description": "Let them sort it out between themselves.",
+          "outcome": {
+            "description": "You fly on, leaving the bickering behind. As you pull away, you hear Jess sigh and say, 'Fine. Warm up the tow line.' Some things work themselves out.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 5}
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "union_ore_spill_01",
+      "encounter_type": "debris",
+      "name": "Ruptured Ore Hauler",
+      "description": "A Union ore hauler sits dead ahead, hull breached along the starboard cargo bay. Refined titanium clusters drift in a glittering cloud around the wounded ship. The pilot, a woman named Britt, is broadcasting on loop: 'Breakstone hauler Pickaxe here. Lost containment on bay three. If you're passing through, watch the drift pattern — that ore'll punch through your hull plating at speed.'",
+      "icon_color": [200, 180, 80],
+      "weight": 10,
+      "danger_levels": ["moderate", "dangerous"],
+      "required_faction": "miners_union",
+      "tone": "neutral",
+      "category": "faction",
+      "choices": [
+        {
+          "id": "help_recover",
+          "label": "Help Recover Ore",
+          "description": "Use your cargo grapple to help Britt reclaim her shipment.",
+          "outcome": {
+            "description": "You spend an hour scooping titanium clusters back into Britt's remaining bays. She's efficient and grateful without being sentimental about it. 'You just saved my quarterly bonus. Here — take a share. Fair's fair.' She splits the salvage evenly.",
+            "rewards": [
+              {"reward_type": "credits", "amount": 120},
+              {"reward_type": "xp", "amount": 15},
+              {"reward_type": "modify_reputation", "amount": 5, "target_id": "miners_union"}
+            ]
+          }
+        },
+        {
+          "id": "scoop_yourself",
+          "label": "Scoop Loose Ore",
+          "description": "Collect the drifting ore for yourself — it's already lost.",
+          "outcome": {
+            "description": "You grab what's drifted beyond Britt's recovery range. Technically it's debris. She watches on sensors but doesn't say anything — the silence speaks volumes. Union haulers will remember your transponder ID.",
+            "rewards": [
+              {"reward_type": "credits", "amount": 160},
+              {"reward_type": "xp", "amount": 5},
+              {"reward_type": "modify_reputation", "amount": -5, "target_id": "miners_union"}
+            ]
+          }
+        },
+        {
+          "id": "fly_around",
+          "label": "Navigate Around",
+          "description": "Heeding Britt's warning, give the debris field a wide berth.",
+          "outcome": {
+            "description": "You plot a course around the glittering cloud. Britt's voice follows you out: 'Smart flying. Stay safe out there.' The titanium catches the starlight behind you like a scattered constellation.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 5}
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "union_folk_song_01",
+      "encounter_type": "comm_intercept",
+      "name": "The Ballad of Shaft 7",
+      "description": "Your comms pick up an open broadcast — an old miner named Gren, voice rough as unrefined ore, singing a working ballad about the Shaft 7 disaster. He's three drinks deep and not bothering to hide it. Between verses, he talks to no one in particular: 'That's a deep shaft to dig, friends. Twenty years and I still hear the alarms.' His ship drifts gently off-lane, running lights blinking in lazy gold.",
+      "icon_color": [220, 190, 60],
+      "weight": 8,
+      "danger_levels": ["moderate", "dangerous"],
+      "required_faction": "miners_union",
+      "tone": "humorous",
+      "category": "faction",
+      "choices": [
+        {
+          "id": "listen_along",
+          "label": "Listen and Chat",
+          "description": "Open a channel and keep the old miner company.",
+          "outcome": {
+            "description": "You tune in and let Gren sing. He's got a surprisingly good voice under the gravel. When he finishes, you talk for a while about the old days, the price of titanium, and whether station coffee counts as a war crime. He shares some route tips only a lifer would know.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 20},
+              {"reward_type": "modify_reputation", "amount": 5, "target_id": "miners_union"}
+            ]
+          }
+        },
+        {
+          "id": "request_song",
+          "label": "Request a Song",
+          "description": "Ask if he knows 'The Iron Depths Reel.'",
+          "outcome": {
+            "description": "Gren barks a laugh. 'Haven't heard that one in years!' He launches into a foot-stomper about a drill operator who fell in love with a safety inspector. It's filthy, it's funny, and by the second chorus you're humming along. Gren signs off with a tip of an imaginary hat.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 15}
+            ]
+          }
+        },
+        {
+          "id": "fly_on",
+          "label": "Keep Flying",
+          "description": "Good voice, but you've got places to be.",
+          "outcome": {
+            "description": "Gren's ballad fades as you pull away, swallowed by the static of deep space. Some songs are meant to be heard by the void.",
+            "rewards": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "union_strike_fund_01",
+      "encounter_type": "merchant",
+      "name": "Strike Fund Collection",
+      "description": "A compact Union shuttle hails you with official Miners Union colors. The rep aboard, a stocky woman named Pia, gets right to it: 'Captain, I'm collecting for the DCMC strike fund. Iron Depths Local 12 is walking out next week — management's been skimming hazard pay. Every credit helps keep families fed while the workers hold the line.'",
+      "icon_color": [200, 180, 80],
+      "weight": 9,
+      "danger_levels": ["moderate", "dangerous"],
+      "required_faction": "miners_union",
+      "tone": "neutral",
+      "category": "faction",
+      "choices": [
+        {
+          "id": "donate_big",
+          "label": "Donate Generously",
+          "description": "Give a substantial contribution to the strike fund.",
+          "outcome": {
+            "description": "Pia's eyebrows go up when she sees the transfer amount. 'Well now. That's real solidarity, Captain. I'll make sure your name gets on the mural.' She hands you a Union solidarity pin — the kind miners wear on their work suits. It opens doors in Breakstone.",
+            "rewards": [
+              {"reward_type": "credits", "amount": -100},
+              {"reward_type": "xp", "amount": 15},
+              {"reward_type": "modify_reputation", "amount": 10, "target_id": "miners_union"}
+            ]
+          }
+        },
+        {
+          "id": "donate_small",
+          "label": "Give What You Can",
+          "description": "Contribute a modest amount to the cause.",
+          "outcome": {
+            "description": "Pia nods, businesslike. 'Every bit counts. We've been through worse — we'll get through this too.' She logs your contribution and sends you a receipted thank-you on official Union letterhead.",
+            "rewards": [
+              {"reward_type": "credits", "amount": -50},
+              {"reward_type": "xp", "amount": 10},
+              {"reward_type": "modify_reputation", "amount": 5, "target_id": "miners_union"}
+            ]
+          }
+        },
+        {
+          "id": "decline",
+          "label": "Decline Politely",
+          "description": "You can't afford to take sides right now.",
+          "outcome": {
+            "description": "Pia shrugs. 'Can't win 'em all. Fly safe, Captain.' No hard feelings — she's heard every excuse in the belt. The shuttle peels off to flag down the next ship.",
+            "rewards": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "union_safety_patrol_01",
+      "encounter_type": "patrol",
+      "name": "Worker Safety Inspection",
+      "description": "A boxy Union patrol craft slides into your sensor range, flashing an official Breakstone Workers' Cooperative safety beacon. The inspector aboard, a man named Cal, hails you with practiced authority: 'Captain, this is Safety Inspector Cal Brinks, BWC Compliance Division. We're running spot checks on vessels transiting Union space. Mind if I take a look at your rad shielding and atmo scrubbers? Shouldn't take long. Famous last words, I know.'",
+      "icon_color": [220, 190, 60],
+      "weight": 9,
+      "danger_levels": ["moderate", "dangerous"],
+      "required_faction": "miners_union",
+      "tone": "dark_humor",
+      "category": "faction",
+      "choices": [
+        {
+          "id": "comply",
+          "label": "Submit to Inspection",
+          "description": "Let Cal do his job. What's the worst that could happen?",
+          "outcome": {
+            "description": "Cal boards with a clipboard older than your ship and proceeds to find seventeen 'violations,' most of which are judgment calls at best. But he also catches a hairline crack in your secondary coolant line that could've blown next week. 'See? That's why we do this.' He waives the fines and patches the crack himself.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 20},
+              {"reward_type": "modify_reputation", "amount": 5, "target_id": "miners_union"}
+            ]
+          }
+        },
+        {
+          "id": "bribe",
+          "label": "Offer a 'Tip'",
+          "description": "Suggest the inspector might want to skip the paperwork.",
+          "outcome": {
+            "description": "Cal stares at you for a long, uncomfortable moment. 'I'm gonna pretend I didn't hear that, on account of you probably not knowing how things work out here. We don't do that.' He inspects your ship twice as thoroughly out of spite. You pass. Barely.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 10},
+              {"reward_type": "modify_reputation", "amount": -3, "target_id": "miners_union"}
+            ]
+          }
+        },
+        {
+          "id": "refuse",
+          "label": "Refuse Inspection",
+          "description": "You're not under Union jurisdiction.",
+          "outcome": {
+            "description": "Cal scratches his jaw. 'Technically true. But technically, my friends on the dock can take real long processing your cargo next time you're in Breakstone. Your call.' He lets you pass, but makes a note on that clipboard.",
+            "rewards": [
+              {"reward_type": "modify_reputation", "amount": -5, "target_id": "miners_union"}
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "union_lost_miner_01",
+      "encounter_type": "distress_signal",
+      "name": "Lost Prospector's Beacon",
+      "description": "Deep in the asteroid field, your sensors catch a faint emergency beacon — the low-power kind solo prospectors use when they don't want to broadcast their claim. A man's voice, calm but thin: 'This is Nils. Independent prospector, license number BWC-4471. My nav's shot and I've been drifting for... I think three days. Oxygen's getting creative with the recycling. If anyone's out there, I could use a hand.'",
+      "icon_color": [200, 180, 80],
+      "weight": 10,
+      "danger_levels": ["dangerous"],
+      "required_faction": "miners_union",
+      "tone": "neutral",
+      "category": "faction",
+      "choices": [
+        {
+          "id": "rescue",
+          "label": "Navigate to Him",
+          "description": "Plot a course through the asteroid field to reach Nils.",
+          "outcome": {
+            "description": "Threading through the rocks takes nerve, but you find Nils in a one-person prospector pod, running on fumes. He's gaunt but grinning when you dock. 'Three days on protein paste and bad air. Could've been worse — could've been four.' He insists on splitting his last ore haul with you. Union prospectors pay their debts.",
+            "rewards": [
+              {"reward_type": "credits", "amount": 140},
+              {"reward_type": "xp", "amount": 20},
+              {"reward_type": "modify_reputation", "amount": 7, "target_id": "miners_union"}
+            ]
+          }
+        },
+        {
+          "id": "transmit_coords",
+          "label": "Relay His Position",
+          "description": "Broadcast Nils's location to Union rescue channels.",
+          "outcome": {
+            "description": "You boost his beacon and tag the coordinates for Union search-and-rescue. A dispatcher confirms they're scrambling a recovery team. Nils's voice comes back, quieter: 'Appreciate it. Tell 'em to bring coffee, yeah?'",
+            "rewards": [
+              {"reward_type": "xp", "amount": 10},
+              {"reward_type": "modify_reputation", "amount": 3, "target_id": "miners_union"}
+            ]
+          }
+        },
+        {
+          "id": "pass",
+          "label": "Mark and Move On",
+          "description": "Log the beacon. Someone closer will get to him.",
+          "outcome": {
+            "description": "You tag the signal in your nav log and continue on course. Nils doesn't say anything else. The beacon keeps pulsing, small and steady, swallowed by the vastness of the field.",
+            "rewards": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "union_equipment_swap_01",
+      "encounter_type": "merchant",
+      "name": "Surplus Equipment Trade",
+      "description": "A pair of Union mining barges sit parked near a beacon, cargo bays open. A miner named Suki flags you down: 'Hey, Captain! We pulled double yield this month and we're sitting on more raw ore than we can haul. Meanwhile, our drill tips are shot and the fabricator needs new filters. You got any machinery? We'll trade weight for weight, ore for parts. Fair deal for everyone.'",
+      "icon_color": [200, 180, 80],
+      "weight": 10,
+      "danger_levels": ["moderate", "dangerous"],
+      "required_faction": "miners_union",
+      "tone": "neutral",
+      "category": "faction",
+      "choices": [
+        {
+          "id": "trade_parts",
+          "label": "Trade Equipment",
+          "description": "Swap machinery and spare parts for refined ore.",
+          "outcome": {
+            "description": "Suki runs a quick inventory of your spare parts and nods approvingly. 'This'll keep us drilling for another two months easy.' She loads your bay with titanium ore — premium grade, already sorted. Union miners don't cheat on weight.",
+            "rewards": [
+              {"reward_type": "credits", "amount": 150},
+              {"reward_type": "xp", "amount": 10},
+              {"reward_type": "modify_reputation", "amount": 5, "target_id": "miners_union"}
+            ]
+          }
+        },
+        {
+          "id": "buy_ore",
+          "label": "Buy Ore Direct",
+          "description": "Purchase ore at the miners' asking price — no middleman markup.",
+          "outcome": {
+            "description": "Suki sells you ore at co-op rates — well below what station merchants charge. 'We'd rather sell direct than let some broker clip twenty percent off the top,' she says, loading crates with practiced efficiency.",
+            "rewards": [
+              {"reward_type": "credits", "amount": 80},
+              {"reward_type": "xp", "amount": 10}
+            ]
+          }
+        },
+        {
+          "id": "pass",
+          "label": "No Thanks",
+          "description": "Your hold's full or you don't have what they need.",
+          "outcome": {
+            "description": "Suki waves you off with a good-natured shrug. 'No worries, Captain. Next time, yeah?' The barges drift back to their work, drill lights flickering in the dark.",
+            "rewards": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "union_memorial_01",
+      "encounter_type": "refugee",
+      "name": "Shaft 7 Memorial Convoy",
+      "description": "A procession of Union ships moves slowly through the lane, running lights dimmed to a respectful amber. Gold pennants stream from every antenna. A convoy leader broadcasts on open comms: 'All vessels, please be advised — this is the annual Shaft 7 Memorial Convoy. We're carrying the families to the remembrance site. We'd appreciate your patience and your respect. Forty-three names on that wall. Forty-three people who deserved to come home.'",
+      "icon_color": [200, 180, 80],
+      "weight": 8,
+      "danger_levels": ["moderate", "dangerous"],
+      "required_faction": "miners_union",
+      "tone": "neutral",
+      "category": "faction",
+      "choices": [
+        {
+          "id": "join_convoy",
+          "label": "Join the Convoy",
+          "description": "Fall in with the memorial procession and pay your respects.",
+          "outcome": {
+            "description": "You dim your lights and slide into formation. At the remembrance site — a carved asteroid bearing forty-three names — the convoy stops. Someone reads the names aloud. Flowers and lanterns drift into the void. A Union elder sends you a quiet message afterward: 'Thank you for flying with us. It means more than you know.'",
+            "rewards": [
+              {"reward_type": "xp", "amount": 25},
+              {"reward_type": "modify_reputation", "amount": 8, "target_id": "miners_union"}
+            ]
+          }
+        },
+        {
+          "id": "yield_way",
+          "label": "Yield the Lane",
+          "description": "Pull aside and let the convoy pass undisturbed.",
+          "outcome": {
+            "description": "You cut engines and drift to the edge of the lane. The convoy passes in solemn silence, ship after ship, gold pennants catching the starlight. A few pilots flash their lights in acknowledgment as they pass. Some things are bigger than schedules.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 10},
+              {"reward_type": "modify_reputation", "amount": 3, "target_id": "miners_union"}
+            ]
+          }
+        },
+        {
+          "id": "detour",
+          "label": "Take a Detour",
+          "description": "Route around the convoy entirely.",
+          "outcome": {
+            "description": "You plot an alternate course and give the convoy its space. The memorial procession shrinks on your rear sensors, a string of amber lights moving through the dark like a prayer.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 5}
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

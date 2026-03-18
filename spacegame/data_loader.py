@@ -12,6 +12,7 @@ from spacegame.models.location import Location
 from spacegame.models.investment import InvestmentTemplate, InvestmentTier
 from spacegame.models.commodity import Commodity, CommodityCategory, Legality
 from spacegame.models.ship import ShipType
+from spacegame.models.ambient_dialogue import AmbientLine
 from spacegame.models.mining import MiningConfig
 from spacegame.models.salvage import SalvageConfig
 from spacegame.models.refining import Recipe
@@ -83,6 +84,7 @@ class DataLoader:
         self.dialogue_trees: Dict[str, DialogueTree] = {}
         self.missions: List[Mission] = []
         self.crew_templates: Dict[str, CrewTemplate] = {}
+        self.ambient_lines: List[AmbientLine] = []
         self.enemy_templates: Dict[str, EnemyShipTemplate] = {}
         self.journal_entries: List[JournalEntry] = []
         self.encounter_definitions: List[EncounterDefinition] = []
@@ -93,33 +95,73 @@ class DataLoader:
         self.locations: Dict[str, List[Location]] = {}
         self.investment_templates: Dict[str, InvestmentTemplate] = {}
         self.faction_relationships: list = []
+        self.faction_perks: Dict[str, Dict[str, list]] = {}
+        self.galaxy_event_templates: List[Dict] = []
+        self.galaxy_event_chains: List[Dict] = []
+        self.station_chatter_lines: list = []
+        self.news_templates: list = []
+        self.travel_log_templates: dict = {}
+        self.deep_core_upgrades: Dict[str, "DeepCoreUpgrade"] = {}
+        self.wreck_upgrades: Dict[str, "WreckUpgrade"] = {}
+        self.forge_upgrades: Dict[str, "ForgeUpgrade"] = {}
+
+    def _safe_load(self, loader_name: str, loader_fn) -> None:
+        """Call a loader function with error handling and context.
+
+        Args:
+            loader_name: Human-readable name for error messages.
+            loader_fn: The load_*() method to call.
+        """
+        try:
+            loader_fn()
+        except FileNotFoundError as e:
+            logger.error(f"Data file not found for {loader_name}: {e}")
+            raise
+        except json.JSONDecodeError as e:
+            logger.error(f"Invalid JSON in {loader_name}: {e}")
+            raise
+        except KeyError as e:
+            logger.error(f"Missing required field in {loader_name}: {e}")
+            raise
+        except Exception as e:
+            logger.error(f"Failed to load {loader_name}: {type(e).__name__}: {e}")
+            raise
 
     def load_all(self) -> None:
         """Load all game data from JSON files."""
         logger.info("Loading game data...")
-        self.load_systems()
-        self.load_commodities()
-        self.load_ship_types()
-        self.load_mining_configs()
-        self.load_salvage_configs()
-        self.load_recipes()
-        self.load_upgrades()
-        self.load_achievements()
-        self.load_factions()
-        self.load_npcs()
-        self.load_dialogues()
-        self.load_missions()
-        self.load_crew_templates()
-        self.load_enemy_templates()
-        self.load_journal_entries()
-        self.load_encounter_definitions()
-        self.load_ground_equipment()
-        self.load_contract_templates()
-        self.load_campaign_maps()
-        self.load_faction_laws()
-        self.load_locations()
-        self.load_investment_configs()
-        self.load_politics()
+        self._safe_load("systems", self.load_systems)
+        self._safe_load("commodities", self.load_commodities)
+        self._safe_load("ship_types", self.load_ship_types)
+        self._safe_load("mining_configs", self.load_mining_configs)
+        self._safe_load("deep_core_upgrades", self.load_deep_core_upgrades)
+        self._safe_load("wreck_upgrades", self.load_wreck_upgrades)
+        self._safe_load("forge_upgrades", self.load_forge_upgrades)
+        self._safe_load("salvage_configs", self.load_salvage_configs)
+        self._safe_load("recipes", self.load_recipes)
+        self._safe_load("upgrades", self.load_upgrades)
+        self._safe_load("achievements", self.load_achievements)
+        self._safe_load("factions", self.load_factions)
+        self._safe_load("npcs", self.load_npcs)
+        self._safe_load("dialogues", self.load_dialogues)
+        self._safe_load("missions", self.load_missions)
+        self._safe_load("crew_templates", self.load_crew_templates)
+        self._safe_load("ambient_dialogue", self.load_ambient_dialogue)
+        self._safe_load("enemy_templates", self.load_enemy_templates)
+        self._safe_load("journal_entries", self.load_journal_entries)
+        self._safe_load("encounter_definitions", self.load_encounter_definitions)
+        self._safe_load("ground_equipment", self.load_ground_equipment)
+        self._safe_load("contract_templates", self.load_contract_templates)
+        self._safe_load("campaign_maps", self.load_campaign_maps)
+        self._safe_load("faction_laws", self.load_faction_laws)
+        self._safe_load("locations", self.load_locations)
+        self._safe_load("investment_configs", self.load_investment_configs)
+        self._safe_load("politics", self.load_politics)
+        self._safe_load("faction_perks", self.load_faction_perks)
+        self._safe_load("galaxy_events", self.load_galaxy_events)
+        self._safe_load("station_chatter", self.load_station_chatter)
+        self._safe_load("news_templates", self.load_news_templates)
+        self._safe_load("travel_log_templates", self.load_travel_log_templates)
         logger.info(
             f"Data loaded: {len(self.systems)} systems, "
             f"{len(self.commodities)} commodities, "
@@ -310,6 +352,90 @@ class DataLoader:
         logger.info(f"Loaded {len(self.mining_configs)} mining configs")
         return self.mining_configs
 
+    def load_deep_core_upgrades(self) -> Dict[str, "DeepCoreUpgrade"]:
+        """Load deep core mining upgrade definitions from JSON."""
+        from spacegame.models.deep_core import DeepCoreUpgrade
+
+        file_path = self.data_dir / "economy" / "mining_upgrades.json"
+        if not file_path.exists():
+            logger.warning(f"Mining upgrades not found: {file_path}")
+            return self.deep_core_upgrades
+
+        with open(file_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        self.deep_core_upgrades.clear()
+        for entry in data.get("mining_upgrades", []):
+            upgrade = DeepCoreUpgrade(
+                id=entry["id"],
+                name=entry["name"],
+                description=entry["description"],
+                max_level=entry["max_level"],
+                costs=entry["costs"],
+                effect_type=entry["effect_type"],
+                effect_per_level=entry["effect_per_level"],
+            )
+            self.deep_core_upgrades[upgrade.id] = upgrade
+
+        logger.info(f"Loaded {len(self.deep_core_upgrades)} deep core upgrades")
+        return self.deep_core_upgrades
+
+    def load_wreck_upgrades(self) -> Dict[str, "WreckUpgrade"]:
+        """Load wreck salvage upgrade definitions from JSON."""
+        from spacegame.models.wreck_upgrade import WreckUpgrade
+
+        file_path = self.data_dir / "economy" / "salvage_upgrades.json"
+        if not file_path.exists():
+            logger.warning(f"Salvage upgrades not found: {file_path}")
+            return self.wreck_upgrades
+
+        with open(file_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        self.wreck_upgrades.clear()
+        for entry in data.get("salvage_upgrades", []):
+            upgrade = WreckUpgrade(
+                id=entry["id"],
+                name=entry["name"],
+                description=entry["description"],
+                max_level=entry["max_level"],
+                costs=entry["costs"],
+                effect_type=entry["effect_type"],
+                effect_per_level=entry["effect_per_level"],
+            )
+            self.wreck_upgrades[upgrade.id] = upgrade
+
+        logger.info(f"Loaded {len(self.wreck_upgrades)} wreck upgrades")
+        return self.wreck_upgrades
+
+    def load_forge_upgrades(self) -> Dict[str, "ForgeUpgrade"]:
+        """Load forge upgrade definitions from JSON."""
+        from spacegame.models.forge_upgrade import ForgeUpgrade
+
+        file_path = self.data_dir / "economy" / "forge_upgrades.json"
+        if not file_path.exists():
+            logger.warning(f"Forge upgrades not found: {file_path}")
+            return self.forge_upgrades
+
+        with open(file_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        self.forge_upgrades.clear()
+        for entry in data.get("forge_upgrades", []):
+            upgrade = ForgeUpgrade(
+                id=entry["id"],
+                name=entry["name"],
+                description=entry["description"],
+                max_level=entry["max_level"],
+                costs=entry["costs"],
+                effect_type=entry["effect_type"],
+                effect_per_level=entry["effect_per_level"],
+            )
+            self.forge_upgrades[upgrade.id] = upgrade
+
+        logger.info(f"Loaded {len(self.forge_upgrades)} forge upgrades")
+        return self.forge_upgrades
+
     def load_salvage_configs(self) -> Dict[str, SalvageConfig]:
         """Load salvage configurations from JSON."""
         file_path = self.data_dir / "economy" / "salvage_configs.json"
@@ -356,6 +482,12 @@ class DataLoader:
                 processing_time=recipe_data["processing_time"],
                 location_ids=recipe_data["location_ids"],
                 requires_skill=recipe_data.get("requires_skill"),
+                category=recipe_data.get("category", "commodity"),
+                tier=recipe_data.get("tier", 1),
+                discoverable=recipe_data.get("discoverable", False),
+                discovery_hint=recipe_data.get("discovery_hint", ""),
+                discovery_prerequisite=recipe_data.get("discovery_prerequisite", ""),
+                schematic_cost=recipe_data.get("schematic_cost", 0),
             )
             self.recipes.append(recipe)
 
@@ -389,6 +521,8 @@ class DataLoader:
                 faction_required=upgrade_data.get("faction_required"),
                 faction_rep_required=upgrade_data.get("faction_rep_required", 0),
                 unlock_condition=upgrade_data.get("unlock_condition"),
+                tier=upgrade_data.get("tier", 1),
+                available_systems=upgrade_data.get("available_systems", []),
             )
             self.upgrades[upgrade.id] = upgrade
 
@@ -480,6 +614,131 @@ class DataLoader:
         )
         return self.faction_relationships
 
+    def load_faction_perks(self) -> Dict[str, Dict[str, list]]:
+        """Load faction perks from JSON."""
+        from spacegame.models.faction_perks import FactionPerk
+
+        file_path = self.data_dir / "progression" / "faction_perks.json"
+        if not file_path.exists():
+            logger.warning(f"Faction perks not found: {file_path}")
+            return self.faction_perks
+
+        with open(file_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        self.faction_perks.clear()
+        perk_count = 0
+        for faction_id, tiers in data.get("faction_perks", {}).items():
+            self.faction_perks[faction_id] = {}
+            for tier_name, perk_list in tiers.items():
+                perks = []
+                for perk_data in perk_list:
+                    perk = FactionPerk(
+                        id=perk_data["id"],
+                        perk_type=perk_data["type"],
+                        value=perk_data["value"],
+                        name=perk_data["name"],
+                        description=perk_data["description"],
+                        faction_id=faction_id,
+                        required_tier=tier_name,
+                    )
+                    perks.append(perk)
+                    perk_count += 1
+                self.faction_perks[faction_id][tier_name] = perks
+
+        logger.info(f"Loaded {perk_count} faction perks for {len(self.faction_perks)} factions")
+        return self.faction_perks
+
+    def load_galaxy_events(self) -> List[Dict]:
+        """Load galaxy event templates and chains from JSON."""
+        file_path = self.data_dir / "economy" / "galaxy_events.json"
+        if not file_path.exists():
+            logger.warning(f"Galaxy events not found: {file_path}")
+            return self.galaxy_event_templates
+
+        with open(file_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        self.galaxy_event_templates = data.get("galaxy_events", [])
+        self.galaxy_event_chains = data.get("event_chains", [])
+        logger.info(
+            f"Loaded {len(self.galaxy_event_templates)} galaxy event templates, "
+            f"{len(self.galaxy_event_chains)} event chains"
+        )
+        return self.galaxy_event_templates
+
+    def load_station_chatter(self) -> list:
+        """Load station chatter lines from JSON."""
+        from spacegame.models.station_chatter import ChatterLine
+
+        file_path = self.data_dir / "crew" / "station_chatter.json"
+        if not file_path.exists():
+            logger.warning(f"Station chatter not found: {file_path}")
+            return self.station_chatter_lines
+
+        with open(file_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        self.station_chatter_lines = []
+        for entry in data.get("chatter_lines", []):
+            self.station_chatter_lines.append(
+                ChatterLine(
+                    id=entry["id"],
+                    system_id=entry["system_id"],
+                    text=entry["text"],
+                    category=entry["category"],
+                    faction_id=entry.get("faction_id", ""),
+                    min_reputation=entry.get("min_reputation", -100),
+                    max_reputation=entry.get("max_reputation", 100),
+                    requires_event_type=entry.get("requires_event_type", ""),
+                    weight=entry.get("weight", 10),
+                )
+            )
+        logger.info(f"Loaded {len(self.station_chatter_lines)} station chatter lines")
+        return self.station_chatter_lines
+
+    def load_news_templates(self) -> list:
+        """Load news ticker headline templates from JSON."""
+        from spacegame.models.news_ticker import HeadlineTemplate
+
+        file_path = self.data_dir / "economy" / "news_templates.json"
+        if not file_path.exists():
+            logger.warning(f"News templates not found: {file_path}")
+            return self.news_templates
+
+        with open(file_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        self.news_templates = []
+        for entry in data.get("news_templates", []):
+            self.news_templates.append(
+                HeadlineTemplate(
+                    id=entry["id"],
+                    template=entry["template"],
+                    trigger=entry["trigger"],
+                    priority=entry.get("priority", 5),
+                    faction_id=entry.get("faction_id", ""),
+                )
+            )
+        logger.info(f"Loaded {len(self.news_templates)} news headline templates")
+        return self.news_templates
+
+    def load_travel_log_templates(self) -> dict:
+        """Load travel log templates from JSON."""
+        file_path = self.data_dir / "journal" / "travel_log_templates.json"
+        if not file_path.exists():
+            logger.warning(f"Travel log templates not found: {file_path}")
+            return self.travel_log_templates
+
+        with open(file_path, "r", encoding="utf-8") as f:
+            self.travel_log_templates = json.load(f)
+
+        first_visit_count = len(self.travel_log_templates.get("first_visit", {}))
+        logger.info(
+            f"Loaded travel log templates ({first_visit_count} first-visit entries)"
+        )
+        return self.travel_log_templates
+
     def get_mining_config(self, system_id: str) -> Optional[MiningConfig]:
         """Get mining config for a system, or None if not a mining system."""
         return self.mining_configs.get(system_id)
@@ -568,6 +827,7 @@ class DataLoader:
                 auto_trigger_gate_flag=npc_data.get("auto_trigger_gate_flag", ""),
                 auto_trigger_prerequisites=npc_data.get("auto_trigger_prerequisites", []),
                 hide_after_flag=npc_data.get("hide_after_flag", ""),
+                dialogue_music=npc_data.get("dialogue_music", ""),
             )
             self.npcs[npc.id] = npc
 
@@ -575,19 +835,23 @@ class DataLoader:
         return self.npcs
 
     def load_dialogues(self) -> Dict[str, DialogueTree]:
-        """Load dialogue trees from JSON."""
-        file_path = self.data_dir / "dialogue" / "dialogues.json"
-        if not file_path.exists():
-            logger.warning(f"Dialogues not found: {file_path}")
-            return self.dialogue_trees
-
-        with open(file_path, "r", encoding="utf-8") as f:
-            data = json.load(f)
-
+        """Load dialogue trees from JSON files."""
+        dialogue_dir = self.data_dir / "dialogue"
         self.dialogue_trees.clear()
-        for tree_data in data.get("dialogues", []):
-            tree = self._parse_dialogue_tree(tree_data)
-            self.dialogue_trees[tree.id] = tree
+
+        for filename in ["dialogues.json", "crew_quest_dialogues.json"]:
+            file_path = dialogue_dir / filename
+            if not file_path.exists():
+                if filename == "dialogues.json":
+                    logger.warning(f"Dialogues not found: {file_path}")
+                continue
+
+            with open(file_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+
+            for tree_data in data.get("dialogues", []):
+                tree = self._parse_dialogue_tree(tree_data)
+                self.dialogue_trees[tree.id] = tree
 
         logger.info(f"Loaded {len(self.dialogue_trees)} dialogue trees")
         return self.dialogue_trees
@@ -619,6 +883,7 @@ class DataLoader:
                         required_flags=r.get("required_flags", []),
                         excluded_flags=r.get("excluded_flags", []),
                         faction_reputation_changes=r.get("faction_reputation_changes", []),
+                        crew_loyalty_changes=r.get("crew_loyalty_changes", {}),
                     )
                 )
             node = DialogueNode(
@@ -649,19 +914,27 @@ class DataLoader:
         return self.dialogue_trees.get(dialogue_id)
 
     def load_missions(self) -> List[Mission]:
-        """Load mission definitions from JSON."""
-        file_path = self.data_dir / "missions" / "missions.json"
-        if not file_path.exists():
-            logger.warning(f"Missions not found: {file_path}")
-            return self.missions
+        """Load mission definitions from JSON.
 
-        with open(file_path, "r", encoding="utf-8") as f:
-            data = json.load(f)
-
+        Loads campaign missions from missions.json and side missions from
+        side_missions.json if it exists.
+        """
+        missions_dir = self.data_dir / "missions"
         self.missions.clear()
-        for mission_data in data.get("missions", []):
-            mission = self._parse_mission(mission_data)
-            self.missions.append(mission)
+
+        for filename in ["missions.json", "side_missions.json", "crew_quests.json"]:
+            file_path = missions_dir / filename
+            if not file_path.exists():
+                if filename == "missions.json":
+                    logger.warning(f"Missions not found: {file_path}")
+                continue
+
+            with open(file_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+
+            for mission_data in data.get("missions", []):
+                mission = self._parse_mission(mission_data)
+                self.missions.append(mission)
 
         logger.info(f"Loaded {len(self.missions)} missions")
         return self.missions
@@ -707,6 +980,12 @@ class DataLoader:
             ground_mission_id=data.get("ground_mission_id", ""),
             ground_mission_system_id=data.get("ground_mission_system_id", ""),
             ground_mission_complete_flag=data.get("ground_mission_complete_flag", ""),
+            mission_type=data.get("mission_type", "campaign"),
+            available_at=data.get("available_at", []),
+            available_after=data.get("available_after", ""),
+            available_before=data.get("available_before", ""),
+            repeatable=data.get("repeatable", False),
+            discovery_method=data.get("discovery_method", ""),
         )
 
     def get_mission(self, mission_id: str) -> Optional[Mission]:
@@ -756,12 +1035,43 @@ class DataLoader:
             max_level=data.get("max_level", 5),
             xp_thresholds=data.get("xp_thresholds", [0, 50, 150, 350, 700]),
             base_attributes=data.get("base_attributes", default_attrs),
+            faction_id=data.get("faction_id", ""),
+            home_system_id=data.get("home_system_id", ""),
             combat_move=data.get("combat_move"),
+            is_companion=data.get("is_companion", False),
         )
 
     def get_crew_template(self, template_id: str) -> Optional[CrewTemplate]:
         """Get a crew template by ID, or None if not found."""
         return self.crew_templates.get(template_id)
+
+    def load_ambient_dialogue(self) -> List[AmbientLine]:
+        """Load ambient crew dialogue lines from JSON."""
+        file_path = self.data_dir / "crew" / "ambient_dialogue.json"
+        if not file_path.exists():
+            logger.warning(f"Ambient dialogue not found: {file_path}")
+            return self.ambient_lines
+
+        with open(file_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        self.ambient_lines.clear()
+        for line_data in data.get("ambient_lines", []):
+            self.ambient_lines.append(
+                AmbientLine(
+                    crew_id=line_data["crew_id"],
+                    text=line_data["text"],
+                    context=line_data["context"],
+                    system_id=line_data.get("system_id", ""),
+                    faction_id=line_data.get("faction_id", ""),
+                    required_crew=line_data.get("required_crew", ""),
+                    min_loyalty=line_data.get("min_loyalty", 0),
+                    action_type=line_data.get("action_type", ""),
+                )
+            )
+
+        logger.info(f"Loaded {len(self.ambient_lines)} ambient dialogue lines")
+        return self.ambient_lines
 
     def load_enemy_templates(self) -> Dict[str, EnemyShipTemplate]:
         """Load enemy ship templates from JSON."""
@@ -806,6 +1116,8 @@ class DataLoader:
             faction_id=data.get("faction_id", ""),
             danger_tier=data.get("danger_tier", "moderate"),
             bribe_cost=data.get("bribe_cost", 0),
+            credit_reward=data.get("credit_reward", 0),
+            rare_loot=data.get("rare_loot", []),
         )
 
     def _parse_combat_move(self, data: dict) -> CombatMove:
@@ -865,23 +1177,23 @@ class DataLoader:
         )
 
     def load_encounter_definitions(self) -> List[EncounterDefinition]:
-        """Load encounter definitions from JSON.
+        """Load encounter definitions from all JSON files in the encounters directory.
 
         Returns:
             List of loaded encounter definitions.
         """
-        file_path = self.data_dir / "encounters" / "encounters.json"
-        if not file_path.exists():
-            logger.warning(f"Encounter definitions not found: {file_path}")
+        enc_dir = self.data_dir / "encounters"
+        if not enc_dir.exists():
+            logger.warning(f"Encounters directory not found: {enc_dir}")
             return self.encounter_definitions
 
-        with open(file_path, "r", encoding="utf-8") as f:
-            data = json.load(f)
-
         self.encounter_definitions.clear()
-        for enc_data in data.get("encounters", []):
-            defn = self._parse_encounter_definition(enc_data)
-            self.encounter_definitions.append(defn)
+        for file_path in sorted(enc_dir.glob("*.json")):
+            with open(file_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            for enc_data in data.get("encounters", []):
+                defn = self._parse_encounter_definition(enc_data)
+                self.encounter_definitions.append(defn)
 
         logger.info(f"Loaded {len(self.encounter_definitions)} encounter definitions")
         return self.encounter_definitions
@@ -932,6 +1244,16 @@ class DataLoader:
             weight=data.get("weight", 10),
             danger_levels=data.get("danger_levels", ["moderate", "dangerous"]),
             icon_color=icon_color,
+            only_systems=data.get("only_systems", []),
+            excluded_systems=data.get("excluded_systems", []),
+            required_faction=data.get("required_faction", ""),
+            requires_flags=data.get("requires_flags", []),
+            excludes_flags=data.get("excludes_flags", []),
+            unique=data.get("unique", False),
+            min_level=data.get("min_level", 0),
+            max_level=data.get("max_level", 0),
+            tone=data.get("tone", ""),
+            category=data.get("category", ""),
         )
 
     def load_ground_equipment(self) -> Dict[str, "GroundEquipment"]:

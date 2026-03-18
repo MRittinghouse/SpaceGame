@@ -4,11 +4,14 @@
       "id": "elena_reeves",
       "name": "Elena Reeves",
       "role": "navigator",
+      "faction_id": "commerce_guild",
+      "home_system_id": "stellaris_port",
       "description": "Former Fleet navigator with an eye for efficient routes. Elena knows every shortcut and fuel-saving trajectory in the sector.",
       "portrait_color": [100, 180, 255],
       "base_attributes": {"com": 2, "acu": 3, "res": 1, "ing": 1, "syn": 1},
       "max_level": 5,
       "xp_thresholds": [0, 50, 150, 350, 700],
+      "is_companion": true,
       "abilities": [
         {
           "bonus_type": "fuel_efficiency_bonus",
@@ -41,11 +44,14 @@
       "id": "marcus_jin",
       "name": "Marcus Jin",
       "role": "engineer",
+      "faction_id": "industrial_union",
+      "home_system_id": "breakstone",
       "description": "Breakstone mining engineer who knows ships inside out. Marcus can coax extra capacity out of any cargo hold or fuel tank.",
       "portrait_color": [200, 160, 60],
       "base_attributes": {"com": 1, "acu": 1, "res": 2, "ing": 3, "syn": 1},
       "max_level": 5,
       "xp_thresholds": [0, 50, 150, 350, 700],
+      "is_companion": true,
       "abilities": [
         {
           "bonus_type": "cargo_bonus",
@@ -78,11 +84,14 @@
       "id": "dr_priya_osei",
       "name": "Dr. Priya Osei",
       "role": "scientist",
+      "faction_id": "science_collective",
+      "home_system_id": "axiom_labs",
       "description": "Axiom Labs researcher specializing in material analysis. Her expertise improves scanning, extraction, and rare material identification.",
       "portrait_color": [160, 120, 210],
       "base_attributes": {"com": 1, "acu": 2, "res": 1, "ing": 3, "syn": 1},
       "max_level": 5,
       "xp_thresholds": [0, 50, 150, 350, 700],
+      "is_companion": true,
       "abilities": [
         {
           "bonus_type": "extra_scan_charges",
@@ -115,11 +124,14 @@
       "id": "tomas_drifter",
       "name": "Tomas Drifter",
       "role": "trader",
+      "faction_id": "frontier_alliance",
+      "home_system_id": "havens_rest",
       "description": "Frontier trader with connections in every port. Tomas's network of contacts gets you better deals on both sides of the counter.",
       "portrait_color": [110, 210, 120],
       "base_attributes": {"com": 3, "acu": 1, "res": 1, "ing": 1, "syn": 2},
       "max_level": 5,
       "xp_thresholds": [0, 50, 150, 350, 700],
+      "is_companion": true,
       "abilities": [
         {
           "bonus_type": "buy_price_reduction",
@@ -147,6 +159,411 @@
         "effects": [{"type": "accuracy_mod", "value": 5.0, "duration": 2, "target": "self"}],
         "energy_cost": 0
       }
+    },
+    {
+      "id": "kai_torren",
+      "name": "Kai Torren",
+      "role": "cargo handler",
+      "faction_id": "commerce_guild",
+      "home_system_id": "nexus_prime",
+      "description": "Former dockside foreman who can reorganize a cargo hold blindfolded. Kai squeezes extra capacity out of any ship.",
+      "portrait_color": [180, 140, 90],
+      "base_attributes": {"com": 1, "acu": 1, "res": 2, "ing": 2, "syn": 1},
+      "max_level": 1,
+      "xp_thresholds": [0],
+      "is_companion": false,
+      "abilities": [
+        {
+          "bonus_type": "cargo_bonus",
+          "bonus_value": 15.0,
+          "description": "Hold Optimization",
+          "unlock_level": 1
+        },
+        {
+          "bonus_type": "bulk_discount",
+          "bonus_value": 0.05,
+          "description": "Bulk Logistics",
+          "unlock_level": 1
+        }
+      ]
+    },
+    {
+      "id": "rina_vasquez",
+      "name": "Rina Vasquez",
+      "role": "market analyst",
+      "faction_id": "commerce_guild",
+      "home_system_id": "stellaris_port",
+      "description": "Guild-trained commodities analyst who reads price boards the way most people read faces. Rina spots trends before they break.",
+      "portrait_color": [220, 180, 140],
+      "base_attributes": {"com": 2, "acu": 2, "res": 1, "ing": 1, "syn": 1},
+      "max_level": 1,
+      "xp_thresholds": [0],
+      "is_companion": false,
+      "abilities": [
+        {
+          "bonus_type": "trend_visibility",
+          "bonus_value": 1.0,
+          "description": "Market Instinct",
+          "unlock_level": 1
+        },
+        {
+          "bonus_type": "price_variance_reduction",
+          "bonus_value": 0.03,
+          "description": "Price Forecasting",
+          "unlock_level": 1
+        }
+      ]
+    },
+    {
+      "id": "sgt_harkov",
+      "name": "Sgt. Dima Harkov",
+      "role": "gunnery sergeant",
+      "faction_id": "",
+      "home_system_id": "crimson_reach",
+      "description": "Retired military gunner who drifted to the Reach after his commission ended. Harkov doesn't talk about his service record, but his aim speaks for itself.",
+      "portrait_color": [160, 80, 80],
+      "base_attributes": {"com": 1, "acu": 2, "res": 2, "ing": 1, "syn": 1},
+      "max_level": 1,
+      "xp_thresholds": [0],
+      "is_companion": false,
+      "abilities": [
+        {
+          "bonus_type": "weapon_damage",
+          "bonus_value": 5.0,
+          "description": "Targeting Discipline",
+          "unlock_level": 1
+        },
+        {
+          "bonus_type": "crit_chance",
+          "bonus_value": 0.05,
+          "description": "Weak Point Analysis",
+          "unlock_level": 1
+        }
+      ]
+    },
+    {
+      "id": "juno_park",
+      "name": "Juno Park",
+      "role": "shield technician",
+      "faction_id": "industrial_union",
+      "home_system_id": "forgeworks",
+      "description": "Forgeworks defense contractor who spent a decade calibrating military-grade shield arrays. Juno can tune a shield generator by sound alone.",
+      "portrait_color": [100, 160, 200],
+      "base_attributes": {"com": 1, "acu": 1, "res": 2, "ing": 2, "syn": 1},
+      "max_level": 1,
+      "xp_thresholds": [0],
+      "is_companion": false,
+      "abilities": [
+        {
+          "bonus_type": "shield_bonus",
+          "bonus_value": 10.0,
+          "description": "Shield Tuning",
+          "unlock_level": 1
+        },
+        {
+          "bonus_type": "hull_damage_reduction",
+          "bonus_value": 0.05,
+          "description": "Armor Reinforcement",
+          "unlock_level": 1
+        }
+      ]
+    },
+    {
+      "id": "bram_okeke",
+      "name": "Bram Okeke",
+      "role": "drill operator",
+      "faction_id": "industrial_union",
+      "home_system_id": "breakstone",
+      "description": "Third-generation Breakstone miner with forty years of rock dust in his lungs and an instinct for finding the right seam. Bram makes drilling look easy.",
+      "portrait_color": [170, 130, 70],
+      "base_attributes": {"com": 1, "acu": 1, "res": 3, "ing": 1, "syn": 1},
+      "max_level": 1,
+      "xp_thresholds": [0],
+      "is_companion": false,
+      "abilities": [
+        {
+          "bonus_type": "drill_speed",
+          "bonus_value": 1.5,
+          "description": "Expert Drilling",
+          "unlock_level": 1
+        },
+        {
+          "bonus_type": "click_drill_power",
+          "bonus_value": 1.0,
+          "description": "Precision Boring",
+          "unlock_level": 1
+        }
+      ]
+    },
+    {
+      "id": "nadia_sokolov",
+      "name": "Nadia Sokolov",
+      "role": "ore specialist",
+      "faction_id": "industrial_union",
+      "home_system_id": "iron_depths",
+      "description": "DCMC geological surveyor who can identify mineral grades by color and fracture pattern. Nadia knows where the rare deposits hide.",
+      "portrait_color": [140, 100, 160],
+      "base_attributes": {"com": 1, "acu": 2, "res": 1, "ing": 2, "syn": 1},
+      "max_level": 1,
+      "xp_thresholds": [0],
+      "is_companion": false,
+      "abilities": [
+        {
+          "bonus_type": "rare_ore_chance",
+          "bonus_value": 0.08,
+          "description": "Vein Finder",
+          "unlock_level": 1
+        },
+        {
+          "bonus_type": "mining_rare_chance",
+          "bonus_value": 0.05,
+          "description": "Rare Mineral Instinct",
+          "unlock_level": 1
+        }
+      ]
+    },
+    {
+      "id": "felix_moreau",
+      "name": "Felix Moreau",
+      "role": "star cartographer",
+      "faction_id": "frontier_alliance",
+      "home_system_id": "havens_rest",
+      "description": "Self-taught navigator who mapped half the frontier routes the Alliance uses today. Felix trades in fuel savings and shortcuts most pilots never find.",
+      "portrait_color": [90, 180, 150],
+      "base_attributes": {"com": 1, "acu": 2, "res": 1, "ing": 1, "syn": 2},
+      "max_level": 1,
+      "xp_thresholds": [0],
+      "is_companion": false,
+      "abilities": [
+        {
+          "bonus_type": "fuel_reduction",
+          "bonus_value": 1.5,
+          "description": "Shortcut Routes",
+          "unlock_level": 1
+        },
+        {
+          "bonus_type": "map_reveal",
+          "bonus_value": 1.0,
+          "description": "Frontier Charts",
+          "unlock_level": 1
+        }
+      ]
+    },
+    {
+      "id": "wren_adeyemi",
+      "name": "Wren Adeyemi",
+      "role": "scout pilot",
+      "faction_id": "frontier_alliance",
+      "home_system_id": "verdant",
+      "description": "Alliance pathfinder who scouts ahead of trade convoys. Wren has a sixth sense for danger and an eye for anything worth scanning.",
+      "portrait_color": [120, 200, 100],
+      "base_attributes": {"com": 1, "acu": 3, "res": 1, "ing": 1, "syn": 1},
+      "max_level": 1,
+      "xp_thresholds": [0],
+      "is_companion": false,
+      "abilities": [
+        {
+          "bonus_type": "travel_danger_reduction",
+          "bonus_value": 0.10,
+          "description": "Threat Assessment",
+          "unlock_level": 1
+        },
+        {
+          "bonus_type": "scan_range",
+          "bonus_value": 1.0,
+          "description": "Long-Range Sensors",
+          "unlock_level": 1
+        }
+      ]
+    },
+    {
+      "id": "zero",
+      "name": "Zero",
+      "role": "contraband specialist",
+      "faction_id": "",
+      "home_system_id": "crimson_reach",
+      "description": "Nobody knows Zero's real name, and that's the point. Specializes in hidden compartments, false manifests, and making cargo disappear from inspection logs.",
+      "portrait_color": [80, 80, 100],
+      "base_attributes": {"com": 2, "acu": 1, "res": 1, "ing": 2, "syn": 1},
+      "max_level": 1,
+      "xp_thresholds": [0],
+      "is_companion": false,
+      "abilities": [
+        {
+          "bonus_type": "contraband_slots",
+          "bonus_value": 1.0,
+          "description": "Hidden Compartments",
+          "unlock_level": 1
+        },
+        {
+          "bonus_type": "scan_evasion",
+          "bonus_value": 0.10,
+          "description": "Counter-Scanning",
+          "unlock_level": 1
+        }
+      ]
+    },
+    {
+      "id": "sol_petrov",
+      "name": "Sol Petrov",
+      "role": "document forger",
+      "faction_id": "commerce_guild",
+      "home_system_id": "nexus_prime",
+      "description": "Former Guild customs clerk who saw one too many inspections go wrong. Sol can make any manifest look legitimate and any cargo look boring.",
+      "portrait_color": [200, 190, 160],
+      "base_attributes": {"com": 2, "acu": 1, "res": 1, "ing": 1, "syn": 2},
+      "max_level": 1,
+      "xp_thresholds": [0],
+      "is_companion": false,
+      "abilities": [
+        {
+          "bonus_type": "manifest_forgery",
+          "bonus_value": 1.0,
+          "description": "Forged Documents",
+          "unlock_level": 1
+        },
+        {
+          "bonus_type": "heat_reduction",
+          "bonus_value": 0.08,
+          "description": "Paper Trail Cleanup",
+          "unlock_level": 1
+        }
+      ]
+    },
+    {
+      "id": "dr_wei_liang",
+      "name": "Dr. Wei Liang",
+      "role": "lab assistant",
+      "faction_id": "science_collective",
+      "home_system_id": "axiom_labs",
+      "description": "Collective research technician with a talent for field observation. Wei turns raw data into actionable intelligence and keeps the scanners calibrated.",
+      "portrait_color": [180, 160, 220],
+      "base_attributes": {"com": 1, "acu": 3, "res": 1, "ing": 1, "syn": 1},
+      "max_level": 1,
+      "xp_thresholds": [0],
+      "is_companion": false,
+      "abilities": [
+        {
+          "bonus_type": "observation_bonus",
+          "bonus_value": 1.0,
+          "description": "Field Analysis",
+          "unlock_level": 1
+        },
+        {
+          "bonus_type": "extra_scan_charges",
+          "bonus_value": 1.0,
+          "description": "Calibrated Sensors",
+          "unlock_level": 1
+        }
+      ]
+    },
+    {
+      "id": "tova_engstrom",
+      "name": "Tova Engström",
+      "role": "xenobiologist",
+      "faction_id": "science_collective",
+      "home_system_id": "nova_research",
+      "description": "Nova Research field biologist who studies anomalous organisms in deep-space wreckage. Tova finds value in debris most people would jettison.",
+      "portrait_color": [130, 190, 180],
+      "base_attributes": {"com": 1, "acu": 2, "res": 1, "ing": 2, "syn": 1},
+      "max_level": 1,
+      "xp_thresholds": [0],
+      "is_companion": false,
+      "abilities": [
+        {
+          "bonus_type": "salvage_yield",
+          "bonus_value": 0.15,
+          "description": "Salvage Expertise",
+          "unlock_level": 1
+        },
+        {
+          "bonus_type": "anomaly_chance",
+          "bonus_value": 0.05,
+          "description": "Anomaly Detection",
+          "unlock_level": 1
+        }
+      ]
+    },
+    {
+      "id": "adisa_nyongo",
+      "name": "Adisa Nyong'o",
+      "role": "diplomatic aide",
+      "faction_id": "frontier_alliance",
+      "home_system_id": "havens_rest",
+      "description": "Alliance community liaison who spent years mediating between faction representatives. Adisa's presence smooths over cultural friction wherever you dock.",
+      "portrait_color": [200, 170, 100],
+      "base_attributes": {"com": 2, "acu": 1, "res": 1, "ing": 1, "syn": 2},
+      "max_level": 1,
+      "xp_thresholds": [0],
+      "is_companion": false,
+      "abilities": [
+        {
+          "bonus_type": "reputation_gain_bonus",
+          "bonus_value": 0.15,
+          "description": "Cultural Bridge",
+          "unlock_level": 1
+        },
+        {
+          "bonus_type": "diplomatic_rep_bonus",
+          "bonus_value": 1.0,
+          "description": "Diplomatic Channels",
+          "unlock_level": 1
+        }
+      ]
+    },
+    {
+      "id": "leah_chen",
+      "name": "Leah Chen",
+      "role": "negotiator",
+      "faction_id": "commerce_guild",
+      "home_system_id": "stellaris_port",
+      "description": "Ex-Guild trade arbitrator who left the boardroom for open space. Leah negotiates better prices at every port — buying and selling.",
+      "portrait_color": [210, 150, 170],
+      "base_attributes": {"com": 3, "acu": 1, "res": 1, "ing": 1, "syn": 1},
+      "max_level": 1,
+      "xp_thresholds": [0],
+      "is_companion": false,
+      "abilities": [
+        {
+          "bonus_type": "buy_price_reduction",
+          "bonus_value": 0.03,
+          "description": "Buyer's Leverage",
+          "unlock_level": 1
+        },
+        {
+          "bonus_type": "sell_price_bonus",
+          "bonus_value": 0.03,
+          "description": "Seller's Edge",
+          "unlock_level": 1
+        }
+      ]
+    },
+    {
+      "id": "cpl_ines_rask",
+      "name": "Cpl. Inés Rask",
+      "role": "security officer",
+      "faction_id": "",
+      "home_system_id": "the_fulcrum",
+      "description": "Former Fulcrum station security who left after one too many classified briefings. Rask doesn't explain why, but she handles herself in a fight.",
+      "portrait_color": [150, 150, 170],
+      "base_attributes": {"com": 1, "acu": 1, "res": 3, "ing": 1, "syn": 1},
+      "max_level": 1,
+      "xp_thresholds": [0],
+      "is_companion": false,
+      "abilities": [
+        {
+          "bonus_type": "ground_attack_bonus",
+          "bonus_value": 2.0,
+          "description": "Combat Training",
+          "unlock_level": 1
+        },
+        {
+          "bonus_type": "ground_hp_bonus",
+          "bonus_value": 5.0,
+          "description": "Tactical Armor",
+          "unlock_level": 1
+        }
+      ]
     }
   ]
 }

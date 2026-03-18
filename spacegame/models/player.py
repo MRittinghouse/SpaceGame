@@ -11,6 +11,20 @@ from spacegame.models.progression import PlayerProgression
 from spacegame.models.upgrades import ShipUpgradeManager
 from spacegame.models.drone import MiningDroneFleet
 from spacegame.models.faction import ReputationTier, get_reputation_tier
+from spacegame.models.trade_route import TradeRouteTracker
+from spacegame.models.ore_silo import OreSiloManager
+from spacegame.models.deep_core import DeepCoreUpgradeState
+from spacegame.models.salvage_hold import SalvageHoldManager
+from spacegame.models.wreck_upgrade import WreckUpgradeState
+from spacegame.models.forge_upgrade import ForgeUpgradeState
+from spacegame.models.forge_buffer import ForgeBufferManager
+from spacegame.models.recipe_mastery import RecipeMasteryTracker
+from spacegame.models.player_identity import (
+    get_all_titles,
+    get_primary_title,
+    get_playstyle,
+    get_playstyle_label,
+)
 
 
 @dataclass
@@ -25,6 +39,7 @@ class Player:
     credits: int
     current_system_id: str
     ship: Ship
+    ship_name: str = ""  # Player-chosen ship name (empty = use ship type name)
     game_day: int = 1  # Turn counter for turn-based travel
     total_profit: int = 0  # Career profit tracking
     trades_completed: int = 0
@@ -76,6 +91,10 @@ class Player:
     # Political system state
     political_state: dict = field(default_factory=dict)
 
+    # Trade route tracking
+    trade_route_tracker: TradeRouteTracker = field(default_factory=TradeRouteTracker)
+    previous_system_id: str = ""
+
     # Smuggling system
     criminal_heat: int = 0
     goods_smuggled: int = 0
@@ -96,6 +115,13 @@ class Player:
     # Combat statistics
     combats_won: int = 0
     combats_fled: int = 0
+    combats_negotiated: int = 0
+    combats_bribed: int = 0
+
+    # Mission statistics
+    side_missions_completed: int = 0
+    crew_quests_completed: int = 0
+    encounters_survived: int = 0
 
     # Lifetime statistics for achievements
     credits_earned_lifetime: int = 0
@@ -121,6 +147,34 @@ class Player:
     # Investment + rating stats
     investments_owned: int = 0
     s_ranks_earned: int = 0
+
+    # Personal records (high-water marks)
+    best_mining_session_ore: int = 0
+    best_mining_depth: int = 0  # Distinct from max_mining_depth (session vs career)
+    best_trade_profit: int = 0  # Single transaction
+    best_salvage_haul: int = 0  # Single session
+    best_refining_output: int = 0  # Single session
+    max_credits_held: int = 0
+
+    # Deep Core mining progression
+    strata_tokens: int = 0
+    mining_prestige_level: int = 0
+    deep_core_upgrades: DeepCoreUpgradeState = field(default_factory=DeepCoreUpgradeState)
+    ore_silo_manager: OreSiloManager = field(default_factory=OreSiloManager)
+
+    # Deep Salvage progression
+    salvage_intel: int = 0
+    salvage_prestige_level: int = 0
+    wreck_upgrades: WreckUpgradeState = field(default_factory=WreckUpgradeState)
+    salvage_hold_manager: SalvageHoldManager = field(default_factory=SalvageHoldManager)
+    max_salvage_deck: int = 0
+
+    # Forge (Catalyst Protocol) progression
+    forge_tokens: int = 0
+    forge_upgrades: ForgeUpgradeState = field(default_factory=ForgeUpgradeState)
+    forge_buffer_manager: ForgeBufferManager = field(default_factory=ForgeBufferManager)
+    recipe_mastery: RecipeMasteryTracker = field(default_factory=RecipeMasteryTracker)
+    discovered_recipes: set[str] = field(default_factory=set)
 
     def __post_init__(self) -> None:
         """Initialize visited systems with starting location."""
@@ -148,6 +202,8 @@ class Player:
             amount: Credits to add
         """
         self.credits += amount
+        if self.credits > self.max_credits_held:
+            self.max_credits_held = self.credits
 
     def deduct_credits(self, amount: int) -> bool:
         """
@@ -440,6 +496,64 @@ class Player:
         # TODO: Add cargo value calculation when market prices available
         return self.credits + self.ship.ship_type.resale_value
 
+    @property
+    def display_ship_name(self) -> str:
+        """Get the display name for the player's ship."""
+        return self.ship_name if self.ship_name else self.ship.name
+
+    def _identity_stats(self) -> dict[str, int]:
+        """Get stats used for identity calculations."""
+        return {
+            "ore_mined": self.ore_mined,
+            "trades_completed": self.trades_completed,
+            "combats_won": self.combats_won,
+            "items_salvaged": self.items_salvaged,
+            "items_refined": self.items_refined,
+            "systems_visited": len(self.systems_visited),
+        }
+
+    @property
+    def title(self) -> str:
+        """Get the player's primary reputation title."""
+        return get_primary_title(**self._identity_stats())
+
+    @property
+    def all_titles(self) -> dict[str, str]:
+        """Get all earned titles by domain."""
+        return get_all_titles(**self._identity_stats())
+
+    @property
+    def playstyle(self) -> str:
+        """Get the player's dominant playstyle key."""
+        return get_playstyle(**self._identity_stats())
+
+    @property
+    def playstyle_label(self) -> str:
+        """Get the player's playstyle as a human-readable label."""
+        return get_playstyle_label(**self._identity_stats())
+
+    def make_news_context(
+        self, detail: str = "", commodity: str = "", amount: str = ""
+    ) -> dict[str, str]:
+        """Create a context dict for player action news templates.
+
+        Args:
+            detail: Action-specific detail (e.g., mining depth, recipe name).
+            commodity: Commodity involved.
+            amount: Amount or value string.
+
+        Returns:
+            Dict suitable for news ticker player_action context.
+        """
+        return {
+            "player_name": self.name,
+            "ship_name": self.display_ship_name,
+            "system": self.current_system_id,
+            "detail": detail,
+            "commodity": commodity,
+            "amount": amount,
+        }
+
     def get_statistics(self) -> dict[str, any]:
         """
         Get player statistics for display.
@@ -449,9 +563,12 @@ class Player:
         """
         return {
             "name": self.name,
+            "title": self.title,
+            "playstyle": self.playstyle_label,
             "credits": self.credits,
             "day": self.game_day,
-            "ship": self.ship.name,
+            "ship": self.display_ship_name,
+            "ship_name": self.ship_name,
             "location": self.current_system_id,
             "fuel": f"{self.ship.current_fuel}/{self.ship.max_fuel}",
             "fuel_percent": self.ship.get_fuel_percentage(),
@@ -479,6 +596,13 @@ class Player:
             "goods_smuggled": self.goods_smuggled,
             "smuggling_contracts_completed": self.smuggling_contracts_completed,
             "times_caught_smuggling": self.times_caught_smuggling,
+            # Personal records
+            "best_mining_session_ore": self.best_mining_session_ore,
+            "best_mining_depth": self.best_mining_depth,
+            "best_trade_profit": self.best_trade_profit,
+            "best_salvage_haul": self.best_salvage_haul,
+            "best_refining_output": self.best_refining_output,
+            "max_credits_held": self.max_credits_held,
         }
 
     def add_criminal_heat(self, amount: int) -> None:
@@ -585,3 +709,100 @@ class Player:
             The ReputationTier enum value.
         """
         return get_reputation_tier(self.get_reputation(faction_id))
+
+    def add_strata_tokens(self, amount: int) -> None:
+        """Add strata tokens to player balance.
+
+        Args:
+            amount: Tokens to add.
+        """
+        self.strata_tokens += amount
+
+    def spend_strata_tokens(self, amount: int) -> bool:
+        """Spend strata tokens if sufficient balance.
+
+        Args:
+            amount: Tokens to spend.
+
+        Returns:
+            True if successful, False if insufficient.
+        """
+        if self.strata_tokens < amount:
+            return False
+        self.strata_tokens -= amount
+        return True
+
+    def add_salvage_intel(self, amount: int) -> None:
+        """Add salvage intel to player balance.
+
+        Args:
+            amount: Intel to add.
+        """
+        self.salvage_intel += amount
+
+    def spend_salvage_intel(self, amount: int) -> bool:
+        """Spend salvage intel if sufficient balance.
+
+        Args:
+            amount: Intel to spend.
+
+        Returns:
+            True if successful, False if insufficient.
+        """
+        if self.salvage_intel < amount:
+            return False
+        self.salvage_intel -= amount
+        return True
+
+    def add_forge_tokens(self, amount: int) -> None:
+        """Add forge tokens to player balance.
+
+        Args:
+            amount: Tokens to add.
+        """
+        self.forge_tokens += amount
+
+    def spend_forge_tokens(self, amount: int) -> bool:
+        """Spend forge tokens if sufficient balance.
+
+        Args:
+            amount: Tokens to spend.
+
+        Returns:
+            True if successful, False if insufficient.
+        """
+        if self.forge_tokens < amount:
+            return False
+        self.forge_tokens -= amount
+        return True
+
+    def discover_recipe(self, recipe_id: str) -> None:
+        """Mark a recipe as discovered.
+
+        Args:
+            recipe_id: ID of the recipe to discover.
+        """
+        self.discovered_recipes.add(recipe_id)
+
+    def is_recipe_discovered(self, recipe_id: str) -> bool:
+        """Check if a recipe has been discovered.
+
+        Args:
+            recipe_id: ID of the recipe to check.
+
+        Returns:
+            True if discovered.
+        """
+        return recipe_id in self.discovered_recipes
+
+    def initialize_discovered_recipes(self, recipes: list) -> None:
+        """Populate discovered_recipes with all non-discoverable recipes.
+
+        Called on new game or when loading a save that has no discoveries yet.
+
+        Args:
+            recipes: All recipes from DataLoader.
+        """
+        for recipe in recipes:
+            if not recipe.discoverable:
+                self.discovered_recipes.add(recipe.id)

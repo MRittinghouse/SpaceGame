@@ -1,0 +1,1326 @@
+{
+  "ambient_lines": [
+    {
+      "crew_id": "elena_reeves",
+      "text": "Stellaris Port. I used to know every docking clerk by name. Doubt any of them remember me.",
+      "context": "home_system",
+      "system_id": "stellaris_port"
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "Guild territory. Say what you will about the bureaucracy -- their docking procedures are impeccable.",
+      "context": "faction_territory",
+      "faction_id": "commerce_guild"
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "I've been running fuel projections. We could save twelve percent if we adjusted our departure windows.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "The navigation charts for this region haven't been updated in three years. I'll draft corrections when we dock.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "Jin, did you re-torque the port coupling? I can feel a 0.3-degree drift.",
+      "context": "inter_crew",
+      "required_crew": "marcus_jin"
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "Drifter, if you're going to renegotiate our fuel contract, at least tell me first. I had the routing planned around the old price.",
+      "context": "inter_crew",
+      "required_crew": "tomas_drifter"
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "Breakstone. The ore dust never really washes off, does it?",
+      "context": "home_system",
+      "system_id": "breakstone"
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "Union steel. You can always tell by the welds -- clean, even, no shortcuts.",
+      "context": "faction_territory",
+      "faction_id": "industrial_union"
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "Engine's running clean. Whoever built this ship knew what they were doing. Mostly.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "I've been thinking about replacing the secondary coolant line. It's within spec, but just barely.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "Doc, your spectrometer's pulling 3 amps over rated. I'll swap the capacitor tonight.",
+      "context": "inter_crew",
+      "required_crew": "dr_priya_osei"
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "Reeves, those departure calculations you sent -- good work. Saved us twenty minutes on the approach.",
+      "context": "inter_crew",
+      "required_crew": "elena_reeves"
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "text": "Axiom Labs. The Collective's flagship research station. I had a corner office once. The view was terrible.",
+      "context": "home_system",
+      "system_id": "axiom_labs"
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "text": "Collective space. The data networks here are exceptional -- if they'd only share them more freely.",
+      "context": "faction_territory",
+      "faction_id": "science_collective"
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "text": "I've been cataloging the mineral traces in our last haul. Three compounds I've never seen in combination before.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "text": "Every system we visit adds to the dataset. Patterns emerge if you're patient enough to look.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "text": "Tomas, I've been analyzing your trade routes. There's a fascinating pattern in how you avoid Collective checkpoints.",
+      "context": "inter_crew",
+      "required_crew": "tomas_drifter"
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "text": "Marcus, the harmonic frequency on the port engine shifted 0.2 hertz. Might want to check the mounting bolts.",
+      "context": "inter_crew",
+      "required_crew": "marcus_jin"
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "text": "Haven's Rest. My mother ran a noodle stand on Deck Seven. Best laksa in the sector.",
+      "context": "home_system",
+      "system_id": "havens_rest"
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "text": "Alliance space. The tariffs are low, the paperwork is thin, and nobody asks where you've been. My kind of port.",
+      "context": "faction_territory",
+      "faction_id": "free_alliance"
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "text": "You know what I miss? Real weather. Station air gets old after a while.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "text": "I heard there's a seller at the next port who owes me a favor. Might get us a better rate on fuel cells.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "text": "Reeves, you ever loosen up? I've seen navigation charts with more personality.",
+      "context": "inter_crew",
+      "required_crew": "elena_reeves"
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "text": "Doc, you ever think about selling those mineral analyses? Some traders would pay good credits for that data.",
+      "context": "inter_crew",
+      "required_crew": "dr_priya_osei"
+    },
+    {
+      "crew_id": "kai_torren",
+      "text": "Nexus Prime. I used to run the loading bays on Deck Twelve. Tightest cargo stacking in the sector.",
+      "context": "home_system",
+      "system_id": "nexus_prime"
+    },
+    {
+      "crew_id": "kai_torren",
+      "text": "Guild docks are always organized. Makes my job easier when everything's labeled right.",
+      "context": "faction_territory",
+      "faction_id": "commerce_guild"
+    },
+    {
+      "crew_id": "kai_torren",
+      "text": "I rearranged the aft hold. Got us another eight cubic meters. You're welcome.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "rina_vasquez",
+      "text": "Stellaris Port. The trading floor here sets the tone for the whole sector. Watch the boards.",
+      "context": "home_system",
+      "system_id": "stellaris_port"
+    },
+    {
+      "crew_id": "rina_vasquez",
+      "text": "Guild stations post their price data honestly, at least. Makes forecasting possible.",
+      "context": "faction_territory",
+      "faction_id": "commerce_guild"
+    },
+    {
+      "crew_id": "rina_vasquez",
+      "text": "Crystal prices are diverging from the three-month trend. Could mean opportunity, could mean trouble.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "sgt_harkov",
+      "text": "The Reach. Good place to disappear. Better place to stay sharp.",
+      "context": "home_system",
+      "system_id": "crimson_reach"
+    },
+    {
+      "crew_id": "sgt_harkov",
+      "text": "Unaffiliated space. Keep weapons hot. Nobody's coming to help out here.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "sgt_harkov",
+      "text": "Weapons are clean, sights are calibrated. When it counts, we won't miss.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "juno_park",
+      "text": "Forgeworks. The vibration here is different from anywhere else. Foundries never sleep.",
+      "context": "home_system",
+      "system_id": "forgeworks"
+    },
+    {
+      "crew_id": "juno_park",
+      "text": "Union stations build their shields to last. Overbuilt, the Guild says. I call it reliable.",
+      "context": "faction_territory",
+      "faction_id": "industrial_union"
+    },
+    {
+      "crew_id": "juno_park",
+      "text": "I tweaked the shield harmonics again. Two percent better absorption across the board.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "bram_okeke",
+      "text": "Breakstone. My grandfather drilled Shaft Four. My father drilled Shaft Seven. This place is in my bones.",
+      "context": "home_system",
+      "system_id": "breakstone"
+    },
+    {
+      "crew_id": "bram_okeke",
+      "text": "Union rock, Union hands. Nobody drills cleaner.",
+      "context": "faction_territory",
+      "faction_id": "industrial_union"
+    },
+    {
+      "crew_id": "bram_okeke",
+      "text": "Drill heads need replacing every forty shifts. Most people don't think about it until it's too late.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "nadia_sokolov",
+      "text": "Iron Depths. DCMC runs a tight operation down here. Tight and quiet.",
+      "context": "home_system",
+      "system_id": "iron_depths"
+    },
+    {
+      "crew_id": "nadia_sokolov",
+      "text": "Union mining stations always have the best geological surveys. The data is thorough.",
+      "context": "faction_territory",
+      "faction_id": "industrial_union"
+    },
+    {
+      "crew_id": "nadia_sokolov",
+      "text": "The color of the fracture line tells you everything. Most people just see rock.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "felix_moreau",
+      "text": "Haven's Rest. I mapped my first route from this dock. Fuel depot to Verdant, the long way around.",
+      "context": "home_system",
+      "system_id": "havens_rest"
+    },
+    {
+      "crew_id": "felix_moreau",
+      "text": "Alliance space. The routes out here weren't charted by committee. They were found by people who needed them.",
+      "context": "faction_territory",
+      "faction_id": "frontier_alliance"
+    },
+    {
+      "crew_id": "felix_moreau",
+      "text": "There's a fuel-saving shortcut through this region. Most pilots miss it because the charts are outdated.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "wren_adeyemi",
+      "text": "Verdant. Greenest station in the sector. The air recyclers here actually work properly.",
+      "context": "home_system",
+      "system_id": "verdant"
+    },
+    {
+      "crew_id": "wren_adeyemi",
+      "text": "Alliance territory. I know these patrol routes. We're safe here. Mostly.",
+      "context": "faction_territory",
+      "faction_id": "frontier_alliance"
+    },
+    {
+      "crew_id": "wren_adeyemi",
+      "text": "Sensors are reading clean ahead, but I've been wrong before. Stay alert.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "zero",
+      "text": "Crimson Reach. Nobody asks names here. That's the appeal.",
+      "context": "home_system",
+      "system_id": "crimson_reach"
+    },
+    {
+      "crew_id": "zero",
+      "text": "Inspection coming up. Relax. The compartments are clean. They're always clean.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "zero",
+      "text": "The less you know about what I did before this, the better we both sleep.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "sol_petrov",
+      "text": "Nexus Prime. I used to stamp manifests in that customs office. Now I unstamp them.",
+      "context": "home_system",
+      "system_id": "nexus_prime"
+    },
+    {
+      "crew_id": "sol_petrov",
+      "text": "Guild paperwork is thorough. That's what makes it fun to forge.",
+      "context": "faction_territory",
+      "faction_id": "commerce_guild"
+    },
+    {
+      "crew_id": "sol_petrov",
+      "text": "I updated the cargo manifests. Everything looks perfectly ordinary. As intended.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "dr_wei_liang",
+      "text": "Axiom Labs. Collective stations always smell like synthesized coffee. I've missed it.",
+      "context": "home_system",
+      "system_id": "axiom_labs"
+    },
+    {
+      "crew_id": "dr_wei_liang",
+      "text": "Collective space. The sensor arrays here are first-rate. I can calibrate remotely.",
+      "context": "faction_territory",
+      "faction_id": "science_collective"
+    },
+    {
+      "crew_id": "dr_wei_liang",
+      "text": "I've been running the scan data through a new filter. There's something in the background noise worth looking at.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "tova_engstrom",
+      "text": "Nova Research. Half the labs here are classified. The other half should be.",
+      "context": "home_system",
+      "system_id": "nova_research"
+    },
+    {
+      "crew_id": "tova_engstrom",
+      "text": "Collective stations archive everything. Somewhere in those databanks is something nobody's looked at twice.",
+      "context": "faction_territory",
+      "faction_id": "science_collective"
+    },
+    {
+      "crew_id": "tova_engstrom",
+      "text": "That debris field we passed had organic traces. I took samples. You'll thank me later.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "adisa_nyongo",
+      "text": "Haven's Rest. The community councils here actually listen. It's refreshing.",
+      "context": "home_system",
+      "system_id": "havens_rest"
+    },
+    {
+      "crew_id": "adisa_nyongo",
+      "text": "Alliance space. People here judge you by what you do, not who you work for.",
+      "context": "faction_territory",
+      "faction_id": "frontier_alliance"
+    },
+    {
+      "crew_id": "adisa_nyongo",
+      "text": "I smoothed things over with the dockmaster. We should get priority clearance next time.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "leah_chen",
+      "text": "Stellaris Port. I negotiated my first contract in that building. The seller never stood a chance.",
+      "context": "home_system",
+      "system_id": "stellaris_port"
+    },
+    {
+      "crew_id": "leah_chen",
+      "text": "Guild stations price fairly, but fairly isn't the same as cheaply. Leave the talking to me.",
+      "context": "faction_territory",
+      "faction_id": "commerce_guild"
+    },
+    {
+      "crew_id": "leah_chen",
+      "text": "I've been reviewing our last three trades. We left credits on the table. Won't happen again.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "cpl_ines_rask",
+      "text": "The Fulcrum. The corridors are too clean. Too quiet. I don't miss it.",
+      "context": "home_system",
+      "system_id": "the_fulcrum"
+    },
+    {
+      "crew_id": "cpl_ines_rask",
+      "text": "Perimeter is secure. I checked twice.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "cpl_ines_rask",
+      "text": "If we're going groundside, I want point. Non-negotiable.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "I keep a list of every ship I couldn't save. It's shorter than you'd think. That's the part that bothers me.",
+      "context": "idle",
+      "min_loyalty": 40
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "I skipped the medical again. I know. The ship needs me more than the clinic does.",
+      "context": "idle",
+      "min_loyalty": 30
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "This sector gives me a bad feeling. The kind I get right before something expensive breaks.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "People always assume the worst thing I did was violent. It wasn't. I just walked away when someone needed me to stay.",
+      "context": "idle",
+      "min_loyalty": 60
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "I don't sleep well out here. The quiet sounds wrong when you're used to shipyard noise.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "Check your seals twice before we jump. I've pulled bodies out of decompressed compartments. You don't forget the faces.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "text": "The Collective offered me my position back last month. Better lab, better pay. I deleted the message.",
+      "context": "idle",
+      "min_loyalty": 50
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "text": "Statistically, this route should have killed us twice by now. I find that oddly motivating.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "text": "I keep a pressed sample from every system we visit. Dust, pollen, metal shavings. My collection fills a drawer now.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "text": "My mother died on a station that couldn't afford medicine. So yeah, I have opinions about trade embargo policy.",
+      "context": "idle",
+      "min_loyalty": 50
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "text": "I've been in cantinas on eleven stations. They all smell the same. Recycled air, cheap synth-alcohol, and desperation.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "text": "People look at me and see a charmer. I look at me and see someone who learned that smiling is cheaper than fighting.",
+      "context": "idle",
+      "min_loyalty": 40
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "Jin, you ever wonder if we're the only ones out here who fix things instead of strip them for parts?",
+      "context": "inter_crew",
+      "required_crew": "marcus_jin",
+      "min_loyalty": 30
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "Drifter, you talk your way out of everything. One day that won't work. I hope I'm there when it happens.",
+      "context": "inter_crew",
+      "required_crew": "tomas_drifter"
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "text": "Elena, when was the last time you ate something that wasn't a ration bar? Your cortisol readings are concerning.",
+      "context": "inter_crew",
+      "required_crew": "elena_reeves"
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "text": "Doc, I've seen you stare at data for nine hours straight. You lecture me about self-care?",
+      "context": "inter_crew",
+      "required_crew": "dr_priya_osei"
+    },
+    {
+      "crew_id": "kai_torren",
+      "text": "I count the crates. Every time. My last crew didn't count. That's why they're my last crew.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "kai_torren",
+      "text": "Nexus Prime charges by the cubic centimeter for hold space. You learn to pack tight or you go hungry.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "rina_vasquez",
+      "text": "The numbers always tell a story. Lately the story is that someone's manipulating the crystal market. And they're good at it.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "rina_vasquez",
+      "text": "I got into market analysis because I like certainty. Funny place to look for it.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "sgt_harkov",
+      "text": "I stopped counting kills after Shaft Seven. The number doesn't help you sleep.",
+      "context": "idle",
+      "min_loyalty": 30
+    },
+    {
+      "crew_id": "sgt_harkov",
+      "text": "The Reach taught me one thing: everybody's armed, and half of them are scared. Scared people miss. Angry people don't.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "juno_park",
+      "text": "I name my tools. The torque wrench is Patience. The arc welder is Last Resort. Don't ask about the hammer.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "juno_park",
+      "text": "Forgeworks foundry workers get a fifteen-minute break every six hours. I used to spend mine just breathing clean air.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "bram_okeke",
+      "text": "My grandfather's lungs gave out at fifty-two. My father's at forty-eight. I hum his song when I drill. Keeps the count steady.",
+      "context": "idle",
+      "min_loyalty": 30
+    },
+    {
+      "crew_id": "bram_okeke",
+      "text": "You ever feel the rock breathe? Deep enough, the pressure changes are rhythmic. Almost like a heartbeat.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "nadia_sokolov",
+      "text": "DCMC doesn't publish the real incident numbers. I've seen the internal reports. The published ones are... optimistic.",
+      "context": "idle",
+      "min_loyalty": 30
+    },
+    {
+      "crew_id": "nadia_sokolov",
+      "text": "Every ore sample is a grave marker for something that lived millions of years ago. I try to remember that.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "felix_moreau",
+      "text": "I mapped a route once that saved two days of fuel. The pilot who flew it found a debris field that wasn't on any chart. Wasn't a good day.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "felix_moreau",
+      "text": "The old charts have gaps. Not errors. Gaps. Places someone decided you shouldn't go. I keep a list.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "wren_adeyemi",
+      "text": "Sensors can't see everything. I trust the instruments, but I also trust the knot in my stomach. Both have saved my life.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "wren_adeyemi",
+      "text": "I scouted for a convoy once that never arrived at the rendezvous. I waited three days. The beacon's still there.",
+      "context": "idle",
+      "min_loyalty": 30
+    },
+    {
+      "crew_id": "zero",
+      "text": "You're wondering about the name. Keep wondering.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "zero",
+      "text": "I had a real name once. It's on a warrant somewhere. Doesn't matter anymore.",
+      "context": "idle",
+      "min_loyalty": 40
+    },
+    {
+      "crew_id": "sol_petrov",
+      "text": "The Guild thinks identity is a number in a database. I think identity is whatever you can make someone believe.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "sol_petrov",
+      "text": "I forged my first document at sixteen. A meal voucher. You do what you have to when the ration line closes at noon.",
+      "context": "idle",
+      "min_loyalty": 30
+    },
+    {
+      "crew_id": "dr_wei_liang",
+      "text": "The Collective let me go because I asked questions about Project Terminus. They said the project didn't exist. My clearance said otherwise.",
+      "context": "idle",
+      "min_loyalty": 40
+    },
+    {
+      "crew_id": "dr_wei_liang",
+      "text": "I keep a journal in a cipher nobody else can read. Habit from the labs. Paranoia, maybe. But useful paranoia.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "tova_engstrom",
+      "text": "I keep a pressed flower from Verdant in my kit. The species went extinct two years after I collected it. Last one anywhere.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "tova_engstrom",
+      "text": "Half the things I study, nobody's looked at twice. The other half, somebody looked at once and classified. There's a pattern there.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "adisa_nyongo",
+      "text": "Diplomacy is just listening until someone tells you what they actually want. Most people are too busy talking to hear it.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "adisa_nyongo",
+      "text": "I brokered a ceasefire on Haven's Rest once. Took eleven hours. Both sides thanked me. Neither side meant it.",
+      "context": "idle",
+      "min_loyalty": 30
+    },
+    {
+      "crew_id": "leah_chen",
+      "text": "The best deal I ever made cost someone their livelihood. I didn't know until after. I don't make deals like that anymore.",
+      "context": "idle",
+      "min_loyalty": 40
+    },
+    {
+      "crew_id": "leah_chen",
+      "text": "Everyone thinks negotiation is about winning. It's about knowing what losing looks like and making the other person see it first.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "cpl_ines_rask",
+      "text": "The Fulcrum trains you to sleep in four-hour blocks. I can't do eight anymore. Doesn't feel safe.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "cpl_ines_rask",
+      "text": "I left the military because I started agreeing with orders I shouldn't have. That scared me more than combat ever did.",
+      "context": "idle",
+      "min_loyalty": 40
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "That margin was razor-thin. I hope you factored in docking fees.",
+      "context": "player_action",
+      "action_type": "sold_cargo"
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "We could have held that inventory another cycle and cleared twenty percent more.",
+      "context": "player_action",
+      "action_type": "sold_cargo",
+      "min_loyalty": 40
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "Good timing on the buy. The spread favors us.",
+      "context": "player_action",
+      "action_type": "bought_cargo"
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "That is a lot of cargo for our hold. I assume you have a buyer lined up.",
+      "context": "player_action",
+      "action_type": "bought_cargo",
+      "min_loyalty": 30
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "We survived. Run the damage assessment before we celebrate.",
+      "context": "player_action",
+      "action_type": "combat_victory"
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "Smart. Fighting was not worth the repair bill.",
+      "context": "player_action",
+      "action_type": "combat_retreat"
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "Contract fulfilled. I have already logged the payout.",
+      "context": "player_action",
+      "action_type": "mission_completed"
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "That deadline was always unrealistic. I should have said something sooner.",
+      "context": "player_action",
+      "action_type": "mission_expired",
+      "min_loyalty": 40
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "I did not see that cargo. As far as the manifest is concerned, neither did you.",
+      "context": "player_action",
+      "action_type": "smuggling_success"
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "I told you the inspection schedules are posted publicly. You chose not to check.",
+      "context": "player_action",
+      "action_type": "smuggling_caught",
+      "min_loyalty": 30
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "Credits are credits. Just keep the fuel tank funded.",
+      "context": "player_action",
+      "action_type": "sold_cargo"
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "Heavy load. The struts can handle it, but I would rather they did not have to.",
+      "context": "player_action",
+      "action_type": "bought_cargo"
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "Clean win. I will patch the hull scoring before it oxidizes.",
+      "context": "player_action",
+      "action_type": "combat_victory"
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "We hit hard. That felt right.",
+      "context": "player_action",
+      "action_type": "combat_victory",
+      "min_loyalty": 40
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "Running. Again.",
+      "context": "player_action",
+      "action_type": "combat_retreat"
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "I understand why we ran. I just do not have to like it.",
+      "context": "player_action",
+      "action_type": "combat_retreat",
+      "min_loyalty": 50
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "Job done. Next one.",
+      "context": "player_action",
+      "action_type": "mission_completed"
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "We missed the window. Could have used better planning on that one.",
+      "context": "player_action",
+      "action_type": "mission_expired"
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "Everyone walked out. That is the only metric that counts.",
+      "context": "player_action",
+      "action_type": "ground_mission_success"
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "That went sideways fast. We need to debrief before the next drop.",
+      "context": "player_action",
+      "action_type": "ground_mission_fail"
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "text": "Profitable. I assume the provenance of that cargo was legitimate.",
+      "context": "player_action",
+      "action_type": "sold_cargo"
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "text": "Interesting purchase. I would like to run some scans before we stow it.",
+      "context": "player_action",
+      "action_type": "bought_cargo"
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "text": "Violence resolved it. I wish I could say I was surprised.",
+      "context": "player_action",
+      "action_type": "combat_victory"
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "text": "Discretion. Thank you for choosing it.",
+      "context": "player_action",
+      "action_type": "combat_retreat"
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "text": "Well executed. The data from this run will be useful.",
+      "context": "player_action",
+      "action_type": "mission_completed"
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "text": "A missed deadline is not a failure if we learned something. But we should learn faster.",
+      "context": "player_action",
+      "action_type": "mission_expired",
+      "min_loyalty": 40
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "text": "I have concerns about what we just transported. I would like to discuss them when you have a moment.",
+      "context": "player_action",
+      "action_type": "smuggling_success",
+      "min_loyalty": 30
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "text": "Caught. I cannot say I am entirely unsympathetic to the inspectors on this one.",
+      "context": "player_action",
+      "action_type": "smuggling_caught"
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "text": "Sold at the right moment. I taught you that, you know.",
+      "context": "player_action",
+      "action_type": "sold_cargo",
+      "min_loyalty": 40
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "text": "Buying in bulk. Bold. I like bold.",
+      "context": "player_action",
+      "action_type": "bought_cargo"
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "text": "We won. Could have talked our way out, but winning works too.",
+      "context": "player_action",
+      "action_type": "combat_victory"
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "text": "Retreating is just negotiating with physics. No shame in it.",
+      "context": "player_action",
+      "action_type": "combat_retreat"
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "text": "Another satisfied client. I will make sure they remember our name.",
+      "context": "player_action",
+      "action_type": "mission_completed"
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "text": "Expired. I had a contact who could have extended the deadline. Should have mentioned it.",
+      "context": "player_action",
+      "action_type": "mission_expired",
+      "min_loyalty": 30
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "text": "Smooth delivery. The kind nobody writes down.",
+      "context": "player_action",
+      "action_type": "smuggling_success"
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "text": "Caught. I know a lawyer on Nexus Prime. Well, I know someone who knows a lawyer.",
+      "context": "player_action",
+      "action_type": "smuggling_caught"
+    },
+    {
+      "crew_id": "kai_torren",
+      "text": "Good sale. I have the hold swept and ready for the next load.",
+      "context": "player_action",
+      "action_type": "sold_cargo"
+    },
+    {
+      "crew_id": "kai_torren",
+      "text": "Heavy shipment. I will rebalance the weight distribution.",
+      "context": "player_action",
+      "action_type": "bought_cargo"
+    },
+    {
+      "crew_id": "sgt_harkov",
+      "text": "Guns ran clean. Good engagement.",
+      "context": "player_action",
+      "action_type": "combat_victory"
+    },
+    {
+      "crew_id": "sgt_harkov",
+      "text": "We broke off. Next time, let me line up the shot.",
+      "context": "player_action",
+      "action_type": "combat_retreat"
+    },
+    {
+      "crew_id": "juno_park",
+      "text": "Shields held. Barely. I am recalibrating the emitters now.",
+      "context": "player_action",
+      "action_type": "combat_victory"
+    },
+    {
+      "crew_id": "bram_okeke",
+      "text": "Good yield from that run. The drill heads are holding up.",
+      "context": "player_action",
+      "action_type": "mission_completed"
+    },
+    {
+      "crew_id": "zero",
+      "text": "Clean run. Nobody saw anything because there was nothing to see.",
+      "context": "player_action",
+      "action_type": "smuggling_success"
+    },
+    {
+      "crew_id": "zero",
+      "text": "Sloppy. I told you to check the patrol rotations.",
+      "context": "player_action",
+      "action_type": "smuggling_caught"
+    },
+    {
+      "crew_id": "cpl_ines_rask",
+      "text": "Ground team performed well. Controlled aggression, clean execution.",
+      "context": "player_action",
+      "action_type": "ground_mission_success"
+    },
+    {
+      "crew_id": "cpl_ines_rask",
+      "text": "We lost control of the situation down there. I want to review our approach before the next drop.",
+      "context": "player_action",
+      "action_type": "ground_mission_fail"
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "I left Stellaris because I stopped trusting my own calculations. They were right. I was the variable I could not account for.",
+      "context": "idle",
+      "min_loyalty": 60
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "You run this ship like you trust the people on it. That is either the smartest or the dumbest thing I have seen out here.",
+      "context": "idle",
+      "min_loyalty": 60
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "I have been aboard long enough to stop planning my exit route. That scares me. But it is the good kind of scared.",
+      "context": "idle",
+      "min_loyalty": 80
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "If you ever need someone to hold the ship together while you do something reckless, I will be at the console. Just do not make it a habit.",
+      "context": "idle",
+      "min_loyalty": 80
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "My father worked the same mine for forty years. Never complained once. I used to think that was strength. Now I think he was just afraid.",
+      "context": "idle",
+      "min_loyalty": 60
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "You asked me once why I fight so hard for this ship. It is because it is the first place that felt like it was worth fighting for.",
+      "context": "idle",
+      "min_loyalty": 60
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "I do not say this to many people. You are the captain I would have wanted back when it mattered most.",
+      "context": "idle",
+      "min_loyalty": 80
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "If we go down, we go down swinging. That is not bravado. It is a promise.",
+      "context": "idle",
+      "min_loyalty": 80
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "text": "I was offered my old research chair back. Twice. I turned it down both times without telling you. I suppose I am telling you now.",
+      "context": "idle",
+      "min_loyalty": 60
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "text": "Science taught me to question everything. This crew taught me that some things do not need questioning. They just need defending.",
+      "context": "idle",
+      "min_loyalty": 60
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "text": "You let me be the person I chose to be instead of the person my credentials said I should be. I have never thanked you properly for that.",
+      "context": "idle",
+      "min_loyalty": 80
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "text": "I keep a journal. Scientific habit. The entries from before I joined this crew are clinical. The recent ones are not. I think that means something.",
+      "context": "idle",
+      "min_loyalty": 80
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "text": "Every port I have ever docked at, I left someone behind. This is the first ship where I stopped counting the exits.",
+      "context": "idle",
+      "min_loyalty": 60
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "text": "I joke about the embargo because it is easier than remembering what my mother looked like before the rationing started.",
+      "context": "idle",
+      "min_loyalty": 60
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "text": "I have been honest with you more than anyone else in the Expanse. That terrifies me. But I keep doing it, so make of that what you will.",
+      "context": "idle",
+      "min_loyalty": 80
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "text": "If something happens to me, there is a lockbox on Haven's Rest. Third warehouse, north wall. The combination is my mother's birthday. You will know what to do with what is inside.",
+      "context": "idle",
+      "min_loyalty": 80
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "Jin, you bypassed two safety interlocks on the starboard coupling. I found them this morning. Disabled. Deliberately.",
+      "context": "inter_crew",
+      "required_crew": "marcus_jin"
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "Marcus. That repair you did on the fuel line. It holds, but if it fails, it fails catastrophically. I need you to care about the difference between 'works' and 'safe.'",
+      "context": "inter_crew",
+      "required_crew": "marcus_jin",
+      "min_loyalty": 40
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "Reeves, your maintenance checklist has forty-seven items for a thruster swap. Forty-seven. I can do it in three steps. Four if I'm being careful.",
+      "context": "inter_crew",
+      "required_crew": "elena_reeves"
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "Elena, you ran six simulations before we docked. Six. The dock was empty. Sometimes I think you'd simulate breathing if you could.",
+      "context": "inter_crew",
+      "required_crew": "elena_reeves",
+      "min_loyalty": 40
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "Priya, your sensor sweeps are pulling power from navigation. I understand the science matters to you, but so does not flying into an asteroid.",
+      "context": "inter_crew",
+      "required_crew": "dr_priya_osei"
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "Doctor, I appreciate the research, but when you reroute processing power to your analysis without asking, we all feel it in the response lag.",
+      "context": "inter_crew",
+      "required_crew": "dr_priya_osei",
+      "min_loyalty": 30
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "text": "Elena, you marked that anomaly as 'navigational obstruction' in the log. It was a previously undocumented stellar phenomenon. There is a difference.",
+      "context": "inter_crew",
+      "required_crew": "elena_reeves"
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "Drifter, you changed our docking window without telling me. Again. I cannot plan around someone who treats schedules like suggestions.",
+      "context": "inter_crew",
+      "required_crew": "tomas_drifter",
+      "min_loyalty": 30
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "text": "Reeves, you filed a deviation report because I took a shortcut through the shipping lane. A shortcut. We saved forty minutes.",
+      "context": "inter_crew",
+      "required_crew": "elena_reeves",
+      "min_loyalty": 30
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "Doc, you wanted us to hold fire on that raider because they 'might be desperate.' They were shooting at us. Desperate people still kill you.",
+      "context": "inter_crew",
+      "required_crew": "dr_priya_osei",
+      "min_loyalty": 30
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "Priya, I respect the ethics. I do. But when someone has a gun on our hull, your ethics are a luxury we cannot afford.",
+      "context": "inter_crew",
+      "required_crew": "dr_priya_osei",
+      "min_loyalty": 60
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "text": "Marcus, your first answer to every problem is force. Sometimes the wrench is not the right tool.",
+      "context": "inter_crew",
+      "required_crew": "marcus_jin",
+      "min_loyalty": 30
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "text": "Jin, I counted. In the last six encounters, you suggested we fight in five of them. I would like you to consider what that pattern says.",
+      "context": "inter_crew",
+      "required_crew": "marcus_jin",
+      "min_loyalty": 60
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "Drifter, I watched you lie to that dock clerk's face and she thanked you for it. I do not know whether to be impressed or worried.",
+      "context": "inter_crew",
+      "required_crew": "tomas_drifter",
+      "min_loyalty": 30
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "text": "Jin, not every situation needs a fist. Some of them just need the right words. I know that offends you, but it is true.",
+      "context": "inter_crew",
+      "required_crew": "marcus_jin"
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "text": "Marcus, you broke that man's wrist over a docking dispute. A docking dispute. I had it handled.",
+      "context": "inter_crew",
+      "required_crew": "marcus_jin",
+      "min_loyalty": 40
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "text": "Tomas, I found the manifest you altered. The one that moved restricted cargo through a Collective checkpoint. We need to talk about this.",
+      "context": "inter_crew",
+      "required_crew": "tomas_drifter",
+      "min_loyalty": 40
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "text": "Drifter, you told that station agent we were a relief ship. We are not a relief ship. Words have consequences.",
+      "context": "inter_crew",
+      "required_crew": "tomas_drifter"
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "text": "Doc, you reported our own ship for an emissions irregularity. Our own ship. To a faction that would have fined us. I am still processing that.",
+      "context": "inter_crew",
+      "required_crew": "dr_priya_osei",
+      "min_loyalty": 30
+    },
+    {
+      "crew_id": "sgt_harkov",
+      "text": "Rask, your trigger discipline on the last run was sloppy. We are not militia. Tighten up.",
+      "context": "inter_crew",
+      "required_crew": "cpl_ines_rask"
+    },
+    {
+      "crew_id": "cpl_ines_rask",
+      "text": "Harkov, you field-stripped my sidearm and reassembled it without asking. I do not care if yours is better. Do not touch my equipment.",
+      "context": "inter_crew",
+      "required_crew": "sgt_harkov"
+    },
+    {
+      "crew_id": "kai_torren",
+      "text": "Okeke, your drill lubricant leaked into hold three again. I had to move six crates. At 0300.",
+      "context": "inter_crew",
+      "required_crew": "bram_okeke"
+    },
+    {
+      "crew_id": "bram_okeke",
+      "text": "Kai, if you stack crates on my drill housing one more time, I am welding the hold divider shut.",
+      "context": "inter_crew",
+      "required_crew": "kai_torren"
+    },
+    {
+      "crew_id": "zero",
+      "text": "Petrov, your forgery on that transit permit was obvious. The seal weight was wrong. If I noticed, inspectors will too.",
+      "context": "inter_crew",
+      "required_crew": "sol_petrov"
+    },
+    {
+      "crew_id": "sol_petrov",
+      "text": "Zero, I have been forging documents since before you learned which end of a scanner to point at cargo. Save the critique.",
+      "context": "inter_crew",
+      "required_crew": "zero"
+    },
+    {
+      "crew_id": "dr_wei_liang",
+      "text": "Tova, your sample storage is contaminating my observation instruments. Biological material and precision optics do not mix.",
+      "context": "inter_crew",
+      "required_crew": "tova_engstrom"
+    },
+    {
+      "crew_id": "tova_engstrom",
+      "text": "Liang, you vented my culture samples because they were 'emitting particulates.' Those were spore patterns. I was studying them.",
+      "context": "inter_crew",
+      "required_crew": "dr_wei_liang"
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "Jin, I still think you take too many risks. But I have stopped worrying you will not come back from them.",
+      "context": "inter_crew",
+      "required_crew": "marcus_jin",
+      "min_loyalty": 60
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "Reeves, your forty-seven step checklist saved us last week. I am not going to say that twice, so remember it.",
+      "context": "inter_crew",
+      "required_crew": "elena_reeves",
+      "min_loyalty": 60
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "text": "Tomas, I disapprove of your methods. But I have noticed you never lie about things that matter. That counts for something.",
+      "context": "inter_crew",
+      "required_crew": "tomas_drifter",
+      "min_loyalty": 60
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "text": "Doc, I used to think you were naive. Turns out you just have a longer view of consequences than the rest of us. I am still catching up.",
+      "context": "inter_crew",
+      "required_crew": "dr_priya_osei",
+      "min_loyalty": 60
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "Priya, I still think you hesitate too long. But last time you hesitated, you were right and I was wrong. So.",
+      "context": "inter_crew",
+      "required_crew": "dr_priya_osei",
+      "min_loyalty": 60
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "text": "Jin, you are the worst liar I have ever met. That is why I trust you.",
+      "context": "inter_crew",
+      "required_crew": "marcus_jin",
+      "min_loyalty": 60
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "Good vein. Keep the drill steady, the iron runs deep here.",
+      "context": "player_action",
+      "action_type": "mining_break"
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "Watch the pressure on that crystal. Hit it wrong and you lose half the yield.",
+      "context": "player_action",
+      "action_type": "mining_break"
+    },
+    {
+      "crew_id": "bram_okeke",
+      "text": "That rock had good grain. I can tell from up here. You are getting an eye for it.",
+      "context": "player_action",
+      "action_type": "mining_break"
+    },
+    {
+      "crew_id": "bram_okeke",
+      "text": "Deeper is better ore, but the walls get unpredictable. Stay sharp.",
+      "context": "player_action",
+      "action_type": "mining_depth"
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "New depth, new composition. I will recalibrate the drill heads.",
+      "context": "player_action",
+      "action_type": "mining_depth"
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "text": "These scan readings suggest item density is higher on the port side. Worth investigating.",
+      "context": "player_action",
+      "action_type": "salvage_scan"
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "text": "Careful with that panel. The corrosion pattern suggests structural compromise.",
+      "context": "player_action",
+      "action_type": "salvage_scan"
+    },
+    {
+      "crew_id": "dr_wei_liang",
+      "text": "I am reading residual energy signatures behind that bulkhead. Could be worth a scan.",
+      "context": "player_action",
+      "action_type": "salvage_scan"
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "Hull integrity on this deck is marginal. Extract what we need and get out.",
+      "context": "player_action",
+      "action_type": "salvage_extract"
+    },
+    {
+      "crew_id": "kai_torren",
+      "text": "Extraction clean. I have it secured in the hold.",
+      "context": "player_action",
+      "action_type": "salvage_extract"
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "Forge is running hot. Good batch. The alloy composition is holding.",
+      "context": "player_action",
+      "action_type": "refine_complete"
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "Output quality is above spec. Whatever you are doing with those recipes, keep doing it.",
+      "context": "player_action",
+      "action_type": "refine_complete"
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "text": "That output has a buyer at Stellaris Port. Just saying.",
+      "context": "player_action",
+      "action_type": "refine_complete"
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "Processing complete. I have updated the manifest. We should talk about margins when you have a moment.",
+      "context": "player_action",
+      "action_type": "refine_complete"
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "mining_upgrades": [
+    {
+      "id": "silo_expansion",
+      "name": "Silo Expansion",
+      "description": "+50 silo capacity per level",
+      "max_level": 5,
+      "costs": [8, 15, 25, 40, 60],
+      "effect_type": "silo_capacity_bonus",
+      "effect_per_level": 50.0
+    },
+    {
+      "id": "core_resonance",
+      "name": "Core Resonance",
+      "description": "+8% click power per level",
+      "max_level": 5,
+      "costs": [5, 10, 18, 28, 42],
+      "effect_type": "click_power_bonus",
+      "effect_per_level": 0.08
+    },
+    {
+      "id": "energy_conduit",
+      "name": "Energy Conduit",
+      "description": "+3 max energy per level",
+      "max_level": 5,
+      "costs": [6, 12, 20, 32, 48],
+      "effect_type": "max_energy_bonus",
+      "effect_per_level": 3.0
+    },
+    {
+      "id": "seismic_pulse",
+      "name": "Seismic Pulse",
+      "description": "+5% chain chance per level; +1 max chain depth at level 3",
+      "max_level": 3,
+      "costs": [12, 25, 45],
+      "effect_type": "chain_chance_bonus",
+      "effect_per_level": 0.05
+    },
+    {
+      "id": "depth_scanner",
+      "name": "Depth Scanner",
+      "description": "Start sessions at depth (1 + level)",
+      "max_level": 3,
+      "costs": [10, 20, 35],
+      "effect_type": "starting_depth_bonus",
+      "effect_per_level": 1.0
+    },
+    {
+      "id": "automaton_core",
+      "name": "Automaton Core",
+      "description": "+15% drone speed per level",
+      "max_level": 3,
+      "costs": [15, 30, 50],
+      "effect_type": "drone_speed_bonus",
+      "effect_per_level": 0.15
+    }
+  ]
+}

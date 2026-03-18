@@ -22,6 +22,12 @@ ENCOUNTER_CHANCE_SAFE = 0
 ENCOUNTER_CHANCE_MODERATE = 20
 ENCOUNTER_CHANCE_DANGEROUS = 40
 
+# Early-game protection: below this level, encounters skew non-hostile
+# and flee chance is boosted
+EARLY_GAME_LEVEL = 3
+EARLY_GAME_NON_HOSTILE_CHANCE = 55  # vs 35% normally
+EARLY_GAME_FLEE_BONUS = 10  # Flat bonus to flee chance
+
 # Distance scaling bounds (units)
 _DISTANCE_MIN = 40.0
 _DISTANCE_MAX = 180.0
@@ -38,18 +44,26 @@ NON_HOSTILE_CHANCE = 35
 # Non-hostile type weights per danger level
 _NON_HOSTILE_WEIGHTS: dict[str, dict[str, int]] = {
     "moderate": {
-        "distress_signal": 30,
-        "derelict": 25,
-        "merchant": 30,
-        "debris": 15,
+        "distress_signal": 25,
+        "derelict": 20,
+        "merchant": 25,
+        "debris": 10,
+        "patrol": 8,
+        "comm_intercept": 5,
+        "refugee": 7,
     },
     "dangerous": {
-        "distress_signal": 20,
-        "derelict": 20,
-        "merchant": 15,
-        "debris": 15,
-        "anomaly": 10,
-        "shakedown": 20,
+        "distress_signal": 15,
+        "derelict": 15,
+        "merchant": 10,
+        "debris": 8,
+        "anomaly": 8,
+        "shakedown": 15,
+        "smuggler": 8,
+        "patrol": 5,
+        "comm_intercept": 7,
+        "refugee": 4,
+        "wildlife": 3,
     },
 }
 
@@ -122,6 +136,7 @@ def check_travel_encounter(
     game_day: int,
     system_id: str,
     distance: float = 80.0,
+    player_level: int = 0,
 ) -> Optional[EncounterRef]:
     """Check if a random combat encounter triggers on travel.
 
@@ -129,12 +144,18 @@ def check_travel_encounter(
     travel on the same day always produces the same result. Distance
     scales the probability: short hops are safer, long journeys riskier.
 
+    Early-game players (below EARLY_GAME_LEVEL) get a higher proportion
+    of non-hostile encounters, giving them time to learn the system
+    without removing danger entirely.
+
     Args:
         system_danger: "safe", "moderate", or "dangerous".
         enemy_template_ids: Available enemy template IDs for this region.
         game_day: Current in-game day for seed.
         system_id: Destination system ID for seed.
         distance: Travel distance in world units (default 80.0).
+        player_level: Current player level. Below EARLY_GAME_LEVEL,
+            encounters skew toward non-hostile types.
 
     Returns:
         EncounterRef if triggered, None otherwise.
@@ -162,9 +183,14 @@ def check_travel_encounter(
     if not enemy_template_ids:
         return None
 
-    # Determine encounter category: non-hostile (35%) or hostile (65%)
+    # Determine encounter category: non-hostile vs hostile
+    # Early-game players get a higher non-hostile ratio
+    non_hostile_pct = (
+        EARLY_GAME_NON_HOSTILE_CHANCE if player_level < EARLY_GAME_LEVEL
+        else NON_HOSTILE_CHANCE
+    )
     type_roll = rng.uniform(0, 100)
-    if type_roll < NON_HOSTILE_CHANCE:
+    if type_roll < non_hostile_pct:
         # Non-hostile: select specific type via weighted table
         enc_type = _select_non_hostile_type(rng, system_danger)
 
@@ -261,6 +287,19 @@ class EncounterChoice:
 
 
 @dataclass
+class EncounterContext:
+    """Player/system state passed to encounter filtering."""
+
+    encounter_type: str
+    danger_level: str
+    seed: int
+    system_id: str = ""
+    faction_id: str = ""
+    player_level: int = 1
+    dialogue_flags: dict[str, bool] = field(default_factory=dict)
+
+
+@dataclass
 class EncounterDefinition:
     """Data-driven encounter template loaded from JSON."""
 
@@ -272,6 +311,16 @@ class EncounterDefinition:
     weight: int = 10
     danger_levels: list[str] = field(default_factory=lambda: ["moderate", "dangerous"])
     icon_color: tuple[int, int, int] = (200, 200, 200)
+    only_systems: list[str] = field(default_factory=list)
+    excluded_systems: list[str] = field(default_factory=list)
+    required_faction: str = ""
+    requires_flags: list[str] = field(default_factory=list)
+    excludes_flags: list[str] = field(default_factory=list)
+    unique: bool = False
+    min_level: int = 0
+    max_level: int = 0
+    tone: str = ""
+    category: str = ""
 
 
 def lookup_encounter_definition(
@@ -293,28 +342,55 @@ def lookup_encounter_definition(
     return None
 
 
-def select_encounter_definition(
-    definitions: list[EncounterDefinition],
-    encounter_type: str,
-    danger_level: str,
-    seed: int,
-) -> Optional[EncounterDefinition]:
-    """Select a weighted random encounter definition for the given type and danger.
+def _is_eligible(defn: EncounterDefinition, ctx: EncounterContext) -> bool:
+    """Check if an encounter definition matches the given context.
 
     Args:
-        definitions: All loaded encounter definitions.
-        encounter_type: The type to filter by.
-        danger_level: Current system danger level.
+        defn: Encounter definition to check.
+        ctx: Current encounter context with player/system state.
+
+    Returns:
+        True if the encounter is eligible for selection.
+    """
+    if defn.encounter_type != ctx.encounter_type:
+        return False
+    if ctx.danger_level not in defn.danger_levels:
+        return False
+    if defn.only_systems and ctx.system_id not in defn.only_systems:
+        return False
+    if ctx.system_id in defn.excluded_systems:
+        return False
+    if defn.required_faction and defn.required_faction != ctx.faction_id:
+        return False
+    if defn.min_level > 0 and ctx.player_level < defn.min_level:
+        return False
+    if defn.max_level > 0 and ctx.player_level > defn.max_level:
+        return False
+    if defn.requires_flags and not all(
+        ctx.dialogue_flags.get(f) for f in defn.requires_flags
+    ):
+        return False
+    if defn.unique and ctx.dialogue_flags.get(f"encounter_seen_{defn.id}"):
+        return False
+    if defn.excludes_flags and any(
+        ctx.dialogue_flags.get(f) for f in defn.excludes_flags
+    ):
+        return False
+    return True
+
+
+def _weighted_select(
+    candidates: list[EncounterDefinition], seed: int
+) -> Optional[EncounterDefinition]:
+    """Select from candidates using weighted random.
+
+    Args:
+        candidates: Pre-filtered encounter definitions.
         seed: Deterministic seed for selection.
 
     Returns:
-        Selected EncounterDefinition, or None if no valid definitions exist.
+        Selected EncounterDefinition, or None if empty.
     """
-    candidates = [
-        d
-        for d in definitions
-        if d.encounter_type == encounter_type and danger_level in d.danger_levels
-    ]
     if not candidates:
         return None
 
@@ -328,3 +404,37 @@ def select_encounter_definition(
         if roll <= cumulative:
             return candidate
     return candidates[-1]  # Fallback for floating-point edge case
+
+
+def select_encounter_definition(
+    definitions: list[EncounterDefinition],
+    encounter_type_or_ctx: str | EncounterContext,
+    danger_level: str = "",
+    seed: int = 0,
+) -> Optional[EncounterDefinition]:
+    """Select a weighted random encounter definition.
+
+    Supports two calling conventions:
+    - New: select_encounter_definition(definitions, context)
+    - Legacy: select_encounter_definition(definitions, type, danger, seed)
+
+    Args:
+        definitions: All loaded encounter definitions.
+        encounter_type_or_ctx: Either an EncounterContext or encounter type string.
+        danger_level: System danger level (legacy signature only).
+        seed: Deterministic seed (legacy signature only).
+
+    Returns:
+        Selected EncounterDefinition, or None if no valid definitions exist.
+    """
+    if isinstance(encounter_type_or_ctx, EncounterContext):
+        ctx = encounter_type_or_ctx
+    else:
+        ctx = EncounterContext(
+            encounter_type=encounter_type_or_ctx,
+            danger_level=danger_level,
+            seed=seed,
+        )
+
+    candidates = [d for d in definitions if _is_eligible(d, ctx)]
+    return _weighted_select(candidates, ctx.seed)

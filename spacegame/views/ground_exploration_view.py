@@ -134,6 +134,7 @@ class GroundExplorationView(BaseView):
 
         # === Mission-wide tracking (for result building) ===
         self.total_loot_credits: int = 0
+        self.total_loot_commodities: dict[str, int] = {}
         self.total_enemies_defeated: int = 0
         self.total_enemies_talked: int = 0
         self.was_detected: bool = False
@@ -159,17 +160,18 @@ class GroundExplorationView(BaseView):
         self._sprite_mgr = get_sprite_manager()
         # Pre-cache tile sprites (GROUND_TILE_SIZE / 16 = scale factor)
         tile_scale = GROUND_TILE_SIZE // 16
+        tile_faction = self.mission_config.faction_id if self.mission_config else "neutral"
         self._tile_sprites: dict[str, Optional[pygame.Surface]] = {}
         self._animated_tile_sprites: dict[str, AnimatedSprite] = {}
         for tt in TileType:
             # Try animated sprite sheet first, fall back to static
             anim = self._sprite_mgr.get_ground_tile_animated(
-                tt.value, "neutral", scale=tile_scale
+                tt.value, tile_faction, scale=tile_scale
             )
             if anim is not None:
                 self._animated_tile_sprites[tt.value] = anim
             self._tile_sprites[tt.value] = self._sprite_mgr.get_ground_tile(
-                tt.value, "neutral", scale=tile_scale
+                tt.value, tile_faction, scale=tile_scale
             )
 
         # Ground character sprites
@@ -343,6 +345,7 @@ class GroundExplorationView(BaseView):
             enemies_talked=self.total_enemies_talked,
             loot_credits=self.total_loot_credits,
             loot_items=[],
+            loot_commodities=dict(self.total_loot_commodities),
             progress_percent=progress,
             crew_ids=list(self._crew_ids),
             detected=self.was_detected,
@@ -957,6 +960,11 @@ class GroundExplorationView(BaseView):
                 # Track loot from containers (check object, not message)
                 if looted_obj is not None and looted_obj.looted:
                     self.total_loot_credits += looted_obj.loot_credits
+                    # Track commodity drops
+                    for cid, qty in looted_obj.loot_commodities.items():
+                        self.total_loot_commodities[cid] = (
+                            self.total_loot_commodities.get(cid, 0) + qty
+                        )
                     if looted_obj.description:
                         msg = f"{looted_obj.description} (+{looted_obj.loot_credits} CR)"
                     get_audio_manager().play_sfx("ground_pickup")

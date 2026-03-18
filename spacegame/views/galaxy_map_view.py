@@ -64,6 +64,7 @@ class GalaxyMapView(BaseView):
         systems: Dict[str, StarSystem],
         active_events: Optional[Dict] = None,
         politics_manager: object = None,
+        news_ticker: object = None,
     ):
         super().__init__()
         self.ui_manager = ui_manager
@@ -71,6 +72,7 @@ class GalaxyMapView(BaseView):
         self.systems = systems
         self.active_events: Dict = active_events or {}
         self.politics_manager = politics_manager
+        self.news_ticker = news_ticker
 
         # Map visualization settings
         self.map_center_x = WINDOW_WIDTH // 2
@@ -413,6 +415,13 @@ class GalaxyMapView(BaseView):
 
         logger.info(f"Travel result: {msg}")
         if success:
+            # Record trade route trip
+            if origin_id:
+                self.player.trade_route_tracker.record_trip(
+                    origin_id, self.selected_system
+                )
+            self.player.previous_system_id = origin_id
+
             from spacegame.config import XP_PER_TRAVEL
             from spacegame.data_loader import get_data_loader
 
@@ -442,6 +451,7 @@ class GalaxyMapView(BaseView):
                     game_day=self.player.game_day,
                     system_id=self.selected_system,
                     distance=distance,
+                    player_level=self.player.progression.level,
                 )
 
                 # Apply reputation modifiers to encounter
@@ -456,14 +466,25 @@ class GalaxyMapView(BaseView):
                             shakedown_demand=int(encounter.shakedown_demand * mult),
                         )
 
+                    # Safe passage perk: no hostile encounters in faction systems
+                    if (
+                        self.politics_manager
+                        and encounter.encounter_type == "hostile"
+                        and self.politics_manager.has_perk(
+                            self.player, self.selected_system, "safe_passage"
+                        )
+                    ):
+                        encounter = None  # Alliance escort grants safe passage
+
                     # Allied/friendly protection: chance to cancel hostile encounter
-                    protection = enc_mods.get("protection_chance", 0)
-                    if protection > 0 and encounter.encounter_type == "hostile":
-                        import hashlib
-                        seed_str = f"{self.player.game_day}_{self.selected_system}_protection"
-                        seed = int(hashlib.md5(seed_str.encode()).hexdigest()[:8], 16)
-                        if (seed % 100) < protection:
-                            encounter = None  # Faction patrol escorts you safely
+                    if encounter:
+                        protection = enc_mods.get("protection_chance", 0)
+                        if protection > 0 and encounter.encounter_type == "hostile":
+                            import hashlib
+                            seed_str = f"{self.player.game_day}_{self.selected_system}_protection"
+                            seed = int(hashlib.md5(seed_str.encode()).hexdigest()[:8], 16)
+                            if (seed % 100) < protection:
+                                encounter = None  # Faction patrol escorts you safely
 
             # Start travel animation
             get_audio_manager().play_sfx("nav_jump")
@@ -898,6 +919,26 @@ class GalaxyMapView(BaseView):
         if self.selected_system:
             self._draw_system_info(screen, self.selected_system)
 
+        # News ticker at bottom
+        self._draw_news_ticker(screen)
+
+    def _draw_news_ticker(self, screen: pygame.Surface) -> None:
+        """Render scrolling news ticker at the bottom of the map."""
+        if not self.news_ticker:
+            return
+        headlines = self.news_ticker.get_headlines(count=3)
+        if not headlines:
+            return
+
+        ticker_y = WINDOW_HEIGHT - 28
+        separator = "  \u2022  "  # bullet separator
+        ticker_text = separator.join(headlines)
+        surf = self.info_font.render(ticker_text, True, Colors.TEXT_SECONDARY)
+        surf.set_alpha(180)
+        # Center horizontally, clamp to screen width
+        x = max(10, WINDOW_WIDTH // 2 - surf.get_width() // 2)
+        screen.blit(surf, (x, ticker_y))
+
     def _get_faction_color(self, faction_name: str) -> Optional[tuple]:
         """Look up faction color by display name."""
         from spacegame.data_loader import get_data_loader
@@ -1144,6 +1185,19 @@ class GalaxyMapView(BaseView):
         panel_y = 60
         panel_width = 300
         panel_height = 250
+        line_height = 22
+
+        # Pre-compute remote prices to adjust panel height
+        remote_price_lines: list[tuple[str, tuple[int, int, int]]] = []
+        if (
+            system_id != self.player.current_system_id
+            and self.player.progression.get_bonus("remote_prices") > 0
+            and hasattr(system, "economy")
+            and system.economy
+        ):
+            remote_price_lines = self._get_remote_price_lines(system)
+        if remote_price_lines:
+            panel_height += len(remote_price_lines) * line_height + 10
 
         # Background with glow border
         panel_surf = pygame.Surface((panel_width, panel_height), pygame.SRCALPHA)
@@ -1160,7 +1214,6 @@ class GalaxyMapView(BaseView):
 
         # Content
         y_offset = panel_y + 10
-        line_height = 22
 
         name_surf = self.title_font.render(system.name, True, Colors.TEXT_HIGHLIGHT)
         screen.blit(name_surf, (panel_x + 10, y_offset))
@@ -1176,9 +1229,28 @@ class GalaxyMapView(BaseView):
         else:
             faction_line = f"Faction: {system.faction}"
 
+        # Render type line
+        type_surf = self.info_font.render(
+            f"Type: {system.type.replace('_', ' ').title()}", True, Colors.TEXT
+        )
+        screen.blit(type_surf, (panel_x + 10, y_offset))
+        y_offset += line_height
+
+        # Render faction line with emblem
+        faction_emblem = (
+            self._sprite_mgr.get_faction_emblem(faction_id, scale=1)
+            if faction_id
+            else None
+        )
+        fx = panel_x + 10
+        if faction_emblem:
+            screen.blit(faction_emblem, (fx, y_offset))
+            fx += faction_emblem.get_width() + 4
+        faction_surf = self.info_font.render(faction_line, True, Colors.TEXT)
+        screen.blit(faction_surf, (fx, y_offset))
+        y_offset += line_height
+
         info_lines = [
-            f"Type: {system.type.replace('_', ' ').title()}",
-            faction_line,
             f"Danger: {system.danger_level.title()}",
             "",
         ]
@@ -1242,6 +1314,48 @@ class GalaxyMapView(BaseView):
             surf = self.info_font.render(line, True, Colors.TEXT)
             screen.blit(surf, (panel_x + 10, y_offset))
             y_offset += line_height
+
+        # Render remote prices below the main info
+        if remote_price_lines:
+            y_offset += 4
+            for text, color in remote_price_lines:
+                surf = self.info_font.render(text, True, color)
+                screen.blit(surf, (panel_x + 10, y_offset))
+                y_offset += line_height
+
+    def _get_remote_price_lines(
+        self, system: StarSystem
+    ) -> list[tuple[str, tuple[int, int, int]]]:
+        """Build price summary lines for a remote system."""
+        from spacegame.models.market import Market
+        from spacegame.data_loader import get_data_loader
+
+        dl = get_data_loader()
+        commodities = list(dl.commodities.values())
+        market = Market(system, commodities, self.player.game_day)
+        prices = market.get_all_prices()
+
+        lines: list[tuple[str, tuple[int, int, int]]] = []
+        lines.append(("── Market Prices ──", Colors.TEXT_HIGHLIGHT))
+
+        exports = system.economy.specialty_exports
+        imports = system.economy.specialty_imports
+
+        if exports:
+            lines.append(("Buy cheap:", Colors.GREEN))
+            for cid in exports[:3]:
+                if cid in prices:
+                    name = dl.commodities[cid].name if cid in dl.commodities else cid
+                    lines.append((f"  {name}: {prices[cid]:,} CR", Colors.GREEN))
+
+        if imports:
+            lines.append(("Sell high:", (220, 180, 40)))
+            for cid in imports[:3]:
+                if cid in prices:
+                    name = dl.commodities[cid].name if cid in dl.commodities else cid
+                    lines.append((f"  {name}: {prices[cid]:,} CR", (220, 180, 40)))
+
+        return lines
 
     @staticmethod
     def _get_danger_route_color(danger_level: str) -> tuple[int, int, int]:

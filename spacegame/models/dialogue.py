@@ -11,6 +11,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
+    from spacegame.models.crew import CrewRoster
     from spacegame.models.social import SocialManager
 
 
@@ -28,6 +29,7 @@ class NPC:
     auto_trigger_gate_flag: str = ""
     auto_trigger_prerequisites: list[str] = field(default_factory=list)
     hide_after_flag: str = ""
+    dialogue_music: str = ""
 
     def get_display_name(self) -> str:
         """Get formatted display name with title."""
@@ -60,6 +62,7 @@ class DialogueResponse:
     required_flags: list[str] = field(default_factory=list)
     excluded_flags: list[str] = field(default_factory=list)
     faction_reputation_changes: list[dict[str, int]] = field(default_factory=list)
+    crew_loyalty_changes: dict[str, int] = field(default_factory=dict)
 
 
 @dataclass
@@ -112,11 +115,16 @@ class DialogueManager:
         self._social_manager: Optional[SocialManager] = None
         self._politics_manager: Optional[object] = None
         self._player: Optional[object] = None
+        self._crew_roster: Optional[CrewRoster] = None
         self._last_check_result: Optional[tuple[bool, str]] = None
 
     def set_social_manager(self, manager: SocialManager) -> None:
         """Set the social manager for skill check resolution."""
         self._social_manager = manager
+
+    def set_crew_roster(self, roster: "CrewRoster") -> None:
+        """Set the crew roster for crew loyalty changes in dialogue."""
+        self._crew_roster = roster
 
     def set_politics_manager(self, manager: object, player: object) -> None:
         """Set the politics manager and player for faction reputation changes."""
@@ -211,6 +219,11 @@ class DialogueManager:
                     self._politics_manager.apply_reputation_with_spillover(
                         self._player, faction_id, amount
                     )
+
+        # Apply crew loyalty changes
+        if response.crew_loyalty_changes and self._crew_roster:
+            for crew_id, amount in response.crew_loyalty_changes.items():
+                self._crew_roster.adjust_loyalty(crew_id, amount)
 
         # Handle skill check
         if response.skill_check:

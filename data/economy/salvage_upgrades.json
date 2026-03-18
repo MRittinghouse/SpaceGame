@@ -1,0 +1,31 @@
+{
+  "salvage_upgrades": [
+    {
+      "id": "signal_amplifier",
+      "name": "Signal Amplifier",
+      "description": "+1 scan charge per level",
+      "max_level": 5,
+      "costs": [5, 10, 18, 28, 42],
+      "effect_type": "extra_charges_bonus",
+      "effect_per_level": 1.0
+    },
+    {
+      "id": "salvage_buffer",
+      "name": "Salvage Buffer",
+      "description": "+50 salvage hold capacity per level",
+      "max_level": 5,
+      "costs": [8, 15, 25, 40, 60],
+      "effect_type": "hold_capacity_bonus",
+      "effect_per_level": 50.0
+    },
+    {
+      "id": "quick_extract",
+      "name": "Quick Extract",
+      "description": "+8% extraction speed per level",
+      "max_level": 5,
+      "costs": [6, 12, 20, 32, 48],
+      "effect_type": "extract_speed_bonus",
+      "effect_per_level": 0.08
+    }
+  ]
+}

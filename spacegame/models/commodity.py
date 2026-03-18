@@ -16,6 +16,7 @@ class CommodityCategory(Enum):
     INDUSTRIAL = "industrial"
     LUXURY = "luxury"
     QUEST = "quest"
+    COMPONENT = "component"
 
 
 class Legality(Enum):

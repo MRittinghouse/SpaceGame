@@ -43,6 +43,8 @@ class ShipUpgrade:
     faction_required: Optional[str] = None  # Faction ID required to purchase
     faction_rep_required: int = 0  # Minimum faction reputation required
     unlock_condition: Optional[str] = None  # Quest or condition ID required
+    tier: int = 1  # 1=starter, 2=mid-game, 3=late-game/specialized
+    available_systems: list[str] = field(default_factory=list)  # Empty = everywhere
 
     def can_afford(self, credits: int) -> bool:
         return credits >= self.price

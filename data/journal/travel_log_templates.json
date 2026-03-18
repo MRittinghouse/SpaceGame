@@ -1,0 +1,36 @@
+{
+  "first_visit": {
+    "nexus_prime": "First visit to Nexus Prime. The docking fee alone cost more than fuel at most stations. The old Aurelia's hull looms above the bay, polished to a museum shine nobody stops to look at. Holographic price tickers scroll across every surface. The air tastes like recycled money — stale, filtered, and somebody else's.",
+    "stellaris_port": "Arrived at Stellaris Port. Crystal chandeliers throw fragmented light across the promenade, but look past the polish and you see the prices. A cup of coffee costs what a miner makes in a shift. This is where fortunes are displayed and quietly redistributed upward.",
+    "breakstone": "Arrived at Breakstone. Rock dust on everything — the handrails, the meal trays, the inside of your lungs if you stay long enough. The station thrums with a rhythm that never stops: drilling, hauling, drilling again. Someone's chalked a name and two dates on the corridor wall near Bay 3. Nobody's erased it.",
+    "iron_depths": "First visit to Iron Depths. The station groans under pressure shifts you can feel in your teeth. Fluorescent lights flicker in the deeper corridors and nobody fixes them. DCMC logos on every surface, but the faces underneath tell a different story than the quarterly reports.",
+    "forgeworks": "Docked at Forgeworks. The heat hits before the airlock finishes cycling. The air tastes like ozone and ambition and the sweat of people working twelve-hour shifts in thermal suits. Foundry sparks arc overhead like brief, doomed stars. Guild inspectors and Union foremen eye each other across the canteen and neither blinks first.",
+    "axiom_labs": "Arrived at Axiom Labs. Synthesized coffee and quiet desperation — grant season, apparently. Color-coded lab coats crowd every corridor, arguing in shorthand about things I only half understand. The Okafor Institute's reputation precedes it, but so does its dropout rate.",
+    "nova_research": "First visit to Nova Research. Three badge checks before I reached the public concourse. The corridors are soundproofed and the researchers walk fast and don't look up. Whatever they're working on here, they'd rather you didn't ask. The cafeteria serves three meals. All of them taste like secrecy.",
+    "havens_rest": "Arrived at Haven's Rest. The air smells like soil and basil — real basil, not the synthesized kind. Children running between planting beds. Wind chimes made from recycled hull plating. After the sterile efficiency of Guild stations, this place feels almost dangerous in how much it makes you want to stay.",
+    "verdant": "Docked at Verdant. Rows of green stretch through observation windows as far as I can see. The light is uncanny — too even, too perfect, the grow-lamps mimicking a sun that never existed here. Prosperity worn so lightly it almost hides the quiet guilt of abundance in a sector where people cough dust.",
+    "crimson_reach": "Arrived at Crimson Reach. Dim lighting, exposed pipes, and the smell of coolant and old decisions. Half the overhead panels are dark. The other half flicker on a schedule nobody posted. A woman at the bar watched me dock through a porthole and looked away when I noticed. No questions asked here. That's not hospitality — it's policy.",
+    "the_fulcrum": "First visit to The Fulcrum. The corridors are sterile. Not clean — sterile, like something was scrubbed away. Military-grade scanners at every junction, guards who check credentials without speaking, blast doors sealed on sections nobody acknowledges. The air recyclers work perfectly. That's the most unsettling thing about this place."
+  },
+  "major_trade": [
+    "Closed a {profit} CR deal on {commodity} at {system}. The dock workers looked relieved to see it. Somebody needed this shipment.",
+    "Turned {commodity} into {profit} CR profit at {system}. Clean trade, good margin. The kind of run that keeps the lights on and the fuel tanks full.",
+    "{profit} CR on {commodity} at {system}. The buyer didn't haggle. Either I undercharged or they were desperate. Either way, credits are credits.",
+    "Sold {commodity} at {system} for {profit} CR over purchase. Watched the crates disappear into the cargo bay and wondered where they'd end up. Not my problem anymore.",
+    "Major haul at {system}: {profit} CR on {commodity}. Enough to cover docking fees, fuel, and maybe something that isn't a ration bar for dinner.",
+    "{commodity} moved at {system} for {profit} CR profit. The manifest clerk stamped it without looking up. Just another shipment. Just another day someone else can eat."
+  ],
+  "encounter_survived": [
+    "Hostile contact near {system}. Hull took hits. Hands are still shaking an hour later, but the ship held and I'm still here.",
+    "Pirates near {system}. They wanted the cargo. I wanted to keep breathing. Both of us got part of what we wanted.",
+    "Close call near {system}. Hostiles in the shipping lanes. Made it through with scorch marks and a new appreciation for shield generators.",
+    "Engagement near {system}. It was over fast. Spent the next twenty minutes checking systems and trying to slow my heart rate.",
+    "Survived an ambush near {system}. Debris and silence afterward. Someone else's cargo floating in the void. Could've been mine.",
+    "Tense encounter near {system}. The kind that makes you recalculate whether the trade route is worth the risk. It is. Probably."
+  ],
+  "galaxy_event_witnessed": [
+    "Was at {system} when the {event_type} hit. {description} You can feel the station holding its breath.",
+    "{description} — caught it firsthand at {system}. The kind of thing that changes prices and plans overnight.",
+    "Witnessed a {event_type} at {system}. {description} People react differently — some scramble, some go quiet. I took notes."
+  ]
+}

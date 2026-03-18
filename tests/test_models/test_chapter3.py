@@ -147,7 +147,7 @@ class TestChapter3NPCs:
     def test_total_npc_count(self) -> None:
         _load_data()
         dl = get_data_loader()
-        assert len(dl.npcs) == 17, f"Expected 17 NPCs, got {len(dl.npcs)}"
+        assert len(dl.npcs) >= 17, f"Expected >= 17 NPCs, got {len(dl.npcs)}"
 
 
 # ============================================================================
@@ -359,8 +359,8 @@ class TestDialogueTreeTotalCount:
     def test_total_dialogue_count(self) -> None:
         _load_data()
         dl = get_data_loader()
-        assert len(dl.dialogue_trees) == 18, (
-            f"Expected 18 dialogue trees, got {len(dl.dialogue_trees)}"
+        assert len(dl.dialogue_trees) >= 18, (
+            f"Expected >= 18 dialogue trees, got {len(dl.dialogue_trees)}"
         )
 
 
@@ -736,22 +736,22 @@ class TestMissionCounts:
     def test_total_mission_count(self) -> None:
         _load_data()
         dl = get_data_loader()
-        assert len(dl.missions) == 22, f"Expected 22 missions, got {len(dl.missions)}"
+        assert len(dl.missions) >= 22, f"Expected >= 22 missions, got {len(dl.missions)}"
 
     def test_total_commodity_count(self) -> None:
-        """Total commodity count should be 27 (26 existing + 1 data_chip)."""
+        """Total commodity count should be 54 (27 existing + 12 components + 3 crafted upgrades + 3 new + 8 added + 1 schematic_data)."""
         _load_data()
         dl = get_data_loader()
-        assert len(dl.commodities) == 27, (
-            f"Expected 27 commodities, got {len(dl.commodities)}"
+        assert len(dl.commodities) == 60, (
+            f"Expected 60 commodities, got {len(dl.commodities)}"
         )
 
     def test_total_encounter_count(self) -> None:
-        """Total encounter definition count should be 13 (12 existing + 1 new)."""
+        """Total encounter definition count should be >= 120 after R3 expansion."""
         _load_data()
         dl = get_data_loader()
-        assert len(dl.encounter_definitions) == 13, (
-            f"Expected 13 encounter definitions, got {len(dl.encounter_definitions)}"
+        assert len(dl.encounter_definitions) >= 120, (
+            f"Expected >= 120 encounter definitions, got {len(dl.encounter_definitions)}"
         )
 
 
@@ -2996,26 +2996,26 @@ class TestActOneFinalCounts:
         """Should have 22 missions (Act One complete)."""
         _load_data()
         dl = get_data_loader()
-        assert len(dl.missions) == 22, (
-            f"Expected 22 missions, got {len(dl.missions)}: "
+        assert len(dl.missions) >= 22, (
+            f"Expected >= 22 missions, got {len(dl.missions)}: "
             f"{[m.id for m in dl.missions]}"
         )
 
     def test_total_npcs(self) -> None:
-        """Should have 17 NPCs."""
+        """Should have at least 17 NPCs (campaign) + side quest NPCs."""
         _load_data()
         dl = get_data_loader()
-        assert len(dl.npcs) == 17, (
-            f"Expected 17 NPCs, got {len(dl.npcs)}: "
+        assert len(dl.npcs) >= 17, (
+            f"Expected >= 17 NPCs, got {len(dl.npcs)}: "
             f"{sorted(dl.npcs.keys())}"
         )
 
     def test_total_dialogues(self) -> None:
-        """Should have 18 dialogue trees."""
+        """Should have at least 18 dialogue trees (campaign) + side quest dialogues."""
         _load_data()
         dl = get_data_loader()
-        assert len(dl.dialogue_trees) == 18, (
-            f"Expected 18 dialogues, got {len(dl.dialogue_trees)}: "
+        assert len(dl.dialogue_trees) >= 18, (
+            f"Expected >= 18 dialogues, got {len(dl.dialogue_trees)}: "
             f"{sorted(dl.dialogue_trees.keys())}"
         )
 

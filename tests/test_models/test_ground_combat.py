@@ -793,7 +793,7 @@ class TestGroundSkillTree:
     def test_ground_skills_in_default_progression(self) -> None:
         prog = PlayerProgression()
         ground_skills = prog.get_skill_tree(SkillTreeType.GROUND)
-        assert len(ground_skills) == 6
+        assert len(ground_skills) == 11
 
     def test_ground_skill_ids(self) -> None:
         prog = PlayerProgression()
@@ -801,6 +801,8 @@ class TestGroundSkillTree:
         expected = {
             "scrapper", "tough_hide", "quick_reflexes",
             "intimidating_presence", "last_stand", "veteran",
+            "field_medic", "terrain_reader", "adaptive_fighter",
+            "combat_scavenger", "battle_hardened",
         }
         assert ground_ids == expected
 

@@ -370,7 +370,7 @@ class TestDualLaserWeapon:
         loader = _make_loader()
         loader.load_upgrades()
         weapons = [u for u in loader.upgrades.values() if u.slot_type == "weapon"]
-        assert len(weapons) == 10, f"Should have 10 weapons, got {len(weapons)}"
+        assert len(weapons) == 13, f"Should have 13 weapons, got {len(weapons)}"
 
 
 class TestEnemyNegotiateDifficulty:

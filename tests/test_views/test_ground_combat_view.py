@@ -175,15 +175,15 @@ class TestCombatFightAction:
             player_x=5, player_y=5, enemies=[enemy]
         )
         self._start_combat(view, mission)
-        initial_hp = view._combat_state.enemies[0].hp
-        # Press F many times to ensure at least one hit lands
-        for _ in range(5):
-            if view._combat_state.outcome != CombatOutcome.IN_PROGRESS:
-                break
-            _send_key(view, pygame.K_f)
-        # Combat should have progressed
-        final_hp = view._combat_state.enemies[0].hp
-        assert final_hp < initial_hp or view._combat_state.outcome != CombatOutcome.IN_PROGRESS
+        cs = view._combat_state
+        initial_hp = cs.enemies[0].hp
+        # Use execute_fight directly with known rolls to avoid RNG flakiness.
+        # Player rolls 6, enemy rolls 1 — guarantees player wins the exchange.
+        cs.execute_fight(player_roll=6, enemy_roll=1)
+        final_hp = cs.enemies[0].hp
+        assert final_hp < initial_hp, (
+            f"Enemy should take damage: {initial_hp} -> {final_hp}"
+        )
         view.on_exit()
 
     def test_tab_cycles_target(self) -> None:

@@ -46,6 +46,57 @@
             "effects": {
                 "emp_disable_turns": 5
             }
+        },
+        {
+            "id": "thermal_visor",
+            "name": "Thermal Visor",
+            "description": "Forge-calibrated thermal-optical overlay with crystal resonance filters. Extended vision range with passive noise suppression.",
+            "slot": "utility",
+            "effects": {
+                "vision_bonus": 3,
+                "noise_reduction": 0.5
+            }
+        },
+        {
+            "id": "breaching_charge",
+            "name": "Breaching Charge",
+            "description": "Shaped plasma charge with integrated EMP emitter. Blows open locked doors and briefly disables nearby electronics.",
+            "slot": "utility",
+            "effects": {
+                "lockpick": 1,
+                "emp_disable_turns": 3
+            }
+        },
+        {
+            "id": "adrenal_compound",
+            "name": "Adrenal Compound Injector",
+            "description": "Illegal stimulant cocktail. Grants a burst of speed and combat focus, but the crash hits hard.",
+            "slot": "utility",
+            "effects": {
+                "action_points_bonus": 1,
+                "damage_bonus": 2,
+                "noise_increase": 0.3
+            }
+        },
+        {
+            "id": "emp_grenade",
+            "name": "EMP Grenade Pack",
+            "description": "Compact electromagnetic pulse devices. Disables electronics in the blast radius and stuns automated targets.",
+            "slot": "utility",
+            "effects": {
+                "emp_disable_turns": 4,
+                "aoe_range": 2
+            }
+        },
+        {
+            "id": "deep_scan_probe",
+            "name": "Deep-Scan Probe",
+            "description": "Single-use mineral survey probe. Reveals hidden caches and resources within a wide radius during ground operations.",
+            "slot": "utility",
+            "effects": {
+                "vision_bonus": 4,
+                "reveal_hidden": 1
+            }
         }
     ]
 }

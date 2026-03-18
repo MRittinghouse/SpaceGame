@@ -1,0 +1,867 @@
+{
+  "_meta": {
+    "description": "Sprite generation manifest for SpaceGame Phase C visual overhaul",
+    "version": 3,
+    "style_guide": "16-bit pixel art, hard pixel edges, no antialiasing. Dark sci-fi space aesthetic. Existing game sprites use isometric 3/4 view for items, with vibrant but not oversaturated colors on dark backgrounds. Palette: cyans/blues for tech, warm oranges/browns for ores, greens for organic, purples for rare/exotic.",
+    "backend_strategy": "NanoBanano for high-value/large sprites (grid objects, backgrounds, forge). Gemini 2.5 Flash for small icons and functional sprites. No DALL-E.",
+    "size_strategy": "Grid objects at 32x32 (displayed at 2-3x in 80px cells). Icons at 16x16 (displayed at 2-3x in UI). Backgrounds at native display size.",
+    "prompt_notes": "Mining rocks: top-down perspective for grid placement. Commodity icons: isometric 3/4 view to match existing sprites. All sprites should have transparent or solid-color backgrounds (pipeline handles removal)."
+  },
+  "sprites": [
+    {
+      "_section": "=== MINING: Rock Sprites (32x32, displayed in 80px grid cells) ==="
+    },
+    {
+      "id": "rock_raw_ore",
+      "category": "mining",
+      "size": [
+        32,
+        32
+      ],
+      "variants": 3,
+      "backend": "nano",
+      "prompt": "32x32 pixel art sprite of a rough gray-brown asteroid rock chunk. Rocky, irregular shape with visible cracks and dark shadows. Muted earth tones: charcoal gray, warm brown, dark tan. Style: retro 16-bit pixel art, hard edges, no antialiasing, transparent background, limited 12-color palette."
+    },
+    {
+      "id": "rock_iron_ore",
+      "category": "mining",
+      "size": [
+        32,
+        32
+      ],
+      "variants": 3,
+      "backend": "nano",
+      "prompt": "32x32 pixel art sprite of an iron-rich asteroid rock. Dark gray stone with reddish-brown metallic veins running through it, subtle rust-colored highlights. Style: retro 16-bit pixel art, hard edges, no antialiasing, transparent background, limited 12-color palette."
+    },
+    {
+      "id": "rock_crystal_ore",
+      "category": "mining",
+      "size": [
+        32,
+        32
+      ],
+      "variants": 3,
+      "backend": "nano",
+      "prompt": "32x32 pixel art sprite of a crystalline asteroid rock. Dark stone base with bright cyan crystal formations growing from the surface, glowing blue-white highlights. Style: retro 16-bit pixel art, hard edges, no antialiasing, transparent background, limited 12-color palette."
+    },
+    {
+      "id": "rock_rare_ore",
+      "category": "mining",
+      "size": [
+        32,
+        32
+      ],
+      "variants": 3,
+      "backend": "nano",
+      "prompt": "32x32 pixel art sprite of a rare glowing asteroid rock. Dark stone with iridescent purple veins and magenta energy glow emanating from cracks, precious and exotic look. Style: retro 16-bit pixel art, hard edges, no antialiasing, transparent background, limited 12-color palette."
+    },
+    {
+      "id": "rock_common_metals",
+      "category": "mining",
+      "size": [
+        32,
+        32
+      ],
+      "variants": 2,
+      "backend": "nano",
+      "prompt": "32x32 pixel art sprite of a dull metallic asteroid chunk. Silver-gray surface with riveted, industrial look, like raw hull plating. Muted steel tones. Style: retro 16-bit pixel art, hard edges, no antialiasing, transparent background, limited 12-color palette."
+    },
+    {
+      "id": "rock_rare_metals",
+      "category": "mining",
+      "size": [
+        32,
+        32
+      ],
+      "variants": 2,
+      "backend": "nano",
+      "prompt": "32x32 pixel art sprite of a precious metallic asteroid chunk. Gold-tinged surface with bright white highlight reflections, veins of valuable metal visible. Style: retro 16-bit pixel art, hard edges, no antialiasing, transparent background, limited 12-color palette."
+    },
+    {
+      "id": "rock_unstable",
+      "category": "mining",
+      "size": [
+        32,
+        32
+      ],
+      "variants": 2,
+      "backend": "nano",
+      "prompt": "32x32 pixel art sprite of a dangerously cracked asteroid rock glowing red-orange from internal heat. Deep fissures with molten lava visible inside, warning colors. Style: retro 16-bit pixel art, hard edges, no antialiasing, transparent background, limited 12-color palette."
+    },
+    {
+      "id": "rock_vent",
+      "category": "mining",
+      "size": [
+        32,
+        32
+      ],
+      "variants": 2,
+      "backend": "nano",
+      "prompt": "32x32 pixel art sprite of a dark asteroid rock with toxic green gas venting from cracks and holes. Wisps of green vapor escaping, porous surface. Style: retro 16-bit pixel art, hard edges, no antialiasing, transparent background, limited 12-color palette."
+    },
+    {
+      "_section": "=== MINING: Drones & Break FX ==="
+    },
+    {
+      "id": "drone_tier1",
+      "category": "mining",
+      "size": [
+        16,
+        16
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "16x16 pixel art sprite of a small basic mining drone. Simple boxy chassis with a single blue indicator light, two stubby arms. Dark metal body. Style: retro pixel art, transparent background."
+    },
+    {
+      "id": "drone_tier2",
+      "category": "mining",
+      "size": [
+        16,
+        16
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "16x16 pixel art sprite of a medium mining drone. Sleeker angular chassis with green indicator lights, articulated drill arms. Silver-gray body. Style: retro pixel art, transparent background."
+    },
+    {
+      "id": "drone_tier3",
+      "category": "mining",
+      "size": [
+        16,
+        16
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "16x16 pixel art sprite of an advanced elite mining drone. Compact body with glowing purple energy field, multiple precision arms, high-tech look. Style: retro pixel art, transparent background."
+    },
+    {
+      "_section": "=== SALVAGE: Cell States (32x32, displayed in grid cells) ==="
+    },
+    {
+      "id": "salvage_cell_hidden",
+      "category": "salvage",
+      "size": [
+        32,
+        32
+      ],
+      "variants": 1,
+      "backend": "nano",
+      "prompt": "32x32 pixel art sprite of a sealed spaceship hull panel. Riveted dark steel plate with subtle scratches, secure and unopened. Dark gray metallic tones. Style: retro 16-bit pixel art, hard edges, no antialiasing, transparent background."
+    },
+    {
+      "id": "salvage_cell_scanned",
+      "category": "salvage",
+      "size": [
+        32,
+        32
+      ],
+      "variants": 1,
+      "backend": "nano",
+      "prompt": "32x32 pixel art sprite of an opened spaceship hull panel revealing dark empty interior. Panel edges bent back, empty dark space inside. Style: retro 16-bit pixel art, hard edges, no antialiasing, transparent background."
+    },
+    {
+      "id": "salvage_cell_item",
+      "category": "salvage",
+      "size": [
+        32,
+        32
+      ],
+      "variants": 1,
+      "backend": "nano",
+      "prompt": "32x32 pixel art sprite of an opened spaceship hull panel with a soft golden glow inside indicating a valuable item. Panel edges bent back, warm light emanating from within. Style: retro 16-bit pixel art, hard edges, no antialiasing, transparent background."
+    },
+    {
+      "id": "salvage_cell_extracted",
+      "category": "salvage",
+      "size": [
+        32,
+        32
+      ],
+      "variants": 1,
+      "backend": "nano",
+      "prompt": "32x32 pixel art sprite of a spent, empty hull panel. Dark, burned-out interior, scorch marks, completely depleted. Very dark charcoal and ash tones. Style: retro 16-bit pixel art, hard edges, no antialiasing, transparent background."
+    },
+    {
+      "_section": "=== SALVAGE: Quality Frames & Icons ==="
+    },
+    {
+      "id": "quality_frame_poor",
+      "category": "salvage",
+      "size": [
+        20,
+        20
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "20x20 pixel art sprite of a thin gray border frame for an item quality indicator. Simple dull gray outline, empty transparent center. Style: retro pixel art, transparent background."
+    },
+    {
+      "id": "quality_frame_normal",
+      "category": "salvage",
+      "size": [
+        20,
+        20
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "20x20 pixel art sprite of a clean white border frame for an item quality indicator. Crisp white outline with subtle inner highlight, empty transparent center. Style: retro pixel art, transparent background."
+    },
+    {
+      "id": "quality_frame_good",
+      "category": "salvage",
+      "size": [
+        20,
+        20
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "20x20 pixel art sprite of a glowing blue border frame for an item quality indicator. Bright blue outline with cyan inner glow, empty transparent center. Style: retro pixel art, transparent background."
+    },
+    {
+      "id": "quality_frame_excellent",
+      "category": "salvage",
+      "size": [
+        20,
+        20
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "20x20 pixel art sprite of a shining gold ornate border frame for an item quality indicator. Bright gold outline with white sparkle accents, empty transparent center. Style: retro pixel art, transparent background."
+    },
+    {
+      "id": "icon_scan_mode",
+      "category": "salvage",
+      "size": [
+        16,
+        16
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "16x16 pixel art icon of a magnifying glass with blue scan pulse lines radiating outward. Sci-fi scanner tool. Style: retro pixel art, transparent background."
+    },
+    {
+      "id": "icon_extract_mode",
+      "category": "salvage",
+      "size": [
+        16,
+        16
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "16x16 pixel art icon of a mechanical extraction claw, orange metallic with grip pincers. Sci-fi salvage tool. Style: retro pixel art, transparent background."
+    },
+    {
+      "_section": "=== SALVAGE: Derelict Backgrounds (high-value, NanoBanano) ==="
+    },
+    {
+      "id": "derelict_cargo_bay",
+      "category": "salvage",
+      "size": [
+        160,
+        120
+      ],
+      "variants": 1,
+      "backend": "nano",
+      "prompt": "Pixel art top-down view of a derelict spaceship cargo bay interior. Dark and abandoned, scattered cargo crates and broken containers, flickering emergency red lights, debris on the floor. Moody dark sci-fi atmosphere with steel blue and rust orange accents. Style: 16-bit retro pixel art, limited color palette, 160x120 pixels."
+    },
+    {
+      "id": "derelict_lab_module",
+      "category": "salvage",
+      "size": [
+        160,
+        120
+      ],
+      "variants": 1,
+      "backend": "nano",
+      "prompt": "Pixel art top-down view of a derelict spaceship laboratory interior. Dark and abandoned, shattered glass tubes, overturned equipment, chemical spills glowing green on the floor, broken screens. Eerie sci-fi atmosphere with teal and toxic green accents. Style: 16-bit retro pixel art, limited color palette, 160x120 pixels."
+    },
+    {
+      "id": "derelict_engine_room",
+      "category": "salvage",
+      "size": [
+        160,
+        120
+      ],
+      "variants": 1,
+      "backend": "nano",
+      "prompt": "Pixel art top-down view of a derelict spaceship engine room interior. Dark and abandoned, massive pipes and cooling vents, sparking exposed wires, dim orange emergency glow from failing systems. Industrial sci-fi atmosphere with dark gray and warning orange accents. Style: 16-bit retro pixel art, limited color palette, 160x120 pixels."
+    },
+    {
+      "_section": "=== REFINING: Forge Sprites (high-value, NanoBanano) ==="
+    },
+    {
+      "id": "forge_idle",
+      "category": "refining",
+      "size": [
+        48,
+        48
+      ],
+      "variants": 1,
+      "backend": "nano",
+      "prompt": "48x48 pixel art sprite of a sci-fi forge furnace in idle state. Metallic frame with pipes, vents, and a viewport showing a dim orange ember glow inside. Space station industrial equipment. Style: retro 16-bit pixel art, hard edges, transparent background, limited color palette."
+    },
+    {
+      "id": "forge_active",
+      "category": "refining",
+      "size": [
+        48,
+        48
+      ],
+      "variants": 1,
+      "backend": "nano",
+      "prompt": "48x48 pixel art sprite of a sci-fi forge furnace in active smelting state. Same metallic frame as idle but viewport shows bright blazing orange-yellow flame, heat distortion lines, sparks flying upward. Style: retro 16-bit pixel art, hard edges, transparent background, limited color palette."
+    },
+    {
+      "id": "forge_complete",
+      "category": "refining",
+      "size": [
+        48,
+        48
+      ],
+      "variants": 1,
+      "backend": "nano",
+      "prompt": "48x48 pixel art sprite of a sci-fi forge furnace in completion state. Same metallic frame but viewport shows bright white flash of completed synthesis, steam venting from sides. Style: retro 16-bit pixel art, hard edges, transparent background, limited color palette."
+    },
+    {
+      "_section": "=== REFINING: Category Icons & Mastery Stars ==="
+    },
+    {
+      "id": "icon_category_commodity",
+      "category": "refining",
+      "size": [
+        16,
+        16
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "16x16 pixel art icon of a small metallic gear cog. Gray-silver industrial look. Style: retro pixel art, transparent background."
+    },
+    {
+      "id": "icon_category_upgrade",
+      "category": "refining",
+      "size": [
+        16,
+        16
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "16x16 pixel art icon of a wrench tool with a small upward arrow or star indicating improvement. Blue-silver coloring. Style: retro pixel art, transparent background."
+    },
+    {
+      "id": "icon_category_equipment",
+      "category": "refining",
+      "size": [
+        16,
+        16
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "16x16 pixel art icon of a small shield with a circuit pattern on it. Green-silver coloring, protective equipment look. Style: retro pixel art, transparent background."
+    },
+    {
+      "id": "icon_category_trade",
+      "category": "refining",
+      "size": [
+        16,
+        16
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "16x16 pixel art icon of a small credit chip or coin. Bright gold with an embossed symbol. Style: retro pixel art, transparent background."
+    },
+    {
+      "id": "mastery_star_bronze",
+      "category": "refining",
+      "size": [
+        8,
+        8
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "8x8 pixel art of a small five-pointed star icon in warm bronze copper tones. Simple and readable at tiny size. Transparent background."
+    },
+    {
+      "id": "mastery_star_silver",
+      "category": "refining",
+      "size": [
+        8,
+        8
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "8x8 pixel art of a small five-pointed star icon in bright silver-white tones. Simple and readable at tiny size. Transparent background."
+    },
+    {
+      "id": "mastery_star_gold",
+      "category": "refining",
+      "size": [
+        8,
+        8
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "8x8 pixel art of a small five-pointed star icon in shining gold-yellow tones. Simple and readable at tiny size. Transparent background."
+    },
+    {
+      "_section": "=== UI: Lock Icon ==="
+    },
+    {
+      "id": "icon_lock",
+      "category": "ui",
+      "size": [
+        8,
+        8
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "8x8 pixel art of a small padlock icon in amber-gold color. Simple silhouette, recognizable at tiny size. Transparent background."
+    },
+    {
+      "_section": "=== COMMODITIES: Missing Icons (Phase A-B items) ==="
+    },
+    {
+      "id": "phase_lattice",
+      "category": "commodities",
+      "size": [
+        16,
+        16
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "16x16 pixel art sprite of a translucent blue crystalline lattice structure with geometric facets. Glowing blue-white, delicate and structured. Isometric 3/4 view, centered on dark background, sci-fi style, clean pixel art."
+    },
+    {
+      "id": "refined_propellant",
+      "category": "commodities",
+      "size": [
+        16,
+        16
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "16x16 pixel art sprite of a small fuel canister with glowing orange liquid visible through a viewport. Metallic container, warm orange glow. Isometric 3/4 view, centered on dark background, sci-fi style, clean pixel art."
+    },
+    {
+      "id": "neural_weave",
+      "category": "commodities",
+      "size": [
+        16,
+        16
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "16x16 pixel art sprite of a mesh of glowing neural fibers. Purple and pink bio-tech filaments in a tangled web. Isometric 3/4 view, centered on dark background, sci-fi style, clean pixel art."
+    },
+    {
+      "id": "combat_salvage",
+      "category": "commodities",
+      "size": [
+        16,
+        16
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "16x16 pixel art sprite of damaged ship wreckage and scrap. Bent armor plates with scorch marks, exposed wiring. Gray and burnt orange tones. Isometric 3/4 view, centered on dark background, sci-fi style, clean pixel art."
+    },
+    {
+      "id": "anomalous_sample",
+      "category": "commodities",
+      "size": [
+        16,
+        16
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "16x16 pixel art sprite of a sealed specimen jar containing a swirling green-purple anomalous substance. Glass container with hazard markings. Isometric 3/4 view, centered on dark background, sci-fi style, clean pixel art."
+    },
+    {
+      "id": "flux_catalyst",
+      "category": "commodities",
+      "size": [
+        16,
+        16
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "16x16 pixel art sprite of a glowing yellow-orange catalyst crystal emitting energy sparks. Bright and volatile-looking. Isometric 3/4 view, centered on dark background, sci-fi style, clean pixel art."
+    },
+    {
+      "id": "resonance_core",
+      "category": "commodities",
+      "size": [
+        16,
+        16
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "16x16 pixel art sprite of a spherical energy core with concentric blue pulse rings emanating outward. High-tech power source. Isometric 3/4 view, centered on dark background, sci-fi style, clean pixel art."
+    },
+    {
+      "id": "charged_filament",
+      "category": "commodities",
+      "size": [
+        16,
+        16
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "16x16 pixel art sprite of a coiled electric filament bundle glowing cyan-white. Thin wires crackling with energy. Isometric 3/4 view, centered on dark background, sci-fi style, clean pixel art."
+    },
+    {
+      "id": "signal_fragment",
+      "category": "commodities",
+      "size": [
+        16,
+        16
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "16x16 pixel art sprite of a small data shard with etched circuit patterns, emitting a faint green signal glow. Triangular chip shape. Isometric 3/4 view, centered on dark background, sci-fi style, clean pixel art."
+    },
+    {
+      "id": "schematic_data",
+      "category": "commodities",
+      "size": [
+        16,
+        16
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "16x16 pixel art sprite of a holographic blueprint data chip. Flat chip with glowing blue circuit patterns and a small holographic projection. Isometric 3/4 view, centered on dark background, sci-fi style, clean pixel art."
+    },
+    {
+      "id": "stellarium_ingot",
+      "category": "commodities",
+      "size": [
+        16,
+        16
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "16x16 pixel art sprite of a gleaming silver-blue metal ingot with tiny starlight sparkle reflections. Premium rare alloy, luminous and precious. Isometric 3/4 view, centered on dark background, sci-fi style, clean pixel art."
+    },
+    {
+      "id": "fortified_stims",
+      "category": "commodities",
+      "size": [
+        16,
+        16
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "16x16 pixel art sprite of a military stimulant auto-injector. Metal syringe with green glowing liquid visible, combat medical equipment. Isometric 3/4 view, centered on dark background, sci-fi style, clean pixel art."
+    },
+    {
+      "id": "crafted_resonant_drill",
+      "category": "commodities",
+      "size": [
+        16,
+        16
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "16x16 pixel art sprite of a high-tech mining drill head with resonance energy rings around it. Orange metal with blue energy glow. Isometric 3/4 view, centered on dark background, sci-fi style, clean pixel art."
+    },
+    {
+      "id": "crafted_seismic_bore",
+      "category": "commodities",
+      "size": [
+        16,
+        16
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "16x16 pixel art sprite of a heavy seismic bore device with shockwave emitter plates. Dark metal with purple energy crackling. Isometric 3/4 view, centered on dark background, sci-fi style, clean pixel art."
+    },
+    {
+      "id": "crafted_precision_extractor",
+      "category": "commodities",
+      "size": [
+        16,
+        16
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "16x16 pixel art sprite of a precision salvage extraction tool with fine manipulator pincers. Silver with cyan indicator lights. Isometric 3/4 view, centered on dark background, sci-fi style, clean pixel art."
+    },
+    {
+      "id": "crafted_quantum_salvage",
+      "category": "commodities",
+      "size": [
+        16,
+        16
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "16x16 pixel art sprite of a quantum-enhanced salvage device with a phase-shift energy field around it. Blue-purple ethereal glow. Isometric 3/4 view, centered on dark background, sci-fi style, clean pixel art."
+    },
+    {
+      "id": "crafted_catalyst_forge",
+      "category": "commodities",
+      "size": [
+        16,
+        16
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "16x16 pixel art sprite of a compact catalyst forge module. Small furnace shape with orange-red flame core visible through a viewport. Isometric 3/4 view, centered on dark background, sci-fi style, clean pixel art."
+    },
+    {
+      "id": "crafted_stellarium_crucible",
+      "category": "commodities",
+      "size": [
+        16,
+        16
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "16x16 pixel art sprite of a stellarium crucible with swirling starlight energy contained inside. Silver vessel with white-blue luminous glow. Isometric 3/4 view, centered on dark background, sci-fi style, clean pixel art."
+    },
+    {
+      "id": "crafted_plasma_conduit",
+      "category": "commodities",
+      "size": [
+        16,
+        16
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "16x16 pixel art sprite of a plasma conduit tube with hot orange-white plasma flowing through transparent sections. Industrial piping look. Isometric 3/4 view, centered on dark background, sci-fi style, clean pixel art."
+    },
+    {
+      "id": "crafted_reinforced_plating",
+      "category": "commodities",
+      "size": [
+        16,
+        16
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "16x16 pixel art sprite of a thick reinforced armor plate. Layered heavy metal with bolt rivets, gunmetal gray with blue highlight edge. Isometric 3/4 view, centered on dark background, sci-fi style, clean pixel art."
+    },
+    {
+      "id": "crafted_shield_capacitor",
+      "category": "commodities",
+      "size": [
+        16,
+        16
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "16x16 pixel art sprite of a shield energy capacitor device. Cylindrical component with blue energy arcs between electrodes. Isometric 3/4 view, centered on dark background, sci-fi style, clean pixel art."
+    },
+    {
+      "id": "crafted_arc_emitter",
+      "category": "commodities",
+      "size": [
+        16,
+        16
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "16x16 pixel art sprite of an arc emitter weapon component. Pronged device with electric arcs crackling between tips, yellow-white energy. Isometric 3/4 view, centered on dark background, sci-fi style, clean pixel art."
+    },
+    {
+      "id": "crafted_nova_core",
+      "category": "commodities",
+      "size": [
+        16,
+        16
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "16x16 pixel art sprite of a nova core power cell. Spherical device with intense white-orange core energy visible, radiating heat lines. Isometric 3/4 view, centered on dark background, sci-fi style, clean pixel art."
+    },
+    {
+      "id": "crafted_deep_scan_probe",
+      "category": "commodities",
+      "size": [
+        16,
+        16
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "16x16 pixel art sprite of a deep scan probe device. Small satellite-like probe with antenna dish and green scanning beam. Isometric 3/4 view, centered on dark background, sci-fi style, clean pixel art."
+    },
+    {
+      "id": "crafted_overclocked_scanner",
+      "category": "commodities",
+      "size": [
+        16,
+        16
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "16x16 pixel art sprite of an overclocked scanner device. Compact electronics box with multiple antennas, red overheating indicator. Isometric 3/4 view, centered on dark background, sci-fi style, clean pixel art."
+    },
+    {
+      "id": "crafted_emp_grenade",
+      "category": "commodities",
+      "size": [
+        16,
+        16
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "16x16 pixel art sprite of an EMP grenade. Small spherical device with blue electromagnetic coils, military ordnance look. Isometric 3/4 view, centered on dark background, sci-fi style, clean pixel art."
+    },
+    {
+      "id": "crafted_breaching_charge",
+      "category": "commodities",
+      "size": [
+        16,
+        16
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "16x16 pixel art sprite of a breaching explosive charge. Rectangular block of explosive with detonator attached, orange hazard stripes. Isometric 3/4 view, centered on dark background, sci-fi style, clean pixel art."
+    },
+    {
+      "id": "crafted_thermal_visor",
+      "category": "commodities",
+      "size": [
+        16,
+        16
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "16x16 pixel art sprite of a thermal vision visor helmet attachment. Sleek eyepiece with red thermal lens glow. Isometric 3/4 view, centered on dark background, sci-fi style, clean pixel art."
+    },
+    {
+      "id": "crafted_adrenal_compound",
+      "category": "commodities",
+      "size": [
+        16,
+        16
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "16x16 pixel art sprite of an adrenal compound vial. Small medical vial with bright yellow stimulant liquid, injector cap. Isometric 3/4 view, centered on dark background, sci-fi style, clean pixel art."
+    },
+    {
+      "id": "crafted_titan_plating",
+      "category": "commodities",
+      "size": [
+        16,
+        16
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "16x16 pixel art sprite of titan-grade armor plating. Extra-thick layered plate with golden reinforcement bands, heavyweight. Isometric 3/4 view, centered on dark background, sci-fi style, clean pixel art."
+    },
+    {
+      "id": "crafted_phantom_module",
+      "category": "commodities",
+      "size": [
+        16,
+        16
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "16x16 pixel art sprite of a stealth phantom module. Dark semi-transparent device with faint purple shimmer, cloaking technology. Isometric 3/4 view, centered on dark background, sci-fi style, clean pixel art."
+    },
+    {
+      "id": "crafted_command_array",
+      "category": "commodities",
+      "size": [
+        16,
+        16
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "16x16 pixel art sprite of a command array communications module. Multi-antenna array with holographic display, blue-white signals. Isometric 3/4 view, centered on dark background, sci-fi style, clean pixel art."
+    },
+    {
+      "id": "crafted_black_market_serum",
+      "category": "commodities",
+      "size": [
+        16,
+        16
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "16x16 pixel art sprite of a black market serum vial. Dark glass vial with sinister red liquid, unmarked and illicit-looking. Isometric 3/4 view, centered on dark background, sci-fi style, clean pixel art."
+    },
+    {
+      "_section": "=== COMBAT: VFX Sprites ==="
+    },
+    {
+      "id": "vfx_laser_beam",
+      "category": "combat",
+      "size": [
+        32,
+        8
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "32x8 pixel art sprite of a horizontal laser beam. Bright red energy beam with white-hot center and red glow edges. Sci-fi weapon fire. Transparent background."
+    },
+    {
+      "id": "vfx_missile",
+      "category": "combat",
+      "size": [
+        16,
+        16
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "16x16 pixel art sprite of a small missile projectile in flight. Metallic warhead with orange exhaust trail behind it. Sci-fi munition. Transparent background."
+    },
+    {
+      "id": "vfx_shield_hit",
+      "category": "combat",
+      "size": [
+        32,
+        32
+      ],
+      "variants": 1,
+      "backend": "gemini",
+      "prompt": "32x32 pixel art sprite of a circular energy shield impact ripple. Translucent blue hexagonal pattern distorting from an impact point. Sci-fi shield effect. Transparent background."
+    },
+    {
+      "id": "vfx_explosion_01",
+      "category": "combat",
+      "size": [
+        32,
+        32
+      ],
+      "variants": 1,
+      "backend": "nano",
+      "prompt": "32x32 pixel art sprite of an explosion, frame 1 of 4: initial bright white-yellow flash expanding from center. Clean pixel art style, transparent background."
+    },
+    {
+      "id": "vfx_explosion_02",
+      "category": "combat",
+      "size": [
+        32,
+        32
+      ],
+      "variants": 1,
+      "backend": "nano",
+      "prompt": "32x32 pixel art sprite of an explosion, frame 2 of 4: expanding orange-yellow fireball with debris particles. Clean pixel art style, transparent background."
+    },
+    {
+      "id": "vfx_explosion_03",
+      "category": "combat",
+      "size": [
+        32,
+        32
+      ],
+      "variants": 1,
+      "backend": "nano",
+      "prompt": "32x32 pixel art sprite of an explosion, frame 3 of 4: dissipating dark orange fire with gray smoke clouds. Clean pixel art style, transparent background."
+    },
+    {
+      "id": "vfx_explosion_04",
+      "category": "combat",
+      "size": [
+        32,
+        32
+      ],
+      "variants": 1,
+      "backend": "nano",
+      "prompt": "32x32 pixel art sprite of an explosion, frame 4 of 4: fading thin gray smoke wisps, nearly transparent. Clean pixel art style, transparent background."
+    }
+  ]
+}

@@ -2,7 +2,51 @@
 
 > **Goal**: Transform Act I from a linear narrative demo into a living, replayable universe. Add strategic depth to trading, variety to encounters, personality to planets, meaningful player builds through expanded skill trees, and organic side content that makes the Expanse feel inhabited.
 
-## Current State Audit
+**Last Updated**: 2026-03-16
+
+---
+
+## Cycle Status Tracker
+
+| Cycle | Name | Status | % | Notes |
+|-------|------|--------|---|-------|
+| **R1** | Regional Markets | **DONE** | 100% | Market profiles, filtering, specialty pricing all working. Trend visibility gated behind Market Eye skill. Remote prices on galaxy map info panel (gated behind Market Insider skill). 9 tests. |
+| **R2** | Ship & Upgrade Overhaul | **DONE** | 100% | 24 ships, 43 upgrades with tier (1-3) + system-locking. 3 new upgrades added (diplomatic_transponder, trade_manifest_scanner, overclocked_engines). |
+| **R3** | Encounter Variety | **DONE** | 100% | 131 encounters across 11 types. Exceeds target of ~37. |
+| **R4** | Side Missions | **DONE** | 100% | 21 narrative side missions + 12 crew quests + 5 procedural templates (bounty, delivery, smuggling, survey, salvage). ProceduralMissionGenerator model with station board UI. Contracts rotate daily per-system. 24 tests. |
+| **R5** | Skill Tree Expansion | **DONE** | 100% | 89 skills across 9 trees (175 total skill points). 26 new skills + 5 multi-rank upgrades. Every tree has capstone skill. Ground Combat overhauled (6→11 skills). 3 orphan positions fixed. Respec system: model + UI button in skill tree view. |
+| **R6** | Faction Reputation | **DONE** | 100% | Tiers, spillover, consequences, faction perks (12 perks across 4 factions at friendly/allied). Buy/sell bonuses, free fuel/repairs, mining/salvage yield bonuses, safe passage. Active perks displayed in character view with tier colors. |
+| **R7** | Crew Depth | **DONE** | 100% | 12 crew quests (3-stage arcs), loyalty system, ambient dialogue, party management. 15 lightweight crew added (specialist hirelings at all 11 systems). Companion/crew distinction: companions have loyalty/XP/quests, crew provide flat passive bonuses. 19 total crew templates (4 companions + 15 crew). 69 ambient dialogue lines. Crew hire UI in station hub cantina with slot tracking. 12 tests. |
+| **R8** | Mini-Game Expansion | **DONE** | 100% | Mining: 5/5 systems. Salvage: 5/5. Refining: Nexus Prime added. Danger-based yield scaling (safe/moderate/dangerous multipliers). Faction perk yield bonuses stack with danger. Yield bonus indicators in mining/salvage session summaries. Fixed refining bonus type mismatch (refine_speed→refining_speed, refine_yield→gathering_yield_bonus). |
+| **R9** | Living Universe Polish | **DONE** | 100% | Galaxy events (5 types, 18 templates), event chains (strike cascade), station chatter (148 lines across 11 systems), news ticker (44 templates), travel log (4 trigger types). Market integration: embargo blocks trade, festival/breakthrough modify prices, strike raises production costs. 126 new tests. Station chatter wired into station hub flavor text. News ticker rendered at bottom of galaxy map. Travel log first-visit entries auto-generated on arrival. |
+| **R10** | Combat Encounter Depth | **DONE** | 100% | Faction enemies, pre-combat negotiation/bribe, combat in travel pool. Tier-based loot scaling: credit_reward on all 28 enemies, loot tables normalized by danger_tier, invalid commodity refs fixed. Ground loot bonus skill (combat_scavenger) now applied to ground mission loot + crew bonus stacking. Rare loot drops on all 10 dangerous-tier enemies with "RARE!" visual callout. 18 tests. |
+| **R11** | Achievements & Polish | **DONE** | 100% | 62 achievements (+19 new: combat, side quest, exploration, smuggling, progression). 5 new player stat fields wired. Category filter tabs in achievements view (12 categories, click to filter). Badge colors for combat and side_quest categories added. |
+| **NP** | Narrative Polish | **DONE** | 100% | Full writing pass across all narrative content. 55 mission descriptions rewritten with texture and personality. ~216 em-dashes purged across 5 content files. 6 "no X, no Y, just Z" GenAI patterns removed. 8 location descriptions polished. ~25 NPC dialogue lines rewritten (physical intros, character voice, removing clichés). Station chatter expanded to 148 lines. All dialogue trees reviewed for natural tone. |
+
+> **All refinement cycles complete.** R1-R11 + Narrative Polish pass are done. The Aurelia Expanse has regional identity, crew depth, side content, skill variety, faction consequences, living-world events, and polished narrative voice throughout.
+
+### Current Counts (as of 2026-03-16)
+
+| System | Count |
+|--------|-------|
+| Tests | 4,242 |
+| Views | 34 |
+| Missions | 55+ (22 campaign + 21 side + 12 crew quests + procedural) |
+| Encounters | 131 (11 types) |
+| Enemy Templates | 28 |
+| Ship Types | 24 |
+| Upgrades | 43 (tiered 1-3, system-locked) |
+| Commodities | 27 |
+| Skill Trees | 9 (89 skills, 175 total points) |
+| Crew Members | 19 (4 companions + 15 crew specialists) |
+| Achievements | 62 |
+| Mining Configs | 5 (Breakstone, Iron Depths, Forgeworks, Verdant, The Fulcrum) |
+| Salvage Configs | 5 (Forgeworks, Crimson Reach, Breakstone, The Fulcrum, Iron Depths) |
+| Factions | 4 + Crimson Reach (with rivalry + spillover + consequences) |
+
+---
+
+## Pre-Refinement State Audit
 
 | System | Count | Gap |
 |--------|-------|-----|
@@ -755,7 +799,7 @@ R11 (Achievements & Polish) ── Final pass after all systems are in
 
 | System | Before | After |
 |--------|--------|-------|
-| Skill Trees | 4 (26 skills) | 8 (60 skills) |
+| Skill Trees | 9 (89 skills, 175 total points) | 8 (60 skills) |
 | Side Missions | 0 | 20 narrative + 5 procedural templates |
 | Encounters | 13 | ~37 |
 | Faction Perks | 0 | 12 (3 tiers × 4 factions) |

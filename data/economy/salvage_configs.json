@@ -23,6 +23,42 @@
         "salvaged_electronics": 0.40,
         "rare_parts": 0.30
       }
+    },
+    {
+      "system_id": "breakstone",
+      "grid_size": 5,
+      "max_charges": 10,
+      "charge_regen_seconds": 5.0,
+      "item_density": 0.35,
+      "item_distribution": {
+        "scrap_metal": 0.55,
+        "salvaged_electronics": 0.30,
+        "rare_parts": 0.15
+      }
+    },
+    {
+      "system_id": "the_fulcrum",
+      "grid_size": 6,
+      "max_charges": 14,
+      "charge_regen_seconds": 3.5,
+      "item_density": 0.55,
+      "item_distribution": {
+        "scrap_metal": 0.25,
+        "salvaged_electronics": 0.35,
+        "rare_parts": 0.40
+      }
+    },
+    {
+      "system_id": "iron_depths",
+      "grid_size": 5,
+      "max_charges": 11,
+      "charge_regen_seconds": 4.5,
+      "item_density": 0.45,
+      "item_distribution": {
+        "scrap_metal": 0.40,
+        "salvaged_electronics": 0.40,
+        "rare_parts": 0.20
+      }
     }
   ]
 }

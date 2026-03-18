@@ -1,0 +1,501 @@
+{
+  "encounters": [
+    {
+      "id": "lore_aurelia_beacon_01",
+      "encounter_type": "anomaly",
+      "name": "The Aurelia Beacon",
+      "description": "Your sensors lock onto a faint, repeating signal — old encoding, pre-settlement era. As you close the distance, the source resolves: a navigation beacon, scarred by micrometeorites and coated in a century of cosmic dust. It bears the faded emblem of the colony ship Aurelia. The transmission is automated, looping endlessly through the void. A woman's voice, calm and precise, reads coordinates — the original landing sites, one after another. Meridian. Breakstone. Veldt. Names that would become cities, read aloud before they were anything at all. The voice pauses between each entry as if waiting for confirmation that will never come. She has been speaking to no one for a hundred and fifty years.",
+      "icon_color": [180, 160, 220],
+      "weight": 6,
+      "danger_levels": ["moderate", "dangerous"],
+      "unique": true,
+      "tone": "mysterious",
+      "category": "lore",
+      "choices": [
+        {
+          "id": "study",
+          "label": "Record the Full Transmission",
+          "description": "Let the beacon cycle through its entire message. Every coordinate, every pause.",
+          "outcome": {
+            "description": "You sit in silence as the voice reads thirty-seven coordinates. Some match modern settlements. Others point to empty space — sites that were surveyed and abandoned, or perhaps never reached at all. When the loop restarts, you notice something: the final coordinate doesn't correspond to any system on your charts. It points somewhere beyond the Expanse's mapped edge. The beacon offers no explanation. It simply begins again.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 35},
+              {"reward_type": "set_flag", "amount": 1, "target_id": "lore_aurelia_found"}
+            ]
+          }
+        },
+        {
+          "id": "share",
+          "label": "Broadcast to Local Channels",
+          "description": "Relay the beacon's signal so others can hear it.",
+          "outcome": {
+            "description": "You amplify the signal and push it across local frequencies. Within minutes, other ships begin responding — some with reverence, some with skepticism. A freighter captain transmits back: 'My grandmother used to say she could still hear the Aurelia calling.' The beacon continues its loop, indifferent to its audience.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 25},
+              {"reward_type": "credits", "amount": 40},
+              {"reward_type": "set_flag", "amount": 1, "target_id": "lore_aurelia_found"}
+            ]
+          }
+        },
+        {
+          "id": "leave",
+          "label": "Mark and Move On",
+          "description": "Log the coordinates and continue your route.",
+          "outcome": {
+            "description": "You tag the beacon's position in your nav computer and pull away. The voice fades into static behind you, still reading its list of names to the dark.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 15},
+              {"reward_type": "set_flag", "amount": 1, "target_id": "lore_aurelia_found"}
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "lore_earth_broadcast_01",
+      "encounter_type": "comm_intercept",
+      "name": "Ghost Frequency",
+      "description": "Your comms array picks up an impossible signal — analogue, unencrypted, riding a frequency that hasn't been used in over a century. The source is diffuse, scattered by a gravitational lens in the region. As you tune in, the static resolves into sound: music. Strings and woodwinds playing something slow and achingly beautiful. Then voices — people laughing, talking over each other in a language your translator can parse but your heart barely can. A child's voice rises above the rest, asking a question you can't quite make out. The signal is a fragment of an old Earth broadcast, stretched across light-years and bent by gravity into something that sounds like a memory you never had.",
+      "icon_color": [140, 180, 220],
+      "weight": 6,
+      "danger_levels": ["moderate", "dangerous"],
+      "unique": true,
+      "tone": "mysterious",
+      "category": "lore",
+      "choices": [
+        {
+          "id": "listen",
+          "label": "Listen to the Full Fragment",
+          "description": "Sit with it. Let the broadcast play out.",
+          "outcome": {
+            "description": "The music shifts to something faster, joyful. Applause. A man's voice announces a date — March 14th, 2087. Two hundred and forty-eight years ago. The laughter is from people who have been dead for generations, preserved in electromagnetic radiation traveling at the speed of light. The signal degrades, warps, and finally dissolves into cosmic background noise. You sit in the silence that follows and realize your hands are shaking.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 30},
+              {"reward_type": "set_flag", "amount": 1, "target_id": "lore_earth_broadcast_heard"}
+            ]
+          }
+        },
+        {
+          "id": "record",
+          "label": "Archive the Signal",
+          "description": "Record every second. Someone should preserve this.",
+          "outcome": {
+            "description": "Your ship's memory banks capture the fragment in full fidelity — fourteen minutes of music, conversation, and ambient sound from a world that no longer exists. Archivists would pay for this, but it feels wrong to sell it. You file it under personal records instead. Some things aren't cargo.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 25},
+              {"reward_type": "credits", "amount": 60},
+              {"reward_type": "set_flag", "amount": 1, "target_id": "lore_earth_broadcast_heard"}
+            ]
+          }
+        },
+        {
+          "id": "change_freq",
+          "label": "Change Frequency",
+          "description": "You don't need to carry this weight right now.",
+          "outcome": {
+            "description": "You switch channels and the laughter cuts off mid-breath. Your comms array returns to the familiar hiss of deep space. The broadcast continues behind you, playing to an audience of dust and starlight.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 15},
+              {"reward_type": "set_flag", "amount": 1, "target_id": "lore_earth_broadcast_heard"}
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "lore_charter_fragment_01",
+      "encounter_type": "derelict",
+      "name": "The Charter Hull",
+      "description": "A drifting hull segment, barely three meters across, tumbles slowly through your flight path. Your sensors flag it as non-hazardous — no fuel, no power, no life signs. But a closer scan reveals something remarkable: the inner surface has been etched with text. Deep, precise cuts in the metal, filled with a polymer sealant that has survived vacuum and radiation for over a century. The words are from the Aurelia Charter, the founding document of the Expanse. 'All who board the Aurelia share equally in what we find. No nation, no corporation, no creed shall claim dominion over what belongs to all.' Someone carved this into a ship's hull and set it adrift — a message in a bottle for anyone willing to read it.",
+      "icon_color": [200, 180, 140],
+      "weight": 6,
+      "danger_levels": ["moderate", "dangerous"],
+      "unique": true,
+      "tone": "mysterious",
+      "category": "lore",
+      "choices": [
+        {
+          "id": "recover",
+          "label": "Bring It Aboard",
+          "description": "Grapple the fragment and store it in your cargo bay.",
+          "outcome": {
+            "description": "The hull segment barely fits through your cargo door. Up close, you can see the care that went into the engraving — every letter precise, every word deliberate. Beneath the Charter text, in smaller script, someone has added: 'We forgot this once. We must not forget it again.' There is no signature, no date. Just the words and the void they were meant to survive.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 30},
+              {"reward_type": "credits", "amount": 80},
+              {"reward_type": "set_flag", "amount": 1, "target_id": "lore_charter_found"}
+            ]
+          }
+        },
+        {
+          "id": "scan",
+          "label": "Scan and Document",
+          "description": "High-resolution imaging. Preserve the text without disturbing the artifact.",
+          "outcome": {
+            "description": "Your sensors capture every groove and imperfection. Metallurgical analysis dates the etching to within a decade of the Aurelia's arrival. This was done by someone from the first generation — someone who lived through the landing and felt the Charter's promise slipping away even then. You store the scans and release the hull fragment back into its slow tumble through the dark.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 35},
+              {"reward_type": "set_flag", "amount": 1, "target_id": "lore_charter_found"}
+            ]
+          }
+        },
+        {
+          "id": "leave",
+          "label": "Leave It Drifting",
+          "description": "It belongs to the void now.",
+          "outcome": {
+            "description": "You watch the fragment rotate slowly away, the Charter's words catching starlight as it turns. It has traveled this far without help. Perhaps that's the point.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 20},
+              {"reward_type": "set_flag", "amount": 1, "target_id": "lore_charter_found"}
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "lore_first_miners_01",
+      "encounter_type": "debris",
+      "name": "The Breakstone Memorial",
+      "description": "A solitary marker floats in a stable orbit near the Breakstone approach vector — a standard navigation buoy, repurposed. Its transponder identifies it as a memorial. The display panel lists forty-seven names under a simple heading: 'First Shaft Crew, Breakstone Mining Colony, Year One.' These were the people who cracked open Breakstone's crust and pulled out the raw materials that built the Expanse's first permanent structures. The buoy's power cell is still good. Someone has been maintaining it.",
+      "icon_color": [160, 160, 160],
+      "weight": 6,
+      "danger_levels": ["moderate", "dangerous"],
+      "unique": true,
+      "tone": "neutral",
+      "category": "lore",
+      "choices": [
+        {
+          "id": "read_names",
+          "label": "Read Every Name",
+          "description": "Take the time to read the full manifest.",
+          "outcome": {
+            "description": "Forty-seven names. Engineers, geologists, demolitions experts, medics. The youngest was nineteen. The oldest, sixty-three. Eleven of them share the same surname — Vasquez — a family that came to the Expanse together and went into the rock together. A note at the bottom reads: 'They built the floor we stand on.' You copy the manifest to your personal log.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 25},
+              {"reward_type": "set_flag", "amount": 1, "target_id": "lore_first_miners_honored"}
+            ]
+          }
+        },
+        {
+          "id": "maintain",
+          "label": "Top Off the Power Cell",
+          "description": "Transfer a small charge to keep the memorial running.",
+          "outcome": {
+            "description": "You dock your auxiliary line and feed power into the buoy's aging cell. The display brightens, the names sharpen. As you disengage, your comms pick up a brief transmission from a nearby mining barge: 'Appreciate that, pilot. My grandmother's name is on that list.' The connection closes before you can respond.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 30},
+              {"reward_type": "credits", "amount": 25},
+              {"reward_type": "set_flag", "amount": 1, "target_id": "lore_first_miners_honored"}
+            ]
+          }
+        },
+        {
+          "id": "pass",
+          "label": "Acknowledge and Continue",
+          "description": "A respectful flyby. You have a schedule to keep.",
+          "outcome": {
+            "description": "You dip your running lights as you pass — the spacer's salute. The memorial shrinks behind you, a small point of light among millions. But this one was placed on purpose.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 15},
+              {"reward_type": "set_flag", "amount": 1, "target_id": "lore_first_miners_honored"}
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "lore_pre_colony_probe_01",
+      "encounter_type": "anomaly",
+      "name": "The Unmanned Surveyor",
+      "description": "Your sensors flag an object on an unusual trajectory — slow, deliberate, following a survey pattern that predates every human settlement in the Expanse. It's a probe. Automated, solar-powered, still functional after what your instruments estimate to be at least two hundred years. Its design language is Earth-era but matches no known space agency's catalog. The probe is methodically scanning asteroid compositions and transmitting data to a relay point that no longer exists. It arrived here decades before the Aurelia. Someone — or something — was mapping the Expanse long before humanity decided to call it home.",
+      "icon_color": [180, 100, 220],
+      "weight": 6,
+      "danger_levels": ["moderate", "dangerous"],
+      "unique": true,
+      "tone": "mysterious",
+      "category": "lore",
+      "choices": [
+        {
+          "id": "intercept",
+          "label": "Intercept and Analyze",
+          "description": "Match velocity and run a full diagnostic.",
+          "outcome": {
+            "description": "The probe doesn't resist your scans. Its memory banks are vast and mostly intact — geological surveys of systems the Expanse hasn't mapped yet, atmospheric data from worlds no human has visited. The manufacturing stamps are partially corroded, but you recover a partial serial number and a date: 2118. Eighty years before the Aurelia launched. Earth sent this probe during an era of expansion that history barely remembers. The question isn't who sent it. The question is what they found — and whether anyone was listening when it reported back.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 35},
+              {"reward_type": "set_flag", "amount": 1, "target_id": "lore_pre_colony_probe_found"}
+            ]
+          }
+        },
+        {
+          "id": "follow",
+          "label": "Shadow Its Course",
+          "description": "Follow the probe's trajectory and see where it leads.",
+          "outcome": {
+            "description": "You trail the probe for an hour, watching it work. It pauses at each asteroid, bathes it in scanning frequencies, logs the data, and moves on. Methodical. Patient. It has been doing this longer than anyone in the Expanse has been alive. Its projected course takes it toward the outer systems — regions still marked 'uncharted' on your nav computer. You log the trajectory and break off. The probe continues without you, as it has for two centuries.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 30},
+              {"reward_type": "set_flag", "amount": 1, "target_id": "lore_pre_colony_probe_found"}
+            ]
+          }
+        },
+        {
+          "id": "leave",
+          "label": "Let It Work",
+          "description": "It's been at this longer than you've been alive. Don't interfere.",
+          "outcome": {
+            "description": "You alter course to give the probe space. It doesn't acknowledge your presence — it never has acknowledged anything. Just the quiet, tireless work of mapping a frontier that no one told it had already been settled. There's something admirable in that.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 20},
+              {"reward_type": "set_flag", "amount": 1, "target_id": "lore_pre_colony_probe_found"}
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "lore_generation_ship_01",
+      "encounter_type": "derelict",
+      "name": "The Ship That Never Arrived",
+      "description": "It emerges from the sensor haze like a cathedral — a generation ship, easily ten times the mass of anything currently flying the Expanse. The hull is intact but dark. No power signatures, no heat, no movement. Your database returns no match for the vessel's configuration, but the general design is unmistakable: this was built to carry thousands of people across interstellar distances. It never reached its destination. The name on the bow, still legible beneath a patina of dust and radiation scarring, reads: COVENANT OF DAWN. You have never heard of it. No one in the Expanse has.",
+      "icon_color": [140, 120, 180],
+      "weight": 6,
+      "danger_levels": ["moderate", "dangerous"],
+      "unique": true,
+      "tone": "mysterious",
+      "category": "lore",
+      "choices": [
+        {
+          "id": "board",
+          "label": "Board and Investigate",
+          "description": "Dock with the Covenant of Dawn. Find out what happened.",
+          "outcome": {
+            "description": "The airlock responds to manual override. Inside, the corridors are pristine — no damage, no signs of struggle. The ship simply stopped. In the command center, the passenger manifest glows faintly on a backup display: 4,217 names. Families, specialists, children. The final log entry is dated 2194, nine years before Earth's abandonment. The captain's voice, digitized and flat: 'Drive failure is total. No repair possible. We are committing all remaining power to cryo-preservation and broadcasting our position. If anyone hears this, we are here. We are waiting.' The cryo-bays are dark. The power ran out long ago.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 35},
+              {"reward_type": "set_flag", "amount": 1, "target_id": "lore_generation_ship_found"}
+            ]
+          }
+        },
+        {
+          "id": "scan",
+          "label": "Deep Scan from Outside",
+          "description": "Map the ship's interior without boarding. Some doors should stay closed.",
+          "outcome": {
+            "description": "Your sensors penetrate the hull and return a ghostly blueprint. Living quarters for thousands. Hydroponics bays. Schools. A ship designed not just for travel but for life. The cryo-bays register as unpowered — have been for decades. The passenger manifest transmits automatically when your scan reaches the bridge computer: 4,217 names scrolling across your display, one after another. You watch them all. It takes eleven minutes.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 30},
+              {"reward_type": "set_flag", "amount": 1, "target_id": "lore_generation_ship_found"}
+            ]
+          }
+        },
+        {
+          "id": "leave",
+          "label": "Transmit Coordinates to Authorities",
+          "description": "This is beyond you. Report the find and move on.",
+          "outcome": {
+            "description": "You broadcast the Covenant of Dawn's position on official channels and pull away. The generation ship recedes on your aft display, vast and silent. Somewhere, families will learn what happened to the people they lost. Somewhere, the history books will add a footnote. It doesn't feel like enough.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 25},
+              {"reward_type": "set_flag", "amount": 1, "target_id": "lore_generation_ship_found"}
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "lore_earth_song_01",
+      "encounter_type": "comm_intercept",
+      "name": "The Annual Broadcast",
+      "description": "Your comms pick up an open-channel transmission — no encryption, no identifiers, just music. A single voice singing in an old Earth language, accompanied by a stringed instrument. The melody is simple and slow, the kind of song that sounds like it was written to be sung around a fire. You trace the source: a battered cargo shuttle, stationary, running lights dimmed to almost nothing. The pilot is broadcasting to no one in particular. Your ship's calendar confirms the date — it's the anniversary of Earth's final evacuation, when the last transports lifted off and the planet was left to its wounds.",
+      "icon_color": [140, 180, 160],
+      "weight": 6,
+      "danger_levels": ["moderate", "dangerous"],
+      "unique": true,
+      "tone": "neutral",
+      "category": "lore",
+      "choices": [
+        {
+          "id": "listen",
+          "label": "Listen in Silence",
+          "description": "Cut your engines and let the song play.",
+          "outcome": {
+            "description": "The pilot sings three songs. The first is mournful — something about rivers and seasons. The second is angry, defiant, a song about refusing to be forgotten. The third is quiet, almost a lullaby. When it ends, the pilot's voice comes through, rough and unsteady: 'Same time next year, for anyone listening.' The shuttle's engines fire and it slips away into the dark. You sit with the silence for a long time after.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 25},
+              {"reward_type": "set_flag", "amount": 1, "target_id": "lore_earth_song_heard"}
+            ]
+          }
+        },
+        {
+          "id": "hail",
+          "label": "Hail the Pilot",
+          "description": "Open a channel. Let them know someone heard.",
+          "outcome": {
+            "description": "You transmit a brief message: 'Heard you. Thank you.' A long pause. Then the pilot responds: 'My family kept songs from before the evacuation. Passed down, voice to voice. I figure if I play them out here, maybe the sound reaches further than it would on a station.' Another pause. 'You're the third ship to respond this year. That's more than last year.' The pilot plays one more song before signing off, and this time you catch the words. They're about coming home.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 30},
+              {"reward_type": "credits", "amount": 30},
+              {"reward_type": "set_flag", "amount": 1, "target_id": "lore_earth_song_heard"}
+            ]
+          }
+        },
+        {
+          "id": "move_on",
+          "label": "Continue Your Route",
+          "description": "Beautiful, but you have places to be.",
+          "outcome": {
+            "description": "You adjust course and let the song fade behind you. The melody stays in your head longer than you'd like to admit. Some frequencies are harder to tune out than others.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 15},
+              {"reward_type": "set_flag", "amount": 1, "target_id": "lore_earth_song_heard"}
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "lore_forgotten_station_01",
+      "encounter_type": "derelict",
+      "name": "Station Zero",
+      "description": "Your sensors detect a structure that shouldn't be here — a space station, first-generation design, tucked into a stable Lagrange point between two minor bodies. It doesn't appear on any current chart. The station is small by modern standards: a central hub with four radiating arms, built for maybe two hundred residents. Power is negligible — emergency lighting only. The hull is scarred but sound. This is one of the Expanse's first permanent habitats, built in the years after the Aurelia's landing, before the settlements grew large enough to make orbital stations obsolete. History forgot about it. But it's still here.",
+      "icon_color": [180, 160, 120],
+      "weight": 6,
+      "danger_levels": ["moderate", "dangerous"],
+      "unique": true,
+      "tone": "mysterious",
+      "category": "lore",
+      "choices": [
+        {
+          "id": "explore",
+          "label": "Dock and Explore",
+          "description": "The docking clamps are ancient but functional. Go inside.",
+          "outcome": {
+            "description": "The station's interior is a time capsule. Living quarters sized for efficiency, not comfort. A communal mess hall with benches bolted to the floor. And everywhere — on walls, doors, support beams — graffiti. Not vandalism. History. 'Ines Kato, born here, Year Three.' 'Water ration increased — we celebrated.' 'The Aurelia is visible from Arm 2 on clear rotations.' 'We argued about the Charter today. We argue about it every day. That's the point.' The last entry you find, scratched near the main airlock: 'Moving to the surface. Leaving this for whoever comes next. Remember we were here.'",
+            "rewards": [
+              {"reward_type": "xp", "amount": 35},
+              {"reward_type": "credits", "amount": 100},
+              {"reward_type": "set_flag", "amount": 1, "target_id": "lore_station_zero_explored"}
+            ]
+          }
+        },
+        {
+          "id": "scan",
+          "label": "External Survey Only",
+          "description": "Document the station's structure and condition without boarding.",
+          "outcome": {
+            "description": "Your scans reveal construction techniques that haven't been used in a century — hand-welded joints, improvised radiation shielding, a hull patched with material from at least three different vessels. This station was built by people who had nothing except determination and whatever they could salvage. The engineering is crude by modern standards and astonishing by any other measure. You transmit the survey data to the Collective's historical archive. They respond within minutes: 'We have no record of this station. Coordinates logged. Thank you.'",
+            "rewards": [
+              {"reward_type": "xp", "amount": 30},
+              {"reward_type": "set_flag", "amount": 1, "target_id": "lore_station_zero_explored"}
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "lore_time_capsule_01",
+      "encounter_type": "debris",
+      "name": "Letters from Earth",
+      "description": "A sealed container, roughly coffin-sized, drifts through your sensor range. Its outer shell is stamped with the Aurelia's cargo manifest codes and a single instruction: 'TO BE OPENED BY OUR CHILDREN'S CHILDREN.' The container was ejected during the Aurelia's atmospheric entry — one of dozens of cargo pods that were jettisoned to reduce mass for landing. Most were recovered in the early years. This one wasn't. Inside, according to your surface scans, are physical storage media — paper, sealed polymer sheets, small objects. Messages from Earth's last generation, written in the final years before the planet was abandoned, addressed to descendants they would never meet.",
+      "icon_color": [200, 180, 140],
+      "weight": 6,
+      "danger_levels": ["moderate", "dangerous"],
+      "unique": true,
+      "tone": "mysterious",
+      "category": "lore",
+      "choices": [
+        {
+          "id": "open",
+          "label": "Open the Capsule",
+          "description": "They wrote these for someone. You're someone.",
+          "outcome": {
+            "description": "The seal breaks with a hiss of preserved atmosphere — air from Earth, a hundred and fifty years stale. Inside: letters, hundreds of them, handwritten on paper that crumbles at the edges. Drawings by children. Photographs printed on polymer sheets. A pressed flower, impossibly fragile, that disintegrates when the vacuum touches it. One letter, written in a steady hand, catches your eye: 'We are sending you everything we couldn't carry. Not cargo — memory. Remember rain. Remember birdsong. Remember that the sky was blue. Build something worthy of what we lost.' You seal the container and store it with more care than anything else in your hold.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 35},
+              {"reward_type": "credits", "amount": 50},
+              {"reward_type": "set_flag", "amount": 1, "target_id": "lore_time_capsule_opened"}
+            ]
+          }
+        },
+        {
+          "id": "deliver",
+          "label": "Deliver It Unopened",
+          "description": "Bring it to a settlement archive. Let it be opened properly, by everyone.",
+          "outcome": {
+            "description": "You secure the capsule in your cargo bay without breaking the seal. It belongs to the Expanse, not to you. The nearest settlement archive will know what to do with it — preserve it, share it, let the words reach the audience they were meant for. You file a recovery report and tag the capsule as historical material. The archivist who responds sounds like they might be crying. 'We've been looking for the missing pods for decades. Thank you. Thank you.'",
+            "rewards": [
+              {"reward_type": "xp", "amount": 30},
+              {"reward_type": "credits", "amount": 75},
+              {"reward_type": "set_flag", "amount": 1, "target_id": "lore_time_capsule_opened"}
+            ]
+          }
+        },
+        {
+          "id": "leave",
+          "label": "Leave It Sealed",
+          "description": "It's survived this long in the dark. Maybe that's where it belongs.",
+          "outcome": {
+            "description": "You log the coordinates and leave the capsule to its drift. The letters inside will continue their long, silent orbit — words from the dead, waiting for readers who may never come. There's a strange peace in that. Some messages don't need to arrive to mean something.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 20},
+              {"reward_type": "set_flag", "amount": 1, "target_id": "lore_time_capsule_opened"}
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "lore_star_map_01",
+      "encounter_type": "anomaly",
+      "name": "The Cartographer's Stone",
+      "description": "Your sensors flag a metallic object tumbling through a region of otherwise empty space. As you approach, the reading becomes stranger: the object is a flat disc, roughly two meters across, composed of an alloy your instruments can't fully identify. Its surface is covered in precise engravings — circles, lines, clusters of dots. It takes your nav computer twelve seconds to recognize the pattern. It's a star map. The positions correspond to known systems in the Expanse and beyond, mapped with an accuracy that would require centuries of observation. The disc predates human presence in this region by an unknown margin. The alloy shows no signs of terrestrial manufacturing. Someone — or something — charted these stars before humanity ever looked up and wondered what was out there.",
+      "icon_color": [220, 180, 100],
+      "weight": 6,
+      "danger_levels": ["moderate", "dangerous"],
+      "unique": true,
+      "tone": "mysterious",
+      "category": "lore",
+      "choices": [
+        {
+          "id": "analyze",
+          "label": "Full Scientific Analysis",
+          "description": "Run every instrument you have. This could change everything.",
+          "outcome": {
+            "description": "Hours of scanning reveal layers of complexity. The map includes eleven systems matching the known Expanse — and seven more beyond its borders, in regions no human vessel has reached. Isotope dating of the alloy returns contradictory results: some readings suggest thousands of years, others merely centuries. The engravings themselves show no tool marks your instruments can identify. The disc is either impossibly old or impossibly precise. Your data will keep scientists arguing for decades. You store the analysis alongside a single note in your log: 'We are not the first to find this place interesting.'",
+            "rewards": [
+              {"reward_type": "xp", "amount": 35},
+              {"reward_type": "credits", "amount": 100},
+              {"reward_type": "set_flag", "amount": 1, "target_id": "lore_star_map_analyzed"}
+            ]
+          }
+        },
+        {
+          "id": "chart",
+          "label": "Copy the Unknown Systems",
+          "description": "Overlay the map's uncharted systems onto your nav computer.",
+          "outcome": {
+            "description": "Seven new coordinates appear on your star charts, blinking in the margins where your maps end. You have no way to verify them — they're beyond the Expanse's explored border. But the map's known systems are accurate to within fractions of a degree. Whoever made this knew what they were doing. You file the coordinates and wonder if anyone will ever follow them. The disc continues its slow tumble as you pull away, carrying its secrets in the same patient silence that has kept them for longer than you can calculate.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 30},
+              {"reward_type": "set_flag", "amount": 1, "target_id": "lore_star_map_analyzed"}
+            ]
+          }
+        },
+        {
+          "id": "leave",
+          "label": "Document and Withdraw",
+          "description": "Take images. Leave the object undisturbed.",
+          "outcome": {
+            "description": "You photograph every centimeter of the disc's surface and pull away without touching it. Some discoveries are bigger than one pilot and one ship. You'll submit the images to the Collective and let people smarter than you figure out what it means. But you keep one image for yourself: the cluster of dots that represents your home system, marked by hands that were never human, under stars that have been burning since before your species learned to name them.",
+            "rewards": [
+              {"reward_type": "xp", "amount": 25},
+              {"reward_type": "set_flag", "amount": 1, "target_id": "lore_star_map_analyzed"}
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

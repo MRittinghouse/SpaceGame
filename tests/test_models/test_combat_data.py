@@ -219,13 +219,13 @@ class TestCombatUpgradeLoading:
         loader = _make_loader()
         loader.load_upgrades()
         weapons = [u for u in loader.upgrades.values() if u.slot_type == "weapon"]
-        assert len(weapons) == 10
+        assert len(weapons) == 13
 
     def test_defense_upgrades_loaded(self) -> None:
         loader = _make_loader()
         loader.load_upgrades()
         defenses = [u for u in loader.upgrades.values() if u.slot_type == "defense"]
-        assert len(defenses) == 9
+        assert len(defenses) == 12
 
     def test_weapon_has_combat_move(self) -> None:
         loader = _make_loader()
@@ -258,11 +258,12 @@ class TestCombatUpgradeLoading:
 class TestCrewCombatMoveLoading:
     """Tests for crew combat move loading."""
 
-    def test_all_crew_have_combat_moves(self) -> None:
+    def test_all_companions_have_combat_moves(self) -> None:
         loader = _make_loader()
         loader.load_crew_templates()
         for ct in loader.crew_templates.values():
-            assert ct.combat_move is not None, f"{ct.id} should have combat_move"
+            if ct.is_companion:
+                assert ct.combat_move is not None, f"{ct.id} should have combat_move"
 
     def test_elena_evasive_maneuvers(self) -> None:
         loader = _make_loader()

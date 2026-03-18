@@ -27,6 +27,9 @@
     "dialogue_intimate": {
       "file": "music/dialogue_intimate.mp3"
     },
+    "dialogue_neutral": {
+      "file": "music/dialogue_neutral.mp3"
+    },
     "frontier_danger": {
       "file": "music/frontier_danger.mp3"
     },

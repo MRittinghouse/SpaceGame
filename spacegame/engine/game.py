@@ -94,6 +94,7 @@ class Game:
         timer.begin("audio_init")
         self.audio_manager = get_audio_manager()
         self._last_audio_state: Optional[GameState] = None
+        self._dialogue_music: str = "dialogue_neutral"
         timer.end("audio_init")
 
         # Core systems
@@ -146,10 +147,16 @@ class Game:
         saved_settings = self.save_manager.load_settings()
         if "audio" in saved_settings:
             from spacegame.engine.audio_manager import AudioConfig
+
             self.audio_manager.set_config(AudioConfig.from_dict(saved_settings["audio"]))
 
         # Markets (system_id -> Market)
         self.markets: dict[str, Market] = {}
+
+        # Price history and trade route tracking
+        from spacegame.models.market import PriceHistory
+
+        self.price_history: PriceHistory = PriceHistory()
 
         # Activity registry
         self.activity_registry = create_default_registry()
@@ -199,6 +206,7 @@ class Game:
         self.ground_exploration_view = None
         self.ground_result_view = None
         self.investment_view = None
+        self.cantina_view = None
 
         # Investment system
         from spacegame.models.investment import InvestmentManager
@@ -239,11 +247,18 @@ class Game:
         self._crew_last_trades: int = 0
         self._crew_last_jumps: int = 0
 
+        # Ambient dialogue system
+        from spacegame.models.ambient_dialogue import AmbientDialogueManager
+
+        self.ambient_dialogue: Optional[AmbientDialogueManager] = None
+        self._ambient_idle_day_counter: int = 0
+
         # Journal system
         from spacegame.models.journal import Journal
 
         self.journal: Optional[Journal] = None
         self.journal_view = None
+        self._last_visited_count: int = 1  # Starting system is already visited
 
         # Ground contract system
         from spacegame.models.ground_contracts import GroundContractManager
@@ -260,6 +275,33 @@ class Game:
 
         self.politics_manager: Optional[PoliticsManager] = None
 
+        # Galaxy event system
+        from spacegame.models.galaxy_event import GalaxyEventGenerator
+
+        self.galaxy_event_generator: Optional[GalaxyEventGenerator] = None
+        self.active_galaxy_events: dict[str, list] = {}  # system_id -> [GalaxyEvent]
+
+        # Station chatter system
+        from spacegame.models.station_chatter import StationChatterManager
+
+        self.station_chatter: Optional[StationChatterManager] = None
+
+        # News ticker system
+        from spacegame.models.news_ticker import NewsTicker
+
+        self.news_ticker: Optional[NewsTicker] = None
+        self._pending_player_news: list[dict] = []
+
+        # Milestone celebration overlay
+        self._celebration_text: str = ""
+        self._celebration_subtitle: str = ""
+        self._celebration_timer: float = 0.0
+
+        # Travel log system
+        from spacegame.models.travel_log import TravelLogGenerator
+
+        self.travel_log: Optional[TravelLogGenerator] = None
+
         # Day-advance tracking for market event generation
         self._last_known_day: int = 0
 
@@ -267,11 +309,57 @@ class Game:
         logger.info(f"Target FPS: {FPS_TARGET}")
         timer.log_summary()
 
-    def initialize_new_game(self, player_name: str = "Captain") -> None:
+    def _make_crew_commentary_fn(self):
+        """Create a callable that returns crew commentary for mini-game events.
+
+        Returns:
+            A function(action_type: str) -> Optional[tuple[str, str]] returning
+            (crew_name, text) or None.
+        """
+        ambient = self.ambient_dialogue
+        roster = self.crew_roster
+
+        if not ambient or not roster:
+            return lambda action_type: None
+
+        def _get_line(action_type: str):
+            recruited = [t.id for t, _s in roster.get_recruited_members()]
+            if not recruited:
+                return None
+            loyalty_map = {}
+            for tid in recruited:
+                state = roster.get_member_state(tid)
+                if state:
+                    loyalty_map[tid] = state.get("loyalty", 50)
+            result = ambient.get_player_action_line(action_type, recruited, loyalty_map)
+            if result:
+                crew_id, text = result
+                template = roster.get_template(crew_id)
+                name = template.name if template else crew_id
+                return (name, text)
+            return None
+
+        return _get_line
+
+    def queue_player_news(self, detail: str = "", commodity: str = "", amount: str = "") -> None:
+        """Queue a player action for the next news ticker generation.
+
+        Args:
+            detail: Action-specific detail.
+            commodity: Commodity involved.
+            amount: Amount or value string.
+        """
+        if self.player:
+            self._pending_player_news.append(
+                self.player.make_news_context(detail, commodity, amount)
+            )
+
+    def initialize_new_game(self, player_name: str = "Captain", ship_name: str = "") -> None:
         """Initialize a new game with starting conditions.
 
         Args:
             player_name: Name chosen by the player.
+            ship_name: Player-chosen ship name (empty = use ship type name).
         """
         logger.info("Initializing new game...")
 
@@ -280,7 +368,11 @@ class Game:
         starting_ship = Ship(ship_type=shuttle_type, current_fuel=shuttle_type.fuel_capacity)
 
         self.player = Player(
-            name=player_name, credits=STARTING_CREDITS, current_system_id="nexus_prime", ship=starting_ship
+            name=player_name,
+            credits=STARTING_CREDITS,
+            current_system_id="nexus_prime",
+            ship=starting_ship,
+            ship_name=ship_name,
         )
 
         # Sync upgrade manager slots from ship type (default_factory doesn't know ship type)
@@ -304,6 +396,9 @@ class Game:
         system_ids = [s.id for s in self.data_loader.get_all_systems()]
         self.event_generator = EventGenerator(commodity_ids, system_ids)
 
+        # Initialize recipe discovery (all non-discoverable recipes start discovered)
+        self.player.initialize_discovered_recipes(self.data_loader.recipes)
+
         # Start tutorial for new game
         self.tutorial_manager.reset_tutorial()
 
@@ -316,12 +411,30 @@ class Game:
         # Auto-start campaign mission: bill of landing
         self.mission_manager.accept_mission("bill_of_landing")
 
+        # Initialize procedural mission generator
+        from spacegame.models.procedural_missions import ProceduralMissionGenerator
+
+        self.procedural_mission_gen = ProceduralMissionGenerator(
+            systems=self.data_loader.systems,
+            commodities=self.data_loader.commodities,
+            enemy_templates=self.data_loader.enemy_templates,
+            seed=hash(self.player.name) & 0xFFFFFFFF,
+        )
+        self._proc_missions_day: int = -1
+
         # Initialize crew system
         from spacegame.models.crew import CrewRoster
 
         self.crew_roster = CrewRoster(self.data_loader.crew_templates)
         self.player.ship.set_crew_roster(self.crew_roster)
+        self.dialogue_manager.set_crew_roster(self.crew_roster)
         self._crew_last_trades = 0
+
+        # Initialize ambient dialogue
+        if self.data_loader.ambient_lines:
+            from spacegame.models.ambient_dialogue import AmbientDialogueManager
+
+            self.ambient_dialogue = AmbientDialogueManager(self.data_loader.ambient_lines)
         self._crew_last_jumps = 0
 
         # Initialize attribute system
@@ -355,6 +468,18 @@ class Game:
 
         # Initialize political system
         self._initialize_politics_manager()
+
+        # Initialize galaxy event system
+        self._initialize_galaxy_event_generator()
+
+        # Initialize station chatter
+        self._initialize_station_chatter()
+
+        # Initialize news ticker
+        self._initialize_news_ticker()
+
+        # Initialize travel log
+        self._initialize_travel_log()
 
         # Track starting day for event generation
         self._last_known_day = self.player.game_day
@@ -409,15 +534,45 @@ class Game:
             self.politics_manager = PoliticsManager.from_dict(political_state, factions)
         else:
             relationships = list(self.data_loader.faction_relationships)
-            self.politics_manager = PoliticsManager(
-                relationships=relationships, factions=factions
-            )
+            self.politics_manager = PoliticsManager(relationships=relationships, factions=factions)
+
+        # Load faction perks into politics manager
+        if self.politics_manager and self.data_loader.faction_perks:
+            self.politics_manager.set_faction_perks(self.data_loader.faction_perks)
 
         # Wire politics into dialogue system for faction_reputation_changes
         if self.politics_manager and self.player:
-            self.dialogue_manager.set_politics_manager(
-                self.politics_manager, self.player
-            )
+            self.dialogue_manager.set_politics_manager(self.politics_manager, self.player)
+
+    def _initialize_galaxy_event_generator(self) -> None:
+        """Initialize the galaxy event generator from data-driven templates."""
+        from spacegame.models.galaxy_event import GalaxyEventGenerator
+
+        templates = self.data_loader.galaxy_event_templates
+        chains = self.data_loader.galaxy_event_chains
+        self.galaxy_event_generator = GalaxyEventGenerator(templates or [], chains=chains or [])
+
+    def _initialize_station_chatter(self) -> None:
+        """Initialize station chatter from loaded data."""
+        from spacegame.models.station_chatter import StationChatterManager
+
+        lines = self.data_loader.station_chatter_lines
+        self.station_chatter = StationChatterManager(lines)
+
+    def _initialize_news_ticker(self) -> None:
+        """Initialize news ticker from loaded templates."""
+        from spacegame.models.news_ticker import NewsTicker
+        from spacegame.config import NEWS_TICKER_BUFFER_SIZE
+
+        self.news_ticker = NewsTicker(
+            self.data_loader.news_templates, buffer_size=NEWS_TICKER_BUFFER_SIZE
+        )
+
+    def _initialize_travel_log(self) -> None:
+        """Initialize travel log from loaded templates."""
+        from spacegame.models.travel_log import TravelLogGenerator
+
+        self.travel_log = TravelLogGenerator(self.data_loader.travel_log_templates)
 
     def _apply_faction_assignments(self) -> None:
         """Apply faction assignments to star system objects.
@@ -497,6 +652,7 @@ class Game:
         GameState.GALAXY_MAP: "galaxy_exploration",
         GameState.TRADING: "station_hub",
         GameState.STATION_HUB: "station_hub",
+        GameState.CANTINA: "station_hub",
         GameState.REPAIR_BAY: "station_hub",
         GameState.SHIPYARD: "station_hub",
         GameState.INVESTMENT: "station_hub",
@@ -515,6 +671,7 @@ class Game:
         GameState.GALAXY_MAP: "ambient_space",
         GameState.TRADING: "ambient_station",
         GameState.STATION_HUB: "ambient_station",
+        GameState.CANTINA: "ambient_station",
         GameState.REPAIR_BAY: "ambient_station",
         GameState.SHIPYARD: "ambient_station",
         GameState.INVESTMENT: "ambient_station",
@@ -537,8 +694,11 @@ class Game:
         if current is None:
             return
 
-        # Music
-        music_id = self._STATE_MUSIC.get(current)
+        # Music (dialogue state uses dynamic track based on NPC)
+        if current == GameState.DIALOGUE:
+            music_id = self._dialogue_music
+        else:
+            music_id = self._STATE_MUSIC.get(current)
         if music_id:
             self.audio_manager.play_music(music_id)
         # Don't stop music for unmapped states (skill tree, stats, etc.)
@@ -593,7 +753,8 @@ class Game:
             if next_state:
                 self.name_input_view.next_state = None
                 player_name = self.name_input_view.get_player_name()
-                self.initialize_new_game(player_name)
+                ship_name = self.name_input_view.get_ship_name()
+                self.initialize_new_game(player_name, ship_name=ship_name)
                 self._create_gameplay_views()
 
                 # Go to character creation for attribute allocation
@@ -627,6 +788,49 @@ class Game:
             if getattr(self.galaxy_map_view, "arrival_message", None):
                 self._mission_notifications.append(self.galaxy_map_view.arrival_message)
                 self.galaxy_map_view.arrival_message = None
+
+                # Travel log: first visit entry
+                if self.travel_log and self.journal and self.player:
+                    system_id = self.player.current_system_id
+                    if len(self.player.systems_visited) > self._last_visited_count:
+                        entry = self.travel_log.on_first_visit(system_id, self.player.game_day)
+                        if entry:
+                            self.journal.add_entry(entry)
+                    self._last_visited_count = len(self.player.systems_visited)
+
+                # Trigger ambient crew dialogue on system arrival
+                if self.ambient_dialogue and self.crew_roster and self.player:
+                    system_id = self.player.current_system_id
+                    system = self.data_loader.get_system(system_id)
+                    faction_id = system.faction if system else ""
+                    recruited = [t.id for t, _ in self.crew_roster.get_recruited_members()]
+                    loyalty_map = {}
+                    for tid in recruited:
+                        state = self.crew_roster.get_member_state(tid)
+                        loyalty_map[tid] = state["loyalty"] if state else 0
+                        template = self.crew_roster.get_template(tid)
+                        if not template:
+                            continue
+                        # Check home system
+                        if template.home_system_id == system_id:
+                            line = self.ambient_dialogue.get_line(
+                                "home_system",
+                                tid,
+                                system_id=system_id,
+                                loyalty=loyalty_map[tid],
+                            )
+                            if line:
+                                self._mission_notifications.append(f'{template.name}: "{line}"')
+                        # Check faction territory
+                        elif template.faction_id and template.faction_id == faction_id:
+                            line = self.ambient_dialogue.get_line(
+                                "faction_territory",
+                                tid,
+                                faction_id=faction_id,
+                                loyalty=loyalty_map[tid],
+                            )
+                            if line:
+                                self._mission_notifications.append(f'{template.name}: "{line}"')
 
             # Check for NPC auto-trigger dialogues at current system
             self._check_auto_triggers()
@@ -682,6 +886,7 @@ class Game:
                             transition_type=TransitionType.WARP,
                         )
                         return
+
                 # Fallback: safe landing
                 def _do():
                     self.auto_save()
@@ -703,6 +908,7 @@ class Game:
 
                         self._start_transition(TransitionType.FADE, 0.4, _do)
                         return
+
                 # Fallback: no definition found → go to station hub
                 def _do():
                     self.auto_save()
@@ -795,9 +1001,21 @@ class Game:
                 dismiss_id = getattr(self.crew_roster_view, "pending_dismiss_id", None)
                 if dismiss_id and self.crew_roster:
                     self.crew_roster_view.pending_dismiss_id = None
-                    success, msg = self.crew_roster.dismiss(dismiss_id)
-                    if success:
-                        self._mission_notifications.append(f"Crew Dismissed: {msg}")
+                    # Check dismiss blocking (e.g. Priya during lab_rat)
+                    from spacegame.models.mission import MissionStatus as _MS
+
+                    active_ids = (
+                        [m.id for m in self.mission_manager.get_missions_by_status(_MS.ACTIVE)]
+                        if self.mission_manager
+                        else []
+                    )
+                    can, reason = self.crew_roster.can_dismiss(dismiss_id, active_ids)
+                    if not can:
+                        self._mission_notifications.append(reason)
+                    else:
+                        success, msg = self.crew_roster.dismiss(dismiss_id)
+                        if success:
+                            self._mission_notifications.append(f"Crew Dismissed: {msg}")
 
                 def _do():
                     self.state_manager.change_state(GameState.GALAXY_MAP)
@@ -902,6 +1120,20 @@ class Game:
                     # Check for journal auto-entries triggered by new flags
                     self._check_journal_triggers()
 
+                    # Handle mission failures triggered by dialogue
+                    if (
+                        self.player.dialogue_flags.get("iron_delivery_failed")
+                        and self.mission_manager
+                    ):
+                        from spacegame.models.mission import MissionStatus
+
+                        if self.mission_manager.get_status("iron_delivery") == MissionStatus.ACTIVE:
+                            self.mission_manager.fail_mission("iron_delivery")
+                            self._mission_notifications.append(
+                                "Mission Failed: Iron Ore Delivery"
+                            )
+                            logger.info("Iron delivery mission failed — player sold consigned cargo")
+
                 target = next_state
 
                 def _do():
@@ -909,6 +1141,8 @@ class Game:
                         self._ensure_name_input_view()
                     elif target == GameState.STATION_HUB:
                         self._ensure_station_hub_view()
+                    elif target == GameState.CANTINA:
+                        self._ensure_cantina_view()
                     self.state_manager.change_state(target)
 
                 self._start_transition(TransitionType.FADE, 0.3, _do)
@@ -1157,6 +1391,30 @@ class Game:
         # Check station hub view for transitions
         if hasattr(self, "station_hub_view") and self.station_hub_view:
             if self.station_hub_view.active:
+                # Handle re-recruitment notification (no state change needed)
+                rerecruit_id = getattr(self.station_hub_view, "pending_rerecruit_id", None)
+                if rerecruit_id and self.crew_roster:
+                    self.station_hub_view.pending_rerecruit_id = None
+                    template = self.crew_roster.get_template(rerecruit_id)
+                    name = template.name if template else rerecruit_id
+                    self._mission_notifications.append(f"Crew Re-recruited: {name}")
+
+                # Handle crew hire notification (no state change needed)
+                hire_id = getattr(self.station_hub_view, "pending_hire_id", None)
+                if hire_id and self.crew_roster:
+                    self.station_hub_view.pending_hire_id = None
+                    template = self.crew_roster.get_template(hire_id)
+                    name = template.name if template else hire_id
+                    self._mission_notifications.append(f"Crew Hired: {name}")
+
+                # Handle station board contract acceptance
+                contract_id = getattr(self.station_hub_view, "pending_contract_id", None)
+                if contract_id and self.mission_manager:
+                    self.station_hub_view.pending_contract_id = None
+                    mission = self.mission_manager.get_mission(contract_id)
+                    name = mission.name if mission else contract_id
+                    self._mission_notifications.append(f"Contract Accepted: {name}")
+
                 next_state = self.station_hub_view.get_next_state()
                 if next_state == GameState.GALAXY_MAP:
                     self.station_hub_view.next_state = None
@@ -1178,6 +1436,14 @@ class Game:
                     def _do():
                         self._ensure_repair_bay_view()
                         self.state_manager.change_state(GameState.REPAIR_BAY)
+
+                    self._start_transition(TransitionType.FADE, 0.3, _do)
+                elif next_state == GameState.CANTINA:
+                    self.station_hub_view.next_state = None
+
+                    def _do():
+                        self._ensure_cantina_view()
+                        self.state_manager.change_state(GameState.CANTINA)
 
                     self._start_transition(TransitionType.FADE, 0.3, _do)
                 elif next_state == GameState.INVESTMENT:
@@ -1240,6 +1506,49 @@ class Game:
 
                     self._start_transition(TransitionType.FADE, 0.3, _do)
 
+        # Check cantina view for transitions
+        if hasattr(self, "cantina_view") and self.cantina_view:
+            if self.cantina_view.active:
+                # Handle re-recruitment notification
+                rerecruit_id = getattr(self.cantina_view, "pending_rerecruit_id", None)
+                if rerecruit_id and self.crew_roster:
+                    self.cantina_view.pending_rerecruit_id = None
+                    template = self.crew_roster.get_template(rerecruit_id)
+                    name = template.name if template else rerecruit_id
+                    self._mission_notifications.append(f"Crew Re-recruited: {name}")
+
+                # Handle crew hire notification
+                hire_id = getattr(self.cantina_view, "pending_hire_id", None)
+                if hire_id and self.crew_roster:
+                    self.cantina_view.pending_hire_id = None
+                    template = self.crew_roster.get_template(hire_id)
+                    name = template.name if template else hire_id
+                    self._mission_notifications.append(f"Crew Hired: {name}")
+
+                # Handle station board contract acceptance
+                contract_id = getattr(self.cantina_view, "pending_contract_id", None)
+                if contract_id and self.mission_manager:
+                    self.cantina_view.pending_contract_id = None
+                    mission = self.mission_manager.get_mission(contract_id)
+                    name = mission.name if mission else contract_id
+                    self._mission_notifications.append(f"Contract Accepted: {name}")
+
+                next_state = self.cantina_view.get_next_state()
+                if next_state == GameState.STATION_HUB:
+                    self.cantina_view.next_state = None
+
+                    def _do():
+                        self._ensure_station_hub_view()
+                        self.state_manager.change_state(GameState.STATION_HUB)
+
+                    self._start_transition(TransitionType.FADE, 0.3, _do)
+                elif next_state == GameState.DIALOGUE:
+                    self.cantina_view.next_state = None
+                    npc_id = getattr(self.cantina_view, "pending_npc_id", None)
+                    if npc_id:
+                        self.cantina_view.pending_npc_id = None
+                        self.start_dialogue(npc_id, return_state=GameState.CANTINA)
+
         # Check investment view for transitions
         if self.investment_view:
             if self.investment_view.active:
@@ -1267,6 +1576,7 @@ class Game:
             systems,
             active_events=self.active_events,
             politics_manager=self.politics_manager,
+            news_ticker=self.news_ticker,
         )
         # Wire journal for quick-add overlay
         if self.journal:
@@ -1278,6 +1588,7 @@ class Game:
             commodities,
             activity_registry=self.activity_registry,
             active_events=self.active_events,
+            price_history=self.price_history,
             smuggling_contract_manager=self.smuggling_contract_manager,
             politics_manager=self.politics_manager,
         )
@@ -1311,6 +1622,10 @@ class Game:
 
         system = self.data_loader.get_system(self.player.current_system_id)
         locations = self.data_loader.get_locations_for_system(self.player.current_system_id)
+
+        # Generate procedural station board contracts (refresh each day)
+        self._refresh_procedural_missions()
+
         self.station_hub_view = StationHubView(
             self.ui_manager,
             self.player,
@@ -1319,6 +1634,9 @@ class Game:
             activity_registry=self.activity_registry,
             data_loader=self.data_loader,
             politics_manager=self.politics_manager,
+            crew_roster=self.crew_roster,
+            station_chatter=self.station_chatter,
+            mission_manager=self.mission_manager,
         )
         self.state_manager.register_state(GameState.STATION_HUB, self.station_hub_view)
 
@@ -1337,6 +1655,11 @@ class Game:
                 location_name = loc.name
                 location_flavor = loc.flavor_text
                 break
+        # Free repairs faction perk
+        if self.politics_manager and self.politics_manager.has_perk(
+            self.player, self.player.current_system_id, "free_repairs"
+        ):
+            cost_per_hp = 0
         self.repair_bay_view = RepairBayView(
             self.ui_manager,
             self.player,
@@ -1345,6 +1668,30 @@ class Game:
             location_flavor=location_flavor,
         )
         self.state_manager.register_state(GameState.REPAIR_BAY, self.repair_bay_view)
+
+    def _ensure_cantina_view(self) -> None:
+        """Create or recreate cantina view for current system."""
+        from spacegame.views.cantina_view import CantinaView
+
+        locations = self.data_loader.get_locations_for_system(self.player.current_system_id)
+        cantina_loc = None
+        for loc in locations:
+            if loc.location_type == "cantina":
+                cantina_loc = loc
+                break
+        if not cantina_loc:
+            return
+        system = self.data_loader.get_system(self.player.current_system_id)
+        self.cantina_view = CantinaView(
+            self.ui_manager,
+            self.player,
+            system,
+            cantina_loc,
+            self.data_loader,
+            crew_roster=self.crew_roster,
+            mission_manager=self.mission_manager,
+        )
+        self.state_manager.register_state(GameState.CANTINA, self.cantina_view)
 
     def _ensure_investment_view(self) -> None:
         """Create or recreate investment view for current system."""
@@ -1365,6 +1712,13 @@ class Game:
         from spacegame.views.mining_view import MiningView
 
         mining_config = self.data_loader.get_mining_config(self.player.current_system_id)
+        system = self.data_loader.systems.get(self.player.current_system_id)
+        if system:
+            mining_config.danger_level = system.danger_level
+        if self.politics_manager:
+            mining_config.perk_yield_bonus = self.politics_manager.get_perk_bonus(
+                self.player, self.player.current_system_id, "mining_yield_bonus"
+            )
         self.mining_view = MiningView(
             self.ui_manager,
             self.player,
@@ -1373,6 +1727,7 @@ class Game:
             progression=self.player.progression,
             drone_fleet=self.player.drone_fleet,
         )
+        self.mining_view._get_crew_line = self._make_crew_commentary_fn()
         self.state_manager.register_state(GameState.MINING, self.mining_view)
 
     def _ensure_salvage_view(self) -> None:
@@ -1380,6 +1735,13 @@ class Game:
         from spacegame.views.salvage_view import SalvageView
 
         salvage_config = self.data_loader.get_salvage_config(self.player.current_system_id)
+        system = self.data_loader.systems.get(self.player.current_system_id)
+        if system:
+            salvage_config.danger_level = system.danger_level
+        if self.politics_manager:
+            salvage_config.perk_yield_bonus = self.politics_manager.get_perk_bonus(
+                self.player, self.player.current_system_id, "salvage_yield_bonus"
+            )
         self.salvage_view = SalvageView(
             self.ui_manager,
             self.player,
@@ -1387,6 +1749,7 @@ class Game:
             salvage_config=salvage_config,
             progression=self.player.progression,
         )
+        self.salvage_view._get_crew_line = self._make_crew_commentary_fn()
         self.state_manager.register_state(GameState.SALVAGING, self.salvage_view)
 
     def _ensure_refining_view(self) -> None:
@@ -1401,6 +1764,7 @@ class Game:
             system_id=self.player.current_system_id,
             progression=self.player.progression,
         )
+        self.refining_view._get_crew_line = self._make_crew_commentary_fn()
         self.state_manager.register_state(GameState.REFINING, self.refining_view)
 
     def _ensure_skill_tree_view(self) -> None:
@@ -1410,6 +1774,7 @@ class Game:
         self.skill_tree_view = SkillTreeView(
             self.ui_manager,
             self.player.progression,
+            player=self.player,
         )
         self.state_manager.register_state(GameState.SKILL_TREE, self.skill_tree_view)
 
@@ -1434,6 +1799,7 @@ class Game:
             self.player,
             self.attribute_sheet,
             self.social_manager,
+            politics_manager=self.politics_manager,
         )
         self.state_manager.register_state(GameState.CHARACTER, self.character_view)
 
@@ -1494,7 +1860,19 @@ class Game:
             if self.player
             else 1
         )
-        self.crew_roster_view = CrewRosterView(self.ui_manager, self.crew_roster, crew_slots)
+        from spacegame.models.mission import MissionStatus as _MS
+
+        active_ids = (
+            [m.id for m in self.mission_manager.get_missions_by_status(_MS.ACTIVE)]
+            if self.mission_manager
+            else []
+        )
+        self.crew_roster_view = CrewRosterView(
+            self.ui_manager,
+            self.crew_roster,
+            crew_slots,
+            active_mission_ids=active_ids,
+        )
         self.state_manager.register_state(GameState.CREW_ROSTER, self.crew_roster_view)
 
     def start_dialogue(self, npc_id: str, return_state: GameState = GameState.TRADING) -> None:
@@ -1517,9 +1895,26 @@ class Game:
         # Track NPC for mission talk_to_npc objectives
         self._last_dialogue_npc_id = npc_id
 
+        # Select dialogue music based on NPC (default neutral, emotional NPCs get intimate)
+        self._dialogue_music = getattr(npc, "dialogue_music", "dialogue_neutral") or "dialogue_neutral"
+
         # Sync flags and social state from player before starting
         self.dialogue_manager.load_flags(self.player.dialogue_flags)
         self.social_manager.load_state(self.player.social_state)
+
+        # Detect if player sold the cargo broker's iron ore
+        if npc_id == "delivery_merchant" and self.mission_manager:
+            from spacegame.models.mission import MissionStatus
+
+            iron_status = self.mission_manager.get_status("iron_delivery")
+            has_ore = self.player.ship.get_cargo_quantity("iron_ore") >= 10
+            if (
+                iron_status == MissionStatus.ACTIVE
+                and not has_ore
+                and not self.player.dialogue_flags.get("iron_ore_delivered", False)
+            ):
+                self.player.dialogue_flags["broker_ore_sold"] = True
+                self.dialogue_manager.set_flag("broker_ore_sold")
 
         # Apply faction-based disposition modifier to NPC
         if self.politics_manager and npc.faction_id:
@@ -1528,9 +1923,7 @@ class Game:
             )
             if disp_mod != 0:
                 self.social_manager.modify_disposition(npc_id, disp_mod)
-                logger.info(
-                    f"Applied faction disposition modifier to {npc_id}: {disp_mod:+d}"
-                )
+                logger.info(f"Applied faction disposition modifier to {npc_id}: {disp_mod:+d}")
 
         self.dialogue_manager.start_dialogue(tree, npc_id=npc_id)
         self._ensure_dialogue_view()
@@ -1542,9 +1935,7 @@ class Game:
         self._start_transition(TransitionType.FADE, 0.3, _do)
         logger.info(f"Starting dialogue with {npc.name}")
 
-    def _start_intro_narration(
-        self, return_state: GameState = GameState.GALAXY_MAP
-    ) -> None:
+    def _start_intro_narration(self, return_state: GameState = GameState.GALAXY_MAP) -> None:
         """Start the intro backstory narration sequence.
 
         Args:
@@ -1562,6 +1953,7 @@ class Game:
             return
 
         self._last_dialogue_npc_id = None  # No NPC for narration
+        self._dialogue_music = "dialogue_intimate"  # Narration is emotional
         self.dialogue_manager.start_dialogue(tree)
         self._ensure_dialogue_view()
         self.dialogue_view._return_state = return_state
@@ -1590,9 +1982,7 @@ class Game:
         """
         from spacegame.views.combat_view import CombatView
 
-        self.combat_view = CombatView(
-            self.ui_manager, engine, self.player, self.social_manager
-        )
+        self.combat_view = CombatView(self.ui_manager, engine, self.player, self.social_manager)
         self.combat_view._return_state = return_state
         if self.player:
             self.combat_view._bribe_credits_available = self.player.credits
@@ -1624,6 +2014,7 @@ class Game:
             self.player.upgrade_manager,
             self.crew_roster,
             crew_moves,
+            player_level=self.player.progression.level,
         )
         enemies = [EnemyShip.from_template(t) for t in encounter.enemy_templates]
         combat_state = CombatState(
@@ -1667,9 +2058,7 @@ class Game:
             encounter_seed=ref.encounter_seed,
         )
 
-    def _resolve_bounty_combat(
-        self, enemy_ids: list[str]
-    ) -> Optional["CombatEncounter"]:
+    def _resolve_bounty_combat(self, enemy_ids: list[str]) -> Optional["CombatEncounter"]:
         """Resolve bounty hunter enemy IDs into a CombatEncounter.
 
         Args:
@@ -1695,9 +2084,7 @@ class Game:
             encounter_seed=seed,
         )
 
-    def _resolve_encounter_definition(
-        self, ref: "EncounterRef"
-    ) -> Optional["EncounterDefinition"]:
+    def _resolve_encounter_definition(self, ref: "EncounterRef") -> Optional["EncounterDefinition"]:
         """Select an encounter definition for a non-hostile encounter.
 
         Args:
@@ -1707,6 +2094,7 @@ class Game:
             EncounterDefinition or None if no definitions match.
         """
         from spacegame.models.encounter import (
+            EncounterContext,
             EncounterDefinition,
             lookup_encounter_definition,
             select_encounter_definition,
@@ -1723,16 +2111,28 @@ class Game:
 
         # Random weighted selection (procedural encounters)
         danger = "moderate"
+        system_id = ""
+        faction_id = ""
         if self.player:
-            system = self.data_loader.systems.get(self.player.current_system_id)
+            system_id = self.player.current_system_id
+            system = self.data_loader.systems.get(system_id)
             if system:
                 danger = getattr(system, "danger_level", "moderate")
+                faction_id = getattr(system, "faction_id", "")
+
+        context = EncounterContext(
+            encounter_type=ref.encounter_type,
+            danger_level=danger,
+            seed=ref.encounter_seed,
+            system_id=system_id,
+            faction_id=faction_id,
+            player_level=self.player.progression.level if self.player else 1,
+            dialogue_flags=self.player.dialogue_flags if self.player else {},
+        )
 
         defn = select_encounter_definition(
             self.data_loader.encounter_definitions,
-            ref.encounter_type,
-            danger,
-            ref.encounter_seed,
+            context,
         )
         if defn:
             ref.encounter_def_id = defn.id
@@ -1751,9 +2151,7 @@ class Game:
         """
         from spacegame.views.encounter_view import EncounterView
 
-        self.encounter_view = EncounterView(
-            self.ui_manager, encounter_def, encounter_ref
-        )
+        self.encounter_view = EncounterView(self.ui_manager, encounter_def, encounter_ref)
         self.state_manager.register_state(GameState.ENCOUNTER, self.encounter_view)
 
     def _check_bounty_hunter_encounter(self) -> bool:
@@ -1997,17 +2395,13 @@ class Game:
         from spacegame.models.mission import MissionStatus
 
         parent_mission = None
-        for m in self.mission_manager.get_missions_by_status(
-            MissionStatus.ACTIVE
-        ):
+        for m in self.mission_manager.get_missions_by_status(MissionStatus.ACTIVE):
             if m.ground_mission_id == ground_mission_id:
                 parent_mission = m
                 break
 
         name = parent_mission.name if parent_mission else ground_mission_id
-        description = (
-            parent_mission.description if parent_mission else "Campaign ground mission."
-        )
+        description = parent_mission.description if parent_mission else "Campaign ground mission."
 
         # Determine faction from system
         system = self.data_loader.systems.get(self.player.current_system_id)
@@ -2043,6 +2437,8 @@ class Game:
         if not outcome:
             return
 
+        self.player.encounters_survived += 1
+
         for reward in outcome.rewards:
             if reward.reward_type == "credits":
                 self.player.credits += reward.amount
@@ -2069,6 +2465,7 @@ class Game:
                 self.player.add_criminal_heat(reward.amount)
                 self.player.times_caught_smuggling += 1
                 logger.info(f"Encounter: +{reward.amount} criminal heat")
+                self._trigger_crew_reaction("smuggling_caught")
             elif reward.reward_type == "modify_reputation":
                 if reward.target_id:
                     if self.politics_manager:
@@ -2077,32 +2474,35 @@ class Game:
                         )
                     else:
                         self.player.modify_reputation(reward.target_id, reward.amount)
-                    logger.info(
-                        f"Encounter: {reward.amount} reputation with {reward.target_id}"
-                    )
+                    logger.info(f"Encounter: {reward.amount} reputation with {reward.target_id}")
             elif reward.reward_type == "confiscate_cargo":
                 if reward.target_id:
                     qty = self.player.ship.get_cargo_quantity(reward.target_id)
                     remove_qty = min(qty, reward.amount)
                     if remove_qty > 0:
                         self.player.ship.remove_cargo(reward.target_id, remove_qty)
-                        logger.info(
-                            f"Encounter: confiscated {remove_qty} {reward.target_id}"
-                        )
+                        logger.info(f"Encounter: confiscated {remove_qty} {reward.target_id}")
             elif reward.reward_type == "reduce_criminal_heat":
                 self.player.decay_criminal_heat(reward.amount)
                 logger.info(f"Encounter: -{reward.amount} criminal heat")
             elif reward.reward_type == "bounty_immunity":
                 self._bounty_immunity_until = self.player.game_day + reward.amount
-                logger.info(
-                    f"Encounter: bounty immunity for {reward.amount} days"
-                )
+                logger.info(f"Encounter: bounty immunity for {reward.amount} days")
             elif reward.reward_type == "start_bounty_combat":
                 # Transition to combat with bounty hunter enemies
                 self._pending_bounty_combat_ids = (
                     reward.target_id.split(",") if reward.target_id else []
                 )
                 logger.info("Encounter: starting bounty hunter combat")
+
+        # Mark unique encounters as seen so they don't repeat
+        enc_def = getattr(self.encounter_view, "encounter_def", None)
+        if enc_def and getattr(enc_def, "unique", False):
+            flag = f"encounter_seen_{enc_def.id}"
+            self.player.dialogue_flags[flag] = True
+            if self.dialogue_manager:
+                self.dialogue_manager.set_flag(flag)
+            logger.info(f"Unique encounter seen: {flag}")
 
     def _get_crew_combat_moves(self) -> dict:
         """Build crew_template_id -> CombatMove mapping from active crew."""
@@ -2152,8 +2552,24 @@ class Game:
                     for commodity_id, qty in loot.items():
                         self.player.ship.add_cargo(commodity_id, qty)
                         logger.info(f"Combat loot: +{qty} {commodity_id}")
+                # Distribute rare loot
+                if not enemy.is_alive and enemy.template.rare_loot:
+                    rare_loot = _roll_loot(
+                        enemy.template.rare_loot,
+                        seed=state.encounter.encounter_seed + hash(enemy.template.id) + 7919,
+                    )
+                    for commodity_id, qty in rare_loot.items():
+                        self.player.ship.add_cargo(commodity_id, qty)
+                        logger.info(f"Combat rare loot: +{qty} {commodity_id}")
+
+            # Award credit rewards from defeated enemies
+            total_credits = sum(e.template.credit_reward for e in state.enemies if not e.is_alive)
+            if total_credits > 0:
+                self.player.add_credits(total_credits)
+                logger.info(f"Combat loot: +{total_credits} credits")
 
             logger.info(f"Combat victory: +{total_xp} XP")
+            self._trigger_crew_reaction("combat_victory")
 
         elif result == CombatResult.DEFEAT:
             safe_system = self.player.current_system_id
@@ -2163,9 +2579,11 @@ class Game:
         elif result == CombatResult.FLED:
             self.player.combats_fled += 1
             logger.info("Combat: player fled")
+            self._trigger_crew_reaction("combat_retreat")
 
         elif result == CombatResult.NEGOTIATED:
             self.player.combats_won += 1
+            self.player.combats_negotiated += 1
 
             # Enhanced negotiate: partial loot (50% of normal loot)
             if state.negotiate_partial_loot:
@@ -2188,15 +2606,14 @@ class Game:
                     self.politics_manager.apply_reputation_with_spillover(
                         self.player, enemy_faction, 2
                     )
-                    logger.info(
-                        f"Combat: intimidation success — +2 rep with {enemy_faction}"
-                    )
+                    logger.info(f"Combat: intimidation success — +2 rep with {enemy_faction}")
                 else:
                     logger.info("Combat: intimidation success — no faction to reward")
 
             logger.info("Combat: negotiated resolution")
 
         elif result == CombatResult.BRIBED:
+            self.player.combats_bribed += 1
             # Deduct bribe cost from player credits
             bribe_cost = getattr(self.combat_view, "_bribe_cost", 0)
             if bribe_cost > 0:
@@ -2213,6 +2630,35 @@ class Game:
                         self.player, enemy_faction, -1
                     )
                     logger.info(f"Combat: bribe — -1 rep with {enemy_faction}")
+
+    def _trigger_crew_reaction(self, action_type: str) -> None:
+        """Trigger a crew ambient reaction to a player action.
+
+        Picks a random matching line from any recruited crew member and
+        queues it as a mission notification.
+
+        Args:
+            action_type: The player action (e.g. "sold_cargo", "combat_victory").
+        """
+        if not self.ambient_dialogue or not self.crew_roster:
+            return
+        recruited = [t.id for t, _ in self.crew_roster.get_recruited_members()]
+        if not recruited:
+            return
+        loyalty_map = {}
+        for tid in recruited:
+            state = self.crew_roster.get_member_state(tid)
+            loyalty_map[tid] = state["loyalty"] if state else 0
+        result = self.ambient_dialogue.get_player_action_line(
+            action_type=action_type,
+            recruited_ids=recruited,
+            loyalty_map=loyalty_map,
+        )
+        if result:
+            crew_id, text = result
+            template = self.crew_roster.get_template(crew_id)
+            name = template.name if template else crew_id
+            self._mission_notifications.append(f'{name}: "{text}"')
 
     # === Ground Mission Methods ===
 
@@ -2234,9 +2680,7 @@ class Game:
             self.crew_roster if self.crew_roster else self._make_empty_crew_roster(),
             skill_levels,
         )
-        self.state_manager.register_state(
-            GameState.GROUND_BRIEFING, self.ground_briefing_view
-        )
+        self.state_manager.register_state(GameState.GROUND_BRIEFING, self.ground_briefing_view)
 
     def _ensure_ground_result_view(self, result: "GroundMissionResult") -> None:
         """Create and register the ground result view.
@@ -2246,12 +2690,8 @@ class Game:
         """
         from spacegame.views.ground_result_view import GroundResultView
 
-        self.ground_result_view = GroundResultView(
-            self.ui_manager, result
-        )
-        self.state_manager.register_state(
-            GameState.GROUND_RESULT, self.ground_result_view
-        )
+        self.ground_result_view = GroundResultView(self.ui_manager, result)
+        self.state_manager.register_state(GameState.GROUND_RESULT, self.ground_result_view)
 
     def get_ground_contracts(self) -> list:
         """Get available ground contracts at the current system.
@@ -2274,9 +2714,7 @@ class Game:
         available = self.ground_contract_manager.get_available(system_id, game_day)
         if not available:
             # Generate new contracts for this visit
-            self.ground_contract_manager.generate_contracts(
-                system_id, faction_id, game_day, level
-            )
+            self.ground_contract_manager.generate_contracts(system_id, faction_id, game_day, level)
             available = self.ground_contract_manager.get_available(system_id, game_day)
 
         return available
@@ -2324,9 +2762,15 @@ class Game:
 
         outcome = result.outcome
 
+        # Apply ground loot bonus from skills and crew
+        loot_bonus = self.player.progression.get_bonus("ground_loot_bonus")
+        if self.crew_roster:
+            loot_bonus += self.crew_roster.get_bonus("ground_loot_bonus")
+        boosted_loot = round(result.loot_credits * (1.0 + loot_bonus))
+
         if outcome == MissionOutcome.SUCCESS:
-            # Mission reward + loot
-            total = result.config.rewards.credits + result.loot_credits
+            # Mission reward + loot (with bonus)
+            total = result.config.rewards.credits + boosted_loot
             # Ghost bonus
             if result.is_ghost_run:
                 total += int(result.config.rewards.credits * GHOST_RUN_BONUS_PERCENT / 100)
@@ -2368,9 +2812,9 @@ class Game:
             )
 
         elif outcome == MissionOutcome.EXTRACTED:
-            # Keep loot, no mission reward
-            self.player.credits += result.loot_credits
-            logger.info("Ground mission extracted: +%d CR loot", result.loot_credits)
+            # Keep loot (with bonus), no mission reward
+            self.player.credits += boosted_loot
+            logger.info("Ground mission extracted: +%d CR loot", boosted_loot)
 
         elif outcome.is_failure:
             # Apply consequence curve penalties
@@ -2378,8 +2822,8 @@ class Game:
             credit_loss = int(self.player.credits * penalties["credit_loss_percent"] / 100)
             self.player.credits -= credit_loss
 
-            # Partial loot
-            kept_loot = int(result.loot_credits * penalties["loot_kept_percent"] / 100)
+            # Partial loot (with bonus applied to kept portion)
+            kept_loot = int(boosted_loot * penalties["loot_kept_percent"] / 100)
             self.player.credits += kept_loot
 
             # XP penalty
@@ -2392,6 +2836,27 @@ class Game:
                 credit_loss,
                 kept_loot,
             )
+
+        # Add commodity drops to ship cargo
+        if result.loot_commodities:
+            for cid, qty in result.loot_commodities.items():
+                self.player.ship.add_cargo(cid, qty, price_per_unit=0)
+            logger.info("Ground commodity loot: %s", result.loot_commodities)
+
+        # Track ground mission statistics
+        self.player.ground_enemies_defeated += result.enemies_defeated
+        self.player.ground_enemies_talked += result.enemies_talked
+
+        if outcome == MissionOutcome.SUCCESS:
+            self.player.ground_missions_completed += 1
+            if result.is_ghost_run:
+                self.player.ground_undetected_completions += 1
+            if result.config.is_campaign:
+                self.player.ground_campaign_missions_completed += 1
+            self._trigger_crew_reaction("ground_mission_success")
+        elif outcome.is_failure:
+            self.player.ground_missions_failed += 1
+            self._trigger_crew_reaction("ground_mission_fail")
 
     def _build_ground_map(self, config: "GroundMissionConfig") -> "MapGenResult":
         """Build a ground map, using campaign map if available.
@@ -2623,6 +3088,11 @@ class Game:
         current_playtime = time.time() - self.playtime_start
         total_playtime = self.total_playtime_seconds + int(current_playtime)
 
+        # Serialize galaxy events for save
+        galaxy_events_data: dict = {}
+        for sid, evts in self.active_galaxy_events.items():
+            galaxy_events_data[sid] = [e.to_dict() for e in evts]
+
         success = self.save_manager.save_game(
             slot=slot,
             player=self.player,
@@ -2631,7 +3101,11 @@ class Game:
             playtime_seconds=total_playtime,
             event_log=self.event_log,
             tutorial_state=self.tutorial_manager.to_dict(),
+            price_history=self.price_history,
+            trade_routes=self.player.trade_route_tracker,
             investment_manager=self.investment_manager,
+            ambient_dialogue=self.ambient_dialogue,
+            galaxy_events=galaxy_events_data,
         )
 
         if success:
@@ -2688,6 +3162,10 @@ class Game:
                 self.player.faction_reputation = {fid: 0 for fid in faction_ids}
         self._apply_faction_assignments()
 
+        # Backward compat: initialize discovered recipes if empty (old saves)
+        if not self.player.discovered_recipes:
+            self.player.initialize_discovered_recipes(self.data_loader.recipes)
+
         # Sync dialogue flags and social state from player
         self.dialogue_manager.load_flags(self.player.dialogue_flags)
         self.social_manager.load_state(self.player.social_state)
@@ -2700,6 +3178,17 @@ class Game:
             self.mission_manager.load_state(self.player.mission_state)
         else:
             self.mission_manager.update_availability(self.player.dialogue_flags)
+
+        # Initialize procedural mission generator
+        from spacegame.models.procedural_missions import ProceduralMissionGenerator
+
+        self.procedural_mission_gen = ProceduralMissionGenerator(
+            systems=self.data_loader.systems,
+            commodities=self.data_loader.commodities,
+            enemy_templates=self.data_loader.enemy_templates,
+            seed=hash(self.player.name) & 0xFFFFFFFF,
+        )
+        self._proc_missions_day = -1
 
         # Restore crew roster
         from spacegame.models.crew import CrewRoster
@@ -2739,9 +3228,7 @@ class Game:
         from spacegame.models.smuggling import SmugglingContractManager as _SCM
 
         if self.player.smuggling_contract_state:
-            self.smuggling_contract_manager = _SCM.from_dict(
-                self.player.smuggling_contract_state
-            )
+            self.smuggling_contract_manager = _SCM.from_dict(self.player.smuggling_contract_state)
         else:
             self.smuggling_contract_manager = _SCM()
 
@@ -2760,6 +3247,44 @@ class Game:
 
         # Restore political system
         self._initialize_politics_manager(self.player.political_state or None)
+
+        # Restore galaxy event system
+        self._initialize_galaxy_event_generator()
+        galaxy_events_data = save_data.get("galaxy_events", {})
+        if galaxy_events_data:
+            from spacegame.models.galaxy_event import GalaxyEvent as _GE
+
+            self.active_galaxy_events = {}
+            for sid, evt_list in galaxy_events_data.items():
+                self.active_galaxy_events[sid] = [_GE.from_dict(d) for d in evt_list]
+        else:
+            self.active_galaxy_events = {}
+
+        # Restore station chatter, news ticker, and travel log
+        self._initialize_station_chatter()
+        self._initialize_news_ticker()
+        self._initialize_travel_log()
+        self._last_visited_count = len(self.player.systems_visited)
+
+        # Restore price history
+        if save_data.get("price_history"):
+            self.price_history = save_data["price_history"]
+        else:
+            from spacegame.models.market import PriceHistory
+
+            self.price_history = PriceHistory()
+
+        # Restore trade route tracker
+        if save_data.get("trade_routes"):
+            self.player.trade_route_tracker = save_data["trade_routes"]
+
+        # Restore ambient dialogue state
+        if self.ambient_dialogue and save_data.get("ambient_dialogue"):
+            self.ambient_dialogue.load_state(save_data["ambient_dialogue"])
+
+        # Wire crew_roster to dialogue manager
+        if self.crew_roster:
+            self.dialogue_manager.set_crew_roster(self.crew_roster)
 
         # Track day for event generation
         self._last_known_day = self.player.game_day
@@ -2861,14 +3386,20 @@ class Game:
 
         self._last_known_day = current_day
 
+        # Record current prices for price history (all systems)
+        if self.price_history:
+            for system in self.data_loader.get_all_systems():
+                market = Market(system, self.data_loader.get_all_commodities(), current_day)
+                for commodity in self.data_loader.get_all_commodities():
+                    price = market.get_price(commodity.id)
+                    if price > 0:
+                        self.price_history.record(system.id, commodity.id, current_day, price)
+
         # Try to generate a new market event
         self.try_generate_market_event()
 
         # Clean up expired events
-        expired = [
-            sid for sid, ev in self.active_events.items()
-            if not ev.is_active(current_day)
-        ]
+        expired = [sid for sid, ev in self.active_events.items() if not ev.is_active(current_day)]
         for sid in expired:
             del self.active_events[sid]
 
@@ -2893,10 +3424,84 @@ class Game:
         if self.politics_manager:
             new_event = self.politics_manager.try_generate_event(current_day)
             if new_event:
-                self._mission_notifications.append(
-                    f"Political: {new_event.description}"
-                )
+                self._mission_notifications.append(f"Political: {new_event.description}")
             self.politics_manager.advance_day(current_day)
+
+        # Galaxy events — generate new, clean up expired
+        if self.galaxy_event_generator:
+            new_galaxy_event = self.galaxy_event_generator.try_generate_event(
+                current_day, self.active_galaxy_events
+            )
+            if new_galaxy_event:
+                sid = new_galaxy_event.system_id
+                if sid not in self.active_galaxy_events:
+                    self.active_galaxy_events[sid] = []
+                self.active_galaxy_events[sid].append(new_galaxy_event)
+                self._mission_notifications.append(f"Galaxy Event: {new_galaxy_event.description}")
+                logger.info(
+                    f"Galaxy event: {new_galaxy_event.id} at {sid} "
+                    f"(type={new_galaxy_event.event_type.value})"
+                )
+
+            # Clean up expired galaxy events and trigger chains
+            for sid in list(self.active_galaxy_events.keys()):
+                still_active = []
+                for e in self.active_galaxy_events[sid]:
+                    if e.is_active(current_day):
+                        still_active.append(e)
+                    else:
+                        # Check for chain follow-up
+                        self.galaxy_event_generator.check_chain_triggers(e, current_day)
+                self.active_galaxy_events[sid] = still_active
+                if not self.active_galaxy_events[sid]:
+                    del self.active_galaxy_events[sid]
+
+        # Generate news ticker headlines from current state
+        if self.news_ticker:
+            galaxy_evt_ctx = []
+            for sid, evts in self.active_galaxy_events.items():
+                for e in evts:
+                    galaxy_evt_ctx.append(
+                        {
+                            "event_type": e.event_type.value,
+                            "description": e.description,
+                            "system_id": e.system_id,
+                            "faction_id": e.faction_id,
+                        }
+                    )
+            market_evt_ctx = []
+            for sid, evt in self.active_events.items():
+                if evt.is_active(current_day):
+                    market_evt_ctx.append(
+                        {
+                            "event_type": evt.event_type.value,
+                            "commodity": evt.commodity_id,
+                            "system_id": evt.system_id,
+                            "description": evt.description,
+                        }
+                    )
+            # Include any queued player action news
+            player_actions = list(self._pending_player_news)
+            self._pending_player_news = []
+
+            # Auto-generate player news for notable stats
+            if self.player and self.player.trades_completed > 0:
+                # Chance to mention the player when they've been active
+                import random as _rng
+
+                if _rng.random() < 0.15:  # 15% chance per day
+                    player_actions.append(
+                        self.player.make_news_context(
+                            commodity=self.player.current_system_id,
+                        )
+                    )
+
+            context = {
+                "galaxy_events": galaxy_evt_ctx,
+                "market_events": market_evt_ctx,
+                "player_actions": player_actions,
+            }
+            self.news_ticker.generate_headlines(context)
 
         # Advance investments — accumulate returns, apply disaster/pirate effects
         if self.investment_manager:
@@ -2908,6 +3513,48 @@ class Game:
             for msg in notifications:
                 self._mission_notifications.append(msg)
 
+        # Crew departure checks
+        if self.crew_roster:
+            for warning in self.crew_roster.check_departure_warnings():
+                self._mission_notifications.append(f"Warning: {warning}")
+            for departure in self.crew_roster.process_departures():
+                self._mission_notifications.append(departure)
+
+        # Ambient idle dialogue (every 3 days)
+        # (Crew reactions to player actions are triggered via _trigger_crew_reaction)
+        self._ambient_idle_day_counter += 1
+        if self._ambient_idle_day_counter >= 3 and self.ambient_dialogue and self.crew_roster:
+            self._ambient_idle_day_counter = 0
+            recruited = [t.id for t, _ in self.crew_roster.get_recruited_members()]
+            loyalty_map = {}
+            for tid in recruited:
+                state = self.crew_roster.get_member_state(tid)
+                loyalty_map[tid] = state["loyalty"] if state else 0
+            result = self.ambient_dialogue.get_random_idle(recruited, loyalty_map)
+            if result:
+                crew_id, text = result
+                template = self.crew_roster.get_template(crew_id)
+                name = template.name if template else crew_id
+                self._mission_notifications.append(f'{name}: "{text}"')
+
+    # Achievement IDs that trigger full-screen celebration
+    CELEBRATION_ACHIEVEMENTS: set[str] = {
+        "first_trade",
+        "first_100_credits",
+        "first_1000_credits",
+        "first_ship_upgrade",
+        "first_s_rank",
+        "first_crew_member",
+        "mine_depth_10",
+        "mine_depth_20",
+        "trades_100",
+        "level_5",
+        "level_10",
+        "level_20",
+        "explore_all_systems",
+        "first_combat_win",
+    }
+
     def check_achievements(self) -> None:
         """Check for newly unlocked achievements and queue notifications."""
         if not self.player:
@@ -2918,6 +3565,11 @@ class Game:
             self._achievement_notifications.append(
                 f"Achievement Unlocked: {achievement.name}! {reward_msg}"
             )
+            # Trigger celebration for notable achievements
+            if achievement.id in self.CELEBRATION_ACHIEVEMENTS:
+                self._celebration_text = achievement.name
+                self._celebration_subtitle = f"{achievement.description} {reward_msg}"
+                self._celebration_timer = 3.0
 
     def check_crew_xp(self) -> None:
         """Award crew XP when trades or jumps occur."""
@@ -2934,9 +3586,14 @@ class Game:
             new_trades = current_trades - self._crew_last_trades
             self._crew_last_trades = current_trades
             levelup_msgs = self.crew_roster.add_xp_to_all((5 + xp_bonus) * new_trades)
-            self.crew_roster.adjust_loyalty_all((1 + loyalty_bonus) * new_trades)
+            loyalty_flags = self.crew_roster.adjust_loyalty_all((1 + loyalty_bonus) * new_trades)
+            for flag in loyalty_flags:
+                self.dialogue_manager.set_flag(flag)
             for msg in levelup_msgs:
                 self._mission_notifications.append(msg)
+            # Crew reaction to trading (alternate sold/bought based on parity)
+            action = "sold_cargo" if current_trades % 2 == 0 else "bought_cargo"
+            self._trigger_crew_reaction(action)
 
         # Check for new jumps
         current_jumps = self.player.jumps_traveled
@@ -2947,12 +3604,42 @@ class Game:
             for msg in levelup_msgs:
                 self._mission_notifications.append(msg)
 
+    def _refresh_procedural_missions(self) -> None:
+        """Generate procedural station board missions for the current system.
+
+        Generates new contracts each game day, removing old unclaimed ones.
+        """
+        if not self.player or not hasattr(self, "procedural_mission_gen"):
+            return
+
+        current_day = self.player.game_day
+        system_id = self.player.current_system_id
+        if current_day == self._proc_missions_day:
+            return  # Already generated for today
+
+        self._proc_missions_day = current_day
+
+        # Remove old procedural missions that were never accepted
+        old_proc = [
+            mid for mid in list(self.mission_manager._missions.keys()) if mid.startswith("proc_")
+        ]
+        for mid in old_proc:
+            self.mission_manager.remove_mission(mid)
+
+        # Generate fresh contracts for this system
+        missions = self.procedural_mission_gen.generate_for_system(system_id, current_day)
+        for mission in missions:
+            self.mission_manager.add_mission(mission)
+
     def check_missions(self) -> None:
         """Check mission objectives and handle completions."""
         if not self.player or not self.mission_manager:
             return
 
-        completed_ids = self.mission_manager.check_objectives(self.player)
+        recruited_crew_ids = self.crew_roster.recruited_ids if self.crew_roster else None
+        completed_ids = self.mission_manager.check_objectives(
+            self.player, recruited_crew_ids=recruited_crew_ids
+        )
         for mission_id in completed_ids:
             reward_msgs = self.mission_manager.apply_rewards(mission_id, self.player)
             mission = self.mission_manager.get_mission(mission_id)
@@ -2960,6 +3647,12 @@ class Game:
             reward_text = ", ".join(reward_msgs) if reward_msgs else ""
             self._mission_notifications.append(f"Mission Complete: {name}! {reward_text}")
             logger.info(f"Mission completed: {name}")
+
+            # Track mission completion stats
+            if mission and mission.mission_type == "side":
+                self.player.side_missions_completed += 1
+            if mission and mission.crew_member_id:
+                self.player.crew_quests_completed += 1
 
             # Handle special reward types (not processed in apply_rewards)
             if mission:
@@ -2988,12 +3681,13 @@ class Game:
                             self.player.grant_trade_permit(faction_id)
                             faction = dl.get_faction(faction_id)
                             fname = faction.name if faction else faction_id
-                            self._mission_notifications.append(
-                                f"Trade Permit Acquired: {fname}"
-                            )
+                            self._mission_notifications.append(f"Trade Permit Acquired: {fname}")
 
                     # Reputation reward (routed through centralized spillover)
-                    if reward.reward_type == "reputation" and reward.target_id:
+                    if (
+                        reward.reward_type in ("reputation", "modify_reputation")
+                        and reward.target_id
+                    ):
                         if self.politics_manager:
                             changes = self.politics_manager.apply_reputation_with_spillover(
                                 self.player, reward.target_id, reward.amount
@@ -3003,9 +3697,7 @@ class Game:
                                 faction = dl.get_faction(fid)
                                 fname = faction.name if faction else fid
                                 sign = "+" if amt >= 0 else ""
-                                self._mission_notifications.append(
-                                    f"{sign}{amt} Rep: {fname}"
-                                )
+                                self._mission_notifications.append(f"{sign}{amt} Rep: {fname}")
                         else:
                             self.player.modify_reputation(reward.target_id, reward.amount)
                             dl = get_data_loader()
@@ -3019,39 +3711,64 @@ class Game:
             # Grant crew XP and loyalty on mission completion
             if self.crew_roster:
                 levelup_msgs = self.crew_roster.add_xp_to_all(20)
-                self.crew_roster.adjust_loyalty_all(5)
+                loyalty_flags = self.crew_roster.adjust_loyalty_all(5)
+                for flag in loyalty_flags:
+                    self.dialogue_manager.set_flag(flag)
                 for msg in levelup_msgs:
                     self._mission_notifications.append(msg)
+
+        # Crew reaction to mission completion
+        if completed_ids:
+            self._trigger_crew_reaction("mission_completed")
 
         # Check for journal auto-entries triggered by mission rewards
         if completed_ids:
             self._check_journal_triggers()
 
-        # Update availability (new missions may unlock from completed prereqs)
+        # Expire side missions whose window has closed
         if completed_ids:
-            newly_available = self.mission_manager.update_availability(
-                self.player.dialogue_flags
-            )
+            expired = self.mission_manager.expire_missions()
+            for mid in expired:
+                exp_mission = self.mission_manager.get_mission(mid)
+                if exp_mission:
+                    logger.info(f"Side mission expired: {exp_mission.name}")
+            if expired:
+                self._trigger_crew_reaction("mission_expired")
+
+        # Update availability (missions may unlock from completed prereqs or new flags)
+        newly_available = self.mission_manager.update_availability(self.player.dialogue_flags)
+        if newly_available:
+            discoverable_count = 0
             for mid in newly_available:
                 mission = self.mission_manager.get_mission(mid)
                 if mission:
                     # Auto-accepted missions grant on_accept_cargo immediately
                     if mission.auto_accept and mission.on_accept_cargo:
                         for cargo in mission.on_accept_cargo:
-                            self.player.ship.add_cargo(
-                                cargo.commodity_id, cargo.quantity, 0
-                            )
+                            self.player.ship.add_cargo(cargo.commodity_id, cargo.quantity, 0)
                             self._mission_notifications.append(
                                 f"Cargo Loaded: {cargo.quantity} {cargo.commodity_id}"
                             )
                     if mission.auto_accept:
-                        self._mission_notifications.append(
-                            f"Mission Accepted: {mission.name}"
-                        )
+                        self._mission_notifications.append(f"Mission Accepted: {mission.name}")
                     else:
-                        self._mission_notifications.append(
-                            f"New Mission Available: {mission.name}"
-                        )
+                        discoverable_count += 1
+                        # Add narrative journal entry for mission discovery
+                        if self.journal:
+                            discovery = mission.discovery_text or f"Heard word of new work: {mission.name}."
+                            self.journal.add_auto_entry(
+                                entry_id=f"mission_discover_{mid}",
+                                text=discovery,
+                                game_day=self.player.game_day,
+                                system_id=self.player.current_system_id,
+                                tag="goals",
+                                mission_id=mid,
+                            )
+            # Single consolidated notification instead of one per mission
+            if discoverable_count == 1:
+                self._mission_notifications.append("New Mission Available — check your journal")
+            elif discoverable_count > 1:
+                self._mission_notifications.append("New Missions Available — check your journal")
             # Update galaxy map markers and forced encounters
             if self.galaxy_map_view:
                 self.galaxy_map_view.mission_target_systems = (
@@ -3085,8 +3802,7 @@ class Game:
             if self.player.current_system_id != npc.home_system_id:
                 continue
             if not all(
-                self.player.dialogue_flags.get(f, False)
-                for f in npc.auto_trigger_prerequisites
+                self.player.dialogue_flags.get(f, False) for f in npc.auto_trigger_prerequisites
             ):
                 continue
             # Pre-set gate flag to prevent re-fire
@@ -3107,9 +3823,7 @@ class Game:
             if level >= lvl and not self.attribute_sheet.has_milestone(milestone_id):
                 self.attribute_sheet._awarded_milestones.add(milestone_id)
                 self.attribute_sheet.add_points(1)
-                self._mission_notifications.append(
-                    f"Level {lvl} reached — +1 attribute point!"
-                )
+                self._mission_notifications.append(f"Level {lvl} reached — +1 attribute point!")
 
         # Gameplay milestones
         if self.player.trades_completed >= 1:
@@ -3228,6 +3942,48 @@ class Game:
         text_surf.set_alpha(alpha)
         text_rect = text_surf.get_rect(center=(WINDOW_WIDTH // 2, banner_y + banner_height // 2))
         screen.blit(text_surf, text_rect)
+
+    def _render_celebration(self, screen: pygame.Surface) -> None:
+        """Render full-screen milestone celebration overlay."""
+        if self._celebration_timer <= 0:
+            return
+
+        # Fade: full for first 2s, fade out in last 1s
+        if self._celebration_timer > 1.0:
+            alpha = 255
+        else:
+            alpha = int(255 * self._celebration_timer)
+
+        # Dimmed background
+        dim = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA)
+        dim.fill((0, 0, 0, min(alpha, 100)))
+        screen.blit(dim, (0, 0))
+
+        # Title
+        title_font = FontCache.get(44)
+        title = title_font.render("MILESTONE ACHIEVED", True, Colors.GOLD)
+        title.set_alpha(alpha)
+        screen.blit(title, title.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 - 40)))
+
+        # Achievement name
+        name_font = FontCache.get(32)
+        name = name_font.render(self._celebration_text, True, Colors.TEXT)
+        name.set_alpha(alpha)
+        screen.blit(name, name.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2)))
+
+        # Subtitle (description + reward)
+        if self._celebration_subtitle:
+            sub_font = FontCache.get(20)
+            sub = sub_font.render(self._celebration_subtitle, True, Colors.TEXT_SECONDARY)
+            sub.set_alpha(alpha)
+            screen.blit(sub, sub.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 + 30)))
+
+        # Decorative lines
+        line_w = 300
+        line_x = WINDOW_WIDTH // 2 - line_w // 2
+        line_surf = pygame.Surface((line_w, 2), pygame.SRCALPHA)
+        line_surf.fill((Colors.GOLD[0], Colors.GOLD[1], Colors.GOLD[2], alpha))
+        screen.blit(line_surf, (line_x, WINDOW_HEIGHT // 2 - 18))
 
     def _render_mission_notification(self, screen: pygame.Surface) -> None:
         """Render mission notification banner at top of screen."""
@@ -3361,8 +4117,11 @@ class Game:
             if not self.paused:
                 self.state_manager.update(dt)
                 self._check_day_advance()
-                self.check_achievements()
-                self.check_missions()
+                # Defer mission/achievement checks while dialogue is active
+                # to avoid notification banners overlapping the conversation
+                if not (self.dialogue_view and self.dialogue_view.active) and not self.transition_manager.active:
+                    self.check_achievements()
+                    self.check_missions()
                 self.check_crew_xp()
                 self.check_attribute_milestones()
 
@@ -3373,6 +4132,10 @@ class Game:
             # Update mission notification timer
             if self._mission_notify_timer > 0:
                 self._mission_notify_timer = max(0.0, self._mission_notify_timer - dt)
+
+            # Update celebration timer
+            if self._celebration_timer > 0:
+                self._celebration_timer = max(0.0, self._celebration_timer - dt)
 
             # Update visual effects
             self.transition_manager.update(dt)
@@ -3410,6 +4173,10 @@ class Game:
 
             # Achievement notification banner
             self._render_achievement_notification(render_surface)
+
+            # Milestone celebration overlay
+            if self._celebration_timer > 0:
+                self._render_celebration(render_surface)
 
             # Mission notification banner
             self._render_mission_notification(render_surface)

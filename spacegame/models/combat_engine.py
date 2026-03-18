@@ -642,13 +642,13 @@ class CombatEngine:
                 if isinstance(target, PlayerCombatState):
                     shield_absorbed = min(target.shields, reduced)
                     hull_damage = reduced - shield_absorbed
-                    target.shields -= int(shield_absorbed)
-                    target.hull -= int(hull_damage)
+                    target.shields = max(0, target.shields - int(shield_absorbed))
+                    target.hull = max(0, target.hull - int(hull_damage))
                 else:
                     shield_absorbed = min(target.current_shields, reduced)
                     hull_damage = reduced - shield_absorbed
-                    target.current_shields -= int(shield_absorbed)
-                    target.current_hull -= int(hull_damage)
+                    target.current_shields = max(0, target.current_shields - int(shield_absorbed))
+                    target.current_hull = max(0, target.current_hull - int(hull_damage))
                 messages.append(
                     f"Dealt {int(reduced)} damage to {target_name} "
                     f"({int(shield_absorbed)} shields, {int(hull_damage)} hull)"

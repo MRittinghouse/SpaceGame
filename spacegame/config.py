@@ -98,6 +98,23 @@ class Colors:
     # Attribute colors
     ATTR_HIGHLIGHT = (180, 160, 255)  # Soft purple for attribute display
 
+    # Salvage view colors
+    SALVAGE_THEME = (100, 200, 255)  # Salvage hold / intel accent
+    CELL_HIDDEN_BG = (40, 42, 55)  # Unrevealed cell background
+    CELL_HIDDEN_BORDER = (65, 68, 85)  # Unrevealed cell border
+    CELL_EMPTY_BG = (25, 25, 30)  # Scanned empty cell
+    CORRUPTION_BG = (50, 20, 20)  # Corrupted cell background
+    CORRUPTION_BORDER = (90, 35, 35)  # Corrupted cell border
+    CORRUPTION_TEXT = (150, 50, 50)  # Corrupted label text
+    CELL_TRANSITION_BG = (12, 14, 22)  # Deck transition dark cell
+    CELL_TRANSITION_BORDER = (25, 28, 38)  # Deck transition border
+
+    # Quality tier colors
+    QUALITY_POOR = (80, 80, 80)
+    QUALITY_NORMAL = (140, 140, 140)
+    QUALITY_GOOD = (100, 200, 100)
+    QUALITY_EXCELLENT = (255, 220, 80)
+
     # Ground exploration tile colors (placeholder)
     GROUND_FLOOR = (60, 65, 75)
     GROUND_WALL = (35, 35, 45)
@@ -158,6 +175,7 @@ class GameState(Enum):
     # Station states
     STATION_HUB = "station_hub"
     REPAIR_BAY = "repair_bay"
+    CANTINA = "cantina"
     INVESTMENT = "investment"
 
     # Combat states
@@ -173,6 +191,7 @@ class GameState(Enum):
 # ============================================================================
 # PATHS
 # ============================================================================
+
 
 def _resolve_root() -> pathlib.Path:
     """Resolve project root, handling both dev and frozen (PyInstaller) modes."""
@@ -277,6 +296,24 @@ REP_HOSTILE_ATTACK_CHANCE = 40
 REP_FRIENDLY_DISPOSITION_BONUS = 10
 REP_UNFRIENDLY_DISPOSITION_PENALTY = -10
 
+# === GALAXY EVENTS ===
+GALAXY_EVENT_DAILY_CHANCE = 0.04  # 4% per day (~1 event per 25 days)
+GALAXY_EVENT_MAX_ACTIVE = 2
+GALAXY_EVENT_MIN_DURATION = 3
+GALAXY_EVENT_MAX_DURATION = 8
+EMBARGO_INSPECTION_MULTIPLIER = 2.0  # Double inspection chance during embargo
+MAJOR_TRADE_PROFIT_THRESHOLD = 500  # CR profit to trigger travel log entry
+NEWS_TICKER_BUFFER_SIZE = 8
+
+# ============================================================================
+# CREW RE-RECRUITMENT COSTS
+# ============================================================================
+
+CREW_RERECRUIT_NEUTRAL = 500  # Re-signing bonus for neutral loyalty
+CREW_RERECRUIT_WARY = 1500  # Higher cost for wary crew
+CREW_RERECRUIT_DISCONTENTED = 3000  # Harsh penalty for discontented crew
+CREW_DEPARTED_SURCHARGE = 50000  # Harsh penalty if crew left due to loyalty 0
+
 # ============================================================================
 # DIALOGUE CONSTANTS
 # ============================================================================
@@ -367,6 +404,14 @@ MUSIC_FADE_MS = 1000  # Default music cross-fade in milliseconds
 # ============================================================================
 # IMAGE ASSET NAMES
 # ============================================================================
+
+# === DANGER YIELD SCALING ===
+# Multiplier applied to mining/salvage yields based on system danger level
+DANGER_YIELD_MULTIPLIERS: dict[str, float] = {
+    "safe": 1.0,
+    "moderate": 1.15,
+    "dangerous": 1.3,
+}
 
 # Background image names (without .png extension)
 BACKGROUND_IMAGES = ["starfield", "deep_space", "nebula", "trade_routes", "frontier"]

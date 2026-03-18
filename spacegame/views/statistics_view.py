@@ -150,6 +150,33 @@ class StatisticsView(BaseView):
             ],
         )
 
+        # Column 3: Personal Records
+        y3 = 80
+        records = []
+        if stats.get("best_trade_profit", 0) > 0:
+            records.append(("Best Trade Profit", f"{stats['best_trade_profit']:,} CR"))
+        if stats.get("max_credits_held", 0) > 0:
+            records.append(("Peak Credits Held", f"{stats['max_credits_held']:,} CR"))
+        if stats.get("best_mining_session_ore", 0) > 0:
+            records.append(("Best Mining Haul", f"{stats['best_mining_session_ore']} ore"))
+        if stats.get("best_mining_depth", 0) > 0:
+            records.append(("Deepest Mine", f"Depth {stats['best_mining_depth']}"))
+        if stats.get("best_salvage_haul", 0) > 0:
+            records.append(("Best Salvage Haul", f"{stats['best_salvage_haul']} items"))
+        if stats.get("best_refining_output", 0) > 0:
+            records.append(("Best Forge Session", f"{stats['best_refining_output']} output"))
+        records.append(("S-Rank Sessions", str(self.player.s_ranks_earned)))
+
+        if records:
+            self._render_category(
+                screen,
+                "PERSONAL RECORDS",
+                col3_x,
+                y3,
+                line_h,
+                records,
+            )
+
     def _render_category(
         self,
         screen: pygame.Surface,

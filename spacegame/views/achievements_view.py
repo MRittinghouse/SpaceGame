@@ -29,7 +29,26 @@ _BADGE_COLORS: dict[str, tuple[int, int, int]] = {
     "progression": (100, 180, 255),  # Blue
     "economy": (200, 160, 50),    # Amber
     "general": (160, 170, 190),   # Silver
+    "combat": (200, 50, 50),      # Dark red
+    "side_quest": (180, 140, 220),  # Lavender
 }
+
+# Category display order and labels for filter tabs
+_CATEGORY_ORDER: list[tuple[str, str]] = [
+    ("all", "All"),
+    ("trading", "Trade"),
+    ("mining", "Mining"),
+    ("salvage", "Salvage"),
+    ("combat", "Combat"),
+    ("ground", "Ground"),
+    ("exploration", "Explore"),
+    ("smuggling", "Smuggle"),
+    ("progression", "Progress"),
+    ("wealth", "Wealth"),
+    ("side_quest", "Quests"),
+    ("economy", "Econ"),
+    ("general", "General"),
+]
 
 # Pre-rendered badge cache
 _badge_cache: dict[str, pygame.Surface] = {}
@@ -80,12 +99,17 @@ class AchievementsView(BaseView):
 
         # Scroll offset for scrolling achievement list
         self.scroll_offset = 0
+        self._active_filter: str = "all"  # Category filter ("all" = show all)
 
         # Fonts
         self.title_font = FontCache.get(40)
         self.name_font = FontCache.get(26)
         self.desc_font = FontCache.get(20)
         self.progress_font = FontCache.get(18)
+        self.tab_font = FontCache.get(18)
+
+        # Tab hitboxes (computed during render)
+        self._tab_rects: list[tuple[str, pygame.Rect]] = []
 
         # UI
         self.back_button: Optional[pygame_gui.elements.UIButton] = None
@@ -123,6 +147,30 @@ class AchievementsView(BaseView):
                 self.next_state = GameState.GALAXY_MAP
         elif event.type == pygame.MOUSEWHEEL:
             self.scroll_offset = max(0, self.scroll_offset - event.y * 30)
+            # Clamp to content bounds
+            self._clamp_scroll()
+        elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            for cat_id, rect in self._tab_rects:
+                if rect.collidepoint(event.pos):
+                    self._active_filter = cat_id
+                    self.scroll_offset = 0
+                    break
+
+    def _clamp_scroll(self) -> None:
+        """Clamp scroll offset to content bounds."""
+        all_achievements = self.achievement_manager.get_all_achievements()
+        if self._active_filter == "all":
+            count = len(all_achievements)
+        else:
+            count = sum(1 for a in all_achievements if a.category == self._active_filter)
+
+        card_height = 70
+        spacing = 8
+        content_height = count * (card_height + spacing)
+        # Visible area: from y=108 to WINDOW_HEIGHT - 70
+        visible_height = WINDOW_HEIGHT - 70 - 108
+        max_scroll = max(0, content_height - visible_height)
+        self.scroll_offset = min(self.scroll_offset, max_scroll)
 
     def update(self, dt: float) -> None:
         self.background.update(dt)
@@ -150,18 +198,43 @@ class AchievementsView(BaseView):
         summary_rect = summary.get_rect(center=(WINDOW_WIDTH // 2, 65))
         screen.blit(summary, summary_rect)
 
+        # Category filter tabs
+        self._tab_rects.clear()
+        tab_y = 82
+        tab_x = 30
+        for cat_id, label in _CATEGORY_ORDER:
+            is_active = self._active_filter == cat_id
+            color = Colors.TEXT_HIGHLIGHT if is_active else Colors.TEXT_SECONDARY
+            badge_color = _BADGE_COLORS.get(cat_id, Colors.TEXT_SECONDARY)
+            if is_active and cat_id != "all":
+                color = badge_color
+
+            tab_surf = self.tab_font.render(label, True, color)
+            rect = pygame.Rect(tab_x, tab_y, tab_surf.get_width(), tab_surf.get_height())
+            screen.blit(tab_surf, (tab_x, tab_y))
+            if is_active:
+                pygame.draw.line(screen, color, (tab_x, tab_y + 17), (tab_x + rect.width, tab_y + 17), 2)
+            self._tab_rects.append((cat_id, rect))
+            tab_x += rect.width + 14
+
+        # Filter achievements by category
+        if self._active_filter == "all":
+            filtered = all_achievements
+        else:
+            filtered = [a for a in all_achievements if a.category == self._active_filter]
+
         # Achievement cards
         card_width = 550
         card_height = 70
         card_x = (WINDOW_WIDTH - card_width) // 2
-        start_y = 90 - self.scroll_offset
+        start_y = 108 - self.scroll_offset
         spacing = 8
 
-        for i, achievement in enumerate(all_achievements):
+        for i, achievement in enumerate(filtered):
             y = start_y + i * (card_height + spacing)
 
             # Skip if off-screen
-            if y + card_height < 80 or y > WINDOW_HEIGHT - 70:
+            if y + card_height < 100 or y > WINDOW_HEIGHT - 70:
                 continue
 
             is_unlocked = achievement.id in unlocked_ids

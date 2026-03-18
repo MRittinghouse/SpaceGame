@@ -15,7 +15,7 @@ def upgrades() -> dict:
 
 class TestUpgradeCount:
     def test_total_upgrade_count(self, upgrades: dict) -> None:
-        assert len(upgrades) == 40
+        assert len(upgrades) == 58
 
     def test_utility_upgrades(self, upgrades: dict) -> None:
         utility_types = {"cargo", "fuel", "engine", "mining", "scanner"}
@@ -24,11 +24,11 @@ class TestUpgradeCount:
 
     def test_weapon_upgrades(self, upgrades: dict) -> None:
         count = sum(1 for u in upgrades.values() if u.slot_type == "weapon")
-        assert count == 10
+        assert count == 13
 
     def test_defense_upgrades(self, upgrades: dict) -> None:
         count = sum(1 for u in upgrades.values() if u.slot_type == "defense")
-        assert count == 9
+        assert count == 12
 
     def test_smuggling_upgrades(self, upgrades: dict) -> None:
         count = sum(1 for u in upgrades.values() if u.slot_type == "smuggling")
@@ -43,6 +43,10 @@ class TestNewUpgradeIdentities:
         "reactive_armor", "ecm_suite",
         "nexus_trade_beacon", "forge_plating", "frontier_salvage_array", "axiom_scanner",
         "prototype_shields", "ancient_drive", "black_sun_jammer",
+        "reinforced_plating", "overclocked_scanner", "plasma_conduit",
+        "titan_plating", "command_array", "nova_core",
+        "phantom_module",
+        "shield_capacitor", "arc_emitter",
     ]
 
     def test_all_new_upgrades_exist(self, upgrades: dict) -> None:
@@ -105,6 +109,15 @@ class TestQuestUpgrades:
         "prototype_shields": "quest_axiom_defense",
         "ancient_drive": "quest_deep_ruins",
         "black_sun_jammer": "quest_fulcrum_chain",
+        "reinforced_plating": "crafted_reinforced_plating",
+        "overclocked_scanner": "crafted_overclocked_scanner",
+        "plasma_conduit": "crafted_plasma_conduit",
+        "titan_plating": "crafted_titan_plating",
+        "command_array": "crafted_command_array",
+        "nova_core": "crafted_nova_core",
+        "phantom_module": "crafted_phantom_module",
+        "shield_capacitor": "crafted_shield_capacitor",
+        "arc_emitter": "crafted_arc_emitter",
     }
 
     def test_quest_gates(self, upgrades: dict) -> None:
@@ -114,9 +127,13 @@ class TestQuestUpgrades:
 
 
 class TestUpgradeStats:
-    def test_all_have_positive_price(self, upgrades: dict) -> None:
+    def test_all_have_valid_price(self, upgrades: dict) -> None:
+        craft_gated = {uid for uid, u in upgrades.items() if u.unlock_condition and u.unlock_condition.startswith("crafted_")}
         for uid, u in upgrades.items():
-            assert u.price > 0, f"{uid} should have positive price"
+            if uid in craft_gated:
+                assert u.price == 0, f"Craft-gated {uid} should be free to install"
+            else:
+                assert u.price > 0, f"{uid} should have positive price"
 
     def test_weapons_have_combat_moves(self, upgrades: dict) -> None:
         for uid, u in upgrades.items():

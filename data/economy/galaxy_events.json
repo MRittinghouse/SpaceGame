@@ -1,0 +1,372 @@
+{
+  "galaxy_events": [
+    {
+      "id": "guild_embargo_ore",
+      "event_type": "embargo",
+      "faction_id": "commerce_guild",
+      "target_systems": ["nexus_prime", "stellaris_port"],
+      "blocked_commodities": ["raw_ore", "iron_ore", "common_metals"],
+      "descriptions": [
+        "Commerce Guild imposes trade embargo on Union raw materials",
+        "Guild Board suspends import licenses for unprocessed ore"
+      ],
+      "flavor_texts": [
+        "Dock workers whisper about empty cargo holds and angry captains.",
+        "The commodity boards flash red — entire ore categories reading SUSPENDED."
+      ],
+      "duration_min": 4,
+      "duration_max": 8,
+      "skill_opportunity": "scan_evasion",
+      "weight": 10
+    },
+    {
+      "id": "collective_embargo_tech",
+      "event_type": "embargo",
+      "faction_id": "science_collective",
+      "target_systems": ["axiom_labs", "nova_research"],
+      "blocked_commodities": ["electronics", "restricted_tech"],
+      "descriptions": [
+        "Science Collective restricts tech exports citing patent enforcement",
+        "Collective Council suspends technology licensing agreements"
+      ],
+      "flavor_texts": [
+        "Lab corridors buzz with urgent memos about intellectual property quarantine.",
+        "Export manifests pile up, unsigned. The licensing office has gone dark."
+      ],
+      "duration_min": 3,
+      "duration_max": 7,
+      "skill_opportunity": "manifest_forgery",
+      "weight": 8
+    },
+    {
+      "id": "union_embargo_ore",
+      "event_type": "embargo",
+      "faction_id": "miners_union",
+      "target_systems": ["breakstone", "iron_depths"],
+      "blocked_commodities": ["raw_ore", "crystal_ore", "rare_ore"],
+      "descriptions": [
+        "Miners Union halts ore exports in protest of Guild tariff hike",
+        "Union Workers' Council votes to suspend outbound ore shipments"
+      ],
+      "flavor_texts": [
+        "The loading bays are quiet. Crates of ore sit sealed, going nowhere.",
+        "Picket signs appear near the cargo terminals. 'Our Rock, Our Terms.'"
+      ],
+      "duration_min": 3,
+      "duration_max": 6,
+      "skill_opportunity": "bribe_reduction",
+      "weight": 9
+    },
+    {
+      "id": "alliance_embargo_food",
+      "event_type": "embargo",
+      "faction_id": "frontier_alliance",
+      "target_systems": ["havens_rest", "verdant"],
+      "blocked_commodities": ["food", "textiles"],
+      "descriptions": [
+        "Frontier Alliance suspends food exports amid political crisis",
+        "Alliance community councils vote to withhold agricultural shipments"
+      ],
+      "flavor_texts": [
+        "The harvest markets stand half-empty. What's left isn't for sale — not to outsiders.",
+        "Farmers shake their heads at the loading docks. 'Feed our own first,' they say."
+      ],
+      "duration_min": 3,
+      "duration_max": 6,
+      "skill_opportunity": "contraband_slots",
+      "weight": 7
+    },
+    {
+      "id": "guild_trade_fair",
+      "event_type": "festival",
+      "faction_id": "commerce_guild",
+      "target_systems": ["nexus_prime", "stellaris_port"],
+      "price_modifiers": {"art": 2.0, "exotic_goods": 1.8, "precious_metals": 1.5},
+      "rep_bonus_faction": "commerce_guild",
+      "rep_bonus_amount": 2,
+      "descriptions": [
+        "Commerce Guild Annual Trade Fair opens at {system}",
+        "The Grand Exchange hosts its quarterly luxury auction"
+      ],
+      "flavor_texts": [
+        "The Central Exchange gleams under event lighting. Even the air smells expensive.",
+        "Bid paddles flash as rare antiquities cross the block. Credits flow like water."
+      ],
+      "duration_min": 2,
+      "duration_max": 4,
+      "skill_opportunity": "sell_price_bonus",
+      "weight": 8
+    },
+    {
+      "id": "union_founders_day",
+      "event_type": "festival",
+      "faction_id": "miners_union",
+      "target_systems": ["breakstone"],
+      "price_modifiers": {"textiles": 1.8, "food": 1.4, "art": 2.0},
+      "rep_bonus_faction": "miners_union",
+      "rep_bonus_amount": 2,
+      "descriptions": [
+        "Founders' Day celebrations fill Breakstone with song and firelight",
+        "The anniversary of the First Strike — Breakstone remembers Sora Takahashi"
+      ],
+      "flavor_texts": [
+        "Mining shanties echo through the corridors. Even the machinery seems to keep time.",
+        "Someone has painted fresh murals in Cargo Bay 7. The old stories, retold in new colors."
+      ],
+      "duration_min": 2,
+      "duration_max": 4,
+      "skill_opportunity": "persuasion_bonus",
+      "weight": 8
+    },
+    {
+      "id": "collective_symposium",
+      "event_type": "festival",
+      "faction_id": "science_collective",
+      "target_systems": ["axiom_labs", "nova_research"],
+      "price_modifiers": {"medical": 0.7, "electronics": 0.8},
+      "rep_bonus_faction": "science_collective",
+      "rep_bonus_amount": 2,
+      "descriptions": [
+        "Science Collective hosts annual research symposium at {system}",
+        "Okafor Institute opens its doors for the Biennial Knowledge Exchange"
+      ],
+      "flavor_texts": [
+        "Researchers in color-coded lab coats crowd every corridor, debating in technical shorthand.",
+        "Poster sessions line the atrium. The smell of synthesized coffee is overwhelming."
+      ],
+      "duration_min": 2,
+      "duration_max": 4,
+      "skill_opportunity": "observation_bonus",
+      "weight": 7
+    },
+    {
+      "id": "alliance_harvest_festival",
+      "event_type": "festival",
+      "faction_id": "frontier_alliance",
+      "target_systems": ["havens_rest", "verdant"],
+      "price_modifiers": {"food": 0.6, "textiles": 1.6, "art": 1.8},
+      "rep_bonus_faction": "frontier_alliance",
+      "rep_bonus_amount": 2,
+      "descriptions": [
+        "Alliance Harvest Festival draws communities together at {system}",
+        "The annual gathering — stories, food, and fellowship under open sky"
+      ],
+      "flavor_texts": [
+        "Long tables stretch through the commons, heavy with food nobody's charging for.",
+        "A storyteller holds a circle of children rapt. The grown-ups are listening too."
+      ],
+      "duration_min": 2,
+      "duration_max": 4,
+      "skill_opportunity": "diplomatic_rep_bonus",
+      "weight": 8
+    },
+    {
+      "id": "breakstone_strike",
+      "event_type": "labor_strike",
+      "faction_id": "miners_union",
+      "target_systems": ["breakstone"],
+      "shutdown_tags": ["raw_materials", "mining"],
+      "descriptions": [
+        "Workers walk off the job at Breakstone — Union leadership calls for solidarity",
+        "Mining operations halt as workers demand revised safety protocols"
+      ],
+      "flavor_texts": [
+        "The drills are silent. The silence is louder than any machine.",
+        "Picket lines form at every cargo bay. 'We Built This' banners stretch between support columns."
+      ],
+      "duration_min": 3,
+      "duration_max": 6,
+      "chain_id": "strike_cascade",
+      "chain_step": 0,
+      "skill_opportunity": "persuasion_bonus",
+      "weight": 8
+    },
+    {
+      "id": "forgeworks_strike",
+      "event_type": "labor_strike",
+      "faction_id": "miners_union",
+      "target_systems": ["forgeworks"],
+      "shutdown_tags": ["manufacturing", "industrial"],
+      "descriptions": [
+        "Forgeworks fabricators down tools over working conditions",
+        "Manufacturing halt at Forgeworks as workers demand fair profit-sharing"
+      ],
+      "flavor_texts": [
+        "The foundries go dark for the first time in years. The station feels wrong without the vibration.",
+        "Work crews gather in the mess, comparing notes on Guild executive compensation. The mood is grim."
+      ],
+      "duration_min": 3,
+      "duration_max": 5,
+      "skill_opportunity": "persuasion_bonus",
+      "weight": 6
+    },
+    {
+      "id": "iron_depths_strike",
+      "event_type": "labor_strike",
+      "faction_id": "miners_union",
+      "target_systems": ["iron_depths"],
+      "shutdown_tags": ["rare_mining", "deep_core"],
+      "descriptions": [
+        "DCMC workers stage walkout at Iron Depths over safety violations",
+        "Deep-core extraction halts as miners refuse to enter contested shafts"
+      ],
+      "flavor_texts": [
+        "Core Station's normally busy corridors feel abandoned. Even the corporate managers look nervous.",
+        "Someone's chalked 'SORA WAS RIGHT' on the bulkhead near Shaft 12."
+      ],
+      "duration_min": 3,
+      "duration_max": 5,
+      "skill_opportunity": "persuasion_bonus",
+      "weight": 6
+    },
+    {
+      "id": "medical_breakthrough",
+      "event_type": "research_breakthrough",
+      "faction_id": "science_collective",
+      "target_systems": ["axiom_labs"],
+      "price_modifiers": {"medical": 0.5, "purified_crystal": 0.7},
+      "descriptions": [
+        "Collective announces breakthrough in applied medical synthesis",
+        "Okafor Institute publishes landmark results — medical supplies surge"
+      ],
+      "flavor_texts": [
+        "The medical wing buzzes with activity. Researchers shake hands, grinning. Something big happened.",
+        "Supply manifests show triple the usual outbound medical shipments. The patents, for once, are open."
+      ],
+      "duration_min": 3,
+      "duration_max": 5,
+      "skill_opportunity": "observation_bonus",
+      "weight": 7
+    },
+    {
+      "id": "materials_breakthrough",
+      "event_type": "research_breakthrough",
+      "faction_id": "science_collective",
+      "target_systems": ["nova_research"],
+      "price_modifiers": {"electronics": 0.6, "alloy_composite": 0.7},
+      "descriptions": [
+        "Nova Applied Sciences publishes materials science advance",
+        "New manufacturing process slashes electronics production costs"
+      ],
+      "flavor_texts": [
+        "Nova's usually secretive corridors are almost festive. Someone's actually smiling in the patent office.",
+        "The price boards update in real time. Electronics are dropping. Everyone's trying to figure out why."
+      ],
+      "duration_min": 3,
+      "duration_max": 5,
+      "skill_opportunity": "trend_visibility",
+      "weight": 6
+    },
+    {
+      "id": "energy_breakthrough",
+      "event_type": "research_breakthrough",
+      "faction_id": "science_collective",
+      "target_systems": ["axiom_labs", "nova_research"],
+      "price_modifiers": {"fuel_cells": 0.4},
+      "descriptions": [
+        "Energy efficiency discovery makes fuel cells dramatically cheaper",
+        "Collective publishes open-source reactor improvement specs"
+      ],
+      "flavor_texts": [
+        "Engineers crowd the technical library, downloading the new reactor specs. The fuel depot is practically giving it away.",
+        "For once, the Collective shares freely. The Engineering department is suspicious but grateful."
+      ],
+      "duration_min": 3,
+      "duration_max": 5,
+      "skill_opportunity": "fuel_reduction",
+      "weight": 5
+    },
+    {
+      "id": "frontier_pirate_surge",
+      "event_type": "pirate_surge",
+      "faction_id": "",
+      "target_systems": ["crimson_reach", "havens_rest"],
+      "encounter_chance_modifier": 1.5,
+      "danger_modifier": 1,
+      "descriptions": [
+        "Pirate activity surges near the Frontier — convoy losses mounting",
+        "Armed raiders spotted in increasing numbers along Alliance shipping lanes"
+      ],
+      "flavor_texts": [
+        "Captains swap stories at the bar. Nobody's laughing.",
+        "The salvage markets are flush with debris. That's never a good sign."
+      ],
+      "duration_min": 4,
+      "duration_max": 7,
+      "skill_opportunity": "weapon_damage",
+      "weight": 9
+    },
+    {
+      "id": "trade_lane_pirates",
+      "event_type": "pirate_surge",
+      "faction_id": "",
+      "target_systems": ["nexus_prime", "forgeworks"],
+      "encounter_chance_modifier": 1.5,
+      "danger_modifier": 1,
+      "descriptions": [
+        "Pirate attacks escalate along the Nexus-Forgeworks corridor",
+        "Trade convoys report coordinated raids on primary shipping lanes"
+      ],
+      "flavor_texts": [
+        "Insurance premiums have tripled overnight. The Guild brokers aren't hiding their worry.",
+        "Armed escorts are booked solid. Independent haulers are on their own."
+      ],
+      "duration_min": 4,
+      "duration_max": 7,
+      "skill_opportunity": "dodge_chance",
+      "weight": 7
+    },
+    {
+      "id": "deep_space_raiders",
+      "event_type": "pirate_surge",
+      "faction_id": "",
+      "target_systems": ["iron_depths", "nova_research"],
+      "encounter_chance_modifier": 2.0,
+      "danger_modifier": 1,
+      "descriptions": [
+        "Organized raider fleet strikes deep space installations",
+        "Remote systems report unprecedented pirate coordination"
+      ],
+      "flavor_texts": [
+        "DCMC security is on high alert. The heavy guns are manned for the first time in months.",
+        "Nova's already-tight security has gone to lockdown. Visitors get three IDs checked and a pat-down."
+      ],
+      "duration_min": 3,
+      "duration_max": 6,
+      "skill_opportunity": "shield_bonus",
+      "weight": 6
+    },
+    {
+      "id": "forgeworks_shortage",
+      "event_type": "labor_strike",
+      "faction_id": "miners_union",
+      "target_systems": ["forgeworks"],
+      "shutdown_tags": ["manufacturing"],
+      "price_modifiers": {"machinery": 1.4, "alloy_composite": 1.3},
+      "descriptions": [
+        "Ore shortage at Forgeworks — Breakstone strike cuts off raw material supply",
+        "Manufacturing slowdown as upstream ore deliveries dry up"
+      ],
+      "flavor_texts": [
+        "The fabrication lines idle. Without ore, even the foundries go quiet.",
+        "Stockpiles are running low. The swing shift foreman stares at empty cargo bays."
+      ],
+      "duration_min": 3,
+      "duration_max": 5,
+      "chain_id": "strike_cascade",
+      "chain_step": 1,
+      "skill_opportunity": "trend_visibility",
+      "weight": 0
+    }
+  ],
+  "event_chains": [
+    {
+      "chain_id": "strike_cascade",
+      "description": "Labor strike cascades to downstream manufacturing shortage",
+      "steps": [
+        {"step": 0, "event_id": "breakstone_strike"},
+        {"step": 1, "event_id": "forgeworks_shortage", "delay_days": 2, "target_rule": "downstream"}
+      ]
+    }
+  ]
+}

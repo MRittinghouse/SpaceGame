@@ -21,7 +21,7 @@ class TestPlayerProgression:
         assert prog.xp == 0
         assert prog.level == 1
         assert prog.skill_points == 0
-        assert len(prog.skills) == 63  # 9 trees after R5 expansion
+        assert len(prog.skills) == 89  # 9 trees after R5 skill tree expansion
 
     def test_add_xp(self):
         prog = PlayerProgression()
@@ -160,9 +160,9 @@ class TestSkillInvestment:
         trading_skills = prog.get_skill_tree(SkillTreeType.TRADING)
         gathering_skills = prog.get_skill_tree(SkillTreeType.GATHERING)
         leadership_skills = prog.get_skill_tree(SkillTreeType.LEADERSHIP)
-        assert len(trading_skills) == 8
-        assert len(gathering_skills) == 5
-        assert len(leadership_skills) == 8
+        assert len(trading_skills) == 10
+        assert len(gathering_skills) == 8
+        assert len(leadership_skills) == 10
 
 
 class TestProgressionSerialization:
@@ -330,7 +330,7 @@ class TestSocialTree:
     def test_social_tree_count(self):
         prog = PlayerProgression()
         social_skills = prog.get_skill_tree(SkillTreeType.SOCIAL)
-        assert len(social_skills) == 8
+        assert len(social_skills) == 10
 
     def test_social_skill_bonuses(self):
         prog = PlayerProgression()

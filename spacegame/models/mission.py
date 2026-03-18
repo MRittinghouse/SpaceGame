@@ -32,6 +32,7 @@ class MissionStatus(Enum):
     AVAILABLE = "available"
     ACTIVE = "active"
     COMPLETED = "completed"
+    FAILED = "failed"
 
 
 @dataclass
@@ -154,6 +155,62 @@ class Mission:
     ground_mission_id: str = ""
     ground_mission_system_id: str = ""
     ground_mission_complete_flag: str = ""
+    # Side mission framework fields
+    mission_type: str = "campaign"  # "campaign" or "side"
+    available_at: list[str] = field(default_factory=list)  # Systems where available
+    available_after: str = ""  # Campaign mission ID prerequisite
+    available_before: str = ""  # Expires after this campaign mission completes
+    repeatable: bool = False
+    discovery_method: str = ""  # "npc", "station_board", "encounter", "automatic"
+    discovery_text: str = ""  # First-person narrative hook for journal when mission unlocks
+    crew_member_id: str = ""  # Crew member required in party for quest progression
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "Mission":
+        """Deserialize from dict.
+
+        Args:
+            data: Dict from to_dict() or JSON data.
+
+        Returns:
+            Mission instance with all fields populated.
+        """
+        objectives = [
+            MissionObjective.from_dict(obj) for obj in data.get("objectives", [])
+        ]
+        rewards = [
+            MissionReward.from_dict(r) for r in data.get("rewards", [])
+        ]
+        on_accept_cargo = [
+            AcceptCargo.from_dict(c) for c in data.get("on_accept_cargo", [])
+        ]
+        forced_encounter = None
+        if "forced_encounter" in data:
+            forced_encounter = ForcedEncounter.from_dict(data["forced_encounter"])
+        return cls(
+            id=data["id"],
+            name=data["name"],
+            description=data["description"],
+            objectives=objectives,
+            rewards=rewards,
+            prerequisites=data.get("prerequisites", []),
+            on_accept_cargo=on_accept_cargo,
+            required_flags=data.get("required_flags", []),
+            forced_encounter=forced_encounter,
+            auto_accept=data.get("auto_accept", False),
+            hint=data.get("hint", ""),
+            ground_mission_id=data.get("ground_mission_id", ""),
+            ground_mission_system_id=data.get("ground_mission_system_id", ""),
+            ground_mission_complete_flag=data.get("ground_mission_complete_flag", ""),
+            mission_type=data.get("mission_type", "campaign"),
+            available_at=data.get("available_at", []),
+            available_after=data.get("available_after", ""),
+            available_before=data.get("available_before", ""),
+            repeatable=data.get("repeatable", False),
+            discovery_method=data.get("discovery_method", ""),
+            discovery_text=data.get("discovery_text", ""),
+            crew_member_id=data.get("crew_member_id", ""),
+        )
 
     def get_target_system_ids(self) -> list[str]:
         """Get system IDs referenced by reach_system objectives."""
@@ -181,6 +238,23 @@ class Mission:
             d["ground_mission_id"] = self.ground_mission_id
             d["ground_mission_system_id"] = self.ground_mission_system_id
             d["ground_mission_complete_flag"] = self.ground_mission_complete_flag
+        # Side mission fields
+        if self.mission_type != "campaign":
+            d["mission_type"] = self.mission_type
+        if self.available_at:
+            d["available_at"] = list(self.available_at)
+        if self.available_after:
+            d["available_after"] = self.available_after
+        if self.available_before:
+            d["available_before"] = self.available_before
+        if self.repeatable:
+            d["repeatable"] = self.repeatable
+        if self.discovery_method:
+            d["discovery_method"] = self.discovery_method
+        if self.discovery_text:
+            d["discovery_text"] = self.discovery_text
+        if self.crew_member_id:
+            d["crew_member_id"] = self.crew_member_id
         return d
 
 
@@ -204,10 +278,56 @@ class MissionManager:
             m.id: [False] * len(m.objectives) for m in missions
         }
 
+    def add_mission(
+        self,
+        mission: Mission,
+        initial_status: MissionStatus = MissionStatus.AVAILABLE,
+    ) -> tuple[bool, str]:
+        """Add a mission at runtime (e.g. procedurally generated).
+
+        Args:
+            mission: Mission definition to add.
+            initial_status: Starting status (default AVAILABLE).
+
+        Returns:
+            Tuple of (success, message).
+        """
+        if mission.id in self._missions:
+            return (False, f"Mission '{mission.id}' already exists")
+        self._missions[mission.id] = mission
+        self._status[mission.id] = initial_status
+        self._progress[mission.id] = [False] * len(mission.objectives)
+        return (True, f"Added: {mission.name}")
+
+    def remove_mission(self, mission_id: str) -> bool:
+        """Remove a mission (e.g. expired procedural contract).
+
+        Only removes missions that are AVAILABLE or UNAVAILABLE.
+        Active/completed missions cannot be removed.
+
+        Args:
+            mission_id: ID of mission to remove.
+
+        Returns:
+            True if removed, False otherwise.
+        """
+        if mission_id not in self._missions:
+            return False
+        status = self._status[mission_id]
+        if status in (MissionStatus.ACTIVE, MissionStatus.COMPLETED):
+            return False
+        del self._missions[mission_id]
+        del self._status[mission_id]
+        del self._progress[mission_id]
+        return True
+
     def update_availability(
         self, player_flags: Optional[dict[str, bool]] = None
     ) -> list[str]:
         """Check prerequisites and flags, mark eligible missions as AVAILABLE.
+
+        For side missions, also checks available_after (campaign mission must
+        be completed before the side mission becomes available).
 
         Args:
             player_flags: Current dialogue flags from player state.
@@ -223,7 +343,12 @@ class MissionManager:
                 continue
             prereqs_met = all(pid in completed_ids for pid in mission.prerequisites)
             flags_met = all(flags.get(f, False) for f in mission.required_flags)
-            if prereqs_met and flags_met:
+            # Side missions: check available_after campaign gate
+            after_met = (
+                not mission.available_after
+                or mission.available_after in completed_ids
+            )
+            if prereqs_met and flags_met and after_met:
                 self._status[mid] = MissionStatus.AVAILABLE
                 newly_available.append(mid)
                 if mission.auto_accept:
@@ -246,11 +371,44 @@ class MissionManager:
         self._status[mission_id] = MissionStatus.ACTIVE
         return (True, f"Accepted: {self._missions[mission_id].name}")
 
-    def check_objectives(self, player: "Player") -> list[str]:
+    def get_status(self, mission_id: str) -> Optional[MissionStatus]:
+        """Get the current status of a mission.
+
+        Args:
+            mission_id: Mission to check.
+
+        Returns:
+            MissionStatus if found, None if mission doesn't exist.
+        """
+        return self._status.get(mission_id)
+
+    def fail_mission(self, mission_id: str) -> tuple[bool, str]:
+        """Move a mission from ACTIVE to FAILED.
+
+        Args:
+            mission_id: Mission to fail.
+
+        Returns:
+            Tuple of (success, message).
+        """
+        if mission_id not in self._missions:
+            return (False, "Mission not found")
+        if self._status[mission_id] != MissionStatus.ACTIVE:
+            return (False, f"Mission is {self._status[mission_id].value}, not active")
+        self._status[mission_id] = MissionStatus.FAILED
+        return (True, f"Failed: {self._missions[mission_id].name}")
+
+    def check_objectives(
+        self,
+        player: "Player",
+        recruited_crew_ids: Optional[set[str]] = None,
+    ) -> list[str]:
         """Check all active mission objectives against current player state.
 
         Args:
             player: Current player state.
+            recruited_crew_ids: Set of currently recruited crew template IDs.
+                Crew quests whose crew_member_id is not in this set are skipped.
 
         Returns:
             List of mission IDs that just completed (all objectives met).
@@ -258,6 +416,14 @@ class MissionManager:
         newly_completed: list[str] = []
         for mid, mission in self._missions.items():
             if self._status[mid] != MissionStatus.ACTIVE:
+                continue
+
+            # Skip crew quests when their crew member is not in the party
+            if (
+                mission.crew_member_id
+                and recruited_crew_ids is not None
+                and mission.crew_member_id not in recruited_crew_ids
+            ):
                 continue
 
             for i, obj in enumerate(mission.objectives):
@@ -381,22 +547,97 @@ class MissionManager:
     def get_current_hint(self) -> Optional[tuple[str, str]]:
         """Get the hint for the current primary mission.
 
-        Prioritizes active missions over available ones. Skips missions
-        with no hint text.
+        Prioritizes campaign missions over side missions, and active over
+        available within each type. Skips missions with no hint text.
 
         Returns:
             Tuple of (mission_name, hint_text), or None if no hinted mission.
         """
-        # Check active missions first, then available
-        for status in (MissionStatus.ACTIVE, MissionStatus.AVAILABLE):
-            for mid, mission in self._missions.items():
-                if self._status[mid] == status and mission.hint:
-                    return (mission.name, mission.hint)
+        # Campaign first, then side; active first, then available
+        for mission_type in ("campaign", "side"):
+            for status in (MissionStatus.ACTIVE, MissionStatus.AVAILABLE):
+                for mid, mission in self._missions.items():
+                    if (
+                        self._status[mid] == status
+                        and mission.hint
+                        and mission.mission_type == mission_type
+                    ):
+                        return (mission.name, mission.hint)
         return None
 
     def get_completed_ids(self) -> set[str]:
         """Get IDs of all completed missions."""
         return {mid for mid, s in self._status.items() if s == MissionStatus.COMPLETED}
+
+    def get_missions_by_type(self, mission_type: str) -> list[Mission]:
+        """Get all missions of a given type (campaign or side).
+
+        Args:
+            mission_type: "campaign" or "side".
+
+        Returns:
+            List of missions matching the type.
+        """
+        return [
+            m for m in self._missions.values()
+            if m.mission_type == mission_type
+        ]
+
+    def get_available_at_system(self, system_id: str) -> list[Mission]:
+        """Get available side missions at a specific system.
+
+        Missions with empty available_at are available everywhere.
+
+        Args:
+            system_id: Current system ID.
+
+        Returns:
+            List of available missions at this system.
+        """
+        return [
+            self._missions[mid]
+            for mid, s in self._status.items()
+            if s == MissionStatus.AVAILABLE
+            and (
+                not self._missions[mid].available_at
+                or system_id in self._missions[mid].available_at
+            )
+        ]
+
+    def get_missions_by_discovery(self, method: str) -> list[Mission]:
+        """Get available missions with a specific discovery method.
+
+        Args:
+            method: Discovery method (e.g. "encounter", "station_board", "npc").
+
+        Returns:
+            List of available missions matching the discovery method.
+        """
+        return [
+            self._missions[mid]
+            for mid, s in self._status.items()
+            if s == MissionStatus.AVAILABLE
+            and self._missions[mid].discovery_method == method
+        ]
+
+    def expire_missions(self) -> list[str]:
+        """Expire side missions whose available_before campaign mission is completed.
+
+        Only expires AVAILABLE missions — active and completed missions are
+        not affected.
+
+        Returns:
+            List of mission IDs that were expired.
+        """
+        completed_ids = self.get_completed_ids()
+        expired: list[str] = []
+        for mid, mission in self._missions.items():
+            if self._status[mid] != MissionStatus.AVAILABLE:
+                continue
+            if mission.available_before and mission.available_before in completed_ids:
+                self._status[mid] = MissionStatus.UNAVAILABLE
+                expired.append(mid)
+        return expired
 
     def get_state(self) -> dict[str, Any]:
         """Serialize all mission runtime state for saving."""

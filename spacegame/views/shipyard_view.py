@@ -16,7 +16,7 @@ from spacegame.models.upgrades import ShipUpgrade, ShipUpgradeManager, MARK_MULT
 from spacegame.utils.logger import logger
 from spacegame.engine.backgrounds import AnimatedBackground
 from spacegame.engine.particles import ParticlePool, COLLECT_SPARKLE, ParticleConfig
-from spacegame.engine.sprites import get_sprite_manager
+from spacegame.engine.sprites import get_sprite_manager, AnimatedSprite
 from spacegame.engine.fonts import FontCache
 from spacegame.engine.audio_manager import get_audio_manager
 
@@ -113,29 +113,32 @@ class ShipyardView(BaseView):
         self.particles = ParticlePool(100)
         self._glow_time = 0.0
 
-        # Ship sprite (with procedural fallback)
+        # Ship sprite (animated with procedural fallback)
         self._sprite_mgr = get_sprite_manager()
-        self._ship_surf = self._load_ship_sprite()
+        self._ship_anim: Optional[AnimatedSprite] = None
+        self._ship_fallback: Optional[pygame.Surface] = None
+        self._load_ship_anim()
 
-    def _load_ship_sprite(self) -> pygame.Surface:
-        """Load ship sprite or generate procedural fallback."""
+    def _load_ship_anim(self) -> None:
+        """Load animated ship sprite or generate procedural fallback."""
         ship_id = self.player.ship.ship_type.id
-        sprite = self._sprite_mgr.get_ship_sprite(ship_id, scale=3)
-        if sprite:
-            return sprite
-        # Procedural fallback
-        surf = pygame.Surface((120, 60), pygame.SRCALPHA)
-        points = [(10, 30), (40, 10), (110, 30), (40, 50)]
-        pygame.draw.polygon(surf, (60, 80, 120), points)
-        pygame.draw.polygon(surf, (100, 130, 180), points, 2)
-        pygame.draw.circle(surf, (80, 150, 255, 120), (15, 30), 5)
-        return surf
+        self._ship_anim = self._sprite_mgr.get_ship_animated(ship_id, scale=3)
+        if self._ship_anim is None:
+            # Procedural fallback
+            surf = pygame.Surface((120, 60), pygame.SRCALPHA)
+            points = [(10, 30), (40, 10), (110, 30), (40, 50)]
+            pygame.draw.polygon(surf, (60, 80, 120), points)
+            pygame.draw.polygon(surf, (100, 130, 180), points, 2)
+            pygame.draw.circle(surf, (80, 150, 255, 120), (15, 30), 5)
+            self._ship_fallback = surf
+        else:
+            self._ship_fallback = None
 
     def on_enter(self) -> None:
         super().on_enter()
         self._scroll_offset = 0
         self._tuning_mode = False
-        self._ship_surf = self._load_ship_sprite()
+        self._load_ship_anim()
         self._create_ui()
 
     def on_exit(self) -> None:
@@ -220,7 +223,10 @@ class ShipyardView(BaseView):
     # ========================================================================
 
     def _is_upgrade_locked(self, upgrade: ShipUpgrade) -> tuple[bool, str]:
-        """Check if an upgrade is locked by faction rep or quest."""
+        """Check if an upgrade is locked by faction rep, quest, or system availability."""
+        if upgrade.available_systems and self.player.current_system_id not in upgrade.available_systems:
+            system_names = ", ".join(s.replace("_", " ").title() for s in upgrade.available_systems)
+            return (True, f"Available at: {system_names}")
         if upgrade.faction_required:
             rep = self.player.get_reputation(upgrade.faction_required)
             if rep < upgrade.faction_rep_required:
@@ -504,7 +510,7 @@ class ShipyardView(BaseView):
         if success:
             get_audio_manager().play_sfx("trade_buy")
             self.particles.emit(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2, PURCHASE_FLASH)
-            self._ship_surf = self._load_ship_sprite()
+            self._load_ship_anim()
 
     def _show_message(self, msg: str) -> None:
         self.message = msg
@@ -545,6 +551,8 @@ class ShipyardView(BaseView):
     def update(self, dt: float) -> None:
         self.background.update(dt)
         self.particles.update(dt)
+        if self._ship_anim:
+            self._ship_anim.update(dt)
         self._glow_time += dt
         if self.message_timer > 0:
             self.message_timer -= dt
@@ -557,8 +565,10 @@ class ShipyardView(BaseView):
         title = self.title_font.render("SHIPYARD", True, Colors.TEXT_HIGHLIGHT)
         screen.blit(title, title.get_rect(center=(WINDOW_WIDTH // 2, 30)))
 
-        # Ship silhouette in header
-        screen.blit(self._ship_surf, (WINDOW_WIDTH - 160, 15))
+        # Ship silhouette in header (animated)
+        ship_surf = self._ship_anim.get_surface() if self._ship_anim else self._ship_fallback
+        if ship_surf:
+            screen.blit(ship_surf, (WINDOW_WIDTH - 160, 15))
 
         # Credits and per-category slot display
         self._render_slot_summary(screen)

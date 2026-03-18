@@ -25,6 +25,35 @@ class RockType(Enum):
     IRON = "iron"
     CRYSTAL = "crystal"
     RARE = "rare"
+    DENSE = "dense"
+    VOLATILE = "volatile"
+    MONOLITH = "monolith"
+
+
+class HazardType(Enum):
+    """Types of environmental hazards in the mining field."""
+
+    UNSTABLE_CELL = "unstable_cell"
+    PRESSURE_VENT = "pressure_vent"
+
+
+@dataclass
+class HazardCell:
+    """An environmental hazard occupying a grid cell."""
+
+    hazard_type: HazardType
+    grid_x: int
+    grid_y: int
+    pulse_timer: float = 0.0  # Used by pressure vents
+
+
+# Hazard depth thresholds
+HAZARD_UNSTABLE_DEPTH = 10
+HAZARD_VENT_DEPTH = 15
+UNSTABLE_ENERGY_COST = 3
+UNSTABLE_PROGRESS_AMOUNT = 0.30
+VENT_PULSE_INTERVAL = 8.0
+VENT_PROGRESS_AMOUNT = 0.10
 
 
 @dataclass
@@ -32,11 +61,14 @@ class RockTypeConfig:
     """Configuration for a rock type."""
 
     rock_type: RockType
-    hardness: float  # Drill time in seconds (0.5 - 3.0)
+    hardness: float  # Drill time in seconds
     min_yield: int
     max_yield: int
     commodity_id: str  # What commodity this yields
     color: tuple  # RGB color for rendering
+    chain_immune: bool = False  # If True, cannot be chain-detonated
+    volatile_splash: bool = False  # If True, applies 50% progress to neighbors on break
+    drone_immune: bool = False  # If True, drones cannot target this rock
 
 
 # Default rock type configurations
@@ -73,6 +105,40 @@ ROCK_TYPE_CONFIGS = {
         commodity_id="rare_ore",
         color=(200, 100, 255),
     ),
+    RockType.DENSE: RockTypeConfig(
+        rock_type=RockType.DENSE,
+        hardness=4.0,
+        min_yield=3,
+        max_yield=6,
+        commodity_id="iron_ore",
+        color=(90, 70, 50),
+        chain_immune=True,
+    ),
+    RockType.VOLATILE: RockTypeConfig(
+        rock_type=RockType.VOLATILE,
+        hardness=1.5,
+        min_yield=2,
+        max_yield=4,
+        commodity_id="raw_ore",
+        color=(255, 120, 40),
+        volatile_splash=True,
+    ),
+    RockType.MONOLITH: RockTypeConfig(
+        rock_type=RockType.MONOLITH,
+        hardness=10.0,  # Base; actual is 10.0 + depth * 0.5
+        min_yield=5,
+        max_yield=5,  # Base; actual is 5 + depth
+        commodity_id="iron_ore",  # Overridden per-system
+        color=(40, 40, 60),
+        chain_immune=True,
+        drone_immune=True,
+    ),
+}
+
+# Depth thresholds for new rock types
+DEPTH_ROCK_THRESHOLDS: dict[str, int] = {
+    "dense": 5,
+    "volatile": 12,
 }
 
 
@@ -86,6 +152,11 @@ class AsteroidRock:
     depleted: bool = False
     drill_progress: float = 0.0  # 0.0 to 1.0
     drilling: bool = False
+    # Overrides for special rocks (Monolith)
+    hardness_override: Optional[float] = None
+    yield_override: Optional[int] = None
+    commodity_override: Optional[str] = None
+    strata_reward: int = 0  # Strata tokens awarded on break (Monolith)
 
     @property
     def config(self) -> RockTypeConfig:
@@ -95,15 +166,21 @@ class AsteroidRock:
     @property
     def hardness(self) -> float:
         """Get drill time in seconds."""
+        if self.hardness_override is not None:
+            return self.hardness_override
         return self.config.hardness
 
     @property
     def commodity_id(self) -> str:
         """Get the commodity this rock yields."""
+        if self.commodity_override is not None:
+            return self.commodity_override
         return self.config.commodity_id
 
     def get_yield(self) -> int:
         """Get random yield amount when rock breaks."""
+        if self.yield_override is not None:
+            return self.yield_override
         cfg = self.config
         return random.randint(cfg.min_yield, cfg.max_yield)
 
@@ -185,6 +262,8 @@ class MiningConfig:
     base_passive_rate: float = 0.05
     rock_distribution: Dict[str, float] = field(default_factory=dict)
     # Distribution is a dict of rock_type_name -> probability (0.0-1.0)
+    danger_level: str = "safe"  # System danger level for yield scaling
+    perk_yield_bonus: float = 0.0  # Faction perk yield bonus (stacks with danger)
 
     def __post_init__(self):
         if not self.rock_distribution:
@@ -221,6 +300,7 @@ class ChainBreak:
     commodity_id: str
     quantity: int
     chain_depth: int
+    ingredient_drops: dict[str, int] = field(default_factory=dict)
 
 
 @dataclass
@@ -310,6 +390,16 @@ class MiningResult:
     commodity_id: str
     quantity: int
     rock_type: RockType
+    ingredient_drops: dict[str, int] = field(default_factory=dict)
+
+
+@dataclass
+class DepthAdvanceResult:
+    """Result of advancing to the next depth level."""
+
+    new_depth: int
+    strata_earned: int
+    was_full_clear: bool
 
 
 class MiningSession:
@@ -329,8 +419,11 @@ class MiningSession:
         drone_speed_bonus: float = 0.0,
         rare_chance_bonus: float = 0.0,
         chain_chance_bonus: float = 0.0,
+        max_chain_depth_bonus: int = 0,
+        starting_depth: int = 1,
         drones: Optional[list[MiningDrone]] = None,
         milestones: Optional[list[MiningMilestone]] = None,
+        prestige_level: int = 0,
     ):
         """
         Initialize mining session.
@@ -343,6 +436,8 @@ class MiningSession:
             drone_speed_bonus: Fractional bonus to drone mining speed.
             rare_chance_bonus: Fractional bonus to rare ore chance.
             chain_chance_bonus: Fractional bonus to chain detonation chance.
+            max_chain_depth_bonus: Extra chain recursion depth (from Seismic Pulse).
+            starting_depth: Initial depth (from Depth Scanner).
             drones: List of active MiningDrone instances.
         """
         self.config = config
@@ -352,7 +447,9 @@ class MiningSession:
         self.drone_speed_bonus = drone_speed_bonus
         self.rare_chance_bonus = rare_chance_bonus
         self.chain_chance_bonus = chain_chance_bonus
+        self.max_chain_depth: int = CHAIN_MAX_DEPTH + max_chain_depth_bonus
         self.drones: list[MiningDrone] = drones or []
+        self.prestige_level: int = prestige_level
 
         # Energy state
         self.energy: int = config.max_energy
@@ -360,7 +457,7 @@ class MiningSession:
         self._energy_regen_timer: float = 0.0
 
         # Depth state
-        self.depth: int = 1
+        self.depth: int = max(1, starting_depth)
 
         # Chain detonation state
         self.chain_results: list[ChainBreak] = []
@@ -373,6 +470,7 @@ class MiningSession:
         self.newly_completed_milestones: list[MiningMilestone] = []
 
         self.rocks: List[AsteroidRock] = []
+        self.hazards: List[HazardCell] = []
         self.active_rock: Optional[AsteroidRock] = None
         self.total_mined: Dict[str, int] = {}  # commodity_id -> quantity
         self.total_clicks: int = 0
@@ -380,10 +478,28 @@ class MiningSession:
 
         self._generate_field()
 
+    def _get_depth_rock_distribution(self) -> Dict[str, float]:
+        """Get rock distribution adjusted for current depth.
+
+        Adds depth-gated rock types and reduces common weight to compensate.
+        """
+        dist = dict(self.config.rock_distribution)
+
+        for type_name, threshold in DEPTH_ROCK_THRESHOLDS.items():
+            if self.depth >= threshold:
+                # Add new type, reduce common weight proportionally
+                weight = 0.10 + 0.02 * (self.depth - threshold)
+                weight = min(weight, 0.25)  # Cap at 25%
+                dist[type_name] = weight
+                if "common" in dist:
+                    dist["common"] = max(0.10, dist["common"] - weight * 0.5)
+
+        return dist
+
     def _generate_field(self) -> None:
-        """Generate asteroid field based on config."""
+        """Generate asteroid field based on config and depth."""
         self.rocks.clear()
-        distribution = self.config.rock_distribution
+        distribution = self._get_depth_rock_distribution()
 
         # Build weighted list
         rock_types = []
@@ -401,22 +517,79 @@ class MiningSession:
 
         # Boost crystal and rare weights based on combined rare bonuses
         depth_mods = self.get_depth_modifiers()
-        effective_rare = self.rare_chance_bonus + depth_mods.rare_weight_bonus
+        effective_rare = min(
+            self.rare_chance_bonus + depth_mods.rare_weight_bonus,
+            2.0,  # Cap at 3x weight multiplier to preserve common rock distribution
+        )
         if effective_rare > 0:
             for i, rt in enumerate(rock_types):
                 if rt in (RockType.CRYSTAL, RockType.RARE):
                     weights[i] *= 1 + effective_rare
 
+        # Reserve one cell for monolith at every 5 depths
+        monolith_cell = None
+        if self.depth > 1 and self.depth % 5 == 0:
+            monolith_cell = (
+                random.randint(0, self.config.grid_width - 1),
+                random.randint(0, self.config.grid_height - 1),
+            )
+
         for y in range(self.config.grid_height):
             for x in range(self.config.grid_width):
-                rock_type = random.choices(rock_types, weights=weights, k=1)[0]
-                self.rocks.append(
-                    AsteroidRock(
-                        rock_type=rock_type,
-                        grid_x=x,
-                        grid_y=y,
+                if monolith_cell and (x, y) == monolith_cell:
+                    self.rocks.append(
+                        AsteroidRock(
+                            rock_type=RockType.MONOLITH,
+                            grid_x=x,
+                            grid_y=y,
+                            hardness_override=10.0 + self.depth * 0.5,
+                            yield_override=5 + self.depth,
+                            strata_reward=self.depth * 2,
+                        )
                     )
-                )
+                else:
+                    rock_type = random.choices(rock_types, weights=weights, k=1)[0]
+                    self.rocks.append(
+                        AsteroidRock(
+                            rock_type=rock_type,
+                            grid_x=x,
+                            grid_y=y,
+                        )
+                    )
+
+        self._generate_hazards()
+
+    def _generate_hazards(self) -> None:
+        """Spawn environmental hazards based on current depth."""
+        self.hazards.clear()
+        if self.depth < HAZARD_UNSTABLE_DEPTH:
+            return
+
+        # Determine how many hazard cells to place (1-2 at threshold, scaling)
+        hazard_types: list[HazardType] = []
+        if self.depth >= HAZARD_UNSTABLE_DEPTH:
+            count = 1 + (self.depth - HAZARD_UNSTABLE_DEPTH) // 5
+            hazard_types.extend([HazardType.UNSTABLE_CELL] * min(count, 3))
+        if self.depth >= HAZARD_VENT_DEPTH:
+            count = 1 + (self.depth - HAZARD_VENT_DEPTH) // 5
+            hazard_types.extend([HazardType.PRESSURE_VENT] * min(count, 2))
+
+        if not hazard_types:
+            return
+
+        # Pick random non-monolith rocks to replace with hazards
+        candidates = [
+            r for r in self.rocks if r.rock_type != RockType.MONOLITH
+        ]
+        random.shuffle(candidates)
+        for i, htype in enumerate(hazard_types):
+            if i >= len(candidates):
+                break
+            rock = candidates[i]
+            self.rocks.remove(rock)
+            self.hazards.append(
+                HazardCell(hazard_type=htype, grid_x=rock.grid_x, grid_y=rock.grid_y)
+            )
 
     def get_rock_at(self, grid_x: int, grid_y: int) -> Optional[AsteroidRock]:
         """Get rock at grid position."""
@@ -442,11 +615,34 @@ class MiningSession:
         return self.get_depth_modifiers().energy_cost_multiplier
 
     def _apply_yield_bonus(self, base_yield: int) -> int:
-        """Apply depth yield bonus to a base yield amount."""
+        """Apply depth yield bonus, danger multiplier, and perk bonus to yield."""
+        from spacegame.config import DANGER_YIELD_MULTIPLIERS
+
         bonus = self.get_depth_modifiers().yield_bonus
-        if bonus <= 0:
-            return base_yield
-        return base_yield + math.floor(base_yield * bonus)
+        result = base_yield
+        if bonus > 0:
+            result = base_yield + math.floor(base_yield * bonus)
+        # Danger + perk multipliers stack additively
+        total_mult = DANGER_YIELD_MULTIPLIERS.get(self.config.danger_level, 1.0)
+        total_mult += self.config.perk_yield_bonus
+        if total_mult != 1.0:
+            result = math.floor(result * total_mult)
+        return max(1, result)
+
+    def _roll_ingredient_drops(self) -> dict[str, int]:
+        """Roll for depth-gated ingredient drops on rock break.
+
+        Returns:
+            Dict of ingredient_id -> quantity (empty if nothing dropped).
+        """
+        drops: dict[str, int] = {}
+        # Resonance core: 5% at depth 15+ (checked first — rarer, higher priority)
+        if self.depth >= 15 and random.random() < 0.05:
+            drops["resonance_core"] = 1
+        # Flux catalyst: 10% at depth 8+
+        if self.depth >= 8 and random.random() < 0.10:
+            drops["flux_catalyst"] = 1
+        return drops
 
     def click_rock(
         self, grid_x: int, grid_y: int, empowered: bool = False
@@ -496,13 +692,16 @@ class MiningSession:
                 commodity_id=rock.commodity_id,
                 quantity=final_yield,
                 rock_type=rock.rock_type,
+                ingredient_drops=self._roll_ingredient_drops(),
             )
             self.total_mined[rock.commodity_id] = (
                 self.total_mined.get(rock.commodity_id, 0) + final_yield
             )
             self.active_rock = None
             self._on_rock_broken(rock)
+            self._apply_volatile_splash(rock)
             self._check_chain_detonation(rock)
+            self._check_unstable_detonation(rock)
             self._check_milestones()
             return (True, f"Mined {final_yield} {rock.commodity_id}!", result)
 
@@ -567,6 +766,7 @@ class MiningSession:
                     commodity_id=self.active_rock.commodity_id,
                     quantity=yield_amount,
                     rock_type=self.active_rock.rock_type,
+                    ingredient_drops=self._roll_ingredient_drops(),
                 )
                 self.total_mined[self.active_rock.commodity_id] = (
                     self.total_mined.get(self.active_rock.commodity_id, 0) + yield_amount
@@ -575,11 +775,17 @@ class MiningSession:
                 broken_rock = self.active_rock
                 self.active_rock = None
                 self._on_rock_broken(broken_rock)
+                self._apply_volatile_splash(broken_rock)
                 self._check_chain_detonation(broken_rock)
+                self._check_unstable_detonation(broken_rock)
 
         # Drone mining
         drone_results = self._update_drones(dt)
         results.extend(drone_results)
+
+        # Environmental hazards
+        vent_results = self._update_pressure_vents(dt)
+        results.extend(vent_results)
 
         self._check_milestones()
         return results
@@ -626,6 +832,7 @@ class MiningSession:
                     commodity_id=target.commodity_id,
                     quantity=final_yield,
                     rock_type=target.rock_type,
+                    ingredient_drops=self._roll_ingredient_drops(),
                 )
                 self.total_mined[target.commodity_id] = (
                     self.total_mined.get(target.commodity_id, 0) + final_yield
@@ -633,7 +840,9 @@ class MiningSession:
                 results.append(result)
                 self.drone_targets.pop(i, None)
                 self._on_rock_broken(target)
+                self._apply_volatile_splash(target)
                 self._check_chain_detonation(target)
+                self._check_unstable_detonation(target)
 
         return results
 
@@ -657,7 +866,10 @@ class MiningSession:
             if idx != drone_index:
                 claimed.add(id(rock))
 
-        available = [r for r in self.rocks if not r.depleted and id(r) not in claimed]
+        available = [
+            r for r in self.rocks
+            if not r.depleted and id(r) not in claimed and not r.config.drone_immune
+        ]
 
         if not available:
             return None
@@ -730,12 +942,18 @@ class MiningSession:
             broken_rock: The rock that just broke.
             depth: Current chain depth (stops at CHAIN_MAX_DEPTH).
         """
-        if depth > CHAIN_MAX_DEPTH:
+        if depth > self.max_chain_depth:
+            return
+        # Chain-immune rocks cannot trigger chains
+        if broken_rock.config.chain_immune:
             return
         chain_chance = CHAIN_BASE_CHANCE + self.chain_chance_bonus
         neighbors = self._get_neighbors(broken_rock.grid_x, broken_rock.grid_y)
         for neighbor in neighbors:
             if neighbor.depleted or neighbor.rock_type != broken_rock.rock_type:
+                continue
+            # Chain-immune rocks cannot be chain targets
+            if neighbor.config.chain_immune:
                 continue
             if random.random() < chain_chance:
                 neighbor.drill_progress += CHAIN_PROGRESS_AMOUNT
@@ -757,19 +975,168 @@ class MiningSession:
                             commodity_id=commodity,
                             quantity=yield_amount,
                             chain_depth=depth,
+                            ingredient_drops=self._roll_ingredient_drops(),
                         )
                     )
                     self.total_chains += 1
                     self._check_chain_detonation(neighbor, depth + 1)
 
-    def regenerate_field(self) -> None:
-        """Regenerate the asteroid field and advance to next depth."""
+    def _apply_volatile_splash(self, broken_rock: AsteroidRock) -> None:
+        """Apply volatile rock splash damage: 50% drill progress to all adjacent rocks."""
+        if not broken_rock.config.volatile_splash:
+            return
+        neighbors = self._get_neighbors(broken_rock.grid_x, broken_rock.grid_y)
+        for neighbor in neighbors:
+            if neighbor.depleted:
+                continue
+            neighbor.drill_progress = min(1.0, neighbor.drill_progress + 0.5)
+            if neighbor.drill_progress >= 1.0:
+                neighbor.drill_progress = 1.0
+                neighbor.depleted = True
+                neighbor.drilling = False
+                yield_amount = self._apply_yield_bonus(neighbor.get_yield())
+                commodity = neighbor.commodity_id
+                self.total_mined[commodity] = (
+                    self.total_mined.get(commodity, 0) + yield_amount
+                )
+                self._on_rock_broken(neighbor)
+                self.chain_results.append(
+                    ChainBreak(
+                        grid_x=neighbor.grid_x,
+                        grid_y=neighbor.grid_y,
+                        rock_type=neighbor.rock_type,
+                        commodity_id=commodity,
+                        quantity=yield_amount,
+                        chain_depth=0,
+                    )
+                )
+
+    def _get_hazard_neighbors(self, gx: int, gy: int) -> list[AsteroidRock]:
+        """Get rocks adjacent to a hazard cell (8 directions)."""
+        neighbors = []
+        for dx in (-1, 0, 1):
+            for dy in (-1, 0, 1):
+                if dx == 0 and dy == 0:
+                    continue
+                rock = self.get_rock_at(gx + dx, gy + dy)
+                if rock is not None:
+                    neighbors.append(rock)
+        return neighbors
+
+    def _is_adjacent_to_hazard(self, rock: AsteroidRock, hazard: HazardCell) -> bool:
+        """Check if a rock is adjacent (8 directions) to a hazard cell."""
+        return abs(rock.grid_x - hazard.grid_x) <= 1 and abs(rock.grid_y - hazard.grid_y) <= 1
+
+    def _check_unstable_detonation(self, broken_rock: AsteroidRock) -> list[MiningResult]:
+        """Check if breaking a rock triggers any adjacent unstable cells.
+
+        Unstable cells detonate when an adjacent rock breaks, applying 30% progress
+        to all their neighbors. Costs 3 energy. Consumed after detonation.
+
+        Returns:
+            List of MiningResult for any rocks broken by detonation.
+        """
+        results: list[MiningResult] = []
+        to_remove: list[HazardCell] = []
+        for hazard in self.hazards:
+            if hazard.hazard_type != HazardType.UNSTABLE_CELL:
+                continue
+            if not self._is_adjacent_to_hazard(broken_rock, hazard):
+                continue
+            if self.energy < UNSTABLE_ENERGY_COST:
+                continue
+            # Detonate
+            self.energy -= UNSTABLE_ENERGY_COST
+            neighbors = self._get_hazard_neighbors(hazard.grid_x, hazard.grid_y)
+            for neighbor in neighbors:
+                if neighbor.depleted:
+                    continue
+                neighbor.drill_progress = min(1.0, neighbor.drill_progress + UNSTABLE_PROGRESS_AMOUNT)
+                if neighbor.drill_progress >= 1.0:
+                    neighbor.drill_progress = 1.0
+                    neighbor.depleted = True
+                    neighbor.drilling = False
+                    yield_amount = self._apply_yield_bonus(neighbor.get_yield())
+                    commodity = neighbor.commodity_id
+                    self.total_mined[commodity] = (
+                        self.total_mined.get(commodity, 0) + yield_amount
+                    )
+                    self._on_rock_broken(neighbor)
+                    results.append(MiningResult(
+                        commodity_id=commodity,
+                        quantity=yield_amount,
+                        rock_type=neighbor.rock_type,
+                    ))
+            to_remove.append(hazard)
+        for hazard in to_remove:
+            self.hazards.remove(hazard)
+        return results
+
+    def _update_pressure_vents(self, dt: float) -> list[MiningResult]:
+        """Update pressure vent timers and pulse when ready.
+
+        Pressure vents pulse every 8 seconds, applying 10% progress to adjacent rocks.
+
+        Returns:
+            List of MiningResult for any rocks broken by vent pulses.
+        """
+        results: list[MiningResult] = []
+        for hazard in self.hazards:
+            if hazard.hazard_type != HazardType.PRESSURE_VENT:
+                continue
+            hazard.pulse_timer += dt
+            if hazard.pulse_timer >= VENT_PULSE_INTERVAL:
+                hazard.pulse_timer -= VENT_PULSE_INTERVAL
+                neighbors = self._get_hazard_neighbors(hazard.grid_x, hazard.grid_y)
+                for neighbor in neighbors:
+                    if neighbor.depleted:
+                        continue
+                    neighbor.drill_progress = min(1.0, neighbor.drill_progress + VENT_PROGRESS_AMOUNT)
+                    if neighbor.drill_progress >= 1.0:
+                        neighbor.drill_progress = 1.0
+                        neighbor.depleted = True
+                        neighbor.drilling = False
+                        yield_amount = self._apply_yield_bonus(neighbor.get_yield())
+                        commodity = neighbor.commodity_id
+                        self.total_mined[commodity] = (
+                            self.total_mined.get(commodity, 0) + yield_amount
+                        )
+                        self._on_rock_broken(neighbor)
+                        results.append(MiningResult(
+                            commodity_id=commodity,
+                            quantity=yield_amount,
+                            rock_type=neighbor.rock_type,
+                        ))
+        return results
+
+    def regenerate_field(self) -> DepthAdvanceResult:
+        """Regenerate the asteroid field and advance to next depth.
+
+        Returns:
+            DepthAdvanceResult with strata earned and full clear status.
+        """
+        from spacegame.models.deep_core import calculate_strata_earned
+
+        was_full_clear = self.get_undepleted_count() == 0
+        cleared_depth = self.depth
+        strata = calculate_strata_earned(
+            cleared_depth,
+            full_clear=was_full_clear,
+            prestige_level=self.prestige_level,
+        )
+
         self.depth += 1
         self.energy = self.max_energy
         self._energy_regen_timer = 0.0
         self._generate_field()
         self.active_rock = None
         self.drone_targets.clear()
+
+        return DepthAdvanceResult(
+            new_depth=self.depth,
+            strata_earned=strata,
+            was_full_clear=was_full_clear,
+        )
 
     def get_undepleted_count(self) -> int:
         """Get count of rocks that haven't been mined yet."""

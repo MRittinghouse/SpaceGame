@@ -677,3 +677,37 @@ class TestJournalQuickAdd:
         view.handle_event(click_event)
         assert view.selected_system == old_selected
         view.on_exit()
+
+
+# ============================================================================
+# Faction Emblem in System Info
+# ============================================================================
+
+
+class TestSystemInfoFactionEmblem:
+    """Tests for faction emblem rendering in system info panel."""
+
+    def test_system_info_renders_with_faction(self) -> None:
+        """Drawing system info for a system with a faction should not crash."""
+        systems = _make_systems()
+        # Set a real faction name on one system
+        systems["nexus_prime"].faction = "commerce_guild"
+        player = _make_player()
+        view = _make_view(player=player, systems=systems)
+        view.on_enter()
+        view.selected_system = "nexus_prime"
+        screen = pygame.display.get_surface()
+        view._draw_system_info(screen, "nexus_prime")
+        view.on_exit()
+
+    def test_system_info_renders_without_faction(self) -> None:
+        """Drawing system info for an independent system should not crash."""
+        systems = _make_systems()
+        systems["nexus_prime"].faction = "Independent"
+        player = _make_player()
+        view = _make_view(player=player, systems=systems)
+        view.on_enter()
+        view.selected_system = "nexus_prime"
+        screen = pygame.display.get_surface()
+        view._draw_system_info(screen, "nexus_prime")
+        view.on_exit()

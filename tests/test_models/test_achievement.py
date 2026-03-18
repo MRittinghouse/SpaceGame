@@ -391,7 +391,7 @@ class TestMinigameAchievements:
 
         dl = get_data_loader()
         dl.load_all()
-        assert len(dl.achievements) == 43
+        assert len(dl.achievements) == 62
 
     def test_deep_delver_triggers(self) -> None:
         """deep_delver should unlock when max_mining_depth >= 4."""

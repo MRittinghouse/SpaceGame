@@ -238,12 +238,11 @@ class TestStationHubNavigation:
         assert view.get_next_state() == GameState.SHIPYARD
         view.on_exit()
 
-    def test_select_cantina_does_not_transition(self) -> None:
-        """Cantina shows NPC panel inline, no state change."""
+    def test_select_cantina_goes_to_cantina(self) -> None:
+        """Cantina transitions to dedicated cantina view."""
         view = self._make_view_entered()
         view._select_location_type("cantina")
-        assert view.get_next_state() is None
-        assert view.cantina_expanded
+        assert view.get_next_state() == GameState.CANTINA
         view.on_exit()
 
     def test_select_unique_does_not_transition(self) -> None:
@@ -255,7 +254,7 @@ class TestStationHubNavigation:
 
 
 class TestStationHubCantina:
-    """Tests for cantina NPC panel behavior."""
+    """Tests for cantina transition to dedicated view."""
 
     def _make_view_entered(
         self, system_id: str = "nexus_prime"
@@ -275,27 +274,15 @@ class TestStationHubCantina:
         view.on_enter()
         return view
 
-    def test_cantina_starts_collapsed(self) -> None:
-        view = self._make_view_entered()
-        assert not view.cantina_expanded
-        view.on_exit()
-
-    def test_cantina_toggle_expands(self) -> None:
+    def test_cantina_transitions_to_cantina_state(self) -> None:
+        """Selecting cantina triggers transition to CANTINA state."""
         view = self._make_view_entered()
         view._select_location_type("cantina")
-        assert view.cantina_expanded
-        view.on_exit()
-
-    def test_cantina_toggle_collapses(self) -> None:
-        view = self._make_view_entered()
-        view._select_location_type("cantina")
-        assert view.cantina_expanded
-        view._select_location_type("cantina")
-        assert not view.cantina_expanded
+        assert view.get_next_state() == GameState.CANTINA
         view.on_exit()
 
     def test_nexus_prime_has_npcs_in_cantina(self) -> None:
-        """Nexus Prime should have NPCs available."""
+        """Nexus Prime should have NPCs available (via station hub legacy helper)."""
         view = self._make_view_entered("nexus_prime")
         npcs = view._get_cantina_npcs()
         assert len(npcs) > 0

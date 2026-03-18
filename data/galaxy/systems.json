@@ -37,7 +37,7 @@
           "food", "textiles", "common_metals", "fuel", "machinery", "electronics",
           "rare_metals", "manufactured_goods", "precious_metals", "art",
           "medical", "raw_ore", "iron_ore", "scrap_metal", "salvaged_electronics",
-          "alloy_composite", "purified_crystal"
+          "alloy_composite", "purified_crystal", "stellarium_ingot", "refined_propellant"
         ],
         "specialty_exports": ["manufactured_goods", "electronics"],
         "specialty_imports": []
@@ -115,7 +115,7 @@
           "food", "fuel", "common_metals", "iron_ore", "raw_ore",
           "machinery", "manufactured_goods", "alloy_composite",
           "scrap_metal", "salvaged_electronics", "rare_metals",
-          "medical", "textiles"
+          "medical", "textiles", "refined_propellant"
         ],
         "specialty_exports": ["machinery", "alloy_composite", "manufactured_goods"],
         "specialty_imports": ["food", "rare_metals"]
@@ -185,7 +185,7 @@
         "available_commodities": [
           "food", "fuel", "electronics", "medical", "rare_metals",
           "crystal_ore", "rare_ore", "purified_crystal",
-          "manufactured_goods", "alloy_composite", "contraband_medicine"
+          "manufactured_goods", "alloy_composite", "contraband_medicine", "neural_weave"
         ],
         "specialty_exports": ["electronics", "medical", "purified_crystal"],
         "specialty_imports": ["rare_metals", "crystal_ore", "rare_ore"]
@@ -255,7 +255,7 @@
           "food", "fuel", "scrap_metal", "salvaged_electronics", "rare_parts",
           "common_metals", "weapons_components", "combat_stims",
           "stolen_data", "restricted_tech", "medical",
-          "manufactured_goods"
+          "manufactured_goods", "fortified_stims"
         ],
         "specialty_exports": ["scrap_metal", "salvaged_electronics", "rare_parts"],
         "specialty_imports": ["food", "fuel", "medical"]
@@ -299,7 +299,7 @@
           "food", "textiles", "fuel", "common_metals", "machinery",
           "electronics", "manufactured_goods", "precious_metals", "art",
           "exotic_goods", "medical", "purified_crystal", "alloy_composite",
-          "rare_metals"
+          "rare_metals", "refined_propellant", "neural_weave"
         ],
         "specialty_exports": ["art", "exotic_goods", "precious_metals"],
         "specialty_imports": ["common_metals", "raw_ore", "rare_metals"]
@@ -334,7 +334,7 @@
         "available_commodities": [
           "food", "fuel", "common_metals", "rare_metals", "raw_ore",
           "iron_ore", "crystal_ore", "rare_ore", "machinery",
-          "medical", "scrap_metal"
+          "medical", "scrap_metal", "refined_propellant"
         ],
         "specialty_exports": ["rare_metals", "crystal_ore", "rare_ore"],
         "specialty_imports": ["food", "medical", "machinery"]
@@ -369,7 +369,7 @@
         "available_commodities": [
           "food", "fuel", "electronics", "medical", "rare_metals",
           "crystal_ore", "rare_ore", "purified_crystal", "restricted_tech",
-          "alloy_composite", "common_metals", "salvaged_electronics"
+          "alloy_composite", "common_metals", "salvaged_electronics", "neural_weave"
         ],
         "specialty_exports": ["medical", "restricted_tech", "electronics"],
         "specialty_imports": ["rare_metals", "crystal_ore", "common_metals"]

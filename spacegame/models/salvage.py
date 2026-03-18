@@ -4,6 +4,7 @@ Salvaging system models.
 Grid-based scanning and extraction puzzle at industrial systems.
 """
 
+import math
 import random
 from dataclasses import dataclass, field
 from enum import Enum
@@ -158,6 +159,16 @@ class SalvageCell:
 
 
 @dataclass
+class DeckAdvanceResult:
+    """Result of advancing to the next deck in a multi-deck salvage session."""
+
+    new_deck: int
+    intel_earned: int
+    extraction_ratio: float
+    was_clear_bonus: bool
+
+
+@dataclass
 class DerelictType:
     """A type of derelict hull to salvage."""
 
@@ -167,6 +178,7 @@ class DerelictType:
     item_density: float
     item_distribution: Dict[str, float]
     corruption_seconds: float = 90.0
+    max_decks: int = 5
 
 
 DERELICT_TYPES: List[DerelictType] = [
@@ -177,6 +189,7 @@ DERELICT_TYPES: List[DerelictType] = [
         item_density=0.50,
         item_distribution={"scrap_metal": 0.60, "salvaged_electronics": 0.30, "rare_parts": 0.10},
         corruption_seconds=90.0,
+        max_decks=4,
     ),
     DerelictType(
         id="lab_module",
@@ -185,6 +198,7 @@ DERELICT_TYPES: List[DerelictType] = [
         item_density=0.45,
         item_distribution={"scrap_metal": 0.20, "salvaged_electronics": 0.50, "rare_parts": 0.30},
         corruption_seconds=75.0,
+        max_decks=3,
     ),
     DerelictType(
         id="engine_room",
@@ -193,6 +207,7 @@ DERELICT_TYPES: List[DerelictType] = [
         item_density=0.30,
         item_distribution={"scrap_metal": 0.30, "salvaged_electronics": 0.20, "rare_parts": 0.50},
         corruption_seconds=100.0,
+        max_decks=5,
     ),
 ]
 
@@ -207,6 +222,8 @@ class SalvageConfig:
     charge_regen_seconds: float = 5.0
     item_density: float = 0.4  # Fraction of cells with items
     item_distribution: Dict[str, float] = field(default_factory=dict)
+    danger_level: str = "safe"  # System danger level for yield scaling
+    perk_yield_bonus: float = 0.0  # Faction perk yield bonus (stacks with danger)
 
     def __post_init__(self):
         if not self.item_distribution:
@@ -225,6 +242,7 @@ class SalvageResult:
     quantity: int
     item_type: SalvageItemType
     corrupted: bool = False
+    ingredient_drops: dict[str, int] = field(default_factory=dict)
 
 
 class SalvageSession:
@@ -241,6 +259,9 @@ class SalvageSession:
         extra_charges: int = 0,
         derelict_type: Optional[DerelictType] = None,
         extra_parallel: int = 0,
+        prestige_level: int = 0,
+        corruption_shield_bonus: float = 0.0,
+        charge_regen_bonus: float = 0.0,
     ):
         """
         Initialize salvage session.
@@ -251,27 +272,35 @@ class SalvageSession:
             extra_charges: Additional scan charges from skills
             derelict_type: Type of derelict hull (random if None)
             extra_parallel: Additional parallel extraction slots from skills
+            prestige_level: Player's salvage prestige level
+            corruption_shield_bonus: Bonus to corruption timer from upgrades
+            charge_regen_bonus: Bonus to charge regen speed from upgrades
         """
         self.config = config
         self.derelict_type = derelict_type or random.choice(DERELICT_TYPES)
         self.extract_speed_bonus = extract_speed_bonus
+        self.prestige_level = prestige_level
         self.charges = config.max_charges + extra_charges
         self.max_charges = config.max_charges + extra_charges
         self.charge_regen_timer: float = 0.0
         self.charge_regen_rate: float = config.charge_regen_seconds
         self.max_parallel: int = 2 + extra_parallel
-        self.corruption_seconds: float = self.derelict_type.corruption_seconds
+        self.base_corruption_seconds: float = self.derelict_type.corruption_seconds
+        self.corruption_seconds: float = self.base_corruption_seconds
         self.corruption_timer: float = self.corruption_seconds
         self.corruption_started: bool = False
         self.is_corrupted: bool = False
         self.grid: List[SalvageCell] = []
         self.active_extractions: List[SalvageCell] = []
         self.total_salvaged: Dict[str, int] = {}
+        # Multi-deck state
+        self.current_deck: int = 1
+        self.session_total_salvaged: Dict[str, int] = {}
         self._generate_grid()
 
     def _generate_grid(self) -> None:
         """Generate the salvage grid with hidden items."""
-        self.grid.clear()
+        self.grid = []
         dt = self.derelict_type
         size = dt.grid_size
         total_cells = size * size
@@ -302,7 +331,8 @@ class SalvageSession:
             for x in range(size):
                 if (x, y) in item_positions:
                     item_type = random.choices(item_types, weights=weights, k=1)[0]
-                    quality = round(random.uniform(0.8, 1.5), 2)
+                    quality_min = min(0.8 + (self.current_deck - 1) * 0.1, 1.2)
+                    quality = round(random.uniform(quality_min, 1.5), 2)
                 else:
                     item_type = SalvageItemType.EMPTY
                     quality = 1.0
@@ -407,6 +437,41 @@ class SalvageSession:
         self.active_extractions.append(cell)
         return (True, f"Extracting {cell.item_type.value.replace('_', ' ')}...")
 
+    def _apply_danger_multiplier(self, base_yield: int) -> int:
+        """Apply system danger-level yield multiplier and perk bonus."""
+        from spacegame.config import DANGER_YIELD_MULTIPLIERS
+        import math
+
+        # Danger + perk multipliers stack additively
+        mult = DANGER_YIELD_MULTIPLIERS.get(self.config.danger_level, 1.0)
+        mult += self.config.perk_yield_bonus
+        if mult == 1.0:
+            return base_yield
+        return max(1, math.floor(base_yield * mult))
+
+    def _roll_salvage_ingredient_drops(self, quality_tier: "QualityTier") -> dict[str, int]:
+        """Roll for quality/deck-gated ingredient drops on extraction.
+
+        Args:
+            quality_tier: Quality tier of the extracted cell.
+
+        Returns:
+            Dict of ingredient_id -> quantity (empty if nothing dropped).
+        """
+        drops: dict[str, int] = {}
+        # Charged filament: 15% on EXCELLENT quality extraction
+        if quality_tier == QualityTier.EXCELLENT and random.random() < 0.15:
+            drops["charged_filament"] = 1
+        # Signal fragment: 8% on deck 4+ extraction
+        if self.current_deck >= 4 and random.random() < 0.08:
+            drops["signal_fragment"] = 1
+        # Schematic data: 12% on deck 3+ with GOOD or EXCELLENT quality
+        if self.current_deck >= 3 and quality_tier in (
+            QualityTier.GOOD, QualityTier.EXCELLENT
+        ) and random.random() < 0.12:
+            drops["schematic_data"] = 1
+        return drops
+
     def update(self, dt: float) -> List[SalvageResult]:
         """
         Update salvage session (charge regen, extraction progress).
@@ -425,17 +490,23 @@ class SalvageSession:
             if cell.state == CellState.EXTRACTING:
                 yield_amount = cell.update_extract(dt, self.extract_speed_bonus)
                 if yield_amount is not None:
+                    yield_amount = self._apply_danger_multiplier(yield_amount)
                     commodity_id = cell.config.commodity_id
+                    ingredient_drops = self._roll_salvage_ingredient_drops(cell.quality_tier)
                     results.append(
                         SalvageResult(
                             commodity_id=commodity_id,
                             quantity=yield_amount,
                             item_type=cell.item_type,
                             corrupted=cell.corrupted,
+                            ingredient_drops=ingredient_drops,
                         )
                     )
                     self.total_salvaged[commodity_id] = (
                         self.total_salvaged.get(commodity_id, 0) + yield_amount
+                    )
+                    self.session_total_salvaged[commodity_id] = (
+                        self.session_total_salvaged.get(commodity_id, 0) + yield_amount
                     )
                     completed.append(cell)
 
@@ -477,6 +548,74 @@ class SalvageSession:
     def get_extractable_count(self) -> int:
         """Get count of scanned cells with items ready to extract."""
         return sum(1 for c in self.grid if c.state == CellState.SCANNED and c.has_item)
+
+    def advance_deck(self) -> Optional[DeckAdvanceResult]:
+        """Attempt to advance to the next deck.
+
+        Requires >= 60% extraction ratio on current deck and not at max deck.
+
+        Returns:
+            DeckAdvanceResult if successful, None if requirements not met.
+        """
+        from spacegame.models.wreck_upgrade import calculate_intel_earned
+
+        # Check max deck
+        if self.current_deck >= self.derelict_type.max_decks:
+            return None
+
+        # Calculate extraction ratio
+        item_count = self.get_item_count()
+        if item_count == 0:
+            return None
+        extracted_count = sum(1 for c in self.grid if c.state == CellState.EXTRACTED)
+        extraction_ratio = extracted_count / item_count
+        if extraction_ratio < 0.60:
+            return None
+
+        # Clear bonus at 80%+
+        was_clear_bonus = extraction_ratio >= 0.80
+
+        # Calculate intel earned
+        intel_earned = calculate_intel_earned(
+            self.current_deck,
+            extraction_ratio=extraction_ratio,
+            prestige_level=self.prestige_level,
+        )
+
+        # Merge per-deck totals into session totals
+        for commodity, amount in self.total_salvaged.items():
+            self.session_total_salvaged[commodity] = (
+                self.session_total_salvaged.get(commodity, 0) + amount
+            )
+
+        # Advance deck
+        self.current_deck += 1
+
+        # Refill charges (+50% of max)
+        self.charges += self.max_charges // 2
+
+        # Tighten corruption (×0.85 per deck beyond first)
+        decay = 0.85 ** (self.current_deck - 1)
+        self.corruption_seconds = self.base_corruption_seconds * decay
+
+        # Reset corruption state
+        self.corruption_started = False
+        self.is_corrupted = False
+        self.corruption_timer = self.corruption_seconds
+
+        # Reset per-deck salvage tracking
+        self.total_salvaged = {}
+        self.active_extractions.clear()
+
+        # Generate new grid for next deck
+        self._generate_grid()
+
+        return DeckAdvanceResult(
+            new_deck=self.current_deck,
+            intel_earned=intel_earned,
+            extraction_ratio=extraction_ratio,
+            was_clear_bonus=was_clear_bonus,
+        )
 
     def regenerate_grid(self) -> None:
         """Regenerate the salvage grid (between sessions)."""

@@ -20,6 +20,11 @@ from spacegame.models.ground import (  # noqa: E402
     GroundTile,
     TileType,
 )
+from spacegame.models.ground_mapgen import DifficultyTier, MissionType  # noqa: E402
+from spacegame.models.ground_mission import (  # noqa: E402
+    GroundMissionConfig,
+    GroundMissionRewards,
+)
 from spacegame.views.ground_exploration_view import GroundExplorationView  # noqa: E402
 
 
@@ -303,5 +308,67 @@ class TestRendering:
         view, _, _ = _make_view(player_x=1, player_y=1)
         screen = pygame.display.get_surface()
         _send_key(view, pygame.K_UP)  # Into wall — triggers message
+        view.render(screen)
+        view.on_exit()
+
+
+# ============================================================================
+# Faction Tile Palette
+# ============================================================================
+
+
+def _make_mission_config(faction_id: str = "commerce_guild") -> GroundMissionConfig:
+    """Create a minimal mission config for tile palette tests."""
+    return GroundMissionConfig(
+        id="test_mission",
+        name="Test",
+        description="Test mission",
+        mission_type=MissionType.INFILTRATION,
+        difficulty=DifficultyTier.LOW,
+        faction_id=faction_id,
+        objectives=["Test"],
+        intel_hints=[],
+        rewards=GroundMissionRewards(),
+    )
+
+
+class TestFactionTilePalette:
+    """Tests for faction-specific tile sprite loading."""
+
+    def test_faction_tile_palette_used(self) -> None:
+        """View should load tiles using the mission config's faction_id."""
+        ui_manager = pygame_gui.UIManager((WINDOW_WIDTH, WINDOW_HEIGHT))
+        ground_map = GroundMap.create_test_map(10, 10)
+        player_state = GroundPlayerState(x=5, y=5)
+        config = _make_mission_config("commerce_guild")
+        view = GroundExplorationView(
+            ui_manager, ground_map, player_state, mission_config=config
+        )
+        view.on_enter()
+        # Tile sprites should have been loaded (may be None if asset missing,
+        # but the key point is the view initialized without error)
+        assert isinstance(view._tile_sprites, dict)
+        assert len(view._tile_sprites) > 0
+        view.on_exit()
+
+    def test_neutral_fallback_without_config(self) -> None:
+        """View without mission_config should default to neutral palette."""
+        view, _, _ = _make_view()
+        # Should have tile sprites loaded (neutral palette)
+        assert isinstance(view._tile_sprites, dict)
+        assert len(view._tile_sprites) > 0
+        view.on_exit()
+
+    def test_faction_tile_render_no_crash(self) -> None:
+        """Rendering with faction tiles should not crash."""
+        ui_manager = pygame_gui.UIManager((WINDOW_WIDTH, WINDOW_HEIGHT))
+        ground_map = GroundMap.create_test_map(10, 10)
+        player_state = GroundPlayerState(x=5, y=5)
+        config = _make_mission_config("miners_union")
+        view = GroundExplorationView(
+            ui_manager, ground_map, player_state, mission_config=config
+        )
+        view.on_enter()
+        screen = pygame.display.get_surface()
         view.render(screen)
         view.on_exit()

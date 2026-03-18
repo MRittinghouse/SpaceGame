@@ -22,8 +22,8 @@ from spacegame.models.progression import SkillTreeType
 from spacegame.engine.backgrounds import AnimatedBackground
 from spacegame.engine.draw_utils import draw_bar
 from spacegame.engine.fonts import FontCache
+from spacegame.engine.sprites import get_sprite_manager
 from spacegame.utils.logger import logger
-
 
 # Map tree types to their governing attribute for display
 _TREE_ATTRIBUTE_MAP = {
@@ -48,12 +48,14 @@ class CharacterView(BaseView):
         player: Player,
         attribute_sheet: AttributeSheet,
         social_manager: Optional[SocialManager] = None,
+        politics_manager: object = None,
     ) -> None:
         super().__init__()
         self.ui_manager = ui_manager
         self.player = player
         self.attribute_sheet = attribute_sheet
         self.social_manager = social_manager
+        self.politics_manager = politics_manager
         self.next_state: Optional[GameState] = None
 
         # Fonts
@@ -73,10 +75,11 @@ class CharacterView(BaseView):
         self.message: str = ""
         self.message_timer: float = 0.0
 
+        # Sprites
+        self._sprite_mgr = get_sprite_manager()
+
         # Visual
-        self.background = AnimatedBackground(
-            "deep_space", WINDOW_WIDTH, WINDOW_HEIGHT, seed=55
-        )
+        self.background = AnimatedBackground("deep_space", WINDOW_WIDTH, WINDOW_HEIGHT, seed=55)
         self._bg_dim = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
         self._bg_dim.fill((0, 0, 0))
         self._bg_dim.set_alpha(100)
@@ -111,9 +114,7 @@ class CharacterView(BaseView):
             manager=self.ui_manager,
         )
         self.back_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(
-                WINDOW_WIDTH // 2 + 100, bottom_y, btn_width, btn_height
-            ),
+            relative_rect=pygame.Rect(WINDOW_WIDTH // 2 + 100, bottom_y, btn_width, btn_height),
             text="Back",
             manager=self.ui_manager,
         )
@@ -191,6 +192,9 @@ class CharacterView(BaseView):
         # Right panel: Progression & Skills
         self._render_progression_panel(screen, 400, 70)
 
+        # Bottom: Faction Perks
+        self._render_faction_perks(screen, 30, 440)
+
         # Message
         if self.message_timer > 0:
             msg_surf = self.info_font.render(self.message, True, Colors.SUCCESS)
@@ -199,9 +203,7 @@ class CharacterView(BaseView):
                 msg_surf.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT - 100)),
             )
 
-    def _render_attributes_panel(
-        self, screen: pygame.Surface, x: int, y: int
-    ) -> None:
+    def _render_attributes_panel(self, screen: pygame.Surface, x: int, y: int) -> None:
         """Render the attributes panel on the left side."""
         # Panel background
         panel_w = 350
@@ -211,11 +213,19 @@ class CharacterView(BaseView):
         screen.blit(panel_surf, (x, y))
         pygame.draw.rect(screen, Colors.UI_BORDER, (x, y, panel_w, panel_h), 1)
 
-        # Header
-        header = self.header_font.render(
-            f"{self.player.name}", True, Colors.TEXT_HIGHLIGHT
-        )
+        # Header — player name + title
+        header = self.header_font.render(f"{self.player.name}", True, Colors.TEXT_HIGHLIGHT)
         screen.blit(header, (x + 15, y + 10))
+
+        # Title and playstyle
+        title_text = f"{self.player.title}  |  {self.player.playstyle_label}"
+        title_surf = self.small_font.render(title_text, True, Colors.GOLD)
+        screen.blit(title_surf, (x + 15, y + 34))
+
+        # Ship name
+        ship_display = f"Ship: {self.player.display_ship_name}"
+        ship_surf = self.small_font.render(ship_display, True, Colors.TEXT_SECONDARY)
+        screen.blit(ship_surf, (x + 15 + title_surf.get_width() + 20, y + 34))
 
         # Level and XP
         prog = self.player.progression
@@ -224,26 +234,31 @@ class CharacterView(BaseView):
         level_surf = self.info_font.render(
             f"Level {prog.level}  |  XP: {xp_str}", True, Colors.TEXT
         )
-        screen.blit(level_surf, (x + 15, y + 38))
+        screen.blit(level_surf, (x + 15, y + 54))
 
         # XP progress bar
         bar_x = x + 15
-        bar_y = y + 60
+        bar_y = y + 76
         bar_w = panel_w - 30
         bar_h = 8
         progress = prog.get_xp_progress()
         draw_bar(
-            screen, bar_x, bar_y, bar_w, bar_h,
-            progress, 1.0, Colors.TEXT_HIGHLIGHT,
-            show_value=False, border_color=Colors.TEXT_SECONDARY,
+            screen,
+            bar_x,
+            bar_y,
+            bar_w,
+            bar_h,
+            progress,
+            1.0,
+            Colors.TEXT_HIGHLIGHT,
+            show_value=False,
+            border_color=Colors.TEXT_SECONDARY,
         )
 
         # Unspent points indicator
         pts = self.attribute_sheet.unspent_points
         if pts > 0:
-            pts_surf = self.info_font.render(
-                f"Attribute Points: {pts}", True, Colors.YELLOW
-            )
+            pts_surf = self.info_font.render(f"Attribute Points: {pts}", True, Colors.YELLOW)
             screen.blit(pts_surf, (x + 15, y + 78))
 
         # Attributes
@@ -259,9 +274,7 @@ class CharacterView(BaseView):
             screen.blit(name_surf, (x + 15, ay))
 
             # Description
-            desc_surf = self.small_font.render(
-                defn["description"], True, Colors.TEXT_SECONDARY
-            )
+            desc_surf = self.small_font.render(defn["description"], True, Colors.TEXT_SECONDARY)
             screen.blit(desc_surf, (x + 15, ay + 18))
 
             # Value
@@ -271,9 +284,7 @@ class CharacterView(BaseView):
 
         # Milestones
         milestone_y = attr_start_y + 5 * row_h + 10
-        milestone_header = self.small_font.render(
-            "MILESTONES", True, Colors.TEXT_SECONDARY
-        )
+        milestone_header = self.small_font.render("MILESTONES", True, Colors.TEXT_SECONDARY)
         screen.blit(milestone_header, (x + 15, milestone_y))
 
         from spacegame.models.attributes import MILESTONE_DEFINITIONS
@@ -286,9 +297,7 @@ class CharacterView(BaseView):
             m_surf = self.small_font.render(f"{mark} {desc}", True, color)
             screen.blit(m_surf, (x + 15, my))
 
-    def _render_progression_panel(
-        self, screen: pygame.Surface, x: int, y: int
-    ) -> None:
+    def _render_progression_panel(self, screen: pygame.Surface, x: int, y: int) -> None:
         """Render the progression/skills overview on the right side."""
         panel_w = WINDOW_WIDTH - x - 30
         panel_h = 360
@@ -336,16 +345,12 @@ class CharacterView(BaseView):
         # Available skill points
         avail = prog.get_available_skill_points()
         sp_color = Colors.YELLOW if avail > 0 else Colors.TEXT_SECONDARY
-        sp_surf = self.info_font.render(
-            f"Skill Points Available: {avail}", True, sp_color
-        )
+        sp_surf = self.info_font.render(f"Skill Points Available: {avail}", True, sp_color)
         screen.blit(sp_surf, (x + 15, tree_y + 10))
 
         # Social skills
         social_y = tree_y + 45
-        social_header = self.header_font.render(
-            "SOCIAL SKILLS", True, Colors.TEXT_HIGHLIGHT
-        )
+        social_header = self.header_font.render("SOCIAL SKILLS", True, Colors.TEXT_HIGHLIGHT)
         screen.blit(social_header, (x + 15, social_y))
 
         if self.social_manager:
@@ -361,9 +366,7 @@ class CharacterView(BaseView):
 
         # Quick stats
         stats_y = social_y + 20
-        stats_header = self.header_font.render(
-            "STATISTICS", True, Colors.TEXT_HIGHLIGHT
-        )
+        stats_header = self.header_font.render("STATISTICS", True, Colors.TEXT_HIGHLIGHT)
         screen.blit(stats_header, (x + 15, stats_y))
         stats_y += 28
 
@@ -378,6 +381,57 @@ class CharacterView(BaseView):
             s = self.info_font.render(line, True, Colors.TEXT_SECONDARY)
             screen.blit(s, (x + 15, stats_y))
             stats_y += 20
+
+    def _render_faction_perks(self, screen: pygame.Surface, x: int, y: int) -> None:
+        """Render faction reputation and active perks."""
+        if not self.politics_manager or not self.player:
+            return
+
+        header = self.header_font.render("FACTION STANDING", True, Colors.TEXT_HIGHLIGHT)
+        screen.blit(header, (x, y))
+        y += 28
+
+        faction_rep = getattr(self.player, "faction_reputation", {})
+        if not faction_rep:
+            return
+
+        from spacegame.models.faction import ReputationTier, get_reputation_tier
+
+        for faction_id, rep_value in faction_rep.items():
+            tier = get_reputation_tier(rep_value)
+            tier_name = tier.value.title()
+            faction_name = faction_id.replace("_", " ").title()
+
+            # Faction name + tier
+            tier_color = {
+                ReputationTier.ALLIED: Colors.GREEN,
+                ReputationTier.FRIENDLY: (100, 200, 130),
+                ReputationTier.NEUTRAL: Colors.TEXT_SECONDARY,
+                ReputationTier.HOSTILE: Colors.RED,
+            }.get(tier, Colors.TEXT_SECONDARY)
+
+            # Faction emblem + name + tier
+            emblem = self._sprite_mgr.get_faction_emblem(faction_id, scale=1)
+            text_x = x
+            if emblem:
+                screen.blit(emblem, (x, y - 1))
+                text_x = x + emblem.get_width() + 4
+
+            line = f"{faction_name}: {tier_name} ({rep_value:+d})"
+            surf = self.info_font.render(line, True, tier_color)
+            screen.blit(surf, (text_x, y))
+
+            # Show active perks inline
+            from spacegame.models.faction_perks import get_active_perks as _get_perks
+
+            faction_perks_data = getattr(self.politics_manager, "_faction_perks", {})
+            perks = _get_perks(faction_perks_data, faction_id, tier)
+            if perks:
+                perk_names = [p.name for p in perks]
+                perk_text = "  " + ", ".join(perk_names)
+                perk_surf = self.small_font.render(perk_text, True, Colors.SUCCESS)
+                screen.blit(perk_surf, (text_x + surf.get_width() + 5, y + 3))
+            y += 22
 
     def get_next_state(self) -> Optional[GameState]:
         return self.next_state

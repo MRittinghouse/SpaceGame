@@ -85,6 +85,7 @@
             "x": 3, "y": 1,
             "type": "loot_container",
             "loot_credits": 65,
+            "loot_commodities": {"anomalous_sample": 1},
             "description": "Spare parts in a labeled bin: actuators, gaskets, hull sealant. Someone keeps a tidy backroom."
         }
     ],

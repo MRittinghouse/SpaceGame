@@ -399,7 +399,7 @@ class GroundPlayerState:
         if interactables is not None:
             for obj in interactables:
                 if obj.x == target_x and obj.y == target_y and not obj.looted:
-                    credits = obj.loot()
+                    credits, _commodities = obj.loot()
                     self.turn_number += 1
                     return True, f"Looted {credits} credits"
 
@@ -445,21 +445,22 @@ class GroundInteractable:
     loot_credits: int = 0
     description: str = ""
     looted: bool = False
+    loot_commodities: dict[str, int] = field(default_factory=dict)
 
-    def loot(self) -> int:
+    def loot(self) -> tuple[int, dict[str, int]]:
         """Collect loot from this interactable.
 
         Returns:
-            Credits looted, or 0 if already looted.
+            Tuple of (credits_looted, commodity_drops).
         """
         if self.looted:
-            return 0
+            return 0, {}
         self.looted = True
-        return self.loot_credits
+        return self.loot_credits, dict(self.loot_commodities)
 
     def to_dict(self) -> dict:
         """Serialize to dictionary."""
-        return {
+        d: dict = {
             "x": self.x,
             "y": self.y,
             "interact_type": self.interact_type,
@@ -467,6 +468,9 @@ class GroundInteractable:
             "description": self.description,
             "looted": self.looted,
         }
+        if self.loot_commodities:
+            d["loot_commodities"] = dict(self.loot_commodities)
+        return d
 
     @classmethod
     def from_dict(cls, data: dict) -> GroundInteractable:
@@ -478,6 +482,7 @@ class GroundInteractable:
             loot_credits=data.get("loot_credits", 0),
             description=data.get("description", ""),
             looted=data.get("looted", False),
+            loot_commodities=data.get("loot_commodities", {}),
         )
 
 

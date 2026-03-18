@@ -88,16 +88,17 @@ class SettingsView(BaseView):
 
     def _create_ui(self) -> None:
         """Create settings UI."""
+        self._misc_labels: list[pygame_gui.elements.UILabel] = []
         panel_width = 800
         panel_x = (WINDOW_WIDTH - panel_width) // 2
         y = 100
 
         # === Audio Section ===
-        pygame_gui.elements.UILabel(
+        self._misc_labels.append(pygame_gui.elements.UILabel(
             relative_rect=pygame.Rect(panel_x, y, panel_width, 30),
             text="Audio",
             manager=self.ui_manager,
-        )
+        ))
         y += 35
 
         audio_cfg = get_audio_manager().get_config()
@@ -131,7 +132,7 @@ class SettingsView(BaseView):
             setattr(self, f"{attr_prefix}_slider", slider)
 
             # Percentage display
-            pygame_gui.elements.UILabel(
+            self._misc_labels.append(pygame_gui.elements.UILabel(
                 relative_rect=pygame.Rect(
                     panel_x + label_w + slider_w + 5, y, val_w, slider_h
                 ),
@@ -140,7 +141,7 @@ class SettingsView(BaseView):
                 object_id=pygame_gui.core.ObjectID(
                     f"#{attr_prefix}_pct", "@volume_pct"
                 ),
-            )
+            ))
             y += slider_h + 8
 
         y += 15
@@ -180,20 +181,20 @@ class SettingsView(BaseView):
             "Changing this will not move existing save files.",
         ]
         for line in info_lines:
-            pygame_gui.elements.UILabel(
+            self._misc_labels.append(pygame_gui.elements.UILabel(
                 relative_rect=pygame.Rect(panel_x, y, panel_width, 22),
                 text=line,
                 manager=self.ui_manager,
-            )
+            ))
             y += 22
         y += 20
 
         # === Tutorial Section ===
-        pygame_gui.elements.UILabel(
+        self._misc_labels.append(pygame_gui.elements.UILabel(
             relative_rect=pygame.Rect(panel_x, y, panel_width, 30),
             text="Tutorial:",
             manager=self.ui_manager,
-        )
+        ))
         y += 35
         self.replay_tutorial_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(panel_x, y, 200, 40),
@@ -228,8 +229,9 @@ class SettingsView(BaseView):
         ]:
             if elem:
                 elem.kill()
-        # Kill percentage labels and section headers created without refs
-        # (pygame_gui manager handles orphaned elements on view exit)
+        for label in getattr(self, "_misc_labels", []):
+            label.kill()
+        self._misc_labels = []
 
     def handle_event(self, event: pygame.event.Event) -> None:
         """Handle settings view events."""

@@ -1,0 +1,34 @@
+{
+  "_meta": {
+    "description": "Found narrative fragments discovered while scanning derelict hulls. Each entry is a short crew log, memo, or data fragment tied to a derelict type."
+  },
+  "stories": {
+    "cargo_bay": [
+      "Cargo manifest fragment: 200 units restricted tech. Buyer listed as 'REDACTED'. Payment: pre-arranged.",
+      "Crew memo: 'Third run this month with no manifest inspection. The boss says don't ask questions. I stopped asking two runs ago.'",
+      "Loading dock log: Bay 3 sealed on captain's orders. Atmosphere readings normal. Nobody checks Bay 3.",
+      "Personal effects: worn photograph tucked behind a cargo strap. Two children, a dog. Facedown.",
+      "Scratched into bulkhead: 'WE WERE 12 WHEN WE LEFT PORT. WE ARE 11 NOW.'",
+      "Inventory discrepancy report: 40 units medical supplies listed. 12 found. Difference attributed to 'transit loss.'",
+      "Captain's log: 'Fuel is holding. Cargo is secure. The buyers don't care where it came from, and neither do I. That's the deal.'"
+    ],
+    "lab_module": [
+      "Research note: 'Subject 7 shows accelerated neural adaptation. Recommend increasing dosage. Recommend it carefully.'",
+      "Lab safety report: Containment breach in Module C. Duration: 14 seconds. Casualties: none reported. None reported.",
+      "Personal log, Dr. Vasik: 'They keep asking for results. I keep giving them data. The difference is starting to matter.'",
+      "Equipment manifest: Centrifuge 3 offline since Day 41. Replacement parts: requisitioned. Status: pending. Always pending.",
+      "Scrawled on whiteboard: 'DO NOT OPEN CHAMBER 9 UNTIL FURTHER NOTICE' (written in three different hands)",
+      "Data fragment: Trial 22 results encrypted. Decryption key filed with project lead. Project lead departed Day 38.",
+      "Lab assistant's journal: 'The readings don't match the published specs. Nobody wants to hear that.'"
+    ],
+    "engine_room": [
+      "Engineering log: 'Reactor output at 47%. Enough to limp to port. Enough if nothing else fails. Something always fails.'",
+      "Maintenance ticket: Coolant leak, Deck 2, junction 14-B. Priority: urgent. Assigned to: [VACANT POSITION].",
+      "Shift supervisor note: 'Third double shift this week. The new hires lasted four days. Can't blame them.'",
+      "Scratched into pipe housing: 'HULL INTEGRITY 62% - ASK THE CAPTAIN WHY WE'RE STILL FLYING'",
+      "Parts requisition (denied): 'Replacement thrust coupling. Reason for denial: budget allocation exhausted.'",
+      "Chief engineer's final log: 'She's held together this long on stubbornness and duct seal. One of those just ran out.'",
+      "Handwritten note taped to reactor panel: 'If you're reading this, I'm sorry. Check the starboard vents. - K.'"
+    ]
+  }
+}
