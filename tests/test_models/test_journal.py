@@ -285,6 +285,52 @@ class TestJournalAutoEntryProgrammatic:
         assert entries[0].mission_id == "iron_delivery"
 
 
+class TestJournalAddEntry:
+    """Tests for add_entry (pre-built JournalEntry)."""
+
+    def test_add_entry_stores_entry(self) -> None:
+        """Adding a pre-built entry stores it in the journal."""
+        journal = Journal()
+        entry = JournalEntry(
+            entry_id="visit_forgeworks",
+            text="First time at Forgeworks.",
+            game_day=3,
+            system_id="forgeworks",
+            source="auto",
+            tag="travel",
+        )
+        journal.add_entry(entry)
+        assert journal.get_entry_count() == 1
+        entries = journal.get_entries()
+        assert entries[0].entry_id == "visit_forgeworks"
+        assert entries[0].tag == "travel"
+
+    def test_add_entry_assigns_created_at(self) -> None:
+        """Pre-built entries get a created_at counter for ordering."""
+        journal = Journal()
+        e1 = JournalEntry(entry_id="e1", text="First", game_day=1, system_id="")
+        e2 = JournalEntry(entry_id="e2", text="Second", game_day=1, system_id="")
+        journal.add_entry(e1)
+        journal.add_entry(e2)
+        assert e2.created_at > e1.created_at
+
+    def test_add_entry_survives_serialization(self) -> None:
+        """Pre-built entries round-trip through save/load."""
+        journal = Journal()
+        entry = JournalEntry(
+            entry_id="visit_test", text="Visited.", game_day=5,
+            system_id="test", source="auto", tag="travel",
+        )
+        journal.add_entry(entry)
+        state = journal.get_state()
+        journal2 = Journal()
+        journal2.load_state(state)
+        entries = journal2.get_entries()
+        assert len(entries) == 1
+        assert entries[0].entry_id == "visit_test"
+        assert entries[0].tag == "travel"
+
+
 class TestJournalPlayerEntries:
     """Tests for player-written entries."""
 

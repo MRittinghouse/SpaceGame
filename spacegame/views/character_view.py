@@ -1,8 +1,8 @@
 """
 Character screen view.
 
-Displays protagonist attributes, progression summary, and social skills.
-Links to Skill Trees and Crew views.
+Displays protagonist attributes, progression summary, faction standing,
+and key statistics. Links to Skill Trees and Crew views.
 """
 
 import pygame
@@ -20,7 +20,7 @@ from spacegame.models.attributes import (
 from spacegame.models.social import SocialManager
 from spacegame.models.progression import SkillTreeType
 from spacegame.engine.backgrounds import AnimatedBackground
-from spacegame.engine.draw_utils import draw_bar
+from spacegame.engine.draw_utils import draw_bar, draw_panel
 from spacegame.engine.fonts import FontCache
 from spacegame.engine.sprites import get_sprite_manager
 from spacegame.utils.logger import logger
@@ -37,6 +37,28 @@ _TREE_ATTRIBUTE_MAP = {
     SkillTreeType.EXPLORATION: "Acuity",
     SkillTreeType.SMUGGLING: "Ingenuity",
 }
+
+# Layout constants
+HEADER_X = 80
+HEADER_Y = 10
+HEADER_W = WINDOW_WIDTH - 160
+HEADER_H = 75
+
+LEFT_X = 30
+LEFT_Y = 100
+LEFT_W = 480
+LEFT_H = 530
+
+RIGHT_X = LEFT_X + LEFT_W + 20
+RIGHT_Y = 100
+RIGHT_W = WINDOW_WIDTH - RIGHT_X - 30
+RIGHT_TOP_H = 270
+RIGHT_BOT_Y = RIGHT_Y + RIGHT_TOP_H + 10
+RIGHT_BOT_H = LEFT_H - RIGHT_TOP_H - 10
+
+BTN_Y = WINDOW_HEIGHT - 55
+BTN_W = 150
+BTN_H = 38
 
 
 class CharacterView(BaseView):
@@ -59,11 +81,12 @@ class CharacterView(BaseView):
         self.next_state: Optional[GameState] = None
 
         # Fonts
-        self.title_font = FontCache.get(36)
-        self.header_font = FontCache.get(28)
-        self.info_font = FontCache.get(22)
-        self.small_font = FontCache.get(18)
-        self.value_font = FontCache.get(26)
+        self.title_font = FontCache.get(30)
+        self.header_font = FontCache.get(22)
+        self.info_font = FontCache.get(20)
+        self.small_font = FontCache.get(16)
+        self.value_font = FontCache.get(24)
+        self.section_font = FontCache.get(18)
 
         # UI elements
         self.skills_button: Optional[pygame_gui.elements.UIButton] = None
@@ -94,39 +117,34 @@ class CharacterView(BaseView):
         self._destroy_ui()
 
     def _create_ui(self) -> None:
-        btn_width = 160
-        btn_height = 40
-        bottom_y = WINDOW_HEIGHT - 60
+        # Navigation buttons at bottom center
+        total_btn_w = BTN_W * 3 + 20 * 2
+        start_x = WINDOW_WIDTH // 2 - total_btn_w // 2
 
-        # Navigation buttons at bottom
         self.skills_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(
-                WINDOW_WIDTH // 2 - btn_width - 100, bottom_y, btn_width, btn_height
-            ),
+            relative_rect=pygame.Rect(start_x, BTN_Y, BTN_W, BTN_H),
             text="Skill Trees",
             manager=self.ui_manager,
         )
         self.crew_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(
-                WINDOW_WIDTH // 2 - btn_width // 2, bottom_y, btn_width, btn_height
-            ),
+            relative_rect=pygame.Rect(start_x + BTN_W + 20, BTN_Y, BTN_W, BTN_H),
             text="Crew Roster",
             manager=self.ui_manager,
         )
         self.back_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(WINDOW_WIDTH // 2 + 100, bottom_y, btn_width, btn_height),
+            relative_rect=pygame.Rect(start_x + (BTN_W + 20) * 2, BTN_Y, BTN_W, BTN_H),
             text="Back",
             manager=self.ui_manager,
         )
 
         # Attribute allocation buttons (only if unspent points)
         if self.attribute_sheet.unspent_points > 0:
-            start_y = 190
-            row_h = 40
+            attr_start_y = LEFT_Y + 90
+            row_h = 48
             for i, attr in enumerate(AttributeId):
-                y = start_y + i * row_h
+                y = attr_start_y + i * row_h
                 self.plus_buttons[attr.value] = pygame_gui.elements.UIButton(
-                    relative_rect=pygame.Rect(310, y, 28, 28),
+                    relative_rect=pygame.Rect(LEFT_X + LEFT_W - 50, y + 6, 30, 30),
                     text="+",
                     manager=self.ui_manager,
                 )
@@ -150,6 +168,10 @@ class CharacterView(BaseView):
         if not self.active:
             return
 
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+            self.next_state = GameState.GALAXY_MAP
+            return
+
         if event.type == pygame_gui.UI_BUTTON_PRESSED:
             if event.ui_element == self.skills_button:
                 self.next_state = GameState.SKILL_TREE
@@ -158,13 +180,11 @@ class CharacterView(BaseView):
             elif event.ui_element == self.back_button:
                 self.next_state = GameState.GALAXY_MAP
             else:
-                # Check plus buttons
                 for attr_id, btn in self.plus_buttons.items():
                     if event.ui_element == btn:
                         success, msg = self.attribute_sheet.allocate_point(attr_id)
                         if success:
                             self._show_message(msg)
-                            # Rebuild UI if no more points
                             if self.attribute_sheet.unspent_points == 0:
                                 for b in self.plus_buttons.values():
                                     b.kill()
@@ -182,136 +202,148 @@ class CharacterView(BaseView):
         self.background.render(screen)
         screen.blit(self._bg_dim, (0, 0))
 
-        # Title
-        title = self.title_font.render("CHARACTER", True, Colors.TEXT_HIGHLIGHT)
-        screen.blit(title, title.get_rect(center=(WINDOW_WIDTH // 2, 30)))
+        self._render_header(screen)
+        self._render_attributes_panel(screen)
+        self._render_skill_trees_panel(screen)
+        self._render_stats_faction_panel(screen)
 
-        # Left panel: Attributes
-        self._render_attributes_panel(screen, 30, 70)
-
-        # Right panel: Progression & Skills
-        self._render_progression_panel(screen, 400, 70)
-
-        # Bottom: Faction Perks
-        self._render_faction_perks(screen, 30, 440)
-
-        # Message
+        # Message feedback
         if self.message_timer > 0:
             msg_surf = self.info_font.render(self.message, True, Colors.SUCCESS)
             screen.blit(
                 msg_surf,
-                msg_surf.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT - 100)),
+                msg_surf.get_rect(center=(WINDOW_WIDTH // 2, BTN_Y - 20)),
             )
 
-    def _render_attributes_panel(self, screen: pygame.Surface, x: int, y: int) -> None:
-        """Render the attributes panel on the left side."""
-        # Panel background
-        panel_w = 350
-        panel_h = 360
-        panel_surf = pygame.Surface((panel_w, panel_h), pygame.SRCALPHA)
-        panel_surf.fill((15, 18, 30, 200))
-        screen.blit(panel_surf, (x, y))
-        pygame.draw.rect(screen, Colors.UI_BORDER, (x, y, panel_w, panel_h), 1)
+    # === Header card ===
 
-        # Header — player name + title
-        header = self.header_font.render(f"{self.player.name}", True, Colors.TEXT_HIGHLIGHT)
-        screen.blit(header, (x + 15, y + 10))
+    def _render_header(self, screen: pygame.Surface) -> None:
+        """Render player identity header card."""
+        draw_panel(screen, (HEADER_X, HEADER_Y, HEADER_W, HEADER_H), alpha=190)
+        pygame.draw.rect(
+            screen, Colors.TEXT_HIGHLIGHT, (HEADER_X, HEADER_Y, HEADER_W, 2)
+        )
 
-        # Title and playstyle
-        title_text = f"{self.player.title}  |  {self.player.playstyle_label}"
-        title_surf = self.small_font.render(title_text, True, Colors.GOLD)
-        screen.blit(title_surf, (x + 15, y + 34))
+        cx = WINDOW_WIDTH // 2
 
-        # Ship name
-        ship_display = f"Ship: {self.player.display_ship_name}"
-        ship_surf = self.small_font.render(ship_display, True, Colors.TEXT_SECONDARY)
-        screen.blit(ship_surf, (x + 15 + title_surf.get_width() + 20, y + 34))
+        # Name + title
+        name_surf = self.title_font.render(self.player.name, True, Colors.TEXT_HIGHLIGHT)
+        screen.blit(name_surf, (cx - name_surf.get_width() // 2, HEADER_Y + 6))
 
-        # Level and XP
+        # Title | Playstyle | Ship
+        parts = []
+        if self.player.title:
+            parts.append(self.player.title)
+        if self.player.playstyle_label:
+            parts.append(self.player.playstyle_label)
+        parts.append(f"Ship: {self.player.display_ship_name}")
+        subtitle = "  |  ".join(parts)
+        sub_surf = self.small_font.render(subtitle, True, Colors.TEXT_SECONDARY)
+        screen.blit(sub_surf, (cx - sub_surf.get_width() // 2, HEADER_Y + 32))
+
+        # Level + XP bar
         prog = self.player.progression
         xp_next = prog.get_xp_for_next_level()
-        xp_str = f"{prog.xp}/{xp_next}"
-        level_surf = self.info_font.render(
-            f"Level {prog.level}  |  XP: {xp_str}", True, Colors.TEXT
-        )
-        screen.blit(level_surf, (x + 15, y + 54))
+        level_text = f"Level {prog.level}  |  XP: {prog.xp}/{xp_next}"
+        level_surf = self.small_font.render(level_text, True, Colors.TEXT)
+        screen.blit(level_surf, (cx - level_surf.get_width() // 2, HEADER_Y + 50))
 
         # XP progress bar
-        bar_x = x + 15
-        bar_y = y + 76
-        bar_w = panel_w - 30
-        bar_h = 8
-        progress = prog.get_xp_progress()
+        bar_w = 300
         draw_bar(
             screen,
-            bar_x,
-            bar_y,
+            cx - bar_w // 2,
+            HEADER_Y + 66,
             bar_w,
-            bar_h,
-            progress,
+            6,
+            prog.get_xp_progress(),
             1.0,
             Colors.TEXT_HIGHLIGHT,
             show_value=False,
             border_color=Colors.TEXT_SECONDARY,
         )
 
-        # Unspent points indicator
+    # === Left panel: Attributes + Milestones ===
+
+    def _render_attributes_panel(self, screen: pygame.Surface) -> None:
+        """Render attributes and milestones in the left card."""
+        draw_panel(screen, (LEFT_X, LEFT_Y, LEFT_W, LEFT_H), alpha=190)
+
+        x = LEFT_X + 15
+        y = LEFT_Y + 10
+
+        # Section header with unspent points
+        header = self.header_font.render("ATTRIBUTES", True, Colors.TEXT_HIGHLIGHT)
+        screen.blit(header, (x, y))
+
         pts = self.attribute_sheet.unspent_points
         if pts > 0:
-            pts_surf = self.info_font.render(f"Attribute Points: {pts}", True, Colors.YELLOW)
-            screen.blit(pts_surf, (x + 15, y + 78))
+            pts_surf = self.section_font.render(
+                f"{pts} point{'s' if pts != 1 else ''} available", True, Colors.YELLOW
+            )
+            screen.blit(pts_surf, (x + LEFT_W - 170, y + 4))
+
+        y += 34
 
         # Attributes
-        attr_start_y = y + 100
-        row_h = 40
+        row_h = 48
         for i, attr in enumerate(AttributeId):
-            ay = attr_start_y + i * row_h
+            ay = y + i * row_h
             defn = ATTRIBUTE_DEFINITIONS[attr.value]
             val = self.attribute_sheet.get_value(attr.value)
 
             # Name
             name_surf = self.info_font.render(defn["name"], True, Colors.ATTR_HIGHLIGHT)
-            screen.blit(name_surf, (x + 15, ay))
+            screen.blit(name_surf, (x, ay))
 
             # Description
             desc_surf = self.small_font.render(defn["description"], True, Colors.TEXT_SECONDARY)
-            screen.blit(desc_surf, (x + 15, ay + 18))
+            screen.blit(desc_surf, (x, ay + 22))
 
-            # Value
+            # Value (right-aligned, inside card boundary before + button)
             val_color = Colors.TEXT if val <= 1 else Colors.SUCCESS
             val_surf = self.value_font.render(str(val), True, val_color)
-            screen.blit(val_surf, (x + panel_w - 50, ay + 4))
+            screen.blit(val_surf, (LEFT_X + LEFT_W - 85, ay + 6))
+
+        # Divider before milestones
+        div_y = y + 5 * row_h + 6
+        pygame.draw.line(
+            screen,
+            Colors.UI_BORDER,
+            (x, div_y),
+            (LEFT_X + LEFT_W - 15, div_y),
+        )
 
         # Milestones
-        milestone_y = attr_start_y + 5 * row_h + 10
-        milestone_header = self.small_font.render("MILESTONES", True, Colors.TEXT_SECONDARY)
-        screen.blit(milestone_header, (x + 15, milestone_y))
+        milestone_y = div_y + 12
+        milestone_header = self.section_font.render("MILESTONES", True, Colors.TEXT_SECONDARY)
+        screen.blit(milestone_header, (x, milestone_y))
+        milestone_y += 22
 
         from spacegame.models.attributes import MILESTONE_DEFINITIONS
 
-        for j, (mid, desc) in enumerate(MILESTONE_DEFINITIONS.items()):
-            my = milestone_y + 18 + j * 16
+        for mid, desc in MILESTONE_DEFINITIONS.items():
             awarded = self.attribute_sheet.has_milestone(mid)
             mark = "[X]" if awarded else "[ ]"
             color = Colors.SUCCESS if awarded else Colors.TEXT_SECONDARY
             m_surf = self.small_font.render(f"{mark} {desc}", True, color)
-            screen.blit(m_surf, (x + 15, my))
+            screen.blit(m_surf, (x, milestone_y))
+            milestone_y += 20
 
-    def _render_progression_panel(self, screen: pygame.Surface, x: int, y: int) -> None:
-        """Render the progression/skills overview on the right side."""
-        panel_w = WINDOW_WIDTH - x - 30
-        panel_h = 360
-        panel_surf = pygame.Surface((panel_w, panel_h), pygame.SRCALPHA)
-        panel_surf.fill((15, 18, 30, 200))
-        screen.blit(panel_surf, (x, y))
-        pygame.draw.rect(screen, Colors.UI_BORDER, (x, y, panel_w, panel_h), 1)
+    # === Right top panel: Skill Trees overview ===
 
-        # Skill Trees summary
+    def _render_skill_trees_panel(self, screen: pygame.Surface) -> None:
+        """Render skill tree investment summary."""
+        draw_panel(screen, (RIGHT_X, RIGHT_Y, RIGHT_W, RIGHT_TOP_H), alpha=190)
+
+        x = RIGHT_X + 15
+        y = RIGHT_Y + 10
+
         header = self.header_font.render("SKILL TREES", True, Colors.TEXT_HIGHLIGHT)
-        screen.blit(header, (x + 15, y + 10))
+        screen.blit(header, (x, y))
+        y += 30
 
         prog = self.player.progression
-        tree_y = y + 40
         tree_colors = {
             SkillTreeType.TRADING: Colors.FACTION_COMMERCE,
             SkillTreeType.GATHERING: Colors.FACTION_FRONTIER,
@@ -329,67 +361,67 @@ class CharacterView(BaseView):
             invested = sum(s.current_level for s in skills)
             total_max = sum(s.max_level for s in skills)
             color = tree_colors.get(tree_type, Colors.TEXT)
-            attr_name = _TREE_ATTRIBUTE_MAP.get(tree_type, "")
 
-            tree_text = f"{tree_type.value.title()} ({attr_name})"
+            tree_text = tree_type.value.title()
             t_surf = self.info_font.render(tree_text, True, color)
-            screen.blit(t_surf, (x + 15, tree_y))
+            screen.blit(t_surf, (x, y))
 
             inv_surf = self.small_font.render(
-                f"{invested}/{total_max} invested", True, Colors.TEXT_SECONDARY
+                f"{invested}/{total_max}", True, Colors.TEXT_SECONDARY
             )
-            screen.blit(inv_surf, (x + 250, tree_y + 2))
+            screen.blit(inv_surf, (x + RIGHT_W - 80, y + 2))
+            y += 24
 
-            tree_y += 26
-
-        # Available skill points
+        # Skill points available
+        y += 6
         avail = prog.get_available_skill_points()
         sp_color = Colors.YELLOW if avail > 0 else Colors.TEXT_SECONDARY
-        sp_surf = self.info_font.render(f"Skill Points Available: {avail}", True, sp_color)
-        screen.blit(sp_surf, (x + 15, tree_y + 10))
+        sp_surf = self.info_font.render(f"Skill Points: {avail}", True, sp_color)
+        screen.blit(sp_surf, (x, y))
 
-        # Social skills
-        social_y = tree_y + 45
-        social_header = self.header_font.render("SOCIAL SKILLS", True, Colors.TEXT_HIGHLIGHT)
-        screen.blit(social_header, (x + 15, social_y))
+    # === Right bottom panel: Statistics + Faction Standing ===
 
-        if self.social_manager:
-            social_y += 28
-            for skill in self.social_manager.get_all_skills():
-                s_surf = self.info_font.render(
-                    f"{skill.name}: Level {skill.level} (XP: {skill.xp})",
-                    True,
-                    Colors.TEXT,
-                )
-                screen.blit(s_surf, (x + 15, social_y))
-                social_y += 22
+    def _render_stats_faction_panel(self, screen: pygame.Surface) -> None:
+        """Render statistics and faction standing side by side."""
+        draw_panel(
+            screen, (RIGHT_X, RIGHT_BOT_Y, RIGHT_W, RIGHT_BOT_H), alpha=190
+        )
 
-        # Quick stats
-        stats_y = social_y + 20
+        # Left column: Statistics
+        sx = RIGHT_X + 15
+        sy = RIGHT_BOT_Y + 10
+
         stats_header = self.header_font.render("STATISTICS", True, Colors.TEXT_HIGHLIGHT)
-        screen.blit(stats_header, (x + 15, stats_y))
-        stats_y += 28
+        screen.blit(stats_header, (sx, sy))
+        sy += 28
 
         stat_lines = [
-            f"Credits: {self.player.credits:,} CR",
-            f"Net Worth: {self.player.get_net_worth():,} CR",
-            f"Trades: {self.player.trades_completed}",
-            f"Systems Visited: {len(self.player.systems_visited)}",
-            f"Day: {self.player.game_day}",
+            ("Credits", f"{self.player.credits:,} CR"),
+            ("Net Worth", f"{self.player.get_net_worth():,} CR"),
+            ("Trades", str(self.player.trades_completed)),
+            ("Systems", f"{len(self.player.systems_visited)} visited"),
+            ("Day", str(self.player.game_day)),
+            ("Missions", str(self.player.side_missions_completed + len(
+                [m for m in (self.player.mission_state or {}).values() if m == "completed"]
+            ))),
         ]
-        for line in stat_lines:
-            s = self.info_font.render(line, True, Colors.TEXT_SECONDARY)
-            screen.blit(s, (x + 15, stats_y))
-            stats_y += 20
+        for label, value in stat_lines:
+            lbl_surf = self.small_font.render(f"{label}:", True, Colors.TEXT_SECONDARY)
+            val_surf = self.small_font.render(value, True, Colors.TEXT)
+            screen.blit(lbl_surf, (sx, sy))
+            screen.blit(val_surf, (sx + 90, sy))
+            sy += 20
 
-    def _render_faction_perks(self, screen: pygame.Surface, x: int, y: int) -> None:
-        """Render faction reputation and active perks."""
+        # Right column: Faction Standing
+        fx = RIGHT_X + RIGHT_W // 2 + 10
+        fy = RIGHT_BOT_Y + 10
+
+        faction_header = self.header_font.render("FACTIONS", True, Colors.TEXT_HIGHLIGHT)
+        screen.blit(faction_header, (fx, fy))
+        fy += 28
+
         if not self.politics_manager or not self.player:
             return
-
-        header = self.header_font.render("FACTION STANDING", True, Colors.TEXT_HIGHLIGHT)
-        screen.blit(header, (x, y))
-        y += 28
 
         faction_rep = getattr(self.player, "faction_reputation", {})
         if not faction_rep:
@@ -397,41 +429,35 @@ class CharacterView(BaseView):
 
         from spacegame.models.faction import ReputationTier, get_reputation_tier
 
+        tier_colors = {
+            ReputationTier.ALLIED: Colors.GREEN,
+            ReputationTier.FRIENDLY: (100, 200, 130),
+            ReputationTier.NEUTRAL: Colors.TEXT_SECONDARY,
+            ReputationTier.HOSTILE: Colors.RED,
+        }
+
         for faction_id, rep_value in faction_rep.items():
             tier = get_reputation_tier(rep_value)
             tier_name = tier.value.title()
+            tier_color = tier_colors.get(tier, Colors.TEXT_SECONDARY)
             faction_name = faction_id.replace("_", " ").title()
 
-            # Faction name + tier
-            tier_color = {
-                ReputationTier.ALLIED: Colors.GREEN,
-                ReputationTier.FRIENDLY: (100, 200, 130),
-                ReputationTier.NEUTRAL: Colors.TEXT_SECONDARY,
-                ReputationTier.HOSTILE: Colors.RED,
-            }.get(tier, Colors.TEXT_SECONDARY)
-
-            # Faction emblem + name + tier
+            # Faction emblem
             emblem = self._sprite_mgr.get_faction_emblem(faction_id, scale=1)
-            text_x = x
+            text_x = fx
             if emblem:
-                screen.blit(emblem, (x, y - 1))
-                text_x = x + emblem.get_width() + 4
+                screen.blit(emblem, (fx, fy - 1))
+                text_x = fx + emblem.get_width() + 4
 
-            line = f"{faction_name}: {tier_name} ({rep_value:+d})"
-            surf = self.info_font.render(line, True, tier_color)
-            screen.blit(surf, (text_x, y))
+            # Name + rep
+            name_surf = self.small_font.render(faction_name, True, tier_color)
+            screen.blit(name_surf, (text_x, fy))
 
-            # Show active perks inline
-            from spacegame.models.faction_perks import get_active_perks as _get_perks
-
-            faction_perks_data = getattr(self.politics_manager, "_faction_perks", {})
-            perks = _get_perks(faction_perks_data, faction_id, tier)
-            if perks:
-                perk_names = [p.name for p in perks]
-                perk_text = "  " + ", ".join(perk_names)
-                perk_surf = self.small_font.render(perk_text, True, Colors.SUCCESS)
-                screen.blit(perk_surf, (text_x + surf.get_width() + 5, y + 3))
-            y += 22
+            rep_surf = self.small_font.render(
+                f"{tier_name} ({rep_value:+d})", True, Colors.TEXT_SECONDARY
+            )
+            screen.blit(rep_surf, (text_x + name_surf.get_width() + 6, fy))
+            fy += 22
 
     def get_next_state(self) -> Optional[GameState]:
         return self.next_state

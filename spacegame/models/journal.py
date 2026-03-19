@@ -118,6 +118,16 @@ class Journal:
         self._triggered_flags.add(trigger_flag)
         return entry
 
+    def add_entry(self, entry: JournalEntry) -> None:
+        """Add a pre-built journal entry directly.
+
+        Args:
+            entry: A JournalEntry to append (e.g. from TravelLog).
+        """
+        self._created_counter += 1
+        entry.created_at = self._created_counter
+        self._entries.append(entry)
+
     def add_auto_entry(
         self,
         entry_id: str,

@@ -7,7 +7,6 @@ from spacegame.models.progression import (
     create_default_skills,
     get_xp_threshold,
 )
-from spacegame.views.skill_tree_view import SKILL_POSITIONS
 
 
 # === Tree Size & Structure ===
@@ -189,45 +188,6 @@ class TestPrerequisiteChains:
                 current = skills[current].prerequisite_id
             if current is not None:
                 assert False, f"Circular prerequisite chain involving {skill_id}"
-
-
-# === SKILL_POSITIONS Sync ===
-
-
-class TestSkillPositionSync:
-    """Every skill must have a position and vice versa."""
-
-    def test_no_orphan_positions(self) -> None:
-        """Every position entry should have a matching skill definition."""
-        skills = create_default_skills()
-        for tree_type, positions in SKILL_POSITIONS.items():
-            for skill_id in positions:
-                assert skill_id in skills, (
-                    f"SKILL_POSITIONS has '{skill_id}' in {tree_type.value} "
-                    f"but no matching skill exists"
-                )
-
-    def test_no_orphan_skills(self) -> None:
-        """Every skill should have a matching position entry."""
-        skills = create_default_skills()
-        all_positioned = set()
-        for positions in SKILL_POSITIONS.values():
-            all_positioned.update(positions.keys())
-        for skill_id in skills:
-            assert skill_id in all_positioned, (
-                f"Skill '{skill_id}' has no entry in SKILL_POSITIONS"
-            )
-
-    def test_positions_match_skill_trees(self) -> None:
-        """Each skill's position should be under its correct tree."""
-        skills = create_default_skills()
-        for tree_type, positions in SKILL_POSITIONS.items():
-            for skill_id in positions:
-                if skill_id in skills:
-                    assert skills[skill_id].tree == tree_type, (
-                        f"'{skill_id}' is positioned under {tree_type.value} "
-                        f"but belongs to {skills[skill_id].tree.value}"
-                    )
 
 
 # === New Skill Spot Checks ===

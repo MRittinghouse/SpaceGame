@@ -91,7 +91,6 @@ class CantinaView(BaseView):
         self.subtitle_font = FontCache.get(22)
         self.label_font = FontCache.get(20)
         self.desc_font = FontCache.get(18)
-
         # UI element refs
         self.back_button: Optional[pygame_gui.elements.UIButton] = None
         self._npc_buttons: dict[str, pygame_gui.elements.UIButton] = {}
@@ -140,14 +139,15 @@ class CantinaView(BaseView):
         btn_x = WINDOW_WIDTH // 2 - BUTTON_W // 2
         btn_y = HEADER_CARD_Y + HEADER_CARD_H + SECTION_PAD + 30
 
-        # NPC talk buttons
+        # NPC talk buttons with name | title
         npcs = self._get_available_npcs()
         if npcs:
             btn_y += 24  # Space for section label
             for npc in npcs:
+                label = f"{npc.name}  |  {npc.title}" if npc.title else npc.name
                 btn = pygame_gui.elements.UIButton(
                     relative_rect=pygame.Rect(btn_x, btn_y, BUTTON_W, BUTTON_H),
-                    text=f"Talk to {npc.name}",
+                    text=label,
                     manager=self.ui_manager,
                 )
                 self._npc_buttons[npc.id] = btn
