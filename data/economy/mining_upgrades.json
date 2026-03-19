@@ -10,8 +10,26 @@
       "effect_per_level": 50.0
     },
     {
+      "id": "ore_scanner",
+      "name": "Ore Scanner",
+      "description": "Reveals rock contents. L1: color hint. L2: commodity name on hover. L3: yield estimate.",
+      "max_level": 3,
+      "costs": [6, 14, 28],
+      "effect_type": "ore_scanner_level",
+      "effect_per_level": 1.0
+    },
+    {
+      "id": "auto_drill",
+      "name": "Auto-Drill",
+      "description": "Passively mines the weakest rock. L1: every 8s. L2: every 5s. L3: every 3s.",
+      "max_level": 3,
+      "costs": [10, 22, 40],
+      "effect_type": "auto_drill_level",
+      "effect_per_level": 1.0
+    },
+    {
       "id": "core_resonance",
-      "name": "Core Resonance",
+      "name": "Drill Power",
       "description": "+8% click power per level",
       "max_level": 5,
       "costs": [5, 10, 18, 28, 42],

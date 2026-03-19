@@ -126,11 +126,17 @@ class TestSiloIntegration:
 class TestStrataOnDepthAdvance:
     """Tests for strata token awards on field regeneration."""
 
+    def _clear_field(self, view) -> None:
+        """Deplete all rocks to satisfy the 50% clear requirement."""
+        if view.session:
+            for rock in view.session.rocks:
+                rock.depleted = True
+
     def test_regen_awards_strata(self) -> None:
         player = _make_player()
         view = _make_view(player)
         initial_strata = player.strata_tokens
-        # Simulate regen button press
+        self._clear_field(view)
         event = pygame.event.Event(
             pygame_gui.UI_BUTTON_PRESSED,
             ui_element=view.regen_button,
@@ -143,14 +149,29 @@ class TestStrataOnDepthAdvance:
     def test_strata_accumulates_across_regens(self) -> None:
         player = _make_player()
         view = _make_view(player)
+        self._clear_field(view)
         event = pygame.event.Event(
             pygame_gui.UI_BUTTON_PRESSED,
             ui_element=view.regen_button,
         )
         view.handle_event(event)
         first_strata = player.strata_tokens
+        self._clear_field(view)
         view.handle_event(event)
         assert player.strata_tokens > first_strata
+        view.on_exit()
+
+    def test_regen_blocked_without_clearing(self) -> None:
+        """Regenerate should be blocked if less than 50% of field is cleared."""
+        player = _make_player()
+        view = _make_view(player)
+        initial_strata = player.strata_tokens
+        event = pygame.event.Event(
+            pygame_gui.UI_BUTTON_PRESSED,
+            ui_element=view.regen_button,
+        )
+        view.handle_event(event)
+        assert player.strata_tokens == initial_strata, "No strata without clearing"
         view.on_exit()
 
 
@@ -180,6 +201,7 @@ class TestTransfer:
         view.on_exit()
 
     def test_transfer_on_stop_mining(self) -> None:
+        """Stopping mining shows transfer screen, then confirm transfers ore."""
         player = _make_player()
         view = _make_view(player)
         view._silo.add_ore("iron_ore", 10)
@@ -190,12 +212,50 @@ class TestTransfer:
         )
         view.handle_event(event)
         assert view._confirm_exit, "Should show exit confirmation"
-        # Confirm with Y key
+        # Confirm exit with Y key → shows transfer screen
         confirm_event = pygame.event.Event(pygame.KEYDOWN, key=pygame.K_y)
         view.handle_event(confirm_event)
+        assert view._show_transfer, "Should show transfer screen"
+        assert not view._show_summary, "Summary comes after transfer"
+        # Confirm transfer with ENTER → applies defaults (take all) and shows summary
+        enter_event = pygame.event.Event(pygame.KEYDOWN, key=pygame.K_RETURN)
+        view.handle_event(enter_event)
         assert view._show_summary
         assert view._transfer_count == 10
         assert player.ship.get_cargo_quantity("iron_ore") == 10
+        view.on_exit()
+
+    def test_transfer_take_nothing(self) -> None:
+        """ESC on transfer screen leaves everything in silo."""
+        player = _make_player()
+        view = _make_view(player)
+        view._silo.add_ore("iron_ore", 10)
+        # End session → transfer screen
+        view._end_session()
+        assert view._show_transfer
+        # ESC → leave in silo
+        esc_event = pygame.event.Event(pygame.KEYDOWN, key=pygame.K_ESCAPE)
+        view.handle_event(esc_event)
+        assert view._show_summary
+        assert view._transfer_count == 0
+        assert player.ship.get_cargo_quantity("iron_ore") == 0
+        assert view._silo.get_total_stored() == 10
+        view.on_exit()
+
+    def test_transfer_partial_selection(self) -> None:
+        """Player can choose to transfer only some ore."""
+        player = _make_player()
+        view = _make_view(player)
+        view._silo.add_ore("iron_ore", 20)
+        view._end_session()
+        assert view._show_transfer
+        # Adjust selection to only take 5
+        view._transfer_selections["iron_ore"] = 5
+        view._apply_transfer_selections()
+        view._finalize_session()
+        assert view._transfer_count == 5
+        assert player.ship.get_cargo_quantity("iron_ore") == 5
+        assert view._silo.contents.get("iron_ore", 0) == 15
         view.on_exit()
 
 

@@ -130,13 +130,40 @@ class TestDepthRockDistribution:
     """Tests for depth-gated rock distribution."""
 
     def test_base_distribution_at_depth_1(self) -> None:
+        """Depth 1: only common ore, no iron/crystal/rare/dense/volatile."""
         config = MiningConfig(system_id="breakstone")
         session = MiningSession(config)
         dist = session._get_depth_rock_distribution()
         assert "common" in dist
-        assert "iron" in dist
+        assert "iron" not in dist, "Iron should be gated to depth 3+"
+        assert "crystal" not in dist, "Crystal should be gated to depth 6+"
+        assert "rare" not in dist, "Rare should be gated to depth 9+"
         assert "dense" not in dist
         assert "volatile" not in dist
+
+    def test_iron_appears_at_depth_3(self) -> None:
+        """Iron ore unlocks at depth 3."""
+        config = MiningConfig(system_id="breakstone")
+        session = MiningSession(config)
+        session.depth = 3
+        dist = session._get_depth_rock_distribution()
+        assert "iron" in dist
+
+    def test_crystal_appears_at_depth_6(self) -> None:
+        """Crystal ore unlocks at depth 6."""
+        config = MiningConfig(system_id="breakstone")
+        session = MiningSession(config)
+        session.depth = 6
+        dist = session._get_depth_rock_distribution()
+        assert "crystal" in dist
+
+    def test_rare_appears_at_depth_9(self) -> None:
+        """Rare ore unlocks at depth 9."""
+        config = MiningConfig(system_id="breakstone")
+        session = MiningSession(config)
+        session.depth = 9
+        dist = session._get_depth_rock_distribution()
+        assert "rare" in dist
 
     def test_distribution_at_depth_7(self) -> None:
         config = MiningConfig(system_id="breakstone")
@@ -144,6 +171,8 @@ class TestDepthRockDistribution:
         session.depth = 7
         dist = session._get_depth_rock_distribution()
         assert "dense" in dist
+        assert "iron" in dist
+        assert "crystal" in dist
         assert "volatile" not in dist
 
     def test_distribution_at_depth_15(self) -> None:

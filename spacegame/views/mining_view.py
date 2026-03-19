@@ -121,6 +121,7 @@ class MiningView(BaseView):
         # UI buttons
         self.back_button: Optional[pygame_gui.elements.UIButton] = None
         self.regen_button: Optional[pygame_gui.elements.UIButton] = None
+        self.transfer_button: Optional[pygame_gui.elements.UIButton] = None
 
         # Upgrade panel rects (for click detection, populated in render)
         self._upgrade_rects: Dict[str, pygame.Rect] = {}
@@ -178,7 +179,9 @@ class MiningView(BaseView):
                 cfg.commodity_id, scale=3
             )
 
-        # Session summary overlay
+        # Session flow states: mining → transfer screen → summary
+        self._show_transfer: bool = False
+        self._transfer_selections: Dict[str, int] = {}  # commodity_id → amount to transfer
         self._show_summary: bool = False
         self._summary_xp: int = 0
         self._session_elapsed: float = 0.0
@@ -362,13 +365,20 @@ class MiningView(BaseView):
         energy_bonus = int(dc_state.get_effect("energy_conduit", dc_upgrades))
         chain_chance_bonus += dc_state.get_effect("seismic_pulse", dc_upgrades)
         drone_speed_bonus += dc_state.get_effect("automaton_core", dc_upgrades)
-        starting_depth = 1 + int(dc_state.get_effect("depth_scanner", dc_upgrades))
+        # Resume from last session depth (or base + scanner upgrade)
+        base_depth = 1 + int(dc_state.get_effect("depth_scanner", dc_upgrades))
+        system_id = self.mining_config.system_id
+        saved_depth = self.player.mining_depth_per_system.get(system_id, 0)
+        starting_depth = max(base_depth, saved_depth)
         # Seismic Pulse level 3 grants +1 max chain depth
         seismic_level = dc_state.get_level("seismic_pulse")
         max_chain_depth_bonus = 1 if seismic_level >= 3 else 0
 
         # Get active drones
         active_drones = self.drone_fleet.get_active_drones() if self.drone_fleet else []
+
+        auto_drill_level = dc_state.get_level("auto_drill")
+        ore_scanner_level = dc_state.get_level("ore_scanner")
 
         self.session = MiningSession(
             self.mining_config,
@@ -381,6 +391,8 @@ class MiningView(BaseView):
             starting_depth=starting_depth,
             drones=active_drones,
             prestige_level=self.player.mining_prestige_level,
+            auto_drill_level=auto_drill_level,
+            ore_scanner_level=ore_scanner_level,
         )
 
         # Apply energy conduit bonus
@@ -405,12 +417,19 @@ class MiningView(BaseView):
             text="Regenerate Field",
             manager=self.ui_manager,
         )
+        self.transfer_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(370, WINDOW_HEIGHT - 60, 180, 40),
+            text="Transfer to Cargo",
+            manager=self.ui_manager,
+        )
 
     def _destroy_ui(self) -> None:
         if self.back_button:
             self.back_button.kill()
         if self.regen_button:
             self.regen_button.kill()
+        if self.transfer_button:
+            self.transfer_button.kill()
 
     def _get_grid_cell(self, mouse_pos: tuple) -> Optional[tuple]:
         mx, my = mouse_pos
@@ -437,7 +456,11 @@ class MiningView(BaseView):
         return "Click: mine  |  Right-click / E: empowered (3x, uses energy)  |  Drones auto-mine"
 
     def _end_session(self) -> None:
-        """End the mining session: transfer, calculate XP, show summary."""
+        """End mining: show transfer screen if silo has ore, otherwise go to summary."""
+        # Save current depth for this system (persist between sessions)
+        if self.session:
+            self.player.mining_depth_per_system[self.mining_config.system_id] = self.session.depth
+
         # Update personal records
         if self.session:
             total_ore = sum(self.session.total_mined.values())
@@ -446,7 +469,21 @@ class MiningView(BaseView):
             if self.session.depth > self.player.best_mining_depth:
                 self.player.best_mining_depth = self.session.depth
 
-        self._transfer_count = self._transfer_silo_to_cargo()
+        if self._silo and self._silo.get_total_stored() > 0:
+            # Show selective transfer screen
+            self._transfer_selections = {}
+            for cid, qty in self._silo.contents.items():
+                if qty > 0:
+                    self._transfer_selections[cid] = qty  # Default: take everything
+            self._show_transfer = True
+            self._destroy_ui()
+        else:
+            # Nothing to transfer, go straight to summary
+            self._transfer_count = 0
+            self._finalize_session()
+
+    def _finalize_session(self) -> None:
+        """Apply selected transfers, calculate XP, and show summary."""
         xp = 0
         if self.session and self.progression:
             total = sum(self.session.total_mined.values())
@@ -459,8 +496,32 @@ class MiningView(BaseView):
                     logger.info(m)
         self._summary_xp = xp
         self._calculate_rating()
+        self._show_transfer = False
         self._show_summary = True
-        self._destroy_ui()
+
+    def _apply_transfer_selections(self) -> None:
+        """Transfer selected amounts from silo to cargo."""
+        commodity_volumes = {c.id: c.volume_per_unit for c in self.commodities.values()}
+        total_transferred = 0
+        for cid, amount in self._transfer_selections.items():
+            if amount <= 0:
+                continue
+            stored = self._silo.contents.get(cid, 0)
+            transfer = min(amount, stored)
+            volume = commodity_volumes.get(cid, 1)
+            available = self.player.ship.get_available_cargo(commodity_volumes)
+            can_fit = available // volume if volume > 0 else transfer
+            transfer = min(transfer, can_fit)
+            if transfer > 0:
+                self._silo.remove_ore(cid, transfer)
+                self.player.ship.add_cargo(cid, transfer, price_per_unit=0)
+                total_transferred += transfer
+        self._transfer_count = total_transferred
+
+    def _get_cargo_space_remaining(self) -> int:
+        """Get remaining cargo space in units."""
+        commodity_volumes = {c.id: c.volume_per_unit for c in self.commodities.values()}
+        return self.player.ship.get_available_cargo(commodity_volumes)
 
     def handle_event(self, event: pygame.event.Event) -> None:
         # Summary dismiss: click or key
@@ -473,6 +534,24 @@ class MiningView(BaseView):
                 pygame.K_SPACE,
             ):
                 self.next_state = GameState.TRADING
+            return
+
+        # Transfer screen interactions
+        if self._show_transfer:
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    # Confirm transfer
+                    self._apply_transfer_selections()
+                    self._finalize_session()
+                elif event.key == pygame.K_ESCAPE:
+                    # Skip transfer — leave everything in silo
+                    self._transfer_selections = {
+                        cid: 0 for cid in self._transfer_selections
+                    }
+                    self._transfer_count = 0
+                    self._finalize_session()
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                self._handle_transfer_click(event.pos)
             return
 
         # Exit confirmation
@@ -509,32 +588,56 @@ class MiningView(BaseView):
         elif event.type == pygame_gui.UI_BUTTON_PRESSED:
             if event.ui_element == self.back_button:
                 self._confirm_exit = True
-            elif event.ui_element == self.regen_button:
-                if self.session:
-                    advance = self.session.regenerate_field()
-                    self.player.max_mining_depth = max(
-                        self.player.max_mining_depth, self.session.depth
-                    )
-                    # Award strata tokens
-                    if advance.strata_earned > 0:
-                        self.player.add_strata_tokens(advance.strata_earned)
-                        self._session_strata += advance.strata_earned
-                        bonus_text = " (full clear!)" if advance.was_full_clear else ""
+            elif event.ui_element == self.transfer_button:
+                if self._silo and self._silo.get_total_stored() > 0:
+                    transferred = self._transfer_silo_to_cargo()
+                    if transferred > 0:
                         self._add_feedback(
-                            f"+{advance.strata_earned} Strata{bonus_text}",
-                            WINDOW_WIDTH // 2,
-                            80,
-                            (180, 140, 255),
+                            f"Transferred {transferred} ore to cargo",
+                            WINDOW_WIDTH // 2, 120, Colors.SUCCESS,
                         )
-                    self._rock_shapes.clear()
-                    # Depth transition particles across the grid
-                    for gx in range(self.mining_config.grid_width):
-                        fx = self.GRID_OFFSET_X + gx * self.CELL_SIZE + self.CELL_SIZE // 2
-                        fy = self.GRID_OFFSET_Y + 10
-                        self.particles.emit(fx, fy, DEPTH_TRANSITION)
-                    self._show_message(
-                        f"Depth {self.session.depth}! +{advance.strata_earned} Strata"
-                    )
+                        self._show_message(f"{transferred} units moved to cargo hold")
+                    else:
+                        self._show_message("Cargo hold is full!")
+                else:
+                    self._show_message("Silo is empty")
+            elif event.ui_element == self.regen_button:
+                if not self.session:
+                    pass
+                elif self.session.get_total_rocks() > 0:
+                    total = self.session.get_total_rocks()
+                    mined = total - self.session.get_undepleted_count()
+                    clear_pct = mined / total if total > 0 else 0
+                    if clear_pct < 0.5:
+                        pct_display = int(clear_pct * 100)
+                        self._show_message(
+                            f"Clear at least 50% of the field first ({pct_display}% cleared)"
+                        )
+                    else:
+                        advance = self.session.regenerate_field()
+                        self.player.max_mining_depth = max(
+                            self.player.max_mining_depth, self.session.depth
+                        )
+                        # Award strata tokens
+                        if advance.strata_earned > 0:
+                            self.player.add_strata_tokens(advance.strata_earned)
+                            self._session_strata += advance.strata_earned
+                            bonus_text = " (full clear!)" if advance.was_full_clear else ""
+                            self._add_feedback(
+                                f"+{advance.strata_earned} Strata{bonus_text}",
+                                WINDOW_WIDTH // 2,
+                                80,
+                                (180, 140, 255),
+                            )
+                        self._rock_shapes.clear()
+                        # Depth transition particles across the grid
+                        for gx in range(self.mining_config.grid_width):
+                            fx = self.GRID_OFFSET_X + gx * self.CELL_SIZE + self.CELL_SIZE // 2
+                            fy = self.GRID_OFFSET_Y + 10
+                            self.particles.emit(fx, fy, DEPTH_TRANSITION)
+                        self._show_message(
+                            f"Depth {self.session.depth}! +{advance.strata_earned} Strata"
+                        )
 
     def _click_rock(self, gx: int, gy: int, empowered: bool = False) -> None:
         if not self.session:
@@ -626,6 +729,10 @@ class MiningView(BaseView):
                             self.session.max_chain_depth = CHAIN_MAX_DEPTH + 1
                     elif uid == "automaton_core" and self.session:
                         self.session.drone_speed_bonus += dc_upgrades[uid].effect_per_level
+                    elif uid == "auto_drill" and self.session:
+                        self.session.auto_drill_level = dc_state.get_level(uid)
+                    elif uid == "ore_scanner" and self.session:
+                        self.session.ore_scanner_level = dc_state.get_level(uid)
                 else:
                     self._show_message(msg)
                 break
@@ -656,6 +763,15 @@ class MiningView(BaseView):
 
         # Glow time
         self._glow_time += dt
+
+        # Update regen button text with clear percentage
+        if self.regen_button and self.session and self.session.get_total_rocks() > 0:
+            total = self.session.get_total_rocks()
+            mined = total - self.session.get_undepleted_count()
+            pct = int((mined / total) * 100)
+            new_text = f"Regen ({pct}%)"
+            if self.regen_button.text != new_text:
+                self.regen_button.set_text(new_text)
 
         # Tooltip update
         self._update_upgrade_tooltip()
@@ -940,6 +1056,10 @@ class MiningView(BaseView):
         if self._confirm_exit:
             self._render_confirm_exit(screen)
 
+        # Transfer screen overlay
+        if self._show_transfer:
+            self._render_transfer_screen(screen)
+
         # Summary overlay (drawn last, on top of everything)
         if self._show_summary:
             self._render_summary(screen)
@@ -1026,6 +1146,35 @@ class MiningView(BaseView):
                         pygame.draw.polygon(screen, Colors.TEXT_HIGHLIGHT, offset_points, 2)
                     else:
                         pygame.draw.polygon(screen, (180, 180, 180), offset_points, 1)
+
+                # Ore Scanner overlay
+                if self.session and self.session.ore_scanner_level >= 1 and not rock.depleted:
+                    # L1+: Commodity-colored border glow
+                    from spacegame.models.mining import ROCK_TYPE_CONFIGS
+
+                    ore_cfg = ROCK_TYPE_CONFIGS.get(rock.rock_type)
+                    if ore_cfg:
+                        scan_color = ore_cfg.color
+                        pygame.draw.rect(
+                            screen, scan_color,
+                            (rect.x - 1, rect.y - 1, rect.w + 2, rect.h + 2), 2,
+                            border_radius=3,
+                        )
+
+                    # L2+: Show commodity name on hover
+                    if self.session.ore_scanner_level >= 2 and is_hovered:
+                        commodity = self.commodities.get(rock.commodity_id)
+                        scan_name = commodity.name if commodity else rock.commodity_id
+                        if self.session.ore_scanner_level >= 3:
+                            # L3: Also show yield estimate
+                            cfg = ore_cfg
+                            min_y = rock.yield_override if rock.yield_override else cfg.min_yield
+                            max_y = rock.yield_override if rock.yield_override else cfg.max_yield
+                            scan_name += f" ({min_y}-{max_y})"
+                        scan_surf = self.cell_font.render(scan_name, True, Colors.TEXT_HIGHLIGHT)
+                        scan_x = rect.centerx - scan_surf.get_width() // 2
+                        scan_y = rect.top - 16
+                        screen.blit(scan_surf, (scan_x, scan_y))
 
                 # Drill progress bar with leading-edge glow
                 if rock.drilling or rock.drill_progress > 0:
@@ -1218,6 +1367,22 @@ class MiningView(BaseView):
             screen.blit(surf, (panel_x, y))
             y += 22
 
+        # Depth hint: show what ore unlocks next
+        if self.session:
+            from spacegame.models.mining import DEPTH_ROCK_THRESHOLDS
+
+            y += 8
+            depth = self.session.depth
+            next_unlock = None
+            for ore_name, threshold in sorted(DEPTH_ROCK_THRESHOLDS.items(), key=lambda x: x[1]):
+                if depth < threshold:
+                    next_unlock = (ore_name.replace("_", " ").title(), threshold)
+                    break
+            if next_unlock:
+                hint_text = f"Depth {next_unlock[1]}: {next_unlock[0]}"
+                hint_surf = self.small_font.render(hint_text, True, (180, 140, 255))
+                screen.blit(hint_surf, (panel_x, y))
+
         # Rock type legend
         y += 15
         legend = self.info_font.render("ROCK TYPES", True, Colors.TEXT_HIGHLIGHT)
@@ -1378,20 +1543,9 @@ class MiningView(BaseView):
 
         dc_state = self.player.deep_core_upgrades
 
-        # Position below milestones
-        milestone_count = len(self.session.milestones) if self.session else 0
-        panel_x = self.GRID_OFFSET_X
-        panel_y = (
-            self.GRID_OFFSET_Y
-            + self.mining_config.grid_height * self.CELL_SIZE
-            + 40
-            + milestone_count * 28
-            + 30
-        )
-
-        # Check if we have room
-        if panel_y > WINDOW_HEIGHT - 120:
-            return
+        # Fixed position on right side, always visible
+        panel_x = WINDOW_WIDTH - 350
+        panel_y = 200
 
         header = self.small_font.render("DEEP CORE UPGRADES", True, (180, 140, 255))
         screen.blit(header, (panel_x, panel_y))
@@ -1517,6 +1671,192 @@ class MiningView(BaseView):
                 self.player.s_ranks_earned += 1
         else:
             self._session_rating = "D"
+
+    def _handle_transfer_click(self, pos: tuple) -> None:
+        """Handle clicks on the transfer screen +/- buttons and action buttons."""
+        mx, my = pos
+
+        # Panel geometry (must match _render_transfer_screen)
+        panel_w, panel_h = 600, 450
+        px = WINDOW_WIDTH // 2 - panel_w // 2
+        py = WINDOW_HEIGHT // 2 - panel_h // 2
+
+        row_y_start = py + 70 + 18
+        row_h = 40
+        items = [(cid, self._silo.contents.get(cid, 0))
+                 for cid in self._transfer_selections if self._silo.contents.get(cid, 0) > 0]
+
+        cargo_space = self._get_cargo_space_remaining()
+        total_selected = sum(self._transfer_selections.values())
+
+        for i, (cid, stored) in enumerate(items):
+            ry = row_y_start + i * row_h
+            # Minus button: x = px + 360, w = 30
+            minus_rect = pygame.Rect(px + 360, ry, 30, 28)
+            # Plus button: x = px + 440, w = 30
+            plus_rect = pygame.Rect(px + 440, ry, 30, 28)
+
+            if minus_rect.collidepoint(mx, my):
+                current = self._transfer_selections.get(cid, 0)
+                self._transfer_selections[cid] = max(0, current - 1)
+                return
+            if plus_rect.collidepoint(mx, my):
+                current = self._transfer_selections.get(cid, 0)
+                if current < stored and total_selected < cargo_space + sum(
+                    self._transfer_selections.values()
+                ):
+                    self._transfer_selections[cid] = min(stored, current + 1)
+                return
+
+        # "Transfer All" button
+        all_btn = pygame.Rect(px + 30, py + panel_h - 55, 160, 36)
+        if all_btn.collidepoint(mx, my):
+            # Greedily fill cargo with most valuable first
+            commodity_values = {}
+            for cid in self._transfer_selections:
+                commodity = self.commodities.get(cid)
+                commodity_values[cid] = commodity.base_price if commodity else 0
+            sorted_cids = sorted(
+                self._transfer_selections.keys(),
+                key=lambda c: commodity_values.get(c, 0),
+                reverse=True,
+            )
+            space = cargo_space
+            for cid in sorted_cids:
+                stored = self._silo.contents.get(cid, 0)
+                take = min(stored, space)
+                self._transfer_selections[cid] = take
+                space -= take
+            return
+
+        # "Take Nothing" button
+        none_btn = pygame.Rect(px + 210, py + panel_h - 55, 160, 36)
+        if none_btn.collidepoint(mx, my):
+            for cid in self._transfer_selections:
+                self._transfer_selections[cid] = 0
+            return
+
+        # "Confirm" button
+        confirm_btn = pygame.Rect(px + 390, py + panel_h - 55, 160, 36)
+        if confirm_btn.collidepoint(mx, my):
+            self._apply_transfer_selections()
+            self._finalize_session()
+            return
+
+    def _render_transfer_screen(self, screen: pygame.Surface) -> None:
+        """Render the selective transfer overlay."""
+        # Dim background
+        dim = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA)
+        dim.fill((0, 0, 0, 160))
+        screen.blit(dim, (0, 0))
+
+        # Panel
+        panel_w, panel_h = 600, 450
+        px = WINDOW_WIDTH // 2 - panel_w // 2
+        py = WINDOW_HEIGHT // 2 - panel_h // 2
+        draw_panel(screen, (px, py, panel_w, panel_h), alpha=240)
+        pygame.draw.rect(
+            screen, (180, 140, 255), (px, py, panel_w, 3)
+        )
+
+        # Title
+        title = self._summary_font.render("TRANSFER ORE", True, (180, 140, 255))
+        screen.blit(title, title.get_rect(center=(WINDOW_WIDTH // 2, py + 20)))
+
+        # Cargo space indicator
+        cargo_space = self._get_cargo_space_remaining()
+        total_selected = sum(self._transfer_selections.values())
+        space_color = Colors.SUCCESS if total_selected <= cargo_space else Colors.RED
+        space_text = f"Cargo Space: {cargo_space} units available"
+        space_surf = self.small_font.render(space_text, True, space_color)
+        screen.blit(space_surf, (px + 30, py + 45))
+
+        selected_text = f"Selected: {total_selected} units"
+        sel_surf = self.small_font.render(selected_text, True, Colors.TEXT)
+        screen.blit(sel_surf, (px + panel_w - sel_surf.get_width() - 30, py + 45))
+
+        # Column headers
+        header_y = py + 65
+        headers = [("Ore", px + 30), ("In Silo", px + 250), ("Take", px + 390)]
+        for text, hx in headers:
+            h_surf = self.small_font.render(text, True, Colors.TEXT_SECONDARY)
+            screen.blit(h_surf, (hx, header_y))
+
+        # Ore rows
+        row_y = py + 70 + 18
+        row_h = 40
+        items = [(cid, self._silo.contents.get(cid, 0))
+                 for cid in self._transfer_selections if self._silo.contents.get(cid, 0) > 0]
+
+        for i, (cid, stored) in enumerate(items):
+            ry = row_y + i * row_h
+            commodity = self.commodities.get(cid)
+            cname = commodity.name if commodity else cid
+            value = commodity.base_price if commodity else 0
+
+            # Icon
+            icon = self._sprite_mgr.get_commodity_icon(cid, scale=2)
+            if icon:
+                screen.blit(icon, (px + 30, ry + 2))
+
+            # Name + value hint
+            name_surf = self.info_font.render(cname, True, Colors.TEXT)
+            screen.blit(name_surf, (px + 65, ry + 2))
+            val_surf = self.small_font.render(f"~{value} CR/unit", True, Colors.TEXT_SECONDARY)
+            screen.blit(val_surf, (px + 65, ry + 22))
+
+            # Stored quantity
+            stored_surf = self.info_font.render(str(stored), True, Colors.TEXT_SECONDARY)
+            screen.blit(stored_surf, (px + 270, ry + 4))
+
+            # - button
+            minus_rect = pygame.Rect(px + 360, ry, 30, 28)
+            pygame.draw.rect(screen, Colors.UI_BORDER, minus_rect, 1, border_radius=3)
+            minus_text = self.info_font.render("-", True, Colors.TEXT)
+            screen.blit(minus_text, minus_text.get_rect(center=minus_rect.center))
+
+            # Selected amount
+            selected = self._transfer_selections.get(cid, 0)
+            sel_color = Colors.SUCCESS if selected > 0 else Colors.TEXT_SECONDARY
+            amount_surf = self.info_font.render(str(selected), True, sel_color)
+            screen.blit(
+                amount_surf,
+                amount_surf.get_rect(center=(px + 420, ry + 14)),
+            )
+
+            # + button
+            plus_rect = pygame.Rect(px + 440, ry, 30, 28)
+            pygame.draw.rect(screen, Colors.UI_BORDER, plus_rect, 1, border_radius=3)
+            plus_text = self.info_font.render("+", True, Colors.TEXT)
+            screen.blit(plus_text, plus_text.get_rect(center=plus_rect.center))
+
+        # Action buttons at bottom
+        btn_y = py + panel_h - 55
+
+        # Transfer All (most valuable first)
+        all_rect = pygame.Rect(px + 30, btn_y, 160, 36)
+        draw_panel(screen, all_rect, alpha=200, border_color=Colors.TEXT_HIGHLIGHT)
+        all_text = self.small_font.render("Transfer All", True, Colors.TEXT_HIGHLIGHT)
+        screen.blit(all_text, all_text.get_rect(center=all_rect.center))
+
+        # Take Nothing
+        none_rect = pygame.Rect(px + 210, btn_y, 160, 36)
+        draw_panel(screen, none_rect, alpha=200, border_color=Colors.TEXT_SECONDARY)
+        none_text = self.small_font.render("Take Nothing", True, Colors.TEXT_SECONDARY)
+        screen.blit(none_text, none_text.get_rect(center=none_rect.center))
+
+        # Confirm
+        confirm_rect = pygame.Rect(px + 390, btn_y, 160, 36)
+        draw_panel(screen, confirm_rect, alpha=200, border_color=Colors.SUCCESS)
+        confirm_text = self.small_font.render("Confirm", True, Colors.SUCCESS)
+        screen.blit(confirm_text, confirm_text.get_rect(center=confirm_rect.center))
+
+        # Hint text
+        hint = self.small_font.render(
+            "ENTER to confirm  |  ESC to leave everything in silo",
+            True, Colors.TEXT_SECONDARY,
+        )
+        screen.blit(hint, hint.get_rect(center=(WINDOW_WIDTH // 2, py + panel_h - 15)))
 
     def _render_summary(self, screen: pygame.Surface) -> None:
         """Render session summary overlay."""

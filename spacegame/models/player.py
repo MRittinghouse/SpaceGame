@@ -161,6 +161,7 @@ class Player:
     mining_prestige_level: int = 0
     deep_core_upgrades: DeepCoreUpgradeState = field(default_factory=DeepCoreUpgradeState)
     ore_silo_manager: OreSiloManager = field(default_factory=OreSiloManager)
+    mining_depth_per_system: dict[str, int] = field(default_factory=dict)
 
     # Deep Salvage progression
     salvage_intel: int = 0

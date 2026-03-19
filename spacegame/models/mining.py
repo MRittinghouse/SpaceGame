@@ -137,9 +137,15 @@ ROCK_TYPE_CONFIGS = {
 
 # Depth thresholds for new rock types
 DEPTH_ROCK_THRESHOLDS: dict[str, int] = {
+    "iron": 3,
+    "crystal": 6,
+    "rare": 9,
     "dense": 5,
     "volatile": 12,
 }
+
+# Ore types that are removed from the base distribution and only appear via depth gating
+DEPTH_GATED_ORES: set[str] = {"iron", "crystal", "rare"}
 
 
 @dataclass
@@ -424,6 +430,8 @@ class MiningSession:
         drones: Optional[list[MiningDrone]] = None,
         milestones: Optional[list[MiningMilestone]] = None,
         prestige_level: int = 0,
+        auto_drill_level: int = 0,
+        ore_scanner_level: int = 0,
     ):
         """
         Initialize mining session.
@@ -437,6 +445,8 @@ class MiningSession:
             rare_chance_bonus: Fractional bonus to rare ore chance.
             chain_chance_bonus: Fractional bonus to chain detonation chance.
             max_chain_depth_bonus: Extra chain recursion depth (from Seismic Pulse).
+            auto_drill_level: Auto-drill upgrade level (0=off, 1=8s, 2=5s, 3=3s).
+            ore_scanner_level: Ore scanner upgrade level (0=off, 1-3=increasing detail).
             starting_depth: Initial depth (from Depth Scanner).
             drones: List of active MiningDrone instances.
         """
@@ -450,6 +460,9 @@ class MiningSession:
         self.max_chain_depth: int = CHAIN_MAX_DEPTH + max_chain_depth_bonus
         self.drones: list[MiningDrone] = drones or []
         self.prestige_level: int = prestige_level
+        self.auto_drill_level: int = auto_drill_level
+        self.ore_scanner_level: int = ore_scanner_level
+        self._auto_drill_timer: float = 0.0
 
         # Energy state
         self.energy: int = config.max_energy
@@ -481,18 +494,29 @@ class MiningSession:
     def _get_depth_rock_distribution(self) -> Dict[str, float]:
         """Get rock distribution adjusted for current depth.
 
-        Adds depth-gated rock types and reduces common weight to compensate.
+        Removes ore types below their depth threshold and adds depth-gated
+        types as the player pushes deeper.
         """
         dist = dict(self.config.rock_distribution)
 
+        # Remove depth-gated ores below their threshold
+        for type_name in DEPTH_GATED_ORES:
+            threshold = DEPTH_ROCK_THRESHOLDS.get(type_name, 0)
+            if self.depth < threshold and type_name in dist:
+                del dist[type_name]
+
+        # Add depth-gated types that are now unlocked (only if not already in dist)
         for type_name, threshold in DEPTH_ROCK_THRESHOLDS.items():
-            if self.depth >= threshold:
-                # Add new type, reduce common weight proportionally
-                weight = 0.10 + 0.02 * (self.depth - threshold)
-                weight = min(weight, 0.25)  # Cap at 25%
-                dist[type_name] = weight
+            if self.depth >= threshold and type_name not in dist:
+                if type_name in DEPTH_GATED_ORES:
+                    base_weight = self.config.rock_distribution.get(type_name, 0.10)
+                    depth_bonus = 0.02 * (self.depth - threshold)
+                    dist[type_name] = min(base_weight + depth_bonus, 0.35)
+                else:
+                    weight = 0.10 + 0.02 * (self.depth - threshold)
+                    dist[type_name] = min(weight, 0.25)
                 if "common" in dist:
-                    dist["common"] = max(0.10, dist["common"] - weight * 0.5)
+                    dist["common"] = max(0.10, dist["common"] - 0.02)
 
         return dist
 
@@ -778,6 +802,17 @@ class MiningSession:
                 self._apply_volatile_splash(broken_rock)
                 self._check_chain_detonation(broken_rock)
                 self._check_unstable_detonation(broken_rock)
+
+        # Auto-drill: passively breaks the weakest rock on a timer
+        if self.auto_drill_level > 0:
+            intervals = {1: 8.0, 2: 5.0, 3: 3.0}
+            interval = intervals.get(self.auto_drill_level, 8.0)
+            self._auto_drill_timer += dt
+            while self._auto_drill_timer >= interval:
+                self._auto_drill_timer -= interval
+                auto_result = self._auto_drill_break()
+                if auto_result:
+                    results.append(auto_result)
 
         # Drone mining
         drone_results = self._update_drones(dt)
@@ -1071,6 +1106,35 @@ class MiningSession:
         for hazard in to_remove:
             self.hazards.remove(hazard)
         return results
+
+    def _auto_drill_break(self) -> Optional[MiningResult]:
+        """Break the weakest undepleted rock for the auto-drill upgrade.
+
+        Returns:
+            MiningResult if a rock was broken, None if no valid target.
+        """
+        # Find the weakest (lowest hardness) undepleted rock
+        candidates = [r for r in self.rocks if not r.depleted]
+        if not candidates:
+            return None
+        target = min(candidates, key=lambda r: r.hardness)
+        target.depleted = True
+        target.drill_progress = 1.0
+        yield_amount = self._apply_yield_bonus(target.get_yield())
+        result = MiningResult(
+            commodity_id=target.commodity_id,
+            quantity=yield_amount,
+            rock_type=target.rock_type,
+            ingredient_drops=self._roll_ingredient_drops(),
+        )
+        self.total_mined[target.commodity_id] = (
+            self.total_mined.get(target.commodity_id, 0) + yield_amount
+        )
+        self._on_rock_broken(target)
+        self._apply_volatile_splash(target)
+        self._check_chain_detonation(target)
+        self._check_unstable_detonation(target)
+        return result
 
     def _update_pressure_vents(self, dt: float) -> list[MiningResult]:
         """Update pressure vent timers and pulse when ready.

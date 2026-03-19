@@ -656,6 +656,40 @@ class StationHubView(BaseView):
             desc = self.card_detail_font.render(desc_text, True, Colors.TEXT_SECONDARY)
             screen.blit(desc, (x + 12, y + CARD_H - 20))
 
+            # Mining cards: show silo status and ore specialty
+            if loc.location_type == "mining" and hasattr(self.player, "ore_silo_manager"):
+                silo = self.player.ore_silo_manager.get_silo(self.system.id)
+                stored = silo.get_total_stored()
+                capacity = silo.capacity
+                if stored > 0:
+                    fill_pct = stored / capacity if capacity > 0 else 0
+                    silo_color = (
+                        Colors.GREEN if fill_pct < 0.7
+                        else Colors.YELLOW if fill_pct < 0.9
+                        else Colors.RED
+                    )
+                    silo_text = f"Silo: {stored}/{capacity}"
+                    silo_surf = self.card_detail_font.render(silo_text, True, silo_color)
+                    screen.blit(silo_surf, (x + CARD_W - silo_surf.get_width() - 12, y + 6))
+
+                # Show dominant ore type from mining config
+                from spacegame.data_loader import get_data_loader
+                mining_cfg = get_data_loader().get_mining_config(self.system.id)
+                if mining_cfg:
+                    dist = mining_cfg.rock_distribution
+                    # Find the highest-weighted non-common ore
+                    best_ore = max(
+                        ((k, v) for k, v in dist.items() if k != "common"),
+                        key=lambda x: x[1],
+                        default=None,
+                    )
+                    if best_ore:
+                        ore_label = best_ore[0].replace("_", " ").title()
+                        spec_surf = self.card_detail_font.render(
+                            f"{ore_label}-rich", True, _LOCATION_COLORS.get("mining", Colors.TEXT_SECONDARY)
+                        )
+                        screen.blit(spec_surf, (x + CARD_W - spec_surf.get_width() - 12, y + CARD_H - 20))
+
     def _render_detail_panel(self, screen: pygame.Surface) -> None:
         """Render detail panel for unique/expanded locations."""
         loc = self._detail_location
