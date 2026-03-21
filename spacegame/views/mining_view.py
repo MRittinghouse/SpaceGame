@@ -492,9 +492,15 @@ class MiningView(BaseView):
         return "Click: mine  |  Right-click / E: empowered (3x, uses energy)  |  Drones auto-mine"
 
     # === Prestige constants ===
-    PRESTIGE_MIN_DEPTH = 100
+    PRESTIGE_BASE_DEPTH = 100
+    PRESTIGE_DEPTH_INCREMENT = 25
     PRESTIGE_MAX_LEVEL = 20
     PRESTIGE_WHOLESALE_BONUS_PER_LEVEL = 0.10
+
+    def _get_prestige_depth_requirement(self) -> int:
+        """Get the depth required for the next prestige."""
+        level = self.player.mining_prestige_level
+        return self.PRESTIGE_BASE_DEPTH + level * self.PRESTIGE_DEPTH_INCREMENT
 
     def _handle_prestige(self) -> None:
         """Handle prestige button press: validate and apply prestige reset."""
@@ -506,9 +512,10 @@ class MiningView(BaseView):
                 f"Already at max prestige level ({self.PRESTIGE_MAX_LEVEL})"
             )
             return
-        if self.session.depth < self.PRESTIGE_MIN_DEPTH:
+        required_depth = self._get_prestige_depth_requirement()
+        if self.session.depth < required_depth:
             self._show_message(
-                f"Must reach depth {self.PRESTIGE_MIN_DEPTH} to prestige "
+                f"Must reach depth {required_depth} to prestige "
                 f"(currently depth {self.session.depth})"
             )
             return
@@ -819,9 +826,9 @@ class MiningView(BaseView):
                         self._show_message(
                             f"Depth {self.session.depth}! +{advance.strata_earned} Strata"
                         )
-                        # One-time prestige tutorial at depth 100
+                        # One-time prestige tutorial when first eligible
                         if (
-                            self.session.depth >= self.PRESTIGE_MIN_DEPTH
+                            self.session.depth >= self._get_prestige_depth_requirement()
                             and not self.player.prestige_hint_shown
                         ):
                             self._show_prestige_hint = True
