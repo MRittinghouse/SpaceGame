@@ -82,8 +82,8 @@ LEVEL_XP_THRESHOLDS = [
 def get_xp_threshold(level: int) -> int:
     """Get cumulative XP needed to reach a given level.
 
-    Uses a gentle quadratic formula with no cap.
-    Level 1 = 0 XP (starting).
+    Uses a quadratic formula with no cap.
+    Level 1 = 0 XP (starting), Level 2 = 500 XP.
 
     Args:
         level: Target level (1-based).
@@ -94,7 +94,7 @@ def get_xp_threshold(level: int) -> int:
     if level <= 1:
         return 0
     n = level - 1  # number of level-ups completed
-    return 60 * n + 20 * n * (n + 1)
+    return 350 * n + 75 * n * (n + 1)
 
 
 @dataclass
@@ -119,6 +119,7 @@ class PlayerProgression:
 
         No level cap — XP thresholds scale via formula.
         Every 5th level is a milestone granting 2 skill points instead of 1.
+        Skill points stop being awarded after SKILL_POINT_CAP_LEVEL.
 
         Args:
             amount: XP to add
@@ -126,6 +127,8 @@ class PlayerProgression:
         Returns:
             List of messages about level ups
         """
+        from spacegame.config import SKILL_POINT_CAP_LEVEL
+
         self.xp += amount
         messages = []
 
@@ -134,10 +137,13 @@ class PlayerProgression:
             next_threshold = get_xp_threshold(self.level + 1)
             if self.xp >= next_threshold:
                 self.level += 1
-                points = 2 if self.level % 5 == 0 else 1
-                self.skill_points += points
-                sp_text = f"+{points} skill point{'s' if points > 1 else ''}!"
-                messages.append(f"Level up! Now level {self.level}. {sp_text}")
+                if self.level <= SKILL_POINT_CAP_LEVEL:
+                    points = 2 if self.level % 5 == 0 else 1
+                    self.skill_points += points
+                    sp_text = f"+{points} skill point{'s' if points > 1 else ''}!"
+                    messages.append(f"Level up! Now level {self.level}. {sp_text}")
+                else:
+                    messages.append(f"Level up! Now level {self.level}.")
             else:
                 break
 

@@ -193,7 +193,7 @@ class TestProgressionSerialization:
 
     def test_roundtrip(self):
         prog = PlayerProgression()
-        prog.add_xp(500)
+        prog.add_xp(1200)  # Enough for level 3 (2 skill points)
         prog.level_up_skill("negotiator")
         prog.level_up_skill("efficient_drills")
 

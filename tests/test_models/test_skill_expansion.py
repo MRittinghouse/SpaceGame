@@ -27,7 +27,7 @@ class TestUncappedLeveling:
         assert get_xp_threshold(1) == 0
 
     def test_xp_threshold_level_2(self) -> None:
-        assert get_xp_threshold(2) == 100
+        assert get_xp_threshold(2) == 500
 
     def test_xp_threshold_increases_each_level(self) -> None:
         """Each level should require more XP than the last."""
@@ -38,19 +38,19 @@ class TestUncappedLeveling:
 
     def test_xp_threshold_moderate_curve(self) -> None:
         """Early levels reachable, later levels require real effort."""
-        assert get_xp_threshold(5) < 800
-        assert get_xp_threshold(10) < 3000
+        assert get_xp_threshold(5) < 4000
+        assert get_xp_threshold(10) < 12000
 
     def test_no_level_cap(self) -> None:
         """Player can level beyond the old cap of 10."""
         prog = PlayerProgression()
-        prog.add_xp(50000)
+        prog.add_xp(200000)
         assert prog.level > 10, "Should be able to level past 10"
 
     def test_level_20_reachable(self) -> None:
         """Level 20 should be a long-term goal but not impossible."""
         threshold = get_xp_threshold(20)
-        assert threshold < 12000, f"Level 20 at {threshold} XP is too high"
+        assert threshold < 40000, f"Level 20 at {threshold} XP is too high"
 
     def test_xp_for_next_level_never_none(self) -> None:
         """get_xp_for_next_level should always return a value (no cap)."""
@@ -467,7 +467,7 @@ class TestBackwardCompatibility:
     def test_old_save_with_level_10_keeps_working(self) -> None:
         """Old save at level 10 (old max) should be able to level further."""
         data = {
-            "xp": 5200,
+            "xp": 9900,
             "level": 10,
             "skill_points": 11,
             "skill_points_spent": 0,
@@ -475,6 +475,6 @@ class TestBackwardCompatibility:
         }
         prog = PlayerProgression.from_dict(data)
         assert prog.level == 10
-        # Can still level up
-        messages = prog.add_xp(5000)
+        # Can still level up (level 11 requires 11,750 XP)
+        messages = prog.add_xp(2000)
         assert prog.level > 10

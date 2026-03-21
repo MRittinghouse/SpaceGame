@@ -268,12 +268,14 @@ SALVAGE_CHARGE_REGEN_SECONDS = 5.0
 # PROGRESSION CONSTANTS
 # ============================================================================
 
-XP_PER_TRADE = 15
+XP_PER_TRADE = 5
 XP_PER_MINING = 1
-XP_PER_SALVAGE = 10
-XP_PER_REFINE = 12
+XP_PER_SALVAGE = 1
+XP_PER_REFINE = 3
 XP_PER_TRAVEL = 10
 MAX_LEVEL = 999  # Effectively uncapped — formula-based XP scaling
+SKILL_POINT_CAP_LEVEL = 40  # Stop granting skill points after this level
+ATTRIBUTE_CAP_LEVEL = 25  # Last level that awards attribute points
 
 # ============================================================================
 # FACTION REPUTATION CONSTANTS

@@ -102,8 +102,8 @@ class TestProgressionLoop:
         initial_level = player.progression.level
         initial_sp = player.progression.skill_points
 
-        # Add enough XP for first level up
-        messages = player.progression.add_xp(200)
+        # Add enough XP for first level up (level 2 requires 500 XP)
+        messages = player.progression.add_xp(600)
         assert player.progression.level > initial_level, "Should have leveled up"
         assert player.progression.skill_points > initial_sp, "Should have skill points"
         assert len(messages) > 0, "Should report level-up messages"
@@ -112,7 +112,7 @@ class TestProgressionLoop:
         """Can invest skill points after leveling up."""
         player = _make_player()
         # Level up
-        player.progression.add_xp(200)
+        player.progression.add_xp(600)
         assert player.progression.get_available_skill_points() > 0
 
         # Find a skill to invest in

@@ -224,6 +224,9 @@ class MiningView(BaseView):
         # One-time prestige tutorial popup
         self._show_prestige_hint: bool = False
 
+        # Prestige confirmation dialog
+        self._confirm_prestige: bool = False
+
         # Crew commentary (set by Game class after construction)
         self._get_crew_line = lambda action_type: None
         self._crew_comment: str = ""
@@ -503,7 +506,7 @@ class MiningView(BaseView):
         return self.PRESTIGE_BASE_DEPTH + level * self.PRESTIGE_DEPTH_INCREMENT
 
     def _handle_prestige(self) -> None:
-        """Handle prestige button press: validate and apply prestige reset."""
+        """Handle prestige button press: validate eligibility, then confirm."""
         if not self.session:
             return
         level = self.player.mining_prestige_level
@@ -519,8 +522,10 @@ class MiningView(BaseView):
                 f"(currently depth {self.session.depth})"
             )
             return
+        self._confirm_prestige = True
 
-        # Apply prestige
+    def _apply_prestige(self) -> None:
+        """Apply prestige: increment level, reset depth/upgrades/strata."""
         self.player.mining_prestige_level += 1
         new_level = self.player.mining_prestige_level
 
@@ -529,6 +534,9 @@ class MiningView(BaseView):
 
         # Reset deep core upgrades
         self.player.deep_core_upgrades.reset()
+
+        # Reset strata tokens
+        self.player.strata_tokens = 0
 
         # Reset current session to depth 1
         self.session.depth = 1
@@ -542,7 +550,7 @@ class MiningView(BaseView):
         )
         self._show_message(
             f"Prestige {new_level}/{self.PRESTIGE_MAX_LEVEL}! "
-            f"Wholesale +{bonus_pct}%. Depth and upgrades reset."
+            f"Wholesale +{bonus_pct}%. Depth, upgrades, and strata reset."
         )
         get_audio_manager().play_sfx("mine_collect")
         logger.info(
@@ -710,6 +718,16 @@ class MiningView(BaseView):
                     self._confirm_exit = False
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 self._confirm_exit = False
+            return
+
+        # Prestige confirmation
+        if self._confirm_prestige:
+            if event.type == pygame.KEYDOWN:
+                if event.key in (pygame.K_y, pygame.K_RETURN):
+                    self._confirm_prestige = False
+                    self._apply_prestige()
+                elif event.key in (pygame.K_n, pygame.K_ESCAPE):
+                    self._confirm_prestige = False
             return
 
         if event.type == pygame.MOUSEBUTTONDOWN and event.button in (1, 3):
@@ -1252,6 +1270,10 @@ class MiningView(BaseView):
         # Exit confirmation overlay
         if self._confirm_exit:
             self._render_confirm_exit(screen)
+
+        # Prestige confirmation overlay
+        if self._confirm_prestige:
+            self._render_confirm_prestige(screen)
 
         # Transfer screen overlay
         if self._show_transfer:
@@ -1927,30 +1949,35 @@ class MiningView(BaseView):
         dim.fill((0, 0, 0, 180))
         screen.blit(dim, (0, 0))
 
-        panel_w, panel_h = 520, 200
+        panel_w, panel_h = 540, 280
         px = WINDOW_WIDTH // 2 - panel_w // 2
         py = WINDOW_HEIGHT // 2 - panel_h // 2
         draw_panel(screen, (px, py, panel_w, panel_h), alpha=220, border_color=(255, 215, 0))
 
         cx = WINDOW_WIDTH // 2
         title = self.info_font.render("PRESTIGE UNLOCKED", True, (255, 215, 0))
-        screen.blit(title, title.get_rect(center=(cx, py + 30)))
+        screen.blit(title, title.get_rect(center=(cx, py + 28)))
 
         lines = [
             "You've reached Depth 100! You can now Prestige.",
             "",
-            "Prestige resets your Depth to 1 and clears all",
+            "Prestige resets your Depth to 1 and clears your",
             "Deep Core Upgrades, but permanently increases",
             "your wholesale sell price by 10%.",
             "",
+            "Upgrades like Silo Expansion are cumulative across",
+            "prestiges. Re-buying Silo Expansion after prestige",
+            "stacks with what you had before!",
+            "",
+            "Each prestige requires 25 more depth than the last.",
             "Use the Prestige button when you're ready.",
         ]
-        y = py + 55
+        y = py + 52
         for line in lines:
             if line:
                 surf = self.small_font.render(line, True, Colors.TEXT)
                 screen.blit(surf, surf.get_rect(center=(cx, y)))
-            y += 20
+            y += 19
 
         hint = self.small_font.render(
             "Click or press any key to dismiss", True, Colors.TEXT_SECONDARY
@@ -1970,6 +1997,37 @@ class MiningView(BaseView):
             "Y / Enter = Yes    N / Esc = Cancel", True, Colors.TEXT_SECONDARY
         )
         screen.blit(hint, hint.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 + 15)))
+
+    def _render_confirm_prestige(self, screen: pygame.Surface) -> None:
+        """Render prestige confirmation overlay."""
+        dim = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA)
+        dim.fill((0, 0, 0, 180))
+        screen.blit(dim, (0, 0))
+
+        cx = WINDOW_WIDTH // 2
+        cy = WINDOW_HEIGHT // 2
+
+        title = self.info_font.render("PRESTIGE?", True, (255, 215, 0))
+        screen.blit(title, title.get_rect(center=(cx, cy - 50)))
+
+        strata = self.player.strata_tokens
+        lines = [
+            f"You will lose all {strata} Strata Tokens,",
+            "all Deep Core Upgrades, and Depth resets to 1.",
+            "",
+            "Wholesale sell price permanently increases by 10%.",
+        ]
+        y = cy - 25
+        for line in lines:
+            if line:
+                surf = self.small_font.render(line, True, Colors.TEXT)
+                screen.blit(surf, surf.get_rect(center=(cx, y)))
+            y += 20
+
+        hint = self.small_font.render(
+            "Y / Enter = Prestige    N / Esc = Cancel", True, Colors.TEXT_SECONDARY
+        )
+        screen.blit(hint, hint.get_rect(center=(cx, cy + 50)))
 
     def _calculate_rating(self) -> None:
         """Calculate session performance rating."""

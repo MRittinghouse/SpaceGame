@@ -3819,9 +3819,11 @@ class Game:
         if not self.player or not hasattr(self, "attribute_sheet"):
             return
 
-        # Level-up attribute points: award at levels 3, 5, 7, 9
+        # Level-up attribute points: award at odd levels 3-25
         level = self.player.progression.level
-        level_milestones = {3: "level_3", 5: "level_5", 7: "level_7", 9: "level_9"}
+        level_milestones = {
+            lvl: f"level_{lvl}" for lvl in range(3, 26, 2)
+        }  # {3: "level_3", 5: "level_5", ..., 25: "level_25"}
         for lvl, milestone_id in level_milestones.items():
             if level >= lvl and not self.attribute_sheet.has_milestone(milestone_id):
                 self.attribute_sheet._awarded_milestones.add(milestone_id)

@@ -42,19 +42,19 @@ class TestConfigConstants:
         )
 
     def test_xp_per_salvage(self) -> None:
-        assert config.XP_PER_SALVAGE == 10, (
-            f"Salvage XP should be 10, got {config.XP_PER_SALVAGE}"
+        assert config.XP_PER_SALVAGE == 1, (
+            f"Salvage XP should be 1, got {config.XP_PER_SALVAGE}"
         )
 
     def test_xp_per_refine(self) -> None:
-        assert config.XP_PER_REFINE == 12, (
-            f"Refine XP should be 12, got {config.XP_PER_REFINE}"
+        assert config.XP_PER_REFINE == 3, (
+            f"Refine XP should be 3, got {config.XP_PER_REFINE}"
         )
 
-    def test_xp_per_trade_unchanged(self) -> None:
-        assert config.XP_PER_TRADE == 15, "Trade XP should remain 15"
+    def test_xp_per_trade(self) -> None:
+        assert config.XP_PER_TRADE == 5, "Trade XP should be 5"
 
-    def test_xp_per_travel_unchanged(self) -> None:
+    def test_xp_per_travel(self) -> None:
         assert config.XP_PER_TRAVEL == 10, "Travel XP should remain 10"
 
     def test_ground_combat_base_hp(self) -> None:
