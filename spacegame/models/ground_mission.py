@@ -176,6 +176,7 @@ class GroundMissionConfig:
     campaign_map_data: Optional[dict[str, Any]] = None
     seed: Optional[int] = None
     max_crew: int = 2
+    complete_flag: str = ""  # Dialogue flag to set on successful completion
 
     @property
     def is_campaign(self) -> bool:

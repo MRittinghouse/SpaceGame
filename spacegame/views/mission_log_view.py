@@ -441,6 +441,22 @@ class MissionLogView(BaseView):
             screen.blit(obj_surf, (pad_x + 10, cur_y))
             cur_y += 22
 
+        # Hint (actionable guidance)
+        if mission.hint:
+            cur_y += 12
+            hint_header = self._label_font.render("Hint:", True, Colors.TEXT_PRIMARY)
+            screen.blit(hint_header, (pad_x, cur_y))
+            cur_y += 24
+            cur_y = self._render_wrapped(
+                screen,
+                mission.hint,
+                self._desc_font,
+                (180, 200, 220),
+                pad_x + 10,
+                cur_y,
+                DETAIL_WIDTH - 50,
+            )
+
         cur_y += 16
 
         # Rewards header

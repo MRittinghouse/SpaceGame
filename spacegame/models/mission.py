@@ -431,6 +431,28 @@ class MissionManager:
                     continue  # Skip completed (except cargo — must re-evaluate)
                 self._progress[mid][i] = self._check_single_objective(obj, player)
 
+            # Auto-resolve for side missions: if every objective except HAS_FLAG
+            # ones are complete, set the missing flags so the mission can finish.
+            # This handles delivery/resolution flags that have no NPC dialogue yet.
+            # Campaign missions are excluded — their flags are set by specific
+            # game events (dialogue, ground missions, encounters).
+            if mission.mission_type == "side":
+                incomplete = [
+                    (i, obj) for i, obj in enumerate(mission.objectives)
+                    if not self._progress[mid][i]
+                ]
+                has_non_flag_objectives = any(
+                    obj.type != ObjectiveType.HAS_FLAG for obj in mission.objectives
+                )
+                if (
+                    incomplete
+                    and has_non_flag_objectives
+                    and all(obj.type == ObjectiveType.HAS_FLAG for _, obj in incomplete)
+                ):
+                    for i, obj in incomplete:
+                        player.dialogue_flags[obj.target_id] = True
+                        self._progress[mid][i] = True
+
             if all(self._progress[mid]):
                 self._status[mid] = MissionStatus.COMPLETED
                 newly_completed.append(mid)

@@ -2421,6 +2421,7 @@ class Game:
             intel_hints=[],
             rewards=GroundMissionRewards(credits=0, xp=0),
             campaign_mission_id=parent_mission.id if parent_mission else None,
+            complete_flag=complete_flag,
         )
 
         self.start_ground_mission(config)
@@ -2856,6 +2857,12 @@ class Game:
                 self.player.ground_undetected_completions += 1
             if result.config.is_campaign:
                 self.player.ground_campaign_missions_completed += 1
+            # Set the completion flag so the parent mission objective resolves
+            if result.config.complete_flag:
+                self.player.dialogue_flags[result.config.complete_flag] = True
+                if getattr(self, "dialogue_manager", None):
+                    self.dialogue_manager.set_flag(result.config.complete_flag)
+                logger.info("Ground mission flag set: %s", result.config.complete_flag)
             self._trigger_crew_reaction("ground_mission_success")
         elif outcome.is_failure:
             self.player.ground_missions_failed += 1
