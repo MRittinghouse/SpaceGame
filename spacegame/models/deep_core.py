@@ -91,6 +91,7 @@ class DeepCoreUpgradeState:
         upgrade_id: str,
         upgrades: dict[str, DeepCoreUpgrade],
         strata_available: int,
+        prestige_level: int = 0,
     ) -> tuple[bool, str, int]:
         """Attempt to purchase the next level of an upgrade.
 
@@ -98,6 +99,7 @@ class DeepCoreUpgradeState:
             upgrade_id: ID of the upgrade to purchase.
             upgrades: All upgrade definitions.
             strata_available: Player's current strata token balance.
+            prestige_level: Mining prestige level (+10% cost per level).
 
         Returns:
             Tuple of (success, message, cost_paid).
@@ -109,9 +111,11 @@ class DeepCoreUpgradeState:
         current = self.get_level(upgrade_id)
         next_level = current + 1
 
-        cost = definition.get_cost(next_level)
-        if cost is None:
+        base_cost = definition.get_cost(next_level)
+        if base_cost is None:
             return (False, f"{definition.name} is already at max level", 0)
+
+        cost = math.ceil(base_cost * (1.0 + 0.10 * prestige_level))
 
         if strata_available < cost:
             return (

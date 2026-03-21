@@ -270,6 +270,7 @@ class MiningConfig:
     # Distribution is a dict of rock_type_name -> probability (0.0-1.0)
     danger_level: str = "safe"  # System danger level for yield scaling
     perk_yield_bonus: float = 0.0  # Faction perk yield bonus (stacks with danger)
+    perk_wholesale_bonus: float = 0.0  # Faction perk wholesale sell price bonus
 
     def __post_init__(self):
         if not self.rock_distribution:
@@ -292,7 +293,7 @@ class DepthModifiers:
 
 # Chain detonation constants
 CHAIN_BASE_CHANCE = 0.15
-CHAIN_PROGRESS_AMOUNT = 0.25
+CHAIN_PROGRESS_AMOUNT = 1.0
 CHAIN_MAX_DEPTH = 3
 
 

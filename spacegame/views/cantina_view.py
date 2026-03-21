@@ -23,6 +23,7 @@ from spacegame.engine.draw_utils import draw_panel
 from spacegame.engine.fonts import FontCache
 from spacegame.utils.logger import logger
 from spacegame.engine.audio_manager import get_audio_manager
+from spacegame.engine.tooltip import TooltipState
 
 # Layout constants
 HEADER_CARD_Y = 10
@@ -97,6 +98,8 @@ class CantinaView(BaseView):
         self._rerecruit_buttons: dict[str, pygame_gui.elements.UIButton] = {}
         self._hire_buttons: dict[str, pygame_gui.elements.UIButton] = {}
         self._contract_buttons: dict[str, pygame_gui.elements.UIButton] = {}
+        self._board_missions: dict[str, object] = {}  # mission_id -> Mission for tooltips
+        self._tooltip = TooltipState(delay=0.3, fade_in=0.15)
 
         # Background
         self.background = AnimatedBackground(
@@ -196,6 +199,7 @@ class CantinaView(BaseView):
                     btn_y += BUTTON_H + BUTTON_PAD
 
         # Station board contracts
+        self._board_missions.clear()
         if self.mission_manager and hasattr(self.mission_manager, "get_available_at_system"):
             board_missions = [
                 m
@@ -216,6 +220,7 @@ class CantinaView(BaseView):
                         manager=self.ui_manager,
                     )
                     self._contract_buttons[mission.id] = btn
+                    self._board_missions[mission.id] = mission
                     btn_y += BUTTON_H + BUTTON_PAD
 
     def _destroy_ui(self) -> None:
@@ -276,8 +281,9 @@ class CantinaView(BaseView):
                 return
 
     def update(self, dt: float) -> None:
-        """Update background animation."""
+        """Update background animation and tooltip state."""
         self.background.update(dt)
+        self._update_contract_tooltip(dt)
 
     def render(self, screen: pygame.Surface) -> None:
         """Render cantina view."""
@@ -289,6 +295,9 @@ class CantinaView(BaseView):
 
         # Section labels
         self._render_section_labels(screen)
+
+        # Contract tooltip (rendered last, on top)
+        self._render_contract_tooltip(screen)
 
     def _render_header(self, screen: pygame.Surface) -> None:
         """Render header card with cantina name and description."""
@@ -344,6 +353,106 @@ class CantinaView(BaseView):
             btn_y += SECTION_PAD
             label = self.label_font.render("Station Board", True, Colors.TEXT_HIGHLIGHT)
             screen.blit(label, (label_x, btn_y - 2))
+
+    # === Contract tooltip ===
+
+    def _update_contract_tooltip(self, dt: float) -> None:
+        """Check if mouse hovers over a contract button and update tooltip."""
+        mouse_pos = pygame.mouse.get_pos()
+        hovered_id: Optional[str] = None
+        for mission_id, btn in self._contract_buttons.items():
+            if btn.rect.collidepoint(mouse_pos):
+                hovered_id = mission_id
+                break
+        if hovered_id:
+            self._tooltip.set_hover(hovered_id, mouse_pos)
+        else:
+            self._tooltip.clear()
+        self._tooltip.update(dt)
+
+    def _render_contract_tooltip(self, screen: pygame.Surface) -> None:
+        """Render tooltip with mission details when hovering a contract."""
+        if not self._tooltip.visible or self._tooltip.content is None:
+            return
+        mission = self._board_missions.get(self._tooltip.content)
+        if not mission:
+            return
+
+        alpha = int(255 * self._tooltip.alpha)
+        pad = 12
+        line_h = 20
+        max_w = 360
+
+        # Build tooltip lines
+        lines: list[tuple[str, tuple[int, int, int]]] = []
+        lines.append((mission.name, Colors.TEXT_HIGHLIGHT))
+        if mission.description:
+            # Word-wrap description to fit tooltip width
+            for wrapped in self._wrap_text(mission.description, self.desc_font, max_w - pad * 2):
+                lines.append((wrapped, Colors.TEXT))
+        if mission.hint:
+            lines.append(("", Colors.TEXT))  # spacer
+            for wrapped in self._wrap_text(mission.hint, self.desc_font, max_w - pad * 2):
+                lines.append((wrapped, Colors.TEXT_SECONDARY))
+        if mission.objectives:
+            lines.append(("", Colors.TEXT))  # spacer
+            lines.append(("Objectives:", Colors.TEXT_HIGHLIGHT))
+            for obj in mission.objectives:
+                desc = obj.description or f"{obj.type.value}: {obj.target_id}"
+                lines.append((f"  {desc}", Colors.TEXT))
+        if mission.rewards:
+            lines.append(("", Colors.TEXT))  # spacer
+            lines.append(("Rewards:", Colors.TEXT_HIGHLIGHT))
+            for r in mission.rewards:
+                if r.reward_type == "credits":
+                    lines.append((f"  {r.amount:,} Credits", (200, 200, 100)))
+                elif r.reward_type == "xp":
+                    lines.append((f"  {r.amount:,} XP", (100, 200, 255)))
+                elif r.reward_type == "reputation":
+                    lines.append((f"  {r.amount:+d} Reputation ({r.target_id})", (100, 200, 100)))
+                else:
+                    lines.append((f"  {r.reward_type}: {r.amount}", Colors.TEXT))
+
+        # Calculate tooltip dimensions
+        tooltip_w = max_w
+        tooltip_h = pad * 2 + len(lines) * line_h
+
+        # Position with screen clamping
+        tx, ty = self._tooltip.get_screen_position(
+            tooltip_w, tooltip_h, WINDOW_WIDTH, WINDOW_HEIGHT
+        )
+
+        # Draw background
+        tip_surf = pygame.Surface((tooltip_w, tooltip_h), pygame.SRCALPHA)
+        tip_surf.fill((15, 18, 30, alpha))
+        pygame.draw.rect(tip_surf, (60, 70, 100, alpha), (0, 0, tooltip_w, tooltip_h), 1)
+        screen.blit(tip_surf, (tx, ty))
+
+        # Draw text lines
+        for i, (text, color) in enumerate(lines):
+            if not text:
+                continue
+            surf = self.desc_font.render(text, True, color)
+            surf.set_alpha(alpha)
+            screen.blit(surf, (tx + pad, ty + pad + i * line_h))
+
+    @staticmethod
+    def _wrap_text(text: str, font: pygame.font.Font, max_width: int) -> list[str]:
+        """Word-wrap text to fit within a pixel width."""
+        words = text.split()
+        lines: list[str] = []
+        current = ""
+        for word in words:
+            test = f"{current} {word}".strip()
+            if font.size(test)[0] <= max_width:
+                current = test
+            else:
+                if current:
+                    lines.append(current)
+                current = word
+        if current:
+            lines.append(current)
+        return lines or [""]
 
     # === Action handlers ===
 

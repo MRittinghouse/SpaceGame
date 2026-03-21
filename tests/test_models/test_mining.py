@@ -889,6 +889,8 @@ class TestDepthScaling:
         """Breaking a rock at depth 4+ gives bonus yield."""
         config = MiningConfig(
             system_id="test",
+            grid_width=1,
+            grid_height=1,
             rock_distribution={"common": 1.0},
             base_click_power=0.50,
         )
@@ -896,7 +898,7 @@ class TestDepthScaling:
         session.depth = 7  # yield_bonus = 0.20
 
         # Break a rock — common yields 1-3, with 20% bonus: floor(base * 0.20) extra
-        # Need to click enough to break (common hardness=0.5, power=0.50 → 1.0 progress)
+        # Use 1x1 grid to prevent chain detonation interference
         success, msg, result = session.click_rock(0, 0)
         assert result is not None, "Rock should break with 0.50 click_power on common"
         # Verify total_mined reflects the yielded amount
@@ -1042,8 +1044,8 @@ class TestChainDetonation:
         assert session.chain_results[0].grid_x == 1
         assert session.chain_results[0].grid_y == 0
 
-    def test_chain_does_not_break_below_threshold(self) -> None:
-        """Neighbor at low progress doesn't break from chain (just gets progress)."""
+    def test_chain_breaks_neighbor_from_zero_progress(self) -> None:
+        """Chain detonation breaks neighbor outright (CHAIN_PROGRESS_AMOUNT=1.0)."""
         config = MiningConfig(
             system_id="test",
             grid_width=2,
@@ -1055,11 +1057,9 @@ class TestChainDetonation:
         neighbor = session.get_rock_at(1, 0)
         neighbor.drill_progress = 0.0  # Fresh rock
         session.click_rock(0, 0)
-        # CHAIN_PROGRESS_AMOUNT=0.25 < 1.0, so neighbor shouldn't break
-        # But should have some progress added
-        assert not neighbor.depleted
-        if neighbor.drill_progress > 0:
-            assert neighbor.drill_progress <= CHAIN_PROGRESS_AMOUNT + 0.01
+        # CHAIN_PROGRESS_AMOUNT=1.0, so neighbor should break
+        assert neighbor.depleted
+        assert neighbor.drill_progress >= 1.0
 
     def test_chain_cascades_to_depth_2(self) -> None:
         """Chain can cascade through multiple same-type neighbors."""
@@ -1263,14 +1263,20 @@ class TestSessionMilestones:
     def test_rocks_mined_milestone_completes(self) -> None:
         config = MiningConfig(
             system_id="test",
+            grid_width=1,
+            grid_height=2,
             rock_distribution={"common": 1.0},
-            base_click_power=0.50,
+            base_click_power=5.0,
         )
         milestones = self._make_milestones("rocks_mined", threshold=2)
         session = MiningSession(config, milestones=milestones)
+        # 1-wide grid: rocks at (0,0) and (0,1) are neighbors but both common.
+        # With high click power, rock breaks instantly. Chain may fire but
+        # that just means more rocks break — threshold=2 is still met.
         session.click_rock(0, 0)  # Break rock 1
-        assert not milestones[0].completed
-        session.click_rock(1, 0)  # Break rock 2
+        if not milestones[0].completed:
+            # Chain didn't break rock 2, click it manually
+            session.click_rock(0, 1)
         assert milestones[0].completed
 
     def test_rare_ores_tracked(self) -> None:

@@ -1,25 +1,21 @@
-# Space Trader — A Narrative-Driven Space Trading RPG
+# Space Trader
 
-A single-player space trading RPG set in the Aurelia Expanse, year 2335. Trade commodities across star systems, build your ship, recruit crew, navigate faction politics, and uncover a conspiracy that threatens the frontier.
+A broke orphan, a broken shuttle, and a galaxy full of secrets.
+
+Space Trader is a narrative-driven space trading RPG set in the Aurelia Expanse, a remote frontier cluster in the year 2335. Start from nothing at Nexus Prime and build your way up: run trade routes, dodge pirates, recruit a crew, pick sides in faction politics, and pull the thread on a conspiracy that could unravel the entire sector.
 
 Built with Python, pygame-ce, and pygame_gui.
 
 ## Playing the Game
 
-### Option A: Standalone Build (Recommended for Playtesters)
+### Option A: Standalone Build (No Python Required)
 
-No Python required. Download the latest build and run:
-
-```
-dist/SpaceGame/SpaceGame.exe
-```
-
-Double-click `SpaceGame.exe` and play. Save files are stored in `%APPDATA%/SpaceGame/saves/`.
+Download the latest release and run `SpaceGame.exe`. Save files are stored in `%APPDATA%/SpaceGame/saves/`.
 
 ### Option B: Install from Source (Windows)
 
-1. Install [Python 3.13+](https://www.python.org/downloads/) — check **"Add Python to PATH"** during install
-2. Double-click **`install.bat`** — creates a virtual environment and installs dependencies
+1. Install [Python 3.13+](https://www.python.org/downloads/) (check **"Add Python to PATH"** during install)
+2. Double-click **`install.bat`** to create a virtual environment and install dependencies
 3. Double-click **`play.bat`** to launch
 
 ### Option C: Manual Setup
@@ -42,23 +38,29 @@ python -m spacegame.main
 | Escape | Back / Cancel |
 | Number keys | Quick-select dialogue options |
 
-## Game Overview
+The game includes a built-in tutorial that walks you through core systems as you encounter them.
 
-You start with a Shuttle and a handful of credits at Nexus Prime. From there, the galaxy is yours.
+## What You Can Do
 
-### Core Systems
+**Trade.** Buy low, sell high across 11 star systems. Each system has its own regional market shaped by what it produces and consumes. Learn the patterns, find the margins, exploit the events.
 
-- **Trading** — Buy low, sell high across 11 star systems. Each system produces and consumes different commodities. 27 trade goods with dynamic pricing.
-- **Combat** — Turn-based tactical combat with energy management, weapons, shields, and special moves. 28 enemy templates from pirates to military patrols.
-- **Mining & Salvage** — Grid-based mini-games for extracting ore and scavenging wrecks. Refine raw materials into valuable goods.
-- **Crew** — Recruit up to 17 unique NPCs with their own personalities and skill bonuses. Assign them to roles, manage loyalty, build relationships.
-- **Progression** — Uncapped leveling with 9 skill trees (63 skills). Milestone bonus points every 5 levels. Specialize in trading, combat, exploration, smuggling, and more.
-- **Ships** — 24 ships across 5 tiers from a tin-can Shuttle to faction prestige vessels. Each ship is a statement of intent with distinct trade-offs.
-- **Upgrades** — 40 upgrades with a Mk1-Mk3 enhancement system. At Mk2, choose a tuning specialization that defines your build identity.
-- **Campaign** — 22 story missions across Act One. Faction politics, ground exploration, dialogue choices that matter.
-- **Ground Exploration** — Tile-based exploration of planetary surfaces with encounters, hazards, and discoveries.
+**Fight.** Turn-based tactical combat with energy management, weapon loadouts, shields, and special abilities. Pirates, military patrols, and worse are out there.
 
-### Ships & Progression
+**Mine, salvage, and refine.** Grid-based mini-games let you crack asteroids for ore and scavenge wrecks for parts. Back at the station, refine raw materials into valuable goods using recipes you discover along the way.
+
+**Smuggle.** High risk, high reward. Run contraband past inspections, manage your criminal heat, find black market contacts, and install hidden compartments. Just don't get caught.
+
+**Build your ship.** 24 ships across 5 tiers, from a tin-can Shuttle to faction prestige vessels. Every ship has a distinct identity: slot layouts, speed, cargo capacity, and fuel range define your playstyle. Outfit it with upgrades that can be enhanced from Mk1 to Mk3, with tuning specializations at Mk2 that let you shape your build.
+
+**Grow your crew.** Recruit companions and specialists, each with their own personality, skill bonuses, and personal quest arcs. Assign them to roles on your ship and build loyalty over time.
+
+**Pick sides.** Four factions vie for influence in the Expanse. Your reputation with each unlocks perks, gated content, and faction-exclusive ships, but getting close to one may cost you standing with another.
+
+**Follow the story.** A 22-mission campaign across Act One, plus side missions and crew quests. Dialogue choices matter. The world reacts. The conspiracy at the center of it all has a name, but you won't learn it until you're already in too deep.
+
+**Explore on foot.** Tile-based ground missions with stealth mechanics, ground combat, hazards, and discoveries. Some things can only be found by leaving the cockpit.
+
+### Ships and Progression
 
 Your ship defines your role:
 
@@ -69,19 +71,11 @@ Your ship defines your role:
 | Exploration | Scout Vessel | Deep Explorer | 500 fuel, 5 utility slots |
 | Mining | Prospector | Industrial Titan | 6 utility slots, 0 weapons |
 | Smuggling | Smuggler's Sloop | Phantom | Fastest ship (2.2x), stealth |
-| Diplomacy | — | Diplomatic Cruiser | 6 crew, rep bonus |
+| Diplomacy | Courier | Diplomatic Cruiser | 6 crew, rep bonus |
 
-Four **faction ships** reward deep reputation with unique abilities like tariff immunity, hull regeneration, double salvage yields, and quantum sensors.
+Four **faction ships** reward deep reputation with unique abilities: tariff immunity, hull regeneration, double salvage yields, and quantum sensors.
 
-### Enhancement System
-
-Every upgrade can be enhanced from Mk1 to Mk3:
-
-- **Mk1** — Base stats (purchase price)
-- **Mk2** — +25% effectiveness, choose a tuning specialization (+100% base price)
-- **Mk3** — +50% effectiveness, tuning bonus doubles (+200% base price)
-
-Two players with the same Laser Cannon can have completely different builds: one overcharged for raw damage, another precision-tuned to never miss.
+Your captain levels up with uncapped progression across 9 skill trees. Every 5 levels you earn milestone bonus points. Specialize in trading, combat, exploration, mining, smuggling, diplomacy, salvage, leadership, or social skills.
 
 ## For Developers
 
@@ -101,7 +95,7 @@ pip install -e ".[dev]"    # Includes pytest, black, mypy, pylint, pyinstaller
 
 ```bash
 python -m spacegame.main                    # Run the game
-pytest                                      # Run all tests (3415+)
+pytest                                      # Run all tests (4,649+)
 pytest tests/test_models/test_market.py     # Run a single test file
 black spacegame/ tests/                     # Format code
 mypy spacegame/                             # Type check
@@ -131,15 +125,15 @@ SpaceGame/
     data/                 # Theme config, assets (sprites, audio)
   data/                   # JSON content files (economy, galaxy, ships, progression)
   tests/                  # pytest tests mirroring spacegame/ structure
-  requirements/           # Game design and spec documents
-  spacegame.spec          # PyInstaller build config
-  install.bat             # Automated installer for from-source players
-  play.bat                # Quick launcher (after install.bat)
+  requirements/           # Active game design and spec documents
+  requirements/archive/   # Historical design docs and completed roadmaps
+  docs/                   # Player guides and feature documentation
+  tools/                  # Asset generation scripts (sprites, audio)
 ```
 
 ### Architecture
 
-- **TDD**: Tests written first, 3415+ tests covering models, data, views
+- **TDD**: Tests written first, 4,649+ tests covering models, data, views
 - **Models**: `@dataclass` classes with business logic, `tuple[bool, str]` for failable ops
 - **Views**: Strict `BaseView` lifecycle with `_create_ui`/`_destroy_ui` pairing
 - **Data-driven**: All game content is JSON files in `data/`, not hardcoded
@@ -151,20 +145,26 @@ See `CLAUDE.md` for comprehensive architecture and coding conventions.
 
 | Category | Count |
 |----------|-------|
-| Tests | 3,515+ |
+| Tests | 4,649+ |
 | Views | 34 |
 | Ships | 24 (5 tiers) |
-| Upgrades | 40 (with tuning) |
-| Commodities | 27 |
+| Upgrades | 58 (Mk1-Mk3 tiered) |
+| Commodities | 60 |
+| Refining Recipes | 38 (21 base + 17 advanced) |
 | Random Encounters | 131 (11 types) |
-| Skill Trees | 9 (63 skills) |
+| Skill Trees | 9 (89 skills, 175 points) |
+| Achievements | 62 |
 | Campaign Missions | 22 |
 | Side Missions | 21 |
-| NPCs | 28 |
-| Dialogue Trees | 29 |
+| Crew Quests | 12 |
+| NPCs | 31 |
+| Crew Members | 19 (4 companions + 15 specialists) |
+| Dialogue Trees | 45 |
 | Enemy Templates | 28 |
-| Star Systems | 11 |
+| Star Systems | 11 (regional markets) |
 | Factions | 4 + Crimson Reach |
+| Faction Perks | 12 |
+| Galaxy Events | 5 types, 18 templates |
 
 ## Credits
 
@@ -172,4 +172,4 @@ Built with [pygame-ce](https://pyga.me/), [pygame_gui](https://pygame-gui.readth
 
 ## License
 
-[To be determined]
+This project is licensed under the [GNU General Public License v3.0](LICENSE). You are free to use, modify, and distribute this software under the terms of the GPL. See the LICENSE file for details.

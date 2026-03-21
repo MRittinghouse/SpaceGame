@@ -201,7 +201,7 @@ class TestTransfer:
         view.on_exit()
 
     def test_transfer_on_stop_mining(self) -> None:
-        """Stopping mining shows transfer screen, then confirm transfers ore."""
+        """Stopping mining shows transfer screen; default is nothing selected."""
         player = _make_player()
         view = _make_view(player)
         view._silo.add_ore("iron_ore", 10)
@@ -217,7 +217,11 @@ class TestTransfer:
         view.handle_event(confirm_event)
         assert view._show_transfer, "Should show transfer screen"
         assert not view._show_summary, "Summary comes after transfer"
-        # Confirm transfer with ENTER → applies defaults (take all) and shows summary
+        # Default selections should be zero (player must actively choose)
+        for qty in view._transfer_selections.values():
+            assert qty == 0, "Transfer should default to nothing selected"
+        # Manually select all to transfer, then confirm
+        view._transfer_selections["iron_ore"] = 10
         enter_event = pygame.event.Event(pygame.KEYDOWN, key=pygame.K_RETURN)
         view.handle_event(enter_event)
         assert view._show_summary
@@ -526,4 +530,118 @@ class TestMiningDeepPolish:
                     break
         view._show_summary = True
         view.render(screen)  # Should not crash
+        view.on_exit()
+
+
+class TestWholesaleSell:
+    """Tests for wholesale ore sale feature."""
+
+    def test_wholesale_sells_at_ten_percent(self) -> None:
+        """Wholesale sell gives 10% of base price per unit."""
+        player = _make_player()
+        starting_credits = player.credits
+        view = _make_view(player)
+        # iron_ore base_price=20, 10% = 2 per unit; 10 units = 20 CR
+        view._silo.add_ore("iron_ore", 10)
+        view._end_session()
+        view._apply_wholesale_sell()
+        assert player.credits == starting_credits + 20
+        assert view._silo.get_total_stored() == 0
+        assert view._wholesale_credits == 20
+        assert view._wholesale_units == 10
+        view.on_exit()
+
+    def test_wholesale_minimum_one_credit(self) -> None:
+        """Cheap ores get at least 1 CR per unit at wholesale."""
+        player = _make_player()
+        starting_credits = player.credits
+        commodities = _make_commodities()
+        # Add a very cheap commodity (base_price=5, 10% = 0.5 → rounds to 0 → clamped to 1)
+        commodities["cheap_ore"] = _make_commodity("cheap_ore", "Cheap Ore", 5)
+        ui_manager = pygame_gui.UIManager((WINDOW_WIDTH, WINDOW_HEIGHT))
+        config = MiningConfig(system_id="breakstone")
+        view = MiningView(ui_manager, player, commodities, mining_config=config)
+        view.on_enter()
+        view._silo.add_ore("cheap_ore", 10)
+        view._end_session()
+        view._apply_wholesale_sell()
+        assert player.credits == starting_credits + 10  # 1 CR × 10 units
+        view.on_exit()
+
+    def test_wholesale_with_perk_bonus(self) -> None:
+        """Wholesale perk adds +5% to the rate (10% → 15%)."""
+        player = _make_player()
+        starting_credits = player.credits
+        ui_manager = pygame_gui.UIManager((WINDOW_WIDTH, WINDOW_HEIGHT))
+        config = MiningConfig(system_id="breakstone", perk_wholesale_bonus=0.05)
+        view = MiningView(ui_manager, player, _make_commodities(), mining_config=config)
+        view.on_enter()
+        # rare_ore base_price=100, 15% = 15 per unit; 10 units = 150 CR
+        view._silo.add_ore("rare_ore", 10)
+        view._end_session()
+        view._apply_wholesale_sell()
+        assert player.credits == starting_credits + 150
+        assert view._wholesale_credits == 150
+        view.on_exit()
+
+    def test_wholesale_mixed_ores(self) -> None:
+        """Wholesale correctly prices multiple ore types."""
+        player = _make_player()
+        starting_credits = player.credits
+        view = _make_view(player)
+        # iron_ore: 20 × 10% = 2/unit × 5 = 10
+        # crystal_ore: 50 × 10% = 5/unit × 3 = 15
+        view._silo.add_ore("iron_ore", 5)
+        view._silo.add_ore("crystal_ore", 3)
+        view._end_session()
+        view._apply_wholesale_sell()
+        assert player.credits == starting_credits + 25
+        assert view._wholesale_units == 8
+        assert view._silo.get_total_stored() == 0
+        view.on_exit()
+
+    def test_wholesale_clears_silo(self) -> None:
+        """Wholesale sell empties the silo completely."""
+        player = _make_player()
+        view = _make_view(player)
+        view._silo.add_ore("iron_ore", 20)
+        view._silo.add_ore("rare_ore", 5)
+        view._end_session()
+        view._apply_wholesale_sell()
+        assert view._silo.get_total_stored() == 0
+        view.on_exit()
+
+    def test_wholesale_transfers_selected_then_sells_rest(self) -> None:
+        """Selected ore goes to cargo, unselected ore gets wholesale sold."""
+        player = _make_player()
+        starting_credits = player.credits
+        view = _make_view(player)
+        # 99 iron (base 20, wholesale 2/unit) + 1 rare (base 100, wholesale 10/unit)
+        view._silo.add_ore("iron_ore", 99)
+        view._silo.add_ore("rare_ore", 1)
+        view._end_session()
+        # Select the rare ore to keep in cargo
+        view._transfer_selections["rare_ore"] = 1
+        view._apply_wholesale_sell()
+        # Rare ore should be in cargo, not sold
+        assert player.ship.get_cargo_quantity("rare_ore") == 1
+        # Iron should be wholesale sold: 99 × 2 = 198 CR
+        assert view._wholesale_credits == 198
+        assert view._wholesale_units == 99
+        assert player.credits == starting_credits + 198
+        # Silo should be empty
+        assert view._silo.get_total_stored() == 0
+        view.on_exit()
+
+    def test_wholesale_with_nothing_selected_sells_all(self) -> None:
+        """With no selections, wholesale sells everything."""
+        player = _make_player()
+        starting_credits = player.credits
+        view = _make_view(player)
+        view._silo.add_ore("iron_ore", 10)
+        view._end_session()
+        # No selections (default is 0)
+        view._apply_wholesale_sell()
+        assert player.credits == starting_credits + 20  # 10 × 2
+        assert player.ship.get_cargo_quantity("iron_ore") == 0
         view.on_exit()

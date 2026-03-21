@@ -650,6 +650,7 @@ class GalaxyMapView(BaseView):
         if self._travel_alert_showing:
             self._travel_alert_timer -= dt
             if self._travel_alert_timer <= 0:
+                self._travel_alert_showing = False
                 self._travel_animating = False
                 self._travel_origin_id = None
                 self._travel_dest_id = None

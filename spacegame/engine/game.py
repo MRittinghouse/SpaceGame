@@ -1719,6 +1719,9 @@ class Game:
             mining_config.perk_yield_bonus = self.politics_manager.get_perk_bonus(
                 self.player, self.player.current_system_id, "mining_yield_bonus"
             )
+            mining_config.perk_wholesale_bonus = self.politics_manager.get_perk_bonus(
+                self.player, self.player.current_system_id, "wholesale_ore_bonus"
+            )
         self.mining_view = MiningView(
             self.ui_manager,
             self.player,

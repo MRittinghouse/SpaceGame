@@ -480,6 +480,7 @@ class SaveManager:
             "deep_core_upgrades": player.deep_core_upgrades.to_dict(),
             "ore_silo_manager": player.ore_silo_manager.to_dict(),
             "mining_depth_per_system": dict(player.mining_depth_per_system),
+            "prestige_hint_shown": player.prestige_hint_shown,
             "salvage_intel": player.salvage_intel,
             "salvage_prestige_level": player.salvage_prestige_level,
             "wreck_upgrades": player.wreck_upgrades.to_dict(),
@@ -668,6 +669,7 @@ class SaveManager:
 
             player.ore_silo_manager = OreSiloManager.from_dict(data["ore_silo_manager"])
         player.mining_depth_per_system = data.get("mining_depth_per_system", {})
+        player.prestige_hint_shown = data.get("prestige_hint_shown", False)
 
         # Restore Deep Salvage progression
         player.salvage_intel = data.get("salvage_intel", 0)

@@ -76,6 +76,7 @@ class TestFactionPerkDataLoading:
         valid_types = {
             "buy_price_bonus", "sell_price_bonus", "mining_yield_bonus",
             "salvage_yield_bonus", "free_repairs", "free_fuel", "safe_passage",
+            "wholesale_ore_bonus",
         }
         from spacegame.data_loader import DataLoader
 
@@ -110,7 +111,7 @@ class TestFactionPerkDataLoading:
             for tiers in loader.faction_perks.values()
             for perks in tiers.values()
         )
-        assert count == 12  # 3 per faction × 4 factions
+        assert count == 13  # 3 per faction × 4 factions + 1 wholesale perk
 
 
 # === Model Logic: get_active_perks ===

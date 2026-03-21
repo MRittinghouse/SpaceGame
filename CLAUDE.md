@@ -31,8 +31,9 @@ spacegame/
   data/             -- Theme config (theme.json)
 data/               -- JSON content files (economy/, galaxy/, progression/, ships/)
 tests/              -- pytest tests mirroring spacegame/ structure
-docs/               -- Architecture and feature design documents
-requirements/       -- Game design and specification documents
+docs/               -- Player guides and feature documentation
+requirements/       -- Active game design and spec documents (7 files)
+requirements/archive/ -- Historical design docs and completed roadmaps
 ```
 
 ## Code Style

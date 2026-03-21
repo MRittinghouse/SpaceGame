@@ -139,7 +139,7 @@ class CharacterView(BaseView):
 
         # Attribute allocation buttons (only if unspent points)
         if self.attribute_sheet.unspent_points > 0:
-            attr_start_y = LEFT_Y + 90
+            attr_start_y = LEFT_Y + 44
             row_h = 48
             for i, attr in enumerate(AttributeId):
                 y = attr_start_y + i * row_h

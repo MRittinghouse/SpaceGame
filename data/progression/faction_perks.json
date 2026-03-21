@@ -51,6 +51,13 @@
           "value": true,
           "name": "Union Drydock",
           "description": "Free repairs at Union stations"
+        },
+        {
+          "id": "mu_wholesale_bonus",
+          "type": "wholesale_ore_bonus",
+          "value": 0.05,
+          "name": "Bulk Handler",
+          "description": "+5% wholesale ore sale prices at Union stations"
         }
       ]
     },

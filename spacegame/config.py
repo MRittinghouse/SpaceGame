@@ -269,7 +269,7 @@ SALVAGE_CHARGE_REGEN_SECONDS = 5.0
 # ============================================================================
 
 XP_PER_TRADE = 15
-XP_PER_MINING = 10
+XP_PER_MINING = 1
 XP_PER_SALVAGE = 10
 XP_PER_REFINE = 12
 XP_PER_TRAVEL = 10

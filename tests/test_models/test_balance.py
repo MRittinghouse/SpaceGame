@@ -37,8 +37,8 @@ class TestConfigConstants:
         )
 
     def test_xp_per_mining(self) -> None:
-        assert config.XP_PER_MINING == 10, (
-            f"Mining XP should be 10, got {config.XP_PER_MINING}"
+        assert config.XP_PER_MINING == 1, (
+            f"Mining XP should be 1, got {config.XP_PER_MINING}"
         )
 
     def test_xp_per_salvage(self) -> None:

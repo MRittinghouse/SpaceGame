@@ -1,8 +1,18 @@
 [project]
 name = "spacegame"
 version = "0.1.0"
-description = "A narrative-driven space trading RPG"
+description = "A narrative-driven space trading RPG set in the Aurelia Expanse"
+readme = "README.md"
+license = {text = "GPL-3.0-only"}
 requires-python = ">=3.13"
+keywords = ["rpg", "trading", "space", "pygame", "game"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Games/Entertainment :: Role-Playing",
+    "Operating System :: Microsoft :: Windows",
+]
 dependencies = [
     "pygame-ce>=2.5.0",
     "pygame-gui>=0.6.9",
