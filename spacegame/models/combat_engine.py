@@ -21,6 +21,7 @@ from spacegame.models.combat import (
     EffectTarget,
     EffectType,
     PlayerCombatState,
+    WeaponElement,
 )
 
 # Hit chance bounds
@@ -102,7 +103,17 @@ class CombatEngine:
         if move.cooldown > 0:
             player.cooldowns[move_id] = move.cooldown
 
-        # Determine target
+        # AOE moves hit all surviving enemies
+        if move.aoe:
+            all_logs: list[CombatLogEntry] = []
+            for enemy in self._state.surviving_enemies:
+                logs = self._resolve_move(
+                    move, player, enemy, "player", player.get_effective_accuracy()
+                )
+                all_logs.extend(logs)
+            return all_logs
+
+        # Single-target: determine target
         target_idx = min(target_idx, len(self._state.enemies) - 1)
         target_enemy = self._state.enemies[target_idx]
 
@@ -112,12 +123,19 @@ class CombatEngine:
         )
 
     def execute_crew_moves(
-        self, skip_ids: Optional[set[str]] = None
+        self, chosen_move_id: Optional[str] = None,
+        skip_ids: Optional[set[str]] = None,
     ) -> list[CombatLogEntry]:
-        """Execute all crew combat moves (crew phase).
+        """Execute a single chosen crew combat move.
+
+        With the crew tactical choice system, the player selects ONE crew
+        ability per turn (or none to save energy). The chosen move is
+        executed against the first surviving enemy.
 
         Args:
-            skip_ids: Set of move IDs to skip.
+            chosen_move_id: ID of the crew move the player selected, or
+                None to skip crew abilities this turn.
+            skip_ids: Legacy — set of move IDs to skip (backward compat).
 
         Returns:
             List of combat log entries produced.
@@ -131,6 +149,21 @@ class CombatEngine:
         if not surviving:
             return all_logs
 
+        # If a specific move was chosen, execute only that one
+        if chosen_move_id is not None:
+            for move in player.crew_moves:
+                if move.id == chosen_move_id and move.id not in skip_ids:
+                    if player.energy >= move.energy_cost:
+                        target = surviving[0]
+                        logs = self._resolve_move(
+                            move, player, target,
+                            f"crew:{move.id}", player.get_effective_accuracy(),
+                        )
+                        all_logs.extend(logs)
+                    break
+            return all_logs
+
+        # Legacy fallback: execute all crew moves (old behavior)
         for move in player.crew_moves:
             if move.id in skip_ids:
                 continue
@@ -240,6 +273,18 @@ class CombatEngine:
 
         # Default / COWARDLY (shouldn't reach here for cowardly, handled above)
         return available[0]
+
+    def telegraph_enemy_moves(self) -> None:
+        """Pre-compute and store each enemy's next intended move.
+
+        Called at the start of the player input phase so the player
+        can see what's coming and react accordingly.
+        """
+        for enemy in self._state.enemies:
+            if not enemy.is_alive or enemy.is_fled:
+                enemy.telegraphed_move = None
+                continue
+            enemy.telegraphed_move = self._select_enemy_move(enemy)
 
     @staticmethod
     def _move_damage(move: CombatMove) -> float:
@@ -573,7 +618,10 @@ class CombatEngine:
             hit = roll <= hit_chance
 
             if hit:
-                msgs = self._apply_effects(offensive_effects, defender, actor_name)
+                msgs = self._apply_effects(
+                    offensive_effects, defender, actor_name,
+                    attacker_state=attacker, element=move.element,
+                )
                 effects_applied.extend(msgs)
             else:
                 effects_applied.append(f"Missed (rolled {roll} vs {hit_chance}%)")
@@ -620,14 +668,25 @@ class CombatEngine:
         effects: list[CombatEffect],
         target: PlayerCombatState | EnemyShip,
         source_name: str,
+        attacker_state: Optional[PlayerCombatState | EnemyShip] = None,
+        element: Optional["WeaponElement"] = None,
     ) -> list[str]:
         """Apply a list of effects to a target.
+
+        Args:
+            effects: Effects to apply.
+            target: The entity receiving the effects.
+            source_name: Name of the actor for log messages.
+            attacker_state: The attacking entity (for self-referencing effects
+                like energy_restore and damage_boost checks). If None, uses target.
+            element: Weapon element for elemental damage resolution.
 
         Returns:
             Human-readable descriptions of what happened.
         """
         messages: list[str] = []
         target_name = self._get_target_name(target)
+        atk = attacker_state if attacker_state is not None else target
 
         # Calculate active damage reduction on the target
         damage_reduction = 0.0
@@ -635,24 +694,118 @@ class CombatEngine:
             if eff.type == EffectType.DAMAGE_REDUCTION:
                 damage_reduction += eff.value
 
+        # Check attacker's damage boost (from Overcharge etc.)
+        damage_boost_pct = 0.0
+        if hasattr(atk, "active_effects"):
+            for eff, _ in atk.active_effects:
+                if eff.type == EffectType.DAMAGE_BOOST:
+                    damage_boost_pct += eff.value
+
+        # Check for ABSORB (countermeasures) — nullify first incoming damage
+        absorb_idx = None
+        for i, (eff, dur) in enumerate(target.active_effects):
+            if eff.type == EffectType.ABSORB:
+                absorb_idx = i
+                break
+
+        if absorb_idx is not None:
+            # Check if this effect set has damage
+            has_incoming_dmg = any(e.type == EffectType.DAMAGE for e in effects)
+            if has_incoming_dmg:
+                target.active_effects.pop(absorb_idx)
+                messages.append("Countermeasures absorbed the hit!")
+                # Process non-damage effects only
+                effects = [e for e in effects if e.type != EffectType.DAMAGE]
+                if not effects:
+                    return messages
+
+        # Determine effective element (default Kinetic if none specified)
+        eff_element = element if element is not None else WeaponElement.KINETIC
+
+        # Check if target has Suppressed stacks (reduce their damage, not ours)
+        # Suppressed affects the TARGET's outgoing damage, handled separately in enemy turn
+
         for effect in effects:
             if effect.type == EffectType.DAMAGE:
                 raw = effect.value
-                reduced = raw * (1.0 - min(damage_reduction, 0.9))
-                if isinstance(target, PlayerCombatState):
-                    shield_absorbed = min(target.shields, reduced)
-                    hull_damage = reduced - shield_absorbed
-                    target.shields = max(0, target.shields - int(shield_absorbed))
-                    target.hull = max(0, target.hull - int(hull_damage))
+                if damage_boost_pct > 0:
+                    raw *= 1.0 + damage_boost_pct / 100.0
+
+                # === Elemental damage resolution ===
+                if eff_element == WeaponElement.PLASMA:
+                    # 66% upfront, remainder becomes Burn DoT
+                    upfront = raw * 0.66
+                    burn_per_turn = raw * 0.34 * 1.15  # 34% + 15% bonus
+                    reduced = upfront * (1.0 - min(damage_reduction, 0.9))
+                    self._apply_direct_damage(target, reduced, messages, target_name)
+                    # Apply Burn stack (stacks to 3, each lasts 3 turns)
+                    burn_effect = CombatEffect(
+                        type=EffectType.BURN, value=burn_per_turn,
+                        duration=3, target=EffectTarget.ENEMY,
+                    )
+                    self._apply_stacking_effect(target, burn_effect, max_stacks=3)
+                    messages.append(
+                        f"Burn: {int(burn_per_turn)}/turn for 3 turns"
+                    )
+
+                elif eff_element == WeaponElement.ION:
+                    # 150% to shields, 75% to hull
+                    reduced = raw * (1.0 - min(damage_reduction, 0.9))
+                    if isinstance(target, PlayerCombatState):
+                        shields = target.shields
+                        ion_shield_dmg = min(shields, reduced * 1.5)
+                        remaining = max(0, reduced - shields / 1.5)
+                        hull_dmg = remaining * 0.75
+                        target.shields = max(0, shields - int(ion_shield_dmg))
+                        target.hull = max(0, target.hull - int(hull_dmg))
+                    else:
+                        shields = target.current_shields
+                        ion_shield_dmg = min(shields, reduced * 1.5)
+                        remaining = max(0, reduced - shields / 1.5)
+                        hull_dmg = remaining * 0.75
+                        target.current_shields = max(0, shields - int(ion_shield_dmg))
+                        target.current_hull = max(0, target.current_hull - int(hull_dmg))
+                    messages.append(
+                        f"Ion: {int(ion_shield_dmg)} shield / {int(hull_dmg)} hull to {target_name}"
+                    )
+
+                elif eff_element == WeaponElement.CRYO:
+                    # 85% damage + Chill stack
+                    reduced = raw * 0.85 * (1.0 - min(damage_reduction, 0.9))
+                    self._apply_direct_damage(target, reduced, messages, target_name)
+                    chill_effect = CombatEffect(
+                        type=EffectType.CHILL, value=5.0,  # -5 evasion per stack
+                        duration=4, target=EffectTarget.ENEMY,
+                    )
+                    chill_count = self._apply_stacking_effect(target, chill_effect, max_stacks=3)
+                    messages.append(f"Chill x{chill_count}")
+                    if chill_count >= 3:
+                        # Frozen! Enemy loses next turn — clear all Chill stacks
+                        self._clear_effect_type(target, EffectType.CHILL)
+                        # Mark frozen by setting a special 1-turn skip flag
+                        frozen_effect = CombatEffect(
+                            type=EffectType.CHILL, value=0.0,
+                            duration=1, target=EffectTarget.ENEMY,
+                        )
+                        frozen_effect._frozen = True  # type: ignore[attr-defined]
+                        target.active_effects.append((frozen_effect, 1))
+                        messages.append("FROZEN! Enemy loses next turn")
+
+                elif eff_element == WeaponElement.VOLTAIC:
+                    # 85% damage + Suppressed stack
+                    reduced = raw * 0.85 * (1.0 - min(damage_reduction, 0.9))
+                    self._apply_direct_damage(target, reduced, messages, target_name)
+                    suppress_effect = CombatEffect(
+                        type=EffectType.SUPPRESSED, value=12.0,  # -12% damage per stack
+                        duration=3, target=EffectTarget.ENEMY,
+                    )
+                    sup_count = self._apply_stacking_effect(target, suppress_effect, max_stacks=3)
+                    messages.append(f"Suppressed x{sup_count} (-{sup_count * 12}% damage)")
+
                 else:
-                    shield_absorbed = min(target.current_shields, reduced)
-                    hull_damage = reduced - shield_absorbed
-                    target.current_shields = max(0, target.current_shields - int(shield_absorbed))
-                    target.current_hull = max(0, target.current_hull - int(hull_damage))
-                messages.append(
-                    f"Dealt {int(reduced)} damage to {target_name} "
-                    f"({int(shield_absorbed)} shields, {int(hull_damage)} hull)"
-                )
+                    # Kinetic (default) — pure direct damage
+                    reduced = raw * (1.0 - min(damage_reduction, 0.9))
+                    self._apply_direct_damage(target, reduced, messages, target_name)
 
             elif effect.type == EffectType.SHIELD_DRAIN:
                 if isinstance(target, PlayerCombatState):
@@ -692,6 +845,28 @@ class CombatEngine:
                     target.current_energy -= drained
                 messages.append(f"Drained {drained} energy from {target_name}")
 
+            elif effect.type == EffectType.ENERGY_RESTORE:
+                # Restore energy to the target (self-targeting in practice)
+                if isinstance(target, PlayerCombatState):
+                    restored = min(int(effect.value), target.max_energy - target.energy)
+                    target.energy += restored
+                else:
+                    max_e = getattr(target, "max_energy", 999)
+                    cur_e = getattr(target, "current_energy", 0)
+                    restored = min(int(effect.value), max_e - cur_e)
+                    if hasattr(target, "current_energy"):
+                        target.current_energy += restored
+                if restored > 0:
+                    messages.append(f"Restored {restored} energy")
+
+            elif effect.type == EffectType.DAMAGE_BOOST:
+                # Buff that increases next attack damage (duration-based, on self)
+                duration = max(1, effect.duration)
+                target.active_effects.append((effect, duration))
+                messages.append(
+                    f"+{int(effect.value)}% damage for {duration} turn{'s' if duration > 1 else ''}"
+                )
+
             elif effect.type in (
                 EffectType.EVASION_MOD,
                 EffectType.ACCURACY_MOD,
@@ -711,7 +886,90 @@ class CombatEngine:
                         f"{int(effect.value)} on {target_name}"
                     )
 
+            elif effect.type == EffectType.CLEANSE:
+                # Remove all negative effects from target (self-buff)
+                negative_types = {
+                    EffectType.BURN, EffectType.CHILL, EffectType.SUPPRESSED,
+                }
+                before = len(target.active_effects)
+                target.active_effects = [
+                    (eff, dur) for eff, dur in target.active_effects
+                    if eff.type not in negative_types
+                    or (eff.target == EffectTarget.SELF and eff.value >= 0)
+                ]
+                removed = before - len(target.active_effects)
+                if removed > 0:
+                    messages.append(f"Cleansed {removed} negative effect{'s' if removed > 1 else ''}")
+                else:
+                    messages.append("No negative effects to cleanse")
+
+            elif effect.type == EffectType.ABSORB:
+                # Add absorb shield: next incoming hit is nullified
+                target.active_effects.append((effect, max(1, effect.duration)))
+                messages.append("Countermeasures deployed — next hit absorbed")
+
         return messages
+
+    @staticmethod
+    def _apply_direct_damage(
+        target: PlayerCombatState | EnemyShip,
+        reduced: float,
+        messages: list[str],
+        target_name: str,
+    ) -> None:
+        """Apply direct damage to a target's shields then hull."""
+        if isinstance(target, PlayerCombatState):
+            shield_absorbed = min(target.shields, reduced)
+            hull_damage = reduced - shield_absorbed
+            target.shields = max(0, target.shields - int(shield_absorbed))
+            target.hull = max(0, target.hull - int(hull_damage))
+        else:
+            shield_absorbed = min(target.current_shields, reduced)
+            hull_damage = reduced - shield_absorbed
+            target.current_shields = max(0, target.current_shields - int(shield_absorbed))
+            target.current_hull = max(0, target.current_hull - int(hull_damage))
+        messages.append(
+            f"Dealt {int(reduced)} damage to {target_name} "
+            f"({int(shield_absorbed)} shields, {int(hull_damage)} hull)"
+        )
+
+    @staticmethod
+    def _apply_stacking_effect(
+        target: PlayerCombatState | EnemyShip,
+        effect: CombatEffect,
+        max_stacks: int = 3,
+    ) -> int:
+        """Apply a stacking status effect, enforcing the stack cap.
+
+        Returns:
+            Current stack count after application.
+        """
+        # Count existing stacks of this effect type
+        current_stacks = sum(
+            1 for eff, _ in target.active_effects
+            if eff.type == effect.type
+        )
+        if current_stacks < max_stacks:
+            target.active_effects.append((effect, effect.duration))
+            current_stacks += 1
+        else:
+            # Refresh the oldest stack's duration instead of adding a new one
+            for i, (eff, _) in enumerate(target.active_effects):
+                if eff.type == effect.type:
+                    target.active_effects[i] = (effect, effect.duration)
+                    break
+        return current_stacks
+
+    @staticmethod
+    def _clear_effect_type(
+        target: PlayerCombatState | EnemyShip,
+        effect_type: EffectType,
+    ) -> None:
+        """Remove all stacks of a specific effect type from a target."""
+        target.active_effects = [
+            (eff, dur) for eff, dur in target.active_effects
+            if eff.type != effect_type
+        ]
 
     def _get_target_name(self, target: PlayerCombatState | EnemyShip) -> str:
         """Get a display name for a target."""

@@ -11,7 +11,7 @@ import math
 import random
 from typing import Optional, Dict, List
 from spacegame.views.base_view import BaseView
-from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState
+from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState, scale_x, scale_y
 from spacegame.models.player import Player
 from spacegame.models.commodity import Commodity
 from spacegame.models.mining import (
@@ -41,8 +41,8 @@ from spacegame.engine.particles import (
     EMPOWERED_BURST,
     DEPTH_TRANSITION,
 )
-from spacegame.engine.sprites import get_sprite_manager
-from spacegame.engine.fonts import FontCache
+from spacegame.engine.sprites import get_sprite_manager, res_scale
+from spacegame.engine.fonts import FONT_HEADING, FONT_LG, FONT_MD, FONT_RATING, FONT_SECTION2, FONT_SM, FONT_TITLE, FontCache
 from spacegame.engine.audio_manager import get_audio_manager
 from spacegame.engine.floating_text import FloatingItemManager
 from spacegame.engine.tooltip import TooltipState
@@ -76,17 +76,17 @@ FIELD_DESCRIPTIONS: dict[str, tuple[str, str]] = {
 class MiningView(BaseView):
     """Asteroid mining mini-game with click-to-mine and drone automation."""
 
-    CELL_SIZE = 80
+    CELL_SIZE = scale_y(80)
     CELL_PADDING = 4
-    GRID_OFFSET_X = 60
-    GRID_OFFSET_Y = 120
+    GRID_OFFSET_X = scale_x(60)
+    GRID_OFFSET_Y = scale_y(120)
 
     # Right-side info cards: two columns to avoid overlap
-    CARD_COL_W = 265
+    CARD_COL_W = scale_x(265)
     CARD_COL_GAP = 10
     CARD_COL_RIGHT_X = WINDOW_WIDTH - CARD_COL_W - 5  # Right column
     CARD_COL_LEFT_X = CARD_COL_RIGHT_X - CARD_COL_W - CARD_COL_GAP  # Left column
-    CARD_TOP_Y = 120
+    CARD_TOP_Y = scale_y(120)
 
     def __init__(
         self,
@@ -120,10 +120,10 @@ class MiningView(BaseView):
         self._session_strata: int = 0
 
         # Fonts
-        self.title_font = FontCache.get(36)
-        self.info_font = FontCache.get(24)
-        self.small_font = FontCache.get(20)
-        self.cell_font = FontCache.get(18)
+        self.title_font = FontCache.get(FONT_TITLE)
+        self.info_font = FontCache.get(FONT_LG)
+        self.small_font = FontCache.get(FONT_MD)
+        self.cell_font = FontCache.get(FONT_SM)
 
         # UI buttons
         self.back_button: Optional[pygame_gui.elements.UIButton] = None
@@ -179,14 +179,14 @@ class MiningView(BaseView):
         self._drone_sprites: Dict[int, Optional[pygame.Surface]] = {}
         for tier in (1, 2, 3):
             self._drone_sprites[tier] = self._sprite_mgr.get_static_sprite(
-                "mining", f"drone_tier{tier}", scale=2
+                "mining", f"drone_tier{tier}", scale=res_scale(2)
             )
 
         # Ore icon sprites (commodity_id -> Surface at 3x scale = 48x48)
         self._ore_icons: Dict[str, Optional[pygame.Surface]] = {}
         for cfg in ROCK_TYPE_CONFIGS.values():
             self._ore_icons[cfg.commodity_id] = self._sprite_mgr.get_commodity_icon(
-                cfg.commodity_id, scale=3
+                cfg.commodity_id, scale=res_scale(3)
             )
 
         # Session flow states: mining → transfer screen → summary
@@ -199,9 +199,9 @@ class MiningView(BaseView):
         self._transfer_count: int = 0
         self._wholesale_credits: int = 0
         self._wholesale_units: int = 0
-        self._summary_font = FontCache.get(32)
-        self._summary_title_font = FontCache.get(44)
-        self._rating_font = FontCache.get(72)
+        self._summary_font = FontCache.get(FONT_HEADING)
+        self._summary_title_font = FontCache.get(FONT_SECTION2)
+        self._rating_font = FontCache.get(FONT_RATING)
 
         # Floating icon manager for ore-to-silo animations
         self._floats = FloatingItemManager()
@@ -260,12 +260,12 @@ class MiningView(BaseView):
             count = self.ROCK_VARIANT_COUNTS.get(rock_type, 1)
             for v in range(1, count + 1):
                 sprite_id = f"{base_id}_v{v}"
-                surf = self._sprite_mgr.get_static_sprite("mining", sprite_id, scale=2)
+                surf = self._sprite_mgr.get_static_sprite("mining", sprite_id, scale=res_scale(2))
                 if surf is not None:
                     variants.append(surf)
             # Try base (no variant suffix) as fallback
             if not variants:
-                surf = self._sprite_mgr.get_static_sprite("mining", base_id, scale=2)
+                surf = self._sprite_mgr.get_static_sprite("mining", base_id, scale=res_scale(2))
                 if surf is not None:
                     variants.append(surf)
             if variants:
@@ -276,7 +276,7 @@ class MiningView(BaseView):
         # Unstable cells
         unstable_variants: list[pygame.Surface] = []
         for v in (1, 2):
-            surf = self._sprite_mgr.get_static_sprite("mining", f"rock_unstable_v{v}", scale=2)
+            surf = self._sprite_mgr.get_static_sprite("mining", f"rock_unstable_v{v}", scale=res_scale(2))
             if surf is not None:
                 unstable_variants.append(surf)
         if unstable_variants:
@@ -285,7 +285,7 @@ class MiningView(BaseView):
         # Pressure vent cells
         vent_variants: list[pygame.Surface] = []
         for v in (1, 2):
-            surf = self._sprite_mgr.get_static_sprite("mining", f"rock_vent_v{v}", scale=2)
+            surf = self._sprite_mgr.get_static_sprite("mining", f"rock_vent_v{v}", scale=res_scale(2))
             if surf is not None:
                 vent_variants.append(surf)
         if vent_variants:
@@ -425,33 +425,35 @@ class MiningView(BaseView):
         self._destroy_ui()
 
     def _create_ui(self) -> None:
+        btn_h = scale_y(40)
+        btn_y = WINDOW_HEIGHT - scale_y(60)
         self.back_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(20, WINDOW_HEIGHT - 60, 150, 40),
+            relative_rect=pygame.Rect(scale_x(20), btn_y, scale_x(150), btn_h),
             text="Stop Mining",
             manager=self.ui_manager,
         )
         self.regen_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(180, WINDOW_HEIGHT - 60, 180, 40),
+            relative_rect=pygame.Rect(scale_x(180), btn_y, scale_x(180), btn_h),
             text="Regenerate Field",
             manager=self.ui_manager,
         )
         self.transfer_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(370, WINDOW_HEIGHT - 60, 180, 40),
+            relative_rect=pygame.Rect(scale_x(370), btn_y, scale_x(180), btn_h),
             text="Transfer to Cargo",
             manager=self.ui_manager,
         )
         self.wholesale_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(560, WINDOW_HEIGHT - 60, 180, 40),
+            relative_rect=pygame.Rect(scale_x(560), btn_y, scale_x(180), btn_h),
             text="Wholesale Sell Silo",
             manager=self.ui_manager,
         )
         self.strata_sell_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(750, WINDOW_HEIGHT - 60, 180, 40),
+            relative_rect=pygame.Rect(scale_x(750), btn_y, scale_x(180), btn_h),
             text="Sell Strata Tokens",
             manager=self.ui_manager,
         )
         self.prestige_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(940, WINDOW_HEIGHT - 60, 150, 40),
+            relative_rect=pygame.Rect(scale_x(940), btn_y, scale_x(150), btn_h),
             text="Prestige",
             manager=self.ui_manager,
         )
@@ -1862,7 +1864,7 @@ class MiningView(BaseView):
                 next_cost = None
 
             # Button rect
-            btn_rect = pygame.Rect(panel_x, y, panel_w - 16, 22)
+            btn_rect = pygame.Rect(panel_x, y, panel_w - scale_x(16), scale_y(22))
             self._upgrade_rects[uid] = btn_rect
 
             # Hover highlight
@@ -2045,12 +2047,12 @@ class MiningView(BaseView):
         mx, my = pos
 
         # Panel geometry (must match _render_transfer_screen)
-        panel_w, panel_h = 600, 500
+        panel_w, panel_h = scale_x(600), scale_y(500)
         px = WINDOW_WIDTH // 2 - panel_w // 2
         py = WINDOW_HEIGHT // 2 - panel_h // 2
 
-        row_y_start = py + 70 + 18
-        row_h = 40
+        row_y_start = py + scale_y(70) + scale_y(18)
+        row_h = scale_y(40)
         items = [(cid, self._silo.contents.get(cid, 0))
                  for cid in self._transfer_selections if self._silo.contents.get(cid, 0) > 0]
 
@@ -2060,9 +2062,9 @@ class MiningView(BaseView):
         for i, (cid, stored) in enumerate(items):
             ry = row_y_start + i * row_h
             # Minus button: x = px + 360, w = 30
-            minus_rect = pygame.Rect(px + 360, ry, 30, 28)
+            minus_rect = pygame.Rect(px + scale_x(360), ry, scale_x(30), scale_y(28))
             # Plus button: x = px + 440, w = 30
-            plus_rect = pygame.Rect(px + 440, ry, 30, 28)
+            plus_rect = pygame.Rect(px + scale_x(440), ry, scale_x(30), scale_y(28))
 
             if minus_rect.collidepoint(mx, my):
                 current = self._transfer_selections.get(cid, 0)
@@ -2077,7 +2079,7 @@ class MiningView(BaseView):
                 return
 
         # "Transfer All" button
-        all_btn = pygame.Rect(px + 30, py + panel_h - 55, 160, 36)
+        all_btn = pygame.Rect(px + scale_x(30), py + panel_h - scale_y(55), scale_x(160), scale_y(36))
         if all_btn.collidepoint(mx, my):
             # Greedily fill cargo with most valuable first
             commodity_values = {}
@@ -2098,21 +2100,21 @@ class MiningView(BaseView):
             return
 
         # "Take Nothing" button
-        none_btn = pygame.Rect(px + 210, py + panel_h - 55, 160, 36)
+        none_btn = pygame.Rect(px + scale_x(210), py + panel_h - scale_y(55), scale_x(160), scale_y(36))
         if none_btn.collidepoint(mx, my):
             for cid in self._transfer_selections:
                 self._transfer_selections[cid] = 0
             return
 
         # "Confirm" button
-        confirm_btn = pygame.Rect(px + 390, py + panel_h - 55, 160, 36)
+        confirm_btn = pygame.Rect(px + scale_x(390), py + panel_h - scale_y(55), scale_x(160), scale_y(36))
         if confirm_btn.collidepoint(mx, my):
             self._apply_transfer_selections()
             self._finalize_session()
             return
 
         # "Wholesale Sell" button (second row)
-        wholesale_btn = pygame.Rect(px + 30, py + panel_h - 100, panel_w - 60, 36)
+        wholesale_btn = pygame.Rect(px + scale_x(30), py + panel_h - scale_y(100), panel_w - scale_x(60), scale_y(36))
         if wholesale_btn.collidepoint(mx, my):
             self._apply_wholesale_sell()
             return
@@ -2125,7 +2127,7 @@ class MiningView(BaseView):
         screen.blit(dim, (0, 0))
 
         # Panel
-        panel_w, panel_h = 600, 500
+        panel_w, panel_h = scale_x(600), scale_y(500)
         px = WINDOW_WIDTH // 2 - panel_w // 2
         py = WINDOW_HEIGHT // 2 - panel_h // 2
         draw_panel(screen, (px, py, panel_w, panel_h), alpha=240)
@@ -2135,7 +2137,7 @@ class MiningView(BaseView):
 
         # Title
         title = self._summary_font.render("TRANSFER ORE", True, (180, 140, 255))
-        screen.blit(title, title.get_rect(center=(WINDOW_WIDTH // 2, py + 20)))
+        screen.blit(title, title.get_rect(center=(WINDOW_WIDTH // 2, py + scale_y(20))))
 
         # Cargo space indicator
         cargo_space = self._get_cargo_space_remaining()
@@ -2143,22 +2145,22 @@ class MiningView(BaseView):
         space_color = Colors.SUCCESS if total_selected <= cargo_space else Colors.RED
         space_text = f"Cargo Space: {cargo_space} units available"
         space_surf = self.small_font.render(space_text, True, space_color)
-        screen.blit(space_surf, (px + 30, py + 45))
+        screen.blit(space_surf, (px + scale_x(30), py + scale_y(45)))
 
         selected_text = f"Selected: {total_selected} units"
         sel_surf = self.small_font.render(selected_text, True, Colors.TEXT)
-        screen.blit(sel_surf, (px + panel_w - sel_surf.get_width() - 30, py + 45))
+        screen.blit(sel_surf, (px + panel_w - sel_surf.get_width() - scale_x(30), py + scale_y(45)))
 
         # Column headers
-        header_y = py + 65
-        headers = [("Ore", px + 30), ("In Silo", px + 250), ("Take", px + 390)]
+        header_y = py + scale_y(65)
+        headers = [("Ore", px + scale_x(30)), ("In Silo", px + scale_x(250)), ("Take", px + scale_x(390))]
         for text, hx in headers:
             h_surf = self.small_font.render(text, True, Colors.TEXT_SECONDARY)
             screen.blit(h_surf, (hx, header_y))
 
         # Ore rows
-        row_y = py + 70 + 18
-        row_h = 40
+        row_y = py + scale_y(70) + scale_y(18)
+        row_h = scale_y(40)
         items = [(cid, self._silo.contents.get(cid, 0))
                  for cid in self._transfer_selections if self._silo.contents.get(cid, 0) > 0]
 
@@ -2169,22 +2171,22 @@ class MiningView(BaseView):
             value = commodity.base_price if commodity else 0
 
             # Icon
-            icon = self._sprite_mgr.get_commodity_icon(cid, scale=2)
+            icon = self._sprite_mgr.get_commodity_icon(cid, scale=res_scale(2))
             if icon:
-                screen.blit(icon, (px + 30, ry + 2))
+                screen.blit(icon, (px + scale_x(30), ry + 2))
 
             # Name + value hint
             name_surf = self.info_font.render(cname, True, Colors.TEXT)
-            screen.blit(name_surf, (px + 65, ry + 2))
+            screen.blit(name_surf, (px + scale_x(65), ry + 2))
             val_surf = self.small_font.render(f"~{value} CR/unit", True, Colors.TEXT_SECONDARY)
-            screen.blit(val_surf, (px + 65, ry + 22))
+            screen.blit(val_surf, (px + scale_x(65), ry + scale_y(22)))
 
             # Stored quantity
             stored_surf = self.info_font.render(str(stored), True, Colors.TEXT_SECONDARY)
-            screen.blit(stored_surf, (px + 270, ry + 4))
+            screen.blit(stored_surf, (px + scale_x(270), ry + 4))
 
             # - button
-            minus_rect = pygame.Rect(px + 360, ry, 30, 28)
+            minus_rect = pygame.Rect(px + scale_x(360), ry, scale_x(30), scale_y(28))
             pygame.draw.rect(screen, Colors.UI_BORDER, minus_rect, 1, border_radius=3)
             minus_text = self.info_font.render("-", True, Colors.TEXT)
             screen.blit(minus_text, minus_text.get_rect(center=minus_rect.center))
@@ -2195,32 +2197,32 @@ class MiningView(BaseView):
             amount_surf = self.info_font.render(str(selected), True, sel_color)
             screen.blit(
                 amount_surf,
-                amount_surf.get_rect(center=(px + 420, ry + 14)),
+                amount_surf.get_rect(center=(px + scale_x(420), ry + scale_y(14))),
             )
 
             # + button
-            plus_rect = pygame.Rect(px + 440, ry, 30, 28)
+            plus_rect = pygame.Rect(px + scale_x(440), ry, scale_x(30), scale_y(28))
             pygame.draw.rect(screen, Colors.UI_BORDER, plus_rect, 1, border_radius=3)
             plus_text = self.info_font.render("+", True, Colors.TEXT)
             screen.blit(plus_text, plus_text.get_rect(center=plus_rect.center))
 
         # Action buttons at bottom
-        btn_y = py + panel_h - 55
+        btn_y = py + panel_h - scale_y(55)
 
         # Transfer All (most valuable first)
-        all_rect = pygame.Rect(px + 30, btn_y, 160, 36)
+        all_rect = pygame.Rect(px + scale_x(30), btn_y, scale_x(160), scale_y(36))
         draw_panel(screen, all_rect, alpha=200, border_color=Colors.TEXT_HIGHLIGHT)
         all_text = self.small_font.render("Transfer All", True, Colors.TEXT_HIGHLIGHT)
         screen.blit(all_text, all_text.get_rect(center=all_rect.center))
 
         # Take Nothing
-        none_rect = pygame.Rect(px + 210, btn_y, 160, 36)
+        none_rect = pygame.Rect(px + scale_x(210), btn_y, scale_x(160), scale_y(36))
         draw_panel(screen, none_rect, alpha=200, border_color=Colors.TEXT_SECONDARY)
         none_text = self.small_font.render("Take Nothing", True, Colors.TEXT_SECONDARY)
         screen.blit(none_text, none_text.get_rect(center=none_rect.center))
 
         # Confirm
-        confirm_rect = pygame.Rect(px + 390, btn_y, 160, 36)
+        confirm_rect = pygame.Rect(px + scale_x(390), btn_y, scale_x(160), scale_y(36))
         draw_panel(screen, confirm_rect, alpha=200, border_color=Colors.SUCCESS)
         confirm_text = self.small_font.render("Confirm", True, Colors.SUCCESS)
         screen.blit(confirm_text, confirm_text.get_rect(center=confirm_rect.center))
@@ -2241,7 +2243,7 @@ class MiningView(BaseView):
                 wholesale_total += price_per_unit * remainder
                 wholesale_units += remainder
 
-        wholesale_rect = pygame.Rect(px + 30, py + panel_h - 100, panel_w - 60, 36)
+        wholesale_rect = pygame.Rect(px + scale_x(30), py + panel_h - scale_y(100), panel_w - scale_x(60), scale_y(36))
         wholesale_color = (200, 170, 60)
         draw_panel(screen, wholesale_rect, alpha=200, border_color=wholesale_color)
         perk_tag = self._get_wholesale_tag()

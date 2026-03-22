@@ -10,10 +10,10 @@ import pygame
 import pygame_gui
 from typing import Optional
 
-from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState
+from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState, scale_x, scale_y
 from spacegame.views.base_view import BaseView
 from spacegame.engine.backgrounds import AnimatedBackground
-from spacegame.engine.fonts import FontCache
+from spacegame.engine.fonts import FontCache, FONT_DISPLAY, FONT_MD, FONT_XL
 from spacegame.utils.logger import logger
 
 # Name validation constants
@@ -30,9 +30,9 @@ class NameInputView(BaseView):
         self.next_state: Optional[GameState] = None
 
         # Fonts
-        self.title_font = FontCache.get(48)
-        self.subtitle_font = FontCache.get(28)
-        self.error_font = FontCache.get(20)
+        self.title_font = FontCache.get(FONT_DISPLAY)
+        self.subtitle_font = FontCache.get(FONT_XL)
+        self.error_font = FontCache.get(FONT_MD)
 
         # UI elements (created in _create_ui)
         self.name_input: Optional[pygame_gui.elements.UITextEntryLine] = None
@@ -65,8 +65,8 @@ class NameInputView(BaseView):
         cx = WINDOW_WIDTH // 2
 
         # Name text input
-        input_width = 300
-        input_rect = pygame.Rect(cx - input_width // 2, 340, input_width, 40)
+        input_width = scale_x(300)
+        input_rect = pygame.Rect(cx - input_width // 2, scale_y(340), input_width, scale_y(40))
         self.name_input = pygame_gui.elements.UITextEntryLine(
             relative_rect=input_rect,
             manager=self.ui_manager,
@@ -75,7 +75,7 @@ class NameInputView(BaseView):
         self.name_input.set_text_length_limit(MAX_NAME_LENGTH)
 
         # Ship name text input
-        ship_rect = pygame.Rect(cx - input_width // 2, 430, input_width, 40)
+        ship_rect = pygame.Rect(cx - input_width // 2, scale_y(430), input_width, scale_y(40))
         self.ship_name_input = pygame_gui.elements.UITextEntryLine(
             relative_rect=ship_rect,
             manager=self.ui_manager,
@@ -84,9 +84,9 @@ class NameInputView(BaseView):
         self.ship_name_input.set_text_length_limit(MAX_NAME_LENGTH)
 
         # Begin Journey button
-        btn_width = 200
+        btn_width = scale_x(200)
         self.begin_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(cx - btn_width // 2, 510, btn_width, 45),
+            relative_rect=pygame.Rect(cx - btn_width // 2, scale_y(510), btn_width, scale_y(45)),
             text="BEGIN JOURNEY",
             manager=self.ui_manager,
         )
@@ -148,26 +148,26 @@ class NameInputView(BaseView):
 
         # Title
         title_surf = self.title_font.render("Enter Your Name", True, Colors.TEXT_HIGHLIGHT)
-        title_rect = title_surf.get_rect(center=(cx, 240))
+        title_rect = title_surf.get_rect(center=(cx, scale_y(240)))
         screen.blit(title_surf, title_rect)
 
         # Subtitle
         sub_surf = self.subtitle_font.render(
             "What shall we call you, spacer?", True, Colors.TEXT_SECONDARY
         )
-        sub_rect = sub_surf.get_rect(center=(cx, 290))
+        sub_rect = sub_surf.get_rect(center=(cx, scale_y(290)))
         screen.blit(sub_surf, sub_rect)
 
         # Ship name label
         ship_label = self.subtitle_font.render(
             "Name your ship (optional):", True, Colors.TEXT_SECONDARY
         )
-        screen.blit(ship_label, ship_label.get_rect(center=(cx, 410)))
+        screen.blit(ship_label, ship_label.get_rect(center=(cx, scale_y(410))))
 
         # Error message
         if self._error_timer > 0 and self._error_message:
             err_surf = self.error_font.render(self._error_message, True, Colors.RED)
-            err_rect = err_surf.get_rect(center=(cx, 490))
+            err_rect = err_surf.get_rect(center=(cx, scale_y(490)))
             screen.blit(err_surf, err_rect)
 
     def get_next_state(self) -> Optional[GameState]:

@@ -353,6 +353,19 @@
       "consumption_tags": []
     },
     {
+      "id": "sealed_audit_chip",
+      "name": "Sealed Audit Chip",
+      "category": "quest",
+      "description": "A sealed data chip containing Guild internal audit records. Neve Osei needs it delivered to Stellaris Port.",
+      "base_price": 0,
+      "variance_min": 0.0,
+      "variance_max": 0.0,
+      "volume_per_unit": 1,
+      "legality": "legal",
+      "production_tags": [],
+      "consumption_tags": []
+    },
+    {
       "id": "flux_catalyst",
       "name": "Flux Catalyst",
       "category": "component",

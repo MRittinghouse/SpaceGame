@@ -1038,6 +1038,7 @@ class DataLoader:
             faction_id=data.get("faction_id", ""),
             home_system_id=data.get("home_system_id", ""),
             combat_move=data.get("combat_move"),
+            combat_moves=data.get("combat_moves", []),
             is_companion=data.get("is_companion", False),
         )
 

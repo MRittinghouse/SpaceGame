@@ -11,8 +11,20 @@
       "tier": 1,
       "available_systems": [],
       "tuning_options": [
-        {"id": "reinforced", "name": "Reinforced", "description": "+10 hull HP", "bonus_type": "hull_bonus", "bonus_value": 10.0},
-        {"id": "optimized", "name": "Optimized", "description": "+5 cargo", "bonus_type": "cargo_bonus", "bonus_value": 5.0}
+        {
+          "id": "reinforced",
+          "name": "Reinforced",
+          "description": "+10 hull HP",
+          "bonus_type": "hull_bonus",
+          "bonus_value": 10.0
+        },
+        {
+          "id": "optimized",
+          "name": "Optimized",
+          "description": "+5 cargo",
+          "bonus_type": "cargo_bonus",
+          "bonus_value": 5.0
+        }
       ]
     },
     {
@@ -26,8 +38,20 @@
       "tier": 1,
       "available_systems": [],
       "tuning_options": [
-        {"id": "insulated", "name": "Insulated", "description": "+10 fuel capacity", "bonus_type": "fuel_bonus", "bonus_value": 10.0},
-        {"id": "lightweight", "name": "Lightweight", "description": "+0.1 speed", "bonus_type": "speed_bonus", "bonus_value": 0.1}
+        {
+          "id": "insulated",
+          "name": "Insulated",
+          "description": "+10 fuel capacity",
+          "bonus_type": "fuel_bonus",
+          "bonus_value": 10.0
+        },
+        {
+          "id": "lightweight",
+          "name": "Lightweight",
+          "description": "+0.1 speed",
+          "bonus_type": "speed_bonus",
+          "bonus_value": 0.1
+        }
       ]
     },
     {
@@ -41,8 +65,20 @@
       "tier": 2,
       "available_systems": [],
       "tuning_options": [
-        {"id": "overdrive", "name": "Overdrive", "description": "+0.15 speed", "bonus_type": "speed_bonus", "bonus_value": 0.15},
-        {"id": "economizer", "name": "Economizer", "description": "-1 fuel per jump", "bonus_type": "fuel_efficiency_bonus", "bonus_value": 1.0}
+        {
+          "id": "overdrive",
+          "name": "Overdrive",
+          "description": "+0.15 speed",
+          "bonus_type": "speed_bonus",
+          "bonus_value": 0.15
+        },
+        {
+          "id": "economizer",
+          "name": "Economizer",
+          "description": "-1 fuel per jump",
+          "bonus_type": "fuel_efficiency_bonus",
+          "bonus_value": 1.0
+        }
       ]
     },
     {
@@ -56,8 +92,20 @@
       "tier": 1,
       "available_systems": [],
       "tuning_options": [
-        {"id": "afterburner", "name": "Afterburner", "description": "+10% flee chance", "bonus_type": "flee_bonus", "bonus_value": 10.0},
-        {"id": "reactive", "name": "Reactive", "description": "+8 evasion in combat", "bonus_type": "evasion_bonus", "bonus_value": 8.0}
+        {
+          "id": "afterburner",
+          "name": "Afterburner",
+          "description": "+10% flee chance",
+          "bonus_type": "flee_bonus",
+          "bonus_value": 10.0
+        },
+        {
+          "id": "reactive",
+          "name": "Reactive",
+          "description": "+8 evasion in combat",
+          "bonus_type": "evasion_bonus",
+          "bonus_value": 8.0
+        }
       ]
     },
     {
@@ -67,12 +115,24 @@
       "price": 6000,
       "slot_type": "mining",
       "bonus_type": "drill_speed_bonus",
-      "bonus_value": 0.20,
+      "bonus_value": 0.2,
       "tier": 1,
       "available_systems": [],
       "tuning_options": [
-        {"id": "deep_core", "name": "Deep Core", "description": "+15% rare ore chance", "bonus_type": "rare_ore_bonus", "bonus_value": 0.15},
-        {"id": "rapid_extract", "name": "Rapid Extract", "description": "+10% drill speed", "bonus_type": "drill_speed_bonus", "bonus_value": 0.10}
+        {
+          "id": "deep_core",
+          "name": "Deep Core",
+          "description": "+15% rare ore chance",
+          "bonus_type": "rare_ore_bonus",
+          "bonus_value": 0.15
+        },
+        {
+          "id": "rapid_extract",
+          "name": "Rapid Extract",
+          "description": "+10% drill speed",
+          "bonus_type": "drill_speed_bonus",
+          "bonus_value": 0.1
+        }
       ]
     },
     {
@@ -86,8 +146,20 @@
       "tier": 1,
       "available_systems": [],
       "tuning_options": [
-        {"id": "deep_scan", "name": "Deep Scan", "description": "+1 scan charge", "bonus_type": "scan_charge_bonus", "bonus_value": 1.0},
-        {"id": "analyzer", "name": "Analyzer", "description": "+10% salvage yield", "bonus_type": "salvage_yield_bonus", "bonus_value": 0.10}
+        {
+          "id": "deep_scan",
+          "name": "Deep Scan",
+          "description": "+1 scan charge",
+          "bonus_type": "scan_charge_bonus",
+          "bonus_value": 1.0
+        },
+        {
+          "id": "analyzer",
+          "name": "Analyzer",
+          "description": "+10% salvage yield",
+          "bonus_type": "salvage_yield_bonus",
+          "bonus_value": 0.1
+        }
       ]
     },
     {
@@ -105,7 +177,12 @@
         "id": "salvaged_pulse_emitter",
         "name": "Pulse Shot",
         "description": "A flickering energy pulse. Low damage, but it gets the job done.",
-        "effects": [{"type": "damage", "value": 6.0}],
+        "effects": [
+          {
+            "type": "damage",
+            "value": 6.0
+          }
+        ],
         "energy_cost": 1,
         "accuracy_modifier": 0
       }
@@ -121,14 +198,31 @@
       "tier": 1,
       "available_systems": [],
       "tuning_options": [
-        {"id": "focused", "name": "Focused Beam", "description": "+4 damage", "bonus_type": "damage_bonus", "bonus_value": 4.0},
-        {"id": "wide_beam", "name": "Wide Beam", "description": "+8 accuracy", "bonus_type": "accuracy_bonus", "bonus_value": 8.0}
+        {
+          "id": "focused",
+          "name": "Focused Beam",
+          "description": "+4 damage",
+          "bonus_type": "damage_bonus",
+          "bonus_value": 4.0
+        },
+        {
+          "id": "wide_beam",
+          "name": "Wide Beam",
+          "description": "+8 accuracy",
+          "bonus_type": "accuracy_bonus",
+          "bonus_value": 8.0
+        }
       ],
       "combat_move": {
         "id": "mining_laser_retrofit",
         "name": "Mining Laser",
         "description": "A repurposed mining laser. Decent accuracy, moderate damage.",
-        "effects": [{"type": "damage", "value": 12.0}],
+        "effects": [
+          {
+            "type": "damage",
+            "value": 12.0
+          }
+        ],
         "energy_cost": 2,
         "accuracy_modifier": 5
       }
@@ -144,14 +238,31 @@
       "tier": 2,
       "available_systems": [],
       "tuning_options": [
-        {"id": "overcharged", "name": "Overcharged", "description": "+4 damage", "bonus_type": "damage_bonus", "bonus_value": 4.0},
-        {"id": "precision", "name": "Precision", "description": "+15 accuracy", "bonus_type": "accuracy_bonus", "bonus_value": 15.0}
+        {
+          "id": "overcharged",
+          "name": "Overcharged",
+          "description": "+4 damage",
+          "bonus_type": "damage_bonus",
+          "bonus_value": 4.0
+        },
+        {
+          "id": "precision",
+          "name": "Precision",
+          "description": "+15 accuracy",
+          "bonus_type": "accuracy_bonus",
+          "bonus_value": 15.0
+        }
       ],
       "combat_move": {
         "id": "laser_cannon",
         "name": "Laser Cannon",
         "description": "A focused laser beam. Accurate and reliable.",
-        "effects": [{"type": "damage", "value": 18.0}],
+        "effects": [
+          {
+            "type": "damage",
+            "value": 18.0
+          }
+        ],
         "energy_cost": 3,
         "accuracy_modifier": 10
       }
@@ -167,14 +278,31 @@
       "tier": 2,
       "available_systems": [],
       "tuning_options": [
-        {"id": "synchronized", "name": "Synchronized", "description": "+6 damage", "bonus_type": "damage_bonus", "bonus_value": 6.0},
-        {"id": "staggered", "name": "Staggered Fire", "description": "+12 accuracy", "bonus_type": "accuracy_bonus", "bonus_value": 12.0}
+        {
+          "id": "synchronized",
+          "name": "Synchronized",
+          "description": "+6 damage",
+          "bonus_type": "damage_bonus",
+          "bonus_value": 6.0
+        },
+        {
+          "id": "staggered",
+          "name": "Staggered Fire",
+          "description": "+12 accuracy",
+          "bonus_type": "accuracy_bonus",
+          "bonus_value": 12.0
+        }
       ],
       "combat_move": {
         "id": "dual_laser",
         "name": "Dual Laser Burst",
         "description": "Fires both lasers in a focused burst.",
-        "effects": [{"type": "damage", "value": 24.0}],
+        "effects": [
+          {
+            "type": "damage",
+            "value": 24.0
+          }
+        ],
         "energy_cost": 4,
         "accuracy_modifier": 5
       }
@@ -190,14 +318,31 @@
       "tier": 2,
       "available_systems": [],
       "tuning_options": [
-        {"id": "heavy_warhead", "name": "Heavy Warhead", "description": "+8 damage", "bonus_type": "damage_bonus", "bonus_value": 8.0},
-        {"id": "guided", "name": "Guided", "description": "+15 accuracy", "bonus_type": "accuracy_bonus", "bonus_value": 15.0}
+        {
+          "id": "heavy_warhead",
+          "name": "Heavy Warhead",
+          "description": "+8 damage",
+          "bonus_type": "damage_bonus",
+          "bonus_value": 8.0
+        },
+        {
+          "id": "guided",
+          "name": "Guided",
+          "description": "+15 accuracy",
+          "bonus_type": "accuracy_bonus",
+          "bonus_value": 15.0
+        }
       ],
       "combat_move": {
         "id": "missile_launcher",
         "name": "Missile Salvo",
         "description": "Launches an explosive missile. High damage, low accuracy.",
-        "effects": [{"type": "damage", "value": 30.0}],
+        "effects": [
+          {
+            "type": "damage",
+            "value": 30.0
+          }
+        ],
         "energy_cost": 4,
         "cooldown": 2,
         "accuracy_modifier": -10
@@ -214,16 +359,34 @@
       "tier": 2,
       "available_systems": [],
       "tuning_options": [
-        {"id": "cascade", "name": "Cascade", "description": "+5 shield drain", "bonus_type": "shield_drain_bonus", "bonus_value": 5.0},
-        {"id": "ionized", "name": "Ionized", "description": "+4 damage", "bonus_type": "damage_bonus", "bonus_value": 4.0}
+        {
+          "id": "cascade",
+          "name": "Cascade",
+          "description": "+5 shield drain",
+          "bonus_type": "shield_drain_bonus",
+          "bonus_value": 5.0
+        },
+        {
+          "id": "ionized",
+          "name": "Ionized",
+          "description": "+4 damage",
+          "bonus_type": "damage_bonus",
+          "bonus_value": 4.0
+        }
       ],
       "combat_move": {
         "id": "ion_disruptor",
         "name": "Ion Blast",
         "description": "Disrupts shields and deals light damage.",
         "effects": [
-          {"type": "damage", "value": 8.0},
-          {"type": "shield_drain", "value": 15.0}
+          {
+            "type": "damage",
+            "value": 8.0
+          },
+          {
+            "type": "shield_drain",
+            "value": 15.0
+          }
         ],
         "energy_cost": 3,
         "cooldown": 1,
@@ -239,16 +402,37 @@
       "bonus_type": "",
       "bonus_value": 0.0,
       "tier": 3,
-      "available_systems": ["crimson_reach", "breakstone", "the_fulcrum"],
+      "available_systems": [
+        "crimson_reach",
+        "breakstone",
+        "the_fulcrum"
+      ],
       "tuning_options": [
-        {"id": "superheated", "name": "Superheated", "description": "+10 damage", "bonus_type": "damage_bonus", "bonus_value": 10.0},
-        {"id": "compact_charge", "name": "Compact Charge", "description": "+10 accuracy", "bonus_type": "accuracy_bonus", "bonus_value": 10.0}
+        {
+          "id": "superheated",
+          "name": "Superheated",
+          "description": "+10 damage",
+          "bonus_type": "damage_bonus",
+          "bonus_value": 10.0
+        },
+        {
+          "id": "compact_charge",
+          "name": "Compact Charge",
+          "description": "+10 accuracy",
+          "bonus_type": "accuracy_bonus",
+          "bonus_value": 10.0
+        }
       ],
       "combat_move": {
         "id": "plasma_torpedo",
         "name": "Plasma Torpedo",
         "description": "A devastating plasma charge.",
-        "effects": [{"type": "damage", "value": 45.0}],
+        "effects": [
+          {
+            "type": "damage",
+            "value": 45.0
+          }
+        ],
         "energy_cost": 6,
         "cooldown": 3,
         "accuracy_modifier": 0
@@ -265,14 +449,32 @@
       "tier": 1,
       "available_systems": [],
       "tuning_options": [
-        {"id": "rapid_cycle", "name": "Rapid Cycle", "description": "-1 energy cost", "bonus_type": "energy_discount", "bonus_value": 1.0},
-        {"id": "overcharge", "name": "Overcharge", "description": "+10 shield restore", "bonus_type": "shield_restore_bonus", "bonus_value": 10.0}
+        {
+          "id": "rapid_cycle",
+          "name": "Rapid Cycle",
+          "description": "-1 energy cost",
+          "bonus_type": "energy_discount",
+          "bonus_value": 1.0
+        },
+        {
+          "id": "overcharge",
+          "name": "Overcharge",
+          "description": "+10 shield restore",
+          "bonus_type": "shield_restore_bonus",
+          "bonus_value": 10.0
+        }
       ],
       "combat_move": {
         "id": "basic_shield_gen",
         "name": "Shield Restore",
         "description": "Restores 20 shield points.",
-        "effects": [{"type": "shield_restore", "value": 20.0, "target": "self"}],
+        "effects": [
+          {
+            "type": "shield_restore",
+            "value": 20.0,
+            "target": "self"
+          }
+        ],
         "energy_cost": 2
       }
     },
@@ -287,14 +489,33 @@
       "tier": 2,
       "available_systems": [],
       "tuning_options": [
-        {"id": "hardened", "name": "Hardened", "description": "+10 hull", "bonus_type": "hull_bonus", "bonus_value": 10.0},
-        {"id": "ablative", "name": "Ablative", "description": "+5% damage reduction", "bonus_type": "damage_reduction_bonus", "bonus_value": 0.05}
+        {
+          "id": "hardened",
+          "name": "Hardened",
+          "description": "+10 hull",
+          "bonus_type": "hull_bonus",
+          "bonus_value": 10.0
+        },
+        {
+          "id": "ablative",
+          "name": "Ablative",
+          "description": "+5% damage reduction",
+          "bonus_type": "damage_reduction_bonus",
+          "bonus_value": 0.05
+        }
       ],
       "combat_move": {
         "id": "armor_plating",
         "name": "Reinforce Armor",
         "description": "+15% damage reduction for 2 turns.",
-        "effects": [{"type": "damage_reduction", "value": 0.15, "duration": 2, "target": "self"}],
+        "effects": [
+          {
+            "type": "damage_reduction",
+            "value": 0.15,
+            "duration": 2,
+            "target": "self"
+          }
+        ],
         "energy_cost": 2
       }
     },
@@ -309,14 +530,33 @@
       "tier": 2,
       "available_systems": [],
       "tuning_options": [
-        {"id": "tracking", "name": "Tracking", "description": "+10 evasion", "bonus_type": "evasion_bonus", "bonus_value": 10.0},
-        {"id": "counterfire", "name": "Counterfire", "description": "+5 accuracy on next attack", "bonus_type": "accuracy_bonus", "bonus_value": 5.0}
+        {
+          "id": "tracking",
+          "name": "Tracking",
+          "description": "+10 evasion",
+          "bonus_type": "evasion_bonus",
+          "bonus_value": 10.0
+        },
+        {
+          "id": "counterfire",
+          "name": "Counterfire",
+          "description": "+5 accuracy on next attack",
+          "bonus_type": "accuracy_bonus",
+          "bonus_value": 5.0
+        }
       ],
       "combat_move": {
         "id": "point_defense",
         "name": "Point Defense",
         "description": "+25 evasion for 1 turn.",
-        "effects": [{"type": "evasion_mod", "value": 25.0, "duration": 1, "target": "self"}],
+        "effects": [
+          {
+            "type": "evasion_mod",
+            "value": 25.0,
+            "duration": 1,
+            "target": "self"
+          }
+        ],
         "energy_cost": 3
       }
     },
@@ -331,14 +571,32 @@
       "tier": 2,
       "available_systems": [],
       "tuning_options": [
-        {"id": "nano_repair", "name": "Nano Repair", "description": "+8 hull restore", "bonus_type": "hull_restore_bonus", "bonus_value": 8.0},
-        {"id": "quick_patch", "name": "Quick Patch", "description": "+5 shield restore", "bonus_type": "shield_restore_bonus", "bonus_value": 5.0}
+        {
+          "id": "nano_repair",
+          "name": "Nano Repair",
+          "description": "+8 hull restore",
+          "bonus_type": "hull_restore_bonus",
+          "bonus_value": 8.0
+        },
+        {
+          "id": "quick_patch",
+          "name": "Quick Patch",
+          "description": "+5 shield restore",
+          "bonus_type": "shield_restore_bonus",
+          "bonus_value": 5.0
+        }
       ],
       "combat_move": {
         "id": "emergency_repair",
         "name": "Emergency Repair",
         "description": "Restores 25 hull points.",
-        "effects": [{"type": "hull_restore", "value": 25.0, "target": "self"}],
+        "effects": [
+          {
+            "type": "hull_restore",
+            "value": 25.0,
+            "target": "self"
+          }
+        ],
         "energy_cost": 3,
         "cooldown": 3
       }
@@ -352,18 +610,43 @@
       "bonus_type": "",
       "bonus_value": 0.0,
       "tier": 3,
-      "available_systems": ["axiom_labs", "nova_research", "stellaris_port"],
+      "available_systems": [
+        "axiom_labs",
+        "nova_research",
+        "stellaris_port"
+      ],
       "tuning_options": [
-        {"id": "capacitor", "name": "Capacitor", "description": "+15 shield restore", "bonus_type": "shield_restore_bonus", "bonus_value": 15.0},
-        {"id": "reflective", "name": "Reflective", "description": "+5% damage reduction", "bonus_type": "damage_reduction_bonus", "bonus_value": 0.05}
+        {
+          "id": "capacitor",
+          "name": "Capacitor",
+          "description": "+15 shield restore",
+          "bonus_type": "shield_restore_bonus",
+          "bonus_value": 15.0
+        },
+        {
+          "id": "reflective",
+          "name": "Reflective",
+          "description": "+5% damage reduction",
+          "bonus_type": "damage_reduction_bonus",
+          "bonus_value": 0.05
+        }
       ],
       "combat_move": {
         "id": "advanced_shield",
         "name": "Advanced Shields",
         "description": "Restores 40 shields + 10% damage reduction for 2 turns.",
         "effects": [
-          {"type": "shield_restore", "value": 40.0, "target": "self"},
-          {"type": "damage_reduction", "value": 0.10, "duration": 2, "target": "self"}
+          {
+            "type": "shield_restore",
+            "value": 40.0,
+            "target": "self"
+          },
+          {
+            "type": "damage_reduction",
+            "value": 0.1,
+            "duration": 2,
+            "target": "self"
+          }
         ],
         "energy_cost": 4
       }
@@ -375,13 +658,25 @@
       "price": 2500,
       "slot_type": "smuggling",
       "bonus_type": "hidden_compartment",
-      "bonus_value": 0.30,
+      "bonus_value": 0.3,
       "requires_black_market": true,
       "tier": 1,
       "available_systems": [],
       "tuning_options": [
-        {"id": "ghost_lining", "name": "Ghost Lining", "description": "-5% scan detection", "bonus_type": "scan_evasion_bonus", "bonus_value": 0.05},
-        {"id": "expanded", "name": "Expanded", "description": "+10% hidden cargo", "bonus_type": "hidden_compartment", "bonus_value": 0.10}
+        {
+          "id": "ghost_lining",
+          "name": "Ghost Lining",
+          "description": "-5% scan detection",
+          "bonus_type": "scan_evasion_bonus",
+          "bonus_value": 0.05
+        },
+        {
+          "id": "expanded",
+          "name": "Expanded",
+          "description": "+10% hidden cargo",
+          "bonus_type": "hidden_compartment",
+          "bonus_value": 0.1
+        }
       ]
     },
     {
@@ -396,8 +691,20 @@
       "tier": 1,
       "available_systems": [],
       "tuning_options": [
-        {"id": "broadband", "name": "Broadband", "description": "-3% inspection chance", "bonus_type": "inspection_evasion", "bonus_value": 0.03},
-        {"id": "targeted", "name": "Targeted", "description": "-3% bounty hunter chance", "bonus_type": "bounty_evasion", "bonus_value": 0.03}
+        {
+          "id": "broadband",
+          "name": "Broadband",
+          "description": "-3% inspection chance",
+          "bonus_type": "inspection_evasion",
+          "bonus_value": 0.03
+        },
+        {
+          "id": "targeted",
+          "name": "Targeted",
+          "description": "-3% bounty hunter chance",
+          "bonus_type": "bounty_evasion",
+          "bonus_value": 0.03
+        }
       ]
     },
     {
@@ -412,8 +719,20 @@
       "tier": 1,
       "available_systems": [],
       "tuning_options": [
-        {"id": "rotating", "name": "Rotating IDs", "description": "-4% inspection chance", "bonus_type": "inspection_evasion", "bonus_value": 0.04},
-        {"id": "deep_cover", "name": "Deep Cover", "description": "-5% bounty hunter chance", "bonus_type": "bounty_evasion", "bonus_value": 0.05}
+        {
+          "id": "rotating",
+          "name": "Rotating IDs",
+          "description": "-4% inspection chance",
+          "bonus_type": "inspection_evasion",
+          "bonus_value": 0.04
+        },
+        {
+          "id": "deep_cover",
+          "name": "Deep Cover",
+          "description": "-5% bounty hunter chance",
+          "bonus_type": "bounty_evasion",
+          "bonus_value": 0.05
+        }
       ]
     },
     {
@@ -427,8 +746,20 @@
       "tier": 2,
       "available_systems": [],
       "tuning_options": [
-        {"id": "predictive", "name": "Predictive", "description": "-1 fuel per jump", "bonus_type": "fuel_efficiency_bonus", "bonus_value": 1.0},
-        {"id": "adaptive", "name": "Adaptive", "description": "+0.1 speed", "bonus_type": "speed_bonus", "bonus_value": 0.1}
+        {
+          "id": "predictive",
+          "name": "Predictive",
+          "description": "-1 fuel per jump",
+          "bonus_type": "fuel_efficiency_bonus",
+          "bonus_value": 1.0
+        },
+        {
+          "id": "adaptive",
+          "name": "Adaptive",
+          "description": "+0.1 speed",
+          "bonus_type": "speed_bonus",
+          "bonus_value": 0.1
+        }
       ]
     },
     {
@@ -438,12 +769,28 @@
       "price": 10000,
       "slot_type": "scanner",
       "bonus_type": "salvage_yield_bonus",
-      "bonus_value": 0.20,
+      "bonus_value": 0.2,
       "tier": 2,
-      "available_systems": ["breakstone", "iron_depths", "forgeworks"],
+      "available_systems": [
+        "breakstone",
+        "iron_depths",
+        "forgeworks"
+      ],
       "tuning_options": [
-        {"id": "wide_field", "name": "Wide Field", "description": "+10% salvage yield", "bonus_type": "salvage_yield_bonus", "bonus_value": 0.10},
-        {"id": "precise", "name": "Precise", "description": "+1 scan charge", "bonus_type": "scan_charge_bonus", "bonus_value": 1.0}
+        {
+          "id": "wide_field",
+          "name": "Wide Field",
+          "description": "+10% salvage yield",
+          "bonus_type": "salvage_yield_bonus",
+          "bonus_value": 0.1
+        },
+        {
+          "id": "precise",
+          "name": "Precise",
+          "description": "+1 scan charge",
+          "bonus_type": "scan_charge_bonus",
+          "bonus_value": 1.0
+        }
       ]
     },
     {
@@ -455,10 +802,26 @@
       "bonus_type": "refining_yield_bonus",
       "bonus_value": 0.15,
       "tier": 2,
-      "available_systems": ["breakstone", "iron_depths", "forgeworks"],
+      "available_systems": [
+        "breakstone",
+        "iron_depths",
+        "forgeworks"
+      ],
       "tuning_options": [
-        {"id": "catalyst", "name": "Catalyst", "description": "+10% refining yield", "bonus_type": "refining_yield_bonus", "bonus_value": 0.10},
-        {"id": "speed_refine", "name": "Speed Refine", "description": "+10% drill speed", "bonus_type": "drill_speed_bonus", "bonus_value": 0.10}
+        {
+          "id": "catalyst",
+          "name": "Catalyst",
+          "description": "+10% refining yield",
+          "bonus_type": "refining_yield_bonus",
+          "bonus_value": 0.1
+        },
+        {
+          "id": "speed_refine",
+          "name": "Speed Refine",
+          "description": "+10% drill speed",
+          "bonus_type": "drill_speed_bonus",
+          "bonus_value": 0.1
+        }
       ]
     },
     {
@@ -470,10 +833,26 @@
       "bonus_type": "crew_slot_bonus",
       "bonus_value": 1.0,
       "tier": 3,
-      "available_systems": ["havens_rest", "nexus_prime", "verdant"],
+      "available_systems": [
+        "havens_rest",
+        "nexus_prime",
+        "verdant"
+      ],
       "tuning_options": [
-        {"id": "comfort", "name": "Comfort", "description": "+5 crew loyalty", "bonus_type": "loyalty_bonus", "bonus_value": 5.0},
-        {"id": "training", "name": "Training", "description": "+1 crew XP per event", "bonus_type": "crew_xp_bonus", "bonus_value": 1.0}
+        {
+          "id": "comfort",
+          "name": "Comfort",
+          "description": "+5 crew loyalty",
+          "bonus_type": "loyalty_bonus",
+          "bonus_value": 5.0
+        },
+        {
+          "id": "training",
+          "name": "Training",
+          "description": "+1 crew XP per event",
+          "bonus_type": "crew_xp_bonus",
+          "bonus_value": 1.0
+        }
       ]
     },
     {
@@ -485,10 +864,26 @@
       "bonus_type": "map_reveal_bonus",
       "bonus_value": 1.0,
       "tier": 2,
-      "available_systems": ["nexus_prime", "stellaris_port", "axiom_labs"],
+      "available_systems": [
+        "nexus_prime",
+        "stellaris_port",
+        "axiom_labs"
+      ],
       "tuning_options": [
-        {"id": "deep_scan", "name": "Deep Scan", "description": "+1 reveal range", "bonus_type": "map_reveal_bonus", "bonus_value": 1.0},
-        {"id": "threat_detect", "name": "Threat Detection", "description": "-10% ambush chance", "bonus_type": "ambush_evasion", "bonus_value": 0.10}
+        {
+          "id": "deep_scan",
+          "name": "Deep Scan",
+          "description": "+1 reveal range",
+          "bonus_type": "map_reveal_bonus",
+          "bonus_value": 1.0
+        },
+        {
+          "id": "threat_detect",
+          "name": "Threat Detection",
+          "description": "-10% ambush chance",
+          "bonus_type": "ambush_evasion",
+          "bonus_value": 0.1
+        }
       ]
     },
     {
@@ -500,10 +895,26 @@
       "bonus_type": "cargo_bonus",
       "bonus_value": 35.0,
       "tier": 2,
-      "available_systems": ["nexus_prime", "stellaris_port", "axiom_labs"],
+      "available_systems": [
+        "nexus_prime",
+        "stellaris_port",
+        "axiom_labs"
+      ],
       "tuning_options": [
-        {"id": "industrial", "name": "Industrial", "description": "+15 cargo", "bonus_type": "cargo_bonus", "bonus_value": 15.0},
-        {"id": "shielded", "name": "Shielded", "description": "+15 hull", "bonus_type": "hull_bonus", "bonus_value": 15.0}
+        {
+          "id": "industrial",
+          "name": "Industrial",
+          "description": "+15 cargo",
+          "bonus_type": "cargo_bonus",
+          "bonus_value": 15.0
+        },
+        {
+          "id": "shielded",
+          "name": "Shielded",
+          "description": "+15 hull",
+          "bonus_type": "hull_bonus",
+          "bonus_value": 15.0
+        }
       ]
     },
     {
@@ -515,10 +926,26 @@
       "bonus_type": "hull_bonus",
       "bonus_value": 25.0,
       "tier": 2,
-      "available_systems": ["havens_rest", "nexus_prime", "verdant"],
+      "available_systems": [
+        "havens_rest",
+        "nexus_prime",
+        "verdant"
+      ],
       "tuning_options": [
-        {"id": "ablative_hull", "name": "Ablative", "description": "+5% damage reduction", "bonus_type": "damage_reduction_bonus", "bonus_value": 0.05},
-        {"id": "dense", "name": "Dense", "description": "+15 hull", "bonus_type": "hull_bonus", "bonus_value": 15.0}
+        {
+          "id": "ablative_hull",
+          "name": "Ablative",
+          "description": "+5% damage reduction",
+          "bonus_type": "damage_reduction_bonus",
+          "bonus_value": 0.05
+        },
+        {
+          "id": "dense",
+          "name": "Dense",
+          "description": "+15 hull",
+          "bonus_type": "hull_bonus",
+          "bonus_value": 15.0
+        }
       ]
     },
     {
@@ -532,14 +959,31 @@
       "tier": 1,
       "available_systems": [],
       "tuning_options": [
-        {"id": "burst_fire", "name": "Burst Fire", "description": "+5 damage", "bonus_type": "damage_bonus", "bonus_value": 5.0},
-        {"id": "tracer", "name": "Tracer", "description": "+10 accuracy", "bonus_type": "accuracy_bonus", "bonus_value": 10.0}
+        {
+          "id": "burst_fire",
+          "name": "Burst Fire",
+          "description": "+5 damage",
+          "bonus_type": "damage_bonus",
+          "bonus_value": 5.0
+        },
+        {
+          "id": "tracer",
+          "name": "Tracer",
+          "description": "+10 accuracy",
+          "bonus_type": "accuracy_bonus",
+          "bonus_value": 10.0
+        }
       ],
       "combat_move": {
         "id": "autocannon",
         "name": "Autocannon Burst",
         "description": "A rapid burst of ballistic rounds.",
-        "effects": [{"type": "damage", "value": 10.0}],
+        "effects": [
+          {
+            "type": "damage",
+            "value": 10.0
+          }
+        ],
         "energy_cost": 2,
         "accuracy_modifier": 15
       }
@@ -553,16 +997,37 @@
       "bonus_type": "",
       "bonus_value": 0.0,
       "tier": 3,
-      "available_systems": ["crimson_reach", "breakstone", "the_fulcrum"],
+      "available_systems": [
+        "crimson_reach",
+        "breakstone",
+        "the_fulcrum"
+      ],
       "tuning_options": [
-        {"id": "accelerator", "name": "Accelerator", "description": "+10 damage", "bonus_type": "damage_bonus", "bonus_value": 10.0},
-        {"id": "armor_piercing", "name": "Armor Piercing", "description": "Ignores 15% shields", "bonus_type": "shield_pierce", "bonus_value": 0.15}
+        {
+          "id": "accelerator",
+          "name": "Accelerator",
+          "description": "+10 damage",
+          "bonus_type": "damage_bonus",
+          "bonus_value": 10.0
+        },
+        {
+          "id": "armor_piercing",
+          "name": "Armor Piercing",
+          "description": "Ignores 15% shields",
+          "bonus_type": "shield_pierce",
+          "bonus_value": 0.15
+        }
       ],
       "combat_move": {
         "id": "rail_gun",
         "name": "Rail Shot",
         "description": "A hypervelocity slug that punches through armor.",
-        "effects": [{"type": "damage", "value": 40.0}],
+        "effects": [
+          {
+            "type": "damage",
+            "value": 40.0
+          }
+        ],
         "energy_cost": 5,
         "cooldown": 2,
         "accuracy_modifier": 20
@@ -577,16 +1042,37 @@
       "bonus_type": "",
       "bonus_value": 0.0,
       "tier": 3,
-      "available_systems": ["crimson_reach", "breakstone", "the_fulcrum"],
+      "available_systems": [
+        "crimson_reach",
+        "breakstone",
+        "the_fulcrum"
+      ],
       "tuning_options": [
-        {"id": "shrapnel", "name": "Shrapnel", "description": "+8 damage", "bonus_type": "damage_bonus", "bonus_value": 8.0},
-        {"id": "suppressive", "name": "Suppressive", "description": "-10 enemy evasion", "bonus_type": "evasion_debuff", "bonus_value": 10.0}
+        {
+          "id": "shrapnel",
+          "name": "Shrapnel",
+          "description": "+8 damage",
+          "bonus_type": "damage_bonus",
+          "bonus_value": 8.0
+        },
+        {
+          "id": "suppressive",
+          "name": "Suppressive",
+          "description": "-10 enemy evasion",
+          "bonus_type": "evasion_debuff",
+          "bonus_value": 10.0
+        }
       ],
       "combat_move": {
         "id": "flak_battery",
         "name": "Flak Barrage",
         "description": "A wide spread of shrapnel. Hard to dodge, moderate damage.",
-        "effects": [{"type": "damage", "value": 15.0}],
+        "effects": [
+          {
+            "type": "damage",
+            "value": 15.0
+          }
+        ],
         "energy_cost": 3,
         "accuracy_modifier": -5
       }
@@ -602,14 +1088,33 @@
       "tier": 2,
       "available_systems": [],
       "tuning_options": [
-        {"id": "composite", "name": "Composite", "description": "+10 hull", "bonus_type": "hull_bonus", "bonus_value": 10.0},
-        {"id": "explosive_reactive", "name": "Explosive", "description": "5 damage to attacker on hit", "bonus_type": "reflect_damage", "bonus_value": 5.0}
+        {
+          "id": "composite",
+          "name": "Composite",
+          "description": "+10 hull",
+          "bonus_type": "hull_bonus",
+          "bonus_value": 10.0
+        },
+        {
+          "id": "explosive_reactive",
+          "name": "Explosive",
+          "description": "5 damage to attacker on hit",
+          "bonus_type": "reflect_damage",
+          "bonus_value": 5.0
+        }
       ],
       "combat_move": {
         "id": "reactive_armor",
         "name": "Reactive Armor",
         "description": "Activates reactive plating. 20% damage reduction for 2 turns.",
-        "effects": [{"type": "damage_reduction", "value": 0.20, "duration": 2, "target": "self"}],
+        "effects": [
+          {
+            "type": "damage_reduction",
+            "value": 0.2,
+            "duration": 2,
+            "target": "self"
+          }
+        ],
         "energy_cost": 3
       }
     },
@@ -622,16 +1127,39 @@
       "bonus_type": "",
       "bonus_value": 0.0,
       "tier": 3,
-      "available_systems": ["axiom_labs", "nova_research", "stellaris_port"],
+      "available_systems": [
+        "axiom_labs",
+        "nova_research",
+        "stellaris_port"
+      ],
       "tuning_options": [
-        {"id": "jamming", "name": "Jamming", "description": "-10 enemy accuracy", "bonus_type": "accuracy_debuff", "bonus_value": 10.0},
-        {"id": "ghost_ecm", "name": "Ghost", "description": "-5% scan detection", "bonus_type": "scan_evasion_bonus", "bonus_value": 0.05}
+        {
+          "id": "jamming",
+          "name": "Jamming",
+          "description": "-10 enemy accuracy",
+          "bonus_type": "accuracy_debuff",
+          "bonus_value": 10.0
+        },
+        {
+          "id": "ghost_ecm",
+          "name": "Ghost",
+          "description": "-5% scan detection",
+          "bonus_type": "scan_evasion_bonus",
+          "bonus_value": 0.05
+        }
       ],
       "combat_move": {
         "id": "ecm_suite",
         "name": "ECM Burst",
         "description": "Electronic countermeasures. +30 evasion for 2 turns.",
-        "effects": [{"type": "evasion_mod", "value": 30.0, "duration": 2, "target": "self"}],
+        "effects": [
+          {
+            "type": "evasion_mod",
+            "value": 30.0,
+            "duration": 2,
+            "target": "self"
+          }
+        ],
         "energy_cost": 3
       }
     },
@@ -646,10 +1174,25 @@
       "faction_required": "nexus_trade",
       "faction_rep_required": 20,
       "tier": 3,
-      "available_systems": ["nexus_prime", "stellaris_port"],
+      "available_systems": [
+        "nexus_prime",
+        "stellaris_port"
+      ],
       "tuning_options": [
-        {"id": "broadcast", "name": "Broadcast", "description": "+3% sell price", "bonus_type": "sell_price_bonus", "bonus_value": 0.03},
-        {"id": "network", "name": "Network", "description": "See remote prices (+1 range)", "bonus_type": "price_reveal_bonus", "bonus_value": 1.0}
+        {
+          "id": "broadcast",
+          "name": "Broadcast",
+          "description": "+3% sell price",
+          "bonus_type": "sell_price_bonus",
+          "bonus_value": 0.03
+        },
+        {
+          "id": "network",
+          "name": "Network",
+          "description": "See remote prices (+1 range)",
+          "bonus_type": "price_reveal_bonus",
+          "bonus_value": 1.0
+        }
       ]
     },
     {
@@ -663,10 +1206,25 @@
       "faction_required": "forgeworks_industrial",
       "faction_rep_required": 20,
       "tier": 3,
-      "available_systems": ["forgeworks", "breakstone"],
+      "available_systems": [
+        "forgeworks",
+        "breakstone"
+      ],
       "tuning_options": [
-        {"id": "tempered", "name": "Tempered", "description": "+15 hull", "bonus_type": "hull_bonus", "bonus_value": 15.0},
-        {"id": "reflective_forge", "name": "Reflective", "description": "+10% shield regen", "bonus_type": "shield_regen_bonus", "bonus_value": 0.10}
+        {
+          "id": "tempered",
+          "name": "Tempered",
+          "description": "+15 hull",
+          "bonus_type": "hull_bonus",
+          "bonus_value": 15.0
+        },
+        {
+          "id": "reflective_forge",
+          "name": "Reflective",
+          "description": "+10% shield regen",
+          "bonus_type": "shield_regen_bonus",
+          "bonus_value": 0.1
+        }
       ]
     },
     {
@@ -676,14 +1234,30 @@
       "price": 22000,
       "slot_type": "scanner",
       "bonus_type": "salvage_yield_bonus",
-      "bonus_value": 0.30,
+      "bonus_value": 0.3,
       "faction_required": "free_salvagers",
       "faction_rep_required": 20,
       "tier": 3,
-      "available_systems": ["crimson_reach", "iron_depths", "the_fulcrum"],
+      "available_systems": [
+        "crimson_reach",
+        "iron_depths",
+        "the_fulcrum"
+      ],
       "tuning_options": [
-        {"id": "field_array", "name": "Field Array", "description": "+15% salvage yield", "bonus_type": "salvage_yield_bonus", "bonus_value": 0.15},
-        {"id": "field_analyzer", "name": "Analyzer", "description": "+2 scan charges", "bonus_type": "scan_charge_bonus", "bonus_value": 2.0}
+        {
+          "id": "field_array",
+          "name": "Field Array",
+          "description": "+15% salvage yield",
+          "bonus_type": "salvage_yield_bonus",
+          "bonus_value": 0.15
+        },
+        {
+          "id": "field_analyzer",
+          "name": "Analyzer",
+          "description": "+2 scan charges",
+          "bonus_type": "scan_charge_bonus",
+          "bonus_value": 2.0
+        }
       ]
     },
     {
@@ -697,10 +1271,25 @@
       "faction_required": "axiom_research",
       "faction_rep_required": 20,
       "tier": 3,
-      "available_systems": ["axiom_labs", "nova_research"],
+      "available_systems": [
+        "axiom_labs",
+        "nova_research"
+      ],
       "tuning_options": [
-        {"id": "quantum", "name": "Quantum", "description": "+2 scan charges", "bonus_type": "scan_charge_bonus", "bonus_value": 2.0},
-        {"id": "spectral", "name": "Spectral", "description": "Reveal rare resources (+15% rare yield)", "bonus_type": "rare_ore_bonus", "bonus_value": 0.15}
+        {
+          "id": "quantum",
+          "name": "Quantum",
+          "description": "+2 scan charges",
+          "bonus_type": "scan_charge_bonus",
+          "bonus_value": 2.0
+        },
+        {
+          "id": "spectral",
+          "name": "Spectral",
+          "description": "Reveal rare resources (+15% rare yield)",
+          "bonus_type": "rare_ore_bonus",
+          "bonus_value": 0.15
+        }
       ]
     },
     {
@@ -713,18 +1302,41 @@
       "bonus_value": 0.0,
       "unlock_condition": "quest_axiom_defense",
       "tier": 3,
-      "available_systems": ["axiom_labs"],
+      "available_systems": [
+        "axiom_labs"
+      ],
       "tuning_options": [
-        {"id": "resonant", "name": "Resonant", "description": "+20 shield restore", "bonus_type": "shield_restore_bonus", "bonus_value": 20.0},
-        {"id": "adaptive_matrix", "name": "Adaptive", "description": "+5% damage reduction", "bonus_type": "damage_reduction_bonus", "bonus_value": 0.05}
+        {
+          "id": "resonant",
+          "name": "Resonant",
+          "description": "+20 shield restore",
+          "bonus_type": "shield_restore_bonus",
+          "bonus_value": 20.0
+        },
+        {
+          "id": "adaptive_matrix",
+          "name": "Adaptive",
+          "description": "+5% damage reduction",
+          "bonus_type": "damage_reduction_bonus",
+          "bonus_value": 0.05
+        }
       ],
       "combat_move": {
         "id": "prototype_shields",
         "name": "Prototype Shield Matrix",
         "description": "Experimental shields. 50 restore + 15% reduction for 3 turns.",
         "effects": [
-          {"type": "shield_restore", "value": 50.0, "target": "self"},
-          {"type": "damage_reduction", "value": 0.15, "duration": 3, "target": "self"}
+          {
+            "type": "shield_restore",
+            "value": 50.0,
+            "target": "self"
+          },
+          {
+            "type": "damage_reduction",
+            "value": 0.15,
+            "duration": 3,
+            "target": "self"
+          }
         ],
         "energy_cost": 5
       }
@@ -741,8 +1353,20 @@
       "tier": 3,
       "available_systems": [],
       "tuning_options": [
-        {"id": "resonance", "name": "Resonance", "description": "+0.2 speed", "bonus_type": "speed_bonus", "bonus_value": 0.2},
-        {"id": "harmonics", "name": "Harmonics", "description": "-2 fuel per jump", "bonus_type": "fuel_efficiency_bonus", "bonus_value": 2.0}
+        {
+          "id": "resonance",
+          "name": "Resonance",
+          "description": "+0.2 speed",
+          "bonus_type": "speed_bonus",
+          "bonus_value": 0.2
+        },
+        {
+          "id": "harmonics",
+          "name": "Harmonics",
+          "description": "-2 fuel per jump",
+          "bonus_type": "fuel_efficiency_bonus",
+          "bonus_value": 2.0
+        }
       ]
     },
     {
@@ -756,10 +1380,25 @@
       "unlock_condition": "quest_fulcrum_chain",
       "requires_black_market": true,
       "tier": 3,
-      "available_systems": ["the_fulcrum", "crimson_reach"],
+      "available_systems": [
+        "the_fulcrum",
+        "crimson_reach"
+      ],
       "tuning_options": [
-        {"id": "deep_jamming", "name": "Deep Jamming", "description": "-8% detection", "bonus_type": "scan_evasion_bonus", "bonus_value": 0.08},
-        {"id": "cold_running", "name": "Cold Running", "description": "-5% heat gain", "bonus_type": "heat_reduction", "bonus_value": 0.05}
+        {
+          "id": "deep_jamming",
+          "name": "Deep Jamming",
+          "description": "-8% detection",
+          "bonus_type": "scan_evasion_bonus",
+          "bonus_value": 0.08
+        },
+        {
+          "id": "cold_running",
+          "name": "Cold Running",
+          "description": "-5% heat gain",
+          "bonus_type": "heat_reduction",
+          "bonus_value": 0.05
+        }
       ]
     },
     {
@@ -773,8 +1412,20 @@
       "tier": 1,
       "available_systems": [],
       "tuning_options": [
-        {"id": "cultural_db", "name": "Cultural Database", "description": "+3% rep gains", "bonus_type": "rep_gain_bonus", "bonus_value": 0.03},
-        {"id": "priority_channel", "name": "Priority Channel", "description": "+5% buy price discount", "bonus_type": "buy_price_bonus", "bonus_value": -0.05}
+        {
+          "id": "cultural_db",
+          "name": "Cultural Database",
+          "description": "+3% rep gains",
+          "bonus_type": "rep_gain_bonus",
+          "bonus_value": 0.03
+        },
+        {
+          "id": "priority_channel",
+          "name": "Priority Channel",
+          "description": "+5% buy price discount",
+          "bonus_type": "buy_price_bonus",
+          "bonus_value": -0.05
+        }
       ]
     },
     {
@@ -786,10 +1437,26 @@
       "bonus_type": "merchant_intel",
       "bonus_value": 1.0,
       "tier": 2,
-      "available_systems": ["nexus_prime", "stellaris_port", "axiom_labs"],
+      "available_systems": [
+        "nexus_prime",
+        "stellaris_port",
+        "axiom_labs"
+      ],
       "tuning_options": [
-        {"id": "deep_manifest", "name": "Deep Manifest", "description": "Reveal cargo values", "bonus_type": "merchant_intel", "bonus_value": 1.0},
-        {"id": "fleet_scan", "name": "Fleet Scan", "description": "+1 scan charge", "bonus_type": "scan_charge_bonus", "bonus_value": 1.0}
+        {
+          "id": "deep_manifest",
+          "name": "Deep Manifest",
+          "description": "Reveal cargo values",
+          "bonus_type": "merchant_intel",
+          "bonus_value": 1.0
+        },
+        {
+          "id": "fleet_scan",
+          "name": "Fleet Scan",
+          "description": "+1 scan charge",
+          "bonus_type": "scan_charge_bonus",
+          "bonus_value": 1.0
+        }
       ]
     },
     {
@@ -801,10 +1468,26 @@
       "bonus_type": "speed_bonus",
       "bonus_value": 0.3,
       "tier": 3,
-      "available_systems": ["forgeworks", "crimson_reach", "the_fulcrum"],
+      "available_systems": [
+        "forgeworks",
+        "crimson_reach",
+        "the_fulcrum"
+      ],
       "tuning_options": [
-        {"id": "turbo", "name": "Turbo", "description": "+0.15 speed", "bonus_type": "speed_bonus", "bonus_value": 0.15},
-        {"id": "balanced", "name": "Balanced", "description": "-1 fuel per jump", "bonus_type": "fuel_efficiency_bonus", "bonus_value": 1.0}
+        {
+          "id": "turbo",
+          "name": "Turbo",
+          "description": "+0.15 speed",
+          "bonus_type": "speed_bonus",
+          "bonus_value": 0.15
+        },
+        {
+          "id": "balanced",
+          "name": "Balanced",
+          "description": "-1 fuel per jump",
+          "bonus_type": "fuel_efficiency_bonus",
+          "bonus_value": 1.0
+        }
       ]
     },
     {
@@ -817,14 +1500,24 @@
       "bonus_value": 15.0,
       "unlock_condition": "crafted_reinforced_plating",
       "tier": 3,
-      "available_systems": ["forgeworks", "iron_depths"],
+      "available_systems": [
+        "forgeworks",
+        "iron_depths"
+      ],
       "max_mark": 1,
       "tuning_options": [],
       "combat_move": {
         "id": "reinforced_plating",
         "name": "Brace Plating",
         "description": "Activates forge-bonded plating. Absorbs the next hit completely.",
-        "effects": [{"type": "absorb_hit", "value": 1.0, "duration": 1, "target": "self"}],
+        "effects": [
+          {
+            "type": "absorb_hit",
+            "value": 1.0,
+            "duration": 1,
+            "target": "self"
+          }
+        ],
         "energy_cost": 4
       }
     },
@@ -838,7 +1531,10 @@
       "bonus_value": 3.0,
       "unlock_condition": "crafted_overclocked_scanner",
       "tier": 3,
-      "available_systems": ["axiom_labs", "nova_research"],
+      "available_systems": [
+        "axiom_labs",
+        "nova_research"
+      ],
       "max_mark": 1,
       "tuning_options": []
     },
@@ -852,14 +1548,21 @@
       "bonus_value": 0.0,
       "unlock_condition": "crafted_plasma_conduit",
       "tier": 3,
-      "available_systems": ["forgeworks"],
+      "available_systems": [
+        "forgeworks"
+      ],
       "max_mark": 1,
       "tuning_options": [],
       "combat_move": {
         "id": "plasma_conduit",
         "name": "Plasma Torrent",
         "description": "A sustained plasma beam that burns through shields and hull alike.",
-        "effects": [{"type": "damage", "value": 45.0}],
+        "effects": [
+          {
+            "type": "damage",
+            "value": 45.0
+          }
+        ],
         "energy_cost": 6,
         "cooldown": 2,
         "accuracy_modifier": 10
@@ -875,14 +1578,21 @@
       "bonus_value": 25.0,
       "unlock_condition": "crafted_titan_plating",
       "tier": 3,
-      "available_systems": ["forgeworks"],
+      "available_systems": [
+        "forgeworks"
+      ],
       "max_mark": 1,
       "tuning_options": [],
       "combat_move": {
         "id": "titan_brace",
         "name": "Titan Brace",
         "description": "Engage stellarium lattice to absorb incoming fire. Reduces damage taken this turn by 75%.",
-        "effects": [{"type": "defense_buff", "value": 75.0}],
+        "effects": [
+          {
+            "type": "defense_buff",
+            "value": 75.0
+          }
+        ],
         "energy_cost": 4,
         "cooldown": 3,
         "accuracy_modifier": 0
@@ -898,7 +1608,10 @@
       "bonus_value": 5.0,
       "unlock_condition": "crafted_command_array",
       "tier": 3,
-      "available_systems": ["axiom_labs", "nova_research"],
+      "available_systems": [
+        "axiom_labs",
+        "nova_research"
+      ],
       "max_mark": 1,
       "tuning_options": []
     },
@@ -912,14 +1625,21 @@
       "bonus_value": 0.0,
       "unlock_condition": "crafted_nova_core",
       "tier": 3,
-      "available_systems": ["forgeworks"],
+      "available_systems": [
+        "forgeworks"
+      ],
       "max_mark": 1,
       "tuning_options": [],
       "combat_move": {
         "id": "nova_core",
         "name": "Nova Blast",
         "description": "Release a concentrated resonance burst. Devastating damage that bypasses shields.",
-        "effects": [{"type": "damage", "value": 60.0}],
+        "effects": [
+          {
+            "type": "damage",
+            "value": 60.0
+          }
+        ],
         "energy_cost": 8,
         "cooldown": 3,
         "accuracy_modifier": 5
@@ -935,14 +1655,21 @@
       "bonus_value": 15.0,
       "unlock_condition": "crafted_phantom_module",
       "tier": 3,
-      "available_systems": ["crimson_reach"],
+      "available_systems": [
+        "crimson_reach"
+      ],
       "max_mark": 1,
       "tuning_options": [],
       "combat_move": {
         "id": "phantom_cloak",
         "name": "Phantom Cloak",
         "description": "Activate sensor spoofing to become nearly untargetable for one turn.",
-        "effects": [{"type": "evasion_buff", "value": 90.0}],
+        "effects": [
+          {
+            "type": "evasion_buff",
+            "value": 90.0
+          }
+        ],
         "energy_cost": 5,
         "cooldown": 3,
         "accuracy_modifier": 0
@@ -958,14 +1685,22 @@
       "bonus_value": 10.0,
       "unlock_condition": "crafted_shield_capacitor",
       "tier": 2,
-      "available_systems": ["axiom_labs", "nexus_prime"],
+      "available_systems": [
+        "axiom_labs",
+        "nexus_prime"
+      ],
       "max_mark": 1,
       "tuning_options": [],
       "combat_move": {
         "id": "shield_surge",
         "name": "Shield Surge",
         "description": "Dump stored capacitor energy into shields for an immediate burst of regeneration.",
-        "effects": [{"type": "shield_restore", "value": 30.0}],
+        "effects": [
+          {
+            "type": "shield_restore",
+            "value": 30.0
+          }
+        ],
         "energy_cost": 4,
         "cooldown": 3,
         "accuracy_modifier": 0
@@ -981,14 +1716,25 @@
       "bonus_value": 0.0,
       "unlock_condition": "crafted_arc_emitter",
       "tier": 3,
-      "available_systems": ["nova_research"],
+      "available_systems": [
+        "nova_research"
+      ],
       "max_mark": 1,
       "tuning_options": [],
       "combat_move": {
         "id": "arc_emitter",
         "name": "Arc Discharge",
         "description": "Fire a phase-aligned energy arc that partially bypasses shields.",
-        "effects": [{"type": "damage", "value": 40.0}, {"type": "shield_pierce", "value": 50.0}],
+        "effects": [
+          {
+            "type": "damage",
+            "value": 40.0
+          },
+          {
+            "type": "shield_pierce",
+            "value": 50.0
+          }
+        ],
         "energy_cost": 6,
         "cooldown": 2,
         "accuracy_modifier": 15
@@ -1001,14 +1747,29 @@
       "price": 0,
       "slot_type": "mining",
       "bonus_type": "drill_speed_bonus",
-      "bonus_value": 0.30,
+      "bonus_value": 0.3,
       "unlock_condition": "crafted_resonant_drill",
       "tier": 2,
-      "available_systems": ["forgeworks", "iron_depths"],
+      "available_systems": [
+        "forgeworks",
+        "iron_depths"
+      ],
       "max_mark": 3,
       "tuning_options": [
-        {"id": "harmonic", "name": "Harmonic", "description": "+15% rare ore chance", "bonus_type": "rare_ore_bonus", "bonus_value": 0.15},
-        {"id": "overclock", "name": "Overclock", "description": "+15% drill speed", "bonus_type": "drill_speed_bonus", "bonus_value": 0.15}
+        {
+          "id": "harmonic",
+          "name": "Harmonic",
+          "description": "+15% rare ore chance",
+          "bonus_type": "rare_ore_bonus",
+          "bonus_value": 0.15
+        },
+        {
+          "id": "overclock",
+          "name": "Overclock",
+          "description": "+15% drill speed",
+          "bonus_type": "drill_speed_bonus",
+          "bonus_value": 0.15
+        }
       ]
     },
     {
@@ -1018,14 +1779,28 @@
       "price": 0,
       "slot_type": "mining",
       "bonus_type": "drill_speed_bonus",
-      "bonus_value": 0.40,
+      "bonus_value": 0.4,
       "unlock_condition": "crafted_seismic_bore",
       "tier": 3,
-      "available_systems": ["forgeworks"],
+      "available_systems": [
+        "forgeworks"
+      ],
       "max_mark": 3,
       "tuning_options": [
-        {"id": "deep_bore", "name": "Deep Bore", "description": "+20% rare ore chance", "bonus_type": "rare_ore_bonus", "bonus_value": 0.20},
-        {"id": "chain_resonance", "name": "Chain Resonance", "description": "+10% chain chance", "bonus_type": "chain_chance_bonus", "bonus_value": 0.10}
+        {
+          "id": "deep_bore",
+          "name": "Deep Bore",
+          "description": "+20% rare ore chance",
+          "bonus_type": "rare_ore_bonus",
+          "bonus_value": 0.2
+        },
+        {
+          "id": "chain_resonance",
+          "name": "Chain Resonance",
+          "description": "+10% chain chance",
+          "bonus_type": "chain_chance_bonus",
+          "bonus_value": 0.1
+        }
       ]
     },
     {
@@ -1038,11 +1813,26 @@
       "bonus_value": 0.25,
       "unlock_condition": "crafted_precision_extractor",
       "tier": 2,
-      "available_systems": ["axiom_labs", "nova_research"],
+      "available_systems": [
+        "axiom_labs",
+        "nova_research"
+      ],
       "max_mark": 3,
       "tuning_options": [
-        {"id": "calibrated", "name": "Calibrated", "description": "+2 scan charges", "bonus_type": "scan_charge_bonus", "bonus_value": 2.0},
-        {"id": "accelerated", "name": "Accelerated", "description": "+15% extract speed", "bonus_type": "extract_speed_bonus", "bonus_value": 0.15}
+        {
+          "id": "calibrated",
+          "name": "Calibrated",
+          "description": "+2 scan charges",
+          "bonus_type": "scan_charge_bonus",
+          "bonus_value": 2.0
+        },
+        {
+          "id": "accelerated",
+          "name": "Accelerated",
+          "description": "+15% extract speed",
+          "bonus_type": "extract_speed_bonus",
+          "bonus_value": 0.15
+        }
       ]
     },
     {
@@ -1055,11 +1845,25 @@
       "bonus_value": 0.35,
       "unlock_condition": "crafted_quantum_salvage",
       "tier": 3,
-      "available_systems": ["nova_research"],
+      "available_systems": [
+        "nova_research"
+      ],
       "max_mark": 3,
       "tuning_options": [
-        {"id": "deep_resonance", "name": "Deep Resonance", "description": "+3 scan charges", "bonus_type": "scan_charge_bonus", "bonus_value": 3.0},
-        {"id": "quality_filter", "name": "Quality Filter", "description": "+20% salvage yield", "bonus_type": "salvage_yield_bonus", "bonus_value": 0.20}
+        {
+          "id": "deep_resonance",
+          "name": "Deep Resonance",
+          "description": "+3 scan charges",
+          "bonus_type": "scan_charge_bonus",
+          "bonus_value": 3.0
+        },
+        {
+          "id": "quality_filter",
+          "name": "Quality Filter",
+          "description": "+20% salvage yield",
+          "bonus_type": "salvage_yield_bonus",
+          "bonus_value": 0.2
+        }
       ]
     },
     {
@@ -1072,11 +1876,26 @@
       "bonus_value": 0.15,
       "unlock_condition": "crafted_catalyst_forge",
       "tier": 2,
-      "available_systems": ["forgeworks", "iron_depths"],
+      "available_systems": [
+        "forgeworks",
+        "iron_depths"
+      ],
       "max_mark": 3,
       "tuning_options": [
-        {"id": "rapid_forge", "name": "Rapid Forge", "description": "+10% refining speed", "bonus_type": "refining_speed_bonus", "bonus_value": 0.10},
-        {"id": "token_amplifier", "name": "Token Amplifier", "description": "+15% forge token earnings", "bonus_type": "forge_token_bonus", "bonus_value": 0.15}
+        {
+          "id": "rapid_forge",
+          "name": "Rapid Forge",
+          "description": "+10% refining speed",
+          "bonus_type": "refining_speed_bonus",
+          "bonus_value": 0.1
+        },
+        {
+          "id": "token_amplifier",
+          "name": "Token Amplifier",
+          "description": "+15% forge token earnings",
+          "bonus_type": "forge_token_bonus",
+          "bonus_value": 0.15
+        }
       ]
     },
     {
@@ -1089,12 +1908,780 @@
       "bonus_value": 0.25,
       "unlock_condition": "crafted_stellarium_crucible",
       "tier": 3,
-      "available_systems": ["forgeworks"],
+      "available_systems": [
+        "forgeworks"
+      ],
       "max_mark": 3,
       "tuning_options": [
-        {"id": "perfect_synthesis", "name": "Perfect Synthesis", "description": "+15% refining speed", "bonus_type": "refining_speed_bonus", "bonus_value": 0.15},
-        {"id": "token_mastery", "name": "Token Mastery", "description": "+25% forge token earnings", "bonus_type": "forge_token_bonus", "bonus_value": 0.25}
+        {
+          "id": "perfect_synthesis",
+          "name": "Perfect Synthesis",
+          "description": "+15% refining speed",
+          "bonus_type": "refining_speed_bonus",
+          "bonus_value": 0.15
+        },
+        {
+          "id": "token_mastery",
+          "name": "Token Mastery",
+          "description": "+25% forge token earnings",
+          "bonus_type": "forge_token_bonus",
+          "bonus_value": 0.25
+        }
       ]
+    },
+    {
+      "id": "power_shunt_module",
+      "name": "Power Shunt Module",
+      "description": "Diverts all weapon power to the capacitor banks. Sacrifices your attack this turn to restore 4 energy for a big play next round.",
+      "price": 800,
+      "slot_type": "utility",
+      "tier": 1,
+      "bonus_type": "",
+      "bonus_value": 0,
+      "combat_move": {
+        "id": "power_shunt",
+        "name": "Power Shunt",
+        "description": "Skip your attack to restore 4 energy.",
+        "effects": [
+          {
+            "type": "energy_restore",
+            "value": 4.0,
+            "target": "self"
+          }
+        ],
+        "energy_cost": 0,
+        "cooldown": 2,
+        "accuracy_modifier": 0
+      },
+      "available_systems": []
+    },
+    {
+      "id": "capacitor_dump_array",
+      "name": "Capacitor Dump Array",
+      "description": "An experimental weapon that recycles impact energy. Deals moderate damage and recovers 2 energy on a successful hit.",
+      "price": 3500,
+      "slot_type": "weapon",
+      "tier": 2,
+      "bonus_type": "",
+      "bonus_value": 0,
+      "combat_move": {
+        "id": "capacitor_dump",
+        "name": "Capacitor Dump",
+        "description": "Deal 14 damage. On hit, restore 2 energy.",
+        "effects": [
+          {
+            "type": "damage",
+            "value": 14.0
+          },
+          {
+            "type": "energy_restore",
+            "value": 2.0,
+            "target": "self"
+          }
+        ],
+        "energy_cost": 2,
+        "cooldown": 0,
+        "accuracy_modifier": -5
+      },
+      "available_systems": [
+        "nexus_prime",
+        "stellaris_port",
+        "forgeworks",
+        "crimson_reach"
+      ]
+    },
+    {
+      "id": "overcharge_coil",
+      "name": "Overcharge Coil",
+      "description": "Supercharges your weapon systems. Your next attack deals 50% more damage, but the overcharge process is expensive.",
+      "price": 6000,
+      "slot_type": "utility",
+      "tier": 3,
+      "bonus_type": "",
+      "bonus_value": 0,
+      "combat_move": {
+        "id": "overcharge",
+        "name": "Overcharge",
+        "description": "Next attack deals +50% damage.",
+        "effects": [
+          {
+            "type": "damage_boost",
+            "value": 50.0,
+            "duration": 1,
+            "target": "self"
+          }
+        ],
+        "energy_cost": 4,
+        "cooldown": 3,
+        "accuracy_modifier": 0
+      },
+      "available_systems": [
+        "stellaris_port",
+        "crimson_reach",
+        "the_fulcrum"
+      ]
+    },
+    {
+      "id": "slug_thrower",
+      "name": "Slug Thrower",
+      "description": "Reliable kinetic rounds that punch through armor plating.",
+      "price": 600,
+      "slot_type": "weapon",
+      "bonus_type": "",
+      "bonus_value": 0.0,
+      "tier": 1,
+      "available_systems": [],
+      "combat_move": {
+        "id": "slug_thrower",
+        "name": "Slug Thrower",
+        "description": "Reliable kinetic rounds.",
+        "effects": [
+          {
+            "type": "damage",
+            "value": 10.0
+          }
+        ],
+        "energy_cost": 2,
+        "element": "kinetic"
+      }
+    },
+    {
+      "id": "railgun_accelerator",
+      "name": "Railgun Accelerator",
+      "description": "Magnetically accelerated kinetic slugs that hit like a freight train.",
+      "price": 3000,
+      "slot_type": "weapon",
+      "bonus_type": "",
+      "bonus_value": 0.0,
+      "tier": 2,
+      "available_systems": [
+        "nexus_prime",
+        "forgeworks",
+        "stellaris_port"
+      ],
+      "combat_move": {
+        "id": "railgun_accelerator",
+        "name": "Railgun Accelerator",
+        "description": "Magnetically accelerated kinetic slugs.",
+        "effects": [
+          {
+            "type": "damage",
+            "value": 22.0
+          }
+        ],
+        "energy_cost": 3,
+        "element": "kinetic"
+      }
+    },
+    {
+      "id": "mass_driver_mk3",
+      "name": "Mass Driver Mk3",
+      "description": "Devastating kinetic payload that tears through hull plating.",
+      "price": 8000,
+      "slot_type": "weapon",
+      "bonus_type": "",
+      "bonus_value": 0.0,
+      "tier": 3,
+      "available_systems": [
+        "stellaris_port",
+        "crimson_reach"
+      ],
+      "combat_move": {
+        "id": "mass_driver_mk3",
+        "name": "Mass Driver Mk3",
+        "description": "Devastating kinetic payload.",
+        "effects": [
+          {
+            "type": "damage",
+            "value": 38.0
+          }
+        ],
+        "energy_cost": 5,
+        "cooldown": 2,
+        "element": "kinetic"
+      }
+    },
+    {
+      "id": "plasma_caster",
+      "name": "Plasma Caster",
+      "description": "Superheated plasma bolt that burns on contact, dealing sustained damage.",
+      "price": 800,
+      "slot_type": "weapon",
+      "bonus_type": "",
+      "bonus_value": 0.0,
+      "tier": 1,
+      "available_systems": [],
+      "combat_move": {
+        "id": "plasma_caster",
+        "name": "Plasma Caster",
+        "description": "Superheated plasma that burns on contact.",
+        "effects": [
+          {
+            "type": "damage",
+            "value": 12.0
+          }
+        ],
+        "energy_cost": 2,
+        "element": "plasma"
+      }
+    },
+    {
+      "id": "inferno_lance",
+      "name": "Inferno Lance",
+      "description": "Concentrated plasma stream that delivers an intense, sustained burn.",
+      "price": 3500,
+      "slot_type": "weapon",
+      "bonus_type": "",
+      "bonus_value": 0.0,
+      "tier": 2,
+      "available_systems": [
+        "forgeworks",
+        "iron_depths",
+        "crimson_reach"
+      ],
+      "combat_move": {
+        "id": "inferno_lance",
+        "name": "Inferno Lance",
+        "description": "Concentrated plasma stream with intense burn.",
+        "effects": [
+          {
+            "type": "damage",
+            "value": 21.0
+          }
+        ],
+        "energy_cost": 3,
+        "element": "plasma"
+      }
+    },
+    {
+      "id": "solar_flare_cannon",
+      "name": "Solar Flare Cannon",
+      "description": "Plasma weapon that burns through shields with solar-intensity heat.",
+      "price": 9000,
+      "slot_type": "weapon",
+      "bonus_type": "",
+      "bonus_value": 0.0,
+      "tier": 3,
+      "available_systems": [
+        "crimson_reach",
+        "the_fulcrum"
+      ],
+      "combat_move": {
+        "id": "solar_flare_cannon",
+        "name": "Solar Flare Cannon",
+        "description": "Plasma that burns through shields.",
+        "effects": [
+          {
+            "type": "damage",
+            "value": 33.0
+          }
+        ],
+        "energy_cost": 5,
+        "cooldown": 2,
+        "element": "plasma"
+      }
+    },
+    {
+      "id": "ion_disruptor_weapon",
+      "name": "Ion Disruptor",
+      "description": "Electrical discharge that overloads enemy shield generators.",
+      "price": 800,
+      "slot_type": "weapon",
+      "bonus_type": "",
+      "bonus_value": 0.0,
+      "tier": 1,
+      "available_systems": [],
+      "combat_move": {
+        "id": "ion_disruptor_weapon",
+        "name": "Ion Disruptor",
+        "description": "Electrical discharge that overloads shields.",
+        "effects": [
+          {
+            "type": "damage",
+            "value": 10.0
+          }
+        ],
+        "energy_cost": 2,
+        "element": "ion"
+      }
+    },
+    {
+      "id": "arc_emitter_weapon",
+      "name": "Arc Emitter",
+      "description": "Sustained ion arc that strips enemy shields with relentless efficiency.",
+      "price": 3500,
+      "slot_type": "weapon",
+      "bonus_type": "",
+      "bonus_value": 0.0,
+      "tier": 2,
+      "available_systems": [
+        "axiom_labs",
+        "nova_research",
+        "stellaris_port"
+      ],
+      "combat_move": {
+        "id": "arc_emitter_weapon",
+        "name": "Arc Emitter",
+        "description": "Sustained ion arc that strips shields.",
+        "effects": [
+          {
+            "type": "damage",
+            "value": 18.0
+          }
+        ],
+        "energy_cost": 3,
+        "element": "ion"
+      }
+    },
+    {
+      "id": "cascade_ionizer",
+      "name": "Cascade Ionizer",
+      "description": "Cascading ion pulse where overkill on shields carries through to hull.",
+      "price": 9000,
+      "slot_type": "weapon",
+      "bonus_type": "",
+      "bonus_value": 0.0,
+      "tier": 3,
+      "available_systems": [
+        "axiom_labs",
+        "nova_research"
+      ],
+      "combat_move": {
+        "id": "cascade_ionizer",
+        "name": "Cascade Ionizer",
+        "description": "Cascading ion pulse. Overkill on shields carries to hull.",
+        "effects": [
+          {
+            "type": "damage",
+            "value": 30.0
+          }
+        ],
+        "energy_cost": 5,
+        "cooldown": 2,
+        "element": "ion"
+      }
+    },
+    {
+      "id": "frost_projector",
+      "name": "Frost Projector",
+      "description": "Cryogenic spray that chills and slows enemy systems.",
+      "price": 800,
+      "slot_type": "weapon",
+      "bonus_type": "",
+      "bonus_value": 0.0,
+      "tier": 1,
+      "available_systems": [],
+      "combat_move": {
+        "id": "frost_projector",
+        "name": "Frost Projector",
+        "description": "Cryogenic spray that chills enemy systems.",
+        "effects": [
+          {
+            "type": "damage",
+            "value": 8.0
+          }
+        ],
+        "energy_cost": 2,
+        "element": "cryo"
+      }
+    },
+    {
+      "id": "glacial_beam",
+      "name": "Glacial Beam",
+      "description": "Sustained cold beam that progressively slows enemy systems.",
+      "price": 3500,
+      "slot_type": "weapon",
+      "bonus_type": "",
+      "bonus_value": 0.0,
+      "tier": 2,
+      "available_systems": [
+        "havens_rest",
+        "verdant",
+        "axiom_labs"
+      ],
+      "combat_move": {
+        "id": "glacial_beam",
+        "name": "Glacial Beam",
+        "description": "Sustained cold beam that slows enemy systems.",
+        "effects": [
+          {
+            "type": "damage",
+            "value": 16.0
+          }
+        ],
+        "energy_cost": 3,
+        "element": "cryo"
+      }
+    },
+    {
+      "id": "absolute_zero_array",
+      "name": "Absolute Zero Array",
+      "description": "Flash-freezes enemy at the molecular level. Freezes target at 2 stacks.",
+      "price": 9000,
+      "slot_type": "weapon",
+      "bonus_type": "",
+      "bonus_value": 0.0,
+      "tier": 3,
+      "available_systems": [
+        "havens_rest",
+        "nova_research"
+      ],
+      "combat_move": {
+        "id": "absolute_zero_array",
+        "name": "Absolute Zero Array",
+        "description": "Flash-freezes enemy at molecular level. Freezes at 2 stacks.",
+        "effects": [
+          {
+            "type": "damage",
+            "value": 24.0
+          }
+        ],
+        "energy_cost": 4,
+        "cooldown": 2,
+        "element": "cryo"
+      }
+    },
+    {
+      "id": "voltaic_pulse",
+      "name": "Voltaic Pulse",
+      "description": "Disrupting energy pulse that weakens enemy firepower.",
+      "price": 800,
+      "slot_type": "weapon",
+      "bonus_type": "",
+      "bonus_value": 0.0,
+      "tier": 1,
+      "available_systems": [],
+      "combat_move": {
+        "id": "voltaic_pulse",
+        "name": "Voltaic Pulse",
+        "description": "Disrupting energy pulse that weakens enemy firepower.",
+        "effects": [
+          {
+            "type": "damage",
+            "value": 8.0
+          }
+        ],
+        "energy_cost": 2,
+        "element": "voltaic"
+      }
+    },
+    {
+      "id": "storm_emitter",
+      "name": "Storm Emitter",
+      "description": "Sustained electrical storm that suppresses enemy weapons.",
+      "price": 3500,
+      "slot_type": "weapon",
+      "bonus_type": "",
+      "bonus_value": 0.0,
+      "tier": 2,
+      "available_systems": [
+        "breakstone",
+        "forgeworks",
+        "nexus_prime"
+      ],
+      "combat_move": {
+        "id": "storm_emitter",
+        "name": "Storm Emitter",
+        "description": "Sustained electrical storm that suppresses weapons.",
+        "effects": [
+          {
+            "type": "damage",
+            "value": 16.0
+          }
+        ],
+        "energy_cost": 3,
+        "element": "voltaic"
+      }
+    },
+    {
+      "id": "tempest_cannon",
+      "name": "Tempest Cannon",
+      "description": "Devastating voltaic discharge that suppresses weapons. 15% suppression per stack.",
+      "price": 9000,
+      "slot_type": "weapon",
+      "bonus_type": "",
+      "bonus_value": 0.0,
+      "tier": 3,
+      "available_systems": [
+        "the_fulcrum",
+        "crimson_reach"
+      ],
+      "combat_move": {
+        "id": "tempest_cannon",
+        "name": "Tempest Cannon",
+        "description": "Devastating voltaic discharge. 15% suppression per stack.",
+        "effects": [
+          {
+            "type": "damage",
+            "value": 24.0
+          }
+        ],
+        "energy_cost": 4,
+        "cooldown": 2,
+        "element": "voltaic"
+      }
+    },
+    {
+      "id": "point_defense_system",
+      "name": "Point Defense System",
+      "description": "Automated turret network that intercepts incoming projectiles.",
+      "price": 900,
+      "slot_type": "defense",
+      "bonus_type": "",
+      "bonus_value": 0,
+      "tier": 1,
+      "available_systems": [],
+      "combat_move": {
+        "id": "point_defense",
+        "name": "Point Defense",
+        "description": "Activates defensive countermeasures. Next incoming attack deals 50% less damage.",
+        "effects": [
+          {
+            "type": "damage_reduction",
+            "value": 50.0,
+            "duration": 1,
+            "target": "self"
+          }
+        ],
+        "energy_cost": 2,
+        "cooldown": 2
+      }
+    },
+    {
+      "id": "emp_pulse_emitter",
+      "name": "EMP Pulse Emitter",
+      "description": "Short-range electromagnetic burst that scrambles enemy power systems.",
+      "price": 1000,
+      "slot_type": "weapon",
+      "bonus_type": "",
+      "bonus_value": 0,
+      "tier": 1,
+      "available_systems": [],
+      "combat_move": {
+        "id": "emp_pulse",
+        "name": "EMP Pulse",
+        "description": "Electromagnetic pulse that damages and drains enemy energy.",
+        "effects": [
+          {
+            "type": "damage",
+            "value": 5.0
+          },
+          {
+            "type": "energy_drain",
+            "value": 3.0
+          }
+        ],
+        "energy_cost": 2,
+        "cooldown": 0
+      }
+    },
+    {
+      "id": "targeting_lock_computer",
+      "name": "Targeting Lock Computer",
+      "description": "Advanced fire-control system that calculates precise firing solutions.",
+      "price": 3000,
+      "slot_type": "utility",
+      "bonus_type": "",
+      "bonus_value": 0,
+      "tier": 2,
+      "available_systems": [
+        "nexus_prime",
+        "axiom_labs",
+        "stellaris_port"
+      ],
+      "combat_move": {
+        "id": "targeting_lock",
+        "name": "Targeting Lock",
+        "description": "Locks firing solutions onto the target. +25 accuracy for 3 turns.",
+        "effects": [
+          {
+            "type": "accuracy_mod",
+            "value": 25.0,
+            "duration": 3,
+            "target": "self"
+          }
+        ],
+        "energy_cost": 2,
+        "cooldown": 3
+      }
+    },
+    {
+      "id": "emergency_vent_system",
+      "name": "Emergency Vent System",
+      "description": "Controlled shield discharge that converts barrier energy into ship power.",
+      "price": 2500,
+      "slot_type": "utility",
+      "bonus_type": "",
+      "bonus_value": 0,
+      "tier": 2,
+      "available_systems": [
+        "forgeworks",
+        "breakstone",
+        "crimson_reach"
+      ],
+      "combat_move": {
+        "id": "emergency_vent",
+        "name": "Emergency Vent",
+        "description": "Sacrifice 15 shields to restore 5 energy. Desperate but effective.",
+        "effects": [
+          {
+            "type": "shield_drain",
+            "value": 15.0,
+            "target": "self"
+          },
+          {
+            "type": "energy_restore",
+            "value": 5.0,
+            "target": "self"
+          }
+        ],
+        "energy_cost": 0,
+        "cooldown": 3
+      }
+    },
+    {
+      "id": "system_reboot_module",
+      "name": "System Reboot Module",
+      "description": "Hard-reset protocol that purges corrupted data from all ship subsystems.",
+      "price": 2800,
+      "slot_type": "utility",
+      "bonus_type": "",
+      "bonus_value": 0,
+      "tier": 2,
+      "available_systems": [
+        "axiom_labs",
+        "nova_research",
+        "nexus_prime"
+      ],
+      "combat_move": {
+        "id": "system_reboot",
+        "name": "System Reboot",
+        "description": "Purges all negative status effects from ship systems.",
+        "effects": [
+          {
+            "type": "cleanse",
+            "value": 0.0,
+            "target": "self"
+          }
+        ],
+        "energy_cost": 3,
+        "cooldown": 4
+      }
+    },
+    {
+      "id": "broadside_battery",
+      "name": "Broadside Battery",
+      "description": "Multi-barrel kinetic array that fires in a wide spread pattern.",
+      "price": 8000,
+      "slot_type": "weapon",
+      "bonus_type": "",
+      "bonus_value": 0,
+      "tier": 3,
+      "available_systems": [
+        "stellaris_port",
+        "crimson_reach"
+      ],
+      "combat_move": {
+        "id": "broadside",
+        "name": "Broadside",
+        "description": "Unleashes a devastating barrage hitting ALL enemies.",
+        "aoe": true,
+        "effects": [
+          {
+            "type": "damage",
+            "value": 15.0
+          }
+        ],
+        "energy_cost": 6,
+        "cooldown": 4,
+        "element": "kinetic"
+      }
+    },
+    {
+      "id": "nova_burst_cannon",
+      "name": "Nova Burst Cannon",
+      "description": "Overcharged particle accelerator that channels all weapon power into one shot.",
+      "price": 10000,
+      "slot_type": "weapon",
+      "bonus_type": "",
+      "bonus_value": 0,
+      "tier": 3,
+      "available_systems": [
+        "the_fulcrum",
+        "crimson_reach"
+      ],
+      "combat_move": {
+        "id": "nova_burst",
+        "name": "Nova Burst",
+        "description": "Channels all weapon power into a single devastating shot.",
+        "effects": [
+          {
+            "type": "damage",
+            "value": 40.0
+          }
+        ],
+        "energy_cost": 8,
+        "cooldown": 5,
+        "element": "kinetic"
+      }
+    },
+    {
+      "id": "countermeasure_pod",
+      "name": "Countermeasure Pod",
+      "description": "Deployable decoy system that absorbs incoming fire.",
+      "price": 7000,
+      "slot_type": "defense",
+      "bonus_type": "",
+      "bonus_value": 0,
+      "tier": 3,
+      "available_systems": [
+        "stellaris_port",
+        "axiom_labs"
+      ],
+      "combat_move": {
+        "id": "countermeasures",
+        "name": "Countermeasures",
+        "description": "Deploys decoys that completely absorb the next incoming hit.",
+        "effects": [
+          {
+            "type": "absorb",
+            "value": 1.0,
+            "duration": 2,
+            "target": "self"
+          }
+        ],
+        "energy_cost": 4,
+        "cooldown": 5
+      }
+    },
+    {
+      "id": "salvage_drone_bay",
+      "name": "Salvage Drone Bay",
+      "description": "Automated drone launcher that recovers usable energy from battlefield debris.",
+      "price": 6000,
+      "slot_type": "utility",
+      "bonus_type": "",
+      "bonus_value": 0,
+      "tier": 3,
+      "available_systems": [
+        "crimson_reach",
+        "breakstone",
+        "the_fulcrum"
+      ],
+      "combat_move": {
+        "id": "salvage_drone",
+        "name": "Salvage Drone",
+        "description": "Deploys a drone that scavenges the battlefield. Restores 4 energy.",
+        "effects": [
+          {
+            "type": "energy_restore",
+            "value": 4.0,
+            "target": "self"
+          }
+        ],
+        "energy_cost": 1,
+        "cooldown": 3
+      }
     }
   ]
 }

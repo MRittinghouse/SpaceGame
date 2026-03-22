@@ -9,24 +9,25 @@ import pygame
 import pygame_gui
 from typing import Optional
 
-from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState
+from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState, scale_x, scale_y
+from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
 from spacegame.views.base_view import BaseView
 from spacegame.models.journal import Journal, JournalEntry, VALID_TAGS, PLAYER_ENTRY_MAX_LENGTH
 from spacegame.models.mission import MissionManager
 from spacegame.engine.backgrounds import AnimatedBackground
-from spacegame.engine.fonts import FontCache
+from spacegame.engine.fonts import FONT_BODY, FONT_LG, FONT_MD, FONT_SECTION, FONT_SM, FontCache
 from spacegame.utils.logger import logger
 
 # Layout constants
-PANEL_LEFT = 40
-PANEL_TOP = 90
+PANEL_LEFT = scale_x(40)
+PANEL_TOP = scale_y(90)
 LIST_WIDTH = WINDOW_WIDTH - PANEL_LEFT * 2
-LIST_HEIGHT = WINDOW_HEIGHT - PANEL_TOP - 80
-ENTRY_CARD_HEIGHT = 80
+LIST_HEIGHT = WINDOW_HEIGHT - PANEL_TOP - scale_y(80) - scale_y(HUD_BASE_HEIGHT)
+ENTRY_CARD_HEIGHT = scale_y(80)
 ENTRY_CARD_GAP = 6
-TAB_HEIGHT = 32
-TAB_WIDTH = 110
-HINT_CARD_HEIGHT = 56
+TAB_HEIGHT = scale_y(32)
+TAB_WIDTH = scale_x(110)
+HINT_CARD_HEIGHT = scale_y(56)
 
 # Tag filter labels
 TAG_FILTERS = [
@@ -247,13 +248,13 @@ class JournalView(BaseView):
         self._compose_tag: str = ""
 
         # Fonts
-        self._title_font = FontCache.get(40)
-        self._tab_font = FontCache.get(22)
-        self._header_font = FontCache.get(20)
-        self._body_font = FontCache.get(20)
-        self._detail_font = FontCache.get(22)
-        self._label_font = FontCache.get(24)
-        self._small_font = FontCache.get(18)
+        self._title_font = FontCache.get(FONT_SECTION)
+        self._tab_font = FontCache.get(FONT_BODY)
+        self._header_font = FontCache.get(FONT_MD)
+        self._body_font = FontCache.get(FONT_MD)
+        self._detail_font = FontCache.get(FONT_BODY)
+        self._label_font = FontCache.get(FONT_LG)
+        self._small_font = FontCache.get(FONT_SM)
 
         # UI elements
         self.back_button: Optional[pygame_gui.elements.UIButton] = None
@@ -290,7 +291,7 @@ class JournalView(BaseView):
 
     def _create_ui(self) -> None:
         self.back_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(PANEL_LEFT, WINDOW_HEIGHT - 60, 120, 40),
+            relative_rect=pygame.Rect(PANEL_LEFT, WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - scale_y(60), 120, 40),
             text="BACK",
             manager=self.ui_manager,
         )
@@ -319,7 +320,7 @@ class JournalView(BaseView):
     def _build_action_buttons(self) -> None:
         # Right-aligned action buttons
         btn_y = PANEL_TOP - TAB_HEIGHT - 6
-        btn_w = 100
+        btn_w = scale_x(100)
         btn_h = TAB_HEIGHT
 
         self._new_btn = _ActionButton(
@@ -363,7 +364,7 @@ class JournalView(BaseView):
         # Tag selection buttons for compose mode
         self._tag_buttons.clear()
         tag_labels = [("", "None"), ("people", "People"), ("places", "Places"), ("suspicions", "Suspicions"), ("goals", "Goals")]
-        tag_btn_w = 90
+        tag_btn_w = scale_x(90)
         for i, (tag_key, tag_label) in enumerate(tag_labels):
             rect = pygame.Rect(
                 PANEL_LEFT + i * (tag_btn_w + 4),

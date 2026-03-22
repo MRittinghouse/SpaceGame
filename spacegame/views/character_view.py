@@ -9,7 +9,8 @@ import pygame
 import pygame_gui
 from typing import Optional
 
-from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState
+from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState, scale_x, scale_y
+from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
 from spacegame.views.base_view import BaseView
 from spacegame.models.player import Player
 from spacegame.models.attributes import (
@@ -21,8 +22,8 @@ from spacegame.models.social import SocialManager
 from spacegame.models.progression import SkillTreeType
 from spacegame.engine.backgrounds import AnimatedBackground
 from spacegame.engine.draw_utils import draw_bar, draw_panel
-from spacegame.engine.fonts import FontCache
-from spacegame.engine.sprites import get_sprite_manager
+from spacegame.engine.fonts import FONT_BODY, FONT_LG, FONT_MD, FONT_SM, FONT_XL2, FONT_XS, FontCache
+from spacegame.engine.sprites import get_sprite_manager, res_scale
 from spacegame.utils.logger import logger
 
 # Map tree types to their governing attribute for display
@@ -39,26 +40,26 @@ _TREE_ATTRIBUTE_MAP = {
 }
 
 # Layout constants
-HEADER_X = 80
+HEADER_X = scale_x(80)
 HEADER_Y = 10
-HEADER_W = WINDOW_WIDTH - 160
-HEADER_H = 75
+HEADER_W = WINDOW_WIDTH - scale_x(160)
+HEADER_H = scale_y(75)
 
-LEFT_X = 30
-LEFT_Y = 100
-LEFT_W = 480
-LEFT_H = 530
+LEFT_X = scale_x(30)
+LEFT_Y = scale_y(100)
+LEFT_W = scale_x(480)
+LEFT_H = scale_y(530)
 
-RIGHT_X = LEFT_X + LEFT_W + 20
-RIGHT_Y = 100
-RIGHT_W = WINDOW_WIDTH - RIGHT_X - 30
-RIGHT_TOP_H = 270
+RIGHT_X = LEFT_X + LEFT_W + scale_x(20)
+RIGHT_Y = scale_y(100)
+RIGHT_W = WINDOW_WIDTH - RIGHT_X - scale_x(30)
+RIGHT_TOP_H = scale_y(270)
 RIGHT_BOT_Y = RIGHT_Y + RIGHT_TOP_H + 10
 RIGHT_BOT_H = LEFT_H - RIGHT_TOP_H - 10
 
-BTN_Y = WINDOW_HEIGHT - 55
-BTN_W = 150
-BTN_H = 38
+BTN_Y = WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - scale_y(55)
+BTN_W = scale_x(150)
+BTN_H = scale_y(38)
 
 
 class CharacterView(BaseView):
@@ -81,12 +82,12 @@ class CharacterView(BaseView):
         self.next_state: Optional[GameState] = None
 
         # Fonts
-        self.title_font = FontCache.get(30)
-        self.header_font = FontCache.get(22)
-        self.info_font = FontCache.get(20)
-        self.small_font = FontCache.get(16)
-        self.value_font = FontCache.get(24)
-        self.section_font = FontCache.get(18)
+        self.title_font = FontCache.get(FONT_XL2)
+        self.header_font = FontCache.get(FONT_BODY)
+        self.info_font = FontCache.get(FONT_MD)
+        self.small_font = FontCache.get(FONT_XS)
+        self.value_font = FontCache.get(FONT_LG)
+        self.section_font = FontCache.get(FONT_SM)
 
         # UI elements
         self.skills_button: Optional[pygame_gui.elements.UIButton] = None
@@ -443,7 +444,7 @@ class CharacterView(BaseView):
             faction_name = faction_id.replace("_", " ").title()
 
             # Faction emblem
-            emblem = self._sprite_mgr.get_faction_emblem(faction_id, scale=1)
+            emblem = self._sprite_mgr.get_faction_emblem(faction_id, scale=res_scale(1))
             text_x = fx
             if emblem:
                 screen.blit(emblem, (fx, fy - 1))

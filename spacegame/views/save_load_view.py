@@ -9,12 +9,12 @@ import pygame_gui
 from typing import Optional, List, Dict, Any
 from datetime import datetime
 
-from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors
+from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, scale_x, scale_y
 from spacegame.views.base_view import BaseView
 from spacegame.save_manager import SaveManager
 from spacegame.utils.logger import logger
 from spacegame.engine.backgrounds import AnimatedBackground
-from spacegame.engine.fonts import FontCache
+from spacegame.engine.fonts import FontCache, FONT_DISPLAY, FONT_LG, FONT_MD, FONT_SM
 
 
 class SaveLoadView(BaseView):
@@ -50,10 +50,10 @@ class SaveLoadView(BaseView):
         self.should_execute = False  # True when save/load should happen
 
         # Fonts
-        self.title_font = FontCache.get(48)
-        self.header_font = FontCache.get(24)
-        self.info_font = FontCache.get(20)
-        self.small_font = FontCache.get(18)
+        self.title_font = FontCache.get(FONT_DISPLAY)
+        self.header_font = FontCache.get(FONT_LG)
+        self.info_font = FontCache.get(FONT_MD)
+        self.small_font = FontCache.get(FONT_SM)
 
         # UI Elements
         self.slot_buttons: List[pygame_gui.elements.UIButton] = []
@@ -89,12 +89,12 @@ class SaveLoadView(BaseView):
     def _create_ui(self) -> None:
         """Create save/load slot UI."""
         # Create 12 slot buttons in a grid (4 rows x 3 columns)
-        slot_width = 350
-        slot_height = 100
-        start_x = 50
-        start_y = 100
-        spacing_x = 370
-        spacing_y = 120
+        slot_width = scale_x(350)
+        slot_height = scale_y(100)
+        start_x = scale_x(50)
+        start_y = scale_y(100)
+        spacing_x = scale_x(370)
+        spacing_y = scale_y(120)
 
         for i in range(12):
             row = i // 3
@@ -121,7 +121,7 @@ class SaveLoadView(BaseView):
 
         # Back button
         self.back_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(50, WINDOW_HEIGHT - 70, 150, 50),
+            relative_rect=pygame.Rect(scale_x(50), WINDOW_HEIGHT - scale_y(70), scale_x(150), scale_y(50)),
             text="BACK",
             manager=self.ui_manager,
         )
@@ -133,7 +133,7 @@ class SaveLoadView(BaseView):
             confirm_text = "LOAD"
 
         self.confirm_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(WINDOW_WIDTH - 350, WINDOW_HEIGHT - 70, 150, 50),
+            relative_rect=pygame.Rect(WINDOW_WIDTH - scale_x(350), WINDOW_HEIGHT - scale_y(70), scale_x(150), scale_y(50)),
             text=confirm_text,
             manager=self.ui_manager,
         )
@@ -142,7 +142,7 @@ class SaveLoadView(BaseView):
         # Delete button (only in load mode, only when slot selected)
         if self.mode == "load":
             self.delete_button = pygame_gui.elements.UIButton(
-                relative_rect=pygame.Rect(WINDOW_WIDTH - 180, WINDOW_HEIGHT - 70, 150, 50),
+                relative_rect=pygame.Rect(WINDOW_WIDTH - scale_x(180), WINDOW_HEIGHT - scale_y(70), scale_x(150), scale_y(50)),
                 text="DELETE",
                 manager=self.ui_manager,
             )

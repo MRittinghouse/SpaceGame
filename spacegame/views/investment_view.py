@@ -13,25 +13,27 @@ from spacegame.config import (
     WINDOW_HEIGHT,
     Colors,
     GameState,
+    scale_x,
+    scale_y,
 )
 from spacegame.views.base_view import BaseView
 from spacegame.models.player import Player
 from spacegame.models.investment import InvestmentManager
 from spacegame.engine.backgrounds import AnimatedBackground
 from spacegame.engine.draw_utils import draw_panel
-from spacegame.engine.fonts import FontCache
+from spacegame.engine.fonts import FONT_BODY, FONT_LG, FONT_SUBTITLE, FONT_TITLE, FONT_XL2, FontCache
 from spacegame.utils.logger import logger
 
 
 # Layout
-PANEL_W = 520
-PANEL_H = 420
+PANEL_W = scale_x(520)
+PANEL_H = scale_y(420)
 PANEL_X = WINDOW_WIDTH // 2 - PANEL_W // 2
 PANEL_Y = WINDOW_HEIGHT // 2 - PANEL_H // 2
-CONTENT_X = PANEL_X + 30
-CONTENT_W = PANEL_W - 60
-BUTTON_W = 200
-BUTTON_H = 40
+CONTENT_X = PANEL_X + scale_x(30)
+CONTENT_W = PANEL_W - scale_x(60)
+BUTTON_W = scale_x(200)
+BUTTON_H = scale_y(40)
 ACCENT_COLOR = (200, 180, 80)  # Gold
 
 
@@ -69,12 +71,12 @@ class InvestmentView(BaseView):
         self.message_color: tuple[int, int, int] = Colors.TEXT_PRIMARY
 
         # Fonts
-        self.title_font = FontCache.get(36)
-        self.subtitle_font = FontCache.get(22)
-        self.label_font = FontCache.get(26)
-        self.value_font = FontCache.get(24)
-        self.tier_font = FontCache.get(30)
-        self.msg_font = FontCache.get(22)
+        self.title_font = FontCache.get(FONT_TITLE)
+        self.subtitle_font = FontCache.get(FONT_BODY)
+        self.label_font = FontCache.get(FONT_SUBTITLE)
+        self.value_font = FontCache.get(FONT_LG)
+        self.tier_font = FontCache.get(FONT_XL2)
+        self.msg_font = FontCache.get(FONT_BODY)
 
         # UI element refs
         self.invest_button: Optional[pygame_gui.elements.UIButton] = None

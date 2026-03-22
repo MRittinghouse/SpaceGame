@@ -7,6 +7,7 @@ Manages the core game loop, initialization, and high-level game control.
 import pygame
 import pygame_gui
 import sys
+from pathlib import Path
 from typing import Optional
 from spacegame.config import (
     WINDOW_TITLE,
@@ -103,16 +104,17 @@ class Game:
         self.state_manager = StateManager()
         self.input_handler = InputHandler()
 
-        # pygame_gui UI manager with custom theme
+        # pygame_gui UI manager with resolution-scaled theme
         timer.begin("ui_manager")
         from spacegame.config import DATA_DIR
 
         theme_path = DATA_DIR / "theme.json"
-        if theme_path.exists():
+        scaled_theme_path = self._build_scaled_theme(theme_path)
+        if scaled_theme_path:
             self.ui_manager = pygame_gui.UIManager(
-                (WINDOW_WIDTH, WINDOW_HEIGHT), theme_path=str(theme_path)
+                (WINDOW_WIDTH, WINDOW_HEIGHT), theme_path=str(scaled_theme_path)
             )
-            logger.info(f"Loaded UI theme from {theme_path}")
+            logger.info(f"Loaded UI theme (scaled for {WINDOW_WIDTH}x{WINDOW_HEIGHT})")
         else:
             self.ui_manager = pygame_gui.UIManager((WINDOW_WIDTH, WINDOW_HEIGHT))
             logger.info("No theme.json found, using default pygame_gui theme")
@@ -172,6 +174,7 @@ class Game:
         # Tutorial system
         self.tutorial_manager = TutorialManager()
         self._tutorial_overlay = None
+        self._cockpit_hud = None
         self._tutorial_cooldown: int = 0  # frames to wait before next overlay
 
         # Pause menu state
@@ -481,8 +484,85 @@ class Game:
         # Initialize travel log
         self._initialize_travel_log()
 
+        # Initialize cockpit HUD
+        self._init_cockpit_hud()
+
         # Track starting day for event generation
         self._last_known_day = self.player.game_day
+
+    @staticmethod
+    def _build_scaled_theme(base_path: Path) -> Optional[Path]:
+        """Build a resolution-scaled theme JSON for pygame_gui.
+
+        Reads the base theme file, scales any font sizes proportionally
+        to the active resolution, and writes a temp file.
+
+        Args:
+            base_path: Path to the base theme.json.
+
+        Returns:
+            Path to the scaled theme file, or None if base doesn't exist.
+        """
+        if not base_path.exists():
+            return None
+        try:
+            import json
+            import tempfile
+
+            from spacegame.engine.fonts import scaled_font_size
+
+            with open(base_path, "r") as f:
+                theme_data = json.load(f)
+
+            # Walk the theme tree and scale any font size values
+            def _scale_fonts(obj: dict) -> None:
+                for key, value in obj.items():
+                    if isinstance(value, dict):
+                        if key == "font" and "size" in value:
+                            base_size = int(value["size"])
+                            value["size"] = str(scaled_font_size(base_size))
+                        else:
+                            _scale_fonts(value)
+
+            _scale_fonts(theme_data)
+
+            # Write scaled theme to temp file (same dir for relative paths)
+            scaled_path = base_path.parent / "_theme_scaled.json"
+            with open(scaled_path, "w") as f:
+                json.dump(theme_data, f, indent=4)
+            return scaled_path
+        except Exception as e:
+            logger.warning(f"Failed to build scaled theme: {e}")
+            return base_path
+
+    def _init_cockpit_hud(self) -> None:
+        """Create or reinitialize the cockpit HUD overlay."""
+        from spacegame.views.cockpit_hud import CockpitHUD
+
+        self._cockpit_hud = CockpitHUD(
+            player=self.player,
+            mission_manager=self.mission_manager,
+            crew_roster=self.crew_roster,
+        )
+
+    def _ensure_view_for_state(self, state: GameState) -> None:
+        """Ensure the view for a target state is initialized.
+
+        Args:
+            state: Target GameState to prepare.
+        """
+        ensure_map = {
+            GameState.CHARACTER: self._ensure_character_view,
+            GameState.SKILL_TREE: self._ensure_skill_tree_view,
+            GameState.CREW_ROSTER: self._ensure_crew_roster_view,
+            GameState.MISSION_LOG: self._ensure_mission_log_view,
+            GameState.JOURNAL: self._ensure_journal_view,
+            GameState.STATISTICS: self._ensure_statistics_view,
+            GameState.ACHIEVEMENTS: self._ensure_achievements_view,
+        }
+        ensure_fn = ensure_map.get(state)
+        if ensure_fn:
+            ensure_fn()
 
     def _set_pixel_cursor(self) -> None:
         """Set a custom 16x16 pixel art cursor matching the game aesthetic."""
@@ -2509,15 +2589,30 @@ class Game:
             logger.info(f"Unique encounter seen: {flag}")
 
     def _get_crew_combat_moves(self) -> dict:
-        """Build crew_template_id -> CombatMove mapping from active crew."""
+        """Build crew_template_id -> list[CombatMove] mapping from active crew.
+
+        Uses combat_moves (plural, 4 abilities) if available, falls back
+        to the legacy single combat_move field.
+        """
         from spacegame.models.combat import CombatMove
 
-        moves: dict[str, CombatMove] = {}
+        moves: dict[str, list[CombatMove]] = {}
         if self.crew_roster:
             for template, _state in self.crew_roster.get_recruited_members():
-                if template.combat_move:
-                    move = self.data_loader._parse_combat_move(template.combat_move)
-                    moves[template.id] = move
+                crew_moves: list[CombatMove] = []
+                # New: multiple combat moves per crew member
+                if template.combat_moves:
+                    for move_data in template.combat_moves:
+                        crew_moves.append(
+                            self.data_loader._parse_combat_move(move_data)
+                        )
+                # Legacy fallback: single combat_move
+                elif template.combat_move:
+                    crew_moves.append(
+                        self.data_loader._parse_combat_move(template.combat_move)
+                    )
+                if crew_moves:
+                    moves[template.id] = crew_moves
         return moves
 
     def _apply_combat_result(self) -> None:
@@ -3038,12 +3133,15 @@ class Game:
                     self.save_manager = SaveManager(new_save_dir)
                     logger.info(f"Save directory changed to: {new_save_dir}")
 
-                # Persist audio config
+                # Persist audio and display config
+                settings = self.save_manager.load_settings()
                 audio_cfg = self.settings_view.get_audio_config()
                 if audio_cfg:
-                    settings = self.save_manager.load_settings()
                     settings["audio"] = audio_cfg.to_dict()
-                    self.save_manager.save_settings(settings)
+                display = self.settings_view.get_display_settings()
+                settings["resolution"] = display["resolution"]
+                settings["fullscreen"] = display["fullscreen"]
+                self.save_manager.save_settings(settings)
 
             # Close dialog
             self.settings_view.on_exit()
@@ -3295,6 +3393,9 @@ class Game:
         # Wire crew_roster to dialogue manager
         if self.crew_roster:
             self.dialogue_manager.set_crew_roster(self.crew_roster)
+
+        # Initialize cockpit HUD
+        self._init_cockpit_hud()
 
         # Track day for event generation
         self._last_known_day = self.player.game_day
@@ -3675,6 +3776,22 @@ class Game:
                         success, crew_msg = self.crew_roster.recruit(reward.target_id, crew_slots)
                         if success:
                             self._mission_notifications.append(f"Crew Joined: {crew_msg}")
+                        else:
+                            # Crew full — mark companion as pending for cantina recruitment
+                            template = self.crew_roster.get_template(reward.target_id)
+                            if template and template.is_companion:
+                                self.crew_roster.add_pending_companion(reward.target_id)
+                                system = self.data_loader.get_system(template.home_system_id)
+                                system_name = system.name if system else template.home_system_id
+                                self._mission_notifications.append(
+                                    f"Crew Full: {template.name} is waiting at "
+                                    f"{system_name}. Dismiss a crew member and "
+                                    f"visit the cantina to recruit them."
+                                )
+                                logger.info(
+                                    f"Crew full — {template.name} marked as pending "
+                                    f"at {template.home_system_id}"
+                                )
 
                     # Trade permit
                     if reward.reward_type == "trade_permit" and reward.target_id:
@@ -4084,6 +4201,26 @@ class Game:
                     self.ui_manager.process_events(event)
                     continue
 
+                # Cockpit HUD event handling (before pygame_gui)
+                if self._cockpit_hud and self._cockpit_hud.visible:
+                    hud_result = self._cockpit_hud.handle_event(event)
+                    if hud_result is not None:
+                        # Navigate to requested state
+                        self._ensure_view_for_state(hud_result)
+                        self.state_manager.change_state(hud_result)
+                        continue
+                    # Consume mouse clicks on the HUD bar to prevent click-through
+                    if (
+                        event.type == pygame.MOUSEBUTTONDOWN
+                        and event.pos[1] >= self._cockpit_hud.y
+                    ):
+                        continue
+
+                # F11 — toggle fullscreen
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_F11:
+                    pygame.display.toggle_fullscreen()
+                    continue
+
                 # Check for ESC key to toggle pause (only during gameplay)
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                     if self.player and not self.paused:
@@ -4105,6 +4242,18 @@ class Game:
 
             # Update UI manager
             self.ui_manager.update(dt)
+
+            # Update cockpit HUD visibility based on current state
+            if self._cockpit_hud and self.player:
+                # Pass current system's faction to HUD for station skin accent
+                faction_id = ""
+                if self.player.current_system_id:
+                    sys_data = self.data_loader.get_system(self.player.current_system_id)
+                    if sys_data:
+                        faction_id = sys_data.faction
+                self._cockpit_hud.update(
+                    dt, self.state_manager.current_state, faction_id=faction_id
+                )
 
             # Handle state transitions
             self._handle_state_transitions()
@@ -4195,7 +4344,11 @@ class Game:
 
             self.ui_manager.draw_ui(render_surface)
 
-            # Tutorial overlay renders AFTER ui_manager.draw_ui() so it
+            # Cockpit HUD renders AFTER pygame_gui so it sits on top of view UI
+            if self._cockpit_hud and self.player:
+                self._cockpit_hud.render(render_surface)
+
+            # Tutorial overlay renders AFTER HUD and ui_manager.draw_ui() so it
             # covers all pygame_gui elements from the underlying view.
             if self._tutorial_overlay and self._tutorial_overlay.active:
                 self._tutorial_overlay.render(render_surface)

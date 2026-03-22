@@ -44,8 +44,8 @@ def test_load_commodities() -> None:
     loader = DataLoader()
     commodities = loader.load_commodities()
 
-    # Should have 54 commodities (27 original + 12 components + 3 crafted upgrades + 3 new + 8 added + 1 schematic_data)
-    assert len(commodities) == 60, "Should load exactly 60 commodities"
+    # 60 existing + 1 sealed_audit_chip = 61
+    assert len(commodities) == 61, "Should load exactly 61 commodities"
 
     # Check a basic commodity
     assert "food" in commodities

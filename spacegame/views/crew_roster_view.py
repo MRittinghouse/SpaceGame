@@ -9,23 +9,24 @@ import pygame
 import pygame_gui
 from typing import Optional
 
-from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState
+from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState, scale_x, scale_y
 from spacegame.views.base_view import BaseView
 from spacegame.models.crew import CrewRoster, CrewTemplate
 from spacegame.models.attributes import AttributeId, ATTRIBUTE_DEFINITIONS
 from spacegame.engine.backgrounds import AnimatedBackground
 from spacegame.engine.draw_utils import draw_bar, draw_panel
-from spacegame.engine.fonts import FontCache
-from spacegame.engine.sprites import AnimatedSprite, get_sprite_manager
+from spacegame.engine.fonts import FONT_BODY, FONT_LG, FONT_MD, FONT_SECTION, FONT_XL, FontCache
+from spacegame.engine.sprites import AnimatedSprite, get_sprite_manager, res_scale
 from spacegame.utils.logger import logger
+from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
 
 # Layout constants
-PANEL_LEFT = 40
-PANEL_TOP = 90
-LIST_WIDTH = 360
-DETAIL_WIDTH = WINDOW_WIDTH - LIST_WIDTH - PANEL_LEFT * 2 - 30
-LIST_HEIGHT = WINDOW_HEIGHT - PANEL_TOP - 80
-ITEM_HEIGHT = 44
+PANEL_LEFT = scale_x(40)
+PANEL_TOP = scale_y(90)
+LIST_WIDTH = scale_x(360)
+DETAIL_WIDTH = WINDOW_WIDTH - LIST_WIDTH - PANEL_LEFT * 2 - scale_x(30)
+LIST_HEIGHT = WINDOW_HEIGHT - PANEL_TOP - scale_y(80) - scale_y(HUD_BASE_HEIGHT)
+ITEM_HEIGHT = scale_y(44)
 
 
 class _CrewItem:
@@ -153,12 +154,12 @@ class CrewRosterView(BaseView):
         self._scroll_offset: int = 0
 
         # Fonts
-        self._title_font = FontCache.get(40)
-        self._name_font = FontCache.get(24)
-        self._desc_font = FontCache.get(20)
-        self._detail_title_font = FontCache.get(28)
-        self._label_font = FontCache.get(22)
-        self._slot_font = FontCache.get(24)
+        self._title_font = FontCache.get(FONT_SECTION)
+        self._name_font = FontCache.get(FONT_LG)
+        self._desc_font = FontCache.get(FONT_MD)
+        self._detail_title_font = FontCache.get(FONT_XL)
+        self._label_font = FontCache.get(FONT_BODY)
+        self._slot_font = FontCache.get(FONT_LG)
 
         # UI
         self.back_button: Optional[pygame_gui.elements.UIButton] = None
@@ -191,7 +192,7 @@ class CrewRosterView(BaseView):
 
     def _create_ui(self) -> None:
         self.back_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(PANEL_LEFT, WINDOW_HEIGHT - 60, 120, 40),
+            relative_rect=pygame.Rect(PANEL_LEFT, WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - scale_y(60), 120, 40),
             text="BACK",
             manager=self.ui_manager,
         )
@@ -199,7 +200,7 @@ class CrewRosterView(BaseView):
         # Dismiss button in detail panel area
         detail_x = PANEL_LEFT + LIST_WIDTH + 30
         self._dismiss_btn = _DismissButton(
-            pygame.Rect(detail_x + 20, WINDOW_HEIGHT - 140, 140, 38),
+            pygame.Rect(detail_x + 20, WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - 140, 140, 38),
             self._label_font,
         )
 
@@ -392,7 +393,7 @@ class CrewRosterView(BaseView):
         # Try sprite
         if template.id not in self._portrait_cache:
             self._portrait_cache[template.id] = self._sprite_mgr.get_portrait_animated(
-                template.id, scale=1
+                template.id, scale=res_scale(1)
             )
         anim = self._portrait_cache[template.id]
         sprite = anim.get_surface() if anim else None

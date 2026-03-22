@@ -9,23 +9,24 @@ import pygame
 import pygame_gui
 from typing import Optional
 
-from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState
+from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState, scale_x, scale_y
+from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
 from spacegame.views.base_view import BaseView
 from spacegame.models.mission import MissionManager, MissionStatus, Mission
 from spacegame.engine.backgrounds import AnimatedBackground
 from spacegame.engine.draw_utils import draw_panel
-from spacegame.engine.fonts import FontCache
+from spacegame.engine.fonts import FontCache, FONT_BODY, FONT_LG, FONT_MD, FONT_SECTION, FONT_XL, FONT_XS
 from spacegame.utils.logger import logger
 
 # Layout constants
-PANEL_LEFT = 40
-PANEL_TOP = 90
-LIST_WIDTH = 360
-DETAIL_WIDTH = WINDOW_WIDTH - LIST_WIDTH - PANEL_LEFT * 2 - 30
-LIST_HEIGHT = WINDOW_HEIGHT - PANEL_TOP - 80
-ITEM_HEIGHT = 44
-TAB_HEIGHT = 36
-TAB_WIDTH = 130
+PANEL_LEFT = scale_x(40)
+PANEL_TOP = scale_y(90)
+LIST_WIDTH = scale_x(360)
+DETAIL_WIDTH = WINDOW_WIDTH - LIST_WIDTH - PANEL_LEFT * 2 - scale_x(30)
+LIST_HEIGHT = WINDOW_HEIGHT - PANEL_TOP - scale_y(80) - scale_y(HUD_BASE_HEIGHT)
+ITEM_HEIGHT = scale_y(44)
+TAB_HEIGHT = scale_y(36)
+TAB_WIDTH = scale_x(130)
 
 
 class _TabButton:
@@ -182,13 +183,13 @@ class MissionLogView(BaseView):
         self._scroll_offset: int = 0
 
         # Fonts
-        self._title_font = FontCache.get(40)
-        self._tab_font = FontCache.get(22)
-        self._name_font = FontCache.get(24)
-        self._desc_font = FontCache.get(20)
-        self._detail_title_font = FontCache.get(28)
-        self._label_font = FontCache.get(22)
-        self._badge_font = FontCache.get(16)
+        self._title_font = FontCache.get(FONT_SECTION)
+        self._tab_font = FontCache.get(FONT_BODY)
+        self._name_font = FontCache.get(FONT_LG)
+        self._desc_font = FontCache.get(FONT_MD)
+        self._detail_title_font = FontCache.get(FONT_XL)
+        self._label_font = FontCache.get(FONT_BODY)
+        self._badge_font = FontCache.get(FONT_XS)
 
         # UI
         self.back_button: Optional[pygame_gui.elements.UIButton] = None
@@ -218,7 +219,7 @@ class MissionLogView(BaseView):
 
     def _create_ui(self) -> None:
         self.back_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(PANEL_LEFT, WINDOW_HEIGHT - 60, 120, 40),
+            relative_rect=pygame.Rect(PANEL_LEFT, WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - scale_y(60), 120, 40),
             text="BACK",
             manager=self.ui_manager,
         )
@@ -226,7 +227,7 @@ class MissionLogView(BaseView):
         # Accept button in detail panel area
         detail_x = PANEL_LEFT + LIST_WIDTH + 30
         self._accept_btn = _AcceptButton(
-            pygame.Rect(detail_x + 20, WINDOW_HEIGHT - 140, 140, 38),
+            pygame.Rect(detail_x + 20, WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - 140, 140, 38),
             self._label_font,
         )
 

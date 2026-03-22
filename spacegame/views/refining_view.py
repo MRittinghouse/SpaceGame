@@ -12,7 +12,7 @@ import math
 import random
 from typing import Optional, Dict, List
 from spacegame.views.base_view import BaseView
-from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState
+from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState, scale_x, scale_y
 from spacegame.models.player import Player
 from spacegame.models.commodity import Commodity
 from spacegame.models.refining import Recipe, RefiningSession, RefiningResult
@@ -27,8 +27,8 @@ from spacegame.engine.particles import (
     FORGE_COMPLETE_FLASH,
 )
 from spacegame.engine.scrollable_panel import ScrollablePanel
-from spacegame.engine.fonts import FontCache
-from spacegame.engine.sprites import get_sprite_manager
+from spacegame.engine.fonts import FontCache, FONT_HEADING, FONT_LG, FONT_MD, FONT_RATING, FONT_SECTION2, FONT_TITLE
+from spacegame.engine.sprites import get_sprite_manager, res_scale
 from spacegame.engine.audio_manager import get_audio_manager
 from spacegame.engine.easing import Tween, ease_out_cubic
 from spacegame.engine.floating_text import FloatingItemManager
@@ -63,9 +63,9 @@ class RefiningView(BaseView):
         self.selected_recipe_idx: int = 0
 
         # Fonts
-        self.title_font = FontCache.get(36)
-        self.info_font = FontCache.get(24)
-        self.small_font = FontCache.get(20)
+        self.title_font = FontCache.get(FONT_TITLE)
+        self.info_font = FontCache.get(FONT_LG)
+        self.small_font = FontCache.get(FONT_MD)
 
         # Batch
         self.batch_count: int = 1
@@ -97,9 +97,9 @@ class RefiningView(BaseView):
         self._session_rating: str = "D"
         self._jobs_completed_count: int = 0
         self._unique_recipes_count: int = 0
-        self._summary_font = FontCache.get(32)
-        self._summary_title_font = FontCache.get(44)
-        self._rating_font = FontCache.get(72)
+        self._summary_font = FontCache.get(FONT_HEADING)
+        self._summary_title_font = FontCache.get(FONT_SECTION2)
+        self._rating_font = FontCache.get(FONT_RATING)
 
         # Sprite manager
         self._sprite_mgr = get_sprite_manager()
@@ -108,26 +108,26 @@ class RefiningView(BaseView):
         self._forge_sprites: Dict[str, Optional[pygame.Surface]] = {}
         for state in ("idle", "active", "complete"):
             self._forge_sprites[state] = self._sprite_mgr.get_static_sprite(
-                "refining", f"forge_{state}", scale=2
+                "refining", f"forge_{state}", scale=res_scale(2)
             )
 
         # Mastery star sprites (8x8 native at 2x = 16x16)
         self._mastery_stars: Dict[str, Optional[pygame.Surface]] = {}
         for tier_name in ("bronze", "silver", "gold"):
             self._mastery_stars[tier_name] = self._sprite_mgr.get_static_sprite(
-                "refining", f"mastery_star_{tier_name}", scale=2
+                "refining", f"mastery_star_{tier_name}", scale=res_scale(2)
             )
 
         # Recipe category icon sprites (16x16 native at 1x)
         self._category_icons: Dict[str, Optional[pygame.Surface]] = {}
         for cat_name in ("commodity", "upgrade", "equipment", "trade"):
             self._category_icons[cat_name] = self._sprite_mgr.get_static_sprite(
-                "refining", f"icon_category_{cat_name}", scale=1
+                "refining", f"icon_category_{cat_name}", scale=res_scale(1)
             )
 
         # Lock icon for locked recipes (8x8 native at 2x = 16x16)
         self._lock_icon: Optional[pygame.Surface] = self._sprite_mgr.get_static_sprite(
-            "ui", "icon_lock", scale=2
+            "ui", "icon_lock", scale=res_scale(2)
         )
 
         # Forge completion flash timer (for brief "complete" sprite display)
@@ -163,7 +163,7 @@ class RefiningView(BaseView):
         self._crew_comment_timer: float = 0.0
 
         # Pre-rendered card background surfaces (avoids per-frame allocation)
-        card_w, card_h = 500, 75
+        card_w, card_h = scale_x(500), scale_y(75)
         self._card_selected = pygame.Surface((card_w, card_h), pygame.SRCALPHA)
         for row in range(card_h):
             t = row / card_h
@@ -174,13 +174,13 @@ class RefiningView(BaseView):
         self._card_unselected = pygame.Surface((card_w, card_h), pygame.SRCALPHA)
         self._card_unselected.fill((18, 22, 38, 200))
 
-        locked_h = 55
+        locked_h = scale_y(55)
         self._card_locked = pygame.Surface((card_w, locked_h), pygame.SRCALPHA)
         self._card_locked.fill((12, 14, 28, 180))
 
         # Recipe list scroll panel (recipes start at y=140, left column 530px wide)
         self._recipe_scroll = ScrollablePanel(
-            rect=pygame.Rect(30, 140, 530, WINDOW_HEIGHT - 220),
+            rect=pygame.Rect(scale_x(30), scale_y(140), scale_x(530), WINDOW_HEIGHT - scale_y(220)),
             content_height=0,  # Updated in on_enter when recipes are known
             scroll_speed=40,
         )
@@ -278,23 +278,25 @@ class RefiningView(BaseView):
         self._destroy_ui()
 
     def _create_ui(self) -> None:
+        btn_h = scale_y(40)
+        btn_y = WINDOW_HEIGHT - scale_y(60)
         self.back_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(20, WINDOW_HEIGHT - 60, 150, 40),
+            relative_rect=pygame.Rect(scale_x(20), btn_y, scale_x(150), btn_h),
             text="Stop Refining",
             manager=self.ui_manager,
         )
         self.batch_minus_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(180, WINDOW_HEIGHT - 60, 35, 40),
+            relative_rect=pygame.Rect(scale_x(180), btn_y, scale_x(35), btn_h),
             text="-",
             manager=self.ui_manager,
         )
         self.craft_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(220, WINDOW_HEIGHT - 60, 150, 40),
+            relative_rect=pygame.Rect(scale_x(220), btn_y, scale_x(150), btn_h),
             text="Start x1",
             manager=self.ui_manager,
         )
         self.batch_plus_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(375, WINDOW_HEIGHT - 60, 35, 40),
+            relative_rect=pygame.Rect(scale_x(375), btn_y, scale_x(35), btn_h),
             text="+",
             manager=self.ui_manager,
         )
@@ -447,10 +449,10 @@ class RefiningView(BaseView):
             return
         filtered = self._get_filtered_recipes()
         for i, recipe in enumerate(filtered):
-            content_y = i * 80
+            content_y = i * scale_y(80)
             screen_y = self._recipe_scroll.get_screen_y(content_y)
-            rect = pygame.Rect(30, screen_y, 500, 75)
-            if rect.collidepoint(pos) and self._recipe_scroll.is_item_visible(content_y, 75):
+            rect = pygame.Rect(scale_x(30), screen_y, scale_x(500), scale_y(75))
+            if rect.collidepoint(pos) and self._recipe_scroll.is_item_visible(content_y, scale_y(75)):
                 # Map back to index in full available_recipes for craft button
                 full_idx = self.session.available_recipes.index(recipe)
                 self.selected_recipe_idx = full_idx
@@ -650,16 +652,16 @@ class RefiningView(BaseView):
         recipes = self._get_filtered_recipes()
         locked = self._locked_recipes if hasattr(self, "_locked_recipes") else []
         # Each recipe card is 80px tall, locked cards are 60px, header adds 25px
-        content_h = len(recipes) * 80
+        content_h = len(recipes) * scale_y(80)
         if locked:
-            content_h += 25 + len(locked) * 60
+            content_h += scale_y(25) + len(locked) * scale_y(60)
         self._recipe_scroll.set_content_height(content_h)
 
     def _get_icon(self, commodity_id: str) -> Optional[pygame.Surface]:
         """Get a cached 16x16 commodity icon."""
         if commodity_id not in self._commodity_icons:
             self._commodity_icons[commodity_id] = self._sprite_mgr.get_commodity_icon(
-                commodity_id, scale=1
+                commodity_id, scale=res_scale(1)
             )
         return self._commodity_icons[commodity_id]
 
@@ -997,7 +999,7 @@ class RefiningView(BaseView):
                 if recipe in self.session.available_recipes
                 else i
             )
-            rect = pygame.Rect(30, y, 500, 75)
+            rect = pygame.Rect(scale_x(30), y, scale_x(500), scale_y(75))
             is_selected = full_idx == self.selected_recipe_idx
             can_craft = recipe.can_craft(inventory)
 
@@ -1166,7 +1168,7 @@ class RefiningView(BaseView):
                 if not self._recipe_scroll.is_item_visible(item_content_y, 55):
                     continue
                 ly = self._recipe_scroll.get_screen_y(item_content_y)
-                rect = pygame.Rect(30, ly, 500, 55)
+                rect = pygame.Rect(scale_x(30), ly, scale_x(500), scale_y(55))
                 screen.blit(self._card_locked, rect.topleft)
                 pygame.draw.rect(screen, (60, 50, 30), rect, 1, border_radius=4)
 
@@ -1213,7 +1215,7 @@ class RefiningView(BaseView):
             ("equipment", "Equipment"),
             ("trade_good", "Trade"),
         ]
-        tab_x = 120
+        tab_x = scale_x(120)
         self._category_tab_rects.clear()
         for cat_id, cat_label in categories:
             is_active = self._active_category == cat_id
@@ -1229,8 +1231,8 @@ class RefiningView(BaseView):
             tab_x += tab_w + 4
 
     def _render_queue(self, screen: pygame.Surface) -> None:
-        panel_x = WINDOW_WIDTH - 350
-        panel_y = 90
+        panel_x = WINDOW_WIDTH - scale_x(350)
+        panel_y = scale_y(90)
 
         # Forge sprite (above queue header)
         forge_state = self._get_forge_state()
@@ -1265,7 +1267,7 @@ class RefiningView(BaseView):
                 display_name = job.recipe.name
                 name_surf = self.small_font.render(display_name, True, Colors.TEXT)
                 # Truncate if name overflows panel width
-                max_name_w = 300 - (jx - panel_x)
+                max_name_w = scale_x(300) - (jx - panel_x)
                 if name_surf.get_width() > max_name_w:
                     while len(display_name) > 3 and self.small_font.size(display_name + "..")[0] > max_name_w:
                         display_name = display_name[:-1]
@@ -1275,8 +1277,8 @@ class RefiningView(BaseView):
 
                 # Progress bar with gradient fill
                 bar_y = y + 22
-                bar_w = 300
-                bar_h = 16
+                bar_w = scale_x(300)
+                bar_h = scale_y(16)
                 bar_color = Colors.SUCCESS if job.progress >= 0.9 else Colors.TEXT_HIGHLIGHT
                 draw_bar(
                     screen,
@@ -1309,7 +1311,7 @@ class RefiningView(BaseView):
         current_jobs = self.session.get_queue_size() if self.session else 0
         empty_slots = max_queue - current_jobs
         for _ in range(empty_slots):
-            slot_rect = pygame.Rect(panel_x, y + 22, 300, 16)
+            slot_rect = pygame.Rect(panel_x, y + 22, scale_x(300), scale_y(16))
             pygame.draw.rect(screen, (25, 28, 40), slot_rect)
             pygame.draw.rect(screen, (40, 44, 60), slot_rect, 1)
             y += 50
@@ -1335,8 +1337,8 @@ class RefiningView(BaseView):
         else:
             bar_color = FORGE_COLOR
 
-        bar_w = 300
-        bar_h = 16
+        bar_w = scale_x(300)
+        bar_h = scale_y(16)
         draw_bar(
             screen,
             x,
@@ -1391,7 +1393,7 @@ class RefiningView(BaseView):
             level = fu_state.get_level(uid)
             next_cost = definition.get_cost(level + 1)
 
-            btn_rect = pygame.Rect(panel_x, y, 320, 22)
+            btn_rect = pygame.Rect(panel_x, y, scale_x(320), scale_y(22))
             self._upgrade_rects[uid] = btn_rect
 
             is_hover = btn_rect.collidepoint(mouse_pos)
@@ -1506,13 +1508,13 @@ class RefiningView(BaseView):
         screen.blit(dim, (0, 0))
 
         # Banner text
-        banner_font = FontCache.get(44)
+        banner_font = FontCache.get(FONT_SECTION2)
         title = banner_font.render("BLUEPRINT DISCOVERED", True, FORGE_COLOR)
         title.set_alpha(alpha)
         title_rect = title.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 - 25))
         screen.blit(title, title_rect)
 
-        name_font = FontCache.get(32)
+        name_font = FontCache.get(FONT_HEADING)
         name = name_font.render(self._discovery_banner, True, Colors.TEXT)
         name.set_alpha(alpha)
         name_rect = name.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 + 15))

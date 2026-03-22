@@ -1014,8 +1014,12 @@
               "next_node_id": null,
               "set_flag": "iron_delivery_failed",
               "faction_reputation_changes": [
-                {"commerce_guild": -10},
-                {"science_collective": -5}
+                {
+                  "commerce_guild": -10
+                },
+                {
+                  "science_collective": -5
+                }
               ]
             }
           ],
@@ -1035,7 +1039,9 @@
             {
               "text": "Odom sent me. Ten units of iron ore.",
               "next_node_id": "accept",
-              "excluded_flags": ["iron_ore_delivered"]
+              "excluded_flags": [
+                "iron_ore_delivered"
+              ]
             },
             {
               "text": "Just looking around.",
@@ -2708,14 +2714,39 @@
           "responses": [
             {
               "text": "What kind of information?",
-              "next_node_id": "pitch"
+              "next_node_id": "pitch",
+              "excluded_flags": [
+                "price_of_info_accepted"
+              ]
             },
             {
               "text": "I don't deal with information brokers.",
-              "next_node_id": "decline"
+              "next_node_id": "decline",
+              "excluded_flags": [
+                "price_of_info_accepted"
+              ]
+            },
+            {
+              "text": "Any update on the delivery?",
+              "next_node_id": "in_progress",
+              "required_flags": [
+                "price_of_info_accepted"
+              ]
             }
           ],
           "expression": "confident"
+        },
+        {
+          "id": "in_progress",
+          "speaker_id": "neve_osei",
+          "text": "The chip needs to reach Stellaris Port, Captain. Every hour it sits in your cargo hold is an hour someone could intercept it.",
+          "responses": [
+            {
+              "text": "[Leave]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "stern"
         },
         {
           "id": "pitch",
@@ -2807,11 +2838,36 @@
           "responses": [
             {
               "text": "That's me. What do you need?",
-              "next_node_id": "explain"
+              "next_node_id": "explain",
+              "excluded_flags": [
+                "whistleblower_accepted"
+              ]
             },
             {
               "text": "Depends on who's asking.",
-              "next_node_id": "introduce"
+              "next_node_id": "introduce",
+              "excluded_flags": [
+                "whistleblower_accepted"
+              ]
+            },
+            {
+              "text": "How are we doing on the documents?",
+              "next_node_id": "in_progress",
+              "required_flags": [
+                "whistleblower_accepted"
+              ]
+            }
+          ],
+          "expression": "worried"
+        },
+        {
+          "id": "in_progress",
+          "speaker_id": "petra_vance",
+          "text": "Get those documents to the journalist at Nexus Prime. The longer we wait, the more workers get hurt.",
+          "responses": [
+            {
+              "text": "[Leave]",
+              "next_node_id": null
             }
           ],
           "expression": "worried"
@@ -2934,14 +2990,39 @@
           "responses": [
             {
               "text": "What kind of personal?",
-              "next_node_id": "explain"
+              "next_node_id": "explain",
+              "excluded_flags": [
+                "old_debts_accepted"
+              ]
             },
             {
               "text": "I haul cargo. What's the job?",
-              "next_node_id": "the_package"
+              "next_node_id": "the_package",
+              "excluded_flags": [
+                "old_debts_accepted"
+              ]
+            },
+            {
+              "text": "Any update on the delivery?",
+              "next_node_id": "in_progress",
+              "required_flags": [
+                "old_debts_accepted"
+              ]
             }
           ],
           "expression": "stern"
+        },
+        {
+          "id": "in_progress",
+          "speaker_id": "tomasz_brennan",
+          "text": "You still have that package, Captain? Henryk is at Breakstone. He won't wait forever. Neither will I.",
+          "responses": [
+            {
+              "text": "[Leave]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "sad"
         },
         {
           "id": "explain",
@@ -3045,15 +3126,43 @@
           "responses": [
             {
               "text": "What kind of medicine?",
-              "next_node_id": "about_lenna"
+              "next_node_id": "about_lenna",
+              "excluded_flags": [
+                "miners_plight_accepted"
+              ]
             },
             {
               "text": "Tell me about the embargo.",
-              "next_node_id": "about_embargo"
+              "next_node_id": "about_embargo",
+              "excluded_flags": [
+                "miners_plight_accepted"
+              ]
             },
             {
               "text": "I can help. What do you need?",
-              "next_node_id": "the_job"
+              "next_node_id": "the_job",
+              "excluded_flags": [
+                "miners_plight_accepted"
+              ]
+            },
+            {
+              "text": "Any update on the medicine?",
+              "next_node_id": "in_progress",
+              "required_flags": [
+                "miners_plight_accepted"
+              ]
+            }
+          ],
+          "expression": "worried"
+        },
+        {
+          "id": "in_progress",
+          "speaker_id": "britt_vasara",
+          "text": "My daughter's fever hasn't broken. Please, Captain, the medicine.",
+          "responses": [
+            {
+              "text": "[Leave]",
+              "next_node_id": null
             }
           ],
           "expression": "worried"
@@ -3185,11 +3294,36 @@
           "responses": [
             {
               "text": "I'm listening.",
-              "next_node_id": "the_offer"
+              "next_node_id": "the_offer",
+              "excluded_flags": [
+                "forgery_job_accepted"
+              ]
             },
             {
               "text": "Discretion usually means trouble.",
-              "next_node_id": "reassure"
+              "next_node_id": "reassure",
+              "excluded_flags": [
+                "forgery_job_accepted"
+              ]
+            },
+            {
+              "text": "About the job...",
+              "next_node_id": "in_progress",
+              "required_flags": [
+                "forgery_job_accepted"
+              ]
+            }
+          ],
+          "expression": "confident"
+        },
+        {
+          "id": "in_progress",
+          "speaker_id": "cassiel_maren",
+          "text": "The collection won't appraise itself, Captain. I trust you haven't lost your nerve.",
+          "responses": [
+            {
+              "text": "[Leave]",
+              "next_node_id": null
             }
           ],
           "expression": "confident"
@@ -3354,19 +3488,50 @@
           "responses": [
             {
               "text": "Why Haven's Rest?",
-              "next_node_id": "deflect_destination"
+              "next_node_id": "deflect_destination",
+              "excluded_flags": [
+                "informant_passenger_accepted"
+              ]
             },
             {
               "text": "'No questions' usually means there are questions worth asking.",
-              "next_node_id": "deflect_smooth"
+              "next_node_id": "deflect_smooth",
+              "excluded_flags": [
+                "informant_passenger_accepted"
+              ]
             },
             {
               "text": "200 credits works. Welcome aboard.",
-              "next_node_id": "accept"
+              "next_node_id": "accept",
+              "excluded_flags": [
+                "informant_passenger_accepted"
+              ]
             },
             {
               "text": "I'm not taking passengers right now.",
-              "next_node_id": "decline"
+              "next_node_id": "decline",
+              "excluded_flags": [
+                "informant_passenger_accepted"
+              ]
+            },
+            {
+              "text": "Ready to go?",
+              "next_node_id": "in_progress",
+              "required_flags": [
+                "informant_passenger_accepted"
+              ]
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "in_progress",
+          "speaker_id": "callum_rhee",
+          "text": "Still here, Captain. Ready to leave whenever you are.",
+          "responses": [
+            {
+              "text": "[Leave]",
+              "next_node_id": null
             }
           ],
           "expression": "neutral"
@@ -3441,15 +3606,43 @@
           "responses": [
             {
               "text": "How bad is it?",
-              "next_node_id": "how_bad"
+              "next_node_id": "how_bad",
+              "excluded_flags": [
+                "blight_season_accepted"
+              ]
             },
             {
               "text": "Why won't the Collective sell to you?",
-              "next_node_id": "collective_politics"
+              "next_node_id": "collective_politics",
+              "excluded_flags": [
+                "blight_season_accepted"
+              ]
             },
             {
               "text": "What do you need from me?",
-              "next_node_id": "options"
+              "next_node_id": "options",
+              "excluded_flags": [
+                "blight_season_accepted"
+              ]
+            },
+            {
+              "text": "Any progress on the pesticide?",
+              "next_node_id": "in_progress",
+              "required_flags": [
+                "blight_season_accepted"
+              ]
+            }
+          ],
+          "expression": "worried"
+        },
+        {
+          "id": "in_progress",
+          "speaker_id": "verdant_farmer",
+          "text": "The eastern fields are getting worse. If you've found a way to get that pesticide, we need it now.",
+          "responses": [
+            {
+              "text": "[Leave]",
+              "next_node_id": null
             }
           ],
           "expression": "worried"
@@ -3532,14 +3725,39 @@
           "responses": [
             {
               "text": "What exactly are you asking me to do?",
-              "next_node_id": "the_task"
+              "next_node_id": "the_task",
+              "excluded_flags": [
+                "heirloom_seeds_accepted"
+              ]
             },
             {
               "text": "Why are you worried about something happening to Verdant?",
-              "next_node_id": "why_worried"
+              "next_node_id": "why_worried",
+              "excluded_flags": [
+                "heirloom_seeds_accepted"
+              ]
+            },
+            {
+              "text": "About the seeds...",
+              "next_node_id": "in_progress",
+              "required_flags": [
+                "heirloom_seeds_accepted"
+              ]
             }
           ],
           "expression": "sad"
+        },
+        {
+          "id": "in_progress",
+          "speaker_id": "verdant_botanist",
+          "text": "Have you delivered the seed samples yet? Three stations, Captain. The sooner they're distributed, the safer the strain.",
+          "responses": [
+            {
+              "text": "[Leave]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
         },
         {
           "id": "why_worried",
@@ -3627,15 +3845,43 @@
           "responses": [
             {
               "text": "Crimson Reach? That's pirate territory.",
-              "next_node_id": "knows_danger"
+              "next_node_id": "knows_danger",
+              "excluded_flags": [
+                "registry_search_started"
+              ]
             },
             {
               "text": "What do you know about what happened?",
-              "next_node_id": "limited_info"
+              "next_node_id": "limited_info",
+              "excluded_flags": [
+                "registry_search_started"
+              ]
             },
             {
               "text": "What are you asking me to do?",
-              "next_node_id": "the_ask"
+              "next_node_id": "the_ask",
+              "excluded_flags": [
+                "registry_search_started"
+              ]
+            },
+            {
+              "text": "Any news on the search?",
+              "next_node_id": "in_progress",
+              "required_flags": [
+                "registry_search_started"
+              ]
+            }
+          ],
+          "expression": "sad"
+        },
+        {
+          "id": "in_progress",
+          "speaker_id": "haven_refugee",
+          "text": "Any news about the Meridian Crossing? I check the boards every morning, but you'd get word before I would.",
+          "responses": [
+            {
+              "text": "[Leave]",
+              "next_node_id": null
             }
           ],
           "expression": "sad"
@@ -3718,18 +3964,46 @@
           "responses": [
             {
               "text": "What was stolen?",
-              "next_node_id": "evasive"
+              "next_node_id": "evasive",
+              "excluded_flags": [
+                "thieves_job_accepted"
+              ]
             },
             {
               "text": "How much are we talking?",
-              "next_node_id": "payment"
+              "next_node_id": "payment",
+              "excluded_flags": [
+                "thieves_job_accepted"
+              ]
             },
             {
               "text": "I don't do jobs for pirates.",
-              "next_node_id": "decline"
+              "next_node_id": "decline",
+              "excluded_flags": [
+                "thieves_job_accepted"
+              ]
+            },
+            {
+              "text": "About your stolen property...",
+              "next_node_id": "in_progress",
+              "required_flags": [
+                "thieves_job_accepted"
+              ]
             }
           ],
           "expression": "confident"
+        },
+        {
+          "id": "in_progress",
+          "speaker_id": "pirate_captain",
+          "text": "You haven't brought back my property yet. The Fulcrum isn't getting any friendlier, so I'd move.",
+          "responses": [
+            {
+              "text": "[Leave]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "stern"
         },
         {
           "id": "evasive",
@@ -3817,18 +4091,46 @@
           "responses": [
             {
               "text": "What kind of signal?",
-              "next_node_id": "signal_details"
+              "next_node_id": "signal_details",
+              "excluded_flags": [
+                "signal_mission_accepted"
+              ]
             },
             {
               "text": "Why me? Don't you have research vessels?",
-              "next_node_id": "why_independent"
+              "next_node_id": "why_independent",
+              "excluded_flags": [
+                "signal_mission_accepted"
+              ]
             },
             {
               "text": "Sounds dangerous. What's in it for me?",
-              "next_node_id": "compensation"
+              "next_node_id": "compensation",
+              "excluded_flags": [
+                "signal_mission_accepted"
+              ]
+            },
+            {
+              "text": "About the signal...",
+              "next_node_id": "in_progress",
+              "required_flags": [
+                "signal_mission_accepted"
+              ]
             }
           ],
           "expression": "happy"
+        },
+        {
+          "id": "in_progress",
+          "speaker_id": "nova_researcher",
+          "text": "The signal is still broadcasting at 47.3-second intervals. We need that amplifier deployed before it shifts again.",
+          "responses": [
+            {
+              "text": "[Leave]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
         },
         {
           "id": "signal_details",

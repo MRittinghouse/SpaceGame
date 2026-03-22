@@ -55,7 +55,7 @@ class TestNameValidationConstants:
 pygame = pytest.importorskip("pygame", reason="pygame required for view tests")
 pygame_gui = pytest.importorskip("pygame_gui", reason="pygame_gui required for view tests")
 
-from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, GameState  # noqa: E402
+from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, GameState, scale_y  # noqa: E402
 from spacegame.views.achievements_view import AchievementsView  # noqa: E402
 from spacegame.views.name_input_view import NameInputView  # noqa: E402
 
@@ -128,7 +128,7 @@ class TestAchievementsViewScrollClamping:
     def test_scroll_clamped_to_zero_when_content_fits(self) -> None:
         """When total content height fits in visible area, scroll should be 0."""
         # Visible area = WINDOW_HEIGHT - 70 - 108
-        visible_height = WINDOW_HEIGHT - 70 - 108
+        visible_height = WINDOW_HEIGHT - scale_y(90) - 70 - 108
         card_total = 70 + 8  # card_height + spacing
         # Use few enough achievements to fit within visible area
         count = visible_height // card_total
@@ -145,7 +145,7 @@ class TestAchievementsViewScrollClamping:
         view = _make_achievements_view(achievement_count=count)
         card_total = 70 + 8
         content_height = count * card_total
-        visible_height = WINDOW_HEIGHT - 70 - 108
+        visible_height = WINDOW_HEIGHT - scale_y(90) - 70 - 108
         expected_max = max(0, content_height - visible_height)
 
         view.scroll_offset = 99999
@@ -160,7 +160,7 @@ class TestAchievementsViewScrollClamping:
         view = _make_achievements_view(achievement_count=count)
         card_total = 70 + 8
         content_height = count * card_total
-        visible_height = WINDOW_HEIGHT - 70 - 108
+        visible_height = WINDOW_HEIGHT - scale_y(90) - 70 - 108
         max_scroll = max(0, content_height - visible_height)
 
         target = max_scroll // 2

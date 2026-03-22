@@ -9,11 +9,12 @@ import pygame_gui
 from typing import Optional
 
 from spacegame.views.base_view import BaseView
-from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState
+from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState, scale_x, scale_y
+from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
 from spacegame.models.player import Player
 from spacegame.utils.logger import logger
 from spacegame.engine.backgrounds import AnimatedBackground
-from spacegame.engine.fonts import FontCache
+from spacegame.engine.fonts import FontCache, FONT_BODY, FONT_SECTION, FONT_XL
 
 
 class StatisticsView(BaseView):
@@ -26,9 +27,9 @@ class StatisticsView(BaseView):
         self.next_state: Optional[GameState] = None
 
         # Fonts
-        self.title_font = FontCache.get(40)
-        self.category_font = FontCache.get(28)
-        self.stat_font = FontCache.get(22)
+        self.title_font = FontCache.get(FONT_SECTION)
+        self.category_font = FontCache.get(FONT_XL)
+        self.stat_font = FontCache.get(FONT_BODY)
 
         # UI
         self.back_button: Optional[pygame_gui.elements.UIButton] = None
@@ -50,7 +51,7 @@ class StatisticsView(BaseView):
 
     def _create_ui(self) -> None:
         self.back_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(20, WINDOW_HEIGHT - 60, 150, 40),
+            relative_rect=pygame.Rect(scale_x(20), WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - scale_y(60), scale_x(150), scale_y(40)),
             text="BACK",
             manager=self.ui_manager,
         )
@@ -73,17 +74,17 @@ class StatisticsView(BaseView):
 
         # Title
         title = self.title_font.render("STATISTICS", True, Colors.TEXT_HIGHLIGHT)
-        title_rect = title.get_rect(center=(WINDOW_WIDTH // 2, 40))
+        title_rect = title.get_rect(center=(WINDOW_WIDTH // 2, scale_y(40)))
         screen.blit(title, title_rect)
 
         stats = self.player.get_statistics()
-        col_width = 380
-        col1_x = 80
-        col2_x = 80 + col_width + 60
-        col3_x = 80 + (col_width + 60) * 2
+        col_width = scale_x(380)
+        col1_x = scale_x(80)
+        col2_x = scale_x(80) + col_width + scale_x(60)
+        col3_x = scale_x(80) + (col_width + scale_x(60)) * 2
 
-        y = 80
-        line_h = 24
+        y = scale_y(80)
+        line_h = scale_y(24)
 
         # Column 1: Economic
         y = self._render_category(
@@ -119,7 +120,7 @@ class StatisticsView(BaseView):
         )
 
         # Column 2: Activities
-        y2 = 80
+        y2 = scale_y(80)
         y2 = self._render_category(
             screen,
             "ACTIVITIES",
@@ -151,7 +152,7 @@ class StatisticsView(BaseView):
         )
 
         # Column 3: Personal Records
-        y3 = 80
+        y3 = scale_y(80)
         records = []
         if stats.get("best_trade_profit", 0) > 0:
             records.append(("Best Trade Profit", f"{stats['best_trade_profit']:,} CR"))
@@ -192,13 +193,13 @@ class StatisticsView(BaseView):
         y += line_h + 8
 
         # Underline
-        pygame.draw.line(screen, Colors.UI_BORDER, (x, y - 4), (x + 300, y - 4), 1)
+        pygame.draw.line(screen, Colors.UI_BORDER, (x, y - 4), (x + scale_x(300), y - 4), 1)
 
         for label, value in items:
             label_surf = self.stat_font.render(f"{label}:", True, Colors.TEXT_SECONDARY)
             value_surf = self.stat_font.render(value, True, Colors.TEXT_PRIMARY)
             screen.blit(label_surf, (x + 10, y))
-            screen.blit(value_surf, (x + 200, y))
+            screen.blit(value_surf, (x + scale_x(200), y))
             y += line_h
 
         return y

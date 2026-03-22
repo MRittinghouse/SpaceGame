@@ -11,9 +11,9 @@ import pygame_gui
 import math
 from typing import Optional
 
-from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState
+from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState, scale_x, scale_y
 from spacegame.views.base_view import BaseView
-from spacegame.engine.fonts import FontCache
+from spacegame.engine.fonts import FontCache, FONT_DISPLAY, FONT_HEADING
 from spacegame.engine.draw_utils import draw_panel
 from spacegame.utils.logger import logger
 
@@ -31,8 +31,8 @@ class PauseMenuView(BaseView):
         self.show_settings_dialog = False
 
         # Fonts
-        self.title_font = FontCache.get(48)
-        self.button_font = FontCache.get(32)
+        self.title_font = FontCache.get(FONT_DISPLAY)
+        self.button_font = FontCache.get(FONT_HEADING)
 
         # UI Elements
         self.resume_button: Optional[pygame_gui.elements.UIButton] = None
@@ -57,15 +57,15 @@ class PauseMenuView(BaseView):
         super().on_exit()
 
     def _create_ui(self) -> None:
-        panel_width = 400
-        panel_height = 620
+        panel_width = scale_x(400)
+        panel_height = scale_y(620)
         panel_x = (WINDOW_WIDTH - panel_width) // 2
         panel_y = (WINDOW_HEIGHT - panel_height) // 2
 
-        button_width = 300
-        button_height = 45
+        button_width = scale_x(300)
+        button_height = scale_y(45)
         button_x = panel_x + (panel_width - button_width) // 2
-        spacing = 60
+        spacing = scale_y(60)
 
         self.resume_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(button_x, panel_y + 70, button_width, button_height),
@@ -177,8 +177,8 @@ class PauseMenuView(BaseView):
         screen.blit(overlay, (0, 0))
 
         # Panel
-        panel_width = 400
-        panel_height = 620
+        panel_width = scale_x(400)
+        panel_height = scale_y(620)
         panel_x = (WINDOW_WIDTH - panel_width) // 2
         panel_y = (WINDOW_HEIGHT - panel_height) // 2
 

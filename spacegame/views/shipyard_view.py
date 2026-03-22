@@ -9,16 +9,17 @@ import pygame_gui
 import math
 from typing import Optional, Dict, List
 from spacegame.views.base_view import BaseView
-from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState
+from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState, scale_x, scale_y
 from spacegame.models.player import Player
 from spacegame.models.ship import ShipType
 from spacegame.models.upgrades import ShipUpgrade, ShipUpgradeManager, MARK_MULTIPLIERS
 from spacegame.utils.logger import logger
 from spacegame.engine.backgrounds import AnimatedBackground
 from spacegame.engine.particles import ParticlePool, COLLECT_SPARKLE, ParticleConfig
-from spacegame.engine.sprites import get_sprite_manager, AnimatedSprite
-from spacegame.engine.fonts import FontCache
+from spacegame.engine.sprites import get_sprite_manager, AnimatedSprite, res_scale
+from spacegame.engine.fonts import FontCache, FONT_LG, FONT_MD, FONT_TITLE, FONT_XL
 from spacegame.engine.audio_manager import get_audio_manager
+from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
 
 # Green flash for purchase
 PURCHASE_FLASH = ParticleConfig(
@@ -39,12 +40,12 @@ PURCHASE_FLASH = ParticleConfig(
 )
 
 # Layout constants
-_LIST_X = 40
-_LIST_Y = 140
-_CARD_W = 600
-_CARD_H = 85
-_CARD_SPACING = 90
-_LIST_BOTTOM = WINDOW_HEIGHT - 155  # Leave room for buttons/messages
+_LIST_X = scale_x(40)
+_LIST_Y = scale_y(140)
+_CARD_W = scale_x(600)
+_CARD_H = scale_y(85)
+_CARD_SPACING = scale_y(90)
+_LIST_BOTTOM = WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - scale_y(155)  # Leave room for buttons/messages
 _SCROLL_SPEED = 30
 
 # Mark label colors
@@ -82,10 +83,10 @@ class ShipyardView(BaseView):
         self._tuning_options: list[dict] = []
 
         # Fonts
-        self.title_font = FontCache.get(36)
-        self.header_font = FontCache.get(28)
-        self.info_font = FontCache.get(24)
-        self.small_font = FontCache.get(20)
+        self.title_font = FontCache.get(FONT_TITLE)
+        self.header_font = FontCache.get(FONT_XL)
+        self.info_font = FontCache.get(FONT_LG)
+        self.small_font = FontCache.get(FONT_MD)
 
         # UI
         self.back_button: Optional[pygame_gui.elements.UIButton] = None
@@ -122,7 +123,7 @@ class ShipyardView(BaseView):
     def _load_ship_anim(self) -> None:
         """Load animated ship sprite or generate procedural fallback."""
         ship_id = self.player.ship.ship_type.id
-        self._ship_anim = self._sprite_mgr.get_ship_animated(ship_id, scale=3)
+        self._ship_anim = self._sprite_mgr.get_ship_animated(ship_id, scale=res_scale(3))
         if self._ship_anim is None:
             # Procedural fallback
             surf = pygame.Surface((120, 60), pygame.SRCALPHA)
@@ -158,23 +159,24 @@ class ShipyardView(BaseView):
             text="Installed",
             manager=self.ui_manager,
         )
+        hud_h = scale_y(HUD_BASE_HEIGHT)
         self.buy_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(WINDOW_WIDTH - 200, WINDOW_HEIGHT - 120, 170, 40),
+            relative_rect=pygame.Rect(WINDOW_WIDTH - 200, WINDOW_HEIGHT - hud_h - scale_y(120), 170, 40),
             text="Buy & Install",
             manager=self.ui_manager,
         )
         self.uninstall_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(WINDOW_WIDTH - 200, WINDOW_HEIGHT - 70, 170, 40),
+            relative_rect=pygame.Rect(WINDOW_WIDTH - 200, WINDOW_HEIGHT - hud_h - scale_y(70), 170, 40),
             text="Uninstall",
             manager=self.ui_manager,
         )
         self.enhance_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(WINDOW_WIDTH - 200, WINDOW_HEIGHT - 120, 170, 40),
+            relative_rect=pygame.Rect(WINDOW_WIDTH - 200, WINDOW_HEIGHT - hud_h - scale_y(120), 170, 40),
             text="Enhance",
             manager=self.ui_manager,
         )
         self.buy_ship_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(WINDOW_WIDTH - 200, WINDOW_HEIGHT - 120, 170, 40),
+            relative_rect=pygame.Rect(WINDOW_WIDTH - 200, WINDOW_HEIGHT - hud_h - scale_y(120), 170, 40),
             text="Buy Ship",
             manager=self.ui_manager,
         )
@@ -196,7 +198,7 @@ class ShipyardView(BaseView):
             manager=self.ui_manager,
         )
         self.back_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(20, WINDOW_HEIGHT - 60, 150, 40),
+            relative_rect=pygame.Rect(20, WINDOW_HEIGHT - hud_h - scale_y(60), 150, 40),
             text="Back",
             manager=self.ui_manager,
         )
@@ -618,7 +620,7 @@ class ShipyardView(BaseView):
             )
             msg_surf = self.info_font.render(self.message, True, color)
             screen.blit(
-                msg_surf, msg_surf.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT - 140))
+                msg_surf, msg_surf.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - scale_y(140)))
             )
 
     def _render_slot_summary(self, screen: pygame.Surface) -> None:
@@ -724,7 +726,7 @@ class ShipyardView(BaseView):
             pygame.draw.rect(screen, border_color, rect, 2 if is_selected else 1, border_radius=4)
 
             # Ship sprite icon
-            icon = self._sprite_mgr.get_ship_sprite(ship_type.id, scale=2)
+            icon = self._sprite_mgr.get_ship_sprite(ship_type.id, scale=res_scale(2))
             icon_offset = 0
             if icon:
                 screen.blit(icon, (rect.x + 6, rect.y + 8))
@@ -892,7 +894,7 @@ class ShipyardView(BaseView):
             pygame.draw.rect(screen, border_color, rect, 2 if is_selected else 1, border_radius=4)
 
             # Upgrade icon (small, left of name)
-            icon = self._sprite_mgr.get_upgrade_icon(upgrade.id, scale=2)
+            icon = self._sprite_mgr.get_upgrade_icon(upgrade.id, scale=res_scale(2))
             icon_offset = 0
             if icon:
                 screen.blit(icon, (rect.x + 6, rect.y + 4))

@@ -14,7 +14,7 @@ from enum import Enum
 from typing import Optional
 
 from spacegame.views.base_view import BaseView
-from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState
+from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState, scale_x, scale_y
 from spacegame.models.combat import (
     CombatLogEntry,
     CombatMove,
@@ -39,8 +39,8 @@ from spacegame.engine.particles import (
     SHIELD_RESTORE,
 )
 from spacegame.engine.screen_effects import ScreenShake, Vignette
-from spacegame.engine.fonts import FontCache
-from spacegame.engine.sprites import AnimatedSprite, get_sprite_manager
+from spacegame.engine.fonts import FONT_DISPLAY, FONT_LG, FONT_MD, FONT_TITLE, FONT_XL, FontCache
+from spacegame.engine.sprites import AnimatedSprite, get_sprite_manager, res_scale
 from spacegame.engine.audio_manager import get_audio_manager
 from spacegame.utils.logger import logger
 
@@ -53,21 +53,23 @@ ROUND_END_DURATION = 0.3
 DEFAULT_ANIMATION_DURATION = 0.5
 BAR_LERP_SPEED = 8.0  # Units per second for smooth bar animation
 
-# Layout zones
-PLAYER_PANEL_X = 10
-PLAYER_PANEL_Y = 55
-PLAYER_PANEL_W = 220
-PLAYER_PANEL_H = 460
+# Layout zones — proportional to window dimensions
+_MARGIN = scale_x(10)
+_TOP_Y = scale_y(55)
 
-ENEMY_PANEL_X = 1050
-ENEMY_PANEL_Y = 55
-ENEMY_PANEL_W = 220
-ENEMY_CARD_H = 145
-ENEMY_CARD_GAP = 10
+PLAYER_PANEL_X = _MARGIN
+PLAYER_PANEL_Y = _TOP_Y
+PLAYER_PANEL_W = scale_x(220)
+
+ENEMY_PANEL_W = PLAYER_PANEL_W
+ENEMY_PANEL_X = WINDOW_WIDTH - ENEMY_PANEL_W - _MARGIN
+ENEMY_PANEL_Y = _TOP_Y
+ENEMY_CARD_H = scale_y(145)
+ENEMY_CARD_GAP = scale_y(10)
 
 # Bar rendering
-BAR_HEIGHT = 14
-BAR_LABEL_W = 50
+BAR_HEIGHT = scale_y(14)
+BAR_LABEL_W = scale_x(50)
 SHIELD_COLOR = (80, 180, 255)
 ENERGY_COLOR = (180, 100, 255)
 BAR_BG_COLOR = Colors.BAR_BG
@@ -134,30 +136,54 @@ class _MoveButton:
 # Layout constants for action panel
 # ============================================================================
 
-ACTION_PANEL_Y = 525
-ACTION_PANEL_H = 195
-MOVE_BTN_W = 170
-MOVE_BTN_H = 55
-MOVE_BTN_GAP = 8
+ACTION_PANEL_H = scale_y(195)
+ACTION_PANEL_Y = WINDOW_HEIGHT - ACTION_PANEL_H
+PLAYER_PANEL_H = ACTION_PANEL_Y - PLAYER_PANEL_Y - _MARGIN
+
+MOVE_BTN_W = scale_x(170)
+MOVE_BTN_H = scale_y(55)
+MOVE_BTN_GAP = scale_y(8)
 MOVE_BTN_COLS = 2
-MOVE_BTN_X_START = 15
-MOVE_BTN_Y_START = ACTION_PANEL_Y + 30
+MOVE_BTN_X_START = scale_x(15)
+MOVE_BTN_Y_START = ACTION_PANEL_Y + scale_y(30)
 
 SPECIAL_BTN_Y = MOVE_BTN_Y_START + 2 * (MOVE_BTN_H + MOVE_BTN_GAP) + 4
-SPECIAL_BTN_W = 120
-SPECIAL_BTN_H = 36
+SPECIAL_BTN_W = scale_x(120)
+SPECIAL_BTN_H = scale_y(36)
 
 FLEE_BTN_X = MOVE_BTN_X_START
 NEGOTIATE_BTN_X = MOVE_BTN_X_START + SPECIAL_BTN_W + MOVE_BTN_GAP
-BRIBE_BTN_X = NEGOTIATE_BTN_X + SPECIAL_BTN_W + 20 + MOVE_BTN_GAP
+BRIBE_BTN_X = NEGOTIATE_BTN_X + SPECIAL_BTN_W + scale_x(20) + MOVE_BTN_GAP
 
-# Combat arena
-ARENA_X = 240
-ARENA_Y = 55
-ARENA_W = 800
-ARENA_H = 465
-PLAYER_SHIP_POS = (380, 280)  # Player ship center in arena
-ENEMY_SHIP_POS = (900, 280)  # Enemy ship center in arena
+# Combat arena — fills center between side panels
+ARENA_X = PLAYER_PANEL_X + PLAYER_PANEL_W + _MARGIN
+ARENA_Y = _TOP_Y
+ARENA_W = ENEMY_PANEL_X - ARENA_X - _MARGIN
+ARENA_H = PLAYER_PANEL_H
+PLAYER_SHIP_POS = (ARENA_X + ARENA_W // 3, ARENA_Y + ARENA_H // 2)
+ENEMY_SHIP_POS = (ARENA_X + 2 * ARENA_W // 3, ARENA_Y + ARENA_H // 2)
+
+# Ship display scale based on class (base values — res_scale applied at load time)
+# Larger ships get larger scale for visual weight and class distinction
+SHIP_CLASS_SCALE: dict[str, int] = {
+    "starter": 3,
+    "early_game": 3,
+    "mid_game": 4,
+    "late_game": 4,
+    "faction": 4,
+}
+# Enemy danger tier → display scale
+ENEMY_TIER_SCALE: dict[str, int] = {
+    "low": 3,
+    "moderate": 3,
+    "dangerous": 4,
+}
+# Vertical spacing between stacked enemies (scales with ship size)
+ENEMY_STACK_SPACING = scale_y(100)
+
+# Idle ship bob animation
+IDLE_BOB_AMPLITUDE = scale_y(3)    # Pixels of vertical oscillation
+IDLE_BOB_PERIOD = 2.5              # Seconds per full cycle
 
 
 def _roll_loot(loot_table: list[dict], seed: int = 0) -> dict[str, int]:
@@ -217,6 +243,10 @@ class CombatView(BaseView):
         # Target selection
         self.selected_target_idx: int = 0
 
+        # Crew tactical choice: selected crew ability for this turn (None = skip)
+        self._selected_crew_move_id: Optional[str] = None
+        self._crew_move_buttons: list[_MoveButton] = []
+
         # Floating text feedback
         self.floating_texts: list[dict] = []
 
@@ -265,15 +295,32 @@ class CombatView(BaseView):
         self._return_state: GameState = GameState.TRADING
 
         # Fonts
-        self.title_font = FontCache.get(36)
-        self.header_font = FontCache.get(28)
-        self.info_font = FontCache.get(24)
-        self.small_font = FontCache.get(20)
-        self.banner_font = FontCache.get(48)
+        self.title_font = FontCache.get(FONT_TITLE)
+        self.header_font = FontCache.get(FONT_XL)
+        self.info_font = FontCache.get(FONT_LG)
+        self.small_font = FontCache.get(FONT_MD)
+        self.banner_font = FontCache.get(FONT_DISPLAY)
 
         # Sprite manager for ship sprites
         self._sprite_mgr = get_sprite_manager()
         self._ship_sprite_cache: dict[str, Optional[AnimatedSprite]] = {}
+
+        # Projectile system for weapon visualization
+        from spacegame.engine.projectiles import ProjectileManager
+
+        self._projectile_mgr = ProjectileManager()
+
+        # Shield, damage, destruction, and atmosphere visualization
+        from spacegame.engine.combat_vfx import (
+            ShieldRenderer, DamageStateManager, DestructionSequence,
+            CombatAtmosphere,
+        )
+
+        self._shield_renderer = ShieldRenderer()
+        self._damage_state_mgr = DamageStateManager()
+        self._destruction_sequences: list[DestructionSequence] = []
+        self._persistent_debris: list[dict] = []
+        self._atmosphere: Optional[CombatAtmosphere] = None
 
         # Visual systems
         self.background = AnimatedBackground("deep_space", WINDOW_WIDTH, WINDOW_HEIGHT, seed=100)
@@ -306,6 +353,11 @@ class CombatView(BaseView):
         self.visible_log_lines.clear()
         self.next_state = None
         self.selected_target_idx = 0
+        self._projectile_mgr.clear()
+        self._shield_renderer.clear()
+        self._damage_state_mgr.clear()
+        self._destruction_sequences.clear()
+        self._persistent_debris.clear()
 
         # Initialize displayed bar values from actual state
         state = self.engine.get_state()
@@ -318,6 +370,23 @@ class CombatView(BaseView):
         self._player_flash_timer = 0.0
         self._enemy_sprite_flashes = [0.0] * len(state.enemies)
         self._enemy_shield_flashes = [0.0] * len(state.enemies)
+
+        # Initialize combat atmosphere based on enemy danger tiers
+        from spacegame.engine.combat_vfx import CombatAtmosphere
+
+        danger = "safe"
+        for e in state.enemies:
+            tier = e.template.danger_tier
+            if tier == "dangerous":
+                danger = "dangerous"
+                break
+            if tier == "moderate" and danger == "safe":
+                danger = "moderate"
+        # Special case: Crimson Reach enemies
+        if any(e.template.faction_id == "crimson_reach" for e in state.enemies if hasattr(e.template, "faction_id")):
+            danger = "crimson"
+        arena_rect = pygame.Rect(ARENA_X, ARENA_Y, ARENA_W, ARENA_H)
+        self._atmosphere = CombatAtmosphere(arena_rect, danger)
         self._player_sprite_flash = 0.0
         self._player_shield_flash = 0.0
         self._destroying_enemies.clear()
@@ -365,6 +434,37 @@ class CombatView(BaseView):
         self.background.update(dt)
         self.particles.update(dt)
         self.screen_shake.update(dt)
+        self._projectile_mgr.update(dt)
+        self._shield_renderer.update(dt)
+        self._damage_state_mgr.update(dt)
+        if self._atmosphere:
+            self._atmosphere.update(dt)
+
+        # Sync shield and hull states from combat engine
+        if hasattr(self, 'engine') and self.engine:
+            state = self.engine.get_state()
+            if state:
+                p = state.player
+                self._shield_renderer.set_shield(
+                    "player", p.shields / max(1, p.max_shields), p.max_shields
+                )
+                self._damage_state_mgr.set_hull("player", p.hull / max(1, p.max_hull))
+                for i, e in enumerate(state.enemies):
+                    ekey = f"enemy_{i}"
+                    self._shield_renderer.set_shield(
+                        ekey, e.current_shields / max(1, e.template.shields), e.template.shields
+                    )
+                    self._damage_state_mgr.set_hull(
+                        ekey, e.current_hull / max(1, e.template.hull)
+                    )
+
+        # Update destruction sequences
+        for seq in self._destruction_sequences:
+            seq.update(dt)
+        finished = [s for s in self._destruction_sequences if s.finished]
+        for seq in finished:
+            self._persistent_debris.extend(seq.debris)
+            self._destruction_sequences.remove(seq)
 
         # Update floating texts
         for ft in self.floating_texts:
@@ -441,14 +541,25 @@ class CombatView(BaseView):
         # Enemy panels
         self._render_enemy_panels(screen, ox, oy)
 
-        # Combat arena
+        # Atmosphere background (dust, tint — behind ships)
+        if self._atmosphere:
+            self._atmosphere.render_background(screen)
+
+        # Combat arena (ships, damage overlays)
         self._render_combat_arena(screen, ox, oy)
+
+        # Atmosphere foreground (arena frame — in front of ships)
+        if self._atmosphere:
+            self._atmosphere.render_foreground(screen)
 
         # Action panel
         self._render_action_panel(screen, ox, oy)
 
         # Combat log
         self._render_combat_log(screen, ox, oy)
+
+        # Projectiles (rendered between arena and particles for layering)
+        self._projectile_mgr.render(screen)
 
         # Particles
         self.particles.render(screen)
@@ -556,7 +667,16 @@ class CombatView(BaseView):
     def _handle_click(self, pos: tuple[int, int]) -> None:
         """Handle mouse clicks on move buttons and enemy cards."""
         if self.phase == CombatPhase.PLAYER_INPUT:
-            # Move buttons
+            # Crew ability buttons (toggle selection, doesn't execute yet)
+            for btn in self._crew_move_buttons:
+                if btn.rect.collidepoint(pos) and btn.enabled:
+                    if self._selected_crew_move_id == btn.move.id:
+                        self._selected_crew_move_id = None  # Deselect
+                    else:
+                        self._selected_crew_move_id = btn.move.id  # Select
+                    return
+
+            # Move buttons (weapon — executes immediately)
             for btn in self.move_buttons:
                 if btn.rect.collidepoint(pos) and btn.enabled:
                     self._execute_player_action(btn.move.id)
@@ -613,8 +733,13 @@ class CombatView(BaseView):
                     return
 
     def _handle_hover(self, pos: tuple[int, int]) -> None:
-        """Update hover state on move buttons."""
+        """Update hover state on move buttons and crew buttons."""
+        self._hovered_move: Optional[CombatMove] = None
         for btn in self.move_buttons:
+            btn.hovered = btn.rect.collidepoint(pos)
+            if btn.hovered and btn.enabled:
+                self._hovered_move = btn.move
+        for btn in self._crew_move_buttons:
             btn.hovered = btn.rect.collidepoint(pos)
 
     # ------------------------------------------------------------------
@@ -631,6 +756,8 @@ class CombatView(BaseView):
         if new_phase == CombatPhase.PLAYER_INPUT:
             self._build_move_buttons()
             self._auto_advance_target()
+            # Telegraph enemy intentions so player can react
+            self.engine.telegraph_enemy_moves()
             # Snapshot dead enemies so we can detect new deaths this round
             state = self.engine.get_state()
             self._previously_dead = {i for i, e in enumerate(state.enemies) if not e.is_alive}
@@ -691,6 +818,36 @@ class CombatView(BaseView):
                 _MoveButton(
                     rect=rect,
                     move=move,
+                    enabled=enabled,
+                    cooldown_remaining=cd_remaining,
+                )
+            )
+
+        # Build crew ability buttons (player chooses ONE or skips)
+        self._crew_move_buttons = []
+        self._selected_crew_move_id = None
+        crew_btn_y = SPECIAL_BTN_Y + SPECIAL_BTN_H + scale_y(8)
+        crew_btn_w = scale_x(130)
+        crew_btn_h = scale_y(28)
+        crew_btn_gap = scale_x(4)
+        crew_btn_x = MOVE_BTN_X_START
+
+        for i, crew_move in enumerate(state.player.crew_moves):
+            bx = crew_btn_x + i * (crew_btn_w + crew_btn_gap)
+            # Wrap to next row if too wide
+            if bx + crew_btn_w > ACTION_PANEL_Y + scale_x(500):
+                bx = crew_btn_x + (i % 4) * (crew_btn_w + crew_btn_gap)
+            rect = pygame.Rect(bx, crew_btn_y, crew_btn_w, crew_btn_h)
+
+            on_cooldown = crew_move.id in state.player.cooldowns
+            cd_remaining = state.player.cooldowns.get(crew_move.id, 0)
+            affordable = state.player.energy >= crew_move.energy_cost
+            enabled = affordable and not on_cooldown
+
+            self._crew_move_buttons.append(
+                _MoveButton(
+                    rect=rect,
+                    move=crew_move,
                     enabled=enabled,
                     cooldown_remaining=cd_remaining,
                 )
@@ -830,10 +987,14 @@ class CombatView(BaseView):
     # ------------------------------------------------------------------
 
     def _start_crew_phase(self) -> None:
-        """Execute crew moves and enqueue their animations."""
-        logs = self.engine.execute_crew_moves()
+        """Execute the player's chosen crew ability (or skip if none selected)."""
+        logs = self.engine.execute_crew_moves(
+            chosen_move_id=self._selected_crew_move_id
+        )
+        # Reset selection for next turn
+        self._selected_crew_move_id = None
         if not logs:
-            # No crew moves — skip straight to enemy phase
+            # No crew move executed — skip straight to enemy phase
             self._advance_phase(CombatPhase.ANIMATING_ENEMIES)
             return
         for log in logs:
@@ -887,14 +1048,18 @@ class CombatView(BaseView):
             self.current_animation = None
 
     def _start_animation_effects(self, anim: AnimationEvent) -> None:
-        """Trigger visual effects for an animation event."""
+        """Trigger visual effects for an animation event.
+
+        For offensive actions, spawns a projectile that travels from source
+        to target. Impact effects (particles, shake, damage numbers) are
+        deferred to the projectile's on_impact callback.
+        """
         log = anim.log_entry
         is_player_source = anim.source == "player"
         is_enemy_source = anim.source == "enemy"
 
-        # Determine target position for floating text
+        # Determine target position for impact effects
         if is_player_source:
-            # Player attacks enemy → effects appear at enemy panel
             target_x = float(ENEMY_PANEL_X + ENEMY_PANEL_W // 2)
             target_y = float(
                 ENEMY_PANEL_Y
@@ -902,84 +1067,167 @@ class CombatView(BaseView):
                 + ENEMY_CARD_H // 2
             )
         else:
-            # Enemy/crew attacks → effects appear at player panel
             target_x = float(PLAYER_PANEL_X + PLAYER_PANEL_W // 2)
             target_y = float(PLAYER_PANEL_Y + PLAYER_PANEL_H // 3)
 
-        if log.hit:
-            # Floating damage/effect text from log effects
-            for effect_text in log.effects_applied:
-                self.floating_texts.append(
-                    {
-                        "text": effect_text,
-                        "x": target_x,
-                        "y": target_y,
-                        "color": Colors.RED if is_player_source else Colors.YELLOW,
-                        "timer": 0.8,
-                        "max_timer": 0.8,
-                        "vy": -40.0,
-                    }
-                )
-                target_y -= 20  # Stack multiple effects
+        # Source position for projectiles (ship position in arena)
+        if is_player_source:
+            source_x = float(PLAYER_SHIP_POS[0])
+            source_y = float(PLAYER_SHIP_POS[1])
+            impact_x = float(ENEMY_SHIP_POS[0])
+            impact_y = float(ENEMY_SHIP_POS[1])
+        else:
+            source_x = float(ENEMY_SHIP_POS[0])
+            source_y = float(ENEMY_SHIP_POS[1])
+            impact_x = float(PLAYER_SHIP_POS[0])
+            impact_y = float(PLAYER_SHIP_POS[1])
 
-            # Screen shake on hit
-            self.screen_shake.trigger(intensity=3.0, duration=0.15)
+        # Determine weapon element from the move name
+        # Check player equipment + crew moves for a matching name
+        from spacegame.models.combat import WeaponElement as _WE
 
-            # Particle effects based on action type
-            action_lower = log.action.lower()
-            has_shield_text = any("shield" in e.lower() for e in log.effects_applied)
-            has_hull_text = any(
-                "hull" in e.lower() and "restore" in e.lower() for e in log.effects_applied
-            )
-            has_shield_restore = any(
-                "shield" in e.lower() and "restore" in e.lower() for e in log.effects_applied
-            )
+        move_element = _WE.KINETIC  # Default
+        if hasattr(self, "engine") and self.engine:
+            cs = self.engine.get_state()
+            all_moves = list(cs.player.equipment_moves) + list(cs.player.crew_moves)
+            for m in all_moves:
+                if m.name == log.action:
+                    move_element = m.element
+                    break
 
+        # Classify weapon type from action text
+        action_lower = log.action.lower()
+        has_shield_text = any("shield" in e.lower() for e in log.effects_applied)
+        has_hull_text = any(
+            "hull" in e.lower() and "restore" in e.lower() for e in log.effects_applied
+        )
+        has_shield_restore = any(
+            "shield" in e.lower() and "restore" in e.lower() for e in log.effects_applied
+        )
+        is_healing = has_hull_text or has_shield_restore
+
+        # Store action text for arena display
+        self._arena_action_text = log.action
+        self._arena_action_timer = 0.5
+
+        if is_healing:
+            # Healing/restore — no projectile, immediate particle effect
             if has_hull_text:
-                self.particles.emit(target_x, target_y, HEAL_SPARKLE)
-            elif has_shield_restore:
-                self.particles.emit(target_x, target_y, SHIELD_RESTORE)
-            elif has_shield_text:
-                self.particles.emit(target_x, target_y, SHIELD_IMPACT)
-            elif "missile" in action_lower or "torpedo" in action_lower:
-                self.particles.emit(target_x, target_y, MISSILE_EXPLOSION)
+                self.particles.emit(
+                    source_x if is_player_source else impact_x,
+                    source_y if is_player_source else impact_y,
+                    HEAL_SPARKLE,
+                )
+            else:
+                self.particles.emit(
+                    source_x if is_player_source else impact_x,
+                    source_y if is_player_source else impact_y,
+                    SHIELD_RESTORE,
+                )
+            return
+
+        # Build impact callback — deferred until projectile arrives
+        def _on_impact() -> None:
+            # Floating damage/effect text
+            ty = target_y
+            for effect_text in log.effects_applied:
+                self.floating_texts.append({
+                    "text": effect_text,
+                    "x": target_x,
+                    "y": ty,
+                    "color": Colors.RED if is_player_source else Colors.YELLOW,
+                    "timer": 0.8,
+                    "max_timer": 0.8,
+                    "vy": -40.0,
+                })
+                ty -= 20
+
+            # Screen shake — severity based on action
+            is_missile = "missile" in action_lower or "torpedo" in action_lower
+            shake_intensity = 4.5 if is_missile else 3.0
+            shake_duration = 0.2 if is_missile else 0.15
+            self.screen_shake.trigger(intensity=shake_intensity, duration=shake_duration)
+
+            # Impact particles
+            if has_shield_text and not has_shield_restore:
+                self.particles.emit(impact_x, impact_y, SHIELD_IMPACT)
+                get_audio_manager().play_sfx("combat_shield")
+                # Shield ripple on the target
+                if is_player_source:
+                    self._shield_renderer.trigger_ripple(
+                        f"enemy_{self.selected_target_idx}", angle=math.pi
+                    )
+                else:
+                    self._shield_renderer.trigger_ripple("player", angle=0.0)
+            elif is_missile:
+                self.particles.emit(impact_x, impact_y, MISSILE_EXPLOSION)
                 get_audio_manager().play_sfx("combat_missile")
             else:
-                self.particles.emit(target_x, target_y, LASER_HIT)
+                self.particles.emit(impact_x, impact_y, LASER_HIT)
                 get_audio_manager().play_sfx("combat_laser")
 
-            # Flash timers (panel + sprite)
+            # Hit recoil on the target ship
             if is_player_source:
-                # Player hit an enemy — flash the target enemy card + sprite
+                self._damage_state_mgr.trigger_recoil(
+                    f"enemy_{self.selected_target_idx}", from_right=False
+                )
+            elif is_enemy_source:
+                self._damage_state_mgr.trigger_recoil("player", from_right=True)
+
+            # Flash timers
+            if is_player_source:
                 if self.selected_target_idx < len(self._enemy_flash_timers):
                     self._enemy_flash_timers[self.selected_target_idx] = 0.15
                     if has_shield_text and not has_shield_restore:
                         if self.selected_target_idx < len(self._enemy_shield_flashes):
                             self._enemy_shield_flashes[self.selected_target_idx] = 0.2
-                            get_audio_manager().play_sfx("combat_shield")
                     else:
                         if self.selected_target_idx < len(self._enemy_sprite_flashes):
                             self._enemy_sprite_flashes[self.selected_target_idx] = 0.12
                             get_audio_manager().play_sfx("combat_hit")
             elif is_enemy_source:
-                # Enemy hit the player — flash the player panel + sprite
                 self._player_flash_timer = 0.15
                 if has_shield_text and not has_shield_restore:
                     self._player_shield_flash = 0.2
-                    get_audio_manager().play_sfx("combat_shield")
                 else:
                     self._player_sprite_flash = 0.12
                     get_audio_manager().play_sfx("combat_hit")
 
-            # Check for enemy deaths → trigger destroy animation
+            # Check for enemy deaths
             if is_player_source or anim.source == "crew":
                 self._check_enemy_deaths()
 
-            # Store current animation text for arena display
-            self._arena_action_text = log.action
-            self._arena_action_timer = 0.5
+        # Choose projectile type based on element and action keywords
+        def _spawn_projectile(hit: bool) -> None:
+            cb = _on_impact if hit else None
+            src = (source_x, source_y)
+            tgt = (impact_x, impact_y)
+
+            # Element-specific or keyword-based projectile selection
+            if "missile" in action_lower or "torpedo" in action_lower:
+                self._projectile_mgr.spawn_missile(src, tgt, on_impact=cb, hit=hit)
+            elif move_element == _WE.PLASMA:
+                # Plasma: missile-style fireball with arc
+                self._projectile_mgr.spawn_missile(src, tgt, on_impact=cb, hit=hit)
+            elif move_element == _WE.ION:
+                # Ion: fast laser-style bolt
+                self._projectile_mgr.spawn_laser(src, tgt, on_impact=cb, hit=hit)
+            elif move_element == _WE.CRYO:
+                # Cryo: laser-style shard
+                self._projectile_mgr.spawn_laser(src, tgt, on_impact=cb, hit=hit)
+            elif move_element == _WE.VOLTAIC:
+                # Voltaic: cannon-style burst
+                self._projectile_mgr.spawn_cannon(src, tgt, on_impact=cb, hit=hit)
+            elif "cannon" in action_lower or "kinetic" in action_lower or "burst" in action_lower:
+                self._projectile_mgr.spawn_cannon(src, tgt, on_impact=cb, hit=hit)
+            else:
+                self._projectile_mgr.spawn_laser(src, tgt, on_impact=cb, hit=hit)
+
+        if log.hit:
+            _spawn_projectile(hit=True)
         else:
-            # Miss — show "MISS" text
+            _spawn_projectile(hit=False)
+            # Show "MISS" text immediately (no impact to defer to)
             self.floating_texts.append(
                 {
                     "text": "MISS",
@@ -1002,25 +1250,41 @@ class CombatView(BaseView):
             if idx in self._previously_dead:
                 continue  # Was already dead before this round
             if not enemy.is_alive and not enemy.is_fled:
-                # Newly dead enemy — start destroy animation
-                anim = self._get_ship_sprite(enemy.template.id, "enemy", scale=3)
+                # Newly dead enemy — start spectacular destruction sequence
+                from spacegame.engine.combat_vfx import DestructionSequence
+
+                living_before = sum(
+                    1
+                    for ii in range(idx)
+                    if state.enemies[ii].is_alive and not state.enemies[ii].is_fled
+                )
+                living_total = sum(1 for e in state.enemies if e.is_alive and not e.is_fled)
+                enemy_x = ENEMY_SHIP_POS[0]
+                enemy_y = ENEMY_SHIP_POS[1] + (living_before - living_total // 2) * ENEMY_STACK_SPACING
+
+                # Determine sprite radius from ship scale
+                scale = self._get_combat_ship_scale(
+                    "enemy", danger_tier=enemy.template.danger_tier
+                )
+                sprite_radius = 16 * scale  # 32x32 native * scale / 2
+
+                seq = DestructionSequence(
+                    float(enemy_x), float(enemy_y), sprite_radius
+                )
+                self._destruction_sequences.append(seq)
+
+                # Also track in old dict for backward compat (animation playback)
+                anim = self._get_ship_sprite(
+                    enemy.template.id, "enemy", danger_tier=enemy.template.danger_tier
+                )
                 if anim is not None:
                     anim.play("destroy")
-                    # Use the enemy's visual slot position
-                    living_before = sum(
-                        1
-                        for ii in range(idx)
-                        if state.enemies[ii].is_alive and not state.enemies[ii].is_fled
-                    )
-                    living_total = sum(1 for e in state.enemies if e.is_alive and not e.is_fled)
-                    enemy_x = ENEMY_SHIP_POS[0]
-                    enemy_y = ENEMY_SHIP_POS[1] + (living_before - living_total // 2) * 80
                     self._destroying_enemies[idx] = (enemy_x, enemy_y, anim)
 
-                    # Explosion particles + SFX
-                    self.particles.emit(float(enemy_x), float(enemy_y), MISSILE_EXPLOSION)
-                    get_audio_manager().play_sfx("combat_explosion")
-                    self.screen_shake.trigger(intensity=5.0, duration=0.25)
+                # Explosion particles + SFX + heavy screen shake
+                self.particles.emit(float(enemy_x), float(enemy_y), MISSILE_EXPLOSION)
+                get_audio_manager().play_sfx("combat_explosion")
+                self.screen_shake.trigger(intensity=8.0, duration=0.35)
 
                 self._previously_dead.add(idx)
 
@@ -1423,7 +1687,7 @@ class CombatView(BaseView):
             return
 
         # Small ship sprite (top-right of card)
-        card_anim = self._get_ship_sprite(enemy.template.id, "enemy", scale=1)
+        card_anim = self._get_ship_sprite(enemy.template.id, "enemy", scale=res_scale(1))
         card_sprite = card_anim.get_surface() if card_anim else None
         if card_sprite:
             sprite_rect = card_sprite.get_rect(topright=(x + ENEMY_PANEL_W - 6, y + 4))
@@ -1437,6 +1701,43 @@ class CombatView(BaseView):
         behavior_text = enemy.template.behavior.value.capitalize()
         behavior_surf = self.small_font.render(behavior_text, True, Colors.TEXT_SECONDARY)
         screen.blit(behavior_surf, (x + 8, y + 26))
+
+        # Telegraph indicator (what enemy plans to do next)
+        if hasattr(enemy, "telegraphed_move") and enemy.telegraphed_move and self.phase == CombatPhase.PLAYER_INPUT:
+            tele_move = enemy.telegraphed_move
+            # Classify the telegraphed intent
+            has_dmg = any(e.type == EffectType.DAMAGE for e in tele_move.effects)
+            is_def = any(
+                e.type in (EffectType.SHIELD_RESTORE, EffectType.HULL_RESTORE, EffectType.DAMAGE_REDUCTION)
+                for e in tele_move.effects
+            )
+            is_eva = any(
+                e.type == EffectType.EVASION_MOD and e.target == EffectTarget.SELF
+                for e in tele_move.effects
+            )
+            is_drain = any(e.type == EffectType.ENERGY_DRAIN for e in tele_move.effects)
+
+            if is_eva:
+                tele_label, tele_color = "EVADING", (100, 200, 255)
+            elif is_def:
+                tele_label, tele_color = "FORTIFYING", (100, 255, 150)
+            elif is_drain:
+                tele_label, tele_color = "DRAINING", (200, 100, 255)
+            elif has_dmg and tele_move.energy_cost >= 4:
+                tele_label, tele_color = "CHARGING", (255, 100, 60)
+            elif has_dmg:
+                tele_label, tele_color = "ATTACKING", (255, 180, 60)
+            else:
+                tele_label, tele_color = "ACTING", Colors.TEXT_SECONDARY
+
+            # Render as a small colored badge
+            from spacegame.engine.fonts import FONT_XS as _FXS
+            tele_font = FontCache.get(_FXS)
+            tele_surf = tele_font.render(tele_label, True, tele_color)
+            tele_bg = pygame.Surface((tele_surf.get_width() + 8, tele_surf.get_height() + 4), pygame.SRCALPHA)
+            tele_bg.fill((0, 0, 0, 120))
+            screen.blit(tele_bg, (x + 8, y + ENEMY_CARD_H - tele_bg.get_height() - 4))
+            screen.blit(tele_surf, (x + 12, y + ENEMY_CARD_H - tele_surf.get_height() - 4))
 
         # Bars
         bar_x = x + 8
@@ -1462,6 +1763,19 @@ class CombatView(BaseView):
             hull_color,
             "Hull",
         )
+
+        # Damage preview ghost fill (when player hovers a move during input phase)
+        if (
+            is_selected
+            and self.phase == CombatPhase.PLAYER_INPUT
+            and hasattr(self, "_hovered_move")
+            and self._hovered_move is not None
+        ):
+            self._render_damage_ghost(
+                screen, bar_x, bar_y, bar_w, BAR_HEIGHT - 2,
+                displayed_hull, enemy.template.hull, enemy,
+            )
+
         bar_y += BAR_HEIGHT + 6
 
         # Shield bar
@@ -1520,6 +1834,152 @@ class CombatView(BaseView):
     # Bar rendering
     # ------------------------------------------------------------------
 
+    def _render_damage_ghost(
+        self,
+        screen: pygame.Surface,
+        bar_x: int,
+        bar_y: int,
+        bar_w: int,
+        bar_h: int,
+        displayed_hull: float,
+        max_hull: int,
+        enemy: object,
+    ) -> None:
+        """Render a translucent ghost fill on the enemy hull bar showing projected damage."""
+        move = self._hovered_move
+        if move is None:
+            return
+
+        # Calculate projected damage range
+        damage_effects = [e for e in move.effects if e.type == EffectType.DAMAGE]
+        if not damage_effects:
+            return
+
+        total_damage = sum(e.value for e in damage_effects)
+
+        # Account for attacker's damage boost
+        state = self.engine.get_state()
+        boost_pct = 0.0
+        for eff, _ in state.player.active_effects:
+            if eff.type == EffectType.DAMAGE_BOOST:
+                boost_pct += eff.value
+        if boost_pct > 0:
+            total_damage *= 1.0 + boost_pct / 100.0
+
+        # Account for enemy damage reduction
+        dr = 0.0
+        for eff, _ in enemy.active_effects:
+            if eff.type == EffectType.DAMAGE_REDUCTION:
+                dr += eff.value
+        total_damage *= 1.0 - min(dr, 0.9)
+
+        # Calculate bar label offset (match _render_bar's label width)
+        label_w = BAR_LABEL_W + 6
+
+        # Ghost fill: shows the damage as a translucent red overlay from current hull backward
+        hull_ratio = displayed_hull / max(1, max_hull)
+        damage_ratio = total_damage / max(1, max_hull)
+
+        fill_bar_x = bar_x + label_w
+        fill_bar_w = bar_w - label_w
+
+        # Ghost starts at current hull position and extends left by damage amount
+        ghost_start_pct = max(0, hull_ratio - damage_ratio)
+        ghost_end_pct = hull_ratio
+
+        ghost_x = fill_bar_x + int(fill_bar_w * ghost_start_pct)
+        ghost_w = int(fill_bar_w * (ghost_end_pct - ghost_start_pct))
+
+        if ghost_w > 0:
+            ghost_surf = pygame.Surface((ghost_w, bar_h), pygame.SRCALPHA)
+            ghost_surf.fill((220, 50, 50, 80))  # Translucent red
+            screen.blit(ghost_surf, (ghost_x, bar_y))
+            # Bright leading edge
+            pygame.draw.line(
+                screen, (255, 80, 80, 160),
+                (ghost_x, bar_y), (ghost_x, bar_y + bar_h - 1),
+            )
+
+    def _render_move_tooltip(
+        self,
+        screen: pygame.Surface,
+        btn: "_MoveButton",
+        ox: int,
+        oy: int,
+    ) -> None:
+        """Render an enhanced tooltip for a hovered move button."""
+        move = btn.move
+        state = self.engine.get_state()
+
+        lines: list[tuple[str, tuple[int, int, int]]] = []
+
+        # Damage info
+        damage_effects = [e for e in move.effects if e.type == EffectType.DAMAGE]
+        if damage_effects:
+            total = sum(e.value for e in damage_effects)
+            lines.append((f"Damage: {int(total)}", Colors.TEXT_PRIMARY))
+
+        # Other effects
+        for eff in move.effects:
+            if eff.type == EffectType.DAMAGE:
+                continue
+            name = eff.type.value.replace("_", " ").title()
+            sign = "+" if eff.value > 0 else ""
+            dur = f" ({eff.duration}t)" if eff.duration > 0 else ""
+            lines.append((f"{name}: {sign}{int(eff.value)}{dur}", Colors.TEXT_SECONDARY))
+
+        # Accuracy
+        player_acc = state.player.accuracy
+        target = state.enemies[self.selected_target_idx] if self.selected_target_idx < len(state.enemies) else None
+        if target and target.is_alive:
+            evasion = target.get_effective_evasion() if hasattr(target, "get_effective_evasion") else 0
+            from spacegame.config import COMBAT_HIT_CHANCE_MIN, COMBAT_HIT_CHANCE_MAX
+            hit_chance = max(COMBAT_HIT_CHANCE_MIN, min(COMBAT_HIT_CHANCE_MAX,
+                player_acc + move.accuracy_modifier - evasion
+            ))
+            acc_color = Colors.GREEN if hit_chance >= 70 else (Colors.YELLOW if hit_chance >= 50 else Colors.RED)
+            lines.append((f"Hit Chance: {hit_chance}%", acc_color))
+
+        # Energy remaining after use
+        remaining = state.player.energy - move.energy_cost
+        energy_color = Colors.TEXT_SECONDARY if remaining >= 2 else (Colors.YELLOW if remaining >= 0 else Colors.RED)
+        lines.append((f"Energy After: {remaining}/{state.player.max_energy}", energy_color))
+
+        # Cooldown
+        if move.cooldown > 0:
+            lines.append((f"Cooldown: {move.cooldown} turns", Colors.TEXT_SECONDARY))
+
+        if not lines:
+            return
+
+        # Render tooltip above the button
+        font = self.small_font
+        line_h = font.get_linesize() + 2
+        pad = 6
+        tip_w = max(font.size(text)[0] for text, _ in lines) + pad * 2
+        tip_h = len(lines) * line_h + pad * 2
+
+        tip_x = btn.rect.x + ox
+        tip_y = btn.rect.y + oy - tip_h - 4
+        # Keep on screen
+        if tip_x + tip_w > WINDOW_WIDTH:
+            tip_x = WINDOW_WIDTH - tip_w - 4
+        if tip_y < 0:
+            tip_y = btn.rect.bottom + oy + 4
+
+        # Background
+        tip_surf = pygame.Surface((tip_w, tip_h), pygame.SRCALPHA)
+        tip_surf.fill((12, 15, 28, 230))
+        screen.blit(tip_surf, (tip_x, tip_y))
+        pygame.draw.rect(screen, Colors.UI_BORDER, (tip_x, tip_y, tip_w, tip_h), 1)
+
+        # Lines
+        ty = tip_y + pad
+        for text, color in lines:
+            surf = font.render(text, True, color)
+            screen.blit(surf, (tip_x + pad, ty))
+            ty += line_h
+
     def _render_bar(
         self,
         screen: pygame.Surface,
@@ -1575,10 +2035,38 @@ class CombatView(BaseView):
                 return move.name
         return move_id
 
+    def _get_combat_ship_scale(self, role: str, ship_class: str = "", danger_tier: str = "") -> int:
+        """Get the display scale for a ship based on its class or danger tier.
+
+        Args:
+            role: "player" or "enemy".
+            ship_class: Ship class string (for player ships).
+            danger_tier: Enemy danger tier (for enemy ships).
+
+        Returns:
+            Resolution-aware integer scale factor.
+        """
+        if role == "player":
+            base = SHIP_CLASS_SCALE.get(ship_class, 3)
+        else:
+            base = ENEMY_TIER_SCALE.get(danger_tier, 3)
+        return res_scale(base)
+
     def _get_ship_sprite(
-        self, sprite_id: str, role: str, scale: int = 2
+        self, sprite_id: str, role: str, scale: Optional[int] = None,
+        ship_class: str = "", danger_tier: str = "",
     ) -> Optional[AnimatedSprite]:
-        """Get a cached AnimatedSprite for a ship."""
+        """Get a cached AnimatedSprite for a ship.
+
+        Args:
+            sprite_id: Ship or enemy template ID.
+            role: "player" or "enemy".
+            scale: Explicit scale override. None uses class-based scaling.
+            ship_class: Ship class for player ships (used if scale is None).
+            danger_tier: Danger tier for enemies (used if scale is None).
+        """
+        if scale is None:
+            scale = self._get_combat_ship_scale(role, ship_class, danger_tier)
         cache_key = f"{role}_{sprite_id}_{scale}"
         if cache_key not in self._ship_sprite_cache:
             category = "player" if role == "player" else "enemies"
@@ -1694,14 +2182,18 @@ class CombatView(BaseView):
         """Render central combat arena with ship sprites and effects."""
         state = self.engine.get_state()
 
-        # Player ship (left side, facing right)
+        # Player ship (left side, facing right) — class-based scale + idle bob
+        bob_offset = int(IDLE_BOB_AMPLITUDE * math.sin(self.phase_timer * 2 * math.pi / IDLE_BOB_PERIOD))
         player_x = PLAYER_SHIP_POS[0] + ox
-        player_y = PLAYER_SHIP_POS[1] + oy
+        player_y = PLAYER_SHIP_POS[1] + oy + bob_offset
         hull_ratio = state.player.hull / state.player.max_hull if state.player.max_hull > 0 else 0
 
         player_ship_id = self.player.ship.ship_type.id if self.player else None
+        player_class = self.player.ship.ship_type.ship_class if self.player else ""
         player_anim = (
-            self._get_ship_sprite(player_ship_id, "player", scale=3) if player_ship_id else None
+            self._get_ship_sprite(
+                player_ship_id, "player", ship_class=player_class
+            ) if player_ship_id else None
         )
         player_sprite = player_anim.get_surface() if player_anim else None
         if player_sprite:
@@ -1725,42 +2217,47 @@ class CombatView(BaseView):
                 white.fill((255, 255, 255, int(180 * flash_t)))
                 flash_surf.blit(white, (0, 0), special_flags=pygame.BLEND_RGBA_ADD)
                 rotated = flash_surf
-            rect = rotated.get_rect(center=(player_x, player_y))
+            # Apply hit recoil offset
+            recoil_ox, recoil_oy = self._damage_state_mgr.get_recoil_offset("player")
+            draw_x = player_x + recoil_ox
+            draw_y = player_y + recoil_oy
+            rect = rotated.get_rect(center=(draw_x, draw_y))
             screen.blit(rotated, rect)
-            # Shield shimmer: cyan glow ring around ship
-            if self._player_shield_flash > 0:
-                shimmer_t = self._player_shield_flash / 0.2
-                shimmer_alpha = int(160 * shimmer_t)
-                shimmer_r = max(rotated.get_width(), rotated.get_height()) // 2 + 6
-                shimmer_surf = pygame.Surface(
-                    (shimmer_r * 2 + 4, shimmer_r * 2 + 4), pygame.SRCALPHA
-                )
-                sc = shimmer_r + 2
-                pygame.draw.circle(
-                    shimmer_surf,
-                    (80, 200, 255, shimmer_alpha),
-                    (sc, sc),
-                    shimmer_r,
-                    3,
-                )
-                screen.blit(shimmer_surf, (player_x - sc, player_y - sc))
+
+            # Shield bubble + ripple (replaces old shimmer)
+            sprite_r = max(rotated.get_width(), rotated.get_height()) // 2
+            self._shield_renderer.render(screen, "player", draw_x, draw_y, sprite_r)
+
+            # Damage smoke/sparks
+            self._damage_state_mgr.render(screen, "player", draw_x, draw_y)
         else:
             self._draw_ship_silhouette(
                 screen, player_x, player_y, facing_right=True, hull_ratio=hull_ratio
             )
 
-        # Enemy ships (right side, facing left)
+        # Enemy ships (right side, facing left) — tier-based scale + idle bob
         living_enemies = [
             (i, e) for i, e in enumerate(state.enemies) if e.is_alive and not e.is_fled
         ]
         for j, (idx, enemy) in enumerate(living_enemies[:3]):
+            # Offset bob phase per enemy so they don't all move in sync
+            enemy_bob = int(
+                IDLE_BOB_AMPLITUDE * math.sin(
+                    (self.phase_timer + j * 0.7) * 2 * math.pi / IDLE_BOB_PERIOD
+                )
+            )
             enemy_x = ENEMY_SHIP_POS[0] + ox
-            enemy_y = ENEMY_SHIP_POS[1] + oy + (j - len(living_enemies) // 2) * 80
+            enemy_y = (
+                ENEMY_SHIP_POS[1] + oy + enemy_bob
+                + (j - len(living_enemies) // 2) * ENEMY_STACK_SPACING
+            )
             e_hull_ratio = (
                 enemy.current_hull / enemy.template.hull if enemy.template.hull > 0 else 0
             )
 
-            enemy_anim = self._get_ship_sprite(enemy.template.id, "enemy", scale=3)
+            enemy_anim = self._get_ship_sprite(
+                enemy.template.id, "enemy", danger_tier=enemy.template.danger_tier
+            )
             enemy_sprite = enemy_anim.get_surface() if enemy_anim else None
             if enemy_sprite:
                 # Rotate 90° so nose points left
@@ -1801,25 +2298,20 @@ class CombatView(BaseView):
                             enemy_y - rotated.get_height() // 2 - 4,
                         ),
                     )
-                rect = rotated.get_rect(center=(enemy_x, enemy_y))
+                # Apply hit recoil offset
+                ekey = f"enemy_{idx}"
+                e_recoil_ox, e_recoil_oy = self._damage_state_mgr.get_recoil_offset(ekey)
+                draw_ex = enemy_x + e_recoil_ox
+                draw_ey = enemy_y + e_recoil_oy
+                rect = rotated.get_rect(center=(draw_ex, draw_ey))
                 screen.blit(rotated, rect)
-                # Shield shimmer: cyan glow ring around ship
-                if idx < len(self._enemy_shield_flashes) and self._enemy_shield_flashes[idx] > 0:
-                    shimmer_t = self._enemy_shield_flashes[idx] / 0.2
-                    shimmer_alpha = int(160 * shimmer_t)
-                    shimmer_r = max(rotated.get_width(), rotated.get_height()) // 2 + 6
-                    shimmer_surf = pygame.Surface(
-                        (shimmer_r * 2 + 4, shimmer_r * 2 + 4), pygame.SRCALPHA
-                    )
-                    sc = shimmer_r + 2
-                    pygame.draw.circle(
-                        shimmer_surf,
-                        (80, 200, 255, shimmer_alpha),
-                        (sc, sc),
-                        shimmer_r,
-                        3,
-                    )
-                    screen.blit(shimmer_surf, (enemy_x - sc, enemy_y - sc))
+
+                # Shield bubble + ripple (replaces old shimmer)
+                e_sprite_r = max(rotated.get_width(), rotated.get_height()) // 2
+                self._shield_renderer.render(screen, ekey, draw_ex, draw_ey, e_sprite_r)
+
+                # Damage smoke/sparks
+                self._damage_state_mgr.render(screen, ekey, draw_ex, draw_ey)
             else:
                 self._draw_ship_silhouette(
                     screen,
@@ -1830,7 +2322,7 @@ class CombatView(BaseView):
                     is_selected=(idx == self.selected_target_idx),
                 )
 
-        # Render destroying enemy ships (explosion animation)
+        # Render destroying enemy ships (sprite sheet animation + destruction VFX)
         finished_destroys = []
         for idx, (ex, ey, anim) in self._destroying_enemies.items():
             sprite_surf = anim.get_surface()
@@ -1842,6 +2334,24 @@ class CombatView(BaseView):
                 finished_destroys.append(idx)
         for idx in finished_destroys:
             del self._destroying_enemies[idx]
+
+        # Render spectacular destruction sequences (fragments, flash, fire)
+        for seq in self._destruction_sequences:
+            seq.render(screen)
+
+        # Render persistent debris from completed destructions
+        for d in self._persistent_debris:
+            d["x"] += d.get("vx", 0) * 0.016
+            d["y"] += d.get("vy", 0) * 0.016
+            size = d.get("size", 2)
+            alpha = int(d.get("alpha", 40))
+            if alpha <= 0:
+                continue
+            from spacegame.engine.combat_vfx import _FRAG_COLORS
+            color = _FRAG_COLORS[d.get("color_idx", 0)]
+            debris_surf = pygame.Surface((size * 2, size * 2), pygame.SRCALPHA)
+            pygame.draw.rect(debris_surf, (*color, alpha), (0, 0, size * 2, size))
+            screen.blit(debris_surf, (int(d["x"]) - size, int(d["y"]) - size))
 
         # Action text flash in center arena
         if self._arena_action_timer > 0 and self._arena_action_text:
@@ -1946,6 +2456,76 @@ class CombatView(BaseView):
         is_input = self.phase == CombatPhase.PLAYER_INPUT
         for btn in self.move_buttons:
             self._render_move_button(screen, btn, ox, oy, is_input)
+
+        # Crew ability buttons (below special buttons)
+        if self._crew_move_buttons:
+            # "CREW" label
+            crew_label_y = SPECIAL_BTN_Y + SPECIAL_BTN_H + scale_y(2) + oy
+            crew_label = self.small_font.render("CREW", True, Colors.TEXT_HIGHLIGHT)
+            screen.blit(crew_label, (MOVE_BTN_X_START + ox, crew_label_y - scale_y(12)))
+
+            for btn in self._crew_move_buttons:
+                bx = btn.rect.x + ox
+                by = btn.rect.y + oy
+                bw = btn.rect.width
+                bh = btn.rect.height
+
+                is_selected = self._selected_crew_move_id == btn.move.id
+                is_active_phase = self.phase == CombatPhase.PLAYER_INPUT
+
+                # Background
+                if is_selected:
+                    bg = (40, 60, 90, 230)
+                elif btn.hovered and btn.enabled and is_active_phase:
+                    bg = (30, 42, 65, 220)
+                elif not btn.enabled or not is_active_phase:
+                    bg = (18, 20, 30, 180)
+                else:
+                    bg = (22, 28, 48, 200)
+
+                btn_surf = pygame.Surface((bw, bh), pygame.SRCALPHA)
+                btn_surf.fill(bg)
+                screen.blit(btn_surf, (bx, by))
+
+                # Border (highlight if selected)
+                border_color = Colors.TEXT_HIGHLIGHT if is_selected else Colors.UI_BORDER
+                if btn.hovered and btn.enabled and is_active_phase:
+                    border_color = Colors.TEXT_HIGHLIGHT
+                pygame.draw.rect(screen, border_color, (bx, by, bw, bh), 1, border_radius=2)
+
+                # Move name (compact)
+                name_surf = self.small_font.render(btn.move.name, True, Colors.TEXT_PRIMARY)
+                max_name_w = bw - scale_x(30)
+                if name_surf.get_width() > max_name_w:
+                    display_name = btn.move.name
+                    while len(display_name) > 3 and name_surf.get_width() > max_name_w:
+                        display_name = display_name[:-1]
+                    display_name = display_name.rstrip() + ".."
+                    name_surf = self.small_font.render(display_name, True, Colors.TEXT_PRIMARY)
+                screen.blit(name_surf, (bx + 4, by + (bh - name_surf.get_height()) // 2))
+
+                # Energy cost (right side)
+                cost_text = f"{btn.move.energy_cost}E"
+                cost_surf = self.small_font.render(cost_text, True, ENERGY_COLOR)
+                screen.blit(cost_surf, (bx + bw - cost_surf.get_width() - 4, by + (bh - cost_surf.get_height()) // 2))
+
+                # Cooldown overlay
+                if btn.cooldown_remaining > 0:
+                    cd_surf = pygame.Surface((bw, bh), pygame.SRCALPHA)
+                    cd_surf.fill((0, 0, 0, 140))
+                    screen.blit(cd_surf, (bx, by))
+
+        # Enhanced tooltip for hovered move (rendered on top of all buttons)
+        if is_input:
+            for btn in self.move_buttons:
+                if btn.hovered and btn.enabled:
+                    self._render_move_tooltip(screen, btn, ox, oy)
+                    break
+            # Also tooltip for hovered crew buttons
+            for btn in self._crew_move_buttons:
+                if btn.hovered and btn.enabled:
+                    self._render_move_tooltip(screen, btn, ox, oy)
+                    break
 
         # Flee button
         flee_chance = self._get_flee_chance()

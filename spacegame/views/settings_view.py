@@ -10,12 +10,15 @@ from pathlib import Path
 import tkinter as tk
 from tkinter import filedialog
 
-from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors
+from spacegame.config import (
+    WINDOW_WIDTH, WINDOW_HEIGHT, Colors, SUPPORTED_RESOLUTIONS, FULLSCREEN,
+    scale_x, scale_y,
+)
 from spacegame.views.base_view import BaseView
 from spacegame.engine.audio_manager import AudioConfig, get_audio_manager
 from spacegame.utils.logger import logger
 from spacegame.engine.backgrounds import AnimatedBackground
-from spacegame.engine.fonts import FontCache
+from spacegame.engine.fonts import FontCache, FONT_BODY, FONT_DISPLAY, FONT_SM, FONT_XL
 
 
 class SettingsView(BaseView):
@@ -45,10 +48,10 @@ class SettingsView(BaseView):
         self._audio_changed = False
 
         # Fonts
-        self.title_font = FontCache.get(48)
-        self.header_font = FontCache.get(28)
-        self.info_font = FontCache.get(22)
-        self.small_font = FontCache.get(18)
+        self.title_font = FontCache.get(FONT_DISPLAY)
+        self.header_font = FontCache.get(FONT_XL)
+        self.info_font = FontCache.get(FONT_BODY)
+        self.small_font = FontCache.get(FONT_SM)
 
         # Background
         self.background = AnimatedBackground("deep_space", WINDOW_WIDTH, WINDOW_HEIGHT, seed=96)
@@ -75,6 +78,13 @@ class SettingsView(BaseView):
         self._sfx_label: Optional[pygame_gui.elements.UILabel] = None
         self._ambient_label: Optional[pygame_gui.elements.UILabel] = None
 
+        # UI Elements — display settings
+        self._resolution_buttons: list[pygame_gui.elements.UIButton] = []
+        self._fullscreen_button: Optional[pygame_gui.elements.UIButton] = None
+        self._selected_resolution: tuple[int, int] = (WINDOW_WIDTH, WINDOW_HEIGHT)
+        self._selected_fullscreen: bool = FULLSCREEN
+        self._restart_label: Optional[pygame_gui.elements.UILabel] = None
+
     def on_enter(self) -> None:
         """Create UI when entering settings view."""
         super().on_enter()
@@ -89,9 +99,9 @@ class SettingsView(BaseView):
     def _create_ui(self) -> None:
         """Create settings UI."""
         self._misc_labels: list[pygame_gui.elements.UILabel] = []
-        panel_width = 800
+        panel_width = scale_x(800)
         panel_x = (WINDOW_WIDTH - panel_width) // 2
-        y = 100
+        y = scale_y(100)
 
         # === Audio Section ===
         self._misc_labels.append(pygame_gui.elements.UILabel(
@@ -102,10 +112,10 @@ class SettingsView(BaseView):
         y += 35
 
         audio_cfg = get_audio_manager().get_config()
-        label_w = 140
-        slider_w = panel_width - label_w - 70
-        slider_h = 25
-        val_w = 50
+        label_w = scale_x(140)
+        slider_w = panel_width - label_w - scale_x(70)
+        slider_h = scale_y(25)
+        val_w = scale_x(50)
 
         slider_defs = [
             ("Master", audio_cfg.master_volume, "_master"),
@@ -146,6 +156,48 @@ class SettingsView(BaseView):
 
         y += 15
 
+        # === Display Section ===
+        self._misc_labels.append(pygame_gui.elements.UILabel(
+            relative_rect=pygame.Rect(panel_x, y, panel_width, 30),
+            text="Display",
+            manager=self.ui_manager,
+        ))
+        y += 35
+
+        # Resolution buttons
+        current_res = (WINDOW_WIDTH, WINDOW_HEIGHT)
+        btn_w = (panel_width - 20) // len(SUPPORTED_RESOLUTIONS)
+        for i, (w, h) in enumerate(SUPPORTED_RESOLUTIONS):
+            label = f"{w}x{h}"
+            btn = pygame_gui.elements.UIButton(
+                relative_rect=pygame.Rect(
+                    panel_x + i * (btn_w + 10), y, btn_w, 35
+                ),
+                text=label,
+                manager=self.ui_manager,
+            )
+            if (w, h) == current_res:
+                btn.disable()
+            self._resolution_buttons.append(btn)
+        y += 45
+
+        # Fullscreen toggle
+        fs_label = "Fullscreen: ON" if self._selected_fullscreen else "Fullscreen: OFF"
+        self._fullscreen_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(panel_x, y, scale_x(200), scale_y(35)),
+            text=fs_label,
+            manager=self.ui_manager,
+        )
+        y += 45
+
+        # Restart required label (hidden until display setting changes)
+        self._restart_label = pygame_gui.elements.UILabel(
+            relative_rect=pygame.Rect(panel_x, y, panel_width, 22),
+            text="",
+            manager=self.ui_manager,
+        )
+        y += 30
+
         # === Save Directory Section ===
         self.save_dir_label = pygame_gui.elements.UILabel(
             relative_rect=pygame.Rect(panel_x, y, panel_width, 30),
@@ -157,19 +209,19 @@ class SettingsView(BaseView):
         save_dir_str = str(self.current_save_dir)
         self.save_dir_display = pygame_gui.elements.UITextBox(
             html_text=f"<font size=4>{save_dir_str}</font>",
-            relative_rect=pygame.Rect(panel_x, y, panel_width - 160, 50),
+            relative_rect=pygame.Rect(panel_x, y, panel_width - scale_x(160), scale_y(50)),
             manager=self.ui_manager,
         )
 
         self.browse_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(panel_x + panel_width - 140, y, 140, 50),
+            relative_rect=pygame.Rect(panel_x + panel_width - scale_x(140), y, scale_x(140), scale_y(50)),
             text="BROWSE",
             manager=self.ui_manager,
         )
         y += 60
 
         self.reset_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(panel_x, y, 200, 40),
+            relative_rect=pygame.Rect(panel_x, y, scale_x(200), scale_y(40)),
             text="RESET TO DEFAULT",
             manager=self.ui_manager,
         )
@@ -197,20 +249,20 @@ class SettingsView(BaseView):
         ))
         y += 35
         self.replay_tutorial_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(panel_x, y, 200, 40),
+            relative_rect=pygame.Rect(panel_x, y, scale_x(200), scale_y(40)),
             text="REPLAY TUTORIAL",
             manager=self.ui_manager,
         )
 
         # === Bottom buttons ===
         self.back_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(panel_x, WINDOW_HEIGHT - 80, 150, 50),
+            relative_rect=pygame.Rect(panel_x, WINDOW_HEIGHT - scale_y(80), scale_x(150), scale_y(50)),
             text="BACK",
             manager=self.ui_manager,
         )
 
         self.apply_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(panel_x + panel_width - 150, WINDOW_HEIGHT - 80, 150, 50),
+            relative_rect=pygame.Rect(panel_x + panel_width - scale_x(150), WINDOW_HEIGHT - scale_y(80), scale_x(150), scale_y(50)),
             text="APPLY",
             manager=self.ui_manager,
         )
@@ -226,9 +278,13 @@ class SettingsView(BaseView):
             self._sfx_slider, self._ambient_slider,
             self._master_label, self._music_label,
             self._sfx_label, self._ambient_label,
+            self._fullscreen_button, self._restart_label,
         ]:
             if elem:
                 elem.kill()
+        for btn in self._resolution_buttons:
+            btn.kill()
+        self._resolution_buttons = []
         for label in getattr(self, "_misc_labels", []):
             label.kill()
         self._misc_labels = []
@@ -244,6 +300,29 @@ class SettingsView(BaseView):
 
             elif event.ui_element == self.replay_tutorial_button:
                 self._replay_tutorial()
+
+            elif event.ui_element == self._fullscreen_button:
+                self._selected_fullscreen = not self._selected_fullscreen
+                fs_label = (
+                    "Fullscreen: ON" if self._selected_fullscreen else "Fullscreen: OFF"
+                )
+                self._fullscreen_button.set_text(fs_label)
+                self.apply_button.enable()
+                if self._restart_label:
+                    self._restart_label.set_text("Restart required to apply display changes")
+
+            elif event.ui_element in self._resolution_buttons:
+                idx = self._resolution_buttons.index(event.ui_element)
+                self._selected_resolution = SUPPORTED_RESOLUTIONS[idx]
+                # Update button states
+                for i, btn in enumerate(self._resolution_buttons):
+                    if i == idx:
+                        btn.disable()
+                    else:
+                        btn.enable()
+                self.apply_button.enable()
+                if self._restart_label:
+                    self._restart_label.set_text("Restart required to apply display changes")
 
             elif event.ui_element == self.back_button:
                 # Revert audio changes on cancel
@@ -294,6 +373,17 @@ class SettingsView(BaseView):
         if self._audio_changed or self.settings_changed:
             return get_audio_manager().get_config()
         return None
+
+    def get_display_settings(self) -> dict:
+        """Get the selected display settings for persistence.
+
+        Returns:
+            Dict with 'resolution' and 'fullscreen' keys.
+        """
+        return {
+            "resolution": list(self._selected_resolution),
+            "fullscreen": self._selected_fullscreen,
+        }
 
     def _browse_save_directory(self) -> None:
         """Open directory browser to select save directory."""

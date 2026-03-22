@@ -17,6 +17,8 @@ from spacegame.config import (
     DIALOGUE_TEXT_SPEED,
     DIALOGUE_PORTRAIT_SIZE,
     SOCIAL_CHECK_FEEDBACK_DURATION,
+    scale_x,
+    scale_y,
 )
 from spacegame.views.base_view import BaseView
 from spacegame.models.dialogue import DialogueManager, NPC
@@ -24,8 +26,8 @@ from spacegame.models.social import SocialManager
 from spacegame.data_loader import DataLoader
 from spacegame.engine.backgrounds import AnimatedBackground
 from spacegame.engine.draw_utils import draw_panel
-from spacegame.engine.sprites import AnimatedSprite, get_sprite_manager
-from spacegame.engine.fonts import FontCache
+from spacegame.engine.sprites import AnimatedSprite, get_sprite_manager, res_scale
+from spacegame.engine.fonts import FONT_BODY, FONT_DISPLAY, FONT_HEADING, FONT_LG, FONT_XL2, FontCache
 from spacegame.utils.logger import logger
 from spacegame.engine.audio_manager import get_audio_manager
 
@@ -107,13 +109,13 @@ class DialogueView(BaseView):
     """View for NPC dialogue conversations."""
 
     # Layout constants
-    PANEL_WIDTH = 800
-    PANEL_HEIGHT = 480
+    PANEL_WIDTH = scale_x(800)
+    PANEL_HEIGHT = scale_y(480)
     PORTRAIT_W, PORTRAIT_H = DIALOGUE_PORTRAIT_SIZE
-    TEXT_LEFT_MARGIN = 150  # Left edge of text area (after portrait)
-    TEXT_TOP = 80  # Top of text area within panel
-    RESPONSE_TOP_OFFSET = 30  # Gap between text area and responses
-    RESPONSE_HEIGHT = 36
+    TEXT_LEFT_MARGIN = scale_x(150)  # Left edge of text area (after portrait)
+    TEXT_TOP = scale_y(80)  # Top of text area within panel
+    RESPONSE_TOP_OFFSET = scale_y(30)  # Gap between text area and responses
+    RESPONSE_HEIGHT = scale_y(36)
     RESPONSE_GAP = 6
 
     def __init__(
@@ -131,12 +133,12 @@ class DialogueView(BaseView):
         self.next_state: Optional[GameState] = None
 
         # Fonts
-        self.name_font = FontCache.get(30)
-        self.title_font = FontCache.get(22)
-        self.body_font = FontCache.get(24)
-        self.response_font = FontCache.get(22)
-        self.initial_font = FontCache.get(48)
-        self.feedback_font = FontCache.get(32)
+        self.name_font = FontCache.get(FONT_XL2)
+        self.title_font = FontCache.get(FONT_BODY)
+        self.body_font = FontCache.get(FONT_LG)
+        self.response_font = FontCache.get(FONT_BODY)
+        self.initial_font = FontCache.get(FONT_DISPLAY)
+        self.feedback_font = FontCache.get(FONT_HEADING)
 
         # Panel geometry
         self.panel_x = (WINDOW_WIDTH - self.PANEL_WIDTH) // 2
@@ -385,7 +387,7 @@ class DialogueView(BaseView):
         """Get a cached animated portrait for an NPC."""
         if npc_id not in self._portrait_cache:
             self._portrait_cache[npc_id] = self._sprite_mgr.get_portrait_animated(
-                npc_id, scale=2
+                npc_id, scale=res_scale(2)
             )
         return self._portrait_cache[npc_id]
 

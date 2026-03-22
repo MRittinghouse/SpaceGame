@@ -16,6 +16,32 @@ import pygame
 from spacegame.utils.logger import logger
 
 
+def res_scale(base_scale: int) -> int:
+    """Compute a resolution-aware sprite scale factor.
+
+    Scales the base factor proportionally to the active WINDOW_HEIGHT
+    relative to the 720p reference. At 720p returns the base unchanged;
+    at 1080p returns base * 1.5 (rounded).
+
+    Use this for explicit ``scale=`` arguments that override SpriteManager
+    defaults. The convenience methods (get_commodity_icon, etc.) already
+    apply this internally when ``scale=None``.
+
+    Args:
+        base_scale: Scale factor designed for 720p resolution.
+
+    Returns:
+        Proportionally scaled integer factor for the current resolution.
+    """
+    from spacegame.config import WINDOW_HEIGHT
+
+    return max(1, round(base_scale * WINDOW_HEIGHT / 720))
+
+
+# Keep private alias for internal use in SpriteManager defaults
+_res_scale = res_scale
+
+
 class SpriteSheet:
     """Extracts and scales frames from a horizontal sprite strip.
 
@@ -439,7 +465,7 @@ class SpriteManager:
     # --- Convenience API ---
 
     def get_ship_sprite(
-        self, ship_id: str, scale: int = 2
+        self, ship_id: str, scale: Optional[int] = None
     ) -> Optional[pygame.Surface]:
         """Get a player ship sprite surface.
 
@@ -449,11 +475,13 @@ class SpriteManager:
 
         Args:
             ship_id: Ship type identifier (e.g. "shuttle").
-            scale: Display scale factor. Defaults to 2 (64x64 display).
+            scale: Display scale factor. None uses resolution-aware default.
 
         Returns:
             pygame.Surface if the asset exists, None otherwise.
         """
+        if scale is None:
+            scale = _res_scale(2)
         anims = self.load_animation_config("ship_anims.json") or None
         animated = self.get_sprite("ships/player", ship_id, 32, 32, scale, anims)
         if animated is not None:
@@ -462,7 +490,7 @@ class SpriteManager:
         return self.get_static_sprite("ships/player", ship_id, scale)
 
     def get_enemy_sprite(
-        self, enemy_id: str, scale: int = 2
+        self, enemy_id: str, scale: Optional[int] = None
     ) -> Optional[pygame.Surface]:
         """Get an enemy ship sprite surface.
 
@@ -472,11 +500,13 @@ class SpriteManager:
 
         Args:
             enemy_id: Enemy template identifier (e.g. "pirate_scout").
-            scale: Display scale factor. Defaults to 2 (64x64 display).
+            scale: Display scale factor. None uses resolution-aware default.
 
         Returns:
             pygame.Surface if the asset exists, None otherwise.
         """
+        if scale is None:
+            scale = _res_scale(2)
         anims = self.load_animation_config("ship_anims.json") or None
         animated = self.get_sprite("ships/enemies", enemy_id, 32, 32, scale, anims)
         if animated is not None:
@@ -485,7 +515,7 @@ class SpriteManager:
         return self.get_static_sprite("ships/enemies", enemy_id, scale)
 
     def get_portrait_sprite(
-        self, npc_id: str, scale: int = 2
+        self, npc_id: str, scale: Optional[int] = None
     ) -> Optional[pygame.Surface]:
         """Get an NPC portrait sprite surface.
 
@@ -495,11 +525,13 @@ class SpriteManager:
 
         Args:
             npc_id: NPC identifier (e.g. "officer_larsen").
-            scale: Display scale factor. Defaults to 2 (100x120 display).
+            scale: Display scale factor. None uses resolution-aware default.
 
         Returns:
             pygame.Surface if the asset exists, None otherwise.
         """
+        if scale is None:
+            scale = _res_scale(2)
         anims = self.load_animation_config("portrait_anims.json") or None
         animated = self.get_sprite("portraits", npc_id, 50, 60, scale, anims)
         if animated is not None:
@@ -508,7 +540,7 @@ class SpriteManager:
         return self.get_static_sprite("portraits", npc_id, scale)
 
     def get_commodity_icon(
-        self, commodity_id: str, scale: int = 2
+        self, commodity_id: str, scale: Optional[int] = None
     ) -> Optional[pygame.Surface]:
         """Get a commodity icon surface.
 
@@ -516,15 +548,17 @@ class SpriteManager:
 
         Args:
             commodity_id: Commodity identifier (e.g. "iron_ore").
-            scale: Display scale factor. Defaults to 2 (32x32 display).
+            scale: Display scale factor. None uses resolution-aware default.
 
         Returns:
             Scaled surface if the asset exists, None otherwise.
         """
+        if scale is None:
+            scale = _res_scale(2)
         return self.get_static_sprite("commodities", commodity_id, scale)
 
     def get_faction_emblem(
-        self, faction_id: str, scale: int = 2
+        self, faction_id: str, scale: Optional[int] = None
     ) -> Optional[pygame.Surface]:
         """Get a faction emblem surface.
 
@@ -532,18 +566,20 @@ class SpriteManager:
 
         Args:
             faction_id: Faction identifier (e.g. "commerce_guild").
-            scale: Display scale factor. Defaults to 2 (48x48 display).
+            scale: Display scale factor. None uses resolution-aware default.
 
         Returns:
             Scaled surface if the asset exists, None otherwise.
         """
+        if scale is None:
+            scale = _res_scale(2)
         return self.get_static_sprite("factions", faction_id, scale)
 
     def get_ground_tile(
         self,
         tile_type: str,
         faction_id: str = "neutral",
-        scale: int = 3,
+        scale: Optional[int] = None,
     ) -> Optional[pygame.Surface]:
         """Get a ground tile surface.
 
@@ -553,11 +589,13 @@ class SpriteManager:
         Args:
             tile_type: Tile type name (e.g. "floor", "wall").
             faction_id: Faction tileset to use. Defaults to "neutral".
-            scale: Display scale factor. Defaults to 3 (48x48 display).
+            scale: Display scale factor. None uses resolution-aware default.
 
         Returns:
             Scaled surface if the asset exists, None otherwise.
         """
+        if scale is None:
+            scale = _res_scale(3)
         category = f"ground_tiles/{faction_id}"
         return self.get_static_sprite(category, tile_type, scale)
 
@@ -565,7 +603,7 @@ class SpriteManager:
         self,
         tile_type: str,
         faction_id: str = "neutral",
-        scale: int = 3,
+        scale: Optional[int] = None,
     ) -> Optional["AnimatedSprite"]:
         """Get an animated ground tile sprite if a sheet exists.
 
@@ -584,10 +622,12 @@ class SpriteManager:
         anims = self.load_animation_config("ground_tile_anims.json")
         if not anims:
             return None
+        if scale is None:
+            scale = _res_scale(3)
         return self.get_sprite(category, tile_type, 16, 16, scale, anims)
 
     def get_system_portrait(
-        self, system_id: str, scale: int = 1
+        self, system_id: str, scale: Optional[int] = None
     ) -> Optional[pygame.Surface]:
         """Get a star system portrait surface.
 
@@ -595,15 +635,17 @@ class SpriteManager:
 
         Args:
             system_id: System identifier (e.g. "nexus_prime").
-            scale: Display scale factor. Defaults to 1 (80x60 display).
+            scale: Display scale factor. None uses resolution-aware default.
 
         Returns:
             Scaled surface if the asset exists, None otherwise.
         """
+        if scale is None:
+            scale = _res_scale(1)
         return self.get_static_sprite("systems", system_id, scale)
 
     def get_upgrade_icon(
-        self, upgrade_id: str, scale: int = 2
+        self, upgrade_id: str, scale: Optional[int] = None
     ) -> Optional[pygame.Surface]:
         """Get an upgrade icon surface.
 
@@ -611,30 +653,34 @@ class SpriteManager:
 
         Args:
             upgrade_id: Upgrade identifier (e.g. "cargo_bay_ext").
-            scale: Display scale factor. Defaults to 2 (32x32 display).
+            scale: Display scale factor. None uses resolution-aware default.
 
         Returns:
             Scaled surface if the asset exists, None otherwise.
         """
+        if scale is None:
+            scale = _res_scale(2)
         return self.get_static_sprite("upgrades", upgrade_id, scale)
 
     def get_ground_player_sprite(
-        self, scale: int = 3
+        self, scale: Optional[int] = None
     ) -> Optional[pygame.Surface]:
         """Get the ground player character sprite.
 
         Loads from sprites/ground_tiles/player.png (16x16 native).
 
         Args:
-            scale: Display scale factor. Defaults to 3 (48x48 display).
+            scale: Display scale factor. None uses resolution-aware default.
 
         Returns:
             Scaled surface if the asset exists, None otherwise.
         """
+        if scale is None:
+            scale = _res_scale(3)
         return self.get_static_sprite("ground_tiles", "player", scale)
 
     def get_ship_animated(
-        self, ship_id: str, category: str = "player", scale: int = 2
+        self, ship_id: str, category: str = "player", scale: Optional[int] = None
     ) -> Optional[AnimatedSprite]:
         """Get an AnimatedSprite for a ship (player or enemy).
 
@@ -650,6 +696,8 @@ class SpriteManager:
         Returns:
             AnimatedSprite if any asset exists, None otherwise.
         """
+        if scale is None:
+            scale = _res_scale(2)
         subdir = f"ships/{category}"
         anims = self.load_animation_config("ship_anims.json") or None
         animated = self.get_sprite(subdir, ship_id, 32, 32, scale, anims)
@@ -670,7 +718,7 @@ class SpriteManager:
         return anim
 
     def get_portrait_animated(
-        self, npc_id: str, scale: int = 2
+        self, npc_id: str, scale: Optional[int] = None
     ) -> Optional[AnimatedSprite]:
         """Get an AnimatedSprite for an NPC portrait.
 
@@ -685,6 +733,8 @@ class SpriteManager:
         Returns:
             AnimatedSprite if any asset exists, None otherwise.
         """
+        if scale is None:
+            scale = _res_scale(2)
         anims = self.load_animation_config("portrait_anims.json") or None
         animated = self.get_sprite("portraits", npc_id, 50, 60, scale, anims)
         if animated is not None:
@@ -702,7 +752,7 @@ class SpriteManager:
         return anim
 
     def get_skill_icon(
-        self, skill_id: str, scale: int = 2
+        self, skill_id: str, scale: Optional[int] = None
     ) -> Optional[pygame.Surface]:
         """Get a skill tree icon surface.
 
@@ -710,15 +760,17 @@ class SpriteManager:
 
         Args:
             skill_id: Skill identifier (e.g. "negotiator").
-            scale: Display scale factor. Defaults to 2 (32x32 display).
+            scale: Display scale factor. None uses resolution-aware default.
 
         Returns:
             Scaled surface if the asset exists, None otherwise.
         """
+        if scale is None:
+            scale = _res_scale(2)
         return self.get_static_sprite("ui/skills", skill_id, scale)
 
     def get_location_icon(
-        self, type_id: str, scale: int = 2
+        self, type_id: str, scale: Optional[int] = None
     ) -> Optional[pygame.Surface]:
         """Get a station hub location type icon surface.
 
@@ -726,15 +778,17 @@ class SpriteManager:
 
         Args:
             type_id: Location type identifier (e.g. "market", "cantina").
-            scale: Display scale factor. Defaults to 2 (32x32 display).
+            scale: Display scale factor. None uses resolution-aware default.
 
         Returns:
             Scaled surface if the asset exists, None otherwise.
         """
+        if scale is None:
+            scale = _res_scale(2)
         return self.get_static_sprite("ui/location_types", type_id, scale)
 
     def get_ground_enemy_sprite(
-        self, template_id: str, scale: int = 3
+        self, template_id: str, scale: Optional[int] = None
     ) -> Optional[pygame.Surface]:
         """Get a ground enemy sprite by template ID.
 
@@ -742,11 +796,13 @@ class SpriteManager:
 
         Args:
             template_id: Enemy template identifier (e.g. "guild_security").
-            scale: Display scale factor. Defaults to 3 (48x48 display).
+            scale: Display scale factor. None uses resolution-aware default.
 
         Returns:
             Scaled surface if the asset exists, None otherwise.
         """
+        if scale is None:
+            scale = _res_scale(3)
         return self.get_static_sprite("ground_tiles/enemies", template_id, scale)
 
     # Icon order must match tools/generate_status_icons.py EFFECT_ORDER
@@ -756,7 +812,7 @@ class SpriteManager:
     ]
 
     def get_status_icon(
-        self, effect_type: str, scale: int = 1
+        self, effect_type: str, scale: Optional[int] = None
     ) -> Optional[pygame.Surface]:
         """Get a status effect icon surface by effect type ID.
 
@@ -764,11 +820,13 @@ class SpriteManager:
 
         Args:
             effect_type: EffectType value string (e.g. "evasion_mod").
-            scale: Display scale factor. Defaults to 1 (12x12 native).
+            scale: Display scale factor. None uses resolution-aware default.
 
         Returns:
             Scaled icon surface if available, None otherwise.
         """
+        if scale is None:
+            scale = _res_scale(1)
         cache_key = f"status_icon:{effect_type}_{scale}"
         if cache_key in self._static_cache:
             return self._static_cache[cache_key]

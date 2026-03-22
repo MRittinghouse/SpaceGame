@@ -20,6 +20,8 @@ from spacegame.config import (
     GROUND_TILE_SIZE,
     GROUND_CAMERA_LERP_SPEED,
     GROUND_COMBAT_PANEL_HEIGHT,
+    scale_x,
+    scale_y,
 )
 from spacegame.models.ground import (
     FogState,
@@ -44,7 +46,7 @@ from spacegame.models.ground_combat import (
 from spacegame.engine.audio_manager import get_audio_manager
 from spacegame.engine.sprites import AnimatedSprite, get_sprite_manager
 from spacegame.engine.draw_utils import draw_bar
-from spacegame.engine.fonts import FontCache
+from spacegame.engine.fonts import FONT_BODY, FONT_LG, FONT_MD, FONT_SECTION, FONT_XL, FontCache
 from spacegame.utils.logger import logger
 
 if TYPE_CHECKING:
@@ -56,7 +58,7 @@ if TYPE_CHECKING:
 
 
 # Minimap constants
-MINIMAP_SIZE = 150  # Pixels (square)
+MINIMAP_SIZE = scale_y(150)  # Pixels (square)
 MINIMAP_MARGIN = 10  # From top-right corner
 MINIMAP_BG_COLOR = (10, 10, 15, 200)  # Semi-transparent background
 MINIMAP_INTERACTABLE_COLOR = (100, 220, 220)  # Cyan for loot containers
@@ -150,11 +152,11 @@ class GroundExplorationView(BaseView):
         self._target_camera_y: float = float(py)
 
         # Fonts
-        self._hud_font = FontCache.get(22)
-        self._msg_font = FontCache.get(24)
-        self._combat_font = FontCache.get(28)
-        self._dice_font = FontCache.get(40)
-        self._combat_label_font = FontCache.get(20)
+        self._hud_font = FontCache.get(FONT_BODY)
+        self._msg_font = FontCache.get(FONT_LG)
+        self._combat_font = FontCache.get(FONT_XL)
+        self._dice_font = FontCache.get(FONT_SECTION)
+        self._combat_label_font = FontCache.get(FONT_MD)
 
         # Sprite manager for ground tiles
         self._sprite_mgr = get_sprite_manager()
@@ -870,7 +872,7 @@ class GroundExplorationView(BaseView):
         color: tuple[int, int, int],
     ) -> None:
         """Render a horizontal HP bar with text."""
-        bar_h = 16
+        bar_h = scale_y(16)
         draw_bar(
             screen, x, y, width, bar_h, current, maximum, color,
             font=self._combat_label_font, border_color=Colors.TEXT_SECONDARY,

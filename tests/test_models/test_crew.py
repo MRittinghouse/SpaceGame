@@ -65,6 +65,7 @@ def _make_template(
     role: str = "navigator",
     abilities: list[CrewAbility] | None = None,
     max_level: int = 5,
+    home_system_id: str = "nexus_prime",
 ) -> CrewTemplate:
     if abilities is None:
         abilities = [
@@ -82,6 +83,7 @@ def _make_template(
         max_level=max_level,
         xp_thresholds=[0, 50, 150, 350, 700],
         is_companion=True,
+        home_system_id=home_system_id,
     )
 
 
@@ -100,6 +102,7 @@ def _make_roster(
                     _make_ability("fuel_bonus", 15.0, "Fuel Tank Mods", 3),
                     _make_ability("cargo_bonus", 20.0, "Master Engineer", 5),
                 ],
+                home_system_id="breakstone",
             ),
         }
     return CrewRoster(templates)
@@ -427,3 +430,114 @@ class TestCrewRosterIntegration:
         skill_discount = 0.05  # Simulated skill bonus
         total = crew_discount + skill_discount
         assert abs(total - 0.08) < 0.001, f"Expected ~0.08, got {total}"
+
+
+# ============================================================================
+# CrewRoster — Pending Companions Tests
+# ============================================================================
+
+
+def _make_non_companion_template(
+    template_id: str = "hired_gunner",
+    name: str = "Hired Gunner",
+) -> CrewTemplate:
+    """Create a non-companion crew template."""
+    return CrewTemplate(
+        id=template_id,
+        name=name,
+        role="gunner",
+        description=f"A hired crew member: {name}",
+        portrait_color=[180, 80, 80],
+        abilities=[_make_ability("combat_bonus", 5.0, "Trained Fighter", 1)],
+        max_level=3,
+        xp_thresholds=[0, 100, 300],
+        is_companion=False,
+        home_system_id="nexus_prime",
+    )
+
+
+class TestPendingCompanions:
+    """Tests for pending companion recruitment (crew full fallback)."""
+
+    def test_add_pending_companion(self) -> None:
+        """Adding a companion to pending tracking works."""
+        roster = _make_roster()
+        result = roster.add_pending_companion("elena_reeves")
+        assert result, "Should succeed for a companion template"
+        assert "elena_reeves" in roster.pending_companion_ids
+
+    def test_add_pending_non_companion_fails(self) -> None:
+        """Non-companion crew cannot be added to pending."""
+        templates = {
+            "hired_gunner": _make_non_companion_template(),
+        }
+        roster = CrewRoster(templates)
+        result = roster.add_pending_companion("hired_gunner")
+        assert not result, "Should fail for non-companion"
+        assert "hired_gunner" not in roster.pending_companion_ids
+
+    def test_add_pending_unknown_template_fails(self) -> None:
+        """Unknown template ID returns False."""
+        roster = _make_roster()
+        result = roster.add_pending_companion("nonexistent")
+        assert not result
+
+    def test_pending_companion_shows_in_available_at_system(self) -> None:
+        """A pending companion at their home system shows in available crew."""
+        roster = _make_roster()
+        roster.add_pending_companion("elena_reeves")
+        available = roster.get_available_crew_at_system("nexus_prime")
+        ids = [t.id for t in available]
+        assert "elena_reeves" in ids, (
+            f"Pending companion should appear at home system, got {ids}"
+        )
+
+    def test_pending_companion_not_at_wrong_system(self) -> None:
+        """Pending companion doesn't show at a different system."""
+        roster = _make_roster()
+        roster.add_pending_companion("elena_reeves")
+        available = roster.get_available_crew_at_system("breakstone")
+        ids = [t.id for t in available]
+        assert "elena_reeves" not in ids
+
+    def test_recruit_clears_pending(self) -> None:
+        """Successful recruit removes companion from pending set."""
+        roster = _make_roster()
+        roster.add_pending_companion("elena_reeves")
+        assert "elena_reeves" in roster.pending_companion_ids
+
+        roster.recruit("elena_reeves", crew_slots=3)
+        assert "elena_reeves" not in roster.pending_companion_ids
+
+    def test_pending_serialization_roundtrip(self) -> None:
+        """get_state/load_state preserves pending companions."""
+        roster = _make_roster()
+        roster.add_pending_companion("elena_reeves")
+        saved = roster.get_state()
+
+        roster2 = _make_roster()
+        roster2.load_state(saved)
+        assert "elena_reeves" in roster2.pending_companion_ids
+
+    def test_pending_backward_compat(self) -> None:
+        """load_state without pending_companions key works (old saves)."""
+        roster = _make_roster()
+        roster.recruit("elena_reeves", crew_slots=3)
+        saved = roster.get_state()
+        # Remove the pending_companions key to simulate old save format
+        saved.pop("pending_companions", None)
+
+        roster2 = _make_roster()
+        roster2.load_state(saved)
+        assert len(roster2.pending_companion_ids) == 0
+        assert len(roster2.get_recruited_members()) == 1
+
+    def test_non_pending_companion_still_excluded(self) -> None:
+        """Regular companions without pending status don't appear in cantina."""
+        roster = _make_roster()
+        # Don't add to pending — just check they don't show up
+        available = roster.get_available_crew_at_system("nexus_prime")
+        ids = [t.id for t in available]
+        assert "elena_reeves" not in ids, (
+            "Non-pending companions should not appear in available crew"
+        )

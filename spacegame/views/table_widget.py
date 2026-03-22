@@ -11,7 +11,7 @@ from dataclasses import dataclass, field
 from typing import Optional
 
 from spacegame.config import Colors
-from spacegame.engine.fonts import FontCache
+from spacegame.engine.fonts import FontCache, FONT_BODY, FONT_MD
 
 # Horizontal padding inside each cell
 CELL_PAD = 6
@@ -56,8 +56,8 @@ class TableWidget:
         self.rect = pygame.Rect(rect)
         self.columns = columns
         self.row_height = row_height
-        self.font = font or FontCache.get(20)
-        self.header_font = header_font or FontCache.get(22)
+        self.font = font or FontCache.get(FONT_MD)
+        self.header_font = header_font or FontCache.get(FONT_BODY)
         self.empty_message = empty_message
 
         # Row data: each row is list[str | tuple[str, tuple]] for per-cell color

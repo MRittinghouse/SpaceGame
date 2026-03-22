@@ -111,6 +111,13 @@ class TestEffectType:
             "SHIELD_DRAIN",
             "DAMAGE_REDUCTION",
             "ENERGY_DRAIN",
+            "ENERGY_RESTORE",
+            "DAMAGE_BOOST",
+            "BURN",
+            "CHILL",
+            "SUPPRESSED",
+            "CLEANSE",
+            "ABSORB",
         }
         actual = {e.name for e in EffectType}
         assert actual == expected

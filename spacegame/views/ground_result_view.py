@@ -9,7 +9,7 @@ import pygame
 import pygame_gui
 from typing import Optional
 
-from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState
+from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState, scale_x, scale_y
 from spacegame.views.base_view import BaseView
 from spacegame.models.ground_mission import (
     GroundMissionResult,
@@ -17,7 +17,7 @@ from spacegame.models.ground_mission import (
     GHOST_RUN_BONUS_PERCENT,
 )
 from spacegame.engine.backgrounds import AnimatedBackground
-from spacegame.engine.fonts import FontCache
+from spacegame.engine.fonts import FONT_LG, FONT_MD, FONT_SECTION2, FONT_XL, FontCache
 from spacegame.utils.logger import logger
 
 # Outcome display mapping
@@ -45,12 +45,12 @@ class GroundResultView(BaseView):
     """
 
     # Layout constants
-    PANEL_W = 480
-    PANEL_H = 500
+    PANEL_W = scale_x(480)
+    PANEL_H = scale_y(500)
     PANEL_X = WINDOW_WIDTH // 2 - PANEL_W // 2
     PANEL_Y = WINDOW_HEIGHT // 2 - PANEL_H // 2
-    BUTTON_W = 200
-    BUTTON_H = 44
+    BUTTON_W = scale_x(200)
+    BUTTON_H = scale_y(44)
 
     def __init__(
         self,
@@ -75,10 +75,10 @@ class GroundResultView(BaseView):
         self.continue_button: Optional[pygame_gui.elements.UIButton] = None
 
         # Fonts
-        self.title_font = FontCache.get(44)
-        self.subtitle_font = FontCache.get(28)
-        self.stat_font = FontCache.get(24)
-        self.hint_font = FontCache.get(20)
+        self.title_font = FontCache.get(FONT_SECTION2)
+        self.subtitle_font = FontCache.get(FONT_XL)
+        self.stat_font = FontCache.get(FONT_LG)
+        self.hint_font = FontCache.get(FONT_MD)
 
         # Visual
         self.background = AnimatedBackground("deep_space", WINDOW_WIDTH, WINDOW_HEIGHT, seed=88)
@@ -261,9 +261,9 @@ class GroundResultView(BaseView):
         )
 
         # Stat lines
-        stat_x = self.PANEL_X + 30
-        stat_y = sep_y + 16
-        line_height = 26
+        stat_x = self.PANEL_X + scale_x(30)
+        stat_y = sep_y + scale_y(16)
+        line_height = scale_y(26)
 
         for text, color in self.build_stat_lines():
             if text:  # Skip empty separator lines (add spacing)

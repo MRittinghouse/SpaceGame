@@ -9,12 +9,12 @@ import pygame
 import pygame_gui
 from typing import Any, Optional
 
-from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState
+from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState, scale_x, scale_y
 from spacegame.views.base_view import BaseView
 from spacegame.models.crew import CrewRoster, CrewTemplate
 from spacegame.models.ground_mission import GroundMissionConfig, IntelHint
 from spacegame.engine.backgrounds import AnimatedBackground
-from spacegame.engine.fonts import FontCache
+from spacegame.engine.fonts import FONT_BODY, FONT_MD, FONT_MD2, FONT_SECTION, FONT_XL, FontCache
 from spacegame.utils.logger import logger
 
 # Ground ability descriptions per crew member (matches GroundCrewBonuses.compute)
@@ -44,16 +44,16 @@ class GroundBriefingView(BaseView):
     """
 
     # Layout constants
-    PANEL_X = 100
-    PANEL_Y = 60
-    PANEL_W = WINDOW_WIDTH - 200
-    PANEL_H = WINDOW_HEIGHT - 120
-    CREW_SECTION_Y = 520
-    CREW_CARD_W = 180
-    CREW_CARD_H = 120
-    CREW_CARD_GAP = 16
-    BUTTON_W = 180
-    BUTTON_H = 44
+    PANEL_X = scale_x(100)
+    PANEL_Y = scale_y(60)
+    PANEL_W = WINDOW_WIDTH - scale_x(200)
+    PANEL_H = WINDOW_HEIGHT - scale_y(120)
+    CREW_SECTION_Y = scale_y(520)
+    CREW_CARD_W = scale_x(180)
+    CREW_CARD_H = scale_y(120)
+    CREW_CARD_GAP = scale_x(16)
+    BUTTON_W = scale_x(180)
+    BUTTON_H = scale_y(44)
 
     def __init__(
         self,
@@ -89,11 +89,11 @@ class GroundBriefingView(BaseView):
         self.crew_buttons: dict[str, pygame_gui.elements.UIButton] = {}
 
         # Fonts
-        self.title_font = FontCache.get(40)
-        self.subtitle_font = FontCache.get(28)
-        self.body_font = FontCache.get(22)
-        self.small_font = FontCache.get(20)
-        self.hint_font = FontCache.get(21)
+        self.title_font = FontCache.get(FONT_SECTION)
+        self.subtitle_font = FontCache.get(FONT_XL)
+        self.body_font = FontCache.get(FONT_BODY)
+        self.small_font = FontCache.get(FONT_MD)
+        self.hint_font = FontCache.get(FONT_MD2)
 
         # Visual
         self.background = AnimatedBackground("deep_space", WINDOW_WIDTH, WINDOW_HEIGHT, seed=77)

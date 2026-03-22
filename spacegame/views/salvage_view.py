@@ -11,7 +11,7 @@ import random
 import math
 from typing import Optional, Dict, List
 from spacegame.views.base_view import BaseView
-from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState
+from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState, scale_x, scale_y
 from spacegame.models.player import Player
 from spacegame.models.commodity import Commodity
 from spacegame.models.salvage import (
@@ -39,8 +39,8 @@ from spacegame.engine.particles import (
     EXTRACTION_SPARK,
     CORRUPTION_CRACKLE,
 )
-from spacegame.engine.fonts import FontCache
-from spacegame.engine.sprites import get_sprite_manager
+from spacegame.engine.fonts import FontCache, FONT_HEADING, FONT_LG, FONT_MD, FONT_RATING, FONT_SECTION2, FONT_SM, FONT_TITLE, FONT_XL, FONT_XS
+from spacegame.engine.sprites import get_sprite_manager, res_scale
 from spacegame.engine.audio_manager import get_audio_manager
 from spacegame.engine.floating_text import FloatingItemManager
 from spacegame.engine.tooltip import TooltipState
@@ -49,10 +49,10 @@ from spacegame.engine.tooltip import TooltipState
 class SalvageView(BaseView):
     """Salvage operations mini-game with visual effects."""
 
-    CELL_SIZE = 90
+    CELL_SIZE = scale_y(90)
     CELL_PADDING = 4
-    GRID_OFFSET_X = 60
-    GRID_OFFSET_Y = 120
+    GRID_OFFSET_X = scale_x(60)
+    GRID_OFFSET_Y = scale_y(120)
 
     def __init__(
         self,
@@ -90,10 +90,10 @@ class SalvageView(BaseView):
         self._upgrade_rects: Dict[str, pygame.Rect] = {}
 
         # Fonts
-        self.title_font = FontCache.get(36)
-        self.info_font = FontCache.get(24)
-        self.small_font = FontCache.get(20)
-        self.cell_font = FontCache.get(18)
+        self.title_font = FontCache.get(FONT_TITLE)
+        self.info_font = FontCache.get(FONT_LG)
+        self.small_font = FontCache.get(FONT_MD)
+        self.cell_font = FontCache.get(FONT_SM)
 
         # UI
         self.back_button: Optional[pygame_gui.elements.UIButton] = None
@@ -127,7 +127,7 @@ class SalvageView(BaseView):
         self._item_icons: Dict[str, Optional[pygame.Surface]] = {}
         for config in SALVAGE_ITEM_CONFIGS.values():
             self._item_icons[config.commodity_id] = self._sprite_mgr.get_commodity_icon(
-                config.commodity_id, scale=3
+                config.commodity_id, scale=res_scale(3)
             )
 
         # Derelict background (loaded per-session in on_enter, scaled to grid)
@@ -146,14 +146,14 @@ class SalvageView(BaseView):
 
         for tier in QualityTier:
             frame = self._sprite_mgr.get_static_sprite(
-                "salvage", f"quality_frame_{tier.value}", scale=4
+                "salvage", f"quality_frame_{tier.value}", scale=res_scale(4)
             )
             self._quality_frames[tier.value] = frame
 
         # Mode icon sprites (16x16 native at 2x = 32x32)
         self._mode_icons: Dict[str, Optional[pygame.Surface]] = {
-            "scan": self._sprite_mgr.get_static_sprite("salvage", "icon_scan_mode", scale=2),
-            "extract": self._sprite_mgr.get_static_sprite("salvage", "icon_extract_mode", scale=2),
+            "scan": self._sprite_mgr.get_static_sprite("salvage", "icon_scan_mode", scale=res_scale(2)),
+            "extract": self._sprite_mgr.get_static_sprite("salvage", "icon_extract_mode", scale=res_scale(2)),
         }
 
         # Corruption overlay surface (pre-allocated, reused each frame)
@@ -170,9 +170,9 @@ class SalvageView(BaseView):
         self._summary_xp: int = 0
         self._session_elapsed: float = 0.0
         self._session_rating: str = "D"
-        self._summary_font = FontCache.get(32)
-        self._summary_title_font = FontCache.get(44)
-        self._rating_font = FontCache.get(72)
+        self._summary_font = FontCache.get(FONT_HEADING)
+        self._summary_title_font = FontCache.get(FONT_SECTION2)
+        self._rating_font = FontCache.get(FONT_RATING)
 
         # Floating icon manager for item-to-hold animations
         self._floats = FloatingItemManager()
@@ -290,7 +290,7 @@ class SalvageView(BaseView):
             self._derelict_bg = None
             return
 
-        raw = self._sprite_mgr.get_static_sprite("salvage", bg_id, scale=1)
+        raw = self._sprite_mgr.get_static_sprite("salvage", bg_id, scale=res_scale(1))
         if raw is None:
             self._derelict_bg = None
             return
@@ -313,29 +313,31 @@ class SalvageView(BaseView):
         return Colors.TEXT_HIGHLIGHT
 
     def _create_ui(self) -> None:
-        btn_x = WINDOW_WIDTH - 200
+        btn_x = WINDOW_WIDTH - scale_x(200)
+        btn_w = scale_x(170)
+        btn_h = scale_y(35)
         self.scan_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(btn_x, WINDOW_HEIGHT - 220, 170, 35),
+            relative_rect=pygame.Rect(btn_x, WINDOW_HEIGHT - scale_y(220), btn_w, btn_h),
             text="Scan Mode",
             manager=self.ui_manager,
         )
         self.extract_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(btn_x, WINDOW_HEIGHT - 180, 170, 35),
+            relative_rect=pygame.Rect(btn_x, WINDOW_HEIGHT - scale_y(180), btn_w, btn_h),
             text="Extract Mode",
             manager=self.ui_manager,
         )
         self.next_deck_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(btn_x, WINDOW_HEIGHT - 140, 170, 35),
+            relative_rect=pygame.Rect(btn_x, WINDOW_HEIGHT - scale_y(140), btn_w, btn_h),
             text="Next Deck",
             manager=self.ui_manager,
         )
         self.regen_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(btn_x, WINDOW_HEIGHT - 100, 170, 35),
+            relative_rect=pygame.Rect(btn_x, WINDOW_HEIGHT - scale_y(100), btn_w, btn_h),
             text="New Wreck",
             manager=self.ui_manager,
         )
         self.back_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(btn_x, WINDOW_HEIGHT - 60, 170, 35),
+            relative_rect=pygame.Rect(btn_x, WINDOW_HEIGHT - scale_y(60), btn_w, btn_h),
             text="Stop Salvaging",
             manager=self.ui_manager,
         )
@@ -907,7 +909,7 @@ class SalvageView(BaseView):
         # Story fragment display (found narrative)
         if self._story_timer > 0 and self._story_text:
             story_alpha = min(int(self._story_timer / 0.5 * 255), 200)
-            story_font = FontCache.get(16)
+            story_font = FontCache.get(FONT_XS)
             from spacegame.engine.draw_utils import word_wrap
 
             story_lines = word_wrap(self._story_text, story_font, 500)
@@ -984,7 +986,7 @@ class SalvageView(BaseView):
             # Derelict background sprite (thumbnail)
             bg_id = self.DERELICT_BG_MAP.get(dt.id)
             if bg_id:
-                thumb = self._sprite_mgr.get_static_sprite("salvage", bg_id, scale=1)
+                thumb = self._sprite_mgr.get_static_sprite("salvage", bg_id, scale=res_scale(1))
                 if thumb:
                     thumb_scaled = pygame.transform.scale(thumb, (card_w - 20, 60))
                     thumb_scaled.set_alpha(100)
@@ -1221,7 +1223,7 @@ class SalvageView(BaseView):
                                 hint_color = (80, 200, 80)
                             else:
                                 hint_color = (220, 200, 50)
-                            hint_font = FontCache.get(28)
+                            hint_font = FontCache.get(FONT_XL)
                             hint_surf = hint_font.render(str(cell.adjacent_count), True, hint_color)
                             screen.blit(hint_surf, hint_surf.get_rect(center=rect.center))
                         else:
@@ -1438,7 +1440,7 @@ class SalvageView(BaseView):
             level = wu_state.get_level(uid)
             next_cost = definition.get_cost(level + 1)
 
-            btn_rect = pygame.Rect(panel_x, y, 320, 22)
+            btn_rect = pygame.Rect(panel_x, y, scale_x(320), scale_y(22))
             self._upgrade_rects[uid] = btn_rect
 
             is_hover = btn_rect.collidepoint(mouse_pos)

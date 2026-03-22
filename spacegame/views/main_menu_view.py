@@ -11,14 +11,14 @@ import random
 from typing import Optional, Union
 from spacegame.views.base_view import BaseView
 from spacegame.config import (
-    WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState, IMAGES_DIR,
+    WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState, IMAGES_DIR, scale_x, scale_y,
 )
 from spacegame.save_manager import SaveManager
 from spacegame.utils.logger import logger
 from spacegame.engine.backgrounds import AnimatedBackground
-from spacegame.engine.fonts import FontCache
+from spacegame.engine.fonts import FONT_HERO, FONT_TITLE, FontCache
 from spacegame.engine.particles import ParticlePool, STAR_TWINKLE
-from spacegame.engine.sprites import AnimatedSprite, get_sprite_manager
+from spacegame.engine.sprites import AnimatedSprite, get_sprite_manager, res_scale
 
 
 class MainMenuView(BaseView):
@@ -35,8 +35,8 @@ class MainMenuView(BaseView):
         self.next_state: Optional[Union[GameState, str]] = None
 
         # Fonts
-        self.title_font = FontCache.get(96)
-        self.subtitle_font = FontCache.get(36)
+        self.title_font = FontCache.get(FONT_HERO)
+        self.subtitle_font = FontCache.get(FONT_TITLE)
 
         # UI Elements (created in on_enter)
         self.new_game_button: Optional[pygame_gui.elements.UIButton] = None
@@ -79,16 +79,16 @@ class MainMenuView(BaseView):
             ]
             ship_id = random.choice(ship_ids)
             self._ship_anim = self._sprite_mgr.get_ship_animated(
-                ship_id, category="player", scale=2,
+                ship_id, category="player", scale=res_scale(2),
             )
         # Reset ship position to off-screen left
         self._ship_x = -100.0
 
-        button_width = 300
-        button_height = 60
+        button_width = scale_x(300)
+        button_height = scale_y(60)
         button_x = (WINDOW_WIDTH - button_width) // 2
         start_y = WINDOW_HEIGHT // 2
-        spacing = 70
+        spacing = scale_y(70)
 
         self.new_game_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(button_x, start_y, button_width, button_height),

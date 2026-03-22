@@ -303,6 +303,28 @@ class TestSideMissionNPCIntegration:
                         f"'{obj.target_id}'"
                     )
 
+    def test_price_of_info_uses_sealed_audit_chip(self) -> None:
+        """The Price of Information uses sealed_audit_chip, not data_chip."""
+        all_missions = _load()
+        poi = [m for m in all_missions if m.id == "the_price_of_information"]
+        assert len(poi) == 1, "the_price_of_information mission not found"
+        mission = poi[0]
+        cargo_ids = [c.commodity_id for c in mission.on_accept_cargo]
+        assert "sealed_audit_chip" in cargo_ids, (
+            f"Expected sealed_audit_chip in on_accept_cargo, got {cargo_ids}"
+        )
+        assert "data_chip" not in cargo_ids, (
+            "the_price_of_information should not use data_chip"
+        )
+        # Verify matching remove_cargo reward
+        remove_rewards = [
+            r for r in mission.rewards
+            if r.reward_type == "remove_cargo" and r.target_id == "sealed_audit_chip"
+        ]
+        assert len(remove_rewards) == 1, (
+            "the_price_of_information should have remove_cargo for sealed_audit_chip"
+        )
+
     def test_side_quest_npcs_have_dialogues(self) -> None:
         """All new side quest NPCs have corresponding dialogue trees."""
         project_root = Path(__file__).parent.parent.parent
@@ -324,4 +346,86 @@ class TestSideMissionNPCIntegration:
             assert dlg is not None, (
                 f"NPC '{npc_id}' references missing dialogue "
                 f"'{npc.dialogue_id}'"
+            )
+
+    def test_side_quest_npcs_have_hide_after_flag(self) -> None:
+        """All side quest NPCs have hide_after_flag set."""
+        import json
+
+        project_root = Path(__file__).parent.parent.parent
+        with open(project_root / "data" / "characters" / "npcs.json") as f:
+            npcs_data = json.load(f)
+        npc_map = {n["id"]: n for n in npcs_data["npcs"]}
+
+        expected = {
+            "neve_osei": "price_of_info_complete",
+            "petra_vance": "whistleblower_complete",
+            "tomasz_brennan": "old_debts_complete",
+            "britt_vasara": "miners_plight_complete",
+            "cassiel_maren": "forgery_complete",
+            "callum_rhee": "informant_complete",
+            "verdant_farmer": "blight_season_complete",
+            "verdant_botanist": "heirloom_seeds_complete",
+            "haven_refugee": "lost_registry_complete",
+            "pirate_captain": "honor_thieves_complete",
+            "nova_researcher": "signal_from_deep_complete",
+        }
+        for npc_id, flag in expected.items():
+            npc = npc_map.get(npc_id)
+            assert npc is not None, f"NPC '{npc_id}' not found"
+            assert npc.get("hide_after_flag") == flag, (
+                f"NPC '{npc_id}' should have hide_after_flag='{flag}', "
+                f"got '{npc.get('hide_after_flag')}'"
+            )
+
+    def test_side_quest_dialogues_have_in_progress_branch(self) -> None:
+        """All side quest dialogues have excluded_flags and in_progress nodes."""
+        import json
+
+        project_root = Path(__file__).parent.parent.parent
+        with open(project_root / "data" / "dialogue" / "dialogues.json") as f:
+            dlg_data = json.load(f)
+        dlg_map = {d["id"]: d for d in dlg_data["dialogues"]}
+
+        targets = {
+            "neve_osei_price_of_info": "price_of_info_accepted",
+            "petra_vance_whistleblower": "whistleblower_accepted",
+            "tomasz_brennan_old_debts": "old_debts_accepted",
+            "britt_vasara_miners_plight": "miners_plight_accepted",
+            "cassiel_maren_forgery": "forgery_job_accepted",
+            "callum_rhee_informant": "informant_passenger_accepted",
+            "orin_blight_season": "blight_season_accepted",
+            "amara_heirloom_seeds": "heirloom_seeds_accepted",
+            "soren_lost_registry": "registry_search_started",
+            "rook_honor_thieves": "thieves_job_accepted",
+            "yuki_signal_deep": "signal_mission_accepted",
+        }
+        for dlg_id, flag in targets.items():
+            dlg = dlg_map[dlg_id]
+            nodes = {n["id"]: n for n in dlg["nodes"]}
+            start = nodes["start"]
+
+            # Verify in_progress node exists
+            assert "in_progress" in nodes, (
+                f"Dialogue '{dlg_id}' missing in_progress node"
+            )
+
+            # Verify start node has excluded_flags on quest-pitch responses
+            excluded = [
+                r for r in start["responses"]
+                if flag in r.get("excluded_flags", [])
+            ]
+            assert len(excluded) >= 1, (
+                f"Dialogue '{dlg_id}' has no excluded_flags for '{flag}'"
+            )
+
+            # Verify start node has required_flags response for in_progress
+            required = [
+                r for r in start["responses"]
+                if flag in r.get("required_flags", [])
+                and r.get("next_node_id") == "in_progress"
+            ]
+            assert len(required) == 1, (
+                f"Dialogue '{dlg_id}' should have exactly one in_progress route "
+                f"with required_flags '{flag}'"
             )

@@ -18,9 +18,57 @@ WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 720
 FPS_TARGET = 60
 
+# Supported resolutions (width, height) — player selects in settings
+SUPPORTED_RESOLUTIONS: list[tuple[int, int]] = [
+    (1280, 720),
+    (1600, 900),
+    (1920, 1080),
+]
+DEFAULT_RESOLUTION: tuple[int, int] = (1280, 720)
+
 # Fullscreen mode
 FULLSCREEN = False  # Toggle for fullscreen mode
 VSYNC = True  # Vertical sync
+
+
+def set_resolution(width: int, height: int) -> None:
+    """Update the active resolution globals.
+
+    Must be called BEFORE views are imported so that
+    ``from spacegame.config import WINDOW_WIDTH`` picks up the new value.
+    """
+    global WINDOW_WIDTH, WINDOW_HEIGHT
+    WINDOW_WIDTH = width
+    WINDOW_HEIGHT = height
+
+
+# Base resolution used by scale_x / scale_y helpers
+_BASE_WIDTH = 1280
+_BASE_HEIGHT = 720
+
+
+def scale_x(base_px: int) -> int:
+    """Scale a horizontal pixel value from 1280-base to the current resolution.
+
+    Args:
+        base_px: Pixel value designed for 1280px width.
+
+    Returns:
+        Proportionally scaled value for the active WINDOW_WIDTH.
+    """
+    return round(base_px * WINDOW_WIDTH / _BASE_WIDTH)
+
+
+def scale_y(base_px: int) -> int:
+    """Scale a vertical pixel value from 720-base to the current resolution.
+
+    Args:
+        base_px: Pixel value designed for 720px height.
+
+    Returns:
+        Proportionally scaled value for the active WINDOW_HEIGHT.
+    """
+    return round(base_px * WINDOW_HEIGHT / _BASE_HEIGHT)
 
 # ============================================================================
 # COLORS (RGB)
@@ -321,16 +369,16 @@ CREW_DEPARTED_SURCHARGE = 50000  # Harsh penalty if crew left due to loyalty 0
 # ============================================================================
 
 DIALOGUE_TEXT_SPEED = 40  # Characters per second for typewriter effect (0 = instant)
-DIALOGUE_PORTRAIT_SIZE = (100, 120)
+DIALOGUE_PORTRAIT_SIZE = (scale_x(100), scale_y(120))
 SOCIAL_CHECK_FEEDBACK_DURATION = 1.5  # Seconds to show check result overlay
 
 # ============================================================================
 # GROUND EXPLORATION CONSTANTS
 # ============================================================================
 
-GROUND_TILE_SIZE = 48  # Pixels per tile
-GROUND_VIEWPORT_TILES_X = 15  # Visible tiles horizontally
-GROUND_VIEWPORT_TILES_Y = 12  # Visible tiles vertically
+GROUND_TILE_SIZE = 48  # Pixels per tile (model-level, do not scale)
+GROUND_VIEWPORT_TILES_X = WINDOW_WIDTH // GROUND_TILE_SIZE  # Visible tiles horizontally
+GROUND_VIEWPORT_TILES_Y = WINDOW_HEIGHT // GROUND_TILE_SIZE  # Visible tiles vertically
 GROUND_CAMERA_LERP_SPEED = 8.0  # Camera smoothing factor
 GROUND_BASE_VISION_RADIUS = 5  # Player base vision in tiles
 GROUND_DEFAULT_MAP_WIDTH = 20

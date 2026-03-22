@@ -183,11 +183,11 @@ class TestTotalCounts:
         assert len(dl.recipes) == 38
 
     def test_total_commodity_count(self) -> None:
-        """54 existing + 6 new = 60 commodities."""
+        """60 existing + 1 sealed_audit_chip = 61 commodities."""
         dl = _load()
-        assert len(dl.get_all_commodities()) == 60
+        assert len(dl.get_all_commodities()) == 61
 
     def test_total_upgrade_count(self) -> None:
         """52 existing + 6 new = 58 upgrades."""
         dl = _load()
-        assert len(dl.upgrades) == 58
+        assert len(dl.upgrades) == 85

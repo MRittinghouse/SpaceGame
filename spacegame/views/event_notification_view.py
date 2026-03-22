@@ -9,10 +9,10 @@ import pygame_gui
 import math
 from typing import Optional
 
-from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors
+from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, scale_x, scale_y
 from spacegame.models.event import MarketEvent
 from spacegame.views.base_view import BaseView
-from spacegame.engine.fonts import FontCache
+from spacegame.engine.fonts import FONT_BODY, FONT_SECTION, FONT_SUBTITLE, FontCache
 from spacegame.utils.logger import logger
 
 
@@ -26,9 +26,9 @@ class EventNotificationView(BaseView):
         self.dismissed = False
 
         # Fonts
-        self.title_font = FontCache.get(40)
-        self.body_font = FontCache.get(26)
-        self.detail_font = FontCache.get(22)
+        self.title_font = FontCache.get(FONT_SECTION)
+        self.body_font = FontCache.get(FONT_SUBTITLE)
+        self.detail_font = FontCache.get(FONT_BODY)
 
         # UI Elements
         self.ok_button: Optional[pygame_gui.elements.UIButton] = None
@@ -47,17 +47,17 @@ class EventNotificationView(BaseView):
 
     def _create_ui(self) -> None:
         """Create OK button centered in panel."""
-        panel_width = 500
-        panel_height = 300
+        panel_width = scale_x(500)
+        panel_height = scale_y(300)
         panel_x = (WINDOW_WIDTH - panel_width) // 2
         panel_y = (WINDOW_HEIGHT - panel_height) // 2
 
-        button_width = 160
-        button_height = 45
+        button_width = scale_x(160)
+        button_height = scale_y(45)
         self.ok_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
                 panel_x + (panel_width - button_width) // 2,
-                panel_y + panel_height - 70,
+                panel_y + panel_height - scale_y(70),
                 button_width,
                 button_height,
             ),
@@ -86,8 +86,8 @@ class EventNotificationView(BaseView):
         screen.blit(overlay, (0, 0))
 
         # Panel
-        panel_width = 500
-        panel_height = 300
+        panel_width = scale_x(500)
+        panel_height = scale_y(300)
         panel_x = (WINDOW_WIDTH - panel_width) // 2
         panel_y = (WINDOW_HEIGHT - panel_height) // 2
 

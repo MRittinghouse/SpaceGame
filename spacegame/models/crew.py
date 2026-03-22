@@ -94,6 +94,7 @@ class CrewTemplate:
     faction_id: str = ""
     home_system_id: str = ""
     combat_move: Optional[dict[str, Any]] = None  # Raw dict, parsed to CombatMove by data_loader
+    combat_moves: list[dict[str, Any]] = field(default_factory=list)  # Multiple combat moves (new)
     is_companion: bool = False
 
     def get_abilities_at_level(self, level: int) -> list[CrewAbility]:
@@ -126,11 +127,32 @@ class CrewRoster:
         self._recruited: list[str] = []
         self._state: dict[str, dict[str, Any]] = {}
         self._dismissed: dict[str, dict[str, Any]] = {}
+        self._pending_companions: set[str] = set()
 
     @property
     def recruited_ids(self) -> set[str]:
         """Get set of currently recruited crew member template IDs."""
         return set(self._recruited)
+
+    @property
+    def pending_companion_ids(self) -> set[str]:
+        """Get set of companion IDs awaiting recruitment (crew was full)."""
+        return set(self._pending_companions)
+
+    def add_pending_companion(self, template_id: str) -> bool:
+        """Mark a companion as pending recruitment (mission reward fired but crew was full).
+
+        Args:
+            template_id: Template ID of the companion.
+
+        Returns:
+            True if added, False if template not found or not a companion.
+        """
+        template = self._templates.get(template_id)
+        if not template or not template.is_companion:
+            return False
+        self._pending_companions.add(template_id)
+        return True
 
     def recruit(self, template_id: str, crew_slots: int) -> tuple[bool, str]:
         """Recruit a crew member, restoring preserved state if previously dismissed.
@@ -167,6 +189,7 @@ class CrewRoster:
                 "attributes": dict(template.base_attributes),
                 "attribute_points": 0,
             }
+        self._pending_companions.discard(template_id)
         return (True, template.name)
 
     def dismiss(self, template_id: str) -> tuple[bool, str]:
@@ -550,7 +573,9 @@ class CrewRoster:
         """
         available = []
         for tid, template in self._templates.items():
-            if template.is_companion:
+            # Pending companions override the is_companion filter
+            is_pending = tid in self._pending_companions
+            if template.is_companion and not is_pending:
                 continue
             if template.home_system_id != system_id:
                 continue
@@ -617,6 +642,7 @@ class CrewRoster:
             "recruited": list(self._recruited),
             "members": {tid: dict(s) for tid, s in self._state.items()},
             "dismissed": {tid: dict(s) for tid, s in self._dismissed.items()},
+            "pending_companions": sorted(self._pending_companions),
         }
 
     def load_state(self, data: dict[str, Any]) -> None:
@@ -650,3 +676,6 @@ class CrewRoster:
         for tid, state in dismissed.items():
             if tid in self._templates:
                 self._dismissed[tid] = dict(state)
+
+        # Load pending companions (backward compat: may not exist in old saves)
+        self._pending_companions = set(data.get("pending_companions", []))

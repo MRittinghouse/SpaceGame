@@ -14,7 +14,7 @@ import pygame
 import pygame_gui
 from pygame_gui.elements import UIButton, UITextBox
 
-from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, GameState
+from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, GameState, scale_x, scale_y
 from spacegame.engine.backgrounds import AnimatedBackground
 from spacegame.models.encounter import (
     EncounterChoice,
@@ -25,7 +25,7 @@ from spacegame.models.encounter import (
 from spacegame.models.mission import MissionReward
 from spacegame.engine.draw_utils import draw_panel
 from spacegame.utils.logger import logger
-from spacegame.engine.fonts import FontCache
+from spacegame.engine.fonts import FONT_BODY, FONT_LG, FONT_TITLE, FontCache
 from spacegame.views.base_view import BaseView
 
 
@@ -37,14 +37,14 @@ class EncounterPhase(str, Enum):
     DONE = "done"
 
 
-# Layout constants
-_PANEL_W = 700
-_PANEL_H = 500
+# Layout constants — proportional to resolution
+_PANEL_W = scale_x(700)
+_PANEL_H = scale_y(500)
 _PANEL_X = (WINDOW_WIDTH - _PANEL_W) // 2
 _PANEL_Y = (WINDOW_HEIGHT - _PANEL_H) // 2
-_INNER_PAD = 24
-_BUTTON_H = 40
-_BUTTON_GAP = 12
+_INNER_PAD = scale_x(24)
+_BUTTON_H = scale_y(40)
+_BUTTON_GAP = scale_y(12)
 
 
 class EncounterView(BaseView):
@@ -71,9 +71,9 @@ class EncounterView(BaseView):
         self.pending_combat: bool = False
 
         # Fonts
-        self.title_font = FontCache.get(36)
-        self.body_font = FontCache.get(22)
-        self.reward_font = FontCache.get(24)
+        self.title_font = FontCache.get(FONT_TITLE)
+        self.body_font = FontCache.get(FONT_BODY)
+        self.reward_font = FontCache.get(FONT_LG)
 
         # Background
         self.background = AnimatedBackground(

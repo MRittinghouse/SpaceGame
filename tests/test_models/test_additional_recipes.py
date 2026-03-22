@@ -51,11 +51,11 @@ class TestNewCommodities:
             assert cid in commodity_ids, f"Missing commodity: {cid}"
 
     def test_total_commodity_count(self) -> None:
-        """Total commodities should be 54 (45 existing + 8 new + 1 schematic_data)."""
+        """Total commodities should be 61 (60 existing + 1 sealed_audit_chip)."""
         from spacegame.data_loader import get_data_loader
         dl = get_data_loader()
         dl.load_all()
-        assert len(dl.get_all_commodities()) == 60
+        assert len(dl.get_all_commodities()) == 61
 
 
 class TestNewUpgrades:

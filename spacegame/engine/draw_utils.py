@@ -9,8 +9,8 @@ from typing import Optional, Sequence
 
 import pygame
 
-from spacegame.config import Colors, WINDOW_WIDTH, WINDOW_HEIGHT
-from spacegame.engine.fonts import FontCache, FONT_SM, FONT_HEADING, FONT_LG, FONT_RATING
+from spacegame.config import Colors, WINDOW_WIDTH, WINDOW_HEIGHT, scale_x, scale_y
+from spacegame.engine.fonts import FontCache, FONT_HEADING, FONT_LG, FONT_RATING, FONT_SECTION2, FONT_SM
 
 
 # ---------------------------------------------------------------------------
@@ -416,8 +416,8 @@ def draw_summary_overlay(
     rating_letter: str,
     rating_color: tuple[int, int, int],
     *,
-    panel_width: int = 500,
-    panel_height: int = 440,
+    panel_width: int = 0,
+    panel_height: int = 0,
 ) -> None:
     """Render a mini-game completion summary overlay.
 
@@ -431,10 +431,16 @@ def draw_summary_overlay(
         xp_earned: XP points earned to display.
         rating_letter: Rating letter (e.g. "A", "S", "B").
         rating_color: Color for the rating letter display.
-        panel_width: Panel width in pixels.
-        panel_height: Panel height in pixels.
+        panel_width: Panel width in pixels. 0 uses resolution-scaled default.
+        panel_height: Panel height in pixels. 0 uses resolution-scaled default.
     """
     sw, sh = screen.get_size()
+
+    # Resolution-scaled defaults
+    pw = panel_width if panel_width > 0 else scale_x(500)
+    ph = panel_height if panel_height > 0 else scale_y(440)
+    pad = scale_x(40)
+    line_pad = scale_x(30)
 
     # Dim overlay
     dim = pygame.Surface((sw, sh), pygame.SRCALPHA)
@@ -442,47 +448,46 @@ def draw_summary_overlay(
     screen.blit(dim, (0, 0))
 
     # Panel
-    pw, ph = panel_width, panel_height
     px = (sw - pw) // 2
     py = (sh - ph) // 2
     panel = pygame.Rect(px, py, pw, ph)
     pygame.draw.rect(screen, (20, 24, 40), panel, border_radius=8)
     pygame.draw.rect(screen, Colors.TEXT_HIGHLIGHT, panel, 2, border_radius=8)
 
-    # Fonts
-    title_font = FontCache.get(44)
+    # Fonts (auto-scaled via FontCache)
+    title_font = FontCache.get(FONT_SECTION2)
     stat_font = FontCache.get(FONT_HEADING)
     rating_font = FontCache.get(FONT_RATING)
     prompt_font = FontCache.get(FONT_LG)
 
     # Title
     title_surf = title_font.render(title, True, Colors.TEXT_HIGHLIGHT)
-    screen.blit(title_surf, title_surf.get_rect(center=(sw // 2, py + 35)))
+    screen.blit(title_surf, title_surf.get_rect(center=(sw // 2, py + scale_y(35))))
 
-    # Stats
-    y = py + 75
-    spacing = 32
+    # Stats — use font line height for spacing
+    y = py + scale_y(75)
+    spacing = stat_font.get_linesize() + scale_y(4)
     for label, value in stats:
         label_surf = stat_font.render(label, True, Colors.TEXT_SECONDARY)
         value_surf = stat_font.render(value, True, Colors.TEXT)
-        screen.blit(label_surf, (px + 40, y))
-        screen.blit(value_surf, (px + pw - 40 - value_surf.get_width(), y))
+        screen.blit(label_surf, (px + pad, y))
+        screen.blit(value_surf, (px + pw - pad - value_surf.get_width(), y))
         y += spacing
 
     # XP earned (highlighted)
-    y += 10
-    pygame.draw.line(screen, Colors.TEXT_SECONDARY, (px + 30, y), (px + pw - 30, y))
-    y += 15
+    y += scale_y(10)
+    pygame.draw.line(screen, Colors.TEXT_SECONDARY, (px + line_pad, y), (px + pw - line_pad, y))
+    y += scale_y(15)
     xp_label = stat_font.render("XP Earned", True, Colors.BLUE)
     xp_value = stat_font.render(f"+{xp_earned}", True, Colors.BLUE)
-    screen.blit(xp_label, (px + 40, y))
-    screen.blit(xp_value, (px + pw - 40 - xp_value.get_width(), y))
+    screen.blit(xp_label, (px + pad, y))
+    screen.blit(xp_value, (px + pw - pad - xp_value.get_width(), y))
 
     # Session rating
     rating_surf = rating_font.render(rating_letter, True, rating_color)
     screen.blit(
         rating_surf,
-        rating_surf.get_rect(center=(px + pw - 70, py + 35)),
+        rating_surf.get_rect(center=(px + pw - scale_x(70), py + scale_y(35))),
     )
 
     # Continue prompt
@@ -490,5 +495,5 @@ def draw_summary_overlay(
         "Click or press Enter to continue", True, Colors.TEXT_SECONDARY
     )
     screen.blit(
-        continue_text, continue_text.get_rect(center=(sw // 2, py + ph - 30))
+        continue_text, continue_text.get_rect(center=(sw // 2, py + ph - scale_y(30)))
     )

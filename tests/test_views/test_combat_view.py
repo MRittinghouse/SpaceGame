@@ -794,7 +794,7 @@ class TestAnimationEffects:
     """Tests for visual effects triggered during animation."""
 
     def test_hit_creates_floating_text(self) -> None:
-        """A hit log entry should spawn a floating damage number."""
+        """A hit log entry should spawn a floating damage number after projectile arrives."""
         view = _make_view()
         view.on_enter()
         log = CombatLogEntry(
@@ -803,6 +803,8 @@ class TestAnimationEffects:
         )
         anim = AnimationEvent(log_entry=log, source="player")
         view._start_animation_effects(anim)
+        # Advance projectile to arrival
+        view._projectile_mgr.update(2.0)
         assert len(view.floating_texts) >= 1
         view.on_exit()
 
@@ -820,7 +822,7 @@ class TestAnimationEffects:
         view.on_exit()
 
     def test_hit_triggers_screen_shake(self) -> None:
-        """A successful hit should trigger screen shake."""
+        """A successful hit should trigger screen shake after projectile arrives."""
         view = _make_view()
         view.on_enter()
         log = CombatLogEntry(
@@ -829,6 +831,7 @@ class TestAnimationEffects:
         )
         anim = AnimationEvent(log_entry=log, source="player")
         view._start_animation_effects(anim)
+        view._projectile_mgr.update(2.0)
         assert view.screen_shake.duration > 0
         view.on_exit()
 
@@ -846,7 +849,7 @@ class TestAnimationEffects:
         view.on_exit()
 
     def test_enemy_hit_triggers_enemy_flash(self) -> None:
-        """An enemy hit should trigger flash timer on enemy card."""
+        """An enemy hit should trigger flash timer on enemy card after projectile arrives."""
         view = _make_view(num_enemies=2)
         view.on_enter()
         log = CombatLogEntry(
@@ -855,11 +858,12 @@ class TestAnimationEffects:
         )
         anim = AnimationEvent(log_entry=log, source="player")
         view._start_animation_effects(anim)
+        view._projectile_mgr.update(2.0)
         assert view._enemy_flash_timers[0] > 0
         view.on_exit()
 
     def test_player_hit_triggers_player_flash(self) -> None:
-        """An enemy hitting the player should trigger player flash."""
+        """An enemy hitting the player should trigger player flash after projectile arrives."""
         view = _make_view()
         view.on_enter()
         log = CombatLogEntry(
@@ -868,6 +872,7 @@ class TestAnimationEffects:
         )
         anim = AnimationEvent(log_entry=log, source="enemy")
         view._start_animation_effects(anim)
+        view._projectile_mgr.update(2.0)
         assert view._player_flash_timer > 0
         view.on_exit()
 

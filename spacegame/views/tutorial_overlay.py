@@ -10,8 +10,8 @@ manager layer, ensuring it is never buried beneath other views.
 from typing import Optional
 
 import pygame
-from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors
-from spacegame.engine.fonts import FontCache
+from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, scale_x, scale_y
+from spacegame.engine.fonts import FontCache, FONT_BODY, FONT_LG, FONT_SM, FONT_TITLE
 from spacegame.tutorial_manager import TutorialManager, TUTORIAL_STEPS, MINIGAME_HINTS
 from spacegame.utils.logger import logger
 
@@ -51,9 +51,9 @@ class _Button:
 class TutorialOverlay:
     """Tutorial step overlay rendered on top of the active game view."""
 
-    PANEL_WIDTH = 550
-    PANEL_HEIGHT = 320
-    HINT_PANEL_HEIGHT = 420  # Taller panel for longer hint descriptions
+    PANEL_WIDTH = scale_x(550)
+    PANEL_HEIGHT = scale_y(320)
+    HINT_PANEL_HEIGHT = scale_y(420)  # Taller panel for longer hint descriptions
 
     def __init__(self, tutorial_manager: TutorialManager):
         self.tutorial_manager = tutorial_manager
@@ -65,10 +65,10 @@ class TutorialOverlay:
         self._hint_id: Optional[str] = None
 
         # Fonts
-        self.title_font = FontCache.get(36)
-        self.body_font = FontCache.get(22)
-        self.step_font = FontCache.get(18)
-        self.btn_font = FontCache.get(24)
+        self.title_font = FontCache.get(FONT_TITLE)
+        self.body_font = FontCache.get(FONT_BODY)
+        self.step_font = FontCache.get(FONT_SM)
+        self.btn_font = FontCache.get(FONT_LG)
 
         # Panel geometry — tutorial step panel (computed once)
         self.panel_x = (WINDOW_WIDTH - self.PANEL_WIDTH) // 2
@@ -78,22 +78,22 @@ class TutorialOverlay:
         self._hint_panel_y = (WINDOW_HEIGHT - self.HINT_PANEL_HEIGHT) // 2
 
         # Buttons for tutorial step mode
-        btn_y = self.panel_y + self.PANEL_HEIGHT - 60
+        btn_y = self.panel_y + self.PANEL_HEIGHT - scale_y(60)
         self.next_button = _Button(
-            pygame.Rect(self.panel_x + self.PANEL_WIDTH - 170, btn_y, 150, 40),
+            pygame.Rect(self.panel_x + self.PANEL_WIDTH - scale_x(170), btn_y, scale_x(150), scale_y(40)),
             "NEXT",
             self.btn_font,
         )
         self.skip_button = _Button(
-            pygame.Rect(self.panel_x + 20, btn_y, 150, 40),
+            pygame.Rect(self.panel_x + scale_x(20), btn_y, scale_x(150), scale_y(40)),
             "SKIP TUTORIAL",
             self.btn_font,
         )
         # "GOT IT" button for hint mode (centered, uses hint panel geometry)
-        hint_btn_y = self._hint_panel_y + self.HINT_PANEL_HEIGHT - 60
+        hint_btn_y = self._hint_panel_y + self.HINT_PANEL_HEIGHT - scale_y(60)
         self.got_it_button = _Button(
             pygame.Rect(
-                self.panel_x + (self.PANEL_WIDTH - 150) // 2, hint_btn_y, 150, 40
+                self.panel_x + (self.PANEL_WIDTH - scale_x(150)) // 2, hint_btn_y, scale_x(150), scale_y(40)
             ),
             "GOT IT",
             self.btn_font,

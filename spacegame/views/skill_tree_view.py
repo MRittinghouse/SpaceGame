@@ -10,14 +10,15 @@ import pygame_gui
 import math
 from typing import Optional, Dict, List
 from spacegame.views.base_view import BaseView
-from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState
+from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState, scale_x, scale_y
+from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
 from spacegame.models.progression import PlayerProgression, SkillNode, SkillTreeType
 from spacegame.utils.logger import logger
 from spacegame.engine.backgrounds import AnimatedBackground
 from spacegame.engine.particles import ParticlePool, COLLECT_SPARKLE
 from spacegame.engine.draw_utils import draw_bar, draw_panel
-from spacegame.engine.fonts import FontCache
-from spacegame.engine.sprites import get_sprite_manager
+from spacegame.engine.fonts import FontCache, FONT_HEADING, FONT_LG, FONT_MD, FONT_MICRO, FONT_XS
+from spacegame.engine.sprites import get_sprite_manager, res_scale
 from spacegame.engine.audio_manager import get_audio_manager
 
 # Tree metadata for display
@@ -70,20 +71,20 @@ _TREE_INFO: Dict[SkillTreeType, dict] = {
 }
 
 # Selector layout
-CARD_W = 380
-CARD_H = 155
-CARD_PAD = 14
+CARD_W = scale_x(380)
+CARD_H = scale_y(155)
+CARD_PAD = scale_y(14)
 CARDS_PER_ROW = 3
 GRID_W = CARDS_PER_ROW * CARD_W + (CARDS_PER_ROW - 1) * CARD_PAD
 GRID_X = (WINDOW_WIDTH - GRID_W) // 2
-GRID_Y = 105
+GRID_Y = scale_y(105)
 
 # Detail node layout
-NODE_RADIUS = 32
-DETAIL_TOP = 100
-DETAIL_BOTTOM = WINDOW_HEIGHT - 80
-DETAIL_LEFT = 100
-DETAIL_RIGHT = WINDOW_WIDTH - 100
+NODE_RADIUS = scale_x(32)
+DETAIL_TOP = scale_y(100)
+DETAIL_BOTTOM = WINDOW_HEIGHT - scale_y(80)
+DETAIL_LEFT = scale_x(100)
+DETAIL_RIGHT = WINDOW_WIDTH - scale_x(100)
 
 
 class SkillTreeView(BaseView):
@@ -106,11 +107,11 @@ class SkillTreeView(BaseView):
         self._selected_tree: Optional[SkillTreeType] = None  # None = selector mode
 
         # Fonts
-        self.title_font = FontCache.get(32)
-        self.header_font = FontCache.get(24)
-        self.info_font = FontCache.get(20)
-        self.small_font = FontCache.get(16)
-        self.node_font = FontCache.get(14)
+        self.title_font = FontCache.get(FONT_HEADING)
+        self.header_font = FontCache.get(FONT_LG)
+        self.info_font = FontCache.get(FONT_MD)
+        self.small_font = FontCache.get(FONT_XS)
+        self.node_font = FontCache.get(FONT_MICRO)
 
         # UI
         self.back_button: Optional[pygame_gui.elements.UIButton] = None
@@ -161,9 +162,10 @@ class SkillTreeView(BaseView):
 
     def _create_selector_ui(self) -> None:
         """Create the 3x3 tree selector grid (manual click rects, not buttons)."""
+        hud_h = scale_y(HUD_BASE_HEIGHT)
         self.back_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
-                WINDOW_WIDTH // 2 - 75, WINDOW_HEIGHT - 55, 150, 38
+                WINDOW_WIDTH // 2 - 75, WINDOW_HEIGHT - hud_h - scale_y(55), 150, 38
             ),
             text="Back",
             manager=self.ui_manager,
@@ -179,13 +181,14 @@ class SkillTreeView(BaseView):
 
     def _create_detail_ui(self) -> None:
         """Create UI for the individual tree detail view."""
+        hud_h = scale_y(HUD_BASE_HEIGHT)
         self.back_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(20, WINDOW_HEIGHT - 55, 120, 38),
+            relative_rect=pygame.Rect(20, WINDOW_HEIGHT - hud_h - scale_y(55), 120, 38),
             text="Back",
             manager=self.ui_manager,
         )
         self.respec_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(WINDOW_WIDTH - 170, WINDOW_HEIGHT - 55, 150, 38),
+            relative_rect=pygame.Rect(WINDOW_WIDTH - 170, WINDOW_HEIGHT - hud_h - scale_y(55), 150, 38),
             text="Respec Skills",
             manager=self.ui_manager,
         )
@@ -351,7 +354,7 @@ class SkillTreeView(BaseView):
             color = Colors.SUCCESS if "leveled" in self.message.lower() else Colors.YELLOW
             msg_surf = self.info_font.render(self.message, True, color)
             screen.blit(
-                msg_surf, msg_surf.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT - 70))
+                msg_surf, msg_surf.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - scale_y(70)))
             )
 
     # === Selector mode rendering ===
@@ -443,7 +446,7 @@ class SkillTreeView(BaseView):
         for s in skills:
             if shown >= 8:
                 break
-            icon = self._sprite_mgr.get_skill_icon(s.id, scale=1)
+            icon = self._sprite_mgr.get_skill_icon(s.id, scale=res_scale(1))
             if icon:
                 # Dim locked icons
                 if not s.is_unlocked:
@@ -615,7 +618,7 @@ class SkillTreeView(BaseView):
             pygame.draw.circle(screen, border_color, (x, y), NODE_RADIUS, 2)
 
         # Skill icon
-        icon = self._sprite_mgr.get_skill_icon(skill_id, scale=2)
+        icon = self._sprite_mgr.get_skill_icon(skill_id, scale=res_scale(2))
         if icon:
             icon_rect = icon.get_rect(center=(x, y - 4))
             screen.blit(icon, icon_rect)

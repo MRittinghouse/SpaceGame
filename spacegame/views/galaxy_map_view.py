@@ -10,7 +10,7 @@ import pygame_gui
 import math
 from typing import Optional, Dict
 from spacegame.views.base_view import BaseView
-from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState
+from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState, scale_x, scale_y
 from spacegame.models.system import StarSystem
 from spacegame.models.player import Player
 from spacegame.models.encounter import (
@@ -21,10 +21,10 @@ from spacegame.models.encounter import (
 )
 from spacegame.utils.logger import logger
 from spacegame.engine.backgrounds import AnimatedBackground
-from spacegame.engine.fonts import FontCache
+from spacegame.engine.fonts import FONT_DISPLAY, FONT_HEADING, FONT_LG, FONT_MD, FontCache
 from spacegame.engine.procedural import generate_planet
 from spacegame.engine.particles import ParticlePool, SCAN_PULSE, WARP_TRAIL
-from spacegame.engine.sprites import AnimatedSprite, get_sprite_manager
+from spacegame.engine.sprites import AnimatedSprite, get_sprite_manager, res_scale
 from spacegame.models.faction import ReputationTier
 from spacegame.engine.audio_manager import get_audio_manager
 
@@ -85,9 +85,9 @@ class GalaxyMapView(BaseView):
         self.next_state: Optional[GameState] = None
 
         # Fonts
-        self.system_font = FontCache.get(24)
-        self.info_font = FontCache.get(20)
-        self.title_font = FontCache.get(32)
+        self.system_font = FontCache.get(FONT_LG)
+        self.info_font = FontCache.get(FONT_MD)
+        self.title_font = FontCache.get(FONT_HEADING)
 
         # UI buttons
         self.trade_button: Optional[pygame_gui.elements.UIButton] = None
@@ -179,7 +179,7 @@ class GalaxyMapView(BaseView):
         # Load/refresh player ship sprite (scale=1 = 32x32 for map display)
         if self.player and self.player.ship:
             self._player_ship_anim = self._sprite_mgr.get_ship_animated(
-                self.player.ship.ship_type.id, category="player", scale=1
+                self.player.ship.ship_type.id, category="player", scale=res_scale(1)
             )
         self._create_ui()
 
@@ -188,11 +188,26 @@ class GalaxyMapView(BaseView):
         self._destroy_ui()
 
     def _create_ui(self) -> None:
-        button_width = 150
-        button_height = 40
-        button_x = WINDOW_WIDTH - button_width - 20
-        start_y = WINDOW_HEIGHT - 298
-        spacing = 30
+        button_width = scale_x(150)
+        button_height = scale_y(36)
+        button_gap = scale_y(6)
+        # Position buttons above the HUD bar with comfortable margin
+        from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
+
+        hud_h = scale_y(HUD_BASE_HEIGHT)
+        num_buttons = 5
+        total_btn_h = num_buttons * button_height + (num_buttons - 1) * button_gap
+        card_pad = scale_y(10)
+        card_h = total_btn_h + card_pad * 2 + scale_y(24)  # Extra for label
+        card_w = button_width + scale_x(20)
+        card_x = WINDOW_WIDTH - card_w - scale_x(10)
+        card_y = WINDOW_HEIGHT - hud_h - card_h - scale_y(10)
+
+        # Store card rect for rendering
+        self._action_card_rect = pygame.Rect(card_x, card_y, card_w, card_h)
+
+        button_x = card_x + (card_w - button_width) // 2
+        start_y = card_y + card_pad + scale_y(24)  # Below card label
 
         self.trade_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(button_x, start_y, button_width, button_height),
@@ -200,55 +215,38 @@ class GalaxyMapView(BaseView):
             manager=self.ui_manager,
         )
         self.travel_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(button_x, start_y + spacing, button_width, button_height),
+            relative_rect=pygame.Rect(button_x, start_y + (button_height + button_gap), button_width, button_height),
             text="Travel",
             manager=self.ui_manager,
         )
-        self.skills_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(button_x, start_y + spacing * 2, button_width, button_height),
-            text="Character",
-            manager=self.ui_manager,
-        )
-        self.missions_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(button_x, start_y + spacing * 3, button_width, button_height),
-            text="Missions",
-            manager=self.ui_manager,
-        )
-        self.journal_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(button_x, start_y + spacing * 4, button_width, button_height),
-            text="Journal",
-            manager=self.ui_manager,
-        )
-        self.crew_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(button_x, start_y + spacing * 5, button_width, button_height),
-            text="Crew",
-            manager=self.ui_manager,
-        )
         self.shipyard_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(button_x, start_y + spacing * 6, button_width, button_height),
+            relative_rect=pygame.Rect(button_x, start_y + (button_height + button_gap) * 2, button_width, button_height),
             text="Shipyard",
             manager=self.ui_manager,
         )
         self.save_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(button_x, start_y + spacing * 7, button_width, button_height),
+            relative_rect=pygame.Rect(button_x, start_y + (button_height + button_gap) * 3, button_width, button_height),
             text="Save",
             manager=self.ui_manager,
         )
         self.menu_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(button_x, start_y + spacing * 8, button_width, button_height),
+            relative_rect=pygame.Rect(button_x, start_y + (button_height + button_gap) * 4, button_width, button_height),
             text="Main Menu",
             manager=self.ui_manager,
         )
+
+        # Removed buttons — set to None for backward compat with event handlers
+        self.skills_button = None
+        self.missions_button = None
+        self.journal_button = None
+        self.crew_button = None
+
         self._update_button_states()
 
     def _destroy_ui(self) -> None:
         for btn in [
             self.trade_button,
             self.travel_button,
-            self.skills_button,
-            self.missions_button,
-            self.journal_button,
-            self.crew_button,
             self.shipyard_button,
             self.save_button,
             self.menu_button,
@@ -524,13 +522,13 @@ class GalaxyMapView(BaseView):
 
         center_x = WINDOW_WIDTH // 2
         center_y = WINDOW_HEIGHT // 2
-        btn_width = 120
-        btn_height = 36
-        gap = 20
+        btn_width = scale_x(120)
+        btn_height = scale_y(36)
+        gap = scale_x(20)
 
         self._confirm_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
-                center_x - btn_width - gap // 2, center_y + 60,
+                center_x - btn_width - gap // 2, center_y + scale_y(60),
                 btn_width, btn_height,
             ),
             text="Confirm",
@@ -538,7 +536,7 @@ class GalaxyMapView(BaseView):
         )
         self._cancel_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
-                center_x + gap // 2, center_y + 60,
+                center_x + gap // 2, center_y + scale_y(60),
                 btn_width, btn_height,
             ),
             text="Cancel",
@@ -582,12 +580,12 @@ class GalaxyMapView(BaseView):
         from spacegame.models.journal import PLAYER_ENTRY_MAX_LENGTH
         self._quick_add_text_entry.set_text_length_limit(PLAYER_ENTRY_MAX_LENGTH)
 
-        btn_width = 100
-        btn_height = 34
-        gap = 16
+        btn_width = scale_x(100)
+        btn_height = scale_y(34)
+        gap = scale_x(16)
         self._quick_add_confirm_btn = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
-                center_x - btn_width - gap // 2, center_y + 30,
+                center_x - btn_width - gap // 2, center_y + scale_y(30),
                 btn_width, btn_height,
             ),
             text="Save",
@@ -595,7 +593,7 @@ class GalaxyMapView(BaseView):
         )
         self._quick_add_cancel_btn = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
-                center_x + gap // 2, center_y + 30,
+                center_x + gap // 2, center_y + scale_y(30),
                 btn_width, btn_height,
             ),
             text="Cancel",
@@ -721,28 +719,24 @@ class GalaxyMapView(BaseView):
         # Animated background
         self.background.render(screen)
 
-        # Title
+        # Title + compact status line (credits/fuel/ship now in HUD bar)
         title = self.title_font.render("GALAXY MAP", True, Colors.TEXT_HIGHLIGHT)
         screen.blit(title, (20, 20))
 
-        # Player stats
-        stats_y = 60
-        stats_text: list[tuple[str, tuple[int, int, int]]] = [
-            (f"Day: {self.player.game_day}  |  Level: {self.player.progression.level}", Colors.TEXT),
-            (f"Credits: {self.player.credits:,} CR", Colors.TEXT),
-            (f"Ship: {self.player.ship.name}", Colors.TEXT),
-            (f"Fuel: {self.player.ship.current_fuel}/{self.player.ship.max_fuel}", Colors.TEXT),
-        ]
+        status_y = scale_y(58)
+        day_text = f"Day {self.player.game_day}  |  Lv {self.player.progression.level}"
+        day_surf = self.info_font.render(day_text, True, Colors.TEXT)
+        screen.blit(day_surf, (20, status_y))
+
         # Criminal heat indicator (only shown when > 0)
         from spacegame.config import get_heat_display_color
 
         heat_color = get_heat_display_color(self.player.criminal_heat)
         if heat_color:
-            stats_text.append((f"Heat: {self.player.criminal_heat}", heat_color))
-
-        for i, (text, color) in enumerate(stats_text):
-            surf = self.info_font.render(text, True, color)
-            screen.blit(surf, (20, stats_y + i * 25))
+            heat_surf = self.info_font.render(
+                f"Heat: {self.player.criminal_heat}", True, heat_color
+            )
+            screen.blit(heat_surf, (20, status_y + scale_y(22)))
 
         # Draw travel lines from current system (animated dashes)
         current_system = self.systems[self.player.current_system_id]
@@ -916,6 +910,9 @@ class GalaxyMapView(BaseView):
         if self._showing_journal_quick_add:
             self._draw_journal_quick_add(screen)
 
+        # Action card background behind buttons
+        self._draw_action_card(screen)
+
         # Selected system info panel
         if self.selected_system:
             self._draw_system_info(screen, self.selected_system)
@@ -1078,9 +1075,9 @@ class GalaxyMapView(BaseView):
         screen.blit(overlay, (0, 0))
 
         # Panel
-        panel_w, panel_h = 320, 200
+        panel_w, panel_h = scale_x(320), scale_y(200)
         px = (WINDOW_WIDTH - panel_w) // 2
-        py = (WINDOW_HEIGHT - panel_h) // 2 - 20
+        py = (WINDOW_HEIGHT - panel_h) // 2 - scale_y(20)
         panel_surf = pygame.Surface((panel_w, panel_h), pygame.SRCALPHA)
         panel_surf.fill((15, 18, 35, 220))
         screen.blit(panel_surf, (px, py))
@@ -1088,11 +1085,11 @@ class GalaxyMapView(BaseView):
 
         # Title
         title = self.title_font.render("Confirm Travel", True, Colors.TEXT_HIGHLIGHT)
-        screen.blit(title, (px + (panel_w - title.get_width()) // 2, py + 12))
+        screen.blit(title, (px + (panel_w - title.get_width()) // 2, py + scale_y(12)))
 
         # Info lines
-        info_y = py + 50
-        line_h = 24
+        info_y = py + scale_y(50)
+        line_h = scale_y(24)
         lines = [
             (f"Destination: {dest.name}", Colors.TEXT),
             (f"Distance: {distance:.0f} u", Colors.TEXT),
@@ -1120,7 +1117,7 @@ class GalaxyMapView(BaseView):
         # Pulsing text
         pulse = 0.5 + 0.5 * math.sin(self._glow_time * 8)
         alpha = int(180 + 75 * pulse)
-        alert_font = FontCache.get(48)
+        alert_font = FontCache.get(FONT_DISPLAY)
 
         # Type-specific alert styling
         _ALERT_STYLES: dict[str, tuple[str, tuple[int, int, int], tuple[int, int, int, int]]] = {
@@ -1161,9 +1158,9 @@ class GalaxyMapView(BaseView):
         screen.blit(overlay, (0, 0))
 
         # Panel
-        panel_w, panel_h = 420, 140
+        panel_w, panel_h = scale_x(420), scale_y(140)
         px = (WINDOW_WIDTH - panel_w) // 2
-        py = (WINDOW_HEIGHT - panel_h) // 2 - 20
+        py = (WINDOW_HEIGHT - panel_h) // 2 - scale_y(20)
         panel_surf = pygame.Surface((panel_w, panel_h), pygame.SRCALPHA)
         panel_surf.fill((15, 18, 35, 220))
         screen.blit(panel_surf, (px, py))
@@ -1179,48 +1176,40 @@ class GalaxyMapView(BaseView):
         )
         screen.blit(hint, (px + (panel_w - hint.get_width()) // 2, py + panel_h - 24))
 
+    def _draw_action_card(self, screen: pygame.Surface) -> None:
+        """Draw the action card background behind the side buttons."""
+        if not hasattr(self, "_action_card_rect"):
+            return
+        rect = self._action_card_rect
+
+        # Semi-transparent panel
+        card_surf = pygame.Surface((rect.width, rect.height), pygame.SRCALPHA)
+        card_surf.fill((15, 18, 35, 190))
+        screen.blit(card_surf, rect.topleft)
+
+        # Border with subtle glow
+        pygame.draw.rect(screen, Colors.UI_BORDER, rect, 1)
+        inner = pygame.Rect(rect.x + 1, rect.y + 1, rect.width - 2, rect.height - 2)
+        glow = pygame.Surface((inner.width, inner.height), pygame.SRCALPHA)
+        pygame.draw.rect(glow, (*Colors.TEXT_HIGHLIGHT, 25), glow.get_rect(), 1)
+        screen.blit(glow, inner.topleft)
+
+        # Label
+        label = self.info_font.render("ACTIONS", True, Colors.TEXT_HIGHLIGHT)
+        screen.blit(label, (rect.x + (rect.width - label.get_width()) // 2, rect.y + scale_y(6)))
+
     def _draw_system_info(self, screen: pygame.Surface, system_id: str) -> None:
         system = self.systems[system_id]
 
-        panel_x = WINDOW_WIDTH - 320
-        panel_y = 60
-        panel_width = 300
-        panel_height = 250
-        line_height = 22
+        panel_x = scale_x(15)
+        panel_y = scale_y(100)
+        panel_width = scale_x(300)
+        line_height = scale_y(22)
+        pad = 10
+        header_height = scale_y(35)
 
-        # Pre-compute remote prices to adjust panel height
-        remote_price_lines: list[tuple[str, tuple[int, int, int]]] = []
-        if (
-            system_id != self.player.current_system_id
-            and self.player.progression.get_bonus("remote_prices") > 0
-            and hasattr(system, "economy")
-            and system.economy
-        ):
-            remote_price_lines = self._get_remote_price_lines(system)
-        if remote_price_lines:
-            panel_height += len(remote_price_lines) * line_height + 10
+        # --- Collect all content lines as (text, color) tuples ---
 
-        # Background with glow border
-        panel_surf = pygame.Surface((panel_width, panel_height), pygame.SRCALPHA)
-        panel_surf.fill((15, 18, 35, 200))
-        screen.blit(panel_surf, (panel_x, panel_y))
-
-        # Border with inner glow
-        pygame.draw.rect(screen, Colors.UI_BORDER, (panel_x, panel_y, panel_width, panel_height), 1)
-        # Bright inner edge
-        inner_rect = pygame.Rect(panel_x + 1, panel_y + 1, panel_width - 2, panel_height - 2)
-        glow_surf = pygame.Surface((inner_rect.width, inner_rect.height), pygame.SRCALPHA)
-        pygame.draw.rect(glow_surf, (*Colors.TEXT_HIGHLIGHT, 30), glow_surf.get_rect(), 1)
-        screen.blit(glow_surf, inner_rect.topleft)
-
-        # Content
-        y_offset = panel_y + 10
-
-        name_surf = self.title_font.render(system.name, True, Colors.TEXT_HIGHLIGHT)
-        screen.blit(name_surf, (panel_x + 10, y_offset))
-        y_offset += 35
-
-        # Build faction line with rep info
         faction_id = self.player.get_faction_for_system(system_id)
         if faction_id:
             tier = self.player.get_reputation_tier(faction_id)
@@ -1230,30 +1219,11 @@ class GalaxyMapView(BaseView):
         else:
             faction_line = f"Faction: {system.faction}"
 
-        # Render type line
-        type_surf = self.info_font.render(
-            f"Type: {system.type.replace('_', ' ').title()}", True, Colors.TEXT
-        )
-        screen.blit(type_surf, (panel_x + 10, y_offset))
-        y_offset += line_height
-
-        # Render faction line with emblem
-        faction_emblem = (
-            self._sprite_mgr.get_faction_emblem(faction_id, scale=1)
-            if faction_id
-            else None
-        )
-        fx = panel_x + 10
-        if faction_emblem:
-            screen.blit(faction_emblem, (fx, y_offset))
-            fx += faction_emblem.get_width() + 4
-        faction_surf = self.info_font.render(faction_line, True, Colors.TEXT)
-        screen.blit(faction_surf, (fx, y_offset))
-        y_offset += line_height
-
-        info_lines = [
-            f"Danger: {system.danger_level.title()}",
-            "",
+        info_lines: list[tuple[str, tuple[int, int, int]]] = [
+            (f"Type: {system.type.replace('_', ' ').title()}", Colors.TEXT),
+            (faction_line, Colors.TEXT),
+            (f"Danger: {system.danger_level.title()}", Colors.TEXT),
+            ("", Colors.TEXT),
         ]
 
         if system_id != self.player.current_system_id:
@@ -1261,7 +1231,6 @@ class GalaxyMapView(BaseView):
             distance = current.distance_to(system)
             fuel_cost = self._calculate_fuel_cost(system_id)
 
-            # Calculate encounter risk based on danger and distance
             from spacegame.models.encounter import (
                 ENCOUNTER_CHANCE_SAFE,
                 ENCOUNTER_CHANCE_MODERATE,
@@ -1274,19 +1243,17 @@ class GalaxyMapView(BaseView):
                 "dangerous": ENCOUNTER_CHANCE_DANGEROUS,
             }.get(system.danger_level, 0)
             enc_chance = calculate_encounter_chance(base_chance, distance)
-
-            if enc_chance > 0:
-                risk_text = f"Encounter Risk: {enc_chance:.0f}%"
-            else:
-                risk_text = "Encounter Risk: None"
-
-            info_lines.extend(
-                [
-                    f"Distance: {distance:.1f} units",
-                    f"Fuel Cost: {fuel_cost} units",
-                    risk_text,
-                ]
+            risk_text = (
+                f"Encounter Risk: {enc_chance:.0f}%"
+                if enc_chance > 0
+                else "Encounter Risk: None"
             )
+
+            info_lines.extend([
+                (f"Distance: {distance:.1f} units", Colors.TEXT),
+                (f"Fuel Cost: {fuel_cost} units", Colors.TEXT),
+                (risk_text, Colors.TEXT),
+            ])
 
         # Active event info
         active_event = self.active_events.get(system_id)
@@ -1297,31 +1264,97 @@ class GalaxyMapView(BaseView):
             commodity = dl.commodities.get(active_event.commodity_id)
             commodity_name = commodity.name if commodity else active_event.commodity_id
             days_left = active_event.days_remaining(self.player.game_day)
-            info_lines.append("")
-            info_lines.append(f"Event: {active_event.event_type.value.upper()}")
-            info_lines.append(f"  {commodity_name} ({days_left}d)")
+            info_lines.append(("", Colors.TEXT))
+            info_lines.append(
+                (f"Event: {active_event.event_type.value.upper()}", Colors.YELLOW)
+            )
+            info_lines.append((f"  {commodity_name} ({days_left}d)", Colors.YELLOW))
 
         # Political event info
         if self.politics_manager and faction_id:
             for pe in self.politics_manager.get_active_events():
                 if pe.faction_a_id == faction_id or pe.faction_b_id == faction_id:
                     days_left = pe.days_remaining(self.player.game_day)
-                    info_lines.append("")
-                    info_lines.append(f"Political: {pe.event_type.value.replace('_', ' ').title()}")
-                    info_lines.append(f"  {pe.description[:40]}... ({days_left}d)")
+                    info_lines.append(("", Colors.TEXT))
+                    info_lines.append((
+                        f"Political: {pe.event_type.value.replace('_', ' ').title()}",
+                        Colors.TEXT,
+                    ))
+                    info_lines.append(
+                        (f"  {pe.description[:40]}... ({days_left}d)", Colors.TEXT)
+                    )
                     break
 
-        for line in info_lines:
-            surf = self.info_font.render(line, True, Colors.TEXT)
-            screen.blit(surf, (panel_x + 10, y_offset))
+        # Remote market prices
+        remote_price_lines: list[tuple[str, tuple[int, int, int]]] = []
+        if (
+            system_id != self.player.current_system_id
+            and self.player.progression.get_bonus("remote_prices") > 0
+            and hasattr(system, "economy")
+            and system.economy
+        ):
+            remote_price_lines = self._get_remote_price_lines(system)
+
+        # --- Calculate total panel height to fit ALL content ---
+        panel_height = (
+            pad
+            + header_height
+            + len(info_lines) * line_height
+        )
+        if remote_price_lines:
+            panel_height += 4 + len(remote_price_lines) * line_height
+        panel_height += pad  # bottom padding
+
+        # --- Draw panel background sized to content ---
+        panel_surf = pygame.Surface((panel_width, panel_height), pygame.SRCALPHA)
+        panel_surf.fill((15, 18, 35, 200))
+        screen.blit(panel_surf, (panel_x, panel_y))
+
+        pygame.draw.rect(
+            screen, Colors.UI_BORDER,
+            (panel_x, panel_y, panel_width, panel_height), 1,
+        )
+        inner_rect = pygame.Rect(
+            panel_x + 1, panel_y + 1, panel_width - 2, panel_height - 2
+        )
+        glow_surf = pygame.Surface(
+            (inner_rect.width, inner_rect.height), pygame.SRCALPHA
+        )
+        pygame.draw.rect(
+            glow_surf, (*Colors.TEXT_HIGHLIGHT, 30), glow_surf.get_rect(), 1
+        )
+        screen.blit(glow_surf, inner_rect.topleft)
+
+        # --- Render content ---
+        y_offset = panel_y + pad
+
+        # System name header
+        name_surf = self.title_font.render(system.name, True, Colors.TEXT_HIGHLIGHT)
+        screen.blit(name_surf, (panel_x + pad, y_offset))
+        y_offset += header_height
+
+        # Faction emblem on the faction line (index 1 in info_lines)
+        faction_emblem = (
+            self._sprite_mgr.get_faction_emblem(faction_id, scale=res_scale(1))
+            if faction_id
+            else None
+        )
+
+        for i, (line, color) in enumerate(info_lines):
+            lx = panel_x + pad
+            if i == 1 and faction_emblem:
+                screen.blit(faction_emblem, (lx, y_offset))
+                lx += faction_emblem.get_width() + 4
+            surf = self.info_font.render(line, True, color)
+            screen.blit(surf, (lx, y_offset))
             y_offset += line_height
 
-        # Render remote prices below the main info
+        # Remote prices
         if remote_price_lines:
             y_offset += 4
             for text, color in remote_price_lines:
                 surf = self.info_font.render(text, True, color)
-                screen.blit(surf, (panel_x + 10, y_offset))
+                screen.blit(surf, (panel_x + pad, y_offset))
                 y_offset += line_height
 
     def _get_remote_price_lines(

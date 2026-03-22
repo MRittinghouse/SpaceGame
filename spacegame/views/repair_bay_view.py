@@ -13,27 +13,29 @@ from spacegame.config import (
     WINDOW_HEIGHT,
     Colors,
     GameState,
+    scale_x,
+    scale_y,
 )
 from spacegame.views.base_view import BaseView
 from spacegame.models.player import Player
 from spacegame.engine.backgrounds import AnimatedBackground
 from spacegame.engine.draw_utils import draw_bar, draw_panel
 from spacegame.engine.particles import ParticlePool, HEAL_SPARKLE
-from spacegame.engine.fonts import FontCache
+from spacegame.engine.fonts import FontCache, FONT_BODY, FONT_LG, FONT_MD, FONT_SUBTITLE, FONT_TITLE
 from spacegame.utils.logger import logger
 from spacegame.engine.audio_manager import get_audio_manager
 
 
 # Layout
-PANEL_W = 500
-PANEL_H = 400
+PANEL_W = scale_x(500)
+PANEL_H = scale_y(400)
 PANEL_X = WINDOW_WIDTH // 2 - PANEL_W // 2
 PANEL_Y = WINDOW_HEIGHT // 2 - PANEL_H // 2
-BAR_X = PANEL_X + 40
-BAR_W = PANEL_W - 80
-BAR_H = 28
-BUTTON_W = 200
-BUTTON_H = 44
+BAR_X = PANEL_X + scale_x(40)
+BAR_W = PANEL_W - scale_x(80)
+BAR_H = scale_y(28)
+BUTTON_W = scale_x(200)
+BUTTON_H = scale_y(44)
 
 
 class RepairBayView(BaseView):
@@ -73,11 +75,11 @@ class RepairBayView(BaseView):
         self.message_color: tuple[int, int, int] = Colors.TEXT_PRIMARY
 
         # Fonts
-        self.title_font = FontCache.get(36)
-        self.subtitle_font = FontCache.get(20)
-        self.label_font = FontCache.get(26)
-        self.value_font = FontCache.get(24)
-        self.msg_font = FontCache.get(22)
+        self.title_font = FontCache.get(FONT_TITLE)
+        self.subtitle_font = FontCache.get(FONT_MD)
+        self.label_font = FontCache.get(FONT_SUBTITLE)
+        self.value_font = FontCache.get(FONT_LG)
+        self.msg_font = FontCache.get(FONT_BODY)
 
         # UI element refs
         self.repair_button: Optional[pygame_gui.elements.UIButton] = None

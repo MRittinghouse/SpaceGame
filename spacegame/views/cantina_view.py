@@ -13,6 +13,8 @@ from spacegame.config import (
     WINDOW_HEIGHT,
     Colors,
     GameState,
+    scale_x,
+    scale_y,
 )
 from spacegame.views.base_view import BaseView
 from spacegame.models.player import Player
@@ -20,26 +22,26 @@ from spacegame.models.system import StarSystem
 from spacegame.models.location import Location
 from spacegame.engine.backgrounds import AnimatedBackground
 from spacegame.engine.draw_utils import draw_panel
-from spacegame.engine.fonts import FontCache
+from spacegame.engine.fonts import FONT_BODY, FONT_HEADING, FONT_MD, FONT_SM, FontCache
 from spacegame.utils.logger import logger
 from spacegame.engine.audio_manager import get_audio_manager
 from spacegame.engine.tooltip import TooltipState
 
 # Layout constants
 HEADER_CARD_Y = 10
-HEADER_CARD_H = 70
-HEADER_CARD_MARGIN_X = 80
+HEADER_CARD_H = scale_y(70)
+HEADER_CARD_MARGIN_X = scale_x(80)
 
-CONTENT_X = 80
-CONTENT_W = WINDOW_WIDTH - 160
-SECTION_PAD = 14
+CONTENT_X = scale_x(80)
+CONTENT_W = WINDOW_WIDTH - scale_x(160)
+SECTION_PAD = scale_y(14)
 
-BUTTON_W = 400
-BUTTON_H = 38
+BUTTON_W = scale_x(400)
+BUTTON_H = scale_y(38)
 BUTTON_PAD = 6
 
-BACK_BUTTON_W = 140
-BACK_BUTTON_H = 40
+BACK_BUTTON_W = scale_x(140)
+BACK_BUTTON_H = scale_y(40)
 
 
 class CantinaView(BaseView):
@@ -88,10 +90,10 @@ class CantinaView(BaseView):
         self.pending_contract_id: Optional[str] = None
 
         # Fonts
-        self.title_font = FontCache.get(32)
-        self.subtitle_font = FontCache.get(22)
-        self.label_font = FontCache.get(20)
-        self.desc_font = FontCache.get(18)
+        self.title_font = FontCache.get(FONT_HEADING)
+        self.subtitle_font = FontCache.get(FONT_BODY)
+        self.label_font = FontCache.get(FONT_MD)
+        self.desc_font = FontCache.get(FONT_SM)
         # UI element refs
         self.back_button: Optional[pygame_gui.elements.UIButton] = None
         self._npc_buttons: dict[str, pygame_gui.elements.UIButton] = {}
@@ -129,10 +131,14 @@ class CantinaView(BaseView):
         """Create all UI elements."""
         self._destroy_ui()
 
-        # Back button (bottom-left)
+        # Back button (bottom-left, above HUD bar)
+        from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
+
+        hud_h = scale_y(HUD_BASE_HEIGHT)
         self.back_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
-                20, WINDOW_HEIGHT - BACK_BUTTON_H - 20, BACK_BUTTON_W, BACK_BUTTON_H
+                20, WINDOW_HEIGHT - hud_h - BACK_BUTTON_H - scale_y(15),
+                BACK_BUTTON_W, BACK_BUTTON_H,
             ),
             text="BACK",
             manager=self.ui_manager,
@@ -343,6 +349,11 @@ class CantinaView(BaseView):
                 slot_color = Colors.TEXT_SECONDARY if current < total else Colors.RED
                 slot_surf = self.desc_font.render(slot_text, True, slot_color)
                 screen.blit(slot_surf, (label_x + BUTTON_W - slot_surf.get_width(), btn_y))
+                if current >= total:
+                    hint_surf = self.desc_font.render(
+                        "Dismiss a crew member to make room", True, Colors.TEXT_SECONDARY
+                    )
+                    screen.blit(hint_surf, (label_x, btn_y + 18))
             btn_y += 24 + (
                 len(self._rerecruit_buttons) + len(self._hire_buttons)
             ) * (BUTTON_H + BUTTON_PAD)

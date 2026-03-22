@@ -10,7 +10,8 @@ import pygame_gui
 from typing import Optional
 from spacegame.views.base_view import BaseView
 from spacegame.views.table_widget import TableWidget, ColumnDef
-from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState
+from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState, scale_x, scale_y
+from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
 from spacegame.models.player import Player
 from spacegame.models.system import StarSystem
 from spacegame.models.commodity import Commodity
@@ -19,9 +20,9 @@ from spacegame.models.faction import get_tariff_modifier
 from spacegame.utils.logger import logger
 from spacegame.engine.backgrounds import AnimatedBackground
 from spacegame.engine.particles import ParticlePool, COLLECT_SPARKLE, ParticleConfig
-from spacegame.engine.sprites import get_sprite_manager
+from spacegame.engine.sprites import get_sprite_manager, res_scale
 from spacegame.engine.draw_utils import draw_bar
-from spacegame.engine.fonts import FontCache
+from spacegame.engine.fonts import FontCache, FONT_HEADING, FONT_LG, FONT_MD
 from spacegame.engine.audio_manager import get_audio_manager
 
 # Red flash for failed transactions
@@ -100,9 +101,9 @@ class TradingView(BaseView):
         self.next_state: Optional[GameState] = None
 
         # Fonts
-        self.title_font = FontCache.get(32)
-        self.header_font = FontCache.get(24)
-        self.info_font = FontCache.get(20)
+        self.title_font = FontCache.get(FONT_HEADING)
+        self.header_font = FontCache.get(FONT_LG)
+        self.info_font = FontCache.get(FONT_MD)
 
         # Table widgets (created in _create_ui, rendered manually)
         self.market_table: Optional[TableWidget] = None
@@ -175,13 +176,13 @@ class TradingView(BaseView):
     def _create_ui(self) -> None:
         # Market table — fixed-column widget (not pygame_gui)
         self.market_table = TableWidget(
-            rect=pygame.Rect(20, 100, 560, 400),
+            rect=pygame.Rect(scale_x(20), scale_y(100), scale_x(560), scale_y(400)),
             columns=[
-                ColumnDef("COMMODITY", 170, "left"),
-                ColumnDef("PRICE", 100, "right"),
-                ColumnDef("STOCK", 70, "right"),
-                ColumnDef("WT", 50, "right"),
-                ColumnDef("TREND", 130, "left"),
+                ColumnDef("COMMODITY", scale_x(170), "left"),
+                ColumnDef("PRICE", scale_x(100), "right"),
+                ColumnDef("STOCK", scale_x(70), "right"),
+                ColumnDef("WT", scale_x(50), "right"),
+                ColumnDef("TREND", scale_x(130), "left"),
             ],
             font=self.info_font,
             header_font=self.header_font,
@@ -189,13 +190,13 @@ class TradingView(BaseView):
 
         # Cargo table
         self.cargo_table = TableWidget(
-            rect=pygame.Rect(WINDOW_WIDTH - 420, 120, 400, 380),
+            rect=pygame.Rect(WINDOW_WIDTH - scale_x(420), scale_y(120), scale_x(400), scale_y(380)),
             columns=[
-                ColumnDef("ITEM", 120, "left"),
-                ColumnDef("QTY", 45, "right"),
-                ColumnDef("SPC", 45, "right"),
-                ColumnDef("AVG", 85, "right"),
-                ColumnDef("PAID", 105, "right"),
+                ColumnDef("ITEM", scale_x(120), "left"),
+                ColumnDef("QTY", scale_x(45), "right"),
+                ColumnDef("SPC", scale_x(45), "right"),
+                ColumnDef("AVG", scale_x(85), "right"),
+                ColumnDef("PAID", scale_x(105), "right"),
             ],
             font=self.info_font,
             header_font=self.header_font,
@@ -205,27 +206,27 @@ class TradingView(BaseView):
         self._refresh_tables()
 
         self.quantity_input = pygame_gui.elements.UITextEntryLine(
-            relative_rect=pygame.Rect(590, 150, 100, 40), manager=self.ui_manager
+            relative_rect=pygame.Rect(scale_x(590), scale_y(150), scale_x(100), scale_y(40)), manager=self.ui_manager
         )
         self.quantity_input.set_text("1")
 
         self.buy_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(590, 200, 100, 36), text="BUY", manager=self.ui_manager
+            relative_rect=pygame.Rect(scale_x(590), scale_y(200), scale_x(100), scale_y(36)), text="BUY", manager=self.ui_manager
         )
         self.buy_max_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(590, 240, 100, 36), text="BUY MAX", manager=self.ui_manager
+            relative_rect=pygame.Rect(scale_x(590), scale_y(240), scale_x(100), scale_y(36)), text="BUY MAX", manager=self.ui_manager
         )
         self.sell_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(590, 284, 100, 36), text="SELL", manager=self.ui_manager
+            relative_rect=pygame.Rect(scale_x(590), scale_y(284), scale_x(100), scale_y(36)), text="SELL", manager=self.ui_manager
         )
         self.sell_max_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(590, 324, 100, 36), text="SELL MAX", manager=self.ui_manager
+            relative_rect=pygame.Rect(scale_x(590), scale_y(324), scale_x(100), scale_y(36)), text="SELL MAX", manager=self.ui_manager
         )
         self.refuel_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(590, 368, 100, 36), text="REFUEL", manager=self.ui_manager
+            relative_rect=pygame.Rect(scale_x(590), scale_y(368), scale_x(100), scale_y(36)), text="REFUEL", manager=self.ui_manager
         )
         self.rest_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(590, 408, 100, 36), text="REST", manager=self.ui_manager
+            relative_rect=pygame.Rect(scale_x(590), scale_y(408), scale_x(100), scale_y(36)), text="REST", manager=self.ui_manager
         )
 
         # Activity and NPC buttons have moved to StationHubView
@@ -233,7 +234,7 @@ class TradingView(BaseView):
         self.talk_buttons.clear()
 
         self.back_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(590, WINDOW_HEIGHT - 60, 100, 40),
+            relative_rect=pygame.Rect(scale_x(590), WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - scale_y(60), scale_x(100), scale_y(40)),
             text="BACK",
             manager=self.ui_manager,
         )
@@ -241,12 +242,12 @@ class TradingView(BaseView):
         # Hidden compartment transfer buttons (when upgrade installed)
         if self.player.hidden_compartment:
             self.hide_cargo_button = pygame_gui.elements.UIButton(
-                relative_rect=pygame.Rect(WINDOW_WIDTH - 420, 510, 95, 28),
+                relative_rect=pygame.Rect(WINDOW_WIDTH - scale_x(420), scale_y(510), scale_x(95), scale_y(28)),
                 text="HIDE \u2192",
                 manager=self.ui_manager,
             )
             self.retrieve_cargo_button = pygame_gui.elements.UIButton(
-                relative_rect=pygame.Rect(WINDOW_WIDTH - 320, 510, 95, 28),
+                relative_rect=pygame.Rect(WINDOW_WIDTH - scale_x(320), scale_y(510), scale_x(95), scale_y(28)),
                 text="\u2190 RETRIEVE",
                 manager=self.ui_manager,
             )
@@ -254,7 +255,7 @@ class TradingView(BaseView):
         # Black market toggle (only shown when player has access)
         if self._has_black_market:
             self.black_market_button = pygame_gui.elements.UIButton(
-                relative_rect=pygame.Rect(590, 496, 100, 36),
+                relative_rect=pygame.Rect(scale_x(590), scale_y(496), scale_x(100), scale_y(36)),
                 text="BLACK MKT",
                 manager=self.ui_manager,
             )
@@ -417,7 +418,7 @@ class TradingView(BaseView):
         if commodity_id not in self._commodity_icons:
             # Scale=1 gives native 16x16, which fits nicely in 26px row height
             self._commodity_icons[commodity_id] = self._sprite_mgr.get_commodity_icon(
-                commodity_id, scale=1
+                commodity_id, scale=res_scale(1)
             )
         return self._commodity_icons.get(commodity_id)
 
@@ -717,7 +718,7 @@ class TradingView(BaseView):
         elif stock == 0 and self.market.get_base_stock(commodity_id) > 0:
             self._show_message("Out of stock — check back tomorrow")
             get_audio_manager().play_sfx("trade_fail")
-            self.particles.emit(WINDOW_WIDTH // 2, WINDOW_HEIGHT - 50, FAIL_FLASH)
+            self.particles.emit(WINDOW_WIDTH // 2, WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - 50, FAIL_FLASH)
             return
 
         if self._black_market_mode:
@@ -733,7 +734,7 @@ class TradingView(BaseView):
 
         if success:
             get_audio_manager().play_sfx("trade_buy")
-            self.particles.emit(WINDOW_WIDTH // 2, WINDOW_HEIGHT - 50, COLLECT_SPARKLE)
+            self.particles.emit(WINDOW_WIDTH // 2, WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - 50, COLLECT_SPARKLE)
             from spacegame.config import XP_PER_TRADE
 
             xp_msgs = self.player.progression.add_xp(XP_PER_TRADE)
@@ -746,7 +747,7 @@ class TradingView(BaseView):
             self._refresh_tables()
         else:
             get_audio_manager().play_sfx("trade_fail")
-            self.particles.emit(WINDOW_WIDTH // 2, WINDOW_HEIGHT - 50, FAIL_FLASH)
+            self.particles.emit(WINDOW_WIDTH // 2, WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - 50, FAIL_FLASH)
 
     def _execute_sell(self) -> None:
         if not self._has_trade_permit():
@@ -775,7 +776,7 @@ class TradingView(BaseView):
 
         if success:
             get_audio_manager().play_sfx("trade_sell")
-            self.particles.emit(WINDOW_WIDTH // 2, WINDOW_HEIGHT - 50, COLLECT_SPARKLE)
+            self.particles.emit(WINDOW_WIDTH // 2, WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - 50, COLLECT_SPARKLE)
             from spacegame.config import XP_PER_TRADE
 
             xp_msgs = self.player.progression.add_xp(XP_PER_TRADE)
@@ -787,7 +788,7 @@ class TradingView(BaseView):
             self._refresh_tables()
         else:
             get_audio_manager().play_sfx("trade_fail")
-            self.particles.emit(WINDOW_WIDTH // 2, WINDOW_HEIGHT - 50, FAIL_FLASH)
+            self.particles.emit(WINDOW_WIDTH // 2, WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - 50, FAIL_FLASH)
 
     def _execute_buy_max(self) -> None:
         if not self._has_trade_permit():
@@ -831,7 +832,7 @@ class TradingView(BaseView):
             else:
                 self._show_message("Not enough cargo space")
             get_audio_manager().play_sfx("trade_fail")
-            self.particles.emit(WINDOW_WIDTH // 2, WINDOW_HEIGHT - 50, FAIL_FLASH)
+            self.particles.emit(WINDOW_WIDTH // 2, WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - 50, FAIL_FLASH)
             return
 
         # Re-calculate price with actual quantity (bulk discount threshold)
@@ -846,7 +847,7 @@ class TradingView(BaseView):
 
         if success:
             get_audio_manager().play_sfx("trade_buy")
-            self.particles.emit(WINDOW_WIDTH // 2, WINDOW_HEIGHT - 50, COLLECT_SPARKLE)
+            self.particles.emit(WINDOW_WIDTH // 2, WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - 50, COLLECT_SPARKLE)
             from spacegame.config import XP_PER_TRADE
 
             xp_msgs = self.player.progression.add_xp(XP_PER_TRADE)
@@ -859,7 +860,7 @@ class TradingView(BaseView):
             self._refresh_tables()
         else:
             get_audio_manager().play_sfx("trade_fail")
-            self.particles.emit(WINDOW_WIDTH // 2, WINDOW_HEIGHT - 50, FAIL_FLASH)
+            self.particles.emit(WINDOW_WIDTH // 2, WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - 50, FAIL_FLASH)
 
     def _execute_sell_max(self) -> None:
         commodity_id = self._get_selected_cargo_commodity()
@@ -878,7 +879,7 @@ class TradingView(BaseView):
 
         if success:
             get_audio_manager().play_sfx("trade_sell")
-            self.particles.emit(WINDOW_WIDTH // 2, WINDOW_HEIGHT - 50, COLLECT_SPARKLE)
+            self.particles.emit(WINDOW_WIDTH // 2, WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - 50, COLLECT_SPARKLE)
             from spacegame.config import XP_PER_TRADE
 
             xp_msgs = self.player.progression.add_xp(XP_PER_TRADE)
@@ -1133,7 +1134,7 @@ class TradingView(BaseView):
                 else Colors.ERROR
             )
             msg_surf = self.header_font.render(self.transaction_message, True, msg_color)
-            msg_rect = msg_surf.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT - 50))
+            msg_rect = msg_surf.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - 50))
             screen.blit(msg_surf, msg_rect)
 
     def get_next_state(self) -> Optional[GameState]:

@@ -193,7 +193,7 @@ class TestShipTypeCombatLoading:
         lf = loader.ship_types["light_freighter"]
         assert lf.combat_hull == 100
         assert lf.combat_shields == 40
-        assert lf.combat_energy == 10
+        assert lf.combat_energy == 6
         assert lf.combat_speed == 8
         assert lf.weapon_slots == 1
         assert lf.defense_slots == 1
@@ -219,13 +219,13 @@ class TestCombatUpgradeLoading:
         loader = _make_loader()
         loader.load_upgrades()
         weapons = [u for u in loader.upgrades.values() if u.slot_type == "weapon"]
-        assert len(weapons) == 13
+        assert len(weapons) == 32
 
     def test_defense_upgrades_loaded(self) -> None:
         loader = _make_loader()
         loader.load_upgrades()
         defenses = [u for u in loader.upgrades.values() if u.slot_type == "defense"]
-        assert len(defenses) == 12
+        assert len(defenses) == 14
 
     def test_weapon_has_combat_move(self) -> None:
         loader = _make_loader()
@@ -276,5 +276,5 @@ class TestCrewCombatMoveLoading:
         loader = _make_loader()
         loader.load_crew_templates()
         marcus = loader.crew_templates["marcus_jin"]
-        assert marcus.combat_move["id"] == "emergency_repairs"
+        assert marcus.combat_move["id"] == "emergency_repair"
         assert marcus.combat_move["effects"][0]["type"] == "hull_restore"

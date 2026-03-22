@@ -15,6 +15,8 @@ from spacegame.config import (
     WINDOW_HEIGHT,
     Colors,
     GameState,
+    scale_x,
+    scale_y,
 )
 from spacegame.views.base_view import BaseView
 from spacegame.models.player import Player
@@ -24,8 +26,8 @@ from spacegame.models.dialogue import NPC
 from spacegame.engine.activity_registry import ActivityRegistry
 from spacegame.engine.backgrounds import AnimatedBackground
 from spacegame.engine.draw_utils import draw_panel
-from spacegame.engine.sprites import get_sprite_manager
-from spacegame.engine.fonts import FontCache
+from spacegame.engine.sprites import get_sprite_manager, res_scale
+from spacegame.engine.fonts import FontCache, FONT_BODY, FONT_LG, FONT_MD, FONT_SM2, FONT_TITLE, FONT_XL, FONT_XL2, FONT_XS
 from spacegame.utils.logger import logger
 from spacegame.engine.audio_manager import get_audio_manager
 
@@ -77,24 +79,24 @@ _FACTION_COLORS: dict[str, tuple[int, int, int]] = {
 
 # Layout constants
 HEADER_CARD_Y = 10
-HEADER_CARD_H = 105
-HEADER_CARD_MARGIN_X = 80
+HEADER_CARD_H = scale_y(105)
+HEADER_CARD_MARGIN_X = scale_x(80)
 
-CARD_W = 370
-CARD_H = 80
+CARD_W = scale_x(370)
+CARD_H = scale_y(80)
 CARD_PAD = 10
 CARDS_PER_ROW = 3
 CARD_AREA_X = (WINDOW_WIDTH - (CARDS_PER_ROW * CARD_W + (CARDS_PER_ROW - 1) * CARD_PAD)) // 2
 
-CHATTER_CARD_X = 80
-CHATTER_CARD_Y = 535
-CHATTER_CARD_W = 960
-CHATTER_CARD_H = 75
+CHATTER_CARD_X = scale_x(80)
+CHATTER_CARD_Y = WINDOW_HEIGHT - scale_y(185)
+CHATTER_CARD_W = scale_x(960)
+CHATTER_CARD_H = scale_y(75)
 
-BACK_BUTTON_W = 140
-BACK_BUTTON_H = 40
-DETAIL_PANEL_X = 60
-DETAIL_PANEL_W = WINDOW_WIDTH - 120
+BACK_BUTTON_W = scale_x(140)
+BACK_BUTTON_H = scale_y(40)
+DETAIL_PANEL_X = scale_x(60)
+DETAIL_PANEL_W = WINDOW_WIDTH - scale_x(120)
 FLAVOR_ROTATION_INTERVAL = 10.0  # Seconds between flavor text changes
 
 # Station atmosphere descriptions — evocative one-liners per system
@@ -183,17 +185,17 @@ class StationHubView(BaseView):
             rng.shuffle(self._flavor_texts)
 
         # Fonts
-        self.title_font = FontCache.get(36)
-        self.subtitle_font = FontCache.get(24)
-        self.flavor_font = FontCache.get(20)
-        self.card_name_font = FontCache.get(28)
-        self.card_desc_font = FontCache.get(22)
-        self.card_detail_font = FontCache.get(17)
-        self.card_label_font = FontCache.get(16)
-        self.detail_title_font = FontCache.get(30)
-        self.detail_font = FontCache.get(22)
-        self.npc_font = FontCache.get(22)
-        self.chatter_font = FontCache.get(22)
+        self.title_font = FontCache.get(FONT_TITLE)
+        self.subtitle_font = FontCache.get(FONT_LG)
+        self.flavor_font = FontCache.get(FONT_MD)
+        self.card_name_font = FontCache.get(FONT_XL)
+        self.card_desc_font = FontCache.get(FONT_BODY)
+        self.card_detail_font = FontCache.get(FONT_SM2)
+        self.card_label_font = FontCache.get(FONT_XS)
+        self.detail_title_font = FontCache.get(FONT_XL2)
+        self.detail_font = FontCache.get(FONT_BODY)
+        self.npc_font = FontCache.get(FONT_BODY)
+        self.chatter_font = FontCache.get(FONT_BODY)
 
         # Dynamic card grid Y (computed in _create_ui for vertical centering)
         self._card_area_y = 0
@@ -212,7 +214,7 @@ class StationHubView(BaseView):
         # Sprite manager for faction emblems
         self._sprite_mgr = get_sprite_manager()
         self._faction_emblem: Optional[pygame.Surface] = self._sprite_mgr.get_faction_emblem(
-            system.faction, scale=2
+            system.faction, scale=res_scale(2)
         )
 
         # Background
@@ -270,11 +272,14 @@ class StationHubView(BaseView):
         """Create location card buttons and back button."""
         self._destroy_ui()
 
-        # Back button (bottom-left)
+        # Back button (bottom-left, above HUD bar)
+        from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
+
+        hud_h = scale_y(HUD_BASE_HEIGHT)
         self.back_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
                 20,
-                WINDOW_HEIGHT - BACK_BUTTON_H - 20,
+                WINDOW_HEIGHT - hud_h - BACK_BUTTON_H - scale_y(15),
                 BACK_BUTTON_W,
                 BACK_BUTTON_H,
             ),
@@ -628,7 +633,7 @@ class StationHubView(BaseView):
             # Top accent line
             pygame.draw.line(screen, color, (x, y), (x + CARD_W - 1, y), 1)
             # Location type icon (next to accent stripe)
-            icon = self._sprite_mgr.get_location_icon(loc.location_type, scale=2)
+            icon = self._sprite_mgr.get_location_icon(loc.location_type, scale=res_scale(2))
             if icon:
                 icon_rect = icon.get_rect(midleft=(x + 8, y + CARD_H // 2))
                 screen.blit(icon, icon_rect)

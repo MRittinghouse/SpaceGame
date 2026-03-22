@@ -9,13 +9,14 @@ import pygame_gui
 from typing import Optional
 
 from spacegame.views.base_view import BaseView
-from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState
+from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState, scale_x, scale_y
+from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
 from spacegame.models.player import Player
 from spacegame.achievement_manager import AchievementManager
 from spacegame.utils.logger import logger
 from spacegame.engine.backgrounds import AnimatedBackground
 from spacegame.engine.draw_utils import draw_bar
-from spacegame.engine.fonts import FontCache
+from spacegame.engine.fonts import FONT_MD, FONT_SECTION, FONT_SM, FONT_SUBTITLE, FontCache
 
 # Category badge colors and symbols
 _BADGE_COLORS: dict[str, tuple[int, int, int]] = {
@@ -102,11 +103,11 @@ class AchievementsView(BaseView):
         self._active_filter: str = "all"  # Category filter ("all" = show all)
 
         # Fonts
-        self.title_font = FontCache.get(40)
-        self.name_font = FontCache.get(26)
-        self.desc_font = FontCache.get(20)
-        self.progress_font = FontCache.get(18)
-        self.tab_font = FontCache.get(18)
+        self.title_font = FontCache.get(FONT_SECTION)
+        self.name_font = FontCache.get(FONT_SUBTITLE)
+        self.desc_font = FontCache.get(FONT_MD)
+        self.progress_font = FontCache.get(FONT_SM)
+        self.tab_font = FontCache.get(FONT_SM)
 
         # Tab hitboxes (computed during render)
         self._tab_rects: list[tuple[str, pygame.Rect]] = []
@@ -132,7 +133,7 @@ class AchievementsView(BaseView):
 
     def _create_ui(self) -> None:
         self.back_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(20, WINDOW_HEIGHT - 60, 150, 40),
+            relative_rect=pygame.Rect(scale_x(20), WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - scale_y(60), scale_x(150), scale_y(40)),
             text="BACK",
             manager=self.ui_manager,
         )
@@ -164,11 +165,11 @@ class AchievementsView(BaseView):
         else:
             count = sum(1 for a in all_achievements if a.category == self._active_filter)
 
-        card_height = 70
+        card_height = scale_y(70)
         spacing = 8
         content_height = count * (card_height + spacing)
-        # Visible area: from y=108 to WINDOW_HEIGHT - 70
-        visible_height = WINDOW_HEIGHT - 70 - 108
+        # Visible area: from y=108 to WINDOW_HEIGHT - HUD - 70
+        visible_height = WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - scale_y(70) - scale_y(108)
         max_scroll = max(0, content_height - visible_height)
         self.scroll_offset = min(self.scroll_offset, max_scroll)
 
@@ -181,7 +182,7 @@ class AchievementsView(BaseView):
 
         # Title
         title = self.title_font.render("ACHIEVEMENTS", True, Colors.TEXT_HIGHLIGHT)
-        title_rect = title.get_rect(center=(WINDOW_WIDTH // 2, 40))
+        title_rect = title.get_rect(center=(WINDOW_WIDTH // 2, scale_y(40)))
         screen.blit(title, title_rect)
 
         # Summary
@@ -195,13 +196,13 @@ class AchievementsView(BaseView):
             True,
             Colors.TEXT_SECONDARY,
         )
-        summary_rect = summary.get_rect(center=(WINDOW_WIDTH // 2, 65))
+        summary_rect = summary.get_rect(center=(WINDOW_WIDTH // 2, scale_y(65)))
         screen.blit(summary, summary_rect)
 
         # Category filter tabs
         self._tab_rects.clear()
-        tab_y = 82
-        tab_x = 30
+        tab_y = scale_y(82)
+        tab_x = scale_x(30)
         for cat_id, label in _CATEGORY_ORDER:
             is_active = self._active_filter == cat_id
             color = Colors.TEXT_HIGHLIGHT if is_active else Colors.TEXT_SECONDARY
@@ -215,7 +216,7 @@ class AchievementsView(BaseView):
             if is_active:
                 pygame.draw.line(screen, color, (tab_x, tab_y + 17), (tab_x + rect.width, tab_y + 17), 2)
             self._tab_rects.append((cat_id, rect))
-            tab_x += rect.width + 14
+            tab_x += rect.width + scale_x(14)
 
         # Filter achievements by category
         if self._active_filter == "all":
@@ -224,17 +225,17 @@ class AchievementsView(BaseView):
             filtered = [a for a in all_achievements if a.category == self._active_filter]
 
         # Achievement cards
-        card_width = 550
-        card_height = 70
+        card_width = scale_x(550)
+        card_height = scale_y(70)
         card_x = (WINDOW_WIDTH - card_width) // 2
-        start_y = 108 - self.scroll_offset
+        start_y = scale_y(108) - self.scroll_offset
         spacing = 8
 
         for i, achievement in enumerate(filtered):
             y = start_y + i * (card_height + spacing)
 
             # Skip if off-screen
-            if y + card_height < 100 or y > WINDOW_HEIGHT - 70:
+            if y + card_height < scale_y(100) or y > WINDOW_HEIGHT - scale_y(70):
                 continue
 
             is_unlocked = achievement.id in unlocked_ids

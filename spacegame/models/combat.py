@@ -16,6 +16,16 @@ if TYPE_CHECKING:
     from spacegame.models.upgrades import ShipUpgradeManager
 
 
+class WeaponElement(Enum):
+    """Elemental damage type for combat moves."""
+
+    KINETIC = "kinetic"    # Pure damage, no secondary effect
+    PLASMA = "plasma"      # 66% upfront + stacking Burn DoT
+    ION = "ion"            # 150% to shields, 75% to hull
+    CRYO = "cryo"          # 85% damage + Chill stacks → Frozen at 3
+    VOLTAIC = "voltaic"    # 85% damage + Suppressed stacks (reduce enemy damage)
+
+
 class EffectType(Enum):
     """Types of effects a combat move can apply."""
 
@@ -27,6 +37,13 @@ class EffectType(Enum):
     SHIELD_DRAIN = "shield_drain"
     DAMAGE_REDUCTION = "damage_reduction"
     ENERGY_DRAIN = "energy_drain"
+    ENERGY_RESTORE = "energy_restore"
+    DAMAGE_BOOST = "damage_boost"
+    BURN = "burn"                # Plasma DoT: X damage per turn, stacks to 3
+    CHILL = "chill"              # Cryo: stacks to 3, then Frozen (lose turn)
+    SUPPRESSED = "suppressed"    # Voltaic: -12% damage per stack, stacks to 3
+    CLEANSE = "cleanse"          # Remove all negative effects from self
+    ABSORB = "absorb"            # Absorb next incoming hit completely (1 charge)
 
 
 class EffectTarget(Enum):
@@ -102,10 +119,12 @@ class CombatMove:
     energy_cost: int = 0
     cooldown: int = 0
     accuracy_modifier: int = 0
+    element: WeaponElement = WeaponElement.KINETIC
+    aoe: bool = False  # True = hits all enemies (Broadside etc.)
 
     def to_dict(self) -> dict:
         """Serialize to dictionary."""
-        return {
+        result = {
             "id": self.id,
             "name": self.name,
             "description": self.description,
@@ -114,6 +133,11 @@ class CombatMove:
             "cooldown": self.cooldown,
             "accuracy_modifier": self.accuracy_modifier,
         }
+        if self.element != WeaponElement.KINETIC:
+            result["element"] = self.element.value
+        if self.aoe:
+            result["aoe"] = True
+        return result
 
     @classmethod
     def from_dict(cls, data: dict) -> "CombatMove":
@@ -121,11 +145,17 @@ class CombatMove:
 
         Args:
             data: Dictionary with id, name, description, effects, and
-                optional energy_cost/cooldown/accuracy_modifier.
+                optional energy_cost/cooldown/accuracy_modifier/element.
 
         Returns:
             CombatMove instance.
         """
+        element_str = data.get("element", "kinetic")
+        try:
+            element = WeaponElement(element_str)
+        except ValueError:
+            element = WeaponElement.KINETIC
+
         return cls(
             id=data["id"],
             name=data["name"],
@@ -134,6 +164,8 @@ class CombatMove:
             energy_cost=data.get("energy_cost", 0),
             cooldown=data.get("cooldown", 0),
             accuracy_modifier=data.get("accuracy_modifier", 0),
+            element=element,
+            aoe=data.get("aoe", False),
         )
 
 
@@ -203,6 +235,7 @@ class EnemyShip:
     active_effects: list[tuple[CombatEffect, int]]
     cooldowns: dict[str, int]
     is_fled: bool = False
+    telegraphed_move: Optional["CombatMove"] = None  # What enemy plans to do next
 
     @classmethod
     def from_template(cls, template: EnemyShipTemplate) -> "EnemyShip":
@@ -252,14 +285,21 @@ class EnemyShip:
         return total
 
     def tick_effects(self) -> list[str]:
-        """Decrement active effect durations and remove expired ones.
+        """Decrement active effect durations, apply DoTs, and remove expired.
 
         Returns:
-            List of human-readable messages about expired effects.
+            List of human-readable messages about effects ticking/expiring.
         """
         messages: list[str] = []
         remaining: list[tuple[CombatEffect, int]] = []
+
         for effect, turns_left in self.active_effects:
+            # Burn DoT: deal damage each tick
+            if effect.type == EffectType.BURN:
+                burn_dmg = int(effect.value)
+                self.current_hull = max(0, self.current_hull - burn_dmg)
+                messages.append(f"Burn: {burn_dmg} damage to {self.template.name}")
+
             new_turns = turns_left - 1
             if new_turns <= 0:
                 messages.append(
@@ -341,14 +381,21 @@ class PlayerCombatState:
         return total
 
     def tick_effects(self) -> list[str]:
-        """Decrement active effect durations and remove expired ones.
+        """Decrement active effect durations, apply DoTs, and remove expired.
 
         Returns:
-            List of human-readable messages about expired effects.
+            List of human-readable messages about effects ticking/expiring.
         """
         messages: list[str] = []
         remaining: list[tuple[CombatEffect, int]] = []
+
         for effect, turns_left in self.active_effects:
+            # Burn DoT: deal damage each tick
+            if effect.type == EffectType.BURN:
+                burn_dmg = int(effect.value)
+                self.hull = max(0, self.hull - burn_dmg)
+                messages.append(f"Burn: {burn_dmg} damage")
+
             new_turns = turns_left - 1
             if new_turns <= 0:
                 messages.append(f"{effect.type.value} effect expired")
@@ -421,7 +468,7 @@ def build_player_combat_state(
     ship: Ship,
     upgrade_manager: ShipUpgradeManager,
     crew_roster: Optional[CrewRoster],
-    crew_combat_moves: dict[str, CombatMove],
+    crew_combat_moves: dict[str, list[CombatMove] | CombatMove],
     player_level: int = 0,
 ) -> PlayerCombatState:
     """Build PlayerCombatState from existing game objects.
@@ -433,7 +480,8 @@ def build_player_combat_state(
         ship: Player's ship instance (uses current_hull/current_shields).
         upgrade_manager: Installed upgrades (provides equipment combat moves).
         crew_roster: Recruited crew (provides crew move IDs). May be None.
-        crew_combat_moves: Mapping of crew template_id to their CombatMove.
+        crew_combat_moves: Mapping of crew template_id to their CombatMove or
+            list of CombatMoves (for the crew tactical choice system).
         player_level: Current player level (early-game flee bonus applied).
 
     Returns:
@@ -446,12 +494,16 @@ def build_player_combat_state(
     # Equipment moves from installed upgrades
     equipment_moves = upgrade_manager.get_combat_moves()
 
-    # Crew moves from recruited members
+    # Crew moves from recruited members (supports both single and multiple moves)
     crew_moves: list[CombatMove] = []
     if crew_roster:
         for template, _state in crew_roster.get_recruited_members():
             if template.id in crew_combat_moves:
-                crew_moves.append(crew_combat_moves[template.id])
+                entry = crew_combat_moves[template.id]
+                if isinstance(entry, list):
+                    crew_moves.extend(entry)
+                else:
+                    crew_moves.append(entry)
 
     flee_bonus = int(upgrade_manager.get_bonus("flee_bonus"))
     if player_level < EARLY_GAME_LEVEL:

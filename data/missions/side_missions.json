@@ -16,14 +16,15 @@
       "required_flags": [],
       "auto_accept": false,
       "on_accept_cargo": [
-        {"commodity_id": "data_chip", "quantity": 1}
+        {"commodity_id": "sealed_audit_chip", "quantity": 1}
       ],
       "objectives": [
         {"type": "talk_to_npc", "target_id": "neve_osei", "target_quantity": 1, "description": "Speak with Neve Osei at Nexus Prime"},
-        {"type": "reach_system", "target_id": "stellaris_port", "target_quantity": 1, "description": "Deliver the data chip to Stellaris Port"},
-        {"type": "has_flag", "target_id": "price_of_info_resolved", "target_quantity": 1, "description": "Resolve the data chip delivery"}
+        {"type": "reach_system", "target_id": "stellaris_port", "target_quantity": 1, "description": "Deliver the audit chip to Stellaris Port"},
+        {"type": "has_flag", "target_id": "price_of_info_resolved", "target_quantity": 1, "description": "Resolve the audit chip delivery"}
       ],
       "rewards": [
+        {"reward_type": "remove_cargo", "amount": 1, "target_id": "sealed_audit_chip"},
         {"reward_type": "credits", "amount": 400},
         {"reward_type": "xp", "amount": 80},
         {"reward_type": "set_flag", "amount": 0, "target_id": "price_of_info_complete"}

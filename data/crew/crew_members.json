@@ -32,12 +32,43 @@
           "unlock_level": 5
         }
       ],
+      "combat_moves": [
+        {
+          "id": "evasive_maneuvers",
+          "name": "Evasive Maneuvers",
+          "description": "Elena plots evasive maneuvers, granting +25 evasion for 2 turns.",
+          "effects": [{"type": "evasion_mod", "value": 25.0, "duration": 2, "target": "self"}],
+          "energy_cost": 3
+        },
+        {
+          "id": "intercept_course",
+          "name": "Intercept Course",
+          "description": "Elena calculates an optimal firing solution. Next attack gains +20 accuracy.",
+          "effects": [{"type": "accuracy_mod", "value": 20.0, "duration": 1, "target": "self"}],
+          "energy_cost": 1
+        },
+        {
+          "id": "emergency_burn",
+          "name": "Emergency Burn",
+          "description": "Elena plots an emergency escape route. +40 flee chance for this combat.",
+          "effects": [{"type": "evasion_mod", "value": 40.0, "duration": 99, "target": "self"}],
+          "energy_cost": 2,
+          "cooldown": 99
+        },
+        {
+          "id": "sensor_sweep",
+          "name": "Sensor Sweep",
+          "description": "Elena sweeps enemy signatures, revealing their tactical intentions.",
+          "effects": [{"type": "accuracy_mod", "value": 10.0, "duration": 3, "target": "self"}],
+          "energy_cost": 2
+        }
+      ],
       "combat_move": {
         "id": "evasive_maneuvers",
         "name": "Evasive Maneuvers",
-        "description": "Elena plots evasive maneuvers, granting +20 evasion for 2 turns.",
-        "effects": [{"type": "evasion_mod", "value": 20.0, "duration": 2, "target": "self"}],
-        "energy_cost": 0
+        "description": "Elena plots evasive maneuvers, granting +25 evasion for 2 turns.",
+        "effects": [{"type": "evasion_mod", "value": 25.0, "duration": 2, "target": "self"}],
+        "energy_cost": 3
       }
     },
     {
@@ -72,12 +103,44 @@
           "unlock_level": 5
         }
       ],
+      "combat_moves": [
+        {
+          "id": "emergency_repair",
+          "name": "Emergency Repair",
+          "description": "Marcus patches hull breaches under fire, restoring 25 hull.",
+          "effects": [{"type": "hull_restore", "value": 25.0, "target": "self"}],
+          "energy_cost": 4
+        },
+        {
+          "id": "reroute_power",
+          "name": "Reroute Power",
+          "description": "Marcus reroutes auxiliary power to weapons. Restore 4 energy but -10 evasion for 1 turn.",
+          "effects": [{"type": "energy_restore", "value": 4.0, "target": "self"}, {"type": "evasion_mod", "value": -10.0, "duration": 1, "target": "self"}],
+          "energy_cost": 0,
+          "cooldown": 3
+        },
+        {
+          "id": "reinforce_hull",
+          "name": "Reinforce Hull",
+          "description": "Marcus reinforces structural weak points. +20% damage reduction for 2 turns.",
+          "effects": [{"type": "damage_reduction", "value": 20.0, "duration": 2, "target": "self"}],
+          "energy_cost": 3
+        },
+        {
+          "id": "overclock_reactor",
+          "name": "Overclock Reactor",
+          "description": "Marcus pushes the reactor past safety limits. +2 energy regen for 3 turns.",
+          "effects": [{"type": "energy_restore", "value": 2.0, "duration": 3, "target": "self"}],
+          "energy_cost": 3,
+          "cooldown": 99
+        }
+      ],
       "combat_move": {
-        "id": "emergency_repairs",
-        "name": "Emergency Repairs",
-        "description": "Marcus patches hull damage, restoring 20 hull points.",
-        "effects": [{"type": "hull_restore", "value": 20.0, "target": "self"}],
-        "energy_cost": 0
+        "id": "emergency_repair",
+        "name": "Emergency Repair",
+        "description": "Marcus patches hull breaches under fire, restoring 25 hull.",
+        "effects": [{"type": "hull_restore", "value": 25.0, "target": "self"}],
+        "energy_cost": 4
       }
     },
     {
@@ -112,12 +175,42 @@
           "unlock_level": 5
         }
       ],
+      "combat_moves": [
+        {
+          "id": "analyze_weakness",
+          "name": "Analyze Weakness",
+          "description": "Priya identifies structural weak points. -20 enemy evasion for 2 turns.",
+          "effects": [{"type": "evasion_mod", "value": -20.0, "duration": 2}],
+          "energy_cost": 3
+        },
+        {
+          "id": "exploit_vulnerability",
+          "name": "Exploit Vulnerability",
+          "description": "Priya marks a critical system for targeting. Next attack deals +40% damage.",
+          "effects": [{"type": "damage_boost", "value": 40.0, "duration": 1, "target": "self"}],
+          "energy_cost": 2
+        },
+        {
+          "id": "system_scan",
+          "name": "System Scan",
+          "description": "Priya runs a deep sensor analysis. +10 accuracy for 3 turns.",
+          "effects": [{"type": "accuracy_mod", "value": 10.0, "duration": 3, "target": "self"}],
+          "energy_cost": 1
+        },
+        {
+          "id": "destabilize_shields",
+          "name": "Destabilize Shields",
+          "description": "Priya disrupts enemy shield harmonics, draining 20 shield points.",
+          "effects": [{"type": "shield_drain", "value": 20.0}],
+          "energy_cost": 3
+        }
+      ],
       "combat_move": {
         "id": "analyze_weakness",
         "name": "Analyze Weakness",
-        "description": "Priya analyzes the enemy, reducing their evasion by 15 for 2 turns.",
-        "effects": [{"type": "evasion_mod", "value": -15.0, "duration": 2}],
-        "energy_cost": 0
+        "description": "Priya identifies structural weak points. -20 enemy evasion for 2 turns.",
+        "effects": [{"type": "evasion_mod", "value": -20.0, "duration": 2}],
+        "energy_cost": 3
       }
     },
     {
@@ -152,12 +245,44 @@
           "unlock_level": 5
         }
       ],
+      "combat_moves": [
+        {
+          "id": "smooth_talking",
+          "name": "Smooth Talking",
+          "description": "Tomas opens a channel and works the angle. +20% negotiate success this combat.",
+          "effects": [{"type": "accuracy_mod", "value": 20.0, "duration": 99, "target": "self"}],
+          "energy_cost": 2,
+          "cooldown": 99
+        },
+        {
+          "id": "distraction",
+          "name": "Distraction",
+          "description": "Tomas broadcasts confusing signals. Target enemy skips their next action.",
+          "effects": [{"type": "evasion_mod", "value": -30.0, "duration": 1}],
+          "energy_cost": 5,
+          "cooldown": 4
+        },
+        {
+          "id": "black_market_contacts",
+          "name": "Black Market Contacts",
+          "description": "Tomas calls in a favor. Restore 3 energy from emergency supplies.",
+          "effects": [{"type": "energy_restore", "value": 3.0, "target": "self"}],
+          "energy_cost": 1
+        },
+        {
+          "id": "intimidate",
+          "name": "Intimidate",
+          "description": "Tomas broadcasts the ship's kill record. -20% enemy damage for 2 turns.",
+          "effects": [{"type": "damage_reduction", "value": 20.0, "duration": 2, "target": "self"}],
+          "energy_cost": 3
+        }
+      ],
       "combat_move": {
         "id": "smooth_talking",
         "name": "Smooth Talking",
-        "description": "Tomas talks the enemy down, making negotiation easier. Reduces negotiate difficulty by 1.",
-        "effects": [{"type": "accuracy_mod", "value": 5.0, "duration": 2, "target": "self"}],
-        "energy_cost": 0
+        "description": "Tomas opens a channel and works the angle. +20% negotiate success this combat.",
+        "effects": [{"type": "accuracy_mod", "value": 20.0, "duration": 99, "target": "self"}],
+        "energy_cost": 2
       }
     },
     {
