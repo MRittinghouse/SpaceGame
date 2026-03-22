@@ -30,6 +30,7 @@ from spacegame.engine.sprites import get_sprite_manager, res_scale
 from spacegame.engine.fonts import FontCache, FONT_BODY, FONT_LG, FONT_MD, FONT_SM2, FONT_TITLE, FONT_XL, FONT_XL2, FONT_XS
 from spacegame.utils.logger import logger
 from spacegame.engine.audio_manager import get_audio_manager
+from spacegame.views.station_layouts import create_station_layout, StationZone
 
 # Location type → GameState mapping
 _LOCATION_STATE_MAP: dict[str, GameState] = {
@@ -197,13 +198,8 @@ class StationHubView(BaseView):
         self.npc_font = FontCache.get(FONT_BODY)
         self.chatter_font = FontCache.get(FONT_BODY)
 
-        # Dynamic card grid Y (computed in _create_ui for vertical centering)
-        self._card_area_y = 0
-
         # UI element refs
         self.back_button: Optional[pygame_gui.elements.UIButton] = None
-        self._card_buttons: list[pygame_gui.elements.UIButton] = []
-        self._card_locations: list[Location] = []
         self._npc_buttons: dict[str, pygame_gui.elements.UIButton] = {}
         self._rerecruit_buttons: dict[str, pygame_gui.elements.UIButton] = {}
         self._hire_buttons: dict[str, pygame_gui.elements.UIButton] = {}
@@ -216,6 +212,9 @@ class StationHubView(BaseView):
         self._faction_emblem: Optional[pygame.Surface] = self._sprite_mgr.get_faction_emblem(
             system.faction, scale=res_scale(2)
         )
+
+        # Faction-specific station layout (created in _create_ui)
+        self._station_layout: Optional[object] = None
 
         # Background
         self.background = AnimatedBackground(
@@ -287,26 +286,10 @@ class StationHubView(BaseView):
             manager=self.ui_manager,
         )
 
-        # Create card buttons for each location, vertically centered
-        self._card_buttons = []
-        self._card_locations = []
-        num_rows = (len(self.locations) + CARDS_PER_ROW - 1) // CARDS_PER_ROW
-        grid_h = num_rows * CARD_H + max(0, num_rows - 1) * CARD_PAD
-        available_top = HEADER_CARD_Y + HEADER_CARD_H + 10
-        available_bottom = CHATTER_CARD_Y - 10
-        self._card_area_y = available_top + (available_bottom - available_top - grid_h) // 2
-        for i, loc in enumerate(self.locations):
-            row = i // CARDS_PER_ROW
-            col = i % CARDS_PER_ROW
-            x = CARD_AREA_X + col * (CARD_W + CARD_PAD)
-            y = self._card_area_y + row * (CARD_H + CARD_PAD)
-            btn = pygame_gui.elements.UIButton(
-                relative_rect=pygame.Rect(x, y, CARD_W, CARD_H),
-                text=loc.name,
-                manager=self.ui_manager,
-            )
-            self._card_buttons.append(btn)
-            self._card_locations.append(loc)
+        # Create faction-specific station layout (replaces card buttons)
+        self._station_layout = create_station_layout(
+            self.locations, self.system.id, self._sprite_mgr
+        )
 
     def _create_denied_ui(self) -> None:
         """Create minimal UI for docking denial — only a Leave button."""
@@ -327,10 +310,7 @@ class StationHubView(BaseView):
         if self.back_button:
             self.back_button.kill()
             self.back_button = None
-        for btn in self._card_buttons:
-            btn.kill()
-        self._card_buttons = []
-        self._card_locations = []
+        self._station_layout = None
         self._destroy_npc_buttons()
         if self._detail_close_button:
             self._detail_close_button.kill()
@@ -367,10 +347,11 @@ class StationHubView(BaseView):
         """Create NPC talk, re-recruit, and hire buttons for expanded cantina."""
         self._destroy_npc_buttons()
         npcs = self._get_cantina_npcs()
-        # Position below the card area
-        base_y = (
-            self._card_area_y + ((len(self.locations) // CARDS_PER_ROW + 1) * (CARD_H + CARD_PAD)) + 10
-        )
+        # Position below the station layout zones
+        if self._station_layout and self._station_layout.zones:
+            base_y = max(z.rect.bottom for z in self._station_layout.zones) + scale_y(10)
+        else:
+            base_y = CHATTER_CARD_Y - scale_y(100)
         btn_index = 0
         for npc in npcs:
             btn = pygame_gui.elements.UIButton(
@@ -475,15 +456,6 @@ class StationHubView(BaseView):
                     self._detail_close_button = None
                 return
 
-            # Check card buttons
-            for btn, loc in zip(self._card_buttons, self._card_locations):
-                if event.ui_element == btn:
-                    get_audio_manager().play_sfx("ui_confirm")
-                    self._select_location_type(loc.location_type)
-                    if loc.location_type == "unique":
-                        self._detail_location = loc
-                    return
-
             # Check NPC buttons
             for npc_id, btn in self._npc_buttons.items():
                 if event.ui_element == btn:
@@ -508,14 +480,27 @@ class StationHubView(BaseView):
                     self._handle_accept_contract(mission_id)
                     return
 
+        # Check station layout zone clicks
+        if self._station_layout and event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            zone = self._station_layout.get_clicked_zone(event.pos)
+            if zone:
+                get_audio_manager().play_sfx("ui_confirm")
+                self._select_location_type(zone.location.location_type)
+                if zone.location.location_type == "unique":
+                    self._detail_location = zone.location
+                return
+
         # Keyboard: Escape to undock
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 self._request_back()
 
     def update(self, dt: float) -> None:
-        """Update background animation and flavor text rotation."""
+        """Update background animation, layout hover, and flavor text rotation."""
         self.background.update(dt)
+        if self._station_layout:
+            self._station_layout.handle_hover(pygame.mouse.get_pos())
+            self._station_layout.update(dt)
         if self._flavor_texts:
             self._flavor_timer += dt
             if self._flavor_timer >= FLAVOR_ROTATION_INTERVAL:
@@ -536,11 +521,11 @@ class StationHubView(BaseView):
         # Header: system name + description
         self._render_header(screen)
 
-        # Card accent colors (rendered behind card buttons)
-        self._render_card_accents(screen)
-
-        # Card descriptions (below each button)
-        self._render_card_descriptions(screen)
+        # Faction-specific station layout zones
+        if self._station_layout:
+            self._station_layout.render_background(screen)
+            self._station_layout.render_zones(screen)
+            self._station_layout.render_atmosphere(screen)
 
         # Station chatter (bottom card)
         self._render_chatter(screen)
@@ -619,81 +604,6 @@ class StationHubView(BaseView):
             screen.blit(self._faction_emblem, emblem_rect)
         else:
             pygame.draw.circle(screen, fc, (info_x - 10, card_y + 78 + 10), 4)
-
-    def _render_card_accents(self, screen: pygame.Surface) -> None:
-        """Render colored accent bars and type labels on location cards."""
-        for i, loc in enumerate(self._card_locations):
-            row = i // CARDS_PER_ROW
-            col = i % CARDS_PER_ROW
-            x = CARD_AREA_X + col * (CARD_W + CARD_PAD)
-            y = self._card_area_y + row * (CARD_H + CARD_PAD)
-            color = _LOCATION_COLORS.get(loc.location_type, Colors.TEXT_SECONDARY)
-            # Left accent stripe (wider)
-            pygame.draw.rect(screen, color, (x, y, 5, CARD_H))
-            # Top accent line
-            pygame.draw.line(screen, color, (x, y), (x + CARD_W - 1, y), 1)
-            # Location type icon (next to accent stripe)
-            icon = self._sprite_mgr.get_location_icon(loc.location_type, scale=res_scale(2))
-            if icon:
-                icon_rect = icon.get_rect(midleft=(x + 8, y + CARD_H // 2))
-                screen.blit(icon, icon_rect)
-            # Type label (top-right corner)
-            label_text = _LOCATION_LABELS.get(loc.location_type, "")
-            if label_text:
-                label_surf = self.card_label_font.render(label_text, True, color)
-                screen.blit(label_surf, (x + CARD_W - label_surf.get_width() - 8, y + 4))
-
-    def _render_card_descriptions(self, screen: pygame.Surface) -> None:
-        """Render location descriptions on cards (over buttons)."""
-        for i, loc in enumerate(self._card_locations):
-            row = i // CARDS_PER_ROW
-            col = i % CARDS_PER_ROW
-            x = CARD_AREA_X + col * (CARD_W + CARD_PAD)
-            y = self._card_area_y + row * (CARD_H + CARD_PAD)
-            # Description in smaller font inside the card, below the button text
-            max_desc_w = CARD_W - 24
-            desc_text = loc.description
-            # Truncate to fit card width
-            while self.card_detail_font.size(desc_text + "...")[0] > max_desc_w and len(desc_text) > 10:
-                desc_text = desc_text[:-1]
-            if len(desc_text) < len(loc.description):
-                desc_text += "..."
-            desc = self.card_detail_font.render(desc_text, True, Colors.TEXT_SECONDARY)
-            screen.blit(desc, (x + 12, y + CARD_H - 20))
-
-            # Mining cards: show silo status and ore specialty
-            if loc.location_type == "mining" and hasattr(self.player, "ore_silo_manager"):
-                silo = self.player.ore_silo_manager.get_silo(self.system.id)
-                stored = silo.get_total_stored()
-                capacity = silo.capacity
-                if stored > 0:
-                    fill_pct = stored / capacity if capacity > 0 else 0
-                    silo_color = (
-                        Colors.GREEN if fill_pct < 0.7
-                        else Colors.YELLOW if fill_pct < 0.9
-                        else Colors.RED
-                    )
-                    silo_text = f"Silo: {stored}/{capacity}"
-                    silo_surf = self.card_detail_font.render(silo_text, True, silo_color)
-                    screen.blit(silo_surf, (x + CARD_W - silo_surf.get_width() - 12, y + 6))
-
-                # Show dominant ore type from mining config
-                from spacegame.data_loader import get_data_loader
-                mining_cfg = get_data_loader().get_mining_config(self.system.id)
-                if mining_cfg:
-                    dist = mining_cfg.rock_distribution
-                    # Find the highest-weighted non-common ore
-                    best_ore = max(
-                        ((k, v) for k, v in dist.items() if k != "common"),
-                        key=lambda x: x[1],
-                        default=None,
-                    )
-                    if best_ore:
-                        ore_label = best_ore[0].replace("_", " ").title()
-                        spec_surf = self.card_detail_font.render(
-                            f"{ore_label}-rich", True, _LOCATION_COLORS.get("mining", Colors.TEXT_SECONDARY)
-                        )
-                        screen.blit(spec_surf, (x + CARD_W - spec_surf.get_width() - 12, y + CARD_H - 20))
 
     def _render_detail_panel(self, screen: pygame.Surface) -> None:
         """Render detail panel for unique/expanded locations."""

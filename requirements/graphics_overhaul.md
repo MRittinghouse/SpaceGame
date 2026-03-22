@@ -708,6 +708,7 @@ Manages per-ship visual degradation:
 | Item | Status | Notes |
 |------|--------|-------|
 | 1C: Combat Visual Overhaul | DONE | All 6 phases complete — ships, projectiles, shields, damage, destruction, atmosphere |
+| 1B: Station Hub Visual Upgrade | DONE | 5 faction-specific layouts: Guild deck, Union blueprint, Collective radial, Frontier scattered, Reach dark |
 
 ### 1C Implementation Phases
 
