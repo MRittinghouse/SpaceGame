@@ -248,6 +248,8 @@ class CombatView(BaseView):
         # Crew tactical choice: selected crew ability for this turn (None = skip)
         self._selected_crew_move_id: Optional[str] = None
         self._crew_move_buttons: list[_MoveButton] = []
+        self._combo_buttons: list[dict] = []  # {"rect": Rect, "combo": CrewCombo, "enabled": bool}
+        self._selected_combo_id: Optional[str] = None
 
         # Floating text feedback
         self.floating_texts: list[dict] = []
@@ -685,6 +687,17 @@ class CombatView(BaseView):
     def _handle_click(self, pos: tuple[int, int]) -> None:
         """Handle mouse clicks on move buttons and enemy cards."""
         if self.phase == CombatPhase.PLAYER_INPUT:
+            # Combo buttons (select combo, replaces individual crew ability)
+            for cb in self._combo_buttons:
+                if cb["rect"].collidepoint(pos) and cb["enabled"]:
+                    combo = cb["combo"]
+                    if self._selected_combo_id == combo.id:
+                        self._selected_combo_id = None  # Deselect
+                    else:
+                        self._selected_combo_id = combo.id
+                        self._selected_crew_move_id = None  # Combo replaces crew ability
+                    return
+
             # Crew ability buttons (toggle selection, doesn't execute yet)
             for btn in self._crew_move_buttons:
                 if btn.rect.collidepoint(pos) and btn.enabled:
@@ -692,6 +705,7 @@ class CombatView(BaseView):
                         self._selected_crew_move_id = None  # Deselect
                     else:
                         self._selected_crew_move_id = btn.move.id  # Select
+                        self._selected_combo_id = None  # Crew ability replaces combo
                     return
 
             # Move buttons (weapon — executes immediately)
@@ -883,6 +897,39 @@ class CombatView(BaseView):
                 )
             )
 
+        # Build combo buttons (Phase 9 — available when momentum ≥ 25%)
+        self._combo_buttons = []
+        self._selected_combo_id = None
+        if hasattr(self, "player") and self.player:
+            from spacegame.models.crew_combos import get_available_combos, check_combo_discoveries
+            recruited = set()
+            if hasattr(self.player, "crew_roster") and self.player.crew_roster:
+                roster = self.player.crew_roster
+                if hasattr(roster, "get_recruited_members"):
+                    recruited = {t.id for t, _ in roster.get_recruited_members()}
+            discovered = getattr(self.player, "discovered_combos", set())
+            momentum_pct = state.player.momentum.current if state.player.momentum else 0.0
+
+            # Check for new discoveries (both crew recruited = combo discoverable)
+            newly = check_combo_discoveries(recruited, discovered)
+            for combo in newly:
+                discovered.add(combo.id)
+                if hasattr(self.player, "discovered_combos"):
+                    self.player.discovered_combos.add(combo.id)
+
+            available = get_available_combos(recruited, discovered, momentum_pct, state.player.energy)
+            combo_y = crew_btn_y + crew_btn_h + scale_y(6)
+            for ci, combo in enumerate(available):
+                combo_w = scale_x(200)
+                combo_h = scale_y(30)
+                cx = crew_btn_x + ci * (combo_w + crew_btn_gap)
+                combo_rect = pygame.Rect(cx, combo_y, combo_w, combo_h)
+                self._combo_buttons.append({
+                    "rect": combo_rect,
+                    "combo": combo,
+                    "enabled": True,
+                })
+
     # ------------------------------------------------------------------
     # Flee
     # ------------------------------------------------------------------
@@ -1047,12 +1094,19 @@ class CombatView(BaseView):
     # ------------------------------------------------------------------
 
     def _start_crew_phase(self) -> None:
-        """Execute the player's chosen crew ability (or skip if none selected)."""
-        logs = self.engine.execute_crew_moves(
-            chosen_move_id=self._selected_crew_move_id
-        )
-        # Reset selection for next turn
-        self._selected_crew_move_id = None
+        """Execute the player's chosen crew ability or combo (or skip if none selected)."""
+        # Combo takes priority over individual crew ability
+        if self._selected_combo_id:
+            logs = self.engine.execute_crew_combo(self._selected_combo_id)
+            self._selected_combo_id = None
+            self._selected_crew_move_id = None
+        else:
+            logs = self.engine.execute_crew_moves(
+                chosen_move_id=self._selected_crew_move_id
+            )
+            # Reset selection for next turn
+            self._selected_crew_move_id = None
+            self._selected_combo_id = None
         if not logs:
             # No crew move executed — skip straight to enemy phase
             self._advance_phase(CombatPhase.ANIMATING_ENEMIES)
@@ -2735,6 +2789,51 @@ class CombatView(BaseView):
                     cd_surf = pygame.Surface((bw, bh), pygame.SRCALPHA)
                     cd_surf.fill((0, 0, 0, 140))
                     screen.blit(cd_surf, (bx, by))
+
+        # Combo buttons (Phase 9 — gold border, special styling)
+        for cb in self._combo_buttons:
+            combo = cb["combo"]
+            rect = cb["rect"]
+            bx = rect.x + ox
+            by = rect.y + oy
+            bw = rect.width
+            bh = rect.height
+            is_selected = self._selected_combo_id == combo.id
+
+            # Gold background for combos
+            if is_selected:
+                bg = (50, 45, 15, 240)
+            elif is_input:
+                bg = (35, 32, 12, 220)
+            else:
+                bg = (20, 18, 8, 180)
+            combo_surf = pygame.Surface((bw, bh), pygame.SRCALPHA)
+            combo_surf.fill(bg)
+            screen.blit(combo_surf, (bx, by))
+
+            # Gold border (brighter when selected)
+            border = (255, 200, 60) if is_selected else (180, 150, 50)
+            pygame.draw.rect(screen, border, (bx, by, bw, bh), 1, border_radius=3)
+
+            # Combo name
+            combo_name = self.small_font.render(combo.name, True, (255, 220, 100))
+            max_name_w = bw - scale_x(30)
+            if combo_name.get_width() > max_name_w:
+                name_text = combo.name
+                while len(name_text) > 3 and self.small_font.size(name_text)[0] > max_name_w:
+                    name_text = name_text[:-1]
+                name_text = name_text.rstrip() + ".."
+                combo_name = self.small_font.render(name_text, True, (255, 220, 100))
+            screen.blit(combo_name, (bx + 4, by + (bh - combo_name.get_height()) // 2))
+
+            # Energy cost (right side)
+            cost_text = f"{combo.energy_cost}E"
+            cost_surf = self.small_font.render(cost_text, True, ENERGY_COLOR)
+            screen.blit(cost_surf, (bx + bw - cost_surf.get_width() - 4, by + (bh - cost_surf.get_height()) // 2))
+
+            # "COMBO" tag (small label)
+            tag_surf = self.small_font.render("COMBO", True, (180, 150, 50))
+            screen.blit(tag_surf, (bx + bw - tag_surf.get_width() - 4, by - 10))
 
         # Enhanced tooltip for hovered move (rendered on top of all buttons)
         if is_input:

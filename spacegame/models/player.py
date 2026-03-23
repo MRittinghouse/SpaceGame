@@ -177,6 +177,7 @@ class Player:
     forge_buffer_manager: ForgeBufferManager = field(default_factory=ForgeBufferManager)
     recipe_mastery: RecipeMasteryTracker = field(default_factory=RecipeMasteryTracker)
     discovered_recipes: set[str] = field(default_factory=set)
+    discovered_combos: set[str] = field(default_factory=set)
 
     def __post_init__(self) -> None:
         """Initialize visited systems with starting location."""

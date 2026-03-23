@@ -492,6 +492,7 @@ class SaveManager:
             "forge_buffer_manager": player.forge_buffer_manager.to_dict(),
             "recipe_mastery": player.recipe_mastery.to_dict(),
             "discovered_recipes": sorted(player.discovered_recipes),
+            "discovered_combos": sorted(player.discovered_combos),
         }
         return result
 
@@ -700,6 +701,8 @@ class SaveManager:
             player.recipe_mastery = RecipeMasteryTracker.from_dict(data["recipe_mastery"])
         if "discovered_recipes" in data:
             player.discovered_recipes = set(data["discovered_recipes"])
+        if "discovered_combos" in data:
+            player.discovered_combos = set(data["discovered_combos"])
 
         return player
 

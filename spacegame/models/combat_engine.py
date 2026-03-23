@@ -213,6 +213,160 @@ class CombatEngine:
         return all_logs
 
     # ------------------------------------------------------------------
+    # Crew combos
+    # ------------------------------------------------------------------
+
+    def execute_crew_combo(self, combo_id: str) -> list[CombatLogEntry]:
+        """Execute a crew combo ability.
+
+        Requires 25%+ momentum and sufficient energy. Counts as the
+        crew action for this turn (replaces individual crew ability).
+
+        Args:
+            combo_id: ID of the combo to execute.
+
+        Returns:
+            Combat log entries from the combo's resolution.
+        """
+        from spacegame.models.crew_combos import get_combo_by_id
+        from spacegame.models.momentum import THRESHOLD_CHARGED
+
+        player = self._state.player
+        combo = get_combo_by_id(combo_id)
+
+        if combo is None:
+            entry = CombatLogEntry(
+                round_number=self._state.round_number,
+                actor="crew_combo",
+                action="Unknown Combo",
+                effects_applied=["Combo not found"],
+                hit=False,
+            )
+            self._state.combat_log.append(entry)
+            return [entry]
+
+        # Check momentum threshold
+        if player.momentum is None or player.momentum.current < THRESHOLD_CHARGED:
+            entry = CombatLogEntry(
+                round_number=self._state.round_number,
+                actor="crew_combo",
+                action=combo.name,
+                effects_applied=["Not enough momentum (need 25%)"],
+                hit=False,
+            )
+            self._state.combat_log.append(entry)
+            return [entry]
+
+        # Check energy
+        if player.energy < combo.energy_cost:
+            entry = CombatLogEntry(
+                round_number=self._state.round_number,
+                actor="crew_combo",
+                action=combo.name,
+                effects_applied=[f"Not enough energy (need {combo.energy_cost})"],
+                hit=False,
+            )
+            self._state.combat_log.append(entry)
+            return [entry]
+
+        # Deduct energy
+        player.energy -= combo.energy_cost
+
+        # Resolve combo effects
+        messages: list[str] = [f"COMBO: {combo.name}!"]
+        surviving = self._state.surviving_enemies
+
+        for effect in combo.effects:
+            effect_type = effect.get("type", "")
+            value = effect.get("value", 0)
+            duration = effect.get("duration", 0)
+            target = effect.get("target", "self")
+
+            if effect_type == "hull_restore":
+                restored = min(int(value), player.max_hull - player.hull)
+                player.hull += restored
+                messages.append(f"Restored {restored} hull")
+
+            elif effect_type == "shield_restore":
+                restored = min(int(value), player.max_shields - player.shields)
+                player.shields += restored
+                messages.append(f"Restored {restored} shields")
+
+            elif effect_type == "energy_restore":
+                restored = min(int(value), player.max_energy - player.energy)
+                player.energy += restored
+                messages.append(f"Restored {restored} energy")
+
+            elif effect_type == "accuracy_mod":
+                eff = CombatEffect(
+                    type=EffectType.ACCURACY_MOD,
+                    value=float(value),
+                    duration=duration,
+                    target=EffectTarget.SELF,
+                )
+                player.active_effects.append((eff, duration))
+                messages.append(f"+{int(value)} accuracy for {duration} turn")
+
+            elif effect_type == "damage_boost":
+                eff = CombatEffect(
+                    type=EffectType.DAMAGE_BOOST,
+                    value=float(value),
+                    duration=duration,
+                    target=EffectTarget.SELF,
+                )
+                player.active_effects.append((eff, duration))
+                messages.append(f"+{int(value)}% damage for {duration} turn")
+
+            elif effect_type == "flee_bonus":
+                player.flee_bonus += int(value)
+                messages.append(f"+{int(value)}% flee chance")
+
+            elif effect_type == "cleanse":
+                # Remove negative effects (burn, chill, suppressed)
+                negative_types = {EffectType.BURN, EffectType.CHILL, EffectType.SUPPRESSED}
+                before = len(player.active_effects)
+                player.active_effects = [
+                    (eff, dur) for eff, dur in player.active_effects
+                    if eff.type not in negative_types
+                ]
+                removed = before - len(player.active_effects)
+                messages.append(f"Cleansed {removed} debuffs")
+
+            elif effect_type == "absorb":
+                eff = CombatEffect(
+                    type=EffectType.ABSORB,
+                    value=1.0,
+                    duration=1,
+                    target=EffectTarget.SELF,
+                )
+                player.active_effects.append((eff, 99))  # Persists until consumed
+                messages.append("Absorb shield deployed")
+
+            elif effect_type == "reveal_stats":
+                messages.append("All enemy stats revealed")
+
+            elif effect_type == "energy_drain" and target == "single_enemy":
+                if surviving:
+                    strongest = max(surviving, key=lambda e: e.current_hull + e.current_shields)
+                    drained = min(int(value), strongest.current_energy)
+                    strongest.current_energy -= drained
+                    messages.append(f"Drained {drained} energy from {strongest.template.name}")
+
+        # Momentum: crew ability used
+        self._add_player_momentum(MOMENTUM_ON_CREW_ABILITY, "crew combo")
+
+        entry = CombatLogEntry(
+            round_number=self._state.round_number,
+            actor="crew_combo",
+            action=f"COMBO: {combo.name}",
+            effects_applied=messages,
+            hit=True,
+        )
+        self._state.combat_log.append(entry)
+        self._check_combat_end()
+        return [entry]
+
+    # ------------------------------------------------------------------
     # Enemy actions
     # ------------------------------------------------------------------
 
