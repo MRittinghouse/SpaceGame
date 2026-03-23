@@ -82,12 +82,13 @@ class MiningView(BaseView):
     GRID_OFFSET_X = scale_x(60)
     GRID_OFFSET_Y = scale_y(120)
 
-    # Right-side info cards: two columns to avoid overlap
-    CARD_COL_W = scale_x(265)
-    CARD_COL_GAP = 10
-    CARD_COL_RIGHT_X = WINDOW_WIDTH - CARD_COL_W - 5  # Right column
-    CARD_COL_LEFT_X = CARD_COL_RIGHT_X - CARD_COL_W - CARD_COL_GAP  # Left column
-    CARD_TOP_Y = scale_y(120)
+    # Right-side info cards: two columns with consistent spacing
+    CARD_COL_W = scale_x(240)
+    CARD_COL_GAP = scale_x(12)
+    CARD_COL_RIGHT_X = WINDOW_WIDTH - CARD_COL_W - scale_x(10)
+    CARD_COL_LEFT_X = CARD_COL_RIGHT_X - CARD_COL_W - CARD_COL_GAP
+    CARD_TOP_Y = scale_y(135)  # Aligned with grid top
+    CARD_PAD = scale_y(8)  # Consistent vertical gap between cards
 
     def __init__(
         self,
@@ -227,9 +228,9 @@ class MiningView(BaseView):
         )
         self._mining_atmosphere = MiningAtmosphere(grid_rect)
         self._depth_meter = DepthMeter(
-            x=self.CARD_COL_LEFT_X - scale_x(50),
-            y=self.GRID_OFFSET_Y,
-            height=self.CELL_SIZE * 5,
+            x=self.CARD_COL_LEFT_X - scale_x(45),
+            y=self.CARD_TOP_Y,
+            height=scale_y(400),
         )
         self._layer_transition = LayerTransition()
 
@@ -1556,6 +1557,12 @@ class MiningView(BaseView):
         """Render drone status panel (left column, top)."""
         panel_x = self.CARD_COL_LEFT_X
         panel_y = self.CARD_TOP_Y
+        panel_w = self.CARD_COL_W
+
+        # Calculate height for background
+        active_drones = self.session.drones if self.session else []
+        content_h = 30 + max(1, len(active_drones)) * 38 + 10
+        draw_panel(screen, (panel_x - 8, panel_y - 6, panel_w + 16, content_h), alpha=160)
 
         # Header
         header = self.info_font.render("DRONES", True, Colors.TEXT_HIGHLIGHT)
@@ -1620,10 +1627,10 @@ class MiningView(BaseView):
         """Render session stats card (left column, below drones)."""
         panel_x = self.CARD_COL_LEFT_X
         panel_w = self.CARD_COL_W
-        # Position below drone panel
+        # Position below drone panel with consistent gap
         active_drones = self.session.drones if self.session else []
-        drone_panel_height = max(65, 28 + len(active_drones) * 38 + 15)
-        panel_y = self.CARD_TOP_Y + drone_panel_height
+        drone_panel_height = max(65, 28 + max(1, len(active_drones)) * 38 + 10)
+        panel_y = self.CARD_TOP_Y + drone_panel_height + self.CARD_PAD
 
         # Pre-calculate content height for the card background
         stats = [
@@ -1642,7 +1649,7 @@ class MiningView(BaseView):
                 stats.append(f"  {name}: {qty}")
 
         content_h = 30 + len(stats) * 22 + 10  # header + lines + padding
-        draw_panel(screen, (panel_x - 8, panel_y - 6, panel_w, content_h), alpha=180)
+        draw_panel(screen, (panel_x - 8, panel_y - 6, panel_w + 16, content_h), alpha=160)
 
         header = self.info_font.render("SESSION STATS", True, Colors.TEXT_HIGHLIGHT)
         screen.blit(header, (panel_x, panel_y))
@@ -1684,7 +1691,8 @@ class MiningView(BaseView):
         content_h += rock_count * 20  # rock entries
         content_h += 10  # padding
 
-        draw_panel(screen, (panel_x - 8, panel_y - 6, panel_w, content_h), alpha=180)
+        draw_panel(screen, (panel_x - 8, panel_y - 6, panel_w + 16, content_h), alpha=160)
+        self._depth_panel_bottom_y = panel_y + content_h
 
         header = self.info_font.render(
             f"DEPTH {depth}", True, Colors.TEXT_HIGHLIGHT
@@ -1884,12 +1892,12 @@ class MiningView(BaseView):
         # Position below depth panel in right column
         panel_x = self.CARD_COL_RIGHT_X
         panel_w = self.CARD_COL_W
-        panel_y = getattr(self, "_depth_panel_bottom_y", 300) + 10
+        panel_y = getattr(self, "_depth_panel_bottom_y", 300) + self.CARD_PAD
 
         # Calculate content height for card background
         upgrade_count = min(len(dc_upgrades), max(0, (WINDOW_HEIGHT - 70 - panel_y - 22) // 24))
         content_h = 22 + upgrade_count * 24 + 10  # header + rows + padding
-        draw_panel(screen, (panel_x - 8, panel_y - 6, panel_w, content_h), alpha=180)
+        draw_panel(screen, (panel_x - 8, panel_y - 6, panel_w + 16, content_h), alpha=160)
 
         header = self.small_font.render("DEEP CORE UPGRADES", True, (180, 140, 255))
         screen.blit(header, (panel_x, panel_y))
