@@ -108,6 +108,7 @@ class StationLayout:
     accent_color: tuple[int, int, int] = Colors.TEXT_HIGHLIGHT
     bg_tint: Optional[tuple[int, int, int, int]] = None
     label_prefix: str = ""
+    faction_tagline: str = ""  # Atmospheric motto displayed in layout
 
     def __init__(self, locations: list, system_id: str) -> None:
         self.locations = locations
@@ -116,7 +117,14 @@ class StationLayout:
         self._label_font = FontCache.get(FONT_XS)
         self._name_font = FontCache.get(FONT_BODY)
         self._section_font = FontCache.get(FONT_SM)
+        self._tooltip_font = FontCache.get(FONT_XS)
+        self._tagline_font = FontCache.get(FONT_SM)
         self._elapsed: float = 0.0
+        self._entrance_timer: float = 0.0  # Fade-in on dock
+
+        # Ambient particles
+        self._ambient_particles: list[dict] = []
+        self._ambient_emit_timer: float = 0.0
 
     def build_zones(self, sprite_mgr: object) -> list[StationZone]:
         """Build zone rects for all locations. Override in subclasses."""
@@ -124,8 +132,17 @@ class StationLayout:
         return self.zones
 
     def update(self, dt: float) -> None:
-        """Update animations."""
+        """Update animations, entrance fade, and ambient particles."""
         self._elapsed += dt
+        if self._entrance_timer < 1.0:
+            self._entrance_timer = min(1.0, self._entrance_timer + dt * 2.0)
+
+        # Update ambient particles
+        for p in self._ambient_particles:
+            p["x"] += p["vx"] * dt
+            p["y"] += p["vy"] * dt
+            p["life"] -= dt
+        self._ambient_particles = [p for p in self._ambient_particles if p["life"] > 0]
 
     def handle_hover(self, pos: tuple[int, int]) -> None:
         """Update hover state on zones."""
@@ -147,19 +164,111 @@ class StationLayout:
             screen.blit(tint, (0, _LAYOUT_TOP))
 
     def render_zones(self, screen: pygame.Surface) -> None:
-        """Render all zones. Override in subclasses for custom styling."""
+        """Render all zones with entrance fade. Override for custom styling."""
+        alpha_mult = self._entrance_timer  # 0→1 over 0.5s
         for zone in self.zones:
-            self._render_default_zone(screen, zone)
+            self._render_default_zone(screen, zone, alpha_mult)
 
     def render_atmosphere(self, screen: pygame.Surface) -> None:
-        """Render decorative faction-specific elements. Override in subclasses."""
-        pass
+        """Render ambient particles, tagline, and hover tooltips."""
+        # Ambient particles
+        for p in self._ambient_particles:
+            t = p["life"] / p["max_life"]
+            alpha = int(p["alpha"] * t * self._entrance_timer)
+            if alpha <= 0:
+                continue
+            size = max(1, int(p.get("size", 2)))
+            color = p["color"]
+            ps = pygame.Surface((size * 2, size * 2), pygame.SRCALPHA)
+            pygame.draw.circle(ps, (*color, alpha), (size, size), size)
+            screen.blit(ps, (int(p["x"]) - size, int(p["y"]) - size))
 
-    def _render_default_zone(self, screen: pygame.Surface, zone: StationZone) -> None:
+        # Faction tagline (bottom of layout area, subtle)
+        if self.faction_tagline and self._entrance_timer >= 0.8:
+            tag_alpha = int(60 * min(1.0, (self._entrance_timer - 0.8) / 0.2))
+            tag_surf = self._tagline_font.render(self.faction_tagline, True, self.accent_color)
+            tag_surf.set_alpha(tag_alpha)
+            tag_x = WINDOW_WIDTH // 2 - tag_surf.get_width() // 2
+            tag_y = _LAYOUT_BOTTOM - scale_y(15)
+            screen.blit(tag_surf, (tag_x, tag_y))
+
+        # Hover tooltip for the hovered zone
+        for zone in self.zones:
+            if zone.hovered:
+                self._render_zone_tooltip(screen, zone)
+                break
+
+    def _render_zone_tooltip(self, screen: pygame.Surface, zone: StationZone) -> None:
+        """Render a detailed tooltip above/below the hovered zone."""
+        loc = zone.location
+        lines: list[tuple[str, tuple[int, int, int]]] = []
+
+        lines.append((loc.name, Colors.TEXT_HIGHLIGHT))
+        if loc.description:
+            # Word-wrap description
+            desc = loc.description
+            if len(desc) > 60:
+                # Simple split at ~60 chars
+                mid = desc.rfind(" ", 0, 60)
+                if mid > 20:
+                    lines.append((desc[:mid], Colors.TEXT_PRIMARY))
+                    lines.append((desc[mid + 1:], Colors.TEXT_PRIMARY))
+                else:
+                    lines.append((desc, Colors.TEXT_PRIMARY))
+            else:
+                lines.append((desc, Colors.TEXT_PRIMARY))
+        if hasattr(loc, "flavor_text") and loc.flavor_text:
+            flavor = loc.flavor_text
+            if len(flavor) > 65:
+                flavor = flavor[:62] + "..."
+            lines.append((f'"{flavor}"', Colors.TEXT_SECONDARY))
+
+        if not lines:
+            return
+
+        font = self._tooltip_font
+        line_h = font.get_linesize() + 2
+        pad = 8
+        tip_w = max(font.size(text)[0] for text, _ in lines) + pad * 2
+        tip_h = len(lines) * line_h + pad * 2
+        tip_w = min(tip_w, scale_x(350))
+
+        # Position: above the zone if space, below if not
+        tip_x = zone.rect.centerx - tip_w // 2
+        tip_y = zone.rect.top - tip_h - 6
+        if tip_y < _LAYOUT_TOP:
+            tip_y = zone.rect.bottom + 6
+        # Keep on screen horizontally
+        tip_x = max(4, min(tip_x, WINDOW_WIDTH - tip_w - 4))
+
+        # Background
+        tip_surf = pygame.Surface((tip_w, tip_h), pygame.SRCALPHA)
+        tip_surf.fill((10, 14, 25, 230))
+        screen.blit(tip_surf, (tip_x, tip_y))
+
+        # Accent top border
+        pygame.draw.line(screen, zone.accent_color, (tip_x, tip_y), (tip_x + tip_w, tip_y), 2)
+        pygame.draw.rect(screen, Colors.UI_BORDER, (tip_x, tip_y, tip_w, tip_h), 1)
+
+        # Text
+        ty = tip_y + pad
+        for text, color in lines:
+            surf = font.render(text, True, color)
+            # Clip if too wide
+            if surf.get_width() > tip_w - pad * 2:
+                clip_rect = pygame.Rect(0, 0, tip_w - pad * 2, surf.get_height())
+                screen.blit(surf, (tip_x + pad, ty), clip_rect)
+            else:
+                screen.blit(surf, (tip_x + pad, ty))
+            ty += line_h
+
+    def _render_default_zone(
+        self, screen: pygame.Surface, zone: StationZone, alpha_mult: float = 1.0
+    ) -> None:
         """Render a single zone with standard styling."""
         r = zone.rect
-        # Background
-        bg_alpha = 200 if zone.hovered else 160
+        # Background (with entrance fade)
+        bg_alpha = int((200 if zone.hovered else 160) * alpha_mult)
         bg_color = (25, 30, 50) if zone.hovered else (18, 22, 38)
         zone_surf = pygame.Surface((r.width, r.height), pygame.SRCALPHA)
         zone_surf.fill((*bg_color, bg_alpha))
@@ -226,6 +335,7 @@ class GuildDeckLayout(StationLayout):
 
     accent_color = (80, 140, 220)
     bg_tint = (10, 15, 30, 15)
+    faction_tagline = "Commerce. Order. Prosperity."
 
     def build_zones(self, sprite_mgr: object) -> list[StationZone]:
         from spacegame.engine.sprites import res_scale
@@ -277,6 +387,22 @@ class GuildDeckLayout(StationLayout):
 
         return self.zones
 
+    def update(self, dt: float) -> None:
+        super().update(dt)
+        # Holographic data motes (blue floating points)
+        import random as _rng
+        self._ambient_emit_timer += dt
+        if self._ambient_emit_timer >= 0.4:
+            self._ambient_emit_timer -= 0.4
+            self._ambient_particles.append({
+                "x": _rng.uniform(scale_x(100), WINDOW_WIDTH - scale_x(100)),
+                "y": _rng.uniform(_LAYOUT_TOP, _LAYOUT_BOTTOM),
+                "vx": _rng.uniform(-5, 5), "vy": _rng.uniform(-15, -5),
+                "life": _rng.uniform(1.5, 3.0), "max_life": 3.0,
+                "alpha": _rng.randint(25, 50),
+                "color": self.accent_color, "size": _rng.uniform(1, 2),
+            })
+
     def render_background(self, screen: pygame.Surface) -> None:
         super().render_background(screen)
 
@@ -303,6 +429,7 @@ class UnionBlueprintLayout(StationLayout):
 
     accent_color = (220, 170, 60)
     bg_tint = (15, 10, 5, 12)
+    faction_tagline = "Built by hands, not contracts."
 
     def build_zones(self, sprite_mgr: object) -> list[StationZone]:
         from spacegame.engine.sprites import res_scale
@@ -336,6 +463,24 @@ class UnionBlueprintLayout(StationLayout):
                 accent_color=color, icon=icon,
             ))
         return self.zones
+
+    def update(self, dt: float) -> None:
+        super().update(dt)
+        # Industrial sparks (amber, falling with gravity)
+        import random as _rng
+        self._ambient_emit_timer += dt
+        if self._ambient_emit_timer >= 0.6:
+            self._ambient_emit_timer -= 0.6
+            if self.zones:
+                zone = _rng.choice(self.zones)
+                self._ambient_particles.append({
+                    "x": _rng.uniform(zone.rect.left, zone.rect.right),
+                    "y": float(zone.rect.top),
+                    "vx": _rng.uniform(-10, 10), "vy": _rng.uniform(15, 35),
+                    "life": _rng.uniform(0.5, 1.2), "max_life": 1.2,
+                    "alpha": _rng.randint(60, 120),
+                    "color": (255, _rng.randint(150, 200), 40), "size": 1.5,
+                })
 
     def render_background(self, screen: pygame.Surface) -> None:
         super().render_background(screen)
@@ -396,6 +541,7 @@ class CollectiveRadialLayout(StationLayout):
 
     accent_color = (160, 200, 240)
     bg_tint = (5, 8, 18, 10)
+    faction_tagline = "Through knowledge, understanding."
 
     def build_zones(self, sprite_mgr: object) -> list[StationZone]:
         from spacegame.engine.sprites import res_scale
@@ -422,6 +568,26 @@ class CollectiveRadialLayout(StationLayout):
         self._center = (cx, cy)
         self._radius = radius
         return self.zones
+
+    def update(self, dt: float) -> None:
+        super().update(dt)
+        # Orbiting data nodes (small white-blue dots circling the center)
+        import random as _rng
+        self._ambient_emit_timer += dt
+        if self._ambient_emit_timer >= 0.3:
+            self._ambient_emit_timer -= 0.3
+            cx, cy = getattr(self, "_center", (WINDOW_WIDTH // 2, _LAYOUT_TOP + _LAYOUT_H // 2))
+            angle = self._elapsed * 0.8 + _rng.uniform(0, math.pi * 2)
+            r = getattr(self, "_radius", scale_x(200)) * _rng.uniform(0.3, 0.9)
+            self._ambient_particles.append({
+                "x": cx + math.cos(angle) * r,
+                "y": cy + math.sin(angle) * r,
+                "vx": math.cos(angle + 1.57) * 12,
+                "vy": math.sin(angle + 1.57) * 12,
+                "life": _rng.uniform(1.0, 2.5), "max_life": 2.5,
+                "alpha": _rng.randint(30, 60),
+                "color": (180, 210, 255), "size": _rng.uniform(1, 2),
+            })
 
     def render_background(self, screen: pygame.Surface) -> None:
         super().render_background(screen)
@@ -482,6 +648,7 @@ class FrontierScatteredLayout(StationLayout):
 
     accent_color = (80, 200, 120)
     bg_tint = (8, 15, 8, 10)
+    faction_tagline = "The frontier takes care of its own."
 
     def build_zones(self, sprite_mgr: object) -> list[StationZone]:
         from spacegame.engine.sprites import res_scale
@@ -521,6 +688,23 @@ class FrontierScatteredLayout(StationLayout):
                 accent_color=color, icon=icon,
             ))
         return self.zones
+
+    def update(self, dt: float) -> None:
+        super().update(dt)
+        # Floating dust/pollen (warm green, drifting upward)
+        import random as _rng
+        self._ambient_emit_timer += dt
+        if self._ambient_emit_timer >= 0.5:
+            self._ambient_emit_timer -= 0.5
+            self._ambient_particles.append({
+                "x": _rng.uniform(scale_x(40), WINDOW_WIDTH - scale_x(40)),
+                "y": float(_LAYOUT_BOTTOM),
+                "vx": _rng.uniform(-8, 8), "vy": _rng.uniform(-20, -8),
+                "life": _rng.uniform(2.0, 4.0), "max_life": 4.0,
+                "alpha": _rng.randint(20, 45),
+                "color": (_rng.randint(100, 160), _rng.randint(180, 220), _rng.randint(80, 120)),
+                "size": _rng.uniform(1, 2.5),
+            })
 
     def render_background(self, screen: pygame.Surface) -> None:
         super().render_background(screen)
@@ -587,6 +771,7 @@ class ReachDarkLayout(StationLayout):
 
     accent_color = (180, 50, 40)
     bg_tint = (20, 5, 5, 15)
+    faction_tagline = "No laws. No mercy. No refunds."
 
     def build_zones(self, sprite_mgr: object) -> list[StationZone]:
         from spacegame.engine.sprites import res_scale
@@ -614,6 +799,23 @@ class ReachDarkLayout(StationLayout):
                 accent_color=color, icon=icon,
             ))
         return self.zones
+
+    def update(self, dt: float) -> None:
+        super().update(dt)
+        # Dim flickering embers (red, sparse, slow)
+        import random as _rng
+        self._ambient_emit_timer += dt
+        if self._ambient_emit_timer >= 1.2:
+            self._ambient_emit_timer -= 1.2
+            self._ambient_particles.append({
+                "x": _rng.uniform(scale_x(80), WINDOW_WIDTH - scale_x(80)),
+                "y": _rng.uniform(_LAYOUT_TOP + scale_y(20), _LAYOUT_BOTTOM - scale_y(20)),
+                "vx": _rng.uniform(-3, 3), "vy": _rng.uniform(-8, -2),
+                "life": _rng.uniform(1.5, 3.0), "max_life": 3.0,
+                "alpha": _rng.randint(15, 35),
+                "color": (_rng.randint(140, 180), _rng.randint(30, 60), _rng.randint(20, 40)),
+                "size": _rng.uniform(1, 2),
+            })
 
     def _render_default_zone(self, screen: pygame.Surface, zone: StationZone) -> None:
         """Override: zones barely visible until hovered."""
