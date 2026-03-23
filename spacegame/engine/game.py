@@ -58,7 +58,7 @@ class Game:
 
     def __init__(self) -> None:
         """Initialize the game engine."""
-        logger.info("Initializing Space Trader game...")
+        logger.info("Initializing Aurelia: A Ledger of Stars...")
         timer = StartupTimer()
 
         # Initialize audio mixer before pygame.init() for correct format

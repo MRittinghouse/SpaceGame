@@ -1,5 +1,5 @@
 """
-Main entry point for Space Trader game.
+Main entry point for Aurelia: A Ledger of Stars game.
 
 Run this module to start the game.
 """
@@ -55,7 +55,7 @@ def main() -> None:
     setup_logger(level=logging.DEBUG)
 
     logger.info("=" * 60)
-    logger.info("Space Trader - Starting...")
+    logger.info("Aurelia: A Ledger of Stars - Starting...")
     logger.info("=" * 60)
 
     # Load display settings BEFORE importing game (which imports views)

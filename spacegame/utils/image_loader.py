@@ -1,5 +1,5 @@
 """
-Image asset loader for Space Trader.
+Image asset loader for Aurelia: A Ledger of Stars.
 
 Handles loading, caching, and scaling of image assets with graceful fallback.
 """

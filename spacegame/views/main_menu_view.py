@@ -196,21 +196,21 @@ class MainMenuView(BaseView):
         # Title glow (blurred duplicate behind)
         title_y = WINDOW_HEIGHT // 4
         glow_alpha = int(80 + 40 * math.sin(self._glow_time * 2))
-        glow_surf = self.title_font.render("SPACE TRADER", True, Colors.GLOW_BLUE)
+        glow_surf = self.title_font.render("AURELIA", True, Colors.GLOW_BLUE)
         glow_surf.set_alpha(glow_alpha)
         glow_rect = glow_surf.get_rect(center=(WINDOW_WIDTH // 2, title_y))
         screen.blit(glow_surf, (glow_rect.x - 2, glow_rect.y + 2))
 
         # Crisp title on top
-        title_text = self.title_font.render("SPACE TRADER", True, Colors.TEXT_HIGHLIGHT)
+        title_text = self.title_font.render("AURELIA", True, Colors.TEXT_HIGHLIGHT)
         title_rect = title_text.get_rect(center=(WINDOW_WIDTH // 2, title_y))
         screen.blit(title_text, title_rect)
 
-        # Subtitle
+        # Subtitle: "A Ledger of Stars"
         subtitle_text = self.subtitle_font.render(
-            "A Narrative-Driven Space Trading RPG", True, Colors.TEXT
+            "A Ledger of Stars", True, Colors.TEXT
         )
-        subtitle_rect = subtitle_text.get_rect(center=(WINDOW_WIDTH // 2, title_y + 80))
+        subtitle_rect = subtitle_text.get_rect(center=(WINDOW_WIDTH // 2, title_y + scale_y(55)))
         screen.blit(subtitle_text, subtitle_rect)
 
         # Fade-in overlay

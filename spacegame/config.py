@@ -13,7 +13,7 @@ import sys
 # DISPLAY SETTINGS
 # ============================================================================
 
-WINDOW_TITLE = "Space Trader"
+WINDOW_TITLE = "Aurelia: A Ledger of Stars"
 WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 720
 FPS_TARGET = 60

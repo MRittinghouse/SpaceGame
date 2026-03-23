@@ -1,5 +1,5 @@
 """
-Space Trader - Launch Script
+Aurelia: A Ledger of Stars - Launch Script
 
 Professional launcher with environment detection, dependency checking,
 and helpful error messages.
@@ -29,8 +29,8 @@ def print_header() -> None:
     print(f"\n{Colors.CYAN}{Colors.BOLD}")
     print("=" * 60)
     print("  +=====================================================+")
-    print("  |        SPACE TRADER - Launch Script               |")
-    print("  |    A Narrative-Driven Space Trading RPG           |")
+    print("  |     AURELIA: A LEDGER OF STARS                    |")
+    print("  |     A Narrative-Driven Space Trading RPG          |")
     print("  +=====================================================+")
     print("=" * 60)
     print(f"{Colors.ENDC}\n")
@@ -209,7 +209,7 @@ def launch_game(python_exe: Path) -> int:
         Exit code from the game
     """
     print(f"\n{Colors.CYAN}{Colors.BOLD}{'=' * 60}{Colors.ENDC}")
-    print_info("Launching Space Trader...")
+    print_info("Launching Aurelia: A Ledger of Stars...")
     print(f"{Colors.CYAN}{Colors.BOLD}{'=' * 60}{Colors.ENDC}\n")
 
     # Add project root to Python path
@@ -253,7 +253,7 @@ def show_help() -> None:
 def show_version() -> None:
     """Show version information."""
     print_header()
-    print_info("Space Trader - Version 0.1.0 (Alpha)")
+    print_info("Aurelia: A Ledger of Stars - Version 0.1.0 (Alpha)")
     print_info("Built with PyGame")
     print()
 
@@ -328,7 +328,7 @@ def main() -> int:
 
     # Goodbye message
     if exit_code == 0:
-        print(f"\n{Colors.CYAN}Thank you for playing Space Trader!{Colors.ENDC}")
+        print(f"\n{Colors.CYAN}Thank you for playing Aurelia: A Ledger of Stars!{Colors.ENDC}")
     else:
         print(f"\n{Colors.RED}Game exited with errors{Colors.ENDC}")
 

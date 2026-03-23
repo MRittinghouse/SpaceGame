@@ -10,7 +10,7 @@ from typing import Optional
 TUTORIAL_STEPS = [
     {
         "id": 0,
-        "title": "Welcome to Space Trader!",
+        "title": "Welcome to Aurelia!",
         "description": (
             "You are a trader in a galaxy of opportunity. "
             "Your goal is to buy low, sell high, and build your fortune.\n\n"
