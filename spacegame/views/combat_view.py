@@ -2206,8 +2206,8 @@ class CombatView(BaseView):
         )
         player_sprite = player_anim.get_surface() if player_anim else None
         if player_sprite:
-            # Rotate 90° so nose points right
-            rotated = pygame.transform.rotate(player_sprite, -90)
+            # Display facing right (sprites are natively oriented right)
+            rotated = player_sprite
             # Damage overlay (scorch marks / sparks based on hull %)
             rotated = self._apply_damage_overlay(rotated, hull_ratio)
             # Tint red on low hull (BLEND_RGB_MULT preserves alpha)
@@ -2269,8 +2269,8 @@ class CombatView(BaseView):
             )
             enemy_sprite = enemy_anim.get_surface() if enemy_anim else None
             if enemy_sprite:
-                # Rotate 90° so nose points left
-                rotated = pygame.transform.rotate(enemy_sprite, 90)
+                # Flip horizontally so enemy faces left
+                rotated = pygame.transform.flip(enemy_sprite, True, False)
                 # Damage overlay (scorch marks / sparks based on hull %)
                 rotated = self._apply_damage_overlay(rotated, e_hull_ratio)
                 if e_hull_ratio < 0.5:
@@ -2336,7 +2336,7 @@ class CombatView(BaseView):
         for idx, (ex, ey, anim) in self._destroying_enemies.items():
             sprite_surf = anim.get_surface()
             if sprite_surf and not anim.is_finished():
-                rotated = pygame.transform.rotate(sprite_surf, 90)
+                rotated = pygame.transform.flip(sprite_surf, True, False)
                 rect = rotated.get_rect(center=(ex + ox, ey + oy))
                 screen.blit(rotated, rect)
             elif anim.is_finished():
