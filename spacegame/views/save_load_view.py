@@ -110,7 +110,8 @@ class SaveLoadView(BaseView):
                 slot_text = self._format_slot_text(i, metadata)
             else:
                 # Empty slot
-                slot_text = f"Slot {i + 1}\n(Empty)"
+                label = "Autosave" if i == 0 else f"Slot {i}"
+                slot_text = f"{label}\n(Empty)"
 
             button = pygame_gui.elements.UIButton(
                 relative_rect=pygame.Rect(x, y, slot_width, slot_height),
@@ -188,8 +189,9 @@ class SaveLoadView(BaseView):
         playtime_str = f"{hours}h {minutes}m"
 
         # Build display text (limited by button size)
+        slot_label = "Autosave" if slot == 0 else f"Slot {slot}"
         lines = [
-            f"Slot {slot + 1}: {name[:20]}",
+            f"{slot_label}: {name[:20]}",
             f"{date_str}",
             f"{credits:,} CR | {location[:15]} | {playtime_str}",
         ]

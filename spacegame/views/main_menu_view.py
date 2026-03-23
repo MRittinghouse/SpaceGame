@@ -66,6 +66,10 @@ class MainMenuView(BaseView):
         # Title glow animation
         self._glow_time = 0.0
 
+        # New game confirmation state
+        self._confirm_new_game: bool = False
+        self._confirm_font = FontCache.get(FONT_TITLE)
+
     def on_enter(self) -> None:
         super().on_enter()
         logger.info("Entered Main Menu")
@@ -130,10 +134,41 @@ class MainMenuView(BaseView):
                 btn.kill()
 
     def handle_event(self, event: pygame.event.Event) -> None:
+        # New game confirmation dialog
+        if self._confirm_new_game:
+            if event.type == pygame.KEYDOWN:
+                if event.key in (pygame.K_y, pygame.K_RETURN):
+                    self._confirm_new_game = False
+                    logger.info("New Game confirmed")
+                    self.next_state = GameState.GALAXY_MAP
+                elif event.key in (pygame.K_n, pygame.K_ESCAPE):
+                    self._confirm_new_game = False
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                # Check Yes/No button rects
+                cx = WINDOW_WIDTH // 2
+                cy = WINDOW_HEIGHT // 2
+                yes_rect = pygame.Rect(cx - scale_x(120), cy + scale_y(30), scale_x(100), scale_y(36))
+                no_rect = pygame.Rect(cx + scale_x(20), cy + scale_y(30), scale_x(100), scale_y(36))
+                if yes_rect.collidepoint(event.pos):
+                    self._confirm_new_game = False
+                    self.next_state = GameState.GALAXY_MAP
+                elif no_rect.collidepoint(event.pos):
+                    self._confirm_new_game = False
+            return
+
         if event.type == pygame_gui.UI_BUTTON_PRESSED:
             if event.ui_element == self.new_game_button:
-                logger.info("New Game button pressed")
-                self.next_state = GameState.GALAXY_MAP
+                # Check if saves exist before starting new game
+                has_saves = any(
+                    self.save_manager.get_save_metadata(i) is not None
+                    for i in range(12)
+                )
+                if has_saves:
+                    self._confirm_new_game = True
+                    logger.info("New Game: showing confirmation (saves exist)")
+                else:
+                    logger.info("New Game: no saves, starting directly")
+                    self.next_state = GameState.GALAXY_MAP
             elif event.ui_element == self.continue_button:
                 logger.info("Continue button pressed")
                 self.next_state = "continue"
@@ -212,6 +247,49 @@ class MainMenuView(BaseView):
         )
         subtitle_rect = subtitle_text.get_rect(center=(WINDOW_WIDTH // 2, title_y + scale_y(55)))
         screen.blit(subtitle_text, subtitle_rect)
+
+        # New game confirmation dialog
+        if self._confirm_new_game:
+            dim = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA)
+            dim.fill((0, 0, 0, 180))
+            screen.blit(dim, (0, 0))
+
+            cx = WINDOW_WIDTH // 2
+            cy = WINDOW_HEIGHT // 2
+
+            # Panel
+            pw, ph = scale_x(440), scale_y(160)
+            panel = pygame.Rect(cx - pw // 2, cy - ph // 2, pw, ph)
+            panel_surf = pygame.Surface((pw, ph), pygame.SRCALPHA)
+            panel_surf.fill((12, 16, 32, 240))
+            screen.blit(panel_surf, panel.topleft)
+            pygame.draw.rect(screen, Colors.TEXT_HIGHLIGHT, panel, 2, border_radius=6)
+
+            # Warning text
+            from spacegame.engine.fonts import FONT_BODY, FONT_SM
+            warn_font = FontCache.get(FONT_BODY)
+            small_font = FontCache.get(FONT_SM)
+
+            line1 = warn_font.render("Start a new game?", True, Colors.TEXT_HIGHLIGHT)
+            screen.blit(line1, line1.get_rect(centerx=cx, top=cy - scale_y(50)))
+
+            line2 = small_font.render(
+                "Your autosave will be overwritten. Manual saves are kept.",
+                True, Colors.TEXT_SECONDARY,
+            )
+            screen.blit(line2, line2.get_rect(centerx=cx, top=cy - scale_y(20)))
+
+            # Yes / No buttons
+            yes_rect = pygame.Rect(cx - scale_x(120), cy + scale_y(20), scale_x(100), scale_y(36))
+            no_rect = pygame.Rect(cx + scale_x(20), cy + scale_y(20), scale_x(100), scale_y(36))
+
+            pygame.draw.rect(screen, Colors.GREEN, yes_rect, 2, border_radius=4)
+            yes_text = small_font.render("Yes (Y)", True, Colors.GREEN)
+            screen.blit(yes_text, yes_text.get_rect(center=yes_rect.center))
+
+            pygame.draw.rect(screen, Colors.RED, no_rect, 2, border_radius=4)
+            no_text = small_font.render("No (N)", True, Colors.RED)
+            screen.blit(no_text, no_text.get_rect(center=no_rect.center))
 
         # Fade-in overlay
         if self._fade_alpha > 0:
