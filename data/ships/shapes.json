@@ -1,0 +1,76 @@
+{
+  "shapes": [
+    {
+      "id": "pixel",
+      "name": "Pixel",
+      "description": "A single pixel. The smallest building block.",
+      "pixel_mask_compact": ["#"],
+      "category": "basic",
+      "unlock_method": "free"
+    },
+    {
+      "id": "small_bar",
+      "name": "Small Bar",
+      "description": "A 2x1 horizontal bar.",
+      "pixel_mask_compact": ["##"],
+      "category": "basic",
+      "unlock_method": "free"
+    },
+    {
+      "id": "bar",
+      "name": "Bar",
+      "description": "A 3x1 horizontal bar. Good for hull planking.",
+      "pixel_mask_compact": ["###"],
+      "category": "basic",
+      "unlock_method": "free"
+    },
+    {
+      "id": "long_bar",
+      "name": "Long Bar",
+      "description": "A 4x1 horizontal bar. Structural backbone.",
+      "pixel_mask_compact": ["####"],
+      "category": "basic",
+      "unlock_method": "free"
+    },
+    {
+      "id": "small_square",
+      "name": "Small Square",
+      "description": "A 2x2 square. Solid and reliable.",
+      "pixel_mask_compact": ["##", "##"],
+      "category": "basic",
+      "unlock_method": "free"
+    },
+    {
+      "id": "small_rect",
+      "name": "Small Rectangle",
+      "description": "A 3x2 rectangle. Versatile hull section.",
+      "pixel_mask_compact": ["###", "###"],
+      "category": "basic",
+      "unlock_method": "free"
+    },
+    {
+      "id": "small_triangle",
+      "name": "Small Triangle",
+      "description": "A 2x2 right triangle. Sharp edges for aerodynamic profiles.",
+      "pixel_mask_compact": ["##", ".#"],
+      "category": "basic",
+      "unlock_method": "free"
+    },
+    {
+      "id": "medium_triangle",
+      "name": "Medium Triangle",
+      "description": "A 3x3 right triangle. The classic ship nose shape.",
+      "pixel_mask_compact": ["###", ".##", "..#"],
+      "category": "basic",
+      "unlock_method": "free"
+    },
+    {
+      "id": "nose_point",
+      "name": "Nose Point",
+      "description": "A 3x2 pointed bow. Gives your ship direction.",
+      "pixel_mask_compact": [".#.", "###"],
+      "category": "basic",
+      "unlock_method": "free"
+    }
+  ]
+}

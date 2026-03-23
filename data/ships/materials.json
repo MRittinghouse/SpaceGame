@@ -1,0 +1,52 @@
+{
+  "materials": [
+    {
+      "id": "light_alloy",
+      "name": "Light Alloy",
+      "description": "Lightweight silver plating. Low weight means high evasion potential, but less hull per pixel than heavier materials.",
+      "color_primary": [176, 184, 200],
+      "color_accent": [140, 148, 168],
+      "color_highlight": [200, 208, 224],
+      "hull_per_pixel": 1.5,
+      "armor_per_pixel": 0,
+      "shield_per_pixel": 0,
+      "shield_regen_per_pixel": 0,
+      "evasion_per_pixel": 0.08,
+      "weight_per_pixel": 0.4,
+      "cost_per_pixel": 8,
+      "unlock_method": "free"
+    },
+    {
+      "id": "standard_plate",
+      "name": "Standard Plate",
+      "description": "Balanced hull plating. The workhorse material of the Aurelia Expanse. Neither light nor heavy, neither cheap nor expensive.",
+      "color_primary": [112, 120, 136],
+      "color_accent": [88, 96, 112],
+      "color_highlight": [140, 148, 168],
+      "hull_per_pixel": 2.5,
+      "armor_per_pixel": 0,
+      "shield_per_pixel": 0,
+      "shield_regen_per_pixel": 0,
+      "evasion_per_pixel": 0,
+      "weight_per_pixel": 0.7,
+      "cost_per_pixel": 15,
+      "unlock_method": "free"
+    },
+    {
+      "id": "salvage_scrap",
+      "name": "Salvage Scrap",
+      "description": "Reclaimed hull fragments welded together. Cheap, functional, and it shows. The frontier builder's best friend.",
+      "color_primary": [136, 104, 72],
+      "color_accent": [112, 80, 56],
+      "color_highlight": [168, 136, 96],
+      "hull_per_pixel": 2.0,
+      "armor_per_pixel": 0.02,
+      "shield_per_pixel": 0,
+      "shield_regen_per_pixel": 0,
+      "evasion_per_pixel": 0,
+      "weight_per_pixel": 0.8,
+      "cost_per_pixel": 5,
+      "unlock_method": "free"
+    }
+  ]
+}
