@@ -422,6 +422,76 @@ The existing Combat skill tree should include elemental mastery nodes:
 | **5** | Elemental Weapons | DONE | 5 elements (Kinetic/Plasma/Ion/Cryo/Voltaic), 15 weapons, stacking effects |
 | **6** | Utility Moves | DONE | 9 tactical tools (AOE, Absorb, Cleanse, Nova Burst, etc.), 85 total upgrades |
 
+### CRITICAL: Ship Sprite Generation Gap
+
+**Current state**: 15 of 24 player ships and 25 of 28 enemy templates fall back to generic cyan polygon wedges because sprite files either don't exist or use mismatched naming conventions.
+
+**Player ships missing sprites** (15):
+prospector, patrol_cutter, corsair, mining_barge, smugglers_sloop, salvage_rig, war_frigate, deep_explorer, phantom, industrial_titan, diplomatic_cruiser, consortium_merchantman, syndicate_enforcer, frontier_runner, institute_vessel
+
+**Enemy templates missing sprites** (25):
+pirate_scout, pirate_raider, smuggler, patrol_vessel, guild_enforcer, guild_dreadnought, union_brawler, union_crusher, science_probe, science_sentinel, frontier_raider, frontier_gunship, guild_revenue_cutter, union_picket, science_surveyor, frontier_skirmisher, reach_dreadwreck, bounty_tracker, bounty_enforcer, bounty_vanguard, bounty_ace, faction_enforcer, ledger_raider, ledger_striker, ledger_vanguard
+
+**Naming mismatches** (sprites exist but IDs don't match):
+- `pirate_light.png` exists → template is `pirate_scout`
+- `enforcer.png` exists → template is `guild_enforcer`
+- `smuggler_runner.png` exists → template is `smuggler`
+- `frontier_gunboat.png` exists → template is `frontier_gunship`
+- `frontier_scout.png` exists → template is `frontier_skirmisher`
+
+#### Phase 7: Ship Sprite Overhaul
+
+**7A. Fix naming mismatches** (immediate, no generation needed):
+- Rename or symlink existing sprites to match template IDs
+- 5 enemy sprites can be fixed immediately
+
+**7B. Generate missing player ship sprites** (15 ships):
+Each ship needs a unique visual identity based on its class and role:
+
+| Ship | Class | Visual Identity |
+|------|-------|----------------|
+| prospector | early_game | Rugged utility vessel, sensor arrays, drill mounts |
+| patrol_cutter | early_game | Small military, angled armor, weapon turret |
+| corsair | mid_game | Sleek raider, swept wings, fast and aggressive |
+| mining_barge | mid_game | Bulky industrial, conveyor arms, ore containers |
+| smugglers_sloop | mid_game | Low-profile, hidden compartments, dark hull |
+| salvage_rig | mid_game | Mechanical arms, cutting tools, patchwork hull |
+| war_frigate | late_game | Heavy warship, turrets, thick armor plating |
+| deep_explorer | late_game | Long-range, sensor dish, fuel pods |
+| phantom | late_game | Stealth, angular, radar-absorbing surfaces |
+| industrial_titan | late_game | Massive hauler, modular containers, crane arms |
+| diplomatic_cruiser | late_game | Elegant, diplomatic insignia, communication arrays |
+| consortium_merchantman | faction | Guild colors (blue), trade insignia |
+| syndicate_enforcer | faction | Dark, menacing, Union colors (amber) |
+| frontier_runner | faction | Improvised, green accents, frontier patches |
+| institute_vessel | faction | Clean white-blue, Collective design, lab modules |
+
+**7C. Generate missing enemy ship sprites** (25 enemies):
+Enemy ships need faction-specific visual language:
+
+- **Pirates**: Patchwork hulls, scavenged parts, red/black markings
+- **Guild**: Clean corporate blue, standardized military design
+- **Union**: Heavy industrial, amber/rust, riveted plating
+- **Science**: Sleek white-blue, sensor arrays, modular pods
+- **Frontier**: Improvised green, mismatched parts, hand-painted markings
+- **Crimson Reach**: Dark red/rust, salvaged, dangerous-looking
+- **Bounty Hunters**: Specialized, dark, purpose-built
+- **Ledger**: Unmarked military, ominous, no faction insignia
+
+**7D. Improve procedural fallback** (before sprites are generated):
+Make the polygon ships look better as a stopgap:
+- Different shapes by ship class (dart, wedge, rectangle, diamond)
+- Faction-colored hulls instead of generic cyan
+- Engine exhaust particle trail
+- Hull detail lines (panel seams, viewport dots)
+
+**7E. Ship sprite manifest update**:
+Add all 40 missing ships to sprite_manifest.json with generation prompts.
+Include animated idle sheets (2-frame engine glow pulse) for each.
+
+#### Priority
+7A (naming fixes) and 7D (better fallback) are immediate — no sprite generation needed. 7B-C-E require the generation pipeline and API budget.
+
 ### Future Expansion Opportunities (post-playtesting)
 - Elemental visual pass: distinct projectile colors/sprites per element
 - Enemy elemental resistances/weaknesses
