@@ -43,9 +43,9 @@ class TestEnemyDangerTiers:
             )
 
     def test_enemy_count(self) -> None:
-        """Should have 28 enemy templates."""
+        """28 base + 7 bosses = 35 enemy templates."""
         enemies = _load_enemies()
-        assert len(enemies) == 28
+        assert len(enemies) == 35
 
     def test_no_duplicate_enemy_ids(self) -> None:
         enemies = _load_enemies()
@@ -75,7 +75,7 @@ class TestEnemyXpRewards:
     def test_dangerous_tier_xp_in_range(self) -> None:
         enemies = _load_enemies()
         lo, hi = TIER_XP_RANGES["dangerous"]
-        for e in [e for e in enemies if e.danger_tier == "dangerous"]:
+        for e in [e for e in enemies if e.danger_tier == "dangerous" and not e.is_boss]:
             assert lo <= e.xp_reward <= hi, (
                 f"{e.id}: xp_reward {e.xp_reward} outside [{lo}, {hi}]"
             )
@@ -128,7 +128,7 @@ class TestEnemyCreditRewards:
     def test_dangerous_tier_credit_in_range(self) -> None:
         enemies = _load_enemies()
         lo, hi = TIER_CREDIT_RANGES["dangerous"]
-        for e in [e for e in enemies if e.danger_tier == "dangerous"]:
+        for e in [e for e in enemies if e.danger_tier == "dangerous" and not e.is_boss]:
             assert lo <= e.credit_reward <= hi, (
                 f"{e.id}: credit_reward {e.credit_reward} outside [{lo}, {hi}]"
             )

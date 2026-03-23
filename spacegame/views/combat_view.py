@@ -1629,6 +1629,64 @@ class CombatView(BaseView):
         phase_rect = phase_surf.get_rect(center=(WINDOW_WIDTH // 2 + ox, 25 + oy))
         screen.blit(phase_surf, phase_rect)
 
+        # Boss health bar (wide bar across top of arena)
+        for enemy in state.enemies:
+            if enemy.template.is_boss and enemy.is_alive:
+                self._render_boss_health_bar(screen, enemy, ox, oy)
+                break  # Only one boss bar
+
+    def _render_boss_health_bar(
+        self, screen: pygame.Surface, boss: "EnemyShip", ox: int, oy: int,
+    ) -> None:
+        """Render a wide health bar across the top of the arena for a boss enemy."""
+        bar_x = ARENA_X + scale_x(20) + ox
+        bar_y = 45 + oy
+        bar_w = ARENA_W - scale_x(40)
+        bar_h = scale_y(18)
+
+        # Boss name + phase name
+        phase_name = ""
+        if boss.template.phases and boss.current_phase_idx < len(boss.template.phases):
+            phase_name = f" — {boss.template.phases[boss.current_phase_idx].name}"
+        name_text = f"{boss.template.name}{phase_name}"
+        name_surf = self.small_font.render(name_text, True, (255, 200, 60))
+        screen.blit(name_surf, (bar_x, bar_y - 14))
+
+        # Background
+        bg_rect = pygame.Rect(bar_x, bar_y, bar_w, bar_h)
+        pygame.draw.rect(screen, (20, 15, 10), bg_rect)
+        pygame.draw.rect(screen, (100, 60, 30), bg_rect, 1)
+
+        # HP fill (hull + shields combined)
+        total_max = boss.max_hull + boss.max_shields
+        total_current = boss.current_hull + boss.current_shields
+        if total_max > 0:
+            ratio = total_current / total_max
+            fill_w = int((bar_w - 2) * ratio)
+
+            # Color shifts with HP: red → orange → red
+            if ratio > 0.5:
+                bar_color = (200, 60, 40)  # Dark red
+            elif ratio > 0.25:
+                bar_color = (220, 120, 30)  # Orange-red
+            else:
+                bar_color = (255, 40, 40)  # Bright red — danger
+
+            if fill_w > 0:
+                pygame.draw.rect(screen, bar_color, (bar_x + 1, bar_y + 1, fill_w, bar_h - 2))
+
+            # Phase threshold markers
+            for phase in boss.template.phases:
+                if phase.hp_threshold < 1.0:
+                    mx = bar_x + 1 + int((bar_w - 2) * phase.hp_threshold)
+                    pygame.draw.line(screen, (255, 200, 60), (mx, bar_y), (mx, bar_y + bar_h), 1)
+
+            # HP text
+            hp_text = f"{total_current}/{total_max}"
+            hp_surf = self.small_font.render(hp_text, True, Colors.TEXT_PRIMARY)
+            hp_rect = hp_surf.get_rect(center=(bar_x + bar_w // 2, bar_y + bar_h // 2))
+            screen.blit(hp_surf, hp_rect)
+
     def _render_player_panel(self, screen: pygame.Surface, ox: int, oy: int) -> None:
         """Render player status panel with health, shield, and energy bars."""
         state = self.engine.get_state()
@@ -3099,27 +3157,71 @@ class CombatView(BaseView):
             screen.blit(surf, (int(ft["x"]) - surf.get_width() // 2, int(ft["y"])))
 
     def _render_intro_banner(self, screen: pygame.Surface) -> None:
-        """Render the intro 'COMBAT!' banner."""
+        """Render the intro banner. Boss encounters get a dramatic treatment."""
+        state = self.engine.get_state()
+        is_boss_fight = any(e.template.is_boss for e in state.enemies)
+
+        # Darker overlay for boss fights
+        dim = 180 if is_boss_fight else 120
         overlay = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA)
-        overlay.fill((0, 0, 0, 120))
+        overlay.fill((0, 0, 0, dim))
         screen.blit(overlay, (0, 0))
 
         # Fade in/out
         t = self.phase_timer / INTRO_DURATION
         alpha = int(255 * (1.0 - abs(2 * t - 1)))
-        text_surf = self.banner_font.render("COMBAT!", True, Colors.RED)
-        text_surf.set_alpha(alpha)
-        text_rect = text_surf.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 - 30))
-        screen.blit(text_surf, text_rect)
 
-        # Show enemy name
-        state = self.engine.get_state()
-        if state.enemies:
-            names = ", ".join(e.template.name for e in state.enemies)
-            name_surf = self.header_font.render(names, True, Colors.TEXT_PRIMARY)
-            name_surf.set_alpha(alpha)
-            name_rect = name_surf.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 + 20))
-            screen.blit(name_surf, name_rect)
+        if is_boss_fight:
+            boss = next((e for e in state.enemies if e.template.is_boss), None)
+            if boss:
+                # Boss intro: dramatic red-gold treatment
+                # "BOSS ENCOUNTER" header
+                header = self.info_font.render("BOSS ENCOUNTER", True, (255, 200, 60))
+                header.set_alpha(alpha)
+                header_rect = header.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 - 60))
+                screen.blit(header, header_rect)
+
+                # Boss name in large dramatic text
+                name_surf = self.banner_font.render(boss.template.name.upper(), True, (255, 80, 60))
+                name_surf.set_alpha(alpha)
+                name_rect = name_surf.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 - 10))
+                screen.blit(name_surf, name_rect)
+
+                # Boss description
+                desc_surf = self.small_font.render(boss.template.description, True, Colors.TEXT_SECONDARY)
+                desc_surf.set_alpha(alpha)
+                desc_rect = desc_surf.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 + 35))
+                screen.blit(desc_surf, desc_rect)
+
+                # Phase 1 name
+                if boss.template.phases:
+                    phase_name = boss.template.phases[0].name
+                    phase_surf = self.small_font.render(phase_name, True, (255, 200, 60))
+                    phase_surf.set_alpha(alpha)
+                    phase_rect = phase_surf.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 + 60))
+                    screen.blit(phase_surf, phase_rect)
+
+                # Accent lines (decorative)
+                line_alpha = min(255, alpha)
+                accent_color = (255, 80, 60)
+                cx = WINDOW_WIDTH // 2
+                cy = WINDOW_HEIGHT // 2 - 75
+                line_w = int(200 * t)
+                pygame.draw.line(screen, accent_color, (cx - line_w, cy), (cx + line_w, cy), 2)
+                pygame.draw.line(screen, accent_color, (cx - line_w, cy + 120), (cx + line_w, cy + 120), 2)
+        else:
+            # Standard combat intro
+            text_surf = self.banner_font.render("COMBAT!", True, Colors.RED)
+            text_surf.set_alpha(alpha)
+            text_rect = text_surf.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 - 30))
+            screen.blit(text_surf, text_rect)
+
+            if state.enemies:
+                names = ", ".join(e.template.name for e in state.enemies)
+                name_surf = self.header_font.render(names, True, Colors.TEXT_PRIMARY)
+                name_surf.set_alpha(alpha)
+                name_rect = name_surf.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 + 20))
+                screen.blit(name_surf, name_rect)
 
     def _render_combat_over_overlay(self, screen: pygame.Surface) -> None:
         """Render polished combat outcome overlay with stats."""

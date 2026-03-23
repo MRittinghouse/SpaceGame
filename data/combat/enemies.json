@@ -2353,6 +2353,1006 @@
           "chance": 0.1
         }
       ]
+    },
+    {
+      "id": "corsair_king",
+      "name": "The Corsair King",
+      "description": "A legendary pirate warlord who commands a fleet of raiders from his heavily armed flagship. Known for brutal boarding tactics and a refusal to surrender.",
+      "behavior": "aggressive",
+      "hull": 100,
+      "shields": 30,
+      "energy": 12,
+      "energy_regen": 3,
+      "speed": 10,
+      "evasion": 15,
+      "accuracy": 68,
+      "negotiate_difficulty": 5,
+      "flee_threshold": 0.0,
+      "xp_reward": 500,
+      "faction_id": "",
+      "danger_tier": "dangerous",
+      "bribe_cost": 0,
+      "credit_reward": 15000,
+      "is_boss": true,
+      "boss_hp_multiplier": 3,
+      "immune_to": [
+        "frozen"
+      ],
+      "max_suppressed_stacks": 2,
+      "trophy_drop": "pirate_cutlass_fin",
+      "moves": [
+        {
+          "id": "corsair_broadside",
+          "name": "Corsair Broadside",
+          "description": "A devastating volley from the flagship's main battery.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 20.0
+            }
+          ],
+          "energy_cost": 3
+        },
+        {
+          "id": "intimidation_volley",
+          "name": "Intimidation Volley",
+          "description": "A rapid burst of fire meant to rattle the enemy crew.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 12.0
+            }
+          ],
+          "energy_cost": 2
+        },
+        {
+          "id": "call_reinforcements",
+          "name": "Call Reinforcements",
+          "description": "Signals nearby raider ships, bolstering the flagship's defenses.",
+          "effects": [
+            {
+              "type": "damage_reduction",
+              "value": 15.0,
+              "duration": 2,
+              "target": "self"
+            }
+          ],
+          "energy_cost": 4
+        },
+        {
+          "id": "corsair_broadside_enhanced",
+          "name": "Corsair Broadside (Enhanced)",
+          "description": "An overcharged broadside with all guns firing in unison.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 35.0
+            }
+          ],
+          "energy_cost": 5
+        },
+        {
+          "id": "ramming_speed",
+          "name": "Ramming Speed",
+          "description": "A reckless full-throttle charge, trading accuracy for raw impact.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 45.0
+            }
+          ],
+          "energy_cost": 6,
+          "accuracy_modifier": -10
+        }
+      ],
+      "loot_table": [
+        {
+          "commodity_id": "rare_metals",
+          "chance": 0.5,
+          "min_qty": 3,
+          "max_qty": 8
+        }
+      ],
+      "phases": [
+        {
+          "name": "Corsair's Fury",
+          "hp_threshold": 1.0,
+          "behavior": "aggressive",
+          "move_ids": [
+            "corsair_broadside",
+            "intimidation_volley"
+          ],
+          "on_enter_text": "",
+          "on_enter_effect": ""
+        },
+        {
+          "name": "Call to Arms",
+          "hp_threshold": 0.66,
+          "behavior": "defensive",
+          "move_ids": [
+            "corsair_broadside",
+            "call_reinforcements"
+          ],
+          "on_enter_text": "All ships, converge on my position!",
+          "on_enter_effect": ""
+        },
+        {
+          "name": "Berserker's Last Stand",
+          "hp_threshold": 0.33,
+          "behavior": "aggressive",
+          "move_ids": [
+            "corsair_broadside_enhanced",
+            "ramming_speed"
+          ],
+          "on_enter_text": "You want my ship? COME AND TAKE IT!",
+          "on_enter_effect": ""
+        }
+      ],
+      "rare_loot": [
+        {
+          "commodity_id": "rare_parts",
+          "chance": 0.5,
+          "min_qty": 2,
+          "max_qty": 5
+        }
+      ]
+    },
+    {
+      "id": "guild_arbiter",
+      "name": "Guild Arbiter",
+      "description": "A corporate enforcement vessel dispatched to eliminate threats to guild interests. Equipped with advanced shielding and precision weaponry.",
+      "behavior": "defensive",
+      "hull": 80,
+      "shields": 40,
+      "energy": 14,
+      "energy_regen": 3,
+      "speed": 7,
+      "evasion": 10,
+      "accuracy": 72,
+      "negotiate_difficulty": 5,
+      "flee_threshold": 0.0,
+      "xp_reward": 600,
+      "faction_id": "",
+      "danger_tier": "dangerous",
+      "bribe_cost": 0,
+      "credit_reward": 20000,
+      "is_boss": true,
+      "boss_hp_multiplier": 3,
+      "immune_to": [
+        "frozen"
+      ],
+      "max_suppressed_stacks": 2,
+      "trophy_drop": "corporate_bulwark",
+      "moves": [
+        {
+          "id": "arbiter_laser",
+          "name": "Arbiter Laser",
+          "description": "A precision laser tuned for maximum shield penetration.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 18.0
+            }
+          ],
+          "energy_cost": 3
+        },
+        {
+          "id": "shield_overcharge",
+          "name": "Shield Overcharge",
+          "description": "Diverts auxiliary power to reinforce shield generators and harden the hull.",
+          "effects": [
+            {
+              "type": "shield_restore",
+              "value": 30.0,
+              "target": "self"
+            },
+            {
+              "type": "damage_reduction",
+              "value": 15.0,
+              "duration": 2,
+              "target": "self"
+            }
+          ],
+          "energy_cost": 3
+        },
+        {
+          "id": "energy_siphon",
+          "name": "Energy Siphon",
+          "description": "Drains power from enemy systems while dealing light damage.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 8.0
+            },
+            {
+              "type": "energy_drain",
+              "value": 3
+            }
+          ],
+          "energy_cost": 3
+        },
+        {
+          "id": "arbiter_judgment",
+          "name": "Arbiter's Judgment",
+          "description": "A devastating concentrated beam that channels full weapons array output.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 40.0
+            }
+          ],
+          "energy_cost": 6
+        },
+        {
+          "id": "desperate_salvo",
+          "name": "Desperate Salvo",
+          "description": "An all-or-nothing barrage with targeting overrides engaged.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 50.0
+            }
+          ],
+          "energy_cost": 5,
+          "accuracy_modifier": 10
+        }
+      ],
+      "loot_table": [
+        {
+          "commodity_id": "rare_metals",
+          "chance": 0.5,
+          "min_qty": 3,
+          "max_qty": 8
+        }
+      ],
+      "phases": [
+        {
+          "name": "Corporate Authority",
+          "hp_threshold": 1.0,
+          "behavior": "defensive",
+          "move_ids": [
+            "arbiter_laser",
+            "shield_overcharge"
+          ],
+          "on_enter_text": "",
+          "on_enter_effect": ""
+        },
+        {
+          "name": "Tactical Reassessment",
+          "hp_threshold": 0.6,
+          "behavior": "evasive",
+          "move_ids": [
+            "arbiter_laser",
+            "energy_siphon"
+          ],
+          "on_enter_text": "Initiating tactical protocols.",
+          "on_enter_effect": ""
+        },
+        {
+          "name": "Desperate Measures",
+          "hp_threshold": 0.3,
+          "behavior": "aggressive",
+          "move_ids": [
+            "arbiter_judgment",
+            "desperate_salvo"
+          ],
+          "on_enter_text": "This ends now. All power to weapons.",
+          "on_enter_effect": ""
+        }
+      ],
+      "rare_loot": [
+        {
+          "commodity_id": "rare_parts",
+          "chance": 0.5,
+          "min_qty": 2,
+          "max_qty": 5
+        }
+      ]
+    },
+    {
+      "id": "iron_maw",
+      "name": "The Iron Maw",
+      "description": "A Union heavy cruiser built for sustained attrition warfare. Its reinforced hull plating and forge-tempered weapons make it a relentless opponent.",
+      "behavior": "aggressive",
+      "hull": 170,
+      "shields": 30,
+      "energy": 12,
+      "energy_regen": 3,
+      "speed": 4,
+      "evasion": 5,
+      "accuracy": 65,
+      "negotiate_difficulty": 5,
+      "flee_threshold": 0.0,
+      "xp_reward": 700,
+      "faction_id": "",
+      "danger_tier": "dangerous",
+      "bribe_cost": 0,
+      "credit_reward": 25000,
+      "is_boss": true,
+      "boss_hp_multiplier": 3,
+      "immune_to": [
+        "frozen"
+      ],
+      "max_suppressed_stacks": 2,
+      "trophy_drop": "forgeborn_steel",
+      "combat_armor": 3,
+      "moves": [
+        {
+          "id": "maw_cannons",
+          "name": "Maw Cannons",
+          "description": "Heavy-caliber auto-cannons that tear through armor plating.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 25.0
+            }
+          ],
+          "energy_cost": 4
+        },
+        {
+          "id": "hull_brace",
+          "name": "Hull Brace",
+          "description": "Activates emergency bulkheads and structural reinforcement.",
+          "effects": [
+            {
+              "type": "damage_reduction",
+              "value": 20.0,
+              "duration": 2,
+              "target": "self"
+            }
+          ],
+          "energy_cost": 2
+        },
+        {
+          "id": "forge_barrage",
+          "name": "Forge Barrage",
+          "description": "Superheated munitions launched in a sustained barrage.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 40.0
+            }
+          ],
+          "energy_cost": 6
+        },
+        {
+          "id": "overload_charge",
+          "name": "Overload Charge",
+          "description": "Channels every weapon system into a single catastrophic discharge.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 60.0
+            }
+          ],
+          "energy_cost": 8,
+          "cooldown": 2,
+          "accuracy_modifier": -15
+        }
+      ],
+      "loot_table": [
+        {
+          "commodity_id": "rare_metals",
+          "chance": 0.5,
+          "min_qty": 3,
+          "max_qty": 8
+        }
+      ],
+      "phases": [
+        {
+          "name": "Industrial Might",
+          "hp_threshold": 1.0,
+          "behavior": "aggressive",
+          "move_ids": [
+            "maw_cannons",
+            "hull_brace"
+          ],
+          "on_enter_text": "",
+          "on_enter_effect": ""
+        },
+        {
+          "name": "Fortified",
+          "hp_threshold": 0.5,
+          "behavior": "defensive",
+          "move_ids": [
+            "maw_cannons",
+            "hull_brace",
+            "forge_barrage"
+          ],
+          "on_enter_text": "Diverting power to structural integrity.",
+          "on_enter_effect": ""
+        },
+        {
+          "name": "Meltdown",
+          "hp_threshold": 0.25,
+          "behavior": "aggressive",
+          "move_ids": [
+            "forge_barrage",
+            "overload_charge"
+          ],
+          "on_enter_text": "OVERLOADING ALL SYSTEMS!",
+          "on_enter_effect": ""
+        }
+      ],
+      "rare_loot": [
+        {
+          "commodity_id": "rare_parts",
+          "chance": 0.5,
+          "min_qty": 2,
+          "max_qty": 5
+        }
+      ]
+    },
+    {
+      "id": "ledger_phantom",
+      "name": "Ledger Phantom",
+      "description": "A ghost ship crewed by conspiracy operatives. Its stealth systems and electronic warfare suite make it nearly impossible to pin down.",
+      "behavior": "evasive",
+      "hull": 80,
+      "shields": 25,
+      "energy": 14,
+      "energy_regen": 4,
+      "speed": 16,
+      "evasion": 35,
+      "accuracy": 72,
+      "negotiate_difficulty": 5,
+      "flee_threshold": 0.0,
+      "xp_reward": 800,
+      "faction_id": "",
+      "danger_tier": "dangerous",
+      "bribe_cost": 0,
+      "credit_reward": 30000,
+      "is_boss": true,
+      "boss_hp_multiplier": 3,
+      "immune_to": [
+        "frozen"
+      ],
+      "max_suppressed_stacks": 1,
+      "trophy_drop": "phantom_shroud",
+      "moves": [
+        {
+          "id": "phantom_lance",
+          "name": "Phantom Lance",
+          "description": "A cloaked energy lance that strikes from unexpected angles.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 22.0
+            }
+          ],
+          "energy_cost": 3
+        },
+        {
+          "id": "ghost_strike",
+          "name": "Ghost Strike",
+          "description": "A precision attack guided by advanced targeting algorithms.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 15.0
+            }
+          ],
+          "energy_cost": 2,
+          "accuracy_modifier": 20
+        },
+        {
+          "id": "data_intercept",
+          "name": "Data Intercept",
+          "description": "Hacks into enemy power systems, siphoning energy while corrupting sensor data.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 5.0
+            },
+            {
+              "type": "energy_drain",
+              "value": 4
+            }
+          ],
+          "energy_cost": 2
+        },
+        {
+          "id": "phantom_barrage",
+          "name": "Phantom Barrage",
+          "description": "Decloaks all weapon hardpoints for a concentrated salvo.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 30.0
+            }
+          ],
+          "energy_cost": 5
+        },
+        {
+          "id": "data_purge",
+          "name": "Data Purge",
+          "description": "A scorched-earth protocol that weaponizes the ship's own data cores.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 55.0
+            }
+          ],
+          "energy_cost": 7,
+          "cooldown": 3
+        }
+      ],
+      "loot_table": [
+        {
+          "commodity_id": "rare_metals",
+          "chance": 0.5,
+          "min_qty": 3,
+          "max_qty": 8
+        }
+      ],
+      "phases": [
+        {
+          "name": "Shadow Protocol",
+          "hp_threshold": 1.0,
+          "behavior": "evasive",
+          "move_ids": [
+            "phantom_lance",
+            "ghost_strike"
+          ],
+          "on_enter_text": "",
+          "on_enter_effect": ""
+        },
+        {
+          "name": "Data War",
+          "hp_threshold": 0.7,
+          "behavior": "evasive",
+          "move_ids": [
+            "ghost_strike",
+            "data_intercept"
+          ],
+          "on_enter_text": "Accessing your systems... interesting data.",
+          "on_enter_effect": ""
+        },
+        {
+          "name": "Scorched Earth",
+          "hp_threshold": 0.4,
+          "behavior": "aggressive",
+          "move_ids": [
+            "phantom_barrage",
+            "data_purge"
+          ],
+          "on_enter_text": "If I can't have the Ledger, no one will.",
+          "on_enter_effect": ""
+        }
+      ],
+      "rare_loot": [
+        {
+          "commodity_id": "rare_parts",
+          "chance": 0.5,
+          "min_qty": 2,
+          "max_qty": 5
+        }
+      ]
+    },
+    {
+      "id": "the_collector",
+      "name": "The Collector",
+      "description": "An obsessive hoarder who roams trade lanes in a heavily modified freighter, stealing cargo from passing ships. The hull is welded with scavenged armor from dozens of defeated vessels.",
+      "behavior": "defensive",
+      "hull": 120,
+      "shields": 30,
+      "energy": 12,
+      "energy_regen": 3,
+      "speed": 6,
+      "evasion": 8,
+      "accuracy": 65,
+      "negotiate_difficulty": 5,
+      "flee_threshold": 0.0,
+      "xp_reward": 600,
+      "faction_id": "",
+      "danger_tier": "dangerous",
+      "bribe_cost": 0,
+      "credit_reward": 35000,
+      "is_boss": true,
+      "boss_hp_multiplier": 3,
+      "immune_to": [
+        "frozen"
+      ],
+      "max_suppressed_stacks": 2,
+      "trophy_drop": "collectors_crest",
+      "moves": [
+        {
+          "id": "tractor_pulse",
+          "name": "Tractor Pulse",
+          "description": "A modified tractor beam repurposed as a concussive weapon.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 15.0
+            }
+          ],
+          "energy_cost": 3
+        },
+        {
+          "id": "collector_beam",
+          "name": "Collector Beam",
+          "description": "A focused cutting beam originally designed for salvage operations.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 20.0
+            }
+          ],
+          "energy_cost": 4
+        },
+        {
+          "id": "cargo_barrage",
+          "name": "Cargo Barrage",
+          "description": "Launches salvaged cargo containers as makeshift projectiles.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 35.0
+            }
+          ],
+          "energy_cost": 5
+        },
+        {
+          "id": "hoard_shield",
+          "name": "Hoard Shield",
+          "description": "Activates a barrier of compacted debris and stolen hull plating.",
+          "effects": [
+            {
+              "type": "shield_restore",
+              "value": 25.0,
+              "target": "self"
+            },
+            {
+              "type": "damage_reduction",
+              "value": 10.0,
+              "duration": 2,
+              "target": "self"
+            }
+          ],
+          "energy_cost": 3
+        }
+      ],
+      "loot_table": [
+        {
+          "commodity_id": "rare_metals",
+          "chance": 1.0,
+          "min_qty": 10,
+          "max_qty": 20
+        },
+        {
+          "commodity_id": "electronics",
+          "chance": 0.8,
+          "min_qty": 5,
+          "max_qty": 10
+        }
+      ],
+      "phases": [
+        {
+          "name": "Acquisition",
+          "hp_threshold": 1.0,
+          "behavior": "defensive",
+          "move_ids": [
+            "tractor_pulse",
+            "hoard_shield"
+          ],
+          "on_enter_text": "",
+          "on_enter_effect": ""
+        },
+        {
+          "name": "Desperate Holdings",
+          "hp_threshold": 0.5,
+          "behavior": "aggressive",
+          "move_ids": [
+            "collector_beam",
+            "hoard_shield"
+          ],
+          "on_enter_text": "You can't take what's MINE!",
+          "on_enter_effect": ""
+        },
+        {
+          "name": "Everything Must Go",
+          "hp_threshold": 0.25,
+          "behavior": "aggressive",
+          "move_ids": [
+            "cargo_barrage",
+            "collector_beam"
+          ],
+          "on_enter_text": "Fine! Take it ALL!",
+          "on_enter_effect": ""
+        }
+      ],
+      "rare_loot": [
+        {
+          "commodity_id": "rare_parts",
+          "chance": 0.5,
+          "min_qty": 2,
+          "max_qty": 5
+        }
+      ]
+    },
+    {
+      "id": "void_leviathan",
+      "name": "Void Leviathan",
+      "description": "An ancient bio-mechanical entity drifting through deep space. Its origins are unknown, but its hunger is unmistakable. Thick chitin plating renders conventional weapons nearly useless.",
+      "behavior": "aggressive",
+      "hull": 200,
+      "shields": 10,
+      "energy": 10,
+      "energy_regen": 2,
+      "speed": 3,
+      "evasion": 3,
+      "accuracy": 60,
+      "negotiate_difficulty": 5,
+      "flee_threshold": 0.0,
+      "xp_reward": 900,
+      "faction_id": "",
+      "danger_tier": "dangerous",
+      "bribe_cost": 0,
+      "credit_reward": 40000,
+      "is_boss": true,
+      "boss_hp_multiplier": 3,
+      "immune_to": [
+        "frozen",
+        "suppressed"
+      ],
+      "max_suppressed_stacks": 0,
+      "trophy_drop": "void_chitin",
+      "combat_armor": 5,
+      "moves": [
+        {
+          "id": "void_slam",
+          "name": "Void Slam",
+          "description": "A massive appendage smashes into the target with crushing force.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 30.0
+            }
+          ],
+          "energy_cost": 4
+        },
+        {
+          "id": "leviathan_roar",
+          "name": "Leviathan Roar",
+          "description": "A disorienting sonic pulse that destabilizes nearby ships.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 15.0
+            },
+            {
+              "type": "evasion_mod",
+              "value": -10.0,
+              "duration": 2,
+              "target": "enemy"
+            }
+          ],
+          "energy_cost": 2
+        },
+        {
+          "id": "abyssal_crush",
+          "name": "Abyssal Crush",
+          "description": "The creature wraps itself around the target, compressing with impossible strength.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 50.0
+            }
+          ],
+          "energy_cost": 6
+        },
+        {
+          "id": "extinction_pulse",
+          "name": "Extinction Pulse",
+          "description": "A cataclysmic energy release from the creature's core. The void itself trembles.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 70.0
+            }
+          ],
+          "energy_cost": 9,
+          "cooldown": 3,
+          "accuracy_modifier": -20
+        }
+      ],
+      "loot_table": [
+        {
+          "commodity_id": "rare_metals",
+          "chance": 0.5,
+          "min_qty": 3,
+          "max_qty": 8
+        }
+      ],
+      "phases": [
+        {
+          "name": "Ancient Hunger",
+          "hp_threshold": 1.0,
+          "behavior": "aggressive",
+          "move_ids": [
+            "void_slam",
+            "leviathan_roar"
+          ],
+          "on_enter_text": "",
+          "on_enter_effect": ""
+        },
+        {
+          "name": "Awakened Fury",
+          "hp_threshold": 0.6,
+          "behavior": "aggressive",
+          "move_ids": [
+            "void_slam",
+            "abyssal_crush"
+          ],
+          "on_enter_text": "The creature shudders. Something ancient stirs.",
+          "on_enter_effect": ""
+        },
+        {
+          "name": "Death Throes",
+          "hp_threshold": 0.3,
+          "behavior": "aggressive",
+          "move_ids": [
+            "abyssal_crush",
+            "extinction_pulse"
+          ],
+          "on_enter_text": "The void itself screams.",
+          "on_enter_effect": ""
+        }
+      ],
+      "rare_loot": [
+        {
+          "commodity_id": "rare_parts",
+          "chance": 0.5,
+          "min_qty": 2,
+          "max_qty": 5
+        }
+      ]
+    },
+    {
+      "id": "rogue_ai_vessel",
+      "name": "Rogue AI Vessel",
+      "description": "A derelict research vessel seized by its own experimental AI. It learns from every exchange, adapting its tactics in real time. Its weapons fire with inhuman precision.",
+      "behavior": "defensive",
+      "hull": 80,
+      "shields": 30,
+      "energy": 16,
+      "energy_regen": 5,
+      "speed": 12,
+      "evasion": 20,
+      "accuracy": 75,
+      "negotiate_difficulty": 5,
+      "flee_threshold": 0.0,
+      "xp_reward": 750,
+      "faction_id": "",
+      "danger_tier": "dangerous",
+      "bribe_cost": 0,
+      "credit_reward": 28000,
+      "is_boss": true,
+      "boss_hp_multiplier": 3,
+      "immune_to": [
+        "frozen"
+      ],
+      "max_suppressed_stacks": 1,
+      "trophy_drop": "ai_logic_core",
+      "moves": [
+        {
+          "id": "adaptive_beam",
+          "name": "Adaptive Beam",
+          "description": "A modulating energy beam that adjusts frequency to exploit hull weaknesses.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 18.0
+            }
+          ],
+          "energy_cost": 3
+        },
+        {
+          "id": "system_hack",
+          "name": "System Hack",
+          "description": "Infiltrates enemy power management systems, draining reserves.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 10.0
+            },
+            {
+              "type": "energy_drain",
+              "value": 3
+            }
+          ],
+          "energy_cost": 2
+        },
+        {
+          "id": "mirror_strike",
+          "name": "Mirror Strike",
+          "description": "Analyzes and replicates the target's last attack pattern with machine precision.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 25.0
+            }
+          ],
+          "energy_cost": 4
+        },
+        {
+          "id": "logic_bomb",
+          "name": "Logic Bomb",
+          "description": "Deploys a weaponized data packet that cascades through enemy systems.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 35.0
+            }
+          ],
+          "energy_cost": 5,
+          "cooldown": 2
+        },
+        {
+          "id": "neural_overload",
+          "name": "Neural Overload",
+          "description": "Broadcasts a consciousness-fracturing signal on all frequencies.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 45.0
+            }
+          ],
+          "energy_cost": 7,
+          "cooldown": 3
+        }
+      ],
+      "loot_table": [
+        {
+          "commodity_id": "rare_metals",
+          "chance": 0.5,
+          "min_qty": 3,
+          "max_qty": 8
+        }
+      ],
+      "phases": [
+        {
+          "name": "Analysis",
+          "hp_threshold": 1.0,
+          "behavior": "defensive",
+          "move_ids": [
+            "adaptive_beam",
+            "system_hack"
+          ],
+          "on_enter_text": "",
+          "on_enter_effect": ""
+        },
+        {
+          "name": "Adaptation",
+          "hp_threshold": 0.66,
+          "behavior": "evasive",
+          "move_ids": [
+            "mirror_strike",
+            "system_hack"
+          ],
+          "on_enter_text": "ANALYZING... ADAPTING... YOUR PATTERNS ARE PREDICTABLE.",
+          "on_enter_effect": ""
+        },
+        {
+          "name": "Convergence",
+          "hp_threshold": 0.33,
+          "behavior": "aggressive",
+          "move_ids": [
+            "logic_bomb",
+            "neural_overload"
+          ],
+          "on_enter_text": "CONVERGENCE PROTOCOL INITIATED. ALL FUTURES CALCULATED.",
+          "on_enter_effect": ""
+        }
+      ],
+      "rare_loot": [
+        {
+          "commodity_id": "rare_parts",
+          "chance": 0.5,
+          "min_qty": 2,
+          "max_qty": 5
+        }
+      ]
     }
   ]
 }

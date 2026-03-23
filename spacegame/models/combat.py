@@ -190,6 +190,44 @@ class EnemyBehavior(Enum):
 
 
 @dataclass
+class BossPhase:
+    """A single phase in a boss encounter.
+
+    Bosses change behavior at HP thresholds. Each phase defines
+    which moves are available, what behavior to use, and optional
+    transition effects.
+    """
+
+    name: str
+    hp_threshold: float  # Phase activates when total HP ratio drops below this (1.0 = always active)
+    behavior: str  # "aggressive", "defensive", "evasive", "berserker", "tactical"
+    move_ids: list[str] = field(default_factory=list)  # IDs of moves available in this phase
+    on_enter_text: str = ""  # Dialogue/flavor text shown on transition
+    on_enter_effect: str = ""  # Special effect on transition (e.g., "spawn_pirate_scout")
+
+    def to_dict(self) -> dict:
+        return {
+            "name": self.name,
+            "hp_threshold": self.hp_threshold,
+            "behavior": self.behavior,
+            "move_ids": self.move_ids,
+            "on_enter_text": self.on_enter_text,
+            "on_enter_effect": self.on_enter_effect,
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "BossPhase":
+        return cls(
+            name=data["name"],
+            hp_threshold=data["hp_threshold"],
+            behavior=data.get("behavior", "aggressive"),
+            move_ids=data.get("move_ids", data.get("moves", [])),
+            on_enter_text=data.get("on_enter_text", ""),
+            on_enter_effect=data.get("on_enter_effect", ""),
+        )
+
+
+@dataclass
 class EnemyShipTemplate:
     """Immutable template defining an enemy ship type.
 
@@ -219,6 +257,13 @@ class EnemyShipTemplate:
     credit_reward: int = 0
     rare_loot: list[dict] = field(default_factory=list)
     combat_armor: int = 0
+    # Boss encounter fields (Phase 10)
+    is_boss: bool = False
+    boss_hp_multiplier: int = 1
+    phases: list[BossPhase] = field(default_factory=list)
+    immune_to: list[str] = field(default_factory=list)  # Effect types the boss is immune to
+    max_suppressed_stacks: int = 3  # Default 3, bosses may cap lower
+    trophy_drop: str = ""  # Shape/material ID dropped on first kill
 
 
 @dataclass
@@ -237,10 +282,14 @@ class EnemyShip:
     cooldowns: dict[str, int]
     is_fled: bool = False
     telegraphed_move: Optional["CombatMove"] = None  # What enemy plans to do next
+    # Boss state (Phase 10)
+    current_phase_idx: int = 0
 
     @classmethod
     def from_template(cls, template: EnemyShipTemplate) -> "EnemyShip":
         """Create a combat-ready enemy ship from a template.
+
+        For boss enemies, applies the HP multiplier to hull and shields.
 
         Args:
             template: The enemy ship template to instantiate.
@@ -248,10 +297,11 @@ class EnemyShip:
         Returns:
             EnemyShip with full health/energy and no active effects.
         """
+        mult = template.boss_hp_multiplier if template.is_boss else 1
         return cls(
             template=template,
-            current_hull=template.hull,
-            current_shields=template.shields,
+            current_hull=template.hull * mult,
+            current_shields=template.shields * mult,
             current_energy=template.energy,
             active_effects=[],
             cooldowns={},
@@ -263,11 +313,32 @@ class EnemyShip:
         return self.current_hull > 0
 
     @property
+    def max_hull(self) -> int:
+        """Maximum hull HP (applies boss multiplier)."""
+        mult = self.template.boss_hp_multiplier if self.template.is_boss else 1
+        return self.template.hull * mult
+
+    @property
+    def max_shields(self) -> int:
+        """Maximum shield HP (applies boss multiplier)."""
+        mult = self.template.boss_hp_multiplier if self.template.is_boss else 1
+        return self.template.shields * mult
+
+    @property
+    def total_hp_ratio(self) -> float:
+        """Combined hull+shields as fraction of max (for boss phase thresholds)."""
+        max_total = self.max_hull + self.max_shields
+        if max_total <= 0:
+            return 0.0
+        current_total = self.current_hull + self.current_shields
+        return max(0.0, current_total / max_total)
+
+    @property
     def hull_ratio(self) -> float:
         """Current hull as a fraction of maximum (0.0 to 1.0)."""
-        if self.template.hull <= 0:
+        if self.max_hull <= 0:
             return 0.0
-        return max(0.0, self.current_hull / self.template.hull)
+        return max(0.0, self.current_hull / self.max_hull)
 
     def get_effective_evasion(self) -> int:
         """Base evasion plus all active evasion modifiers."""

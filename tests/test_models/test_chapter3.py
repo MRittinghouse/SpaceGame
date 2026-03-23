@@ -3020,11 +3020,11 @@ class TestActOneFinalCounts:
         )
 
     def test_total_enemy_templates(self) -> None:
-        """Should have 28 enemy templates."""
+        """28 base + 7 bosses = 35 enemy templates."""
         _load_data()
         dl = get_data_loader()
-        assert len(dl.enemy_templates) == 28, (
-            f"Expected 28 enemy templates, got {len(dl.enemy_templates)}: "
+        assert len(dl.enemy_templates) == 35, (
+            f"Expected 35 enemy templates, got {len(dl.enemy_templates)}: "
             f"{sorted(dl.enemy_templates.keys())}"
         )
 

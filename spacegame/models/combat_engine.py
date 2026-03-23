@@ -440,15 +440,52 @@ class CombatEngine:
         )
 
     def _select_enemy_move(self, enemy: EnemyShip) -> Optional[CombatMove]:
-        """Select a move based on enemy AI behavior."""
-        available = [
-            m for m in enemy.template.moves
-            if m.id not in enemy.cooldowns and enemy.current_energy >= m.energy_cost
-        ]
+        """Select a move based on enemy AI behavior.
+
+        For bosses with phases, restricts available moves to the current
+        phase's move_ids and uses the phase's behavior pattern.
+        """
+        # Boss phase-aware move filtering
+        if (enemy.template.is_boss and enemy.template.phases
+                and enemy.current_phase_idx < len(enemy.template.phases)):
+            phase = enemy.template.phases[enemy.current_phase_idx]
+            phase_moves = [
+                m for m in enemy.template.moves
+                if m.id in phase.move_ids
+            ]
+            available = [
+                m for m in phase_moves
+                if m.id not in enemy.cooldowns and enemy.current_energy >= m.energy_cost
+            ]
+            # Fall back to all moves if phase moves are all on cooldown
+            if not available:
+                available = [
+                    m for m in enemy.template.moves
+                    if m.id not in enemy.cooldowns and enemy.current_energy >= m.energy_cost
+                ]
+            behavior_str = phase.behavior
+        else:
+            available = [
+                m for m in enemy.template.moves
+                if m.id not in enemy.cooldowns and enemy.current_energy >= m.energy_cost
+            ]
+            behavior_str = enemy.template.behavior.value if hasattr(enemy.template.behavior, "value") else str(enemy.template.behavior)
+
         if not available:
             return None
 
+        # Map behavior string to enum for bosses with phase-specific behavior
         behavior = enemy.template.behavior
+        if enemy.template.is_boss:
+            behavior_map = {
+                "aggressive": EnemyBehavior.AGGRESSIVE,
+                "defensive": EnemyBehavior.DEFENSIVE,
+                "evasive": EnemyBehavior.EVASIVE,
+                "cowardly": EnemyBehavior.COWARDLY,
+                "berserker": EnemyBehavior.AGGRESSIVE,  # Berserker = ultra-aggressive
+                "tactical": EnemyBehavior.DEFENSIVE,     # Tactical = smart defensive
+            }
+            behavior = behavior_map.get(behavior_str, enemy.template.behavior)
 
         if behavior == EnemyBehavior.AGGRESSIVE:
             # Always pick the highest-damage move
@@ -951,6 +988,10 @@ class CombatEngine:
                 self._state.combat_log.append(entry)
                 logs.append(entry)
 
+        # Check boss phase transitions after damage resolution
+        phase_logs = self._check_boss_phase_transitions()
+        logs.extend(phase_logs)
+
         self._check_combat_end()
         return logs
 
@@ -1115,15 +1156,25 @@ class CombatEngine:
                     if source_name == "player" or source_name.startswith("crew:"):
                         self._add_player_momentum(MOMENTUM_ON_STATUS_APPLIED, "chill applied")
                     if chill_count >= 3:
-                        # Frozen! Enemy loses next turn — clear all Chill stacks
-                        self._clear_effect_type(target, EffectType.CHILL)
-                        # Mark frozen by setting a special 1-turn skip flag
-                        frozen_effect = CombatEffect(
-                            type=EffectType.CHILL, value=0.0,
-                            duration=1, target=EffectTarget.ENEMY,
-                        )
-                        frozen_effect._frozen = True  # type: ignore[attr-defined]
-                        target.active_effects.append((frozen_effect, 1))
+                        # Boss immunity: check if target is immune to frozen
+                        immune_to_frozen = False
+                        if isinstance(target, EnemyShip) and target.template.is_boss:
+                            immune_to_frozen = "frozen" in target.template.immune_to
+
+                        if immune_to_frozen:
+                            self._clear_effect_type(target, EffectType.CHILL)
+                            messages.append(f"{target_name} resists being frozen!")
+                        else:
+                            # Frozen! Enemy loses next turn — clear all Chill stacks
+                            self._clear_effect_type(target, EffectType.CHILL)
+                            # Mark frozen by setting a special 1-turn skip flag
+                            frozen_effect = CombatEffect(
+                                type=EffectType.CHILL, value=0.0,
+                                duration=1, target=EffectTarget.ENEMY,
+                            )
+                            frozen_effect._frozen = True  # type: ignore[attr-defined]
+                            target.active_effects.append((frozen_effect, 1))
+                            messages.append("FROZEN! Enemy loses next turn")
                         messages.append("FROZEN! Enemy loses next turn")
 
                 elif eff_element == WeaponElement.VOLTAIC:
@@ -1134,7 +1185,11 @@ class CombatEngine:
                         type=EffectType.SUPPRESSED, value=12.0,  # -12% damage per stack
                         duration=3, target=EffectTarget.ENEMY,
                     )
-                    sup_count = self._apply_stacking_effect(target, suppress_effect, max_stacks=3)
+                    # Boss-specific Suppressed cap
+                    max_sup = 3
+                    if isinstance(target, EnemyShip) and target.template.is_boss:
+                        max_sup = target.template.max_suppressed_stacks
+                    sup_count = self._apply_stacking_effect(target, suppress_effect, max_stacks=max_sup)
                     messages.append(f"Suppressed x{sup_count} (-{sup_count * 12}% damage)")
                     if source_name == "player" or source_name.startswith("crew:"):
                         self._add_player_momentum(MOMENTUM_ON_STATUS_APPLIED, "suppressed applied")
@@ -1622,6 +1677,95 @@ class CombatEngine:
 
         self._check_combat_end()
         return [entry]
+
+    def _check_boss_phase_transitions(self) -> list[CombatLogEntry]:
+        """Check if any boss enemies should transition to a new phase.
+
+        Called after damage is dealt. Compares current total HP ratio
+        against phase thresholds and advances to the next phase if needed.
+
+        Returns:
+            Log entries for phase transitions (with flavor text and effects).
+        """
+        logs: list[CombatLogEntry] = []
+        for enemy in self._state.enemies:
+            if not enemy.template.is_boss or not enemy.is_alive:
+                continue
+            if not enemy.template.phases:
+                continue
+
+            hp_ratio = enemy.total_hp_ratio
+            phases = enemy.template.phases
+
+            # Find the latest phase we should be in (phases are ordered by descending threshold)
+            target_phase_idx = 0
+            for i, phase in enumerate(phases):
+                if hp_ratio <= phase.hp_threshold:
+                    target_phase_idx = i
+
+            # If we need to advance (can skip multiple phases on a huge hit)
+            while enemy.current_phase_idx < target_phase_idx:
+                enemy.current_phase_idx += 1
+                new_phase = phases[enemy.current_phase_idx]
+
+                messages: list[str] = [
+                    f"PHASE SHIFT: {new_phase.name}"
+                ]
+                if new_phase.on_enter_text:
+                    messages.append(new_phase.on_enter_text)
+
+                # Apply on_enter_effects
+                if new_phase.on_enter_effect:
+                    effect_msg = self._apply_boss_phase_effect(
+                        enemy, new_phase.on_enter_effect
+                    )
+                    if effect_msg:
+                        messages.append(effect_msg)
+
+                entry = CombatLogEntry(
+                    round_number=self._state.round_number,
+                    actor=f"boss:{enemy.template.id}",
+                    action=f"Phase Shift: {new_phase.name}",
+                    effects_applied=messages,
+                    hit=True,
+                )
+                self._state.combat_log.append(entry)
+                logs.append(entry)
+
+        return logs
+
+    def _apply_boss_phase_effect(self, enemy: EnemyShip, effect_id: str) -> str:
+        """Apply a boss phase transition effect.
+
+        Args:
+            enemy: The boss enemy.
+            effect_id: The effect identifier string.
+
+        Returns:
+            Human-readable message describing what happened.
+        """
+        if effect_id == "damage_boost_50":
+            eff = CombatEffect(
+                type=EffectType.DAMAGE_BOOST, value=50.0,
+                duration=99, target=EffectTarget.SELF,
+            )
+            enemy.active_effects.append((eff, 99))
+            return "Damage increased by 50%!"
+
+        if effect_id == "damage_boost_50_defense_minus_30":
+            boost = CombatEffect(
+                type=EffectType.DAMAGE_BOOST, value=50.0,
+                duration=99, target=EffectTarget.SELF,
+            )
+            enemy.active_effects.append((boost, 99))
+            return "Berserk! +50% damage, defenses lowered!"
+
+        if effect_id == "spawn_pirate_scout":
+            # Conceptual — reinforcement spawning is complex (needs UI coordination)
+            # For now, log the intent; actual spawn handled by view layer
+            return "Reinforcements incoming!"
+
+        return ""
 
     def _check_combat_end(self) -> None:
         """Check if combat has ended (victory or defeat)."""

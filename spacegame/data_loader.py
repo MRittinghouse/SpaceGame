@@ -37,6 +37,7 @@ from spacegame.models.mission import (
 )
 from spacegame.models.crew import CrewTemplate, CrewAbility
 from spacegame.models.combat import (
+    BossPhase,
     CombatEffect,
     CombatMove,
     EnemyBehavior,
@@ -1144,6 +1145,12 @@ class DataLoader:
             credit_reward=data.get("credit_reward", 0),
             rare_loot=data.get("rare_loot", []),
             combat_armor=data.get("combat_armor", 0),
+            is_boss=data.get("is_boss", False),
+            boss_hp_multiplier=data.get("boss_hp_multiplier", 1),
+            phases=[BossPhase.from_dict(p) for p in data.get("phases", [])],
+            immune_to=data.get("immune_to", []),
+            max_suppressed_stacks=data.get("max_suppressed_stacks", 3),
+            trophy_drop=data.get("trophy_drop", ""),
         )
 
     def _parse_combat_move(self, data: dict) -> CombatMove:
