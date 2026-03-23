@@ -226,7 +226,7 @@ class MiningView(BaseView):
         )
         self._mining_atmosphere = MiningAtmosphere(grid_rect)
         self._depth_meter = DepthMeter(
-            x=WINDOW_WIDTH - scale_x(60),
+            x=self.CARD_COL_LEFT_X - scale_x(50),
             y=self.GRID_OFFSET_Y,
             height=self.CELL_SIZE * 5,
         )
@@ -1772,12 +1772,7 @@ class MiningView(BaseView):
             surf = self.small_font.render(label, True, Colors.TEXT)
         screen.blit(surf, (bar_x + 8, bar_y + 2))
 
-        # Depth indicator right of energy bar
-        depth_label = f"DEPTH {self.session.depth}"
-        depth_intensity = min(255, 150 + self.session.depth * 10)
-        depth_color = (depth_intensity, depth_intensity, 255)
-        depth_surf = self.info_font.render(depth_label, True, depth_color)
-        screen.blit(depth_surf, (bar_x + bar_width + 20, bar_y))
+        # Depth indicator removed — shown in Depth card and depth meter sidebar
 
     def _render_milestones(self, screen: pygame.Surface) -> None:
         """Render milestone progress panel."""
