@@ -188,6 +188,6 @@ class TestTotalCounts:
         assert len(dl.get_all_commodities()) == 61
 
     def test_total_upgrade_count(self) -> None:
-        """52 existing + 6 new = 58 upgrades."""
+        """85 existing + 27 Phase 12B defense/utility = 112 upgrades."""
         dl = _load()
-        assert len(dl.upgrades) == 85
+        assert len(dl.upgrades) == 112

@@ -2682,6 +2682,889 @@
         "energy_cost": 1,
         "cooldown": 3
       }
+    },
+    {
+      "id": "hull_reinforced_plating",
+      "name": "Reinforced Hull Plating",
+      "description": "Layered composite plating that absorbs kinetic impacts. +1 armor.",
+      "price": 4000,
+      "slot_type": "defense",
+      "bonus_type": "armor_bonus",
+      "bonus_value": 1.0,
+      "tier": 1,
+      "available_systems": [],
+      "tuning_options": [
+        {
+          "id": "hardened",
+          "name": "Hardened",
+          "description": "+1 armor",
+          "bonus_type": "armor_bonus",
+          "bonus_value": 1.0
+        },
+        {
+          "id": "layered",
+          "name": "Layered",
+          "description": "+15 hull",
+          "bonus_type": "hull_bonus",
+          "bonus_value": 15.0
+        }
+      ],
+      "combat_move": {
+        "id": "brace",
+        "name": "Brace",
+        "description": "Braces hull plating against incoming fire. Reduces damage for 2 turns.",
+        "effects": [
+          {
+            "type": "damage_reduction",
+            "value": 15.0,
+            "duration": 2,
+            "target": "self"
+          }
+        ],
+        "energy_cost": 2
+      }
+    },
+    {
+      "id": "hull_reactive_armor",
+      "name": "Reactive Armor System",
+      "description": "Smart armor that detonates outward on impact, neutralizing projectiles. +2 armor.",
+      "price": 12000,
+      "slot_type": "defense",
+      "bonus_type": "armor_bonus",
+      "bonus_value": 2.0,
+      "tier": 2,
+      "available_systems": [],
+      "tuning_options": [
+        {
+          "id": "dense",
+          "name": "Dense",
+          "description": "+1 armor",
+          "bonus_type": "armor_bonus",
+          "bonus_value": 1.0
+        },
+        {
+          "id": "regenerative",
+          "name": "Regenerative",
+          "description": "+5 hull restore",
+          "bonus_type": "hull_restore_bonus",
+          "bonus_value": 5.0
+        }
+      ],
+      "combat_move": {
+        "id": "ablative_shield",
+        "name": "Ablative Shield",
+        "description": "Sacrifices outer armor layers to absorb a devastating hit.",
+        "effects": [
+          {
+            "type": "absorb",
+            "value": 1.0,
+            "target": "self"
+          }
+        ],
+        "energy_cost": 3
+      }
+    },
+    {
+      "id": "nano_repair_suite",
+      "name": "Nano-Repair Suite",
+      "description": "Swarms of nanobots continuously seal hull breaches. +1 armor.",
+      "price": 14000,
+      "slot_type": "defense",
+      "bonus_type": "armor_bonus",
+      "bonus_value": 1.0,
+      "tier": 2,
+      "available_systems": [],
+      "tuning_options": [
+        {
+          "id": "fast_cycle",
+          "name": "Fast Cycle",
+          "description": "-1 energy cost",
+          "bonus_type": "energy_discount",
+          "bonus_value": 1.0
+        },
+        {
+          "id": "deep_repair",
+          "name": "Deep Repair",
+          "description": "+12 hull restore",
+          "bonus_type": "hull_restore_bonus",
+          "bonus_value": 12.0
+        }
+      ],
+      "combat_move": {
+        "id": "rapid_mend",
+        "name": "Rapid Mend",
+        "description": "Deploys emergency nanobot swarm to restore 35 hull integrity.",
+        "effects": [
+          {
+            "type": "hull_restore",
+            "value": 35.0,
+            "target": "self"
+          }
+        ],
+        "energy_cost": 3,
+        "cooldown": 3
+      }
+    },
+    {
+      "id": "hull_matrix",
+      "name": "Structural Integrity Matrix",
+      "description": "An interlocking lattice of reinforced struts that distributes impact force across the hull. +3 armor.",
+      "price": 28000,
+      "slot_type": "defense",
+      "bonus_type": "armor_bonus",
+      "bonus_value": 3.0,
+      "tier": 3,
+      "available_systems": [
+        "forgeworks",
+        "iron_depths"
+      ],
+      "tuning_options": [
+        {
+          "id": "adamantine",
+          "name": "Adamantine",
+          "description": "+2 armor",
+          "bonus_type": "armor_bonus",
+          "bonus_value": 2.0
+        },
+        {
+          "id": "resilient",
+          "name": "Resilient",
+          "description": "+25 hull",
+          "bonus_type": "hull_bonus",
+          "bonus_value": 25.0
+        }
+      ],
+      "combat_move": {
+        "id": "fortify",
+        "name": "Fortify",
+        "description": "Locks structural matrix into maximum rigidity. Reduces damage for 3 turns.",
+        "effects": [
+          {
+            "type": "damage_reduction",
+            "value": 20.0,
+            "duration": 3,
+            "target": "self"
+          }
+        ],
+        "energy_cost": 4,
+        "cooldown": 4
+      }
+    },
+    {
+      "id": "titan_bulkhead",
+      "name": "Titan-Class Bulkhead",
+      "description": "Military-grade bulkhead forged from compressed neutronium alloy. +4 armor.",
+      "price": 42000,
+      "slot_type": "defense",
+      "bonus_type": "armor_bonus",
+      "bonus_value": 4.0,
+      "tier": 3,
+      "available_systems": [
+        "forgeworks"
+      ],
+      "tuning_options": [
+        {
+          "id": "fortress",
+          "name": "Fortress",
+          "description": "+3 armor",
+          "bonus_type": "armor_bonus",
+          "bonus_value": 3.0
+        },
+        {
+          "id": "retribution",
+          "name": "Retribution",
+          "description": "+20 damage reflect",
+          "bonus_type": "damage_reflect_bonus",
+          "bonus_value": 20.0
+        }
+      ],
+      "combat_move": {
+        "id": "unbreakable",
+        "name": "Unbreakable",
+        "description": "Channels all power to structural integrity. Nearly impervious for 2 turns.",
+        "effects": [
+          {
+            "type": "damage_reduction",
+            "value": 95.0,
+            "duration": 2,
+            "target": "self"
+          }
+        ],
+        "energy_cost": 5,
+        "cooldown": 5
+      }
+    },
+    {
+      "id": "field_repair_rig",
+      "name": "Field Repair Rig",
+      "description": "Portable welding and patching equipment that reduces station repair costs by 25%.",
+      "price": 10000,
+      "slot_type": "defense",
+      "bonus_type": "repair_discount",
+      "bonus_value": 25.0,
+      "tier": 2,
+      "available_systems": [],
+      "tuning_options": [
+        {
+          "id": "salvage_parts",
+          "name": "Salvage Parts",
+          "description": "+10% repair discount",
+          "bonus_type": "repair_discount",
+          "bonus_value": 10.0
+        },
+        {
+          "id": "combat_welder",
+          "name": "Combat Welder",
+          "description": "+8 hull restore",
+          "bonus_type": "hull_restore_bonus",
+          "bonus_value": 8.0
+        }
+      ],
+      "combat_move": {
+        "id": "patch_up",
+        "name": "Patch Up",
+        "description": "Performs emergency hull repairs mid-combat. Restores 20 hull.",
+        "effects": [
+          {
+            "type": "hull_restore",
+            "value": 20.0,
+            "target": "self"
+          }
+        ],
+        "energy_cost": 2
+      }
+    },
+    {
+      "id": "shield_conduit",
+      "name": "Shield Power Conduit",
+      "description": "Dedicated power conduit that feeds the shield generator. +2 shield regen.",
+      "price": 5000,
+      "slot_type": "defense",
+      "bonus_type": "shield_regen_bonus",
+      "bonus_value": 2.0,
+      "tier": 1,
+      "available_systems": [],
+      "tuning_options": [
+        {
+          "id": "capacitor",
+          "name": "Capacitor",
+          "description": "+1 shield regen",
+          "bonus_type": "shield_regen_bonus",
+          "bonus_value": 1.0
+        },
+        {
+          "id": "burst",
+          "name": "Burst",
+          "description": "+8 shield restore",
+          "bonus_type": "shield_restore_bonus",
+          "bonus_value": 8.0
+        }
+      ],
+      "combat_move": {
+        "id": "pulse_shield",
+        "name": "Pulse Shield",
+        "description": "Surges power through the shield conduit. Restores 20 shield points.",
+        "effects": [
+          {
+            "type": "shield_restore",
+            "value": 20.0,
+            "target": "self"
+          }
+        ],
+        "energy_cost": 2
+      }
+    },
+    {
+      "id": "adaptive_barrier",
+      "name": "Adaptive Barrier Array",
+      "description": "Shield array that recalibrates its frequency to match incoming fire. +3 shield regen.",
+      "price": 13000,
+      "slot_type": "defense",
+      "bonus_type": "shield_regen_bonus",
+      "bonus_value": 3.0,
+      "tier": 2,
+      "available_systems": [],
+      "tuning_options": [
+        {
+          "id": "overcharge",
+          "name": "Overcharge",
+          "description": "+15 shield capacity",
+          "bonus_type": "shield_bonus",
+          "bonus_value": 15.0
+        },
+        {
+          "id": "reflective",
+          "name": "Reflective",
+          "description": "+5 damage reduction",
+          "bonus_type": "damage_reduction_bonus",
+          "bonus_value": 5.0
+        }
+      ],
+      "combat_move": {
+        "id": "adaptive_ward",
+        "name": "Adaptive Ward",
+        "description": "Recalibrates shields and braces for impact. Restores 30 shields and reduces damage for 1 turn.",
+        "effects": [
+          {
+            "type": "shield_restore",
+            "value": 30.0,
+            "target": "self"
+          },
+          {
+            "type": "damage_reduction",
+            "value": 10.0,
+            "duration": 1,
+            "target": "self"
+          }
+        ],
+        "energy_cost": 3
+      }
+    },
+    {
+      "id": "shield_harmonics",
+      "name": "Shield Harmonics Generator",
+      "description": "Generates resonance patterns that amplify shield regeneration cycles. +4 shield regen.",
+      "price": 15000,
+      "slot_type": "defense",
+      "bonus_type": "shield_regen_bonus",
+      "bonus_value": 4.0,
+      "tier": 2,
+      "available_systems": [],
+      "tuning_options": [
+        {
+          "id": "harmonic",
+          "name": "Harmonic",
+          "description": "+2 shield regen",
+          "bonus_type": "shield_regen_bonus",
+          "bonus_value": 2.0
+        },
+        {
+          "id": "feedback",
+          "name": "Feedback",
+          "description": "+15 damage reflect",
+          "bonus_type": "damage_reflect_bonus",
+          "bonus_value": 15.0
+        }
+      ],
+      "combat_move": {
+        "id": "resonance_pulse",
+        "name": "Resonance Pulse",
+        "description": "Releases a harmonic pulse that restores 40 shield points.",
+        "effects": [
+          {
+            "type": "shield_restore",
+            "value": 40.0,
+            "target": "self"
+          }
+        ],
+        "energy_cost": 3,
+        "cooldown": 3
+      }
+    },
+    {
+      "id": "quantum_shield",
+      "name": "Quantum Shield Matrix",
+      "description": "Experimental shield that exists in a superposition state, partially phasing out of reality. +5 shield regen.",
+      "price": 30000,
+      "slot_type": "defense",
+      "bonus_type": "shield_regen_bonus",
+      "bonus_value": 5.0,
+      "tier": 3,
+      "available_systems": [
+        "axiom_labs",
+        "nova_research"
+      ],
+      "tuning_options": [
+        {
+          "id": "quantum_lock",
+          "name": "Quantum Lock",
+          "description": "+10 shield capacity",
+          "bonus_type": "shield_bonus",
+          "bonus_value": 10.0
+        },
+        {
+          "id": "overclock",
+          "name": "Overclock",
+          "description": "+20 shield capacity",
+          "bonus_type": "shield_bonus",
+          "bonus_value": 20.0
+        }
+      ],
+      "combat_move": {
+        "id": "phase_shields",
+        "name": "Phase Shields",
+        "description": "Shifts shields into quantum superposition. Massive damage reduction for 2 turns.",
+        "effects": [
+          {
+            "type": "damage_reduction",
+            "value": 50.0,
+            "duration": 2,
+            "target": "self"
+          }
+        ],
+        "energy_cost": 4,
+        "cooldown": 4
+      }
+    },
+    {
+      "id": "aegis_projector",
+      "name": "Aegis Shield Projector",
+      "description": "Top-of-the-line shield projector used by capital ships. +6 shield regen.",
+      "price": 45000,
+      "slot_type": "defense",
+      "bonus_type": "shield_regen_bonus",
+      "bonus_value": 6.0,
+      "tier": 3,
+      "available_systems": [
+        "axiom_labs"
+      ],
+      "tuning_options": [
+        {
+          "id": "fortress_mode",
+          "name": "Fortress Mode",
+          "description": "+3 shield regen",
+          "bonus_type": "shield_regen_bonus",
+          "bonus_value": 3.0
+        },
+        {
+          "id": "phalanx",
+          "name": "Phalanx",
+          "description": "+10 shield capacity",
+          "bonus_type": "shield_bonus",
+          "bonus_value": 10.0
+        }
+      ],
+      "combat_move": {
+        "id": "aegis_protocol",
+        "name": "Aegis Protocol",
+        "description": "Activates full defensive protocol. Restores 50 shields and reduces damage for 3 turns.",
+        "effects": [
+          {
+            "type": "shield_restore",
+            "value": 50.0,
+            "target": "self"
+          },
+          {
+            "type": "damage_reduction",
+            "value": 30.0,
+            "duration": 3,
+            "target": "self"
+          }
+        ],
+        "energy_cost": 5,
+        "cooldown": 5
+      }
+    },
+    {
+      "id": "ion_hardening",
+      "name": "Ion-Hardened Shield Coils",
+      "description": "Specialized coils that resist ion weapon interference. +30% ion resistance.",
+      "price": 11000,
+      "slot_type": "defense",
+      "bonus_type": "ion_resistance",
+      "bonus_value": 30.0,
+      "tier": 2,
+      "available_systems": [],
+      "tuning_options": [
+        {
+          "id": "full_hardening",
+          "name": "Full Hardening",
+          "description": "+20% ion resistance",
+          "bonus_type": "ion_resistance",
+          "bonus_value": 20.0
+        },
+        {
+          "id": "capacitor_bleed",
+          "name": "Capacitor Bleed",
+          "description": "+2 shield regen",
+          "bonus_type": "shield_regen_bonus",
+          "bonus_value": 2.0
+        }
+      ],
+      "combat_move": {
+        "id": "discharge",
+        "name": "Discharge",
+        "description": "Discharges built-up ion energy, restoring 15 shield points.",
+        "effects": [
+          {
+            "type": "shield_restore",
+            "value": 15.0,
+            "target": "self"
+          }
+        ],
+        "energy_cost": 2
+      }
+    },
+    {
+      "id": "thruster_array",
+      "name": "Maneuvering Thruster Array",
+      "description": "Multi-directional thrusters that improve combat maneuverability. +5 evasion.",
+      "price": 4500,
+      "slot_type": "defense",
+      "bonus_type": "evasion_bonus",
+      "bonus_value": 5.0,
+      "tier": 1,
+      "available_systems": [],
+      "tuning_options": [
+        {
+          "id": "quick_burn",
+          "name": "Quick Burn",
+          "description": "+3 evasion",
+          "bonus_type": "evasion_bonus",
+          "bonus_value": 3.0
+        },
+        {
+          "id": "afterburner",
+          "name": "Afterburner",
+          "description": "+10% flee chance",
+          "bonus_type": "flee_bonus",
+          "bonus_value": 10.0
+        }
+      ],
+      "combat_move": {
+        "id": "jink",
+        "name": "Jink",
+        "description": "Executes a rapid lateral thrust. +15 evasion for 1 turn.",
+        "effects": [
+          {
+            "type": "evasion_mod",
+            "value": 15.0,
+            "duration": 1,
+            "target": "self"
+          }
+        ],
+        "energy_cost": 1
+      }
+    },
+    {
+      "id": "evasion_ecm_suite",
+      "name": "ECM Countermeasure Suite",
+      "description": "Electronic warfare system that scrambles enemy targeting solutions. +8 evasion.",
+      "price": 12000,
+      "slot_type": "defense",
+      "bonus_type": "evasion_bonus",
+      "bonus_value": 8.0,
+      "tier": 2,
+      "available_systems": [],
+      "tuning_options": [
+        {
+          "id": "broadband",
+          "name": "Broadband",
+          "description": "+5 evasion",
+          "bonus_type": "evasion_bonus",
+          "bonus_value": 5.0
+        },
+        {
+          "id": "sensor_jam",
+          "name": "Sensor Jam",
+          "description": "+15 accuracy debuff",
+          "bonus_type": "accuracy_debuff_bonus",
+          "bonus_value": 15.0
+        }
+      ],
+      "combat_move": {
+        "id": "chaff_cloud",
+        "name": "Chaff Cloud",
+        "description": "Deploys a cloud of sensor-scattering chaff. +20 evasion for 2 turns.",
+        "effects": [
+          {
+            "type": "evasion_mod",
+            "value": 20.0,
+            "duration": 2,
+            "target": "self"
+          }
+        ],
+        "energy_cost": 2,
+        "cooldown": 2
+      }
+    },
+    {
+      "id": "phase_drive",
+      "name": "Phase Shift Drive",
+      "description": "Momentarily shifts the ship out of phase with normal space. +10 evasion.",
+      "price": 16000,
+      "slot_type": "defense",
+      "bonus_type": "evasion_bonus",
+      "bonus_value": 10.0,
+      "tier": 2,
+      "available_systems": [
+        "crimson_reach",
+        "havens_rest"
+      ],
+      "tuning_options": [
+        {
+          "id": "lingering",
+          "name": "Lingering",
+          "description": "+25 evasion",
+          "bonus_type": "evasion_bonus",
+          "bonus_value": 25.0
+        },
+        {
+          "id": "aggressive",
+          "name": "Aggressive",
+          "description": "+25 damage boost",
+          "bonus_type": "damage_boost_bonus",
+          "bonus_value": 25.0
+        }
+      ],
+      "combat_move": {
+        "id": "phase_shift",
+        "name": "Phase Shift",
+        "description": "Phases out of reality. Untouchable for 1 turn.",
+        "effects": [
+          {
+            "type": "evasion_mod",
+            "value": 100.0,
+            "duration": 1,
+            "target": "self"
+          }
+        ],
+        "energy_cost": 3,
+        "cooldown": 3
+      }
+    },
+    {
+      "id": "ghost_plating",
+      "name": "Ghost Plating",
+      "description": "Stealth-composite hull that bends sensor returns. +12 evasion.",
+      "price": 32000,
+      "slot_type": "defense",
+      "bonus_type": "evasion_bonus",
+      "bonus_value": 12.0,
+      "tier": 3,
+      "available_systems": [
+        "crimson_reach"
+      ],
+      "tuning_options": [
+        {
+          "id": "cloak",
+          "name": "Cloak",
+          "description": "+15 evasion",
+          "bonus_type": "evasion_bonus",
+          "bonus_value": 15.0
+        },
+        {
+          "id": "ambush",
+          "name": "Ambush",
+          "description": "+40 damage boost",
+          "bonus_type": "damage_boost_bonus",
+          "bonus_value": 40.0
+        }
+      ],
+      "combat_move": {
+        "id": "vanish",
+        "name": "Vanish",
+        "description": "Disappears from all sensor grids. +200 evasion for 2 turns.",
+        "effects": [
+          {
+            "type": "evasion_mod",
+            "value": 200.0,
+            "duration": 2,
+            "target": "self"
+          }
+        ],
+        "energy_cost": 4,
+        "cooldown": 4
+      }
+    },
+    {
+      "id": "quantum_blink",
+      "name": "Quantum Blink Engine",
+      "description": "Micro-jump drive that teleports the ship short distances. +15 evasion.",
+      "price": 48000,
+      "slot_type": "defense",
+      "bonus_type": "evasion_bonus",
+      "bonus_value": 15.0,
+      "tier": 3,
+      "available_systems": [
+        "crimson_reach"
+      ],
+      "tuning_options": [
+        {
+          "id": "emergency_jump",
+          "name": "Emergency Jump",
+          "description": "+20% flee chance",
+          "bonus_type": "flee_bonus",
+          "bonus_value": 20.0
+        },
+        {
+          "id": "predator",
+          "name": "Predator",
+          "description": "+10 evasion",
+          "bonus_type": "evasion_bonus",
+          "bonus_value": 10.0
+        }
+      ],
+      "combat_move": {
+        "id": "blink",
+        "name": "Blink",
+        "description": "Teleports to an advantageous position. +200 evasion and +30 accuracy for 1 turn.",
+        "effects": [
+          {
+            "type": "evasion_mod",
+            "value": 200.0,
+            "duration": 1,
+            "target": "self"
+          },
+          {
+            "type": "accuracy_mod",
+            "value": 30.0,
+            "duration": 1,
+            "target": "self"
+          }
+        ],
+        "energy_cost": 5,
+        "cooldown": 5
+      }
+    },
+    {
+      "id": "lightweight_frame",
+      "name": "Lightweight Frame",
+      "description": "Stripped-down frame that trades hull integrity for agility. +5 evasion, -15 hull.",
+      "price": 3000,
+      "slot_type": "defense",
+      "bonus_type": "evasion_bonus",
+      "bonus_value": 5.0,
+      "tier": 1,
+      "available_systems": [],
+      "tuning_options": [
+        {
+          "id": "stripped_down",
+          "name": "Stripped Down",
+          "description": "+3 evasion",
+          "bonus_type": "evasion_bonus",
+          "bonus_value": 3.0
+        },
+        {
+          "id": "balanced",
+          "name": "Balanced",
+          "description": "+2 evasion",
+          "bonus_type": "evasion_bonus",
+          "bonus_value": 2.0
+        }
+      ],
+      "combat_move": {
+        "id": "nimble_dodge",
+        "name": "Nimble Dodge",
+        "description": "Uses the ship's light frame to slip past incoming fire. +10 evasion for 1 turn.",
+        "effects": [
+          {
+            "type": "evasion_mod",
+            "value": 10.0,
+            "duration": 1,
+            "target": "self"
+          }
+        ],
+        "energy_cost": 1
+      }
+    },
+    {
+      "id": "hull_sealant",
+      "name": "Emergency Hull Sealant",
+      "description": "Automated sealant dispensers that patch minor breaches. +5 hull sealant.",
+      "price": 3000,
+      "slot_type": "cargo",
+      "bonus_type": "hull_sealant",
+      "bonus_value": 5.0,
+      "tier": 1,
+      "available_systems": [],
+      "tuning_options": []
+    },
+    {
+      "id": "backup_plating",
+      "name": "Backup Armor Plating",
+      "description": "Secondary armor plates stored in cargo bays. +1 armor.",
+      "price": 9000,
+      "slot_type": "cargo",
+      "bonus_type": "armor_bonus",
+      "bonus_value": 1.0,
+      "tier": 2,
+      "available_systems": [],
+      "tuning_options": []
+    },
+    {
+      "id": "damage_dampener",
+      "name": "Kinetic Damage Dampener",
+      "description": "Shock-absorbing modules that reduce kinetic weapon effectiveness. +10% kinetic resistance.",
+      "price": 11000,
+      "slot_type": "cargo",
+      "bonus_type": "kinetic_resistance",
+      "bonus_value": 10.0,
+      "tier": 2,
+      "available_systems": [],
+      "tuning_options": []
+    },
+    {
+      "id": "shield_battery",
+      "name": "Auxiliary Shield Battery",
+      "description": "Backup power cells dedicated to the shield system. +10 shield capacity.",
+      "price": 3500,
+      "slot_type": "cargo",
+      "bonus_type": "shield_bonus",
+      "bonus_value": 10.0,
+      "tier": 1,
+      "available_systems": [],
+      "tuning_options": []
+    },
+    {
+      "id": "regen_coil",
+      "name": "Shield Regeneration Coil",
+      "description": "Supplementary coil that boosts shield recovery rate. +2 shield regen.",
+      "price": 10000,
+      "slot_type": "cargo",
+      "bonus_type": "shield_regen_bonus",
+      "bonus_value": 2.0,
+      "tier": 2,
+      "available_systems": [],
+      "tuning_options": []
+    },
+    {
+      "id": "ion_filter",
+      "name": "Ion Interference Filter",
+      "description": "Filters electromagnetic noise from ion weapons. +15% ion resistance.",
+      "price": 8000,
+      "slot_type": "cargo",
+      "bonus_type": "ion_resistance",
+      "bonus_value": 15.0,
+      "tier": 2,
+      "available_systems": [],
+      "tuning_options": []
+    },
+    {
+      "id": "agility_mod",
+      "name": "Agility Modification",
+      "description": "Engine tuning that improves responsiveness in combat. +3 evasion.",
+      "price": 2500,
+      "slot_type": "engine",
+      "bonus_type": "evasion_bonus",
+      "bonus_value": 3.0,
+      "tier": 1,
+      "available_systems": [],
+      "tuning_options": []
+    },
+    {
+      "id": "smuggler_rig",
+      "name": "Smuggler's Rigging",
+      "description": "Modified hull panels and baffled thruster ports that reduce the ship's profile. +5 evasion.",
+      "price": 8000,
+      "slot_type": "smuggling",
+      "bonus_type": "evasion_bonus",
+      "bonus_value": 5.0,
+      "tier": 2,
+      "available_systems": [],
+      "tuning_options": []
+    },
+    {
+      "id": "threat_analyzer",
+      "name": "Threat Analysis Computer",
+      "description": "Advanced targeting computer that identifies enemy weak points. +5 counterstrike.",
+      "price": 12000,
+      "slot_type": "scanner",
+      "bonus_type": "counterstrike_bonus",
+      "bonus_value": 5.0,
+      "tier": 2,
+      "available_systems": [],
+      "tuning_options": []
     }
   ]
 }

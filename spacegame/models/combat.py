@@ -534,24 +534,30 @@ def build_player_combat_state(
     if player_level < EARLY_GAME_LEVEL:
         flee_bonus += EARLY_GAME_FLEE_BONUS
 
+    # Aggregate defensive bonuses from upgrades (Phase 12B)
+    armor_from_upgrades = int(upgrade_manager.get_bonus("armor_bonus"))
+    shield_regen_from_upgrades = int(upgrade_manager.get_bonus("shield_regen_bonus"))
+    evasion_from_upgrades = int(upgrade_manager.get_bonus("evasion_bonus"))
+    shield_max_from_upgrades = int(upgrade_manager.get_bonus("shield_bonus"))
+
     return PlayerCombatState(
         hull=ship.current_hull,
         max_hull=st.combat_hull,
         shields=ship.current_shields,
-        max_shields=st.combat_shields,
+        max_shields=st.combat_shields + shield_max_from_upgrades,
         energy=st.combat_energy,
         max_energy=st.combat_energy,
         energy_regen=st.combat_energy_regen,
         speed=st.combat_speed,
-        evasion=st.combat_evasion,
+        evasion=st.combat_evasion + evasion_from_upgrades,
         accuracy=st.combat_accuracy,
         equipment_moves=equipment_moves,
         crew_moves=crew_moves,
         active_effects=[],
         cooldowns={},
         flee_bonus=flee_bonus,
-        armor=st.combat_armor,
-        shield_regen=st.combat_shield_regen,
+        armor=st.combat_armor + armor_from_upgrades,
+        shield_regen=st.combat_shield_regen + shield_regen_from_upgrades,
         defensive_identity=st.defensive_identity,
         ship_class_category=st.ship_class_category,
     )

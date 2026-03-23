@@ -15,7 +15,7 @@ def upgrades() -> dict:
 
 class TestUpgradeCount:
     def test_total_upgrade_count(self, upgrades: dict) -> None:
-        assert len(upgrades) == 85
+        assert len(upgrades) == 112
 
     def test_utility_upgrades(self, upgrades: dict) -> None:
         utility_types = {"cargo", "fuel", "engine", "mining", "scanner"}
@@ -28,11 +28,11 @@ class TestUpgradeCount:
 
     def test_defense_upgrades(self, upgrades: dict) -> None:
         count = sum(1 for u in upgrades.values() if u.slot_type == "defense")
-        assert count == 14
+        assert count == 32
 
     def test_smuggling_upgrades(self, upgrades: dict) -> None:
         count = sum(1 for u in upgrades.values() if u.slot_type == "smuggling")
-        assert count == 4
+        assert count == 5
 
 
 class TestNewUpgradeIdentities:
