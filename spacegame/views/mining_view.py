@@ -2173,11 +2173,20 @@ class MiningView(BaseView):
                 self._finalize_session()
             return
 
-        # "Wholesale Sell" button (second row)
-        wholesale_btn = pygame.Rect(px + scale_x(30), py + panel_h - scale_y(100), panel_w - scale_x(60), scale_y(36))
-        if wholesale_btn.collidepoint(mx, my):
-            self._apply_wholesale_sell()
-            return
+        # "Cancel" button (mid-session only, same position as wholesale in session-end)
+        if getattr(self, "_mid_session_transfer", False):
+            cancel_btn = pygame.Rect(px + scale_x(30), py + panel_h - scale_y(100), scale_x(160), scale_y(36))
+            if cancel_btn.collidepoint(mx, my):
+                self._mid_session_transfer = False
+                self._show_transfer = False
+                return
+
+        # "Wholesale Sell" button (session-end only)
+        if not getattr(self, "_mid_session_transfer", False):
+            wholesale_btn = pygame.Rect(px + scale_x(30), py + panel_h - scale_y(100), panel_w - scale_x(60), scale_y(36))
+            if wholesale_btn.collidepoint(mx, my):
+                self._apply_wholesale_sell()
+                return
 
     def _render_transfer_screen(self, screen: pygame.Surface) -> None:
         """Render the selective transfer overlay."""
@@ -2287,7 +2296,17 @@ class MiningView(BaseView):
         confirm_text = self.small_font.render("Confirm", True, Colors.SUCCESS)
         screen.blit(confirm_text, confirm_text.get_rect(center=confirm_rect.center))
 
-        # Wholesale Sell button (above action buttons)
+        # Cancel button (only during mid-session transfer)
+        if getattr(self, "_mid_session_transfer", False):
+            cancel_rect = pygame.Rect(px + scale_x(30), py + panel_h - scale_y(100), scale_x(160), scale_y(36))
+            draw_panel(screen, cancel_rect, alpha=200, border_color=Colors.RED)
+            cancel_text = self.small_font.render("Cancel (ESC)", True, Colors.RED)
+            screen.blit(cancel_text, cancel_text.get_rect(center=cancel_rect.center))
+
+        # Wholesale Sell button (session-end only, not during mid-session transfer)
+        if getattr(self, "_mid_session_transfer", False):
+            return  # Skip wholesale render for mid-session
+
         # Shows value of unselected ore (selected items go to cargo first)
         wholesale_rate = self._get_wholesale_rate()
         wholesale_total = 0
