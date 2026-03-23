@@ -33,7 +33,7 @@ from spacegame.engine.audio_manager import get_audio_manager
 from spacegame.engine.easing import Tween, ease_out_cubic
 from spacegame.engine.floating_text import FloatingItemManager
 from spacegame.engine.tooltip import TooltipState
-from spacegame.engine.refining_vfx import ForgeAtmosphere, MasteryMomentumBar, DiscoveryHint
+from spacegame.engine.refining_vfx import ForgeAtmosphere, MasteryMomentumBar, DiscoveryHint, BufferPressure, MasteryLevelUp
 
 # Forge upgrade color theme (warm orange)
 FORGE_COLOR = (255, 160, 60)
@@ -221,6 +221,12 @@ class RefiningView(BaseView):
             y=scale_y(525),
             width=scale_x(330),
         )
+        self._buffer_pressure = BufferPressure(
+            bar_x=WINDOW_WIDTH - scale_x(350),
+            bar_y=scale_y(545),
+            bar_w=scale_x(300),
+        )
+        self._mastery_levelup = MasteryLevelUp()
 
     def on_enter(self) -> None:
         super().on_enter()
@@ -749,7 +755,24 @@ class RefiningView(BaseView):
             self._forge_atmosphere.set_intensity(active_count, max_tier)
         else:
             self._forge_atmosphere.set_intensity(0)
-        self._mastery_bar.clear()
+        # Sync mastery bar from current processing job
+        if self.session and self.session.job_queue:
+            current_job = self.session.job_queue[0]
+            mastery = self.player.recipe_mastery.get_mastery(current_job.recipe.id)
+            recipe_name = current_job.recipe.name
+            self._mastery_bar.set_recipe(recipe_name, mastery.times_crafted, mastery.mastery_level)
+        else:
+            self._mastery_bar.clear()
+
+        # Sync buffer pressure visualization
+        self._buffer_pressure.update(dt)
+        if self._buffer:
+            ratio = self._buffer.get_total_stored() / max(1, self._buffer.capacity)
+            self._buffer_pressure.set_ratio(ratio)
+
+        # Mastery level-up celebration
+        self._mastery_levelup.update(dt)
+
         if not self._show_summary:
             self._session_elapsed += dt
 
@@ -863,6 +886,10 @@ class RefiningView(BaseView):
             levelup_key = f"{result.recipe_id}_{mastery.mastery_level}"
             if levelup_key not in self._mastery_levelups:
                 self._mastery_levelups.append(levelup_key)
+                # Trigger celebration effect
+                forge_cx = WINDOW_WIDTH - scale_x(350) + scale_x(165)
+                forge_cy = scale_y(240)
+                self._mastery_levelup.trigger(recipe_name, mastery.mastery_level, forge_cx, forge_cy)
 
         # Mastery 3 triggers recipe discovery
         if mastery.mastery_level >= 3:
@@ -1002,6 +1029,9 @@ class RefiningView(BaseView):
         # Exit confirmation overlay
         if self._confirm_exit:
             self._render_confirm_exit(screen)
+
+        # Mastery level-up celebration overlay
+        self._mastery_levelup.render(screen)
 
         # Summary overlay (drawn last, on top of everything)
         if self._show_summary:
@@ -1352,6 +1382,7 @@ class RefiningView(BaseView):
         # Forge buffer bar
         y += 10
         self._render_buffer_bar(screen, panel_x, y)
+        self._buffer_pressure.render(screen)
         y += 40
 
         # Forge upgrade panel

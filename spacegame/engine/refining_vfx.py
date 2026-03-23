@@ -247,6 +247,173 @@ class MasteryMomentumBar:
 # ==========================================================================
 
 
+class BufferPressure:
+    """Visual warning when forge buffer approaches capacity.
+
+    Creates escalating visual urgency as the buffer fills:
+    - Under 70%: no warning
+    - 70-90%: amber pulse on buffer bar area
+    - 90%+: red pulse with "BUFFER CRITICAL" warning
+    - 100%: solid red flash with "BUFFER FULL" alert
+    """
+
+    def __init__(self, bar_x: int, bar_y: int, bar_w: int) -> None:
+        self.bar_x = bar_x
+        self.bar_y = bar_y
+        self.bar_w = bar_w
+        self.bar_h = scale_y(12)
+        self._ratio: float = 0.0
+        self._elapsed: float = 0.0
+        self._label_font = FontCache.get(FONT_XS)
+
+    def set_ratio(self, ratio: float) -> None:
+        """Update buffer fill ratio (0.0 = empty, 1.0 = full)."""
+        self._ratio = max(0.0, min(1.0, ratio))
+
+    def update(self, dt: float) -> None:
+        self._elapsed += dt
+
+    def render(self, screen: pygame.Surface) -> None:
+        # Buffer bar background
+        bg_rect = pygame.Rect(self.bar_x, self.bar_y, self.bar_w, self.bar_h)
+        pygame.draw.rect(screen, Colors.BAR_BG, bg_rect)
+
+        # Fill bar with color gradient
+        fill_w = int(self.bar_w * self._ratio)
+        if fill_w > 0:
+            if self._ratio < 0.7:
+                fill_color = (200, 160, 40)  # Amber
+            elif self._ratio < 0.9:
+                pulse = 0.7 + 0.3 * math.sin(self._elapsed * 4.0)
+                fill_color = (
+                    int(220 * pulse + 30),
+                    int(140 * pulse),
+                    20,
+                )
+            else:
+                pulse = 0.5 + 0.5 * math.sin(self._elapsed * 8.0)
+                fill_color = (
+                    int(200 + 55 * pulse),
+                    int(30 * (1 - pulse)),
+                    int(20 * (1 - pulse)),
+                )
+            pygame.draw.rect(screen, fill_color, (self.bar_x, self.bar_y, fill_w, self.bar_h))
+
+        pygame.draw.rect(screen, Colors.UI_BORDER, bg_rect, 1)
+
+        # Warning text
+        if self._ratio >= 1.0:
+            label = self._label_font.render("BUFFER FULL", True, Colors.RED)
+        elif self._ratio >= 0.9:
+            label = self._label_font.render("BUFFER CRITICAL", True, (255, 120, 40))
+        elif self._ratio >= 0.7:
+            label = self._label_font.render("BUFFER FILLING", True, (220, 180, 60))
+        else:
+            pct = f"{int(self._ratio * 100)}%"
+            label = self._label_font.render(f"FORGE BUFFER {pct}", True, Colors.TEXT_SECONDARY)
+
+        screen.blit(label, (self.bar_x, self.bar_y - label.get_height() - 2))
+
+
+class MasteryLevelUp:
+    """Celebration effect when a recipe reaches a new mastery level.
+
+    Golden particle burst + brief banner with the mastery tier name.
+    Creates a satisfying "achievement" moment mid-session.
+    """
+
+    def __init__(self) -> None:
+        self._active: bool = False
+        self._timer: float = 0.0
+        self._duration: float = 1.2
+        self._recipe_name: str = ""
+        self._level: int = 0
+        self._particles: list[dict] = []
+        self._rng = _random.Random()
+
+    @property
+    def active(self) -> bool:
+        return self._active
+
+    def trigger(self, recipe_name: str, level: int, cx: int, cy: int) -> None:
+        """Trigger a mastery level-up celebration.
+
+        Args:
+            recipe_name: Name of the mastered recipe.
+            level: New mastery level (1=Bronze, 2=Silver, 3=Gold).
+            cx: Center X for particle burst.
+            cy: Center Y for particle burst.
+        """
+        self._active = True
+        self._timer = self._duration
+        self._recipe_name = recipe_name
+        self._level = level
+
+        # Particle burst
+        colors = [(180, 120, 50), (200, 200, 220), (255, 215, 50)]
+        color = colors[min(level - 1, len(colors) - 1)]
+        self._particles = []
+        count = 12 + level * 5
+        for i in range(count):
+            angle = (2 * math.pi * i / count) + self._rng.uniform(-0.3, 0.3)
+            speed = self._rng.uniform(40, 120)
+            self._particles.append({
+                "x": 0.0, "y": 0.0,
+                "vx": math.cos(angle) * speed,
+                "vy": math.sin(angle) * speed,
+                "life": self._rng.uniform(0.5, 1.0),
+                "max_life": 1.0,
+                "size": self._rng.uniform(1.5, 3.5),
+                "color": color,
+            })
+        self._cx = cx
+        self._cy = cy
+
+    def update(self, dt: float) -> None:
+        if not self._active:
+            return
+        self._timer -= dt
+        for p in self._particles:
+            p["x"] += p["vx"] * dt
+            p["y"] += p["vy"] * dt
+            p["vy"] += 30 * dt
+            p["life"] -= dt
+        self._particles = [p for p in self._particles if p["life"] > 0]
+        if self._timer <= 0:
+            self._active = False
+
+    def render(self, screen: pygame.Surface) -> None:
+        if not self._active:
+            return
+
+        t = self._timer / self._duration
+
+        # Particles
+        for p in self._particles:
+            pt = p["life"] / p["max_life"]
+            alpha = int(220 * pt)
+            size = max(1, int(p["size"] * pt))
+            color = p["color"]
+            ps = pygame.Surface((size * 2, size * 2), pygame.SRCALPHA)
+            pygame.draw.circle(ps, (*color, alpha), (size, size), size)
+            screen.blit(ps, (self._cx + int(p["x"]) - size, self._cy + int(p["y"]) - size))
+
+        # Banner text
+        if t > 0.3:
+            banner_alpha = int(220 * min(1.0, (t - 0.3) / 0.3))
+            tier_names = {1: "BRONZE", 2: "SILVER", 3: "GOLD"}
+            tier_colors = {1: (180, 120, 50), 2: (200, 200, 220), 3: (255, 215, 50)}
+            tier = tier_names.get(self._level, "")
+            color = tier_colors.get(self._level, Colors.TEXT_HIGHLIGHT)
+
+            font = FontCache.get(FONT_MD)
+            text = f"MASTERY {tier}: {self._recipe_name}"
+            surf = font.render(text, True, color)
+            surf.set_alpha(banner_alpha)
+            rect = surf.get_rect(center=(self._cx, self._cy - scale_y(40)))
+            screen.blit(surf, rect)
+
+
 class DiscoveryHint:
     """Shows a teaser when the player is close to unlocking a new recipe.
 
