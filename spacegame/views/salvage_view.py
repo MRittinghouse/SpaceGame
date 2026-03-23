@@ -49,6 +49,9 @@ from spacegame.engine.salvage_vfx import (
     SalvageDeckMeter,
     CorruptionOverlay,
     DeckTransition,
+    ScanPulse,
+    QualityBurst,
+    ModeOverlay,
 )
 
 
@@ -95,6 +98,9 @@ class SalvageView(BaseView):
             bar_w=self.CELL_SIZE * 6,
         )
         self._vfx_deck_trans = DeckTransition()
+        self._scan_pulse = ScanPulse()
+        self._quality_burst = QualityBurst()
+        self._mode_overlay = ModeOverlay(grid_rect)
 
         self.session: Optional[SalvageSession] = None
         self.next_state: Optional[GameState] = None
@@ -482,6 +488,7 @@ class SalvageView(BaseView):
             # Tab toggles scan/extract mode
             elif event.key == pygame.K_TAB:
                 self.mode = "extract" if self.mode == "scan" else "scan"
+                self._mode_overlay.set_mode(self.mode)
                 self._show_message(f"{'Extract' if self.mode == 'extract' else 'Scan'} mode")
 
         elif event.type == pygame_gui.UI_BUTTON_PRESSED:
@@ -489,9 +496,11 @@ class SalvageView(BaseView):
                 self._confirm_exit = True
             elif event.ui_element == self.scan_button:
                 self.mode = "scan"
+                self._mode_overlay.set_mode(self.mode)
                 self._show_message("Scan mode: click cells to reveal contents")
             elif event.ui_element == self.extract_button:
                 self.mode = "extract"
+                self._mode_overlay.set_mode(self.mode)
                 self._show_message("Extract mode: click scanned items to extract them")
             elif event.ui_element == self.next_deck_button:
                 if self.session:
@@ -582,11 +591,19 @@ class SalvageView(BaseView):
             max_radius = grid_size * self.CELL_SIZE * 0.6
             self._scan_waves.append([float(fx), float(fy), 0.0, max_radius, 300.0])
 
+            # VFX: scan pulse sonar ripple
+            cell_cx = self.GRID_OFFSET_X + gx * self.CELL_SIZE + self.CELL_SIZE // 2
+            cell_cy = self.GRID_OFFSET_Y + gy * self.CELL_SIZE + self.CELL_SIZE // 2
+            self._scan_pulse.trigger(cell_cx, cell_cy)
+
             # EXCELLENT quality golden glow burst
             cell = self.session.get_cell_at(gx, gy)
             if cell and cell.has_item:
                 if cell.quality_tier == QualityTier.EXCELLENT:
                     self._excellent_glow[(gx, gy)] = 0.6
+                # VFX: quality burst for good/excellent items
+                if cell.quality_tier:
+                    self._quality_burst.trigger(cell_cx, cell_cy, cell.quality_tier.value)
         else:
             self._show_message(msg)
 
@@ -755,6 +772,9 @@ class SalvageView(BaseView):
         self._vfx_atmosphere.update(dt)
         self._vfx_deck_trans.update(dt)
         self._vfx_corruption.update(dt)
+        self._scan_pulse.update(dt)
+        self._quality_burst.update(dt)
+        self._mode_overlay.update(dt)
 
         # Sync corruption ratio from session
         if self.session and self.session.corruption_started:
@@ -921,7 +941,10 @@ class SalvageView(BaseView):
         self._vfx_corruption.render(screen)
 
         self._render_corruption_timer(screen)
+        self._mode_overlay.render(screen)
         self._render_grid(screen)
+        self._scan_pulse.render(screen)
+        self._quality_burst.render(screen)
         self._render_stats(screen)
         self._render_hold_bar_panel(screen)
         self._render_upgrade_panel(screen)

@@ -355,6 +355,209 @@ class CorruptionOverlay:
 # ==========================================================================
 
 
+# ==========================================================================
+# Scan Pulse Effect
+# ==========================================================================
+
+
+class ScanPulse:
+    """Sonar-like ripple that radiates from a scanned cell.
+
+    Creates a ring that expands outward from the scan point,
+    fading as it grows. Reinforces the "active scanning" feel.
+    """
+
+    def __init__(self) -> None:
+        self._pulses: list[dict] = []
+
+    def trigger(self, cx: int, cy: int) -> None:
+        """Start a scan pulse from a grid position.
+
+        Args:
+            cx: Center X pixel coordinate.
+            cy: Center Y pixel coordinate.
+        """
+        self._pulses.append({
+            "x": cx, "y": cy,
+            "radius": 0.0,
+            "max_radius": float(scale_x(120)),
+            "life": 0.4,
+            "max_life": 0.4,
+        })
+
+    def update(self, dt: float) -> None:
+        for p in self._pulses:
+            p["life"] -= dt
+            t = 1.0 - p["life"] / p["max_life"]
+            p["radius"] = p["max_radius"] * t
+        self._pulses = [p for p in self._pulses if p["life"] > 0]
+
+    @property
+    def has_active(self) -> bool:
+        return len(self._pulses) > 0
+
+    def render(self, screen: pygame.Surface) -> None:
+        for p in self._pulses:
+            t = p["life"] / p["max_life"]
+            alpha = int(80 * t)
+            radius = int(p["radius"])
+            if radius <= 0:
+                continue
+            pulse_surf = pygame.Surface((radius * 2, radius * 2), pygame.SRCALPHA)
+            pygame.draw.circle(
+                pulse_surf, (80, 180, 255, alpha), (radius, radius), radius, 2
+            )
+            # Inner ring (fainter, smaller)
+            inner_r = max(1, radius - scale_x(15))
+            pygame.draw.circle(
+                pulse_surf, (60, 140, 220, alpha // 2), (radius, radius), inner_r, 1
+            )
+            screen.blit(pulse_surf, (p["x"] - radius, p["y"] - radius))
+
+
+# ==========================================================================
+# Quality Discovery Burst
+# ==========================================================================
+
+
+class QualityBurst:
+    """Particle burst effect when scanning reveals a valuable item.
+
+    Good items get a moderate glow. Excellent items get a dramatic
+    golden sparkle burst.
+    """
+
+    def __init__(self) -> None:
+        self._bursts: list[dict] = []
+        self._rng = _random.Random()
+
+    def trigger(self, cx: int, cy: int, quality: str) -> None:
+        """Trigger a quality discovery burst.
+
+        Args:
+            cx: Cell center X.
+            cy: Cell center Y.
+            quality: Quality tier string ("poor", "normal", "good", "excellent").
+        """
+        if quality == "good":
+            color = (80, 160, 255)
+            count = 8
+            speed = 60
+        elif quality == "excellent":
+            color = (255, 215, 60)
+            count = 15
+            speed = 100
+        else:
+            return  # No burst for poor/normal
+
+        particles = []
+        for i in range(count):
+            angle = (2 * math.pi * i / count) + self._rng.uniform(-0.3, 0.3)
+            spd = self._rng.uniform(speed * 0.5, speed)
+            particles.append({
+                "x": 0.0, "y": 0.0,
+                "vx": math.cos(angle) * spd,
+                "vy": math.sin(angle) * spd,
+                "life": self._rng.uniform(0.3, 0.6),
+                "max_life": 0.6,
+                "size": self._rng.uniform(1.5, 3.0),
+            })
+
+        self._bursts.append({
+            "cx": cx, "cy": cy, "color": color,
+            "particles": particles,
+            "glow_timer": 0.3,
+        })
+
+    def update(self, dt: float) -> None:
+        for burst in self._bursts:
+            burst["glow_timer"] -= dt
+            for p in burst["particles"]:
+                p["x"] += p["vx"] * dt
+                p["y"] += p["vy"] * dt
+                p["life"] -= dt
+            burst["particles"] = [p for p in burst["particles"] if p["life"] > 0]
+        self._bursts = [b for b in self._bursts if b["particles"] or b["glow_timer"] > 0]
+
+    @property
+    def has_active(self) -> bool:
+        return len(self._bursts) > 0
+
+    def render(self, screen: pygame.Surface) -> None:
+        for burst in self._bursts:
+            cx, cy = burst["cx"], burst["cy"]
+            color = burst["color"]
+
+            # Glow flash at center
+            if burst["glow_timer"] > 0:
+                gt = burst["glow_timer"] / 0.3
+                glow_r = int(scale_x(25) * gt)
+                glow_alpha = int(100 * gt)
+                glow_surf = pygame.Surface((glow_r * 2, glow_r * 2), pygame.SRCALPHA)
+                pygame.draw.circle(glow_surf, (*color, glow_alpha), (glow_r, glow_r), glow_r)
+                screen.blit(glow_surf, (cx - glow_r, cy - glow_r))
+
+            # Particles
+            for p in burst["particles"]:
+                t = p["life"] / p["max_life"]
+                alpha = int(200 * t)
+                size = max(1, int(p["size"] * t))
+                ps = pygame.Surface((size * 2, size * 2), pygame.SRCALPHA)
+                pygame.draw.circle(ps, (*color, alpha), (size, size), size)
+                screen.blit(ps, (cx + int(p["x"]) - size, cy + int(p["y"]) - size))
+
+
+# ==========================================================================
+# Mode Overlay
+# ==========================================================================
+
+
+class ModeOverlay:
+    """Subtle tint overlay indicating the current salvage mode.
+
+    Scan mode: blue sonar tint. Extract mode: warm amber work-light tint.
+    """
+
+    def __init__(self, grid_rect: pygame.Rect) -> None:
+        self._grid_rect = grid_rect
+        self._mode: str = "scan"
+        self._transition: float = 0.0  # 0=scan, 1=extract
+
+    def set_mode(self, mode: str) -> None:
+        self._mode = mode
+
+    def update(self, dt: float) -> None:
+        target = 1.0 if self._mode == "extract" else 0.0
+        diff = target - self._transition
+        self._transition += diff * dt * 5.0  # Smooth lerp
+
+    def render(self, screen: pygame.Surface) -> None:
+        gr = self._grid_rect
+        t = self._transition
+
+        # Blend between scan (blue) and extract (amber)
+        r = int(10 * (1 - t) + 20 * t)
+        g = int(15 * (1 - t) + 15 * t)
+        b = int(25 * (1 - t) + 8 * t)
+        alpha = 20
+
+        overlay = pygame.Surface((gr.width, gr.height), pygame.SRCALPHA)
+        overlay.fill((r, g, b, alpha))
+        screen.blit(overlay, gr.topleft)
+
+        # Mode label in corner
+        label_color = (80, 160, 255) if self._mode == "scan" else (220, 170, 60)
+        label_text = "SCAN MODE" if self._mode == "scan" else "EXTRACT MODE"
+        font = FontCache.get(FONT_XS)
+        label = font.render(label_text, True, label_color)
+        screen.blit(label, (gr.right - label.get_width() - 4, gr.top + 3))
+
+
+# ==========================================================================
+# Deck Transition Effect
+# ==========================================================================
+
+
 class DeckTransition:
     """Visual effect when descending to the next deck."""
 
