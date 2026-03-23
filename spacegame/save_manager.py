@@ -27,7 +27,7 @@ class SaveManager:
     """
 
     SAVE_VERSION = "1.0"
-    DEFAULT_NUM_SLOTS = 12
+    DEFAULT_NUM_SLOTS = 5
 
     def __init__(self, save_directory: Optional[Path] = None):
         """

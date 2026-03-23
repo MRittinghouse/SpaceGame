@@ -88,7 +88,7 @@ class SaveLoadView(BaseView):
 
     def _create_ui(self) -> None:
         """Create save/load slot UI."""
-        # Create 12 slot buttons in a grid (4 rows x 3 columns)
+        # Create slot buttons in a grid (3 columns)
         slot_width = scale_x(350)
         slot_height = scale_y(100)
         start_x = scale_x(50)
@@ -96,7 +96,7 @@ class SaveLoadView(BaseView):
         spacing_x = scale_x(370)
         spacing_y = scale_y(120)
 
-        for i in range(12):
+        for i in range(len(self.slot_metadata)):
             row = i // 3
             col = i % 3
 
