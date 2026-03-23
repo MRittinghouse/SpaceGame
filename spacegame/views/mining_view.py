@@ -46,6 +46,7 @@ from spacegame.engine.fonts import FONT_HEADING, FONT_LG, FONT_MD, FONT_RATING, 
 from spacegame.engine.audio_manager import get_audio_manager
 from spacegame.engine.floating_text import FloatingItemManager
 from spacegame.engine.tooltip import TooltipState
+from spacegame.engine.mining_vfx import MiningAtmosphere, DepthMeter, LayerTransition
 
 # System-specific asteroid field descriptions and bonuses
 FIELD_DESCRIPTIONS: dict[str, tuple[str, str]] = {
@@ -217,6 +218,19 @@ class MiningView(BaseView):
 
         # Tooltip for upgrade descriptions
         self._tooltip = TooltipState(delay=0.3, fade_in=0.15)
+
+        # Depth visual systems
+        grid_rect = pygame.Rect(
+            self.GRID_OFFSET_X, self.GRID_OFFSET_Y,
+            self.CELL_SIZE * 7, self.CELL_SIZE * 5,
+        )
+        self._mining_atmosphere = MiningAtmosphere(grid_rect)
+        self._depth_meter = DepthMeter(
+            x=WINDOW_WIDTH - scale_x(60),
+            y=self.GRID_OFFSET_Y,
+            height=self.CELL_SIZE * 5,
+        )
+        self._layer_transition = LayerTransition()
 
         # Exit confirmation state
         self._confirm_exit: bool = False
@@ -418,6 +432,11 @@ class MiningView(BaseView):
             self.session.max_energy += energy_bonus
             self.session.energy = self.session.max_energy
         self._rock_shapes.clear()
+
+        # Sync depth VFX to starting depth
+        self._mining_atmosphere.set_depth(self.session.depth)
+        self._depth_meter.set_depth(self.session.depth)
+
         self._create_ui()
 
     def on_exit(self) -> None:
@@ -843,6 +862,17 @@ class MiningView(BaseView):
                             fx = self.GRID_OFFSET_X + gx * self.CELL_SIZE + self.CELL_SIZE // 2
                             fy = self.GRID_OFFSET_Y + 10
                             self.particles.emit(fx, fy, DEPTH_TRANSITION)
+                        # Sync depth VFX and trigger layer transition
+                        self._mining_atmosphere.set_depth(self.session.depth)
+                        self._depth_meter.set_depth(self.session.depth)
+                        cols = self.mining_config.grid_width
+                        rows = self.mining_config.grid_height
+                        vfx_grid_rect = pygame.Rect(
+                            self.GRID_OFFSET_X, self.GRID_OFFSET_Y,
+                            self.CELL_SIZE * cols, self.CELL_SIZE * rows,
+                        )
+                        self._layer_transition.trigger(self.session.depth, vfx_grid_rect)
+
                         self._show_message(
                             f"Depth {self.session.depth}! +{advance.strata_earned} Strata"
                         )
@@ -978,6 +1008,10 @@ class MiningView(BaseView):
 
         # Floating icon animations
         self._floats.update(dt)
+
+        # Depth VFX
+        self._mining_atmosphere.update(dt)
+        self._layer_transition.update(dt)
 
         # Glow time
         self._glow_time += dt
@@ -1206,6 +1240,9 @@ class MiningView(BaseView):
         instr = self.small_font.render(self._get_instruction_text(), True, Colors.TEXT_SECONDARY)
         screen.blit(instr, (self.GRID_OFFSET_X, 65))
 
+        # Depth atmosphere behind grid
+        self._mining_atmosphere.render(screen)
+
         # Draw grid
         self._render_grid(screen)
 
@@ -1220,6 +1257,9 @@ class MiningView(BaseView):
         self._render_depth_panel(screen)
         self._render_upgrade_panel(screen)
 
+        # Depth meter sidebar
+        self._depth_meter.render(screen)
+
         # Milestones below the grid
         self._render_milestones(screen)
 
@@ -1228,6 +1268,9 @@ class MiningView(BaseView):
 
         # Particles on top
         self.particles.render(screen)
+
+        # Layer transition effect (on top of particles)
+        self._layer_transition.render(screen)
 
         # Floating ore icons (rock to silo)
         for item in self._floats.items:
