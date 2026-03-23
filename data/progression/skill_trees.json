@@ -669,6 +669,186 @@
           "bonus_type": "ace_pilot",
           "bonus_per_level": 1.0,
           "prerequisite_id": "broadside"
+        },
+        {
+          "id": "armor_expertise",
+          "name": "Armor Expertise",
+          "description": "+1 armor per level",
+          "max_level": 3,
+          "bonus_type": "armor_bonus",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": "hull_reinforcement"
+        },
+        {
+          "id": "last_stand_mastery",
+          "name": "Last Stand Mastery",
+          "description": "Last Stand triggers at +5% higher hull, +5% bonus damage per level",
+          "max_level": 2,
+          "bonus_type": "last_stand_bonus",
+          "bonus_per_level": 0.05,
+          "prerequisite_id": "armor_expertise"
+        },
+        {
+          "id": "combat_field_repairs",
+          "name": "Field Repairs",
+          "description": "-15% repair costs per level",
+          "max_level": 3,
+          "bonus_type": "repair_discount",
+          "bonus_per_level": 0.15,
+          "prerequisite_id": "hull_reinforcement"
+        },
+        {
+          "id": "endurance",
+          "name": "Endurance",
+          "description": "+3% hull damage reduction per level",
+          "max_level": 2,
+          "bonus_type": "hull_damage_reduction",
+          "bonus_per_level": 0.03,
+          "prerequisite_id": "hull_reinforcement"
+        },
+        {
+          "id": "juggernaut_capstone",
+          "name": "Juggernaut",
+          "description": "When hull > 75%: immune to crits. When hull < 25%: +25% damage",
+          "max_level": 1,
+          "bonus_type": "juggernaut_capstone",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": "endurance"
+        },
+        {
+          "id": "shield_regen_skill",
+          "name": "Shield Regeneration",
+          "description": "+2 shield regen per turn per level",
+          "max_level": 3,
+          "bonus_type": "shield_regen_bonus",
+          "bonus_per_level": 2.0,
+          "prerequisite_id": "shield_mastery"
+        },
+        {
+          "id": "overcharge",
+          "name": "Overcharge Capacity",
+          "description": "+25% max shield overflow per level",
+          "max_level": 2,
+          "bonus_type": "shield_overcharge",
+          "bonus_per_level": 0.25,
+          "prerequisite_id": "shield_regen_skill"
+        },
+        {
+          "id": "shield_discipline",
+          "name": "Shield Discipline",
+          "description": "Shield break vulnerability reduced by 10% per level",
+          "max_level": 2,
+          "bonus_type": "shield_break_reduction",
+          "bonus_per_level": 0.1,
+          "prerequisite_id": "shield_mastery"
+        },
+        {
+          "id": "energy_shields",
+          "name": "Energy Shields",
+          "description": "Shield restore moves cost 1 less energy per level",
+          "max_level": 2,
+          "bonus_type": "shield_energy_discount",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": "shield_mastery"
+        },
+        {
+          "id": "sentinel_capstone",
+          "name": "Sentinel",
+          "description": "Shields regen double when above 50%. Shield break restores 20% shields",
+          "max_level": 1,
+          "bonus_type": "sentinel_capstone",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": "energy_shields"
+        },
+        {
+          "id": "afterburner",
+          "name": "Afterburner",
+          "description": "+5 evasion, +5% flee chance per level",
+          "max_level": 3,
+          "bonus_type": "afterburner_bonus",
+          "bonus_per_level": 5.0,
+          "prerequisite_id": "evasive_maneuvers"
+        },
+        {
+          "id": "counterstrike_mastery",
+          "name": "Counterstrike Mastery",
+          "description": "Counterstrike bonus +5% per level, max stacks +1 per level",
+          "max_level": 2,
+          "bonus_type": "counterstrike_bonus",
+          "bonus_per_level": 0.05,
+          "prerequisite_id": "afterburner"
+        },
+        {
+          "id": "light_foot",
+          "name": "Light Foot",
+          "description": "Level 1: no evasion decay after hit. Level 2: graze damage reduced to 20%",
+          "max_level": 2,
+          "bonus_type": "light_foot",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": "evasive_maneuvers"
+        },
+        {
+          "id": "slippery",
+          "name": "Slippery",
+          "description": "+10% flee chance, +5% encounter avoidance per level",
+          "max_level": 2,
+          "bonus_type": "slippery_bonus",
+          "bonus_per_level": 0.1,
+          "prerequisite_id": "evasive_maneuvers"
+        },
+        {
+          "id": "ghost_capstone",
+          "name": "Ghost",
+          "description": "First combat turn: +30 evasion. If not hit in a round: next attack is guaranteed crit",
+          "max_level": 1,
+          "bonus_type": "ghost_capstone",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": "slippery"
+        },
+        {
+          "id": "burn_specialist",
+          "name": "Burn Specialist",
+          "description": "+20% Burn damage per level",
+          "max_level": 2,
+          "bonus_type": "burn_damage_bonus",
+          "bonus_per_level": 0.2,
+          "prerequisite_id": "weapons_training"
+        },
+        {
+          "id": "ion_overcharge",
+          "name": "Ion Overcharge",
+          "description": "Ion weapons drain 2 enemy energy on hit per level",
+          "max_level": 2,
+          "bonus_type": "ion_drain_bonus",
+          "bonus_per_level": 2.0,
+          "prerequisite_id": "precision_targeting"
+        },
+        {
+          "id": "deep_freeze",
+          "name": "Deep Freeze",
+          "description": "Chill stacks last +1 turn per level",
+          "max_level": 2,
+          "bonus_type": "chill_duration_bonus",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": "weapons_training"
+        },
+        {
+          "id": "suppression_expert",
+          "name": "Suppression Expert",
+          "description": "Suppressed stacks last +1 turn per level",
+          "max_level": 2,
+          "bonus_type": "suppressed_duration_bonus",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": "precision_targeting"
+        },
+        {
+          "id": "elemental_versatility",
+          "name": "Elemental Versatility",
+          "description": "All elemental status effects gain +1 max stack",
+          "max_level": 1,
+          "bonus_type": "elemental_max_stack_bonus",
+          "bonus_per_level": 1.0,
+          "prerequisite_id": "burn_specialist"
         }
       ]
     },

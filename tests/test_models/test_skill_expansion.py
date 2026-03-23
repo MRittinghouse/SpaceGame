@@ -174,7 +174,7 @@ class TestCombatTree:
     def test_combat_tree_count(self) -> None:
         prog = PlayerProgression()
         combat_skills = prog.get_skill_tree(SkillTreeType.COMBAT)
-        assert len(combat_skills) == 10
+        assert len(combat_skills) == 30
 
     def test_weapons_training_is_root(self) -> None:
         prog = PlayerProgression()
@@ -408,9 +408,9 @@ class TestTotalSkillCount:
     """Verify overall skill count after expansion."""
 
     def test_total_skill_count(self) -> None:
-        """Should have 89 skills across 9 trees after expansion."""
+        """Should have 109 skills across 9 trees after Phase 12C expansion."""
         skills = create_default_skills()
-        assert len(skills) == 89
+        assert len(skills) == 109
 
     def test_all_trees_have_skills(self) -> None:
         prog = PlayerProgression()

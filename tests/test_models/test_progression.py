@@ -21,7 +21,7 @@ class TestPlayerProgression:
         assert prog.xp == 0
         assert prog.level == 1
         assert prog.skill_points == 0
-        assert len(prog.skills) == 89  # 9 trees after R5 skill tree expansion
+        assert len(prog.skills) == 109  # 9 trees, 89 base + 20 Phase 12C combat expansion
 
     def test_add_xp(self):
         prog = PlayerProgression()

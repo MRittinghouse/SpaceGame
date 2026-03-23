@@ -997,6 +997,154 @@ def create_default_skills() -> Dict[str, SkillNode]:
         bonus_per_level=1.0,
     )
 
+    # === COMBAT TREE — Hull Branch (Juggernaut Path) ===
+    skills["armor_expertise"] = SkillNode(
+        id="armor_expertise", name="Armor Expertise",
+        description="+1 armor per level",
+        tree=SkillTreeType.COMBAT, max_level=3,
+        prerequisite_id="hull_reinforcement",
+        bonus_type="armor_bonus", bonus_per_level=1.0,
+    )
+    skills["last_stand_mastery"] = SkillNode(
+        id="last_stand_mastery", name="Last Stand Mastery",
+        description="Last Stand triggers at +5% higher hull, +5% bonus damage per level",
+        tree=SkillTreeType.COMBAT, max_level=2,
+        prerequisite_id="armor_expertise",
+        bonus_type="last_stand_bonus", bonus_per_level=0.05,
+    )
+    skills["combat_field_repairs"] = SkillNode(
+        id="combat_field_repairs", name="Field Repairs",
+        description="-15% repair costs per level",
+        tree=SkillTreeType.COMBAT, max_level=3,
+        prerequisite_id="hull_reinforcement",
+        bonus_type="repair_discount", bonus_per_level=0.15,
+    )
+    skills["endurance"] = SkillNode(
+        id="endurance", name="Endurance",
+        description="+3% hull damage reduction per level",
+        tree=SkillTreeType.COMBAT, max_level=2,
+        prerequisite_id="hull_reinforcement",
+        bonus_type="hull_damage_reduction", bonus_per_level=0.03,
+    )
+    skills["juggernaut_capstone"] = SkillNode(
+        id="juggernaut_capstone", name="Juggernaut",
+        description="Hull > 75%: immune to crits. Hull < 25%: +25% damage",
+        tree=SkillTreeType.COMBAT, max_level=1,
+        prerequisite_id="endurance",
+        bonus_type="juggernaut_capstone", bonus_per_level=1.0,
+    )
+
+    # === COMBAT TREE — Shield Branch (Sentinel Path) ===
+    skills["shield_regen_skill"] = SkillNode(
+        id="shield_regen_skill", name="Shield Regeneration",
+        description="+2 shield regen per turn per level",
+        tree=SkillTreeType.COMBAT, max_level=3,
+        prerequisite_id="shield_mastery",
+        bonus_type="shield_regen_bonus", bonus_per_level=2.0,
+    )
+    skills["overcharge"] = SkillNode(
+        id="overcharge", name="Overcharge Capacity",
+        description="+25% max shield overflow per level",
+        tree=SkillTreeType.COMBAT, max_level=2,
+        prerequisite_id="shield_regen_skill",
+        bonus_type="shield_overcharge", bonus_per_level=0.25,
+    )
+    skills["shield_discipline"] = SkillNode(
+        id="shield_discipline", name="Shield Discipline",
+        description="Shield break vulnerability reduced by 10% per level",
+        tree=SkillTreeType.COMBAT, max_level=2,
+        prerequisite_id="shield_mastery",
+        bonus_type="shield_break_reduction", bonus_per_level=0.10,
+    )
+    skills["energy_shields"] = SkillNode(
+        id="energy_shields", name="Energy Shields",
+        description="Shield restore moves cost 1 less energy per level",
+        tree=SkillTreeType.COMBAT, max_level=2,
+        prerequisite_id="shield_mastery",
+        bonus_type="shield_energy_discount", bonus_per_level=1.0,
+    )
+    skills["sentinel_capstone"] = SkillNode(
+        id="sentinel_capstone", name="Sentinel",
+        description="Shields regen double above 50%. Shield break restores 20% shields",
+        tree=SkillTreeType.COMBAT, max_level=1,
+        prerequisite_id="energy_shields",
+        bonus_type="sentinel_capstone", bonus_per_level=1.0,
+    )
+
+    # === COMBAT TREE — Evasion Branch (Ghost Path) ===
+    skills["afterburner"] = SkillNode(
+        id="afterburner", name="Afterburner",
+        description="+5 evasion, +5% flee chance per level",
+        tree=SkillTreeType.COMBAT, max_level=3,
+        prerequisite_id="evasive_maneuvers",
+        bonus_type="afterburner_bonus", bonus_per_level=5.0,
+    )
+    skills["counterstrike_mastery"] = SkillNode(
+        id="counterstrike_mastery", name="Counterstrike Mastery",
+        description="Counterstrike bonus +5% per level, max stacks +1 per level",
+        tree=SkillTreeType.COMBAT, max_level=2,
+        prerequisite_id="afterburner",
+        bonus_type="counterstrike_bonus", bonus_per_level=0.05,
+    )
+    skills["light_foot"] = SkillNode(
+        id="light_foot", name="Light Foot",
+        description="Lv1: no evasion decay after hit. Lv2: graze damage reduced to 20%",
+        tree=SkillTreeType.COMBAT, max_level=2,
+        prerequisite_id="evasive_maneuvers",
+        bonus_type="light_foot", bonus_per_level=1.0,
+    )
+    skills["slippery"] = SkillNode(
+        id="slippery", name="Slippery",
+        description="+10% flee chance, +5% encounter avoidance per level",
+        tree=SkillTreeType.COMBAT, max_level=2,
+        prerequisite_id="evasive_maneuvers",
+        bonus_type="slippery_bonus", bonus_per_level=0.10,
+    )
+    skills["ghost_capstone"] = SkillNode(
+        id="ghost_capstone", name="Ghost",
+        description="First turn: +30 evasion. If not hit: next attack is guaranteed crit",
+        tree=SkillTreeType.COMBAT, max_level=1,
+        prerequisite_id="slippery",
+        bonus_type="ghost_capstone", bonus_per_level=1.0,
+    )
+
+    # === COMBAT TREE — Elemental Mastery ===
+    skills["burn_specialist"] = SkillNode(
+        id="burn_specialist", name="Burn Specialist",
+        description="+20% Burn damage per level",
+        tree=SkillTreeType.COMBAT, max_level=2,
+        prerequisite_id="weapons_training",
+        bonus_type="burn_damage_bonus", bonus_per_level=0.20,
+    )
+    skills["ion_overcharge"] = SkillNode(
+        id="ion_overcharge", name="Ion Overcharge",
+        description="Ion weapons drain 2 enemy energy on hit per level",
+        tree=SkillTreeType.COMBAT, max_level=2,
+        prerequisite_id="precision_targeting",
+        bonus_type="ion_drain_bonus", bonus_per_level=2.0,
+    )
+    skills["deep_freeze"] = SkillNode(
+        id="deep_freeze", name="Deep Freeze",
+        description="Chill stacks last +1 turn per level",
+        tree=SkillTreeType.COMBAT, max_level=2,
+        prerequisite_id="weapons_training",
+        bonus_type="chill_duration_bonus", bonus_per_level=1.0,
+    )
+    skills["suppression_expert"] = SkillNode(
+        id="suppression_expert", name="Suppression Expert",
+        description="Suppressed stacks last +1 turn per level",
+        tree=SkillTreeType.COMBAT, max_level=2,
+        prerequisite_id="precision_targeting",
+        bonus_type="suppressed_duration_bonus", bonus_per_level=1.0,
+    )
+    skills["elemental_versatility"] = SkillNode(
+        id="elemental_versatility", name="Elemental Versatility",
+        description="All elemental status effects gain +1 max stack",
+        tree=SkillTreeType.COMBAT, max_level=1,
+        prerequisite_id="burn_specialist",
+        bonus_type="elemental_max_stack_bonus", bonus_per_level=1.0,
+    )
+
     # === EXPLORATION & PILOTING TREE ===
     skills["fuel_efficiency"] = SkillNode(
         id="fuel_efficiency",

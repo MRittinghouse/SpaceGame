@@ -41,7 +41,7 @@ class TestTreeSizes:
 
     def test_combat_tree_size(self) -> None:
         prog = PlayerProgression()
-        assert len(prog.get_skill_tree(SkillTreeType.COMBAT)) == 10
+        assert len(prog.get_skill_tree(SkillTreeType.COMBAT)) == 30
 
     def test_exploration_tree_size(self) -> None:
         prog = PlayerProgression()
@@ -53,13 +53,13 @@ class TestTreeSizes:
 
     def test_total_skill_count(self) -> None:
         skills = create_default_skills()
-        assert len(skills) == 89
+        assert len(skills) == 109
 
     def test_total_skill_points(self) -> None:
         """Total cost to max every skill should be 175."""
         skills = create_default_skills()
         total = sum(s.max_level * s.cost_per_level for s in skills.values())
-        assert total == 175
+        assert total == 215
 
 
 # === Capstone Skills ===
