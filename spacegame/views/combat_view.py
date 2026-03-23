@@ -1191,11 +1191,24 @@ class CombatView(BaseView):
             # Floating damage/effect text
             ty = target_y
             for effect_text in log.effects_applied:
+                # Color coding for defensive identity feedback
+                if "Armor absorbed" in effect_text:
+                    text_color = (180, 180, 200)  # Silver — armor deflection
+                elif "GRAZE" in effect_text:
+                    text_color = (255, 180, 80)   # Orange — near miss
+                elif "Shield regen" in effect_text:
+                    text_color = (80, 180, 255)   # Cyan — shield regen
+                elif "Overclock" in effect_text:
+                    text_color = (180, 100, 255)  # Purple — energy boost
+                elif "Momentum" in effect_text:
+                    text_color = (255, 220, 100)  # Gold — momentum threshold
+                else:
+                    text_color = Colors.RED if is_player_source else Colors.YELLOW
                 self.floating_texts.append({
                     "text": effect_text,
                     "x": target_x,
                     "y": ty,
-                    "color": Colors.RED if is_player_source else Colors.YELLOW,
+                    "color": text_color,
                     "timer": 0.8,
                     "max_timer": 0.8,
                     "vy": -40.0,
@@ -1661,6 +1674,47 @@ class CombatView(BaseView):
             y += BAR_HEIGHT + 16
         else:
             y += 6
+
+        # Defensive identity status (Phase 12A)
+        identity = state.player.defensive_identity
+        if identity:
+            identity_colors = {
+                "juggernaut": (200, 150, 50),   # Bronze
+                "sentinel": (80, 180, 255),     # Cyan
+                "ghost": (160, 100, 200),       # Purple
+            }
+            id_color = identity_colors.get(identity, Colors.TEXT_SECONDARY)
+            id_label = identity.upper()
+
+            # Active passive indicators
+            passive_texts: list[tuple[str, tuple[int, int, int]]] = []
+            if identity == "juggernaut":
+                if state.player.armor > 0:
+                    passive_texts.append((f"Armor: {state.player.armor}", id_color))
+                if state.player.hull_ratio < 0.25:
+                    passive_texts.append(("LAST STAND!", (255, 80, 80)))
+                elif state.player.hull_ratio > 0.75:
+                    passive_texts.append(("Integrity: +5% DR", (100, 180, 100)))
+            elif identity == "sentinel":
+                if state.player.shield_regen > 0:
+                    passive_texts.append((f"Regen: +{state.player.shield_regen}/turn", id_color))
+                if state.player.shield_break_vulnerable:
+                    passive_texts.append(("SHIELDS BROKEN!", (255, 80, 80)))
+            elif identity == "ghost":
+                if state.player.counterstrike_stacks > 0:
+                    pct = state.player.counterstrike_stacks * 10
+                    passive_texts.append((f"Counterstrike: +{pct}%", (200, 255, 100)))
+                if state.player.evasion_decay > 0:
+                    passive_texts.append(("Shaken: -5 evasion", (255, 180, 80)))
+
+            id_surf = self.small_font.render(id_label, True, id_color)
+            screen.blit(id_surf, (bar_x, y))
+            y += 16
+            for pt_text, pt_color in passive_texts:
+                pt_surf = self.small_font.render(pt_text, True, pt_color)
+                screen.blit(pt_surf, (bar_x + 8, y))
+                y += 14
+            y += 4
 
         # Active effects badges (icon + text)
         if state.player.active_effects:
