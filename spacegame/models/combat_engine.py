@@ -1103,7 +1103,17 @@ class CombatEngine:
             elif threshold == "surging":
                 messages.append("Momentum: SURGING! Overdriven Weapon ready.")
             elif threshold == "overload":
-                messages.append("Momentum: OVERLOAD! Systems overclocked.")
+                messages.append("Momentum: OVERLOAD! Systems overclocked (+3 regen, 2 turns)")
+                # Immediately restore 3 energy as a burst, then add regen buff
+                # that the engine processes in end_round for 2 more turns
+                player.energy = min(player.max_energy, player.energy + 3)
+                overclock_eff = CombatEffect(
+                    type=EffectType.ENERGY_RESTORE,
+                    value=3.0,
+                    duration=2,
+                    target=EffectTarget.SELF,
+                )
+                player.active_effects.append((overclock_eff, 2))
             elif threshold == "ultimate":
                 messages.append("Momentum: ULTIMATE READY!")
         return messages

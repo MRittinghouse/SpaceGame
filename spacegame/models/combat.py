@@ -406,6 +406,13 @@ class PlayerCombatState:
                 self.hull = max(0, self.hull - burn_dmg)
                 messages.append(f"Burn: {burn_dmg} damage")
 
+            # Energy restore over time (Overclock regen buff)
+            if effect.type == EffectType.ENERGY_RESTORE and effect.duration > 0:
+                restored = min(int(effect.value), self.max_energy - self.energy)
+                if restored > 0:
+                    self.energy += restored
+                    messages.append(f"Overclock: +{restored} energy")
+
             new_turns = turns_left - 1
             if new_turns <= 0:
                 messages.append(f"{effect.type.value} effect expired")

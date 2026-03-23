@@ -366,6 +366,10 @@ class CombatView(BaseView):
         self._displayed_player_hull = float(state.player.hull)
         self._displayed_player_shields = float(state.player.shields)
         self._displayed_player_energy = float(state.player.energy)
+        self._displayed_player_momentum = 0.0
+        self._momentum_pulse_timer = 0.0  # Brief glow on threshold cross
+        self._momentum_pulse_color: tuple[int, int, int] = (100, 200, 255)
+        self._selected_crew_move_id: Optional[str] = getattr(self, "_selected_crew_move_id", None)
         self._displayed_enemy_hulls = [float(e.current_hull) for e in state.enemies]
         self._displayed_enemy_shields = [float(e.current_shields) for e in state.enemies]
         self._enemy_flash_timers = [0.0] * len(state.enemies)
@@ -481,6 +485,7 @@ class CombatView(BaseView):
         self._player_flash_timer = max(0.0, self._player_flash_timer - dt)
         self._player_sprite_flash = max(0.0, self._player_sprite_flash - dt)
         self._player_shield_flash = max(0.0, self._player_shield_flash - dt)
+        self._momentum_pulse_timer = max(0.0, self._momentum_pulse_timer - dt)
         for i in range(len(self._enemy_flash_timers)):
             self._enemy_flash_timers[i] = max(0.0, self._enemy_flash_timers[i] - dt)
         for i in range(len(self._enemy_sprite_flashes)):
@@ -672,6 +677,11 @@ class CombatView(BaseView):
             self._attempt_bribe()
             return
 
+        # U: activate ultimate
+        if event.key == pygame.K_u:
+            self._activate_ultimate()
+            return
+
     def _handle_click(self, pos: tuple[int, int]) -> None:
         """Handle mouse clicks on move buttons and enemy cards."""
         if self.phase == CombatPhase.PLAYER_INPUT:
@@ -717,6 +727,18 @@ class CombatView(BaseView):
             if bribe_rect.collidepoint(pos):
                 self._attempt_bribe()
                 return
+
+            # Ultimate button (rendered below crew buttons when available)
+            state_ult = self.engine.get_state()
+            if (state_ult.player.momentum
+                    and state_ult.player.momentum.ultimate_available):
+                ult_y = SPECIAL_BTN_Y + SPECIAL_BTN_H + scale_y(42)
+                ult_rect = pygame.Rect(
+                    MOVE_BTN_X_START, ult_y, scale_x(280), scale_y(36),
+                )
+                if ult_rect.collidepoint(pos):
+                    self._activate_ultimate()
+                    return
 
             # Negotiate sub-menu skill buttons
             if self._negotiate_menu_open:
@@ -899,6 +921,36 @@ class CombatView(BaseView):
             self._advance_phase(CombatPhase.ANIMATING_PLAYER)
         else:
             self._advance_phase(CombatPhase.ANIMATING_PLAYER)
+
+    # ------------------------------------------------------------------
+    # Ultimate
+    # ------------------------------------------------------------------
+
+    def _activate_ultimate(self) -> None:
+        """Activate the ship's ultimate ability (requires 100% momentum)."""
+        if self.phase != CombatPhase.PLAYER_INPUT:
+            return
+
+        state = self.engine.get_state()
+        if not state.player.momentum or not state.player.momentum.ultimate_available:
+            return
+
+        logs = self.engine.execute_ultimate()
+        for log in logs:
+            self._enqueue_animation(log, source="player")
+            self._append_log_line(log)
+
+        # Trigger pulse animation
+        self._momentum_pulse_timer = 0.8
+        self._momentum_pulse_color = (255, 255, 200)
+
+        # Emit celebration particles at player ship position
+        from spacegame.engine.particles import EMPOWERED_BURST
+        px = ARENA_X + ARENA_W // 4
+        py = ARENA_Y + ARENA_H // 2
+        self.particles.emit(px, py, EMPOWERED_BURST)
+
+        self._advance_phase(CombatPhase.ANIMATING_PLAYER)
 
     # ------------------------------------------------------------------
     # Negotiate
@@ -1446,6 +1498,12 @@ class CombatView(BaseView):
         self._displayed_player_energy = self._lerp_toward(
             self._displayed_player_energy, float(state.player.energy), speed * dt
         )
+        if state.player.momentum:
+            self._displayed_player_momentum = self._lerp_toward(
+                self._displayed_player_momentum,
+                state.player.momentum.current * 100.0,  # Display as 0-100
+                speed * dt * 2,  # Faster lerp for momentum (feels responsive)
+            )
 
         for i, enemy in enumerate(state.enemies):
             if i < len(self._displayed_enemy_hulls):
@@ -1595,7 +1653,14 @@ class CombatView(BaseView):
             ENERGY_COLOR,
             "Engy",
         )
-        y += BAR_HEIGHT + 16
+        y += BAR_HEIGHT + 10
+
+        # Momentum bar
+        if state.player.momentum:
+            self._render_momentum_bar(screen, bar_x, y, bar_w, state)
+            y += BAR_HEIGHT + 16
+        else:
+            y += 6
 
         # Active effects badges (icon + text)
         if state.player.active_effects:
@@ -2001,6 +2066,86 @@ class CombatView(BaseView):
             surf = font.render(text, True, color)
             screen.blit(surf, (tip_x + pad, ty))
             ty += line_h
+
+    def _render_momentum_bar(
+        self, screen: pygame.Surface, x: int, y: int, width: int,
+        state: object,
+    ) -> None:
+        """Render the momentum gauge with gradient fill and threshold markers."""
+        from spacegame.models.momentum import (
+            THRESHOLD_CHARGED, THRESHOLD_SURGING, THRESHOLD_OVERLOAD, THRESHOLD_ULTIMATE,
+        )
+
+        momentum = state.player.momentum
+        if momentum is None:
+            return
+
+        # Color based on current level (gradient: blue → cyan → green → gold → white)
+        pct = momentum.current
+        if pct >= 1.0:
+            bar_color = (255, 255, 220)  # Blazing white-gold
+        elif pct >= 0.75:
+            t = (pct - 0.75) / 0.25
+            bar_color = (
+                int(200 + 55 * t), int(180 + 75 * t), int(50 + 170 * t)
+            )  # Gold → white-gold
+        elif pct >= 0.50:
+            t = (pct - 0.50) / 0.25
+            bar_color = (
+                int(50 + 150 * t), int(200 - 20 * t), int(50 * (1 - t))
+            )  # Green → gold
+        elif pct >= 0.25:
+            t = (pct - 0.25) / 0.25
+            bar_color = (
+                int(40 + 10 * t), int(180 + 20 * t), int(230 - 180 * t)
+            )  # Cyan → green
+        else:
+            t = pct / 0.25 if pct > 0 else 0
+            bar_color = (
+                int(30 + 10 * t), int(60 + 120 * t), int(140 + 90 * t)
+            )  # Dark blue → cyan
+
+        # Render bar with label
+        draw_bar(
+            screen, x, y, width, BAR_HEIGHT,
+            self._displayed_player_momentum, 100.0,
+            bar_color,
+            label="Mtm",
+            font=self.small_font,
+            show_value=True,
+        )
+
+        # Threshold markers (vertical lines on the bar)
+        label_w = self.small_font.size("Mtm")[0] + 8 if self.small_font else 30
+        inner_x = x + label_w + 2
+        inner_w = width - label_w - 4
+
+        for threshold, marker_color in [
+            (THRESHOLD_CHARGED, (100, 200, 255)),   # Cyan
+            (THRESHOLD_SURGING, (80, 200, 80)),     # Green
+            (THRESHOLD_OVERLOAD, (220, 180, 50)),   # Gold
+        ]:
+            mx = inner_x + int(inner_w * threshold)
+            pygame.draw.line(screen, marker_color, (mx, y + 1), (mx, y + BAR_HEIGHT - 2), 1)
+
+        # Pulse effect when threshold crossed
+        if self._momentum_pulse_timer > 0:
+            pulse_alpha = int(120 * (self._momentum_pulse_timer / 0.5))
+            pulse_surf = pygame.Surface((width, BAR_HEIGHT + 4), pygame.SRCALPHA)
+            pulse_surf.fill((*self._momentum_pulse_color, pulse_alpha))
+            screen.blit(pulse_surf, (x, y - 2))
+
+        # Ultimate ready indicator
+        if momentum.ultimate_available:
+            ult_text = self.small_font.render("ULTIMATE READY!", True, (255, 255, 200))
+            ult_rect = ult_text.get_rect(centerx=x + width // 2, top=y + BAR_HEIGHT + 2)
+            screen.blit(ult_text, ult_rect)
+
+        # Overdriven indicator
+        if momentum.overdriven_available:
+            ovd_text = self.small_font.render("2X DAMAGE", True, (80, 220, 80))
+            ovd_rect = ovd_text.get_rect(right=x + width, top=y + BAR_HEIGHT + 2)
+            screen.blit(ovd_text, ovd_rect)
 
     def _render_bar(
         self,
@@ -2597,8 +2742,36 @@ class CombatView(BaseView):
             bribe_color,
         )
 
-        # Target indicator
+        # Ultimate button (appears when momentum reaches 100%)
         state = self.engine.get_state()
+        if (state.player.momentum
+                and state.player.momentum.ultimate_available
+                and is_input):
+            from spacegame.data_loader import get_data_loader
+            ult_def = get_data_loader().ship_ultimates.get(state.player.ship_class_category)
+            ult_name = ult_def.name if ult_def else "ULTIMATE"
+            ult_y = SPECIAL_BTN_Y + SPECIAL_BTN_H + scale_y(42) + oy
+            ult_w = scale_x(280)
+            ult_h = scale_y(36)
+            ult_x = MOVE_BTN_X_START + ox
+
+            # Pulsing gold background
+            import math
+            pulse = 0.7 + 0.3 * math.sin(self.phase_timer * 4)
+            bg_alpha = int(220 * pulse)
+            ult_surf = pygame.Surface((ult_w, ult_h), pygame.SRCALPHA)
+            ult_surf.fill((60, 50, 15, bg_alpha))
+            screen.blit(ult_surf, (ult_x, ult_y))
+
+            # Gold border
+            pygame.draw.rect(screen, (255, 200, 60), (ult_x, ult_y, ult_w, ult_h), 2, border_radius=4)
+
+            # Text
+            ult_text = self.info_font.render(f"[U] {ult_name}", True, (255, 220, 100))
+            text_rect = ult_text.get_rect(center=(ult_x + ult_w // 2, ult_y + ult_h // 2))
+            screen.blit(ult_text, text_rect)
+
+        # Target indicator
         if state.enemies:
             target = state.enemies[self.selected_target_idx]
             target_text = f"Target: {target.template.name}"
