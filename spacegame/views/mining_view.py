@@ -192,6 +192,7 @@ class MiningView(BaseView):
 
         # Session flow states: mining → transfer screen → summary
         self._show_transfer: bool = False
+        self._mid_session_transfer: bool = False  # True when transfer opened mid-session
         self._transfer_selections: Dict[str, int] = {}  # commodity_id → amount to transfer
         self._show_summary: bool = False
         self._summary_xp: int = 0
@@ -717,14 +718,28 @@ class MiningView(BaseView):
                 if event.key == pygame.K_RETURN:
                     # Confirm transfer
                     self._apply_transfer_selections()
-                    self._finalize_session()
+                    if getattr(self, "_mid_session_transfer", False):
+                        self._mid_session_transfer = False
+                        self._show_transfer = False
+                        transferred = self._transfer_count
+                        if transferred > 0:
+                            self._show_message(f"{transferred} units moved to cargo hold")
+                        else:
+                            self._show_message("Nothing transferred")
+                    else:
+                        self._finalize_session()
                 elif event.key == pygame.K_ESCAPE:
-                    # Skip transfer — leave everything in silo
-                    self._transfer_selections = {
-                        cid: 0 for cid in self._transfer_selections
-                    }
-                    self._transfer_count = 0
-                    self._finalize_session()
+                    if getattr(self, "_mid_session_transfer", False):
+                        # Cancel mid-session transfer — return to mining
+                        self._mid_session_transfer = False
+                        self._show_transfer = False
+                    else:
+                        # Skip transfer — leave everything in silo
+                        self._transfer_selections = {
+                            cid: 0 for cid in self._transfer_selections
+                        }
+                        self._transfer_count = 0
+                        self._finalize_session()
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 self._handle_transfer_click(event.pos)
             return
@@ -775,15 +790,13 @@ class MiningView(BaseView):
                 self._confirm_exit = True
             elif event.ui_element == self.transfer_button:
                 if self._silo and self._silo.get_total_stored() > 0:
-                    transferred = self._transfer_silo_to_cargo()
-                    if transferred > 0:
-                        self._add_feedback(
-                            f"Transferred {transferred} ore to cargo",
-                            WINDOW_WIDTH // 2, 120, Colors.SUCCESS,
-                        )
-                        self._show_message(f"{transferred} units moved to cargo hold")
-                    else:
-                        self._show_message("Cargo hold is full!")
+                    # Open selective transfer screen (reuse session-end transfer UI)
+                    self._transfer_selections = {}
+                    for cid, qty in self._silo.contents.items():
+                        if qty > 0:
+                            self._transfer_selections[cid] = 0
+                    self._show_transfer = True
+                    self._mid_session_transfer = True  # Flag to return to mining after
                 else:
                     self._show_message("Silo is empty")
             elif event.ui_element == self.wholesale_button:
@@ -2148,7 +2161,16 @@ class MiningView(BaseView):
         confirm_btn = pygame.Rect(px + scale_x(390), py + panel_h - scale_y(55), scale_x(160), scale_y(36))
         if confirm_btn.collidepoint(mx, my):
             self._apply_transfer_selections()
-            self._finalize_session()
+            if getattr(self, "_mid_session_transfer", False):
+                self._mid_session_transfer = False
+                self._show_transfer = False
+                transferred = self._transfer_count
+                if transferred > 0:
+                    self._show_message(f"{transferred} units moved to cargo hold")
+                else:
+                    self._show_message("Nothing transferred")
+            else:
+                self._finalize_session()
             return
 
         # "Wholesale Sell" button (second row)
