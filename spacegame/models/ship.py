@@ -136,6 +136,15 @@ class Ship:
             self._computed_stats = ShipStatsComputer.compute(
                 self._build, materials, equipment,
             )
+            # Create or update the composite renderer
+            try:
+                from spacegame.engine.ship_composite import ShipComposite
+                if not hasattr(self, "_composite") or self._composite is None:
+                    self._composite = ShipComposite(self._build, materials)
+                else:
+                    self._composite.invalidate()
+            except ImportError:
+                pass  # Composite not available in test environments
 
     @property
     def build(self) -> "Optional[ShipBuild]":

@@ -176,11 +176,16 @@ class GalaxyMapView(BaseView):
         logger.info("Entered Galaxy Map")
         self.selected_system = self.player.current_system_id
         self.arrival_message = None
-        # Load/refresh player ship sprite (scale=1 = 32x32 for map display)
+        # Load/refresh player ship sprite (composite if available, else stock)
+        self._use_composite_sprite = False
         if self.player and self.player.ship:
-            self._player_ship_anim = self._sprite_mgr.get_ship_animated(
-                self.player.ship.ship_type.id, category="player", scale=res_scale(1)
-            )
+            composite = self.player.ship.composite
+            if composite and hasattr(composite, "get_surface"):
+                self._use_composite_sprite = True
+            else:
+                self._player_ship_anim = self._sprite_mgr.get_ship_animated(
+                    self.player.ship.ship_type.id, category="player", scale=res_scale(1)
+                )
         self._create_ui()
 
     def on_exit(self) -> None:
@@ -1004,8 +1009,13 @@ class GalaxyMapView(BaseView):
         """Draw ship sprite (or fallback chevron) at current position."""
         ship_x, ship_y, angle = self._get_ship_position()
 
-        # Try sprite first
-        player_ship_surface = self._player_ship_anim.get_surface() if self._player_ship_anim else None
+        # Try composite first (player-built ship), then stock sprite
+        player_ship_surface = None
+        if self._use_composite_sprite and self.player and self.player.ship.composite:
+            player_ship_surface = self.player.ship.composite.get_surface(scale=res_scale(1))
+            self.player.ship.composite.update(0.016)
+        elif self._player_ship_anim:
+            player_ship_surface = self._player_ship_anim.get_surface()
         if player_ship_surface is not None:
             # Rotate sprite to match travel direction (pygame rotates CCW)
             rotated = pygame.transform.rotate(player_ship_surface, angle)

@@ -2598,14 +2598,22 @@ class CombatView(BaseView):
         player_y = PLAYER_SHIP_POS[1] + oy + bob_offset
         hull_ratio = state.player.hull / state.player.max_hull if state.player.max_hull > 0 else 0
 
-        player_ship_id = self.player.ship.ship_type.id if self.player else None
-        player_class = self.player.ship.ship_type.ship_class if self.player else ""
-        player_anim = (
-            self._get_ship_sprite(
-                player_ship_id, "player", ship_class=player_class
-            ) if player_ship_id else None
-        )
-        player_sprite = player_anim.get_surface() if player_anim else None
+        # Use composite sprite if player has a build, otherwise stock sprite
+        player_sprite = None
+        composite = self.player.ship.composite if self.player else None
+        if composite and hasattr(composite, "get_surface"):
+            from spacegame.engine.sprites import res_scale
+            player_sprite = composite.get_surface(scale=res_scale(2))
+            composite.update(0.016)  # Advance engine glow
+        else:
+            player_ship_id = self.player.ship.ship_type.id if self.player else None
+            player_class = self.player.ship.ship_type.ship_class if self.player else ""
+            player_anim = (
+                self._get_ship_sprite(
+                    player_ship_id, "player", ship_class=player_class
+                ) if player_ship_id else None
+            )
+            player_sprite = player_anim.get_surface() if player_anim else None
         if player_sprite:
             # Flip to face right (sprites are natively oriented left)
             rotated = pygame.transform.flip(player_sprite, True, False)
