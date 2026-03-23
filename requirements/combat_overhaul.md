@@ -102,33 +102,46 @@ This creates dramatic tension moments that the visual system (flash effects, cha
 - Player has zero input on crew actions
 - Crew feels like a stat modifier, not a team member
 
-### Changes
+### Changes (IMPLEMENTED — 4 abilities per companion)
 
 **Player chooses ONE crew ability per turn during the Player Input phase:**
 
-UI: A crew ability bar appears above the move buttons (or as a second row). Each recruited crew member shows their ability with energy cost. Player clicks one (optional — can skip for free).
+UI: Crew ability buttons appear in the action panel. Each recruited companion shows their 4 abilities with energy cost and cooldown. Player clicks one (optional — can skip for free). Choosing a crew ability and a weapon move costs energy from the same pool.
 
-**Expanded crew combat abilities (2 per crew member):**
+**Crew combat abilities (4 per companion, 16 total):**
 
-| Crew | Ability 1 | Ability 2 |
-|------|-----------|-----------|
-| Elena (Navigator) | *Evasive Maneuvers*: +25 evasion for 2 turns (3 energy) | *Intercept Course*: Next attack gains +20 accuracy (1 energy) |
-| Marcus (Engineer) | *Emergency Repair*: Restore 25 hull (4 energy) | *Reroute Power*: Restore 3 energy, skip crew ability next turn (0 energy) |
-| Priya (Scientist) | *Sensor Jam*: -20 enemy evasion for 2 turns (3 energy) | *Analyze Weakness*: Next attack deals +30% damage to target (2 energy) |
-| Tomas (Trader) | *Smooth Talking*: +15 negotiate chance, permanent for this combat (2 energy) | *Distraction*: Target enemy skips their next turn (5 energy, 4-turn cooldown) |
+| Crew | Ability | Energy | CD | Effect |
+|------|---------|--------|----|--------|
+| **Elena** (Navigator) | *Evasive Maneuvers* | 3 | 0 | +25 evasion for 2 turns |
+| | *Intercept Course* | 1 | 0 | Next attack: +20 accuracy |
+| | *Emergency Vector* | 2 | 2 | +30% flee chance for this combat |
+| | *Targeting Sync* | 4 | 3 | All attacks this turn: +15 accuracy, +10% damage |
+| **Marcus** (Engineer) | *Emergency Repair* | 4 | 0 | Restore 25 hull |
+| | *Reroute Power* | 0 | 2 | Restore 3 energy (skip crew ability next turn) |
+| | *Reinforce Hull* | 3 | 3 | +15% damage reduction for 2 turns |
+| | *Overclock Systems* | 5 | 4 | +2 energy regen for 3 turns |
+| **Priya** (Scientist) | *Sensor Jam* | 3 | 0 | -20 enemy evasion for 2 turns |
+| | *Analyze Weakness* | 2 | 0 | Next attack: +30% damage to target |
+| | *Shield Frequency* | 3 | 3 | Restore 30 shields |
+| | *System Purge* | 4 | 3 | Cleanse all negative status effects |
+| **Tomas** (Smuggler) | *Smooth Talking* | 2 | 0 | +15 negotiate/bribe chance (permanent this combat) |
+| | *Distraction* | 5 | 4 | Target enemy skips next turn |
+| | *Dirty Trick* | 2 | 2 | -15 enemy accuracy for 1 turn |
+| | *Smuggler's Luck* | 3 | 3 | Next hit: 50% chance to deal double damage |
 
 **Design intent:**
-- Each crew member offers a defensive/utility option AND an offensive option
-- The choice is contextual: "Do I heal or set up a big hit?"
+- 4 abilities per companion: 2 low-cost staples + 2 higher-cost situational tools
 - Energy cost means crew abilities compete with weapon moves for the same pool
-- Tomas's Distraction is expensive but powerful — a real tactical tool
+- Cooldowns prevent spamming the powerful abilities (Distraction, Overclock)
+- Each companion covers a different tactical role (navigation, engineering, science, social)
 
 ### Crew Synergies
 
-Certain combinations create bonus effects:
-- Elena's Intercept Course + Priya's Analyze Weakness = "Precision Strike" (text callout, +50% damage total)
-- Marcus's Reroute Power + any expensive weapon = "Overclocked" (the energy you saved pays for a big gun)
-- These aren't hard-coded mechanics — they're emergent from the system. But we can add visual callouts when synergies occur.
+Certain combinations create emergent bonus effects:
+- Elena's Targeting Sync + Priya's Analyze Weakness = devastating alpha strike setup
+- Marcus's Overclock Systems + any expensive weapon = sustained heavy damage
+- Tomas's Distraction + any charge attack = safe setup window
+- These synergies become formalized as **Crew Combos** in Phase 9 (requires Momentum gauge).
 
 ---
 
@@ -241,16 +254,29 @@ When a weapon fires, the combat engine processes damage based on its element:
 ```
 1. Calculate base damage (from weapon stats)
 2. Apply damage_boost buffs (Overcharge etc.)
-3. Apply element-specific split:
+3. Apply attacker's Suppressed stacks (reduce outgoing damage)
+4. Roll hit/miss (accuracy vs evasion). On miss:
+   a. If miss margin ≤ 10: GRAZE — deal 30% damage (Wave 3: Phase 12A)
+   b. If clean miss: 0 damage. Trigger Counterstrike on defender if Ghost identity (Wave 3)
+   c. If AoE move: ALWAYS hits, skip evasion roll entirely (AoE cannot be dodged)
+5. Apply element-specific split:
    - Kinetic: 100% direct
    - Plasma: 66% direct, remainder → Burn stack
    - Ion: 150% to shields, 75% to hull
    - Cryo: 85% direct, apply Chill stack
    - Voltaic: 85% direct, apply Suppressed stack
-4. Apply target's damage reduction
-5. Resolve shield absorption → hull damage
-6. Apply DoT/status stacks
+6. Apply target's armor (flat reduction per hit) (Wave 3: Phase 12A)
+   - Burn DoT BYPASSES armor (applied after armor step, directly to hull)
+7. Apply target's damage reduction (percentage-based, from buffs/skills)
+8. Resolve shield absorption → hull damage
+9. Apply DoT/status stacks
+10. If target has Shield Break Vulnerability and shields just hit 0: +25% damage for 1 turn (Wave 3)
 ```
+
+**Critical design rules:**
+- **AoE moves cannot be evaded.** This is the hard counter to Ghost builds — area damage always connects. Ghost ships must use their Vanish/Phase abilities proactively when AoE is telegraphed.
+- **Burn DoT bypasses armor.** This is the hard counter to Juggernaut builds — Plasma's damage-over-time ticks ignore flat armor reduction, meaning sustained Burn pressure erodes even the heaviest armor.
+- **Ion vs shields is multiplicative, not additive.** Ion deals 150% to shields regardless of other modifiers. This is the hard counter to Sentinel builds.
 
 ### Weapon Upgrade Tiers (15 new weapons: 5 elements x 3 tiers)
 
@@ -540,11 +566,149 @@ Momentum resets to 0 after using the Ship Ultimate. Lower-tier thresholds remain
 | Faction: Frontier | Frontier Runner | **Rally Cry** | Full heal crew abilities cooldowns + 50% momentum refund |
 | Faction: Science | Institute Vessel | **Quantum Analysis** | Copy the strongest enemy's best move for 1 use |
 
+#### Momentum Threshold Abilities — Detailed Behavior
+
+| Threshold | Ability | One-Shot or Sustained? | How It Works |
+|-----------|---------|----------------------|-------------|
+| 25% Charged | **Crew Synergy** | Sustained (always available while ≥25%) | Combo buttons appear in crew row. Using a combo doesn't consume momentum. |
+| 50% Surging | **Overdriven Weapon** | One-shot (consumes the buff on use) | A "2X" indicator appears on the next weapon attack button. Player can hold it — the buff persists until used. Using it doesn't reduce momentum; it just consumes the Overdriven state. Recharges when momentum re-crosses 50%. |
+| 75% Overload | **System Overclock** | One-shot (auto-applies, then on cooldown) | Immediately grants +3 energy regen for 2 turns when crossed. Cannot trigger again until momentum drops below 75% and re-crosses. |
+| 100% ULTIMATE | **Ship Ultimate** | One-shot (consumes ALL momentum) | Ultimate button appears. Player activates when ready. Momentum resets to 0%. Dramatic activation sequence. |
+
+**Momentum persistence:** Momentum persists across turns within a single combat encounter. It does NOT carry between encounters (resets to 0 at combat start).
+
+**Momentum and flee:** If the player flees, momentum is lost. No benefit from retreating.
+
 #### Visual Treatment
 - Momentum bar renders below the player panel (left side), filling with a gradient glow
 - At each threshold, a brief pulse flash and audio cue
-- At ULTIMATE, the bar blazes with the ship class's accent color
-- Ultimate activation: brief cinematic zoom on player ship, dramatic particle burst, screen darken
+- Color gradient: dark blue (0%) → cyan (25%) → green (50%) → gold (75%) → blazing white-gold (100%)
+- At ULTIMATE, the bar blazes with the ship class's accent color and pulses
+- Ultimate activation: brief cinematic zoom on player ship, dramatic particle burst, screen darken, then the effect resolves
+
+#### Implementation Guide — Phase 8
+
+**New files to create:**
+
+| File | Purpose |
+|------|---------|
+| `spacegame/models/momentum.py` | MomentumGauge class, ShipUltimate dataclass, SHIP_CLASS_ULTIMATES registry |
+| `data/combat/ultimates.json` | Ship class → ultimate definition (name, effects, visual config) |
+| `tests/test_models/test_momentum.py` | Momentum buildup, threshold detection, ultimate resolution tests |
+
+**Files to modify:**
+
+| File | Changes |
+|------|---------|
+| `spacegame/models/combat.py` | Add `momentum: float` to PlayerCombatState. Add `ship_class: str` field. Add `overdriven: bool`, `overclock_active: bool` flags. |
+| `spacegame/models/combat_engine.py` | Call `momentum.add()` at each trigger point (deal damage, take damage, kill, crew ability, status applied). Check thresholds after each action. Resolve Overdriven (2x damage on next weapon hit). Resolve Overclock (+3 regen for 2 turns). Resolve Ultimate (call ultimate handler). |
+| `spacegame/views/combat_view.py` | Render momentum bar (left side, below player panel). Render threshold markers. Render Overdriven indicator on weapon buttons. Render ULTIMATE button when available. Ultimate activation animation (zoom, darken, particles). |
+| `data/ships/ship_types.json` | Add `"ship_class_category"` field to each ship type (maps to ultimate). E.g., `"ship_class_category": "fast_scout"`. |
+| `spacegame/models/ship.py` | Expose `ship_class_category` property. |
+
+**Data model for `spacegame/models/momentum.py`:**
+
+```python
+@dataclass
+class MomentumGauge:
+    """Tracks combat momentum with threshold-triggered abilities."""
+    current: float = 0.0  # 0.0 to 1.0 (0% to 100%)
+    overdriven_available: bool = False
+    overdriven_used: bool = False      # True after the 2x hit is consumed
+    overclock_triggered: bool = False   # True after 75% auto-trigger fires
+    ultimate_used: bool = False         # True after ultimate is consumed
+
+    def add(self, amount: float) -> list[str]:
+        """Add momentum and return list of newly crossed thresholds."""
+        ...
+
+    def consume_ultimate(self) -> None:
+        """Reset to 0 after ultimate activation."""
+        self.current = 0.0
+        self.ultimate_used = True
+        self.overdriven_available = False
+        self.overclock_triggered = False
+
+    def consume_overdriven(self) -> None:
+        """Mark Overdriven as used (recharges when re-crossing 50%)."""
+        self.overdriven_used = True
+        self.overdriven_available = False
+
+
+@dataclass
+class ShipUltimate:
+    """Definition of a ship class's ultimate ability."""
+    id: str                     # e.g., "afterburner_strike"
+    name: str                   # "Afterburner Strike"
+    ship_class_category: str    # "fast_scout"
+    description: str
+    effects: list[dict]         # Same format as CombatEffect
+    visual_type: str            # "damage_aoe", "buff_self", "control", "utility"
+
+
+SHIP_CLASS_CATEGORIES: dict[str, list[str]] = {
+    "starter": ["shuttle"],
+    "early_combat": ["patrol_cutter"],
+    "trade_freighter": ["light_freighter", "medium_freighter", "bulk_hauler"],
+    "fast_scout": ["fast_courier", "scout_vessel", "corsair"],
+    "mining_salvage": ["prospector", "mining_barge", "salvage_rig"],
+    "stealth": ["phantom", "smugglers_sloop"],
+    "heavy_combat": ["war_frigate", "clipper"],
+    "luxury_diplomat": ["luxury_yacht", "diplomatic_cruiser"],
+    "explorer": ["deep_explorer"],
+    "industrial": ["industrial_titan"],
+    "faction_guild": ["consortium_merchantman"],
+    "faction_union": ["syndicate_enforcer"],
+    "faction_frontier": ["frontier_runner"],
+    "faction_science": ["institute_vessel"],
+}
+```
+
+**Momentum trigger points in `combat_engine.py`:**
+```python
+# After player weapon hits:
+self._player_state.momentum.add(0.05)  # +5% per hit
+
+# After player takes hull damage:
+self._player_state.momentum.add(0.08)  # +8% per hull hit received
+
+# After enemy killed:
+self._player_state.momentum.add(0.15)  # +15% per kill
+
+# After crew ability used:
+self._player_state.momentum.add(0.03)  # +3% per crew use
+
+# After elemental status applied:
+self._player_state.momentum.add(0.02)  # +2% per stack
+
+# When hull drops below 25% (one-time):
+if not self._critical_surge_fired and hull_ratio < 0.25:
+    self._player_state.momentum.add(0.20)  # +20% surge
+    self._critical_surge_fired = True
+```
+
+**Tests for Phase 8 (`tests/test_models/test_momentum.py`):**
+1. Momentum starts at 0
+2. add(0.05) increases momentum correctly
+3. Threshold detection: crossing 25% returns "charged" in threshold list
+4. Threshold detection: crossing 50% returns "surging"
+5. Overdriven becomes available at 50%, consumed on use, recharges on re-cross
+6. Overclock fires once at 75%, doesn't re-fire until momentum drops and re-crosses
+7. Ultimate available at 100%, resets momentum to 0 on use
+8. Momentum caps at 1.0 (can't exceed 100%)
+9. Each ship_type maps to exactly one ship_class_category
+10. Each ship_class_category has exactly one ultimate
+11. Ultimate effects resolve correctly (damage, buffs, flee, etc.)
+12. Cargo Jettison actually removes 10 cargo from player inventory
+
+**Phase 8 checkpoint:**
+- [ ] Momentum bar renders and fills during combat
+- [ ] Thresholds trigger at correct percentages with visual pulse
+- [ ] Overdriven Weapon doubles next weapon damage
+- [ ] System Overclock grants +3 regen for 2 turns
+- [ ] Ultimate button appears at 100%, activates with animation, resets momentum
+- [ ] Each of the 14 ultimates resolves correctly
+- [ ] `pytest` — all existing tests pass + new momentum tests pass
 
 ---
 
@@ -618,11 +782,72 @@ Bosses differ from regular enemies in:
 | **Ghost Ship** | Investigate disappearances at 2 systems | Void Leviathan | Unique ship upgrade |
 | **The Collector's Debt** | Trade at 3 systems to lure them out | The Collector | Massive cargo haul |
 
+#### Boss Phase Transition Triggers
+
+All bosses use HP-based phase transitions. When total HP (hull + shields) drops below a threshold, the boss enters the next phase. Transitions are one-way (can't go back to Phase 1).
+
+| Boss | Phase 1 → 2 | Phase 2 → 3 | Total HP (3x multiplier) |
+|------|------------|------------|-------------------------|
+| The Corsair King | 66% HP | 33% HP | ~300 total (100 hull × 3) |
+| Guild Arbiter | 60% HP | 30% HP | ~360 total (high shields) |
+| The Iron Maw | 50% HP | 25% HP | ~510 total (massive hull) |
+| Ledger Phantom | 70% HP | 40% HP | ~315 total (moderate, but evasive) |
+| The Collector | 50% HP | 25% HP | ~450 total |
+| Void Leviathan | 60% HP | 30% HP | ~600 total (enormous hull, weak shields) |
+| Rogue AI Vessel | 66% HP | 33% HP | ~330 total |
+
+#### Boss Template JSON Structure
+
+```json
+{
+  "id": "corsair_king",
+  "name": "The Corsair King",
+  "is_boss": true,
+  "hull": 100, "shields": 30,
+  "boss_hp_multiplier": 3,
+  "energy": 10, "energy_regen": 3,
+  "speed": 10, "evasion": 15, "accuracy": 68,
+  "behavior": "aggressive",
+  "immune_to": ["frozen"],
+  "max_suppressed_stacks": 2,
+  "phases": [
+    {
+      "name": "Corsair's Fury",
+      "hp_threshold": 1.0,
+      "behavior": "aggressive",
+      "moves": ["corsair_broadside", "intimidation_volley"],
+      "on_enter_text": null
+    },
+    {
+      "name": "Call to Arms",
+      "hp_threshold": 0.66,
+      "behavior": "tactical",
+      "moves": ["corsair_broadside", "call_reinforcements"],
+      "on_enter_text": "\"All ships — converge on my position!\"",
+      "on_enter_effect": "spawn_pirate_scout"
+    },
+    {
+      "name": "Berserker's Last Stand",
+      "hp_threshold": 0.33,
+      "behavior": "berserker",
+      "moves": ["corsair_broadside_enhanced", "ramming_speed"],
+      "on_enter_text": "\"You want my ship? COME AND TAKE IT!\"",
+      "on_enter_effect": "damage_boost_50_defense_minus_30"
+    }
+  ],
+  "loot_table": [...],
+  "xp_reward": 500,
+  "credit_reward": 15000,
+  "trophy_drop": "pirate_cutlass_fin"
+}
+```
+
 #### Boss Visual Treatment
-- **Intro**: Screen darkens, boss name appears in large dramatic text with faction-colored accent
-- **Health bar**: Boss gets a wide bar across the top of the arena (not side panel) showing phase thresholds
-- **Phase transitions**: Brief animation pause, boss hull color shifts, new pattern announced
+- **Intro**: Screen darkens, boss name appears in large dramatic text with faction-colored accent, brief pause (1s)
+- **Health bar**: Boss gets a wide bar across the top of the arena (not side panel) showing phase threshold markers as vertical lines
+- **Phase transitions**: 0.5s animation pause, boss sprite flashes, hull color shifts, new phase name announced as banner text, new behavior pattern takes effect
 - **Death**: Extended destruction sequence (1.5x duration, more fragments, screen shake)
+- **Music**: Boss encounters should use a distinct combat music track (if audio system supports it)
 
 ---
 
@@ -683,20 +908,43 @@ Every new mechanic needs clear communication. The tutorial system already suppor
 | **12E** | Visual Pass (armor sparks, dodge anims, identity VFX) | MEDIUM | HIGH | Phases 12A-B |
 | **12F** | Balance & Integration | LOW | HIGH | Phases 12A-E |
 
+### Dependency Graph
+
+```
+Phase 8 (Momentum + Ultimates)
+ ├── Phase 9 (Crew Combos) — needs 25% momentum threshold
+ │    └── Phase 10 (Bosses) — should test all systems
+ └── Phase 12A (Defensive Core) — can start after or alongside Phase 8
+      ├── Phase 12B (Defense Upgrades)
+      ├── Phase 12C (Skill Tree + Elemental Mastery)
+      ├── Phase 12D (Counter-Enemies + Support)
+      └── Phase 12E (Visual Pass)
+
+Phase 11 (Tutorials) — after ALL above phases
+Phase 12F (Balance Pass) — after ALL above phases
+
+THEN → Shipyard Overhaul (uses all combat mechanics as foundation)
+```
+
 ### Recommended Implementation Order
-1. **Phase 8 (Momentum)** first — it's the backbone. Ship Ultimates give every ship class identity.
-2. **Phase 12A (Defensive Core)** — can be built in parallel with or immediately after Phase 8. Armor, shield regen, and graze are foundational mechanics that improve every subsequent combat feature.
-3. **Phase 9 (Crew Combos)** — layered on top of Momentum threshold 1. Rewards party composition.
-4. **Phase 12B-C (Upgrades + Skills)** — flesh out the defensive identities with equipment and skill trees.
-5. **Phase 10 (Bosses)** — uses all systems (momentum, combos, elements, defense identities, telegraphing). Boss design should exploit all three defensive identities.
-6. **Phase 12D-E (Enemies + Visuals)** — counter-enemies and visual polish for defense identities.
-7. **Phase 11 (Tutorials)** last — explains everything that's been built, including defense identity choices.
-8. **Phase 12F (Balance)** — final tuning pass after all systems are in place.
+
+| Step | Phase | What | Why This Order |
+|------|-------|------|---------------|
+| 1 | **8** | Momentum Gauge + Ship Ultimates | Foundation for Wave 2. Gives every ship class a unique combat identity. No dependencies. |
+| 2 | **12A** | Defensive Core Mechanics | Foundation for Wave 3. Armor, shield regen, graze, and identity passives are needed before defensive content can be built. |
+| 3 | **9** | Crew Combo Abilities | Builds on Phase 8 momentum threshold. Quick to implement with high impact. |
+| 4 | **12B** | Defense Upgrades & Equipment | 27 new upgrades that give players tools to express defensive identity. |
+| 5 | **12C** | Skill Tree Expansion | 26 new nodes (18 defensive + 5 elemental mastery + 3 capstones). Deepens both offensive and defensive build paths. |
+| 6 | **10** | Boss Encounter System | The capstone combat content. Bosses should test everything: momentum, combos, elements, defensive identities, telegraphing. Build last so bosses are designed against the full system. |
+| 7 | **12D** | Counter-Enemy Templates | 7 new enemies that challenge specific defensive builds. Should exist before balance pass. |
+| 8 | **12E** | Visual Pass | Armor sparks, dodge animations, identity VFX. Polish that makes all the mechanics FEEL right. |
+| 9 | **11** | Tutorial Integration | Explain all new systems. Must come after the systems exist. |
+| 10 | **12F** | Balance & Integration Pass | Final tuning. All mechanics, content, and visuals are in place. Playtest and adjust. |
 
 ### Future Expansion Opportunities (post-playtesting)
-- Elemental visual pass: distinct projectile colors/sprites per element
-- Enemy elemental resistances/weaknesses
-- Skill tree integration: elemental mastery nodes + momentum mastery
+- Elemental visual pass: distinct projectile colors/sprites per element (partially designed in Phase 5)
+- Enemy elemental resistances/weaknesses (natural extension of the defense identity × element matrix)
+- Momentum mastery skill nodes (+momentum build rate, faster threshold access)
 - Blue Magic equivalent: salvage enemy technology after boss kills
 - New Game+ mode: bosses appear as random encounters, momentum builds faster
 - Boss Rush mode: fight all bosses in sequence for leaderboard score
@@ -996,6 +1244,7 @@ Enemies should also lean into identities, creating readable combat puzzles:
 | Ion Striker | 50 | 10 | 20 | Anti-shield | Uses Ion weapons exclusively. Shield builds' nightmare |
 | Cryo Interceptor | 55 | 25 | 18 | Anti-evasion | Uses Cryo weapons. Evasion builds' nightmare (Chill reduces evasion) |
 | Plasma Bomber | 45 | 20 | 12 | Anti-hull | Uses Plasma weapons. Hull builds' concern (Burn DoT bypasses armor) |
+| Support Frigate | 60 | 40 | 10 | Support | Heals allies 15 hull/turn, buffs ally damage +10%. Priority target — kill first or the fight drags. Telegraphs SUPPORTING. |
 
 ---
 
@@ -1041,32 +1290,108 @@ This creates a double layer of strategy: your DEFENSIVE identity determines whic
 
 ### Upgrade Counts Summary
 
-| Category | Hull | Shield | Evasion | Total New |
-|----------|------|--------|---------|-----------|
-| Defense slot | 6 | 6 | 6 | **18** |
-| Utility slot | 3 | 3 | 3 | **9** |
-| Skill nodes | 5+capstone | 5+capstone | 5+capstone | **18** |
-| Enemy templates | — | — | — | **6** |
-| **Total new content** | | | | **51 items** |
+| Category | Hull | Shield | Evasion | Other | Total New |
+|----------|------|--------|---------|-------|-----------|
+| Defense slot upgrades | 6 | 6 | 6 | — | **18** |
+| Utility slot upgrades | 3 | 3 | 3 | — | **9** |
+| Defensive skill nodes | 5+capstone | 5+capstone | 5+capstone | — | **18** |
+| Elemental mastery nodes | — | — | — | 5+capstone | **6** |
+| Enemy templates | — | — | — | 7 (6 counter + 1 support) | **7** |
+| **Total new Wave 3 content** | | | | | **58 items** |
 
-Combined with existing 85 upgrades → **112 total upgrades** (18 defense + 9 utility new).
-Combined with existing 28 enemy templates → **34 total enemy templates**.
-Combined with existing 89 skill nodes → **107 total skill nodes**.
+**Combined totals after Wave 2 + Wave 3:**
+- Upgrades: 85 existing + 27 new = **112 total upgrades**
+- Enemy templates: 28 existing + 7 new + ~10 boss = **~45 total enemy templates**
+- Skill nodes: 89 existing + 24 new = **113 total skill nodes**
+- Ship class ultimates: **14** (one per ship class category)
+- Crew combo abilities: **6** (one per companion pair)
+- Boss encounters: **10** (4 campaign + 3 random + 3 side quest)
 
 ---
 
 ### Implementation Phases
 
 #### Phase 12A: Core Mechanics (HIGH effort)
-- Add `armor` field to ShipType and combat state
-- Implement armor damage reduction in combat engine
-- Implement passive shield regen per turn in combat engine
-- Implement graze system (near-miss 30% damage)
-- Implement evasion diminishing returns above 50
-- Implement evasion decay after being hit (-5 for 1 turn)
-- Add identity passive flags to ShipType (`hull_passives`, `shield_passives`, `evasion_passives`)
-- Implement Last Stand, Structural Integrity, Overcharge Capacity, Shield Break Vulnerability, Counterstrike, Slippery, Light Frame Vulnerability passives
-- Tests for all new mechanics
+
+**Goal:** Add the three foundational defensive mechanics (armor, shield regen, graze) and identity passives to the combat engine. These are the building blocks that all Wave 3 content depends on.
+
+**Files to modify:**
+
+| File | Changes |
+|------|---------|
+| `spacegame/models/combat.py` | Add `armor`, `shield_regen`, `defensive_identity` to PlayerCombatState and EnemyShip. Add `overcharge_max_shields`, `shield_break_vulnerable` flags. Add `counterstrike_stacks`, `evasion_decay` tracking. |
+| `spacegame/models/combat_engine.py` | Insert armor reduction at step 6 of damage pipeline. Add shield regen in `_end_of_turn()`. Implement graze in hit/miss resolution. Implement evasion diminishing returns in `_calculate_hit_chance()`. Implement evasion decay. Process identity passives (Last Stand, Structural Integrity, etc.) |
+| `data/ships/ship_types.json` | Add `"combat_armor"`, `"combat_shield_regen"`, `"defensive_identity"` fields to each ship. Identity = `"juggernaut"`, `"sentinel"`, `"ghost"`, or `null` (balanced). |
+| `spacegame/models/ship.py` | Expose new ShipType fields. |
+| `spacegame/views/combat_view.py` | Render "DEFLECTED" text for armor reduction. Render graze indicator. Render dodge animation (jink). Render shield regen pulse per turn. Render Last Stand visual (red hull glow). Render Counterstrike glow intensity. |
+
+**Specific code changes in `combat_engine.py`:**
+
+```python
+# In _calculate_hit_chance() — add diminishing returns:
+effective_evasion = defender_evasion
+if effective_evasion > 50:
+    effective_evasion = 50 + (effective_evasion - 50) * 0.5
+
+# In hit/miss resolution — add graze:
+if not hit:
+    miss_margin = roll - hit_chance
+    if miss_margin <= 10:
+        # GRAZE: 30% damage
+        graze = True
+        damage_multiplier = 0.30
+    else:
+        # Clean miss
+        if defender_identity == "ghost":
+            defender.counterstrike_stacks = min(defender.counterstrike_stacks + 1, 3)
+
+# In _apply_direct_damage() — add armor:
+if not is_burn_dot:  # Burn bypasses armor
+    reduced = max(1, raw_damage - defender.armor)
+else:
+    reduced = raw_damage
+
+# In _end_of_turn() — add shield regen:
+if player.shield_regen > 0 and player.shields < player.max_shields:
+    regen = min(player.shield_regen, player.max_shields - player.shields)
+    player.shields += regen
+
+# In _end_of_turn() — add evasion decay reset:
+player.evasion_decay = 0  # Reset each turn; set to -5 when hit
+```
+
+**Forward-compatibility note for Shipyard Overhaul:**
+Design the identity passive system to check a `defensive_identity` string field — not a ShipType-specific flag. When the shipyard ships, `ShipBuild.computed_stats.defensive_identity` will provide this same field. The combat engine should read identity from `PlayerCombatState.defensive_identity` regardless of whether it came from ShipType or ShipBuild.
+
+**Tests for Phase 12A:**
+1. Armor reduces incoming damage: 20 damage - 3 armor = 17
+2. Armor minimum: 5 damage - 8 armor = 1 (floor of 1)
+3. Armor does NOT reduce Burn DoT: 7 burn vs 3 armor = 7 (bypassed)
+4. Shield regen adds shields each turn (capped at max)
+5. Graze: hit chance 60%, roll 65 (miss by 5) → 30% damage dealt
+6. Clean miss: hit chance 60%, roll 80 (miss by 20) → 0 damage
+7. Evasion diminishing returns: 60 effective evasion → 55 actual
+8. Evasion decay: after being hit, -5 evasion for 1 turn
+9. Last Stand: below 25% hull → +15% damage, +2 armor
+10. Structural Integrity: above 75% hull → +5% DR
+11. Overcharge: shields can exceed max by 50% with decay
+12. Shield Break Vulnerability: shields hit 0 → +25% incoming damage 1 turn
+13. Counterstrike: clean miss increments stacks; stacks reset on being hit
+14. Slippery: +20% flee bonus for ghost identity
+15. Light Frame Vulnerability: ghost identity takes +15% damage when hit
+16. AoE moves always hit regardless of evasion
+17. Identity detection: only one identity active based on ShipType field
+
+**Phase 12A checkpoint:**
+- [ ] Armor reduces damage correctly, Burn bypasses it
+- [ ] Shield regen ticks each turn
+- [ ] Graze system produces partial damage on near-misses
+- [ ] All 7 identity passives function correctly
+- [ ] AoE moves ignore evasion
+- [ ] `pytest` — all existing tests pass + new defensive mechanic tests
+- [ ] Playtest: fight as Juggernaut (War Frigate) → armor feels meaningful
+- [ ] Playtest: fight as Sentinel (Institute Vessel) → shield regen sustains against chip damage
+- [ ] Playtest: fight as Ghost (Phantom) → dodges feel impactful, grazes soften misses
 
 #### Phase 12B: Upgrades & Equipment (MEDIUM effort)
 - Add 18 new defense slot upgrades to upgrades.json
@@ -1077,16 +1402,32 @@ Combined with existing 89 skill nodes → **107 total skill nodes**.
 - Tests for upgrade effects in combat
 
 #### Phase 12C: Skill Tree Expansion (MEDIUM effort)
-- Add 18 new skill nodes to skill_trees.json (6 per branch + 3 capstones)
-- Wire new bonus types through combat state initialization
+- Add 18 new defensive identity skill nodes to skill_trees.json (6 per branch + 3 capstones) — see Skill Tree Expansion section
+- Add 5 elemental mastery nodes to Combat skill tree:
+  - *Burn Specialist* (2 levels): +20% Burn damage per level. Prereq: weapons_training
+  - *Ion Overcharge* (2 levels): Ion weapons drain 2 enemy energy on hit per level. Prereq: precision_targeting
+  - *Deep Freeze* (2 levels): Chill stacks last +1 turn per level. Prereq: weapons_training
+  - *Suppression Expert* (2 levels): Suppressed stacks last +1 turn per level. Prereq: precision_targeting
+  - *Elemental Versatility* (1 level, capstone): All elemental status effects gain +1 max stack. Prereq: any 2 elemental mastery nodes
+- Wire all new bonus types through combat state initialization
 - Ensure capstone skills have meaningful prerequisites
 - Tests for skill bonuses in combat
 
-#### Phase 12D: Enemy Templates (LOW effort)
-- Add 6 new enemy templates to enemies.json
+**Updated skill node counts:** 18 defensive + 5 elemental + 3 capstones = **26 new nodes**. Combined with existing 89 → **115 total skill nodes**.
+
+#### Phase 12D: Enemy Templates (LOW-MEDIUM effort)
+- Add 7 new enemy templates to enemies.json (6 identity-counter + 1 support)
 - Assign identity-appropriate behaviors and moves
-- Distribute across systems by difficulty
-- Tests for new enemy combat resolution
+- Distribute across systems by difficulty and faction:
+  - Shield Drone: Science systems (Axiom, Nova)
+  - Armored Transport: Union systems (Forgeworks, Breakstone, Iron Depths)
+  - Ghost Raider: Frontier and Crimson Reach
+  - Ion Striker: Science systems
+  - Cryo Interceptor: Science systems
+  - Plasma Bomber: Union and dangerous systems
+  - Support Frigate: Any moderate+ system (paired with other enemies)
+- Add SUPPORTING telegraph behavior for Support Frigate
+- Tests for new enemy combat resolution, support healing/buff mechanics
 
 #### Phase 12E: Visual Pass (MEDIUM effort)
 - Armor deflection particles and text
