@@ -19,6 +19,8 @@ from spacegame.models.combat import (
     CombatLogEntry,
     CombatMove,
     CombatResult,
+    EffectType,
+    EffectTarget,
 )
 from spacegame.models.combat_engine import (
     CombatEngine,
