@@ -33,6 +33,7 @@ from spacegame.engine.audio_manager import get_audio_manager
 from spacegame.engine.easing import Tween, ease_out_cubic
 from spacegame.engine.floating_text import FloatingItemManager
 from spacegame.engine.tooltip import TooltipState
+from spacegame.engine.refining_vfx import ForgeAtmosphere, MasteryMomentumBar, DiscoveryHint
 
 # Forge upgrade color theme (warm orange)
 FORGE_COLOR = (255, 160, 60)
@@ -204,6 +205,22 @@ class RefiningView(BaseView):
 
         # Upgrade panel click rects
         self._upgrade_rects: Dict[str, pygame.Rect] = {}
+
+        # Forge atmosphere VFX (right-side panel where queue/forge renders)
+        forge_rect = pygame.Rect(
+            WINDOW_WIDTH - scale_x(350), scale_y(80), scale_x(330), scale_y(400)
+        )
+        self._forge_atmosphere = ForgeAtmosphere(forge_rect)
+        self._mastery_bar = MasteryMomentumBar(
+            x=WINDOW_WIDTH - scale_x(350),
+            y=scale_y(490),
+            width=scale_x(330),
+        )
+        self._discovery_hint = DiscoveryHint(
+            x=WINDOW_WIDTH - scale_x(350),
+            y=scale_y(525),
+            width=scale_x(330),
+        )
 
     def on_enter(self) -> None:
         super().on_enter()
@@ -720,6 +737,19 @@ class RefiningView(BaseView):
         self.background.update(dt)
         self.particles.update(dt)
         self._glow_time += dt
+
+        # Forge atmosphere VFX
+        self._forge_atmosphere.update(dt)
+        self._discovery_hint.update(dt)
+        if self.session:
+            active_count = len(self.session.job_queue)
+            max_tier = 1
+            for job in self.session.job_queue:
+                max_tier = max(max_tier, job.recipe.tier)
+            self._forge_atmosphere.set_intensity(active_count, max_tier)
+        else:
+            self._forge_atmosphere.set_intensity(0)
+        self._mastery_bar.clear()
         if not self._show_summary:
             self._session_elapsed += dt
 
@@ -920,7 +950,10 @@ class RefiningView(BaseView):
         screen.blit(instr, (30, 60))
 
         self._render_recipes(screen)
+        self._forge_atmosphere.render(screen)
         self._render_queue(screen)
+        self._mastery_bar.render(screen)
+        self._discovery_hint.render(screen)
 
         # Particles
         self.particles.render(screen)
