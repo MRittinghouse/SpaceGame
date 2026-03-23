@@ -39,6 +39,7 @@ from spacegame.engine.particles import (
     SHIELD_IMPACT,
     HEAL_SPARKLE,
     SHIELD_RESTORE,
+    SPARK_BURST,
 )
 from spacegame.engine.screen_effects import ScreenShake, Vignette
 from spacegame.engine.fonts import FONT_DISPLAY, FONT_LG, FONT_MD, FONT_TITLE, FONT_XL, FontCache
@@ -371,6 +372,9 @@ class CombatView(BaseView):
         self._displayed_player_momentum = 0.0
         self._momentum_pulse_timer = 0.0  # Brief glow on threshold cross
         self._momentum_pulse_color: tuple[int, int, int] = (100, 200, 255)
+        self._dodge_jink_timer = 0.0  # Lateral ship offset on dodge
+        self._dodge_jink_direction = 1  # 1 = right, -1 = left
+        self._rng_visual = _random.Random(42)  # Visual variety RNG
         self._selected_crew_move_id: Optional[str] = getattr(self, "_selected_crew_move_id", None)
         self._displayed_enemy_hulls = [float(e.current_hull) for e in state.enemies]
         self._displayed_enemy_shields = [float(e.current_shields) for e in state.enemies]
@@ -488,6 +492,7 @@ class CombatView(BaseView):
         self._player_sprite_flash = max(0.0, self._player_sprite_flash - dt)
         self._player_shield_flash = max(0.0, self._player_shield_flash - dt)
         self._momentum_pulse_timer = max(0.0, self._momentum_pulse_timer - dt)
+        self._dodge_jink_timer = max(0.0, self._dodge_jink_timer - dt)
         for i in range(len(self._enemy_flash_timers)):
             self._enemy_flash_timers[i] = max(0.0, self._enemy_flash_timers[i] - dt)
         for i in range(len(self._enemy_sprite_flashes)):
@@ -1292,6 +1297,24 @@ class CombatView(BaseView):
             else:
                 self.particles.emit(impact_x, impact_y, LASER_HIT)
                 get_audio_manager().play_sfx("combat_laser")
+
+            # Armor deflection particle burst (Phase 12E)
+            has_armor_text = any("Armor absorbed" in eff for eff in log.effects_applied)
+            if has_armor_text:
+                self.particles.emit(impact_x, impact_y, SPARK_BURST)
+
+            # Shield regen pulse particles (Phase 12E — on end-of-round regen)
+            has_regen_text = any("Shield regen" in eff for eff in log.effects_applied)
+            if has_regen_text:
+                px = PLAYER_SHIP_POS[0]
+                py = PLAYER_SHIP_POS[1]
+                self.particles.emit(px, py, SHIELD_RESTORE)
+
+            # Dodge jink animation (Phase 12E — player ship lateral offset on dodge/graze)
+            has_dodge = any("Missed" in eff or "GRAZE" in eff for eff in log.effects_applied)
+            if has_dodge and is_enemy_source:
+                self._dodge_jink_timer = 0.15
+                self._dodge_jink_direction = 1 if self._rng_visual.random() > 0.5 else -1
 
             # Hit recoil on the target ship
             if is_player_source:
@@ -2560,9 +2583,13 @@ class CombatView(BaseView):
                 white.fill((255, 255, 255, int(180 * flash_t)))
                 flash_surf.blit(white, (0, 0), special_flags=pygame.BLEND_RGBA_ADD)
                 rotated = flash_surf
-            # Apply hit recoil offset
+            # Apply hit recoil offset + dodge jink (Phase 12E)
             recoil_ox, recoil_oy = self._damage_state_mgr.get_recoil_offset("player")
-            draw_x = player_x + recoil_ox
+            jink_ox = 0
+            if self._dodge_jink_timer > 0:
+                jink_t = self._dodge_jink_timer / 0.15
+                jink_ox = int(12 * jink_t * self._dodge_jink_direction)
+            draw_x = player_x + recoil_ox + jink_ox
             draw_y = player_y + recoil_oy
             rect = rotated.get_rect(center=(draw_x, draw_y))
             screen.blit(rotated, rect)

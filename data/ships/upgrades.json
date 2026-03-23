@@ -2733,7 +2733,11 @@
       "bonus_type": "armor_bonus",
       "bonus_value": 2.0,
       "tier": 2,
-      "available_systems": [],
+      "available_systems": [
+        "forgeworks",
+        "breakstone",
+        "iron_depths"
+      ],
       "tuning_options": [
         {
           "id": "dense",
@@ -2773,7 +2777,11 @@
       "bonus_type": "armor_bonus",
       "bonus_value": 1.0,
       "tier": 2,
-      "available_systems": [],
+      "available_systems": [
+        "forgeworks",
+        "breakstone",
+        "iron_depths"
+      ],
       "tuning_options": [
         {
           "id": "fast_cycle",
@@ -2903,7 +2911,10 @@
       "bonus_type": "repair_discount",
       "bonus_value": 25.0,
       "tier": 2,
-      "available_systems": [],
+      "available_systems": [
+        "forgeworks",
+        "breakstone"
+      ],
       "tuning_options": [
         {
           "id": "salvage_parts",
@@ -2983,7 +2994,11 @@
       "bonus_type": "shield_regen_bonus",
       "bonus_value": 3.0,
       "tier": 2,
-      "available_systems": [],
+      "available_systems": [
+        "axiom_labs",
+        "nova_research",
+        "stellaris_port"
+      ],
       "tuning_options": [
         {
           "id": "overcharge",
@@ -3029,7 +3044,10 @@
       "bonus_type": "shield_regen_bonus",
       "bonus_value": 4.0,
       "tier": 2,
-      "available_systems": [],
+      "available_systems": [
+        "axiom_labs",
+        "nova_research"
+      ],
       "tuning_options": [
         {
           "id": "harmonic",
@@ -3164,7 +3182,10 @@
       "bonus_type": "ion_resistance",
       "bonus_value": 30.0,
       "tier": 2,
-      "available_systems": [],
+      "available_systems": [
+        "axiom_labs",
+        "nova_research"
+      ],
       "tuning_options": [
         {
           "id": "full_hardening",
@@ -3245,7 +3266,10 @@
       "bonus_type": "evasion_bonus",
       "bonus_value": 8.0,
       "tier": 2,
-      "available_systems": [],
+      "available_systems": [
+        "havens_rest",
+        "crimson_reach"
+      ],
       "tuning_options": [
         {
           "id": "broadband",
@@ -3479,7 +3503,11 @@
       "bonus_type": "armor_bonus",
       "bonus_value": 1.0,
       "tier": 2,
-      "available_systems": [],
+      "available_systems": [
+        "forgeworks",
+        "breakstone",
+        "iron_depths"
+      ],
       "tuning_options": []
     },
     {
@@ -3491,7 +3519,10 @@
       "bonus_type": "kinetic_resistance",
       "bonus_value": 10.0,
       "tier": 2,
-      "available_systems": [],
+      "available_systems": [
+        "forgeworks",
+        "breakstone"
+      ],
       "tuning_options": []
     },
     {
@@ -3515,7 +3546,11 @@
       "bonus_type": "shield_regen_bonus",
       "bonus_value": 2.0,
       "tier": 2,
-      "available_systems": [],
+      "available_systems": [
+        "axiom_labs",
+        "nova_research",
+        "stellaris_port"
+      ],
       "tuning_options": []
     },
     {
@@ -3527,7 +3562,10 @@
       "bonus_type": "ion_resistance",
       "bonus_value": 15.0,
       "tier": 2,
-      "available_systems": [],
+      "available_systems": [
+        "axiom_labs",
+        "nova_research"
+      ],
       "tuning_options": []
     },
     {
@@ -3551,7 +3589,10 @@
       "bonus_type": "evasion_bonus",
       "bonus_value": 5.0,
       "tier": 2,
-      "available_systems": [],
+      "available_systems": [
+        "havens_rest",
+        "crimson_reach"
+      ],
       "tuning_options": []
     },
     {
@@ -3563,7 +3604,10 @@
       "bonus_type": "counterstrike_bonus",
       "bonus_value": 5.0,
       "tier": 2,
-      "available_systems": [],
+      "available_systems": [
+        "crimson_reach",
+        "havens_rest"
+      ],
       "tuning_options": []
     }
   ]
