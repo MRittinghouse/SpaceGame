@@ -492,12 +492,199 @@ Include animated idle sheets (2-frame engine glow pulse) for each.
 #### Priority
 7A (naming fixes) and 7D (better fallback) are immediate — no sprite generation needed. 7B-C-E require the generation pipeline and API budget.
 
+---
+
+## Wave 2: JRPG-Inspired Combat Evolution
+
+> Inspired by Final Fantasy 6-9: momentum-based special abilities, crew combo synergies, boss encounters with scripted patterns, and ship class ultimates. These mechanics deepen combat from "pick a move" into a system with buildup, payoff, team synergy, and memorable moments.
+
+### Phase 8: Momentum Gauge & Ship Ultimates
+
+**The Momentum Gauge** is a combat-long resource that builds through actions and damage, unlocking increasingly powerful abilities at thresholds. This is our version of FF's Limit Break system.
+
+#### Momentum Buildup
+- **Dealing damage**: +5% per hit
+- **Taking hull damage**: +8% per hit received (comeback mechanic)
+- **Killing an enemy**: +15%
+- **Crew ability used**: +3%
+- **Elemental status applied**: +2% per stack
+- **Taking critical damage (below 25% hull)**: +20% one-time surge
+
+#### Momentum Thresholds
+
+| Level | Threshold | Unlock | Description |
+|-------|-----------|--------|-------------|
+| Charged | 25% | **Crew Synergy** | Unlock combo abilities for crew pairs |
+| Surging | 50% | **Overdriven Weapon** | Next weapon attack deals 2x damage |
+| Overload | 75% | **System Overclock** | +3 energy regen for 2 turns |
+| ULTIMATE | 100% | **Ship Ultimate** | Unique ability per ship class (see below) |
+
+Momentum resets to 0 after using the Ship Ultimate. Lower-tier thresholds remain available after use (they don't consume momentum, only unlock access).
+
+#### Ship Class Ultimates
+
+| Ship Class | Ships | Ultimate Name | Effect |
+|-----------|-------|---------------|--------|
+| Starter | Shuttle | **Mayday Burst** | Guaranteed flee + 30% hull heal |
+| Early Combat | Patrol Cutter | **Intercept Salvo** | 25 damage to all + -20 evasion for 2 turns |
+| Trade/Freighter | Light/Medium Freighter, Bulk Hauler | **Cargo Jettison** | Sacrifice 10 cargo for 60 AoE damage |
+| Fast/Scout | Fast Courier, Scout, Corsair | **Afterburner Strike** | 50 damage + guaranteed hit + free action next turn |
+| Mining/Salvage | Prospector, Mining Barge, Salvage Rig | **Drill Charge** | 45 damage, ignores shields entirely |
+| Stealth | Phantom, Smuggler's Sloop | **Ghost Protocol** | Immune to all damage for 2 turns |
+| Heavy Combat | War Frigate, Clipper | **Nova Barrage** | 60 damage to ALL enemies (Kinetic) |
+| Luxury/Diplomat | Luxury Yacht, Diplomatic Cruiser | **Diplomatic Immunity** | All enemies skip next 2 turns |
+| Explorer | Deep Explorer | **Sensor Overload** | Reveal all enemy stats + 30 accuracy for 3 turns + drain 5 energy from all enemies |
+| Industrial | Industrial Titan | **Tractor Beam** | Immobilize strongest enemy for 3 turns |
+| Faction: Guild | Consortium Merchantman | **Trade Embargo** | Enemies can't use abilities costing 3+ energy for 3 turns |
+| Faction: Union | Syndicate Enforcer | **Forge Hammer** | 70 single-target damage + apply 3 Burn stacks |
+| Faction: Frontier | Frontier Runner | **Rally Cry** | Full heal crew abilities cooldowns + 50% momentum refund |
+| Faction: Science | Institute Vessel | **Quantum Analysis** | Copy the strongest enemy's best move for 1 use |
+
+#### Visual Treatment
+- Momentum bar renders below the player panel (left side), filling with a gradient glow
+- At each threshold, a brief pulse flash and audio cue
+- At ULTIMATE, the bar blazes with the ship class's accent color
+- Ultimate activation: brief cinematic zoom on player ship, dramatic particle burst, screen darken
+
+---
+
+### Phase 9: Crew Combo Abilities
+
+When specific crew members are both recruited AND the Momentum gauge is at 25%+, **Combo Abilities** become available. These are more powerful than individual crew abilities and reward thoughtful party composition.
+
+#### Combo List
+
+| Crew Pair | Combo Name | Effect | Energy Cost |
+|-----------|-----------|--------|-------------|
+| Elena + Marcus | **Emergency Overhaul** | Restore 40 hull AND 5 energy | 5 |
+| Elena + Priya | **Precision Strike Protocol** | Next attack: 100% accuracy + 50% bonus damage | 4 |
+| Elena + Tomas | **Smuggler's Escape** | +60% flee chance + restore 3 energy | 3 |
+| Marcus + Priya | **System Purge** | Cleanse all debuffs + restore 20 shields | 5 |
+| Marcus + Tomas | **Jury-Rigged Countermeasures** | Deploy absorb shield + restore 4 energy | 4 |
+| Priya + Tomas | **Market Intelligence** | Reveal all enemy stats + drain 4 energy from target | 3 |
+
+#### UI Treatment
+- When a combo is available (both crew recruited, 25%+ momentum, enough energy), a special **COMBO** button appears in the crew ability row
+- Combo button has a distinct gold border and both crew member names
+- Using a combo counts as the crew action for that turn (replaces individual crew ability)
+- Brief combo name banner appears on use: "PRECISION STRIKE PROTOCOL"
+
+#### Discovery
+- Combos are NOT visible until the player has both crew members AND triggers 25% momentum for the first time with that pair
+- First discovery shows a tutorial popup: "Crew Combo Unlocked! Elena and Marcus can combine their abilities."
+- Discovered combos are remembered and show immediately in future combats
+
+---
+
+### Phase 10: Boss Encounter System
+
+Boss enemies are mechanically distinct from regular enemies. They have more health, scripted multi-phase behavior patterns, and unique abilities that create puzzle-like combat encounters.
+
+#### Boss Designation
+A new field on enemy templates: `"is_boss": true`
+
+Bosses differ from regular enemies in:
+- **3x health multiplier** (applied on top of base hull/shields)
+- **Scripted phase patterns** (behavior changes at HP thresholds)
+- **Unique abilities** (not available to regular enemies)
+- **Immunity to certain effects** (can't be frozen, limited suppression)
+- **Special loot tables** (guaranteed rare drops)
+- **Dramatic intro** (name banner, unique music, screen effects)
+
+#### Boss Roster (Initial)
+
+**Campaign Bosses** (encountered during Act One story missions):
+
+| Boss | Context | Phase 1 | Phase 2 | Phase 3 |
+|------|---------|---------|---------|---------|
+| **The Corsair King** | Pirate leader, early campaign | Aggressive (high damage) | Calls reinforcement (spawns pirate_scout) | Berserk (damage +50%, defense -30%) |
+| **Guild Arbiter** | Corporate enforcer, mid campaign | Defensive (shields + DR) | Tactical (drains energy + accuracy debuffs) | Desperate (removes own shields, 2x damage) |
+| **The Iron Maw** | Union heavy cruiser, Forgeworks | Heavy (slow, massive damage) | Fortified (DR + shield regen) | Overload (charges 2-turn devastating attack) |
+| **Ledger Phantom** | Conspiracy agent, late campaign | Stealth (high evasion, disappears 1 turn) | Revealed (normal combat, vulnerable) | Data Purge (self-destructs for massive AoE) |
+
+**Rare Random Encounter Bosses** (low chance during travel):
+
+| Boss | Systems | Behavior |
+|------|---------|----------|
+| **The Collector** | Any dangerous system | Hoards player cargo — on defeat, drops massive loot |
+| **Void Leviathan** | Deep space (Iron Depths, Crimson Reach) | Massive hull, weak shields. Charges devastating attacks. |
+| **Rogue AI Vessel** | Axiom Labs, Nova Research | Copies player's last weapon used. Adapts each round. |
+
+**Side Quest Boss Encounters** (new multi-part side quests):
+
+| Quest Name | Stages | Boss | Reward |
+|-----------|--------|------|--------|
+| **The Bounty Board** | 3 systems, track the target | Bounty Ace (enhanced) | Rare weapon + credits |
+| **Ghost Ship** | Investigate disappearances at 2 systems | Void Leviathan | Unique ship upgrade |
+| **The Collector's Debt** | Trade at 3 systems to lure them out | The Collector | Massive cargo haul |
+
+#### Boss Visual Treatment
+- **Intro**: Screen darkens, boss name appears in large dramatic text with faction-colored accent
+- **Health bar**: Boss gets a wide bar across the top of the arena (not side panel) showing phase thresholds
+- **Phase transitions**: Brief animation pause, boss hull color shifts, new pattern announced
+- **Death**: Extended destruction sequence (1.5x duration, more fragments, screen shake)
+
+---
+
+### Phase 11: Tutorial Integration
+
+Every new mechanic needs clear communication. The tutorial system already supports contextual overlays.
+
+#### New Tutorials
+
+| Trigger | Tutorial | Content |
+|---------|----------|---------|
+| First combat with Momentum > 0 | "Momentum Gauge" | "Your Momentum gauge builds as you fight. At key thresholds, new abilities unlock. Watch the bar on the left!" |
+| Momentum reaches 25% first time | "Momentum: Crew Synergy" | "At 25% Momentum, Crew Combo abilities unlock if you have the right pair. Check the COMBO button in your crew row." |
+| Momentum reaches 100% first time | "Ship Ultimate!" | "ULTIMATE READY! Your ship's unique ability is available. Use it wisely — it resets your Momentum to zero." |
+| First Crew Combo discovered | "Crew Combo: [Name]" | "[Crew A] and [Crew B] can combine their abilities! Combos are more powerful than individual crew moves." |
+| First Boss encounter | "Boss Encounter!" | "This is a powerful boss enemy. Watch for phase changes as their health drops. Boss enemies have unique attack patterns — read the telegraphs!" |
+| First elemental status applied | "Elemental Effects" | "Your [Element] weapon applied [Status]. Stacking these effects increases their power. Cryo can freeze, Plasma burns, Voltaic suppresses!" |
+
+#### Tutorial Persistence
+- Each tutorial fires ONCE per save file (flag stored in player.tutorial_flags)
+- Can be replayed from Settings → Tutorial section
+- Non-intrusive: appears as overlay at top of screen, doesn't pause combat
+
+---
+
+## Implementation Priority (Updated)
+
+### COMPLETED (Phases 1-7)
+
+| Phase | Description | Status |
+|-------|-------------|--------|
+| 1 | Energy Tension | DONE |
+| 2 | Enemy Telegraphing | DONE |
+| 3 | Crew Tactical Choice | DONE |
+| 4 | Damage Preview | DONE |
+| 5 | Elemental Weapons | DONE |
+| 6 | Utility Moves | DONE |
+| 7A | Ship Sprite Naming Fixes | DONE |
+
+### UPCOMING (JRPG Evolution)
+
+| Phase | Description | Effort | Impact | Dependencies |
+|-------|-------------|--------|--------|-------------|
+| **8** | Momentum Gauge + Ship Ultimates | HIGH | CRITICAL | None |
+| **9** | Crew Combo Abilities | MEDIUM | HIGH | Phase 8 (needs Momentum threshold) |
+| **10** | Boss Encounter System | HIGH | HIGH | Phases 8-9 (bosses should test all systems) |
+| **11** | Tutorial Integration | MEDIUM | HIGH | Phases 8-10 (tutorials explain new mechanics) |
+| **7B-E** | Ship Sprite Generation | HIGH | MEDIUM | Art pipeline (API budget) |
+
+### Recommended Implementation Order
+1. **Phase 8 (Momentum)** first — it's the backbone. Ship Ultimates give every ship class identity.
+2. **Phase 9 (Crew Combos)** next — layered on top of Momentum threshold 1. Rewards party composition.
+3. **Phase 10 (Bosses)** third — uses all existing systems (momentum, combos, elements, telegraphing).
+4. **Phase 11 (Tutorials)** last — explains everything that's been built.
+
 ### Future Expansion Opportunities (post-playtesting)
 - Elemental visual pass: distinct projectile colors/sprites per element
 - Enemy elemental resistances/weaknesses
-- Skill tree integration: elemental mastery nodes
-- Charge attacks (2-turn enemy moves with telegraphing)
-- Enemy AI personality improvements (tactical, berserker, support behaviors)
+- Skill tree integration: elemental mastery nodes + momentum mastery
+- Blue Magic equivalent: salvage enemy technology after boss kills
+- New Game+ mode: bosses appear as random encounters, momentum builds faster
+- Boss Rush mode: fight all bosses in sequence for leaderboard score
 
 ---
 
