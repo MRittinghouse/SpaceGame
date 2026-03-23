@@ -1320,7 +1320,18 @@ class Game:
                 target = next_state
 
                 def _do():
-                    self.state_manager.change_state(target)
+                    # Ensure target view exists before switching
+                    if target == GameState.TRADING:
+                        self._ensure_station_hub_view()
+                        self.state_manager.change_state(GameState.STATION_HUB)
+                    elif target == GameState.GALAXY_MAP:
+                        self.state_manager.change_state(GameState.GALAXY_MAP)
+                    elif target == GameState.STATION_HUB:
+                        self._ensure_station_hub_view()
+                        self.state_manager.change_state(GameState.STATION_HUB)
+                    else:
+                        self._ensure_view_for_state(target)
+                        self.state_manager.change_state(target)
 
                 self._start_transition(TransitionType.FADE, 0.3, _do)
 
