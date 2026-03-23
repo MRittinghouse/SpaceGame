@@ -44,6 +44,7 @@ from spacegame.models.combat import (
     EnemyShipTemplate,
 )
 from spacegame.models.momentum import ShipUltimate
+from spacegame.models.ship_build import HullShape, HullMaterial
 from spacegame.models.encounter import (
     EncounterChoice,
     EncounterDefinition,
@@ -107,6 +108,8 @@ class DataLoader:
         self.wreck_upgrades: Dict[str, "WreckUpgrade"] = {}
         self.forge_upgrades: Dict[str, "ForgeUpgrade"] = {}
         self.ship_ultimates: Dict[str, "ShipUltimate"] = {}  # category → ultimate
+        self.hull_shapes: Dict[str, "HullShape"] = {}
+        self.hull_materials: Dict[str, "HullMaterial"] = {}
 
     def _safe_load(self, loader_name: str, loader_fn) -> None:
         """Call a loader function with error handling and context.
@@ -152,6 +155,8 @@ class DataLoader:
         self._safe_load("ambient_dialogue", self.load_ambient_dialogue)
         self._safe_load("enemy_templates", self.load_enemy_templates)
         self._safe_load("ship_ultimates", self.load_ship_ultimates)
+        self._safe_load("hull_shapes", self.load_hull_shapes)
+        self._safe_load("hull_materials", self.load_hull_materials)
         self._safe_load("journal_entries", self.load_journal_entries)
         self._safe_load("encounter_definitions", self.load_encounter_definitions)
         self._safe_load("ground_equipment", self.load_ground_equipment)
@@ -1116,6 +1121,40 @@ class DataLoader:
 
         logger.info(f"Loaded {len(self.ship_ultimates)} ship ultimates")
         return self.ship_ultimates
+
+    def load_hull_shapes(self) -> Dict[str, HullShape]:
+        """Load hull shape templates from JSON."""
+        file_path = self.data_dir / "ships" / "shapes.json"
+        if not file_path.exists():
+            logger.warning(f"Shapes file not found: {file_path}")
+            return self.hull_shapes
+        with open(file_path, "r") as f:
+            data = json.load(f)
+
+        self.hull_shapes.clear()
+        for shape_data in data.get("shapes", []):
+            shape = HullShape.from_dict(shape_data)
+            self.hull_shapes[shape.id] = shape
+
+        logger.info(f"Loaded {len(self.hull_shapes)} hull shapes")
+        return self.hull_shapes
+
+    def load_hull_materials(self) -> Dict[str, HullMaterial]:
+        """Load hull material definitions from JSON."""
+        file_path = self.data_dir / "ships" / "materials.json"
+        if not file_path.exists():
+            logger.warning(f"Materials file not found: {file_path}")
+            return self.hull_materials
+        with open(file_path, "r") as f:
+            data = json.load(f)
+
+        self.hull_materials.clear()
+        for mat_data in data.get("materials", []):
+            material = HullMaterial.from_dict(mat_data)
+            self.hull_materials[material.id] = material
+
+        logger.info(f"Loaded {len(self.hull_materials)} hull materials")
+        return self.hull_materials
 
     def _parse_enemy_template(self, data: dict) -> EnemyShipTemplate:
         """Parse an enemy ship template from raw JSON data."""

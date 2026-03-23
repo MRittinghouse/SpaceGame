@@ -570,9 +570,9 @@ def build_player_combat_state(
 ) -> PlayerCombatState:
     """Build PlayerCombatState from existing game objects.
 
-    Pulls base combat stats from ShipType, equipment moves from
-    ShipUpgradeManager, crew moves from the provided mapping, and
-    skill bonuses from PlayerProgression.
+    If the ship has a ShipBuild with computed stats, those are used
+    instead of ShipType stats. Otherwise falls back to the legacy
+    ShipType + UpgradeManager path.
 
     Args:
         ship: Player's ship instance (uses current_hull/current_shields).
@@ -588,6 +588,48 @@ def build_player_combat_state(
     """
     from spacegame.models.encounter import EARLY_GAME_FLEE_BONUS, EARLY_GAME_LEVEL
 
+    # === Build-derived stats path (Shipyard Overhaul Phase A2) ===
+    # When a ShipBuild is active, use its computed stats instead of ShipType
+    from spacegame.models.ship_build import ComputedShipStats
+    cs = getattr(ship, "computed_stats", None)
+    if isinstance(cs, ComputedShipStats):
+        crew_moves: list[CombatMove] = []
+        if crew_roster:
+            for template, _state in crew_roster.get_recruited_members():
+                if template.id in crew_combat_moves:
+                    entry = crew_combat_moves[template.id]
+                    if isinstance(entry, list):
+                        crew_moves.extend(entry)
+                    else:
+                        crew_moves.append(entry)
+
+        flee_bonus = cs.flee_bonus
+        if player_level < EARLY_GAME_LEVEL:
+            flee_bonus += EARLY_GAME_FLEE_BONUS
+
+        return PlayerCombatState(
+            hull=ship.current_hull,
+            max_hull=cs.hull,
+            shields=ship.current_shields,
+            max_shields=cs.shields,
+            energy=cs.energy_pool,
+            max_energy=cs.energy_pool,
+            energy_regen=cs.energy_regen,
+            speed=cs.speed,
+            evasion=cs.evasion,
+            accuracy=cs.accuracy,
+            equipment_moves=cs.combat_moves,
+            crew_moves=crew_moves,
+            active_effects=[],
+            cooldowns={},
+            flee_bonus=flee_bonus,
+            armor=cs.armor,
+            shield_regen=cs.shield_regen,
+            defensive_identity=cs.defensive_identity or "",
+            ship_class_category=ship.ship_type.ship_class_category,
+        )
+
+    # === Legacy ShipType path (backward compat) ===
     st = ship.ship_type
 
     # Equipment moves from installed upgrades

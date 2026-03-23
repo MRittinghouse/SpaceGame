@@ -89,6 +89,11 @@ class Ship:
             self._upgrade_manager = None
         if not hasattr(self, "_crew_roster"):
             self._crew_roster = None
+        # Ship builder references (Phase A2)
+        if not hasattr(self, "_build"):
+            self._build = None
+        if not hasattr(self, "_computed_stats"):
+            self._computed_stats = None
         if self.current_fuel == 0:
             self.current_fuel = self.ship_type.fuel_capacity
         # Auto-init hull/shields from ship type if not explicitly set
@@ -110,6 +115,42 @@ class Ship:
         if self._crew_roster:
             return self._crew_roster.get_bonus(bonus_type)
         return 0.0
+
+    def set_build(self, build: "ShipBuild") -> None:
+        """Attach a ShipBuild and recompute stats.
+
+        Args:
+            build: The ship build configuration.
+        """
+        self._build = build
+        self._recompute_stats()
+
+    def _recompute_stats(self) -> None:
+        """Derive ComputedShipStats from the build. Called when build changes."""
+        if self._build:
+            from spacegame.data_loader import get_data_loader
+            from spacegame.models.ship_build import ShipStatsComputer
+            dl = get_data_loader()
+            materials = getattr(dl, "hull_materials", {})
+            equipment = getattr(dl, "upgrades", {})
+            self._computed_stats = ShipStatsComputer.compute(
+                self._build, materials, equipment,
+            )
+
+    @property
+    def build(self) -> "Optional[ShipBuild]":
+        """The ship's build configuration, if set."""
+        return self._build
+
+    @property
+    def computed_stats(self) -> "Optional[ComputedShipStats]":
+        """Computed stats from the build, if available."""
+        return self._computed_stats
+
+    @property
+    def composite(self) -> "Optional[object]":
+        """Ship composite renderer (set by view layer)."""
+        return getattr(self, "_composite", None)
 
     @property
     def name(self) -> str:
