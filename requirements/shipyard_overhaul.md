@@ -833,6 +833,380 @@ Key quest chains reward builder content:
 
 ---
 
+## Acquisition Atlas — Where Everything Comes From
+
+The core principle: **every system, every activity, and every faction should contribute something unique to the builder.** The player who only trades at Nexus Prime has a different set of parts than the player who mines at Iron Depths. Your ship tells the story of where you've been.
+
+### Drydock Capability by System
+
+Not all shipyards are created equal. Each system's drydock has a **specialty** — a category of shapes and materials it stocks that others don't. Basic shapes and starter materials are available everywhere, but the interesting stuff requires visiting the right port.
+
+| System | Drydock Specialty | Shapes Sold | Materials Sold | Equipment Focus | Weight Classes |
+|--------|------------------|-------------|----------------|-----------------|---------------|
+| **Nexus Prime** | Commerce & Luxury | Medium Rect, Arrow Point, Hull Section | Standard Plate, Composite Weave | Full catalog (all tiers, marked up 10%) | Up to Large |
+| **Stellaris Port** | Premium Engineering | Large Square, Diamond, Hull Plank | Reinforced Plate, Barrier Lattice | Luxury equipment, diplomatic modules | Up to Large |
+| **Verdant** | Agricultural & Civilian | Small shapes only (low-tech) | Light Alloy, Standard Plate | Cargo modules, fuel tanks, basic weapons | Up to Small |
+| **Haven's Rest** | Frontier Improvisation | Notch, L-Shape, T-Shape | Salvage Scrap, Composite Weave | Budget equipment, emergency thrusters | Up to Medium |
+| **Forgeworks** | Industrial & Heavy Armor | Large Triangle, Hull Section, Mega Block (L+) | Heavy Armor, Reinforced Plate | Heavy weapons, armor modules, mining drills | Up to XL |
+| **Breakstone** | Mining & Rugged | Medium Square, Hull Plank | Heavy Armor, Salvage Scrap | Mining equipment, hull repair modules | Up to Medium |
+| **Axiom Labs** | Science & Sensors | Diamond, Plus, Medium Rect | Shield Crystal, Barrier Lattice | Sensor arrays, shield generators, ECM | Up to Large |
+| **Nova Research** | Experimental Tech | Arrow Point, Large Square | Shield Crystal, Quantum Lattice (Allied) | Advanced shields, experimental weapons | Up to Large |
+| **Crimson Reach** | Stealth & Black Market | Notch, L-Shape | Stealth Composite, Crimson Steel (black market) | Evasion modules, smuggling rigs, ghost plating | Up to Medium |
+| **Iron Depths** | Deep Industrial | Hull Plank, Large Triangle | Heavy Armor, Standard Plate | Mining drills, hull repair, heavy armor mods | Up to Medium |
+| **The Fulcrum** | *No drydock* | — | — | Emergency repairs only (20 CR/HP) | — |
+
+**Key design rule**: No single system sells everything. A Juggernaut pilot needs Forgeworks or Iron Depths for Heavy Armor. A Sentinel needs Axiom Labs or Nova Research for Shield Crystal. A Ghost needs Crimson Reach for Stealth Composite. This creates TRAVEL motivation — you go to specific places because they have what you need for YOUR build.
+
+**No-reputation gate, location-gated content**: Simply docking at a system gives you access to its drydock catalog. You don't need faction reputation to buy standard shapes and materials at a system's shipyard. Reputation gates only apply to faction-exclusive content (see Faction Reputation section below). The player who scrapes together fuel money to reach Crimson Reach can immediately buy Stealth Composite — they earned it by getting there.
+
+### Equipment Module Distribution by Faction
+
+Equipment modules (weapons, defenses, utilities installed in slots) are distributed across factions. Each faction's systems stock equipment that supports certain playstyles.
+
+#### Commerce Guild Systems (Nexus Prime, Stellaris Port)
+*"Everything has a price, and we set it."*
+
+| Category | Module | Tier | Price | System | Notes |
+|----------|--------|------|-------|--------|-------|
+| Weapon | Laser Cannon | 2 | 10,000 | Both | Reliable Kinetic mainstay |
+| Weapon | Dual Laser Array | 2 | 14,000 | Both | Heavy Kinetic, high energy |
+| Weapon | Railgun | 3 | 35,000 | Stellaris only | Ultimate single-target |
+| Weapon | Trade Beam | 2 | 12,000 | Nexus only | Moderate damage, +10% credit loot on kill |
+| Defense | Reinforced Shield Gen | 2 | 5,000 | Both | Standard shield module |
+| Defense | Insurance Protocol | 2 | 9,000 | Nexus only | On death: retain 50% cargo value as credits |
+| Defense | Luxury Shield Array | 3 | 25,000 | Stellaris only | +60 shields, +6 regen. Top-tier |
+| Utility | Expanded Cargo Bay | 2 | 4,000 | Both | Guild space staple |
+| Utility | Pressurized Hold | 3 | 10,000 | Both | Large cargo capacity |
+| Utility | Trade Computer | 2 | 8,000 | Nexus only | Shows price differentials on galaxy map |
+| Utility | Diplomatic Transponder | 3 | 18,000 | Stellaris only | Reduces faction rep loss from smuggling |
+
+#### Miners' Union Systems (Forgeworks, Breakstone, Iron Depths)
+*"Built to last, built to work."*
+
+| Category | Module | Tier | Price | System | Notes |
+|----------|--------|------|-------|--------|-------|
+| Weapon | Mining Laser Retrofit | 1 | 3,000 | All Union | Starter dual-use weapon |
+| Weapon | Missile Launcher | 2 | 18,000 | Forgeworks/Breakstone | Heavy Kinetic burst |
+| Weapon | Plasma Caster | 2 | 12,000 | Forgeworks only | Burn DoT |
+| Weapon | Plasma Torpedo | 3 | 30,000 | Iron Depths only | Devastating + Burn |
+| Weapon | Flak Battery | 2 | 16,000 | Breakstone only | AoE Kinetic |
+| Defense | Reactive Armor Module | 2 | 7,000 | All Union | Hull identity staple |
+| Defense | Nano-Repair Module | 2 | 6,000 | Forgeworks only | In-combat hull restore |
+| Defense | Hull Integrity Matrix | 3 | 20,000 | Iron Depths only | +100 hull, +3 armor, Fortify ability |
+| Defense | Field Repair Rig | 2 | 10,000 | Breakstone only | -25% station repair costs |
+| Utility | Mining Drill | 1 | 3,000 | All Union | Mining capability |
+| Utility | Advanced Mining Laser | 2 | 10,000 | Breakstone/Iron Depths | Enhanced mining yield |
+| Utility | Tractor Beam | 2 | 8,000 | Forgeworks only | +20% post-combat loot |
+| Utility | Compact Refinery | 2 | 15,000 | Forgeworks only | On-board basic refining |
+
+#### Science Collective Systems (Axiom Labs, Nova Research)
+*"Knowledge is the ultimate armor."*
+
+| Category | Module | Tier | Price | System | Notes |
+|----------|--------|------|-------|--------|-------|
+| Weapon | Ion Disruptor | 2 | 15,000 | Both | Anti-shield specialist |
+| Weapon | Ion Lance | 3 | 28,000 | Nova only | Heavy shield drain |
+| Weapon | Cryo Projector | 2 | 13,000 | Axiom only | Chill stacks → Freeze |
+| Weapon | Cryo Cannon | 3 | 26,000 | Axiom only | Multi-Chill, devastating vs. evasion |
+| Weapon | Voltaic Emitter | 2 | 14,000 | Both | Suppress enemy damage |
+| Weapon | Voltaic Array | 3 | 27,000 | Nova only | AoE Suppress |
+| Defense | Shield Harmonics Unit | 3 | 10,000 | Axiom only | +5 regen, +20 shields |
+| Defense | Quantum Shield Matrix | 3 | 15,000 | Nova only | Phase Shields ability |
+| Defense | Aegis Projector | 3 | 25,000 | Axiom only | Full shield restore ultimate |
+| Defense | Ion-Hardened Coils | 2 | 5,500 | Both | Counter to Ion weapons |
+| Defense | ECM Suite | 2 | 5,000 | Both | Evasion + Chaff ability |
+| Utility | Advanced Sensors | 2 | 5,000 | Both | Accuracy + scan bonus |
+| Utility | Quantum Sensor Suite | 3 | 12,000 | Nova only | +12 accuracy |
+| Utility | Repair Drone Bay | 3 | 18,000 | Axiom only | Auto-repair 5 hull/turn |
+| Utility | Shield Drone Bay | 3 | 18,000 | Nova only | Auto-restore 5 shields/turn |
+
+#### Frontier Alliance Systems (Haven's Rest, Verdant)
+*"Make do. Make it work. Make it yours."*
+
+| Category | Module | Tier | Price | System | Notes |
+|----------|--------|------|-------|--------|-------|
+| Weapon | Pulse Emitter | 1 | 500 | Both | Starter weapon |
+| Weapon | Point Defense Array | 2 | 8,000 | Haven's Rest | Auto-fire on incoming |
+| Weapon | Salvaged Cannon | 1 | 2,500 | Haven's Rest | Cheap mid-range Kinetic |
+| Defense | Basic Shield Gen | 1 | 1,500 | Both | Starter shield |
+| Defense | Emergency Thrusters | 1 | 2,000 | Both | +15% flee |
+| Defense | Lightweight Frame Mod | 1 | 1,500 | Haven's Rest | +3 evasion, -10 hull |
+| Utility | Cargo Pod | 1 | 1,000 | Both | Starter cargo |
+| Utility | Fuel Cell | 1 | 500 | Both | Starter fuel |
+| Utility | Nav Computer | 2 | 4,000 | Verdant only | -3 fuel per jump |
+| Utility | Salvage Arm | 1 | 3,000 | Haven's Rest | Salvage capability |
+| Utility | Smuggling Rig | 2 | 6,000 | Haven's Rest | Contraband concealment |
+
+*Frontier systems are where new players gear up. Low prices, Tier 1-2 range. The breadth isn't here — but neither is the cost.*
+
+#### Crimson Reach (Independent / Black Market)
+*"We don't ask where it came from."*
+
+| Category | Module | Tier | Price | System | Notes |
+|----------|--------|------|-------|--------|-------|
+| Weapon | Voltaic Emitter | 2 | 14,000 | Standard | Suppress enemy output |
+| Weapon | Cryo Projector | 2 | 13,000 | Standard | Freeze evasion targets |
+| Weapon | Stolen Railgun | 3 | 28,000 | Black market | Cheaper than Stellaris |
+| Weapon | Disruptor Mines | 2 | 11,000 | Black market | AoE damage + energy drain |
+| Defense | Phase Shift Drive | 3 | 16,000 | Standard | 100% evasion for 1 turn |
+| Defense | Ghost Plating | 3 | 14,000 | Black market | +10 evasion, Vanish ability |
+| Defense | Quantum Blink Drive | 3 | 18,000 | Black market | Dodge all + guaranteed next hit |
+| Utility | Hidden Compartment | 2 | 6,000 | Standard | Concealed cargo |
+| Utility | Smuggling Rig | 2 | 6,000 | Standard | Contraband concealment |
+| Utility | Threat Analyzer | 2 | 12,000 | Black market | Counterstrike bonus increased |
+| Utility | Bounty Scanner | 2 | 9,000 | Black market | Shows enemy credit rewards |
+
+*Crimson Reach is the Ghost identity's home base. Stealth materials, evasion equipment, black market specials. Coming here is a statement about your playstyle.*
+
+### Mini-Game Discovery — Deep Integration
+
+Every mini-game feeds the builder. This creates a virtuous loop: you build your ship to be better at activities that unlock more parts for your ship.
+
+#### Salvaging → Shape Blueprints + Rare Material Variants
+
+**Discovery Mechanics:**
+- Base discovery chance: 5% per completed salvage run
+- +2% per Salvage skill level (max +10% at level 5)
+- +1% per deck quality tier (Good/Excellent)
+- +3% at dangerous system salvage sites (Crimson Reach, Forgeworks)
+- Marcus crew bonus: +5% additional
+
+**Discovery Table by Deck Type:**
+
+| Deck Type | Shape Discoveries | Material Discoveries |
+|-----------|------------------|---------------------|
+| **Cargo Deck** | Cargo Rack (6×3), Hull Plank (6×2) | Salvage Scrap (free restock) |
+| **Engine Deck** | Thruster Nacelle (3×5), Swept Wing (6×3) | Composite Weave (if not yet unlocked) |
+| **Lab Deck** | Sensor Dome (3×3), Organic Panel (4×3) | Shield Crystal (if not yet unlocked) |
+| **Bridge Deck** | Curved Bow (5×4), Stealth Wedge (5×2) | Phase Alloy (rare, 2% within the discovery roll) |
+| **Any Deck** | Basic shapes (duplicates give 200 CR scrap value) | Salvage Scrap (free restock) |
+
+**Salvage-Exclusive Content (ONLY found by salvaging):**
+- Swept Wing shape — sleek aerodynamic form, the salvager's signature
+- Thruster Nacelle shape — efficient engine housing, pre-cut mounting channels
+- Derelict Plating material variant — Salvage Scrap with +0.03 armor/px ("battle-tested junk")
+
+#### Mining → Material Discovery + Rare Shapes
+
+**Discovery Mechanics:**
+- Only triggers at depth layer 3+ (Deep Veins and below)
+- Base discovery chance: 3% per mining field
+- +2% per Mining skill level
+- +5% at Abyssal Vein depth (layer 5)
+- System-specific discoveries
+
+**Discovery Table by System:**
+
+| System | Shape Discoveries | Material Discoveries |
+|--------|------------------|---------------------|
+| **Breakstone** | Union Girder (bypasses rep gate) | Heavy Armor (if not yet purchased) |
+| **Iron Depths** | Reinforced Bulkhead (4×4), Armored Prow (5×5) | Nano-Fiber Hull (rare, bypasses rep gate) |
+
+**Mining-Exclusive Content (ONLY found by mining):**
+- Reinforced Bulkhead shape — dense, thick, the miner's signature hull piece
+- Armored Prow shape — massive battering ram bow
+- Crystal Vein material variant — Shield Crystal with +0.02 regen/px ("naturally resonant ore")
+
+*Mining is the Juggernaut's discovery path. Heavy shapes, heavy materials, deep investment in the hull identity.*
+
+#### Refining → Material Mastery + Unique Shapes
+
+**Mastery rewards by recipe category:**
+
+| Recipe Category | Bronze Mastery | Silver Mastery | Gold Mastery |
+|----------------|---------------|----------------|-------------|
+| **Metal Refining** | -10% Heavy Armor cost/px | Reinforced Plate unlock (if not purchased) | **Armored Hull Plank** shape (8×2, extra thick) |
+| **Crystal Processing** | -10% Shield Crystal cost/px | Barrier Lattice unlock (if not purchased) | **Resonant Panel** shape (3×3, built-in +shield regen) |
+| **Chemical Synthesis** | -10% Composite Weave cost/px | Stealth Composite unlock (if not purchased) | **Cargo Rack** shape (6×3) |
+| **Advanced Recipes** | -10% on all Tier 3 materials | Unlock corresponding advanced material | **Prototype Module** shape (4×4, +5% to any installed module stat) |
+
+**Refining-Exclusive Content:**
+- Armored Hull Plank shape (Gold Metal mastery)
+- Resonant Panel shape (Gold Crystal mastery)
+- Prototype Module shape (Gold Advanced mastery)
+- Permanent material cost discounts (Bronze mastery, stacking with faction discounts)
+
+*Refining is the long game. Mastery takes time, but the rewards compound — cheaper builds and exclusive shapes that no shop sells.*
+
+#### Combat → Trophy Salvage
+
+**New mechanic: notable enemies drop usable ship parts.**
+
+| Enemy Type | Drop Chance | Possible Drops |
+|-----------|------------|---------------|
+| Regular enemies | 3% | Basic shape (duplicate = 100-500 CR scrap) |
+| Elite enemies | 8% | Intermediate shapes |
+| Boss enemies | **100%** (first kill) | Unique trophy (see below) |
+
+**Boss Trophy Drops:**
+
+| Boss | Trophy | Type | Description |
+|------|--------|------|-------------|
+| The Corsair King | **Pirate Cutlass Fin** (5×2, angled) | Shape | *"Torn from the King's own hull. Still has scorch marks."* |
+| Guild Arbiter | **Corporate Bulwark** (4×4, built-in +5% DR) | Shape | *"Guild-stamped armor. Legal ownership is... complicated."* |
+| The Iron Maw | **Forgeborn Steel** (3.5 hull, 0.07 armor, 1.3 wt) | Material | *"Metal from the Maw's heart. It doesn't bend."* |
+| Ledger Phantom | **Phantom Shroud** (5×3, built-in +8 evasion) | Shape | *"The Phantom's cloak. Still shimmers at the edges."* |
+| The Collector | **Collector's Crest** (3×3, +10% credit loot) | Shape | *"They collected everything. Now you've collected them."* |
+| Void Leviathan | **Void Chitin** (2.5 hull, 0.3 shield, 0.1 evasion) | Material | *"Peeled from something that shouldn't exist."* |
+| Rogue AI Vessel | **AI Logic Core** (2×2, +8 accuracy, +3 energy) | Shape | *"It still hums. Don't think about it too hard."* |
+
+*Boss trophies are the rarest and most powerful builder content in the game. Each one is a statement piece — visible on the ship, mechanically impactful, and earned through the hardest fights.*
+
+#### Ground Exploration → Rare Finds
+
+Ground exploration missions can uncover builder blueprints in the field:
+
+| Ground Map | Discovery | Chance | Notes |
+|-----------|-----------|--------|-------|
+| Forgeworks Industrial Complex | Union Plating shape | 8% per run | Found in the restricted forge area |
+| Axiom Labs Research Wing | Collective Ring shape | 8% per run | Found in sealed laboratory |
+| Crimson Reach Underbelly | Stealth Wedge shape | 8% per run | Found in smuggler's cache |
+| Iron Depths Caverns | Armored Prow shape | 8% per run | Found in ancient mining ruin |
+| The Fulcrum Assembly | **Experimental Hull Fragment** (6×4, +3 energy) | 100% | Campaign Act One reward |
+
+#### Trading → Economic Unlocks
+
+Profitable trading unlocks builder content through **Trade Milestones**:
+
+| Milestone | Requirement | Reward |
+|-----------|------------|--------|
+| First Profit | Any profitable sale | Basic shapes tutorial reminder |
+| Merchant | 10,000 CR cumulative profit | Trade Computer available at Nexus |
+| Trader | 50,000 CR cumulative profit | Medium weight class 20% discount |
+| Magnate | 100,000 CR cumulative profit | Hull Section shape (8×2) free |
+| Tycoon | 250,000 CR cumulative profit | Cargo Rack shape free |
+| Baron | 500,000 CR cumulative profit | Large weight class 15% discount |
+| Mogul | 1,000,000 CR cumulative profit | **Merchant's Keel** shape (6×4, +15 cargo when placed) |
+
+*Trading doesn't give combat-focused rewards. It gives economic advantages — discounts, cargo shapes, efficiency. The trader's ship isn't the meanest; it's the most profitable.*
+
+### Faction Reputation — Full Unlock Paths
+
+Each faction has a tiered unlock path. Reputation gates the exclusive content; location access (just docking there) gates the standard catalog.
+
+#### Commerce Guild (Nexus Prime, Stellaris Port)
+
+| Rep Level | Threshold | Unlocks |
+|-----------|-----------|---------|
+| Neutral | 0 | Standard catalog at Guild drydocks |
+| Acquainted | 10 | 5% drydock discount |
+| Friendly | 25 | **Guild Prow** shape (4×3, golden accent) + Trade Computer equipment + 10% drydock discount |
+| Trusted | 40 | **Ablative Plating** material available for purchase + Diplomatic Transponder + 15% discount |
+| Allied | 50 | **Guild Stern** shape (5×3, elegant engine) + Ablative Plating at -20% + Luxury Shield Array + Guild Exclusive preset |
+
+#### Miners' Union (Forgeworks, Breakstone, Iron Depths)
+
+| Rep Level | Threshold | Unlocks |
+|-----------|-----------|---------|
+| Neutral | 0 | Standard catalog at Union drydocks |
+| Acquainted | 10 | 5% repair discount at Union stations |
+| Friendly | 25 | **Union Girder** shape (6×2, riveted) + Hull Integrity Matrix + 10% repair discount |
+| Trusted | 40 | **Nano-Fiber Hull** material available + Compact Refinery + 15% repair discount |
+| Allied | 50 | **Union Plating** shape (4×4, interlocking) + Nano-Fiber at -20% + XL weight class 25% discount at Forgeworks |
+
+#### Science Collective (Axiom Labs, Nova Research)
+
+| Rep Level | Threshold | Unlocks |
+|-----------|-----------|---------|
+| Neutral | 0 | Standard catalog at Collective drydocks |
+| Acquainted | 10 | 5% discount on science equipment |
+| Friendly | 25 | **Collective Arc** shape (4×4, precise curves) + Quantum Shield Matrix + 10% equipment discount |
+| Trusted | 40 | **Quantum Lattice** material available + Shield Drone Bay + free Quantum Sensors upgrade |
+| Allied | 50 | **Collective Ring** shape (5×5, sensor array) + Quantum Lattice at -20% + Aegis Projector + Sensor Dome shape free |
+
+#### Frontier Alliance (Haven's Rest, Verdant)
+
+| Rep Level | Threshold | Unlocks |
+|-----------|-----------|---------|
+| Neutral | 0 | Standard catalog at Alliance drydocks |
+| Acquainted | 10 | 5% fuel discount at Alliance stations |
+| Friendly | 25 | **Alliance Fin** shape (3×4, organic curves) + Salvage Suite + 10% fuel + construction discount |
+| Trusted | 40 | **Bio-Hull** material available + Phase Shift Drive at Haven's Rest + 15% all discounts |
+| Allied | 50 | **Alliance Canopy** shape (3×3, bioluminescent) + Bio-Hull at -20% + Ghost Plating at Haven's Rest (no black market needed) + Hidden Compartment shape free |
+
+#### Crimson Reach (No formal faction — progression through activities)
+
+| Unlock Tier | Requirement | Content |
+|-------------|------------|---------|
+| Docked | Arrive at Crimson Reach | Stealth Composite material, standard evasion equipment |
+| Black Market | Criminal heat > 0 OR smuggling quest | Black market equipment catalog (Ghost Plating, Stolen Railgun, etc.) |
+| Smuggler's Trust | Complete 3 smuggling runs | **Crimson Steel** material available |
+| Wrecker's Guild | Complete "Wrecker's Initiation" quest | Disruptor Mines, Quantum Blink Drive, Threat Analyzer |
+| Inner Circle | Complete "The Wrecker's Debt" chain | **Void Glass** material, unique Phantom Shroud preset |
+
+### Crew Integration — Builder Bonuses
+
+| Crew Member | Role | Passive Builder Bonus | Discovery Bonus | Recruitment Reward |
+|-------------|------|----------------------|-----------------|-------------------|
+| **Marcus** | Engineer | -10% construction cost at all drydocks | +5% salvage shape discovery | Repair Drone Bay 20% cheaper |
+| **Priya** | Navigator | Sensor equipment: +15% stat bonus | +3% discovery chance in ANY activity | Nav Computer unlocked free |
+| **Elena** | Medic | Bio-Hull regen +50% effectiveness | +2% ground exploration discovery | Crew Quarters 20% cheaper |
+| **Tomas** | Smuggler | Hidden Compartment shape unlocked | +5% mining material discovery | Smuggling Rig free, Crimson Reach black market (no heat needed) |
+
+**Crew Quest Rewards (personal quest chain completions):**
+
+| Quest Chain | Reward Shape | Effect |
+|------------|-------------|--------|
+| Marcus's Engineering Legacy | **Marcus's Masterwork** (4×4) | +auto-repair 3 hull/turn when placed |
+| Priya's Star Chart | **Astrogation Module** (2×2) | -2 fuel per jump when placed |
+| Elena's Research | **Medical Bay Module** (3×2) | Crew abilities cost -1 energy in combat |
+| Tomas's Past | **Tomas's Getaway Kit** (3×3) | +20% flee chance when placed, stealth design |
+
+*Crew shapes are among the most powerful in the game — built-in stat bonuses that no other shape has. But they require completing personal quest chains, real investment in your crew relationships.*
+
+### Quest & Event Rewards — Complete Map
+
+| Source | Reward | Type |
+|--------|--------|------|
+| Tutorial completion | Basic shapes palette + Standard Cockpit + starter kit | Shapes + Equipment |
+| "The Phantom's Wake" side quest | Phase Alloy material + Curved Bow shape | Material + Shape |
+| "The Collector's Debt" side quest | Void Glass material + Collector's Crest trophy | Material + Shape |
+| "Ghost Ship" side quest | Stealth Wedge shape + Ghost Plating equipment | Shape + Equipment |
+| "The Bounty Board" side quest | Pirate Cutlass Fin trophy shape | Shape |
+| "Wrecker's Initiation" (Crimson Reach) | Black market equipment access | Equipment |
+| "The Wrecker's Debt" (Crimson Reach chain) | Void Glass material + Phantom preset | Material + Preset |
+| Campaign: Corsair King defeated | Pirate Cutlass Fin + Forgeborn Steel | Shape + Material |
+| Campaign: Guild Arbiter defeated | Corporate Bulwark trophy shape | Shape |
+| Campaign: The Iron Maw defeated | Forgeborn Steel trophy material | Material |
+| Campaign: Ledger Phantom defeated | Phantom Shroud trophy shape | Shape |
+| Campaign: Act One complete | XL weight class unlock + Experimental Hull Fragment | Weight Class + Shape |
+| Marcus crew quest complete | Marcus's Masterwork shape | Shape |
+| Priya crew quest complete | Astrogation Module shape | Shape |
+| Elena crew quest complete | Medical Bay Module shape | Shape |
+| Tomas crew quest complete | Tomas's Getaway Kit shape | Shape |
+| 62 achievements (completionist) | **Aurelia's Mark** (3×3, golden glow, +1 all stats) | Shape |
+
+### Skill Tree Bonuses for the Builder
+
+| Skill | Tree | Builder Effect |
+|-------|------|---------------|
+| Hull Reinforcement | Combat | +5% hull per level from hull materials |
+| Shield Mastery | Combat | +10% shield effectiveness from shield materials |
+| Evasive Maneuvers | Combat | +5% evasion per level from evasion materials |
+| Armor Expertise (Wave 3) | Combat | +1 armor per level (added to material armor sum) |
+| Shield Regen (Wave 3) | Combat | +2 shield regen/turn per level |
+| Afterburner (Wave 3) | Combat | +5 evasion per level |
+| Field Repairs (Wave 3) | Combat | -15% repair costs per level |
+| Salvage Expert | Exploration | +3% salvage shape discovery per level |
+| Deep Mining | Exploration | +2% mining material discovery per level |
+| Refining Mastery | Exploration | Faster mastery progression |
+| Negotiation | Social | -5% drydock construction cost per level |
+| Black Market Access | Social | Crimson Reach black market (no heat required) |
+
+### Content Totals (Final)
+
+| Content Type | Count | Acquisition Breakdown |
+|-------------|-------|----------------------|
+| **Shapes** | **~55** | Free (9) + Purchase (12) + Salvage-exclusive (3) + Mining-exclusive (3) + Refining-exclusive (3) + Quest (9) + Faction rep (8) + Boss trophy (7) + Crew quest (4) + Trading milestone (1) + Ground exploration (4) + Completionist (1) |
+| **Materials** | **16** | Free (3) + Location-gated purchase (7) + Faction Allied (4) + Boss trophy (2) + Quest (2) + Mini-game variant (3) |
+| **Equipment Modules** | **~85** | Distributed across 10 systems by faction, some faction-rep gated, some quest-gated, some black-market only |
+| **Weight Classes** | **5** | Free (Tiny) + Credits (Small/Medium/Large/XL) + Campaign alternate path (XL) |
+| **Presets** | **24+ system + 10 player** | Legacy ships + faction exclusives + player-saved |
+
+**Total unique builder content: ~160+ items**, each with a specific source that ties it to a place, an activity, a faction, or a story moment in the game world.
+
+---
+
 ## Tutorial Design
 
 The builder is the most complex UI in the game. It needs excellent onboarding.
@@ -1068,21 +1442,44 @@ Player sees their ship auto-converted to a preset build that matches their old s
 10. Verify all existing VFX work with composite (shields, damage sparks, destruction)
 11. Size-appropriate rendering for each weight class (tiny→XL visual scaling)
 
-### Phase D: Content & Discovery (MEDIUM effort)
+### Phase D: Content Catalog & System Distribution (HIGH effort)
 
-**Goal:** Full shape/material catalog with progression unlocks.
+**Goal:** Full shape/material/equipment catalog, distributed across systems per the Acquisition Atlas.
 
-1. Create all ~40 shapes with pixel masks in JSON
-2. Balance all 14 materials (stat values, weights, costs)
-3. Create all 24 legacy presets (matching old ShipType stats within 10%)
-4. Wire salvage discovery: shape blueprints from derelict salvage runs
-5. Wire mining discovery: materials and shapes from deep mining
-6. Wire refining mastery: material discounts and shape unlocks
-7. Wire faction reputation: faction shapes and materials
-8. Wire quest rewards: specific shapes/materials from quest completions
-9. Wire crew bonuses: builder-relevant passive bonuses
-10. Create discovery popup UI (shape/material found notification)
-11. Create shape/material collection screen (gallery of unlocked content)
+**Shapes & Materials:**
+1. Create all ~55 shapes with pixel masks in `data/ships/shapes.json`
+2. Balance all 16 materials in `data/ships/materials.json`
+3. Create all 24 legacy presets in `data/ships/presets.json`
+4. Assign drydock-specific shape/material catalogs per system (Acquisition Atlas mapping)
+5. Assign weight class availability per system drydock
+
+**Equipment Distribution:**
+6. Redistribute all ~85 equipment modules across faction systems (per Equipment Distribution tables)
+7. Mark system-exclusive equipment (e.g., Trade Beam = Nexus only, Cryo Cannon = Axiom only)
+8. Mark black-market-only equipment for Crimson Reach
+9. Update shipyard view to filter equipment by current system's catalog
+
+**Discovery Wiring:**
+10. Wire salvage discovery: deck-type-specific shape/material drops with skill scaling
+11. Wire mining discovery: system-specific deep-layer discoveries
+12. Wire refining mastery: Bronze/Silver/Gold tier unlocks per recipe category
+13. Wire combat trophy drops: boss-guaranteed + elite/regular chance drops
+14. Wire ground exploration: map-specific blueprint finds
+15. Wire trading milestones: cumulative profit → economic unlocks
+16. Wire faction reputation: 5-tier unlock paths per faction (Neutral→Allied)
+17. Wire crew bonuses: passive builder discounts + discovery chance boosts
+18. Wire crew quest rewards: unique shapes from companion quest chains
+
+**UI:**
+19. Create discovery popup UI (shape/material/equipment found notification with flavor text)
+20. Create collection gallery screen (shapes, materials, trophies — shows locked items with unlock hints)
+21. Create trade milestone tracker (accessible from stats or shipyard)
+
+**Testing:**
+22. Test each discovery path fires correctly (salvage, mining, refining, combat, ground, trading)
+23. Test faction unlock progression across all 4 factions + Crimson Reach
+24. Test system-specific equipment availability (can't buy Axiom-only gear at Haven's Rest)
+25. Verify all presets produce stats within 10% of original ShipType values
 
 ### Phase E: Builder Polish & UX (MEDIUM effort)
 
