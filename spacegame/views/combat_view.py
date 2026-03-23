@@ -595,6 +595,10 @@ class CombatView(BaseView):
             self._handle_key(event)
 
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            # Click anywhere to continue from combat over
+            if self.phase == CombatPhase.COMBAT_OVER:
+                self._on_continue_pressed()
+                return
             self._handle_click(event.pos)
 
         if event.type == pygame.MOUSEMOTION:
@@ -602,10 +606,11 @@ class CombatView(BaseView):
 
     def _handle_key(self, event: pygame.event.Event) -> None:
         """Handle keyboard shortcuts."""
-        # Enter/Return: continue from combat over screen
+        # Enter/Return/Space: continue from combat over screen
         if self.phase == CombatPhase.COMBAT_OVER and event.key in (
             pygame.K_RETURN,
             pygame.K_KP_ENTER,
+            pygame.K_SPACE,
         ):
             self._on_continue_pressed()
             return

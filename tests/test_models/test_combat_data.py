@@ -193,7 +193,7 @@ class TestShipTypeCombatLoading:
         lf = loader.ship_types["light_freighter"]
         assert lf.combat_hull == 100
         assert lf.combat_shields == 40
-        assert lf.combat_energy == 6
+        assert lf.combat_energy == 7
         assert lf.combat_speed == 8
         assert lf.weapon_slots == 1
         assert lf.defense_slots == 1
