@@ -84,7 +84,7 @@ SYSTEM_LAYOUT_MAP: dict[str, str] = {
 
 # HUD height for layout area calculation
 _HUD_H = scale_y(HUD_BASE_HEIGHT)
-_LAYOUT_TOP = scale_y(75)  # Below compact header
+_LAYOUT_TOP = scale_y(125)  # Below header card (HEADER_CARD_Y=10 + HEADER_CARD_H=105 + margin)
 _LAYOUT_BOTTOM = WINDOW_HEIGHT - _HUD_H - scale_y(90)  # Above chatter + HUD
 _LAYOUT_H = _LAYOUT_BOTTOM - _LAYOUT_TOP
 

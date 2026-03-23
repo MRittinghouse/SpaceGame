@@ -534,8 +534,7 @@ class StationHubView(BaseView):
         if self._detail_location:
             self._render_detail_panel(screen)
 
-        # Status bar: credits + hull + shields
-        self._render_status_bar(screen)
+        # Status bar removed — HUD bar now handles credits, hull, shields, fuel
 
     def _render_denied(self, screen: pygame.Surface) -> None:
         """Render docking denial overlay."""
