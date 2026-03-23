@@ -3463,6 +3463,13 @@ class Game:
             self._tutorial_overlay.show_hint(hint_id)
             return
 
+        # Combat-specific contextual hints (Phase 11)
+        if current_state == GameState.COMBAT:
+            combat_hint = self._get_combat_tutorial_hint()
+            if combat_hint and self.tutorial_manager.should_show_hint(combat_hint):
+                self._tutorial_overlay.show_hint(combat_hint)
+                return
+
         # --- 5-step tutorial (only when tutorial is active) ---
         if not self.tutorial_manager.active or self.tutorial_manager.completed:
             return
@@ -3490,6 +3497,50 @@ class Game:
         if trigger and self.tutorial_manager.should_show_step(trigger):
             self.tutorial_manager.start_step()
             self._tutorial_overlay.show()
+
+    def _get_combat_tutorial_hint(self) -> Optional[str]:
+        """Determine which combat tutorial hint to show, if any.
+
+        Checks combat state for first-time triggers: boss encounter,
+        momentum threshold, elemental status, defensive identity.
+
+        Returns:
+            Hint ID string or None.
+        """
+        combat_view = self.state_manager.get_view(GameState.COMBAT)
+        if combat_view is None or not hasattr(combat_view, "engine"):
+            return None
+
+        try:
+            state = combat_view.engine.get_state()
+        except Exception:
+            return None
+
+        # Boss encounter (first time)
+        if any(e.template.is_boss for e in state.enemies if e.is_alive):
+            return "combat_boss"
+
+        player = state.player
+
+        # Defensive identity (first time a player has one)
+        if player.defensive_identity:
+            return "combat_defensive_identity"
+
+        # Momentum gauge (first time momentum > 0)
+        if player.momentum and player.momentum.current > 0:
+            if player.momentum.ultimate_available:
+                return "combat_ultimate"
+            if player.momentum.current >= 0.25:
+                return "combat_crew_combo"
+            return "combat_momentum"
+
+        # Elemental effects (first time an enemy has burn/chill/suppressed)
+        for enemy in state.enemies:
+            for eff, _ in enemy.active_effects:
+                if eff.type.value in ("burn", "chill", "suppressed"):
+                    return "combat_elemental"
+
+        return None
 
     def _check_day_advance(self) -> None:
         """Check if game day advanced and trigger market event generation.

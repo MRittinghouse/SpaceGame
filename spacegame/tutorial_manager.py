@@ -108,6 +108,82 @@ MINIGAME_HINTS: dict[str, dict[str, str]] = {
             "Refined goods sell for much more than raw materials!"
         ),
     },
+    # === Combat System Tutorials (Phase 11) ===
+    "combat_momentum": {
+        "title": "Momentum Gauge",
+        "description": (
+            "Your Momentum gauge builds as you fight. Dealing damage, "
+            "taking hits, using crew abilities, and applying elemental "
+            "effects all build Momentum.\n\n"
+            "At key thresholds, powerful abilities unlock:\n"
+            "25% — Crew Combos available\n"
+            "50% — Overdriven Weapon (2x damage)\n"
+            "75% — System Overclock (+3 energy regen)\n"
+            "100% — Ship Ultimate (unique per ship class)\n\n"
+            "Watch the Momentum bar on the left!"
+        ),
+    },
+    "combat_crew_combo": {
+        "title": "Crew Combo Unlocked!",
+        "description": (
+            "When two specific crew members are recruited and your "
+            "Momentum reaches 25%, Crew Combos unlock!\n\n"
+            "Combos are more powerful than individual crew abilities. "
+            "Look for the gold COMBO button in the crew row.\n\n"
+            "Using a combo replaces your crew ability for that turn. "
+            "Each pair of companions has a unique combo."
+        ),
+    },
+    "combat_ultimate": {
+        "title": "Ship Ultimate Ready!",
+        "description": (
+            "Your Momentum has reached 100%! Your ship's unique "
+            "Ultimate ability is now available.\n\n"
+            "Press [U] or click the gold ULTIMATE button to activate. "
+            "Ultimates are devastating one-shot abilities — each ship "
+            "class has a different one.\n\n"
+            "Using the Ultimate resets your Momentum to zero."
+        ),
+    },
+    "combat_boss": {
+        "title": "Boss Encounter!",
+        "description": (
+            "This is a powerful boss enemy with far more health than "
+            "normal foes. Watch for PHASE CHANGES as their health "
+            "drops.\n\n"
+            "Boss enemies change tactics at health thresholds — they "
+            "may become more aggressive, call reinforcements, or "
+            "unleash devastating attacks.\n\n"
+            "Read the telegraphs carefully. Bosses are immune to "
+            "Freeze and resist Suppression."
+        ),
+    },
+    "combat_elemental": {
+        "title": "Elemental Effects",
+        "description": (
+            "Your weapon applied an elemental status effect! Elements "
+            "stack across turns for increasing power:\n\n"
+            "Plasma — BURN: Damage over time (3 turns, stacks to 3)\n"
+            "Cryo — CHILL: Reduces evasion. At 3 stacks: FROZEN!\n"
+            "Voltaic — SUPPRESS: Reduces enemy damage output\n"
+            "Ion — Bonus shield damage (150%), weak vs hull\n\n"
+            "Kinetic deals the highest raw damage but has no effect."
+        ),
+    },
+    "combat_defensive_identity": {
+        "title": "Defensive Identity",
+        "description": (
+            "Your ship has a defensive identity that grants passive "
+            "combat bonuses:\n\n"
+            "JUGGERNAUT (Hull) — Armor reduces incoming damage. "
+            "Last Stand activates below 25% hull.\n"
+            "SENTINEL (Shield) — Shields regenerate each turn. "
+            "Shield Break leaves you briefly vulnerable.\n"
+            "GHOST (Evasion) — Dodge attacks to build Counterstrike "
+            "damage. Light frame means hits hurt more.\n\n"
+            "Your identity is shown on the left combat panel."
+        ),
+    },
 }
 
 
