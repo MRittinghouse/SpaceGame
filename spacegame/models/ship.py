@@ -31,6 +31,10 @@ class ShipType:
     availability: str  # common, uncommon, rare
     # Ship class category for momentum ultimates
     ship_class_category: str = ""
+    # Defensive identity (Phase 12A)
+    defensive_identity: str = ""  # "juggernaut", "sentinel", "ghost", or ""
+    combat_armor: int = 0
+    combat_shield_regen: int = 0
     # Combat stats (default 0 for backward compat)
     combat_hull: int = 0
     combat_shields: int = 0

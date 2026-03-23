@@ -218,6 +218,7 @@ class EnemyShipTemplate:
     bribe_cost: int = 0
     credit_reward: int = 0
     rare_loot: list[dict] = field(default_factory=list)
+    combat_armor: int = 0
 
 
 @dataclass
@@ -351,6 +352,13 @@ class PlayerCombatState:
     active_effects: list[tuple[CombatEffect, int]]
     cooldowns: dict[str, int]
     flee_bonus: int = 0
+    # Defensive identity system (Phase 12A)
+    armor: int = 0
+    shield_regen: int = 0
+    defensive_identity: str = ""  # "juggernaut", "sentinel", "ghost", or ""
+    counterstrike_stacks: int = 0
+    shield_break_vulnerable: bool = False
+    evasion_decay: int = 0  # Temporary evasion penalty after being hit
     # Momentum system (Phase 8)
     ship_class_category: str = ""
     momentum: "MomentumGauge | None" = field(default=None, repr=False)
@@ -542,5 +550,8 @@ def build_player_combat_state(
         active_effects=[],
         cooldowns={},
         flee_bonus=flee_bonus,
+        armor=st.combat_armor,
+        shield_regen=st.combat_shield_regen,
+        defensive_identity=st.defensive_identity,
         ship_class_category=st.ship_class_category,
     )

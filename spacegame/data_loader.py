@@ -304,6 +304,9 @@ class DataLoader:
             name=data["name"],
             ship_class=data["class"],
             ship_class_category=data.get("ship_class_category", ""),
+            defensive_identity=data.get("defensive_identity", ""),
+            combat_armor=data.get("combat_armor", 0),
+            combat_shield_regen=data.get("combat_shield_regen", 0),
             description=data["description"],
             cargo_capacity=data["cargo_capacity"],
             fuel_capacity=data["fuel_capacity"],
@@ -1140,6 +1143,7 @@ class DataLoader:
             bribe_cost=data.get("bribe_cost", 0),
             credit_reward=data.get("credit_reward", 0),
             rare_loot=data.get("rare_loot", []),
+            combat_armor=data.get("combat_armor", 0),
         )
 
     def _parse_combat_move(self, data: dict) -> CombatMove:

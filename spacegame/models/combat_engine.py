@@ -608,9 +608,22 @@ class CombatEngine:
         logs: list[CombatLogEntry] = []
 
         # Tick player effects
-        messages = self._state.player.tick_effects()
-        self._state.player.tick_cooldowns()
-        self._state.player.regenerate_energy()
+        player = self._state.player
+        messages = player.tick_effects()
+        player.tick_cooldowns()
+        player.regenerate_energy()
+
+        # Passive shield regen (Phase 12A)
+        if player.shield_regen > 0 and player.shields < player.max_shields:
+            regen = min(player.shield_regen, player.max_shields - player.shields)
+            player.shields += regen
+            messages.append(f"Shield regen: +{regen}")
+
+        # Reset evasion decay (Phase 12A — penalty clears each round)
+        player.evasion_decay = 0
+
+        # Reset shield break vulnerability (lasts 1 turn)
+        player.shield_break_vulnerable = False
 
         # Tick enemy effects
         for enemy in self._state.enemies:
@@ -659,18 +672,49 @@ class CombatEngine:
 
         # Resolve offensive effects (require hit roll)
         if offensive_effects:
-            defender_evasion = (
-                defender.get_effective_evasion()
-                if hasattr(defender, "get_effective_evasion")
-                else 0
-            )
-            hit_chance = max(HIT_CHANCE_MIN, min(HIT_CHANCE_MAX,
-                attacker_accuracy + move.accuracy_modifier - defender_evasion - accuracy_penalty
-            ))
-            roll = self._rng.randint(1, 100)
-            hit = roll <= hit_chance
+            is_player_attack = actor_name == "player" or actor_name.startswith("crew:")
 
-            if hit:
+            # AoE moves always hit — skip evasion roll entirely
+            if move.aoe:
+                hit = True
+                graze = False
+                roll = 0
+                hit_chance = 100
+            else:
+                # Evasion with diminishing returns above 50
+                raw_evasion = (
+                    defender.get_effective_evasion()
+                    if hasattr(defender, "get_effective_evasion")
+                    else 0
+                )
+                # Apply evasion decay (temporary penalty after being hit)
+                if isinstance(defender, PlayerCombatState):
+                    raw_evasion = max(0, raw_evasion - defender.evasion_decay)
+                effective_evasion = raw_evasion
+                if effective_evasion > 50:
+                    effective_evasion = 50 + int((effective_evasion - 50) * 0.5)
+
+                hit_chance = max(HIT_CHANCE_MIN, min(HIT_CHANCE_MAX,
+                    attacker_accuracy + move.accuracy_modifier - effective_evasion - accuracy_penalty
+                ))
+                roll = self._rng.randint(1, 100)
+                hit = roll <= hit_chance
+                graze = False
+
+                # Graze system: miss by ≤10 → 30% damage
+                if not hit:
+                    miss_margin = roll - hit_chance
+                    if miss_margin <= 10:
+                        graze = True
+                    else:
+                        # Clean miss — Ghost Counterstrike
+                        if (isinstance(defender, PlayerCombatState)
+                                and defender.defensive_identity == "ghost"):
+                            defender.counterstrike_stacks = min(
+                                defender.counterstrike_stacks + 1, 3
+                            )
+
+            if hit or graze:
                 # Track if enemy was alive before applying effects
                 enemy_was_alive = (
                     defender.is_alive
@@ -678,18 +722,34 @@ class CombatEngine:
                     else True
                 )
 
+                # Apply effects with graze damage multiplier
                 msgs = self._apply_effects(
                     offensive_effects, defender, actor_name,
                     attacker_state=attacker, element=move.element,
+                    damage_multiplier=0.30 if graze else 1.0,
                 )
                 effects_applied.extend(msgs)
 
+                if graze:
+                    effects_applied.append(f"GRAZE (rolled {roll} vs {hit_chance}%)")
+
+                # Identity passives on being hit
+                if not is_player_attack and isinstance(defender, PlayerCombatState):
+                    # Evasion decay: -5 evasion for 1 turn after being hit
+                    defender.evasion_decay = 5
+                    # Ghost Counterstrike resets on being hit
+                    if defender.defensive_identity == "ghost":
+                        defender.counterstrike_stacks = 0
+                    # Sentinel Shield Break detection
+                    if (defender.defensive_identity == "sentinel"
+                            and defender.shields == 0
+                            and not defender.shield_break_vulnerable):
+                        defender.shield_break_vulnerable = True
+
                 # Momentum: player dealt a hit
-                is_player_attack = actor_name == "player" or actor_name.startswith("crew:")
                 if is_player_attack and isinstance(defender, EnemyShip):
                     momentum_msgs = self._add_player_momentum(MOMENTUM_ON_HIT, "hit")
                     effects_applied.extend(momentum_msgs)
-                    # Check if this hit killed the enemy
                     if enemy_was_alive and not defender.is_alive:
                         kill_msgs = self._add_player_momentum(MOMENTUM_ON_KILL, "kill")
                         effects_applied.extend(kill_msgs)
@@ -698,7 +758,6 @@ class CombatEngine:
                 if not is_player_attack and isinstance(defender, PlayerCombatState):
                     hull_msgs = self._add_player_momentum(MOMENTUM_ON_HULL_DAMAGE, "took damage")
                     effects_applied.extend(hull_msgs)
-                    # Check critical HP surge
                     crit_msgs = self._check_critical_hp_surge()
                     effects_applied.extend(crit_msgs)
             else:
@@ -748,6 +807,7 @@ class CombatEngine:
         source_name: str,
         attacker_state: Optional[PlayerCombatState | EnemyShip] = None,
         element: Optional["WeaponElement"] = None,
+        damage_multiplier: float = 1.0,
     ) -> list[str]:
         """Apply a list of effects to a target.
 
@@ -819,6 +879,33 @@ class CombatEngine:
                     raw *= 1.0 + damage_boost_pct / 100.0
                 if suppressed_reduction > 0:
                     raw *= 1.0 - suppressed_reduction
+
+                # Graze multiplier (0.30 for near-miss, 1.0 for full hit)
+                raw *= damage_multiplier
+
+                # Attacker identity bonuses
+                if isinstance(atk, PlayerCombatState):
+                    # Juggernaut Last Stand: +15% damage below 25% hull
+                    if (atk.defensive_identity == "juggernaut"
+                            and atk.hull_ratio < 0.25):
+                        raw *= 1.15
+                    # Ghost Counterstrike: +10% per stack
+                    if (atk.defensive_identity == "ghost"
+                            and atk.counterstrike_stacks > 0):
+                        raw *= 1.0 + 0.10 * atk.counterstrike_stacks
+
+                # Defender identity modifiers
+                if isinstance(target, PlayerCombatState):
+                    # Ghost Light Frame Vulnerability: +15% incoming damage
+                    if target.defensive_identity == "ghost":
+                        raw *= 1.15
+                    # Juggernaut Structural Integrity: -5% DR when hull > 75%
+                    if (target.defensive_identity == "juggernaut"
+                            and target.hull_ratio > 0.75):
+                        damage_reduction = min(0.9, damage_reduction + 0.05)
+                    # Sentinel Shield Break Vulnerability: +25% damage when shields broken
+                    if target.shield_break_vulnerable:
+                        raw *= 1.25
 
                 # === Elemental damage resolution ===
                 if eff_element == WeaponElement.PLASMA:
@@ -1013,7 +1100,28 @@ class CombatEngine:
         messages: list[str],
         target_name: str,
     ) -> None:
-        """Apply direct damage to a target's shields then hull."""
+        """Apply direct damage to a target's shields then hull.
+
+        Applies armor reduction (flat damage subtraction) before shield/hull split.
+        Burn DoT and other bypass-armor effects should reduce damage before calling.
+        """
+        # Armor: flat reduction per hit (minimum 1 damage)
+        armor = 0
+        if isinstance(target, PlayerCombatState):
+            armor = target.armor
+            # Juggernaut Last Stand: +2 armor when below 25% hull
+            if (target.defensive_identity == "juggernaut"
+                    and target.hull_ratio < 0.25):
+                armor += 2
+        elif hasattr(target, "template"):
+            armor = getattr(target.template, "combat_armor", 0)
+
+        if armor > 0 and reduced > 0:
+            armor_absorbed = min(armor, reduced - 1)  # Always deal at least 1
+            reduced = max(1.0, reduced - armor)
+            if armor_absorbed > 0:
+                messages.append(f"Armor absorbed {int(armor_absorbed)}")
+
         if isinstance(target, PlayerCombatState):
             shield_absorbed = min(target.shields, reduced)
             hull_damage = reduced - shield_absorbed
