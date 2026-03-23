@@ -1387,151 +1387,921 @@ Player sees their ship auto-converted to a preset build that matches their old s
 
 ## Implementation Roadmap
 
-### Phase A: Data Model & Core Logic (HIGH effort)
+> This roadmap is broken into sub-phases that can be implemented independently and tested in isolation. Each sub-phase has a clear goal, specific files to create/modify, acceptance criteria, and a checkpoint before proceeding. Follow the project conventions in `CLAUDE.md` and `spacegame/views/CLAUDE.md` throughout.
 
-**Goal:** The foundational data structures and computation engine. No UI yet.
+### Dependency Graph
 
-1. Create `HullShape` dataclass + `data/ships/shapes.json` (~40 shapes with pixel masks)
-2. Create `HullMaterial` dataclass + `data/ships/materials.json` (14 materials)
-3. Create `ShipBuild`, `PlacedPixel`, `DesignatedSlot` dataclasses
-4. Create `ShipGridManager` — placement validation, collision detection, weight calculation
-5. Create `ShipStatsComputer` — derive all stats from build (hull, shields, evasion, armor, speed, etc.)
-6. Create `ShipComposite` — render build into a pygame Surface with auto-detailing pipeline
-7. Implement weight class system with modifier tables
-8. Implement power budget computation
-9. Implement identity detection (Juggernaut/Sentinel/Ghost threshold)
-10. Create preset system + `data/ships/presets.json` (24 legacy ship presets)
-11. Save/load serialization for ShipBuild (new format + old format migration)
-12. Update `Ship` model to derive stats from `ShipBuild` instead of `ShipType`
-13. Update `build_player_combat_state()` to use build-derived stats
-14. **Tests**: Grid placement, stat computation, weight limits, identity detection, serialization, migration
+```
+A1 (Data Models)
+ ├── A2 (Ship Model Transition) ──── G (System Integration & Migration)
+ │    └── A3 (Presets & Save Migration)
+ ├── B1 (Builder View: Grid & Core Tools)
+ │    ├── B2 (Builder View: Advanced Tools)
+ │    └── B3 (Builder View: Slots & Equipment)
+ └── C (Visual Composite Rendering) ── replaces stock sprites everywhere
 
-### Phase B: Builder View — Core Interaction (HIGH effort)
+D1 (Content Catalog: Shapes & Materials) ── feeds B1, C
+D2 (Content Distribution & Discovery) ── depends on A3, B3, mini-game views
 
-**Goal:** The interactive ship builder screen. The heart of the feature.
+E (Builder Polish) ── depends on B1+B2+B3
+F (Tutorial & Onboarding) ── depends on B3, E
+```
 
-1. Create `ShipBuilderView` (BaseView subclass) with grid rendering
-2. Implement shape palette panel (left side) with category tabs and scrolling
-3. Implement material selector panel (right side)
-4. Implement Shape Stamp tool (select shape → ghost preview → click to place)
-5. Implement Pencil tool (single pixel placement)
-6. Implement Eraser tool (click to remove)
-7. Implement Material Brush tool (repaint existing pixels)
-8. Implement Mirror Mode toggle (symmetrical placement)
-9. Implement Slot Designator tool (place equipment slots on filled areas)
-10. Implement real-time stats panel with weight/power bars
-11. Implement build validation (required core slot, weight limit, etc.)
-12. Implement CONFIRM BUILD flow
-13. Implement equipment install modal (click slot → browse equipment)
-14. Implement Undo/Redo stack
-15. Wire into game state (Shipyard → Builder transition)
+**Recommended build order:** A1 → A2 → A3 → D1 → B1 → C → B2 → B3 → D2 → E → F → G
 
-### Phase C: Visual System — Ship Composite Rendering (MEDIUM effort)
+---
 
-**Goal:** Player-built ships render beautifully everywhere.
+### Phase A1: Data Models & Core Logic
 
-1. Implement full auto-detailing pipeline (panel lines, edge highlight, outline, material texture)
-2. Implement engine glow animation (2-frame pulse at engine slot locations)
-3. Implement tier visual variations for materials
-4. Cache composite surfaces with invalidation on build change
-5. Replace player ship sprite calls in `combat_view.py`
-6. Replace player ship sprite calls in `galaxy_map_view.py`
-7. Replace player ship sprite in `cockpit_hud.py`
-8. Update `station_hub_view.py` docked ship display
-9. Update save/load slot thumbnails
-10. Verify all existing VFX work with composite (shields, damage sparks, destruction)
-11. Size-appropriate rendering for each weight class (tiny→XL visual scaling)
+**Goal:** Pure data structures and computation engine. No UI, no rendering, no pygame imports. Everything in this phase is testable with `pytest` alone.
 
-### Phase D: Content Catalog & System Distribution (HIGH effort)
+**Effort:** HIGH | **Dependencies:** None | **Estimated scope:** ~600-800 lines of model code + ~400 lines of tests
 
-**Goal:** Full shape/material/equipment catalog, distributed across systems per the Acquisition Atlas.
+**New files to create:**
 
-**Shapes & Materials:**
-1. Create all ~55 shapes with pixel masks in `data/ships/shapes.json`
-2. Balance all 16 materials in `data/ships/materials.json`
-3. Create all 24 legacy presets in `data/ships/presets.json`
-4. Assign drydock-specific shape/material catalogs per system (Acquisition Atlas mapping)
-5. Assign weight class availability per system drydock
+| File | Purpose |
+|------|---------|
+| `spacegame/models/ship_build.py` | All builder data models and computation logic |
+| `data/ships/shapes.json` | Shape catalog (start with 9 basic shapes only — full catalog in D1) |
+| `data/ships/materials.json` | Material catalog (start with 3 starter materials only — full catalog in D1) |
+| `tests/test_models/test_ship_build.py` | Comprehensive tests |
 
-**Equipment Distribution:**
-6. Redistribute all ~85 equipment modules across faction systems (per Equipment Distribution tables)
-7. Mark system-exclusive equipment (e.g., Trade Beam = Nexus only, Cryo Cannon = Axiom only)
-8. Mark black-market-only equipment for Crimson Reach
-9. Update shipyard view to filter equipment by current system's catalog
+**Implementation details for `spacegame/models/ship_build.py`:**
 
-**Discovery Wiring:**
-10. Wire salvage discovery: deck-type-specific shape/material drops with skill scaling
-11. Wire mining discovery: system-specific deep-layer discoveries
-12. Wire refining mastery: Bronze/Silver/Gold tier unlocks per recipe category
-13. Wire combat trophy drops: boss-guaranteed + elite/regular chance drops
-14. Wire ground exploration: map-specific blueprint finds
-15. Wire trading milestones: cumulative profit → economic unlocks
-16. Wire faction reputation: 5-tier unlock paths per faction (Neutral→Allied)
-17. Wire crew bonuses: passive builder discounts + discovery chance boosts
-18. Wire crew quest rewards: unique shapes from companion quest chains
+```python
+# === Data Models (all @dataclass, following project conventions) ===
 
-**UI:**
-19. Create discovery popup UI (shape/material/equipment found notification with flavor text)
-20. Create collection gallery screen (shapes, materials, trophies — shows locked items with unlock hints)
-21. Create trade milestone tracker (accessible from stats or shipyard)
+@dataclass
+class HullShape:
+    """A geometric building block template."""
+    id: str
+    name: str
+    description: str
+    pixel_mask: list[list[bool]]    # 2D array, True = filled pixel
+    category: str                   # "basic", "intermediate", "advanced", "exotic", "faction"
+    unlock_method: str              # "free", "purchase", "salvage", "quest", "faction", "mining"
+    unlock_cost: int
+    unlock_source: str
+    discovery_flavor: str
 
-**Testing:**
-22. Test each discovery path fires correctly (salvage, mining, refining, combat, ground, trading)
-23. Test faction unlock progression across all 4 factions + Crimson Reach
-24. Test system-specific equipment availability (can't buy Axiom-only gear at Haven's Rest)
-25. Verify all presets produce stats within 10% of original ShipType values
+    @property
+    def width(self) -> int: ...
+    @property
+    def height(self) -> int: ...
+    @property
+    def pixel_count(self) -> int: ...
+    def rotated(self, times: int = 1) -> "HullShape": ...  # Returns new shape with rotated mask
+    def flipped(self) -> "HullShape": ...                   # Returns horizontally flipped shape
+    def to_dict(self) -> dict: ...
+    @classmethod
+    def from_dict(cls, data: dict) -> "HullShape": ...
 
-### Phase E: Builder Polish & UX (MEDIUM effort)
 
-**Goal:** Make the builder feel satisfying and accessible.
+@dataclass
+class HullMaterial:
+    """A material type that determines pixel stats and color."""
+    id: str
+    name: str
+    description: str
+    color_primary: tuple[int, int, int]
+    color_accent: tuple[int, int, int]
+    color_highlight: tuple[int, int, int]
+    hull_per_pixel: float
+    armor_per_pixel: float
+    shield_per_pixel: float
+    shield_regen_per_pixel: float
+    evasion_per_pixel: float
+    weight_per_pixel: float
+    cost_per_pixel: int
+    special_property: str | None
+    unlock_method: str
+    unlock_cost: int
+    unlock_source: str
+    # NOTE: No pygame imports. Colors are plain tuples. Rendering uses them later.
 
-1. Ghost preview (translucent shape follows cursor)
-2. Invalid placement feedback (red ghost, tooltip explaining why)
-3. Fill tool implementation (flood-fill enclosed area)
-4. Select tool (region select, move, copy, delete)
-5. Rotation preview (R key rotates ghost before placement)
-6. Stat comparison (hover module in equipment → preview stat delta)
-7. Builder ambient: industrial background, particle sparks, audio ambiance
-8. Confirmation animation (sparks, "ship powered up" flourish)
-9. Zoom/pan for Large and XL canvases
-10. Shape search in palette
-11. "Auto-Fill" button (fill empty cells with cheapest material)
-12. Weight class upgrade flow (buy new class, import old build)
 
-### Phase F: Tutorial & Onboarding (LOW-MEDIUM effort)
+@dataclass
+class PlacedPixel:
+    """A single filled pixel on the ship grid."""
+    x: int
+    y: int
+    material_id: str
 
-**Goal:** New players can use the builder without frustration.
+    def to_dict(self) -> dict: ...
+    @classmethod
+    def from_dict(cls, data: dict) -> "PlacedPixel": ...
 
-1. Implement 10-step guided first-build tutorial
-2. Contextual tooltips on all builder UI elements
-3. Quick-start preset loading (prominent "LOAD PRESET" for non-builders)
-4. In-builder help panel (? button showing controls and concepts)
-5. Contextual warnings ("Your ship has no weapons — you won't be able to fight")
-6. Tutorial flag: skip tutorial on repeat visits, replayable from Settings
 
-### Phase G: System Integration & Migration (MEDIUM effort)
+@dataclass
+class DesignatedSlot:
+    """An equipment slot placed on the ship grid."""
+    slot_type: str              # "weapon", "defense", "engine", "utility", "core"
+    x: int                      # Top-left X of 2×2 area (3×3 for core)
+    y: int                      # Top-left Y
+    equipment_id: str | None    # Installed equipment module ID (None = empty slot)
+    mark: int = 1               # Enhancement level (1-3)
+    tuning: str | None = None   # Tuning specialization
 
-**Goal:** All game systems work seamlessly with the new ship model.
+    @property
+    def size(self) -> int: ...  # 2 for standard slots, 3 for core
+    def to_dict(self) -> dict: ...
+    @classmethod
+    def from_dict(cls, data: dict) -> "DesignatedSlot": ...
 
-1. Combat: all stats from build, all moves from equipment
-2. Repair: cost scaled by material value
-3. Mining/Salvage/Refining: check module presence in slots
-4. Trading: cargo from utility slot equipment
-5. Travel: speed and fuel from build stats
-6. Skill tree: bonuses apply to computed stats
-7. Crew: bonuses apply to computed stats + builder bonuses
-8. Achievements: update references to old ship/upgrade data
-9. Old save migration: transparent conversion on load
-10. New game flow: starts with Tiny weight class + Shuttle preset
 
-### Phase H: Expansion & Future (LOW effort, FUTURE)
+WEIGHT_CLASSES: dict[str, dict] = {
+    "tiny":   {"canvas": 16, "max_weight": 40,  "max_slots": 4,  "unlock_cost": 0},
+    "small":  {"canvas": 24, "max_weight": 80,  "max_slots": 7,  "unlock_cost": 15000},
+    "medium": {"canvas": 32, "max_weight": 140, "max_slots": 10, "unlock_cost": 60000},
+    "large":  {"canvas": 48, "max_weight": 240, "max_slots": 14, "unlock_cost": 200000},
+    "xlarge": {"canvas": 64, "max_weight": 400, "max_slots": 18, "unlock_cost": 500000},
+}
 
-1. Ship painting (cosmetic color palette per material region)
-2. Build code sharing (encode build as shareable text string)
-3. Enemy ship variety (auto-generate enemy builds for visual diversity)
-4. Fleet building (multiple ship builds for fleet management feature)
-5. Frame modifications (add cells to an existing weight class — hull expansion module)
-6. Animated assembly sequence on confirm (watch ship build piece by piece)
+SLOT_POOLS: dict[str, dict[str, int]] = {
+    "tiny":   {"weapon": 1, "defense": 1, "utility": 1, "engine": 1},
+    "small":  {"weapon": 2, "defense": 1, "utility": 2, "engine": 2},
+    # ... etc per Weight Classes table
+}
+
+
+@dataclass
+class ShipBuild:
+    """Complete ship configuration — the central data structure."""
+    weight_class: str                   # "tiny", "small", "medium", "large", "xlarge"
+    pixels: list[PlacedPixel]           # All filled pixels
+    slots: list[DesignatedSlot]         # All designated equipment slots
+    preset_name: str | None = None      # Custom name if saved
+
+    def to_dict(self) -> dict: ...
+    @classmethod
+    def from_dict(cls, data: dict) -> "ShipBuild": ...
+
+
+# === Computation Engine ===
+
+class ShipGridManager:
+    """Handles placement validation and grid state queries."""
+
+    def __init__(self, weight_class: str): ...
+
+    def can_place_shape(self, shape: HullShape, x: int, y: int, material: HullMaterial,
+                        existing_pixels: list[PlacedPixel]) -> tuple[bool, str]: ...
+    def can_place_slot(self, slot_type: str, x: int, y: int,
+                       pixels: list[PlacedPixel], slots: list[DesignatedSlot]) -> tuple[bool, str]: ...
+    def get_pixels_at(self, x: int, y: int, width: int, height: int,
+                      pixels: list[PlacedPixel]) -> list[PlacedPixel]: ...
+    def is_area_filled(self, x: int, y: int, size: int, pixels: list[PlacedPixel]) -> bool: ...
+    def get_canvas_size(self) -> int: ...
+
+
+class ShipStatsComputer:
+    """Derives all ship stats from a ShipBuild + material/equipment data."""
+
+    @staticmethod
+    def compute(build: ShipBuild, materials: dict[str, HullMaterial],
+                equipment: dict[str, "ShipUpgrade"]) -> "ComputedShipStats": ...
+    # Returns a ComputedShipStats dataclass with all combat/travel/economy stats
+
+
+@dataclass
+class ComputedShipStats:
+    """All derived stats for a ship build. Replaces ShipType combat stats."""
+    hull: int
+    armor: int
+    shields: int
+    shield_regen: int
+    evasion: int
+    speed: int
+    accuracy: int
+    energy_pool: int
+    energy_regen: int
+    cargo_capacity: int
+    fuel_capacity: int
+    crew_slots: int
+    weight_current: float
+    weight_max: int
+    weight_ratio: float
+    power_current: int
+    power_max: int
+    defensive_identity: str | None  # "juggernaut", "sentinel", "ghost", or None
+    combat_moves: list              # CombatMove objects from equipment
+    flee_bonus: int
+    special_abilities: list[str]
+```
+
+**Key implementation rules:**
+- Follow `tuple[bool, str]` return convention for failable operations (can_place_shape, can_place_slot)
+- All dataclasses have `to_dict()` / `from_dict()` serialization
+- No pygame imports in this file — purely data and math
+- Weight modifiers: use the table from the Weight System section (0-40% = ULTRALIGHT +15% evasion, etc.)
+- Identity detection: 35% material pixel threshold, highest wins, see Defensive Identity Integration section
+- Power budget: sum equipment power_draw vs frame base_power + power_core output
+
+**Tests to write (`tests/test_models/test_ship_build.py`):**
+1. Shape rotation produces correct pixel mask (90°, 180°, 270°)
+2. Shape flip produces correct horizontal mirror
+3. `can_place_shape` — succeeds on empty grid
+4. `can_place_shape` — fails on overlap with existing pixels
+5. `can_place_shape` — fails when shape extends beyond canvas
+6. `can_place_shape` — fails when weight would exceed max
+7. `can_place_slot` — succeeds on filled 2×2 area
+8. `can_place_slot` — fails when underlying pixels not filled
+9. `can_place_slot` — fails when overlapping existing slot
+10. `can_place_slot` — fails when slot pool exhausted
+11. `can_place_slot` — engine slot fails when not in rear 25% of canvas
+12. Stat computation: hull = sum of material hull_per_pixel across all pixels
+13. Stat computation: weight modifiers apply correctly at each threshold
+14. Stat computation: identity detection triggers at 35% threshold
+15. Stat computation: identity detection picks highest ratio when multiple cross threshold
+16. Stat computation: power budget sums correctly
+17. Serialization round-trip: `ShipBuild.to_dict()` → `ShipBuild.from_dict()` produces identical build
+18. Edge case: empty build (no pixels) produces zero stats
+19. Edge case: build at exactly 100% weight
+
+**Checkpoint before proceeding:**
+- [ ] `pytest tests/test_models/test_ship_build.py` — all pass
+- [ ] Can create a ShipBuild programmatically, compute stats, serialize/deserialize
+- [ ] Weight modifiers produce expected evasion/speed changes
+- [ ] Identity detection correctly identifies Juggernaut/Sentinel/Ghost builds
+
+---
+
+### Phase A2: Ship Model Transition
+
+**Goal:** Wire ShipBuild into the existing Ship model so the game can use build-derived stats alongside the old ShipType system. Both paths work simultaneously during transition.
+
+**Effort:** MEDIUM | **Dependencies:** A1 | **Estimated scope:** ~200 lines modified across 3 files
+
+**Files to modify:**
+
+| File | Changes |
+|------|---------|
+| `spacegame/models/ship.py` | Add optional `ShipBuild` reference; stat properties check build first, fall back to ShipType |
+| `spacegame/models/combat.py` | Update `build_player_combat_state()` to read from build when available |
+| `spacegame/data_loader.py` | Add `load_shapes()`, `load_materials()` to DataLoader |
+
+**Implementation approach for `ship.py`:**
+
+```python
+# Add to Ship dataclass:
+_build: Optional[ShipBuild] = field(default=None, repr=False)
+_computed_stats: Optional[ComputedShipStats] = field(default=None, repr=False)
+
+def set_build(self, build: ShipBuild) -> None:
+    """Attach a ShipBuild and recompute stats."""
+    self._build = build
+    self._recompute_stats()
+
+def _recompute_stats(self) -> None:
+    """Derive ComputedShipStats from the build. Called when build changes."""
+    if self._build:
+        materials = get_data_loader().materials  # dict[str, HullMaterial]
+        equipment = get_data_loader().upgrades   # dict[str, ShipUpgrade]
+        self._computed_stats = ShipStatsComputer.compute(self._build, materials, equipment)
+
+@property
+def computed_stats(self) -> Optional[ComputedShipStats]:
+    return self._computed_stats
+
+# Modify existing properties to check build first:
+@property
+def max_cargo(self) -> int:
+    if self._computed_stats:
+        return self._computed_stats.cargo_capacity + self._crew_bonus("cargo_bonus")
+    # Fall back to old ShipType path (backward compat during transition)
+    return self.ship_type.cargo_capacity + self._upgrade_bonus("cargo_bonus") + self._crew_bonus("cargo_bonus")
+```
+
+**Implementation approach for `combat.py` `build_player_combat_state()`:**
+
+```python
+# Add at top of function:
+if ship.computed_stats:
+    cs = ship.computed_stats
+    return PlayerCombatState(
+        hull=ship.current_hull, max_hull=cs.hull,
+        shields=ship.current_shields, max_shields=cs.shields,
+        energy=cs.energy_pool, max_energy=cs.energy_pool,
+        energy_regen=cs.energy_regen,
+        speed=cs.speed, evasion=cs.evasion, accuracy=cs.accuracy,
+        equipment_moves=cs.combat_moves,
+        crew_moves=crew_moves,  # unchanged
+        active_effects=[], cooldowns={},
+        flee_bonus=cs.flee_bonus,
+    )
+# ... existing ShipType path below (unchanged, used for old saves until migrated)
+```
+
+**Tests to write:**
+1. Ship with ShipBuild returns computed stats from build, not ShipType
+2. Ship without ShipBuild returns stats from ShipType (backward compat)
+3. `build_player_combat_state()` with build produces correct PlayerCombatState
+4. DataLoader loads shapes and materials from JSON
+
+**Checkpoint:**
+- [ ] Existing game still works (no build set → old path)
+- [ ] Programmatically setting a build on a Ship produces correct combat stats
+- [ ] `pytest` — ALL existing 5,076 tests still pass (no regressions)
+
+---
+
+### Phase A3: Presets & Save/Load Migration
+
+**Goal:** Create preset builds for all 24 legacy ships and implement save format migration so old saves auto-convert.
+
+**Effort:** MEDIUM | **Dependencies:** A1, A2 | **Estimated scope:** ~300 lines + preset JSON
+
+**New files:**
+
+| File | Purpose |
+|------|---------|
+| `data/ships/presets.json` | 24 preset builds (one per legacy ShipType) |
+| `spacegame/models/ship_presets.py` | Preset loading, legacy ShipType → ShipBuild conversion |
+
+**Files to modify:**
+
+| File | Changes |
+|------|---------|
+| `spacegame/save_manager.py` | Detect old format, convert to new; serialize ShipBuild |
+| `spacegame/data_loader.py` | Load presets |
+| `spacegame/models/player.py` | Add `unlocked_shapes`, `unlocked_materials`, `weight_class`, `player_presets` |
+
+**Preset creation strategy:**
+Each legacy ship type must produce a preset build that matches its stats within 10%. Approach:
+1. Map ship's hull → appropriate material mix (e.g., Patrol Cutter's 110 hull → ~44 Standard Plate pixels)
+2. Map ship's shields → Shield Crystal pixels
+3. Map ship's evasion → either Light Alloy pixels or weight ratio targeting
+4. Place shapes to form a recognizable silhouette matching the ship's identity
+5. Designate slots matching the ship's weapon/defense/utility slot counts
+6. Verify: `ComputedShipStats` from preset ≈ old `ShipType` stats (within 10%)
+
+Write a test that loads every preset and asserts stat parity with the legacy ShipType.
+
+**Save migration in `save_manager.py`:**
+
+```python
+def _deserialize_ship(self, data: dict) -> Ship:
+    if "build" in data:
+        # New format — load ShipBuild directly
+        build = ShipBuild.from_dict(data["build"])
+        ship = Ship(ship_type=self._get_fallback_ship_type(build), ...)
+        ship.set_build(build)
+    else:
+        # OLD FORMAT — migrate
+        ship_type = data_loader.get_ship_type(data["ship_type_id"])
+        ship = Ship(ship_type=ship_type, ...)
+        # Convert to build using preset
+        preset = data_loader.get_preset_for_ship_type(data["ship_type_id"])
+        if preset:
+            build = self._apply_upgrades_to_preset(preset, data.get("upgrades", {}))
+            ship.set_build(build)
+    return ship
+```
+
+**Player model additions:**
+```python
+# Add to Player dataclass:
+unlocked_shapes: set[str] = field(default_factory=lambda: {"pixel", "small_bar", ...})  # 9 basic shapes
+unlocked_materials: set[str] = field(default_factory=lambda: {"light_alloy", "standard_plate", "salvage_scrap"})
+unlocked_weight_classes: set[str] = field(default_factory=lambda: {"tiny"})
+player_presets: list[dict] = field(default_factory=list)  # Max 10 custom presets
+trade_profit_total: int = 0  # For trading milestones
+```
+
+**Tests:**
+1. Every preset produces stats within 10% of its legacy ShipType
+2. Old save format loads and auto-converts to new format with build
+3. New save format round-trips correctly
+4. Player unlocked shapes/materials serialize correctly
+5. Preset loading from JSON works
+
+**Checkpoint:**
+- [ ] All 24 presets created and verified for stat parity
+- [ ] Loading an old save file → ship has a ShipBuild → stats match old system
+- [ ] Saving and reloading produces identical state
+- [ ] `pytest` — all tests pass including new migration tests
+
+---
+
+### Phase B1: Builder View — Grid & Core Tools
+
+**Goal:** A minimal but functional ship builder. Player can open it, see the grid, place shapes, choose materials, see stats update, and confirm a build. This is the MVP builder.
+
+**Effort:** HIGH | **Dependencies:** A1, D1 (needs shapes and materials in JSON) | **Estimated scope:** ~800-1000 lines
+
+**New files:**
+
+| File | Purpose |
+|------|---------|
+| `spacegame/views/ship_builder_view.py` | The builder view (BaseView subclass) |
+
+**Files to modify:**
+
+| File | Changes |
+|------|---------|
+| `spacegame/config.py` | Add `GameState.SHIP_BUILDER` |
+| `spacegame/engine/game.py` | Register builder view, wire SHIPYARD → BUILDER transition |
+| `spacegame/views/shipyard_view.py` | Add "DRYDOCK" button/tab that transitions to builder |
+
+**View lifecycle (follow `spacegame/views/CLAUDE.md` patterns exactly):**
+
+```python
+class ShipBuilderView(BaseView):
+    def __init__(self, ui_manager, player, system, data_loader): ...
+    def on_enter(self) -> None: ...   # _create_ui(), load current build onto grid
+    def on_exit(self) -> None: ...    # _destroy_ui()
+    def _create_ui(self) -> None: ... # pygame_gui buttons: CONFIRM, CLEAR, UNDO, BACK
+    def _destroy_ui(self) -> None: ...
+    def handle_event(self, event) -> None: ...  # Grid clicks, tool switching, keyboard shortcuts
+    def update(self, dt: float) -> None: ...    # Cursor preview, stat recomputation
+    def render(self, screen) -> None: ...       # Grid, shapes, panels, stats
+```
+
+**B1 scope — tools to implement in this phase:**
+- Shape Stamp tool (primary — select shape, click to place)
+- Eraser tool (right-click or E key)
+- Material selector panel (right side, clickable list)
+- Shape palette panel (left side, scrollable, category filtered)
+
+**B1 scope — panels to implement:**
+- Grid rendering (center, scaled to fit screen area, with subtle grid lines)
+- Stats panel (bottom, real-time: hull/shields/evasion/speed/weight/power)
+- Weight bar (color-coded: green → yellow → orange → red)
+- Power bar (similar)
+- Current cost display
+
+**B1 scope — controls:**
+- CONFIRM BUILD button (grayed until build is valid)
+- CLEAR ALL button (with confirmation dialog)
+- BACK button (returns to station hub, with "unsaved changes" warning if modified)
+- R key: rotate selected shape
+- Q key: flip selected shape
+
+**Rendering approach:**
+The grid is drawn manually (not pygame_gui) using `pygame.draw.rect()` for cells and `screen.blit()` for shape previews. The stats panel uses `FontCache` with existing font constants. The shape palette and material list can use either manual rendering or pygame_gui elements — follow whichever approach the existing shipyard_view uses for consistency.
+
+**Builder grid rendering pseudocode:**
+```python
+def _render_grid(self, screen):
+    canvas_size = WEIGHT_CLASSES[self.build.weight_class]["canvas"]
+    # Scale grid to fit the available screen area
+    cell_size = min(grid_area_w, grid_area_h) // canvas_size
+    grid_origin_x = grid_area_x + (grid_area_w - canvas_size * cell_size) // 2
+    grid_origin_y = grid_area_y + (grid_area_h - canvas_size * cell_size) // 2
+
+    # Draw background (dark)
+    # Draw grid lines (subtle, 1px, toggleable)
+    # Draw filled pixels (material color)
+    # Draw slot indicators (colored overlay on designated slots)
+    # Draw ghost preview (if holding a shape)
+```
+
+**Tests:**
+View tests are limited (pygame dependency), but test:
+1. Build validation logic (required core, weight limit, slot count)
+2. Shape placement through ShipGridManager integration
+3. Stats recompute correctly when pixels added/removed
+
+**Checkpoint:**
+- [ ] Player can open the builder from the shipyard
+- [ ] Grid renders for each weight class (try Tiny and Medium)
+- [ ] Player can select a shape, select a material, click to place
+- [ ] Stats panel shows correct values and updates in real-time
+- [ ] Player can erase pixels
+- [ ] CONFIRM BUILD saves the build to the player's ship
+- [ ] Player's ship uses build-derived stats in combat (verify with a test fight)
+- [ ] BACK returns to station hub
+
+---
+
+### Phase B2: Builder View — Advanced Tools
+
+**Goal:** Make the builder feel good to use. These are quality-of-life tools that aren't required for functionality but transform the experience.
+
+**Effort:** MEDIUM | **Dependencies:** B1
+
+**All changes in `spacegame/views/ship_builder_view.py`:**
+
+1. **Mirror Mode** (X key toggle): Auto-duplicate placements across the vertical center line. This is the single most impactful UX feature — implement it first.
+2. **Pencil tool** (P key): Place individual 1×1 pixels. For detail work.
+3. **Material Brush** (M key): Click filled pixels to repaint them with current material. No shape needed.
+4. **Fill tool** (F key): Flood-fill an enclosed area with current material. Use standard 4-connected flood fill, bounded by canvas edges and filled pixels.
+5. **Ghost preview**: Translucent shape follows cursor before placement. Green tint = valid, red tint = invalid. This makes placement feel precise and predictable.
+6. **Rotation preview**: Shape in ghost rotates when R is pressed, before placement.
+7. **Undo/Redo** (Ctrl+Z / Ctrl+Y): Store up to 20 grid states. Each placement or erasure pushes state.
+8. **Select tool** (V key): Click+drag to select a rectangular region. Then move (drag), delete (Delete key), or copy (Ctrl+C → click to paste).
+9. **Zoom/Pan**: For Large (48×48) and XL (64×64) canvases, scroll wheel zooms, middle-click drags to pan. Small/Medium/Tiny fit on screen without zoom.
+10. **"Auto-Fill" button**: Fill all empty cells within the ship's convex hull with the cheapest available material. For players who designed the silhouette but want quick stat filling.
+
+**Checkpoint:**
+- [ ] Mirror mode produces symmetrical ships efficiently
+- [ ] Ghost preview makes placement feel predictable
+- [ ] Undo/redo works across tool switches
+- [ ] Large canvas is navigable with zoom/pan
+
+---
+
+### Phase B3: Builder View — Slots & Equipment
+
+**Goal:** Slot designation and equipment installation. This connects the visual hull to the mechanical equipment system.
+
+**Effort:** MEDIUM | **Dependencies:** B1
+
+**Implementation in `ship_builder_view.py`:**
+
+1. **Slot Designator tool** (D key): Enter slot mode. A sub-panel shows slot types with remaining counts (e.g., "Weapon: 1/3"). Click a slot type, then click on the grid to place it on a filled 2×2 area. The slot overlay (colored marker) appears immediately. Right-click an existing slot to remove it (50% cost refund).
+
+2. **Equipment install modal**: Click an already-placed slot to open an equipment browser filtered to that slot type. This should reuse the card-list rendering pattern from the existing `shipyard_view.py` (scrollable list, card per item, stats, buy button). Install deducts credits; uninstall refunds 50%.
+
+3. **Core slot requirement**: Build validation enforces exactly 1 core slot. Show warning text if missing.
+
+4. **Engine slot placement rule**: Engine slots must be in the rear 25% of the canvas (y > 75% of canvas height). Show the valid zone with a subtle tint when engine slot is selected.
+
+5. **Power budget display**: Show power bar in stats panel. If power demand > supply, the bar turns red and affected modules show a "DEPOWERED" label. Depowered weapon modules can't be used in combat.
+
+6. **Slot cost display**: Each slot shows its designation cost (weapon: 3000 CR, etc.). Running total visible.
+
+**Equipment modal pattern:**
+```python
+# When player clicks a placed slot:
+self._equipment_modal_open = True
+self._equipment_slot = clicked_slot
+self._equipment_list = self._get_available_equipment(clicked_slot.slot_type, self.system)
+# Render as overlay on top of grid, similar to existing detail panels
+# Filter by current system's catalog (from Acquisition Atlas — implemented in D2)
+```
+
+**Checkpoint:**
+- [ ] Player can designate slots of each type
+- [ ] Slot placement validates (filled area, slot pool, engine zone)
+- [ ] Player can install equipment into slots
+- [ ] Equipment stats contribute to ship stats
+- [ ] Combat uses equipment moves from slots
+- [ ] Core slot requirement enforced
+
+---
+
+### Phase C: Visual Composite Rendering
+
+**Goal:** The player's ship build renders as a polished composite sprite everywhere in the game. This is what makes the whole system VISIBLE.
+
+**Effort:** MEDIUM | **Dependencies:** A1 (needs build data), B1 (needs builds to exist)
+
+**New files:**
+
+| File | Purpose |
+|------|---------|
+| `spacegame/engine/ship_composite.py` | ShipComposite renderer + auto-detailing pipeline |
+
+**Files to modify:**
+
+| File | Change | Search for |
+|------|--------|-----------|
+| `spacegame/views/combat_view.py` | Use composite for player ship | `get_ship_sprite`, `get_ship_animated`, `_ship_sprite_cache` |
+| `spacegame/views/galaxy_map_view.py` | Use composite for player ship | `_player_ship_anim`, `get_ship_animated` |
+| `spacegame/views/cockpit_hud.py` | Use composite thumbnail | Any ship sprite reference |
+| `spacegame/views/station_hub_view.py` | Show composite in docked display | Ship sprite references |
+| `spacegame/views/save_load_view.py` | Composite thumbnail in slot preview | Ship sprite references |
+
+**Auto-detailing pipeline implementation (`ship_composite.py`):**
+
+```python
+class ShipComposite:
+    """Renders a ShipBuild into a pygame Surface with automatic visual polish."""
+
+    def __init__(self, build: ShipBuild, materials: dict[str, HullMaterial]):
+        self._build = build
+        self._materials = materials
+        self._base_surface: pygame.Surface | None = None
+        self._scaled_cache: dict[int, pygame.Surface] = {}
+        self._dirty = True
+
+    def invalidate(self) -> None:
+        """Mark for rebuild (call when build changes)."""
+        self._dirty = True
+        self._scaled_cache.clear()
+
+    def get_surface(self, scale: int = 1) -> pygame.Surface:
+        """Get rendered composite at given scale factor."""
+        if self._dirty:
+            self._rebuild()
+        if scale not in self._scaled_cache:
+            scaled = pygame.transform.scale(
+                self._base_surface,
+                (self._base_surface.get_width() * scale,
+                 self._base_surface.get_height() * scale),
+            )
+            self._scaled_cache[scale] = scaled
+        return self._scaled_cache[scale]
+
+    def _rebuild(self) -> None:
+        """Execute the full rendering pipeline."""
+        canvas = WEIGHT_CLASSES[self._build.weight_class]["canvas"]
+        surf = pygame.Surface((canvas, canvas), pygame.SRCALPHA)
+
+        # Step 1: Fill pixels with material base color
+        for pixel in self._build.pixels:
+            mat = self._materials[pixel.material_id]
+            surf.set_at((pixel.x, pixel.y), mat.color_primary)
+
+        # Step 2: Panel lines (1px darker between different materials)
+        self._apply_panel_lines(surf)
+
+        # Step 3: Edge highlight (1px lighter on top/left silhouette edges)
+        self._apply_edge_highlight(surf)
+
+        # Step 4: Material texture (per-material micro-detail)
+        self._apply_material_texture(surf)
+
+        # Step 5: Edge outline (1px dark border around entire silhouette)
+        self._apply_outline(surf)
+
+        # Step 6: Slot indicators (subtle colored dots)
+        self._apply_slot_indicators(surf)
+
+        self._base_surface = surf.convert_alpha()
+        self._dirty = False
+```
+
+**How to replace sprite calls:**
+In each view, search for calls to `SpriteManager.get_ship_sprite()` or `get_ship_animated()` for the player's ship. Replace with:
+
+```python
+# Before:
+sprite = self._sprite_mgr.get_ship_sprite(self.player.ship.ship_type.id, scale=res_scale(2))
+
+# After:
+if self.player.ship.composite:
+    sprite = self.player.ship.composite.get_surface(scale=res_scale(2))
+else:
+    sprite = self._sprite_mgr.get_ship_sprite(self.player.ship.ship_type.id, scale=res_scale(2))
+```
+
+Always keep the fallback for ships that haven't been converted yet (backward compat).
+
+**Combat VFX compatibility:**
+The existing `ShieldRenderer`, `DamageStateManager`, and `DestructionSequence` all work with any `pygame.Surface` — they use the sprite's bounding rect for positioning. The composite surface slots in identically. Verify by running a test combat after integration.
+
+**Weight class → visual size:**
+| Class | Native | Combat (res_scale 2) | Galaxy Map (res_scale 1) |
+|-------|--------|---------------------|------------------------|
+| Tiny | 16×16 | 32×32 | 16×16 |
+| Small | 24×24 | 48×48 | 24×24 |
+| Medium | 32×32 | 64×64 | 32×32 |
+| Large | 48×48 | 96×96 | 48×48 |
+| XL | 64×64 | 128×128 | 64×64 |
+
+**Checkpoint:**
+- [ ] Composite renders a recognizable ship from a preset build
+- [ ] Auto-detailing makes even a simple rectangle build look like a ship
+- [ ] Composite displays correctly in combat (correct position, scale, orientation)
+- [ ] Shield bubble, damage sparks, destruction sequence all work on composite
+- [ ] Composite displays on galaxy map with rotation
+- [ ] Composite shows in HUD and station hub
+
+---
+
+### Phase D1: Content Catalog — Shapes & Materials
+
+**Goal:** Create the full library of shapes and materials that players will use. This is content creation, not engineering.
+
+**Effort:** MEDIUM | **Dependencies:** A1 (needs data model) | Can be done in parallel with B1
+
+**Files to create/update:**
+
+| File | Content |
+|------|---------|
+| `data/ships/shapes.json` | All ~55 shapes with pixel masks |
+| `data/ships/materials.json` | All 16 materials with stat values and colors |
+| `data/ships/presets.json` | All 24 legacy presets (update from A3 if needed) |
+
+**Shape creation approach:**
+Each shape needs a `pixel_mask` — a 2D boolean array. Define these as compact strings in JSON for readability:
+
+```json
+{
+  "id": "medium_triangle",
+  "name": "Medium Triangle",
+  "pixel_mask_compact": [
+    "###",
+    ".##",
+    "..#"
+  ],
+  "category": "basic",
+  "unlock_method": "free"
+}
+```
+
+The data loader converts `pixel_mask_compact` strings to `list[list[bool]]` during parsing.
+
+**Material balance approach:**
+Start with the values in the Material Catalog section of this document. Then run the preset parity test: do the 24 legacy presets produce stats within 10% of old ShipType values? Adjust material per-pixel values until they do. This is the primary balance lever.
+
+**Content checklist:**
+- [ ] 9 basic shapes (free) — rectangles + triangles per Shape Catalog
+- [ ] 12 intermediate shapes (purchased) — per Shape Catalog
+- [ ] 10+ advanced shapes (discovery-gated) — per Shape Catalog
+- [ ] 8 faction shapes (rep-gated) — per Faction Shapes table
+- [ ] 7 boss trophy shapes — per Boss Trophy Drops table
+- [ ] 4 crew quest shapes — per Crew Quest Rewards table
+- [ ] 3 starter materials — per Material Catalog
+- [ ] 7 mid-game materials — per Material Catalog
+- [ ] 4 late-game materials — per Material Catalog
+- [ ] 2 boss trophy materials — per Boss Trophy Drops table
+- [ ] All shapes have discovery_flavor text
+- [ ] All materials have distinct, readable colors (test at native resolution)
+- [ ] Preset parity test passes (all 24 within 10%)
+
+---
+
+### Phase D2: Content Distribution & Discovery Wiring
+
+**Goal:** Every shape, material, and equipment module is tied to a specific source in the game world. The Acquisition Atlas becomes real.
+
+**Effort:** HIGH | **Dependencies:** A3, B3, D1, plus access to mini-game views
+
+**New files:**
+
+| File | Purpose |
+|------|---------|
+| `data/ships/drydock_catalogs.json` | Per-system shape/material/equipment catalogs + weight class availability |
+| `spacegame/models/builder_discovery.py` | Discovery logic: chance rolls, unlock tracking, milestone tracking |
+
+**Files to modify:**
+
+| File | Changes |
+|------|---------|
+| `spacegame/views/shipyard_view.py` | Filter equipment by current system's catalog (read from drydock_catalogs.json) |
+| `spacegame/views/ship_builder_view.py` | Filter shapes/materials by unlocked + current system catalog |
+| `spacegame/views/salvage_view.py` (or model) | Add shape discovery roll after salvage completion |
+| `spacegame/views/mining_view.py` (or model) | Add material/shape discovery roll at deep layers |
+| `spacegame/models/refining.py` (or similar) | Wire mastery tier rewards |
+| `spacegame/models/combat_engine.py` | Add trophy drop roll after boss/elite kills |
+| `spacegame/views/ground_exploration_view.py` (or model) | Add blueprint discovery roll |
+| `spacegame/models/player.py` | Add `trade_profit_total` tracking, milestone checks on trade |
+| `spacegame/models/faction_reputation.py` (or similar) | Wire reputation threshold → unlock notifications |
+| `spacegame/models/crew.py` | Wire crew builder bonuses + quest rewards |
+
+**Discovery popup pattern:**
+Create a reusable discovery notification that shows:
+- Shape/material name and visual preview (rendered at 4× for visibility)
+- Discovery flavor text (italicized)
+- "Added to your builder palette" confirmation
+- Brief particle effect (COLLECT_SPARKLE preset)
+
+This should use the existing floating message or tutorial overlay pattern.
+
+**Drydock catalog JSON structure:**
+```json
+{
+  "nexus_prime": {
+    "shapes_sold": ["medium_rect", "arrow_point", "hull_section"],
+    "materials_sold": ["standard_plate", "composite_weave"],
+    "equipment_sold": ["laser_cannon", "dual_laser", "railgun", "trade_beam", ...],
+    "weight_classes": ["tiny", "small", "medium", "large"],
+    "price_modifier": 1.1
+  },
+  "forgeworks": {
+    "shapes_sold": ["large_triangle", "hull_section", "mega_block"],
+    "materials_sold": ["heavy_armor", "reinforced_plate"],
+    "equipment_sold": ["mining_laser_retro", "missile_launcher", "plasma_caster", ...],
+    "weight_classes": ["tiny", "small", "medium", "large", "xlarge"],
+    "price_modifier": 1.0
+  }
+}
+```
+
+**Testing (critical — this phase touches many systems):**
+1. Salvage at Crimson Reach → shape discovery fires with correct deck-type table
+2. Mining at Iron Depths layer 5 → material discovery fires
+3. Refining Gold mastery → shape unlock fires
+4. Boss kill → trophy drops correctly (first kill only)
+5. Trading milestone at 50K → weight class discount applies
+6. Faction rep reaches Friendly → shape unlocks
+7. Crew quest completion → crew shape unlocks
+8. System-specific equipment: can't buy Axiom-only gear at Haven's Rest
+9. Crimson Reach black market: requires heat or quest flag
+10. Discovery popup displays correctly with flavor text
+
+**Checkpoint:**
+- [ ] Each of the 7 discovery sources (salvage, mining, refining, combat, ground, trading, faction) produces unlocks
+- [ ] System-specific catalogs filter correctly in the builder
+- [ ] All content from the Acquisition Atlas is wired and reachable
+- [ ] Discovery popups display with flavor text
+- [ ] Collection gallery shows locked items with unlock hints
+
+---
+
+### Phase E: Builder Polish & UX
+
+**Goal:** Make the builder feel satisfying and professional. This is the difference between "functional tool" and "feature you want to spend time in."
+
+**Effort:** MEDIUM | **Dependencies:** B1, B2, B3
+
+**All changes in `ship_builder_view.py` + supporting engine files:**
+
+1. **Stat comparison on hover**: When hovering a shape in the palette, show "+X hull, +Y weight" delta in the stats panel. Green for improvements, red for costs. This reduces cognitive load — the player sees the trade-off before committing.
+
+2. **Builder ambient atmosphere**: Industrial background (reuse `AnimatedBackground("industrial")`), welding spark particles (reuse `ParticlePool` with `FORGE_FLAME` or new preset), subtle ambient audio. The shipyard should FEEL like a shipyard.
+
+3. **Confirmation animation**: When player clicks CONFIRM BUILD, play a brief "assembly" flourish: spark particles converge on the ship, a bright flash, the composite sprite renders at large scale center-screen for 1 second, then fades. This makes confirming a build feel like a MOMENT.
+
+4. **Shape search**: Text input at top of shape palette. Filters shapes by name as you type. Essential when the palette grows to 55+ shapes.
+
+5. **Weight class upgrade flow**: Dedicated sub-screen or modal for purchasing weight class upgrades. Shows: canvas size comparison, stat budget comparison, cost, and an "import current build" option that centers the old build in the new canvas.
+
+6. **Auto-Fill button**: Fills empty pixels inside the ship's convex hull with the cheapest unlocked material. For players who want to design the silhouette but not hand-fill every pixel.
+
+7. **Stat breakdown tooltip**: Hover a stat (e.g., "Hull: 460") to see breakdown: "Standard Plate: 280, Heavy Armor: 120, Equipment: +60".
+
+**Checkpoint:**
+- [ ] Stat comparison makes trade-offs visible before placement
+- [ ] Builder atmosphere feels immersive (background, particles, audio)
+- [ ] Confirmation animation makes building feel rewarding
+- [ ] A new player can build a functional ship in under 10 minutes
+- [ ] A veteran can optimize a build in 3-5 minutes
+
+---
+
+### Phase F: Tutorial & Onboarding
+
+**Goal:** A new player walks into the builder and knows what to do within 60 seconds.
+
+**Effort:** LOW-MEDIUM | **Dependencies:** B3, E
+
+**Implementation:**
+Use the existing tutorial overlay system (`spacegame/views/tutorial_overlay.py` or similar pattern). The builder tutorial is a sequence of 10 contextual steps (detailed in the Tutorial Design section of this document).
+
+**Key principles:**
+- Tutorial fires ONCE on first builder visit (flag in `player.tutorial_flags`)
+- Each step highlights a specific UI element and gives a short instruction
+- Player must complete the highlighted action to advance (guided, not just informational)
+- "Skip Tutorial" button always visible
+- Tutorial can be replayed from Settings
+- "Quick Start: Load Preset" button is ALWAYS visible, even during tutorial — escape hatch for players who don't want to build
+
+**Also implement:**
+- Contextual tooltips on every UI element (0.5s hover delay)
+- Build validation warnings rendered in stats panel ("No weapons — you won't be able to fight")
+- In-builder help panel (? button → overlay showing all controls and concepts)
+
+**Checkpoint:**
+- [ ] First-time player completes tutorial and has a functional ship
+- [ ] Tutorial can be skipped without breaking anything
+- [ ] "Load Preset" provides an instant working ship for non-builders
+- [ ] All builder UI elements have informative tooltips
+
+---
+
+### Phase G: System Integration & Migration
+
+**Goal:** Every game system works seamlessly with the new ship model. Old saves convert transparently. New games start with the builder.
+
+**Effort:** MEDIUM | **Dependencies:** All previous phases
+
+**System-by-system integration checklist:**
+
+| System | File(s) | What to change | How to verify |
+|--------|---------|---------------|--------------|
+| **Combat** | `combat.py`, `combat_engine.py`, `combat_view.py` | Stats from build, moves from equipment, composite sprite | Fight an enemy → correct damage, hit chance, energy |
+| **Repair** | Station repair logic | Cost = `f(total_material_cost, total_hull)` | Repair at station → cost scales with material quality |
+| **Mining** | `mining_view.py` or model | Check `ship.has_module("mining_drill")` instead of `has_upgrade()` | Enter mining → works if mining drill in utility slot |
+| **Salvaging** | `salvage_view.py` or model | Same pattern: check module in slot | Enter salvaging → works if salvage arm in slot |
+| **Refining** | Refining model | Same pattern | Enter refining → works |
+| **Trading** | Trading model | Cargo from build stats `computed_stats.cargo_capacity` | Buy/sell → cargo limits correct |
+| **Travel** | Galaxy map, fuel logic | Fuel from build stats, speed from build stats | Jump → correct fuel cost, travel time |
+| **Skill tree** | `progression.py`, stat computation | Bonuses apply to computed stats (hull_hp_bonus → +% hull) | Level skill → stats increase in builder |
+| **Crew** | `crew.py`, stat computation | Crew bonuses apply (cargo_bonus, etc.) | Recruit crew → stats change |
+| **Achievements** | Achievement checks | Update any that reference old upgrade/ship_type data | Check achievement triggers still fire |
+| **Flee** | `combat_engine.py` | Flee bonus from build stats + equipment | Flee attempt → correct success rate |
+| **New Game** | `game.py` | Start with Tiny weight class, Shuttle preset loaded, basic shapes/materials unlocked | New game → player has a functional ship |
+| **Smuggling** | Smuggling logic | Check hidden_compartment module | Smuggling works with module in slot |
+
+**Migration testing matrix:**
+- [ ] Load save from before shipyard overhaul → auto-converts → game plays normally
+- [ ] Load save with fully upgraded War Frigate → preset matches old stats
+- [ ] Load save with installed upgrades → upgrades map to equipment in slots
+- [ ] New game → tutorial → builder → first combat → all works
+
+**Checkpoint:**
+- [ ] ALL existing 5,076+ tests pass
+- [ ] Every game activity (mine, salvage, refine, trade, fight, flee, repair) works with build-derived stats
+- [ ] New game through first combat works end-to-end
+- [ ] Old save load through combat works end-to-end
+
+---
+
+### Phase H: Expansion & Future (FUTURE — not part of initial implementation)
+
+Ideas for post-launch iteration, documented here for reference:
+
+1. **Ship painting**: Cosmetic color palette per material region. Material still determines stats, but player can tint the visual color. Purely cosmetic.
+2. **Build code sharing**: Encode a ShipBuild as a Base64 string. Players share build codes. Import code → load build in builder.
+3. **Enemy ship variety**: Auto-generate enemy builds from templates for visual diversity. Enemy stats still come from `EnemyTemplate` (no balance risk), but the rendered sprite is a composite.
+4. **Fleet building**: Multiple ship builds for the Fleet Management feature (Campaign Act Two). Crew assigned to specific ships.
+5. **Canvas expansion modules**: Rare modules that add rows/columns to your canvas without upgrading weight class. Found in late-game quests.
+6. **Animated assembly**: On CONFIRM BUILD, watch modules assemble one by one with sparks and welds. Purely cinematic.
+7. **Builder challenges**: "Build a ship under 40 weight that can defeat the Void Leviathan." Community challenges with leaderboard.
 
 ---
 
@@ -1546,21 +2316,24 @@ Player sees their ship auto-converted to a preset build that matches their old s
 - **Weight modifier ranges**: -20% to +15% evasion, -10% to +10% speed (bounded impact).
 - **Repair cost scaling**: Prevents ultra-cheap hull tanking (expensive materials = expensive repairs).
 - **Pixel economy**: At max, a build should cost comparable to current late-game ship + full upgrades (~300-500K for a Large, ~700K+ for XL). Not cheap, not impossible.
-- **Discovery pacing**: Shapes should unlock steadily throughout the game. By mid-game, player has ~20 shapes. By end-game, ~35+. The last 5 are rare collectibles.
-- **Preset parity**: Legacy presets must produce stats within 10% of old ShipType values. If not, adjust material values until they do.
+- **Discovery pacing**: Shapes should unlock steadily throughout the game. By mid-game, player has ~20 shapes. By end-game, ~35+. The last 5-10 are rare collectibles.
+- **Preset parity**: Legacy presets must produce stats within 10% of old ShipType values. If not, adjust material values until they do. This is the first thing to verify.
 - **Builder time expectation**: A quick rebuild (swap some materials, move a slot) should take 2-3 minutes. A full from-scratch design should be 10-15 minutes. If it takes longer, the UX needs improvement.
+- **No "best build"**: Weight, power, grid space, and discovery gating should prevent convergence. If playtesting shows one dominant build, add counter-content (new enemy types, material weaknesses) rather than nerfing the build.
 
 ---
 
-## Content Counts Summary
+## Content Counts Summary (Final)
 
-| Content Type | Count | Notes |
-|-------------|-------|-------|
-| Weight Classes | 5 | Tiny through Extra Large |
-| Shapes | ~40 | 9 basic (free) + 12 intermediate (purchased) + 10 advanced (discovered) + 8 faction |
-| Materials | 14 | 3 starter + 7 mid-game + 4 late-game |
-| Equipment Modules | 75+ | Carried from existing upgrade system + new modules |
-| Presets | 24+ | All legacy ships + player-created (max 10) |
-| Discovery Sources | 4 | Salvage, Mining, Refining, Quests |
+| Content Type | Count | Acquisition Breakdown |
+|-------------|-------|----------------------|
+| Weight Classes | 5 | Free (Tiny) + Purchase (Small/Medium/Large/XL) + Campaign alt path (XL) |
+| Shapes | ~55 | Free (9) + Purchase (12) + Salvage (3) + Mining (3) + Refining (3) + Quest (9) + Faction (8) + Boss trophy (7) + Crew quest (4) + Trading (1) + Ground (4) + Completionist (1) |
+| Materials | 16 | Free (3) + Location-purchase (7) + Faction Allied (4) + Boss trophy (2) + Quest (2) + Mini-game variant (3) |
+| Equipment Modules | ~85 | Distributed across 10 systems by faction identity |
+| Presets | 24+ system + 10 player | All legacy ships + player-saved custom builds |
+| Discovery Sources | 7 | Salvage, Mining, Refining, Combat, Ground, Trading, Faction |
 | Builder Tools | 8 | Stamp, Pencil, Eraser, Brush, Slot, Fill, Select, Mirror |
 | Tutorial Steps | 10 | Guided first-build walkthrough |
+| New Files | ~8 | ship_build.py, ship_composite.py, ship_builder_view.py, builder_discovery.py, shapes.json, materials.json, presets.json, drydock_catalogs.json |
+| Modified Files | ~20 | ship.py, combat.py, game.py, save_manager.py, data_loader.py, player.py, shipyard_view.py, combat_view.py, galaxy_map_view.py, cockpit_hud.py, + mini-game views |
