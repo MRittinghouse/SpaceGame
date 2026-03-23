@@ -23,6 +23,8 @@ from spacegame.models.ship_build import (
 from spacegame.engine.backgrounds import AnimatedBackground
 from spacegame.engine.draw_utils import draw_panel, draw_bar
 from spacegame.engine.fonts import FontCache, FONT_BODY, FONT_LG, FONT_MD, FONT_SM, FONT_TITLE, FONT_XL, FONT_XS
+from spacegame.engine.particles import ParticlePool, FORGE_FLAME, SPARK_BURST
+from spacegame.engine.audio_manager import get_audio_manager
 from spacegame.utils.logger import logger
 
 
@@ -83,6 +85,7 @@ class ShipBuilderView(BaseView):
         self._bg_dim = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
         self._bg_dim.fill((0, 0, 0))
         self._bg_dim.set_alpha(160)
+        self.particles = ParticlePool(100)
 
         # Build state
         self.build: ShipBuild = ShipBuild(
@@ -104,11 +107,18 @@ class ShipBuilderView(BaseView):
         self._undo_stack: list[list[dict]] = []  # Pixel snapshots
 
         # Slot designator (Phase B3)
-        self._slot_type_to_place: Optional[str] = None  # "weapon", "defense", "engine", "utility", "core"
+        self._slot_type_to_place: Optional[str] = None
         self._equipment_modal_open: bool = False
         self._equipment_modal_slot: Optional[DesignatedSlot] = None
         self._equipment_list: list = []
         self._equipment_scroll: int = 0
+
+        # Polish (Phase E)
+        self._confirm_anim_timer: float = 0.0  # Confirmation animation
+        self._confirm_anim_surface: Optional[pygame.Surface] = None
+        self._hovered_shape: Optional[HullShape] = None  # Shape under cursor in palette
+        self._particle_timer: float = 0.0  # Ambient sparks
+        self._validation_warnings: list[str] = []  # Build issues
         self._redo_stack: list[list[dict]] = []
         self._max_undo: int = 20
 
@@ -657,11 +667,51 @@ class ShipBuilderView(BaseView):
             self.player.ship.current_shields = self._computed_stats.shields
         self._modified = False
         logger.info("Ship build confirmed")
-        self.next_state = GameState.SHIPYARD
+
+        # Confirmation animation (Phase E)
+        self._confirm_anim_timer = 1.2
+        # Cache the composite sprite for the animation
+        composite = self.player.ship.composite
+        if composite and hasattr(composite, "get_surface"):
+            from spacegame.engine.sprites import res_scale
+            self._confirm_anim_surface = composite.get_surface(scale=res_scale(3))
+        # Spark burst at grid center
+        cx = GRID_AREA_X + GRID_AREA_W // 2
+        cy = GRID_AREA_Y + GRID_AREA_H // 2
+        for _ in range(3):
+            self.particles.emit(cx, cy, SPARK_BURST)
+        get_audio_manager().play_sfx("ui_confirm")
+
+        # Delay transition until animation completes (handled in update)
 
     # ------------------------------------------------------------------
     # Computation
     # ------------------------------------------------------------------
+
+    def _update_validation_warnings(self) -> None:
+        """Check build for issues and update warning list."""
+        warnings: list[str] = []
+        stats = self._computed_stats
+        if stats:
+            if stats.weight_ratio > 1.0:
+                warnings.append("OVERWEIGHT! Remove pixels or use lighter materials.")
+            elif stats.weight_ratio > 0.95:
+                warnings.append("Near weight limit.")
+
+        has_core = any(s.slot_type == "core" for s in self.build.slots)
+        if not has_core and len(self.build.pixels) > 0:
+            warnings.append("No Core slot — ship has no energy system.")
+
+        has_weapon_or_engine = any(
+            s.slot_type in ("weapon", "engine") for s in self.build.slots
+        )
+        if not has_weapon_or_engine and len(self.build.pixels) > 0:
+            warnings.append("No weapons or engines — ship can't fight or flee.")
+
+        if len(self.build.pixels) == 0:
+            warnings.append("Empty build. Place shapes to design your ship.")
+
+        self._validation_warnings = warnings
 
     def _recompute_stats(self) -> None:
         materials = getattr(self.data_loader, "hull_materials", {})
@@ -729,6 +779,25 @@ class ShipBuilderView(BaseView):
 
     def update(self, dt: float) -> None:
         self.background.update(dt)
+        self.particles.update(dt)
+
+        # Ambient welding sparks (Phase E)
+        self._particle_timer += dt
+        if self._particle_timer > 0.3:
+            self._particle_timer = 0.0
+            import random
+            spark_x = GRID_AREA_X + random.randint(0, GRID_AREA_W)
+            spark_y = GRID_AREA_Y + random.randint(0, GRID_AREA_H)
+            self.particles.emit(spark_x, spark_y, FORGE_FLAME)
+
+        # Confirmation animation countdown → transition when done
+        if self._confirm_anim_timer > 0:
+            self._confirm_anim_timer = max(0, self._confirm_anim_timer - dt)
+            if self._confirm_anim_timer <= 0 and not self._modified:
+                self.next_state = GameState.SHIPYARD
+
+        # Update validation warnings
+        self._update_validation_warnings()
 
     # ------------------------------------------------------------------
     # Rendering
@@ -745,6 +814,12 @@ class ShipBuilderView(BaseView):
         )
         screen.blit(title, (WINDOW_WIDTH // 2 - title.get_width() // 2, 10))
 
+        # Credits display (top right)
+        credits_text = self.small_font.render(
+            f"Credits: {self.player.credits:,} CR", True, Colors.TEXT_PRIMARY,
+        )
+        screen.blit(credits_text, (WINDOW_WIDTH - credits_text.get_width() - scale_x(20), 14))
+
         # Main panels
         self._render_grid(screen)
         self._render_shape_palette(screen)
@@ -752,8 +827,28 @@ class ShipBuilderView(BaseView):
         if self._active_tool == "slot":
             self._render_slot_type_panel(screen)
         self._render_stats_panel(screen)
+
+        # Ambient particles
+        self.particles.render(screen)
+
+        # Validation warnings (above stats panel)
+        if self._validation_warnings:
+            warn_y = STATS_PANEL_Y - scale_y(20) * len(self._validation_warnings)
+            for warning in self._validation_warnings:
+                warn_surf = self.label_font.render(warning, True, Colors.YELLOW)
+                screen.blit(warn_surf, (scale_x(20), warn_y))
+                warn_y += scale_y(18)
+
+        # Stat comparison preview (when hovering shape in palette)
+        self._render_stat_preview(screen)
+
+        # Equipment modal (overlay)
         if self._equipment_modal_open:
             self._render_equipment_modal(screen)
+
+        # Confirmation animation (overlay)
+        if self._confirm_anim_timer > 0:
+            self._render_confirm_animation(screen)
 
     def _render_grid(self, screen: pygame.Surface) -> None:
         """Render the ship building grid with placed pixels."""
@@ -1185,6 +1280,93 @@ class ShipBuilderView(BaseView):
         # Hint
         hint = self.label_font.render("Click to install. Right-click to close.", True, Colors.TEXT_SECONDARY)
         screen.blit(hint, (modal_x + 10, modal_y + modal_h - scale_y(16)))
+
+    def _render_stat_preview(self, screen: pygame.Surface) -> None:
+        """Show stat delta when hovering a shape in the palette (Phase E)."""
+        # Detect hovered shape from mouse position
+        mx, my = pygame.mouse.get_pos()
+        hovered_shape = None
+        if SHAPE_PANEL_X <= mx < SHAPE_PANEL_X + SHAPE_PANEL_W:
+            shapes = self._get_filtered_shapes()
+            item_h = scale_y(36)
+            start_y = SHAPE_PANEL_Y + scale_y(42) - self._shape_scroll_offset
+            for i, shape in enumerate(shapes):
+                iy = start_y + i * item_h
+                if iy <= my < iy + item_h:
+                    hovered_shape = shape
+                    break
+
+        if not hovered_shape:
+            return
+
+        mat = self._get_selected_material()
+        if not mat:
+            return
+
+        # Calculate what placing this shape would add
+        pixel_count = hovered_shape.pixel_count
+        hull_delta = int(pixel_count * mat.hull_per_pixel)
+        shield_delta = int(pixel_count * mat.shield_per_pixel)
+        weight_delta = pixel_count * mat.weight_per_pixel
+        cost_delta = pixel_count * mat.cost_per_pixel
+        armor_delta = pixel_count * mat.armor_per_pixel
+        evasion_delta = pixel_count * mat.evasion_per_pixel
+
+        # Render preview box near the shape palette
+        preview_x = SHAPE_PANEL_X + SHAPE_PANEL_W + scale_x(5)
+        preview_y = my - scale_y(20)
+        pw = scale_x(140)
+        ph = scale_y(80)
+
+        draw_panel(screen, (preview_x, preview_y, pw, ph), alpha=230)
+
+        y = preview_y + 4
+        deltas = [
+            (f"+{hull_delta} Hull", Colors.GREEN if hull_delta > 0 else Colors.TEXT_SECONDARY),
+            (f"+{shield_delta} Shield", (80, 180, 255) if shield_delta > 0 else Colors.TEXT_SECONDARY),
+            (f"+{weight_delta:.1f} Weight", Colors.YELLOW),
+            (f"+{cost_delta} CR", Colors.TEXT_SECONDARY),
+        ]
+        if armor_delta > 0:
+            deltas.insert(1, (f"+{armor_delta:.2f} Armor", (200, 150, 50)))
+        if evasion_delta > 0:
+            deltas.insert(2, (f"+{evasion_delta:.2f} Evasion", (160, 100, 200)))
+
+        for text, color in deltas:
+            surf = self.label_font.render(text, True, color)
+            screen.blit(surf, (preview_x + 6, y))
+            y += scale_y(12)
+
+    def _render_confirm_animation(self, screen: pygame.Surface) -> None:
+        """Render the build confirmation celebration (Phase E)."""
+        t = self._confirm_anim_timer / 1.2  # 0→1 as animation plays
+        alpha = int(255 * min(1.0, t * 3))  # Fade in fast, hold, then we transition
+
+        # Flash overlay
+        if t > 0.8:
+            flash_alpha = int(200 * ((t - 0.8) / 0.2))
+            flash = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA)
+            flash.fill((255, 255, 255, flash_alpha))
+            screen.blit(flash, (0, 0))
+
+        # Ship sprite centered large
+        if self._confirm_anim_surface:
+            sprite = self._confirm_anim_surface
+            sprite_alpha = min(255, alpha)
+            sprite.set_alpha(sprite_alpha)
+            rect = sprite.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2))
+            screen.blit(sprite, rect)
+
+            # "BUILD CONFIRMED" text
+            text = self.header_font.render("BUILD CONFIRMED", True, (255, 220, 100))
+            text.set_alpha(sprite_alpha)
+            text_rect = text.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 + sprite.get_height() // 2 + scale_y(30)))
+            screen.blit(text, text_rect)
+
+        # Darken edges
+        dim = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA)
+        dim.fill((0, 0, 0, int(120 * (1.0 - t))))
+        screen.blit(dim, (0, 0))
 
     def get_next_state(self) -> Optional[GameState]:
         return self.next_state
