@@ -1,0 +1,381 @@
+"""Ship preset generation — converts legacy ShipTypes into ShipBuilds.
+
+Algorithmically generates a ShipBuild from a ShipType's stats by
+mapping hull → hull materials, shields → shield materials, evasion →
+light materials, and placing pixels in a recognizable ship silhouette.
+
+Part of Shipyard Overhaul Phase A3.
+"""
+
+from __future__ import annotations
+
+import math
+from typing import Optional
+
+from spacegame.models.ship_build import (
+    ComputedShipStats,
+    DesignatedSlot,
+    HullMaterial,
+    PlacedPixel,
+    ShipBuild,
+    ShipStatsComputer,
+    WEIGHT_CLASSES,
+)
+
+
+# Materials used for preset generation (these may not all be in the
+# starter JSON — presets represent pre-built ships with full access)
+_PRESET_MATERIALS: dict[str, HullMaterial] = {
+    "standard_plate": HullMaterial(
+        id="standard_plate", name="Standard Plate", description="Balanced",
+        color_primary=(112, 120, 136),
+        hull_per_pixel=2.5, weight_per_pixel=0.7, cost_per_pixel=15,
+    ),
+    "light_alloy": HullMaterial(
+        id="light_alloy", name="Light Alloy", description="Light",
+        color_primary=(176, 184, 200),
+        hull_per_pixel=1.5, evasion_per_pixel=0.08, weight_per_pixel=0.4,
+        cost_per_pixel=8,
+    ),
+    "shield_crystal": HullMaterial(
+        id="shield_crystal", name="Shield Crystal", description="Shields",
+        color_primary=(64, 168, 208),
+        hull_per_pixel=1.0, shield_per_pixel=0.6, shield_regen_per_pixel=0.03,
+        weight_per_pixel=0.6, cost_per_pixel=22,
+    ),
+    "heavy_armor": HullMaterial(
+        id="heavy_armor", name="Heavy Armor", description="Armor",
+        color_primary=(152, 112, 64),
+        hull_per_pixel=3.0, armor_per_pixel=0.06, weight_per_pixel=1.2,
+        cost_per_pixel=25,
+    ),
+    "salvage_scrap": HullMaterial(
+        id="salvage_scrap", name="Salvage Scrap", description="Cheap",
+        color_primary=(136, 104, 72),
+        hull_per_pixel=2.0, armor_per_pixel=0.02, weight_per_pixel=0.8,
+        cost_per_pixel=5,
+    ),
+}
+
+
+def _select_weight_class(ship_type: object) -> str:
+    """Pick an appropriate weight class for a ship type based on its stats.
+
+    Args:
+        ship_type: ShipType with combat_hull, combat_shields, cargo_capacity.
+
+    Returns:
+        Weight class string.
+    """
+    total_hp = ship_type.combat_hull + ship_type.combat_shields
+    cargo = ship_type.cargo_capacity
+
+    if total_hp <= 100 and cargo <= 60:
+        return "tiny"
+    elif total_hp <= 180 and cargo <= 150:
+        return "small"
+    elif total_hp <= 300 and cargo <= 300:
+        return "medium"
+    elif total_hp <= 500:
+        return "large"
+    return "xlarge"
+
+
+def _compute_pixel_counts(
+    ship_type: object,
+    weight_class: str,
+) -> dict[str, int]:
+    """Determine how many pixels of each material to place.
+
+    Maps hull → standard_plate/heavy_armor, shields → shield_crystal,
+    evasion → light_alloy. Balances pixel counts against the weight
+    class's weight limit.
+
+    Args:
+        ship_type: ShipType with combat stats.
+        weight_class: The chosen weight class.
+
+    Returns:
+        Dict of material_id → pixel count.
+    """
+    max_weight = WEIGHT_CLASSES[weight_class]["max_weight"]
+
+    target_hull = ship_type.combat_hull
+    target_shields = ship_type.combat_shields
+    target_evasion = ship_type.combat_evasion
+    identity = getattr(ship_type, "defensive_identity", "")
+
+    # Calculate pixel counts to approximate target stats
+    # Shield pixels (each gives 0.6 shields + 1.0 hull)
+    shield_pixels = int(target_shields / 0.6) if target_shields > 0 else 0
+    hull_from_shields = shield_pixels * 1.0
+
+    # Evasion pixels (each gives 0.08 evasion + 1.5 hull)
+    # Only use light_alloy if the ship has notable evasion
+    evasion_pixels = 0
+    if target_evasion > 15:
+        # Scale evasion pixels conservatively — weight system provides bonus too
+        evasion_pixels = min(
+            int(target_evasion / 0.08 * 0.2),
+            int(target_hull * 0.3 / 1.5),  # Cap at 30% of target hull contribution
+        )
+    hull_from_evasion = evasion_pixels * 1.5
+
+    # Remaining hull from standard plate or heavy armor
+    remaining_hull = max(0, target_hull - hull_from_shields - hull_from_evasion)
+
+    if identity == "juggernaut":
+        # Use heavy armor for hull ships
+        armor_pixels = int(remaining_hull / 3.0)
+        standard_pixels = max(5, int(remaining_hull * 0.1 / 2.5))  # Small amount of standard
+        heavy_pixels = armor_pixels
+    else:
+        heavy_pixels = 0
+        standard_pixels = int(remaining_hull / 2.5)
+
+    # Check total weight and scale down if needed
+    total_weight = (
+        standard_pixels * 0.7
+        + shield_pixels * 0.6
+        + evasion_pixels * 0.4
+        + heavy_pixels * 1.2
+    )
+
+    if total_weight > max_weight * 0.95:
+        scale = (max_weight * 0.90) / total_weight
+        standard_pixels = int(standard_pixels * scale)
+        shield_pixels = int(shield_pixels * scale)
+        evasion_pixels = int(evasion_pixels * scale)
+        heavy_pixels = int(heavy_pixels * scale)
+
+    # Ensure at least some pixels
+    if standard_pixels + shield_pixels + evasion_pixels + heavy_pixels < 10:
+        standard_pixels = max(standard_pixels, 10)
+
+    counts: dict[str, int] = {}
+    if standard_pixels > 0:
+        counts["standard_plate"] = standard_pixels
+    if shield_pixels > 0:
+        counts["shield_crystal"] = shield_pixels
+    if evasion_pixels > 0:
+        counts["light_alloy"] = evasion_pixels
+    if heavy_pixels > 0:
+        counts["heavy_armor"] = heavy_pixels
+    return counts
+
+
+def _place_pixels_in_silhouette(
+    pixel_counts: dict[str, int],
+    canvas_size: int,
+) -> list[PlacedPixel]:
+    """Place pixels in a simple ship-like silhouette.
+
+    Creates a diamond/dart shape centered on the canvas, filling
+    from the center outward. Different materials are layered:
+    hull materials at the core, shields around them, light alloy
+    at the edges.
+
+    Args:
+        pixel_counts: Material → count mapping.
+        canvas_size: Grid dimension.
+
+    Returns:
+        List of placed pixels forming the ship silhouette.
+    """
+    cx = canvas_size // 2
+    cy = canvas_size // 2
+    total = sum(pixel_counts.values())
+
+    # Generate a ship-like shape: sorted positions by distance from center
+    # within an elliptical boundary (wider than tall, like a ship)
+    candidates: list[tuple[float, int, int]] = []
+    for y in range(canvas_size):
+        for x in range(canvas_size):
+            dx = (x - cx) / (canvas_size * 0.4)  # Wider
+            dy = (y - cy) / (canvas_size * 0.3)  # Taller aspect
+            dist = math.sqrt(dx * dx + dy * dy)
+            if dist <= 1.0:
+                candidates.append((dist, x, y))
+
+    # Sort by distance from center (fill from inside out)
+    candidates.sort(key=lambda c: c[0])
+
+    # Take only as many positions as we need
+    positions = [(x, y) for _, x, y in candidates[:total]]
+
+    # Assign materials: core materials first, edge materials last
+    pixels: list[PlacedPixel] = []
+    idx = 0
+
+    # Core: heavy armor or standard plate
+    for mat_id in ["heavy_armor", "standard_plate", "salvage_scrap"]:
+        count = pixel_counts.get(mat_id, 0)
+        for _ in range(count):
+            if idx < len(positions):
+                x, y = positions[idx]
+                pixels.append(PlacedPixel(x, y, mat_id))
+                idx += 1
+
+    # Middle: shield crystal
+    for _ in range(pixel_counts.get("shield_crystal", 0)):
+        if idx < len(positions):
+            x, y = positions[idx]
+            pixels.append(PlacedPixel(x, y, "shield_crystal"))
+            idx += 1
+
+    # Edge: light alloy
+    for _ in range(pixel_counts.get("light_alloy", 0)):
+        if idx < len(positions):
+            x, y = positions[idx]
+            pixels.append(PlacedPixel(x, y, "light_alloy"))
+            idx += 1
+
+    return pixels
+
+
+def _place_slots(
+    ship_type: object,
+    pixels: list[PlacedPixel],
+    canvas_size: int,
+) -> list[DesignatedSlot]:
+    """Place equipment slots based on ship type's slot counts.
+
+    Args:
+        ship_type: ShipType with weapon_slots, defense_slots, utility_slots.
+        pixels: Placed pixels (slots need filled area underneath).
+        canvas_size: Grid dimension.
+
+    Returns:
+        List of designated slots.
+    """
+    slots: list[DesignatedSlot] = []
+    occupied = {(p.x, p.y) for p in pixels}
+
+    def _find_slot_position(size: int, prefer_rear: bool = False) -> Optional[tuple[int, int]]:
+        """Find a valid position for a slot of given size."""
+        cx = canvas_size // 2
+        cy = canvas_size // 2
+        best = None
+        best_dist = float("inf")
+
+        y_range = range(canvas_size - size, -1, -1) if prefer_rear else range(canvas_size - size + 1)
+        for y in y_range:
+            for x in range(canvas_size - size + 1):
+                # Check all cells are filled and no existing slot overlap
+                all_filled = all(
+                    (x + dx, y + dy) in occupied
+                    for dy in range(size) for dx in range(size)
+                )
+                if not all_filled:
+                    continue
+                no_overlap = all(
+                    not (x < s.x + s.size and x + size > s.x
+                         and y < s.y + s.size and y + size > s.y)
+                    for s in slots
+                )
+                if not no_overlap:
+                    continue
+
+                dist = abs(x + size // 2 - cx) + abs(y + size // 2 - cy)
+                if prefer_rear:
+                    dist = -(y)  # Prefer high Y (rear)
+                if dist < best_dist:
+                    best_dist = dist
+                    best = (x, y)
+                    if prefer_rear:
+                        return best  # First valid rear position is fine
+
+        return best
+
+    # Core slot (center, 3x3)
+    core_pos = _find_slot_position(3)
+    if core_pos:
+        slots.append(DesignatedSlot(slot_type="core", x=core_pos[0], y=core_pos[1]))
+
+    # Weapon slots
+    for _ in range(ship_type.weapon_slots):
+        pos = _find_slot_position(2)
+        if pos:
+            slots.append(DesignatedSlot(slot_type="weapon", x=pos[0], y=pos[1]))
+
+    # Defense slots
+    for _ in range(ship_type.defense_slots):
+        pos = _find_slot_position(2)
+        if pos:
+            slots.append(DesignatedSlot(slot_type="defense", x=pos[0], y=pos[1]))
+
+    # Engine slots (prefer rear)
+    engine_count = min(2, max(1, ship_type.utility_slots // 2))
+    for _ in range(engine_count):
+        pos = _find_slot_position(2, prefer_rear=True)
+        if pos:
+            slots.append(DesignatedSlot(slot_type="engine", x=pos[0], y=pos[1]))
+
+    # Utility slots (remaining)
+    remaining_utility = ship_type.utility_slots - engine_count
+    for _ in range(max(0, remaining_utility)):
+        pos = _find_slot_position(2)
+        if pos:
+            slots.append(DesignatedSlot(slot_type="utility", x=pos[0], y=pos[1]))
+
+    return slots
+
+
+def generate_preset_from_ship_type(
+    ship_type: object,
+    materials: Optional[dict[str, HullMaterial]] = None,
+) -> ShipBuild:
+    """Generate a preset ShipBuild from a legacy ShipType.
+
+    Creates a build that approximates the ShipType's combat stats
+    using the available materials. The build uses an algorithmically
+    generated ship silhouette with appropriate material distribution.
+
+    Args:
+        ship_type: ShipType with all combat and slot fields.
+        materials: Material catalog. Defaults to preset materials.
+
+    Returns:
+        A ShipBuild that approximates the ship's original stats.
+    """
+    if materials is None:
+        materials = _PRESET_MATERIALS
+
+    weight_class = _select_weight_class(ship_type)
+    canvas_size = WEIGHT_CLASSES[weight_class]["canvas"]
+
+    pixel_counts = _compute_pixel_counts(ship_type, weight_class)
+    pixels = _place_pixels_in_silhouette(pixel_counts, canvas_size)
+    slots = _place_slots(ship_type, pixels, canvas_size)
+
+    return ShipBuild(
+        weight_class=weight_class,
+        pixels=pixels,
+        slots=slots,
+        preset_name=ship_type.name,
+    )
+
+
+def get_preset_for_ship_type(
+    ship_type_id: str,
+    ship_types: Optional[dict] = None,
+) -> Optional[ShipBuild]:
+    """Get or generate a preset build for a legacy ship type.
+
+    Args:
+        ship_type_id: The ShipType ID to generate a preset for.
+        ship_types: Ship type registry. If None, uses DataLoader.
+
+    Returns:
+        ShipBuild preset, or None if ship type not found.
+    """
+    if ship_types is None:
+        from spacegame.data_loader import get_data_loader
+        dl = get_data_loader()
+        ship_types = dl.ship_types
+
+    ship_type = ship_types.get(ship_type_id)
+    if ship_type is None:
+        return None
+
+    return generate_preset_from_ship_type(ship_type)

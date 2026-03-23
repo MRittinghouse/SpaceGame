@@ -178,6 +178,17 @@ class Player:
     recipe_mastery: RecipeMasteryTracker = field(default_factory=RecipeMasteryTracker)
     discovered_recipes: set[str] = field(default_factory=set)
     discovered_combos: set[str] = field(default_factory=set)
+    # Ship builder (Shipyard Overhaul Phase A3)
+    unlocked_shapes: set[str] = field(default_factory=lambda: {
+        "pixel", "small_bar", "bar", "long_bar", "small_square",
+        "small_rect", "small_triangle", "medium_triangle", "nose_point",
+    })
+    unlocked_materials: set[str] = field(default_factory=lambda: {
+        "light_alloy", "standard_plate", "salvage_scrap",
+    })
+    unlocked_weight_classes: set[str] = field(default_factory=lambda: {"tiny"})
+    player_presets: list[dict] = field(default_factory=list)
+    trade_profit_total: int = 0
 
     def __post_init__(self) -> None:
         """Initialize visited systems with starting location."""

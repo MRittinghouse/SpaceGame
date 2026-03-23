@@ -493,6 +493,11 @@ class SaveManager:
             "recipe_mastery": player.recipe_mastery.to_dict(),
             "discovered_recipes": sorted(player.discovered_recipes),
             "discovered_combos": sorted(player.discovered_combos),
+            "unlocked_shapes": sorted(player.unlocked_shapes),
+            "unlocked_materials": sorted(player.unlocked_materials),
+            "unlocked_weight_classes": sorted(player.unlocked_weight_classes),
+            "player_presets": player.player_presets,
+            "trade_profit_total": player.trade_profit_total,
         }
         return result
 
@@ -703,6 +708,16 @@ class SaveManager:
             player.discovered_recipes = set(data["discovered_recipes"])
         if "discovered_combos" in data:
             player.discovered_combos = set(data["discovered_combos"])
+        if "unlocked_shapes" in data:
+            player.unlocked_shapes = set(data["unlocked_shapes"])
+        if "unlocked_materials" in data:
+            player.unlocked_materials = set(data["unlocked_materials"])
+        if "unlocked_weight_classes" in data:
+            player.unlocked_weight_classes = set(data["unlocked_weight_classes"])
+        if "player_presets" in data:
+            player.player_presets = data["player_presets"]
+        if "trade_profit_total" in data:
+            player.trade_profit_total = data["trade_profit_total"]
 
         return player
 
