@@ -29,7 +29,7 @@ class TestEnemyTemplateLoading:
     def test_load_all_enemies(self) -> None:
         loader = _make_loader()
         loader.load_enemy_templates()
-        assert len(loader.enemy_templates) == 35
+        assert len(loader.enemy_templates) == 42
 
     def test_pirate_scout_template(self) -> None:
         loader = _make_loader()
@@ -124,7 +124,7 @@ class TestEnemyTemplateLoading:
         """Should have 25 total enemies: 13 generic + 12 faction."""
         loader = _make_loader()
         loader.load_enemy_templates()
-        assert len(loader.enemy_templates) == 35
+        assert len(loader.enemy_templates) == 42
 
     def test_faction_enemies_have_correct_faction_ids(self) -> None:
         """Faction enemies should reference valid faction IDs."""
@@ -134,7 +134,7 @@ class TestEnemyTemplateLoading:
         faction_enemies = [
             t for t in loader.enemy_templates.values() if t.faction_id != ""
         ]
-        assert len(faction_enemies) == 12
+        assert len(faction_enemies) == 15
         for t in faction_enemies:
             assert t.faction_id in valid_factions, f"{t.id} has invalid faction: {t.faction_id}"
 

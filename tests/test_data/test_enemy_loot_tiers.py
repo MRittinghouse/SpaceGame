@@ -45,7 +45,7 @@ class TestEnemyDangerTiers:
     def test_enemy_count(self) -> None:
         """28 base + 7 bosses = 35 enemy templates."""
         enemies = _load_enemies()
-        assert len(enemies) == 35
+        assert len(enemies) == 42
 
     def test_no_duplicate_enemy_ids(self) -> None:
         enemies = _load_enemies()

@@ -3023,7 +3023,7 @@ class TestActOneFinalCounts:
         """28 base + 7 bosses = 35 enemy templates."""
         _load_data()
         dl = get_data_loader()
-        assert len(dl.enemy_templates) == 35, (
+        assert len(dl.enemy_templates) == 42, (
             f"Expected 35 enemy templates, got {len(dl.enemy_templates)}: "
             f"{sorted(dl.enemy_templates.keys())}"
         )

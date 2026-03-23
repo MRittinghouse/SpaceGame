@@ -3353,6 +3353,459 @@
           "max_qty": 5
         }
       ]
+    },
+    {
+      "id": "shield_drone",
+      "name": "Shield Drone",
+      "description": "An automated defense platform projecting layered energy barriers. Strip the shields or watch your ammo disappear.",
+      "behavior": "defensive",
+      "hull": 20,
+      "shields": 60,
+      "energy": 8,
+      "energy_regen": 3,
+      "speed": 3,
+      "evasion": 5,
+      "accuracy": 50,
+      "negotiate_difficulty": 5,
+      "flee_threshold": 0.0,
+      "xp_reward": 20,
+      "faction_id": "science_collective",
+      "danger_tier": "moderate",
+      "bribe_cost": 0,
+      "credit_reward": 30,
+      "moves": [
+        {
+          "id": "drone_pulse",
+          "name": "Drone Pulse",
+          "description": "A weak energy pulse from the drone's emitter array.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 5.0
+            }
+          ],
+          "energy_cost": 1
+        },
+        {
+          "id": "shield_regenerate",
+          "name": "Shield Regenerate",
+          "description": "Diverts power to restore shield integrity.",
+          "effects": [
+            {
+              "type": "shield_restore",
+              "value": 15.0,
+              "target": "self"
+            }
+          ],
+          "energy_cost": 2
+        }
+      ],
+      "loot_table": [
+        {
+          "commodity_id": "electronics",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.4
+        }
+      ],
+      "rare_loot": []
+    },
+    {
+      "id": "armored_transport",
+      "name": "Armored Transport",
+      "description": "A heavily plated cargo hauler with reinforced bulkheads. Slow and predictable, but try scratching that armor.",
+      "behavior": "defensive",
+      "hull": 120,
+      "shields": 15,
+      "energy": 6,
+      "energy_regen": 2,
+      "speed": 3,
+      "evasion": 3,
+      "accuracy": 55,
+      "combat_armor": 4,
+      "negotiate_difficulty": 2,
+      "flee_threshold": 0.3,
+      "xp_reward": 35,
+      "faction_id": "",
+      "danger_tier": "moderate",
+      "bribe_cost": 200,
+      "credit_reward": 70,
+      "moves": [
+        {
+          "id": "transport_cannon",
+          "name": "Transport Cannon",
+          "description": "A heavy-bore turret mounted on the transport's dorsal hull.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 18.0
+            }
+          ],
+          "energy_cost": 3
+        },
+        {
+          "id": "hull_brace",
+          "name": "Hull Brace",
+          "description": "Activates emergency bulkheads to reduce incoming damage.",
+          "effects": [
+            {
+              "type": "damage_reduction",
+              "value": 15.0,
+              "duration": 2,
+              "target": "self"
+            }
+          ],
+          "energy_cost": 2
+        }
+      ],
+      "loot_table": [
+        {
+          "commodity_id": "iron_ore",
+          "min_qty": 3,
+          "max_qty": 8,
+          "chance": 0.6
+        },
+        {
+          "commodity_id": "alloy_composite",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.3
+        }
+      ],
+      "rare_loot": []
+    },
+    {
+      "id": "ghost_raider",
+      "name": "Ghost Raider",
+      "description": "A nimble predator that strikes from blind spots. If you can't track it, you can't stop it.",
+      "behavior": "evasive",
+      "hull": 35,
+      "shields": 15,
+      "energy": 8,
+      "energy_regen": 3,
+      "speed": 16,
+      "evasion": 35,
+      "accuracy": 72,
+      "negotiate_difficulty": 4,
+      "flee_threshold": 0.5,
+      "xp_reward": 40,
+      "faction_id": "",
+      "danger_tier": "dangerous",
+      "bribe_cost": 250,
+      "credit_reward": 100,
+      "moves": [
+        {
+          "id": "ghost_strike",
+          "name": "Ghost Strike",
+          "description": "A precision attack from a concealed approach vector.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 22.0
+            }
+          ],
+          "energy_cost": 3,
+          "accuracy_modifier": 10
+        },
+        {
+          "id": "vanishing_shot",
+          "name": "Vanishing Shot",
+          "description": "Fires while engaging evasive thrusters, becoming harder to track.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 12.0
+            },
+            {
+              "type": "evasion_mod",
+              "value": 20.0,
+              "duration": 1,
+              "target": "self"
+            }
+          ],
+          "energy_cost": 2
+        }
+      ],
+      "loot_table": [
+        {
+          "commodity_id": "combat_salvage",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.5
+        },
+        {
+          "commodity_id": "rare_parts",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.3
+        }
+      ],
+      "rare_loot": [
+        {
+          "commodity_id": "rare_parts",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.15
+        }
+      ]
+    },
+    {
+      "id": "ion_striker",
+      "name": "Ion Striker",
+      "description": "Weapons tuned to disrupt energy barriers. Shield-heavy ships beware: this one was built to break you.",
+      "behavior": "aggressive",
+      "hull": 50,
+      "shields": 10,
+      "energy": 9,
+      "energy_regen": 3,
+      "speed": 10,
+      "evasion": 20,
+      "accuracy": 68,
+      "negotiate_difficulty": 3,
+      "flee_threshold": 0.25,
+      "xp_reward": 35,
+      "faction_id": "science_collective",
+      "danger_tier": "moderate",
+      "bribe_cost": 180,
+      "credit_reward": 70,
+      "moves": [
+        {
+          "id": "ion_lance",
+          "name": "Ion Lance",
+          "description": "A focused ion beam that disrupts shield harmonics.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 14.0
+            }
+          ],
+          "energy_cost": 3,
+          "element": "ion"
+        },
+        {
+          "id": "ion_burst",
+          "name": "Ion Burst",
+          "description": "A wide-spectrum ion pulse that damages and drains shields.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 8.0
+            },
+            {
+              "type": "shield_drain",
+              "value": 10.0
+            }
+          ],
+          "energy_cost": 2
+        }
+      ],
+      "loot_table": [
+        {
+          "commodity_id": "electronics",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.5
+        }
+      ],
+      "rare_loot": []
+    },
+    {
+      "id": "cryo_interceptor",
+      "name": "Cryo Interceptor",
+      "description": "Cryogenic weapons lock down fast movers. Each hit slows you further, until the ice closes in.",
+      "behavior": "aggressive",
+      "hull": 55,
+      "shields": 25,
+      "energy": 9,
+      "energy_regen": 3,
+      "speed": 12,
+      "evasion": 18,
+      "accuracy": 70,
+      "negotiate_difficulty": 3,
+      "flee_threshold": 0.25,
+      "xp_reward": 35,
+      "faction_id": "science_collective",
+      "danger_tier": "moderate",
+      "bribe_cost": 180,
+      "credit_reward": 70,
+      "moves": [
+        {
+          "id": "cryo_lance",
+          "name": "Cryo Lance",
+          "description": "A concentrated cryogenic beam that flash-freezes hull plating.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 12.0
+            }
+          ],
+          "energy_cost": 3,
+          "element": "cryo"
+        },
+        {
+          "id": "frost_burst",
+          "name": "Frost Burst",
+          "description": "A dispersal charge that coats the target in supercooled particles.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 8.0
+            }
+          ],
+          "energy_cost": 2,
+          "element": "cryo"
+        }
+      ],
+      "loot_table": [
+        {
+          "commodity_id": "electronics",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.4
+        }
+      ],
+      "rare_loot": []
+    },
+    {
+      "id": "plasma_bomber",
+      "name": "Plasma Bomber",
+      "description": "Incendiary warheads that eat through armor plating. The fire doesn't stop when the shooting does.",
+      "behavior": "aggressive",
+      "hull": 45,
+      "shields": 20,
+      "energy": 8,
+      "energy_regen": 2,
+      "speed": 7,
+      "evasion": 12,
+      "accuracy": 62,
+      "negotiate_difficulty": 3,
+      "flee_threshold": 0.3,
+      "xp_reward": 35,
+      "faction_id": "",
+      "danger_tier": "dangerous",
+      "bribe_cost": 160,
+      "credit_reward": 75,
+      "moves": [
+        {
+          "id": "plasma_volley",
+          "name": "Plasma Volley",
+          "description": "A barrage of superheated plasma bolts.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 15.0
+            }
+          ],
+          "energy_cost": 3,
+          "element": "plasma"
+        },
+        {
+          "id": "incendiary_torpedo",
+          "name": "Incendiary Torpedo",
+          "description": "A slow-burn warhead that melts through armor plating on impact.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 25.0
+            }
+          ],
+          "energy_cost": 5,
+          "cooldown": 2,
+          "element": "plasma"
+        }
+      ],
+      "loot_table": [
+        {
+          "commodity_id": "fuel",
+          "min_qty": 2,
+          "max_qty": 5,
+          "chance": 0.5
+        },
+        {
+          "commodity_id": "rare_metals",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.3
+        }
+      ],
+      "rare_loot": [
+        {
+          "commodity_id": "rare_metals",
+          "min_qty": 1,
+          "max_qty": 1,
+          "chance": 0.1
+        }
+      ]
+    },
+    {
+      "id": "support_frigate",
+      "name": "Support Frigate",
+      "description": "A force multiplier that repairs and empowers its allies. Kill it first, or the fight never ends.",
+      "behavior": "defensive",
+      "hull": 60,
+      "shields": 40,
+      "energy": 10,
+      "energy_regen": 3,
+      "speed": 6,
+      "evasion": 10,
+      "accuracy": 55,
+      "negotiate_difficulty": 2,
+      "flee_threshold": 0.2,
+      "xp_reward": 30,
+      "faction_id": "",
+      "danger_tier": "moderate",
+      "bribe_cost": 200,
+      "credit_reward": 50,
+      "moves": [
+        {
+          "id": "support_beam",
+          "name": "Support Beam",
+          "description": "A low-power energy beam used for suppression.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 8.0
+            }
+          ],
+          "energy_cost": 2
+        },
+        {
+          "id": "repair_pulse",
+          "name": "Repair Pulse",
+          "description": "Emits a restorative field that patches hull damage.",
+          "effects": [
+            {
+              "type": "hull_restore",
+              "value": 15.0,
+              "target": "self"
+            }
+          ],
+          "energy_cost": 2
+        },
+        {
+          "id": "rally_field",
+          "name": "Rally Field",
+          "description": "Projects an energy field that amplifies weapon output.",
+          "effects": [
+            {
+              "type": "damage_boost",
+              "value": 10.0,
+              "duration": 2,
+              "target": "self"
+            }
+          ],
+          "energy_cost": 3
+        }
+      ],
+      "loot_table": [
+        {
+          "commodity_id": "medical",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.4
+        }
+      ],
+      "rare_loot": []
     }
   ]
 }
