@@ -1712,7 +1712,20 @@ class CombatView(BaseView):
         screen.blit(behavior_surf, (x + 8, y + 26))
 
         # Telegraph indicator (what enemy plans to do next)
-        if hasattr(enemy, "telegraphed_move") and enemy.telegraphed_move and self.phase == CombatPhase.PLAYER_INPUT:
+        # Check for frozen state (Cryo 3-stack)
+        is_frozen = any(
+            hasattr(eff, "_frozen") and eff._frozen
+            for eff, _ in enemy.active_effects
+        )
+        if is_frozen and self.phase == CombatPhase.PLAYER_INPUT:
+            from spacegame.engine.fonts import FONT_XS as _FXS
+            tele_font = FontCache.get(_FXS)
+            tele_surf = tele_font.render("FROZEN", True, (150, 220, 255))
+            tele_bg = pygame.Surface((tele_surf.get_width() + 8, tele_surf.get_height() + 4), pygame.SRCALPHA)
+            tele_bg.fill((0, 0, 0, 120))
+            screen.blit(tele_bg, (x + 8, y + ENEMY_CARD_H - tele_bg.get_height() - 4))
+            screen.blit(tele_surf, (x + 12, y + ENEMY_CARD_H - tele_surf.get_height() - 4))
+        elif hasattr(enemy, "telegraphed_move") and enemy.telegraphed_move and self.phase == CombatPhase.PLAYER_INPUT:
             tele_move = enemy.telegraphed_move
             # Classify the telegraphed intent
             has_dmg = any(e.type == EffectType.DAMAGE for e in tele_move.effects)

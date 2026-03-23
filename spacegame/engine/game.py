@@ -811,11 +811,9 @@ class Game:
                 self.main_menu_view.next_state = None
 
                 def _do():
-                    if not self.player:
-                        # New game: start intro narration first
-                        self._start_intro_narration(return_state=GameState.NAME_INPUT)
-                    else:
-                        self.state_manager.change_state(GameState.GALAXY_MAP)
+                    # Always start fresh — clear existing player if loaded
+                    self.player = None
+                    self._start_intro_narration(return_state=GameState.NAME_INPUT)
 
                 self._start_transition(TransitionType.FADE, 0.5, _do)
             elif next_state == "continue":

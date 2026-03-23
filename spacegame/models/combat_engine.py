@@ -208,6 +208,19 @@ class CombatEngine:
         enemy = self._state.enemies[enemy_idx]
         actor = f"enemy:{enemy_idx}"
 
+        # Check if frozen (Cryo 3-stack effect) — skip turn entirely
+        for eff, _ in enemy.active_effects:
+            if hasattr(eff, "_frozen") and eff._frozen:
+                entry = CombatLogEntry(
+                    round_number=self._state.round_number,
+                    actor=actor,
+                    action="Frozen",
+                    effects_applied=[f"{enemy.template.name} is frozen solid!"],
+                    hit=False,
+                )
+                self._state.combat_log.append(entry)
+                return [entry]
+
         # Cowardly behavior: flee when hull is low
         if (
             enemy.template.behavior == EnemyBehavior.COWARDLY
@@ -287,6 +300,14 @@ class CombatEngine:
         """
         for enemy in self._state.enemies:
             if not enemy.is_alive or enemy.is_fled:
+                enemy.telegraphed_move = None
+                continue
+            # Frozen enemies can't act — clear telegraph
+            is_frozen = any(
+                hasattr(eff, "_frozen") and eff._frozen
+                for eff, _ in enemy.active_effects
+            )
+            if is_frozen:
                 enemy.telegraphed_move = None
                 continue
             enemy.telegraphed_move = self._select_enemy_move(enemy)
@@ -706,6 +727,15 @@ class CombatEngine:
                 if eff.type == EffectType.DAMAGE_BOOST:
                     damage_boost_pct += eff.value
 
+        # Check attacker's Suppressed stacks (from Voltaic weapons)
+        # Each stack reduces the attacker's outgoing damage by its value percent
+        suppressed_reduction = 0.0
+        if hasattr(atk, "active_effects"):
+            for eff, _ in atk.active_effects:
+                if eff.type == EffectType.SUPPRESSED:
+                    suppressed_reduction += eff.value / 100.0
+        suppressed_reduction = min(suppressed_reduction, 0.9)  # Cap at 90%
+
         # Check for ABSORB (countermeasures) — nullify first incoming damage
         absorb_idx = None
         for i, (eff, dur) in enumerate(target.active_effects):
@@ -735,6 +765,8 @@ class CombatEngine:
                 raw = effect.value
                 if damage_boost_pct > 0:
                     raw *= 1.0 + damage_boost_pct / 100.0
+                if suppressed_reduction > 0:
+                    raw *= 1.0 - suppressed_reduction
 
                 # === Elemental damage resolution ===
                 if eff_element == WeaponElement.PLASMA:

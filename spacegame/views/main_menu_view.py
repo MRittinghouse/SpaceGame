@@ -161,7 +161,7 @@ class MainMenuView(BaseView):
                 # Check if saves exist before starting new game
                 has_saves = any(
                     self.save_manager.get_save_metadata(i) is not None
-                    for i in range(12)
+                    for i in range(self.save_manager.DEFAULT_NUM_SLOTS)
                 )
                 if has_saves:
                     self._confirm_new_game = True
