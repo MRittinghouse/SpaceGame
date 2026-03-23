@@ -375,6 +375,10 @@ class CombatView(BaseView):
         self._dodge_jink_timer = 0.0  # Lateral ship offset on dodge
         self._dodge_jink_direction = 1  # 1 = right, -1 = left
         self._rng_visual = _random.Random(42)  # Visual variety RNG
+        self._ultimate_zoom_timer = 0.0  # Cinematic zoom on ultimate
+        self._ultimate_darken_timer = 0.0  # Darken overlay on ultimate
+        self._combo_banner_text = ""  # Combo name banner
+        self._combo_banner_timer = 0.0
         self._selected_crew_move_id: Optional[str] = getattr(self, "_selected_crew_move_id", None)
         self._displayed_enemy_hulls = [float(e.current_hull) for e in state.enemies]
         self._displayed_enemy_shields = [float(e.current_shields) for e in state.enemies]
@@ -493,6 +497,9 @@ class CombatView(BaseView):
         self._player_shield_flash = max(0.0, self._player_shield_flash - dt)
         self._momentum_pulse_timer = max(0.0, self._momentum_pulse_timer - dt)
         self._dodge_jink_timer = max(0.0, self._dodge_jink_timer - dt)
+        self._ultimate_zoom_timer = max(0.0, self._ultimate_zoom_timer - dt)
+        self._ultimate_darken_timer = max(0.0, self._ultimate_darken_timer - dt)
+        self._combo_banner_timer = max(0.0, self._combo_banner_timer - dt)
         for i in range(len(self._enemy_flash_timers)):
             self._enemy_flash_timers[i] = max(0.0, self._enemy_flash_timers[i] - dt)
         for i in range(len(self._enemy_sprite_flashes)):
@@ -581,6 +588,21 @@ class CombatView(BaseView):
 
         # Floating texts
         self._render_floating_texts(screen)
+
+        # Ultimate cinematic darken (Gap #6)
+        if self._ultimate_darken_timer > 0:
+            darken_alpha = int(100 * (self._ultimate_darken_timer / 0.5))
+            darken_surf = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA)
+            darken_surf.fill((0, 0, 0, darken_alpha))
+            screen.blit(darken_surf, (0, 0))
+
+        # Combo name banner (Gap #7)
+        if self._combo_banner_timer > 0:
+            banner_alpha = int(255 * min(1.0, self._combo_banner_timer / 0.3))
+            banner_surf = self.banner_font.render(self._combo_banner_text, True, (255, 220, 100))
+            banner_surf.set_alpha(banner_alpha)
+            banner_rect = banner_surf.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 3))
+            screen.blit(banner_surf, banner_rect)
 
         # Vignette
         self.vignette.render(screen)
@@ -996,11 +1018,18 @@ class CombatView(BaseView):
         self._momentum_pulse_timer = 0.8
         self._momentum_pulse_color = (255, 255, 200)
 
+        # Cinematic zoom effect (Gap #6)
+        self._ultimate_zoom_timer = 0.4
+        self._ultimate_darken_timer = 0.5
+
         # Emit celebration particles at player ship position
         from spacegame.engine.particles import EMPOWERED_BURST
         px = ARENA_X + ARENA_W // 4
         py = ARENA_Y + ARENA_H // 2
         self.particles.emit(px, py, EMPOWERED_BURST)
+
+        # Audio cue (Gap #5)
+        get_audio_manager().play_sfx("combat_victory")
 
         self._advance_phase(CombatPhase.ANIMATING_PLAYER)
 
@@ -1102,6 +1131,13 @@ class CombatView(BaseView):
         """Execute the player's chosen crew ability or combo (or skip if none selected)."""
         # Combo takes priority over individual crew ability
         if self._selected_combo_id:
+            # Set combo banner (Gap #7)
+            from spacegame.models.crew_combos import get_combo_by_id
+            combo = get_combo_by_id(self._selected_combo_id)
+            if combo:
+                self._combo_banner_text = combo.name.upper()
+                self._combo_banner_timer = 1.5
+                get_audio_manager().play_sfx("ui_confirm")
             logs = self.engine.execute_crew_combo(self._selected_combo_id)
             self._selected_combo_id = None
             self._selected_crew_move_id = None
@@ -1261,6 +1297,8 @@ class CombatView(BaseView):
                     text_color = (180, 100, 255)  # Purple — energy boost
                 elif "Momentum" in effect_text:
                     text_color = (255, 220, 100)  # Gold — momentum threshold
+                    # Audio cue for momentum thresholds (Gap #5)
+                    get_audio_manager().play_sfx("ui_confirm")
                 else:
                     text_color = Colors.RED if is_player_source else Colors.YELLOW
                 self.floating_texts.append({
@@ -1418,10 +1456,16 @@ class CombatView(BaseView):
                 )
                 sprite_radius = 16 * scale  # 32x32 native * scale / 2
 
+                # Boss death: larger destruction (Gap #8)
+                boss_mult = 1.5 if enemy.template.is_boss else 1.0
                 seq = DestructionSequence(
-                    float(enemy_x), float(enemy_y), sprite_radius
+                    float(enemy_x), float(enemy_y),
+                    int(sprite_radius * boss_mult),
                 )
                 self._destruction_sequences.append(seq)
+                if enemy.template.is_boss:
+                    # Extra screen shake for boss death
+                    self.screen_shake.trigger(intensity=8.0, duration=0.4)
 
                 # Also track in old dict for backward compat (animation playback)
                 anim = self._get_ship_sprite(

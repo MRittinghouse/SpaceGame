@@ -566,11 +566,13 @@ def build_player_combat_state(
     crew_roster: Optional[CrewRoster],
     crew_combat_moves: dict[str, list[CombatMove] | CombatMove],
     player_level: int = 0,
+    progression: Optional[object] = None,
 ) -> PlayerCombatState:
     """Build PlayerCombatState from existing game objects.
 
     Pulls base combat stats from ShipType, equipment moves from
-    ShipUpgradeManager, and crew moves from the provided mapping.
+    ShipUpgradeManager, crew moves from the provided mapping, and
+    skill bonuses from PlayerProgression.
 
     Args:
         ship: Player's ship instance (uses current_hull/current_shields).
@@ -579,6 +581,7 @@ def build_player_combat_state(
         crew_combat_moves: Mapping of crew template_id to their CombatMove or
             list of CombatMoves (for the crew tactical choice system).
         player_level: Current player level (early-game flee bonus applied).
+        progression: PlayerProgression for skill bonuses. May be None.
 
     Returns:
         Fully initialized PlayerCombatState.
@@ -611,6 +614,29 @@ def build_player_combat_state(
     evasion_from_upgrades = int(upgrade_manager.get_bonus("evasion_bonus"))
     shield_max_from_upgrades = int(upgrade_manager.get_bonus("shield_bonus"))
 
+    # Aggregate skill tree bonuses (Phase 12C gap fix)
+    armor_from_skills = 0
+    shield_regen_from_skills = 0
+    evasion_from_skills = 0
+    flee_from_skills = 0
+    if progression and hasattr(progression, "get_bonus"):
+        armor_from_skills = int(progression.get_bonus("armor_bonus"))
+        shield_regen_from_skills = int(progression.get_bonus("shield_regen_bonus"))
+        # Afterburner skill gives evasion + flee
+        afterburner = int(progression.get_bonus("afterburner_bonus"))
+        evasion_from_skills = afterburner
+        flee_from_skills = afterburner  # Same value for both
+        # Slippery skill gives flee + encounter avoidance
+        flee_from_skills += int(progression.get_bonus("slippery_bonus") * 100)
+        # Tactical retreat (existing skill)
+        flee_from_skills += int(progression.get_bonus("flee_bonus") * 100)
+
+    flee_bonus += flee_from_skills
+
+    # Ghost identity Slippery passive: +20% base flee bonus
+    if st.defensive_identity == "ghost":
+        flee_bonus += 20
+
     return PlayerCombatState(
         hull=ship.current_hull,
         max_hull=st.combat_hull,
@@ -620,15 +646,15 @@ def build_player_combat_state(
         max_energy=st.combat_energy,
         energy_regen=st.combat_energy_regen,
         speed=st.combat_speed,
-        evasion=st.combat_evasion + evasion_from_upgrades,
+        evasion=st.combat_evasion + evasion_from_upgrades + evasion_from_skills,
         accuracy=st.combat_accuracy,
         equipment_moves=equipment_moves,
         crew_moves=crew_moves,
         active_effects=[],
         cooldowns={},
         flee_bonus=flee_bonus,
-        armor=st.combat_armor + armor_from_upgrades,
-        shield_regen=st.combat_shield_regen + shield_regen_from_upgrades,
+        armor=st.combat_armor + armor_from_upgrades + armor_from_skills,
+        shield_regen=st.combat_shield_regen + shield_regen_from_upgrades + shield_regen_from_skills,
         defensive_identity=st.defensive_identity,
         ship_class_category=st.ship_class_category,
     )

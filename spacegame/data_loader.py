@@ -1255,6 +1255,7 @@ class DataLoader:
                 description=outcome_data.get("description", ""),
                 rewards=rewards,
                 leads_to_combat=outcome_data.get("leads_to_combat", False),
+                enemy_template_ids=outcome_data.get("enemy_template_ids", []),
             )
             choices.append(
                 EncounterChoice(

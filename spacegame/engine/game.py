@@ -2107,6 +2107,7 @@ class Game:
             self.crew_roster,
             crew_moves,
             player_level=self.player.progression.level,
+            progression=self.player.progression,
         )
         enemies = [EnemyShip.from_template(t) for t in encounter.enemy_templates]
         combat_state = CombatState(

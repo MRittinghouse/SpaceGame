@@ -450,6 +450,7 @@ class GalaxyMapView(BaseView):
                     system_id=self.selected_system,
                     distance=distance,
                     player_level=self.player.progression.level,
+                    defensive_identity=self.player.ship.ship_type.defensive_identity,
                 )
 
                 # Apply reputation modifiers to encounter

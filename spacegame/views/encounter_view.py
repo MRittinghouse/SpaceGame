@@ -299,6 +299,10 @@ class EncounterView(BaseView):
         )
         self.pending_combat = outcome.leads_to_combat
 
+        # Boss encounters: override enemy_template_ids from outcome
+        if outcome.leads_to_combat and hasattr(outcome, "enemy_template_ids") and outcome.enemy_template_ids:
+            self.encounter_ref.enemy_template_ids = list(outcome.enemy_template_ids)
+
         self.phase = EncounterPhase.OUTCOME
         self._create_ui()
         logger.info(

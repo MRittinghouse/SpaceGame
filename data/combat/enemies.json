@@ -2485,7 +2485,7 @@
             "ramming_speed"
           ],
           "on_enter_text": "You want my ship? COME AND TAKE IT!",
-          "on_enter_effect": ""
+          "on_enter_effect": "damage_boost_50_defense_minus_30"
         }
       ],
       "rare_loot": [
@@ -2771,7 +2771,7 @@
             "overload_charge"
           ],
           "on_enter_text": "OVERLOADING ALL SYSTEMS!",
-          "on_enter_effect": ""
+          "on_enter_effect": "damage_boost_50"
         }
       ],
       "rare_loot": [
@@ -3196,7 +3196,7 @@
             "extinction_pulse"
           ],
           "on_enter_text": "The void itself screams.",
-          "on_enter_effect": ""
+          "on_enter_effect": "damage_boost_50"
         }
       ],
       "rare_loot": [

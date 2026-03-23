@@ -137,6 +137,7 @@ def check_travel_encounter(
     system_id: str,
     distance: float = 80.0,
     player_level: int = 0,
+    defensive_identity: str = "",
 ) -> Optional[EncounterRef]:
     """Check if a random combat encounter triggers on travel.
 
@@ -167,6 +168,11 @@ def check_travel_encounter(
     }.get(system_danger, ENCOUNTER_CHANCE_MODERATE)
 
     chance = calculate_encounter_chance(base_chance, distance)
+
+    # Ghost identity: encounter avoidance (Phase 12A — Gap #10)
+    if defensive_identity == "ghost":
+        avoidance = min(30.0, 15.0)  # 15% base avoidance for Ghost ships
+        chance = max(0, chance - avoidance)
 
     if chance <= 0:
         return None
@@ -274,6 +280,7 @@ class EncounterOutcome:
     description: str
     rewards: list["MissionReward"]
     leads_to_combat: bool = False
+    enemy_template_ids: list[str] = field(default_factory=list)  # Boss encounters specify enemies
 
 
 @dataclass

@@ -816,6 +816,13 @@ class CombatEngine:
         # Reset shield break vulnerability (lasts 1 turn)
         player.shield_break_vulnerable = False
 
+        # Sentinel Overcharge decay (shields above max decay by 10% of excess/turn)
+        if player.shields > player.max_shields:
+            excess = player.shields - player.max_shields
+            decay = max(1, int(excess * 0.10))
+            player.shields = max(player.max_shields, player.shields - decay)
+            messages.append(f"Overshield decay: -{decay}")
+
         # Tick enemy effects
         for enemy in self._state.enemies:
             if enemy.is_alive and not enemy.is_fled:
@@ -1210,11 +1217,18 @@ class CombatEngine:
 
             elif effect.type == EffectType.SHIELD_RESTORE:
                 if isinstance(target, PlayerCombatState):
-                    restored = min(int(effect.value), target.max_shields - target.shields)
+                    # Sentinel Overcharge: can push shields to 150% of max
+                    shield_cap = target.max_shields
+                    if target.defensive_identity == "sentinel":
+                        shield_cap = int(target.max_shields * 1.5)
+                    restored = min(int(effect.value), shield_cap - target.shields)
+                    restored = max(0, restored)
                     target.shields += restored
+                    if target.shields > target.max_shields:
+                        messages.append(f"Overcharged! Shields at {target.shields}/{target.max_shields}")
                 else:
                     restored = min(int(effect.value),
-                                   target.template.shields - target.current_shields)
+                                   target.max_shields - target.current_shields)
                     target.current_shields += restored
                 messages.append(f"Restored {restored} shields on {target_name}")
 
