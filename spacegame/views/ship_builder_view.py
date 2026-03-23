@@ -97,6 +97,13 @@ class ShipBuilderView(BaseView):
         self._selected_material_id: str = "standard_plate"
         self._shape_rotation: int = 0  # 0-3 (90° increments)
         self._shape_flipped: bool = False
+        self._active_tool: str = "stamp"  # "stamp", "pencil", "brush", "fill", "eraser"
+
+        # Advanced tools (Phase B2)
+        self._mirror_mode: bool = False
+        self._undo_stack: list[list[dict]] = []  # Pixel snapshots
+        self._redo_stack: list[list[dict]] = []
+        self._max_undo: int = 20
 
         # Shape palette scroll
         self._shape_scroll_offset: int = 0
@@ -202,6 +209,24 @@ class ShipBuilderView(BaseView):
                 self._shape_flipped = not self._shape_flipped
             elif event.key == pygame.K_ESCAPE:
                 self.next_state = GameState.SHIPYARD
+            # Tool switching (Phase B2)
+            elif event.key == pygame.K_s:
+                self._active_tool = "stamp"
+            elif event.key == pygame.K_p:
+                self._active_tool = "pencil"
+            elif event.key == pygame.K_m:
+                self._active_tool = "brush"
+            elif event.key == pygame.K_f:
+                self._active_tool = "fill"
+            elif event.key == pygame.K_e:
+                self._active_tool = "eraser"
+            elif event.key == pygame.K_x:
+                self._mirror_mode = not self._mirror_mode
+            # Undo/Redo (Phase B2)
+            elif event.key == pygame.K_z and pygame.key.get_mods() & pygame.KMOD_CTRL:
+                self._undo()
+            elif event.key == pygame.K_y and pygame.key.get_mods() & pygame.KMOD_CTRL:
+                self._redo()
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:  # Left click
@@ -235,22 +260,31 @@ class ShipBuilderView(BaseView):
             self._handle_material_panel_click(mx, my)
             return
 
-        # Click on grid — place shape
+        # Click on grid — route through active tool
         grid_pos = self._screen_to_grid(mx, my)
-        if grid_pos and self._selected_shape:
-            self._place_shape_at(*grid_pos)
+        if grid_pos:
+            if self._active_tool == "stamp" and self._selected_shape:
+                self._push_undo()
+                self._place_shape_at(*grid_pos)
+            elif self._active_tool == "pencil":
+                self._push_undo()
+                self._place_pencil(*grid_pos)
+            elif self._active_tool == "brush":
+                self._push_undo()
+                self._paint_material(*grid_pos)
+            elif self._active_tool == "fill":
+                self._push_undo()
+                self._flood_fill(*grid_pos)
+            elif self._active_tool == "eraser":
+                self._push_undo()
+                self._erase_pixel(*grid_pos)
 
     def _handle_right_click(self, pos: tuple[int, int]) -> None:
         """Erase pixel at clicked grid position."""
         grid_pos = self._screen_to_grid(pos[0], pos[1])
         if grid_pos:
-            gx, gy = grid_pos
-            self.build.pixels = [
-                p for p in self.build.pixels
-                if not (p.x == gx and p.y == gy)
-            ]
-            self._modified = True
-            self._recompute_stats()
+            self._push_undo()
+            self._erase_pixel(*grid_pos)
 
     def _handle_shape_palette_click(self, mx: int, my: int) -> None:
         """Select a shape from the palette or switch category filter."""
@@ -302,14 +336,156 @@ class ShipBuilderView(BaseView):
         if not ok:
             return
 
-        # Stamp pixels
+        # Stamp pixels (with mirror mode support)
+        canvas = self.build.canvas_size
+        occupied = {(p.x, p.y) for p in self.build.pixels}
         for row_idx, row in enumerate(shape.pixel_mask):
             for col_idx, filled in enumerate(row):
                 if filled:
                     px, py = gx + col_idx, gy + row_idx
-                    self.build.pixels.append(
-                        PlacedPixel(px, py, self._selected_material_id)
-                    )
+                    if (px, py) not in occupied:
+                        self.build.pixels.append(
+                            PlacedPixel(px, py, self._selected_material_id)
+                        )
+                        occupied.add((px, py))
+                    # Mirror mode: place mirrored pixel
+                    if self._mirror_mode:
+                        mx = canvas - 1 - px
+                        if (mx, py) not in occupied:
+                            self.build.pixels.append(
+                                PlacedPixel(mx, py, self._selected_material_id)
+                            )
+                            occupied.add((mx, py))
+        self._modified = True
+        self._recompute_stats()
+
+    # ------------------------------------------------------------------
+    # Advanced Tools (Phase B2)
+    # ------------------------------------------------------------------
+
+    def _place_pencil(self, gx: int, gy: int) -> None:
+        """Place a single pixel at the grid position."""
+        canvas = self.build.canvas_size
+        if gx < 0 or gy < 0 or gx >= canvas or gy >= canvas:
+            return
+        occupied = {(p.x, p.y) for p in self.build.pixels}
+        if (gx, gy) in occupied:
+            return
+        self.build.pixels.append(PlacedPixel(gx, gy, self._selected_material_id))
+        if self._mirror_mode:
+            mx = canvas - 1 - gx
+            if (mx, gy) not in occupied:
+                self.build.pixels.append(PlacedPixel(mx, gy, self._selected_material_id))
+        self._modified = True
+        self._recompute_stats()
+
+    def _paint_material(self, gx: int, gy: int) -> None:
+        """Change the material of an existing pixel (Material Brush)."""
+        for pixel in self.build.pixels:
+            if pixel.x == gx and pixel.y == gy:
+                pixel.material_id = self._selected_material_id
+                if self._mirror_mode:
+                    mx = self.build.canvas_size - 1 - gx
+                    for mp in self.build.pixels:
+                        if mp.x == mx and mp.y == gy:
+                            mp.material_id = self._selected_material_id
+                            break
+                self._modified = True
+                self._recompute_stats()
+                return
+
+    def _flood_fill(self, gx: int, gy: int) -> None:
+        """Flood-fill empty cells from the clicked position.
+
+        Uses 4-connected fill bounded by canvas edges and existing
+        pixels. Fills with the currently selected material.
+        """
+        canvas = self.build.canvas_size
+        if gx < 0 or gy < 0 or gx >= canvas or gy >= canvas:
+            return
+        occupied = {(p.x, p.y) for p in self.build.pixels}
+        if (gx, gy) in occupied:
+            return  # Can't fill a filled cell
+
+        # BFS flood fill
+        to_fill: list[tuple[int, int]] = []
+        visited: set[tuple[int, int]] = set()
+        queue = [(gx, gy)]
+        max_fill = 500  # Safety limit
+
+        while queue and len(to_fill) < max_fill:
+            x, y = queue.pop(0)
+            if (x, y) in visited or (x, y) in occupied:
+                continue
+            if x < 0 or y < 0 or x >= canvas or y >= canvas:
+                continue
+            visited.add((x, y))
+            to_fill.append((x, y))
+            for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+                queue.append((x + dx, y + dy))
+
+        for x, y in to_fill:
+            self.build.pixels.append(PlacedPixel(x, y, self._selected_material_id))
+            if self._mirror_mode:
+                mx = canvas - 1 - x
+                if (mx, y) not in occupied and (mx, y) not in {(fx, fy) for fx, fy in to_fill}:
+                    self.build.pixels.append(PlacedPixel(mx, y, self._selected_material_id))
+
+        if to_fill:
+            self._modified = True
+            self._recompute_stats()
+
+    def _erase_pixel(self, gx: int, gy: int) -> None:
+        """Remove the pixel at the given grid position."""
+        canvas = self.build.canvas_size
+        before = len(self.build.pixels)
+        self.build.pixels = [
+            p for p in self.build.pixels
+            if not (p.x == gx and p.y == gy)
+        ]
+        if self._mirror_mode:
+            mx = canvas - 1 - gx
+            self.build.pixels = [
+                p for p in self.build.pixels
+                if not (p.x == mx and p.y == gy)
+            ]
+        if len(self.build.pixels) < before:
+            self._modified = True
+            self._recompute_stats()
+
+    # ------------------------------------------------------------------
+    # Undo/Redo (Phase B2)
+    # ------------------------------------------------------------------
+
+    def _push_undo(self) -> None:
+        """Save current pixel state to undo stack."""
+        snapshot = [p.to_dict() for p in self.build.pixels]
+        self._undo_stack.append(snapshot)
+        if len(self._undo_stack) > self._max_undo:
+            self._undo_stack.pop(0)
+        self._redo_stack.clear()
+
+    def _undo(self) -> None:
+        """Restore previous pixel state."""
+        if not self._undo_stack:
+            return
+        # Save current state to redo
+        self._redo_stack.append([p.to_dict() for p in self.build.pixels])
+        # Restore previous state
+        snapshot = self._undo_stack.pop()
+        self.build.pixels = [PlacedPixel.from_dict(d) for d in snapshot]
+        self._modified = True
+        self._recompute_stats()
+
+    def _redo(self) -> None:
+        """Restore next pixel state (after undo)."""
+        if not self._redo_stack:
+            return
+        # Save current to undo
+        self._undo_stack.append([p.to_dict() for p in self.build.pixels])
+        # Restore redo state
+        snapshot = self._redo_stack.pop()
+        self.build.pixels = [PlacedPixel.from_dict(d) for d in snapshot]
         self._modified = True
         self._recompute_stats()
 
@@ -680,13 +856,44 @@ class ShipBuilderView(BaseView):
             )
             screen.blit(id_text, (x_start, y))
 
-        # Rotation/flip indicator (right side)
+        # Tool bar (right side of stats panel)
+        tool_x = WINDOW_WIDTH - scale_x(280)
+        tool_y = STATS_PANEL_Y + 8
+
+        # Active tool indicator
+        tool_labels = {
+            "stamp": "[S] Stamp", "pencil": "[P] Pencil", "brush": "[M] Brush",
+            "fill": "[F] Fill", "eraser": "[E] Eraser",
+        }
+        for i, (tool_id, label) in enumerate(tool_labels.items()):
+            is_active = self._active_tool == tool_id
+            color = Colors.TEXT_HIGHLIGHT if is_active else Colors.TEXT_SECONDARY
+            t = self.label_font.render(label, True, color)
+            screen.blit(t, (tool_x + i * scale_x(55), tool_y))
+
+        tool_y += scale_y(16)
+
+        # Mirror mode and rotation
+        mirror_text = f"[X] Mirror {'ON' if self._mirror_mode else 'OFF'}"
+        mirror_color = Colors.TEXT_HIGHLIGHT if self._mirror_mode else Colors.TEXT_SECONDARY
+        mt = self.label_font.render(mirror_text, True, mirror_color)
+        screen.blit(mt, (tool_x, tool_y))
+
         if self._selected_shape:
             rot_text = self.label_font.render(
-                f"[R] Rotate ({self._shape_rotation * 90}°)  [Q] Flip {'ON' if self._shape_flipped else 'OFF'}",
+                f"  [R] {self._shape_rotation * 90}°  [Q] Flip {'Y' if self._shape_flipped else 'N'}",
                 True, Colors.TEXT_SECONDARY,
             )
-            screen.blit(rot_text, (WINDOW_WIDTH - rot_text.get_width() - scale_x(20), STATS_PANEL_Y + 8))
+            screen.blit(rot_text, (tool_x + mt.get_width(), tool_y))
+
+        tool_y += scale_y(16)
+
+        # Undo/redo indicator
+        undo_text = self.label_font.render(
+            f"Undo: {len(self._undo_stack)}  Redo: {len(self._redo_stack)}  [Ctrl+Z/Y]",
+            True, Colors.TEXT_SECONDARY,
+        )
+        screen.blit(undo_text, (tool_x, tool_y))
 
     def get_next_state(self) -> Optional[GameState]:
         return self.next_state
