@@ -42,6 +42,7 @@ from spacegame.models.combat import (
     EnemyBehavior,
     EnemyShipTemplate,
 )
+from spacegame.models.momentum import ShipUltimate
 from spacegame.models.encounter import (
     EncounterChoice,
     EncounterDefinition,
@@ -104,6 +105,7 @@ class DataLoader:
         self.deep_core_upgrades: Dict[str, "DeepCoreUpgrade"] = {}
         self.wreck_upgrades: Dict[str, "WreckUpgrade"] = {}
         self.forge_upgrades: Dict[str, "ForgeUpgrade"] = {}
+        self.ship_ultimates: Dict[str, "ShipUltimate"] = {}  # category → ultimate
 
     def _safe_load(self, loader_name: str, loader_fn) -> None:
         """Call a loader function with error handling and context.
@@ -148,6 +150,7 @@ class DataLoader:
         self._safe_load("crew_templates", self.load_crew_templates)
         self._safe_load("ambient_dialogue", self.load_ambient_dialogue)
         self._safe_load("enemy_templates", self.load_enemy_templates)
+        self._safe_load("ship_ultimates", self.load_ship_ultimates)
         self._safe_load("journal_entries", self.load_journal_entries)
         self._safe_load("encounter_definitions", self.load_encounter_definitions)
         self._safe_load("ground_equipment", self.load_ground_equipment)
@@ -300,6 +303,7 @@ class DataLoader:
             id=data["id"],
             name=data["name"],
             ship_class=data["class"],
+            ship_class_category=data.get("ship_class_category", ""),
             description=data["description"],
             cargo_capacity=data["cargo_capacity"],
             fuel_capacity=data["fuel_capacity"],
@@ -1091,6 +1095,23 @@ class DataLoader:
 
         logger.info(f"Loaded {len(self.enemy_templates)} enemy templates")
         return self.enemy_templates
+
+    def load_ship_ultimates(self) -> Dict[str, ShipUltimate]:
+        """Load ship class ultimate abilities from JSON."""
+        file_path = self.data_dir / "combat" / "ultimates.json"
+        if not file_path.exists():
+            logger.warning(f"Ultimates file not found: {file_path}")
+            return self.ship_ultimates
+        with open(file_path, "r") as f:
+            data = json.load(f)
+
+        self.ship_ultimates.clear()
+        for ult_data in data.get("ultimates", []):
+            ultimate = ShipUltimate.from_dict(ult_data)
+            self.ship_ultimates[ultimate.ship_class_category] = ultimate
+
+        logger.info(f"Loaded {len(self.ship_ultimates)} ship ultimates")
+        return self.ship_ultimates
 
     def _parse_enemy_template(self, data: dict) -> EnemyShipTemplate:
         """Parse an enemy ship template from raw JSON data."""

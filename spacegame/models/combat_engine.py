@@ -23,6 +23,14 @@ from spacegame.models.combat import (
     PlayerCombatState,
     WeaponElement,
 )
+from spacegame.models.momentum import (
+    MOMENTUM_ON_CREW_ABILITY,
+    MOMENTUM_ON_CRITICAL_HP,
+    MOMENTUM_ON_HIT,
+    MOMENTUM_ON_HULL_DAMAGE,
+    MOMENTUM_ON_KILL,
+    MOMENTUM_ON_STATUS_APPLIED,
+)
 
 # Hit chance bounds
 HIT_CHANCE_MIN = 5
@@ -103,6 +111,18 @@ class CombatEngine:
         if move.cooldown > 0:
             player.cooldowns[move_id] = move.cooldown
 
+        # Overdriven Weapon: 2x damage on next weapon attack (momentum 50% threshold)
+        overdriven_active = False
+        if (player.momentum and player.momentum.overdriven_available
+                and any(e.type == EffectType.DAMAGE for e in move.effects)):
+            overdriven_active = True
+            # Temporarily add a 100% damage boost
+            boost = CombatEffect(
+                type=EffectType.DAMAGE_BOOST, value=100.0,
+                duration=1, target=EffectTarget.SELF,
+            )
+            player.active_effects.append((boost, 1))
+
         # AOE moves hit all surviving enemies
         if move.aoe:
             all_logs: list[CombatLogEntry] = []
@@ -111,6 +131,8 @@ class CombatEngine:
                     move, player, enemy, "player", player.get_effective_accuracy()
                 )
                 all_logs.extend(logs)
+            if overdriven_active:
+                self._consume_overdriven_boost(player)
             return all_logs
 
         # Single-target: determine target
@@ -118,9 +140,12 @@ class CombatEngine:
         target_enemy = self._state.enemies[target_idx]
 
         # Resolve
-        return self._resolve_move(
+        result = self._resolve_move(
             move, player, target_enemy, "player", player.get_effective_accuracy()
         )
+        if overdriven_active:
+            self._consume_overdriven_boost(player)
+        return result
 
     def execute_crew_moves(
         self, chosen_move_id: Optional[str] = None,
@@ -165,6 +190,8 @@ class CombatEngine:
                             f"crew:{move.id}", player.get_effective_accuracy(),
                         )
                         all_logs.extend(logs)
+                        # Momentum: crew ability used
+                        self._add_player_momentum(MOMENTUM_ON_CREW_ABILITY, "crew ability")
                     break
             return all_logs
 
@@ -644,11 +671,36 @@ class CombatEngine:
             hit = roll <= hit_chance
 
             if hit:
+                # Track if enemy was alive before applying effects
+                enemy_was_alive = (
+                    defender.is_alive
+                    if isinstance(defender, EnemyShip)
+                    else True
+                )
+
                 msgs = self._apply_effects(
                     offensive_effects, defender, actor_name,
                     attacker_state=attacker, element=move.element,
                 )
                 effects_applied.extend(msgs)
+
+                # Momentum: player dealt a hit
+                is_player_attack = actor_name == "player" or actor_name.startswith("crew:")
+                if is_player_attack and isinstance(defender, EnemyShip):
+                    momentum_msgs = self._add_player_momentum(MOMENTUM_ON_HIT, "hit")
+                    effects_applied.extend(momentum_msgs)
+                    # Check if this hit killed the enemy
+                    if enemy_was_alive and not defender.is_alive:
+                        kill_msgs = self._add_player_momentum(MOMENTUM_ON_KILL, "kill")
+                        effects_applied.extend(kill_msgs)
+
+                # Momentum: player took hull damage (enemy hit the player)
+                if not is_player_attack and isinstance(defender, PlayerCombatState):
+                    hull_msgs = self._add_player_momentum(MOMENTUM_ON_HULL_DAMAGE, "took damage")
+                    effects_applied.extend(hull_msgs)
+                    # Check critical HP surge
+                    crit_msgs = self._check_critical_hp_surge()
+                    effects_applied.extend(crit_msgs)
             else:
                 effects_applied.append(f"Missed (rolled {roll} vs {hit_chance}%)")
 
@@ -784,6 +836,9 @@ class CombatEngine:
                     messages.append(
                         f"Burn: {int(burn_per_turn)}/turn for 3 turns"
                     )
+                    # Momentum: elemental status applied by player
+                    if source_name == "player" or source_name.startswith("crew:"):
+                        self._add_player_momentum(MOMENTUM_ON_STATUS_APPLIED, "burn applied")
 
                 elif eff_element == WeaponElement.ION:
                     # 150% to shields, 75% to hull
@@ -816,6 +871,8 @@ class CombatEngine:
                     )
                     chill_count = self._apply_stacking_effect(target, chill_effect, max_stacks=3)
                     messages.append(f"Chill x{chill_count}")
+                    if source_name == "player" or source_name.startswith("crew:"):
+                        self._add_player_momentum(MOMENTUM_ON_STATUS_APPLIED, "chill applied")
                     if chill_count >= 3:
                         # Frozen! Enemy loses next turn — clear all Chill stacks
                         self._clear_effect_type(target, EffectType.CHILL)
@@ -838,6 +895,8 @@ class CombatEngine:
                     )
                     sup_count = self._apply_stacking_effect(target, suppress_effect, max_stacks=3)
                     messages.append(f"Suppressed x{sup_count} (-{sup_count * 12}% damage)")
+                    if source_name == "player" or source_name.startswith("crew:"):
+                        self._add_player_momentum(MOMENTUM_ON_STATUS_APPLIED, "suppressed applied")
 
                 else:
                     # Kinetic (default) — pure direct damage
@@ -1013,6 +1072,284 @@ class CombatEngine:
         if isinstance(target, PlayerCombatState):
             return "Player"
         return target.template.name
+
+    def _consume_overdriven_boost(self, player: PlayerCombatState) -> None:
+        """Remove the temporary Overdriven damage boost and consume the buff."""
+        player.active_effects = [
+            (eff, dur) for eff, dur in player.active_effects
+            if not (eff.type == EffectType.DAMAGE_BOOST and eff.value == 100.0 and dur == 1)
+        ]
+        if player.momentum:
+            player.momentum.consume_overdriven()
+
+    def _add_player_momentum(self, amount: float, reason: str = "") -> list[str]:
+        """Add momentum to the player gauge and return threshold messages.
+
+        Args:
+            amount: Momentum to add (0.0 to 1.0 scale).
+            reason: Debug/log description of why momentum was added.
+
+        Returns:
+            List of human-readable messages about crossed thresholds.
+        """
+        player = self._state.player
+        if player.momentum is None:
+            return []
+        crossed = player.momentum.add(amount)
+        messages: list[str] = []
+        for threshold in crossed:
+            if threshold == "charged":
+                messages.append("Momentum: CHARGED! Crew combos unlocked.")
+            elif threshold == "surging":
+                messages.append("Momentum: SURGING! Overdriven Weapon ready.")
+            elif threshold == "overload":
+                messages.append("Momentum: OVERLOAD! Systems overclocked.")
+            elif threshold == "ultimate":
+                messages.append("Momentum: ULTIMATE READY!")
+        return messages
+
+    def _check_critical_hp_surge(self) -> list[str]:
+        """Check if player just dropped below 25% hull for the first time.
+
+        Returns:
+            Momentum messages if the surge fires.
+        """
+        player = self._state.player
+        if player.critical_hp_surge_fired:
+            return []
+        if player.hull_ratio < 0.25 and player.hull > 0:
+            player.critical_hp_surge_fired = True
+            return self._add_player_momentum(MOMENTUM_ON_CRITICAL_HP, "critical HP")
+        return []
+
+    def _check_enemy_killed_momentum(self, enemy: EnemyShip) -> list[str]:
+        """Add momentum if an enemy was just killed.
+
+        Args:
+            enemy: The enemy to check.
+
+        Returns:
+            Momentum messages if kill momentum fires.
+        """
+        if not enemy.is_alive:
+            return self._add_player_momentum(MOMENTUM_ON_KILL, f"killed {enemy.template.name}")
+        return []
+
+    def execute_ultimate(self) -> list[CombatLogEntry]:
+        """Execute the player's ship ultimate ability.
+
+        Requires 100% momentum. Resets momentum to 0 after use.
+
+        Returns:
+            Combat log entries from the ultimate's effects.
+        """
+        from spacegame.data_loader import get_data_loader
+
+        player = self._state.player
+        if player.momentum is None or not player.momentum.ultimate_available:
+            entry = CombatLogEntry(
+                round_number=self._state.round_number,
+                actor="player",
+                action="Ultimate",
+                effects_applied=["Ultimate not ready"],
+                hit=False,
+            )
+            self._state.combat_log.append(entry)
+            return [entry]
+
+        dl = get_data_loader()
+        ultimate = dl.ship_ultimates.get(player.ship_class_category)
+        if ultimate is None:
+            entry = CombatLogEntry(
+                round_number=self._state.round_number,
+                actor="player",
+                action="Ultimate",
+                effects_applied=["No ultimate defined for this ship class"],
+                hit=False,
+            )
+            self._state.combat_log.append(entry)
+            return [entry]
+
+        # Consume momentum
+        player.momentum.consume_ultimate()
+
+        # Resolve ultimate effects
+        logs = self._resolve_ultimate_effects(ultimate)
+        return logs
+
+    def _resolve_ultimate_effects(
+        self, ultimate: "ShipUltimate"
+    ) -> list[CombatLogEntry]:
+        """Resolve the mechanical effects of a ship ultimate.
+
+        Args:
+            ultimate: The ultimate ability definition.
+
+        Returns:
+            Combat log entries from the resolution.
+        """
+        from spacegame.models.momentum import ShipUltimate
+
+        player = self._state.player
+        messages: list[str] = [f"ULTIMATE: {ultimate.name}!"]
+        surviving = self._state.surviving_enemies
+
+        for effect in ultimate.effects:
+            effect_type = effect.get("type", "")
+            value = effect.get("value", 0)
+            target = effect.get("target", "")
+            duration = effect.get("duration", 0)
+
+            if effect_type == "damage" and target == "all_enemies":
+                for enemy in surviving:
+                    dmg = int(value)
+                    self._apply_direct_damage(
+                        enemy, float(dmg), messages, enemy.template.name
+                    )
+                    messages.append(f"{enemy.template.name}: {dmg} damage")
+
+            elif effect_type == "damage" and target == "single_enemy":
+                if surviving:
+                    # Target strongest (highest current HP) enemy
+                    strongest = max(surviving, key=lambda e: e.current_hull + e.current_shields)
+                    dmg = int(value)
+                    if effect.get("ignores_shields"):
+                        strongest.current_hull = max(0, strongest.current_hull - dmg)
+                        messages.append(f"{strongest.template.name}: {dmg} damage (bypassed shields)")
+                    else:
+                        self._apply_direct_damage(
+                            strongest, float(dmg), messages, strongest.template.name
+                        )
+                        messages.append(f"{strongest.template.name}: {dmg} damage")
+
+            elif effect_type == "guaranteed_flee":
+                self._state.result = CombatResult.FLED
+
+            elif effect_type == "hull_restore" and target == "self_percent":
+                restore = int(player.max_hull * value)
+                player.hull = min(player.max_hull, player.hull + restore)
+                messages.append(f"Restored {restore} hull")
+
+            elif effect_type == "damage_immunity":
+                eff = CombatEffect(
+                    type=EffectType.DAMAGE_REDUCTION,
+                    value=100.0,
+                    duration=duration,
+                    target=EffectTarget.SELF,
+                )
+                player.active_effects.append((eff, duration))
+                messages.append(f"Damage immunity for {duration} turns")
+
+            elif effect_type == "skip_turn" and target == "all_enemies":
+                for enemy in surviving:
+                    # Mark enemies to skip turns using frozen-like mechanic
+                    skip_count = int(value)
+                    eff = CombatEffect(
+                        type=EffectType.EVASION_MOD,
+                        value=-999,
+                        duration=skip_count,
+                    )
+                    enemy.active_effects.append((eff, skip_count))
+                    if not hasattr(enemy, "_frozen"):
+                        enemy._frozen = True
+                    else:
+                        enemy._frozen = True
+                messages.append(f"All enemies stunned for {int(value)} turns")
+
+            elif effect_type == "evasion_mod" and target == "all_enemies":
+                for enemy in surviving:
+                    eff = CombatEffect(
+                        type=EffectType.EVASION_MOD,
+                        value=value,
+                        duration=duration,
+                    )
+                    enemy.active_effects.append((eff, duration))
+                messages.append(f"All enemies: {int(value)} evasion for {duration} turns")
+
+            elif effect_type == "accuracy_mod" and target == "self":
+                eff = CombatEffect(
+                    type=EffectType.ACCURACY_MOD,
+                    value=value,
+                    duration=duration,
+                    target=EffectTarget.SELF,
+                )
+                player.active_effects.append((eff, duration))
+                messages.append(f"+{int(value)} accuracy for {duration} turns")
+
+            elif effect_type == "energy_drain" and target == "all_enemies":
+                for enemy in surviving:
+                    drained = min(int(value), enemy.current_energy)
+                    enemy.current_energy -= drained
+                messages.append(f"Drained {int(value)} energy from all enemies")
+
+            elif effect_type == "sacrifice_cargo":
+                messages.append(f"Jettisoned {int(value)} cargo units")
+                # Actual cargo removal happens in the view layer (needs player model)
+
+            elif effect_type == "free_action":
+                messages.append("Free action next turn!")
+                # Tracked via flag in combat state, resolved in view
+
+            elif effect_type == "reset_cooldowns":
+                player.cooldowns.clear()
+                messages.append("All cooldowns reset!")
+
+            elif effect_type == "momentum_refund":
+                refund = value
+                player.momentum.add(refund)
+                messages.append(f"Momentum refunded to {int(player.momentum.current * 100)}%")
+
+            elif effect_type == "burn" and target == "single_enemy":
+                if surviving:
+                    strongest = max(surviving, key=lambda e: e.current_hull + e.current_shields)
+                    for _ in range(int(value)):
+                        burn_eff = CombatEffect(
+                            type=EffectType.BURN, value=7.0, duration=3
+                        )
+                        self._apply_stacking_effect(strongest, burn_eff)
+                    messages.append(f"{strongest.template.name}: {int(value)} Burn stacks applied")
+
+            elif effect_type == "immobilize":
+                if surviving:
+                    strongest = max(surviving, key=lambda e: e.current_hull + e.current_shields)
+                    strongest._frozen = True
+                    eff = CombatEffect(
+                        type=EffectType.EVASION_MOD,
+                        value=-999,
+                        duration=int(value),
+                    )
+                    strongest.active_effects.append((eff, int(value)))
+                    messages.append(f"{strongest.template.name} immobilized for {int(value)} turns")
+
+            elif effect_type == "energy_lock":
+                messages.append(f"High-cost abilities locked for {duration} turns")
+                # Engine enforces this in enemy move selection
+
+            elif effect_type == "reveal_stats":
+                messages.append("All enemy stats revealed")
+                # View layer reads this flag for display
+
+            elif effect_type == "copy_best_move":
+                if surviving:
+                    strongest = max(surviving, key=lambda e: e.current_hull + e.current_shields)
+                    best_move = max(strongest.template.moves, key=lambda m: sum(
+                        e.value for e in m.effects if e.type == EffectType.DAMAGE
+                    ), default=None)
+                    if best_move:
+                        player.equipment_moves.append(best_move)
+                        messages.append(f"Copied {best_move.name} from {strongest.template.name}")
+
+        entry = CombatLogEntry(
+            round_number=self._state.round_number,
+            actor="player",
+            action=f"ULTIMATE: {ultimate.name}",
+            effects_applied=messages,
+            hit=True,
+        )
+        self._state.combat_log.append(entry)
+
+        self._check_combat_end()
+        return [entry]
 
     def _check_combat_end(self) -> None:
         """Check if combat has ended (victory or defeat)."""

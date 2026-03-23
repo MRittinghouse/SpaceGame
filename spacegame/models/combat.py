@@ -351,6 +351,16 @@ class PlayerCombatState:
     active_effects: list[tuple[CombatEffect, int]]
     cooldowns: dict[str, int]
     flee_bonus: int = 0
+    # Momentum system (Phase 8)
+    ship_class_category: str = ""
+    momentum: "MomentumGauge | None" = field(default=None, repr=False)
+    critical_hp_surge_fired: bool = field(default=False, repr=False)
+
+    def __post_init__(self) -> None:
+        """Initialize momentum gauge if not provided."""
+        if self.momentum is None:
+            from spacegame.models.momentum import MomentumGauge
+            self.momentum = MomentumGauge()
 
     @property
     def is_alive(self) -> bool:
@@ -525,4 +535,5 @@ def build_player_combat_state(
         active_effects=[],
         cooldowns={},
         flee_bonus=flee_bonus,
+        ship_class_category=st.ship_class_category,
     )

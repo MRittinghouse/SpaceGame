@@ -1,0 +1,152 @@
+{
+  "ultimates": [
+    {
+      "id": "mayday_burst",
+      "name": "Mayday Burst",
+      "ship_class_category": "starter",
+      "description": "Emergency distress burst grants guaranteed escape and rapid hull patching.",
+      "effects": [
+        {"type": "guaranteed_flee", "value": 1.0},
+        {"type": "hull_restore", "value": 0.30, "target": "self_percent"}
+      ],
+      "visual_type": "utility"
+    },
+    {
+      "id": "intercept_salvo",
+      "name": "Intercept Salvo",
+      "ship_class_category": "early_combat",
+      "description": "Coordinated barrage rakes all enemies, shredding their defenses.",
+      "effects": [
+        {"type": "damage", "value": 25.0, "target": "all_enemies"},
+        {"type": "evasion_mod", "value": -20.0, "duration": 2, "target": "all_enemies"}
+      ],
+      "visual_type": "damage_aoe"
+    },
+    {
+      "id": "cargo_jettison",
+      "name": "Cargo Jettison",
+      "ship_class_category": "trade_freighter",
+      "description": "Eject volatile cargo containers into the combat zone. Everything burns.",
+      "effects": [
+        {"type": "sacrifice_cargo", "value": 10.0},
+        {"type": "damage", "value": 60.0, "target": "all_enemies"}
+      ],
+      "visual_type": "damage_aoe"
+    },
+    {
+      "id": "afterburner_strike",
+      "name": "Afterburner Strike",
+      "ship_class_category": "fast_scout",
+      "description": "Full-throttle attack run. Hit hard, hit fast, and line up the next shot before they recover.",
+      "effects": [
+        {"type": "damage", "value": 50.0, "target": "single_enemy", "guaranteed_hit": true},
+        {"type": "free_action", "value": 1.0, "target": "self"}
+      ],
+      "visual_type": "damage_single"
+    },
+    {
+      "id": "drill_charge",
+      "name": "Drill Charge",
+      "ship_class_category": "mining_salvage",
+      "description": "Overclock the mining drill and ram it through the enemy hull. Shields don't stop industrial equipment.",
+      "effects": [
+        {"type": "damage", "value": 45.0, "target": "single_enemy", "ignores_shields": true}
+      ],
+      "visual_type": "damage_single"
+    },
+    {
+      "id": "ghost_protocol",
+      "name": "Ghost Protocol",
+      "ship_class_category": "stealth",
+      "description": "Engage full stealth. All systems go dark. For two turns, you don't exist.",
+      "effects": [
+        {"type": "damage_immunity", "value": 1.0, "duration": 2, "target": "self"}
+      ],
+      "visual_type": "buff_self"
+    },
+    {
+      "id": "nova_barrage",
+      "name": "Nova Barrage",
+      "ship_class_category": "heavy_combat",
+      "description": "All weapons fire simultaneously. Everything in range takes the full broadside.",
+      "effects": [
+        {"type": "damage", "value": 60.0, "target": "all_enemies", "element": "kinetic"}
+      ],
+      "visual_type": "damage_aoe"
+    },
+    {
+      "id": "diplomatic_immunity",
+      "name": "Diplomatic Immunity",
+      "ship_class_category": "luxury_diplomat",
+      "description": "Broadcast diplomatic override codes. All hostile ships are forced to stand down.",
+      "effects": [
+        {"type": "skip_turn", "value": 2.0, "target": "all_enemies"}
+      ],
+      "visual_type": "control"
+    },
+    {
+      "id": "sensor_overload",
+      "name": "Sensor Overload",
+      "ship_class_category": "explorer",
+      "description": "Flood every frequency. Their systems are stripped bare while yours lock on with surgical precision.",
+      "effects": [
+        {"type": "reveal_stats", "value": 1.0, "target": "all_enemies"},
+        {"type": "accuracy_mod", "value": 30.0, "duration": 3, "target": "self"},
+        {"type": "energy_drain", "value": 5.0, "target": "all_enemies"}
+      ],
+      "visual_type": "utility"
+    },
+    {
+      "id": "tractor_beam",
+      "name": "Tractor Beam",
+      "ship_class_category": "industrial",
+      "description": "Lock the industrial tractor array onto the biggest threat. They're not going anywhere.",
+      "effects": [
+        {"type": "immobilize", "value": 3.0, "target": "strongest_enemy"}
+      ],
+      "visual_type": "control"
+    },
+    {
+      "id": "trade_embargo",
+      "name": "Trade Embargo",
+      "ship_class_category": "faction_guild",
+      "description": "Invoke Guild authority to restrict enemy power systems. High-cost abilities go offline.",
+      "effects": [
+        {"type": "energy_lock", "value": 3.0, "duration": 3, "target": "all_enemies"}
+      ],
+      "visual_type": "control"
+    },
+    {
+      "id": "forge_hammer",
+      "name": "Forge Hammer",
+      "ship_class_category": "faction_union",
+      "description": "Channel the Syndicate's industrial might into a single devastating blow. The hull melts.",
+      "effects": [
+        {"type": "damage", "value": 70.0, "target": "single_enemy"},
+        {"type": "burn", "value": 3.0, "target": "single_enemy"}
+      ],
+      "visual_type": "damage_single"
+    },
+    {
+      "id": "rally_cry",
+      "name": "Rally Cry",
+      "ship_class_category": "faction_frontier",
+      "description": "The frontier never gives up. Reset all cooldowns and get back in the fight.",
+      "effects": [
+        {"type": "reset_cooldowns", "value": 1.0, "target": "self"},
+        {"type": "momentum_refund", "value": 0.50, "target": "self"}
+      ],
+      "visual_type": "buff_self"
+    },
+    {
+      "id": "quantum_analysis",
+      "name": "Quantum Analysis",
+      "ship_class_category": "faction_science",
+      "description": "Analyze and replicate the enemy's most powerful weapon system. Science adapts.",
+      "effects": [
+        {"type": "copy_best_move", "value": 1.0, "target": "strongest_enemy"}
+      ],
+      "visual_type": "utility"
+    }
+  ]
+}

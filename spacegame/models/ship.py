@@ -29,6 +29,8 @@ class ShipType:
     crew_slots: int
     special_abilities: List[str]
     availability: str  # common, uncommon, rare
+    # Ship class category for momentum ultimates
+    ship_class_category: str = ""
     # Combat stats (default 0 for backward compat)
     combat_hull: int = 0
     combat_shields: int = 0
