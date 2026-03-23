@@ -119,9 +119,15 @@ class SaveLoadView(BaseView):
             )
             self.slot_buttons.append(button)
 
-        # Back button
+        # Back button (above HUD bar)
+        from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
+
+        hud_h = scale_y(HUD_BASE_HEIGHT)
         self.back_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(scale_x(50), WINDOW_HEIGHT - scale_y(70), scale_x(150), scale_y(50)),
+            relative_rect=pygame.Rect(
+                scale_x(50), WINDOW_HEIGHT - hud_h - scale_y(60),
+                scale_x(150), scale_y(45),
+            ),
             text="BACK",
             manager=self.ui_manager,
         )
@@ -192,6 +198,11 @@ class SaveLoadView(BaseView):
 
     def handle_event(self, event: pygame.event.Event) -> None:
         """Handle save/load view events."""
+        # ESC to close
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+            self.should_close = True
+            return
+
         if event.type == pygame_gui.UI_BUTTON_PRESSED:
             # Check if slot button pressed
             for i, button in enumerate(self.slot_buttons):
