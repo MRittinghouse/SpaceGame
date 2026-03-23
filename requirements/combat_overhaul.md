@@ -662,7 +662,7 @@ Every new mechanic needs clear communication. The tutorial system already suppor
 | 6 | Utility Moves | DONE |
 | 7A | Ship Sprite Naming Fixes | DONE |
 
-### UPCOMING (JRPG Evolution)
+### UPCOMING (JRPG Evolution — Wave 2)
 
 | Phase | Description | Effort | Impact | Dependencies |
 |-------|-------------|--------|--------|-------------|
@@ -670,13 +670,28 @@ Every new mechanic needs clear communication. The tutorial system already suppor
 | **9** | Crew Combo Abilities | MEDIUM | HIGH | Phase 8 (needs Momentum threshold) |
 | **10** | Boss Encounter System | HIGH | HIGH | Phases 8-9 (bosses should test all systems) |
 | **11** | Tutorial Integration | MEDIUM | HIGH | Phases 8-10 (tutorials explain new mechanics) |
-| **7B-E** | Ship Sprite Generation | HIGH | MEDIUM | Art pipeline (API budget) |
+| **7B-E** | ~~Ship Sprite Generation~~ | ~~HIGH~~ | ~~MEDIUM~~ | **SUPERSEDED by Shipyard Overhaul** — player ships are now player-built pixel grids, eliminating the need for hand-crafted/generated sprites. Enemy sprites remain stock. See `requirements/shipyard_overhaul.md`. |
+
+### UPCOMING (Defensive Identity — Wave 3)
+
+| Phase | Description | Effort | Impact | Dependencies |
+|-------|-------------|--------|--------|-------------|
+| **12A** | Core Mechanics (armor, shield regen, graze, identity passives) | HIGH | CRITICAL | None (can be built alongside Wave 2) |
+| **12B** | Upgrades & Equipment (18 defense + 9 utility) | MEDIUM | HIGH | Phase 12A |
+| **12C** | Skill Tree Expansion (18 nodes + 3 capstones) | MEDIUM | HIGH | Phase 12A |
+| **12D** | Enemy Templates (6 identity-counter enemies) | LOW | MEDIUM | Phase 12A |
+| **12E** | Visual Pass (armor sparks, dodge anims, identity VFX) | MEDIUM | HIGH | Phases 12A-B |
+| **12F** | Balance & Integration | LOW | HIGH | Phases 12A-E |
 
 ### Recommended Implementation Order
 1. **Phase 8 (Momentum)** first — it's the backbone. Ship Ultimates give every ship class identity.
-2. **Phase 9 (Crew Combos)** next — layered on top of Momentum threshold 1. Rewards party composition.
-3. **Phase 10 (Bosses)** third — uses all existing systems (momentum, combos, elements, telegraphing).
-4. **Phase 11 (Tutorials)** last — explains everything that's been built.
+2. **Phase 12A (Defensive Core)** — can be built in parallel with or immediately after Phase 8. Armor, shield regen, and graze are foundational mechanics that improve every subsequent combat feature.
+3. **Phase 9 (Crew Combos)** — layered on top of Momentum threshold 1. Rewards party composition.
+4. **Phase 12B-C (Upgrades + Skills)** — flesh out the defensive identities with equipment and skill trees.
+5. **Phase 10 (Bosses)** — uses all systems (momentum, combos, elements, defense identities, telegraphing). Boss design should exploit all three defensive identities.
+6. **Phase 12D-E (Enemies + Visuals)** — counter-enemies and visual polish for defense identities.
+7. **Phase 11 (Tutorials)** last — explains everything that's been built, including defense identity choices.
+8. **Phase 12F (Balance)** — final tuning pass after all systems are in place.
 
 ### Future Expansion Opportunities (post-playtesting)
 - Elemental visual pass: distinct projectile colors/sprites per element
@@ -685,6 +700,419 @@ Every new mechanic needs clear communication. The tutorial system already suppor
 - Blue Magic equivalent: salvage enemy technology after boss kills
 - New Game+ mode: bosses appear as random encounters, momentum builds faster
 - Boss Rush mode: fight all bosses in sequence for leaderboard score
+- Defensive identity synergy with crew: crew members that amplify specific identities
+- Hybrid identity builds: upgrades that bridge two identities (e.g., shield-to-armor conversion)
+
+---
+
+## Wave 3: Defensive Identity System — Hull, Shields, Evasion
+
+> Every ship has three defensive stats: Hull, Shields, and Evasion. Currently these exist as raw numbers, but they don't create distinct playstyles. This wave turns them into three fully realized defensive identities — the RPG equivalent of Warrior, Paladin, and Thief — each with dedicated upgrades, skill paths, passive mechanics, and strategic trade-offs that make choosing your defense feel as meaningful as choosing your weapon.
+
+### Design Philosophy
+
+**The Core Triangle:**
+- **Hull (Juggernaut)**: High total survivability. You take every hit, but you can take more of them. Costs credits to repair — but in exchange, you get raw combat prowess that shield and evasion builds can't match. The "I win fights by refusing to die" identity.
+- **Shields (Sentinel)**: Self-sustaining defense. Shields regenerate, so you pay nothing between fights — but the pool is smaller, and once broken, you're exposed. The "I manage my energy and tempo" identity. Countered hard by Ion weapons.
+- **Evasion (Ghost)**: Probabilistic defense. When it works, you take zero damage. When it doesn't, you fold. The "I never get hit, but one bad turn can end me" identity. Rewards risk-taking, punishes greed. Also grants the best flee chances, fastest travel, and smuggling synergy.
+
+**Balance Anchor: The Repair Cost Problem**
+Hull costs money. Shields don't. Evasion doesn't. This means hull MUST be the strongest defensive option in raw combat terms, or a rational player would never choose it. Our balance target:
+
+| Identity | Effective HP (turns survived) | Repair Cost | Out-of-Combat Advantage |
+|----------|------------------------------|-------------|------------------------|
+| Hull | **120%** of baseline | High (credits/turn) | None — pure combat power |
+| Shield | **100%** of baseline | Free (auto-regen) | Sustain — no repair bills |
+| Evasion | **90%** of baseline (probabilistic) | Free (not hit) | Flee chance, speed, smuggling |
+
+A hull-focused ship survives ~20% more punishment than a shield ship, compensating for repair costs. An evasion ship survives ~10% less on average (but with higher variance — sometimes untouchable, sometimes caught flat-footed), compensated by out-of-combat advantages.
+
+### Three Defensive Identities — Detailed Design
+
+---
+
+#### Identity 1: Hull (Juggernaut)
+
+**Fantasy**: You're an armored freight train. Enemies shoot you and it barely matters. Your hull shrugs off hits that would cripple lighter ships. You pay for repairs after the fight, but during it? You're the last one standing.
+
+**Core Mechanic — Armor Rating**
+A new stat: **Armor**. Flat damage reduction per hit. Before shields are checked, before percentage reduction, Armor subtracts a flat amount from each incoming damage instance.
+
+```
+final_damage = max(1, raw_damage - armor_rating)
+```
+
+This is powerful against rapid small attacks (a 5-damage hit against 3 armor becomes 2 damage — 60% reduction!) but less effective against single large hits (a 40-damage hit against 3 armor becomes 37 — only 7.5% reduction). This creates a natural counter: hull ships fear big slow weapons but laugh at chip damage.
+
+**Armor Scaling:**
+- Base armor: 0 for most ships (opt-in via upgrades)
+- Hull-identity ships (Industrial Titan, War Frigate, Bulk Hauler): 2-4 base armor
+- Armor upgrades: +1 to +5 from equipment
+- Skill tree: +1 per level of Hull Reinforcement (existing skill, rebalanced)
+- Practical range: 0 (no investment) to 8-10 (fully built)
+
+**Hull Passive — Last Stand**
+When below 25% hull, hull-identity ships gain:
+- +15% damage dealt (adrenaline)
+- +2 armor (desperate defense)
+- Visual: red hull glow, sparks, warning klaxon tone
+
+This creates dramatic comeback moments and rewards staying in fights longer — exactly the hull fantasy.
+
+**Hull Passive — Structural Integrity**
+Hull HP above 75% grants +5% damage reduction. This rewards keeping hull topped up and makes the opening of fights slightly easier for hull ships.
+
+**Repair Cost Balance:**
+Current repair costs are flat per HP. We keep this, but add:
+- Skill discount: "Field Repairs" skill reduces repair costs by 15% per level (max 3, 45% discount)
+- Emergency hull-repair move heals less than shield-restore (25 hull vs 30-40 shields) but hull is a bigger pool
+- Crew bonus: Marcus's engineering reduces repair costs at stations by 20%
+
+---
+
+#### Identity 2: Shields (Sentinel)
+
+**Fantasy**: Your shields are your lifeline. You manage them like a resource — regenerating, restoring, overcharging. When shields are up, you're nearly invulnerable. When they break, you're scrambling to get them back. Ion weapons are your nightmare.
+
+**Core Mechanic — Shield Regeneration**
+Shields already exist but have no passive regen in combat. We add:
+
+- **Passive shield regen**: Shields regenerate a small amount each turn automatically
+- Base regen: 0 (most ships)
+- Shield-identity ships (Institute Vessel, Luxury Yacht, Diplomatic Cruiser): 3-5 base regen per turn
+- Shield regen upgrades: +2 to +8 per turn from equipment
+- Skill tree: Shield Mastery adds +2 regen per level (existing skill, rebalanced)
+- Practical range: 0 (no investment) to 10-15 per turn (fully built)
+
+This means a dedicated shield build can sustain ~10-15 shield per turn for free, which against moderate damage creates a "shield wall" that absorbs chip damage entirely. But burst damage overwhelms it — a 40-damage hit blows through 10 regen instantly.
+
+**Shield Passive — Overcharge Capacity**
+Shield-identity upgrades can push shields ABOVE their base max, up to 150% capacity. Overshield decays at 10% per turn (use it or lose it). This rewards proactive shield management — restore shields before the fight intensifies, build a buffer.
+
+**Shield Passive — Shield Break Vulnerability**
+When shields hit 0, the ship takes 25% bonus damage for 1 turn (exposed systems). This is the shield identity's explicit weakness — once breached, you're more vulnerable than a hull ship would be. It creates urgency to prevent shield break and punishes letting shields drop.
+
+**Ion Weakness:**
+Ion weapons already deal 150% to shields. This is the hard counter. A shield-focused build that encounters Ion enemies must adapt (switch to hull repair moves, use evasion buffs). This is intentional — every identity should have a counter that forces adaptation.
+
+**Economic Advantage:**
+Shield regen is free. A shield ship that wins fights with shields intact pays zero repair bills. This is a real economic advantage over hull builds, balanced by the 20% lower effective survivability in combat.
+
+---
+
+#### Identity 3: Evasion (Ghost)
+
+**Fantasy**: They can't hit what they can't catch. You're fast, slippery, and dangerous. You dodge most attacks, and the ones that land hit a ship made of paper. But your flee chance is incredible, your speed lets you outrun anything, and your hidden compartments keep contraband safe. You're a smuggler, a raider, a thief in the night.
+
+**Core Mechanic — Evasion Scaling Overhaul**
+Current evasion subtracts linearly from accuracy. We enhance this:
+
+- **Graze system**: Attacks that miss by 10 or less deal 30% damage as a "graze" instead of a clean miss. This means evasion is never truly binary — high evasion reduces average damage smoothly rather than creating coin-flip situations.
+- **Evasion diminishing returns above 50**: Each point of evasion above 50 counts as 0.5 points. This prevents evasion stacking from creating unhittable ships while keeping the 25-40 range (most evasion ships) at full value.
+- **Evasion decay under fire**: After being hit, evasion is reduced by 5 for 1 turn (shaken). This means sustained focus fire gradually chips through evasion, preventing the "untouchable forever" problem. Ghost ships want short fights.
+
+**Evasion Passive — Counterstrike**
+When an attack misses (clean miss, not graze), the evasion ship gets +10% damage on their next attack. Stacks up to 3 times (+30%). This rewards the dodge fantasy — you dance around the enemy and then strike when they're overextended. Resets on taking a hit.
+
+**Evasion Passive — Slippery**
++20% base flee chance (on top of the speed-based formula). Ghost ships can almost always escape fights they're losing. This is a MAJOR out-of-combat advantage — hull and shield ships are committed to fights; ghost ships choose their battles.
+
+**Evasion Passive — Light Frame Vulnerability**
+Evasion-identity ships take 15% bonus damage when hit. The trade-off is explicit: you dodge most things, but what connects HURTS. Combined with typically low hull pools (70-90 HP), a few unlucky hits can be fatal.
+
+**Out-of-Combat Advantages:**
+- **Faster travel**: Ships with evasion > 25 gain a speed multiplier (already exists on some ships)
+- **Better smuggling**: Evasion-identity ships have higher contraband concealment (existing hidden_compartment ability)
+- **Better encounter avoidance**: High evasion = higher chance to avoid random encounters entirely (new mechanic, simple roll)
+- **Cheaper fuel**: Light ships are fuel-efficient (existing via fuel_efficiency stat)
+
+---
+
+### Ship Archetype Mapping
+
+Every ship already leans toward an identity based on existing stats. We formalize this:
+
+#### Hull-Leaning Ships (Juggernaut)
+| Ship | Hull | Shields | Evasion | Base Armor | Identity Bonus |
+|------|------|---------|---------|------------|---------------|
+| War Frigate | 280 | 120 | 10 | 4 | Last Stand, +3 defense slots |
+| Industrial Titan | 300 | 60 | 3 | 5 | Structural Integrity |
+| Bulk Hauler | 250 | 80 | 5 | 3 | Last Stand |
+| Syndicate Enforcer | 250 | 100 | 12 | 3 | hull_regen ability |
+| Medium Freighter | 150 | 60 | 10 | 2 | Structural Integrity |
+| Mining Barge | 180 | 40 | 5 | 3 | — |
+| Salvage Rig | 160 | 35 | 10 | 2 | — |
+
+#### Shield-Leaning Ships (Sentinel)
+| Ship | Hull | Shields | Evasion | Base Regen | Identity Bonus |
+|------|------|---------|---------|------------|---------------|
+| Institute Vessel | 110 | 130 | 18 | 5 | Overcharge Capacity |
+| Luxury Yacht | 120 | 100 | 20 | 4 | Overcharge Capacity |
+| Diplomatic Cruiser | 180 | 90 | 12 | 3 | Shield Break protection |
+| Patrol Cutter | 110 | 45 | 22 | 2 | — |
+| Armed Trader | 130 | 50 | 15 | 2 | — |
+
+#### Evasion-Leaning Ships (Ghost)
+| Ship | Hull | Shields | Evasion | Speed | Identity Bonus |
+|------|------|---------|---------|-------|---------------|
+| Phantom | 70 | 35 | 38 | 18 | Counterstrike, Slippery, ghost_mode |
+| Smuggler's Sloop | 75 | 30 | 32 | 15 | Slippery, hidden_compartment |
+| Clipper | 90 | 45 | 32 | 16 | Counterstrike, fast_travel |
+| Fast Courier | 80 | 30 | 30 | 15 | Slippery |
+| Scout Vessel | 70 | 35 | 28 | 14 | Counterstrike, advanced_sensors |
+| Frontier Runner | 90 | 50 | 28 | 14 | Slippery, salvage_mastery |
+| Corsair | 140 | 55 | 20 | 12 | Counterstrike (hybrid, leans offense) |
+
+#### Balanced/Starter Ships
+| Ship | Hull | Shields | Evasion | Notes |
+|------|------|---------|---------|-------|
+| Shuttle | 60 | 20 | 25 | No identity — early game, upgradeable |
+| Light Freighter | 100 | 40 | 15 | Slight hull lean |
+| Prospector | 80 | 25 | 18 | Slight evasion lean |
+| Deep Explorer | 100 | 60 | 22 | Slight shield lean |
+| Consortium Merchantman | 180 | 70 | 12 | Hull/shield hybrid |
+
+---
+
+### New Upgrades — Defense Slot Equipment
+
+Each identity gets a full tier progression of upgrades. Defense slot equipment provides the primary defense-identity investment.
+
+#### Hull Identity Upgrades
+
+| ID | Name | Tier | Price | Slot | Passive Bonus | Combat Move | Tuning Options |
+|----|------|------|-------|------|--------------|-------------|----------------|
+| `reinforced_plating` | Reinforced Hull Plating | 1 | 4,000 | defense | +1 armor | Brace (2E): +3 armor for 2 turns | Hardened (+1 armor) / Layered (+15 hull) |
+| `reactive_armor` | Reactive Armor System | 2 | 12,000 | defense | +2 armor, +20 hull | Ablative Shield (3E): Absorb next hit up to 30 damage | Dense (+1 armor) / Regenerative (+5 hull/turn when below 50%) |
+| `nano_repair_suite` | Nano-Repair Suite | 2 | 14,000 | defense | +1 armor | Rapid Mend (3E, 3-turn CD): Restore 35 hull | Fast Cycle (-1 energy) / Deep Repair (+12 hull) |
+| `hull_matrix` | Structural Integrity Matrix | 3 | 28,000 | defense | +3 armor, +40 hull | Fortify (4E, 4-turn CD): +5 armor + 20% DR for 3 turns | Adamantine (+2 armor) / Resilient (+25 hull, Last Stand threshold 30%) |
+| `titan_bulkhead` | Titan-Class Bulkhead | 3 | 42,000 | defense | +4 armor, +60 hull | Unbreakable (5E, 5-turn CD): Reduce all damage to 1 for 2 turns | Fortress (+3 armor) / Retribution (reflect 20% damage when hit) |
+| `field_repair_rig` | Field Repair Rig | 2 | 10,000 | defense | Repair cost -25% | Patch Up (2E): Restore 20 hull | Salvage Parts (-10% more repair cost) / Combat Welder (+8 hull restore) |
+
+#### Shield Identity Upgrades
+
+| ID | Name | Tier | Price | Slot | Passive Bonus | Combat Move | Tuning Options |
+|----|------|------|-------|------|--------------|-------------|----------------|
+| `shield_conduit` | Shield Power Conduit | 1 | 5,000 | defense | +2 shield regen/turn | Pulse Shield (2E): Restore 20 shields | Capacitor (+1 regen) / Burst (+8 restore) |
+| `adaptive_barrier` | Adaptive Barrier Array | 2 | 13,000 | defense | +3 shield regen, +20 max shields | Adaptive Ward (3E): Restore 30 shields + 10% DR for 1 turn | Overcharge (+15 max shields, allows overshield) / Reflective (+5% DR) |
+| `shield_harmonics` | Shield Harmonics Generator | 2 | 15,000 | defense | +4 shield regen | Resonance Pulse (3E, 3-turn CD): Restore 40 shields to full, +5 regen for 2 turns | Harmonic (+2 regen) / Feedback (on shield break: deal 15 damage to attacker) |
+| `quantum_shield` | Quantum Shield Matrix | 3 | 30,000 | defense | +5 shield regen, +30 max shields | Phase Shields (4E, 4-turn CD): Shields absorb 200% damage for 2 turns | Quantum Lock (shield break immunity for 1 turn) / Overclock (+20 max shields, overshield) |
+| `aegis_projector` | Aegis Shield Projector | 3 | 45,000 | defense | +6 shield regen, +50 max shields | Aegis Protocol (5E, 5-turn CD): Full shield restore + overshield to 150% + immune to shield drain for 3 turns | Fortress Mode (+3 regen, -10 evasion) / Phalanx (allies gain 10 shields — future fleet mechanic) |
+| `ion_hardening` | Ion-Hardened Shield Coils | 2 | 11,000 | defense | Ion damage reduced to 120% (from 150%) | Discharge (2E): Remove all Ion debuffs + restore 15 shields | Full Hardening (Ion to 100%) / Capacitor Bleed (+2 regen) |
+
+#### Evasion Identity Upgrades
+
+| ID | Name | Tier | Price | Slot | Passive Bonus | Combat Move | Tuning Options |
+|----|------|------|-------|------|--------------|-------------|----------------|
+| `thruster_array` | Maneuvering Thruster Array | 1 | 4,500 | defense | +5 evasion | Jink (1E): +15 evasion for 1 turn | Quick Burn (+3 evasion) / Afterburner (+10 flee chance) |
+| `ecm_suite` | ECM Countermeasure Suite | 2 | 12,000 | defense | +8 evasion | Chaff Cloud (2E, 2-turn CD): +20 evasion for 2 turns + enemies -10 accuracy for 1 turn | Broadband (+5 evasion) / Sensor Jam (-15 enemy accuracy for 1 turn) |
+| `phase_drive` | Phase Shift Drive | 2 | 16,000 | defense | +10 evasion | Phase Shift (3E, 3-turn CD): 100% evasion for 1 turn (unhittable) | Lingering (+25 evasion for 1 turn after phase) / Aggressive (next attack after phase: +25% damage) |
+| `ghost_plating` | Ghost Plating | 3 | 32,000 | defense | +12 evasion, +10% flee | Vanish (4E, 4-turn CD): Cannot be targeted for 2 turns | Cloak (+15 evasion) / Ambush (+40% damage on first attack from stealth) |
+| `quantum_blink` | Quantum Blink Engine | 3 | 48,000 | defense | +15 evasion, +20% flee | Blink (5E, 5-turn CD): Teleport — dodge ALL attacks this turn + reposition (guaranteed next hit) | Emergency Jump (if hull < 25%: auto-flee, one use per combat) / Predator (Counterstrike stacks cap at 5 instead of 3) |
+| `lightweight_frame` | Lightweight Frame | 1 | 3,000 | defense | +5 evasion, -15 hull | Nimble Dodge (1E): +10 evasion for 1 turn | Stripped Down (+3 evasion, -10 hull) / Balanced (+2 evasion, no hull penalty) |
+
+---
+
+### New Upgrades — Utility Slot Equipment (Identity-Supporting)
+
+These go in utility slots and provide secondary support for each identity.
+
+| ID | Name | Tier | Price | Slot | Identity | Effect |
+|----|------|------|-------|------|----------|--------|
+| `hull_sealant` | Emergency Hull Sealant | 1 | 3,000 | utility | Hull | Auto-restore 5 hull when dropping below 50% (once per combat) |
+| `backup_plating` | Backup Armor Plating | 2 | 9,000 | utility | Hull | +1 armor when hull is below 50% |
+| `damage_dampener` | Kinetic Damage Dampener | 2 | 11,000 | utility | Hull | Kinetic damage reduced by 10% |
+| `shield_battery` | Auxiliary Shield Battery | 1 | 3,500 | utility | Shield | +10 max shields |
+| `regen_coil` | Shield Regeneration Coil | 2 | 10,000 | utility | Shield | +2 shield regen/turn |
+| `ion_filter` | Ion Interference Filter | 2 | 8,000 | utility | Shield | Ion bonus damage reduced by 15% |
+| `agility_mod` | Agility Modification | 1 | 2,500 | utility | Evasion | +3 evasion |
+| `smuggler_rig` | Smuggler's Rigging | 2 | 8,000 | utility | Evasion | +5 evasion + hidden compartment (if ship lacks one) |
+| `threat_analyzer` | Threat Analysis Computer | 2 | 12,000 | utility | Evasion | Counterstrike bonus increased to +15% per dodge (from +10%) |
+
+---
+
+### Skill Tree Expansion — Defense Paths
+
+The existing Combat skill tree has `evasive_maneuvers`, `shield_mastery`, and `hull_reinforcement`. We expand these into three full branches.
+
+#### Hull Branch (Juggernaut Path)
+```
+hull_reinforcement (existing, 3 levels: +5% max hull per level)
+    ├── armor_expertise (NEW, 3 levels: +1 armor per level)
+    │       └── last_stand_mastery (NEW, 2 levels: Last Stand threshold +5% per level, bonus damage +5% per level)
+    ├── field_repairs (NEW, 3 levels: repair costs -15% per level)
+    └── endurance (NEW, 2 levels: +3% hull damage reduction per level)
+            └── juggernaut (NEW, capstone, 1 level: When hull > 75%, immune to critical hits. When hull < 25%, +25% damage)
+```
+
+#### Shield Branch (Sentinel Path)
+```
+shield_mastery (existing, 2 levels: +10% shield effectiveness per level)
+    ├── shield_regen (NEW, 3 levels: +2 shield regen per turn per level)
+    │       └── overcharge (NEW, 2 levels: max shield overflow +25% per level, up to +50%)
+    ├── shield_discipline (NEW, 2 levels: shield break vulnerability reduced by 10% per level)
+    └── energy_shields (NEW, 2 levels: shield restore moves cost 1 less energy per level)
+            └── sentinel (NEW, capstone, 1 level: Shields regenerate double when above 50%. Shield break triggers emergency restore of 20% shields)
+```
+
+#### Evasion Branch (Ghost Path)
+```
+evasive_maneuvers (existing, 3 levels: +5% dodge chance per level)
+    ├── afterburner (NEW, 3 levels: +5 evasion per level, +5% flee chance per level)
+    │       └── counterstrike_mastery (NEW, 2 levels: Counterstrike bonus +5% per level, max stacks +1 per level)
+    ├── light_foot (NEW, 2 levels: no evasion decay after being hit at level 1; graze damage reduced to 20% at level 2)
+    └── slippery (NEW, 2 levels: +10% flee chance per level, +5% encounter avoidance per level)
+            └── ghost (NEW, capstone, 1 level: First turn of combat: +30 evasion. If not hit in a round, next attack is guaranteed crit)
+```
+
+---
+
+### Enemy Design Implications
+
+Enemies should also lean into identities, creating readable combat puzzles:
+
+**Hull-Heavy Enemies** (Pirate Heavy, Patrol Vessel):
+- High hull, low evasion. Weak to sustained DPS and Burn.
+- Counter: Use Plasma for DoT, or Ion to strip shields then burst hull.
+- Telegraphed behavior: FORTIFYING (damage reduction buff)
+
+**Shield-Heavy Enemies** (Shield Drone — NEW, Elite Patrol):
+- High shields with regen. Break the shield, then burst.
+- Counter: Ion weapons (150% shield damage), or energy drain to prevent shield restore.
+- Telegraphed behavior: CHARGING (shield restore incoming)
+
+**Evasion-Heavy Enemies** (Pirate Scout, Smuggler):
+- High evasion, paper hull. Hard to hit but fold when connected.
+- Counter: AoE weapons (can't dodge area effects), Cryo (reduces evasion via Chill stacks), accuracy buffs.
+- Telegraphed behavior: EVADING (evasion buff active)
+
+**New Enemy Templates to Add:**
+
+| Enemy | Hull | Shields | Evasion | Identity | Behavior |
+|-------|------|---------|---------|----------|----------|
+| Shield Drone | 20 | 60 | 5 | Shield | Pure shield wall; regenerates 8/turn, exists to waste your ammo |
+| Armored Transport | 120 | 15 | 3 | Hull | High armor (4), slow. Hits hard but infrequently |
+| Ghost Raider | 35 | 15 | 35 | Evasion | Appears, strikes hard, tries to flee. Counterstrike-style attacks |
+| Ion Striker | 50 | 10 | 20 | Anti-shield | Uses Ion weapons exclusively. Shield builds' nightmare |
+| Cryo Interceptor | 55 | 25 | 18 | Anti-evasion | Uses Cryo weapons. Evasion builds' nightmare (Chill reduces evasion) |
+| Plasma Bomber | 45 | 20 | 12 | Anti-hull | Uses Plasma weapons. Hull builds' concern (Burn DoT bypasses armor) |
+
+---
+
+### Interaction with Existing Elemental Weapons
+
+The defensive triangle creates natural interactions with the elemental system:
+
+| Element | vs Hull (Juggernaut) | vs Shield (Sentinel) | vs Evasion (Ghost) |
+|---------|---------------------|---------------------|-------------------|
+| **Kinetic** | Neutral (armor reduces flat) | Neutral | Neutral |
+| **Plasma** | **Strong** — Burn DoT bypasses armor | Neutral | Neutral |
+| **Ion** | Weak — 75% hull damage | **Strong** — 150% shield damage | Neutral |
+| **Cryo** | Neutral | Neutral | **Strong** — Chill reduces evasion (-5 per stack) |
+| **Voltaic** | Neutral (suppressed reduces their damage) | Neutral | Weak — suppressed doesn't help vs dodge |
+
+This creates a double layer of strategy: your DEFENSIVE identity determines which enemy WEAPONS threaten you, and your OFFENSIVE element determines which enemy DEFENSES you can break. A hull ship dreads Plasma enemies. A shield ship fears Ion. An evasion ship struggles against Cryo.
+
+---
+
+### Visual Design
+
+#### Hull Identity Visuals
+- **Ship tint**: Warm orange/rust glow on hull-heavy ships
+- **Armor hit effect**: Metallic sparks + "DEFLECTED" text for damage reduced by armor
+- **Last Stand**: Red pulsing hull outline, warning sirens, sparks flying
+- **Repair move**: Welding sparks, orange particles converging on ship
+
+#### Shield Identity Visuals
+- **Shield bubble**: Existing system, but more prominent on shield ships (thicker, brighter)
+- **Regen tick**: Small blue pulse each turn shields regenerate
+- **Overcharge**: Shield bubble glows brighter, expands slightly when above 100%
+- **Shield break**: Dramatic shatter effect (existing), plus the vulnerability flash (red flicker)
+- **Ion hit on shields**: Crackling electricity, distinct from normal shield impact
+
+#### Evasion Identity Visuals
+- **Dodge animation**: Ship jinks sideways briefly (short lateral movement)
+- **Graze**: Projectile visually clips past the ship (near-miss particle trail)
+- **Counterstrike glow**: Ship glows brighter with each dodge (stacking intensity)
+- **Phase Shift**: Ship becomes translucent/ghostly for the duration
+- **Vanish**: Ship fades to near-invisible, afterimage effect
+
+---
+
+### Upgrade Counts Summary
+
+| Category | Hull | Shield | Evasion | Total New |
+|----------|------|--------|---------|-----------|
+| Defense slot | 6 | 6 | 6 | **18** |
+| Utility slot | 3 | 3 | 3 | **9** |
+| Skill nodes | 5+capstone | 5+capstone | 5+capstone | **18** |
+| Enemy templates | — | — | — | **6** |
+| **Total new content** | | | | **51 items** |
+
+Combined with existing 85 upgrades → **112 total upgrades** (18 defense + 9 utility new).
+Combined with existing 28 enemy templates → **34 total enemy templates**.
+Combined with existing 89 skill nodes → **107 total skill nodes**.
+
+---
+
+### Implementation Phases
+
+#### Phase 12A: Core Mechanics (HIGH effort)
+- Add `armor` field to ShipType and combat state
+- Implement armor damage reduction in combat engine
+- Implement passive shield regen per turn in combat engine
+- Implement graze system (near-miss 30% damage)
+- Implement evasion diminishing returns above 50
+- Implement evasion decay after being hit (-5 for 1 turn)
+- Add identity passive flags to ShipType (`hull_passives`, `shield_passives`, `evasion_passives`)
+- Implement Last Stand, Structural Integrity, Overcharge Capacity, Shield Break Vulnerability, Counterstrike, Slippery, Light Frame Vulnerability passives
+- Tests for all new mechanics
+
+#### Phase 12B: Upgrades & Equipment (MEDIUM effort)
+- Add 18 new defense slot upgrades to upgrades.json
+- Add 9 new utility slot upgrades to upgrades.json
+- Add combat moves for all new upgrades
+- Add tuning options for all new upgrades
+- Wire passive bonuses (armor, shield_regen, evasion) through upgrade_manager
+- Tests for upgrade effects in combat
+
+#### Phase 12C: Skill Tree Expansion (MEDIUM effort)
+- Add 18 new skill nodes to skill_trees.json (6 per branch + 3 capstones)
+- Wire new bonus types through combat state initialization
+- Ensure capstone skills have meaningful prerequisites
+- Tests for skill bonuses in combat
+
+#### Phase 12D: Enemy Templates (LOW effort)
+- Add 6 new enemy templates to enemies.json
+- Assign identity-appropriate behaviors and moves
+- Distribute across systems by difficulty
+- Tests for new enemy combat resolution
+
+#### Phase 12E: Visual Pass (MEDIUM effort)
+- Armor deflection particles and text
+- Shield regen pulse animation
+- Dodge/graze animations
+- Counterstrike glow intensity
+- Last Stand visual effects
+- Identity-colored health bar accents
+
+#### Phase 12F: Balance & Integration (LOW effort)
+- Rebalance existing ship base stats to formalize identity leans
+- Update ship descriptions to reference defensive identity
+- Ensure upgrade availability matches progression curve
+- Playtest tuning pass
+
+---
+
+### Balance Guardrails
+
+- **Armor cap**: Maximum 10 armor from all sources. Prevents chip damage from becoming completely irrelevant.
+- **Shield regen cap**: Maximum 15 per turn from all sources. Prevents passive regen from exceeding typical damage output.
+- **Evasion soft cap**: Diminishing returns above 50. Effective evasion of 70+ should require massive investment and still allow 15-20% hit chance.
+- **Graze floor**: Graze damage minimum is 2 (prevents 0-damage grazes on high-armor ships).
+- **No stacking identity passives across identities**: A ship can benefit from hull AND shield upgrades, but identity passives (Last Stand, Overcharge, Counterstrike) only activate on ships whose ShipType has that identity flag. You can't get Counterstrike on a War Frigate.
+- **Upgrade slot tension**: Defense slots are limited (1-3 per ship). You can mix identities but you can't max all three. This is the core build constraint.
+- **Enemy identity counters should be telegraphed**: "ION STRIKER — your shields won't help here" in the encounter flavor text. The player should know before combat starts.
 
 ---
 
@@ -700,3 +1128,9 @@ Every new mechanic needs clear communication. The tutorial system already suppor
 - New moves should be unlocked through the existing upgrade/skill tree progression, not given all at once.
 - Elemental mastery skill nodes should be mid-to-late in the Combat skill tree, rewarding specialization.
 - Ship class identity (energy pool/regen differences) should reinforce the existing ship progression, not create mandatory choices.
+- **Defensive identity balance**: Hull should survive ~20% more damage than shields to compensate for repair costs. Evasion should survive ~10% less on average but with higher variance and out-of-combat advantages.
+- **Armor vs Burn**: Burn DoT bypasses armor intentionally. This is the hard counter to hull builds and prevents armor stacking from creating invulnerable ships.
+- **Shield regen vs burst damage**: Shield regen should sustain against 1-2 weak enemies but be overwhelmed by 3+ attackers or boss-level burst. If shield regen makes a build feel invulnerable in normal encounters, the regen cap is too high.
+- **Evasion graze system**: The 30% graze damage ensures evasion is never all-or-nothing. High evasion reduces average damage taken smoothly. If evasion builds feel too "coin flippy," adjust graze threshold or damage percentage.
+- **Identity locking**: Ships should lean toward an identity but not be locked. A War Frigate with shield upgrades should work — just not as well as a pure hull build. The identity passives (Last Stand, Counterstrike, etc.) are the specialization reward.
+- **Upgrade availability**: Hull upgrades should be available at industrial stations (Forgeworks, Breakstone). Shield upgrades at science/diplomatic stations (Axiom Labs, Stellaris Port). Evasion upgrades at frontier/criminal stations (Haven's Rest, Crimson Reach). This ties identity to faction exploration.
