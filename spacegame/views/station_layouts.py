@@ -493,7 +493,9 @@ class UnionBlueprintLayout(StationLayout):
         for y in range(_LAYOUT_TOP, _LAYOUT_BOTTOM, grid_spacing):
             pygame.draw.line(screen, grid_color, (0, y), (WINDOW_WIDTH, y))
 
-    def _render_default_zone(self, screen: pygame.Surface, zone: StationZone) -> None:
+    def _render_default_zone(
+        self, screen: pygame.Surface, zone: StationZone, alpha_mult: float = 1.0
+    ) -> None:
         """Override: add riveted panel feel and technical labels."""
         r = zone.rect
         # Darker, more industrial background
@@ -614,7 +616,9 @@ class CollectiveRadialLayout(StationLayout):
         pygame.draw.circle(screen, self.accent_color, (cx, cy), scale_x(6))
         pygame.draw.circle(screen, Colors.TEXT_PRIMARY, (cx, cy), scale_x(3))
 
-    def _render_default_zone(self, screen: pygame.Surface, zone: StationZone) -> None:
+    def _render_default_zone(
+        self, screen: pygame.Surface, zone: StationZone, alpha_mult: float = 1.0
+    ) -> None:
         """Override: holographic node feel."""
         r = zone.rect
         # Subtle translucent background
@@ -730,7 +734,9 @@ class FrontierScatteredLayout(StationLayout):
                     py2 = int(y1 + dy * t2)
                     pygame.draw.line(screen, (60, 80, 60), (px1, py1), (px2, py2))
 
-    def _render_default_zone(self, screen: pygame.Surface, zone: StationZone) -> None:
+    def _render_default_zone(
+        self, screen: pygame.Surface, zone: StationZone, alpha_mult: float = 1.0
+    ) -> None:
         """Override: varied panel styles, slightly rough edges."""
         r = zone.rect
         bg_alpha = 190 if zone.hovered else 150
@@ -817,7 +823,9 @@ class ReachDarkLayout(StationLayout):
                 "size": _rng.uniform(1, 2),
             })
 
-    def _render_default_zone(self, screen: pygame.Surface, zone: StationZone) -> None:
+    def _render_default_zone(
+        self, screen: pygame.Surface, zone: StationZone, alpha_mult: float = 1.0
+    ) -> None:
         """Override: zones barely visible until hovered."""
         r = zone.rect
 
