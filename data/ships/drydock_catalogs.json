@@ -1,0 +1,64 @@
+{
+  "drydock_catalogs": {
+    "nexus_prime": {
+      "shapes_sold": ["medium_rect", "arrow_point", "hull_section", "medium_square", "large_square"],
+      "materials_sold": ["standard_plate", "composite_weave"],
+      "weight_classes": ["tiny", "small", "medium", "large"],
+      "price_modifier": 1.1
+    },
+    "stellaris_port": {
+      "shapes_sold": ["large_square", "diamond", "hull_plank", "medium_rect"],
+      "materials_sold": ["reinforced_plate", "barrier_lattice"],
+      "weight_classes": ["tiny", "small", "medium", "large"],
+      "price_modifier": 1.15
+    },
+    "verdant": {
+      "shapes_sold": ["medium_square", "notch", "l_shape"],
+      "materials_sold": ["light_alloy", "standard_plate"],
+      "weight_classes": ["tiny", "small"],
+      "price_modifier": 1.0
+    },
+    "havens_rest": {
+      "shapes_sold": ["notch", "l_shape", "t_shape", "plus_shape"],
+      "materials_sold": ["salvage_scrap", "composite_weave"],
+      "weight_classes": ["tiny", "small", "medium"],
+      "price_modifier": 0.95
+    },
+    "forgeworks": {
+      "shapes_sold": ["large_triangle", "hull_section", "mega_block", "hull_plank", "medium_square"],
+      "materials_sold": ["heavy_armor", "reinforced_plate"],
+      "weight_classes": ["tiny", "small", "medium", "large", "xlarge"],
+      "price_modifier": 1.0
+    },
+    "breakstone": {
+      "shapes_sold": ["medium_square", "hull_plank", "large_triangle"],
+      "materials_sold": ["heavy_armor", "salvage_scrap"],
+      "weight_classes": ["tiny", "small", "medium"],
+      "price_modifier": 0.95
+    },
+    "axiom_labs": {
+      "shapes_sold": ["diamond", "plus_shape", "medium_rect"],
+      "materials_sold": ["shield_crystal", "barrier_lattice"],
+      "weight_classes": ["tiny", "small", "medium", "large"],
+      "price_modifier": 1.05
+    },
+    "nova_research": {
+      "shapes_sold": ["arrow_point", "large_square"],
+      "materials_sold": ["shield_crystal"],
+      "weight_classes": ["tiny", "small", "medium", "large"],
+      "price_modifier": 1.1
+    },
+    "crimson_reach": {
+      "shapes_sold": ["notch", "l_shape"],
+      "materials_sold": ["stealth_composite", "crimson_steel"],
+      "weight_classes": ["tiny", "small", "medium"],
+      "price_modifier": 0.9
+    },
+    "iron_depths": {
+      "shapes_sold": ["hull_plank", "large_triangle"],
+      "materials_sold": ["heavy_armor", "standard_plate"],
+      "weight_classes": ["tiny", "small", "medium"],
+      "price_modifier": 1.0
+    }
+  }
+}

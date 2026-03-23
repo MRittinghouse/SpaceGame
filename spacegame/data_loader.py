@@ -110,6 +110,7 @@ class DataLoader:
         self.ship_ultimates: Dict[str, "ShipUltimate"] = {}  # category → ultimate
         self.hull_shapes: Dict[str, "HullShape"] = {}
         self.hull_materials: Dict[str, "HullMaterial"] = {}
+        self.drydock_catalogs: Dict[str, dict] = {}
 
     def _safe_load(self, loader_name: str, loader_fn) -> None:
         """Call a loader function with error handling and context.
@@ -157,6 +158,7 @@ class DataLoader:
         self._safe_load("ship_ultimates", self.load_ship_ultimates)
         self._safe_load("hull_shapes", self.load_hull_shapes)
         self._safe_load("hull_materials", self.load_hull_materials)
+        self._safe_load("drydock_catalogs", self.load_drydock_catalogs)
         self._safe_load("journal_entries", self.load_journal_entries)
         self._safe_load("encounter_definitions", self.load_encounter_definitions)
         self._safe_load("ground_equipment", self.load_ground_equipment)
@@ -1155,6 +1157,18 @@ class DataLoader:
 
         logger.info(f"Loaded {len(self.hull_materials)} hull materials")
         return self.hull_materials
+
+    def load_drydock_catalogs(self) -> Dict[str, dict]:
+        """Load per-system drydock content catalogs from JSON."""
+        file_path = self.data_dir / "ships" / "drydock_catalogs.json"
+        if not file_path.exists():
+            logger.warning(f"Drydock catalogs not found: {file_path}")
+            return self.drydock_catalogs
+        with open(file_path, "r") as f:
+            data = json.load(f)
+        self.drydock_catalogs = data.get("drydock_catalogs", {})
+        logger.info(f"Loaded drydock catalogs for {len(self.drydock_catalogs)} systems")
+        return self.drydock_catalogs
 
     def _parse_enemy_template(self, data: dict) -> EnemyShipTemplate:
         """Parse an enemy ship template from raw JSON data."""

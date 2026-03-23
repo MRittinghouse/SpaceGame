@@ -1789,6 +1789,23 @@ class CombatEngine:
             self._state.result = CombatResult.DEFEAT
         elif self._state.all_enemies_defeated:
             self._state.result = CombatResult.VICTORY
+            # Check for boss trophy drops (Phase D2)
+            self._check_boss_trophy_drops()
+
+    def _check_boss_trophy_drops(self) -> None:
+        """Award trophy shapes from defeated boss enemies."""
+        from spacegame.models.builder_discovery import check_combat_trophy
+        for enemy in self._state.enemies:
+            if not enemy.is_alive and enemy.template.is_boss:
+                trophy_id = enemy.template.trophy_drop
+                if trophy_id:
+                    # Store pending trophy for game.py to process
+                    if not hasattr(self._state, "_pending_trophy_drops"):
+                        self._state._pending_trophy_drops = []
+                    self._state._pending_trophy_drops.append({
+                        "shape_id": trophy_id,
+                        "boss_name": enemy.template.name,
+                    })
 
     # ------------------------------------------------------------------
     # Queries
