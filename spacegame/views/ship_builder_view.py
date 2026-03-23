@@ -102,6 +102,13 @@ class ShipBuilderView(BaseView):
         # Advanced tools (Phase B2)
         self._mirror_mode: bool = False
         self._undo_stack: list[list[dict]] = []  # Pixel snapshots
+
+        # Slot designator (Phase B3)
+        self._slot_type_to_place: Optional[str] = None  # "weapon", "defense", "engine", "utility", "core"
+        self._equipment_modal_open: bool = False
+        self._equipment_modal_slot: Optional[DesignatedSlot] = None
+        self._equipment_list: list = []
+        self._equipment_scroll: int = 0
         self._redo_stack: list[list[dict]] = []
         self._max_undo: int = 20
 
@@ -222,6 +229,9 @@ class ShipBuilderView(BaseView):
                 self._active_tool = "eraser"
             elif event.key == pygame.K_x:
                 self._mirror_mode = not self._mirror_mode
+            elif event.key == pygame.K_d:
+                self._active_tool = "slot"
+                self._slot_type_to_place = None
             # Undo/Redo (Phase B2)
             elif event.key == pygame.K_z and pygame.key.get_mods() & pygame.KMOD_CTRL:
                 self._undo()
@@ -250,6 +260,11 @@ class ShipBuilderView(BaseView):
     def _handle_left_click(self, pos: tuple[int, int]) -> None:
         mx, my = pos
 
+        # Equipment modal takes priority if open
+        if self._equipment_modal_open:
+            self._handle_equipment_modal_click(mx, my)
+            return
+
         # Click on shape palette
         if SHAPE_PANEL_X <= mx < SHAPE_PANEL_X + SHAPE_PANEL_W:
             self._handle_shape_palette_click(mx, my)
@@ -260,10 +275,22 @@ class ShipBuilderView(BaseView):
             self._handle_material_panel_click(mx, my)
             return
 
+        # Slot type selector (shown when in slot mode, below material panel)
+        if self._active_tool == "slot":
+            if self._handle_slot_type_click(mx, my):
+                return
+
         # Click on grid — route through active tool
         grid_pos = self._screen_to_grid(mx, my)
         if grid_pos:
-            if self._active_tool == "stamp" and self._selected_shape:
+            if self._active_tool == "slot":
+                if self._slot_type_to_place:
+                    self._push_undo()
+                    self._place_slot(*grid_pos)
+                else:
+                    # Click on existing slot to open equipment modal
+                    self._try_open_equipment_modal(*grid_pos)
+            elif self._active_tool == "stamp" and self._selected_shape:
                 self._push_undo()
                 self._place_shape_at(*grid_pos)
             elif self._active_tool == "pencil":
@@ -280,11 +307,17 @@ class ShipBuilderView(BaseView):
                 self._erase_pixel(*grid_pos)
 
     def _handle_right_click(self, pos: tuple[int, int]) -> None:
-        """Erase pixel at clicked grid position."""
+        """Erase pixel or remove slot at clicked grid position."""
+        if self._equipment_modal_open:
+            self._equipment_modal_open = False
+            return
         grid_pos = self._screen_to_grid(pos[0], pos[1])
         if grid_pos:
-            self._push_undo()
-            self._erase_pixel(*grid_pos)
+            if self._active_tool == "slot":
+                self._remove_slot_at(*grid_pos)
+            else:
+                self._push_undo()
+                self._erase_pixel(*grid_pos)
 
     def _handle_shape_palette_click(self, mx: int, my: int) -> None:
         """Select a shape from the palette or switch category filter."""
@@ -489,6 +522,132 @@ class ShipBuilderView(BaseView):
         self._modified = True
         self._recompute_stats()
 
+    # ------------------------------------------------------------------
+    # Slot Designator & Equipment (Phase B3)
+    # ------------------------------------------------------------------
+
+    SLOT_COSTS: dict[str, int] = {
+        "weapon": 3000, "defense": 2500, "engine": 2000,
+        "utility": 1500, "core": 0,
+    }
+    SLOT_TYPES_ORDER: list[str] = ["weapon", "defense", "engine", "utility", "core"]
+
+    def _handle_slot_type_click(self, mx: int, my: int) -> bool:
+        """Handle clicks on the slot type selector panel."""
+        panel_x = MATERIAL_PANEL_X
+        panel_y = MATERIAL_PANEL_Y + MATERIAL_PANEL_H + scale_y(10)
+        item_h = scale_y(24)
+
+        for i, slot_type in enumerate(self.SLOT_TYPES_ORDER):
+            iy = panel_y + scale_y(20) + i * item_h
+            if panel_x <= mx < panel_x + MATERIAL_PANEL_W and iy <= my < iy + item_h:
+                self._slot_type_to_place = slot_type
+                return True
+        return False
+
+    def _place_slot(self, gx: int, gy: int) -> None:
+        """Place a slot at the given grid position."""
+        if not self._slot_type_to_place:
+            return
+        ok, msg = self.grid_manager.can_place_slot(
+            self._slot_type_to_place, gx, gy,
+            self.build.pixels, self.build.slots,
+        )
+        if not ok:
+            return
+
+        slot = DesignatedSlot(slot_type=self._slot_type_to_place, x=gx, y=gy)
+        self.build.slots.append(slot)
+        self._modified = True
+        self._recompute_stats()
+
+    def _remove_slot_at(self, gx: int, gy: int) -> None:
+        """Remove a slot that contains the given grid position."""
+        for slot in self.build.slots:
+            if (slot.x <= gx < slot.x + slot.size
+                    and slot.y <= gy < slot.y + slot.size):
+                self.build.slots.remove(slot)
+                self._modified = True
+                self._recompute_stats()
+                return
+
+    def _try_open_equipment_modal(self, gx: int, gy: int) -> None:
+        """Open equipment browser if clicking on an existing slot."""
+        for slot in self.build.slots:
+            if (slot.x <= gx < slot.x + slot.size
+                    and slot.y <= gy < slot.y + slot.size):
+                self._open_equipment_modal(slot)
+                return
+
+    def _open_equipment_modal(self, slot: DesignatedSlot) -> None:
+        """Open the equipment browser for the given slot."""
+        self._equipment_modal_open = True
+        self._equipment_modal_slot = slot
+        self._equipment_scroll = 0
+
+        # Build available equipment list for this slot type
+        all_upgrades = getattr(self.data_loader, "upgrades", {})
+        slot_type = slot.slot_type
+
+        # Map builder slot types to upgrade slot_types
+        type_map = {
+            "weapon": ["weapon"],
+            "defense": ["defense"],
+            "engine": ["engine"],
+            "utility": ["cargo", "fuel", "mining", "scanner", "smuggling", "utility"],
+            "core": [],  # Core provides energy, no equipment
+        }
+        valid_types = type_map.get(slot_type, [])
+        self._equipment_list = [
+            u for u in all_upgrades.values()
+            if u.slot_type in valid_types
+        ]
+        # Sort by tier then price
+        self._equipment_list.sort(key=lambda u: (u.tier, u.price))
+
+    def _handle_equipment_modal_click(self, mx: int, my: int) -> None:
+        """Handle clicks within the equipment modal."""
+        modal_x = GRID_AREA_X + scale_x(50)
+        modal_y = GRID_AREA_Y + scale_y(30)
+        modal_w = GRID_AREA_W - scale_x(100)
+        modal_h = GRID_AREA_H - scale_y(60)
+
+        # Close button (top right of modal)
+        close_x = modal_x + modal_w - scale_x(30)
+        close_y = modal_y + 5
+        if close_x <= mx < close_x + scale_x(25) and close_y <= my < close_y + scale_y(20):
+            self._equipment_modal_open = False
+            return
+
+        # Equipment items
+        item_h = scale_y(40)
+        start_y = modal_y + scale_y(35) - self._equipment_scroll
+        for i, upgrade in enumerate(self._equipment_list):
+            iy = start_y + i * item_h
+            if modal_x <= mx < modal_x + modal_w and iy <= my < iy + item_h:
+                # Install this equipment
+                if self._equipment_modal_slot:
+                    self._equipment_modal_slot.equipment_id = upgrade.id
+                    self._modified = True
+                    self._recompute_stats()
+                self._equipment_modal_open = False
+                return
+
+    def _get_slot_pool_remaining(self) -> dict[str, tuple[int, int]]:
+        """Get remaining slot counts by type (used, max)."""
+        pool = SLOT_POOLS.get(self.build.weight_class, {})
+        result: dict[str, tuple[int, int]] = {}
+        for slot_type in self.SLOT_TYPES_ORDER:
+            if slot_type == "core":
+                # Core: max 1
+                used = sum(1 for s in self.build.slots if s.slot_type == "core")
+                result["core"] = (used, 1)
+            else:
+                max_count = pool.get(slot_type, 0)
+                used = sum(1 for s in self.build.slots if s.slot_type == slot_type)
+                result[slot_type] = (used, max_count)
+        return result
+
     def _confirm_build(self) -> None:
         """Apply the current build to the player's ship."""
         self.player.ship.set_build(self.build)
@@ -590,7 +749,11 @@ class ShipBuilderView(BaseView):
         self._render_grid(screen)
         self._render_shape_palette(screen)
         self._render_material_panel(screen)
+        if self._active_tool == "slot":
+            self._render_slot_type_panel(screen)
         self._render_stats_panel(screen)
+        if self._equipment_modal_open:
+            self._render_equipment_modal(screen)
 
     def _render_grid(self, screen: pygame.Surface) -> None:
         """Render the ship building grid with placed pixels."""
@@ -617,6 +780,14 @@ class ShipBuilderView(BaseView):
             line_surf2 = pygame.Surface((grid_w, 1), pygame.SRCALPHA)
             line_surf2.fill((100, 120, 160, alpha_line))
             screen.blit(line_surf2, (ox, ly))
+
+        # Engine rear zone highlight (Phase B3 — when placing engine slots)
+        if self._active_tool == "slot" and self._slot_type_to_place == "engine":
+            rear_y = int(canvas * 0.75)
+            zone_h = (canvas - rear_y) * cell
+            zone_surf = pygame.Surface((grid_w, zone_h), pygame.SRCALPHA)
+            zone_surf.fill((200, 140, 40, 25))
+            screen.blit(zone_surf, (ox, oy + rear_y * cell))
 
         # Filled pixels (material colors)
         materials = getattr(self.data_loader, "hull_materials", {})
@@ -863,7 +1034,7 @@ class ShipBuilderView(BaseView):
         # Active tool indicator
         tool_labels = {
             "stamp": "[S] Stamp", "pencil": "[P] Pencil", "brush": "[M] Brush",
-            "fill": "[F] Fill", "eraser": "[E] Eraser",
+            "fill": "[F] Fill", "eraser": "[E] Eraser", "slot": "[D] Slot",
         }
         for i, (tool_id, label) in enumerate(tool_labels.items()):
             is_active = self._active_tool == tool_id
@@ -894,6 +1065,126 @@ class ShipBuilderView(BaseView):
             True, Colors.TEXT_SECONDARY,
         )
         screen.blit(undo_text, (tool_x, tool_y))
+
+    def _render_slot_type_panel(self, screen: pygame.Surface) -> None:
+        """Render the slot type selector panel (shown in slot mode)."""
+        panel_x = MATERIAL_PANEL_X
+        panel_y = MATERIAL_PANEL_Y + MATERIAL_PANEL_H + scale_y(10)
+        panel_w = MATERIAL_PANEL_W
+        panel_h = scale_y(170)
+
+        draw_panel(screen, (panel_x, panel_y, panel_w, panel_h), alpha=210)
+
+        title = self.small_font.render("SLOT TYPE", True, Colors.TEXT_HIGHLIGHT)
+        screen.blit(title, (panel_x + 8, panel_y + 5))
+
+        slot_colors = {
+            "weapon": (200, 60, 60), "defense": (60, 120, 200),
+            "engine": (200, 140, 40), "utility": (60, 180, 80),
+            "core": (200, 180, 60),
+        }
+        pool = self._get_slot_pool_remaining()
+        item_h = scale_y(24)
+
+        for i, slot_type in enumerate(self.SLOT_TYPES_ORDER):
+            iy = panel_y + scale_y(24) + i * item_h
+            used, max_count = pool.get(slot_type, (0, 0))
+            is_selected = self._slot_type_to_place == slot_type
+            is_full = used >= max_count
+
+            # Background
+            if is_selected:
+                bg = (*slot_colors.get(slot_type, (100, 100, 100)), 80)
+                bg_surf = pygame.Surface((panel_w - 8, item_h - 2), pygame.SRCALPHA)
+                bg_surf.fill(bg)
+                screen.blit(bg_surf, (panel_x + 4, iy))
+
+            # Label
+            color = slot_colors.get(slot_type, (150, 150, 150))
+            if is_full:
+                color = Colors.TEXT_SECONDARY
+            label = self.tiny_font.render(
+                f"{slot_type.title()}: {used}/{max_count}",
+                True, color,
+            )
+            screen.blit(label, (panel_x + 10, iy + 2))
+
+            # Cost
+            cost = self.SLOT_COSTS.get(slot_type, 0)
+            if cost > 0:
+                cost_text = self.label_font.render(f"{cost:,} CR", True, Colors.TEXT_SECONDARY)
+                screen.blit(cost_text, (panel_x + panel_w - cost_text.get_width() - 10, iy + 4))
+
+        # Engine zone hint
+        if self._slot_type_to_place == "engine":
+            hint = self.label_font.render("Engine: rear 25% only", True, (200, 140, 40))
+            screen.blit(hint, (panel_x + 8, panel_y + panel_h - scale_y(18)))
+
+    def _render_equipment_modal(self, screen: pygame.Surface) -> None:
+        """Render the equipment browser overlay."""
+        # Darken background
+        dim = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA)
+        dim.fill((0, 0, 0, 140))
+        screen.blit(dim, (0, 0))
+
+        modal_x = GRID_AREA_X + scale_x(30)
+        modal_y = GRID_AREA_Y + scale_y(20)
+        modal_w = GRID_AREA_W - scale_x(60)
+        modal_h = GRID_AREA_H - scale_y(40)
+
+        draw_panel(screen, (modal_x, modal_y, modal_w, modal_h), alpha=240)
+
+        # Title
+        slot = self._equipment_modal_slot
+        slot_name = slot.slot_type.title() if slot else "Unknown"
+        title = self.header_font.render(f"Install: {slot_name}", True, Colors.TEXT_HIGHLIGHT)
+        screen.blit(title, (modal_x + 10, modal_y + 8))
+
+        # Close button
+        close_text = self.small_font.render("[X] Close", True, Colors.RED)
+        screen.blit(close_text, (modal_x + modal_w - close_text.get_width() - 10, modal_y + 10))
+
+        # Equipment list
+        item_h = scale_y(40)
+        start_y = modal_y + scale_y(40) - self._equipment_scroll
+        clip = pygame.Rect(modal_x, modal_y + scale_y(36), modal_w, modal_h - scale_y(40))
+        screen.set_clip(clip)
+
+        for i, upgrade in enumerate(self._equipment_list):
+            iy = start_y + i * item_h
+            if iy + item_h < clip.top or iy > clip.bottom:
+                continue
+
+            # Card background
+            is_installed = (slot and slot.equipment_id == upgrade.id)
+            bg_color = (40, 60, 50) if is_installed else (22, 28, 40)
+            pygame.draw.rect(screen, bg_color,
+                             (modal_x + 8, iy, modal_w - 16, item_h - 2))
+            if is_installed:
+                pygame.draw.rect(screen, Colors.GREEN,
+                                 (modal_x + 8, iy, modal_w - 16, item_h - 2), 1)
+
+            # Name and tier
+            tier_colors = {1: Colors.TEXT_SECONDARY, 2: (100, 180, 255), 3: (255, 200, 80)}
+            name_surf = self.tiny_font.render(
+                f"T{upgrade.tier} {upgrade.name}",
+                True, tier_colors.get(upgrade.tier, Colors.TEXT_PRIMARY),
+            )
+            screen.blit(name_surf, (modal_x + 14, iy + 2))
+
+            # Price and description
+            desc_text = upgrade.description[:50] + ("..." if len(upgrade.description) > 50 else "")
+            desc_surf = self.label_font.render(desc_text, True, Colors.TEXT_SECONDARY)
+            screen.blit(desc_surf, (modal_x + 14, iy + 18))
+
+            price_surf = self.tiny_font.render(f"{upgrade.price:,} CR", True, Colors.TEXT_PRIMARY)
+            screen.blit(price_surf, (modal_x + modal_w - price_surf.get_width() - 14, iy + 8))
+
+        screen.set_clip(None)
+
+        # Hint
+        hint = self.label_font.render("Click to install. Right-click to close.", True, Colors.TEXT_SECONDARY)
+        screen.blit(hint, (modal_x + 10, modal_y + modal_h - scale_y(16)))
 
     def get_next_state(self) -> Optional[GameState]:
         return self.next_state
