@@ -5,13 +5,13 @@
       "name": "Pirate Scout",
       "description": "A fast, lightly armed scout vessel. Prefers to flee when outmatched.",
       "behavior": "cowardly",
-      "hull": 50,
-      "shields": 15,
+      "hull": 37,
+      "shields": 11,
       "energy": 6,
       "energy_regen": 2,
       "speed": 14,
       "evasion": 30,
-      "accuracy": 60,
+      "accuracy": 50,
       "negotiate_difficulty": 2,
       "flee_threshold": 0.4,
       "xp_reward": 15,
@@ -27,7 +27,7 @@
           "effects": [
             {
               "type": "damage",
-              "value": 8.0
+              "value": 6.8
             }
           ],
           "energy_cost": 2,
@@ -54,13 +54,13 @@
       "name": "Pirate Raider",
       "description": "A well-armed raider that attacks aggressively and without mercy.",
       "behavior": "aggressive",
-      "hull": 90,
-      "shields": 30,
+      "hull": 67,
+      "shields": 22,
       "energy": 7,
       "energy_regen": 2,
       "speed": 8,
       "evasion": 15,
-      "accuracy": 70,
+      "accuracy": 60,
       "negotiate_difficulty": 3,
       "flee_threshold": 0.2,
       "xp_reward": 25,
@@ -76,7 +76,7 @@
           "effects": [
             {
               "type": "damage",
-              "value": 15.0
+              "value": 12.8
             }
           ],
           "energy_cost": 3,
@@ -89,7 +89,7 @@
           "effects": [
             {
               "type": "damage",
-              "value": 25.0
+              "value": 21.2
             }
           ],
           "energy_cost": 5,
@@ -129,13 +129,13 @@
       "name": "Pirate Heavy",
       "description": "A heavily armored pirate vessel that fights defensively, shielding allies.",
       "behavior": "defensive",
-      "hull": 180,
-      "shields": 50,
+      "hull": 135,
+      "shields": 37,
       "energy": 9,
       "energy_regen": 2,
       "speed": 4,
       "evasion": 5,
-      "accuracy": 65,
+      "accuracy": 55,
       "negotiate_difficulty": 4,
       "flee_threshold": 0.15,
       "xp_reward": 40,
@@ -151,7 +151,7 @@
           "effects": [
             {
               "type": "damage",
-              "value": 20.0
+              "value": 17.0
             }
           ],
           "energy_cost": 4,
@@ -224,13 +224,13 @@
       "name": "Smuggler",
       "description": "A nimble smuggler vessel. Will flee rather than fight if given the chance.",
       "behavior": "cowardly",
-      "hull": 60,
-      "shields": 20,
+      "hull": 45,
+      "shields": 15,
       "energy": 6,
       "energy_regen": 2,
       "speed": 12,
       "evasion": 25,
-      "accuracy": 65,
+      "accuracy": 55,
       "negotiate_difficulty": 2,
       "flee_threshold": 0.5,
       "xp_reward": 20,
@@ -246,7 +246,7 @@
           "effects": [
             {
               "type": "damage",
-              "value": 12.0
+              "value": 10.2
             }
           ],
           "energy_cost": 2,
@@ -288,13 +288,13 @@
       "name": "Patrol Vessel",
       "description": "A well-maintained patrol ship. Fights defensively and hard to negotiate with.",
       "behavior": "defensive",
-      "hull": 120,
-      "shields": 40,
+      "hull": 90,
+      "shields": 30,
       "energy": 7,
       "energy_regen": 2,
       "speed": 7,
       "evasion": 12,
-      "accuracy": 72,
+      "accuracy": 62,
       "negotiate_difficulty": 4,
       "flee_threshold": 0.2,
       "xp_reward": 35,
@@ -310,7 +310,7 @@
           "effects": [
             {
               "type": "damage",
-              "value": 16.0
+              "value": 13.6
             }
           ],
           "energy_cost": 3,
@@ -357,13 +357,13 @@
       "name": "Guild Enforcer",
       "description": "A Commerce Guild patrol ship enforcing trade regulations. Well-shielded and methodical.",
       "behavior": "defensive",
-      "hull": 100,
-      "shields": 35,
+      "hull": 75,
+      "shields": 26,
       "energy": 7,
       "energy_regen": 2,
       "speed": 7,
       "evasion": 10,
-      "accuracy": 68,
+      "accuracy": 58,
       "negotiate_difficulty": 4,
       "flee_threshold": 0.25,
       "xp_reward": 25,
@@ -379,7 +379,7 @@
           "effects": [
             {
               "type": "damage",
-              "value": 14.0
+              "value": 11.9
             }
           ],
           "energy_cost": 3,
@@ -426,13 +426,13 @@
       "name": "Guild Dreadnought",
       "description": "A Commerce Guild capital-class enforcer. Heavily armed and drains enemy systems.",
       "behavior": "aggressive",
-      "hull": 200,
-      "shields": 60,
+      "hull": 150,
+      "shields": 45,
       "energy": 10,
       "energy_regen": 3,
       "speed": 4,
       "evasion": 5,
-      "accuracy": 72,
+      "accuracy": 62,
       "negotiate_difficulty": 4,
       "flee_threshold": 0.1,
       "xp_reward": 50,
@@ -448,7 +448,7 @@
           "effects": [
             {
               "type": "damage",
-              "value": 22.0
+              "value": 18.7
             }
           ],
           "energy_cost": 4,
@@ -461,7 +461,7 @@
           "effects": [
             {
               "type": "damage",
-              "value": 8.0
+              "value": 6.8
             },
             {
               "type": "energy_drain",
@@ -519,13 +519,13 @@
       "name": "Union Brawler",
       "description": "A rugged Miners' Union combat vessel. Hits hard with improvised mining weapons.",
       "behavior": "aggressive",
-      "hull": 110,
-      "shields": 20,
+      "hull": 82,
+      "shields": 15,
       "energy": 7,
       "energy_regen": 2,
       "speed": 6,
       "evasion": 8,
-      "accuracy": 65,
+      "accuracy": 55,
       "negotiate_difficulty": 3,
       "flee_threshold": 0.2,
       "xp_reward": 25,
@@ -541,7 +541,7 @@
           "effects": [
             {
               "type": "damage",
-              "value": 18.0
+              "value": 15.3
             }
           ],
           "energy_cost": 3,
@@ -595,13 +595,13 @@
       "name": "Union Crusher",
       "description": "A massive Miners' Union warship built from salvaged mining rigs. Deals devastating damage.",
       "behavior": "aggressive",
-      "hull": 220,
-      "shields": 30,
+      "hull": 165,
+      "shields": 22,
       "energy": 9,
       "energy_regen": 2,
       "speed": 3,
       "evasion": 3,
-      "accuracy": 62,
+      "accuracy": 52,
       "negotiate_difficulty": 4,
       "flee_threshold": 0.1,
       "xp_reward": 50,
@@ -617,7 +617,7 @@
           "effects": [
             {
               "type": "damage",
-              "value": 30.0
+              "value": 25.5
             }
           ],
           "energy_cost": 5,
@@ -684,13 +684,13 @@
       "name": "Science Probe",
       "description": "A Science Collective autonomous probe. Drains shields and evades with advanced technology.",
       "behavior": "evasive",
-      "hull": 70,
-      "shields": 50,
+      "hull": 52,
+      "shields": 37,
       "energy": 7,
       "energy_regen": 2,
       "speed": 12,
       "evasion": 28,
-      "accuracy": 75,
+      "accuracy": 65,
       "negotiate_difficulty": 2,
       "flee_threshold": 0.35,
       "xp_reward": 25,
@@ -706,7 +706,7 @@
           "effects": [
             {
               "type": "damage",
-              "value": 10.0
+              "value": 8.5
             },
             {
               "type": "shield_drain",
@@ -764,13 +764,13 @@
       "name": "Science Sentinel",
       "description": "A Science Collective guardian vessel. Uses advanced technology for damage reduction and accuracy disruption.",
       "behavior": "defensive",
-      "hull": 150,
-      "shields": 70,
+      "hull": 112,
+      "shields": 52,
       "energy": 9,
       "energy_regen": 2,
       "speed": 6,
       "evasion": 15,
-      "accuracy": 78,
+      "accuracy": 68,
       "negotiate_difficulty": 4,
       "flee_threshold": 0.15,
       "xp_reward": 50,
@@ -786,7 +786,7 @@
           "effects": [
             {
               "type": "damage",
-              "value": 12.0
+              "value": 10.2
             },
             {
               "type": "accuracy_mod",
@@ -864,13 +864,13 @@
       "name": "Frontier Raider",
       "description": "A fast Frontier Alliance strike craft. Relies on speed and precision.",
       "behavior": "aggressive",
-      "hull": 90,
-      "shields": 25,
+      "hull": 67,
+      "shields": 18,
       "energy": 7,
       "energy_regen": 2,
       "speed": 12,
       "evasion": 22,
-      "accuracy": 72,
+      "accuracy": 62,
       "negotiate_difficulty": 3,
       "flee_threshold": 0.3,
       "xp_reward": 25,
@@ -886,7 +886,7 @@
           "effects": [
             {
               "type": "damage",
-              "value": 14.0
+              "value": 11.9
             }
           ],
           "energy_cost": 2,
@@ -940,13 +940,13 @@
       "name": "Frontier Gunship",
       "description": "A heavily armed Frontier Alliance warship. Fast and devastating with multiple weapon systems.",
       "behavior": "aggressive",
-      "hull": 170,
-      "shields": 40,
+      "hull": 127,
+      "shields": 30,
       "energy": 9,
       "energy_regen": 2,
       "speed": 9,
       "evasion": 15,
-      "accuracy": 70,
+      "accuracy": 60,
       "negotiate_difficulty": 4,
       "flee_threshold": 0.15,
       "xp_reward": 50,
@@ -962,7 +962,7 @@
           "effects": [
             {
               "type": "damage",
-              "value": 25.0
+              "value": 21.2
             }
           ],
           "energy_cost": 5,
@@ -975,7 +975,7 @@
           "effects": [
             {
               "type": "damage",
-              "value": 12.0
+              "value": 10.2
             },
             {
               "type": "evasion_mod",
@@ -1035,13 +1035,13 @@
       "name": "Guild Revenue Cutter",
       "description": "A light Commerce Guild patrol craft. Revenue Cutters enforce trade regulations and inspect cargo manifests. Lightly armed but persistent \u00e2\u20ac\u201d their job is to detain, not destroy.",
       "behavior": "defensive",
-      "hull": 65,
-      "shields": 25,
+      "hull": 48,
+      "shields": 18,
       "energy": 6,
       "energy_regen": 2,
       "speed": 10,
       "evasion": 15,
-      "accuracy": 70,
+      "accuracy": 60,
       "negotiate_difficulty": 2,
       "flee_threshold": 0.35,
       "xp_reward": 15,
@@ -1057,7 +1057,7 @@
           "effects": [
             {
               "type": "damage",
-              "value": 8.0
+              "value": 6.8
             },
             {
               "type": "evasion_mod",
@@ -1075,7 +1075,7 @@
           "effects": [
             {
               "type": "damage",
-              "value": 10.0
+              "value": 8.5
             }
           ],
           "energy_cost": 2,
@@ -1102,13 +1102,13 @@
       "name": "Union Picket",
       "description": "A converted mining skiff pressed into convoy escort duty. Small and tough, crewed by miners who decided shooting pirates beats drilling rock. Armed with improvised weapons powered by engines built to haul ten times their weight.",
       "behavior": "aggressive",
-      "hull": 75,
-      "shields": 10,
+      "hull": 56,
+      "shields": 7,
       "energy": 6,
       "energy_regen": 2,
       "speed": 7,
       "evasion": 8,
-      "accuracy": 62,
+      "accuracy": 52,
       "negotiate_difficulty": 2,
       "flee_threshold": 0.3,
       "xp_reward": 15,
@@ -1124,7 +1124,7 @@
           "effects": [
             {
               "type": "damage",
-              "value": 14.0
+              "value": 11.9
             }
           ],
           "energy_cost": 2,
@@ -1172,13 +1172,13 @@
       "name": "Science Surveyor",
       "description": "A Collective research vessel repurposed for patrol duty. High sensor resolution and excellent shields, but minimal weapons. Prefers to scan, analyze, and evade \u00e2\u20ac\u201d but its analysis beam strips shields with clinical precision.",
       "behavior": "evasive",
-      "hull": 50,
-      "shields": 40,
+      "hull": 37,
+      "shields": 30,
       "energy": 6,
       "energy_regen": 2,
       "speed": 11,
       "evasion": 25,
-      "accuracy": 72,
+      "accuracy": 62,
       "negotiate_difficulty": 2,
       "flee_threshold": 0.4,
       "xp_reward": 15,
@@ -1194,7 +1194,7 @@
           "effects": [
             {
               "type": "damage",
-              "value": 6.0
+              "value": 5.1
             },
             {
               "type": "shield_drain",
@@ -1240,13 +1240,13 @@
       "name": "Frontier Skirmisher",
       "description": "A fast Alliance interceptor built for hit-and-run tactics. Light, agile, and crewed by the best seat-of-the-pants flyers in the Expanse. Armed with quick-firing modified weapons that compensate for low power with high accuracy.",
       "behavior": "aggressive",
-      "hull": 60,
-      "shields": 15,
+      "hull": 45,
+      "shields": 11,
       "energy": 6,
       "energy_regen": 2,
       "speed": 14,
       "evasion": 28,
-      "accuracy": 68,
+      "accuracy": 58,
       "negotiate_difficulty": 2,
       "flee_threshold": 0.35,
       "xp_reward": 15,
@@ -1262,7 +1262,7 @@
           "effects": [
             {
               "type": "damage",
-              "value": 10.0
+              "value": 8.5
             }
           ],
           "energy_cost": 2,
@@ -1310,13 +1310,13 @@
       "name": "Reach Rust Runner",
       "description": "A fast, light harassment vessel built from courier wreckage in the scrapyards of Crimson Reach. Armed with corrosive slug-throwers that eat through hull plating. Its job is to harry and harass, not to stand and fight.",
       "behavior": "cowardly",
-      "hull": 55,
-      "shields": 10,
+      "hull": 41,
+      "shields": 7,
       "energy": 6,
       "energy_regen": 2,
       "speed": 15,
       "evasion": 30,
-      "accuracy": 60,
+      "accuracy": 50,
       "negotiate_difficulty": 2,
       "flee_threshold": 0.4,
       "xp_reward": 15,
@@ -1332,7 +1332,7 @@
           "effects": [
             {
               "type": "damage",
-              "value": 8.0
+              "value": 6.8
             },
             {
               "type": "shield_drain",
@@ -1384,13 +1384,13 @@
       "name": "Reach Wrecker",
       "description": "A medium combat vessel built from salvaged military hulls in Crimson Reach. Equipped with grapple launchers and a reinforced ram prow \u00e2\u20ac\u201d Reach combat doctrine favors getting close and tearing ships apart for salvage. Why destroy what you can repurpose?",
       "behavior": "aggressive",
-      "hull": 110,
-      "shields": 25,
+      "hull": 82,
+      "shields": 18,
       "energy": 7,
       "energy_regen": 2,
       "speed": 6,
       "evasion": 8,
-      "accuracy": 65,
+      "accuracy": 55,
       "negotiate_difficulty": 3,
       "flee_threshold": 0.2,
       "xp_reward": 30,
@@ -1406,7 +1406,7 @@
           "effects": [
             {
               "type": "damage",
-              "value": 22.0
+              "value": 18.7
             }
           ],
           "energy_cost": 4,
@@ -1419,7 +1419,7 @@
           "effects": [
             {
               "type": "damage",
-              "value": 10.0
+              "value": 8.5
             },
             {
               "type": "shield_drain",
@@ -1477,13 +1477,13 @@
       "name": "Reach Dreadwreck",
       "description": "A massive amalgamation of ship carcasses welded into a single hulking combat platform. Slow, poorly shielded, but absurdly durable and bristling with weapons salvaged from a dozen different sources. Each Dreadwreck is unique and terrifying.",
       "behavior": "aggressive",
-      "hull": 200,
-      "shields": 35,
+      "hull": 150,
+      "shields": 26,
       "energy": 9,
       "energy_regen": 2,
       "speed": 3,
       "evasion": 3,
-      "accuracy": 60,
+      "accuracy": 50,
       "negotiate_difficulty": 4,
       "flee_threshold": 0.1,
       "xp_reward": 50,
@@ -1499,7 +1499,7 @@
           "effects": [
             {
               "type": "damage",
-              "value": 28.0
+              "value": 23.8
             }
           ],
           "energy_cost": 5,
@@ -1512,7 +1512,7 @@
           "effects": [
             {
               "type": "damage",
-              "value": 12.0
+              "value": 10.2
             },
             {
               "type": "energy_drain",
@@ -1590,13 +1590,13 @@
       "name": "Freelance Tracker",
       "description": "A fast, lightly armed bounty tracking vessel. Relies on speed to catch targets, but flees when outgunned.",
       "behavior": "cowardly",
-      "hull": 70,
-      "shields": 25,
+      "hull": 52,
+      "shields": 18,
       "energy": 7,
       "energy_regen": 2,
       "speed": 14,
       "evasion": 28,
-      "accuracy": 72,
+      "accuracy": 62,
       "negotiate_difficulty": 3,
       "flee_threshold": 0.35,
       "xp_reward": 25,
@@ -1612,7 +1612,7 @@
           "effects": [
             {
               "type": "damage",
-              "value": 10.0
+              "value": 8.5
             },
             {
               "type": "evasion_mod",
@@ -1671,13 +1671,13 @@
       "name": "Bounty Enforcer",
       "description": "A well-armed bounty hunter ship. Balanced loadout optimized for disabling targets.",
       "behavior": "aggressive",
-      "hull": 120,
-      "shields": 40,
+      "hull": 90,
+      "shields": 30,
       "energy": 7,
       "energy_regen": 2,
       "speed": 9,
       "evasion": 15,
-      "accuracy": 74,
+      "accuracy": 64,
       "negotiate_difficulty": 3,
       "flee_threshold": 0.2,
       "xp_reward": 35,
@@ -1693,7 +1693,7 @@
           "effects": [
             {
               "type": "damage",
-              "value": 16.0
+              "value": 13.6
             },
             {
               "type": "shield_drain",
@@ -1710,7 +1710,7 @@
           "effects": [
             {
               "type": "damage",
-              "value": 5.0
+              "value": 4.2
             },
             {
               "type": "evasion_mod",
@@ -1755,13 +1755,13 @@
       "name": "Bounty Vanguard",
       "description": "A heavily shielded bounty hunting vessel. Absorbs punishment while wearing down targets with sustained fire.",
       "behavior": "defensive",
-      "hull": 180,
-      "shields": 70,
+      "hull": 135,
+      "shields": 52,
       "energy": 9,
       "energy_regen": 2,
       "speed": 5,
       "evasion": 8,
-      "accuracy": 70,
+      "accuracy": 60,
       "negotiate_difficulty": 4,
       "flee_threshold": 0.15,
       "xp_reward": 45,
@@ -1777,7 +1777,7 @@
           "effects": [
             {
               "type": "damage",
-              "value": 14.0
+              "value": 11.9
             },
             {
               "type": "accuracy_mod",
@@ -1855,13 +1855,13 @@
       "name": "Bounty Ace",
       "description": "An elite freelance hunter flying a custom interceptor. Extremely fast and accurate \u00e2\u20ac\u201d almost impossible to outrun.",
       "behavior": "evasive",
-      "hull": 100,
-      "shields": 45,
+      "hull": 75,
+      "shields": 33,
       "energy": 9,
       "energy_regen": 2,
       "speed": 16,
       "evasion": 35,
-      "accuracy": 82,
+      "accuracy": 72,
       "negotiate_difficulty": 4,
       "flee_threshold": 0.25,
       "xp_reward": 50,
@@ -1877,7 +1877,7 @@
           "effects": [
             {
               "type": "damage",
-              "value": 18.0
+              "value": 15.3
             }
           ],
           "energy_cost": 3,
@@ -1890,7 +1890,7 @@
           "effects": [
             {
               "type": "damage",
-              "value": 12.0
+              "value": 10.2
             },
             {
               "type": "evasion_mod",
@@ -1910,7 +1910,7 @@
           "effects": [
             {
               "type": "damage",
-              "value": 10.0
+              "value": 8.5
             },
             {
               "type": "evasion_mod",
@@ -1969,13 +1969,13 @@
       "name": "Sector Authority Enforcer",
       "description": "A top-tier enforcement vessel deployed by the sector council. Three weapon systems, heavy armor, and zero tolerance for criminals.",
       "behavior": "aggressive",
-      "hull": 220,
-      "shields": 80,
+      "hull": 165,
+      "shields": 60,
       "energy": 10,
       "energy_regen": 3,
       "speed": 7,
       "evasion": 12,
-      "accuracy": 78,
+      "accuracy": 68,
       "negotiate_difficulty": 5,
       "flee_threshold": 0.1,
       "xp_reward": 65,
@@ -1991,7 +1991,7 @@
           "effects": [
             {
               "type": "damage",
-              "value": 25.0
+              "value": 21.2
             }
           ],
           "energy_cost": 4,
@@ -2004,7 +2004,7 @@
           "effects": [
             {
               "type": "damage",
-              "value": 10.0
+              "value": 8.5
             },
             {
               "type": "shield_drain",
@@ -2031,7 +2031,7 @@
             },
             {
               "type": "damage",
-              "value": 8.0
+              "value": 6.8
             }
           ],
           "energy_cost": 4,
@@ -2091,13 +2091,13 @@
       "name": "Unmarked Raider",
       "description": "A heavily armed raider with military-grade weapons and coordinated tactics. The hull markings have been scrubbed, but the drive core is unmistakably Guild-pattern.",
       "behavior": "aggressive",
-      "hull": 110,
-      "shields": 45,
+      "hull": 82,
+      "shields": 33,
       "energy": 7,
       "energy_regen": 2,
       "speed": 10,
       "evasion": 20,
-      "accuracy": 72,
+      "accuracy": 62,
       "negotiate_difficulty": 4,
       "flee_threshold": 0.15,
       "xp_reward": 35,
@@ -2113,7 +2113,7 @@
           "effects": [
             {
               "type": "damage",
-              "value": 18.0
+              "value": 15.3
             }
           ],
           "energy_cost": 3,
@@ -2126,7 +2126,7 @@
           "effects": [
             {
               "type": "damage",
-              "value": 22.0
+              "value": 18.7
             },
             {
               "type": "shield_drain",
@@ -2170,13 +2170,13 @@
       "name": "Unmarked Striker",
       "description": "A fast, evasive interceptor running unmarked. The engine signature matches military-spec thruster arrays \u00e2\u20ac\u201d hardware that doesn't appear on any civilian market.",
       "behavior": "evasive",
-      "hull": 60,
-      "shields": 35,
+      "hull": 45,
+      "shields": 26,
       "energy": 7,
       "energy_regen": 2,
       "speed": 60,
       "evasion": 45,
-      "accuracy": 58,
+      "accuracy": 48,
       "negotiate_difficulty": 4,
       "flee_threshold": 0.3,
       "xp_reward": 30,
@@ -2192,7 +2192,7 @@
           "effects": [
             {
               "type": "damage",
-              "value": 12.0
+              "value": 10.2
             }
           ],
           "energy_cost": 2,
@@ -2246,13 +2246,13 @@
       "name": "Ledger Vanguard",
       "description": "The Ledger's elite interceptor. Purpose-built from Guild military prototypes, piloted by the Inner Ledger's most experienced operative. Fast, heavily armed, and utterly committed to preventing anyone from reaching the warp gate.",
       "behavior": "aggressive",
-      "hull": 140,
-      "shields": 60,
+      "hull": 105,
+      "shields": 45,
       "energy": 10,
       "energy_regen": 3,
       "speed": 50,
       "evasion": 30,
-      "accuracy": 72,
+      "accuracy": 62,
       "negotiate_difficulty": 8,
       "flee_threshold": 0.1,
       "xp_reward": 60,
@@ -2268,7 +2268,7 @@
           "effects": [
             {
               "type": "damage",
-              "value": 25.0
+              "value": 21.2
             }
           ],
           "energy_cost": 4,
@@ -2281,7 +2281,7 @@
           "effects": [
             {
               "type": "damage",
-              "value": 15.0
+              "value": 12.8
             },
             {
               "type": "shield_drain",

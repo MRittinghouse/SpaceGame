@@ -37,8 +37,8 @@ class TestEnemyTemplateLoading:
         scout = loader.enemy_templates["pirate_scout"]
         assert scout.name == "Pirate Scout"
         assert scout.behavior == EnemyBehavior.COWARDLY
-        assert scout.hull == 50
-        assert scout.shields == 15
+        assert scout.hull == 37  # 50 * 0.75 (nerfed)
+        assert scout.shields == 11  # 15 * 0.75 (nerfed)
         assert scout.negotiate_difficulty == 2
         assert len(scout.moves) == 1
         assert scout.moves[0].id == "scout_blaster"
@@ -193,7 +193,7 @@ class TestShipTypeCombatLoading:
         lf = loader.ship_types["light_freighter"]
         assert lf.combat_hull == 100
         assert lf.combat_shields == 40
-        assert lf.combat_energy == 7
+        assert lf.combat_energy == 9
         assert lf.combat_speed == 8
         assert lf.weapon_slots == 1
         assert lf.defense_slots == 1
