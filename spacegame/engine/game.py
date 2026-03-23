@@ -1477,6 +1477,28 @@ class Game:
 
                 self._start_transition(TransitionType.FADE, 0.3, _do)
 
+            elif next_state == GameState.SHIP_BUILDER:
+                self.shipyard_view.next_state = None
+
+                def _do_builder():
+                    self._ensure_ship_builder_view()
+                    self.state_manager.change_state(GameState.SHIP_BUILDER)
+
+                self._start_transition(TransitionType.FADE, 0.3, _do_builder)
+
+        # Check ship builder for transitions
+        if hasattr(self, "ship_builder_view") and self.ship_builder_view:
+            if self.ship_builder_view.active:
+                next_state = self.ship_builder_view.get_next_state()
+                if next_state == GameState.SHIPYARD:
+                    self.ship_builder_view.next_state = None
+
+                    def _do_builder_back():
+                        self._ensure_shipyard_view()
+                        self.state_manager.change_state(GameState.SHIPYARD)
+
+                    self._start_transition(TransitionType.FADE, 0.3, _do_builder_back)
+
         # Check station hub view for transitions
         if hasattr(self, "station_hub_view") and self.station_hub_view:
             if self.station_hub_view.active:
@@ -3012,6 +3034,17 @@ class Game:
         from spacegame.models.crew import CrewRoster
 
         return CrewRoster(self.data_loader.crew_templates)
+
+    def _ensure_ship_builder_view(self) -> None:
+        """Create or recreate ship builder view."""
+        from spacegame.views.ship_builder_view import ShipBuilderView
+
+        self.ship_builder_view = ShipBuilderView(
+            self.ui_manager,
+            self.player,
+            self.data_loader,
+        )
+        self.state_manager.register_state(GameState.SHIP_BUILDER, self.ship_builder_view)
 
     def _ensure_shipyard_view(self) -> None:
         """Create or recreate shipyard view."""

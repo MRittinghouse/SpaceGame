@@ -204,6 +204,7 @@ class GameState(Enum):
     REFINING = "refining"
     SKILL_TREE = "skill_tree"
     SHIPYARD = "shipyard"
+    SHIP_BUILDER = "ship_builder"
     SHIP_MANAGEMENT = "ship_management"
 
     # Info screens

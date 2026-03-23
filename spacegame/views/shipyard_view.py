@@ -159,6 +159,11 @@ class ShipyardView(BaseView):
             text="Installed",
             manager=self.ui_manager,
         )
+        self.drydock_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(btn_x + 400, 70, 120, 35),
+            text="Drydock",
+            manager=self.ui_manager,
+        )
         hud_h = scale_y(HUD_BASE_HEIGHT)
         self.buy_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(WINDOW_WIDTH - 200, WINDOW_HEIGHT - hud_h - scale_y(120), 170, 40),
@@ -216,6 +221,7 @@ class ShipyardView(BaseView):
             self.tuning_btn_a,
             self.tuning_btn_b,
             self.tuning_cancel,
+            getattr(self, "drydock_button", None),
         ]:
             if btn:
                 btn.kill()
@@ -334,6 +340,8 @@ class ShipyardView(BaseView):
                 self.viewing = "installed"
                 self.selected_upgrade_idx = 0
                 self._scroll_offset = 0
+            elif hasattr(self, "drydock_button") and event.ui_element == self.drydock_button:
+                self.next_state = GameState.SHIP_BUILDER
             elif event.ui_element == self.buy_button:
                 self._buy_selected()
             elif event.ui_element == self.uninstall_button:
