@@ -411,28 +411,23 @@ The existing Combat skill tree should include elemental mastery nodes:
 
 ---
 
-## Implementation Priority (Updated)
+## Implementation Status — ALL 6 PHASES COMPLETE
 
-| Phase | Description | Effort | Impact | Status |
-|-------|-------------|--------|--------|--------|
-| **1** | Energy Tension | LOW | CRITICAL | DONE |
-| **4** | Damage Preview | MEDIUM | MEDIUM | DONE |
-| **2** | Enemy Telegraphing | MEDIUM | HIGH | DONE |
-| **3** | Crew Tactical Choice | MEDIUM | HIGH | DONE |
-| **5** | Elemental Weapon System | HIGH | CRITICAL | DONE |
-| **6** | Utility Moves & Tactical Depth | MEDIUM | HIGH | DONE |
+| Phase | Description | Status | Highlights |
+|-------|-------------|--------|------------|
+| **1** | Energy Tension | DONE | Pools 6-8, regen 2, 24 ships + 28 enemies rebalanced, 3 new energy moves |
+| **2** | Enemy Telegraphing | DONE | Enemies broadcast intent (ATTACKING/CHARGING/FORTIFYING/EVADING/DRAINING) |
+| **3** | Crew Tactical Choice | DONE | 4 abilities per companion (16 total), player picks one per turn, energy cost |
+| **4** | Damage Preview | DONE | Ghost fill on enemy health bars, enhanced tooltips with accuracy/energy |
+| **5** | Elemental Weapons | DONE | 5 elements (Kinetic/Plasma/Ion/Cryo/Voltaic), 15 weapons, stacking effects |
+| **6** | Utility Moves | DONE | 9 tactical tools (AOE, Absorb, Cleanse, Nova Burst, etc.), 85 total upgrades |
 
-### Recommended Next Pass
-
-**Phase 5 (Elemental Weapons)** is the next transformative change. It creates build identity, rewards tactical play, and gives the 15 new weapons a reason to exist beyond "bigger numbers." Implementation requires:
-- New `WeaponElement` enum in combat.py
-- Elemental damage resolution in combat_engine.py
-- New status effects (Burn, Chill, Suppressed) with stacking logic
-- 15 new weapon upgrade entries in upgrades.json
-- Projectile visual variants per element in combat_view.py
-- Status effect rendering on ship sprites
-
-**Phase 2 (Enemy Telegraphing)** pairs well with Phase 5 — once enemies telegraph their moves AND the player has elemental options, the decision becomes: "The enemy is CHARGING — do I freeze them with Cryo, suppress their damage with Voltaic, or burn them down with Plasma before the charge fires?"
+### Future Expansion Opportunities (post-playtesting)
+- Elemental visual pass: distinct projectile colors/sprites per element
+- Enemy elemental resistances/weaknesses
+- Skill tree integration: elemental mastery nodes
+- Charge attacks (2-turn enemy moves with telegraphing)
+- Enemy AI personality improvements (tactical, berserker, support behaviors)
 
 ---
 

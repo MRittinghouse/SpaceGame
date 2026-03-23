@@ -690,43 +690,34 @@ Manages per-ship visual degradation:
 
 ## Implementation Status & Priority
 
-### COMPLETED
+### WAVE 1: Foundation — ALL COMPLETE
 
 | Item | Status | Notes |
 |------|--------|-------|
 | Resolution Infrastructure | DONE | Configurable 720p/900p/1080p, scale_x/scale_y, font auto-scaling |
 | Font System Migration | DONE | 161 calls migrated to semantic constants, resolution-aware FontCache |
-| View Layout Scaling | DONE | All 34 views use proportional positioning |
+| View Layout Scaling | DONE | All 35 views use proportional positioning |
 | Sprite Scale Defaults | DONE | Resolution-aware res_scale() on all SpriteManager methods |
 | Sprite Manifest v4 | DONE | All 75 sprites doubled to HD sizes, improved prompts |
 | 1A: Cockpit HUD Bar | DONE | Ship/station context skins, notification badges, quest hints, faction accents |
 | Galaxy Map Cleanup | DONE | Buttons migrated to HUD, system info panel moved left, action card added |
 | HUD Clearance Pass | DONE | All bottom-positioned buttons across 11 views adjusted for HUD height |
+| 1B: Station Hub Visual | DONE | 5 faction-specific layouts + polish (tooltips, particles, taglines, entrance anim) |
+| 1C: Combat Visual Overhaul | DONE | All 6 phases: ships, projectiles, shields, damage, destruction, atmosphere |
 
-### IN PROGRESS
+### WAVE 2: Mini-Game Identity — ALL COMPLETE
 
 | Item | Status | Notes |
 |------|--------|-------|
-| 1C: Combat Visual Overhaul | DONE | All 6 phases complete — ships, projectiles, shields, damage, destruction, atmosphere |
-| 1B: Station Hub Visual Upgrade | DONE | 5 faction-specific layouts: Guild deck, Union blueprint, Collective radial, Frontier scattered, Reach dark |
+| 2A: Mining Depth Visuals | DONE | 5-layer atmosphere, depth meter sidebar, layer transition animation |
+| 2B: Salvage Derelict Visuals | DONE | 3 derelict atmospheres, deck meter, corruption pressure, scan pulse, quality bursts, mode overlay |
+| 2C: Refining Forge Visuals | DONE | Forge intensity (4 heat levels), mastery momentum bar (connected), buffer pressure, mastery celebration |
 
-### 1C Implementation Phases
-
-| Phase | Description | Status |
-|-------|-------------|--------|
-| 1C-1 | Ship Scale & Arena Layout | DONE |
-| 1C-2 | Projectile System | DONE |
-| 1C-3 | Shield Visualization | DONE |
-| 1C-4 | Damage Escalation | DONE |
-| 1C-5 | Destruction Spectacular | DONE |
-| 1C-6 | Atmosphere & Polish | DONE |
-
-### UPCOMING
+### UPCOMING (Waves 3-4)
 
 | Wave | Item | Impact | Effort | Priority |
 |------|------|--------|--------|----------|
-| 1B | Station Hub Visual Upgrade | High | High | After 1C |
-| 2A | Mining Depth System | High | High | After 1B |
+| 3A | Space Combat Positioning | High | Very High | Next |
 | 2B | Salvage Derelict Layout | High | High | After 2A |
 | 2C | Refining Active Forge | Medium | High | After 2B |
 | 3A | Space Combat Positioning | High | Very High | After 2C |
