@@ -125,7 +125,7 @@ class TestDataLoaderShapes:
         from spacegame.data_loader import get_data_loader
         dl = get_data_loader()
         dl.load_hull_shapes()
-        assert len(dl.hull_shapes) == 9, f"Expected 9 shapes, got {len(dl.hull_shapes)}"
+        assert len(dl.hull_shapes) == 56, f"Expected 56 shapes, got {len(dl.hull_shapes)}"
         assert "pixel" in dl.hull_shapes
         assert "small_square" in dl.hull_shapes
         assert dl.hull_shapes["bar"].pixel_count == 3
@@ -134,7 +134,7 @@ class TestDataLoaderShapes:
         from spacegame.data_loader import get_data_loader
         dl = get_data_loader()
         dl.load_hull_materials()
-        assert len(dl.hull_materials) == 3, f"Expected 3 materials, got {len(dl.hull_materials)}"
+        assert len(dl.hull_materials) == 16, f"Expected 16 materials, got {len(dl.hull_materials)}"
         assert "light_alloy" in dl.hull_materials
         assert "standard_plate" in dl.hull_materials
         assert "salvage_scrap" in dl.hull_materials
