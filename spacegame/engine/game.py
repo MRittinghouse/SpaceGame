@@ -3491,6 +3491,7 @@ class Game:
             GameState.MINING: "mining",
             GameState.SALVAGING: "salvage",
             GameState.REFINING: "refining",
+            GameState.SHIP_BUILDER: "builder_welcome",
         }
         hint_id = hint_map.get(current_state)
         if hint_id and self.tutorial_manager.should_show_hint(hint_id):

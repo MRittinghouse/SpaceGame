@@ -170,6 +170,77 @@ MINIGAME_HINTS: dict[str, dict[str, str]] = {
             "Kinetic deals the highest raw damage but has no effect."
         ),
     },
+    # === Ship Builder Tutorials (Phase F) ===
+    "builder_welcome": {
+        "title": "Welcome to the Drydock",
+        "description": (
+            "This is where you build your ship. Every pixel you place "
+            "becomes part of your ship's hull and sprite.\n\n"
+            "LEFT panel: Shape palette — pick a shape to stamp\n"
+            "RIGHT panel: Material selector — pick what it's made of\n"
+            "CENTER: Your ship grid — click to place shapes\n\n"
+            "The stats panel at the bottom shows your ship's capabilities "
+            "in real-time as you build.\n\n"
+            "Don't want to build from scratch? Click BACK and load a "
+            "preset from the Shipyard."
+        ),
+    },
+    "builder_shapes": {
+        "title": "Shapes & Materials",
+        "description": (
+            "Shapes are your building blocks. Select one from the left "
+            "panel, then click the grid to stamp it down.\n\n"
+            "[R] Rotate the shape 90°\n"
+            "[Q] Flip horizontally\n"
+            "[X] Mirror Mode — auto-duplicate across the center line\n\n"
+            "Materials determine what each pixel contributes to your "
+            "ship's stats. Standard Plate is balanced. Heavy Armor is "
+            "tough but heavy. Light Alloy is fast but fragile.\n\n"
+            "The color of each pixel on your ship IS the material color."
+        ),
+    },
+    "builder_tools": {
+        "title": "Builder Tools",
+        "description": (
+            "[S] Stamp — place shapes (default tool)\n"
+            "[P] Pencil — place single pixels for detail\n"
+            "[M] Brush — repaint pixels with a different material\n"
+            "[F] Fill — flood-fill an enclosed area\n"
+            "[E] Eraser — remove pixels\n"
+            "[D] Slot — designate equipment hardpoints\n\n"
+            "Right-click always erases. Ctrl+Z undoes, Ctrl+Y redoes.\n\n"
+            "The weight bar shows how heavy your ship is. Lighter ships "
+            "dodge better. Heavier ships tank more."
+        ),
+    },
+    "builder_slots": {
+        "title": "Equipment Slots",
+        "description": (
+            "Press [D] to enter Slot mode. Choose a slot type from "
+            "the panel, then click on your ship to place it.\n\n"
+            "Weapon slots: mount guns and missiles\n"
+            "Defense slots: shields, armor modules, ECM\n"
+            "Engine slots: thrusters (must go at the rear)\n"
+            "Utility slots: cargo, sensors, mining drills\n"
+            "Core slot: your ship's power source (required!)\n\n"
+            "Click a placed slot to install equipment into it. "
+            "Your ship needs at least a weapon or engine to fight or flee."
+        ),
+    },
+    "builder_confirm": {
+        "title": "Confirming Your Build",
+        "description": (
+            "When you're satisfied, click CONFIRM BUILD. Your ship's "
+            "sprite will update everywhere — combat, galaxy map, HUD.\n\n"
+            "You can return to the Drydock at any shipyard to rebuild. "
+            "Nothing is permanent. Experiment freely.\n\n"
+            "The weight system creates natural trade-offs:\n"
+            "• Hull materials are HEAVY → slow but tanky\n"
+            "• Shield materials are MEDIUM → balanced sustain\n"
+            "• Light materials are FAST → evasive but fragile\n\n"
+            "Your ship tells your story. Build it YOUR way."
+        ),
+    },
     "combat_defensive_identity": {
         "title": "Defensive Identity",
         "description": (

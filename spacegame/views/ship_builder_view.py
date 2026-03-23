@@ -191,9 +191,27 @@ class ShipBuilderView(BaseView):
             text="BACK",
             manager=self.ui_manager,
         )
+        # Quick Start / Help buttons (Phase F — always visible)
+        self.load_preset_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(
+                scale_x(160), btn_y, btn_w, btn_h,
+            ),
+            text="LOAD PRESET",
+            manager=self.ui_manager,
+        )
+        self.help_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(
+                scale_x(300), btn_y, scale_x(40), btn_h,
+            ),
+            text="?",
+            manager=self.ui_manager,
+        )
+        self._help_overlay_open = False
 
     def _destroy_ui(self) -> None:
-        for btn in [self.confirm_button, self.clear_button, self.back_button]:
+        for btn in [self.confirm_button, self.clear_button, self.back_button,
+                    getattr(self, "load_preset_button", None),
+                    getattr(self, "help_button", None)]:
             if btn:
                 btn.kill()
         self.confirm_button = None
@@ -213,10 +231,17 @@ class ShipBuilderView(BaseView):
                 self._confirm_build()
                 return
             if event.ui_element == self.clear_button:
+                self._push_undo()
                 self.build.pixels.clear()
                 self.build.slots.clear()
                 self._modified = True
                 self._recompute_stats()
+                return
+            if hasattr(self, "load_preset_button") and event.ui_element == self.load_preset_button:
+                self._load_preset()
+                return
+            if hasattr(self, "help_button") and event.ui_element == self.help_button:
+                self._help_overlay_open = not self._help_overlay_open
                 return
 
         if event.type == pygame.KEYDOWN:
@@ -249,6 +274,10 @@ class ShipBuilderView(BaseView):
                 self._redo()
 
         if event.type == pygame.MOUSEBUTTONDOWN:
+            # Close help overlay on any click
+            if getattr(self, "_help_overlay_open", False):
+                self._help_overlay_open = False
+                return
             if event.button == 1:  # Left click
                 self._handle_left_click(event.pos)
             elif event.button == 3:  # Right click — erase
@@ -850,6 +879,10 @@ class ShipBuilderView(BaseView):
         if self._confirm_anim_timer > 0:
             self._render_confirm_animation(screen)
 
+        # Help overlay (on top of everything)
+        if getattr(self, "_help_overlay_open", False):
+            self._render_help_overlay(screen)
+
     def _render_grid(self, screen: pygame.Surface) -> None:
         """Render the ship building grid with placed pixels."""
         canvas = self.build.canvas_size
@@ -1280,6 +1313,70 @@ class ShipBuilderView(BaseView):
         # Hint
         hint = self.label_font.render("Click to install. Right-click to close.", True, Colors.TEXT_SECONDARY)
         screen.blit(hint, (modal_x + 10, modal_y + modal_h - scale_y(16)))
+
+    def _load_preset(self) -> None:
+        """Load the current ship type's preset into the builder."""
+        from spacegame.models.ship_presets import generate_preset_from_ship_type
+        self._push_undo()
+        self.build = generate_preset_from_ship_type(self.player.ship.ship_type)
+        self.grid_manager = ShipGridManager(self.build.weight_class)
+        self._modified = True
+        self._recompute_stats()
+        logger.info(f"Loaded preset for {self.player.ship.ship_type.name}")
+
+    def _render_help_overlay(self, screen: pygame.Surface) -> None:
+        """Render the in-builder help panel (Phase F)."""
+        # Darken background
+        dim = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA)
+        dim.fill((0, 0, 0, 180))
+        screen.blit(dim, (0, 0))
+
+        pw = scale_x(600)
+        ph = scale_y(450)
+        px = (WINDOW_WIDTH - pw) // 2
+        py = (WINDOW_HEIGHT - ph) // 2
+
+        draw_panel(screen, (px, py, pw, ph), alpha=240)
+
+        # Title
+        title = self.header_font.render("Ship Builder — Controls", True, Colors.TEXT_HIGHLIGHT)
+        screen.blit(title, (px + scale_x(20), py + scale_y(10)))
+
+        y = py + scale_y(45)
+        line_h = scale_y(20)
+
+        help_lines = [
+            ("BUILDING", Colors.TEXT_HIGHLIGHT),
+            ("  Left-click: Place shape / Use tool", Colors.TEXT_PRIMARY),
+            ("  Right-click: Erase pixel / Remove slot", Colors.TEXT_PRIMARY),
+            ("  [R] Rotate shape 90°    [Q] Flip horizontally", Colors.TEXT_PRIMARY),
+            ("  [X] Toggle Mirror Mode (symmetrical building)", Colors.TEXT_PRIMARY),
+            ("  Ctrl+Z: Undo    Ctrl+Y: Redo", Colors.TEXT_PRIMARY),
+            ("", Colors.TEXT_PRIMARY),
+            ("TOOLS", Colors.TEXT_HIGHLIGHT),
+            ("  [S] Stamp    [P] Pencil    [M] Material Brush", Colors.TEXT_PRIMARY),
+            ("  [F] Flood Fill    [E] Eraser    [D] Slot Designator", Colors.TEXT_PRIMARY),
+            ("", Colors.TEXT_PRIMARY),
+            ("SLOTS & EQUIPMENT", Colors.TEXT_HIGHLIGHT),
+            ("  Press [D], select a slot type, click grid to place", Colors.TEXT_PRIMARY),
+            ("  Click an existing slot to install equipment", Colors.TEXT_PRIMARY),
+            ("  Weapons (red), Defense (blue), Engine (orange), Utility (green)", Colors.TEXT_PRIMARY),
+            ("  Core (gold) — required for energy. 1 per ship.", Colors.TEXT_PRIMARY),
+            ("", Colors.TEXT_PRIMARY),
+            ("WEIGHT & IDENTITY", Colors.TEXT_HIGHLIGHT),
+            ("  Hull materials are heavy → Juggernaut (armor, durability)", Colors.TEXT_PRIMARY),
+            ("  Shield materials are medium → Sentinel (regen, sustain)", Colors.TEXT_PRIMARY),
+            ("  Light materials are fast → Ghost (evasion, speed)", Colors.TEXT_PRIMARY),
+            ("  Your ship's identity activates when 35%+ of pixels are one type", Colors.TEXT_PRIMARY),
+            ("", Colors.TEXT_PRIMARY),
+            ("Press [?] or click anywhere to close", Colors.TEXT_SECONDARY),
+        ]
+
+        for text, color in help_lines:
+            if text:
+                surf = self.label_font.render(text, True, color)
+                screen.blit(surf, (px + scale_x(20), y))
+            y += line_h
 
     def _render_stat_preview(self, screen: pygame.Surface) -> None:
         """Show stat delta when hovering a shape in the palette (Phase E)."""
