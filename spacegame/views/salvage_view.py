@@ -44,6 +44,12 @@ from spacegame.engine.sprites import get_sprite_manager, res_scale
 from spacegame.engine.audio_manager import get_audio_manager
 from spacegame.engine.floating_text import FloatingItemManager
 from spacegame.engine.tooltip import TooltipState
+from spacegame.engine.salvage_vfx import (
+    SalvageAtmosphere,
+    SalvageDeckMeter,
+    CorruptionOverlay,
+    DeckTransition,
+)
 
 
 class SalvageView(BaseView):
@@ -71,6 +77,24 @@ class SalvageView(BaseView):
         if salvage_config is None:
             salvage_config = SalvageConfig(system_id=player.current_system_id)
         self.salvage_config = salvage_config
+
+        # VFX objects (synced with session state in on_enter / deck advance)
+        grid_rect = pygame.Rect(
+            self.GRID_OFFSET_X, self.GRID_OFFSET_Y,
+            self.CELL_SIZE * 6, self.CELL_SIZE * 6,
+        )
+        self._vfx_atmosphere = SalvageAtmosphere(grid_rect)
+        self._vfx_deck_meter = SalvageDeckMeter(
+            x=WINDOW_WIDTH - scale_x(60),
+            y=self.GRID_OFFSET_Y,
+            height=self.CELL_SIZE * 5,
+        )
+        self._vfx_corruption = CorruptionOverlay(
+            bar_x=self.GRID_OFFSET_X,
+            bar_y=self.GRID_OFFSET_Y - scale_y(20),
+            bar_w=self.CELL_SIZE * 6,
+        )
+        self._vfx_deck_trans = DeckTransition()
 
         self.session: Optional[SalvageSession] = None
         self.next_state: Optional[GameState] = None
@@ -479,6 +503,11 @@ class SalvageView(BaseView):
                             self.player.max_salvage_deck, result.new_deck
                         )
                         self._reveal_timers.clear()
+                        # Sync VFX with new deck
+                        d_id = self.session.derelict_type.id
+                        self._vfx_atmosphere.set_deck(result.new_deck)
+                        self._vfx_deck_meter.set_state(result.new_deck, d_id)
+                        self._vfx_deck_trans.trigger(result.new_deck, d_id)
                         # Trigger tile-by-tile deck transition animation
                         self._start_deck_transition()
                         bonus_text = " (deck clear!)" if result.was_clear_bonus else ""
@@ -588,6 +617,23 @@ class SalvageView(BaseView):
         )
         self._selecting_derelict = False
         self._load_derelict_background()
+
+        # Sync VFX with new session
+        derelict_id = self.session.derelict_type.id
+        grid_rect = pygame.Rect(
+            self.GRID_OFFSET_X, self.GRID_OFFSET_Y,
+            self.CELL_SIZE * self.session.derelict_type.grid_size,
+            self.CELL_SIZE * self.session.derelict_type.grid_size,
+        )
+        self._vfx_atmosphere = SalvageAtmosphere(grid_rect, derelict_id)
+        self._vfx_atmosphere.set_deck(self.session.current_deck)
+        self._vfx_deck_meter.max_decks = self.session.derelict_type.max_decks
+        self._vfx_deck_meter.set_state(self.session.current_deck, derelict_id)
+        self._vfx_corruption = CorruptionOverlay(
+            bar_x=self.GRID_OFFSET_X,
+            bar_y=self.GRID_OFFSET_Y - scale_y(20),
+            bar_w=self.CELL_SIZE * self.session.derelict_type.grid_size,
+        )
 
     def _load_derelict_stories(self) -> None:
         """Load derelict story fragments from data file."""
@@ -704,6 +750,19 @@ class SalvageView(BaseView):
             self._excellent_glow[key] -= dt
             if self._excellent_glow[key] <= 0:
                 del self._excellent_glow[key]
+
+        # Update VFX systems
+        self._vfx_atmosphere.update(dt)
+        self._vfx_deck_trans.update(dt)
+        self._vfx_corruption.update(dt)
+
+        # Sync corruption ratio from session
+        if self.session and self.session.corruption_started:
+            max_time = self.session.corruption_seconds
+            if max_time > 0:
+                ratio = self.session.corruption_timer / max_time
+                self._vfx_atmosphere.set_corruption(ratio)
+                self._vfx_corruption.set_ratio(ratio)
 
         # Corruption heartbeat (pulse at <15% timer)
         if self.session and self.session.corruption_started and not self.session.is_corrupted:
@@ -855,11 +914,20 @@ class SalvageView(BaseView):
         if self._derelict_bg is not None:
             screen.blit(self._derelict_bg, (self.GRID_OFFSET_X, self.GRID_OFFSET_Y))
 
+        # VFX: atmosphere behind grid cells
+        self._vfx_atmosphere.render(screen)
+
+        # VFX: corruption bar above grid
+        self._vfx_corruption.render(screen)
+
         self._render_corruption_timer(screen)
         self._render_grid(screen)
         self._render_stats(screen)
         self._render_hold_bar_panel(screen)
         self._render_upgrade_panel(screen)
+
+        # VFX: deck meter alongside right panels
+        self._vfx_deck_meter.render(screen)
 
         # Scan wave rings (drawn on top of grid, below particles)
         for wave in self._scan_waves:
@@ -896,6 +964,9 @@ class SalvageView(BaseView):
 
         # Particles
         self.particles.render(screen)
+
+        # VFX: deck transition effect (after particles, before overlays)
+        self._vfx_deck_trans.render(screen)
 
         # Floating item icons (cell to hold)
         for item in self._floats.items:
