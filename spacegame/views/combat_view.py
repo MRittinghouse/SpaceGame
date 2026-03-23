@@ -1702,6 +1702,16 @@ class CombatView(BaseView):
             border_radius=4,
         )
 
+        # Identity accent line at top of panel (Phase 12E)
+        identity_colors = {
+            "juggernaut": (200, 150, 50),   # Bronze
+            "sentinel": (80, 180, 255),     # Cyan
+            "ghost": (160, 100, 200),       # Purple
+        }
+        id_accent = identity_colors.get(state.player.defensive_identity)
+        if id_accent:
+            pygame.draw.rect(screen, id_accent, (px, py, PLAYER_PANEL_W, 2))
+
         # Flash overlay on hit
         if self._player_flash_timer > 0:
             flash_alpha = int(80 * (self._player_flash_timer / 0.15))
@@ -2556,6 +2566,23 @@ class CombatView(BaseView):
             draw_y = player_y + recoil_oy
             rect = rotated.get_rect(center=(draw_x, draw_y))
             screen.blit(rotated, rect)
+
+            # Identity visual overlays (Phase 12E)
+            identity = state.player.defensive_identity
+            if identity == "juggernaut" and state.player.hull_ratio < 0.25:
+                # Last Stand: pulsing red glow around ship
+                pulse = 0.5 + 0.5 * math.sin(self.phase_timer * 6)
+                glow_alpha = int(60 * pulse)
+                glow_surf = pygame.Surface(rotated.get_size(), pygame.SRCALPHA)
+                glow_surf.fill((255, 40, 20, glow_alpha))
+                screen.blit(glow_surf, rect)
+            elif identity == "ghost" and state.player.counterstrike_stacks > 0:
+                # Counterstrike: brightening cyan glow per stack
+                stacks = state.player.counterstrike_stacks
+                glow_alpha = int(25 * stacks)
+                glow_surf = pygame.Surface(rotated.get_size(), pygame.SRCALPHA)
+                glow_surf.fill((100, 220, 255, glow_alpha))
+                screen.blit(glow_surf, rect)
 
             # Shield bubble + ripple (replaces old shimmer)
             sprite_r = max(rotated.get_width(), rotated.get_height()) // 2
