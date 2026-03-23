@@ -7,27 +7,63 @@
       "hint": "Speak with Neve Osei at Nexus Prime, then deliver the sealed data chip to Stellaris Port.",
       "discovery_text": "A woman named Neve Osei caught my eye in the cantina. She looked like she was waiting for someone specific, or maybe just someone new enough to not know better.",
       "mission_type": "side",
-      "available_at": ["nexus_prime"],
+      "available_at": [
+        "nexus_prime"
+      ],
       "available_after": "bill_of_landing",
       "available_before": "",
       "discovery_method": "npc",
       "repeatable": false,
       "prerequisites": [],
-      "required_flags": [],
-      "auto_accept": false,
+      "required_flags": [
+        "price_of_info_accepted"
+      ],
+      "auto_accept": true,
       "on_accept_cargo": [
-        {"commodity_id": "sealed_audit_chip", "quantity": 1}
+        {
+          "commodity_id": "sealed_audit_chip",
+          "quantity": 1
+        }
       ],
       "objectives": [
-        {"type": "talk_to_npc", "target_id": "neve_osei", "target_quantity": 1, "description": "Speak with Neve Osei at Nexus Prime"},
-        {"type": "reach_system", "target_id": "stellaris_port", "target_quantity": 1, "description": "Deliver the audit chip to Stellaris Port"},
-        {"type": "has_flag", "target_id": "price_of_info_resolved", "target_quantity": 1, "description": "Resolve the audit chip delivery"}
+        {
+          "type": "talk_to_npc",
+          "target_id": "neve_osei",
+          "target_quantity": 1,
+          "description": "Speak with Neve Osei at Nexus Prime"
+        },
+        {
+          "type": "reach_system",
+          "target_id": "stellaris_port",
+          "target_quantity": 1,
+          "description": "Deliver the audit chip to Stellaris Port"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "price_of_info_resolved",
+          "target_quantity": 1,
+          "description": "Resolve the audit chip delivery"
+        }
       ],
       "rewards": [
-        {"reward_type": "remove_cargo", "amount": 1, "target_id": "sealed_audit_chip"},
-        {"reward_type": "credits", "amount": 400},
-        {"reward_type": "xp", "amount": 80},
-        {"reward_type": "set_flag", "amount": 0, "target_id": "price_of_info_complete"}
+        {
+          "reward_type": "remove_cargo",
+          "amount": 1,
+          "target_id": "sealed_audit_chip"
+        },
+        {
+          "reward_type": "credits",
+          "amount": 400
+        },
+        {
+          "reward_type": "xp",
+          "amount": 80
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "price_of_info_complete"
+        }
       ]
     },
     {
@@ -36,7 +72,9 @@
       "description": "A shipping clerk named Patel was found dead on Dock 7. Station security called it an accident. Pressure seal failure. But pressure seals don't fail on occupied docks, and the access logs show three visitors that night: a Guild auditor, a Union freight handler, and a Frontier trader. Everyone has a reason. Nobody has an alibi.",
       "hint": "Check the Nexus Prime station board for details on the dock incident. Investigate witnesses and examine the dock log.",
       "mission_type": "side",
-      "available_at": ["nexus_prime"],
+      "available_at": [
+        "nexus_prime"
+      ],
       "available_after": "iron_delivery",
       "available_before": "",
       "discovery_method": "station_board",
@@ -46,13 +84,33 @@
       "auto_accept": false,
       "on_accept_cargo": [],
       "objectives": [
-        {"type": "has_flag", "target_id": "dead_ledger_investigated", "target_quantity": 1, "description": "Investigate the shipping clerk's death"},
-        {"type": "has_flag", "target_id": "dead_ledger_accusation_made", "target_quantity": 1, "description": "Accuse one of the three suspects"}
+        {
+          "type": "has_flag",
+          "target_id": "dead_ledger_investigated",
+          "target_quantity": 1,
+          "description": "Investigate the shipping clerk's death"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "dead_ledger_accusation_made",
+          "target_quantity": 1,
+          "description": "Accuse one of the three suspects"
+        }
       ],
       "rewards": [
-        {"reward_type": "credits", "amount": 500},
-        {"reward_type": "xp", "amount": 100},
-        {"reward_type": "set_flag", "amount": 0, "target_id": "dead_ledger_complete"}
+        {
+          "reward_type": "credits",
+          "amount": 500
+        },
+        {
+          "reward_type": "xp",
+          "amount": 100
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "dead_ledger_complete"
+        }
       ]
     },
     {
@@ -61,26 +119,64 @@
       "description": "The blight hit Verdant's eastern greenhouses first. Now it's spreading. A farmer named Okafor watched three seasons of work turn brown in a week. Axiom Labs has the pesticide that could stop it, but the Science Collective restricted exports. Something about 'ecological impact assessments.' Okafor's family doesn't have time for assessments.",
       "hint": "Travel to Axiom Labs and find a way to acquire the restricted pesticide, then return it to Verdant.",
       "mission_type": "side",
-      "available_at": ["verdant"],
+      "available_at": [
+        "verdant"
+      ],
       "available_after": "footing_the_bill",
       "available_before": "",
       "discovery_method": "npc",
       "repeatable": false,
       "prerequisites": [],
-      "required_flags": [],
-      "auto_accept": false,
+      "required_flags": [
+        "blight_season_accepted"
+      ],
+      "auto_accept": true,
       "on_accept_cargo": [],
       "objectives": [
-        {"type": "reach_system", "target_id": "axiom_labs", "target_quantity": 1, "description": "Travel to Axiom Labs to acquire pesticide"},
-        {"type": "has_flag", "target_id": "pesticide_acquired", "target_quantity": 1, "description": "Acquire the restricted pesticide"},
-        {"type": "reach_system", "target_id": "verdant", "target_quantity": 1, "description": "Return the pesticide to Verdant"},
-        {"type": "has_flag", "target_id": "blight_season_resolved", "target_quantity": 1, "description": "Deliver the pesticide to the farmer"}
+        {
+          "type": "reach_system",
+          "target_id": "axiom_labs",
+          "target_quantity": 1,
+          "description": "Travel to Axiom Labs to acquire pesticide"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "pesticide_acquired",
+          "target_quantity": 1,
+          "description": "Acquire the restricted pesticide"
+        },
+        {
+          "type": "reach_system",
+          "target_id": "verdant",
+          "target_quantity": 1,
+          "description": "Return the pesticide to Verdant"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "blight_season_resolved",
+          "target_quantity": 1,
+          "description": "Deliver the pesticide to the farmer"
+        }
       ],
       "rewards": [
-        {"reward_type": "credits", "amount": 300},
-        {"reward_type": "xp", "amount": 80},
-        {"reward_type": "modify_reputation", "amount": 10, "target_id": "frontier_alliance"},
-        {"reward_type": "set_flag", "amount": 0, "target_id": "blight_season_complete"}
+        {
+          "reward_type": "credits",
+          "amount": 300
+        },
+        {
+          "reward_type": "xp",
+          "amount": 80
+        },
+        {
+          "reward_type": "modify_reputation",
+          "amount": 10,
+          "target_id": "frontier_alliance"
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "blight_season_complete"
+        }
       ]
     },
     {
@@ -89,27 +185,64 @@
       "description": "Botanist Maren Holt has spent forty years on a single wheat strain. Drought-resistant, high-yield, ugly as sin. She calls it her life's work without a trace of exaggeration. She wants seed samples distributed to three stations for safekeeping, because the last blight taught her what happens when you keep all your seeds in one greenhouse.",
       "hint": "Deliver the heirloom seeds to Breakstone, Stellaris Port, and Haven's Rest.",
       "mission_type": "side",
-      "available_at": ["verdant"],
+      "available_at": [
+        "verdant"
+      ],
       "available_after": "the_scholars_errand",
       "available_before": "",
       "discovery_method": "npc",
       "repeatable": false,
       "prerequisites": [],
-      "required_flags": [],
-      "auto_accept": false,
+      "required_flags": [
+        "heirloom_seeds_accepted"
+      ],
+      "auto_accept": true,
       "on_accept_cargo": [
-        {"commodity_id": "heirloom_seeds", "quantity": 3}
+        {
+          "commodity_id": "heirloom_seeds",
+          "quantity": 3
+        }
       ],
       "objectives": [
-        {"type": "reach_system", "target_id": "breakstone", "target_quantity": 1, "description": "Deliver seeds to Breakstone"},
-        {"type": "reach_system", "target_id": "stellaris_port", "target_quantity": 1, "description": "Deliver seeds to Stellaris Port"},
-        {"type": "reach_system", "target_id": "havens_rest", "target_quantity": 1, "description": "Deliver seeds to Haven's Rest"},
-        {"type": "has_flag", "target_id": "seeds_delivered", "target_quantity": 1, "description": "Confirm all seed deliveries"}
+        {
+          "type": "reach_system",
+          "target_id": "breakstone",
+          "target_quantity": 1,
+          "description": "Deliver seeds to Breakstone"
+        },
+        {
+          "type": "reach_system",
+          "target_id": "stellaris_port",
+          "target_quantity": 1,
+          "description": "Deliver seeds to Stellaris Port"
+        },
+        {
+          "type": "reach_system",
+          "target_id": "havens_rest",
+          "target_quantity": 1,
+          "description": "Deliver seeds to Haven's Rest"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "seeds_delivered",
+          "target_quantity": 1,
+          "description": "Confirm all seed deliveries"
+        }
       ],
       "rewards": [
-        {"reward_type": "credits", "amount": 450},
-        {"reward_type": "xp", "amount": 120},
-        {"reward_type": "set_flag", "amount": 0, "target_id": "heirloom_seeds_complete"}
+        {
+          "reward_type": "credits",
+          "amount": 450
+        },
+        {
+          "reward_type": "xp",
+          "amount": 120
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "heirloom_seeds_complete"
+        }
       ]
     },
     {
@@ -118,32 +251,71 @@
       "description": "Petra Vance is a factory supervisor who stopped sleeping the night she counted the injuries. Thirty-seven workers hurt in six months, all logged as 'equipment mishandling.' She has the real maintenance records. A journalist at Nexus Prime can make it front-page. Problem is, Forgeworks security is scanning every outbound cargo hold.",
       "hint": "Talk to Petra Vance at Forgeworks, then deliver the evidence to Nexus Prime. Expect trouble in transit.",
       "mission_type": "side",
-      "available_at": ["forgeworks"],
+      "available_at": [
+        "forgeworks"
+      ],
       "available_after": "union_territory",
       "available_before": "",
       "discovery_method": "npc",
       "repeatable": false,
       "prerequisites": [],
-      "required_flags": [],
-      "auto_accept": false,
+      "required_flags": [
+        "whistleblower_accepted"
+      ],
+      "auto_accept": true,
       "on_accept_cargo": [],
       "forced_encounter": {
         "encounter_type": "hostile",
-        "enemy_template_ids": ["corporate_enforcer"],
+        "enemy_template_ids": [
+          "corporate_enforcer"
+        ],
         "trigger_flag": "whistleblower_intercepted",
         "encounter_def_id": "whistleblower_interception"
       },
       "objectives": [
-        {"type": "talk_to_npc", "target_id": "petra_vance", "target_quantity": 1, "description": "Speak with Petra Vance at Forgeworks"},
-        {"type": "reach_system", "target_id": "nexus_prime", "target_quantity": 1, "description": "Deliver the evidence to Nexus Prime"},
-        {"type": "has_flag", "target_id": "whistleblower_resolved", "target_quantity": 1, "description": "Hand the evidence to the journalist"}
+        {
+          "type": "talk_to_npc",
+          "target_id": "petra_vance",
+          "target_quantity": 1,
+          "description": "Speak with Petra Vance at Forgeworks"
+        },
+        {
+          "type": "reach_system",
+          "target_id": "nexus_prime",
+          "target_quantity": 1,
+          "description": "Deliver the evidence to Nexus Prime"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "whistleblower_resolved",
+          "target_quantity": 1,
+          "description": "Hand the evidence to the journalist"
+        }
       ],
       "rewards": [
-        {"reward_type": "credits", "amount": 600},
-        {"reward_type": "xp", "amount": 100},
-        {"reward_type": "modify_reputation", "amount": 15, "target_id": "frontier_alliance"},
-        {"reward_type": "modify_reputation", "amount": -10, "target_id": "commerce_guild"},
-        {"reward_type": "set_flag", "amount": 0, "target_id": "whistleblower_complete"}
+        {
+          "reward_type": "credits",
+          "amount": 600
+        },
+        {
+          "reward_type": "xp",
+          "amount": 100
+        },
+        {
+          "reward_type": "modify_reputation",
+          "amount": 15,
+          "target_id": "frontier_alliance"
+        },
+        {
+          "reward_type": "modify_reputation",
+          "amount": -10,
+          "target_id": "commerce_guild"
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "whistleblower_complete"
+        }
       ]
     },
     {
@@ -152,24 +324,53 @@
       "description": "Tomasz Brennan hasn't spoken to his son in eleven years. The Forgeworks-Breakstone labor split put them on opposite sides of a picket line, and neither one bent. Now Tomasz is old and his hands shake, and he's wrapped a package he can't bring himself to mail. It's a simple delivery. The hardest kind.",
       "hint": "Talk to Tomasz Brennan at Forgeworks, then deliver his package to Breakstone.",
       "mission_type": "side",
-      "available_at": ["forgeworks"],
+      "available_at": [
+        "forgeworks"
+      ],
       "available_after": "the_foremans_son",
       "available_before": "",
       "discovery_method": "npc",
       "repeatable": false,
       "prerequisites": [],
-      "required_flags": [],
-      "auto_accept": false,
+      "required_flags": [
+        "old_debts_accepted"
+      ],
+      "auto_accept": true,
       "on_accept_cargo": [],
       "objectives": [
-        {"type": "talk_to_npc", "target_id": "tomasz_brennan", "target_quantity": 1, "description": "Speak with Tomasz Brennan at Forgeworks"},
-        {"type": "reach_system", "target_id": "breakstone", "target_quantity": 1, "description": "Deliver the package to Breakstone"},
-        {"type": "has_flag", "target_id": "old_debts_delivered", "target_quantity": 1, "description": "Complete the delivery to Tomasz's son"}
+        {
+          "type": "talk_to_npc",
+          "target_id": "tomasz_brennan",
+          "target_quantity": 1,
+          "description": "Speak with Tomasz Brennan at Forgeworks"
+        },
+        {
+          "type": "reach_system",
+          "target_id": "breakstone",
+          "target_quantity": 1,
+          "description": "Deliver the package to Breakstone"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "old_debts_delivered",
+          "target_quantity": 1,
+          "description": "Complete the delivery to Tomasz's son"
+        }
       ],
       "rewards": [
-        {"reward_type": "credits", "amount": 200},
-        {"reward_type": "xp", "amount": 60},
-        {"reward_type": "set_flag", "amount": 0, "target_id": "old_debts_complete"}
+        {
+          "reward_type": "credits",
+          "amount": 200
+        },
+        {
+          "reward_type": "xp",
+          "amount": 60
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "old_debts_complete"
+        }
       ]
     },
     {
@@ -178,27 +379,69 @@
       "description": "Britt Vasara's daughter has a fever that won't break and medicine that won't come. Forgeworks slapped an embargo on Breakstone pharmaceuticals as leverage in a contract dispute that has nothing to do with a sick child. Britt needs five units smuggled past the blockade. You can help her, or you can report the request and sleep fine. Probably.",
       "hint": "Talk to Britt Vasara at Breakstone. She needs 5 units of medicine delivered past the embargo.",
       "mission_type": "side",
-      "available_at": ["breakstone"],
+      "available_at": [
+        "breakstone"
+      ],
       "available_after": "union_territory",
       "available_before": "",
       "discovery_method": "npc",
       "repeatable": false,
       "prerequisites": [],
-      "required_flags": [],
-      "auto_accept": false,
+      "required_flags": [
+        "miners_plight_accepted"
+      ],
+      "auto_accept": true,
       "on_accept_cargo": [],
       "objectives": [
-        {"type": "talk_to_npc", "target_id": "britt_vasara", "target_quantity": 1, "description": "Speak with Britt Vasara at Breakstone"},
-        {"type": "collect_cargo", "target_id": "medicine", "target_quantity": 5, "description": "Acquire 5 units of medicine"},
-        {"type": "reach_system", "target_id": "breakstone", "target_quantity": 1, "description": "Deliver medicine to Breakstone"},
-        {"type": "has_flag", "target_id": "miners_plight_resolved", "target_quantity": 1, "description": "Resolve the medicine delivery"}
+        {
+          "type": "talk_to_npc",
+          "target_id": "britt_vasara",
+          "target_quantity": 1,
+          "description": "Speak with Britt Vasara at Breakstone"
+        },
+        {
+          "type": "collect_cargo",
+          "target_id": "medicine",
+          "target_quantity": 5,
+          "description": "Acquire 5 units of medicine"
+        },
+        {
+          "type": "reach_system",
+          "target_id": "breakstone",
+          "target_quantity": 1,
+          "description": "Deliver medicine to Breakstone"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "miners_plight_resolved",
+          "target_quantity": 1,
+          "description": "Resolve the medicine delivery"
+        }
       ],
       "rewards": [
-        {"reward_type": "credits", "amount": 250},
-        {"reward_type": "xp", "amount": 80},
-        {"reward_type": "modify_reputation", "amount": 15, "target_id": "miners_union"},
-        {"reward_type": "modify_reputation", "amount": -10, "target_id": "commerce_guild"},
-        {"reward_type": "set_flag", "amount": 0, "target_id": "miners_plight_complete"}
+        {
+          "reward_type": "credits",
+          "amount": 250
+        },
+        {
+          "reward_type": "xp",
+          "amount": 80
+        },
+        {
+          "reward_type": "modify_reputation",
+          "amount": 15,
+          "target_id": "miners_union"
+        },
+        {
+          "reward_type": "modify_reputation",
+          "amount": -10,
+          "target_id": "commerce_guild"
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "miners_plight_complete"
+        }
       ]
     },
     {
@@ -207,7 +450,9 @@
       "description": "The cave-in on Level 14 trapped Denny Kowalski under eight meters of rubble. He's alive. His suit transponder is still pinging. A ground team could reach him in time. But the collapse also exposed what Denny was actually doing down there: mining an illegal vein, off the books, in a section the Union sealed two years ago. Rescue him, and you'll have to decide what to do with what you find.",
       "hint": "Check the Breakstone station board and launch a ground rescue mission into the collapsed mines.",
       "mission_type": "side",
-      "available_at": ["breakstone"],
+      "available_at": [
+        "breakstone"
+      ],
       "available_after": "the_foremans_son",
       "available_before": "",
       "discovery_method": "station_board",
@@ -220,14 +465,39 @@
       "ground_mission_system_id": "breakstone",
       "ground_mission_complete_flag": "long_shift_ground_complete",
       "objectives": [
-        {"type": "reach_system", "target_id": "breakstone", "target_quantity": 1, "description": "Travel to the Breakstone mines"},
-        {"type": "has_flag", "target_id": "long_shift_ground_complete", "target_quantity": 1, "description": "Complete the ground rescue mission"},
-        {"type": "has_flag", "target_id": "long_shift_resolved", "target_quantity": 1, "description": "Decide Denny Kowalski's fate"}
+        {
+          "type": "reach_system",
+          "target_id": "breakstone",
+          "target_quantity": 1,
+          "description": "Travel to the Breakstone mines"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "long_shift_ground_complete",
+          "target_quantity": 1,
+          "description": "Complete the ground rescue mission"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "long_shift_resolved",
+          "target_quantity": 1,
+          "description": "Decide Denny Kowalski's fate"
+        }
       ],
       "rewards": [
-        {"reward_type": "credits", "amount": 350},
-        {"reward_type": "xp", "amount": 100},
-        {"reward_type": "set_flag", "amount": 0, "target_id": "long_shift_complete"}
+        {
+          "reward_type": "credits",
+          "amount": 350
+        },
+        {
+          "reward_type": "xp",
+          "amount": 100
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "long_shift_complete"
+        }
       ]
     },
     {
@@ -236,25 +506,58 @@
       "description": "A junior researcher with shaking hands and a locked office door showed you gravitational data that shouldn't exist. Three star systems, moved into a pattern that nature doesn't make. Publishing would end her mentor's legacy and probably her own career. She needs the raw data verified at Nova Research. Independently, quietly, and before anyone asks why she was looking.",
       "hint": "Collect the researcher's data at Axiom Labs, then deliver it to Nova Research for verification.",
       "mission_type": "side",
-      "available_at": ["axiom_labs"],
+      "available_at": [
+        "axiom_labs"
+      ],
       "available_after": "the_scholars_errand",
       "available_before": "",
       "discovery_method": "npc",
       "repeatable": false,
       "prerequisites": [],
-      "required_flags": [],
-      "auto_accept": false,
+      "required_flags": [
+        "scholar_data_received"
+      ],
+      "auto_accept": true,
       "on_accept_cargo": [],
       "objectives": [
-        {"type": "has_flag", "target_id": "scholar_data_received", "target_quantity": 1, "description": "Receive the gravitational data"},
-        {"type": "reach_system", "target_id": "nova_research", "target_quantity": 1, "description": "Deliver the data to Nova Research"},
-        {"type": "has_flag", "target_id": "scholars_dilemma_resolved", "target_quantity": 1, "description": "Complete the data verification"}
+        {
+          "type": "has_flag",
+          "target_id": "scholar_data_received",
+          "target_quantity": 1,
+          "description": "Receive the gravitational data"
+        },
+        {
+          "type": "reach_system",
+          "target_id": "nova_research",
+          "target_quantity": 1,
+          "description": "Deliver the data to Nova Research"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "scholars_dilemma_resolved",
+          "target_quantity": 1,
+          "description": "Complete the data verification"
+        }
       ],
       "rewards": [
-        {"reward_type": "credits", "amount": 300},
-        {"reward_type": "xp", "amount": 80},
-        {"reward_type": "modify_reputation", "amount": 10, "target_id": "science_collective"},
-        {"reward_type": "set_flag", "amount": 0, "target_id": "scholars_dilemma_complete"}
+        {
+          "reward_type": "credits",
+          "amount": 300
+        },
+        {
+          "reward_type": "xp",
+          "amount": 80
+        },
+        {
+          "reward_type": "modify_reputation",
+          "amount": 10,
+          "target_id": "science_collective"
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "scholars_dilemma_complete"
+        }
       ]
     },
     {
@@ -263,14 +566,18 @@
       "description": "The Science Collective needs a test pilot. Specifically, they need someone willing to strap an experimental shield modulator to their hull and fly through a high-traffic corridor to Forgeworks. Free installation, free removal, and a generous data fee. The catch? The words 'might malfunction under stress' appeared three times in the waiver.",
       "hint": "Accept the shield modulator test at Axiom Labs, fly to Forgeworks for field data, then return to Axiom Labs.",
       "mission_type": "side",
-      "available_at": ["axiom_labs"],
+      "available_at": [
+        "axiom_labs"
+      ],
       "available_after": "recruit_scientist",
       "available_before": "",
       "discovery_method": "npc",
       "repeatable": false,
       "prerequisites": [],
-      "required_flags": [],
-      "auto_accept": false,
+      "required_flags": [
+        "lab_rat_accepted"
+      ],
+      "auto_accept": true,
       "on_accept_cargo": [],
       "forced_encounter": {
         "encounter_type": "hostile",
@@ -279,16 +586,50 @@
         "encounter_def_id": "lab_rat_malfunction"
       },
       "objectives": [
-        {"type": "has_flag", "target_id": "lab_rat_accepted", "target_quantity": 1, "description": "Accept the shield modulator test"},
-        {"type": "reach_system", "target_id": "forgeworks", "target_quantity": 1, "description": "Fly to Forgeworks collecting field data"},
-        {"type": "reach_system", "target_id": "axiom_labs", "target_quantity": 1, "description": "Return to Axiom Labs with the data"},
-        {"type": "has_flag", "target_id": "lab_rat_resolved", "target_quantity": 1, "description": "Complete the field test report"}
+        {
+          "type": "has_flag",
+          "target_id": "lab_rat_accepted",
+          "target_quantity": 1,
+          "description": "Accept the shield modulator test"
+        },
+        {
+          "type": "reach_system",
+          "target_id": "forgeworks",
+          "target_quantity": 1,
+          "description": "Fly to Forgeworks collecting field data"
+        },
+        {
+          "type": "reach_system",
+          "target_id": "axiom_labs",
+          "target_quantity": 1,
+          "description": "Return to Axiom Labs with the data"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "lab_rat_resolved",
+          "target_quantity": 1,
+          "description": "Complete the field test report"
+        }
       ],
       "rewards": [
-        {"reward_type": "credits", "amount": 500},
-        {"reward_type": "xp", "amount": 100},
-        {"reward_type": "modify_reputation", "amount": 10, "target_id": "science_collective"},
-        {"reward_type": "set_flag", "amount": 0, "target_id": "lab_rat_complete"}
+        {
+          "reward_type": "credits",
+          "amount": 500
+        },
+        {
+          "reward_type": "xp",
+          "amount": 100
+        },
+        {
+          "reward_type": "modify_reputation",
+          "amount": 10,
+          "target_id": "science_collective"
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "lab_rat_complete"
+        }
       ]
     },
     {
@@ -297,7 +638,9 @@
       "description": "Two distress calls. One frequency. A refugee transport limping toward Haven's Rest with failing life support, and a clinic at Verdant where the medicine ran out yesterday. You can reach one in time. Not both. Whoever you don't help, you'll hear about what happened to them. That's the part nobody warns you about.",
       "hint": "Choose which distress call to answer: the refugee transport or the Verdant clinic. You cannot help both.",
       "mission_type": "side",
-      "available_at": ["havens_rest"],
+      "available_at": [
+        "havens_rest"
+      ],
       "available_after": "cargo_lost",
       "available_before": "",
       "discovery_method": "automatic",
@@ -307,13 +650,33 @@
       "auto_accept": true,
       "on_accept_cargo": [],
       "objectives": [
-        {"type": "has_flag", "target_id": "two_calls_choice_made", "target_quantity": 1, "description": "Choose which distress call to answer"},
-        {"type": "has_flag", "target_id": "two_calls_resolved", "target_quantity": 1, "description": "Complete the chosen rescue mission"}
+        {
+          "type": "has_flag",
+          "target_id": "two_calls_choice_made",
+          "target_quantity": 1,
+          "description": "Choose which distress call to answer"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "two_calls_resolved",
+          "target_quantity": 1,
+          "description": "Complete the chosen rescue mission"
+        }
       ],
       "rewards": [
-        {"reward_type": "credits", "amount": 400},
-        {"reward_type": "xp", "amount": 100},
-        {"reward_type": "set_flag", "amount": 0, "target_id": "two_calls_complete"}
+        {
+          "reward_type": "credits",
+          "amount": 400
+        },
+        {
+          "reward_type": "xp",
+          "amount": 100
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "two_calls_complete"
+        }
       ]
     },
     {
@@ -322,27 +685,70 @@
       "description": "The woman at Haven's Rest has been checking the arrival board every morning for six weeks. Her brother's transport never docked. Last known coordinates point toward Crimson Reach, where signals go to die. She doesn't need hope. She needs to know. Find the wreckage, pull the data log, and bring her an answer she can live with.",
       "hint": "Travel to Crimson Reach to search for the missing transport's data log, then return to Haven's Rest.",
       "mission_type": "side",
-      "available_at": ["havens_rest"],
+      "available_at": [
+        "havens_rest"
+      ],
       "available_after": "whispers_at_the_bar",
       "available_before": "",
       "discovery_method": "npc",
       "repeatable": false,
       "prerequisites": [],
-      "required_flags": [],
-      "auto_accept": false,
+      "required_flags": [
+        "registry_search_started"
+      ],
+      "auto_accept": true,
       "on_accept_cargo": [],
       "objectives": [
-        {"type": "has_flag", "target_id": "registry_search_started", "target_quantity": 1, "description": "Accept the search request"},
-        {"type": "reach_system", "target_id": "crimson_reach", "target_quantity": 1, "description": "Search Crimson Reach for the data log"},
-        {"type": "has_flag", "target_id": "registry_data_found", "target_quantity": 1, "description": "Recover the transport's data log"},
-        {"type": "reach_system", "target_id": "havens_rest", "target_quantity": 1, "description": "Return to Haven's Rest with the news"},
-        {"type": "has_flag", "target_id": "lost_registry_resolved", "target_quantity": 1, "description": "Deliver the news to the refugee"}
+        {
+          "type": "has_flag",
+          "target_id": "registry_search_started",
+          "target_quantity": 1,
+          "description": "Accept the search request"
+        },
+        {
+          "type": "reach_system",
+          "target_id": "crimson_reach",
+          "target_quantity": 1,
+          "description": "Search Crimson Reach for the data log"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "registry_data_found",
+          "target_quantity": 1,
+          "description": "Recover the transport's data log"
+        },
+        {
+          "type": "reach_system",
+          "target_id": "havens_rest",
+          "target_quantity": 1,
+          "description": "Return to Haven's Rest with the news"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "lost_registry_resolved",
+          "target_quantity": 1,
+          "description": "Deliver the news to the refugee"
+        }
       ],
       "rewards": [
-        {"reward_type": "credits", "amount": 250},
-        {"reward_type": "xp", "amount": 80},
-        {"reward_type": "modify_reputation", "amount": 10, "target_id": "frontier_alliance"},
-        {"reward_type": "set_flag", "amount": 0, "target_id": "lost_registry_complete"}
+        {
+          "reward_type": "credits",
+          "amount": 250
+        },
+        {
+          "reward_type": "xp",
+          "amount": 80
+        },
+        {
+          "reward_type": "modify_reputation",
+          "amount": 10,
+          "target_id": "frontier_alliance"
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "lost_registry_complete"
+        }
       ]
     },
     {
@@ -351,24 +757,53 @@
       "description": "Cassiel Maren has the most respected collection of pre-colony artifacts in the Expanse. She also has the steadiest hands you've ever seen on someone her age, which starts to make sense when you realize the artifacts are as real as her smile. Decades of forgeries, flawless technique, and a reputation built on beautiful lies. What you do with that knowledge is between you and your conscience.",
       "hint": "Talk to Cassiel Maren at Stellaris Port to begin the appraisal job.",
       "mission_type": "side",
-      "available_at": ["stellaris_port"],
+      "available_at": [
+        "stellaris_port"
+      ],
       "available_after": "footing_the_bill",
       "available_before": "",
       "discovery_method": "npc",
       "repeatable": false,
       "prerequisites": [],
-      "required_flags": [],
-      "auto_accept": false,
+      "required_flags": [
+        "forgery_job_accepted"
+      ],
+      "auto_accept": true,
       "on_accept_cargo": [],
       "objectives": [
-        {"type": "talk_to_npc", "target_id": "cassiel_maren", "target_quantity": 1, "description": "Meet Cassiel Maren at Stellaris Port"},
-        {"type": "has_flag", "target_id": "forgery_appraised", "target_quantity": 1, "description": "Complete the artifact appraisal"},
-        {"type": "has_flag", "target_id": "forgery_resolved", "target_quantity": 1, "description": "Decide what to do about the forgeries"}
+        {
+          "type": "talk_to_npc",
+          "target_id": "cassiel_maren",
+          "target_quantity": 1,
+          "description": "Meet Cassiel Maren at Stellaris Port"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "forgery_appraised",
+          "target_quantity": 1,
+          "description": "Complete the artifact appraisal"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "forgery_resolved",
+          "target_quantity": 1,
+          "description": "Decide what to do about the forgeries"
+        }
       ],
       "rewards": [
-        {"reward_type": "credits", "amount": 500},
-        {"reward_type": "xp", "amount": 100},
-        {"reward_type": "set_flag", "amount": 0, "target_id": "forgery_complete"}
+        {
+          "reward_type": "credits",
+          "amount": 500
+        },
+        {
+          "reward_type": "xp",
+          "amount": 100
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "forgery_complete"
+        }
       ]
     },
     {
@@ -377,7 +812,9 @@
       "description": "Someone is flooding Stellaris Port with counterfeit luxury goods. Good counterfeits, the kind that pass first and second inspection. A merchant who's losing real money wants answers. The trail leads to The Fulcrum, then further than you'd expect. If you've already poked around Forgeworks, some of the names might look familiar.",
       "hint": "Travel to The Fulcrum to investigate the counterfeit luxury goods, then report back to Stellaris Port.",
       "mission_type": "side",
-      "available_at": ["stellaris_port"],
+      "available_at": [
+        "stellaris_port"
+      ],
       "available_after": "the_drifters_deal",
       "available_before": "",
       "discovery_method": "station_board",
@@ -387,16 +824,50 @@
       "auto_accept": false,
       "on_accept_cargo": [],
       "objectives": [
-        {"type": "reach_system", "target_id": "the_fulcrum", "target_quantity": 1, "description": "Travel to The Fulcrum to investigate"},
-        {"type": "has_flag", "target_id": "counterfeit_investigated", "target_quantity": 1, "description": "Examine the counterfeit goods"},
-        {"type": "reach_system", "target_id": "stellaris_port", "target_quantity": 1, "description": "Return to Stellaris Port with findings"},
-        {"type": "has_flag", "target_id": "counterfeit_resolved", "target_quantity": 1, "description": "Report your findings to the merchant"}
+        {
+          "type": "reach_system",
+          "target_id": "the_fulcrum",
+          "target_quantity": 1,
+          "description": "Travel to The Fulcrum to investigate"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "counterfeit_investigated",
+          "target_quantity": 1,
+          "description": "Examine the counterfeit goods"
+        },
+        {
+          "type": "reach_system",
+          "target_id": "stellaris_port",
+          "target_quantity": 1,
+          "description": "Return to Stellaris Port with findings"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "counterfeit_resolved",
+          "target_quantity": 1,
+          "description": "Report your findings to the merchant"
+        }
       ],
       "rewards": [
-        {"reward_type": "credits", "amount": 400},
-        {"reward_type": "xp", "amount": 80},
-        {"reward_type": "modify_reputation", "amount": 10, "target_id": "commerce_guild"},
-        {"reward_type": "set_flag", "amount": 0, "target_id": "counterfeit_complete"}
+        {
+          "reward_type": "credits",
+          "amount": 400
+        },
+        {
+          "reward_type": "xp",
+          "amount": 80
+        },
+        {
+          "reward_type": "modify_reputation",
+          "amount": 10,
+          "target_id": "commerce_guild"
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "counterfeit_complete"
+        }
       ]
     },
     {
@@ -405,26 +876,65 @@
       "description": "Torres doesn't ask for much. This time she's asking for three ship components. Specific models, specific years, from ships that aren't flying anymore. She wants to build a memorial transponder for the salvagers who didn't come home. Her friends. She'll talk about them while she works, if you let her. Quietly, like she's afraid they'll hear.",
       "hint": "Collect 3 ship parts from various systems and return them to Torres at Crimson Reach.",
       "mission_type": "side",
-      "available_at": ["crimson_reach"],
+      "available_at": [
+        "crimson_reach"
+      ],
       "available_after": "the_crimson_run",
       "available_before": "",
       "discovery_method": "npc",
       "repeatable": false,
       "prerequisites": [],
-      "required_flags": ["met_malia_torres"],
-      "auto_accept": false,
+      "required_flags": [
+        "met_malia_torres",
+        "wrench_request_accepted"
+      ],
+      "auto_accept": true,
       "on_accept_cargo": [],
       "objectives": [
-        {"type": "has_flag", "target_id": "wrench_request_accepted", "target_quantity": 1, "description": "Accept Torres's request"},
-        {"type": "collect_cargo", "target_id": "ship_parts", "target_quantity": 3, "description": "Collect 3 ship components"},
-        {"type": "reach_system", "target_id": "crimson_reach", "target_quantity": 1, "description": "Return to Crimson Reach"},
-        {"type": "has_flag", "target_id": "wrench_request_resolved", "target_quantity": 1, "description": "Help Torres build the memorial transponder"}
+        {
+          "type": "has_flag",
+          "target_id": "wrench_request_accepted",
+          "target_quantity": 1,
+          "description": "Accept Torres's request"
+        },
+        {
+          "type": "collect_cargo",
+          "target_id": "ship_parts",
+          "target_quantity": 3,
+          "description": "Collect 3 ship components"
+        },
+        {
+          "type": "reach_system",
+          "target_id": "crimson_reach",
+          "target_quantity": 1,
+          "description": "Return to Crimson Reach"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "wrench_request_resolved",
+          "target_quantity": 1,
+          "description": "Help Torres build the memorial transponder"
+        }
       ],
       "rewards": [
-        {"reward_type": "credits", "amount": 300},
-        {"reward_type": "xp", "amount": 100},
-        {"reward_type": "modify_reputation", "amount": 15, "target_id": "frontier_alliance"},
-        {"reward_type": "set_flag", "amount": 0, "target_id": "wrench_request_complete"}
+        {
+          "reward_type": "credits",
+          "amount": 300
+        },
+        {
+          "reward_type": "xp",
+          "amount": 100
+        },
+        {
+          "reward_type": "modify_reputation",
+          "amount": 15,
+          "target_id": "frontier_alliance"
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "wrench_request_complete"
+        }
       ]
     },
     {
@@ -433,27 +943,70 @@
       "description": "The pirate captain didn't give a name. She gave terms: retrieve something stolen by a rival crew at The Fulcrum, bring it back intact, and don't open it. In exchange, you get neutral standing with the Crimson Reach pirates. That's worth more than credits in a place where the wrong reputation gets your ship stripped for parts.",
       "hint": "Travel to The Fulcrum to recover the stolen item, then return it to Crimson Reach.",
       "mission_type": "side",
-      "available_at": ["crimson_reach"],
+      "available_at": [
+        "crimson_reach"
+      ],
       "available_after": "the_crimson_run",
       "available_before": "",
       "discovery_method": "npc",
       "repeatable": false,
       "prerequisites": [],
-      "required_flags": [],
-      "auto_accept": false,
+      "required_flags": [
+        "thieves_job_accepted"
+      ],
+      "auto_accept": true,
       "on_accept_cargo": [],
       "objectives": [
-        {"type": "has_flag", "target_id": "thieves_job_accepted", "target_quantity": 1, "description": "Accept the pirate captain's job"},
-        {"type": "reach_system", "target_id": "the_fulcrum", "target_quantity": 1, "description": "Travel to The Fulcrum"},
-        {"type": "has_flag", "target_id": "stolen_item_recovered", "target_quantity": 1, "description": "Recover the stolen item"},
-        {"type": "reach_system", "target_id": "crimson_reach", "target_quantity": 1, "description": "Return to Crimson Reach"},
-        {"type": "has_flag", "target_id": "thieves_resolved", "target_quantity": 1, "description": "Deliver the stolen item to the captain"}
+        {
+          "type": "has_flag",
+          "target_id": "thieves_job_accepted",
+          "target_quantity": 1,
+          "description": "Accept the pirate captain's job"
+        },
+        {
+          "type": "reach_system",
+          "target_id": "the_fulcrum",
+          "target_quantity": 1,
+          "description": "Travel to The Fulcrum"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "stolen_item_recovered",
+          "target_quantity": 1,
+          "description": "Recover the stolen item"
+        },
+        {
+          "type": "reach_system",
+          "target_id": "crimson_reach",
+          "target_quantity": 1,
+          "description": "Return to Crimson Reach"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "thieves_resolved",
+          "target_quantity": 1,
+          "description": "Deliver the stolen item to the captain"
+        }
       ],
       "rewards": [
-        {"reward_type": "credits", "amount": 500},
-        {"reward_type": "xp", "amount": 80},
-        {"reward_type": "set_flag", "amount": 0, "target_id": "honor_thieves_complete"},
-        {"reward_type": "set_flag", "amount": 0, "target_id": "crimson_neutral_status"}
+        {
+          "reward_type": "credits",
+          "amount": 500
+        },
+        {
+          "reward_type": "xp",
+          "amount": 80
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "honor_thieves_complete"
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "crimson_neutral_status"
+        }
       ]
     },
     {
@@ -462,7 +1015,9 @@
       "description": "The night shift at Iron Depths has been hearing things. Rhythmic vibrations from below Level 30, too regular for geology, too deep for equipment. Management says it's resonance from the drill rigs. The miners aren't buying it. A ground expedition into the lower tunnels finds something older than the colony. Older than the Expanse. Whatever built it wasn't human, and whatever it left behind is still humming.",
       "hint": "Check the Iron Depths station board and launch a ground mission into the deep mining tunnels.",
       "mission_type": "side",
-      "available_at": ["iron_depths"],
+      "available_at": [
+        "iron_depths"
+      ],
       "available_after": "iron_depths_investigation",
       "available_before": "",
       "discovery_method": "station_board",
@@ -475,15 +1030,44 @@
       "ground_mission_system_id": "iron_depths",
       "ground_mission_complete_flag": "deep_core_ground_complete",
       "objectives": [
-        {"type": "reach_system", "target_id": "iron_depths", "target_quantity": 1, "description": "Travel to Iron Depths"},
-        {"type": "has_flag", "target_id": "deep_core_ground_complete", "target_quantity": 1, "description": "Complete the deep core ground expedition"},
-        {"type": "has_flag", "target_id": "deep_core_resolved", "target_quantity": 1, "description": "Report your findings"}
+        {
+          "type": "reach_system",
+          "target_id": "iron_depths",
+          "target_quantity": 1,
+          "description": "Travel to Iron Depths"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "deep_core_ground_complete",
+          "target_quantity": 1,
+          "description": "Complete the deep core ground expedition"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "deep_core_resolved",
+          "target_quantity": 1,
+          "description": "Report your findings"
+        }
       ],
       "rewards": [
-        {"reward_type": "credits", "amount": 400},
-        {"reward_type": "xp", "amount": 120},
-        {"reward_type": "set_flag", "amount": 0, "target_id": "deep_core_complete"},
-        {"reward_type": "set_flag", "amount": 0, "target_id": "ancient_chamber_discovered"}
+        {
+          "reward_type": "credits",
+          "amount": 400
+        },
+        {
+          "reward_type": "xp",
+          "amount": 120
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "deep_core_complete"
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "ancient_chamber_discovered"
+        }
       ]
     },
     {
@@ -492,26 +1076,64 @@
       "description": "The signal repeats every 47.3 seconds. Mathematically precise, unmistakably artificial, and coming from beyond the edge of charted space. Nova Research needs someone to deploy an amplifier at the system boundary. A simple equipment drop, until you power it on and the signal changes. It speeds up. Like a heartbeat that just noticed you're in the room.",
       "hint": "Deploy the signal amplifier at the edge of the Nova Research system and observe the response.",
       "mission_type": "side",
-      "available_at": ["nova_research"],
+      "available_at": [
+        "nova_research"
+      ],
       "available_after": "embassy_visit",
       "available_before": "",
       "discovery_method": "npc",
       "repeatable": false,
       "prerequisites": [],
-      "required_flags": [],
-      "auto_accept": false,
+      "required_flags": [
+        "signal_mission_accepted"
+      ],
+      "auto_accept": true,
       "on_accept_cargo": [],
       "objectives": [
-        {"type": "has_flag", "target_id": "signal_mission_accepted", "target_quantity": 1, "description": "Accept the signal investigation mission"},
-        {"type": "reach_system", "target_id": "nova_research", "target_quantity": 1, "description": "Travel to the edge of Nova Research system"},
-        {"type": "has_flag", "target_id": "signal_amplifier_deployed", "target_quantity": 1, "description": "Deploy the signal amplifier"},
-        {"type": "has_flag", "target_id": "signal_from_deep_resolved", "target_quantity": 1, "description": "Observe and report the signal response"}
+        {
+          "type": "has_flag",
+          "target_id": "signal_mission_accepted",
+          "target_quantity": 1,
+          "description": "Accept the signal investigation mission"
+        },
+        {
+          "type": "reach_system",
+          "target_id": "nova_research",
+          "target_quantity": 1,
+          "description": "Travel to the edge of Nova Research system"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "signal_amplifier_deployed",
+          "target_quantity": 1,
+          "description": "Deploy the signal amplifier"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "signal_from_deep_resolved",
+          "target_quantity": 1,
+          "description": "Observe and report the signal response"
+        }
       ],
       "rewards": [
-        {"reward_type": "credits", "amount": 500},
-        {"reward_type": "xp", "amount": 100},
-        {"reward_type": "modify_reputation", "amount": 10, "target_id": "science_collective"},
-        {"reward_type": "set_flag", "amount": 0, "target_id": "signal_from_deep_complete"}
+        {
+          "reward_type": "credits",
+          "amount": 500
+        },
+        {
+          "reward_type": "xp",
+          "amount": 100
+        },
+        {
+          "reward_type": "modify_reputation",
+          "amount": 10,
+          "target_id": "science_collective"
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "signal_from_deep_complete"
+        }
       ]
     },
     {
@@ -520,14 +1142,18 @@
       "description": "Callum Rhee paid double the standard passenger fare and didn't haggle. That should have been the first warning. A simple transport run to Haven's Rest turns complicated when you find out your quiet passenger is a Ledger operative using your ship as a getaway ride. Now you're an accomplice, a witness, and the only person between him and a clean escape. Confront him, turn him in, or let him walk. Each option costs something.",
       "hint": "Talk to Callum Rhee at The Fulcrum and transport him to Haven's Rest. Expect complications.",
       "mission_type": "side",
-      "available_at": ["the_fulcrum"],
+      "available_at": [
+        "the_fulcrum"
+      ],
       "available_after": "the_drifters_deal",
       "available_before": "",
       "discovery_method": "npc",
       "repeatable": false,
       "prerequisites": [],
-      "required_flags": [],
-      "auto_accept": false,
+      "required_flags": [
+        "informant_passenger_accepted"
+      ],
+      "auto_accept": true,
       "on_accept_cargo": [],
       "forced_encounter": {
         "encounter_type": "hostile",
@@ -536,14 +1162,39 @@
         "encounter_def_id": "informant_pursuit"
       },
       "objectives": [
-        {"type": "talk_to_npc", "target_id": "callum_rhee", "target_quantity": 1, "description": "Meet Callum Rhee at The Fulcrum"},
-        {"type": "reach_system", "target_id": "havens_rest", "target_quantity": 1, "description": "Transport Callum Rhee to Haven's Rest"},
-        {"type": "has_flag", "target_id": "informant_resolved", "target_quantity": 1, "description": "Decide Callum Rhee's fate"}
+        {
+          "type": "talk_to_npc",
+          "target_id": "callum_rhee",
+          "target_quantity": 1,
+          "description": "Meet Callum Rhee at The Fulcrum"
+        },
+        {
+          "type": "reach_system",
+          "target_id": "havens_rest",
+          "target_quantity": 1,
+          "description": "Transport Callum Rhee to Haven's Rest"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "informant_resolved",
+          "target_quantity": 1,
+          "description": "Decide Callum Rhee's fate"
+        }
       ],
       "rewards": [
-        {"reward_type": "credits", "amount": 350},
-        {"reward_type": "xp", "amount": 80},
-        {"reward_type": "set_flag", "amount": 0, "target_id": "informant_complete"}
+        {
+          "reward_type": "credits",
+          "amount": 350
+        },
+        {
+          "reward_type": "xp",
+          "amount": 80
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "informant_complete"
+        }
       ]
     },
     {
@@ -562,13 +1213,33 @@
       "auto_accept": true,
       "on_accept_cargo": [],
       "objectives": [
-        {"type": "has_flag", "target_id": "stowaway_discovered", "target_quantity": 1, "description": "Discover the stowaway"},
-        {"type": "has_flag", "target_id": "stowaway_resolved", "target_quantity": 1, "description": "Decide the stowaway's fate"}
+        {
+          "type": "has_flag",
+          "target_id": "stowaway_discovered",
+          "target_quantity": 1,
+          "description": "Discover the stowaway"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "stowaway_resolved",
+          "target_quantity": 1,
+          "description": "Decide the stowaway's fate"
+        }
       ],
       "rewards": [
-        {"reward_type": "credits", "amount": 200},
-        {"reward_type": "xp", "amount": 60},
-        {"reward_type": "set_flag", "amount": 0, "target_id": "stowaway_complete"}
+        {
+          "reward_type": "credits",
+          "amount": 200
+        },
+        {
+          "reward_type": "xp",
+          "amount": 60
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "stowaway_complete"
+        }
       ]
     },
     {
@@ -587,14 +1258,38 @@
       "auto_accept": true,
       "on_accept_cargo": [],
       "objectives": [
-        {"type": "has_flag", "target_id": "adrift_survivor_found", "target_quantity": 1, "description": "Find the escape pod survivor"},
-        {"type": "has_flag", "target_id": "adrift_resolved", "target_quantity": 1, "description": "Deliver the survivor to safety"}
+        {
+          "type": "has_flag",
+          "target_id": "adrift_survivor_found",
+          "target_quantity": 1,
+          "description": "Find the escape pod survivor"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "adrift_resolved",
+          "target_quantity": 1,
+          "description": "Deliver the survivor to safety"
+        }
       ],
       "rewards": [
-        {"reward_type": "credits", "amount": 250},
-        {"reward_type": "xp", "amount": 60},
-        {"reward_type": "modify_reputation", "amount": 5, "target_id": "frontier_alliance"},
-        {"reward_type": "set_flag", "amount": 0, "target_id": "adrift_complete"}
+        {
+          "reward_type": "credits",
+          "amount": 250
+        },
+        {
+          "reward_type": "xp",
+          "amount": 60
+        },
+        {
+          "reward_type": "modify_reputation",
+          "amount": 5,
+          "target_id": "frontier_alliance"
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "adrift_complete"
+        }
       ]
     }
   ]
