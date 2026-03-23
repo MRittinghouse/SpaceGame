@@ -1032,13 +1032,16 @@ class TestCombatOutcome:
         assert view.get_next_state() == GameState.GALAXY_MAP
         view.on_exit()
 
-    def test_continue_button_visible_in_combat_over(self) -> None:
+    def test_continue_via_click_in_combat_over(self) -> None:
+        """Click anywhere during COMBAT_OVER should trigger continue."""
         view = _make_view()
+        view._return_state = GameState.GALAXY_MAP
         view.on_enter()
         view.phase = CombatPhase.COMBAT_OVER
         view.engine.get_state().result = CombatResult.VICTORY
-        view.update(0.1)
-        assert view.continue_button.visible
+        # Simulate click
+        view._on_continue_pressed()
+        assert view.get_next_state() == GameState.GALAXY_MAP
         view.on_exit()
 
 

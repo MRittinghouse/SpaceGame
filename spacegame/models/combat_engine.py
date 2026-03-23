@@ -154,6 +154,11 @@ class CombatEngine:
             for move in player.crew_moves:
                 if move.id == chosen_move_id and move.id not in skip_ids:
                     if player.energy >= move.energy_cost:
+                        # Deduct energy cost
+                        player.energy -= move.energy_cost
+                        # Set cooldown if applicable
+                        if move.cooldown > 0:
+                            player.cooldowns[move.id] = move.cooldown
                         target = surviving[0]
                         logs = self._resolve_move(
                             move, player, target,

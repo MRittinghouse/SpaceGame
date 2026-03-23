@@ -519,8 +519,9 @@ class CombatView(BaseView):
                     self._advance_phase(CombatPhase.PLAYER_INPUT)
 
         elif self.phase == CombatPhase.COMBAT_OVER:
-            if self.continue_button:
-                self.continue_button.show()
+            # Continue is handled via click-anywhere and keyboard (Enter/Space)
+            # No need to show the pygame_gui button — it overlaps the overlay text
+            pass
 
     # ------------------------------------------------------------------
     # Render
@@ -1365,7 +1366,8 @@ class CombatView(BaseView):
 
     def _on_continue_pressed(self) -> None:
         """Handle continue button press after combat ends."""
-        self.next_state = self._return_state
+        if self.next_state is None:  # Guard against double-fire during transition
+            self.next_state = self._return_state
 
     # ------------------------------------------------------------------
     # Outcome summary
@@ -2789,8 +2791,52 @@ class CombatView(BaseView):
 
         summary = self._get_outcome_summary()
 
-        # Result panel (centered)
-        panel_w, panel_h = 420, 300
+        # Build all stat lines first so we can size the panel dynamically
+        line_height = scale_y(26)
+        pad = scale_x(30)
+        panel_w = scale_x(500)
+        max_text_w = panel_w - pad * 2
+
+        stats: list[tuple[str, tuple[int, int, int]]] = [
+            (f"Rounds: {summary['rounds']}", Colors.TEXT_PRIMARY),
+            (f"Enemies defeated: {summary['enemies_defeated']}", Colors.TEXT_PRIMARY),
+        ]
+
+        if summary["enemies_fled"] > 0:
+            stats.append((f"Enemies fled: {summary['enemies_fled']}", Colors.TEXT_SECONDARY))
+
+        if summary["result"] == CombatResult.VICTORY and summary["xp_gained"] > 0:
+            stats.append((f"XP gained: +{summary['xp_gained']}", Colors.TEXT_HIGHLIGHT))
+
+        if summary["result"] == CombatResult.VICTORY and summary["loot"]:
+            for cid, qty in summary["loot"].items():
+                name = cid.replace("_", " ").title()
+                stats.append((f"  Loot: {qty}x {name}", Colors.GREEN))
+
+        if summary["result"] == CombatResult.VICTORY and summary.get("rare_loot"):
+            for cid, qty in summary["rare_loot"].items():
+                name = cid.replace("_", " ").title()
+                stats.append((f"  RARE: {qty}x {name}", Colors.YELLOW))
+
+        if summary["result"] == CombatResult.DEFEAT:
+            stats.append(("Cargo lost: 30%", Colors.RED))
+            stats.append(("Hull reduced to 25%", Colors.RED))
+
+        if summary["result"] == CombatResult.FLED:
+            stats.append(("Escaped with hull intact", Colors.YELLOW))
+
+        if summary["result"] == CombatResult.NEGOTIATED:
+            stats.append(("Resolved without bloodshed", Colors.TEXT_HIGHLIGHT))
+
+        if summary["result"] == CombatResult.BRIBED:
+            stats.append(("Enemies stood down", Colors.YELLOW))
+
+        # Calculate panel height dynamically
+        title_h = scale_y(80)  # Title + separator
+        stats_h = len(stats) * line_height
+        hint_h = scale_y(50)  # Continue hint area
+        panel_h = title_h + stats_h + hint_h + scale_y(20)
+
         panel_x = WINDOW_WIDTH // 2 - panel_w // 2
         panel_y = WINDOW_HEIGHT // 2 - panel_h // 2
 
@@ -2806,65 +2852,35 @@ class CombatView(BaseView):
 
         # Title
         title_surf = self.banner_font.render(summary["title"], True, summary["color"])
-        title_rect = title_surf.get_rect(centerx=WINDOW_WIDTH // 2, top=panel_y + 20)
+        title_rect = title_surf.get_rect(centerx=WINDOW_WIDTH // 2, top=panel_y + scale_y(18))
         screen.blit(title_surf, title_rect)
 
         # Separator
-        sep_y = panel_y + 70
+        sep_y = panel_y + title_h - scale_y(10)
         pygame.draw.line(
             screen,
             Colors.UI_BORDER,
-            (panel_x + 20, sep_y),
-            (panel_x + panel_w - 20, sep_y),
+            (panel_x + pad, sep_y),
+            (panel_x + panel_w - pad, sep_y),
         )
 
-        # Stats
-        stat_x = panel_x + 30
-        stat_y = sep_y + 16
-        line_height = 26
-
-        stats = [
-            (f"Rounds: {summary['rounds']}", Colors.TEXT_PRIMARY),
-            (f"Enemies defeated: {summary['enemies_defeated']}", Colors.TEXT_PRIMARY),
-        ]
-
-        if summary["enemies_fled"] > 0:
-            stats.append((f"Enemies fled: {summary['enemies_fled']}", Colors.TEXT_SECONDARY))
-
-        if summary["result"] == CombatResult.VICTORY and summary["xp_gained"] > 0:
-            stats.append((f"XP gained: +{summary['xp_gained']}", Colors.TEXT_HIGHLIGHT))
-
-        if summary["result"] == CombatResult.VICTORY and summary["loot"]:
-            loot_items = ", ".join(
-                f"{qty}x {cid.replace('_', ' ').title()}" for cid, qty in summary["loot"].items()
-            )
-            stats.append((f"Loot: {loot_items}", Colors.GREEN))
-
-        if summary["result"] == CombatResult.VICTORY and summary.get("rare_loot"):
-            rare_items = ", ".join(
-                f"{qty}x {cid.replace('_', ' ').title()}"
-                for cid, qty in summary["rare_loot"].items()
-            )
-            stats.append((f"RARE! {rare_items}", Colors.YELLOW))
-
-        if summary["result"] == CombatResult.DEFEAT:
-            stats.append(("Cargo lost: 30%", Colors.RED))
-            stats.append(("Hull reduced to 25%", Colors.RED))
-
-        if summary["result"] == CombatResult.FLED:
-            stats.append(("Escaped with hull intact", Colors.YELLOW))
-
-        if summary["result"] == CombatResult.NEGOTIATED:
-            stats.append(("Resolved without bloodshed", Colors.TEXT_HIGHLIGHT))
+        # Stats (clipped to panel width)
+        stat_x = panel_x + pad
+        stat_y = sep_y + scale_y(14)
 
         for text, color in stats:
             surf = self.info_font.render(text, True, color)
-            screen.blit(surf, (stat_x, stat_y))
+            # Clip text to panel width
+            if surf.get_width() > max_text_w:
+                clip_rect = pygame.Rect(0, 0, max_text_w, surf.get_height())
+                screen.blit(surf, (stat_x, stat_y), clip_rect)
+            else:
+                screen.blit(surf, (stat_x, stat_y))
             stat_y += line_height
 
-        # "Press Continue" hint
-        hint_y = panel_y + panel_h - 36
-        hint_text = "Press ENTER or click Continue"
+        # "Click or press ENTER to continue" hint (bottom of panel)
+        hint_y = panel_y + panel_h - scale_y(30)
+        hint_text = "Click or press ENTER to continue"
         hint_surf = self.small_font.render(hint_text, True, Colors.TEXT_SECONDARY)
         hint_rect = hint_surf.get_rect(centerx=WINDOW_WIDTH // 2, top=hint_y)
         screen.blit(hint_surf, hint_rect)
