@@ -72,16 +72,16 @@ class CharacterCreationView(BaseView):
         for i, attr in enumerate(AttributeId):
             y = start_y + i * row_height
 
-            # Minus button
+            # Minus button (pushed right to avoid text overlap)
             self.minus_buttons[attr.value] = pygame_gui.elements.UIButton(
-                relative_rect=pygame.Rect(cx + scale_x(80), y, scale_x(36), scale_y(36)),
+                relative_rect=pygame.Rect(cx + scale_x(150), y + scale_y(4), scale_x(36), scale_y(36)),
                 text="-",
                 manager=self.ui_manager,
             )
 
             # Plus button
             self.plus_buttons[attr.value] = pygame_gui.elements.UIButton(
-                relative_rect=pygame.Rect(cx + scale_x(160), y, scale_x(36), scale_y(36)),
+                relative_rect=pygame.Rect(cx + scale_x(250), y + scale_y(4), scale_x(36), scale_y(36)),
                 text="+",
                 manager=self.ui_manager,
             )
@@ -203,18 +203,24 @@ class CharacterCreationView(BaseView):
             val = self.attribute_sheet.get_value(attr.value)
 
             # Attribute name (left-aligned)
+            text_x = cx - scale_x(280)
             name_surf = self.attr_font.render(defn["name"], True, Colors.TEXT_HIGHLIGHT)
-            screen.blit(name_surf, (cx - scale_x(280), y + 4))
+            screen.blit(name_surf, (text_x, y + 4))
 
-            # Description
-            desc_surf = self.desc_font.render(
-                defn["description"], True, Colors.TEXT_SECONDARY
-            )
-            screen.blit(desc_surf, (cx - scale_x(280), y + scale_y(28)))
+            # Description (capped width to avoid overlapping buttons)
+            max_desc_w = scale_x(400)
+            desc_text = defn["description"]
+            desc_surf = self.desc_font.render(desc_text, True, Colors.TEXT_SECONDARY)
+            if desc_surf.get_width() > max_desc_w:
+                # Truncate with ellipsis
+                while len(desc_text) > 10 and self.desc_font.size(desc_text + "...")[0] > max_desc_w:
+                    desc_text = desc_text[:-1]
+                desc_surf = self.desc_font.render(desc_text.rstrip() + "...", True, Colors.TEXT_SECONDARY)
+            screen.blit(desc_surf, (text_x, y + scale_y(28)))
 
-            # Value (between minus and plus buttons)
+            # Value (centered between minus and plus buttons)
             val_surf = self.value_font.render(str(val), True, Colors.TEXT)
-            val_rect = val_surf.get_rect(center=(cx + scale_x(138), y + scale_y(18)))
+            val_rect = val_surf.get_rect(center=(cx + scale_x(218), y + scale_y(22)))
             screen.blit(val_surf, val_rect)
 
     def get_next_state(self) -> Optional[GameState]:
