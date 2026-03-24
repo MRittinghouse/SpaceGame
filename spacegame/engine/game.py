@@ -370,6 +370,14 @@ class Game:
         shuttle_type = self.data_loader.get_ship_type("shuttle")
         starting_ship = Ship(ship_type=shuttle_type, current_fuel=shuttle_type.fuel_capacity)
 
+        # Generate a preset build so the player has a composite from the start
+        from spacegame.models.ship_presets import generate_preset_from_ship_type
+        try:
+            preset = generate_preset_from_ship_type(shuttle_type)
+            starting_ship.set_build(preset)
+        except Exception:
+            pass  # Composite will be generated on first drydock visit
+
         # Debug mode: 1M credits when player name is "Debug"
         credits = 1_000_000 if player_name == "Debug" else STARTING_CREDITS
 

@@ -121,7 +121,14 @@ class ShipyardView(BaseView):
         self._load_ship_anim()
 
     def _load_ship_anim(self) -> None:
-        """Load animated ship sprite or generate procedural fallback."""
+        """Load ship sprite — composite first, then stock, then fallback."""
+        # Prefer composite from player's build (the ship they designed)
+        composite = self.player.ship.composite if self.player else None
+        if composite and hasattr(composite, "get_surface"):
+            self._ship_anim = None
+            self._ship_fallback = composite.get_surface(scale=res_scale(3))
+            return
+
         ship_id = self.player.ship.ship_type.id
         self._ship_anim = self._sprite_mgr.get_ship_animated(ship_id, scale=res_scale(3))
         if self._ship_anim is None:
