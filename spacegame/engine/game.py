@@ -3500,7 +3500,7 @@ class Game:
 
         # Builder-specific sequential hints (QA Fix #7)
         if current_state == GameState.SHIP_BUILDER:
-            builder_view = self.state_manager.get_view(GameState.SHIP_BUILDER)
+            builder_view = self.state_manager.states.get(GameState.SHIP_BUILDER)
             if builder_view and hasattr(builder_view, "_pending_hint"):
                 pending = builder_view._pending_hint
                 if pending and self.tutorial_manager.should_show_hint(pending):
@@ -3564,7 +3564,7 @@ class Game:
         Returns:
             Hint ID string or None.
         """
-        combat_view = self.state_manager.get_view(GameState.COMBAT)
+        combat_view = self.state_manager.states.get(GameState.COMBAT)
         if combat_view is None or not hasattr(combat_view, "engine"):
             return None
 
@@ -3644,7 +3644,7 @@ class Game:
         """Process boss trophy drops after combat victory."""
         if not self.player or not hasattr(self, "combat_view"):
             return
-        combat_view = self.state_manager.get_view(GameState.COMBAT)
+        combat_view = self.state_manager.states.get(GameState.COMBAT)
         if not combat_view or not hasattr(combat_view, "engine"):
             return
         state = combat_view.engine.get_state()
