@@ -269,6 +269,21 @@ class ShipyardView(BaseView):
             and (not u.requires_black_market or has_market)
         ]
 
+    # Frame size labels for ship class display (replaces "Early Game" etc.)
+    _FRAME_SIZE_LABELS: dict[str, str] = {
+        "starter": "Tiny Frame",
+        "early_game": "Small Frame",
+        "mid_game": "Medium Frame",
+        "late_game": "Large Frame",
+        "faction": "Faction Frame",
+    }
+
+    def _get_frame_size_label(self, ship_type: object) -> str:
+        """Get player-facing frame size label for a ship type."""
+        return self._FRAME_SIZE_LABELS.get(
+            ship_type.ship_class, ship_type.ship_class.replace("_", " ").title()
+        )
+
     def _get_ship_list(self) -> list:
         """Get ship types available for purchase, excluding current ship."""
         current_id = self.player.ship.ship_type.id
@@ -742,7 +757,7 @@ class ShipyardView(BaseView):
 
             if locked:
                 # Show locked state
-                name_text = f"{ship_type.name}  ({ship_type.ship_class.replace('_', ' ').title()})"
+                name_text = f"{ship_type.name}  ({self._get_frame_size_label(ship_type)})"
                 name = self.info_font.render(name_text, True, (80, 60, 60))
                 screen.blit(name, (rect.x + 10 + icon_offset, rect.y + 5))
                 lock_surf = self.small_font.render(lock_reason, True, (180, 80, 80))
@@ -766,7 +781,7 @@ class ShipyardView(BaseView):
                 screen.blit(price, (price_x, rect.y + 5))
 
                 # Truncate name if it would overlap price
-                name_text = f"{ship_type.name}  ({ship_type.ship_class.replace('_', ' ').title()})"
+                name_text = f"{ship_type.name}  ({self._get_frame_size_label(ship_type)})"
                 name_x = rect.x + 10 + icon_offset
                 max_name_w = price_x - name_x - 8
                 name = self.info_font.render(name_text, True, name_color)
