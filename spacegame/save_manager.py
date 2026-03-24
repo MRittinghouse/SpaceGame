@@ -771,9 +771,10 @@ class SaveManager:
             from spacegame.models.ship_presets import get_preset_for_ship_type
             preset = get_preset_for_ship_type(data["ship_type_id"])
             if preset:
-                ship._build = preset
-                # Don't call set_build() here to avoid recomputing during load
-                # Stats will be computed when needed
+                try:
+                    ship.set_build(preset)
+                except Exception:
+                    ship._build = preset  # Fallback if set_build fails
 
         return ship
 

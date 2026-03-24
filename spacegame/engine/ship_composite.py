@@ -67,7 +67,8 @@ class ShipComposite:
     ) -> None:
         self._build = build
         self._materials = materials
-        self._base_surface: Optional[pygame.Surface] = None
+        self._clean_surface: Optional[pygame.Surface] = None  # Without engine glow
+        self._base_surface: Optional[pygame.Surface] = None   # With current glow frame
         self._scaled_cache: dict[int, pygame.Surface] = {}
         self._engine_timer: float = 0.0
         self._engine_frame: int = 0  # 0 or 1
@@ -122,9 +123,10 @@ class ShipComposite:
         new_frame = int(self._engine_timer / (self.ENGINE_GLOW_PERIOD / 2)) % 2
         if new_frame != self._engine_frame:
             self._engine_frame = new_frame
-            # Invalidate scaled cache (base changes with engine glow)
+            # Rebuild base from clean + fresh glow (no accumulation)
             self._scaled_cache.clear()
-            if self._base_surface is not None:
+            if self._clean_surface is not None:
+                self._base_surface = self._clean_surface.copy()
                 self._apply_engine_glow(self._base_surface)
 
     def _rebuild(self) -> None:
@@ -155,7 +157,8 @@ class ShipComposite:
         # Step 7: Engine glow (animated)
         self._apply_engine_glow(surf)
 
-        self._base_surface = surf.convert_alpha()
+        self._clean_surface = surf.convert_alpha()
+        self._base_surface = self._clean_surface.copy()
         self._dirty = False
         self._scaled_cache.clear()
 

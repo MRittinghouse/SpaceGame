@@ -223,6 +223,10 @@ class ShipBuilderView(BaseView):
     # ------------------------------------------------------------------
 
     def handle_event(self, event: pygame.event.Event) -> None:
+        # Block input during confirmation animation
+        if self._confirm_anim_timer > 0:
+            return
+
         if event.type == pygame_gui.UI_BUTTON_PRESSED:
             if event.ui_element == self.back_button:
                 self.next_state = GameState.SHIPYARD
@@ -404,6 +408,7 @@ class ShipBuilderView(BaseView):
 
         ok, msg = self.grid_manager.can_place_shape(
             shape, gx, gy, material, self.build.pixels,
+            materials_catalog=getattr(self.data_loader, "hull_materials", None),
         )
         if not ok:
             return
@@ -506,6 +511,8 @@ class ShipBuilderView(BaseView):
         if to_fill:
             self._modified = True
             self._recompute_stats()
+            if len(to_fill) >= max_fill:
+                self._validation_warnings.append("Fill capped at 500 pixels (safety limit).")
 
     def _erase_pixel(self, gx: int, gy: int) -> None:
         """Remove the pixel at the given grid position."""
@@ -664,11 +671,14 @@ class ShipBuilderView(BaseView):
         for i, upgrade in enumerate(self._equipment_list):
             iy = start_y + i * item_h
             if modal_x <= mx < modal_x + modal_w and iy <= my < iy + item_h:
-                # Install this equipment
+                # Install this equipment (check credits)
                 if self._equipment_modal_slot:
-                    self._equipment_modal_slot.equipment_id = upgrade.id
-                    self._modified = True
-                    self._recompute_stats()
+                    if self.player.credits >= upgrade.price:
+                        self.player.credits -= upgrade.price
+                        self._equipment_modal_slot.equipment_id = upgrade.id
+                        self._modified = True
+                        self._recompute_stats()
+                        get_audio_manager().play_sfx("trade_buy")
                 self._equipment_modal_open = False
                 return
 

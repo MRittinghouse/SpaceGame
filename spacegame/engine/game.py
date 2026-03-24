@@ -1230,6 +1230,8 @@ class Game:
             next_state = self.mining_view.get_next_state()
             if next_state == GameState.TRADING:
                 self.mining_view.next_state = None
+                # Discovery: check for shape/material from deep mining (Phase D2)
+                self._check_mining_discovery()
 
                 def _do():
                     self._ensure_station_hub_view()
@@ -1242,6 +1244,8 @@ class Game:
             next_state = self.salvage_view.get_next_state()
             if next_state == GameState.TRADING:
                 self.salvage_view.next_state = None
+                # Discovery: check for shape blueprint from salvage (Phase D2)
+                self._check_salvage_discovery()
 
                 def _do():
                     self._ensure_station_hub_view()
@@ -3498,6 +3502,14 @@ class Game:
             self._tutorial_overlay.show_hint(hint_id)
             return
 
+        # Process boss trophy drops after combat (Phase D2)
+        if current_state != GameState.COMBAT and hasattr(self, "_combat_trophies_checked"):
+            if not self._combat_trophies_checked:
+                self._check_combat_trophy_drops()
+                self._combat_trophies_checked = True
+        elif current_state == GameState.COMBAT:
+            self._combat_trophies_checked = False
+
         # Combat-specific contextual hints (Phase 11)
         if current_state == GameState.COMBAT:
             combat_hint = self._get_combat_tutorial_hint()
@@ -3576,6 +3588,79 @@ class Game:
                     return "combat_elemental"
 
         return None
+
+    # ------------------------------------------------------------------
+    # Builder discovery hooks (Phase D2 wiring)
+    # ------------------------------------------------------------------
+
+    def _check_salvage_discovery(self) -> None:
+        """Check for shape discovery after completing a salvage run."""
+        if not self.player:
+            return
+        from spacegame.models.builder_discovery import check_salvage_discovery
+        deck_type = "cargo"  # Default; salvage views track deck type
+        if hasattr(self, "salvage_view") and self.salvage_view:
+            deck_type = getattr(self.salvage_view, "_deck_type", "cargo")
+        skill_level = int(self.player.progression.get_bonus("salvage_expert") * 10) if hasattr(self.player, "progression") else 0
+        result = check_salvage_discovery(
+            deck_type, skill_level, self.player.unlocked_shapes,
+        )
+        if result:
+            self.player.unlocked_shapes.add(result)
+            self._show_builder_discovery("shape", result)
+
+    def _check_mining_discovery(self) -> None:
+        """Check for shape/material discovery after mining."""
+        if not self.player:
+            return
+        from spacegame.models.builder_discovery import check_mining_discovery
+        system_id = self.player.current_system_id
+        depth = 3  # Default; mining views track depth
+        if hasattr(self, "mining_view") and self.mining_view:
+            depth = getattr(self.mining_view, "_current_depth", 3)
+        skill_level = int(self.player.progression.get_bonus("deep_mining") * 10) if hasattr(self.player, "progression") else 0
+        result = check_mining_discovery(
+            system_id, depth, skill_level,
+            self.player.unlocked_shapes, self.player.unlocked_materials,
+        )
+        if result:
+            if result["type"] == "shape":
+                self.player.unlocked_shapes.add(result["id"])
+            else:
+                self.player.unlocked_materials.add(result["id"])
+            self._show_builder_discovery(result["type"], result["id"])
+
+    def _check_combat_trophy_drops(self) -> None:
+        """Process boss trophy drops after combat victory."""
+        if not self.player or not hasattr(self, "combat_view"):
+            return
+        combat_view = self.state_manager.get_view(GameState.COMBAT)
+        if not combat_view or not hasattr(combat_view, "engine"):
+            return
+        state = combat_view.engine.get_state()
+        trophies = getattr(state, "_pending_trophy_drops", [])
+        for trophy in trophies:
+            shape_id = trophy["shape_id"]
+            if shape_id not in self.player.unlocked_shapes:
+                self.player.unlocked_shapes.add(shape_id)
+                self._show_builder_discovery("shape", shape_id, boss_name=trophy.get("boss_name"))
+        if hasattr(state, "_pending_trophy_drops"):
+            state._pending_trophy_drops.clear()
+
+    def _show_builder_discovery(self, discovery_type: str, item_id: str, boss_name: str = "") -> None:
+        """Show a discovery notification for a builder unlock."""
+        from spacegame.models.ship_build import HullShape
+        label = item_id.replace("_", " ").title()
+        if boss_name:
+            msg = f"Trophy: {label} (from {boss_name})"
+        elif discovery_type == "shape":
+            msg = f"Shape Discovered: {label}"
+        else:
+            msg = f"Material Discovered: {label}"
+        # Use the existing mission notification system for display
+        if hasattr(self, "_mission_notifications"):
+            self._mission_notifications.append(msg)
+        logger.info(f"Builder discovery: {discovery_type} '{item_id}'")
 
     def _check_day_advance(self) -> None:
         """Check if game day advanced and trigger market event generation.

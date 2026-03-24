@@ -397,6 +397,7 @@ class ShipGridManager:
         y: int,
         material: HullMaterial,
         existing_pixels: list[PlacedPixel],
+        materials_catalog: Optional[dict[str, "HullMaterial"]] = None,
     ) -> tuple[bool, str]:
         """Check if a shape can be placed at the given position.
 
@@ -406,6 +407,9 @@ class ShipGridManager:
             y: Top row of placement.
             material: Material for the new pixels.
             existing_pixels: Currently placed pixels.
+            materials_catalog: Optional dict of all materials (for accurate
+                weight calculation). If None, uses new material's weight
+                as approximation.
 
         Returns:
             (success, message) tuple.
@@ -429,11 +433,13 @@ class ShipGridManager:
                         return False, f"Overlap at ({px}, {py})"
                     new_pixel_count += 1
 
-        # Weight check
-        current_weight = sum(
-            self._get_pixel_weight(p, material)
-            for p in existing_pixels
-        )
+        # Weight check — use actual material weights per pixel
+        current_weight = 0.0
+        for p in existing_pixels:
+            if materials_catalog and p.material_id in materials_catalog:
+                current_weight += materials_catalog[p.material_id].weight_per_pixel
+            else:
+                current_weight += material.weight_per_pixel  # Fallback approximation
         new_weight = new_pixel_count * material.weight_per_pixel
         if current_weight + new_weight > self._max_weight:
             return False, f"Exceeds weight limit ({current_weight + new_weight:.1f}/{self._max_weight})"
@@ -519,10 +525,7 @@ class ShipGridManager:
             if x <= p.x < x + width and y <= p.y < y + height
         ]
 
-    @staticmethod
-    def _get_pixel_weight(pixel: PlacedPixel, default_material: HullMaterial) -> float:
-        """Get weight for a pixel (uses default material for simplification)."""
-        return default_material.weight_per_pixel
+    # _get_pixel_weight removed — weight now calculated with actual material catalog
 
 
 # ============================================================================
