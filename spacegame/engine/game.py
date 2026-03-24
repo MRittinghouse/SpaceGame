@@ -3497,6 +3497,16 @@ class Game:
             GameState.REFINING: "refining",
             GameState.SHIP_BUILDER: "builder_welcome",
         }
+
+        # Builder-specific sequential hints (QA Fix #7)
+        if current_state == GameState.SHIP_BUILDER:
+            builder_view = self.state_manager.get_view(GameState.SHIP_BUILDER)
+            if builder_view and hasattr(builder_view, "_pending_hint"):
+                pending = builder_view._pending_hint
+                if pending and self.tutorial_manager.should_show_hint(pending):
+                    self._tutorial_overlay.show_hint(pending)
+                    builder_view._pending_hint = None
+                    return
         hint_id = hint_map.get(current_state)
         if hint_id and self.tutorial_manager.should_show_hint(hint_id):
             self._tutorial_overlay.show_hint(hint_id)

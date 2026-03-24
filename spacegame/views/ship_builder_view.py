@@ -106,6 +106,13 @@ class ShipBuilderView(BaseView):
         self._mirror_mode: bool = False
         self._undo_stack: list[list[dict]] = []  # Pixel snapshots
 
+        # Zoom/Pan for Large/XL canvases (QA Fix #6)
+        self._zoom_level: float = 1.0
+        self._pan_offset_x: float = 0.0
+        self._pan_offset_y: float = 0.0
+        self._panning: bool = False
+        self._pan_start: tuple[int, int] = (0, 0)
+
         # Slot designator (Phase B3)
         self._slot_type_to_place: Optional[str] = None
         self._equipment_modal_open: bool = False
@@ -119,6 +126,7 @@ class ShipBuilderView(BaseView):
         self._hovered_shape: Optional[HullShape] = None  # Shape under cursor in palette
         self._particle_timer: float = 0.0  # Ambient sparks
         self._validation_warnings: list[str] = []  # Build issues
+        self._pending_hint: Optional[str] = None  # Hint ID for game.py to show
         self._redo_stack: list[list[dict]] = []
         self._max_undo: int = 20
 
@@ -284,8 +292,23 @@ class ShipBuilderView(BaseView):
                 return
             if event.button == 1:  # Left click
                 self._handle_left_click(event.pos)
+            elif event.button == 2:  # Middle click — start pan
+                self._panning = True
+                self._pan_start = event.pos
             elif event.button == 3:  # Right click — erase
                 self._handle_right_click(event.pos)
+
+        if event.type == pygame.MOUSEBUTTONUP:
+            if event.button == 2:
+                self._panning = False
+
+        if event.type == pygame.MOUSEMOTION:
+            if self._panning:
+                dx = event.pos[0] - self._pan_start[0]
+                dy = event.pos[1] - self._pan_start[1]
+                self._pan_offset_x += dx
+                self._pan_offset_y += dy
+                self._pan_start = event.pos
 
         if event.type == pygame.MOUSEWHEEL:
             mx, my = pygame.mouse.get_pos()
@@ -299,6 +322,16 @@ class ShipBuilderView(BaseView):
                 self._material_scroll_offset = max(
                     0, self._material_scroll_offset - event.y * 30,
                 )
+            elif GRID_AREA_X <= mx <= GRID_AREA_X + GRID_AREA_W:
+                # Grid zoom (QA Fix #6)
+                old_zoom = self._zoom_level
+                self._zoom_level = max(0.5, min(4.0, self._zoom_level + event.y * 0.25))
+                # Zoom toward mouse position
+                if old_zoom != self._zoom_level:
+                    scale_change = self._zoom_level / old_zoom
+                    ox, oy = self._get_grid_origin()
+                    self._pan_offset_x = mx - (mx - ox - self._pan_offset_x) * scale_change - ox + self._pan_offset_x
+                    self._pan_offset_y = my - (my - oy - self._pan_offset_y) * scale_change - oy + self._pan_offset_y
 
     def _handle_left_click(self, pos: tuple[int, int]) -> None:
         mx, my = pos
@@ -752,6 +785,33 @@ class ShipBuilderView(BaseView):
 
         self._validation_warnings = warnings
 
+    def _check_builder_hint_triggers(self) -> None:
+        """Check if any builder tutorial hints should fire (QA Fix #7).
+
+        Hints trigger based on builder state milestones, checked via
+        the player's dialogue_flags to ensure one-time firing.
+        """
+        flags = self.player.dialogue_flags if hasattr(self.player, "dialogue_flags") else {}
+
+        # After first shape placed → shapes hint
+        if (len(self.build.pixels) > 0
+                and not flags.get("builder_hint_shapes")
+                and flags.get("builder_hint_welcome_seen", False)):
+            self.player.dialogue_flags["builder_hint_shapes"] = True
+            self._pending_hint = "builder_shapes"
+
+        # After first tool switch → tools hint
+        if (self._active_tool != "stamp"
+                and not flags.get("builder_hint_tools")):
+            self.player.dialogue_flags["builder_hint_tools"] = True
+            self._pending_hint = "builder_tools"
+
+        # After first slot placed → slots hint
+        if (len(self.build.slots) > 0
+                and not flags.get("builder_hint_slots")):
+            self.player.dialogue_flags["builder_hint_slots"] = True
+            self._pending_hint = "builder_slots"
+
     def _recompute_stats(self) -> None:
         materials = getattr(self.data_loader, "hull_materials", {})
         equipment = getattr(self.data_loader, "upgrades", {})
@@ -793,18 +853,21 @@ class ShipBuilderView(BaseView):
 
     def _get_cell_size(self) -> int:
         canvas = self.build.canvas_size
-        return min(GRID_AREA_W, GRID_AREA_H) // canvas
+        base = min(GRID_AREA_W, GRID_AREA_H) // canvas
+        return max(1, int(base * self._zoom_level))
 
     def _get_grid_origin(self) -> tuple[int, int]:
         canvas = self.build.canvas_size
         cell = self._get_cell_size()
-        ox = GRID_AREA_X + (GRID_AREA_W - canvas * cell) // 2
-        oy = GRID_AREA_Y + (GRID_AREA_H - canvas * cell) // 2
+        ox = GRID_AREA_X + (GRID_AREA_W - canvas * cell) // 2 + int(self._pan_offset_x)
+        oy = GRID_AREA_Y + (GRID_AREA_H - canvas * cell) // 2 + int(self._pan_offset_y)
         return ox, oy
 
     def _screen_to_grid(self, sx: int, sy: int) -> Optional[tuple[int, int]]:
         ox, oy = self._get_grid_origin()
         cell = self._get_cell_size()
+        if cell <= 0:
+            return None
         gx = (sx - ox) // cell
         gy = (sy - oy) // cell
         canvas = self.build.canvas_size
@@ -819,6 +882,9 @@ class ShipBuilderView(BaseView):
     def update(self, dt: float) -> None:
         self.background.update(dt)
         self.particles.update(dt)
+
+        # Track builder hint triggers (QA Fix #7)
+        self._check_builder_hint_triggers()
 
         # Ambient welding sparks (Phase E)
         self._particle_timer += dt
@@ -1197,9 +1263,10 @@ class ShipBuilderView(BaseView):
 
         tool_y += scale_y(16)
 
-        # Undo/redo indicator
+        # Undo/redo and zoom indicator
+        zoom_pct = int(self._zoom_level * 100)
         undo_text = self.label_font.render(
-            f"Undo: {len(self._undo_stack)}  Redo: {len(self._redo_stack)}  [Ctrl+Z/Y]",
+            f"Undo: {len(self._undo_stack)}  Redo: {len(self._redo_stack)}  [Ctrl+Z/Y]  Zoom: {zoom_pct}%",
             True, Colors.TEXT_SECONDARY,
         )
         screen.blit(undo_text, (tool_x, tool_y))
