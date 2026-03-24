@@ -139,10 +139,12 @@ class MainMenuView(BaseView):
             if event.type == pygame.KEYDOWN:
                 if event.key in (pygame.K_y, pygame.K_RETURN):
                     self._confirm_new_game = False
+                    self._set_menu_buttons_visible(True)
                     logger.info("New Game confirmed")
                     self.next_state = GameState.GALAXY_MAP
                 elif event.key in (pygame.K_n, pygame.K_ESCAPE):
                     self._confirm_new_game = False
+                    self._set_menu_buttons_visible(True)
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 # Check Yes/No button rects (must match render positions exactly)
                 cx = WINDOW_WIDTH // 2
@@ -155,9 +157,11 @@ class MainMenuView(BaseView):
                 no_rect = pygame.Rect(cx + scale_x(15), btn_y, btn_w, btn_h)
                 if yes_rect.collidepoint(event.pos):
                     self._confirm_new_game = False
+                    self._set_menu_buttons_visible(True)
                     self.next_state = GameState.GALAXY_MAP
                 elif no_rect.collidepoint(event.pos):
                     self._confirm_new_game = False
+                    self._set_menu_buttons_visible(True)
             return
 
         if event.type == pygame_gui.UI_BUTTON_PRESSED:
@@ -169,6 +173,7 @@ class MainMenuView(BaseView):
                 )
                 if has_saves:
                     self._confirm_new_game = True
+                    self._set_menu_buttons_visible(False)
                     logger.info("New Game: showing confirmation (saves exist)")
                 else:
                     logger.info("New Game: no saves, starting directly")
@@ -182,6 +187,16 @@ class MainMenuView(BaseView):
             elif event.ui_element == self.exit_button:
                 logger.info("Exit button pressed")
                 pygame.event.post(pygame.event.Event(pygame.QUIT))
+
+    def _set_menu_buttons_visible(self, visible: bool) -> None:
+        """Show or hide the main menu buttons (for confirmation dialog)."""
+        for btn in [self.new_game_button, self.continue_button,
+                    self.load_game_button, self.exit_button]:
+            if btn:
+                if visible:
+                    btn.show()
+                else:
+                    btn.hide()
 
     def update(self, dt: float) -> None:
         self.background.update(dt)
