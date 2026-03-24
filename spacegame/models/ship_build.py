@@ -18,11 +18,11 @@ from typing import Optional
 # ============================================================================
 
 WEIGHT_CLASSES: dict[str, dict] = {
-    "tiny": {"canvas_w": 16, "canvas_h": 16, "max_weight": 40, "max_slots": 4, "unlock_cost": 0},
-    "small": {"canvas_w": 32, "canvas_h": 20, "max_weight": 80, "max_slots": 7, "unlock_cost": 15000},
-    "medium": {"canvas_w": 40, "canvas_h": 28, "max_weight": 140, "max_slots": 10, "unlock_cost": 60000},
-    "large": {"canvas_w": 56, "canvas_h": 40, "max_weight": 240, "max_slots": 14, "unlock_cost": 200000},
-    "xlarge": {"canvas_w": 72, "canvas_h": 52, "max_weight": 400, "max_slots": 18, "unlock_cost": 500000},
+    "tiny": {"canvas_w": 16, "canvas_h": 16, "max_weight": 55, "max_slots": 4, "unlock_cost": 0},
+    "small": {"canvas_w": 32, "canvas_h": 20, "max_weight": 110, "max_slots": 7, "unlock_cost": 15000},
+    "medium": {"canvas_w": 40, "canvas_h": 28, "max_weight": 190, "max_slots": 10, "unlock_cost": 60000},
+    "large": {"canvas_w": 56, "canvas_h": 40, "max_weight": 330, "max_slots": 14, "unlock_cost": 200000},
+    "xlarge": {"canvas_w": 72, "canvas_h": 52, "max_weight": 550, "max_slots": 18, "unlock_cost": 500000},
 }
 
 SLOT_POOLS: dict[str, dict[str, int]] = {

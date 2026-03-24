@@ -4,15 +4,27 @@
       "id": "light_alloy",
       "name": "Light Alloy",
       "description": "Lightweight silver plating. Low weight means high evasion potential, but less hull per pixel than heavier materials.",
-      "color_primary": [176, 184, 200],
-      "color_accent": [140, 148, 168],
-      "color_highlight": [200, 208, 224],
+      "color_primary": [
+        176,
+        184,
+        200
+      ],
+      "color_accent": [
+        140,
+        148,
+        168
+      ],
+      "color_highlight": [
+        200,
+        208,
+        224
+      ],
       "hull_per_pixel": 1.5,
       "armor_per_pixel": 0,
       "shield_per_pixel": 0,
       "shield_regen_per_pixel": 0,
       "evasion_per_pixel": 0.08,
-      "weight_per_pixel": 0.4,
+      "weight_per_pixel": 0.15,
       "cost_per_pixel": 8,
       "unlock_method": "free"
     },
@@ -20,15 +32,27 @@
       "id": "standard_plate",
       "name": "Standard Plate",
       "description": "Balanced hull plating. The workhorse material of the Aurelia Expanse. Neither light nor heavy, neither cheap nor expensive.",
-      "color_primary": [112, 120, 136],
-      "color_accent": [88, 96, 112],
-      "color_highlight": [140, 148, 168],
+      "color_primary": [
+        112,
+        120,
+        136
+      ],
+      "color_accent": [
+        88,
+        96,
+        112
+      ],
+      "color_highlight": [
+        140,
+        148,
+        168
+      ],
       "hull_per_pixel": 2.5,
       "armor_per_pixel": 0,
       "shield_per_pixel": 0,
       "shield_regen_per_pixel": 0,
       "evasion_per_pixel": 0,
-      "weight_per_pixel": 0.7,
+      "weight_per_pixel": 0.25,
       "cost_per_pixel": 15,
       "unlock_method": "free"
     },
@@ -36,15 +60,27 @@
       "id": "salvage_scrap",
       "name": "Salvage Scrap",
       "description": "Reclaimed hull fragments welded together. Cheap, functional, and it shows. The frontier builder's best friend.",
-      "color_primary": [136, 104, 72],
-      "color_accent": [112, 80, 56],
-      "color_highlight": [168, 136, 96],
+      "color_primary": [
+        136,
+        104,
+        72
+      ],
+      "color_accent": [
+        112,
+        80,
+        56
+      ],
+      "color_highlight": [
+        168,
+        136,
+        96
+      ],
       "hull_per_pixel": 2.0,
       "armor_per_pixel": 0.02,
       "shield_per_pixel": 0,
       "shield_regen_per_pixel": 0,
       "evasion_per_pixel": 0,
-      "weight_per_pixel": 0.8,
+      "weight_per_pixel": 0.2,
       "cost_per_pixel": 5,
       "unlock_method": "free"
     },
@@ -52,15 +88,27 @@
       "id": "heavy_armor",
       "name": "Heavy Armor",
       "description": "Dense bronze-toned plating. Every pixel absorbs punishment. The weight adds up fast, but so does the armor.",
-      "color_primary": [152, 112, 64],
-      "color_accent": [120, 88, 48],
-      "color_highlight": [184, 144, 80],
+      "color_primary": [
+        152,
+        112,
+        64
+      ],
+      "color_accent": [
+        120,
+        88,
+        48
+      ],
+      "color_highlight": [
+        184,
+        144,
+        80
+      ],
       "hull_per_pixel": 3.0,
       "armor_per_pixel": 0.06,
       "shield_per_pixel": 0,
       "shield_regen_per_pixel": 0,
       "evasion_per_pixel": 0,
-      "weight_per_pixel": 1.2,
+      "weight_per_pixel": 0.55,
       "cost_per_pixel": 25,
       "unlock_method": "purchase",
       "unlock_cost": 5000,
@@ -70,15 +118,27 @@
       "id": "reinforced_plate",
       "name": "Reinforced Plate",
       "description": "Military-spec dark steel. Denser than standard plate, with integral armor channels. The professional's choice.",
-      "color_primary": [80, 88, 104],
-      "color_accent": [60, 68, 84],
-      "color_highlight": [108, 116, 136],
+      "color_primary": [
+        80,
+        88,
+        104
+      ],
+      "color_accent": [
+        60,
+        68,
+        84
+      ],
+      "color_highlight": [
+        108,
+        116,
+        136
+      ],
       "hull_per_pixel": 3.5,
       "armor_per_pixel": 0.04,
       "shield_per_pixel": 0,
       "shield_regen_per_pixel": 0,
       "evasion_per_pixel": 0,
-      "weight_per_pixel": 1.0,
+      "weight_per_pixel": 0.45,
       "cost_per_pixel": 30,
       "unlock_method": "purchase",
       "unlock_cost": 8000,
@@ -88,15 +148,27 @@
       "id": "shield_crystal",
       "name": "Shield Crystal",
       "description": "Cyan crystalline panels that generate energy barriers. Each pixel contributes to your shield pool. The Sentinel's foundation.",
-      "color_primary": [64, 168, 208],
-      "color_accent": [40, 136, 176],
-      "color_highlight": [96, 200, 240],
+      "color_primary": [
+        64,
+        168,
+        208
+      ],
+      "color_accent": [
+        40,
+        136,
+        176
+      ],
+      "color_highlight": [
+        96,
+        200,
+        240
+      ],
       "hull_per_pixel": 1.0,
       "armor_per_pixel": 0,
       "shield_per_pixel": 0.6,
       "shield_regen_per_pixel": 0.03,
       "evasion_per_pixel": 0,
-      "weight_per_pixel": 0.6,
+      "weight_per_pixel": 0.3,
       "cost_per_pixel": 22,
       "unlock_method": "purchase",
       "unlock_cost": 6000,
@@ -106,15 +178,27 @@
       "id": "barrier_lattice",
       "name": "Barrier Lattice",
       "description": "Deep blue energy lattice. Higher shield output per pixel than crystal, but heavier. For dedicated Sentinel builds.",
-      "color_primary": [56, 104, 176],
-      "color_accent": [40, 80, 144],
-      "color_highlight": [80, 136, 208],
+      "color_primary": [
+        56,
+        104,
+        176
+      ],
+      "color_accent": [
+        40,
+        80,
+        144
+      ],
+      "color_highlight": [
+        80,
+        136,
+        208
+      ],
       "hull_per_pixel": 0.5,
       "armor_per_pixel": 0,
       "shield_per_pixel": 0.8,
       "shield_regen_per_pixel": 0.02,
       "evasion_per_pixel": 0,
-      "weight_per_pixel": 0.7,
+      "weight_per_pixel": 0.35,
       "cost_per_pixel": 28,
       "unlock_method": "purchase",
       "unlock_cost": 10000,
@@ -124,15 +208,27 @@
       "id": "stealth_composite",
       "name": "Stealth Composite",
       "description": "Matte black panels that absorb radar returns. Barely there on sensors. The Ghost's signature material.",
-      "color_primary": [40, 40, 56],
-      "color_accent": [28, 28, 40],
-      "color_highlight": [56, 56, 72],
+      "color_primary": [
+        40,
+        40,
+        56
+      ],
+      "color_accent": [
+        28,
+        28,
+        40
+      ],
+      "color_highlight": [
+        56,
+        56,
+        72
+      ],
       "hull_per_pixel": 1.0,
       "armor_per_pixel": 0,
       "shield_per_pixel": 0,
       "shield_regen_per_pixel": 0,
       "evasion_per_pixel": 0.15,
-      "weight_per_pixel": 0.3,
+      "weight_per_pixel": 0.12,
       "cost_per_pixel": 20,
       "unlock_method": "purchase",
       "unlock_cost": 8000,
@@ -142,15 +238,27 @@
       "id": "phase_alloy",
       "name": "Phase Alloy",
       "description": "Dark violet metal that seems to shift when you look at it. Incredible evasion potential. Found only in the Phantom's wake.",
-      "color_primary": [56, 48, 80],
-      "color_accent": [40, 32, 64],
-      "color_highlight": [80, 72, 112],
+      "color_primary": [
+        56,
+        48,
+        80
+      ],
+      "color_accent": [
+        40,
+        32,
+        64
+      ],
+      "color_highlight": [
+        80,
+        72,
+        112
+      ],
       "hull_per_pixel": 0.8,
       "armor_per_pixel": 0,
       "shield_per_pixel": 0,
       "shield_regen_per_pixel": 0,
-      "evasion_per_pixel": 0.20,
-      "weight_per_pixel": 0.25,
+      "evasion_per_pixel": 0.2,
+      "weight_per_pixel": 0.1,
       "cost_per_pixel": 35,
       "unlock_method": "quest",
       "unlock_source": "quest_phantoms_wake"
@@ -159,15 +267,27 @@
       "id": "composite_weave",
       "name": "Composite Weave",
       "description": "Teal-toned hybrid material. A bit of everything: hull, shields, evasion. Jack of all trades, master of none.",
-      "color_primary": [64, 96, 104],
-      "color_accent": [48, 72, 80],
-      "color_highlight": [88, 120, 128],
+      "color_primary": [
+        64,
+        96,
+        104
+      ],
+      "color_accent": [
+        48,
+        72,
+        80
+      ],
+      "color_highlight": [
+        88,
+        120,
+        128
+      ],
       "hull_per_pixel": 2.0,
       "armor_per_pixel": 0.02,
       "shield_per_pixel": 0.2,
       "shield_regen_per_pixel": 0,
       "evasion_per_pixel": 0.05,
-      "weight_per_pixel": 0.5,
+      "weight_per_pixel": 0.2,
       "cost_per_pixel": 18,
       "unlock_method": "purchase",
       "unlock_cost": 4000,
@@ -177,15 +297,27 @@
       "id": "nano_fiber",
       "name": "Nano-Fiber Hull",
       "description": "Silver-blue material laced with self-repairing nanobots. Hull damage slowly mends itself between fights. Union engineering at its finest.",
-      "color_primary": [144, 160, 192],
-      "color_accent": [112, 128, 160],
-      "color_highlight": [176, 192, 224],
+      "color_primary": [
+        144,
+        160,
+        192
+      ],
+      "color_accent": [
+        112,
+        128,
+        160
+      ],
+      "color_highlight": [
+        176,
+        192,
+        224
+      ],
       "hull_per_pixel": 3.0,
       "armor_per_pixel": 0.05,
       "shield_per_pixel": 0,
       "shield_regen_per_pixel": 0,
       "evasion_per_pixel": 0,
-      "weight_per_pixel": 0.8,
+      "weight_per_pixel": 0.35,
       "cost_per_pixel": 40,
       "special_property": "auto_repair",
       "unlock_method": "faction",
@@ -195,15 +327,27 @@
       "id": "quantum_lattice",
       "name": "Quantum Lattice",
       "description": "Bright cyan energy matrix. The highest shield output per pixel in the sector. Collective research pushed past theoretical limits.",
-      "color_primary": [80, 192, 224],
-      "color_accent": [48, 160, 192],
-      "color_highlight": [112, 224, 255],
+      "color_primary": [
+        80,
+        192,
+        224
+      ],
+      "color_accent": [
+        48,
+        160,
+        192
+      ],
+      "color_highlight": [
+        112,
+        224,
+        255
+      ],
       "hull_per_pixel": 0.5,
       "armor_per_pixel": 0,
       "shield_per_pixel": 1.0,
       "shield_regen_per_pixel": 0.05,
       "evasion_per_pixel": 0,
-      "weight_per_pixel": 0.6,
+      "weight_per_pixel": 0.3,
       "cost_per_pixel": 45,
       "unlock_method": "faction",
       "unlock_source": "science_collective_allied"
@@ -212,15 +356,27 @@
       "id": "ablative_plating",
       "name": "Ablative Plating",
       "description": "Orange-brown armor that sacrifices outer layers to protect the core. Each hit strips a layer, but the ship endures.",
-      "color_primary": [192, 136, 64],
-      "color_accent": [160, 104, 40],
-      "color_highlight": [224, 168, 96],
+      "color_primary": [
+        192,
+        136,
+        64
+      ],
+      "color_accent": [
+        160,
+        104,
+        40
+      ],
+      "color_highlight": [
+        224,
+        168,
+        96
+      ],
       "hull_per_pixel": 4.0,
       "armor_per_pixel": 0.08,
       "shield_per_pixel": 0,
       "shield_regen_per_pixel": 0,
       "evasion_per_pixel": 0,
-      "weight_per_pixel": 1.5,
+      "weight_per_pixel": 0.65,
       "cost_per_pixel": 50,
       "special_property": "damage_reflect",
       "unlock_method": "faction",
@@ -230,15 +386,27 @@
       "id": "bio_hull",
       "name": "Bio-Hull",
       "description": "Living green panels that grow and repair themselves. The Alliance cultivates them in orbital greenhouses. Regenerates hull over time.",
-      "color_primary": [64, 136, 72],
-      "color_accent": [48, 104, 56],
-      "color_highlight": [96, 168, 104],
+      "color_primary": [
+        64,
+        136,
+        72
+      ],
+      "color_accent": [
+        48,
+        104,
+        56
+      ],
+      "color_highlight": [
+        96,
+        168,
+        104
+      ],
       "hull_per_pixel": 2.0,
       "armor_per_pixel": 0,
       "shield_per_pixel": 0,
       "shield_regen_per_pixel": 0,
       "evasion_per_pixel": 0,
-      "weight_per_pixel": 0.5,
+      "weight_per_pixel": 0.2,
       "cost_per_pixel": 35,
       "special_property": "hull_regen",
       "unlock_method": "faction",
@@ -248,15 +416,27 @@
       "id": "void_glass",
       "name": "Void Glass",
       "description": "Deep purple material so thin it's nearly transparent. Almost no hull, but enemies can barely see you. For Ghost builds that push the limit.",
-      "color_primary": [32, 24, 48],
-      "color_accent": [20, 16, 32],
-      "color_highlight": [48, 40, 72],
+      "color_primary": [
+        32,
+        24,
+        48
+      ],
+      "color_accent": [
+        20,
+        16,
+        32
+      ],
+      "color_highlight": [
+        48,
+        40,
+        72
+      ],
       "hull_per_pixel": 0.3,
       "armor_per_pixel": 0,
       "shield_per_pixel": 0,
       "shield_regen_per_pixel": 0,
       "evasion_per_pixel": 0.25,
-      "weight_per_pixel": 0.15,
+      "weight_per_pixel": 0.06,
       "cost_per_pixel": 55,
       "special_property": "transparent",
       "unlock_method": "quest",
@@ -266,15 +446,27 @@
       "id": "crimson_steel",
       "name": "Crimson Steel",
       "description": "Blood-red metal from the Reach's illegal forges. Strong hull, decent armor, and rumored to make weapons hit harder.",
-      "color_primary": [128, 32, 32],
-      "color_accent": [96, 24, 24],
-      "color_highlight": [168, 48, 48],
+      "color_primary": [
+        128,
+        32,
+        32
+      ],
+      "color_accent": [
+        96,
+        24,
+        24
+      ],
+      "color_highlight": [
+        168,
+        48,
+        48
+      ],
       "hull_per_pixel": 3.5,
       "armor_per_pixel": 0.05,
       "shield_per_pixel": 0,
       "shield_regen_per_pixel": 0,
       "evasion_per_pixel": 0,
-      "weight_per_pixel": 1.1,
+      "weight_per_pixel": 0.5,
       "cost_per_pixel": 45,
       "special_property": "weapon_damage_bonus",
       "unlock_method": "purchase",

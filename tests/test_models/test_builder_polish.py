@@ -40,13 +40,14 @@ class TestBuildValidation:
         assert len(build.pixels) == 0
 
     def test_overweight_detected(self) -> None:
-        build = ShipBuild(weight_class="tiny")  # max_weight=40
-        # Heavy material: 1.2 weight/px, fill 35 pixels = 42 weight (over 40)
+        build = ShipBuild(weight_class="tiny")  # max_weight=55
+        # Use a deliberately heavy material to exceed limit
         heavy = HullMaterial(
             id="heavy", name="H", description="t", color_primary=(0, 0, 0),
-            hull_per_pixel=3.0, weight_per_pixel=1.2,
+            hull_per_pixel=3.0, weight_per_pixel=0.55,
         )
-        for i in range(35):
+        # 101 pixels * 0.55 = 55.55 → over 55 limit
+        for i in range(101):
             build.pixels.append(PlacedPixel(i % 16, i // 16, "heavy"))
         stats = ShipStatsComputer.compute(build, {"heavy": heavy})
         assert stats.weight_ratio > 1.0, "Should be overweight"

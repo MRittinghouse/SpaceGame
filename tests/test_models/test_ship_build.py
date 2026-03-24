@@ -53,7 +53,7 @@ def _mat_standard() -> HullMaterial:
     return HullMaterial(
         id="standard_plate", name="Standard Plate", description="Balanced",
         color_primary=(112, 120, 136),
-        hull_per_pixel=2.5, weight_per_pixel=0.7, cost_per_pixel=15,
+        hull_per_pixel=2.5, weight_per_pixel=0.25, cost_per_pixel=15,
     )
 
 
@@ -62,7 +62,7 @@ def _mat_heavy() -> HullMaterial:
     return HullMaterial(
         id="heavy_armor", name="Heavy Armor", description="Tank",
         color_primary=(152, 112, 64),
-        hull_per_pixel=3.0, armor_per_pixel=0.06, weight_per_pixel=1.2,
+        hull_per_pixel=3.0, armor_per_pixel=0.06, weight_per_pixel=0.55,
         cost_per_pixel=25,
     )
 
@@ -197,15 +197,13 @@ class TestShipGridManager:
         assert not ok
 
     def test_place_shape_fails_weight_exceeded(self) -> None:
-        mgr = ShipGridManager("tiny")  # max_weight=40
-        mat = _mat_heavy()  # weight 1.2 per pixel
-        # Fill with enough weight to nearly max out
-        existing = [PlacedPixel(i, 0, "heavy_armor") for i in range(16)]
-        # 16 pixels * 1.2 weight = 19.2 weight. Adding 4 more = 24 total, still under 40.
-        # Let's make it closer: fill 30 pixels = 36 weight
-        existing = [PlacedPixel(i % 16, i // 16, "heavy_armor") for i in range(33)]
-        # 33 * 1.2 = 39.6. Adding 4 pixels * 1.2 = 4.8 → 44.4 > 40
-        ok, msg = mgr.can_place_shape(_shape_2x2(), 0, 3, mat, existing)
+        mgr = ShipGridManager("tiny")  # max_weight=55
+        mat = _mat_heavy()  # weight 0.55 per pixel
+        # Fill 96 pixels at 0.55 = 52.8 weight. Adding 4 more = 55 + 2.2 > 55
+        existing = [PlacedPixel(i % 16, i // 16, "heavy_armor") for i in range(98)]
+        # 98 * 0.55 = 53.9. Adding 4 * 0.55 = 2.2 → 56.1 > 55
+        ok, msg = mgr.can_place_shape(_shape_2x2(), 14, 7, mat, existing,
+                                       materials_catalog={"heavy_armor": mat})
         assert not ok
         assert "weight" in msg.lower()
 
@@ -291,12 +289,12 @@ class TestShipStatsComputer:
 
     def test_weight_ratio(self) -> None:
         """Weight ratio = current / max."""
-        build = ShipBuild(weight_class="tiny")  # max_weight=40
+        build = ShipBuild(weight_class="tiny")  # max_weight=55
         for i in range(10):
             build.pixels.append(PlacedPixel(i, 0, "standard_plate"))
         stats = ShipStatsComputer.compute(build, _materials())
-        # 10 * 0.7 weight = 7.0, ratio = 7/40 = 0.175
-        assert abs(stats.weight_ratio - 0.175) < 0.01
+        # 10 * 0.25 weight = 2.5, ratio = 2.5/55 ≈ 0.045
+        assert stats.weight_ratio < 0.10
         assert stats.weight_label == "ULTRALIGHT"
 
     def test_weight_modifier_ultralight(self) -> None:
@@ -313,10 +311,10 @@ class TestShipStatsComputer:
 
     def test_weight_modifier_heavy(self) -> None:
         """HEAVY (80-95%): -10% evasion."""
-        build = ShipBuild(weight_class="tiny")  # max_weight=40
-        # Need ~85% weight → 34 weight
-        # Heavy armor: 1.2 weight/px → 28 pixels = 33.6 weight = 84%
-        for i in range(28):
+        build = ShipBuild(weight_class="tiny")  # max_weight=55
+        # Need ~85% weight → 46.75 weight
+        # Heavy armor: 0.55 weight/px → 85 pixels = 46.75 weight = 85%
+        for i in range(85):
             build.pixels.append(PlacedPixel(i % 16, i // 16, "heavy_armor"))
         stats = ShipStatsComputer.compute(build, _materials())
         assert stats.weight_label == "HEAVY", f"Expected HEAVY, got {stats.weight_label} ({stats.weight_ratio:.2f})"

@@ -140,4 +140,4 @@ class TestDataLoaderShapes:
         assert "salvage_scrap" in dl.hull_materials
         mat = dl.hull_materials["standard_plate"]
         assert mat.hull_per_pixel == 2.5
-        assert mat.weight_per_pixel == 0.7
+        assert mat.weight_per_pixel == 0.25  # Reduced for builder freedom
