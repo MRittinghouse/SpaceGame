@@ -370,9 +370,12 @@ class Game:
         shuttle_type = self.data_loader.get_ship_type("shuttle")
         starting_ship = Ship(ship_type=shuttle_type, current_fuel=shuttle_type.fuel_capacity)
 
+        # Debug mode: 1M credits when player name is "Debug"
+        credits = 1_000_000 if player_name == "Debug" else STARTING_CREDITS
+
         self.player = Player(
             name=player_name,
-            credits=STARTING_CREDITS,
+            credits=credits,
             current_system_id="nexus_prime",
             ship=starting_ship,
             ship_name=ship_name,
