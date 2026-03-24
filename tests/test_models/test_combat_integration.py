@@ -392,9 +392,9 @@ class TestShipUpgradeManagerCategories:
         dl = get_data_loader()
         shuttle = dl.get_ship_type("shuttle")
         assert shuttle is not None
-        assert shuttle.weapon_slots == 1, "Shuttle should have 1 weapon slot"
-        assert shuttle.defense_slots == 0, "Shuttle should have 0 defense slots"
-        assert shuttle.utility_slots == 2, "Shuttle should have 2 utility slots"
+        assert shuttle.weapon_slots == 2, "Shuttle should have 2 weapon slots (+1 expansion)"
+        assert shuttle.defense_slots == 1, "Shuttle should have 1 defense slot (+1 expansion)"
+        assert shuttle.utility_slots == 3, "Shuttle should have 3 utility slots (+1 expansion)"
 
         # Verify upgrade manager created with these values can install weapons
         mgr = ShipUpgradeManager(

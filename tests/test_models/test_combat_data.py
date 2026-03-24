@@ -195,9 +195,9 @@ class TestShipTypeCombatLoading:
         assert lf.combat_shields == 40
         assert lf.combat_energy == 9
         assert lf.combat_speed == 8
-        assert lf.weapon_slots == 1
-        assert lf.defense_slots == 1
-        assert lf.utility_slots == 3
+        assert lf.weapon_slots == 2   # +1 from slot expansion
+        assert lf.defense_slots == 2  # +1 from slot expansion
+        assert lf.utility_slots == 4  # +1 from slot expansion
 
     def test_slot_distribution_varies(self) -> None:
         loader = _make_loader()

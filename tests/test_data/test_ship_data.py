@@ -84,7 +84,7 @@ class TestShipStats:
     def test_total_slots_reasonable(self, ships: dict) -> None:
         for sid, s in ships.items():
             total = s.weapon_slots + s.defense_slots + s.utility_slots
-            assert 2 <= total <= 9, f"{sid} has {total} total slots"
+            assert 3 <= total <= 12, f"{sid} has {total} total slots"
 
     def test_speed_multiplier_range(self, ships: dict) -> None:
         for sid, s in ships.items():
@@ -131,13 +131,13 @@ class TestDesignTradeoffs:
 
     def test_corsair_high_weapons_low_cargo(self, ships: dict) -> None:
         s = ships["corsair"]
-        assert s.weapon_slots == 3
+        assert s.weapon_slots == 4  # +1 from slot expansion
         assert s.cargo_capacity <= 150  # 3x balanced for mid-game frame
 
-    def test_mining_barge_no_weapons(self, ships: dict) -> None:
+    def test_mining_barge_low_weapons(self, ships: dict) -> None:
         s = ships["mining_barge"]
-        assert s.weapon_slots == 0
-        assert s.utility_slots == 5
+        assert s.weapon_slots == 1  # +1 from slot expansion (was 0)
+        assert s.utility_slots == 6  # +1 from slot expansion
 
     def test_phantom_fastest_but_fragile(self, ships: dict) -> None:
         s = ships["phantom"]
@@ -147,13 +147,13 @@ class TestDesignTradeoffs:
     def test_industrial_titan_slowest_most_utility(self, ships: dict) -> None:
         s = ships["industrial_titan"]
         assert s.speed_multiplier <= 0.6
-        assert s.utility_slots == 6
-        assert s.weapon_slots == 0
+        assert s.utility_slots == 7  # +1 from slot expansion
+        assert s.weapon_slots == 1   # +1 from slot expansion (was 0)
 
     def test_war_frigate_most_combat_slots(self, ships: dict) -> None:
         s = ships["war_frigate"]
-        assert s.weapon_slots == 4
-        assert s.defense_slots == 3
+        assert s.weapon_slots == 5  # +1 from slot expansion
+        assert s.defense_slots == 4  # +1 from slot expansion
 
     def test_deep_explorer_max_fuel(self, ships: dict) -> None:
         s = ships["deep_explorer"]

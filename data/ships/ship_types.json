@@ -25,9 +25,9 @@
       "combat_speed": 12,
       "combat_evasion": 25,
       "combat_accuracy": 65,
-      "weapon_slots": 1,
-      "defense_slots": 0,
-      "utility_slots": 2
+      "weapon_slots": 2,
+      "defense_slots": 1,
+      "utility_slots": 3
     },
     {
       "id": "light_freighter",
@@ -54,9 +54,9 @@
       "combat_speed": 8,
       "combat_evasion": 15,
       "combat_accuracy": 70,
-      "weapon_slots": 1,
-      "defense_slots": 1,
-      "utility_slots": 3
+      "weapon_slots": 2,
+      "defense_slots": 2,
+      "utility_slots": 4
     },
     {
       "id": "prospector",
@@ -83,9 +83,9 @@
       "combat_speed": 8,
       "combat_evasion": 18,
       "combat_accuracy": 60,
-      "weapon_slots": 0,
-      "defense_slots": 1,
-      "utility_slots": 4
+      "weapon_slots": 1,
+      "defense_slots": 2,
+      "utility_slots": 5
     },
     {
       "id": "patrol_cutter",
@@ -112,9 +112,9 @@
       "combat_speed": 13,
       "combat_evasion": 22,
       "combat_accuracy": 74,
-      "weapon_slots": 2,
-      "defense_slots": 1,
-      "utility_slots": 2
+      "weapon_slots": 3,
+      "defense_slots": 2,
+      "utility_slots": 3
     },
     {
       "id": "medium_freighter",
@@ -141,9 +141,9 @@
       "combat_speed": 6,
       "combat_evasion": 10,
       "combat_accuracy": 70,
-      "weapon_slots": 1,
-      "defense_slots": 2,
-      "utility_slots": 3
+      "weapon_slots": 2,
+      "defense_slots": 3,
+      "utility_slots": 4
     },
     {
       "id": "fast_courier",
@@ -172,9 +172,9 @@
       "combat_speed": 15,
       "combat_evasion": 30,
       "combat_accuracy": 75,
-      "weapon_slots": 2,
-      "defense_slots": 1,
-      "utility_slots": 2
+      "weapon_slots": 3,
+      "defense_slots": 2,
+      "utility_slots": 3
     },
     {
       "id": "armed_trader",
@@ -201,9 +201,9 @@
       "combat_speed": 8,
       "combat_evasion": 15,
       "combat_accuracy": 72,
-      "weapon_slots": 2,
-      "defense_slots": 2,
-      "utility_slots": 2
+      "weapon_slots": 3,
+      "defense_slots": 3,
+      "utility_slots": 3
     },
     {
       "id": "scout_vessel",
@@ -232,9 +232,9 @@
       "combat_speed": 14,
       "combat_evasion": 28,
       "combat_accuracy": 68,
-      "weapon_slots": 1,
-      "defense_slots": 1,
-      "utility_slots": 4
+      "weapon_slots": 2,
+      "defense_slots": 2,
+      "utility_slots": 5
     },
     {
       "id": "corsair",
@@ -261,9 +261,9 @@
       "combat_speed": 12,
       "combat_evasion": 20,
       "combat_accuracy": 76,
-      "weapon_slots": 3,
-      "defense_slots": 1,
-      "utility_slots": 2
+      "weapon_slots": 4,
+      "defense_slots": 2,
+      "utility_slots": 3
     },
     {
       "id": "mining_barge",
@@ -290,9 +290,9 @@
       "combat_speed": 4,
       "combat_evasion": 5,
       "combat_accuracy": 55,
-      "weapon_slots": 0,
-      "defense_slots": 2,
-      "utility_slots": 5
+      "weapon_slots": 1,
+      "defense_slots": 3,
+      "utility_slots": 6
     },
     {
       "id": "smugglers_sloop",
@@ -321,9 +321,9 @@
       "combat_speed": 15,
       "combat_evasion": 32,
       "combat_accuracy": 68,
-      "weapon_slots": 1,
-      "defense_slots": 1,
-      "utility_slots": 3
+      "weapon_slots": 2,
+      "defense_slots": 2,
+      "utility_slots": 4
     },
     {
       "id": "salvage_rig",
@@ -352,9 +352,9 @@
       "combat_speed": 6,
       "combat_evasion": 10,
       "combat_accuracy": 65,
-      "weapon_slots": 1,
-      "defense_slots": 1,
-      "utility_slots": 4
+      "weapon_slots": 2,
+      "defense_slots": 2,
+      "utility_slots": 5
     },
     {
       "id": "bulk_hauler",
@@ -383,9 +383,9 @@
       "combat_speed": 4,
       "combat_evasion": 5,
       "combat_accuracy": 65,
-      "weapon_slots": 2,
-      "defense_slots": 2,
-      "utility_slots": 4
+      "weapon_slots": 3,
+      "defense_slots": 3,
+      "utility_slots": 5
     },
     {
       "id": "luxury_yacht",
@@ -415,9 +415,9 @@
       "combat_speed": 10,
       "combat_evasion": 20,
       "combat_accuracy": 70,
-      "weapon_slots": 1,
-      "defense_slots": 3,
-      "utility_slots": 3
+      "weapon_slots": 2,
+      "defense_slots": 4,
+      "utility_slots": 4
     },
     {
       "id": "clipper",
@@ -447,9 +447,9 @@
       "combat_speed": 16,
       "combat_evasion": 32,
       "combat_accuracy": 70,
-      "weapon_slots": 2,
-      "defense_slots": 1,
-      "utility_slots": 3
+      "weapon_slots": 3,
+      "defense_slots": 2,
+      "utility_slots": 4
     },
     {
       "id": "war_frigate",
@@ -476,9 +476,9 @@
       "combat_speed": 8,
       "combat_evasion": 10,
       "combat_accuracy": 78,
-      "weapon_slots": 4,
-      "defense_slots": 3,
-      "utility_slots": 2
+      "weapon_slots": 5,
+      "defense_slots": 4,
+      "utility_slots": 3
     },
     {
       "id": "deep_explorer",
@@ -507,9 +507,9 @@
       "combat_speed": 12,
       "combat_evasion": 22,
       "combat_accuracy": 70,
-      "weapon_slots": 1,
-      "defense_slots": 2,
-      "utility_slots": 5
+      "weapon_slots": 2,
+      "defense_slots": 3,
+      "utility_slots": 6
     },
     {
       "id": "phantom",
@@ -539,9 +539,9 @@
       "combat_speed": 18,
       "combat_evasion": 38,
       "combat_accuracy": 72,
-      "weapon_slots": 2,
-      "defense_slots": 1,
-      "utility_slots": 4
+      "weapon_slots": 3,
+      "defense_slots": 2,
+      "utility_slots": 5
     },
     {
       "id": "industrial_titan",
@@ -570,9 +570,9 @@
       "combat_speed": 3,
       "combat_evasion": 3,
       "combat_accuracy": 50,
-      "weapon_slots": 0,
-      "defense_slots": 3,
-      "utility_slots": 6
+      "weapon_slots": 1,
+      "defense_slots": 4,
+      "utility_slots": 7
     },
     {
       "id": "diplomatic_cruiser",
@@ -602,9 +602,9 @@
       "combat_speed": 8,
       "combat_evasion": 12,
       "combat_accuracy": 68,
-      "weapon_slots": 1,
-      "defense_slots": 3,
-      "utility_slots": 4
+      "weapon_slots": 2,
+      "defense_slots": 4,
+      "utility_slots": 5
     },
     {
       "id": "consortium_merchantman",
@@ -633,9 +633,9 @@
       "combat_speed": 8,
       "combat_evasion": 12,
       "combat_accuracy": 70,
-      "weapon_slots": 2,
-      "defense_slots": 2,
-      "utility_slots": 4,
+      "weapon_slots": 3,
+      "defense_slots": 3,
+      "utility_slots": 5,
       "faction_required": "nexus_trade",
       "faction_rep_required": 50
     },
@@ -666,9 +666,9 @@
       "combat_speed": 8,
       "combat_evasion": 12,
       "combat_accuracy": 75,
-      "weapon_slots": 3,
-      "defense_slots": 3,
-      "utility_slots": 3,
+      "weapon_slots": 4,
+      "defense_slots": 4,
+      "utility_slots": 4,
       "faction_required": "forgeworks_industrial",
       "faction_rep_required": 50
     },
@@ -699,9 +699,9 @@
       "combat_speed": 14,
       "combat_evasion": 28,
       "combat_accuracy": 70,
-      "weapon_slots": 2,
-      "defense_slots": 1,
-      "utility_slots": 4,
+      "weapon_slots": 3,
+      "defense_slots": 2,
+      "utility_slots": 5,
       "faction_required": "free_salvagers",
       "faction_rep_required": 50
     },
@@ -732,9 +732,9 @@
       "combat_speed": 10,
       "combat_evasion": 18,
       "combat_accuracy": 72,
-      "weapon_slots": 1,
-      "defense_slots": 2,
-      "utility_slots": 5,
+      "weapon_slots": 2,
+      "defense_slots": 3,
+      "utility_slots": 6,
       "faction_required": "axiom_research",
       "faction_rep_required": 50
     }
