@@ -7,7 +7,7 @@
       "price": 5000,
       "slot_type": "cargo",
       "bonus_type": "cargo_bonus",
-      "bonus_value": 20.0,
+      "bonus_value": 60.0,
       "tier": 1,
       "available_systems": [],
       "tuning_options": [
@@ -893,7 +893,7 @@
       "price": 18000,
       "slot_type": "cargo",
       "bonus_type": "cargo_bonus",
-      "bonus_value": 35.0,
+      "bonus_value": 105.0,
       "tier": 2,
       "available_systems": [
         "nexus_prime",

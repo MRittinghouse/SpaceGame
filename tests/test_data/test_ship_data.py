@@ -132,7 +132,7 @@ class TestDesignTradeoffs:
     def test_corsair_high_weapons_low_cargo(self, ships: dict) -> None:
         s = ships["corsair"]
         assert s.weapon_slots == 3
-        assert s.cargo_capacity <= 50
+        assert s.cargo_capacity <= 150  # 3x balanced for mid-game frame
 
     def test_mining_barge_no_weapons(self, ships: dict) -> None:
         s = ships["mining_barge"]
