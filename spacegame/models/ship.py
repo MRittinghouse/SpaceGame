@@ -161,6 +161,51 @@ class Ship:
         """Ship composite renderer (set by view layer)."""
         return getattr(self, "_composite", None)
 
+    def has_module_in_slot(self, equipment_id: str) -> bool:
+        """Check if any slot has the given equipment installed.
+
+        Works with ShipBuild slots. Falls back to upgrade_manager
+        for ships without a build.
+
+        Args:
+            equipment_id: The equipment/upgrade ID to check for.
+
+        Returns:
+            True if the equipment is installed in any slot.
+        """
+        if self._build:
+            return any(
+                s.equipment_id == equipment_id
+                for s in self._build.slots
+            )
+        # Fallback: check upgrade manager
+        if self._upgrade_manager:
+            return self._upgrade_manager.has_upgrade(equipment_id)
+        return False
+
+    def has_module_type_in_slot(self, slot_type: str) -> bool:
+        """Check if a slot of the given type has equipment installed.
+
+        Args:
+            slot_type: Slot type ("weapon", "defense", "engine", "utility", "core").
+
+        Returns:
+            True if any slot of this type has equipment.
+        """
+        if self._build:
+            return any(
+                s.slot_type == slot_type and s.equipment_id is not None
+                for s in self._build.slots
+            )
+        return False
+
+    @property
+    def display_ship_name(self) -> str:
+        """Display name: preset name if available, else ship type name."""
+        if self._build and self._build.preset_name:
+            return self._build.preset_name
+        return self.ship_type.name
+
     @property
     def name(self) -> str:
         """Get ship type name."""
@@ -169,9 +214,12 @@ class Ship:
     @property
     def max_cargo(self) -> int:
         """Get maximum cargo capacity including upgrade and crew bonuses."""
-        base = self.ship_type.cargo_capacity
-        if self._upgrade_manager:
-            base += int(self._upgrade_manager.get_bonus("cargo_bonus"))
+        if self._computed_stats:
+            base = self._computed_stats.cargo_capacity
+        else:
+            base = self.ship_type.cargo_capacity
+            if self._upgrade_manager:
+                base += int(self._upgrade_manager.get_bonus("cargo_bonus"))
         if self._crew_roster:
             base += int(self._crew_roster.get_bonus("cargo_bonus"))
         return base
@@ -179,9 +227,12 @@ class Ship:
     @property
     def max_fuel(self) -> int:
         """Get maximum fuel capacity including upgrade and crew bonuses."""
-        base = self.ship_type.fuel_capacity
-        if self._upgrade_manager:
-            base += int(self._upgrade_manager.get_bonus("fuel_bonus"))
+        if self._computed_stats:
+            base = self._computed_stats.fuel_capacity
+        else:
+            base = self.ship_type.fuel_capacity
+            if self._upgrade_manager:
+                base += int(self._upgrade_manager.get_bonus("fuel_bonus"))
         if self._crew_roster:
             base += int(self._crew_roster.get_bonus("fuel_bonus"))
         return base

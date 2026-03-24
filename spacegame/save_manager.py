@@ -728,7 +728,7 @@ class SaveManager:
 
         data_loader = get_data_loader()
 
-        return {
+        result = {
             "ship_type_id": ship.ship_type.id,
             "current_fuel": ship.current_fuel,
             "current_cargo": ship.current_cargo,
@@ -736,6 +736,10 @@ class SaveManager:
             "current_hull": ship.current_hull,
             "current_shields": ship.current_shields,
         }
+        # Serialize ShipBuild if present (Shipyard Overhaul Phase G)
+        if hasattr(ship, "_build") and ship._build is not None:
+            result["build"] = ship._build.to_dict()
+        return result
 
     def _deserialize_ship(self, data: Dict[str, Any]) -> Ship:
         """Deserialize Ship object."""
@@ -756,6 +760,21 @@ class SaveManager:
             ship.current_hull = data["current_hull"]
         if "current_shields" in data:
             ship.current_shields = data["current_shields"]
+
+        # Restore ShipBuild if present (Shipyard Overhaul Phase G)
+        if "build" in data:
+            from spacegame.models.ship_build import ShipBuild
+            build = ShipBuild.from_dict(data["build"])
+            ship.set_build(build)
+        elif data.get("ship_type_id"):
+            # Old save without build: generate preset for migration
+            from spacegame.models.ship_presets import get_preset_for_ship_type
+            preset = get_preset_for_ship_type(data["ship_type_id"])
+            if preset:
+                ship._build = preset
+                # Don't call set_build() here to avoid recomputing during load
+                # Stats will be computed when needed
+
         return ship
 
     def _serialize_markets(self, markets: Dict[str, Market]) -> Dict[str, Any]:
