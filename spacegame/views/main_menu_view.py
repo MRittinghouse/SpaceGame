@@ -144,11 +144,15 @@ class MainMenuView(BaseView):
                 elif event.key in (pygame.K_n, pygame.K_ESCAPE):
                     self._confirm_new_game = False
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                # Check Yes/No button rects
+                # Check Yes/No button rects (must match render positions exactly)
                 cx = WINDOW_WIDTH // 2
                 cy = WINDOW_HEIGHT // 2
-                yes_rect = pygame.Rect(cx - scale_x(120), cy + scale_y(30), scale_x(100), scale_y(36))
-                no_rect = pygame.Rect(cx + scale_x(20), cy + scale_y(30), scale_x(100), scale_y(36))
+                pw, ph = scale_x(480), scale_y(200)
+                panel_top = cy - ph // 2
+                btn_w, btn_h = scale_x(140), scale_y(44)
+                btn_y = panel_top + scale_y(100)
+                yes_rect = pygame.Rect(cx - btn_w - scale_x(15), btn_y, btn_w, btn_h)
+                no_rect = pygame.Rect(cx + scale_x(15), btn_y, btn_w, btn_h)
                 if yes_rect.collidepoint(event.pos):
                     self._confirm_new_game = False
                     self.next_state = GameState.GALAXY_MAP
@@ -251,45 +255,59 @@ class MainMenuView(BaseView):
         # New game confirmation dialog
         if self._confirm_new_game:
             dim = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA)
-            dim.fill((0, 0, 0, 180))
+            dim.fill((0, 0, 0, 200))
             screen.blit(dim, (0, 0))
 
             cx = WINDOW_WIDTH // 2
             cy = WINDOW_HEIGHT // 2
 
-            # Panel
-            pw, ph = scale_x(440), scale_y(160)
+            # Panel — larger, properly centered
+            pw, ph = scale_x(480), scale_y(200)
             panel = pygame.Rect(cx - pw // 2, cy - ph // 2, pw, ph)
             panel_surf = pygame.Surface((pw, ph), pygame.SRCALPHA)
-            panel_surf.fill((12, 16, 32, 240))
+            panel_surf.fill((12, 16, 32, 245))
             screen.blit(panel_surf, panel.topleft)
-            pygame.draw.rect(screen, Colors.TEXT_HIGHLIGHT, panel, 2, border_radius=6)
+            pygame.draw.rect(screen, Colors.TEXT_HIGHLIGHT, panel, 2, border_radius=8)
 
-            # Warning text
+            # Title
             from spacegame.engine.fonts import FONT_BODY, FONT_SM
             warn_font = FontCache.get(FONT_BODY)
             small_font = FontCache.get(FONT_SM)
 
             line1 = warn_font.render("Start a new game?", True, Colors.TEXT_HIGHLIGHT)
-            screen.blit(line1, line1.get_rect(centerx=cx, top=cy - scale_y(50)))
+            screen.blit(line1, line1.get_rect(centerx=cx, top=panel.top + scale_y(20)))
 
             line2 = small_font.render(
                 "Your autosave will be overwritten. Manual saves are kept.",
                 True, Colors.TEXT_SECONDARY,
             )
-            screen.blit(line2, line2.get_rect(centerx=cx, top=cy - scale_y(20)))
+            screen.blit(line2, line2.get_rect(centerx=cx, top=panel.top + scale_y(55)))
 
-            # Yes / No buttons
-            yes_rect = pygame.Rect(cx - scale_x(120), cy + scale_y(20), scale_x(100), scale_y(36))
-            no_rect = pygame.Rect(cx + scale_x(20), cy + scale_y(20), scale_x(100), scale_y(36))
+            # Yes / No buttons — larger, filled backgrounds, clearly clickable
+            btn_w, btn_h = scale_x(140), scale_y(44)
+            btn_y = panel.top + scale_y(100)
+            yes_rect = pygame.Rect(cx - btn_w - scale_x(15), btn_y, btn_w, btn_h)
+            no_rect = pygame.Rect(cx + scale_x(15), btn_y, btn_w, btn_h)
 
-            pygame.draw.rect(screen, Colors.GREEN, yes_rect, 2, border_radius=4)
-            yes_text = small_font.render("Yes (Y)", True, Colors.GREEN)
+            # Yes button — filled green background
+            yes_bg = pygame.Surface((btn_w, btn_h), pygame.SRCALPHA)
+            yes_bg.fill((20, 60, 30, 220))
+            screen.blit(yes_bg, yes_rect.topleft)
+            pygame.draw.rect(screen, Colors.GREEN, yes_rect, 2, border_radius=6)
+            yes_text = warn_font.render("Yes (Y)", True, Colors.GREEN)
             screen.blit(yes_text, yes_text.get_rect(center=yes_rect.center))
 
-            pygame.draw.rect(screen, Colors.RED, no_rect, 2, border_radius=4)
-            no_text = small_font.render("No (N)", True, Colors.RED)
+            # No button — filled red background
+            no_bg = pygame.Surface((btn_w, btn_h), pygame.SRCALPHA)
+            no_bg.fill((60, 20, 20, 220))
+            screen.blit(no_bg, no_rect.topleft)
+            pygame.draw.rect(screen, Colors.RED, no_rect, 2, border_radius=6)
+            no_text = warn_font.render("No (N)", True, Colors.RED)
             screen.blit(no_text, no_text.get_rect(center=no_rect.center))
+
+            # Keyboard hint
+            hint = small_font.render("Press Y or N  |  Enter to confirm, Escape to cancel", True, Colors.TEXT_SECONDARY)
+            screen.blit(hint, hint.get_rect(centerx=cx, top=panel.top + scale_y(155)))
 
         # Fade-in overlay
         if self._fade_alpha > 0:
