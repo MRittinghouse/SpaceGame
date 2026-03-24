@@ -18,11 +18,11 @@ from typing import Optional
 # ============================================================================
 
 WEIGHT_CLASSES: dict[str, dict] = {
-    "tiny": {"canvas": 16, "max_weight": 40, "max_slots": 4, "unlock_cost": 0},
-    "small": {"canvas": 24, "max_weight": 80, "max_slots": 7, "unlock_cost": 15000},
-    "medium": {"canvas": 32, "max_weight": 140, "max_slots": 10, "unlock_cost": 60000},
-    "large": {"canvas": 48, "max_weight": 240, "max_slots": 14, "unlock_cost": 200000},
-    "xlarge": {"canvas": 64, "max_weight": 400, "max_slots": 18, "unlock_cost": 500000},
+    "tiny": {"canvas_w": 16, "canvas_h": 16, "max_weight": 40, "max_slots": 4, "unlock_cost": 0},
+    "small": {"canvas_w": 32, "canvas_h": 20, "max_weight": 80, "max_slots": 7, "unlock_cost": 15000},
+    "medium": {"canvas_w": 40, "canvas_h": 28, "max_weight": 140, "max_slots": 10, "unlock_cost": 60000},
+    "large": {"canvas_w": 56, "canvas_h": 40, "max_weight": 240, "max_slots": 14, "unlock_cost": 200000},
+    "xlarge": {"canvas_w": 72, "canvas_h": 52, "max_weight": 400, "max_slots": 18, "unlock_cost": 500000},
 }
 
 SLOT_POOLS: dict[str, dict[str, int]] = {
@@ -308,8 +308,19 @@ class ShipBuild:
 
     @property
     def canvas_size(self) -> int:
-        """Grid dimension for this weight class."""
-        return WEIGHT_CLASSES.get(self.weight_class, {}).get("canvas", 32)
+        """Largest grid dimension for backward compat (max of w, h)."""
+        wc = WEIGHT_CLASSES.get(self.weight_class, {})
+        return max(wc.get("canvas_w", 32), wc.get("canvas_h", 32))
+
+    @property
+    def canvas_w(self) -> int:
+        """Grid width for this weight class."""
+        return WEIGHT_CLASSES.get(self.weight_class, {}).get("canvas_w", 32)
+
+    @property
+    def canvas_h(self) -> int:
+        """Grid height for this weight class."""
+        return WEIGHT_CLASSES.get(self.weight_class, {}).get("canvas_h", 32)
 
     @property
     def max_weight(self) -> int:
@@ -382,13 +393,20 @@ class ShipGridManager:
 
     def __init__(self, weight_class: str) -> None:
         wc = WEIGHT_CLASSES.get(weight_class, WEIGHT_CLASSES["medium"])
-        self._canvas = wc["canvas"]
+        self._canvas_w = wc.get("canvas_w", wc.get("canvas", 32))
+        self._canvas_h = wc.get("canvas_h", wc.get("canvas", 32))
         self._max_weight = wc["max_weight"]
         self._weight_class = weight_class
 
     def get_canvas_size(self) -> int:
-        """Return the grid dimension for this weight class."""
-        return self._canvas
+        """Return the largest grid dimension (backward compat)."""
+        return max(self._canvas_w, self._canvas_h)
+
+    def get_canvas_w(self) -> int:
+        return self._canvas_w
+
+    def get_canvas_h(self) -> int:
+        return self._canvas_h
 
     def can_place_shape(
         self,
@@ -417,7 +435,7 @@ class ShipGridManager:
         # Bounds check
         if x < 0 or y < 0:
             return False, "Position out of bounds"
-        if x + shape.width > self._canvas or y + shape.height > self._canvas:
+        if x + shape.width > self._canvas_w or y + shape.height > self._canvas_h:
             return False, "Shape extends beyond canvas"
 
         # Build occupied set for fast overlap check
@@ -469,7 +487,7 @@ class ShipGridManager:
         size = 3 if slot_type == "core" else 2
 
         # Bounds check
-        if x < 0 or y < 0 or x + size > self._canvas or y + size > self._canvas:
+        if x < 0 or y < 0 or x + size > self._canvas_w or y + size > self._canvas_h:
             return False, "Slot position out of bounds"
 
         # Check all underlying pixels are filled
@@ -498,7 +516,7 @@ class ShipGridManager:
 
         # Engine slot must be in rear 25% of canvas
         if slot_type == "engine":
-            rear_threshold = int(self._canvas * 0.75)
+            rear_threshold = int(self._canvas_h * 0.75)
             if y < rear_threshold:
                 return False, f"Engine slots must be in rear 25% of ship (y >= {rear_threshold})"
 

@@ -166,7 +166,8 @@ def _compute_pixel_counts(
 
 def _place_pixels_in_silhouette(
     pixel_counts: dict[str, int],
-    canvas_size: int,
+    canvas_w: int,
+    canvas_h: int = 0,
 ) -> list[PlacedPixel]:
     """Place pixels in a simple ship-like silhouette.
 
@@ -177,22 +178,25 @@ def _place_pixels_in_silhouette(
 
     Args:
         pixel_counts: Material → count mapping.
-        canvas_size: Grid dimension.
+        canvas_w: Grid width.
+        canvas_h: Grid height (defaults to canvas_w if 0).
 
     Returns:
         List of placed pixels forming the ship silhouette.
     """
-    cx = canvas_size // 2
-    cy = canvas_size // 2
+    if canvas_h <= 0:
+        canvas_h = canvas_w
+    cx = canvas_w // 2
+    cy = canvas_h // 2
     total = sum(pixel_counts.values())
 
     # Generate a ship-like shape: sorted positions by distance from center
     # within an elliptical boundary (wider than tall, like a ship)
     candidates: list[tuple[float, int, int]] = []
-    for y in range(canvas_size):
-        for x in range(canvas_size):
-            dx = (x - cx) / (canvas_size * 0.4)  # Wider
-            dy = (y - cy) / (canvas_size * 0.3)  # Taller aspect
+    for y in range(canvas_h):
+        for x in range(canvas_w):
+            dx = (x - cx) / (canvas_w * 0.4)  # Wider
+            dy = (y - cy) / (canvas_h * 0.35)  # Taller aspect
             dist = math.sqrt(dx * dx + dy * dy)
             if dist <= 1.0:
                 candidates.append((dist, x, y))
@@ -236,31 +240,35 @@ def _place_pixels_in_silhouette(
 def _place_slots(
     ship_type: object,
     pixels: list[PlacedPixel],
-    canvas_size: int,
+    canvas_w: int,
+    canvas_h: int = 0,
 ) -> list[DesignatedSlot]:
     """Place equipment slots based on ship type's slot counts.
 
     Args:
         ship_type: ShipType with weapon_slots, defense_slots, utility_slots.
         pixels: Placed pixels (slots need filled area underneath).
-        canvas_size: Grid dimension.
+        canvas_w: Grid width.
+        canvas_h: Grid height (defaults to canvas_w if 0).
 
     Returns:
         List of designated slots.
     """
+    if canvas_h <= 0:
+        canvas_h = canvas_w
     slots: list[DesignatedSlot] = []
     occupied = {(p.x, p.y) for p in pixels}
 
     def _find_slot_position(size: int, prefer_rear: bool = False) -> Optional[tuple[int, int]]:
         """Find a valid position for a slot of given size."""
-        cx = canvas_size // 2
-        cy = canvas_size // 2
+        cx = canvas_w // 2
+        cy = canvas_h // 2
         best = None
         best_dist = float("inf")
 
-        y_range = range(canvas_size - size, -1, -1) if prefer_rear else range(canvas_size - size + 1)
+        y_range = range(canvas_h - size, -1, -1) if prefer_rear else range(canvas_h - size + 1)
         for y in y_range:
-            for x in range(canvas_size - size + 1):
+            for x in range(canvas_w - size + 1):
                 # Check all cells are filled and no existing slot overlap
                 all_filled = all(
                     (x + dx, y + dy) in occupied
@@ -342,11 +350,13 @@ def generate_preset_from_ship_type(
         materials = _PRESET_MATERIALS
 
     weight_class = _select_weight_class(ship_type)
-    canvas_size = WEIGHT_CLASSES[weight_class]["canvas"]
+    wc = WEIGHT_CLASSES[weight_class]
+    canvas_w = wc.get("canvas_w", wc.get("canvas", 32))
+    canvas_h = wc.get("canvas_h", wc.get("canvas", 32))
 
     pixel_counts = _compute_pixel_counts(ship_type, weight_class)
-    pixels = _place_pixels_in_silhouette(pixel_counts, canvas_size)
-    slots = _place_slots(ship_type, pixels, canvas_size)
+    pixels = _place_pixels_in_silhouette(pixel_counts, canvas_w, canvas_h)
+    slots = _place_slots(ship_type, pixels, canvas_w, canvas_h)
 
     return ShipBuild(
         weight_class=weight_class,

@@ -322,16 +322,10 @@ class ShipBuilderView(BaseView):
                 self._material_scroll_offset = max(
                     0, self._material_scroll_offset - event.y * 30,
                 )
-            elif GRID_AREA_X <= mx <= GRID_AREA_X + GRID_AREA_W:
-                # Grid zoom (QA Fix #6)
+            else:
+                # Grid zoom — works from anywhere not on side panels
                 old_zoom = self._zoom_level
                 self._zoom_level = max(0.5, min(4.0, self._zoom_level + event.y * 0.25))
-                # Zoom toward mouse position
-                if old_zoom != self._zoom_level:
-                    scale_change = self._zoom_level / old_zoom
-                    ox, oy = self._get_grid_origin()
-                    self._pan_offset_x = mx - (mx - ox - self._pan_offset_x) * scale_change - ox + self._pan_offset_x
-                    self._pan_offset_y = my - (my - oy - self._pan_offset_y) * scale_change - oy + self._pan_offset_y
 
     def _handle_left_click(self, pos: tuple[int, int]) -> None:
         mx, my = pos
@@ -852,15 +846,15 @@ class ShipBuilderView(BaseView):
     # ------------------------------------------------------------------
 
     def _get_cell_size(self) -> int:
-        canvas = self.build.canvas_size
-        base = min(GRID_AREA_W, GRID_AREA_H) // canvas
+        cw, ch = self.build.canvas_w, self.build.canvas_h
+        base = min(GRID_AREA_W // cw, GRID_AREA_H // ch)
         return max(1, int(base * self._zoom_level))
 
     def _get_grid_origin(self) -> tuple[int, int]:
-        canvas = self.build.canvas_size
+        cw, ch = self.build.canvas_w, self.build.canvas_h
         cell = self._get_cell_size()
-        ox = GRID_AREA_X + (GRID_AREA_W - canvas * cell) // 2 + int(self._pan_offset_x)
-        oy = GRID_AREA_Y + (GRID_AREA_H - canvas * cell) // 2 + int(self._pan_offset_y)
+        ox = GRID_AREA_X + (GRID_AREA_W - cw * cell) // 2 + int(self._pan_offset_x)
+        oy = GRID_AREA_Y + (GRID_AREA_H - ch * cell) // 2 + int(self._pan_offset_y)
         return ox, oy
 
     def _screen_to_grid(self, sx: int, sy: int) -> Optional[tuple[int, int]]:
@@ -870,8 +864,8 @@ class ShipBuilderView(BaseView):
             return None
         gx = (sx - ox) // cell
         gy = (sy - oy) // cell
-        canvas = self.build.canvas_size
-        if 0 <= gx < canvas and 0 <= gy < canvas:
+        cw, ch = self.build.canvas_w, self.build.canvas_h
+        if 0 <= gx < cw and 0 <= gy < ch:
             return gx, gy
         return None
 
@@ -914,7 +908,7 @@ class ShipBuilderView(BaseView):
 
         # Header
         title = self.title_font.render(
-            f"DRYDOCK — {self.build.weight_class.upper()} ({self.build.canvas_size}×{self.build.canvas_size})",
+            f"DRYDOCK — {self.build.weight_class.upper()} ({self.build.canvas_w}×{self.build.canvas_h})",
             True, Colors.TEXT_HIGHLIGHT,
         )
         screen.blit(title, (WINDOW_WIDTH // 2 - title.get_width() // 2, 10))
@@ -961,33 +955,32 @@ class ShipBuilderView(BaseView):
 
     def _render_grid(self, screen: pygame.Surface) -> None:
         """Render the ship building grid with placed pixels."""
-        canvas = self.build.canvas_size
+        cw, ch = self.build.canvas_w, self.build.canvas_h
         cell = self._get_cell_size()
         ox, oy = self._get_grid_origin()
 
         # Grid background
-        grid_w = canvas * cell
-        grid_h = canvas * cell
+        grid_w = cw * cell
+        grid_h = ch * cell
         pygame.draw.rect(screen, (8, 10, 20), (ox, oy, grid_w, grid_h))
 
-        # Grid lines (subtle)
-        for i in range(canvas + 1):
-            alpha_line = 30
-            # Every 8 cells slightly brighter
-            if i % 8 == 0:
-                alpha_line = 50
+        # Grid lines (subtle) — separate horizontal and vertical
+        for i in range(cw + 1):
+            alpha_line = 50 if i % 8 == 0 else 30
             lx = ox + i * cell
-            ly = oy + i * cell
             line_surf = pygame.Surface((1, grid_h), pygame.SRCALPHA)
             line_surf.fill((100, 120, 160, alpha_line))
             screen.blit(line_surf, (lx, oy))
-            line_surf2 = pygame.Surface((grid_w, 1), pygame.SRCALPHA)
-            line_surf2.fill((100, 120, 160, alpha_line))
-            screen.blit(line_surf2, (ox, ly))
+        for j in range(ch + 1):
+            alpha_line = 50 if j % 8 == 0 else 30
+            ly = oy + j * cell
+            line_surf = pygame.Surface((grid_w, 1), pygame.SRCALPHA)
+            line_surf.fill((100, 120, 160, alpha_line))
+            screen.blit(line_surf, (ox, ly))
 
         # Engine rear zone highlight (Phase B3 — when placing engine slots)
         if self._active_tool == "slot" and self._slot_type_to_place == "engine":
-            rear_y = int(canvas * 0.75)
+            rear_y = int(ch * 0.75)
             zone_h = (canvas - rear_y) * cell
             zone_surf = pygame.Surface((grid_w, zone_h), pygame.SRCALPHA)
             zone_surf.fill((200, 140, 40, 25))
@@ -1039,7 +1032,7 @@ class ShipBuilderView(BaseView):
                     if filled:
                         gx = grid_pos[0] + col_idx
                         gy = grid_pos[1] + row_idx
-                        if 0 <= gx < canvas and 0 <= gy < canvas:
+                        if 0 <= gx < cw and 0 <= gy < ch:
                             px = ox + gx * cell
                             py = oy + gy * cell
                             preview_color = ghost_color if valid else (200, 60, 60)

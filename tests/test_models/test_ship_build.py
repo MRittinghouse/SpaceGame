@@ -210,9 +210,9 @@ class TestShipGridManager:
         assert "weight" in msg.lower()
 
     def test_canvas_size(self) -> None:
-        assert ShipGridManager("tiny").get_canvas_size() == 16
-        assert ShipGridManager("medium").get_canvas_size() == 32
-        assert ShipGridManager("xlarge").get_canvas_size() == 64
+        assert ShipGridManager("tiny").get_canvas_w() == 16
+        assert ShipGridManager("medium").get_canvas_w() == 40
+        assert ShipGridManager("xlarge").get_canvas_w() == 72
 
 
 class TestSlotPlacement:
@@ -462,14 +462,17 @@ class TestWeightClassConstants:
 
     def test_all_have_required_fields(self) -> None:
         for wc_id, wc in WEIGHT_CLASSES.items():
-            assert "canvas" in wc, f"{wc_id} missing canvas"
+            assert "canvas_w" in wc, f"{wc_id} missing canvas_w"
+            assert "canvas_h" in wc, f"{wc_id} missing canvas_h"
             assert "max_weight" in wc, f"{wc_id} missing max_weight"
             assert "max_slots" in wc, f"{wc_id} missing max_slots"
             assert "unlock_cost" in wc, f"{wc_id} missing unlock_cost"
 
     def test_canvas_sizes_ascending(self) -> None:
-        sizes = [WEIGHT_CLASSES[k]["canvas"] for k in ["tiny", "small", "medium", "large", "xlarge"]]
-        assert sizes == sorted(sizes)
+        widths = [WEIGHT_CLASSES[k]["canvas_w"] for k in ["tiny", "small", "medium", "large", "xlarge"]]
+        assert widths == sorted(widths)
+        heights = [WEIGHT_CLASSES[k]["canvas_h"] for k in ["tiny", "small", "medium", "large", "xlarge"]]
+        assert heights == sorted(heights)
 
     def test_slot_pools_match_weight_classes(self) -> None:
         for wc_id in WEIGHT_CLASSES:

@@ -131,10 +131,10 @@ class ShipComposite:
 
     def _rebuild(self) -> None:
         """Execute the full rendering pipeline."""
-        canvas = WEIGHT_CLASSES.get(
-            self._build.weight_class, WEIGHT_CLASSES["medium"]
-        )["canvas"]
-        surf = pygame.Surface((canvas, canvas), pygame.SRCALPHA)
+        wc = WEIGHT_CLASSES.get(self._build.weight_class, WEIGHT_CLASSES["medium"])
+        canvas_w = wc.get("canvas_w", wc.get("canvas", 32))
+        canvas_h = wc.get("canvas_h", wc.get("canvas", 32))
+        surf = pygame.Surface((canvas_w, canvas_h), pygame.SRCALPHA)
 
         # Step 1: Material color fill
         self._fill_materials(surf)
@@ -276,7 +276,8 @@ class ShipComposite:
         pixel, draw a dark outline pixel. This makes the ship read
         clearly against any background.
         """
-        canvas = surf.get_width()
+        canvas_w = surf.get_width()
+        canvas_h = surf.get_height()
         outline_color = (15, 18, 30, 200)
         outline_pixels: set[tuple[int, int]] = set()
 
@@ -284,7 +285,7 @@ class ShipComposite:
             for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
                 nx, ny = x + dx, y + dy
                 if (nx, ny) not in self._pixel_map:
-                    if 0 <= nx < canvas and 0 <= ny < canvas:
+                    if 0 <= nx < canvas_w and 0 <= ny < canvas_h:
                         outline_pixels.add((nx, ny))
 
         for x, y in outline_pixels:
@@ -337,12 +338,12 @@ class ShipComposite:
                 surround = _darken(self.ENGINE_SURROUND, 0.7)
 
             # Center pixel
-            canvas = surf.get_width()
-            if 0 <= cx < canvas and 0 <= cy < canvas:
+            sw, sh = surf.get_width(), surf.get_height()
+            if 0 <= cx < sw and 0 <= cy < sh:
                 surf.set_at((cx, cy), (*glow_color, 255))
 
             # Surround pixels (cross pattern)
             for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
                 nx, ny = cx + dx, cy + dy
-                if 0 <= nx < canvas and 0 <= ny < canvas and (nx, ny) in self._pixel_map:
+                if 0 <= nx < sw and 0 <= ny < sh and (nx, ny) in self._pixel_map:
                     surf.set_at((nx, ny), (*surround, 220))
