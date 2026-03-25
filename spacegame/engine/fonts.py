@@ -92,10 +92,10 @@ def _init_font_roles() -> None:
 # Target: ~1.05-1.15x overshoot (slightly wider is OK, overflow is not).
 _ROLE_SIZE_SCALE: dict[str, float] = {
     "header": 0.50,  # Press Start 2P: 3.1x width → aim for ~1.55x
-    "dialogue": 0.72,  # Pixeloid Sans: 1.6x width → aim for ~1.15x
-    "machine": 0.62,  # Space Mono: 1.9x width → aim for ~1.18x
-    "machine_bold": 0.62,  # Space Mono Bold: same metrics
-    "label": 0.82,  # Tiny5: 1.3x width → aim for ~1.07x
+    "dialogue": 0.82,  # Pixeloid Sans: 1.6x width → ~1.31x (readable over compact)
+    "machine": 0.68,  # Space Mono: 1.9x width → aim for ~1.29x
+    "machine_bold": 0.68,  # Space Mono Bold: same metrics
+    "label": 0.85,  # Tiny5: 1.3x width → aim for ~1.10x
     "stats": 0.92,  # monogram: 1.2x width → aim for ~1.10x
     "narration": 1.0,  # Silver: ~1.0x width, no compensation needed
 }
