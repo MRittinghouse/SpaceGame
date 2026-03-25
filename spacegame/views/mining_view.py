@@ -245,7 +245,7 @@ class MiningView(BaseView):
         )
         self._mining_atmosphere = MiningAtmosphere(grid_rect)
         self._depth_meter = DepthMeter(
-            x=self.CARD_COL_LEFT_X - scale_x(45),
+            x=self.CARD_COL_LEFT_X - scale_x(65),
             y=self.CARD_TOP_Y,
             height=scale_y(400),
         )
@@ -1955,21 +1955,40 @@ class MiningView(BaseView):
             if is_hover:
                 pygame.draw.rect(screen, (40, 35, 60), btn_rect)
 
-            # Level pips
-            pip_str = ""
-            for i in range(definition.max_level):
-                pip_str += "[X]" if i < level else "[ ]"
-
+            # Upgrade name
             if next_cost is not None:
                 can_buy = self.player.strata_tokens >= next_cost
-                cost_color = Colors.TEXT if can_buy else Colors.RED
-                text = f"{definition.name} {pip_str}  ({next_cost} ST)"
-                surf = self.small_font.render(text, True, cost_color)
+                name_color = Colors.TEXT if can_buy else Colors.TEXT_SECONDARY
             else:
-                text = f"{definition.name} {pip_str}  MAX"
-                surf = self.small_font.render(text, True, Colors.TEXT_SECONDARY)
+                name_color = Colors.TEXT_SECONDARY
+            name_surf = self.small_font.render(definition.name, True, name_color)
+            screen.blit(name_surf, (panel_x + 4, y + 2))
 
-            screen.blit(surf, (panel_x + 4, y + 2))
+            # Graphical level pips (small filled/empty squares)
+            pip_x = panel_x + 4 + name_surf.get_width() + 6
+            pip_size = scale_x(8)
+            pip_gap = scale_x(3)
+            pip_y = y + 5
+            for i in range(definition.max_level):
+                pip_rect = pygame.Rect(pip_x, pip_y, pip_size, pip_size)
+                if i < level:
+                    pygame.draw.rect(screen, (120, 100, 220), pip_rect)
+                    pygame.draw.rect(screen, (180, 140, 255), pip_rect, 1)
+                else:
+                    pygame.draw.rect(screen, (30, 25, 45), pip_rect)
+                    pygame.draw.rect(screen, (60, 50, 80), pip_rect, 1)
+                pip_x += pip_size + pip_gap
+
+            # Cost label (right-aligned)
+            if next_cost is not None:
+                cost_color = Colors.TEXT if can_buy else Colors.RED
+                cost_surf = self.small_font.render(f"{next_cost} ST", True, cost_color)
+            else:
+                cost_surf = self.small_font.render("MAX", True, (180, 140, 255))
+            screen.blit(
+                cost_surf,
+                (panel_x + panel_w - scale_x(16) - cost_surf.get_width(), y + 2),
+            )
             y += 24
 
     def _update_upgrade_tooltip(self) -> None:
