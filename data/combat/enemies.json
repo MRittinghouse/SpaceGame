@@ -1033,7 +1033,7 @@
     {
       "id": "guild_revenue_cutter",
       "name": "Guild Revenue Cutter",
-      "description": "A light Commerce Guild patrol craft. Revenue Cutters enforce trade regulations and inspect cargo manifests. Lightly armed but persistent \u00e2\u20ac\u201d their job is to detain, not destroy.",
+      "description": "A light Commerce Guild patrol craft. Revenue Cutters enforce trade regulations and inspect cargo manifests. Lightly armed but persistent  -- their job is to detain, not destroy.",
       "behavior": "defensive",
       "hull": 48,
       "shields": 18,
@@ -1170,7 +1170,7 @@
     {
       "id": "science_surveyor",
       "name": "Science Surveyor",
-      "description": "A Collective research vessel repurposed for patrol duty. High sensor resolution and excellent shields, but minimal weapons. Prefers to scan, analyze, and evade \u00e2\u20ac\u201d but its analysis beam strips shields with clinical precision.",
+      "description": "A Collective research vessel repurposed for patrol duty. High sensor resolution and excellent shields, but minimal weapons. Prefers to scan, analyze, and evade  -- but its analysis beam strips shields with clinical precision.",
       "behavior": "evasive",
       "hull": 37,
       "shields": 30,
@@ -1382,7 +1382,7 @@
     {
       "id": "reach_wrecker",
       "name": "Reach Wrecker",
-      "description": "A medium combat vessel built from salvaged military hulls in Crimson Reach. Equipped with grapple launchers and a reinforced ram prow \u00e2\u20ac\u201d Reach combat doctrine favors getting close and tearing ships apart for salvage. Why destroy what you can repurpose?",
+      "description": "A medium combat vessel built from salvaged military hulls in Crimson Reach. Equipped with grapple launchers and a reinforced ram prow  -- Reach combat doctrine favors getting close and tearing ships apart for salvage. Why destroy what you can repurpose?",
       "behavior": "aggressive",
       "hull": 82,
       "shields": 18,
@@ -1495,7 +1495,7 @@
         {
           "id": "dreadwreck_barrage",
           "name": "Scrapyard Barrage",
-          "description": "Fires every weapon simultaneously \u00e2\u20ac\u201d a chaotic storm of mismatched ordnance.",
+          "description": "Fires every weapon simultaneously  -- a chaotic storm of mismatched ordnance.",
           "effects": [
             {
               "type": "damage",
@@ -1853,7 +1853,7 @@
     {
       "id": "bounty_ace",
       "name": "Bounty Ace",
-      "description": "An elite freelance hunter flying a custom interceptor. Extremely fast and accurate \u00e2\u20ac\u201d almost impossible to outrun.",
+      "description": "An elite freelance hunter flying a custom interceptor. Extremely fast and accurate  -- almost impossible to outrun.",
       "behavior": "evasive",
       "hull": 75,
       "shields": 33,
@@ -2168,7 +2168,7 @@
     {
       "id": "ledger_striker",
       "name": "Unmarked Striker",
-      "description": "A fast, evasive interceptor running unmarked. The engine signature matches military-spec thruster arrays \u00e2\u20ac\u201d hardware that doesn't appear on any civilian market.",
+      "description": "A fast, evasive interceptor running unmarked. The engine signature matches military-spec thruster arrays  -- hardware that doesn't appear on any civilian market.",
       "behavior": "evasive",
       "hull": 45,
       "shields": 26,

@@ -115,7 +115,7 @@
             "x": 10, "y": 23,
             "type": "loot_container",
             "loot_credits": 40,
-            "description": "Maintenance supply crates — hull sealant, wiring harnesses, replacement filters. Everything brand new. This base is well-funded."
+            "description": "Maintenance supply crates  -- hull sealant, wiring harnesses, replacement filters. Everything brand new. This base is well-funded."
         },
         {
             "x": 5, "y": 9,
@@ -134,7 +134,7 @@
             "type": "loot_container",
             "loot_credits": 70,
             "loot_commodities": {"anomalous_sample": 1},
-            "description": "Data drives stacked in shielded cases. Financial records, patrol schedules, communications logs — encrypted, but Priya could crack these in her sleep."
+            "description": "Data drives stacked in shielded cases. Financial records, patrol schedules, communications logs  -- encrypted, but Priya could crack these in her sleep."
         }
     ],
 
@@ -142,12 +142,12 @@
         {
             "x": 17, "y": 26,
             "type": "atmosphere",
-            "text": "The maintenance port is dark and cold — emergency lighting only, the air stale from minimal life support. Tomas checks his sidearm and grins. 'Unused maintenance port, they said. Nobody watches it, they said. Let's prove them right.'"
+            "text": "The maintenance port is dark and cold  -- emergency lighting only, the air stale from minimal life support. Tomas checks his sidearm and grins. 'Unused maintenance port, they said. Nobody watches it, they said. Let's prove them right.'"
         },
         {
             "x": 17, "y": 22,
             "type": "atmosphere",
-            "text": "The deck plates vibrate underfoot — a deep, steady pulse from generators buried in the asteroid's core. Someone spent a fortune building this place. Power generation, atmosphere processing, communications arrays. This isn't a hideout. It's an installation."
+            "text": "The deck plates vibrate underfoot  -- a deep, steady pulse from generators buried in the asteroid's core. Someone spent a fortune building this place. Power generation, atmosphere processing, communications arrays. This isn't a hideout. It's an installation."
         },
         {
             "x": 17, "y": 15,
@@ -162,7 +162,7 @@
         {
             "x": 17, "y": 3,
             "type": "atmosphere",
-            "text": "Holo-projectors line the walls. Star charts showing every system in the Expanse, shipping lanes marked in red, patrol routes highlighted with timestamps. And there — in the center of the command table — a network map. Lines connecting this base to nodes across the sector. Each labeled with a code name. This is The Ledger's command structure, laid bare."
+            "text": "Holo-projectors line the walls. Star charts showing every system in the Expanse, shipping lanes marked in red, patrol routes highlighted with timestamps. And there  -- in the center of the command table  -- a network map. Lines connecting this base to nodes across the sector. Each labeled with a code name. This is The Ledger's command structure, laid bare."
         }
     ]
 }

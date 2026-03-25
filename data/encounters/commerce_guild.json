@@ -128,7 +128,7 @@
           "label": "Dispute the Tariff",
           "description": "Challenge the legality of the tariff in this corridor.",
           "outcome": {
-            "description": "You cite corridor jurisdiction precedents from the Bureau's own charter. There is a long silence before the officer responds. \"Your objection has been noted and will be reviewed by the Bureau. You may proceed — for now.\" No credits change hands, but you sense this is not over.",
+            "description": "You cite corridor jurisdiction precedents from the Bureau's own charter. There is a long silence before the officer responds. \"Your objection has been noted and will be reviewed by the Bureau. You may proceed  -- for now.\" No credits change hands, but you sense this is not over.",
             "rewards": [
               {"reward_type": "xp", "amount": 15},
               {"reward_type": "modify_reputation", "amount": -5, "target_id": "commerce_guild"}
@@ -393,7 +393,7 @@
       "id": "guild_blackmail_01",
       "encounter_type": "comm_intercept",
       "name": "Compromising Transmission",
-      "description": "Your communications array intercepts a partially decrypted transmission between two Guild officials. The content is damning: a senior Meridian Trading House director has been funneling profits through shell companies to avoid Guild taxation. The transmission includes account numbers, dates, and enough detail to ruin a career — or make someone very grateful for your discretion.",
+      "description": "Your communications array intercepts a partially decrypted transmission between two Guild officials. The content is damning: a senior Meridian Trading House director has been funneling profits through shell companies to avoid Guild taxation. The transmission includes account numbers, dates, and enough detail to ruin a career  -- or make someone very grateful for your discretion.",
       "icon_color": [80, 130, 200],
       "weight": 8,
       "danger_levels": ["moderate", "dangerous"],
@@ -419,7 +419,7 @@
           "label": "Contact the Director",
           "description": "The director might pay handsomely for this to disappear.",
           "outcome": {
-            "description": "You reach out through back channels. The response is swift and generous. A large sum appears in an untraceable account, and a curt message follows: \"This matter is concluded. I trust we understand each other.\" You have made a powerful friend — or a dangerous enemy.",
+            "description": "You reach out through back channels. The response is swift and generous. A large sum appears in an untraceable account, and a curt message follows: \"This matter is concluded. I trust we understand each other.\" You have made a powerful friend  -- or a dangerous enemy.",
             "rewards": [
               {"reward_type": "credits", "amount": 250},
               {"reward_type": "xp", "amount": 15},
@@ -444,7 +444,7 @@
       "id": "guild_merger_01",
       "encounter_type": "merchant",
       "name": "Contract Dispute",
-      "description": "Two merchant vessels are parked nose-to-nose in the shipping lane, their captains arguing over an open channel. The dispute concerns a bulk commodity contract — both claim exclusive rights to the same delivery route. Captain Fenn of the Steady Margin insists her contract predates Captain Dorr's by three days. Dorr counters that his was filed with the Bureau first. They spot your vessel and simultaneously request you serve as an impartial arbiter.",
+      "description": "Two merchant vessels are parked nose-to-nose in the shipping lane, their captains arguing over an open channel. The dispute concerns a bulk commodity contract  -- both claim exclusive rights to the same delivery route. Captain Fenn of the Steady Margin insists her contract predates Captain Dorr's by three days. Dorr counters that his was filed with the Bureau first. They spot your vessel and simultaneously request you serve as an impartial arbiter.",
       "icon_color": [100, 150, 220],
       "weight": 9,
       "danger_levels": ["safe", "moderate"],
@@ -483,7 +483,7 @@
           "label": "Propose a Split",
           "description": "Suggest they divide the route between them.",
           "outcome": {
-            "description": "You propose they split the delivery route at the midpoint — Fenn takes the coreward leg, Dorr takes the rimward. Both captains stare at you, then at each other, then reluctantly agree. \"Fine. But I am filing a formal precedent objection,\" Dorr mutters. They each tip you for your Solomonic wisdom.",
+            "description": "You propose they split the delivery route at the midpoint  -- Fenn takes the coreward leg, Dorr takes the rimward. Both captains stare at you, then at each other, then reluctantly agree. \"Fine. But I am filing a formal precedent objection,\" Dorr mutters. They each tip you for your Solomonic wisdom.",
             "rewards": [
               {"reward_type": "credits", "amount": 75},
               {"reward_type": "xp", "amount": 20},
@@ -497,7 +497,7 @@
       "id": "guild_distress_luxury_01",
       "encounter_type": "distress_signal",
       "name": "Luxury Liner Crisis",
-      "description": "A Commerce Guild luxury liner, the MTS Golden Dividend, is broadcasting a distress signal on a priority channel. When you respond, the ship's purser explains the situation with barely contained panic: the primary galley's heating array has failed, and the one hundred and twelve passengers — all Guild executives on a corporate retreat — have been without hot meals for six hours. The purser describes the situation as \"approaching mutiny.\"",
+      "description": "A Commerce Guild luxury liner, the MTS Golden Dividend, is broadcasting a distress signal on a priority channel. When you respond, the ship's purser explains the situation with barely contained panic: the primary galley's heating array has failed, and the one hundred and twelve passengers  -- all Guild executives on a corporate retreat  -- have been without hot meals for six hours. The purser describes the situation as \"approaching mutiny.\"",
       "icon_color": [100, 150, 220],
       "weight": 8,
       "danger_levels": ["safe", "moderate"],
@@ -548,7 +548,7 @@
       "id": "guild_signal_encoded_01",
       "encounter_type": "comm_intercept",
       "name": "Encoded Priority Signal",
-      "description": "Your comms array flags an anomalous signal on a restricted Guild frequency — a burst transmission using heavy encryption that your systems can only partially decode. What you can read references \"Project Dividend\" and includes coordinates deep in the Fulcrum, along with a warning: \"Ensure all assets are in position before the quarter closes. No exceptions.\" The rest is garbled.",
+      "description": "Your comms array flags an anomalous signal on a restricted Guild frequency  -- a burst transmission using heavy encryption that your systems can only partially decode. What you can read references \"Project Dividend\" and includes coordinates deep in the Fulcrum, along with a warning: \"Ensure all assets are in position before the quarter closes. No exceptions.\" The rest is garbled.",
       "icon_color": [80, 130, 200],
       "weight": 8,
       "danger_levels": ["moderate", "dangerous"],
@@ -561,7 +561,7 @@
           "label": "Attempt Full Decode",
           "description": "Devote processing power to cracking the encryption.",
           "outcome": {
-            "description": "Your systems grind through the encryption layers for hours, but the Guild's cryptographers are thorough. You extract fragments — shipping manifests, personnel codes, a reference to \"controlled market correction\" — but the full picture remains elusive. Still, the data you have recovered could be valuable to the right buyer.",
+            "description": "Your systems grind through the encryption layers for hours, but the Guild's cryptographers are thorough. You extract fragments  -- shipping manifests, personnel codes, a reference to \"controlled market correction\"  -- but the full picture remains elusive. Still, the data you have recovered could be valuable to the right buyer.",
             "rewards": [
               {"reward_type": "credits", "amount": 125},
               {"reward_type": "xp", "amount": 25}

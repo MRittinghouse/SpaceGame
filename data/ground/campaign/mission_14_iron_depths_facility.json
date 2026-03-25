@@ -101,14 +101,14 @@
             "type": "loot_container",
             "loot_credits": 70,
             "loot_commodities": {"anomalous_sample": 1},
-            "description": "A sealed container with a cracked environmental seal. Rare metal alloys machined to specifications you've never seen — curved panels designed to focus energy along precise trajectories."
+            "description": "A sealed container with a cracked environmental seal. Rare metal alloys machined to specifications you've never seen  -- curved panels designed to focus energy along precise trajectories."
         },
         {
             "x": 9, "y": 9,
             "type": "loot_container",
             "loot_credits": 80,
             "loot_commodities": {"anomalous_sample": 2},
-            "description": "An engineering workstation with data crystals scattered across it. Partial schematics glow on a dormant screen — concentric ring structures with gravitational field calculations in the margins."
+            "description": "An engineering workstation with data crystals scattered across it. Partial schematics glow on a dormant screen  -- concentric ring structures with gravitational field calculations in the margins."
         },
         {
             "x": 24, "y": 14,
@@ -122,27 +122,27 @@
         {
             "x": 13, "y": 20,
             "type": "atmosphere",
-            "text": "The mining tunnel narrows as you descend past the marked depth levels. The rock changes color here — darker, denser. A sealed blast door ahead has been retrofitted with a modern access panel. Someone has been maintaining infrastructure that officially doesn't exist."
+            "text": "The mining tunnel narrows as you descend past the marked depth levels. The rock changes color here  -- darker, denser. A sealed blast door ahead has been retrofitted with a modern access panel. Someone has been maintaining infrastructure that officially doesn't exist."
         },
         {
             "x": 13, "y": 17,
             "type": "atmosphere",
-            "text": "Beyond the blast door, everything changes. Rough-hewn rock gives way to fabricated walls — clean alloy panels, recessed lighting, atmospheric scrubbers humming at frequencies you associate with orbital stations, not mining tunnels. This is no storage depot. This is a manufacturing floor."
+            "text": "Beyond the blast door, everything changes. Rough-hewn rock gives way to fabricated walls  -- clean alloy panels, recessed lighting, atmospheric scrubbers humming at frequencies you associate with orbital stations, not mining tunnels. This is no storage depot. This is a manufacturing floor."
         },
         {
             "x": 5, "y": 11,
             "type": "atmosphere",
-            "text": "The main corridor stretches the width of the facility. Through reinforced windows, you see assembly bays where curved metal panels are being shaped by automated presses. The scale is staggering — whatever they're building requires components measured in meters, not centimeters."
+            "text": "The main corridor stretches the width of the facility. Through reinforced windows, you see assembly bays where curved metal panels are being shaped by automated presses. The scale is staggering  -- whatever they're building requires components measured in meters, not centimeters."
         },
         {
             "x": 8, "y": 7,
             "type": "atmosphere",
-            "text": "A research bay lined with holographic displays. Most are powered down, but one still cycles through structural simulations — concentric rings focusing energy inward toward a central point. The math scrolling alongside is beyond your training, but the diagram looks like a lens. A very large lens."
+            "text": "A research bay lined with holographic displays. Most are powered down, but one still cycles through structural simulations  -- concentric rings focusing energy inward toward a central point. The math scrolling alongside is beyond your training, but the diagram looks like a lens. A very large lens."
         },
         {
             "x": 14, "y": 4,
             "type": "atmosphere",
-            "text": "The cargo lift at the facility's heart descends into darkness. Crate after crate lines the walls — all stamped with Commerce Guild freight codes, all addressed to recipients that don't appear in any public registry. The shipping dates span eighteen months. This operation has been running for longer than anyone suspected."
+            "text": "The cargo lift at the facility's heart descends into darkness. Crate after crate lines the walls  -- all stamped with Commerce Guild freight codes, all addressed to recipients that don't appear in any public registry. The shipping dates span eighteen months. This operation has been running for longer than anyone suspected."
         }
     ]
 }

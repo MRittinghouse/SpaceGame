@@ -642,7 +642,7 @@
       "role": "negotiator",
       "faction_id": "commerce_guild",
       "home_system_id": "stellaris_port",
-      "description": "Ex-Guild trade arbitrator who left the boardroom for open space. Leah negotiates better prices at every port — buying and selling.",
+      "description": "Ex-Guild trade arbitrator who left the boardroom for open space. Leah negotiates better prices at every port  -- buying and selling.",
       "portrait_color": [210, 150, 170],
       "base_attributes": {"com": 3, "acu": 1, "res": 1, "ing": 1, "syn": 1},
       "max_level": 1,

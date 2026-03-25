@@ -317,7 +317,7 @@
       "id": "combat_stims",
       "name": "Combat Stimulants",
       "category": "industrial",
-      "description": "Performance enhancers banned by every medical board in the sector. Demand stays high in the mines and the combat zones — places where being tired gets you killed.",
+      "description": "Performance enhancers banned by every medical board in the sector. Demand stays high in the mines and the combat zones  -- places where being tired gets you killed.",
       "base_price": 350,
       "variance_min": -0.25,
       "variance_max": 0.45,

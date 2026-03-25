@@ -93,7 +93,7 @@
             "type": "loot_container",
             "loot_credits": 60,
             "loot_commodities": {"anomalous_sample": 1},
-            "description": "Ore sample crates stamped with Union quality seals. Grade-A refined ore — someone's been skimming the yield reports."
+            "description": "Ore sample crates stamped with Union quality seals. Grade-A refined ore  -- someone's been skimming the yield reports."
         },
         {
             "x": 3, "y": 13,
@@ -117,7 +117,7 @@
         {
             "x": 12, "y": 10,
             "type": "atmosphere",
-            "text": "The main gallery opens into a cathedral of carved rock. Heavy drilling rigs sit idle between shifts, ventilation fans humming where the machinery should roar. Thousands of tons of ore have passed through here — Breakstone's lifeblood, cut from the asteroid one blast at a time."
+            "text": "The main gallery opens into a cathedral of carved rock. Heavy drilling rigs sit idle between shifts, ventilation fans humming where the machinery should roar. Thousands of tons of ore have passed through here  -- Breakstone's lifeblood, cut from the asteroid one blast at a time."
         },
         {
             "x": 1, "y": 8,
@@ -127,7 +127,7 @@
         {
             "x": 3, "y": 5,
             "type": "atmosphere",
-            "text": "Something shifts in the darkness ahead. A faint light — chemical, not electric — flickers beyond a sealed door. Someone lives down here by choice. Someone who doesn't want to be found."
+            "text": "Something shifts in the darkness ahead. A faint light  -- chemical, not electric  -- flickers beyond a sealed door. Someone lives down here by choice. Someone who doesn't want to be found."
         }
     ]
 }

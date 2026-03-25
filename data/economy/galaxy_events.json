@@ -12,7 +12,7 @@
       ],
       "flavor_texts": [
         "Dock workers whisper about empty cargo holds and angry captains.",
-        "The commodity boards flash red — entire ore categories reading SUSPENDED."
+        "The commodity boards flash red  -- entire ore categories reading SUSPENDED."
       ],
       "duration_min": 4,
       "duration_max": 8,
@@ -68,7 +68,7 @@
         "Alliance community councils vote to withhold agricultural shipments"
       ],
       "flavor_texts": [
-        "The harvest markets stand half-empty. What's left isn't for sale — not to outsiders.",
+        "The harvest markets stand half-empty. What's left isn't for sale  -- not to outsiders.",
         "Farmers shake their heads at the loading docks. 'Feed our own first,' they say."
       ],
       "duration_min": 3,
@@ -107,7 +107,7 @@
       "rep_bonus_amount": 2,
       "descriptions": [
         "Founders' Day celebrations fill Breakstone with song and firelight",
-        "The anniversary of the First Strike — Breakstone remembers Sora Takahashi"
+        "The anniversary of the First Strike  -- Breakstone remembers Sora Takahashi"
       ],
       "flavor_texts": [
         "Mining shanties echo through the corridors. Even the machinery seems to keep time.",
@@ -149,7 +149,7 @@
       "rep_bonus_amount": 2,
       "descriptions": [
         "Alliance Harvest Festival draws communities together at {system}",
-        "The annual gathering — stories, food, and fellowship under open sky"
+        "The annual gathering  -- stories, food, and fellowship under open sky"
       ],
       "flavor_texts": [
         "Long tables stretch through the commons, heavy with food nobody's charging for.",
@@ -167,7 +167,7 @@
       "target_systems": ["breakstone"],
       "shutdown_tags": ["raw_materials", "mining"],
       "descriptions": [
-        "Workers walk off the job at Breakstone — Union leadership calls for solidarity",
+        "Workers walk off the job at Breakstone  -- Union leadership calls for solidarity",
         "Mining operations halt as workers demand revised safety protocols"
       ],
       "flavor_texts": [
@@ -227,7 +227,7 @@
       "price_modifiers": {"medical": 0.5, "purified_crystal": 0.7},
       "descriptions": [
         "Collective announces breakthrough in applied medical synthesis",
-        "Okafor Institute publishes landmark results — medical supplies surge"
+        "Okafor Institute publishes landmark results  -- medical supplies surge"
       ],
       "flavor_texts": [
         "The medical wing buzzes with activity. Researchers shake hands, grinning. Something big happened.",
@@ -284,7 +284,7 @@
       "encounter_chance_modifier": 1.5,
       "danger_modifier": 1,
       "descriptions": [
-        "Pirate activity surges near the Frontier — convoy losses mounting",
+        "Pirate activity surges near the Frontier  -- convoy losses mounting",
         "Armed raiders spotted in increasing numbers along Alliance shipping lanes"
       ],
       "flavor_texts": [
@@ -344,7 +344,7 @@
       "shutdown_tags": ["manufacturing"],
       "price_modifiers": {"machinery": 1.4, "alloy_composite": 1.3},
       "descriptions": [
-        "Ore shortage at Forgeworks — Breakstone strike cuts off raw material supply",
+        "Ore shortage at Forgeworks  -- Breakstone strike cuts off raw material supply",
         "Manufacturing slowdown as upstream ore deliveries dry up"
       ],
       "flavor_texts": [

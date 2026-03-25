@@ -79,7 +79,7 @@
             "x": 5, "y": 8,
             "type": "loot_container",
             "loot_credits": 55,
-            "description": "Refurbished electronics stacked behind a vendor's counter — origin unknown, quality decent."
+            "description": "Refurbished electronics stacked behind a vendor's counter  -- origin unknown, quality decent."
         },
         {
             "x": 3, "y": 1,
@@ -94,7 +94,7 @@
         {
             "x": 5, "y": 17,
             "type": "atmosphere",
-            "text": "Wrecker's Outpost doesn't look like much from the airlock — welded hull plates, exposed conduit, a hand-painted sign reading WELCOME in six languages. But the air recyclers work, and nobody asks your name."
+            "text": "Wrecker's Outpost doesn't look like much from the airlock  -- welded hull plates, exposed conduit, a hand-painted sign reading WELCOME in six languages. But the air recyclers work, and nobody asks your name."
         },
         {
             "x": 12, "y": 11,
@@ -104,7 +104,7 @@
         {
             "x": 1, "y": 9,
             "type": "atmosphere",
-            "text": "Loose deck plating shifts and rings underfoot — mismatched panels from salvaged freighters, not quite flush. Each step announces itself to the corridor."
+            "text": "Loose deck plating shifts and rings underfoot  -- mismatched panels from salvaged freighters, not quite flush. Each step announces itself to the corridor."
         },
         {
             "x": 12, "y": 4,

@@ -2,14 +2,14 @@
   "news_templates": [
     {
       "id": "ge_embargo_01",
-      "template": "TRADE ALERT: {faction} imposes trade embargo — {description}",
+      "template": "TRADE ALERT: {faction} imposes trade embargo  -- {description}",
       "trigger": "galaxy_event_embargo",
       "priority": 8,
       "faction_id": ""
     },
     {
       "id": "ge_embargo_02",
-      "template": "COMMERCE: Embargo restricts trade at {system} — smuggling premiums spike",
+      "template": "COMMERCE: Embargo restricts trade at {system}  -- smuggling premiums spike",
       "trigger": "galaxy_event_embargo",
       "priority": 7,
       "faction_id": ""
@@ -51,7 +51,7 @@
     },
     {
       "id": "ge_festival_02",
-      "template": "MARKETS: Festival at {system} drives luxury demand — traders flock to the exchange",
+      "template": "MARKETS: Festival at {system} drives luxury demand  -- traders flock to the exchange",
       "trigger": "galaxy_event_festival",
       "priority": 6,
       "faction_id": ""
@@ -65,7 +65,7 @@
     },
     {
       "id": "ge_festival_04",
-      "template": "COMMERCE: Festival at {system} boosts local economy. Workers granted half-shift holiday — unpaid, naturally.",
+      "template": "COMMERCE: Festival at {system} boosts local economy. Workers granted half-shift holiday  -- unpaid, naturally.",
       "trigger": "galaxy_event_festival",
       "priority": 5,
       "faction_id": ""
@@ -177,7 +177,7 @@
     },
     {
       "id": "ge_pirate_02",
-      "template": "WARNING: Pirate activity near {system} — independent traders advised to travel armed",
+      "template": "WARNING: Pirate activity near {system}  -- independent traders advised to travel armed",
       "trigger": "galaxy_event_pirate_surge",
       "priority": 7,
       "faction_id": ""
@@ -219,7 +219,7 @@
     },
     {
       "id": "me_surge_01",
-      "template": "COMMERCE: {commodity} prices surge at {system} — traders report unusual activity",
+      "template": "COMMERCE: {commodity} prices surge at {system}  -- traders report unusual activity",
       "trigger": "market_event",
       "priority": 5,
       "faction_id": ""
@@ -254,7 +254,7 @@
     },
     {
       "id": "pe_02",
-      "template": "POLITICS: {description} — analysts predict fallout will reshape trade routes for months.",
+      "template": "POLITICS: {description}  -- analysts predict fallout will reshape trade routes for months.",
       "trigger": "political_event",
       "priority": 6,
       "faction_id": ""
@@ -282,7 +282,7 @@
     },
     {
       "id": "pm_02",
-      "template": "LOCAL: {description} — one more name the sector won't forget.",
+      "template": "LOCAL: {description}  -- one more name the sector won't forget.",
       "trigger": "player_milestone",
       "priority": 4,
       "faction_id": ""
@@ -394,14 +394,14 @@
     },
     {
       "id": "flavor_05",
-      "template": "Iron Depths safety board publishes quarterly incident report — numbers improving",
+      "template": "Iron Depths safety board publishes quarterly incident report  -- numbers improving",
       "trigger": "flavor",
       "priority": 2,
       "faction_id": ""
     },
     {
       "id": "flavor_06",
-      "template": "Axiom Labs announces open call for research proposals — record applications expected",
+      "template": "Axiom Labs announces open call for research proposals  -- record applications expected",
       "trigger": "flavor",
       "priority": 2,
       "faction_id": ""
@@ -443,14 +443,14 @@
     },
     {
       "id": "flavor_12",
-      "template": "Crimson Reach salvage haul yields pre-Expansion navigational data — historians intrigued",
+      "template": "Crimson Reach salvage haul yields pre-Expansion navigational data  -- historians intrigued",
       "trigger": "flavor",
       "priority": 2,
       "faction_id": ""
     },
     {
       "id": "flavor_13",
-      "template": "Fuel cell efficiency standards under review — Collective researchers call for industry-wide upgrade",
+      "template": "Fuel cell efficiency standards under review  -- Collective researchers call for industry-wide upgrade",
       "trigger": "flavor",
       "priority": 2,
       "faction_id": ""
@@ -464,7 +464,7 @@
     },
     {
       "id": "flavor_15",
-      "template": "Union leadership lauds declining injury rates — credits improved safety training programs",
+      "template": "Union leadership lauds declining injury rates  -- credits improved safety training programs",
       "trigger": "flavor",
       "priority": 2,
       "faction_id": ""
@@ -478,14 +478,14 @@
     },
     {
       "id": "flavor_17",
-      "template": "The Fulcrum denies rumors of expanded military operations — 'routine exercises only'",
+      "template": "The Fulcrum denies rumors of expanded military operations  -- 'routine exercises only'",
       "trigger": "flavor",
       "priority": 2,
       "faction_id": ""
     },
     {
       "id": "flavor_18",
-      "template": "Medical supply demand up 15% sector-wide — Collective attributes rise to aging infrastructure",
+      "template": "Medical supply demand up 15% sector-wide  -- Collective attributes rise to aging infrastructure",
       "trigger": "flavor",
       "priority": 2,
       "faction_id": ""
@@ -506,28 +506,28 @@
     },
     {
       "id": "flavor_21",
-      "template": "Breakstone ore shipments running ahead of schedule — Guild procurement pleased",
+      "template": "Breakstone ore shipments running ahead of schedule  -- Guild procurement pleased",
       "trigger": "flavor",
       "priority": 2,
       "faction_id": ""
     },
     {
       "id": "flavor_22",
-      "template": "New restaurant opens on Stellaris Port promenade — reservations already backed up three weeks",
+      "template": "New restaurant opens on Stellaris Port promenade  -- reservations already backed up three weeks",
       "trigger": "flavor",
       "priority": 2,
       "faction_id": ""
     },
     {
       "id": "flavor_23",
-      "template": "Verdant harvest yields break previous records — surplus earmarked for Alliance distribution",
+      "template": "Verdant harvest yields break previous records  -- surplus earmarked for Alliance distribution",
       "trigger": "flavor",
       "priority": 2,
       "faction_id": ""
     },
     {
       "id": "flavor_24",
-      "template": "DCMC quarterly earnings beat projections — Iron Depths operations cited as key driver",
+      "template": "DCMC quarterly earnings beat projections  -- Iron Depths operations cited as key driver",
       "trigger": "flavor",
       "priority": 2,
       "faction_id": ""
@@ -541,14 +541,14 @@
     },
     {
       "id": "flavor_26",
-      "template": "Crimson Reach pilots report unusual debris field — origin unknown, salvage opportunities expected",
+      "template": "Crimson Reach pilots report unusual debris field  -- origin unknown, salvage opportunities expected",
       "trigger": "flavor",
       "priority": 2,
       "faction_id": ""
     },
     {
       "id": "flavor_27",
-      "template": "Science Collective publishes annual 'State of Research' report — funding requests up across all departments",
+      "template": "Science Collective publishes annual 'State of Research' report  -- funding requests up across all departments",
       "trigger": "flavor",
       "priority": 2,
       "faction_id": ""
@@ -562,14 +562,14 @@
     },
     {
       "id": "flavor_29",
-      "template": "Alliance storyteller circuit announces new season — performances scheduled across frontier systems",
+      "template": "Alliance storyteller circuit announces new season  -- performances scheduled across frontier systems",
       "trigger": "flavor",
       "priority": 2,
       "faction_id": ""
     },
     {
       "id": "flavor_30",
-      "template": "Commerce Guild arbitration court settles long-running tariff dispute — both sides claim victory",
+      "template": "Commerce Guild arbitration court settles long-running tariff dispute  -- both sides claim victory",
       "trigger": "flavor",
       "priority": 2,
       "faction_id": ""
@@ -583,7 +583,7 @@
     },
     {
       "id": "flavor_32",
-      "template": "Frontier Alliance reports 14% decrease in missing vessel filings — down to 340 this quarter",
+      "template": "Frontier Alliance reports 14% decrease in missing vessel filings  -- down to 340 this quarter",
       "trigger": "flavor",
       "priority": 2,
       "faction_id": ""
@@ -618,7 +618,7 @@
     },
     {
       "id": "flavor_37",
-      "template": "Oxygen tariffs at Nexus Prime increase for third consecutive quarter — Guild cites 'infrastructure investment'",
+      "template": "Oxygen tariffs at Nexus Prime increase for third consecutive quarter  -- Guild cites 'infrastructure investment'",
       "trigger": "flavor",
       "priority": 2,
       "faction_id": ""
@@ -632,14 +632,14 @@
     },
     {
       "id": "flavor_39",
-      "template": "REDACTED — [Content removed by Commerce Guild Information Bureau pending review] — filed under Administrative Order 7-14",
+      "template": "REDACTED  -- [Content removed by Commerce Guild Information Bureau pending review]  -- filed under Administrative Order 7-14",
       "trigger": "flavor",
       "priority": 2,
       "faction_id": ""
     },
     {
       "id": "flavor_40",
-      "template": "Stellaris Port docking wait times exceed 9 hours — port authority blames 'seasonal volume'",
+      "template": "Stellaris Port docking wait times exceed 9 hours  -- port authority blames 'seasonal volume'",
       "trigger": "flavor",
       "priority": 2,
       "faction_id": ""
@@ -653,14 +653,14 @@
     },
     {
       "id": "flavor_42",
-      "template": "PERSONAL: To the pilot who docked in Bay 14 on Forgeworks last cycle — you left your manifest. And your reputation.",
+      "template": "PERSONAL: To the pilot who docked in Bay 14 on Forgeworks last cycle  -- you left your manifest. And your reputation.",
       "trigger": "flavor",
       "priority": 2,
       "faction_id": ""
     },
     {
       "id": "flavor_43",
-      "template": "Science Collective denies reports of anomalous readings near Nova Research — 'instrumentation error, nothing more'",
+      "template": "Science Collective denies reports of anomalous readings near Nova Research  -- 'instrumentation error, nothing more'",
       "trigger": "flavor",
       "priority": 2,
       "faction_id": ""
@@ -702,14 +702,14 @@
     },
     {
       "id": "flavor_49",
-      "template": "Miners' Union pension fund audit delayed for second time — Union leadership calls timing 'coincidental'",
+      "template": "Miners' Union pension fund audit delayed for second time  -- Union leadership calls timing 'coincidental'",
       "trigger": "flavor",
       "priority": 2,
       "faction_id": ""
     },
     {
       "id": "flavor_50",
-      "template": "BOUNTY POSTED: 8,000 CR — armed pirate vessel 'Scorched Policy' — approach with extreme caution",
+      "template": "BOUNTY POSTED: 8,000 CR  -- armed pirate vessel 'Scorched Policy'  -- approach with extreme caution",
       "trigger": "flavor",
       "priority": 2,
       "faction_id": ""

@@ -37,14 +37,14 @@
     },
     {
       "entry_id": "auto_m06_priya",
-      "text": "Transported Dr. Priya Osei to Axiom Labs with time-sensitive research samples. She studies resource extraction economics. Describes working conditions as data sets. Axiom Labs is clinical and precise — nothing like Breakstone.",
+      "text": "Transported Dr. Priya Osei to Axiom Labs with time-sensitive research samples. She studies resource extraction economics. Describes working conditions as data sets. Axiom Labs is clinical and precise  -- nothing like Breakstone.",
       "trigger_flag": "met_priya_osei",
       "system_id": "axiom_labs",
       "mission_id": ""
     },
     {
       "entry_id": "auto_m07_tomas_accepted",
-      "text": "Met Tomas Drifter at Haven's Rest. Accepted a gray-market trade — rerouting supplies past Guild tariffs to people who need them. Haven's Rest runs on handshakes and trust.",
+      "text": "Met Tomas Drifter at Haven's Rest. Accepted a gray-market trade  -- rerouting supplies past Guild tariffs to people who need them. Haven's Rest runs on handshakes and trust.",
       "trigger_flag": "accepted_drifter_deal",
       "system_id": "havens_rest",
       "mission_id": ""
@@ -79,7 +79,7 @@
     },
     {
       "entry_id": "auto_m10_crimson",
-      "text": "Delivered a package to Malia Torres at Crimson Reach. She says whoever is backing the pirates has serious resources — real money, real ships, real intelligence. This is not random raiding.",
+      "text": "Delivered a package to Malia Torres at Crimson Reach. She says whoever is backing the pirates has serious resources  -- real money, real ships, real intelligence. This is not random raiding.",
       "trigger_flag": "delivered_dex_chip",
       "system_id": "crimson_reach",
       "mission_id": ""
@@ -93,7 +93,7 @@
     },
     {
       "entry_id": "auto_m12_attack",
-      "text": "Ambushed by pirates during travel. Survived the attack. Their ships were well-equipped — better than any frontier raiders should be.",
+      "text": "Ambushed by pirates during travel. Survived the attack. Their ships were well-equipped  -- better than any frontier raiders should be.",
       "trigger_flag": "survived_pirate_attack",
       "system_id": "",
       "mission_id": ""
