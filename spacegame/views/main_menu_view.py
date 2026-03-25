@@ -161,10 +161,10 @@ class MainMenuView(BaseView):
                 # Check Yes/No button rects (must match render positions exactly)
                 cx = WINDOW_WIDTH // 2
                 cy = WINDOW_HEIGHT // 2
-                _pw, ph = scale_x(480), scale_y(200)
+                _pw, ph = scale_x(500), scale_y(210)
                 panel_top = cy - ph // 2
                 btn_w, btn_h = scale_x(140), scale_y(44)
-                btn_y = panel_top + scale_y(100)
+                btn_y = panel_top + scale_y(120)
                 yes_rect = pygame.Rect(cx - btn_w - scale_x(15), btn_y, btn_w, btn_h)
                 no_rect = pygame.Rect(cx + scale_x(15), btn_y, btn_w, btn_h)
                 if yes_rect.collidepoint(event.pos):
@@ -290,8 +290,8 @@ class MainMenuView(BaseView):
             cx = WINDOW_WIDTH // 2
             cy = WINDOW_HEIGHT // 2
 
-            # Panel — larger, properly centered
-            pw, ph = scale_x(480), scale_y(200)
+            # Panel — sized for custom fonts
+            pw, ph = scale_x(620), scale_y(230)
             panel = pygame.Rect(cx - pw // 2, cy - ph // 2, pw, ph)
             panel_surf = pygame.Surface((pw, ph), pygame.SRCALPHA)
             panel_surf.fill((12, 16, 32, 245))
@@ -316,7 +316,7 @@ class MainMenuView(BaseView):
 
             # Yes / No buttons — larger, filled backgrounds, clearly clickable
             btn_w, btn_h = scale_x(140), scale_y(44)
-            btn_y = panel.top + scale_y(100)
+            btn_y = panel.top + scale_y(105)
             yes_rect = pygame.Rect(cx - btn_w - scale_x(15), btn_y, btn_w, btn_h)
             no_rect = pygame.Rect(cx + scale_x(15), btn_y, btn_w, btn_h)
 
@@ -338,9 +338,11 @@ class MainMenuView(BaseView):
 
             # Keyboard hint
             hint = small_font.render(
-                "Press Y or N  |  Enter to confirm, Escape to cancel", True, Colors.TEXT_SECONDARY
+                "Press Y or N  |  Enter to confirm, Escape to cancel",
+                True,
+                Colors.TEXT_SECONDARY,
             )
-            screen.blit(hint, hint.get_rect(centerx=cx, top=panel.top + scale_y(155)))
+            screen.blit(hint, hint.get_rect(centerx=cx, top=panel.top + scale_y(162)))
 
         # Fade-in overlay
         if self._fade_alpha > 0:

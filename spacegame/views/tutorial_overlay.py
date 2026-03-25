@@ -52,8 +52,8 @@ class _Button:
 class TutorialOverlay:
     """Tutorial step overlay rendered on top of the active game view."""
 
-    PANEL_WIDTH = scale_x(550)
-    PANEL_HEIGHT = scale_y(320)
+    PANEL_WIDTH = scale_x(620)
+    PANEL_HEIGHT = scale_y(330)
     HINT_PANEL_HEIGHT = scale_y(420)  # Taller panel for longer hint descriptions
 
     def __init__(self, tutorial_manager: TutorialManager):

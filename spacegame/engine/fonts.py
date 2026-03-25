@@ -84,6 +84,23 @@ def _init_font_roles() -> None:
     }
 
 
+# Width compensation factors per role.
+# Custom fonts are wider than the system font at the same point size.
+# These factors scale the requested size DOWN so rendered text occupies
+# roughly the same horizontal space as the system font would have.
+# Measured empirically: header=3.1x, machine=1.9x, dialogue=1.6x, etc.
+# Target: ~1.05-1.15x overshoot (slightly wider is OK, overflow is not).
+_ROLE_SIZE_SCALE: dict[str, float] = {
+    "header": 0.50,  # Press Start 2P: 3.1x width → aim for ~1.55x
+    "dialogue": 0.72,  # Pixeloid Sans: 1.6x width → aim for ~1.15x
+    "machine": 0.62,  # Space Mono: 1.9x width → aim for ~1.18x
+    "machine_bold": 0.62,  # Space Mono Bold: same metrics
+    "label": 0.82,  # Tiny5: 1.3x width → aim for ~1.07x
+    "stats": 0.92,  # monogram: 1.2x width → aim for ~1.10x
+    "narration": 1.0,  # Silver: ~1.0x width, no compensation needed
+}
+
+
 # Initialize on import
 _init_font_roles()
 
@@ -172,7 +189,10 @@ def get_font(role: str, size: int) -> pygame.font.Font:
         scan = get_font("machine", FONT_SM).render("SCAN COMPLETE", True, color)
     """
     path = FONT_ROLES.get(role)
-    return FontCache.get(size, path=path)
+    # Apply width compensation so custom fonts don't overflow UI containers
+    scale = _ROLE_SIZE_SCALE.get(role, 1.0)
+    adjusted_size = max(8, int(size * scale))
+    return FontCache.get(adjusted_size, path=path)
 
 
 def get_available_roles() -> dict[str, bool]:
