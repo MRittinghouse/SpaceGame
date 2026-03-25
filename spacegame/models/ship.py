@@ -219,8 +219,11 @@ class Ship:
 
     @property
     def max_cargo(self) -> int:
-        """Get maximum cargo capacity including upgrade and crew bonuses."""
-        if self._computed_stats:
+        """Get maximum cargo capacity including upgrade and crew bonuses.
+
+        Falls back to ShipType base cargo if computed cargo is 0.
+        """
+        if self._computed_stats and self._computed_stats.cargo_capacity > 0:
             base = self._computed_stats.cargo_capacity
         else:
             base = self.ship_type.cargo_capacity
@@ -232,8 +235,14 @@ class Ship:
 
     @property
     def max_fuel(self) -> int:
-        """Get maximum fuel capacity including upgrade and crew bonuses."""
-        if self._computed_stats:
+        """Get maximum fuel capacity including upgrade and crew bonuses.
+
+        Uses computed stats from the ship build if available. Falls back
+        to ShipType base fuel if computed fuel is 0 (e.g. preset builds
+        without fuel tank modules). Guarantees a minimum of 10 fuel so
+        the player can always travel at least one hop.
+        """
+        if self._computed_stats and self._computed_stats.fuel_capacity > 0:
             base = self._computed_stats.fuel_capacity
         else:
             base = self.ship_type.fuel_capacity
@@ -241,7 +250,7 @@ class Ship:
                 base += int(self._upgrade_manager.get_bonus("fuel_bonus"))
         if self._crew_roster:
             base += int(self._crew_roster.get_bonus("fuel_bonus"))
-        return base
+        return max(base, 10)
 
     @property
     def effective_fuel_efficiency(self) -> int:
