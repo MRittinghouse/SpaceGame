@@ -964,7 +964,12 @@ class ShipyardView(BaseView):
             pygame.draw.rect(screen, (80, 90, 120), (bar_x, bar_y, 6, bar_h), border_radius=3)
 
     def _render_frame_detail(self, screen: pygame.Surface, ships: list) -> None:
-        """Render detail panel for the selected frame on the right side."""
+        """Render detail panel for the selected frame — two-column layout.
+
+        Left column: frame label, grid preview, grid info, slots, description.
+        Right column: stat comparison table, price/trade-in/net cost.
+        Title spans the full width at top.
+        """
         if not ships or self.selected_upgrade_idx >= len(ships):
             return
 
@@ -975,6 +980,7 @@ class ShipyardView(BaseView):
         dx = self._FRAME_DETAIL_X
         dw = self._FRAME_DETAIL_W
         dy = _LIST_Y - scale_y(10)
+        pad = scale_x(16)
 
         # Panel background
         panel_h = _LIST_BOTTOM - dy + scale_y(10)
@@ -988,21 +994,39 @@ class ShipyardView(BaseView):
             screen, Colors.TEXT_HIGHLIGHT, (dx + 10, dy + 2), (dx + dw - 10, dy + 2), 2
         )
 
-        cx = dx + scale_x(20)  # Content left margin
-        cy = dy + scale_y(16)  # Start y
-
-        # Frame name (large)
+        # === TITLE (full width, centered) ===
+        title_y = dy + scale_y(10)
         name = self.header_font.render(ship_type.name, True, Colors.TEXT_HIGHLIGHT)
-        screen.blit(name, (cx, cy))
-        cy += name.get_height() + scale_y(4)
+        screen.blit(name, name.get_rect(centerx=dx + dw // 2, top=title_y))
+        content_top = title_y + name.get_height() + scale_y(8)
+
+        # Vertical divider position
+        half_w = dw // 2
+        divider_x = dx + half_w
+
+        # Draw vertical divider line
+        pygame.draw.line(
+            screen,
+            (40, 48, 65),
+            (divider_x, content_top),
+            (divider_x, dy + panel_h - pad),
+            1,
+        )
+
+        # ============================================================
+        # LEFT COLUMN: frame info, grid preview, slots, description
+        # ============================================================
+        lx = dx + pad
+        lw = half_w - pad * 2
+        ly = content_top
 
         # Frame size label
         frame_label = self._get_frame_size_label(ship_type)
         frame_surf = self.small_font.render(frame_label, True, Colors.TEXT_SECONDARY)
-        screen.blit(frame_surf, (cx, cy))
-        cy += frame_surf.get_height() + scale_y(6)
+        screen.blit(frame_surf, (lx, ly))
+        ly += frame_surf.get_height() + scale_y(6)
 
-        # Canvas visualization — show grid outline representing the weight class
+        # Canvas visualization
         wc_name = self._CLASS_TO_WEIGHT.get(ship_type.ship_class, "small")
         from spacegame.models.ship_build import WEIGHT_CLASSES
 
@@ -1010,37 +1034,67 @@ class ShipyardView(BaseView):
         canvas_w = wc.get("canvas_w", 32)
         canvas_h = wc.get("canvas_h", 32)
 
-        # Draw scaled grid preview (compact to save vertical space)
-        max_preview_w = dw - scale_x(50)
+        max_preview_w = lw
         max_preview_h = scale_y(80)
         pixel_size = min(max_preview_w // canvas_w, max_preview_h // canvas_h, 4)
         grid_w = canvas_w * pixel_size
         grid_h = canvas_h * pixel_size
-        grid_x = cx
-        grid_y = cy
 
-        # Grid background
         grid_surf = pygame.Surface((grid_w, grid_h), pygame.SRCALPHA)
         grid_surf.fill((20, 28, 45, 180))
-        screen.blit(grid_surf, (grid_x, grid_y))
-        pygame.draw.rect(screen, (50, 60, 90), (grid_x, grid_y, grid_w, grid_h), 1)
+        screen.blit(grid_surf, (lx, ly))
+        pygame.draw.rect(screen, (50, 60, 90), (lx, ly, grid_w, grid_h), 1)
 
-        # Grid dots for visual texture
         for gx in range(0, canvas_w, 4):
             for gy in range(0, canvas_h, 4):
-                screen.set_at((grid_x + gx * pixel_size, grid_y + gy * pixel_size), (40, 50, 70))
+                screen.set_at((lx + gx * pixel_size, ly + gy * pixel_size), (40, 50, 70))
 
-        # Canvas dimensions label
-        dim_text = f"{canvas_w} x {canvas_h} grid  |  Max weight: {wc['max_weight']}"
-        dim_surf = self.small_font.render(dim_text, True, Colors.TEXT_SECONDARY)
-        screen.blit(dim_surf, (grid_x, grid_y + grid_h + 2))
-        cy = grid_y + grid_h + scale_y(18)
+        ly += grid_h + scale_y(4)
 
-        # Separator
-        pygame.draw.line(screen, (40, 48, 65), (cx, cy), (dx + dw - scale_x(20), cy), 1)
-        cy += scale_y(8)
+        # Grid dimensions
+        dim_text = f"Grid: {canvas_w} x {canvas_h}"
+        screen.blit(self.small_font.render(dim_text, True, Colors.TEXT_SECONDARY), (lx, ly))
+        ly += scale_y(14)
 
-        # Stat comparison table
+        # Max weight
+        weight_text = f"Max Weight: {wc['max_weight']}"
+        screen.blit(self.small_font.render(weight_text, True, Colors.TEXT_SECONDARY), (lx, ly))
+        ly += scale_y(14)
+
+        # Slot counts
+        slot_text = (
+            f"Weapon: {ship_type.weapon_slots} | "
+            f"Defense: {ship_type.defense_slots} | "
+            f"Utility: {ship_type.utility_slots}"
+        )
+        screen.blit(self.small_font.render(slot_text, True, Colors.TEXT), (lx, ly))
+        ly += scale_y(18)
+
+        # Description (word-wrapped in left column)
+        desc = ship_type.description
+        self._render_wrapped_text(screen, desc, lx, ly, lw, Colors.TEXT_SECONDARY)
+
+        # ============================================================
+        # RIGHT COLUMN: stats table, price section
+        # ============================================================
+        rx = divider_x + pad
+        ry = content_top
+
+        # Stats header
+        stats_label = self.small_font.render("Stats:", True, Colors.TEXT_HIGHLIGHT)
+        screen.blit(stats_label, (rx, ry))
+        ry += stats_label.get_height() + scale_y(4)
+
+        # Column positions (relative to right column)
+        col_new_x = rx + scale_x(90)
+        col_diff_x = rx + scale_x(155)
+
+        hdr_new = self.small_font.render("New", True, Colors.TEXT_SECONDARY)
+        hdr_diff = self.small_font.render("Current", True, Colors.TEXT_SECONDARY)
+        screen.blit(hdr_new, (col_new_x, ry))
+        screen.blit(hdr_diff, (col_diff_x, ry))
+        ry += scale_y(16)
+
         stat_rows = [
             ("Cargo", ship_type.cargo_capacity, current.cargo_capacity),
             ("Fuel", ship_type.fuel_capacity, current.fuel_capacity),
@@ -1050,29 +1104,10 @@ class ShipyardView(BaseView):
             ("Speed", ship_type.combat_speed, current.combat_speed),
         ]
 
-        # Column headers
-        col_label_x = cx
-        col_new_x = cx + scale_x(120)
-        col_diff_x = cx + scale_x(200)
-
-        hdr_label = self.small_font.render("Stat", True, Colors.TEXT_SECONDARY)
-        hdr_new = self.small_font.render("New", True, Colors.TEXT_SECONDARY)
-        hdr_diff = self.small_font.render("vs Current", True, Colors.TEXT_SECONDARY)
-        screen.blit(hdr_label, (col_label_x, cy))
-        screen.blit(hdr_new, (col_new_x, cy))
-        screen.blit(hdr_diff, (col_diff_x, cy))
-        cy += scale_y(16)
-
         for label, new_val, old_val in stat_rows:
-            # Label
-            label_surf = self.small_font.render(label, True, Colors.TEXT)
-            screen.blit(label_surf, (col_label_x, cy))
+            screen.blit(self.small_font.render(label, True, Colors.TEXT), (rx, ry))
+            screen.blit(self.small_font.render(str(new_val), True, Colors.TEXT), (col_new_x, ry))
 
-            # New value
-            val_surf = self.small_font.render(str(new_val), True, Colors.TEXT)
-            screen.blit(val_surf, (col_new_x, cy))
-
-            # Diff
             diff = new_val - old_val
             if diff > 0:
                 diff_color = Colors.GREEN
@@ -1083,39 +1118,19 @@ class ShipyardView(BaseView):
             else:
                 diff_color = Colors.TEXT_SECONDARY
                 diff_text = "="
-            diff_surf = self.small_font.render(diff_text, True, diff_color)
-            screen.blit(diff_surf, (col_diff_x, cy))
+            screen.blit(self.small_font.render(diff_text, True, diff_color), (col_diff_x, ry))
+            ry += scale_y(15)
 
-            cy += scale_y(15)
+        ry += scale_y(8)
 
-        cy += scale_y(4)
+        # Separator before price
+        pygame.draw.line(screen, (40, 48, 65), (rx, ry), (dx + dw - pad, ry), 1)
+        ry += scale_y(8)
 
-        # Slot comparison
-        slot_text = (
-            f"Weapon: {ship_type.weapon_slots}  "
-            f"Defense: {ship_type.defense_slots}  "
-            f"Utility: {ship_type.utility_slots}"
-        )
-        slot_surf = self.small_font.render(slot_text, True, Colors.TEXT)
-        screen.blit(slot_surf, (cx, cy))
-        cy += scale_y(18)
-
-        # Separator
-        pygame.draw.line(screen, (40, 48, 65), (cx, cy), (dx + dw - scale_x(20), cy), 1)
-        cy += scale_y(6)
-
-        # Description (word-wrapped)
-        desc = ship_type.description
-        max_text_w = dw - scale_x(40)
-        desc_height = self._render_wrapped_text(
-            screen, desc, cx, cy, max_text_w, Colors.TEXT_SECONDARY
-        )
-        cy += desc_height + scale_y(4)
-
-        # Price section
+        # Price section (right column, bottom)
         if locked:
-            lock_surf = self.info_font.render(f"LOCKED: {lock_reason}", True, (180, 80, 80))
-            screen.blit(lock_surf, (cx, cy))
+            lock_surf = self.small_font.render(f"LOCKED: {lock_reason}", True, (180, 80, 80))
+            screen.blit(lock_surf, (rx, ry))
         else:
             net_cost = ship_type.purchase_price - current.resale_value
             can_afford = net_cost <= self.player.credits
@@ -1125,11 +1140,11 @@ class ShipyardView(BaseView):
             trade_line = f"Trade-in: -{current.resale_value:,} CR"
             net_line = f"Net cost: {net_cost:,} CR"
 
-            screen.blit(self.small_font.render(price_line, True, Colors.TEXT), (cx, cy))
-            cy += scale_y(15)
-            screen.blit(self.small_font.render(trade_line, True, Colors.TEXT_SECONDARY), (cx, cy))
-            cy += scale_y(15)
-            screen.blit(self.info_font.render(net_line, True, price_color), (cx, cy))
+            screen.blit(self.small_font.render(price_line, True, Colors.TEXT), (rx, ry))
+            ry += scale_y(15)
+            screen.blit(self.small_font.render(trade_line, True, Colors.TEXT_SECONDARY), (rx, ry))
+            ry += scale_y(15)
+            screen.blit(self.info_font.render(net_line, True, price_color), (rx, ry))
 
     def _render_wrapped_text(
         self,
