@@ -149,8 +149,8 @@ class CockpitHUD:
         self._value_font = get_font("stats", FONT_SM)
         self._button_font = get_font("dialogue", FONT_SM)
         self._tooltip_font = get_font("dialogue", FONT_XS)
-        self._quest_font = get_font("label", FONT_XS)
-        self._credit_font = get_font("stats", FONT_MD)
+        self._quest_font = get_font("dialogue", FONT_SM)
+        self._credit_font = get_font("dialogue", FONT_MD)
 
         # Button rects (computed in _build_layout)
         self._button_rects: list[pygame.Rect] = []
@@ -201,11 +201,25 @@ class CockpitHUD:
         """Pre-render the ship/cockpit panel background skin."""
         bg = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
 
-        # Dark metal fill
-        bg.fill(_SHIP_PANEL_BG)
+        # Subtle vertical gradient (lighter at top, darker at bottom)
+        r0, g0, b0 = _SHIP_PANEL_BG
+        for row in range(self.height):
+            t = row / max(1, self.height - 1)
+            # Lighten top by +8, darken bottom by -4
+            r = int(r0 + 8 * (1 - t) - 4 * t)
+            g = int(g0 + 8 * (1 - t) - 4 * t)
+            b = int(b0 + 10 * (1 - t) - 6 * t)
+            pygame.draw.line(
+                bg,
+                (max(0, min(255, r)), max(0, min(255, g)), max(0, min(255, b))),
+                (0, row),
+                (self.width, row),
+            )
 
         # Top accent line (cyan cockpit border)
         pygame.draw.line(bg, _SHIP_ACCENT, (0, 0), (self.width, 0), 2)
+        # Inner glow line below the cyan accent (darker cyan, 1px)
+        pygame.draw.line(bg, (20, 60, 100), (0, 3), (self.width, 3), 1)
         pygame.draw.line(bg, _SHIP_ACCENT_DIM, (0, 2), (self.width, 2), 1)
 
         # Bottom edge (dark)
@@ -213,6 +227,16 @@ class CockpitHUD:
 
         # Subtle panel border
         pygame.draw.rect(bg, _SHIP_PANEL_BORDER, (0, 0, self.width, self.height), 1)
+
+        # Thin vertical separator lines at section boundaries
+        pad = scale_x(12)
+        left_sep_x = self._left_x + self._left_w + pad
+        right_sep_x = self._right_x - pad
+        sep_top = scale_y(8)
+        sep_bottom = self.height - scale_y(8)
+        sep_color = (35, 42, 65)
+        pygame.draw.line(bg, sep_color, (left_sep_x, sep_top), (left_sep_x, sep_bottom), 1)
+        pygame.draw.line(bg, sep_color, (right_sep_x, sep_top), (right_sep_x, sep_bottom), 1)
 
         # Rivets along top edge for industrial feel
         rivet_spacing = scale_x(40)
@@ -363,21 +387,24 @@ class CockpitHUD:
             if hull_ratio > 0.5
             else (Colors.YELLOW if hull_ratio > 0.25 else Colors.RED)
         )
-        self._draw_hud_bar(screen, x, y, bar_w, bar_h, hull_ratio, hull_color, "HULL")
-        value_text = f"{ship.current_hull}/{ship.ship_type.combat_hull}"
-        val_surf = self._label_font.render(value_text, True, Colors.TEXT_SECONDARY)
-        screen.blit(val_surf, (x + bar_w - val_surf.get_width(), y + bar_h + 1))
+        hull_value = f"{ship.current_hull}/{ship.ship_type.combat_hull}"
+        self._draw_hud_bar(screen, x, y, bar_w, bar_h, hull_ratio, hull_color, "HULL", hull_value)
 
         # Shield bar
         y += spacing
-        shield_ratio = ship.current_shields / max(1, ship.ship_type.combat_shields)
-        self._draw_hud_bar(screen, x, y, bar_w, bar_h, shield_ratio, _SHIELD_COLOR, "SHLD")
+        shield_max = ship.ship_type.combat_shields
+        shield_ratio = ship.current_shields / max(1, shield_max)
+        shield_value = f"{ship.current_shields}/{shield_max}"
+        self._draw_hud_bar(
+            screen, x, y, bar_w, bar_h, shield_ratio, _SHIELD_COLOR, "SHLD", shield_value
+        )
 
         # Fuel bar
         y += spacing
         fuel_ratio = ship.current_fuel / max(1, ship.max_fuel)
         fuel_color = _FUEL_COLOR if fuel_ratio > 0.2 else Colors.RED
-        self._draw_hud_bar(screen, x, y, bar_w, bar_h, fuel_ratio, fuel_color, "FUEL")
+        fuel_value = f"{ship.current_fuel}/{ship.max_fuel}"
+        self._draw_hud_bar(screen, x, y, bar_w, bar_h, fuel_ratio, fuel_color, "FUEL", fuel_value)
 
     def _draw_hud_bar(
         self,
@@ -389,8 +416,9 @@ class CockpitHUD:
         ratio: float,
         color: tuple[int, int, int],
         label: str,
+        value: str = "",
     ) -> None:
-        """Render a single HUD status bar with label."""
+        """Render a single HUD status bar with label and inline value."""
         label_w = scale_x(38)
         bar_x = x + label_w
         bar_w = width - label_w
@@ -413,6 +441,13 @@ class CockpitHUD:
 
         # Border
         pygame.draw.rect(screen, _SHIP_PANEL_BORDER, (bar_x, y, bar_w, height), 1)
+
+        # Inline value text (right-aligned inside the bar, vertically centered)
+        if value:
+            val_surf = self._label_font.render(value, True, Colors.TEXT_PRIMARY)
+            val_x = bar_x + bar_w - val_surf.get_width() - scale_x(4)
+            val_y = y + (height - val_surf.get_height()) // 2
+            screen.blit(val_surf, (val_x, val_y))
 
     def _render_buttons(self, screen: pygame.Surface) -> None:
         """Render the 5 navigation buttons in the center section."""
