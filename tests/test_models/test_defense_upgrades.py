@@ -9,9 +9,15 @@ from spacegame.models.combat import build_player_combat_state, PlayerCombatState
 
 
 def _mock_ship(
-    hull: int = 100, shields: int = 40, energy: int = 10,
-    energy_regen: int = 3, speed: int = 8, evasion: int = 15,
-    accuracy: int = 70, armor: int = 0, shield_regen: int = 0,
+    hull: int = 100,
+    shields: int = 40,
+    energy: int = 10,
+    energy_regen: int = 3,
+    speed: int = 8,
+    evasion: int = 15,
+    accuracy: int = 70,
+    armor: int = 0,
+    shield_regen: int = 0,
     identity: str = "",
 ) -> MagicMock:
     """Create a mock Ship with ShipType attributes."""
@@ -71,7 +77,9 @@ class TestDefenseUpgradeBonusWiring:
         ship = _mock_ship(shields=40)
         um = _mock_upgrade_manager(shield_bonus=10.0)
         state = build_player_combat_state(ship, um, None, {})
-        assert state.max_shields == 50, f"Expected 50 (40 base + 10 upgrade), got {state.max_shields}"
+        assert state.max_shields == 50, (
+            f"Expected 50 (40 base + 10 upgrade), got {state.max_shields}"
+        )
 
     def test_flee_bonus_from_upgrades(self) -> None:
         ship = _mock_ship()
@@ -91,8 +99,10 @@ class TestDefenseUpgradeBonusWiring:
     def test_combined_bonuses(self) -> None:
         ship = _mock_ship(armor=2, shield_regen=3, evasion=10)
         um = _mock_upgrade_manager(
-            armor_bonus=2.0, shield_regen_bonus=3.0,
-            evasion_bonus=5.0, shield_bonus=15.0,
+            armor_bonus=2.0,
+            shield_regen_bonus=3.0,
+            evasion_bonus=5.0,
+            shield_bonus=15.0,
         )
         state = build_player_combat_state(ship, um, None, {})
         assert state.armor == 4

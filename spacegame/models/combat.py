@@ -19,11 +19,11 @@ if TYPE_CHECKING:
 class WeaponElement(Enum):
     """Elemental damage type for combat moves."""
 
-    KINETIC = "kinetic"    # Pure damage, no secondary effect
-    PLASMA = "plasma"      # 66% upfront + stacking Burn DoT
-    ION = "ion"            # 150% to shields, 75% to hull
-    CRYO = "cryo"          # 85% damage + Chill stacks → Frozen at 3
-    VOLTAIC = "voltaic"    # 85% damage + Suppressed stacks (reduce enemy damage)
+    KINETIC = "kinetic"  # Pure damage, no secondary effect
+    PLASMA = "plasma"  # 66% upfront + stacking Burn DoT
+    ION = "ion"  # 150% to shields, 75% to hull
+    CRYO = "cryo"  # 85% damage + Chill stacks → Frozen at 3
+    VOLTAIC = "voltaic"  # 85% damage + Suppressed stacks (reduce enemy damage)
 
 
 class EffectType(Enum):
@@ -39,11 +39,11 @@ class EffectType(Enum):
     ENERGY_DRAIN = "energy_drain"
     ENERGY_RESTORE = "energy_restore"
     DAMAGE_BOOST = "damage_boost"
-    BURN = "burn"                # Plasma DoT: X damage per turn, stacks to 3
-    CHILL = "chill"              # Cryo: stacks to 3, then Frozen (lose turn)
-    SUPPRESSED = "suppressed"    # Voltaic: -12% damage per stack, stacks to 3
-    CLEANSE = "cleanse"          # Remove all negative effects from self
-    ABSORB = "absorb"            # Absorb next incoming hit completely (1 charge)
+    BURN = "burn"  # Plasma DoT: X damage per turn, stacks to 3
+    CHILL = "chill"  # Cryo: stacks to 3, then Frozen (lose turn)
+    SUPPRESSED = "suppressed"  # Voltaic: -12% damage per stack, stacks to 3
+    CLEANSE = "cleanse"  # Remove all negative effects from self
+    ABSORB = "absorb"  # Absorb next incoming hit completely (1 charge)
 
 
 class EffectTarget(Enum):
@@ -199,7 +199,9 @@ class BossPhase:
     """
 
     name: str
-    hp_threshold: float  # Phase activates when total HP ratio drops below this (1.0 = always active)
+    hp_threshold: (
+        float  # Phase activates when total HP ratio drops below this (1.0 = always active)
+    )
     behavior: str  # "aggressive", "defensive", "evasive", "berserker", "tactical"
     move_ids: list[str] = field(default_factory=list)  # IDs of moves available in this phase
     on_enter_text: str = ""  # Dialogue/flavor text shown on transition
@@ -374,9 +376,7 @@ class EnemyShip:
 
             new_turns = turns_left - 1
             if new_turns <= 0:
-                messages.append(
-                    f"{effect.type.value} effect expired on {self.template.name}"
-                )
+                messages.append(f"{effect.type.value} effect expired on {self.template.name}")
             else:
                 remaining.append((effect, new_turns))
         self.active_effects = remaining
@@ -434,11 +434,18 @@ class PlayerCombatState:
     ship_class_category: str = ""
     momentum: "MomentumGauge | None" = field(default=None, repr=False)
     critical_hp_surge_fired: bool = field(default=False, repr=False)
+    # Module combat state (Shipbuilder Upgrade Phase 9)
+    module_states: list = field(default_factory=list)  # list[ModuleCombatState]
+    _ship_build: object = field(default=None, repr=False)  # ShipBuild reference
+    _module_catalog: dict = field(default_factory=dict, repr=False)
+    # Legendary module state (Shipbuilder Upgrade — Boss Drops)
+    _legendary: object = field(default=None, repr=False)  # LegendaryState
 
     def __post_init__(self) -> None:
         """Initialize momentum gauge if not provided."""
         if self.momentum is None:
             from spacegame.models.momentum import MomentumGauge
+
             self.momentum = MomentumGauge()
 
     @property
@@ -591,6 +598,7 @@ def build_player_combat_state(
     # === Build-derived stats path (Shipyard Overhaul Phase A2) ===
     # When a ShipBuild is active, use its computed stats instead of ShipType
     from spacegame.models.ship_build import ComputedShipStats
+
     cs = getattr(ship, "computed_stats", None)
     if isinstance(cs, ComputedShipStats):
         crew_moves: list[CombatMove] = []
@@ -607,6 +615,60 @@ def build_player_combat_state(
         if player_level < EARLY_GAME_LEVEL:
             flee_bonus += EARLY_GAME_FLEE_BONUS
 
+        # Initialize module combat states if build has modules
+        module_states_list = []
+        module_catalog_ref = {}
+        build_ref = None
+        legendary_state = None
+        if ship.build and ship.build.modules:
+            try:
+                from spacegame.data_loader import get_data_loader
+                from spacegame.models.module_combat import init_module_combat_states
+
+                dl = get_data_loader()
+                module_catalog_ref = getattr(dl, "ship_modules", {})
+                module_states_list = init_module_combat_states(ship.build, module_catalog_ref)
+                build_ref = ship.build
+            except (ImportError, Exception):
+                pass
+            # Initialize legendary module effects
+            try:
+                from spacegame.models.legendary_effects import init_legendary_state
+
+                legendary_state = init_legendary_state(ship.build, module_catalog_ref)
+            except (ImportError, Exception):
+                pass
+
+        # Extract combat moves from module-installed equipment (unified system)
+        # Falls back to cs.combat_moves (old DesignatedSlot path) if no modules have equipment
+        equipment_moves_list = []
+        if ship.build and ship.build.modules:
+            try:
+                from spacegame.data_loader import get_data_loader
+                from spacegame.models.ship_module import get_module_equipment_slots
+
+                all_upgrades = getattr(get_data_loader(), "upgrades", {})
+                slots = get_module_equipment_slots(ship.build, module_catalog_ref)
+                for slot in slots:
+                    uid = slot.get("installed_upgrade_id")
+                    if uid and uid in all_upgrades:
+                        upgrade = all_upgrades[uid]
+                        if hasattr(upgrade, "combat_move") and upgrade.combat_move:
+                            move = CombatMove.from_dict(upgrade.combat_move)
+                            # Apply mark multiplier to damage effects
+                            mark = slot.get("upgrade_mark", 1)
+                            if mark > 1:
+                                mark_mult = {1: 1.0, 2: 1.25, 3: 1.50}.get(mark, 1.0)
+                                for eff in move.effects:
+                                    if eff.type == EffectType.DAMAGE:
+                                        eff.value = eff.value * mark_mult
+                            equipment_moves_list.append(move)
+            except Exception:
+                pass
+        # Fallback: use old system's combat_moves if no module equipment found
+        if not equipment_moves_list:
+            equipment_moves_list = cs.combat_moves
+
         return PlayerCombatState(
             hull=ship.current_hull,
             max_hull=cs.hull,
@@ -618,7 +680,7 @@ def build_player_combat_state(
             speed=cs.speed,
             evasion=cs.evasion,
             accuracy=cs.accuracy,
-            equipment_moves=cs.combat_moves,
+            equipment_moves=equipment_moves_list,
             crew_moves=crew_moves,
             active_effects=[],
             cooldowns={},
@@ -627,6 +689,10 @@ def build_player_combat_state(
             shield_regen=cs.shield_regen,
             defensive_identity=cs.defensive_identity or "",
             ship_class_category=ship.ship_type.ship_class_category,
+            module_states=module_states_list,
+            _ship_build=build_ref,
+            _module_catalog=module_catalog_ref,
+            _legendary=legendary_state,
         )
 
     # === Legacy ShipType path (backward compat) ===

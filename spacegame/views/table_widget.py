@@ -6,12 +6,13 @@ hover highlighting, scrolling, and a scrollbar. Not a pygame_gui element —
 draws directly to the screen surface.
 """
 
-import pygame
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Optional
 
+import pygame
+
 from spacegame.config import Colors
-from spacegame.engine.fonts import FontCache, FONT_BODY, FONT_MD
+from spacegame.engine.fonts import FONT_BODY, FONT_MD, get_font
 
 # Horizontal padding inside each cell
 CELL_PAD = 6
@@ -56,8 +57,8 @@ class TableWidget:
         self.rect = pygame.Rect(rect)
         self.columns = columns
         self.row_height = row_height
-        self.font = font or FontCache.get(FONT_MD)
-        self.header_font = header_font or FontCache.get(FONT_BODY)
+        self.font = font or get_font("dialogue", FONT_MD)
+        self.header_font = header_font or get_font("header", FONT_BODY)
         self.empty_message = empty_message
 
         # Row data: each row is list[str | tuple[str, tuple]] for per-cell color
@@ -299,7 +300,9 @@ class TableWidget:
             if text_surf.get_width() > max_width:
                 text_surf = self._truncate_text(text, color, max_width)
 
-            tx = self._align_x(text_surf, x + col_icon_offset, col.width - col_icon_offset, col.align)
+            tx = self._align_x(
+                text_surf, x + col_icon_offset, col.width - col_icon_offset, col.align
+            )
             # Vertically center text in the row
             ty = y + (self.row_height - text_surf.get_height()) // 2
             screen.blit(text_surf, (tx, ty))

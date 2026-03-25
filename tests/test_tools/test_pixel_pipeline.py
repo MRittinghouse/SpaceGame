@@ -442,9 +442,9 @@ class TestResizeForPixelArt:
         img = Image.new("RGBA", (512, 512))
         # Four colored quadrants
         colors = [
-            (255, 0, 0, 255),    # top-left: red
-            (0, 0, 255, 255),    # top-right: blue
-            (0, 255, 0, 255),    # bottom-left: green
+            (255, 0, 0, 255),  # top-left: red
+            (0, 0, 255, 255),  # top-right: blue
+            (0, 255, 0, 255),  # bottom-left: green
             (255, 255, 0, 255),  # bottom-right: yellow
         ]
         for x in range(512):

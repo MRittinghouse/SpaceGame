@@ -4,21 +4,28 @@ Main menu view.
 Starting point for the game with options to start new game, load, settings, etc.
 """
 
-import pygame
-import pygame_gui
 import math
 import random
 from typing import Optional, Union
-from spacegame.views.base_view import BaseView
+
+import pygame
+import pygame_gui
+
 from spacegame.config import (
-    WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState, IMAGES_DIR, scale_x, scale_y,
+    WINDOW_HEIGHT,
+    WINDOW_WIDTH,
+    Colors,
+    GameState,
+    scale_x,
+    scale_y,
 )
+from spacegame.engine.backgrounds import AnimatedBackground
+from spacegame.engine.fonts import FONT_HERO, FONT_TITLE, get_font
+from spacegame.engine.particles import STAR_TWINKLE, ParticlePool
+from spacegame.engine.sprites import AnimatedSprite, get_sprite_manager, res_scale
 from spacegame.save_manager import SaveManager
 from spacegame.utils.logger import logger
-from spacegame.engine.backgrounds import AnimatedBackground
-from spacegame.engine.fonts import FONT_HERO, FONT_TITLE, FontCache
-from spacegame.engine.particles import ParticlePool, STAR_TWINKLE
-from spacegame.engine.sprites import AnimatedSprite, get_sprite_manager, res_scale
+from spacegame.views.base_view import BaseView
 
 
 class MainMenuView(BaseView):
@@ -35,8 +42,8 @@ class MainMenuView(BaseView):
         self.next_state: Optional[Union[GameState, str]] = None
 
         # Fonts
-        self.title_font = FontCache.get(FONT_HERO)
-        self.subtitle_font = FontCache.get(FONT_TITLE)
+        self.title_font = get_font("header", FONT_HERO)  # "AURELIA" — bold arcade pixel
+        self.subtitle_font = get_font("narration", FONT_TITLE)  # "A Ledger of Stars" — elegant
 
         # UI Elements (created in on_enter)
         self.new_game_button: Optional[pygame_gui.elements.UIButton] = None
@@ -68,7 +75,7 @@ class MainMenuView(BaseView):
 
         # New game confirmation state
         self._confirm_new_game: bool = False
-        self._confirm_font = FontCache.get(FONT_TITLE)
+        self._confirm_font = get_font("header", FONT_TITLE)
 
     def on_enter(self) -> None:
         super().on_enter()
@@ -78,12 +85,17 @@ class MainMenuView(BaseView):
         # Load an animated ship sprite for the drifting ambient ship
         if self._ship_anim is None:
             ship_ids = [
-                "light_freighter", "scout_vessel", "fast_courier",
-                "clipper", "shuttle",
+                "light_freighter",
+                "scout_vessel",
+                "fast_courier",
+                "clipper",
+                "shuttle",
             ]
             ship_id = random.choice(ship_ids)
             self._ship_anim = self._sprite_mgr.get_ship_animated(
-                ship_id, category="player", scale=res_scale(2),
+                ship_id,
+                category="player",
+                scale=res_scale(2),
             )
         # Reset ship position to off-screen left
         self._ship_x = -100.0
@@ -149,7 +161,7 @@ class MainMenuView(BaseView):
                 # Check Yes/No button rects (must match render positions exactly)
                 cx = WINDOW_WIDTH // 2
                 cy = WINDOW_HEIGHT // 2
-                pw, ph = scale_x(480), scale_y(200)
+                _pw, ph = scale_x(480), scale_y(200)
                 panel_top = cy - ph // 2
                 btn_w, btn_h = scale_x(140), scale_y(44)
                 btn_y = panel_top + scale_y(100)
@@ -190,8 +202,12 @@ class MainMenuView(BaseView):
 
     def _set_menu_buttons_visible(self, visible: bool) -> None:
         """Show or hide the main menu buttons (for confirmation dialog)."""
-        for btn in [self.new_game_button, self.continue_button,
-                    self.load_game_button, self.exit_button]:
+        for btn in [
+            self.new_game_button,
+            self.continue_button,
+            self.load_game_button,
+            self.exit_button,
+        ]:
             if btn:
                 if visible:
                     btn.show()
@@ -261,9 +277,7 @@ class MainMenuView(BaseView):
         screen.blit(title_text, title_rect)
 
         # Subtitle: "A Ledger of Stars"
-        subtitle_text = self.subtitle_font.render(
-            "A Ledger of Stars", True, Colors.TEXT
-        )
+        subtitle_text = self.subtitle_font.render("A Ledger of Stars", True, Colors.TEXT)
         subtitle_rect = subtitle_text.get_rect(center=(WINDOW_WIDTH // 2, title_y + scale_y(55)))
         screen.blit(subtitle_text, subtitle_rect)
 
@@ -286,15 +300,17 @@ class MainMenuView(BaseView):
 
             # Title
             from spacegame.engine.fonts import FONT_BODY, FONT_SM
-            warn_font = FontCache.get(FONT_BODY)
-            small_font = FontCache.get(FONT_SM)
+
+            warn_font = get_font("dialogue", FONT_BODY)
+            small_font = get_font("dialogue", FONT_SM)
 
             line1 = warn_font.render("Start a new game?", True, Colors.TEXT_HIGHLIGHT)
             screen.blit(line1, line1.get_rect(centerx=cx, top=panel.top + scale_y(20)))
 
             line2 = small_font.render(
                 "Your autosave will be overwritten. Manual saves are kept.",
-                True, Colors.TEXT_SECONDARY,
+                True,
+                Colors.TEXT_SECONDARY,
             )
             screen.blit(line2, line2.get_rect(centerx=cx, top=panel.top + scale_y(55)))
 
@@ -321,7 +337,9 @@ class MainMenuView(BaseView):
             screen.blit(no_text, no_text.get_rect(center=no_rect.center))
 
             # Keyboard hint
-            hint = small_font.render("Press Y or N  |  Enter to confirm, Escape to cancel", True, Colors.TEXT_SECONDARY)
+            hint = small_font.render(
+                "Press Y or N  |  Enter to confirm, Escape to cancel", True, Colors.TEXT_SECONDARY
+            )
             screen.blit(hint, hint.get_rect(centerx=cx, top=panel.top + scale_y(155)))
 
         # Fade-in overlay

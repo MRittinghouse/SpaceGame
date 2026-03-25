@@ -5,8 +5,10 @@ Processes keyboard and mouse input events and dispatches them to the
 appropriate game components.
 """
 
+from typing import Callable, Dict
+
 import pygame
-from typing import Dict, Callable, Optional
+
 from spacegame.utils.logger import logger
 
 
@@ -85,7 +87,7 @@ class InputHandler:
 
     def _handle_mouse_up(self, event: pygame.event.Event) -> None:
         """Handle mouse button release."""
-        pass  # Can implement if needed
+        # Can implement if needed
 
     def is_key_pressed(self, key: int) -> bool:
         """

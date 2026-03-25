@@ -5,20 +5,29 @@ Displays active, available, and completed missions with objectives
 and rewards. Allows accepting available missions.
 """
 
-import pygame
-import pygame_gui
 from typing import Optional
 
-from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState, scale_x, scale_y
-from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
-from spacegame.views.base_view import BaseView
-from spacegame.models.mission import MissionManager, MissionStatus, Mission
+import pygame
+import pygame_gui
+
+from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH, Colors, GameState, scale_x, scale_y
 from spacegame.engine.backgrounds import AnimatedBackground
 from spacegame.engine.draw_utils import draw_panel
-from spacegame.engine.fonts import FontCache, FONT_BODY, FONT_LG, FONT_MD, FONT_SECTION, FONT_XL, FONT_XS
+from spacegame.engine.fonts import (
+    FONT_BODY,
+    FONT_LG,
+    FONT_MD,
+    FONT_SECTION,
+    FONT_XL,
+    FONT_XS,
+    get_font,
+)
+from spacegame.models.mission import Mission, MissionManager, MissionStatus
 from spacegame.utils.logger import logger
+from spacegame.views.base_view import BaseView
+from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
 
-# Layout constants
+# Layout constants (list-detail pattern, shared with crew_roster_view and journal_view)
 PANEL_LEFT = scale_x(40)
 PANEL_TOP = scale_y(90)
 LIST_WIDTH = scale_x(360)
@@ -116,9 +125,7 @@ class _MissionItem:
             badge_text = "MAIN"
             badge_color = _CAMPAIGN_BADGE_COLOR
         badge_surf = self.badge_font.render(badge_text, True, badge_color)
-        badge_rect = badge_surf.get_rect(
-            midright=(self.rect.right - 10, self.rect.centery)
-        )
+        badge_rect = badge_surf.get_rect(midright=(self.rect.right - 10, self.rect.centery))
         screen.blit(badge_surf, badge_rect)
 
     def was_clicked(self, event: pygame.event.Event) -> bool:
@@ -183,13 +190,13 @@ class MissionLogView(BaseView):
         self._scroll_offset: int = 0
 
         # Fonts
-        self._title_font = FontCache.get(FONT_SECTION)
-        self._tab_font = FontCache.get(FONT_BODY)
-        self._name_font = FontCache.get(FONT_LG)
-        self._desc_font = FontCache.get(FONT_MD)
-        self._detail_title_font = FontCache.get(FONT_XL)
-        self._label_font = FontCache.get(FONT_BODY)
-        self._badge_font = FontCache.get(FONT_XS)
+        self._title_font = get_font("header", FONT_SECTION)
+        self._tab_font = get_font("label", FONT_BODY)
+        self._name_font = get_font("dialogue", FONT_LG)
+        self._desc_font = get_font("dialogue", FONT_MD)
+        self._detail_title_font = get_font("header", FONT_XL)
+        self._label_font = get_font("dialogue", FONT_BODY)
+        self._badge_font = get_font("label", FONT_XS)
 
         # UI
         self.back_button: Optional[pygame_gui.elements.UIButton] = None
@@ -219,7 +226,9 @@ class MissionLogView(BaseView):
 
     def _create_ui(self) -> None:
         self.back_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(PANEL_LEFT, WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - scale_y(60), 120, 40),
+            relative_rect=pygame.Rect(
+                PANEL_LEFT, WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - scale_y(60), 120, 40
+            ),
             text="BACK",
             manager=self.ui_manager,
         )

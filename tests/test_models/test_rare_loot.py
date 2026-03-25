@@ -96,8 +96,7 @@ class TestRareLootDataLoading:
 
         # At least one dangerous enemy should have rare_loot
         dangerous_with_rare = [
-            t for t in dl.enemy_templates.values()
-            if t.danger_tier == "dangerous" and t.rare_loot
+            t for t in dl.enemy_templates.values() if t.danger_tier == "dangerous" and t.rare_loot
         ]
         assert len(dangerous_with_rare) > 0, "At least one dangerous enemy should have rare_loot"
 
@@ -108,9 +107,7 @@ class TestRareLootDataLoading:
         dl = get_data_loader()
         dl.load_enemy_templates()
 
-        dangerous = [
-            t for t in dl.enemy_templates.values() if t.danger_tier == "dangerous"
-        ]
+        dangerous = [t for t in dl.enemy_templates.values() if t.danger_tier == "dangerous"]
         assert len(dangerous) >= 10, f"Expected at least 10 dangerous enemies, got {len(dangerous)}"
 
         for template in dangerous:
@@ -266,9 +263,7 @@ class TestRareLootRolling:
         for seed in range(50):
             result = _roll_loot(table, seed=seed)
             results.add(frozenset(result.items()))
-        assert len(results) > 1, (
-            "Different seeds should produce at least some variation in loot"
-        )
+        assert len(results) > 1, "Different seeds should produce at least some variation in loot"
 
     def test_empty_loot_table_returns_empty_dict(self) -> None:
         """_roll_loot with an empty table should return an empty dict."""
@@ -290,6 +285,5 @@ class TestRareLootRolling:
                 found_difference = True
                 break
         assert found_difference, (
-            "Rare loot seed offset (7919) should produce different results "
-            "than normal loot seed"
+            "Rare loot seed offset (7919) should produce different results than normal loot seed"
         )

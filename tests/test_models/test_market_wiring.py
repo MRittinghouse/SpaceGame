@@ -59,8 +59,7 @@ class TestPlayerSupplyDemandWiring:
         price_after = market.get_price(commodity_id)
         # 1 unit * 0.02 per unit = 2% modifier — price may change by 0-1 due to rounding
         assert abs(price_after - price_before) <= 2, (
-            f"Price change should be minimal for 1 unit: "
-            f"before={price_before}, after={price_after}"
+            f"Price change should be minimal for 1 unit: before={price_before}, after={price_after}"
         )
 
     def test_modifier_decays_over_time(self) -> None:

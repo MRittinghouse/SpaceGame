@@ -293,10 +293,7 @@ class TestDayAdvanceEventGeneration:
 
         # Simulate cleanup logic (mirrors Game._check_day_advance)
         current_day = 5  # After duration
-        expired = [
-            sid for sid, ev in active_events.items()
-            if not ev.is_active(current_day)
-        ]
+        expired = [sid for sid, ev in active_events.items() if not ev.is_active(current_day)]
         for sid in expired:
             del active_events[sid]
 

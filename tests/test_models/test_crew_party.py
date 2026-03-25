@@ -423,9 +423,7 @@ class TestDismissedSerialization:
 class TestReRecruitCost:
     """Verify credit costs scale with loyalty tier and departed flag."""
 
-    def _dismiss_at_loyalty(
-        self, loyalty: int, departed: bool = False
-    ) -> CrewRoster:
+    def _dismiss_at_loyalty(self, loyalty: int, departed: bool = False) -> CrewRoster:
         roster, _ = _make_roster_with_recruited()
         # Set loyalty to desired value
         roster.adjust_loyalty("elena_reeves", loyalty - 30)  # starts at 30
@@ -492,7 +490,9 @@ class TestDismissBlocking:
 
     def test_can_dismiss_blocks_priya_during_lab_rat(self) -> None:
         template = _make_template(
-            "dr_priya_osei", "Dr. Priya Osei", "scientist",
+            "dr_priya_osei",
+            "Dr. Priya Osei",
+            "scientist",
             home_system_id="axiom_labs",
         )
         roster = CrewRoster({"dr_priya_osei": template})
@@ -504,7 +504,9 @@ class TestDismissBlocking:
 
     def test_can_dismiss_allows_priya_when_lab_rat_not_active(self) -> None:
         template = _make_template(
-            "dr_priya_osei", "Dr. Priya Osei", "scientist",
+            "dr_priya_osei",
+            "Dr. Priya Osei",
+            "scientist",
             home_system_id="axiom_labs",
         )
         roster = CrewRoster({"dr_priya_osei": template})
@@ -583,9 +585,7 @@ class TestCrewQuestGating:
         mgr._status["elena_old_charts"] = MissionStatus.ACTIVE
 
         player = _make_player_stub(system_id="stellaris_port")
-        completed = mgr.check_objectives(
-            player, recruited_crew_ids={"elena_reeves"}
-        )
+        completed = mgr.check_objectives(player, recruited_crew_ids={"elena_reeves"})
         assert "elena_old_charts" in completed
 
     def test_non_crew_mission_unaffected_by_recruited_ids(self) -> None:

@@ -25,9 +25,7 @@ from spacegame.engine.sprites import (
 pygame.init()
 
 
-def _make_sheet_surface(
-    frame_width: int, frame_height: int, frame_count: int
-) -> pygame.Surface:
+def _make_sheet_surface(frame_width: int, frame_height: int, frame_count: int) -> pygame.Surface:
     """Create a test sprite sheet surface with distinct colors per frame.
 
     Each frame is filled with a unique color so we can verify extraction.
@@ -200,7 +198,9 @@ class TestAnimatedSprite:
         anims = {
             "idle": AnimationDef(name="idle", frames=[0, 1], frame_duration=0.5),
             "hit": AnimationDef(name="hit", frames=[2, 3, 2], frame_duration=0.1, loop=False),
-            "destroy": AnimationDef(name="destroy", frames=[4, 5, 6, 7], frame_duration=0.15, loop=False),
+            "destroy": AnimationDef(
+                name="destroy", frames=[4, 5, 6, 7], frame_duration=0.15, loop=False
+            ),
         }
         return AnimatedSprite(sheet=sheet, animations=anims)
 
@@ -409,16 +409,16 @@ class TestScalePixelArt:
 # ============================================================================
 
 
-def _save_test_png(path: str, width: int, height: int,
-                   color: tuple[int, int, int, int] = (255, 0, 0, 255)) -> None:
+def _save_test_png(
+    path: str, width: int, height: int, color: tuple[int, int, int, int] = (255, 0, 0, 255)
+) -> None:
     """Create a minimal RGBA PNG file using pygame."""
     surface = pygame.Surface((width, height), pygame.SRCALPHA)
     surface.fill(color)
     pygame.image.save(surface, path)
 
 
-def _save_test_sheet_png(path: str, frame_width: int, frame_height: int,
-                         frame_count: int) -> None:
+def _save_test_sheet_png(path: str, frame_width: int, frame_height: int, frame_count: int) -> None:
     """Create a sprite sheet PNG with distinct colors per frame."""
     total_width = frame_width * frame_count
     surface = pygame.Surface((total_width, frame_height), pygame.SRCALPHA)
@@ -429,8 +429,7 @@ def _save_test_sheet_png(path: str, frame_width: int, frame_height: int,
     pygame.image.save(surface, path)
 
 
-def _write_anim_config(dir_path: str, filename: str,
-                       config: dict) -> None:
+def _write_anim_config(dir_path: str, filename: str, config: dict) -> None:
     """Write an animation config JSON file."""
     anims_dir = os.path.join(dir_path, "animations")
     os.makedirs(anims_dir, exist_ok=True)
@@ -463,9 +462,7 @@ class TestSpriteManager:
         with tempfile.TemporaryDirectory() as tmpdir:
             sprites_dir = os.path.join(tmpdir, "sprites", "ships", "player")
             os.makedirs(sprites_dir)
-            _save_test_sheet_png(
-                os.path.join(sprites_dir, "shuttle_sheet.png"), 32, 32, 4
-            )
+            _save_test_sheet_png(os.path.join(sprites_dir, "shuttle_sheet.png"), 32, 32, 4)
 
             mgr = SpriteManager(tmpdir)
             sheet = mgr.get_sheet("ships/player", "shuttle", 32, 32)
@@ -477,9 +474,7 @@ class TestSpriteManager:
         with tempfile.TemporaryDirectory() as tmpdir:
             sprites_dir = os.path.join(tmpdir, "sprites", "ships", "player")
             os.makedirs(sprites_dir)
-            _save_test_sheet_png(
-                os.path.join(sprites_dir, "shuttle_sheet.png"), 32, 32, 4
-            )
+            _save_test_sheet_png(os.path.join(sprites_dir, "shuttle_sheet.png"), 32, 32, 4)
 
             mgr = SpriteManager(tmpdir)
             sheet1 = mgr.get_sheet("ships/player", "shuttle", 32, 32)
@@ -490,9 +485,7 @@ class TestSpriteManager:
         with tempfile.TemporaryDirectory() as tmpdir:
             sprites_dir = os.path.join(tmpdir, "sprites", "ships", "player")
             os.makedirs(sprites_dir)
-            _save_test_sheet_png(
-                os.path.join(sprites_dir, "shuttle_sheet.png"), 32, 32, 2
-            )
+            _save_test_sheet_png(os.path.join(sprites_dir, "shuttle_sheet.png"), 32, 32, 2)
 
             mgr = SpriteManager(tmpdir)
             sheet = mgr.get_sheet("ships/player", "shuttle", 32, 32, scale=2)
@@ -503,9 +496,7 @@ class TestSpriteManager:
         with tempfile.TemporaryDirectory() as tmpdir:
             sprites_dir = os.path.join(tmpdir, "sprites", "ships", "player")
             os.makedirs(sprites_dir)
-            _save_test_sheet_png(
-                os.path.join(sprites_dir, "shuttle_sheet.png"), 32, 32, 2
-            )
+            _save_test_sheet_png(os.path.join(sprites_dir, "shuttle_sheet.png"), 32, 32, 2)
 
             mgr = SpriteManager(tmpdir)
             sheet_1x = mgr.get_sheet("ships/player", "shuttle", 32, 32, scale=1)
@@ -526,17 +517,13 @@ class TestSpriteManager:
         with tempfile.TemporaryDirectory() as tmpdir:
             sprites_dir = os.path.join(tmpdir, "sprites", "ships", "player")
             os.makedirs(sprites_dir)
-            _save_test_sheet_png(
-                os.path.join(sprites_dir, "shuttle_sheet.png"), 32, 32, 4
-            )
+            _save_test_sheet_png(os.path.join(sprites_dir, "shuttle_sheet.png"), 32, 32, 4)
 
             anims = {
                 "idle": AnimationDef(name="idle", frames=[0, 1], frame_duration=0.3),
             }
             mgr = SpriteManager(tmpdir)
-            sprite = mgr.get_sprite(
-                "ships/player", "shuttle", 32, 32, animations=anims
-            )
+            sprite = mgr.get_sprite("ships/player", "shuttle", 32, 32, animations=anims)
             assert sprite is not None
             assert isinstance(sprite, AnimatedSprite)
 
@@ -545,9 +532,7 @@ class TestSpriteManager:
         with tempfile.TemporaryDirectory() as tmpdir:
             sprites_dir = os.path.join(tmpdir, "sprites", "ships", "player")
             os.makedirs(sprites_dir)
-            _save_test_sheet_png(
-                os.path.join(sprites_dir, "shuttle_sheet.png"), 32, 32, 4
-            )
+            _save_test_sheet_png(os.path.join(sprites_dir, "shuttle_sheet.png"), 32, 32, 4)
 
             anims = {
                 "idle": AnimationDef(name="idle", frames=[0, 1], frame_duration=0.3),
@@ -672,13 +657,14 @@ class TestSpriteManager:
         with tempfile.TemporaryDirectory() as tmpdir:
             sprites_dir = os.path.join(tmpdir, "sprites", "ships", "player")
             os.makedirs(sprites_dir)
-            _save_test_sheet_png(
-                os.path.join(sprites_dir, "shuttle_sheet.png"), 32, 32, 4
+            _save_test_sheet_png(os.path.join(sprites_dir, "shuttle_sheet.png"), 32, 32, 4)
+            _write_anim_config(
+                tmpdir,
+                "ship_anims.json",
+                {
+                    "idle": {"name": "idle", "frames": [0, 1], "frame_duration": 0.3, "loop": True},
+                },
             )
-            _write_anim_config(tmpdir, "ship_anims.json", {
-                "idle": {"name": "idle", "frames": [0, 1],
-                         "frame_duration": 0.3, "loop": True},
-            })
 
             mgr = SpriteManager(tmpdir)
             surface = mgr.get_ship_sprite("shuttle")
@@ -709,9 +695,7 @@ class TestSpriteManager:
         with tempfile.TemporaryDirectory() as tmpdir:
             sprites_dir = os.path.join(tmpdir, "sprites", "ships", "player")
             os.makedirs(sprites_dir)
-            _save_test_sheet_png(
-                os.path.join(sprites_dir, "shuttle_sheet.png"), 32, 32, 4
-            )
+            _save_test_sheet_png(os.path.join(sprites_dir, "shuttle_sheet.png"), 32, 32, 4)
 
             mgr = SpriteManager(tmpdir)
             surface = mgr.get_ship_sprite("shuttle")
@@ -724,13 +708,14 @@ class TestSpriteManager:
         with tempfile.TemporaryDirectory() as tmpdir:
             sprites_dir = os.path.join(tmpdir, "sprites", "ships", "enemies")
             os.makedirs(sprites_dir)
-            _save_test_sheet_png(
-                os.path.join(sprites_dir, "pirate_base_sheet.png"), 32, 32, 4
+            _save_test_sheet_png(os.path.join(sprites_dir, "pirate_base_sheet.png"), 32, 32, 4)
+            _write_anim_config(
+                tmpdir,
+                "ship_anims.json",
+                {
+                    "idle": {"name": "idle", "frames": [0, 1], "frame_duration": 0.3, "loop": True},
+                },
             )
-            _write_anim_config(tmpdir, "ship_anims.json", {
-                "idle": {"name": "idle", "frames": [0, 1],
-                         "frame_duration": 0.3, "loop": True},
-            })
 
             mgr = SpriteManager(tmpdir)
             surface = mgr.get_enemy_sprite("pirate_base")
@@ -761,13 +746,14 @@ class TestSpriteManager:
         with tempfile.TemporaryDirectory() as tmpdir:
             sprites_dir = os.path.join(tmpdir, "sprites", "portraits")
             os.makedirs(sprites_dir)
-            _save_test_sheet_png(
-                os.path.join(sprites_dir, "officer_larsen_sheet.png"), 50, 60, 8
+            _save_test_sheet_png(os.path.join(sprites_dir, "officer_larsen_sheet.png"), 50, 60, 8)
+            _write_anim_config(
+                tmpdir,
+                "portrait_anims.json",
+                {
+                    "idle": {"name": "idle", "frames": [0, 1], "frame_duration": 1.0, "loop": True},
+                },
             )
-            _write_anim_config(tmpdir, "portrait_anims.json", {
-                "idle": {"name": "idle", "frames": [0, 1],
-                         "frame_duration": 1.0, "loop": True},
-            })
 
             mgr = SpriteManager(tmpdir)
             surface = mgr.get_portrait_sprite("officer_larsen")
@@ -820,9 +806,7 @@ class TestSpriteManager:
         with tempfile.TemporaryDirectory() as tmpdir:
             sprites_dir = os.path.join(tmpdir, "sprites", "factions")
             os.makedirs(sprites_dir)
-            _save_test_png(
-                os.path.join(sprites_dir, "commerce_guild.png"), 24, 24
-            )
+            _save_test_png(os.path.join(sprites_dir, "commerce_guild.png"), 24, 24)
 
             mgr = SpriteManager(tmpdir)
             surface = mgr.get_faction_emblem("commerce_guild")
@@ -831,9 +815,7 @@ class TestSpriteManager:
 
     def test_get_ground_tile_neutral(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
-            sprites_dir = os.path.join(
-                tmpdir, "sprites", "ground_tiles", "neutral"
-            )
+            sprites_dir = os.path.join(tmpdir, "sprites", "ground_tiles", "neutral")
             os.makedirs(sprites_dir)
             _save_test_png(os.path.join(sprites_dir, "floor.png"), 16, 16)
 
@@ -844,9 +826,7 @@ class TestSpriteManager:
 
     def test_get_ground_tile_faction(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
-            sprites_dir = os.path.join(
-                tmpdir, "sprites", "ground_tiles", "commerce_guild"
-            )
+            sprites_dir = os.path.join(tmpdir, "sprites", "ground_tiles", "commerce_guild")
             os.makedirs(sprites_dir)
             _save_test_png(os.path.join(sprites_dir, "wall.png"), 16, 16)
 
@@ -859,9 +839,7 @@ class TestSpriteManager:
         with tempfile.TemporaryDirectory() as tmpdir:
             sprites_dir = os.path.join(tmpdir, "sprites", "upgrades")
             os.makedirs(sprites_dir)
-            _save_test_png(
-                os.path.join(sprites_dir, "cargo_bay_ext.png"), 16, 16
-            )
+            _save_test_png(os.path.join(sprites_dir, "cargo_bay_ext.png"), 16, 16)
 
             mgr = SpriteManager(tmpdir)
             surface = mgr.get_upgrade_icon("cargo_bay_ext")
@@ -901,13 +879,9 @@ class TestSpriteManager:
 
     def test_get_ground_enemy_sprite(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
-            sprites_dir = os.path.join(
-                tmpdir, "sprites", "ground_tiles", "enemies"
-            )
+            sprites_dir = os.path.join(tmpdir, "sprites", "ground_tiles", "enemies")
             os.makedirs(sprites_dir)
-            _save_test_png(
-                os.path.join(sprites_dir, "guild_security.png"), 16, 16
-            )
+            _save_test_png(os.path.join(sprites_dir, "guild_security.png"), 16, 16)
 
             mgr = SpriteManager(tmpdir)
             surface = mgr.get_ground_enemy_sprite("guild_security")
@@ -916,13 +890,9 @@ class TestSpriteManager:
 
     def test_get_ground_enemy_sprite_custom_scale(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
-            sprites_dir = os.path.join(
-                tmpdir, "sprites", "ground_tiles", "enemies"
-            )
+            sprites_dir = os.path.join(tmpdir, "sprites", "ground_tiles", "enemies")
             os.makedirs(sprites_dir)
-            _save_test_png(
-                os.path.join(sprites_dir, "guild_security.png"), 16, 16
-            )
+            _save_test_png(os.path.join(sprites_dir, "guild_security.png"), 16, 16)
 
             mgr = SpriteManager(tmpdir)
             surface = mgr.get_ground_enemy_sprite("guild_security", scale=2)
@@ -938,12 +908,12 @@ class TestSpriteManager:
         """Ground enemy sprite uses ground_tiles/enemies category path."""
         with tempfile.TemporaryDirectory() as tmpdir:
             # Place file at the expected path
-            sprites_dir = os.path.join(
-                tmpdir, "sprites", "ground_tiles", "enemies"
-            )
+            sprites_dir = os.path.join(tmpdir, "sprites", "ground_tiles", "enemies")
             os.makedirs(sprites_dir)
             _save_test_png(
-                os.path.join(sprites_dir, "pirate_thug.png"), 16, 16,
+                os.path.join(sprites_dir, "pirate_thug.png"),
+                16,
+                16,
                 color=(0, 255, 0, 255),
             )
 
@@ -959,7 +929,9 @@ class TestSpriteManager:
             sprites_dir = os.path.join(tmpdir, "sprites", "ground_tiles")
             os.makedirs(sprites_dir)
             _save_test_png(
-                os.path.join(sprites_dir, "player.png"), 16, 16,
+                os.path.join(sprites_dir, "player.png"),
+                16,
+                16,
                 color=(0, 0, 255, 255),
             )
 
@@ -991,13 +963,14 @@ class TestSpriteManager:
         with tempfile.TemporaryDirectory() as tmpdir:
             sprites_dir = os.path.join(tmpdir, "sprites", "ships", "player")
             os.makedirs(sprites_dir)
-            _save_test_sheet_png(
-                os.path.join(sprites_dir, "shuttle_sheet.png"), 32, 32, 4
+            _save_test_sheet_png(os.path.join(sprites_dir, "shuttle_sheet.png"), 32, 32, 4)
+            _write_anim_config(
+                tmpdir,
+                "ship_anims.json",
+                {
+                    "idle": {"name": "idle", "frames": [0, 1], "frame_duration": 0.3, "loop": True},
+                },
             )
-            _write_anim_config(tmpdir, "ship_anims.json", {
-                "idle": {"name": "idle", "frames": [0, 1],
-                         "frame_duration": 0.3, "loop": True},
-            })
 
             mgr = SpriteManager(tmpdir)
             sprite = mgr.get_ship_animated("shuttle", category="player", scale=2)
@@ -1031,9 +1004,7 @@ class TestSpriteManager:
         with tempfile.TemporaryDirectory() as tmpdir:
             sprites_dir = os.path.join(tmpdir, "sprites", "ships", "player")
             os.makedirs(sprites_dir)
-            _save_test_sheet_png(
-                os.path.join(sprites_dir, "shuttle_sheet.png"), 32, 32, 4
-            )
+            _save_test_sheet_png(os.path.join(sprites_dir, "shuttle_sheet.png"), 32, 32, 4)
 
             mgr = SpriteManager(tmpdir)
             sprite = mgr.get_ship_animated("shuttle", category="player", scale=1)
@@ -1067,13 +1038,14 @@ class TestSpriteManager:
         with tempfile.TemporaryDirectory() as tmpdir:
             sprites_dir = os.path.join(tmpdir, "sprites", "portraits")
             os.makedirs(sprites_dir)
-            _save_test_sheet_png(
-                os.path.join(sprites_dir, "officer_larsen_sheet.png"), 50, 60, 4
+            _save_test_sheet_png(os.path.join(sprites_dir, "officer_larsen_sheet.png"), 50, 60, 4)
+            _write_anim_config(
+                tmpdir,
+                "portrait_anims.json",
+                {
+                    "idle": {"name": "idle", "frames": [0, 1], "frame_duration": 1.0, "loop": True},
+                },
             )
-            _write_anim_config(tmpdir, "portrait_anims.json", {
-                "idle": {"name": "idle", "frames": [0, 1],
-                         "frame_duration": 1.0, "loop": True},
-            })
 
             mgr = SpriteManager(tmpdir)
             sprite = mgr.get_portrait_animated("officer_larsen", scale=2)

@@ -7,9 +7,7 @@ and story trigger message duration.
 import pytest
 
 pygame = pytest.importorskip("pygame", reason="pygame required for view tests")
-pygame_gui = pytest.importorskip(
-    "pygame_gui", reason="pygame_gui required for view tests"
-)
+pygame_gui = pytest.importorskip("pygame_gui", reason="pygame_gui required for view tests")
 
 from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT  # noqa: E402
 from spacegame.models.ground import (  # noqa: E402
@@ -39,7 +37,10 @@ def _init_pygame():
 
 
 def _make_view(
-    width: int = 15, height: int = 15, player_x: int = 5, player_y: int = 5,
+    width: int = 15,
+    height: int = 15,
+    player_x: int = 5,
+    player_y: int = 5,
     mission_state: GroundMissionState = None,
 ) -> GroundExplorationView:
     """Create a view with optional mission state."""
@@ -47,7 +48,10 @@ def _make_view(
     ground_map = GroundMap.create_test_map(width, height)
     player_state = GroundPlayerState(x=player_x, y=player_y)
     view = GroundExplorationView(
-        ui_manager, ground_map, player_state, mission_state=mission_state,
+        ui_manager,
+        ground_map,
+        player_state,
+        mission_state=mission_state,
     )
     view.on_enter()
     return view
@@ -122,7 +126,8 @@ class TestStoryTriggerDuration:
             enemies=[],
             story_triggers=[
                 GroundStoryTrigger(
-                    x=5, y=5,
+                    x=5,
+                    y=5,
                     trigger_type="atmosphere",
                     text="The corridor opens into a vast cargo hold.",
                 ),

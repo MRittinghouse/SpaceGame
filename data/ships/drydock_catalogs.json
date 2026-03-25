@@ -3,60 +3,147 @@
     "nexus_prime": {
       "shapes_sold": ["medium_rect", "arrow_point", "hull_section", "medium_square", "large_square"],
       "materials_sold": ["standard_plate", "composite_weave"],
+      "modules_sold": [
+        "standard_bridge_rk", "standard_drive_rk", "turret_platform_rk",
+        "standard_generator_rk", "standard_bay_rk", "standard_quarters_rk",
+        "compact_reactor_rk", "sensor_array_rk", "large_fuel_tank_rk",
+        "wide_hold_rk", "medium_rect_4x3", "large_plate_5x4",
+        "hull_beam_6x2", "comms_array_rk", "tractor_beam_rk",
+        "point_defense_rk", "dorsal_turret_rk", "escape_pod_rk",
+        "nexus_trade_terminal", "nexus_customs_bypass",
+        "armored_command_foundry", "standard_hardpoint_talon",
+        "efficient_drive_meridian", "heavy_weapons_bay_foundry",
+        "directional_barrier_rk", "refrigerated_hold_meridian",
+        "twin_nacelle_rk", "medical_bay_rk"
+      ],
       "weight_classes": ["tiny", "small", "medium", "large"],
       "price_modifier": 1.1
     },
     "stellaris_port": {
       "shapes_sold": ["large_square", "diamond", "hull_plank", "medium_rect"],
       "materials_sold": ["reinforced_plate", "barrier_lattice"],
+      "modules_sold": [
+        "standard_bridge_rk", "standard_drive_rk", "standard_hardpoint_talon",
+        "standard_generator_rk", "standard_bay_rk", "heavy_weapons_bay_foundry",
+        "compact_reactor_rk", "large_fuel_tank_rk", "extended_fuel_tank_rk",
+        "missile_rack_rk", "directional_barrier_rk", "wing_tip_pod_rk",
+        "large_square_4x4", "long_beam_8x2", "wide_plate_6x3",
+        "stellaris_grand_hold", "stellaris_vip_suite"
+      ],
       "weight_classes": ["tiny", "small", "medium", "large"],
       "price_modifier": 1.15
     },
     "verdant": {
       "shapes_sold": ["medium_square", "notch", "l_shape"],
       "materials_sold": ["light_alloy", "standard_plate"],
+      "modules_sold": [
+        "standard_bridge_rk", "light_thruster_rk", "tapered_nozzle_rk",
+        "light_hardpoint_rk", "basic_emitter_rk", "small_hold_rk",
+        "small_fuel_tank_rk", "medical_bay_rk", "crew_lounge_meridian",
+        "efficient_drive_meridian", "nav_computer_meridian",
+        "verdant_hydroponic_bay", "verdant_life_module"
+      ],
       "weight_classes": ["tiny", "small"],
       "price_modifier": 1.0
     },
     "havens_rest": {
       "shapes_sold": ["notch", "l_shape", "t_shape", "plus_shape"],
       "materials_sold": ["salvage_scrap", "composite_weave"],
+      "modules_sold": [
+        "standard_bridge_rk", "standard_drive_rk", "turret_platform_rk",
+        "standard_generator_rk", "standard_bay_rk", "wide_hold_rk",
+        "modular_rack_rk", "workshop_foundry", "bunk_room_rk",
+        "extended_hab_rk", "hull_beam_6x2", "t_shape_4x3",
+        "smuggling_compartment_sable", "rapid_fire_talon",
+        "haven_garden_quarters", "haven_mediator_array"
+      ],
       "weight_classes": ["tiny", "small", "medium"],
       "price_modifier": 0.95
     },
     "forgeworks": {
       "shapes_sold": ["large_triangle", "hull_section", "mega_block", "hull_plank", "medium_square"],
       "materials_sold": ["heavy_armor", "reinforced_plate"],
+      "modules_sold": [
+        "armored_command_foundry", "heavy_drive_foundry", "wide_array_foundry",
+        "heavy_weapons_bay_foundry", "broadside_battery_foundry", "quad_mount_foundry",
+        "fortress_projector_foundry", "heavy_projector_foundry", "layered_barrier_foundry",
+        "bulk_freighter_foundry", "barracks_foundry", "heavy_reactor_foundry",
+        "standard_reactor_rk", "workshop_foundry", "refinery_pod_foundry",
+        "capital_engine_foundry", "capital_reactor_foundry",
+        "reinforced_bulkhead_4x2", "armored_plate_3x3_foundry",
+        "forge_repair_rig", "forge_slag_plate"
+      ],
       "weight_classes": ["tiny", "small", "medium", "large", "xlarge"],
       "price_modifier": 1.0
     },
     "breakstone": {
       "shapes_sold": ["medium_square", "hull_plank", "large_triangle"],
       "materials_sold": ["heavy_armor", "salvage_scrap"],
+      "modules_sold": [
+        "standard_bridge_rk", "standard_drive_rk", "heavy_drive_foundry",
+        "standard_hardpoint_talon", "standard_generator_rk",
+        "standard_bay_rk", "tall_hold_rk", "bunk_room_rk",
+        "compact_reactor_rk", "tractor_beam_rk",
+        "reinforced_bulkhead_4x2", "wing_spar_5x2",
+        "breakstone_prospect_scanner", "breakstone_rock_rat_pod"
+      ],
       "weight_classes": ["tiny", "small", "medium"],
       "price_modifier": 0.95
     },
     "axiom_labs": {
       "shapes_sold": ["diamond", "plus_shape", "medium_rect"],
       "materials_sold": ["shield_crystal", "barrier_lattice"],
+      "modules_sold": [
+        "observation_dome_rk", "tall_tower_meridian", "efficient_drive_meridian",
+        "ion_array_meridian", "shield_dome_meridian", "phase_barrier_sable",
+        "standard_generator_rk", "standard_bay_rk", "compact_node_sable",
+        "science_lab_meridian", "sensor_array_rk", "nav_computer_meridian",
+        "efficient_cell_meridian", "ew_suite_sable", "drone_bay_rk",
+        "lightweight_frame_4x3",
+        "axiom_analysis_core", "axiom_lattice_shield"
+      ],
       "weight_classes": ["tiny", "small", "medium", "large"],
       "price_modifier": 1.05
     },
     "nova_research": {
       "shapes_sold": ["arrow_point", "large_square"],
       "materials_sold": ["shield_crystal"],
+      "modules_sold": [
+        "standard_bridge_rk", "whisper_drive_sable", "concealed_bay_sable",
+        "phase_barrier_sable", "compact_node_sable", "standard_bay_rk",
+        "science_lab_meridian", "sensor_array_rk", "ew_suite_sable",
+        "micro_reactor_sable", "compact_quarters_sable",
+        "lightweight_frame_4x3", "nose_point_3x3",
+        "nova_prototype_drive", "nova_classified_sensor"
+      ],
       "weight_classes": ["tiny", "small", "medium", "large"],
       "price_modifier": 1.1
     },
     "crimson_reach": {
       "shapes_sold": ["notch", "l_shape"],
       "materials_sold": ["stealth_composite", "crimson_steel"],
+      "modules_sold": [
+        "stealth_helm_sable", "whisper_drive_sable", "concealed_bay_sable",
+        "twin_link_talon", "rapid_fire_talon", "compact_node_sable",
+        "smuggling_compartment_sable", "small_hold_rk",
+        "micro_reactor_sable", "ew_suite_sable",
+        "angled_connector_3x3", "nose_point_3x3",
+        "crimson_wrecker_bay", "crimson_scrapyard_turret"
+      ],
       "weight_classes": ["tiny", "small", "medium"],
       "price_modifier": 0.9
     },
     "iron_depths": {
       "shapes_sold": ["hull_plank", "large_triangle"],
       "materials_sold": ["heavy_armor", "standard_plate"],
+      "modules_sold": [
+        "armored_command_foundry", "heavy_drive_foundry",
+        "standard_hardpoint_talon", "forward_battery_talon",
+        "heavy_projector_foundry", "standard_bay_rk", "tall_hold_rk",
+        "bunk_room_rk", "compact_reactor_rk", "tractor_beam_rk",
+        "reinforced_bulkhead_4x2", "armored_plate_3x3_foundry",
+        "iron_depths_pressure_hull", "iron_depths_bore_mount"
+      ],
       "weight_classes": ["tiny", "small", "medium"],
       "price_modifier": 1.0
     }

@@ -588,6 +588,7 @@ class TestStationHubDockingDenial:
 
         # Just verify the constructor signature accepts the param
         import inspect
+
         sig = inspect.signature(StationHubView.__init__)
         assert "politics_manager" in sig.parameters
 
@@ -660,6 +661,7 @@ class TestGalaxyMapPoliticalEvents:
         """GalaxyMapView should accept optional politics_manager param."""
         from spacegame.views.galaxy_map_view import GalaxyMapView
         import inspect
+
         sig = inspect.signature(GalaxyMapView.__init__)
         assert "politics_manager" in sig.parameters
 
@@ -806,18 +808,14 @@ class TestCampaignDialoguePoliticalIntegration:
                 return tree
         raise ValueError(f"Dialogue tree {tree_id} not found")
 
-    def _find_response(
-        self, tree: dict, node_id: str, response_text_prefix: str
-    ) -> dict:
+    def _find_response(self, tree: dict, node_id: str, response_text_prefix: str) -> dict:
         """Find a response in a node by text prefix."""
         for node in tree["nodes"]:
             if node["id"] == node_id:
                 for r in node["responses"]:
                     if r["text"].startswith(response_text_prefix):
                         return r
-        raise ValueError(
-            f"Response starting with '{response_text_prefix}' not found in {node_id}"
-        )
+        raise ValueError(f"Response starting with '{response_text_prefix}' not found in {node_id}")
 
     def test_oren_tak_revelation_has_rep_changes(self) -> None:
         """Oren's revelation should reward miners_union and penalize guild."""
@@ -843,7 +841,9 @@ class TestCampaignDialoguePoliticalIntegration:
         full = self._find_response(tree, "share_data", "I'll stop it")
         partial = self._find_response(tree, "partial_intel", "That's enough")
         full_factions = {k: v for d in full["faction_reputation_changes"] for k, v in d.items()}
-        partial_factions = {k: v for d in partial["faction_reputation_changes"] for k, v in d.items()}
+        partial_factions = {
+            k: v for d in partial["faction_reputation_changes"] for k, v in d.items()
+        }
         assert partial_factions["science_collective"] < full_factions["science_collective"]
         assert partial_factions["commerce_guild"] > full_factions["commerce_guild"]  # less negative
 
@@ -899,4 +899,5 @@ class TestDeadCodeCleanup:
     def test_spillover_ratio_is_authoritative(self) -> None:
         """REP_SPILLOVER_RATIO should be the only spillover constant."""
         from spacegame.config import REP_SPILLOVER_RATIO
+
         assert REP_SPILLOVER_RATIO == 0.30

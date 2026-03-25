@@ -31,17 +31,28 @@ class TestTransitionLifecycle:
         manager.start(TransitionType.FADE, 0.4, old_surface=screen)
         assert manager.active
 
-    def test_callback_fires_at_midpoint(self, manager: TransitionManager, screen: pygame.Surface) -> None:
+    def test_callback_fires_at_midpoint(
+        self, manager: TransitionManager, screen: pygame.Surface
+    ) -> None:
         called = []
-        manager.start(TransitionType.FADE, 0.4, callback=lambda: called.append(True), old_surface=screen)
+        manager.start(
+            TransitionType.FADE, 0.4, callback=lambda: called.append(True), old_surface=screen
+        )
         manager.update(0.15)
         assert len(called) == 0
         manager.update(0.1)  # past midpoint (0.2)
         assert len(called) == 1
 
-    def test_callback_fires_only_once(self, manager: TransitionManager, screen: pygame.Surface) -> None:
+    def test_callback_fires_only_once(
+        self, manager: TransitionManager, screen: pygame.Surface
+    ) -> None:
         count = [0]
-        manager.start(TransitionType.FADE, 0.4, callback=lambda: count.__setitem__(0, count[0] + 1), old_surface=screen)
+        manager.start(
+            TransitionType.FADE,
+            0.4,
+            callback=lambda: count.__setitem__(0, count[0] + 1),
+            old_surface=screen,
+        )
         manager.update(0.25)
         manager.update(0.05)
         manager.update(0.05)
@@ -52,7 +63,9 @@ class TestTransitionLifecycle:
         manager.update(0.5)
         assert not manager.active
 
-    def test_old_screen_cleared_on_end(self, manager: TransitionManager, screen: pygame.Surface) -> None:
+    def test_old_screen_cleared_on_end(
+        self, manager: TransitionManager, screen: pygame.Surface
+    ) -> None:
         manager.start(TransitionType.FADE, 0.4, old_surface=screen)
         manager.update(0.5)
         assert manager.old_screen is None
@@ -62,24 +75,32 @@ class TestTransitionRendering:
     """Each transition type renders without error."""
 
     @pytest.mark.parametrize("ttype", list(TransitionType))
-    def test_render_at_start(self, manager: TransitionManager, screen: pygame.Surface, ttype: TransitionType) -> None:
+    def test_render_at_start(
+        self, manager: TransitionManager, screen: pygame.Surface, ttype: TransitionType
+    ) -> None:
         manager.start(ttype, 0.4, old_surface=screen)
         manager.update(0.01)
         manager.render(screen)
 
     @pytest.mark.parametrize("ttype", list(TransitionType))
-    def test_render_at_midpoint(self, manager: TransitionManager, screen: pygame.Surface, ttype: TransitionType) -> None:
+    def test_render_at_midpoint(
+        self, manager: TransitionManager, screen: pygame.Surface, ttype: TransitionType
+    ) -> None:
         manager.start(ttype, 0.4, old_surface=screen)
         manager.update(0.2)
         manager.render(screen)
 
     @pytest.mark.parametrize("ttype", list(TransitionType))
-    def test_render_near_end(self, manager: TransitionManager, screen: pygame.Surface, ttype: TransitionType) -> None:
+    def test_render_near_end(
+        self, manager: TransitionManager, screen: pygame.Surface, ttype: TransitionType
+    ) -> None:
         manager.start(ttype, 0.4, old_surface=screen)
         manager.update(0.38)
         manager.render(screen)
 
-    def test_render_inactive_is_noop(self, manager: TransitionManager, screen: pygame.Surface) -> None:
+    def test_render_inactive_is_noop(
+        self, manager: TransitionManager, screen: pygame.Surface
+    ) -> None:
         manager.render(screen)  # should not crash
 
 
@@ -98,8 +119,9 @@ class TestPixelateTransition:
         manager.render(screen)
 
         # Screen should differ from original
-        assert screen.get_at((80, 60)) != original.get_at((80, 60)) or \
-               screen.get_at((50, 30)) != original.get_at((50, 30))
+        assert screen.get_at((80, 60)) != original.get_at((80, 60)) or screen.get_at(
+            (50, 30)
+        ) != original.get_at((50, 30))
 
     def test_pixelate_near_start_minimal_effect(self, manager: TransitionManager) -> None:
         screen = pygame.Surface((160, 120))

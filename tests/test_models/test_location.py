@@ -187,16 +187,21 @@ class TestLocationDataLoading:
         loader.load_locations()
         for system_id, locs in loader.locations.items():
             ids = [loc.id for loc in locs]
-            assert len(ids) == len(set(ids)), (
-                f"{system_id} has duplicate location IDs"
-            )
+            assert len(ids) == len(set(ids)), f"{system_id} has duplicate location IDs"
 
     def test_location_types_are_valid(self) -> None:
         from spacegame.data_loader import DataLoader
 
         valid_types = {
-            "market", "repair_bay", "cantina", "mining",
-            "salvaging", "refining", "shipyard", "unique", "investment",
+            "market",
+            "repair_bay",
+            "cantina",
+            "mining",
+            "salvaging",
+            "refining",
+            "shipyard",
+            "unique",
+            "investment",
         }
         loader = DataLoader()
         loader.load_locations()

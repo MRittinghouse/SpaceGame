@@ -208,15 +208,34 @@ class TestShipClassCategories:
         for ships in SHIP_CLASS_CATEGORIES.values():
             all_ships.update(ships)
         expected_ships = {
-            "shuttle", "light_freighter", "prospector", "patrol_cutter",
-            "medium_freighter", "fast_courier", "armed_trader", "scout_vessel",
-            "corsair", "mining_barge", "smugglers_sloop", "salvage_rig",
-            "bulk_hauler", "luxury_yacht", "clipper", "war_frigate",
-            "deep_explorer", "phantom", "industrial_titan", "diplomatic_cruiser",
-            "consortium_merchantman", "syndicate_enforcer", "frontier_runner",
+            "shuttle",
+            "light_freighter",
+            "prospector",
+            "patrol_cutter",
+            "medium_freighter",
+            "fast_courier",
+            "armed_trader",
+            "scout_vessel",
+            "corsair",
+            "mining_barge",
+            "smugglers_sloop",
+            "salvage_rig",
+            "bulk_hauler",
+            "luxury_yacht",
+            "clipper",
+            "war_frigate",
+            "deep_explorer",
+            "phantom",
+            "industrial_titan",
+            "diplomatic_cruiser",
+            "consortium_merchantman",
+            "syndicate_enforcer",
+            "frontier_runner",
             "institute_vessel",
         }
-        assert all_ships == expected_ships, f"Missing: {expected_ships - all_ships}, Extra: {all_ships - expected_ships}"
+        assert all_ships == expected_ships, (
+            f"Missing: {expected_ships - all_ships}, Extra: {all_ships - expected_ships}"
+        )
 
     def test_no_ship_in_multiple_categories(self) -> None:
         seen: dict[str, str] = {}
@@ -267,22 +286,37 @@ def _make_test_move(
     aoe: bool = False,
 ) -> CombatMove:
     return CombatMove(
-        id=id, name=id.title(), description=f"{id} attack",
+        id=id,
+        name=id.title(),
+        description=f"{id} attack",
         effects=[CombatEffect(type=EffectType.DAMAGE, value=damage)],
-        energy_cost=energy_cost, element=element, aoe=aoe,
+        energy_cost=energy_cost,
+        element=element,
+        aoe=aoe,
     )
 
 
 def _make_test_enemy(
-    hull: int = 80, shields: int = 0, evasion: int = 0,
+    hull: int = 80,
+    shields: int = 0,
+    evasion: int = 0,
 ) -> EnemyShipTemplate:
     return EnemyShipTemplate(
-        id="test_enemy", name="Test Enemy", description="Test",
+        id="test_enemy",
+        name="Test Enemy",
+        description="Test",
         behavior=EnemyBehavior.AGGRESSIVE,
-        hull=hull, shields=shields, energy=10, energy_regen=3,
-        speed=8, evasion=evasion, accuracy=70,
+        hull=hull,
+        shields=shields,
+        energy=10,
+        energy_regen=3,
+        speed=8,
+        evasion=evasion,
+        accuracy=70,
         moves=[_make_test_move("enemy_blaster", 5.0)],
-        loot_table=[], negotiate_difficulty=3, flee_threshold=0.4,
+        loot_table=[],
+        negotiate_difficulty=3,
+        flee_threshold=0.4,
         bribe_cost=0,
     )
 
@@ -299,11 +333,20 @@ def _make_test_state(
         enemy_templates = [_make_test_enemy()]
 
     player = PlayerCombatState(
-        hull=100, max_hull=100, shields=40, max_shields=40,
-        energy=10, max_energy=10, energy_regen=3,
-        speed=8, evasion=0, accuracy=95,  # High accuracy to ensure hits
-        equipment_moves=player_moves, crew_moves=[],
-        active_effects=[], cooldowns={},
+        hull=100,
+        max_hull=100,
+        shields=40,
+        max_shields=40,
+        energy=10,
+        max_energy=10,
+        energy_regen=3,
+        speed=8,
+        evasion=0,
+        accuracy=95,  # High accuracy to ensure hits
+        equipment_moves=player_moves,
+        crew_moves=[],
+        active_effects=[],
+        cooldowns={},
         ship_class_category=ship_class_category,
     )
     encounter = CombatEncounter(enemy_templates=enemy_templates, encounter_seed=seed)
@@ -342,12 +385,21 @@ class TestMomentumEngineIntegration:
     def test_momentum_builds_on_taking_damage(self) -> None:
         # Use enemy with 95 accuracy and seed that guarantees a hit
         high_acc_enemy = EnemyShipTemplate(
-            id="sniper", name="Sniper", description="Test",
+            id="sniper",
+            name="Sniper",
+            description="Test",
             behavior=EnemyBehavior.AGGRESSIVE,
-            hull=80, shields=0, energy=10, energy_regen=3,
-            speed=8, evasion=0, accuracy=95,
+            hull=80,
+            shields=0,
+            energy=10,
+            energy_regen=3,
+            speed=8,
+            evasion=0,
+            accuracy=95,
             moves=[_make_test_move("sniper_shot", 15.0)],
-            loot_table=[], negotiate_difficulty=3, flee_threshold=0.4,
+            loot_table=[],
+            negotiate_difficulty=3,
+            flee_threshold=0.4,
             bribe_cost=0,
         )
         state = _make_test_state(enemy_templates=[high_acc_enemy], seed=1)
@@ -361,8 +413,12 @@ class TestMomentumEngineIntegration:
 
     def test_momentum_builds_on_crew_ability(self) -> None:
         crew_move = CombatMove(
-            id="repair", name="Repair", description="Heal",
-            effects=[CombatEffect(type=EffectType.HULL_RESTORE, value=10, target=EffectTarget.SELF)],
+            id="repair",
+            name="Repair",
+            description="Heal",
+            effects=[
+                CombatEffect(type=EffectType.HULL_RESTORE, value=10, target=EffectTarget.SELF)
+            ],
             energy_cost=2,
         )
         state = _make_test_state()

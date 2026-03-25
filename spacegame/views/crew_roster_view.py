@@ -5,22 +5,23 @@ Displays recruited crew members with their stats, abilities, and loyalty.
 Allows dismissing crew members from the roster.
 """
 
-import pygame
-import pygame_gui
 from typing import Optional
 
-from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState, scale_x, scale_y
-from spacegame.views.base_view import BaseView
-from spacegame.models.crew import CrewRoster, CrewTemplate
-from spacegame.models.attributes import AttributeId, ATTRIBUTE_DEFINITIONS
+import pygame
+import pygame_gui
+
+from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH, Colors, GameState, scale_x, scale_y
 from spacegame.engine.backgrounds import AnimatedBackground
 from spacegame.engine.draw_utils import draw_bar, draw_panel
-from spacegame.engine.fonts import FONT_BODY, FONT_LG, FONT_MD, FONT_SECTION, FONT_XL, FontCache
+from spacegame.engine.fonts import FONT_BODY, FONT_LG, FONT_MD, FONT_SECTION, FONT_XL, get_font
 from spacegame.engine.sprites import AnimatedSprite, get_sprite_manager, res_scale
+from spacegame.models.attributes import ATTRIBUTE_DEFINITIONS, AttributeId
+from spacegame.models.crew import CrewRoster, CrewTemplate
 from spacegame.utils.logger import logger
+from spacegame.views.base_view import BaseView
 from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
 
-# Layout constants
+# Layout constants (list-detail pattern, shared with mission_log_view and journal_view)
 PANEL_LEFT = scale_x(40)
 PANEL_TOP = scale_y(90)
 LIST_WIDTH = scale_x(360)
@@ -154,12 +155,12 @@ class CrewRosterView(BaseView):
         self._scroll_offset: int = 0
 
         # Fonts
-        self._title_font = FontCache.get(FONT_SECTION)
-        self._name_font = FontCache.get(FONT_LG)
-        self._desc_font = FontCache.get(FONT_MD)
-        self._detail_title_font = FontCache.get(FONT_XL)
-        self._label_font = FontCache.get(FONT_BODY)
-        self._slot_font = FontCache.get(FONT_LG)
+        self._title_font = get_font("header", FONT_SECTION)
+        self._name_font = get_font("dialogue", FONT_LG)
+        self._desc_font = get_font("dialogue", FONT_MD)
+        self._detail_title_font = get_font("header", FONT_XL)
+        self._label_font = get_font("dialogue", FONT_BODY)
+        self._slot_font = get_font("stats", FONT_LG)
 
         # UI
         self.back_button: Optional[pygame_gui.elements.UIButton] = None
@@ -192,7 +193,9 @@ class CrewRosterView(BaseView):
 
     def _create_ui(self) -> None:
         self.back_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(PANEL_LEFT, WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - scale_y(60), 120, 40),
+            relative_rect=pygame.Rect(
+                PANEL_LEFT, WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - scale_y(60), 120, 40
+            ),
             text="BACK",
             manager=self.ui_manager,
         )
@@ -286,7 +289,7 @@ class CrewRosterView(BaseView):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             for attr_id, rect in self._attr_plus_rects.items():
                 if rect.collidepoint(event.pos) and self._selected_crew_id:
-                    success, msg = self.crew_roster.allocate_crew_attribute(
+                    success, _msg = self.crew_roster.allocate_crew_attribute(
                         self._selected_crew_id, attr_id
                     )
                     if success:
@@ -454,6 +457,7 @@ class CrewRosterView(BaseView):
             tier = self.crew_roster.get_loyalty_tier(template.id)
             if tier:
                 from spacegame.models.crew import LoyaltyTier
+
                 tier_names = {
                     LoyaltyTier.DISCONTENTED: ("Discontented", Colors.RED),
                     LoyaltyTier.WARY: ("Wary", Colors.YELLOW),
@@ -462,17 +466,22 @@ class CrewRosterView(BaseView):
                     LoyaltyTier.LOYAL: ("Loyal", Colors.GREEN),
                     LoyaltyTier.DEVOTED: ("Devoted", Colors.GREEN),
                 }
-                tier_name, bar_color = tier_names.get(
-                    tier, ("", Colors.TEXT_SECONDARY)
-                )
+                tier_name, bar_color = tier_names.get(tier, ("", Colors.TEXT_SECONDARY))
             else:
                 bar_color = Colors.TEXT_SECONDARY
                 tier_name = ""
 
             draw_bar(
-                screen, pad_x + 70, cur_y + 3, 140, 14,
-                current=loyalty, maximum=100, color=bar_color,
-                font=self._desc_font, show_value=True,
+                screen,
+                pad_x + 70,
+                cur_y + 3,
+                140,
+                14,
+                current=loyalty,
+                maximum=100,
+                color=bar_color,
+                font=self._desc_font,
+                show_value=True,
             )
             if tier_name:
                 tier_surf = self._desc_font.render(tier_name, True, bar_color)
@@ -541,9 +550,7 @@ class CrewRosterView(BaseView):
             for attr in AttributeId:
                 defn = ATTRIBUTE_DEFINITIONS[attr.value]
                 val = attrs.get(attr.value, 1)
-                attr_surf = self._desc_font.render(
-                    f"{defn['name']}: {val}", True, Colors.TEXT
-                )
+                attr_surf = self._desc_font.render(f"{defn['name']}: {val}", True, Colors.TEXT)
                 screen.blit(attr_surf, (pad_x + 10, cur_y))
 
                 if attr_points > 0:

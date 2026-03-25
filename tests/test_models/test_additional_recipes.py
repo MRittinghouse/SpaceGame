@@ -9,15 +9,22 @@ class TestAdditionalRecipesExist:
     """All B5 recipes should load from data."""
 
     EXPECTED_IDS = {
-        "refine_rare_ore", "reclaim_rare_parts", "synthesize_phase_lattice",
-        "distill_refined_propellant", "forge_combat_alloy",
-        "synthesize_neural_weave", "craft_emp_grenade", "craft_arc_emitter",
-        "craft_shield_capacitor", "craft_deep_scan_probe",
+        "refine_rare_ore",
+        "reclaim_rare_parts",
+        "synthesize_phase_lattice",
+        "distill_refined_propellant",
+        "forge_combat_alloy",
+        "synthesize_neural_weave",
+        "craft_emp_grenade",
+        "craft_arc_emitter",
+        "craft_shield_capacitor",
+        "craft_deep_scan_probe",
         "craft_contraband_serum",
     }
 
     def test_all_new_recipes_exist(self) -> None:
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_all()
         recipe_ids = {r.id for r in dl.recipes}
@@ -27,6 +34,7 @@ class TestAdditionalRecipesExist:
     def test_total_recipe_count(self) -> None:
         """Total recipes should be 32 (21 existing + 11 new)."""
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_all()
         assert len(dl.recipes) == 38
@@ -36,14 +44,19 @@ class TestNewCommodities:
     """New commodities for B5 recipes should exist."""
 
     NEW_COMMODITY_IDS = {
-        "phase_lattice", "refined_propellant", "neural_weave",
-        "crafted_arc_emitter", "crafted_emp_grenade",
-        "crafted_shield_capacitor", "crafted_deep_scan_probe",
+        "phase_lattice",
+        "refined_propellant",
+        "neural_weave",
+        "crafted_arc_emitter",
+        "crafted_emp_grenade",
+        "crafted_shield_capacitor",
+        "crafted_deep_scan_probe",
         "crafted_black_market_serum",
     }
 
     def test_new_commodities_exist(self) -> None:
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_all()
         commodity_ids = {c.id for c in dl.get_all_commodities()}
@@ -53,6 +66,7 @@ class TestNewCommodities:
     def test_total_commodity_count(self) -> None:
         """Total commodities should be 61 (60 existing + 1 sealed_audit_chip)."""
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_all()
         assert len(dl.get_all_commodities()) == 61
@@ -63,6 +77,7 @@ class TestNewUpgrades:
 
     def test_shield_capacitor_upgrade(self) -> None:
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_all()
         assert "shield_capacitor" in dl.upgrades
@@ -72,6 +87,7 @@ class TestNewUpgrades:
 
     def test_arc_emitter_upgrade(self) -> None:
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_all()
         assert "arc_emitter" in dl.upgrades
@@ -85,12 +101,14 @@ class TestNewEquipment:
 
     def test_emp_grenade_exists(self) -> None:
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_all()
         assert "emp_grenade" in dl.ground_equipment
 
     def test_deep_scan_probe_exists(self) -> None:
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_all()
         assert "deep_scan_probe" in dl.ground_equipment
@@ -101,6 +119,7 @@ class TestDiscoverableRecipes:
 
     def test_phase_lattice_discoverable(self) -> None:
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_all()
         recipe = next(r for r in dl.recipes if r.id == "synthesize_phase_lattice")
@@ -109,6 +128,7 @@ class TestDiscoverableRecipes:
 
     def test_arc_emitter_discoverable(self) -> None:
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_all()
         recipe = next(r for r in dl.recipes if r.id == "craft_arc_emitter")
@@ -117,6 +137,7 @@ class TestDiscoverableRecipes:
 
     def test_neural_weave_discoverable(self) -> None:
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_all()
         recipe = next(r for r in dl.recipes if r.id == "synthesize_neural_weave")
@@ -125,6 +146,7 @@ class TestDiscoverableRecipes:
 
     def test_shield_capacitor_discoverable(self) -> None:
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_all()
         recipe = next(r for r in dl.recipes if r.id == "craft_shield_capacitor")
@@ -138,6 +160,7 @@ class TestCrossSystemRecipes:
     def test_combat_alloy_uses_three_sources(self) -> None:
         """forge_combat_alloy uses mining (iron_ore) + combat (combat_salvage) + salvage (salvaged_electronics)."""
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_all()
         recipe = next(r for r in dl.recipes if r.id == "forge_combat_alloy")
@@ -147,6 +170,7 @@ class TestCrossSystemRecipes:
 
     def test_neural_weave_uses_four_inputs(self) -> None:
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_all()
         recipe = next(r for r in dl.recipes if r.id == "synthesize_neural_weave")
@@ -158,6 +182,7 @@ class TestTradeGoodRecipes:
 
     def test_refined_propellant_tradeable(self) -> None:
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_all()
         c = next(c for c in dl.get_all_commodities() if c.id == "refined_propellant")
@@ -165,6 +190,7 @@ class TestTradeGoodRecipes:
 
     def test_neural_weave_tradeable(self) -> None:
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_all()
         c = next(c for c in dl.get_all_commodities() if c.id == "neural_weave")

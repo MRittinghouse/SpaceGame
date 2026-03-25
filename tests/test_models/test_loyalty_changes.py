@@ -49,9 +49,7 @@ def _make_roster() -> CrewRoster:
         "elena_reeves": _make_template(
             "elena_reeves", "Elena Reeves", "commerce_guild", "stellaris_port"
         ),
-        "marcus_jin": _make_template(
-            "marcus_jin", "Marcus Jin", "industrial_union", "breakstone"
-        ),
+        "marcus_jin": _make_template("marcus_jin", "Marcus Jin", "industrial_union", "breakstone"),
         "dr_priya_osei": _make_template(
             "dr_priya_osei", "Dr. Priya Osei", "science_collective", "axiom_labs"
         ),
@@ -125,9 +123,7 @@ class TestDialogueCrewLoyaltyChanges:
     def test_dialogue_loyalty_multiple_crew(self) -> None:
         """A single response can affect multiple crew members."""
         roster = _make_roster()
-        _, manager = _make_dialogue_with_loyalty(
-            {"elena_reeves": 5, "marcus_jin": -3}
-        )
+        _, manager = _make_dialogue_with_loyalty({"elena_reeves": 5, "marcus_jin": -3})
         manager.set_crew_roster(roster)
         manager.select_response(0)
 

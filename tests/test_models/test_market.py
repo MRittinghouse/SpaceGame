@@ -106,9 +106,9 @@ def test_market_day_update() -> None:
     price_changes = sum(1 for cid in day1_prices if day1_prices[cid] != day2_prices[cid])
 
     # Most prices should change slightly
-    assert (
-        price_changes >= len(day1_prices) * 0.5
-    ), "At least 50% of prices should change between days"
+    assert price_changes >= len(day1_prices) * 0.5, (
+        "At least 50% of prices should change between days"
+    )
 
 
 # ============================================================================

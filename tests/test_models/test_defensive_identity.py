@@ -26,47 +26,81 @@ from spacegame.models.combat_engine import CombatEngine
 
 
 def _move(
-    id: str = "blaster", damage: float = 10.0, energy: int = 2,
-    element: WeaponElement = WeaponElement.KINETIC, aoe: bool = False,
+    id: str = "blaster",
+    damage: float = 10.0,
+    energy: int = 2,
+    element: WeaponElement = WeaponElement.KINETIC,
+    aoe: bool = False,
 ) -> CombatMove:
     return CombatMove(
-        id=id, name=id.replace("_", " ").title(), description=f"{id}",
+        id=id,
+        name=id.replace("_", " ").title(),
+        description=f"{id}",
         effects=[CombatEffect(type=EffectType.DAMAGE, value=damage)],
-        energy_cost=energy, element=element, aoe=aoe,
+        energy_cost=energy,
+        element=element,
+        aoe=aoe,
     )
 
 
 def _enemy(
-    hull: int = 80, shields: int = 0, evasion: int = 0, accuracy: int = 95,
-    armor: int = 0, moves: list[CombatMove] | None = None,
+    hull: int = 80,
+    shields: int = 0,
+    evasion: int = 0,
+    accuracy: int = 95,
+    armor: int = 0,
+    moves: list[CombatMove] | None = None,
 ) -> EnemyShipTemplate:
     if moves is None:
         moves = [_move("enemy_shot", 10.0)]
     return EnemyShipTemplate(
-        id="test_enemy", name="Test Enemy", description="Test",
+        id="test_enemy",
+        name="Test Enemy",
+        description="Test",
         behavior=EnemyBehavior.AGGRESSIVE,
-        hull=hull, shields=shields, energy=10, energy_regen=3,
-        speed=8, evasion=evasion, accuracy=accuracy,
-        moves=moves, loot_table=[], bribe_cost=0,
+        hull=hull,
+        shields=shields,
+        energy=10,
+        energy_regen=3,
+        speed=8,
+        evasion=evasion,
+        accuracy=accuracy,
+        moves=moves,
+        loot_table=[],
+        bribe_cost=0,
         combat_armor=armor,
     )
 
 
 def _player(
-    hull: int = 100, shields: int = 40, evasion: int = 0, accuracy: int = 95,
-    armor: int = 0, shield_regen: int = 0,
+    hull: int = 100,
+    shields: int = 40,
+    evasion: int = 0,
+    accuracy: int = 95,
+    armor: int = 0,
+    shield_regen: int = 0,
     defensive_identity: str = "",
     moves: list[CombatMove] | None = None,
 ) -> PlayerCombatState:
     if moves is None:
         moves = [_move("laser", 20.0, 3)]
     return PlayerCombatState(
-        hull=hull, max_hull=100, shields=shields, max_shields=40,
-        energy=10, max_energy=10, energy_regen=3,
-        speed=8, evasion=evasion, accuracy=accuracy,
-        equipment_moves=moves, crew_moves=[],
-        active_effects=[], cooldowns={},
-        armor=armor, shield_regen=shield_regen,
+        hull=hull,
+        max_hull=100,
+        shields=shields,
+        max_shields=40,
+        energy=10,
+        max_energy=10,
+        energy_regen=3,
+        speed=8,
+        evasion=evasion,
+        accuracy=accuracy,
+        equipment_moves=moves,
+        crew_moves=[],
+        active_effects=[],
+        cooldowns={},
+        armor=armor,
+        shield_regen=shield_regen,
         defensive_identity=defensive_identity,
     )
 
@@ -83,7 +117,10 @@ def _state(
     encounter = CombatEncounter(enemy_templates=enemies, encounter_seed=seed)
     enemy_ships = [EnemyShip.from_template(t) for t in enemies]
     return CombatState(
-        player=player, enemies=enemy_ships, encounter=encounter, combat_log=[],
+        player=player,
+        enemies=enemy_ships,
+        encounter=encounter,
+        combat_log=[],
     )
 
 
@@ -320,7 +357,9 @@ class TestJuggernautPassives:
         """Below 25% hull with Juggernaut identity → +15% damage."""
         s = _state(
             player=_player(
-                hull=20, armor=0, defensive_identity="juggernaut",
+                hull=20,
+                armor=0,
+                defensive_identity="juggernaut",
                 moves=[_move("cannon", 20.0, 3)],
             ),
             enemies=[_enemy(hull=200)],

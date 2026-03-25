@@ -4,28 +4,29 @@ After selecting the cantina/social location from the station hub, players
 see available NPCs to talk to, crew for hire, and station board contracts.
 """
 
-import pygame
-import pygame_gui
 from typing import Optional
 
+import pygame
+import pygame_gui
+
 from spacegame.config import (
-    WINDOW_WIDTH,
     WINDOW_HEIGHT,
+    WINDOW_WIDTH,
     Colors,
     GameState,
     scale_x,
     scale_y,
 )
-from spacegame.views.base_view import BaseView
-from spacegame.models.player import Player
-from spacegame.models.system import StarSystem
-from spacegame.models.location import Location
+from spacegame.engine.audio_manager import get_audio_manager
 from spacegame.engine.backgrounds import AnimatedBackground
 from spacegame.engine.draw_utils import draw_panel
-from spacegame.engine.fonts import FONT_BODY, FONT_HEADING, FONT_MD, FONT_SM, FontCache
-from spacegame.utils.logger import logger
-from spacegame.engine.audio_manager import get_audio_manager
+from spacegame.engine.fonts import FONT_BODY, FONT_HEADING, FONT_MD, FONT_SM, get_font
 from spacegame.engine.tooltip import TooltipState
+from spacegame.models.location import Location
+from spacegame.models.player import Player
+from spacegame.models.system import StarSystem
+from spacegame.utils.logger import logger
+from spacegame.views.base_view import BaseView
 
 # Layout constants
 HEADER_CARD_Y = 10
@@ -90,10 +91,10 @@ class CantinaView(BaseView):
         self.pending_contract_id: Optional[str] = None
 
         # Fonts
-        self.title_font = FontCache.get(FONT_HEADING)
-        self.subtitle_font = FontCache.get(FONT_BODY)
-        self.label_font = FontCache.get(FONT_MD)
-        self.desc_font = FontCache.get(FONT_SM)
+        self.title_font = get_font("header", FONT_HEADING)
+        self.subtitle_font = get_font("dialogue", FONT_BODY)
+        self.label_font = get_font("dialogue", FONT_MD)
+        self.desc_font = get_font("dialogue", FONT_SM)
         # UI element refs
         self.back_button: Optional[pygame_gui.elements.UIButton] = None
         self._npc_buttons: dict[str, pygame_gui.elements.UIButton] = {}
@@ -137,8 +138,10 @@ class CantinaView(BaseView):
         hud_h = scale_y(HUD_BASE_HEIGHT)
         self.back_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
-                20, WINDOW_HEIGHT - hud_h - BACK_BUTTON_H - scale_y(15),
-                BACK_BUTTON_W, BACK_BUTTON_H,
+                20,
+                WINDOW_HEIGHT - hud_h - BACK_BUTTON_H - scale_y(15),
+                BACK_BUTTON_W,
+                BACK_BUTTON_H,
             ),
             text="BACK",
             manager=self.ui_manager,
@@ -354,9 +357,9 @@ class CantinaView(BaseView):
                         "Dismiss a crew member to make room", True, Colors.TEXT_SECONDARY
                     )
                     screen.blit(hint_surf, (label_x, btn_y + 18))
-            btn_y += 24 + (
-                len(self._rerecruit_buttons) + len(self._hire_buttons)
-            ) * (BUTTON_H + BUTTON_PAD)
+            btn_y += 24 + (len(self._rerecruit_buttons) + len(self._hire_buttons)) * (
+                BUTTON_H + BUTTON_PAD
+            )
             if self._rerecruit_buttons and self._hire_buttons:
                 btn_y += SECTION_PAD  # Extra pad between re-recruit and hire
 
@@ -476,7 +479,7 @@ class CantinaView(BaseView):
             return
         crew_slots = self._get_crew_slots()
         self.player.credits -= cost
-        success, msg = self.crew_roster.recruit(crew_id, crew_slots)
+        success, _msg = self.crew_roster.recruit(crew_id, crew_slots)
         if success:
             self.pending_rerecruit_id = crew_id
             get_audio_manager().play_sfx("ui_confirm")
@@ -489,7 +492,7 @@ class CantinaView(BaseView):
         if not self.crew_roster:
             return
         crew_slots = self._get_crew_slots()
-        success, msg = self.crew_roster.recruit(crew_id, crew_slots)
+        success, _msg = self.crew_roster.recruit(crew_id, crew_slots)
         if success:
             self.pending_hire_id = crew_id
             get_audio_manager().play_sfx("ui_confirm")
@@ -499,7 +502,7 @@ class CantinaView(BaseView):
         """Accept a station board contract mission."""
         if not self.mission_manager:
             return
-        success, msg = self.mission_manager.accept_mission(mission_id)
+        success, _msg = self.mission_manager.accept_mission(mission_id)
         if success:
             self.pending_contract_id = mission_id
             mission = self.mission_manager.get_mission(mission_id)

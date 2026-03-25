@@ -324,22 +324,16 @@ class TestSelectEncounterDefinitionBackwardCompat:
 
     def test_old_signature_still_works(self) -> None:
         defn = _make_definition()
-        result = select_encounter_definition(
-            [defn], "distress_signal", "moderate", 42
-        )
+        result = select_encounter_definition([defn], "distress_signal", "moderate", 42)
         assert result is not None
         assert result.id == "test_enc"
 
     def test_old_signature_filters_by_type(self) -> None:
         defn = _make_definition(encounter_type="merchant")
-        result = select_encounter_definition(
-            [defn], "distress_signal", "moderate", 42
-        )
+        result = select_encounter_definition([defn], "distress_signal", "moderate", 42)
         assert result is None
 
     def test_old_signature_filters_by_danger(self) -> None:
         defn = _make_definition(danger_levels=["dangerous"])
-        result = select_encounter_definition(
-            [defn], "distress_signal", "moderate", 42
-        )
+        result = select_encounter_definition([defn], "distress_signal", "moderate", 42)
         assert result is None

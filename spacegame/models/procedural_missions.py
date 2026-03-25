@@ -6,7 +6,6 @@ and rotate with the game day.
 """
 
 import random
-from dataclasses import dataclass
 from typing import Any
 
 from spacegame.models.commodity import Commodity, Legality
@@ -18,7 +17,6 @@ from spacegame.models.mission import (
     ObjectiveType,
 )
 from spacegame.models.system import StarSystem
-
 
 # Credit reward multipliers by system danger level
 _DANGER_MULTIPLIER = {"safe": 1.0, "moderate": 1.5, "dangerous": 2.0}
@@ -94,10 +92,7 @@ class ProceduralMissionGenerator:
             if candidates:
                 return rng.choice(candidates)
         # Fallback: any legal commodity
-        legal = [
-            cid for cid, c in self._commodities.items()
-            if c.legality == Legality.LEGAL
-        ]
+        legal = [cid for cid, c in self._commodities.items() if c.legality == Legality.LEGAL]
         return rng.choice(legal)
 
     def generate_bounty(self, system_id: str, game_day: int) -> Mission:
@@ -164,7 +159,6 @@ class ProceduralMissionGenerator:
         """
         rng = self._make_rng(system_id, game_day, "delivery")
         mid = self._next_id("delivery", system_id, game_day)
-        system = self._systems[system_id]
         dest_id = self._pick_other_system(rng, system_id)
         dest = self._systems[dest_id]
         commodity_id = self._pick_trade_commodity(rng, system_id)
@@ -227,9 +221,7 @@ class ProceduralMissionGenerator:
         dest = self._systems[dest_id]
 
         # Pick a smuggling commodity that exists in our commodities
-        available_smuggling = [
-            c for c in _SMUGGLING_COMMODITIES if c in self._commodities
-        ]
+        available_smuggling = [c for c in _SMUGGLING_COMMODITIES if c in self._commodities]
         commodity_id = rng.choice(available_smuggling) if available_smuggling else "electronics"
         commodity = self._commodities[commodity_id]
         qty = rng.randint(2, 5)
@@ -339,7 +331,8 @@ class ProceduralMissionGenerator:
         system = self._systems[system_id]
         # Prefer dangerous systems for salvage
         danger_systems = [
-            sid for sid, s in self._systems.items()
+            sid
+            for sid, s in self._systems.items()
             if s.danger_level in ("moderate", "dangerous") and sid != system_id
         ]
         if not danger_systems:
@@ -378,9 +371,7 @@ class ProceduralMissionGenerator:
             ],
         )
 
-    def generate_for_system(
-        self, system_id: str, game_day: int
-    ) -> list[Mission]:
+    def generate_for_system(self, system_id: str, game_day: int) -> list[Mission]:
         """Generate 2-3 varied missions for a system's station board.
 
         Picks from all 5 template types, weighted by system characteristics.

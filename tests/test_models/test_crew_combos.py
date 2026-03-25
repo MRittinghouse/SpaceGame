@@ -33,7 +33,9 @@ from spacegame.models.combat_engine import CombatEngine
 
 def _move(id: str = "blaster", damage: float = 10.0, energy: int = 2) -> CombatMove:
     return CombatMove(
-        id=id, name=id.title(), description=f"{id}",
+        id=id,
+        name=id.title(),
+        description=f"{id}",
         effects=[CombatEffect(type=EffectType.DAMAGE, value=damage)],
         energy_cost=energy,
     )
@@ -41,22 +43,39 @@ def _move(id: str = "blaster", damage: float = 10.0, energy: int = 2) -> CombatM
 
 def _enemy(hull: int = 80) -> EnemyShipTemplate:
     return EnemyShipTemplate(
-        id="test_enemy", name="Test Enemy", description="Test",
+        id="test_enemy",
+        name="Test Enemy",
+        description="Test",
         behavior=EnemyBehavior.AGGRESSIVE,
-        hull=hull, shields=20, energy=10, energy_regen=3,
-        speed=8, evasion=0, accuracy=70,
+        hull=hull,
+        shields=20,
+        energy=10,
+        energy_regen=3,
+        speed=8,
+        evasion=0,
+        accuracy=70,
         moves=[_move("enemy_shot", 5.0)],
-        loot_table=[], bribe_cost=0,
+        loot_table=[],
+        bribe_cost=0,
     )
 
 
 def _player(energy: int = 10, momentum_pct: float = 0.0) -> PlayerCombatState:
     p = PlayerCombatState(
-        hull=80, max_hull=100, shields=30, max_shields=40,
-        energy=energy, max_energy=10, energy_regen=3,
-        speed=8, evasion=15, accuracy=70,
-        equipment_moves=[_move("laser", 20.0, 3)], crew_moves=[],
-        active_effects=[], cooldowns={},
+        hull=80,
+        max_hull=100,
+        shields=30,
+        max_shields=40,
+        energy=energy,
+        max_energy=10,
+        energy_regen=3,
+        speed=8,
+        evasion=15,
+        accuracy=70,
+        equipment_moves=[_move("laser", 20.0, 3)],
+        crew_moves=[],
+        active_effects=[],
+        cooldowns={},
     )
     if momentum_pct > 0:
         p.momentum.add(momentum_pct)
@@ -75,7 +94,10 @@ def _state(
     encounter = CombatEncounter(enemy_templates=enemies, encounter_seed=seed)
     enemy_ships = [EnemyShip.from_template(t) for t in enemies]
     return CombatState(
-        player=player, enemies=enemy_ships, encounter=encounter, combat_log=[],
+        player=player,
+        enemies=enemy_ships,
+        encounter=encounter,
+        combat_log=[],
     )
 
 
@@ -189,17 +211,19 @@ class TestComboAvailability:
     def test_discovery_check_both_crew_and_momentum(self) -> None:
         """Discovery happens when both crew are recruited and 25% momentum is first reached."""
         from spacegame.models.crew_combos import check_combo_discoveries
+
         recruited = {"elena", "marcus", "tomas"}
         already_discovered: set[str] = set()
         newly_discovered = check_combo_discoveries(recruited, already_discovered)
         # Should discover combos for all pairs involving recruited members
         ids = {c.id for c in newly_discovered}
-        assert "emergency_overhaul" in ids    # elena + marcus
-        assert "smugglers_escape" in ids      # elena + tomas
+        assert "emergency_overhaul" in ids  # elena + marcus
+        assert "smugglers_escape" in ids  # elena + tomas
         assert "jury_rigged_countermeasures" in ids  # marcus + tomas
 
     def test_no_rediscovery(self) -> None:
         from spacegame.models.crew_combos import check_combo_discoveries
+
         recruited = {"elena", "marcus"}
         already_discovered = {"emergency_overhaul"}
         newly_discovered = check_combo_discoveries(recruited, already_discovered)

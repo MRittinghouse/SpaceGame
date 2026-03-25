@@ -109,11 +109,16 @@ class TestViewLootInteraction:
     def test_e_key_loots_adjacent_container(self):
         """E key interaction with adjacent container increments total_loot_credits."""
         container = GroundInteractable(
-            x=4, y=3, interact_type="loot_container",
-            loot_credits=75, description="Supply crate",
+            x=4,
+            y=3,
+            interact_type="loot_container",
+            loot_credits=75,
+            description="Supply crate",
         )
         view = _make_view_with_state(
-            player_x=3, player_y=3, interactables=[container],
+            player_x=3,
+            player_y=3,
+            interactables=[container],
         )
         # Face right toward container
         _send_key(view, pygame.K_RIGHT)
@@ -133,11 +138,16 @@ class TestViewLootInteraction:
     def test_e_key_shows_container_description(self):
         """Looting a container with description shows it in the message."""
         container = GroundInteractable(
-            x=4, y=3, interact_type="loot_container",
-            loot_credits=100, description="Salvage bin",
+            x=4,
+            y=3,
+            interact_type="loot_container",
+            loot_credits=100,
+            description="Salvage bin",
         )
         view = _make_view_with_state(
-            player_x=3, player_y=3, interactables=[container],
+            player_x=3,
+            player_y=3,
+            interactables=[container],
         )
         view._last_dx = 1
         view._last_dy = 0
@@ -151,12 +161,17 @@ class TestViewLootInteraction:
     def test_e_key_looted_container_does_not_add_credits(self):
         """Looting an already-looted container doesn't add to total."""
         container = GroundInteractable(
-            x=4, y=3, interact_type="loot_container",
-            loot_credits=50, description="Empty box",
+            x=4,
+            y=3,
+            interact_type="loot_container",
+            loot_credits=50,
+            description="Empty box",
         )
         container.loot()  # Already looted
         view = _make_view_with_state(
-            player_x=3, player_y=3, interactables=[container],
+            player_x=3,
+            player_y=3,
+            interactables=[container],
         )
         view._last_dx = 1
         view._last_dy = 0
@@ -206,11 +221,15 @@ class TestStoryTriggerOnMovement:
     def test_trigger_fires_on_player_movement(self):
         """Moving onto a story trigger tile fires it automatically."""
         trigger = GroundStoryTrigger(
-            x=4, y=3, trigger_type="atmosphere",
+            x=4,
+            y=3,
+            trigger_type="atmosphere",
             text="Rust-stained walls whisper of forgotten cargo.",
         )
         view = _make_view_with_state(
-            player_x=3, player_y=3, story_triggers=[trigger],
+            player_x=3,
+            player_y=3,
+            story_triggers=[trigger],
         )
 
         # Move right onto trigger position
@@ -224,11 +243,15 @@ class TestStoryTriggerOnMovement:
     def test_trigger_does_not_fire_twice(self):
         """Returning to a triggered tile does not fire it again."""
         trigger = GroundStoryTrigger(
-            x=4, y=3, trigger_type="atmosphere",
+            x=4,
+            y=3,
+            trigger_type="atmosphere",
             text="First time only.",
         )
         view = _make_view_with_state(
-            player_x=3, player_y=3, story_triggers=[trigger],
+            player_x=3,
+            player_y=3,
+            story_triggers=[trigger],
         )
 
         # Move right onto trigger
@@ -247,11 +270,15 @@ class TestStoryTriggerOnMovement:
     def test_trigger_not_on_player_tile_does_not_fire(self):
         """Triggers at other positions don't fire when player moves elsewhere."""
         trigger = GroundStoryTrigger(
-            x=8, y=8, trigger_type="discovery",
+            x=8,
+            y=8,
+            trigger_type="discovery",
             text="Should not appear.",
         )
         view = _make_view_with_state(
-            player_x=3, player_y=3, story_triggers=[trigger],
+            player_x=3,
+            player_y=3,
+            story_triggers=[trigger],
         )
 
         _send_key(view, pygame.K_RIGHT)
@@ -262,11 +289,15 @@ class TestStoryTriggerOnMovement:
     def test_trigger_uses_extended_message_duration(self):
         """Story trigger messages use longer display time than normal messages."""
         trigger = GroundStoryTrigger(
-            x=4, y=3, trigger_type="atmosphere",
+            x=4,
+            y=3,
+            trigger_type="atmosphere",
             text="A narrative moment.",
         )
         view = _make_view_with_state(
-            player_x=3, player_y=3, story_triggers=[trigger],
+            player_x=3,
+            player_y=3,
+            story_triggers=[trigger],
         )
 
         _send_key(view, pygame.K_RIGHT)
@@ -287,12 +318,15 @@ class TestEnemyTemplateFallback:
         """Enemy with unrecognized ID falls back to guild_security template."""
         enemy = GroundEnemy(
             id="completely_unknown_type",
-            x=4, y=3,
+            x=4,
+            y=3,
             facing=Direction.LEFT,
             patrol_route=[(4, 3)],
         )
         view = _make_view_with_state(
-            player_x=3, player_y=3, enemies=[enemy],
+            player_x=3,
+            player_y=3,
+            enemies=[enemy],
         )
         # Set alert to combat to trigger combat start
         view.mission_state.alert_level = AlertLevel.COMBAT
@@ -307,12 +341,15 @@ class TestEnemyTemplateFallback:
         """Campaign map enemy IDs (like 'guild_watch_1') use fallback gracefully."""
         enemy = GroundEnemy(
             id="guild_watch_1",
-            x=4, y=3,
+            x=4,
+            y=3,
             facing=Direction.RIGHT,
             patrol_route=[(4, 3)],
         )
         view = _make_view_with_state(
-            player_x=3, player_y=3, enemies=[enemy],
+            player_x=3,
+            player_y=3,
+            enemies=[enemy],
         )
         view.mission_state.alert_level = AlertLevel.COMBAT
         view._start_combat()
@@ -467,8 +504,11 @@ class TestDefeatPathEndToEnd:
         ground_map = GroundMap.create_test_map(10, 10)
         player_state = GroundPlayerState(x=3, y=3)
         enemy = GroundEnemy(
-            id="test_guard", x=4, y=3,
-            facing=Direction.LEFT, patrol_route=[(4, 3)],
+            id="test_guard",
+            x=4,
+            y=3,
+            facing=Direction.LEFT,
+            patrol_route=[(4, 3)],
         )
         mission_state = GroundMissionState(
             ground_map=ground_map,

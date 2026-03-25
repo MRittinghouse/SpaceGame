@@ -89,9 +89,7 @@ class TestRefiningSessionForgeIntegration:
     def test_session_forge_speed_bonus_applied(self) -> None:
         """Forge speed bonus stacks with skill speed bonus on effective time."""
         recipe = self._make_recipe(processing_time=10.0)
-        session = RefiningSession(
-            [recipe], "test", speed_bonus=0.20, forge_speed_bonus=0.10
-        )
+        session = RefiningSession([recipe], "test", speed_bonus=0.20, forge_speed_bonus=0.10)
         inv = {"raw_ore": 100}
         session.start_job(recipe, inv)
         job = session.job_queue[0]
@@ -107,9 +105,7 @@ class TestRefiningSessionForgeIntegration:
             tracker.record_craft("test")
         assert tracker.get_mastery("test").mastery_level >= 1
 
-        session = RefiningSession(
-            [recipe], "test", speed_bonus=0.0, mastery_tracker=tracker
-        )
+        session = RefiningSession([recipe], "test", speed_bonus=0.0, mastery_tracker=tracker)
         inv = {"raw_ore": 100}
         session.start_job(recipe, inv)
         job = session.job_queue[0]
@@ -120,9 +116,7 @@ class TestRefiningSessionForgeIntegration:
         """Forge yield bonus stacks with skill yield bonus."""
         recipe = self._make_recipe(outputs={"common_metals": 2})
         # Using 100% yield bonuses for deterministic test
-        session = RefiningSession(
-            [recipe], "test", yield_bonus=1.0, forge_yield_bonus=1.0
-        )
+        session = RefiningSession([recipe], "test", yield_bonus=1.0, forge_yield_bonus=1.0)
         inv = {"raw_ore": 100}
         session.start_job(recipe, inv)
         results = session.update(20.0)
@@ -136,18 +130,14 @@ class TestRefiningSessionForgeIntegration:
 
     def test_session_mastery_yield_applied(self) -> None:
         """Mastery level 2+ adds +1 to each output commodity."""
-        recipe = self._make_recipe(
-            outputs={"common_metals": 2, "rare_metals": 1}
-        )
+        recipe = self._make_recipe(outputs={"common_metals": 2, "rare_metals": 1})
         tracker = RecipeMasteryTracker()
         # Reach mastery level 2 (need 8 crafts)
         for _ in range(MASTERY_THRESHOLDS[1]):
             tracker.record_craft("test")
         assert tracker.get_mastery("test").mastery_level >= 2
 
-        session = RefiningSession(
-            [recipe], "test", yield_bonus=0.0, mastery_tracker=tracker
-        )
+        session = RefiningSession([recipe], "test", yield_bonus=0.0, mastery_tracker=tracker)
         inv = {"raw_ore": 100}
         session.start_job(recipe, inv)
         results = session.update(20.0)
@@ -159,13 +149,9 @@ class TestRefiningSessionForgeIntegration:
 
     def test_session_forge_tokens_in_result(self) -> None:
         """Completed job has forge_tokens_earned > 0."""
-        recipe = self._make_recipe(
-            processing_time=15.0, inputs={"raw_ore": 5, "iron_ore": 3}
-        )
+        recipe = self._make_recipe(processing_time=15.0, inputs={"raw_ore": 5, "iron_ore": 3})
         tracker = RecipeMasteryTracker()
-        session = RefiningSession(
-            [recipe], "test", mastery_tracker=tracker
-        )
+        session = RefiningSession([recipe], "test", mastery_tracker=tracker)
         inv = {"raw_ore": 100, "iron_ore": 100}
         session.start_job(recipe, inv)
         results = session.update(20.0)
@@ -176,9 +162,7 @@ class TestRefiningSessionForgeIntegration:
         """Mastery tracker gets record_craft called when job completes."""
         recipe = self._make_recipe()
         tracker = RecipeMasteryTracker()
-        session = RefiningSession(
-            [recipe], "test", mastery_tracker=tracker
-        )
+        session = RefiningSession([recipe], "test", mastery_tracker=tracker)
         inv = {"raw_ore": 100}
         session.start_job(recipe, inv)
         session.update(20.0)

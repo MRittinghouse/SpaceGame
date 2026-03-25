@@ -7,13 +7,11 @@ and recipe discovery anticipation.
 
 import math
 import random as _random
-from typing import Optional
 
 import pygame
 
-from spacegame.config import Colors, scale_x, scale_y
-from spacegame.engine.fonts import FontCache, FONT_XS, FONT_SM, FONT_MD
-
+from spacegame.config import Colors, scale_y
+from spacegame.engine.fonts import FONT_MD, FONT_SM, FONT_XS, get_font
 
 # ==========================================================================
 # Forge Atmosphere
@@ -99,16 +97,18 @@ class ForgeAtmosphere:
             self._emit_timer -= level["particle_rate"]
             r = self._rect
             for _ in range(level["particle_count"]):
-                self._particles.append({
-                    "x": self._rng.uniform(r.left + 10, r.right - 10),
-                    "y": float(r.bottom - 5),
-                    "vx": self._rng.uniform(-8, 8),
-                    "vy": self._rng.uniform(-30, -10),
-                    "life": self._rng.uniform(0.8, 2.0),
-                    "max_life": 2.0,
-                    "alpha": self._rng.randint(40, 100),
-                    "size": self._rng.uniform(1.0, 3.0),
-                })
+                self._particles.append(
+                    {
+                        "x": self._rng.uniform(r.left + 10, r.right - 10),
+                        "y": float(r.bottom - 5),
+                        "vx": self._rng.uniform(-8, 8),
+                        "vy": self._rng.uniform(-30, -10),
+                        "life": self._rng.uniform(0.8, 2.0),
+                        "max_life": 2.0,
+                        "alpha": self._rng.randint(40, 100),
+                        "size": self._rng.uniform(1.0, 3.0),
+                    }
+                )
 
         for p in self._particles:
             p["x"] += p["vx"] * dt
@@ -173,8 +173,8 @@ class MasteryMomentumBar:
         self._next_threshold: int = 3
         self._mastery_level: int = 0
         self._visible: bool = False
-        self._label_font = FontCache.get(FONT_XS)
-        self._name_font = FontCache.get(FONT_SM)
+        self._label_font = get_font("label", FONT_XS)
+        self._name_font = get_font("dialogue", FONT_SM)
 
     def set_recipe(
         self,
@@ -264,7 +264,7 @@ class BufferPressure:
         self.bar_h = scale_y(12)
         self._ratio: float = 0.0
         self._elapsed: float = 0.0
-        self._label_font = FontCache.get(FONT_XS)
+        self._label_font = get_font("label", FONT_XS)
 
     def set_ratio(self, ratio: float) -> None:
         """Update buffer fill ratio (0.0 = empty, 1.0 = full)."""
@@ -357,15 +357,18 @@ class MasteryLevelUp:
         for i in range(count):
             angle = (2 * math.pi * i / count) + self._rng.uniform(-0.3, 0.3)
             speed = self._rng.uniform(40, 120)
-            self._particles.append({
-                "x": 0.0, "y": 0.0,
-                "vx": math.cos(angle) * speed,
-                "vy": math.sin(angle) * speed,
-                "life": self._rng.uniform(0.5, 1.0),
-                "max_life": 1.0,
-                "size": self._rng.uniform(1.5, 3.5),
-                "color": color,
-            })
+            self._particles.append(
+                {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "vx": math.cos(angle) * speed,
+                    "vy": math.sin(angle) * speed,
+                    "life": self._rng.uniform(0.5, 1.0),
+                    "max_life": 1.0,
+                    "size": self._rng.uniform(1.5, 3.5),
+                    "color": color,
+                }
+            )
         self._cx = cx
         self._cy = cy
 
@@ -406,7 +409,7 @@ class MasteryLevelUp:
             tier = tier_names.get(self._level, "")
             color = tier_colors.get(self._level, Colors.TEXT_HIGHLIGHT)
 
-            font = FontCache.get(FONT_MD)
+            font = get_font("machine", FONT_MD)
             text = f"MASTERY {tier}: {self._recipe_name}"
             surf = font.render(text, True, color)
             surf.set_alpha(banner_alpha)
@@ -428,7 +431,7 @@ class DiscoveryHint:
         self._text: str = ""
         self._visible: bool = False
         self._pulse_timer: float = 0.0
-        self._font = FontCache.get(FONT_XS)
+        self._font = get_font("machine", FONT_XS)
 
     def set_hint(self, prerequisite_name: str, target_name: str) -> None:
         """Set the discovery hint text.

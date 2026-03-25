@@ -5,11 +5,10 @@ Run this module to start the game.
 """
 
 import json
+import logging
 import os
 import sys
 from pathlib import Path
-
-import logging
 
 
 def _load_display_settings() -> None:

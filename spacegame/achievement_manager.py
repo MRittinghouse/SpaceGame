@@ -4,7 +4,6 @@ Achievement tracking and reward system.
 Checks player stats against achievement thresholds and applies rewards.
 """
 
-from typing import Optional
 from spacegame.models.achievement import Achievement
 from spacegame.models.player import Player
 from spacegame.utils.logger import logger

@@ -3,9 +3,7 @@
 import pytest
 
 pygame = pytest.importorskip("pygame", reason="pygame required for view tests")
-pygame_gui = pytest.importorskip(
-    "pygame_gui", reason="pygame_gui required for view tests"
-)
+pygame_gui = pytest.importorskip("pygame_gui", reason="pygame_gui required for view tests")
 
 from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, GameState  # noqa: E402
 from spacegame.models.ground import (  # noqa: E402
@@ -70,12 +68,8 @@ class TestCombatTrigger:
         view.on_exit()
 
     def test_combat_starts_on_alert_combat(self) -> None:
-        enemy = GroundEnemy(
-            id="guard", x=6, y=5, facing=Direction.LEFT, vision_range=5
-        )
-        view, mission = _make_combat_view(
-            player_x=5, player_y=5, enemies=[enemy]
-        )
+        enemy = GroundEnemy(id="guard", x=6, y=5, facing=Direction.LEFT, vision_range=5)
+        view, mission = _make_combat_view(player_x=5, player_y=5, enemies=[enemy])
         # Manually raise alert to COMBAT to trigger
         mission.raise_alert(AlertLevel.COMBAT)
         view._process_enemy_phase()
@@ -83,12 +77,8 @@ class TestCombatTrigger:
         view.on_exit()
 
     def test_combat_state_has_enemies(self) -> None:
-        enemy = GroundEnemy(
-            id="guard", x=6, y=5, facing=Direction.LEFT, vision_range=5
-        )
-        view, mission = _make_combat_view(
-            player_x=5, player_y=5, enemies=[enemy]
-        )
+        enemy = GroundEnemy(id="guard", x=6, y=5, facing=Direction.LEFT, vision_range=5)
+        view, mission = _make_combat_view(player_x=5, player_y=5, enemies=[enemy])
         mission.raise_alert(AlertLevel.COMBAT)
         view._process_enemy_phase()
         assert len(view._combat_state.enemies) >= 1
@@ -98,19 +88,13 @@ class TestCombatTrigger:
 class TestCombatInputBlocking:
     """Tests that normal input is blocked during combat."""
 
-    def _start_combat(
-        self, view: GroundExplorationView, mission: GroundMissionState
-    ) -> None:
+    def _start_combat(self, view: GroundExplorationView, mission: GroundMissionState) -> None:
         mission.raise_alert(AlertLevel.COMBAT)
         view._process_enemy_phase()
 
     def test_movement_blocked_during_combat(self) -> None:
-        enemy = GroundEnemy(
-            id="guard", x=6, y=5, facing=Direction.LEFT, vision_range=5
-        )
-        view, mission = _make_combat_view(
-            player_x=5, player_y=5, enemies=[enemy]
-        )
+        enemy = GroundEnemy(id="guard", x=6, y=5, facing=Direction.LEFT, vision_range=5)
+        view, mission = _make_combat_view(player_x=5, player_y=5, enemies=[enemy])
         self._start_combat(view, mission)
         start_x = mission.player.x
         _send_key(view, pygame.K_RIGHT)
@@ -118,24 +102,16 @@ class TestCombatInputBlocking:
         view.on_exit()
 
     def test_escape_blocked_during_combat(self) -> None:
-        enemy = GroundEnemy(
-            id="guard", x=6, y=5, facing=Direction.LEFT, vision_range=5
-        )
-        view, mission = _make_combat_view(
-            player_x=5, player_y=5, enemies=[enemy]
-        )
+        enemy = GroundEnemy(id="guard", x=6, y=5, facing=Direction.LEFT, vision_range=5)
+        view, mission = _make_combat_view(player_x=5, player_y=5, enemies=[enemy])
         self._start_combat(view, mission)
         _send_key(view, pygame.K_ESCAPE)
         assert view.get_next_state() is None, "Escape blocked during combat"
         view.on_exit()
 
     def test_wait_blocked_during_combat(self) -> None:
-        enemy = GroundEnemy(
-            id="guard", x=6, y=5, facing=Direction.LEFT, vision_range=5
-        )
-        view, mission = _make_combat_view(
-            player_x=5, player_y=5, enemies=[enemy]
-        )
+        enemy = GroundEnemy(id="guard", x=6, y=5, facing=Direction.LEFT, vision_range=5)
+        view, mission = _make_combat_view(player_x=5, player_y=5, enemies=[enemy])
         self._start_combat(view, mission)
         turn = mission.player.turn_number
         _send_key(view, pygame.K_SPACE)
@@ -146,19 +122,13 @@ class TestCombatInputBlocking:
 class TestCombatFightAction:
     """Tests for the fight action via keyboard."""
 
-    def _start_combat(
-        self, view: GroundExplorationView, mission: GroundMissionState
-    ) -> None:
+    def _start_combat(self, view: GroundExplorationView, mission: GroundMissionState) -> None:
         mission.raise_alert(AlertLevel.COMBAT)
         view._process_enemy_phase()
 
     def test_f_key_triggers_fight(self) -> None:
-        enemy = GroundEnemy(
-            id="guard", x=6, y=5, facing=Direction.LEFT, vision_range=5
-        )
-        view, mission = _make_combat_view(
-            player_x=5, player_y=5, enemies=[enemy]
-        )
+        enemy = GroundEnemy(id="guard", x=6, y=5, facing=Direction.LEFT, vision_range=5)
+        view, mission = _make_combat_view(player_x=5, player_y=5, enemies=[enemy])
         self._start_combat(view, mission)
         assert view._combat_state is not None
         initial_round = view._combat_state.round_number
@@ -168,12 +138,8 @@ class TestCombatFightAction:
         view.on_exit()
 
     def test_fight_damages_enemy(self) -> None:
-        enemy = GroundEnemy(
-            id="guard", x=6, y=5, facing=Direction.LEFT, vision_range=5
-        )
-        view, mission = _make_combat_view(
-            player_x=5, player_y=5, enemies=[enemy]
-        )
+        enemy = GroundEnemy(id="guard", x=6, y=5, facing=Direction.LEFT, vision_range=5)
+        view, mission = _make_combat_view(player_x=5, player_y=5, enemies=[enemy])
         self._start_combat(view, mission)
         cs = view._combat_state
         initial_hp = cs.enemies[0].hp
@@ -181,9 +147,7 @@ class TestCombatFightAction:
         # Player rolls 6, enemy rolls 1 — guarantees player wins the exchange.
         cs.execute_fight(player_roll=6, enemy_roll=1)
         final_hp = cs.enemies[0].hp
-        assert final_hp < initial_hp, (
-            f"Enemy should take damage: {initial_hp} -> {final_hp}"
-        )
+        assert final_hp < initial_hp, f"Enemy should take damage: {initial_hp} -> {final_hp}"
         view.on_exit()
 
     def test_tab_cycles_target(self) -> None:
@@ -191,9 +155,7 @@ class TestCombatFightAction:
             GroundEnemy(id="a", x=6, y=5, facing=Direction.LEFT, vision_range=5),
             GroundEnemy(id="b", x=4, y=5, facing=Direction.RIGHT, vision_range=5),
         ]
-        view, mission = _make_combat_view(
-            player_x=5, player_y=5, enemies=enemies
-        )
+        view, mission = _make_combat_view(player_x=5, player_y=5, enemies=enemies)
         self._start_combat(view, mission)
         assert view._combat_state.target_index == 0
         _send_key(view, pygame.K_TAB)
@@ -204,19 +166,13 @@ class TestCombatFightAction:
 class TestCombatRetreatAction:
     """Tests for the retreat action."""
 
-    def _start_combat(
-        self, view: GroundExplorationView, mission: GroundMissionState
-    ) -> None:
+    def _start_combat(self, view: GroundExplorationView, mission: GroundMissionState) -> None:
         mission.raise_alert(AlertLevel.COMBAT)
         view._process_enemy_phase()
 
     def test_r_key_attempts_retreat(self) -> None:
-        enemy = GroundEnemy(
-            id="guard", x=6, y=5, facing=Direction.LEFT, vision_range=5
-        )
-        view, mission = _make_combat_view(
-            player_x=5, player_y=5, enemies=[enemy]
-        )
+        enemy = GroundEnemy(id="guard", x=6, y=5, facing=Direction.LEFT, vision_range=5)
+        view, mission = _make_combat_view(player_x=5, player_y=5, enemies=[enemy])
         self._start_combat(view, mission)
         # Press R many times — eventually should succeed or combat should change
         for _ in range(20):
@@ -226,30 +182,21 @@ class TestCombatRetreatAction:
                 break
             _send_key(view, pygame.K_r)
         # Should have resolved (retreat success or player defeated from free attacks)
-        assert (
-            view._combat_state is None
-            or view._combat_state.outcome != CombatOutcome.IN_PROGRESS
-        )
+        assert view._combat_state is None or view._combat_state.outcome != CombatOutcome.IN_PROGRESS
         view.on_exit()
 
 
 class TestCombatTalkAction:
     """Tests for the talk action."""
 
-    def _start_combat(
-        self, view: GroundExplorationView, mission: GroundMissionState
-    ) -> None:
+    def _start_combat(self, view: GroundExplorationView, mission: GroundMissionState) -> None:
         mission.raise_alert(AlertLevel.COMBAT)
         view._process_enemy_phase()
 
     def test_t_key_attempts_talk(self) -> None:
         # Use a weak enemy with low talk difficulty
-        enemy = GroundEnemy(
-            id="worker", x=6, y=5, facing=Direction.LEFT, vision_range=5
-        )
-        view, mission = _make_combat_view(
-            player_x=5, player_y=5, enemies=[enemy]
-        )
+        enemy = GroundEnemy(id="worker", x=6, y=5, facing=Direction.LEFT, vision_range=5)
+        view, mission = _make_combat_view(player_x=5, player_y=5, enemies=[enemy])
         self._start_combat(view, mission)
         # Set talk difficulty low for test
         view._combat_state.enemies[0].talk_difficulty = 2
@@ -266,19 +213,13 @@ class TestCombatTalkAction:
 class TestCombatOutcomes:
     """Tests for combat resolution and cleanup."""
 
-    def _start_combat(
-        self, view: GroundExplorationView, mission: GroundMissionState
-    ) -> None:
+    def _start_combat(self, view: GroundExplorationView, mission: GroundMissionState) -> None:
         mission.raise_alert(AlertLevel.COMBAT)
         view._process_enemy_phase()
 
     def test_victory_clears_combat_state(self) -> None:
-        enemy = GroundEnemy(
-            id="guard", x=6, y=5, facing=Direction.LEFT, vision_range=5
-        )
-        view, mission = _make_combat_view(
-            player_x=5, player_y=5, enemies=[enemy]
-        )
+        enemy = GroundEnemy(id="guard", x=6, y=5, facing=Direction.LEFT, vision_range=5)
+        view, mission = _make_combat_view(player_x=5, player_y=5, enemies=[enemy])
         self._start_combat(view, mission)
         # Manually set enemy HP to 0 to trigger victory
         view._combat_state.enemies[0].hp = 0
@@ -292,12 +233,8 @@ class TestCombatOutcomes:
         view.on_exit()
 
     def test_victory_drops_alert(self) -> None:
-        enemy = GroundEnemy(
-            id="guard", x=6, y=5, facing=Direction.LEFT, vision_range=5
-        )
-        view, mission = _make_combat_view(
-            player_x=5, player_y=5, enemies=[enemy]
-        )
+        enemy = GroundEnemy(id="guard", x=6, y=5, facing=Direction.LEFT, vision_range=5)
+        view, mission = _make_combat_view(player_x=5, player_y=5, enemies=[enemy])
         self._start_combat(view, mission)
         view._combat_state.enemies[0].hp = 0
         view._combat_state._check_outcome()
@@ -311,31 +248,21 @@ class TestCombatOutcomes:
 class TestCombatPanelRendering:
     """Smoke tests for combat panel rendering."""
 
-    def _start_combat(
-        self, view: GroundExplorationView, mission: GroundMissionState
-    ) -> None:
+    def _start_combat(self, view: GroundExplorationView, mission: GroundMissionState) -> None:
         mission.raise_alert(AlertLevel.COMBAT)
         view._process_enemy_phase()
 
     def test_render_during_combat_no_crash(self) -> None:
-        enemy = GroundEnemy(
-            id="guard", x=6, y=5, facing=Direction.LEFT, vision_range=5
-        )
-        view, mission = _make_combat_view(
-            player_x=5, player_y=5, enemies=[enemy]
-        )
+        enemy = GroundEnemy(id="guard", x=6, y=5, facing=Direction.LEFT, vision_range=5)
+        view, mission = _make_combat_view(player_x=5, player_y=5, enemies=[enemy])
         self._start_combat(view, mission)
         screen = pygame.display.get_surface()
         view.render(screen)
         view.on_exit()
 
     def test_render_after_fight_no_crash(self) -> None:
-        enemy = GroundEnemy(
-            id="guard", x=6, y=5, facing=Direction.LEFT, vision_range=5
-        )
-        view, mission = _make_combat_view(
-            player_x=5, player_y=5, enemies=[enemy]
-        )
+        enemy = GroundEnemy(id="guard", x=6, y=5, facing=Direction.LEFT, vision_range=5)
+        view, mission = _make_combat_view(player_x=5, player_y=5, enemies=[enemy])
         self._start_combat(view, mission)
         _send_key(view, pygame.K_f)
         screen = pygame.display.get_surface()
@@ -343,11 +270,7 @@ class TestCombatPanelRendering:
         view.on_exit()
 
     def test_on_exit_during_combat_no_leak(self) -> None:
-        enemy = GroundEnemy(
-            id="guard", x=6, y=5, facing=Direction.LEFT, vision_range=5
-        )
-        view, mission = _make_combat_view(
-            player_x=5, player_y=5, enemies=[enemy]
-        )
+        enemy = GroundEnemy(id="guard", x=6, y=5, facing=Direction.LEFT, vision_range=5)
+        view, mission = _make_combat_view(player_x=5, player_y=5, enemies=[enemy])
         self._start_combat(view, mission)
         view.on_exit()  # Should not crash, should clean up combat state

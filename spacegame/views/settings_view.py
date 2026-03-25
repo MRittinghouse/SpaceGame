@@ -3,22 +3,28 @@
 Allows player to configure save directory, audio volume, and other settings.
 """
 
+import tkinter as tk
+from pathlib import Path
+from tkinter import filedialog
+from typing import Optional
+
 import pygame
 import pygame_gui
-from typing import Optional
-from pathlib import Path
-import tkinter as tk
-from tkinter import filedialog
 
 from spacegame.config import (
-    WINDOW_WIDTH, WINDOW_HEIGHT, Colors, SUPPORTED_RESOLUTIONS, FULLSCREEN,
-    scale_x, scale_y,
+    FULLSCREEN,
+    SUPPORTED_RESOLUTIONS,
+    WINDOW_HEIGHT,
+    WINDOW_WIDTH,
+    Colors,
+    scale_x,
+    scale_y,
 )
-from spacegame.views.base_view import BaseView
 from spacegame.engine.audio_manager import AudioConfig, get_audio_manager
-from spacegame.utils.logger import logger
 from spacegame.engine.backgrounds import AnimatedBackground
-from spacegame.engine.fonts import FontCache, FONT_BODY, FONT_DISPLAY, FONT_SM, FONT_XL
+from spacegame.engine.fonts import FONT_BODY, FONT_DISPLAY, FONT_SM, FONT_XL, get_font
+from spacegame.utils.logger import logger
+from spacegame.views.base_view import BaseView
 
 
 class SettingsView(BaseView):
@@ -48,10 +54,10 @@ class SettingsView(BaseView):
         self._audio_changed = False
 
         # Fonts
-        self.title_font = FontCache.get(FONT_DISPLAY)
-        self.header_font = FontCache.get(FONT_XL)
-        self.info_font = FontCache.get(FONT_BODY)
-        self.small_font = FontCache.get(FONT_SM)
+        self.title_font = get_font("header", FONT_DISPLAY)
+        self.header_font = get_font("header", FONT_XL)
+        self.info_font = get_font("dialogue", FONT_BODY)
+        self.small_font = get_font("dialogue", FONT_SM)
 
         # Background
         self.background = AnimatedBackground("deep_space", WINDOW_WIDTH, WINDOW_HEIGHT, seed=96)
@@ -104,11 +110,13 @@ class SettingsView(BaseView):
         y = scale_y(100)
 
         # === Audio Section ===
-        self._misc_labels.append(pygame_gui.elements.UILabel(
-            relative_rect=pygame.Rect(panel_x, y, panel_width, 30),
-            text="Audio",
-            manager=self.ui_manager,
-        ))
+        self._misc_labels.append(
+            pygame_gui.elements.UILabel(
+                relative_rect=pygame.Rect(panel_x, y, panel_width, 30),
+                text="Audio",
+                manager=self.ui_manager,
+            )
+        )
         y += 35
 
         audio_cfg = get_audio_manager().get_config()
@@ -142,26 +150,26 @@ class SettingsView(BaseView):
             setattr(self, f"{attr_prefix}_slider", slider)
 
             # Percentage display
-            self._misc_labels.append(pygame_gui.elements.UILabel(
-                relative_rect=pygame.Rect(
-                    panel_x + label_w + slider_w + 5, y, val_w, slider_h
-                ),
-                text=f"{pct}%",
-                manager=self.ui_manager,
-                object_id=pygame_gui.core.ObjectID(
-                    f"#{attr_prefix}_pct", "@volume_pct"
-                ),
-            ))
+            self._misc_labels.append(
+                pygame_gui.elements.UILabel(
+                    relative_rect=pygame.Rect(panel_x + label_w + slider_w + 5, y, val_w, slider_h),
+                    text=f"{pct}%",
+                    manager=self.ui_manager,
+                    object_id=pygame_gui.core.ObjectID(f"#{attr_prefix}_pct", "@volume_pct"),
+                )
+            )
             y += slider_h + 8
 
         y += 15
 
         # === Display Section ===
-        self._misc_labels.append(pygame_gui.elements.UILabel(
-            relative_rect=pygame.Rect(panel_x, y, panel_width, 30),
-            text="Display",
-            manager=self.ui_manager,
-        ))
+        self._misc_labels.append(
+            pygame_gui.elements.UILabel(
+                relative_rect=pygame.Rect(panel_x, y, panel_width, 30),
+                text="Display",
+                manager=self.ui_manager,
+            )
+        )
         y += 35
 
         # Resolution buttons
@@ -170,9 +178,7 @@ class SettingsView(BaseView):
         for i, (w, h) in enumerate(SUPPORTED_RESOLUTIONS):
             label = f"{w}x{h}"
             btn = pygame_gui.elements.UIButton(
-                relative_rect=pygame.Rect(
-                    panel_x + i * (btn_w + 10), y, btn_w, 35
-                ),
+                relative_rect=pygame.Rect(panel_x + i * (btn_w + 10), y, btn_w, 35),
                 text=label,
                 manager=self.ui_manager,
             )
@@ -214,7 +220,9 @@ class SettingsView(BaseView):
         )
 
         self.browse_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(panel_x + panel_width - scale_x(140), y, scale_x(140), scale_y(50)),
+            relative_rect=pygame.Rect(
+                panel_x + panel_width - scale_x(140), y, scale_x(140), scale_y(50)
+            ),
             text="BROWSE",
             manager=self.ui_manager,
         )
@@ -233,20 +241,24 @@ class SettingsView(BaseView):
             "Changing this will not move existing save files.",
         ]
         for line in info_lines:
-            self._misc_labels.append(pygame_gui.elements.UILabel(
-                relative_rect=pygame.Rect(panel_x, y, panel_width, 22),
-                text=line,
-                manager=self.ui_manager,
-            ))
+            self._misc_labels.append(
+                pygame_gui.elements.UILabel(
+                    relative_rect=pygame.Rect(panel_x, y, panel_width, 22),
+                    text=line,
+                    manager=self.ui_manager,
+                )
+            )
             y += 22
         y += 20
 
         # === Tutorial Section ===
-        self._misc_labels.append(pygame_gui.elements.UILabel(
-            relative_rect=pygame.Rect(panel_x, y, panel_width, 30),
-            text="Tutorial:",
-            manager=self.ui_manager,
-        ))
+        self._misc_labels.append(
+            pygame_gui.elements.UILabel(
+                relative_rect=pygame.Rect(panel_x, y, panel_width, 30),
+                text="Tutorial:",
+                manager=self.ui_manager,
+            )
+        )
         y += 35
         self.replay_tutorial_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(panel_x, y, scale_x(200), scale_y(40)),
@@ -256,13 +268,20 @@ class SettingsView(BaseView):
 
         # === Bottom buttons ===
         self.back_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(panel_x, WINDOW_HEIGHT - scale_y(80), scale_x(150), scale_y(50)),
+            relative_rect=pygame.Rect(
+                panel_x, WINDOW_HEIGHT - scale_y(80), scale_x(150), scale_y(50)
+            ),
             text="BACK",
             manager=self.ui_manager,
         )
 
         self.apply_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(panel_x + panel_width - scale_x(150), WINDOW_HEIGHT - scale_y(80), scale_x(150), scale_y(50)),
+            relative_rect=pygame.Rect(
+                panel_x + panel_width - scale_x(150),
+                WINDOW_HEIGHT - scale_y(80),
+                scale_x(150),
+                scale_y(50),
+            ),
             text="APPLY",
             manager=self.ui_manager,
         )
@@ -271,14 +290,23 @@ class SettingsView(BaseView):
     def _destroy_ui(self) -> None:
         """Destroy all UI elements."""
         for elem in [
-            self.save_dir_label, self.save_dir_display,
-            self.browse_button, self.reset_button,
-            self.replay_tutorial_button, self.back_button, self.apply_button,
-            self._master_slider, self._music_slider,
-            self._sfx_slider, self._ambient_slider,
-            self._master_label, self._music_label,
-            self._sfx_label, self._ambient_label,
-            self._fullscreen_button, self._restart_label,
+            self.save_dir_label,
+            self.save_dir_display,
+            self.browse_button,
+            self.reset_button,
+            self.replay_tutorial_button,
+            self.back_button,
+            self.apply_button,
+            self._master_slider,
+            self._music_slider,
+            self._sfx_slider,
+            self._ambient_slider,
+            self._master_label,
+            self._music_label,
+            self._sfx_label,
+            self._ambient_label,
+            self._fullscreen_button,
+            self._restart_label,
         ]:
             if elem:
                 elem.kill()
@@ -303,9 +331,7 @@ class SettingsView(BaseView):
 
             elif event.ui_element == self._fullscreen_button:
                 self._selected_fullscreen = not self._selected_fullscreen
-                fs_label = (
-                    "Fullscreen: ON" if self._selected_fullscreen else "Fullscreen: OFF"
-                )
+                fs_label = "Fullscreen: ON" if self._selected_fullscreen else "Fullscreen: OFF"
                 self._fullscreen_button.set_text(fs_label)
                 self.apply_button.enable()
                 if self._restart_label:
@@ -352,7 +378,7 @@ class SettingsView(BaseView):
 
         elem_id = id(event.ui_element)
         if elem_id in slider_map:
-            name, setter, pct_obj_id = slider_map[elem_id]
+            _name, setter, pct_obj_id = slider_map[elem_id]
             value = event.value / 100.0
             setter(value)
             self._audio_changed = True
@@ -361,10 +387,9 @@ class SettingsView(BaseView):
             # Update percentage label
             pct_text = f"{int(event.value)}%"
             for elem in self.ui_manager.get_sprite_group():
-                if (
-                    hasattr(elem, "object_ids")
-                    and pct_obj_id in [str(oid) for oid in elem.object_ids]
-                ):
+                if hasattr(elem, "object_ids") and pct_obj_id in [
+                    str(oid) for oid in elem.object_ids
+                ]:
                     elem.set_text(pct_text)
                     break
 
@@ -403,7 +428,7 @@ class SettingsView(BaseView):
                 # Update display
                 self.save_dir_display.kill()
                 self.save_dir_display = pygame_gui.elements.UITextBox(
-                    html_text=f"<font size=4>{str(self.new_save_dir)}</font>",
+                    html_text=f"<font size=4>{self.new_save_dir!s}</font>",
                     relative_rect=pygame.Rect((WINDOW_WIDTH - 800) // 2, 160, 640, 60),
                     manager=self.ui_manager,
                 )
@@ -439,7 +464,7 @@ class SettingsView(BaseView):
         panel_x = (WINDOW_WIDTH - 800) // 2
         self.save_dir_display.kill()
         self.save_dir_display = pygame_gui.elements.UITextBox(
-            html_text=f"<font size=4>{str(self.new_save_dir)}</font>",
+            html_text=f"<font size=4>{self.new_save_dir!s}</font>",
             relative_rect=pygame.Rect(panel_x, 160, 640, 60),
             manager=self.ui_manager,
         )

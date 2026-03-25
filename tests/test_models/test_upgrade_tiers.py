@@ -9,9 +9,17 @@ from spacegame.models.upgrades import ShipUpgrade
 
 DATA_DIR = Path(__file__).resolve().parents[2] / "data"
 VALID_SYSTEM_IDS = {
-    "nexus_prime", "verdant", "forgeworks", "breakstone", "axiom_labs",
-    "havens_rest", "crimson_reach", "stellaris_port", "iron_depths",
-    "nova_research", "the_fulcrum",
+    "nexus_prime",
+    "verdant",
+    "forgeworks",
+    "breakstone",
+    "axiom_labs",
+    "havens_rest",
+    "crimson_reach",
+    "stellaris_port",
+    "iron_depths",
+    "nova_research",
+    "the_fulcrum",
 }
 
 
@@ -31,9 +39,7 @@ class TestUpgradeTierField:
     def test_tier_values_are_valid(self) -> None:
         raw = _load_upgrades_json()
         for entry in raw:
-            assert entry["tier"] in (1, 2, 3), (
-                f"{entry['id']} has invalid tier: {entry['tier']}"
-            )
+            assert entry["tier"] in (1, 2, 3), f"{entry['id']} has invalid tier: {entry['tier']}"
 
     def test_tier_distribution_not_empty(self) -> None:
         raw = _load_upgrades_json()
@@ -45,8 +51,13 @@ class TestUpgradeTierField:
 
     def test_tier_defaults_to_1_in_model(self) -> None:
         upgrade = ShipUpgrade(
-            id="test", name="Test", description="Test",
-            price=1000, slot_type="cargo", bonus_type="", bonus_value=0.0,
+            id="test",
+            name="Test",
+            description="Test",
+            price=1000,
+            slot_type="cargo",
+            bonus_type="",
+            bonus_value=0.0,
         )
         assert upgrade.tier == 1
 
@@ -66,14 +77,17 @@ class TestAvailableSystems:
     def test_all_upgrades_have_available_systems(self) -> None:
         raw = _load_upgrades_json()
         for entry in raw:
-            assert "available_systems" in entry, (
-                f"{entry['id']} missing available_systems field"
-            )
+            assert "available_systems" in entry, f"{entry['id']} missing available_systems field"
 
     def test_available_systems_defaults_to_empty(self) -> None:
         upgrade = ShipUpgrade(
-            id="test", name="Test", description="Test",
-            price=1000, slot_type="cargo", bonus_type="", bonus_value=0.0,
+            id="test",
+            name="Test",
+            description="Test",
+            price=1000,
+            slot_type="cargo",
+            bonus_type="",
+            bonus_value=0.0,
         )
         assert upgrade.available_systems == []
 
@@ -95,10 +109,7 @@ class TestAvailableSystems:
 
     def test_some_tier_3_upgrades_are_system_locked(self) -> None:
         raw = _load_upgrades_json()
-        locked_t3 = [
-            e for e in raw
-            if e["tier"] == 3 and e.get("available_systems")
-        ]
+        locked_t3 = [e for e in raw if e["tier"] == 3 and e.get("available_systems")]
         assert len(locked_t3) >= 3, "Expected at least 3 system-locked Tier 3 upgrades"
 
 
@@ -156,9 +167,7 @@ class TestDataLoaderParsesTiers:
         dl = get_data_loader()
         dl.load_upgrades()
         # At least one upgrade should have non-empty available_systems
-        has_locked = any(
-            len(u.available_systems) > 0 for u in dl.upgrades.values()
-        )
+        has_locked = any(len(u.available_systems) > 0 for u in dl.upgrades.values())
         assert has_locked, "No upgrades have available_systems set"
 
     def test_no_duplicate_upgrade_ids(self) -> None:

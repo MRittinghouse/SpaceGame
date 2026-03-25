@@ -36,21 +36,25 @@ class FogState(Enum):
     VISIBLE = "visible"
 
 
-_WALKABLE_TYPES = frozenset({
-    TileType.FLOOR,
-    TileType.DOOR_OPEN,
-    TileType.EXIT,
-    TileType.ENTRANCE,
-    TileType.NOISY_FLOOR,
-    TileType.TERMINAL,
-    TileType.HAZARD,
-})
+_WALKABLE_TYPES = frozenset(
+    {
+        TileType.FLOOR,
+        TileType.DOOR_OPEN,
+        TileType.EXIT,
+        TileType.ENTRANCE,
+        TileType.NOISY_FLOOR,
+        TileType.TERMINAL,
+        TileType.HAZARD,
+    }
+)
 
-_VISION_BLOCKING_TYPES = frozenset({
-    TileType.WALL,
-    TileType.DOOR_CLOSED,
-    TileType.VENT,
-})
+_VISION_BLOCKING_TYPES = frozenset(
+    {
+        TileType.WALL,
+        TileType.DOOR_CLOSED,
+        TileType.VENT,
+    }
+)
 
 
 @dataclass
@@ -192,9 +196,7 @@ class GroundMap:
 
         return True
 
-    def update_fog_of_war(
-        self, player_x: int, player_y: int, vision_radius: int
-    ) -> None:
+    def update_fog_of_war(self, player_x: int, player_y: int, vision_radius: int) -> None:
         """Update fog state based on player position and vision.
 
         All currently VISIBLE tiles become EXPLORED, then tiles within
@@ -229,9 +231,7 @@ class GroundMap:
         return {
             "width": self.width,
             "height": self.height,
-            "tiles": [
-                [tile.to_dict() for tile in row] for row in self.tiles
-            ],
+            "tiles": [[tile.to_dict() for tile in row] for row in self.tiles],
             "entrance_pos": list(self.entrance_pos),
             "exit_pos": list(self.exit_pos),
         }
@@ -246,10 +246,7 @@ class GroundMap:
         Returns:
             GroundMap instance.
         """
-        tiles = [
-            [GroundTile.from_dict(td) for td in row]
-            for row in data["tiles"]
-        ]
+        tiles = [[GroundTile.from_dict(td) for td in row] for row in data["tiles"]]
         return cls(
             width=data["width"],
             height=data["height"],

@@ -18,18 +18,29 @@ class TestTileType:
 
     def test_all_tile_types_have_string_values(self) -> None:
         expected = {
-            "floor", "wall", "door_closed", "door_open",
-            "exit", "entrance", "noisy_floor",
-            "terminal", "hazard", "vent",
+            "floor",
+            "wall",
+            "door_closed",
+            "door_open",
+            "exit",
+            "entrance",
+            "noisy_floor",
+            "terminal",
+            "hazard",
+            "vent",
         }
         actual = {t.value for t in TileType}
         assert actual == expected
 
     def test_walkable_types(self) -> None:
         walkable = {
-            TileType.FLOOR, TileType.DOOR_OPEN, TileType.EXIT,
-            TileType.ENTRANCE, TileType.NOISY_FLOOR,
-            TileType.TERMINAL, TileType.HAZARD,
+            TileType.FLOOR,
+            TileType.DOOR_OPEN,
+            TileType.EXIT,
+            TileType.ENTRANCE,
+            TileType.NOISY_FLOOR,
+            TileType.TERMINAL,
+            TileType.HAZARD,
         }
         for tt in TileType:
             tile = GroundTile(tile_type=tt)
@@ -334,9 +345,7 @@ class TestGroundMap:
         gm = self._make_map(8, 6)
         # Modify some state
         gm.update_fog_of_war(3, 3, 2)
-        gm.tiles[2][2] = GroundTile(
-            tile_type=TileType.DOOR_CLOSED, fog_state=FogState.EXPLORED
-        )
+        gm.tiles[2][2] = GroundTile(tile_type=TileType.DOOR_CLOSED, fog_state=FogState.EXPLORED)
 
         data = gm.to_dict()
         restored = GroundMap.from_dict(data)

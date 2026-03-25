@@ -53,7 +53,9 @@ class TestMultiDeckBasics:
     def test_default_max_decks(self) -> None:
         """DerelictType without max_decks should default to 5."""
         dt = DerelictType(
-            id="test", name="Test", grid_size=4,
+            id="test",
+            name="Test",
+            grid_size=4,
             item_density=0.5,
             item_distribution={"scrap_metal": 1.0},
         )
@@ -184,9 +186,7 @@ class TestDeckAdvance:
         assert hidden_count == len(session.grid)
 
     def test_prestige_multiplier_on_intel(self) -> None:
-        session = SalvageSession(
-            _make_config(), derelict_type=_make_derelict(), prestige_level=5
-        )
+        session = SalvageSession(_make_config(), derelict_type=_make_derelict(), prestige_level=5)
         # Advance to deck 3 so the numbers are large enough for prestige to matter
         for _ in range(2):
             self._extract_enough(session, 0.65)
@@ -224,6 +224,4 @@ class TestQualityScaling:
         # Deck 3: quality_min = 0.8 + 2 * 0.1 = 1.0
         for cell in session.grid:
             if cell.has_item:
-                assert cell.quality >= 1.0, (
-                    f"Cell quality {cell.quality} below 1.0 on deck 3"
-                )
+                assert cell.quality >= 1.0, f"Cell quality {cell.quality} below 1.0 on deck 3"

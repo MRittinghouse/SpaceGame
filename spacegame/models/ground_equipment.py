@@ -9,7 +9,7 @@ from __future__ import annotations
 import random
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 
 class EquipmentSlot(Enum):
@@ -98,9 +98,7 @@ class GroundLootTable:
     equipment_pool: list[str]
     commodity_drops: list[tuple[str, int]] = field(default_factory=list)
 
-    def roll_container_loot(
-        self, com_bonus: float, rng: random.Random
-    ) -> dict[str, Any]:
+    def roll_container_loot(self, com_bonus: float, rng: random.Random) -> dict[str, Any]:
         """Generate loot for a single container.
 
         Args:
@@ -138,9 +136,7 @@ class GroundLootTable:
             "credit_range": list(self.credit_range),
             "equipment_chance": self.equipment_chance,
             "equipment_pool": list(self.equipment_pool),
-            "commodity_drops": [
-                [cid, qty] for cid, qty in self.commodity_drops
-            ],
+            "commodity_drops": [[cid, qty] for cid, qty in self.commodity_drops],
         }
 
     @classmethod
@@ -158,8 +154,5 @@ class GroundLootTable:
             credit_range=(cr[0], cr[1]),
             equipment_chance=data.get("equipment_chance", 0.0),
             equipment_pool=data.get("equipment_pool", []),
-            commodity_drops=[
-                (item[0], item[1])
-                for item in data.get("commodity_drops", [])
-            ],
+            commodity_drops=[(item[0], item[1]) for item in data.get("commodity_drops", [])],
         )

@@ -7,7 +7,6 @@ a numeric value over time using any easing function.
 import math
 from typing import Callable, Optional
 
-
 # ---------------------------------------------------------------------------
 # Easing functions: map t in [0, 1] -> value (usually [0, 1])
 # ---------------------------------------------------------------------------
@@ -72,6 +71,24 @@ def ease_out_back(t: float) -> float:
     return 1.0 + c3 * (t - 1.0) ** 3 + c1 * (t - 1.0) ** 2
 
 
+def ease_out_bounce(t: float) -> float:
+    """Bounce ease-out (ball-drop style, settles at target)."""
+    t = _clamp01(t)
+    n1 = 7.5625
+    d1 = 2.75
+    if t < 1.0 / d1:
+        return n1 * t * t
+    elif t < 2.0 / d1:
+        t -= 1.5 / d1
+        return n1 * t * t + 0.75
+    elif t < 2.5 / d1:
+        t -= 2.25 / d1
+        return n1 * t * t + 0.9375
+    else:
+        t -= 2.625 / d1
+        return n1 * t * t + 0.984375
+
+
 def ease_out_elastic(t: float) -> float:
     """Elastic ease-out (spring-like oscillation)."""
     t = _clamp01(t)
@@ -81,6 +98,47 @@ def ease_out_elastic(t: float) -> float:
         return 1.0
     c4 = (2.0 * math.pi) / 3.0
     return 2.0 ** (-10.0 * t) * math.sin((t * 10.0 - 0.75) * c4) + 1.0
+
+
+def lerp(a: float, b: float, t: float, ease: Optional[EasingFn] = None) -> float:
+    """Linearly interpolate from a to b, optionally applying an easing curve.
+
+    Args:
+        a: Start value.
+        b: End value.
+        t: Progress in [0, 1] (clamped).
+        ease: Optional easing function to apply to t before interpolation.
+
+    Returns:
+        Interpolated value between a and b.
+    """
+    t = _clamp01(t)
+    if ease is not None:
+        t = ease(t)
+    return a + (b - a) * t
+
+
+def lerp_color(
+    c1: tuple[int, ...],
+    c2: tuple[int, ...],
+    t: float,
+    ease: Optional[EasingFn] = None,
+) -> tuple[int, ...]:
+    """Interpolate between two RGB or RGBA color tuples.
+
+    Args:
+        c1: Start color (3 or 4 channels).
+        c2: End color (same length as c1).
+        t: Progress in [0, 1] (clamped).
+        ease: Optional easing function.
+
+    Returns:
+        Interpolated color tuple with integer channels clamped to [0, 255].
+    """
+    t = _clamp01(t)
+    if ease is not None:
+        t = ease(t)
+    return tuple(max(0, min(255, int(c1[i] + (c2[i] - c1[i]) * t))) for i in range(len(c1)))
 
 
 # ---------------------------------------------------------------------------

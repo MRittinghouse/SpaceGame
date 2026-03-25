@@ -5,7 +5,6 @@ derived (not stored), so they automatically update as the player progresses.
 Ship name is stored and persisted.
 """
 
-from dataclasses import dataclass, field
 from typing import Optional
 
 # ============================================================================

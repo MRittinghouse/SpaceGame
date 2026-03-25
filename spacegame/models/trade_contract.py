@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import hashlib
 import random as _rng
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 
 @dataclass
@@ -139,9 +139,7 @@ class TradeContractManager:
 
         return new_contracts
 
-    def get_available(
-        self, system_id: str, game_day: int
-    ) -> list[TradeContract]:
+    def get_available(self, system_id: str, game_day: int) -> list[TradeContract]:
         """Get unfulfilled, non-expired contracts for a system.
 
         Args:
@@ -154,9 +152,7 @@ class TradeContractManager:
         return [
             c
             for c in self._contracts
-            if c.system_id == system_id
-            and not c.completed
-            and game_day <= c.expiry_day
+            if c.system_id == system_id and not c.completed and game_day <= c.expiry_day
         ]
 
     def try_fulfill(
@@ -211,9 +207,7 @@ class TradeContractManager:
             game_day: Current game day.
         """
         self._contracts = [
-            c
-            for c in self._contracts
-            if not c.completed and game_day <= c.expiry_day
+            c for c in self._contracts if not c.completed and game_day <= c.expiry_day
         ]
 
     def to_dict(self) -> dict:
@@ -231,7 +225,5 @@ class TradeContractManager:
             TradeContractManager instance.
         """
         mgr = cls()
-        mgr._contracts = [
-            TradeContract.from_dict(c) for c in data.get("contracts", [])
-        ]
+        mgr._contracts = [TradeContract.from_dict(c) for c in data.get("contracts", [])]
         return mgr

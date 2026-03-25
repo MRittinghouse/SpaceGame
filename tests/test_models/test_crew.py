@@ -488,9 +488,7 @@ class TestPendingCompanions:
         roster.add_pending_companion("elena_reeves")
         available = roster.get_available_crew_at_system("nexus_prime")
         ids = [t.id for t in available]
-        assert "elena_reeves" in ids, (
-            f"Pending companion should appear at home system, got {ids}"
-        )
+        assert "elena_reeves" in ids, f"Pending companion should appear at home system, got {ids}"
 
     def test_pending_companion_not_at_wrong_system(self) -> None:
         """Pending companion doesn't show at a different system."""

@@ -4,29 +4,29 @@ Displays ship hull status and allows the player to repair damage for credits.
 Shields are automatically restored on docking (handled by StationHubView).
 """
 
-import pygame
-import pygame_gui
 from typing import Optional
 
+import pygame
+import pygame_gui
+
 from spacegame.config import (
-    WINDOW_WIDTH,
     WINDOW_HEIGHT,
+    WINDOW_WIDTH,
     Colors,
     GameState,
     scale_x,
     scale_y,
 )
-from spacegame.views.base_view import BaseView
-from spacegame.models.player import Player
+from spacegame.engine.audio_manager import get_audio_manager
 from spacegame.engine.backgrounds import AnimatedBackground
 from spacegame.engine.draw_utils import draw_bar, draw_panel
-from spacegame.engine.particles import ParticlePool, HEAL_SPARKLE
-from spacegame.engine.fonts import FontCache, FONT_BODY, FONT_LG, FONT_MD, FONT_SUBTITLE, FONT_TITLE
+from spacegame.engine.fonts import FONT_BODY, FONT_LG, FONT_MD, FONT_SUBTITLE, FONT_TITLE, get_font
+from spacegame.engine.particles import HEAL_SPARKLE, ParticlePool
+from spacegame.models.player import Player
 from spacegame.utils.logger import logger
-from spacegame.engine.audio_manager import get_audio_manager
+from spacegame.views.base_view import BaseView
 
-
-# Layout
+# Layout (centered modal pattern, also used in investment_view)
 PANEL_W = scale_x(500)
 PANEL_H = scale_y(400)
 PANEL_X = WINDOW_WIDTH // 2 - PANEL_W // 2
@@ -75,11 +75,11 @@ class RepairBayView(BaseView):
         self.message_color: tuple[int, int, int] = Colors.TEXT_PRIMARY
 
         # Fonts
-        self.title_font = FontCache.get(FONT_TITLE)
-        self.subtitle_font = FontCache.get(FONT_MD)
-        self.label_font = FontCache.get(FONT_SUBTITLE)
-        self.value_font = FontCache.get(FONT_LG)
-        self.msg_font = FontCache.get(FONT_BODY)
+        self.title_font = get_font("header", FONT_TITLE)
+        self.subtitle_font = get_font("dialogue", FONT_MD)
+        self.label_font = get_font("dialogue", FONT_SUBTITLE)
+        self.value_font = get_font("stats", FONT_LG)
+        self.msg_font = get_font("dialogue", FONT_BODY)
 
         # UI element refs
         self.repair_button: Optional[pygame_gui.elements.UIButton] = None
@@ -89,9 +89,7 @@ class RepairBayView(BaseView):
         self.particles = ParticlePool(60)
 
         # Background
-        self.background = AnimatedBackground(
-            "station", WINDOW_WIDTH, WINDOW_HEIGHT, seed=7777
-        )
+        self.background = AnimatedBackground("station", WINDOW_WIDTH, WINDOW_HEIGHT, seed=7777)
         self._bg_dim = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
         self._bg_dim.fill((0, 0, 0))
         self._bg_dim.set_alpha(140)
@@ -177,12 +175,8 @@ class RepairBayView(BaseView):
         pygame.draw.rect(screen, Colors.GREEN, (PANEL_X, PANEL_Y, PANEL_W, 3))
 
         # Title — use location name
-        title = self.title_font.render(
-            self.location_name.upper(), True, Colors.TEXT_HIGHLIGHT
-        )
-        screen.blit(
-            title, (PANEL_X + PANEL_W // 2 - title.get_width() // 2, PANEL_Y + 12)
-        )
+        title = self.title_font.render(self.location_name.upper(), True, Colors.TEXT_HIGHLIGHT)
+        screen.blit(title, (PANEL_X + PANEL_W // 2 - title.get_width() // 2, PANEL_Y + 12))
 
         # Flavor text below title
         if self.location_flavor:
@@ -213,29 +207,39 @@ class RepairBayView(BaseView):
         else:
             bar_color = Colors.RED
         draw_bar(
-            screen, BAR_X, bar_y, BAR_W, BAR_H,
-            ship.current_hull, max_hull, bar_color,
-            font=self.value_font, bg_color=Colors.BAR_BG_LIGHT,
+            screen,
+            BAR_X,
+            bar_y,
+            BAR_W,
+            BAR_H,
+            ship.current_hull,
+            max_hull,
+            bar_color,
+            font=self.value_font,
+            bg_color=Colors.BAR_BG_LIGHT,
         )
 
         # Shield bar (smaller, informational)
         shield_y = bar_y + BAR_H + 14
         max_shields = ship.ship_type.combat_shields
-        shield_ratio = ship.current_shields / max_shields if max_shields > 0 else 1.0
-
         shield_label = self.label_font.render("Shields", True, Colors.TEXT_SECONDARY)
         screen.blit(shield_label, (BAR_X, shield_y))
-        restored_label = self.value_font.render(
-            "(restored on dock)", True, Colors.TEXT_SECONDARY
-        )
+        restored_label = self.value_font.render("(restored on dock)", True, Colors.TEXT_SECONDARY)
         screen.blit(restored_label, (BAR_X + shield_label.get_width() + 8, shield_y + 3))
 
         shield_bar_y = shield_y + 24
         shield_bar_h = 18
         draw_bar(
-            screen, BAR_X, shield_bar_y, BAR_W, shield_bar_h,
-            ship.current_shields, max_shields, Colors.BLUE,
-            font=self.value_font, bg_color=Colors.BAR_BG_LIGHT,
+            screen,
+            BAR_X,
+            shield_bar_y,
+            BAR_W,
+            shield_bar_h,
+            ship.current_shields,
+            max_shields,
+            Colors.BLUE,
+            font=self.value_font,
+            bg_color=Colors.BAR_BG_LIGHT,
         )
 
         # Repair cost info

@@ -5,9 +5,9 @@ This module contains all configurable constants for the game, including
 display settings, colors, timing, and game rules.
 """
 
-from enum import Enum
 import pathlib
 import sys
+from enum import Enum
 
 # ============================================================================
 # DISPLAY SETTINGS
@@ -69,6 +69,7 @@ def scale_y(base_px: int) -> int:
         Proportionally scaled value for the active WINDOW_HEIGHT.
     """
     return round(base_px * WINDOW_HEIGHT / _BASE_HEIGHT)
+
 
 # ============================================================================
 # COLORS (RGB)

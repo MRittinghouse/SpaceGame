@@ -6,35 +6,30 @@ and ground combat overlay panel.
 """
 
 import random
+from typing import TYPE_CHECKING, Optional
 
 import pygame
 import pygame_gui
-from typing import Optional, TYPE_CHECKING
 
-from spacegame.views.base_view import BaseView
 from spacegame.config import (
-    WINDOW_WIDTH,
-    WINDOW_HEIGHT,
-    Colors,
-    GameState,
-    GROUND_TILE_SIZE,
     GROUND_CAMERA_LERP_SPEED,
     GROUND_COMBAT_PANEL_HEIGHT,
-    scale_x,
+    GROUND_TILE_SIZE,
+    WINDOW_HEIGHT,
+    WINDOW_WIDTH,
+    Colors,
+    GameState,
     scale_y,
 )
+from spacegame.engine.audio_manager import get_audio_manager
+from spacegame.engine.draw_utils import draw_bar
+from spacegame.engine.fonts import FONT_BODY, FONT_LG, FONT_MD, FONT_SECTION, FONT_XL, get_font
+from spacegame.engine.sprites import AnimatedSprite, get_sprite_manager
 from spacegame.models.ground import (
     FogState,
     GroundMap,
     GroundPlayerState,
     TileType,
-)
-from spacegame.models.ground_enemy import (
-    AlertLevel,
-    Direction,
-    GroundEnemy,
-    GroundMissionState,
-    NoiseEvent,
 )
 from spacegame.models.ground_combat import (
     CombatOutcome,
@@ -43,11 +38,14 @@ from spacegame.models.ground_combat import (
     build_player_ground_combat_stats,
     make_enemy_from_template,
 )
-from spacegame.engine.audio_manager import get_audio_manager
-from spacegame.engine.sprites import AnimatedSprite, get_sprite_manager
-from spacegame.engine.draw_utils import draw_bar
-from spacegame.engine.fonts import FONT_BODY, FONT_LG, FONT_MD, FONT_SECTION, FONT_XL, FontCache
+from spacegame.models.ground_enemy import (
+    AlertLevel,
+    Direction,
+    GroundMissionState,
+    NoiseEvent,
+)
 from spacegame.utils.logger import logger
+from spacegame.views.base_view import BaseView
 
 if TYPE_CHECKING:
     from spacegame.models.ground_mission import (
@@ -114,7 +112,6 @@ _SOCIAL_SKILL_ORDER = [
 ]
 
 
-
 class GroundExplorationView(BaseView):
     """Turn-based grid exploration with scrolling viewport and fog of war."""
 
@@ -152,11 +149,11 @@ class GroundExplorationView(BaseView):
         self._target_camera_y: float = float(py)
 
         # Fonts
-        self._hud_font = FontCache.get(FONT_BODY)
-        self._msg_font = FontCache.get(FONT_LG)
-        self._combat_font = FontCache.get(FONT_XL)
-        self._dice_font = FontCache.get(FONT_SECTION)
-        self._combat_label_font = FontCache.get(FONT_MD)
+        self._hud_font = get_font("machine", FONT_BODY)
+        self._msg_font = get_font("dialogue", FONT_LG)
+        self._combat_font = get_font("header", FONT_XL)
+        self._dice_font = get_font("stats", FONT_SECTION)
+        self._combat_label_font = get_font("dialogue", FONT_MD)
 
         # Sprite manager for ground tiles
         self._sprite_mgr = get_sprite_manager()
@@ -181,9 +178,7 @@ class GroundExplorationView(BaseView):
         self._enemy_sprites: dict[str, Optional[pygame.Surface]] = {}
 
         # Fog overlay tile (reused for explored tiles)
-        self._fog_overlay = pygame.Surface(
-            (GROUND_TILE_SIZE, GROUND_TILE_SIZE), pygame.SRCALPHA
-        )
+        self._fog_overlay = pygame.Surface((GROUND_TILE_SIZE, GROUND_TILE_SIZE), pygame.SRCALPHA)
         self._fog_overlay.fill((0, 0, 0, Colors.GROUND_FOG_EXPLORED_ALPHA))
 
         # Combat panel background (reused)
@@ -193,12 +188,8 @@ class GroundExplorationView(BaseView):
         self._combat_panel_bg.fill((15, 15, 25, 230))
 
         # Minimap surface and positioning
-        self._minimap_surface = pygame.Surface(
-            (MINIMAP_SIZE, MINIMAP_SIZE), pygame.SRCALPHA
-        )
-        self._minimap_scale = MINIMAP_SIZE / max(
-            self.ground_map.width, self.ground_map.height
-        )
+        self._minimap_surface = pygame.Surface((MINIMAP_SIZE, MINIMAP_SIZE), pygame.SRCALPHA)
+        self._minimap_scale = MINIMAP_SIZE / max(self.ground_map.width, self.ground_map.height)
         self._minimap_x = WINDOW_WIDTH - MINIMAP_SIZE - MINIMAP_MARGIN
         self._minimap_y = MINIMAP_MARGIN
 
@@ -302,9 +293,7 @@ class GroundExplorationView(BaseView):
         self._mission_outcome = outcome
         self.next_state = GameState.GROUND_RESULT
 
-    def get_mission_result(
-        self, outcome: "MissionOutcome"
-    ) -> Optional["GroundMissionResult"]:
+    def get_mission_result(self, outcome: "MissionOutcome") -> Optional["GroundMissionResult"]:
         """Build a GroundMissionResult from tracked mission state.
 
         Args:
@@ -422,7 +411,7 @@ class GroundExplorationView(BaseView):
                         tile_sprite = self._tile_sprites.get(tile.tile_type.value)
                         if tile_sprite:
                             screen.blit(tile_sprite, (screen_x, screen_y))
-                elif (tile_sprite := self._tile_sprites.get(tile.tile_type.value)):
+                elif tile_sprite := self._tile_sprites.get(tile.tile_type.value):
                     screen.blit(tile_sprite, (screen_x, screen_y))
                 else:
                     color = _TILE_COLORS.get(tile.tile_type, Colors.GROUND_FLOOR)
@@ -454,24 +443,14 @@ class GroundExplorationView(BaseView):
             else:
                 angle = 0  # Down (default)
             rotated = pygame.transform.rotate(self._player_sprite, angle)
-            ppx = int(
-                self.player_state.x * ts
-                + offset_x
-                + (ts - rotated.get_width()) // 2
-            )
-            ppy = int(
-                self.player_state.y * ts
-                + offset_y
-                + (ts - rotated.get_height()) // 2
-            )
+            ppx = int(self.player_state.x * ts + offset_x + (ts - rotated.get_width()) // 2)
+            ppy = int(self.player_state.y * ts + offset_y + (ts - rotated.get_height()) // 2)
             screen.blit(rotated, (ppx, ppy))
         else:
             ppx = int(self.player_state.x * ts + offset_x + ts * 0.2)
             ppy = int(self.player_state.y * ts + offset_y + ts * 0.2)
             player_size = int(ts * 0.6)
-            pygame.draw.rect(
-                screen, Colors.GROUND_PLAYER, (ppx, ppy, player_size, player_size)
-            )
+            pygame.draw.rect(screen, Colors.GROUND_PLAYER, (ppx, ppy, player_size, player_size))
 
         # HUD overlay
         self._render_hud(screen)
@@ -503,10 +482,14 @@ class GroundExplorationView(BaseView):
             # Small diamond marker
             size = 4
             points = [
-                (cx, cy - size), (cx + size, cy),
-                (cx, cy + size), (cx - size, cy),
+                (cx, cy - size),
+                (cx + size, cy),
+                (cx, cy + size),
+                (cx - size, cy),
             ]
-            color = (255, 180, 50, 160) if tile.fog_state == FogState.VISIBLE else (255, 180, 50, 80)
+            color = (
+                (255, 180, 50, 160) if tile.fog_state == FogState.VISIBLE else (255, 180, 50, 80)
+            )
             pygame.draw.polygon(screen, color[:3], points)
 
     def _render_enemies(
@@ -527,8 +510,8 @@ class GroundExplorationView(BaseView):
 
             # Try sprite for this enemy
             if enemy.template_id not in self._enemy_sprites:
-                self._enemy_sprites[enemy.template_id] = (
-                    self._sprite_mgr.get_ground_enemy_sprite(enemy.template_id)
+                self._enemy_sprites[enemy.template_id] = self._sprite_mgr.get_ground_enemy_sprite(
+                    enemy.template_id
                 )
             enemy_sprite = self._enemy_sprites.get(enemy.template_id)
 
@@ -542,21 +525,11 @@ class GroundExplorationView(BaseView):
                 }
                 angle = facing_angles.get(enemy.facing, 0)
                 rotated_enemy = pygame.transform.rotate(enemy_sprite, angle)
-                ex = int(
-                    enemy.x * ts
-                    + offset_x
-                    + (ts - rotated_enemy.get_width()) // 2
-                )
-                ey = int(
-                    enemy.y * ts
-                    + offset_y
-                    + (ts - rotated_enemy.get_height()) // 2
-                )
+                ex = int(enemy.x * ts + offset_x + (ts - rotated_enemy.get_width()) // 2)
+                ey = int(enemy.y * ts + offset_y + (ts - rotated_enemy.get_height()) // 2)
                 screen.blit(rotated_enemy, (ex, ey))
                 # Alert level indicator dot
-                color = _ALERT_COLORS.get(
-                    self.mission_state.alert_level, Colors.GROUND_ENEMY
-                )
+                color = _ALERT_COLORS.get(self.mission_state.alert_level, Colors.GROUND_ENEMY)
                 dot_x = int(enemy.x * ts + offset_x + ts - 8)
                 dot_y = int(enemy.y * ts + offset_y + 4)
                 pygame.draw.circle(screen, color, (dot_x, dot_y), 4)
@@ -565,9 +538,7 @@ class GroundExplorationView(BaseView):
                 cx = int(enemy.x * ts + offset_x + ts // 2)
                 cy = int(enemy.y * ts + offset_y + ts // 2)
                 radius = int(ts * 0.25)
-                color = _ALERT_COLORS.get(
-                    self.mission_state.alert_level, Colors.GROUND_ENEMY
-                )
+                color = _ALERT_COLORS.get(self.mission_state.alert_level, Colors.GROUND_ENEMY)
                 pygame.draw.circle(screen, color, (cx, cy), radius)
                 tri = _FACING_OFFSETS.get(enemy.facing)
                 if tri:
@@ -600,16 +571,12 @@ class GroundExplorationView(BaseView):
         if self.mission_state:
             alert = self.mission_state.alert_level
             alert_color = _ALERT_COLORS.get(alert, Colors.TEXT_SECONDARY)
-            alert_text = self._hud_font.render(
-                f"Alert: {alert.value.upper()}", True, alert_color
-            )
+            alert_text = self._hud_font.render(f"Alert: {alert.value.upper()}", True, alert_color)
             screen.blit(alert_text, (10, 54))
 
         # Status message (only when NOT in combat — combat has its own messages)
         if self._combat_state is None and self._message and self._message_timer > 0:
-            msg_surface = self._msg_font.render(
-                self._message, True, Colors.YELLOW
-            )
+            msg_surface = self._msg_font.render(self._message, True, Colors.YELLOW)
             msg_x = (WINDOW_WIDTH - msg_surface.get_width()) // 2
             screen.blit(msg_surface, (msg_x, WINDOW_HEIGHT - 40))
 
@@ -649,8 +616,10 @@ class GroundExplorationView(BaseView):
                     cy = int(obj.y * scale + scale / 2)
                     r = max(2, int(scale / 2))
                     pygame.draw.circle(
-                        self._minimap_surface, MINIMAP_INTERACTABLE_COLOR,
-                        (cx, cy), r,
+                        self._minimap_surface,
+                        MINIMAP_INTERACTABLE_COLOR,
+                        (cx, cy),
+                        r,
                     )
 
         # Draw visible enemies
@@ -662,7 +631,10 @@ class GroundExplorationView(BaseView):
                     cy = int(enemy.y * scale + scale / 2)
                     r = max(2, int(scale / 2))
                     pygame.draw.circle(
-                        self._minimap_surface, Colors.GROUND_ENEMY, (cx, cy), r,
+                        self._minimap_surface,
+                        Colors.GROUND_ENEMY,
+                        (cx, cy),
+                        r,
                     )
 
         # Draw player dot (always visible, on top)
@@ -670,7 +642,10 @@ class GroundExplorationView(BaseView):
         py = int(self.player_state.y * scale + scale / 2)
         r = max(2, int(scale / 2) + 1)
         pygame.draw.circle(
-            self._minimap_surface, Colors.GROUND_PLAYER, (px, py), r,
+            self._minimap_surface,
+            Colors.GROUND_PLAYER,
+            (px, py),
+            r,
         )
 
     def _render_minimap(self, screen: pygame.Surface) -> None:
@@ -679,7 +654,8 @@ class GroundExplorationView(BaseView):
         screen.blit(self._minimap_surface, (self._minimap_x, self._minimap_y))
         # Border
         pygame.draw.rect(
-            screen, Colors.UI_BORDER,
+            screen,
+            Colors.UI_BORDER,
             (self._minimap_x, self._minimap_y, MINIMAP_SIZE, MINIMAP_SIZE),
             1,
         )
@@ -698,9 +674,7 @@ class GroundExplorationView(BaseView):
         screen.blit(self._combat_panel_bg, (0, panel_y))
 
         # Urgent top border
-        pygame.draw.line(
-            screen, Colors.RED, (0, panel_y), (WINDOW_WIDTH, panel_y), 2
-        )
+        pygame.draw.line(screen, Colors.RED, (0, panel_y), (WINDOW_WIDTH, panel_y), 2)
 
         # === Left section: Player stats ===
         self._render_combat_player_stats(screen, 20, panel_y + 12, cs)
@@ -722,9 +696,7 @@ class GroundExplorationView(BaseView):
         screen.blit(label, (x, y))
 
         # HP bar
-        self._render_hp_bar(
-            screen, x, y + 20, 200, cs.player.hp, cs.player.max_hp, Colors.GREEN
-        )
+        self._render_hp_bar(screen, x, y + 20, 200, cs.player.hp, cs.player.max_hp, Colors.GREEN)
 
         # Shield if any
         if cs.player.shield > 0:
@@ -742,9 +714,7 @@ class GroundExplorationView(BaseView):
 
         # Momentum
         if cs.consecutive_wins >= 2:
-            mom_text = self._combat_label_font.render(
-                "MOMENTUM +2!", True, (255, 200, 50)
-            )
+            mom_text = self._combat_label_font.render("MOMENTUM +2!", True, (255, 200, 50))
             screen.blit(mom_text, (x, y + 80))
 
         # Round counter
@@ -760,9 +730,7 @@ class GroundExplorationView(BaseView):
         if self._last_player_roll > 0:
             # Player die
             p_color = Colors.GOLD if self._last_player_roll == 6 else Colors.TEXT_PRIMARY
-            p_text = self._dice_font.render(
-                f"[{self._last_player_roll}]", True, p_color
-            )
+            p_text = self._dice_font.render(f"[{self._last_player_roll}]", True, p_color)
             screen.blit(p_text, p_text.get_rect(center=(center_x - 60, y + 30)))
 
             # VS label
@@ -771,9 +739,7 @@ class GroundExplorationView(BaseView):
 
             # Enemy die
             e_color = (255, 60, 60) if self._last_enemy_roll == 6 else Colors.TEXT_PRIMARY
-            e_text = self._dice_font.render(
-                f"[{self._last_enemy_roll}]", True, e_color
-            )
+            e_text = self._dice_font.render(f"[{self._last_enemy_roll}]", True, e_color)
             screen.blit(e_text, e_text.get_rect(center=(center_x + 60, y + 30)))
 
         # Combat message
@@ -783,9 +749,7 @@ class GroundExplorationView(BaseView):
                 msg_color = Colors.GOLD
             if "Victory" in self._combat_message or "escaped" in self._combat_message:
                 msg_color = Colors.GREEN
-            msg_surf = self._combat_font.render(
-                self._combat_message, True, msg_color
-            )
+            msg_surf = self._combat_font.render(self._combat_message, True, msg_color)
             screen.blit(msg_surf, msg_surf.get_rect(center=(center_x, y + 80)))
 
     def _render_combat_enemy_info(
@@ -799,16 +763,12 @@ class GroundExplorationView(BaseView):
         target = cs.enemies[cs.target_index]
 
         # Target indicator
-        target_label = self._combat_label_font.render(
-            f"TARGET: {target.name}", True, Colors.RED
-        )
+        target_label = self._combat_label_font.render(f"TARGET: {target.name}", True, Colors.RED)
         screen.blit(target_label, (x, y))
 
         # Enemy HP bar
         hp_color = Colors.RED if target.hp <= target.max_hp * 0.25 else (220, 60, 60)
-        self._render_hp_bar(
-            screen, x, y + 20, 200, target.hp, target.max_hp, hp_color
-        )
+        self._render_hp_bar(screen, x, y + 20, 200, target.hp, target.max_hp, hp_color)
 
         # Enemy count
         if len(alive) > 1:
@@ -833,14 +793,10 @@ class GroundExplorationView(BaseView):
         if talk_text:
             screen.blit(talk_text, (x, y + 62))
 
-    def _render_combat_actions(
-        self, screen: pygame.Surface, y: int, cs: GroundCombatState
-    ) -> None:
+    def _render_combat_actions(self, screen: pygame.Surface, y: int, cs: GroundCombatState) -> None:
         """Render action key hints at bottom of combat panel."""
         if cs.outcome != CombatOutcome.IN_PROGRESS:
-            hint = self._combat_font.render(
-                "Press SPACE to continue", True, Colors.TEXT_PRIMARY
-            )
+            hint = self._combat_font.render("Press SPACE to continue", True, Colors.TEXT_PRIMARY)
             screen.blit(hint, hint.get_rect(center=(WINDOW_WIDTH // 2, y)))
             return
 
@@ -856,9 +812,7 @@ class GroundExplorationView(BaseView):
         hints.append("[Tab] Cycle Target")
 
         hint_text = "    ".join(hints)
-        hint_surf = self._combat_label_font.render(
-            hint_text, True, Colors.TEXT_PRIMARY
-        )
+        hint_surf = self._combat_label_font.render(hint_text, True, Colors.TEXT_PRIMARY)
         screen.blit(hint_surf, hint_surf.get_rect(center=(WINDOW_WIDTH // 2, y)))
 
     def _render_hp_bar(
@@ -874,8 +828,16 @@ class GroundExplorationView(BaseView):
         """Render a horizontal HP bar with text."""
         bar_h = scale_y(16)
         draw_bar(
-            screen, x, y, width, bar_h, current, maximum, color,
-            font=self._combat_label_font, border_color=Colors.TEXT_SECONDARY,
+            screen,
+            x,
+            y,
+            width,
+            bar_h,
+            current,
+            maximum,
+            color,
+            font=self._combat_label_font,
+            border_color=Colors.TEXT_SECONDARY,
         )
 
     # === Input Handling ===
@@ -939,8 +901,7 @@ class GroundExplorationView(BaseView):
             # Check tile type BEFORE interaction to detect door opens
             tile_before = self.ground_map.get_tile(target_x, target_y)
             was_closed_door = (
-                tile_before is not None
-                and tile_before.tile_type == TileType.DOOR_CLOSED
+                tile_before is not None and tile_before.tile_type == TileType.DOOR_CLOSED
             )
 
             # Check for un-looted interactable at target (before interact mutates)
@@ -951,11 +912,11 @@ class GroundExplorationView(BaseView):
                         looted_obj = ia
                         break
 
-            interactables = (
-                self.mission_state.interactables if self.mission_state else []
-            )
+            interactables = self.mission_state.interactables if self.mission_state else []
             success, msg = self.player_state.interact(
-                self.ground_map, target_x, target_y,
+                self.ground_map,
+                target_x,
+                target_y,
                 interactables=interactables,
             )
             if success:
@@ -1117,9 +1078,7 @@ class GroundExplorationView(BaseView):
             social_mod = self.mission_state.crew_bonuses.talk_bonus
         free_attacks = [random.randint(1, 6) for e in alive]
 
-        success = cs.attempt_talk(
-            roll, social_mod, skill, free_attack_rolls=free_attacks
-        )
+        success = cs.attempt_talk(roll, social_mod, skill, free_attack_rolls=free_attacks)
 
         if success:
             self._combat_message = f"Talked your way out! ({skill.value})"
@@ -1177,9 +1136,7 @@ class GroundExplorationView(BaseView):
         # Check if player has adjacent cover (non-wall non-floor tiles count)
         has_cover = False
         for dx, dy in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
-            adj_tile = self.ground_map.get_tile(
-                self.player_state.x + dx, self.player_state.y + dy
-            )
+            adj_tile = self.ground_map.get_tile(self.player_state.x + dx, self.player_state.y + dy)
             if adj_tile and adj_tile.tile_type == TileType.WALL:
                 has_cover = True
                 break
@@ -1305,9 +1262,7 @@ class GroundExplorationView(BaseView):
 
         # Check for tile noise
         if self.mission_state:
-            noise = self.mission_state.check_tile_noise(
-                self.player_state.x, self.player_state.y
-            )
+            noise = self.mission_state.check_tile_noise(self.player_state.x, self.player_state.y)
             if noise:
                 self.mission_state.add_noise(noise)
 
@@ -1321,9 +1276,7 @@ class GroundExplorationView(BaseView):
         """Fire story trigger at player position if one exists."""
         if not self.mission_state:
             return
-        trigger = self.mission_state.get_story_trigger_at(
-            self.player_state.x, self.player_state.y
-        )
+        trigger = self.mission_state.get_story_trigger_at(self.player_state.x, self.player_state.y)
         if trigger:
             text = trigger.fire()
             if text:
@@ -1362,10 +1315,7 @@ class GroundExplorationView(BaseView):
         self.mission_state.process_enemy_turns(self.player_state.turn_number)
 
         # Check for combat trigger
-        if (
-            self.mission_state.alert_level == AlertLevel.COMBAT
-            and self._combat_state is None
-        ):
+        if self.mission_state.alert_level == AlertLevel.COMBAT and self._combat_state is None:
             self._start_combat()
             return
 

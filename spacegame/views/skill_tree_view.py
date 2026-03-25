@@ -5,66 +5,76 @@ Mode 1 (Selector): 3x3 grid of skill tree cards showing investment progress.
 Mode 2 (Detail): Individual tree with horizontal node layout by depth.
 """
 
+import math
+from typing import Dict, Optional
+
 import pygame
 import pygame_gui
-import math
-from typing import Optional, Dict, List
-from spacegame.views.base_view import BaseView
-from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState, scale_x, scale_y
-from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
-from spacegame.models.progression import PlayerProgression, SkillNode, SkillTreeType
-from spacegame.utils.logger import logger
-from spacegame.engine.backgrounds import AnimatedBackground
-from spacegame.engine.particles import ParticlePool, COLLECT_SPARKLE
-from spacegame.engine.draw_utils import draw_bar, draw_panel
-from spacegame.engine.fonts import FontCache, FONT_HEADING, FONT_LG, FONT_MD, FONT_MICRO, FONT_XS
-from spacegame.engine.sprites import get_sprite_manager, res_scale
+
+from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH, Colors, GameState, scale_x, scale_y
 from spacegame.engine.audio_manager import get_audio_manager
+from spacegame.engine.backgrounds import AnimatedBackground
+from spacegame.engine.draw_utils import draw_bar, draw_panel
+from spacegame.engine.fonts import FONT_HEADING, FONT_LG, FONT_MD, FONT_MICRO, FONT_XS, get_font
+from spacegame.engine.particles import COLLECT_SPARKLE, ParticlePool
+from spacegame.engine.sprites import get_sprite_manager, res_scale
+from spacegame.models.progression import PlayerProgression, SkillTreeType
+from spacegame.views.base_view import BaseView
+from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
 
 # Tree metadata for display
 _TREE_INFO: Dict[SkillTreeType, dict] = {
     SkillTreeType.TRADING: {
-        "name": "Trading Mastery", "attr": "Commerce",
+        "name": "Trading Mastery",
+        "attr": "Commerce",
         "desc": "Market prices, bulk trading, trade networks",
         "color": Colors.FACTION_COMMERCE,
     },
     SkillTreeType.GATHERING: {
-        "name": "Resource Gathering", "attr": "Acuity",
+        "name": "Resource Gathering",
+        "attr": "Acuity",
         "desc": "Drill efficiency, scanning, refining knowledge",
         "color": Colors.FACTION_FRONTIER,
     },
     SkillTreeType.MINING: {
-        "name": "Mining Mastery", "attr": "Resolve",
+        "name": "Mining Mastery",
+        "attr": "Resolve",
         "desc": "Click power, drones, deep scanning, chain reactions",
         "color": Colors.GLOW_ORANGE,
     },
     SkillTreeType.LEADERSHIP: {
-        "name": "Leadership", "attr": "Ingenuity",
+        "name": "Leadership",
+        "attr": "Ingenuity",
         "desc": "Crew management, diplomacy, fleet coordination",
         "color": Colors.FACTION_SCIENCE,
     },
     SkillTreeType.SOCIAL: {
-        "name": "Social Arts", "attr": "Synergy",
+        "name": "Social Arts",
+        "attr": "Synergy",
         "desc": "Persuasion, insight, faction diplomacy",
         "color": Colors.ATTR_HIGHLIGHT,
     },
     SkillTreeType.GROUND: {
-        "name": "Ground Combat", "attr": "Resolve",
+        "name": "Ground Combat",
+        "attr": "Resolve",
         "desc": "Melee skills, toughness, field tactics",
         "color": Colors.RED,
     },
     SkillTreeType.COMBAT: {
-        "name": "Combat & Tactics", "attr": "Combat",
+        "name": "Combat & Tactics",
+        "attr": "Combat",
         "desc": "Weapons, evasion, shields, ship combat",
         "color": Colors.RED,
     },
     SkillTreeType.EXPLORATION: {
-        "name": "Exploration", "attr": "Acuity",
+        "name": "Exploration",
+        "attr": "Acuity",
         "desc": "Fuel efficiency, scanning, hazard detection",
         "color": Colors.FACTION_FRONTIER,
     },
     SkillTreeType.SMUGGLING: {
-        "name": "Smuggling", "attr": "Ingenuity",
+        "name": "Smuggling",
+        "attr": "Ingenuity",
         "desc": "Hidden cargo, bribes, scan jamming",
         "color": Colors.GLOW_ORANGE,
     },
@@ -107,11 +117,11 @@ class SkillTreeView(BaseView):
         self._selected_tree: Optional[SkillTreeType] = None  # None = selector mode
 
         # Fonts
-        self.title_font = FontCache.get(FONT_HEADING)
-        self.header_font = FontCache.get(FONT_LG)
-        self.info_font = FontCache.get(FONT_MD)
-        self.small_font = FontCache.get(FONT_XS)
-        self.node_font = FontCache.get(FONT_MICRO)
+        self.title_font = get_font("header", FONT_HEADING)
+        self.header_font = get_font("header", FONT_LG)
+        self.info_font = get_font("dialogue", FONT_MD)
+        self.small_font = get_font("label", FONT_XS)
+        self.node_font = get_font("label", FONT_MICRO)
 
         # UI
         self.back_button: Optional[pygame_gui.elements.UIButton] = None
@@ -188,7 +198,9 @@ class SkillTreeView(BaseView):
             manager=self.ui_manager,
         )
         self.respec_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(WINDOW_WIDTH - 170, WINDOW_HEIGHT - hud_h - scale_y(55), 150, 38),
+            relative_rect=pygame.Rect(
+                WINDOW_WIDTH - 170, WINDOW_HEIGHT - hud_h - scale_y(55), 150, 38
+            ),
             text="Respec Skills",
             manager=self.ui_manager,
         )
@@ -309,11 +321,13 @@ class SkillTreeView(BaseView):
                     level = self.progression.level
                     credits = self._player.credits if self._player else 0
                     success, msg = self.progression.respec_skills(
-                        player_level=level, player_credits=credits,
+                        player_level=level,
+                        player_credits=credits,
                     )
                     self._show_message(msg)
                     if success and self._player:
                         from spacegame.models.progression import RESPEC_COST_PER_LEVEL
+
                         self._player.deduct_credits(RESPEC_COST_PER_LEVEL * level)
                         self._node_surface_cache.clear()
                         self._build_node_cache()
@@ -354,7 +368,13 @@ class SkillTreeView(BaseView):
             color = Colors.SUCCESS if "leveled" in self.message.lower() else Colors.YELLOW
             msg_surf = self.info_font.render(self.message, True, color)
             screen.blit(
-                msg_surf, msg_surf.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - scale_y(70)))
+                msg_surf,
+                msg_surf.get_rect(
+                    center=(
+                        WINDOW_WIDTH // 2,
+                        WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - scale_y(70),
+                    )
+                ),
             )
 
     # === Selector mode rendering ===
@@ -368,19 +388,22 @@ class SkillTreeView(BaseView):
         # Stats bar
         sp = self.progression.get_available_skill_points()
         sp_color = Colors.YELLOW if sp > 0 else Colors.TEXT_SECONDARY
-        stats_text = (
-            f"Level {self.progression.level}  |  "
-            f"Skill Points: {sp}"
-        )
+        stats_text = f"Level {self.progression.level}  |  Skill Points: {sp}"
         stats = self.info_font.render(stats_text, True, sp_color)
         screen.blit(stats, stats.get_rect(center=(WINDOW_WIDTH // 2, 60)))
 
         # XP bar
         bar_w = 300
         draw_bar(
-            screen, WINDOW_WIDTH // 2 - bar_w // 2, 76, bar_w, 8,
-            self.progression.get_xp_progress(), 1.0,
-            Colors.TEXT_HIGHLIGHT, show_value=False,
+            screen,
+            WINDOW_WIDTH // 2 - bar_w // 2,
+            76,
+            bar_w,
+            8,
+            self.progression.get_xp_progress(),
+            1.0,
+            Colors.TEXT_HIGHLIGHT,
+            show_value=False,
             border_color=Colors.TEXT_SECONDARY,
         )
 
@@ -420,11 +443,17 @@ class SkillTreeView(BaseView):
         # Progress bar
         bar_y = y + 65
         bar_w = CARD_W - 24
-        progress = invested / max(1, total_max)
         draw_bar(
-            screen, x + 12, bar_y, bar_w, 12,
-            invested, total_max, color,
-            show_value=False, border_color=Colors.UI_BORDER,
+            screen,
+            x + 12,
+            bar_y,
+            bar_w,
+            12,
+            invested,
+            total_max,
+            color,
+            show_value=False,
+            border_color=Colors.UI_BORDER,
         )
 
         # Investment text
@@ -470,9 +499,7 @@ class SkillTreeView(BaseView):
         # Attribute + skill points
         sp = self.progression.get_available_skill_points()
         sp_color = Colors.YELLOW if sp > 0 else Colors.TEXT_SECONDARY
-        sub = self.info_font.render(
-            f"{info['attr']}  |  Skill Points: {sp}", True, sp_color
-        )
+        sub = self.info_font.render(f"{info['attr']}  |  Skill Points: {sp}", True, sp_color)
         screen.blit(sub, sub.get_rect(center=(WINDOW_WIDTH // 2, 55)))
 
         # Description
@@ -521,8 +548,13 @@ class SkillTreeView(BaseView):
                     self._draw_dashed_line(screen, start_pos, end_pos, (35, 35, 45))
 
     def _draw_dashed_line(
-        self, screen: pygame.Surface, start: tuple, end: tuple,
-        color: tuple, dash_len: int = 6, gap: int = 4,
+        self,
+        screen: pygame.Surface,
+        start: tuple,
+        end: tuple,
+        color: tuple,
+        dash_len: int = 6,
+        gap: int = 4,
     ) -> None:
         dx = end[0] - start[0]
         dy = end[1] - start[1]
@@ -651,9 +683,12 @@ class SkillTreeView(BaseView):
         ty = min(my + 15, WINDOW_HEIGHT - th - 10)
 
         draw_panel(
-            screen, pygame.Rect(tx, ty, tw, th),
-            alpha=230, bg_color=(12, 12, 28),
-            border_color=Colors.TEXT_HIGHLIGHT, border_radius=4,
+            screen,
+            pygame.Rect(tx, ty, tw, th),
+            alpha=230,
+            bg_color=(12, 12, 28),
+            border_color=Colors.TEXT_HIGHLIGHT,
+            border_radius=4,
         )
 
         name = self.info_font.render(skill.name, True, Colors.TEXT_HIGHLIGHT)
@@ -680,7 +715,8 @@ class SkillTreeView(BaseView):
                     if skill.bonus_per_level < 1
                     else f"Current bonus: {skill.get_bonus():.0f}"
                 ),
-                True, Colors.SUCCESS,
+                True,
+                Colors.SUCCESS,
             )
             screen.blit(bonus, (tx + 8, ty + 80))
 

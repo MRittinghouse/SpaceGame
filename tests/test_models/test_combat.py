@@ -366,9 +366,7 @@ def _make_enemy_template(
         "evasion": 15,
         "accuracy": 70,
         "moves": [_make_combat_move()],
-        "loot_table": [
-            {"commodity_id": "metals", "min_qty": 2, "max_qty": 5, "chance": 0.8}
-        ],
+        "loot_table": [{"commodity_id": "metals", "min_qty": 2, "max_qty": 5, "chance": 0.8}],
         "negotiate_difficulty": 3,
         "flee_threshold": 0.4,
         "xp_reward": 20,
@@ -713,9 +711,7 @@ class TestCombatState:
         templates = [_make_enemy_template(), _make_enemy_template(id="scout")]
         encounter = CombatEncounter(enemy_templates=templates, encounter_seed=1)
         enemies = [EnemyShip.from_template(t) for t in templates]
-        state = CombatState(
-            player=player, enemies=enemies, encounter=encounter, combat_log=[]
-        )
+        state = CombatState(player=player, enemies=enemies, encounter=encounter, combat_log=[])
         enemies[0].current_hull = 0  # dead
         enemies[1].is_fled = True  # fled
         assert state.all_enemies_defeated is True
@@ -729,9 +725,7 @@ class TestCombatState:
         ]
         encounter = CombatEncounter(enemy_templates=templates, encounter_seed=1)
         enemies = [EnemyShip.from_template(t) for t in templates]
-        state = CombatState(
-            player=player, enemies=enemies, encounter=encounter, combat_log=[]
-        )
+        state = CombatState(player=player, enemies=enemies, encounter=encounter, combat_log=[])
         enemies[1].current_hull = 0  # dead
         survivors = state.surviving_enemies
         assert len(survivors) == 2
@@ -742,9 +736,7 @@ class TestCombatState:
         templates = [_make_enemy_template(id="a"), _make_enemy_template(id="b")]
         encounter = CombatEncounter(enemy_templates=templates, encounter_seed=1)
         enemies = [EnemyShip.from_template(t) for t in templates]
-        state = CombatState(
-            player=player, enemies=enemies, encounter=encounter, combat_log=[]
-        )
+        state = CombatState(player=player, enemies=enemies, encounter=encounter, combat_log=[])
         enemies[0].is_fled = True
         survivors = state.surviving_enemies
         assert len(survivors) == 1

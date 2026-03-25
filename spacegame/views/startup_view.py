@@ -6,10 +6,11 @@ message and responds to input.
 """
 
 import pygame
-from spacegame.views.base_view import BaseView
-from spacegame.config import Colors, WINDOW_WIDTH, WINDOW_HEIGHT
-from spacegame.engine.fonts import FontCache, FONT_HEADING, FONT_RATING
+
+from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH, Colors
+from spacegame.engine.fonts import FONT_HEADING, FONT_RATING, get_font
 from spacegame.utils.logger import logger
+from spacegame.views.base_view import BaseView
 
 
 class StartupView(BaseView):
@@ -24,8 +25,8 @@ class StartupView(BaseView):
         super().__init__()
 
         # Create a default font
-        self.font_large = FontCache.get(FONT_RATING)
-        self.font_small = FontCache.get(FONT_HEADING)
+        self.font_large = get_font("header", FONT_RATING)
+        self.font_small = get_font("dialogue", FONT_HEADING)
 
         # Track mouse position for interaction demo
         self.mouse_pos = (0, 0)
@@ -44,7 +45,6 @@ class StartupView(BaseView):
             dt: Delta time in seconds
         """
         # Nothing to update yet
-        pass
 
     def render(self, screen: pygame.Surface) -> None:
         """

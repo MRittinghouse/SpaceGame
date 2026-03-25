@@ -4,17 +4,18 @@ Statistics display view.
 Shows all tracked player stats organized by category.
 """
 
-import pygame
-import pygame_gui
 from typing import Optional
 
-from spacegame.views.base_view import BaseView
-from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState, scale_x, scale_y
-from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
+import pygame
+import pygame_gui
+
+from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH, Colors, GameState, scale_x, scale_y
+from spacegame.engine.backgrounds import AnimatedBackground
+from spacegame.engine.fonts import FONT_BODY, FONT_SECTION, FONT_XL, get_font
 from spacegame.models.player import Player
 from spacegame.utils.logger import logger
-from spacegame.engine.backgrounds import AnimatedBackground
-from spacegame.engine.fonts import FontCache, FONT_BODY, FONT_SECTION, FONT_XL
+from spacegame.views.base_view import BaseView
+from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
 
 
 class StatisticsView(BaseView):
@@ -27,9 +28,9 @@ class StatisticsView(BaseView):
         self.next_state: Optional[GameState] = None
 
         # Fonts
-        self.title_font = FontCache.get(FONT_SECTION)
-        self.category_font = FontCache.get(FONT_XL)
-        self.stat_font = FontCache.get(FONT_BODY)
+        self.title_font = get_font("header", FONT_SECTION)
+        self.category_font = get_font("header", FONT_XL)
+        self.stat_font = get_font("stats", FONT_BODY)
 
         # UI
         self.back_button: Optional[pygame_gui.elements.UIButton] = None
@@ -51,7 +52,12 @@ class StatisticsView(BaseView):
 
     def _create_ui(self) -> None:
         self.back_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(scale_x(20), WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - scale_y(60), scale_x(150), scale_y(40)),
+            relative_rect=pygame.Rect(
+                scale_x(20),
+                WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - scale_y(60),
+                scale_x(150),
+                scale_y(40),
+            ),
             text="BACK",
             manager=self.ui_manager,
         )

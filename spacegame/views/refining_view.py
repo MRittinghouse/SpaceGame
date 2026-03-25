@@ -6,34 +6,50 @@ Features styled recipe cards, active job glow, completion particles, progress ba
 forge buffer output decoupling, forge token upgrades, and recipe mastery indicators.
 """
 
-import pygame
-import pygame_gui
 import math
 import random
-from typing import Optional, Dict, List
-from spacegame.views.base_view import BaseView
-from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState, scale_x, scale_y
-from spacegame.models.player import Player
-from spacegame.models.commodity import Commodity
-from spacegame.models.refining import Recipe, RefiningSession, RefiningResult
-from spacegame.models.forge_buffer import ForgeBuffer
-from spacegame.models.rating import calculate_rating, REFINING_THRESHOLDS, RATING_COLORS
-from spacegame.engine.draw_utils import draw_bar, draw_summary_overlay, draw_nine_slice_panel
-from spacegame.utils.logger import logger
-from spacegame.engine.backgrounds import AnimatedBackground
-from spacegame.engine.particles import (
-    ParticlePool,
-    FORGE_FLAME,
-    FORGE_COMPLETE_FLASH,
-)
-from spacegame.engine.scrollable_panel import ScrollablePanel
-from spacegame.engine.fonts import FontCache, FONT_HEADING, FONT_LG, FONT_MD, FONT_RATING, FONT_SECTION2, FONT_TITLE
-from spacegame.engine.sprites import get_sprite_manager, res_scale
+from typing import Dict, List, Optional
+
+import pygame
+import pygame_gui
+
+from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH, Colors, GameState, scale_x, scale_y
 from spacegame.engine.audio_manager import get_audio_manager
+from spacegame.engine.backgrounds import AnimatedBackground
+from spacegame.engine.draw_utils import draw_bar, draw_summary_overlay
 from spacegame.engine.easing import Tween, ease_out_cubic
 from spacegame.engine.floating_text import FloatingItemManager
+from spacegame.engine.fonts import (
+    FONT_HEADING,
+    FONT_LG,
+    FONT_MD,
+    FONT_RATING,
+    FONT_SECTION2,
+    FONT_TITLE,
+    get_font,
+)
+from spacegame.engine.particles import (
+    FORGE_COMPLETE_FLASH,
+    FORGE_FLAME,
+    ParticlePool,
+)
+from spacegame.engine.refining_vfx import (
+    BufferPressure,
+    DiscoveryHint,
+    ForgeAtmosphere,
+    MasteryLevelUp,
+    MasteryMomentumBar,
+)
+from spacegame.engine.scrollable_panel import ScrollablePanel
+from spacegame.engine.sprites import get_sprite_manager, res_scale
 from spacegame.engine.tooltip import TooltipState
-from spacegame.engine.refining_vfx import ForgeAtmosphere, MasteryMomentumBar, DiscoveryHint, BufferPressure, MasteryLevelUp
+from spacegame.models.commodity import Commodity
+from spacegame.models.forge_buffer import ForgeBuffer
+from spacegame.models.player import Player
+from spacegame.models.rating import RATING_COLORS, REFINING_THRESHOLDS, calculate_rating
+from spacegame.models.refining import Recipe, RefiningResult, RefiningSession
+from spacegame.utils.logger import logger
+from spacegame.views.base_view import BaseView
 
 # Forge upgrade color theme (warm orange)
 FORGE_COLOR = (255, 160, 60)
@@ -64,9 +80,9 @@ class RefiningView(BaseView):
         self.selected_recipe_idx: int = 0
 
         # Fonts
-        self.title_font = FontCache.get(FONT_TITLE)
-        self.info_font = FontCache.get(FONT_LG)
-        self.small_font = FontCache.get(FONT_MD)
+        self.title_font = get_font("header", FONT_TITLE)
+        self.info_font = get_font("dialogue", FONT_LG)
+        self.small_font = get_font("stats", FONT_MD)
 
         # Batch
         self.batch_count: int = 1
@@ -98,9 +114,9 @@ class RefiningView(BaseView):
         self._session_rating: str = "D"
         self._jobs_completed_count: int = 0
         self._unique_recipes_count: int = 0
-        self._summary_font = FontCache.get(FONT_HEADING)
-        self._summary_title_font = FontCache.get(FONT_SECTION2)
-        self._rating_font = FontCache.get(FONT_RATING)
+        self._summary_font = get_font("header", FONT_HEADING)
+        self._summary_title_font = get_font("header", FONT_SECTION2)
+        self._rating_font = get_font("header", FONT_RATING)
 
         # Sprite manager
         self._sprite_mgr = get_sprite_manager()
@@ -475,7 +491,9 @@ class RefiningView(BaseView):
             content_y = i * scale_y(80)
             screen_y = self._recipe_scroll.get_screen_y(content_y)
             rect = pygame.Rect(scale_x(30), screen_y, scale_x(500), scale_y(75))
-            if rect.collidepoint(pos) and self._recipe_scroll.is_item_visible(content_y, scale_y(75)):
+            if rect.collidepoint(pos) and self._recipe_scroll.is_item_visible(
+                content_y, scale_y(75)
+            ):
                 # Map back to index in full available_recipes for craft button
                 full_idx = self.session.available_recipes.index(recipe)
                 self.selected_recipe_idx = full_idx
@@ -580,7 +598,7 @@ class RefiningView(BaseView):
 
         if recipe.requires_skill and self.progression:
             if not self.progression.get_bonus("advanced_recipes"):
-                self._show_message(f"Requires skill: Refining Knowledge")
+                self._show_message("Requires skill: Refining Knowledge")
                 return
 
         inventory = self.player.ship.current_cargo
@@ -889,7 +907,9 @@ class RefiningView(BaseView):
                 # Trigger celebration effect
                 forge_cx = WINDOW_WIDTH - scale_x(350) + scale_x(165)
                 forge_cy = scale_y(240)
-                self._mastery_levelup.trigger(recipe_name, mastery.mastery_level, forge_cx, forge_cy)
+                self._mastery_levelup.trigger(
+                    recipe_name, mastery.mastery_level, forge_cx, forge_cy
+                )
 
         # Mastery 3 triggers recipe discovery
         if mastery.mastery_level >= 3:
@@ -1332,7 +1352,10 @@ class RefiningView(BaseView):
                 # Truncate if name overflows panel width
                 max_name_w = scale_x(300) - (jx - panel_x)
                 if name_surf.get_width() > max_name_w:
-                    while len(display_name) > 3 and self.small_font.size(display_name + "..")[0] > max_name_w:
+                    while (
+                        len(display_name) > 3
+                        and self.small_font.size(display_name + "..")[0] > max_name_w
+                    ):
                         display_name = display_name[:-1]
                     display_name = display_name.rstrip() + ".."
                     name_surf = self.small_font.render(display_name, True, Colors.TEXT)
@@ -1572,13 +1595,13 @@ class RefiningView(BaseView):
         screen.blit(dim, (0, 0))
 
         # Banner text
-        banner_font = FontCache.get(FONT_SECTION2)
+        banner_font = get_font("header", FONT_SECTION2)
         title = banner_font.render("BLUEPRINT DISCOVERED", True, FORGE_COLOR)
         title.set_alpha(alpha)
         title_rect = title.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 - 25))
         screen.blit(title, title_rect)
 
-        name_font = FontCache.get(FONT_HEADING)
+        name_font = get_font("dialogue", FONT_HEADING)
         name = name_font.render(self._discovery_banner, True, Colors.TEXT)
         name.set_alpha(alpha)
         name_rect = name.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 + 15))

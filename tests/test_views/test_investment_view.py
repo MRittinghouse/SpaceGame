@@ -51,8 +51,10 @@ class TestInvestmentViewConstruction:
     def test_create_view(self) -> None:
         ui_mgr, player, inv_mgr = _make_test_env()
         view = InvestmentView(
-            ui_manager=ui_mgr, player=player,
-            investment_manager=inv_mgr, system_id="nexus_prime",
+            ui_manager=ui_mgr,
+            player=player,
+            investment_manager=inv_mgr,
+            system_id="nexus_prime",
         )
         assert view is not None
         assert view.next_state is None
@@ -60,8 +62,10 @@ class TestInvestmentViewConstruction:
     def test_stores_system_id(self) -> None:
         ui_mgr, player, inv_mgr = _make_test_env()
         view = InvestmentView(
-            ui_manager=ui_mgr, player=player,
-            investment_manager=inv_mgr, system_id="nexus_prime",
+            ui_manager=ui_mgr,
+            player=player,
+            investment_manager=inv_mgr,
+            system_id="nexus_prime",
         )
         assert view.system_id == "nexus_prime"
 
@@ -70,8 +74,10 @@ class TestInvestmentViewLifecycle:
     def test_on_enter_sets_active(self) -> None:
         ui_mgr, player, inv_mgr = _make_test_env()
         view = InvestmentView(
-            ui_manager=ui_mgr, player=player,
-            investment_manager=inv_mgr, system_id="nexus_prime",
+            ui_manager=ui_mgr,
+            player=player,
+            investment_manager=inv_mgr,
+            system_id="nexus_prime",
         )
         view.on_enter()
         assert view.active
@@ -80,8 +86,10 @@ class TestInvestmentViewLifecycle:
     def test_on_exit_clears_active(self) -> None:
         ui_mgr, player, inv_mgr = _make_test_env()
         view = InvestmentView(
-            ui_manager=ui_mgr, player=player,
-            investment_manager=inv_mgr, system_id="nexus_prime",
+            ui_manager=ui_mgr,
+            player=player,
+            investment_manager=inv_mgr,
+            system_id="nexus_prime",
         )
         view.on_enter()
         view.on_exit()
@@ -92,8 +100,10 @@ class TestInvestmentViewActions:
     def test_invest_creates_investment(self) -> None:
         ui_mgr, player, inv_mgr = _make_test_env(credits=5000)
         view = InvestmentView(
-            ui_manager=ui_mgr, player=player,
-            investment_manager=inv_mgr, system_id="nexus_prime",
+            ui_manager=ui_mgr,
+            player=player,
+            investment_manager=inv_mgr,
+            system_id="nexus_prime",
         )
         view.on_enter()
         view._execute_invest()
@@ -105,8 +115,10 @@ class TestInvestmentViewActions:
     def test_invest_insufficient_credits(self) -> None:
         ui_mgr, player, inv_mgr = _make_test_env(credits=500)
         view = InvestmentView(
-            ui_manager=ui_mgr, player=player,
-            investment_manager=inv_mgr, system_id="nexus_prime",
+            ui_manager=ui_mgr,
+            player=player,
+            investment_manager=inv_mgr,
+            system_id="nexus_prime",
         )
         view.on_enter()
         view._execute_invest()
@@ -117,8 +129,10 @@ class TestInvestmentViewActions:
     def test_upgrade_increases_tier(self) -> None:
         ui_mgr, player, inv_mgr = _make_test_env(credits=10000)
         view = InvestmentView(
-            ui_manager=ui_mgr, player=player,
-            investment_manager=inv_mgr, system_id="nexus_prime",
+            ui_manager=ui_mgr,
+            player=player,
+            investment_manager=inv_mgr,
+            system_id="nexus_prime",
         )
         view.on_enter()
         view._execute_invest()  # tier 1, cost 1000
@@ -130,8 +144,10 @@ class TestInvestmentViewActions:
     def test_collect_returns(self) -> None:
         ui_mgr, player, inv_mgr = _make_test_env(credits=5000)
         view = InvestmentView(
-            ui_manager=ui_mgr, player=player,
-            investment_manager=inv_mgr, system_id="nexus_prime",
+            ui_manager=ui_mgr,
+            player=player,
+            investment_manager=inv_mgr,
+            system_id="nexus_prime",
         )
         view.on_enter()
         view._execute_invest()
@@ -145,8 +161,10 @@ class TestInvestmentViewNavigation:
     def test_back_returns_to_station_hub(self) -> None:
         ui_mgr, player, inv_mgr = _make_test_env()
         view = InvestmentView(
-            ui_manager=ui_mgr, player=player,
-            investment_manager=inv_mgr, system_id="nexus_prime",
+            ui_manager=ui_mgr,
+            player=player,
+            investment_manager=inv_mgr,
+            system_id="nexus_prime",
         )
         view.on_enter()
         view._request_back()

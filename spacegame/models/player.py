@@ -6,25 +6,26 @@ Tracks player credits, location, ship, and game progress.
 
 from dataclasses import dataclass, field
 from typing import Optional
-from spacegame.models.ship import Ship, ShipType
-from spacegame.models.progression import PlayerProgression
-from spacegame.models.upgrades import ShipUpgradeManager
+
+from spacegame.models.deep_core import DeepCoreUpgradeState
 from spacegame.models.drone import MiningDroneFleet
 from spacegame.models.faction import ReputationTier, get_reputation_tier
-from spacegame.models.trade_route import TradeRouteTracker
-from spacegame.models.ore_silo import OreSiloManager
-from spacegame.models.deep_core import DeepCoreUpgradeState
-from spacegame.models.salvage_hold import SalvageHoldManager
-from spacegame.models.wreck_upgrade import WreckUpgradeState
-from spacegame.models.forge_upgrade import ForgeUpgradeState
 from spacegame.models.forge_buffer import ForgeBufferManager
-from spacegame.models.recipe_mastery import RecipeMasteryTracker
+from spacegame.models.forge_upgrade import ForgeUpgradeState
+from spacegame.models.ore_silo import OreSiloManager
 from spacegame.models.player_identity import (
     get_all_titles,
-    get_primary_title,
     get_playstyle,
     get_playstyle_label,
+    get_primary_title,
 )
+from spacegame.models.progression import PlayerProgression
+from spacegame.models.recipe_mastery import RecipeMasteryTracker
+from spacegame.models.salvage_hold import SalvageHoldManager
+from spacegame.models.ship import Ship, ShipType
+from spacegame.models.trade_route import TradeRouteTracker
+from spacegame.models.upgrades import ShipUpgradeManager
+from spacegame.models.wreck_upgrade import WreckUpgradeState
 
 
 @dataclass
@@ -179,15 +180,57 @@ class Player:
     discovered_recipes: set[str] = field(default_factory=set)
     discovered_combos: set[str] = field(default_factory=set)
     # Ship builder (Shipyard Overhaul Phase A3)
-    unlocked_shapes: set[str] = field(default_factory=lambda: {
-        "pixel", "small_bar", "bar", "long_bar", "small_square",
-        "small_rect", "small_triangle", "medium_triangle", "nose_point",
-    })
-    unlocked_materials: set[str] = field(default_factory=lambda: {
-        "light_alloy", "standard_plate", "salvage_scrap",
-    })
+    unlocked_shapes: set[str] = field(
+        default_factory=lambda: {
+            "pixel",
+            "small_bar",
+            "bar",
+            "long_bar",
+            "small_square",
+            "small_rect",
+            "small_triangle",
+            "medium_triangle",
+            "nose_point",
+        }
+    )
+    unlocked_materials: set[str] = field(
+        default_factory=lambda: {
+            "light_alloy",
+            "standard_plate",
+            "salvage_scrap",
+        }
+    )
     unlocked_weight_classes: set[str] = field(default_factory=lambda: {"tiny"})
+    unlocked_modules: set[str] = field(
+        default_factory=lambda: {
+            "scout_pod_rk",
+            "salvage_cockpit_sr",
+            "light_thruster_rk",
+            "micro_thruster_rk",
+            "salvage_engine_sr",
+            "light_hardpoint_rk",
+            "salvage_gun_sr",
+            "basic_emitter_rk",
+            "salvage_shield_sr",
+            "small_hold_rk",
+            "bunk_room_rk",
+            "salvage_bunk_sr",
+            "small_fuel_tank_rk",
+            "life_support_rk",
+            "hull_connector_2x2",
+            "hull_beam_6x2",
+            "small_rect_3x2",
+            "medium_rect_4x3",
+            "small_square_3x3",
+            "l_shape_3x3",
+            "plus_shape_3x3",
+            "nose_point_3x3",
+            "tail_fin_3x4",
+            "connector_2x3",
+        }
+    )
     player_presets: list[dict] = field(default_factory=list)
+    build_drafts: list[dict] = field(default_factory=list)  # Saved ship drafts (max 20)
     trade_profit_total: int = 0
 
     def __post_init__(self) -> None:
@@ -367,8 +410,7 @@ class Player:
         if total_cost > 0 and not self.can_afford(total_cost):
             return (
                 False,
-                f"Insufficient credits. Repair costs {total_cost:,} CR, "
-                f"have {self.credits:,} CR.",
+                f"Insufficient credits. Repair costs {total_cost:,} CR, have {self.credits:,} CR.",
             )
         self.deduct_credits(total_cost)
         repaired = self.ship.repair_hull(damage)
@@ -395,8 +437,7 @@ class Player:
         if net_cost > self.credits:
             return (
                 False,
-                f"Cannot afford. Need {net_cost:,} CR after trade-in, "
-                f"have {self.credits:,} CR.",
+                f"Cannot afford. Need {net_cost:,} CR after trade-in, have {self.credits:,} CR.",
             )
 
         # Save references to transfer
@@ -506,8 +547,8 @@ class Player:
         Returns:
             Total net worth (credits + ship value + cargo value estimate)
         """
-        # Simplified: credits + ship resale value
-        # TODO: Add cargo value calculation when market prices available
+        # Credits + ship resale value. Cargo value excluded because market
+        # prices are system-dependent and would require a system context parameter.
         return self.credits + self.ship.ship_type.resale_value
 
     @property

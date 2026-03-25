@@ -182,15 +182,26 @@ class TestContractPersistence:
         dl.load_all()
 
         ship_type = ShipType(
-            id="shuttle", name="Shuttle", ship_class="light",
-            description="Basic ship", cargo_capacity=50, fuel_capacity=100,
-            fuel_efficiency=1.0, speed_multiplier=1.0, purchase_price=0,
-            resale_value=0, crew_slots=1, special_abilities=[], availability="all",
+            id="shuttle",
+            name="Shuttle",
+            ship_class="light",
+            description="Basic ship",
+            cargo_capacity=50,
+            fuel_capacity=100,
+            fuel_efficiency=1.0,
+            speed_multiplier=1.0,
+            purchase_price=0,
+            resale_value=0,
+            crew_slots=1,
+            special_abilities=[],
+            availability="all",
         )
         ship = Ship(ship_type=ship_type, current_fuel=100)
         player = Player(
-            name="Test", credits=5000,
-            current_system_id="nexus_prime", ship=ship,
+            name="Test",
+            credits=5000,
+            current_system_id="nexus_prime",
+            ship=ship,
         )
 
         # Set up contracts

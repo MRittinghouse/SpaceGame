@@ -4,9 +4,10 @@ Animated background system with parallax starfield layers.
 Composites cached procedural background + live parallax stars.
 """
 
-import pygame
 import random
-from typing import Optional
+
+import pygame
+
 from spacegame.engine.procedural import generate_background
 
 

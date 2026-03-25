@@ -126,7 +126,10 @@ class TestBuildInspectionEncounter:
         assert "intimidate" in choice_ids
         intimidate_choice = [c for c in encounter.choices if c.id == "intimidate"][0]
         # Must warn the player this is risky
-        assert "risk" in intimidate_choice.description.lower() or "gamble" in intimidate_choice.description.lower()
+        assert (
+            "risk" in intimidate_choice.description.lower()
+            or "gamble" in intimidate_choice.description.lower()
+        )
 
     def test_comply_with_clean_cargo_no_penalty(self) -> None:
         """Complying with clean cargo results in no penalty."""
@@ -142,9 +145,7 @@ class TestBuildInspectionEncounter:
         )
         comply = [c for c in encounter.choices if c.id == "comply"][0]
         # No deduct_credits reward on clean cargo
-        deduct_rewards = [
-            r for r in comply.outcome.rewards if r.reward_type == "deduct_credits"
-        ]
+        deduct_rewards = [r for r in comply.outcome.rewards if r.reward_type == "deduct_credits"]
         assert len(deduct_rewards) == 0
 
     def test_comply_with_contraband_has_penalty_rewards(self) -> None:
@@ -290,7 +291,10 @@ class TestInspectionRewardTypes:
             intimidation_level=0,
         )
         comply = [c for c in encounter.choices if c.id == "comply"][0]
-        assert "clear" in comply.outcome.description.lower() or "pass" in comply.outcome.description.lower()
+        assert (
+            "clear" in comply.outcome.description.lower()
+            or "pass" in comply.outcome.description.lower()
+        )
 
     def test_persuade_success_skips_inspection(self) -> None:
         """Successful persuasion has no penalty rewards."""
@@ -305,9 +309,7 @@ class TestInspectionRewardTypes:
             intimidation_level=0,
         )
         persuade = [c for c in encounter.choices if c.id == "persuade"][0]
-        deduct_rewards = [
-            r for r in persuade.outcome.rewards if r.reward_type == "deduct_credits"
-        ]
+        deduct_rewards = [r for r in persuade.outcome.rewards if r.reward_type == "deduct_credits"]
         assert len(deduct_rewards) == 0
 
     def test_bribe_deducts_credits(self) -> None:
@@ -323,9 +325,7 @@ class TestInspectionRewardTypes:
             intimidation_level=0,
         )
         bribe = [c for c in encounter.choices if c.id == "bribe"][0]
-        deduct_rewards = [
-            r for r in bribe.outcome.rewards if r.reward_type == "deduct_credits"
-        ]
+        deduct_rewards = [r for r in bribe.outcome.rewards if r.reward_type == "deduct_credits"]
         assert len(deduct_rewards) == 1
         assert deduct_rewards[0].amount > 0
 
@@ -344,7 +344,10 @@ class TestInspectionRewardTypes:
         intimidate = [c for c in encounter.choices if c.id == "intimidate"][0]
         # Intimidation is risky — when it fails, penalties are worse
         # The outcome description should reflect this
-        assert "double" in intimidate.outcome.description.lower() or "worse" in intimidate.outcome.description.lower()
+        assert (
+            "double" in intimidate.outcome.description.lower()
+            or "worse" in intimidate.outcome.description.lower()
+        )
 
     def test_add_criminal_heat_reward_type(self) -> None:
         """Comply with contraband generates add_criminal_heat reward."""
@@ -359,9 +362,7 @@ class TestInspectionRewardTypes:
             intimidation_level=0,
         )
         comply = [c for c in encounter.choices if c.id == "comply"][0]
-        heat_rewards = [
-            r for r in comply.outcome.rewards if r.reward_type == "add_criminal_heat"
-        ]
+        heat_rewards = [r for r in comply.outcome.rewards if r.reward_type == "add_criminal_heat"]
         assert len(heat_rewards) == 1
         assert heat_rewards[0].amount > 0
 
@@ -378,9 +379,7 @@ class TestInspectionRewardTypes:
             intimidation_level=0,
         )
         comply = [c for c in encounter.choices if c.id == "comply"][0]
-        rep_rewards = [
-            r for r in comply.outcome.rewards if r.reward_type == "modify_reputation"
-        ]
+        rep_rewards = [r for r in comply.outcome.rewards if r.reward_type == "modify_reputation"]
         assert len(rep_rewards) == 1
         assert rep_rewards[0].amount < 0
 
@@ -515,7 +514,8 @@ class TestFactionLawDataLoading:
         )
         comply = [c for c in encounter.choices if c.id == "comply"][0]
         penalty_rewards = [
-            r for r in comply.outcome.rewards
+            r
+            for r in comply.outcome.rewards
             if r.reward_type in ("deduct_credits", "add_criminal_heat", "confiscate_cargo")
         ]
         assert len(penalty_rewards) == 0, "Clean cargo should have no penalties"
@@ -558,7 +558,8 @@ class TestFactionLawDataLoading:
         )
         comply = [c for c in encounter.choices if c.id == "comply"][0]
         penalty_rewards = [
-            r for r in comply.outcome.rewards
+            r
+            for r in comply.outcome.rewards
             if r.reward_type in ("deduct_credits", "add_criminal_heat", "confiscate_cargo")
         ]
         assert len(penalty_rewards) > 0, "Illegal cargo should trigger penalties"

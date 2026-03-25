@@ -138,18 +138,14 @@ class TestCrewHireAction:
         # Recruit enough crew to fill slots
         all_templates = list(crew_roster._templates.keys())
         non_companion = [
-            tid for tid in all_templates
-            if not crew_roster._templates[tid].is_companion
+            tid for tid in all_templates if not crew_roster._templates[tid].is_companion
         ]
         for i in range(crew_slots):
             if i < len(non_companion):
                 crew_roster.recruit(non_companion[i], crew_slots)
 
         # Now try to hire another
-        remaining = [
-            tid for tid in non_companion
-            if not crew_roster.is_recruited(tid)
-        ]
+        remaining = [tid for tid in non_companion if not crew_roster.is_recruited(tid)]
         if remaining:
             success, msg = crew_roster.recruit(remaining[0], crew_slots)
             assert not success, "Hire should fail when slots full"
@@ -206,10 +202,7 @@ class TestCrewHireAction:
         crew_slots = player.ship.ship_type.crew_slots + int(
             player.progression.get_bonus("crew_slot_bonus")
         )
-        non_companion = [
-            tid for tid, t in crew_roster._templates.items()
-            if not t.is_companion
-        ]
+        non_companion = [tid for tid, t in crew_roster._templates.items() if not t.is_companion]
         for i in range(min(crew_slots, len(non_companion))):
             crew_roster.recruit(non_companion[i], crew_slots)
 
@@ -249,7 +242,5 @@ class TestCrewHireAction:
         )
         cantina.on_enter()
         cantina._handle_hire("kai_torren")
-        assert cantina.pending_hire_id == "kai_torren", (
-            "pending_hire_id should be set after hire"
-        )
+        assert cantina.pending_hire_id == "kai_torren", "pending_hire_id should be set after hire"
         cantina.on_exit()

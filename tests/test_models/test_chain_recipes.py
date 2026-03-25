@@ -10,6 +10,7 @@ class TestChainRecipeData:
 
     def test_chain_recipes_exist(self) -> None:
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_all()
         recipe_ids = {r.id for r in dl.recipes}
@@ -19,6 +20,7 @@ class TestChainRecipeData:
 
     def test_chain_recipes_are_tier_3(self) -> None:
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_all()
         chain_ids = {"craft_titan_plating", "craft_command_array", "craft_nova_core"}
@@ -31,14 +33,13 @@ class TestChainRecipeData:
     def test_chain_recipes_use_crafted_inputs(self) -> None:
         """Chain recipes must require at least one crafted output as input."""
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_all()
         chain_ids = {"craft_titan_plating", "craft_command_array", "craft_nova_core"}
         for recipe in dl.recipes:
             if recipe.id in chain_ids:
-                crafted_inputs = [
-                    k for k in recipe.inputs if k.startswith("crafted_")
-                ]
+                crafted_inputs = [k for k in recipe.inputs if k.startswith("crafted_")]
                 assert len(crafted_inputs) >= 1, (
                     f"{recipe.id} should use at least one crafted item as input"
                 )
@@ -49,6 +50,7 @@ class TestChainRecipeCommodities:
 
     def test_chain_output_commodities_exist(self) -> None:
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_all()
         commodity_ids = {c.id for c in dl.get_all_commodities()}
@@ -62,6 +64,7 @@ class TestChainRecipeUpgrades:
 
     def test_chain_upgrades_exist(self) -> None:
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_all()
         upgrade_ids = set(dl.upgrades.keys())
@@ -71,6 +74,7 @@ class TestChainRecipeUpgrades:
 
     def test_chain_upgrades_are_craft_gated(self) -> None:
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_all()
         for uid in ("titan_plating", "command_array", "nova_core"):
@@ -87,13 +91,19 @@ class TestChainRecipeSession:
 
     def test_chain_recipe_craftable_with_ingredients(self) -> None:
         recipe = Recipe(
-            id="craft_titan_plating", name="Forge Titan Plating",
+            id="craft_titan_plating",
+            name="Forge Titan Plating",
             description="test",
-            inputs={"crafted_reinforced_plating": 1, "crafted_plasma_conduit": 1,
-                    "stellarium_ingot": 1},
+            inputs={
+                "crafted_reinforced_plating": 1,
+                "crafted_plasma_conduit": 1,
+                "stellarium_ingot": 1,
+            },
             outputs={"crafted_titan_plating": 1},
-            processing_time=45.0, location_ids=["forgeworks"],
-            category="upgrade", tier=3,
+            processing_time=45.0,
+            location_ids=["forgeworks"],
+            category="upgrade",
+            tier=3,
         )
         inventory = {
             "crafted_reinforced_plating": 1,
@@ -104,13 +114,19 @@ class TestChainRecipeSession:
 
     def test_chain_recipe_missing_crafted_input(self) -> None:
         recipe = Recipe(
-            id="craft_titan_plating", name="Forge Titan Plating",
+            id="craft_titan_plating",
+            name="Forge Titan Plating",
             description="test",
-            inputs={"crafted_reinforced_plating": 1, "crafted_plasma_conduit": 1,
-                    "stellarium_ingot": 1},
+            inputs={
+                "crafted_reinforced_plating": 1,
+                "crafted_plasma_conduit": 1,
+                "stellarium_ingot": 1,
+            },
             outputs={"crafted_titan_plating": 1},
-            processing_time=45.0, location_ids=["forgeworks"],
-            category="upgrade", tier=3,
+            processing_time=45.0,
+            location_ids=["forgeworks"],
+            category="upgrade",
+            tier=3,
         )
         inventory = {"crafted_reinforced_plating": 1, "stellarium_ingot": 1}
         assert not recipe.can_craft(inventory)
@@ -120,6 +136,7 @@ class TestChainRecipeSession:
     def test_chain_recipe_discovery_prerequisite(self) -> None:
         """Chain recipes should have discovery prerequisites pointing to tier 2 recipes."""
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_all()
         chain_ids = {"craft_titan_plating", "craft_command_array", "craft_nova_core"}

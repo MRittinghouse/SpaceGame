@@ -21,8 +21,9 @@ Usage:
             # ... draw item at screen_y
 """
 
-import pygame
 from typing import Optional
+
+import pygame
 
 
 class ScrollablePanel:

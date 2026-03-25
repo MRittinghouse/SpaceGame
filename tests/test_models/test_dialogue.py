@@ -717,9 +717,7 @@ class TestConditionalResponses:
             "guild_trust": DialogueNode(
                 id="guild_trust", speaker_id="elena", text="Good.", responses=[]
             ),
-            "secret": DialogueNode(
-                id="secret", speaker_id="elena", text="Shh...", responses=[]
-            ),
+            "secret": DialogueNode(id="secret", speaker_id="elena", text="Shh...", responses=[]),
             "greeting": DialogueNode(
                 id="greeting", speaker_id="elena", text="Welcome!", responses=[]
             ),

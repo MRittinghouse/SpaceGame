@@ -4,8 +4,9 @@ Base class for all game views/screens.
 Provides a common interface that all game screens must implement.
 """
 
-import pygame
 from abc import ABC, abstractmethod
+
+import pygame
 
 
 class BaseView(ABC):
@@ -46,7 +47,6 @@ class BaseView(ABC):
         Args:
             dt: Delta time in seconds since last frame
         """
-        pass
 
     @abstractmethod
     def render(self, screen: pygame.Surface) -> None:
@@ -56,13 +56,12 @@ class BaseView(ABC):
         Args:
             screen: Pygame surface to draw on
         """
-        pass
 
-    def handle_event(self, event: pygame.event.Event) -> None:
+    def handle_event(self, event: pygame.event.Event) -> None:  # noqa: B027
         """
         Handle pygame events specific to this view.
 
         Args:
             event: Pygame event to process
         """
-        pass  # Optional override
+        # Optional override

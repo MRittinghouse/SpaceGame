@@ -96,9 +96,12 @@ class TestTooltipState:
         ts.set_hover("info", (100, 200))
         ts.update(0.0)
         x, y = ts.get_screen_position(
-            tooltip_w=200, tooltip_h=80,
-            screen_w=1280, screen_h=720,
-            offset_x=15, offset_y=15,
+            tooltip_w=200,
+            tooltip_h=80,
+            screen_w=1280,
+            screen_h=720,
+            offset_x=15,
+            offset_y=15,
         )
         assert x == 115  # anchor_x + offset
         assert y == 215  # anchor_y + offset
@@ -108,8 +111,10 @@ class TestTooltipState:
         ts.set_hover("info", (1200, 200))
         ts.update(0.0)
         x, y = ts.get_screen_position(
-            tooltip_w=200, tooltip_h=80,
-            screen_w=1280, screen_h=720,
+            tooltip_w=200,
+            tooltip_h=80,
+            screen_w=1280,
+            screen_h=720,
         )
         assert x + 200 <= 1280
 
@@ -118,8 +123,10 @@ class TestTooltipState:
         ts.set_hover("info", (100, 680))
         ts.update(0.0)
         x, y = ts.get_screen_position(
-            tooltip_w=200, tooltip_h=80,
-            screen_w=1280, screen_h=720,
+            tooltip_w=200,
+            tooltip_h=80,
+            screen_w=1280,
+            screen_h=720,
         )
         assert y + 80 <= 720
 

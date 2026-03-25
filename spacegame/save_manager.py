@@ -8,13 +8,12 @@ import json
 import os
 from datetime import datetime
 from pathlib import Path
-from typing import Optional, Dict, Any, List
-from dataclasses import asdict
+from typing import Any, Dict, List, Optional
 
-from spacegame.models.player import Player
-from spacegame.models.ship import Ship, ShipType
-from spacegame.models.market import Market
 from spacegame.models.event import MarketEvent
+from spacegame.models.market import Market
+from spacegame.models.player import Player
+from spacegame.models.ship import Ship
 from spacegame.utils.logger import logger
 
 
@@ -190,7 +189,9 @@ class SaveManager:
                 logger.warning(
                     f"Save file version mismatch: {save_data.get('version')} != {self.SAVE_VERSION}"
                 )
-                # TODO: Implement save migration in future
+                # Save migration: ShipBuild.from_dict handles missing module
+                # fields via .get() defaults. Full version migration (schema
+                # transforms) deferred until a breaking format change is needed.
 
             deserialized = self._deserialize_game_state(save_data)
             logger.info(f"Game loaded from slot {slot}: {save_path}")
@@ -496,16 +497,18 @@ class SaveManager:
             "unlocked_shapes": sorted(player.unlocked_shapes),
             "unlocked_materials": sorted(player.unlocked_materials),
             "unlocked_weight_classes": sorted(player.unlocked_weight_classes),
+            "unlocked_modules": sorted(player.unlocked_modules),
             "player_presets": player.player_presets,
+            "build_drafts": player.build_drafts,
             "trade_profit_total": player.trade_profit_total,
         }
         return result
 
     def _deserialize_player(self, data: Dict[str, Any]) -> Player:
         """Deserialize Player object."""
+        from spacegame.data_loader import get_data_loader
         from spacegame.models.progression import PlayerProgression
         from spacegame.models.upgrades import ShipUpgradeManager
-        from spacegame.data_loader import get_data_loader
 
         ship = self._deserialize_ship(data["ship"])
 
@@ -603,8 +606,7 @@ class SaveManager:
         crew_slots = player.ship.ship_type.crew_slots if player.ship else 0
         if crew_count > crew_slots:
             logger.warning(
-                "Crew count (%d) exceeds ship capacity (%d). "
-                "Crew preserved but may cause issues.",
+                "Crew count (%d) exceeds ship capacity (%d). Crew preserved but may cause issues.",
                 crew_count,
                 crew_slots,
             )
@@ -714,8 +716,12 @@ class SaveManager:
             player.unlocked_materials = set(data["unlocked_materials"])
         if "unlocked_weight_classes" in data:
             player.unlocked_weight_classes = set(data["unlocked_weight_classes"])
+        if "unlocked_modules" in data:
+            player.unlocked_modules = set(data["unlocked_modules"])
         if "player_presets" in data:
             player.player_presets = data["player_presets"]
+        if "build_drafts" in data:
+            player.build_drafts = data["build_drafts"]
         if "trade_profit_total" in data:
             player.trade_profit_total = data["trade_profit_total"]
 
@@ -724,10 +730,6 @@ class SaveManager:
     def _serialize_ship(self, ship: Ship) -> Dict[str, Any]:
         """Serialize Ship object."""
         # Get ship type data
-        from spacegame.data_loader import get_data_loader
-
-        data_loader = get_data_loader()
-
         result = {
             "ship_type_id": ship.ship_type.id,
             "current_fuel": ship.current_fuel,
@@ -764,11 +766,13 @@ class SaveManager:
         # Restore ShipBuild if present (Shipyard Overhaul Phase G)
         if "build" in data:
             from spacegame.models.ship_build import ShipBuild
+
             build = ShipBuild.from_dict(data["build"])
             ship.set_build(build)
         elif data.get("ship_type_id"):
             # Old save without build: generate preset for migration
             from spacegame.models.ship_presets import get_preset_for_ship_type
+
             preset = get_preset_for_ship_type(data["ship_type_id"])
             if preset:
                 try:
@@ -815,7 +819,7 @@ class SaveManager:
 
     def _deserialize_events(self, data: Dict[str, Any]) -> Dict[str, MarketEvent]:
         """Deserialize active events dictionary."""
-        from spacegame.models.event import MarketEvent, EventType
+        from spacegame.models.event import EventType, MarketEvent
 
         events = {}
 

@@ -9,7 +9,7 @@ to avoid repetition.
 from __future__ import annotations
 
 import random as _rng
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any
 
 

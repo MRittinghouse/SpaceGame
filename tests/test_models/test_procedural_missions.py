@@ -39,9 +39,7 @@ class TestMissionManagerAddMission:
             id="test_proc_1",
             name="Test Mission",
             description="A test",
-            objectives=[
-                MissionObjective(type=ObjectiveType.REACH_SYSTEM, target_id="nexus_prime")
-            ],
+            objectives=[MissionObjective(type=ObjectiveType.REACH_SYSTEM, target_id="nexus_prime")],
             rewards=[MissionReward(reward_type="credits", amount=100)],
         )
         mgr.add_mission(mission)
@@ -87,9 +85,7 @@ class TestMissionManagerAddMission:
             id="proc_accept",
             name="Proc",
             description="Proc",
-            objectives=[
-                MissionObjective(type=ObjectiveType.REACH_SYSTEM, target_id="verdant")
-            ],
+            objectives=[MissionObjective(type=ObjectiveType.REACH_SYSTEM, target_id="verdant")],
             rewards=[MissionReward(reward_type="credits", amount=200)],
         )
         mgr.add_mission(mission)
@@ -185,16 +181,26 @@ class TestProceduralMissionGenerator:
     def test_all_generated_missions_are_side_type(self) -> None:
         """All procedural missions have mission_type='side'."""
         gen = self._make_generator()
-        for method in [gen.generate_bounty, gen.generate_delivery,
-                       gen.generate_smuggling, gen.generate_survey, gen.generate_salvage]:
+        for method in [
+            gen.generate_bounty,
+            gen.generate_delivery,
+            gen.generate_smuggling,
+            gen.generate_survey,
+            gen.generate_salvage,
+        ]:
             mission = method("nexus_prime", game_day=10)
             assert mission.mission_type == "side", f"{mission.id} should be side type"
 
     def test_all_generated_missions_have_station_board_discovery(self) -> None:
         """All procedural missions use station_board discovery method."""
         gen = self._make_generator()
-        for method in [gen.generate_bounty, gen.generate_delivery,
-                       gen.generate_smuggling, gen.generate_survey, gen.generate_salvage]:
+        for method in [
+            gen.generate_bounty,
+            gen.generate_delivery,
+            gen.generate_smuggling,
+            gen.generate_survey,
+            gen.generate_salvage,
+        ]:
             mission = method("nexus_prime", game_day=10)
             assert mission.discovery_method == "station_board"
 
@@ -252,12 +258,10 @@ class TestProceduralMissionGenerator:
         # Bounty reward = base_reward * danger_mult * kills, so per-kill
         # reward reflects base * danger_mult.
         safe_kills = next(
-            o.target_quantity for o in safe.objectives
-            if o.type == ObjectiveType.WIN_COMBAT
+            o.target_quantity for o in safe.objectives if o.type == ObjectiveType.WIN_COMBAT
         )
         danger_kills = next(
-            o.target_quantity for o in dangerous.objectives
-            if o.type == ObjectiveType.WIN_COMBAT
+            o.target_quantity for o in dangerous.objectives if o.type == ObjectiveType.WIN_COMBAT
         )
         safe_per_kill = safe_credits / max(safe_kills, 1)
         danger_per_kill = danger_credits / max(danger_kills, 1)
@@ -273,9 +277,7 @@ class TestProceduralMissionGenerator:
         mission = gen.generate_delivery("nexus_prime", game_day=10)
         for obj in mission.objectives:
             if obj.type == ObjectiveType.COLLECT_CARGO:
-                assert obj.target_id in dl.commodities, (
-                    f"Unknown commodity: {obj.target_id}"
-                )
+                assert obj.target_id in dl.commodities, f"Unknown commodity: {obj.target_id}"
 
     def test_survey_targets_are_valid_systems(self) -> None:
         """Survey objectives reference real system IDs."""
@@ -299,8 +301,13 @@ class TestProceduralMissionGenerator:
     def test_all_rewards_have_xp(self) -> None:
         """All procedural missions reward XP."""
         gen = self._make_generator()
-        for method in [gen.generate_bounty, gen.generate_delivery,
-                       gen.generate_smuggling, gen.generate_survey, gen.generate_salvage]:
+        for method in [
+            gen.generate_bounty,
+            gen.generate_delivery,
+            gen.generate_smuggling,
+            gen.generate_survey,
+            gen.generate_salvage,
+        ]:
             mission = method("nexus_prime", game_day=10)
             assert any(r.reward_type == "xp" for r in mission.rewards), (
                 f"{mission.id} should reward XP"

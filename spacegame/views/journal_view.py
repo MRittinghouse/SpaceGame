@@ -5,23 +5,24 @@ Displays auto-generated story entries and player-written notes
 with tag-based filtering, creation, editing, and deletion.
 """
 
-import pygame
-import pygame_gui
 from typing import Optional
 
-from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState, scale_x, scale_y
-from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
-from spacegame.views.base_view import BaseView
-from spacegame.models.journal import Journal, JournalEntry, VALID_TAGS, PLAYER_ENTRY_MAX_LENGTH
-from spacegame.models.mission import MissionManager
-from spacegame.engine.backgrounds import AnimatedBackground
-from spacegame.engine.fonts import FONT_BODY, FONT_LG, FONT_MD, FONT_SECTION, FONT_SM, FontCache
-from spacegame.utils.logger import logger
+import pygame
+import pygame_gui
 
-# Layout constants
+from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH, Colors, GameState, scale_x, scale_y
+from spacegame.engine.backgrounds import AnimatedBackground
+from spacegame.engine.fonts import FONT_BODY, FONT_LG, FONT_MD, FONT_SECTION, FONT_SM, get_font
+from spacegame.models.journal import PLAYER_ENTRY_MAX_LENGTH, Journal, JournalEntry
+from spacegame.models.mission import MissionManager
+from spacegame.utils.logger import logger
+from spacegame.views.base_view import BaseView
+from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
+
+# Layout constants (PANEL_LEFT/TOP shared with mission_log_view, crew_roster_view)
 PANEL_LEFT = scale_x(40)
 PANEL_TOP = scale_y(90)
-LIST_WIDTH = WINDOW_WIDTH - PANEL_LEFT * 2
+LIST_WIDTH = WINDOW_WIDTH - PANEL_LEFT * 2  # Full width (no detail panel, unlike mission_log)
 LIST_HEIGHT = WINDOW_HEIGHT - PANEL_TOP - scale_y(80) - scale_y(HUD_BASE_HEIGHT)
 ENTRY_CARD_HEIGHT = scale_y(80)
 ENTRY_CARD_GAP = 6
@@ -147,7 +148,10 @@ class _EntryItem:
         display_text = self.entry.text
         # Truncate to ~2 lines
         if self.body_font.size(display_text)[0] > max_text_width * 2:
-            while self.body_font.size(display_text + "...")[0] > max_text_width * 2 and len(display_text) > 0:
+            while (
+                self.body_font.size(display_text + "...")[0] > max_text_width * 2
+                and len(display_text) > 0
+            ):
                 display_text = display_text[:-1]
             display_text += "..."
 
@@ -167,7 +171,9 @@ class _EntryItem:
             lines.append(current_line)
 
         for line in lines[:2]:
-            text_color = Colors.TEXT_PRIMARY if self.entry.source == "player" else Colors.TEXT_SECONDARY
+            text_color = (
+                Colors.TEXT_PRIMARY if self.entry.source == "player" else Colors.TEXT_SECONDARY
+            )
             line_surf = self.body_font.render(line, True, text_color)
             screen.blit(line_surf, (pad_x, cur_y))
             cur_y += self.body_font.get_linesize()
@@ -181,7 +187,9 @@ class _EntryItem:
 class _ActionButton:
     """Small action button (New, Edit, Delete)."""
 
-    def __init__(self, rect: pygame.Rect, label: str, font: pygame.font.Font, color: tuple[int, int, int]) -> None:
+    def __init__(
+        self, rect: pygame.Rect, label: str, font: pygame.font.Font, color: tuple[int, int, int]
+    ) -> None:
         self.rect = rect
         self.label = label
         self.font = font
@@ -248,13 +256,13 @@ class JournalView(BaseView):
         self._compose_tag: str = ""
 
         # Fonts
-        self._title_font = FontCache.get(FONT_SECTION)
-        self._tab_font = FontCache.get(FONT_BODY)
-        self._header_font = FontCache.get(FONT_MD)
-        self._body_font = FontCache.get(FONT_MD)
-        self._detail_font = FontCache.get(FONT_BODY)
-        self._label_font = FontCache.get(FONT_LG)
-        self._small_font = FontCache.get(FONT_SM)
+        self._title_font = get_font("header", FONT_SECTION)
+        self._tab_font = get_font("label", FONT_BODY)
+        self._header_font = get_font("dialogue", FONT_MD)
+        self._body_font = get_font("narration", FONT_MD)
+        self._detail_font = get_font("narration", FONT_BODY)
+        self._label_font = get_font("dialogue", FONT_LG)
+        self._small_font = get_font("dialogue", FONT_SM)
 
         # UI elements
         self.back_button: Optional[pygame_gui.elements.UIButton] = None
@@ -291,7 +299,9 @@ class JournalView(BaseView):
 
     def _create_ui(self) -> None:
         self.back_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(PANEL_LEFT, WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - scale_y(60), 120, 40),
+            relative_rect=pygame.Rect(
+                PANEL_LEFT, WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - scale_y(60), 120, 40
+            ),
             text="BACK",
             manager=self.ui_manager,
         )
@@ -363,9 +373,15 @@ class JournalView(BaseView):
 
         # Tag selection buttons for compose mode
         self._tag_buttons.clear()
-        tag_labels = [("", "None"), ("people", "People"), ("places", "Places"), ("suspicions", "Suspicions"), ("goals", "Goals")]
+        tag_labels = [
+            ("", "None"),
+            ("people", "People"),
+            ("places", "Places"),
+            ("suspicions", "Suspicions"),
+            ("goals", "Goals"),
+        ]
         tag_btn_w = scale_x(90)
-        for i, (tag_key, tag_label) in enumerate(tag_labels):
+        for i, (_tag_key, tag_label) in enumerate(tag_labels):
             rect = pygame.Rect(
                 PANEL_LEFT + i * (tag_btn_w + 4),
                 compose_y + 40,
@@ -723,12 +739,18 @@ class JournalView(BaseView):
         hint_offset = self._get_hint_offset()
         if hint_offset > 0:
             self._render_hint_card(screen)
-        list_rect = pygame.Rect(PANEL_LEFT, PANEL_TOP + hint_offset, LIST_WIDTH, LIST_HEIGHT - hint_offset)
+        list_rect = pygame.Rect(
+            PANEL_LEFT, PANEL_TOP + hint_offset, LIST_WIDTH, LIST_HEIGHT - hint_offset
+        )
         pygame.draw.rect(screen, Colors.PANEL_BG, list_rect, border_radius=4)
         pygame.draw.rect(screen, Colors.UI_BORDER, list_rect, 1, border_radius=4)
 
         if not self._entry_items:
-            empty_text = "No entries yet." if self._current_filter == "all" else f'No entries tagged "{self._current_filter}".'
+            empty_text = (
+                "No entries yet."
+                if self._current_filter == "all"
+                else f'No entries tagged "{self._current_filter}".'
+            )
             empty_surf = self._body_font.render(empty_text, True, Colors.TEXT_SECONDARY)
             screen.blit(empty_surf, (list_rect.x + 20, list_rect.y + 30))
             return

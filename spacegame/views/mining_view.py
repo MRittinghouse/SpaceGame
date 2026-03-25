@@ -5,48 +5,63 @@ Click-to-mine asteroid field with drone automation, passive drilling,
 procedural rock shapes, particle effects, and progression integration.
 """
 
-import pygame
-import pygame_gui
 import math
 import random
-from typing import Optional, Dict, List
-from spacegame.views.base_view import BaseView
-from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState, scale_x, scale_y
-from spacegame.models.player import Player
-from spacegame.models.commodity import Commodity
-from spacegame.models.mining import (
-    MiningSession,
-    MiningConfig,
-    MiningResult,
-    AsteroidRock,
-    RockType,
-    HazardType,
-    ROCK_TYPE_CONFIGS,
-)
-from spacegame.models.drone import MiningDroneFleet
-from spacegame.models.ore_silo import OreSilo
-from spacegame.models.rating import calculate_rating, MINING_THRESHOLDS, RATING_COLORS
-from spacegame.engine.draw_utils import draw_bar, draw_panel, draw_summary_overlay, draw_nine_slice_panel
-from spacegame.utils.logger import logger
+from typing import Dict, List, Optional
+
+import pygame
+import pygame_gui
+
+from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH, Colors, GameState, scale_x, scale_y
+from spacegame.engine.audio_manager import get_audio_manager
 from spacegame.engine.backgrounds import AnimatedBackground
+from spacegame.engine.draw_utils import (
+    draw_bar,
+    draw_nine_slice_panel,
+    draw_panel,
+    draw_summary_overlay,
+)
+from spacegame.engine.floating_text import FloatingItemManager
+from spacegame.engine.fonts import (
+    FONT_HEADING,
+    FONT_LG,
+    FONT_MD,
+    FONT_RATING,
+    FONT_SECTION2,
+    FONT_SM,
+    FONT_TITLE,
+    get_font,
+)
+from spacegame.engine.mining_vfx import DepthMeter, LayerTransition, MiningAtmosphere
 from spacegame.engine.particles import (
-    ParticlePool,
-    SPARK_BURST,
-    COLLECT_SPARKLE,
+    CHAIN_SHOCKWAVE,
     CLICK_HIT,
+    COLLECT_SPARKLE,
+    DEPTH_TRANSITION,
     DRONE_SPARK,
+    EMPOWERED_BURST,
     ENERGY_REGEN,
     ROCK_BREAK,
-    CHAIN_SHOCKWAVE,
-    EMPOWERED_BURST,
-    DEPTH_TRANSITION,
+    SPARK_BURST,
+    ParticlePool,
 )
 from spacegame.engine.sprites import get_sprite_manager, res_scale
-from spacegame.engine.fonts import FONT_HEADING, FONT_LG, FONT_MD, FONT_RATING, FONT_SECTION2, FONT_SM, FONT_TITLE, FontCache
-from spacegame.engine.audio_manager import get_audio_manager
-from spacegame.engine.floating_text import FloatingItemManager
 from spacegame.engine.tooltip import TooltipState
-from spacegame.engine.mining_vfx import MiningAtmosphere, DepthMeter, LayerTransition
+from spacegame.models.commodity import Commodity
+from spacegame.models.drone import MiningDroneFleet
+from spacegame.models.mining import (
+    ROCK_TYPE_CONFIGS,
+    HazardType,
+    MiningConfig,
+    MiningResult,
+    MiningSession,
+    RockType,
+)
+from spacegame.models.ore_silo import OreSilo
+from spacegame.models.player import Player
+from spacegame.models.rating import MINING_THRESHOLDS, RATING_COLORS, calculate_rating
+from spacegame.utils.logger import logger
+from spacegame.views.base_view import BaseView
 
 # System-specific asteroid field descriptions and bonuses
 FIELD_DESCRIPTIONS: dict[str, tuple[str, str]] = {
@@ -122,10 +137,10 @@ class MiningView(BaseView):
         self._session_strata: int = 0
 
         # Fonts
-        self.title_font = FontCache.get(FONT_TITLE)
-        self.info_font = FontCache.get(FONT_LG)
-        self.small_font = FontCache.get(FONT_MD)
-        self.cell_font = FontCache.get(FONT_SM)
+        self.title_font = get_font("header", FONT_TITLE)
+        self.info_font = get_font("dialogue", FONT_LG)
+        self.small_font = get_font("stats", FONT_MD)
+        self.cell_font = get_font("stats", FONT_SM)
 
         # UI buttons
         self.back_button: Optional[pygame_gui.elements.UIButton] = None
@@ -202,9 +217,9 @@ class MiningView(BaseView):
         self._transfer_count: int = 0
         self._wholesale_credits: int = 0
         self._wholesale_units: int = 0
-        self._summary_font = FontCache.get(FONT_HEADING)
-        self._summary_title_font = FontCache.get(FONT_SECTION2)
-        self._rating_font = FontCache.get(FONT_RATING)
+        self._summary_font = get_font("header", FONT_HEADING)
+        self._summary_title_font = get_font("header", FONT_SECTION2)
+        self._rating_font = get_font("header", FONT_RATING)
 
         # Floating icon manager for ore-to-silo animations
         self._floats = FloatingItemManager()
@@ -223,8 +238,10 @@ class MiningView(BaseView):
 
         # Depth visual systems
         grid_rect = pygame.Rect(
-            self.GRID_OFFSET_X, self.GRID_OFFSET_Y,
-            self.CELL_SIZE * 7, self.CELL_SIZE * 5,
+            self.GRID_OFFSET_X,
+            self.GRID_OFFSET_Y,
+            self.CELL_SIZE * 7,
+            self.CELL_SIZE * 5,
         )
         self._mining_atmosphere = MiningAtmosphere(grid_rect)
         self._depth_meter = DepthMeter(
@@ -292,7 +309,9 @@ class MiningView(BaseView):
         # Unstable cells
         unstable_variants: list[pygame.Surface] = []
         for v in (1, 2):
-            surf = self._sprite_mgr.get_static_sprite("mining", f"rock_unstable_v{v}", scale=res_scale(2))
+            surf = self._sprite_mgr.get_static_sprite(
+                "mining", f"rock_unstable_v{v}", scale=res_scale(2)
+            )
             if surf is not None:
                 unstable_variants.append(surf)
         if unstable_variants:
@@ -301,7 +320,9 @@ class MiningView(BaseView):
         # Pressure vent cells
         vent_variants: list[pygame.Surface] = []
         for v in (1, 2):
-            surf = self._sprite_mgr.get_static_sprite("mining", f"rock_vent_v{v}", scale=res_scale(2))
+            surf = self._sprite_mgr.get_static_sprite(
+                "mining", f"rock_vent_v{v}", scale=res_scale(2)
+            )
             if surf is not None:
                 vent_variants.append(surf)
         if vent_variants:
@@ -534,9 +555,7 @@ class MiningView(BaseView):
             return
         level = self.player.mining_prestige_level
         if level >= self.PRESTIGE_MAX_LEVEL:
-            self._show_message(
-                f"Already at max prestige level ({self.PRESTIGE_MAX_LEVEL})"
-            )
+            self._show_message(f"Already at max prestige level ({self.PRESTIGE_MAX_LEVEL})")
             return
         required_depth = self._get_prestige_depth_requirement()
         if self.session.depth < required_depth:
@@ -569,7 +588,9 @@ class MiningView(BaseView):
         bonus_pct = int(new_level * self.PRESTIGE_WHOLESALE_BONUS_PER_LEVEL * 100)
         self._add_feedback(
             f"PRESTIGE {new_level}!",
-            WINDOW_WIDTH // 2, 100, (255, 215, 0),
+            WINDOW_WIDTH // 2,
+            100,
+            (255, 215, 0),
         )
         self._show_message(
             f"Prestige {new_level}/{self.PRESTIGE_MAX_LEVEL}! "
@@ -578,16 +599,14 @@ class MiningView(BaseView):
         get_audio_manager().play_sfx("mine_collect")
         logger.info(
             "Mining prestige %d: depth reset, upgrades reset, wholesale +%d%%",
-            new_level, bonus_pct,
+            new_level,
+            bonus_pct,
         )
 
     def _get_wholesale_rate(self) -> float:
         """Get the effective wholesale rate including prestige bonus."""
         base = 0.10 + self.mining_config.perk_wholesale_bonus
-        prestige_bonus = (
-            self.player.mining_prestige_level
-            * self.PRESTIGE_WHOLESALE_BONUS_PER_LEVEL
-        )
+        prestige_bonus = self.player.mining_prestige_level * self.PRESTIGE_WHOLESALE_BONUS_PER_LEVEL
         return base + prestige_bonus
 
     def _get_wholesale_tag(self) -> str:
@@ -736,9 +755,7 @@ class MiningView(BaseView):
                         self._show_transfer = False
                     else:
                         # Skip transfer — leave everything in silo
-                        self._transfer_selections = {
-                            cid: 0 for cid in self._transfer_selections
-                        }
+                        self._transfer_selections = dict.fromkeys(self._transfer_selections, 0)
                         self._transfer_count = 0
                         self._finalize_session()
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -819,7 +836,9 @@ class MiningView(BaseView):
                     rate_pct = int(wholesale_rate * 100)
                     self._add_feedback(
                         f"Sold {total_units} ore for {total_credits:,} CR",
-                        WINDOW_WIDTH // 2, 120, (200, 170, 60),
+                        WINDOW_WIDTH // 2,
+                        120,
+                        (200, 170, 60),
                     )
                     self._show_message(
                         f"Wholesale sold {total_units} ore at {rate_pct}% value{perk_tag} for {total_credits:,} CR"
@@ -833,11 +852,11 @@ class MiningView(BaseView):
                     self.player.strata_tokens = 0
                     self._add_feedback(
                         f"+{tokens:,} CR",
-                        WINDOW_WIDTH // 2, 120, (180, 140, 255),
+                        WINDOW_WIDTH // 2,
+                        120,
+                        (180, 140, 255),
                     )
-                    self._show_message(
-                        f"Converted {tokens} strata tokens to {tokens:,} credits"
-                    )
+                    self._show_message(f"Converted {tokens} strata tokens to {tokens:,} credits")
                 else:
                     self._show_message("No strata tokens to sell")
             elif event.ui_element == self.prestige_button:
@@ -882,8 +901,10 @@ class MiningView(BaseView):
                         cols = self.mining_config.grid_width
                         rows = self.mining_config.grid_height
                         vfx_grid_rect = pygame.Rect(
-                            self.GRID_OFFSET_X, self.GRID_OFFSET_Y,
-                            self.CELL_SIZE * cols, self.CELL_SIZE * rows,
+                            self.GRID_OFFSET_X,
+                            self.GRID_OFFSET_Y,
+                            self.CELL_SIZE * cols,
+                            self.CELL_SIZE * rows,
                         )
                         self._layer_transition.trigger(self.session.depth, vfx_grid_rect)
 
@@ -963,7 +984,9 @@ class MiningView(BaseView):
         for uid, rect in self._upgrade_rects.items():
             if rect.collidepoint(pos):
                 success, msg, cost = self.player.deep_core_upgrades.purchase(
-                    uid, dc_upgrades, self.player.strata_tokens,
+                    uid,
+                    dc_upgrades,
+                    self.player.strata_tokens,
                     prestige_level=self.player.mining_prestige_level,
                 )
                 if success:
@@ -992,9 +1015,13 @@ class MiningView(BaseView):
                     elif uid == "automaton_core" and self.session:
                         self.session.drone_speed_bonus += dc_upgrades[uid].effect_per_level
                     elif uid == "auto_drill" and self.session:
-                        self.session.auto_drill_level = self.player.deep_core_upgrades.get_level(uid)
+                        self.session.auto_drill_level = self.player.deep_core_upgrades.get_level(
+                            uid
+                        )
                     elif uid == "ore_scanner" and self.session:
-                        self.session.ore_scanner_level = self.player.deep_core_upgrades.get_level(uid)
+                        self.session.ore_scanner_level = self.player.deep_core_upgrades.get_level(
+                            uid
+                        )
                 else:
                     self._show_message(msg)
                 break
@@ -1080,7 +1107,7 @@ class MiningView(BaseView):
                 )
 
             # Drone spark particles on drone targets
-            for idx, target in self.session.drone_targets.items():
+            for _idx, target in self.session.drone_targets.items():
                 if target and not target.depleted:
                     fx = self.GRID_OFFSET_X + target.grid_x * self.CELL_SIZE + self.CELL_SIZE // 2
                     fy = self.GRID_OFFSET_Y + target.grid_y * self.CELL_SIZE + self.CELL_SIZE // 2
@@ -1291,7 +1318,6 @@ class MiningView(BaseView):
             alpha = int(255 * item.alpha)
             if alpha <= 0:
                 continue
-            scale = item.scale
             text_surf = self.small_font.render(item.text, True, Colors.SUCCESS)
             text_surf.set_alpha(alpha)
             screen.blit(text_surf, (int(item.x) - text_surf.get_width() // 2, int(item.y)))
@@ -1353,7 +1379,7 @@ class MiningView(BaseView):
         # Build set of drone target rock positions for indicator rendering
         drone_target_positions = set()
         if self.session:
-            for idx, target in self.session.drone_targets.items():
+            for _idx, target in self.session.drone_targets.items():
                 if target and not target.depleted:
                     drone_target_positions.add((target.grid_x, target.grid_y))
 
@@ -1438,8 +1464,10 @@ class MiningView(BaseView):
                     if ore_cfg:
                         scan_color = ore_cfg.color
                         pygame.draw.rect(
-                            screen, scan_color,
-                            (rect.x - 1, rect.y - 1, rect.w + 2, rect.h + 2), 2,
+                            screen,
+                            scan_color,
+                            (rect.x - 1, rect.y - 1, rect.w + 2, rect.h + 2),
+                            2,
                             border_radius=3,
                         )
 
@@ -1694,9 +1722,7 @@ class MiningView(BaseView):
         draw_panel(screen, (panel_x - 8, panel_y - 6, panel_w + 16, content_h), alpha=160)
         self._depth_panel_bottom_y = panel_y + content_h
 
-        header = self.info_font.render(
-            f"DEPTH {depth}", True, Colors.TEXT_HIGHLIGHT
-        )
+        header = self.info_font.render(f"DEPTH {depth}", True, Colors.TEXT_HIGHLIGHT)
         screen.blit(header, (panel_x, panel_y))
 
         y = panel_y + 30
@@ -1809,8 +1835,6 @@ class MiningView(BaseView):
 
         for ms in self.session.milestones:
             value = self.session._get_milestone_value(ms.category)
-            progress = min(1.0, value / max(1, ms.threshold))
-
             # Checkmark or progress
             if ms.completed:
                 mark = self.small_font.render("[DONE]", True, Colors.GREEN)
@@ -2112,8 +2136,11 @@ class MiningView(BaseView):
 
         row_y_start = py + scale_y(70) + scale_y(18)
         row_h = scale_y(40)
-        items = [(cid, self._silo.contents.get(cid, 0))
-                 for cid in self._transfer_selections if self._silo.contents.get(cid, 0) > 0]
+        items = [
+            (cid, self._silo.contents.get(cid, 0))
+            for cid in self._transfer_selections
+            if self._silo.contents.get(cid, 0) > 0
+        ]
 
         cargo_space = self._get_cargo_space_remaining()
         total_selected = sum(self._transfer_selections.values())
@@ -2138,7 +2165,9 @@ class MiningView(BaseView):
                 return
 
         # "Transfer All" button
-        all_btn = pygame.Rect(px + scale_x(30), py + panel_h - scale_y(55), scale_x(160), scale_y(36))
+        all_btn = pygame.Rect(
+            px + scale_x(30), py + panel_h - scale_y(55), scale_x(160), scale_y(36)
+        )
         if all_btn.collidepoint(mx, my):
             # Greedily fill cargo with most valuable first
             commodity_values = {}
@@ -2159,14 +2188,18 @@ class MiningView(BaseView):
             return
 
         # "Take Nothing" button
-        none_btn = pygame.Rect(px + scale_x(210), py + panel_h - scale_y(55), scale_x(160), scale_y(36))
+        none_btn = pygame.Rect(
+            px + scale_x(210), py + panel_h - scale_y(55), scale_x(160), scale_y(36)
+        )
         if none_btn.collidepoint(mx, my):
             for cid in self._transfer_selections:
                 self._transfer_selections[cid] = 0
             return
 
         # "Confirm" button
-        confirm_btn = pygame.Rect(px + scale_x(390), py + panel_h - scale_y(55), scale_x(160), scale_y(36))
+        confirm_btn = pygame.Rect(
+            px + scale_x(390), py + panel_h - scale_y(55), scale_x(160), scale_y(36)
+        )
         if confirm_btn.collidepoint(mx, my):
             self._apply_transfer_selections()
             if getattr(self, "_mid_session_transfer", False):
@@ -2183,7 +2216,9 @@ class MiningView(BaseView):
 
         # "Cancel" button (mid-session only, same position as wholesale in session-end)
         if getattr(self, "_mid_session_transfer", False):
-            cancel_btn = pygame.Rect(px + scale_x(30), py + panel_h - scale_y(100), scale_x(160), scale_y(36))
+            cancel_btn = pygame.Rect(
+                px + scale_x(30), py + panel_h - scale_y(100), scale_x(160), scale_y(36)
+            )
             if cancel_btn.collidepoint(mx, my):
                 self._mid_session_transfer = False
                 self._show_transfer = False
@@ -2191,7 +2226,9 @@ class MiningView(BaseView):
 
         # "Wholesale Sell" button (session-end only)
         if not getattr(self, "_mid_session_transfer", False):
-            wholesale_btn = pygame.Rect(px + scale_x(30), py + panel_h - scale_y(100), panel_w - scale_x(60), scale_y(36))
+            wholesale_btn = pygame.Rect(
+                px + scale_x(30), py + panel_h - scale_y(100), panel_w - scale_x(60), scale_y(36)
+            )
             if wholesale_btn.collidepoint(mx, my):
                 self._apply_wholesale_sell()
                 return
@@ -2208,9 +2245,7 @@ class MiningView(BaseView):
         px = WINDOW_WIDTH // 2 - panel_w // 2
         py = WINDOW_HEIGHT // 2 - panel_h // 2
         draw_panel(screen, (px, py, panel_w, panel_h), alpha=240)
-        pygame.draw.rect(
-            screen, (180, 140, 255), (px, py, panel_w, 3)
-        )
+        pygame.draw.rect(screen, (180, 140, 255), (px, py, panel_w, 3))
 
         # Title
         title = self._summary_font.render("TRANSFER ORE", True, (180, 140, 255))
@@ -2230,7 +2265,11 @@ class MiningView(BaseView):
 
         # Column headers
         header_y = py + scale_y(65)
-        headers = [("Ore", px + scale_x(30)), ("In Silo", px + scale_x(250)), ("Take", px + scale_x(390))]
+        headers = [
+            ("Ore", px + scale_x(30)),
+            ("In Silo", px + scale_x(250)),
+            ("Take", px + scale_x(390)),
+        ]
         for text, hx in headers:
             h_surf = self.small_font.render(text, True, Colors.TEXT_SECONDARY)
             screen.blit(h_surf, (hx, header_y))
@@ -2238,8 +2277,11 @@ class MiningView(BaseView):
         # Ore rows
         row_y = py + scale_y(70) + scale_y(18)
         row_h = scale_y(40)
-        items = [(cid, self._silo.contents.get(cid, 0))
-                 for cid in self._transfer_selections if self._silo.contents.get(cid, 0) > 0]
+        items = [
+            (cid, self._silo.contents.get(cid, 0))
+            for cid in self._transfer_selections
+            if self._silo.contents.get(cid, 0) > 0
+        ]
 
         for i, (cid, stored) in enumerate(items):
             ry = row_y + i * row_h
@@ -2306,7 +2348,9 @@ class MiningView(BaseView):
 
         # Cancel button (only during mid-session transfer)
         if getattr(self, "_mid_session_transfer", False):
-            cancel_rect = pygame.Rect(px + scale_x(30), py + panel_h - scale_y(100), scale_x(160), scale_y(36))
+            cancel_rect = pygame.Rect(
+                px + scale_x(30), py + panel_h - scale_y(100), scale_x(160), scale_y(36)
+            )
             draw_panel(screen, cancel_rect, alpha=200, border_color=Colors.RED)
             cancel_text = self.small_font.render("Cancel (ESC)", True, Colors.RED)
             screen.blit(cancel_text, cancel_text.get_rect(center=cancel_rect.center))
@@ -2330,7 +2374,9 @@ class MiningView(BaseView):
                 wholesale_total += price_per_unit * remainder
                 wholesale_units += remainder
 
-        wholesale_rect = pygame.Rect(px + scale_x(30), py + panel_h - scale_y(100), panel_w - scale_x(60), scale_y(36))
+        wholesale_rect = pygame.Rect(
+            px + scale_x(30), py + panel_h - scale_y(100), panel_w - scale_x(60), scale_y(36)
+        )
         wholesale_color = (200, 170, 60)
         draw_panel(screen, wholesale_rect, alpha=200, border_color=wholesale_color)
         perk_tag = self._get_wholesale_tag()
@@ -2344,7 +2390,8 @@ class MiningView(BaseView):
         # Hint text
         hint = self.small_font.render(
             "ENTER to confirm  |  ESC to leave everything in silo",
-            True, Colors.TEXT_SECONDARY,
+            True,
+            Colors.TEXT_SECONDARY,
         )
         screen.blit(hint, hint.get_rect(center=(WINDOW_WIDTH // 2, py + panel_h - 15)))
 
@@ -2365,7 +2412,12 @@ class MiningView(BaseView):
                 ("Loaded to Ship", str(self._transfer_count)),
             ]
             if self._wholesale_credits > 0:
-                stats.append(("Wholesale Sold", f"{self._wholesale_units} ore → {self._wholesale_credits:,} CR"))
+                stats.append(
+                    (
+                        "Wholesale Sold",
+                        f"{self._wholesale_units} ore → {self._wholesale_credits:,} CR",
+                    )
+                )
             silo_remaining = self._silo.get_total_stored()
             if silo_remaining > 0:
                 stats.append(("Left in Silo", str(silo_remaining)))

@@ -40,15 +40,11 @@ class TestNpcAvailability:
         if npc.hide_after_flag and dialogue_flags.get(npc.hide_after_flag, False):
             return False
         # Hide if gate flag already triggered (dialogue already happened)
-        if npc.auto_trigger_gate_flag and dialogue_flags.get(
-            npc.auto_trigger_gate_flag, False
-        ):
+        if npc.auto_trigger_gate_flag and dialogue_flags.get(npc.auto_trigger_gate_flag, False):
             return False
         # Hide if prerequisites not yet met
         if npc.auto_trigger_prerequisites:
-            if not all(
-                dialogue_flags.get(f, False) for f in npc.auto_trigger_prerequisites
-            ):
+            if not all(dialogue_flags.get(f, False) for f in npc.auto_trigger_prerequisites):
                 return False
         return True
 

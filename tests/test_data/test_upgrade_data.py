@@ -37,16 +37,34 @@ class TestUpgradeCount:
 
 class TestNewUpgradeIdentities:
     NEW_IDS = [
-        "nav_computer", "tractor_beam", "refining_module", "crew_quarters",
-        "sensor_array", "cargo_compressor", "hull_reinforcement",
-        "autocannon", "rail_gun", "flak_battery",
-        "reactive_armor", "ecm_suite",
-        "nexus_trade_beacon", "forge_plating", "frontier_salvage_array", "axiom_scanner",
-        "prototype_shields", "ancient_drive", "black_sun_jammer",
-        "reinforced_plating", "overclocked_scanner", "plasma_conduit",
-        "titan_plating", "command_array", "nova_core",
+        "nav_computer",
+        "tractor_beam",
+        "refining_module",
+        "crew_quarters",
+        "sensor_array",
+        "cargo_compressor",
+        "hull_reinforcement",
+        "autocannon",
+        "rail_gun",
+        "flak_battery",
+        "reactive_armor",
+        "ecm_suite",
+        "nexus_trade_beacon",
+        "forge_plating",
+        "frontier_salvage_array",
+        "axiom_scanner",
+        "prototype_shields",
+        "ancient_drive",
+        "black_sun_jammer",
+        "reinforced_plating",
+        "overclocked_scanner",
+        "plasma_conduit",
+        "titan_plating",
+        "command_array",
+        "nova_core",
         "phantom_module",
-        "shield_capacitor", "arc_emitter",
+        "shield_capacitor",
+        "arc_emitter",
     ]
 
     def test_all_new_upgrades_exist(self, upgrades: dict) -> None:
@@ -128,7 +146,11 @@ class TestQuestUpgrades:
 
 class TestUpgradeStats:
     def test_all_have_valid_price(self, upgrades: dict) -> None:
-        craft_gated = {uid for uid, u in upgrades.items() if u.unlock_condition and u.unlock_condition.startswith("crafted_")}
+        craft_gated = {
+            uid
+            for uid, u in upgrades.items()
+            if u.unlock_condition and u.unlock_condition.startswith("crafted_")
+        }
         for uid, u in upgrades.items():
             if uid in craft_gated:
                 assert u.price == 0, f"Craft-gated {uid} should be free to install"

@@ -49,9 +49,7 @@ def _extract_pulse_max(source_lines: list[str], var_name: str, line_idx: int) ->
             continue
 
         # Pattern: int(abs(math.sin(...)) * N) + M
-        match = re.search(
-            r"int\(abs\(math\.sin\([^)]+\)\)\s*\*\s*(\d+)\)\s*\+\s*(\d+)", line
-        )
+        match = re.search(r"int\(abs\(math\.sin\([^)]+\)\)\s*\*\s*(\d+)\)\s*\+\s*(\d+)", line)
         if match:
             return int(match.group(1)) + int(match.group(2))
 
@@ -91,13 +89,11 @@ class TestColorValueSafety:
                         total_max = base + var_max
                         if total_max > 255:
                             violations.append(
-                                f"{py_file.name}:{i+1} — {var_name} max={var_max}, "
+                                f"{py_file.name}:{i + 1} — {var_name} max={var_max}, "
                                 f"base={base}, total={total_max} > 255: {line.strip()}"
                             )
 
-        assert not violations, (
-            f"Color channel overflow detected:\n" + "\n".join(violations)
-        )
+        assert not violations, f"Color channel overflow detected:\n" + "\n".join(violations)
 
     def test_min_calls_clamp_computed_colors(self) -> None:
         """Verify that tuple(min(c + N, 255) ...) patterns clamp correctly."""
@@ -124,10 +120,6 @@ class TestColorValueSafety:
                 if match:
                     val = int(match.group(1))
                     if val > 255:
-                        violations.append(
-                            f"{py_file.name}:{i} — set_alpha({val}) > 255"
-                        )
+                        violations.append(f"{py_file.name}:{i} — set_alpha({val}) > 255")
 
-        assert not violations, (
-            f"Alpha overflow detected:\n" + "\n".join(violations)
-        )
+        assert not violations, f"Alpha overflow detected:\n" + "\n".join(violations)

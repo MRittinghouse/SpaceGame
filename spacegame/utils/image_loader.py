@@ -4,9 +4,11 @@ Image asset loader for Aurelia: A Ledger of Stars.
 Handles loading, caching, and scaling of image assets with graceful fallback.
 """
 
-import pygame
 from pathlib import Path
-from typing import Optional, Dict
+from typing import Dict, Optional
+
+import pygame
+
 from spacegame.utils.logger import logger
 
 

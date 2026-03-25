@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
     from spacegame.models.attributes import AttributeSheet
@@ -344,9 +344,7 @@ class GroundCombatState:
         if self.is_disadvantaged and self._first_exchange:
             player_mod -= 2
 
-        result = GroundCombatEngine.resolve_exchange(
-            player_roll, player_mod, enemy_roll, enemy_mod
-        )
+        result = GroundCombatEngine.resolve_exchange(player_roll, player_mod, enemy_roll, enemy_mod)
 
         # Apply damage
         if result.enemy_damage > 0:
@@ -535,9 +533,7 @@ class GroundCombatState:
         """
         state = cls(
             player=GroundCombatantStats.from_dict(data["player"]),
-            enemies=[
-                GroundCombatantStats.from_dict(e) for e in data["enemies"]
-            ],
+            enemies=[GroundCombatantStats.from_dict(e) for e in data["enemies"]],
             round_number=data.get("round_number", 0),
             target_index=data.get("target_index", 0),
             outcome=CombatOutcome(data.get("outcome", "in_progress")),
@@ -549,9 +545,7 @@ class GroundCombatState:
             has_last_stand=data.get("has_last_stand", False),
             has_intimidating_presence=data.get("has_intimidating_presence", False),
             has_analyze_weakness=data.get("has_analyze_weakness", False),
-            used_social_skills={
-                SocialSkillType(s) for s in data.get("used_social_skills", [])
-            },
+            used_social_skills={SocialSkillType(s) for s in data.get("used_social_skills", [])},
         )
         state._first_exchange = data.get("first_exchange", True)
         state._analyze_weakness_used = data.get("analyze_weakness_used", False)
@@ -563,14 +557,72 @@ class GroundCombatState:
 # ---------------------------------------------------------------------------
 
 GROUND_ENEMY_TEMPLATES: dict[str, dict] = {
-    "guild_security": {"name": "Guild Security", "hp": 4, "attack": 2, "defense": 2, "talk": 6, "loot_credits": 30},
-    "union_worker": {"name": "Union Worker", "hp": 3, "attack": 1, "defense": 0, "talk": 4, "loot_credits": 15},
-    "pirate_thug": {"name": "Pirate Thug", "hp": 5, "attack": 3, "defense": 0, "talk": 8, "loot_credits": 45},
-    "collective_drone": {"name": "Collective Drone", "hp": 3, "attack": 1, "defense": 3, "talk": None, "automated": True, "loot_credits": 10},
-    "alliance_scrapper": {"name": "Alliance Scrapper", "hp": 4, "attack": 2, "defense": 1, "talk": 5, "loot_credits": 25},
-    "elite_guard": {"name": "Elite Guard", "hp": 6, "attack": 3, "defense": 3, "talk": 9, "loot_credits": 60},
-    "station_sentry": {"name": "Station Sentry", "hp": 2, "attack": 0, "defense": 1, "talk": None, "automated": True, "loot_credits": 5},
-    "crimson_enforcer": {"name": "Crimson Enforcer", "hp": 5, "attack": 3, "defense": 1, "talk": 7, "loot_credits": 50},
+    "guild_security": {
+        "name": "Guild Security",
+        "hp": 4,
+        "attack": 2,
+        "defense": 2,
+        "talk": 6,
+        "loot_credits": 30,
+    },
+    "union_worker": {
+        "name": "Union Worker",
+        "hp": 3,
+        "attack": 1,
+        "defense": 0,
+        "talk": 4,
+        "loot_credits": 15,
+    },
+    "pirate_thug": {
+        "name": "Pirate Thug",
+        "hp": 5,
+        "attack": 3,
+        "defense": 0,
+        "talk": 8,
+        "loot_credits": 45,
+    },
+    "collective_drone": {
+        "name": "Collective Drone",
+        "hp": 3,
+        "attack": 1,
+        "defense": 3,
+        "talk": None,
+        "automated": True,
+        "loot_credits": 10,
+    },
+    "alliance_scrapper": {
+        "name": "Alliance Scrapper",
+        "hp": 4,
+        "attack": 2,
+        "defense": 1,
+        "talk": 5,
+        "loot_credits": 25,
+    },
+    "elite_guard": {
+        "name": "Elite Guard",
+        "hp": 6,
+        "attack": 3,
+        "defense": 3,
+        "talk": 9,
+        "loot_credits": 60,
+    },
+    "station_sentry": {
+        "name": "Station Sentry",
+        "hp": 2,
+        "attack": 0,
+        "defense": 1,
+        "talk": None,
+        "automated": True,
+        "loot_credits": 5,
+    },
+    "crimson_enforcer": {
+        "name": "Crimson Enforcer",
+        "hp": 5,
+        "attack": 3,
+        "defense": 1,
+        "talk": 7,
+        "loot_credits": 50,
+    },
 }
 
 

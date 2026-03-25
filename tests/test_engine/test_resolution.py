@@ -3,9 +3,19 @@
 import spacegame.config as config
 from spacegame.config import scale_x, scale_y
 from spacegame.engine.fonts import (
-    FONT_XS, FONT_SM, FONT_MD, FONT_BODY, FONT_LG, FONT_SUBTITLE,
-    FONT_XL, FONT_HEADING, FONT_TITLE, FONT_SECTION, FONT_DISPLAY,
-    FONT_RATING, scaled_font_size,
+    FONT_XS,
+    FONT_SM,
+    FONT_MD,
+    FONT_BODY,
+    FONT_LG,
+    FONT_SUBTITLE,
+    FONT_XL,
+    FONT_HEADING,
+    FONT_TITLE,
+    FONT_SECTION,
+    FONT_DISPLAY,
+    FONT_RATING,
+    scaled_font_size,
 )
 
 
@@ -42,9 +52,7 @@ class TestResolutionConfig:
         """All supported resolutions should be 16:9 aspect ratio."""
         for w, h in config.SUPPORTED_RESOLUTIONS:
             ratio = w / h
-            assert abs(ratio - 16 / 9) < 0.01, (
-                f"Resolution {w}x{h} is not 16:9 (ratio={ratio:.3f})"
-            )
+            assert abs(ratio - 16 / 9) < 0.01, f"Resolution {w}x{h} is not 16:9 (ratio={ratio:.3f})"
 
 
 class TestScaleHelpers:
@@ -108,14 +116,21 @@ class TestFontScaling:
     def test_font_constants_ordered(self) -> None:
         """Semantic font constants should be in ascending order."""
         sizes = [
-            FONT_XS, FONT_SM, FONT_MD, FONT_BODY, FONT_LG, FONT_SUBTITLE,
-            FONT_XL, FONT_HEADING, FONT_TITLE, FONT_SECTION, FONT_DISPLAY,
+            FONT_XS,
+            FONT_SM,
+            FONT_MD,
+            FONT_BODY,
+            FONT_LG,
+            FONT_SUBTITLE,
+            FONT_XL,
+            FONT_HEADING,
+            FONT_TITLE,
+            FONT_SECTION,
+            FONT_DISPLAY,
             FONT_RATING,
         ]
         for i in range(len(sizes) - 1):
-            assert sizes[i] < sizes[i + 1], (
-                f"Font sizes out of order: {sizes[i]} >= {sizes[i + 1]}"
-            )
+            assert sizes[i] < sizes[i + 1], f"Font sizes out of order: {sizes[i]} >= {sizes[i + 1]}"
 
     def test_scaled_font_size_at_720p(self) -> None:
         """At 720p, scaled size should equal base size."""

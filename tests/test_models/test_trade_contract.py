@@ -70,9 +70,15 @@ class TestTradeContractManager:
         """Expired contracts should not appear in available list."""
         mgr = TradeContractManager()
         c = TradeContract(
-            id="c1", contract_type="sell", commodity_id="metals",
-            quantity=10, price_per_unit=100, bonus_credits=50,
-            system_id="nexus_prime", day_offered=1, expiry_day=5,
+            id="c1",
+            contract_type="sell",
+            commodity_id="metals",
+            quantity=10,
+            price_per_unit=100,
+            bonus_credits=50,
+            system_id="nexus_prime",
+            day_offered=1,
+            expiry_day=5,
         )
         mgr._contracts.append(c)
         # Day 3: available
@@ -86,14 +92,26 @@ class TestTradeContractManager:
         """Only contracts for the requested system should appear."""
         mgr = TradeContractManager()
         c1 = TradeContract(
-            id="c1", contract_type="sell", commodity_id="metals",
-            quantity=10, price_per_unit=100, bonus_credits=50,
-            system_id="nexus_prime", day_offered=1, expiry_day=10,
+            id="c1",
+            contract_type="sell",
+            commodity_id="metals",
+            quantity=10,
+            price_per_unit=100,
+            bonus_credits=50,
+            system_id="nexus_prime",
+            day_offered=1,
+            expiry_day=10,
         )
         c2 = TradeContract(
-            id="c2", contract_type="buy", commodity_id="fuel_cells",
-            quantity=5, price_per_unit=50, bonus_credits=30,
-            system_id="breakstone", day_offered=1, expiry_day=10,
+            id="c2",
+            contract_type="buy",
+            commodity_id="fuel_cells",
+            quantity=5,
+            price_per_unit=50,
+            bonus_credits=30,
+            system_id="breakstone",
+            day_offered=1,
+            expiry_day=10,
         )
         mgr._contracts.extend([c1, c2])
         assert len(mgr.get_available("nexus_prime", 3)) == 1
@@ -103,9 +121,15 @@ class TestTradeContractManager:
         """Fulfilling a sell contract should mark it completed and return bonus."""
         mgr = TradeContractManager()
         c = TradeContract(
-            id="c1", contract_type="sell", commodity_id="metals",
-            quantity=10, price_per_unit=100, bonus_credits=200,
-            system_id="nexus_prime", day_offered=1, expiry_day=10,
+            id="c1",
+            contract_type="sell",
+            commodity_id="metals",
+            quantity=10,
+            price_per_unit=100,
+            bonus_credits=200,
+            system_id="nexus_prime",
+            day_offered=1,
+            expiry_day=10,
         )
         mgr._contracts.append(c)
         success, msg = mgr.try_fulfill("c1", "nexus_prime", "metals", 10)
@@ -117,9 +141,15 @@ class TestTradeContractManager:
         """Cannot fulfill a contract from the wrong system."""
         mgr = TradeContractManager()
         c = TradeContract(
-            id="c1", contract_type="sell", commodity_id="metals",
-            quantity=10, price_per_unit=100, bonus_credits=200,
-            system_id="nexus_prime", day_offered=1, expiry_day=10,
+            id="c1",
+            contract_type="sell",
+            commodity_id="metals",
+            quantity=10,
+            price_per_unit=100,
+            bonus_credits=200,
+            system_id="nexus_prime",
+            day_offered=1,
+            expiry_day=10,
         )
         mgr._contracts.append(c)
         success, msg = mgr.try_fulfill("c1", "breakstone", "metals", 10)
@@ -129,9 +159,15 @@ class TestTradeContractManager:
         """Cannot fulfill a contract without enough quantity."""
         mgr = TradeContractManager()
         c = TradeContract(
-            id="c1", contract_type="sell", commodity_id="metals",
-            quantity=10, price_per_unit=100, bonus_credits=200,
-            system_id="nexus_prime", day_offered=1, expiry_day=10,
+            id="c1",
+            contract_type="sell",
+            commodity_id="metals",
+            quantity=10,
+            price_per_unit=100,
+            bonus_credits=200,
+            system_id="nexus_prime",
+            day_offered=1,
+            expiry_day=10,
         )
         mgr._contracts.append(c)
         success, msg = mgr.try_fulfill("c1", "nexus_prime", "metals", 5)
@@ -141,14 +177,26 @@ class TestTradeContractManager:
         """expire_old should remove completed and expired contracts."""
         mgr = TradeContractManager()
         c1 = TradeContract(
-            id="c1", contract_type="sell", commodity_id="metals",
-            quantity=10, price_per_unit=100, bonus_credits=50,
-            system_id="nexus_prime", day_offered=1, expiry_day=5,
+            id="c1",
+            contract_type="sell",
+            commodity_id="metals",
+            quantity=10,
+            price_per_unit=100,
+            bonus_credits=50,
+            system_id="nexus_prime",
+            day_offered=1,
+            expiry_day=5,
         )
         c2 = TradeContract(
-            id="c2", contract_type="buy", commodity_id="fuel_cells",
-            quantity=5, price_per_unit=50, bonus_credits=30,
-            system_id="nexus_prime", day_offered=1, expiry_day=20,
+            id="c2",
+            contract_type="buy",
+            commodity_id="fuel_cells",
+            quantity=5,
+            price_per_unit=50,
+            bonus_credits=30,
+            system_id="nexus_prime",
+            day_offered=1,
+            expiry_day=20,
         )
         mgr._contracts.extend([c1, c2])
         mgr.expire_old(10)
@@ -159,9 +207,15 @@ class TestTradeContractManager:
         """Manager should serialize and deserialize contracts."""
         mgr = TradeContractManager()
         c = TradeContract(
-            id="c1", contract_type="sell", commodity_id="metals",
-            quantity=10, price_per_unit=100, bonus_credits=50,
-            system_id="nexus_prime", day_offered=1, expiry_day=10,
+            id="c1",
+            contract_type="sell",
+            commodity_id="metals",
+            quantity=10,
+            price_per_unit=100,
+            bonus_credits=50,
+            system_id="nexus_prime",
+            day_offered=1,
+            expiry_day=10,
         )
         mgr._contracts.append(c)
 

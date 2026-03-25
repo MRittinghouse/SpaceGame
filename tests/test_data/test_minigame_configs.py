@@ -6,9 +6,17 @@ from pathlib import Path
 
 DATA_DIR = Path(__file__).resolve().parents[2] / "data"
 VALID_SYSTEM_IDS = {
-    "nexus_prime", "verdant", "forgeworks", "breakstone", "axiom_labs",
-    "havens_rest", "crimson_reach", "stellaris_port", "iron_depths",
-    "nova_research", "the_fulcrum",
+    "nexus_prime",
+    "verdant",
+    "forgeworks",
+    "breakstone",
+    "axiom_labs",
+    "havens_rest",
+    "crimson_reach",
+    "stellaris_port",
+    "iron_depths",
+    "nova_research",
+    "the_fulcrum",
 }
 
 
@@ -43,17 +51,13 @@ class TestMiningConfigs:
     def test_mining_system_ids_valid(self) -> None:
         configs = _load_mining()
         for cfg in configs:
-            assert cfg["system_id"] in VALID_SYSTEM_IDS, (
-                f"Invalid system_id: {cfg['system_id']}"
-            )
+            assert cfg["system_id"] in VALID_SYSTEM_IDS, f"Invalid system_id: {cfg['system_id']}"
 
     def test_mining_distribution_sums_to_one(self) -> None:
         configs = _load_mining()
         for cfg in configs:
             total = sum(cfg["rock_distribution"].values())
-            assert abs(total - 1.0) < 0.01, (
-                f"{cfg['system_id']} distribution sums to {total}"
-            )
+            assert abs(total - 1.0) < 0.01, f"{cfg['system_id']} distribution sums to {total}"
 
     def test_mining_grid_dimensions_reasonable(self) -> None:
         configs = _load_mining()
@@ -88,17 +92,13 @@ class TestSalvageConfigs:
     def test_salvage_system_ids_valid(self) -> None:
         configs = _load_salvage()
         for cfg in configs:
-            assert cfg["system_id"] in VALID_SYSTEM_IDS, (
-                f"Invalid system_id: {cfg['system_id']}"
-            )
+            assert cfg["system_id"] in VALID_SYSTEM_IDS, f"Invalid system_id: {cfg['system_id']}"
 
     def test_salvage_distribution_sums_to_one(self) -> None:
         configs = _load_salvage()
         for cfg in configs:
             total = sum(cfg["item_distribution"].values())
-            assert abs(total - 1.0) < 0.01, (
-                f"{cfg['system_id']} distribution sums to {total}"
-            )
+            assert abs(total - 1.0) < 0.01, f"{cfg['system_id']} distribution sums to {total}"
 
     def test_salvage_grid_size_reasonable(self) -> None:
         configs = _load_salvage()
@@ -123,9 +123,7 @@ class TestRefiningRecipes:
     def test_nexus_prime_in_basic_recipes(self) -> None:
         """Nexus Prime should appear in at least one basic refining recipe."""
         recipes = _load_recipes()
-        nexus_recipes = [
-            r for r in recipes if "nexus_prime" in r.get("location_ids", [])
-        ]
+        nexus_recipes = [r for r in recipes if "nexus_prime" in r.get("location_ids", [])]
         assert len(nexus_recipes) >= 1, "nexus_prime should appear in at least 1 recipe"
 
     def test_smelt_iron_includes_nexus(self) -> None:

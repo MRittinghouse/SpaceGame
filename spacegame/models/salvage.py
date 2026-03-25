@@ -8,7 +8,7 @@ import math
 import random
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import List, Optional, Dict, Tuple
+from typing import Dict, List, Optional, Tuple
 
 
 class SalvageItemType(Enum):
@@ -440,7 +440,6 @@ class SalvageSession:
     def _apply_danger_multiplier(self, base_yield: int) -> int:
         """Apply system danger-level yield multiplier and perk bonus."""
         from spacegame.config import DANGER_YIELD_MULTIPLIERS
-        import math
 
         # Danger + perk multipliers stack additively
         mult = DANGER_YIELD_MULTIPLIERS.get(self.config.danger_level, 1.0)
@@ -466,9 +465,11 @@ class SalvageSession:
         if self.current_deck >= 4 and random.random() < 0.08:
             drops["signal_fragment"] = 1
         # Schematic data: 12% on deck 3+ with GOOD or EXCELLENT quality
-        if self.current_deck >= 3 and quality_tier in (
-            QualityTier.GOOD, QualityTier.EXCELLENT
-        ) and random.random() < 0.12:
+        if (
+            self.current_deck >= 3
+            and quality_tier in (QualityTier.GOOD, QualityTier.EXCELLENT)
+            and random.random() < 0.12
+        ):
             drops["schematic_data"] = 1
         return drops
 

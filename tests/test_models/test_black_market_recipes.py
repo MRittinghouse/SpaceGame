@@ -10,6 +10,7 @@ class TestBlackMarketRecipeData:
 
     def test_black_market_recipes_exist(self) -> None:
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_all()
         recipe_ids = {r.id for r in dl.recipes}
@@ -20,6 +21,7 @@ class TestBlackMarketRecipeData:
     def test_black_market_recipes_at_crimson_reach(self) -> None:
         """All black market recipes should be available at crimson_reach."""
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_all()
         bm_ids = {"craft_adrenal_compound", "craft_phantom_module", "craft_fortified_stims"}
@@ -32,6 +34,7 @@ class TestBlackMarketRecipeData:
     def test_black_market_recipes_use_illegal_inputs(self) -> None:
         """Each black market recipe should require at least one illegal commodity."""
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_all()
         illegal_commodities = {"combat_stims", "stolen_data", "restricted_tech"}
@@ -45,6 +48,7 @@ class TestBlackMarketRecipeData:
 
     def test_black_market_recipes_tier_2(self) -> None:
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_all()
         bm_ids = {"craft_adrenal_compound", "craft_phantom_module", "craft_fortified_stims"}
@@ -58,6 +62,7 @@ class TestBlackMarketCommodities:
 
     def test_output_commodities_exist(self) -> None:
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_all()
         commodity_ids = {c.id for c in dl.get_all_commodities()}
@@ -68,6 +73,7 @@ class TestBlackMarketCommodities:
     def test_fortified_stims_is_illegal(self) -> None:
         """Fortified stims should be illegal (contraband trade good)."""
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_all()
         for c in dl.get_all_commodities():
@@ -83,12 +89,14 @@ class TestBlackMarketUpgrade:
 
     def test_phantom_module_upgrade_exists(self) -> None:
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_all()
         assert "phantom_module" in dl.upgrades
 
     def test_phantom_module_is_craft_gated(self) -> None:
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_all()
         upgrade = dl.upgrades["phantom_module"]
@@ -101,6 +109,7 @@ class TestBlackMarketEquipment:
 
     def test_adrenal_compound_equipment_exists(self) -> None:
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_all()
         assert "adrenal_compound" in dl.ground_equipment
@@ -111,6 +120,7 @@ class TestBlackMarketSessionFilter:
 
     def test_recipes_not_at_nexus(self) -> None:
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_all()
         # All recipes discovered for this test
@@ -123,6 +133,7 @@ class TestBlackMarketSessionFilter:
 
     def test_recipes_at_crimson_reach(self) -> None:
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_all()
         all_ids = {r.id for r in dl.recipes}

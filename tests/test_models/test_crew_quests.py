@@ -18,9 +18,7 @@ class TestCrewQuestDataLoading:
         """All 12 crew quest missions should load."""
         loader = _load_all()
         crew_missions = [m for m in loader.missions if m.mission_type == "crew"]
-        assert len(crew_missions) == 12, (
-            f"Expected 12 crew quests, got {len(crew_missions)}"
-        )
+        assert len(crew_missions) == 12, f"Expected 12 crew quests, got {len(crew_missions)}"
 
     def test_each_crew_member_has_3_quests(self) -> None:
         """Each of the 4 crew members should have exactly 3 quest stages."""
@@ -30,8 +28,7 @@ class TestCrewQuestDataLoading:
         for prefix in prefixes:
             quests = [m for m in crew_missions if m.id.startswith(prefix)]
             assert len(quests) == 3, (
-                f"Expected 3 quests for {prefix}, got {len(quests)}: "
-                f"{[m.id for m in quests]}"
+                f"Expected 3 quests for {prefix}, got {len(quests)}: {[m.id for m in quests]}"
             )
 
     def test_stage1_quests_require_loyalty_50_flag(self) -> None:
@@ -46,9 +43,7 @@ class TestCrewQuestDataLoading:
         for mission_id in stage1_ids:
             mission = next(m for m in loader.missions if m.id == mission_id)
             loyalty_flags = [f for f in mission.required_flags if "loyalty" in f]
-            assert len(loyalty_flags) >= 1, (
-                f"{mission_id} should require a loyalty flag"
-            )
+            assert len(loyalty_flags) >= 1, f"{mission_id} should require a loyalty flag"
             assert any("_50" in f for f in loyalty_flags), (
                 f"{mission_id} should require loyalty 50 flag"
             )
@@ -83,9 +78,7 @@ class TestCrewQuestDataLoading:
                 f"{mission_id} should require {stage2_flag}"
             )
             loyalty_flags = [f for f in mission.required_flags if loyalty_suffix in f]
-            assert len(loyalty_flags) >= 1, (
-                f"{mission_id} should require loyalty 85 flag"
-            )
+            assert len(loyalty_flags) >= 1, f"{mission_id} should require loyalty 85 flag"
 
     def test_quest_completion_sets_stage_flags(self) -> None:
         """Each quest stage should set a completion flag as reward."""
@@ -107,12 +100,9 @@ class TestCrewQuestDataLoading:
         for mission_id, flag in expected_flags:
             mission = next(m for m in loader.missions if m.id == mission_id)
             flag_rewards = [
-                r for r in mission.rewards
-                if r.reward_type == "set_flag" and r.target_id == flag
+                r for r in mission.rewards if r.reward_type == "set_flag" and r.target_id == flag
             ]
-            assert len(flag_rewards) == 1, (
-                f"{mission_id} should set flag {flag}"
-            )
+            assert len(flag_rewards) == 1, f"{mission_id} should set flag {flag}"
 
 
 class TestCrewQuestDialogueLoading:
@@ -140,9 +130,7 @@ class TestCrewQuestDialogueLoading:
             "tomas_new_ledger_dialogue",
         ]
         for dialogue_id in crew_dialogue_ids:
-            assert dialogue_id in loader.dialogue_trees, (
-                f"Dialogue tree {dialogue_id} not loaded"
-            )
+            assert dialogue_id in loader.dialogue_trees, f"Dialogue tree {dialogue_id} not loaded"
 
     def test_dialogue_trees_have_valid_start_nodes(self) -> None:
         """Each crew quest dialogue tree should have a reachable start node."""
@@ -151,9 +139,7 @@ class TestCrewQuestDialogueLoading:
         for tree_id, tree in loader.dialogue_trees.items():
             if any(tree_id.startswith(p) for p in crew_prefixes):
                 start = tree.get_start_node()
-                assert start is not None, (
-                    f"Dialogue {tree_id} has no valid start node"
-                )
+                assert start is not None, f"Dialogue {tree_id} has no valid start node"
 
     def test_wreck_dialogue_has_moral_choice(self) -> None:
         """Elena's wreck dialogue should have a cargo vs logs choice."""

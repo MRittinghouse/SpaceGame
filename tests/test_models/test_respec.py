@@ -68,7 +68,7 @@ class TestRespecSkills:
     def test_respec_across_multiple_trees(self) -> None:
         prog = PlayerProgression()
         prog.skill_points = 5
-        prog.level_up_skill("negotiator")       # Trading
+        prog.level_up_skill("negotiator")  # Trading
         prog.level_up_skill("weapons_training")  # Combat
         assert prog.skill_points_spent == 2
 

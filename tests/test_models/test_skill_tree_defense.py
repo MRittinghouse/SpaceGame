@@ -13,6 +13,7 @@ def _load_combat_skills() -> list[dict]:
     dl.load_all()
     # Access the raw skill tree data
     import json
+
     with open("data/progression/skill_trees.json") as f:
         data = json.load(f)
     return data["skill_trees"]["combat"]["skills"]
@@ -28,32 +29,52 @@ class TestCombatTreeExpansion:
     def test_hull_branch_skills_exist(self) -> None:
         skills = _load_combat_skills()
         ids = {s["id"] for s in skills}
-        hull_ids = {"armor_expertise", "last_stand_mastery", "combat_field_repairs",
-                    "endurance", "juggernaut_capstone"}
+        hull_ids = {
+            "armor_expertise",
+            "last_stand_mastery",
+            "combat_field_repairs",
+            "endurance",
+            "juggernaut_capstone",
+        }
         missing = hull_ids - ids
         assert not missing, f"Missing hull branch skills: {missing}"
 
     def test_shield_branch_skills_exist(self) -> None:
         skills = _load_combat_skills()
         ids = {s["id"] for s in skills}
-        shield_ids = {"shield_regen_skill", "overcharge", "shield_discipline",
-                      "energy_shields", "sentinel_capstone"}
+        shield_ids = {
+            "shield_regen_skill",
+            "overcharge",
+            "shield_discipline",
+            "energy_shields",
+            "sentinel_capstone",
+        }
         missing = shield_ids - ids
         assert not missing, f"Missing shield branch skills: {missing}"
 
     def test_evasion_branch_skills_exist(self) -> None:
         skills = _load_combat_skills()
         ids = {s["id"] for s in skills}
-        evasion_ids = {"afterburner", "counterstrike_mastery", "light_foot",
-                       "slippery", "ghost_capstone"}
+        evasion_ids = {
+            "afterburner",
+            "counterstrike_mastery",
+            "light_foot",
+            "slippery",
+            "ghost_capstone",
+        }
         missing = evasion_ids - ids
         assert not missing, f"Missing evasion branch skills: {missing}"
 
     def test_elemental_mastery_skills_exist(self) -> None:
         skills = _load_combat_skills()
         ids = {s["id"] for s in skills}
-        elem_ids = {"burn_specialist", "ion_overcharge", "deep_freeze",
-                    "suppression_expert", "elemental_versatility"}
+        elem_ids = {
+            "burn_specialist",
+            "ion_overcharge",
+            "deep_freeze",
+            "suppression_expert",
+            "elemental_versatility",
+        }
         missing = elem_ids - ids
         assert not missing, f"Missing elemental mastery skills: {missing}"
 
@@ -118,13 +139,15 @@ class TestCapstoneSkills:
 
     def test_capstones_are_max_level_1(self) -> None:
         skills = _load_combat_skills()
-        capstone_ids = {"juggernaut_capstone", "sentinel_capstone", "ghost_capstone",
-                        "elemental_versatility"}
+        capstone_ids = {
+            "juggernaut_capstone",
+            "sentinel_capstone",
+            "ghost_capstone",
+            "elemental_versatility",
+        }
         for skill in skills:
             if skill["id"] in capstone_ids:
-                assert skill["max_level"] == 1, (
-                    f"Capstone {skill['id']} should be max_level 1"
-                )
+                assert skill["max_level"] == 1, f"Capstone {skill['id']} should be max_level 1"
 
     def test_no_duplicate_skill_ids(self) -> None:
         skills = _load_combat_skills()

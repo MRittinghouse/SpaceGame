@@ -531,9 +531,7 @@ class TestNewObjectiveTypes:
         """complete_trade passes when trades_completed meets target."""
         m1 = _make_mission(
             "m1",
-            objectives=[
-                _make_objective(ObjectiveType.COMPLETE_TRADE, "", target_quantity=5)
-            ],
+            objectives=[_make_objective(ObjectiveType.COMPLETE_TRADE, "", target_quantity=5)],
         )
         mgr = MissionManager([m1])
         mgr.update_availability()
@@ -547,9 +545,7 @@ class TestNewObjectiveTypes:
         """complete_trade fails when trades_completed is below target."""
         m1 = _make_mission(
             "m1",
-            objectives=[
-                _make_objective(ObjectiveType.COMPLETE_TRADE, "", target_quantity=5)
-            ],
+            objectives=[_make_objective(ObjectiveType.COMPLETE_TRADE, "", target_quantity=5)],
         )
         mgr = MissionManager([m1])
         mgr.update_availability()
@@ -563,9 +559,7 @@ class TestNewObjectiveTypes:
         """win_combat passes when combats_won meets target."""
         m1 = _make_mission(
             "m1",
-            objectives=[
-                _make_objective(ObjectiveType.WIN_COMBAT, "", target_quantity=2)
-            ],
+            objectives=[_make_objective(ObjectiveType.WIN_COMBAT, "", target_quantity=2)],
         )
         mgr = MissionManager([m1])
         mgr.update_availability()
@@ -579,9 +573,7 @@ class TestNewObjectiveTypes:
         """win_combat fails when combats_won is zero."""
         m1 = _make_mission(
             "m1",
-            objectives=[
-                _make_objective(ObjectiveType.WIN_COMBAT, "", target_quantity=1)
-            ],
+            objectives=[_make_objective(ObjectiveType.WIN_COMBAT, "", target_quantity=1)],
         )
         mgr = MissionManager([m1])
         mgr.update_availability()

@@ -22,8 +22,8 @@ dependencies = [
 dev = [
     "pytest>=7.4.0",
     "pytest-cov>=4.1.0",
-    "black>=23.9.1",
-    "pylint>=3.0.0",
+    "pytest-xdist>=3.5.0",
+    "ruff>=0.4.0",
     "mypy>=1.5.1",
     "pyinstaller>=6.0.0",
 ]
@@ -32,12 +32,43 @@ dev = [
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-[tool.black]
+[tool.ruff]
 line-length = 100
-target-version = ['py313']
+target-version = "py313"
 
-[tool.pylint.messages_control]
-max-line-length = 100
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "F",    # pyflakes (unused imports, undefined names, etc.)
+    "W",    # pycodestyle warnings
+    "I",    # isort (import sorting)
+    "B",    # flake8-bugbear (common bug patterns)
+    "C4",   # flake8-comprehensions (idiomatic comprehensions)
+    "PIE",  # flake8-pie (misc. quality: unnecessary pass, etc.)
+    "RUF",  # ruff-specific rules (mutable defaults, implicit optional, etc.)
+]
+ignore = [
+    "E501",    # Line length handled by ruff format
+    "F821",    # False positives on forward-reference type annotations
+    "E741",    # Ambiguous variable names (l, O, I) — common in game math
+    "RUF001",  # Ambiguous unicode in strings — narrative text uses special chars
+    "RUF002",  # Ambiguous unicode in docstrings — narrative text uses em-dashes
+    "RUF003",  # Ambiguous unicode in comments — same
+    "RUF012",  # Mutable class default — @dataclass fields and pygame patterns
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["spacegame"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# Use -n auto for parallel execution (~2x faster); omit for debugging with --pdb
+# addopts = "-n auto"  # Uncomment to default to parallel
 
 [tool.mypy]
 python_version = "3.13"

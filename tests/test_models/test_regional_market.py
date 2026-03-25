@@ -333,8 +333,9 @@ class TestTradeRouteIntegration:
 
     def test_trade_route_profit_differential(self) -> None:
         """Buying specialty exports and selling as specialty imports should be profitable."""
-        food = _make_commodity("food", base_price=50, production_tags=["food"],
-                               consumption_tags=["food"])
+        food = _make_commodity(
+            "food", base_price=50, production_tags=["food"], consumption_tags=["food"]
+        )
 
         verdant = _make_system(
             "verdant",
@@ -407,14 +408,13 @@ class TestTradeRouteIntegration:
 
     def test_same_commodity_different_prices_across_systems(self) -> None:
         """The same commodity should have different prices at different systems."""
-        food = _make_commodity("food", base_price=50, production_tags=["food"],
-                               consumption_tags=["food"])
+        food = _make_commodity(
+            "food", base_price=50, production_tags=["food"], consumption_tags=["food"]
+        )
 
-        producer = _make_system("verdant", production_tags=["food"],
-                                specialty_exports=["food"])
+        producer = _make_system("verdant", production_tags=["food"], specialty_exports=["food"])
         neutral = _make_system("nexus")
-        consumer = _make_system("breakstone", consumption_tags=["food"],
-                                specialty_imports=["food"])
+        consumer = _make_system("breakstone", consumption_tags=["food"], specialty_imports=["food"])
 
         producer_price = Market(producer, [food]).get_price("food")
         neutral_price = Market(neutral, [food]).get_price("food")
@@ -507,6 +507,7 @@ class TestLiveMarketProfiles:
 
     def _load(self):
         from spacegame.data_loader import DataLoader
+
         loader = DataLoader()
         loader.load_all()
         return loader
@@ -514,9 +515,19 @@ class TestLiveMarketProfiles:
     def test_every_system_has_market_profile(self) -> None:
         """All systems should have available_commodities defined."""
         loader = self._load()
-        for system_id in ["nexus_prime", "verdant", "forgeworks", "breakstone",
-                          "axiom_labs", "havens_rest", "crimson_reach", "stellaris_port",
-                          "iron_depths", "nova_research", "the_fulcrum"]:
+        for system_id in [
+            "nexus_prime",
+            "verdant",
+            "forgeworks",
+            "breakstone",
+            "axiom_labs",
+            "havens_rest",
+            "crimson_reach",
+            "stellaris_port",
+            "iron_depths",
+            "nova_research",
+            "the_fulcrum",
+        ]:
             system = loader.get_system(system_id)
             assert system.economy.available_commodities is not None, (
                 f"{system_id} should have available_commodities"
@@ -549,7 +560,7 @@ class TestLiveMarketProfiles:
         loader = self._load()
         commodity_ids = set(loader.commodities.keys())
         for sid, system in loader.systems.items():
-            for cid in (system.economy.available_commodities or []):
+            for cid in system.economy.available_commodities or []:
                 assert cid in commodity_ids, (
                     f"{sid}: available commodity '{cid}' is not a valid commodity"
                 )
@@ -557,10 +568,7 @@ class TestLiveMarketProfiles:
     def test_all_commodities_available_somewhere(self) -> None:
         """Every non-quest commodity should be available in at least one system."""
         loader = self._load()
-        commodity_ids = {
-            cid for cid, c in loader.commodities.items()
-            if c.base_price > 0
-        }
+        commodity_ids = {cid for cid, c in loader.commodities.items() if c.base_price > 0}
         available_anywhere: set[str] = set()
         for system in loader.systems.values():
             available_anywhere.update(system.economy.available_commodities or [])
@@ -572,16 +580,18 @@ class TestLiveMarketProfiles:
         """Food and fuel should be available at most systems (essential goods)."""
         loader = self._load()
         food_count = sum(
-            1 for s in loader.systems.values()
-            if "food" in (s.economy.available_commodities or [])
+            1 for s in loader.systems.values() if "food" in (s.economy.available_commodities or [])
         )
         fuel_count = sum(
-            1 for s in loader.systems.values()
-            if "fuel" in (s.economy.available_commodities or [])
+            1 for s in loader.systems.values() if "fuel" in (s.economy.available_commodities or [])
         )
         total = len(loader.systems)
-        assert food_count >= total * 0.8, f"Food should be at 80%+ of systems, found {food_count}/{total}"
-        assert fuel_count >= total * 0.8, f"Fuel should be at 80%+ of systems, found {fuel_count}/{total}"
+        assert food_count >= total * 0.8, (
+            f"Food should be at 80%+ of systems, found {food_count}/{total}"
+        )
+        assert fuel_count >= total * 0.8, (
+            f"Fuel should be at 80%+ of systems, found {fuel_count}/{total}"
+        )
 
     def test_trade_hubs_have_most_variety(self) -> None:
         """Trade hubs (Nexus Prime, Stellaris Port) should have the most commodities."""

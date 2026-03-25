@@ -33,8 +33,14 @@ class TestPalette:
 
     def test_loads_all_expected_colors(self, pal: dict) -> None:
         expected = [
-            "ui_accent_bright", "guild_gold", "guild_navy", "union_rust",
-            "crimson_red", "collective_teal", "alliance_green", "skin_mid",
+            "ui_accent_bright",
+            "guild_gold",
+            "guild_navy",
+            "union_rust",
+            "crimson_red",
+            "collective_teal",
+            "alliance_green",
+            "skin_mid",
             "outline_dark",
         ]
         for name in expected:
@@ -63,18 +69,14 @@ class TestSpriteGeneration:
     def test_has_opaque_pixels(self, pal: dict, sprite_id: str, gen_func) -> None:
         img = gen_func(pal)
         px = img.load()
-        opaque = sum(
-            1 for y in range(16) for x in range(16) if px[x, y][3] > 0
-        )
+        opaque = sum(1 for y in range(16) for x in range(16) if px[x, y][3] > 0)
         assert opaque > 20, f"{sprite_id} should have substantial opaque area"
 
     @pytest.mark.parametrize("sprite_id,gen_func", list(SPRITES.items()))
     def test_has_transparent_pixels(self, pal: dict, sprite_id: str, gen_func) -> None:
         img = gen_func(pal)
         px = img.load()
-        transparent = sum(
-            1 for y in range(16) for x in range(16) if px[x, y][3] == 0
-        )
+        transparent = sum(1 for y in range(16) for x in range(16) if px[x, y][3] == 0)
         assert transparent > 20, f"{sprite_id} should have transparent background"
 
     @pytest.mark.parametrize("sprite_id,gen_func", list(SPRITES.items()))
@@ -83,7 +85,9 @@ class TestSpriteGeneration:
         img = gen_func(pal)
         px = img.load()
         outline_count = sum(
-            1 for y in range(16) for x in range(16)
+            1
+            for y in range(16)
+            for x in range(16)
             if px[x, y][3] > 0 and px[x, y][:3] == (10, 10, 15)
         )
         assert outline_count > 5, f"{sprite_id} should have outline pixels"
@@ -127,9 +131,7 @@ class TestSpriteDistinctness:
             for j in range(i + 1, len(ids)):
                 a = images[ids[i]]
                 b = images[ids[j]]
-                assert a.tobytes() != b.tobytes(), (
-                    f"{ids[i]} and {ids[j]} should not be identical"
-                )
+                assert a.tobytes() != b.tobytes(), f"{ids[i]} and {ids[j]} should not be identical"
 
     def test_drone_differs_from_humanoids(self, pal: dict) -> None:
         """Drone has fundamentally different shape than humanoids."""
@@ -161,9 +163,14 @@ class TestSpriteRegistry:
 
     def test_all_enemy_templates_covered(self) -> None:
         expected = [
-            "guild_security", "union_worker", "pirate_thug",
-            "collective_drone", "alliance_scrapper", "elite_guard",
-            "station_sentry", "crimson_enforcer",
+            "guild_security",
+            "union_worker",
+            "pirate_thug",
+            "collective_drone",
+            "alliance_scrapper",
+            "elite_guard",
+            "station_sentry",
+            "crimson_enforcer",
         ]
         for template_id in expected:
             assert template_id in SPRITES, f"Missing: {template_id}"

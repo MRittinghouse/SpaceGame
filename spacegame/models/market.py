@@ -7,9 +7,10 @@ Implements dynamic pricing based on supply/demand, system economy, and random va
 import random
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional
+
 from spacegame.models.commodity import Commodity
-from spacegame.models.system import StarSystem
 from spacegame.models.event import MarketEvent
+from spacegame.models.system import StarSystem
 
 
 @dataclass
@@ -19,9 +20,7 @@ class PriceHistory:
     Used to show price trend indicators in the trading view.
     """
 
-    _history: dict[str, dict[str, list[tuple[int, int]]]] = field(
-        default_factory=dict
-    )
+    _history: dict[str, dict[str, list[tuple[int, int]]]] = field(default_factory=dict)
     max_days: int = 7
 
     def record(self, system_id: str, commodity_id: str, day: int, price: int) -> None:
@@ -43,11 +42,9 @@ class PriceHistory:
 
         # Trim to max_days most recent
         if len(entries) > self.max_days:
-            self._history[system_id][commodity_id] = entries[-self.max_days:]
+            self._history[system_id][commodity_id] = entries[-self.max_days :]
 
-    def get_history(
-        self, system_id: str, commodity_id: str
-    ) -> list[tuple[int, int]]:
+    def get_history(self, system_id: str, commodity_id: str) -> list[tuple[int, int]]:
         """Get price history for a system/commodity pair.
 
         Args:
@@ -106,9 +103,7 @@ class PriceHistory:
         for sys_id, commodities in raw.items():
             ph._history[sys_id] = {}
             for com_id, entries in commodities.items():
-                ph._history[sys_id][com_id] = [
-                    (e[0], e[1]) for e in entries
-                ]
+                ph._history[sys_id][com_id] = [(e[0], e[1]) for e in entries]
         return ph
 
 
@@ -419,9 +414,7 @@ class Market:
         """
         current = self._player_supply_demand.get(commodity_id, 0.0)
         new_mod = current + quantity * self._PLAYER_MODIFIER_PER_UNIT
-        self._player_supply_demand[commodity_id] = min(
-            new_mod, self._PLAYER_MODIFIER_CAP
-        )
+        self._player_supply_demand[commodity_id] = min(new_mod, self._PLAYER_MODIFIER_CAP)
 
     def record_sell(self, commodity_id: str, quantity: int) -> None:
         """Record player selling, increasing supply pressure.
@@ -432,13 +425,9 @@ class Market:
         """
         current = self._player_supply_demand.get(commodity_id, 0.0)
         new_mod = current - quantity * self._PLAYER_MODIFIER_PER_UNIT
-        self._player_supply_demand[commodity_id] = max(
-            new_mod, -self._PLAYER_MODIFIER_CAP
-        )
+        self._player_supply_demand[commodity_id] = max(new_mod, -self._PLAYER_MODIFIER_CAP)
 
-    def initialize_stock(
-        self, system: StarSystem, commodities: List[Commodity]
-    ) -> None:
+    def initialize_stock(self, system: StarSystem, commodities: List[Commodity]) -> None:
         """Initialize stock levels based on system production/consumption.
 
         Args:

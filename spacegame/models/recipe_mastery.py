@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any, Optional
 
 MASTERY_THRESHOLDS: list[int] = [3, 8, 15]  # crafts needed for levels 1, 2, 3

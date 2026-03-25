@@ -10,9 +10,10 @@ manager layer, ensuring it is never buried beneath other views.
 from typing import Optional
 
 import pygame
-from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, scale_x, scale_y
-from spacegame.engine.fonts import FontCache, FONT_BODY, FONT_LG, FONT_SM, FONT_TITLE
-from spacegame.tutorial_manager import TutorialManager, TUTORIAL_STEPS, MINIGAME_HINTS
+
+from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH, Colors, scale_x, scale_y
+from spacegame.engine.fonts import FONT_BODY, FONT_LG, FONT_SM, FONT_TITLE, get_font
+from spacegame.tutorial_manager import TUTORIAL_STEPS, TutorialManager
 from spacegame.utils.logger import logger
 
 
@@ -65,10 +66,10 @@ class TutorialOverlay:
         self._hint_id: Optional[str] = None
 
         # Fonts
-        self.title_font = FontCache.get(FONT_TITLE)
-        self.body_font = FontCache.get(FONT_BODY)
-        self.step_font = FontCache.get(FONT_SM)
-        self.btn_font = FontCache.get(FONT_LG)
+        self.title_font = get_font("header", FONT_TITLE)
+        self.body_font = get_font("dialogue", FONT_BODY)
+        self.step_font = get_font("label", FONT_SM)
+        self.btn_font = get_font("dialogue", FONT_LG)
 
         # Panel geometry — tutorial step panel (computed once)
         self.panel_x = (WINDOW_WIDTH - self.PANEL_WIDTH) // 2
@@ -80,7 +81,9 @@ class TutorialOverlay:
         # Buttons for tutorial step mode
         btn_y = self.panel_y + self.PANEL_HEIGHT - scale_y(60)
         self.next_button = _Button(
-            pygame.Rect(self.panel_x + self.PANEL_WIDTH - scale_x(170), btn_y, scale_x(150), scale_y(40)),
+            pygame.Rect(
+                self.panel_x + self.PANEL_WIDTH - scale_x(170), btn_y, scale_x(150), scale_y(40)
+            ),
             "NEXT",
             self.btn_font,
         )
@@ -93,7 +96,10 @@ class TutorialOverlay:
         hint_btn_y = self._hint_panel_y + self.HINT_PANEL_HEIGHT - scale_y(60)
         self.got_it_button = _Button(
             pygame.Rect(
-                self.panel_x + (self.PANEL_WIDTH - scale_x(150)) // 2, hint_btn_y, scale_x(150), scale_y(40)
+                self.panel_x + (self.PANEL_WIDTH - scale_x(150)) // 2,
+                hint_btn_y,
+                scale_x(150),
+                scale_y(40),
             ),
             "GOT IT",
             self.btn_font,
@@ -171,8 +177,10 @@ class TutorialOverlay:
             # Also dismiss on any click inside the panel area
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 panel_rect = pygame.Rect(
-                    self.panel_x, self._hint_panel_y,
-                    self.PANEL_WIDTH, self.HINT_PANEL_HEIGHT,
+                    self.panel_x,
+                    self._hint_panel_y,
+                    self.PANEL_WIDTH,
+                    self.HINT_PANEL_HEIGHT,
                 )
                 if panel_rect.collidepoint(event.pos):
                     self._dismiss_hint()

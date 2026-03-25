@@ -37,9 +37,7 @@ class TestShapeCatalogIntegrity:
             assert len(mask) > 0, f"Shape {s['id']} has no pixel mask"
             # All rows should be the same length
             widths = [len(row) for row in mask]
-            assert len(set(widths)) == 1, (
-                f"Shape {s['id']} has inconsistent row widths: {widths}"
-            )
+            assert len(set(widths)) == 1, f"Shape {s['id']} has inconsistent row widths: {widths}"
 
     def test_all_have_filled_pixels(self) -> None:
         shapes = _load_shapes()
@@ -57,9 +55,18 @@ class TestShapeCatalogIntegrity:
 
     def test_all_have_valid_unlock_method(self) -> None:
         valid = {
-            "free", "purchase", "salvage", "quest", "faction", "mining",
-            "refining", "boss_drop", "crew_quest", "trading",
-            "ground_exploration", "achievement",
+            "free",
+            "purchase",
+            "salvage",
+            "quest",
+            "faction",
+            "mining",
+            "refining",
+            "boss_drop",
+            "crew_quest",
+            "trading",
+            "ground_exploration",
+            "achievement",
         }
         shapes = _load_shapes()
         for s in shapes:
@@ -71,9 +78,7 @@ class TestShapeCatalogIntegrity:
         basic = [s for s in shapes if s.get("category") == "basic"]
         assert len(basic) == 9, f"Expected 9 basic shapes, got {len(basic)}"
         for s in basic:
-            assert s.get("unlock_method", "free") == "free", (
-                f"Basic shape {s['id']} should be free"
-            )
+            assert s.get("unlock_method", "free") == "free", f"Basic shape {s['id']} should be free"
 
     def test_intermediate_shapes_have_cost(self) -> None:
         shapes = _load_shapes()
@@ -86,15 +91,25 @@ class TestShapeCatalogIntegrity:
     def test_discovery_shapes_have_flavor(self) -> None:
         """Non-purchase shapes should have discovery_flavor text."""
         shapes = _load_shapes()
-        discovery_methods = {"salvage", "quest", "mining", "boss_drop", "crew_quest", "ground_exploration"}
+        discovery_methods = {
+            "salvage",
+            "quest",
+            "mining",
+            "boss_drop",
+            "crew_quest",
+            "ground_exploration",
+        }
         for s in shapes:
             if s.get("unlock_method") in discovery_methods:
                 flavor = s.get("discovery_flavor", "")
-                assert flavor, f"Shape {s['id']} (unlock: {s['unlock_method']}) needs discovery_flavor"
+                assert flavor, (
+                    f"Shape {s['id']} (unlock: {s['unlock_method']}) needs discovery_flavor"
+                )
 
     def test_shapes_load_via_data_loader(self) -> None:
         from spacegame.data_loader import get_data_loader
         from spacegame.models.ship_build import HullShape
+
         dl = get_data_loader()
         dl.load_hull_shapes()
         assert len(dl.hull_shapes) >= 40
@@ -149,6 +164,7 @@ class TestMaterialCatalogIntegrity:
     def test_materials_load_via_data_loader(self) -> None:
         from spacegame.data_loader import get_data_loader
         from spacegame.models.ship_build import HullMaterial
+
         dl = get_data_loader()
         dl.load_hull_materials()
         assert len(dl.hull_materials) == 16
@@ -161,10 +177,15 @@ class TestMaterialCatalogIntegrity:
         materials = _load_materials()
         ids = {m["id"] for m in materials}
         required = {
-            "heavy_armor", "reinforced_plate",  # Juggernaut
-            "shield_crystal", "barrier_lattice",  # Sentinel
-            "stealth_composite", "phase_alloy",  # Ghost
-            "light_alloy", "standard_plate", "salvage_scrap",  # Starter
+            "heavy_armor",
+            "reinforced_plate",  # Juggernaut
+            "shield_crystal",
+            "barrier_lattice",  # Sentinel
+            "stealth_composite",
+            "phase_alloy",  # Ghost
+            "light_alloy",
+            "standard_plate",
+            "salvage_scrap",  # Starter
         }
         missing = required - ids
         assert not missing, f"Missing required materials: {missing}"

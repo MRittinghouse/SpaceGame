@@ -131,9 +131,7 @@ class TestGroundCrewBonusesConstruction:
         assert bonuses.reveal_patrol_routes
 
     def test_two_crew_stacking(self) -> None:
-        bonuses = GroundCrewBonuses.compute(
-            crew_ids=["elena_reeves", "marcus_jin"]
-        )
+        bonuses = GroundCrewBonuses.compute(crew_ids=["elena_reeves", "marcus_jin"])
         assert bonuses.vision_radius_bonus == 1  # Elena only
         assert bonuses.silent_doors  # Marcus
         assert bonuses.retreat_bonus == 2  # Elena
@@ -214,9 +212,7 @@ class TestNoiseReduction:
 
     def test_stacked_noise_reduction(self) -> None:
         attrs = _make_attrs(ing=4)
-        bonuses = GroundCrewBonuses.compute(
-            crew_ids=["tomas_drifter"], attributes=attrs
-        )
+        bonuses = GroundCrewBonuses.compute(crew_ids=["tomas_drifter"], attributes=attrs)
         mission, _ = _make_mission(bonuses=bonuses)
         mission.ground_map.tiles[5][6] = GroundTile(tile_type=TileType.NOISY_FLOOR)
         noise = mission.check_tile_noise(6, 5)
@@ -226,9 +222,7 @@ class TestNoiseReduction:
     def test_noise_reduction_minimum_zero(self) -> None:
         """Noise radius can't go below 0."""
         attrs = _make_attrs(ing=4)
-        bonuses = GroundCrewBonuses.compute(
-            crew_ids=["tomas_drifter"], attributes=attrs
-        )
+        bonuses = GroundCrewBonuses.compute(crew_ids=["tomas_drifter"], attributes=attrs)
         # noise_reduction = 2, but a radius-1 noise should become 0
         bonuses_heavy = GroundCrewBonuses(noise_reduction=5)
         mission, _ = _make_mission(bonuses=bonuses_heavy)
@@ -273,9 +267,7 @@ class TestCombatCrewBonuses:
         attrs = _make_attrs(acu=4, res=4, syn=2)
         prog = PlayerProgression()
         prog.skills["scrapper"].current_level = 1
-        bonuses = GroundCrewBonuses.compute(
-            crew_ids=["dr_priya_osei"], attributes=attrs
-        )
+        bonuses = GroundCrewBonuses.compute(crew_ids=["dr_priya_osei"], attributes=attrs)
         stats = build_player_ground_combat_stats(
             attributes=attrs, progression=prog, crew_bonuses=bonuses
         )
@@ -294,11 +286,16 @@ class TestCombatCrewBonuses:
         """Combat state tracks analyze weakness usage."""
         player = GroundCombatantStats(hp=8, max_hp=8)
         enemy = GroundCombatantStats(
-            hp=10, max_hp=10, attack_mod=0, defense_mod=0,
-            talk_difficulty=6, name="Guard",
+            hp=10,
+            max_hp=10,
+            attack_mod=0,
+            defense_mod=0,
+            talk_difficulty=6,
+            name="Guard",
         )
         state = GroundCombatState(
-            player=player, enemies=[enemy],
+            player=player,
+            enemies=[enemy],
             has_analyze_weakness=True,
         )
         assert state.can_analyze_weakness

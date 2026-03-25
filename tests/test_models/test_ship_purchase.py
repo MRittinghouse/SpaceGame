@@ -63,7 +63,9 @@ class TestShipPurchase:
     def test_swap_ship_basic(self) -> None:
         """Player can swap to a new ship type."""
         old_type = _make_ship_type("shuttle", price=5000, resale=3500, cargo=50)
-        new_type = _make_ship_type("freighter", name="Freighter", price=25000, resale=17500, cargo=150)
+        new_type = _make_ship_type(
+            "freighter", name="Freighter", price=25000, resale=17500, cargo=150
+        )
 
         player = _make_player(credits=30000, ship_type=old_type)
         success, msg = player.swap_ship(new_type)

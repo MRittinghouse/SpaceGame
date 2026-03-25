@@ -6,27 +6,35 @@ Loads JSON data files and converts them to game model instances.
 
 import json
 from pathlib import Path
-from typing import List, Dict, Optional
-from spacegame.models.system import StarSystem, Station, Economy, Coordinates
-from spacegame.models.location import Location
-from spacegame.models.investment import InvestmentTemplate, InvestmentTier
-from spacegame.models.commodity import Commodity, CommodityCategory, Legality
-from spacegame.models.ship import ShipType
-from spacegame.models.ambient_dialogue import AmbientLine
-from spacegame.models.mining import MiningConfig
-from spacegame.models.salvage import SalvageConfig
-from spacegame.models.refining import Recipe
-from spacegame.models.journal import JournalEntry
-from spacegame.models.upgrades import ShipUpgrade
+from typing import Dict, List, Optional
+
 from spacegame.models.achievement import Achievement
-from spacegame.models.faction import Faction
+from spacegame.models.ambient_dialogue import AmbientLine
+from spacegame.models.combat import (
+    BossPhase,
+    CombatMove,
+    EnemyBehavior,
+    EnemyShipTemplate,
+)
+from spacegame.models.commodity import Commodity, CommodityCategory, Legality
+from spacegame.models.crew import CrewAbility, CrewTemplate
 from spacegame.models.dialogue import (
     NPC,
-    DialogueTree,
     DialogueNode,
     DialogueResponse,
+    DialogueTree,
     SkillCheck,
 )
+from spacegame.models.encounter import (
+    EncounterChoice,
+    EncounterDefinition,
+    EncounterOutcome,
+)
+from spacegame.models.faction import Faction
+from spacegame.models.investment import InvestmentTemplate, InvestmentTier
+from spacegame.models.journal import JournalEntry
+from spacegame.models.location import Location
+from spacegame.models.mining import MiningConfig
 from spacegame.models.mission import (
     AcceptCargo,
     ForcedEncounter,
@@ -35,21 +43,13 @@ from spacegame.models.mission import (
     MissionReward,
     ObjectiveType,
 )
-from spacegame.models.crew import CrewTemplate, CrewAbility
-from spacegame.models.combat import (
-    BossPhase,
-    CombatEffect,
-    CombatMove,
-    EnemyBehavior,
-    EnemyShipTemplate,
-)
 from spacegame.models.momentum import ShipUltimate
-from spacegame.models.ship_build import HullShape, HullMaterial
-from spacegame.models.encounter import (
-    EncounterChoice,
-    EncounterDefinition,
-    EncounterOutcome,
-)
+from spacegame.models.refining import Recipe
+from spacegame.models.salvage import SalvageConfig
+from spacegame.models.ship import ShipType
+from spacegame.models.ship_build import HullMaterial, HullShape
+from spacegame.models.system import Coordinates, Economy, StarSystem, Station
+from spacegame.models.upgrades import ShipUpgrade
 from spacegame.utils.logger import logger
 
 
@@ -60,7 +60,7 @@ class DataLoader:
     Provides centralized access to all game content.
     """
 
-    def __init__(self, data_dir: Path = None):
+    def __init__(self, data_dir: Optional[Path] = None):
         """
         Initialize data loader.
 
@@ -110,6 +110,7 @@ class DataLoader:
         self.ship_ultimates: Dict[str, "ShipUltimate"] = {}  # category → ultimate
         self.hull_shapes: Dict[str, "HullShape"] = {}
         self.hull_materials: Dict[str, "HullMaterial"] = {}
+        self.ship_modules: Dict[str, "ShipModule"] = {}
         self.drydock_catalogs: Dict[str, dict] = {}
 
     def _safe_load(self, loader_name: str, loader_fn) -> None:
@@ -158,6 +159,8 @@ class DataLoader:
         self._safe_load("ship_ultimates", self.load_ship_ultimates)
         self._safe_load("hull_shapes", self.load_hull_shapes)
         self._safe_load("hull_materials", self.load_hull_materials)
+        self._safe_load("ship_modules", self.load_ship_modules)
+        self._safe_load("module_materials", self.load_module_materials)
         self._safe_load("drydock_catalogs", self.load_drydock_catalogs)
         self._safe_load("journal_entries", self.load_journal_entries)
         self._safe_load("encounter_definitions", self.load_encounter_definitions)
@@ -621,12 +624,9 @@ class DataLoader:
             data = json.load(f)
 
         self.faction_relationships = [
-            FactionRelationship.from_dict(rel_data)
-            for rel_data in data.get("relationships", [])
+            FactionRelationship.from_dict(rel_data) for rel_data in data.get("relationships", [])
         ]
-        logger.info(
-            f"Loaded {len(self.faction_relationships)} faction relationships"
-        )
+        logger.info(f"Loaded {len(self.faction_relationships)} faction relationships")
         return self.faction_relationships
 
     def load_faction_perks(self) -> Dict[str, Dict[str, list]]:
@@ -749,9 +749,7 @@ class DataLoader:
             self.travel_log_templates = json.load(f)
 
         first_visit_count = len(self.travel_log_templates.get("first_visit", {}))
-        logger.info(
-            f"Loaded travel log templates ({first_visit_count} first-visit entries)"
-        )
+        logger.info(f"Loaded travel log templates ({first_visit_count} first-visit entries)")
         return self.travel_log_templates
 
     def get_mining_config(self, system_id: str) -> Optional[MiningConfig]:
@@ -1158,6 +1156,43 @@ class DataLoader:
         logger.info(f"Loaded {len(self.hull_materials)} hull materials")
         return self.hull_materials
 
+    def load_ship_modules(self) -> Dict[str, "ShipModule"]:
+        """Load ship module blueprints from JSON."""
+        from spacegame.models.ship_module import ShipModule
+
+        file_path = self.data_dir / "ships" / "modules.json"
+        if not file_path.exists():
+            logger.warning(f"Modules file not found: {file_path}")
+            return self.ship_modules
+        with open(file_path, "r") as f:
+            data = json.load(f)
+
+        self.ship_modules.clear()
+        for mod_data in data.get("modules", []):
+            module = ShipModule.from_dict(mod_data)
+            self.ship_modules[module.id] = module
+
+        logger.info(f"Loaded {len(self.ship_modules)} ship modules")
+        return self.ship_modules
+
+    def load_module_materials(self) -> Dict[str, HullMaterial]:
+        """Load module-specific visual materials and merge into hull_materials."""
+        file_path = self.data_dir / "ships" / "module_materials.json"
+        if not file_path.exists():
+            logger.warning(f"Module materials file not found: {file_path}")
+            return self.hull_materials
+        with open(file_path, "r") as f:
+            data = json.load(f)
+
+        count = 0
+        for mat_data in data.get("module_materials", []):
+            material = HullMaterial.from_dict(mat_data)
+            self.hull_materials[material.id] = material
+            count += 1
+
+        logger.info(f"Loaded {count} module materials (merged into hull_materials)")
+        return self.hull_materials
+
     def load_drydock_catalogs(self) -> Dict[str, dict]:
         """Load per-system drydock content catalogs from JSON."""
         file_path = self.data_dir / "ships" / "drydock_catalogs.json"
@@ -1172,9 +1207,7 @@ class DataLoader:
 
     def _parse_enemy_template(self, data: dict) -> EnemyShipTemplate:
         """Parse an enemy ship template from raw JSON data."""
-        moves = [
-            self._parse_combat_move(m) for m in data.get("moves", [])
-        ]
+        moves = [self._parse_combat_move(m) for m in data.get("moves", [])]
         return EnemyShipTemplate(
             id=data["id"],
             name=data["name"],

@@ -74,8 +74,13 @@ class TestFactionPerkDataLoading:
 
     def test_perk_types_are_valid(self) -> None:
         valid_types = {
-            "buy_price_bonus", "sell_price_bonus", "mining_yield_bonus",
-            "salvage_yield_bonus", "free_repairs", "free_fuel", "safe_passage",
+            "buy_price_bonus",
+            "sell_price_bonus",
+            "mining_yield_bonus",
+            "salvage_yield_bonus",
+            "free_repairs",
+            "free_fuel",
+            "safe_passage",
             "wholesale_ore_bonus",
         }
         from spacegame.data_loader import DataLoader
@@ -107,9 +112,7 @@ class TestFactionPerkDataLoading:
         loader = DataLoader()
         loader.load_all()
         count = sum(
-            len(perks)
-            for tiers in loader.faction_perks.values()
-            for perks in tiers.values()
+            len(perks) for tiers in loader.faction_perks.values() for perks in tiers.values()
         )
         assert count == 13  # 3 per faction × 4 factions + 1 wholesale perk
 
@@ -219,12 +222,18 @@ class TestPoliticsManagerPerks:
 
         factions = {
             "commerce_guild": Faction(
-                id="commerce_guild", name="Commerce Guild",
-                description="", color=(200, 180, 50), rivalry="miners_union",
+                id="commerce_guild",
+                name="Commerce Guild",
+                description="",
+                color=(200, 180, 50),
+                rivalry="miners_union",
             ),
             "miners_union": Faction(
-                id="miners_union", name="Miners' Union",
-                description="", color=(180, 120, 60), rivalry="commerce_guild",
+                id="miners_union",
+                name="Miners' Union",
+                description="",
+                color=(180, 120, 60),
+                rivalry="commerce_guild",
             ),
         }
         mgr = PoliticsManager(relationships=[], factions=factions)
@@ -236,15 +245,26 @@ class TestPoliticsManagerPerks:
         from spacegame.models.ship import Ship, ShipType
 
         ship_type = ShipType(
-            id="shuttle", name="Shuttle", ship_class="light",
-            description="", cargo_capacity=50, fuel_capacity=100,
-            fuel_efficiency=1.0, speed_multiplier=1.0, purchase_price=0,
-            resale_value=0, crew_slots=1, special_abilities=[], availability="all",
+            id="shuttle",
+            name="Shuttle",
+            ship_class="light",
+            description="",
+            cargo_capacity=50,
+            fuel_capacity=100,
+            fuel_efficiency=1.0,
+            speed_multiplier=1.0,
+            purchase_price=0,
+            resale_value=0,
+            crew_slots=1,
+            special_abilities=[],
+            availability="all",
         )
         ship = Ship(ship_type=ship_type, current_fuel=100)
         player = Player(
-            name="Test", credits=5000,
-            current_system_id="nexus_prime", ship=ship,
+            name="Test",
+            credits=5000,
+            current_system_id="nexus_prime",
+            ship=ship,
         )
         # Wire faction system mapping
         if faction_systems:

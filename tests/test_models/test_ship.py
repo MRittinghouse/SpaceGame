@@ -52,10 +52,19 @@ class TestShipType:
 
     def test_combat_stats_default_zero(self) -> None:
         st = ShipType(
-            id="basic", name="Basic", ship_class="starter",
-            description="", cargo_capacity=50, fuel_capacity=30,
-            fuel_efficiency=3, speed_multiplier=1.0, purchase_price=1000,
-            resale_value=500, crew_slots=1, special_abilities=[], availability="common",
+            id="basic",
+            name="Basic",
+            ship_class="starter",
+            description="",
+            cargo_capacity=50,
+            fuel_capacity=30,
+            fuel_efficiency=3,
+            speed_multiplier=1.0,
+            purchase_price=1000,
+            resale_value=500,
+            crew_slots=1,
+            special_abilities=[],
+            availability="common",
         )
         assert st.combat_hull == 0
         assert st.combat_shields == 0

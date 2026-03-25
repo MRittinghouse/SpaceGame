@@ -41,14 +41,16 @@ class TestSalvageResultIngredients:
 
     def test_default_no_ingredients(self) -> None:
         result = SalvageResult(
-            commodity_id="scrap_metal", quantity=3,
+            commodity_id="scrap_metal",
+            quantity=3,
             item_type=SalvageItemType.SCRAP_METAL,
         )
         assert result.ingredient_drops == {}
 
     def test_with_ingredients(self) -> None:
         result = SalvageResult(
-            commodity_id="scrap_metal", quantity=3,
+            commodity_id="scrap_metal",
+            quantity=3,
             item_type=SalvageItemType.SCRAP_METAL,
             ingredient_drops={"charged_filament": 1},
         )

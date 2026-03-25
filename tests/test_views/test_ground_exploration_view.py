@@ -3,9 +3,7 @@
 import pytest
 
 pygame = pytest.importorskip("pygame", reason="pygame required for view tests")
-pygame_gui = pytest.importorskip(
-    "pygame_gui", reason="pygame_gui required for view tests"
-)
+pygame_gui = pytest.importorskip("pygame_gui", reason="pygame_gui required for view tests")
 
 from spacegame.config import (  # noqa: E402
     WINDOW_WIDTH,
@@ -341,9 +339,7 @@ class TestFactionTilePalette:
         ground_map = GroundMap.create_test_map(10, 10)
         player_state = GroundPlayerState(x=5, y=5)
         config = _make_mission_config("commerce_guild")
-        view = GroundExplorationView(
-            ui_manager, ground_map, player_state, mission_config=config
-        )
+        view = GroundExplorationView(ui_manager, ground_map, player_state, mission_config=config)
         view.on_enter()
         # Tile sprites should have been loaded (may be None if asset missing,
         # but the key point is the view initialized without error)
@@ -365,9 +361,7 @@ class TestFactionTilePalette:
         ground_map = GroundMap.create_test_map(10, 10)
         player_state = GroundPlayerState(x=5, y=5)
         config = _make_mission_config("miners_union")
-        view = GroundExplorationView(
-            ui_manager, ground_map, player_state, mission_config=config
-        )
+        view = GroundExplorationView(ui_manager, ground_map, player_state, mission_config=config)
         view.on_enter()
         screen = pygame.display.get_surface()
         view.render(screen)

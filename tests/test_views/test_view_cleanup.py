@@ -46,6 +46,7 @@ class TestMainMenuViewCleanup:
 
         mgr = _make_ui_manager()
         from spacegame.save_manager import SaveManager
+
         view = MainMenuView(mgr, SaveManager())
         before = _count_alive_elements(mgr)
         view.on_enter()
@@ -78,6 +79,7 @@ class TestSettingsViewCleanup:
         mgr = _make_ui_manager()
         from pathlib import Path
         import tempfile
+
         view = SettingsView(mgr, Path(tempfile.gettempdir()))
         before = _count_alive_elements(mgr)
         view.on_enter()

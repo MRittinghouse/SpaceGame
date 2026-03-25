@@ -8,10 +8,9 @@ with a faction while in that faction's controlled systems.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Union
+from typing import Union
 
 from spacegame.models.faction import ReputationTier
-
 
 # Tiers that qualify for friendly-level perks
 _FRIENDLY_TIERS = {ReputationTier.FRIENDLY, ReputationTier.ALLIED}
@@ -89,7 +88,4 @@ def has_perk(active_perks: list[FactionPerk], perk_type: str) -> bool:
     Returns:
         True if at least one perk of this type is active and truthy.
     """
-    return any(
-        perk.perk_type == perk_type and perk.value
-        for perk in active_perks
-    )
+    return any(perk.perk_type == perk_type and perk.value for perk in active_perks)

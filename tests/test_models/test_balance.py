@@ -37,19 +37,13 @@ class TestConfigConstants:
         )
 
     def test_xp_per_mining(self) -> None:
-        assert config.XP_PER_MINING == 1, (
-            f"Mining XP should be 1, got {config.XP_PER_MINING}"
-        )
+        assert config.XP_PER_MINING == 1, f"Mining XP should be 1, got {config.XP_PER_MINING}"
 
     def test_xp_per_salvage(self) -> None:
-        assert config.XP_PER_SALVAGE == 1, (
-            f"Salvage XP should be 1, got {config.XP_PER_SALVAGE}"
-        )
+        assert config.XP_PER_SALVAGE == 1, f"Salvage XP should be 1, got {config.XP_PER_SALVAGE}"
 
     def test_xp_per_refine(self) -> None:
-        assert config.XP_PER_REFINE == 3, (
-            f"Refine XP should be 3, got {config.XP_PER_REFINE}"
-        )
+        assert config.XP_PER_REFINE == 3, f"Refine XP should be 3, got {config.XP_PER_REFINE}"
 
     def test_xp_per_trade(self) -> None:
         assert config.XP_PER_TRADE == 5, "Trade XP should be 5"
@@ -165,9 +159,7 @@ class TestCrewLoyalty:
         success, _ = roster.recruit("test_crew", crew_slots=4)
         assert success
         state = roster.get_member_state("test_crew")
-        assert state["loyalty"] == 30, (
-            f"Initial loyalty should be 30, got {state['loyalty']}"
-        )
+        assert state["loyalty"] == 30, f"Initial loyalty should be 30, got {state['loyalty']}"
 
 
 class TestMiningYields:
@@ -266,9 +258,7 @@ class TestCommodityPrices:
         loader = _make_loader()
         loader.load_commodities()
         alloy = loader.commodities["alloy_composite"]
-        assert alloy.base_price == 280, (
-            f"alloy_composite should be 280, got {alloy.base_price}"
-        )
+        assert alloy.base_price == 280, f"alloy_composite should be 280, got {alloy.base_price}"
 
     def test_purified_crystal_price(self) -> None:
         loader = _make_loader()
@@ -302,9 +292,7 @@ class TestMissionRewards:
         loader = _make_loader()
         loader.load_missions()
         mission = self._find_mission(loader, "iron_delivery")
-        credit_reward = next(
-            (r for r in mission.rewards if r.reward_type == "credits"), None
-        )
+        credit_reward = next((r for r in mission.rewards if r.reward_type == "credits"), None)
         assert credit_reward is not None
         assert credit_reward.amount == 600, (
             f"iron_delivery should reward 600 CR, got {credit_reward.amount}"
@@ -314,9 +302,7 @@ class TestMissionRewards:
         loader = _make_loader()
         loader.load_missions()
         mission = self._find_mission(loader, "footing_the_bill")
-        credit_reward = next(
-            (r for r in mission.rewards if r.reward_type == "credits"), None
-        )
+        credit_reward = next((r for r in mission.rewards if r.reward_type == "credits"), None)
         assert credit_reward is not None, "footing_the_bill should have a credit reward"
         assert credit_reward.amount == 150
 
@@ -324,9 +310,7 @@ class TestMissionRewards:
         loader = _make_loader()
         loader.load_missions()
         mission = self._find_mission(loader, "the_scholars_errand")
-        credit_reward = next(
-            (r for r in mission.rewards if r.reward_type == "credits"), None
-        )
+        credit_reward = next((r for r in mission.rewards if r.reward_type == "credits"), None)
         assert credit_reward is not None
         assert credit_reward.amount == 350, (
             f"scholars_errand should reward 350 CR, got {credit_reward.amount}"
@@ -463,9 +447,7 @@ class TestBalanceIntegration:
         crystal_income = 3 * loader.commodities["crystal_ore"].base_price
         mining_income = raw_income + iron_income + crystal_income
         # Should be at least 300 CR per session to feel worthwhile
-        assert mining_income >= 300, (
-            f"Mining session should yield 300+ CR, got {mining_income}"
-        )
+        assert mining_income >= 300, f"Mining session should yield 300+ CR, got {mining_income}"
 
     def test_salvage_income_viable(self) -> None:
         """Salvage session should yield at least 200 CR."""
@@ -495,14 +477,10 @@ class TestBalanceIntegration:
 
         xp_needed = SOCIAL_XP_THRESHOLDS[2]  # Level 3 threshold
         checks_needed = xp_needed / XP_ON_SUCCESS
-        assert checks_needed >= 10, (
-            f"Level 3 should need 10+ successes, got {checks_needed}"
-        )
+        assert checks_needed >= 10, f"Level 3 should need 10+ successes, got {checks_needed}"
 
     def test_starting_credits_cover_first_permit_and_cargo(self) -> None:
         """3000 CR should cover M01 permit (250) + a full cargo run."""
         permit_cost = 250
         remaining = config.STARTING_CREDITS - permit_cost
-        assert remaining >= 2000, (
-            f"After permit, should have 2000+ CR for cargo, got {remaining}"
-        )
+        assert remaining >= 2000, f"After permit, should have 2000+ CR for cargo, got {remaining}"

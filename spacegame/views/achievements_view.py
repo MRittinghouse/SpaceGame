@@ -4,33 +4,34 @@ Achievements display view.
 Shows all achievements with locked/unlocked state and progress bars.
 """
 
-import pygame
-import pygame_gui
 from typing import Optional
 
-from spacegame.views.base_view import BaseView
-from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState, scale_x, scale_y
-from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
-from spacegame.models.player import Player
+import pygame
+import pygame_gui
+
 from spacegame.achievement_manager import AchievementManager
-from spacegame.utils.logger import logger
+from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH, Colors, GameState, scale_x, scale_y
 from spacegame.engine.backgrounds import AnimatedBackground
 from spacegame.engine.draw_utils import draw_bar
-from spacegame.engine.fonts import FONT_MD, FONT_SECTION, FONT_SM, FONT_SUBTITLE, FontCache
+from spacegame.engine.fonts import FONT_MD, FONT_SECTION, FONT_SM, FONT_SUBTITLE, get_font
+from spacegame.models.player import Player
+from spacegame.utils.logger import logger
+from spacegame.views.base_view import BaseView
+from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
 
 # Category badge colors and symbols
 _BADGE_COLORS: dict[str, tuple[int, int, int]] = {
-    "trading": (220, 180, 40),    # Gold
-    "mining": (180, 100, 30),     # Rust
-    "salvage": (100, 160, 200),   # Steel blue
+    "trading": (220, 180, 40),  # Gold
+    "mining": (180, 100, 30),  # Rust
+    "salvage": (100, 160, 200),  # Steel blue
     "exploration": (80, 180, 120),  # Green
-    "ground": (200, 80, 80),      # Red
-    "wealth": (255, 215, 0),      # Bright gold
+    "ground": (200, 80, 80),  # Red
+    "wealth": (255, 215, 0),  # Bright gold
     "smuggling": (140, 50, 160),  # Purple
     "progression": (100, 180, 255),  # Blue
-    "economy": (200, 160, 50),    # Amber
-    "general": (160, 170, 190),   # Silver
-    "combat": (200, 50, 50),      # Dark red
+    "economy": (200, 160, 50),  # Amber
+    "general": (160, 170, 190),  # Silver
+    "combat": (200, 50, 50),  # Dark red
     "side_quest": (180, 140, 220),  # Lavender
 }
 
@@ -103,11 +104,11 @@ class AchievementsView(BaseView):
         self._active_filter: str = "all"  # Category filter ("all" = show all)
 
         # Fonts
-        self.title_font = FontCache.get(FONT_SECTION)
-        self.name_font = FontCache.get(FONT_SUBTITLE)
-        self.desc_font = FontCache.get(FONT_MD)
-        self.progress_font = FontCache.get(FONT_SM)
-        self.tab_font = FontCache.get(FONT_SM)
+        self.title_font = get_font("header", FONT_SECTION)
+        self.name_font = get_font("dialogue", FONT_SUBTITLE)
+        self.desc_font = get_font("dialogue", FONT_MD)
+        self.progress_font = get_font("stats", FONT_SM)
+        self.tab_font = get_font("label", FONT_SM)
 
         # Tab hitboxes (computed during render)
         self._tab_rects: list[tuple[str, pygame.Rect]] = []
@@ -133,7 +134,12 @@ class AchievementsView(BaseView):
 
     def _create_ui(self) -> None:
         self.back_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(scale_x(20), WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - scale_y(60), scale_x(150), scale_y(40)),
+            relative_rect=pygame.Rect(
+                scale_x(20),
+                WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - scale_y(60),
+                scale_x(150),
+                scale_y(40),
+            ),
             text="BACK",
             manager=self.ui_manager,
         )
@@ -214,7 +220,9 @@ class AchievementsView(BaseView):
             rect = pygame.Rect(tab_x, tab_y, tab_surf.get_width(), tab_surf.get_height())
             screen.blit(tab_surf, (tab_x, tab_y))
             if is_active:
-                pygame.draw.line(screen, color, (tab_x, tab_y + 17), (tab_x + rect.width, tab_y + 17), 2)
+                pygame.draw.line(
+                    screen, color, (tab_x, tab_y + 17), (tab_x + rect.width, tab_y + 17), 2
+                )
             self._tab_rects.append((cat_id, rect))
             tab_x += rect.width + scale_x(14)
 
@@ -305,9 +313,15 @@ class AchievementsView(BaseView):
             bar_w = width - 120
             bar_h = 8
             draw_bar(
-                screen, bar_x, bar_y, bar_w, bar_h,
-                current=progress, maximum=1.0,
-                color=Colors.TEXT_HIGHLIGHT, show_value=False,
+                screen,
+                bar_x,
+                bar_y,
+                bar_w,
+                bar_h,
+                current=progress,
+                maximum=1.0,
+                color=Colors.TEXT_HIGHLIGHT,
+                show_value=False,
             )
 
             # Progress text

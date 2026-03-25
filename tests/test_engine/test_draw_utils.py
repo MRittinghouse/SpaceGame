@@ -5,8 +5,14 @@ import pytest
 
 from spacegame.config import Colors
 from spacegame.engine.draw_utils import (
-    draw_bar, draw_panel, draw_nine_slice_panel, draw_summary_overlay, word_wrap,
-    _make_nine_slice_pieces, _get_nine_slice, SLICE,
+    draw_bar,
+    draw_panel,
+    draw_nine_slice_panel,
+    draw_summary_overlay,
+    word_wrap,
+    _make_nine_slice_pieces,
+    _get_nine_slice,
+    SLICE,
 )
 from spacegame.engine.fonts import FontCache
 
@@ -138,8 +144,11 @@ class TestNineSlice:
 
     def test_draw_nine_slice_custom_colors(self, screen: pygame.Surface) -> None:
         draw_nine_slice_panel(
-            screen, pygame.Rect(10, 10, 300, 200),
-            bg_color=(30, 30, 50), border_color=(100, 100, 150), alpha=180,
+            screen,
+            pygame.Rect(10, 10, 300, 200),
+            bg_color=(30, 30, 50),
+            border_color=(100, 100, 150),
+            alpha=180,
         )
 
     def test_draw_panel_uses_nine_slice(self, screen: pygame.Surface) -> None:

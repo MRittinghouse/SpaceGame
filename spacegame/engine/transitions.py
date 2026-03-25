@@ -4,11 +4,12 @@ Screen transition effects between game states.
 Supports fade, warp distortion, slide, and pixelate transitions.
 """
 
-import pygame
 import math
 import random
-from typing import Optional, Callable
 from enum import Enum
+from typing import Callable, Optional
+
+import pygame
 
 
 class TransitionType(Enum):
@@ -176,8 +177,7 @@ class TransitionManager:
                 screen.fill((0, 0, 0))
                 screen.blit(temp, (-offset, 0))
 
-    def _render_pixelate(self, screen: pygame.Surface, progress: float,
-                         w: int, h: int) -> None:
+    def _render_pixelate(self, screen: pygame.Surface, progress: float, w: int, h: int) -> None:
         """Pixelation effect — screen resolves to blocky pixels then back.
 
         Uses nearest-neighbor downscale then upscale to create a retro
@@ -194,7 +194,7 @@ class TransitionManager:
         # Scale factor: 1 (no effect) to 16 (very blocky)
         # Use exponential curve for pleasing ramp
         max_block = 16
-        block_size = max(1, int(1 + (max_block - 1) * (intensity ** 1.5)))
+        block_size = max(1, int(1 + (max_block - 1) * (intensity**1.5)))
 
         if block_size <= 1:
             return

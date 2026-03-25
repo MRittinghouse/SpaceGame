@@ -8,7 +8,6 @@ engine can use either source interchangeably.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Optional
 
 from spacegame.models.ground import (
     GroundInteractable,
@@ -17,6 +16,7 @@ from spacegame.models.ground import (
     GroundTile,
     TileType,
 )
+from spacegame.models.ground_combat import GROUND_ENEMY_TEMPLATES
 from spacegame.models.ground_enemy import Direction, GroundEnemy
 from spacegame.models.ground_mapgen import (
     DifficultyTier,
@@ -24,8 +24,6 @@ from spacegame.models.ground_mapgen import (
     MapGenResult,
     MissionType,
 )
-from spacegame.models.ground_combat import GROUND_ENEMY_TEMPLATES
-
 
 # Single-character tile codes used in campaign map JSON
 TILE_CODE_MAP: dict[str, TileType] = {
@@ -148,9 +146,7 @@ class CampaignMapBuilder:
         )
 
 
-def _build_enemies(
-    enemy_defs: list[dict], difficulty: DifficultyTier
-) -> list[GroundEnemy]:
+def _build_enemies(enemy_defs: list[dict], difficulty: DifficultyTier) -> list[GroundEnemy]:
     """Build GroundEnemy instances from campaign map enemy definitions.
 
     Args:
@@ -163,9 +159,7 @@ def _build_enemies(
     enemies: list[GroundEnemy] = []
     for edef in enemy_defs:
         template_id = edef.get("template_id", "guild_security")
-        template = GROUND_ENEMY_TEMPLATES.get(
-            template_id, GROUND_ENEMY_TEMPLATES["guild_security"]
-        )
+        template = GROUND_ENEMY_TEMPLATES.get(template_id, GROUND_ENEMY_TEMPLATES["guild_security"])
 
         # Parse patrol route (list of [x, y] -> list of (x, y))
         raw_patrol = edef.get("patrol_route", [])

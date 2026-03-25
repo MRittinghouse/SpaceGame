@@ -107,8 +107,11 @@ class TestVentBlocksLineOfSight:
             ]
         ]
         return GroundMap(
-            width=3, height=1, tiles=tiles,
-            entrance_pos=(0, 0), exit_pos=(2, 0),
+            width=3,
+            height=1,
+            tiles=tiles,
+            entrance_pos=(0, 0),
+            exit_pos=(2, 0),
         )
 
     def test_vent_blocks_los(self) -> None:
@@ -143,8 +146,11 @@ class TestTerminalInteraction:
             ],
         ]
         return GroundMap(
-            width=3, height=3, tiles=tiles,
-            entrance_pos=(1, 1), exit_pos=(1, 1),
+            width=3,
+            height=3,
+            tiles=tiles,
+            entrance_pos=(1, 1),
+            exit_pos=(1, 1),
         )
 
     def test_interact_with_terminal(self) -> None:
@@ -174,8 +180,11 @@ class TestHazardOnStep:
             ]
         ]
         return GroundMap(
-            width=3, height=1, tiles=tiles,
-            entrance_pos=(0, 0), exit_pos=(2, 0),
+            width=3,
+            height=1,
+            tiles=tiles,
+            entrance_pos=(0, 0),
+            exit_pos=(2, 0),
         )
 
     def test_move_onto_hazard_succeeds(self) -> None:
@@ -203,8 +212,11 @@ class TestPlayerCannotWalkOnVent:
             ]
         ]
         gmap = GroundMap(
-            width=3, height=1, tiles=tiles,
-            entrance_pos=(0, 0), exit_pos=(2, 0),
+            width=3,
+            height=1,
+            tiles=tiles,
+            entrance_pos=(0, 0),
+            exit_pos=(2, 0),
         )
         player = GroundPlayerState(x=0, y=0)
         success, msg = player.move(1, 0, gmap)

@@ -6,8 +6,6 @@ Sets up structured logging for debugging and monitoring game behavior.
 
 import logging
 import sys
-from pathlib import Path
-from typing import Optional
 
 
 def setup_logger(name: str = "spacegame", level: int = logging.INFO) -> logging.Logger:

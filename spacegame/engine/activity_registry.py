@@ -6,7 +6,8 @@ new mini-games to different systems.
 """
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Callable
+from typing import Dict, List, Optional
+
 from spacegame.config import GameState
 
 

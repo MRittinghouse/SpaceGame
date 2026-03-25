@@ -10,14 +10,26 @@ DIALOGUE_FILE = DATA_DIR / "crew" / "ambient_dialogue.json"
 
 # All valid system IDs from the game
 VALID_SYSTEMS = {
-    "nexus_prime", "stellaris_port", "breakstone", "iron_depths",
-    "forgeworks", "axiom_labs", "nova_research", "havens_rest",
-    "verdant", "crimson_reach", "the_fulcrum",
+    "nexus_prime",
+    "stellaris_port",
+    "breakstone",
+    "iron_depths",
+    "forgeworks",
+    "axiom_labs",
+    "nova_research",
+    "havens_rest",
+    "verdant",
+    "crimson_reach",
+    "the_fulcrum",
 }
 
 VALID_FACTIONS = {
-    "commerce_guild", "industrial_union", "science_collective",
-    "frontier_alliance", "free_alliance", "",
+    "commerce_guild",
+    "industrial_union",
+    "science_collective",
+    "frontier_alliance",
+    "free_alliance",
+    "",
 }
 
 
@@ -131,8 +143,7 @@ class TestAmbientDialogueData:
         crew = [t for t in templates if not t.get("is_companion", False)]
         for c in crew:
             home_lines = [
-                d for d in dialogue
-                if d["crew_id"] == c["id"] and d["context"] == "home_system"
+                d for d in dialogue if d["crew_id"] == c["id"] and d["context"] == "home_system"
             ]
             assert len(home_lines) >= 1, f"{c['id']} has no home_system dialogue line"
 
@@ -140,4 +151,6 @@ class TestAmbientDialogueData:
         templates = _load_crew_data()
         valid_ids = {t["id"] for t in templates}
         for line in _load_dialogue_data():
-            assert line["crew_id"] in valid_ids, f"Dialogue references unknown crew: {line['crew_id']}"
+            assert line["crew_id"] in valid_ids, (
+                f"Dialogue references unknown crew: {line['crew_id']}"
+            )

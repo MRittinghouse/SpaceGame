@@ -107,9 +107,7 @@ def _make_crew_template_with_combat(
             "id": "evasive_maneuvers",
             "name": "Evasive Maneuvers",
             "description": "+20 evasion for 2 turns.",
-            "effects": [
-                {"type": "evasion_mod", "value": 20.0, "duration": 2, "target": "self"}
-            ],
+            "effects": [{"type": "evasion_mod", "value": 20.0, "duration": 2, "target": "self"}],
             "energy_cost": 0,
         },
     )
@@ -416,7 +414,10 @@ class TestCrewTemplateCombatMove:
 
     def test_combat_move_none_by_default(self) -> None:
         ct = CrewTemplate(
-            id="test", name="Test", role="Pilot", description="A pilot.",
+            id="test",
+            name="Test",
+            role="Pilot",
+            description="A pilot.",
             portrait_color=[100, 100, 100],
         )
         assert ct.combat_move is None
@@ -437,9 +438,16 @@ class TestBuildPlayerCombatState:
 
     def test_basic_build(self) -> None:
         st = _make_ship_type(
-            combat_hull=100, combat_shields=40, combat_energy=10,
-            combat_energy_regen=3, combat_speed=8, combat_evasion=15,
-            combat_accuracy=70, weapon_slots=1, defense_slots=1, utility_slots=3,
+            combat_hull=100,
+            combat_shields=40,
+            combat_energy=10,
+            combat_energy_regen=3,
+            combat_speed=8,
+            combat_evasion=15,
+            combat_accuracy=70,
+            weapon_slots=1,
+            defense_slots=1,
+            utility_slots=3,
         )
         ship = Ship(ship_type=st, current_fuel=150)
         mgr = ShipUpgradeManager(weapon_slots=1, defense_slots=1, utility_slots=3)
@@ -460,8 +468,12 @@ class TestBuildPlayerCombatState:
 
     def test_build_with_crew_moves(self) -> None:
         st = _make_ship_type(
-            combat_hull=100, combat_shields=40, combat_energy=10,
-            combat_energy_regen=3, combat_speed=8, combat_evasion=15,
+            combat_hull=100,
+            combat_shields=40,
+            combat_energy=10,
+            combat_energy_regen=3,
+            combat_speed=8,
+            combat_evasion=15,
             combat_accuracy=70,
         )
         ship = Ship(ship_type=st, current_fuel=150)
@@ -478,8 +490,10 @@ class TestBuildPlayerCombatState:
                 description="+20 evasion",
                 effects=[
                     CombatEffect(
-                        type=EffectType.EVASION_MOD, value=20.0,
-                        duration=2, target=EffectTarget.SELF,
+                        type=EffectType.EVASION_MOD,
+                        value=20.0,
+                        duration=2,
+                        target=EffectTarget.SELF,
                     )
                 ],
             ),

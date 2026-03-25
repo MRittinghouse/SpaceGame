@@ -39,9 +39,7 @@ class TestNewAchievements:
 
         loader = DataLoader()
         loader.load_all()
-        achievement = next(
-            (a for a in loader.achievements if a.id == "investor"), None
-        )
+        achievement = next((a for a in loader.achievements if a.id == "investor"), None)
         assert achievement is not None
         assert achievement.stat_key == "investments_owned"
         assert achievement.threshold == 5
@@ -51,9 +49,7 @@ class TestNewAchievements:
 
         loader = DataLoader()
         loader.load_all()
-        achievement = next(
-            (a for a in loader.achievements if a.id == "efficiency_expert"), None
-        )
+        achievement = next((a for a in loader.achievements if a.id == "efficiency_expert"), None)
         assert achievement is not None
         assert achievement.stat_key == "s_ranks_earned"
         assert achievement.threshold == 1

@@ -14,11 +14,11 @@ class LoyaltyTier(Enum):
     """Loyalty tier that determines gameplay effects."""
 
     DISCONTENTED = "discontented"  # 0-9: departure risk
-    WARY = "wary"                  # 10-29: no bonuses
-    NEUTRAL = "neutral"            # 30-49: starting range
-    WARM = "warm"                  # 50-69: quest stage 1
-    LOYAL = "loyal"                # 70-84: +25% bonuses, quest stage 2
-    DEVOTED = "devoted"            # 85-100: +50% bonuses, quest stage 3
+    WARY = "wary"  # 10-29: no bonuses
+    NEUTRAL = "neutral"  # 30-49: starting range
+    WARM = "warm"  # 50-69: quest stage 1
+    LOYAL = "loyal"  # 70-84: +25% bonuses, quest stage 2
+    DEVOTED = "devoted"  # 85-100: +50% bonuses, quest stage 3
 
 
 # Thresholds that generate quest-gating flags when crossed upward
@@ -232,9 +232,7 @@ class CrewRoster:
                 result.append((template, state))
         return result
 
-    def add_bonus_ability(
-        self, template_id: str, ability: CrewAbility
-    ) -> tuple[bool, str]:
+    def add_bonus_ability(self, template_id: str, ability: CrewAbility) -> tuple[bool, str]:
         """Add a permanent bonus ability to a crew member.
 
         Args:
@@ -315,9 +313,7 @@ class CrewRoster:
             return 0
         return state.get("attribute_points", 0)
 
-    def allocate_crew_attribute(
-        self, template_id: str, attr_id: str
-    ) -> tuple[bool, str]:
+    def allocate_crew_attribute(self, template_id: str, attr_id: str) -> tuple[bool, str]:
         """Allocate an attribute point for a crew member.
 
         Args:
@@ -438,9 +434,7 @@ class CrewRoster:
             all_flags.extend(flags)
         return all_flags
 
-    def adjust_loyalty_for_faction(
-        self, faction_id: str, amount: int
-    ) -> list[str]:
+    def adjust_loyalty_for_faction(self, faction_id: str, amount: int) -> list[str]:
         """Adjust loyalty for all recruited crew matching a faction.
 
         Args:
@@ -499,9 +493,7 @@ class CrewRoster:
             state = self._state.get(tid)
             template = self._templates.get(tid)
             if state and template and state["loyalty"] < 10:
-                warnings.append(
-                    f"{template.name} is considering leaving the crew"
-                )
+                warnings.append(f"{template.name} is considering leaving the crew")
         return warnings
 
     def process_departures(self) -> list[str]:
@@ -557,9 +549,7 @@ class CrewRoster:
                     result.append((template, state))
         return result
 
-    def get_available_crew_at_system(
-        self, system_id: str
-    ) -> list["CrewTemplate"]:
+    def get_available_crew_at_system(self, system_id: str) -> list["CrewTemplate"]:
         """Get hireable crew members at a system.
 
         Returns non-companion crew whose home_system_id matches,
@@ -584,9 +574,7 @@ class CrewRoster:
             available.append(template)
         return available
 
-    def can_dismiss(
-        self, template_id: str, active_mission_ids: list[str]
-    ) -> tuple[bool, str]:
+    def can_dismiss(self, template_id: str, active_mission_ids: list[str]) -> tuple[bool, str]:
         """Check if a crew member can be dismissed.
 
         Args:

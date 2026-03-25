@@ -4,28 +4,35 @@ Displays current investment status and allows investing, upgrading, and
 collecting accumulated returns.
 """
 
-import pygame
-import pygame_gui
 from typing import Optional
 
+import pygame
+import pygame_gui
+
 from spacegame.config import (
-    WINDOW_WIDTH,
     WINDOW_HEIGHT,
+    WINDOW_WIDTH,
     Colors,
     GameState,
     scale_x,
     scale_y,
 )
-from spacegame.views.base_view import BaseView
-from spacegame.models.player import Player
-from spacegame.models.investment import InvestmentManager
 from spacegame.engine.backgrounds import AnimatedBackground
 from spacegame.engine.draw_utils import draw_panel
-from spacegame.engine.fonts import FONT_BODY, FONT_LG, FONT_SUBTITLE, FONT_TITLE, FONT_XL2, FontCache
+from spacegame.engine.fonts import (
+    FONT_BODY,
+    FONT_LG,
+    FONT_SUBTITLE,
+    FONT_TITLE,
+    FONT_XL2,
+    get_font,
+)
+from spacegame.models.investment import InvestmentManager
+from spacegame.models.player import Player
 from spacegame.utils.logger import logger
+from spacegame.views.base_view import BaseView
 
-
-# Layout
+# Layout (centered modal pattern, also used in repair_bay_view)
 PANEL_W = scale_x(520)
 PANEL_H = scale_y(420)
 PANEL_X = WINDOW_WIDTH // 2 - PANEL_W // 2
@@ -71,12 +78,12 @@ class InvestmentView(BaseView):
         self.message_color: tuple[int, int, int] = Colors.TEXT_PRIMARY
 
         # Fonts
-        self.title_font = FontCache.get(FONT_TITLE)
-        self.subtitle_font = FontCache.get(FONT_BODY)
-        self.label_font = FontCache.get(FONT_SUBTITLE)
-        self.value_font = FontCache.get(FONT_LG)
-        self.tier_font = FontCache.get(FONT_XL2)
-        self.msg_font = FontCache.get(FONT_BODY)
+        self.title_font = get_font("header", FONT_TITLE)
+        self.subtitle_font = get_font("dialogue", FONT_BODY)
+        self.label_font = get_font("dialogue", FONT_SUBTITLE)
+        self.value_font = get_font("stats", FONT_LG)
+        self.tier_font = get_font("stats", FONT_XL2)
+        self.msg_font = get_font("dialogue", FONT_BODY)
 
         # UI element refs
         self.invest_button: Optional[pygame_gui.elements.UIButton] = None
@@ -85,9 +92,7 @@ class InvestmentView(BaseView):
         self.back_button: Optional[pygame_gui.elements.UIButton] = None
 
         # Background
-        self.background = AnimatedBackground(
-            "station", WINDOW_WIDTH, WINDOW_HEIGHT, seed=8888
-        )
+        self.background = AnimatedBackground("station", WINDOW_WIDTH, WINDOW_HEIGHT, seed=8888)
         self._bg_dim = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
         self._bg_dim.fill((0, 0, 0))
         self._bg_dim.set_alpha(140)
@@ -143,7 +148,10 @@ class InvestmentView(BaseView):
         # Back button
         self.back_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
-                btn_x, PANEL_Y + PANEL_H - 50, BUTTON_W, BUTTON_H,
+                btn_x,
+                PANEL_Y + PANEL_H - 50,
+                BUTTON_W,
+                BUTTON_H,
             ),
             text="BACK",
             manager=self.ui_manager,
@@ -151,8 +159,12 @@ class InvestmentView(BaseView):
 
     def _destroy_ui(self) -> None:
         """Kill all UI elements."""
-        for elem in [self.invest_button, self.upgrade_button,
-                     self.collect_button, self.back_button]:
+        for elem in [
+            self.invest_button,
+            self.upgrade_button,
+            self.collect_button,
+            self.back_button,
+        ]:
             if elem:
                 elem.kill()
         self.invest_button = None
@@ -198,9 +210,7 @@ class InvestmentView(BaseView):
         inv = self.investment_manager.get_investment(self.system_id)
 
         if not template:
-            title = self.title_font.render(
-                "NO INVESTMENT AVAILABLE", True, Colors.TEXT_SECONDARY
-            )
+            title = self.title_font.render("NO INVESTMENT AVAILABLE", True, Colors.TEXT_SECONDARY)
             screen.blit(
                 title,
                 (PANEL_X + PANEL_W // 2 - title.get_width() // 2, PANEL_Y + 20),
@@ -208,18 +218,14 @@ class InvestmentView(BaseView):
             return
 
         # Title — investment name
-        title = self.title_font.render(
-            template.name.upper(), True, ACCENT_COLOR
-        )
+        title = self.title_font.render(template.name.upper(), True, ACCENT_COLOR)
         screen.blit(
             title,
             (PANEL_X + PANEL_W // 2 - title.get_width() // 2, PANEL_Y + 12),
         )
 
         # Description
-        desc = self.subtitle_font.render(
-            template.description, True, Colors.TEXT_SECONDARY
-        )
+        desc = self.subtitle_font.render(template.description, True, Colors.TEXT_SECONDARY)
         screen.blit(
             desc,
             (PANEL_X + PANEL_W // 2 - desc.get_width() // 2, PANEL_Y + 42),
@@ -230,9 +236,7 @@ class InvestmentView(BaseView):
         if inv:
             # Current tier
             tier_info = template.get_tier(inv.tier)
-            tier_label = self.tier_font.render(
-                f"Tier {inv.tier}", True, ACCENT_COLOR
-            )
+            tier_label = self.tier_font.render(f"Tier {inv.tier}", True, ACCENT_COLOR)
             screen.blit(tier_label, (CONTENT_X, y))
             y += 34
 
@@ -251,17 +255,17 @@ class InvestmentView(BaseView):
             # Accumulated returns
             acc = inv.accumulated_returns
             if acc > 0:
-                if tier_info and tier_info.returns_type == "commodity" and tier_info.returns_commodity:
+                if (
+                    tier_info
+                    and tier_info.returns_type == "commodity"
+                    and tier_info.returns_commodity
+                ):
                     acc_text = f"{acc} {tier_info.returns_commodity.replace('_', ' ')}"
                 else:
                     acc_text = f"{acc:,} CR"
-                acc_label = self.label_font.render(
-                    f"Uncollected: {acc_text}", True, Colors.GREEN
-                )
+                acc_label = self.label_font.render(f"Uncollected: {acc_text}", True, Colors.GREEN)
             else:
-                acc_label = self.label_font.render(
-                    "Uncollected: None", True, Colors.TEXT_SECONDARY
-                )
+                acc_label = self.label_font.render("Uncollected: None", True, Colors.TEXT_SECONDARY)
             screen.blit(acc_label, (CONTENT_X, y))
             y += 30
 
@@ -289,7 +293,8 @@ class InvestmentView(BaseView):
                     ret = f"{tier_info.daily_return_amount:,} CR/day"
                 row = self.value_font.render(
                     f"Tier {tier_info.tier}: {tier_info.cost:,} CR → {ret}",
-                    True, Colors.TEXT_PRIMARY,
+                    True,
+                    Colors.TEXT_PRIMARY,
                 )
                 screen.blit(row, (CONTENT_X + 10, y))
                 y += 24
@@ -341,9 +346,7 @@ class InvestmentView(BaseView):
         template = self.investment_manager.get_template(self.system_id)
         next_tier = template.get_tier(inv.tier + 1) if template else None
 
-        success, msg = self.investment_manager.upgrade(
-            self.player.credits, self.system_id
-        )
+        success, msg = self.investment_manager.upgrade(self.player.credits, self.system_id)
         if success and next_tier:
             self.player.deduct_credits(next_tier.cost)
             self.message = msg

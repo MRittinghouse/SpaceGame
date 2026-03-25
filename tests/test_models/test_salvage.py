@@ -323,9 +323,7 @@ class TestItemQuality:
 
     def test_quality_affects_yield(self):
         """High quality increases yield."""
-        cell = SalvageCell(
-            grid_x=0, grid_y=0, item_type=SalvageItemType.SCRAP_METAL, quality=1.5
-        )
+        cell = SalvageCell(grid_x=0, grid_y=0, item_type=SalvageItemType.SCRAP_METAL, quality=1.5)
         cell.scan()
         cell.start_extract()
         # Scrap metal: min=1, max=3, quality=1.5 → yield = max(1, round(base * 1.5))
@@ -351,9 +349,7 @@ class TestItemQuality:
 
     def test_poor_quality_yield_minimum_1(self):
         """Even with poor quality, yield is at least 1."""
-        cell = SalvageCell(
-            grid_x=0, grid_y=0, item_type=SalvageItemType.RARE_PARTS, quality=0.8
-        )
+        cell = SalvageCell(grid_x=0, grid_y=0, item_type=SalvageItemType.RARE_PARTS, quality=0.8)
         cell.scan()
         cell.start_extract()
         # Rare parts: min=1, max=1, quality=0.8 → round(1 * 0.8) = round(0.8) = 1
@@ -363,23 +359,17 @@ class TestItemQuality:
 
     def test_quality_tier_poor(self):
         """Quality 0.8 is POOR tier."""
-        cell = SalvageCell(
-            grid_x=0, grid_y=0, item_type=SalvageItemType.SCRAP_METAL, quality=0.8
-        )
+        cell = SalvageCell(grid_x=0, grid_y=0, item_type=SalvageItemType.SCRAP_METAL, quality=0.8)
         assert cell.quality_tier == QualityTier.POOR
 
     def test_quality_tier_normal(self):
         """Quality 1.0 is NORMAL tier."""
-        cell = SalvageCell(
-            grid_x=0, grid_y=0, item_type=SalvageItemType.SCRAP_METAL, quality=1.0
-        )
+        cell = SalvageCell(grid_x=0, grid_y=0, item_type=SalvageItemType.SCRAP_METAL, quality=1.0)
         assert cell.quality_tier == QualityTier.NORMAL
 
     def test_quality_tier_excellent(self):
         """Quality 1.45 is EXCELLENT tier."""
-        cell = SalvageCell(
-            grid_x=0, grid_y=0, item_type=SalvageItemType.SCRAP_METAL, quality=1.45
-        )
+        cell = SalvageCell(grid_x=0, grid_y=0, item_type=SalvageItemType.SCRAP_METAL, quality=1.45)
         assert cell.quality_tier == QualityTier.EXCELLENT
 
 
@@ -620,6 +610,7 @@ class TestCorruptionTimer:
     def test_corrupted_extraction_50_percent_zero(self):
         """Corrupted cells have ~50% chance of yielding 0 on extraction."""
         import random as rng
+
         rng.seed(42)
         zero_count = 0
         total = 50
@@ -627,7 +618,10 @@ class TestCorruptionTimer:
             session = self._make_session(corruption_seconds=0.1)
             # Make all cells items with density=1.0
             derelict = DerelictType(
-                id="test", name="Test", grid_size=3, item_density=1.0,
+                id="test",
+                name="Test",
+                grid_size=3,
+                item_density=1.0,
                 item_distribution={"scrap_metal": 1.0},
                 corruption_seconds=0.1,
             )

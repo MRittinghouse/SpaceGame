@@ -121,15 +121,25 @@ class TestPlayerBuilderFields:
         from spacegame.models.ship import Ship, ShipType
 
         st = ShipType(
-            id="shuttle", name="Shuttle", ship_class="starter",
-            description="test", cargo_capacity=50, fuel_capacity=100,
-            fuel_efficiency=10, speed_multiplier=1.0, purchase_price=5000,
-            resale_value=3500, crew_slots=1, special_abilities=[],
+            id="shuttle",
+            name="Shuttle",
+            ship_class="starter",
+            description="test",
+            cargo_capacity=50,
+            fuel_capacity=100,
+            fuel_efficiency=10,
+            speed_multiplier=1.0,
+            purchase_price=5000,
+            resale_value=3500,
+            crew_slots=1,
+            special_abilities=[],
             availability="common",
         )
         ship = Ship(ship_type=st, current_fuel=100)
         p = Player(
-            name="Test", credits=1000, current_system_id="nexus_prime",
+            name="Test",
+            credits=1000,
+            current_system_id="nexus_prime",
             ship=ship,
         )
         assert len(p.unlocked_shapes) == 9
@@ -141,15 +151,25 @@ class TestPlayerBuilderFields:
         from spacegame.models.ship import Ship, ShipType
 
         st = ShipType(
-            id="shuttle", name="Shuttle", ship_class="starter",
-            description="test", cargo_capacity=50, fuel_capacity=100,
-            fuel_efficiency=10, speed_multiplier=1.0, purchase_price=5000,
-            resale_value=3500, crew_slots=1, special_abilities=[],
+            id="shuttle",
+            name="Shuttle",
+            ship_class="starter",
+            description="test",
+            cargo_capacity=50,
+            fuel_capacity=100,
+            fuel_efficiency=10,
+            speed_multiplier=1.0,
+            purchase_price=5000,
+            resale_value=3500,
+            crew_slots=1,
+            special_abilities=[],
             availability="common",
         )
         ship = Ship(ship_type=st, current_fuel=100)
         p = Player(
-            name="Test", credits=1000, current_system_id="nexus_prime",
+            name="Test",
+            credits=1000,
+            current_system_id="nexus_prime",
             ship=ship,
         )
         assert len(p.unlocked_materials) == 3
@@ -160,15 +180,25 @@ class TestPlayerBuilderFields:
         from spacegame.models.ship import Ship, ShipType
 
         st = ShipType(
-            id="shuttle", name="Shuttle", ship_class="starter",
-            description="test", cargo_capacity=50, fuel_capacity=100,
-            fuel_efficiency=10, speed_multiplier=1.0, purchase_price=5000,
-            resale_value=3500, crew_slots=1, special_abilities=[],
+            id="shuttle",
+            name="Shuttle",
+            ship_class="starter",
+            description="test",
+            cargo_capacity=50,
+            fuel_capacity=100,
+            fuel_efficiency=10,
+            speed_multiplier=1.0,
+            purchase_price=5000,
+            resale_value=3500,
+            crew_slots=1,
+            special_abilities=[],
             availability="common",
         )
         ship = Ship(ship_type=st, current_fuel=100)
         p = Player(
-            name="Test", credits=1000, current_system_id="nexus_prime",
+            name="Test",
+            credits=1000,
+            current_system_id="nexus_prime",
             ship=ship,
         )
         assert "tiny" in p.unlocked_weight_classes

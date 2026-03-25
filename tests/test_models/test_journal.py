@@ -109,7 +109,10 @@ class TestJournalEntry:
         """Player entries exceeding 500 chars are truncated."""
         long_text = "x" * 600
         entry = JournalEntry(
-            entry_id="p1", text=long_text, game_day=1, system_id="s",
+            entry_id="p1",
+            text=long_text,
+            game_day=1,
+            system_id="s",
             source="player",
         )
         assert len(entry.text) == PLAYER_ENTRY_MAX_LENGTH
@@ -118,7 +121,10 @@ class TestJournalEntry:
         """Auto entries are not truncated (they're data-defined)."""
         long_text = "x" * 600
         entry = JournalEntry(
-            entry_id="a1", text=long_text, game_day=1, system_id="s",
+            entry_id="a1",
+            text=long_text,
+            game_day=1,
+            system_id="s",
             source="auto",
         )
         assert len(entry.text) == 600
@@ -126,8 +132,12 @@ class TestJournalEntry:
     def test_invalid_tag_cleared(self) -> None:
         """Invalid tag values are set to empty string."""
         entry = JournalEntry(
-            entry_id="p1", text="test", game_day=1, system_id="s",
-            source="player", tag="invalid_tag",
+            entry_id="p1",
+            text="test",
+            game_day=1,
+            system_id="s",
+            source="player",
+            tag="invalid_tag",
         )
         assert entry.tag == ""
 
@@ -135,8 +145,12 @@ class TestJournalEntry:
         """All valid tags are accepted."""
         for tag in ["people", "places", "suspicions", "goals", ""]:
             entry = JournalEntry(
-                entry_id="p1", text="test", game_day=1, system_id="s",
-                source="player", tag=tag,
+                entry_id="p1",
+                text="test",
+                game_day=1,
+                system_id="s",
+                source="player",
+                tag=tag,
             )
             assert entry.tag == tag
 
@@ -190,7 +204,9 @@ class TestJournalAutoEntries:
     def test_trigger_creates_entry(self) -> None:
         """Triggering a known flag creates an entry."""
         journal = Journal(auto_templates=_make_auto_templates())
-        entry = journal.trigger_auto_entry("talked_to_officer_larsen", game_day=5, system_id="nexus_prime")
+        entry = journal.trigger_auto_entry(
+            "talked_to_officer_larsen", game_day=5, system_id="nexus_prime"
+        )
         assert entry is not None
         assert entry.entry_id == "auto_m01"
         assert entry.game_day == 5
@@ -273,9 +289,7 @@ class TestJournalAutoEntryProgrammatic:
     def test_add_auto_entry_survives_serialization(self) -> None:
         """Programmatic auto entries round-trip through save/load."""
         journal = Journal()
-        journal.add_auto_entry(
-            "disc_1", "Found work.", game_day=5, mission_id="iron_delivery"
-        )
+        journal.add_auto_entry("disc_1", "Found work.", game_day=5, mission_id="iron_delivery")
         state = journal.get_state()
         journal2 = Journal()
         journal2.load_state(state)
@@ -318,8 +332,12 @@ class TestJournalAddEntry:
         """Pre-built entries round-trip through save/load."""
         journal = Journal()
         entry = JournalEntry(
-            entry_id="visit_test", text="Visited.", game_day=5,
-            system_id="test", source="auto", tag="travel",
+            entry_id="visit_test",
+            text="Visited.",
+            game_day=5,
+            system_id="test",
+            source="auto",
+            tag="travel",
         )
         journal.add_entry(entry)
         state = journal.get_state()
@@ -505,7 +523,9 @@ class TestJournalSerialization:
         """State round-trip preserves all entries and metadata."""
         journal = Journal(auto_templates=_make_auto_templates())
         journal.trigger_auto_entry("talked_to_officer_larsen", game_day=1, system_id="nexus_prime")
-        journal.add_player_entry(text="My suspicion", game_day=3, system_id="nexus_prime", tag="suspicions")
+        journal.add_player_entry(
+            text="My suspicion", game_day=3, system_id="nexus_prime", tag="suspicions"
+        )
         journal.add_player_entry(text="Goal note", game_day=5, system_id="breakstone", tag="goals")
 
         state = journal.get_state()

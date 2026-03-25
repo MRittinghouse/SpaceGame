@@ -240,29 +240,41 @@ def _make_action_lines() -> list[AmbientLine]:
     """Create test lines for player_action context."""
     return [
         AmbientLine(
-            crew_id="elena_reeves", text="That cargo was worth something.",
-            context="player_action", action_type="sold_cargo",
+            crew_id="elena_reeves",
+            text="That cargo was worth something.",
+            context="player_action",
+            action_type="sold_cargo",
         ),
         AmbientLine(
-            crew_id="elena_reeves", text="Smart buy.",
-            context="player_action", action_type="bought_cargo",
+            crew_id="elena_reeves",
+            text="Smart buy.",
+            context="player_action",
+            action_type="bought_cargo",
         ),
         AmbientLine(
-            crew_id="marcus_jin", text="Good fight.",
-            context="player_action", action_type="combat_victory",
+            crew_id="marcus_jin",
+            text="Good fight.",
+            context="player_action",
+            action_type="combat_victory",
         ),
         AmbientLine(
-            crew_id="marcus_jin", text="Running again?",
-            context="player_action", action_type="combat_retreat",
+            crew_id="marcus_jin",
+            text="Running again?",
+            context="player_action",
+            action_type="combat_retreat",
         ),
         AmbientLine(
-            crew_id="elena_reeves", text="I know these docks.",
+            crew_id="elena_reeves",
+            text="I know these docks.",
             context="idle",
         ),
         # Loyalty-gated player_action line
         AmbientLine(
-            crew_id="elena_reeves", text="You always sell too early.",
-            context="player_action", action_type="sold_cargo", min_loyalty=60,
+            crew_id="elena_reeves",
+            text="You always sell too early.",
+            context="player_action",
+            action_type="sold_cargo",
+            min_loyalty=60,
         ),
     ]
 
@@ -276,8 +288,10 @@ class TestAmbientLineActionType:
 
     def test_action_type_set_explicitly(self) -> None:
         line = AmbientLine(
-            crew_id="elena_reeves", text="Nice sale.",
-            context="player_action", action_type="sold_cargo",
+            crew_id="elena_reeves",
+            text="Nice sale.",
+            context="player_action",
+            action_type="sold_cargo",
         )
         assert line.action_type == "sold_cargo"
 
@@ -288,7 +302,8 @@ class TestGetAllMatchingPlayerAction:
     def test_filters_by_action_type(self) -> None:
         mgr = AmbientDialogueManager(_make_action_lines())
         matches = mgr.get_all_matching(
-            context="player_action", crew_id="elena_reeves",
+            context="player_action",
+            crew_id="elena_reeves",
             action_type="sold_cargo",
         )
         texts = [line.text for _, line in matches]
@@ -298,7 +313,8 @@ class TestGetAllMatchingPlayerAction:
     def test_no_match_wrong_action_type(self) -> None:
         mgr = AmbientDialogueManager(_make_action_lines())
         matches = mgr.get_all_matching(
-            context="player_action", crew_id="elena_reeves",
+            context="player_action",
+            crew_id="elena_reeves",
             action_type="combat_victory",
         )
         assert len(matches) == 0
@@ -307,7 +323,8 @@ class TestGetAllMatchingPlayerAction:
         """action_type filter only applies when context is player_action."""
         mgr = AmbientDialogueManager(_make_action_lines())
         matches = mgr.get_all_matching(
-            context="idle", crew_id="elena_reeves",
+            context="idle",
+            crew_id="elena_reeves",
             action_type="sold_cargo",
         )
         assert len(matches) >= 1
@@ -316,12 +333,16 @@ class TestGetAllMatchingPlayerAction:
     def test_loyalty_gating_on_player_action(self) -> None:
         mgr = AmbientDialogueManager(_make_action_lines())
         low = mgr.get_all_matching(
-            context="player_action", crew_id="elena_reeves",
-            action_type="sold_cargo", loyalty=10,
+            context="player_action",
+            crew_id="elena_reeves",
+            action_type="sold_cargo",
+            loyalty=10,
         )
         high = mgr.get_all_matching(
-            context="player_action", crew_id="elena_reeves",
-            action_type="sold_cargo", loyalty=80,
+            context="player_action",
+            crew_id="elena_reeves",
+            action_type="sold_cargo",
+            loyalty=80,
         )
         assert len(high) > len(low), "High loyalty should unlock more lines"
 
@@ -394,16 +415,20 @@ class TestGetLineWithActionType:
     def test_get_line_filters_action_type(self) -> None:
         mgr = AmbientDialogueManager(_make_action_lines())
         text = mgr.get_line(
-            context="player_action", crew_id="elena_reeves",
-            action_type="bought_cargo", loyalty=50,
+            context="player_action",
+            crew_id="elena_reeves",
+            action_type="bought_cargo",
+            loyalty=50,
         )
         assert text == "Smart buy."
 
     def test_get_line_returns_none_for_wrong_action(self) -> None:
         mgr = AmbientDialogueManager(_make_action_lines())
         text = mgr.get_line(
-            context="player_action", crew_id="elena_reeves",
-            action_type="mission_expired", loyalty=50,
+            context="player_action",
+            crew_id="elena_reeves",
+            action_type="mission_expired",
+            loyalty=50,
         )
         assert text is None
 
@@ -418,20 +443,28 @@ class TestLoyaltyDialogueTiers:
 
     def _make_tiered_lines(self) -> list[AmbientLine]:
         return [
-            AmbientLine(crew_id="elena_reeves", text="Base idle.",
-                         context="idle", min_loyalty=0),
-            AmbientLine(crew_id="elena_reeves", text="Warming up.",
-                         context="idle", min_loyalty=30),
-            AmbientLine(crew_id="elena_reeves", text="We're a real crew now.",
-                         context="idle", min_loyalty=60),
-            AmbientLine(crew_id="elena_reeves", text="I trust you with my life.",
-                         context="idle", min_loyalty=80),
+            AmbientLine(crew_id="elena_reeves", text="Base idle.", context="idle", min_loyalty=0),
+            AmbientLine(crew_id="elena_reeves", text="Warming up.", context="idle", min_loyalty=30),
+            AmbientLine(
+                crew_id="elena_reeves",
+                text="We're a real crew now.",
+                context="idle",
+                min_loyalty=60,
+            ),
+            AmbientLine(
+                crew_id="elena_reeves",
+                text="I trust you with my life.",
+                context="idle",
+                min_loyalty=80,
+            ),
         ]
 
     def test_tier_0_sees_base_only(self) -> None:
         mgr = AmbientDialogueManager(self._make_tiered_lines())
         matches = mgr.get_all_matching(
-            context="idle", crew_id="elena_reeves", loyalty=0,
+            context="idle",
+            crew_id="elena_reeves",
+            loyalty=0,
         )
         texts = [l.text for _, l in matches]
         assert texts == ["Base idle."]
@@ -439,7 +472,9 @@ class TestLoyaltyDialogueTiers:
     def test_tier_1_unlocks(self) -> None:
         mgr = AmbientDialogueManager(self._make_tiered_lines())
         matches = mgr.get_all_matching(
-            context="idle", crew_id="elena_reeves", loyalty=30,
+            context="idle",
+            crew_id="elena_reeves",
+            loyalty=30,
         )
         texts = [l.text for _, l in matches]
         assert "Base idle." in texts
@@ -449,17 +484,17 @@ class TestLoyaltyDialogueTiers:
     def test_tier_3_sees_all(self) -> None:
         mgr = AmbientDialogueManager(self._make_tiered_lines())
         matches = mgr.get_all_matching(
-            context="idle", crew_id="elena_reeves", loyalty=100,
+            context="idle",
+            crew_id="elena_reeves",
+            loyalty=100,
         )
         assert len(matches) == 4
 
     def test_get_random_idle_respects_loyalty_tiers(self) -> None:
         """get_random_idle only returns lines the crew member has unlocked."""
         lines = [
-            AmbientLine(crew_id="elena_reeves", text="Base.",
-                         context="idle", min_loyalty=0),
-            AmbientLine(crew_id="elena_reeves", text="Deep.",
-                         context="idle", min_loyalty=90),
+            AmbientLine(crew_id="elena_reeves", text="Base.", context="idle", min_loyalty=0),
+            AmbientLine(crew_id="elena_reeves", text="Deep.", context="idle", min_loyalty=90),
         ]
         mgr = AmbientDialogueManager(lines)
         # With low loyalty, should only ever get "Base."

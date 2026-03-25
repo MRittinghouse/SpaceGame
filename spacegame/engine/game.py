@@ -1,48 +1,74 @@
-"""
-Main game engine class.
+"""Main game engine — orchestrates the entire game.
 
-Manages the core game loop, initialization, and high-level game control.
+Manages the core loop, state transitions, view lifecycle, save/load,
+audio, tutorials, and all system managers. This is intentionally a
+large file (~4,600 lines) because it owns all cross-cutting concerns.
+
+File structure:
+  Lines ~1-80:     Imports (eager for engine/models, lazy for views)
+  Lines ~80-350:   Game.__init__() — pygame init, manager creation, data loading
+  Lines ~350-500:  Game.run() — main loop, event handling, render
+  Lines ~500-810:  Game loop helpers — update, render, HUD, save/load
+  Lines ~810-1690: _handle_state_transitions() — 30-case router for all state changes
+  Lines ~1690-1745: Transition helpers — _start_transition, _do closures
+  Lines ~1745-2100: View factories — 23 _ensure_*_view() methods (lazy view creation)
+  Lines ~2100-2270: Combat setup — start_combat(), build encounters
+  Lines ~2270-2500: Encounter processing — resolve encounters, post-combat rewards
+  Lines ~2500-2810: Travel & exploration — jump logic, travel encounters, day advance
+  Lines ~2810-2900: Ground mission setup
+  Lines ~2900-3100: Shipyard/builder setup
+  Lines ~3100-3500: Tutorial, achievements, notifications
+  Lines ~3500-3700: Trophy drops, builder discovery, event processing
+  Lines ~3700-4000: Audio, settings, resolution management
+  Lines ~4000-4611: Utility methods, main() entry point
+
+View factories (_ensure_*_view methods) use lazy imports to keep startup fast.
+State transitions are a flat switch for readability — each case maps directly
+to the game state diagram. Both are kept in this file because they access
+15+ shared managers that don't cleanly extract without passing the world state.
 """
+
+import sys
+import time
+from pathlib import Path
+from typing import Optional
 
 import pygame
 import pygame_gui
-import sys
-from pathlib import Path
-from typing import Optional
+
+from spacegame.achievement_manager import AchievementManager
 from spacegame.config import (
-    WINDOW_TITLE,
-    WINDOW_WIDTH,
-    WINDOW_HEIGHT,
     FPS_TARGET,
     FULLSCREEN,
-    VSYNC,
-    STARTING_CREDITS,
+    MIXER_BUFFER,
+    MIXER_CHANNELS,
     MIXER_FREQUENCY,
     MIXER_SIZE,
-    MIXER_CHANNELS,
-    MIXER_BUFFER,
+    STARTING_CREDITS,
+    VSYNC,
+    WINDOW_HEIGHT,
+    WINDOW_TITLE,
+    WINDOW_WIDTH,
     Colors,
     GameState,
 )
-from spacegame.engine.audio_manager import get_audio_manager
-from spacegame.engine.state_manager import StateManager
-from spacegame.engine.input_handler import InputHandler
-from spacegame.engine.activity_registry import create_default_registry
-from spacegame.engine.transitions import TransitionManager, TransitionType
-from spacegame.engine.screen_effects import Vignette, ScreenShake
-from spacegame.engine.fonts import FontCache
 from spacegame.data_loader import get_data_loader
+from spacegame.engine.activity_registry import create_default_registry
+from spacegame.engine.audio_manager import get_audio_manager
+from spacegame.engine.fonts import get_font
+from spacegame.engine.input_handler import InputHandler
+from spacegame.engine.screen_effects import ScreenShake, Vignette
+from spacegame.engine.startup_timer import StartupTimer
+from spacegame.engine.state_manager import StateManager
+from spacegame.engine.transitions import TransitionManager, TransitionType
+from spacegame.models.event import EventGenerator
+from spacegame.models.faction import generate_faction_assignments
+from spacegame.models.market import Market
 from spacegame.models.player import Player
 from spacegame.models.ship import Ship
-from spacegame.models.event import EventGenerator
-from spacegame.models.market import Market
-from spacegame.models.faction import generate_faction_assignments
-from spacegame.achievement_manager import AchievementManager
-from spacegame.tutorial_manager import TutorialManager
 from spacegame.save_manager import SaveManager
-from spacegame.engine.startup_timer import StartupTimer
+from spacegame.tutorial_manager import TutorialManager
 from spacegame.utils.logger import logger
-import time
 
 
 class Game:
@@ -217,9 +243,9 @@ class Game:
         self.investment_manager: Optional[InvestmentManager] = None
 
         # Dialogue system
+        from spacegame.models.attributes import AttributeSheet
         from spacegame.models.dialogue import DialogueManager
         from spacegame.models.social import SocialManager
-        from spacegame.models.attributes import AttributeSheet
 
         self.dialogue_manager = DialogueManager()
         self.social_manager = SocialManager()
@@ -372,6 +398,7 @@ class Game:
 
         # Generate a preset build so the player has a composite from the start
         from spacegame.models.ship_presets import generate_preset_from_ship_type
+
         try:
             preset = generate_preset_from_ship_type(shuttle_type)
             starting_ship.set_build(preset)
@@ -402,7 +429,7 @@ class Game:
         system_ids = [s.id for s in self.data_loader.get_all_systems()]
         if faction_ids:
             self.player.faction_assignments = generate_faction_assignments(system_ids, faction_ids)
-            self.player.faction_reputation = {fid: 0 for fid in faction_ids}
+            self.player.faction_reputation = dict.fromkeys(faction_ids, 0)
             self._apply_faction_assignments()
 
         # Initialize event generator
@@ -518,7 +545,6 @@ class Game:
             return None
         try:
             import json
-            import tempfile
 
             from spacegame.engine.fonts import scaled_font_size
 
@@ -618,7 +644,7 @@ class Game:
         Args:
             political_state: Saved political state dict, or None for fresh defaults.
         """
-        from spacegame.models.politics import PoliticsManager, FactionRelationship
+        from spacegame.models.politics import PoliticsManager
 
         factions = {f.id: f for f in self.data_loader.get_all_factions()}
         if political_state:
@@ -652,8 +678,8 @@ class Game:
 
     def _initialize_news_ticker(self) -> None:
         """Initialize news ticker from loaded templates."""
-        from spacegame.models.news_ticker import NewsTicker
         from spacegame.config import NEWS_TICKER_BUFFER_SIZE
+        from spacegame.models.news_ticker import NewsTicker
 
         self.news_ticker = NewsTicker(
             self.data_loader.news_templates, buffer_size=NEWS_TICKER_BUFFER_SIZE
@@ -723,9 +749,6 @@ class Game:
     def initialize_states(self) -> None:
         """Register all game states."""
         from spacegame.views.main_menu_view import MainMenuView
-        from spacegame.views.galaxy_map_view import GalaxyMapView
-        from spacegame.views.trading_view import TradingView
-        from spacegame.views.mining_view import MiningView
 
         # Create views
         self.main_menu_view = MainMenuView(self.ui_manager, self.save_manager)
@@ -808,6 +831,14 @@ class Game:
             return
         old_surface = self.screen.copy()
         self.transition_manager.start(transition_type, duration, callback, old_surface)
+
+    # ==================================================================
+    # STATE TRANSITIONS (lines ~836-1710)
+    # Each active view is checked for a pending next_state. When found,
+    # the transition handler creates the target view (via _ensure_*),
+    # wraps the state change in a visual transition, and clears the
+    # pending state. Cases are ordered by frequency of use.
+    # ==================================================================
 
     def _handle_state_transitions(self) -> None:
         """Check for and handle state transitions."""
@@ -1218,10 +1249,10 @@ class Game:
 
                         if self.mission_manager.get_status("iron_delivery") == MissionStatus.ACTIVE:
                             self.mission_manager.fail_mission("iron_delivery")
-                            self._mission_notifications.append(
-                                "Mission Failed: Iron Ore Delivery"
+                            self._mission_notifications.append("Mission Failed: Iron Ore Delivery")
+                            logger.info(
+                                "Iron delivery mission failed — player sold consigned cargo"
                             )
-                            logger.info("Iron delivery mission failed — player sold consigned cargo")
 
                 target = next_state
 
@@ -1396,10 +1427,6 @@ class Game:
                 config = self.ground_briefing_view.mission_config
 
                 def _do():
-                    from spacegame.models.ground_mapgen import (
-                        MapGenConfig,
-                        GroundMapGenerator,
-                    )
                     from spacegame.models.ground_crew import GroundCrewBonuses
 
                     crew_bonuses = GroundCrewBonuses.compute(
@@ -1742,6 +1769,14 @@ class Game:
         self.station_hub_view = None
         self.repair_bay_view = None
 
+    # ==================================================================
+    # VIEW FACTORIES (lines ~1777-2130)
+    # 23 _ensure_*_view() methods. Each lazily imports its view class,
+    # creates an instance with current game state, and registers it
+    # with the state manager. Views are recreated on each visit to
+    # ensure fresh data (locations, configs, mission state, etc.).
+    # ==================================================================
+
     def _ensure_station_hub_view(self) -> None:
         """Create or recreate station hub view for current system."""
         from spacegame.views.station_hub_view import StationHubView
@@ -2025,7 +2060,9 @@ class Game:
         self._last_dialogue_npc_id = npc_id
 
         # Select dialogue music based on NPC (default neutral, emotional NPCs get intimate)
-        self._dialogue_music = getattr(npc, "dialogue_music", "dialogue_neutral") or "dialogue_neutral"
+        self._dialogue_music = (
+            getattr(npc, "dialogue_music", "dialogue_neutral") or "dialogue_neutral"
+        )
 
         # Sync flags and social state from player before starting
         self.dialogue_manager.load_flags(self.player.dialogue_flags)
@@ -2225,7 +2262,6 @@ class Game:
         """
         from spacegame.models.encounter import (
             EncounterContext,
-            EncounterDefinition,
             lookup_encounter_definition,
             select_encounter_definition,
         )
@@ -2306,9 +2342,9 @@ class Game:
         has_false_transponder = self.player.upgrade_manager.has_upgrade("false_transponder")
 
         from spacegame.models.smuggling import (
-            should_trigger_bounty_hunter,
-            get_bounty_hunter_tier,
             build_bounty_hunter_encounter,
+            get_bounty_hunter_tier,
+            should_trigger_bounty_hunter,
         )
 
         triggered = should_trigger_bounty_hunter(
@@ -2650,14 +2686,10 @@ class Game:
                 # New: multiple combat moves per crew member
                 if template.combat_moves:
                     for move_data in template.combat_moves:
-                        crew_moves.append(
-                            self.data_loader._parse_combat_move(move_data)
-                        )
+                        crew_moves.append(self.data_loader._parse_combat_move(move_data))
                 # Legacy fallback: single combat_move
                 elif template.combat_move:
-                    crew_moves.append(
-                        self.data_loader._parse_combat_move(template.combat_move)
-                    )
+                    crew_moves.append(self.data_loader._parse_combat_move(template.combat_move))
                 if crew_moves:
                     moves[template.id] = crew_moves
         return moves
@@ -2902,8 +2934,8 @@ class Game:
             return
 
         from spacegame.models.ground_mission import (
-            MissionOutcome,
             GHOST_RUN_BONUS_PERCENT,
+            MissionOutcome,
         )
 
         outcome = result.outcome
@@ -3034,7 +3066,7 @@ class Game:
             return CampaignMapBuilder.build(parsed)
 
         # Procedural fallback
-        from spacegame.models.ground_mapgen import MapGenConfig, GroundMapGenerator
+        from spacegame.models.ground_mapgen import GroundMapGenerator, MapGenConfig
 
         gen_config = MapGenConfig(
             mission_type=config.mission_type,
@@ -3054,6 +3086,11 @@ class Game:
         """Create or recreate ship builder view."""
         from spacegame.views.ship_builder_view import ShipBuilderView
 
+        # Clean up previous builder view's UI elements to avoid zombie buttons
+        old_view = self.state_manager.states.get(GameState.SHIP_BUILDER)
+        if old_view and hasattr(old_view, "_destroy_ui"):
+            old_view._destroy_ui()
+
         self.ship_builder_view = ShipBuilderView(
             self.ui_manager,
             self.player,
@@ -3064,6 +3101,11 @@ class Game:
     def _ensure_shipyard_view(self) -> None:
         """Create or recreate shipyard view."""
         from spacegame.views.shipyard_view import ShipyardView
+
+        # Clean up previous view's UI elements to avoid zombie buttons
+        old_view = self.state_manager.states.get(GameState.SHIPYARD)
+        if old_view and hasattr(old_view, "_destroy_ui"):
+            old_view._destroy_ui()
 
         self.shipyard_view = ShipyardView(
             self.ui_manager,
@@ -3312,7 +3354,7 @@ class Game:
         # Recreate markets (they need to be reconstructed with current game state)
         self.markets = {}
         market_data = save_data.get("markets", {})
-        for system_id, data in market_data.items():
+        for _system_id, _data in market_data.items():
             # Markets will be recreated when entering trading view
             # For now, just store the serialized data
             pass
@@ -3325,7 +3367,7 @@ class Game:
                 self.player.faction_assignments = generate_faction_assignments(
                     system_ids, faction_ids
                 )
-                self.player.faction_reputation = {fid: 0 for fid in faction_ids}
+                self.player.faction_reputation = dict.fromkeys(faction_ids, 0)
         self._apply_faction_assignments()
 
         # Backward compat: initialize discovered recipes if empty (old saves)
@@ -3619,12 +3661,19 @@ class Game:
         if not self.player:
             return
         from spacegame.models.builder_discovery import check_salvage_discovery
+
         deck_type = "cargo"  # Default; salvage views track deck type
         if hasattr(self, "salvage_view") and self.salvage_view:
             deck_type = getattr(self.salvage_view, "_deck_type", "cargo")
-        skill_level = int(self.player.progression.get_bonus("salvage_expert") * 10) if hasattr(self.player, "progression") else 0
+        skill_level = (
+            int(self.player.progression.get_bonus("salvage_expert") * 10)
+            if hasattr(self.player, "progression")
+            else 0
+        )
         result = check_salvage_discovery(
-            deck_type, skill_level, self.player.unlocked_shapes,
+            deck_type,
+            skill_level,
+            self.player.unlocked_shapes,
         )
         if result:
             self.player.unlocked_shapes.add(result)
@@ -3635,14 +3684,22 @@ class Game:
         if not self.player:
             return
         from spacegame.models.builder_discovery import check_mining_discovery
+
         system_id = self.player.current_system_id
         depth = 3  # Default; mining views track depth
         if hasattr(self, "mining_view") and self.mining_view:
             depth = getattr(self.mining_view, "_current_depth", 3)
-        skill_level = int(self.player.progression.get_bonus("deep_mining") * 10) if hasattr(self.player, "progression") else 0
+        skill_level = (
+            int(self.player.progression.get_bonus("deep_mining") * 10)
+            if hasattr(self.player, "progression")
+            else 0
+        )
         result = check_mining_discovery(
-            system_id, depth, skill_level,
-            self.player.unlocked_shapes, self.player.unlocked_materials,
+            system_id,
+            depth,
+            skill_level,
+            self.player.unlocked_shapes,
+            self.player.unlocked_materials,
         )
         if result:
             if result["type"] == "shape":
@@ -3668,9 +3725,23 @@ class Game:
         if hasattr(state, "_pending_trophy_drops"):
             state._pending_trophy_drops.clear()
 
-    def _show_builder_discovery(self, discovery_type: str, item_id: str, boss_name: str = "") -> None:
+        # Legendary module trophy drops
+        module_trophies = getattr(state, "_pending_module_trophy_drops", [])
+        for trophy in module_trophies:
+            module_id = trophy["module_id"]
+            if module_id not in self.player.unlocked_modules:
+                self.player.unlocked_modules.add(module_id)
+                self._show_builder_discovery("module", module_id, boss_name=trophy.get("boss_name"))
+                logger.info(
+                    f"Legendary module unlocked: {module_id} from {trophy.get('boss_name')}"
+                )
+        if hasattr(state, "_pending_module_trophy_drops"):
+            state._pending_module_trophy_drops.clear()
+
+    def _show_builder_discovery(
+        self, discovery_type: str, item_id: str, boss_name: str = ""
+    ) -> None:
         """Show a discovery notification for a builder unlock."""
-        from spacegame.models.ship_build import HullShape
         label = item_id.replace("_", " ").title()
         if boss_name:
             msg = f"Trophy: {label} (from {boss_name})"
@@ -3771,7 +3842,7 @@ class Game:
         # Generate news ticker headlines from current state
         if self.news_ticker:
             galaxy_evt_ctx = []
-            for sid, evts in self.active_galaxy_events.items():
+            for evts in self.active_galaxy_events.values():
                 for e in evts:
                     galaxy_evt_ctx.append(
                         {
@@ -3782,7 +3853,7 @@ class Game:
                         }
                     )
             market_evt_ctx = []
-            for sid, evt in self.active_events.items():
+            for evt in self.active_events.values():
                 if evt.is_active(current_day):
                     market_evt_ctx.append(
                         {
@@ -4083,7 +4154,9 @@ class Game:
                         discoverable_count += 1
                         # Add narrative journal entry for mission discovery
                         if self.journal:
-                            discovery = mission.discovery_text or f"Heard word of new work: {mission.name}."
+                            discovery = (
+                                mission.discovery_text or f"Heard word of new work: {mission.name}."
+                            )
                             self.journal.add_auto_entry(
                                 entry_id=f"mission_discover_{mid}",
                                 text=discovery,
@@ -4209,7 +4282,7 @@ class Game:
             return
 
         if self._banner_font is None:
-            self._banner_font = FontCache.get(24)
+            self._banner_font = get_font("machine", 24)
 
         # Fade out in last second
         alpha = 255
@@ -4248,7 +4321,7 @@ class Game:
             return
 
         if self._banner_font is None:
-            self._banner_font = FontCache.get(24)
+            self._banner_font = get_font("machine", 24)
 
         msg = getattr(self, "_current_achievement_msg", "")
         if not msg:
@@ -4290,20 +4363,20 @@ class Game:
         screen.blit(dim, (0, 0))
 
         # Title
-        title_font = FontCache.get(44)
+        title_font = get_font("header", 44)
         title = title_font.render("MILESTONE ACHIEVED", True, Colors.GOLD)
         title.set_alpha(alpha)
         screen.blit(title, title.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 - 40)))
 
         # Achievement name
-        name_font = FontCache.get(32)
+        name_font = get_font("dialogue", 32)
         name = name_font.render(self._celebration_text, True, Colors.TEXT)
         name.set_alpha(alpha)
         screen.blit(name, name.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2)))
 
         # Subtitle (description + reward)
         if self._celebration_subtitle:
-            sub_font = FontCache.get(20)
+            sub_font = get_font("dialogue", 20)
             sub = sub_font.render(self._celebration_subtitle, True, Colors.TEXT_SECONDARY)
             sub.set_alpha(alpha)
             screen.blit(sub, sub.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 + 30)))
@@ -4329,7 +4402,7 @@ class Game:
             return
 
         if self._banner_font is None:
-            self._banner_font = FontCache.get(24)
+            self._banner_font = get_font("machine", 24)
 
         msg = self._current_mission_msg
         if not msg:
@@ -4411,10 +4484,7 @@ class Game:
                         self.state_manager.change_state(hud_result)
                         continue
                     # Consume mouse clicks on the HUD bar to prevent click-through
-                    if (
-                        event.type == pygame.MOUSEBUTTONDOWN
-                        and event.pos[1] >= self._cockpit_hud.y
-                    ):
+                    if event.type == pygame.MOUSEBUTTONDOWN and event.pos[1] >= self._cockpit_hud.y:
                         continue
 
                 # F11 — toggle fullscreen
@@ -4481,7 +4551,10 @@ class Game:
                 self._check_day_advance()
                 # Defer mission/achievement checks while dialogue is active
                 # to avoid notification banners overlapping the conversation
-                if not (self.dialogue_view and self.dialogue_view.active) and not self.transition_manager.active:
+                if (
+                    not (self.dialogue_view and self.dialogue_view.active)
+                    and not self.transition_manager.active
+                ):
                     self.check_achievements()
                     self.check_missions()
                 self.check_crew_xp()

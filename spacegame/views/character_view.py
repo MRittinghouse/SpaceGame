@@ -5,26 +5,35 @@ Displays protagonist attributes, progression summary, faction standing,
 and key statistics. Links to Skill Trees and Crew views.
 """
 
-import pygame
-import pygame_gui
 from typing import Optional
 
-from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState, scale_x, scale_y
-from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
-from spacegame.views.base_view import BaseView
-from spacegame.models.player import Player
-from spacegame.models.attributes import (
-    AttributeId,
-    AttributeSheet,
-    ATTRIBUTE_DEFINITIONS,
-)
-from spacegame.models.social import SocialManager
-from spacegame.models.progression import SkillTreeType
+import pygame
+import pygame_gui
+
+from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH, Colors, GameState, scale_x, scale_y
 from spacegame.engine.backgrounds import AnimatedBackground
 from spacegame.engine.draw_utils import draw_bar, draw_panel
-from spacegame.engine.fonts import FONT_BODY, FONT_LG, FONT_MD, FONT_SM, FONT_XL2, FONT_XS, FontCache
+from spacegame.engine.fonts import (
+    FONT_BODY,
+    FONT_LG,
+    FONT_MD,
+    FONT_SM,
+    FONT_XL2,
+    FONT_XS,
+    get_font,
+)
 from spacegame.engine.sprites import get_sprite_manager, res_scale
+from spacegame.models.attributes import (
+    ATTRIBUTE_DEFINITIONS,
+    AttributeId,
+    AttributeSheet,
+)
+from spacegame.models.player import Player
+from spacegame.models.progression import SkillTreeType
+from spacegame.models.social import SocialManager
 from spacegame.utils.logger import logger
+from spacegame.views.base_view import BaseView
+from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
 
 # Map tree types to their governing attribute for display
 _TREE_ATTRIBUTE_MAP = {
@@ -82,12 +91,12 @@ class CharacterView(BaseView):
         self.next_state: Optional[GameState] = None
 
         # Fonts
-        self.title_font = FontCache.get(FONT_XL2)
-        self.header_font = FontCache.get(FONT_BODY)
-        self.info_font = FontCache.get(FONT_MD)
-        self.small_font = FontCache.get(FONT_XS)
-        self.value_font = FontCache.get(FONT_LG)
-        self.section_font = FontCache.get(FONT_SM)
+        self.title_font = get_font("header", FONT_XL2)
+        self.header_font = get_font("header", FONT_BODY)
+        self.info_font = get_font("dialogue", FONT_MD)
+        self.small_font = get_font("label", FONT_XS)
+        self.value_font = get_font("stats", FONT_LG)
+        self.section_font = get_font("label", FONT_SM)
 
         # UI elements
         self.skills_button: Optional[pygame_gui.elements.UIButton] = None
@@ -221,9 +230,7 @@ class CharacterView(BaseView):
     def _render_header(self, screen: pygame.Surface) -> None:
         """Render player identity header card."""
         draw_panel(screen, (HEADER_X, HEADER_Y, HEADER_W, HEADER_H), alpha=190)
-        pygame.draw.rect(
-            screen, Colors.TEXT_HIGHLIGHT, (HEADER_X, HEADER_Y, HEADER_W, 2)
-        )
+        pygame.draw.rect(screen, Colors.TEXT_HIGHLIGHT, (HEADER_X, HEADER_Y, HEADER_W, 2))
 
         cx = WINDOW_WIDTH // 2
 
@@ -384,9 +391,7 @@ class CharacterView(BaseView):
 
     def _render_stats_faction_panel(self, screen: pygame.Surface) -> None:
         """Render statistics and faction standing side by side."""
-        draw_panel(
-            screen, (RIGHT_X, RIGHT_BOT_Y, RIGHT_W, RIGHT_BOT_H), alpha=190
-        )
+        draw_panel(screen, (RIGHT_X, RIGHT_BOT_Y, RIGHT_W, RIGHT_BOT_H), alpha=190)
 
         # Left column: Statistics
         sx = RIGHT_X + 15
@@ -402,9 +407,15 @@ class CharacterView(BaseView):
             ("Trades", str(self.player.trades_completed)),
             ("Systems", f"{len(self.player.systems_visited)} visited"),
             ("Day", str(self.player.game_day)),
-            ("Missions", str(self.player.side_missions_completed + len(
-                [m for m in (self.player.mission_state or {}).values() if m == "completed"]
-            ))),
+            (
+                "Missions",
+                str(
+                    self.player.side_missions_completed
+                    + len(
+                        [m for m in (self.player.mission_state or {}).values() if m == "completed"]
+                    )
+                ),
+            ),
         ]
         for label, value in stat_lines:
             lbl_surf = self.small_font.render(f"{label}:", True, Colors.TEXT_SECONDARY)

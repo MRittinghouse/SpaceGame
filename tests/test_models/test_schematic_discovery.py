@@ -15,17 +15,25 @@ class TestSchematicCostField:
 
     def test_default_schematic_cost_is_zero(self) -> None:
         r = Recipe(
-            id="test", name="Test", description="test",
-            inputs={"a": 1}, outputs={"b": 1},
-            processing_time=5.0, location_ids=["nexus_prime"],
+            id="test",
+            name="Test",
+            description="test",
+            inputs={"a": 1},
+            outputs={"b": 1},
+            processing_time=5.0,
+            location_ids=["nexus_prime"],
         )
         assert r.schematic_cost == 0
 
     def test_schematic_cost_set(self) -> None:
         r = Recipe(
-            id="test", name="Test", description="test",
-            inputs={"a": 1}, outputs={"b": 1},
-            processing_time=5.0, location_ids=["nexus_prime"],
+            id="test",
+            name="Test",
+            description="test",
+            inputs={"a": 1},
+            outputs={"b": 1},
+            processing_time=5.0,
+            location_ids=["nexus_prime"],
             schematic_cost=3,
         )
         assert r.schematic_cost == 3
@@ -36,6 +44,7 @@ class TestSchematicDataCommodity:
 
     def test_schematic_data_exists(self) -> None:
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_all()
         commodity_ids = {c.id for c in dl.get_all_commodities()}
@@ -43,6 +52,7 @@ class TestSchematicDataCommodity:
 
     def test_schematic_data_has_zero_price(self) -> None:
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_all()
         c = next(c for c in dl.get_all_commodities() if c.id == "schematic_data")
@@ -54,6 +64,7 @@ class TestDiscoverableRecipeSchematicCosts:
 
     def test_tier2_discoverable_cost_3(self) -> None:
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_all()
         for r in dl.recipes:
@@ -62,6 +73,7 @@ class TestDiscoverableRecipeSchematicCosts:
 
     def test_tier3_discoverable_cost_5(self) -> None:
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_all()
         for r in dl.recipes:
@@ -70,6 +82,7 @@ class TestDiscoverableRecipeSchematicCosts:
 
     def test_non_discoverable_cost_zero(self) -> None:
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_all()
         for r in dl.recipes:

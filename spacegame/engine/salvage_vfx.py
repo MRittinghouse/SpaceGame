@@ -7,19 +7,17 @@ sidebar, corruption warnings, and deck transition effects.
 
 import math
 import random as _random
-from typing import Optional
 
 import pygame
 
 from spacegame.config import (
-    WINDOW_WIDTH,
     WINDOW_HEIGHT,
+    WINDOW_WIDTH,
     Colors,
     scale_x,
     scale_y,
 )
-from spacegame.engine.fonts import FontCache, FONT_XS, FONT_SM, FONT_MD
-
+from spacegame.engine.fonts import FONT_MD, FONT_XS, get_font
 
 # ==========================================================================
 # Derelict Type Visual Profiles
@@ -29,10 +27,10 @@ _DERELICT_PROFILES = {
     "cargo_bay": {
         "name": "Cargo Bay",
         "bg_colors": [
-            (25, 22, 18),   # Deck 1: warm brown (cargo crates)
-            (22, 20, 16),   # Deck 2: darker, deeper in hold
-            (18, 16, 14),   # Deck 3: deep storage
-            (14, 12, 12),   # Deck 4: sub-level
+            (25, 22, 18),  # Deck 1: warm brown (cargo crates)
+            (22, 20, 16),  # Deck 2: darker, deeper in hold
+            (18, 16, 14),  # Deck 3: deep storage
+            (14, 12, 12),  # Deck 4: sub-level
         ],
         "accent": (200, 170, 100),  # Cargo amber
         "particle_color": (160, 140, 100),  # Dust/debris
@@ -42,9 +40,9 @@ _DERELICT_PROFILES = {
     "lab_module": {
         "name": "Lab Module",
         "bg_colors": [
-            (18, 22, 30),   # Deck 1: sterile blue-white
-            (14, 18, 26),   # Deck 2: deeper, flickering lights
-            (10, 14, 22),   # Deck 3: dark lab, emergency lighting
+            (18, 22, 30),  # Deck 1: sterile blue-white
+            (14, 18, 26),  # Deck 2: deeper, flickering lights
+            (10, 14, 22),  # Deck 3: dark lab, emergency lighting
         ],
         "accent": (100, 180, 220),  # Lab cyan
         "particle_color": (80, 160, 200),  # Chemical vapor
@@ -54,11 +52,11 @@ _DERELICT_PROFILES = {
     "engine_room": {
         "name": "Engine Room",
         "bg_colors": [
-            (28, 18, 14),   # Deck 1: warm industrial
-            (24, 15, 12),   # Deck 2: heat haze
-            (20, 12, 10),   # Deck 3: hot, sparks
-            (16, 10, 8),    # Deck 4: reactor adjacent
-            (12, 8, 8),     # Deck 5: core proximity
+            (28, 18, 14),  # Deck 1: warm industrial
+            (24, 15, 12),  # Deck 2: heat haze
+            (20, 12, 10),  # Deck 3: hot, sparks
+            (16, 10, 8),  # Deck 4: reactor adjacent
+            (12, 8, 8),  # Deck 5: core proximity
         ],
         "accent": (255, 140, 40),  # Engine orange
         "particle_color": (255, 120, 30),  # Sparks
@@ -136,32 +134,44 @@ class SalvageAtmosphere:
             style = self._profile["particle_style"]
 
             if style == "dust":
-                self._particles.append({
-                    "x": self._rng.uniform(gr.left, gr.right),
-                    "y": float(gr.bottom),
-                    "vx": self._rng.uniform(-5, 5),
-                    "vy": self._rng.uniform(-12, -4),
-                    "life": self._rng.uniform(2.0, 4.0), "max_life": 4.0,
-                    "alpha": self._rng.randint(15, 35), "size": 1.5,
-                })
+                self._particles.append(
+                    {
+                        "x": self._rng.uniform(gr.left, gr.right),
+                        "y": float(gr.bottom),
+                        "vx": self._rng.uniform(-5, 5),
+                        "vy": self._rng.uniform(-12, -4),
+                        "life": self._rng.uniform(2.0, 4.0),
+                        "max_life": 4.0,
+                        "alpha": self._rng.randint(15, 35),
+                        "size": 1.5,
+                    }
+                )
             elif style == "vapor":
-                self._particles.append({
-                    "x": self._rng.uniform(gr.left, gr.right),
-                    "y": self._rng.uniform(gr.top, gr.bottom),
-                    "vx": self._rng.uniform(-10, 10),
-                    "vy": self._rng.uniform(-8, 8),
-                    "life": self._rng.uniform(1.5, 3.0), "max_life": 3.0,
-                    "alpha": self._rng.randint(15, 30), "size": 2.0,
-                })
+                self._particles.append(
+                    {
+                        "x": self._rng.uniform(gr.left, gr.right),
+                        "y": self._rng.uniform(gr.top, gr.bottom),
+                        "vx": self._rng.uniform(-10, 10),
+                        "vy": self._rng.uniform(-8, 8),
+                        "life": self._rng.uniform(1.5, 3.0),
+                        "max_life": 3.0,
+                        "alpha": self._rng.randint(15, 30),
+                        "size": 2.0,
+                    }
+                )
             elif style == "sparks":
-                self._particles.append({
-                    "x": self._rng.uniform(gr.left, gr.right),
-                    "y": self._rng.uniform(gr.top, gr.top + gr.height * 0.3),
-                    "vx": self._rng.uniform(-15, 15),
-                    "vy": self._rng.uniform(20, 50),
-                    "life": self._rng.uniform(0.3, 0.8), "max_life": 0.8,
-                    "alpha": self._rng.randint(80, 160), "size": 1.0,
-                })
+                self._particles.append(
+                    {
+                        "x": self._rng.uniform(gr.left, gr.right),
+                        "y": self._rng.uniform(gr.top, gr.top + gr.height * 0.3),
+                        "vx": self._rng.uniform(-15, 15),
+                        "vy": self._rng.uniform(20, 50),
+                        "life": self._rng.uniform(0.3, 0.8),
+                        "max_life": 0.8,
+                        "alpha": self._rng.randint(80, 160),
+                        "size": 1.0,
+                    }
+                )
 
         for p in self._particles:
             p["x"] += p["vx"] * dt
@@ -175,8 +185,10 @@ class SalvageAtmosphere:
         gr = self._grid_rect
         margin = scale_x(12)
         area = pygame.Rect(
-            gr.left - margin, gr.top - margin,
-            gr.width + margin * 2, gr.height + margin * 2,
+            gr.left - margin,
+            gr.top - margin,
+            gr.width + margin * 2,
+            gr.height + margin * 2,
         )
 
         # Background tint (deck-specific)
@@ -241,8 +253,8 @@ class SalvageDeckMeter:
         self.max_decks = max_decks
         self._deck: int = 1
         self._derelict_type: str = "cargo_bay"
-        self._label_font = FontCache.get(FONT_XS)
-        self._value_font = FontCache.get(FONT_MD)
+        self._label_font = get_font("label", FONT_XS)
+        self._value_font = get_font("stats", FONT_MD)
 
     def set_state(self, deck: int, derelict_type: str = "cargo_bay") -> None:
         self._deck = deck
@@ -275,7 +287,8 @@ class SalvageDeckMeter:
         # Current deck marker
         marker_y = self.y + (self._deck - 1) * segment_h
         pygame.draw.rect(
-            screen, profile["accent"],
+            screen,
+            profile["accent"],
             (self.x + 1, marker_y, self.width - 2, segment_h - 1),
         )
         deck_text = f"D{self._deck}"
@@ -284,7 +297,9 @@ class SalvageDeckMeter:
 
         # Title
         title = self._label_font.render("DECK", True, Colors.TEXT_SECONDARY)
-        screen.blit(title, (self.x + (self.width - title.get_width()) // 2, self.y - title.get_height() - 2))
+        screen.blit(
+            title, (self.x + (self.width - title.get_width()) // 2, self.y - title.get_height() - 2)
+        )
 
 
 # ==========================================================================
@@ -307,7 +322,7 @@ class CorruptionOverlay:
         self._bar_h = scale_y(8)
         self._ratio: float = 1.0
         self._elapsed: float = 0.0
-        self._label_font = FontCache.get(FONT_XS)
+        self._label_font = get_font("label", FONT_XS)
 
     def set_ratio(self, ratio: float) -> None:
         """Update corruption ratio (1.0 = safe, 0.0 = corrupted)."""
@@ -377,13 +392,16 @@ class ScanPulse:
             cx: Center X pixel coordinate.
             cy: Center Y pixel coordinate.
         """
-        self._pulses.append({
-            "x": cx, "y": cy,
-            "radius": 0.0,
-            "max_radius": float(scale_x(120)),
-            "life": 0.4,
-            "max_life": 0.4,
-        })
+        self._pulses.append(
+            {
+                "x": cx,
+                "y": cy,
+                "radius": 0.0,
+                "max_radius": float(scale_x(120)),
+                "life": 0.4,
+                "max_life": 0.4,
+            }
+        )
 
     def update(self, dt: float) -> None:
         for p in self._pulses:
@@ -404,14 +422,10 @@ class ScanPulse:
             if radius <= 0:
                 continue
             pulse_surf = pygame.Surface((radius * 2, radius * 2), pygame.SRCALPHA)
-            pygame.draw.circle(
-                pulse_surf, (80, 180, 255, alpha), (radius, radius), radius, 2
-            )
+            pygame.draw.circle(pulse_surf, (80, 180, 255, alpha), (radius, radius), radius, 2)
             # Inner ring (fainter, smaller)
             inner_r = max(1, radius - scale_x(15))
-            pygame.draw.circle(
-                pulse_surf, (60, 140, 220, alpha // 2), (radius, radius), inner_r, 1
-            )
+            pygame.draw.circle(pulse_surf, (60, 140, 220, alpha // 2), (radius, radius), inner_r, 1)
             screen.blit(pulse_surf, (p["x"] - radius, p["y"] - radius))
 
 
@@ -454,20 +468,27 @@ class QualityBurst:
         for i in range(count):
             angle = (2 * math.pi * i / count) + self._rng.uniform(-0.3, 0.3)
             spd = self._rng.uniform(speed * 0.5, speed)
-            particles.append({
-                "x": 0.0, "y": 0.0,
-                "vx": math.cos(angle) * spd,
-                "vy": math.sin(angle) * spd,
-                "life": self._rng.uniform(0.3, 0.6),
-                "max_life": 0.6,
-                "size": self._rng.uniform(1.5, 3.0),
-            })
+            particles.append(
+                {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "vx": math.cos(angle) * spd,
+                    "vy": math.sin(angle) * spd,
+                    "life": self._rng.uniform(0.3, 0.6),
+                    "max_life": 0.6,
+                    "size": self._rng.uniform(1.5, 3.0),
+                }
+            )
 
-        self._bursts.append({
-            "cx": cx, "cy": cy, "color": color,
-            "particles": particles,
-            "glow_timer": 0.3,
-        })
+        self._bursts.append(
+            {
+                "cx": cx,
+                "cy": cy,
+                "color": color,
+                "particles": particles,
+                "glow_timer": 0.3,
+            }
+        )
 
     def update(self, dt: float) -> None:
         for burst in self._bursts:
@@ -548,7 +569,7 @@ class ModeOverlay:
         # Mode label in corner
         label_color = (80, 160, 255) if self._mode == "scan" else (220, 170, 60)
         label_text = "SCAN MODE" if self._mode == "scan" else "EXTRACT MODE"
-        font = FontCache.get(FONT_XS)
+        font = get_font("machine", FONT_XS)
         label = font.render(label_text, True, label_color)
         screen.blit(label, (gr.right - label.get_width() - 4, gr.top + 3))
 
@@ -595,7 +616,7 @@ class DeckTransition:
         # "DECK X" banner
         if t < 0.6:
             alpha = int(220 * min(1.0, (0.6 - t) / 0.4))
-            font = FontCache.get(FONT_MD)
+            font = get_font("machine", FONT_MD)
             text = f"DESCENDING TO DECK {self._new_deck}"
             surf = font.render(text, True, profile["accent"])
             surf.set_alpha(alpha)

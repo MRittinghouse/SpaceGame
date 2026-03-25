@@ -147,7 +147,9 @@ class TestCheckTravelEncounter:
     def test_returned_ids_from_input(self) -> None:
         """All returned template IDs must come from the input list."""
         for day in range(200):
-            result = check_travel_encounter("dangerous", self.ENEMIES, day, "test", 150.0, player_level=10)
+            result = check_travel_encounter(
+                "dangerous", self.ENEMIES, day, "test", 150.0, player_level=10
+            )
             if result is not None:
                 for tid in result.enemy_template_ids:
                     assert tid in self.ENEMIES, f"Unknown template ID: {tid}"
@@ -157,7 +159,9 @@ class TestCheckTravelEncounter:
         short_hits = sum(
             1
             for day in range(1000)
-            if check_travel_encounter("dangerous", self.ENEMIES, day, f"short_{day}", 40.0, player_level=10)
+            if check_travel_encounter(
+                "dangerous", self.ENEMIES, day, f"short_{day}", 40.0, player_level=10
+            )
             is not None
         )
         # At distance 40: chance = 30 * 0.5 = 15%, expect ~150/1000
@@ -169,7 +173,9 @@ class TestCheckTravelEncounter:
         long_hits = sum(
             1
             for day in range(1000)
-            if check_travel_encounter("dangerous", self.ENEMIES, day, f"long_{day}", 180.0, player_level=10)
+            if check_travel_encounter(
+                "dangerous", self.ENEMIES, day, f"long_{day}", 180.0, player_level=10
+            )
             is not None
         )
         # At distance 180: chance = 30 * 1.5 = 45%, expect ~450/1000
@@ -181,13 +187,17 @@ class TestCheckTravelEncounter:
         dangerous_hits = sum(
             1
             for day in range(1000)
-            if check_travel_encounter("dangerous", self.ENEMIES, day, f"d_{day}", 100.0, player_level=10)
+            if check_travel_encounter(
+                "dangerous", self.ENEMIES, day, f"d_{day}", 100.0, player_level=10
+            )
             is not None
         )
         moderate_hits = sum(
             1
             for day in range(1000)
-            if check_travel_encounter("moderate", self.ENEMIES, day, f"m_{day}", 100.0, player_level=10)
+            if check_travel_encounter(
+                "moderate", self.ENEMIES, day, f"m_{day}", 100.0, player_level=10
+            )
             is not None
         )
         assert dangerous_hits > moderate_hits, (
@@ -205,11 +215,23 @@ class TestCheckTravelEncounter:
         dangerous_multi = False
         moderate_multi = False
         for day in range(500):
-            d_result = check_travel_encounter("dangerous", self.ENEMIES, day, f"d_{day}", 150.0, player_level=10)
-            m_result = check_travel_encounter("moderate", self.ENEMIES, day, f"m_{day}", 150.0, player_level=10)
-            if d_result and d_result.encounter_type == "hostile" and len(d_result.enemy_template_ids) > 1:
+            d_result = check_travel_encounter(
+                "dangerous", self.ENEMIES, day, f"d_{day}", 150.0, player_level=10
+            )
+            m_result = check_travel_encounter(
+                "moderate", self.ENEMIES, day, f"m_{day}", 150.0, player_level=10
+            )
+            if (
+                d_result
+                and d_result.encounter_type == "hostile"
+                and len(d_result.enemy_template_ids) > 1
+            ):
                 dangerous_multi = True
-            if m_result and m_result.encounter_type == "hostile" and len(m_result.enemy_template_ids) > 1:
+            if (
+                m_result
+                and m_result.encounter_type == "hostile"
+                and len(m_result.enemy_template_ids) > 1
+            ):
                 moderate_multi = True
         assert dangerous_multi, "Dangerous should sometimes have multiple enemies"
         assert not moderate_multi, "Moderate should always have exactly 1 enemy"
@@ -238,7 +260,11 @@ class TestEarlyGameEncounterProtection:
             1
             for day in range(1000)
             if check_travel_encounter(
-                "dangerous", self.ENEMIES, day, f"d_{day}", 150.0,
+                "dangerous",
+                self.ENEMIES,
+                day,
+                f"d_{day}",
+                150.0,
                 player_level=1,
             )
             is not None
@@ -254,7 +280,11 @@ class TestEarlyGameEncounterProtection:
 
         for day in range(5000):
             early = check_travel_encounter(
-                "dangerous", self.ENEMIES, day, f"early_{day}", 150.0,
+                "dangerous",
+                self.ENEMIES,
+                day,
+                f"early_{day}",
+                150.0,
                 player_level=1,
             )
             if early is not None:
@@ -263,7 +293,11 @@ class TestEarlyGameEncounterProtection:
                     early_non_hostile += 1
 
             veteran = check_travel_encounter(
-                "dangerous", self.ENEMIES, day, f"vet_{day}", 150.0,
+                "dangerous",
+                self.ENEMIES,
+                day,
+                f"vet_{day}",
+                150.0,
                 player_level=10,
             )
             if veteran is not None:
@@ -290,7 +324,11 @@ class TestEarlyGameEncounterProtection:
         total = 0
         for day in range(5000):
             result = check_travel_encounter(
-                "dangerous", self.ENEMIES, day, f"l3_{day}", 150.0,
+                "dangerous",
+                self.ENEMIES,
+                day,
+                f"l3_{day}",
+                150.0,
                 player_level=3,
             )
             if result is not None:
@@ -332,13 +370,21 @@ class TestEarlyGameEncounterProtection:
 
         # Level 1: should get EARLY_GAME_FLEE_BONUS
         state_early = build_player_combat_state(
-            ship, upgrade_mgr, None, {}, player_level=1,
+            ship,
+            upgrade_mgr,
+            None,
+            {},
+            player_level=1,
         )
         assert state_early.flee_bonus == EARLY_GAME_FLEE_BONUS
 
         # Level 10: should NOT get early-game bonus
         state_veteran = build_player_combat_state(
-            ship, upgrade_mgr, None, {}, player_level=10,
+            ship,
+            upgrade_mgr,
+            None,
+            {},
+            player_level=10,
         )
         assert state_veteran.flee_bonus == 0
 
@@ -366,7 +412,11 @@ class TestEarlyGameEncounterProtection:
         upgrade_mgr.get_bonus.return_value = 5.0  # 5% equipment flee bonus
 
         state = build_player_combat_state(
-            ship, upgrade_mgr, None, {}, player_level=1,
+            ship,
+            upgrade_mgr,
+            None,
+            {},
+            player_level=1,
         )
         assert state.flee_bonus == 5 + EARLY_GAME_FLEE_BONUS
 
@@ -394,7 +444,9 @@ class TestEncounterType:
     def test_distress_signal_never_in_safe_systems(self) -> None:
         """Safe systems should never generate any encounters including distress."""
         for day in range(500):
-            result = check_travel_encounter("safe", self.ENEMIES, day, f"safe_{day}", 100.0, player_level=10)
+            result = check_travel_encounter(
+                "safe", self.ENEMIES, day, f"safe_{day}", 100.0, player_level=10
+            )
             assert result is None
 
     def test_distress_signal_possible_in_dangerous(self) -> None:
@@ -402,7 +454,11 @@ class TestEncounterType:
         distress_count = 0
         for day in range(2000):
             result = check_travel_encounter(
-                "dangerous", self.ENEMIES, day, f"d_{day}", 150.0,
+                "dangerous",
+                self.ENEMIES,
+                day,
+                f"d_{day}",
+                150.0,
                 player_level=10,
             )
             if result and result.encounter_type == "distress_signal":
@@ -413,7 +469,11 @@ class TestEncounterType:
         """Distress signals should not have enemy template IDs."""
         for day in range(2000):
             result = check_travel_encounter(
-                "dangerous", self.ENEMIES, day, f"d_{day}", 150.0,
+                "dangerous",
+                self.ENEMIES,
+                day,
+                f"d_{day}",
+                150.0,
                 player_level=10,
             )
             if result and result.encounter_type == "distress_signal":
@@ -434,11 +494,19 @@ def _make_template(
 ) -> EnemyShipTemplate:
     """Create a minimal EnemyShipTemplate for filter tests."""
     return EnemyShipTemplate(
-        id=id, name=id, description="test",
+        id=id,
+        name=id,
+        description="test",
         behavior=EnemyBehavior.AGGRESSIVE,
-        hull=50, shields=10, energy=8, energy_regen=3,
-        speed=8, evasion=10, accuracy=60,
-        moves=[], loot_table=[],
+        hull=50,
+        shields=10,
+        energy=8,
+        energy_regen=3,
+        speed=8,
+        evasion=10,
+        accuracy=60,
+        moves=[],
+        loot_table=[],
         faction_id=faction_id,
         danger_tier=danger_tier,
     )
@@ -513,10 +581,10 @@ class TestFilterEnemiesForSystem:
         """In a moderate Commerce Guild system: generics (low+moderate) + guild moderate."""
         templates = self._make_templates()
         result = filter_enemies_for_system(templates, "commerce_guild", "moderate")
-        assert "pirate_scout" in result       # generic, low
-        assert "pirate_raider" in result      # generic, moderate
-        assert "pirate_heavy" not in result   # generic, dangerous (filtered by tier)
-        assert "guild_enforcer" in result     # faction, moderate
+        assert "pirate_scout" in result  # generic, low
+        assert "pirate_raider" in result  # generic, moderate
+        assert "pirate_heavy" not in result  # generic, dangerous (filtered by tier)
+        assert "guild_enforcer" in result  # faction, moderate
         assert "guild_dreadnought" not in result  # faction, dangerous (filtered by tier)
         assert "union_brawler" not in result  # wrong faction
 
@@ -541,7 +609,11 @@ class TestShakedownEncounter:
         shakedown_found = False
         for day in range(500):
             result = check_travel_encounter(
-                "moderate", enemies, day, "sys_test", distance=120.0,
+                "moderate",
+                enemies,
+                day,
+                "sys_test",
+                distance=120.0,
                 player_level=10,
             )
             if result and result.encounter_type == "shakedown":
@@ -555,7 +627,11 @@ class TestShakedownEncounter:
         shakedown_found = False
         for day in range(2000):
             result = check_travel_encounter(
-                "dangerous", enemies, day, f"sys_{day}", distance=120.0,
+                "dangerous",
+                enemies,
+                day,
+                f"sys_{day}",
+                distance=120.0,
                 player_level=10,
             )
             if result and result.encounter_type == "shakedown":
@@ -568,7 +644,11 @@ class TestShakedownEncounter:
         enemies = ["pirate_scout", "pirate_raider", "pirate_heavy"]
         for day in range(2000):
             result = check_travel_encounter(
-                "dangerous", enemies, day, f"sys_{day}", distance=120.0,
+                "dangerous",
+                enemies,
+                day,
+                f"sys_{day}",
+                distance=120.0,
                 player_level=10,
             )
             if result and result.encounter_type == "shakedown":
@@ -591,7 +671,11 @@ class TestShakedownEncounter:
         enemies = ["pirate_scout"]
         for day in range(2000):
             result = check_travel_encounter(
-                "dangerous", enemies, day, f"sys_{day}", distance=120.0,
+                "dangerous",
+                enemies,
+                day,
+                f"sys_{day}",
+                distance=120.0,
                 player_level=10,
             )
             if result and result.encounter_type == "shakedown":
@@ -630,9 +714,7 @@ class TestEncounterOutcome:
     def test_leads_to_combat(self) -> None:
         from spacegame.models.encounter import EncounterOutcome
 
-        outcome = EncounterOutcome(
-            description="Fight!", rewards=[], leads_to_combat=True
-        )
+        outcome = EncounterOutcome(description="Fight!", rewards=[], leads_to_combat=True)
         assert outcome.leads_to_combat is True
 
 
@@ -654,9 +736,7 @@ class TestEncounterChoice:
     def test_combat_choice(self) -> None:
         from spacegame.models.encounter import EncounterChoice, EncounterOutcome
 
-        outcome = EncounterOutcome(
-            description="Fight!", rewards=[], leads_to_combat=True
-        )
+        outcome = EncounterOutcome(description="Fight!", rewards=[], leads_to_combat=True)
         choice = EncounterChoice(
             id="fight", label="Fight", description="Open fire.", outcome=outcome
         )
@@ -825,7 +905,11 @@ class TestNonHostileDistribution:
         """Moderate systems should never produce shakedown encounters."""
         for day in range(500):
             result = check_travel_encounter(
-                "moderate", self.ENEMIES, day, f"m_{day}", 120.0,
+                "moderate",
+                self.ENEMIES,
+                day,
+                f"m_{day}",
+                120.0,
                 player_level=10,
             )
             if result and result.encounter_type == "shakedown":
@@ -835,7 +919,11 @@ class TestNonHostileDistribution:
         """Moderate systems should never produce anomaly encounters."""
         for day in range(500):
             result = check_travel_encounter(
-                "moderate", self.ENEMIES, day, f"m_{day}", 120.0,
+                "moderate",
+                self.ENEMIES,
+                day,
+                f"m_{day}",
+                120.0,
                 player_level=10,
             )
             if result and result.encounter_type == "anomaly":
@@ -846,7 +934,11 @@ class TestNonHostileDistribution:
         types_seen: set[str] = set()
         for day in range(5000):
             result = check_travel_encounter(
-                "dangerous", self.ENEMIES, day, f"d_{day}", 150.0,
+                "dangerous",
+                self.ENEMIES,
+                day,
+                f"d_{day}",
+                150.0,
                 player_level=10,
             )
             if result:
@@ -862,14 +954,23 @@ class TestNonHostileDistribution:
         types_seen: set[str] = set()
         for day in range(5000):
             result = check_travel_encounter(
-                "moderate", self.ENEMIES, day, f"m_{day}", 150.0,
+                "moderate",
+                self.ENEMIES,
+                day,
+                f"m_{day}",
+                150.0,
                 player_level=10,
             )
             if result and result.encounter_type != "hostile":
                 types_seen.add(result.encounter_type)
         valid_moderate = {
-            "distress_signal", "derelict", "merchant", "debris",
-            "patrol", "comm_intercept", "refugee",
+            "distress_signal",
+            "derelict",
+            "merchant",
+            "debris",
+            "patrol",
+            "comm_intercept",
+            "refugee",
         }
         assert types_seen.issubset(valid_moderate), (
             f"Unexpected types in moderate: {types_seen - valid_moderate}"

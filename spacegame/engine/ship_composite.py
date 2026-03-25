@@ -8,12 +8,15 @@ Pipeline:
 1. Material Color Fill — base pixel colors
 2. Panel Line Generation — darker lines between different materials
 3. Edge Highlight — lighter border on top/left silhouette edges
-4. Edge Outline — dark border around entire ship silhouette
-5. Slot Indicators — subtle colored overlay on equipment slots
-6. Material Texture — per-material micro-detail
-7. Engine Glow — animated warm color at engine slot positions
+4. Material Texture — per-material micro-detail (hull + module materials)
+5. Edge Outline — dark border around entire ship silhouette
+6. Slot Indicators — subtle colored overlay on equipment slots
+7. Engine Glow — animated warm color at engine slots and exhaust_port pixels
 
-Part of the Shipyard Overhaul — Phase C.
+Supports both legacy pixel-only builds and module-based builds.
+Module pixels are resolved into the pixel map alongside hull pixels.
+
+Part of the Shipyard Overhaul — Phases C + 3.
 """
 
 from typing import Optional
@@ -22,9 +25,7 @@ import pygame
 
 from spacegame.models.ship_build import (
     HullMaterial,
-    PlacedPixel,
     ShipBuild,
-    WEIGHT_CLASSES,
 )
 
 
@@ -64,11 +65,13 @@ class ShipComposite:
         self,
         build: ShipBuild,
         materials: dict[str, HullMaterial],
+        module_catalog: Optional[dict] = None,
     ) -> None:
         self._build = build
         self._materials = materials
+        self._module_catalog = module_catalog or {}
         self._clean_surface: Optional[pygame.Surface] = None  # Without engine glow
-        self._base_surface: Optional[pygame.Surface] = None   # With current glow frame
+        self._base_surface: Optional[pygame.Surface] = None  # With current glow frame
         self._scaled_cache: dict[int, pygame.Surface] = {}
         self._engine_timer: float = 0.0
         self._engine_frame: int = 0  # 0 or 1
@@ -76,17 +79,25 @@ class ShipComposite:
 
         # Pre-compute pixel lookup for fast neighbor queries
         self._pixel_map: dict[tuple[int, int], str] = {}
-        for p in build.pixels:
-            self._pixel_map[(p.x, p.y)] = p.material_id
+        self._build_pixel_map()
+
+    def _build_pixel_map(self) -> None:
+        """Build the (x, y) -> material_id lookup from modules + hull pixels."""
+        self._pixel_map.clear()
+        if self._module_catalog and self._build.modules:
+            from spacegame.models.ship_module import resolve_all_pixels
+
+            for p in resolve_all_pixels(self._build, self._module_catalog):
+                self._pixel_map[(p.x, p.y)] = p.material_id
+        else:
+            for p in self._build.pixels:
+                self._pixel_map[(p.x, p.y)] = p.material_id
 
     def invalidate(self) -> None:
         """Mark as needing rebuild (call when build changes)."""
         self._dirty = True
         self._scaled_cache.clear()
-        # Rebuild pixel map
-        self._pixel_map.clear()
-        for p in self._build.pixels:
-            self._pixel_map[(p.x, p.y)] = p.material_id
+        self._build_pixel_map()
 
     def get_surface(self, scale: int = 1) -> pygame.Surface:
         """Get the rendered ship at the given scale.
@@ -109,7 +120,8 @@ class ShipComposite:
                 self._scaled_cache[scale] = self._base_surface.copy()
             else:
                 self._scaled_cache[scale] = pygame.transform.scale(
-                    self._base_surface, (w, h),
+                    self._base_surface,
+                    (w, h),
                 )
         return self._scaled_cache[scale]
 
@@ -131,9 +143,8 @@ class ShipComposite:
 
     def _rebuild(self) -> None:
         """Execute the full rendering pipeline."""
-        wc = WEIGHT_CLASSES.get(self._build.weight_class, WEIGHT_CLASSES["medium"])
-        canvas_w = wc.get("canvas_w", wc.get("canvas", 32))
-        canvas_h = wc.get("canvas_h", wc.get("canvas", 32))
+        canvas_w = self._build.canvas_w
+        canvas_h = self._build.canvas_h
         surf = pygame.Surface((canvas_w, canvas_h), pygame.SRCALPHA)
 
         # Step 1: Material color fill
@@ -177,7 +188,6 @@ class ShipComposite:
         Where two different materials meet, the shared edge pixel is
         tinted slightly darker, creating a natural panel-line effect.
         """
-        canvas = surf.get_width()
         for (x, y), mat_id in self._pixel_map.items():
             # Check right and bottom neighbors
             for dx, dy in [(1, 0), (0, 1)]:
@@ -225,6 +235,7 @@ class ShipComposite:
         - Salvage Scrap: patchy worn look (random darker pixels)
         """
         import random as _rng
+
         scrap_rng = _rng.Random(42)  # Deterministic for consistency
 
         for (x, y), mat_id in self._pixel_map.items():
@@ -269,6 +280,132 @@ class ShipComposite:
                     pulse = _lighten((current.r, current.g, current.b), 8)
                     surf.set_at((x, y), (*pulse, 255))
 
+            # --- Module-specific material textures ---
+
+            elif mat_id == "cockpit_glass":
+                # Reflection band: top edge of glass gets a bright highlight
+                if (x, y - 1) not in self._pixel_map or self._pixel_map.get(
+                    (x, y - 1)
+                ) != "cockpit_glass":
+                    bright = _lighten((current.r, current.g, current.b), 18)
+                    surf.set_at((x, y), (*bright, 255))
+
+            elif mat_id == "console_panel":
+                # Instrument dots: alternating pixels get a green/amber glow
+                if (x + y) % 2 == 0:
+                    dotted = (
+                        min(255, current.r + 3),
+                        min(255, current.g + 12),
+                        min(255, current.b + 2),
+                    )
+                    surf.set_at((x, y), (*dotted, 255))
+
+            elif mat_id == "exhaust_port":
+                # Warm inner glow tint (main glow is animated in step 7)
+                warm = (
+                    min(255, current.r + 10),
+                    min(255, current.g + 5),
+                    current.b,
+                )
+                surf.set_at((x, y), (*warm, 255))
+
+            elif mat_id == "weapon_barrel":
+                # Machined groove: alternate rows slightly lighter
+                if y % 2 == 0:
+                    groove = _lighten((current.r, current.g, current.b), 6)
+                    surf.set_at((x, y), (*groove, 255))
+
+            elif mat_id == "shield_emitter":
+                # Cyan shimmer: same pattern as shield_crystal
+                if y % 2 == 0:
+                    bright = _lighten((current.r, current.g, current.b), 10)
+                    surf.set_at((x, y), (*bright, 255))
+
+            elif mat_id == "sensor_dish":
+                # Interior pixels brighter (dish center effect)
+                all_neighbors_filled = all(
+                    (x + dx, y + dy) in self._pixel_map
+                    for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]
+                )
+                if all_neighbors_filled:
+                    bright = _lighten((current.r, current.g, current.b), 14)
+                    surf.set_at((x, y), (*bright, 255))
+
+            elif mat_id == "cargo_interior":
+                # Crate grid: every 3rd pixel darker
+                if (x + y) % 3 == 0:
+                    crate = _darken((current.r, current.g, current.b), 0.90)
+                    surf.set_at((x, y), (*crate, 255))
+
+            elif mat_id == "reactor_core":
+                # Energy pulse: diagonal wave
+                if (x * 5 + y * 11) % 4 == 0:
+                    pulse = _lighten((current.r, current.g, current.b), 12)
+                    surf.set_at((x, y), (*pulse, 255))
+
+            elif mat_id == "crew_quarters_interior":
+                # Warm interior rows (window/lighting effect)
+                if y % 2 == 0:
+                    warm = _lighten((current.r, current.g, current.b), 6)
+                    surf.set_at((x, y), (*warm, 255))
+
+            # --- Manufacturer hull textures ---
+
+            elif mat_id == "module_hull_foundry":
+                # Industrial rivets (same pattern as heavy_armor)
+                if (x + y) % 3 == 0:
+                    rivet = _darken((current.r, current.g, current.b), 0.90)
+                    surf.set_at((x, y), (*rivet, 255))
+
+            elif mat_id == "module_hull_talon":
+                # Sharp angular highlights
+                if (x + y) % 4 == 0:
+                    edge = _lighten((current.r, current.g, current.b), 7)
+                    surf.set_at((x, y), (*edge, 255))
+
+            elif mat_id == "module_hull_meridian":
+                # Luxury shimmer
+                if x % 2 == 0:
+                    shimmer = _lighten((current.r, current.g, current.b), 5)
+                    surf.set_at((x, y), (*shimmer, 255))
+
+            elif mat_id == "module_hull_salvage":
+                # Patchy worn (reuse salvage scrap pattern)
+                if scrap_rng.random() < 0.15:
+                    shift = scrap_rng.randint(-12, 12)
+                    shifted = (
+                        max(0, min(255, current.r + shift)),
+                        max(0, min(255, current.g + shift - 3)),
+                        max(0, min(255, current.b + shift - 6)),
+                    )
+                    surf.set_at((x, y), (*shifted, 255))
+
+            # --- Legendary material textures ---
+
+            elif mat_id == "legendary_hull":
+                # Golden shimmer: alternating bright/dim in a wave
+                if (x + y) % 2 == 0:
+                    shimmer = _lighten((current.r, current.g, current.b), 12)
+                    surf.set_at((x, y), (*shimmer, 255))
+
+            elif mat_id == "legendary_core":
+                # Purple energy pulse: strong diagonal wave
+                if (x * 3 + y * 7) % 4 == 0:
+                    pulse = _lighten((current.r, current.g, current.b), 18)
+                    surf.set_at((x, y), (*pulse, 255))
+
+            elif mat_id == "void_material":
+                # Void absorption: very subtle dark ripple, almost imperceptible
+                if (x * 5 + y * 3) % 6 == 0:
+                    void_dark = _darken((current.r, current.g, current.b), 0.7)
+                    surf.set_at((x, y), (*void_dark, 255))
+
+            elif mat_id == "phantom_material":
+                # Phase flicker: some pixels slightly transparent-looking
+                if (x + y * 2) % 3 == 0:
+                    phase = _lighten((current.r, current.g, current.b), 20)
+                    surf.set_at((x, y), (*phase, 255))
+
     def _apply_outline(self, surf: pygame.Surface) -> None:
         """Step 4: Draw a 1px dark outline around the entire silhouette.
 
@@ -281,7 +418,7 @@ class ShipComposite:
         outline_color = (15, 18, 30, 200)
         outline_pixels: set[tuple[int, int]] = set()
 
-        for (x, y) in self._pixel_map:
+        for x, y in self._pixel_map:
             for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
                 nx, ny = x + dx, y + dy
                 if (nx, ny) not in self._pixel_map:
@@ -319,31 +456,40 @@ class ShipComposite:
                         surf.set_at((px, py), blended)
 
     def _apply_engine_glow(self, surf: pygame.Surface) -> None:
-        """Step 7: Animated engine glow at engine slot positions.
+        """Step 7: Animated engine glow at engine slots and exhaust_port pixels.
 
         Frame 0: Bright warm center
         Frame 1: Dimmer, slightly shifted
+
+        For legacy builds: glow at engine slot centers.
+        For module builds: glow on exhaust_port material pixels.
         """
+        if self._engine_frame == 0:
+            glow_color = self.ENGINE_COLOR_BRIGHT
+            surround = self.ENGINE_SURROUND
+        else:
+            glow_color = self.ENGINE_COLOR_DIM
+            surround = _darken(self.ENGINE_SURROUND, 0.7)
+
+        sw, sh = surf.get_width(), surf.get_height()
+
+        # Legacy: glow at engine slot centers
         for slot in self._build.slots:
             if slot.slot_type != "engine":
                 continue
             cx = slot.x + slot.size // 2
             cy = slot.y + slot.size // 2
 
-            if self._engine_frame == 0:
-                glow_color = self.ENGINE_COLOR_BRIGHT
-                surround = self.ENGINE_SURROUND
-            else:
-                glow_color = self.ENGINE_COLOR_DIM
-                surround = _darken(self.ENGINE_SURROUND, 0.7)
-
-            # Center pixel
-            sw, sh = surf.get_width(), surf.get_height()
             if 0 <= cx < sw and 0 <= cy < sh:
                 surf.set_at((cx, cy), (*glow_color, 255))
 
-            # Surround pixels (cross pattern)
             for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
                 nx, ny = cx + dx, cy + dy
                 if 0 <= nx < sw and 0 <= ny < sh and (nx, ny) in self._pixel_map:
                     surf.set_at((nx, ny), (*surround, 220))
+
+        # Module-based: glow on exhaust_port pixels directly
+        for (x, y), mat_id in self._pixel_map.items():
+            if mat_id == "exhaust_port":
+                if 0 <= x < sw and 0 <= y < sh:
+                    surf.set_at((x, y), (*glow_color, 255))

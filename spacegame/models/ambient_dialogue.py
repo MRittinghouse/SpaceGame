@@ -6,7 +6,7 @@ inter-crew banter. Fire-and-forget flavor text, not interactive conversations.
 """
 
 import random
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any, Optional
 
 
@@ -21,7 +21,9 @@ class AmbientLine:
     faction_id: str = ""
     required_crew: str = ""
     min_loyalty: int = 0
-    action_type: str = ""  # Sub-type for player_action context (e.g. "sold_cargo", "combat_victory")
+    action_type: str = (
+        ""  # Sub-type for player_action context (e.g. "sold_cargo", "combat_victory")
+    )
 
 
 class AmbientDialogueManager:
@@ -56,13 +58,15 @@ class AmbientDialogueManager:
             The line text, or None if no matching line available.
         """
         matching = self.get_all_matching(
-            context, crew_id, system_id, faction_id, recruited_ids, loyalty,
+            context,
+            crew_id,
+            system_id,
+            faction_id,
+            recruited_ids,
+            loyalty,
             action_type,
         )
-        available = [
-            (i, line) for i, line in matching
-            if i not in self._shown
-        ]
+        available = [(i, line) for i, line in matching if i not in self._shown]
         if not available:
             return None
 

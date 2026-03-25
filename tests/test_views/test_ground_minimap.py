@@ -7,9 +7,7 @@ player/enemy dot positioning, and interactable markers.
 import pytest
 
 pygame = pytest.importorskip("pygame", reason="pygame required for view tests")
-pygame_gui = pytest.importorskip(
-    "pygame_gui", reason="pygame_gui required for view tests"
-)
+pygame_gui = pytest.importorskip("pygame_gui", reason="pygame_gui required for view tests")
 
 from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, GROUND_TILE_SIZE  # noqa: E402
 from spacegame.models.ground import (  # noqa: E402
@@ -43,7 +41,10 @@ def _init_pygame():
 
 
 def _make_view(
-    width: int = 15, height: int = 15, player_x: int = 5, player_y: int = 5,
+    width: int = 15,
+    height: int = 15,
+    player_x: int = 5,
+    player_y: int = 5,
     mission_state: GroundMissionState = None,
 ) -> GroundExplorationView:
     """Create a view with optional mission state."""
@@ -51,7 +52,10 @@ def _make_view(
     ground_map = GroundMap.create_test_map(width, height)
     player_state = GroundPlayerState(x=player_x, y=player_y)
     view = GroundExplorationView(
-        ui_manager, ground_map, player_state, mission_state=mission_state,
+        ui_manager,
+        ground_map,
+        player_state,
+        mission_state=mission_state,
     )
     view.on_enter()
     return view
@@ -207,7 +211,10 @@ class TestMinimapEnemyDots:
     def test_visible_enemy_shown(self):
         """Visible enemy appears as a dot on minimap."""
         enemy = GroundEnemy(
-            id="test_e", x=7, y=7, facing=Direction.RIGHT,
+            id="test_e",
+            x=7,
+            y=7,
+            facing=Direction.RIGHT,
             patrol_route=[(7, 7), (7, 7)],
         )
         state = _make_mission_state(enemies=[enemy])
@@ -228,7 +235,10 @@ class TestMinimapEnemyDots:
     def test_non_visible_enemy_hidden(self):
         """Enemy on unexplored tile is NOT shown on minimap."""
         enemy = GroundEnemy(
-            id="test_e", x=12, y=12, facing=Direction.RIGHT,
+            id="test_e",
+            x=12,
+            y=12,
+            facing=Direction.RIGHT,
             patrol_route=[(12, 12), (12, 12)],
         )
         state = _make_mission_state(enemies=[enemy])

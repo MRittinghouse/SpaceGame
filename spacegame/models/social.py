@@ -7,7 +7,7 @@ per-NPC disposition for dialogue skill checks.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Optional
 
 if TYPE_CHECKING:
     from spacegame.models.attributes import AttributeSheet
@@ -49,9 +49,7 @@ class SocialSkill:
     level: int = 1
     xp: int = 0
 
-    def add_xp(
-        self, amount: int, max_level: int, xp_thresholds: list[int]
-    ) -> list[str]:
+    def add_xp(self, amount: int, max_level: int, xp_thresholds: list[int]) -> list[str]:
         """Add XP and check for level ups.
 
         Args:
@@ -71,9 +69,7 @@ class SocialSkill:
                 break
             if self.xp >= xp_thresholds[next_threshold_index]:
                 self.level += 1
-                messages.append(
-                    f"{self.name} increased to level {self.level}!"
-                )
+                messages.append(f"{self.name} increased to level {self.level}!")
             else:
                 break
 
@@ -109,8 +105,7 @@ class SocialManager:
 
     def __init__(self) -> None:
         self._skills: dict[str, SocialSkill] = {
-            sid: SocialSkill(id=sid, name=name)
-            for sid, name in SOCIAL_SKILL_DEFINITIONS.items()
+            sid: SocialSkill(id=sid, name=name) for sid, name in SOCIAL_SKILL_DEFINITIONS.items()
         }
         self._npc_disposition: dict[str, int] = {}
         self._progression: Optional[PlayerProgression] = None
@@ -156,9 +151,7 @@ class SocialManager:
     def modify_disposition(self, npc_id: str, amount: int) -> None:
         """Adjust NPC disposition, clamped 0-100."""
         current = self.get_disposition(npc_id)
-        self._npc_disposition[npc_id] = max(
-            DISPOSITION_MIN, min(DISPOSITION_MAX, current + amount)
-        )
+        self._npc_disposition[npc_id] = max(DISPOSITION_MIN, min(DISPOSITION_MAX, current + amount))
 
     # --- Effective level & check resolution ---
 
@@ -201,9 +194,7 @@ class SocialManager:
         """
         return self.get_effective_level(skill_id, npc_id) >= difficulty
 
-    def resolve_check(
-        self, skill_id: str, difficulty: int, npc_id: str
-    ) -> tuple[bool, str]:
+    def resolve_check(self, skill_id: str, difficulty: int, npc_id: str) -> tuple[bool, str]:
         """Resolve a skill check, awarding XP and adjusting disposition.
 
         Args:
@@ -222,15 +213,11 @@ class SocialManager:
         success = effective >= difficulty
 
         if success:
-            messages = skill.add_xp(
-                XP_ON_SUCCESS, MAX_SOCIAL_LEVEL, SOCIAL_XP_THRESHOLDS
-            )
+            skill.add_xp(XP_ON_SUCCESS, MAX_SOCIAL_LEVEL, SOCIAL_XP_THRESHOLDS)
             self.modify_disposition(npc_id, DISPOSITION_ON_CHECK_SUCCESS)
             msg = f"{skill.name} check passed!"
         else:
-            messages = skill.add_xp(
-                XP_ON_FAILURE, MAX_SOCIAL_LEVEL, SOCIAL_XP_THRESHOLDS
-            )
+            skill.add_xp(XP_ON_FAILURE, MAX_SOCIAL_LEVEL, SOCIAL_XP_THRESHOLDS)
             self.modify_disposition(npc_id, DISPOSITION_ON_CHECK_FAILURE)
             msg = f"{skill.name} check failed."
 
@@ -241,9 +228,7 @@ class SocialManager:
     def get_state(self) -> dict[str, Any]:
         """Serialize social state for saving."""
         return {
-            "skills": {
-                sid: skill.to_dict() for sid, skill in self._skills.items()
-            },
+            "skills": {sid: skill.to_dict() for sid, skill in self._skills.items()},
             "disposition": dict(self._npc_disposition),
         }
 
@@ -255,8 +240,7 @@ class SocialManager:
         """
         # Reset to defaults
         self._skills = {
-            sid: SocialSkill(id=sid, name=name)
-            for sid, name in SOCIAL_SKILL_DEFINITIONS.items()
+            sid: SocialSkill(id=sid, name=name) for sid, name in SOCIAL_SKILL_DEFINITIONS.items()
         }
         self._npc_disposition = {}
 

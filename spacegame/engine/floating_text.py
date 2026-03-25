@@ -24,7 +24,7 @@ Usage:
 
 from typing import Callable, Optional
 
-from spacegame.engine.easing import ease_out_cubic, EasingFn
+from spacegame.engine.easing import EasingFn, ease_out_cubic
 
 
 class FloatingItem:

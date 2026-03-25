@@ -50,12 +50,10 @@ class TestSalvageDiscovery:
     def test_skill_increases_chance(self) -> None:
         """Higher salvage skill = more discoveries."""
         low_skill_finds = sum(
-            1 for s in range(500)
-            if check_salvage_discovery("engine", 0, set(), seed=s)
+            1 for s in range(500) if check_salvage_discovery("engine", 0, set(), seed=s)
         )
         high_skill_finds = sum(
-            1 for s in range(500)
-            if check_salvage_discovery("engine", 5, set(), seed=s)
+            1 for s in range(500) if check_salvage_discovery("engine", 5, set(), seed=s)
         )
         assert high_skill_finds > low_skill_finds, "Higher skill should find more"
 
@@ -167,14 +165,21 @@ class TestFactionUnlocks:
     def test_no_rediscovery(self) -> None:
         """Already-unlocked shapes are not re-reported."""
         unlocks = check_faction_unlocks(
-            "commerce_guild", 50,
-            {"guild_prow", "guild_stern"}, {"ablative_plating"},
+            "commerce_guild",
+            50,
+            {"guild_prow", "guild_stern"},
+            {"ablative_plating"},
         )
         assert len(unlocks) == 0
 
     def test_all_four_factions_have_unlocks(self) -> None:
         assert len(FACTION_BUILDER_UNLOCKS) == 4
-        for faction_id in ["commerce_guild", "miners_union", "science_collective", "frontier_alliance"]:
+        for faction_id in [
+            "commerce_guild",
+            "miners_union",
+            "science_collective",
+            "frontier_alliance",
+        ]:
             assert faction_id in FACTION_BUILDER_UNLOCKS
             assert len(FACTION_BUILDER_UNLOCKS[faction_id]) >= 3
 
@@ -184,12 +189,14 @@ class TestDrydockCatalogs:
 
     def test_catalogs_load(self) -> None:
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_drydock_catalogs()
         assert len(dl.drydock_catalogs) >= 10
 
     def test_forgeworks_has_heavy_armor(self) -> None:
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_drydock_catalogs()
         forge = dl.drydock_catalogs.get("forgeworks", {})
@@ -197,6 +204,7 @@ class TestDrydockCatalogs:
 
     def test_axiom_has_shield_crystal(self) -> None:
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_drydock_catalogs()
         axiom = dl.drydock_catalogs.get("axiom_labs", {})
@@ -204,6 +212,7 @@ class TestDrydockCatalogs:
 
     def test_crimson_has_stealth(self) -> None:
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_drydock_catalogs()
         crimson = dl.drydock_catalogs.get("crimson_reach", {})
@@ -212,6 +221,7 @@ class TestDrydockCatalogs:
     def test_no_system_sells_everything(self) -> None:
         """Each system should have a limited selection."""
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_drydock_catalogs()
         for sys_id, catalog in dl.drydock_catalogs.items():

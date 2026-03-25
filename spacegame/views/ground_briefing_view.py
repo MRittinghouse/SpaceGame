@@ -5,17 +5,18 @@ and crew selection. The player reviews the mission and chooses which
 crew members to bring before launching ground exploration.
 """
 
-import pygame
-import pygame_gui
 from typing import Any, Optional
 
-from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState, scale_x, scale_y
-from spacegame.views.base_view import BaseView
+import pygame
+import pygame_gui
+
+from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH, Colors, GameState, scale_x, scale_y
+from spacegame.engine.backgrounds import AnimatedBackground
+from spacegame.engine.fonts import FONT_BODY, FONT_MD, FONT_MD2, FONT_SECTION, FONT_XL, get_font
 from spacegame.models.crew import CrewRoster, CrewTemplate
 from spacegame.models.ground_mission import GroundMissionConfig, IntelHint
-from spacegame.engine.backgrounds import AnimatedBackground
-from spacegame.engine.fonts import FONT_BODY, FONT_MD, FONT_MD2, FONT_SECTION, FONT_XL, FontCache
 from spacegame.utils.logger import logger
+from spacegame.views.base_view import BaseView
 
 # Ground ability descriptions per crew member (matches GroundCrewBonuses.compute)
 _GROUND_ABILITIES: dict[str, list[str]] = {
@@ -89,11 +90,11 @@ class GroundBriefingView(BaseView):
         self.crew_buttons: dict[str, pygame_gui.elements.UIButton] = {}
 
         # Fonts
-        self.title_font = FontCache.get(FONT_SECTION)
-        self.subtitle_font = FontCache.get(FONT_XL)
-        self.body_font = FontCache.get(FONT_BODY)
-        self.small_font = FontCache.get(FONT_MD)
-        self.hint_font = FontCache.get(FONT_MD2)
+        self.title_font = get_font("header", FONT_SECTION)
+        self.subtitle_font = get_font("header", FONT_XL)
+        self.body_font = get_font("dialogue", FONT_BODY)
+        self.small_font = get_font("dialogue", FONT_MD)
+        self.hint_font = get_font("machine", FONT_MD2)
 
         # Visual
         self.background = AnimatedBackground("deep_space", WINDOW_WIDTH, WINDOW_HEIGHT, seed=77)

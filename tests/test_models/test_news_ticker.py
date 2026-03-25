@@ -83,7 +83,9 @@ def _make_flavor_templates() -> list[HeadlineTemplate]:
     ]
 
 
-def _make_ticker(templates: list[HeadlineTemplate] | None = None, buffer_size: int = 8) -> NewsTicker:
+def _make_ticker(
+    templates: list[HeadlineTemplate] | None = None, buffer_size: int = 8
+) -> NewsTicker:
     """Create a NewsTicker; defaults to a small mixed template set."""
     if templates is None:
         templates = [
@@ -294,9 +296,7 @@ class TestGenerateFromGalaxyEvents:
         }
         ticker.generate_headlines(context)
         results = ticker.get_headlines()
-        assert len(results) == 0, (
-            "Event type with no matching template should produce no headlines"
-        )
+        assert len(results) == 0, "Event type with no matching template should produce no headlines"
 
     def test_multiple_galaxy_events_each_add_headline(self) -> None:
         templates = [_make_embargo_template(), _make_festival_template()]
@@ -332,9 +332,7 @@ class TestGenerateFromMarketEvents:
     def test_market_headline_contains_commodity_or_system(self) -> None:
         ticker = NewsTicker(templates=[_make_market_template()], buffer_size=8)
         context: dict = {
-            "market_events": [
-                _make_market_event(commodity="refined_ore", system_id="breakstone")
-            ],
+            "market_events": [_make_market_event(commodity="refined_ore", system_id="breakstone")],
         }
         ticker.generate_headlines(context)
         results = ticker.get_headlines()
@@ -369,9 +367,7 @@ class TestGenerateFromPoliticalEvents:
         ticker.generate_headlines(context)
         results = ticker.get_headlines()
         combined = " ".join(results)
-        assert "Senate" in combined, (
-            "Political headline should include the event description text"
-        )
+        assert "Senate" in combined, "Political headline should include the event description text"
 
 
 # ============================================================================
@@ -532,9 +528,7 @@ class TestEdgeCases:
     def test_empty_templates_and_empty_context_produces_empty_buffer(self) -> None:
         ticker = NewsTicker(templates=[], buffer_size=8)
         ticker.generate_headlines({})
-        assert ticker.get_headlines() == [], (
-            "No templates and no context should yield no headlines"
-        )
+        assert ticker.get_headlines() == [], "No templates and no context should yield no headlines"
 
     def test_generate_headlines_with_none_values_in_context_is_safe(self) -> None:
         ticker = _make_ticker()

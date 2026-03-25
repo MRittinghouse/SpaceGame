@@ -4,10 +4,10 @@ Random market events system.
 Events that cause dramatic price fluctuations for specific commodities.
 """
 
+import random
 from dataclasses import dataclass
 from enum import Enum
 from typing import Optional
-import random
 
 
 class EventType(Enum):

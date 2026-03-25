@@ -9,9 +9,7 @@ import os
 from dataclasses import dataclass, field
 
 
-def color_distance_sq(
-    c1: tuple[int, int, int], c2: tuple[int, int, int]
-) -> int:
+def color_distance_sq(c1: tuple[int, int, int], c2: tuple[int, int, int]) -> int:
     """Euclidean distance squared between two RGB colors.
 
     Args:
@@ -155,9 +153,7 @@ class PaletteManager:
         """
         return self._palettes.get(palette_id)
 
-    def get_color(
-        self, palette_id: str, color_name: str
-    ) -> tuple[int, int, int] | None:
+    def get_color(self, palette_id: str, color_name: str) -> tuple[int, int, int] | None:
         """Shorthand to get a specific color from a specific palette.
 
         Args:

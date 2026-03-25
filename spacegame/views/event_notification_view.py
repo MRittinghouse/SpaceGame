@@ -4,16 +4,17 @@ Modal overlay for DISASTER market events.
 Displayed on top of current view, requires player to dismiss before continuing.
 """
 
-import pygame
-import pygame_gui
 import math
 from typing import Optional
 
-from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, scale_x, scale_y
+import pygame
+import pygame_gui
+
+from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH, Colors, scale_x, scale_y
+from spacegame.engine.fonts import FONT_BODY, FONT_SECTION, FONT_SUBTITLE, get_font
 from spacegame.models.event import MarketEvent
-from spacegame.views.base_view import BaseView
-from spacegame.engine.fonts import FONT_BODY, FONT_SECTION, FONT_SUBTITLE, FontCache
 from spacegame.utils.logger import logger
+from spacegame.views.base_view import BaseView
 
 
 class EventNotificationView(BaseView):
@@ -26,9 +27,9 @@ class EventNotificationView(BaseView):
         self.dismissed = False
 
         # Fonts
-        self.title_font = FontCache.get(FONT_SECTION)
-        self.body_font = FontCache.get(FONT_SUBTITLE)
-        self.detail_font = FontCache.get(FONT_BODY)
+        self.title_font = get_font("header", FONT_SECTION)
+        self.body_font = get_font("dialogue", FONT_SUBTITLE)
+        self.detail_font = get_font("dialogue", FONT_BODY)
 
         # UI Elements
         self.ok_button: Optional[pygame_gui.elements.UIButton] = None

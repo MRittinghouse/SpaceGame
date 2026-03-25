@@ -23,19 +23,35 @@ def _init_pygame():
 
 def _make_ship_type() -> ShipType:
     return ShipType(
-        id="shuttle", name="Shuttle", ship_class="light",
-        description="Basic ship", cargo_capacity=100, fuel_capacity=50,
-        fuel_efficiency=1.0, speed_multiplier=1.0, purchase_price=0,
-        resale_value=0, crew_slots=1, special_abilities=[], availability="all",
+        id="shuttle",
+        name="Shuttle",
+        ship_class="light",
+        description="Basic ship",
+        cargo_capacity=100,
+        fuel_capacity=50,
+        fuel_efficiency=1.0,
+        speed_multiplier=1.0,
+        purchase_price=0,
+        resale_value=0,
+        crew_slots=1,
+        special_abilities=[],
+        availability="all",
     )
 
 
 def _make_commodity(cid: str, name: str, price: int) -> Commodity:
     return Commodity(
-        id=cid, name=name, base_price=price,
-        category=CommodityCategory.BASIC, description="Test",
-        variance_min=-0.1, variance_max=0.1, volume_per_unit=1,
-        legality=Legality.LEGAL, production_tags=[], consumption_tags=[],
+        id=cid,
+        name=name,
+        base_price=price,
+        category=CommodityCategory.BASIC,
+        description="Test",
+        variance_min=-0.1,
+        variance_max=0.1,
+        volume_per_unit=1,
+        legality=Legality.LEGAL,
+        production_tags=[],
+        consumption_tags=[],
     )
 
 
@@ -49,9 +65,13 @@ def _make_commodities() -> dict[str, Commodity]:
 
 def _make_recipe(recipe_id: str = "smelt_iron", **kwargs) -> Recipe:
     defaults = dict(
-        id=recipe_id, name="Smelt Iron", description="Basic smelting",
-        inputs={"iron_ore": 3}, outputs={"common_metals": 1},
-        processing_time=5.0, location_ids=["forgeworks"],
+        id=recipe_id,
+        name="Smelt Iron",
+        description="Basic smelting",
+        inputs={"iron_ore": 3},
+        outputs={"common_metals": 1},
+        processing_time=5.0,
+        location_ids=["forgeworks"],
     )
     defaults.update(kwargs)
     return Recipe(**defaults)
@@ -59,7 +79,8 @@ def _make_recipe(recipe_id: str = "smelt_iron", **kwargs) -> Recipe:
 
 def _make_player() -> Player:
     return Player(
-        name="TestCaptain", credits=5000,
+        name="TestCaptain",
+        credits=5000,
         current_system_id="forgeworks",
         ship=Ship(ship_type=_make_ship_type(), current_fuel=50),
     )
@@ -71,14 +92,22 @@ def _make_view(player: Player = None, recipes: list = None) -> RefiningView:
     if recipes is None:
         recipes = [
             _make_recipe("smelt_iron", category="commodity"),
-            _make_recipe("forge_alloy", name="Forge Alloy", category="upgrade",
-                         inputs={"common_metals": 2}, outputs={"common_metals": 3},
-                         processing_time=10.0),
+            _make_recipe(
+                "forge_alloy",
+                name="Forge Alloy",
+                category="upgrade",
+                inputs={"common_metals": 2},
+                outputs={"common_metals": 3},
+                processing_time=10.0,
+            ),
         ]
     ui_manager = pygame_gui.UIManager((WINDOW_WIDTH, WINDOW_HEIGHT))
     view = RefiningView(
-        ui_manager, player, _make_commodities(),
-        recipes=recipes, system_id="forgeworks",
+        ui_manager,
+        player,
+        _make_commodities(),
+        recipes=recipes,
+        system_id="forgeworks",
     )
     view.on_enter()
     return view
@@ -364,7 +393,8 @@ class TestRefiningDeepPolish:
     def test_exit_confirmation_blocks_session_end(self) -> None:
         view = _make_view()
         event = pygame.event.Event(
-            pygame_gui.UI_BUTTON_PRESSED, ui_element=view.back_button,
+            pygame_gui.UI_BUTTON_PRESSED,
+            ui_element=view.back_button,
         )
         view.handle_event(event)
         assert view._confirm_exit

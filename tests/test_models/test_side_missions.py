@@ -162,9 +162,7 @@ class TestMissionSerialization:
             "id": "old_mission",
             "name": "Old Mission",
             "description": "From before side missions existed.",
-            "objectives": [
-                {"type": "reach_system", "target_id": "nexus_prime"}
-            ],
+            "objectives": [{"type": "reach_system", "target_id": "nexus_prime"}],
             "rewards": [{"reward_type": "credits", "amount": 100}],
         }
         m = Mission.from_dict(data)
@@ -298,13 +296,19 @@ class TestMissionManagerSideFiltering:
     def test_get_current_hint_prefers_campaign(self) -> None:
         """get_current_hint prefers campaign missions over side missions."""
         campaign = Mission(
-            id="c1", name="Campaign", description="C",
-            mission_type="campaign", hint="Campaign hint",
+            id="c1",
+            name="Campaign",
+            description="C",
+            mission_type="campaign",
+            hint="Campaign hint",
             objectives=[MissionObjective(type=ObjectiveType.HAS_FLAG, target_id="x")],
         )
         side = Mission(
-            id="s1", name="Side", description="S",
-            mission_type="side", hint="Side hint",
+            id="s1",
+            name="Side",
+            description="S",
+            mission_type="side",
+            hint="Side hint",
             objectives=[MissionObjective(type=ObjectiveType.HAS_FLAG, target_id="y")],
         )
         mgr = MissionManager([campaign, side])
@@ -318,8 +322,11 @@ class TestMissionManagerSideFiltering:
     def test_side_mission_hint_shown_when_no_campaign(self) -> None:
         """Side mission hints show when no campaign missions are active."""
         side = Mission(
-            id="s1", name="Side", description="S",
-            mission_type="side", hint="Side hint",
+            id="s1",
+            name="Side",
+            description="S",
+            mission_type="side",
+            hint="Side hint",
             objectives=[MissionObjective(type=ObjectiveType.HAS_FLAG, target_id="y")],
         )
         mgr = MissionManager([side])

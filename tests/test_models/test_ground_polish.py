@@ -116,7 +116,10 @@ class TestPatrolRouteReveal:
 
     def test_patrol_tiles_not_revealed_by_default(self) -> None:
         enemy = GroundEnemy(
-            id="guard", x=10, y=10, facing=Direction.RIGHT,
+            id="guard",
+            x=10,
+            y=10,
+            facing=Direction.RIGHT,
             patrol_route=[(10, 10), (15, 10), (15, 15), (10, 15)],
         )
         mission, _ = _make_mission(enemies=[enemy])
@@ -126,7 +129,10 @@ class TestPatrolRouteReveal:
     def test_elena_reveals_patrol_tiles(self) -> None:
         bonuses = GroundCrewBonuses.compute(crew_ids=["elena_reeves"])
         enemy = GroundEnemy(
-            id="guard", x=10, y=10, facing=Direction.RIGHT,
+            id="guard",
+            x=10,
+            y=10,
+            facing=Direction.RIGHT,
             patrol_route=[(10, 10), (15, 10)],
         )
         mission, _ = _make_mission(enemies=[enemy], bonuses=bonuses)
@@ -137,10 +143,16 @@ class TestPatrolRouteReveal:
     def test_multiple_enemies_routes_merged(self) -> None:
         bonuses = GroundCrewBonuses.compute(crew_ids=["elena_reeves"])
         e1 = GroundEnemy(
-            id="a", x=3, y=3, patrol_route=[(3, 3), (5, 3)],
+            id="a",
+            x=3,
+            y=3,
+            patrol_route=[(3, 3), (5, 3)],
         )
         e2 = GroundEnemy(
-            id="b", x=8, y=8, patrol_route=[(8, 8), (8, 10)],
+            id="b",
+            x=8,
+            y=8,
+            patrol_route=[(8, 8), (8, 10)],
         )
         mission, _ = _make_mission(enemies=[e1, e2], bonuses=bonuses)
         revealed = mission.get_revealed_patrol_tiles()

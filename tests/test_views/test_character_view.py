@@ -69,9 +69,7 @@ class TestFactionEmblems:
             "miners_union": -10,
         }
         attr_sheet = AttributeSheet()
-        view = CharacterView(
-            ui_manager, player, attr_sheet, politics_manager=None
-        )
+        view = CharacterView(ui_manager, player, attr_sheet, politics_manager=None)
         view.on_enter()
         screen = pygame.display.get_surface()
         view.render(screen)

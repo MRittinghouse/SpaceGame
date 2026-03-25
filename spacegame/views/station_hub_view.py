@@ -5,32 +5,42 @@ cantina, activities, shipyard, unique POIs) and choose where to go. This replace
 the direct galaxy-map-to-trading transition.
 """
 
-import pygame
-import pygame_gui
 import random
 from typing import Optional
 
+import pygame
+import pygame_gui
+
 from spacegame.config import (
-    WINDOW_WIDTH,
     WINDOW_HEIGHT,
+    WINDOW_WIDTH,
     Colors,
     GameState,
     scale_x,
     scale_y,
 )
-from spacegame.views.base_view import BaseView
-from spacegame.models.player import Player
-from spacegame.models.system import StarSystem
-from spacegame.models.location import Location
-from spacegame.models.dialogue import NPC
 from spacegame.engine.activity_registry import ActivityRegistry
+from spacegame.engine.audio_manager import get_audio_manager
 from spacegame.engine.backgrounds import AnimatedBackground
 from spacegame.engine.draw_utils import draw_panel
+from spacegame.engine.fonts import (
+    FONT_BODY,
+    FONT_LG,
+    FONT_MD,
+    FONT_SM2,
+    FONT_TITLE,
+    FONT_XL,
+    FONT_XL2,
+    FONT_XS,
+    get_font,
+)
 from spacegame.engine.sprites import get_sprite_manager, res_scale
-from spacegame.engine.fonts import FontCache, FONT_BODY, FONT_LG, FONT_MD, FONT_SM2, FONT_TITLE, FONT_XL, FONT_XL2, FONT_XS
+from spacegame.models.location import Location
+from spacegame.models.player import Player
+from spacegame.models.system import StarSystem
 from spacegame.utils.logger import logger
-from spacegame.engine.audio_manager import get_audio_manager
-from spacegame.views.station_layouts import create_station_layout, StationZone
+from spacegame.views.base_view import BaseView
+from spacegame.views.station_layouts import create_station_layout
 
 # Location type → GameState mapping
 _LOCATION_STATE_MAP: dict[str, GameState] = {
@@ -185,18 +195,18 @@ class StationHubView(BaseView):
             rng = random.Random(hash(system.id))
             rng.shuffle(self._flavor_texts)
 
-        # Fonts
-        self.title_font = FontCache.get(FONT_TITLE)
-        self.subtitle_font = FontCache.get(FONT_LG)
-        self.flavor_font = FontCache.get(FONT_MD)
-        self.card_name_font = FontCache.get(FONT_XL)
-        self.card_desc_font = FontCache.get(FONT_BODY)
-        self.card_detail_font = FontCache.get(FONT_SM2)
-        self.card_label_font = FontCache.get(FONT_XS)
-        self.detail_title_font = FontCache.get(FONT_XL2)
-        self.detail_font = FontCache.get(FONT_BODY)
-        self.npc_font = FontCache.get(FONT_BODY)
-        self.chatter_font = FontCache.get(FONT_BODY)
+        # Fonts — role-based for narrative immersion
+        self.title_font = get_font("header", FONT_TITLE)  # "DOCKED — NEXUS PRIME"
+        self.subtitle_font = get_font("narration", FONT_LG)  # Station description
+        self.flavor_font = get_font("narration", FONT_MD)  # Atmosphere text
+        self.card_name_font = get_font("dialogue", FONT_XL)  # Location names
+        self.card_desc_font = get_font("dialogue", FONT_BODY)  # Location descriptions
+        self.card_detail_font = get_font("label", FONT_SM2)  # Card detail labels
+        self.card_label_font = get_font("label", FONT_XS)  # "TRADE", "REPAIR" badges
+        self.detail_title_font = get_font("header", FONT_XL2)  # Detail panel headers
+        self.detail_font = get_font("dialogue", FONT_BODY)  # Detail panel body
+        self.npc_font = get_font("dialogue", FONT_BODY)  # NPC names and speech
+        self.chatter_font = get_font("narration", FONT_BODY)  # Station ambient chatter
 
         # UI element refs
         self.back_button: Optional[pygame_gui.elements.UIButton] = None
@@ -838,7 +848,7 @@ class StationHubView(BaseView):
             return
         crew_slots = self._get_crew_slots()
         self.player.credits -= cost
-        success, msg = self.crew_roster.recruit(crew_id, crew_slots)
+        success, _msg = self.crew_roster.recruit(crew_id, crew_slots)
         if success:
             self.pending_rerecruit_id = crew_id
             get_audio_manager().play_sfx("ui_confirm")
@@ -857,7 +867,7 @@ class StationHubView(BaseView):
         if not self.crew_roster:
             return
         crew_slots = self._get_crew_slots()
-        success, msg = self.crew_roster.recruit(crew_id, crew_slots)
+        success, _msg = self.crew_roster.recruit(crew_id, crew_slots)
         if success:
             self.pending_hire_id = crew_id
             get_audio_manager().play_sfx("ui_confirm")
@@ -872,7 +882,7 @@ class StationHubView(BaseView):
         """
         if not self.mission_manager:
             return
-        success, msg = self.mission_manager.accept_mission(mission_id)
+        success, _msg = self.mission_manager.accept_mission(mission_id)
         if success:
             self.pending_contract_id = mission_id
             # Grant on_accept_cargo if any

@@ -8,19 +8,18 @@ Part of the JRPG-inspired combat evolution (Phase 8).
 from dataclasses import dataclass, field
 from typing import Optional
 
-
 # === Momentum Thresholds ===
 
-THRESHOLD_CHARGED = 0.25    # 25% — Crew Synergy (combos available)
-THRESHOLD_SURGING = 0.50    # 50% — Overdriven Weapon (2x next hit)
-THRESHOLD_OVERLOAD = 0.75   # 75% — System Overclock (+3 regen 2 turns)
-THRESHOLD_ULTIMATE = 1.00   # 100% — Ship Ultimate (unique per class)
+THRESHOLD_CHARGED = 0.25  # 25% — Crew Synergy (combos available)
+THRESHOLD_SURGING = 0.50  # 50% — Overdriven Weapon (2x next hit)
+THRESHOLD_OVERLOAD = 0.75  # 75% — System Overclock (+3 regen 2 turns)
+THRESHOLD_ULTIMATE = 1.00  # 100% — Ship Ultimate (unique per class)
 
 # Momentum buildup amounts
-MOMENTUM_ON_HIT = 0.05          # +5% per hit dealt
+MOMENTUM_ON_HIT = 0.05  # +5% per hit dealt
 MOMENTUM_ON_HULL_DAMAGE = 0.08  # +8% per hit received (hull)
-MOMENTUM_ON_KILL = 0.15         # +15% per enemy killed
-MOMENTUM_ON_CREW_ABILITY = 0.03 # +3% per crew ability used
+MOMENTUM_ON_KILL = 0.15  # +15% per enemy killed
+MOMENTUM_ON_CREW_ABILITY = 0.03  # +3% per crew ability used
 MOMENTUM_ON_STATUS_APPLIED = 0.02  # +2% per elemental status stack
 MOMENTUM_ON_CRITICAL_HP = 0.20  # +20% one-time when hull drops below 25%
 
@@ -64,6 +63,7 @@ def get_ship_class_category(ship_id: str) -> Optional[str]:
 
 
 # === Momentum Gauge ===
+
 
 @dataclass
 class MomentumGauge:
@@ -160,6 +160,7 @@ class MomentumGauge:
 
 
 # === Ship Ultimate ===
+
 
 @dataclass
 class ShipUltimate:

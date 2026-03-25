@@ -12,10 +12,19 @@ from spacegame.models.ship import Ship, ShipType
 
 def _make_ship_type() -> ShipType:
     return ShipType(
-        id="test", name="Test", ship_class="starter",
-        description="", cargo_capacity=100, fuel_capacity=50,
-        fuel_efficiency=5, speed_multiplier=1.0, purchase_price=0,
-        resale_value=0, crew_slots=2, special_abilities=[], availability="common",
+        id="test",
+        name="Test",
+        ship_class="starter",
+        description="",
+        cargo_capacity=100,
+        fuel_capacity=50,
+        fuel_efficiency=5,
+        speed_multiplier=1.0,
+        purchase_price=0,
+        resale_value=0,
+        crew_slots=2,
+        special_abilities=[],
+        availability="common",
     )
 
 
@@ -68,9 +77,7 @@ class TestRespecCost:
         player = _make_player(credits=10000)
         self._invest_one_skill(player)
 
-        success, msg = player.progression.respec_skills(
-            player_level=5, player_credits=10000
-        )
+        success, msg = player.progression.respec_skills(player_level=5, player_credits=10000)
         assert success, msg
 
     def test_respec_fails_insufficient_credits(self) -> None:
@@ -78,18 +85,14 @@ class TestRespecCost:
         player = _make_player(credits=0)
         self._invest_one_skill(player)
 
-        success, msg = player.progression.respec_skills(
-            player_level=5, player_credits=0
-        )
+        success, msg = player.progression.respec_skills(player_level=5, player_credits=0)
         assert not success
         assert "credits" in msg.lower() or "CR" in msg
 
     def test_respec_no_investment_no_cost(self) -> None:
         """Respec with no skills invested should report nothing to reset."""
         player = _make_player()
-        success, msg = player.progression.respec_skills(
-            player_level=1, player_credits=5000
-        )
+        success, msg = player.progression.respec_skills(player_level=1, player_credits=5000)
         assert not success
 
     def test_respec_cost_scales_with_level(self) -> None:
@@ -105,9 +108,7 @@ class TestRespecCost:
         player = _make_player(credits=50000)
         self._invest_one_skill(player)
 
-        success, msg = player.progression.respec_skills(
-            player_level=1, player_credits=50000
-        )
+        success, msg = player.progression.respec_skills(player_level=1, player_credits=50000)
         assert success
         assert "CR" in msg or "credits" in msg.lower()
 
@@ -166,10 +167,7 @@ class TestMiningRareOreCap:
         # After generating rocks, there should still be some common rocks
         # (cap prevents 100% rare/crystal)
         total_rocks = len(session.rocks)
-        rare_count = sum(
-            1 for r in session.rocks
-            if r.rock_type.value in ("rare", "crystal")
-        )
+        rare_count = sum(1 for r in session.rocks if r.rock_type.value in ("rare", "crystal"))
         # With a cap, rare+crystal shouldn't be 100% of rocks
         assert rare_count < total_rocks, (
             f"All {total_rocks} rocks were rare/crystal — bonus not capped"
@@ -261,8 +259,11 @@ class TestTomasFactionId:
         tomas = dl.crew_templates.get("tomas_drifter")
         assert tomas is not None
         valid_factions = {
-            "commerce_guild", "frontier_alliance", "miners_union",
-            "science_collective", "",
+            "commerce_guild",
+            "frontier_alliance",
+            "miners_union",
+            "science_collective",
+            "",
         }
         assert tomas.faction_id in valid_factions, (
             f"Tomas has invalid faction_id: {tomas.faction_id}"

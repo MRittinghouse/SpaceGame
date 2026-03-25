@@ -7,7 +7,7 @@ that tracks mission lifecycle: available -> active -> completed.
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Optional
 
 if TYPE_CHECKING:
     from spacegame.models.player import Player
@@ -175,15 +175,9 @@ class Mission:
         Returns:
             Mission instance with all fields populated.
         """
-        objectives = [
-            MissionObjective.from_dict(obj) for obj in data.get("objectives", [])
-        ]
-        rewards = [
-            MissionReward.from_dict(r) for r in data.get("rewards", [])
-        ]
-        on_accept_cargo = [
-            AcceptCargo.from_dict(c) for c in data.get("on_accept_cargo", [])
-        ]
+        objectives = [MissionObjective.from_dict(obj) for obj in data.get("objectives", [])]
+        rewards = [MissionReward.from_dict(r) for r in data.get("rewards", [])]
+        on_accept_cargo = [AcceptCargo.from_dict(c) for c in data.get("on_accept_cargo", [])]
         forced_encounter = None
         if "forced_encounter" in data:
             forced_encounter = ForcedEncounter.from_dict(data["forced_encounter"])
@@ -321,9 +315,7 @@ class MissionManager:
         del self._progress[mission_id]
         return True
 
-    def update_availability(
-        self, player_flags: Optional[dict[str, bool]] = None
-    ) -> list[str]:
+    def update_availability(self, player_flags: Optional[dict[str, bool]] = None) -> list[str]:
         """Check prerequisites and flags, mark eligible missions as AVAILABLE.
 
         For side missions, also checks available_after (campaign mission must
@@ -344,10 +336,7 @@ class MissionManager:
             prereqs_met = all(pid in completed_ids for pid in mission.prerequisites)
             flags_met = all(flags.get(f, False) for f in mission.required_flags)
             # Side missions: check available_after campaign gate
-            after_met = (
-                not mission.available_after
-                or mission.available_after in completed_ids
-            )
+            after_met = not mission.available_after or mission.available_after in completed_ids
             if prereqs_met and flags_met and after_met:
                 self._status[mid] = MissionStatus.AVAILABLE
                 newly_available.append(mid)
@@ -438,7 +427,8 @@ class MissionManager:
             # game events (dialogue, ground missions, encounters).
             if mission.mission_type == "side":
                 incomplete = [
-                    (i, obj) for i, obj in enumerate(mission.objectives)
+                    (i, obj)
+                    for i, obj in enumerate(mission.objectives)
                     if not self._progress[mid][i]
                 ]
                 has_non_flag_objectives = any(
@@ -600,10 +590,7 @@ class MissionManager:
         Returns:
             List of missions matching the type.
         """
-        return [
-            m for m in self._missions.values()
-            if m.mission_type == mission_type
-        ]
+        return [m for m in self._missions.values() if m.mission_type == mission_type]
 
     def get_available_at_system(self, system_id: str) -> list[Mission]:
         """Get available side missions at a specific system.
@@ -638,8 +625,7 @@ class MissionManager:
         return [
             self._missions[mid]
             for mid, s in self._status.items()
-            if s == MissionStatus.AVAILABLE
-            and self._missions[mid].discovery_method == method
+            if s == MissionStatus.AVAILABLE and self._missions[mid].discovery_method == method
         ]
 
     def expire_missions(self) -> list[str]:

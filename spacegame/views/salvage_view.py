@@ -5,54 +5,64 @@ Grid-based scanning and extraction puzzle.
 Features scan pulse particles, cell reveal fade, metallic hidden cells, and extraction sparks.
 """
 
+import math
+import random
+from typing import Dict, List, Optional
+
 import pygame
 import pygame_gui
-import random
-import math
-from typing import Optional, Dict, List
-from spacegame.views.base_view import BaseView
-from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState, scale_x, scale_y
-from spacegame.models.player import Player
-from spacegame.models.commodity import Commodity
-from spacegame.models.salvage import (
-    SalvageSession,
-    SalvageConfig,
-    SalvageResult,
-    SalvageCell,
-    CellState,
-    SalvageItemType,
-    DeckAdvanceResult,
-    DerelictType,
-    QualityTier,
-    DERELICT_TYPES,
-    SALVAGE_ITEM_CONFIGS,
-)
-from spacegame.models.salvage_hold import SalvageHold
-from spacegame.models.rating import calculate_rating, SALVAGE_THRESHOLDS, RATING_COLORS
-from spacegame.engine.draw_utils import draw_bar, draw_summary_overlay, draw_nine_slice_panel
-from spacegame.utils.logger import logger
-from spacegame.engine.backgrounds import AnimatedBackground
-from spacegame.engine.particles import (
-    ParticlePool,
-    COLLECT_SPARKLE,
-    SCAN_RIPPLE,
-    EXTRACTION_SPARK,
-    CORRUPTION_CRACKLE,
-)
-from spacegame.engine.fonts import FontCache, FONT_HEADING, FONT_LG, FONT_MD, FONT_RATING, FONT_SECTION2, FONT_SM, FONT_TITLE, FONT_XL, FONT_XS
-from spacegame.engine.sprites import get_sprite_manager, res_scale
+
+from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH, Colors, GameState, scale_x, scale_y
 from spacegame.engine.audio_manager import get_audio_manager
+from spacegame.engine.backgrounds import AnimatedBackground
+from spacegame.engine.draw_utils import draw_bar, draw_nine_slice_panel, draw_summary_overlay
 from spacegame.engine.floating_text import FloatingItemManager
-from spacegame.engine.tooltip import TooltipState
+from spacegame.engine.fonts import (
+    FONT_HEADING,
+    FONT_LG,
+    FONT_MD,
+    FONT_RATING,
+    FONT_SECTION2,
+    FONT_SM,
+    FONT_TITLE,
+    FONT_XL,
+    FONT_XS,
+    get_font,
+)
+from spacegame.engine.particles import (
+    COLLECT_SPARKLE,
+    CORRUPTION_CRACKLE,
+    EXTRACTION_SPARK,
+    SCAN_RIPPLE,
+    ParticlePool,
+)
 from spacegame.engine.salvage_vfx import (
-    SalvageAtmosphere,
-    SalvageDeckMeter,
     CorruptionOverlay,
     DeckTransition,
-    ScanPulse,
-    QualityBurst,
     ModeOverlay,
+    QualityBurst,
+    SalvageAtmosphere,
+    SalvageDeckMeter,
+    ScanPulse,
 )
+from spacegame.engine.sprites import get_sprite_manager, res_scale
+from spacegame.engine.tooltip import TooltipState
+from spacegame.models.commodity import Commodity
+from spacegame.models.player import Player
+from spacegame.models.rating import RATING_COLORS, SALVAGE_THRESHOLDS, calculate_rating
+from spacegame.models.salvage import (
+    DERELICT_TYPES,
+    SALVAGE_ITEM_CONFIGS,
+    CellState,
+    DerelictType,
+    QualityTier,
+    SalvageConfig,
+    SalvageResult,
+    SalvageSession,
+)
+from spacegame.models.salvage_hold import SalvageHold
+from spacegame.utils.logger import logger
+from spacegame.views.base_view import BaseView
 
 
 class SalvageView(BaseView):
@@ -83,8 +93,10 @@ class SalvageView(BaseView):
 
         # VFX objects (synced with session state in on_enter / deck advance)
         grid_rect = pygame.Rect(
-            self.GRID_OFFSET_X, self.GRID_OFFSET_Y,
-            self.CELL_SIZE * 6, self.CELL_SIZE * 6,
+            self.GRID_OFFSET_X,
+            self.GRID_OFFSET_Y,
+            self.CELL_SIZE * 6,
+            self.CELL_SIZE * 6,
         )
         self._vfx_atmosphere = SalvageAtmosphere(grid_rect)
         self._vfx_deck_meter = SalvageDeckMeter(
@@ -120,10 +132,10 @@ class SalvageView(BaseView):
         self._upgrade_rects: Dict[str, pygame.Rect] = {}
 
         # Fonts
-        self.title_font = FontCache.get(FONT_TITLE)
-        self.info_font = FontCache.get(FONT_LG)
-        self.small_font = FontCache.get(FONT_MD)
-        self.cell_font = FontCache.get(FONT_SM)
+        self.title_font = get_font("header", FONT_TITLE)
+        self.info_font = get_font("dialogue", FONT_LG)
+        self.small_font = get_font("stats", FONT_MD)
+        self.cell_font = get_font("stats", FONT_SM)
 
         # UI
         self.back_button: Optional[pygame_gui.elements.UIButton] = None
@@ -182,8 +194,12 @@ class SalvageView(BaseView):
 
         # Mode icon sprites (16x16 native at 2x = 32x32)
         self._mode_icons: Dict[str, Optional[pygame.Surface]] = {
-            "scan": self._sprite_mgr.get_static_sprite("salvage", "icon_scan_mode", scale=res_scale(2)),
-            "extract": self._sprite_mgr.get_static_sprite("salvage", "icon_extract_mode", scale=res_scale(2)),
+            "scan": self._sprite_mgr.get_static_sprite(
+                "salvage", "icon_scan_mode", scale=res_scale(2)
+            ),
+            "extract": self._sprite_mgr.get_static_sprite(
+                "salvage", "icon_extract_mode", scale=res_scale(2)
+            ),
         }
 
         # Corruption overlay surface (pre-allocated, reused each frame)
@@ -200,9 +216,9 @@ class SalvageView(BaseView):
         self._summary_xp: int = 0
         self._session_elapsed: float = 0.0
         self._session_rating: str = "D"
-        self._summary_font = FontCache.get(FONT_HEADING)
-        self._summary_title_font = FontCache.get(FONT_SECTION2)
-        self._rating_font = FontCache.get(FONT_RATING)
+        self._summary_font = get_font("header", FONT_HEADING)
+        self._summary_title_font = get_font("header", FONT_SECTION2)
+        self._rating_font = get_font("header", FONT_RATING)
 
         # Floating icon manager for item-to-hold animations
         self._floats = FloatingItemManager()
@@ -638,7 +654,8 @@ class SalvageView(BaseView):
         # Sync VFX with new session
         derelict_id = self.session.derelict_type.id
         grid_rect = pygame.Rect(
-            self.GRID_OFFSET_X, self.GRID_OFFSET_Y,
+            self.GRID_OFFSET_X,
+            self.GRID_OFFSET_Y,
             self.CELL_SIZE * self.session.derelict_type.grid_size,
             self.CELL_SIZE * self.session.derelict_type.grid_size,
         )
@@ -1003,7 +1020,7 @@ class SalvageView(BaseView):
         # Story fragment display (found narrative)
         if self._story_timer > 0 and self._story_text:
             story_alpha = min(int(self._story_timer / 0.5 * 255), 200)
-            story_font = FontCache.get(FONT_XS)
+            story_font = get_font("narration", FONT_XS)
             from spacegame.engine.draw_utils import word_wrap
 
             story_lines = word_wrap(self._story_text, story_font, 500)
@@ -1153,7 +1170,6 @@ class SalvageView(BaseView):
         # Progressive screen-edge darkening as corruption approaches
         if pct < 0.5 and not self.session.is_corrupted:
             urgency = 1.0 - (pct / 0.5)  # 0.0 at 50%, 1.0 at 0%
-            alpha = int(urgency * 60)
             self._corruption_overlay.fill((0, 0, 0, 0))
             # Red vignette on edges
             edge_w = int(40 * urgency)
@@ -1317,7 +1333,7 @@ class SalvageView(BaseView):
                                 hint_color = (80, 200, 80)
                             else:
                                 hint_color = (220, 200, 50)
-                            hint_font = FontCache.get(FONT_XL)
+                            hint_font = get_font("dialogue", FONT_XL)
                             hint_surf = hint_font.render(str(cell.adjacent_count), True, hint_color)
                             screen.blit(hint_surf, hint_surf.get_rect(center=rect.center))
                         else:

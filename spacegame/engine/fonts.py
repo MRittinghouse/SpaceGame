@@ -1,25 +1,35 @@
-"""Centralized font cache for the game.
+"""Centralized font system with role-based custom fonts.
 
-Eliminates redundant pygame.font.Font() construction across views by caching
-one Font object per (path, size) pair. Views should use FontCache.get(size)
-with semantic constants instead of magic numbers.
+Provides a FontCache for resolution-aware font loading, and a role-based
+font registry that maps narrative roles (dialogue, headers, narration,
+machine, stats, labels) to specific TTF files.
 
-Font sizes are automatically scaled to the active resolution. The semantic
-constants define base sizes at 720p; FontCache.get() applies a scale factor
-derived from WINDOW_HEIGHT so that fonts remain proportional at higher
-resolutions.
+Font roles serve a storytelling purpose:
+- Pixel fonts (dialogue, narration, stats, labels) feel HUMAN — warm, crafted
+- Space Mono (machine) feels SYNTHETIC — cold, precise, mechanical
+- Press Start 2P (headers) commands attention — bold, iconic, arcade
+- When an NPC speaks, it's Pixeloid Sans. When the ship computer reports,
+  it's Space Mono. The font IS the voice.
+
+All fonts fall back to the pygame system font if the TTF file is missing,
+so the game always runs even without the font assets.
 """
+
+from pathlib import Path
+from typing import Optional
 
 import pygame
 
 # Base resolution for font size definitions
 _BASE_HEIGHT: int = 720
 
-# Semantic font size constants — base values at 720p reference resolution.
-# FontCache.get() scales these to the active WINDOW_HEIGHT automatically.
+# ============================================================================
+# Font Size Constants (base values at 720p, auto-scaled by FontCache)
+# ============================================================================
+
 FONT_MICRO: int = 14  # Skill tree node labels, tiny UI chrome
 FONT_XS: int = 16  # Small indicators, badge text, card labels
-FONT_SM: int = 18  # Small labels, hints, step indicators, cell text
+FONT_SM: int = 18  # Small labels, hints, step indicators
 FONT_SM2: int = 17  # Card detail text (station hub)
 FONT_MD: int = 20  # Body text, descriptions, info text
 FONT_MD2: int = 21  # Hint text (ground briefing)
@@ -35,6 +45,47 @@ FONT_SECTION2: int = 44  # Summary titles, ground result titles
 FONT_DISPLAY: int = 48  # Large titles (character creation, pause, etc.)
 FONT_RATING: int = 72  # Mini-game rating displays
 FONT_HERO: int = 96  # Main menu title
+
+# ============================================================================
+# Font Role Registry — maps narrative roles to TTF file paths
+# ============================================================================
+
+# Resolve font directory from this file's location
+_FONT_DIR = Path(__file__).parent.parent / "data" / "assets" / "fonts"
+
+# Font role → TTF path mapping. If a TTF is missing, falls back to system font.
+# Download missing fonts from the sources listed in requirements/polish_and_tooling.md
+FONT_ROLES: dict[str, Optional[str]] = {}
+
+
+def _resolve_font_path(filename: str) -> Optional[str]:
+    """Resolve a font filename to an absolute path, or None if missing."""
+    path = _FONT_DIR / filename
+    if path.exists():
+        return str(path)
+    return None
+
+
+def _init_font_roles() -> None:
+    """Initialize the font role registry from available TTF files."""
+    global FONT_ROLES
+    FONT_ROLES = {
+        # Human voices — pixel fonts for warmth and character
+        "dialogue": _resolve_font_path("PixeloidSans.ttf"),  # NPC speech, menu body
+        "header": _resolve_font_path("PressStart2P-Regular.ttf"),  # Screen titles, bold headers
+        "narration": _resolve_font_path("Silver.ttf"),  # Flavor text, atmosphere
+        # Synthetic voice — clean monospace for machine/digital feel
+        "machine": _resolve_font_path("SpaceMono-Regular.ttf"),  # System messages, scan data
+        "machine_bold": _resolve_font_path("SpaceMono-Bold.ttf"),  # Alerts, warnings
+        # Data display — compact monospace for numbers and stats
+        "stats": _resolve_font_path("monogram.ttf"),  # Stat panels, credits, damage
+        # Tiny labels — readable at very small sizes
+        "label": _resolve_font_path("Tiny5-Regular.ttf"),  # Badges, category tabs
+    }
+
+
+# Initialize on import
+_init_font_roles()
 
 
 def scaled_font_size(base_size: int) -> int:
@@ -98,3 +149,36 @@ class FontCache:
     def clear(cls) -> None:
         """Clear the font cache. Useful for testing or reinitializing."""
         cls._cache.clear()
+
+
+def get_font(role: str, size: int) -> pygame.font.Font:
+    """Get a font by narrative role and size.
+
+    Resolves the role to a TTF file path via FONT_ROLES, then returns
+    a cached font at the resolution-scaled size. Falls back to the
+    system default font if the role's TTF is not available.
+
+    Args:
+        role: Font role name ("dialogue", "header", "narration",
+              "machine", "machine_bold", "stats", "label").
+        size: Base font size at 720p.
+
+    Returns:
+        Cached pygame Font at the scaled size.
+
+    Example:
+        title = get_font("header", FONT_TITLE).render("SHIPYARD", True, color)
+        body = get_font("dialogue", FONT_MD).render("Welcome aboard.", True, color)
+        scan = get_font("machine", FONT_SM).render("SCAN COMPLETE", True, color)
+    """
+    path = FONT_ROLES.get(role)
+    return FontCache.get(size, path=path)
+
+
+def get_available_roles() -> dict[str, bool]:
+    """Get which font roles have TTF files available.
+
+    Returns:
+        Dict mapping role name → True if TTF exists, False if falling back.
+    """
+    return {role: path is not None for role, path in FONT_ROLES.items()}

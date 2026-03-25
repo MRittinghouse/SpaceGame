@@ -5,8 +5,8 @@ Defines tradeable commodities with their economic properties.
 """
 
 from dataclasses import dataclass
-from typing import List
 from enum import Enum
+from typing import List
 
 
 class CommodityCategory(Enum):

@@ -6,13 +6,13 @@ cannon bursts.
 """
 
 import math
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
-from typing import Optional, Callable
+from typing import Callable, Optional
 
 import pygame
 
-from spacegame.config import Colors, scale_x, scale_y
+from spacegame.config import scale_x, scale_y
 
 
 class WeaponType(Enum):
@@ -128,17 +128,26 @@ class ProjectileManager:
                 extend = scale_x(60)
                 miss_end = (end[0] + dx / dist * extend, end[1] + dy / dist * extend + scale_y(30))
 
-        self._projectiles.append(Projectile(
-            start_x=start[0], start_y=start[1],
-            end_x=miss_end[0], end_y=miss_end[1],
-            weapon_type=WeaponType.LASER,
-            speed=800.0,  # Fast — beam extends quickly
-            on_impact=on_impact if hit else None,
-            hit=hit,
-        ))
-        self._muzzle_flashes.append({
-            "x": start[0], "y": start[1], "timer": 0.08, "max_timer": 0.08,
-        })
+        self._projectiles.append(
+            Projectile(
+                start_x=start[0],
+                start_y=start[1],
+                end_x=miss_end[0],
+                end_y=miss_end[1],
+                weapon_type=WeaponType.LASER,
+                speed=800.0,  # Fast — beam extends quickly
+                on_impact=on_impact if hit else None,
+                hit=hit,
+            )
+        )
+        self._muzzle_flashes.append(
+            {
+                "x": start[0],
+                "y": start[1],
+                "timer": 0.08,
+                "max_timer": 0.08,
+            }
+        )
 
     def spawn_missile(
         self,
@@ -164,18 +173,27 @@ class ProjectileManager:
                 extend = scale_x(80)
                 miss_end = (end[0] + dx / dist * extend, end[1] + scale_y(40))
 
-        self._projectiles.append(Projectile(
-            start_x=start[0], start_y=start[1],
-            end_x=miss_end[0], end_y=miss_end[1],
-            weapon_type=WeaponType.MISSILE,
-            speed=400.0,
-            arc_height=float(scale_y(35)),
-            on_impact=on_impact if hit else None,
-            hit=hit,
-        ))
-        self._muzzle_flashes.append({
-            "x": start[0], "y": start[1], "timer": 0.05, "max_timer": 0.05,
-        })
+        self._projectiles.append(
+            Projectile(
+                start_x=start[0],
+                start_y=start[1],
+                end_x=miss_end[0],
+                end_y=miss_end[1],
+                weapon_type=WeaponType.MISSILE,
+                speed=400.0,
+                arc_height=float(scale_y(35)),
+                on_impact=on_impact if hit else None,
+                hit=hit,
+            )
+        )
+        self._muzzle_flashes.append(
+            {
+                "x": start[0],
+                "y": start[1],
+                "timer": 0.05,
+                "max_timer": 0.05,
+            }
+        )
 
     def spawn_cannon(
         self,
@@ -208,8 +226,10 @@ class ProjectileManager:
             impact_cb = on_impact if (hit and i == burst_count - 1) else None
 
             proj = Projectile(
-                start_x=start[0], start_y=start[1],
-                end_x=miss_end[0], end_y=miss_end[1],
+                start_x=start[0],
+                start_y=start[1],
+                end_x=miss_end[0],
+                end_y=miss_end[1],
                 weapon_type=WeaponType.CANNON,
                 speed=600.0,
                 on_impact=impact_cb,
@@ -220,9 +240,14 @@ class ProjectileManager:
             proj._sub_index = i
             self._projectiles.append(proj)
 
-        self._muzzle_flashes.append({
-            "x": start[0], "y": start[1], "timer": 0.12, "max_timer": 0.12,
-        })
+        self._muzzle_flashes.append(
+            {
+                "x": start[0],
+                "y": start[1],
+                "timer": 0.12,
+                "max_timer": 0.12,
+            }
+        )
 
     def update(self, dt: float) -> None:
         """Advance all projectiles and trigger arrivals.

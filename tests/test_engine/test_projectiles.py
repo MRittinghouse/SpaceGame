@@ -9,8 +9,12 @@ class TestProjectile:
     def test_position_at_start(self) -> None:
         """At progress=0, position is at start."""
         proj = Projectile(
-            start_x=100, start_y=200, end_x=500, end_y=200,
-            weapon_type=WeaponType.LASER, speed=400,
+            start_x=100,
+            start_y=200,
+            end_x=500,
+            end_y=200,
+            weapon_type=WeaponType.LASER,
+            speed=400,
         )
         assert proj.x == 100
         assert proj.y == 200
@@ -18,8 +22,13 @@ class TestProjectile:
     def test_position_at_end(self) -> None:
         """At progress=1, position is at end."""
         proj = Projectile(
-            start_x=100, start_y=200, end_x=500, end_y=200,
-            weapon_type=WeaponType.LASER, speed=400, progress=1.0,
+            start_x=100,
+            start_y=200,
+            end_x=500,
+            end_y=200,
+            weapon_type=WeaponType.LASER,
+            speed=400,
+            progress=1.0,
         )
         assert proj.x == 500
         assert proj.y == 200
@@ -27,17 +36,27 @@ class TestProjectile:
     def test_position_midway(self) -> None:
         """At progress=0.5, position is halfway."""
         proj = Projectile(
-            start_x=0, start_y=0, end_x=400, end_y=0,
-            weapon_type=WeaponType.LASER, speed=400, progress=0.5,
+            start_x=0,
+            start_y=0,
+            end_x=400,
+            end_y=0,
+            weapon_type=WeaponType.LASER,
+            speed=400,
+            progress=0.5,
         )
         assert proj.x == 200.0
 
     def test_arc_height_affects_y(self) -> None:
         """Missile arc should offset Y at midpoint."""
         proj = Projectile(
-            start_x=0, start_y=100, end_x=400, end_y=100,
-            weapon_type=WeaponType.MISSILE, speed=400,
-            progress=0.5, arc_height=40.0,
+            start_x=0,
+            start_y=100,
+            end_x=400,
+            end_y=100,
+            weapon_type=WeaponType.MISSILE,
+            speed=400,
+            progress=0.5,
+            arc_height=40.0,
         )
         # At midpoint, arc is at max: y = 100 - 40 = 60
         assert proj.y == 60.0
@@ -45,8 +64,13 @@ class TestProjectile:
     def test_arc_zero_at_endpoints(self) -> None:
         """Arc should be zero at start and end."""
         proj = Projectile(
-            start_x=0, start_y=100, end_x=400, end_y=100,
-            weapon_type=WeaponType.MISSILE, speed=400, arc_height=40.0,
+            start_x=0,
+            start_y=100,
+            end_x=400,
+            end_y=100,
+            weapon_type=WeaponType.MISSILE,
+            speed=400,
+            arc_height=40.0,
         )
         proj.progress = 0.0
         assert proj.y == 100.0
@@ -56,8 +80,12 @@ class TestProjectile:
     def test_distance(self) -> None:
         """Distance calculation should be correct."""
         proj = Projectile(
-            start_x=0, start_y=0, end_x=300, end_y=400,
-            weapon_type=WeaponType.LASER, speed=400,
+            start_x=0,
+            start_y=0,
+            end_x=300,
+            end_y=400,
+            weapon_type=WeaponType.LASER,
+            speed=400,
         )
         assert proj.distance == 500.0
 

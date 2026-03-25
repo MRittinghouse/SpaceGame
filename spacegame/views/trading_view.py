@@ -5,25 +5,27 @@ Buy and sell commodities at the current system's market.
 Features dimmed animated background, panel glow borders, and transaction particles.
 """
 
+from typing import Optional
+
 import pygame
 import pygame_gui
-from typing import Optional
-from spacegame.views.base_view import BaseView
-from spacegame.views.table_widget import TableWidget, ColumnDef
-from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState, scale_x, scale_y
-from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
+
+from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH, Colors, GameState, scale_x, scale_y
+from spacegame.engine.audio_manager import get_audio_manager
+from spacegame.engine.backgrounds import AnimatedBackground
+from spacegame.engine.draw_utils import draw_bar
+from spacegame.engine.fonts import FONT_HEADING, FONT_LG, FONT_MD, get_font
+from spacegame.engine.particles import COLLECT_SPARKLE, ParticleConfig, ParticlePool
+from spacegame.engine.sprites import get_sprite_manager, res_scale
+from spacegame.models.commodity import Commodity
+from spacegame.models.faction import get_tariff_modifier
+from spacegame.models.market import Market
 from spacegame.models.player import Player
 from spacegame.models.system import StarSystem
-from spacegame.models.commodity import Commodity
-from spacegame.models.market import Market
-from spacegame.models.faction import get_tariff_modifier
 from spacegame.utils.logger import logger
-from spacegame.engine.backgrounds import AnimatedBackground
-from spacegame.engine.particles import ParticlePool, COLLECT_SPARKLE, ParticleConfig
-from spacegame.engine.sprites import get_sprite_manager, res_scale
-from spacegame.engine.draw_utils import draw_bar
-from spacegame.engine.fonts import FontCache, FONT_HEADING, FONT_LG, FONT_MD
-from spacegame.engine.audio_manager import get_audio_manager
+from spacegame.views.base_view import BaseView
+from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
+from spacegame.views.table_widget import ColumnDef, TableWidget
 
 # Red flash for failed transactions
 FAIL_FLASH = ParticleConfig(
@@ -101,9 +103,9 @@ class TradingView(BaseView):
         self.next_state: Optional[GameState] = None
 
         # Fonts
-        self.title_font = FontCache.get(FONT_HEADING)
-        self.header_font = FontCache.get(FONT_LG)
-        self.info_font = FontCache.get(FONT_MD)
+        self.title_font = get_font("header", FONT_HEADING)
+        self.header_font = get_font("header", FONT_LG)
+        self.info_font = get_font("dialogue", FONT_MD)
 
         # Table widgets (created in _create_ui, rendered manually)
         self.market_table: Optional[TableWidget] = None
@@ -206,27 +208,40 @@ class TradingView(BaseView):
         self._refresh_tables()
 
         self.quantity_input = pygame_gui.elements.UITextEntryLine(
-            relative_rect=pygame.Rect(scale_x(590), scale_y(150), scale_x(100), scale_y(40)), manager=self.ui_manager
+            relative_rect=pygame.Rect(scale_x(590), scale_y(150), scale_x(100), scale_y(40)),
+            manager=self.ui_manager,
         )
         self.quantity_input.set_text("1")
 
         self.buy_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(scale_x(590), scale_y(200), scale_x(100), scale_y(36)), text="BUY", manager=self.ui_manager
+            relative_rect=pygame.Rect(scale_x(590), scale_y(200), scale_x(100), scale_y(36)),
+            text="BUY",
+            manager=self.ui_manager,
         )
         self.buy_max_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(scale_x(590), scale_y(240), scale_x(100), scale_y(36)), text="BUY MAX", manager=self.ui_manager
+            relative_rect=pygame.Rect(scale_x(590), scale_y(240), scale_x(100), scale_y(36)),
+            text="BUY MAX",
+            manager=self.ui_manager,
         )
         self.sell_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(scale_x(590), scale_y(284), scale_x(100), scale_y(36)), text="SELL", manager=self.ui_manager
+            relative_rect=pygame.Rect(scale_x(590), scale_y(284), scale_x(100), scale_y(36)),
+            text="SELL",
+            manager=self.ui_manager,
         )
         self.sell_max_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(scale_x(590), scale_y(324), scale_x(100), scale_y(36)), text="SELL MAX", manager=self.ui_manager
+            relative_rect=pygame.Rect(scale_x(590), scale_y(324), scale_x(100), scale_y(36)),
+            text="SELL MAX",
+            manager=self.ui_manager,
         )
         self.refuel_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(scale_x(590), scale_y(368), scale_x(100), scale_y(36)), text="REFUEL", manager=self.ui_manager
+            relative_rect=pygame.Rect(scale_x(590), scale_y(368), scale_x(100), scale_y(36)),
+            text="REFUEL",
+            manager=self.ui_manager,
         )
         self.rest_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(scale_x(590), scale_y(408), scale_x(100), scale_y(36)), text="REST", manager=self.ui_manager
+            relative_rect=pygame.Rect(scale_x(590), scale_y(408), scale_x(100), scale_y(36)),
+            text="REST",
+            manager=self.ui_manager,
         )
 
         # Activity and NPC buttons have moved to StationHubView
@@ -234,7 +249,12 @@ class TradingView(BaseView):
         self.talk_buttons.clear()
 
         self.back_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(scale_x(590), WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - scale_y(60), scale_x(100), scale_y(40)),
+            relative_rect=pygame.Rect(
+                scale_x(590),
+                WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - scale_y(60),
+                scale_x(100),
+                scale_y(40),
+            ),
             text="BACK",
             manager=self.ui_manager,
         )
@@ -242,12 +262,16 @@ class TradingView(BaseView):
         # Hidden compartment transfer buttons (when upgrade installed)
         if self.player.hidden_compartment:
             self.hide_cargo_button = pygame_gui.elements.UIButton(
-                relative_rect=pygame.Rect(WINDOW_WIDTH - scale_x(420), scale_y(510), scale_x(95), scale_y(28)),
+                relative_rect=pygame.Rect(
+                    WINDOW_WIDTH - scale_x(420), scale_y(510), scale_x(95), scale_y(28)
+                ),
                 text="HIDE \u2192",
                 manager=self.ui_manager,
             )
             self.retrieve_cargo_button = pygame_gui.elements.UIButton(
-                relative_rect=pygame.Rect(WINDOW_WIDTH - scale_x(320), scale_y(510), scale_x(95), scale_y(28)),
+                relative_rect=pygame.Rect(
+                    WINDOW_WIDTH - scale_x(320), scale_y(510), scale_x(95), scale_y(28)
+                ),
                 text="\u2190 RETRIEVE",
                 manager=self.ui_manager,
             )
@@ -718,7 +742,9 @@ class TradingView(BaseView):
         elif stock == 0 and self.market.get_base_stock(commodity_id) > 0:
             self._show_message("Out of stock — check back tomorrow")
             get_audio_manager().play_sfx("trade_fail")
-            self.particles.emit(WINDOW_WIDTH // 2, WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - 50, FAIL_FLASH)
+            self.particles.emit(
+                WINDOW_WIDTH // 2, WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - 50, FAIL_FLASH
+            )
             return
 
         if self._black_market_mode:
@@ -734,7 +760,9 @@ class TradingView(BaseView):
 
         if success:
             get_audio_manager().play_sfx("trade_buy")
-            self.particles.emit(WINDOW_WIDTH // 2, WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - 50, COLLECT_SPARKLE)
+            self.particles.emit(
+                WINDOW_WIDTH // 2, WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - 50, COLLECT_SPARKLE
+            )
             from spacegame.config import XP_PER_TRADE
 
             xp_msgs = self.player.progression.add_xp(XP_PER_TRADE)
@@ -747,7 +775,9 @@ class TradingView(BaseView):
             self._refresh_tables()
         else:
             get_audio_manager().play_sfx("trade_fail")
-            self.particles.emit(WINDOW_WIDTH // 2, WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - 50, FAIL_FLASH)
+            self.particles.emit(
+                WINDOW_WIDTH // 2, WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - 50, FAIL_FLASH
+            )
 
     def _execute_sell(self) -> None:
         if not self._has_trade_permit():
@@ -776,7 +806,9 @@ class TradingView(BaseView):
 
         if success:
             get_audio_manager().play_sfx("trade_sell")
-            self.particles.emit(WINDOW_WIDTH // 2, WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - 50, COLLECT_SPARKLE)
+            self.particles.emit(
+                WINDOW_WIDTH // 2, WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - 50, COLLECT_SPARKLE
+            )
             from spacegame.config import XP_PER_TRADE
 
             xp_msgs = self.player.progression.add_xp(XP_PER_TRADE)
@@ -788,7 +820,9 @@ class TradingView(BaseView):
             self._refresh_tables()
         else:
             get_audio_manager().play_sfx("trade_fail")
-            self.particles.emit(WINDOW_WIDTH // 2, WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - 50, FAIL_FLASH)
+            self.particles.emit(
+                WINDOW_WIDTH // 2, WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - 50, FAIL_FLASH
+            )
 
     def _execute_buy_max(self) -> None:
         if not self._has_trade_permit():
@@ -832,7 +866,9 @@ class TradingView(BaseView):
             else:
                 self._show_message("Not enough cargo space")
             get_audio_manager().play_sfx("trade_fail")
-            self.particles.emit(WINDOW_WIDTH // 2, WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - 50, FAIL_FLASH)
+            self.particles.emit(
+                WINDOW_WIDTH // 2, WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - 50, FAIL_FLASH
+            )
             return
 
         # Re-calculate price with actual quantity (bulk discount threshold)
@@ -847,7 +883,9 @@ class TradingView(BaseView):
 
         if success:
             get_audio_manager().play_sfx("trade_buy")
-            self.particles.emit(WINDOW_WIDTH // 2, WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - 50, COLLECT_SPARKLE)
+            self.particles.emit(
+                WINDOW_WIDTH // 2, WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - 50, COLLECT_SPARKLE
+            )
             from spacegame.config import XP_PER_TRADE
 
             xp_msgs = self.player.progression.add_xp(XP_PER_TRADE)
@@ -860,7 +898,9 @@ class TradingView(BaseView):
             self._refresh_tables()
         else:
             get_audio_manager().play_sfx("trade_fail")
-            self.particles.emit(WINDOW_WIDTH // 2, WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - 50, FAIL_FLASH)
+            self.particles.emit(
+                WINDOW_WIDTH // 2, WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - 50, FAIL_FLASH
+            )
 
     def _execute_sell_max(self) -> None:
         commodity_id = self._get_selected_cargo_commodity()
@@ -879,7 +919,9 @@ class TradingView(BaseView):
 
         if success:
             get_audio_manager().play_sfx("trade_sell")
-            self.particles.emit(WINDOW_WIDTH // 2, WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - 50, COLLECT_SPARKLE)
+            self.particles.emit(
+                WINDOW_WIDTH // 2, WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - 50, COLLECT_SPARKLE
+            )
             from spacegame.config import XP_PER_TRADE
 
             xp_msgs = self.player.progression.add_xp(XP_PER_TRADE)
@@ -1134,7 +1176,9 @@ class TradingView(BaseView):
                 else Colors.ERROR
             )
             msg_surf = self.header_font.render(self.transaction_message, True, msg_color)
-            msg_rect = msg_surf.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - 50))
+            msg_rect = msg_surf.get_rect(
+                center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - 50)
+            )
             screen.blit(msg_surf, msg_rect)
 
     def get_next_state(self) -> Optional[GameState]:

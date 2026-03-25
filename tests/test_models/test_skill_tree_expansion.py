@@ -106,9 +106,7 @@ class TestCapstoneSkills:
         capstone_set = set(CAPSTONES)
         for skill_id, skill in skills.items():
             if skill.prerequisite_id and skill.prerequisite_id in capstone_set:
-                assert False, (
-                    f"{skill_id} depends on capstone {skill.prerequisite_id}"
-                )
+                assert False, f"{skill_id} depends on capstone {skill.prerequisite_id}"
 
 
 # === Ground Combat Multi-Rank ===
@@ -164,8 +162,7 @@ class TestPrerequisiteChains:
         for skill_id, skill in skills.items():
             if skill.prerequisite_id:
                 assert skill.prerequisite_id in skills, (
-                    f"{skill_id} references nonexistent prerequisite "
-                    f"'{skill.prerequisite_id}'"
+                    f"{skill_id} references nonexistent prerequisite '{skill.prerequisite_id}'"
                 )
 
     def test_prerequisites_in_same_tree(self) -> None:

@@ -5,11 +5,12 @@ Supports color lerping, alpha fade, gravity, and additive glow rendering.
 Max 500 particles with dead-particle recycling (no GC churn).
 """
 
-import pygame
 import math
 import random
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Optional
+
+import pygame
 
 
 @dataclass

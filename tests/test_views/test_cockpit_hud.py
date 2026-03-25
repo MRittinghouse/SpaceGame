@@ -198,12 +198,14 @@ class TestHUDLayout:
     def test_hud_at_bottom_of_screen(self) -> None:
         """HUD should be positioned at the bottom of the screen."""
         from spacegame.config import WINDOW_HEIGHT
+
         hud = _make_hud()
         assert hud.y == WINDOW_HEIGHT - hud.height
 
     def test_buttons_within_screen_bounds(self) -> None:
         """All button rects should be within screen bounds."""
         from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT
+
         hud = _make_hud()
         for i, rect in enumerate(hud._button_rects):
             assert rect.left >= 0, f"Button {i} left edge off-screen"

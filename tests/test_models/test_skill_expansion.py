@@ -34,7 +34,7 @@ class TestUncappedLeveling:
         for level in range(2, 50):
             prev = get_xp_threshold(level)
             curr = get_xp_threshold(level + 1)
-            assert curr > prev, f"Level {level+1} should need more XP than level {level}"
+            assert curr > prev, f"Level {level + 1} should need more XP than level {level}"
 
     def test_xp_threshold_moderate_curve(self) -> None:
         """Early levels reachable, later levels require real effort."""

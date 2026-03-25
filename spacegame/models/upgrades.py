@@ -8,7 +8,6 @@ and an enhancement system (Mk1 → Mk2 → Mk3) with tuning specialization.
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Tuple
 
-
 # Mark multipliers applied to base bonus_value
 MARK_MULTIPLIERS: dict[int, float] = {1: 1.0, 2: 1.25, 3: 1.50}
 
@@ -123,9 +122,7 @@ class ShipUpgradeManager:
 
     def get_category_used(self, category: str) -> int:
         """Get slots used in a category."""
-        return sum(
-            1 for u in self.installed if self.get_category(u.slot_type) == category
-        )
+        return sum(1 for u in self.installed if self.get_category(u.slot_type) == category)
 
     def get_category_available(self, category: str) -> int:
         """Get available slots in a category."""
@@ -140,9 +137,7 @@ class ShipUpgradeManager:
             return False
         return True
 
-    def install(
-        self, upgrade: ShipUpgrade, force: bool = False
-    ) -> Tuple[bool, str]:
+    def install(self, upgrade: ShipUpgrade, force: bool = False) -> Tuple[bool, str]:
         """Install an upgrade.
 
         Args:

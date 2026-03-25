@@ -78,9 +78,13 @@ class TestWreckUpgrade:
 
     def test_create_upgrade(self) -> None:
         u = WreckUpgrade(
-            id="test", name="Test", description="Test",
-            max_level=3, costs=[5, 10, 20],
-            effect_type="test_bonus", effect_per_level=0.1,
+            id="test",
+            name="Test",
+            description="Test",
+            max_level=3,
+            costs=[5, 10, 20],
+            effect_type="test_bonus",
+            effect_per_level=0.1,
         )
         assert u.id == "test"
         assert u.max_level == 3
@@ -88,9 +92,13 @@ class TestWreckUpgrade:
     def test_costs_length_validation(self) -> None:
         with pytest.raises(ValueError, match="costs length"):
             WreckUpgrade(
-                id="bad", name="Bad", description="Bad",
-                max_level=3, costs=[5, 10],
-                effect_type="test", effect_per_level=0.1,
+                id="bad",
+                name="Bad",
+                description="Bad",
+                max_level=3,
+                costs=[5, 10],
+                effect_type="test",
+                effect_per_level=0.1,
             )
 
     def test_get_cost_level_1(self) -> None:

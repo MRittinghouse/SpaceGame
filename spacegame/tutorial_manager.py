@@ -200,31 +200,16 @@ MINIGAME_HINTS: dict[str, dict[str, str]] = {
         ),
     },
     "builder_tools": {
-        "title": "Builder Tools",
+        "title": "Builder Tools (Hull Mode)",
         "description": (
             "[S] Stamp — place shapes (default tool)\n"
             "[P] Pencil — place single pixels for detail\n"
             "[M] Brush — repaint pixels with a different material\n"
             "[F] Fill — flood-fill an enclosed area\n"
-            "[E] Eraser — remove pixels\n"
-            "[D] Slot — designate equipment hardpoints\n\n"
+            "[E] Eraser — remove pixels\n\n"
             "Right-click always erases. Ctrl+Z undoes, Ctrl+Y redoes.\n\n"
-            "The weight bar shows how heavy your ship is. Lighter ships "
-            "dodge better. Heavier ships tank more."
-        ),
-    },
-    "builder_slots": {
-        "title": "Equipment Slots",
-        "description": (
-            "Press [D] to enter Slot mode. Choose a slot type from "
-            "the panel, then click on your ship to place it.\n\n"
-            "Weapon slots: mount guns and missiles\n"
-            "Defense slots: shields, armor modules, ECM\n"
-            "Engine slots: thrusters (must go at the rear)\n"
-            "Utility slots: cargo, sensors, mining drills\n"
-            "Core slot: your ship's power source (required!)\n\n"
-            "Click a placed slot to install equipment into it. "
-            "Your ship needs at least a weapon or engine to fight or flee."
+            "Switch to EQUIP mode [Tab] to install weapons and "
+            "shields into your module slots."
         ),
     },
     "builder_confirm": {
@@ -239,6 +224,77 @@ MINIGAME_HINTS: dict[str, dict[str, str]] = {
             "• Shield materials are MEDIUM → balanced sustain\n"
             "• Light materials are FAST → evasive but fragile\n\n"
             "Your ship tells your story. Build it YOUR way."
+        ),
+    },
+    # === Module Builder Tutorials (Shipbuilder Upgrade) ===
+    "builder_module_welcome": {
+        "title": "Module-Based Ship Builder",
+        "description": (
+            "Welcome to the module builder. Ships are assembled from "
+            "functional parts: cockpits, engines, weapons, shields, "
+            "and cargo bays.\n\n"
+            "MODULES tab: Browse and place ship parts\n"
+            "HULL tab: Paint structural pixels for detail\n\n"
+            "Start by selecting a Cockpit from the catalog on the left, "
+            "then click the grid to place it.\n\n"
+            "[R] Rotate  [Q] Flip  [Tab] Switch mode\n"
+            "Right-click to remove a placed module."
+        ),
+    },
+    "builder_module_engine": {
+        "title": "Place Your Engine",
+        "description": (
+            "Your ship needs propulsion. Select an Engine module "
+            "from the catalog and place it in the shaded zone on "
+            "the LEFT side of the grid.\n\n"
+            "Ships face RIGHT. The left side is the stern, where "
+            "engines belong. The warm-tinted zone shows where "
+            "engines must go.\n\n"
+            "Different engines have different thrust and fuel "
+            "efficiency. Heavier engines push harder but weigh more."
+        ),
+    },
+    "builder_module_requirements": {
+        "title": "Ship Requirements",
+        "description": (
+            "Every ship needs five core systems:\n\n"
+            "1. Cockpit (command center)\n"
+            "2. Engine (propulsion)\n"
+            "3. Weapon mount (combat)\n"
+            "4. Shield generator (defense)\n"
+            "5. Cargo bay (trading)\n\n"
+            "The checklist on the right tracks your progress. "
+            "All five must be placed before you can confirm.\n\n"
+            "Larger ships (Medium+) also need Crew Quarters, "
+            "and capital ships (Large+) need a Reactor Core."
+        ),
+    },
+    "builder_module_hull": {
+        "title": "Hull Pixel Mode",
+        "description": (
+            "Press [Tab] to switch to Hull mode. Here you can "
+            "paint structural pixels to connect modules, shape "
+            "the exterior, and add your personal touch.\n\n"
+            "Four hull materials:\n"
+            "• Light Alloy — fast, fragile\n"
+            "• Standard Plate — balanced\n"
+            "• Heavy Armor — tough, slow\n"
+            "• Stealth Composite — evasive\n\n"
+            "Hull pixels are the creative layer. Modules handle "
+            "function; hull pixels handle form."
+        ),
+    },
+    "builder_module_confirm": {
+        "title": "Ready to Fly",
+        "description": (
+            "All requirements met! Your ship is ready.\n\n"
+            "Click CONFIRM BUILD to finalize. The build cost will "
+            "be deducted from your credits.\n\n"
+            "SAVE DRAFT saves your design without paying, so you "
+            "can come back later.\n\n"
+            "Overlays (right panel) show structural integrity and "
+            "center of mass. Use them to find weak points in your "
+            "design before committing."
         ),
     },
     "combat_defensive_identity": {

@@ -98,9 +98,7 @@ class TestEncounterDataLoading:
         definitions = self._load()
         # Should have encounters from various categories
         categories = {d.category for d in definitions if d.category}
-        assert len(categories) >= 4, (
-            f"Expected encounters from >= 4 categories, got {categories}"
-        )
+        assert len(categories) >= 4, f"Expected encounters from >= 4 categories, got {categories}"
 
     def test_no_duplicate_ids(self) -> None:
         """All encounter IDs are unique across all files."""
@@ -115,8 +113,12 @@ class TestEncounterDataLoading:
         types_found = {d.encounter_type for d in definitions}
         # At minimum, the original 6 types plus new ones should have definitions
         required_types = {
-            "distress_signal", "derelict", "merchant", "debris",
-            "anomaly", "shakedown",
+            "distress_signal",
+            "derelict",
+            "merchant",
+            "debris",
+            "anomaly",
+            "shakedown",
         }
         for enc_type in required_types:
             assert enc_type in types_found, f"Missing encounter type: {enc_type}"
@@ -125,9 +127,7 @@ class TestEncounterDataLoading:
         """Every encounter definition has at least one choice."""
         definitions = self._load()
         for defn in definitions:
-            assert len(defn.choices) >= 1, (
-                f"Encounter {defn.id} has no choices"
-            )
+            assert len(defn.choices) >= 1, f"Encounter {defn.id} has no choices"
 
     def test_choice_count_range(self) -> None:
         """Every encounter has 2-3 choices (except campaign weight-0)."""
@@ -181,7 +181,8 @@ class TestEncounterDataLoading:
         assert len(shakedowns) >= 1, "Need at least one shakedown definition"
         for defn in shakedowns:
             pay_choices = [
-                c for c in defn.choices
+                c
+                for c in defn.choices
                 if any(r.reward_type == "deduct_credits" for r in c.outcome.rewards)
             ]
             for choice in pay_choices:
@@ -196,9 +197,7 @@ class TestEncounterDataLoading:
         """All tone values are from the known set."""
         definitions = self._load()
         for defn in definitions:
-            assert defn.tone in VALID_TONES, (
-                f"Invalid tone '{defn.tone}' in encounter {defn.id}"
-            )
+            assert defn.tone in VALID_TONES, f"Invalid tone '{defn.tone}' in encounter {defn.id}"
 
     def test_category_values_valid(self) -> None:
         """All category values are from the known set."""
@@ -237,19 +236,20 @@ class TestEncounterDataLoading:
     def test_faction_encounter_distribution(self) -> None:
         """Each faction has at least 8 encounters."""
         definitions = self._load()
-        for faction_id in ["commerce_guild", "miners_union", "science_collective", "frontier_alliance"]:
+        for faction_id in [
+            "commerce_guild",
+            "miners_union",
+            "science_collective",
+            "frontier_alliance",
+        ]:
             count = sum(1 for d in definitions if d.required_faction == faction_id)
-            assert count >= 8, (
-                f"Faction {faction_id} has only {count} encounters, expected >= 8"
-            )
+            assert count >= 8, f"Faction {faction_id} has only {count} encounters, expected >= 8"
 
     def test_unique_encounters_exist(self) -> None:
         """At least 10 unique (one-time) encounters are defined."""
         definitions = self._load()
         unique_count = sum(1 for d in definitions if d.unique)
-        assert unique_count >= 10, (
-            f"Expected >= 10 unique encounters, got {unique_count}"
-        )
+        assert unique_count >= 10, f"Expected >= 10 unique encounters, got {unique_count}"
 
     def test_new_encounter_types_have_definitions(self) -> None:
         """New encounter types (patrol, comm_intercept, refugee) have definitions."""
@@ -257,6 +257,4 @@ class TestEncounterDataLoading:
         types_found = {d.encounter_type for d in definitions}
         new_types = {"patrol", "comm_intercept", "refugee"}
         for enc_type in new_types:
-            assert enc_type in types_found, (
-                f"New encounter type '{enc_type}' has no definitions"
-            )
+            assert enc_type in types_found, f"New encounter type '{enc_type}' has no definitions"

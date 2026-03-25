@@ -5,16 +5,16 @@ Allows the player to enter their name before starting a new game.
 """
 
 import re
+from typing import Optional
 
 import pygame
 import pygame_gui
-from typing import Optional
 
-from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState, scale_x, scale_y
-from spacegame.views.base_view import BaseView
+from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH, Colors, GameState, scale_x, scale_y
 from spacegame.engine.backgrounds import AnimatedBackground
-from spacegame.engine.fonts import FontCache, FONT_DISPLAY, FONT_MD, FONT_XL
+from spacegame.engine.fonts import FONT_DISPLAY, FONT_MD, FONT_XL, get_font
 from spacegame.utils.logger import logger
+from spacegame.views.base_view import BaseView
 
 # Name validation constants
 MAX_NAME_LENGTH = 20
@@ -30,9 +30,9 @@ class NameInputView(BaseView):
         self.next_state: Optional[GameState] = None
 
         # Fonts
-        self.title_font = FontCache.get(FONT_DISPLAY)
-        self.subtitle_font = FontCache.get(FONT_XL)
-        self.error_font = FontCache.get(FONT_MD)
+        self.title_font = get_font("header", FONT_DISPLAY)
+        self.subtitle_font = get_font("dialogue", FONT_XL)
+        self.error_font = get_font("machine", FONT_MD)
 
         # UI elements (created in _create_ui)
         self.name_input: Optional[pygame_gui.elements.UITextEntryLine] = None

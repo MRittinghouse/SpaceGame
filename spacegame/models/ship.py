@@ -5,7 +5,7 @@ Defines ship types, their capabilities, and player ship instances.
 """
 
 from dataclasses import dataclass, field
-from typing import List, Dict
+from typing import Dict, List
 
 
 @dataclass
@@ -130,17 +130,27 @@ class Ship:
         if self._build:
             from spacegame.data_loader import get_data_loader
             from spacegame.models.ship_build import ShipStatsComputer
+
             dl = get_data_loader()
             materials = getattr(dl, "hull_materials", {})
             equipment = getattr(dl, "upgrades", {})
+            module_catalog = getattr(dl, "ship_modules", {})
             self._computed_stats = ShipStatsComputer.compute(
-                self._build, materials, equipment,
+                self._build,
+                materials,
+                equipment,
+                module_catalog=module_catalog,
             )
             # Create or update the composite renderer
             try:
                 from spacegame.engine.ship_composite import ShipComposite
+
                 if not hasattr(self, "_composite") or self._composite is None:
-                    self._composite = ShipComposite(self._build, materials)
+                    self._composite = ShipComposite(
+                        self._build,
+                        materials,
+                        module_catalog=module_catalog,
+                    )
                 else:
                     self._composite.invalidate()
             except ImportError:
@@ -174,10 +184,7 @@ class Ship:
             True if the equipment is installed in any slot.
         """
         if self._build:
-            return any(
-                s.equipment_id == equipment_id
-                for s in self._build.slots
-            )
+            return any(s.equipment_id == equipment_id for s in self._build.slots)
         # Fallback: check upgrade manager
         if self._upgrade_manager:
             return self._upgrade_manager.has_upgrade(equipment_id)
@@ -194,8 +201,7 @@ class Ship:
         """
         if self._build:
             return any(
-                s.slot_type == slot_type and s.equipment_id is not None
-                for s in self._build.slots
+                s.slot_type == slot_type and s.equipment_id is not None for s in self._build.slots
             )
         return False
 

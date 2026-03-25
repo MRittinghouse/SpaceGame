@@ -31,19 +31,14 @@ class TestStockInitialization:
         market = _make_market("forgeworks")
         food_stock = market.get_stock("food")
         # Stock should be moderate (consumed means imported, some available)
-        assert 0 < food_stock <= 60, (
-            f"Consumer should have moderate stock, got {food_stock}"
-        )
+        assert 0 < food_stock <= 60, f"Consumer should have moderate stock, got {food_stock}"
 
     def test_unavailable_commodity_has_zero_stock(self) -> None:
         """Commodities not available at a system should have 0 stock."""
         market = _make_market("verdant")
         # Check a commodity that Verdant doesn't stock
         # Get a commodity that's NOT in the market's available list
-        unavailable = [
-            cid for cid in market._all_commodities
-            if cid not in market.commodities
-        ]
+        unavailable = [cid for cid in market._all_commodities if cid not in market.commodities]
         if unavailable:
             assert market.get_stock(unavailable[0]) == 0
 
@@ -54,9 +49,7 @@ class TestStockInitialization:
             commodity = market.commodities[commodity_id]
             if commodity.base_price > 0:  # Skip quest items
                 stock = market.get_stock(commodity_id)
-                assert stock > 0, (
-                    f"Available commodity {commodity_id} should have stock > 0"
-                )
+                assert stock > 0, f"Available commodity {commodity_id} should have stock > 0"
 
 
 class TestStockDepletion:

@@ -10,7 +10,10 @@ Part of the Shipyard Overhaul — Phase A1.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
+
+if TYPE_CHECKING:
+    from spacegame.models.ship_module import PlacedModule
 
 
 # ============================================================================
@@ -19,18 +22,107 @@ from typing import Optional
 
 WEIGHT_CLASSES: dict[str, dict] = {
     "tiny": {"canvas_w": 16, "canvas_h": 16, "max_weight": 55, "max_slots": 4, "unlock_cost": 0},
-    "small": {"canvas_w": 32, "canvas_h": 20, "max_weight": 110, "max_slots": 7, "unlock_cost": 15000},
-    "medium": {"canvas_w": 40, "canvas_h": 28, "max_weight": 190, "max_slots": 10, "unlock_cost": 60000},
-    "large": {"canvas_w": 56, "canvas_h": 40, "max_weight": 330, "max_slots": 14, "unlock_cost": 200000},
-    "xlarge": {"canvas_w": 72, "canvas_h": 52, "max_weight": 550, "max_slots": 18, "unlock_cost": 500000},
+    "small": {
+        "canvas_w": 32,
+        "canvas_h": 20,
+        "max_weight": 110,
+        "max_slots": 7,
+        "unlock_cost": 15000,
+    },
+    "medium": {
+        "canvas_w": 40,
+        "canvas_h": 28,
+        "max_weight": 190,
+        "max_slots": 10,
+        "unlock_cost": 60000,
+    },
+    "large": {
+        "canvas_w": 56,
+        "canvas_h": 40,
+        "max_weight": 330,
+        "max_slots": 14,
+        "unlock_cost": 200000,
+    },
+    "xlarge": {
+        "canvas_w": 72,
+        "canvas_h": 52,
+        "max_weight": 550,
+        "max_slots": 18,
+        "unlock_cost": 500000,
+    },
 }
 
+# LEGACY: Old slot pool system, kept only for backward compatibility
+# with saves created before the module-based builder. New builds use
+# MODULE_CAPS instead. Do not reference in new code.
 SLOT_POOLS: dict[str, dict[str, int]] = {
     "tiny": {"weapon": 1, "defense": 1, "utility": 1, "engine": 1},
     "small": {"weapon": 2, "defense": 1, "utility": 2, "engine": 2},
     "medium": {"weapon": 3, "defense": 2, "utility": 3, "engine": 2},
     "large": {"weapon": 4, "defense": 3, "utility": 4, "engine": 3},
     "xlarge": {"weapon": 6, "defense": 4, "utility": 5, "engine": 3},
+}
+
+# Maximum modules per category per weight class.
+# These are soft caps — more generous than SLOT_POOLS since modules
+# now serve as both structure and equipment slots. Prevents degenerate
+# builds (20-weapon turret arrays) while preserving creative freedom.
+MODULE_CAPS: dict[str, dict[str, int]] = {
+    "tiny": {
+        "cockpit": 1,
+        "engine": 2,
+        "weapon": 2,
+        "shield": 2,
+        "cargo": 2,
+        "crew": 1,
+        "reactor": 1,
+        "utility": 3,
+        "structural": 50,
+    },
+    "small": {
+        "cockpit": 1,
+        "engine": 3,
+        "weapon": 3,
+        "shield": 3,
+        "cargo": 3,
+        "crew": 2,
+        "reactor": 1,
+        "utility": 4,
+        "structural": 50,
+    },
+    "medium": {
+        "cockpit": 1,
+        "engine": 4,
+        "weapon": 5,
+        "shield": 4,
+        "cargo": 4,
+        "crew": 3,
+        "reactor": 2,
+        "utility": 6,
+        "structural": 50,
+    },
+    "large": {
+        "cockpit": 1,
+        "engine": 5,
+        "weapon": 7,
+        "shield": 5,
+        "cargo": 5,
+        "crew": 4,
+        "reactor": 3,
+        "utility": 8,
+        "structural": 50,
+    },
+    "xlarge": {
+        "cockpit": 1,
+        "engine": 6,
+        "weapon": 9,
+        "shield": 7,
+        "cargo": 6,
+        "crew": 5,
+        "reactor": 4,
+        "utility": 10,
+        "structural": 50,
+    },
 }
 
 # Weight ratio → stat modifier thresholds
@@ -43,19 +135,45 @@ WEIGHT_MODIFIERS: list[tuple[float, float, str, float, float]] = [
     (1.00, 0.95, "OVERLOADED", 0.80, 0.90),
 ]
 
+# Frame variants: (width, height) for non-default canvas aspect ratios.
+# Tiny and small have no variants. Variants preserve roughly the same
+# total pixel area as the default canvas for each weight class.
+FRAME_VARIANTS: dict[str, dict[str, tuple[int, int]]] = {
+    "medium": {
+        "wide": (48, 24),
+        "tall": (28, 40),
+    },
+    "large": {
+        "wide": (68, 32),
+        "tall": (40, 56),
+    },
+    "xlarge": {
+        "wide": (84, 44),
+        "tall": (52, 72),
+    },
+}
+
 # Identity detection: material pixel ratio threshold
 IDENTITY_THRESHOLD = 0.35
 
 # Materials that count toward each identity
 JUGGERNAUT_MATERIALS = {
-    "heavy_armor", "reinforced_plate", "ablative_plating",
-    "nano_fiber", "crimson_steel",
+    "heavy_armor",
+    "reinforced_plate",
+    "ablative_plating",
+    "nano_fiber",
+    "crimson_steel",
 }
 SENTINEL_MATERIALS = {
-    "shield_crystal", "barrier_lattice", "quantum_lattice",
+    "shield_crystal",
+    "barrier_lattice",
+    "quantum_lattice",
 }
 GHOST_MATERIALS = {
-    "stealth_composite", "phase_alloy", "void_glass", "light_alloy",
+    "stealth_composite",
+    "phase_alloy",
+    "void_glass",
+    "light_alloy",
 }
 
 
@@ -120,10 +238,15 @@ class HullShape:
                 new_mask.append(new_row)
             mask = new_mask
         return HullShape(
-            id=self.id, name=self.name, description=self.description,
-            pixel_mask=mask, category=self.category,
-            unlock_method=self.unlock_method, unlock_cost=self.unlock_cost,
-            unlock_source=self.unlock_source, discovery_flavor=self.discovery_flavor,
+            id=self.id,
+            name=self.name,
+            description=self.description,
+            pixel_mask=mask,
+            category=self.category,
+            unlock_method=self.unlock_method,
+            unlock_cost=self.unlock_cost,
+            unlock_source=self.unlock_source,
+            discovery_flavor=self.discovery_flavor,
         )
 
     def flipped(self) -> HullShape:
@@ -134,20 +257,30 @@ class HullShape:
         """
         mask = [row[::-1] for row in self.pixel_mask]
         return HullShape(
-            id=self.id, name=self.name, description=self.description,
-            pixel_mask=mask, category=self.category,
-            unlock_method=self.unlock_method, unlock_cost=self.unlock_cost,
-            unlock_source=self.unlock_source, discovery_flavor=self.discovery_flavor,
+            id=self.id,
+            name=self.name,
+            description=self.description,
+            pixel_mask=mask,
+            category=self.category,
+            unlock_method=self.unlock_method,
+            unlock_cost=self.unlock_cost,
+            unlock_source=self.unlock_source,
+            discovery_flavor=self.discovery_flavor,
         )
 
     def to_dict(self) -> dict:
         """Serialize shape to dict."""
         compact = ["".join("#" if c else "." for c in row) for row in self.pixel_mask]
         return {
-            "id": self.id, "name": self.name, "description": self.description,
-            "pixel_mask_compact": compact, "category": self.category,
-            "unlock_method": self.unlock_method, "unlock_cost": self.unlock_cost,
-            "unlock_source": self.unlock_source, "discovery_flavor": self.discovery_flavor,
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
+            "pixel_mask_compact": compact,
+            "category": self.category,
+            "unlock_method": self.unlock_method,
+            "unlock_cost": self.unlock_cost,
+            "unlock_source": self.unlock_source,
+            "discovery_flavor": self.discovery_flavor,
         }
 
     @classmethod
@@ -160,9 +293,11 @@ class HullShape:
         else:
             mask = []
         return cls(
-            id=data["id"], name=data["name"],
+            id=data["id"],
+            name=data["name"],
             description=data.get("description", ""),
-            pixel_mask=mask, category=data.get("category", "basic"),
+            pixel_mask=mask,
+            category=data.get("category", "basic"),
             unlock_method=data.get("unlock_method", "free"),
             unlock_cost=data.get("unlock_cost", 0),
             unlock_source=data.get("unlock_source", ""),
@@ -199,7 +334,9 @@ class HullMaterial:
     def to_dict(self) -> dict:
         """Serialize material to dict."""
         return {
-            "id": self.id, "name": self.name, "description": self.description,
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
             "color_primary": list(self.color_primary),
             "color_accent": list(self.color_accent),
             "color_highlight": list(self.color_highlight),
@@ -220,7 +357,8 @@ class HullMaterial:
     def from_dict(cls, data: dict) -> HullMaterial:
         """Restore material from dict."""
         return cls(
-            id=data["id"], name=data["name"],
+            id=data["id"],
+            name=data["name"],
             description=data.get("description", ""),
             color_primary=tuple(data.get("color_primary", [128, 128, 128])),
             color_accent=tuple(data.get("color_accent", [0, 0, 0])),
@@ -257,7 +395,13 @@ class PlacedPixel:
 
 @dataclass
 class DesignatedSlot:
-    """An equipment slot placed on the ship grid.
+    """LEGACY: Equipment slot from the old pixel-based builder.
+
+    Kept for backward compatibility with saves created before the
+    module-based system. New builds use PlacedModule.installed_upgrade_id
+    instead. Do not use in new code.
+
+    Originally: An equipment slot placed on the ship grid.
 
     Each slot occupies a 2×2 area (3×3 for core) of filled pixels.
     Equipment modules are installed into slots to provide combat moves
@@ -278,17 +422,23 @@ class DesignatedSlot:
 
     def to_dict(self) -> dict:
         return {
-            "slot_type": self.slot_type, "x": self.x, "y": self.y,
-            "equipment_id": self.equipment_id, "mark": self.mark,
+            "slot_type": self.slot_type,
+            "x": self.x,
+            "y": self.y,
+            "equipment_id": self.equipment_id,
+            "mark": self.mark,
             "tuning": self.tuning,
         }
 
     @classmethod
     def from_dict(cls, data: dict) -> DesignatedSlot:
         return cls(
-            slot_type=data["slot_type"], x=data["x"], y=data["y"],
+            slot_type=data["slot_type"],
+            x=data["x"],
+            y=data["y"],
             equipment_id=data.get("equipment_id"),
-            mark=data.get("mark", 1), tuning=data.get("tuning"),
+            mark=data.get("mark", 1),
+            tuning=data.get("tuning"),
         )
 
 
@@ -305,21 +455,30 @@ class ShipBuild:
     pixels: list[PlacedPixel] = field(default_factory=list)
     slots: list[DesignatedSlot] = field(default_factory=list)
     preset_name: Optional[str] = None
+    modules: list[PlacedModule] = field(default_factory=list)
+    frame_variant: Optional[str] = None
 
     @property
     def canvas_size(self) -> int:
         """Largest grid dimension for backward compat (max of w, h)."""
-        wc = WEIGHT_CLASSES.get(self.weight_class, {})
-        return max(wc.get("canvas_w", 32), wc.get("canvas_h", 32))
+        return max(self.canvas_w, self.canvas_h)
 
     @property
     def canvas_w(self) -> int:
-        """Grid width for this weight class."""
+        """Grid width, accounting for frame variant."""
+        if self.frame_variant and self.weight_class in FRAME_VARIANTS:
+            variants = FRAME_VARIANTS[self.weight_class]
+            if self.frame_variant in variants:
+                return variants[self.frame_variant][0]
         return WEIGHT_CLASSES.get(self.weight_class, {}).get("canvas_w", 32)
 
     @property
     def canvas_h(self) -> int:
-        """Grid height for this weight class."""
+        """Grid height, accounting for frame variant."""
+        if self.frame_variant and self.weight_class in FRAME_VARIANTS:
+            variants = FRAME_VARIANTS[self.weight_class]
+            if self.frame_variant in variants:
+                return variants[self.frame_variant][1]
         return WEIGHT_CLASSES.get(self.weight_class, {}).get("canvas_h", 32)
 
     @property
@@ -328,20 +487,33 @@ class ShipBuild:
         return WEIGHT_CLASSES.get(self.weight_class, {}).get("max_weight", 140)
 
     def to_dict(self) -> dict:
-        return {
+        """Serialize build to dict, including modules and frame variant."""
+        result: dict = {
             "weight_class": self.weight_class,
             "pixels": [p.to_dict() for p in self.pixels],
             "slots": [s.to_dict() for s in self.slots],
             "preset_name": self.preset_name,
         }
+        if self.modules:
+            result["modules"] = [m.to_dict() for m in self.modules]
+        if self.frame_variant:
+            result["frame_variant"] = self.frame_variant
+        return result
 
     @classmethod
     def from_dict(cls, data: dict) -> ShipBuild:
+        """Restore build from dict. Backward-compatible with old saves."""
+        # Local import to avoid circular dependency
+        from spacegame.models.ship_module import PlacedModule as PM
+
+        modules = [PM.from_dict(m) for m in data.get("modules", [])]
         return cls(
             weight_class=data["weight_class"],
             pixels=[PlacedPixel.from_dict(p) for p in data.get("pixels", [])],
             slots=[DesignatedSlot.from_dict(s) for s in data.get("slots", [])],
             preset_name=data.get("preset_name"),
+            modules=modules,
+            frame_variant=data.get("frame_variant"),
         )
 
 
@@ -460,70 +632,19 @@ class ShipGridManager:
                 current_weight += material.weight_per_pixel  # Fallback approximation
         new_weight = new_pixel_count * material.weight_per_pixel
         if current_weight + new_weight > self._max_weight:
-            return False, f"Exceeds weight limit ({current_weight + new_weight:.1f}/{self._max_weight})"
-
-        return True, "OK"
-
-    def can_place_slot(
-        self,
-        slot_type: str,
-        x: int,
-        y: int,
-        pixels: list[PlacedPixel],
-        slots: list[DesignatedSlot],
-    ) -> tuple[bool, str]:
-        """Check if an equipment slot can be placed at the given position.
-
-        Args:
-            slot_type: Type of slot ("weapon", "defense", "engine", "utility", "core").
-            x: Left column of slot area.
-            y: Top row of slot area.
-            pixels: Currently placed pixels.
-            slots: Currently placed slots.
-
-        Returns:
-            (success, message) tuple.
-        """
-        size = 3 if slot_type == "core" else 2
-
-        # Bounds check
-        if x < 0 or y < 0 or x + size > self._canvas_w or y + size > self._canvas_h:
-            return False, "Slot position out of bounds"
-
-        # Check all underlying pixels are filled
-        if not self.is_area_filled(x, y, size, pixels):
-            return False, "Slot must be placed on filled pixels"
-
-        # Check no overlap with existing slots
-        for existing in slots:
-            ex_size = existing.size
-            if (x < existing.x + ex_size and x + size > existing.x
-                    and y < existing.y + ex_size and y + size > existing.y):
-                return False, "Overlaps existing slot"
-
-        # Check slot pool limits
-        pool = SLOT_POOLS.get(self._weight_class, {})
-        if slot_type != "core":
-            max_of_type = pool.get(slot_type, 0)
-            current_of_type = sum(1 for s in slots if s.slot_type == slot_type)
-            if current_of_type >= max_of_type:
-                return False, f"No {slot_type} slots remaining ({current_of_type}/{max_of_type})"
-
-        # Total slot limit
-        max_total = WEIGHT_CLASSES.get(self._weight_class, {}).get("max_slots", 10)
-        if len(slots) >= max_total:
-            return False, f"Maximum slots reached ({max_total})"
-
-        # Engine slot must be in rear 25% of canvas
-        if slot_type == "engine":
-            rear_threshold = int(self._canvas_h * 0.75)
-            if y < rear_threshold:
-                return False, f"Engine slots must be in rear 25% of ship (y >= {rear_threshold})"
+            return (
+                False,
+                f"Exceeds weight limit ({current_weight + new_weight:.1f}/{self._max_weight})",
+            )
 
         return True, "OK"
 
     def is_area_filled(
-        self, x: int, y: int, size: int, pixels: list[PlacedPixel],
+        self,
+        x: int,
+        y: int,
+        size: int,
+        pixels: list[PlacedPixel],
     ) -> bool:
         """Check if every cell in a size×size area is filled with pixels."""
         occupied = {(p.x, p.y) for p in pixels}
@@ -534,14 +655,15 @@ class ShipGridManager:
         return True
 
     def get_pixels_at(
-        self, x: int, y: int, width: int, height: int,
+        self,
+        x: int,
+        y: int,
+        width: int,
+        height: int,
         pixels: list[PlacedPixel],
     ) -> list[PlacedPixel]:
         """Get all pixels within a rectangular region."""
-        return [
-            p for p in pixels
-            if x <= p.x < x + width and y <= p.y < y + height
-        ]
+        return [p for p in pixels if x <= p.x < x + width and y <= p.y < y + height]
 
     # _get_pixel_weight removed — weight now calculated with actual material catalog
 
@@ -559,6 +681,7 @@ class ShipStatsComputer:
         build: ShipBuild,
         materials: dict[str, HullMaterial],
         equipment: Optional[dict] = None,
+        module_catalog: Optional[dict] = None,
     ) -> ComputedShipStats:
         """Compute all ship stats from the build configuration.
 
@@ -566,18 +689,42 @@ class ShipStatsComputer:
             build: The ship build to compute stats for.
             materials: Material definitions keyed by ID.
             equipment: Equipment/upgrade definitions keyed by ID (optional).
+            module_catalog: Ship module blueprints keyed by ID (optional).
 
         Returns:
             ComputedShipStats with all derived values.
         """
         if equipment is None:
             equipment = {}
+        if module_catalog is None:
+            module_catalog = {}
 
         stats = ComputedShipStats()
         wc = WEIGHT_CLASSES.get(build.weight_class, WEIGHT_CLASSES["medium"])
         stats.weight_max = wc["max_weight"]
 
-        # Sum material contributions across all pixels
+        # --- Module stat contributions (fixed stats from provides dict) ---
+        for placed_mod in build.modules:
+            module = module_catalog.get(placed_mod.module_id)
+            if module is None:
+                continue
+            provides = module.provides
+            stats.shields += provides.get("shield_hp", 0)
+            stats.shield_regen += provides.get("shield_regen", 0)
+            stats.cargo_capacity += provides.get("cargo_capacity", 0)
+            stats.crew_slots += provides.get("crew_capacity", 0)
+            stats.speed += provides.get("thrust", 0)
+            stats.armor += provides.get("armor_bonus", 0)
+            stats.fuel_capacity += provides.get("fuel_capacity", 0)
+            stats.power_max += provides.get("power_output", 0)
+            stats.evasion += provides.get("evasion_bonus", 0)
+            stats.accuracy += provides.get("accuracy_bonus", 0)
+            stats.hull += provides.get("hull_hp", 0)
+            # Module weight and cost
+            stats.weight_current += module.weight
+            stats.total_cost += module.instantiation_cost
+
+        # --- Hull pixel stat contributions (per-pixel material accumulation) ---
         material_counts: dict[str, int] = {}
         for pixel in build.pixels:
             mat = materials.get(pixel.material_id)
@@ -618,12 +765,22 @@ class ShipStatsComputer:
         stats.evasion = int(stats.evasion * evasion_mult)
         stats.speed = int(stats.speed * speed_mult) if stats.speed > 0 else 0
 
+        # Physics-based modifiers (CoM balance, frontal profile)
+        if module_catalog and (build.modules or build.pixels):
+            try:
+                from spacegame.models.ship_physics import compute_physics_modifiers
+
+                physics = compute_physics_modifiers(build, materials, module_catalog)
+                physics_evasion_mult = physics.get("evasion_mult", 1.0)
+                if physics_evasion_mult != 1.0:
+                    stats.evasion = int(stats.evasion * physics_evasion_mult)
+            except Exception:
+                pass  # Physics computation failed gracefully (import, data, etc.)
+
         # Equipment contributions (from slots with installed equipment)
         for slot in build.slots:
             if slot.equipment_id and slot.equipment_id in equipment:
                 upgrade = equipment[slot.equipment_id]
-                # Equipment stats are added via the existing upgrade system
-                # Combat moves are collected for the equipment_moves list
                 if hasattr(upgrade, "combat_move") and upgrade.combat_move:
                     stats.combat_moves.append(upgrade.combat_move)
 
@@ -632,18 +789,12 @@ class ShipStatsComputer:
         for slot in build.slots:
             stats.total_cost += slot_costs.get(slot.slot_type, 0)
 
-        # Defensive identity detection
+        # Defensive identity detection (hull pixels only)
         total_pixels = len(build.pixels)
         if total_pixels > 0:
-            juggernaut_count = sum(
-                material_counts.get(mid, 0) for mid in JUGGERNAUT_MATERIALS
-            )
-            sentinel_count = sum(
-                material_counts.get(mid, 0) for mid in SENTINEL_MATERIALS
-            )
-            ghost_count = sum(
-                material_counts.get(mid, 0) for mid in GHOST_MATERIALS
-            )
+            juggernaut_count = sum(material_counts.get(mid, 0) for mid in JUGGERNAUT_MATERIALS)
+            sentinel_count = sum(material_counts.get(mid, 0) for mid in SENTINEL_MATERIALS)
+            ghost_count = sum(material_counts.get(mid, 0) for mid in GHOST_MATERIALS)
 
             juggernaut_ratio = juggernaut_count / total_pixels
             sentinel_ratio = sentinel_count / total_pixels

@@ -7,13 +7,23 @@ from spacegame.save_manager import SaveManager
 
 def _make_player() -> Player:
     ship_type = ShipType(
-        id="shuttle", name="Shuttle", ship_class="light",
-        description="Basic", cargo_capacity=100, fuel_capacity=50,
-        fuel_efficiency=1.0, speed_multiplier=1.0, purchase_price=0,
-        resale_value=0, crew_slots=1, special_abilities=[], availability="all",
+        id="shuttle",
+        name="Shuttle",
+        ship_class="light",
+        description="Basic",
+        cargo_capacity=100,
+        fuel_capacity=50,
+        fuel_efficiency=1.0,
+        speed_multiplier=1.0,
+        purchase_price=0,
+        resale_value=0,
+        crew_slots=1,
+        special_abilities=[],
+        availability="all",
     )
     return Player(
-        name="TestCaptain", credits=5000,
+        name="TestCaptain",
+        credits=5000,
         current_system_id="forgeworks",
         ship=Ship(ship_type=ship_type, current_fuel=50),
     )
@@ -70,8 +80,7 @@ class TestForgeSaveLoad:
         player = _make_player()
         data = sm._serialize_player(player)
         # Strip forge fields to simulate old save
-        for key in ["forge_tokens", "forge_upgrades",
-                     "forge_buffer_manager", "recipe_mastery"]:
+        for key in ["forge_tokens", "forge_upgrades", "forge_buffer_manager", "recipe_mastery"]:
             data.pop(key, None)
         restored = sm._deserialize_player(data)
         assert restored.forge_tokens == 0

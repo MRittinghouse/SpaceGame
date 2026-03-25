@@ -388,9 +388,7 @@ class TestContractTemplates:
 
         dl = get_data_loader()
         for mt_key, template in dl.contract_templates.items():
-            assert len(template["descriptions"]) > 0, (
-                f"Template {mt_key} has no descriptions"
-            )
+            assert len(template["descriptions"]) > 0, f"Template {mt_key} has no descriptions"
 
     def test_templates_have_objectives(self):
         """Each mission type template has at least one objective."""
@@ -398,9 +396,7 @@ class TestContractTemplates:
 
         dl = get_data_loader()
         for mt_key, template in dl.contract_templates.items():
-            assert len(template["objectives"]) > 0, (
-                f"Template {mt_key} has no objectives"
-            )
+            assert len(template["objectives"]) > 0, f"Template {mt_key} has no objectives"
 
     def test_generated_contracts_use_templates(self):
         """Generated contract descriptions come from templates."""

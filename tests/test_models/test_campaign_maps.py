@@ -16,6 +16,7 @@ from spacegame.models.ground_mapgen import MapGenResult, MissionType, Difficulty
 # Minimal valid campaign map data
 # ===========================================================================
 
+
 def _minimal_map_data() -> dict:
     """A small 8x6 campaign map with one enemy and basic layout."""
     # Legend: W=wall, F=floor, E=entrance, X=exit, D=door, N=noisy
@@ -49,12 +50,8 @@ def _minimal_map_data() -> dict:
                 "patrol_route": [[5, 2], [5, 3], [5, 4], [5, 3]],
             }
         ],
-        "interactables": [
-            {"x": 3, "y": 2, "type": "loot_container", "loot_credits": 50}
-        ],
-        "story_triggers": [
-            {"x": 2, "y": 4, "type": "discovery", "text": "A hidden passage."}
-        ],
+        "interactables": [{"x": 3, "y": 2, "type": "loot_container", "loot_credits": 50}],
+        "story_triggers": [{"x": 2, "y": 4, "type": "discovery", "text": "A hidden passage."}],
     }
 
 

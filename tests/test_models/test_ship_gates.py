@@ -46,9 +46,7 @@ class TestShipTypeGateFields:
         assert ship.unlock_condition is None
 
     def test_faction_gated_ship(self) -> None:
-        ship = _make_ship_type(
-            faction_required="nexus_trade", faction_rep_required=50
-        )
+        ship = _make_ship_type(faction_required="nexus_trade", faction_rep_required=50)
         assert ship.faction_required == "nexus_trade"
         assert ship.faction_rep_required == 50
 
@@ -68,9 +66,7 @@ class TestShipTypeGateFields:
 
     def test_can_afford_unchanged(self) -> None:
         """Gate fields don't affect can_afford logic."""
-        ship = _make_ship_type(
-            purchase_price=100000, faction_required="nexus_trade"
-        )
+        ship = _make_ship_type(purchase_price=100000, faction_required="nexus_trade")
         assert ship.can_afford(100000)
         assert not ship.can_afford(99999)
 
@@ -109,9 +105,7 @@ class TestUpgradeDataLoading:
         for uid, upgrade in dl.upgrades.items():
             assert 1 <= upgrade.max_mark <= 3
             assert isinstance(upgrade.tuning_options, list)
-            assert upgrade.faction_required is None or isinstance(
-                upgrade.faction_required, str
-            )
+            assert upgrade.faction_required is None or isinstance(upgrade.faction_required, str)
 
     def test_existing_upgrades_still_load(self) -> None:
         """All existing upgrades should still parse correctly."""

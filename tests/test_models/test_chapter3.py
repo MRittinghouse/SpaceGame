@@ -182,8 +182,10 @@ class TestRevaDistressDialogue:
         # The start node should have responses that lead to grateful path
         # Walk the tree to verify flag-gated content exists
         all_node_ids = set(tree.nodes.keys())
-        assert "grateful" in all_node_ids or "helped_path" in all_node_ids or any(
-            "grateful" in nid or "helped" in nid for nid in all_node_ids
+        assert (
+            "grateful" in all_node_ids
+            or "helped_path" in all_node_ids
+            or any("grateful" in nid or "helped" in nid for nid in all_node_ids)
         ), f"Should have a helped/grateful branch. Nodes: {all_node_ids}"
 
     def test_ignored_branch_exists(self) -> None:
@@ -192,9 +194,9 @@ class TestRevaDistressDialogue:
         dl = get_data_loader()
         tree = dl.dialogue_trees["reva_distress"]
         all_node_ids = set(tree.nodes.keys())
-        assert any(
-            "cold" in nid or "ignored" in nid or "bitter" in nid for nid in all_node_ids
-        ), f"Should have an ignored/cold branch. Nodes: {all_node_ids}"
+        assert any("cold" in nid or "ignored" in nid or "bitter" in nid for nid in all_node_ids), (
+            f"Should have an ignored/cold branch. Nodes: {all_node_ids}"
+        )
 
     def test_persuasion_check_exists(self) -> None:
         """Should contain a persuasion skill check with difficulty 2."""
@@ -285,12 +287,12 @@ class TestDexCantinaDialogue:
         dl = get_data_loader()
         tree = dl.dialogue_trees["dex_cantina"]
         all_node_ids = set(tree.nodes.keys())
-        assert any(
-            "accept" in nid for nid in all_node_ids
-        ), f"Should have accept path. Nodes: {all_node_ids}"
-        assert any(
-            "decline" in nid for nid in all_node_ids
-        ), f"Should have decline path. Nodes: {all_node_ids}"
+        assert any("accept" in nid for nid in all_node_ids), (
+            f"Should have accept path. Nodes: {all_node_ids}"
+        )
+        assert any("decline" in nid for nid in all_node_ids), (
+            f"Should have decline path. Nodes: {all_node_ids}"
+        )
 
 
 class TestTorresUndergroundDialogue:
@@ -348,8 +350,7 @@ class TestTorresUndergroundDialogue:
         all_text = " ".join(node.text for node in tree.nodes.values())
         # Should mention someone with resources or organized piracy
         assert any(
-            phrase in all_text.lower()
-            for phrase in ["resources", "organized", "someone", "behind"]
+            phrase in all_text.lower() for phrase in ["resources", "organized", "someone", "behind"]
         ), "Torres should hint at organized piracy conspiracy"
 
 
@@ -384,10 +385,7 @@ class TestChapter3AutoTriggers:
             npc.auto_trigger_gate_flag
             and not player.dialogue_flags.get(npc.auto_trigger_gate_flag, False)
             and player.current_system_id == npc.home_system_id
-            and all(
-                player.dialogue_flags.get(f, False)
-                for f in npc.auto_trigger_prerequisites
-            )
+            and all(player.dialogue_flags.get(f, False) for f in npc.auto_trigger_prerequisites)
         )
         assert should_trigger, "Dex should auto-trigger at nexus_prime after cargo_lost_resolved"
 
@@ -402,10 +400,7 @@ class TestChapter3AutoTriggers:
             npc.auto_trigger_gate_flag
             and not player.dialogue_flags.get(npc.auto_trigger_gate_flag, False)
             and player.current_system_id == npc.home_system_id
-            and all(
-                player.dialogue_flags.get(f, False)
-                for f in npc.auto_trigger_prerequisites
-            )
+            and all(player.dialogue_flags.get(f, False) for f in npc.auto_trigger_prerequisites)
         )
         assert not should_trigger, "Dex should not trigger without cargo_lost_resolved"
 
@@ -421,10 +416,7 @@ class TestChapter3AutoTriggers:
             npc.auto_trigger_gate_flag
             and not player.dialogue_flags.get(npc.auto_trigger_gate_flag, False)
             and player.current_system_id == npc.home_system_id
-            and all(
-                player.dialogue_flags.get(f, False)
-                for f in npc.auto_trigger_prerequisites
-            )
+            and all(player.dialogue_flags.get(f, False) for f in npc.auto_trigger_prerequisites)
         )
         assert should_trigger, "Torres should auto-trigger at crimson_reach after ground mission"
 
@@ -439,10 +431,7 @@ class TestChapter3AutoTriggers:
             npc.auto_trigger_gate_flag
             and not player.dialogue_flags.get(npc.auto_trigger_gate_flag, False)
             and player.current_system_id == npc.home_system_id
-            and all(
-                player.dialogue_flags.get(f, False)
-                for f in npc.auto_trigger_prerequisites
-            )
+            and all(player.dialogue_flags.get(f, False) for f in npc.auto_trigger_prerequisites)
         )
         assert not should_trigger, "Torres should not trigger without ground mission complete"
 
@@ -711,9 +700,7 @@ class TestCargoLostDistressEncounter:
         dl = get_data_loader()
         enc = next(e for e in dl.encounter_definitions if e.id == "cargo_lost_distress")
         help_choice = next(c for c in enc.choices if c.id == "answer_signal")
-        flag_rewards = [
-            r for r in help_choice.outcome.rewards if r.reward_type == "set_flag"
-        ]
+        flag_rewards = [r for r in help_choice.outcome.rewards if r.reward_type == "set_flag"]
         flag_ids = {r.target_id for r in flag_rewards}
         assert "helped_reva_sato" in flag_ids
 
@@ -723,9 +710,7 @@ class TestCargoLostDistressEncounter:
         dl = get_data_loader()
         enc = next(e for e in dl.encounter_definitions if e.id == "cargo_lost_distress")
         ignore_choice = next(c for c in enc.choices if c.id == "press_on")
-        flag_rewards = [
-            r for r in ignore_choice.outcome.rewards if r.reward_type == "set_flag"
-        ]
+        flag_rewards = [r for r in ignore_choice.outcome.rewards if r.reward_type == "set_flag"]
         flag_ids = {r.target_id for r in flag_rewards}
         assert "ignored_distress_signal" in flag_ids
 
@@ -742,9 +727,7 @@ class TestMissionCounts:
         """Total commodity count should be 61 (60 existing + 1 sealed_audit_chip)."""
         _load_data()
         dl = get_data_loader()
-        assert len(dl.commodities) == 61, (
-            f"Expected 61 commodities, got {len(dl.commodities)}"
-        )
+        assert len(dl.commodities) == 61, f"Expected 61 commodities, got {len(dl.commodities)}"
 
     def test_total_encounter_count(self) -> None:
         """Total encounter definition count should be >= 120 after R3 expansion."""
@@ -766,15 +749,22 @@ class TestChapter3MissionChain:
     def test_cargo_lost_unlocks_after_scholars_errand(self) -> None:
         """M08 unlocks when the_scholars_errand is completed."""
         m_prereq = Mission(
-            id="the_scholars_errand", name="Scholar", description="",
-            objectives=[], rewards=[], prerequisites=[],
+            id="the_scholars_errand",
+            name="Scholar",
+            description="",
+            objectives=[],
+            rewards=[],
+            prerequisites=[],
         )
         m_cargo = Mission(
-            id="cargo_lost", name="Cargo Lost", description="",
+            id="cargo_lost",
+            name="Cargo Lost",
+            description="",
             prerequisites=["the_scholars_errand"],
             objectives=[
                 MissionObjective(
-                    type=ObjectiveType.REACH_SYSTEM, target_id="nova_research",
+                    type=ObjectiveType.REACH_SYSTEM,
+                    target_id="nova_research",
                     description="Reach Nova Research",
                 ),
             ],
@@ -794,17 +784,24 @@ class TestChapter3MissionChain:
     def test_whispers_needs_cargo_lost_and_dex_flag(self) -> None:
         """M09 needs cargo_lost + met_dex_halloran flag."""
         m_cargo = Mission(
-            id="cargo_lost", name="Cargo", description="",
-            objectives=[], rewards=[], prerequisites=[],
+            id="cargo_lost",
+            name="Cargo",
+            description="",
+            objectives=[],
+            rewards=[],
+            prerequisites=[],
         )
         m_whispers = Mission(
-            id="whispers_at_the_bar", name="Whispers", description="",
+            id="whispers_at_the_bar",
+            name="Whispers",
+            description="",
             prerequisites=["cargo_lost"],
             required_flags=["met_dex_halloran"],
             auto_accept=True,
             objectives=[
                 MissionObjective(
-                    type=ObjectiveType.HAS_FLAG, target_id="dex_favor_accepted",
+                    type=ObjectiveType.HAS_FLAG,
+                    target_id="dex_favor_accepted",
                     description="Accept or decline Dex's favor",
                 ),
             ],
@@ -825,16 +822,23 @@ class TestChapter3MissionChain:
     def test_crimson_run_needs_whispers_and_favor(self) -> None:
         """M10 needs whispers + dex_favor_accepted flag."""
         m_whispers = Mission(
-            id="whispers_at_the_bar", name="Whispers", description="",
-            objectives=[], rewards=[], prerequisites=[],
+            id="whispers_at_the_bar",
+            name="Whispers",
+            description="",
+            objectives=[],
+            rewards=[],
+            prerequisites=[],
         )
         m_crimson = Mission(
-            id="the_crimson_run", name="Crimson", description="",
+            id="the_crimson_run",
+            name="Crimson",
+            description="",
             prerequisites=["whispers_at_the_bar"],
             required_flags=["dex_favor_accepted"],
             objectives=[
                 MissionObjective(
-                    type=ObjectiveType.REACH_SYSTEM, target_id="crimson_reach",
+                    type=ObjectiveType.REACH_SYSTEM,
+                    target_id="crimson_reach",
                     description="Reach Crimson Reach",
                 ),
             ],
@@ -916,7 +920,9 @@ class TestGroundMissionFields:
     def test_ground_mission_id_field(self) -> None:
         """Mission should support ground_mission_id."""
         m = Mission(
-            id="test", name="Test", description="",
+            id="test",
+            name="Test",
+            description="",
             ground_mission_id="mission_10_crimson_reach",
             ground_mission_system_id="crimson_reach",
             ground_mission_complete_flag="crimson_run_ground_complete",
@@ -944,7 +950,9 @@ class TestGroundMissionFields:
     def test_ground_mission_serialization(self) -> None:
         """Ground mission fields survive to_dict round-trip."""
         m = Mission(
-            id="test", name="Test", description="",
+            id="test",
+            name="Test",
+            description="",
             ground_mission_id="test_ground",
             ground_mission_system_id="test_system",
             ground_mission_complete_flag="test_complete",
@@ -970,9 +978,13 @@ class TestBlackMarketAccessReward:
     def test_apply_rewards_grants_access(self) -> None:
         """black_market_access reward should grant player access."""
         m = Mission(
-            id="test_bm", name="Test", description="",
+            id="test_bm",
+            name="Test",
+            description="",
             rewards=[
-                MissionReward(reward_type="black_market_access", amount=0, target_id="crimson_reach"),
+                MissionReward(
+                    reward_type="black_market_access", amount=0, target_id="crimson_reach"
+                ),
             ],
         )
         mgr = MissionManager([m])
@@ -996,34 +1008,43 @@ class TestChapter3FullChain:
         return [
             Mission(
                 id="the_scholars_errand",
-                name="The Scholar's Errand", description="",
+                name="The Scholar's Errand",
+                description="",
                 objectives=[
                     MissionObjective(
-                        type=ObjectiveType.REACH_SYSTEM, target_id="axiom_labs",
+                        type=ObjectiveType.REACH_SYSTEM,
+                        target_id="axiom_labs",
                         description="Transport to Axiom Labs",
                     ),
                 ],
                 rewards=[
-                    MissionReward(reward_type="set_flag", amount=0, target_id="escorted_priya_axiom"),
+                    MissionReward(
+                        reward_type="set_flag", amount=0, target_id="escorted_priya_axiom"
+                    ),
                     MissionReward(reward_type="xp", amount=80),
                 ],
             ),
             Mission(
                 id="cargo_lost",
-                name="Cargo Lost", description="",
+                name="Cargo Lost",
+                description="",
                 prerequisites=["the_scholars_errand"],
                 on_accept_cargo=[AcceptCargo(commodity_id="electronics", quantity=5)],
                 objectives=[
                     MissionObjective(
-                        type=ObjectiveType.COLLECT_CARGO, target_id="electronics",
-                        target_quantity=5, description="Have electronics",
+                        type=ObjectiveType.COLLECT_CARGO,
+                        target_id="electronics",
+                        target_quantity=5,
+                        description="Have electronics",
                     ),
                     MissionObjective(
-                        type=ObjectiveType.REACH_SYSTEM, target_id="nova_research",
+                        type=ObjectiveType.REACH_SYSTEM,
+                        target_id="nova_research",
                         description="Reach Nova Research",
                     ),
                     MissionObjective(
-                        type=ObjectiveType.HAS_FLAG, target_id="cargo_lost_resolved",
+                        type=ObjectiveType.HAS_FLAG,
+                        target_id="cargo_lost_resolved",
                         description="Speak with Reva",
                     ),
                 ],
@@ -1031,18 +1052,22 @@ class TestChapter3FullChain:
                     MissionReward(reward_type="credits", amount=600),
                     MissionReward(reward_type="remove_cargo", amount=5, target_id="electronics"),
                     MissionReward(reward_type="xp", amount=100),
-                    MissionReward(reward_type="set_flag", amount=0, target_id="cargo_lost_complete"),
+                    MissionReward(
+                        reward_type="set_flag", amount=0, target_id="cargo_lost_complete"
+                    ),
                 ],
             ),
             Mission(
                 id="whispers_at_the_bar",
-                name="Whispers", description="",
+                name="Whispers",
+                description="",
                 prerequisites=["cargo_lost"],
                 required_flags=["met_dex_halloran"],
                 auto_accept=True,
                 objectives=[
                     MissionObjective(
-                        type=ObjectiveType.HAS_FLAG, target_id="dex_favor_accepted",
+                        type=ObjectiveType.HAS_FLAG,
+                        target_id="dex_favor_accepted",
                         description="Dex's favor",
                     ),
                 ],
@@ -1053,21 +1078,25 @@ class TestChapter3FullChain:
             ),
             Mission(
                 id="the_crimson_run",
-                name="The Crimson Run", description="",
+                name="The Crimson Run",
+                description="",
                 prerequisites=["whispers_at_the_bar"],
                 required_flags=["dex_favor_accepted"],
                 on_accept_cargo=[AcceptCargo(commodity_id="data_chip", quantity=1)],
                 objectives=[
                     MissionObjective(
-                        type=ObjectiveType.REACH_SYSTEM, target_id="crimson_reach",
+                        type=ObjectiveType.REACH_SYSTEM,
+                        target_id="crimson_reach",
                         description="Reach Crimson Reach",
                     ),
                     MissionObjective(
-                        type=ObjectiveType.HAS_FLAG, target_id="crimson_run_ground_complete",
+                        type=ObjectiveType.HAS_FLAG,
+                        target_id="crimson_run_ground_complete",
                         description="Ground mission",
                     ),
                     MissionObjective(
-                        type=ObjectiveType.HAS_FLAG, target_id="met_malia_torres",
+                        type=ObjectiveType.HAS_FLAG,
+                        target_id="met_malia_torres",
                         description="Meet Torres",
                     ),
                 ],
@@ -1076,7 +1105,9 @@ class TestChapter3FullChain:
                     MissionReward(reward_type="remove_cargo", amount=1, target_id="data_chip"),
                     MissionReward(reward_type="xp", amount=120),
                     MissionReward(
-                        reward_type="black_market_access", amount=0, target_id="crimson_reach",
+                        reward_type="black_market_access",
+                        amount=0,
+                        target_id="crimson_reach",
                     ),
                 ],
             ),
@@ -1170,7 +1201,8 @@ class TestChapter3FullChain:
         # Should have the cold/ignored response, not the grateful one
         assert any("know you" in t.lower() for t in texts2) or any(
             "cold" in r.next_node_id or "ignored" in r.next_node_id
-            for r in responses2 if r.next_node_id
+            for r in responses2
+            if r.next_node_id
         )
 
     def test_dex_persuasion_branching(self) -> None:
@@ -1200,9 +1232,7 @@ class TestChapter3FullChain:
 
         # Find the persuasion check response
         responses = dm.get_available_responses()
-        check_idx = next(
-            i for i, r in enumerate(responses) if r.skill_check is not None
-        )
+        check_idx = next(i for i, r in enumerate(responses) if r.skill_check is not None)
         next_node = dm.select_response(check_idx)
         assert next_node is not None
         assert next_node.id == "chip_truth"  # Success path
@@ -1307,13 +1337,16 @@ class TestGroundMissionTrigger:
     def test_get_ground_trigger_at_system(self) -> None:
         """MissionManager should report ground mission triggers for current system."""
         m = Mission(
-            id="the_crimson_run", name="Crimson", description="",
+            id="the_crimson_run",
+            name="Crimson",
+            description="",
             ground_mission_id="mission_10_crimson_reach",
             ground_mission_system_id="crimson_reach",
             ground_mission_complete_flag="crimson_run_ground_complete",
             objectives=[
                 MissionObjective(
-                    type=ObjectiveType.REACH_SYSTEM, target_id="crimson_reach",
+                    type=ObjectiveType.REACH_SYSTEM,
+                    target_id="crimson_reach",
                     description="",
                 ),
             ],
@@ -1324,9 +1357,7 @@ class TestGroundMissionTrigger:
 
         player = _make_player(current_system_id="crimson_reach")
 
-        trigger = mgr.get_ground_mission_trigger(
-            player.current_system_id, player.dialogue_flags
-        )
+        trigger = mgr.get_ground_mission_trigger(player.current_system_id, player.dialogue_flags)
         assert trigger is not None
         assert trigger[0] == "mission_10_crimson_reach"  # ground_mission_id
         assert trigger[1] == "crimson_run_ground_complete"  # complete_flag
@@ -1334,56 +1365,59 @@ class TestGroundMissionTrigger:
     def test_no_trigger_at_wrong_system(self) -> None:
         """No ground trigger when player is at the wrong system."""
         m = Mission(
-            id="the_crimson_run", name="Crimson", description="",
+            id="the_crimson_run",
+            name="Crimson",
+            description="",
             ground_mission_id="mission_10_crimson_reach",
             ground_mission_system_id="crimson_reach",
             ground_mission_complete_flag="crimson_run_ground_complete",
-            objectives=[], rewards=[],
+            objectives=[],
+            rewards=[],
         )
         mgr = MissionManager([m])
         mgr._status["the_crimson_run"] = MissionStatus.ACTIVE
 
         player = _make_player(current_system_id="nexus_prime")
-        trigger = mgr.get_ground_mission_trigger(
-            player.current_system_id, player.dialogue_flags
-        )
+        trigger = mgr.get_ground_mission_trigger(player.current_system_id, player.dialogue_flags)
         assert trigger is None
 
     def test_no_trigger_if_already_complete(self) -> None:
         """No ground trigger when complete flag is already set."""
         m = Mission(
-            id="the_crimson_run", name="Crimson", description="",
+            id="the_crimson_run",
+            name="Crimson",
+            description="",
             ground_mission_id="mission_10_crimson_reach",
             ground_mission_system_id="crimson_reach",
             ground_mission_complete_flag="crimson_run_ground_complete",
-            objectives=[], rewards=[],
+            objectives=[],
+            rewards=[],
         )
         mgr = MissionManager([m])
         mgr._status["the_crimson_run"] = MissionStatus.ACTIVE
 
         player = _make_player(current_system_id="crimson_reach")
         player.dialogue_flags["crimson_run_ground_complete"] = True
-        trigger = mgr.get_ground_mission_trigger(
-            player.current_system_id, player.dialogue_flags
-        )
+        trigger = mgr.get_ground_mission_trigger(player.current_system_id, player.dialogue_flags)
         assert trigger is None
 
     def test_no_trigger_if_mission_not_active(self) -> None:
         """No ground trigger for unavailable missions."""
         m = Mission(
-            id="the_crimson_run", name="Crimson", description="",
+            id="the_crimson_run",
+            name="Crimson",
+            description="",
             ground_mission_id="mission_10_crimson_reach",
             ground_mission_system_id="crimson_reach",
             ground_mission_complete_flag="crimson_run_ground_complete",
-            objectives=[], rewards=[],
+            objectives=[],
+            rewards=[],
         )
         mgr = MissionManager([m])
         # Mission stays UNAVAILABLE
 
         player = _make_player(current_system_id="crimson_reach")
-        trigger = mgr.get_ground_mission_trigger(
-            player.current_system_id, player.dialogue_flags
-        )
+        trigger = mgr.get_ground_mission_trigger(player.current_system_id, player.dialogue_flags)
         assert trigger is None
 
 
@@ -1529,8 +1563,7 @@ class TestEmbassySummitDialogue:
                     assert success_node is not None
                     # Flag should be on one of the success node's responses
                     flag_set = any(
-                        r.set_flag == "noticed_guild_signal"
-                        for r in success_node.responses
+                        r.set_flag == "noticed_guild_signal" for r in success_node.responses
                     )
                     assert flag_set, "Observation success should set noticed_guild_signal"
                     return
@@ -1546,10 +1579,7 @@ class TestEmbassySummitDialogue:
                 if resp.skill_check and resp.skill_check.skill == "persuasion":
                     success_node = tree.nodes.get(resp.skill_check.success_node_id)
                     assert success_node is not None
-                    flag_set = any(
-                        r.set_flag == "spoke_at_summit"
-                        for r in success_node.responses
-                    )
+                    flag_set = any(r.set_flag == "spoke_at_summit" for r in success_node.responses)
                     assert flag_set, "Persuasion success should set spoke_at_summit"
                     return
         assert False, "No persuasion check found"
@@ -1561,10 +1591,7 @@ class TestEmbassySummitDialogue:
         tree = dl.dialogue_trees["embassy_summit"]
         farewell = tree.nodes.get("summit_farewell")
         assert farewell is not None, "summit_farewell node should exist"
-        flag_set = any(
-            r.set_flag == "attended_embassy_summit"
-            for r in farewell.responses
-        )
+        flag_set = any(r.set_flag == "attended_embassy_summit" for r in farewell.responses)
         assert flag_set, "Farewell response should set attended_embassy_summit"
 
 
@@ -1620,9 +1647,14 @@ class TestEmbassyVisitMission:
 
         # Complete prerequisite chain through the_crimson_run
         for mid in [
-            "bill_of_landing", "iron_delivery", "footing_the_bill",
-            "union_territory", "the_scholars_errand", "cargo_lost",
-            "whispers_at_the_bar", "the_crimson_run",
+            "bill_of_landing",
+            "iron_delivery",
+            "footing_the_bill",
+            "union_territory",
+            "the_scholars_errand",
+            "cargo_lost",
+            "whispers_at_the_bar",
+            "the_crimson_run",
         ]:
             mgr._status[mid] = MissionStatus.COMPLETED
 
@@ -1672,6 +1704,7 @@ class TestLedgerEnemyTemplates:
         dl = get_data_loader()
         raider = dl.enemy_templates["ledger_raider"]
         from spacegame.models.combat import EnemyBehavior
+
         assert raider.behavior == EnemyBehavior.AGGRESSIVE
 
     def test_ledger_striker_exists(self) -> None:
@@ -1697,6 +1730,7 @@ class TestLedgerEnemyTemplates:
         dl = get_data_loader()
         striker = dl.enemy_templates["ledger_striker"]
         from spacegame.models.combat import EnemyBehavior
+
         assert striker.behavior == EnemyBehavior.EVASIVE
 
     def test_enemy_descriptions_hint_guild_hardware(self) -> None:
@@ -1751,10 +1785,7 @@ class TestUnderFireMission:
         dl = get_data_loader()
         mission = next(m for m in dl.missions if m.id == "under_fire")
         fe = mission.forced_encounter
-        obj_flags = [
-            o.target_id for o in mission.objectives
-            if o.type == ObjectiveType.HAS_FLAG
-        ]
+        obj_flags = [o.target_id for o in mission.objectives if o.type == ObjectiveType.HAS_FLAG]
         assert fe.trigger_flag in obj_flags
 
     def test_rewards_include_discovery_flag(self) -> None:
@@ -1762,9 +1793,7 @@ class TestUnderFireMission:
         _load_data()
         dl = get_data_loader()
         mission = next(m for m in dl.missions if m.id == "under_fire")
-        reward_flags = [
-            (r.reward_type, r.target_id) for r in mission.rewards
-        ]
+        reward_flags = [(r.reward_type, r.target_id) for r in mission.rewards]
         assert ("set_flag", "guild_hardware_discovered") in reward_flags
         assert any(r.reward_type == "xp" for r in mission.rewards)
 
@@ -1777,9 +1806,15 @@ class TestUnderFireMission:
 
         # Complete prerequisite chain through embassy_visit
         for mid in [
-            "bill_of_landing", "iron_delivery", "footing_the_bill",
-            "union_territory", "the_scholars_errand", "cargo_lost",
-            "whispers_at_the_bar", "the_crimson_run", "embassy_visit",
+            "bill_of_landing",
+            "iron_delivery",
+            "footing_the_bill",
+            "union_territory",
+            "the_scholars_errand",
+            "cargo_lost",
+            "whispers_at_the_bar",
+            "the_crimson_run",
+            "embassy_visit",
         ]:
             mgr._status[mid] = MissionStatus.COMPLETED
 
@@ -2020,9 +2055,7 @@ class TestFavorReturnedMission:
         dl = get_data_loader()
         mission = next(m for m in dl.missions if m.id == "the_favor_returned")
         assert any(r.reward_type == "xp" for r in mission.rewards)
-        reward_flags = [
-            r.target_id for r in mission.rewards if r.reward_type == "set_flag"
-        ]
+        reward_flags = [r.target_id for r in mission.rewards if r.reward_type == "set_flag"]
         assert "favor_returned_complete" in reward_flags
         assert "hidden_facility_discovered" in reward_flags
 
@@ -2035,9 +2068,15 @@ class TestFavorReturnedMission:
 
         # Complete prerequisite chain
         for mid in [
-            "bill_of_landing", "iron_delivery", "footing_the_bill",
-            "union_territory", "the_scholars_errand", "cargo_lost",
-            "whispers_at_the_bar", "the_crimson_run", "embassy_visit",
+            "bill_of_landing",
+            "iron_delivery",
+            "footing_the_bill",
+            "union_territory",
+            "the_scholars_errand",
+            "cargo_lost",
+            "whispers_at_the_bar",
+            "the_crimson_run",
+            "embassy_visit",
             "under_fire",
         ]:
             mgr._status[mid] = MissionStatus.COMPLETED
@@ -2227,9 +2266,7 @@ class TestIronDepthsMission:
         dl = get_data_loader()
         mission = next(m for m in dl.missions if m.id == "iron_depths_investigation")
         assert any(r.reward_type == "xp" for r in mission.rewards)
-        reward_flags = [
-            r.target_id for r in mission.rewards if r.reward_type == "set_flag"
-        ]
+        reward_flags = [r.target_id for r in mission.rewards if r.reward_type == "set_flag"]
         assert "iron_depths_complete" in reward_flags
         assert "singularity_weapon_discovered" in reward_flags
 
@@ -2242,10 +2279,17 @@ class TestIronDepthsMission:
 
         # Complete prerequisite chain
         for mid in [
-            "bill_of_landing", "iron_delivery", "footing_the_bill",
-            "union_territory", "the_scholars_errand", "cargo_lost",
-            "whispers_at_the_bar", "the_crimson_run", "embassy_visit",
-            "under_fire", "the_favor_returned",
+            "bill_of_landing",
+            "iron_delivery",
+            "footing_the_bill",
+            "union_territory",
+            "the_scholars_errand",
+            "cargo_lost",
+            "whispers_at_the_bar",
+            "the_crimson_run",
+            "embassy_visit",
+            "under_fire",
+            "the_favor_returned",
         ]:
             mgr._status[mid] = MissionStatus.COMPLETED
 
@@ -2519,9 +2563,7 @@ class TestLedgerMission:
         dl = get_data_loader()
         mission = next(m for m in dl.missions if m.id == "the_ledger")
         assert any(r.reward_type == "xp" for r in mission.rewards)
-        reward_flags = [
-            r.target_id for r in mission.rewards if r.reward_type == "set_flag"
-        ]
+        reward_flags = [r.target_id for r in mission.rewards if r.reward_type == "set_flag"]
         assert "ledger_complete" in reward_flags
 
     def test_mission_completion_flow(self) -> None:
@@ -2533,10 +2575,18 @@ class TestLedgerMission:
 
         # Complete prerequisite chain
         for mid in [
-            "bill_of_landing", "iron_delivery", "footing_the_bill",
-            "union_territory", "the_scholars_errand", "cargo_lost",
-            "whispers_at_the_bar", "the_crimson_run", "embassy_visit",
-            "under_fire", "the_favor_returned", "iron_depths_investigation",
+            "bill_of_landing",
+            "iron_delivery",
+            "footing_the_bill",
+            "union_territory",
+            "the_scholars_errand",
+            "cargo_lost",
+            "whispers_at_the_bar",
+            "the_crimson_run",
+            "embassy_visit",
+            "under_fire",
+            "the_favor_returned",
+            "iron_depths_investigation",
         ]:
             mgr._status[mid] = MissionStatus.COMPLETED
 
@@ -2693,9 +2743,7 @@ class TestPointOfNoReturnMission:
         dl = get_data_loader()
         mission = next(m for m in dl.missions if m.id == "point_of_no_return")
         assert any(r.reward_type == "xp" for r in mission.rewards)
-        reward_flags = [
-            r.target_id for r in mission.rewards if r.reward_type == "set_flag"
-        ]
+        reward_flags = [r.target_id for r in mission.rewards if r.reward_type == "set_flag"]
         assert "point_of_no_return_complete" in reward_flags
         assert "convergence_active" in reward_flags
 
@@ -2708,10 +2756,18 @@ class TestPointOfNoReturnMission:
 
         # Complete prerequisite chain
         for mid in [
-            "bill_of_landing", "iron_delivery", "footing_the_bill",
-            "union_territory", "the_scholars_errand", "cargo_lost",
-            "whispers_at_the_bar", "the_crimson_run", "embassy_visit",
-            "under_fire", "the_favor_returned", "iron_depths_investigation",
+            "bill_of_landing",
+            "iron_delivery",
+            "footing_the_bill",
+            "union_territory",
+            "the_scholars_errand",
+            "cargo_lost",
+            "whispers_at_the_bar",
+            "the_crimson_run",
+            "embassy_visit",
+            "under_fire",
+            "the_favor_returned",
+            "iron_depths_investigation",
             "the_ledger",
         ]:
             mgr._status[mid] = MissionStatus.COMPLETED
@@ -2761,6 +2817,7 @@ class TestLedgerVanguardEnemy:
         _load_data()
         dl = get_data_loader()
         from spacegame.models.combat import EnemyBehavior
+
         vanguard = dl.enemy_templates["ledger_vanguard"]
         assert vanguard.behavior == EnemyBehavior.AGGRESSIVE
 
@@ -2934,10 +2991,7 @@ class TestCollapseMission:
         _load_data()
         dl = get_data_loader()
         mission = next(m for m in dl.missions if m.id == "the_collapse")
-        obj_flags = [
-            o.target_id for o in mission.objectives
-            if o.type == ObjectiveType.HAS_FLAG
-        ]
+        obj_flags = [o.target_id for o in mission.objectives if o.type == ObjectiveType.HAS_FLAG]
         assert "escape_combat_survived" in obj_flags
         assert "expanse_collapsed" in obj_flags
 
@@ -2946,9 +3000,7 @@ class TestCollapseMission:
         _load_data()
         dl = get_data_loader()
         mission = next(m for m in dl.missions if m.id == "the_collapse")
-        reward_flags = [
-            r.target_id for r in mission.rewards if r.reward_type == "set_flag"
-        ]
+        reward_flags = [r.target_id for r in mission.rewards if r.reward_type == "set_flag"]
         assert "act_one_complete" in reward_flags
         assert "escaped_through_warp_gate" in reward_flags
 
@@ -2961,11 +3013,20 @@ class TestCollapseMission:
 
         # Complete full prerequisite chain
         for mid in [
-            "bill_of_landing", "iron_delivery", "footing_the_bill",
-            "union_territory", "the_scholars_errand", "cargo_lost",
-            "whispers_at_the_bar", "the_crimson_run", "embassy_visit",
-            "under_fire", "the_favor_returned", "iron_depths_investigation",
-            "the_ledger", "point_of_no_return",
+            "bill_of_landing",
+            "iron_delivery",
+            "footing_the_bill",
+            "union_territory",
+            "the_scholars_errand",
+            "cargo_lost",
+            "whispers_at_the_bar",
+            "the_crimson_run",
+            "embassy_visit",
+            "under_fire",
+            "the_favor_returned",
+            "iron_depths_investigation",
+            "the_ledger",
+            "point_of_no_return",
         ]:
             mgr._status[mid] = MissionStatus.COMPLETED
 
@@ -2997,8 +3058,7 @@ class TestActOneFinalCounts:
         _load_data()
         dl = get_data_loader()
         assert len(dl.missions) >= 22, (
-            f"Expected >= 22 missions, got {len(dl.missions)}: "
-            f"{[m.id for m in dl.missions]}"
+            f"Expected >= 22 missions, got {len(dl.missions)}: {[m.id for m in dl.missions]}"
         )
 
     def test_total_npcs(self) -> None:
@@ -3006,8 +3066,7 @@ class TestActOneFinalCounts:
         _load_data()
         dl = get_data_loader()
         assert len(dl.npcs) >= 17, (
-            f"Expected >= 17 NPCs, got {len(dl.npcs)}: "
-            f"{sorted(dl.npcs.keys())}"
+            f"Expected >= 17 NPCs, got {len(dl.npcs)}: {sorted(dl.npcs.keys())}"
         )
 
     def test_total_dialogues(self) -> None:
@@ -3033,8 +3092,7 @@ class TestActOneFinalCounts:
         _load_data()
         dl = get_data_loader()
         assert len(dl.systems) == 11, (
-            f"Expected 11 systems, got {len(dl.systems)}: "
-            f"{sorted(dl.systems.keys())}"
+            f"Expected 11 systems, got {len(dl.systems)}: {sorted(dl.systems.keys())}"
         )
 
     def test_total_campaign_maps(self) -> None:
@@ -3051,11 +3109,21 @@ class TestActOneFinalCounts:
         _load_data()
         dl = get_data_loader()
         main_chain = [
-            "bill_of_landing", "iron_delivery", "footing_the_bill",
-            "union_territory", "the_scholars_errand", "cargo_lost",
-            "whispers_at_the_bar", "the_crimson_run", "embassy_visit",
-            "under_fire", "the_favor_returned", "iron_depths_investigation",
-            "the_ledger", "point_of_no_return", "the_collapse",
+            "bill_of_landing",
+            "iron_delivery",
+            "footing_the_bill",
+            "union_territory",
+            "the_scholars_errand",
+            "cargo_lost",
+            "whispers_at_the_bar",
+            "the_crimson_run",
+            "embassy_visit",
+            "under_fire",
+            "the_favor_returned",
+            "iron_depths_investigation",
+            "the_ledger",
+            "point_of_no_return",
+            "the_collapse",
         ]
         mission_ids = {m.id for m in dl.missions}
         for mid in main_chain:

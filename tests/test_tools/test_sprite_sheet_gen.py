@@ -212,9 +212,7 @@ class TestGenerateAnimationConfig:
     """generate_animation_config creates JSON-ready animation defs."""
 
     def test_basic_config(self) -> None:
-        config = generate_animation_config(
-            num_frames=2, frame_duration=0.5, loop=True
-        )
+        config = generate_animation_config(num_frames=2, frame_duration=0.5, loop=True)
         assert config["idle"]["name"] == "idle"
         assert config["idle"]["frames"] == [0, 1]
         assert config["idle"]["frame_duration"] == 0.5

@@ -550,9 +550,9 @@ class TestConsequenceCurve:
     def test_escalating_zone_late(self) -> None:
         result = _make_result(outcome=MissionOutcome.DEFEATED, progress_percent=0.39)
         penalties = result.calculate_penalties()
-        assert (
-            10 <= penalties["credit_loss_percent"] <= 15
-        ), f"Escalating zone credit loss should be 10-15%, got {penalties['credit_loss_percent']}%"
+        assert 10 <= penalties["credit_loss_percent"] <= 15, (
+            f"Escalating zone credit loss should be 10-15%, got {penalties['credit_loss_percent']}%"
+        )
         assert penalties["loot_kept_percent"] == 10
         assert penalties["xp_penalty"] == 0
 
@@ -568,18 +568,18 @@ class TestConsequenceCurve:
     def test_commitment_zone_middle(self) -> None:
         result = _make_result(outcome=MissionOutcome.DEFEATED, progress_percent=0.50)
         penalties = result.calculate_penalties()
-        assert (
-            15 <= penalties["credit_loss_percent"] <= 20
-        ), f"Commitment zone credit loss should be 15-20%, got {penalties['credit_loss_percent']}%"
+        assert 15 <= penalties["credit_loss_percent"] <= 20, (
+            f"Commitment zone credit loss should be 15-20%, got {penalties['credit_loss_percent']}%"
+        )
         assert penalties["loot_kept_percent"] == 0
         assert penalties["xp_penalty"] > 0
 
     def test_commitment_zone_late(self) -> None:
         result = _make_result(outcome=MissionOutcome.DEFEATED, progress_percent=0.64)
         penalties = result.calculate_penalties()
-        assert (
-            15 <= penalties["credit_loss_percent"] <= 20
-        ), f"Commitment zone credit loss should be 15-20%, got {penalties['credit_loss_percent']}%"
+        assert 15 <= penalties["credit_loss_percent"] <= 20, (
+            f"Commitment zone credit loss should be 15-20%, got {penalties['credit_loss_percent']}%"
+        )
         assert penalties["loot_kept_percent"] == 0
         assert penalties["xp_penalty"] > 0
 
@@ -713,9 +713,9 @@ class TestRewardCalculation:
             detected=False,
             loot_credits=100,
         )
-        assert (
-            ghost.total_credits >= normal.total_credits
-        ), "Ghost run should not earn less than a detected run"
+        assert ghost.total_credits >= normal.total_credits, (
+            "Ghost run should not earn less than a detected run"
+        )
 
 
 # ===========================================================================

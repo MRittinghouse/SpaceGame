@@ -42,10 +42,17 @@ def _make_ship_type() -> ShipType:
 
 def _make_commodity(cid: str, name: str, price: int) -> Commodity:
     return Commodity(
-        id=cid, name=name, base_price=price,
-        category=CommodityCategory.BASIC, description="Test",
-        variance_min=-0.1, variance_max=0.1, volume_per_unit=1,
-        legality=Legality.LEGAL, production_tags=[], consumption_tags=[],
+        id=cid,
+        name=name,
+        base_price=price,
+        category=CommodityCategory.BASIC,
+        description="Test",
+        variance_min=-0.1,
+        variance_max=0.1,
+        volume_per_unit=1,
+        legality=Legality.LEGAL,
+        production_tags=[],
+        consumption_tags=[],
     )
 
 
@@ -323,8 +330,15 @@ class TestRockSpriteWiring:
     def test_rock_sprite_map_covers_core_types(self) -> None:
         """All non-monolith rock types should have a sprite mapping."""
         from spacegame.models.mining import RockType
-        for rt in (RockType.COMMON, RockType.IRON, RockType.CRYSTAL,
-                   RockType.RARE, RockType.DENSE, RockType.VOLATILE):
+
+        for rt in (
+            RockType.COMMON,
+            RockType.IRON,
+            RockType.CRYSTAL,
+            RockType.RARE,
+            RockType.DENSE,
+            RockType.VOLATILE,
+        ):
             assert rt in MiningView.ROCK_SPRITE_MAP, f"Missing sprite map for {rt}"
 
     def test_rock_sprites_loaded(self) -> None:
@@ -340,6 +354,7 @@ class TestRockSpriteWiring:
     def test_get_rock_sprite_returns_surface(self) -> None:
         """Sprite getter should return a Surface for loaded types."""
         from spacegame.models.mining import RockType
+
         view = _make_view()
         if RockType.COMMON in view._rock_sprites:
             surf = view._get_rock_sprite(RockType.COMMON, 0, 0)
@@ -349,6 +364,7 @@ class TestRockSpriteWiring:
     def test_get_rock_sprite_deterministic(self) -> None:
         """Same grid position should return same variant."""
         from spacegame.models.mining import RockType
+
         view = _make_view()
         if RockType.IRON in view._rock_sprites:
             s1 = view._get_rock_sprite(RockType.IRON, 2, 3)
@@ -359,6 +375,7 @@ class TestRockSpriteWiring:
     def test_get_rock_sprite_varies_by_position(self) -> None:
         """Different positions may return different variants."""
         from spacegame.models.mining import RockType
+
         view = _make_view()
         if RockType.COMMON in view._rock_sprites and len(view._rock_sprites[RockType.COMMON]) > 1:
             sprites_seen = set()
@@ -372,6 +389,7 @@ class TestRockSpriteWiring:
     def test_monolith_has_no_sprite(self) -> None:
         """Monolith rocks should fall back to procedural rendering."""
         from spacegame.models.mining import RockType
+
         view = _make_view()
         surf = view._get_rock_sprite(RockType.MONOLITH, 0, 0)
         assert surf is None, "Monolith should not have a sprite (uses procedural)"
@@ -486,7 +504,8 @@ class TestMiningDeepPolish:
     def test_exit_confirmation_blocks_session_end(self) -> None:
         view = _make_view()
         event = pygame.event.Event(
-            pygame_gui.UI_BUTTON_PRESSED, ui_element=view.back_button,
+            pygame_gui.UI_BUTTON_PRESSED,
+            ui_element=view.back_button,
         )
         view.handle_event(event)
         assert view._confirm_exit

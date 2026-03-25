@@ -2,9 +2,9 @@
 Screen-wide visual effects: vignette overlay and screen shake.
 """
 
-import pygame
 import random
-import math
+
+import pygame
 
 
 class Vignette:
@@ -16,9 +16,6 @@ class Vignette:
 
     def _generate(self, w: int, h: int, intensity: float) -> None:
         """Generate vignette overlay with radial darkening."""
-        cx, cy = w / 2, h / 2
-        max_dist = math.sqrt(cx * cx + cy * cy)
-
         # Draw concentric rectangles from outside in with decreasing alpha
         steps = 30
         for i in range(steps):

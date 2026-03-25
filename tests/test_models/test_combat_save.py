@@ -79,6 +79,7 @@ class TestCombatConfig:
             COMBAT_DEFEAT_CARGO_LOSS_PERCENT,
             COMBAT_DEFEAT_HULL_REMAINING_PERCENT,
         )
+
         assert COMBAT_FLEE_BASE_CHANCE == 30
         assert COMBAT_FLEE_SPEED_FACTOR == 3
         assert COMBAT_FLEE_MIN_CHANCE == 10
@@ -169,6 +170,7 @@ class TestShipCombatSerialization:
 
     def test_serialize_hull_shields(self) -> None:
         from spacegame.save_manager import SaveManager
+
         mgr = SaveManager()
         st = _make_ship_type(combat_hull=100, combat_shields=40)
         ship = Ship(ship_type=st, current_fuel=150)
@@ -180,6 +182,7 @@ class TestShipCombatSerialization:
 
     def test_deserialize_hull_shields(self) -> None:
         from spacegame.save_manager import SaveManager
+
         mgr = SaveManager()
         data = {
             "ship_type_id": "light_freighter",

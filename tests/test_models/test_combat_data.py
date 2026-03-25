@@ -109,12 +109,21 @@ class TestEnemyTemplateLoading:
     def test_default_faction_fields(self) -> None:
         """Templates without explicit faction fields should get defaults."""
         from spacegame.models.combat import EnemyShipTemplate, EnemyBehavior
+
         template = EnemyShipTemplate(
-            id="test", name="Test", description="Test",
+            id="test",
+            name="Test",
+            description="Test",
             behavior=EnemyBehavior.AGGRESSIVE,
-            hull=50, shields=10, energy=8, energy_regen=3,
-            speed=8, evasion=10, accuracy=60,
-            moves=[], loot_table=[],
+            hull=50,
+            shields=10,
+            energy=8,
+            energy_regen=3,
+            speed=8,
+            evasion=10,
+            accuracy=60,
+            moves=[],
+            loot_table=[],
         )
         assert template.faction_id == ""
         assert template.danger_tier == "moderate"
@@ -130,10 +139,13 @@ class TestEnemyTemplateLoading:
         """Faction enemies should reference valid faction IDs."""
         loader = _make_loader()
         loader.load_enemy_templates()
-        valid_factions = {"commerce_guild", "miners_union", "science_collective", "frontier_alliance"}
-        faction_enemies = [
-            t for t in loader.enemy_templates.values() if t.faction_id != ""
-        ]
+        valid_factions = {
+            "commerce_guild",
+            "miners_union",
+            "science_collective",
+            "frontier_alliance",
+        }
+        faction_enemies = [t for t in loader.enemy_templates.values() if t.faction_id != ""]
         assert len(faction_enemies) == 15
         for t in faction_enemies:
             assert t.faction_id in valid_factions, f"{t.id} has invalid faction: {t.faction_id}"
@@ -150,7 +162,12 @@ class TestEnemyTemplateLoading:
         """Dangerous tier enemies should generally be stronger than moderate."""
         loader = _make_loader()
         loader.load_enemy_templates()
-        for faction in ["commerce_guild", "miners_union", "science_collective", "frontier_alliance"]:
+        for faction in [
+            "commerce_guild",
+            "miners_union",
+            "science_collective",
+            "frontier_alliance",
+        ]:
             faction_enemies = [
                 t for t in loader.enemy_templates.values() if t.faction_id == faction
             ]
@@ -195,7 +212,7 @@ class TestShipTypeCombatLoading:
         assert lf.combat_shields == 40
         assert lf.combat_energy == 9
         assert lf.combat_speed == 8
-        assert lf.weapon_slots == 2   # +1 from slot expansion
+        assert lf.weapon_slots == 2  # +1 from slot expansion
         assert lf.defense_slots == 2  # +1 from slot expansion
         assert lf.utility_slots == 4  # +1 from slot expansion
 

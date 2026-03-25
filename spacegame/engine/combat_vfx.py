@@ -13,17 +13,16 @@ from typing import Optional
 
 import pygame
 
-from spacegame.config import Colors, scale_x, scale_y
-
+from spacegame.config import scale_x
 
 # ==========================================================================
 # Shield Visualization
 # ==========================================================================
 
 # Shield colors
-_SHIELD_BUBBLE_COLOR = (60, 180, 255)   # Cyan bubble
+_SHIELD_BUBBLE_COLOR = (60, 180, 255)  # Cyan bubble
 _SHIELD_RIPPLE_COLOR = (120, 210, 255)  # Brighter ripple
-_SHIELD_BREAK_COLOR = (80, 200, 255)    # Fragment color
+_SHIELD_BREAK_COLOR = (80, 200, 255)  # Fragment color
 
 
 @dataclass
@@ -145,9 +144,7 @@ class ShieldRenderer:
                 if state.restore_timer <= 0:
                     state.restoring = False
 
-    def render(
-        self, screen: pygame.Surface, key: str, cx: int, cy: int, radius: int
-    ) -> None:
+    def render(self, screen: pygame.Surface, key: str, cx: int, cy: int, radius: int) -> None:
         """Render shield effects for a ship.
 
         Args:
@@ -173,7 +170,8 @@ class ShieldRenderer:
                     frag_surf = pygame.Surface((size * 2, size * 2), pygame.SRCALPHA)
                     alpha = int(min(255, frag["alpha"]))
                     pygame.draw.polygon(
-                        frag_surf, (*_SHIELD_BREAK_COLOR, alpha),
+                        frag_surf,
+                        (*_SHIELD_BREAK_COLOR, alpha),
                         [(size, 0), (size * 2, size * 2), (0, size * 2)],
                     )
                     screen.blit(frag_surf, (fx - size, fy - size))
@@ -199,9 +197,7 @@ class ShieldRenderer:
                 self._draw_ripple(screen, cx, cy, bubble_r, ripple_t, state.ripple_angle)
 
     @staticmethod
-    def _draw_bubble(
-        screen: pygame.Surface, cx: int, cy: int, radius: int, alpha: int
-    ) -> None:
+    def _draw_bubble(screen: pygame.Surface, cx: int, cy: int, radius: int, alpha: int) -> None:
         """Draw a translucent shield bubble."""
         size = radius * 2 + 4
         surf = pygame.Surface((size, size), pygame.SRCALPHA)
@@ -215,8 +211,7 @@ class ShieldRenderer:
 
     @staticmethod
     def _draw_ripple(
-        screen: pygame.Surface, cx: int, cy: int, radius: int,
-        t: float, angle: float
+        screen: pygame.Surface, cx: int, cy: int, radius: int, t: float, angle: float
     ) -> None:
         """Draw expanding concentric ripple rings at impact point."""
         # Impact point on the bubble surface
@@ -231,9 +226,7 @@ class ShieldRenderer:
             ring_alpha = int(180 * ring_t)
             ring_surf = pygame.Surface((ring_r * 2 + 4, ring_r * 2 + 4), pygame.SRCALPHA)
             rc = ring_r + 2
-            pygame.draw.circle(
-                ring_surf, (*_SHIELD_RIPPLE_COLOR, ring_alpha), (rc, rc), ring_r, 2
-            )
+            pygame.draw.circle(ring_surf, (*_SHIELD_RIPPLE_COLOR, ring_alpha), (rc, rc), ring_r, 2)
             screen.blit(ring_surf, (impact_x - rc, impact_y - rc))
 
     @staticmethod
@@ -244,12 +237,15 @@ class ShieldRenderer:
         for i in range(10):
             angle = (2 * math.pi * i / 10) + rng.uniform(-0.3, 0.3)
             speed = rng.uniform(60, 160)
-            fragments.append({
-                "x": 0.0, "y": 0.0,
-                "vx": math.cos(angle) * speed,
-                "vy": math.sin(angle) * speed,
-                "alpha": 255.0,
-            })
+            fragments.append(
+                {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "vx": math.cos(angle) * speed,
+                    "vy": math.sin(angle) * speed,
+                    "alpha": 255.0,
+                }
+            )
         return fragments
 
 
@@ -382,15 +378,17 @@ class DamageStateManager:
                 state.smoke_timer += dt
                 if state.smoke_timer >= smoke_rate:
                     state.smoke_timer -= smoke_rate
-                    state.smoke_particles.append({
-                        "x": self._rng.uniform(-8, 8),
-                        "y": 0.0,
-                        "vx": self._rng.uniform(-5, 5),
-                        "vy": self._rng.uniform(-20, -8),
-                        "life": self._rng.uniform(0.8, 1.5),
-                        "max_life": 1.5,
-                        "size": self._rng.uniform(2, 5),
-                    })
+                    state.smoke_particles.append(
+                        {
+                            "x": self._rng.uniform(-8, 8),
+                            "y": 0.0,
+                            "vx": self._rng.uniform(-5, 5),
+                            "vy": self._rng.uniform(-20, -8),
+                            "life": self._rng.uniform(0.8, 1.5),
+                            "max_life": 1.5,
+                            "size": self._rng.uniform(2, 5),
+                        }
+                    )
 
             # Update smoke particles
             for p in state.smoke_particles:
@@ -401,19 +399,23 @@ class DamageStateManager:
 
             # Spark emission (below 75% hull)
             if state.hull_ratio < 0.75:
-                spark_rate = 0.4 if state.hull_ratio < 0.25 else (0.8 if state.hull_ratio < 0.5 else 1.5)
+                spark_rate = (
+                    0.4 if state.hull_ratio < 0.25 else (0.8 if state.hull_ratio < 0.5 else 1.5)
+                )
                 state.spark_timer += dt
                 if state.spark_timer >= spark_rate:
                     state.spark_timer -= spark_rate
-                    state.spark_particles.append({
-                        "x": self._rng.uniform(-10, 10),
-                        "y": self._rng.uniform(-10, 10),
-                        "vx": self._rng.uniform(-40, 40),
-                        "vy": self._rng.uniform(-60, -20),
-                        "life": self._rng.uniform(0.15, 0.35),
-                        "max_life": 0.35,
-                        "color_idx": self._rng.randint(0, len(_SPARK_COLORS) - 1),
-                    })
+                    state.spark_particles.append(
+                        {
+                            "x": self._rng.uniform(-10, 10),
+                            "y": self._rng.uniform(-10, 10),
+                            "vx": self._rng.uniform(-40, 40),
+                            "vy": self._rng.uniform(-60, -20),
+                            "life": self._rng.uniform(0.15, 0.35),
+                            "max_life": 0.35,
+                            "color_idx": self._rng.randint(0, len(_SPARK_COLORS) - 1),
+                        }
+                    )
 
             # Update spark particles
             for p in state.spark_particles:
@@ -465,8 +467,11 @@ class DamageStateManager:
                 pulse_r = scale_x(30)
                 pulse_surf = pygame.Surface((pulse_r * 2, pulse_r * 2), pygame.SRCALPHA)
                 pygame.draw.circle(
-                    pulse_surf, (255, 40, 40, pulse_alpha),
-                    (pulse_r, pulse_r), pulse_r, 2,
+                    pulse_surf,
+                    (255, 40, 40, pulse_alpha),
+                    (pulse_r, pulse_r),
+                    pulse_r,
+                    2,
                 )
                 screen.blit(pulse_surf, (cx - pulse_r, cy - pulse_r))
 
@@ -478,7 +483,10 @@ class DamageStateManager:
 _FRAG_COLORS = [(180, 160, 140), (140, 120, 100), (100, 80, 60)]
 _FIRE_COLORS = [(255, 200, 60), (255, 140, 30), (255, 80, 10), (200, 40, 0)]
 _SECONDARY_EXPLOSION_OFFSETS = [
-    (-0.3, -0.2), (0.4, 0.1), (-0.1, 0.35), (0.2, -0.3),
+    (-0.3, -0.2),
+    (0.4, 0.1),
+    (-0.1, 0.35),
+    (0.2, -0.3),
 ]
 
 
@@ -545,13 +553,15 @@ class DestructionSequence:
         # Secondary explosion timers
         self._secondary_timers: list[dict] = []
         for i, (ox_pct, oy_pct) in enumerate(_SECONDARY_EXPLOSION_OFFSETS):
-            self._secondary_timers.append({
-                "x": cx + ox_pct * sprite_radius * 2,
-                "y": cy + oy_pct * sprite_radius * 2,
-                "trigger_time": 0.25 + i * 0.08,
-                "fired": False,
-                "flash_timer": 0.0,
-            })
+            self._secondary_timers.append(
+                {
+                    "x": cx + ox_pct * sprite_radius * 2,
+                    "y": cy + oy_pct * sprite_radius * 2,
+                    "trigger_time": 0.25 + i * 0.08,
+                    "fired": False,
+                    "flash_timer": 0.0,
+                }
+            )
 
         # Lingering fire/smoke at center
         self._fire_particles: list[dict] = []
@@ -569,16 +579,19 @@ class DestructionSequence:
             angle = (2 * math.pi * i / count) + rng.uniform(-0.4, 0.4)
             speed = rng.uniform(80, 220)
             size = rng.randint(max(3, radius // 6), max(5, radius // 3))
-            fragments.append({
-                "x": 0.0, "y": 0.0,
-                "vx": math.cos(angle) * speed,
-                "vy": math.sin(angle) * speed,
-                "rotation": rng.uniform(0, 360),
-                "rot_speed": rng.uniform(-300, 300),  # Degrees/sec
-                "size": size,
-                "alpha": 255.0,
-                "color_idx": rng.randint(0, len(_FRAG_COLORS) - 1),
-            })
+            fragments.append(
+                {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "vx": math.cos(angle) * speed,
+                    "vy": math.sin(angle) * speed,
+                    "rotation": rng.uniform(0, 360),
+                    "rot_speed": rng.uniform(-300, 300),  # Degrees/sec
+                    "size": size,
+                    "alpha": 255.0,
+                    "color_idx": rng.randint(0, len(_FRAG_COLORS) - 1),
+                }
+            )
         return fragments
 
     def update(self, dt: float) -> None:
@@ -629,16 +642,18 @@ class DestructionSequence:
             if self._fire_emit_timer >= 0.06:
                 self._fire_emit_timer -= 0.06
                 rng = self._rng
-                self._fire_particles.append({
-                    "x": rng.uniform(-15, 15),
-                    "y": rng.uniform(-15, 15),
-                    "vx": rng.uniform(-15, 15),
-                    "vy": rng.uniform(-35, -10),
-                    "life": rng.uniform(0.3, 0.6),
-                    "max_life": 0.6,
-                    "size": rng.uniform(3, 8),
-                    "color_idx": rng.randint(0, len(_FIRE_COLORS) - 1),
-                })
+                self._fire_particles.append(
+                    {
+                        "x": rng.uniform(-15, 15),
+                        "y": rng.uniform(-15, 15),
+                        "vx": rng.uniform(-15, 15),
+                        "vy": rng.uniform(-35, -10),
+                        "life": rng.uniform(0.3, 0.6),
+                        "max_life": 0.6,
+                        "size": rng.uniform(3, 8),
+                        "color_idx": rng.randint(0, len(_FIRE_COLORS) - 1),
+                    }
+                )
 
         for p in self._fire_particles:
             p["x"] += p["vx"] * dt
@@ -652,15 +667,17 @@ class DestructionSequence:
             # Convert remaining fragments to persistent debris
             for frag in self._fragments:
                 if frag["alpha"] > 30:
-                    self.debris.append({
-                        "x": self.cx + frag["x"],
-                        "y": self.cy + frag["y"],
-                        "vx": frag["vx"] * 0.05,  # Very slow drift
-                        "vy": frag["vy"] * 0.05,
-                        "size": max(2, frag["size"] // 2),
-                        "alpha": min(80, frag["alpha"] * 0.3),
-                        "color_idx": frag["color_idx"],
-                    })
+                    self.debris.append(
+                        {
+                            "x": self.cx + frag["x"],
+                            "y": self.cy + frag["y"],
+                            "vx": frag["vx"] * 0.05,  # Very slow drift
+                            "vy": frag["vy"] * 0.05,
+                            "size": max(2, frag["size"] // 2),
+                            "alpha": min(80, frag["alpha"] * 0.3),
+                            "color_idx": frag["color_idx"],
+                        }
+                    )
             self._fragments.clear()
             self._fire_particles.clear()
 
@@ -689,7 +706,9 @@ class DestructionSequence:
                 # White center fading to orange edge
                 pygame.draw.circle(flash_surf, (255, 255, 240, flash_alpha), (r, r), r)
                 inner_r = max(1, r // 2)
-                pygame.draw.circle(flash_surf, (255, 255, 255, min(255, flash_alpha + 30)), (r, r), inner_r)
+                pygame.draw.circle(
+                    flash_surf, (255, 255, 255, min(255, flash_alpha + 30)), (r, r), inner_r
+                )
                 screen.blit(flash_surf, (cx - r, cy - r))
 
         # Fragments
@@ -729,7 +748,9 @@ class DestructionSequence:
                 sx, sy = int(sec["x"]), int(sec["y"])
                 sec_surf = pygame.Surface((sr * 2, sr * 2), pygame.SRCALPHA)
                 pygame.draw.circle(sec_surf, (255, 220, 150, s_alpha), (sr, sr), sr)
-                pygame.draw.circle(sec_surf, (255, 255, 240, min(255, s_alpha + 50)), (sr, sr), max(1, sr // 2))
+                pygame.draw.circle(
+                    sec_surf, (255, 255, 240, min(255, s_alpha + 50)), (sr, sr), max(1, sr // 2)
+                )
                 screen.blit(sec_surf, (sx - sr, sy - sr))
 
         # Fire/smoke particles
@@ -856,16 +877,18 @@ class CombatAtmosphere:
         count = self._config["dust_count"]
         speed_min, speed_max = self._config["dust_speed"]
         for _ in range(count):
-            self._dust.append(_DustMote(
-                x=self._rng.uniform(self._arena.left, self._arena.right),
-                y=self._rng.uniform(self._arena.top, self._arena.bottom),
-                vx=self._rng.uniform(speed_min, speed_max),
-                vy=self._rng.uniform(-2, 2),
-                size=self._rng.uniform(1.0, 2.5),
-                alpha=self._rng.uniform(0.4, 1.0),
-                twinkle_phase=self._rng.uniform(0, math.pi * 2),
-                twinkle_speed=self._rng.uniform(1.5, 4.0),
-            ))
+            self._dust.append(
+                _DustMote(
+                    x=self._rng.uniform(self._arena.left, self._arena.right),
+                    y=self._rng.uniform(self._arena.top, self._arena.bottom),
+                    vx=self._rng.uniform(speed_min, speed_max),
+                    vy=self._rng.uniform(-2, 2),
+                    size=self._rng.uniform(1.0, 2.5),
+                    alpha=self._rng.uniform(0.4, 1.0),
+                    twinkle_phase=self._rng.uniform(0, math.pi * 2),
+                    twinkle_speed=self._rng.uniform(1.5, 4.0),
+                )
+            )
 
     def _build_arena_frame(self) -> None:
         """Pre-render the arena viewport frame."""
@@ -894,8 +917,12 @@ class CombatAtmosphere:
         pygame.draw.line(self._frame_surface, accent_color, (0, h - 1), (accent_len, h - 1))
         pygame.draw.line(self._frame_surface, accent_color, (0, h - 1), (0, h - 1 - accent_len))
         # Bottom-right
-        pygame.draw.line(self._frame_surface, accent_color, (w - 1, h - 1), (w - 1 - accent_len, h - 1))
-        pygame.draw.line(self._frame_surface, accent_color, (w - 1, h - 1), (w - 1, h - 1 - accent_len))
+        pygame.draw.line(
+            self._frame_surface, accent_color, (w - 1, h - 1), (w - 1 - accent_len, h - 1)
+        )
+        pygame.draw.line(
+            self._frame_surface, accent_color, (w - 1, h - 1), (w - 1, h - 1 - accent_len)
+        )
 
     def update(self, dt: float) -> None:
         """Advance dust motes and twinkle animations.
@@ -954,9 +981,7 @@ class CombatAtmosphere:
                         pass
             else:
                 mote_surf = pygame.Surface((size * 2, size * 2), pygame.SRCALPHA)
-                pygame.draw.circle(
-                    mote_surf, (*dust_base_color, alpha), (size, size), size
-                )
+                pygame.draw.circle(mote_surf, (*dust_base_color, alpha), (size, size), size)
                 screen.blit(mote_surf, (mx - size, my - size))
 
     def render_foreground(self, screen: pygame.Surface) -> None:

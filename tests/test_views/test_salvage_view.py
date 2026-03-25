@@ -23,19 +23,35 @@ def _init_pygame():
 
 def _make_ship_type() -> ShipType:
     return ShipType(
-        id="shuttle", name="Shuttle", ship_class="light",
-        description="Basic ship", cargo_capacity=100, fuel_capacity=50,
-        fuel_efficiency=1.0, speed_multiplier=1.0, purchase_price=0,
-        resale_value=0, crew_slots=1, special_abilities=[], availability="all",
+        id="shuttle",
+        name="Shuttle",
+        ship_class="light",
+        description="Basic ship",
+        cargo_capacity=100,
+        fuel_capacity=50,
+        fuel_efficiency=1.0,
+        speed_multiplier=1.0,
+        purchase_price=0,
+        resale_value=0,
+        crew_slots=1,
+        special_abilities=[],
+        availability="all",
     )
 
 
 def _make_commodity(cid: str, name: str, price: int) -> Commodity:
     return Commodity(
-        id=cid, name=name, base_price=price,
-        category=CommodityCategory.BASIC, description="Test",
-        variance_min=-0.1, variance_max=0.1, volume_per_unit=1,
-        legality=Legality.LEGAL, production_tags=[], consumption_tags=[],
+        id=cid,
+        name=name,
+        base_price=price,
+        category=CommodityCategory.BASIC,
+        description="Test",
+        variance_min=-0.1,
+        variance_max=0.1,
+        volume_per_unit=1,
+        legality=Legality.LEGAL,
+        production_tags=[],
+        consumption_tags=[],
     )
 
 
@@ -49,7 +65,8 @@ def _make_commodities() -> dict[str, Commodity]:
 
 def _make_player() -> Player:
     return Player(
-        name="TestCaptain", credits=5000,
+        name="TestCaptain",
+        credits=5000,
         current_system_id="forgeworks",
         ship=Ship(ship_type=_make_ship_type(), current_fuel=50),
     )
@@ -283,7 +300,8 @@ class TestSalvageUIOverhaul:
     def test_exit_confirmation_blocks_session_end(self) -> None:
         view = _make_view()
         event = pygame.event.Event(
-            pygame_gui.UI_BUTTON_PRESSED, ui_element=view.back_button,
+            pygame_gui.UI_BUTTON_PRESSED,
+            ui_element=view.back_button,
         )
         view.handle_event(event)
         assert view._confirm_exit
@@ -321,9 +339,7 @@ class TestSalvageUIOverhaul:
         view.mode = "extract"  # Deliberately in extract mode
         if view.session:
             # Find a hidden cell
-            hidden_cell = next(
-                (c for c in view.session.grid if c.state == CellState.HIDDEN), None
-            )
+            hidden_cell = next((c for c in view.session.grid if c.state == CellState.HIDDEN), None)
             if hidden_cell:
                 view._click_cell(hidden_cell.grid_x, hidden_cell.grid_y)
                 # Cell should now be scanned
@@ -359,6 +375,7 @@ class TestSalvageUIOverhaul:
         assert view.session is None, "Session should not exist before selection"
         # Select a derelict type
         from spacegame.models.salvage import DERELICT_TYPES
+
         view._start_with_derelict(DERELICT_TYPES[1])  # Lab Module
         assert not view._selecting_derelict
         assert view.session is not None

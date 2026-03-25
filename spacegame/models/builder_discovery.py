@@ -10,20 +10,33 @@ Part of the Shipyard Overhaul — Phase D2.
 from __future__ import annotations
 
 import random
-from dataclasses import dataclass, field
 from typing import Optional
-
 
 # ============================================================================
 # Trading Milestones
 # ============================================================================
 
 TRADE_MILESTONES: list[dict] = [
-    {"threshold": 10000, "reward_type": "equipment", "reward_id": "trade_computer", "name": "Merchant"},
-    {"threshold": 50000, "reward_type": "discount", "reward_id": "medium_weight_20", "name": "Trader"},
+    {
+        "threshold": 10000,
+        "reward_type": "equipment",
+        "reward_id": "trade_computer",
+        "name": "Merchant",
+    },
+    {
+        "threshold": 50000,
+        "reward_type": "discount",
+        "reward_id": "medium_weight_20",
+        "name": "Trader",
+    },
     {"threshold": 100000, "reward_type": "shape", "reward_id": "hull_section", "name": "Magnate"},
     {"threshold": 250000, "reward_type": "shape", "reward_id": "cargo_rack", "name": "Tycoon"},
-    {"threshold": 500000, "reward_type": "discount", "reward_id": "large_weight_15", "name": "Baron"},
+    {
+        "threshold": 500000,
+        "reward_type": "discount",
+        "reward_id": "large_weight_15",
+        "name": "Baron",
+    },
     {"threshold": 1000000, "reward_type": "shape", "reward_id": "merchants_keel", "name": "Mogul"},
 ]
 
@@ -87,6 +100,90 @@ BOSS_TROPHY_MATERIALS: dict[str, str] = {
     "iron_maw": "forgeborn_steel",  # Not in base materials yet — future
     "void_leviathan": "void_chitin_material",  # Not in base materials yet — future
 }
+
+# Legendary module drops from the 5 superbosses (Emerald/Ruby weapon tier)
+BOSS_TROPHY_MODULES: dict[str, str] = {
+    "corsair_king": "legendary_kings_repeater",
+    "void_leviathan": "legendary_void_maw_reactor",
+    "iron_maw": "legendary_forgeborn_bulwark",
+    "the_collector": "legendary_collection_engine",
+    "ledger_phantom": "legendary_phantom_shroud",
+}
+
+# ============================================================================
+# Module Blueprint Unlock Tables (Shipbuilder Upgrade Phase 8)
+# ============================================================================
+
+# Faction → module blueprint unlocks at reputation thresholds
+FACTION_MODULE_UNLOCKS: dict[str, list[dict]] = {
+    "commerce_guild": [
+        {"rep": 25, "modules": ["split_engine_talon", "twin_link_talon"], "label": "Friendly"},
+        {"rep": 40, "modules": ["quad_mount_foundry"], "label": "Trusted"},
+        {"rep": 50, "modules": ["brig_rk"], "label": "Allied"},
+    ],
+    "miners_union": [
+        {
+            "rep": 25,
+            "modules": ["wide_array_foundry", "reinforced_bulkhead_4x2"],
+            "label": "Friendly",
+        },
+        {"rep": 40, "modules": ["heavy_projector_foundry"], "label": "Trusted"},
+        {"rep": 50, "modules": ["capital_engine_foundry"], "label": "Allied"},
+    ],
+    "science_collective": [
+        {"rep": 25, "modules": ["whisper_drive_sable", "compact_node_sable"], "label": "Friendly"},
+        {"rep": 40, "modules": ["phase_barrier_sable", "concealed_bay_sable"], "label": "Trusted"},
+        {"rep": 50, "modules": ["ew_suite_sable", "micro_reactor_sable"], "label": "Allied"},
+    ],
+    "frontier_alliance": [
+        {
+            "rep": 25,
+            "modules": ["efficient_drive_meridian", "shield_dome_meridian"],
+            "label": "Friendly",
+        },
+        {
+            "rep": 40,
+            "modules": ["tall_tower_meridian", "officer_cabin_meridian"],
+            "label": "Trusted",
+        },
+        {
+            "rep": 50,
+            "modules": ["luxury_cabin_meridian", "ion_array_meridian", "science_lab_meridian"],
+            "label": "Allied",
+        },
+    ],
+}
+
+
+def check_faction_module_unlocks(
+    faction_id: str,
+    current_rep: int,
+    already_unlocked: set[str],
+) -> list[dict]:
+    """Check if faction reputation has unlocked any new module blueprints.
+
+    Args:
+        faction_id: Faction to check.
+        current_rep: Player's current reputation with that faction.
+        already_unlocked: Set of already-unlocked module IDs.
+
+    Returns:
+        List of dicts with 'module_id' and 'label' for newly unlocked modules.
+    """
+    tiers = FACTION_MODULE_UNLOCKS.get(faction_id, [])
+    newly_unlocked = []
+    for tier in tiers:
+        if current_rep >= tier["rep"]:
+            for mod_id in tier["modules"]:
+                if mod_id not in already_unlocked:
+                    newly_unlocked.append(
+                        {
+                            "module_id": mod_id,
+                            "label": tier["label"],
+                            "faction": faction_id,
+                        }
+                    )
+    return newly_unlocked
 
 
 # ============================================================================
@@ -200,6 +297,33 @@ def check_combat_trophy(
     return None
 
 
+def check_combat_trophy_module(
+    enemy_id: str,
+    is_boss: bool,
+    already_unlocked: set[str],
+) -> Optional[str]:
+    """Check if defeating a boss awards a legendary module blueprint.
+
+    Superboss enemies drop unique legendary modules on first kill.
+    These modules have effects that don't exist anywhere else.
+
+    Args:
+        enemy_id: The defeated enemy template ID.
+        is_boss: Whether the enemy is a boss.
+        already_unlocked: Already-unlocked module IDs.
+
+    Returns:
+        Module ID awarded, or None.
+    """
+    if not is_boss:
+        return None
+
+    trophy = BOSS_TROPHY_MODULES.get(enemy_id)
+    if trophy and trophy not in already_unlocked:
+        return trophy
+    return None
+
+
 def check_trade_milestones(
     current_profit: int,
     previous_profit: int,
@@ -246,11 +370,13 @@ def check_faction_unlocks(
             new_shapes = [s for s in unlock["shapes"] if s not in already_unlocked_shapes]
             new_materials = [m for m in unlock["materials"] if m not in already_unlocked_materials]
             if new_shapes or new_materials:
-                newly_unlocked.append({
-                    "shapes": new_shapes,
-                    "materials": new_materials,
-                    "label": unlock["label"],
-                    "faction": faction_id,
-                })
+                newly_unlocked.append(
+                    {
+                        "shapes": new_shapes,
+                        "materials": new_materials,
+                        "label": unlock["label"],
+                        "faction": faction_id,
+                    }
+                )
 
     return newly_unlocked

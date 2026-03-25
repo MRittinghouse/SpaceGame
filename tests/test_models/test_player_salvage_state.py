@@ -8,13 +8,23 @@ from spacegame.models.salvage_hold import SalvageHoldManager
 
 def _make_player() -> Player:
     ship_type = ShipType(
-        id="shuttle", name="Shuttle", ship_class="light",
-        description="Basic", cargo_capacity=100, fuel_capacity=50,
-        fuel_efficiency=1.0, speed_multiplier=1.0, purchase_price=0,
-        resale_value=0, crew_slots=1, special_abilities=[], availability="all",
+        id="shuttle",
+        name="Shuttle",
+        ship_class="light",
+        description="Basic",
+        cargo_capacity=100,
+        fuel_capacity=50,
+        fuel_efficiency=1.0,
+        speed_multiplier=1.0,
+        purchase_price=0,
+        resale_value=0,
+        crew_slots=1,
+        special_abilities=[],
+        availability="all",
     )
     return Player(
-        name="TestCaptain", credits=5000,
+        name="TestCaptain",
+        credits=5000,
         current_system_id="forgeworks",
         ship=Ship(ship_type=ship_type, current_fuel=50),
     )

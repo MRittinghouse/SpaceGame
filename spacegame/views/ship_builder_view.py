@@ -1,48 +1,95 @@
-"""Ship builder view — the pixel ship designer.
+"""Ship builder view — the unified ship designer.
 
-The player builds their ship on a grid by stamping geometric shapes
-with chosen materials. The grid IS the ship sprite. Real-time stat
-updates show the effect of every placement. Part of the Shipyard
-Overhaul — Phase B1.
+Three-mode builder: MODULES (place ship parts), HULL (paint structural
+pixels), and EQUIP (install weapons/shields into module slots). The grid
+IS the ship sprite. Real-time stat updates show the effect of every
+placement.
+
+File structure (3300+ lines):
+  - Lines ~1-200: Imports, layout constants, __init__, lifecycle
+  - Lines ~200-600: Event handling (clicks, keys, mode routing)
+  - Lines ~600-850: Module interaction methods (catalog, place, remove, recolor)
+  - Lines ~850-1050: Equip mode interaction (slot selection, install, uninstall)
+  - Lines ~1050-1350: Build actions (save draft, share, import, confirm with delta cost)
+  - Lines ~1350-1650: Update loop, render dispatch, grid rendering
+  - Lines ~1650-2050: Module catalog rendering, requirements checklist, mode toggle
+  - Lines ~2050-2350: Physics overlays, module tooltip, stats panel
+  - Lines ~2350-2650: Equip mode rendering (slot list, equipment panel)
+  - Lines ~2650-2800: Recolor panel, help overlay, confirmation animation
+  - Lines ~2800+: Equipment modal, stat preview, preset loading
+
+Candidate for extraction: EQUIP mode (~300 lines) and RECOLOR mode (~150 lines)
+could be extracted into helper modules when file grows further.
 """
+
+from typing import Optional
 
 import pygame
 import pygame_gui
-from typing import Optional
 
 from spacegame.config import (
-    WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState, scale_x, scale_y,
+    WINDOW_HEIGHT,
+    WINDOW_WIDTH,
+    Colors,
+    GameState,
+    scale_x,
+    scale_y,
 )
-from spacegame.views.base_view import BaseView
+from spacegame.engine.audio_manager import get_audio_manager
+from spacegame.engine.backgrounds import AnimatedBackground
+from spacegame.engine.draw_utils import draw_bar, draw_panel
+from spacegame.engine.fonts import (
+    FONT_BODY,
+    FONT_MD,
+    FONT_SM,
+    FONT_TITLE,
+    FONT_XL,
+    FONT_XS,
+    get_font,
+)
+from spacegame.engine.particles import FORGE_FLAME, SPARK_BURST, ParticlePool
 from spacegame.models.player import Player
 from spacegame.models.ship_build import (
-    HullShape, HullMaterial, PlacedPixel, DesignatedSlot,
-    ShipBuild, ShipGridManager, ShipStatsComputer,
-    ComputedShipStats, WEIGHT_CLASSES, SLOT_POOLS,
+    ComputedShipStats,
+    DesignatedSlot,
+    HullMaterial,
+    HullShape,
+    PlacedPixel,
+    ShipBuild,
+    ShipGridManager,
+    ShipStatsComputer,
 )
-from spacegame.engine.backgrounds import AnimatedBackground
-from spacegame.engine.draw_utils import draw_panel, draw_bar
-from spacegame.engine.fonts import FontCache, FONT_BODY, FONT_LG, FONT_MD, FONT_SM, FONT_TITLE, FONT_XL, FONT_XS
-from spacegame.engine.particles import ParticlePool, FORGE_FLAME, SPARK_BURST
-from spacegame.engine.audio_manager import get_audio_manager
+from spacegame.models.ship_module import (
+    PlacedModule,
+    ShipModule,
+    can_place_module,
+    is_pixel_recolorable,
+    resolve_all_pixels,
+    resolve_placed_module,
+    validate_connectivity,
+    validate_requirements,
+)
 from spacegame.utils.logger import logger
+from spacegame.views.base_view import BaseView
 
+# Hull-only materials for the simplified hull pixel palette
+HULL_PIXEL_MATERIALS = ("light_alloy", "standard_plate", "heavy_armor", "stealth_composite")
 
-# Layout constants
-GRID_AREA_X = scale_x(200)
-GRID_AREA_Y = scale_y(50)
-GRID_AREA_W = scale_x(500)
-GRID_AREA_H = scale_y(500)
+# Layout constants — widened panels, centered grid
+SHAPE_PANEL_X = scale_x(8)
+SHAPE_PANEL_Y = scale_y(58)
+SHAPE_PANEL_W = scale_x(240)
+SHAPE_PANEL_H = scale_y(490)
 
-SHAPE_PANEL_X = scale_x(10)
-SHAPE_PANEL_Y = scale_y(50)
-SHAPE_PANEL_W = scale_x(180)
-SHAPE_PANEL_H = scale_y(500)
+MATERIAL_PANEL_X = WINDOW_WIDTH - scale_x(220)
+MATERIAL_PANEL_Y = scale_y(58)
+MATERIAL_PANEL_W = scale_x(210)
+MATERIAL_PANEL_H = scale_y(280)
 
-MATERIAL_PANEL_X = WINDOW_WIDTH - scale_x(190)
-MATERIAL_PANEL_Y = scale_y(50)
-MATERIAL_PANEL_W = scale_x(180)
-MATERIAL_PANEL_H = scale_y(260)
+GRID_AREA_X = SHAPE_PANEL_X + SHAPE_PANEL_W + scale_x(8)
+GRID_AREA_Y = scale_y(58)
+GRID_AREA_W = MATERIAL_PANEL_X - GRID_AREA_X - scale_x(8)
+GRID_AREA_H = scale_y(490)
 
 STATS_PANEL_Y = WINDOW_HEIGHT - scale_y(170)
 STATS_PANEL_H = scale_y(160)
@@ -70,17 +117,20 @@ class ShipBuilderView(BaseView):
         self.data_loader = data_loader
         self.next_state: Optional[GameState] = None
 
-        # Fonts
-        self.title_font = FontCache.get(FONT_TITLE)
-        self.header_font = FontCache.get(FONT_XL)
-        self.body_font = FontCache.get(FONT_BODY)
-        self.small_font = FontCache.get(FONT_MD)
-        self.tiny_font = FontCache.get(FONT_SM)
-        self.label_font = FontCache.get(FONT_XS)
+        # Fonts — role-based
+        self.title_font = get_font("header", FONT_TITLE)  # "DRYDOCK — LARGE"
+        self.header_font = get_font("header", FONT_XL)  # Section headers
+        self.body_font = get_font("dialogue", FONT_BODY)  # Module names
+        self.small_font = get_font("stats", FONT_MD)  # Stats, costs
+        self.tiny_font = get_font("dialogue", FONT_SM)  # Detail text
+        self.label_font = get_font("label", FONT_XS)  # Category tabs, badges
 
         # Background
         self.background = AnimatedBackground(
-            "industrial", WINDOW_WIDTH, WINDOW_HEIGHT, seed=90,
+            "industrial",
+            WINDOW_WIDTH,
+            WINDOW_HEIGHT,
+            seed=90,
         )
         self._bg_dim = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
         self._bg_dim.fill((0, 0, 0))
@@ -113,22 +163,19 @@ class ShipBuilderView(BaseView):
         self._panning: bool = False
         self._pan_start: tuple[int, int] = (0, 0)
 
-        # Slot designator (Phase B3)
-        self._slot_type_to_place: Optional[str] = None
-        self._equipment_modal_open: bool = False
-        self._equipment_modal_slot: Optional[DesignatedSlot] = None
-        self._equipment_list: list = []
-        self._equipment_scroll: int = 0
+        # (Legacy slot designator removed — equipment via EQUIP mode)
 
         # Polish (Phase E)
         self._confirm_anim_timer: float = 0.0  # Confirmation animation
         self._confirm_anim_surface: Optional[pygame.Surface] = None
         self._hovered_shape: Optional[HullShape] = None  # Shape under cursor in palette
         self._particle_timer: float = 0.0  # Ambient sparks
-        self._validation_warnings: list[str] = []  # Build issues
+        self._validation_warnings: list[str] = []  # Build issues (blocking)
+        self._advisory_warnings: list[str] = []  # Build advisories (non-blocking)
+        self._can_confirm: bool = False
         self._pending_hint: Optional[str] = None  # Hint ID for game.py to show
         self._redo_stack: list[list[dict]] = []
-        self._max_undo: int = 20
+        self._max_undo: int = 30
 
         # Shape palette scroll
         self._shape_scroll_offset: int = 0
@@ -137,6 +184,40 @@ class ShipBuilderView(BaseView):
 
         # Material list scroll
         self._material_scroll_offset: int = 0
+
+        # Module mode (Phase 4 — Shipbuilder Upgrade)
+        self._builder_mode: str = "module"  # "module" or "hull"
+        self._selected_module_id: Optional[str] = None
+        self._module_rotation: int = 0  # 0-3 (90° increments)
+        self._module_flipped: bool = False
+        self._module_catalog_scroll: int = 0
+        self._module_category_filter: str = "all"
+        self._module_categories = [
+            "all",
+            "cockpit",
+            "engine",
+            "weapon",
+            "shield",
+            "cargo",
+            "utility",
+            "structural",
+        ]
+        self._selected_placed_module_idx: Optional[int] = None  # For removal
+        self._recolor_mode: bool = False
+        self._recolor_material_id: str = "standard_plate"
+        # EQUIP mode (Systems Unification U3)
+        self._equip_selected_module_idx: Optional[int] = None  # Module with open equip panel
+        self._equip_scroll: int = 0
+
+        # Visual feedback (Phase 10)
+        self._placement_flash_timer: float = 0.0
+        self._placement_flash_pos: tuple[int, int] = (0, 0)
+        self._feedback_messages: list[dict] = []
+
+        # Physics overlay toggles (Phase 6)
+        self._show_integrity_overlay: bool = False
+        self._show_com_overlay: bool = False
+        self._cached_integrity: Optional[dict] = None
 
         # UI elements
         self.confirm_button: Optional[pygame_gui.elements.UIButton] = None
@@ -161,11 +242,14 @@ class ShipBuilderView(BaseView):
         else:
             # Generate a preset from the current ship type
             from spacegame.models.ship_presets import generate_preset_from_ship_type
+
             self.build = generate_preset_from_ship_type(self.player.ship.ship_type)
 
         self.grid_manager = ShipGridManager(self.build.weight_class)
         self._modified = False
         self._recompute_stats()
+        # Track the build cost at entry to charge only the delta on confirm
+        self._entry_cost = self._computed_stats.total_cost if self._computed_stats else 0
         self._create_ui()
 
     def on_exit(self) -> None:
@@ -180,21 +264,30 @@ class ShipBuilderView(BaseView):
 
         self.confirm_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
-                WINDOW_WIDTH - btn_w - scale_x(20), btn_y, btn_w, btn_h,
+                WINDOW_WIDTH - btn_w - scale_x(20),
+                btn_y,
+                btn_w,
+                btn_h,
             ),
             text="CONFIRM BUILD",
             manager=self.ui_manager,
         )
         self.clear_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
-                WINDOW_WIDTH - btn_w * 2 - scale_x(30), btn_y, btn_w, btn_h,
+                WINDOW_WIDTH - btn_w * 2 - scale_x(30),
+                btn_y,
+                btn_w,
+                btn_h,
             ),
             text="CLEAR ALL",
             manager=self.ui_manager,
         )
         self.back_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
-                scale_x(20), btn_y, btn_w, btn_h,
+                scale_x(20),
+                btn_y,
+                btn_w,
+                btn_h,
             ),
             text="BACK",
             manager=self.ui_manager,
@@ -202,24 +295,71 @@ class ShipBuilderView(BaseView):
         # Quick Start / Help buttons (Phase F — always visible)
         self.load_preset_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
-                scale_x(160), btn_y, btn_w, btn_h,
+                scale_x(160),
+                btn_y,
+                btn_w,
+                btn_h,
             ),
             text="LOAD PRESET",
             manager=self.ui_manager,
         )
         self.help_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
-                scale_x(300), btn_y, scale_x(40), btn_h,
+                scale_x(300),
+                btn_y,
+                scale_x(40),
+                btn_h,
             ),
             text="?",
             manager=self.ui_manager,
         )
+        self.save_draft_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(
+                scale_x(350),
+                btn_y,
+                btn_w,
+                btn_h,
+            ),
+            text="SAVE DRAFT",
+            manager=self.ui_manager,
+        )
+        self.share_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(
+                scale_x(490),
+                btn_y,
+                scale_x(110),
+                btn_h,
+            ),
+            text="SHARE BUILD",
+            manager=self.ui_manager,
+        )
+        self.import_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(
+                scale_x(610),
+                btn_y,
+                scale_x(90),
+                btn_h,
+            ),
+            text="IMPORT",
+            manager=self.ui_manager,
+        )
         self._help_overlay_open = False
+        self._import_modal_open = False
+        self._import_text = ""
+        self._import_error = ""
+        self._import_missing_blueprints: list[dict] = []
 
     def _destroy_ui(self) -> None:
-        for btn in [self.confirm_button, self.clear_button, self.back_button,
-                    getattr(self, "load_preset_button", None),
-                    getattr(self, "help_button", None)]:
+        for btn in [
+            self.confirm_button,
+            self.clear_button,
+            self.back_button,
+            getattr(self, "load_preset_button", None),
+            getattr(self, "help_button", None),
+            getattr(self, "save_draft_button", None),
+            getattr(self, "share_button", None),
+            getattr(self, "import_button", None),
+        ]:
             if btn:
                 btn.kill()
         self.confirm_button = None
@@ -246,21 +386,88 @@ class ShipBuilderView(BaseView):
                 self._push_undo()
                 self.build.pixels.clear()
                 self.build.slots.clear()
+                self.build.modules.clear()
+                self._selected_placed_module_idx = None
                 self._modified = True
                 self._recompute_stats()
                 return
             if hasattr(self, "load_preset_button") and event.ui_element == self.load_preset_button:
+                logger.info("Load Preset button clicked")
                 self._load_preset()
                 return
             if hasattr(self, "help_button") and event.ui_element == self.help_button:
                 self._help_overlay_open = not self._help_overlay_open
                 return
+            if hasattr(self, "save_draft_button") and event.ui_element == self.save_draft_button:
+                self._save_draft()
+                return
+            if hasattr(self, "share_button") and event.ui_element == self.share_button:
+                self._share_build()
+                return
+            if hasattr(self, "import_button") and event.ui_element == self.import_button:
+                self._import_modal_open = not self._import_modal_open
+                self._import_text = ""
+                self._import_error = ""
+                self._import_missing_blueprints = []
+                return
 
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_r:
-                self._shape_rotation = (self._shape_rotation + 1) % 4
+            # Import modal text input
+            if getattr(self, "_import_modal_open", False):
+                if event.key == pygame.K_ESCAPE:
+                    self._import_modal_open = False
+                    return
+                elif event.key == pygame.K_RETURN:
+                    self._try_import_build()
+                    return
+                elif event.key == pygame.K_BACKSPACE:
+                    self._import_text = self._import_text[:-1]
+                    return
+                elif event.key == pygame.K_v and pygame.key.get_mods() & pygame.KMOD_CTRL:
+                    # Paste from clipboard
+                    try:
+                        if not pygame.scrap.get_init():
+                            pygame.scrap.init()
+                        clipboard = pygame.scrap.get(pygame.SCRAP_TEXT)
+                        if clipboard:
+                            text = clipboard.decode("utf-8").rstrip("\x00").strip()
+                            self._import_text = text
+                    except Exception:
+                        pass
+                    return
+                elif event.unicode and len(event.unicode) == 1 and event.unicode.isprintable():
+                    self._import_text += event.unicode
+                    return
+                return  # Block all other keys when modal is open
+
+            if event.key == pygame.K_TAB:
+                # Cycle through module → hull → equip
+                cycle = {"module": "hull", "hull": "equip", "equip": "module"}
+                self._builder_mode = cycle.get(self._builder_mode, "module")
+                self._equip_selected_module_idx = None
+                try:
+                    get_audio_manager().play_sfx("ui_click")
+                except Exception:
+                    pass
+            elif event.key == pygame.K_r:
+                if self._builder_mode == "module":
+                    self._module_rotation = (self._module_rotation + 1) % 4
+                else:
+                    self._shape_rotation = (self._shape_rotation + 1) % 4
             elif event.key == pygame.K_q:
-                self._shape_flipped = not self._shape_flipped
+                if self._builder_mode == "module":
+                    self._module_flipped = not self._module_flipped
+                else:
+                    self._shape_flipped = not self._shape_flipped
+            elif event.key == pygame.K_DELETE or event.key == pygame.K_BACKSPACE:
+                if self._builder_mode == "module" and self._selected_placed_module_idx is not None:
+                    self._push_undo()
+                    idx = self._selected_placed_module_idx
+                    if 0 <= idx < len(self.build.modules):
+                        self.build.modules.pop(idx)
+                    self._selected_placed_module_idx = None
+                    self._modified = True
+                    self._recompute_stats()
             elif event.key == pygame.K_ESCAPE:
                 self.next_state = GameState.SHIPYARD
             # Tool switching (Phase B2)
@@ -274,11 +481,13 @@ class ShipBuilderView(BaseView):
                 self._active_tool = "fill"
             elif event.key == pygame.K_e:
                 self._active_tool = "eraser"
+            elif event.key == pygame.K_c:
+                if self._builder_mode == "module":
+                    self._recolor_mode = not getattr(self, "_recolor_mode", False)
+                    self._recolor_material_id = "standard_plate"
             elif event.key == pygame.K_x:
                 self._mirror_mode = not self._mirror_mode
-            elif event.key == pygame.K_d:
-                self._active_tool = "slot"
-                self._slot_type_to_place = None
+            # [D] key retired — equipment now installed via EQUIP mode
             # Undo/Redo (Phase B2)
             elif event.key == pygame.K_z and pygame.key.get_mods() & pygame.KMOD_CTRL:
                 self._undo()
@@ -311,30 +520,119 @@ class ShipBuilderView(BaseView):
                 self._pan_start = event.pos
 
         if event.type == pygame.MOUSEWHEEL:
-            mx, my = pygame.mouse.get_pos()
+            mx, _my = pygame.mouse.get_pos()
             if mx < GRID_AREA_X:
-                # Shape palette scroll
-                self._shape_scroll_offset = max(
-                    0, self._shape_scroll_offset - event.y * 30,
-                )
+                if self._builder_mode == "module":
+                    # Module catalog scroll
+                    self._module_catalog_scroll = max(
+                        0,
+                        self._module_catalog_scroll - event.y * 30,
+                    )
+                else:
+                    # Shape palette scroll
+                    self._shape_scroll_offset = max(
+                        0,
+                        self._shape_scroll_offset - event.y * 30,
+                    )
             elif mx > MATERIAL_PANEL_X:
                 # Material panel scroll
                 self._material_scroll_offset = max(
-                    0, self._material_scroll_offset - event.y * 30,
+                    0,
+                    self._material_scroll_offset - event.y * 30,
                 )
             else:
                 # Grid zoom — works from anywhere not on side panels
-                old_zoom = self._zoom_level
                 self._zoom_level = max(0.5, min(4.0, self._zoom_level + event.y * 0.25))
 
     def _handle_left_click(self, pos: tuple[int, int]) -> None:
         mx, my = pos
 
-        # Equipment modal takes priority if open
-        if self._equipment_modal_open:
-            self._handle_equipment_modal_click(mx, my)
+        # --- Mode toggle click (header area) ---
+        toggle_y = scale_y(30)
+        toggle_h = scale_y(20)
+        center_x = WINDOW_WIDTH // 2
+        btn_w = scale_x(70)
+        gap = 4
+        total_w = btn_w * 3 + gap * 2
+        start_x = center_x - total_w // 2
+        modes = ["module", "hull", "equip"]
+        if toggle_y <= my < toggle_y + toggle_h:
+            for i, mode_id in enumerate(modes):
+                bx = start_x + i * (btn_w + gap)
+                if bx <= mx < bx + btn_w:
+                    self._builder_mode = mode_id
+                    self._equip_selected_module_idx = None
+                    return
+
+        # --- Frame variant click (header area, Medium+ only) ---
+        if hasattr(self, "_frame_variant_rects"):
+            for variant_key, rect in self._frame_variant_rects.items():
+                if rect.collidepoint(mx, my):
+                    new_variant = None if variant_key == "default" else variant_key
+                    if new_variant != self.build.frame_variant:
+                        self._push_undo()
+                        self.build.frame_variant = new_variant
+                        self._modified = True
+                        self._recompute_stats()
+                        try:
+                            get_audio_manager().play_sfx("ui_click")
+                        except Exception:
+                            pass
+                    return
+
+        # --- Overlay toggle clicks (right panel, module mode) ---
+        if self._builder_mode == "module":
+            if hasattr(self, "_integrity_toggle_rect") and self._integrity_toggle_rect.collidepoint(
+                mx, my
+            ):
+                self._show_integrity_overlay = not self._show_integrity_overlay
+                self._cached_integrity = None  # Force recompute
+                return
+            if hasattr(self, "_com_toggle_rect") and self._com_toggle_rect.collidepoint(mx, my):
+                self._show_com_overlay = not self._show_com_overlay
+                return
+
+        # --- Module mode routing ---
+        if self._builder_mode == "module":
+            # Click on module catalog (left panel)
+            if SHAPE_PANEL_X <= mx < SHAPE_PANEL_X + SHAPE_PANEL_W:
+                self._handle_module_catalog_click(mx, my)
+                return
+
+            # Click on material panel in recolor mode — select recolor material
+            if getattr(self, "_recolor_mode", False):
+                if MATERIAL_PANEL_X <= mx < MATERIAL_PANEL_X + MATERIAL_PANEL_W:
+                    self._handle_recolor_material_click(mx, my)
+                    return
+
+            # Click on grid — module placement, selection, or recoloring
+            grid_pos = self._screen_to_grid(mx, my)
+            if grid_pos:
+                if getattr(self, "_recolor_mode", False):
+                    self._recolor_pixel_at(*grid_pos)
+                elif self._selected_module_id:
+                    self._place_module_at(*grid_pos)
+                else:
+                    self._select_module_at(*grid_pos)
             return
 
+        # --- EQUIP mode routing ---
+        if self._builder_mode == "equip":
+            # Click on left panel (slot list)
+            if SHAPE_PANEL_X <= mx < SHAPE_PANEL_X + SHAPE_PANEL_W:
+                self._handle_equip_slot_list_click(mx, my)
+                return
+            # Click on right panel (equipment selection)
+            if MATERIAL_PANEL_X <= mx < MATERIAL_PANEL_X + MATERIAL_PANEL_W:
+                self._handle_equip_panel_click(mx, my)
+                return
+            # Click on grid — select module for equipping
+            grid_pos = self._screen_to_grid(mx, my)
+            if grid_pos:
+                self._select_equip_module_at(*grid_pos)
+            return
+
+        # --- Hull mode routing (existing behavior) ---
         # Click on shape palette
         if SHAPE_PANEL_X <= mx < SHAPE_PANEL_X + SHAPE_PANEL_W:
             self._handle_shape_palette_click(mx, my)
@@ -345,22 +643,10 @@ class ShipBuilderView(BaseView):
             self._handle_material_panel_click(mx, my)
             return
 
-        # Slot type selector (shown when in slot mode, below material panel)
-        if self._active_tool == "slot":
-            if self._handle_slot_type_click(mx, my):
-                return
-
         # Click on grid — route through active tool
         grid_pos = self._screen_to_grid(mx, my)
         if grid_pos:
-            if self._active_tool == "slot":
-                if self._slot_type_to_place:
-                    self._push_undo()
-                    self._place_slot(*grid_pos)
-                else:
-                    # Click on existing slot to open equipment modal
-                    self._try_open_equipment_modal(*grid_pos)
-            elif self._active_tool == "stamp" and self._selected_shape:
+            if self._active_tool == "stamp" and self._selected_shape:
                 self._push_undo()
                 self._place_shape_at(*grid_pos)
             elif self._active_tool == "pencil":
@@ -377,14 +663,12 @@ class ShipBuilderView(BaseView):
                 self._erase_pixel(*grid_pos)
 
     def _handle_right_click(self, pos: tuple[int, int]) -> None:
-        """Erase pixel or remove slot at clicked grid position."""
-        if self._equipment_modal_open:
-            self._equipment_modal_open = False
-            return
+        """Erase pixel or remove module at clicked position."""
         grid_pos = self._screen_to_grid(pos[0], pos[1])
         if grid_pos:
-            if self._active_tool == "slot":
-                self._remove_slot_at(*grid_pos)
+            if self._builder_mode == "module":
+                # Right-click in module mode: remove module at position
+                self._remove_module_at(*grid_pos)
             else:
                 self._push_undo()
                 self._erase_pixel(*grid_pos)
@@ -413,14 +697,220 @@ class ShipBuilderView(BaseView):
                 self._shape_flipped = False
                 return
 
-    def _handle_material_panel_click(self, mx: int, my: int) -> None:
-        """Select a material from the panel."""
-        materials = self._get_available_materials()
-        item_h = scale_y(30)
-        start_y = MATERIAL_PANEL_Y + scale_y(25) - self._material_scroll_offset
-        for i, mat in enumerate(materials):
+    # ------------------------------------------------------------------
+    # Module Mode Interactions (Phase 4)
+    # ------------------------------------------------------------------
+
+    def _get_module_catalog(self) -> dict[str, ShipModule]:
+        """Get the module catalog from the data loader."""
+        return getattr(self.data_loader, "ship_modules", {})
+
+    def _get_filtered_modules(self) -> list[ShipModule]:
+        """Get modules filtered by category, unlocked first, sorted by name."""
+        catalog = self._get_module_catalog()
+        unlocked = self.player.unlocked_modules
+        modules = list(catalog.values())
+        if self._module_category_filter != "all":
+            modules = [m for m in modules if m.category == self._module_category_filter]
+        # Sort: unlocked first, then by category and name
+        modules.sort(key=lambda m: (m.id not in unlocked, m.category, m.name))
+        return modules
+
+    def _is_module_unlocked(self, module_id: str) -> bool:
+        """Check if a module blueprint is unlocked for the player."""
+        return module_id in self.player.unlocked_modules
+
+    def _handle_module_catalog_click(self, mx: int, my: int) -> None:
+        """Handle click on the module catalog panel (left side in module mode)."""
+        # Category tabs — two rows of 4
+        tab_y_start = SHAPE_PANEL_Y + 22
+        tab_h = scale_y(16)
+        tab_row_gap = 2
+        tabs_per_row = 4
+        tab_pad = 3
+        tab_w = (SHAPE_PANEL_W - tab_pad * 2 - (tabs_per_row - 1) * 2) // tabs_per_row
+        for i, cat in enumerate(self._module_categories):
+            row = i // tabs_per_row
+            col = i % tabs_per_row
+            tx = SHAPE_PANEL_X + tab_pad + col * (tab_w + 2)
+            ty = tab_y_start + row * (tab_h + tab_row_gap)
+            if tx <= mx < tx + tab_w and ty <= my < ty + tab_h:
+                self._module_category_filter = cat
+                self._module_catalog_scroll = 0
+                return
+
+        # Module items below tabs
+        modules = self._get_filtered_modules()
+        item_h = scale_y(46)
+        start_y = SHAPE_PANEL_Y + scale_y(58) - self._module_catalog_scroll
+        for i, module in enumerate(modules):
             iy = start_y + i * item_h
-            if MATERIAL_PANEL_X <= mx < MATERIAL_PANEL_X + MATERIAL_PANEL_W and iy <= my < iy + item_h:
+            if SHAPE_PANEL_X <= mx < SHAPE_PANEL_X + SHAPE_PANEL_W and iy <= my < iy + item_h:
+                if not self._is_module_unlocked(module.id):
+                    return  # Can't select locked modules
+                if self._selected_module_id == module.id:
+                    self._selected_module_id = None
+                else:
+                    self._selected_module_id = module.id
+                    self._module_rotation = 0
+                    self._module_flipped = False
+                self._selected_placed_module_idx = None
+                return
+
+    def _get_oriented_preview_module(self) -> Optional[ShipModule]:
+        """Get the selected module with rotation/flip applied for preview."""
+        if not self._selected_module_id:
+            return None
+        catalog = self._get_module_catalog()
+        module = catalog.get(self._selected_module_id)
+        if not module:
+            return None
+        oriented = module
+        if self._module_flipped:
+            oriented = oriented.flipped()
+        if self._module_rotation:
+            oriented = oriented.rotated(self._module_rotation)
+        return oriented
+
+    def _place_module_at(self, gx: int, gy: int) -> None:
+        """Place the selected module at the given grid position."""
+        if not self._selected_module_id:
+            return
+        catalog = self._get_module_catalog()
+        materials = getattr(self.data_loader, "hull_materials", {})
+
+        placed = PlacedModule(
+            module_id=self._selected_module_id,
+            x=gx,
+            y=gy,
+            rotation=self._module_rotation,
+            flipped=self._module_flipped,
+        )
+        ok, _msg = can_place_module(self.build, placed, catalog, materials)
+        if ok:
+            self._push_undo()
+            self.build.modules.append(placed)
+            self._modified = True
+            self._selected_placed_module_idx = None
+            self._recompute_stats()
+            # Placement feedback: sound + flash + particles
+            try:
+                get_audio_manager().play_sfx("ui_build")
+            except Exception:
+                pass
+            # Module placement flash at grid position
+            cell = self._get_cell_size()
+            ox, oy = self._get_grid_origin()
+            fx = ox + gx * cell + cell
+            fy = oy + gy * cell + cell
+            self.particles.emit(fx, fy, SPARK_BURST)
+            self._placement_flash_timer = 0.15
+            self._placement_flash_pos = (gx, gy)
+        else:
+            # Invalid placement buzz
+            try:
+                get_audio_manager().play_sfx("ui_error")
+            except Exception:
+                pass
+
+    def _select_module_at(self, gx: int, gy: int) -> None:
+        """Select a placed module at the given grid position (for removal/info)."""
+        catalog = self._get_module_catalog()
+        for i, placed in enumerate(self.build.modules):
+            if placed.module_id not in catalog:
+                continue
+            pixels = resolve_placed_module(placed, catalog)
+            for p in pixels:
+                if p.x == gx and p.y == gy:
+                    self._selected_placed_module_idx = i
+                    self._selected_module_id = None  # Deselect catalog item
+                    return
+        # Clicked empty space — deselect
+        self._selected_placed_module_idx = None
+
+    def _remove_module_at(self, gx: int, gy: int) -> None:
+        """Remove the module at the given grid position."""
+        catalog = self._get_module_catalog()
+        for i, placed in enumerate(self.build.modules):
+            if placed.module_id not in catalog:
+                continue
+            pixels = resolve_placed_module(placed, catalog)
+            for p in pixels:
+                if p.x == gx and p.y == gy:
+                    self._push_undo()
+                    self.build.modules.pop(i)
+                    self._selected_placed_module_idx = None
+                    self._modified = True
+                    self._recompute_stats()
+                    try:
+                        get_audio_manager().play_sfx("ui_cancel")
+                    except Exception:
+                        pass
+                    return
+
+    def _recolor_pixel_at(self, gx: int, gy: int) -> None:
+        """Recolor a module hull pixel at the given grid position."""
+        catalog = self._get_module_catalog()
+        for _i, placed in enumerate(self.build.modules):
+            if placed.module_id not in catalog:
+                continue
+            module = catalog[placed.module_id]
+            oriented = module
+            if placed.flipped:
+                oriented = oriented.flipped()
+            if placed.rotation:
+                oriented = oriented.rotated(placed.rotation)
+            # Check if this grid position is within this module
+            local_x = gx - placed.x
+            local_y = gy - placed.y
+            if 0 <= local_x < oriented.width and 0 <= local_y < oriented.height:
+                if oriented.pixel_grid[local_y][local_x] == ".":
+                    continue  # Empty cell
+                if not is_pixel_recolorable(oriented, local_x, local_y):
+                    return  # Functional pixel — locked
+                # Apply the recolor
+                self._push_undo()
+                placed.color_overrides[(local_x, local_y)] = self._recolor_material_id
+                self._modified = True
+                self._recompute_stats()
+                try:
+                    get_audio_manager().play_sfx("ui_click")
+                except Exception:
+                    pass
+                return
+
+    def _handle_recolor_material_click(self, mx: int, my: int) -> None:
+        """Select a hull material for recoloring from the right panel."""
+        all_mats = getattr(self.data_loader, "hull_materials", {})
+        hull_mats = [all_mats[mid] for mid in HULL_PIXEL_MATERIALS if mid in all_mats]
+        swatch_h = scale_y(50)
+        start_y = MATERIAL_PANEL_Y + scale_y(26)
+        pad = 4
+        for i, mat in enumerate(hull_mats):
+            sy = start_y + i * (swatch_h + pad)
+            if (
+                MATERIAL_PANEL_X <= mx < MATERIAL_PANEL_X + MATERIAL_PANEL_W
+                and sy <= my < sy + swatch_h
+            ):
+                self._recolor_material_id = mat.id
+                return
+
+    def _handle_material_panel_click(self, mx: int, my: int) -> None:
+        """Select a hull material from the panel."""
+        all_mats = getattr(self.data_loader, "hull_materials", {})
+        hull_mats = [all_mats[mid] for mid in HULL_PIXEL_MATERIALS if mid in all_mats]
+        if not hull_mats:
+            hull_mats = list(self._get_available_materials())
+
+        swatch_h = scale_y(50)
+        start_y = MATERIAL_PANEL_Y + scale_y(26)
+        pad = 4
+        for i, mat in enumerate(hull_mats):
+            sy = start_y + i * (swatch_h + pad)
+            if (
+                MATERIAL_PANEL_X <= mx < MATERIAL_PANEL_X + MATERIAL_PANEL_W
+                and sy <= my < sy + swatch_h
+            ):
                 self._selected_material_id = mat.id
                 return
 
@@ -433,8 +923,12 @@ class ShipBuilderView(BaseView):
         if material is None:
             return
 
-        ok, msg = self.grid_manager.can_place_shape(
-            shape, gx, gy, material, self.build.pixels,
+        ok, _msg = self.grid_manager.can_place_shape(
+            shape,
+            gx,
+            gy,
+            material,
+            self.build.pixels,
             materials_catalog=getattr(self.data_loader, "hull_materials", None),
         )
         if not ok:
@@ -448,9 +942,7 @@ class ShipBuilderView(BaseView):
                 if filled:
                     px, py = gx + col_idx, gy + row_idx
                     if (px, py) not in occupied:
-                        self.build.pixels.append(
-                            PlacedPixel(px, py, self._selected_material_id)
-                        )
+                        self.build.pixels.append(PlacedPixel(px, py, self._selected_material_id))
                         occupied.add((px, py))
                     # Mirror mode: place mirrored pixel
                     if self._mirror_mode:
@@ -545,16 +1037,10 @@ class ShipBuilderView(BaseView):
         """Remove the pixel at the given grid position."""
         canvas = self.build.canvas_size
         before = len(self.build.pixels)
-        self.build.pixels = [
-            p for p in self.build.pixels
-            if not (p.x == gx and p.y == gy)
-        ]
+        self.build.pixels = [p for p in self.build.pixels if not (p.x == gx and p.y == gy)]
         if self._mirror_mode:
             mx = canvas - 1 - gx
-            self.build.pixels = [
-                p for p in self.build.pixels
-                if not (p.x == mx and p.y == gy)
-            ]
+            self.build.pixels = [p for p in self.build.pixels if not (p.x == mx and p.y == gy)]
         if len(self.build.pixels) < before:
             self._modified = True
             self._recompute_stats()
@@ -564,168 +1050,192 @@ class ShipBuilderView(BaseView):
     # ------------------------------------------------------------------
 
     def _push_undo(self) -> None:
-        """Save current pixel state to undo stack."""
-        snapshot = [p.to_dict() for p in self.build.pixels]
+        """Save current build state (pixels + modules + slots) to undo stack."""
+        snapshot = {
+            "pixels": [p.to_dict() for p in self.build.pixels],
+            "modules": [m.to_dict() for m in self.build.modules],
+            "slots": [s.to_dict() for s in self.build.slots],
+        }
         self._undo_stack.append(snapshot)
         if len(self._undo_stack) > self._max_undo:
             self._undo_stack.pop(0)
         self._redo_stack.clear()
 
+    def _restore_snapshot(self, snapshot: dict | list) -> None:
+        """Restore build state from a snapshot.
+
+        Handles both new dict format (pixels + modules + slots) and
+        legacy list format (pixel dicts only, from before module support).
+        """
+        if isinstance(snapshot, list):
+            # Legacy format: plain list of pixel dicts
+            self.build.pixels = [PlacedPixel.from_dict(d) for d in snapshot]
+            self.build.modules = []
+            self.build.slots = []
+        else:
+            self.build.pixels = [PlacedPixel.from_dict(d) for d in snapshot["pixels"]]
+            self.build.modules = [PlacedModule.from_dict(d) for d in snapshot.get("modules", [])]
+            self.build.slots = [DesignatedSlot.from_dict(d) for d in snapshot.get("slots", [])]
+        self._selected_placed_module_idx = None
+        self._modified = True
+        self._recompute_stats()
+
+    def _make_current_snapshot(self) -> dict:
+        """Create a snapshot of the current build state."""
+        return {
+            "pixels": [p.to_dict() for p in self.build.pixels],
+            "modules": [m.to_dict() for m in self.build.modules],
+            "slots": [s.to_dict() for s in self.build.slots],
+        }
+
     def _undo(self) -> None:
-        """Restore previous pixel state."""
+        """Restore previous build state."""
         if not self._undo_stack:
             return
-        # Save current state to redo
-        self._redo_stack.append([p.to_dict() for p in self.build.pixels])
-        # Restore previous state
+        self._redo_stack.append(self._make_current_snapshot())
         snapshot = self._undo_stack.pop()
-        self.build.pixels = [PlacedPixel.from_dict(d) for d in snapshot]
-        self._modified = True
-        self._recompute_stats()
+        self._restore_snapshot(snapshot)
 
     def _redo(self) -> None:
-        """Restore next pixel state (after undo)."""
+        """Restore next build state (after undo)."""
         if not self._redo_stack:
             return
-        # Save current to undo
-        self._undo_stack.append([p.to_dict() for p in self.build.pixels])
-        # Restore redo state
+        self._undo_stack.append(self._make_current_snapshot())
         snapshot = self._redo_stack.pop()
-        self.build.pixels = [PlacedPixel.from_dict(d) for d in snapshot]
-        self._modified = True
-        self._recompute_stats()
+        self._restore_snapshot(snapshot)
 
-    # ------------------------------------------------------------------
-    # Slot Designator & Equipment (Phase B3)
-    # ------------------------------------------------------------------
+    # (Legacy slot designator & equipment modal removed — use EQUIP mode)
 
-    SLOT_COSTS: dict[str, int] = {
-        "weapon": 3000, "defense": 2500, "engine": 2000,
-        "utility": 1500, "core": 0,
-    }
-    SLOT_TYPES_ORDER: list[str] = ["weapon", "defense", "engine", "utility", "core"]
-
-    def _handle_slot_type_click(self, mx: int, my: int) -> bool:
-        """Handle clicks on the slot type selector panel."""
-        panel_x = MATERIAL_PANEL_X
-        panel_y = MATERIAL_PANEL_Y + MATERIAL_PANEL_H + scale_y(10)
-        item_h = scale_y(24)
-
-        for i, slot_type in enumerate(self.SLOT_TYPES_ORDER):
-            iy = panel_y + scale_y(20) + i * item_h
-            if panel_x <= mx < panel_x + MATERIAL_PANEL_W and iy <= my < iy + item_h:
-                self._slot_type_to_place = slot_type
-                return True
-        return False
-
-    def _place_slot(self, gx: int, gy: int) -> None:
-        """Place a slot at the given grid position."""
-        if not self._slot_type_to_place:
+    def _save_draft(self) -> None:
+        """Save current build as a draft (no credits charged)."""
+        max_drafts = 20
+        if len(self.player.build_drafts) >= max_drafts:
+            self._validation_warnings.append(
+                f"Draft limit reached ({max_drafts}). Delete a draft first."
+            )
             return
-        ok, msg = self.grid_manager.can_place_slot(
-            self._slot_type_to_place, gx, gy,
-            self.build.pixels, self.build.slots,
+        draft_num = len(self.player.build_drafts) + 1
+        draft_name = self.build.preset_name or f"Draft {draft_num}"
+        self.player.build_drafts.append(
+            {
+                "name": draft_name,
+                "build": self.build.to_dict(),
+            }
         )
-        if not ok:
+        logger.info(f"Saved draft: {draft_name} ({len(self.player.build_drafts)} total)")
+
+    def _share_build(self) -> None:
+        """Export current build as a shareable text code to clipboard."""
+        from spacegame.models.build_sharing import export_build_code
+
+        code = export_build_code(self.build)
+        # Copy to clipboard via pygame scrap
+        try:
+            if not pygame.scrap.get_init():
+                pygame.scrap.init()
+            pygame.scrap.put(pygame.SCRAP_TEXT, code.encode("utf-8"))
+        except Exception:
+            pass  # Clipboard not available on all platforms
+        # Show feedback
+        self._feedback_messages.append(
+            {
+                "text": f"Build code copied! ({len(code)} chars)",
+                "x": float(WINDOW_WIDTH // 2 - 80),
+                "y": float(WINDOW_HEIGHT // 2),
+                "timer": 2.0,
+                "color": Colors.GREEN,
+            }
+        )
+        try:
+            get_audio_manager().play_sfx("ui_confirm")
+        except Exception:
+            pass
+        logger.info(f"Build exported: {len(code)} chars")
+
+    def _try_import_build(self) -> None:
+        """Attempt to import a build from the text in _import_text."""
+        from spacegame.models.build_sharing import (
+            check_blueprint_availability,
+            import_build_code,
+        )
+
+        catalog = self._get_module_catalog()
+        materials = getattr(self.data_loader, "hull_materials", {})
+        build, err = import_build_code(self._import_text.strip(), catalog, materials)
+        if build is None:
+            self._import_error = err or "Invalid build code"
+            self._import_missing_blueprints = []
             return
 
-        slot = DesignatedSlot(slot_type=self._slot_type_to_place, x=gx, y=gy)
-        self.build.slots.append(slot)
+        # Check blueprint availability
+        missing = check_blueprint_availability(build, catalog, self.player.unlocked_modules)
+        if missing:
+            self._import_missing_blueprints = missing
+            self._import_error = f"{len(missing)} blueprint(s) needed"
+            # Still load the build for viewing (but can't confirm)
+            self._push_undo()
+            self.build = build
+            self.grid_manager = ShipGridManager(self.build.weight_class)
+            self._modified = True
+            self._recompute_stats()
+            self._import_modal_open = False
+            return
+
+        # All blueprints owned — load fully
+        self._push_undo()
+        self.build = build
+        self.grid_manager = ShipGridManager(self.build.weight_class)
         self._modified = True
         self._recompute_stats()
-
-    def _remove_slot_at(self, gx: int, gy: int) -> None:
-        """Remove a slot that contains the given grid position."""
-        for slot in self.build.slots:
-            if (slot.x <= gx < slot.x + slot.size
-                    and slot.y <= gy < slot.y + slot.size):
-                self.build.slots.remove(slot)
-                self._modified = True
-                self._recompute_stats()
-                return
-
-    def _try_open_equipment_modal(self, gx: int, gy: int) -> None:
-        """Open equipment browser if clicking on an existing slot."""
-        for slot in self.build.slots:
-            if (slot.x <= gx < slot.x + slot.size
-                    and slot.y <= gy < slot.y + slot.size):
-                self._open_equipment_modal(slot)
-                return
-
-    def _open_equipment_modal(self, slot: DesignatedSlot) -> None:
-        """Open the equipment browser for the given slot."""
-        self._equipment_modal_open = True
-        self._equipment_modal_slot = slot
-        self._equipment_scroll = 0
-
-        # Build available equipment list for this slot type
-        all_upgrades = getattr(self.data_loader, "upgrades", {})
-        slot_type = slot.slot_type
-
-        # Map builder slot types to upgrade slot_types
-        type_map = {
-            "weapon": ["weapon"],
-            "defense": ["defense"],
-            "engine": ["engine"],
-            "utility": ["cargo", "fuel", "mining", "scanner", "smuggling", "utility"],
-            "core": [],  # Core provides energy, no equipment
-        }
-        valid_types = type_map.get(slot_type, [])
-        self._equipment_list = [
-            u for u in all_upgrades.values()
-            if u.slot_type in valid_types
-        ]
-        # Sort by tier then price
-        self._equipment_list.sort(key=lambda u: (u.tier, u.price))
-
-    def _handle_equipment_modal_click(self, mx: int, my: int) -> None:
-        """Handle clicks within the equipment modal."""
-        modal_x = GRID_AREA_X + scale_x(50)
-        modal_y = GRID_AREA_Y + scale_y(30)
-        modal_w = GRID_AREA_W - scale_x(100)
-        modal_h = GRID_AREA_H - scale_y(60)
-
-        # Close button (top right of modal)
-        close_x = modal_x + modal_w - scale_x(30)
-        close_y = modal_y + 5
-        if close_x <= mx < close_x + scale_x(25) and close_y <= my < close_y + scale_y(20):
-            self._equipment_modal_open = False
-            return
-
-        # Equipment items
-        item_h = scale_y(40)
-        start_y = modal_y + scale_y(35) - self._equipment_scroll
-        for i, upgrade in enumerate(self._equipment_list):
-            iy = start_y + i * item_h
-            if modal_x <= mx < modal_x + modal_w and iy <= my < iy + item_h:
-                # Install this equipment (check credits)
-                if self._equipment_modal_slot:
-                    if self.player.credits >= upgrade.price:
-                        self.player.credits -= upgrade.price
-                        self._equipment_modal_slot.equipment_id = upgrade.id
-                        self._modified = True
-                        self._recompute_stats()
-                        get_audio_manager().play_sfx("trade_buy")
-                self._equipment_modal_open = False
-                return
-
-    def _get_slot_pool_remaining(self) -> dict[str, tuple[int, int]]:
-        """Get remaining slot counts by type (used, max)."""
-        pool = SLOT_POOLS.get(self.build.weight_class, {})
-        result: dict[str, tuple[int, int]] = {}
-        for slot_type in self.SLOT_TYPES_ORDER:
-            if slot_type == "core":
-                # Core: max 1
-                used = sum(1 for s in self.build.slots if s.slot_type == "core")
-                result["core"] = (used, 1)
-            else:
-                max_count = pool.get(slot_type, 0)
-                used = sum(1 for s in self.build.slots if s.slot_type == slot_type)
-                result[slot_type] = (used, max_count)
-        return result
+        self._import_modal_open = False
+        self._import_error = ""
+        self._import_missing_blueprints = []
+        self._feedback_messages.append(
+            {
+                "text": "Build imported successfully!",
+                "x": float(WINDOW_WIDTH // 2 - 70),
+                "y": float(WINDOW_HEIGHT // 2),
+                "timer": 1.5,
+                "color": Colors.GREEN,
+            }
+        )
+        try:
+            get_audio_manager().play_sfx("ui_confirm")
+        except Exception:
+            pass
 
     def _confirm_build(self) -> None:
-        """Apply the current build to the player's ship."""
+        """Apply the current build to the player's ship. Charges only the delta cost."""
+        if not self._can_confirm:
+            return
+
+        # Compute delta cost: new build cost minus what was already paid at entry
+        # Positive delta = player pays. Negative delta = player gets 80% refund.
+        REFUND_RATE = 0.80
+        new_cost = self._computed_stats.total_cost if self._computed_stats else 0
+        entry_cost = getattr(self, "_entry_cost", 0)
+        raw_delta = new_cost - entry_cost
+
+        if raw_delta > 0:
+            # Player is adding — charge full delta
+            if raw_delta > self.player.credits:
+                self._validation_warnings.append(
+                    f"Cannot afford changes ({raw_delta:,} CR needed, you have {self.player.credits:,} CR)"
+                )
+                return
+            self.player.credits -= raw_delta
+            logger.info(
+                f"Build cost: {raw_delta:,} CR charged (new: {new_cost:,}, was: {entry_cost:,})"
+            )
+        elif raw_delta < 0:
+            # Player is removing — refund 80% of the reduction
+            refund = int(abs(raw_delta) * REFUND_RATE)
+            if refund > 0:
+                self.player.credits += refund
+                logger.info(f"Build refund: +{refund:,} CR (80% of {abs(raw_delta):,} removed)")
+        else:
+            logger.info("Build confirmed (no cost change)")
+
         self.player.ship.set_build(self.build)
         # Update hull/shields to match new build stats
         if self._computed_stats:
@@ -740,6 +1250,7 @@ class ShipBuilderView(BaseView):
         composite = self.player.ship.composite
         if composite and hasattr(composite, "get_surface"):
             from spacegame.engine.sprites import res_scale
+
             self._confirm_anim_surface = composite.get_surface(scale=res_scale(3))
         # Spark burst at grid center
         cx = GRID_AREA_X + GRID_AREA_W // 2
@@ -764,20 +1275,107 @@ class ShipBuilderView(BaseView):
             elif stats.weight_ratio > 0.95:
                 warnings.append("Near weight limit.")
 
-        has_core = any(s.slot_type == "core" for s in self.build.slots)
-        if not has_core and len(self.build.pixels) > 0:
-            warnings.append("No Core slot — ship has no energy system.")
+        catalog = self._get_module_catalog()
+        has_modules = len(self.build.modules) > 0
+        has_pixels = len(self.build.pixels) > 0
+        has_content = has_modules or has_pixels
 
-        has_weapon_or_engine = any(
-            s.slot_type in ("weapon", "engine") for s in self.build.slots
-        )
-        if not has_weapon_or_engine and len(self.build.pixels) > 0:
-            warnings.append("No weapons or engines — ship can't fight or flee.")
+        # Module-based validation (primary system)
+        if has_modules:
+            req_ok, req_msg = validate_requirements(self.build, catalog)
+            if not req_ok:
+                warnings.append(req_msg)
 
-        if len(self.build.pixels) == 0:
-            warnings.append("Empty build. Place shapes to design your ship.")
+            conn_ok, conn_msg = validate_connectivity(self.build, catalog)
+            if not conn_ok:
+                warnings.append(f"Disconnected: {conn_msg}")
+
+        # Legacy slot-based warnings (for old hull-only builds)
+        elif has_pixels:
+            has_core = any(s.slot_type == "core" for s in self.build.slots)
+            if not has_core:
+                warnings.append("No Core slot — ship has no energy system.")
+            has_weapon_or_engine = any(
+                s.slot_type in ("weapon", "engine") for s in self.build.slots
+            )
+            if not has_weapon_or_engine:
+                warnings.append("No weapons or engines — ship can't fight or flee.")
+
+        if not has_content:
+            warnings.append("Empty build. Place modules to design your ship.")
+
+        # Advisory warnings (non-blocking, informational)
+        advisories: list[str] = []
+        if has_modules and len(warnings) == 0:
+            try:
+                from spacegame.models.ship_module import resolve_all_pixels
+                from spacegame.models.ship_physics import (
+                    BalanceRating,
+                    compute_center_of_mass,
+                    compute_hull_efficiency,
+                )
+
+                materials = getattr(self.data_loader, "hull_materials", {})
+                _, _, offset_pct, rating = compute_center_of_mass(
+                    self.build,
+                    materials,
+                    catalog,
+                )
+                if rating == BalanceRating.OFF_BALANCE:
+                    advisories.append(
+                        f"Center of mass {offset_pct:.0f}% off-center (handling penalty)"
+                    )
+                elif rating == BalanceRating.SEVERELY_OFF:
+                    advisories.append(
+                        f"Center of mass {offset_pct:.0f}% off-center (severe penalty)"
+                    )
+
+                all_pixels = resolve_all_pixels(self.build, catalog)
+                coords = [(p.x, p.y) for p in all_pixels]
+                if coords:
+                    _, _, efficiency = compute_hull_efficiency(coords)
+                    if efficiency < 0.15:
+                        advisories.append("Low hull efficiency: ship is mostly exposed surface")
+
+                # Check if cockpit is on exterior
+                for pm in self.build.modules:
+                    mod = catalog.get(pm.module_id)
+                    if mod and mod.category == "cockpit":
+                        cpx = resolve_placed_module(pm, catalog)
+                        coord_set = {(p.x, p.y) for p in all_pixels}
+                        for cp in cpx:
+                            has_empty = any(
+                                (cp.x + dx, cp.y + dy) not in coord_set
+                                for dx, dy in ((0, 1), (0, -1), (1, 0), (-1, 0))
+                            )
+                            if has_empty:
+                                advisories.append("Cockpit is exposed on the hull exterior")
+                                break
+                        break
+            except ImportError:
+                pass
 
         self._validation_warnings = warnings
+        self._advisory_warnings = advisories
+        was_confirmable = self._can_confirm
+        self._can_confirm = has_content and len(warnings) == 0
+
+        # Play positive feedback when all requirements first met
+        if self._can_confirm and not was_confirmable and has_modules:
+            try:
+                get_audio_manager().play_sfx("achievement")
+            except Exception:
+                pass
+            ox, oy = self._get_grid_origin()
+            self._feedback_messages.append(
+                {
+                    "text": "All requirements met!",
+                    "x": float(ox + GRID_AREA_W // 2 - 50),
+                    "y": float(oy + GRID_AREA_H // 2),
+                    "timer": 1.5,
+                    "color": Colors.GREEN,
+                }
+            )
 
     def _check_builder_hint_triggers(self) -> None:
         """Check if any builder tutorial hints should fire (QA Fix #7).
@@ -787,31 +1385,79 @@ class ShipBuilderView(BaseView):
         """
         flags = self.player.dialogue_flags if hasattr(self.player, "dialogue_flags") else {}
 
-        # After first shape placed → shapes hint
-        if (len(self.build.pixels) > 0
-                and not flags.get("builder_hint_shapes")
-                and flags.get("builder_hint_welcome_seen", False)):
+        # Module builder hints (Shipbuilder Upgrade)
+        if self._builder_mode == "module":
+            # First entry into module builder
+            if not flags.get("builder_module_welcome_seen"):
+                self.player.dialogue_flags["builder_module_welcome_seen"] = True
+                self._pending_hint = "builder_module_welcome"
+                return
+
+            # After placing first module (cockpit likely) → engine hint
+            has_cockpit = any(
+                self._get_module_catalog().get(m.module_id, None) is not None
+                and self._get_module_catalog()[m.module_id].category == "cockpit"
+                for m in self.build.modules
+            )
+            has_engine = any(
+                self._get_module_catalog().get(m.module_id, None) is not None
+                and self._get_module_catalog()[m.module_id].category == "engine"
+                for m in self.build.modules
+            )
+            if has_cockpit and not has_engine and not flags.get("builder_module_engine_seen"):
+                self.player.dialogue_flags["builder_module_engine_seen"] = True
+                self._pending_hint = "builder_module_engine"
+                return
+
+            # After placing 2+ modules → requirements hint
+            if len(self.build.modules) >= 2 and not flags.get("builder_module_requirements_seen"):
+                self.player.dialogue_flags["builder_module_requirements_seen"] = True
+                self._pending_hint = "builder_module_requirements"
+                return
+
+            # When all requirements met → confirm hint
+            if self._can_confirm and not flags.get("builder_module_confirm_seen"):
+                self.player.dialogue_flags["builder_module_confirm_seen"] = True
+                self._pending_hint = "builder_module_confirm"
+                return
+
+        # Hull mode hint
+        if (
+            self._builder_mode == "hull"
+            and not flags.get("builder_module_hull_seen")
+            and flags.get("builder_module_welcome_seen", False)
+        ):
+            self.player.dialogue_flags["builder_module_hull_seen"] = True
+            self._pending_hint = "builder_module_hull"
+            return
+
+        # Legacy shape-based hints
+        if (
+            len(self.build.pixels) > 0
+            and not flags.get("builder_hint_shapes")
+            and flags.get("builder_hint_welcome_seen", False)
+        ):
             self.player.dialogue_flags["builder_hint_shapes"] = True
             self._pending_hint = "builder_shapes"
 
-        # After first tool switch → tools hint
-        if (self._active_tool != "stamp"
-                and not flags.get("builder_hint_tools")):
+        if self._active_tool != "stamp" and not flags.get("builder_hint_tools"):
             self.player.dialogue_flags["builder_hint_tools"] = True
             self._pending_hint = "builder_tools"
 
-        # After first slot placed → slots hint
-        if (len(self.build.slots) > 0
-                and not flags.get("builder_hint_slots")):
-            self.player.dialogue_flags["builder_hint_slots"] = True
-            self._pending_hint = "builder_slots"
+        # Legacy slot hint removed — equipment managed via EQUIP mode
 
     def _recompute_stats(self) -> None:
         materials = getattr(self.data_loader, "hull_materials", {})
         equipment = getattr(self.data_loader, "upgrades", {})
+        module_catalog = self._get_module_catalog()
         self._computed_stats = ShipStatsComputer.compute(
-            self.build, materials, equipment,
+            self.build,
+            materials,
+            equipment,
+            module_catalog=module_catalog,
         )
+        # Invalidate physics overlay caches
+        self._cached_integrity = None
 
     def _get_filtered_shapes(self) -> list[HullShape]:
         shapes = list(getattr(self.data_loader, "hull_shapes", {}).values())
@@ -885,6 +1531,7 @@ class ShipBuilderView(BaseView):
         if self._particle_timer > 0.3:
             self._particle_timer = 0.0
             import random
+
             spark_x = GRID_AREA_X + random.randint(0, GRID_AREA_W)
             spark_y = GRID_AREA_Y + random.randint(0, GRID_AREA_H)
             self.particles.emit(spark_x, spark_y, FORGE_FLAME)
@@ -898,6 +1545,16 @@ class ShipBuilderView(BaseView):
         # Update validation warnings
         self._update_validation_warnings()
 
+        # Placement flash timer (Phase 10 visual feedback)
+        if self._placement_flash_timer > 0:
+            self._placement_flash_timer = max(0, self._placement_flash_timer - dt)
+
+        # Floating feedback messages
+        for msg in self._feedback_messages:
+            msg["timer"] -= dt
+            msg["y"] -= 25 * dt  # Rise upward
+        self._feedback_messages = [m for m in self._feedback_messages if m["timer"] > 0]
+
     # ------------------------------------------------------------------
     # Rendering
     # ------------------------------------------------------------------
@@ -906,48 +1563,79 @@ class ShipBuilderView(BaseView):
         self.background.render(screen)
         screen.blit(self._bg_dim, (0, 0))
 
-        # Header
+        # Header with mode toggle
         title = self.title_font.render(
             f"DRYDOCK — {self.build.weight_class.upper()} ({self.build.canvas_w}×{self.build.canvas_h})",
-            True, Colors.TEXT_HIGHLIGHT,
+            True,
+            Colors.TEXT_HIGHLIGHT,
         )
-        screen.blit(title, (WINDOW_WIDTH // 2 - title.get_width() // 2, 10))
+        screen.blit(title, (WINDOW_WIDTH // 2 - title.get_width() // 2, 6))
+
+        # Mode toggle indicator (below title)
+        self._render_mode_toggle(screen)
 
         # Credits display (top right)
         credits_text = self.small_font.render(
-            f"Credits: {self.player.credits:,} CR", True, Colors.TEXT_PRIMARY,
+            f"Credits: {self.player.credits:,} CR",
+            True,
+            Colors.TEXT_PRIMARY,
         )
         screen.blit(credits_text, (WINDOW_WIDTH - credits_text.get_width() - scale_x(20), 14))
 
         # Main panels
         self._render_grid(screen)
-        self._render_shape_palette(screen)
-        self._render_material_panel(screen)
-        if self._active_tool == "slot":
-            self._render_slot_type_panel(screen)
+        if self._builder_mode == "module":
+            if getattr(self, "_recolor_mode", False):
+                self._render_module_catalog(screen)
+                self._render_recolor_panel(screen)
+            else:
+                self._render_module_catalog(screen)
+                self._render_requirements_checklist(screen)
+        elif self._builder_mode == "equip":
+            self._render_equip_slot_list(screen)
+            self._render_equip_panel(screen)
+        else:
+            self._render_shape_palette(screen)
+            self._render_material_panel(screen)
         self._render_stats_panel(screen)
+
+        # Floating feedback messages (Phase 10)
+        for msg in self._feedback_messages:
+            alpha = int(255 * min(1.0, msg["timer"] / 0.5))
+            text_surf = self.label_font.render(msg["text"], True, msg["color"])
+            text_surf.set_alpha(alpha)
+            screen.blit(text_surf, (int(msg["x"]), int(msg["y"])))
 
         # Ambient particles
         self.particles.render(screen)
 
-        # Validation warnings (above stats panel)
-        if self._validation_warnings:
-            warn_y = STATS_PANEL_Y - scale_y(20) * len(self._validation_warnings)
-            for warning in self._validation_warnings:
-                warn_surf = self.label_font.render(warning, True, Colors.YELLOW)
+        # Validation warnings and advisories (above stats panel)
+        all_warnings = self._validation_warnings + self._advisory_warnings
+        if all_warnings:
+            warn_y = STATS_PANEL_Y - scale_y(18) * len(all_warnings)
+            for i, warning in enumerate(all_warnings):
+                is_advisory = i >= len(self._validation_warnings)
+                color = (140, 160, 200) if is_advisory else Colors.YELLOW
+                prefix = "\u26a0 " if not is_advisory else "\u2139 "
+                warn_surf = self.label_font.render(prefix + warning, True, color)
                 screen.blit(warn_surf, (scale_x(20), warn_y))
-                warn_y += scale_y(18)
+                warn_y += scale_y(16)
 
         # Stat comparison preview (when hovering shape in palette)
-        self._render_stat_preview(screen)
+        if self._builder_mode == "hull":
+            self._render_stat_preview(screen)
 
-        # Equipment modal (overlay)
-        if self._equipment_modal_open:
-            self._render_equipment_modal(screen)
+        # Module hover tooltip (when hovering placed module on grid)
+        if self._builder_mode == "module":
+            self._render_module_tooltip(screen)
 
         # Confirmation animation (overlay)
         if self._confirm_anim_timer > 0:
             self._render_confirm_animation(screen)
+
+        # Import modal (overlay)
+        if getattr(self, "_import_modal_open", False):
+            self._render_import_modal(screen)
 
         # Help overlay (on top of everything)
         if getattr(self, "_help_overlay_open", False):
@@ -978,15 +1666,23 @@ class ShipBuilderView(BaseView):
             line_surf.fill((100, 120, 160, alpha_line))
             screen.blit(line_surf, (ox, ly))
 
-        # Engine rear zone highlight (Phase B3 — when placing engine slots)
-        if self._active_tool == "slot" and self._slot_type_to_place == "engine":
-            rear_y = int(ch * 0.75)
-            zone_h = (canvas - rear_y) * cell
-            zone_surf = pygame.Surface((grid_w, zone_h), pygame.SRCALPHA)
-            zone_surf.fill((200, 140, 40, 25))
-            screen.blit(zone_surf, (ox, oy + rear_y * cell))
+        # Orientation cues: BOW/STERN labels and engine zone
+        # Ships face RIGHT (bow = right, stern = left)
+        stern_label = self.label_font.render("STERN", True, (120, 90, 60))
+        screen.blit(stern_label, (ox + 3, oy - stern_label.get_height() - 2))
+        bow_label = self.label_font.render("BOW", True, (120, 90, 60))
+        screen.blit(
+            bow_label, (ox + grid_w - bow_label.get_width() - 3, oy - bow_label.get_height() - 2)
+        )
 
-        # Filled pixels (material colors)
+        # Engine zone tint (left 30% of canvas = stern/rear)
+        engine_zone_w = int(cw * 0.30) * cell
+        if engine_zone_w > 0:
+            zone_surf = pygame.Surface((engine_zone_w, grid_h), pygame.SRCALPHA)
+            zone_surf.fill((200, 140, 40, 15))
+            screen.blit(zone_surf, (ox, oy))
+
+        # Filled pixels — hull pixels (material colors)
         materials = getattr(self.data_loader, "hull_materials", {})
         for pixel in self.build.pixels:
             mat = materials.get(pixel.material_id)
@@ -995,38 +1691,82 @@ class ShipBuilderView(BaseView):
             py = oy + pixel.y * cell
             pygame.draw.rect(screen, color, (px + 1, py + 1, cell - 1, cell - 1))
 
-        # Slot indicators
-        slot_colors = {
-            "weapon": (200, 60, 60), "defense": (60, 120, 200),
-            "engine": (200, 140, 40), "utility": (60, 180, 80),
-            "core": (200, 180, 60),
-        }
-        for slot in self.build.slots:
-            color = slot_colors.get(slot.slot_type, (150, 150, 150))
-            sx = ox + slot.x * cell
-            sy = oy + slot.y * cell
-            size = slot.size * cell
-            slot_surf = pygame.Surface((size, size), pygame.SRCALPHA)
-            slot_surf.fill((*color, 60))
-            screen.blit(slot_surf, (sx, sy))
-            pygame.draw.rect(screen, color, (sx, sy, size, size), 1)
+        # Module pixels — rendered from placed modules
+        catalog = self._get_module_catalog()
+        for mod_idx, placed_mod in enumerate(self.build.modules):
+            if placed_mod.module_id not in catalog:
+                continue
+            mod_pixels = resolve_placed_module(placed_mod, catalog)
+            is_selected = mod_idx == self._selected_placed_module_idx
+            for mp in mod_pixels:
+                mat = materials.get(mp.material_id)
+                color = mat.color_primary if mat else (128, 128, 128)
+                px = ox + mp.x * cell
+                py = oy + mp.y * cell
+                pygame.draw.rect(screen, color, (px + 1, py + 1, cell - 1, cell - 1))
+            # Module boundary outline (dashed effect via corners)
+            if is_selected or self._builder_mode == "module":
+                module = catalog[placed_mod.module_id]
+                oriented = module
+                if placed_mod.flipped:
+                    oriented = oriented.flipped()
+                if placed_mod.rotation:
+                    oriented = oriented.rotated(placed_mod.rotation)
+                bx = ox + placed_mod.x * cell
+                by = oy + placed_mod.y * cell
+                bw = oriented.width * cell
+                bh = oriented.height * cell
+                border_color = (255, 220, 80) if is_selected else (100, 120, 160, 80)
+                border_width = 2 if is_selected else 1
+                pygame.draw.rect(screen, border_color, (bx, by, bw, bh), border_width)
 
-        # Ghost preview (selected shape at mouse position)
+        # Legacy slot indicators removed — equipment managed via EQUIP mode
+
+        # Ghost preview — module mode or hull mode
         mouse_pos = pygame.mouse.get_pos()
         grid_pos = self._screen_to_grid(mouse_pos[0], mouse_pos[1])
-        if grid_pos and self._selected_shape:
+
+        if grid_pos and self._builder_mode == "module" and self._selected_module_id:
+            # Module ghost preview
+            oriented = self._get_oriented_preview_module()
+            if oriented:
+                placed = PlacedModule(
+                    module_id=self._selected_module_id,
+                    x=grid_pos[0],
+                    y=grid_pos[1],
+                    rotation=self._module_rotation,
+                    flipped=self._module_flipped,
+                )
+                ok, _ = can_place_module(self.build, placed, catalog, materials)
+                for lx, ly, mat_char in oriented.filled_pixels():
+                    gx = grid_pos[0] + lx
+                    gy = grid_pos[1] + ly
+                    if 0 <= gx < cw and 0 <= gy < ch:
+                        px = ox + gx * cell
+                        py = oy + gy * cell
+                        mat_id = oriented.material_map.get(mat_char, "")
+                        mat = materials.get(mat_id)
+                        base_color = mat.color_primary if mat else (100, 200, 100)
+                        preview_color = base_color if ok else (200, 60, 60)
+                        ghost_surf = pygame.Surface((cell - 1, cell - 1), pygame.SRCALPHA)
+                        ghost_surf.fill((*preview_color, 120))
+                        screen.blit(ghost_surf, (px + 1, py + 1))
+
+        elif grid_pos and self._builder_mode == "hull" and self._selected_shape:
+            # Shape ghost preview (existing hull mode)
             shape = self._get_transformed_shape()
             mat = self._get_selected_material()
             ghost_color = mat.color_primary if mat else (100, 200, 100)
-
-            # Check if placement is valid
             valid = True
             if mat:
                 ok, _ = self.grid_manager.can_place_shape(
-                    shape, grid_pos[0], grid_pos[1], mat, self.build.pixels,
+                    shape,
+                    grid_pos[0],
+                    grid_pos[1],
+                    mat,
+                    self.build.pixels,
                 )
                 valid = ok
-
             for row_idx, row in enumerate(shape.pixel_mask):
                 for col_idx, filled in enumerate(row):
                     if filled:
@@ -1039,6 +1779,23 @@ class ShipBuilderView(BaseView):
                             ghost_surf = pygame.Surface((cell - 1, cell - 1), pygame.SRCALPHA)
                             ghost_surf.fill((*preview_color, 100))
                             screen.blit(ghost_surf, (px + 1, py + 1))
+
+        # Placement flash (Phase 10 visual feedback)
+        if self._placement_flash_timer > 0:
+            from spacegame.engine.easing import ease_out_quad
+
+            fx, fy = self._placement_flash_pos
+            flash_t = self._placement_flash_timer / 0.15  # 1→0 as flash fades
+            flash_alpha = int(180 * ease_out_quad(flash_t))
+            flash_surf = pygame.Surface((cell * 3, cell * 3), pygame.SRCALPHA)
+            flash_surf.fill((255, 255, 255, flash_alpha))
+            screen.blit(flash_surf, (ox + (fx - 1) * cell, oy + (fy - 1) * cell))
+
+        # Physics overlays (Phase 6)
+        if self._show_integrity_overlay:
+            self._render_integrity_overlay(screen, ox, oy, cell, cw, ch)
+        if self._show_com_overlay:
+            self._render_com_overlay(screen, ox, oy, cell)
 
         # Grid border
         pygame.draw.rect(screen, Colors.UI_BORDER, (ox - 1, oy - 1, grid_w + 2, grid_h + 2), 1)
@@ -1053,7 +1810,14 @@ class ShipBuilderView(BaseView):
 
         # Category tabs
         tab_y = SHAPE_PANEL_Y + 5
-        tab_labels = {"all": "All", "basic": "B", "intermediate": "I", "advanced": "A", "exotic": "X", "faction": "F"}
+        tab_labels = {
+            "all": "All",
+            "basic": "B",
+            "intermediate": "I",
+            "advanced": "A",
+            "exotic": "X",
+            "faction": "F",
+        }
         for i, cat in enumerate(self._shape_categories):
             tx = SHAPE_PANEL_X + 5 + (i % 6) * scale_x(28)
             ty = tab_y + scale_y(18)
@@ -1066,7 +1830,9 @@ class ShipBuilderView(BaseView):
         shapes = self._get_filtered_shapes()
         item_h = scale_y(36)
         start_y = SHAPE_PANEL_Y + scale_y(42) - self._shape_scroll_offset
-        clip_rect = pygame.Rect(SHAPE_PANEL_X, SHAPE_PANEL_Y + scale_y(38), SHAPE_PANEL_W, SHAPE_PANEL_H - scale_y(42))
+        clip_rect = pygame.Rect(
+            SHAPE_PANEL_X, SHAPE_PANEL_Y + scale_y(38), SHAPE_PANEL_W, SHAPE_PANEL_H - scale_y(42)
+        )
         screen.set_clip(clip_rect)
 
         for i, shape in enumerate(shapes):
@@ -1074,13 +1840,18 @@ class ShipBuilderView(BaseView):
             if iy + item_h < clip_rect.top or iy > clip_rect.bottom:
                 continue
 
-            is_selected = (self._selected_shape and self._selected_shape.id == shape.id)
+            is_selected = self._selected_shape and self._selected_shape.id == shape.id
             bg_color = (40, 50, 80) if is_selected else (20, 25, 40)
-            pygame.draw.rect(screen, bg_color,
-                             (SHAPE_PANEL_X + 4, iy, SHAPE_PANEL_W - 8, item_h - 2))
+            pygame.draw.rect(
+                screen, bg_color, (SHAPE_PANEL_X + 4, iy, SHAPE_PANEL_W - 8, item_h - 2)
+            )
             if is_selected:
-                pygame.draw.rect(screen, Colors.TEXT_HIGHLIGHT,
-                                 (SHAPE_PANEL_X + 4, iy, SHAPE_PANEL_W - 8, item_h - 2), 1)
+                pygame.draw.rect(
+                    screen,
+                    Colors.TEXT_HIGHLIGHT,
+                    (SHAPE_PANEL_X + 4, iy, SHAPE_PANEL_W - 8, item_h - 2),
+                    1,
+                )
 
             # Shape name
             name = self.tiny_font.render(shape.name, True, Colors.TEXT_PRIMARY)
@@ -1089,7 +1860,8 @@ class ShipBuilderView(BaseView):
             # Pixel count
             info = self.label_font.render(
                 f"{shape.pixel_count}px {shape.width}×{shape.height}",
-                True, Colors.TEXT_SECONDARY,
+                True,
+                Colors.TEXT_SECONDARY,
             )
             screen.blit(info, (SHAPE_PANEL_X + 8, iy + 18))
 
@@ -1100,48 +1872,747 @@ class ShipBuilderView(BaseView):
                 for cx, filled in enumerate(row):
                     if filled:
                         pygame.draw.rect(
-                            screen, Colors.TEXT_SECONDARY,
-                            (preview_x + cx * preview_cell, iy + 4 + ry * preview_cell,
-                             preview_cell, preview_cell),
+                            screen,
+                            Colors.TEXT_SECONDARY,
+                            (
+                                preview_x + cx * preview_cell,
+                                iy + 4 + ry * preview_cell,
+                                preview_cell,
+                                preview_cell,
+                            ),
                         )
 
         screen.set_clip(None)
 
     def _render_material_panel(self, screen: pygame.Surface) -> None:
-        """Render the material selection panel on the right."""
-        draw_panel(screen, (MATERIAL_PANEL_X, MATERIAL_PANEL_Y, MATERIAL_PANEL_W, MATERIAL_PANEL_H), alpha=200)
+        """Render the hull material panel on the right (hull mode)."""
+        draw_panel(
+            screen,
+            (MATERIAL_PANEL_X, MATERIAL_PANEL_Y, MATERIAL_PANEL_W, MATERIAL_PANEL_H),
+            alpha=200,
+        )
 
-        title = self.small_font.render("MATERIALS", True, Colors.TEXT_HIGHLIGHT)
+        title = self.small_font.render("HULL MATERIAL", True, Colors.TEXT_HIGHLIGHT)
         screen.blit(title, (MATERIAL_PANEL_X + 8, MATERIAL_PANEL_Y + 6))
 
-        materials = self._get_available_materials()
-        item_h = scale_y(30)
-        start_y = MATERIAL_PANEL_Y + scale_y(25) - self._material_scroll_offset
+        # Show only the 4 hull materials as large swatches
+        all_mats = getattr(self.data_loader, "hull_materials", {})
+        hull_mats = [all_mats[mid] for mid in HULL_PIXEL_MATERIALS if mid in all_mats]
+        if not hull_mats:
+            # Fallback to old behavior if hull materials not loaded
+            hull_mats = list(self._get_available_materials())
 
-        for i, mat in enumerate(materials):
-            iy = start_y + i * item_h
-            if iy + item_h < MATERIAL_PANEL_Y or iy > MATERIAL_PANEL_Y + MATERIAL_PANEL_H:
-                continue
+        swatch_h = scale_y(50)
+        start_y = MATERIAL_PANEL_Y + scale_y(26)
+        pad = 4
 
+        for i, mat in enumerate(hull_mats):
+            sy = start_y + i * (swatch_h + pad)
             is_selected = mat.id == self._selected_material_id
-            bg_color = (40, 50, 80) if is_selected else (20, 25, 40)
-            pygame.draw.rect(screen, bg_color,
-                             (MATERIAL_PANEL_X + 4, iy, MATERIAL_PANEL_W - 8, item_h - 2))
+
+            # Background
+            bg_color = (45, 60, 100) if is_selected else (20, 25, 40)
+            pygame.draw.rect(
+                screen,
+                bg_color,
+                (MATERIAL_PANEL_X + 4, sy, MATERIAL_PANEL_W - 8, swatch_h),
+                border_radius=4,
+            )
             if is_selected:
-                pygame.draw.rect(screen, Colors.TEXT_HIGHLIGHT,
-                                 (MATERIAL_PANEL_X + 4, iy, MATERIAL_PANEL_W - 8, item_h - 2), 1)
+                pygame.draw.rect(
+                    screen,
+                    Colors.TEXT_HIGHLIGHT,
+                    (MATERIAL_PANEL_X + 4, sy, MATERIAL_PANEL_W - 8, swatch_h),
+                    2,
+                    border_radius=4,
+                )
 
-            # Color swatch
-            pygame.draw.rect(screen, mat.color_primary,
-                             (MATERIAL_PANEL_X + 8, iy + 4, scale_x(14), item_h - 10))
+            # Large color swatch
+            swatch_w = scale_x(30)
+            pygame.draw.rect(
+                screen,
+                mat.color_primary,
+                (MATERIAL_PANEL_X + 10, sy + 6, swatch_w, swatch_h - 12),
+                border_radius=2,
+            )
 
-            # Name
+            # Name (larger text)
+            text_x = MATERIAL_PANEL_X + 14 + swatch_w
             name = self.tiny_font.render(mat.name, True, Colors.TEXT_PRIMARY)
-            screen.blit(name, (MATERIAL_PANEL_X + scale_x(26), iy + 2))
+            screen.blit(name, (text_x, sy + 4))
 
-            # Cost
-            cost = self.label_font.render(f"{mat.cost_per_pixel}/px", True, Colors.TEXT_SECONDARY)
-            screen.blit(cost, (MATERIAL_PANEL_X + scale_x(26), iy + 15))
+            # Stats summary
+            stats_parts = []
+            if mat.hull_per_pixel > 0:
+                stats_parts.append(f"HP:{mat.hull_per_pixel:.1f}")
+            if mat.armor_per_pixel > 0:
+                stats_parts.append(f"Arm:{mat.armor_per_pixel:.2f}")
+            if mat.evasion_per_pixel > 0:
+                stats_parts.append(f"Eva:{mat.evasion_per_pixel:.2f}")
+            if stats_parts:
+                stats_text = self.label_font.render(
+                    "  ".join(stats_parts), True, Colors.TEXT_SECONDARY
+                )
+                screen.blit(stats_text, (text_x, sy + 18))
+
+            # Weight and cost
+            info = self.label_font.render(
+                f"W:{mat.weight_per_pixel:.2f}  {mat.cost_per_pixel}cr/px",
+                True,
+                (100, 110, 130),
+            )
+            screen.blit(info, (text_x, sy + 32))
+
+        # Tool hint at bottom
+        tool_y = start_y + len(hull_mats) * (swatch_h + pad) + scale_y(8)
+        hint = self.label_font.render(
+            f"Active: {self._active_tool.upper()} [{self._active_tool[0].upper()}]",
+            True,
+            (100, 110, 140),
+        )
+        screen.blit(hint, (MATERIAL_PANEL_X + 8, tool_y))
+        mirror_hint = self.label_font.render(
+            f"Mirror [X]: {'ON' if self._mirror_mode else 'OFF'}",
+            True,
+            Colors.GREEN if self._mirror_mode else (80, 90, 110),
+        )
+        screen.blit(mirror_hint, (MATERIAL_PANEL_X + 8, tool_y + scale_y(14)))
+
+    # ------------------------------------------------------------------
+    # Module Mode Rendering (Phase 4)
+    # ------------------------------------------------------------------
+
+    def _render_mode_toggle(self, screen: pygame.Surface) -> None:
+        """Render the MODULE / HULL / EQUIP mode toggle in the header area."""
+        toggle_y = scale_y(30)
+        center_x = WINDOW_WIDTH // 2
+        btn_w = scale_x(70)
+        btn_h = scale_y(20)
+        gap = 4
+        total_w = btn_w * 3 + gap * 2
+        start_x = center_x - total_w // 2
+
+        modes = [
+            ("module", "MODULES"),
+            ("hull", "HULL"),
+            ("equip", "EQUIP"),
+        ]
+        for i, (mode_id, label_text) in enumerate(modes):
+            bx = start_x + i * (btn_w + gap)
+            is_active = self._builder_mode == mode_id
+            bg = (40, 80, 140) if is_active else (30, 35, 50)
+            border = Colors.TEXT_HIGHLIGHT if is_active else (60, 70, 90)
+            pygame.draw.rect(screen, bg, (bx, toggle_y, btn_w, btn_h), border_radius=3)
+            pygame.draw.rect(screen, border, (bx, toggle_y, btn_w, btn_h), 1, border_radius=3)
+            label = self.label_font.render(
+                label_text, True, Colors.TEXT_PRIMARY if is_active else Colors.TEXT_SECONDARY
+            )
+            screen.blit(label, (bx + btn_w // 2 - label.get_width() // 2, toggle_y + 3))
+
+        # Tab hint
+        hint = self.label_font.render("[Tab]", True, (80, 90, 110))
+        screen.blit(hint, (start_x + total_w + 6, toggle_y + 4))
+
+        # Frame variant selector (Medium+ only)
+        from spacegame.models.ship_build import FRAME_VARIANTS
+
+        if self.build.weight_class in FRAME_VARIANTS:
+            frame_x = scale_x(20)
+            frame_y = toggle_y
+            frame_btn_w = scale_x(42)
+            frame_h = scale_y(20)
+            variants = [("default", "Std"), ("wide", "Wide"), ("tall", "Tall")]
+            frame_label = self.label_font.render("Frame:", True, (100, 110, 130))
+            screen.blit(frame_label, (frame_x, frame_y + 3))
+            btn_start_x = frame_x + frame_label.get_width() + 4
+            self._frame_variant_rects = {}
+            for i, (variant_key, label) in enumerate(variants):
+                bx = btn_start_x + i * (frame_btn_w + 2)
+                current = self.build.frame_variant or "default"
+                is_active = variant_key == current
+                bg = (40, 80, 140) if is_active else (25, 30, 45)
+                border = Colors.TEXT_HIGHLIGHT if is_active else (50, 55, 70)
+                rect = pygame.Rect(bx, frame_y, frame_btn_w, frame_h)
+                pygame.draw.rect(screen, bg, rect, border_radius=2)
+                pygame.draw.rect(screen, border, rect, 1, border_radius=2)
+                v_label = self.label_font.render(
+                    label, True, Colors.TEXT_PRIMARY if is_active else Colors.TEXT_SECONDARY
+                )
+                screen.blit(
+                    v_label, (bx + frame_btn_w // 2 - v_label.get_width() // 2, frame_y + 3)
+                )
+                self._frame_variant_rects[variant_key] = rect
+
+    def _render_module_catalog(self, screen: pygame.Surface) -> None:
+        """Render the module catalog panel (left side, module mode)."""
+        panel_x = SHAPE_PANEL_X
+        panel_y = SHAPE_PANEL_Y
+        panel_w = SHAPE_PANEL_W
+        panel_h = SHAPE_PANEL_H
+        draw_panel(screen, (panel_x, panel_y, panel_w, panel_h), alpha=200)
+
+        # Title
+        title = self.small_font.render("MODULES", True, Colors.TEXT_HIGHLIGHT)
+        screen.blit(title, (panel_x + 8, panel_y + 6))
+
+        # Category filter tabs — two rows of 4 with item counts
+        catalog = self._get_module_catalog()
+        unlocked = self.player.unlocked_modules
+        cat_counts: dict[str, int] = {"all": 0}
+        for mid in unlocked:
+            mod = catalog.get(mid)
+            if mod:
+                cat_counts["all"] = cat_counts.get("all", 0) + 1
+                cat_counts[mod.category] = cat_counts.get(mod.category, 0) + 1
+
+        tab_y_start = panel_y + 22
+        tab_h = scale_y(16)
+        tab_row_gap = 2
+        tab_labels = {
+            "all": "All",
+            "cockpit": "Cockpit",
+            "engine": "Engine",
+            "weapon": "Weapon",
+            "shield": "Shield",
+            "cargo": "Cargo",
+            "utility": "Utility",
+            "structural": "Struct",
+        }
+        tabs_per_row = 4
+        tab_pad = 3
+        tab_w = (panel_w - tab_pad * 2 - (tabs_per_row - 1) * 2) // tabs_per_row
+        for i, cat in enumerate(self._module_categories):
+            row = i // tabs_per_row
+            col = i % tabs_per_row
+            tx = panel_x + tab_pad + col * (tab_w + 2)
+            ty = tab_y_start + row * (tab_h + tab_row_gap)
+            active = cat == self._module_category_filter
+            bg = (50, 70, 110) if active else (25, 30, 45)
+            pygame.draw.rect(screen, bg, (tx, ty, tab_w, tab_h), border_radius=2)
+            count = cat_counts.get(cat, 0)
+            label_text = f"{tab_labels.get(cat, cat[:5])} {count}"
+            label = self.label_font.render(
+                label_text, True, Colors.TEXT_PRIMARY if active else Colors.TEXT_SECONDARY
+            )
+            screen.blit(label, (tx + tab_w // 2 - label.get_width() // 2, ty + 1))
+
+        # Module list (scrollable)
+        modules = self._get_filtered_modules()
+        item_h = scale_y(46)
+        list_top = panel_y + scale_y(58)  # Below two-row tabs
+        list_h = panel_h - scale_y(62)
+
+        # Clip rect for scrollable area
+        clip = pygame.Rect(panel_x, list_top, panel_w, list_h)
+        screen.set_clip(clip)
+
+        materials = getattr(self.data_loader, "hull_materials", {})
+        start_y = list_top - self._module_catalog_scroll
+        for i, module in enumerate(modules):
+            iy = start_y + i * item_h
+            if iy + item_h < list_top or iy > list_top + list_h:
+                continue  # Off-screen, skip rendering
+
+            is_selected = module.id == self._selected_module_id
+            is_locked = not self._is_module_unlocked(module.id)
+
+            if is_locked:
+                bg_color = (15, 15, 22)  # Dark, grayed out
+            elif is_selected:
+                bg_color = (45, 65, 100)
+            else:
+                bg_color = (20, 25, 40)
+            pygame.draw.rect(
+                screen, bg_color, (panel_x + 3, iy, panel_w - 6, item_h - 2), border_radius=3
+            )
+            if is_selected and not is_locked:
+                pygame.draw.rect(
+                    screen,
+                    Colors.TEXT_HIGHLIGHT,
+                    (panel_x + 3, iy, panel_w - 6, item_h - 2),
+                    1,
+                    border_radius=3,
+                )
+
+            # Module mini-preview (render filled pixels in a small area)
+            preview_size = scale_y(18)
+            preview_x = panel_x + 6
+            preview_y = iy + 3
+            pw = module.width
+            ph = module.height
+            if pw > 0 and ph > 0:
+                ps = min(preview_size / pw, preview_size / ph)
+                for lx, ly, char in module.filled_pixels():
+                    mat_id = module.material_map.get(char, "")
+                    mat = materials.get(mat_id)
+                    color = mat.color_primary if mat else (100, 100, 100)
+                    if is_locked:
+                        # Desaturate locked module previews
+                        avg = (color[0] + color[1] + color[2]) // 3
+                        color = (avg // 2, avg // 2, avg // 2)
+                    rx = int(preview_x + lx * ps)
+                    ry = int(preview_y + ly * ps)
+                    rw = max(1, int(ps))
+                    pygame.draw.rect(screen, color, (rx, ry, rw, rw))
+
+            # Module name and info
+            text_x = panel_x + 8 + preview_size + 4
+            name_color = (70, 70, 80) if is_locked else Colors.TEXT_PRIMARY
+            name_surf = self.label_font.render(module.name, True, name_color)
+            screen.blit(name_surf, (text_x, iy + 2))
+
+            # Category and weight
+            cat_color = {
+                "cockpit": (100, 180, 255),
+                "engine": (255, 180, 80),
+                "weapon": (255, 80, 80),
+                "shield": (80, 220, 255),
+                "cargo": (255, 220, 80),
+                "utility": (80, 255, 120),
+                "structural": (160, 160, 180),
+                "crew": (120, 200, 120),
+                "reactor": (180, 100, 240),
+            }.get(module.category, Colors.TEXT_SECONDARY)
+            if is_locked:
+                cat_color = (50, 50, 60)
+            cat_label = self.label_font.render(
+                f"{module.category.upper()}  W:{module.weight:.1f}",
+                True,
+                cat_color,
+            )
+            screen.blit(cat_label, (text_x, iy + 14))
+
+            # Cost or lock hint
+            if is_locked:
+                lock_hint = module.unlock_method.replace("_", " ").title()
+                if module.unlock_source:
+                    lock_hint += f": {module.unlock_source.replace('_', ' ').title()}"
+                lock_label = self.label_font.render(
+                    f"\U0001f512 {lock_hint}",
+                    True,
+                    (100, 70, 70),
+                )
+                screen.blit(lock_label, (text_x, iy + 26))
+            else:
+                cost_label = self.label_font.render(
+                    f"{module.instantiation_cost:,} CR",
+                    True,
+                    Colors.TEXT_SECONDARY,
+                )
+                screen.blit(cost_label, (text_x, iy + 26))
+
+        screen.set_clip(None)
+
+        # Scroll indicator
+        if len(modules) * item_h > list_h:
+            max_scroll = max(1, len(modules) * item_h - list_h)
+            bar_h = max(10, int(list_h * (list_h / (len(modules) * item_h))))
+            bar_y = list_top + int((self._module_catalog_scroll / max_scroll) * (list_h - bar_h))
+            pygame.draw.rect(
+                screen, (80, 90, 120), (panel_x + panel_w - 5, bar_y, 3, bar_h), border_radius=1
+            )
+
+    def _render_requirements_checklist(self, screen: pygame.Surface) -> None:
+        """Render the requirements checklist on the right panel (module mode)."""
+        panel_x = MATERIAL_PANEL_X
+        panel_y = MATERIAL_PANEL_Y
+        panel_w = MATERIAL_PANEL_W
+        panel_h = scale_y(320)
+        draw_panel(screen, (panel_x, panel_y, panel_w, panel_h), alpha=200)
+
+        # Title
+        title = self.small_font.render("REQUIREMENTS", True, Colors.TEXT_HIGHLIGHT)
+        screen.blit(title, (panel_x + 8, panel_y + 6))
+
+        # Count modules by category
+        catalog = self._get_module_catalog()
+        cat_counts: dict[str, int] = {}
+        for pm in self.build.modules:
+            mod = catalog.get(pm.module_id)
+            if mod:
+                cat_counts[mod.category] = cat_counts.get(mod.category, 0) + 1
+
+        # Mandatory requirements
+        requirements = [
+            ("Cockpit", "cockpit", 1),
+            ("Engine", "engine", 1),
+            ("Weapon", "weapon", 1),
+            ("Shield", "shield", 1),
+            ("Cargo", "cargo", 1),
+        ]
+
+        # Conditional requirements
+        wc = self.build.weight_class
+        if wc in ("medium", "large", "xlarge"):
+            requirements.append(("Crew Quarters", "crew", 1))
+        if wc in ("large", "xlarge"):
+            requirements.append(("Reactor", "reactor", 1))
+
+        from spacegame.models.ship_build import MODULE_CAPS
+
+        caps = MODULE_CAPS.get(self.build.weight_class, {})
+
+        row_y = panel_y + scale_y(26)
+        row_h = scale_y(22)
+        for label, cat, needed in requirements:
+            count = cat_counts.get(cat, 0)
+            cap = caps.get(cat, 99)
+            met = count >= needed
+            at_cap = count >= cap
+            check = "\u2713" if met else "\u2717"
+            check_color = Colors.GREEN if met else (200, 60, 60)
+            if at_cap and met:
+                check_color = (200, 180, 60)  # Yellow when at cap
+            label_color = Colors.TEXT_PRIMARY if met else Colors.TEXT_SECONDARY
+
+            check_surf = self.small_font.render(check, True, check_color)
+            screen.blit(check_surf, (panel_x + 8, row_y))
+            name_surf = self.label_font.render(label, True, label_color)
+            screen.blit(name_surf, (panel_x + 26, row_y + 3))
+            count_text = f"{count}/{cap}" if cap < 99 else f"{count}"
+            count_surf = self.label_font.render(count_text, True, check_color)
+            screen.blit(count_surf, (panel_x + panel_w - count_surf.get_width() - 8, row_y + 3))
+            row_y += row_h
+
+        # Weight bar
+        row_y += scale_y(8)
+        weight_label = self.label_font.render("WEIGHT", True, Colors.TEXT_HIGHLIGHT)
+        screen.blit(weight_label, (panel_x + 8, row_y))
+        row_y += scale_y(14)
+        if self._computed_stats:
+            cs = self._computed_stats
+            ratio = cs.weight_ratio
+            bar_w = panel_w - 20
+            bar_color = (
+                Colors.GREEN if ratio < 0.8 else (Colors.YELLOW if ratio < 0.95 else Colors.RED)
+            )
+            draw_bar(
+                screen,
+                panel_x + 10,
+                row_y,
+                bar_w,
+                BAR_H,
+                cs.weight_current,
+                cs.weight_max,
+                bar_color,
+                font=self.label_font,
+                show_value=True,
+            )
+            row_y += BAR_H + scale_y(6)
+            ratio_label = self.label_font.render(
+                f"{cs.weight_label}  ({cs.weight_current:.1f}/{cs.weight_max})",
+                True,
+                Colors.TEXT_SECONDARY,
+            )
+            screen.blit(ratio_label, (panel_x + 10, row_y))
+
+        # Connectivity status
+        row_y += scale_y(20)
+        all_pixels = resolve_all_pixels(self.build, catalog)
+        if len(all_pixels) > 1:
+            conn_ok, _ = validate_connectivity(self.build, catalog)
+            conn_check = "\u2713" if conn_ok else "\u2717"
+            conn_color = Colors.GREEN if conn_ok else (200, 60, 60)
+            conn_surf = self.small_font.render(f"{conn_check} Connected", True, conn_color)
+            screen.blit(conn_surf, (panel_x + 8, row_y))
+
+        # Build cost
+        row_y += scale_y(20)
+        if self._computed_stats:
+            cost_label = self.label_font.render(
+                f"Build Cost: {self._computed_stats.total_cost:,} CR",
+                True,
+                Colors.TEXT_SECONDARY,
+            )
+            screen.blit(cost_label, (panel_x + 8, row_y))
+
+        # Module rotation/flip indicator
+        row_y += scale_y(20)
+        rot_label = self.label_font.render(
+            f"[R] Rot: {self._module_rotation * 90}\u00b0  [Q] Flip: {'Y' if self._module_flipped else 'N'}",
+            True,
+            (100, 110, 140),
+        )
+        screen.blit(rot_label, (panel_x + 8, row_y))
+
+        # Overlay toggle buttons (Phase 6)
+        row_y += scale_y(20)
+        overlay_label = self.label_font.render("OVERLAYS", True, Colors.TEXT_HIGHLIGHT)
+        screen.blit(overlay_label, (panel_x + 8, row_y))
+        row_y += scale_y(14)
+
+        # Integrity overlay toggle
+        int_active = self._show_integrity_overlay
+        int_bg = (40, 70, 50) if int_active else (25, 30, 45)
+        int_rect = pygame.Rect(panel_x + 6, row_y, panel_w - 12, scale_y(16))
+        pygame.draw.rect(screen, int_bg, int_rect, border_radius=2)
+        int_label = self.label_font.render(
+            f"{'[x]' if int_active else '[ ]'} Structural Integrity",
+            True,
+            Colors.GREEN if int_active else Colors.TEXT_SECONDARY,
+        )
+        screen.blit(int_label, (panel_x + 10, row_y + 2))
+        # Store rect for click detection
+        self._integrity_toggle_rect = int_rect
+
+        row_y += scale_y(18)
+
+        # CoM overlay toggle
+        com_active = self._show_com_overlay
+        com_bg = (40, 70, 50) if com_active else (25, 30, 45)
+        com_rect = pygame.Rect(panel_x + 6, row_y, panel_w - 12, scale_y(16))
+        pygame.draw.rect(screen, com_bg, com_rect, border_radius=2)
+        com_label = self.label_font.render(
+            f"{'[x]' if com_active else '[ ]'} Center of Mass",
+            True,
+            Colors.GREEN if com_active else Colors.TEXT_SECONDARY,
+        )
+        screen.blit(com_label, (panel_x + 10, row_y + 2))
+        self._com_toggle_rect = com_rect
+
+    # ------------------------------------------------------------------
+    # EQUIP Mode — delegated to builder_equip_mode.EquipModeHelper
+    # See spacegame/views/builder_equip_mode.py for implementation.
+    # ------------------------------------------------------------------
+
+    def _get_equip_helper(self):
+        """Lazy-create the EQUIP mode helper."""
+        if not hasattr(self, "_equip_helper") or self._equip_helper is None:
+            from spacegame.views.builder_equip_mode import EquipModeHelper
+
+            self._equip_helper = EquipModeHelper(self)
+        return self._equip_helper
+
+    def _get_equip_slots(self) -> list[dict]:
+        return self._get_equip_helper().get_equip_slots()
+
+    def _get_compatible_upgrades(self, slot_type: str) -> list:
+        return self._get_equip_helper().get_compatible_upgrades(slot_type)
+
+    def _select_equip_module_at(self, gx: int, gy: int) -> None:
+        self._get_equip_helper().select_module_at(gx, gy)
+
+    def _handle_equip_slot_list_click(self, mx: int, my: int) -> None:
+        self._get_equip_helper().handle_slot_list_click(mx, my)
+
+    def _handle_equip_panel_click(self, mx: int, my: int) -> None:
+        self._get_equip_helper().handle_panel_click(mx, my)
+
+    def _render_equip_slot_list(self, screen: pygame.Surface) -> None:
+        self._get_equip_helper().render_slot_list(screen)
+
+    def _render_equip_panel(self, screen: pygame.Surface) -> None:
+        self._get_equip_helper().render_panel(screen)
+
+    # NOTE: ~260 lines of dead inline EQUIP code removed (was _DEAD_CODE_START).
+    # Implementation lives in builder_equip_mode.py via EquipModeHelper.
+
+    def _render_recolor_panel(self, screen: pygame.Surface) -> None:
+        """Render the recolor material selection panel (right side, module recolor mode)."""
+        panel_x = MATERIAL_PANEL_X
+        panel_y = MATERIAL_PANEL_Y
+        panel_w = MATERIAL_PANEL_W
+        panel_h = scale_y(300)
+        draw_panel(screen, (panel_x, panel_y, panel_w, panel_h), alpha=200)
+
+        # Title
+        title = self.small_font.render("RECOLOR [C]", True, (255, 200, 80))
+        screen.blit(title, (panel_x + 8, panel_y + 6))
+
+        hint = self.label_font.render("Click hull pixels to recolor", True, Colors.TEXT_SECONDARY)
+        screen.blit(hint, (panel_x + 8, panel_y + 22))
+
+        # Material swatches (4 hull materials)
+        all_mats = getattr(self.data_loader, "hull_materials", {})
+        hull_mats = [all_mats[mid] for mid in HULL_PIXEL_MATERIALS if mid in all_mats]
+        swatch_h = scale_y(44)
+        start_y = panel_y + scale_y(40)
+        pad = 3
+
+        for i, mat in enumerate(hull_mats):
+            sy = start_y + i * (swatch_h + pad)
+            is_selected = mat.id == getattr(self, "_recolor_material_id", "")
+            bg = (50, 65, 100) if is_selected else (20, 25, 40)
+            pygame.draw.rect(screen, bg, (panel_x + 4, sy, panel_w - 8, swatch_h), border_radius=3)
+            if is_selected:
+                pygame.draw.rect(
+                    screen,
+                    (255, 200, 80),
+                    (panel_x + 4, sy, panel_w - 8, swatch_h),
+                    2,
+                    border_radius=3,
+                )
+            # Color swatch
+            swatch_w = scale_x(28)
+            pygame.draw.rect(
+                screen,
+                mat.color_primary,
+                (panel_x + 10, sy + 6, swatch_w, swatch_h - 12),
+                border_radius=2,
+            )
+            # Name
+            text_x = panel_x + 14 + swatch_w
+            name = self.tiny_font.render(mat.name, True, Colors.TEXT_PRIMARY)
+            screen.blit(name, (text_x, sy + 6))
+            info = self.label_font.render(
+                f"W:{mat.weight_per_pixel:.2f}", True, Colors.TEXT_SECONDARY
+            )
+            screen.blit(info, (text_x, sy + 22))
+
+        # Locked pixel hint
+        lock_y = start_y + len(hull_mats) * (swatch_h + pad) + scale_y(10)
+        lock_hint = self.label_font.render("Functional pixels (glass,", True, (120, 80, 80))
+        screen.blit(lock_hint, (panel_x + 8, lock_y))
+        lock_hint2 = self.label_font.render("exhaust, etc.) are locked.", True, (120, 80, 80))
+        screen.blit(lock_hint2, (panel_x + 8, lock_y + scale_y(12)))
+
+        # Exit hint
+        exit_y = lock_y + scale_y(30)
+        exit_hint = self.label_font.render("Press [C] to exit recolor", True, (100, 110, 140))
+        screen.blit(exit_hint, (panel_x + 8, exit_y))
+
+    def _render_module_tooltip(self, screen: pygame.Surface) -> None:
+        """Render a tooltip for the placed module under the cursor."""
+        mouse_pos = pygame.mouse.get_pos()
+        grid_pos = self._screen_to_grid(mouse_pos[0], mouse_pos[1])
+        if not grid_pos:
+            return
+        catalog = self._get_module_catalog()
+        gx, gy = grid_pos
+        for placed in self.build.modules:
+            if placed.module_id not in catalog:
+                continue
+            pixels = resolve_placed_module(placed, catalog)
+            for p in pixels:
+                if p.x == gx and p.y == gy:
+                    module = catalog[placed.module_id]
+                    # Draw tooltip near cursor
+                    tx = mouse_pos[0] + 16
+                    ty = mouse_pos[1] - 10
+                    # Keep on screen
+                    tip_w = scale_x(180)
+                    tip_h = scale_y(80)
+                    if tx + tip_w > WINDOW_WIDTH:
+                        tx = mouse_pos[0] - tip_w - 8
+                    if ty + tip_h > WINDOW_HEIGHT:
+                        ty = mouse_pos[1] - tip_h
+
+                    draw_panel(screen, (tx, ty, tip_w, tip_h), alpha=230)
+                    # Module name
+                    name_surf = self.tiny_font.render(module.name, True, Colors.TEXT_HIGHLIGHT)
+                    screen.blit(name_surf, (tx + 6, ty + 4))
+                    # Manufacturer
+                    mfg_name = module.manufacturer.replace("_", " ").title()
+                    mfg_surf = self.label_font.render(mfg_name, True, Colors.TEXT_SECONDARY)
+                    screen.blit(mfg_surf, (tx + 6, ty + 20))
+                    # Category and weight
+                    cat_surf = self.label_font.render(
+                        f"{module.category.upper()}  W: {module.weight:.1f}  Cost: {module.instantiation_cost:,}",
+                        True,
+                        Colors.TEXT_SECONDARY,
+                    )
+                    screen.blit(cat_surf, (tx + 6, ty + 34))
+                    # Key stats from provides
+                    provides_parts = []
+                    for key, val in module.provides.items():
+                        if key == "slot_type":
+                            provides_parts.append(f"Slot: {val}")
+                        elif isinstance(val, (int, float)) and val > 0:
+                            provides_parts.append(f"{key}: {val}")
+                    if provides_parts:
+                        prov_text = "  ".join(provides_parts[:4])
+                        prov_surf = self.label_font.render(prov_text, True, (120, 180, 140))
+                        screen.blit(prov_surf, (tx + 6, ty + 48))
+                    return  # Only one tooltip at a time
+
+    # ------------------------------------------------------------------
+    # Physics Overlays (Phase 6)
+    # ------------------------------------------------------------------
+
+    def _render_integrity_overlay(
+        self,
+        screen: pygame.Surface,
+        ox: int,
+        oy: int,
+        cell: int,
+        cw: int,
+        ch: int,
+    ) -> None:
+        """Render structural integrity heat map over ship pixels."""
+        from spacegame.models.ship_module import resolve_all_pixels
+        from spacegame.models.ship_physics import compute_structural_integrity
+
+        catalog = self._get_module_catalog()
+        all_pixels = resolve_all_pixels(self.build, catalog)
+        coords = [(p.x, p.y) for p in all_pixels]
+
+        if not coords:
+            return
+
+        # Recompute if cache invalidated
+        if self._cached_integrity is None:
+            self._cached_integrity = compute_structural_integrity(coords)
+
+        for (x, y), score in self._cached_integrity.items():
+            if score <= 0:
+                continue  # Green/safe pixels don't need overlay
+            px = ox + x * cell
+            py = oy + y * cell
+            if score >= 0.7:
+                color = (255, 50, 50, 100)  # Red — critical
+            elif score >= 0.3:
+                color = (255, 200, 50, 80)  # Yellow — moderate
+            else:
+                color = (100, 255, 100, 50)  # Green — mild
+            overlay = pygame.Surface((cell - 1, cell - 1), pygame.SRCALPHA)
+            overlay.fill(color)
+            screen.blit(overlay, (px + 1, py + 1))
+
+    def _render_com_overlay(
+        self,
+        screen: pygame.Surface,
+        ox: int,
+        oy: int,
+        cell: int,
+    ) -> None:
+        """Render center of mass crosshair on the grid."""
+        from spacegame.models.ship_physics import compute_center_of_mass
+
+        catalog = self._get_module_catalog()
+        materials = getattr(self.data_loader, "hull_materials", {})
+        com_x, com_y, offset_pct, rating = compute_center_of_mass(
+            self.build,
+            materials,
+            catalog,
+        )
+
+        if offset_pct == 0.0 and not self.build.pixels and not self.build.modules:
+            return
+
+        # Draw crosshair at CoM position
+        cx = int(ox + com_x * cell + cell // 2)
+        cy = int(oy + com_y * cell + cell // 2)
+
+        # Color based on balance rating
+        from spacegame.models.ship_physics import BalanceRating
+
+        if rating == BalanceRating.BALANCED:
+            color = (80, 255, 80)
+        elif rating == BalanceRating.OFF_BALANCE:
+            color = (255, 200, 50)
+        else:
+            color = (255, 60, 60)
+
+        # Crosshair lines
+        arm_len = max(8, cell * 2)
+        pygame.draw.line(screen, color, (cx - arm_len, cy), (cx + arm_len, cy), 2)
+        pygame.draw.line(screen, color, (cx, cy - arm_len), (cx, cy + arm_len), 2)
+        # Center dot
+        pygame.draw.circle(screen, color, (cx, cy), 3)
+
+        # Label
+        label = self.label_font.render(f"CoM {offset_pct:.0f}%", True, color)
+        screen.blit(label, (cx + arm_len + 4, cy - 6))
 
     def _render_stats_panel(self, screen: pygame.Surface) -> None:
         """Render the ship stats and weight/power bars at the bottom."""
@@ -1177,7 +2648,11 @@ class ShipBuilderView(BaseView):
             ("Cargo", str(stats.cargo_capacity), Colors.TEXT_PRIMARY),
             ("Fuel", str(stats.fuel_capacity), Colors.TEXT_PRIMARY),
             ("Crew", str(stats.crew_slots), Colors.TEXT_PRIMARY),
-            ("Cost", f"{stats.total_cost:,} CR", Colors.GOLD if hasattr(Colors, "GOLD") else (200, 180, 80)),
+            (
+                "Cost",
+                f"{stats.total_cost:,} CR",
+                Colors.GOLD if hasattr(Colors, "GOLD") else (200, 180, 80),
+            ),
             ("Pixels", str(len(self.build.pixels)), Colors.TEXT_SECONDARY),
         ]
         for i, (label, value, color) in enumerate(eco_items):
@@ -1197,14 +2672,22 @@ class ShipBuilderView(BaseView):
         if stats.weight_ratio > 0.95:
             weight_color = (220, 60, 40)  # Red
         draw_bar(
-            screen, x_start, y, bar_w, BAR_H,
-            stats.weight_current, stats.weight_max,
-            weight_color, label="Weight", font=self.label_font,
+            screen,
+            x_start,
+            y,
+            bar_w,
+            BAR_H,
+            stats.weight_current,
+            stats.weight_max,
+            weight_color,
+            label="Weight",
+            font=self.label_font,
         )
         # Weight label
         wt_label = self.label_font.render(
             f"{stats.weight_label} ({stats.weight_ratio:.0%})",
-            True, weight_color,
+            True,
+            weight_color,
         )
         screen.blit(wt_label, (x_start + bar_w + 10, y))
 
@@ -1220,178 +2703,107 @@ class ShipBuilderView(BaseView):
             id_color = id_colors.get(stats.defensive_identity, Colors.TEXT_SECONDARY)
             id_text = self.tiny_font.render(
                 f"Identity: {stats.defensive_identity.upper()}",
-                True, id_color,
+                True,
+                id_color,
             )
             screen.blit(id_text, (x_start, y))
 
-        # Tool bar (right side of stats panel)
-        tool_x = WINDOW_WIDTH - scale_x(280)
-        tool_y = STATS_PANEL_Y + 8
+        # Tool bar (right side of stats panel) — prominent labeled buttons
+        tool_x = WINDOW_WIDTH - scale_x(350)
+        tool_y = STATS_PANEL_Y + 6
+        btn_w = scale_x(52)
+        btn_h = scale_y(24)
+        btn_gap = 3
 
-        # Active tool indicator
-        tool_labels = {
-            "stamp": "[S] Stamp", "pencil": "[P] Pencil", "brush": "[M] Brush",
-            "fill": "[F] Fill", "eraser": "[E] Eraser", "slot": "[D] Slot",
-        }
-        for i, (tool_id, label) in enumerate(tool_labels.items()):
-            is_active = self._active_tool == tool_id
-            color = Colors.TEXT_HIGHLIGHT if is_active else Colors.TEXT_SECONDARY
-            t = self.label_font.render(label, True, color)
-            screen.blit(t, (tool_x + i * scale_x(55), tool_y))
+        if self._builder_mode == "hull":
+            # Hull mode tools
+            tools = [
+                ("stamp", "S", "Stamp"),
+                ("pencil", "P", "Pencil"),
+                ("brush", "M", "Brush"),
+                ("fill", "F", "Fill"),
+                ("eraser", "E", "Erase"),
+            ]
+            for i, (tool_id, key, label) in enumerate(tools):
+                bx = tool_x + i * (btn_w + btn_gap)
+                is_active = self._active_tool == tool_id
+                bg = (50, 80, 140) if is_active else (25, 30, 50)
+                border = Colors.TEXT_HIGHLIGHT if is_active else (50, 55, 70)
+                pygame.draw.rect(screen, bg, (bx, tool_y, btn_w, btn_h), border_radius=3)
+                pygame.draw.rect(screen, border, (bx, tool_y, btn_w, btn_h), 1, border_radius=3)
+                t = self.label_font.render(
+                    f"[{key}] {label}",
+                    True,
+                    Colors.TEXT_PRIMARY if is_active else Colors.TEXT_SECONDARY,
+                )
+                screen.blit(t, (bx + btn_w // 2 - t.get_width() // 2, tool_y + 5))
 
-        tool_y += scale_y(16)
-
-        # Mirror mode and rotation
-        mirror_text = f"[X] Mirror {'ON' if self._mirror_mode else 'OFF'}"
-        mirror_color = Colors.TEXT_HIGHLIGHT if self._mirror_mode else Colors.TEXT_SECONDARY
-        mt = self.label_font.render(mirror_text, True, mirror_color)
-        screen.blit(mt, (tool_x, tool_y))
-
-        if self._selected_shape:
-            rot_text = self.label_font.render(
-                f"  [R] {self._shape_rotation * 90}°  [Q] Flip {'Y' if self._shape_flipped else 'N'}",
-                True, Colors.TEXT_SECONDARY,
+            # Mirror button
+            mirror_x = tool_x + len(tools) * (btn_w + btn_gap) + btn_gap
+            mirror_bg = (40, 100, 60) if self._mirror_mode else (25, 30, 50)
+            mirror_border = Colors.GREEN if self._mirror_mode else (50, 55, 70)
+            pygame.draw.rect(screen, mirror_bg, (mirror_x, tool_y, btn_w, btn_h), border_radius=3)
+            pygame.draw.rect(
+                screen, mirror_border, (mirror_x, tool_y, btn_w, btn_h), 1, border_radius=3
             )
-            screen.blit(rot_text, (tool_x + mt.get_width(), tool_y))
+            mir_label = self.label_font.render(
+                "[X] Mirror",
+                True,
+                Colors.GREEN if self._mirror_mode else Colors.TEXT_SECONDARY,
+            )
+            screen.blit(mir_label, (mirror_x + btn_w // 2 - mir_label.get_width() // 2, tool_y + 5))
 
-        tool_y += scale_y(16)
+        # Row 2: Undo/Redo + rotation + zoom (both modes)
+        tool_y += btn_h + 4
+        undo_redo_x = tool_x
 
-        # Undo/redo and zoom indicator
-        zoom_pct = int(self._zoom_level * 100)
-        undo_text = self.label_font.render(
-            f"Undo: {len(self._undo_stack)}  Redo: {len(self._redo_stack)}  [Ctrl+Z/Y]  Zoom: {zoom_pct}%",
-            True, Colors.TEXT_SECONDARY,
+        # Undo button
+        has_undo = len(self._undo_stack) > 0
+        undo_bg = (40, 50, 80) if has_undo else (20, 22, 30)
+        pygame.draw.rect(screen, undo_bg, (undo_redo_x, tool_y, btn_w, btn_h), border_radius=3)
+        undo_label = self.label_font.render(
+            f"Undo ({len(self._undo_stack)})",
+            True,
+            Colors.TEXT_PRIMARY if has_undo else (50, 55, 65),
         )
-        screen.blit(undo_text, (tool_x, tool_y))
+        screen.blit(undo_label, (undo_redo_x + 3, tool_y + 5))
 
-    def _render_slot_type_panel(self, screen: pygame.Surface) -> None:
-        """Render the slot type selector panel (shown in slot mode)."""
-        panel_x = MATERIAL_PANEL_X
-        panel_y = MATERIAL_PANEL_Y + MATERIAL_PANEL_H + scale_y(10)
-        panel_w = MATERIAL_PANEL_W
-        panel_h = scale_y(170)
+        # Redo button
+        redo_x = undo_redo_x + btn_w + btn_gap
+        has_redo = len(self._redo_stack) > 0
+        redo_bg = (40, 50, 80) if has_redo else (20, 22, 30)
+        pygame.draw.rect(screen, redo_bg, (redo_x, tool_y, btn_w, btn_h), border_radius=3)
+        redo_label = self.label_font.render(
+            f"Redo ({len(self._redo_stack)})",
+            True,
+            Colors.TEXT_PRIMARY if has_redo else (50, 55, 65),
+        )
+        screen.blit(redo_label, (redo_x + 3, tool_y + 5))
 
-        draw_panel(screen, (panel_x, panel_y, panel_w, panel_h), alpha=210)
+        # Rotation/flip indicator
+        rot_x = redo_x + btn_w + btn_gap * 3
+        if self._builder_mode == "module":
+            rot_text = f"[R] {self._module_rotation * 90}\u00b0  [Q] Flip: {'Y' if self._module_flipped else 'N'}"
+        else:
+            rot_text = f"[R] {self._shape_rotation * 90}\u00b0  [Q] Flip: {'Y' if self._shape_flipped else 'N'}"
+        rt = self.label_font.render(rot_text, True, Colors.TEXT_SECONDARY)
+        screen.blit(rt, (rot_x, tool_y + 5))
 
-        title = self.small_font.render("SLOT TYPE", True, Colors.TEXT_HIGHLIGHT)
-        screen.blit(title, (panel_x + 8, panel_y + 5))
-
-        slot_colors = {
-            "weapon": (200, 60, 60), "defense": (60, 120, 200),
-            "engine": (200, 140, 40), "utility": (60, 180, 80),
-            "core": (200, 180, 60),
-        }
-        pool = self._get_slot_pool_remaining()
-        item_h = scale_y(24)
-
-        for i, slot_type in enumerate(self.SLOT_TYPES_ORDER):
-            iy = panel_y + scale_y(24) + i * item_h
-            used, max_count = pool.get(slot_type, (0, 0))
-            is_selected = self._slot_type_to_place == slot_type
-            is_full = used >= max_count
-
-            # Background
-            if is_selected:
-                bg = (*slot_colors.get(slot_type, (100, 100, 100)), 80)
-                bg_surf = pygame.Surface((panel_w - 8, item_h - 2), pygame.SRCALPHA)
-                bg_surf.fill(bg)
-                screen.blit(bg_surf, (panel_x + 4, iy))
-
-            # Label
-            color = slot_colors.get(slot_type, (150, 150, 150))
-            if is_full:
-                color = Colors.TEXT_SECONDARY
-            label = self.tiny_font.render(
-                f"{slot_type.title()}: {used}/{max_count}",
-                True, color,
-            )
-            screen.blit(label, (panel_x + 10, iy + 2))
-
-            # Cost
-            cost = self.SLOT_COSTS.get(slot_type, 0)
-            if cost > 0:
-                cost_text = self.label_font.render(f"{cost:,} CR", True, Colors.TEXT_SECONDARY)
-                screen.blit(cost_text, (panel_x + panel_w - cost_text.get_width() - 10, iy + 4))
-
-        # Engine zone hint
-        if self._slot_type_to_place == "engine":
-            hint = self.label_font.render("Engine: rear 25% only", True, (200, 140, 40))
-            screen.blit(hint, (panel_x + 8, panel_y + panel_h - scale_y(18)))
-
-    def _render_equipment_modal(self, screen: pygame.Surface) -> None:
-        """Render the equipment browser overlay."""
-        # Darken background
-        dim = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA)
-        dim.fill((0, 0, 0, 140))
-        screen.blit(dim, (0, 0))
-
-        modal_x = GRID_AREA_X + scale_x(30)
-        modal_y = GRID_AREA_Y + scale_y(20)
-        modal_w = GRID_AREA_W - scale_x(60)
-        modal_h = GRID_AREA_H - scale_y(40)
-
-        draw_panel(screen, (modal_x, modal_y, modal_w, modal_h), alpha=240)
-
-        # Title
-        slot = self._equipment_modal_slot
-        slot_name = slot.slot_type.title() if slot else "Unknown"
-        title = self.header_font.render(f"Install: {slot_name}", True, Colors.TEXT_HIGHLIGHT)
-        screen.blit(title, (modal_x + 10, modal_y + 8))
-
-        # Close button
-        close_text = self.small_font.render("[X] Close", True, Colors.RED)
-        screen.blit(close_text, (modal_x + modal_w - close_text.get_width() - 10, modal_y + 10))
-
-        # Equipment list
-        item_h = scale_y(40)
-        start_y = modal_y + scale_y(40) - self._equipment_scroll
-        clip = pygame.Rect(modal_x, modal_y + scale_y(36), modal_w, modal_h - scale_y(40))
-        screen.set_clip(clip)
-
-        for i, upgrade in enumerate(self._equipment_list):
-            iy = start_y + i * item_h
-            if iy + item_h < clip.top or iy > clip.bottom:
-                continue
-
-            # Card background
-            is_installed = (slot and slot.equipment_id == upgrade.id)
-            bg_color = (40, 60, 50) if is_installed else (22, 28, 40)
-            pygame.draw.rect(screen, bg_color,
-                             (modal_x + 8, iy, modal_w - 16, item_h - 2))
-            if is_installed:
-                pygame.draw.rect(screen, Colors.GREEN,
-                                 (modal_x + 8, iy, modal_w - 16, item_h - 2), 1)
-
-            # Name and tier
-            tier_colors = {1: Colors.TEXT_SECONDARY, 2: (100, 180, 255), 3: (255, 200, 80)}
-            name_surf = self.tiny_font.render(
-                f"T{upgrade.tier} {upgrade.name}",
-                True, tier_colors.get(upgrade.tier, Colors.TEXT_PRIMARY),
-            )
-            screen.blit(name_surf, (modal_x + 14, iy + 2))
-
-            # Price and description
-            desc_text = upgrade.description[:50] + ("..." if len(upgrade.description) > 50 else "")
-            desc_surf = self.label_font.render(desc_text, True, Colors.TEXT_SECONDARY)
-            screen.blit(desc_surf, (modal_x + 14, iy + 18))
-
-            price_surf = self.tiny_font.render(f"{upgrade.price:,} CR", True, Colors.TEXT_PRIMARY)
-            screen.blit(price_surf, (modal_x + modal_w - price_surf.get_width() - 14, iy + 8))
-
-        screen.set_clip(None)
-
-        # Hint
-        hint = self.label_font.render("Click to install. Right-click to close.", True, Colors.TEXT_SECONDARY)
-        screen.blit(hint, (modal_x + 10, modal_y + modal_h - scale_y(16)))
+        # Zoom indicator
+        zoom_pct = int(self._zoom_level * 100)
+        zoom_text = self.label_font.render(f"Zoom: {zoom_pct}%", True, Colors.TEXT_SECONDARY)
+        screen.blit(zoom_text, (WINDOW_WIDTH - zoom_text.get_width() - scale_x(20), tool_y + 5))
 
     def _load_preset(self) -> None:
         """Load the current ship type's preset into the builder."""
         from spacegame.models.ship_presets import generate_preset_from_ship_type
+
         self._push_undo()
         self.build = generate_preset_from_ship_type(self.player.ship.ship_type)
         self.grid_manager = ShipGridManager(self.build.weight_class)
         self._modified = True
         self._recompute_stats()
+        self._validation_warnings = [f"Loaded {self.player.ship.ship_type.name} preset"]
         logger.info(f"Loaded preset for {self.player.ship.ship_type.name}")
 
     def _render_help_overlay(self, screen: pygame.Surface) -> None:
@@ -1418,26 +2830,27 @@ class ShipBuilderView(BaseView):
         help_lines = [
             ("BUILDING", Colors.TEXT_HIGHLIGHT),
             ("  Left-click: Place shape / Use tool", Colors.TEXT_PRIMARY),
-            ("  Right-click: Erase pixel / Remove slot", Colors.TEXT_PRIMARY),
+            ("  Right-click: Erase pixel / Remove module", Colors.TEXT_PRIMARY),
             ("  [R] Rotate shape 90°    [Q] Flip horizontally", Colors.TEXT_PRIMARY),
             ("  [X] Toggle Mirror Mode (symmetrical building)", Colors.TEXT_PRIMARY),
             ("  Ctrl+Z: Undo    Ctrl+Y: Redo", Colors.TEXT_PRIMARY),
             ("", Colors.TEXT_PRIMARY),
             ("TOOLS", Colors.TEXT_HIGHLIGHT),
             ("  [S] Stamp    [P] Pencil    [M] Material Brush", Colors.TEXT_PRIMARY),
-            ("  [F] Flood Fill    [E] Eraser    [D] Slot Designator", Colors.TEXT_PRIMARY),
+            ("  [F] Flood Fill    [E] Eraser", Colors.TEXT_PRIMARY),
             ("", Colors.TEXT_PRIMARY),
-            ("SLOTS & EQUIPMENT", Colors.TEXT_HIGHLIGHT),
-            ("  Press [D], select a slot type, click grid to place", Colors.TEXT_PRIMARY),
-            ("  Click an existing slot to install equipment", Colors.TEXT_PRIMARY),
-            ("  Weapons (red), Defense (blue), Engine (orange), Utility (green)", Colors.TEXT_PRIMARY),
-            ("  Core (gold) — required for energy. 1 per ship.", Colors.TEXT_PRIMARY),
+            ("EQUIPMENT", Colors.TEXT_HIGHLIGHT),
+            ("  Switch to EQUIP mode to install weapons and shields", Colors.TEXT_PRIMARY),
+            ("  Select a module, then choose equipment from the panel", Colors.TEXT_PRIMARY),
             ("", Colors.TEXT_PRIMARY),
             ("WEIGHT & IDENTITY", Colors.TEXT_HIGHLIGHT),
             ("  Hull materials are heavy → Juggernaut (armor, durability)", Colors.TEXT_PRIMARY),
             ("  Shield materials are medium → Sentinel (regen, sustain)", Colors.TEXT_PRIMARY),
             ("  Light materials are fast → Ghost (evasion, speed)", Colors.TEXT_PRIMARY),
-            ("  Your ship's identity activates when 35%+ of pixels are one type", Colors.TEXT_PRIMARY),
+            (
+                "  Your ship's identity activates when 35%+ of pixels are one type",
+                Colors.TEXT_PRIMARY,
+            ),
             ("", Colors.TEXT_PRIMARY),
             ("Press [?] or click anywhere to close", Colors.TEXT_SECONDARY),
         ]
@@ -1490,7 +2903,10 @@ class ShipBuilderView(BaseView):
         y = preview_y + 4
         deltas = [
             (f"+{hull_delta} Hull", Colors.GREEN if hull_delta > 0 else Colors.TEXT_SECONDARY),
-            (f"+{shield_delta} Shield", (80, 180, 255) if shield_delta > 0 else Colors.TEXT_SECONDARY),
+            (
+                f"+{shield_delta} Shield",
+                (80, 180, 255) if shield_delta > 0 else Colors.TEXT_SECONDARY,
+            ),
             (f"+{weight_delta:.1f} Weight", Colors.YELLOW),
             (f"+{cost_delta} CR", Colors.TEXT_SECONDARY),
         ]
@@ -1504,35 +2920,142 @@ class ShipBuilderView(BaseView):
             screen.blit(surf, (preview_x + 6, y))
             y += scale_y(12)
 
+    def _render_import_modal(self, screen: pygame.Surface) -> None:
+        """Render the import build code modal overlay."""
+        # Dim background
+        dim = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA)
+        dim.fill((0, 0, 0, 160))
+        screen.blit(dim, (0, 0))
+
+        # Modal panel
+        modal_w = scale_x(500)
+        modal_h = scale_y(220)
+        mx = WINDOW_WIDTH // 2 - modal_w // 2
+        my = WINDOW_HEIGHT // 2 - modal_h // 2
+        draw_panel(screen, (mx, my, modal_w, modal_h), alpha=240)
+
+        # Title
+        title = self.small_font.render("Import Build Code", True, Colors.TEXT_HIGHLIGHT)
+        screen.blit(title, (mx + 15, my + 10))
+
+        # Instructions
+        inst = self.label_font.render(
+            "Paste a build code below (Ctrl+V), then press Enter", True, Colors.TEXT_SECONDARY
+        )
+        screen.blit(inst, (mx + 15, my + 32))
+
+        # Text input area
+        input_y = my + scale_y(55)
+        input_h = scale_y(30)
+        input_rect = pygame.Rect(mx + 10, input_y, modal_w - 20, input_h)
+        pygame.draw.rect(screen, (15, 18, 30), input_rect, border_radius=3)
+        pygame.draw.rect(screen, Colors.UI_BORDER, input_rect, 1, border_radius=3)
+
+        # Display text (truncated if too long)
+        display_text = self._import_text
+        if len(display_text) > 60:
+            display_text = display_text[:57] + "..."
+        if display_text:
+            text_surf = self.label_font.render(display_text, True, Colors.TEXT_PRIMARY)
+        else:
+            text_surf = self.label_font.render("Paste code here...", True, (60, 65, 80))
+        screen.blit(text_surf, (mx + 15, input_y + 8))
+
+        # Blinking cursor
+        import time
+
+        if int(time.time() * 2) % 2 == 0:
+            cursor_x = mx + 15 + (self.label_font.size(display_text)[0] if display_text else 0)
+            pygame.draw.line(
+                screen,
+                Colors.TEXT_PRIMARY,
+                (cursor_x, input_y + 6),
+                (cursor_x, input_y + input_h - 6),
+            )
+
+        # Error message
+        if self._import_error:
+            err_surf = self.label_font.render(self._import_error, True, (220, 60, 60))
+            screen.blit(err_surf, (mx + 15, input_y + input_h + 8))
+
+        # Missing blueprints list
+        if self._import_missing_blueprints:
+            bp_y = input_y + input_h + scale_y(28)
+            header = self.label_font.render("Missing Blueprints:", True, (200, 160, 60))
+            screen.blit(header, (mx + 15, bp_y))
+            bp_y += scale_y(14)
+            for bp in self._import_missing_blueprints[:5]:
+                method = bp.get("unlock_method", "").replace("_", " ").title()
+                line = f"\u2717 {bp['name']} ({bp['category']}) - {method}"
+                if bp.get("unlock_source"):
+                    line += f": {bp['unlock_source'].replace('_', ' ').title()}"
+                bp_surf = self.label_font.render(line, True, (180, 100, 100))
+                screen.blit(bp_surf, (mx + 20, bp_y))
+                bp_y += scale_y(13)
+            if len(self._import_missing_blueprints) > 5:
+                more = self.label_font.render(
+                    f"... and {len(self._import_missing_blueprints) - 5} more",
+                    True,
+                    (140, 100, 100),
+                )
+                screen.blit(more, (mx + 20, bp_y))
+
+        # Buttons hint
+        hint_y = my + modal_h - scale_y(22)
+        hint = self.label_font.render(
+            "[Enter] Import    [Esc] Cancel    [Ctrl+V] Paste", True, (80, 90, 110)
+        )
+        screen.blit(hint, (mx + 15, hint_y))
+
     def _render_confirm_animation(self, screen: pygame.Surface) -> None:
         """Render the build confirmation celebration (Phase E)."""
-        t = self._confirm_anim_timer / 1.2  # 0→1 as animation plays
-        alpha = int(255 * min(1.0, t * 3))  # Fade in fast, hold, then we transition
+        from spacegame.engine.easing import ease_out_back, ease_out_quad
 
-        # Flash overlay
-        if t > 0.8:
-            flash_alpha = int(200 * ((t - 0.8) / 0.2))
+        t = self._confirm_anim_timer / 1.2  # 1→0 as animation plays
+        progress = 1.0 - t  # 0→1 as animation advances
+
+        # Sprite scale: ease_out_back gives a satisfying pop-in overshoot
+        scale_t = ease_out_back(min(progress * 2.0, 1.0))  # Finish scaling in first half
+        alpha = int(255 * ease_out_quad(min(progress * 3.0, 1.0)))  # Fade in fast
+
+        # Flash overlay near end
+        if progress > 0.8:
+            flash_t = ease_out_quad((progress - 0.8) / 0.2)
+            flash_alpha = int(200 * flash_t)
             flash = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA)
             flash.fill((255, 255, 255, flash_alpha))
             screen.blit(flash, (0, 0))
 
-        # Ship sprite centered large
+        # Ship sprite centered large with scale pop
         if self._confirm_anim_surface:
             sprite = self._confirm_anim_surface
-            sprite_alpha = min(255, alpha)
-            sprite.set_alpha(sprite_alpha)
-            rect = sprite.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2))
-            screen.blit(sprite, rect)
+            # Scale from 80% to 100% with overshoot
+            draw_scale = 0.8 + 0.2 * scale_t
+            if draw_scale != 1.0:
+                sw = max(1, int(sprite.get_width() * draw_scale))
+                sh = max(1, int(sprite.get_height() * draw_scale))
+                scaled = pygame.transform.scale(sprite, (sw, sh))
+            else:
+                scaled = sprite
+            scaled.set_alpha(min(255, alpha))
+            rect = scaled.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2))
+            screen.blit(scaled, rect)
 
             # "BUILD CONFIRMED" text
             text = self.header_font.render("BUILD CONFIRMED", True, (255, 220, 100))
-            text.set_alpha(sprite_alpha)
-            text_rect = text.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 + sprite.get_height() // 2 + scale_y(30)))
+            text.set_alpha(min(255, alpha))
+            text_rect = text.get_rect(
+                center=(
+                    WINDOW_WIDTH // 2,
+                    WINDOW_HEIGHT // 2 + scaled.get_height() // 2 + scale_y(30),
+                )
+            )
             screen.blit(text, text_rect)
 
-        # Darken edges
+        # Darken edges — fade out as animation progresses
+        dim_alpha = int(120 * (1.0 - ease_out_quad(progress)))
         dim = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA)
-        dim.fill((0, 0, 0, int(120 * (1.0 - t))))
+        dim.fill((0, 0, 0, dim_alpha))
         screen.blit(dim, (0, 0))
 
     def get_next_state(self) -> Optional[GameState]:

@@ -1018,8 +1018,10 @@ class TestChainDetonation:
         rock_right = session.get_rock_at(2, 0)
         # At least one neighbor should have been affected (chain or broken)
         any_affected = (
-            rock_left.drill_progress > 0 or rock_left.depleted
-            or rock_right.drill_progress > 0 or rock_right.depleted
+            rock_left.drill_progress > 0
+            or rock_left.depleted
+            or rock_right.drill_progress > 0
+            or rock_right.depleted
         )
         assert any_affected
 
@@ -1280,6 +1282,9 @@ class TestSessionMilestones:
         assert milestones[0].completed
 
     def test_rare_ores_tracked(self) -> None:
+        import random
+
+        random.seed(42)  # Deterministic: avoid flaky results from test ordering
         config = MiningConfig(
             system_id="test",
             rock_distribution={"crystal": 1.0},
@@ -1287,7 +1292,16 @@ class TestSessionMilestones:
         )
         milestones = self._make_milestones("rare_ores", threshold=1)
         session = MiningSession(config, milestones=milestones, starting_depth=9)
-        session.click_rock(0, 0)  # Break crystal rock
+        # Crystal and rare both count as rare ores. At depth 9,
+        # depth gating adds iron/dense/rare alongside crystal.
+        # Click all rocks to guarantee at least one crystal or rare.
+        for y in range(config.grid_height):
+            for x in range(config.grid_width):
+                session.click_rock(x, y)
+                if session.rare_ores_found >= 1:
+                    break
+            if session.rare_ores_found >= 1:
+                break
         assert session.rare_ores_found >= 1
         assert milestones[0].completed
 
@@ -1364,8 +1378,11 @@ class TestSessionMilestones:
         config = MiningConfig(system_id="test")
         custom = [
             MiningMilestone(
-                id="custom_1", description="Custom", category="rocks_mined",
-                threshold=99, reward_xp=100,
+                id="custom_1",
+                description="Custom",
+                category="rocks_mined",
+                threshold=99,
+                reward_xp=100,
             )
         ]
         session = MiningSession(config, milestones=custom)

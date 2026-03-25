@@ -3,9 +3,7 @@
 import pytest
 
 pygame = pytest.importorskip("pygame", reason="pygame required for view tests")
-pygame_gui = pytest.importorskip(
-    "pygame_gui", reason="pygame_gui required for view tests"
-)
+pygame_gui = pytest.importorskip("pygame_gui", reason="pygame_gui required for view tests")
 
 from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT  # noqa: E402
 from spacegame.models.attributes import AttributeSheet  # noqa: E402
@@ -143,12 +141,8 @@ class TestViewDoorNoise:
     def test_marcus_silent_doors_no_noise(self) -> None:
         """Marcus silences doors — no noise event added."""
         bonuses = GroundCrewBonuses.compute(crew_ids=["marcus_jin"])
-        enemy = GroundEnemy(
-            id="guard", x=10, y=5, facing=Direction.LEFT, vision_range=5
-        )
-        view, mission = _make_crew_view(
-            player_x=5, player_y=5, enemies=[enemy], bonuses=bonuses
-        )
+        enemy = GroundEnemy(id="guard", x=10, y=5, facing=Direction.LEFT, vision_range=5)
+        view, mission = _make_crew_view(player_x=5, player_y=5, enemies=[enemy], bonuses=bonuses)
 
         # Place a closed door adjacent to player
         mission.ground_map.tiles[5][6] = GroundTile(tile_type=TileType.DOOR_CLOSED)
@@ -156,9 +150,7 @@ class TestViewDoorNoise:
         # Interact to open door
         view._last_dx = 1
         view._last_dy = 0
-        success, msg = view.player_state.interact(
-            view.ground_map, 6, 5
-        )
+        success, msg = view.player_state.interact(view.ground_map, 6, 5)
         # Manually trigger on_player_acted with door_opened
         # Check that silent doors means no noise is generated
         assert mission.get_door_noise_radius() == 0
@@ -173,21 +165,15 @@ class TestViewDoorNoise:
 class TestViewCombatCrewBonuses:
     """Combat in the view passes crew bonuses through."""
 
-    def _start_combat(
-        self, view: GroundExplorationView, mission: GroundMissionState
-    ) -> None:
+    def _start_combat(self, view: GroundExplorationView, mission: GroundMissionState) -> None:
         mission.raise_alert(AlertLevel.COMBAT)
         view._process_enemy_phase()
 
     def test_combat_uses_attributes_for_stats(self) -> None:
         """Player stats in combat use attributes from mission state."""
         attrs = _make_attrs(acu=4, res=4)
-        enemy = GroundEnemy(
-            id="guard", x=6, y=5, facing=Direction.LEFT, vision_range=5
-        )
-        view, mission = _make_crew_view(
-            player_x=5, player_y=5, enemies=[enemy], attributes=attrs
-        )
+        enemy = GroundEnemy(id="guard", x=6, y=5, facing=Direction.LEFT, vision_range=5)
+        view, mission = _make_crew_view(player_x=5, player_y=5, enemies=[enemy], attributes=attrs)
         self._start_combat(view, mission)
         cs = view._combat_state
         assert cs is not None
@@ -202,12 +188,8 @@ class TestViewCombatCrewBonuses:
         prog = PlayerProgression()
         prog.add_xp(5200)
         prog.level_up_skill("scrapper")
-        enemy = GroundEnemy(
-            id="guard", x=6, y=5, facing=Direction.LEFT, vision_range=5
-        )
-        view, mission = _make_crew_view(
-            player_x=5, player_y=5, enemies=[enemy], progression=prog
-        )
+        enemy = GroundEnemy(id="guard", x=6, y=5, facing=Direction.LEFT, vision_range=5)
+        view, mission = _make_crew_view(player_x=5, player_y=5, enemies=[enemy], progression=prog)
         self._start_combat(view, mission)
         cs = view._combat_state
         assert cs is not None
@@ -218,12 +200,8 @@ class TestViewCombatCrewBonuses:
     def test_priya_analyze_in_combat(self) -> None:
         """Priya's analyze weakness is available in combat via A key."""
         bonuses = GroundCrewBonuses.compute(crew_ids=["dr_priya_osei"])
-        enemy = GroundEnemy(
-            id="guard", x=6, y=5, facing=Direction.LEFT, vision_range=5
-        )
-        view, mission = _make_crew_view(
-            player_x=5, player_y=5, enemies=[enemy], bonuses=bonuses
-        )
+        enemy = GroundEnemy(id="guard", x=6, y=5, facing=Direction.LEFT, vision_range=5)
+        view, mission = _make_crew_view(player_x=5, player_y=5, enemies=[enemy], bonuses=bonuses)
         self._start_combat(view, mission)
         cs = view._combat_state
         assert cs is not None
@@ -236,12 +214,8 @@ class TestViewCombatCrewBonuses:
     def test_analyze_bonus_consumed_on_fight(self) -> None:
         """Analyze bonus is consumed by the next fight."""
         bonuses = GroundCrewBonuses.compute(crew_ids=["dr_priya_osei"])
-        enemy = GroundEnemy(
-            id="guard", x=6, y=5, facing=Direction.LEFT, vision_range=5
-        )
-        view, mission = _make_crew_view(
-            player_x=5, player_y=5, enemies=[enemy], bonuses=bonuses
-        )
+        enemy = GroundEnemy(id="guard", x=6, y=5, facing=Direction.LEFT, vision_range=5)
+        view, mission = _make_crew_view(player_x=5, player_y=5, enemies=[enemy], bonuses=bonuses)
         self._start_combat(view, mission)
         _send_key(view, pygame.K_a)  # Activate analyze
         assert view._analyze_bonus == 3
@@ -252,12 +226,8 @@ class TestViewCombatCrewBonuses:
     def test_elena_retreat_bonus_in_view(self) -> None:
         """Elena's retreat bonus is passed to attempt_retreat."""
         bonuses = GroundCrewBonuses.compute(crew_ids=["elena_reeves"])
-        enemy = GroundEnemy(
-            id="guard", x=6, y=5, facing=Direction.LEFT, vision_range=5
-        )
-        view, mission = _make_crew_view(
-            player_x=5, player_y=5, enemies=[enemy], bonuses=bonuses
-        )
+        enemy = GroundEnemy(id="guard", x=6, y=5, facing=Direction.LEFT, vision_range=5)
+        view, mission = _make_crew_view(player_x=5, player_y=5, enemies=[enemy], bonuses=bonuses)
         self._start_combat(view, mission)
         # Elena gives +2 retreat bonus — retreat should be easier
         assert mission.crew_bonuses.retreat_bonus == 2
@@ -266,12 +236,8 @@ class TestViewCombatCrewBonuses:
     def test_tomas_talk_bonus_in_view(self) -> None:
         """Tomas's talk bonus is passed to attempt_talk."""
         bonuses = GroundCrewBonuses.compute(crew_ids=["tomas_drifter"])
-        enemy = GroundEnemy(
-            id="worker", x=6, y=5, facing=Direction.LEFT, vision_range=5
-        )
-        view, mission = _make_crew_view(
-            player_x=5, player_y=5, enemies=[enemy], bonuses=bonuses
-        )
+        enemy = GroundEnemy(id="worker", x=6, y=5, facing=Direction.LEFT, vision_range=5)
+        view, mission = _make_crew_view(player_x=5, player_y=5, enemies=[enemy], bonuses=bonuses)
         self._start_combat(view, mission)
         # Tomas gives +2 talk bonus
         assert mission.crew_bonuses.talk_bonus == 2
@@ -290,12 +256,13 @@ class TestViewPatrolRouteRendering:
         """Rendering with patrol route reveal active doesn't crash."""
         bonuses = GroundCrewBonuses.compute(crew_ids=["elena_reeves"])
         enemy = GroundEnemy(
-            id="guard", x=10, y=10, facing=Direction.RIGHT,
+            id="guard",
+            x=10,
+            y=10,
+            facing=Direction.RIGHT,
             patrol_route=[(10, 10), (15, 10)],
         )
-        view, mission = _make_crew_view(
-            player_x=5, player_y=5, enemies=[enemy], bonuses=bonuses
-        )
+        view, mission = _make_crew_view(player_x=5, player_y=5, enemies=[enemy], bonuses=bonuses)
         screen = pygame.display.get_surface()
         view.render(screen)
         view.on_exit()
@@ -309,21 +276,21 @@ class TestViewPatrolRouteRendering:
 class TestViewCombatLoot:
     """Combat victory awards loot credits."""
 
-    def _start_combat(
-        self, view: GroundExplorationView, mission: GroundMissionState
-    ) -> None:
+    def _start_combat(self, view: GroundExplorationView, mission: GroundMissionState) -> None:
         mission.raise_alert(AlertLevel.COMBAT)
         view._process_enemy_phase()
 
     def test_victory_awards_loot(self) -> None:
         """Victory message includes loot earned."""
         enemy = GroundEnemy(
-            id="guard", x=6, y=5, facing=Direction.LEFT,
-            vision_range=5, loot_credits=50,
+            id="guard",
+            x=6,
+            y=5,
+            facing=Direction.LEFT,
+            vision_range=5,
+            loot_credits=50,
         )
-        view, mission = _make_crew_view(
-            player_x=5, player_y=5, enemies=[enemy]
-        )
+        view, mission = _make_crew_view(player_x=5, player_y=5, enemies=[enemy])
         self._start_combat(view, mission)
         cs = view._combat_state
         assert cs is not None

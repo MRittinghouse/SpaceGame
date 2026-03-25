@@ -5,29 +5,31 @@ Visual map of star systems with navigation and travel mechanics.
 Features animated background, procedural planet thumbnails, and pulsing highlights.
 """
 
+import math
+from typing import Dict, Optional
+
 import pygame
 import pygame_gui
-import math
-from typing import Optional, Dict
-from spacegame.views.base_view import BaseView
-from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState, scale_x, scale_y
-from spacegame.models.system import StarSystem
-from spacegame.models.player import Player
+
+from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH, Colors, GameState, scale_x, scale_y
+from spacegame.engine.audio_manager import get_audio_manager
+from spacegame.engine.backgrounds import AnimatedBackground
+from spacegame.engine.easing import ease_in_out_quad
+from spacegame.engine.fonts import FONT_DISPLAY, FONT_HEADING, FONT_LG, FONT_MD, get_font
+from spacegame.engine.particles import SCAN_PULSE, WARP_TRAIL, ParticlePool
+from spacegame.engine.procedural import generate_planet
+from spacegame.engine.sprites import AnimatedSprite, get_sprite_manager, res_scale
 from spacegame.models.encounter import (
     EncounterRef,
-    check_travel_encounter,
     calculate_encounter_chance,
+    check_travel_encounter,
     filter_enemies_for_system,
 )
-from spacegame.utils.logger import logger
-from spacegame.engine.backgrounds import AnimatedBackground
-from spacegame.engine.fonts import FONT_DISPLAY, FONT_HEADING, FONT_LG, FONT_MD, FontCache
-from spacegame.engine.procedural import generate_planet
-from spacegame.engine.particles import ParticlePool, SCAN_PULSE, WARP_TRAIL
-from spacegame.engine.sprites import AnimatedSprite, get_sprite_manager, res_scale
 from spacegame.models.faction import ReputationTier
-from spacegame.engine.audio_manager import get_audio_manager
-
+from spacegame.models.player import Player
+from spacegame.models.system import StarSystem
+from spacegame.utils.logger import logger
+from spacegame.views.base_view import BaseView
 
 # Standing pip color per reputation tier (None = no indicator)
 _STANDING_COLORS: dict[ReputationTier, Optional[tuple[int, int, int]]] = {
@@ -84,10 +86,10 @@ class GalaxyMapView(BaseView):
         self.hovered_system: Optional[str] = None
         self.next_state: Optional[GameState] = None
 
-        # Fonts
-        self.system_font = FontCache.get(FONT_LG)
-        self.info_font = FontCache.get(FONT_MD)
-        self.title_font = FontCache.get(FONT_HEADING)
+        # Fonts — role-based
+        self.system_font = get_font("header", FONT_LG)  # System names on map
+        self.info_font = get_font("stats", FONT_MD)  # Distance, danger, info
+        self.title_font = get_font("machine", FONT_HEADING)  # Encounter alerts
 
         # UI buttons
         self.trade_button: Optional[pygame_gui.elements.UIButton] = None
@@ -160,7 +162,7 @@ class GalaxyMapView(BaseView):
 
     def _generate_planet_thumbnails(self) -> None:
         """Load system portrait sprites or generate procedural fallbacks."""
-        for i, (sys_id, system) in enumerate(self.systems.items()):
+        for _i, (sys_id, system) in enumerate(self.systems.items()):
             # Try system portrait sprite first
             portrait = self._sprite_mgr.get_system_portrait(sys_id)
             if portrait:
@@ -220,22 +222,30 @@ class GalaxyMapView(BaseView):
             manager=self.ui_manager,
         )
         self.travel_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(button_x, start_y + (button_height + button_gap), button_width, button_height),
+            relative_rect=pygame.Rect(
+                button_x, start_y + (button_height + button_gap), button_width, button_height
+            ),
             text="Travel",
             manager=self.ui_manager,
         )
         self.shipyard_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(button_x, start_y + (button_height + button_gap) * 2, button_width, button_height),
+            relative_rect=pygame.Rect(
+                button_x, start_y + (button_height + button_gap) * 2, button_width, button_height
+            ),
             text="Shipyard",
             manager=self.ui_manager,
         )
         self.save_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(button_x, start_y + (button_height + button_gap) * 3, button_width, button_height),
+            relative_rect=pygame.Rect(
+                button_x, start_y + (button_height + button_gap) * 3, button_width, button_height
+            ),
             text="Save",
             manager=self.ui_manager,
         )
         self.menu_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(button_x, start_y + (button_height + button_gap) * 4, button_width, button_height),
+            relative_rect=pygame.Rect(
+                button_x, start_y + (button_height + button_gap) * 4, button_width, button_height
+            ),
             text="Main Menu",
             manager=self.ui_manager,
         )
@@ -420,9 +430,7 @@ class GalaxyMapView(BaseView):
         if success:
             # Record trade route trip
             if origin_id:
-                self.player.trade_route_tracker.record_trip(
-                    origin_id, self.selected_system
-                )
+                self.player.trade_route_tracker.record_trip(origin_id, self.selected_system)
             self.player.previous_system_id = origin_id
 
             from spacegame.config import XP_PER_TRAVEL
@@ -485,6 +493,7 @@ class GalaxyMapView(BaseView):
                         protection = enc_mods.get("protection_chance", 0)
                         if protection > 0 and encounter.encounter_type == "hostile":
                             import hashlib
+
                             seed_str = f"{self.player.game_day}_{self.selected_system}_protection"
                             seed = int(hashlib.md5(seed_str.encode()).hexdigest()[:8], 16)
                             if (seed % 100) < protection:
@@ -507,9 +516,7 @@ class GalaxyMapView(BaseView):
 
                 rng = _rng.Random(encounter.encounter_seed)
                 self._travel_encounter_stop = 0.4 + rng.random() * 0.4
-                logger.info(
-                    f"Encounter will trigger at {self._travel_encounter_stop:.0%} of route"
-                )
+                logger.info(f"Encounter will trigger at {self._travel_encounter_stop:.0%} of route")
             else:
                 self._travel_encounter_stop = 1.0
 
@@ -534,16 +541,20 @@ class GalaxyMapView(BaseView):
 
         self._confirm_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
-                center_x - btn_width - gap // 2, center_y + scale_y(60),
-                btn_width, btn_height,
+                center_x - btn_width - gap // 2,
+                center_y + scale_y(60),
+                btn_width,
+                btn_height,
             ),
             text="Confirm",
             manager=self.ui_manager,
         )
         self._cancel_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
-                center_x + gap // 2, center_y + scale_y(60),
-                btn_width, btn_height,
+                center_x + gap // 2,
+                center_y + scale_y(60),
+                btn_width,
+                btn_height,
             ),
             text="Cancel",
             manager=self.ui_manager,
@@ -584,6 +595,7 @@ class GalaxyMapView(BaseView):
             manager=self.ui_manager,
         )
         from spacegame.models.journal import PLAYER_ENTRY_MAX_LENGTH
+
         self._quick_add_text_entry.set_text_length_limit(PLAYER_ENTRY_MAX_LENGTH)
 
         btn_width = scale_x(100)
@@ -591,16 +603,20 @@ class GalaxyMapView(BaseView):
         gap = scale_x(16)
         self._quick_add_confirm_btn = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
-                center_x - btn_width - gap // 2, center_y + scale_y(30),
-                btn_width, btn_height,
+                center_x - btn_width - gap // 2,
+                center_y + scale_y(30),
+                btn_width,
+                btn_height,
             ),
             text="Save",
             manager=self.ui_manager,
         )
         self._quick_add_cancel_btn = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
-                center_x + gap // 2, center_y + scale_y(30),
-                btn_width, btn_height,
+                center_x + gap // 2,
+                center_y + scale_y(30),
+                btn_width,
+                btn_height,
             ),
             text="Cancel",
             manager=self.ui_manager,
@@ -680,10 +696,11 @@ class GalaxyMapView(BaseView):
             origin = self.systems[self._travel_origin_id]
             dest = self.systems[self._travel_dest_id]
             t = min(self._travel_progress, self._travel_encounter_stop)
+            eased_t = ease_in_out_quad(t)
             ox, oy = self._world_to_screen(origin.coordinates.x, origin.coordinates.y)
             dx, dy = self._world_to_screen(dest.coordinates.x, dest.coordinates.y)
-            ship_x = ox + (dx - ox) * t
-            ship_y = oy + (dy - oy) * t
+            ship_x = ox + (dx - ox) * eased_t
+            ship_y = oy + (dy - oy) * eased_t
             self.particles.emit(ship_x, ship_y, WARP_TRAIL)
 
         # Check if encounter triggers mid-route
@@ -697,7 +714,9 @@ class GalaxyMapView(BaseView):
             self._travel_progress = self._travel_encounter_stop
             # Burst particles at encounter point
             self.particles.emit(ship_x, ship_y, SCAN_PULSE)
-            enc_type = self._travel_encounter.encounter_type if self._travel_encounter else "hostile"
+            enc_type = (
+                self._travel_encounter.encounter_type if self._travel_encounter else "hostile"
+            )
             if enc_type == "hostile":
                 logger.info("Travel encounter: HOSTILE CONTACT!")
             else:
@@ -785,8 +804,11 @@ class GalaxyMapView(BaseView):
                 gh = half_h * 2 + 14
                 glow_surf = pygame.Surface((gw, gh), pygame.SRCALPHA)
                 pygame.draw.rect(
-                    glow_surf, (*Colors.TEXT_HIGHLIGHT, glow_alpha),
-                    (0, 0, gw, gh), 3, border_radius=4,
+                    glow_surf,
+                    (*Colors.TEXT_HIGHLIGHT, glow_alpha),
+                    (0, 0, gw, gh),
+                    3,
+                    border_radius=4,
                 )
                 screen.blit(glow_surf, (screen_x - gw // 2, screen_y - gh // 2))
 
@@ -795,8 +817,11 @@ class GalaxyMapView(BaseView):
                 sw = half_w * 2 + 8
                 sh = half_h * 2 + 8
                 pygame.draw.rect(
-                    screen, Colors.TEXT,
-                    (screen_x - sw // 2, screen_y - sh // 2, sw, sh), 2, border_radius=3,
+                    screen,
+                    Colors.TEXT,
+                    (screen_x - sw // 2, screen_y - sh // 2, sw, sh),
+                    2,
+                    border_radius=3,
                 )
 
             # Hovered system highlight
@@ -804,8 +829,11 @@ class GalaxyMapView(BaseView):
                 hw = half_w * 2 + 4
                 hh = half_h * 2 + 4
                 pygame.draw.rect(
-                    screen, (255, 255, 255),
-                    (screen_x - hw // 2, screen_y - hh // 2, hw, hh), 1, border_radius=2,
+                    screen,
+                    (255, 255, 255),
+                    (screen_x - hw // 2, screen_y - hh // 2, hw, hh),
+                    1,
+                    border_radius=2,
                 )
 
             # Draw system portrait or procedural planet thumbnail
@@ -823,14 +851,20 @@ class GalaxyMapView(BaseView):
                 border_surf = pygame.Surface((border_w, border_h), pygame.SRCALPHA)
                 if half_w > 20:  # Portrait — draw rectangle border
                     pygame.draw.rect(
-                        border_surf, (*faction_color, 160),
-                        (0, 0, border_w, border_h), 2, border_radius=3,
+                        border_surf,
+                        (*faction_color, 160),
+                        (0, 0, border_w, border_h),
+                        2,
+                        border_radius=3,
                     )
                 else:  # Procedural — draw circle ring
                     r = min(border_w, border_h) // 2
                     pygame.draw.circle(
-                        border_surf, (*faction_color, 160),
-                        (border_w // 2, border_h // 2), r, 2,
+                        border_surf,
+                        (*faction_color, 160),
+                        (border_w // 2, border_h // 2),
+                        r,
+                        2,
                     )
                 screen.blit(border_surf, (screen_x - border_w // 2, screen_y - border_h // 2))
 
@@ -872,9 +906,7 @@ class GalaxyMapView(BaseView):
                         pe_surf = pygame.Surface((14, 14), pygame.SRCALPHA)
                         # Small diamond shape in cyan
                         pe_points = [(7, 1), (13, 7), (7, 13), (1, 7)]
-                        pygame.draw.polygon(
-                            pe_surf, (100, 200, 255, min(255, pe_alpha)), pe_points
-                        )
+                        pygame.draw.polygon(pe_surf, (100, 200, 255, min(255, pe_alpha)), pe_points)
                         pygame.draw.polygon(
                             pe_surf, (180, 140, 255, min(255, pe_alpha // 2)), pe_points, 1
                         )
@@ -993,10 +1025,11 @@ class GalaxyMapView(BaseView):
             origin = self.systems[self._travel_origin_id]
             dest = self.systems[self._travel_dest_id]
             t = min(self._travel_progress, self._travel_encounter_stop)
+            eased_t = ease_in_out_quad(t)
             ox, oy = self._world_to_screen(origin.coordinates.x, origin.coordinates.y)
             dx, dy = self._world_to_screen(dest.coordinates.x, dest.coordinates.y)
-            ship_x = ox + (dx - ox) * t
-            ship_y = oy + (dy - oy) * t
+            ship_x = ox + (dx - ox) * eased_t
+            ship_y = oy + (dy - oy) * eased_t
             angle = math.degrees(math.atan2(-(dy - oy), dx - ox))
             return ship_x, ship_y, angle
 
@@ -1031,8 +1064,10 @@ class GalaxyMapView(BaseView):
             glow_size = glow_radius * 2
             glow_surf = pygame.Surface((glow_size, glow_size), pygame.SRCALPHA)
             pygame.draw.circle(
-                glow_surf, (*Colors.TEXT_HIGHLIGHT, 60),
-                (glow_radius, glow_radius), glow_radius,
+                glow_surf,
+                (*Colors.TEXT_HIGHLIGHT, 60),
+                (glow_radius, glow_radius),
+                glow_radius,
             )
             screen.blit(
                 glow_surf,
@@ -1076,7 +1111,9 @@ class GalaxyMapView(BaseView):
 
         # Encounter risk %
         base_chance = {
-            "safe": 0, "moderate": 15, "dangerous": 30,
+            "safe": 0,
+            "moderate": 15,
+            "dangerous": 30,
         }.get(dest.danger_level, 15)
         risk_pct = calculate_encounter_chance(base_chance, distance)
 
@@ -1128,7 +1165,7 @@ class GalaxyMapView(BaseView):
         # Pulsing text
         pulse = 0.5 + 0.5 * math.sin(self._glow_time * 8)
         alpha = int(180 + 75 * pulse)
-        alert_font = FontCache.get(FONT_DISPLAY)
+        alert_font = get_font("machine", FONT_DISPLAY)
 
         # Type-specific alert styling
         _ALERT_STYLES: dict[str, tuple[str, tuple[int, int, int], tuple[int, int, int, int]]] = {
@@ -1140,9 +1177,16 @@ class GalaxyMapView(BaseView):
             "debris": ("DEBRIS FIELD", (160, 160, 160), (20, 20, 20, 180)),
             "anomaly": ("ANOMALY DETECTED", (180, 100, 220), (25, 0, 35, 180)),
         }
-        label, color, bg_base = _ALERT_STYLES.get(
-            enc_type, ("ENCOUNTER", (200, 200, 200), (20, 20, 20, 180))
-        )
+        # Legendary boss encounters get a unique flash
+        enc_id = getattr(enc, "encounter_def_id", "") or getattr(enc, "id", "") or ""
+        if enc_id.startswith("legendary_"):
+            label = "LEGENDARY THREAT"
+            color = (255, 200, 50)
+            bg_base = (50, 30, 0, 200)
+        else:
+            label, color, bg_base = _ALERT_STYLES.get(
+                enc_type, ("ENCOUNTER", (200, 200, 200), (20, 20, 20, 180))
+            )
         text_surf = alert_font.render(label, True, color)
         bg_color = (bg_base[0], bg_base[1], bg_base[2], min(255, alpha))
 
@@ -1243,9 +1287,9 @@ class GalaxyMapView(BaseView):
             fuel_cost = self._calculate_fuel_cost(system_id)
 
             from spacegame.models.encounter import (
-                ENCOUNTER_CHANCE_SAFE,
-                ENCOUNTER_CHANCE_MODERATE,
                 ENCOUNTER_CHANCE_DANGEROUS,
+                ENCOUNTER_CHANCE_MODERATE,
+                ENCOUNTER_CHANCE_SAFE,
             )
 
             base_chance = {
@@ -1255,16 +1299,16 @@ class GalaxyMapView(BaseView):
             }.get(system.danger_level, 0)
             enc_chance = calculate_encounter_chance(base_chance, distance)
             risk_text = (
-                f"Encounter Risk: {enc_chance:.0f}%"
-                if enc_chance > 0
-                else "Encounter Risk: None"
+                f"Encounter Risk: {enc_chance:.0f}%" if enc_chance > 0 else "Encounter Risk: None"
             )
 
-            info_lines.extend([
-                (f"Distance: {distance:.1f} units", Colors.TEXT),
-                (f"Fuel Cost: {fuel_cost} units", Colors.TEXT),
-                (risk_text, Colors.TEXT),
-            ])
+            info_lines.extend(
+                [
+                    (f"Distance: {distance:.1f} units", Colors.TEXT),
+                    (f"Fuel Cost: {fuel_cost} units", Colors.TEXT),
+                    (risk_text, Colors.TEXT),
+                ]
+            )
 
         # Active event info
         active_event = self.active_events.get(system_id)
@@ -1276,9 +1320,7 @@ class GalaxyMapView(BaseView):
             commodity_name = commodity.name if commodity else active_event.commodity_id
             days_left = active_event.days_remaining(self.player.game_day)
             info_lines.append(("", Colors.TEXT))
-            info_lines.append(
-                (f"Event: {active_event.event_type.value.upper()}", Colors.YELLOW)
-            )
+            info_lines.append((f"Event: {active_event.event_type.value.upper()}", Colors.YELLOW))
             info_lines.append((f"  {commodity_name} ({days_left}d)", Colors.YELLOW))
 
         # Political event info
@@ -1287,13 +1329,13 @@ class GalaxyMapView(BaseView):
                 if pe.faction_a_id == faction_id or pe.faction_b_id == faction_id:
                     days_left = pe.days_remaining(self.player.game_day)
                     info_lines.append(("", Colors.TEXT))
-                    info_lines.append((
-                        f"Political: {pe.event_type.value.replace('_', ' ').title()}",
-                        Colors.TEXT,
-                    ))
                     info_lines.append(
-                        (f"  {pe.description[:40]}... ({days_left}d)", Colors.TEXT)
+                        (
+                            f"Political: {pe.event_type.value.replace('_', ' ').title()}",
+                            Colors.TEXT,
+                        )
                     )
+                    info_lines.append((f"  {pe.description[:40]}... ({days_left}d)", Colors.TEXT))
                     break
 
         # Remote market prices
@@ -1307,11 +1349,7 @@ class GalaxyMapView(BaseView):
             remote_price_lines = self._get_remote_price_lines(system)
 
         # --- Calculate total panel height to fit ALL content ---
-        panel_height = (
-            pad
-            + header_height
-            + len(info_lines) * line_height
-        )
+        panel_height = pad + header_height + len(info_lines) * line_height
         if remote_price_lines:
             panel_height += 4 + len(remote_price_lines) * line_height
         panel_height += pad  # bottom padding
@@ -1322,18 +1360,14 @@ class GalaxyMapView(BaseView):
         screen.blit(panel_surf, (panel_x, panel_y))
 
         pygame.draw.rect(
-            screen, Colors.UI_BORDER,
-            (panel_x, panel_y, panel_width, panel_height), 1,
+            screen,
+            Colors.UI_BORDER,
+            (panel_x, panel_y, panel_width, panel_height),
+            1,
         )
-        inner_rect = pygame.Rect(
-            panel_x + 1, panel_y + 1, panel_width - 2, panel_height - 2
-        )
-        glow_surf = pygame.Surface(
-            (inner_rect.width, inner_rect.height), pygame.SRCALPHA
-        )
-        pygame.draw.rect(
-            glow_surf, (*Colors.TEXT_HIGHLIGHT, 30), glow_surf.get_rect(), 1
-        )
+        inner_rect = pygame.Rect(panel_x + 1, panel_y + 1, panel_width - 2, panel_height - 2)
+        glow_surf = pygame.Surface((inner_rect.width, inner_rect.height), pygame.SRCALPHA)
+        pygame.draw.rect(glow_surf, (*Colors.TEXT_HIGHLIGHT, 30), glow_surf.get_rect(), 1)
         screen.blit(glow_surf, inner_rect.topleft)
 
         # --- Render content ---
@@ -1368,12 +1402,10 @@ class GalaxyMapView(BaseView):
                 screen.blit(surf, (panel_x + pad, y_offset))
                 y_offset += line_height
 
-    def _get_remote_price_lines(
-        self, system: StarSystem
-    ) -> list[tuple[str, tuple[int, int, int]]]:
+    def _get_remote_price_lines(self, system: StarSystem) -> list[tuple[str, tuple[int, int, int]]]:
         """Build price summary lines for a remote system."""
-        from spacegame.models.market import Market
         from spacegame.data_loader import get_data_loader
+        from spacegame.models.market import Market
 
         dl = get_data_loader()
         commodities = list(dl.commodities.values())

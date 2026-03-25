@@ -3,9 +3,7 @@
 import pytest
 
 pygame = pytest.importorskip("pygame", reason="pygame required for EncounterView tests")
-pygame_gui = pytest.importorskip(
-    "pygame_gui", reason="pygame_gui required for EncounterView tests"
-)
+pygame_gui = pytest.importorskip("pygame_gui", reason="pygame_gui required for EncounterView tests")
 
 from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, GameState  # noqa: E402
 from spacegame.models.encounter import (  # noqa: E402
@@ -72,12 +70,13 @@ def _make_definition(
         description=description,
         choices=choices
         or [
-            _make_choice("help", "Help", "Provide aid.", _make_outcome(
-                "You helped.", [MissionReward("credits", 100)]
-            )),
-            _make_choice("ignore", "Ignore", "Leave them.", _make_outcome(
-                "You left."
-            )),
+            _make_choice(
+                "help",
+                "Help",
+                "Provide aid.",
+                _make_outcome("You helped.", [MissionReward("credits", 100)]),
+            ),
+            _make_choice("ignore", "Ignore", "Leave them.", _make_outcome("You left.")),
         ],
     )
 
@@ -199,7 +198,9 @@ class TestOutcomePhase:
 
     def test_combat_outcome_sets_pending(self) -> None:
         combat_choice = _make_choice(
-            "fight", "Fight", "Fight them.",
+            "fight",
+            "Fight",
+            "Fight them.",
             _make_outcome("Combat begins.", leads_to_combat=True),
         )
         defn = _make_definition(choices=[combat_choice])
@@ -238,7 +239,9 @@ class TestDonePhase:
 
     def test_combat_outcome_returns_combat(self) -> None:
         combat_choice = _make_choice(
-            "fight", "Fight", "Fight them.",
+            "fight",
+            "Fight",
+            "Fight them.",
             _make_outcome("Combat!", leads_to_combat=True),
         )
         defn = _make_definition(choices=[combat_choice])
@@ -273,7 +276,9 @@ class TestShakedownSubstitution:
 
     def test_sentinel_resolved_in_rewards(self) -> None:
         pay_choice = _make_choice(
-            "pay", "Pay", "Pay them.",
+            "pay",
+            "Pay",
+            "Pay them.",
             _make_outcome(
                 "Paid.",
                 [MissionReward("deduct_credits", -1)],
@@ -294,7 +299,9 @@ class TestShakedownSubstitution:
 
     def test_demand_replaced_in_choice_labels(self) -> None:
         choice = _make_choice(
-            "pay", "Pay {shakedown_demand} CR", "Hand over credits.",
+            "pay",
+            "Pay {shakedown_demand} CR",
+            "Hand over credits.",
             _make_outcome("Done."),
         )
         defn = _make_definition(

@@ -9,10 +9,9 @@ from __future__ import annotations
 
 import math
 import random
-import time
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import List, Optional, Dict, TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict, List, Optional
 
 if TYPE_CHECKING:
     from spacegame.models.drone import MiningDrone
@@ -480,7 +479,9 @@ class MiningSession:
         # Milestone tracking
         self.rocks_broken: int = 0
         self.rare_ores_found: int = 0
-        self.milestones: list[MiningMilestone] = milestones if milestones is not None else self._select_milestones()
+        self.milestones: list[MiningMilestone] = (
+            milestones if milestones is not None else self._select_milestones()
+        )
         self.newly_completed_milestones: list[MiningMilestone] = []
 
         self.rocks: List[AsteroidRock] = []
@@ -603,9 +604,7 @@ class MiningSession:
             return
 
         # Pick random non-monolith rocks to replace with hazards
-        candidates = [
-            r for r in self.rocks if r.rock_type != RockType.MONOLITH
-        ]
+        candidates = [r for r in self.rocks if r.rock_type != RockType.MONOLITH]
         random.shuffle(candidates)
         for i, htype in enumerate(hazard_types):
             if i >= len(candidates):
@@ -708,7 +707,9 @@ class MiningSession:
 
         # Apply click — empowered clicks deal 3x damage
         power_multiplier = 3.0 if empowered else 1.0
-        effective_power = self.config.base_click_power * (1 + self.click_power_bonus) * power_multiplier
+        effective_power = (
+            self.config.base_click_power * (1 + self.click_power_bonus) * power_multiplier
+        )
         yield_amount = rock.apply_click(effective_power)
 
         if yield_amount is not None:
@@ -903,7 +904,8 @@ class MiningSession:
                 claimed.add(id(rock))
 
         available = [
-            r for r in self.rocks
+            r
+            for r in self.rocks
             if not r.depleted and id(r) not in claimed and not r.config.drone_immune
         ]
 
@@ -999,9 +1001,7 @@ class MiningSession:
                     neighbor.drilling = False
                     yield_amount = self._apply_yield_bonus(neighbor.get_yield())
                     commodity = ROCK_TYPE_CONFIGS[neighbor.rock_type].commodity_id
-                    self.total_mined[commodity] = (
-                        self.total_mined.get(commodity, 0) + yield_amount
-                    )
+                    self.total_mined[commodity] = self.total_mined.get(commodity, 0) + yield_amount
                     self._on_rock_broken(neighbor)
                     self.chain_results.append(
                         ChainBreak(
@@ -1032,9 +1032,7 @@ class MiningSession:
                 neighbor.drilling = False
                 yield_amount = self._apply_yield_bonus(neighbor.get_yield())
                 commodity = neighbor.commodity_id
-                self.total_mined[commodity] = (
-                    self.total_mined.get(commodity, 0) + yield_amount
-                )
+                self.total_mined[commodity] = self.total_mined.get(commodity, 0) + yield_amount
                 self._on_rock_broken(neighbor)
                 self.chain_results.append(
                     ChainBreak(
@@ -1087,22 +1085,24 @@ class MiningSession:
             for neighbor in neighbors:
                 if neighbor.depleted:
                     continue
-                neighbor.drill_progress = min(1.0, neighbor.drill_progress + UNSTABLE_PROGRESS_AMOUNT)
+                neighbor.drill_progress = min(
+                    1.0, neighbor.drill_progress + UNSTABLE_PROGRESS_AMOUNT
+                )
                 if neighbor.drill_progress >= 1.0:
                     neighbor.drill_progress = 1.0
                     neighbor.depleted = True
                     neighbor.drilling = False
                     yield_amount = self._apply_yield_bonus(neighbor.get_yield())
                     commodity = neighbor.commodity_id
-                    self.total_mined[commodity] = (
-                        self.total_mined.get(commodity, 0) + yield_amount
-                    )
+                    self.total_mined[commodity] = self.total_mined.get(commodity, 0) + yield_amount
                     self._on_rock_broken(neighbor)
-                    results.append(MiningResult(
-                        commodity_id=commodity,
-                        quantity=yield_amount,
-                        rock_type=neighbor.rock_type,
-                    ))
+                    results.append(
+                        MiningResult(
+                            commodity_id=commodity,
+                            quantity=yield_amount,
+                            rock_type=neighbor.rock_type,
+                        )
+                    )
             to_remove.append(hazard)
         for hazard in to_remove:
             self.hazards.remove(hazard)
@@ -1156,7 +1156,9 @@ class MiningSession:
                 for neighbor in neighbors:
                     if neighbor.depleted:
                         continue
-                    neighbor.drill_progress = min(1.0, neighbor.drill_progress + VENT_PROGRESS_AMOUNT)
+                    neighbor.drill_progress = min(
+                        1.0, neighbor.drill_progress + VENT_PROGRESS_AMOUNT
+                    )
                     if neighbor.drill_progress >= 1.0:
                         neighbor.drill_progress = 1.0
                         neighbor.depleted = True
@@ -1167,11 +1169,13 @@ class MiningSession:
                             self.total_mined.get(commodity, 0) + yield_amount
                         )
                         self._on_rock_broken(neighbor)
-                        results.append(MiningResult(
-                            commodity_id=commodity,
-                            quantity=yield_amount,
-                            rock_type=neighbor.rock_type,
-                        ))
+                        results.append(
+                            MiningResult(
+                                commodity_id=commodity,
+                                quantity=yield_amount,
+                                rock_type=neighbor.rock_type,
+                            )
+                        )
         return results
 
     def regenerate_field(self) -> DepthAdvanceResult:

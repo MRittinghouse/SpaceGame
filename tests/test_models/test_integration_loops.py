@@ -171,8 +171,7 @@ class TestAchievementLoop:
 
         # Get all achievements, find one with XP reward
         xp_achievements = [
-            a for a in dl.achievements
-            if a.reward_type == "xp" and a.reward_value > 0
+            a for a in dl.achievements if a.reward_type == "xp" and a.reward_value > 0
         ]
         if not xp_achievements:
             return  # Skip if no XP achievements

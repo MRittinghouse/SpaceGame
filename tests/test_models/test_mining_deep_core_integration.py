@@ -175,13 +175,10 @@ class TestDeepCoreEffects:
         random.seed(1)
         config = MiningConfig(system_id="breakstone", grid_width=6, grid_height=1)
         # Guarantee chains fire, and add +1 max chain depth
-        session = MiningSession(
-            config, chain_chance_bonus=10.0, max_chain_depth_bonus=1
-        )
+        session = MiningSession(config, chain_chance_bonus=10.0, max_chain_depth_bonus=1)
         # Place a line of common rocks with high progress so chain breaks them
         session.rocks = [
-            AsteroidRock(rock_type=RockType.COMMON, grid_x=i, grid_y=0)
-            for i in range(6)
+            AsteroidRock(rock_type=RockType.COMMON, grid_x=i, grid_y=0) for i in range(6)
         ]
         for rock in session.rocks[1:]:
             rock.drill_progress = 0.80  # Will break with 0.25 chain progress

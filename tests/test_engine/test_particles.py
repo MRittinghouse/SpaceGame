@@ -110,8 +110,12 @@ class TestParticlePoolBasics:
 
     def test_particles_respect_gravity(self, pool: ParticlePool) -> None:
         config = ParticleConfig(
-            count=1, speed_min=0, speed_max=0,
-            life_min=1.0, life_max=1.0, gravity=100.0,
+            count=1,
+            speed_min=0,
+            speed_max=0,
+            life_min=1.0,
+            life_max=1.0,
+            gravity=100.0,
         )
         pool.emit(100, 100, config)
         alive = [p for p in pool.particles if p.alive]
@@ -122,19 +126,42 @@ class TestParticlePoolBasics:
     def test_render_all_paths(self, screen: pygame.Surface, pool: ParticlePool) -> None:
         """Render opaque, alpha, and glow particles without errors."""
         # Fully opaque, no glow
-        pool.emit(100, 100, ParticleConfig(
-            count=2, alpha_start=255, alpha_end=255, glow=False,
-            life_min=1.0, life_max=1.0,
-        ))
+        pool.emit(
+            100,
+            100,
+            ParticleConfig(
+                count=2,
+                alpha_start=255,
+                alpha_end=255,
+                glow=False,
+                life_min=1.0,
+                life_max=1.0,
+            ),
+        )
         # Alpha blended
-        pool.emit(200, 200, ParticleConfig(
-            count=2, alpha_start=128, alpha_end=0, glow=False,
-            life_min=1.0, life_max=1.0,
-        ))
+        pool.emit(
+            200,
+            200,
+            ParticleConfig(
+                count=2,
+                alpha_start=128,
+                alpha_end=0,
+                glow=False,
+                life_min=1.0,
+                life_max=1.0,
+            ),
+        )
         # Glow
-        pool.emit(300, 300, ParticleConfig(
-            count=2, glow=True, life_min=1.0, life_max=1.0,
-        ))
+        pool.emit(
+            300,
+            300,
+            ParticleConfig(
+                count=2,
+                glow=True,
+                life_min=1.0,
+                life_max=1.0,
+            ),
+        )
         pool.update(0.1)
         pool.render(screen)
 

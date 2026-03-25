@@ -18,13 +18,25 @@ from spacegame.models.ship_build import (
 
 def _make_ship_type() -> ShipType:
     return ShipType(
-        id="shuttle", name="Shuttle", ship_class="starter",
+        id="shuttle",
+        name="Shuttle",
+        ship_class="starter",
         description="A basic ship.",
-        cargo_capacity=50, fuel_capacity=100, fuel_efficiency=10,
-        speed_multiplier=1.0, purchase_price=5000, resale_value=3500,
-        crew_slots=1, special_abilities=[], availability="common",
-        combat_hull=60, combat_shields=20, combat_energy=8,
-        combat_energy_regen=3, combat_speed=12, combat_evasion=25,
+        cargo_capacity=50,
+        fuel_capacity=100,
+        fuel_efficiency=10,
+        speed_multiplier=1.0,
+        purchase_price=5000,
+        resale_value=3500,
+        crew_slots=1,
+        special_abilities=[],
+        availability="common",
+        combat_hull=60,
+        combat_shields=20,
+        combat_energy=8,
+        combat_energy_regen=3,
+        combat_speed=12,
+        combat_evasion=25,
         combat_accuracy=65,
     )
 
@@ -40,9 +52,13 @@ def _make_build() -> ShipBuild:
 def _make_materials() -> dict[str, HullMaterial]:
     return {
         "standard_plate": HullMaterial(
-            id="standard_plate", name="Standard", description="test",
+            id="standard_plate",
+            name="Standard",
+            description="test",
             color_primary=(128, 128, 128),
-            hull_per_pixel=2.5, weight_per_pixel=0.7, cost_per_pixel=15,
+            hull_per_pixel=2.5,
+            weight_per_pixel=0.7,
+            cost_per_pixel=15,
         ),
     }
 
@@ -123,6 +139,7 @@ class TestDataLoaderShapes:
 
     def test_load_shapes(self) -> None:
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_hull_shapes()
         assert len(dl.hull_shapes) == 56, f"Expected 56 shapes, got {len(dl.hull_shapes)}"
@@ -132,6 +149,7 @@ class TestDataLoaderShapes:
 
     def test_load_materials(self) -> None:
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_hull_materials()
         assert len(dl.hull_materials) == 16, f"Expected 16 materials, got {len(dl.hull_materials)}"

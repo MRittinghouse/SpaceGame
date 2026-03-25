@@ -136,9 +136,7 @@ class DialogueManager:
         """Check if a dialogue is currently in progress."""
         return self._current_tree is not None and self._current_node_id is not None
 
-    def start_dialogue(
-        self, tree: DialogueTree, npc_id: Optional[str] = None
-    ) -> None:
+    def start_dialogue(self, tree: DialogueTree, npc_id: Optional[str] = None) -> None:
         """Begin a new dialogue conversation.
 
         Args:
@@ -203,11 +201,7 @@ class DialogueManager:
             self.set_flag(response.set_flag)
 
         # Apply disposition change
-        if (
-            response.disposition_change != 0
-            and self._social_manager
-            and self._current_npc_id
-        ):
+        if response.disposition_change != 0 and self._social_manager and self._current_npc_id:
             self._social_manager.modify_disposition(
                 self._current_npc_id, response.disposition_change
             )
@@ -237,9 +231,7 @@ class DialogueManager:
         self._current_node_id = response.next_node_id
         return self.get_current_node()
 
-    def _resolve_skill_check(
-        self, response: DialogueResponse
-    ) -> Optional[DialogueNode]:
+    def _resolve_skill_check(self, response: DialogueResponse) -> Optional[DialogueNode]:
         """Resolve a skill check response and navigate to the appropriate node."""
         check = response.skill_check
         assert check is not None  # Caller guarantees this
@@ -247,9 +239,7 @@ class DialogueManager:
         npc_id = self._current_npc_id or ""
 
         if self._social_manager:
-            success, msg = self._social_manager.resolve_check(
-                check.skill, check.difficulty, npc_id
-            )
+            success, msg = self._social_manager.resolve_check(check.skill, check.difficulty, npc_id)
             self._last_check_result = (success, msg)
         else:
             # No social manager — fall back to success path

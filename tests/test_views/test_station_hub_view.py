@@ -178,9 +178,7 @@ class TestStationHubLocationCards:
 class TestStationHubNavigation:
     """Tests for navigation state transitions."""
 
-    def _make_view_entered(
-        self, system_id: str = "nexus_prime"
-    ) -> StationHubView:
+    def _make_view_entered(self, system_id: str = "nexus_prime") -> StationHubView:
         manager, player, loader = _make_test_env(system_id)
         system = loader.get_system(system_id)
         locations = loader.get_locations_for_system(system_id)
@@ -256,9 +254,7 @@ class TestStationHubNavigation:
 class TestStationHubCantina:
     """Tests for cantina transition to dedicated view."""
 
-    def _make_view_entered(
-        self, system_id: str = "nexus_prime"
-    ) -> StationHubView:
+    def _make_view_entered(self, system_id: str = "nexus_prime") -> StationHubView:
         manager, player, loader = _make_test_env(system_id)
         system = loader.get_system(system_id)
         locations = loader.get_locations_for_system(system_id)

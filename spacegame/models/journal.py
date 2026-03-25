@@ -6,9 +6,8 @@ with tag-based filtering and chronological organization.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any, Optional
-
 
 # Valid tags for player entries
 VALID_TAGS: frozenset[str] = frozenset({"people", "places", "suspicions", "goals", "travel", ""})
@@ -24,11 +23,11 @@ class JournalEntry:
     text: str
     game_day: int
     system_id: str
-    source: str = "auto"        # "auto" or "player"
-    tag: str = ""               # "people", "places", "suspicions", "goals", or ""
-    trigger_flag: str = ""      # For auto entries: the flag that triggers this entry
-    mission_id: str = ""        # Which mission triggered this (auto entries only)
-    created_at: int = 0         # Monotonic counter for stable sort within a day
+    source: str = "auto"  # "auto" or "player"
+    tag: str = ""  # "people", "places", "suspicions", "goals", or ""
+    trigger_flag: str = ""  # For auto entries: the flag that triggers this entry
+    mission_id: str = ""  # Which mission triggered this (auto entries only)
+    created_at: int = 0  # Monotonic counter for stable sort within a day
 
     def __post_init__(self) -> None:
         """Validate entry constraints."""

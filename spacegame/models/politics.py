@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import hashlib
 import random as _rng
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Optional
 
@@ -87,9 +87,7 @@ class IntelReport:
     acquired_day: int
     delivered: bool = False
 
-    def get_delivery_value(
-        self, target_faction_id: str, factions: dict[str, Faction]
-    ) -> int:
+    def get_delivery_value(self, target_faction_id: str, factions: dict[str, Faction]) -> int:
         """Calculate credit reward for delivering to a specific faction.
 
         Rival of source: 2x. Same faction: 0.5x. Other: 1x.
@@ -101,9 +99,7 @@ class IntelReport:
             return int(self.base_value * INTEL_RIVAL_BONUS_MULTIPLIER)
         return self.base_value
 
-    def get_reputation_reward(
-        self, target_faction_id: str, factions: dict[str, Faction]
-    ) -> int:
+    def get_reputation_reward(self, target_faction_id: str, factions: dict[str, Faction]) -> int:
         """Calculate rep reward for delivering to a specific faction."""
         base_rep = _INTEL_REP_REWARDS.get(self.quality, 1)
         source = factions.get(self.source_faction_id)
@@ -143,7 +139,7 @@ class IntelReport:
 
 # Rep changes per action type
 _ACTION_REP = {
-    PoliticalAction.SIDE_WITH_A: (8, -5),   # (faction_a, faction_b)
+    PoliticalAction.SIDE_WITH_A: (8, -5),  # (faction_a, faction_b)
     PoliticalAction.SIDE_WITH_B: (-5, 8),
     PoliticalAction.MEDIATE: (3, 3),
     PoliticalAction.IGNORE: (0, 0),
@@ -345,9 +341,7 @@ class PoliticsManager:
 
     # --- Relationship Management ---
 
-    def get_relationship(
-        self, faction_a: str, faction_b: str
-    ) -> FactionRelationship:
+    def get_relationship(self, faction_a: str, faction_b: str) -> FactionRelationship:
         """Get the relationship between two factions.
 
         Args:
@@ -363,9 +357,7 @@ class PoliticsManager:
         key = tuple(sorted((faction_a, faction_b)))
         return self._relationships[key]  # type: ignore[index]
 
-    def modify_relationship(
-        self, faction_a: str, faction_b: str, amount: int
-    ) -> None:
+    def modify_relationship(self, faction_a: str, faction_b: str, amount: int) -> None:
         """Modify the relationship between two factions.
 
         Args:
@@ -376,9 +368,7 @@ class PoliticsManager:
         rel = self.get_relationship(faction_a, faction_b)
         rel.modify(amount)
 
-    def get_tension_level(
-        self, faction_a: str, faction_b: str
-    ) -> TensionLevel:
+    def get_tension_level(self, faction_a: str, faction_b: str) -> TensionLevel:
         """Get tension level between two factions."""
         return self.get_relationship(faction_a, faction_b).get_tension_level()
 
@@ -466,9 +456,7 @@ class PoliticsManager:
         faction_b_name = self._factions[faction_b].name
         description = desc_template.format(a=faction_a_name, b=faction_b_name)
 
-        duration = rng.randint(
-            POLITICAL_EVENT_MIN_DURATION, POLITICAL_EVENT_MAX_DURATION
-        )
+        duration = rng.randint(POLITICAL_EVENT_MIN_DURATION, POLITICAL_EVENT_MAX_DURATION)
 
         event = PoliticalEvent(
             id=f"political_{current_day}_{template['event_type']}",
@@ -509,9 +497,7 @@ class PoliticsManager:
         rep_a, rep_b = _ACTION_REP[action]
 
         if rep_a != 0:
-            changes = self.apply_reputation_with_spillover(
-                player, event.faction_a_id, rep_a
-            )
+            changes = self.apply_reputation_with_spillover(player, event.faction_a_id, rep_a)
             for fid, amt in changes:
                 sign = "+" if amt > 0 else ""
                 fname = self._factions.get(fid)
@@ -519,9 +505,7 @@ class PoliticsManager:
                 messages.append(f"{sign}{amt} reputation with {name}")
 
         if rep_b != 0:
-            changes = self.apply_reputation_with_spillover(
-                player, event.faction_b_id, rep_b
-            )
+            changes = self.apply_reputation_with_spillover(player, event.faction_b_id, rep_b)
             for fid, amt in changes:
                 sign = "+" if amt > 0 else ""
                 fname = self._factions.get(fid)
@@ -531,7 +515,8 @@ class PoliticsManager:
         # Mediation improves the bilateral relationship
         if action == PoliticalAction.MEDIATE:
             self.modify_relationship(
-                event.faction_a_id, event.faction_b_id,
+                event.faction_a_id,
+                event.faction_b_id,
                 _MEDIATE_RELATIONSHIP_BONUS,
             )
             messages.append("Faction relations improved through mediation")
@@ -550,16 +535,15 @@ class PoliticsManager:
             if event.is_active(current_day) and event.relationship_drift != 0:
                 try:
                     self.modify_relationship(
-                        event.faction_a_id, event.faction_b_id,
+                        event.faction_a_id,
+                        event.faction_b_id,
                         event.relationship_drift,
                     )
                 except KeyError:
                     pass  # Relationship pair may not exist
 
         # Clean up expired/resolved events
-        self._active_events = [
-            e for e in self._active_events if e.is_active(current_day)
-        ]
+        self._active_events = [e for e in self._active_events if e.is_active(current_day)]
 
     def get_active_events(self) -> list[PoliticalEvent]:
         """Get all currently active political events."""
@@ -567,9 +551,7 @@ class PoliticsManager:
 
     # --- Reputation Consequences ---
 
-    def get_docking_allowed(
-        self, player: Any, system_id: str
-    ) -> tuple[bool, str]:
+    def get_docking_allowed(self, player: Any, system_id: str) -> tuple[bool, str]:
         """Check if player can dock at a system based on faction reputation.
 
         HOSTILE faction systems deny docking.
@@ -594,9 +576,7 @@ class PoliticsManager:
             return (False, f"{name} refuses to grant you docking clearance")
         return (True, "")
 
-    def get_encounter_modifier(
-        self, player: Any, system_id: str
-    ) -> dict[str, Any]:
+    def get_encounter_modifier(self, player: Any, system_id: str) -> dict[str, Any]:
         """Get encounter modifications based on faction rep at a system.
 
         Args:
@@ -669,9 +649,7 @@ class PoliticsManager:
         # Backlash: if delivering to rival, source faction finds out
         source = self._factions.get(report.source_faction_id)
         if source and source.rivalry == target_faction_id:
-            self.apply_reputation_with_spillover(
-                player, report.source_faction_id, _INTEL_BACKLASH
-            )
+            self.apply_reputation_with_spillover(player, report.source_faction_id, _INTEL_BACKLASH)
 
         target = self._factions.get(target_faction_id)
         target_name = target.name if target else target_faction_id
@@ -680,9 +658,7 @@ class PoliticsManager:
             f"Delivered intel to {target_name} for {credits} credits",
         )
 
-    def get_npc_disposition_modifier(
-        self, player: Any, npc_faction_id: str
-    ) -> int:
+    def get_npc_disposition_modifier(self, player: Any, npc_faction_id: str) -> int:
         """Get disposition modifier for NPC based on player's faction standing.
 
         Args:
@@ -706,9 +682,7 @@ class PoliticsManager:
 
     # --- Faction Perks ---
 
-    def set_faction_perks(
-        self, faction_perks: dict[str, dict[str, list]]
-    ) -> None:
+    def set_faction_perks(self, faction_perks: dict[str, dict[str, list]]) -> None:
         """Set faction perks data from DataLoader.
 
         Args:
@@ -716,9 +690,7 @@ class PoliticsManager:
         """
         self._faction_perks = faction_perks
 
-    def get_active_perks(
-        self, player: Any, system_id: str
-    ) -> list:
+    def get_active_perks(self, player: Any, system_id: str) -> list:
         """Get all active faction perks for the player at a system.
 
         Args:
@@ -740,9 +712,7 @@ class PoliticsManager:
         tier = player.get_reputation_tier(faction_id)
         return get_active_perks(self._faction_perks, faction_id, tier)
 
-    def get_perk_bonus(
-        self, player: Any, system_id: str, perk_type: str
-    ) -> float:
+    def get_perk_bonus(self, player: Any, system_id: str, perk_type: str) -> float:
         """Get total numeric bonus from active perks of a given type.
 
         Args:
@@ -758,9 +728,7 @@ class PoliticsManager:
         active = self.get_active_perks(player, system_id)
         return get_perk_bonus(active, perk_type)
 
-    def has_perk(
-        self, player: Any, system_id: str, perk_type: str
-    ) -> bool:
+    def has_perk(self, player: Any, system_id: str, perk_type: str) -> bool:
         """Check if a boolean perk is active at the given system.
 
         Args:
@@ -781,18 +749,12 @@ class PoliticsManager:
     def to_dict(self) -> dict[str, Any]:
         """Serialize political state to dict."""
         return {
-            "relationships": [
-                rel.to_dict() for rel in self._relationships.values()
-            ],
-            "active_events": [
-                event.to_dict() for event in self._active_events
-            ],
+            "relationships": [rel.to_dict() for rel in self._relationships.values()],
+            "active_events": [event.to_dict() for event in self._active_events],
         }
 
     @classmethod
-    def from_dict(
-        cls, data: dict[str, Any], factions: dict[str, Faction]
-    ) -> PoliticsManager:
+    def from_dict(cls, data: dict[str, Any], factions: dict[str, Faction]) -> PoliticsManager:
         """Deserialize from dict, with defaults for missing data.
 
         Args:

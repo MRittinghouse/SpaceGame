@@ -60,25 +60,19 @@ class TestEnemyXpRewards:
         enemies = _load_enemies()
         lo, hi = TIER_XP_RANGES["low"]
         for e in [e for e in enemies if e.danger_tier == "low"]:
-            assert lo <= e.xp_reward <= hi, (
-                f"{e.id}: xp_reward {e.xp_reward} outside [{lo}, {hi}]"
-            )
+            assert lo <= e.xp_reward <= hi, f"{e.id}: xp_reward {e.xp_reward} outside [{lo}, {hi}]"
 
     def test_moderate_tier_xp_in_range(self) -> None:
         enemies = _load_enemies()
         lo, hi = TIER_XP_RANGES["moderate"]
         for e in [e for e in enemies if e.danger_tier == "moderate"]:
-            assert lo <= e.xp_reward <= hi, (
-                f"{e.id}: xp_reward {e.xp_reward} outside [{lo}, {hi}]"
-            )
+            assert lo <= e.xp_reward <= hi, f"{e.id}: xp_reward {e.xp_reward} outside [{lo}, {hi}]"
 
     def test_dangerous_tier_xp_in_range(self) -> None:
         enemies = _load_enemies()
         lo, hi = TIER_XP_RANGES["dangerous"]
         for e in [e for e in enemies if e.danger_tier == "dangerous" and not e.is_boss]:
-            assert lo <= e.xp_reward <= hi, (
-                f"{e.id}: xp_reward {e.xp_reward} outside [{lo}, {hi}]"
-            )
+            assert lo <= e.xp_reward <= hi, f"{e.id}: xp_reward {e.xp_reward} outside [{lo}, {hi}]"
 
 
 class TestEnemyCreditRewards:
@@ -149,8 +143,13 @@ class TestEnemyLootTables:
     def test_dangerous_tier_has_high_value_commodity(self) -> None:
         """Dangerous-tier enemies should drop at least one high-value item."""
         high_value = {
-            "rare_metals", "rare_parts", "electronics", "weapons_components",
-            "exotic_goods", "precious_metals", "rare_ore",
+            "rare_metals",
+            "rare_parts",
+            "electronics",
+            "weapons_components",
+            "exotic_goods",
+            "precious_metals",
+            "rare_ore",
         }
         enemies = _load_enemies()
         for e in [e for e in enemies if e.danger_tier == "dangerous"]:
@@ -165,15 +164,11 @@ class TestEnemyLootTables:
         for e in enemies:
             for loot in e.loot_table:
                 assert loot["min_qty"] >= 1, f"{e.id}: min_qty < 1"
-                assert loot["max_qty"] >= loot["min_qty"], (
-                    f"{e.id}: max_qty < min_qty"
-                )
+                assert loot["max_qty"] >= loot["min_qty"], f"{e.id}: max_qty < min_qty"
 
     def test_loot_chances_valid(self) -> None:
         """Loot drop chances should be between 0 and 1."""
         enemies = _load_enemies()
         for e in enemies:
             for loot in e.loot_table:
-                assert 0 < loot["chance"] <= 1.0, (
-                    f"{e.id}: chance {loot['chance']} not in (0, 1]"
-                )
+                assert 0 < loot["chance"] <= 1.0, f"{e.id}: chance {loot['chance']} not in (0, 1]"

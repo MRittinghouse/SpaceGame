@@ -13,46 +13,64 @@ import math
 from typing import Optional
 
 from spacegame.models.ship_build import (
-    ComputedShipStats,
+    WEIGHT_CLASSES,
     DesignatedSlot,
     HullMaterial,
     PlacedPixel,
     ShipBuild,
-    ShipStatsComputer,
-    WEIGHT_CLASSES,
 )
-
 
 # Materials used for preset generation (these may not all be in the
 # starter JSON — presets represent pre-built ships with full access)
 _PRESET_MATERIALS: dict[str, HullMaterial] = {
     "standard_plate": HullMaterial(
-        id="standard_plate", name="Standard Plate", description="Balanced",
+        id="standard_plate",
+        name="Standard Plate",
+        description="Balanced",
         color_primary=(112, 120, 136),
-        hull_per_pixel=2.5, weight_per_pixel=0.25, cost_per_pixel=15,
+        hull_per_pixel=2.5,
+        weight_per_pixel=0.25,
+        cost_per_pixel=15,
     ),
     "light_alloy": HullMaterial(
-        id="light_alloy", name="Light Alloy", description="Light",
+        id="light_alloy",
+        name="Light Alloy",
+        description="Light",
         color_primary=(176, 184, 200),
-        hull_per_pixel=1.5, evasion_per_pixel=0.08, weight_per_pixel=0.15,
+        hull_per_pixel=1.5,
+        evasion_per_pixel=0.08,
+        weight_per_pixel=0.15,
         cost_per_pixel=8,
     ),
     "shield_crystal": HullMaterial(
-        id="shield_crystal", name="Shield Crystal", description="Shields",
+        id="shield_crystal",
+        name="Shield Crystal",
+        description="Shields",
         color_primary=(64, 168, 208),
-        hull_per_pixel=1.0, shield_per_pixel=0.6, shield_regen_per_pixel=0.03,
-        weight_per_pixel=0.30, cost_per_pixel=22,
+        hull_per_pixel=1.0,
+        shield_per_pixel=0.6,
+        shield_regen_per_pixel=0.03,
+        weight_per_pixel=0.30,
+        cost_per_pixel=22,
     ),
     "heavy_armor": HullMaterial(
-        id="heavy_armor", name="Heavy Armor", description="Armor",
+        id="heavy_armor",
+        name="Heavy Armor",
+        description="Armor",
         color_primary=(152, 112, 64),
-        hull_per_pixel=3.0, armor_per_pixel=0.06, weight_per_pixel=0.55,
+        hull_per_pixel=3.0,
+        armor_per_pixel=0.06,
+        weight_per_pixel=0.55,
         cost_per_pixel=25,
     ),
     "salvage_scrap": HullMaterial(
-        id="salvage_scrap", name="Salvage Scrap", description="Cheap",
+        id="salvage_scrap",
+        name="Salvage Scrap",
+        description="Cheap",
         color_primary=(136, 104, 72),
-        hull_per_pixel=2.0, armor_per_pixel=0.02, weight_per_pixel=0.20,
+        hull_per_pixel=2.0,
+        armor_per_pixel=0.02,
+        weight_per_pixel=0.20,
         cost_per_pixel=5,
     ),
 }
@@ -135,10 +153,7 @@ def _compute_pixel_counts(
 
     # Check total weight and scale down if needed
     total_weight = (
-        standard_pixels * 0.7
-        + shield_pixels * 0.6
-        + evasion_pixels * 0.4
-        + heavy_pixels * 1.2
+        standard_pixels * 0.7 + shield_pixels * 0.6 + evasion_pixels * 0.4 + heavy_pixels * 1.2
     )
 
     if total_weight > max_weight * 0.95:
@@ -271,14 +286,14 @@ def _place_slots(
             for x in range(canvas_w - size + 1):
                 # Check all cells are filled and no existing slot overlap
                 all_filled = all(
-                    (x + dx, y + dy) in occupied
-                    for dy in range(size) for dx in range(size)
+                    (x + dx, y + dy) in occupied for dy in range(size) for dx in range(size)
                 )
                 if not all_filled:
                     continue
                 no_overlap = all(
-                    not (x < s.x + s.size and x + size > s.x
-                         and y < s.y + s.size and y + size > s.y)
+                    not (
+                        x < s.x + s.size and x + size > s.x and y < s.y + s.size and y + size > s.y
+                    )
                     for s in slots
                 )
                 if not no_overlap:
@@ -381,6 +396,7 @@ def get_preset_for_ship_type(
     """
     if ship_types is None:
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         ship_types = dl.ship_types
 

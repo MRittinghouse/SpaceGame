@@ -9,16 +9,14 @@ from __future__ import annotations
 
 import hashlib
 import random as _rng
-from dataclasses import dataclass, field
-from typing import Any, Optional
+from dataclasses import dataclass
+from typing import Any
 
+from spacegame.models.ground_mapgen import DifficultyTier, MissionType
 from spacegame.models.ground_mission import (
     GroundMissionConfig,
     GroundMissionRewards,
-    IntelHint,
 )
-from spacegame.models.ground_mapgen import DifficultyTier, MissionType
-
 
 # ===========================================================================
 # Reward scaling by difficulty
@@ -227,9 +225,7 @@ class GroundContractManager:
 
         return new_contracts
 
-    def get_available(
-        self, system_id: str, game_day: int
-    ) -> list[GroundContract]:
+    def get_available(self, system_id: str, game_day: int) -> list[GroundContract]:
         """Get non-expired, non-completed contracts for a system.
 
         Args:
@@ -242,9 +238,7 @@ class GroundContractManager:
         return [
             c
             for c in self.active_contracts
-            if c.system_id == system_id
-            and not c.completed
-            and not c.is_expired(game_day)
+            if c.system_id == system_id and not c.completed and not c.is_expired(game_day)
         ]
 
     def complete_contract(self, contract_id: str) -> tuple[bool, str]:
@@ -272,9 +266,7 @@ class GroundContractManager:
             game_day: Current game day.
         """
         self.active_contracts = [
-            c
-            for c in self.active_contracts
-            if not c.completed and not c.is_expired(game_day)
+            c for c in self.active_contracts if not c.completed and not c.is_expired(game_day)
         ]
 
     def to_dict(self) -> dict[str, Any]:
@@ -295,9 +287,7 @@ class GroundContractManager:
             GroundContractManager instance.
         """
         mgr = cls()
-        mgr.active_contracts = [
-            GroundContract.from_dict(c) for c in data.get("contracts", [])
-        ]
+        mgr.active_contracts = [GroundContract.from_dict(c) for c in data.get("contracts", [])]
         mgr.completed_count = data.get("completed_count", 0)
         return mgr
 
@@ -351,9 +341,7 @@ class GroundContractManager:
         descriptions = template.get("descriptions", [])
         if descriptions:
             desc_template = rng.choice(descriptions)
-            description = desc_template.format(
-                faction=faction_display, system=system_display
-            )
+            description = desc_template.format(faction=faction_display, system=system_display)
         else:
             description = f"A {type_key} mission at {system_display}."
 

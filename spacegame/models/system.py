@@ -4,9 +4,9 @@ Star system and station models.
 Represents star systems, their coordinates, stations, and economic properties.
 """
 
+import math
 from dataclasses import dataclass, field
 from typing import List, Optional
-import math
 
 
 @dataclass

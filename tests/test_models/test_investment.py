@@ -9,11 +9,19 @@ from spacegame.models.investment import (
 )
 
 
-def _make_tier(tier: int = 1, cost: int = 1000, daily: int = 10,
-               returns_type: str = "credits", commodity: str | None = None) -> InvestmentTier:
+def _make_tier(
+    tier: int = 1,
+    cost: int = 1000,
+    daily: int = 10,
+    returns_type: str = "credits",
+    commodity: str | None = None,
+) -> InvestmentTier:
     return InvestmentTier(
-        tier=tier, cost=cost, daily_return_amount=daily,
-        returns_type=returns_type, returns_commodity=commodity,
+        tier=tier,
+        cost=cost,
+        daily_return_amount=daily,
+        returns_type=returns_type,
+        returns_commodity=commodity,
     )
 
 
@@ -31,8 +39,11 @@ def _make_template(
             _make_tier(3, 15000, 200),
         ]
     return InvestmentTemplate(
-        system_id=system_id, investment_type=investment_type,
-        name=name, description=description, tiers=tiers,
+        system_id=system_id,
+        investment_type=investment_type,
+        name=name,
+        description=description,
+        tiers=tiers,
     )
 
 
@@ -93,16 +104,22 @@ class TestInvestmentTemplateSerialization:
 
 class TestInvestmentSerialization:
     def test_to_dict(self) -> None:
-        inv = Investment(system_id="nexus_prime", tier=2,
-                         accumulated_returns=150, last_processed_day=10)
+        inv = Investment(
+            system_id="nexus_prime", tier=2, accumulated_returns=150, last_processed_day=10
+        )
         d = inv.to_dict()
         assert d["system_id"] == "nexus_prime"
         assert d["tier"] == 2
         assert d["accumulated_returns"] == 150
 
     def test_round_trip(self) -> None:
-        inv = Investment(system_id="nexus_prime", tier=1,
-                         accumulated_returns=50, last_processed_day=5, halted_until_day=8)
+        inv = Investment(
+            system_id="nexus_prime",
+            tier=1,
+            accumulated_returns=50,
+            last_processed_day=5,
+            halted_until_day=8,
+        )
         d = inv.to_dict()
         restored = Investment.from_dict(d)
         assert restored.system_id == inv.system_id
@@ -199,6 +216,7 @@ class TestInvestmentManagerAdvanceDay:
         class FakeEvent:
             def is_active(self, day: int) -> bool:
                 return True
+
             event_type: str = "disaster"
 
         events = {"nexus_prime": FakeEvent()}
@@ -217,8 +235,7 @@ class TestInvestmentManagerAdvanceDay:
         for day in range(2, 102):
             mgr.active["nexus_prime"].last_processed_day = day - 1
             mgr.active["nexus_prime"].accumulated_returns = 0
-            mgr.advance_day(day, active_events={},
-                           danger_levels={"nexus_prime": "dangerous"})
+            mgr.advance_day(day, active_events={}, danger_levels={"nexus_prime": "dangerous"})
             total += mgr.active["nexus_prime"].accumulated_returns
         # If no reductions ever happened, total would be 1000 (100 * 10)
         # With 10% halving, expect ~950 on average
@@ -281,24 +298,34 @@ class TestInvestmentDataLoading:
 
     def test_load_investment_configs(self) -> None:
         from spacegame.data_loader import DataLoader
+
         loader = DataLoader()
         loader.load_investment_configs()
         assert len(loader.investment_templates) == 10
 
     def test_all_systems_have_templates(self) -> None:
         from spacegame.data_loader import DataLoader
+
         loader = DataLoader()
         loader.load_investment_configs()
         expected = [
-            "nexus_prime", "stellaris_port", "axiom_labs", "nova_research",
-            "forgeworks", "breakstone", "iron_depths", "verdant",
-            "havens_rest", "crimson_reach",
+            "nexus_prime",
+            "stellaris_port",
+            "axiom_labs",
+            "nova_research",
+            "forgeworks",
+            "breakstone",
+            "iron_depths",
+            "verdant",
+            "havens_rest",
+            "crimson_reach",
         ]
         for sys_id in expected:
             assert sys_id in loader.investment_templates, f"Missing template for {sys_id}"
 
     def test_each_template_has_three_tiers(self) -> None:
         from spacegame.data_loader import DataLoader
+
         loader = DataLoader()
         loader.load_investment_configs()
         for sys_id, template in loader.investment_templates.items():
@@ -306,6 +333,7 @@ class TestInvestmentDataLoading:
 
     def test_get_investment_template(self) -> None:
         from spacegame.data_loader import DataLoader
+
         loader = DataLoader()
         loader.load_investment_configs()
         t = loader.get_investment_template("nexus_prime")
@@ -314,6 +342,7 @@ class TestInvestmentDataLoading:
 
     def test_get_investment_template_missing(self) -> None:
         from spacegame.data_loader import DataLoader
+
         loader = DataLoader()
         loader.load_investment_configs()
         assert loader.get_investment_template("nonexistent") is None

@@ -53,8 +53,12 @@ class TestAllTitles:
 
     def test_all_titles_covers_all_domains(self) -> None:
         titles = get_all_titles(
-            ore_mined=5000, trades_completed=5000, combats_won=250,
-            items_salvaged=1500, items_refined=1000, systems_visited=11,
+            ore_mined=5000,
+            trades_completed=5000,
+            combats_won=250,
+            items_salvaged=1500,
+            items_refined=1000,
+            systems_visited=11,
         )
         assert len(titles) == 6
 
@@ -93,8 +97,10 @@ class TestPlaystyle:
     def test_balanced_when_even(self) -> None:
         # Equal engagement across activities
         style = get_playstyle(
-            ore_mined=100, trades_completed=50,
-            combats_won=15, items_salvaged=50,
+            ore_mined=100,
+            trades_completed=50,
+            combats_won=15,
+            items_salvaged=50,
         )
         assert style == "balanced"
 

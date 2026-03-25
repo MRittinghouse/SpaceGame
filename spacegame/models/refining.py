@@ -7,7 +7,7 @@ Process raw materials into valuable goods through recipes and job queues.
 from __future__ import annotations
 
 import random
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
 
 from spacegame.models.forge_upgrade import calculate_forge_tokens
@@ -133,10 +133,9 @@ class RefiningSession:
         location_recipes = [r for r in recipes if system_id in r.location_ids]
         # Filter out undiscovered discoverable recipes
         self.available_recipes = [
-            r for r in location_recipes
-            if not r.discoverable or (
-                discovered_recipes is not None and r.id in discovered_recipes
-            )
+            r
+            for r in location_recipes
+            if not r.discoverable or (discovered_recipes is not None and r.id in discovered_recipes)
         ]
         self.job_queue: List[ActiveJob] = []
         self.total_refined: Dict[str, int] = {}
@@ -254,9 +253,7 @@ class RefiningSession:
                 # Calculate forge tokens
                 forge_tokens = 0
                 if self.mastery_tracker is not None:
-                    mastery_level = self.mastery_tracker.get_mastery(
-                        job.recipe.id
-                    ).mastery_level
+                    mastery_level = self.mastery_tracker.get_mastery(job.recipe.id).mastery_level
                     forge_tokens = calculate_forge_tokens(
                         job.recipe.processing_time,
                         len(job.recipe.inputs),

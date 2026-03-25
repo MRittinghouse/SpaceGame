@@ -62,9 +62,7 @@ def _make_roster() -> CrewRoster:
     return CrewRoster(templates)
 
 
-def _recruit_at_loyalty(
-    roster: CrewRoster, template_id: str, loyalty: int
-) -> None:
+def _recruit_at_loyalty(roster: CrewRoster, template_id: str, loyalty: int) -> None:
     """Recruit a crew member and set their loyalty to a specific value."""
     roster.recruit(template_id, crew_slots=5)
     state = roster.get_member_state(template_id)

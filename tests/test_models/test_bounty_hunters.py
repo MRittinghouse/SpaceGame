@@ -102,9 +102,7 @@ class TestBountyHunterChance:
 
     def test_crimson_reach_no_bounty_hunters(self) -> None:
         """Crimson Reach is a safe haven — no bounty hunters spawn there."""
-        chance = calculate_bounty_hunter_chance(
-            criminal_heat=90, system_id="crimson_reach"
-        )
+        chance = calculate_bounty_hunter_chance(criminal_heat=90, system_id="crimson_reach")
         assert chance == 0.0
 
 
@@ -118,12 +116,8 @@ class TestBountyHunterTrigger:
 
     def test_deterministic_same_inputs(self) -> None:
         """Same inputs produce same result."""
-        r1 = should_trigger_bounty_hunter(
-            criminal_heat=60, game_day=10, system_id="nexus_prime"
-        )
-        r2 = should_trigger_bounty_hunter(
-            criminal_heat=60, game_day=10, system_id="nexus_prime"
-        )
+        r1 = should_trigger_bounty_hunter(criminal_heat=60, game_day=10, system_id="nexus_prime")
+        r2 = should_trigger_bounty_hunter(criminal_heat=60, game_day=10, system_id="nexus_prime")
         assert r1 == r2
 
     def test_different_day_may_differ(self) -> None:
@@ -141,9 +135,12 @@ class TestBountyHunterTrigger:
     def test_no_trigger_at_low_heat(self) -> None:
         """Never triggers below heat 26."""
         for day in range(1, 100):
-            assert should_trigger_bounty_hunter(
-                criminal_heat=10, game_day=day, system_id="nexus_prime"
-            ) is False
+            assert (
+                should_trigger_bounty_hunter(
+                    criminal_heat=10, game_day=day, system_id="nexus_prime"
+                )
+                is False
+            )
 
 
 # ============================================================================
@@ -264,9 +261,7 @@ class TestBountyHunterEncounter:
         """Surrender choice deducts credits."""
         enc = self._build_tier1()
         surrender = next(c for c in enc.choices if c.id == "surrender")
-        has_deduction = any(
-            r.reward_type == "deduct_credits" for r in surrender.outcome.rewards
-        )
+        has_deduction = any(r.reward_type == "deduct_credits" for r in surrender.outcome.rewards)
         assert has_deduction is True
 
     def test_surrender_reduces_heat(self) -> None:
@@ -322,9 +317,7 @@ class TestBountyHunterEncounter:
         """Fight choice outcome has start_combat flag."""
         enc = self._build_tier1()
         fight = next(c for c in enc.choices if c.id == "fight")
-        has_combat = any(
-            r.reward_type == "start_bounty_combat" for r in fight.outcome.rewards
-        )
+        has_combat = any(r.reward_type == "start_bounty_combat" for r in fight.outcome.rewards)
         assert has_combat is True
 
     def test_encounter_type_is_bounty_hunter(self) -> None:
@@ -384,7 +377,5 @@ class TestBountyHunterEncounter:
             seed=42,
         )
         negotiate = next(c for c in enc.choices if c.id == "negotiate")
-        has_immunity = any(
-            r.reward_type == "bounty_immunity" for r in negotiate.outcome.rewards
-        )
+        has_immunity = any(r.reward_type == "bounty_immunity" for r in negotiate.outcome.rewards)
         assert has_immunity is True

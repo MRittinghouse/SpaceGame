@@ -70,9 +70,7 @@ class TestBonusAbilities:
         roster.add_bonus_ability("elena_reeves", _make_bonus_ability())
         new_bonus = roster.get_bonus("fuel_efficiency_bonus")
 
-        assert new_bonus == base_bonus + 5.0, (
-            f"Expected {base_bonus + 5.0}, got {new_bonus}"
-        )
+        assert new_bonus == base_bonus + 5.0, f"Expected {base_bonus + 5.0}, got {new_bonus}"
 
     def test_bonus_ability_persists_through_save_load(self) -> None:
         roster = _make_roster()

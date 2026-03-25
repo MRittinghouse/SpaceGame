@@ -65,7 +65,8 @@ class TestGroundInteractable:
     def test_construction(self):
         """Interactable stores position, type, credits, and description."""
         obj = GroundInteractable(
-            x=5, y=3,
+            x=5,
+            y=3,
             interact_type="loot_container",
             loot_credits=50,
             description="A supply crate.",
@@ -117,8 +118,12 @@ class TestGroundInteractable:
     def test_from_dict(self):
         """Deserializes from dict."""
         d = {
-            "x": 5, "y": 3, "interact_type": "loot_container",
-            "loot_credits": 50, "description": "Crate", "looted": True,
+            "x": 5,
+            "y": 3,
+            "interact_type": "loot_container",
+            "loot_credits": 50,
+            "description": "Crate",
+            "looted": True,
         }
         obj = GroundInteractable.from_dict(d)
         assert obj.x == 5
@@ -135,7 +140,8 @@ class TestGroundStoryTrigger:
     def test_construction(self):
         """Story trigger stores position, type, and text."""
         trigger = GroundStoryTrigger(
-            x=5, y=3,
+            x=5,
+            y=3,
             trigger_type="atmosphere",
             text="The corridor smells of rust.",
         )
@@ -186,23 +192,21 @@ class TestMapGenResultInteractables:
 
     def test_default_empty_interactables(self):
         """MapGenResult defaults to empty interactables list."""
-        result = MapGenResult(
-            ground_map=_make_simple_map(), enemies=[], config=_make_config()
-        )
+        result = MapGenResult(ground_map=_make_simple_map(), enemies=[], config=_make_config())
         assert result.interactables == []
 
     def test_default_empty_story_triggers(self):
         """MapGenResult defaults to empty story triggers list."""
-        result = MapGenResult(
-            ground_map=_make_simple_map(), enemies=[], config=_make_config()
-        )
+        result = MapGenResult(ground_map=_make_simple_map(), enemies=[], config=_make_config())
         assert result.story_triggers == []
 
     def test_carries_interactables(self):
         """MapGenResult stores interactables."""
         obj = GroundInteractable(x=3, y=3, interact_type="loot_container", loot_credits=50)
         result = MapGenResult(
-            ground_map=_make_simple_map(), enemies=[], config=_make_config(),
+            ground_map=_make_simple_map(),
+            enemies=[],
+            config=_make_config(),
             interactables=[obj],
         )
         assert len(result.interactables) == 1
@@ -212,7 +216,9 @@ class TestMapGenResultInteractables:
         """MapGenResult stores story triggers."""
         trigger = GroundStoryTrigger(x=3, y=3, trigger_type="atmosphere", text="Dark.")
         result = MapGenResult(
-            ground_map=_make_simple_map(), enemies=[], config=_make_config(),
+            ground_map=_make_simple_map(),
+            enemies=[],
+            config=_make_config(),
             story_triggers=[trigger],
         )
         assert len(result.story_triggers) == 1
@@ -309,7 +315,9 @@ class TestBuildMissionStateWithInteractables:
         """Interactables appear in the built mission state."""
         obj = GroundInteractable(x=3, y=3, interact_type="loot_container", loot_credits=40)
         result = MapGenResult(
-            ground_map=_make_simple_map(), enemies=[], config=_make_config(),
+            ground_map=_make_simple_map(),
+            enemies=[],
+            config=_make_config(),
             interactables=[obj],
         )
         state = result.build_mission_state()
@@ -320,7 +328,9 @@ class TestBuildMissionStateWithInteractables:
         """Story triggers appear in the built mission state."""
         trigger = GroundStoryTrigger(x=4, y=4, trigger_type="atmosphere", text="Hum.")
         result = MapGenResult(
-            ground_map=_make_simple_map(), enemies=[], config=_make_config(),
+            ground_map=_make_simple_map(),
+            enemies=[],
+            config=_make_config(),
             story_triggers=[trigger],
         )
         state = result.build_mission_state()
@@ -358,13 +368,15 @@ class TestCampaignMapBuilderInteractables:
             "enemies": [],
             "interactables": [
                 {
-                    "x": 3, "y": 3,
+                    "x": 3,
+                    "y": 3,
                     "type": "loot_container",
                     "loot_credits": 55,
                     "description": "A crate of spare parts.",
                 },
                 {
-                    "x": 6, "y": 5,
+                    "x": 6,
+                    "y": 5,
                     "type": "loot_container",
                     "loot_credits": 30,
                     "description": "Salvage bin.",
@@ -372,7 +384,8 @@ class TestCampaignMapBuilderInteractables:
             ],
             "story_triggers": [
                 {
-                    "x": 4, "y": 2,
+                    "x": 4,
+                    "y": 2,
                     "type": "atmosphere",
                     "text": "The air smells of machine oil.",
                 },
@@ -434,13 +447,17 @@ class TestPlayerInteractWithContainer:
     """GroundPlayerState can interact with adjacent loot containers."""
 
     def _make_state_with_container(
-        self, player_x: int = 3, player_y: int = 3,
-        container_x: int = 4, container_y: int = 3,
+        self,
+        player_x: int = 3,
+        player_y: int = 3,
+        container_x: int = 4,
+        container_y: int = 3,
         loot_credits: int = 50,
     ) -> GroundMissionState:
         gmap = _make_simple_map()
         obj = GroundInteractable(
-            x=container_x, y=container_y,
+            x=container_x,
+            y=container_y,
             interact_type="loot_container",
             loot_credits=loot_credits,
             description="Test crate.",
@@ -480,7 +497,10 @@ class TestPlayerInteractWithContainer:
     def test_interact_not_adjacent_fails(self):
         """Cannot interact with distant container."""
         state = self._make_state_with_container(
-            player_x=1, player_y=1, container_x=5, container_y=5,
+            player_x=1,
+            player_y=1,
+            container_x=5,
+            container_y=5,
         )
         success, msg = state.player.interact(
             state.ground_map, 5, 5, interactables=state.interactables

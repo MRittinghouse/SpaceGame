@@ -19,9 +19,7 @@ def _make_mission(
         name="Test Mission",
         description="A test mission.",
         objectives=[
-            MissionObjective(
-                type="reach_system", target_id="breakstone", target_quantity=1
-            )
+            MissionObjective(type="reach_system", target_id="breakstone", target_quantity=1)
         ],
         rewards=[MissionReward(reward_type="credits", amount=100)],
         prerequisites=prerequisites or [],

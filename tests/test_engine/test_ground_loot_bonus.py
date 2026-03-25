@@ -38,9 +38,14 @@ class TestGroundLootBonusApplication:
 
         return game
 
-    def _make_result(self, outcome_name: str, loot_credits: int = 100,
-                     reward_credits: int = 200, reward_xp: int = 50,
-                     crew_xp: int = 10) -> MagicMock:
+    def _make_result(
+        self,
+        outcome_name: str,
+        loot_credits: int = 100,
+        reward_credits: int = 200,
+        reward_xp: int = 50,
+        crew_xp: int = 10,
+    ) -> MagicMock:
         """Create a mock GroundMissionResult."""
         from spacegame.models.ground_mission import MissionOutcome
 

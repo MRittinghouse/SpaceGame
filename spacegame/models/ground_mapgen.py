@@ -10,20 +10,20 @@ from __future__ import annotations
 import random
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from spacegame.models.ground import (
+    _WALKABLE_TYPES,
     GroundInteractable,
     GroundMap,
     GroundPlayerState,
     GroundStoryTrigger,
     GroundTile,
     TileType,
-    _WALKABLE_TYPES,
 )
-from spacegame.models.ground_crew import GroundCrewBonuses
-from spacegame.models.ground_enemy import GroundEnemy, GroundMissionState, Direction
 from spacegame.models.ground_combat import GROUND_ENEMY_TEMPLATES
+from spacegame.models.ground_crew import GroundCrewBonuses
+from spacegame.models.ground_enemy import Direction, GroundEnemy, GroundMissionState
 
 if TYPE_CHECKING:
     from spacegame.models.attributes import AttributeSheet
@@ -113,29 +113,37 @@ class DifficultyTier(Enum):
 
 _TIER_PARAMS: dict[DifficultyTier, dict] = {
     DifficultyTier.LOW: {
-        "enemy_min": 3, "enemy_max": 5,
-        "width": 18, "height": 18,
+        "enemy_min": 3,
+        "enemy_max": 5,
+        "width": 18,
+        "height": 18,
         "speed_weights": [(2, 3), (1, 1)],
         "loot_mult": 1.0,
         "rooms": (3, 5),
     },
     DifficultyTier.MODERATE: {
-        "enemy_min": 5, "enemy_max": 8,
-        "width": 22, "height": 22,
+        "enemy_min": 5,
+        "enemy_max": 8,
+        "width": 22,
+        "height": 22,
         "speed_weights": [(2, 2), (1, 3)],
         "loot_mult": 1.3,
         "rooms": (4, 7),
     },
     DifficultyTier.HIGH: {
-        "enemy_min": 8, "enemy_max": 12,
-        "width": 26, "height": 28,
+        "enemy_min": 8,
+        "enemy_max": 12,
+        "width": 26,
+        "height": 28,
         "speed_weights": [(1, 4), (2, 1)],
         "loot_mult": 1.7,
         "rooms": (5, 8),
     },
     DifficultyTier.EXTREME: {
-        "enemy_min": 10, "enemy_max": 15,
-        "width": 30, "height": 30,
+        "enemy_min": 10,
+        "enemy_max": 15,
+        "width": 30,
+        "height": 30,
         "speed_weights": [(1, 3), (2, 1)],
         "loot_mult": 2.0,
         "rooms": (6, 10),
@@ -217,8 +225,11 @@ class ChunkTemplate:
                     row.append(TileType.FLOOR)
             tiles.append(row)
         return cls(
-            id=room_id, width=width, height=height,
-            category=ChunkCategory.ROOM, tiles=tiles,
+            id=room_id,
+            width=width,
+            height=height,
+            category=ChunkCategory.ROOM,
+            tiles=tiles,
         )
 
     @classmethod
@@ -236,7 +247,7 @@ class ChunkTemplate:
         tiles: list[list[TileType]] = []
         for y in range(h):
             row: list[TileType] = []
-            for x in range(length):
+            for _x in range(length):
                 if y == 0 or y == h - 1:
                     row.append(TileType.WALL)
                 elif y == 1 or y == 3:
@@ -245,8 +256,11 @@ class ChunkTemplate:
                     row.append(TileType.FLOOR)
             tiles.append(row)
         chunk = cls(
-            id=corridor_id, width=length, height=h,
-            category=ChunkCategory.CONNECTOR, tiles=tiles,
+            id=corridor_id,
+            width=length,
+            height=h,
+            category=ChunkCategory.CONNECTOR,
+            tiles=tiles,
             exits={"west": (0, 2), "east": (length - 1, 2)},
         )
         return chunk
@@ -264,7 +278,7 @@ class ChunkTemplate:
         """
         w = 5
         tiles: list[list[TileType]] = []
-        for y in range(length):
+        for _y in range(length):
             row: list[TileType] = []
             for x in range(w):
                 if x == 0 or x == w - 1:
@@ -275,8 +289,11 @@ class ChunkTemplate:
                     row.append(TileType.FLOOR)
             tiles.append(row)
         chunk = cls(
-            id=corridor_id, width=w, height=length,
-            category=ChunkCategory.CONNECTOR, tiles=tiles,
+            id=corridor_id,
+            width=w,
+            height=length,
+            category=ChunkCategory.CONNECTOR,
+            tiles=tiles,
             exits={"north": (2, 0), "south": (2, length - 1)},
         )
         return chunk
@@ -433,8 +450,11 @@ def _create_l_bend() -> ChunkTemplate:
         tiles[y][4] = TileType.FLOOR
         tiles[y][3] = TileType.FLOOR
     return ChunkTemplate(
-        id="l_bend", width=w, height=h,
-        category=ChunkCategory.CONNECTOR, tiles=tiles,
+        id="l_bend",
+        width=w,
+        height=h,
+        category=ChunkCategory.CONNECTOR,
+        tiles=tiles,
         exits={"west": (0, 2), "south": (4, h - 1)},
     )
 
@@ -586,8 +606,11 @@ class GroundMapGenerator:
 
         # 7. Build the GroundMap
         ground_map = GroundMap(
-            width=w, height=h, tiles=tiles,
-            entrance_pos=entrance_pos, exit_pos=exit_pos,
+            width=w,
+            height=h,
+            tiles=tiles,
+            entrance_pos=entrance_pos,
+            exit_pos=exit_pos,
         )
 
         # 8. Place enemies with patrol routes
@@ -646,8 +669,7 @@ class GroundMapGenerator:
             # Check overlap with existing rooms (with 1-tile gap)
             overlap = False
             for ex, ey, ew, eh in rooms:
-                if (rx - 1 < ex + ew and rx + rw + 1 > ex and
-                        ry - 1 < ey + eh and ry + rh + 1 > ey):
+                if rx - 1 < ex + ew and rx + rw + 1 > ex and ry - 1 < ey + eh and ry + rh + 1 > ey:
                     overlap = True
                     break
 
@@ -683,7 +705,10 @@ class GroundMapGenerator:
     def _carve_room(
         self,
         tiles: list[list[GroundTile]],
-        rx: int, ry: int, rw: int, rh: int,
+        rx: int,
+        ry: int,
+        rw: int,
+        rh: int,
     ) -> None:
         """Carve a plain rectangular room (fallback when no templates available)."""
         for dy in range(rh):
@@ -725,14 +750,21 @@ class GroundMapGenerator:
                 b = rng.randint(0, len(sorted_rooms) - 1)
                 if a != b:
                     self._carve_corridor(
-                        tiles, sorted_rooms[a], sorted_rooms[b],
-                        map_w, map_h, rng,
+                        tiles,
+                        sorted_rooms[a],
+                        sorted_rooms[b],
+                        map_w,
+                        map_h,
+                        rng,
                     )
 
     def _find_floor_in_room(
         self,
         tiles: list[list[GroundTile]],
-        rx: int, ry: int, rw: int, rh: int,
+        rx: int,
+        ry: int,
+        rw: int,
+        rh: int,
     ) -> tuple[int, int]:
         """Find a floor tile inside a room, starting from center outward."""
         cx, cy = rx + rw // 2, ry + rh // 2
@@ -742,8 +774,12 @@ class GroundMapGenerator:
         # Spiral outward within room interior
         for dy in range(1, rh // 2):
             for dx in range(1, rw // 2):
-                for sx, sy in [(cx + dx, cy + dy), (cx - dx, cy + dy),
-                               (cx + dx, cy - dy), (cx - dx, cy - dy)]:
+                for sx, sy in [
+                    (cx + dx, cy + dy),
+                    (cx - dx, cy + dy),
+                    (cx + dx, cy - dy),
+                    (cx - dx, cy - dy),
+                ]:
                     if rx < sx < rx + rw - 1 and ry < sy < ry + rh - 1:
                         if tiles[sy][sx].tile_type == TileType.FLOOR:
                             return sx, sy
@@ -773,8 +809,12 @@ class GroundMapGenerator:
     def _carve_h_then_v(
         self,
         tiles: list[list[GroundTile]],
-        x1: int, y1: int, x2: int, y2: int,
-        map_w: int, map_h: int,
+        x1: int,
+        y1: int,
+        x2: int,
+        y2: int,
+        map_w: int,
+        map_h: int,
     ) -> None:
         """Carve horizontal then vertical corridor."""
         sx = min(x1, x2)
@@ -790,8 +830,12 @@ class GroundMapGenerator:
     def _carve_v_then_h(
         self,
         tiles: list[list[GroundTile]],
-        x1: int, y1: int, x2: int, y2: int,
-        map_w: int, map_h: int,
+        x1: int,
+        y1: int,
+        x2: int,
+        y2: int,
+        map_w: int,
+        map_h: int,
     ) -> None:
         """Carve vertical then horizontal corridor."""
         sy = min(y1, y2)
@@ -807,8 +851,10 @@ class GroundMapGenerator:
     def _carve_corridor_tile(
         self,
         tiles: list[list[GroundTile]],
-        x: int, y: int,
-        map_w: int, map_h: int,
+        x: int,
+        y: int,
+        map_w: int,
+        map_h: int,
     ) -> None:
         """Carve a single corridor tile (skip map border).
 
@@ -882,9 +928,7 @@ class GroundMapGenerator:
 
                     # Check if this wall tile has corridor floor adjacent
                     # on the outside of the room
-                    if self._is_room_corridor_junction(
-                        tiles, tx, ty, rx, ry, rw, rh, map_w, map_h
-                    ):
+                    if self._is_room_corridor_junction(tiles, tx, ty, rx, ry, rw, rh, map_w, map_h):
                         # Only place door with some probability
                         if rng.random() < 0.6:
                             tiles[ty][tx].tile_type = TileType.DOOR_CLOSED
@@ -892,9 +936,14 @@ class GroundMapGenerator:
     def _is_room_corridor_junction(
         self,
         tiles: list[list[GroundTile]],
-        tx: int, ty: int,
-        rx: int, ry: int, rw: int, rh: int,
-        map_w: int, map_h: int,
+        tx: int,
+        ty: int,
+        rx: int,
+        ry: int,
+        rw: int,
+        rh: int,
+        map_w: int,
+        map_h: int,
     ) -> bool:
         """Check if a wall tile is between a room interior and a corridor."""
         # Find direction from room center to this tile
@@ -1083,7 +1132,9 @@ class GroundMapGenerator:
         for i in range(min(count, len(floor_positions))):
             ex, ey = floor_positions[i]
             template_id = rng.choice(template_pool)
-            template = GROUND_ENEMY_TEMPLATES.get(template_id, GROUND_ENEMY_TEMPLATES["guild_security"])
+            template = GROUND_ENEMY_TEMPLATES.get(
+                template_id, GROUND_ENEMY_TEMPLATES["guild_security"]
+            )
             speed = rng.choice(speed_pool)
             facing = rng.choice(list(Direction))
 
@@ -1092,20 +1143,25 @@ class GroundMapGenerator:
 
             loot = int(template.get("loot_credits", 20) * tier.loot_multiplier)
 
-            enemies.append(GroundEnemy(
-                id=f"enemy_{i}",
-                x=ex, y=ey,
-                facing=facing,
-                speed=speed,
-                patrol_route=patrol,
-                loot_credits=loot,
-                template_id=template_id,
-            ))
+            enemies.append(
+                GroundEnemy(
+                    id=f"enemy_{i}",
+                    x=ex,
+                    y=ey,
+                    facing=facing,
+                    speed=speed,
+                    patrol_route=patrol,
+                    loot_credits=loot,
+                    template_id=template_id,
+                )
+            )
 
         return enemies
 
     def _build_template_pool(
-        self, tier: DifficultyTier, rng: random.Random,
+        self,
+        tier: DifficultyTier,
+        rng: random.Random,
         faction_id: Optional[str] = None,
     ) -> list[str]:
         """Build a weighted pool of enemy template IDs for this tier.
@@ -1144,7 +1200,7 @@ class GroundMapGenerator:
             best: Optional[tuple[int, int]] = None
             best_dist = 0
 
-            for attempt in range(20):
+            for _attempt in range(20):
                 dx = rng.randint(-6, 6)
                 dy = rng.randint(-6, 6)
                 nx, ny = current_x + dx, current_y + dy

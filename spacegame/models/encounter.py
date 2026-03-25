@@ -123,7 +123,7 @@ def _select_non_hostile_type(rng: _rng.Random, system_danger: str) -> str:
     total = sum(type_weights)
     roll = rng.uniform(0, total)
     cumulative = 0.0
-    for enc_type, weight in zip(types, type_weights):
+    for enc_type, weight in zip(types, type_weights, strict=True):
         cumulative += weight
         if roll <= cumulative:
             return enc_type
@@ -192,8 +192,7 @@ def check_travel_encounter(
     # Determine encounter category: non-hostile vs hostile
     # Early-game players get a higher non-hostile ratio
     non_hostile_pct = (
-        EARLY_GAME_NON_HOSTILE_CHANCE if player_level < EARLY_GAME_LEVEL
-        else NON_HOSTILE_CHANCE
+        EARLY_GAME_NON_HOSTILE_CHANCE if player_level < EARLY_GAME_LEVEL else NON_HOSTILE_CHANCE
     )
     type_roll = rng.uniform(0, 100)
     if type_roll < non_hostile_pct:
@@ -373,15 +372,11 @@ def _is_eligible(defn: EncounterDefinition, ctx: EncounterContext) -> bool:
         return False
     if defn.max_level > 0 and ctx.player_level > defn.max_level:
         return False
-    if defn.requires_flags and not all(
-        ctx.dialogue_flags.get(f) for f in defn.requires_flags
-    ):
+    if defn.requires_flags and not all(ctx.dialogue_flags.get(f) for f in defn.requires_flags):
         return False
     if defn.unique and ctx.dialogue_flags.get(f"encounter_seen_{defn.id}"):
         return False
-    if defn.excludes_flags and any(
-        ctx.dialogue_flags.get(f) for f in defn.excludes_flags
-    ):
+    if defn.excludes_flags and any(ctx.dialogue_flags.get(f) for f in defn.excludes_flags):
         return False
     return True
 
@@ -406,7 +401,7 @@ def _weighted_select(
     total = sum(weights)
     roll = rng.uniform(0, total)
     cumulative = 0.0
-    for candidate, weight in zip(candidates, weights):
+    for candidate, weight in zip(candidates, weights, strict=True):
         cumulative += weight
         if roll <= cumulative:
             return candidate

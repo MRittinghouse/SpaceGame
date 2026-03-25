@@ -196,7 +196,9 @@ class TestAttackResolution:
 
         # Damage should go to shields first
         if state.combat_log and state.combat_log[-1].hit:
-            total_damage = initial_shields - enemy.current_shields + initial_hull - enemy.current_hull
+            total_damage = (
+                initial_shields - enemy.current_shields + initial_hull - enemy.current_hull
+            )
             assert total_damage > 0, "Hit should deal damage"
 
     def test_damage_overflow_to_hull(self) -> None:
@@ -230,7 +232,10 @@ class TestDamageReduction:
         # Give enemy 50% damage reduction
         state = engine.get_state()
         dr_effect = CombatEffect(
-            type=EffectType.DAMAGE_REDUCTION, value=0.5, duration=3, target=EffectTarget.SELF,
+            type=EffectType.DAMAGE_REDUCTION,
+            value=0.5,
+            duration=3,
+            target=EffectTarget.SELF,
         )
         state.enemies[0].active_effects.append((dr_effect, 3))
 
@@ -260,8 +265,9 @@ class TestEnergyAndCooldowns:
         player = _make_player_state(energy=1)  # laser costs 3
         engine = _make_engine(player=player, seed=42)
         logs = engine.execute_player_move("laser", target_idx=0)
-        assert any("energy" in e.action.lower() or "energy" in str(e.effects_applied).lower()
-                    for e in logs)
+        assert any(
+            "energy" in e.action.lower() or "energy" in str(e.effects_applied).lower() for e in logs
+        )
 
     def test_cooldown_blocks_move(self) -> None:
         move = _make_move("missile", "Missile", 30.0, energy_cost=4, cooldown=2)
@@ -272,8 +278,10 @@ class TestEnergyAndCooldowns:
         engine.execute_player_move("missile", target_idx=0)
         # Immediately using again should fail (on cooldown)
         logs = engine.execute_player_move("missile", target_idx=0)
-        assert any("cooldown" in str(e.effects_applied).lower() or "cooldown" in e.action.lower()
-                    for e in logs)
+        assert any(
+            "cooldown" in str(e.effects_applied).lower() or "cooldown" in e.action.lower()
+            for e in logs
+        )
 
     def test_cooldown_decrements_each_round(self) -> None:
         move = _make_move("missile", "Missile", 30.0, energy_cost=2, cooldown=1)
@@ -298,8 +306,13 @@ class TestCrewMoves:
 
     def test_crew_moves_execute(self) -> None:
         heal_move = _make_move(
-            "repair", "Emergency Repair", 0, energy_cost=0,
-            effects=[CombatEffect(type=EffectType.HULL_RESTORE, value=20.0, target=EffectTarget.SELF)],
+            "repair",
+            "Emergency Repair",
+            0,
+            energy_cost=0,
+            effects=[
+                CombatEffect(type=EffectType.HULL_RESTORE, value=20.0, target=EffectTarget.SELF)
+            ],
         )
         player = _make_player_state(hull=50, crew_moves=[heal_move])
         engine = _make_engine(player=player, seed=42)
@@ -311,8 +324,13 @@ class TestCrewMoves:
 
     def test_skip_crew_moves(self) -> None:
         heal_move = _make_move(
-            "repair", "Emergency Repair", 0, energy_cost=0,
-            effects=[CombatEffect(type=EffectType.HULL_RESTORE, value=20.0, target=EffectTarget.SELF)],
+            "repair",
+            "Emergency Repair",
+            0,
+            energy_cost=0,
+            effects=[
+                CombatEffect(type=EffectType.HULL_RESTORE, value=20.0, target=EffectTarget.SELF)
+            ],
         )
         player = _make_player_state(hull=50, crew_moves=[heal_move])
         engine = _make_engine(player=player, seed=42)
@@ -339,7 +357,9 @@ class TestEnemyAI:
 
     def test_cowardly_flees_at_low_hull(self) -> None:
         enemy_t = _make_enemy_template(
-            behavior=EnemyBehavior.COWARDLY, hull=100, flee_threshold=0.4,
+            behavior=EnemyBehavior.COWARDLY,
+            hull=100,
+            flee_threshold=0.4,
         )
         engine = _make_engine(enemy_templates=[enemy_t], seed=42)
         state = engine.get_state()
@@ -350,15 +370,23 @@ class TestEnemyAI:
 
     def test_defensive_uses_defense_when_low(self) -> None:
         shield_move = _make_move(
-            "shield", "Shield", 0, energy_cost=2,
-            effects=[CombatEffect(
-                type=EffectType.SHIELD_RESTORE, value=15.0, target=EffectTarget.SELF,
-            )],
+            "shield",
+            "Shield",
+            0,
+            energy_cost=2,
+            effects=[
+                CombatEffect(
+                    type=EffectType.SHIELD_RESTORE,
+                    value=15.0,
+                    target=EffectTarget.SELF,
+                )
+            ],
         )
         attack_move = _make_move("attack", "Attack", 10.0, energy_cost=2)
         enemy_t = _make_enemy_template(
             behavior=EnemyBehavior.DEFENSIVE,
-            hull=100, shields=20,
+            hull=100,
+            shields=20,
             moves=[attack_move, shield_move],
         )
         engine = _make_engine(enemy_templates=[enemy_t], seed=42)
@@ -462,7 +490,10 @@ class TestEndRound:
         engine = _make_engine(seed=42)
         state = engine.get_state()
         effect = CombatEffect(
-            type=EffectType.EVASION_MOD, value=10.0, duration=1, target=EffectTarget.SELF,
+            type=EffectType.EVASION_MOD,
+            value=10.0,
+            duration=1,
+            target=EffectTarget.SELF,
         )
         state.player.active_effects.append((effect, 1))
         engine.end_round()
@@ -728,17 +759,13 @@ class TestFleeBonus:
         no_bonus_success = 0
         bonus_success = 0
         for s in range(500):
-            state_no = _make_combat_state(
-                _make_player_state(speed=8), [template], seed=s
-            )
+            state_no = _make_combat_state(_make_player_state(speed=8), [template], seed=s)
             engine_no = CombatEngine(state_no, seed=s)
             ok, _ = engine_no.attempt_flee()
             if ok:
                 no_bonus_success += 1
 
-            state_yes = _make_combat_state(
-                _make_player_state(speed=8), [template], seed=s
-            )
+            state_yes = _make_combat_state(_make_player_state(speed=8), [template], seed=s)
             state_yes.player.flee_bonus = 15
             engine_yes = CombatEngine(state_yes, seed=s)
             ok, _ = engine_yes.attempt_flee()
@@ -831,7 +858,5 @@ class TestCombatResultFlags:
         social = _FakeSocialManager(pass_check=True)
         template = _make_enemy_template(negotiate_difficulty=5)
         engine = _make_engine(enemy_templates=[template])
-        engine.attempt_negotiate(
-            "persuasion", social, faction_reputation_tier="Allied"
-        )
+        engine.attempt_negotiate("persuasion", social, faction_reputation_tier="Allied")
         assert social.last_difficulty == 3  # 5 - 2 = 3

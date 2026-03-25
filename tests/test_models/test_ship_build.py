@@ -5,19 +5,16 @@ modifiers, identity detection, and serialization.
 """
 
 from spacegame.models.ship_build import (
-    HullShape,
-    HullMaterial,
-    PlacedPixel,
+    SLOT_POOLS,
+    WEIGHT_CLASSES,
     DesignatedSlot,
+    HullMaterial,
+    HullShape,
+    PlacedPixel,
     ShipBuild,
-    ComputedShipStats,
     ShipGridManager,
     ShipStatsComputer,
-    WEIGHT_CLASSES,
-    SLOT_POOLS,
-    IDENTITY_THRESHOLD,
 )
-
 
 # ============================================================================
 # Helpers
@@ -27,7 +24,9 @@ from spacegame.models.ship_build import (
 def _shape_2x2() -> HullShape:
     """A simple 2x2 square shape."""
     return HullShape(
-        id="square", name="Square", description="2x2 square",
+        id="square",
+        name="Square",
+        description="2x2 square",
         pixel_mask=[[True, True], [True, True]],
     )
 
@@ -35,7 +34,9 @@ def _shape_2x2() -> HullShape:
 def _shape_triangle() -> HullShape:
     """A right triangle (2x2, 3 pixels)."""
     return HullShape(
-        id="triangle", name="Triangle", description="Right triangle",
+        id="triangle",
+        name="Triangle",
+        description="Right triangle",
         pixel_mask=[[True, True], [False, True]],
     )
 
@@ -43,7 +44,9 @@ def _shape_triangle() -> HullShape:
 def _shape_bar() -> HullShape:
     """A 3x1 horizontal bar."""
     return HullShape(
-        id="bar", name="Bar", description="3x1 bar",
+        id="bar",
+        name="Bar",
+        description="3x1 bar",
         pixel_mask=[[True, True, True]],
     )
 
@@ -51,18 +54,26 @@ def _shape_bar() -> HullShape:
 def _mat_standard() -> HullMaterial:
     """Standard plate material."""
     return HullMaterial(
-        id="standard_plate", name="Standard Plate", description="Balanced",
+        id="standard_plate",
+        name="Standard Plate",
+        description="Balanced",
         color_primary=(112, 120, 136),
-        hull_per_pixel=2.5, weight_per_pixel=0.25, cost_per_pixel=15,
+        hull_per_pixel=2.5,
+        weight_per_pixel=0.25,
+        cost_per_pixel=15,
     )
 
 
 def _mat_heavy() -> HullMaterial:
     """Heavy armor material (juggernaut identity)."""
     return HullMaterial(
-        id="heavy_armor", name="Heavy Armor", description="Tank",
+        id="heavy_armor",
+        name="Heavy Armor",
+        description="Tank",
         color_primary=(152, 112, 64),
-        hull_per_pixel=3.0, armor_per_pixel=0.06, weight_per_pixel=0.55,
+        hull_per_pixel=3.0,
+        armor_per_pixel=0.06,
+        weight_per_pixel=0.55,
         cost_per_pixel=25,
     )
 
@@ -70,19 +81,28 @@ def _mat_heavy() -> HullMaterial:
 def _mat_shield() -> HullMaterial:
     """Shield crystal material (sentinel identity)."""
     return HullMaterial(
-        id="shield_crystal", name="Shield Crystal", description="Shields",
+        id="shield_crystal",
+        name="Shield Crystal",
+        description="Shields",
         color_primary=(64, 168, 208),
-        hull_per_pixel=1.0, shield_per_pixel=0.6, shield_regen_per_pixel=0.03,
-        weight_per_pixel=0.6, cost_per_pixel=22,
+        hull_per_pixel=1.0,
+        shield_per_pixel=0.6,
+        shield_regen_per_pixel=0.03,
+        weight_per_pixel=0.6,
+        cost_per_pixel=22,
     )
 
 
 def _mat_light() -> HullMaterial:
     """Light alloy material (ghost identity)."""
     return HullMaterial(
-        id="light_alloy", name="Light Alloy", description="Evasion",
+        id="light_alloy",
+        name="Light Alloy",
+        description="Evasion",
         color_primary=(176, 184, 200),
-        hull_per_pixel=1.5, evasion_per_pixel=0.08, weight_per_pixel=0.4,
+        hull_per_pixel=1.5,
+        evasion_per_pixel=0.08,
+        weight_per_pixel=0.4,
         cost_per_pixel=8,
     )
 
@@ -177,10 +197,12 @@ class TestShipGridManager:
 
     def test_place_shape_fails_on_overlap(self) -> None:
         mgr = ShipGridManager("medium")
-        existing = [PlacedPixel(5, 5, "standard_plate"),
-                    PlacedPixel(6, 5, "standard_plate"),
-                    PlacedPixel(5, 6, "standard_plate"),
-                    PlacedPixel(6, 6, "standard_plate")]
+        existing = [
+            PlacedPixel(5, 5, "standard_plate"),
+            PlacedPixel(6, 5, "standard_plate"),
+            PlacedPixel(5, 6, "standard_plate"),
+            PlacedPixel(6, 6, "standard_plate"),
+        ]
         ok, msg = mgr.can_place_shape(_shape_2x2(), 5, 5, _mat_standard(), existing)
         assert not ok
         assert "Overlap" in msg
@@ -202,8 +224,9 @@ class TestShipGridManager:
         # Fill 96 pixels at 0.55 = 52.8 weight. Adding 4 more = 55 + 2.2 > 55
         existing = [PlacedPixel(i % 16, i // 16, "heavy_armor") for i in range(98)]
         # 98 * 0.55 = 53.9. Adding 4 * 0.55 = 2.2 → 56.1 > 55
-        ok, msg = mgr.can_place_shape(_shape_2x2(), 14, 7, mat, existing,
-                                       materials_catalog={"heavy_armor": mat})
+        ok, msg = mgr.can_place_shape(
+            _shape_2x2(), 14, 7, mat, existing, materials_catalog={"heavy_armor": mat}
+        )
         assert not ok
         assert "weight" in msg.lower()
 
@@ -213,60 +236,12 @@ class TestShipGridManager:
         assert ShipGridManager("xlarge").get_canvas_w() == 72
 
 
-class TestSlotPlacement:
-    """Slot designation validation."""
-
-    def _filled_area(self, x: int, y: int, size: int) -> list[PlacedPixel]:
-        """Create a filled area of pixels."""
-        return [
-            PlacedPixel(x + dx, y + dy, "standard_plate")
-            for dy in range(size) for dx in range(size)
-        ]
-
-    def test_slot_succeeds_on_filled_area(self) -> None:
-        mgr = ShipGridManager("medium")
-        pixels = self._filled_area(5, 5, 4)
-        ok, msg = mgr.can_place_slot("weapon", 5, 5, pixels, [])
-        assert ok, msg
-
-    def test_slot_fails_on_unfilled_area(self) -> None:
-        mgr = ShipGridManager("medium")
-        ok, msg = mgr.can_place_slot("weapon", 5, 5, [], [])
-        assert not ok
-        assert "filled pixels" in msg
-
-    def test_slot_fails_on_overlap(self) -> None:
-        mgr = ShipGridManager("medium")
-        pixels = self._filled_area(5, 5, 6)
-        existing_slot = DesignatedSlot(slot_type="weapon", x=5, y=5)
-        ok, msg = mgr.can_place_slot("defense", 6, 6, pixels, [existing_slot])
-        assert not ok
-        assert "Overlaps" in msg
-
-    def test_slot_fails_pool_exhausted(self) -> None:
-        mgr = ShipGridManager("tiny")  # 1 weapon slot max
-        pixels = self._filled_area(0, 0, 8)
-        existing = [DesignatedSlot(slot_type="weapon", x=0, y=0)]
-        ok, msg = mgr.can_place_slot("weapon", 4, 0, pixels, existing)
-        assert not ok
-        assert "remaining" in msg
-
-    def test_engine_slot_fails_not_in_rear(self) -> None:
-        mgr = ShipGridManager("medium")  # 32x32, rear = y >= 24
-        pixels = self._filled_area(5, 5, 4)
-        ok, msg = mgr.can_place_slot("engine", 5, 5, pixels, [])
-        assert not ok
-        assert "rear" in msg
-
-    def test_engine_slot_succeeds_in_rear(self) -> None:
-        mgr = ShipGridManager("medium")  # rear threshold at y=24
-        pixels = self._filled_area(5, 24, 4)
-        ok, msg = mgr.can_place_slot("engine", 5, 24, pixels, [])
-        assert ok, msg
+class TestAreaFilled:
+    """Grid area fill checks (used by module placement)."""
 
     def test_is_area_filled(self) -> None:
         mgr = ShipGridManager("medium")
-        pixels = self._filled_area(0, 0, 3)
+        pixels = [PlacedPixel(x, y, "standard_plate") for y in range(3) for x in range(3)]
         assert mgr.is_area_filled(0, 0, 2, pixels)
         assert not mgr.is_area_filled(2, 2, 2, pixels)
 
@@ -317,7 +292,9 @@ class TestShipStatsComputer:
         for i in range(85):
             build.pixels.append(PlacedPixel(i % 16, i // 16, "heavy_armor"))
         stats = ShipStatsComputer.compute(build, _materials())
-        assert stats.weight_label == "HEAVY", f"Expected HEAVY, got {stats.weight_label} ({stats.weight_ratio:.2f})"
+        assert stats.weight_label == "HEAVY", (
+            f"Expected HEAVY, got {stats.weight_label} ({stats.weight_ratio:.2f})"
+        )
 
     def test_identity_juggernaut(self) -> None:
         """35%+ heavy_armor pixels → Juggernaut identity."""
@@ -411,7 +388,9 @@ class TestSerialization:
         build = ShipBuild(
             weight_class="medium",
             pixels=[PlacedPixel(5, 5, "standard_plate"), PlacedPixel(6, 5, "heavy_armor")],
-            slots=[DesignatedSlot(slot_type="weapon", x=5, y=5, equipment_id="laser_cannon", mark=2)],
+            slots=[
+                DesignatedSlot(slot_type="weapon", x=5, y=5, equipment_id="laser_cannon", mark=2)
+            ],
             preset_name="My Ship",
         )
         data = build.to_dict()
@@ -436,8 +415,12 @@ class TestSerialization:
 
     def test_designated_slot_round_trip(self) -> None:
         slot = DesignatedSlot(
-            slot_type="core", x=10, y=10,
-            equipment_id="power_core_t2", mark=3, tuning="overclocked",
+            slot_type="core",
+            x=10,
+            y=10,
+            equipment_id="power_core_t2",
+            mark=3,
+            tuning="overclocked",
         )
         data = slot.to_dict()
         restored = DesignatedSlot.from_dict(data)
@@ -467,9 +450,13 @@ class TestWeightClassConstants:
             assert "unlock_cost" in wc, f"{wc_id} missing unlock_cost"
 
     def test_canvas_sizes_ascending(self) -> None:
-        widths = [WEIGHT_CLASSES[k]["canvas_w"] for k in ["tiny", "small", "medium", "large", "xlarge"]]
+        widths = [
+            WEIGHT_CLASSES[k]["canvas_w"] for k in ["tiny", "small", "medium", "large", "xlarge"]
+        ]
         assert widths == sorted(widths)
-        heights = [WEIGHT_CLASSES[k]["canvas_h"] for k in ["tiny", "small", "medium", "large", "xlarge"]]
+        heights = [
+            WEIGHT_CLASSES[k]["canvas_h"] for k in ["tiny", "small", "medium", "large", "xlarge"]
+        ]
         assert heights == sorted(heights)
 
     def test_slot_pools_match_weight_classes(self) -> None:

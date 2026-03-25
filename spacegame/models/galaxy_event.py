@@ -18,8 +18,8 @@ from typing import Any, Optional
 from spacegame.config import (
     GALAXY_EVENT_DAILY_CHANCE,
     GALAXY_EVENT_MAX_ACTIVE,
-    GALAXY_EVENT_MIN_DURATION,
     GALAXY_EVENT_MAX_DURATION,
+    GALAXY_EVENT_MIN_DURATION,
 )
 
 
@@ -138,9 +138,7 @@ class GalaxyEventGenerator:
         self._chain_by_id = {c["chain_id"]: c for c in self._chains}
         self._pending_chain_events: list[tuple[int, str]] = []  # (fire_day, template_id)
 
-    def check_chain_triggers(
-        self, expired_event: GalaxyEvent, current_day: int
-    ) -> None:
+    def check_chain_triggers(self, expired_event: GalaxyEvent, current_day: int) -> None:
         """Queue chain follow-up events when an event expires.
 
         Args:
@@ -160,9 +158,7 @@ class GalaxyEventGenerator:
                 self._pending_chain_events.append((fire_day, step["event_id"]))
                 break
 
-    def _try_fire_chain_event(
-        self, current_day: int
-    ) -> Optional[GalaxyEvent]:
+    def _try_fire_chain_event(self, current_day: int) -> Optional[GalaxyEvent]:
         """Check if any pending chain events should fire.
 
         Args:
@@ -179,9 +175,7 @@ class GalaxyEventGenerator:
                     return self._build_event_from_template(template, current_day)
         return None
 
-    def _build_event_from_template(
-        self, template: dict[str, Any], current_day: int
-    ) -> GalaxyEvent:
+    def _build_event_from_template(self, template: dict[str, Any], current_day: int) -> GalaxyEvent:
         """Build a GalaxyEvent from a template dict.
 
         Args:
@@ -268,7 +262,7 @@ class GalaxyEventGenerator:
         roll = rng.uniform(0, total_weight)
         cumulative = 0.0
         template = self._templates[0]
-        for t, w in zip(self._templates, weights):
+        for t, w in zip(self._templates, weights, strict=True):
             cumulative += w
             if roll <= cumulative:
                 template = t

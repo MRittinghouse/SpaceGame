@@ -133,7 +133,9 @@ class TestSystemFiltering:
     def test_correct_system_text_is_returned(self) -> None:
         manager = _make_manager()
         results = manager.get_chatter("breakstone", player_rep=0, active_event_types=[], count=2)
-        assert all("Breakstone" in t for t in results), "All returned lines should be Breakstone lines"
+        assert all("Breakstone" in t for t in results), (
+            "All returned lines should be Breakstone lines"
+        )
 
 
 # ============================================================================
@@ -153,7 +155,9 @@ class TestReputationFiltering:
         manager = _make_manager(_make_reputation_lines())
         # rep=60 is above max_reputation=-10 for the low-rep line
         results = manager.get_chatter("nexus_prime", player_rep=60, active_event_types=[], count=3)
-        assert not any("enforcers" in t for t in results), "Low-rep line should be excluded for rep=60"
+        assert not any("enforcers" in t for t in results), (
+            "Low-rep line should be excluded for rep=60"
+        )
 
     def test_excludes_line_above_max_reputation(self) -> None:
         manager = _make_manager(_make_reputation_lines())
@@ -165,13 +169,17 @@ class TestReputationFiltering:
         manager = _make_manager(_make_reputation_lines())
         # rep=50 is exactly the min_reputation of the high-rep line
         results = manager.get_chatter("nexus_prime", player_rep=50, active_event_types=[], count=3)
-        assert any("hero" in t for t in results), "Line with min_reputation=50 should appear at rep=50"
+        assert any("hero" in t for t in results), (
+            "Line with min_reputation=50 should appear at rep=50"
+        )
 
     def test_boundary_max_reputation_is_inclusive(self) -> None:
         manager = _make_manager(_make_reputation_lines())
         # rep=-10 is exactly the max_reputation of the low-rep line
         results = manager.get_chatter("nexus_prime", player_rep=-10, active_event_types=[], count=3)
-        assert any("enforcers" in t for t in results), "Line with max_reputation=-10 should appear at rep=-10"
+        assert any("enforcers" in t for t in results), (
+            "Line with max_reputation=-10 should appear at rep=-10"
+        )
 
     def test_no_lines_match_reputation_returns_empty(self) -> None:
         lines = [
@@ -212,9 +220,7 @@ class TestEventFiltering:
 
     def test_event_line_excluded_when_event_inactive(self) -> None:
         manager = _make_manager(_make_event_lines())
-        results = manager.get_chatter(
-            "nexus_prime", player_rep=0, active_event_types=[], count=3
-        )
+        results = manager.get_chatter("nexus_prime", player_rep=0, active_event_types=[], count=3)
         assert not any("Guild stamp" in t for t in results), (
             "Blockade line should not appear when no events are active"
         )
@@ -306,15 +312,11 @@ class TestShownTracking:
         # Exhaust nexus_prime lines
         manager.get_chatter("nexus_prime", player_rep=0, active_event_types=[], count=3)
         # Breakstone lines should still be available
-        results = manager.get_chatter(
-            "breakstone", player_rep=0, active_event_types=[], count=2
-        )
+        results = manager.get_chatter("breakstone", player_rep=0, active_event_types=[], count=2)
         assert len(results) == 2, "Shown tracking for nexus_prime should not affect breakstone"
 
     def test_returns_empty_when_all_lines_shown(self) -> None:
-        lines = [
-            _make_line(id="only_one", system_id="nexus_prime", text="The only line here.")
-        ]
+        lines = [_make_line(id="only_one", system_id="nexus_prime", text="The only line here.")]
         manager = _make_manager(lines)
         manager.get_chatter("nexus_prime", player_rep=0, active_event_types=[], count=1)
         second = manager.get_chatter("nexus_prime", player_rep=0, active_event_types=[], count=1)
@@ -330,9 +332,7 @@ class TestResetShown:
     """reset_shown clears tracking for a specific system."""
 
     def test_reset_allows_lines_to_be_shown_again(self) -> None:
-        lines = [
-            _make_line(id="only_one", system_id="nexus_prime", text="The only line here.")
-        ]
+        lines = [_make_line(id="only_one", system_id="nexus_prime", text="The only line here.")]
         manager = _make_manager(lines)
         manager.get_chatter("nexus_prime", player_rep=0, active_event_types=[], count=1)
 

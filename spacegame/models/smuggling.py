@@ -10,7 +10,7 @@ import hashlib
 import random as _rng
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from spacegame.models.commodity import Legality
 from spacegame.models.faction import ReputationTier, get_reputation_tier
@@ -527,7 +527,11 @@ def build_inspection_encounter(
         persuade_outcome = EncounterOutcome(
             description=(
                 "The inspector isn't convinced. They proceed with a full scan. "
-                + (comply_outcome.description if not inspection.passed else "Your cargo checks out.")
+                + (
+                    comply_outcome.description
+                    if not inspection.passed
+                    else "Your cargo checks out."
+                )
             ),
             rewards=list(comply_outcome.rewards),
         )
@@ -535,7 +539,9 @@ def build_inspection_encounter(
     risk_word = (
         "Likely"
         if persuasion_level >= persuasion_diff
-        else "Unlikely" if persuasion_level < persuasion_diff - 1 else "Uncertain"
+        else "Unlikely"
+        if persuasion_level < persuasion_diff - 1
+        else "Uncertain"
     )
     choices.append(
         EncounterChoice(
@@ -548,7 +554,8 @@ def build_inspection_encounter(
 
     # --- Choice 3: Bribe ---
     contraband_value = sum(
-        qty * price_map.get(cid, 0) for cid, qty in cargo.items()
+        qty * price_map.get(cid, 0)
+        for cid, qty in cargo.items()
         if legality_map.get(cid, Legality.LEGAL) != Legality.LEGAL
     )
     bribe_cost = max(50, int(contraband_value * _BRIBE_COST_FRACTION))
@@ -589,9 +596,7 @@ def build_inspection_encounter(
         fail_rewards: list[MissionReward] = []
         doubled_fine = inspection.fine_amount * 2
         if doubled_fine > 0:
-            fail_rewards.append(
-                MissionReward(reward_type="deduct_credits", amount=doubled_fine)
-            )
+            fail_rewards.append(MissionReward(reward_type="deduct_credits", amount=doubled_fine))
         if inspection.penalty in (Penalty.CONFISCATE, Penalty.BAN):
             for commodity_id, qty in inspection.contraband_found.items():
                 fail_rewards.append(
@@ -603,9 +608,7 @@ def build_inspection_encounter(
                 )
         doubled_heat = inspection.heat_gain * 2
         if doubled_heat > 0:
-            fail_rewards.append(
-                MissionReward(reward_type="add_criminal_heat", amount=doubled_heat)
-            )
+            fail_rewards.append(MissionReward(reward_type="add_criminal_heat", amount=doubled_heat))
         if inspection.reputation_loss != 0:
             fail_rewards.append(
                 MissionReward(
@@ -623,9 +626,7 @@ def build_inspection_encounter(
             rewards=fail_rewards,
         )
 
-    risk_label = (
-        "Risky" if intimidation_level < _INTIMIDATION_DIFFICULTY else "Confident"
-    )
+    risk_label = "Risky" if intimidation_level < _INTIMIDATION_DIFFICULTY else "Confident"
     choices.append(
         EncounterChoice(
             id="intimidate",
@@ -654,9 +655,7 @@ def build_inspection_encounter(
     )
 
 
-def _get_worst_legality(
-    cargo: dict[str, int], legality_map: dict[str, Legality]
-) -> Legality:
+def _get_worst_legality(cargo: dict[str, int], legality_map: dict[str, Legality]) -> Legality:
     """Find the worst legality level among cargo items."""
     worst = Legality.LEGAL
     for commodity_id in cargo:
@@ -695,9 +694,9 @@ def _describe_penalty(inspection: InspectionResult, faction_name: str) -> str:
 
 # Black market price modifiers by commodity legality
 _BLACK_MARKET_PRICE_MODS: dict[Legality, float] = {
-    Legality.LEGAL: 0.15,       # +15% premium for anonymity
-    Legality.RESTRICTED: 0.0,   # Standard price
-    Legality.ILLEGAL: -0.10,    # -10% discount, plentiful supply
+    Legality.LEGAL: 0.15,  # +15% premium for anonymity
+    Legality.RESTRICTED: 0.0,  # Standard price
+    Legality.ILLEGAL: -0.10,  # -10% discount, plentiful supply
 }
 
 
@@ -911,9 +910,16 @@ _CONTRACT_PARAMS: dict[str, dict] = {
 
 # All system IDs for destination selection
 _SYSTEM_IDS: list[str] = [
-    "nexus_prime", "stellaris_port", "breakstone", "iron_depths",
-    "axiom_labs", "nova_research", "havens_rest", "verdant",
-    "crimson_reach", "forgeworks",
+    "nexus_prime",
+    "stellaris_port",
+    "breakstone",
+    "iron_depths",
+    "axiom_labs",
+    "nova_research",
+    "havens_rest",
+    "verdant",
+    "crimson_reach",
+    "forgeworks",
 ]
 
 # Maximum active contracts at once
@@ -1043,16 +1049,12 @@ class SmugglingContractManager:
             new_contracts.append(contract)
 
         # Replace available contracts for this system
-        self._available = [
-            c for c in self._available if c.source_system != system_id
-        ]
+        self._available = [c for c in self._available if c.source_system != system_id]
         self._available.extend(new_contracts)
 
         return new_contracts
 
-    def get_available_contracts(
-        self, system_id: str
-    ) -> list[SmugglingContract]:
+    def get_available_contracts(self, system_id: str) -> list[SmugglingContract]:
         """Get contracts available for acceptance at a system.
 
         Args:
@@ -1063,9 +1065,7 @@ class SmugglingContractManager:
         """
         active_ids = {ac.contract.id for ac in self._active}
         return [
-            c
-            for c in self._available
-            if c.source_system == system_id and c.id not in active_ids
+            c for c in self._available if c.source_system == system_id and c.id not in active_ids
         ]
 
     def get_active_contracts(self) -> list[SmugglingContract]:
@@ -1076,9 +1076,7 @@ class SmugglingContractManager:
         """
         return [ac.contract for ac in self._active if not ac.completed]
 
-    def accept_contract(
-        self, contract_id: str, accepted_day: int
-    ) -> tuple[bool, str]:
+    def accept_contract(self, contract_id: str, accepted_day: int) -> tuple[bool, str]:
         """Accept a smuggling contract for delivery.
 
         Args:
@@ -1107,10 +1105,11 @@ class SmugglingContractManager:
         if contract is None:
             return False, "Contract not found."
 
-        self._active.append(
-            _ActiveContract(contract=contract, accepted_day=accepted_day)
+        self._active.append(_ActiveContract(contract=contract, accepted_day=accepted_day))
+        return (
+            True,
+            f"Contract accepted: deliver {contract.quantity} {contract.commodity_id} to {contract.destination_system}.",
         )
-        return True, f"Contract accepted: deliver {contract.quantity} {contract.commodity_id} to {contract.destination_system}."
 
     def complete_contract(
         self,
@@ -1178,8 +1177,7 @@ class SmugglingContractManager:
         return [
             ac.contract
             for ac in self._active
-            if not ac.completed
-            and ac.contract.is_expired(current_day, ac.accepted_day)
+            if not ac.completed and ac.contract.is_expired(current_day, ac.accepted_day)
         ]
 
     def to_dict(self) -> dict:
@@ -1200,12 +1198,8 @@ class SmugglingContractManager:
             SmugglingContractManager instance.
         """
         mgr = cls()
-        mgr._available = [
-            SmugglingContract.from_dict(c) for c in data.get("available", [])
-        ]
-        mgr._active = [
-            _ActiveContract.from_dict(ac) for ac in data.get("active", [])
-        ]
+        mgr._available = [SmugglingContract.from_dict(c) for c in data.get("available", [])]
+        mgr._active = [_ActiveContract.from_dict(ac) for ac in data.get("active", [])]
         return mgr
 
 
@@ -1265,7 +1259,10 @@ class HiddenCompartment:
             Tuple of (success, message).
         """
         if self.hidden_used + quantity > self.hidden_capacity:
-            return False, f"Insufficient hidden hold space ({self.hidden_capacity - self.hidden_used} free)."
+            return (
+                False,
+                f"Insufficient hidden hold space ({self.hidden_capacity - self.hidden_used} free).",
+            )
         current = self.hidden_cargo.get(commodity_id, 0)
         self.hidden_cargo[commodity_id] = current + quantity
         return True, f"Moved {quantity} {commodity_id} to hidden hold."
@@ -1463,9 +1460,9 @@ def resolve_inspection_with_hidden(
 class BountyHunterTier(Enum):
     """Bounty hunter difficulty tiers based on criminal heat."""
 
-    FREELANCE = "freelance"   # Heat 26-50: solo trackers, bribable
-    LICENSED = "licensed"     # Heat 51-75: 1-2 ships, not bribable
-    ELITE = "elite"           # Heat 76-100: 2-3 ships, faction enforcers
+    FREELANCE = "freelance"  # Heat 26-50: solo trackers, bribable
+    LICENSED = "licensed"  # Heat 51-75: 1-2 ships, not bribable
+    ELITE = "elite"  # Heat 76-100: 2-3 ships, faction enforcers
 
 
 # Heat thresholds for each tier
@@ -1538,11 +1535,11 @@ _BOUNTY_TIER_DESCRIPTIONS: dict[BountyHunterTier, str] = {
     ),
     BountyHunterTier.LICENSED: (
         "Two ships bearing licensed bounty hunter transponders move to intercept. "
-        "The lead ship hails you: \"You're flagged for criminal activity. Stand down and prepare to be boarded.\""
+        'The lead ship hails you: "You\'re flagged for criminal activity. Stand down and prepare to be boarded."'
     ),
     BountyHunterTier.ELITE: (
         "A formation of faction enforcement vessels locks weapons on your ship. "
-        "\"By authority of the sector council, you are ordered to surrender. Resistance will be met with force.\""
+        '"By authority of the sector council, you are ordered to surrender. Resistance will be met with force."'
     ),
 }
 
@@ -1729,11 +1726,13 @@ def build_bounty_hunter_encounter(
                     description=(
                         "You power down your engines and transmit payment. "
                         "The hunter verifies the transfer and disengages. "
-                        "\"Pleasure doing business. Stay clean.\""
+                        '"Pleasure doing business. Stay clean."'
                     ),
                     rewards=[
                         MissionReward(reward_type="deduct_credits", amount=surrender_cost),
-                        MissionReward(reward_type="reduce_criminal_heat", amount=_SURRENDER_HEAT_REDUCTION),
+                        MissionReward(
+                            reward_type="reduce_criminal_heat", amount=_SURRENDER_HEAT_REDUCTION
+                        ),
                     ],
                 ),
             )
@@ -1754,7 +1753,7 @@ def build_bounty_hunter_encounter(
     else:
         negotiate_outcome = EncounterOutcome(
             description=(
-                "The hunter isn't convinced. \"Nice try, but my contract says otherwise.\" "
+                'The hunter isn\'t convinced. "Nice try, but my contract says otherwise." '
                 "They power up weapons."
             ),
             rewards=[
@@ -1769,7 +1768,9 @@ def build_bounty_hunter_encounter(
     risk_word = (
         "Likely"
         if persuasion_level >= negotiate_diff
-        else "Unlikely" if persuasion_level < negotiate_diff - 1 else "Uncertain"
+        else "Unlikely"
+        if persuasion_level < negotiate_diff - 1
+        else "Uncertain"
     )
     choices.append(
         EncounterChoice(

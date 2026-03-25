@@ -46,8 +46,12 @@ class TestChainBreakIngredients:
         from spacegame.models.mining import RockType
 
         cb = ChainBreak(
-            grid_x=0, grid_y=0, rock_type=RockType.COMMON,
-            commodity_id="common_metals", quantity=3, chain_depth=1,
+            grid_x=0,
+            grid_y=0,
+            rock_type=RockType.COMMON,
+            commodity_id="common_metals",
+            quantity=3,
+            chain_depth=1,
         )
         assert cb.ingredient_drops == {}
 

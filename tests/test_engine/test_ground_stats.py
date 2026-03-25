@@ -13,10 +13,19 @@ from spacegame.models.ship import Ship, ShipType
 
 def _make_ship_type() -> ShipType:
     return ShipType(
-        id="test", name="Test", ship_class="starter",
-        description="", cargo_capacity=100, fuel_capacity=50,
-        fuel_efficiency=5, speed_multiplier=1.0, purchase_price=0,
-        resale_value=0, crew_slots=2, special_abilities=[], availability="common",
+        id="test",
+        name="Test",
+        ship_class="starter",
+        description="",
+        cargo_capacity=100,
+        fuel_capacity=50,
+        fuel_efficiency=5,
+        speed_multiplier=1.0,
+        purchase_price=0,
+        resale_value=0,
+        crew_slots=2,
+        special_abilities=[],
+        availability="common",
     )
 
 

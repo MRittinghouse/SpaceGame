@@ -6,16 +6,17 @@ Provides options to Save, Load, Settings, Resume, and Quit.
 Features pulsing border glow and semi-transparent overlay.
 """
 
-import pygame
-import pygame_gui
 import math
 from typing import Optional
 
-from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState, scale_x, scale_y
-from spacegame.views.base_view import BaseView
-from spacegame.engine.fonts import FontCache, FONT_DISPLAY, FONT_HEADING
+import pygame
+import pygame_gui
+
+from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH, Colors, GameState, scale_x, scale_y
 from spacegame.engine.draw_utils import draw_panel
+from spacegame.engine.fonts import FONT_DISPLAY, FONT_HEADING, get_font
 from spacegame.utils.logger import logger
+from spacegame.views.base_view import BaseView
 
 
 class PauseMenuView(BaseView):
@@ -31,8 +32,8 @@ class PauseMenuView(BaseView):
         self.show_settings_dialog = False
 
         # Fonts
-        self.title_font = FontCache.get(FONT_DISPLAY)
-        self.button_font = FontCache.get(FONT_HEADING)
+        self.title_font = get_font("header", FONT_DISPLAY)
+        self.button_font = get_font("dialogue", FONT_HEADING)
 
         # UI Elements
         self.resume_button: Optional[pygame_gui.elements.UIButton] = None

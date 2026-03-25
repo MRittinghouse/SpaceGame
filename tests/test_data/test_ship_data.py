@@ -44,12 +44,29 @@ class TestShipIdentities:
     """Verify key ships exist with expected IDs."""
 
     EXPECTED_IDS = [
-        "shuttle", "light_freighter", "prospector", "patrol_cutter",
-        "medium_freighter", "fast_courier", "armed_trader", "scout_vessel",
-        "corsair", "mining_barge", "smugglers_sloop", "salvage_rig",
-        "bulk_hauler", "luxury_yacht", "clipper", "war_frigate",
-        "deep_explorer", "phantom", "industrial_titan", "diplomatic_cruiser",
-        "consortium_merchantman", "syndicate_enforcer", "frontier_runner",
+        "shuttle",
+        "light_freighter",
+        "prospector",
+        "patrol_cutter",
+        "medium_freighter",
+        "fast_courier",
+        "armed_trader",
+        "scout_vessel",
+        "corsair",
+        "mining_barge",
+        "smugglers_sloop",
+        "salvage_rig",
+        "bulk_hauler",
+        "luxury_yacht",
+        "clipper",
+        "war_frigate",
+        "deep_explorer",
+        "phantom",
+        "industrial_titan",
+        "diplomatic_cruiser",
+        "consortium_merchantman",
+        "syndicate_enforcer",
+        "frontier_runner",
         "institute_vessel",
     ]
 
@@ -148,7 +165,7 @@ class TestDesignTradeoffs:
         s = ships["industrial_titan"]
         assert s.speed_multiplier <= 0.6
         assert s.utility_slots == 7  # +1 from slot expansion
-        assert s.weapon_slots == 1   # +1 from slot expansion (was 0)
+        assert s.weapon_slots == 1  # +1 from slot expansion (was 0)
 
     def test_war_frigate_most_combat_slots(self, ships: dict) -> None:
         s = ships["war_frigate"]

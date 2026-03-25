@@ -5,8 +5,7 @@ Gracefully degrades to no-op if pygame.mixer fails to initialize.
 """
 
 import json
-from dataclasses import dataclass, field
-from pathlib import Path
+from dataclasses import dataclass
 from typing import Optional
 
 import pygame

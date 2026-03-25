@@ -73,13 +73,35 @@ class TestFontSizeConstants:
         assert FONT_RATING == 72
 
     def test_constants_are_ascending(self) -> None:
-        sizes = [FONT_XS, FONT_SM, FONT_MD, FONT_BODY, FONT_LG, FONT_XL,
-                 FONT_HEADING, FONT_TITLE, FONT_SECTION, FONT_DISPLAY, FONT_RATING]
+        sizes = [
+            FONT_XS,
+            FONT_SM,
+            FONT_MD,
+            FONT_BODY,
+            FONT_LG,
+            FONT_XL,
+            FONT_HEADING,
+            FONT_TITLE,
+            FONT_SECTION,
+            FONT_DISPLAY,
+            FONT_RATING,
+        ]
         assert sizes == sorted(sizes), "Size constants should be in ascending order"
 
     def test_all_constants_produce_valid_fonts(self) -> None:
-        for size in [FONT_XS, FONT_SM, FONT_MD, FONT_BODY, FONT_LG, FONT_SUBTITLE,
-                     FONT_XL, FONT_HEADING, FONT_TITLE, FONT_SECTION, FONT_DISPLAY,
-                     FONT_RATING]:
+        for size in [
+            FONT_XS,
+            FONT_SM,
+            FONT_MD,
+            FONT_BODY,
+            FONT_LG,
+            FONT_SUBTITLE,
+            FONT_XL,
+            FONT_HEADING,
+            FONT_TITLE,
+            FONT_SECTION,
+            FONT_DISPLAY,
+            FONT_RATING,
+        ]:
             font = FontCache.get(size)
             assert isinstance(font, pygame.font.Font), f"Size {size} should produce a valid font"

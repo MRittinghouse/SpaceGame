@@ -12,30 +12,25 @@ they're in from the visual language alone.
 """
 
 import math
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Optional
 
 import pygame
 
 from spacegame.config import (
-    WINDOW_WIDTH,
     WINDOW_HEIGHT,
+    WINDOW_WIDTH,
     Colors,
     scale_x,
     scale_y,
 )
 from spacegame.engine.fonts import (
-    FontCache,
-    FONT_XS,
-    FONT_SM,
-    FONT_MD,
     FONT_BODY,
-    FONT_LG,
-    FONT_XL,
+    FONT_SM,
+    FONT_XS,
+    get_font,
 )
-from spacegame.engine.draw_utils import draw_panel
 from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
-
 
 # Location type accent colors (shared across all layouts)
 LOCATION_COLORS: dict[str, tuple[int, int, int]] = {
@@ -114,11 +109,11 @@ class StationLayout:
         self.locations = locations
         self.system_id = system_id
         self.zones: list[StationZone] = []
-        self._label_font = FontCache.get(FONT_XS)
-        self._name_font = FontCache.get(FONT_BODY)
-        self._section_font = FontCache.get(FONT_SM)
-        self._tooltip_font = FontCache.get(FONT_XS)
-        self._tagline_font = FontCache.get(FONT_SM)
+        self._label_font = get_font("label", FONT_XS)
+        self._name_font = get_font("dialogue", FONT_BODY)
+        self._section_font = get_font("label", FONT_SM)
+        self._tooltip_font = get_font("dialogue", FONT_XS)
+        self._tagline_font = get_font("narration", FONT_SM)
         self._elapsed: float = 0.0
         self._entrance_timer: float = 0.0  # Fade-in on dock
 
@@ -212,7 +207,7 @@ class StationLayout:
                 mid = desc.rfind(" ", 0, 60)
                 if mid > 20:
                     lines.append((desc[:mid], Colors.TEXT_PRIMARY))
-                    lines.append((desc[mid + 1:], Colors.TEXT_PRIMARY))
+                    lines.append((desc[mid + 1 :], Colors.TEXT_PRIMARY))
                 else:
                     lines.append((desc, Colors.TEXT_PRIMARY))
             else:
@@ -300,13 +295,34 @@ class StationLayout:
             label_surf = self._label_font.render(type_label, True, zone.accent_color)
             screen.blit(label_surf, (r.right - label_surf.get_width() - 8, r.y + 6))
 
-        # Description (below name, if zone is tall enough)
-        if r.height >= scale_y(55):
+        # Description (below name, with word wrapping for taller cards)
+        if r.height >= scale_y(50):
             desc = zone.location.description or ""
-            if len(desc) > 50:
-                desc = desc[:47] + "..."
-            desc_surf = self._label_font.render(desc, True, Colors.TEXT_SECONDARY)
-            screen.blit(desc_surf, (text_x, r.y + scale_y(30)))
+            max_desc_w = r.right - text_x - 10
+            desc_y = r.y + scale_y(28)
+            line_h = self._label_font.get_linesize()
+            max_lines = max(1, (r.height - scale_y(32)) // line_h)
+
+            # Word-wrap description into lines that fit the available width
+            words = desc.split()
+            lines: list[str] = []
+            current_line = ""
+            for word in words:
+                test = f"{current_line} {word}".strip() if current_line else word
+                if self._label_font.size(test)[0] <= max_desc_w:
+                    current_line = test
+                else:
+                    if current_line:
+                        lines.append(current_line)
+                    current_line = word
+            if current_line:
+                lines.append(current_line)
+
+            for i, line in enumerate(lines[:max_lines]):
+                if i == max_lines - 1 and len(lines) > max_lines:
+                    line = line[: len(line) - 3] + "..." if len(line) > 3 else line
+                desc_surf = self._label_font.render(line, True, Colors.TEXT_SECONDARY)
+                screen.blit(desc_surf, (text_x, desc_y + i * line_h))
 
     def _categorize_locations(self) -> dict[str, list]:
         """Sort locations into upper/service/industrial categories."""
@@ -343,11 +359,11 @@ class GuildDeckLayout(StationLayout):
         cats = self._categorize_locations()
         self.zones = []
 
-        margin_x = scale_x(80)
+        margin_x = scale_x(60)
         deck_w = WINDOW_WIDTH - margin_x * 2
-        zone_h = scale_y(55)
-        zone_gap = scale_x(10)
-        deck_gap = scale_y(15)
+        zone_h = scale_y(90)
+        zone_gap = scale_x(12)
+        deck_gap = scale_y(18)
         deck_label_h = scale_y(22)
 
         y = _LAYOUT_TOP + scale_y(10)
@@ -369,7 +385,7 @@ class GuildDeckLayout(StationLayout):
             # Zones within deck
             num = len(locations)
             zone_w = (deck_w - (num - 1) * zone_gap) // max(1, num)
-            zone_w = min(zone_w, scale_x(300))
+            zone_w = min(zone_w, scale_x(380))
 
             total_w = num * zone_w + (num - 1) * zone_gap
             start_x = (WINDOW_WIDTH - total_w) // 2
@@ -379,10 +395,15 @@ class GuildDeckLayout(StationLayout):
                 rect = pygame.Rect(x, y, zone_w, zone_h)
                 color = LOCATION_COLORS.get(loc.location_type, Colors.TEXT_HIGHLIGHT)
                 icon = sprite_mgr.get_location_icon(loc.location_type, scale=res_scale(2))
-                self.zones.append(StationZone(
-                    location=loc, rect=rect, label=loc.name,
-                    accent_color=color, icon=icon,
-                ))
+                self.zones.append(
+                    StationZone(
+                        location=loc,
+                        rect=rect,
+                        label=loc.name,
+                        accent_color=color,
+                        icon=icon,
+                    )
+                )
             y += zone_h + deck_gap
 
         return self.zones
@@ -391,17 +412,23 @@ class GuildDeckLayout(StationLayout):
         super().update(dt)
         # Holographic data motes (blue floating points)
         import random as _rng
+
         self._ambient_emit_timer += dt
         if self._ambient_emit_timer >= 0.4:
             self._ambient_emit_timer -= 0.4
-            self._ambient_particles.append({
-                "x": _rng.uniform(scale_x(100), WINDOW_WIDTH - scale_x(100)),
-                "y": _rng.uniform(_LAYOUT_TOP, _LAYOUT_BOTTOM),
-                "vx": _rng.uniform(-5, 5), "vy": _rng.uniform(-15, -5),
-                "life": _rng.uniform(1.5, 3.0), "max_life": 3.0,
-                "alpha": _rng.randint(25, 50),
-                "color": self.accent_color, "size": _rng.uniform(1, 2),
-            })
+            self._ambient_particles.append(
+                {
+                    "x": _rng.uniform(scale_x(100), WINDOW_WIDTH - scale_x(100)),
+                    "y": _rng.uniform(_LAYOUT_TOP, _LAYOUT_BOTTOM),
+                    "vx": _rng.uniform(-5, 5),
+                    "vy": _rng.uniform(-15, -5),
+                    "life": _rng.uniform(1.5, 3.0),
+                    "max_life": 3.0,
+                    "alpha": _rng.randint(25, 50),
+                    "color": self.accent_color,
+                    "size": _rng.uniform(1, 2),
+                }
+            )
 
     def render_background(self, screen: pygame.Surface) -> None:
         super().render_background(screen)
@@ -413,7 +440,8 @@ class GuildDeckLayout(StationLayout):
             # Horizontal rule after label
             line_y = ly + scale_y(18)
             pygame.draw.line(
-                screen, (*self.accent_color, 60),
+                screen,
+                (*self.accent_color, 60),
                 (lx + label_surf.get_width() + 10, line_y),
                 (WINDOW_WIDTH - lx, line_y),
             )
@@ -437,7 +465,7 @@ class UnionBlueprintLayout(StationLayout):
         self.zones = []
         margin_x = scale_x(60)
         zone_w = scale_x(200)
-        zone_h = scale_y(70)
+        zone_h = scale_y(90)
         gap_x = scale_x(15)
         gap_y = scale_y(20)
         cols = min(4, max(2, (WINDOW_WIDTH - margin_x * 2 + gap_x) // (zone_w + gap_x)))
@@ -457,30 +485,40 @@ class UnionBlueprintLayout(StationLayout):
 
             # Technical label prefix
             bay_num = f"BAY {i + 1:02d}"
-            self.zones.append(StationZone(
-                location=loc, rect=rect,
-                label=f"{bay_num}: {loc.name}",
-                accent_color=color, icon=icon,
-            ))
+            self.zones.append(
+                StationZone(
+                    location=loc,
+                    rect=rect,
+                    label=f"{bay_num}: {loc.name}",
+                    accent_color=color,
+                    icon=icon,
+                )
+            )
         return self.zones
 
     def update(self, dt: float) -> None:
         super().update(dt)
         # Industrial sparks (amber, falling with gravity)
         import random as _rng
+
         self._ambient_emit_timer += dt
         if self._ambient_emit_timer >= 0.6:
             self._ambient_emit_timer -= 0.6
             if self.zones:
                 zone = _rng.choice(self.zones)
-                self._ambient_particles.append({
-                    "x": _rng.uniform(zone.rect.left, zone.rect.right),
-                    "y": float(zone.rect.top),
-                    "vx": _rng.uniform(-10, 10), "vy": _rng.uniform(15, 35),
-                    "life": _rng.uniform(0.5, 1.2), "max_life": 1.2,
-                    "alpha": _rng.randint(60, 120),
-                    "color": (255, _rng.randint(150, 200), 40), "size": 1.5,
-                })
+                self._ambient_particles.append(
+                    {
+                        "x": _rng.uniform(zone.rect.left, zone.rect.right),
+                        "y": float(zone.rect.top),
+                        "vx": _rng.uniform(-10, 10),
+                        "vy": _rng.uniform(15, 35),
+                        "life": _rng.uniform(0.5, 1.2),
+                        "max_life": 1.2,
+                        "alpha": _rng.randint(60, 120),
+                        "color": (255, _rng.randint(150, 200), 40),
+                        "size": 1.5,
+                    }
+                )
 
     def render_background(self, screen: pygame.Surface) -> None:
         super().render_background(screen)
@@ -513,8 +551,12 @@ class UnionBlueprintLayout(StationLayout):
 
         # Rivets at corners
         rivet_color = (70, 65, 50)
-        for cx, cy in [(r.x + 6, r.y + 6), (r.right - 6, r.y + 6),
-                        (r.x + 6, r.bottom - 6), (r.right - 6, r.bottom - 6)]:
+        for cx, cy in [
+            (r.x + 6, r.y + 6),
+            (r.right - 6, r.y + 6),
+            (r.x + 6, r.bottom - 6),
+            (r.right - 6, r.bottom - 6),
+        ]:
             pygame.draw.circle(screen, rivet_color, (cx, cy), 2)
 
         # Bay number (top-left, small, amber)
@@ -524,13 +566,37 @@ class UnionBlueprintLayout(StationLayout):
         # Location name
         name = zone.location.name
         name_surf = self._name_font.render(name, True, Colors.TEXT_PRIMARY)
-        screen.blit(name_surf, (r.x + 12, r.y + scale_y(22)))
+        screen.blit(name_surf, (r.x + 12, r.y + scale_y(18)))
 
-        # Type label (bottom-right)
+        # Description (word-wrapped)
+        desc = zone.location.description or ""
+        if desc and r.height >= scale_y(60):
+            text_x = r.x + 12
+            max_w = r.width - 24
+            desc_y = r.y + scale_y(38)
+            line_h = self._label_font.get_linesize()
+            words = desc.split()
+            line = ""
+            lines_drawn = 0
+            for word in words:
+                test = f"{line} {word}".strip() if line else word
+                if self._label_font.size(test)[0] <= max_w:
+                    line = test
+                else:
+                    if line and lines_drawn < 2:
+                        d_surf = self._label_font.render(line, True, Colors.TEXT_SECONDARY)
+                        screen.blit(d_surf, (text_x, desc_y + lines_drawn * line_h))
+                        lines_drawn += 1
+                    line = word
+            if line and lines_drawn < 2:
+                d_surf = self._label_font.render(line, True, Colors.TEXT_SECONDARY)
+                screen.blit(d_surf, (text_x, desc_y + lines_drawn * line_h))
+
+        # Type label (top-right)
         type_label = LOCATION_LABELS.get(zone.location.location_type, "")
         if type_label:
             tl_surf = self._label_font.render(type_label, True, zone.accent_color)
-            screen.blit(tl_surf, (r.right - tl_surf.get_width() - 10, r.bottom - tl_surf.get_height() - 5))
+            screen.blit(tl_surf, (r.right - tl_surf.get_width() - 10, r.y + 6))
 
 
 # ==========================================================================
@@ -553,7 +619,7 @@ class CollectiveRadialLayout(StationLayout):
         cy = _LAYOUT_TOP + _LAYOUT_H // 2
         radius = min(scale_x(280), _LAYOUT_H // 2 - scale_y(40))
         zone_w = scale_x(160)
-        zone_h = scale_y(50)
+        zone_h = scale_y(85)
 
         n = len(self.locations)
         for i, loc in enumerate(self.locations):
@@ -563,10 +629,15 @@ class CollectiveRadialLayout(StationLayout):
             rect = pygame.Rect(zx, zy, zone_w, zone_h)
             color = LOCATION_COLORS.get(loc.location_type, Colors.TEXT_HIGHLIGHT)
             icon = sprite_mgr.get_location_icon(loc.location_type, scale=res_scale(2))
-            self.zones.append(StationZone(
-                location=loc, rect=rect, label=loc.name,
-                accent_color=color, icon=icon,
-            ))
+            self.zones.append(
+                StationZone(
+                    location=loc,
+                    rect=rect,
+                    label=loc.name,
+                    accent_color=color,
+                    icon=icon,
+                )
+            )
         self._center = (cx, cy)
         self._radius = radius
         return self.zones
@@ -575,21 +646,26 @@ class CollectiveRadialLayout(StationLayout):
         super().update(dt)
         # Orbiting data nodes (small white-blue dots circling the center)
         import random as _rng
+
         self._ambient_emit_timer += dt
         if self._ambient_emit_timer >= 0.3:
             self._ambient_emit_timer -= 0.3
             cx, cy = getattr(self, "_center", (WINDOW_WIDTH // 2, _LAYOUT_TOP + _LAYOUT_H // 2))
             angle = self._elapsed * 0.8 + _rng.uniform(0, math.pi * 2)
             r = getattr(self, "_radius", scale_x(200)) * _rng.uniform(0.3, 0.9)
-            self._ambient_particles.append({
-                "x": cx + math.cos(angle) * r,
-                "y": cy + math.sin(angle) * r,
-                "vx": math.cos(angle + 1.57) * 12,
-                "vy": math.sin(angle + 1.57) * 12,
-                "life": _rng.uniform(1.0, 2.5), "max_life": 2.5,
-                "alpha": _rng.randint(30, 60),
-                "color": (180, 210, 255), "size": _rng.uniform(1, 2),
-            })
+            self._ambient_particles.append(
+                {
+                    "x": cx + math.cos(angle) * r,
+                    "y": cy + math.sin(angle) * r,
+                    "vx": math.cos(angle + 1.57) * 12,
+                    "vy": math.sin(angle + 1.57) * 12,
+                    "life": _rng.uniform(1.0, 2.5),
+                    "max_life": 2.5,
+                    "alpha": _rng.randint(30, 60),
+                    "color": (180, 210, 255),
+                    "size": _rng.uniform(1, 2),
+                }
+            )
 
     def render_background(self, screen: pygame.Surface) -> None:
         super().render_background(screen)
@@ -600,7 +676,13 @@ class CollectiveRadialLayout(StationLayout):
         ring_surf = pygame.Surface((self._radius * 2 + 20, self._radius * 2 + 20), pygame.SRCALPHA)
         rc = self._radius + 10
         pygame.draw.circle(ring_surf, (*self.accent_color, ring_alpha), (rc, rc), self._radius, 1)
-        pygame.draw.circle(ring_surf, (*self.accent_color, ring_alpha // 2), (rc, rc), self._radius - scale_x(15), 1)
+        pygame.draw.circle(
+            ring_surf,
+            (*self.accent_color, ring_alpha // 2),
+            (rc, rc),
+            self._radius - scale_x(15),
+            1,
+        )
         screen.blit(ring_surf, (cx - rc, cy - rc))
 
         # Connecting lines from center to each zone
@@ -655,15 +737,16 @@ class FrontierScatteredLayout(StationLayout):
     faction_tagline = "The frontier takes care of its own."
 
     def build_zones(self, sprite_mgr: object) -> list[StationZone]:
-        from spacegame.engine.sprites import res_scale
         import random as _random
+
+        from spacegame.engine.sprites import res_scale
 
         self.zones = []
         rng = _random.Random(hash(self.system_id) + 42)
 
         # Scatter zones with controlled randomness (no overlap)
         zone_w = scale_x(190)
-        zone_h = scale_y(60)
+        zone_h = scale_y(85)
         margin = scale_x(50)
 
         placed: list[pygame.Rect] = []
@@ -687,28 +770,42 @@ class FrontierScatteredLayout(StationLayout):
 
             color = LOCATION_COLORS.get(loc.location_type, Colors.TEXT_HIGHLIGHT)
             icon = sprite_mgr.get_location_icon(loc.location_type, scale=res_scale(2))
-            self.zones.append(StationZone(
-                location=loc, rect=rect, label=loc.name,
-                accent_color=color, icon=icon,
-            ))
+            self.zones.append(
+                StationZone(
+                    location=loc,
+                    rect=rect,
+                    label=loc.name,
+                    accent_color=color,
+                    icon=icon,
+                )
+            )
         return self.zones
 
     def update(self, dt: float) -> None:
         super().update(dt)
         # Floating dust/pollen (warm green, drifting upward)
         import random as _rng
+
         self._ambient_emit_timer += dt
         if self._ambient_emit_timer >= 0.5:
             self._ambient_emit_timer -= 0.5
-            self._ambient_particles.append({
-                "x": _rng.uniform(scale_x(40), WINDOW_WIDTH - scale_x(40)),
-                "y": float(_LAYOUT_BOTTOM),
-                "vx": _rng.uniform(-8, 8), "vy": _rng.uniform(-20, -8),
-                "life": _rng.uniform(2.0, 4.0), "max_life": 4.0,
-                "alpha": _rng.randint(20, 45),
-                "color": (_rng.randint(100, 160), _rng.randint(180, 220), _rng.randint(80, 120)),
-                "size": _rng.uniform(1, 2.5),
-            })
+            self._ambient_particles.append(
+                {
+                    "x": _rng.uniform(scale_x(40), WINDOW_WIDTH - scale_x(40)),
+                    "y": float(_LAYOUT_BOTTOM),
+                    "vx": _rng.uniform(-8, 8),
+                    "vy": _rng.uniform(-20, -8),
+                    "life": _rng.uniform(2.0, 4.0),
+                    "max_life": 4.0,
+                    "alpha": _rng.randint(20, 45),
+                    "color": (
+                        _rng.randint(100, 160),
+                        _rng.randint(180, 220),
+                        _rng.randint(80, 120),
+                    ),
+                    "size": _rng.uniform(1, 2.5),
+                }
+            )
 
     def render_background(self, screen: pygame.Surface) -> None:
         super().render_background(screen)
@@ -784,10 +881,8 @@ class ReachDarkLayout(StationLayout):
 
         self.zones = []
         zone_w = scale_x(220)
-        zone_h = scale_y(50)
+        zone_h = scale_y(85)
         gap = scale_y(12)
-        margin_x = scale_x(100)
-
         # Single column, centered, sparse
         total_h = len(self.locations) * zone_h + (len(self.locations) - 1) * gap
         start_y = _LAYOUT_TOP + (_LAYOUT_H - total_h) // 2
@@ -800,28 +895,38 @@ class ReachDarkLayout(StationLayout):
             rect = pygame.Rect(x, y, zone_w, zone_h)
             color = LOCATION_COLORS.get(loc.location_type, self.accent_color)
             icon = sprite_mgr.get_location_icon(loc.location_type, scale=res_scale(2))
-            self.zones.append(StationZone(
-                location=loc, rect=rect, label=loc.name,
-                accent_color=color, icon=icon,
-            ))
+            self.zones.append(
+                StationZone(
+                    location=loc,
+                    rect=rect,
+                    label=loc.name,
+                    accent_color=color,
+                    icon=icon,
+                )
+            )
         return self.zones
 
     def update(self, dt: float) -> None:
         super().update(dt)
         # Dim flickering embers (red, sparse, slow)
         import random as _rng
+
         self._ambient_emit_timer += dt
         if self._ambient_emit_timer >= 1.2:
             self._ambient_emit_timer -= 1.2
-            self._ambient_particles.append({
-                "x": _rng.uniform(scale_x(80), WINDOW_WIDTH - scale_x(80)),
-                "y": _rng.uniform(_LAYOUT_TOP + scale_y(20), _LAYOUT_BOTTOM - scale_y(20)),
-                "vx": _rng.uniform(-3, 3), "vy": _rng.uniform(-8, -2),
-                "life": _rng.uniform(1.5, 3.0), "max_life": 3.0,
-                "alpha": _rng.randint(15, 35),
-                "color": (_rng.randint(140, 180), _rng.randint(30, 60), _rng.randint(20, 40)),
-                "size": _rng.uniform(1, 2),
-            })
+            self._ambient_particles.append(
+                {
+                    "x": _rng.uniform(scale_x(80), WINDOW_WIDTH - scale_x(80)),
+                    "y": _rng.uniform(_LAYOUT_TOP + scale_y(20), _LAYOUT_BOTTOM - scale_y(20)),
+                    "vx": _rng.uniform(-3, 3),
+                    "vy": _rng.uniform(-8, -2),
+                    "life": _rng.uniform(1.5, 3.0),
+                    "max_life": 3.0,
+                    "alpha": _rng.randint(15, 35),
+                    "color": (_rng.randint(140, 180), _rng.randint(30, 60), _rng.randint(20, 40)),
+                    "size": _rng.uniform(1, 2),
+                }
+            )
 
     def _render_default_zone(
         self, screen: pygame.Surface, zone: StationZone, alpha_mult: float = 1.0

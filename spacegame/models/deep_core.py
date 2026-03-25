@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any, Optional
 
 
@@ -127,9 +127,7 @@ class DeepCoreUpgradeState:
         self._levels[upgrade_id] = next_level
         return (True, f"{definition.name} upgraded to level {next_level}!", cost)
 
-    def get_effect(
-        self, upgrade_id: str, upgrades: dict[str, DeepCoreUpgrade]
-    ) -> float:
+    def get_effect(self, upgrade_id: str, upgrades: dict[str, DeepCoreUpgrade]) -> float:
         """Get current effect value for an upgrade.
 
         Args:

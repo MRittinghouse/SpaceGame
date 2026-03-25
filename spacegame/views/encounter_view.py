@@ -6,7 +6,6 @@ and rewards, then transitions back to the galaxy map or into combat.
 
 from __future__ import annotations
 
-import copy
 from enum import Enum
 from typing import Optional
 
@@ -14,8 +13,10 @@ import pygame
 import pygame_gui
 from pygame_gui.elements import UIButton, UITextBox
 
-from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, GameState, scale_x, scale_y
+from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH, GameState, scale_x, scale_y
 from spacegame.engine.backgrounds import AnimatedBackground
+from spacegame.engine.draw_utils import draw_panel
+from spacegame.engine.fonts import FONT_BODY, FONT_LG, FONT_TITLE, get_font
 from spacegame.models.encounter import (
     EncounterChoice,
     EncounterDefinition,
@@ -23,9 +24,7 @@ from spacegame.models.encounter import (
     EncounterRef,
 )
 from spacegame.models.mission import MissionReward
-from spacegame.engine.draw_utils import draw_panel
 from spacegame.utils.logger import logger
-from spacegame.engine.fonts import FONT_BODY, FONT_LG, FONT_TITLE, FontCache
 from spacegame.views.base_view import BaseView
 
 
@@ -71,9 +70,9 @@ class EncounterView(BaseView):
         self.pending_combat: bool = False
 
         # Fonts
-        self.title_font = FontCache.get(FONT_TITLE)
-        self.body_font = FontCache.get(FONT_BODY)
-        self.reward_font = FontCache.get(FONT_LG)
+        self.title_font = get_font("header", FONT_TITLE)
+        self.body_font = get_font("narration", FONT_BODY)
+        self.reward_font = get_font("stats", FONT_LG)
 
         # Background
         self.background = AnimatedBackground(
@@ -85,9 +84,7 @@ class EncounterView(BaseView):
 
         # Template substitution for shakedown encounters
         subs = {"shakedown_demand": str(encounter_ref.shakedown_demand)}
-        self.display_description = encounter_def.description.format_map(
-            _SafeFormatMap(subs)
-        )
+        self.display_description = encounter_def.description.format_map(_SafeFormatMap(subs))
         self.display_choices = _substitute_choices(encounter_def.choices, subs)
 
         # UI element refs (created in _create_ui)
@@ -209,21 +206,24 @@ class EncounterView(BaseView):
         panel_rect = pygame.Rect(_PANEL_X, _PANEL_Y, _PANEL_W, _PANEL_H)
         color = self.encounter_def.icon_color
         draw_panel(
-            screen, panel_rect, alpha=255, bg_color=(20, 20, 30),
-            border_color=color, border_radius=8,
+            screen,
+            panel_rect,
+            alpha=255,
+            bg_color=(20, 20, 30),
+            border_color=color,
+            border_radius=8,
         )
 
         # Title
-        title_surf = self.title_font.render(
-            self.encounter_def.name, True, color
-        )
+        title_surf = self.title_font.render(self.encounter_def.name, True, color)
         title_x = _PANEL_X + (_PANEL_W - title_surf.get_width()) // 2
         screen.blit(title_surf, (title_x, _PANEL_Y + 16))
 
         # Horizontal rule
         rule_y = _PANEL_Y + 50
         pygame.draw.line(
-            screen, (60, 60, 80),
+            screen,
+            (60, 60, 80),
             (_PANEL_X + _INNER_PAD, rule_y),
             (_PANEL_X + _PANEL_W - _INNER_PAD, rule_y),
         )
@@ -300,14 +300,16 @@ class EncounterView(BaseView):
         self.pending_combat = outcome.leads_to_combat
 
         # Boss encounters: override enemy_template_ids from outcome
-        if outcome.leads_to_combat and hasattr(outcome, "enemy_template_ids") and outcome.enemy_template_ids:
+        if (
+            outcome.leads_to_combat
+            and hasattr(outcome, "enemy_template_ids")
+            and outcome.enemy_template_ids
+        ):
             self.encounter_ref.enemy_template_ids = list(outcome.enemy_template_ids)
 
         self.phase = EncounterPhase.OUTCOME
         self._create_ui()
-        logger.info(
-            f"Encounter choice: {choice.id} (combat={self.pending_combat})"
-        )
+        logger.info(f"Encounter choice: {choice.id} (combat={self.pending_combat})")
 
     def _finish(self) -> None:
         """Transition from OUTCOME to DONE."""

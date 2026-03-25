@@ -5,20 +5,29 @@ Shown once after name input during new game setup. Player distributes
 5 attribute points across the 5 character attributes.
 """
 
-import pygame
-import pygame_gui
 from typing import Optional
 
-from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState, scale_x, scale_y
-from spacegame.views.base_view import BaseView
+import pygame
+import pygame_gui
+
+from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH, Colors, GameState, scale_x, scale_y
+from spacegame.engine.backgrounds import AnimatedBackground
+from spacegame.engine.fonts import (
+    FONT_DISPLAY,
+    FONT_LG,
+    FONT_MD,
+    FONT_TITLE,
+    FONT_XL,
+    FONT_XL2,
+    get_font,
+)
 from spacegame.models.attributes import (
+    ATTRIBUTE_DEFINITIONS,
     AttributeId,
     AttributeSheet,
-    ATTRIBUTE_DEFINITIONS,
 )
-from spacegame.engine.backgrounds import AnimatedBackground
-from spacegame.engine.fonts import FONT_DISPLAY, FONT_LG, FONT_MD, FONT_TITLE, FONT_XL, FONT_XL2, FontCache
 from spacegame.utils.logger import logger
+from spacegame.views.base_view import BaseView
 
 
 class CharacterCreationView(BaseView):
@@ -35,12 +44,12 @@ class CharacterCreationView(BaseView):
         self.next_state: Optional[GameState] = None
 
         # Fonts
-        self.title_font = FontCache.get(FONT_DISPLAY)
-        self.subtitle_font = FontCache.get(FONT_LG)
-        self.attr_font = FontCache.get(FONT_XL)
-        self.desc_font = FontCache.get(FONT_MD)
-        self.value_font = FontCache.get(FONT_TITLE)
-        self.points_font = FontCache.get(FONT_XL2)
+        self.title_font = get_font("header", FONT_DISPLAY)
+        self.subtitle_font = get_font("dialogue", FONT_LG)
+        self.attr_font = get_font("header", FONT_XL)
+        self.desc_font = get_font("dialogue", FONT_MD)
+        self.value_font = get_font("stats", FONT_TITLE)
+        self.points_font = get_font("stats", FONT_XL2)
 
         # UI elements
         self.plus_buttons: dict[str, pygame_gui.elements.UIButton] = {}
@@ -48,9 +57,7 @@ class CharacterCreationView(BaseView):
         self.confirm_button: Optional[pygame_gui.elements.UIButton] = None
 
         # Visual
-        self.background = AnimatedBackground(
-            "deep_space", WINDOW_WIDTH, WINDOW_HEIGHT, seed=42
-        )
+        self.background = AnimatedBackground("deep_space", WINDOW_WIDTH, WINDOW_HEIGHT, seed=42)
         self._bg_dim = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
         self._bg_dim.fill((0, 0, 0))
         self._bg_dim.set_alpha(140)
@@ -74,14 +81,18 @@ class CharacterCreationView(BaseView):
 
             # Minus button (pushed right to avoid text overlap)
             self.minus_buttons[attr.value] = pygame_gui.elements.UIButton(
-                relative_rect=pygame.Rect(cx + scale_x(150), y + scale_y(4), scale_x(36), scale_y(36)),
+                relative_rect=pygame.Rect(
+                    cx + scale_x(150), y + scale_y(4), scale_x(36), scale_y(36)
+                ),
                 text="-",
                 manager=self.ui_manager,
             )
 
             # Plus button
             self.plus_buttons[attr.value] = pygame_gui.elements.UIButton(
-                relative_rect=pygame.Rect(cx + scale_x(250), y + scale_y(4), scale_x(36), scale_y(36)),
+                relative_rect=pygame.Rect(
+                    cx + scale_x(250), y + scale_y(4), scale_x(36), scale_y(36)
+                ),
                 text="+",
                 manager=self.ui_manager,
             )
@@ -172,9 +183,7 @@ class CharacterCreationView(BaseView):
         cx = WINDOW_WIDTH // 2
 
         # Title
-        title_surf = self.title_font.render(
-            "ALLOCATE ATTRIBUTES", True, Colors.ATTR_HIGHLIGHT
-        )
+        title_surf = self.title_font.render("ALLOCATE ATTRIBUTES", True, Colors.ATTR_HIGHLIGHT)
         screen.blit(title_surf, title_surf.get_rect(center=(cx, scale_y(100))))
 
         # Subtitle
@@ -188,9 +197,7 @@ class CharacterCreationView(BaseView):
         # Points remaining
         pts = self.attribute_sheet.unspent_points
         pts_color = Colors.YELLOW if pts > 0 else Colors.SUCCESS
-        pts_surf = self.points_font.render(
-            f"Points Remaining: {pts}", True, pts_color
-        )
+        pts_surf = self.points_font.render(f"Points Remaining: {pts}", True, pts_color)
         screen.blit(pts_surf, pts_surf.get_rect(center=(cx, scale_y(185))))
 
         # Attribute rows
@@ -213,9 +220,13 @@ class CharacterCreationView(BaseView):
             desc_surf = self.desc_font.render(desc_text, True, Colors.TEXT_SECONDARY)
             if desc_surf.get_width() > max_desc_w:
                 # Truncate with ellipsis
-                while len(desc_text) > 10 and self.desc_font.size(desc_text + "...")[0] > max_desc_w:
+                while (
+                    len(desc_text) > 10 and self.desc_font.size(desc_text + "...")[0] > max_desc_w
+                ):
                     desc_text = desc_text[:-1]
-                desc_surf = self.desc_font.render(desc_text.rstrip() + "...", True, Colors.TEXT_SECONDARY)
+                desc_surf = self.desc_font.render(
+                    desc_text.rstrip() + "...", True, Colors.TEXT_SECONDARY
+                )
             screen.blit(desc_surf, (text_x, y + scale_y(28)))
 
             # Value (centered between minus and plus buttons)

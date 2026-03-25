@@ -6,30 +6,38 @@ and clickable player response options. Supports skill check indicators
 and pass/fail feedback for social skill checks.
 """
 
-import pygame
 from typing import Optional
 
+import pygame
+
 from spacegame.config import (
-    WINDOW_WIDTH,
+    DIALOGUE_PORTRAIT_SIZE,
+    DIALOGUE_TEXT_SPEED,
+    SOCIAL_CHECK_FEEDBACK_DURATION,
     WINDOW_HEIGHT,
+    WINDOW_WIDTH,
     Colors,
     GameState,
-    DIALOGUE_TEXT_SPEED,
-    DIALOGUE_PORTRAIT_SIZE,
-    SOCIAL_CHECK_FEEDBACK_DURATION,
     scale_x,
     scale_y,
 )
-from spacegame.views.base_view import BaseView
-from spacegame.models.dialogue import DialogueManager, NPC
-from spacegame.models.social import SocialManager
 from spacegame.data_loader import DataLoader
+from spacegame.engine.audio_manager import get_audio_manager
 from spacegame.engine.backgrounds import AnimatedBackground
 from spacegame.engine.draw_utils import draw_panel
+from spacegame.engine.fonts import (
+    FONT_BODY,
+    FONT_DISPLAY,
+    FONT_HEADING,
+    FONT_LG,
+    FONT_XL2,
+    get_font,
+)
 from spacegame.engine.sprites import AnimatedSprite, get_sprite_manager, res_scale
-from spacegame.engine.fonts import FONT_BODY, FONT_DISPLAY, FONT_HEADING, FONT_LG, FONT_XL2, FontCache
+from spacegame.models.dialogue import NPC, DialogueManager
+from spacegame.models.social import SocialManager
 from spacegame.utils.logger import logger
-from spacegame.engine.audio_manager import get_audio_manager
+from spacegame.views.base_view import BaseView
 
 
 class _ResponseButton:
@@ -133,12 +141,12 @@ class DialogueView(BaseView):
         self.next_state: Optional[GameState] = None
 
         # Fonts
-        self.name_font = FontCache.get(FONT_XL2)
-        self.title_font = FontCache.get(FONT_BODY)
-        self.body_font = FontCache.get(FONT_LG)
-        self.response_font = FontCache.get(FONT_BODY)
-        self.initial_font = FontCache.get(FONT_DISPLAY)
-        self.feedback_font = FontCache.get(FONT_HEADING)
+        self.name_font = get_font("header", FONT_XL2)
+        self.title_font = get_font("label", FONT_BODY)
+        self.body_font = get_font("dialogue", FONT_LG)
+        self.response_font = get_font("dialogue", FONT_BODY)
+        self.initial_font = get_font("header", FONT_DISPLAY)
+        self.feedback_font = get_font("machine", FONT_HEADING)
 
         # Panel geometry
         self.panel_x = (WINDOW_WIDTH - self.PANEL_WIDTH) // 2
@@ -235,12 +243,14 @@ class DialogueView(BaseView):
                     skill_name = sc.skill.capitalize()
                     display_text = f"[{skill_name}: {effective}/{sc.difficulty}] {r.text}"
                     responses_text.append(display_text)
-                    check_infos.append({
-                        "skill": sc.skill,
-                        "difficulty": sc.difficulty,
-                        "effective": effective,
-                        "can_pass": can_pass,
-                    })
+                    check_infos.append(
+                        {
+                            "skill": sc.skill,
+                            "difficulty": sc.difficulty,
+                            "effective": effective,
+                            "can_pass": can_pass,
+                        }
+                    )
                 else:
                     responses_text.append(r.text)
                     check_infos.append(None)
@@ -410,9 +420,7 @@ class DialogueView(BaseView):
             screen.blit(scaled, (px, py))
         else:
             # Fallback: colored rectangle with initials
-            portrait_surf = pygame.Surface(
-                (self.PORTRAIT_W, self.PORTRAIT_H), pygame.SRCALPHA
-            )
+            portrait_surf = pygame.Surface((self.PORTRAIT_W, self.PORTRAIT_H), pygame.SRCALPHA)
             portrait_surf.fill((*npc.portrait_color, 180))
             screen.blit(portrait_surf, (px, py))
             initials = "".join(word[0].upper() for word in npc.name.split() if word)

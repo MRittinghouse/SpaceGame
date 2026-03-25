@@ -12,15 +12,26 @@ from spacegame.achievement_manager import AchievementManager
 
 def _make_player() -> Player:
     ship_type = ShipType(
-        id="shuttle", name="Shuttle", ship_class="light",
-        description="Basic ship", cargo_capacity=50, fuel_capacity=100,
-        fuel_efficiency=1.0, speed_multiplier=1.0, purchase_price=0,
-        resale_value=0, crew_slots=1, special_abilities=[], availability="all",
+        id="shuttle",
+        name="Shuttle",
+        ship_class="light",
+        description="Basic ship",
+        cargo_capacity=50,
+        fuel_capacity=100,
+        fuel_efficiency=1.0,
+        speed_multiplier=1.0,
+        purchase_price=0,
+        resale_value=0,
+        crew_slots=1,
+        special_abilities=[],
+        availability="all",
     )
     ship = Ship(ship_type=ship_type, current_fuel=100)
     return Player(
-        name="Test", credits=5000,
-        current_system_id="nexus_prime", ship=ship,
+        name="Test",
+        credits=5000,
+        current_system_id="nexus_prime",
+        ship=ship,
     )
 
 
@@ -159,10 +170,14 @@ class TestSmugglingAchievements:
     def test_first_smuggle_triggers(self) -> None:
         """first_smuggle unlocks when goods_smuggled >= 1."""
         achievement = Achievement(
-            id="first_smuggle", name="Contraband Runner",
+            id="first_smuggle",
+            name="Contraband Runner",
             description="Smuggle your first goods.",
-            category="smuggling", stat_key="goods_smuggled",
-            threshold=1, reward_type="xp", reward_value=100,
+            category="smuggling",
+            stat_key="goods_smuggled",
+            threshold=1,
+            reward_type="xp",
+            reward_value=100,
         )
         mgr = AchievementManager([achievement])
         player = _make_player()
@@ -179,10 +194,14 @@ class TestSmugglingAchievements:
     def test_heat_survivor_triggers(self) -> None:
         """heat_survivor unlocks when max_criminal_heat_reached >= 75."""
         achievement = Achievement(
-            id="heat_survivor", name="Heat Survivor",
+            id="heat_survivor",
+            name="Heat Survivor",
             description="Reach 75 criminal heat and survive.",
-            category="smuggling", stat_key="max_criminal_heat_reached",
-            threshold=75, reward_type="credits", reward_value=2000,
+            category="smuggling",
+            stat_key="max_criminal_heat_reached",
+            threshold=75,
+            reward_type="credits",
+            reward_value=2000,
         )
         mgr = AchievementManager([achievement])
         player = _make_player()
@@ -199,10 +218,14 @@ class TestSmugglingAchievements:
     def test_clean_getaway_triggers(self) -> None:
         """clean_getaway unlocks when inspections_passed_with_contraband >= 1."""
         achievement = Achievement(
-            id="clean_getaway", name="Clean Getaway",
+            id="clean_getaway",
+            name="Clean Getaway",
             description="Pass a customs inspection while carrying contraband.",
-            category="smuggling", stat_key="inspections_passed_with_contraband",
-            threshold=1, reward_type="xp", reward_value=150,
+            category="smuggling",
+            stat_key="inspections_passed_with_contraband",
+            threshold=1,
+            reward_type="xp",
+            reward_value=150,
         )
         mgr = AchievementManager([achievement])
         player = _make_player()

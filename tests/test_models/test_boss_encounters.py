@@ -29,14 +29,18 @@ from spacegame.models.combat_engine import CombatEngine
 
 def _move(id: str = "attack", damage: float = 10.0, energy: int = 2) -> CombatMove:
     return CombatMove(
-        id=id, name=id.replace("_", " ").title(), description=id,
+        id=id,
+        name=id.replace("_", " ").title(),
+        description=id,
         effects=[CombatEffect(type=EffectType.DAMAGE, value=damage)],
         energy_cost=energy,
     )
 
 
 def _boss_template(
-    hull: int = 100, shields: int = 30, multiplier: int = 3,
+    hull: int = 100,
+    shields: int = 30,
+    multiplier: int = 3,
     phases: list[BossPhase] | None = None,
 ) -> EnemyShipTemplate:
     """Create a boss template with configurable phases."""
@@ -53,14 +57,14 @@ def _boss_template(
                 hp_threshold=0.66,
                 behavior="defensive",
                 move_ids=["broadside", "shield_restore"],
-                on_enter_text="\"Raising shields!\"",
+                on_enter_text='"Raising shields!"',
             ),
             BossPhase(
                 name="Phase 3: Berserk",
                 hp_threshold=0.33,
                 behavior="aggressive",
                 move_ids=["broadside_enhanced", "ramming"],
-                on_enter_text="\"No quarter!\"",
+                on_enter_text='"No quarter!"',
                 on_enter_effect="damage_boost_50",
             ),
         ]
@@ -74,12 +78,22 @@ def _boss_template(
     ]
 
     return EnemyShipTemplate(
-        id="test_boss", name="Test Boss", description="A fearsome boss.",
+        id="test_boss",
+        name="Test Boss",
+        description="A fearsome boss.",
         behavior=EnemyBehavior.AGGRESSIVE,
-        hull=hull, shields=shields, energy=15, energy_regen=4,
-        speed=8, evasion=10, accuracy=70,
-        moves=all_moves, loot_table=[],
-        xp_reward=500, credit_reward=15000, bribe_cost=0,
+        hull=hull,
+        shields=shields,
+        energy=15,
+        energy_regen=4,
+        speed=8,
+        evasion=10,
+        accuracy=70,
+        moves=all_moves,
+        loot_table=[],
+        xp_reward=500,
+        credit_reward=15000,
+        bribe_cost=0,
         is_boss=True,
         boss_hp_multiplier=multiplier,
         phases=phases,
@@ -91,11 +105,20 @@ def _boss_template(
 
 def _player(energy: int = 10) -> PlayerCombatState:
     return PlayerCombatState(
-        hull=100, max_hull=100, shields=40, max_shields=40,
-        energy=energy, max_energy=10, energy_regen=3,
-        speed=8, evasion=0, accuracy=95,
-        equipment_moves=[_move("laser", 20.0, 3)], crew_moves=[],
-        active_effects=[], cooldowns={},
+        hull=100,
+        max_hull=100,
+        shields=40,
+        max_shields=40,
+        energy=energy,
+        max_energy=10,
+        energy_regen=3,
+        speed=8,
+        evasion=0,
+        accuracy=95,
+        equipment_moves=[_move("laser", 20.0, 3)],
+        crew_moves=[],
+        active_effects=[],
+        cooldowns={},
     )
 
 
@@ -111,7 +134,10 @@ def _boss_state(
     encounter = CombatEncounter(enemy_templates=[boss], encounter_seed=seed)
     enemies = [EnemyShip.from_template(boss)]
     return CombatState(
-        player=player, enemies=enemies, encounter=encounter, combat_log=[],
+        player=player,
+        enemies=enemies,
+        encounter=encounter,
+        combat_log=[],
     )
 
 
@@ -138,7 +164,9 @@ class TestBossTemplateFields:
     def test_phase_hp_thresholds_descending(self) -> None:
         t = _boss_template()
         thresholds = [p.hp_threshold for p in t.phases]
-        assert thresholds == sorted(thresholds, reverse=True), "Phases must be in descending HP order"
+        assert thresholds == sorted(thresholds, reverse=True), (
+            "Phases must be in descending HP order"
+        )
 
     def test_immune_to(self) -> None:
         t = _boss_template()
@@ -154,11 +182,19 @@ class TestBossTemplateFields:
 
     def test_non_boss_defaults(self) -> None:
         t = EnemyShipTemplate(
-            id="pirate", name="Pirate", description="test",
+            id="pirate",
+            name="Pirate",
+            description="test",
             behavior=EnemyBehavior.AGGRESSIVE,
-            hull=50, shields=10, energy=8, energy_regen=2,
-            speed=8, evasion=10, accuracy=60,
-            moves=[_move()], loot_table=[],
+            hull=50,
+            shields=10,
+            energy=8,
+            energy_regen=2,
+            speed=8,
+            evasion=10,
+            accuracy=60,
+            moves=[_move()],
+            loot_table=[],
         )
         assert t.is_boss is False
         assert t.boss_hp_multiplier == 1
@@ -239,7 +275,8 @@ class TestBossPhaseTransitions:
 
         # Look for phase transition in the log
         phase_logs = [
-            log for log in s.combat_log
+            log
+            for log in s.combat_log
             if any("Phase" in eff or "phase" in eff.lower() for eff in log.effects_applied)
         ]
         # Should have at least one phase transition
@@ -262,15 +299,12 @@ class TestBossImmunities:
 
         # Apply 3 Chill stacks (normally triggers Frozen)
         for _ in range(3):
-            chill_eff = CombatEffect(
-                type=EffectType.CHILL, value=5.0, duration=4
-            )
+            chill_eff = CombatEffect(type=EffectType.CHILL, value=5.0, duration=4)
             engine._apply_stacking_effect(s.enemies[0], chill_eff, max_stacks=3)
 
         # Boss should NOT have the frozen flag
         has_frozen = any(
-            hasattr(eff, "_frozen") and eff._frozen
-            for eff, _ in s.enemies[0].active_effects
+            hasattr(eff, "_frozen") and eff._frozen for eff, _ in s.enemies[0].active_effects
         )
         # The frozen flag is set in _apply_effects during Cryo resolution,
         # not in _apply_stacking_effect directly. The immunity check happens
@@ -286,18 +320,16 @@ class TestBossImmunities:
 
         # Apply 3 Suppressed stacks — should cap at 2
         for _ in range(3):
-            suppress = CombatEffect(
-                type=EffectType.SUPPRESSED, value=12.0, duration=3
-            )
+            suppress = CombatEffect(type=EffectType.SUPPRESSED, value=12.0, duration=3)
             engine = CombatEngine(s, seed=42)
             engine._apply_stacking_effect(
-                boss, suppress,
+                boss,
+                suppress,
                 max_stacks=t.max_suppressed_stacks,
             )
 
         suppressed_count = sum(
-            1 for eff, _ in boss.active_effects
-            if eff.type == EffectType.SUPPRESSED
+            1 for eff, _ in boss.active_effects if eff.type == EffectType.SUPPRESSED
         )
         assert suppressed_count <= 2, f"Suppressed should cap at 2, got {suppressed_count}"
 
@@ -322,7 +354,9 @@ class TestBossMoveSelection:
         phase_1_ids = {"broadside", "volley"}
         if boss.current_phase_idx == 0 and t.phases:
             # Boss move selection should respect phase
-            assert move.id in phase_1_ids or True  # Soft check until phase-aware selection is implemented
+            assert (
+                move.id in phase_1_ids or True
+            )  # Soft check until phase-aware selection is implemented
 
 
 # ============================================================================
@@ -335,6 +369,7 @@ class TestBossDataLoading:
 
     def test_bosses_exist_in_data(self) -> None:
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_all()
         bosses = {k: v for k, v in dl.enemy_templates.items() if v.is_boss}
@@ -342,6 +377,7 @@ class TestBossDataLoading:
 
     def test_corsair_king_exists(self) -> None:
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_all()
         assert "corsair_king" in dl.enemy_templates
@@ -352,6 +388,7 @@ class TestBossDataLoading:
 
     def test_boss_phases_have_names(self) -> None:
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_all()
         for tid, t in dl.enemy_templates.items():
@@ -364,6 +401,7 @@ class TestBossDataLoading:
 
     def test_boss_hp_multiplied(self) -> None:
         from spacegame.data_loader import get_data_loader
+
         dl = get_data_loader()
         dl.load_all()
         boss_t = dl.enemy_templates.get("corsair_king")

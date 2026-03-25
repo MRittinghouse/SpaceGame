@@ -8,25 +8,30 @@ from spacegame.models.ship_build import (
     HullMaterial,
     HullShape,
     PlacedPixel,
-    DesignatedSlot,
     ShipBuild,
-    ShipGridManager,
     ShipStatsComputer,
-    WEIGHT_CLASSES,
 )
 
 
 def _mat() -> dict[str, HullMaterial]:
     return {
         "standard_plate": HullMaterial(
-            id="standard_plate", name="Standard", description="test",
+            id="standard_plate",
+            name="Standard",
+            description="test",
             color_primary=(128, 128, 128),
-            hull_per_pixel=2.5, weight_per_pixel=0.7, cost_per_pixel=15,
+            hull_per_pixel=2.5,
+            weight_per_pixel=0.7,
+            cost_per_pixel=15,
         ),
         "light_alloy": HullMaterial(
-            id="light_alloy", name="Light", description="test",
+            id="light_alloy",
+            name="Light",
+            description="test",
             color_primary=(176, 184, 200),
-            hull_per_pixel=1.5, evasion_per_pixel=0.08, weight_per_pixel=0.4,
+            hull_per_pixel=1.5,
+            evasion_per_pixel=0.08,
+            weight_per_pixel=0.4,
             cost_per_pixel=8,
         ),
     }
@@ -43,8 +48,12 @@ class TestBuildValidation:
         build = ShipBuild(weight_class="tiny")  # max_weight=55
         # Use a deliberately heavy material to exceed limit
         heavy = HullMaterial(
-            id="heavy", name="H", description="t", color_primary=(0, 0, 0),
-            hull_per_pixel=3.0, weight_per_pixel=0.55,
+            id="heavy",
+            name="H",
+            description="t",
+            color_primary=(0, 0, 0),
+            hull_per_pixel=3.0,
+            weight_per_pixel=0.55,
         )
         # 101 pixels * 0.55 = 55.55 → over 55 limit
         for i in range(101):
@@ -60,15 +69,6 @@ class TestBuildValidation:
             build.pixels.append(PlacedPixel(i % 16, i // 16, "standard_plate"))
         stats = ShipStatsComputer.compute(build, _mat())
         assert stats.weight_ratio <= 1.0
-
-    def test_slot_pool_enforcement(self) -> None:
-        """Tiny has max 1 weapon slot."""
-        mgr = ShipGridManager("tiny")
-        pixels = [PlacedPixel(x, y, "standard_plate")
-                  for y in range(4) for x in range(8)]
-        slot1 = DesignatedSlot(slot_type="weapon", x=0, y=0)
-        ok, msg = mgr.can_place_slot("weapon", 4, 0, pixels, [slot1])
-        assert not ok, "Should reject second weapon slot in tiny"
 
 
 class TestUndoRedoLogic:
@@ -162,7 +162,9 @@ class TestShapeTransformChain:
 
     def test_rotate_then_flip(self) -> None:
         shape = HullShape(
-            id="test", name="Test", description="t",
+            id="test",
+            name="Test",
+            description="t",
             pixel_mask=[[True, True, True], [False, False, True]],
         )
         # Rotate 90° then flip
@@ -173,7 +175,9 @@ class TestShapeTransformChain:
     def test_all_8_orientations_preserve_pixel_count(self) -> None:
         """4 rotations × 2 flips = 8 orientations, all same pixel count."""
         shape = HullShape(
-            id="test", name="Test", description="t",
+            id="test",
+            name="Test",
+            description="t",
             pixel_mask=[[True, True], [False, True], [False, True]],
         )
         count = shape.pixel_count

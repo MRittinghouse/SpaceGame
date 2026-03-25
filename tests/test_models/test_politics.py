@@ -428,9 +428,14 @@ class TestPoliticalEvent:
 
     def test_is_active_within_duration(self) -> None:
         event = PoliticalEvent(
-            id="e1", event_type=PoliticalEventType.TRADE_DISPUTE,
-            faction_a_id="a", faction_b_id="b", description="Test",
-            day_started=10, duration_days=5, relationship_drift=-1,
+            id="e1",
+            event_type=PoliticalEventType.TRADE_DISPUTE,
+            faction_a_id="a",
+            faction_b_id="b",
+            description="Test",
+            day_started=10,
+            duration_days=5,
+            relationship_drift=-1,
         )
         assert event.is_active(10)  # start day
         assert event.is_active(14)  # last active day
@@ -438,9 +443,14 @@ class TestPoliticalEvent:
 
     def test_days_remaining(self) -> None:
         event = PoliticalEvent(
-            id="e1", event_type=PoliticalEventType.BORDER_INCIDENT,
-            faction_a_id="a", faction_b_id="b", description="Test",
-            day_started=10, duration_days=5, relationship_drift=-1,
+            id="e1",
+            event_type=PoliticalEventType.BORDER_INCIDENT,
+            faction_a_id="a",
+            faction_b_id="b",
+            description="Test",
+            day_started=10,
+            duration_days=5,
+            relationship_drift=-1,
         )
         assert event.days_remaining(10) == 5
         assert event.days_remaining(12) == 3
@@ -448,19 +458,28 @@ class TestPoliticalEvent:
 
     def test_resolved_event_not_active(self) -> None:
         event = PoliticalEvent(
-            id="e1", event_type=PoliticalEventType.AID_REQUEST,
-            faction_a_id="a", faction_b_id="b", description="Test",
-            day_started=10, duration_days=5, relationship_drift=0,
+            id="e1",
+            event_type=PoliticalEventType.AID_REQUEST,
+            faction_a_id="a",
+            faction_b_id="b",
+            description="Test",
+            day_started=10,
+            duration_days=5,
+            relationship_drift=0,
             resolved=True,
         )
         assert not event.is_active(10)
 
     def test_to_dict_from_dict_roundtrip(self) -> None:
         event = PoliticalEvent(
-            id="e1", event_type=PoliticalEventType.SANCTION,
-            faction_a_id="commerce_guild", faction_b_id="frontier_alliance",
+            id="e1",
+            event_type=PoliticalEventType.SANCTION,
+            faction_a_id="commerce_guild",
+            faction_b_id="frontier_alliance",
             description="Guild sanctions Alliance exports",
-            day_started=5, duration_days=7, relationship_drift=-3,
+            day_started=5,
+            duration_days=7,
+            relationship_drift=-3,
         )
         data = event.to_dict()
         restored = PoliticalEvent.from_dict(data)
@@ -472,8 +491,12 @@ class TestPoliticalEvent:
 
     def test_all_event_types_exist(self) -> None:
         expected = {
-            "trade_dispute", "border_incident", "aid_request",
-            "diplomatic_summit", "sanction", "pirate_crisis",
+            "trade_dispute",
+            "border_incident",
+            "aid_request",
+            "diplomatic_summit",
+            "sanction",
+            "pirate_crisis",
         }
         actual = {t.value for t in PoliticalEventType}
         assert expected == actual
@@ -496,12 +519,18 @@ class TestEventGenerator:
         mgr = _make_politics_manager()
         # Force 2 events into active list
         for i in range(2):
-            mgr._active_events.append(PoliticalEvent(
-                id=f"forced_{i}", event_type=PoliticalEventType.TRADE_DISPUTE,
-                faction_a_id="commerce_guild", faction_b_id="miners_union",
-                description="Test", day_started=1, duration_days=10,
-                relationship_drift=-1,
-            ))
+            mgr._active_events.append(
+                PoliticalEvent(
+                    id=f"forced_{i}",
+                    event_type=PoliticalEventType.TRADE_DISPUTE,
+                    faction_a_id="commerce_guild",
+                    faction_b_id="miners_union",
+                    description="Test",
+                    day_started=1,
+                    duration_days=10,
+                    relationship_drift=-1,
+                )
+            )
         result = mgr.try_generate_event(50)
         assert result is None, "Should not create event when 2 already active"
 
@@ -537,10 +566,14 @@ class TestPlayerActions:
 
     def _make_event(self) -> PoliticalEvent:
         return PoliticalEvent(
-            id="test_dispute", event_type=PoliticalEventType.TRADE_DISPUTE,
-            faction_a_id="commerce_guild", faction_b_id="miners_union",
-            description="Trade tariff dispute", day_started=1,
-            duration_days=5, relationship_drift=-2,
+            id="test_dispute",
+            event_type=PoliticalEventType.TRADE_DISPUTE,
+            faction_a_id="commerce_guild",
+            faction_b_id="miners_union",
+            description="Trade tariff dispute",
+            day_started=1,
+            duration_days=5,
+            relationship_drift=-2,
         )
 
     def test_side_with_a(self) -> None:
@@ -639,9 +672,13 @@ class TestDayAdvance:
     def test_advance_day_applies_drift(self) -> None:
         mgr = _make_politics_manager()
         event = PoliticalEvent(
-            id="drift_test", event_type=PoliticalEventType.TRADE_DISPUTE,
-            faction_a_id="commerce_guild", faction_b_id="miners_union",
-            description="Test", day_started=1, duration_days=5,
+            id="drift_test",
+            event_type=PoliticalEventType.TRADE_DISPUTE,
+            faction_a_id="commerce_guild",
+            faction_b_id="miners_union",
+            description="Test",
+            day_started=1,
+            duration_days=5,
             relationship_drift=-2,
         )
         mgr._active_events.append(event)
@@ -655,9 +692,14 @@ class TestDayAdvance:
     def test_advance_day_cleans_expired(self) -> None:
         mgr = _make_politics_manager()
         event = PoliticalEvent(
-            id="expired_test", event_type=PoliticalEventType.BORDER_INCIDENT,
-            faction_a_id="a", faction_b_id="b", description="Test",
-            day_started=1, duration_days=3, relationship_drift=-1,
+            id="expired_test",
+            event_type=PoliticalEventType.BORDER_INCIDENT,
+            faction_a_id="a",
+            faction_b_id="b",
+            description="Test",
+            day_started=1,
+            duration_days=3,
+            relationship_drift=-1,
         )
         mgr._active_events.append(event)
 
@@ -668,15 +710,23 @@ class TestDayAdvance:
     def test_advance_day_multiple_events(self) -> None:
         mgr = _make_politics_manager()
         e1 = PoliticalEvent(
-            id="e1", event_type=PoliticalEventType.TRADE_DISPUTE,
-            faction_a_id="commerce_guild", faction_b_id="miners_union",
-            description="T1", day_started=1, duration_days=10,
+            id="e1",
+            event_type=PoliticalEventType.TRADE_DISPUTE,
+            faction_a_id="commerce_guild",
+            faction_b_id="miners_union",
+            description="T1",
+            day_started=1,
+            duration_days=10,
             relationship_drift=-1,
         )
         e2 = PoliticalEvent(
-            id="e2", event_type=PoliticalEventType.AID_REQUEST,
-            faction_a_id="science_collective", faction_b_id="frontier_alliance",
-            description="T2", day_started=1, duration_days=3,
+            id="e2",
+            event_type=PoliticalEventType.AID_REQUEST,
+            faction_a_id="science_collective",
+            faction_b_id="frontier_alliance",
+            description="T2",
+            day_started=1,
+            duration_days=3,
             relationship_drift=1,
         )
         mgr._active_events.extend([e1, e2])
@@ -694,9 +744,13 @@ class TestDayAdvance:
     def test_advance_day_resolved_events_no_drift(self) -> None:
         mgr = _make_politics_manager()
         event = PoliticalEvent(
-            id="resolved", event_type=PoliticalEventType.TRADE_DISPUTE,
-            faction_a_id="commerce_guild", faction_b_id="miners_union",
-            description="Test", day_started=1, duration_days=10,
+            id="resolved",
+            event_type=PoliticalEventType.TRADE_DISPUTE,
+            faction_a_id="commerce_guild",
+            faction_b_id="miners_union",
+            description="Test",
+            day_started=1,
+            duration_days=10,
             relationship_drift=-5,
             resolved=True,
         )
@@ -714,9 +768,13 @@ class TestEventSerialization:
     def test_events_survive_roundtrip(self) -> None:
         mgr = _make_politics_manager()
         event = PoliticalEvent(
-            id="persist_test", event_type=PoliticalEventType.SANCTION,
-            faction_a_id="commerce_guild", faction_b_id="frontier_alliance",
-            description="Test sanction", day_started=5, duration_days=7,
+            id="persist_test",
+            event_type=PoliticalEventType.SANCTION,
+            faction_a_id="commerce_guild",
+            faction_b_id="frontier_alliance",
+            description="Test sanction",
+            day_started=5,
+            duration_days=7,
             relationship_drift=-3,
         )
         mgr._active_events.append(event)
@@ -891,9 +949,13 @@ class TestIntelReport:
         """Delivering intel to the source's rival should give 2x value."""
         factions = _make_factions()
         report = IntelReport(
-            id="test", name="Test", description="",
+            id="test",
+            name="Test",
+            description="",
             source_faction_id="commerce_guild",
-            quality=IntelQuality.REPORT, base_value=100, acquired_day=1,
+            quality=IntelQuality.REPORT,
+            base_value=100,
+            acquired_day=1,
         )
         value = report.get_delivery_value("miners_union", factions)
         assert value == 200, f"Rival delivery should be 2x, got {value}"
@@ -902,9 +964,13 @@ class TestIntelReport:
         """Delivering intel back to the source faction should give 0.5x."""
         factions = _make_factions()
         report = IntelReport(
-            id="test", name="Test", description="",
+            id="test",
+            name="Test",
+            description="",
             source_faction_id="commerce_guild",
-            quality=IntelQuality.REPORT, base_value=100, acquired_day=1,
+            quality=IntelQuality.REPORT,
+            base_value=100,
+            acquired_day=1,
         )
         value = report.get_delivery_value("commerce_guild", factions)
         assert value == 50
@@ -913,18 +979,26 @@ class TestIntelReport:
         """Delivering to unrelated faction should give 1x."""
         factions = _make_factions()
         report = IntelReport(
-            id="test", name="Test", description="",
+            id="test",
+            name="Test",
+            description="",
             source_faction_id="commerce_guild",
-            quality=IntelQuality.REPORT, base_value=100, acquired_day=1,
+            quality=IntelQuality.REPORT,
+            base_value=100,
+            acquired_day=1,
         )
         value = report.get_delivery_value("science_collective", factions)
         assert value == 100
 
     def test_to_dict_from_dict_roundtrip(self) -> None:
         report = IntelReport(
-            id="test", name="Test Intel", description="Desc",
+            id="test",
+            name="Test Intel",
+            description="Desc",
             source_faction_id="miners_union",
-            quality=IntelQuality.CLASSIFIED, base_value=200, acquired_day=10,
+            quality=IntelQuality.CLASSIFIED,
+            base_value=200,
+            acquired_day=10,
         )
         data = report.to_dict()
         restored = IntelReport.from_dict(data)
@@ -950,9 +1024,13 @@ class TestIntelQuality:
             (IntelQuality.CLASSIFIED, 5),
         ]:
             report = IntelReport(
-                id="test", name="T", description="",
+                id="test",
+                name="T",
+                description="",
                 source_faction_id="commerce_guild",
-                quality=quality, base_value=100, acquired_day=1,
+                quality=quality,
+                base_value=100,
+                acquired_day=1,
             )
             rep = report.get_reputation_reward("science_collective", factions)
             assert rep >= expected_min_rep, (
@@ -967,9 +1045,13 @@ class TestIntelDelivery:
         mgr = _make_politics_manager()
         player = _make_player()
         report = IntelReport(
-            id="guild_info", name="Guild Intel", description="",
+            id="guild_info",
+            name="Guild Intel",
+            description="",
             source_faction_id="commerce_guild",
-            quality=IntelQuality.REPORT, base_value=100, acquired_day=1,
+            quality=IntelQuality.REPORT,
+            base_value=100,
+            acquired_day=1,
         )
         mgr._intel_reports["guild_info"] = report
 
@@ -983,9 +1065,13 @@ class TestIntelDelivery:
         mgr = _make_politics_manager()
         player = _make_player()
         report = IntelReport(
-            id="guild_info", name="Guild Intel", description="",
+            id="guild_info",
+            name="Guild Intel",
+            description="",
             source_faction_id="commerce_guild",
-            quality=IntelQuality.REPORT, base_value=100, acquired_day=1,
+            quality=IntelQuality.REPORT,
+            base_value=100,
+            acquired_day=1,
         )
         mgr._intel_reports["guild_info"] = report
 
@@ -997,9 +1083,13 @@ class TestIntelDelivery:
         mgr = _make_politics_manager()
         player = _make_player()
         report = IntelReport(
-            id="old_info", name="Old Intel", description="",
+            id="old_info",
+            name="Old Intel",
+            description="",
             source_faction_id="commerce_guild",
-            quality=IntelQuality.RUMOR, base_value=50, acquired_day=1,
+            quality=IntelQuality.RUMOR,
+            base_value=50,
+            acquired_day=1,
             delivered=True,
         )
         mgr._intel_reports["old_info"] = report
@@ -1012,9 +1102,13 @@ class TestIntelDelivery:
         mgr = _make_politics_manager()
         player = _make_player()
         report = IntelReport(
-            id="guild_secrets", name="Guild Secrets", description="",
+            id="guild_secrets",
+            name="Guild Secrets",
+            description="",
             source_faction_id="commerce_guild",
-            quality=IntelQuality.CLASSIFIED, base_value=200, acquired_day=1,
+            quality=IntelQuality.CLASSIFIED,
+            base_value=200,
+            acquired_day=1,
         )
         mgr._intel_reports["guild_secrets"] = report
 
@@ -1127,9 +1221,13 @@ class TestSaveCompatibility:
         mgr = _make_politics_manager()
         # Add an event
         event = PoliticalEvent(
-            id="save_test", event_type=PoliticalEventType.TRADE_DISPUTE,
-            faction_a_id="commerce_guild", faction_b_id="miners_union",
-            description="Save test", day_started=1, duration_days=5,
+            id="save_test",
+            event_type=PoliticalEventType.TRADE_DISPUTE,
+            faction_a_id="commerce_guild",
+            faction_b_id="miners_union",
+            description="Save test",
+            day_started=1,
+            duration_days=5,
             relationship_drift=-2,
         )
         mgr._active_events.append(event)

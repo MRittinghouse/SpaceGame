@@ -24,9 +24,7 @@ def _make_mission(
         name=name,
         description=f"Description for {name}.",
         objectives=[
-            MissionObjective(
-                type="reach_system", target_id="breakstone", target_quantity=1
-            )
+            MissionObjective(type="reach_system", target_id="breakstone", target_quantity=1)
         ],
         rewards=[MissionReward(reward_type="credits", amount=100)],
         prerequisites=prerequisites or [],
@@ -83,9 +81,7 @@ def _trigger_availability(game: "Game") -> None:
     logic that check_missions uses, since we can't easily make check_objectives
     return a completed ID without a fully wired player.
     """
-    newly_available = game.mission_manager.update_availability(
-        game.player.dialogue_flags
-    )
+    newly_available = game.mission_manager.update_availability(game.player.dialogue_flags)
     discoverable_count = 0
     for mid in newly_available:
         mission = game.mission_manager.get_mission(mid)
@@ -97,16 +93,11 @@ def _trigger_availability(game: "Game") -> None:
                         f"Cargo Loaded: {cargo.quantity} {cargo.commodity_id}"
                     )
             if mission.auto_accept:
-                game._mission_notifications.append(
-                    f"Mission Accepted: {mission.name}"
-                )
+                game._mission_notifications.append(f"Mission Accepted: {mission.name}")
             else:
                 discoverable_count += 1
                 if game.journal:
-                    discovery = (
-                        mission.discovery_text
-                        or f"Heard word of new work: {mission.name}."
-                    )
+                    discovery = mission.discovery_text or f"Heard word of new work: {mission.name}."
                     game.journal.add_auto_entry(
                         entry_id=f"mission_discover_{mid}",
                         text=discovery,
@@ -116,13 +107,9 @@ def _trigger_availability(game: "Game") -> None:
                         mission_id=mid,
                     )
     if discoverable_count == 1:
-        game._mission_notifications.append(
-            "New Mission Available \u2014 check your journal"
-        )
+        game._mission_notifications.append("New Mission Available \u2014 check your journal")
     elif discoverable_count > 1:
-        game._mission_notifications.append(
-            "New Missions Available \u2014 check your journal"
-        )
+        game._mission_notifications.append("New Missions Available \u2014 check your journal")
 
 
 class TestConsolidatedMissionNotifications:
@@ -130,9 +117,7 @@ class TestConsolidatedMissionNotifications:
 
     def test_single_mission_singular_notification(self) -> None:
         """One new mission produces singular 'New Mission Available' text."""
-        unlocked = _make_mission(
-            "unlocked", "Unlocked Mission", prerequisites=["prereq"]
-        )
+        unlocked = _make_mission("unlocked", "Unlocked Mission", prerequisites=["prereq"])
         game = _make_game_with_prereq_completed("prereq", [unlocked])
         _trigger_availability(game)
 
@@ -156,15 +141,13 @@ class TestConsolidatedMissionNotifications:
 
     def test_no_individual_mission_name_in_notifications(self) -> None:
         """Individual mission names should not appear in notification cards."""
-        unlocked = _make_mission(
-            "unlocked", "Secret Mission", prerequisites=["prereq"]
-        )
+        unlocked = _make_mission("unlocked", "Secret Mission", prerequisites=["prereq"])
         game = _make_game_with_prereq_completed("prereq", [unlocked])
         _trigger_availability(game)
 
-        assert not any(
-            "Secret Mission" in n for n in game._mission_notifications
-        ), "Individual mission name should not appear in notification cards"
+        assert not any("Secret Mission" in n for n in game._mission_notifications), (
+            "Individual mission name should not appear in notification cards"
+        )
 
     def test_journal_entry_with_custom_discovery_text(self) -> None:
         """Custom discovery_text is used for the journal entry."""
@@ -186,9 +169,7 @@ class TestConsolidatedMissionNotifications:
 
     def test_journal_entry_fallback_without_discovery_text(self) -> None:
         """Without discovery_text, journal entry uses generic fallback."""
-        unlocked = _make_mission(
-            "unlocked", "Ore Hauling", prerequisites=["prereq"]
-        )
+        unlocked = _make_mission("unlocked", "Ore Hauling", prerequisites=["prereq"])
         game = _make_game_with_prereq_completed("prereq", [unlocked])
         _trigger_availability(game)
 
@@ -198,40 +179,31 @@ class TestConsolidatedMissionNotifications:
 
     def test_auto_accept_missions_skip_journal_discovery(self) -> None:
         """Auto-accepted missions get 'Mission Accepted', not journal discovery."""
-        auto = _make_mission(
-            "auto_m", "Auto Mission", prerequisites=["prereq"], auto_accept=True
-        )
+        auto = _make_mission("auto_m", "Auto Mission", prerequisites=["prereq"], auto_accept=True)
         game = _make_game_with_prereq_completed("prereq", [auto])
         _trigger_availability(game)
 
-        assert any(
-            "Mission Accepted: Auto Mission" in n
-            for n in game._mission_notifications
-        )
+        assert any("Mission Accepted: Auto Mission" in n for n in game._mission_notifications)
         goal_entries = game.journal.get_entries(tag_filter="goals")
         assert len(goal_entries) == 0
 
     def test_no_notification_when_nothing_unlocks(self) -> None:
         """No consolidated notification when nothing new unlocks."""
         # Mission with unmet prereq
-        locked = _make_mission(
-            "locked", "Locked", prerequisites=["other_prereq"]
-        )
+        locked = _make_mission("locked", "Locked", prerequisites=["other_prereq"])
         game = _make_game_with_prereq_completed("prereq", [locked])
         _trigger_availability(game)
 
-        available_msgs = [
-            n for n in game._mission_notifications if "New Mission" in n
-        ]
+        available_msgs = [n for n in game._mission_notifications if "New Mission" in n]
         assert len(available_msgs) == 0
 
     def test_mixed_auto_and_discoverable(self) -> None:
         """Auto-accept and discoverable missions produce correct notifications."""
-        auto = _make_mission(
-            "auto_m", "Auto Mission", prerequisites=["prereq"], auto_accept=True
-        )
+        auto = _make_mission("auto_m", "Auto Mission", prerequisites=["prereq"], auto_accept=True)
         disc = _make_mission(
-            "disc_m", "Discoverable", prerequisites=["prereq"],
+            "disc_m",
+            "Discoverable",
+            prerequisites=["prereq"],
             discovery_text="Spotted a notice on the board.",
         )
         game = _make_game_with_prereq_completed("prereq", [auto, disc])

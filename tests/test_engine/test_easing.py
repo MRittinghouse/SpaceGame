@@ -10,7 +10,10 @@ from spacegame.engine.easing import (
     ease_out_cubic,
     ease_in_out_cubic,
     ease_out_back,
+    ease_out_bounce,
     ease_out_elastic,
+    lerp,
+    lerp_color,
     Tween,
     TweenGroup,
 )
@@ -69,6 +72,68 @@ class TestEasingFunctions:
         assert linear(1.5) == pytest.approx(1.0)
 
 
+class TestEaseOutBounce:
+    def test_boundaries(self) -> None:
+        assert ease_out_bounce(0.0) == pytest.approx(0.0)
+        assert ease_out_bounce(1.0) == pytest.approx(1.0)
+
+    def test_never_exceeds_one(self) -> None:
+        """Bounce should not overshoot — it settles, not springs."""
+        for i in range(101):
+            t = i / 100.0
+            assert ease_out_bounce(t) <= 1.0 + 1e-9
+
+    def test_clamps(self) -> None:
+        assert ease_out_bounce(-0.5) == pytest.approx(0.0)
+        assert ease_out_bounce(1.5) == pytest.approx(1.0)
+
+
+class TestLerp:
+    def test_basic(self) -> None:
+        assert lerp(0.0, 10.0, 0.5) == pytest.approx(5.0)
+
+    def test_boundaries(self) -> None:
+        assert lerp(10.0, 20.0, 0.0) == pytest.approx(10.0)
+        assert lerp(10.0, 20.0, 1.0) == pytest.approx(20.0)
+
+    def test_with_easing(self) -> None:
+        # ease_in_quad at t=0.5 -> 0.25
+        result = lerp(0.0, 100.0, 0.5, ease=ease_in_quad)
+        assert result == pytest.approx(25.0)
+
+    def test_negative_range(self) -> None:
+        assert lerp(100.0, 0.0, 0.5) == pytest.approx(50.0)
+
+    def test_clamps_t(self) -> None:
+        assert lerp(0.0, 10.0, -1.0) == pytest.approx(0.0)
+        assert lerp(0.0, 10.0, 2.0) == pytest.approx(10.0)
+
+
+class TestLerpColor:
+    def test_basic_rgb(self) -> None:
+        c = lerp_color((0, 0, 0), (255, 255, 255), 0.5)
+        assert c == (127, 127, 127)
+
+    def test_boundaries(self) -> None:
+        assert lerp_color((10, 20, 30), (200, 100, 50), 0.0) == (10, 20, 30)
+        assert lerp_color((10, 20, 30), (200, 100, 50), 1.0) == (200, 100, 50)
+
+    def test_rgba(self) -> None:
+        c = lerp_color((0, 0, 0, 0), (255, 255, 255, 255), 0.5)
+        assert len(c) == 4
+        assert c == (127, 127, 127, 127)
+
+    def test_with_easing(self) -> None:
+        # ease_in_quad at t=0.5 → 0.25
+        c = lerp_color((0, 0, 0), (100, 100, 100), 0.5, ease=ease_in_quad)
+        assert c == (25, 25, 25)
+
+    def test_clamps_channels(self) -> None:
+        # Even with overshoot easing, channels stay in [0, 255]
+        c = lerp_color((200, 200, 200), (255, 255, 255), 0.5, ease=ease_out_back)
+        assert all(0 <= ch <= 255 for ch in c)
+
+
 class TestTween:
     """Tween interpolates a value from start to end over duration."""
 
@@ -106,7 +171,10 @@ class TestTween:
     def test_callback_on_finish(self) -> None:
         results = []
         tw = Tween(
-            start=0.0, end=1.0, duration=0.5, easing=linear,
+            start=0.0,
+            end=1.0,
+            duration=0.5,
+            easing=linear,
             on_complete=lambda: results.append("done"),
         )
         tw.update(0.25)
@@ -117,7 +185,10 @@ class TestTween:
     def test_callback_fires_only_once(self) -> None:
         results = []
         tw = Tween(
-            start=0.0, end=1.0, duration=0.5, easing=linear,
+            start=0.0,
+            end=1.0,
+            duration=0.5,
+            easing=linear,
             on_complete=lambda: results.append("done"),
         )
         tw.update(1.0)

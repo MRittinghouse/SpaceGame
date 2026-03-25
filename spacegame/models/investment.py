@@ -6,7 +6,7 @@ increasing costs and returns.
 """
 
 import random
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Optional
 
 
@@ -127,7 +127,10 @@ class InvestmentManager:
         return self.active.get(system_id)
 
     def invest(
-        self, available_credits: int, system_id: str, current_day: int,
+        self,
+        available_credits: int,
+        system_id: str,
+        current_day: int,
     ) -> tuple[bool, str]:
         """Create a new tier-1 investment at a system.
 
@@ -164,7 +167,9 @@ class InvestmentManager:
         return (True, f"Invested {tier_info.cost:,} CR in {template.name}.")
 
     def upgrade(
-        self, available_credits: int, system_id: str,
+        self,
+        available_credits: int,
+        system_id: str,
     ) -> tuple[bool, str]:
         """Upgrade an existing investment to the next tier.
 
@@ -233,9 +238,7 @@ class InvestmentManager:
             if event and getattr(event, "event_type", "") == "disaster":
                 inv.halted_until_day = current_day + 1
                 inv.last_processed_day = current_day
-                messages.append(
-                    f"{template.name} at {system_id}: returns halted by disaster."
-                )
+                messages.append(f"{template.name} at {system_id}: returns halted by disaster.")
                 continue
 
             # Skip if still halted from previous disaster
@@ -259,7 +262,8 @@ class InvestmentManager:
         return messages
 
     def collect_returns(
-        self, system_id: str,
+        self,
+        system_id: str,
     ) -> tuple[bool, str, int, Optional[str], Optional[int]]:
         """Collect accumulated returns from an investment.
 
@@ -309,9 +313,7 @@ class InvestmentManager:
     def to_dict(self) -> dict:
         """Serialize active investments."""
         return {
-            "active": {
-                sid: inv.to_dict() for sid, inv in self.active.items()
-            },
+            "active": {sid: inv.to_dict() for sid, inv in self.active.items()},
         }
 
     @classmethod

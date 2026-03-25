@@ -57,9 +57,15 @@ def _make_journal_with_entries() -> Journal:
     journal = Journal(auto_templates=_make_auto_templates())
     journal.trigger_auto_entry("talked_to_officer_larsen", game_day=1, system_id="nexus_prime")
     journal.trigger_auto_entry("iron_ore_delivered", game_day=3, system_id="forgeworks")
-    journal.add_player_entry("Elena seems trustworthy.", game_day=2, system_id="nexus_prime", tag="people")
-    journal.add_player_entry("Breakstone is rough.", game_day=4, system_id="breakstone", tag="places")
-    journal.add_player_entry("Who runs the pirates?", game_day=5, system_id="nexus_prime", tag="suspicions")
+    journal.add_player_entry(
+        "Elena seems trustworthy.", game_day=2, system_id="nexus_prime", tag="people"
+    )
+    journal.add_player_entry(
+        "Breakstone is rough.", game_day=4, system_id="breakstone", tag="places"
+    )
+    journal.add_player_entry(
+        "Who runs the pirates?", game_day=5, system_id="nexus_prime", tag="suspicions"
+    )
     return journal
 
 

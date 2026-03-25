@@ -81,9 +81,7 @@ class TravelLogGenerator:
             tag="travel",
         )
 
-    def on_encounter_survived(
-        self, system_id: str, game_day: int
-    ) -> Optional[JournalEntry]:
+    def on_encounter_survived(self, system_id: str, game_day: int) -> Optional[JournalEntry]:
         """Generate a journal entry for surviving an encounter.
 
         Args:
@@ -127,9 +125,7 @@ class TravelLogGenerator:
         if not self._galaxy_event:
             return None
         template = _rng.choice(self._galaxy_event)
-        text = template.format(
-            event_type=event_type, description=description, system=system_id
-        )
+        text = template.format(event_type=event_type, description=description, system=system_id)
         return JournalEntry(
             entry_id=self._next_id("event"),
             text=text,

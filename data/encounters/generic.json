@@ -1871,88 +1871,6 @@
       ]
     },
     {
-      "id": "boss_collector_01",
-      "encounter_type": "shakedown",
-      "name": "The Collector",
-      "description": "Your sensors detect a massive signature. A ship unlike anything in the registry: bristling with tractor arrays and cargo pods welded to every surface. It turns toward you. It wants what you have.",
-      "icon_color": [
-        200,
-        150,
-        50
-      ],
-      "weight": 1,
-      "danger_levels": [
-        "dangerous"
-      ],
-      "tone": "aggressive",
-      "category": "generic",
-      "choices": [
-        {
-          "id": "fight",
-          "label": "Engage the Collector",
-          "description": "This hoarder has a fortune in stolen cargo. Taking it down could be worth the risk.",
-          "outcome": {
-            "description": "The Collector locks a tractor beam on your hull. This fight was inevitable.",
-            "rewards": [],
-            "leads_to_combat": true,
-            "enemy_template_ids": [
-              "the_collector"
-            ]
-          }
-        },
-        {
-          "id": "flee",
-          "label": "Burn Away",
-          "description": "That ship is enormous. Discretion is the better part of valor.",
-          "outcome": {
-            "description": "You push the engines to maximum and slip away before the tractor beam can lock. Smart.",
-            "rewards": []
-          }
-        }
-      ]
-    },
-    {
-      "id": "boss_leviathan_01",
-      "encounter_type": "shakedown",
-      "name": "Void Leviathan",
-      "description": "Something vast blots out the stars ahead. Your sensors struggle to resolve the signature: organic? Mineral? It defies classification. Ancient. Hungry. Coming straight at you.",
-      "icon_color": [
-        100,
-        50,
-        150
-      ],
-      "weight": 1,
-      "danger_levels": [
-        "dangerous"
-      ],
-      "tone": "aggressive",
-      "category": "generic",
-      "choices": [
-        {
-          "id": "fight",
-          "label": "Stand Your Ground",
-          "description": "Whatever this thing is, running might just make it chase you.",
-          "outcome": {
-            "description": "The void itself screams as the creature charges.",
-            "rewards": [],
-            "leads_to_combat": true,
-            "enemy_template_ids": [
-              "void_leviathan"
-            ]
-          }
-        },
-        {
-          "id": "flee",
-          "label": "Full Reverse",
-          "description": "Nothing in the manuals prepared you for this. Get out.",
-          "outcome": {
-            "description": "You wheel the ship around and punch it. The creature falls behind, slowly. You do not look back.",
-            "rewards": []
-          }
-        }
-      ]
-    },
-    {
       "id": "boss_rogue_ai_01",
       "encounter_type": "shakedown",
       "name": "Rogue AI Vessel",
@@ -1988,6 +1906,217 @@
           "description": "An AI that talks to itself is not something you want to fight.",
           "outcome": {
             "description": "You cut comms and burn hard. The AI vessel does not pursue. Its final transmission: \"NOTED. NEXT TIME.\"",
+            "rewards": []
+          }
+        }
+      ],
+      "min_level": 15
+    },
+    {
+      "id": "legendary_corsair_king",
+      "encounter_type": "shakedown",
+      "name": "The Corsair King",
+      "description": "A warship the size of a station drops out of hyperspace, trailing wreckage and the ghosts of a hundred conquered vessels. The Corsair King's flagship. Its broadside batteries are already turning toward you.",
+      "icon_color": [
+        200,
+        60,
+        60
+      ],
+      "weight": 1,
+      "danger_levels": [
+        "dangerous"
+      ],
+      "tone": "aggressive",
+      "category": "generic",
+      "min_level": 15,
+      "choices": [
+        {
+          "id": "fight",
+          "label": "Stand and Fight",
+          "description": "The King has terrorized these lanes long enough. If you can take that ship, you take the crown.",
+          "outcome": {
+            "description": "The Corsair King opens with a broadside that rocks your ship to its bolts. This is the fight of your life.",
+            "rewards": [],
+            "leads_to_combat": true,
+            "enemy_template_ids": [
+              "corsair_king"
+            ]
+          }
+        },
+        {
+          "id": "flee",
+          "label": "Full Burn Away",
+          "description": "Fighting that thing is suicide. You can outrun it. Probably.",
+          "outcome": {
+            "description": "You punch the engines and break away. The King does not pursue. You were beneath notice.",
+            "rewards": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "legendary_iron_maw",
+      "encounter_type": "shakedown",
+      "name": "The Iron Maw",
+      "description": "The asteroid field ahead is moving. Something IN the field is moving. A hulk of industrial metal and jury-rigged armor, larger than a frigate. The Iron Maw. They said it was a myth. A foundry that learned to hate.",
+      "icon_color": [
+        180,
+        100,
+        40
+      ],
+      "weight": 1,
+      "danger_levels": [
+        "dangerous"
+      ],
+      "tone": "aggressive",
+      "category": "generic",
+      "min_level": 15,
+      "choices": [
+        {
+          "id": "fight",
+          "label": "Engage the Iron Maw",
+          "description": "That thing has swallowed ships whole. But whatever powers it must be extraordinary.",
+          "outcome": {
+            "description": "The Iron Maw opens its jaws. The heat hits your shields before the weapons do.",
+            "rewards": [],
+            "leads_to_combat": true,
+            "enemy_template_ids": [
+              "iron_maw"
+            ]
+          }
+        },
+        {
+          "id": "flee",
+          "label": "Reverse Course",
+          "description": "No cargo is worth dying for. Back away slowly.",
+          "outcome": {
+            "description": "You cut engines and drift backward. The Iron Maw does not follow. It has other prey.",
+            "rewards": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "legendary_ledger_phantom",
+      "encounter_type": "shakedown",
+      "name": "The Ledger Phantom",
+      "description": "Your sensors are glitching. The readout shows a ship, then nothing, then a ship again in a different position. Your targeting computer gives up and displays a question mark. The Ledger Phantom. A data ghost haunting the lanes since before anyone alive can remember.",
+      "icon_color": [
+        140,
+        180,
+        220
+      ],
+      "weight": 1,
+      "danger_levels": [
+        "dangerous"
+      ],
+      "tone": "aggressive",
+      "category": "generic",
+      "min_level": 15,
+      "choices": [
+        {
+          "id": "fight",
+          "label": "Lock On and Fire",
+          "description": "If you can hit something that is barely real, you deserve whatever it drops.",
+          "outcome": {
+            "description": "The Phantom flickers. For one moment it is solid, and in that moment it fires.",
+            "rewards": [],
+            "leads_to_combat": true,
+            "enemy_template_ids": [
+              "ledger_phantom"
+            ]
+          }
+        },
+        {
+          "id": "flee",
+          "label": "Cut Sensors and Run",
+          "description": "If you cannot see it, it cannot see you. Maybe.",
+          "outcome": {
+            "description": "You kill active sensors and drift away on momentum. The Phantom flickers once more and vanishes.",
+            "rewards": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "legendary_void_leviathan",
+      "encounter_type": "shakedown",
+      "name": "The Void Leviathan",
+      "description": "The stars go dark. Not dimmed. Dark. Something immense is blocking them. Mass readings off the scale. Energy signatures that predate human spaceflight. The Void Leviathan. It does not hunt. It simply consumes whatever it touches.",
+      "icon_color": [
+        40,
+        20,
+        80
+      ],
+      "weight": 1,
+      "danger_levels": [
+        "dangerous"
+      ],
+      "tone": "aggressive",
+      "category": "generic",
+      "min_level": 15,
+      "choices": [
+        {
+          "id": "fight",
+          "label": "Attack the Leviathan",
+          "description": "Generations of pilots have run from this thing. You are not going to be one of them.",
+          "outcome": {
+            "description": "The Leviathan turns toward you. Your ship feels very, very small.",
+            "rewards": [],
+            "leads_to_combat": true,
+            "enemy_template_ids": [
+              "void_leviathan"
+            ]
+          }
+        },
+        {
+          "id": "flee",
+          "label": "Emergency Jump",
+          "description": "You cannot fight a force of nature. Get out. Now.",
+          "outcome": {
+            "description": "You blind-jump to anywhere that is not here. Your hull groans as the gravity well pulls, but you break free. Barely.",
+            "rewards": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "legendary_the_collector",
+      "encounter_type": "shakedown",
+      "name": "The Collector",
+      "description": "A ship that should not exist. Welded together from the hulls of a hundred captured vessels, each one a trophy. Weapon systems from every manufacturer, every era. The Collector does not destroy. It acquires. And it has decided your ship belongs in its collection.",
+      "icon_color": [
+        200,
+        180,
+        60
+      ],
+      "weight": 1,
+      "danger_levels": [
+        "dangerous"
+      ],
+      "tone": "aggressive",
+      "category": "generic",
+      "min_level": 15,
+      "choices": [
+        {
+          "id": "fight",
+          "label": "Refuse the Collection",
+          "description": "Your ship is not a trophy. Prove it.",
+          "outcome": {
+            "description": "The Collector deploys weapons you have never seen before. This is what happens when one ship has everything.",
+            "rewards": [],
+            "leads_to_combat": true,
+            "enemy_template_ids": [
+              "the_collector"
+            ]
+          }
+        },
+        {
+          "id": "flee",
+          "label": "Outrun the Tractor Beams",
+          "description": "That thing is slow. You can make it out before the beams lock.",
+          "outcome": {
+            "description": "You boost away, tractor beams clawing at your hull. You escape. This time.",
             "rewards": []
           }
         }

@@ -6,7 +6,7 @@ is more powerful than individual crew abilities, rewarding thoughtful
 party composition. Part of Phase 9 of the combat overhaul.
 """
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Optional
 
 from spacegame.models.momentum import THRESHOLD_CHARGED
@@ -207,7 +207,6 @@ def check_combo_discoveries(
     for combo in CREW_COMBOS:
         if combo.id in already_discovered:
             continue
-        if (combo.crew_pair[0] in recruited_crew
-                and combo.crew_pair[1] in recruited_crew):
+        if combo.crew_pair[0] in recruited_crew and combo.crew_pair[1] in recruited_crew:
             newly_discovered.append(combo)
     return newly_discovered

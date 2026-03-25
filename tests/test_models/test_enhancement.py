@@ -329,9 +329,7 @@ class TestShipUpgradeNewFields:
         assert upgrade.max_mark == 3
 
     def test_faction_gated_upgrade(self) -> None:
-        upgrade = _make_upgrade(
-            faction_required="nexus_trade", faction_rep_required=20
-        )
+        upgrade = _make_upgrade(faction_required="nexus_trade", faction_rep_required=20)
         assert upgrade.faction_required == "nexus_trade"
         assert upgrade.faction_rep_required == 20
 
@@ -373,9 +371,7 @@ class TestEnhancementSerialization:
             "weapon_slots": 0,
             "defense_slots": 0,
             "utility_slots": 3,
-            "installed": [
-                {"upgrade_id": "test_upgrade", "mark": 2, "tuning": "reinforced"}
-            ],
+            "installed": [{"upgrade_id": "test_upgrade", "mark": 2, "tuning": "reinforced"}],
         }
         mgr = ShipUpgradeManager.from_dict(data, all_upgrades)
         assert mgr.slots_used == 1

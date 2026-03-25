@@ -12,14 +12,13 @@ from typing import Optional
 import pygame
 
 from spacegame.config import (
-    WINDOW_WIDTH,
     WINDOW_HEIGHT,
+    WINDOW_WIDTH,
     Colors,
     scale_x,
     scale_y,
 )
-from spacegame.engine.fonts import FontCache, FONT_XS, FONT_SM, FONT_MD
-
+from spacegame.engine.fonts import FONT_MD, FONT_XS, get_font
 
 # ==========================================================================
 # Depth Layer Definitions
@@ -31,8 +30,8 @@ _DEPTH_LAYERS = [
         "name": "Surface",
         "min_depth": 1,
         "max_depth": 3,
-        "bg_color": (35, 30, 22),       # Warm rocky brown
-        "accent": (160, 140, 100),       # Sandy
+        "bg_color": (35, 30, 22),  # Warm rocky brown
+        "accent": (160, 140, 100),  # Sandy
         "particle_color": (120, 110, 90),  # Dust
         "particle_rate": 0.8,
         "description": "Loose regolith and surface deposits",
@@ -41,8 +40,8 @@ _DEPTH_LAYERS = [
         "name": "Shallow Rock",
         "min_depth": 4,
         "max_depth": 6,
-        "bg_color": (28, 25, 20),        # Darker brown
-        "accent": (180, 120, 60),        # Iron tones
+        "bg_color": (28, 25, 20),  # Darker brown
+        "accent": (180, 120, 60),  # Iron tones
         "particle_color": (180, 130, 60),  # Iron dust
         "particle_rate": 0.6,
         "description": "Iron-rich sedimentary layers",
@@ -51,8 +50,8 @@ _DEPTH_LAYERS = [
         "name": "Mid Strata",
         "min_depth": 7,
         "max_depth": 9,
-        "bg_color": (22, 22, 28),        # Cool gray
-        "accent": (100, 160, 200),       # Crystal blue hints
+        "bg_color": (22, 22, 28),  # Cool gray
+        "accent": (100, 160, 200),  # Crystal blue hints
         "particle_color": (80, 140, 180),  # Crystal glint
         "particle_rate": 0.5,
         "description": "Crystalline veins and compressed ore",
@@ -61,8 +60,8 @@ _DEPTH_LAYERS = [
         "name": "Deep Core",
         "min_depth": 10,
         "max_depth": 14,
-        "bg_color": (18, 15, 22),        # Deep purple-dark
-        "accent": (160, 80, 200),        # Rare purple glow
+        "bg_color": (18, 15, 22),  # Deep purple-dark
+        "accent": (160, 80, 200),  # Rare purple glow
         "particle_color": (140, 60, 180),  # Energy wisps
         "particle_rate": 0.4,
         "description": "Pressurized rare mineral deposits",
@@ -71,8 +70,8 @@ _DEPTH_LAYERS = [
         "name": "Abyssal Vein",
         "min_depth": 15,
         "max_depth": 999,
-        "bg_color": (15, 10, 10),        # Near black with red tint
-        "accent": (200, 60, 40),         # Magma orange-red
+        "bg_color": (15, 10, 10),  # Near black with red tint
+        "accent": (200, 60, 40),  # Magma orange-red
         "particle_color": (220, 80, 30),  # Magma embers
         "particle_rate": 0.3,
         "description": "Unstable core — extreme pressure and heat",
@@ -166,16 +165,18 @@ class MiningAtmosphere:
         if self._emit_timer >= rate:
             self._emit_timer -= rate
             gr = self._grid_rect
-            self._particles.append({
-                "x": self._rng.uniform(gr.left - 20, gr.right + 20),
-                "y": self._rng.uniform(gr.top, gr.bottom),
-                "vx": self._rng.uniform(-8, 8),
-                "vy": self._rng.uniform(-15, -3),
-                "life": self._rng.uniform(1.5, 3.0),
-                "max_life": 3.0,
-                "alpha": self._rng.randint(20, 50),
-                "size": self._rng.uniform(1, 2.5),
-            })
+            self._particles.append(
+                {
+                    "x": self._rng.uniform(gr.left - 20, gr.right + 20),
+                    "y": self._rng.uniform(gr.top, gr.bottom),
+                    "vx": self._rng.uniform(-8, 8),
+                    "vy": self._rng.uniform(-15, -3),
+                    "life": self._rng.uniform(1.5, 3.0),
+                    "max_life": 3.0,
+                    "alpha": self._rng.randint(20, 50),
+                    "size": self._rng.uniform(1, 2.5),
+                }
+            )
 
         # Update particles
         for p in self._particles:
@@ -193,8 +194,10 @@ class MiningAtmosphere:
         gr = self._grid_rect
         margin = scale_x(15)
         area = pygame.Rect(
-            gr.left - margin, gr.top - margin,
-            gr.width + margin * 2, gr.height + margin * 2,
+            gr.left - margin,
+            gr.top - margin,
+            gr.width + margin * 2,
+            gr.height + margin * 2,
         )
 
         # Background tint (with transition blend)
@@ -260,8 +263,8 @@ class DepthMeter:
         self.width = scale_x(35)
         self.max_display_depth = max_display_depth
         self._depth: int = 1
-        self._label_font = FontCache.get(FONT_XS)
-        self._value_font = FontCache.get(FONT_MD)
+        self._label_font = get_font("label", FONT_XS)
+        self._value_font = get_font("stats", FONT_MD)
 
     def set_depth(self, depth: int) -> None:
         """Update the current depth display."""
@@ -307,7 +310,8 @@ class DepthMeter:
 
         # Bright marker bar
         pygame.draw.rect(
-            screen, marker_color,
+            screen,
+            marker_color,
             (self.x + 1, marker_y, self.width - 2, marker_h),
         )
 
@@ -318,7 +322,9 @@ class DepthMeter:
 
         # "DEPTH" label at top
         title = self._label_font.render("DEPTH", True, Colors.TEXT_SECONDARY)
-        screen.blit(title, (self.x + (self.width - title.get_width()) // 2, self.y - title.get_height() - 2))
+        screen.blit(
+            title, (self.x + (self.width - title.get_width()) // 2, self.y - title.get_height() - 2)
+        )
 
     def _depth_to_y(self, depth: int) -> int:
         """Convert a depth value to a Y pixel position on the meter."""
@@ -361,14 +367,16 @@ class LayerTransition:
         # Generate rock fragments that slide downward
         self._fragments = []
         for _ in range(12):
-            self._fragments.append({
-                "x": self._rng.uniform(grid_rect.left, grid_rect.right),
-                "y": self._rng.uniform(grid_rect.top, grid_rect.bottom),
-                "vy": self._rng.uniform(80, 200),
-                "size": self._rng.randint(3, 8),
-                "alpha": 200,
-                "color": _get_layer_for_depth(max(1, new_depth - 1))["bg_color"],
-            })
+            self._fragments.append(
+                {
+                    "x": self._rng.uniform(grid_rect.left, grid_rect.right),
+                    "y": self._rng.uniform(grid_rect.top, grid_rect.bottom),
+                    "vy": self._rng.uniform(80, 200),
+                    "size": self._rng.randint(3, 8),
+                    "alpha": 200,
+                    "color": _get_layer_for_depth(max(1, new_depth - 1))["bg_color"],
+                }
+            )
 
     def update(self, dt: float) -> None:
         """Advance the transition animation."""
@@ -414,7 +422,7 @@ class LayerTransition:
         if t < 0.5:
             banner_alpha = int(200 * (1.0 - t / 0.5))
             layer = _get_layer_for_depth(self._new_depth)
-            font = FontCache.get(FONT_MD)
+            font = get_font("machine", FONT_MD)
             text = f"DEPTH {self._new_depth} — {layer['name']}"
             surf = font.render(text, True, layer["accent"])
             surf.set_alpha(banner_alpha)

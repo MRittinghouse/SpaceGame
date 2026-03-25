@@ -5,7 +5,10 @@ import math
 import pygame
 
 from spacegame.engine.combat_vfx import (
-    ShieldRenderer, ShieldState, DamageStateManager, DestructionSequence,
+    ShieldRenderer,
+    ShieldState,
+    DamageStateManager,
+    DestructionSequence,
     CombatAtmosphere,
 )
 

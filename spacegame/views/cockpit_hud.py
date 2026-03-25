@@ -6,26 +6,24 @@ Visual skin adapts to context: cockpit instruments when in space, station
 chrome when docked.
 """
 
-import math
 from enum import Enum
 from typing import Optional
 
 import pygame
 
 from spacegame.config import (
-    WINDOW_WIDTH,
     WINDOW_HEIGHT,
+    WINDOW_WIDTH,
     Colors,
     GameState,
     scale_x,
     scale_y,
 )
 from spacegame.engine.fonts import (
-    FontCache,
-    FONT_SM,
     FONT_MD,
-    FONT_BODY,
+    FONT_SM,
     FONT_XS,
+    get_font,
 )
 from spacegame.models.mission import MissionStatus
 from spacegame.utils.logger import logger
@@ -38,7 +36,7 @@ class HUDContext(Enum):
     """Visual context for the HUD bar."""
 
     HIDDEN = "hidden"
-    SHIP = "ship"        # In space / on the ship — cockpit instruments
+    SHIP = "ship"  # In space / on the ship — cockpit instruments
     STATION = "station"  # Docked at a station — station interior chrome
 
 
@@ -68,21 +66,21 @@ HUD_VISIBLE_STATES = frozenset(_STATE_CONTEXT.keys())
 # --- Ship skin colors (cockpit instruments) ---
 _SHIP_PANEL_BG = (18, 22, 35)
 _SHIP_PANEL_BORDER = (40, 50, 75)
-_SHIP_ACCENT = (60, 180, 255)       # Cyan
+_SHIP_ACCENT = (60, 180, 255)  # Cyan
 _SHIP_ACCENT_DIM = (30, 90, 130)
 _SHIP_RIVET_COLOR = (50, 55, 70)
 
 # --- Station skin colors (docked interior) ---
 _STATION_PANEL_BG = (22, 25, 32)
 _STATION_PANEL_BORDER = (55, 60, 75)
-_STATION_ACCENT = (200, 180, 100)   # Warm amber (default; overridden by faction)
+_STATION_ACCENT = (200, 180, 100)  # Warm amber (default; overridden by faction)
 _STATION_ACCENT_DIM = (100, 90, 50)
 _STATION_TRIM_COLOR = (60, 60, 55)
 
 # Faction accent overrides for station skin
 FACTION_ACCENTS: dict[str, tuple[int, int, int]] = {
-    "commerce_guild": (80, 140, 220),    # Corporate blue
-    "miners_union": (220, 170, 60),      # Industrial amber
+    "commerce_guild": (80, 140, 220),  # Corporate blue
+    "miners_union": (220, 170, 60),  # Industrial amber
     "science_collective": (180, 200, 240),  # Clean white-blue
     "frontier_alliance": (80, 200, 120),  # Frontier green
 }
@@ -147,12 +145,12 @@ class CockpitHUD:
         self.width = WINDOW_WIDTH
 
         # Fonts
-        self._label_font = FontCache.get(FONT_XS)
-        self._value_font = FontCache.get(FONT_SM)
-        self._button_font = FontCache.get(FONT_SM)
-        self._tooltip_font = FontCache.get(FONT_XS)
-        self._quest_font = FontCache.get(FONT_XS)
-        self._credit_font = FontCache.get(FONT_MD)
+        self._label_font = get_font("label", FONT_XS)
+        self._value_font = get_font("stats", FONT_SM)
+        self._button_font = get_font("dialogue", FONT_SM)
+        self._tooltip_font = get_font("dialogue", FONT_XS)
+        self._quest_font = get_font("label", FONT_XS)
+        self._credit_font = get_font("stats", FONT_MD)
 
         # Button rects (computed in _build_layout)
         self._button_rects: list[pygame.Rect] = []
@@ -247,7 +245,9 @@ class CockpitHUD:
 
         # Horizontal trim lines (station interior feel, no rivets)
         trim_y = scale_y(6)
-        pygame.draw.line(bg, _STATION_TRIM_COLOR, (scale_x(20), trim_y), (self.width - scale_x(20), trim_y), 1)
+        pygame.draw.line(
+            bg, _STATION_TRIM_COLOR, (scale_x(20), trim_y), (self.width - scale_x(20), trim_y), 1
+        )
         seam_y = self.height // 2
         pygame.draw.line(bg, (30, 32, 40), (0, seam_y), (self.width, seam_y), 1)
 
@@ -358,7 +358,11 @@ class CockpitHUD:
 
         # Hull bar
         hull_ratio = ship.current_hull / max(1, ship.ship_type.combat_hull)
-        hull_color = Colors.GREEN if hull_ratio > 0.5 else (Colors.YELLOW if hull_ratio > 0.25 else Colors.RED)
+        hull_color = (
+            Colors.GREEN
+            if hull_ratio > 0.5
+            else (Colors.YELLOW if hull_ratio > 0.25 else Colors.RED)
+        )
         self._draw_hud_bar(screen, x, y, bar_w, bar_h, hull_ratio, hull_color, "HULL")
         value_text = f"{ship.current_hull}/{ship.ship_type.combat_hull}"
         val_surf = self._label_font.render(value_text, True, Colors.TEXT_SECONDARY)
@@ -367,7 +371,6 @@ class CockpitHUD:
         # Shield bar
         y += spacing
         shield_ratio = ship.current_shields / max(1, ship.ship_type.combat_shields)
-        shield_alpha = 0.7 + 0.3 * math.sin(self._pulse_timer * 2.0) if shield_ratio >= 1.0 else 1.0
         self._draw_hud_bar(screen, x, y, bar_w, bar_h, shield_ratio, _SHIELD_COLOR, "SHLD")
 
         # Fuel bar
@@ -454,8 +457,10 @@ class CockpitHUD:
                 tip_x = rect.centerx - tooltip.get_width() // 2
                 tip_y = rect.top - tooltip.get_height() - scale_y(4)
                 tip_bg = pygame.Rect(
-                    tip_x - 4, tip_y - 2,
-                    tooltip.get_width() + 8, tooltip.get_height() + 4,
+                    tip_x - 4,
+                    tip_y - 2,
+                    tooltip.get_width() + 8,
+                    tooltip.get_height() + 4,
                 )
                 pygame.draw.rect(screen, _SHIP_PANEL_BG, tip_bg)
                 pygame.draw.rect(screen, _SHIP_PANEL_BORDER, tip_bg, 1)

@@ -34,7 +34,9 @@ class TestRepairBayConstruction:
     def test_create_repair_bay_view(self) -> None:
         manager, player, cost = _make_test_env()
         view = RepairBayView(
-            ui_manager=manager, player=player, cost_per_hp=cost,
+            ui_manager=manager,
+            player=player,
+            cost_per_hp=cost,
         )
         assert view is not None
         assert view.next_state is None
@@ -42,7 +44,9 @@ class TestRepairBayConstruction:
     def test_stores_cost_per_hp(self) -> None:
         manager, player, cost = _make_test_env()
         view = RepairBayView(
-            ui_manager=manager, player=player, cost_per_hp=cost,
+            ui_manager=manager,
+            player=player,
+            cost_per_hp=cost,
         )
         assert view.cost_per_hp == 10
 

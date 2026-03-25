@@ -9,9 +9,15 @@ from typing import Optional, Sequence
 
 import pygame
 
-from spacegame.config import Colors, WINDOW_WIDTH, WINDOW_HEIGHT, scale_x, scale_y
-from spacegame.engine.fonts import FontCache, FONT_HEADING, FONT_LG, FONT_RATING, FONT_SECTION2, FONT_SM
-
+from spacegame.config import Colors, scale_x, scale_y
+from spacegame.engine.fonts import (
+    FONT_HEADING,
+    FONT_LG,
+    FONT_RATING,
+    FONT_SECTION2,
+    FONT_SM,
+    get_font,
+)
 
 # ---------------------------------------------------------------------------
 # 9-slice panel rendering
@@ -143,9 +149,7 @@ def _get_nine_slice(
     """Get or create cached 9-slice pieces for given colors."""
     key = f"{border_color}_{bg_color}_{alpha}"
     if key not in _nine_slice_cache:
-        _nine_slice_cache[key] = _make_nine_slice_pieces(
-            border_color, bg_color, alpha
-        )
+        _nine_slice_cache[key] = _make_nine_slice_pieces(border_color, bg_color, alpha)
     return _nine_slice_cache[key]
 
 
@@ -252,7 +256,7 @@ def draw_bar(
         border_color: Bar border color.
     """
     if font is None:
-        font = FontCache.get(FONT_SM)
+        font = get_font("stats", FONT_SM)
 
     bar_x = x
     bar_w = width
@@ -276,20 +280,20 @@ def draw_bar(
             max(0, border_color[1] - 25),
             max(0, border_color[2] - 25),
         )
-        pygame.draw.line(screen, shadow, (bar_x + 1, y + height - 2),
-                         (bar_x + bar_w - 2, y + height - 2))
-        pygame.draw.line(screen, shadow, (bar_x + bar_w - 2, y + 1),
-                         (bar_x + bar_w - 2, y + height - 2))
+        pygame.draw.line(
+            screen, shadow, (bar_x + 1, y + height - 2), (bar_x + bar_w - 2, y + height - 2)
+        )
+        pygame.draw.line(
+            screen, shadow, (bar_x + bar_w - 2, y + 1), (bar_x + bar_w - 2, y + height - 2)
+        )
         # Highlight on top-left (brighter)
         highlight = (
             min(255, border_color[0] + 30),
             min(255, border_color[1] + 30),
             min(255, border_color[2] + 35),
         )
-        pygame.draw.line(screen, highlight, (bar_x + 1, y + 1),
-                         (bar_x + bar_w - 2, y + 1))
-        pygame.draw.line(screen, highlight, (bar_x + 1, y + 1),
-                         (bar_x + 1, y + height - 2))
+        pygame.draw.line(screen, highlight, (bar_x + 1, y + 1), (bar_x + bar_w - 2, y + 1))
+        pygame.draw.line(screen, highlight, (bar_x + 1, y + 1), (bar_x + 1, y + height - 2))
 
         # Background (inside bevel)
         inner_x = bar_x + 2
@@ -314,17 +318,13 @@ def draw_bar(
         pygame.draw.rect(screen, color, (inner_x, inner_y, fill_w, inner_h))
         # Leading edge highlight
         if fill_w > 2:
-            pygame.draw.rect(
-                screen, edge_color, (inner_x + fill_w - 2, inner_y, 2, inner_h)
-            )
+            pygame.draw.rect(screen, edge_color, (inner_x + fill_w - 2, inner_y, 2, inner_h))
 
     # Value text
     if show_value and maximum > 0:
         value_text = f"{int(current)}/{int(maximum)}"
         value_surf = font.render(value_text, True, Colors.TEXT_PRIMARY)
-        value_rect = value_surf.get_rect(
-            center=(bar_x + bar_w // 2, y + height // 2)
-        )
+        value_rect = value_surf.get_rect(center=(bar_x + bar_w // 2, y + height // 2))
         screen.blit(value_surf, value_rect)
 
 
@@ -352,9 +352,7 @@ def draw_panel(
         return
 
     if border_color is not None:
-        draw_nine_slice_panel(
-            screen, r, alpha=alpha, bg_color=bg_color, border_color=border_color
-        )
+        draw_nine_slice_panel(screen, r, alpha=alpha, bg_color=bg_color, border_color=border_color)
     else:
         # No border — simple fill
         if alpha < 255:
@@ -454,11 +452,11 @@ def draw_summary_overlay(
     pygame.draw.rect(screen, (20, 24, 40), panel, border_radius=8)
     pygame.draw.rect(screen, Colors.TEXT_HIGHLIGHT, panel, 2, border_radius=8)
 
-    # Fonts (auto-scaled via FontCache)
-    title_font = FontCache.get(FONT_SECTION2)
-    stat_font = FontCache.get(FONT_HEADING)
-    rating_font = FontCache.get(FONT_RATING)
-    prompt_font = FontCache.get(FONT_LG)
+    # Fonts (auto-scaled via get_font)
+    title_font = get_font("header", FONT_SECTION2)
+    stat_font = get_font("stats", FONT_HEADING)
+    rating_font = get_font("header", FONT_RATING)
+    prompt_font = get_font("dialogue", FONT_LG)
 
     # Title
     title_surf = title_font.render(title, True, Colors.TEXT_HIGHLIGHT)
@@ -494,6 +492,4 @@ def draw_summary_overlay(
     continue_text = prompt_font.render(
         "Click or press Enter to continue", True, Colors.TEXT_SECONDARY
     )
-    screen.blit(
-        continue_text, continue_text.get_rect(center=(sw // 2, py + ph - scale_y(30)))
-    )
+    screen.blit(continue_text, continue_text.get_rect(center=(sw // 2, py + ph - scale_y(30))))

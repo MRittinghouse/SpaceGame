@@ -165,8 +165,12 @@ class TestDifficultyTier:
         assert len(DifficultyTier) == 4
 
     def test_tiers_have_increasing_enemy_counts(self) -> None:
-        tiers = [DifficultyTier.LOW, DifficultyTier.MODERATE,
-                 DifficultyTier.HIGH, DifficultyTier.EXTREME]
+        tiers = [
+            DifficultyTier.LOW,
+            DifficultyTier.MODERATE,
+            DifficultyTier.HIGH,
+            DifficultyTier.EXTREME,
+        ]
         for i in range(len(tiers) - 1):
             assert tiers[i].enemy_count_max <= tiers[i + 1].enemy_count_max
 
@@ -299,16 +303,20 @@ class TestGroundMapGenerator:
     def test_different_seeds_produce_different_maps(self) -> None:
         """Different seeds should produce different layouts."""
         gen = GroundMapGenerator()
-        r1 = gen.generate(MapGenConfig(
-            mission_type=MissionType.INFILTRATION,
-            difficulty=DifficultyTier.MODERATE,
-            seed=1,
-        ))
-        r2 = gen.generate(MapGenConfig(
-            mission_type=MissionType.INFILTRATION,
-            difficulty=DifficultyTier.MODERATE,
-            seed=2,
-        ))
+        r1 = gen.generate(
+            MapGenConfig(
+                mission_type=MissionType.INFILTRATION,
+                difficulty=DifficultyTier.MODERATE,
+                seed=1,
+            )
+        )
+        r2 = gen.generate(
+            MapGenConfig(
+                mission_type=MissionType.INFILTRATION,
+                difficulty=DifficultyTier.MODERATE,
+                seed=2,
+            )
+        )
         # At least some tiles should differ
         diffs = 0
         for y in range(min(r1.ground_map.height, r2.ground_map.height)):
@@ -446,9 +454,7 @@ class TestCriticalPath:
                 seed=99,
             )
             result = gen.generate(cfg)
-            assert self._can_reach_exit(result.ground_map), (
-                f"No path for mission type {mt.name}"
-            )
+            assert self._can_reach_exit(result.ground_map), f"No path for mission type {mt.name}"
 
 
 # ============================================================================
@@ -471,14 +477,20 @@ class TestEnemyPlacement:
 
     def test_enemy_count_scales_with_difficulty(self) -> None:
         gen = GroundMapGenerator()
-        low = gen.generate(MapGenConfig(
-            mission_type=MissionType.INFILTRATION,
-            difficulty=DifficultyTier.LOW, seed=42,
-        ))
-        high = gen.generate(MapGenConfig(
-            mission_type=MissionType.INFILTRATION,
-            difficulty=DifficultyTier.HIGH, seed=42,
-        ))
+        low = gen.generate(
+            MapGenConfig(
+                mission_type=MissionType.INFILTRATION,
+                difficulty=DifficultyTier.LOW,
+                seed=42,
+            )
+        )
+        high = gen.generate(
+            MapGenConfig(
+                mission_type=MissionType.INFILTRATION,
+                difficulty=DifficultyTier.HIGH,
+                seed=42,
+            )
+        )
         assert len(high.enemies) > len(low.enemies)
 
     def test_enemies_on_walkable_tiles(self) -> None:
@@ -506,9 +518,7 @@ class TestEnemyPlacement:
             ex, ey = result.ground_map.entrance_pos
             for enemy in result.enemies:
                 dist = abs(enemy.x - ex) + abs(enemy.y - ey)
-                assert dist >= 3, (
-                    f"Enemy too close to entrance (seed={seed}, dist={dist})"
-                )
+                assert dist >= 3, f"Enemy too close to entrance (seed={seed}, dist={dist})"
 
     def test_enemies_have_patrol_routes(self) -> None:
         cfg = MapGenConfig(
@@ -519,9 +529,7 @@ class TestEnemyPlacement:
         gen = GroundMapGenerator()
         result = gen.generate(cfg)
         for enemy in result.enemies:
-            assert len(enemy.patrol_route) >= 2, (
-                f"Enemy {enemy.id} has no patrol route"
-            )
+            assert len(enemy.patrol_route) >= 2, f"Enemy {enemy.id} has no patrol route"
 
     def test_patrol_routes_on_walkable_tiles(self) -> None:
         cfg = MapGenConfig(
@@ -604,9 +612,15 @@ class TestMapFeatures:
             1
             for row in gm.tiles
             for tile in row
-            if tile.tile_type in (TileType.FLOOR, TileType.ENTRANCE, TileType.EXIT,
-                                  TileType.DOOR_CLOSED, TileType.DOOR_OPEN,
-                                  TileType.NOISY_FLOOR)
+            if tile.tile_type
+            in (
+                TileType.FLOOR,
+                TileType.ENTRANCE,
+                TileType.EXIT,
+                TileType.DOOR_CLOSED,
+                TileType.DOOR_OPEN,
+                TileType.NOISY_FLOOR,
+            )
         )
         ratio = floor_count / total
         assert ratio >= 0.20, f"Floor ratio too low: {ratio:.2f}"
@@ -625,9 +639,7 @@ class TestMapFeatures:
         ox, oy = result.ground_map.exit_pos
         dist = abs(ox - ex) + abs(oy - ey)
         min_dist = (result.ground_map.width + result.ground_map.height) // 4
-        assert dist >= min_dist, (
-            f"Entrance-exit distance {dist} too small (min {min_dist})"
-        )
+        assert dist >= min_dist, f"Entrance-exit distance {dist} too small (min {min_dist})"
 
 
 # ============================================================================
@@ -652,6 +664,7 @@ class TestMapGenResult:
 
     def test_result_builds_mission_with_crew_bonuses(self) -> None:
         from spacegame.models.ground_crew import GroundCrewBonuses
+
         cfg = MapGenConfig(
             mission_type=MissionType.INFILTRATION,
             difficulty=DifficultyTier.LOW,
@@ -729,9 +742,7 @@ class TestChunkStamping:
         lib = ChunkLibrary.create_default()
         chunk = lib.get_by_id("security_checkpoint")
         assert chunk is not None
-        noisy_count = sum(
-            1 for row in chunk.tiles for t in row if t == TileType.NOISY_FLOOR
-        )
+        noisy_count = sum(1 for row in chunk.tiles for t in row if t == TileType.NOISY_FLOOR)
         assert noisy_count >= 2, "Security checkpoint should have noisy floor"
 
     def test_stamped_features_appear_on_map(self) -> None:
@@ -753,7 +764,8 @@ class TestChunkStamping:
                     tile = gm.get_tile(x, y)
                     if tile and tile.tile_type == TileType.WALL:
                         floor_neighbors = sum(
-                            1 for dx, dy in [(0, 1), (0, -1), (1, 0), (-1, 0)]
+                            1
+                            for dx, dy in [(0, 1), (0, -1), (1, 0), (-1, 0)]
                             if gm.get_tile(x + dx, y + dy)
                             and gm.get_tile(x + dx, y + dy).tile_type
                             in (TileType.FLOOR, TileType.NOISY_FLOOR)
@@ -778,8 +790,12 @@ class TestFactionGeneration:
 
     def test_faction_produces_valid_enemies(self) -> None:
         gen = GroundMapGenerator()
-        for faction in ["merchants_guild", "miners_union",
-                        "science_collective", "frontier_alliance"]:
+        for faction in [
+            "merchants_guild",
+            "miners_union",
+            "science_collective",
+            "frontier_alliance",
+        ]:
             cfg = MapGenConfig(
                 mission_type=MissionType.INFILTRATION,
                 difficulty=DifficultyTier.MODERATE,
@@ -810,14 +826,20 @@ class TestMissionTypeInfluence:
 
     def test_exploration_maps_are_larger(self) -> None:
         gen = GroundMapGenerator()
-        infiltration = gen.generate(MapGenConfig(
-            mission_type=MissionType.INFILTRATION,
-            difficulty=DifficultyTier.MODERATE, seed=42,
-        ))
-        exploration = gen.generate(MapGenConfig(
-            mission_type=MissionType.EXPLORATION,
-            difficulty=DifficultyTier.MODERATE, seed=42,
-        ))
+        infiltration = gen.generate(
+            MapGenConfig(
+                mission_type=MissionType.INFILTRATION,
+                difficulty=DifficultyTier.MODERATE,
+                seed=42,
+            )
+        )
+        exploration = gen.generate(
+            MapGenConfig(
+                mission_type=MissionType.EXPLORATION,
+                difficulty=DifficultyTier.MODERATE,
+                seed=42,
+            )
+        )
         inf_area = infiltration.ground_map.width * infiltration.ground_map.height
         exp_area = exploration.ground_map.width * exploration.ground_map.height
         assert exp_area > inf_area
@@ -848,8 +870,12 @@ class TestGeneratorRobustness:
         """Generate 100 maps across difficulties with no crashes."""
         gen = GroundMapGenerator()
         for seed in range(100):
-            tier = [DifficultyTier.LOW, DifficultyTier.MODERATE,
-                    DifficultyTier.HIGH, DifficultyTier.EXTREME][seed % 4]
+            tier = [
+                DifficultyTier.LOW,
+                DifficultyTier.MODERATE,
+                DifficultyTier.HIGH,
+                DifficultyTier.EXTREME,
+            ][seed % 4]
             cfg = MapGenConfig(
                 mission_type=MissionType.INFILTRATION,
                 difficulty=tier,

@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import random as _rng
 from collections import deque
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any
 
 # ============================================================================
@@ -78,7 +78,7 @@ class NewsTicker:
     # Public API
     # ------------------------------------------------------------------
 
-    def add_headline(self, text: str, priority: int = 5) -> None:  # noqa: ARG002
+    def add_headline(self, text: str, priority: int = 5) -> None:
         """Manually add a headline to the buffer.
 
         Args:

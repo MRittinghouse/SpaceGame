@@ -6,18 +6,32 @@ properties, module detection, and backward compatibility.
 
 from spacegame.models.ship import Ship, ShipType
 from spacegame.models.ship_build import (
-    ShipBuild, PlacedPixel, DesignatedSlot, HullMaterial,
-    ShipStatsComputer, ComputedShipStats,
+    ShipBuild,
+    PlacedPixel,
+    DesignatedSlot,
+    HullMaterial,
+    ShipStatsComputer,
+    ComputedShipStats,
 )
 
 
 def _ship_type() -> ShipType:
     return ShipType(
-        id="shuttle", name="Shuttle", ship_class="starter",
-        description="test", cargo_capacity=50, fuel_capacity=100,
-        fuel_efficiency=10, speed_multiplier=1.0, purchase_price=5000,
-        resale_value=3500, crew_slots=1, special_abilities=[],
-        availability="common", combat_hull=60, combat_shields=20,
+        id="shuttle",
+        name="Shuttle",
+        ship_class="starter",
+        description="test",
+        cargo_capacity=50,
+        fuel_capacity=100,
+        fuel_efficiency=10,
+        speed_multiplier=1.0,
+        purchase_price=5000,
+        resale_value=3500,
+        crew_slots=1,
+        special_abilities=[],
+        availability="common",
+        combat_hull=60,
+        combat_shields=20,
     )
 
 
@@ -29,11 +43,17 @@ def _build_with_stats() -> tuple[ShipBuild, ComputedShipStats]:
     build.slots.append(DesignatedSlot(slot_type="weapon", x=4, y=4, equipment_id="laser_cannon"))
     build.slots.append(DesignatedSlot(slot_type="utility", x=6, y=4, equipment_id="mining_drill"))
 
-    mat = {"standard_plate": HullMaterial(
-        id="standard_plate", name="S", description="t",
-        color_primary=(128, 128, 128),
-        hull_per_pixel=2.5, weight_per_pixel=0.7, cost_per_pixel=15,
-    )}
+    mat = {
+        "standard_plate": HullMaterial(
+            id="standard_plate",
+            name="S",
+            description="t",
+            color_primary=(128, 128, 128),
+            hull_per_pixel=2.5,
+            weight_per_pixel=0.7,
+            cost_per_pixel=15,
+        )
+    }
     stats = ShipStatsComputer.compute(build, mat)
     return build, stats
 
@@ -60,6 +80,7 @@ class TestShipBuildSaveSerialization:
 
         # Simulate deserialization
         from spacegame.models.ship_build import ShipBuild as SB
+
         assert "build" in data
         restored_build = SB.from_dict(data["build"])
         assert restored_build.weight_class == "tiny"
@@ -155,6 +176,7 @@ class TestPlayerBuilderDefaults:
 
     def test_new_player_has_9_basic_shapes(self) -> None:
         from spacegame.models.player import Player
+
         ship = Ship(ship_type=_ship_type(), current_fuel=80)
         p = Player(name="Test", credits=1000, current_system_id="nexus_prime", ship=ship)
         assert len(p.unlocked_shapes) == 9
@@ -164,6 +186,7 @@ class TestPlayerBuilderDefaults:
 
     def test_new_player_has_3_starter_materials(self) -> None:
         from spacegame.models.player import Player
+
         ship = Ship(ship_type=_ship_type(), current_fuel=80)
         p = Player(name="Test", credits=1000, current_system_id="nexus_prime", ship=ship)
         assert len(p.unlocked_materials) == 3
@@ -173,6 +196,7 @@ class TestPlayerBuilderDefaults:
 
     def test_new_player_has_tiny_weight_class(self) -> None:
         from spacegame.models.player import Player
+
         ship = Ship(ship_type=_ship_type(), current_fuel=80)
         p = Player(name="Test", credits=1000, current_system_id="nexus_prime", ship=ship)
         assert "tiny" in p.unlocked_weight_classes

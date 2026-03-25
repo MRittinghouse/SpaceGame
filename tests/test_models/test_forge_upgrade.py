@@ -127,9 +127,7 @@ class TestForgeUpgradeState:
         state = ForgeUpgradeState()
         upgrades = self._make_upgrades()
         state._levels["flux_capacitor"] = 5
-        success, msg, cost = state.purchase(
-            "flux_capacitor", upgrades, forge_tokens_available=1000
-        )
+        success, msg, cost = state.purchase("flux_capacitor", upgrades, forge_tokens_available=1000)
         assert not success
         assert cost == 0
 

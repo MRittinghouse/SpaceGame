@@ -585,8 +585,7 @@ class TestLarsenHideAfterPermit:
         filtered = [
             npc
             for npc in npcs
-            if not npc.hide_after_flag
-            or not player.dialogue_flags.get(npc.hide_after_flag, False)
+            if not npc.hide_after_flag or not player.dialogue_flags.get(npc.hide_after_flag, False)
         ]
         assert len(filtered) == 1
         assert filtered[0].id == "visible_npc"
@@ -1019,10 +1018,7 @@ class TestAutoTriggerLogic:
             npc.auto_trigger_gate_flag
             and not player.dialogue_flags.get(npc.auto_trigger_gate_flag, False)
             and player.current_system_id == npc.home_system_id
-            and all(
-                player.dialogue_flags.get(f, False)
-                for f in npc.auto_trigger_prerequisites
-            )
+            and all(player.dialogue_flags.get(f, False) for f in npc.auto_trigger_prerequisites)
         )
         assert should_trigger, "Elena should auto-trigger at nexus_prime after iron_ore_delivered"
 
@@ -1048,10 +1044,7 @@ class TestAutoTriggerLogic:
             npc.auto_trigger_gate_flag
             and not player.dialogue_flags.get(npc.auto_trigger_gate_flag, False)
             and player.current_system_id == npc.home_system_id
-            and all(
-                player.dialogue_flags.get(f, False)
-                for f in npc.auto_trigger_prerequisites
-            )
+            and all(player.dialogue_flags.get(f, False) for f in npc.auto_trigger_prerequisites)
         )
         assert not should_trigger, "Should not re-trigger after gate flag is set"
 
@@ -1076,10 +1069,7 @@ class TestAutoTriggerLogic:
             npc.auto_trigger_gate_flag
             and not player.dialogue_flags.get(npc.auto_trigger_gate_flag, False)
             and player.current_system_id == npc.home_system_id
-            and all(
-                player.dialogue_flags.get(f, False)
-                for f in npc.auto_trigger_prerequisites
-            )
+            and all(player.dialogue_flags.get(f, False) for f in npc.auto_trigger_prerequisites)
         )
         assert not should_trigger, "Should not trigger without prerequisites"
 
@@ -1104,9 +1094,6 @@ class TestAutoTriggerLogic:
             npc.auto_trigger_gate_flag
             and not player.dialogue_flags.get(npc.auto_trigger_gate_flag, False)
             and player.current_system_id == npc.home_system_id
-            and all(
-                player.dialogue_flags.get(f, False)
-                for f in npc.auto_trigger_prerequisites
-            )
+            and all(player.dialogue_flags.get(f, False) for f in npc.auto_trigger_prerequisites)
         )
         assert not should_trigger, "Tomas should not trigger at nexus_prime"

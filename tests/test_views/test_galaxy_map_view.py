@@ -125,9 +125,7 @@ class TestTravelAnimation:
 
         # Try to select a system via mouse click — should be blocked
         old_selected = view.selected_system
-        event = pygame.event.Event(
-            pygame.MOUSEBUTTONDOWN, button=1, pos=(400, 300)
-        )
+        event = pygame.event.Event(pygame.MOUSEBUTTONDOWN, button=1, pos=(400, 300))
         view.handle_event(event)
         assert view.selected_system == old_selected, "Selection should not change during animation"
         view.on_exit()
@@ -671,9 +669,7 @@ class TestJournalQuickAdd:
         view.on_enter()
         view._show_journal_quick_add()
         old_selected = view.selected_system
-        click_event = pygame.event.Event(
-            pygame.MOUSEBUTTONDOWN, button=1, pos=(400, 300)
-        )
+        click_event = pygame.event.Event(pygame.MOUSEBUTTONDOWN, button=1, pos=(400, 300))
         view.handle_event(click_event)
         assert view.selected_system == old_selected
         view.on_exit()

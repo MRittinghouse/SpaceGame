@@ -60,11 +60,7 @@ def _make_move(
         id=move_id,
         name=name,
         description="A test move.",
-        effects=[
-            CombatEffect(
-                type=EffectType.DAMAGE, value=damage, target=EffectTarget.ENEMY
-            )
-        ],
+        effects=[CombatEffect(type=EffectType.DAMAGE, value=damage, target=EffectTarget.ENEMY)],
         energy_cost=energy_cost,
         cooldown=cooldown,
     )
@@ -77,11 +73,7 @@ def _make_heal_move(
         id=move_id,
         name=name,
         description="A test heal.",
-        effects=[
-            CombatEffect(
-                type=EffectType.HULL_RESTORE, value=value, target=EffectTarget.SELF
-            )
-        ],
+        effects=[CombatEffect(type=EffectType.HULL_RESTORE, value=value, target=EffectTarget.SELF)],
         energy_cost=2,
     )
 
@@ -149,9 +141,7 @@ def _make_combat_state(
     player_moves: list[CombatMove] | None = None,
     crew_moves: list[CombatMove] | None = None,
 ) -> CombatState:
-    templates = [
-        _make_enemy_template(f"enemy_{i}", f"Enemy {i}") for i in range(num_enemies)
-    ]
+    templates = [_make_enemy_template(f"enemy_{i}", f"Enemy {i}") for i in range(num_enemies)]
     enemies = [EnemyShip.from_template(t) for t in templates]
     player = _make_player_state(equipment_moves=player_moves, crew_moves=crew_moves)
     encounter = CombatEncounter(enemy_templates=templates, encounter_seed=42)
@@ -307,11 +297,15 @@ class TestAnimationQueue:
         view.on_enter()
         view.phase = CombatPhase.ANIMATING_PLAYER
         log1 = CombatLogEntry(
-            round_number=1, actor="player", action="Laser",
+            round_number=1,
+            actor="player",
+            action="Laser",
             effects_applied=["10 damage"],
         )
         log2 = CombatLogEntry(
-            round_number=1, actor="player", action="Bonus",
+            round_number=1,
+            actor="player",
+            action="Bonus",
             effects_applied=["5 damage"],
         )
         view._enqueue_animation(log1, source="player")
@@ -327,7 +321,9 @@ class TestAnimationQueue:
         view.on_enter()
         view.phase = CombatPhase.ANIMATING_PLAYER
         log = CombatLogEntry(
-            round_number=1, actor="player", action="Laser",
+            round_number=1,
+            actor="player",
+            action="Laser",
             effects_applied=["hit"],
         )
         view._enqueue_animation(log, source="player")
@@ -393,7 +389,8 @@ class TestCombatFlow:
         view.on_enter()
         view.update(1.0)  # Past intro
         assert view.phase == CombatPhase.PLAYER_INPUT
-        view._execute_player_action("test_laser")
+        view._execute_player_action("test_laser")  # Queue the action
+        view._execute_queued_turn()  # Execute the queue
         assert view.phase == CombatPhase.ANIMATING_PLAYER
         view.on_exit()
 
@@ -402,6 +399,7 @@ class TestCombatFlow:
         view.on_enter()
         view.update(1.0)  # Past intro → PLAYER_INPUT
         view._execute_player_action("test_laser")
+        view._execute_queued_turn()
         # Drain all animation phases with enough time
         for _ in range(20):
             view.update(0.5)
@@ -476,22 +474,27 @@ class TestHealthBarLogic:
 
     def test_bar_color_green_above_50(self) -> None:
         from spacegame.views.combat_view import _bar_color_for_ratio
+
         assert _bar_color_for_ratio(0.8) == Colors.GREEN
 
     def test_bar_color_yellow_between_25_and_50(self) -> None:
         from spacegame.views.combat_view import _bar_color_for_ratio
+
         assert _bar_color_for_ratio(0.35) == Colors.YELLOW
 
     def test_bar_color_red_below_25(self) -> None:
         from spacegame.views.combat_view import _bar_color_for_ratio
+
         assert _bar_color_for_ratio(0.15) == Colors.RED
 
     def test_bar_color_green_at_full(self) -> None:
         from spacegame.views.combat_view import _bar_color_for_ratio
+
         assert _bar_color_for_ratio(1.0) == Colors.GREEN
 
     def test_bar_color_red_at_zero(self) -> None:
         from spacegame.views.combat_view import _bar_color_for_ratio
+
         assert _bar_color_for_ratio(0.0) == Colors.RED
 
 
@@ -671,8 +674,10 @@ class TestFleeAction:
         view.on_enter()
         chance = view._get_flee_chance()
         # Player speed=8, enemy speed=10 → 30 + (8-10)*3 = 24%
-        expected = max(FLEE_MIN_CHANCE, min(FLEE_MAX_CHANCE,
-            FLEE_BASE_CHANCE + int((8 - 10) * FLEE_SPEED_FACTOR)))
+        expected = max(
+            FLEE_MIN_CHANCE,
+            min(FLEE_MAX_CHANCE, FLEE_BASE_CHANCE + int((8 - 10) * FLEE_SPEED_FACTOR)),
+        )
         assert chance == expected
         view.on_exit()
 
@@ -712,15 +717,21 @@ class TestNegotiateAction:
 class TestKeyboardInput:
     """Tests for keyboard shortcut handling."""
 
-    def test_number_key_executes_move(self) -> None:
+    def test_number_key_queues_move(self) -> None:
         moves = [_make_move("laser", "Laser"), _make_move("missile", "Missile", energy_cost=3)]
         view = _make_view(player_moves=moves)
         view.on_enter()
         view.update(1.0)  # Past intro
         assert view.phase == CombatPhase.PLAYER_INPUT
         view._build_move_buttons()
-        # Simulate pressing '1' to select first move
+        # Simulate pressing '1' to queue first move
         event = pygame.event.Event(pygame.KEYDOWN, key=pygame.K_1)
+        view.handle_event(event)
+        assert view.phase == CombatPhase.PLAYER_INPUT  # Still in input (queued, not executed)
+        assert view._action_queue is not None
+        assert not view._action_queue.is_empty
+        # Press Enter to execute
+        event = pygame.event.Event(pygame.KEYDOWN, key=pygame.K_RETURN)
         view.handle_event(event)
         assert view.phase == CombatPhase.ANIMATING_PLAYER
         view.on_exit()
@@ -798,8 +809,11 @@ class TestAnimationEffects:
         view = _make_view()
         view.on_enter()
         log = CombatLogEntry(
-            round_number=1, actor="player", action="Laser Cannon",
-            effects_applied=["18 hull damage to Enemy 0"], hit=True,
+            round_number=1,
+            actor="player",
+            action="Laser Cannon",
+            effects_applied=["18 hull damage to Enemy 0"],
+            hit=True,
         )
         anim = AnimationEvent(log_entry=log, source="player")
         view._start_animation_effects(anim)
@@ -813,8 +827,11 @@ class TestAnimationEffects:
         view = _make_view()
         view.on_enter()
         log = CombatLogEntry(
-            round_number=1, actor="player", action="Laser Cannon",
-            effects_applied=["Missed!"], hit=False,
+            round_number=1,
+            actor="player",
+            action="Laser Cannon",
+            effects_applied=["Missed!"],
+            hit=False,
         )
         anim = AnimationEvent(log_entry=log, source="player")
         view._start_animation_effects(anim)
@@ -826,8 +843,11 @@ class TestAnimationEffects:
         view = _make_view()
         view.on_enter()
         log = CombatLogEntry(
-            round_number=1, actor="player", action="Laser Cannon",
-            effects_applied=["18 hull damage to Enemy 0"], hit=True,
+            round_number=1,
+            actor="player",
+            action="Laser Cannon",
+            effects_applied=["18 hull damage to Enemy 0"],
+            hit=True,
         )
         anim = AnimationEvent(log_entry=log, source="player")
         view._start_animation_effects(anim)
@@ -840,8 +860,11 @@ class TestAnimationEffects:
         view = _make_view()
         view.on_enter()
         log = CombatLogEntry(
-            round_number=1, actor="player", action="Laser Cannon",
-            effects_applied=["Missed!"], hit=False,
+            round_number=1,
+            actor="player",
+            action="Laser Cannon",
+            effects_applied=["Missed!"],
+            hit=False,
         )
         anim = AnimationEvent(log_entry=log, source="player")
         view._start_animation_effects(anim)
@@ -853,8 +876,11 @@ class TestAnimationEffects:
         view = _make_view(num_enemies=2)
         view.on_enter()
         log = CombatLogEntry(
-            round_number=1, actor="player", action="Laser Cannon",
-            effects_applied=["10 hull damage to Enemy 0"], hit=True,
+            round_number=1,
+            actor="player",
+            action="Laser Cannon",
+            effects_applied=["10 hull damage to Enemy 0"],
+            hit=True,
         )
         anim = AnimationEvent(log_entry=log, source="player")
         view._start_animation_effects(anim)
@@ -867,8 +893,11 @@ class TestAnimationEffects:
         view = _make_view()
         view.on_enter()
         log = CombatLogEntry(
-            round_number=1, actor="enemy:Enemy 0", action="Blaster",
-            effects_applied=["8 hull damage to player"], hit=True,
+            round_number=1,
+            actor="enemy:Enemy 0",
+            action="Blaster",
+            effects_applied=["8 hull damage to player"],
+            hit=True,
         )
         anim = AnimationEvent(log_entry=log, source="enemy")
         view._start_animation_effects(anim)
@@ -883,11 +912,17 @@ class TestFloatingTextLifecycle:
     def test_floating_text_rises_and_expires(self) -> None:
         view = _make_view()
         view.on_enter()
-        view.floating_texts.append({
-            "text": "-18", "x": 400.0, "y": 300.0,
-            "color": Colors.RED, "timer": 0.5, "max_timer": 0.8,
-            "vy": -40,
-        })
+        view.floating_texts.append(
+            {
+                "text": "-18",
+                "x": 400.0,
+                "y": 300.0,
+                "color": Colors.RED,
+                "timer": 0.5,
+                "max_timer": 0.8,
+                "vy": -40,
+            }
+        )
         original_y = view.floating_texts[0]["y"]
         view.update(0.1)
         assert view.floating_texts[0]["y"] < original_y, "Text should rise"
@@ -898,11 +933,17 @@ class TestFloatingTextLifecycle:
     def test_floating_text_timer_decrements(self) -> None:
         view = _make_view()
         view.on_enter()
-        view.floating_texts.append({
-            "text": "+20", "x": 100.0, "y": 200.0,
-            "color": Colors.GREEN, "timer": 1.0, "max_timer": 1.0,
-            "vy": -40,
-        })
+        view.floating_texts.append(
+            {
+                "text": "+20",
+                "x": 100.0,
+                "y": 200.0,
+                "color": Colors.GREEN,
+                "timer": 1.0,
+                "max_timer": 1.0,
+                "vy": -40,
+            }
+        )
         view.update(0.3)
         assert view.floating_texts[0]["timer"] == pytest.approx(0.7, abs=0.05)
         view.on_exit()
@@ -917,6 +958,7 @@ class TestPhaseSequencingWithAnimations:
         view.on_enter()
         view.update(1.0)  # Past intro → PLAYER_INPUT
         view._execute_player_action("test_laser")
+        view._execute_queued_turn()
         # Drain all phases
         phases_seen = {view.phase}
         for _ in range(40):
@@ -935,11 +977,15 @@ class TestPhaseSequencingWithAnimations:
         view.phase = CombatPhase.ANIMATING_PLAYER
         # Add two events with 0.5s duration each
         log1 = CombatLogEntry(
-            round_number=1, actor="player", action="Shot 1",
+            round_number=1,
+            actor="player",
+            action="Shot 1",
             effects_applied=["hit"],
         )
         log2 = CombatLogEntry(
-            round_number=1, actor="player", action="Shot 2",
+            round_number=1,
+            actor="player",
+            action="Shot 2",
             effects_applied=["hit"],
         )
         view._enqueue_animation(log1, source="player")
@@ -1010,14 +1056,22 @@ class TestCombatOutcome:
         state.result = CombatResult.VICTORY
         state.enemies[0].current_hull = 0
         # Add some log entries to count damage
-        state.combat_log.append(CombatLogEntry(
-            round_number=1, actor="player", action="Laser",
-            effects_applied=["18 damage"],
-        ))
-        state.combat_log.append(CombatLogEntry(
-            round_number=1, actor="enemy:Enemy 0", action="Blaster",
-            effects_applied=["8 damage to player"],
-        ))
+        state.combat_log.append(
+            CombatLogEntry(
+                round_number=1,
+                actor="player",
+                action="Laser",
+                effects_applied=["18 damage"],
+            )
+        )
+        state.combat_log.append(
+            CombatLogEntry(
+                round_number=1,
+                actor="enemy:Enemy 0",
+                action="Blaster",
+                effects_applied=["8 damage to player"],
+            )
+        )
         summary = view._get_outcome_summary()
         assert summary["rounds"] == state.round_number
         view.on_exit()
@@ -1083,7 +1137,6 @@ class TestOutcomeDisplayData:
         view.on_exit()
 
 
-
 # ============================================================================
 # Mouse Click Handling (Polish)
 # ============================================================================
@@ -1092,7 +1145,7 @@ class TestOutcomeDisplayData:
 class TestMouseClickHandling:
     """Tests for mouse click handling on move buttons, flee, and enemy cards."""
 
-    def test_click_move_button_executes_move(self) -> None:
+    def test_click_move_button_queues_then_execute(self) -> None:
         moves = [_make_move("laser", "Laser", energy_cost=2)]
         view = _make_view(player_moves=moves)
         view.on_enter()
@@ -1100,12 +1153,17 @@ class TestMouseClickHandling:
         view._build_move_buttons()
         assert len(view.move_buttons) == 1
 
-        # Simulate click in center of the first button's rect
+        # Simulate click in center of the first button's rect — queues the action
         btn = view.move_buttons[0]
         cx = btn.rect.centerx
         cy = btn.rect.centery
         event = pygame.event.Event(pygame.MOUSEBUTTONDOWN, button=1, pos=(cx, cy))
         view.handle_event(event)
+        assert view.phase == CombatPhase.PLAYER_INPUT  # Queued, not executed
+        assert view._action_queue is not None
+        assert not view._action_queue.is_empty
+        # Execute with Enter
+        view._execute_queued_turn()
         assert view.phase == CombatPhase.ANIMATING_PLAYER
         view.on_exit()
 
@@ -1119,7 +1177,8 @@ class TestMouseClickHandling:
 
         btn = view.move_buttons[0]
         event = pygame.event.Event(
-            pygame.MOUSEBUTTONDOWN, button=1,
+            pygame.MOUSEBUTTONDOWN,
+            button=1,
             pos=(btn.rect.centerx, btn.rect.centery),
         )
         view.handle_event(event)
@@ -1127,7 +1186,12 @@ class TestMouseClickHandling:
         view.on_exit()
 
     def test_click_flee_button(self) -> None:
-        from spacegame.views.combat_view import FLEE_BTN_X, SPECIAL_BTN_Y, SPECIAL_BTN_W, SPECIAL_BTN_H
+        from spacegame.views.combat_view import (
+            FLEE_BTN_X,
+            SPECIAL_BTN_Y,
+            SPECIAL_BTN_W,
+            SPECIAL_BTN_H,
+        )
 
         view = _make_view()
         view.on_enter()
@@ -1141,7 +1205,12 @@ class TestMouseClickHandling:
         view.on_exit()
 
     def test_click_enemy_card_selects_target(self) -> None:
-        from spacegame.views.combat_view import ENEMY_PANEL_X, ENEMY_PANEL_Y, ENEMY_PANEL_W, ENEMY_CARD_H
+        from spacegame.views.combat_view import (
+            ENEMY_PANEL_X,
+            ENEMY_PANEL_Y,
+            ENEMY_PANEL_W,
+            ENEMY_CARD_H,
+        )
 
         view = _make_view(num_enemies=2)
         view.on_enter()
@@ -1158,7 +1227,12 @@ class TestMouseClickHandling:
         view.on_exit()
 
     def test_click_negotiate_button(self) -> None:
-        from spacegame.views.combat_view import NEGOTIATE_BTN_X, SPECIAL_BTN_Y, SPECIAL_BTN_W, SPECIAL_BTN_H
+        from spacegame.views.combat_view import (
+            NEGOTIATE_BTN_X,
+            SPECIAL_BTN_Y,
+            SPECIAL_BTN_W,
+            SPECIAL_BTN_H,
+        )
 
         view = _make_view()
         view.on_enter()
@@ -1363,7 +1437,10 @@ class TestBribeButton:
     def test_bribe_click_triggers_bribe(self) -> None:
         """Clicking bribe button area during PLAYER_INPUT should trigger bribe."""
         from spacegame.views.combat_view import (
-            BRIBE_BTN_X, SPECIAL_BTN_Y, SPECIAL_BTN_W, SPECIAL_BTN_H,
+            BRIBE_BTN_X,
+            SPECIAL_BTN_Y,
+            SPECIAL_BTN_W,
+            SPECIAL_BTN_H,
         )
 
         view = _make_bribe_view(bribe_cost=100)

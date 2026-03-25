@@ -7,12 +7,12 @@ and caching, and scale_pixel_art for safe nearest-neighbor scaling.
 """
 
 import json
-import os
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional, Callable
+from typing import Callable, Optional
 
 import pygame
+
 from spacegame.utils.logger import logger
 
 
@@ -414,9 +414,7 @@ class SpriteManager:
             self._static_cache[cache_key] = None
             return None
 
-    def load_animation_config(
-        self, config_filename: str
-    ) -> dict[str, AnimationDef]:
+    def load_animation_config(self, config_filename: str) -> dict[str, AnimationDef]:
         """Load animation definitions from a JSON config file.
 
         Looks for: animations/<config_filename>
@@ -662,9 +660,7 @@ class SpriteManager:
             scale = _res_scale(2)
         return self.get_static_sprite("upgrades", upgrade_id, scale)
 
-    def get_ground_player_sprite(
-        self, scale: Optional[int] = None
-    ) -> Optional[pygame.Surface]:
+    def get_ground_player_sprite(self, scale: Optional[int] = None) -> Optional[pygame.Surface]:
         """Get the ground player character sprite.
 
         Loads from sprites/ground_tiles/player.png (16x16 native).
@@ -807,8 +803,14 @@ class SpriteManager:
 
     # Icon order must match tools/generate_status_icons.py EFFECT_ORDER
     _STATUS_ICON_ORDER = [
-        "damage", "shield_restore", "hull_restore", "evasion_mod",
-        "accuracy_mod", "shield_drain", "damage_reduction", "energy_drain",
+        "damage",
+        "shield_restore",
+        "hull_restore",
+        "evasion_mod",
+        "accuracy_mod",
+        "shield_drain",
+        "damage_reduction",
+        "energy_drain",
     ]
 
     def get_status_icon(

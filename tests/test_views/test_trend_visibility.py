@@ -37,6 +37,7 @@ class TestTrendVisibilityGating:
         commodity.legality.name = "LEGAL"
         # Make legality comparison fail for RESTRICTED/ILLEGAL checks
         from spacegame.models.commodity import Legality
+
         commodity.legality = Legality.LEGAL
 
         view.market = MagicMock()

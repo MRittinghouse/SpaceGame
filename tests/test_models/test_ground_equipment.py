@@ -306,9 +306,7 @@ class TestEquipmentInCrewBonuses:
         from spacegame.models.ground_crew import GroundCrewBonuses
 
         without = GroundCrewBonuses.compute(crew_ids=[], attributes=None)
-        with_empty = GroundCrewBonuses.compute(
-            crew_ids=[], attributes=None, equipment_ids=[]
-        )
+        with_empty = GroundCrewBonuses.compute(crew_ids=[], attributes=None, equipment_ids=[])
         assert without.vision_radius_bonus == with_empty.vision_radius_bonus
         assert without.noise_reduction == with_empty.noise_reduction
 

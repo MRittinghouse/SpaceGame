@@ -283,9 +283,7 @@ class TestCrewAvailableAtSystem:
             home_system_id="breakstone",
             is_companion=True,
         )
-        roster = CrewRoster(
-            {"crew_a": crew1, "crew_b": crew2, "comp_a": companion}
-        )
+        roster = CrewRoster({"crew_a": crew1, "crew_b": crew2, "comp_a": companion})
 
         available = roster.get_available_crew_at_system("breakstone")
         ids = [t.id for t, in_available in [(t, True) for t in available]]

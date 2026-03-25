@@ -175,9 +175,7 @@ class TestGroundEnemy:
             (Direction.RIGHT, (8, 5)),
         ]:
             enemy = _make_enemy(x=5, y=5, facing=direction, vision_range=5)
-            assert enemy.can_see_tile(*target, gm), (
-                f"Facing {direction.value}, should see {target}"
-            )
+            assert enemy.can_see_tile(*target, gm), f"Facing {direction.value}, should see {target}"
 
     # --- Patrol movement ---
 
@@ -351,9 +349,7 @@ class TestGroundMissionState:
         # Player far from enemy, wall between them
         player = GroundPlayerState(x=1, y=1)
         enemy = _make_enemy(x=12, y=12, vision_range=3)
-        mission = _make_mission(
-            ground_map=gm, player=player, enemies=[enemy]
-        )
+        mission = _make_mission(ground_map=gm, player=player, enemies=[enemy])
         mission.raise_alert(AlertLevel.ALERT)
 
         # Process enough turns with broken LOS
@@ -367,9 +363,7 @@ class TestGroundMissionState:
         gm = _make_map()
         player = GroundPlayerState(x=5, y=5)
         enemy = _make_enemy(x=7, y=5, facing=Direction.LEFT, vision_range=5)
-        mission = _make_mission(
-            ground_map=gm, player=player, enemies=[enemy]
-        )
+        mission = _make_mission(ground_map=gm, player=player, enemies=[enemy])
         mission.raise_alert(AlertLevel.ALERT)
 
         # Enemy can see player — alert should not decay
@@ -385,9 +379,7 @@ class TestGroundMissionState:
         gm = _make_map()
         player = GroundPlayerState(x=1, y=1)
         enemy = _make_enemy(x=4, y=1)
-        mission = _make_mission(
-            ground_map=gm, player=player, enemies=[enemy]
-        )
+        mission = _make_mission(ground_map=gm, player=player, enemies=[enemy])
 
         mission.add_noise(NoiseEvent(x=2, y=1, radius=5))
         mission.process_noise()
@@ -399,9 +391,7 @@ class TestGroundMissionState:
         gm = _make_map()
         player = GroundPlayerState(x=1, y=1)
         enemy = _make_enemy(x=12, y=12)
-        mission = _make_mission(
-            ground_map=gm, player=player, enemies=[enemy]
-        )
+        mission = _make_mission(ground_map=gm, player=player, enemies=[enemy])
 
         mission.add_noise(NoiseEvent(x=2, y=1, radius=3))
         mission.process_noise()
@@ -414,9 +404,7 @@ class TestGroundMissionState:
         gm.tiles[5][5] = GroundTile(tile_type=TileType.NOISY_FLOOR)
         player = GroundPlayerState(x=4, y=5)
         enemy = _make_enemy(x=7, y=5)
-        mission = _make_mission(
-            ground_map=gm, player=player, enemies=[enemy]
-        )
+        mission = _make_mission(ground_map=gm, player=player, enemies=[enemy])
 
         # Move onto noisy floor
         success, _ = player.move(1, 0, gm)
@@ -431,9 +419,7 @@ class TestGroundMissionState:
         gm = _make_map()
         player = GroundPlayerState(x=8, y=5)
         enemy = _make_enemy(x=5, y=5, facing=Direction.RIGHT, vision_range=5)
-        mission = _make_mission(
-            ground_map=gm, player=player, enemies=[enemy]
-        )
+        mission = _make_mission(ground_map=gm, player=player, enemies=[enemy])
 
         mission.check_enemy_vision()
         assert mission.alert_level == AlertLevel.ALERT
@@ -442,9 +428,7 @@ class TestGroundMissionState:
         gm = _make_map()
         player = GroundPlayerState(x=2, y=5)
         enemy = _make_enemy(x=5, y=5, facing=Direction.RIGHT, vision_range=5)
-        mission = _make_mission(
-            ground_map=gm, player=player, enemies=[enemy]
-        )
+        mission = _make_mission(ground_map=gm, player=player, enemies=[enemy])
 
         mission.check_enemy_vision()
         assert mission.alert_level == AlertLevel.UNDETECTED
@@ -454,9 +438,7 @@ class TestGroundMissionState:
         gm.tiles[5][7] = GroundTile(tile_type=TileType.WALL)
         player = GroundPlayerState(x=9, y=5)
         enemy = _make_enemy(x=5, y=5, facing=Direction.RIGHT, vision_range=6)
-        mission = _make_mission(
-            ground_map=gm, player=player, enemies=[enemy]
-        )
+        mission = _make_mission(ground_map=gm, player=player, enemies=[enemy])
 
         mission.check_enemy_vision()
         assert mission.alert_level == AlertLevel.UNDETECTED
@@ -469,9 +451,7 @@ class TestGroundMissionState:
         enemy = _make_enemy(x=3, y=3, patrol_route=route, speed=1)
         enemy.patrol_index = 0
         player = GroundPlayerState(x=1, y=1)
-        mission = _make_mission(
-            ground_map=gm, player=player, enemies=[enemy]
-        )
+        mission = _make_mission(ground_map=gm, player=player, enemies=[enemy])
 
         mission.process_enemy_turns(0)
         assert (enemy.x, enemy.y) == (4, 3)
@@ -482,9 +462,7 @@ class TestGroundMissionState:
         enemy.ai_state = EnemyAIState.INVESTIGATING
         enemy.investigate_target = (8, 5)
         player = GroundPlayerState(x=1, y=1)
-        mission = _make_mission(
-            ground_map=gm, player=player, enemies=[enemy]
-        )
+        mission = _make_mission(ground_map=gm, player=player, enemies=[enemy])
 
         mission.process_enemy_turns(0)
         assert enemy.x > 5, "Should move toward investigation target"
@@ -496,9 +474,7 @@ class TestGroundMissionState:
         enemy.ai_state = EnemyAIState.INVESTIGATING
         enemy.investigate_target = (7, 5)  # Already at target
         player = GroundPlayerState(x=1, y=1)
-        mission = _make_mission(
-            ground_map=gm, player=player, enemies=[enemy]
-        )
+        mission = _make_mission(ground_map=gm, player=player, enemies=[enemy])
 
         mission.process_enemy_turns(0)
         assert enemy.ai_state == EnemyAIState.PATROLLING
@@ -509,9 +485,7 @@ class TestGroundMissionState:
         enemy = _make_enemy(x=3, y=3, patrol_route=route, speed=2)
         enemy.patrol_index = 0
         player = GroundPlayerState(x=1, y=1)
-        mission = _make_mission(
-            ground_map=gm, player=player, enemies=[enemy]
-        )
+        mission = _make_mission(ground_map=gm, player=player, enemies=[enemy])
 
         # Turn 0: should act
         mission.process_enemy_turns(0)
@@ -531,9 +505,7 @@ class TestGroundMissionState:
         gm = _make_map()
         enemy = _make_enemy(x=3, y=3)
         player = GroundPlayerState(x=1, y=1)
-        mission = _make_mission(
-            ground_map=gm, player=player, enemies=[enemy]
-        )
+        mission = _make_mission(ground_map=gm, player=player, enemies=[enemy])
         mission.raise_alert(AlertLevel.ALERT)
         mission.player_last_known_pos = (10, 10)
         enemy.ai_state = EnemyAIState.SEARCHING
@@ -549,9 +521,7 @@ class TestGroundMissionState:
         player = GroundPlayerState(x=3, y=3)
         enemy = _make_enemy(x=5, y=5)
         enemy.patrol_route = [(5, 5), (6, 5)]
-        mission = _make_mission(
-            ground_map=gm, player=player, enemies=[enemy]
-        )
+        mission = _make_mission(ground_map=gm, player=player, enemies=[enemy])
         mission.raise_alert(AlertLevel.SUSPICIOUS, investigate_pos=(7, 7))
 
         data = mission.to_dict()

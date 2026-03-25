@@ -9,7 +9,7 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from spacegame.config import (
     GROUND_ALERT_DECAY_TURNS,
@@ -24,7 +24,6 @@ from spacegame.models.ground import (
     GroundMap,
     GroundPlayerState,
     GroundStoryTrigger,
-    GroundTile,
     TileType,
 )
 from spacegame.models.ground_crew import GroundCrewBonuses
@@ -71,9 +70,7 @@ _DIRECTION_DELTAS: dict[Direction, tuple[int, int]] = {
     Direction.RIGHT: (1, 0),
 }
 
-_DELTA_TO_DIRECTION: dict[tuple[int, int], Direction] = {
-    v: k for k, v in _DIRECTION_DELTAS.items()
-}
+_DELTA_TO_DIRECTION: dict[tuple[int, int], Direction] = {v: k for k, v in _DIRECTION_DELTAS.items()}
 
 _DIRECTION_ANGLES: dict[Direction, float] = {
     Direction.RIGHT: 0.0,
@@ -220,9 +217,7 @@ class GroundEnemy:
         # Update facing based on movement direction
         dx = next_x - self.x
         dy = next_y - self.y
-        new_facing = Direction.from_delta(
-            max(-1, min(1, dx)), max(-1, min(1, dy))
-        )
+        new_facing = Direction.from_delta(max(-1, min(1, dx)), max(-1, min(1, dy)))
         if new_facing is not None:
             self.facing = new_facing
 
@@ -385,6 +380,7 @@ class GroundMissionState:
         if self.crew_bonuses.silent_doors:
             return 0
         from spacegame.config import GROUND_NOISE_DOOR_OPEN
+
         return max(0, GROUND_NOISE_DOOR_OPEN - self.crew_bonuses.noise_reduction)
 
     def get_revealed_patrol_tiles(self) -> set[tuple[int, int]]:
@@ -527,9 +523,7 @@ class GroundMissionState:
         """
         tile = self.ground_map.get_tile(x, y)
         if tile is not None and tile.tile_type == TileType.NOISY_FLOOR:
-            radius = max(
-                0, GROUND_NOISE_NOISY_FLOOR - self.crew_bonuses.noise_reduction
-            )
+            radius = max(0, GROUND_NOISE_NOISY_FLOOR - self.crew_bonuses.noise_reduction)
             return NoiseEvent(x=x, y=y, radius=radius)
         return None
 
@@ -599,9 +593,7 @@ class GroundMissionState:
         elif self.alert_level == AlertLevel.ALERT:
             # Check if any enemy can still see the player
             any_sees_player = any(
-                enemy.can_see_tile(
-                    self.player.x, self.player.y, self.ground_map
-                )
+                enemy.can_see_tile(self.player.x, self.player.y, self.ground_map)
                 for enemy in self.enemies
             )
 
@@ -670,8 +662,6 @@ class GroundMissionState:
             player_last_known_pos=tuple(last_known) if last_known else None,
             crew_bonuses=crew_bonuses,
         )
-        mission._suspicious_turns_remaining = data.get(
-            "suspicious_turns_remaining", 0
-        )
+        mission._suspicious_turns_remaining = data.get("suspicious_turns_remaining", 0)
         mission._alert_no_los_turns = data.get("alert_no_los_turns", 0)
         return mission

@@ -5,11 +5,13 @@ Manages transitions between different game states (menu, gameplay, etc.)
 and delegates update/render calls to the active state.
 """
 
-import pygame
 from typing import Dict, Optional
+
+import pygame
+
 from spacegame.config import GameState
-from spacegame.views.base_view import BaseView
 from spacegame.utils.logger import logger
+from spacegame.views.base_view import BaseView
 
 
 class StateManager:

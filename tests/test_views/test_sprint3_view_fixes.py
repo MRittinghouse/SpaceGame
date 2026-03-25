@@ -30,7 +30,9 @@ class TestNameValidationConstants:
         assert _VALID_NAME_PATTERN.match("John Doe"), "Name with spaces should be valid"
 
     def test_valid_name_pattern_accepts_mixed(self) -> None:
-        assert _VALID_NAME_PATTERN.match("Ace 42 Bravo"), "Mixed alphanumeric with spaces should be valid"
+        assert _VALID_NAME_PATTERN.match("Ace 42 Bravo"), (
+            "Mixed alphanumeric with spaces should be valid"
+        )
 
     def test_valid_name_pattern_rejects_empty(self) -> None:
         assert not _VALID_NAME_PATTERN.match(""), "Empty string should not match"
@@ -41,7 +43,9 @@ class TestNameValidationConstants:
             assert not _VALID_NAME_PATTERN.match(name), f"Name with '{char}' should be rejected"
 
     def test_valid_name_pattern_rejects_unicode(self) -> None:
-        assert not _VALID_NAME_PATTERN.match("Ren\u00e9"), "Name with accented characters should be rejected"
+        assert not _VALID_NAME_PATTERN.match("Ren\u00e9"), (
+            "Name with accented characters should be rejected"
+        )
 
     def test_valid_name_pattern_rejects_tabs_and_newlines(self) -> None:
         assert not _VALID_NAME_PATTERN.match("Name\tTab"), "Name with tab should be rejected"
@@ -90,8 +94,7 @@ def _make_achievements_view(
     player = MagicMock()
     achievement_manager = MagicMock()
     achievements = [
-        _FakeAchievement(id=f"ach_{i}", category=category)
-        for i in range(achievement_count)
+        _FakeAchievement(id=f"ach_{i}", category=category) for i in range(achievement_count)
     ]
     achievement_manager.get_all_achievements.return_value = achievements
     view = AchievementsView(ui_manager, player, achievement_manager)
@@ -220,9 +223,7 @@ class TestNameInputViewValidation:
     def test_valid_alpha_name_accepted(self) -> None:
         view = _make_name_input_view()
         self._simulate_begin_press(view, "Captain")
-        assert view.next_state == GameState.GALAXY_MAP, (
-            "Valid alphabetic name should be accepted"
-        )
+        assert view.next_state == GameState.GALAXY_MAP, "Valid alphabetic name should be accepted"
         view.on_exit()
 
     def test_valid_alphanumeric_space_name_accepted(self) -> None:
@@ -258,7 +259,5 @@ class TestNameInputViewValidation:
             {"ui_element": view.begin_button},
         )
         view.handle_event(event)
-        assert view.next_state is None, (
-            f"Name over {MAX_NAME_LENGTH} chars should be rejected"
-        )
+        assert view.next_state is None, f"Name over {MAX_NAME_LENGTH} chars should be rejected"
         view.on_exit()

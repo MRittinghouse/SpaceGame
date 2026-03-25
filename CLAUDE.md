@@ -8,12 +8,15 @@ Narrative-driven space trading RPG built with Python 3.13+, pygame-ce, and pygam
 python run.py                                    # Run the game (with environment checks)
 python -m spacegame.main                         # Run directly
 pytest                                           # Run all tests
+pytest -n auto                                   # Run tests in parallel (~2x faster)
 pytest tests/test_models/test_market.py           # Run a single test file
 pytest --cov=spacegame --cov-report=html         # Tests with coverage report
-black spacegame/ tests/                          # Format code
+ruff format spacegame/ tests/                    # Format code (replaces black)
+ruff check spacegame/                            # Lint (<1s)
+ruff check spacegame/ --fix                      # Auto-fix lint issues
 mypy spacegame/                                  # Type check
-pylint spacegame/                                # Lint
-pip install -e ".[dev]"                          # Install with dev dependencies
+uv sync --extra dev                              # Install all dependencies (preferred)
+pip install -e ".[dev]"                          # Install with dev dependencies (fallback)
 ```
 
 ## Project Structure
@@ -39,7 +42,7 @@ requirements/archive/ -- Historical design docs and completed roadmaps
 ## Code Style
 
 ### Formatting
-- **Black** formatter, **100 character** line length (configured in pyproject.toml)
+- **Ruff** formatter (`ruff format`), **100 character** line length (configured in pyproject.toml)
 - **MyPy strict**: `disallow_untyped_defs = true` — all functions must have type hints
 - Follow the **Google Python Style Guide** as baseline
 

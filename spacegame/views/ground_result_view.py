@@ -5,20 +5,21 @@ mission stats, rewards or penalties, and a continue button. Mirrors the
 combat outcome overlay pattern as a standalone view.
 """
 
-import pygame
-import pygame_gui
 from typing import Optional
 
-from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, Colors, GameState, scale_x, scale_y
-from spacegame.views.base_view import BaseView
+import pygame
+import pygame_gui
+
+from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH, Colors, GameState, scale_x, scale_y
+from spacegame.engine.backgrounds import AnimatedBackground
+from spacegame.engine.fonts import FONT_LG, FONT_MD, FONT_SECTION2, FONT_XL, get_font
 from spacegame.models.ground_mission import (
+    GHOST_RUN_BONUS_PERCENT,
     GroundMissionResult,
     MissionOutcome,
-    GHOST_RUN_BONUS_PERCENT,
 )
-from spacegame.engine.backgrounds import AnimatedBackground
-from spacegame.engine.fonts import FONT_LG, FONT_MD, FONT_SECTION2, FONT_XL, FontCache
 from spacegame.utils.logger import logger
+from spacegame.views.base_view import BaseView
 
 # Outcome display mapping
 _OUTCOME_TITLES: dict[MissionOutcome, str] = {
@@ -75,10 +76,10 @@ class GroundResultView(BaseView):
         self.continue_button: Optional[pygame_gui.elements.UIButton] = None
 
         # Fonts
-        self.title_font = FontCache.get(FONT_SECTION2)
-        self.subtitle_font = FontCache.get(FONT_XL)
-        self.stat_font = FontCache.get(FONT_LG)
-        self.hint_font = FontCache.get(FONT_MD)
+        self.title_font = get_font("header", FONT_SECTION2)
+        self.subtitle_font = get_font("header", FONT_XL)
+        self.stat_font = get_font("stats", FONT_LG)
+        self.hint_font = get_font("dialogue", FONT_MD)
 
         # Visual
         self.background = AnimatedBackground("deep_space", WINDOW_WIDTH, WINDOW_HEIGHT, seed=88)

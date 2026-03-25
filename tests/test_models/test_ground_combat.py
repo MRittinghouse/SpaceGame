@@ -22,6 +22,7 @@ from spacegame.models.progression import PlayerProgression, SkillTreeType
 # Helper factories
 # ---------------------------------------------------------------------------
 
+
 def _make_player(**overrides: object) -> GroundCombatantStats:
     """Create player combatant stats with defaults."""
     defaults: dict = {
@@ -119,8 +120,10 @@ class TestExchangeResolution:
     def test_player_wins_exchange(self) -> None:
         """Player roll > enemy roll => enemy takes damage."""
         result = GroundCombatEngine.resolve_exchange(
-            player_roll=5, player_mod=1,  # total 6
-            enemy_roll=2, enemy_mod=1,    # total 3
+            player_roll=5,
+            player_mod=1,  # total 6
+            enemy_roll=2,
+            enemy_mod=1,  # total 3
         )
         assert result.player_damage == 0
         assert result.enemy_damage == 3, "Damage = difference (6-3)"
@@ -130,8 +133,10 @@ class TestExchangeResolution:
     def test_enemy_wins_exchange(self) -> None:
         """Enemy roll > player roll => player takes damage."""
         result = GroundCombatEngine.resolve_exchange(
-            player_roll=1, player_mod=0,  # total 1
-            enemy_roll=4, enemy_mod=2,    # total 6
+            player_roll=1,
+            player_mod=0,  # total 1
+            enemy_roll=4,
+            enemy_mod=2,  # total 6
         )
         assert result.player_damage == 5
         assert result.enemy_damage == 0
@@ -139,8 +144,10 @@ class TestExchangeResolution:
     def test_tie_exchange(self) -> None:
         """Tie => 1 damage to both."""
         result = GroundCombatEngine.resolve_exchange(
-            player_roll=3, player_mod=1,  # total 4
-            enemy_roll=2, enemy_mod=2,    # total 4
+            player_roll=3,
+            player_mod=1,  # total 4
+            enemy_roll=2,
+            enemy_mod=2,  # total 4
         )
         assert result.player_damage == 1
         assert result.enemy_damage == 1
@@ -148,16 +155,20 @@ class TestExchangeResolution:
     def test_minimum_damage_is_one(self) -> None:
         """Even a 1-point difference deals 1 damage."""
         result = GroundCombatEngine.resolve_exchange(
-            player_roll=3, player_mod=0,  # total 3
-            enemy_roll=2, enemy_mod=0,    # total 2
+            player_roll=3,
+            player_mod=0,  # total 3
+            enemy_roll=2,
+            enemy_mod=0,  # total 2
         )
         assert result.enemy_damage == 1
 
     def test_player_crit_on_natural_six(self) -> None:
         """Natural 6 = critical hit, double damage."""
         result = GroundCombatEngine.resolve_exchange(
-            player_roll=6, player_mod=0,  # total 6, crit
-            enemy_roll=3, enemy_mod=0,    # total 3
+            player_roll=6,
+            player_mod=0,  # total 6, crit
+            enemy_roll=3,
+            enemy_mod=0,  # total 3
         )
         assert result.player_crit
         assert result.enemy_damage == 6, "Crit doubles the 3 difference"
@@ -166,8 +177,10 @@ class TestExchangeResolution:
     def test_enemy_crit_on_natural_six(self) -> None:
         """Enemy natural 6 = crit, double damage to player."""
         result = GroundCombatEngine.resolve_exchange(
-            player_roll=2, player_mod=0,  # total 2
-            enemy_roll=6, enemy_mod=0,    # total 6
+            player_roll=2,
+            player_mod=0,  # total 2
+            enemy_roll=6,
+            enemy_mod=0,  # total 6
         )
         assert result.enemy_crit
         assert result.player_damage == 8, "Crit doubles the 4 difference"
@@ -175,8 +188,10 @@ class TestExchangeResolution:
     def test_both_crit(self) -> None:
         """Both roll 6 — tie with crits, 1 damage each doubled to 2."""
         result = GroundCombatEngine.resolve_exchange(
-            player_roll=6, player_mod=0,
-            enemy_roll=6, enemy_mod=0,
+            player_roll=6,
+            player_mod=0,
+            enemy_roll=6,
+            enemy_mod=0,
         )
         assert result.player_crit
         assert result.enemy_crit
@@ -186,8 +201,10 @@ class TestExchangeResolution:
     def test_crit_minimum_damage_doubled(self) -> None:
         """Crit with small difference still doubles."""
         result = GroundCombatEngine.resolve_exchange(
-            player_roll=6, player_mod=0,  # total 6
-            enemy_roll=5, enemy_mod=0,    # total 5
+            player_roll=6,
+            player_mod=0,  # total 6
+            enemy_roll=5,
+            enemy_mod=0,  # total 5
         )
         assert result.player_crit
         assert result.enemy_damage == 2, "1 damage doubled to 2"
@@ -212,16 +229,12 @@ class TestCombatStateConstruction:
 
     def test_ambush_bonus(self) -> None:
         player = _make_player()
-        state = GroundCombatState(
-            player=player, enemies=[_make_enemy()], is_ambush=True
-        )
+        state = GroundCombatState(player=player, enemies=[_make_enemy()], is_ambush=True)
         assert state.is_ambush
 
     def test_disadvantaged_start(self) -> None:
         player = _make_player()
-        state = GroundCombatState(
-            player=player, enemies=[_make_enemy()], is_disadvantaged=True
-        )
+        state = GroundCombatState(player=player, enemies=[_make_enemy()], is_disadvantaged=True)
         assert state.is_disadvantaged
 
 
@@ -229,9 +242,7 @@ class TestOutnumberedPenalty:
     """Tests for the outnumbered penalty."""
 
     def test_one_enemy_no_penalty(self) -> None:
-        state = GroundCombatState(
-            player=_make_player(), enemies=[_make_enemy()]
-        )
+        state = GroundCombatState(player=_make_player(), enemies=[_make_enemy()])
         assert state.outnumbered_penalty == 0
 
     def test_two_enemies_penalty_one(self) -> None:
@@ -258,23 +269,17 @@ class TestMomentumCombo:
     """Tests for the momentum combo mechanic."""
 
     def test_no_momentum_initially(self) -> None:
-        state = GroundCombatState(
-            player=_make_player(), enemies=[_make_enemy()]
-        )
+        state = GroundCombatState(player=_make_player(), enemies=[_make_enemy()])
         assert state.consecutive_wins == 0
         assert state.momentum_bonus == 0
 
     def test_two_wins_no_bonus_yet(self) -> None:
-        state = GroundCombatState(
-            player=_make_player(), enemies=[_make_enemy()]
-        )
+        state = GroundCombatState(player=_make_player(), enemies=[_make_enemy()])
         state.consecutive_wins = 2
         assert state.momentum_bonus == 2, "3rd exchange gets +2 bonus"
 
     def test_loss_resets_momentum(self) -> None:
-        state = GroundCombatState(
-            player=_make_player(), enemies=[_make_enemy()]
-        )
+        state = GroundCombatState(player=_make_player(), enemies=[_make_enemy()])
         state.consecutive_wins = 2
         state.record_exchange_outcome(player_won=False)
         assert state.consecutive_wins == 0
@@ -314,9 +319,7 @@ class TestFightAction:
     def test_fight_ambush_first_exchange(self) -> None:
         player = _make_player(attack_mod=0)
         enemy = _make_enemy(defense_mod=0)
-        state = GroundCombatState(
-            player=player, enemies=[enemy], is_ambush=True
-        )
+        state = GroundCombatState(player=player, enemies=[enemy], is_ambush=True)
 
         result = state.execute_fight(player_roll=3, enemy_roll=6)
         # Ambush: +3 attack, enemy doesn't get defense
@@ -327,9 +330,7 @@ class TestFightAction:
     def test_ambush_only_first_exchange(self) -> None:
         player = _make_player()
         enemy = _make_enemy(hp=20, defense_mod=0)
-        state = GroundCombatState(
-            player=player, enemies=[enemy], is_ambush=True
-        )
+        state = GroundCombatState(player=player, enemies=[enemy], is_ambush=True)
 
         # First exchange — ambush applies
         state.execute_fight(player_roll=3, enemy_roll=3)
@@ -340,9 +341,7 @@ class TestFightAction:
     def test_disadvantaged_first_exchange(self) -> None:
         player = _make_player(attack_mod=0, defense_mod=0)
         enemy = _make_enemy(attack_mod=0, defense_mod=0)
-        state = GroundCombatState(
-            player=player, enemies=[enemy], is_disadvantaged=True
-        )
+        state = GroundCombatState(player=player, enemies=[enemy], is_disadvantaged=True)
 
         result = state.execute_fight(player_roll=4, enemy_roll=4)
         # Disadvantaged: -2 to player's first exchange
@@ -423,9 +422,7 @@ class TestRetreatAction:
     def test_failed_retreat(self) -> None:
         player = _make_player(hp=8)
         enemy = _make_enemy(attack_mod=2)
-        state = GroundCombatState(
-            player=player, enemies=[enemy], can_retreat=True
-        )
+        state = GroundCombatState(player=player, enemies=[enemy], can_retreat=True)
         success = state.attempt_retreat(roll=1, retreat_mod=0)
         # 1 + 0 = 1 < 5 => fail
         assert not success
@@ -434,9 +431,7 @@ class TestRetreatAction:
     def test_failed_retreat_enemy_free_attack(self) -> None:
         player = _make_player(hp=8, defense_mod=0)
         enemy = _make_enemy(attack_mod=2)
-        state = GroundCombatState(
-            player=player, enemies=[enemy], can_retreat=True
-        )
+        state = GroundCombatState(player=player, enemies=[enemy], can_retreat=True)
         state.attempt_retreat(roll=1, retreat_mod=0, free_attack_rolls=[5])
         assert player.hp < 8, "Failed retreat should incur free attack"
 
@@ -451,9 +446,7 @@ class TestRetreatAction:
 
     def test_retreat_difficulty_scales_with_enemies(self) -> None:
         enemies = [_make_enemy(name="A"), _make_enemy(name="B"), _make_enemy(name="C")]
-        state = GroundCombatState(
-            player=_make_player(), enemies=enemies, can_retreat=True
-        )
+        state = GroundCombatState(player=_make_player(), enemies=enemies, can_retreat=True)
         # Difficulty = 4 + 3 enemies = 7
         success = state.attempt_retreat(roll=6, retreat_mod=0)
         # 6 < 7 => fail
@@ -465,12 +458,8 @@ class TestTalkAction:
 
     def test_successful_talk(self) -> None:
         enemy = _make_enemy(talk_difficulty=4)
-        state = GroundCombatState(
-            player=_make_player(), enemies=[enemy]
-        )
-        success = state.attempt_talk(
-            roll=5, social_mod=0, skill_type=SocialSkillType.PERSUASION
-        )
+        state = GroundCombatState(player=_make_player(), enemies=[enemy])
+        success = state.attempt_talk(roll=5, social_mod=0, skill_type=SocialSkillType.PERSUASION)
         # 5 + 0 = 5 >= 4 => success
         assert success
         assert state.outcome == CombatOutcome.TALKED
@@ -479,9 +468,7 @@ class TestTalkAction:
         player = _make_player(hp=8)
         enemy = _make_enemy(talk_difficulty=8, attack_mod=2)
         state = GroundCombatState(player=player, enemies=[enemy])
-        success = state.attempt_talk(
-            roll=3, social_mod=0, skill_type=SocialSkillType.PERSUASION
-        )
+        success = state.attempt_talk(roll=3, social_mod=0, skill_type=SocialSkillType.PERSUASION)
         assert not success
         assert state.outcome == CombatOutcome.IN_PROGRESS
 
@@ -490,7 +477,8 @@ class TestTalkAction:
         enemy = _make_enemy(talk_difficulty=8, attack_mod=2)
         state = GroundCombatState(player=player, enemies=[enemy])
         state.attempt_talk(
-            roll=1, social_mod=0,
+            roll=1,
+            social_mod=0,
             skill_type=SocialSkillType.PERSUASION,
             free_attack_rolls=[5],
         )
@@ -498,23 +486,15 @@ class TestTalkAction:
 
     def test_cannot_talk_to_automated(self) -> None:
         enemy = _make_enemy(is_automated=True, talk_difficulty=None)
-        state = GroundCombatState(
-            player=_make_player(), enemies=[enemy]
-        )
-        success = state.attempt_talk(
-            roll=6, social_mod=5, skill_type=SocialSkillType.PERSUASION
-        )
+        state = GroundCombatState(player=_make_player(), enemies=[enemy])
+        success = state.attempt_talk(roll=6, social_mod=5, skill_type=SocialSkillType.PERSUASION)
         assert not success, "Cannot talk to automated enemies"
 
     def test_same_skill_cannot_be_used_twice(self) -> None:
         enemy = _make_enemy(talk_difficulty=10)
-        state = GroundCombatState(
-            player=_make_player(), enemies=[enemy]
-        )
+        state = GroundCombatState(player=_make_player(), enemies=[enemy])
         # First attempt fails
-        state.attempt_talk(
-            roll=1, social_mod=0, skill_type=SocialSkillType.PERSUASION
-        )
+        state.attempt_talk(roll=1, social_mod=0, skill_type=SocialSkillType.PERSUASION)
         assert not state.can_use_social_skill(SocialSkillType.PERSUASION)
         assert state.can_use_social_skill(SocialSkillType.INTIMIDATION)
 
@@ -523,13 +503,9 @@ class TestTalkAction:
             _make_enemy(name="A", talk_difficulty=4),
             _make_enemy(name="B", talk_difficulty=8),
         ]
-        state = GroundCombatState(
-            player=_make_player(), enemies=enemies
-        )
+        state = GroundCombatState(player=_make_player(), enemies=enemies)
         # Must beat highest difficulty (8)
-        success = state.attempt_talk(
-            roll=5, social_mod=2, skill_type=SocialSkillType.PERSUASION
-        )
+        success = state.attempt_talk(roll=5, social_mod=2, skill_type=SocialSkillType.PERSUASION)
         # 5 + 2 = 7 < 8 => fail
         assert not success
 
@@ -538,17 +514,13 @@ class TestTalkAction:
             _make_enemy(name="A", hp=0),  # Already defeated
             _make_enemy(name="B", talk_difficulty=6),
         ]
-        state = GroundCombatState(
-            player=_make_player(), enemies=enemies
-        )
+        state = GroundCombatState(player=_make_player(), enemies=enemies)
         state.enemies_defeated_count = 1
         bonus = state.get_intimidation_bonus()
         assert bonus == 2, "+2 intimidation after defeating an enemy"
 
     def test_no_intimidation_bonus_without_kills(self) -> None:
-        state = GroundCombatState(
-            player=_make_player(), enemies=[_make_enemy()]
-        )
+        state = GroundCombatState(player=_make_player(), enemies=[_make_enemy()])
         assert state.get_intimidation_bonus() == 0
 
 
@@ -557,23 +529,17 @@ class TestLastStandMechanic:
 
     def test_last_stand_bonus_when_low_hp(self) -> None:
         player = _make_player(hp=1, max_hp=8)
-        state = GroundCombatState(
-            player=player, enemies=[_make_enemy()], has_last_stand=True
-        )
+        state = GroundCombatState(player=player, enemies=[_make_enemy()], has_last_stand=True)
         assert state.last_stand_bonus == 3
 
     def test_no_last_stand_above_quarter(self) -> None:
         player = _make_player(hp=5, max_hp=8)
-        state = GroundCombatState(
-            player=player, enemies=[_make_enemy()], has_last_stand=True
-        )
+        state = GroundCombatState(player=player, enemies=[_make_enemy()], has_last_stand=True)
         assert state.last_stand_bonus == 0
 
     def test_no_last_stand_without_skill(self) -> None:
         player = _make_player(hp=1, max_hp=8)
-        state = GroundCombatState(
-            player=player, enemies=[_make_enemy()], has_last_stand=False
-        )
+        state = GroundCombatState(player=player, enemies=[_make_enemy()], has_last_stand=False)
         assert state.last_stand_bonus == 0
 
 
@@ -604,22 +570,16 @@ class TestCombatOutcome:
     """Tests for combat outcome determination."""
 
     def test_in_progress_initially(self) -> None:
-        state = GroundCombatState(
-            player=_make_player(), enemies=[_make_enemy()]
-        )
+        state = GroundCombatState(player=_make_player(), enemies=[_make_enemy()])
         assert state.outcome == CombatOutcome.IN_PROGRESS
 
     def test_victory_all_defeated(self) -> None:
-        state = GroundCombatState(
-            player=_make_player(), enemies=[_make_enemy(hp=0)]
-        )
+        state = GroundCombatState(player=_make_player(), enemies=[_make_enemy(hp=0)])
         state._check_outcome()
         assert state.outcome == CombatOutcome.VICTORY
 
     def test_defeat_player_dead(self) -> None:
-        state = GroundCombatState(
-            player=_make_player(hp=0), enemies=[_make_enemy()]
-        )
+        state = GroundCombatState(player=_make_player(hp=0), enemies=[_make_enemy()])
         state._check_outcome()
         assert state.outcome == CombatOutcome.DEFEAT
 
@@ -639,9 +599,12 @@ class TestSerialization:
         player = _make_player(hp=6)
         enemies = [_make_enemy(hp=3, name="Guard")]
         state = GroundCombatState(
-            player=player, enemies=enemies,
-            is_ambush=True, is_disadvantaged=False,
-            can_retreat=True, has_last_stand=True,
+            player=player,
+            enemies=enemies,
+            is_ambush=True,
+            is_disadvantaged=False,
+            can_retreat=True,
+            has_last_stand=True,
         )
         state.consecutive_wins = 2
         state.round_number = 3
@@ -685,9 +648,14 @@ class TestEnemyTemplates:
 
     def test_all_templates_defined(self) -> None:
         expected = {
-            "guild_security", "union_worker", "pirate_thug",
-            "collective_drone", "alliance_scrapper", "elite_guard",
-            "station_sentry", "crimson_enforcer",
+            "guild_security",
+            "union_worker",
+            "pirate_thug",
+            "collective_drone",
+            "alliance_scrapper",
+            "elite_guard",
+            "station_sentry",
+            "crimson_enforcer",
         }
         assert set(GROUND_ENEMY_TEMPLATES.keys()) == expected
 
@@ -799,10 +767,17 @@ class TestGroundSkillTree:
         prog = PlayerProgression()
         ground_ids = {s.id for s in prog.get_skill_tree(SkillTreeType.GROUND)}
         expected = {
-            "scrapper", "tough_hide", "quick_reflexes",
-            "intimidating_presence", "last_stand", "veteran",
-            "field_medic", "terrain_reader", "adaptive_fighter",
-            "combat_scavenger", "battle_hardened",
+            "scrapper",
+            "tough_hide",
+            "quick_reflexes",
+            "intimidating_presence",
+            "last_stand",
+            "veteran",
+            "field_medic",
+            "terrain_reader",
+            "adaptive_fighter",
+            "combat_scavenger",
+            "battle_hardened",
         }
         assert ground_ids == expected
 

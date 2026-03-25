@@ -147,16 +147,22 @@ class TestPaletteManager:
     def test_load_from_directory(self) -> None:
         """Loads all JSON files from a directory."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            self._write_palette(tmpdir, {
-                "id": "faction_guild",
-                "name": "Commerce Guild",
-                "colors": {"gold": [220, 180, 40], "navy": [20, 30, 60]},
-            })
-            self._write_palette(tmpdir, {
-                "id": "faction_union",
-                "name": "Miners Union",
-                "colors": {"rust": [180, 80, 30], "gray": [80, 80, 80]},
-            })
+            self._write_palette(
+                tmpdir,
+                {
+                    "id": "faction_guild",
+                    "name": "Commerce Guild",
+                    "colors": {"gold": [220, 180, 40], "navy": [20, 30, 60]},
+                },
+            )
+            self._write_palette(
+                tmpdir,
+                {
+                    "id": "faction_union",
+                    "name": "Miners Union",
+                    "colors": {"rust": [180, 80, 30], "gray": [80, 80, 80]},
+                },
+            )
 
             mgr = PaletteManager()
             mgr.load_directory(tmpdir)
@@ -171,11 +177,14 @@ class TestPaletteManager:
     def test_get_color_shorthand(self) -> None:
         """Shorthand: get_color(palette_id, color_name) -> tuple."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            self._write_palette(tmpdir, {
-                "id": "ui",
-                "name": "UI",
-                "colors": {"bg_dark": [12, 18, 32]},
-            })
+            self._write_palette(
+                tmpdir,
+                {
+                    "id": "ui",
+                    "name": "UI",
+                    "colors": {"bg_dark": [12, 18, 32]},
+                },
+            )
             mgr = PaletteManager()
             mgr.load_directory(tmpdir)
 
@@ -187,11 +196,14 @@ class TestPaletteManager:
 
     def test_get_color_missing_name(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
-            self._write_palette(tmpdir, {
-                "id": "ui",
-                "name": "UI",
-                "colors": {"bg_dark": [12, 18, 32]},
-            })
+            self._write_palette(
+                tmpdir,
+                {
+                    "id": "ui",
+                    "name": "UI",
+                    "colors": {"bg_dark": [12, 18, 32]},
+                },
+            )
             mgr = PaletteManager()
             mgr.load_directory(tmpdir)
 
@@ -212,16 +224,22 @@ class TestPaletteManager:
     def test_get_master_palette(self) -> None:
         """Master palette collects all unique colors across all palettes."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            self._write_palette(tmpdir, {
-                "id": "a",
-                "name": "A",
-                "colors": {"red": [255, 0, 0], "shared": [100, 100, 100]},
-            })
-            self._write_palette(tmpdir, {
-                "id": "b",
-                "name": "B",
-                "colors": {"blue": [0, 0, 255], "shared": [100, 100, 100]},
-            })
+            self._write_palette(
+                tmpdir,
+                {
+                    "id": "a",
+                    "name": "A",
+                    "colors": {"red": [255, 0, 0], "shared": [100, 100, 100]},
+                },
+            )
+            self._write_palette(
+                tmpdir,
+                {
+                    "id": "b",
+                    "name": "B",
+                    "colors": {"blue": [0, 0, 255], "shared": [100, 100, 100]},
+                },
+            )
 
             mgr = PaletteManager()
             mgr.load_directory(tmpdir)

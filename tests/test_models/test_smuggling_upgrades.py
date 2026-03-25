@@ -11,35 +11,53 @@ from spacegame.models.ship import Ship, ShipType
 
 def _make_ship_type() -> ShipType:
     return ShipType(
-        id="shuttle", name="Shuttle", ship_class="light",
-        description="Basic ship", cargo_capacity=50, fuel_capacity=100,
-        fuel_efficiency=1.0, speed_multiplier=1.0, purchase_price=0,
-        resale_value=0, crew_slots=1, special_abilities=[], availability="all",
+        id="shuttle",
+        name="Shuttle",
+        ship_class="light",
+        description="Basic ship",
+        cargo_capacity=50,
+        fuel_capacity=100,
+        fuel_efficiency=1.0,
+        speed_multiplier=1.0,
+        purchase_price=0,
+        resale_value=0,
+        crew_slots=1,
+        special_abilities=[],
+        availability="all",
     )
 
 
 def _make_player() -> Player:
     ship = Ship(ship_type=_make_ship_type(), current_fuel=100)
     return Player(
-        name="Test", credits=50000,
-        current_system_id="nexus_prime", ship=ship,
+        name="Test",
+        credits=50000,
+        current_system_id="nexus_prime",
+        ship=ship,
     )
 
 
 def _make_smuggling_upgrade() -> ShipUpgrade:
     return ShipUpgrade(
-        id="hidden_compartment", name="Hidden Compartment",
-        description="Conceals cargo", price=2500,
-        slot_type="smuggling", bonus_type="hidden_compartment",
-        bonus_value=0.30, requires_black_market=True,
+        id="hidden_compartment",
+        name="Hidden Compartment",
+        description="Conceals cargo",
+        price=2500,
+        slot_type="smuggling",
+        bonus_type="hidden_compartment",
+        bonus_value=0.30,
+        requires_black_market=True,
     )
 
 
 def _make_normal_upgrade() -> ShipUpgrade:
     return ShipUpgrade(
-        id="cargo_bay_ext", name="Cargo Bay Extension",
-        description="Expands cargo", price=5000,
-        slot_type="cargo", bonus_type="cargo_bonus",
+        id="cargo_bay_ext",
+        name="Cargo Bay Extension",
+        description="Expands cargo",
+        price=5000,
+        slot_type="cargo",
+        bonus_type="cargo_bonus",
         bonus_value=20.0,
     )
 
@@ -127,10 +145,13 @@ class TestShipyardSmugglingFilter:
         # The shop list should exclude requires_black_market upgrades
         installed_ids: set[str] = set()
         shop = [
-            u for u in all_upgrades.values()
+            u
+            for u in all_upgrades.values()
             if u.id not in installed_ids
-            and (not u.requires_black_market
-                 or player.has_black_market_access(player.current_system_id))
+            and (
+                not u.requires_black_market
+                or player.has_black_market_access(player.current_system_id)
+            )
         ]
         assert len(shop) == 1
         assert shop[0].id == "cargo_bay_ext"
@@ -146,10 +167,13 @@ class TestShipyardSmugglingFilter:
 
         installed_ids: set[str] = set()
         shop = [
-            u for u in all_upgrades.values()
+            u
+            for u in all_upgrades.values()
             if u.id not in installed_ids
-            and (not u.requires_black_market
-                 or player.has_black_market_access(player.current_system_id))
+            and (
+                not u.requires_black_market
+                or player.has_black_market_access(player.current_system_id)
+            )
         ]
         assert len(shop) == 2
         assert {u.id for u in shop} == {"hidden_compartment", "cargo_bay_ext"}
@@ -165,9 +189,12 @@ class TestShipyardSmugglingFilter:
 
         installed_ids: set[str] = set()
         shop = [
-            u for u in all_upgrades.values()
+            u
+            for u in all_upgrades.values()
             if u.id not in installed_ids
-            and (not u.requires_black_market
-                 or player.has_black_market_access(player.current_system_id))
+            and (
+                not u.requires_black_market
+                or player.has_black_market_access(player.current_system_id)
+            )
         ]
         assert len(shop) == 0

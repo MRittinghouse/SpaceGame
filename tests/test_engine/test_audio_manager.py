@@ -240,7 +240,9 @@ class TestAudioConfigPersistence:
         assert d["ambient_volume"] == 0.6
 
     def test_round_trip(self) -> None:
-        config = AudioConfig(master_volume=0.5, music_volume=0.3, sfx_volume=1.0, ambient_volume=0.0)
+        config = AudioConfig(
+            master_volume=0.5, music_volume=0.3, sfx_volume=1.0, ambient_volume=0.0
+        )
         d = config.to_dict()
         restored = AudioConfig.from_dict(d)
         assert restored.master_volume == 0.5
@@ -283,7 +285,9 @@ class TestSettingsPersistence:
         from spacegame.save_manager import SaveManager
 
         mgr = SaveManager(tmp_path / "saves")
-        config = AudioConfig(master_volume=0.4, music_volume=0.6, sfx_volume=0.8, ambient_volume=0.2)
+        config = AudioConfig(
+            master_volume=0.4, music_volume=0.6, sfx_volume=0.8, ambient_volume=0.2
+        )
         mgr.save_settings({"audio": config.to_dict()})
 
         loaded = mgr.load_settings()
