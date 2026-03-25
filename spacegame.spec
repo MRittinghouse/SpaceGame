@@ -22,8 +22,7 @@ a = Analysis(
     runtime_hooks=[],
     excludes=[
         "pytest",
-        "black",
-        "pylint",
+        "ruff",
         "mypy",
         "pip",
         "setuptools",
