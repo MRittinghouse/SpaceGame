@@ -443,12 +443,89 @@ class DesignatedSlot:
 
 
 @dataclass
+class PlacedSlot:
+    """A slot placed on the ship's pixel grid.
+
+    Represents a typed/sized slot at a specific grid position. The slot
+    is a placeholder — the actual equipment is referenced by equipped_part_id
+    and managed through the Loadout tab.
+
+    Attributes:
+        slot_def_id: References a SlotDefinition.id (e.g., "weapon_small").
+        x: Grid column of the top-left corner.
+        y: Grid row of the top-left corner.
+        rotation: Placement rotation (0, 90, 180, 270).
+        equipped_part_id: ID of the ShipPart installed, or None if empty.
+    """
+
+    slot_def_id: str
+    x: int
+    y: int
+    rotation: int = 0
+    equipped_part_id: Optional[str] = None
+
+    def to_dict(self) -> dict:
+        """Serialize to a JSON-compatible dict."""
+        d: dict = {
+            "slot_def_id": self.slot_def_id,
+            "x": self.x,
+            "y": self.y,
+        }
+        if self.rotation != 0:
+            d["rotation"] = self.rotation
+        if self.equipped_part_id:
+            d["equipped_part_id"] = self.equipped_part_id
+        return d
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "PlacedSlot":
+        """Deserialize from a dict."""
+        return cls(
+            slot_def_id=data["slot_def_id"],
+            x=data["x"],
+            y=data["y"],
+            rotation=data.get("rotation", 0),
+            equipped_part_id=data.get("equipped_part_id"),
+        )
+
+
+# Frame slot limits — maximum number of each slot type per weight class.
+# These replace MODULE_CAPS for the new slot-based builder.
+FRAME_SLOT_LIMITS: dict[str, dict[str, int]] = {
+    "tiny": {
+        "weapon": 1, "defense": 1, "engine": 1, "utility": 2,
+        "cargo": 2, "crew_quarters": 1, "reactor": 1,
+    },
+    "small": {
+        "weapon": 2, "defense": 1, "engine": 1, "utility": 2,
+        "cargo": 3, "crew_quarters": 1, "reactor": 1,
+    },
+    "medium": {
+        "weapon": 3, "defense": 2, "engine": 2, "utility": 3,
+        "cargo": 4, "crew_quarters": 2, "reactor": 1,
+    },
+    "large": {
+        "weapon": 4, "defense": 3, "engine": 2, "utility": 4,
+        "cargo": 5, "crew_quarters": 3, "reactor": 2,
+    },
+    "xlarge": {
+        "weapon": 5, "defense": 3, "engine": 3, "utility": 4,
+        "cargo": 6, "crew_quarters": 3, "reactor": 2,
+    },
+}
+
+
+@dataclass
 class ShipBuild:
     """Complete ship configuration — the central data structure.
 
     A ShipBuild defines everything about a player's ship: the weight
     class (canvas size), every filled pixel with its material, and
     every designated equipment slot with installed modules.
+
+    The placed_slots field is the new slot-based model. The modules
+    field is the legacy module-based model. Both can coexist for
+    backward compatibility during migration.
     """
 
     weight_class: str
@@ -457,6 +534,7 @@ class ShipBuild:
     preset_name: Optional[str] = None
     modules: list[PlacedModule] = field(default_factory=list)
     frame_variant: Optional[str] = None
+    placed_slots: list[PlacedSlot] = field(default_factory=list)
 
     @property
     def canvas_size(self) -> int:
@@ -487,7 +565,7 @@ class ShipBuild:
         return WEIGHT_CLASSES.get(self.weight_class, {}).get("max_weight", 140)
 
     def to_dict(self) -> dict:
-        """Serialize build to dict, including modules and frame variant."""
+        """Serialize build to dict, including modules, slots, and frame variant."""
         result: dict = {
             "weight_class": self.weight_class,
             "pixels": [p.to_dict() for p in self.pixels],
@@ -496,6 +574,8 @@ class ShipBuild:
         }
         if self.modules:
             result["modules"] = [m.to_dict() for m in self.modules]
+        if self.placed_slots:
+            result["placed_slots"] = [ps.to_dict() for ps in self.placed_slots]
         if self.frame_variant:
             result["frame_variant"] = self.frame_variant
         return result
@@ -507,6 +587,7 @@ class ShipBuild:
         from spacegame.models.ship_module import PlacedModule as PM
 
         modules = [PM.from_dict(m) for m in data.get("modules", [])]
+        placed_slots = [PlacedSlot.from_dict(ps) for ps in data.get("placed_slots", [])]
         return cls(
             weight_class=data["weight_class"],
             pixels=[PlacedPixel.from_dict(p) for p in data.get("pixels", [])],
@@ -514,6 +595,7 @@ class ShipBuild:
             preset_name=data.get("preset_name"),
             modules=modules,
             frame_variant=data.get("frame_variant"),
+            placed_slots=placed_slots,
         )
 
 
@@ -682,14 +764,23 @@ class ShipStatsComputer:
         materials: dict[str, HullMaterial],
         equipment: Optional[dict] = None,
         module_catalog: Optional[dict] = None,
+        slot_definitions: Optional[dict] = None,
+        parts_catalog: Optional[dict] = None,
     ) -> ComputedShipStats:
         """Compute all ship stats from the build configuration.
+
+        Supports both the new slot+part model (placed_slots) and the
+        legacy module model (modules). If placed_slots is populated,
+        stats come from slot definitions + equipped parts. Otherwise
+        falls back to the module path.
 
         Args:
             build: The ship build to compute stats for.
             materials: Material definitions keyed by ID.
             equipment: Equipment/upgrade definitions keyed by ID (optional).
             module_catalog: Ship module blueprints keyed by ID (optional).
+            slot_definitions: SlotDefinition catalog keyed by ID (optional).
+            parts_catalog: ShipPart catalog keyed by ID (optional).
 
         Returns:
             ComputedShipStats with all derived values.
@@ -698,12 +789,44 @@ class ShipStatsComputer:
             equipment = {}
         if module_catalog is None:
             module_catalog = {}
+        if slot_definitions is None:
+            slot_definitions = {}
+        if parts_catalog is None:
+            parts_catalog = {}
 
         stats = ComputedShipStats()
         wc = WEIGHT_CLASSES.get(build.weight_class, WEIGHT_CLASSES["medium"])
         stats.weight_max = wc["max_weight"]
 
-        # --- Module stat contributions (fixed stats from provides dict) ---
+        # --- NEW: Slot + Part stat contributions ---
+        if build.placed_slots:
+            for placed_slot in build.placed_slots:
+                # Slot itself contributes weight and cost
+                slot_def = slot_definitions.get(placed_slot.slot_def_id)
+                if slot_def:
+                    stats.weight_current += slot_def.weight
+                    stats.total_cost += slot_def.placement_cost
+
+                # Equipped part contributes stats
+                if placed_slot.equipped_part_id:
+                    part = parts_catalog.get(placed_slot.equipped_part_id)
+                    if part:
+                        provides = part.provides
+                        stats.shields += provides.get("shield_hp", 0)
+                        stats.shield_regen += provides.get("shield_regen", 0)
+                        stats.cargo_capacity += provides.get("cargo_capacity", 0)
+                        stats.crew_slots += provides.get("crew_capacity", 0)
+                        stats.speed += provides.get("thrust", 0)
+                        stats.armor += provides.get("armor_bonus", 0)
+                        stats.fuel_capacity += provides.get("fuel_capacity", 0)
+                        stats.power_max += provides.get("power_output", 0)
+                        stats.evasion += provides.get("evasion_bonus", 0)
+                        stats.accuracy += provides.get("accuracy_bonus", 0)
+                        stats.hull += provides.get("hull_hp", 0)
+                        stats.weight_current += part.weight
+                        stats.total_cost += part.base_cost
+
+        # --- LEGACY: Module stat contributions (fixed stats from provides dict) ---
         for placed_mod in build.modules:
             module = module_catalog.get(placed_mod.module_id)
             if module is None:

@@ -1,0 +1,204 @@
+{
+  "slot_definitions": [
+    {
+      "id": "weapon_small",
+      "slot_type": "weapon",
+      "size": "small",
+      "footprint_w": 2,
+      "footprint_h": 2,
+      "weight": 3.0,
+      "placement_cost": 500,
+      "color": [200, 60, 60]
+    },
+    {
+      "id": "weapon_medium",
+      "slot_type": "weapon",
+      "size": "medium",
+      "footprint_w": 3,
+      "footprint_h": 3,
+      "weight": 6.0,
+      "placement_cost": 1500,
+      "color": [200, 60, 60]
+    },
+    {
+      "id": "weapon_large",
+      "slot_type": "weapon",
+      "size": "large",
+      "footprint_w": 4,
+      "footprint_h": 4,
+      "weight": 10.0,
+      "placement_cost": 4000,
+      "color": [200, 60, 60]
+    },
+    {
+      "id": "defense_small",
+      "slot_type": "defense",
+      "size": "small",
+      "footprint_w": 2,
+      "footprint_h": 2,
+      "weight": 3.0,
+      "placement_cost": 400,
+      "color": [60, 120, 200]
+    },
+    {
+      "id": "defense_medium",
+      "slot_type": "defense",
+      "size": "medium",
+      "footprint_w": 3,
+      "footprint_h": 3,
+      "weight": 6.0,
+      "placement_cost": 1200,
+      "color": [60, 120, 200]
+    },
+    {
+      "id": "defense_large",
+      "slot_type": "defense",
+      "size": "large",
+      "footprint_w": 4,
+      "footprint_h": 4,
+      "weight": 10.0,
+      "placement_cost": 3500,
+      "color": [60, 120, 200]
+    },
+    {
+      "id": "engine_small",
+      "slot_type": "engine",
+      "size": "small",
+      "footprint_w": 2,
+      "footprint_h": 3,
+      "weight": 4.0,
+      "placement_cost": 600,
+      "color": [200, 140, 40]
+    },
+    {
+      "id": "engine_medium",
+      "slot_type": "engine",
+      "size": "medium",
+      "footprint_w": 3,
+      "footprint_h": 4,
+      "weight": 7.0,
+      "placement_cost": 1800,
+      "color": [200, 140, 40]
+    },
+    {
+      "id": "engine_large",
+      "slot_type": "engine",
+      "size": "large",
+      "footprint_w": 4,
+      "footprint_h": 5,
+      "weight": 12.0,
+      "placement_cost": 4500,
+      "color": [200, 140, 40]
+    },
+    {
+      "id": "utility_small",
+      "slot_type": "utility",
+      "size": "small",
+      "footprint_w": 2,
+      "footprint_h": 2,
+      "weight": 2.0,
+      "placement_cost": 300,
+      "color": [60, 180, 80]
+    },
+    {
+      "id": "utility_medium",
+      "slot_type": "utility",
+      "size": "medium",
+      "footprint_w": 3,
+      "footprint_h": 3,
+      "weight": 4.0,
+      "placement_cost": 800,
+      "color": [60, 180, 80]
+    },
+    {
+      "id": "utility_large",
+      "slot_type": "utility",
+      "size": "large",
+      "footprint_w": 4,
+      "footprint_h": 4,
+      "weight": 7.0,
+      "placement_cost": 2000,
+      "color": [60, 180, 80]
+    },
+    {
+      "id": "cargo_small",
+      "slot_type": "cargo",
+      "size": "small",
+      "footprint_w": 2,
+      "footprint_h": 3,
+      "weight": 2.0,
+      "placement_cost": 200,
+      "color": [180, 150, 60]
+    },
+    {
+      "id": "cargo_medium",
+      "slot_type": "cargo",
+      "size": "medium",
+      "footprint_w": 3,
+      "footprint_h": 4,
+      "weight": 4.0,
+      "placement_cost": 600,
+      "color": [180, 150, 60]
+    },
+    {
+      "id": "cargo_large",
+      "slot_type": "cargo",
+      "size": "large",
+      "footprint_w": 4,
+      "footprint_h": 6,
+      "weight": 7.0,
+      "placement_cost": 1500,
+      "color": [180, 150, 60]
+    },
+    {
+      "id": "crew_quarters_small",
+      "slot_type": "crew_quarters",
+      "size": "small",
+      "footprint_w": 2,
+      "footprint_h": 2,
+      "weight": 3.0,
+      "placement_cost": 400,
+      "color": [160, 120, 200]
+    },
+    {
+      "id": "crew_quarters_medium",
+      "slot_type": "crew_quarters",
+      "size": "medium",
+      "footprint_w": 3,
+      "footprint_h": 3,
+      "weight": 5.0,
+      "placement_cost": 1000,
+      "color": [160, 120, 200]
+    },
+    {
+      "id": "reactor_small",
+      "slot_type": "reactor",
+      "size": "small",
+      "footprint_w": 2,
+      "footprint_h": 2,
+      "weight": 4.0,
+      "placement_cost": 800,
+      "color": [255, 200, 50]
+    },
+    {
+      "id": "reactor_medium",
+      "slot_type": "reactor",
+      "size": "medium",
+      "footprint_w": 3,
+      "footprint_h": 3,
+      "weight": 7.0,
+      "placement_cost": 2500,
+      "color": [255, 200, 50]
+    },
+    {
+      "id": "reactor_large",
+      "slot_type": "reactor",
+      "size": "large",
+      "footprint_w": 4,
+      "footprint_h": 4,
+      "weight": 12.0,
+      "placement_cost": 5000,
+      "color": [255, 200, 50]
+    }
+  ]
+}

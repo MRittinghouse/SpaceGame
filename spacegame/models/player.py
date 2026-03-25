@@ -83,6 +83,9 @@ class Player:
     # Ground equipment inventory (equipment IDs owned)
     ground_equipment: list[str] = field(default_factory=list)
 
+    # Ship parts inventory (part_id -> count owned but not equipped)
+    parts_inventory: dict[str, int] = field(default_factory=dict)
+
     # Smuggling contract manager state
     smuggling_contract_state: dict = field(default_factory=dict)
 
@@ -250,6 +253,45 @@ class Player:
             True if player has enough credits
         """
         return self.credits >= cost
+
+    # ------------------------------------------------------------------
+    # Parts inventory management
+    # ------------------------------------------------------------------
+
+    def add_part(self, part_id: str, count: int = 1) -> None:
+        """Add ship parts to inventory.
+
+        Args:
+            part_id: The ShipPart ID.
+            count: Number to add (default 1).
+        """
+        self.parts_inventory[part_id] = self.parts_inventory.get(part_id, 0) + count
+
+    def remove_part(self, part_id: str, count: int = 1) -> tuple[bool, str]:
+        """Remove ship parts from inventory.
+
+        Args:
+            part_id: The ShipPart ID.
+            count: Number to remove.
+
+        Returns:
+            (success, message) tuple.
+        """
+        current = self.parts_inventory.get(part_id, 0)
+        if current < count:
+            return False, f"Not enough {part_id} in inventory ({current} < {count})"
+        self.parts_inventory[part_id] = current - count
+        if self.parts_inventory[part_id] == 0:
+            del self.parts_inventory[part_id]
+        return True, f"Removed {count}x {part_id}"
+
+    def get_part_count(self, part_id: str) -> int:
+        """Get count of a specific part in inventory."""
+        return self.parts_inventory.get(part_id, 0)
+
+    # ------------------------------------------------------------------
+    # Credit management
+    # ------------------------------------------------------------------
 
     def add_credits(self, amount: int) -> None:
         """

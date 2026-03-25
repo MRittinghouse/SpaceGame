@@ -135,11 +135,15 @@ class Ship:
             materials = getattr(dl, "hull_materials", {})
             equipment = getattr(dl, "upgrades", {})
             module_catalog = getattr(dl, "ship_modules", {})
+            slot_defs = getattr(dl, "slot_definitions", {})
+            parts_catalog = getattr(dl, "ship_parts", {})
             self._computed_stats = ShipStatsComputer.compute(
                 self._build,
                 materials,
                 equipment,
                 module_catalog=module_catalog,
+                slot_definitions=slot_defs,
+                parts_catalog=parts_catalog,
             )
             # Create or update the composite renderer
             try:

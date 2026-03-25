@@ -111,6 +111,8 @@ class DataLoader:
         self.hull_shapes: Dict[str, "HullShape"] = {}
         self.hull_materials: Dict[str, "HullMaterial"] = {}
         self.ship_modules: Dict[str, "ShipModule"] = {}
+        self.slot_definitions: Dict[str, "SlotDefinition"] = {}
+        self.ship_parts: Dict[str, "ShipPart"] = {}
         self.drydock_catalogs: Dict[str, dict] = {}
 
     def _safe_load(self, loader_name: str, loader_fn) -> None:
@@ -160,6 +162,8 @@ class DataLoader:
         self._safe_load("hull_shapes", self.load_hull_shapes)
         self._safe_load("hull_materials", self.load_hull_materials)
         self._safe_load("ship_modules", self.load_ship_modules)
+        self._safe_load("slot_definitions", self.load_slot_definitions)
+        self._safe_load("ship_parts", self.load_ship_parts)
         self._safe_load("module_materials", self.load_module_materials)
         self._safe_load("drydock_catalogs", self.load_drydock_catalogs)
         self._safe_load("journal_entries", self.load_journal_entries)
@@ -1174,6 +1178,45 @@ class DataLoader:
 
         logger.info(f"Loaded {len(self.ship_modules)} ship modules")
         return self.ship_modules
+
+    def load_slot_definitions(self) -> Dict[str, "SlotDefinition"]:
+        """Load slot definitions (type+size templates) from JSON."""
+        from spacegame.models.slot_definition import SlotDefinition
+
+        file_path = self.data_dir / "ships" / "slot_definitions.json"
+        if not file_path.exists():
+            logger.warning(f"Slot definitions file not found: {file_path}")
+            return self.slot_definitions
+        with open(file_path, "r") as f:
+            data = json.load(f)
+
+        self.slot_definitions.clear()
+        for entry in data.get("slot_definitions", []):
+            slot_def = SlotDefinition.from_dict(entry)
+            self.slot_definitions[slot_def.id] = slot_def
+
+        logger.info(f"Loaded {len(self.slot_definitions)} slot definitions")
+        return self.slot_definitions
+
+    def load_ship_parts(self) -> Dict[str, "ShipPart"]:
+        """Load ship parts (equippable items for slots) from JSON."""
+        from spacegame.models.ship_part import ShipPart
+
+        file_path = self.data_dir / "ships" / "parts.json"
+        if not file_path.exists():
+            # Parts file is optional during migration — not all installs have it yet
+            logger.info("Ship parts file not found (optional during migration)")
+            return self.ship_parts
+        with open(file_path, "r") as f:
+            data = json.load(f)
+
+        self.ship_parts.clear()
+        for entry in data.get("parts", []):
+            part = ShipPart.from_dict(entry)
+            self.ship_parts[part.id] = part
+
+        logger.info(f"Loaded {len(self.ship_parts)} ship parts")
+        return self.ship_parts
 
     def load_module_materials(self) -> Dict[str, HullMaterial]:
         """Load module-specific visual materials and merge into hull_materials."""

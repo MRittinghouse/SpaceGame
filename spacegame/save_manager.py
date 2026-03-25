@@ -448,6 +448,7 @@ class SaveManager:
             "attribute_state": player.attribute_state,
             "journal_state": player.journal_state,
             "ground_equipment": list(player.ground_equipment),
+            "parts_inventory": dict(player.parts_inventory),
             "hidden_compartment": (
                 player.hidden_compartment.to_dict() if player.hidden_compartment else None
             ),
@@ -622,6 +623,7 @@ class SaveManager:
 
         # Restore ground equipment inventory
         player.ground_equipment = data.get("ground_equipment", [])
+        player.parts_inventory = data.get("parts_inventory", {})
 
         # Restore hidden compartment
         hidden_data = data.get("hidden_compartment")
