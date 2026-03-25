@@ -77,9 +77,11 @@ class GalaxyMapView(BaseView):
         self.news_ticker = news_ticker
 
         # Map visualization settings
-        self.map_center_x = WINDOW_WIDTH // 2
-        self.map_center_y = WINDOW_HEIGHT // 2
-        self.zoom = 2.0
+        # Center the map between the info panel (left) and actions panel (right)
+        # with a slight upward shift to account for the cockpit HUD at bottom
+        self.map_center_x = WINDOW_WIDTH // 2 + scale_x(30)
+        self.map_center_y = WINDOW_HEIGHT // 2 - scale_y(20)
+        self.zoom = 2.4  # Spread systems out more to use available space
 
         # UI state
         self.selected_system: Optional[str] = None
@@ -87,9 +89,12 @@ class GalaxyMapView(BaseView):
         self.next_state: Optional[GameState] = None
 
         # Fonts — role-based
+        from spacegame.engine.fonts import FONT_SUBTITLE
+
         self.system_font = get_font("dialogue", FONT_MD)  # System names on map
-        self.info_font = get_font("stats", FONT_MD)  # Distance, danger, info
-        self.title_font = get_font("machine", FONT_HEADING)  # Encounter alerts
+        self.info_font = get_font("dialogue", FONT_MD)  # Card body text, info lines
+        self.card_name_font = get_font("dialogue", FONT_SUBTITLE)  # System name in info card
+        self.title_font = get_font("machine", FONT_HEADING)  # Encounter alerts, overlay titles
 
         # UI buttons
         self.trade_button: Optional[pygame_gui.elements.UIButton] = None
@@ -161,17 +166,41 @@ class GalaxyMapView(BaseView):
         self._pending_encounter: Optional[EncounterRef] = None
 
     def _generate_planet_thumbnails(self) -> None:
-        """Load system portrait sprites or generate procedural fallbacks."""
+        """Load system portrait sprites or generate procedural fallbacks.
+
+        All portraits are clipped to a circle so they integrate with the
+        circular halo system instead of showing rectangular backgrounds.
+        """
         for _i, (sys_id, system) in enumerate(self.systems.items()):
             # Try system portrait sprite first
             portrait = self._sprite_mgr.get_system_portrait(sys_id)
             if portrait:
-                self._planet_surfaces[sys_id] = portrait
+                self._planet_surfaces[sys_id] = self._clip_to_circle(portrait)
             else:
-                # Procedural fallback
+                # Procedural fallback (already circular from generate_planet)
                 planet_type = system.type if system.type else "terran"
                 surface = generate_planet(12, planet_type, seed=hash(sys_id) % 10000)
                 self._planet_surfaces[sys_id] = surface
+
+    @staticmethod
+    def _clip_to_circle(surface: pygame.Surface) -> pygame.Surface:
+        """Clip a rectangular surface to a circular mask."""
+        w, h = surface.get_size()
+        size = max(w, h)
+        radius = size // 2
+
+        # Create circular output
+        clipped = pygame.Surface((size, size), pygame.SRCALPHA)
+        # Center the portrait on the square canvas
+        ox = (size - w) // 2
+        oy = (size - h) // 2
+        clipped.blit(surface, (ox, oy))
+
+        # Apply circular mask
+        mask = pygame.Surface((size, size), pygame.SRCALPHA)
+        pygame.draw.circle(mask, (255, 255, 255, 255), (radius, radius), radius)
+        clipped.blit(mask, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
+        return clipped
 
     def on_enter(self) -> None:
         super().on_enter()
@@ -931,11 +960,7 @@ class GalaxyMapView(BaseView):
                 screen.blit(marker_surf, (screen_x - half_w - 12, screen_y - 7))
 
             # System name (below portrait with text shadow for readability)
-            name_color = (
-                Colors.TEXT_HIGHLIGHT
-                if system_id == self.selected_system
-                else Colors.TEXT
-            )
+            name_color = Colors.TEXT_HIGHLIGHT if system_id == self.selected_system else Colors.TEXT
             name_surf = self.system_font.render(system.name, True, name_color)
             name_y = screen_y + half_h + 4
             name_rect = name_surf.get_rect(center=(screen_x, name_y))
@@ -1272,7 +1297,7 @@ class GalaxyMapView(BaseView):
 
         panel_x = scale_x(15)
         panel_y = scale_y(100)
-        panel_width = scale_x(300)
+        panel_width = scale_x(340)
         line_height = scale_y(22)
         pad = 10
         header_height = scale_y(35)
@@ -1387,8 +1412,8 @@ class GalaxyMapView(BaseView):
         # --- Render content ---
         y_offset = panel_y + pad
 
-        # System name header
-        name_surf = self.title_font.render(system.name, True, Colors.TEXT_HIGHLIGHT)
+        # System name header (larger, readable font)
+        name_surf = self.card_name_font.render(system.name, True, Colors.TEXT_HIGHLIGHT)
         screen.blit(name_surf, (panel_x + pad, y_offset))
         y_offset += header_height
 
