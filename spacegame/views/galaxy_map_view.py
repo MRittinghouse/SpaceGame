@@ -15,7 +15,7 @@ from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH, Colors, GameState, sca
 from spacegame.engine.audio_manager import get_audio_manager
 from spacegame.engine.backgrounds import AnimatedBackground
 from spacegame.engine.easing import ease_in_out_quad
-from spacegame.engine.fonts import FONT_DISPLAY, FONT_HEADING, FONT_LG, FONT_MD, get_font
+from spacegame.engine.fonts import FONT_DISPLAY, FONT_HEADING, FONT_MD, get_font
 from spacegame.engine.particles import SCAN_PULSE, WARP_TRAIL, ParticlePool
 from spacegame.engine.procedural import generate_planet
 from spacegame.engine.sprites import AnimatedSprite, get_sprite_manager, res_scale
@@ -87,7 +87,7 @@ class GalaxyMapView(BaseView):
         self.next_state: Optional[GameState] = None
 
         # Fonts — role-based
-        self.system_font = get_font("header", FONT_LG)  # System names on map
+        self.system_font = get_font("dialogue", FONT_MD)  # System names on map
         self.info_font = get_font("stats", FONT_MD)  # Distance, danger, info
         self.title_font = get_font("machine", FONT_HEADING)  # Encounter alerts
 
@@ -763,17 +763,17 @@ class GalaxyMapView(BaseView):
             )
             screen.blit(heat_surf, (20, status_y + scale_y(22)))
 
-        # Draw travel lines from current system (animated dashes)
+        # Draw travel route line (only to selected or hovered destination)
         current_system = self.systems[self.player.current_system_id]
         current_pos = self._world_to_screen(
             current_system.coordinates.x, current_system.coordinates.y
         )
 
-        for system in self.systems.values():
-            if system.id == self.player.current_system_id:
-                continue
-            target_pos = self._world_to_screen(system.coordinates.x, system.coordinates.y)
-            route_color = self._get_danger_route_color(system.danger_level)
+        route_target_id = self.selected_system or self.hovered_system
+        if route_target_id and route_target_id != self.player.current_system_id:
+            target = self.systems[route_target_id]
+            target_pos = self._world_to_screen(target.coordinates.x, target.coordinates.y)
+            route_color = self._get_danger_route_color(target.danger_level)
             self._draw_dashed_line(screen, route_color, current_pos, target_pos)
 
         # Highlight active travel route
@@ -797,44 +797,51 @@ class GalaxyMapView(BaseView):
             else:
                 half_w = half_h = 12
 
-            # Pulsing glow ring on current system
+            # Soft halo radius based on portrait size
+            halo_r = max(half_w, half_h) + 6
+
+            # Pulsing glow ring on current system (circular)
             if system_id == self.player.current_system_id:
                 glow_alpha = int(120 + 80 * math.sin(self._glow_time * 3))
-                gw = half_w * 2 + 14
-                gh = half_h * 2 + 14
-                glow_surf = pygame.Surface((gw, gh), pygame.SRCALPHA)
-                pygame.draw.rect(
+                glow_r = halo_r + 4
+                glow_d = glow_r * 2 + 2
+                glow_surf = pygame.Surface((glow_d, glow_d), pygame.SRCALPHA)
+                pygame.draw.circle(
                     glow_surf,
                     (*Colors.TEXT_HIGHLIGHT, glow_alpha),
-                    (0, 0, gw, gh),
+                    (glow_r + 1, glow_r + 1),
+                    glow_r,
                     3,
-                    border_radius=4,
                 )
-                screen.blit(glow_surf, (screen_x - gw // 2, screen_y - gh // 2))
+                screen.blit(glow_surf, (screen_x - glow_r - 1, screen_y - glow_r - 1))
 
-            # Selected system highlight
+            # Selected system highlight (circular ring)
             if system_id == self.selected_system:
-                sw = half_w * 2 + 8
-                sh = half_h * 2 + 8
-                pygame.draw.rect(
-                    screen,
-                    Colors.TEXT,
-                    (screen_x - sw // 2, screen_y - sh // 2, sw, sh),
+                sel_r = halo_r + 2
+                sel_d = sel_r * 2 + 2
+                sel_surf = pygame.Surface((sel_d, sel_d), pygame.SRCALPHA)
+                pygame.draw.circle(
+                    sel_surf,
+                    (*Colors.TEXT, 180),
+                    (sel_r + 1, sel_r + 1),
+                    sel_r,
                     2,
-                    border_radius=3,
                 )
+                screen.blit(sel_surf, (screen_x - sel_r - 1, screen_y - sel_r - 1))
 
-            # Hovered system highlight
+            # Hovered system highlight (subtle outer glow)
             if system_id == self.hovered_system:
-                hw = half_w * 2 + 4
-                hh = half_h * 2 + 4
-                pygame.draw.rect(
-                    screen,
-                    (255, 255, 255),
-                    (screen_x - hw // 2, screen_y - hh // 2, hw, hh),
+                hov_r = halo_r + 1
+                hov_d = hov_r * 2 + 2
+                hov_surf = pygame.Surface((hov_d, hov_d), pygame.SRCALPHA)
+                pygame.draw.circle(
+                    hov_surf,
+                    (255, 255, 255, 60),
+                    (hov_r + 1, hov_r + 1),
+                    hov_r,
                     1,
-                    border_radius=2,
                 )
+                screen.blit(hov_surf, (screen_x - hov_r - 1, screen_y - hov_r - 1))
 
             # Draw system portrait or procedural planet thumbnail
             if planet_surf:
@@ -843,30 +850,28 @@ class GalaxyMapView(BaseView):
                 # Fallback colored circle
                 pygame.draw.circle(screen, (150, 150, 150), (screen_x, screen_y), 12)
 
-            # Faction-colored border (rectangle for portraits, ring for circles)
+            # Faction-colored halo (soft circular glow behind the portrait)
             faction_color = self._get_faction_color(system.faction)
             if faction_color:
-                border_w = half_w * 2 + 6
-                border_h = half_h * 2 + 6
-                border_surf = pygame.Surface((border_w, border_h), pygame.SRCALPHA)
-                if half_w > 20:  # Portrait — draw rectangle border
-                    pygame.draw.rect(
-                        border_surf,
-                        (*faction_color, 160),
-                        (0, 0, border_w, border_h),
-                        2,
-                        border_radius=3,
-                    )
-                else:  # Procedural — draw circle ring
-                    r = min(border_w, border_h) // 2
-                    pygame.draw.circle(
-                        border_surf,
-                        (*faction_color, 160),
-                        (border_w // 2, border_h // 2),
-                        r,
-                        2,
-                    )
-                screen.blit(border_surf, (screen_x - border_w // 2, screen_y - border_h // 2))
+                fc_r = halo_r
+                fc_d = fc_r * 2 + 2
+                fc_surf = pygame.Surface((fc_d, fc_d), pygame.SRCALPHA)
+                # Outer soft glow ring
+                pygame.draw.circle(
+                    fc_surf,
+                    (*faction_color, 50),
+                    (fc_r + 1, fc_r + 1),
+                    fc_r,
+                )
+                # Sharper inner ring
+                pygame.draw.circle(
+                    fc_surf,
+                    (*faction_color, 100),
+                    (fc_r + 1, fc_r + 1),
+                    fc_r,
+                    2,
+                )
+                screen.blit(fc_surf, (screen_x - fc_r - 1, screen_y - fc_r - 1))
 
             # Danger level indicator dot (top-right of portrait)
             danger_dot_color = self._get_danger_dot_color(system.danger_level)
@@ -925,9 +930,18 @@ class GalaxyMapView(BaseView):
                 )
                 screen.blit(marker_surf, (screen_x - half_w - 12, screen_y - 7))
 
-            # System name
-            name_surf = self.system_font.render(system.name, True, Colors.TEXT)
-            name_rect = name_surf.get_rect(center=(screen_x, screen_y - half_h - 8))
+            # System name (below portrait with text shadow for readability)
+            name_color = (
+                Colors.TEXT_HIGHLIGHT
+                if system_id == self.selected_system
+                else Colors.TEXT
+            )
+            name_surf = self.system_font.render(system.name, True, name_color)
+            name_y = screen_y + half_h + 4
+            name_rect = name_surf.get_rect(center=(screen_x, name_y))
+            # Dark shadow for contrast against starfield
+            shadow = self.system_font.render(system.name, True, (0, 0, 0))
+            screen.blit(shadow, (name_rect.x + 1, name_rect.y + 1))
             screen.blit(name_surf, name_rect)
 
         # Ship icon
