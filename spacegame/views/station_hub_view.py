@@ -630,8 +630,8 @@ class StationHubView(BaseView):
                 f'"{loc.flavor_text}"', self.detail_font, content_w - 24
             ) + 1  # +1 for gap
         line_h = self.detail_font.get_linesize()
-        panel_h = header_h + (desc_lines + flavor_lines) * line_h + 60  # 60 for padding + close btn
-        panel_h = max(180, min(panel_h, 350))  # Clamp to reasonable range
+        panel_h = header_h + (desc_lines + flavor_lines) * line_h + 70  # 70 for padding + close btn
+        panel_h = max(180, min(panel_h, 450))  # Allow taller panels for long flavor text
         panel_y = WINDOW_HEIGHT - panel_h - 60
         accent = _LOCATION_COLORS.get(loc.location_type, Colors.UI_BORDER)
 
