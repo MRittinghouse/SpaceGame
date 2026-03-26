@@ -257,159 +257,6 @@
       "legendary": false
     },
     {
-      "id": "standard_hardpoint_talon",
-      "name": "Talon Hardpoint",
-      "description": "Precision-engineered weapon platform with improved targeting.",
-      "slot_type": "weapon",
-      "min_size": "medium",
-      "manufacturer": "talon",
-      "provides": {
-        "slot_type": "weapon",
-        "weapon_size": "medium",
-        "accuracy_bonus": 5
-      },
-      "base_cost": 3000,
-      "mark": 1,
-      "weight": 3.5,
-      "legendary": false
-    },
-    {
-      "id": "turret_platform_rk",
-      "name": "Turret Platform",
-      "description": "Rotating weapon mount with wider firing arcs.",
-      "slot_type": "weapon",
-      "min_size": "medium",
-      "manufacturer": "reyes_kowalski",
-      "provides": {
-        "slot_type": "weapon",
-        "weapon_size": "medium",
-        "accuracy_bonus": 2
-      },
-      "base_cost": 4000,
-      "mark": 1,
-      "weight": 3.0,
-      "legendary": false
-    },
-    {
-      "id": "twin_link_talon",
-      "name": "Twin-Link Mount",
-      "description": "Paired barrels for rapid synchronized fire.",
-      "slot_type": "weapon",
-      "min_size": "medium",
-      "manufacturer": "talon",
-      "provides": {
-        "slot_type": "weapon",
-        "weapon_size": "medium",
-        "accuracy_bonus": 3
-      },
-      "base_cost": 5000,
-      "mark": 1,
-      "weight": 4.0,
-      "legendary": false
-    },
-    {
-      "id": "spinal_cannon_talon",
-      "name": "Spinal Cannon",
-      "description": "Ship-length weapon that runs along the centerline. Devastating but inflexible.",
-      "slot_type": "weapon",
-      "min_size": "large",
-      "manufacturer": "talon",
-      "provides": {
-        "slot_type": "weapon",
-        "weapon_size": "large",
-        "accuracy_bonus": 8
-      },
-      "base_cost": 10000,
-      "mark": 1,
-      "weight": 7.0,
-      "legendary": false
-    },
-    {
-      "id": "quad_mount_foundry",
-      "name": "Quad Mount",
-      "description": "Four barrels, one platform. Overwhelming firepower.",
-      "slot_type": "weapon",
-      "min_size": "large",
-      "manufacturer": "foundry",
-      "provides": {
-        "slot_type": "weapon",
-        "weapon_size": "large",
-        "accuracy_bonus": 2
-      },
-      "base_cost": 8000,
-      "mark": 1,
-      "weight": 6.0,
-      "legendary": false
-    },
-    {
-      "id": "concealed_bay_sable",
-      "name": "Concealed Bay",
-      "description": "Recessed weapon housing with minimal visual signature.",
-      "slot_type": "weapon",
-      "min_size": "medium",
-      "manufacturer": "sable",
-      "provides": {
-        "slot_type": "weapon",
-        "weapon_size": "medium",
-        "evasion_bonus": 1
-      },
-      "base_cost": 5000,
-      "mark": 1,
-      "weight": 3.5,
-      "legendary": false
-    },
-    {
-      "id": "point_defense_rk",
-      "name": "Point Defense",
-      "description": "Small rapid-fire mount for anti-missile work.",
-      "slot_type": "weapon",
-      "min_size": "small",
-      "manufacturer": "reyes_kowalski",
-      "provides": {
-        "slot_type": "weapon",
-        "weapon_size": "small",
-        "accuracy_bonus": 2
-      },
-      "base_cost": 2500,
-      "mark": 1,
-      "weight": 1.5,
-      "legendary": false
-    },
-    {
-      "id": "dorsal_turret_rk",
-      "name": "Dorsal Turret",
-      "description": "Elevated weapon position with excellent coverage.",
-      "slot_type": "weapon",
-      "min_size": "medium",
-      "manufacturer": "reyes_kowalski",
-      "provides": {
-        "slot_type": "weapon",
-        "weapon_size": "medium",
-        "accuracy_bonus": 4
-      },
-      "base_cost": 5500,
-      "mark": 1,
-      "weight": 4.0,
-      "legendary": false
-    },
-    {
-      "id": "rapid_fire_talon",
-      "name": "Rapid-Fire Mount",
-      "description": "Compact, high-cyclic weapon platform for sustained fire.",
-      "slot_type": "weapon",
-      "min_size": "small",
-      "manufacturer": "talon",
-      "provides": {
-        "slot_type": "weapon",
-        "weapon_size": "small",
-        "accuracy_bonus": 3
-      },
-      "base_cost": 3000,
-      "mark": 1,
-      "weight": 2.0,
-      "legendary": false
-    },
-    {
       "id": "basic_emitter_rk",
       "name": "Basic Emitter",
       "description": "Entry-level shield projection. Thin but better than bare hull.",
@@ -1387,23 +1234,6 @@
       "legendary": false
     },
     {
-      "id": "crimson_scrapyard_turret",
-      "name": "Scrapyard Turret",
-      "description": "Welded from three different weapon systems. Somehow, the combination works better than any original.",
-      "slot_type": "weapon",
-      "min_size": "medium",
-      "manufacturer": "salvage_rat",
-      "provides": {
-        "slot_type": "weapon",
-        "weapon_size": "medium",
-        "accuracy_bonus": 1
-      },
-      "base_cost": 2500,
-      "mark": 1,
-      "weight": 3.0,
-      "legendary": false
-    },
-    {
       "id": "stellaris_grand_hold",
       "name": "Grand Bazaar Hold",
       "description": "Climate-controlled luxury cargo bay with anti-vibration mounting. For goods that deserve better.",
@@ -1431,23 +1261,6 @@
       "base_cost": 8000,
       "mark": 1,
       "weight": 8.0,
-      "legendary": false
-    },
-    {
-      "id": "iron_depths_bore_mount",
-      "name": "Deep Bore Mount",
-      "description": "Heavy weapon housing reinforced for recoil in dense gravity fields. Steady as stone.",
-      "slot_type": "weapon",
-      "min_size": "large",
-      "manufacturer": "foundry",
-      "provides": {
-        "slot_type": "weapon",
-        "weapon_size": "large",
-        "accuracy_bonus": 3
-      },
-      "base_cost": 7000,
-      "mark": 1,
-      "weight": 7.0,
       "legendary": false
     },
     {
@@ -1484,25 +1297,6 @@
       "mark": 1,
       "weight": 3.5,
       "legendary": false
-    },
-    {
-      "id": "legendary_kings_repeater",
-      "name": "The King's Repeater",
-      "description": "Salvaged from the Corsair King's flagship. Twin-linked barrels with a hair-trigger cycling mechanism that sometimes fires twice before you release. The pirate fleets feared this weapon's staccato roar. Now it roars for you.",
-      "slot_type": "weapon",
-      "min_size": "large",
-      "manufacturer": "salvage_rat",
-      "provides": {
-        "slot_type": "weapon",
-        "weapon_size": "large",
-        "accuracy_bonus": 6,
-        "chain_fire_chance": 0.4,
-        "chain_fire_damage_mult": 0.5
-      },
-      "base_cost": 75000,
-      "mark": 1,
-      "weight": 7.0,
-      "legendary": true
     },
     {
       "id": "legendary_void_maw_reactor",
@@ -2059,14 +1853,14 @@
     {
       "id": "reinforced_plating",
       "name": "Reinforced Plating",
-      "description": "Forge-hardened hull plating bonded at the molecular level. +15 hull HP and absorbs the first hit in combat.",
+      "description": "Military-grade hull reinforcement. Dramatically increases structural integrity.",
       "slot_type": "defense",
       "min_size": "large",
       "manufacturer": "",
       "provides": {
         "hull_bonus": 15.0
       },
-      "base_cost": 0,
+      "base_cost": 20000,
       "mark": 1,
       "weight": 0.0,
       "legendary": false,
@@ -2088,12 +1882,12 @@
     {
       "id": "plasma_conduit",
       "name": "Plasma Conduit",
-      "description": "Crystalline plasma channel forged from purified resonance cores. Fires a devastating sustained plasma beam.",
+      "description": "Superheated plasma channeled through magnetic conduits. Devastating at close range.",
       "slot_type": "weapon",
       "min_size": "large",
       "manufacturer": "",
       "provides": {},
-      "base_cost": 0,
+      "base_cost": 28000,
       "mark": 1,
       "weight": 0.0,
       "legendary": false,
@@ -2115,14 +1909,14 @@
     {
       "id": "titan_plating",
       "name": "Titan Plating",
-      "description": "Stellarium-reinforced hull armor layered with plasma-fused conduits. Absorbs the first hit each fight and provides unmatched hull protection.",
+      "description": "The heaviest armor available outside of military contracts. Nearly impervious to kinetic weapons.",
       "slot_type": "defense",
       "min_size": "large",
       "manufacturer": "",
       "provides": {
         "hull_hp": 25.0
       },
-      "base_cost": 0,
+      "base_cost": 35000,
       "mark": 1,
       "weight": 0.0,
       "legendary": false,
@@ -2144,12 +1938,12 @@
     {
       "id": "nova_core",
       "name": "Nova Core",
-      "description": "Twin resonance chambers wrapped in stellarium. Unleashes a devastating nova blast that damages all enemies.",
+      "description": "Experimental weapon that channels stellar energy into a focused beam. The pinnacle of energy weapon technology.",
       "slot_type": "weapon",
       "min_size": "large",
       "manufacturer": "",
       "provides": {},
-      "base_cost": 0,
+      "base_cost": 45000,
       "mark": 1,
       "weight": 0.0,
       "legendary": false,
@@ -2171,14 +1965,14 @@
     {
       "id": "phantom_module",
       "name": "Phantom Module",
-      "description": "Active countermeasure suite forged from stolen sensor profiles. Spoofs scanner returns and increases evasion in combat.",
+      "description": "Experimental sensor-dampening technology. Reduces the ship's sensor profile significantly.",
       "slot_type": "utility",
       "min_size": "large",
       "manufacturer": "",
       "provides": {
         "evasion": 15.0
       },
-      "base_cost": 0,
+      "base_cost": 18000,
       "mark": 1,
       "weight": 0.0,
       "legendary": false,
@@ -2200,14 +1994,14 @@
     {
       "id": "shield_capacitor",
       "name": "Shield Capacitor Bank",
-      "description": "High-density capacitor array tuned to shield harmonics. Absorbs burst damage and accelerates shield regeneration.",
+      "description": "Banks of energy capacitors that boost shield regeneration rate under fire.",
       "slot_type": "defense",
       "min_size": "medium",
       "manufacturer": "",
       "provides": {
         "shield_regen": 10.0
       },
-      "base_cost": 0,
+      "base_cost": 12000,
       "mark": 1,
       "weight": 0.0,
       "legendary": false,
@@ -2234,7 +2028,7 @@
       "min_size": "large",
       "manufacturer": "",
       "provides": {},
-      "base_cost": 0,
+      "base_cost": 22000,
       "mark": 1,
       "weight": 0.0,
       "legendary": false,
@@ -3537,6 +3331,23 @@
         ],
         "energy_cost": 1
       }
+    },
+    {
+      "id": "legendary_kings_repeater",
+      "name": "The King's Repeater",
+      "description": "A legendary rapid-fire weapon system recovered from a superboss encounter. Chance to trigger chain fire on each hit.",
+      "slot_type": "weapon",
+      "min_size": "large",
+      "manufacturer": "",
+      "provides": {
+        "accuracy_bonus": 6,
+        "chain_fire_chance": 0.4,
+        "chain_fire_damage_mult": 0.5
+      },
+      "base_cost": 75000,
+      "mark": 1,
+      "weight": 0.0,
+      "legendary": true
     }
   ]
 }
