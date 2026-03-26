@@ -1499,7 +1499,7 @@
         "chain_fire_chance": 0.4,
         "chain_fire_damage_mult": 0.5
       },
-      "base_cost": 0,
+      "base_cost": 75000,
       "mark": 1,
       "weight": 7.0,
       "legendary": true
@@ -1517,7 +1517,7 @@
         "void_absorption_rate": 0.15,
         "void_release_available": true
       },
-      "base_cost": 0,
+      "base_cost": 60000,
       "mark": 1,
       "weight": 14.0,
       "legendary": true
@@ -1538,7 +1538,7 @@
         "heat_hardening_max": 5,
         "low_shield_regen_mult": 2.0
       },
-      "base_cost": 0,
+      "base_cost": 65000,
       "mark": 1,
       "weight": 12.0,
       "legendary": true
@@ -1556,7 +1556,7 @@
         "cooldown_reduction": 1,
         "overdrive_available": true
       },
-      "base_cost": 0,
+      "base_cost": 50000,
       "mark": 1,
       "weight": 10.0,
       "legendary": true
