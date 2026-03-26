@@ -591,8 +591,7 @@ class CombatEngine:
             # When shields are gone, prioritize shield restore over attack
             if enemy.current_shields <= 0 and defensive:
                 shield_restores = [
-                    m for m in defensive
-                    if any(e.type.value == "shield_restore" for e in m.effects)
+                    m for m in defensive if any(e.type.value == "shield_restore" for e in m.effects)
                 ]
                 if shield_restores:
                     return shield_restores[0]
@@ -674,8 +673,7 @@ class CombatEngine:
     def _is_debuff_move(move: CombatMove) -> bool:
         """Whether a move debuffs the enemy (energy drain, accuracy reduction, etc)."""
         return any(
-            e.type
-            in (EffectType.ENERGY_DRAIN, EffectType.ACCURACY_MOD, EffectType.SHIELD_DRAIN)
+            e.type in (EffectType.ENERGY_DRAIN, EffectType.ACCURACY_MOD, EffectType.SHIELD_DRAIN)
             and e.target == EffectTarget.ENEMY
             for e in move.effects
         )
