@@ -17,6 +17,8 @@ from spacegame.engine.particles import ParticleConfig, ParticlePool
 from spacegame.engine.sprites import AnimatedSprite, get_sprite_manager, res_scale
 from spacegame.models.player import Player
 from spacegame.models.ship import ShipType
+from spacegame.models.ship_build import WEIGHT_CLASSES, ComputedShipStats, ShipStatsComputer
+from spacegame.models.slot_definition import _SIZE_DISPLAY, _TYPE_DISPLAY, SlotDefinition
 from spacegame.models.upgrades import MARK_MULTIPLIERS, ShipUpgrade, ShipUpgradeManager
 from spacegame.views.base_view import BaseView
 from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
@@ -116,6 +118,14 @@ class ShipyardView(BaseView):
 
         self.particles = ParticlePool(100)
         self._glow_time = 0.0
+
+        # Loadout tab state
+        self._loadout_selected_slot_idx: Optional[int] = None
+        self._loadout_scroll: int = 0
+        self._loadout_stats: Optional[ComputedShipStats] = None
+        self._loadout_hover_slot_idx: Optional[int] = None
+        self._loadout_unequip_rect: Optional[pygame.Rect] = None
+        self._loadout_part_rects: list[tuple[str, pygame.Rect]] = []
 
         # Ship sprite (animated with procedural fallback)
         self._sprite_mgr = get_sprite_manager()
@@ -398,6 +408,9 @@ class ShipyardView(BaseView):
                 self.viewing = "loadout"
                 self.selected_upgrade_idx = 0
                 self._scroll_offset = 0
+                self._loadout_selected_slot_idx = None
+                self._loadout_scroll = 0
+                self._recompute_loadout_stats()
             elif event.ui_element == self.buy_button:
                 if self.viewing == "shop" and self._shop_sub_tab != "frames":
                     self._buy_selected_part()
@@ -411,6 +424,10 @@ class ShipyardView(BaseView):
                 self._buy_selected_ship()
 
         elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            # Loadout tab has its own click handler
+            if self.viewing == "loadout":
+                self._handle_loadout_click(event.pos)
+                return
             # Sub-tab click handling for shop view
             if self.viewing == "shop" and hasattr(self, "_sub_tab_rects"):
                 for sub_id, rect in self._sub_tab_rects.items():
@@ -434,7 +451,11 @@ class ShipyardView(BaseView):
                 self._handle_item_click(event.pos)
 
         elif event.type == pygame.MOUSEWHEEL:
-            if not self._tuning_mode:
+            if self.viewing == "loadout":
+                # Scroll the compatible parts list
+                self._loadout_scroll -= event.y * _SCROLL_SPEED
+                self._loadout_scroll = max(0, self._loadout_scroll)
+            elif not self._tuning_mode:
                 self._scroll_offset -= event.y * _SCROLL_SPEED
                 self._clamp_scroll()
 
@@ -728,7 +749,7 @@ class ShipyardView(BaseView):
             else:
                 self._render_parts_shop(screen)
         elif self.viewing == "loadout":
-            self._render_loadout_placeholder(screen)
+            self._render_loadout(screen)
         else:
             # Legacy fallback
             self._render_shop(screen)
@@ -1132,14 +1153,549 @@ class ShipyardView(BaseView):
         own_color = Colors.GREEN if owned_count > 0 else Colors.TEXT_SECONDARY
         screen.blit(self.small_font.render(own_text, True, own_color), (rx, ry))
 
-    def _render_loadout_placeholder(self, screen: pygame.Surface) -> None:
-        """Render placeholder for the Loadout tab."""
-        text = "Loadout: Assign parts to slots. Coming in Phase S4."
-        surf = self.info_font.render(text, True, Colors.TEXT_SECONDARY)
-        screen.blit(
-            surf,
-            surf.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2)),
+    # ========================================================================
+    # Loadout tab — grid + parts assignment
+    # ========================================================================
+
+    # Slot type letter abbreviations for grid rendering
+    _SLOT_TYPE_LETTERS: dict[str, str] = {
+        "weapon": "W",
+        "defense": "D",
+        "engine": "E",
+        "utility": "U",
+        "cargo": "C",
+        "crew_quarters": "Q",
+        "reactor": "R",
+    }
+
+    def _recompute_loadout_stats(self) -> None:
+        """Recompute ship stats from the current build for the loadout stats bar."""
+        build = self.player.ship.build
+        if not build:
+            self._loadout_stats = None
+            return
+        from spacegame.data_loader import get_data_loader
+
+        dl = get_data_loader()
+        materials = getattr(dl, "hull_materials", {})
+        slot_defs = getattr(dl, "slot_definitions", {})
+        parts_cat = getattr(dl, "ship_parts", {})
+        equipment = getattr(dl, "upgrades", {})
+        module_cat = getattr(dl, "ship_modules", {})
+        self._loadout_stats = ShipStatsComputer.compute(
+            build,
+            materials,
+            equipment=equipment,
+            module_catalog=module_cat,
+            slot_definitions=slot_defs,
+            parts_catalog=parts_cat,
         )
+
+    def _get_loadout_grid_params(self) -> Optional[dict]:
+        """Calculate grid rendering parameters for the loadout tab.
+
+        Returns:
+            Dict with grid_x, grid_y, cell_size, canvas_w, canvas_h, or None.
+        """
+        build = self.player.ship.build
+        if not build or not build.placed_slots:
+            return None
+
+        canvas_w = build.canvas_w
+        canvas_h = build.canvas_h
+
+        grid_area_x = scale_x(30)
+        grid_area_y = scale_y(170)
+        grid_area_w = scale_x(550)
+        grid_area_h = scale_y(380)
+
+        cell_w = grid_area_w // canvas_w
+        cell_h = grid_area_h // canvas_h
+        cell_size = min(cell_w, cell_h, scale_x(16))
+
+        # Center the grid within the available area
+        total_grid_w = canvas_w * cell_size
+        total_grid_h = canvas_h * cell_size
+        grid_x = grid_area_x + (grid_area_w - total_grid_w) // 2
+        grid_y = grid_area_y + (grid_area_h - total_grid_h) // 2
+
+        return {
+            "grid_x": grid_x,
+            "grid_y": grid_y,
+            "cell_size": cell_size,
+            "canvas_w": canvas_w,
+            "canvas_h": canvas_h,
+            "total_w": total_grid_w,
+            "total_h": total_grid_h,
+        }
+
+    def _get_slot_def_for_placed(self, placed_slot: object) -> Optional[SlotDefinition]:
+        """Look up the SlotDefinition for a PlacedSlot."""
+        from spacegame.data_loader import get_data_loader
+
+        dl = get_data_loader()
+        return dl.slot_definitions.get(placed_slot.slot_def_id)
+
+    def _slot_screen_rect(
+        self, placed_slot: object, slot_def: SlotDefinition, gp: dict
+    ) -> pygame.Rect:
+        """Get the screen-space rect for a placed slot on the grid."""
+        sx = gp["grid_x"] + placed_slot.x * gp["cell_size"]
+        sy = gp["grid_y"] + placed_slot.y * gp["cell_size"]
+        sw = slot_def.footprint_w * gp["cell_size"]
+        sh = slot_def.footprint_h * gp["cell_size"]
+        return pygame.Rect(sx, sy, sw, sh)
+
+    def _render_loadout(self, screen: pygame.Surface) -> None:
+        """Render the full Loadout tab: grid + parts panel + stats bar."""
+        build = self.player.ship.build
+        if not build or not build.placed_slots:
+            text = "No ship build with slots. Visit Drydock first."
+            surf = self.info_font.render(text, True, Colors.TEXT_SECONDARY)
+            screen.blit(surf, surf.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2)))
+            return
+
+        gp = self._get_loadout_grid_params()
+        if not gp:
+            return
+
+        self._render_loadout_grid(screen, build, gp)
+        self._render_loadout_parts_panel(screen, build, gp)
+        self._render_loadout_stats_bar(screen)
+
+    def _render_loadout_grid(self, screen: pygame.Surface, build: object, gp: dict) -> None:
+        """Render the ship grid with hull pixels and clickable slots."""
+        from spacegame.data_loader import get_data_loader
+
+        dl = get_data_loader()
+        materials = getattr(dl, "hull_materials", {})
+        cell = gp["cell_size"]
+        gx, gy = gp["grid_x"], gp["grid_y"]
+
+        # Grid background
+        grid_bg = pygame.Rect(gx - 2, gy - 2, gp["total_w"] + 4, gp["total_h"] + 4)
+        pygame.draw.rect(screen, (10, 12, 22), grid_bg, border_radius=4)
+        pygame.draw.rect(screen, (35, 40, 55), grid_bg, 1, border_radius=4)
+
+        # Hull pixels
+        for pixel in build.pixels:
+            mat = materials.get(pixel.material_id)
+            color = mat.color_primary if mat else (60, 60, 60)
+            px = gx + pixel.x * cell
+            py = gy + pixel.y * cell
+            pygame.draw.rect(screen, color, (px, py, cell - 1, cell - 1))
+
+        # Placed slots
+        mouse_pos = pygame.mouse.get_pos()
+        for idx, ps in enumerate(build.placed_slots):
+            slot_def = self._get_slot_def_for_placed(ps)
+            if not slot_def:
+                continue
+
+            rect = self._slot_screen_rect(ps, slot_def, gp)
+            is_selected = idx == self._loadout_selected_slot_idx
+            is_hovered = rect.collidepoint(mouse_pos) and not is_selected
+
+            # Slot fill — dim version of slot color
+            base_color = slot_def.color
+            if ps.equipped_part_id:
+                fill_color = (
+                    min(255, base_color[0] + 30),
+                    min(255, base_color[1] + 30),
+                    min(255, base_color[2] + 30),
+                )
+            else:
+                fill_color = (
+                    base_color[0] // 3,
+                    base_color[1] // 3,
+                    base_color[2] // 3,
+                )
+
+            slot_surf = pygame.Surface((rect.width, rect.height), pygame.SRCALPHA)
+            slot_surf.fill((*fill_color, 160))
+            screen.blit(slot_surf, rect.topleft)
+
+            # Border
+            if is_selected:
+                pygame.draw.rect(screen, (255, 220, 80), rect, 2, border_radius=2)
+            elif is_hovered:
+                pygame.draw.rect(screen, (180, 180, 200), rect, 1, border_radius=2)
+            else:
+                border_c = base_color if ps.equipped_part_id else (60, 65, 80)
+                pygame.draw.rect(screen, border_c, rect, 1, border_radius=2)
+
+            # Type letter centered in slot
+            letter = self._SLOT_TYPE_LETTERS.get(slot_def.slot_type, "?")
+            letter_surf = self.small_font.render(letter, True, Colors.TEXT)
+            screen.blit(letter_surf, letter_surf.get_rect(center=rect.center))
+
+            # Equipped indicator — small dot if part is installed
+            if ps.equipped_part_id:
+                dot_x = rect.right - 5
+                dot_y = rect.top + 5
+                pygame.draw.circle(screen, Colors.GREEN, (dot_x, dot_y), 3)
+
+    def _render_loadout_parts_panel(self, screen: pygame.Surface, build: object, gp: dict) -> None:
+        """Render the right-side panel: slot info + compatible parts list."""
+        panel_x = WINDOW_WIDTH // 2 + scale_x(20)
+        panel_w = WINDOW_WIDTH // 2 - scale_x(40)
+        panel_y = scale_y(170)
+        panel_h = scale_y(380)
+
+        # Panel background
+        panel_surf = pygame.Surface((panel_w, panel_h), pygame.SRCALPHA)
+        panel_surf.fill((14, 18, 32, 220))
+        screen.blit(panel_surf, (panel_x, panel_y))
+        pygame.draw.rect(
+            screen, (45, 52, 72), (panel_x, panel_y, panel_w, panel_h), 1, border_radius=6
+        )
+
+        if self._loadout_selected_slot_idx is None:
+            hint = "Click a slot on the ship to assign parts."
+            hint_surf = self.info_font.render(hint, True, Colors.TEXT_SECONDARY)
+            screen.blit(
+                hint_surf,
+                hint_surf.get_rect(center=(panel_x + panel_w // 2, panel_y + panel_h // 2)),
+            )
+            return
+
+        # Validate selected index
+        if self._loadout_selected_slot_idx >= len(build.placed_slots):
+            self._loadout_selected_slot_idx = None
+            return
+
+        ps = build.placed_slots[self._loadout_selected_slot_idx]
+        slot_def = self._get_slot_def_for_placed(ps)
+        if not slot_def:
+            return
+
+        from spacegame.data_loader import get_data_loader
+
+        dl = get_data_loader()
+        pad = scale_x(12)
+        cx = panel_x + pad
+        cy = panel_y + pad
+        content_w = panel_w - pad * 2
+
+        # --- Slot Info Header ---
+        type_name = _TYPE_DISPLAY.get(slot_def.slot_type, slot_def.slot_type.title())
+        size_label = _SIZE_DISPLAY.get(slot_def.size, slot_def.size[0].upper())
+        header_text = f"{type_name} Slot ({size_label})"
+        header_surf = self.info_font.render(header_text, True, Colors.TEXT_HIGHLIGHT)
+        screen.blit(header_surf, (cx, cy))
+        cy += header_surf.get_height() + scale_y(6)
+
+        # Current equipment
+        if ps.equipped_part_id:
+            part = dl.ship_parts.get(ps.equipped_part_id)
+            equip_name = part.name if part else ps.equipped_part_id
+            equip_surf = self.small_font.render(f"Equipped: {equip_name}", True, Colors.GREEN)
+            screen.blit(equip_surf, (cx, cy))
+            cy += equip_surf.get_height() + scale_y(4)
+
+            # Key stat of equipped part
+            if part and part.provides:
+                top_stat = next(iter(part.provides.items()), None)
+                if top_stat:
+                    stat_name = top_stat[0].replace("_", " ").title()
+                    stat_surf = self.small_font.render(
+                        f"  {stat_name}: {top_stat[1]}", True, Colors.TEXT_SECONDARY
+                    )
+                    screen.blit(stat_surf, (cx, cy))
+                    cy += stat_surf.get_height() + scale_y(4)
+
+            # Unequip button area
+            unequip_rect = pygame.Rect(cx, cy, scale_x(100), scale_y(22))
+            pygame.draw.rect(screen, (80, 40, 40), unequip_rect, border_radius=3)
+            pygame.draw.rect(screen, (180, 80, 80), unequip_rect, 1, border_radius=3)
+            unequip_text = self.small_font.render("Unequip", True, Colors.TEXT)
+            screen.blit(
+                unequip_text,
+                unequip_text.get_rect(center=unequip_rect.center),
+            )
+            # Store rect for click detection
+            self._loadout_unequip_rect = unequip_rect
+            cy += unequip_rect.height + scale_y(8)
+        else:
+            empty_surf = self.small_font.render("Empty", True, Colors.TEXT_SECONDARY)
+            screen.blit(empty_surf, (cx, cy))
+            cy += empty_surf.get_height() + scale_y(6)
+            self._loadout_unequip_rect = None
+
+        # --- Separator ---
+        pygame.draw.line(screen, (40, 48, 65), (cx, cy), (cx + content_w, cy), 1)
+        cy += scale_y(6)
+
+        # --- Compatible Parts Header ---
+        compat_header = self.small_font.render("COMPATIBLE PARTS", True, Colors.TEXT_HIGHLIGHT)
+        screen.blit(compat_header, (cx, cy))
+        cy += compat_header.get_height() + scale_y(6)
+
+        # --- Build compatible parts list ---
+        compatible = self._get_compatible_parts(slot_def)
+        if not compatible:
+            none_surf = self.small_font.render(
+                "No compatible parts in inventory.", True, Colors.TEXT_SECONDARY
+            )
+            screen.blit(none_surf, (cx, cy))
+            self._loadout_part_rects = []
+            return
+
+        # Scrollable parts list
+        list_top = cy
+        list_bottom = panel_y + panel_h - pad
+        visible_h = list_bottom - list_top
+        entry_h = scale_y(36)
+
+        # Clamp scroll
+        max_scroll = max(0, len(compatible) * entry_h - visible_h)
+        self._loadout_scroll = max(0, min(self._loadout_scroll, max_scroll))
+
+        clip_rect = pygame.Rect(cx - 2, list_top, content_w + 4, visible_h)
+        old_clip = screen.get_clip()
+        screen.set_clip(clip_rect)
+
+        self._loadout_part_rects = []
+        for i, part in enumerate(compatible):
+            ey = list_top + i * entry_h - self._loadout_scroll
+            if ey + entry_h < list_top or ey > list_bottom:
+                self._loadout_part_rects.append((part.id, pygame.Rect(0, 0, 0, 0)))
+                continue
+
+            entry_rect = pygame.Rect(cx, ey, content_w, entry_h - 2)
+            self._loadout_part_rects.append((part.id, entry_rect))
+
+            # Entry background
+            mouse_pos = pygame.mouse.get_pos()
+            is_hovered = entry_rect.collidepoint(mouse_pos)
+            bg_color = (30, 38, 55, 200) if is_hovered else (20, 25, 40, 180)
+            entry_surf = pygame.Surface((entry_rect.width, entry_rect.height), pygame.SRCALPHA)
+            entry_surf.fill(bg_color)
+            screen.blit(entry_surf, entry_rect.topleft)
+            pygame.draw.rect(
+                screen,
+                (60, 70, 90) if is_hovered else (40, 48, 65),
+                entry_rect,
+                1,
+                border_radius=3,
+            )
+
+            # Size badge
+            badge_label = self._SIZE_BADGE_LABELS.get(part.min_size, "?")
+            badge_color = self._SIZE_BADGE_COLORS.get(part.min_size, (120, 120, 120))
+            badge_w = scale_x(18)
+            badge_h = scale_y(14)
+            badge_x = entry_rect.x + 4
+            badge_y = entry_rect.y + 3
+            pygame.draw.rect(
+                screen,
+                badge_color,
+                (badge_x, badge_y, badge_w, badge_h),
+                border_radius=2,
+            )
+            badge_surf = self.small_font.render(badge_label, True, (0, 0, 0))
+            screen.blit(
+                badge_surf,
+                badge_surf.get_rect(center=(badge_x + badge_w // 2, badge_y + badge_h // 2)),
+            )
+
+            # Part name
+            name_x = badge_x + badge_w + 6
+            name_surf = self.small_font.render(part.name, True, Colors.TEXT)
+            screen.blit(name_surf, (name_x, entry_rect.y + 2))
+
+            # Key stat + owned count on second line
+            owned = self.player.get_part_count(part.id)
+            stat_text = ""
+            if part.provides:
+                top_stat = next(iter(part.provides.items()), None)
+                if top_stat:
+                    stat_name = top_stat[0].replace("_", " ").title()
+                    stat_text = f"{stat_name}: {top_stat[1]}"
+            stat_line = f"{stat_text}  |  x{owned}" if stat_text else f"x{owned}"
+            stat_surf = self.small_font.render(stat_line, True, Colors.TEXT_SECONDARY)
+            screen.blit(stat_surf, (name_x, entry_rect.y + 17))
+
+        screen.set_clip(old_clip)
+
+        # Scrollbar for parts list
+        if max_scroll > 0:
+            bar_x = panel_x + panel_w - scale_x(8)
+            bar_total_h = visible_h
+            bar_h = max(15, int(bar_total_h * visible_h / (len(compatible) * entry_h)))
+            bar_y = list_top + int(
+                self._loadout_scroll / max(1, max_scroll) * (bar_total_h - bar_h)
+            )
+            pygame.draw.rect(
+                screen,
+                (40, 45, 60),
+                (bar_x, list_top, 5, bar_total_h),
+                border_radius=2,
+            )
+            pygame.draw.rect(
+                screen,
+                (80, 90, 120),
+                (bar_x, bar_y, 5, bar_h),
+                border_radius=2,
+            )
+
+    def _get_compatible_parts(self, slot_def: SlotDefinition) -> list:
+        """Get parts from inventory compatible with the given slot definition."""
+        from spacegame.data_loader import get_data_loader
+
+        dl = get_data_loader()
+        compatible = []
+        for part_id, count in self.player.parts_inventory.items():
+            if count <= 0:
+                continue
+            part = dl.ship_parts.get(part_id)
+            if not part:
+                continue
+            if part.slot_type != slot_def.slot_type:
+                continue
+            if not part.fits_in_slot_size(slot_def.size):
+                continue
+            compatible.append(part)
+        # Sort by base_cost ascending
+        compatible.sort(key=lambda p: p.base_cost)
+        return compatible
+
+    def _render_loadout_stats_bar(self, screen: pygame.Surface) -> None:
+        """Render the horizontal stats summary bar below the grid."""
+        stats = self._loadout_stats
+        if not stats:
+            return
+
+        bar_y = WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - scale_y(60)
+        bar_x = scale_x(30)
+        bar_w = WINDOW_WIDTH - scale_x(60)
+
+        # Background
+        bar_rect = pygame.Rect(bar_x, bar_y, bar_w, scale_y(32))
+        bar_surf = pygame.Surface((bar_rect.width, bar_rect.height), pygame.SRCALPHA)
+        bar_surf.fill((14, 18, 32, 220))
+        screen.blit(bar_surf, bar_rect.topleft)
+        pygame.draw.rect(screen, (45, 52, 72), bar_rect, 1, border_radius=4)
+
+        stat_items = [
+            ("Hull", stats.hull),
+            ("Shields", stats.shields),
+            ("Armor", stats.armor),
+            ("Speed", stats.speed),
+            ("Fuel", stats.fuel_capacity),
+            ("Cargo", stats.cargo_capacity),
+            ("Power", stats.power_max),
+        ]
+
+        text_parts = "  |  ".join(f"{name}: {val}" for name, val in stat_items)
+        stat_surf = self.small_font.render(text_parts, True, Colors.TEXT)
+        screen.blit(stat_surf, stat_surf.get_rect(center=bar_rect.center))
+
+    def _handle_loadout_click(self, pos: tuple) -> None:
+        """Handle mouse click in loadout tab — grid slots, parts list, unequip."""
+        build = self.player.ship.build
+        if not build or not build.placed_slots:
+            return
+
+        gp = self._get_loadout_grid_params()
+        if not gp:
+            return
+
+        # Check unequip button
+        if (
+            hasattr(self, "_loadout_unequip_rect")
+            and self._loadout_unequip_rect
+            and self._loadout_unequip_rect.collidepoint(pos)
+        ):
+            self._loadout_unequip()
+            return
+
+        # Check parts list clicks
+        if hasattr(self, "_loadout_part_rects"):
+            for part_id, rect in self._loadout_part_rects:
+                if rect.width > 0 and rect.collidepoint(pos):
+                    self._loadout_equip(part_id)
+                    return
+
+        # Check grid slot clicks
+        for idx, ps in enumerate(build.placed_slots):
+            slot_def = self._get_slot_def_for_placed(ps)
+            if not slot_def:
+                continue
+            rect = self._slot_screen_rect(ps, slot_def, gp)
+            if rect.collidepoint(pos):
+                self._loadout_selected_slot_idx = idx
+                self._loadout_scroll = 0
+                return
+
+    def _loadout_equip(self, part_id: str) -> None:
+        """Equip a part from inventory into the selected slot."""
+        build = self.player.ship.build
+        if (
+            not build
+            or self._loadout_selected_slot_idx is None
+            or self._loadout_selected_slot_idx >= len(build.placed_slots)
+        ):
+            return
+
+        ps = build.placed_slots[self._loadout_selected_slot_idx]
+
+        # If slot already has a part, unequip it first
+        if ps.equipped_part_id:
+            self.player.add_part(ps.equipped_part_id)
+
+        # Remove part from inventory and equip
+        success, msg = self.player.remove_part(part_id)
+        if not success:
+            self._show_message(f"Cannot equip: {msg}")
+            return
+
+        ps.equipped_part_id = part_id
+        self.player.ship.set_build(build)
+        self._recompute_loadout_stats()
+
+        from spacegame.data_loader import get_data_loader
+
+        dl = get_data_loader()
+        part = dl.ship_parts.get(part_id)
+        part_name = part.name if part else part_id
+        self._show_message(f"Equipped {part_name}")
+
+        try:
+            get_audio_manager().play_sfx("ui_confirm")
+        except Exception:
+            pass
+
+    def _loadout_unequip(self) -> None:
+        """Unequip the part from the selected slot back to inventory."""
+        build = self.player.ship.build
+        if (
+            not build
+            or self._loadout_selected_slot_idx is None
+            or self._loadout_selected_slot_idx >= len(build.placed_slots)
+        ):
+            return
+
+        ps = build.placed_slots[self._loadout_selected_slot_idx]
+        if not ps.equipped_part_id:
+            return
+
+        from spacegame.data_loader import get_data_loader
+
+        dl = get_data_loader()
+        part = dl.ship_parts.get(ps.equipped_part_id)
+        part_name = part.name if part else ps.equipped_part_id
+
+        self.player.add_part(ps.equipped_part_id)
+        ps.equipped_part_id = None
+        self.player.ship.set_build(build)
+        self._recompute_loadout_stats()
+        self._show_message(f"Unequipped {part_name}")
+
+        try:
+            get_audio_manager().play_sfx("ui_confirm")
+        except Exception:
+            pass
 
     def _render_tuning_overlay(self, screen: pygame.Surface) -> None:
         """Draw the tuning selection overlay."""
@@ -1356,7 +1912,6 @@ class ShipyardView(BaseView):
 
         # Canvas visualization
         wc_name = self._CLASS_TO_WEIGHT.get(ship_type.ship_class, "small")
-        from spacegame.models.ship_build import WEIGHT_CLASSES
 
         wc = WEIGHT_CLASSES.get(wc_name, WEIGHT_CLASSES["small"])
         canvas_w = wc.get("canvas_w", 32)
