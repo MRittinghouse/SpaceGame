@@ -2650,6 +2650,7 @@ class ShipBuilderView(BaseView):
 
         # Count slots or modules by category
         slot_defs = getattr(self.data_loader, "slot_definitions", {})
+        catalog = self._get_module_catalog()
         cat_counts: dict[str, int] = {}
 
         if self.build.placed_slots:
