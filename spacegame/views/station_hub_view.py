@@ -620,7 +620,18 @@ class StationHubView(BaseView):
         if not loc:
             return
 
-        panel_h = 220
+        # Pre-calculate content height for dynamic panel sizing
+        content_w = DETAIL_PANEL_W - 40
+        header_h = 52  # Title + divider
+        desc_lines = self._count_wrapped_lines(loc.description, self.detail_font, content_w)
+        flavor_lines = 0
+        if loc.flavor_text:
+            flavor_lines = self._count_wrapped_lines(
+                f'"{loc.flavor_text}"', self.detail_font, content_w - 24
+            ) + 1  # +1 for gap
+        line_h = self.detail_font.get_linesize()
+        panel_h = header_h + (desc_lines + flavor_lines) * line_h + 60  # 60 for padding + close btn
+        panel_h = max(180, min(panel_h, 350))  # Clamp to reasonable range
         panel_y = WINDOW_HEIGHT - panel_h - 60
         accent = _LOCATION_COLORS.get(loc.location_type, Colors.UI_BORDER)
 
@@ -715,6 +726,22 @@ class StationHubView(BaseView):
             screen.blit(surf, (x, line_y))
             line_y += font.get_linesize()
         return line_y
+
+    def _count_wrapped_lines(self, text: str, font: pygame.font.Font, max_width: int) -> int:
+        """Count how many lines word-wrapped text will take."""
+        words = text.split()
+        line = ""
+        count = 0
+        for word in words:
+            test = f"{line} {word}".strip()
+            if font.size(test)[0] > max_width and line:
+                count += 1
+                line = word
+            else:
+                line = test
+        if line:
+            count += 1
+        return max(1, count)
 
     def _render_chatter(self, screen: pygame.Surface) -> None:
         """Render station chatter in a card at the bottom of the screen."""
