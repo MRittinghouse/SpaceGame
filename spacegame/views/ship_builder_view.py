@@ -3754,7 +3754,7 @@ class ShipBuilderView(BaseView):
         pygame.draw.rect(screen, Colors.TEXT_HIGHLIGHT, panel, 2, border_radius=8)
 
         # Title
-        title = self.info_font.render("Name Your Ship", True, Colors.TEXT_HIGHLIGHT)
+        title = self.small_font.render("Name Your Ship", True, Colors.TEXT_HIGHLIGHT)
         screen.blit(title, title.get_rect(centerx=cx, top=panel.top + scale_y(16)))
 
         # Text input field
@@ -3775,7 +3775,7 @@ class ShipBuilderView(BaseView):
         show_cursor = int(self._naming_cursor_timer * 2) % 2 == 0
         if show_cursor:
             display_text += "|"
-        text_surf = self.info_font.render(display_text, True, Colors.TEXT_PRIMARY)
+        text_surf = self.small_font.render(display_text, True, Colors.TEXT_PRIMARY)
         screen.blit(
             text_surf, (field_x + scale_x(8), field_y + (field_h - text_surf.get_height()) // 2)
         )

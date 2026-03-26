@@ -249,6 +249,10 @@
       "file": "sfx/builder/place_cargo.wav",
       "volume": 0.7
     },
+    "build_place_crew_quarters": {
+      "file": "sfx/builder/place_crew.wav",
+      "volume": 0.7
+    },
     "build_place_crew": {
       "file": "sfx/builder/place_crew.wav",
       "volume": 0.7
