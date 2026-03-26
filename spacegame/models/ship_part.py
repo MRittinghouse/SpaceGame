@@ -6,6 +6,7 @@ size requirement (a medium part fits medium or large slots, not small).
 """
 
 from dataclasses import dataclass, field
+from typing import Optional
 
 from spacegame.models.slot_definition import SIZE_ORDER
 
@@ -26,6 +27,7 @@ class ShipPart:
         mark: Quality tier (1=Mk1, 2=Mk2, 3=Mk3).
         weight: Additional weight when equipped (on top of slot weight).
         legendary: Whether this is a legendary boss-drop part.
+        combat_move: Combat action when equipped (weapons/defense).
     """
 
     id: str
@@ -39,6 +41,7 @@ class ShipPart:
     mark: int = 1
     weight: float = 0.0
     legendary: bool = False
+    combat_move: Optional[dict] = None
 
     def fits_in_slot_size(self, slot_size: str) -> bool:
         """Check if this part fits in a slot of the given size.
@@ -62,6 +65,7 @@ class ShipPart:
             "mark": self.mark,
             "weight": self.weight,
             "legendary": self.legendary,
+            "combat_move": dict(self.combat_move) if self.combat_move else None,
         }
 
     @classmethod
@@ -79,4 +83,5 @@ class ShipPart:
             mark=data.get("mark", 1),
             weight=data.get("weight", 0.0),
             legendary=data.get("legendary", False),
+            combat_move=data.get("combat_move"),
         )

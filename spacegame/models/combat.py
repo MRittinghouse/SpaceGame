@@ -615,12 +615,95 @@ def build_player_combat_state(
         if player_level < EARLY_GAME_LEVEL:
             flee_bonus += EARLY_GAME_FLEE_BONUS
 
-        # Initialize module combat states if build has modules
+        # Initialize combat states and extract equipment moves.
+        # Two paths: new slot+part model, or legacy module model.
         module_states_list = []
         module_catalog_ref = {}
         build_ref = None
         legendary_state = None
-        if ship.build and ship.build.modules:
+        equipment_moves_list = []
+
+        # === NEW: Slot+Part path ===
+        if ship.build and ship.build.placed_slots:
+            try:
+                from spacegame.data_loader import get_data_loader
+                from spacegame.models.module_combat import (
+                    get_slot_equipment_moves,
+                    init_slot_combat_states,
+                )
+
+                dl = get_data_loader()
+                slot_defs = getattr(dl, "slot_definitions", {})
+                parts_cat = getattr(dl, "ship_parts", {})
+
+                module_states_list = init_slot_combat_states(ship.build, slot_defs)
+                build_ref = ship.build
+
+                # Extract combat moves from equipped parts
+                slot_moves = get_slot_equipment_moves(ship.build, slot_defs, parts_cat)
+                for sm in slot_moves:
+                    cm = sm.get("combat_move")
+                    if cm:
+                        move = CombatMove.from_dict(cm)
+                        mark = sm.get("mark", 1)
+                        if mark > 1:
+                            mark_mult = {1: 1.0, 2: 1.25, 3: 1.50}.get(mark, 1.0)
+                            for eff in move.effects:
+                                if eff.type == EffectType.DAMAGE:
+                                    eff.value = eff.value * mark_mult
+                        equipment_moves_list.append(move)
+            except Exception:
+                pass
+
+            # Legendary effects from equipped parts
+            try:
+                for ps in ship.build.placed_slots:
+                    if ps.equipped_part_id:
+                        part = parts_cat.get(ps.equipped_part_id)
+                        if part and part.provides:
+                            # Check for legendary ability keys in provides
+                            if any(
+                                k in part.provides
+                                for k in (
+                                    "chain_fire_chance",
+                                    "void_absorption_rate",
+                                    "heat_hardening_per_hit",
+                                    "cooldown_reduction",
+                                    "phase_shift_interval",
+                                )
+                            ):
+                                from spacegame.models.legendary_effects import (
+                                    LegendaryState,
+                                )
+
+                                if legendary_state is None:
+                                    legendary_state = LegendaryState()
+                                p = part.provides
+                                legendary_state.chain_fire_chance = max(
+                                    legendary_state.chain_fire_chance,
+                                    p.get("chain_fire_chance", 0),
+                                )
+                                legendary_state.void_absorption_rate = max(
+                                    legendary_state.void_absorption_rate,
+                                    p.get("void_absorption_rate", 0),
+                                )
+                                legendary_state.heat_hardening_per_hit = max(
+                                    legendary_state.heat_hardening_per_hit,
+                                    p.get("heat_hardening_per_hit", 0),
+                                )
+                                legendary_state.cooldown_reduction = max(
+                                    legendary_state.cooldown_reduction,
+                                    p.get("cooldown_reduction", 0),
+                                )
+                                legendary_state.phase_shift_interval = max(
+                                    legendary_state.phase_shift_interval,
+                                    p.get("phase_shift_interval", 0),
+                                )
+            except Exception:
+                pass
+
+        # === LEGACY: Module path ===
+        elif ship.build and ship.build.modules:
             try:
                 from spacegame.data_loader import get_data_loader
                 from spacegame.models.module_combat import init_module_combat_states
@@ -639,10 +722,7 @@ def build_player_combat_state(
             except (ImportError, Exception):
                 pass
 
-        # Extract combat moves from module-installed equipment (unified system)
-        # Falls back to cs.combat_moves (old DesignatedSlot path) if no modules have equipment
-        equipment_moves_list = []
-        if ship.build and ship.build.modules:
+            # Extract combat moves from module-installed equipment
             try:
                 from spacegame.data_loader import get_data_loader
                 from spacegame.models.ship_module import get_module_equipment_slots
@@ -655,7 +735,6 @@ def build_player_combat_state(
                         upgrade = all_upgrades[uid]
                         if hasattr(upgrade, "combat_move") and upgrade.combat_move:
                             move = CombatMove.from_dict(upgrade.combat_move)
-                            # Apply mark multiplier to damage effects
                             mark = slot.get("upgrade_mark", 1)
                             if mark > 1:
                                 mark_mult = {1: 1.0, 2: 1.25, 3: 1.50}.get(mark, 1.0)
@@ -665,7 +744,8 @@ def build_player_combat_state(
                             equipment_moves_list.append(move)
             except Exception:
                 pass
-        # Fallback: use old system's combat_moves if no module equipment found
+
+        # Fallback: use old system's combat_moves if no equipment found
         if not equipment_moves_list:
             equipment_moves_list = cs.combat_moves
 

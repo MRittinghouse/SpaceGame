@@ -74,6 +74,96 @@ def init_module_combat_states(
     return states
 
 
+# HP per grid cell for slot-based builds (slots use footprint area instead of pixel count)
+HP_PER_SLOT_CELL = 8
+
+
+def init_slot_combat_states(
+    build: ShipBuild,
+    slot_definitions: dict,
+) -> list[ModuleCombatState]:
+    """Initialize combat states for all placed slots in a build.
+
+    Produces the same ModuleCombatState objects as init_module_combat_states(),
+    allowing the downstream combat engine to work identically.
+
+    Each slot's max HP = footprint_area * HP_PER_SLOT_CELL.
+    The slot_def's slot_type maps to ModuleCombatState.category for
+    disable effects (weapon → weapon offline, defense → shield penalty, etc).
+
+    Args:
+        build: The ship build containing placed slots.
+        slot_definitions: SlotDefinition catalog keyed by ID.
+
+    Returns:
+        List of ModuleCombatState, one per placed slot.
+    """
+    states: list[ModuleCombatState] = []
+    for i, placed_slot in enumerate(build.placed_slots):
+        slot_def = slot_definitions.get(placed_slot.slot_def_id)
+        if not slot_def:
+            continue
+        area = slot_def.footprint_w * slot_def.footprint_h
+        max_hp = area * HP_PER_SLOT_CELL
+        # Map slot_type to combat category for disable effects
+        # "defense" → "shield" for backward compat with existing disable logic
+        category = slot_def.slot_type
+        if category == "defense":
+            category = "shield"
+        states.append(
+            ModuleCombatState(
+                module_id=placed_slot.slot_def_id,
+                placed_index=i,
+                max_hp=max_hp,
+                current_hp=max_hp,
+                disabled=False,
+                category=category,
+            )
+        )
+    return states
+
+
+def get_slot_equipment_moves(
+    build: ShipBuild,
+    slot_definitions: dict,
+    parts_catalog: dict,
+) -> list[dict]:
+    """Extract equipment slot info from placed slots for combat initialization.
+
+    Produces the same format as get_module_equipment_slots() from ship_module.py,
+    allowing build_player_combat_state() to use either path.
+
+    Args:
+        build: Ship build with placed_slots.
+        slot_definitions: SlotDefinition catalog.
+        parts_catalog: ShipPart catalog.
+
+    Returns:
+        List of dicts with keys: slot_idx, slot_type, equipped_part_id,
+        combat_move (raw dict), mark.
+    """
+    result: list[dict] = []
+    for i, placed_slot in enumerate(build.placed_slots):
+        if not placed_slot.equipped_part_id:
+            continue
+        slot_def = slot_definitions.get(placed_slot.slot_def_id)
+        part = parts_catalog.get(placed_slot.equipped_part_id)
+        if not slot_def or not part:
+            continue
+        if not part.combat_move:
+            continue
+        result.append(
+            {
+                "slot_idx": i,
+                "slot_type": slot_def.slot_type,
+                "equipped_part_id": placed_slot.equipped_part_id,
+                "combat_move": part.combat_move,
+                "mark": part.mark,
+            }
+        )
+    return result
+
+
 def resolve_module_hit(
     build: ShipBuild,
     module_catalog: dict[str, ShipModule],
