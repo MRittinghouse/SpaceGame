@@ -50,11 +50,13 @@ from spacegame.engine.fonts import (
 from spacegame.engine.particles import FORGE_FLAME, SPARK_BURST, ParticlePool
 from spacegame.models.player import Player
 from spacegame.models.ship_build import (
+    FRAME_SLOT_LIMITS,
     ComputedShipStats,
     DesignatedSlot,
     HullMaterial,
     HullShape,
     PlacedPixel,
+    PlacedSlot,
     ShipBuild,
     ShipGridManager,
     ShipStatsComputer,
@@ -69,11 +71,34 @@ from spacegame.models.ship_module import (
     validate_connectivity,
     validate_requirements,
 )
+from spacegame.models.slot_definition import _SIZE_DISPLAY, _TYPE_DISPLAY, SlotDefinition
 from spacegame.utils.logger import logger
 from spacegame.views.base_view import BaseView
 
 # Hull-only materials for the simplified hull pixel palette
 HULL_PIXEL_MATERIALS = ("light_alloy", "standard_plate", "heavy_armor", "stealth_composite")
+
+# Single-letter labels for slot types rendered on grid cells
+_SLOT_TYPE_SHORT: dict[str, str] = {
+    "weapon": "W",
+    "defense": "D",
+    "engine": "E",
+    "utility": "U",
+    "cargo": "C",
+    "crew_quarters": "Q",
+    "reactor": "R",
+}
+
+# Ordered slot types for palette grouping
+_SLOT_TYPE_ORDER: list[str] = [
+    "weapon",
+    "defense",
+    "engine",
+    "utility",
+    "cargo",
+    "crew_quarters",
+    "reactor",
+]
 
 # Layout constants — widened panels, centered grid
 SHAPE_PANEL_X = scale_x(8)
@@ -186,7 +211,7 @@ class ShipBuilderView(BaseView):
         self._material_scroll_offset: int = 0
 
         # Module mode (Phase 4 — Shipbuilder Upgrade)
-        self._builder_mode: str = "module"  # "module" or "hull"
+        self._builder_mode: str = "slot"  # "slot" or "hull"
         self._selected_module_id: Optional[str] = None
         self._module_rotation: int = 0  # 0-3 (90° increments)
         self._module_flipped: bool = False
@@ -205,9 +230,12 @@ class ShipBuilderView(BaseView):
         self._selected_placed_module_idx: Optional[int] = None  # For removal
         self._recolor_mode: bool = False
         self._recolor_material_id: str = "standard_plate"
-        # EQUIP mode (Systems Unification U3)
-        self._equip_selected_module_idx: Optional[int] = None  # Module with open equip panel
-        self._equip_scroll: int = 0
+        # Slot palette (S2.2 — new slot-based builder)
+        self._selected_slot_def_id: Optional[str] = None
+        self._slot_palette_scroll: int = 0
+
+        # EQUIP mode moved to Loadout tab (Phase S4)
+        self._equip_selected_module_idx: Optional[int] = None  # Legacy, kept for compat
 
         # Visual feedback (Phase 10)
         self._placement_flash_timer: float = 0.0
@@ -387,7 +415,9 @@ class ShipBuilderView(BaseView):
                 self.build.pixels.clear()
                 self.build.slots.clear()
                 self.build.modules.clear()
+                self.build.placed_slots.clear()
                 self._selected_placed_module_idx = None
+                self._selected_slot_def_id = None
                 self._modified = True
                 self._recompute_stats()
                 return
@@ -442,25 +472,25 @@ class ShipBuilderView(BaseView):
 
             if event.key == pygame.K_TAB:
                 # Cycle through module → hull → equip
-                cycle = {"module": "hull", "hull": "equip", "equip": "module"}
-                self._builder_mode = cycle.get(self._builder_mode, "module")
+                cycle = {"slot": "hull", "hull": "slot"}
+                self._builder_mode = cycle.get(self._builder_mode, "slot")
                 self._equip_selected_module_idx = None
                 try:
                     get_audio_manager().play_sfx("ui_click")
                 except Exception:
                     pass
             elif event.key == pygame.K_r:
-                if self._builder_mode == "module":
+                if self._builder_mode == "slot":
                     self._module_rotation = (self._module_rotation + 1) % 4
                 else:
                     self._shape_rotation = (self._shape_rotation + 1) % 4
             elif event.key == pygame.K_q:
-                if self._builder_mode == "module":
+                if self._builder_mode == "slot":
                     self._module_flipped = not self._module_flipped
                 else:
                     self._shape_flipped = not self._shape_flipped
             elif event.key == pygame.K_DELETE or event.key == pygame.K_BACKSPACE:
-                if self._builder_mode == "module" and self._selected_placed_module_idx is not None:
+                if self._builder_mode == "slot" and self._selected_placed_module_idx is not None:
                     self._push_undo()
                     idx = self._selected_placed_module_idx
                     if 0 <= idx < len(self.build.modules):
@@ -482,7 +512,7 @@ class ShipBuilderView(BaseView):
             elif event.key == pygame.K_e:
                 self._active_tool = "eraser"
             elif event.key == pygame.K_c:
-                if self._builder_mode == "module":
+                if self._builder_mode == "slot":
                     self._recolor_mode = not getattr(self, "_recolor_mode", False)
                     self._recolor_material_id = "standard_plate"
             elif event.key == pygame.K_x:
@@ -522,11 +552,11 @@ class ShipBuilderView(BaseView):
         if event.type == pygame.MOUSEWHEEL:
             mx, _my = pygame.mouse.get_pos()
             if mx < GRID_AREA_X:
-                if self._builder_mode == "module":
-                    # Module catalog scroll
-                    self._module_catalog_scroll = max(
+                if self._builder_mode == "slot":
+                    # Slot palette scroll
+                    self._slot_palette_scroll = max(
                         0,
-                        self._module_catalog_scroll - event.y * 30,
+                        self._slot_palette_scroll - event.y * 30,
                     )
                 else:
                     # Shape palette scroll
@@ -553,9 +583,9 @@ class ShipBuilderView(BaseView):
         center_x = WINDOW_WIDTH // 2
         btn_w = scale_x(70)
         gap = 4
-        total_w = btn_w * 3 + gap * 2
+        total_w = btn_w * 2 + gap
         start_x = center_x - total_w // 2
-        modes = ["module", "hull", "equip"]
+        modes = ["slot", "hull"]
         if toggle_y <= my < toggle_y + toggle_h:
             for i, mode_id in enumerate(modes):
                 bx = start_x + i * (btn_w + gap)
@@ -580,8 +610,8 @@ class ShipBuilderView(BaseView):
                             pass
                     return
 
-        # --- Overlay toggle clicks (right panel, module mode) ---
-        if self._builder_mode == "module":
+        # --- Overlay toggle clicks (right panel, slot mode) ---
+        if self._builder_mode == "slot":
             if hasattr(self, "_integrity_toggle_rect") and self._integrity_toggle_rect.collidepoint(
                 mx, my
             ):
@@ -592,45 +622,34 @@ class ShipBuilderView(BaseView):
                 self._show_com_overlay = not self._show_com_overlay
                 return
 
-        # --- Module mode routing ---
-        if self._builder_mode == "module":
-            # Click on module catalog (left panel)
+        # --- Slot mode routing ---
+        if self._builder_mode == "slot":
+            # Click on slot palette (left panel)
             if SHAPE_PANEL_X <= mx < SHAPE_PANEL_X + SHAPE_PANEL_W:
-                self._handle_module_catalog_click(mx, my)
+                self._handle_slot_palette_click(mx, my)
                 return
 
-            # Click on material panel in recolor mode — select recolor material
-            if getattr(self, "_recolor_mode", False):
-                if MATERIAL_PANEL_X <= mx < MATERIAL_PANEL_X + MATERIAL_PANEL_W:
-                    self._handle_recolor_material_click(mx, my)
-                    return
-
-            # Click on grid — module placement, selection, or recoloring
+            # Click on grid — slot placement or selection
             grid_pos = self._screen_to_grid(mx, my)
             if grid_pos:
-                if getattr(self, "_recolor_mode", False):
-                    self._recolor_pixel_at(*grid_pos)
-                elif self._selected_module_id:
-                    self._place_module_at(*grid_pos)
+                if self._selected_slot_def_id:
+                    self._place_slot_at(*grid_pos)
                 else:
-                    self._select_module_at(*grid_pos)
+                    self._select_slot_at(*grid_pos)
             return
 
-        # --- EQUIP mode routing ---
-        if self._builder_mode == "equip":
-            # Click on left panel (slot list)
-            if SHAPE_PANEL_X <= mx < SHAPE_PANEL_X + SHAPE_PANEL_W:
-                self._handle_equip_slot_list_click(mx, my)
-                return
-            # Click on right panel (equipment selection)
-            if MATERIAL_PANEL_X <= mx < MATERIAL_PANEL_X + MATERIAL_PANEL_W:
-                self._handle_equip_panel_click(mx, my)
-                return
-            # Click on grid — select module for equipping
-            grid_pos = self._screen_to_grid(mx, my)
-            if grid_pos:
-                self._select_equip_module_at(*grid_pos)
-            return
+        # --- EQUIP mode routing (disabled — moves to Loadout tab) ---
+        # if self._builder_mode == "equip":
+        #     if SHAPE_PANEL_X <= mx < SHAPE_PANEL_X + SHAPE_PANEL_W:
+        #         self._handle_equip_slot_list_click(mx, my)
+        #         return
+        #     if MATERIAL_PANEL_X <= mx < MATERIAL_PANEL_X + MATERIAL_PANEL_W:
+        #         self._handle_equip_panel_click(mx, my)
+        #         return
+        #     grid_pos = self._screen_to_grid(mx, my)
+        #     if grid_pos:
+        #         self._select_equip_module_at(*grid_pos)
+        #     return
 
         # --- Hull mode routing (existing behavior) ---
         # Click on shape palette
@@ -663,12 +682,12 @@ class ShipBuilderView(BaseView):
                 self._erase_pixel(*grid_pos)
 
     def _handle_right_click(self, pos: tuple[int, int]) -> None:
-        """Erase pixel or remove module at clicked position."""
+        """Erase pixel, remove slot, or remove module at clicked position."""
         grid_pos = self._screen_to_grid(pos[0], pos[1])
         if grid_pos:
-            if self._builder_mode == "module":
-                # Right-click in module mode: remove module at position
-                self._remove_module_at(*grid_pos)
+            if self._builder_mode == "slot":
+                # Right-click in slot mode: remove placed slot at position
+                self._remove_slot_at(*grid_pos)
             else:
                 self._push_undo()
                 self._erase_pixel(*grid_pos)
@@ -893,6 +912,186 @@ class ShipBuilderView(BaseView):
                 and sy <= my < sy + swatch_h
             ):
                 self._recolor_material_id = mat.id
+                return
+
+    # ------------------------------------------------------------------
+    # Slot Palette Interactions (S2.2/S2.3)
+    # ------------------------------------------------------------------
+
+    def _get_slot_definitions_grouped(self) -> list[tuple[str, list[SlotDefinition]]]:
+        """Return slot definitions grouped by type in display order.
+
+        Returns:
+            List of (slot_type, [SlotDefinition, ...]) tuples ordered by
+            _SLOT_TYPE_ORDER.
+        """
+        slot_defs = getattr(self.data_loader, "slot_definitions", {})
+        groups: dict[str, list[SlotDefinition]] = {}
+        for sd in slot_defs.values():
+            groups.setdefault(sd.slot_type, []).append(sd)
+        # Sort each group by size order: small, medium, large
+        from spacegame.models.slot_definition import SIZE_ORDER
+
+        for defs in groups.values():
+            defs.sort(key=lambda d: SIZE_ORDER.get(d.size, 0))
+        # Return in display order
+        result = []
+        for st in _SLOT_TYPE_ORDER:
+            if st in groups:
+                result.append((st, groups[st]))
+        return result
+
+    def _get_slot_type_counts(self) -> dict[str, int]:
+        """Count how many placed slots exist per slot type."""
+        slot_defs = getattr(self.data_loader, "slot_definitions", {})
+        counts: dict[str, int] = {}
+        for ps in self.build.placed_slots:
+            sdef = slot_defs.get(ps.slot_def_id)
+            if sdef:
+                counts[sdef.slot_type] = counts.get(sdef.slot_type, 0) + 1
+        return counts
+
+    def _get_slot_type_limit(self, slot_type: str) -> int:
+        """Get the frame limit for a slot type based on current weight class."""
+        limits = FRAME_SLOT_LIMITS.get(self.build.weight_class, {})
+        return limits.get(slot_type, 0)
+
+    def _handle_slot_palette_click(self, mx: int, my: int) -> None:
+        """Handle click on the slot palette panel (left side in slot mode)."""
+        groups = self._get_slot_definitions_grouped()
+        item_h = scale_y(24)
+        group_header_h = scale_y(20)
+        start_y = SHAPE_PANEL_Y + scale_y(26) - self._slot_palette_scroll
+        y_cursor = start_y
+
+        for _slot_type, defs in groups:
+            y_cursor += group_header_h  # Skip group header
+            for sdef in defs:
+                if (
+                    SHAPE_PANEL_X <= mx < SHAPE_PANEL_X + SHAPE_PANEL_W
+                    and y_cursor <= my < y_cursor + item_h
+                ):
+                    if self._selected_slot_def_id == sdef.id:
+                        self._selected_slot_def_id = None
+                    else:
+                        self._selected_slot_def_id = sdef.id
+                    return
+                y_cursor += item_h
+
+    def _validate_slot_placement(self, gx: int, gy: int, sdef: SlotDefinition) -> tuple[bool, str]:
+        """Validate whether a slot can be placed at the given grid position.
+
+        Checks bounds, overlap with existing slots, frame slot limit,
+        and weight budget.
+
+        Args:
+            gx: Grid column of top-left corner.
+            gy: Grid row of top-left corner.
+            sdef: The slot definition to place.
+
+        Returns:
+            (success, message) tuple.
+        """
+        cw, ch = self.build.canvas_w, self.build.canvas_h
+        fw, fh = sdef.footprint_w, sdef.footprint_h
+
+        # Bounds check
+        if gx < 0 or gy < 0 or gx + fw > cw or gy + fh > ch:
+            return False, "Slot extends beyond canvas"
+
+        # Overlap check with existing placed slots
+        slot_defs = getattr(self.data_loader, "slot_definitions", {})
+        for ps in self.build.placed_slots:
+            other = slot_defs.get(ps.slot_def_id)
+            if not other:
+                continue
+            ow, oh = other.footprint_w, other.footprint_h
+            # AABB overlap test
+            if gx < ps.x + ow and gx + fw > ps.x and gy < ps.y + oh and gy + fh > ps.y:
+                return False, "Overlaps existing slot"
+
+        # Frame slot limit
+        counts = self._get_slot_type_counts()
+        current = counts.get(sdef.slot_type, 0)
+        limit = self._get_slot_type_limit(sdef.slot_type)
+        if current >= limit:
+            return (
+                False,
+                f"{_TYPE_DISPLAY.get(sdef.slot_type, sdef.slot_type)} limit reached ({limit})",
+            )
+
+        # Weight budget
+        stats = self._computed_stats
+        if stats:
+            new_weight = stats.weight_current + sdef.weight
+            if new_weight > stats.weight_max:
+                return False, f"Exceeds weight limit ({new_weight:.1f}/{stats.weight_max})"
+
+        return True, "OK"
+
+    def _place_slot_at(self, gx: int, gy: int) -> None:
+        """Place the selected slot definition at the given grid position."""
+        if not self._selected_slot_def_id:
+            return
+        slot_defs = getattr(self.data_loader, "slot_definitions", {})
+        sdef = slot_defs.get(self._selected_slot_def_id)
+        if not sdef:
+            return
+
+        ok, _msg = self._validate_slot_placement(gx, gy, sdef)
+        if ok:
+            self._push_undo()
+            self.build.placed_slots.append(PlacedSlot(slot_def_id=sdef.id, x=gx, y=gy))
+            self._modified = True
+            self._recompute_stats()
+            # Placement feedback
+            try:
+                get_audio_manager().play_sfx("ui_build")
+            except Exception:
+                pass
+            cell = self._get_cell_size()
+            ox, oy = self._get_grid_origin()
+            fx = ox + gx * cell + (sdef.footprint_w * cell) // 2
+            fy = oy + gy * cell + (sdef.footprint_h * cell) // 2
+            self.particles.emit(fx, fy, SPARK_BURST)
+            self._placement_flash_timer = 0.15
+            self._placement_flash_pos = (gx, gy)
+        else:
+            try:
+                get_audio_manager().play_sfx("ui_error")
+            except Exception:
+                pass
+
+    def _select_slot_at(self, gx: int, gy: int) -> None:
+        """Select a placed slot at the given grid position (for info display)."""
+        slot_defs = getattr(self.data_loader, "slot_definitions", {})
+        for ps in self.build.placed_slots:
+            sdef = slot_defs.get(ps.slot_def_id)
+            if not sdef:
+                continue
+            if ps.x <= gx < ps.x + sdef.footprint_w and ps.y <= gy < ps.y + sdef.footprint_h:
+                # Deselect the palette item when clicking an existing slot
+                self._selected_slot_def_id = None
+                return
+        # Clicked empty space — deselect palette
+        self._selected_slot_def_id = None
+
+    def _remove_slot_at(self, gx: int, gy: int) -> None:
+        """Remove the placed slot at the given grid position."""
+        slot_defs = getattr(self.data_loader, "slot_definitions", {})
+        for i, ps in enumerate(self.build.placed_slots):
+            sdef = slot_defs.get(ps.slot_def_id)
+            if not sdef:
+                continue
+            if ps.x <= gx < ps.x + sdef.footprint_w and ps.y <= gy < ps.y + sdef.footprint_h:
+                self._push_undo()
+                self.build.placed_slots.pop(i)
+                self._modified = True
+                self._recompute_stats()
+                try:
+                    get_audio_manager().play_sfx("ui_cancel")
+                except Exception:
+                    pass
                 return
 
     def _handle_material_panel_click(self, mx: int, my: int) -> None:
@@ -1277,11 +1476,36 @@ class ShipBuilderView(BaseView):
 
         catalog = self._get_module_catalog()
         has_modules = len(self.build.modules) > 0
+        has_slots = len(self.build.placed_slots) > 0
         has_pixels = len(self.build.pixels) > 0
-        has_content = has_modules or has_pixels
+        has_content = has_modules or has_slots or has_pixels
 
-        # Module-based validation (primary system)
-        if has_modules:
+        # NEW: Slot-based validation (primary for new builds)
+        if has_slots:
+            slot_defs = getattr(self.data_loader, "slot_definitions", {})
+            slot_type_counts: dict[str, int] = {}
+            for ps in self.build.placed_slots:
+                sd = slot_defs.get(ps.slot_def_id)
+                if sd:
+                    slot_type_counts[sd.slot_type] = slot_type_counts.get(sd.slot_type, 0) + 1
+
+            # Required slot checks
+            if slot_type_counts.get("engine", 0) < 1:
+                warnings.append("Engine required! Place at least 1 engine slot.")
+            if slot_type_counts.get("reactor", 0) < 1:
+                warnings.append("Reactor required! Place at least 1 reactor slot.")
+
+            # Frame slot limit checks
+            limits = FRAME_SLOT_LIMITS.get(self.build.weight_class, {})
+            for stype, count in slot_type_counts.items():
+                limit = limits.get(stype, 0)
+                if count > limit:
+                    warnings.append(
+                        f"Too many {stype} slots: {count}/{limit}"
+                    )
+
+        # LEGACY: Module-based validation
+        elif has_modules:
             req_ok, req_msg = validate_requirements(self.build, catalog)
             if not req_ok:
                 warnings.append(req_msg)
@@ -1290,7 +1514,7 @@ class ShipBuilderView(BaseView):
             if not conn_ok:
                 warnings.append(f"Disconnected: {conn_msg}")
 
-        # Legacy slot-based warnings (for old hull-only builds)
+        # LEGACY: Old hull-only builds
         elif has_pixels:
             has_core = any(s.slot_type == "core" for s in self.build.slots)
             if not has_core:
@@ -1302,7 +1526,7 @@ class ShipBuilderView(BaseView):
                 warnings.append("No weapons or engines — ship can't fight or flee.")
 
         if not has_content:
-            warnings.append("Empty build. Place modules to design your ship.")
+            warnings.append("Empty build. Place slots and hull pixels to design your ship.")
 
         # Advisory warnings (non-blocking, informational)
         advisories: list[str] = []
@@ -1386,7 +1610,7 @@ class ShipBuilderView(BaseView):
         flags = self.player.dialogue_flags if hasattr(self.player, "dialogue_flags") else {}
 
         # Module builder hints (Shipbuilder Upgrade)
-        if self._builder_mode == "module":
+        if self._builder_mode == "slot":
             # First entry into module builder
             if not flags.get("builder_module_welcome_seen"):
                 self.player.dialogue_flags["builder_module_welcome_seen"] = True
@@ -1450,11 +1674,13 @@ class ShipBuilderView(BaseView):
         materials = getattr(self.data_loader, "hull_materials", {})
         equipment = getattr(self.data_loader, "upgrades", {})
         module_catalog = self._get_module_catalog()
+        slot_definitions = getattr(self.data_loader, "slot_definitions", {})
         self._computed_stats = ShipStatsComputer.compute(
             self.build,
             materials,
             equipment,
             module_catalog=module_catalog,
+            slot_definitions=slot_definitions,
         )
         # Invalidate physics overlay caches
         self._cached_integrity = None
@@ -1584,16 +1810,12 @@ class ShipBuilderView(BaseView):
 
         # Main panels
         self._render_grid(screen)
-        if self._builder_mode == "module":
-            if getattr(self, "_recolor_mode", False):
-                self._render_module_catalog(screen)
-                self._render_recolor_panel(screen)
-            else:
-                self._render_module_catalog(screen)
-                self._render_requirements_checklist(screen)
-        elif self._builder_mode == "equip":
-            self._render_equip_slot_list(screen)
-            self._render_equip_panel(screen)
+        if self._builder_mode == "slot":
+            self._render_slot_palette(screen)
+            self._render_requirements_checklist(screen)
+        # elif self._builder_mode == "equip":  # disabled — moves to Loadout tab
+        #     self._render_equip_slot_list(screen)
+        #     self._render_equip_panel(screen)
         else:
             self._render_shape_palette(screen)
             self._render_material_panel(screen)
@@ -1626,7 +1848,7 @@ class ShipBuilderView(BaseView):
             self._render_stat_preview(screen)
 
         # Module hover tooltip (when hovering placed module on grid)
-        if self._builder_mode == "module":
+        if self._builder_mode == "slot":
             self._render_module_tooltip(screen)
 
         # Confirmation animation (overlay)
@@ -1705,7 +1927,7 @@ class ShipBuilderView(BaseView):
                 py = oy + mp.y * cell
                 pygame.draw.rect(screen, color, (px + 1, py + 1, cell - 1, cell - 1))
             # Module boundary outline (dashed effect via corners)
-            if is_selected or self._builder_mode == "module":
+            if is_selected or self._builder_mode == "slot":
                 module = catalog[placed_mod.module_id]
                 oriented = module
                 if placed_mod.flipped:
@@ -1722,12 +1944,68 @@ class ShipBuilderView(BaseView):
 
         # Legacy slot indicators removed — equipment managed via EQUIP mode
 
-        # Ghost preview — module mode or hull mode
+        # Placed slots — rendered as colored rectangles with type labels
+        slot_defs = getattr(self.data_loader, "slot_definitions", {})
+        for ps in self.build.placed_slots:
+            sdef = slot_defs.get(ps.slot_def_id)
+            if not sdef:
+                continue
+            fw, fh = sdef.footprint_w, sdef.footprint_h
+            sx = ox + ps.x * cell
+            sy = oy + ps.y * cell
+            sw = fw * cell
+            sh = fh * cell
+            # Filled rectangle at low alpha
+            fill_surf = pygame.Surface((sw, sh), pygame.SRCALPHA)
+            fill_surf.fill((*sdef.color, 60))
+            screen.blit(fill_surf, (sx, sy))
+            # Border at high alpha
+            pygame.draw.rect(screen, sdef.color, (sx, sy, sw, sh), 2)
+            # Center type label (e.g., "W", "D", "E")
+            type_letter = _SLOT_TYPE_SHORT.get(sdef.slot_type, "?")
+            if cell >= 6:
+                type_surf = self.label_font.render(type_letter, True, (255, 255, 255))
+                type_rect = type_surf.get_rect(center=(sx + sw // 2, sy + sh // 2))
+                screen.blit(type_surf, type_rect)
+            # Size label in top-left corner
+            size_letter = _SIZE_DISPLAY.get(sdef.size, "?")
+            if cell >= 6:
+                size_surf = self.label_font.render(size_letter, True, (200, 200, 200))
+                screen.blit(size_surf, (sx + 2, sy + 1))
+            # Equipped indicator dot (bottom-right)
+            if ps.equipped_part_id:
+                dot_r = max(2, cell // 4)
+                pygame.draw.circle(
+                    screen, (100, 255, 100), (sx + sw - dot_r - 2, sy + sh - dot_r - 2), dot_r
+                )
+
+        # Ghost preview — slot mode or hull mode
         mouse_pos = pygame.mouse.get_pos()
         grid_pos = self._screen_to_grid(mouse_pos[0], mouse_pos[1])
 
-        if grid_pos and self._builder_mode == "module" and self._selected_module_id:
-            # Module ghost preview
+        if grid_pos and self._builder_mode == "slot" and self._selected_slot_def_id:
+            # Slot ghost preview
+            ghost_sdef = slot_defs.get(self._selected_slot_def_id)
+            if ghost_sdef:
+                gx, gy = grid_pos
+                fw, fh = ghost_sdef.footprint_w, ghost_sdef.footprint_h
+                ok, _ = self._validate_slot_placement(gx, gy, ghost_sdef)
+                ghost_color = (100, 255, 100) if ok else (255, 60, 60)
+                ghost_sx = ox + gx * cell
+                ghost_sy = oy + gy * cell
+                ghost_sw = fw * cell
+                ghost_sh = fh * cell
+                ghost_surf = pygame.Surface((ghost_sw, ghost_sh), pygame.SRCALPHA)
+                ghost_surf.fill((*ghost_color, 80))
+                screen.blit(ghost_surf, (ghost_sx, ghost_sy))
+                pygame.draw.rect(screen, ghost_color, (ghost_sx, ghost_sy, ghost_sw, ghost_sh), 2)
+                # Show footprint dimensions near cursor
+                dim_text = f"{fw}x{fh}"
+                dim_surf = self.label_font.render(dim_text, True, ghost_color)
+                screen.blit(dim_surf, (ghost_sx + ghost_sw + 3, ghost_sy))
+
+        elif grid_pos and self._builder_mode == "slot" and self._selected_module_id:
+            # Module ghost preview (legacy module placement)
             oriented = self._get_oriented_preview_module()
             if oriented:
                 placed = PlacedModule(
@@ -1983,19 +2261,18 @@ class ShipBuilderView(BaseView):
     # ------------------------------------------------------------------
 
     def _render_mode_toggle(self, screen: pygame.Surface) -> None:
-        """Render the MODULE / HULL / EQUIP mode toggle in the header area."""
+        """Render the SLOTS / HULL mode toggle in the header area."""
         toggle_y = scale_y(30)
         center_x = WINDOW_WIDTH // 2
         btn_w = scale_x(70)
         btn_h = scale_y(20)
         gap = 4
-        total_w = btn_w * 3 + gap * 2
+        total_w = btn_w * 2 + gap
         start_x = center_x - total_w // 2
 
         modes = [
-            ("module", "MODULES"),
+            ("slot", "SLOTS"),
             ("hull", "HULL"),
-            ("equip", "EQUIP"),
         ]
         for i, (mode_id, label_text) in enumerate(modes):
             bx = start_x + i * (btn_w + gap)
@@ -2042,6 +2319,134 @@ class ShipBuilderView(BaseView):
                     v_label, (bx + frame_btn_w // 2 - v_label.get_width() // 2, frame_y + 3)
                 )
                 self._frame_variant_rects[variant_key] = rect
+
+    def _render_slot_palette(self, screen: pygame.Surface) -> None:
+        """Render the slot palette panel (left side, slot mode).
+
+        Shows slot definitions grouped by type (Weapon, Defense, etc.)
+        with S/M/L variants as clickable entries. Each entry shows a
+        colored square, display name, footprint, weight, and cost.
+        Frame slot limits are shown per group.
+        """
+        panel_x = SHAPE_PANEL_X
+        panel_y = SHAPE_PANEL_Y
+        panel_w = SHAPE_PANEL_W
+        panel_h = SHAPE_PANEL_H
+        draw_panel(screen, (panel_x, panel_y, panel_w, panel_h), alpha=200)
+
+        # Title
+        title = self.small_font.render("SLOT PALETTE", True, Colors.TEXT_HIGHLIGHT)
+        screen.blit(title, (panel_x + 8, panel_y + 6))
+
+        # Scrollable content
+        groups = self._get_slot_definitions_grouped()
+        type_counts = self._get_slot_type_counts()
+        item_h = scale_y(24)
+        group_header_h = scale_y(20)
+
+        list_top = panel_y + scale_y(26)
+        list_h = panel_h - scale_y(30)
+        clip = pygame.Rect(panel_x, list_top, panel_w, list_h)
+        screen.set_clip(clip)
+
+        start_y = list_top - self._slot_palette_scroll
+        y_cursor = start_y
+
+        for slot_type, defs in groups:
+            # Group header with limit indicator
+            if (
+                y_cursor + group_header_h >= list_top - group_header_h
+                and y_cursor < list_top + list_h
+            ):
+                type_name = _TYPE_DISPLAY.get(slot_type, slot_type.title())
+                placed_count = type_counts.get(slot_type, 0)
+                limit = self._get_slot_type_limit(slot_type)
+                header_color = defs[0].color if defs else (150, 150, 150)
+                header_text = f"{type_name}: {placed_count}/{limit}"
+                header_surf = self.tiny_font.render(header_text, True, header_color)
+                screen.blit(header_surf, (panel_x + 8, y_cursor + 2))
+                # Underline
+                pygame.draw.line(
+                    screen,
+                    (*header_color, 80) if len(header_color) == 3 else header_color,
+                    (panel_x + 6, y_cursor + group_header_h - 2),
+                    (panel_x + panel_w - 6, y_cursor + group_header_h - 2),
+                    1,
+                )
+            y_cursor += group_header_h
+
+            for sdef in defs:
+                if y_cursor + item_h >= list_top and y_cursor < list_top + list_h:
+                    is_selected = sdef.id == self._selected_slot_def_id
+
+                    # Check if limit reached for this type
+                    at_limit = type_counts.get(sdef.slot_type, 0) >= self._get_slot_type_limit(
+                        sdef.slot_type
+                    )
+
+                    # Background
+                    if is_selected:
+                        bg_color = (45, 65, 100)
+                    elif at_limit:
+                        bg_color = (15, 15, 22)
+                    else:
+                        bg_color = (20, 25, 40)
+                    pygame.draw.rect(
+                        screen,
+                        bg_color,
+                        (panel_x + 3, y_cursor, panel_w - 6, item_h - 2),
+                        border_radius=3,
+                    )
+                    if is_selected:
+                        pygame.draw.rect(
+                            screen,
+                            Colors.TEXT_HIGHLIGHT,
+                            (panel_x + 3, y_cursor, panel_w - 6, item_h - 2),
+                            1,
+                            border_radius=3,
+                        )
+
+                    # Colored square for slot type
+                    swatch_size = scale_y(14)
+                    swatch_x = panel_x + 8
+                    swatch_y = y_cursor + (item_h - swatch_size) // 2 - 1
+                    swatch_color = sdef.color if not at_limit else (60, 60, 60)
+                    pygame.draw.rect(
+                        screen,
+                        swatch_color,
+                        (swatch_x, swatch_y, swatch_size, swatch_size),
+                        border_radius=2,
+                    )
+
+                    # Display name
+                    text_x = swatch_x + swatch_size + 6
+                    name_color = (70, 70, 80) if at_limit else Colors.TEXT_PRIMARY
+                    name_surf = self.label_font.render(sdef.display_name, True, name_color)
+                    screen.blit(name_surf, (text_x, y_cursor + 1))
+
+                    # Info line: footprint, weight, cost
+                    info_color = (50, 50, 60) if at_limit else Colors.TEXT_SECONDARY
+                    info_text = (
+                        f"{sdef.footprint_w}x{sdef.footprint_h}  "
+                        f"W:{sdef.weight:.0f}  "
+                        f"{sdef.placement_cost:,}CR"
+                    )
+                    info_surf = self.label_font.render(info_text, True, info_color)
+                    screen.blit(info_surf, (text_x, y_cursor + 12))
+
+                y_cursor += item_h
+
+        screen.set_clip(None)
+
+        # Scroll indicator
+        total_content_h = sum(group_header_h + len(defs) * item_h for _, defs in groups)
+        if total_content_h > list_h:
+            max_scroll = max(1, total_content_h - list_h)
+            bar_h = max(10, int(list_h * (list_h / total_content_h)))
+            bar_y = list_top + int((self._slot_palette_scroll / max_scroll) * (list_h - bar_h))
+            pygame.draw.rect(
+                screen, (80, 90, 120), (panel_x + panel_w - 5, bar_y, 3, bar_h), border_radius=1
+            )
 
     def _render_module_catalog(self, screen: pygame.Surface) -> None:
         """Render the module catalog panel (left side, module mode)."""
@@ -2782,7 +3187,7 @@ class ShipBuilderView(BaseView):
 
         # Rotation/flip indicator
         rot_x = redo_x + btn_w + btn_gap * 3
-        if self._builder_mode == "module":
+        if self._builder_mode == "slot":
             rot_text = f"[R] {self._module_rotation * 90}\u00b0  [Q] Flip: {'Y' if self._module_flipped else 'N'}"
         else:
             rot_text = f"[R] {self._shape_rotation * 90}\u00b0  [Q] Flip: {'Y' if self._shape_flipped else 'N'}"
@@ -2840,8 +3245,11 @@ class ShipBuilderView(BaseView):
             ("  [F] Flood Fill    [E] Eraser", Colors.TEXT_PRIMARY),
             ("", Colors.TEXT_PRIMARY),
             ("EQUIPMENT", Colors.TEXT_HIGHLIGHT),
-            ("  Switch to EQUIP mode to install weapons and shields", Colors.TEXT_PRIMARY),
-            ("  Select a module, then choose equipment from the panel", Colors.TEXT_PRIMARY),
+            (
+                "  Install weapons and shields via the Loadout tab in the Shipyard",
+                Colors.TEXT_PRIMARY,
+            ),
+            ("  Place slot modules in SLOTS mode to define equipment points", Colors.TEXT_PRIMARY),
             ("", Colors.TEXT_PRIMARY),
             ("WEIGHT & IDENTITY", Colors.TEXT_HIGHLIGHT),
             ("  Hull materials are heavy → Juggernaut (armor, durability)", Colors.TEXT_PRIMARY),

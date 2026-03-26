@@ -252,9 +252,9 @@ class TestRequirementsChecklist:
 class TestModeSwitching:
     """Test that builder mode affects behavior correctly."""
 
-    def test_default_mode_is_module(self) -> None:
-        """New builder sessions should start in module mode."""
-        # The view initializes _builder_mode = "module"
+    def test_default_mode_is_slot(self) -> None:
+        """New builder sessions should start in slot mode."""
+        # The view initializes _builder_mode = "slot"
         # We test the constant directly since we can't instantiate the view easily
         assert True  # Verified in __init__ code
 
