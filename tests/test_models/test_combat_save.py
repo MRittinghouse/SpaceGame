@@ -153,11 +153,13 @@ class TestPlayerCombatDefeat:
         player.apply_combat_defeat("haven_station")
         assert player.current_system_id == "haven_station"
 
-    def test_defeat_no_credits_lost(self) -> None:
+    def test_defeat_loses_credits(self) -> None:
+        """Defeat costs 10% of credits (repair/salvage fees)."""
         player = _make_player()
         original_credits = player.credits
         player.apply_combat_defeat("safe_system")
-        assert player.credits == original_credits
+        expected = original_credits - int(original_credits * 0.10)
+        assert player.credits == expected, f"Should lose 10%: {original_credits} -> {expected}"
 
 
 # ============================================================================

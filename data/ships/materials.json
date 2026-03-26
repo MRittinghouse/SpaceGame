@@ -76,7 +76,7 @@
         96
       ],
       "hull_per_pixel": 2.0,
-      "armor_per_pixel": 0.02,
+      "armor_per_pixel": 0.01,
       "shield_per_pixel": 0,
       "shield_regen_per_pixel": 0,
       "evasion_per_pixel": 0,
@@ -104,7 +104,7 @@
         80
       ],
       "hull_per_pixel": 3.0,
-      "armor_per_pixel": 0.06,
+      "armor_per_pixel": 0.03,
       "shield_per_pixel": 0,
       "shield_regen_per_pixel": 0,
       "evasion_per_pixel": 0,
@@ -134,7 +134,7 @@
         136
       ],
       "hull_per_pixel": 3.5,
-      "armor_per_pixel": 0.04,
+      "armor_per_pixel": 0.02,
       "shield_per_pixel": 0,
       "shield_regen_per_pixel": 0,
       "evasion_per_pixel": 0,
@@ -283,7 +283,7 @@
         128
       ],
       "hull_per_pixel": 2.0,
-      "armor_per_pixel": 0.02,
+      "armor_per_pixel": 0.01,
       "shield_per_pixel": 0.2,
       "shield_regen_per_pixel": 0,
       "evasion_per_pixel": 0.05,
@@ -313,7 +313,7 @@
         224
       ],
       "hull_per_pixel": 3.0,
-      "armor_per_pixel": 0.05,
+      "armor_per_pixel": 0.025,
       "shield_per_pixel": 0,
       "shield_regen_per_pixel": 0,
       "evasion_per_pixel": 0,
@@ -372,7 +372,7 @@
         96
       ],
       "hull_per_pixel": 4.0,
-      "armor_per_pixel": 0.08,
+      "armor_per_pixel": 0.04,
       "shield_per_pixel": 0,
       "shield_regen_per_pixel": 0,
       "evasion_per_pixel": 0,
@@ -462,7 +462,7 @@
         48
       ],
       "hull_per_pixel": 3.5,
-      "armor_per_pixel": 0.05,
+      "armor_per_pixel": 0.025,
       "shield_per_pixel": 0,
       "shield_regen_per_pixel": 0,
       "evasion_per_pixel": 0,

@@ -296,6 +296,9 @@ COMBAT_HIT_CHANCE_MIN = 5
 COMBAT_HIT_CHANCE_MAX = 95
 COMBAT_DEFEAT_CARGO_LOSS_PERCENT = 30
 COMBAT_DEFEAT_HULL_REMAINING_PERCENT = 25
+COMBAT_DEFEAT_CREDIT_LOSS_PERCENT = 10  # Lose 10% of credits (repair/salvage costs)
+COMBAT_DEFEAT_REPUTATION_PENALTY = 5  # Lose 5 rep with local faction (needed rescuing)
+COMBAT_DEFEAT_FUEL_REMAINING = 5  # Minimum fuel after defeat (enough for 1 jump)
 
 # ============================================================================
 # MINING CONSTANTS

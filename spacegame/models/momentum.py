@@ -16,11 +16,11 @@ THRESHOLD_OVERLOAD = 0.75  # 75% — System Overclock (+3 regen 2 turns)
 THRESHOLD_ULTIMATE = 1.00  # 100% — Ship Ultimate (unique per class)
 
 # Momentum buildup amounts
-MOMENTUM_ON_HIT = 0.05  # +5% per hit dealt
-MOMENTUM_ON_HULL_DAMAGE = 0.08  # +8% per hit received (hull)
+MOMENTUM_ON_HIT = 0.07  # +7% per hit dealt (buffed from 5% — reward aggression)
+MOMENTUM_ON_HULL_DAMAGE = 0.05  # +5% per hit received (nerfed from 8% — reduce turtle incentive)
 MOMENTUM_ON_KILL = 0.15  # +15% per enemy killed
 MOMENTUM_ON_CREW_ABILITY = 0.03  # +3% per crew ability used
-MOMENTUM_ON_STATUS_APPLIED = 0.02  # +2% per elemental status stack
+MOMENTUM_ON_STATUS_APPLIED = 0.03  # +3% per elemental status stack (buffed from 2%)
 MOMENTUM_ON_CRITICAL_HP = 0.20  # +20% one-time when hull drops below 25%
 
 

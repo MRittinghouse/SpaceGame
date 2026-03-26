@@ -798,7 +798,7 @@
       "manufacturer": "reyes_kowalski",
       "provides": {
         "power_output": 15,
-        "armor_bonus": 5
+        "armor_bonus": 3
       },
       "base_cost": 9000,
       "mark": 1,
@@ -2914,7 +2914,7 @@
       "min_size": "large",
       "manufacturer": "",
       "provides": {
-        "armor_bonus": 4.0
+        "armor_bonus": 2
       },
       "base_cost": 42000,
       "mark": 1,

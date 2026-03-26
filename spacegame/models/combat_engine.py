@@ -1239,15 +1239,15 @@ class CombatEngine:
                     # Juggernaut Last Stand: +15% damage below 25% hull
                     if atk.defensive_identity == "juggernaut" and atk.hull_ratio < 0.25:
                         raw *= 1.15
-                    # Ghost Counterstrike: +10% per stack
+                    # Ghost Counterstrike: +12% per stack (buffed from 10%)
                     if atk.defensive_identity == "ghost" and atk.counterstrike_stacks > 0:
-                        raw *= 1.0 + 0.10 * atk.counterstrike_stacks
+                        raw *= 1.0 + 0.12 * atk.counterstrike_stacks
 
                 # Defender identity modifiers
                 if isinstance(target, PlayerCombatState):
-                    # Ghost Light Frame Vulnerability: +15% incoming damage
+                    # Ghost Light Frame Vulnerability: +10% incoming (reduced from 15%)
                     if target.defensive_identity == "ghost":
-                        raw *= 1.15
+                        raw *= 1.10
                     # Juggernaut Structural Integrity: -5% DR when hull > 75%
                     if target.defensive_identity == "juggernaut" and target.hull_ratio > 0.75:
                         damage_reduction = min(0.9, damage_reduction + 0.05)

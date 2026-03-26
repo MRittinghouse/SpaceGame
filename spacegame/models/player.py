@@ -555,22 +555,30 @@ class Player:
     def apply_combat_defeat(self, safe_system_id: str) -> None:
         """Apply consequences of losing combat.
 
-        Loses 30% of each cargo type (min 1 per type), sets hull to 25%
-        of max, shields to 0, and moves player to a safe system.
-        Credits are not affected.
+        Consequences: cargo loss, credit loss, hull/shield damage,
+        fuel reduction, faction reputation hit, and retreat to safety.
+        Painful but not permadeath — the player keeps their ship and parts.
 
         Args:
             safe_system_id: System to retreat to.
         """
         from spacegame.config import (
             COMBAT_DEFEAT_CARGO_LOSS_PERCENT,
+            COMBAT_DEFEAT_CREDIT_LOSS_PERCENT,
+            COMBAT_DEFEAT_FUEL_REMAINING,
             COMBAT_DEFEAT_HULL_REMAINING_PERCENT,
+            COMBAT_DEFEAT_REPUTATION_PENALTY,
         )
 
-        # Lose cargo
+        # Lose cargo (30% of each type)
         for commodity_id, quantity in list(self.ship.current_cargo.items()):
             loss = max(1, int(quantity * COMBAT_DEFEAT_CARGO_LOSS_PERCENT / 100))
             self.ship.remove_cargo(commodity_id, loss)
+
+        # Lose credits (10% — repair and salvage costs)
+        credit_loss = int(self.credits * COMBAT_DEFEAT_CREDIT_LOSS_PERCENT / 100)
+        if credit_loss > 0:
+            self.credits -= credit_loss
 
         # Set hull to 25% of max
         max_hull = self.ship.ship_type.combat_hull
@@ -578,6 +586,14 @@ class Player:
 
         # Shields to 0
         self.ship.current_shields = 0
+
+        # Fuel reduced (enough for 1 short jump)
+        self.ship.current_fuel = min(self.ship.current_fuel, COMBAT_DEFEAT_FUEL_REMAINING)
+
+        # Reputation hit with local faction (you needed rescuing)
+        faction_id = self.get_faction_for_system(safe_system_id)
+        if faction_id and COMBAT_DEFEAT_REPUTATION_PENALTY > 0:
+            self.add_reputation(faction_id, -COMBAT_DEFEAT_REPUTATION_PENALTY)
 
         # Move to safe system
         self.current_system_id = safe_system_id

@@ -476,7 +476,7 @@ class TestGhostPassives:
         # This is tested via the flee chance calculation, not a field
 
     def test_light_frame_vulnerability(self) -> None:
-        """Ghost identity takes +15% damage when hit."""
+        """Ghost identity takes +10% damage when hit (reduced from 15%)."""
         s = _state(
             player=_player(shields=0, armor=0, defensive_identity="ghost"),
             enemies=[_enemy(accuracy=95, moves=[_move("shot", 20.0, 2)])],
@@ -487,8 +487,8 @@ class TestGhostPassives:
         engine.execute_enemy_turns()
         damage = hull_before - s.player.hull
         if damage > 0:
-            # 20 * 1.15 = 23
-            assert damage == 23, f"Light Frame: expected 23 (20*1.15), got {damage}"
+            # 20 * 1.10 = 22
+            assert damage == 22, f"Light Frame: expected 22 (20*1.10), got {damage}"
 
 
 # ============================================================================
