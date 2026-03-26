@@ -116,14 +116,19 @@ class Ship:
             return self._crew_roster.get_bonus(bonus_type)
         return 0.0
 
-    def set_build(self, build: "ShipBuild") -> None:
+    def set_build(self, build: "ShipBuild", full_heal: bool = False) -> None:
         """Attach a ShipBuild and recompute stats.
 
         Args:
             build: The ship build configuration.
+            full_heal: If True, set hull/shields to the new computed max.
+                       Used for new game and builder confirm, not save/load.
         """
         self._build = build
         self._recompute_stats()
+        if full_heal and self._computed_stats:
+            self.current_hull = self._computed_stats.hull
+            self.current_shields = self._computed_stats.shields
 
     def _recompute_stats(self) -> None:
         """Derive ComputedShipStats from the build. Called when build changes."""

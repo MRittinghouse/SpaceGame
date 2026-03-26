@@ -401,7 +401,7 @@ class Game:
 
         try:
             preset = generate_preset_from_ship_type(shuttle_type)
-            starting_ship.set_build(preset)
+            starting_ship.set_build(preset, full_heal=True)
         except Exception:
             pass  # Composite will be generated on first drydock visit
 

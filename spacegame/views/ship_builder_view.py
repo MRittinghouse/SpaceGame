@@ -1535,7 +1535,7 @@ class ShipBuilderView(BaseView):
         else:
             logger.info("Build confirmed (no cost change)")
 
-        self.player.ship.set_build(self.build)
+        self.player.ship.set_build(self.build, full_heal=True)
         # Update hull/shields to match new build stats
         if self._computed_stats:
             self.player.ship.current_hull = self._computed_stats.hull

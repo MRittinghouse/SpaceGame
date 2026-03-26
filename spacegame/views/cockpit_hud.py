@@ -558,49 +558,38 @@ class CockpitHUD:
         return False
 
     def _render_info_panel(self, screen: pygame.Surface) -> None:
-        """Render credits, cargo, and quest hint in the right section."""
+        """Render ship name, credits, cargo, and quest hint in the right section."""
         x = self._right_x
         w = self._right_w
-        y = self.y + scale_y(10)
 
-        # Ship name (if player has named their ship)
+        # Evenly distribute 4 items across the HUD height
+        line_spacing = self.height // 5  # 5 divisions for 4 items + padding
+        y_base = self.y + scale_y(6)
+
+        # Line 1: Ship name
         ship_name = self.player.display_ship_name
         if ship_name:
             name_surf = self._credit_font.render(ship_name, True, _CREDIT_GOLD)
-            screen.blit(name_surf, (x, y))
-            y += scale_y(18)
+            screen.blit(name_surf, (x, y_base))
 
-        # Credits
+        # Line 2: Credits
+        y2 = y_base + line_spacing
         credits_text = f"{self.player.credits:,} CR"
         cr_surf = self._value_font.render(credits_text, True, Colors.TEXT_SECONDARY)
-        screen.blit(cr_surf, (x, y))
+        screen.blit(cr_surf, (x, y2))
 
-        # Cargo capacity
-        y += scale_y(24)
+        # Line 3: Cargo
+        y3 = y_base + line_spacing * 2
         ship = self.player.ship
         used = sum(ship.current_cargo.values())
         capacity = ship.max_cargo
         cargo_text = f"Cargo: {used}/{capacity}"
         cargo_color = Colors.TEXT_SECONDARY if used < capacity else Colors.RED
         cargo_surf = self._value_font.render(cargo_text, True, cargo_color)
-        screen.blit(cargo_surf, (x, y))
+        screen.blit(cargo_surf, (x, y3))
 
-        # Small cargo fill bar
-        cargo_bar_y = y + cargo_surf.get_height() + 2
-        cargo_bar_w = min(w, scale_x(140))
-        cargo_bar_h = scale_y(4)
-        pygame.draw.rect(screen, Colors.BAR_BG, (x, cargo_bar_y, cargo_bar_w, cargo_bar_h))
-        fill_ratio = min(1.0, used / max(1, capacity))
-        fill_w = int(cargo_bar_w * fill_ratio)
-        if fill_w > 0:
-            fill_color = Colors.TEXT_HIGHLIGHT if fill_ratio < 0.9 else Colors.RED
-            pygame.draw.rect(screen, fill_color, (x, cargo_bar_y, fill_w, cargo_bar_h))
-
-        # Quest hint — positioned so full text height fits above HUD bottom edge
-        y = cargo_bar_y + scale_y(8)
-        max_y = self.y + self.height - scale_y(4)
-        if y + self._quest_font.get_linesize() > max_y:
-            y = max_y - self._quest_font.get_linesize()
+        # Line 4: Quest hint
+        y4 = y_base + line_spacing * 3
         quest_text = self._get_quest_hint()
         if quest_text:
             quest_surf = self._quest_font.render(quest_text, True, Colors.TEXT_SECONDARY)
@@ -611,8 +600,8 @@ class CockpitHUD:
                     quest_text = quest_text[:-1]
                 quest_text = quest_text.rstrip() + ".."
                 quest_surf = self._quest_font.render(quest_text, True, Colors.TEXT_SECONDARY)
-            screen.blit(quest_surf, (x, y))
-            self._quest_rect = pygame.Rect(x, y, quest_surf.get_width(), quest_surf.get_height())
+            screen.blit(quest_surf, (x, y4))
+            self._quest_rect = pygame.Rect(x, y4, quest_surf.get_width(), quest_surf.get_height())
         else:
             self._quest_rect = pygame.Rect(0, 0, 0, 0)
 
