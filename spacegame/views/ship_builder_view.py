@@ -1560,7 +1560,10 @@ class ShipBuilderView(BaseView):
         cy = GRID_AREA_Y + GRID_AREA_H // 2
         for _ in range(3):
             self.particles.emit(cx, cy, SPARK_BURST)
-        get_audio_manager().play_sfx("ui_confirm")
+        try:
+            get_audio_manager().play_sfx("ui_confirm")
+        except Exception:
+            pass
 
         # Delay transition until animation completes (handled in update)
 

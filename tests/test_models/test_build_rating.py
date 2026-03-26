@@ -39,39 +39,64 @@ class TestEmptyBuild:
 
 class TestCombatRating:
     def test_weapons_improve_combat(self) -> None:
-        build_0 = _make_build(slots=[
-            _slot("cockpit_scout_pod"), _slot("engine_small"), _slot("reactor_small"),
-            _slot("fuel_small"),
-        ])
-        build_2 = _make_build(slots=[
-            _slot("cockpit_scout_pod"), _slot("engine_small"), _slot("reactor_small"),
-            _slot("fuel_small"),
-            _slot("weapon_small", x=4), _slot("weapon_small", x=6),
-        ])
+        build_0 = _make_build(
+            slots=[
+                _slot("cockpit_scout_pod"),
+                _slot("engine_small"),
+                _slot("reactor_small"),
+                _slot("fuel_small"),
+            ]
+        )
+        build_2 = _make_build(
+            slots=[
+                _slot("cockpit_scout_pod"),
+                _slot("engine_small"),
+                _slot("reactor_small"),
+                _slot("fuel_small"),
+                _slot("weapon_small", x=4),
+                _slot("weapon_small", x=6),
+            ]
+        )
         r0 = compute_build_rating(build_0, {}, {})
         r2 = compute_build_rating(build_2, {}, {})
         assert r2["combat"][1] > r0["combat"][1], "More weapons should improve combat score"
 
     def test_defense_improves_combat(self) -> None:
-        build = _make_build(slots=[
-            _slot("cockpit_scout_pod"), _slot("engine_small"), _slot("reactor_small"),
-            _slot("fuel_small"),
-            _slot("weapon_small", x=4), _slot("defense_small", x=6),
-        ])
+        build = _make_build(
+            slots=[
+                _slot("cockpit_scout_pod"),
+                _slot("engine_small"),
+                _slot("reactor_small"),
+                _slot("fuel_small"),
+                _slot("weapon_small", x=4),
+                _slot("defense_small", x=6),
+            ]
+        )
         result = compute_build_rating(build, {}, {})
         assert result["combat"][1] > 0
 
 
 class TestTradeRating:
     def test_cargo_improves_trade(self) -> None:
-        build_0 = _make_build(slots=[_slot("cockpit_scout_pod"), _slot("engine_small"),
-                                      _slot("reactor_small"), _slot("fuel_small")])
-        build_cargo = _make_build(slots=[
-            _slot("cockpit_scout_pod"), _slot("engine_small"), _slot("reactor_small"),
-            _slot("fuel_small"),
-            _slot("cargo_small", x=4), _slot("cargo_small", x=6),
-            _slot("cargo_medium", x=8),
-        ])
+        build_0 = _make_build(
+            slots=[
+                _slot("cockpit_scout_pod"),
+                _slot("engine_small"),
+                _slot("reactor_small"),
+                _slot("fuel_small"),
+            ]
+        )
+        build_cargo = _make_build(
+            slots=[
+                _slot("cockpit_scout_pod"),
+                _slot("engine_small"),
+                _slot("reactor_small"),
+                _slot("fuel_small"),
+                _slot("cargo_small", x=4),
+                _slot("cargo_small", x=6),
+                _slot("cargo_medium", x=8),
+            ]
+        )
         r0 = compute_build_rating(build_0, {}, {})
         rc = compute_build_rating(build_cargo, {}, {})
         assert rc["trade"][1] > r0["trade"][1]
@@ -79,14 +104,23 @@ class TestTradeRating:
 
 class TestMobilityRating:
     def test_engines_improve_mobility(self) -> None:
-        build_1e = _make_build(slots=[
-            _slot("cockpit_scout_pod"), _slot("engine_small"),
-            _slot("reactor_small"), _slot("fuel_small"),
-        ])
-        build_2e = _make_build(slots=[
-            _slot("cockpit_scout_pod"), _slot("engine_small"), _slot("engine_small", x=4),
-            _slot("reactor_small"), _slot("fuel_small"),
-        ])
+        build_1e = _make_build(
+            slots=[
+                _slot("cockpit_scout_pod"),
+                _slot("engine_small"),
+                _slot("reactor_small"),
+                _slot("fuel_small"),
+            ]
+        )
+        build_2e = _make_build(
+            slots=[
+                _slot("cockpit_scout_pod"),
+                _slot("engine_small"),
+                _slot("engine_small", x=4),
+                _slot("reactor_small"),
+                _slot("fuel_small"),
+            ]
+        )
         r1 = compute_build_rating(build_1e, {}, {})
         r2 = compute_build_rating(build_2e, {}, {})
         assert r2["mobility"][1] > r1["mobility"][1]
