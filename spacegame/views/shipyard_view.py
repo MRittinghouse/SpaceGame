@@ -884,7 +884,12 @@ class ShipyardView(BaseView):
         from spacegame.data_loader import get_data_loader
 
         dl = get_data_loader()
-        all_parts = [p for p in dl.ship_parts.values() if p.slot_type == self._shop_sub_tab]
+        all_parts = [
+            p
+            for p in dl.ship_parts.values()
+            if p.slot_type == self._shop_sub_tab
+            and not p.legendary  # Legendary parts are boss drops, not shop items
+        ]
         # Sort: owned first, then by base_cost ascending
         all_parts.sort(
             key=lambda p: (0 if self.player.get_part_count(p.id) > 0 else 1, p.base_cost)
