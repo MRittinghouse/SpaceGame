@@ -252,6 +252,10 @@ class ShipBuilderView(BaseView):
         self._show_com_overlay: bool = False
         self._cached_integrity: Optional[dict] = None
 
+        # Live ship preview (BP1)
+        self._preview_surface: Optional[pygame.Surface] = None
+        self._preview_dirty: bool = True  # Rebuild on next render
+
         # UI elements
         self.confirm_button: Optional[pygame_gui.elements.UIButton] = None
         self.clear_button: Optional[pygame_gui.elements.UIButton] = None
@@ -1749,8 +1753,9 @@ class ShipBuilderView(BaseView):
             module_catalog=module_catalog,
             slot_definitions=slot_definitions,
         )
-        # Invalidate physics overlay caches
+        # Invalidate physics overlay caches and preview
         self._cached_integrity = None
+        self._preview_dirty = True
 
     def _get_filtered_shapes(self) -> list[HullShape]:
         shapes = list(getattr(self.data_loader, "hull_shapes", {}).values())
@@ -1884,6 +1889,7 @@ class ShipBuilderView(BaseView):
             self._render_shape_palette(screen)
             self._render_material_panel(screen)
         self._render_stats_panel(screen)
+        self._render_ship_preview(screen)
 
         # Floating feedback messages (Phase 10)
         for msg in self._feedback_messages:
@@ -3533,6 +3539,130 @@ class ShipBuilderView(BaseView):
             "[Enter] Import    [Esc] Cancel    [Ctrl+V] Paste", True, (80, 90, 110)
         )
         screen.blit(hint, (mx + 15, hint_y))
+
+    # ------------------------------------------------------------------
+    # Live Ship Preview (BP1)
+    # ------------------------------------------------------------------
+
+    def _build_preview_surface(self) -> Optional[pygame.Surface]:
+        """Build a small ship preview surface from the current build.
+
+        Renders hull pixels with material colors and placed slots with
+        type colors onto a canvas-sized surface. Returns None if the
+        build has no content.
+        """
+        cw, ch = self.build.canvas_w, self.build.canvas_h
+        if cw <= 0 or ch <= 0:
+            return None
+
+        has_content = self.build.pixels or self.build.placed_slots or self.build.modules
+        if not has_content:
+            return None
+
+        surf = pygame.Surface((cw, ch), pygame.SRCALPHA)
+        surf.fill((12, 16, 28, 200))  # Dark background so the ship reads clearly
+
+        # Hull pixels — material colored
+        materials = getattr(self.data_loader, "hull_materials", {})
+        for pixel in self.build.pixels:
+            mat = materials.get(pixel.material_id)
+            if mat and 0 <= pixel.x < cw and 0 <= pixel.y < ch:
+                color = getattr(mat, "color_primary", (120, 120, 130))
+                surf.set_at((pixel.x, pixel.y), (*color, 255))
+
+        # Placed slots — type colored fills
+        slot_defs = getattr(self.data_loader, "slot_definitions", {})
+        for ps in self.build.placed_slots:
+            sdef = slot_defs.get(ps.slot_def_id)
+            if not sdef:
+                continue
+            fw, fh, r_mask = sdef.get_rotated(ps.rotation)
+            for ly in range(fh):
+                for lx in range(fw):
+                    px = ps.x + lx
+                    py = ps.y + ly
+                    if 0 <= px < cw and 0 <= py < ch:
+                        if r_mask:
+                            if ly < len(r_mask) and lx < len(r_mask[ly]) and r_mask[ly][lx] == "X":
+                                surf.set_at((px, py), (*sdef.color, 220))
+                        else:
+                            surf.set_at((px, py), (*sdef.color, 220))
+
+        # Legacy modules — render their pixels if present
+        module_catalog = self._get_module_catalog()
+        for placed_mod in self.build.modules:
+            module = module_catalog.get(placed_mod.module_id)
+            if not module:
+                continue
+            from spacegame.models.ship_module import resolve_placed_module
+
+            resolved = resolve_placed_module(placed_mod, module)
+            for rp in resolved:
+                if 0 <= rp.x < cw and 0 <= rp.y < ch:
+                    mat = materials.get(rp.material_id)
+                    color = getattr(mat, "color_primary", (100, 100, 110)) if mat else (100, 100, 110)
+                    surf.set_at((rp.x, rp.y), (*color, 255))
+
+        return surf
+
+    def _render_ship_preview(self, screen: pygame.Surface) -> None:
+        """Render the live ship preview thumbnail in the right panel area."""
+        # Rebuild if dirty
+        if self._preview_dirty:
+            self._preview_surface = self._build_preview_surface()
+            self._preview_dirty = False
+
+        if self._preview_surface is None:
+            return
+
+        # Preview display area — below the right panel, above the stats bar
+        preview_max_w = MATERIAL_PANEL_W
+        preview_max_h = (
+            STATS_PANEL_Y - scale_y(10) - (MATERIAL_PANEL_Y + MATERIAL_PANEL_H + scale_y(340))
+        )
+        if preview_max_h < scale_y(60):
+            # Not enough space — fall back to a smaller area
+            preview_max_h = scale_y(80)
+
+        # Scale the preview to fit, maintaining aspect ratio
+        src_w, src_h = self._preview_surface.get_size()
+        if src_w <= 0 or src_h <= 0:
+            return
+        scale_factor = min(preview_max_w / src_w, preview_max_h / src_h, 3.0)
+        display_w = max(1, int(src_w * scale_factor))
+        display_h = max(1, int(src_h * scale_factor))
+
+        scaled = pygame.transform.scale(self._preview_surface, (display_w, display_h))
+
+        # Position: centered in the right panel area, below requirements
+        preview_x = MATERIAL_PANEL_X + (MATERIAL_PANEL_W - display_w) // 2
+        preview_y = STATS_PANEL_Y - display_h - scale_y(12)
+
+        # Panel background
+        pad = scale_x(6)
+        panel_rect = pygame.Rect(
+            preview_x - pad,
+            preview_y - scale_y(16) - pad,
+            display_w + pad * 2,
+            display_h + scale_y(16) + pad * 2,
+        )
+        panel_bg = pygame.Surface((panel_rect.width, panel_rect.height), pygame.SRCALPHA)
+        panel_bg.fill((10, 14, 25, 200))
+        screen.blit(panel_bg, panel_rect.topleft)
+        pygame.draw.rect(screen, (40, 50, 70), panel_rect, 1, border_radius=4)
+
+        # Label
+        label = self.label_font.render("PREVIEW", True, Colors.TEXT_HIGHLIGHT)
+        screen.blit(label, (preview_x, preview_y - scale_y(14)))
+
+        # Ship preview with thin border
+        screen.blit(scaled, (preview_x, preview_y))
+        pygame.draw.rect(
+            screen,
+            (50, 60, 80),
+            (preview_x - 1, preview_y - 1, display_w + 2, display_h + 2),
+            1,
+        )
 
     def _render_confirm_animation(self, screen: pygame.Surface) -> None:
         """Render the build confirmation celebration (Phase E)."""
