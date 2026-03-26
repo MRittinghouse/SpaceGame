@@ -2754,8 +2754,21 @@ class ShipBuilderView(BaseView):
             )
             screen.blit(cost_label, (panel_x + 8, row_y))
 
+        # Flow guide: remind player of the 3-step process
+        if self.build.placed_slots:
+            row_y += scale_y(14)
+            flow_lines = [
+                ("1. Place slots here (Drydock)", Colors.TEXT_SECONDARY),
+                ("2. Buy parts (Shop tab)", Colors.TEXT_SECONDARY),
+                ("3. Equip parts (Loadout tab)", Colors.TEXT_SECONDARY),
+            ]
+            for flow_text, flow_color in flow_lines:
+                flow_surf = self.label_font.render(flow_text, True, flow_color)
+                screen.blit(flow_surf, (panel_x + 8, row_y))
+                row_y += scale_y(12)
+
         # Module rotation/flip indicator
-        row_y += scale_y(20)
+        row_y += scale_y(8)
         rot_label = self.label_font.render(
             f"[R] Rot: {self._module_rotation * 90}\u00b0  [Q] Flip: {'Y' if self._module_flipped else 'N'}",
             True,
@@ -3100,6 +3113,24 @@ class ShipBuilderView(BaseView):
                 id_color,
             )
             screen.blit(id_text, (x_start, y))
+
+        # Guidance hints when the build has slots placed but stats are empty
+        # (slots provide structure; parts provide stats via the Loadout tab)
+        has_slots = len(self.build.placed_slots) > 0
+        if has_slots:
+            hints: list[str] = []
+            if stats.speed == 0 and stats.fuel_capacity == 0 and stats.shields == 0:
+                hints.append("Slots placed! Visit Shop to buy parts, then Loadout to equip them.")
+            else:
+                if stats.fuel_capacity == 0:
+                    hints.append("No fuel -- equip a Fuel Tank (Utility slot) in Loadout.")
+                if stats.speed == 0:
+                    hints.append("No speed -- equip an Engine part in Loadout.")
+            if hints:
+                hint_y = STATS_PANEL_Y + STATS_PANEL_H - scale_y(16)
+                hint_text = "  |  ".join(hints)
+                hint_surf = self.tiny_font.render(hint_text, True, (180, 160, 80))
+                screen.blit(hint_surf, (x_start, hint_y))
 
         # Tool bar (right side of stats panel) — prominent labeled buttons
         tool_x = WINDOW_WIDTH - scale_x(350)
