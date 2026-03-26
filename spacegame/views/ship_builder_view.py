@@ -3377,7 +3377,7 @@ class ShipBuilderView(BaseView):
             )
             screen.blit(id_text, (x_start, y))
 
-        # Build rating (BP3) — live quality assessment
+        # Build rating (BP3) — rendered on Row 3 (below weight bar), right-aligned
         has_slots = len(self.build.placed_slots) > 0
         if has_slots or len(self.build.modules) > 0 or len(self.build.pixels) > 20:
             from spacegame.models.build_rating import compute_build_rating
@@ -3387,51 +3387,32 @@ class ShipBuilderView(BaseView):
             ratings = compute_build_rating(self.build, slot_defs, parts_cat)
 
             grade_colors = {
-                "S": (255, 215, 80),  # Gold
-                "A": (80, 220, 80),  # Green
-                "B": (80, 180, 255),  # Cyan
-                "C": (220, 200, 60),  # Yellow
-                "D": (220, 140, 40),  # Orange
-                "F": (200, 60, 60),  # Red
+                "S": (255, 215, 80),
+                "A": (80, 220, 80),
+                "B": (80, 180, 255),
+                "C": (220, 200, 60),
+                "D": (220, 140, 40),
+                "F": (200, 60, 60),
             }
-            rating_x = x_start + scale_x(420)
-            rating_y = STATS_PANEL_Y + 8
+            # Place ratings on the weight bar row, right of the weight label
+            rating_x = x_start + scale_x(500)
+            rating_y = y - BAR_H - 6  # Same Y as weight bar
             for axis_name in ("combat", "trade", "mobility", "durability"):
                 grade, _score, _feedback = ratings[axis_name]
                 gc = grade_colors.get(grade, Colors.TEXT_SECONDARY)
                 label = axis_name.title()[:3]
-                rating_text = f"{label}: {grade}"
-                r_surf = self.tiny_font.render(rating_text, True, gc)
+                r_surf = self.label_font.render(f"{label}:{grade}", True, gc)
                 screen.blit(r_surf, (rating_x, rating_y))
-                rating_x += scale_x(80)
-            # Feedback for lowest-rated axis
-            worst_axis = min(ratings, key=lambda a: ratings[a][1])
-            worst_grade, _, worst_feedback = ratings[worst_axis]
-            if worst_grade in ("D", "F") and worst_feedback:
-                fb_y = STATS_PANEL_Y + 8 + scale_y(14)
-                fb_color = grade_colors.get(worst_grade, Colors.TEXT_SECONDARY)
-                fb_surf = self.label_font.render(
-                    f"{worst_axis.title()}: {worst_feedback}", True, fb_color
-                )
-                screen.blit(fb_surf, (x_start + scale_x(420), fb_y))
+                rating_x += scale_x(70)
 
-        # Guidance hints when the build has slots placed but stats are empty
-        # (slots provide structure; parts provide stats via the Loadout tab)
-        has_slots = len(self.build.placed_slots) > 0
-        if has_slots:
-            hints: list[str] = []
-            if stats.speed == 0 and stats.fuel_capacity == 0 and stats.shields == 0:
-                hints.append("Slots placed! Visit Shop to buy parts, then Loadout to equip them.")
-            else:
-                if stats.fuel_capacity == 0:
-                    hints.append("No fuel -- equip a Fuel Tank (Utility slot) in Loadout.")
-                if stats.speed == 0:
-                    hints.append("No speed -- equip an Engine part in Loadout.")
-            if hints:
-                hint_y = STATS_PANEL_Y + STATS_PANEL_H - scale_y(16)
-                hint_text = "  |  ".join(hints)
-                hint_surf = self.tiny_font.render(hint_text, True, (180, 160, 80))
-                screen.blit(hint_surf, (x_start, hint_y))
+        # Guidance hint — single line integrated into the identity row
+        if has_slots and stats.speed == 0 and stats.fuel_capacity == 0 and stats.shields == 0:
+            hint_surf = self.label_font.render(
+                "Place slots, then buy & equip parts via Shop + Loadout tabs",
+                True,
+                (180, 160, 80),
+            )
+            screen.blit(hint_surf, (x_start + scale_x(200), y))
 
         # Tool bar (right side of stats panel) — prominent labeled buttons
         tool_x = WINDOW_WIDTH - scale_x(350)
@@ -3878,7 +3859,7 @@ class ShipBuilderView(BaseView):
         return surf
 
     def _render_ship_preview(self, screen: pygame.Surface) -> None:
-        """Render the live ship preview thumbnail in the right panel area."""
+        """Render the live ship preview as a floating thumbnail in the grid corner."""
         # Rebuild if dirty
         if self._preview_dirty:
             self._preview_surface = self._build_preview_surface()
@@ -3887,14 +3868,9 @@ class ShipBuilderView(BaseView):
         if self._preview_surface is None:
             return
 
-        # Preview display area — below the right panel, above the stats bar
-        preview_max_w = MATERIAL_PANEL_W
-        preview_max_h = (
-            STATS_PANEL_Y - scale_y(10) - (MATERIAL_PANEL_Y + MATERIAL_PANEL_H + scale_y(340))
-        )
-        if preview_max_h < scale_y(60):
-            # Not enough space — fall back to a smaller area
-            preview_max_h = scale_y(80)
+        # Fixed preview size — small, unobtrusive, in bottom-right of grid area
+        preview_max_w = scale_x(100)
+        preview_max_h = scale_y(80)
 
         # Scale the preview to fit, maintaining aspect ratio
         src_w, src_h = self._preview_surface.get_size()
@@ -3906,17 +3882,17 @@ class ShipBuilderView(BaseView):
 
         scaled = pygame.transform.scale(self._preview_surface, (display_w, display_h))
 
-        # Position: centered in the right panel area, below requirements
-        preview_x = MATERIAL_PANEL_X + (MATERIAL_PANEL_W - display_w) // 2
-        preview_y = STATS_PANEL_Y - display_h - scale_y(12)
+        # Position: bottom-right corner of the grid area, above the stats panel
+        preview_x = GRID_AREA_X + GRID_AREA_W - display_w - scale_x(8)
+        preview_y = STATS_PANEL_Y - display_h - scale_y(8)
 
         # Panel background
-        pad = scale_x(6)
+        pad = scale_x(4)
         panel_rect = pygame.Rect(
             preview_x - pad,
-            preview_y - scale_y(16) - pad,
+            preview_y - scale_y(12) - pad,
             display_w + pad * 2,
-            display_h + scale_y(16) + pad * 2,
+            display_h + scale_y(12) + pad * 2,
         )
         panel_bg = pygame.Surface((panel_rect.width, panel_rect.height), pygame.SRCALPHA)
         panel_bg.fill((10, 14, 25, 200))
