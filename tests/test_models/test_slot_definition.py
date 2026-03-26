@@ -17,7 +17,7 @@ class TestSlotDefinitionConstants:
         assert "cargo" in SLOT_TYPES
         assert "crew_quarters" in SLOT_TYPES
         assert "reactor" in SLOT_TYPES
-        assert len(SLOT_TYPES) == 8
+        assert len(SLOT_TYPES) == 9
 
     def test_slot_sizes_defined(self) -> None:
         assert "small" in SLOT_SIZES

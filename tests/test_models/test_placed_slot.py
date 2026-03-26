@@ -139,6 +139,7 @@ class TestFrameSlotLimits:
             "defense",
             "engine",
             "utility",
+            "fuel",
             "cargo",
             "crew_quarters",
             "reactor",

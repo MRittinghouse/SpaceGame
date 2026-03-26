@@ -5,7 +5,7 @@ pixel grid. Each slot type+size combination has a fixed grid footprint,
 weight cost, and placement cost.
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 # Valid slot types — each maps to a category of equippable parts
 SLOT_TYPES: frozenset[str] = frozenset(
@@ -15,6 +15,7 @@ SLOT_TYPES: frozenset[str] = frozenset(
         "defense",
         "engine",
         "utility",
+        "fuel",
         "cargo",
         "crew_quarters",
         "reactor",
@@ -34,6 +35,7 @@ _TYPE_DISPLAY: dict[str, str] = {
     "defense": "Defense",
     "engine": "Engine",
     "utility": "Utility",
+    "fuel": "Fuel Tank",
     "cargo": "Cargo",
     "crew_quarters": "Crew Quarters",
     "reactor": "Reactor",
@@ -77,11 +79,32 @@ class SlotDefinition:
     custom_name: str = ""  # Override display name (e.g., "Scout Pod")
     unlock_faction: str = ""  # Faction ID required (empty = always available)
     unlock_rep_tier: str = ""  # Min reputation tier ("friendly", "allied")
+    pixel_mask: list[str] = field(default_factory=list)  # Row strings: "XX.." = filled/empty
 
     @property
     def grid_area(self) -> int:
-        """Total pixel grid cells this slot occupies."""
+        """Total filled cells (from pixel_mask if present, else w*h)."""
+        if self.pixel_mask:
+            return sum(row.count("X") for row in self.pixel_mask)
         return self.footprint_w * self.footprint_h
+
+    def is_filled(self, local_x: int, local_y: int) -> bool:
+        """Check if a local grid cell is filled in this slot's shape.
+
+        Args:
+            local_x: Column within the footprint (0 to footprint_w-1).
+            local_y: Row within the footprint (0 to footprint_h-1).
+
+        Returns:
+            True if the cell is filled (part of the slot shape).
+        """
+        if not self.pixel_mask:
+            return 0 <= local_x < self.footprint_w and 0 <= local_y < self.footprint_h
+        if 0 <= local_y < len(self.pixel_mask):
+            row = self.pixel_mask[local_y]
+            if 0 <= local_x < len(row):
+                return row[local_x] == "X"
+        return False
 
     @property
     def display_name(self) -> str:
@@ -125,6 +148,8 @@ class SlotDefinition:
         if self.unlock_faction:
             d["unlock_faction"] = self.unlock_faction
             d["unlock_rep_tier"] = self.unlock_rep_tier
+        if self.pixel_mask:
+            d["pixel_mask"] = self.pixel_mask
         return d
 
     @classmethod
@@ -143,4 +168,5 @@ class SlotDefinition:
             custom_name=data.get("custom_name", ""),
             unlock_faction=data.get("unlock_faction", ""),
             unlock_rep_tier=data.get("unlock_rep_tier", ""),
+            pixel_mask=data.get("pixel_mask", []),
         )

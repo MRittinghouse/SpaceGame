@@ -85,6 +85,7 @@ _SLOT_TYPE_SHORT: dict[str, str] = {
     "defense": "D",
     "engine": "E",
     "utility": "U",
+    "fuel": "F",
     "cargo": "C",
     "crew_quarters": "Q",
     "reactor": "R",
@@ -97,6 +98,7 @@ _SLOT_TYPE_ORDER: list[str] = [
     "defense",
     "engine",
     "utility",
+    "fuel",
     "cargo",
     "crew_quarters",
     "reactor",
@@ -1501,6 +1503,8 @@ class ShipBuilderView(BaseView):
                 warnings.append("Engine required! Place at least 1 engine slot.")
             if slot_type_counts.get("reactor", 0) < 1:
                 warnings.append("Reactor required! Place at least 1 reactor slot.")
+            if slot_type_counts.get("fuel", 0) < 1:
+                warnings.append("Fuel tank required! Place at least 1 fuel slot.")
 
             # Frame slot limit checks
             limits = FRAME_SLOT_LIMITS.get(self.build.weight_class, {})
@@ -1946,7 +1950,8 @@ class ShipBuilderView(BaseView):
 
         # Legacy slot indicators removed — equipment managed via EQUIP mode
 
-        # Placed slots — rendered as colored rectangles with type labels
+        # Placed slots — rendered using pixel_mask for shaped cockpits,
+        # or as solid rectangles for standard slots
         slot_defs = getattr(self.data_loader, "slot_definitions", {})
         for ps in self.build.placed_slots:
             sdef = slot_defs.get(ps.slot_def_id)
@@ -1957,19 +1962,32 @@ class ShipBuilderView(BaseView):
             sy = oy + ps.y * cell
             sw = fw * cell
             sh = fh * cell
-            # Filled rectangle at low alpha
-            fill_surf = pygame.Surface((sw, sh), pygame.SRCALPHA)
-            fill_surf.fill((*sdef.color, 60))
-            screen.blit(fill_surf, (sx, sy))
-            # Border at high alpha
-            pygame.draw.rect(screen, sdef.color, (sx, sy, sw, sh), 2)
-            # Center type label (e.g., "W", "D", "E")
+
+            if sdef.pixel_mask:
+                # Shaped slot — render per-cell using mask
+                for ly in range(fh):
+                    for lx in range(fw):
+                        if sdef.is_filled(lx, ly):
+                            cx = sx + lx * cell
+                            cy = sy + ly * cell
+                            fill = pygame.Surface((cell, cell), pygame.SRCALPHA)
+                            fill.fill((*sdef.color, 60))
+                            screen.blit(fill, (cx, cy))
+                            pygame.draw.rect(screen, sdef.color, (cx, cy, cell, cell), 1)
+            else:
+                # Standard rectangular slot
+                fill_surf = pygame.Surface((sw, sh), pygame.SRCALPHA)
+                fill_surf.fill((*sdef.color, 60))
+                screen.blit(fill_surf, (sx, sy))
+                pygame.draw.rect(screen, sdef.color, (sx, sy, sw, sh), 2)
+
+            # Center type label (e.g., "W", "D", "E", "K")
             type_letter = _SLOT_TYPE_SHORT.get(sdef.slot_type, "?")
             if cell >= 6:
                 type_surf = self.label_font.render(type_letter, True, (255, 255, 255))
                 type_rect = type_surf.get_rect(center=(sx + sw // 2, sy + sh // 2))
                 screen.blit(type_surf, type_rect)
-            # Size label in top-left corner
+            # Size label in top-left corner (on first filled cell)
             size_letter = _SIZE_DISPLAY.get(sdef.size, "?")
             if cell >= 6:
                 size_surf = self.label_font.render(size_letter, True, (200, 200, 200))
@@ -1997,10 +2015,24 @@ class ShipBuilderView(BaseView):
                 ghost_sy = oy + gy * cell
                 ghost_sw = fw * cell
                 ghost_sh = fh * cell
-                ghost_surf = pygame.Surface((ghost_sw, ghost_sh), pygame.SRCALPHA)
-                ghost_surf.fill((*ghost_color, 80))
-                screen.blit(ghost_surf, (ghost_sx, ghost_sy))
-                pygame.draw.rect(screen, ghost_color, (ghost_sx, ghost_sy, ghost_sw, ghost_sh), 2)
+                if ghost_sdef.pixel_mask:
+                    # Shaped ghost — render per-cell
+                    for ly in range(fh):
+                        for lx in range(fw):
+                            if ghost_sdef.is_filled(lx, ly):
+                                cx = ghost_sx + lx * cell
+                                cy = ghost_sy + ly * cell
+                                gc = pygame.Surface((cell, cell), pygame.SRCALPHA)
+                                gc.fill((*ghost_color, 80))
+                                screen.blit(gc, (cx, cy))
+                                pygame.draw.rect(screen, ghost_color, (cx, cy, cell, cell), 1)
+                else:
+                    ghost_surf = pygame.Surface((ghost_sw, ghost_sh), pygame.SRCALPHA)
+                    ghost_surf.fill((*ghost_color, 80))
+                    screen.blit(ghost_surf, (ghost_sx, ghost_sy))
+                    pygame.draw.rect(
+                        screen, ghost_color, (ghost_sx, ghost_sy, ghost_sw, ghost_sh), 2
+                    )
                 # Show footprint dimensions near cursor
                 dim_text = f"{fw}x{fh}"
                 dim_surf = self.label_font.render(dim_text, True, ghost_color)
@@ -2659,6 +2691,7 @@ class ShipBuilderView(BaseView):
             requirements = [
                 ("Cockpit", "cockpit", 1),
                 ("Engine", "engine", 1),
+                ("Fuel Tank", "fuel", 1),
                 ("Reactor", "reactor", 1),
                 ("Weapon", "weapon", 0),
                 ("Defense", "defense", 0),

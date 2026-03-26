@@ -375,6 +375,7 @@ def _generate_placed_slots(
         ("cockpit_scout_pod", 2, 2, 1),
         ("engine_small", 2, 3, max(1, getattr(ship_type, "utility_slots", 2) // 3)),
         ("reactor_small", 2, 2, 1),
+        ("fuel_small", 2, 2, 1),
         ("weapon_small", 2, 2, getattr(ship_type, "weapon_slots", 1)),
         ("defense_small", 2, 2, getattr(ship_type, "defense_slots", 1)),
         ("cargo_small", 2, 3, max(1, getattr(ship_type, "cargo_capacity", 50) // 80)),

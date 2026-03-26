@@ -20,7 +20,8 @@
       "weight": 2.5,
       "placement_cost": 400,
       "color": [220, 220, 180],
-      "custom_name": "Observation Deck"
+      "custom_name": "Observation Deck",
+      "pixel_mask": ["XXX", ".X."]
     },
     {
       "id": "cockpit_armored_cabin",
@@ -31,7 +32,8 @@
       "weight": 3.0,
       "placement_cost": 450,
       "color": [220, 220, 180],
-      "custom_name": "Armored Cabin"
+      "custom_name": "Armored Cabin",
+      "pixel_mask": ["XX", "XX", ".X"]
     },
     {
       "id": "cockpit_command_bridge",
@@ -42,7 +44,8 @@
       "weight": 4.0,
       "placement_cost": 800,
       "color": [220, 220, 180],
-      "custom_name": "Command Bridge"
+      "custom_name": "Command Bridge",
+      "pixel_mask": [".X.", "XXX", "XXX"]
     },
     {
       "id": "cockpit_needle",
@@ -53,7 +56,8 @@
       "weight": 3.5,
       "placement_cost": 700,
       "color": [220, 220, 180],
-      "custom_name": "Needle Cockpit"
+      "custom_name": "Needle Cockpit",
+      "pixel_mask": [".X", "XX", "XX", ".X"]
     },
     {
       "id": "cockpit_wide_bridge",
@@ -64,7 +68,8 @@
       "weight": 5.0,
       "placement_cost": 1000,
       "color": [220, 220, 180],
-      "custom_name": "Wide Bridge"
+      "custom_name": "Wide Bridge",
+      "pixel_mask": [".XX.", "XXXX", "XXXX"]
     },
     {
       "id": "cockpit_capital_bridge",
@@ -75,7 +80,8 @@
       "weight": 7.0,
       "placement_cost": 1500,
       "color": [220, 220, 180],
-      "custom_name": "Capital Bridge"
+      "custom_name": "Capital Bridge",
+      "pixel_mask": [".XX.", "XXXX", "XXXX", ".XX."]
     },
     {
       "id": "cockpit_guild_console",
@@ -88,7 +94,8 @@
       "color": [80, 140, 220],
       "custom_name": "Guild Console",
       "unlock_faction": "commerce_guild",
-      "unlock_rep_tier": "friendly"
+      "unlock_rep_tier": "friendly",
+      "pixel_mask": ["XX.", "XXX"]
     },
     {
       "id": "cockpit_union_helm",
@@ -114,7 +121,8 @@
       "color": [180, 200, 240],
       "custom_name": "Research Array",
       "unlock_faction": "science_collective",
-      "unlock_rep_tier": "friendly"
+      "unlock_rep_tier": "friendly",
+      "pixel_mask": [".X.", "XXX", ".X."]
     },
     {
       "id": "cockpit_frontier_turret",
@@ -248,6 +256,36 @@
       "weight": 7.0,
       "placement_cost": 2000,
       "color": [60, 180, 80]
+    },
+    {
+      "id": "fuel_small",
+      "slot_type": "fuel",
+      "size": "small",
+      "footprint_w": 2,
+      "footprint_h": 2,
+      "weight": 2.0,
+      "placement_cost": 250,
+      "color": [200, 160, 40]
+    },
+    {
+      "id": "fuel_medium",
+      "slot_type": "fuel",
+      "size": "medium",
+      "footprint_w": 3,
+      "footprint_h": 3,
+      "weight": 4.0,
+      "placement_cost": 700,
+      "color": [200, 160, 40]
+    },
+    {
+      "id": "fuel_large",
+      "slot_type": "fuel",
+      "size": "large",
+      "footprint_w": 4,
+      "footprint_h": 4,
+      "weight": 7.0,
+      "placement_cost": 1800,
+      "color": [200, 160, 40]
     },
     {
       "id": "cargo_small",
