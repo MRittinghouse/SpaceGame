@@ -49,6 +49,7 @@ class MainMenuView(BaseView):
         self.new_game_button: Optional[pygame_gui.elements.UIButton] = None
         self.continue_button: Optional[pygame_gui.elements.UIButton] = None
         self.load_game_button: Optional[pygame_gui.elements.UIButton] = None
+        self.settings_button: Optional[pygame_gui.elements.UIButton] = None
         self.exit_button: Optional[pygame_gui.elements.UIButton] = None
 
         # Animated background
@@ -128,8 +129,14 @@ class MainMenuView(BaseView):
             manager=self.ui_manager,
         )
 
-        self.exit_button = pygame_gui.elements.UIButton(
+        self.settings_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(button_x, start_y + spacing * 3, button_width, button_height),
+            text="Settings",
+            manager=self.ui_manager,
+        )
+
+        self.exit_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(button_x, start_y + spacing * 4, button_width, button_height),
             text="Exit",
             manager=self.ui_manager,
         )
@@ -140,6 +147,7 @@ class MainMenuView(BaseView):
             self.new_game_button,
             self.continue_button,
             self.load_game_button,
+            self.settings_button,
             self.exit_button,
         ]:
             if btn:
@@ -196,6 +204,9 @@ class MainMenuView(BaseView):
             elif event.ui_element == self.load_game_button:
                 logger.info("Load Game button pressed")
                 self.next_state = "load_game"
+            elif event.ui_element == self.settings_button:
+                logger.info("Settings button pressed")
+                self.next_state = "settings"
             elif event.ui_element == self.exit_button:
                 logger.info("Exit button pressed")
                 pygame.event.post(pygame.event.Event(pygame.QUIT))
@@ -206,6 +217,7 @@ class MainMenuView(BaseView):
             self.new_game_button,
             self.continue_button,
             self.load_game_button,
+            self.settings_button,
             self.exit_button,
         ]:
             if btn:

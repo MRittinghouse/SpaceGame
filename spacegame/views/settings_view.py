@@ -63,7 +63,7 @@ class SettingsView(BaseView):
         self.background = AnimatedBackground("deep_space", WINDOW_WIDTH, WINDOW_HEIGHT, seed=96)
         self._bg_dim = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
         self._bg_dim.fill((0, 0, 0))
-        self._bg_dim.set_alpha(120)
+        self._bg_dim.set_alpha(230)  # Nearly opaque so game doesn't bleed through
 
         # UI Elements — save directory
         self.save_dir_label: Optional[pygame_gui.elements.UILabel] = None
@@ -478,13 +478,25 @@ class SettingsView(BaseView):
 
     def render(self, screen: pygame.Surface) -> None:
         """Render settings view."""
-        # Animated background
+        # Full-screen opaque background (covers game underneath completely)
         self.background.render(screen)
         screen.blit(self._bg_dim, (0, 0))
 
+        # Settings panel background (dark card for readability)
+        panel_w = scale_x(840)
+        panel_h = WINDOW_HEIGHT - scale_y(40)
+        panel_x = (WINDOW_WIDTH - panel_w) // 2
+        panel_y = scale_y(20)
+        panel_surf = pygame.Surface((panel_w, panel_h), pygame.SRCALPHA)
+        panel_surf.fill((10, 14, 25, 240))
+        screen.blit(panel_surf, (panel_x, panel_y))
+        pygame.draw.rect(
+            screen, (40, 50, 70), (panel_x, panel_y, panel_w, panel_h), 1, border_radius=8
+        )
+
         # Title
         title = self.title_font.render("SETTINGS", True, Colors.TEXT_HIGHLIGHT)
-        title_rect = title.get_rect(center=(WINDOW_WIDTH // 2, 50))
+        title_rect = title.get_rect(center=(WINDOW_WIDTH // 2, scale_y(50)))
         screen.blit(title, title_rect)
 
     def should_close_dialog(self) -> bool:

@@ -866,6 +866,9 @@ class Game:
             elif next_state == "load_game":
                 self.main_menu_view.next_state = None
                 self._open_load_dialog()
+            elif next_state == "settings":
+                self.main_menu_view.next_state = None
+                self._open_settings_from_menu()
 
         # Check name input view for transitions
         if self.name_input_view and self.name_input_view.active:
@@ -3195,6 +3198,10 @@ class Game:
         )
         self.settings_view.on_enter()
         logger.info("Opened settings dialog")
+
+    def _open_settings_from_menu(self) -> None:
+        """Open settings dialog from the main menu."""
+        self._open_settings_dialog()
 
     def _handle_save_load_dialog(self) -> None:
         """Handle save/load dialog."""
