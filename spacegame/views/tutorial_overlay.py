@@ -88,7 +88,7 @@ class TutorialOverlay:
             self.btn_font,
         )
         self.skip_button = _Button(
-            pygame.Rect(self.panel_x + scale_x(20), btn_y, scale_x(150), scale_y(40)),
+            pygame.Rect(self.panel_x + scale_x(20), btn_y, scale_x(190), scale_y(40)),
             "SKIP TUTORIAL",
             self.btn_font,
         )
