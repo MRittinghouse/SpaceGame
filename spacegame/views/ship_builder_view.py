@@ -237,7 +237,6 @@ class ShipBuilderView(BaseView):
         self._slot_palette_scroll: int = 0
 
         # EQUIP mode moved to Loadout tab (Phase S4)
-        self._equip_selected_module_idx: Optional[int] = None  # Legacy, kept for compat
 
         # Visual feedback (Phase 10)
         self._placement_flash_timer: float = 0.0
@@ -476,7 +475,7 @@ class ShipBuilderView(BaseView):
                 # Cycle through module → hull → equip
                 cycle = {"slot": "hull", "hull": "slot"}
                 self._builder_mode = cycle.get(self._builder_mode, "slot")
-                self._equip_selected_module_idx = None
+                # EQUIP mode removed
                 try:
                     get_audio_manager().play_sfx("ui_click")
                 except Exception:
@@ -593,7 +592,7 @@ class ShipBuilderView(BaseView):
                 bx = start_x + i * (btn_w + gap)
                 if bx <= mx < bx + btn_w:
                     self._builder_mode = mode_id
-                    self._equip_selected_module_idx = None
+                    # EQUIP mode removed
                     return
 
         # --- Frame variant click (header area, Medium+ only) ---
@@ -639,19 +638,6 @@ class ShipBuilderView(BaseView):
                 else:
                     self._select_slot_at(*grid_pos)
             return
-
-        # --- EQUIP mode routing (disabled — moves to Loadout tab) ---
-        # if self._builder_mode == "equip":
-        #     if SHAPE_PANEL_X <= mx < SHAPE_PANEL_X + SHAPE_PANEL_W:
-        #         self._handle_equip_slot_list_click(mx, my)
-        #         return
-        #     if MATERIAL_PANEL_X <= mx < MATERIAL_PANEL_X + MATERIAL_PANEL_W:
-        #         self._handle_equip_panel_click(mx, my)
-        #         return
-        #     grid_pos = self._screen_to_grid(mx, my)
-        #     if grid_pos:
-        #         self._select_equip_module_at(*grid_pos)
-        #     return
 
         # --- Hull mode routing (existing behavior) ---
         # Click on shape palette
@@ -1832,9 +1818,6 @@ class ShipBuilderView(BaseView):
         if self._builder_mode == "slot":
             self._render_slot_palette(screen)
             self._render_requirements_checklist(screen)
-        # elif self._builder_mode == "equip":  # disabled — moves to Loadout tab
-        #     self._render_equip_slot_list(screen)
-        #     self._render_equip_panel(screen)
         else:
             self._render_shape_palette(screen)
             self._render_material_panel(screen)
@@ -2815,42 +2798,7 @@ class ShipBuilderView(BaseView):
         screen.blit(com_label, (panel_x + 10, row_y + 2))
         self._com_toggle_rect = com_rect
 
-    # ------------------------------------------------------------------
-    # EQUIP Mode — delegated to builder_equip_mode.EquipModeHelper
-    # See spacegame/views/builder_equip_mode.py for implementation.
-    # ------------------------------------------------------------------
-
-    def _get_equip_helper(self):
-        """Lazy-create the EQUIP mode helper."""
-        if not hasattr(self, "_equip_helper") or self._equip_helper is None:
-            from spacegame.views.builder_equip_mode import EquipModeHelper
-
-            self._equip_helper = EquipModeHelper(self)
-        return self._equip_helper
-
-    def _get_equip_slots(self) -> list[dict]:
-        return self._get_equip_helper().get_equip_slots()
-
-    def _get_compatible_upgrades(self, slot_type: str) -> list:
-        return self._get_equip_helper().get_compatible_upgrades(slot_type)
-
-    def _select_equip_module_at(self, gx: int, gy: int) -> None:
-        self._get_equip_helper().select_module_at(gx, gy)
-
-    def _handle_equip_slot_list_click(self, mx: int, my: int) -> None:
-        self._get_equip_helper().handle_slot_list_click(mx, my)
-
-    def _handle_equip_panel_click(self, mx: int, my: int) -> None:
-        self._get_equip_helper().handle_panel_click(mx, my)
-
-    def _render_equip_slot_list(self, screen: pygame.Surface) -> None:
-        self._get_equip_helper().render_slot_list(screen)
-
-    def _render_equip_panel(self, screen: pygame.Surface) -> None:
-        self._get_equip_helper().render_panel(screen)
-
-    # NOTE: ~260 lines of dead inline EQUIP code removed (was _DEAD_CODE_START).
-    # Implementation lives in builder_equip_mode.py via EquipModeHelper.
+    # EQUIP mode removed — equipment assignment lives in the Loadout tab (Phase S4)
 
     def _render_recolor_panel(self, screen: pygame.Surface) -> None:
         """Render the recolor material selection panel (right side, module recolor mode)."""

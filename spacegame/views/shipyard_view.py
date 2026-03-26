@@ -165,7 +165,6 @@ class ShipyardView(BaseView):
         super().on_enter()
         self._scroll_offset = 0
         self._tuning_mode = False
-        self._parts_hide_owned = True  # Default: hide owned parts to reduce clutter
         self._load_ship_anim()
         self._create_ui()
 
@@ -436,17 +435,6 @@ class ShipyardView(BaseView):
                         self.selected_upgrade_idx = 0
                         self._scroll_offset = 0
                         return
-            # Parts toggle click
-            if (
-                self.viewing == "shop"
-                and self._shop_sub_tab != "frames"
-                and hasattr(self, "_parts_toggle_rect")
-                and self._parts_toggle_rect.collidepoint(event.pos)
-            ):
-                self._parts_hide_owned = not self._parts_hide_owned
-                self.selected_upgrade_idx = 0
-                self._scroll_offset = 0
-                return
             if not self._tuning_mode:
                 self._handle_item_click(event.pos)
 
@@ -2115,171 +2103,6 @@ class ShipyardView(BaseView):
     # ========================================================================
     # Shop tab
     # ========================================================================
-
-    # ------------------------------------------------------------------
-    # Parts Tab (Phase 12 — Module Blueprints)
-    # ------------------------------------------------------------------
-
-    def _get_station_parts(self) -> list:
-        """Get module blueprints available at the current station, filtered by owned toggle."""
-        from spacegame.data_loader import get_data_loader
-        from spacegame.models.build_sharing import get_station_modules
-
-        dl = get_data_loader()
-        catalogs = getattr(dl, "drydock_catalogs", {})
-        module_catalog = getattr(dl, "ship_modules", {})
-        all_parts = get_station_modules(self.player.current_system_id, catalogs, module_catalog)
-        if getattr(self, "_parts_hide_owned", False):
-            return [p for p in all_parts if p.id not in self.player.unlocked_modules]
-        return all_parts
-
-    def _get_station_price_modifier(self) -> float:
-        """Get the price modifier for the current station."""
-        from spacegame.data_loader import get_data_loader
-
-        dl = get_data_loader()
-        catalogs = getattr(dl, "drydock_catalogs", {})
-        entry = catalogs.get(self.player.current_system_id, {})
-        return entry.get("price_modifier", 1.0)
-
-    def _render_parts(self, screen: pygame.Surface) -> None:
-        """Render the module blueprint parts shop."""
-        header = self.header_font.render("MODULE BLUEPRINTS", True, Colors.TEXT_HIGHLIGHT)
-        screen.blit(header, (40, scale_y(140)))
-
-        # Show/Hide owned toggle
-        hide_owned = getattr(self, "_parts_hide_owned", False)
-        toggle_label = "Show Owned" if hide_owned else "Hide Owned"
-        toggle_color = Colors.TEXT_SECONDARY if hide_owned else Colors.GREEN
-        toggle_bg = (30, 35, 50) if hide_owned else (25, 45, 35)
-        toggle_w = scale_x(110)
-        toggle_h = scale_y(24)
-        toggle_x = WINDOW_WIDTH - toggle_w - 40
-        toggle_y = scale_y(142)
-        toggle_rect = pygame.Rect(toggle_x, toggle_y, toggle_w, toggle_h)
-        pygame.draw.rect(screen, toggle_bg, toggle_rect, border_radius=3)
-        pygame.draw.rect(screen, toggle_color, toggle_rect, 1, border_radius=3)
-        tl_surf = self.small_font.render(toggle_label, True, toggle_color)
-        screen.blit(tl_surf, (toggle_x + toggle_w // 2 - tl_surf.get_width() // 2, toggle_y + 3))
-        self._parts_toggle_rect = toggle_rect
-
-        parts = self._get_station_parts()
-        if not parts:
-            msg = (
-                "All blueprints owned!"
-                if hide_owned
-                else "No module blueprints available at this station."
-            )
-            empty = self.info_font.render(msg, True, Colors.TEXT_SECONDARY)
-            screen.blit(empty, (60, scale_y(180)))
-            return
-
-        price_mod = self._get_station_price_modifier()
-        hud_h = scale_y(HUD_BASE_HEIGHT)
-        list_y = _LIST_Y
-        list_h = WINDOW_HEIGHT - hud_h - list_y - scale_y(80)
-        card_h = scale_y(52)
-        # Clamp selection and scroll
-        self.selected_upgrade_idx = max(0, min(self.selected_upgrade_idx, len(parts) - 1))
-
-        from spacegame.data_loader import get_data_loader
-
-        materials = getattr(get_data_loader(), "hull_materials", {})
-
-        for i, module in enumerate(parts):
-            card_y = list_y + (i * card_h) - self._scroll_offset
-            if card_y + card_h < list_y or card_y > list_y + list_h:
-                continue
-
-            is_selected = i == self.selected_upgrade_idx
-            is_owned = module.id in self.player.unlocked_modules
-            is_locked = module.unlock_method not in ("purchase", "free")
-
-            # Card background
-            if is_selected:
-                bg = (35, 55, 90)
-            elif is_owned:
-                bg = (20, 35, 25)
-            else:
-                bg = (18, 22, 35)
-            pygame.draw.rect(
-                screen, bg, (30, card_y, WINDOW_WIDTH - 60, card_h - 2), border_radius=4
-            )
-            if is_selected:
-                border = Colors.TEXT_HIGHLIGHT if not is_locked else (150, 80, 80)
-                pygame.draw.rect(
-                    screen, border, (30, card_y, WINDOW_WIDTH - 60, card_h - 2), 1, border_radius=4
-                )
-
-            # Module mini-preview
-            preview_size = scale_y(22)
-            px_start = 40
-            py_start = card_y + 4
-            pw, ph = module.width, module.height
-            if pw > 0 and ph > 0:
-                ps = min(preview_size / pw, preview_size / ph)
-                for lx, ly, char in module.filled_pixels():
-                    mat_id = module.material_map.get(char, "")
-                    mat = materials.get(mat_id)
-                    color = mat.color_primary if mat else (100, 100, 100)
-                    if is_locked:
-                        avg = (color[0] + color[1] + color[2]) // 3
-                        color = (avg // 2, avg // 2, avg // 2)
-                    rx = int(px_start + lx * ps)
-                    ry = int(py_start + ly * ps)
-                    rw = max(1, int(ps))
-                    pygame.draw.rect(screen, color, (rx, ry, rw, rw))
-
-            # Name and manufacturer
-            text_x = 48 + preview_size
-            cat_colors = {
-                "cockpit": (100, 180, 255),
-                "engine": (255, 180, 80),
-                "weapon": (255, 80, 80),
-                "shield": (80, 220, 255),
-                "cargo": (255, 220, 80),
-                "utility": (80, 255, 120),
-                "structural": (160, 160, 180),
-                "crew": (120, 200, 120),
-                "reactor": (180, 100, 240),
-            }
-            name_color = Colors.TEXT_PRIMARY if not is_locked else (80, 80, 90)
-            name_surf = self.info_font.render(module.name, True, name_color)
-            screen.blit(name_surf, (text_x, card_y + 4))
-
-            mfg = module.manufacturer.replace("_", " ").title()
-            cat = module.category.upper()
-            cat_color = cat_colors.get(module.category, Colors.TEXT_SECONDARY)
-            if is_locked:
-                cat_color = (60, 60, 70)
-            detail = self.small_font.render(f"{cat}  {mfg}  W:{module.weight:.1f}", True, cat_color)
-            screen.blit(detail, (text_x, card_y + 20))
-
-            # Right side: price or status
-            right_x = WINDOW_WIDTH - 180
-            if is_owned:
-                owned_surf = self.info_font.render("\u2713 OWNED", True, Colors.GREEN)
-                screen.blit(owned_surf, (right_x, card_y + 8))
-            elif is_locked:
-                lock_method = module.unlock_method.replace("_", " ").title()
-                lock_surf = self.small_font.render(f"\U0001f512 {lock_method}", True, (150, 80, 80))
-                screen.blit(lock_surf, (right_x, card_y + 4))
-                if module.unlock_source:
-                    src = module.unlock_source.replace("_", " ").title()
-                    src_surf = self.small_font.render(src, True, (120, 70, 70))
-                    screen.blit(src_surf, (right_x, card_y + 18))
-            else:
-                price = int(module.unlock_cost * price_mod)
-                affordable = self.player.credits >= price
-                price_color = Colors.TEXT_PRIMARY if affordable else (200, 80, 80)
-                price_surf = self.info_font.render(f"{price:,} CR", True, price_color)
-                screen.blit(price_surf, (right_x, card_y + 8))
-
-            # Description (truncated)
-            if is_selected and module.description:
-                desc = module.description[:80]
-                desc_surf = self.small_font.render(desc, True, Colors.TEXT_SECONDARY)
-                screen.blit(desc_surf, (text_x, card_y + 34))
 
     def _buy_selected_part(self) -> None:
         """Purchase the selected ShipPart into inventory."""
