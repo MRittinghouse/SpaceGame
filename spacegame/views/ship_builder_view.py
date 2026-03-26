@@ -247,10 +247,12 @@ class ShipBuilderView(BaseView):
         self._placement_flash_pos: tuple[int, int] = (0, 0)
         self._feedback_messages: list[dict] = []
 
-        # Physics overlay toggles (Phase 6)
+        # Physics overlay toggles (Phase 6 + BP4)
         self._show_integrity_overlay: bool = False
         self._show_com_overlay: bool = False
+        self._show_exposure_overlay: bool = False
         self._cached_integrity: Optional[dict] = None
+        self._cached_exposure: Optional[dict] = None
 
         # Live ship preview (BP1)
         self._preview_surface: Optional[pygame.Surface] = None
@@ -646,6 +648,10 @@ class ShipBuilderView(BaseView):
                 return
             if hasattr(self, "_com_toggle_rect") and self._com_toggle_rect.collidepoint(mx, my):
                 self._show_com_overlay = not self._show_com_overlay
+            if hasattr(self, "_exposure_toggle_rect") and self._exposure_toggle_rect.collidepoint(
+                mx, my
+            ):
+                self._show_exposure_overlay = not self._show_exposure_overlay
                 return
 
         # --- Slot mode routing ---
@@ -1784,6 +1790,7 @@ class ShipBuilderView(BaseView):
         )
         # Invalidate physics overlay caches and preview
         self._cached_integrity = None
+        self._cached_exposure = None
         self._preview_dirty = True
 
     def _get_filtered_shapes(self) -> list[HullShape]:
@@ -2206,6 +2213,8 @@ class ShipBuilderView(BaseView):
             self._render_integrity_overlay(screen, ox, oy, cell, cw, ch)
         if self._show_com_overlay:
             self._render_com_overlay(screen, ox, oy, cell)
+        if self._show_exposure_overlay:
+            self._render_exposure_overlay(screen, ox, oy, cell, cw, ch)
 
         # Grid border
         pygame.draw.rect(screen, Colors.UI_BORDER, (ox - 1, oy - 1, grid_w + 2, grid_h + 2), 1)
@@ -2950,6 +2959,21 @@ class ShipBuilderView(BaseView):
         screen.blit(com_label, (panel_x + 10, row_y + 2))
         self._com_toggle_rect = com_rect
 
+        row_y += scale_y(18)
+
+        # Exposure overlay toggle (BP4)
+        exp_active = self._show_exposure_overlay
+        exp_bg = (40, 70, 50) if exp_active else (25, 30, 45)
+        exp_rect = pygame.Rect(panel_x + 6, row_y, panel_w - 12, scale_y(16))
+        pygame.draw.rect(screen, exp_bg, exp_rect, border_radius=2)
+        exp_label = self.label_font.render(
+            f"{'[x]' if exp_active else '[ ]'} Combat Exposure",
+            True,
+            Colors.GREEN if exp_active else Colors.TEXT_SECONDARY,
+        )
+        screen.blit(exp_label, (panel_x + 10, row_y + 2))
+        self._exposure_toggle_rect = exp_rect
+
     # EQUIP mode removed — equipment assignment lives in the Loadout tab (Phase S4)
 
     def _render_recolor_panel(self, screen: pygame.Surface) -> None:
@@ -3158,6 +3182,103 @@ class ShipBuilderView(BaseView):
         # Label
         label = self.label_font.render(f"CoM {offset_pct:.0f}%", True, color)
         screen.blit(label, (cx + arm_len + 4, cy - 6))
+
+    def _compute_exposure(self, cw: int, ch: int) -> dict[tuple[int, int], float]:
+        """Compute per-cell combat exposure scores.
+
+        Exposure is based on:
+        - Column position: bow (right) is more exposed, stern (left) is safer
+        - Edge proximity: cells on the silhouette edge are more vulnerable
+        - Neighbor density: isolated cells are more exposed than interior ones
+
+        Returns:
+            Dict mapping (x, y) -> exposure score (0.0 safe to 1.0 exposed).
+        """
+        from spacegame.models.ship_module import resolve_all_pixels
+
+        catalog = self._get_module_catalog()
+        all_pixels = resolve_all_pixels(self.build, catalog)
+
+        # Also include slot footprint cells
+        slot_defs = getattr(self.data_loader, "slot_definitions", {})
+        slot_cells: set[tuple[int, int]] = set()
+        for ps in self.build.placed_slots:
+            sdef = slot_defs.get(ps.slot_def_id)
+            if not sdef:
+                continue
+            fw, fh, r_mask = sdef.get_rotated(ps.rotation)
+            for ly in range(fh):
+                for lx in range(fw):
+                    if r_mask:
+                        if ly < len(r_mask) and lx < len(r_mask[ly]) and r_mask[ly][lx] == "X":
+                            slot_cells.add((ps.x + lx, ps.y + ly))
+                    else:
+                        slot_cells.add((ps.x + lx, ps.y + ly))
+
+        filled: set[tuple[int, int]] = {(p.x, p.y) for p in all_pixels} | slot_cells
+        if not filled:
+            return {}
+
+        # Find bounding box for normalization
+        min_x = min(x for x, _ in filled)
+        max_x = max(x for x, _ in filled)
+        x_range = max(1, max_x - min_x)
+
+        exposure: dict[tuple[int, int], float] = {}
+        for x, y in filled:
+            # Factor 1: Column position (0 at stern/left, 1 at bow/right)
+            col_factor = (x - min_x) / x_range
+
+            # Factor 2: Edge proximity — count filled neighbors in 8 directions
+            neighbor_count = 0
+            for dx in (-1, 0, 1):
+                for dy in (-1, 0, 1):
+                    if dx == 0 and dy == 0:
+                        continue
+                    if (x + dx, y + dy) in filled:
+                        neighbor_count += 1
+            # 8 neighbors = fully interior (0.0), 0 neighbors = fully exposed (1.0)
+            edge_factor = 1.0 - (neighbor_count / 8.0)
+
+            # Combine: 60% column position + 40% edge proximity
+            score = 0.6 * col_factor + 0.4 * edge_factor
+            exposure[(x, y)] = min(1.0, score)
+
+        return exposure
+
+    def _render_exposure_overlay(
+        self,
+        screen: pygame.Surface,
+        ox: int,
+        oy: int,
+        cell: int,
+        cw: int,
+        ch: int,
+    ) -> None:
+        """Render combat exposure heat map over ship cells."""
+        if self._cached_exposure is None:
+            self._cached_exposure = self._compute_exposure(cw, ch)
+
+        for (x, y), score in self._cached_exposure.items():
+            px = ox + x * cell
+            py = oy + y * cell
+            # Color gradient: green (safe) -> yellow -> red (exposed)
+            if score >= 0.6:
+                # Red zone
+                t = min(1.0, (score - 0.6) / 0.4)
+                r, g, b = int(200 + 55 * t), int(100 * (1 - t)), 30
+            elif score >= 0.3:
+                # Yellow zone
+                t = (score - 0.3) / 0.3
+                r, g, b = int(100 + 155 * t), int(200 - 100 * t), 30
+            else:
+                # Green zone
+                t = score / 0.3
+                r, g, b = int(50 + 50 * t), int(180 + 20 * t), int(80 - 50 * t)
+            alpha = int(40 + 60 * score)  # More exposed = more visible
+            overlay = pygame.Surface((cell - 1, cell - 1), pygame.SRCALPHA)
+            overlay.fill((r, g, b, alpha))
+            screen.blit(overlay, (px + 1, py + 1))
 
     def _render_stats_panel(self, screen: pygame.Surface) -> None:
         """Render the ship stats and weight/power bars at the bottom."""
