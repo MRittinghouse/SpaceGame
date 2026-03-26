@@ -220,6 +220,54 @@
     "ui_scroll": {
       "file": "sfx/ui/ui_scroll.wav",
       "volume": 0.3
+    },
+    "build_place_cockpit": {
+      "file": "sfx/builder/place_cockpit.wav",
+      "volume": 0.7
+    },
+    "build_place_weapon": {
+      "file": "sfx/builder/place_weapon.wav",
+      "volume": 0.7
+    },
+    "build_place_defense": {
+      "file": "sfx/builder/place_defense.wav",
+      "volume": 0.7
+    },
+    "build_place_engine": {
+      "file": "sfx/builder/place_engine.wav",
+      "volume": 0.7
+    },
+    "build_place_utility": {
+      "file": "sfx/builder/place_utility.wav",
+      "volume": 0.7
+    },
+    "build_place_fuel": {
+      "file": "sfx/builder/place_fuel.wav",
+      "volume": 0.7
+    },
+    "build_place_cargo": {
+      "file": "sfx/builder/place_cargo.wav",
+      "volume": 0.7
+    },
+    "build_place_crew": {
+      "file": "sfx/builder/place_crew.wav",
+      "volume": 0.7
+    },
+    "build_place_reactor": {
+      "file": "sfx/builder/place_reactor.wav",
+      "volume": 0.7
+    },
+    "build_slot_remove": {
+      "file": "sfx/builder/slot_remove.wav",
+      "volume": 0.6
+    },
+    "build_slot_rotate": {
+      "file": "sfx/builder/slot_rotate.wav",
+      "volume": 0.5
+    },
+    "build_slot_variant": {
+      "file": "sfx/builder/slot_variant.wav",
+      "volume": 0.5
     }
   }
 }

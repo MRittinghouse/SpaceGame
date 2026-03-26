@@ -501,6 +501,10 @@ class ShipBuilderView(BaseView):
             elif event.key == pygame.K_r:
                 if self._builder_mode == "slot":
                     self._module_rotation = (self._module_rotation + 1) % 4
+                    try:
+                        get_audio_manager().play_sfx("build_slot_rotate")
+                    except Exception:
+                        pass
                 else:
                     self._shape_rotation = (self._shape_rotation + 1) % 4
             elif event.key == pygame.K_q:
@@ -1016,6 +1020,10 @@ class ShipBuilderView(BaseView):
         idx = (idx + 1) % len(vg_ids)
         self._slot_variant_index[vg] = idx
         self._selected_slot_def_id = vg_ids[idx]
+        try:
+            get_audio_manager().play_sfx("build_slot_variant")
+        except Exception:
+            pass
 
     def _get_slot_type_counts(self) -> dict[str, int]:
         """Count how many placed slots exist per slot type."""
@@ -1123,9 +1131,10 @@ class ShipBuilderView(BaseView):
             )
             self._modified = True
             self._recompute_stats()
-            # Placement feedback
+            # Placement feedback — type-specific sound
+            sfx_id = f"build_place_{sdef.slot_type}"
             try:
-                get_audio_manager().play_sfx("ui_build")
+                get_audio_manager().play_sfx(sfx_id)
             except Exception:
                 pass
             cell = self._get_cell_size()
@@ -1168,7 +1177,7 @@ class ShipBuilderView(BaseView):
                 self._modified = True
                 self._recompute_stats()
                 try:
-                    get_audio_manager().play_sfx("ui_cancel")
+                    get_audio_manager().play_sfx("build_slot_remove")
                 except Exception:
                     pass
                 return
