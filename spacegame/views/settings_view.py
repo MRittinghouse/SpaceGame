@@ -251,21 +251,6 @@ class SettingsView(BaseView):
             y += 22
         y += 20
 
-        # === Tutorial Section ===
-        self._misc_labels.append(
-            pygame_gui.elements.UILabel(
-                relative_rect=pygame.Rect(panel_x, y, panel_width, 30),
-                text="Tutorial:",
-                manager=self.ui_manager,
-            )
-        )
-        y += 35
-        self.replay_tutorial_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(panel_x, y, scale_x(200), scale_y(40)),
-            text="REPLAY TUTORIAL",
-            manager=self.ui_manager,
-        )
-
         # === Bottom buttons ===
         self.back_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
@@ -294,7 +279,6 @@ class SettingsView(BaseView):
             self.save_dir_display,
             self.browse_button,
             self.reset_button,
-            self.replay_tutorial_button,
             self.back_button,
             self.apply_button,
             self._master_slider,
@@ -326,8 +310,6 @@ class SettingsView(BaseView):
             elif event.ui_element == self.reset_button:
                 self._reset_to_default()
 
-            elif event.ui_element == self.replay_tutorial_button:
-                self._replay_tutorial()
 
             elif event.ui_element == self._fullscreen_button:
                 self._selected_fullscreen = not self._selected_fullscreen

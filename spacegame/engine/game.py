@@ -4595,15 +4595,20 @@ class Game:
             # Render to intermediate surface for screen shake
             render_surface = self.screen
             self.screen.fill(Colors.BACKGROUND)
-            self.state_manager.render(render_surface)
 
-            # Render pause menu overlay if paused
-            if self.paused and self.pause_menu_view:
-                self.pause_menu_view.render(render_surface)
+            # Settings view replaces all other rendering when active
+            if self.settings_view:
+                self.settings_view.render(render_surface)
+            else:
+                self.state_manager.render(render_surface)
 
-            # Render save/load dialog on top of pause menu
-            if self.save_load_view:
-                self.save_load_view.render(render_surface)
+                # Render pause menu overlay if paused
+                if self.paused and self.pause_menu_view:
+                    self.pause_menu_view.render(render_surface)
+
+                # Render save/load dialog on top of pause menu
+                if self.save_load_view:
+                    self.save_load_view.render(render_surface)
 
             # Transition overlay (on top of game, under UI)
             if self.transition_manager.active:
