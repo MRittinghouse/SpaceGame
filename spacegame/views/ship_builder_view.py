@@ -923,6 +923,9 @@ class ShipBuilderView(BaseView):
     def _get_slot_definitions_grouped(self) -> list[tuple[str, list[SlotDefinition]]]:
         """Return slot definitions grouped by type in display order.
 
+        Faction-locked slots are hidden until the player reaches the
+        required reputation tier. This keeps the palette clean.
+
         Returns:
             List of (slot_type, [SlotDefinition, ...]) tuples ordered by
             _SLOT_TYPE_ORDER.
@@ -930,6 +933,10 @@ class ShipBuilderView(BaseView):
         slot_defs = getattr(self.data_loader, "slot_definitions", {})
         groups: dict[str, list[SlotDefinition]] = {}
         for sd in slot_defs.values():
+            # Hide faction-locked slots the player hasn't unlocked
+            if sd.unlock_faction:
+                if not self._is_slot_unlocked(sd):
+                    continue
             groups.setdefault(sd.slot_type, []).append(sd)
         # Sort each group by size order: small, medium, large
         from spacegame.models.slot_definition import SIZE_ORDER
@@ -942,6 +949,16 @@ class ShipBuilderView(BaseView):
             if st in groups:
                 result.append((st, groups[st]))
         return result
+
+    def _is_slot_unlocked(self, sd: SlotDefinition) -> bool:
+        """Check if a faction-locked slot definition is available to the player."""
+        if not sd.unlock_faction:
+            return True
+        tier = self.player.get_reputation_tier(sd.unlock_faction)
+        tier_order = {"hostile": 0, "unfriendly": 1, "neutral": 2, "friendly": 3, "allied": 4}
+        required = tier_order.get(sd.unlock_rep_tier, 3)
+        current = tier_order.get(tier.value, 2)
+        return current >= required
 
     def _get_slot_type_counts(self) -> dict[str, int]:
         """Count how many placed slots exist per slot type."""

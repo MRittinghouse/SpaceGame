@@ -74,6 +74,9 @@ class SlotDefinition:
     weight: float
     placement_cost: int
     color: tuple[int, int, int]
+    custom_name: str = ""  # Override display name (e.g., "Scout Pod")
+    unlock_faction: str = ""  # Faction ID required (empty = always available)
+    unlock_rep_tier: str = ""  # Min reputation tier ("friendly", "allied")
 
     @property
     def grid_area(self) -> int:
@@ -82,7 +85,9 @@ class SlotDefinition:
 
     @property
     def display_name(self) -> str:
-        """Human-readable name like 'Weapon (S)' or 'Crew Quarters (M)'."""
+        """Human-readable name."""
+        if self.custom_name:
+            return self.custom_name
         type_name = _TYPE_DISPLAY.get(self.slot_type, self.slot_type.title())
         size_label = _SIZE_DISPLAY.get(self.size, self.size[0].upper())
         return f"{type_name} ({size_label})"
@@ -105,7 +110,7 @@ class SlotDefinition:
 
     def to_dict(self) -> dict:
         """Serialize to a JSON-compatible dict."""
-        return {
+        d = {
             "id": self.id,
             "slot_type": self.slot_type,
             "size": self.size,
@@ -115,6 +120,12 @@ class SlotDefinition:
             "placement_cost": self.placement_cost,
             "color": list(self.color),
         }
+        if self.custom_name:
+            d["custom_name"] = self.custom_name
+        if self.unlock_faction:
+            d["unlock_faction"] = self.unlock_faction
+            d["unlock_rep_tier"] = self.unlock_rep_tier
+        return d
 
     @classmethod
     def from_dict(cls, data: dict) -> "SlotDefinition":
@@ -129,4 +140,7 @@ class SlotDefinition:
             weight=data.get("weight", 1.0),
             placement_cost=data.get("placement_cost", 100),
             color=tuple(color),
+            custom_name=data.get("custom_name", ""),
+            unlock_faction=data.get("unlock_faction", ""),
+            unlock_rep_tier=data.get("unlock_rep_tier", ""),
         )

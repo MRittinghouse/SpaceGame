@@ -372,7 +372,7 @@ def _generate_placed_slots(
 
     # Slot type → (slot_def_id, footprint_w, footprint_h, count)
     slot_plan = [
-        ("cockpit_small", 2, 2, 1),
+        ("cockpit_scout_pod", 2, 2, 1),
         ("engine_small", 2, 3, max(1, getattr(ship_type, "utility_slots", 2) // 3)),
         ("reactor_small", 2, 2, 1),
         ("weapon_small", 2, 2, getattr(ship_type, "weapon_slots", 1)),
