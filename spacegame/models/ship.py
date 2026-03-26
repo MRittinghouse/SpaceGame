@@ -144,6 +144,7 @@ class Ship:
                 module_catalog=module_catalog,
                 slot_definitions=slot_defs,
                 parts_catalog=parts_catalog,
+                ship_type=self.ship_type,
             )
             # Create or update the composite renderer
             try:

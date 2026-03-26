@@ -1790,6 +1790,7 @@ class ShipBuilderView(BaseView):
             equipment,
             module_catalog=module_catalog,
             slot_definitions=slot_definitions,
+            ship_type=self.player.ship.ship_type,
         )
         # Invalidate physics overlay caches and preview
         self._cached_integrity = None

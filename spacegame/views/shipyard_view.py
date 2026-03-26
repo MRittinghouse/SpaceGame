@@ -1226,6 +1226,7 @@ class ShipyardView(BaseView):
             module_catalog=module_cat,
             slot_definitions=slot_defs,
             parts_catalog=parts_cat,
+            ship_type=self.player.ship.ship_type,
         )
 
     def _get_loadout_grid_params(self) -> Optional[dict]:

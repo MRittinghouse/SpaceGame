@@ -801,6 +801,7 @@ class ShipStatsComputer:
         module_catalog: Optional[dict] = None,
         slot_definitions: Optional[dict] = None,
         parts_catalog: Optional[dict] = None,
+        ship_type: Optional[object] = None,
     ) -> ComputedShipStats:
         """Compute all ship stats from the build configuration.
 
@@ -809,6 +810,10 @@ class ShipStatsComputer:
         stats come from slot definitions + equipped parts. Otherwise
         falls back to the module path.
 
+        When ship_type is provided, the frame's base stats (cargo, fuel,
+        hull, shields, speed, evasion) are included as a foundation.
+        Parts add on top of these base values.
+
         Args:
             build: The ship build to compute stats for.
             materials: Material definitions keyed by ID.
@@ -816,6 +821,7 @@ class ShipStatsComputer:
             module_catalog: Ship module blueprints keyed by ID (optional).
             slot_definitions: SlotDefinition catalog keyed by ID (optional).
             parts_catalog: ShipPart catalog keyed by ID (optional).
+            ship_type: ShipType for frame base stats (optional).
 
         Returns:
             ComputedShipStats with all derived values.
@@ -832,6 +838,16 @@ class ShipStatsComputer:
         stats = ComputedShipStats()
         wc = WEIGHT_CLASSES.get(build.weight_class, WEIGHT_CLASSES["medium"])
         stats.weight_max = wc["max_weight"]
+
+        # --- Frame base stats (from ShipType) ---
+        # The frame provides baseline capabilities; parts enhance them.
+        if ship_type is not None:
+            stats.cargo_capacity += getattr(ship_type, "cargo_capacity", 0)
+            stats.fuel_capacity += getattr(ship_type, "fuel_capacity", 0)
+            stats.hull += getattr(ship_type, "combat_hull", 0)
+            stats.shields += getattr(ship_type, "combat_shields", 0)
+            stats.speed += getattr(ship_type, "combat_speed", 0)
+            stats.evasion += getattr(ship_type, "combat_evasion", 0)
 
         # --- NEW: Slot + Part stat contributions ---
         if build.placed_slots:
