@@ -720,19 +720,24 @@ class TestRareChanceWiring:
 
     def test_rare_bonus_increases_rare_weight(self) -> None:
         """Large rare bonus produces statistically more rare rocks."""
+        import random as rng_module
+
         config = MiningConfig(
             system_id="test",
             grid_width=10,
             grid_height=10,
             rock_distribution={"common": 0.50, "iron": 0.30, "crystal": 0.15, "rare": 0.05},
         )
+        # Seed for deterministic results across runs
+        rng_module.seed(42)
         counts_base = 0
-        for _ in range(20):
+        for _ in range(50):
             session = MiningSession(config, rare_chance_bonus=0.0, starting_depth=9)
             counts_base += sum(1 for r in session.rocks if r.rock_type == RockType.RARE)
 
+        rng_module.seed(42)
         counts_bonus = 0
-        for _ in range(20):
+        for _ in range(50):
             session = MiningSession(config, rare_chance_bonus=5.0, starting_depth=9)
             counts_bonus += sum(1 for r in session.rocks if r.rock_type == RockType.RARE)
 
