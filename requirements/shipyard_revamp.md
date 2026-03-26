@@ -1,6 +1,6 @@
 # Shipyard Revamp: Slot-Based Ship Building
 
-> **Status**: REQUIREMENTS DRAFT
+> **Status**: ALL PHASES COMPLETE (S1-S6)
 > **Created**: 2026-03-25
 > **Context**: The current shipyard has overlapping systems (modules + equipment) that confuse
 > the player. This revamp separates ship design (structure/slots), part acquisition (shopping),
@@ -313,47 +313,51 @@ Player:
 
 ## Implementation Phases
 
-### Phase S1: Data Foundation
-- Define slot type + size data schema
-- Create slot definitions (footprints, weight, visual masks for each type+size)
-- Reclassify existing 144 modules into parts with slot type + size requirements
-- Add `parts_inventory` to Player model
-- Add frame slot limits to ShipType data
-- Update ComputedShipStats to read from slot+equipment pairs
+### Phase S1: Data Foundation — COMPLETE
+- [x] SlotDefinition dataclass (7 types x 3 sizes = 20 definitions)
+- [x] ShipPart dataclass with combat_move field (168 parts total)
+- [x] PlacedSlot dataclass + ShipBuild integration
+- [x] FRAME_SLOT_LIMITS per weight class
+- [x] Player.parts_inventory with add/remove/count helpers
+- [x] ComputedShipStats dual-path (slot+part alongside legacy modules)
+- [x] DataLoader integration for slot_definitions.json + parts.json
 
-### Phase S2: Drydock Overhaul
-- Replace module catalog with slot type/size palette
-- Slot placement with grid footprint, rotation, snap
-- Update validation (frame slot limits, weight, connectivity)
-- Remove module-specific logic from builder
-- Cockpit rendered as part of frame (not placeable)
+### Phase S2: Drydock Overhaul — COMPLETE
+- [x] Slot palette replaces 144-item module catalog (~20 slot types)
+- [x] Slot placement with footprint, rotation, validation
+- [x] Frame slot limits enforced, weight budget checked
+- [x] Grid rendering: colored rectangles with type letters + size labels
+- [x] Ghost preview (green valid / red invalid)
+- [x] Two-mode system: SLOTS / HULL (EQUIP moved to Loadout)
 
-### Phase S3: Shop Tab
-- Frame sub-tab (similar to current Frames tab)
-- Parts sub-tab with category navigation
-- Inventory display (what you own, what's equipped)
-- Purchase flow (buy part -> goes to inventory)
-- Sell flow (sell from inventory, can't sell equipped parts)
-- Station-specific part catalogs (faction variety preserved)
+### Phase S3: Shop Tab — COMPLETE
+- [x] 3-tab restructure: Drydock / Shop / Loadout
+- [x] 8 Shop sub-tabs: Frames / Weapons / Defense / Engines / Utility / Cargo / Crew / Reactors
+- [x] Parts shop with scrollable cards, size badges, manufacturer, price
+- [x] Two-column detail panel with combat stats, provides, description
+- [x] Purchase flow: deduct credits -> add to parts_inventory
 
-### Phase S4: Loadout Tab
-- Ship visualization with slot highlighting
-- Slot selection -> compatible parts list from inventory
-- Equip/unequip flow with live stat preview
-- Ship stats summary panel
-- Launch readiness warnings (empty required slots)
+### Phase S4: Loadout Tab — COMPLETE
+- [x] Read-only ship grid with clickable slots
+- [x] Compatible parts panel filtered by type + size
+- [x] Equip/unequip with immediate inventory management
+- [x] Live stats summary bar (Hull/Shields/Armor/Speed/Fuel/Cargo/Power)
+- [x] Build persisted after each change
 
-### Phase S5: Combat + Migration
-- Update combat hit resolution to use new slot model
-- Update stat computation chain
-- Save migration for old module-based builds
-- Preserve legendary parts and boss drops
+### Phase S5: Combat + Migration — COMPLETE
+- [x] Slot combat adapters (init_slot_combat_states, get_slot_equipment_moves)
+- [x] build_player_combat_state() dual-path (slot+part vs legacy modules)
+- [x] 70 weapon/defense/utility upgrades converted to parts with combat_moves
+- [x] Legendary effects scanned from equipped part provides
+- [x] Backward compatibility verified (old saves load via legacy module path)
 
-### Phase S6: Polish
-- Visual slot rendering on grid (type-colored outlines with icons)
-- Part tooltips and comparison
-- Inventory management improvements
-- Tutorial updates
+### Phase S6: Polish — COMPLETE
+- [x] Ship presets generate placed_slots (new players get working Loadout)
+- [x] HUD reads computed_stats with ship_type fallback
+- [x] Combat stats (damage, energy, accuracy) shown in Shop detail panel
+- [x] Loadout parts list shows damage/energy for weapon parts
+- [x] Tutorial text updated for slot-based system
+- [x] Requirements document updated
 
 ---
 

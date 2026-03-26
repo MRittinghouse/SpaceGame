@@ -1500,9 +1500,7 @@ class ShipBuilderView(BaseView):
             for stype, count in slot_type_counts.items():
                 limit = limits.get(stype, 0)
                 if count > limit:
-                    warnings.append(
-                        f"Too many {stype} slots: {count}/{limit}"
-                    )
+                    warnings.append(f"Too many {stype} slots: {count}/{limit}")
 
         # LEGACY: Module-based validation
         elif has_modules:

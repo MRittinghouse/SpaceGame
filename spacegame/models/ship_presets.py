@@ -344,6 +344,81 @@ def _place_slots(
     return slots
 
 
+def _generate_placed_slots(
+    ship_type: object,
+    pixels: list[PlacedPixel],
+    canvas_w: int,
+    canvas_h: int,
+) -> list:
+    """Generate PlacedSlot objects from a ShipType's slot counts.
+
+    Places typed slots on the pixel grid at valid positions,
+    using the new slot-based system (PlacedSlot + SlotDefinition).
+
+    Args:
+        ship_type: ShipType with weapon_slots, defense_slots, utility_slots.
+        pixels: Placed hull pixels (slots need filled area underneath).
+        canvas_w: Grid width.
+        canvas_h: Grid height.
+
+    Returns:
+        List of PlacedSlot objects.
+    """
+    from spacegame.models.ship_build import PlacedSlot
+
+    placed: list = []
+    occupied_rects: list[tuple[int, int, int, int]] = []  # (x, y, w, h)
+    filled = {(p.x, p.y) for p in pixels}
+
+    # Slot type → (slot_def_id, footprint_w, footprint_h, count)
+    slot_plan = [
+        ("engine_small", 2, 3, max(1, getattr(ship_type, "utility_slots", 2) // 3)),
+        ("reactor_small", 2, 2, 1),
+        ("weapon_small", 2, 2, getattr(ship_type, "weapon_slots", 1)),
+        ("defense_small", 2, 2, getattr(ship_type, "defense_slots", 1)),
+        ("cargo_small", 2, 3, max(1, getattr(ship_type, "cargo_capacity", 50) // 80)),
+        ("utility_small", 2, 2, max(0, getattr(ship_type, "utility_slots", 2) - 1)),
+        ("crew_quarters_small", 2, 2, 1),
+    ]
+
+    def _find_position(fw: int, fh: int, prefer_rear: bool = False) -> Optional[tuple[int, int]]:
+        cx, cy = canvas_w // 2, canvas_h // 2
+        best = None
+        best_dist = float("inf")
+
+        y_range = range(canvas_h - fh, -1, -1) if prefer_rear else range(canvas_h - fh + 1)
+        for y in y_range:
+            for x in range(canvas_w - fw + 1):
+                # Check footprint cells are filled
+                if not all((x + dx, y + dy) in filled for dx in range(fw) for dy in range(fh)):
+                    continue
+                # No overlap with existing placed slots
+                if any(
+                    x < rx + rw and x + fw > rx and y < ry + rh and y + fh > ry
+                    for rx, ry, rw, rh in occupied_rects
+                ):
+                    continue
+                dist = abs(x + fw // 2 - cx) + abs(y + fh // 2 - cy)
+                if prefer_rear:
+                    dist = -(y)
+                if dist < best_dist:
+                    best_dist = dist
+                    best = (x, y)
+                    if prefer_rear:
+                        return best
+        return best
+
+    for slot_def_id, fw, fh, count in slot_plan:
+        prefer_rear = "engine" in slot_def_id
+        for _ in range(count):
+            pos = _find_position(fw, fh, prefer_rear=prefer_rear)
+            if pos:
+                placed.append(PlacedSlot(slot_def_id=slot_def_id, x=pos[0], y=pos[1]))
+                occupied_rects.append((pos[0], pos[1], fw, fh))
+
+    return placed
+
+
 def generate_preset_from_ship_type(
     ship_type: object,
     materials: Optional[dict[str, HullMaterial]] = None,
@@ -353,6 +428,8 @@ def generate_preset_from_ship_type(
     Creates a build that approximates the ShipType's combat stats
     using the available materials. The build uses an algorithmically
     generated ship silhouette with appropriate material distribution.
+    Includes both legacy DesignatedSlots (for combat compat) and
+    new PlacedSlots (for the Loadout tab).
 
     Args:
         ship_type: ShipType with all combat and slot fields.
@@ -371,13 +448,15 @@ def generate_preset_from_ship_type(
 
     pixel_counts = _compute_pixel_counts(ship_type, weight_class)
     pixels = _place_pixels_in_silhouette(pixel_counts, canvas_w, canvas_h)
-    slots = _place_slots(ship_type, pixels, canvas_w, canvas_h)
+    legacy_slots = _place_slots(ship_type, pixels, canvas_w, canvas_h)
+    placed_slots = _generate_placed_slots(ship_type, pixels, canvas_w, canvas_h)
 
     return ShipBuild(
         weight_class=weight_class,
         pixels=pixels,
-        slots=slots,
+        slots=legacy_slots,
         preset_name=ship_type.name,
+        placed_slots=placed_slots,
     )
 
 

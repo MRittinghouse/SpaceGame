@@ -60,11 +60,12 @@ class TestTutorialHints:
             assert len(hint["title"]) > 0
             assert len(hint["description"]) > 10
 
-    def test_welcome_hint_mentions_modules(self) -> None:
+    def test_welcome_hint_mentions_slots(self) -> None:
         from spacegame.tutorial_manager import MINIGAME_HINTS
 
         desc = MINIGAME_HINTS["builder_module_welcome"]["description"].lower()
-        assert "module" in desc, "Welcome hint should mention modules"
+        assert "slot" in desc, "Welcome hint should mention slots"
+        assert "drydock" in desc, "Welcome hint should mention Drydock"
 
     def test_engine_hint_mentions_stern(self) -> None:
         from spacegame.tutorial_manager import MINIGAME_HINTS
@@ -72,14 +73,13 @@ class TestTutorialHints:
         desc = MINIGAME_HINTS["builder_module_engine"]["description"].lower()
         assert "stern" in desc or "left" in desc, "Engine hint should mention stern/left"
 
-    def test_requirements_hint_lists_categories(self) -> None:
+    def test_requirements_hint_lists_slot_types(self) -> None:
         from spacegame.tutorial_manager import MINIGAME_HINTS
 
         desc = MINIGAME_HINTS["builder_module_requirements"]["description"].lower()
-        assert "cockpit" in desc
         assert "engine" in desc
+        assert "reactor" in desc
         assert "weapon" in desc
-        assert "shield" in desc
         assert "cargo" in desc
 
 

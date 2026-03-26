@@ -226,72 +226,68 @@ MINIGAME_HINTS: dict[str, dict[str, str]] = {
             "Your ship tells your story. Build it YOUR way."
         ),
     },
-    # === Module Builder Tutorials (Shipbuilder Upgrade) ===
+    # === Ship Builder Tutorials (Slot-Based System) ===
     "builder_module_welcome": {
-        "title": "Module-Based Ship Builder",
+        "title": "Ship Builder -- Drydock",
         "description": (
-            "Welcome to the module builder. Ships are assembled from "
-            "functional parts: cockpits, engines, weapons, shields, "
-            "and cargo bays.\n\n"
-            "MODULES tab: Browse and place ship parts\n"
-            "HULL tab: Paint structural pixels for detail\n\n"
-            "Start by selecting a Cockpit from the catalog on the left, "
+            "Welcome to the Drydock. Design your ship by placing "
+            "slots on the grid. Each slot type serves a purpose:\n\n"
+            "SLOTS tab: Place weapon, defense, engine, and other slots\n"
+            "HULL tab: Paint hull pixels for armor and cosmetics\n\n"
+            "Select a slot type from the palette on the left, "
             "then click the grid to place it.\n\n"
-            "[R] Rotate  [Q] Flip  [Tab] Switch mode\n"
-            "Right-click to remove a placed module."
+            "[R] Rotate  [Tab] Switch mode\n"
+            "Right-click to remove a placed slot."
         ),
     },
     "builder_module_engine": {
         "title": "Place Your Engine",
         "description": (
-            "Your ship needs propulsion. Select an Engine module "
-            "from the catalog and place it in the shaded zone on "
-            "the LEFT side of the grid.\n\n"
-            "Ships face RIGHT. The left side is the stern, where "
-            "engines belong. The warm-tinted zone shows where "
-            "engines must go.\n\n"
-            "Different engines have different thrust and fuel "
-            "efficiency. Heavier engines push harder but weigh more."
+            "Your ship needs propulsion. Select an Engine slot "
+            "from the palette and place it on the grid.\n\n"
+            "Ships face RIGHT. Place engines toward the left "
+            "(stern) for realistic positioning.\n\n"
+            "After placing the slot here, you will buy an engine "
+            "part in the Shop and equip it in the Loadout tab."
         ),
     },
     "builder_module_requirements": {
         "title": "Ship Requirements",
         "description": (
-            "Every ship needs five core systems:\n\n"
-            "1. Cockpit (command center)\n"
-            "2. Engine (propulsion)\n"
-            "3. Weapon mount (combat)\n"
-            "4. Shield generator (defense)\n"
-            "5. Cargo bay (trading)\n\n"
-            "The checklist on the right tracks your progress. "
-            "All five must be placed before you can confirm.\n\n"
-            "Larger ships (Medium+) also need Crew Quarters, "
-            "and capital ships (Large+) need a Reactor Core."
+            "Every ship needs at minimum:\n\n"
+            "1. Engine slot (propulsion)\n"
+            "2. Reactor slot (power)\n\n"
+            "Additional slots expand your capabilities:\n"
+            "• Weapon slots for combat\n"
+            "• Defense slots for shields\n"
+            "• Cargo slots for trading\n"
+            "• Utility slots for fuel, sensors\n"
+            "• Crew quarters for crew members\n\n"
+            "Your frame determines the maximum of each slot type."
         ),
     },
     "builder_module_hull": {
         "title": "Hull Pixel Mode",
         "description": (
             "Press [Tab] to switch to Hull mode. Here you can "
-            "paint structural pixels to connect modules, shape "
-            "the exterior, and add your personal touch.\n\n"
+            "paint structural pixels around your slots to add "
+            "hull points, armor, and visual detail.\n\n"
             "Four hull materials:\n"
             "• Light Alloy — fast, fragile\n"
             "• Standard Plate — balanced\n"
             "• Heavy Armor — tough, slow\n"
             "• Stealth Composite — evasive\n\n"
-            "Hull pixels are the creative layer. Modules handle "
-            "function; hull pixels handle form."
+            "Slots define function; hull pixels define form."
         ),
     },
     "builder_module_confirm": {
         "title": "Ready to Fly",
         "description": (
-            "All requirements met! Your ship is ready.\n\n"
-            "Click CONFIRM BUILD to finalize. The build cost will "
-            "be deducted from your credits.\n\n"
-            "SAVE DRAFT saves your design without paying, so you "
-            "can come back later.\n\n"
+            "All requirements met! Your ship layout is ready.\n\n"
+            "Click CONFIRM BUILD to finalize. Slot and pixel "
+            "fabrication costs will be deducted.\n\n"
+            "After confirming, visit the Shop tab to buy parts, "
+            "then the Loadout tab to equip them.\n\n"
             "Overlays (right panel) show structural integrity and "
             "center of mass. Use them to find weak points in your "
             "design before committing."

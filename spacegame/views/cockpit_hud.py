@@ -380,19 +380,23 @@ class CockpitHUD:
         y = self.y + scale_y(10)
         spacing = scale_y(25)
 
+        # Prefer computed_stats from custom builds, fall back to ship_type
+        cs = getattr(ship, "computed_stats", None)
+
         # Hull bar
-        hull_ratio = ship.current_hull / max(1, ship.ship_type.combat_hull)
+        hull_max = cs.hull if cs and cs.hull > 0 else ship.ship_type.combat_hull
+        hull_ratio = ship.current_hull / max(1, hull_max)
         hull_color = (
             Colors.GREEN
             if hull_ratio > 0.5
             else (Colors.YELLOW if hull_ratio > 0.25 else Colors.RED)
         )
-        hull_value = f"{ship.current_hull}/{ship.ship_type.combat_hull}"
+        hull_value = f"{ship.current_hull}/{hull_max}"
         self._draw_hud_bar(screen, x, y, bar_w, bar_h, hull_ratio, hull_color, "HULL", hull_value)
 
         # Shield bar
         y += spacing
-        shield_max = ship.ship_type.combat_shields
+        shield_max = cs.shields if cs and cs.shields > 0 else ship.ship_type.combat_shields
         shield_ratio = ship.current_shields / max(1, shield_max)
         shield_value = f"{ship.current_shields}/{shield_max}"
         self._draw_hud_bar(
@@ -401,9 +405,10 @@ class CockpitHUD:
 
         # Fuel bar
         y += spacing
-        fuel_ratio = ship.current_fuel / max(1, ship.max_fuel)
+        fuel_max = cs.fuel_capacity if cs and cs.fuel_capacity > 0 else ship.max_fuel
+        fuel_ratio = ship.current_fuel / max(1, fuel_max)
         fuel_color = _FUEL_COLOR if fuel_ratio > 0.2 else Colors.RED
-        fuel_value = f"{ship.current_fuel}/{ship.max_fuel}"
+        fuel_value = f"{ship.current_fuel}/{fuel_max}"
         self._draw_hud_bar(screen, x, y, bar_w, bar_h, fuel_ratio, fuel_color, "FUEL", fuel_value)
 
     def _draw_hud_bar(

@@ -1105,10 +1105,54 @@ class ShipyardView(BaseView):
                 ly += stat_surf.get_height() + scale_y(2)
 
         # ============================================================
-        # RIGHT COLUMN: full stats table, price, inventory, mark
+        # RIGHT COLUMN: combat stats, provides table, price, inventory
         # ============================================================
         rx = divider_x + pad
         ry = content_top
+
+        # Combat move section (shown above provides for weapon/defense parts)
+        cm = part.combat_move
+        if cm:
+            combat_label = self.small_font.render("COMBAT", True, (255, 180, 80))
+            screen.blit(combat_label, (rx, ry))
+            ry += combat_label.get_height() + scale_y(4)
+
+            # Move name
+            move_name = cm.get("name", "Unknown")
+            screen.blit(
+                self.small_font.render(f"  {move_name}", True, Colors.TEXT_HIGHLIGHT),
+                (rx, ry),
+            )
+            ry += scale_y(15)
+
+            # Damage (from effects list)
+            effects = cm.get("effects", [])
+            for eff in effects:
+                if eff.get("type") == "damage":
+                    dmg_val = eff.get("amount", 0)
+                    screen.blit(
+                        self.small_font.render(f"  Damage: {dmg_val}", True, Colors.TEXT),
+                        (rx, ry),
+                    )
+                    ry += scale_y(15)
+                    break
+
+            # Energy cost
+            energy_cost = cm.get("energy_cost", 0)
+            screen.blit(
+                self.small_font.render(f"  Energy: {energy_cost}", True, Colors.TEXT),
+                (rx, ry),
+            )
+            ry += scale_y(15)
+
+            # Accuracy modifier
+            acc_mod = cm.get("accuracy_modifier", 0)
+            acc_sign = "+" if acc_mod >= 0 else ""
+            screen.blit(
+                self.small_font.render(f"  Accuracy: {acc_sign}{acc_mod}", True, Colors.TEXT),
+                (rx, ry),
+            )
+            ry += scale_y(15) + scale_y(6)
 
         # Stats header
         stats_label = self.small_font.render("Stats:", True, Colors.TEXT_HIGHLIGHT)
@@ -1507,7 +1551,17 @@ class ShipyardView(BaseView):
             # Key stat + owned count on second line
             owned = self.player.get_part_count(part.id)
             stat_text = ""
-            if part.provides:
+            cm = part.combat_move
+            if cm:
+                # For weapon/defense parts, show damage and energy cost
+                dmg_val = 0
+                for eff in cm.get("effects", []):
+                    if eff.get("type") == "damage":
+                        dmg_val = eff.get("amount", 0)
+                        break
+                energy_cost = cm.get("energy_cost", 0)
+                stat_text = f"Dmg: {dmg_val} | E: {energy_cost}"
+            elif part.provides:
                 top_stat = next(iter(part.provides.items()), None)
                 if top_stat:
                     stat_name = top_stat[0].replace("_", " ").title()
