@@ -383,33 +383,53 @@ class CockpitHUD:
         # Prefer computed_stats from custom builds, fall back to ship_type
         cs = getattr(ship, "computed_stats", None)
 
-        # Hull bar
+        # Hull bar — clamp current to max to prevent "60/58" display
         hull_max = cs.hull if cs and cs.hull > 0 else ship.ship_type.combat_hull
-        hull_ratio = ship.current_hull / max(1, hull_max)
+        hull_current = min(ship.current_hull, hull_max)
+        hull_ratio = hull_current / max(1, hull_max)
         hull_color = (
             Colors.GREEN
             if hull_ratio > 0.5
             else (Colors.YELLOW if hull_ratio > 0.25 else Colors.RED)
         )
-        hull_value = f"{ship.current_hull}/{hull_max}"
-        self._draw_hud_bar(screen, x, y, bar_w, bar_h, hull_ratio, hull_color, "HULL", hull_value)
+        self._draw_hud_bar(
+            screen, x, y, bar_w, bar_h, hull_ratio, hull_color, "HULL", f"{hull_current}/{hull_max}"
+        )
 
         # Shield bar
         y += spacing
         shield_max = cs.shields if cs and cs.shields > 0 else ship.ship_type.combat_shields
-        shield_ratio = ship.current_shields / max(1, shield_max)
-        shield_value = f"{ship.current_shields}/{shield_max}"
+        shield_current = min(ship.current_shields, shield_max)
+        shield_ratio = shield_current / max(1, shield_max)
         self._draw_hud_bar(
-            screen, x, y, bar_w, bar_h, shield_ratio, _SHIELD_COLOR, "SHLD", shield_value
+            screen,
+            x,
+            y,
+            bar_w,
+            bar_h,
+            shield_ratio,
+            _SHIELD_COLOR,
+            "SHLD",
+            f"{shield_current}/{shield_max}",
         )
 
         # Fuel bar
         y += spacing
         fuel_max = cs.fuel_capacity if cs and cs.fuel_capacity > 0 else ship.max_fuel
-        fuel_ratio = ship.current_fuel / max(1, fuel_max)
+        fuel_current = min(ship.current_fuel, fuel_max)
+        fuel_ratio = fuel_current / max(1, fuel_max)
         fuel_color = _FUEL_COLOR if fuel_ratio > 0.2 else Colors.RED
-        fuel_value = f"{ship.current_fuel}/{fuel_max}"
-        self._draw_hud_bar(screen, x, y, bar_w, bar_h, fuel_ratio, fuel_color, "FUEL", fuel_value)
+        self._draw_hud_bar(
+            screen,
+            x,
+            y,
+            bar_w,
+            bar_h,
+            fuel_ratio,
+            fuel_color,
+            "FUEL",
+            f"{fuel_current}/{fuel_max}",
+        )
 
     def _draw_hud_bar(
         self,
@@ -447,15 +467,22 @@ class CockpitHUD:
         # Border
         pygame.draw.rect(screen, _SHIP_PANEL_BORDER, (bar_x, y, bar_w, height), 1)
 
-        # Inline value text (right-aligned inside the bar, with dark outline for readability)
+        # Inline value text (right-aligned, dark pill background for readability)
         if value:
-            val_surf = self._label_font.render(value, True, (240, 240, 240))
+            val_surf = self._label_font.render(value, True, (230, 230, 230))
             val_x = bar_x + bar_w - val_surf.get_width() - scale_x(4)
             val_y = y + (height - val_surf.get_height()) // 2
-            # Dark outline for contrast against bright bar fills
-            shadow = self._label_font.render(value, True, (0, 0, 0))
-            for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
-                screen.blit(shadow, (val_x + dx, val_y + dy))
+            # Dark semi-transparent pill behind the text
+            pill_pad = scale_x(3)
+            pill_rect = pygame.Rect(
+                val_x - pill_pad,
+                val_y - 1,
+                val_surf.get_width() + pill_pad * 2,
+                val_surf.get_height() + 2,
+            )
+            pill_bg = pygame.Surface((pill_rect.width, pill_rect.height), pygame.SRCALPHA)
+            pill_bg.fill((0, 0, 0, 160))
+            screen.blit(pill_bg, pill_rect.topleft)
             screen.blit(val_surf, (val_x, val_y))
 
     def _render_buttons(self, screen: pygame.Surface) -> None:
