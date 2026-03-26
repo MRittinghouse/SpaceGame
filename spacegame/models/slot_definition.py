@@ -10,6 +10,7 @@ from dataclasses import dataclass
 # Valid slot types — each maps to a category of equippable parts
 SLOT_TYPES: frozenset[str] = frozenset(
     {
+        "cockpit",
         "weapon",
         "defense",
         "engine",
@@ -28,6 +29,7 @@ SIZE_ORDER: dict[str, int] = {"small": 0, "medium": 1, "large": 2}
 
 # Display-friendly type names
 _TYPE_DISPLAY: dict[str, str] = {
+    "cockpit": "Cockpit",
     "weapon": "Weapon",
     "defense": "Defense",
     "engine": "Engine",

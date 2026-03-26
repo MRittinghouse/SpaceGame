@@ -134,6 +134,7 @@ class TestFrameSlotLimits:
 
     def test_limits_include_all_slot_types(self) -> None:
         expected_types = {
+            "cockpit",
             "weapon",
             "defense",
             "engine",

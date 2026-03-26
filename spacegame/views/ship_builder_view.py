@@ -80,6 +80,7 @@ HULL_PIXEL_MATERIALS = ("light_alloy", "standard_plate", "heavy_armor", "stealth
 
 # Single-letter labels for slot types rendered on grid cells
 _SLOT_TYPE_SHORT: dict[str, str] = {
+    "cockpit": "K",
     "weapon": "W",
     "defense": "D",
     "engine": "E",
@@ -91,6 +92,7 @@ _SLOT_TYPE_SHORT: dict[str, str] = {
 
 # Ordered slot types for palette grouping
 _SLOT_TYPE_ORDER: list[str] = [
+    "cockpit",
     "weapon",
     "defense",
     "engine",
@@ -1490,6 +1492,8 @@ class ShipBuilderView(BaseView):
                     slot_type_counts[sd.slot_type] = slot_type_counts.get(sd.slot_type, 0) + 1
 
             # Required slot checks
+            if slot_type_counts.get("cockpit", 0) < 1:
+                warnings.append("Cockpit required! Place a cockpit slot.")
             if slot_type_counts.get("engine", 0) < 1:
                 warnings.append("Engine required! Place at least 1 engine slot.")
             if slot_type_counts.get("reactor", 0) < 1:
@@ -2627,33 +2631,53 @@ class ShipBuilderView(BaseView):
         title = self.small_font.render("REQUIREMENTS", True, Colors.TEXT_HIGHLIGHT)
         screen.blit(title, (panel_x + 8, panel_y + 6))
 
-        # Count modules by category
-        catalog = self._get_module_catalog()
+        # Count slots or modules by category
+        slot_defs = getattr(self.data_loader, "slot_definitions", {})
         cat_counts: dict[str, int] = {}
-        for pm in self.build.modules:
-            mod = catalog.get(pm.module_id)
-            if mod:
-                cat_counts[mod.category] = cat_counts.get(mod.category, 0) + 1
 
-        # Mandatory requirements
-        requirements = [
-            ("Cockpit", "cockpit", 1),
-            ("Engine", "engine", 1),
-            ("Weapon", "weapon", 1),
-            ("Shield", "shield", 1),
-            ("Cargo", "cargo", 1),
-        ]
+        if self.build.placed_slots:
+            # New slot-based system
+            for ps in self.build.placed_slots:
+                sd = slot_defs.get(ps.slot_def_id)
+                if sd:
+                    cat_counts[sd.slot_type] = cat_counts.get(sd.slot_type, 0) + 1
+            caps = FRAME_SLOT_LIMITS.get(self.build.weight_class, {})
+        else:
+            # Legacy module system
+            catalog = self._get_module_catalog()
+            for pm in self.build.modules:
+                mod = catalog.get(pm.module_id)
+                if mod:
+                    cat_counts[mod.category] = cat_counts.get(mod.category, 0) + 1
+            from spacegame.models.ship_build import MODULE_CAPS
 
-        # Conditional requirements
-        wc = self.build.weight_class
-        if wc in ("medium", "large", "xlarge"):
-            requirements.append(("Crew Quarters", "crew", 1))
-        if wc in ("large", "xlarge"):
-            requirements.append(("Reactor", "reactor", 1))
+            caps = MODULE_CAPS.get(self.build.weight_class, {})
 
-        from spacegame.models.ship_build import MODULE_CAPS
-
-        caps = MODULE_CAPS.get(self.build.weight_class, {})
+        # Requirements list — slot types for new builds, module categories for legacy
+        if self.build.placed_slots:
+            requirements = [
+                ("Cockpit", "cockpit", 1),
+                ("Engine", "engine", 1),
+                ("Reactor", "reactor", 1),
+                ("Weapon", "weapon", 0),
+                ("Defense", "defense", 0),
+                ("Utility", "utility", 0),
+                ("Cargo", "cargo", 0),
+                ("Crew Quarters", "crew_quarters", 0),
+            ]
+        else:
+            requirements = [
+                ("Cockpit", "cockpit", 1),
+                ("Engine", "engine", 1),
+                ("Weapon", "weapon", 1),
+                ("Shield", "shield", 1),
+                ("Cargo", "cargo", 1),
+            ]
+            wc = self.build.weight_class
+            if wc in ("medium", "large", "xlarge"):
+                requirements.append(("Crew Quarters", "crew", 1))
+            if wc in ("large", "xlarge"):
+                requirements.append(("Reactor", "reactor", 1))
 
         row_y = panel_y + scale_y(26)
         row_h = scale_y(22)

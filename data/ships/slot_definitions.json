@@ -1,6 +1,26 @@
 {
   "slot_definitions": [
     {
+      "id": "cockpit_small",
+      "slot_type": "cockpit",
+      "size": "small",
+      "footprint_w": 2,
+      "footprint_h": 2,
+      "weight": 2.0,
+      "placement_cost": 300,
+      "color": [220, 220, 180]
+    },
+    {
+      "id": "cockpit_medium",
+      "slot_type": "cockpit",
+      "size": "medium",
+      "footprint_w": 3,
+      "footprint_h": 3,
+      "weight": 4.0,
+      "placement_cost": 800,
+      "color": [220, 220, 180]
+    },
+    {
       "id": "weapon_small",
       "slot_type": "weapon",
       "size": "small",

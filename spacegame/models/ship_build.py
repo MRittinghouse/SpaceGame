@@ -493,6 +493,7 @@ class PlacedSlot:
 # These replace MODULE_CAPS for the new slot-based builder.
 FRAME_SLOT_LIMITS: dict[str, dict[str, int]] = {
     "tiny": {
+        "cockpit": 1,
         "weapon": 1,
         "defense": 1,
         "engine": 1,
@@ -502,6 +503,7 @@ FRAME_SLOT_LIMITS: dict[str, dict[str, int]] = {
         "reactor": 1,
     },
     "small": {
+        "cockpit": 1,
         "weapon": 2,
         "defense": 1,
         "engine": 1,
@@ -511,6 +513,7 @@ FRAME_SLOT_LIMITS: dict[str, dict[str, int]] = {
         "reactor": 1,
     },
     "medium": {
+        "cockpit": 1,
         "weapon": 3,
         "defense": 2,
         "engine": 2,
@@ -520,6 +523,7 @@ FRAME_SLOT_LIMITS: dict[str, dict[str, int]] = {
         "reactor": 1,
     },
     "large": {
+        "cockpit": 1,
         "weapon": 4,
         "defense": 3,
         "engine": 2,
@@ -529,6 +533,7 @@ FRAME_SLOT_LIMITS: dict[str, dict[str, int]] = {
         "reactor": 2,
     },
     "xlarge": {
+        "cockpit": 1,
         "weapon": 5,
         "defense": 3,
         "engine": 3,
