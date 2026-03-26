@@ -1055,7 +1055,8 @@ class ShipBuilderView(BaseView):
             (success, message) tuple.
         """
         cw, ch = self.build.canvas_w, self.build.canvas_h
-        fw, fh = sdef.footprint_w, sdef.footprint_h
+        # Apply rotation to get effective footprint
+        fw, fh, _ = sdef.get_rotated(self._module_rotation)
 
         # Bounds check
         if gx < 0 or gy < 0 or gx + fw > cw or gy + fh > ch:
@@ -1067,7 +1068,7 @@ class ShipBuilderView(BaseView):
             other = slot_defs.get(ps.slot_def_id)
             if not other:
                 continue
-            ow, oh = other.footprint_w, other.footprint_h
+            ow, oh, _ = other.get_rotated(ps.rotation)
             # AABB overlap test
             if gx < ps.x + ow and gx + fw > ps.x and gy < ps.y + oh and gy + fh > ps.y:
                 return False, "Overlaps existing slot"
@@ -1103,7 +1104,9 @@ class ShipBuilderView(BaseView):
         ok, _msg = self._validate_slot_placement(gx, gy, sdef)
         if ok:
             self._push_undo()
-            self.build.placed_slots.append(PlacedSlot(slot_def_id=sdef.id, x=gx, y=gy))
+            self.build.placed_slots.append(
+                PlacedSlot(slot_def_id=sdef.id, x=gx, y=gy, rotation=self._module_rotation)
+            )
             self._modified = True
             self._recompute_stats()
             # Placement feedback
@@ -2005,24 +2008,25 @@ class ShipBuilderView(BaseView):
 
         # Legacy slot indicators removed — equipment managed via EQUIP mode
 
-        # Placed slots — rendered using pixel_mask for shaped cockpits,
+        # Placed slots — rendered using rotated pixel_mask for shaped slots,
         # or as solid rectangles for standard slots
         slot_defs = getattr(self.data_loader, "slot_definitions", {})
         for ps in self.build.placed_slots:
             sdef = slot_defs.get(ps.slot_def_id)
             if not sdef:
                 continue
-            fw, fh = sdef.footprint_w, sdef.footprint_h
+            # Get rotated footprint
+            fw, fh, r_mask = sdef.get_rotated(ps.rotation)
             sx = ox + ps.x * cell
             sy = oy + ps.y * cell
             sw = fw * cell
             sh = fh * cell
 
-            if sdef.pixel_mask:
-                # Shaped slot — render per-cell using mask
+            if r_mask:
+                # Shaped slot — render per-cell using rotated mask
                 for ly in range(fh):
                     for lx in range(fw):
-                        if sdef.is_filled(lx, ly):
+                        if ly < len(r_mask) and lx < len(r_mask[ly]) and r_mask[ly][lx] == "X":
                             cx = sx + lx * cell
                             cy = sy + ly * cell
                             fill = pygame.Surface((cell, cell), pygame.SRCALPHA)
@@ -2063,18 +2067,18 @@ class ShipBuilderView(BaseView):
             ghost_sdef = slot_defs.get(self._selected_slot_def_id)
             if ghost_sdef:
                 gx, gy = grid_pos
-                fw, fh = ghost_sdef.footprint_w, ghost_sdef.footprint_h
+                fw, fh, g_mask = ghost_sdef.get_rotated(self._module_rotation)
                 ok, _ = self._validate_slot_placement(gx, gy, ghost_sdef)
                 ghost_color = (100, 255, 100) if ok else (255, 60, 60)
                 ghost_sx = ox + gx * cell
                 ghost_sy = oy + gy * cell
                 ghost_sw = fw * cell
                 ghost_sh = fh * cell
-                if ghost_sdef.pixel_mask:
-                    # Shaped ghost — render per-cell
+                if g_mask:
+                    # Shaped ghost — render per-cell using rotated mask
                     for ly in range(fh):
                         for lx in range(fw):
-                            if ghost_sdef.is_filled(lx, ly):
+                            if ly < len(g_mask) and lx < len(g_mask[ly]) and g_mask[ly][lx] == "X":
                                 cx = ghost_sx + lx * cell
                                 cy = ghost_sy + ly * cell
                                 gc = pygame.Surface((cell, cell), pygame.SRCALPHA)

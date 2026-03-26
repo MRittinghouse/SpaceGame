@@ -90,6 +90,49 @@ class SlotDefinition:
             return sum(row.count("X") for row in self.pixel_mask)
         return self.footprint_w * self.footprint_h
 
+    def get_rotated(self, rotation: int) -> tuple[int, int, list[str]]:
+        """Get footprint dimensions and mask after rotation.
+
+        Args:
+            rotation: 0-3 (number of 90° clockwise rotations).
+
+        Returns:
+            (width, height, rotated_pixel_mask) tuple.
+        """
+        r = rotation % 4
+        w, h = self.footprint_w, self.footprint_h
+        mask = self.pixel_mask
+
+        if r == 0:
+            return w, h, mask
+
+        # Build a full grid, rotate, extract
+        if not mask:
+            # Pure rectangle — just swap dimensions
+            if r in (1, 3):
+                return h, w, []
+            return w, h, []
+
+        # Rotate the mask grid
+        grid = []
+        for row_str in mask:
+            grid.append(list(row_str))
+
+        for _ in range(r):
+            # 90° clockwise: new[x][old_h - 1 - y] = old[y][x]
+            old_h = len(grid)
+            old_w = len(grid[0]) if grid else 0
+            new_grid = [["." for _ in range(old_h)] for _ in range(old_w)]
+            for y in range(old_h):
+                for x in range(old_w):
+                    new_grid[x][old_h - 1 - y] = grid[y][x]
+            grid = new_grid
+
+        new_h = len(grid)
+        new_w = len(grid[0]) if grid else 0
+        new_mask = ["".join(row) for row in grid]
+        return new_w, new_h, new_mask
+
     def is_filled(self, local_x: int, local_y: int) -> bool:
         """Check if a local grid cell is filled in this slot's shape.
 
