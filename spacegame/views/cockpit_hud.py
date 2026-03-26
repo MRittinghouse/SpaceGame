@@ -596,8 +596,11 @@ class CockpitHUD:
             fill_color = Colors.TEXT_HIGHLIGHT if fill_ratio < 0.9 else Colors.RED
             pygame.draw.rect(screen, fill_color, (x, cargo_bar_y, fill_w, cargo_bar_h))
 
-        # Quest hint
-        y = cargo_bar_y + scale_y(10)
+        # Quest hint — positioned so full text height fits above HUD bottom edge
+        y = cargo_bar_y + scale_y(8)
+        max_y = self.y + self.height - scale_y(4)
+        if y + self._quest_font.get_linesize() > max_y:
+            y = max_y - self._quest_font.get_linesize()
         quest_text = self._get_quest_hint()
         if quest_text:
             quest_surf = self._quest_font.render(quest_text, True, Colors.TEXT_SECONDARY)
