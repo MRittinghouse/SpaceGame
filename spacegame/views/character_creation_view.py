@@ -215,7 +215,7 @@ class CharacterCreationView(BaseView):
             screen.blit(name_surf, (text_x, y + 4))
 
             # Description (capped width to avoid overlapping buttons)
-            max_desc_w = scale_x(400)
+            max_desc_w = scale_x(520)
             desc_text = defn["description"]
             desc_surf = self.desc_font.render(desc_text, True, Colors.TEXT_SECONDARY)
             if desc_surf.get_width() > max_desc_w:
