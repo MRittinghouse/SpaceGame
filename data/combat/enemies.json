@@ -47,7 +47,8 @@
           "max_qty": 2,
           "chance": 0.3
         }
-      ]
+      ],
+      "danger_level": "safe"
     },
     {
       "id": "pirate_raider",
@@ -122,7 +123,9 @@
           "max_qty": 2,
           "chance": 0.4
         }
-      ]
+      ],
+      "danger_level": "moderate",
+      "combat_armor": 2
     },
     {
       "id": "pirate_heavy",
@@ -217,7 +220,9 @@
           "max_qty": 2,
           "chance": 0.08
         }
-      ]
+      ],
+      "danger_level": "dangerous",
+      "combat_armor": 4
     },
     {
       "id": "smuggler",
@@ -281,7 +286,8 @@
           "max_qty": 3,
           "chance": 0.5
         }
-      ]
+      ],
+      "danger_level": "safe"
     },
     {
       "id": "patrol_vessel",
@@ -350,7 +356,8 @@
           "max_qty": 2,
           "chance": 0.4
         }
-      ]
+      ],
+      "danger_level": "dangerous"
     },
     {
       "id": "guild_enforcer",
@@ -419,7 +426,9 @@
           "max_qty": 2,
           "chance": 0.4
         }
-      ]
+      ],
+      "danger_level": "moderate",
+      "combat_armor": 2
     },
     {
       "id": "guild_dreadnought",
@@ -512,7 +521,9 @@
           "max_qty": 3,
           "chance": 0.12
         }
-      ]
+      ],
+      "danger_level": "dangerous",
+      "combat_armor": 4
     },
     {
       "id": "union_brawler",
@@ -588,7 +599,9 @@
           "max_qty": 2,
           "chance": 0.4
         }
-      ]
+      ],
+      "danger_level": "dangerous",
+      "combat_armor": 1
     },
     {
       "id": "union_crusher",
@@ -677,7 +690,9 @@
           "max_qty": 2,
           "chance": 0.1
         }
-      ]
+      ],
+      "danger_level": "dangerous",
+      "combat_armor": 6
     },
     {
       "id": "science_probe",
@@ -685,11 +700,11 @@
       "description": "A Science Collective autonomous probe. Drains shields and evades with advanced technology.",
       "behavior": "evasive",
       "hull": 52,
-      "shields": 37,
+      "shields": 51,
       "energy": 7,
       "energy_regen": 2,
       "speed": 12,
-      "evasion": 28,
+      "evasion": 33,
       "accuracy": 65,
       "negotiate_difficulty": 2,
       "flee_threshold": 0.35,
@@ -757,7 +772,8 @@
           "max_qty": 2,
           "chance": 0.4
         }
-      ]
+      ],
+      "danger_level": "moderate"
     },
     {
       "id": "science_sentinel",
@@ -765,7 +781,7 @@
       "description": "A Science Collective guardian vessel. Uses advanced technology for damage reduction and accuracy disruption.",
       "behavior": "defensive",
       "hull": 112,
-      "shields": 52,
+      "shields": 71,
       "energy": 9,
       "energy_regen": 2,
       "speed": 6,
@@ -857,7 +873,9 @@
           "max_qty": 1,
           "chance": 0.08
         }
-      ]
+      ],
+      "danger_level": "dangerous",
+      "combat_armor": 3
     },
     {
       "id": "frontier_raider",
@@ -869,7 +887,7 @@
       "energy": 7,
       "energy_regen": 2,
       "speed": 12,
-      "evasion": 22,
+      "evasion": 25,
       "accuracy": 62,
       "negotiate_difficulty": 3,
       "flee_threshold": 0.3,
@@ -933,7 +951,9 @@
           "max_qty": 2,
           "chance": 0.4
         }
-      ]
+      ],
+      "danger_level": "moderate",
+      "combat_armor": 2
     },
     {
       "id": "frontier_gunship",
@@ -945,7 +965,7 @@
       "energy": 9,
       "energy_regen": 2,
       "speed": 9,
-      "evasion": 15,
+      "evasion": 18,
       "accuracy": 60,
       "negotiate_difficulty": 4,
       "flee_threshold": 0.15,
@@ -1028,7 +1048,9 @@
           "max_qty": 2,
           "chance": 0.08
         }
-      ]
+      ],
+      "danger_level": "dangerous",
+      "combat_armor": 3
     },
     {
       "id": "guild_revenue_cutter",
@@ -1095,7 +1117,8 @@
           "max_qty": 2,
           "chance": 0.4
         }
-      ]
+      ],
+      "danger_level": "safe"
     },
     {
       "id": "union_picket",
@@ -1165,7 +1188,9 @@
           "max_qty": 2,
           "chance": 0.4
         }
-      ]
+      ],
+      "danger_level": "moderate",
+      "combat_armor": 2
     },
     {
       "id": "science_surveyor",
@@ -1173,7 +1198,7 @@
       "description": "A Collective research vessel repurposed for patrol duty. High sensor resolution and excellent shields, but minimal weapons. Prefers to scan, analyze, and evade  -- but its analysis beam strips shields with clinical precision.",
       "behavior": "evasive",
       "hull": 37,
-      "shields": 30,
+      "shields": 34,
       "energy": 6,
       "energy_regen": 2,
       "speed": 11,
@@ -1233,7 +1258,8 @@
           "max_qty": 2,
           "chance": 0.4
         }
-      ]
+      ],
+      "danger_level": "safe"
     },
     {
       "id": "frontier_skirmisher",
@@ -1245,7 +1271,7 @@
       "energy": 6,
       "energy_regen": 2,
       "speed": 14,
-      "evasion": 28,
+      "evasion": 31,
       "accuracy": 58,
       "negotiate_difficulty": 2,
       "flee_threshold": 0.35,
@@ -1303,7 +1329,8 @@
           "max_qty": 2,
           "chance": 0.4
         }
-      ]
+      ],
+      "danger_level": "safe"
     },
     {
       "id": "reach_rustrunner",
@@ -1377,7 +1404,8 @@
           "max_qty": 3,
           "chance": 0.5
         }
-      ]
+      ],
+      "danger_level": "safe"
     },
     {
       "id": "reach_wrecker",
@@ -1470,7 +1498,8 @@
           "max_qty": 2,
           "chance": 0.4
         }
-      ]
+      ],
+      "danger_level": "dangerous"
     },
     {
       "id": "reach_dreadwreck",
@@ -1583,7 +1612,9 @@
           "max_qty": 2,
           "chance": 0.1
         }
-      ]
+      ],
+      "danger_level": "dangerous",
+      "combat_armor": 4
     },
     {
       "id": "bounty_tracker",
@@ -1595,7 +1626,7 @@
       "energy": 7,
       "energy_regen": 2,
       "speed": 14,
-      "evasion": 28,
+      "evasion": 33,
       "accuracy": 62,
       "negotiate_difficulty": 3,
       "flee_threshold": 0.35,
@@ -1664,7 +1695,8 @@
           "max_qty": 2,
           "chance": 0.4
         }
-      ]
+      ],
+      "danger_level": "moderate"
     },
     {
       "id": "bounty_enforcer",
@@ -1748,7 +1780,8 @@
           "max_qty": 2,
           "chance": 0.4
         }
-      ]
+      ],
+      "danger_level": "dangerous"
     },
     {
       "id": "bounty_vanguard",
@@ -1848,7 +1881,9 @@
           "max_qty": 1,
           "chance": 0.08
         }
-      ]
+      ],
+      "danger_level": "dangerous",
+      "combat_armor": 4
     },
     {
       "id": "bounty_ace",
@@ -1856,11 +1891,11 @@
       "description": "An elite freelance hunter flying a custom interceptor. Extremely fast and accurate  -- almost impossible to outrun.",
       "behavior": "evasive",
       "hull": 75,
-      "shields": 33,
+      "shields": 40,
       "energy": 9,
       "energy_regen": 2,
       "speed": 16,
-      "evasion": 35,
+      "evasion": 40,
       "accuracy": 72,
       "negotiate_difficulty": 4,
       "flee_threshold": 0.25,
@@ -1962,7 +1997,8 @@
           "max_qty": 2,
           "chance": 0.1
         }
-      ]
+      ],
+      "danger_level": "moderate"
     },
     {
       "id": "faction_enforcer",
@@ -2084,7 +2120,9 @@
           "max_qty": 3,
           "chance": 0.1
         }
-      ]
+      ],
+      "danger_level": "dangerous",
+      "combat_armor": 5
     },
     {
       "id": "ledger_raider",
@@ -2092,7 +2130,7 @@
       "description": "A heavily armed raider with military-grade weapons and coordinated tactics. The hull markings have been scrubbed, but the drive core is unmistakably Guild-pattern.",
       "behavior": "aggressive",
       "hull": 82,
-      "shields": 33,
+      "shields": 40,
       "energy": 7,
       "energy_regen": 2,
       "speed": 10,
@@ -2163,7 +2201,8 @@
           "max_qty": 2,
           "chance": 0.4
         }
-      ]
+      ],
+      "danger_level": "dangerous"
     },
     {
       "id": "ledger_striker",
@@ -2239,7 +2278,8 @@
           "max_qty": 2,
           "chance": 0.4
         }
-      ]
+      ],
+      "danger_level": "safe"
     },
     {
       "id": "ledger_vanguard",
@@ -2247,11 +2287,11 @@
       "description": "The Ledger's elite interceptor. Purpose-built from Guild military prototypes, piloted by the Inner Ledger's most experienced operative. Fast, heavily armed, and utterly committed to preventing anyone from reaching the warp gate.",
       "behavior": "aggressive",
       "hull": 105,
-      "shields": 45,
+      "shields": 54,
       "energy": 10,
       "energy_regen": 3,
       "speed": 50,
-      "evasion": 30,
+      "evasion": 35,
       "accuracy": 62,
       "negotiate_difficulty": 8,
       "flee_threshold": 0.1,
@@ -2352,7 +2392,9 @@
           "max_qty": 2,
           "chance": 0.1
         }
-      ]
+      ],
+      "danger_level": "dangerous",
+      "combat_armor": 3
     },
     {
       "id": "corsair_king",
@@ -2495,7 +2537,8 @@
           "min_qty": 2,
           "max_qty": 5
         }
-      ]
+      ],
+      "danger_level": "dangerous"
     },
     {
       "id": "guild_arbiter",
@@ -2647,7 +2690,8 @@
           "min_qty": 2,
           "max_qty": 5
         }
-      ]
+      ],
+      "danger_level": "moderate"
     },
     {
       "id": "iron_maw",
@@ -2781,7 +2825,8 @@
           "min_qty": 2,
           "max_qty": 5
         }
-      ]
+      ],
+      "danger_level": "dangerous"
     },
     {
       "id": "ledger_phantom",
@@ -2927,7 +2972,8 @@
           "min_qty": 2,
           "max_qty": 5
         }
-      ]
+      ],
+      "danger_level": "moderate"
     },
     {
       "id": "the_collector",
@@ -3068,7 +3114,8 @@
           "min_qty": 2,
           "max_qty": 5
         }
-      ]
+      ],
+      "danger_level": "dangerous"
     },
     {
       "id": "void_leviathan",
@@ -3206,7 +3253,8 @@
           "min_qty": 2,
           "max_qty": 5
         }
-      ]
+      ],
+      "danger_level": "dangerous"
     },
     {
       "id": "rogue_ai_vessel",
@@ -3352,7 +3400,8 @@
           "min_qty": 2,
           "max_qty": 5
         }
-      ]
+      ],
+      "danger_level": "moderate"
     },
     {
       "id": "shield_drone",
@@ -3360,7 +3409,7 @@
       "description": "An automated defense platform projecting layered energy barriers. Strip the shields or watch your ammo disappear.",
       "behavior": "defensive",
       "hull": 20,
-      "shields": 60,
+      "shields": 69,
       "energy": 8,
       "energy_regen": 3,
       "speed": 3,
@@ -3408,7 +3457,8 @@
           "chance": 0.4
         }
       ],
-      "rare_loot": []
+      "rare_loot": [],
+      "danger_level": "safe"
     },
     {
       "id": "armored_transport",
@@ -3472,7 +3522,8 @@
           "chance": 0.3
         }
       ],
-      "rare_loot": []
+      "rare_loot": [],
+      "danger_level": "dangerous"
     },
     {
       "id": "ghost_raider",
@@ -3547,7 +3598,8 @@
           "max_qty": 2,
           "chance": 0.15
         }
-      ]
+      ],
+      "danger_level": "safe"
     },
     {
       "id": "ion_striker",
@@ -3555,7 +3607,7 @@
       "description": "Weapons tuned to disrupt energy barriers. Shield-heavy ships beware: this one was built to break you.",
       "behavior": "aggressive",
       "hull": 50,
-      "shields": 10,
+      "shields": 12,
       "energy": 9,
       "energy_regen": 3,
       "speed": 10,
@@ -3607,7 +3659,9 @@
           "chance": 0.5
         }
       ],
-      "rare_loot": []
+      "rare_loot": [],
+      "danger_level": "moderate",
+      "combat_armor": 1
     },
     {
       "id": "cryo_interceptor",
@@ -3615,7 +3669,7 @@
       "description": "Cryogenic weapons lock down fast movers. Each hit slows you further, until the ice closes in.",
       "behavior": "aggressive",
       "hull": 55,
-      "shields": 25,
+      "shields": 34,
       "energy": 9,
       "energy_regen": 3,
       "speed": 12,
@@ -3664,7 +3718,8 @@
           "chance": 0.4
         }
       ],
-      "rare_loot": []
+      "rare_loot": [],
+      "danger_level": "moderate"
     },
     {
       "id": "plasma_bomber",
@@ -3735,7 +3790,8 @@
           "max_qty": 1,
           "chance": 0.1
         }
-      ]
+      ],
+      "danger_level": "safe"
     },
     {
       "id": "support_frigate",
@@ -3743,7 +3799,7 @@
       "description": "A force multiplier that repairs and empowers its allies. Kill it first, or the fight never ends.",
       "behavior": "defensive",
       "hull": 60,
-      "shields": 40,
+      "shields": 48,
       "energy": 10,
       "energy_regen": 3,
       "speed": 6,
@@ -3805,7 +3861,8 @@
           "chance": 0.4
         }
       ],
-      "rare_loot": []
+      "rare_loot": [],
+      "danger_level": "moderate"
     }
   ]
 }
