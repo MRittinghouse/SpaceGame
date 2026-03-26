@@ -13,7 +13,7 @@ from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH, Colors, GameState, sca
 from spacegame.engine.audio_manager import get_audio_manager
 from spacegame.engine.backgrounds import AnimatedBackground
 from spacegame.engine.fonts import FONT_LG, FONT_MD, FONT_TITLE, FONT_XL, get_font
-from spacegame.engine.particles import SPARK_BURST, ParticleConfig, ParticlePool
+from spacegame.engine.particles import ParticleConfig, ParticlePool
 from spacegame.engine.sprites import AnimatedSprite, get_sprite_manager, res_scale
 from spacegame.models.player import Player
 from spacegame.models.ship import ShipType
@@ -74,7 +74,8 @@ class ShipyardView(BaseView):
         self.next_state: Optional[GameState] = None
 
         self.selected_upgrade_idx: int = 0
-        self.viewing: str = "frames"  # Default to frames tab
+        self.viewing: str = "shop"  # Default to shop tab
+        self._shop_sub_tab: str = "frames"  # Sub-tab within Shop
 
         # Scrolling
         self._scroll_offset: int = 0
@@ -96,9 +97,8 @@ class ShipyardView(BaseView):
         self.uninstall_button: Optional[pygame_gui.elements.UIButton] = None
         self.enhance_button: Optional[pygame_gui.elements.UIButton] = None
         self.drydock_tab: Optional[pygame_gui.elements.UIButton] = None
-        self.frames_tab: Optional[pygame_gui.elements.UIButton] = None
         self.shop_tab: Optional[pygame_gui.elements.UIButton] = None
-        self.installed_tab: Optional[pygame_gui.elements.UIButton] = None
+        self.loadout_tab: Optional[pygame_gui.elements.UIButton] = None
         self.buy_ship_button: Optional[pygame_gui.elements.UIButton] = None
         self.tuning_btn_a: Optional[pygame_gui.elements.UIButton] = None
         self.tuning_btn_b: Optional[pygame_gui.elements.UIButton] = None
@@ -166,37 +166,30 @@ class ShipyardView(BaseView):
     # Tab subtitle descriptions (rendered below buttons)
     _TAB_SUBTITLES: dict[str, str] = {
         "drydock": "Design Your Ship",
-        "frames": "Unlock Larger Hulls",
-        "parts": "Module Blueprints",
-        "shop": "Buy & Manage Equipment",
+        "shop": "Buy Frames & Parts",
+        "loadout": "Equip Your Ship",
     }
 
     def _create_ui(self) -> None:
         tab_w = 110
         tab_gap = 8
-        total_tab_w = tab_w * 4 + tab_gap * 3
+        total_tab_w = tab_w * 3 + tab_gap * 2
         btn_x = WINDOW_WIDTH // 2 - total_tab_w // 2
         self.drydock_tab = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(btn_x, 70, tab_w, 35),
             text="Drydock",
             manager=self.ui_manager,
         )
-        self.frames_tab = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(btn_x + (tab_w + tab_gap), 70, tab_w, 35),
-            text="Frames",
-            manager=self.ui_manager,
-        )
-        self.parts_tab = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(btn_x + (tab_w + tab_gap) * 2, 70, tab_w, 35),
-            text="Parts",
-            manager=self.ui_manager,
-        )
         self.shop_tab = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(btn_x + (tab_w + tab_gap) * 3, 70, tab_w, 35),
-            text="Equipment",
+            relative_rect=pygame.Rect(btn_x + (tab_w + tab_gap), 70, tab_w, 35),
+            text="Shop",
             manager=self.ui_manager,
         )
-        self.installed_tab = None  # Retired — equipment managed in Drydock EQUIP mode
+        self.loadout_tab = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(btn_x + (tab_w + tab_gap) * 2, 70, tab_w, 35),
+            text="Loadout",
+            manager=self.ui_manager,
+        )
         hud_h = scale_y(HUD_BASE_HEIGHT)
         self.buy_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
@@ -256,10 +249,8 @@ class ShipyardView(BaseView):
             self.uninstall_button,
             self.enhance_button,
             self.drydock_tab,
-            self.frames_tab,
-            getattr(self, "parts_tab", None),
             self.shop_tab,
-            self.installed_tab,
+            self.loadout_tab,
             self.buy_ship_button,
             self.tuning_btn_a,
             self.tuning_btn_b,
@@ -341,13 +332,14 @@ class ShipyardView(BaseView):
         return [st for st in self.all_ship_types.values() if st.id != current_id]
 
     def _get_current_list(self) -> list:
-        if self.viewing == "frames":
-            return self._get_ship_list()
-        if self.viewing == "parts":
-            return self._get_station_parts()
         if self.viewing == "shop":
-            return self._get_shop_list()
-        return self.upgrade_manager.installed
+            if self._shop_sub_tab == "frames":
+                return self._get_ship_list()
+            return self._get_filtered_parts()
+        if self.viewing == "loadout":
+            return self.upgrade_manager.installed
+        # Legacy fallback
+        return self._get_shop_list()
 
     # ========================================================================
     # Enhancement helpers
@@ -398,20 +390,16 @@ class ShipyardView(BaseView):
                 self.next_state = GameState.GALAXY_MAP
             elif event.ui_element == self.drydock_tab:
                 self.next_state = GameState.SHIP_BUILDER
-            elif event.ui_element == self.frames_tab:
-                self.viewing = "frames"
-                self.selected_upgrade_idx = 0
-                self._scroll_offset = 0
-            elif hasattr(self, "parts_tab") and event.ui_element == self.parts_tab:
-                self.viewing = "parts"
-                self.selected_upgrade_idx = 0
-                self._scroll_offset = 0
             elif event.ui_element == self.shop_tab:
                 self.viewing = "shop"
                 self.selected_upgrade_idx = 0
                 self._scroll_offset = 0
+            elif event.ui_element == self.loadout_tab:
+                self.viewing = "loadout"
+                self.selected_upgrade_idx = 0
+                self._scroll_offset = 0
             elif event.ui_element == self.buy_button:
-                if self.viewing == "parts":
+                if self.viewing == "shop" and self._shop_sub_tab != "frames":
                     self._buy_selected_part()
                 else:
                     self._buy_selected()
@@ -423,9 +411,18 @@ class ShipyardView(BaseView):
                 self._buy_selected_ship()
 
         elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            # Sub-tab click handling for shop view
+            if self.viewing == "shop" and hasattr(self, "_sub_tab_rects"):
+                for sub_id, rect in self._sub_tab_rects.items():
+                    if rect.collidepoint(event.pos):
+                        self._shop_sub_tab = sub_id
+                        self.selected_upgrade_idx = 0
+                        self._scroll_offset = 0
+                        return
             # Parts toggle click
             if (
-                self.viewing == "parts"
+                self.viewing == "shop"
+                and self._shop_sub_tab != "frames"
                 and hasattr(self, "_parts_toggle_rect")
                 and self._parts_toggle_rect.collidepoint(event.pos)
             ):
@@ -457,16 +454,16 @@ class ShipyardView(BaseView):
     def _handle_item_click(self, pos: tuple) -> None:
         items = self._get_current_list()
         # Use tab-specific layout dimensions
-        if self.viewing == "frames":
+        if self.viewing == "shop" and self._shop_sub_tab == "frames":
             list_x = self._FRAME_LIST_X
             card_w = self._FRAME_LIST_W
             card_h = self._FRAME_CARD_H
             card_spacing = self._FRAME_CARD_SPACING
-        elif self.viewing == "parts":
-            list_x = 30
-            card_w = WINDOW_WIDTH - 60
-            card_h = scale_y(52)
-            card_spacing = scale_y(52)
+        elif self.viewing == "shop" and self._shop_sub_tab != "frames":
+            list_x = self._FRAME_LIST_X
+            card_w = self._FRAME_LIST_W
+            card_h = self._PART_CARD_H
+            card_spacing = self._PART_CARD_SPACING
         else:
             list_x = _LIST_X
             card_w = _CARD_W
@@ -631,11 +628,10 @@ class ShipyardView(BaseView):
 
     def _get_card_dimensions(self) -> tuple[int, int]:
         """Return (card_height, card_spacing) for current tab."""
-        if self.viewing == "frames":
+        if self.viewing == "shop" and self._shop_sub_tab == "frames":
             return self._FRAME_CARD_H, self._FRAME_CARD_SPACING
-        if self.viewing == "parts":
-            parts_h = scale_y(52)
-            return parts_h, parts_h
+        if self.viewing == "shop" and self._shop_sub_tab != "frames":
+            return self._PART_CARD_H, self._PART_CARD_SPACING
         return _CARD_H, _CARD_SPACING
 
     def _max_scroll(self) -> int:
@@ -703,18 +699,19 @@ class ShipyardView(BaseView):
 
         # Show/hide context-sensitive buttons
         is_shop = self.viewing == "shop"
-        is_installed = False  # Retired — equipment managed in Drydock EQUIP mode
-        is_frames = self.viewing == "frames"
+        is_frames_sub = is_shop and self._shop_sub_tab == "frames"
+        is_parts_sub = is_shop and self._shop_sub_tab != "frames"
 
-        is_parts = self.viewing == "parts"
         if self.buy_button:
-            self.buy_button.visible = (is_shop or is_parts) and not self._tuning_mode
+            self.buy_button.visible = is_parts_sub and not self._tuning_mode
+            if is_parts_sub:
+                self.buy_button.set_text("Buy Part")
         if self.uninstall_button:
-            self.uninstall_button.visible = is_installed and not self._tuning_mode
+            self.uninstall_button.visible = False
         if self.enhance_button:
-            self.enhance_button.visible = is_installed and not self._tuning_mode
+            self.enhance_button.visible = False
         if self.buy_ship_button:
-            self.buy_ship_button.visible = is_frames and not self._tuning_mode
+            self.buy_ship_button.visible = is_frames_sub and not self._tuning_mode
 
         # Tuning buttons
         if self.tuning_btn_a:
@@ -724,16 +721,16 @@ class ShipyardView(BaseView):
         if self.tuning_cancel:
             self.tuning_cancel.visible = self._tuning_mode
 
-        if self.viewing == "frames":
-            self._render_frames(screen)
-        elif self.viewing == "parts":
-            self._render_parts(screen)
-        elif self.viewing == "shop":
-            self._render_shop(screen)
-        elif self.viewing == "installed":
-            # Legacy fallback — redirect to shop
-            self._render_shop(screen)
+        if self.viewing == "shop":
+            self._render_shop_sub_tabs(screen)
+            if self._shop_sub_tab == "frames":
+                self._render_frames(screen)
+            else:
+                self._render_parts_shop(screen)
+        elif self.viewing == "loadout":
+            self._render_loadout_placeholder(screen)
         else:
+            # Legacy fallback
             self._render_shop(screen)
 
         # Tuning overlay
@@ -785,13 +782,12 @@ class ShipyardView(BaseView):
         """Render active tab underline and subtitle text below each tab."""
         tab_w = 110
         tab_gap = 8
-        total_tab_w = tab_w * 4 + tab_gap * 3
+        total_tab_w = tab_w * 3 + tab_gap * 2
         btn_x = WINDOW_WIDTH // 2 - total_tab_w // 2
         tab_info = [
             ("drydock", btn_x, self.drydock_tab),
-            ("frames", btn_x + (tab_w + tab_gap), self.frames_tab),
-            ("parts", btn_x + (tab_w + tab_gap) * 2, getattr(self, "parts_tab", None)),
-            ("shop", btn_x + (tab_w + tab_gap) * 3, self.shop_tab),
+            ("shop", btn_x + (tab_w + tab_gap), self.shop_tab),
+            ("loadout", btn_x + (tab_w + tab_gap) * 2, self.loadout_tab),
         ]
         for tab_id, x, btn in tab_info:
             if not btn:
@@ -812,6 +808,338 @@ class ShipyardView(BaseView):
                 if subtitle:
                     sub_surf = self.small_font.render(subtitle, True, Colors.TEXT_SECONDARY)
                     screen.blit(sub_surf, sub_surf.get_rect(center=(WINDOW_WIDTH // 2, 118)))
+
+    # Sub-tab definitions for the Shop tab
+    _SHOP_SUB_TABS: list[tuple[str, str]] = [
+        ("frames", "Frames"),
+        ("weapon", "Weapons"),
+        ("defense", "Defense"),
+        ("engine", "Engines"),
+        ("utility", "Utility"),
+        ("cargo", "Cargo"),
+        ("crew_quarters", "Crew"),
+        ("reactor", "Reactors"),
+    ]
+
+    def _render_shop_sub_tabs(self, screen: pygame.Surface) -> None:
+        """Render second row of sub-tab buttons below main tabs when viewing Shop."""
+        btn_w = scale_x(90)
+        btn_h = scale_y(24)
+        gap = scale_x(4)
+        total_w = len(self._SHOP_SUB_TABS) * btn_w + (len(self._SHOP_SUB_TABS) - 1) * gap
+        start_x = WINDOW_WIDTH // 2 - total_w // 2
+        y = 130
+
+        self._sub_tab_rects: dict[str, pygame.Rect] = {}
+
+        for i, (sub_id, label) in enumerate(self._SHOP_SUB_TABS):
+            x = start_x + i * (btn_w + gap)
+            rect = pygame.Rect(x, y, btn_w, btn_h)
+            self._sub_tab_rects[sub_id] = rect
+
+            is_active = self._shop_sub_tab == sub_id
+
+            # Background
+            if is_active:
+                pygame.draw.rect(screen, (40, 55, 80), rect, border_radius=3)
+                pygame.draw.rect(screen, Colors.TEXT_HIGHLIGHT, rect, 1, border_radius=3)
+            else:
+                pygame.draw.rect(screen, (20, 25, 38), rect, border_radius=3)
+                pygame.draw.rect(screen, (45, 52, 72), rect, 1, border_radius=3)
+
+            text_color = Colors.TEXT_HIGHLIGHT if is_active else Colors.TEXT_SECONDARY
+            text_surf = self.small_font.render(label, True, text_color)
+            screen.blit(text_surf, text_surf.get_rect(center=rect.center))
+
+    # Parts layout constants (same split as frames)
+    _PART_CARD_H = scale_y(48)
+    _PART_CARD_SPACING = scale_y(52)
+
+    # Size badge colors
+    _SIZE_BADGE_COLORS: dict[str, tuple] = {
+        "small": (80, 180, 80),
+        "medium": (100, 160, 255),
+        "large": (255, 180, 80),
+    }
+    _SIZE_BADGE_LABELS: dict[str, str] = {
+        "small": "S",
+        "medium": "M",
+        "large": "L",
+    }
+
+    def _get_filtered_parts(self) -> list:
+        """Get ShipParts filtered by the active sub-tab slot_type.
+
+        Returns parts sorted with owned-first, then by base_cost ascending.
+        """
+        from spacegame.data_loader import get_data_loader
+
+        dl = get_data_loader()
+        all_parts = [p for p in dl.ship_parts.values() if p.slot_type == self._shop_sub_tab]
+        # Sort: owned first, then by base_cost ascending
+        all_parts.sort(
+            key=lambda p: (0 if self.player.get_part_count(p.id) > 0 else 1, p.base_cost)
+        )
+        return all_parts
+
+    def _render_parts_shop(self, screen: pygame.Surface) -> None:
+        """Render parts shop for the selected sub-tab category (split layout)."""
+        parts = self._get_filtered_parts()
+        if not parts:
+            empty = self.info_font.render(
+                "No parts available in this category.", True, Colors.TEXT_SECONDARY
+            )
+            screen.blit(empty, (40, 200))
+            return
+
+        self._render_parts_list(screen, parts)
+        self._render_part_detail(screen, parts)
+
+    def _render_parts_list(self, screen: pygame.Surface, parts: list) -> None:
+        """Render compact scrollable parts list on the left side."""
+        lx = self._FRAME_LIST_X
+        lw = self._FRAME_LIST_W
+        ch = self._PART_CARD_H
+        cs = self._PART_CARD_SPACING
+
+        # Section header
+        header = self.info_font.render("AVAILABLE PARTS", True, Colors.TEXT_HIGHLIGHT)
+        screen.blit(header, (lx, scale_y(145)))
+
+        clip_rect = pygame.Rect(lx - 2, _LIST_Y, lw + 4, _LIST_BOTTOM - _LIST_Y)
+        old_clip = screen.get_clip()
+        screen.set_clip(clip_rect)
+
+        for i, part in enumerate(parts):
+            card_y = _LIST_Y + i * cs - self._scroll_offset
+            if card_y + ch < _LIST_Y or card_y > _LIST_BOTTOM:
+                continue
+
+            rect = pygame.Rect(lx, card_y, lw, ch)
+            is_selected = i == self.selected_upgrade_idx
+            owned_count = self.player.get_part_count(part.id)
+
+            # Card background
+            card_surf = pygame.Surface((rect.width, rect.height), pygame.SRCALPHA)
+            if is_selected:
+                for row in range(rect.height):
+                    t = row / rect.height
+                    r = int(28 + 12 * t)
+                    g = int(38 + 12 * t)
+                    b = int(58 + 12 * t)
+                    pygame.draw.line(card_surf, (r, g, b, 220), (0, row), (rect.width, row))
+            elif owned_count > 0:
+                card_surf.fill((20, 35, 25, 200))
+            else:
+                card_surf.fill((18, 22, 38, 200))
+            screen.blit(card_surf, rect.topleft)
+
+            border_color = Colors.TEXT_HIGHLIGHT if is_selected else (45, 52, 72)
+            pygame.draw.rect(screen, border_color, rect, 2 if is_selected else 1, border_radius=4)
+
+            # Size badge
+            badge_label = self._SIZE_BADGE_LABELS.get(part.min_size, "?")
+            badge_color = self._SIZE_BADGE_COLORS.get(part.min_size, (120, 120, 120))
+            badge_w = scale_x(20)
+            badge_h = scale_y(16)
+            badge_x = rect.x + 8
+            badge_y = rect.y + 5
+            pygame.draw.rect(
+                screen, badge_color, (badge_x, badge_y, badge_w, badge_h), border_radius=3
+            )
+            badge_surf = self.small_font.render(badge_label, True, (0, 0, 0))
+            screen.blit(
+                badge_surf,
+                badge_surf.get_rect(center=(badge_x + badge_w // 2, badge_y + badge_h // 2)),
+            )
+
+            # Part name (after badge)
+            name_x = badge_x + badge_w + 6
+            name = self.info_font.render(part.name, True, Colors.TEXT)
+            screen.blit(name, (name_x, rect.y + 3))
+
+            # Manufacturer (small, below name)
+            mfg = part.manufacturer.replace("_", " ").title()
+            mfg_surf = self.small_font.render(mfg, True, Colors.TEXT_SECONDARY)
+            screen.blit(mfg_surf, (name_x, rect.y + 24))
+
+            # Owned count badge
+            if owned_count > 0:
+                own_text = f"x{owned_count}"
+                own_surf = self.small_font.render(own_text, True, Colors.GREEN)
+                own_x = name_x + name.get_width() + 6
+                screen.blit(own_surf, (own_x, rect.y + 5))
+
+            # Price (right-aligned)
+            can_afford = part.base_cost <= self.player.credits
+            price_color = Colors.SUCCESS if can_afford else Colors.RED
+            price_text = f"{part.base_cost:,} CR"
+            price = self.small_font.render(price_text, True, price_color)
+            screen.blit(price, (rect.right - price.get_width() - 10, rect.y + 14))
+
+        screen.set_clip(old_clip)
+
+        # Scrollbar
+        content_height = len(parts) * cs
+        visible_height = _LIST_BOTTOM - _LIST_Y
+        if content_height > visible_height:
+            bar_x = lx + lw + 4
+            bar_h = max(20, int(visible_height * visible_height / content_height))
+            max_scroll = max(1, content_height - visible_height)
+            bar_y = _LIST_Y + int(self._scroll_offset / max_scroll * (visible_height - bar_h))
+            pygame.draw.rect(
+                screen, (40, 45, 60), (bar_x, _LIST_Y, 6, visible_height), border_radius=3
+            )
+            pygame.draw.rect(screen, (80, 90, 120), (bar_x, bar_y, 6, bar_h), border_radius=3)
+
+    def _render_part_detail(self, screen: pygame.Surface, parts: list) -> None:
+        """Render detail panel for the selected part (two-column layout)."""
+        if not parts or self.selected_upgrade_idx >= len(parts):
+            return
+
+        part = parts[self.selected_upgrade_idx]
+
+        dx = self._FRAME_DETAIL_X
+        dw = self._FRAME_DETAIL_W
+        dy = _LIST_Y - scale_y(10)
+        pad = scale_x(16)
+
+        # Panel background
+        panel_h = _LIST_BOTTOM - dy + scale_y(10)
+        panel_surf = pygame.Surface((dw, panel_h), pygame.SRCALPHA)
+        panel_surf.fill((14, 18, 32, 220))
+        screen.blit(panel_surf, (dx, dy))
+        pygame.draw.rect(screen, (45, 52, 72), (dx, dy, dw, panel_h), 1, border_radius=6)
+
+        # Accent line at top
+        pygame.draw.line(
+            screen, Colors.TEXT_HIGHLIGHT, (dx + 10, dy + 2), (dx + dw - 10, dy + 2), 2
+        )
+
+        # === TITLE (full width, centered) ===
+        title_y = dy + scale_y(10)
+        name = self.header_font.render(part.name, True, Colors.TEXT_HIGHLIGHT)
+        screen.blit(name, name.get_rect(centerx=dx + dw // 2, top=title_y))
+        content_top = title_y + name.get_height() + scale_y(8)
+
+        # Vertical divider position
+        half_w = dw // 2
+        divider_x = dx + half_w
+
+        # Draw vertical divider line
+        pygame.draw.line(
+            screen,
+            (40, 48, 65),
+            (divider_x, content_top),
+            (divider_x, dy + panel_h - pad),
+            1,
+        )
+
+        # ============================================================
+        # LEFT COLUMN: size, manufacturer, description, key stats
+        # ============================================================
+        lx_col = dx + pad
+        lw_col = half_w - pad * 2
+        ly = content_top
+
+        # Size label (e.g. "Medium Weapon")
+        size_label = f"{part.min_size.title()} {part.slot_type.replace('_', ' ').title()}"
+        size_surf = self.small_font.render(size_label, True, Colors.TEXT_SECONDARY)
+        screen.blit(size_surf, (lx_col, ly))
+        ly += size_surf.get_height() + scale_y(4)
+
+        # Manufacturer
+        mfg = part.manufacturer.replace("_", " ").title()
+        mfg_surf = self.small_font.render(f"Mfg: {mfg}", True, Colors.TEXT_SECONDARY)
+        screen.blit(mfg_surf, (lx_col, ly))
+        ly += mfg_surf.get_height() + scale_y(8)
+
+        # Weight
+        weight_surf = self.small_font.render(
+            f"Weight: {part.weight:.1f}", True, Colors.TEXT_SECONDARY
+        )
+        screen.blit(weight_surf, (lx_col, ly))
+        ly += weight_surf.get_height() + scale_y(8)
+
+        # Description (word-wrapped)
+        if part.description:
+            ly += self._render_wrapped_text(
+                screen, part.description, lx_col, ly, lw_col, Colors.TEXT_SECONDARY
+            )
+            ly += scale_y(8)
+
+        # Key stat highlights (top 3 provides values, excluding slot_type)
+        provides = {k: v for k, v in part.provides.items() if k != "slot_type"}
+        if provides:
+            ly += scale_y(4)
+            highlight_label = self.small_font.render("Key Stats:", True, Colors.TEXT_HIGHLIGHT)
+            screen.blit(highlight_label, (lx_col, ly))
+            ly += highlight_label.get_height() + scale_y(4)
+
+            for stat_key, stat_val in list(provides.items())[:3]:
+                stat_name = stat_key.replace("_", " ").title()
+                stat_text = f"{stat_name}: {stat_val}"
+                stat_surf = self.small_font.render(stat_text, True, Colors.TEXT)
+                screen.blit(stat_surf, (lx_col + scale_x(8), ly))
+                ly += stat_surf.get_height() + scale_y(2)
+
+        # ============================================================
+        # RIGHT COLUMN: full stats table, price, inventory, mark
+        # ============================================================
+        rx = divider_x + pad
+        ry = content_top
+
+        # Stats header
+        stats_label = self.small_font.render("Stats:", True, Colors.TEXT_HIGHLIGHT)
+        screen.blit(stats_label, (rx, ry))
+        ry += stats_label.get_height() + scale_y(4)
+
+        # Full provides table
+        col_val_x = rx + scale_x(120)
+        for stat_key, stat_val in provides.items():
+            stat_name = stat_key.replace("_", " ").title()
+            screen.blit(self.small_font.render(stat_name, True, Colors.TEXT), (rx, ry))
+            val_str = f"{stat_val:.1f}" if isinstance(stat_val, float) else str(stat_val)
+            screen.blit(
+                self.small_font.render(val_str, True, Colors.TEXT_HIGHLIGHT), (col_val_x, ry)
+            )
+            ry += scale_y(15)
+
+        ry += scale_y(8)
+
+        # Mark
+        mark_text = f"Mark: Mk{part.mark}"
+        if part.legendary:
+            mark_text += "  (LEGENDARY)"
+        mark_color = (255, 200, 80) if part.legendary else Colors.TEXT_SECONDARY
+        screen.blit(self.small_font.render(mark_text, True, mark_color), (rx, ry))
+        ry += scale_y(18)
+
+        # Separator before price
+        pygame.draw.line(screen, (40, 48, 65), (rx, ry), (dx + dw - pad, ry), 1)
+        ry += scale_y(8)
+
+        # Price
+        can_afford = part.base_cost <= self.player.credits
+        price_color = Colors.SUCCESS if can_afford else Colors.RED
+        price_line = f"Price: {part.base_cost:,} CR"
+        screen.blit(self.info_font.render(price_line, True, price_color), (rx, ry))
+        ry += scale_y(20)
+
+        # Inventory count
+        owned_count = self.player.get_part_count(part.id)
+        own_text = f"You own: {owned_count}"
+        own_color = Colors.GREEN if owned_count > 0 else Colors.TEXT_SECONDARY
+        screen.blit(self.small_font.render(own_text, True, own_color), (rx, ry))
+
+    def _render_loadout_placeholder(self, screen: pygame.Surface) -> None:
+        """Render placeholder for the Loadout tab."""
+        text = "Loadout: Assign parts to slots. Coming in Phase S4."
+        surf = self.info_font.render(text, True, Colors.TEXT_SECONDARY)
+        screen.blit(
+            surf,
+            surf.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2)),
+        )
 
     def _render_tuning_overlay(self, screen: pygame.Surface) -> None:
         """Draw the tuning selection overlay."""
@@ -1345,35 +1673,35 @@ class ShipyardView(BaseView):
                 screen.blit(desc_surf, (text_x, card_y + 34))
 
     def _buy_selected_part(self) -> None:
-        """Purchase the selected module blueprint."""
-        from spacegame.data_loader import get_data_loader
-        from spacegame.models.build_sharing import purchase_module_blueprint
-
-        parts = self._get_station_parts()
+        """Purchase the selected ShipPart into inventory."""
+        parts = self._get_filtered_parts()
         if not parts or self.selected_upgrade_idx >= len(parts):
             return
 
-        module = parts[self.selected_upgrade_idx]
-        dl = get_data_loader()
-        module_catalog = getattr(dl, "ship_modules", {})
-        price_mod = self._get_station_price_modifier()
+        part = parts[self.selected_upgrade_idx]
 
-        ok, msg = purchase_module_blueprint(self.player, module.id, module_catalog, price_mod)
-        if ok:
-            self._show_message(msg)
-            try:
-                get_audio_manager().play_sfx("trade_buy")
-            except Exception:
-                pass
-            cx = WINDOW_WIDTH - 100
-            cy = 140 + self.selected_upgrade_idx * scale_y(52) - self._scroll_offset
-            self.particles.emit(cx, cy, SPARK_BURST)
-        else:
-            self._show_message(msg)
+        if part.base_cost > self.player.credits:
+            self._show_message(
+                f"Cannot afford {part.name} ({part.base_cost:,} CR, "
+                f"need {part.base_cost - self.player.credits:,} more)"
+            )
             try:
                 get_audio_manager().play_sfx("ui_error")
             except Exception:
                 pass
+            return
+
+        self.player.deduct_credits(part.base_cost)
+        self.player.add_part(part.id)
+        self._show_message(f"Bought {part.name} for {part.base_cost:,} CR")
+
+        try:
+            get_audio_manager().play_sfx("trade_buy")
+        except Exception:
+            pass
+        cx = self._FRAME_LIST_X + self._FRAME_LIST_W // 2
+        cy = _LIST_Y + self.selected_upgrade_idx * self._PART_CARD_SPACING - self._scroll_offset
+        self.particles.emit(cx, cy, PURCHASE_FLASH)
 
     def _render_shop(self, screen: pygame.Surface) -> None:
         header = self.info_font.render("AVAILABLE UPGRADES", True, Colors.TEXT_HIGHLIGHT)
