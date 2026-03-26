@@ -3253,6 +3253,44 @@ class ShipBuilderView(BaseView):
             )
             screen.blit(id_text, (x_start, y))
 
+        # Build rating (BP3) — live quality assessment
+        has_slots = len(self.build.placed_slots) > 0
+        if has_slots or len(self.build.modules) > 0 or len(self.build.pixels) > 20:
+            from spacegame.models.build_rating import compute_build_rating
+
+            slot_defs = getattr(self.data_loader, "slot_definitions", {})
+            parts_cat = getattr(self.data_loader, "ship_parts", {})
+            ratings = compute_build_rating(self.build, slot_defs, parts_cat)
+
+            grade_colors = {
+                "S": (255, 215, 80),  # Gold
+                "A": (80, 220, 80),  # Green
+                "B": (80, 180, 255),  # Cyan
+                "C": (220, 200, 60),  # Yellow
+                "D": (220, 140, 40),  # Orange
+                "F": (200, 60, 60),  # Red
+            }
+            rating_x = x_start + scale_x(420)
+            rating_y = STATS_PANEL_Y + 8
+            for axis_name in ("combat", "trade", "mobility", "durability"):
+                grade, _score, _feedback = ratings[axis_name]
+                gc = grade_colors.get(grade, Colors.TEXT_SECONDARY)
+                label = axis_name.title()[:3]
+                rating_text = f"{label}: {grade}"
+                r_surf = self.tiny_font.render(rating_text, True, gc)
+                screen.blit(r_surf, (rating_x, rating_y))
+                rating_x += scale_x(80)
+            # Feedback for lowest-rated axis
+            worst_axis = min(ratings, key=lambda a: ratings[a][1])
+            worst_grade, _, worst_feedback = ratings[worst_axis]
+            if worst_grade in ("D", "F") and worst_feedback:
+                fb_y = STATS_PANEL_Y + 8 + scale_y(14)
+                fb_color = grade_colors.get(worst_grade, Colors.TEXT_SECONDARY)
+                fb_surf = self.label_font.render(
+                    f"{worst_axis.title()}: {worst_feedback}", True, fb_color
+                )
+                screen.blit(fb_surf, (x_start + scale_x(420), fb_y))
+
         # Guidance hints when the build has slots placed but stats are empty
         # (slots provide structure; parts provide stats via the Loadout tab)
         has_slots = len(self.build.placed_slots) > 0
