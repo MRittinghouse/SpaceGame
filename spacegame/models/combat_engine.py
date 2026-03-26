@@ -553,27 +553,77 @@ class CombatEngine:
             }
             behavior = behavior_map.get(behavior_str, enemy.template.behavior)
 
+        # Classify available moves
+        offensive = [m for m in available if self._move_damage(m) > 0]
+        defensive = [m for m in available if self._is_defensive_move(m)]
+        evasive = [m for m in available if self._is_evasive_move(m)]
+        debuff = [m for m in available if self._is_debuff_move(m)]
+
+        # Player state awareness
+        player = self._state.player
+        player_shields_up = player.shields > 0
+        player_low_hp = player.hull_ratio < 0.3
+
         if behavior == EnemyBehavior.AGGRESSIVE:
-            # Always pick the highest-damage move
-            return max(available, key=lambda m: self._move_damage(m))
+            # BRAWLER archetype: maximum damage, always.
+            # When player is low, go for the kill with biggest hit.
+            # When player shields are up, prefer shield-bypassing moves if available.
+            # Counter: shields, evasion, cryo freeze
+            if player_low_hp and offensive:
+                # Go for the kill — pick the biggest single hit
+                return max(offensive, key=lambda m: self._move_damage(m))
+            if offensive:
+                return max(offensive, key=lambda m: self._move_damage(m))
+            return available[0]
 
         elif behavior == EnemyBehavior.DEFENSIVE:
-            if enemy.hull_ratio < 0.5:
-                # Prefer defensive moves when low
-                defensive = [m for m in available if self._is_defensive_move(m)]
-                if defensive:
+            # SHIELD WALL archetype: sustain and outlast.
+            # Prioritize shield/hull restore when damaged. Attack when healthy.
+            # Below 30% hull: ALWAYS heal if possible.
+            # Below 60% hull: 70% chance to heal, 30% to attack.
+            # Above 60%: attack normally but prefer efficient moves.
+            # Counter: ion weapons (melt shields), sustained pressure, voltaic suppression
+            if enemy.hull_ratio < 0.3 and defensive:
+                return defensive[0]
+            if enemy.hull_ratio < 0.6 and defensive:
+                if self._rng.random() < 0.7:
                     return defensive[0]
-            return max(available, key=lambda m: self._move_damage(m))
+            # When shields are gone, prioritize shield restore over attack
+            if enemy.current_shields <= 0 and defensive:
+                shield_restores = [
+                    m for m in defensive
+                    if any(e.type.value == "shield_restore" for e in m.effects)
+                ]
+                if shield_restores:
+                    return shield_restores[0]
+            if offensive:
+                return max(offensive, key=lambda m: self._move_damage(m))
+            return available[0]
 
         elif behavior == EnemyBehavior.EVASIVE:
-            # Alternate: evasion move if available and not on cooldown, else attack
-            evasive = [m for m in available if self._is_evasive_move(m)]
-            if evasive and self._state.round_number % 2 == 0:
+            # INTERCEPTOR archetype: dodge then strike.
+            # Open with evasion buff, then attack while buffed. Rebuff when it fades.
+            # When healthy (>60%): alternate evasion buff and attack
+            # When hurt (<40%): prioritize evasion to survive
+            # Counter: AoE weapons (can't dodge), accuracy-boosted weapons
+            if enemy.hull_ratio < 0.4 and evasive:
+                # Survival mode — dodge everything
                 return evasive[0]
-            offensive = [m for m in available if self._move_damage(m) > 0]
-            return offensive[0] if offensive else available[0]
+            if evasive and self._state.round_number % 3 == 0:
+                # Rebuff evasion every 3 rounds
+                return evasive[0]
+            if debuff and player_shields_up and self._rng.random() < 0.3:
+                # Occasionally debuff instead of pure damage
+                return debuff[0]
+            if offensive:
+                # Pick the highest damage attack
+                return max(offensive, key=lambda m: self._move_damage(m))
+            return available[0]
 
-        # Default / COWARDLY (shouldn't reach here for cowardly, handled above)
+        # Default / COWARDLY (flee handled above; if still here, attack weakly)
+        if offensive:
+            # Cowardly enemies pick the cheapest (safest) attack
+            return min(offensive, key=lambda m: m.energy_cost)
         return available[0]
 
     def telegraph_enemy_moves(self) -> None:
@@ -618,6 +668,16 @@ class CombatEngine:
         """Whether a move boosts evasion."""
         return any(
             e.type == EffectType.EVASION_MOD and e.target == EffectTarget.SELF for e in move.effects
+        )
+
+    @staticmethod
+    def _is_debuff_move(move: CombatMove) -> bool:
+        """Whether a move debuffs the enemy (energy drain, accuracy reduction, etc)."""
+        return any(
+            e.type
+            in (EffectType.ENERGY_DRAIN, EffectType.ACCURACY_MOD, EffectType.SHIELD_DRAIN)
+            and e.target == EffectTarget.ENEMY
+            for e in move.effects
         )
 
     # ------------------------------------------------------------------
