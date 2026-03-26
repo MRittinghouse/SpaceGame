@@ -879,23 +879,16 @@ class GalaxyMapView(BaseView):
                 # Fallback colored circle
                 pygame.draw.circle(screen, (150, 150, 150), (screen_x, screen_y), 12)
 
-            # Faction-colored halo (soft circular glow behind the portrait)
+            # Faction-colored halo (subtle ring, not a filled glow)
             faction_color = self._get_faction_color(system.faction)
             if faction_color:
                 fc_r = halo_r
                 fc_d = fc_r * 2 + 2
                 fc_surf = pygame.Surface((fc_d, fc_d), pygame.SRCALPHA)
-                # Outer soft glow ring
+                # Thin outer ring only — no filled glow (cleaner, less garish)
                 pygame.draw.circle(
                     fc_surf,
-                    (*faction_color, 50),
-                    (fc_r + 1, fc_r + 1),
-                    fc_r,
-                )
-                # Sharper inner ring
-                pygame.draw.circle(
-                    fc_surf,
-                    (*faction_color, 100),
+                    (*faction_color, 70),
                     (fc_r + 1, fc_r + 1),
                     fc_r,
                     2,
@@ -959,13 +952,38 @@ class GalaxyMapView(BaseView):
                 )
                 screen.blit(marker_surf, (screen_x - half_w - 12, screen_y - 7))
 
-            # System name (below portrait with text shadow for readability)
+            # System name — rendered after all systems to allow overlap avoidance
+            # (deferred to a second pass below)
+
+        # System names — second pass with overlap avoidance
+        name_rects: list[pygame.Rect] = []
+        for system_id, system in self.systems.items():
+            screen_x, screen_y = self._world_to_screen(system.coordinates.x, system.coordinates.y)
+            planet_surf = self._planet_surfaces.get(system_id)
+            half_h = (planet_surf.get_height() // 2) if planet_surf else 12
+
             name_color = Colors.TEXT_HIGHLIGHT if system_id == self.selected_system else Colors.TEXT
             name_surf = self.system_font.render(system.name, True, name_color)
-            name_y = screen_y + half_h + 4
-            name_rect = name_surf.get_rect(center=(screen_x, name_y))
-            # Dark shadow for contrast against starfield
             shadow = self.system_font.render(system.name, True, (0, 0, 0))
+
+            # Default position: below portrait
+            name_rect = name_surf.get_rect(center=(screen_x, screen_y + half_h + 6))
+
+            # Nudge if overlapping any previously placed name
+            for existing in name_rects:
+                if name_rect.colliderect(existing):
+                    # Try above the portrait instead
+                    alt_rect = name_surf.get_rect(center=(screen_x, screen_y - half_h - 8))
+                    if not any(alt_rect.colliderect(e) for e in name_rects):
+                        name_rect = alt_rect
+                        break
+                    # Try offset right
+                    alt_rect = name_surf.get_rect(midleft=(screen_x + half_h + 8, screen_y))
+                    if not any(alt_rect.colliderect(e) for e in name_rects):
+                        name_rect = alt_rect
+                        break
+
+            name_rects.append(name_rect)
             screen.blit(shadow, (name_rect.x + 1, name_rect.y + 1))
             screen.blit(name_surf, name_rect)
 
@@ -1305,20 +1323,25 @@ class GalaxyMapView(BaseView):
         # --- Collect all content lines as (text, color) tuples ---
 
         faction_id = self.player.get_faction_for_system(system_id)
+
+        info_lines: list[tuple[str, tuple[int, int, int]]] = [
+            (f"Type: {system.type.replace('_', ' ').title()}", Colors.TEXT),
+        ]
+
+        # Faction and reputation on separate lines for readability
         if faction_id:
             tier = self.player.get_reputation_tier(faction_id)
             rep_val = self.player.get_reputation(faction_id)
             sign = "+" if rep_val >= 0 else ""
-            faction_line = f"Faction: {system.faction} ({tier.value}, {sign}{rep_val})"
+            info_lines.append((f"Faction: {system.faction}", Colors.TEXT))
+            info_lines.append(
+                (f"  Reputation: {tier.value} ({sign}{rep_val})", Colors.TEXT_SECONDARY)
+            )
         else:
-            faction_line = f"Faction: {system.faction}"
+            info_lines.append((f"Faction: {system.faction}", Colors.TEXT))
 
-        info_lines: list[tuple[str, tuple[int, int, int]]] = [
-            (f"Type: {system.type.replace('_', ' ').title()}", Colors.TEXT),
-            (faction_line, Colors.TEXT),
-            (f"Danger: {system.danger_level.title()}", Colors.TEXT),
-            ("", Colors.TEXT),
-        ]
+        info_lines.append((f"Danger: {system.danger_level.title()}", Colors.TEXT))
+        info_lines.append(("", Colors.TEXT))
 
         if system_id != self.player.current_system_id:
             current = self.systems[self.player.current_system_id]

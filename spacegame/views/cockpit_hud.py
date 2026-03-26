@@ -447,11 +447,15 @@ class CockpitHUD:
         # Border
         pygame.draw.rect(screen, _SHIP_PANEL_BORDER, (bar_x, y, bar_w, height), 1)
 
-        # Inline value text (right-aligned inside the bar, vertically centered)
+        # Inline value text (right-aligned inside the bar, with dark outline for readability)
         if value:
-            val_surf = self._label_font.render(value, True, Colors.TEXT_PRIMARY)
+            val_surf = self._label_font.render(value, True, (240, 240, 240))
             val_x = bar_x + bar_w - val_surf.get_width() - scale_x(4)
             val_y = y + (height - val_surf.get_height()) // 2
+            # Dark outline for contrast against bright bar fills
+            shadow = self._label_font.render(value, True, (0, 0, 0))
+            for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+                screen.blit(shadow, (val_x + dx, val_y + dy))
             screen.blit(val_surf, (val_x, val_y))
 
     def _render_buttons(self, screen: pygame.Surface) -> None:
