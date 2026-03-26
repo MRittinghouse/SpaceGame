@@ -145,7 +145,9 @@
       "footprint_h": 2,
       "weight": 3.0,
       "placement_cost": 500,
-      "color": [200, 60, 60]
+      "color": [200, 60, 60],
+      "variant_group": "weapon_small",
+      "variant_name": "Standard"
     },
     {
       "id": "weapon_medium",
@@ -155,7 +157,35 @@
       "footprint_h": 3,
       "weight": 6.0,
       "placement_cost": 1500,
-      "color": [200, 60, 60]
+      "color": [200, 60, 60],
+      "variant_group": "weapon_medium",
+      "variant_name": "Standard"
+    },
+    {
+      "id": "weapon_medium_v2",
+      "slot_type": "weapon",
+      "size": "medium",
+      "footprint_w": 3,
+      "footprint_h": 3,
+      "weight": 6.0,
+      "placement_cost": 1500,
+      "color": [200, 60, 60],
+      "pixel_mask": ["XX.", "XXX", "XXX"],
+      "variant_group": "weapon_medium",
+      "variant_name": "Battery"
+    },
+    {
+      "id": "weapon_medium_v3",
+      "slot_type": "weapon",
+      "size": "medium",
+      "footprint_w": 3,
+      "footprint_h": 3,
+      "weight": 6.0,
+      "placement_cost": 1500,
+      "color": [200, 60, 60],
+      "pixel_mask": ["XXX", ".X.", ".X."],
+      "variant_group": "weapon_medium",
+      "variant_name": "Turret"
     },
     {
       "id": "weapon_large",
@@ -165,7 +195,22 @@
       "footprint_h": 4,
       "weight": 10.0,
       "placement_cost": 4000,
-      "color": [200, 60, 60]
+      "color": [200, 60, 60],
+      "variant_group": "weapon_large",
+      "variant_name": "Standard"
+    },
+    {
+      "id": "weapon_large_v2",
+      "slot_type": "weapon",
+      "size": "large",
+      "footprint_w": 4,
+      "footprint_h": 4,
+      "weight": 10.0,
+      "placement_cost": 4000,
+      "color": [200, 60, 60],
+      "pixel_mask": ["XXXX", "XXXX", ".XX.", ".XX."],
+      "variant_group": "weapon_large",
+      "variant_name": "Broadside"
     },
     {
       "id": "defense_small",
@@ -175,7 +220,9 @@
       "footprint_h": 2,
       "weight": 3.0,
       "placement_cost": 400,
-      "color": [60, 120, 200]
+      "color": [60, 120, 200],
+      "variant_group": "defense_small",
+      "variant_name": "Standard"
     },
     {
       "id": "defense_medium",
@@ -185,7 +232,35 @@
       "footprint_h": 3,
       "weight": 6.0,
       "placement_cost": 1200,
-      "color": [60, 120, 200]
+      "color": [60, 120, 200],
+      "variant_group": "defense_medium",
+      "variant_name": "Standard"
+    },
+    {
+      "id": "defense_medium_v2",
+      "slot_type": "defense",
+      "size": "medium",
+      "footprint_w": 3,
+      "footprint_h": 3,
+      "weight": 6.0,
+      "placement_cost": 1200,
+      "color": [60, 120, 200],
+      "pixel_mask": [".X.", "XXX", ".X."],
+      "variant_group": "defense_medium",
+      "variant_name": "Shield Array"
+    },
+    {
+      "id": "defense_medium_v3",
+      "slot_type": "defense",
+      "size": "medium",
+      "footprint_w": 3,
+      "footprint_h": 3,
+      "weight": 6.0,
+      "placement_cost": 1200,
+      "color": [60, 120, 200],
+      "pixel_mask": ["XXX", "XXX", ".X."],
+      "variant_group": "defense_medium",
+      "variant_name": "Bulwark"
     },
     {
       "id": "defense_large",
@@ -195,7 +270,22 @@
       "footprint_h": 4,
       "weight": 10.0,
       "placement_cost": 3500,
-      "color": [60, 120, 200]
+      "color": [60, 120, 200],
+      "variant_group": "defense_large",
+      "variant_name": "Standard"
+    },
+    {
+      "id": "defense_large_v2",
+      "slot_type": "defense",
+      "size": "large",
+      "footprint_w": 4,
+      "footprint_h": 4,
+      "weight": 10.0,
+      "placement_cost": 3500,
+      "color": [60, 120, 200],
+      "pixel_mask": [".XX.", "XXXX", "XXXX", ".XX."],
+      "variant_group": "defense_large",
+      "variant_name": "Dome"
     },
     {
       "id": "engine_small",
@@ -205,7 +295,9 @@
       "footprint_h": 3,
       "weight": 4.0,
       "placement_cost": 600,
-      "color": [200, 140, 40]
+      "color": [200, 140, 40],
+      "variant_group": "engine_small",
+      "variant_name": "Standard"
     },
     {
       "id": "engine_medium",
@@ -215,7 +307,22 @@
       "footprint_h": 4,
       "weight": 7.0,
       "placement_cost": 1800,
-      "color": [200, 140, 40]
+      "color": [200, 140, 40],
+      "variant_group": "engine_medium",
+      "variant_name": "Standard"
+    },
+    {
+      "id": "engine_medium_v2",
+      "slot_type": "engine",
+      "size": "medium",
+      "footprint_w": 3,
+      "footprint_h": 4,
+      "weight": 7.0,
+      "placement_cost": 1800,
+      "color": [200, 140, 40],
+      "pixel_mask": [".XX", "XXX", "XXX", ".XX"],
+      "variant_group": "engine_medium",
+      "variant_name": "Thruster"
     },
     {
       "id": "engine_large",
@@ -225,7 +332,22 @@
       "footprint_h": 5,
       "weight": 12.0,
       "placement_cost": 4500,
-      "color": [200, 140, 40]
+      "color": [200, 140, 40],
+      "variant_group": "engine_large",
+      "variant_name": "Standard"
+    },
+    {
+      "id": "engine_large_v2",
+      "slot_type": "engine",
+      "size": "large",
+      "footprint_w": 4,
+      "footprint_h": 5,
+      "weight": 12.0,
+      "placement_cost": 4500,
+      "color": [200, 140, 40],
+      "pixel_mask": [".XX.", "XXXX", "XXXX", "XXXX", ".XX."],
+      "variant_group": "engine_large",
+      "variant_name": "Nacelle"
     },
     {
       "id": "utility_small",
@@ -235,7 +357,9 @@
       "footprint_h": 2,
       "weight": 2.0,
       "placement_cost": 300,
-      "color": [60, 180, 80]
+      "color": [60, 180, 80],
+      "variant_group": "utility_small",
+      "variant_name": "Standard"
     },
     {
       "id": "utility_medium",
@@ -245,7 +369,22 @@
       "footprint_h": 3,
       "weight": 4.0,
       "placement_cost": 800,
-      "color": [60, 180, 80]
+      "color": [60, 180, 80],
+      "variant_group": "utility_medium",
+      "variant_name": "Standard"
+    },
+    {
+      "id": "utility_medium_v2",
+      "slot_type": "utility",
+      "size": "medium",
+      "footprint_w": 3,
+      "footprint_h": 3,
+      "weight": 4.0,
+      "placement_cost": 800,
+      "color": [60, 180, 80],
+      "pixel_mask": ["XX.", "XXX", ".XX"],
+      "variant_group": "utility_medium",
+      "variant_name": "Sensor Pod"
     },
     {
       "id": "utility_large",
@@ -255,7 +394,9 @@
       "footprint_h": 4,
       "weight": 7.0,
       "placement_cost": 2000,
-      "color": [60, 180, 80]
+      "color": [60, 180, 80],
+      "variant_group": "utility_large",
+      "variant_name": "Standard"
     },
     {
       "id": "fuel_small",
@@ -265,7 +406,9 @@
       "footprint_h": 2,
       "weight": 2.0,
       "placement_cost": 250,
-      "color": [200, 160, 40]
+      "color": [200, 160, 40],
+      "variant_group": "fuel_small",
+      "variant_name": "Standard"
     },
     {
       "id": "fuel_medium",
@@ -275,7 +418,22 @@
       "footprint_h": 3,
       "weight": 4.0,
       "placement_cost": 700,
-      "color": [200, 160, 40]
+      "color": [200, 160, 40],
+      "variant_group": "fuel_medium",
+      "variant_name": "Standard"
+    },
+    {
+      "id": "fuel_medium_v2",
+      "slot_type": "fuel",
+      "size": "medium",
+      "footprint_w": 3,
+      "footprint_h": 3,
+      "weight": 4.0,
+      "placement_cost": 700,
+      "color": [200, 160, 40],
+      "pixel_mask": [".X.", "XXX", "XXX"],
+      "variant_group": "fuel_medium",
+      "variant_name": "Reserve Tank"
     },
     {
       "id": "fuel_large",
@@ -285,7 +443,9 @@
       "footprint_h": 4,
       "weight": 7.0,
       "placement_cost": 1800,
-      "color": [200, 160, 40]
+      "color": [200, 160, 40],
+      "variant_group": "fuel_large",
+      "variant_name": "Standard"
     },
     {
       "id": "cargo_small",
@@ -295,7 +455,9 @@
       "footprint_h": 3,
       "weight": 2.0,
       "placement_cost": 200,
-      "color": [180, 150, 60]
+      "color": [180, 150, 60],
+      "variant_group": "cargo_small",
+      "variant_name": "Standard"
     },
     {
       "id": "cargo_medium",
@@ -305,7 +467,22 @@
       "footprint_h": 4,
       "weight": 4.0,
       "placement_cost": 600,
-      "color": [180, 150, 60]
+      "color": [180, 150, 60],
+      "variant_group": "cargo_medium",
+      "variant_name": "Standard"
+    },
+    {
+      "id": "cargo_medium_v2",
+      "slot_type": "cargo",
+      "size": "medium",
+      "footprint_w": 3,
+      "footprint_h": 4,
+      "weight": 4.0,
+      "placement_cost": 600,
+      "color": [180, 150, 60],
+      "pixel_mask": ["XXX", "XXX", "XX.", "XX."],
+      "variant_group": "cargo_medium",
+      "variant_name": "Bay"
     },
     {
       "id": "cargo_large",
@@ -315,7 +492,9 @@
       "footprint_h": 6,
       "weight": 7.0,
       "placement_cost": 1500,
-      "color": [180, 150, 60]
+      "color": [180, 150, 60],
+      "variant_group": "cargo_large",
+      "variant_name": "Standard"
     },
     {
       "id": "crew_quarters_small",
@@ -325,7 +504,9 @@
       "footprint_h": 2,
       "weight": 3.0,
       "placement_cost": 400,
-      "color": [160, 120, 200]
+      "color": [160, 120, 200],
+      "variant_group": "crew_quarters_small",
+      "variant_name": "Standard"
     },
     {
       "id": "crew_quarters_medium",
@@ -335,7 +516,22 @@
       "footprint_h": 3,
       "weight": 5.0,
       "placement_cost": 1000,
-      "color": [160, 120, 200]
+      "color": [160, 120, 200],
+      "variant_group": "crew_quarters_medium",
+      "variant_name": "Standard"
+    },
+    {
+      "id": "crew_quarters_medium_v2",
+      "slot_type": "crew_quarters",
+      "size": "medium",
+      "footprint_w": 3,
+      "footprint_h": 3,
+      "weight": 5.0,
+      "placement_cost": 1000,
+      "color": [160, 120, 200],
+      "pixel_mask": ["XX.", "XX.", "XXX"],
+      "variant_group": "crew_quarters_medium",
+      "variant_name": "Cabin"
     },
     {
       "id": "reactor_small",
@@ -345,7 +541,9 @@
       "footprint_h": 2,
       "weight": 4.0,
       "placement_cost": 800,
-      "color": [255, 200, 50]
+      "color": [255, 200, 50],
+      "variant_group": "reactor_small",
+      "variant_name": "Standard"
     },
     {
       "id": "reactor_medium",
@@ -355,7 +553,22 @@
       "footprint_h": 3,
       "weight": 7.0,
       "placement_cost": 2500,
-      "color": [255, 200, 50]
+      "color": [255, 200, 50],
+      "variant_group": "reactor_medium",
+      "variant_name": "Standard"
+    },
+    {
+      "id": "reactor_medium_v2",
+      "slot_type": "reactor",
+      "size": "medium",
+      "footprint_w": 3,
+      "footprint_h": 3,
+      "weight": 7.0,
+      "placement_cost": 2500,
+      "color": [255, 200, 50],
+      "pixel_mask": [".X.", "XXX", ".X."],
+      "variant_group": "reactor_medium",
+      "variant_name": "Core"
     },
     {
       "id": "reactor_large",
@@ -365,7 +578,22 @@
       "footprint_h": 4,
       "weight": 12.0,
       "placement_cost": 5000,
-      "color": [255, 200, 50]
+      "color": [255, 200, 50],
+      "variant_group": "reactor_large",
+      "variant_name": "Standard"
+    },
+    {
+      "id": "reactor_large_v2",
+      "slot_type": "reactor",
+      "size": "large",
+      "footprint_w": 4,
+      "footprint_h": 4,
+      "weight": 12.0,
+      "placement_cost": 5000,
+      "color": [255, 200, 50],
+      "pixel_mask": [".XX.", "X..X", "X..X", ".XX."],
+      "variant_group": "reactor_large",
+      "variant_name": "Torus"
     }
   ]
 }

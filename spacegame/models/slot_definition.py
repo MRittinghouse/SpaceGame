@@ -80,6 +80,8 @@ class SlotDefinition:
     unlock_faction: str = ""  # Faction ID required (empty = always available)
     unlock_rep_tier: str = ""  # Min reputation tier ("friendly", "allied")
     pixel_mask: list[str] = field(default_factory=list)  # Row strings: "XX.." = filled/empty
+    variant_group: str = ""  # Group ID for variant cycling (e.g., "weapon_medium")
+    variant_name: str = ""  # Short variant label (e.g., "Standard", "Angular")
 
     @property
     def grid_area(self) -> int:
@@ -150,6 +152,10 @@ class SlotDefinition:
             d["unlock_rep_tier"] = self.unlock_rep_tier
         if self.pixel_mask:
             d["pixel_mask"] = self.pixel_mask
+        if self.variant_group:
+            d["variant_group"] = self.variant_group
+        if self.variant_name:
+            d["variant_name"] = self.variant_name
         return d
 
     @classmethod
@@ -169,4 +175,6 @@ class SlotDefinition:
             unlock_faction=data.get("unlock_faction", ""),
             unlock_rep_tier=data.get("unlock_rep_tier", ""),
             pixel_mask=data.get("pixel_mask", []),
+            variant_group=data.get("variant_group", ""),
+            variant_name=data.get("variant_name", ""),
         )

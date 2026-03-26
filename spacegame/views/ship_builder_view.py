@@ -237,6 +237,8 @@ class ShipBuilderView(BaseView):
         # Slot palette (S2.2 — new slot-based builder)
         self._selected_slot_def_id: Optional[str] = None
         self._slot_palette_scroll: int = 0
+        self._slot_variant_index: dict[str, int] = {}  # variant_group -> active index
+        self._slot_variant_lists: dict[str, list[str]] = {}  # variant_group -> [def IDs]
 
         # EQUIP mode moved to Loadout tab (Phase S4)
 
@@ -518,6 +520,9 @@ class ShipBuilderView(BaseView):
                 if self._builder_mode == "slot":
                     self._recolor_mode = not getattr(self, "_recolor_mode", False)
                     self._recolor_material_id = "standard_plate"
+            elif event.key == pygame.K_v:
+                if self._builder_mode == "slot":
+                    self._cycle_slot_variant()
             elif event.key == pygame.K_x:
                 self._mirror_mode = not self._mirror_mode
             # [D] key retired — equipment now installed via EQUIP mode
@@ -912,20 +917,49 @@ class ShipBuilderView(BaseView):
         """Return slot definitions grouped by type in display order.
 
         Faction-locked slots are hidden until the player reaches the
-        required reputation tier. This keeps the palette clean.
+        required reputation tier. Within each type, variant groups are
+        collapsed to show only the active variant. This keeps the palette clean.
 
         Returns:
             List of (slot_type, [SlotDefinition, ...]) tuples ordered by
             _SLOT_TYPE_ORDER.
         """
         slot_defs = getattr(self.data_loader, "slot_definitions", {})
+
+        # Build variant lists for cycling (group_id -> ordered list of def IDs)
+        variant_map: dict[str, list[SlotDefinition]] = {}
+        for sd in slot_defs.values():
+            if sd.variant_group:
+                variant_map.setdefault(sd.variant_group, []).append(sd)
+        # Sort variant lists by ID to keep order stable (base first, then _v2, _v3)
+        for vg_list in variant_map.values():
+            vg_list.sort(key=lambda d: d.id)
+        # Store for cycling
+        self._slot_variant_lists = {
+            vg: [sd.id for sd in vg_list] for vg, vg_list in variant_map.items()
+        }
+
         groups: dict[str, list[SlotDefinition]] = {}
+        seen_variant_groups: set[str] = set()
         for sd in slot_defs.values():
             # Hide faction-locked slots the player hasn't unlocked
             if sd.unlock_faction:
                 if not self._is_slot_unlocked(sd):
                     continue
-            groups.setdefault(sd.slot_type, []).append(sd)
+            # For variant groups, only show the active variant
+            if sd.variant_group:
+                if sd.variant_group in seen_variant_groups:
+                    continue
+                seen_variant_groups.add(sd.variant_group)
+                # Pick the active variant for this group
+                idx = self._slot_variant_index.get(sd.variant_group, 0)
+                vg_ids = self._slot_variant_lists.get(sd.variant_group, [sd.id])
+                idx = idx % len(vg_ids) if vg_ids else 0
+                active_id = vg_ids[idx] if vg_ids else sd.id
+                active_sd = slot_defs.get(active_id, sd)
+                groups.setdefault(active_sd.slot_type, []).append(active_sd)
+            else:
+                groups.setdefault(sd.slot_type, []).append(sd)
         # Sort each group by size order: small, medium, large
         from spacegame.models.slot_definition import SIZE_ORDER
 
@@ -947,6 +981,27 @@ class ShipBuilderView(BaseView):
         required = tier_order.get(sd.unlock_rep_tier, 3)
         current = tier_order.get(tier.value, 2)
         return current >= required
+
+    def _cycle_slot_variant(self) -> None:
+        """Cycle the currently selected slot to the next shape variant.
+
+        If the selected slot belongs to a variant group with multiple
+        entries, advance the index and update the selection.
+        """
+        if not self._selected_slot_def_id:
+            return
+        slot_defs = getattr(self.data_loader, "slot_definitions", {})
+        sdef = slot_defs.get(self._selected_slot_def_id)
+        if not sdef or not sdef.variant_group:
+            return
+        vg = sdef.variant_group
+        vg_ids = self._slot_variant_lists.get(vg, [])
+        if len(vg_ids) <= 1:
+            return
+        idx = self._slot_variant_index.get(vg, 0)
+        idx = (idx + 1) % len(vg_ids)
+        self._slot_variant_index[vg] = idx
+        self._selected_slot_def_id = vg_ids[idx]
 
     def _get_slot_type_counts(self) -> dict[str, int]:
         """Count how many placed slots exist per slot type."""
@@ -2452,20 +2507,28 @@ class ShipBuilderView(BaseView):
                         border_radius=2,
                     )
 
-                    # Display name
+                    # Display name with variant indicator
                     text_x = swatch_x + swatch_size + 6
                     name_color = (70, 70, 80) if at_limit else Colors.TEXT_PRIMARY
-                    name_surf = self.label_font.render(sdef.display_name, True, name_color)
+                    display_label = sdef.display_name
+                    vg_ids = self._slot_variant_lists.get(sdef.variant_group, [])
+                    if sdef.variant_group and len(vg_ids) > 1:
+                        vg_idx = self._slot_variant_index.get(sdef.variant_group, 0)
+                        vg_idx = vg_idx % len(vg_ids)
+                        display_label += f" ({vg_idx + 1}/{len(vg_ids)})"
+                    name_surf = self.label_font.render(display_label, True, name_color)
                     screen.blit(name_surf, (text_x, y_cursor + 1))
 
-                    # Info line: footprint, weight, cost
+                    # Info line: footprint, weight, cost + variant name
                     info_color = (50, 50, 60) if at_limit else Colors.TEXT_SECONDARY
-                    info_text = (
+                    info_parts = (
                         f"{sdef.footprint_w}x{sdef.footprint_h}  "
                         f"W:{sdef.weight:.0f}  "
                         f"{sdef.placement_cost:,}CR"
                     )
-                    info_surf = self.label_font.render(info_text, True, info_color)
+                    if sdef.variant_name and sdef.variant_name != "Standard":
+                        info_parts += f"  [{sdef.variant_name}]"
+                    info_surf = self.label_font.render(info_parts, True, info_color)
                     screen.blit(info_surf, (text_x, y_cursor + 12))
 
                 y_cursor += item_h
@@ -3288,7 +3351,7 @@ class ShipBuilderView(BaseView):
             ("BUILDING", Colors.TEXT_HIGHLIGHT),
             ("  Left-click: Place shape / Use tool", Colors.TEXT_PRIMARY),
             ("  Right-click: Erase pixel / Remove module", Colors.TEXT_PRIMARY),
-            ("  [R] Rotate shape 90°    [Q] Flip horizontally", Colors.TEXT_PRIMARY),
+            ("  [R] Rotate shape 90°    [Q] Flip    [V] Cycle variant", Colors.TEXT_PRIMARY),
             ("  [X] Toggle Mirror Mode (symmetrical building)", Colors.TEXT_PRIMARY),
             ("  Ctrl+Z: Undo    Ctrl+Y: Redo", Colors.TEXT_PRIMARY),
             ("", Colors.TEXT_PRIMARY),
