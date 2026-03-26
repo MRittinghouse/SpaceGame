@@ -4515,7 +4515,9 @@ class Game:
                 self.ui_manager.process_events(event)
 
                 # Route events to event notification, save/load, pause menu, or game state
-                if self._event_notification_view and self._event_notification_view.active:
+                if self.settings_view:
+                    self.settings_view.handle_event(event)
+                elif self._event_notification_view and self._event_notification_view.active:
                     self._event_notification_view.handle_event(event)
                 elif self.save_load_view:
                     self.save_load_view.handle_event(event)
