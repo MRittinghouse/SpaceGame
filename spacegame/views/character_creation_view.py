@@ -73,16 +73,16 @@ class CharacterCreationView(BaseView):
 
     def _create_ui(self) -> None:
         cx = WINDOW_WIDTH // 2
-        start_y = scale_y(220)
-        row_height = scale_y(60)
+        start_y = scale_y(230)
+        row_height = scale_y(75)
 
         for i, attr in enumerate(AttributeId):
             y = start_y + i * row_height
 
-            # Minus button (pushed right to avoid text overlap)
+            # Minus button
             self.minus_buttons[attr.value] = pygame_gui.elements.UIButton(
                 relative_rect=pygame.Rect(
-                    cx + scale_x(150), y + scale_y(4), scale_x(36), scale_y(36)
+                    cx + scale_x(160), y + scale_y(8), scale_x(36), scale_y(36)
                 ),
                 text="-",
                 manager=self.ui_manager,
@@ -91,7 +91,7 @@ class CharacterCreationView(BaseView):
             # Plus button
             self.plus_buttons[attr.value] = pygame_gui.elements.UIButton(
                 relative_rect=pygame.Rect(
-                    cx + scale_x(250), y + scale_y(4), scale_x(36), scale_y(36)
+                    cx + scale_x(260), y + scale_y(8), scale_x(36), scale_y(36)
                 ),
                 text="+",
                 manager=self.ui_manager,
@@ -201,8 +201,8 @@ class CharacterCreationView(BaseView):
         screen.blit(pts_surf, pts_surf.get_rect(center=(cx, scale_y(185))))
 
         # Attribute rows
-        start_y = scale_y(220)
-        row_height = scale_y(60)
+        start_y = scale_y(230)
+        row_height = scale_y(75)  # Taller rows for wrapped descriptions
 
         for i, attr in enumerate(AttributeId):
             y = start_y + i * row_height
@@ -212,26 +212,35 @@ class CharacterCreationView(BaseView):
             # Attribute name (left-aligned)
             text_x = cx - scale_x(280)
             name_surf = self.attr_font.render(defn["name"], True, Colors.TEXT_HIGHLIGHT)
-            screen.blit(name_surf, (text_x, y + 4))
+            screen.blit(name_surf, (text_x, y))
 
-            # Description (capped width to avoid overlapping buttons)
-            max_desc_w = scale_x(520)
+            # Description — word-wrapped to fit before the buttons
+            max_desc_w = scale_x(380)  # Stop before minus button at cx+150
             desc_text = defn["description"]
-            desc_surf = self.desc_font.render(desc_text, True, Colors.TEXT_SECONDARY)
-            if desc_surf.get_width() > max_desc_w:
-                # Truncate with ellipsis
-                while (
-                    len(desc_text) > 10 and self.desc_font.size(desc_text + "...")[0] > max_desc_w
-                ):
-                    desc_text = desc_text[:-1]
-                desc_surf = self.desc_font.render(
-                    desc_text.rstrip() + "...", True, Colors.TEXT_SECONDARY
-                )
-            screen.blit(desc_surf, (text_x, y + scale_y(28)))
+            desc_y = y + scale_y(22)
+
+            # Simple word wrap
+            words = desc_text.split()
+            lines: list[str] = []
+            current_line = ""
+            for word in words:
+                test = f"{current_line} {word}".strip()
+                if self.desc_font.size(test)[0] <= max_desc_w:
+                    current_line = test
+                else:
+                    if current_line:
+                        lines.append(current_line)
+                    current_line = word
+            if current_line:
+                lines.append(current_line)
+
+            for line_idx, line in enumerate(lines[:2]):  # Max 2 lines
+                line_surf = self.desc_font.render(line, True, Colors.TEXT_SECONDARY)
+                screen.blit(line_surf, (text_x, desc_y + line_idx * scale_y(16)))
 
             # Value (centered between minus and plus buttons)
             val_surf = self.value_font.render(str(val), True, Colors.TEXT)
-            val_rect = val_surf.get_rect(center=(cx + scale_x(218), y + scale_y(22)))
+            val_rect = val_surf.get_rect(center=(cx + scale_x(218), y + scale_y(24)))
             screen.blit(val_surf, val_rect)
 
     def get_next_state(self) -> Optional[GameState]:
