@@ -3201,6 +3201,9 @@ class Game:
 
     def _open_settings_from_menu(self) -> None:
         """Open settings dialog from the main menu."""
+        # Hide main menu buttons so they don't show through settings
+        if self.main_menu_view:
+            self.main_menu_view._set_menu_buttons_visible(False)
         self._open_settings_dialog()
 
     def _handle_save_load_dialog(self) -> None:
@@ -3253,6 +3256,9 @@ class Game:
             # Close dialog
             self.settings_view.on_exit()
             self.settings_view = None
+            # Restore main menu buttons if we came from the main menu
+            if self.main_menu_view and self.main_menu_view.active:
+                self.main_menu_view._set_menu_buttons_visible(True)
 
     def _save_game(self, slot: int) -> None:
         """
