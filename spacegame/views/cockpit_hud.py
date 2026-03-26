@@ -563,9 +563,16 @@ class CockpitHUD:
         w = self._right_w
         y = self.y + scale_y(10)
 
+        # Ship name (if player has named their ship)
+        ship_name = self.player.display_ship_name
+        if ship_name:
+            name_surf = self._credit_font.render(ship_name, True, _CREDIT_GOLD)
+            screen.blit(name_surf, (x, y))
+            y += scale_y(18)
+
         # Credits
         credits_text = f"{self.player.credits:,} CR"
-        cr_surf = self._credit_font.render(credits_text, True, _CREDIT_GOLD)
+        cr_surf = self._value_font.render(credits_text, True, Colors.TEXT_SECONDARY)
         screen.blit(cr_surf, (x, y))
 
         # Cargo capacity

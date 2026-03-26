@@ -256,6 +256,11 @@ class ShipBuilderView(BaseView):
         self._preview_surface: Optional[pygame.Surface] = None
         self._preview_dirty: bool = True  # Rebuild on next render
 
+        # Ship naming dialog (BP2)
+        self._naming_active: bool = False
+        self._naming_text: str = ""
+        self._naming_cursor_timer: float = 0.0
+
         # UI elements
         self.confirm_button: Optional[pygame_gui.elements.UIButton] = None
         self.clear_button: Optional[pygame_gui.elements.UIButton] = None
@@ -410,6 +415,11 @@ class ShipBuilderView(BaseView):
     def handle_event(self, event: pygame.event.Event) -> None:
         # Block input during confirmation animation
         if self._confirm_anim_timer > 0:
+            return
+
+        # Ship naming dialog intercepts all input
+        if self._naming_active:
+            self._handle_naming_event(event)
             return
 
         if event.type == pygame_gui.UI_BUTTON_PRESSED:
@@ -1473,10 +1483,16 @@ class ShipBuilderView(BaseView):
             pass
 
     def _confirm_build(self) -> None:
-        """Apply the current build to the player's ship. Charges only the delta cost."""
+        """Start the build confirmation flow — shows naming dialog first."""
         if not self._can_confirm:
             return
+        # Show naming dialog before finalizing
+        self._naming_active = True
+        self._naming_text = self.player.ship_name or self.player.ship.ship_type.name
+        self._naming_cursor_timer = 0.0
 
+    def _finalize_build(self) -> None:
+        """Apply the current build to the player's ship. Charges only the delta cost."""
         # Compute delta cost: new build cost minus what was already paid at entry
         # Positive delta = player pays. Negative delta = player gets 80% refund.
         REFUND_RATE = 0.80
@@ -1510,7 +1526,11 @@ class ShipBuilderView(BaseView):
             self.player.ship.current_hull = self._computed_stats.hull
             self.player.ship.current_shields = self._computed_stats.shields
         self._modified = False
-        logger.info("Ship build confirmed")
+        # Apply ship name from naming dialog
+        if self._naming_text.strip():
+            self.player.ship_name = self._naming_text.strip()
+        self._naming_active = False
+        logger.info(f"Ship build confirmed — '{self.player.display_ship_name}'")
 
         # Confirmation animation (Phase E)
         self._confirm_anim_timer = 1.2
@@ -1920,6 +1940,10 @@ class ShipBuilderView(BaseView):
         # Module hover tooltip (when hovering placed module on grid)
         if self._builder_mode == "slot":
             self._render_module_tooltip(screen)
+
+        # Ship naming dialog (overlay, BP2)
+        if self._naming_active:
+            self._render_naming_dialog(screen)
 
         # Confirmation animation (overlay)
         if self._confirm_anim_timer > 0:
@@ -3541,6 +3565,81 @@ class ShipBuilderView(BaseView):
         screen.blit(hint, (mx + 15, hint_y))
 
     # ------------------------------------------------------------------
+    # Ship Naming Dialog (BP2)
+    # ------------------------------------------------------------------
+
+    def _handle_naming_event(self, event: pygame.event.Event) -> None:
+        """Handle input while the ship naming dialog is active."""
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RETURN:
+                self._finalize_build()
+            elif event.key == pygame.K_ESCAPE:
+                self._naming_active = False
+            elif event.key == pygame.K_BACKSPACE:
+                self._naming_text = self._naming_text[:-1]
+            else:
+                char = event.unicode
+                if char and len(self._naming_text) < 24 and char.isprintable():
+                    self._naming_text += char
+
+    def _render_naming_dialog(self, screen: pygame.Surface) -> None:
+        """Render the ship naming overlay."""
+        # Dim background
+        dim = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA)
+        dim.fill((0, 0, 0, 180))
+        screen.blit(dim, (0, 0))
+
+        cx = WINDOW_WIDTH // 2
+        cy = WINDOW_HEIGHT // 2
+
+        # Panel
+        pw, ph = scale_x(440), scale_y(180)
+        panel = pygame.Rect(cx - pw // 2, cy - ph // 2, pw, ph)
+        panel_surf = pygame.Surface((pw, ph), pygame.SRCALPHA)
+        panel_surf.fill((12, 16, 32, 245))
+        screen.blit(panel_surf, panel.topleft)
+        pygame.draw.rect(screen, Colors.TEXT_HIGHLIGHT, panel, 2, border_radius=8)
+
+        # Title
+        title = self.info_font.render("Name Your Ship", True, Colors.TEXT_HIGHLIGHT)
+        screen.blit(title, title.get_rect(centerx=cx, top=panel.top + scale_y(16)))
+
+        # Text input field
+        field_w = pw - scale_x(60)
+        field_h = scale_y(32)
+        field_x = cx - field_w // 2
+        field_y = panel.top + scale_y(60)
+        pygame.draw.rect(
+            screen, (20, 25, 40), (field_x, field_y, field_w, field_h), border_radius=4
+        )
+        pygame.draw.rect(
+            screen, Colors.TEXT_HIGHLIGHT, (field_x, field_y, field_w, field_h), 1, border_radius=4
+        )
+
+        # Text + blinking cursor
+        display_text = self._naming_text
+        self._naming_cursor_timer += 0.016  # ~60fps
+        show_cursor = int(self._naming_cursor_timer * 2) % 2 == 0
+        if show_cursor:
+            display_text += "|"
+        text_surf = self.info_font.render(display_text, True, Colors.TEXT_PRIMARY)
+        screen.blit(
+            text_surf, (field_x + scale_x(8), field_y + (field_h - text_surf.get_height()) // 2)
+        )
+
+        # Hint
+        hint = self.label_font.render(
+            "[Enter] Confirm    [Esc] Cancel", True, Colors.TEXT_SECONDARY
+        )
+        screen.blit(hint, hint.get_rect(centerx=cx, top=panel.top + scale_y(110)))
+
+        # Subtitle
+        sub = self.label_font.render(
+            "Leave blank to use the frame name", True, Colors.TEXT_SECONDARY
+        )
+        screen.blit(sub, sub.get_rect(centerx=cx, top=panel.top + scale_y(140)))
+
+    # ------------------------------------------------------------------
     # Live Ship Preview (BP1)
     # ------------------------------------------------------------------
 
@@ -3600,7 +3699,9 @@ class ShipBuilderView(BaseView):
             for rp in resolved:
                 if 0 <= rp.x < cw and 0 <= rp.y < ch:
                     mat = materials.get(rp.material_id)
-                    color = getattr(mat, "color_primary", (100, 100, 110)) if mat else (100, 100, 110)
+                    color = (
+                        getattr(mat, "color_primary", (100, 100, 110)) if mat else (100, 100, 110)
+                    )
                     surf.set_at((rp.x, rp.y), (*color, 255))
 
         return surf
