@@ -994,9 +994,12 @@ class ShipyardView(BaseView):
     def _get_filtered_parts(self) -> list:
         """Get ShipParts filtered by the active sub-tab slot_type.
 
-        Returns parts sorted with owned-first, then by base_cost ascending.
+        Sorted by: size (S, M, L) → cost (low to high).
+        Owned parts get a green badge but don't jump to the top,
+        so the list stays stable when buying.
         """
         from spacegame.data_loader import get_data_loader
+        from spacegame.models.slot_definition import SIZE_ORDER
 
         dl = get_data_loader()
         all_parts = [
@@ -1005,9 +1008,9 @@ class ShipyardView(BaseView):
             if p.slot_type == self._shop_sub_tab
             and not p.legendary  # Legendary parts are boss drops, not shop items
         ]
-        # Sort: owned first, then by base_cost ascending
+        # Sort: size (S→M→L) then cost (low→high) — stable ordering
         all_parts.sort(
-            key=lambda p: (0 if self.player.get_part_count(p.id) > 0 else 1, p.base_cost)
+            key=lambda p: (SIZE_ORDER.get(p.min_size, 0), p.base_cost)
         )
         return all_parts
 
