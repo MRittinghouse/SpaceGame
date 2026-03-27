@@ -972,7 +972,7 @@ class ShipyardView(BaseView):
                 badge_y = rect.top - scale_y(2)
                 badge_r = scale_x(8)
                 pygame.draw.circle(screen, (200, 50, 50), (badge_x, badge_y), badge_r)
-                badge_text = self.label_font.render(str(empty_count), True, (255, 255, 255))
+                badge_text = self.small_font.render(str(empty_count), True, (255, 255, 255))
                 screen.blit(badge_text, badge_text.get_rect(center=(badge_x, badge_y)))
 
     # Parts layout constants (same split as frames)
