@@ -2289,7 +2289,8 @@ class ShipyardView(BaseView):
 
         self.player.deduct_credits(part.base_cost)
         self.player.add_part(part.id)
-        self._show_message(f"Bought {part.name} for {part.base_cost:,} CR")
+        new_count = self.player.get_part_count(part.id)
+        self._show_message(f"Bought {part.name} for {part.base_cost:,} CR (now own {new_count})")
 
         try:
             get_audio_manager().play_sfx("trade_buy")
