@@ -840,7 +840,7 @@
       "id": "small_fuel_tank_rk",
       "name": "Small Fuel Tank",
       "description": "Extra fuel reserves for longer voyages.",
-      "slot_type": "utility",
+      "slot_type": "fuel",
       "min_size": "small",
       "manufacturer": "reyes_kowalski",
       "provides": {
@@ -855,7 +855,7 @@
       "id": "large_fuel_tank_rk",
       "name": "Large Fuel Tank",
       "description": "Substantial fuel reserves for extended expeditions.",
-      "slot_type": "utility",
+      "slot_type": "fuel",
       "min_size": "medium",
       "manufacturer": "reyes_kowalski",
       "provides": {
@@ -870,7 +870,7 @@
       "id": "extended_fuel_tank_rk",
       "name": "Extended Fuel Tank",
       "description": "Long, narrow tank that fits along the spine.",
-      "slot_type": "utility",
+      "slot_type": "fuel",
       "min_size": "medium",
       "manufacturer": "reyes_kowalski",
       "provides": {
@@ -982,7 +982,7 @@
       "id": "nav_computer_meridian",
       "name": "Navigation Computer",
       "description": "Advanced route optimization for fuel-efficient travel.",
-      "slot_type": "utility",
+      "slot_type": "fuel",
       "min_size": "small",
       "manufacturer": "meridian",
       "provides": {
@@ -3348,6 +3348,141 @@
       "mark": 1,
       "weight": 0.0,
       "legendary": true
+    },
+    {
+      "id": "compact_fuel_cell",
+      "name": "Compact Fuel Cell",
+      "description": "A lightweight fuel cell suited for short-range shuttles and scouts.",
+      "slot_type": "fuel",
+      "min_size": "small",
+      "manufacturer": "sung_dynamics",
+      "provides": {
+        "fuel_capacity": 15
+      },
+      "base_cost": 800,
+      "mark": 1,
+      "weight": 0.0,
+      "legendary": false
+    },
+    {
+      "id": "standard_fuel_tank",
+      "name": "Standard Fuel Tank",
+      "description": "Reliable mid-range fuel storage. The backbone of any trading vessel.",
+      "slot_type": "fuel",
+      "min_size": "small",
+      "manufacturer": "reyes_kowalski",
+      "provides": {
+        "fuel_capacity": 25
+      },
+      "base_cost": 1500,
+      "mark": 1,
+      "weight": 0.0,
+      "legendary": false
+    },
+    {
+      "id": "reinforced_fuel_tank",
+      "name": "Reinforced Fuel Tank",
+      "description": "Armored fuel storage designed for combat zones. Won't rupture under fire.",
+      "slot_type": "fuel",
+      "min_size": "medium",
+      "manufacturer": "foundry_collective",
+      "provides": {
+        "fuel_capacity": 40
+      },
+      "base_cost": 3000,
+      "mark": 1,
+      "weight": 0.0,
+      "legendary": false
+    },
+    {
+      "id": "high_pressure_tank",
+      "name": "High-Pressure Tank",
+      "description": "Compressed fuel storage that packs more range into less space.",
+      "slot_type": "fuel",
+      "min_size": "medium",
+      "manufacturer": "sung_dynamics",
+      "provides": {
+        "fuel_capacity": 55
+      },
+      "base_cost": 4500,
+      "mark": 1,
+      "weight": 0.0,
+      "legendary": false
+    },
+    {
+      "id": "expedition_reserve",
+      "name": "Expedition Reserve",
+      "description": "Deep-space exploration fuel reserve. Enough range for the longest trade routes.",
+      "slot_type": "fuel",
+      "min_size": "medium",
+      "manufacturer": "meridian_works",
+      "provides": {
+        "fuel_capacity": 70
+      },
+      "base_cost": 6000,
+      "mark": 1,
+      "weight": 0.0,
+      "legendary": false
+    },
+    {
+      "id": "bulk_fuel_reservoir",
+      "name": "Bulk Fuel Reservoir",
+      "description": "Massive fuel storage for capital ships and long-haul freighters.",
+      "slot_type": "fuel",
+      "min_size": "large",
+      "manufacturer": "reyes_kowalski",
+      "provides": {
+        "fuel_capacity": 100
+      },
+      "base_cost": 8000,
+      "mark": 1,
+      "weight": 0.0,
+      "legendary": false
+    },
+    {
+      "id": "frontier_range_extender",
+      "name": "Frontier Range Extender",
+      "description": "Built for the outer systems where fuel stations are days apart.",
+      "slot_type": "fuel",
+      "min_size": "large",
+      "manufacturer": "salvage_rat",
+      "provides": {
+        "fuel_capacity": 80
+      },
+      "base_cost": 5500,
+      "mark": 1,
+      "weight": 0.0,
+      "legendary": false
+    },
+    {
+      "id": "union_heavy_tank",
+      "name": "Union Heavy Tank",
+      "description": "Industrial-grade fuel storage from the Miners Union. Overbuilt and reliable.",
+      "slot_type": "fuel",
+      "min_size": "large",
+      "manufacturer": "foundry_collective",
+      "provides": {
+        "fuel_capacity": 120
+      },
+      "base_cost": 10000,
+      "mark": 1,
+      "weight": 0.0,
+      "legendary": false
+    },
+    {
+      "id": "efficient_fuel_processor",
+      "name": "Efficient Fuel Processor",
+      "description": "Advanced fuel processing extends effective range without extra volume.",
+      "slot_type": "fuel",
+      "min_size": "small",
+      "manufacturer": "sable_dynamics",
+      "provides": {
+        "fuel_capacity": 30
+      },
+      "base_cost": 2500,
+      "mark": 1,
+      "weight": 0.0,
+      "legendary": false
     }
   ]
 }
