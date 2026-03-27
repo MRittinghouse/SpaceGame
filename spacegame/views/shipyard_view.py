@@ -770,20 +770,34 @@ class ShipyardView(BaseView):
             )
 
     def _render_slot_summary(self, screen: pygame.Surface) -> None:
-        """Render credits and per-category slot counts."""
-        w_used = self.upgrade_manager.get_category_used("weapon")
-        w_max = self.upgrade_manager.get_category_limit("weapon")
-        d_used = self.upgrade_manager.get_category_used("defense")
-        d_max = self.upgrade_manager.get_category_limit("defense")
-        u_used = self.upgrade_manager.get_category_used("utility")
-        u_max = self.upgrade_manager.get_category_limit("utility")
+        """Render credits and equipped/total slot counts from the ship build."""
+        from spacegame.data_loader import get_data_loader
 
-        slot_text = (
-            f"Credits: {self.player.credits:,} CR  |  "
-            f"Weapon: {w_used}/{w_max}  "
-            f"Defense: {d_used}/{d_max}  "
-            f"Utility: {u_used}/{u_max}"
-        )
+        # Count slots from the actual build (placed_slots system)
+        build = self.player.ship.build if self.player.ship else None
+        slot_defs = getattr(get_data_loader(), "slot_definitions", {})
+
+        slot_counts: dict[str, tuple[int, int]] = {}  # type -> (equipped, total)
+        if build and build.placed_slots:
+            for ps in build.placed_slots:
+                sd = slot_defs.get(ps.slot_def_id)
+                stype = sd.slot_type if sd else ps.slot_def_id.split("_")[0]
+                total, equipped = slot_counts.get(stype, (0, 0))
+                total += 1
+                if ps.equipped_part_id:
+                    equipped += 1
+                slot_counts[stype] = (total, equipped)
+
+        # Build summary string with key slot types
+        parts = [f"Credits: {self.player.credits:,} CR"]
+        display_types = ["weapon", "defense", "engine", "cargo"]
+        for stype in display_types:
+            total, equipped = slot_counts.get(stype, (0, 0))
+            if total > 0:
+                label = stype.title()[:3]
+                parts.append(f"{label}: {equipped}/{total}")
+
+        slot_text = "  |  ".join(parts)
         slot_surf = self.small_font.render(slot_text, True, Colors.TEXT)
         screen.blit(slot_surf, slot_surf.get_rect(center=(WINDOW_WIDTH // 2, 55)))
 
