@@ -4344,20 +4344,45 @@ class Game:
         if self._achievement_notify_timer < 1.0:
             alpha = int(255 * self._achievement_notify_timer)
 
-        banner_y = 34 if self.event_banner_timer > 0 else 0
-        banner_height = 32
-        banner_surf = pygame.Surface((WINDOW_WIDTH, banner_height), pygame.SRCALPHA)
-        banner_surf.fill((10, 30, 10, min(200, alpha)))
-        screen.blit(banner_surf, (0, banner_y))
+        # Prominent centered card — unmissable against any background
+        card_w = scale_x(500)
+        card_h = scale_y(70)
+        card_x = (WINDOW_WIDTH - card_w) // 2
+        card_y = scale_y(80)
 
-        border_surf = pygame.Surface((WINDOW_WIDTH, 2), pygame.SRCALPHA)
-        border_surf.fill((*Colors.GREEN, alpha))
-        screen.blit(border_surf, (0, banner_y + banner_height - 2))
+        # Solid dark card background
+        card_surf = pygame.Surface((card_w, card_h), pygame.SRCALPHA)
+        card_surf.fill((8, 20, 8, min(240, alpha)))
+        screen.blit(card_surf, (card_x, card_y))
 
-        text_surf = self._banner_font.render(msg, True, Colors.GREEN)
+        # Gold border for prestige feel
+        border_color = (255, 215, 80, alpha)
+        border_surf = pygame.Surface((card_w, card_h), pygame.SRCALPHA)
+        pygame.draw.rect(border_surf, border_color, (0, 0, card_w, card_h), 2, border_radius=8)
+        screen.blit(border_surf, (card_x, card_y))
+
+        # Top accent line
+        accent_surf = pygame.Surface((card_w - 20, 2), pygame.SRCALPHA)
+        accent_surf.fill((255, 215, 80, alpha))
+        screen.blit(accent_surf, (card_x + 10, card_y + 2))
+
+        # "ACHIEVEMENT UNLOCKED" label
+        if self._label_font is None:
+            self._label_font = get_font("label", 16)
+        label_surf = self._label_font.render("ACHIEVEMENT UNLOCKED", True, (255, 215, 80))
+        label_surf.set_alpha(alpha)
+        screen.blit(
+            label_surf,
+            label_surf.get_rect(centerx=WINDOW_WIDTH // 2, top=card_y + scale_y(10)),
+        )
+
+        # Achievement name (larger, prominent)
+        text_surf = self._banner_font.render(msg, True, (255, 255, 255))
         text_surf.set_alpha(alpha)
-        text_rect = text_surf.get_rect(center=(WINDOW_WIDTH // 2, banner_y + banner_height // 2))
-        screen.blit(text_surf, text_rect)
+        screen.blit(
+            text_surf,
+            text_surf.get_rect(centerx=WINDOW_WIDTH // 2, top=card_y + scale_y(32)),
+        )
 
     def _render_celebration(self, screen: pygame.Surface) -> None:
         """Render full-screen milestone celebration overlay."""
