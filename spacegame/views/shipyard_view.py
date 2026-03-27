@@ -1540,7 +1540,7 @@ class ShipyardView(BaseView):
             self._loadout_unequip_rect = unequip_rect
             cy += unequip_rect.height + scale_y(8)
         else:
-            empty_surf = self.small_font.render("Empty", True, Colors.TEXT_SECONDARY)
+            empty_surf = self.small_font.render("Empty -- select a part below to equip", True, (220, 160, 60))
             screen.blit(empty_surf, (cx, cy))
             cy += empty_surf.get_height() + scale_y(6)
             self._loadout_unequip_rect = None
@@ -1557,10 +1557,34 @@ class ShipyardView(BaseView):
         # --- Build compatible parts list ---
         compatible = self._get_compatible_parts(slot_def)
         if not compatible:
-            none_surf = self.small_font.render(
-                "No compatible parts in inventory.", True, Colors.TEXT_SECONDARY
-            )
-            screen.blit(none_surf, (cx, cy))
+            # SI3: Contextual guidance for empty inventory
+            type_name_lower = type_name.lower()
+            size_full = slot_def.size.title()
+
+            # Map slot types to shop sub-tab labels
+            tab_names = dict(self._SHOP_SUB_TABS)
+            shop_tab = tab_names.get(slot_def.slot_type, type_name)
+
+            guide_lines = [
+                ("No compatible parts in inventory.", Colors.TEXT_SECONDARY),
+                ("", Colors.TEXT_SECONDARY),
+                (f"Visit Shop > {shop_tab} to buy parts.", (180, 160, 80)),
+                (f"This is a {size_full} {type_name_lower} slot.", Colors.TEXT_SECONDARY),
+            ]
+            # Size compatibility hint
+            if slot_def.size == "small":
+                guide_lines.append(("Accepts: Small parts only.", Colors.TEXT_SECONDARY))
+            elif slot_def.size == "medium":
+                guide_lines.append(("Accepts: Small or Medium parts.", Colors.TEXT_SECONDARY))
+            else:
+                guide_lines.append(("Accepts: Small, Medium, or Large parts.", Colors.TEXT_SECONDARY))
+
+            for line_text, line_color in guide_lines:
+                if line_text:
+                    line_surf = self.small_font.render(line_text, True, line_color)
+                    screen.blit(line_surf, (cx, cy))
+                cy += scale_y(16)
+
             self._loadout_part_rects = []
             return
 
