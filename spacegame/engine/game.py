@@ -4626,17 +4626,18 @@ class Game:
             # Event banner (above vignette, below UI)
             self._render_event_banner(render_surface)
 
-            # Achievement notification banner
-            self._render_achievement_notification(render_surface)
-
-            # Milestone celebration overlay
-            if self._celebration_timer > 0:
-                self._render_celebration(render_surface)
-
-            # Mission notification banner
+            # Mission notification banner (below UI)
             self._render_mission_notification(render_surface)
 
+            # pygame_gui elements
             self.ui_manager.draw_ui(render_surface)
+
+            # Achievement notification — renders ABOVE all UI so it's never hidden
+            self._render_achievement_notification(render_surface)
+
+            # Milestone celebration overlay (topmost)
+            if self._celebration_timer > 0:
+                self._render_celebration(render_surface)
 
             # Cockpit HUD renders AFTER pygame_gui so it sits on top of view UI
             if self._cockpit_hud and self.player:
