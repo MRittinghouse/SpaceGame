@@ -839,13 +839,54 @@ class ShipyardView(BaseView):
         ("defense", "Defense"),
         ("engine", "Engines"),
         ("utility", "Utility"),
+        ("fuel", "Fuel"),
         ("cargo", "Cargo"),
         ("crew_quarters", "Crew"),
         ("reactor", "Reactors"),
     ]
 
+    def _get_empty_slots_by_type(self) -> dict[str, dict[str, int]]:
+        """Count empty (unequipped) slots by type and size.
+
+        Returns:
+            Dict mapping slot_type -> {"total": N, "equipped": N,
+            "empty": N, "small": N, "medium": N, "large": N} where the
+            size keys count EMPTY slots of that size.
+        """
+        from spacegame.data_loader import get_data_loader
+
+        build = self.player.ship.build if self.player.ship else None
+        if not build or not build.placed_slots:
+            return {}
+
+        slot_defs = getattr(get_data_loader(), "slot_definitions", {})
+        result: dict[str, dict[str, int]] = {}
+
+        for ps in build.placed_slots:
+            sd = slot_defs.get(ps.slot_def_id)
+            stype = sd.slot_type if sd else ps.slot_def_id.split("_")[0]
+            ssize = sd.size if sd else "small"
+
+            if stype not in result:
+                result[stype] = {
+                    "total": 0,
+                    "equipped": 0,
+                    "empty": 0,
+                    "small": 0,
+                    "medium": 0,
+                    "large": 0,
+                }
+            result[stype]["total"] += 1
+            if ps.equipped_part_id:
+                result[stype]["equipped"] += 1
+            else:
+                result[stype]["empty"] += 1
+                result[stype][ssize] += 1
+
+        return result
+
     def _render_shop_sub_tabs(self, screen: pygame.Surface) -> None:
-        """Render second row of sub-tab buttons below main tabs when viewing Shop."""
+        """Render second row of sub-tab buttons with need badges."""
         btn_w = scale_x(90)
         btn_h = scale_y(24)
         gap = scale_x(4)
@@ -854,6 +895,7 @@ class ShipyardView(BaseView):
         y = 130
 
         self._sub_tab_rects: dict[str, pygame.Rect] = {}
+        empty_slots = self._get_empty_slots_by_type()
 
         for i, (sub_id, label) in enumerate(self._SHOP_SUB_TABS):
             x = start_x + i * (btn_w + gap)
@@ -861,6 +903,7 @@ class ShipyardView(BaseView):
             self._sub_tab_rects[sub_id] = rect
 
             is_active = self._shop_sub_tab == sub_id
+            empty_count = empty_slots.get(sub_id, {}).get("empty", 0)
 
             # Background
             if is_active:
@@ -873,6 +916,15 @@ class ShipyardView(BaseView):
             text_color = Colors.TEXT_HIGHLIGHT if is_active else Colors.TEXT_SECONDARY
             text_surf = self.small_font.render(label, True, text_color)
             screen.blit(text_surf, text_surf.get_rect(center=rect.center))
+
+            # SI1: Need badge — red circle with empty count
+            if empty_count > 0 and sub_id != "frames":
+                badge_x = rect.right - scale_x(4)
+                badge_y = rect.top - scale_y(2)
+                badge_r = scale_x(8)
+                pygame.draw.circle(screen, (200, 50, 50), (badge_x, badge_y), badge_r)
+                badge_text = self.label_font.render(str(empty_count), True, (255, 255, 255))
+                screen.blit(badge_text, badge_text.get_rect(center=(badge_x, badge_y)))
 
     # Parts layout constants (same split as frames)
     _PART_CARD_H = scale_y(48)
@@ -933,6 +985,25 @@ class ShipyardView(BaseView):
         # Section header
         header = self.info_font.render("AVAILABLE PARTS", True, Colors.TEXT_HIGHLIGHT)
         screen.blit(header, (lx, scale_y(145)))
+
+        # SI2: Shopping list header — show what the ship needs for this slot type
+        empty_slots = self._get_empty_slots_by_type()
+        needs = empty_slots.get(self._shop_sub_tab, {})
+        empty_count = needs.get("empty", 0)
+        if empty_count > 0:
+            # Build size breakdown
+            size_parts = []
+            for sz in ("small", "medium", "large"):
+                n = needs.get(sz, 0)
+                if n > 0:
+                    size_parts.append(f"{n} {sz.title()}")
+            size_str = ", ".join(size_parts) if size_parts else ""
+            need_text = f"Your ship needs {empty_count} ({size_str})"
+            need_surf = self.small_font.render(need_text, True, (220, 160, 60))
+            screen.blit(need_surf, (lx, scale_y(158)))
+        elif needs.get("total", 0) > 0:
+            done_surf = self.small_font.render("All slots equipped!", True, (80, 200, 80))
+            screen.blit(done_surf, (lx, scale_y(158)))
 
         clip_rect = pygame.Rect(lx - 2, _LIST_Y, lw + 4, _LIST_BOTTOM - _LIST_Y)
         old_clip = screen.get_clip()
