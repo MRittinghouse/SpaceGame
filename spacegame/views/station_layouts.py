@@ -193,40 +193,49 @@ class StationLayout:
                 self._render_zone_tooltip(screen, zone)
                 break
 
+    @staticmethod
+    def _wrap_text(text: str, font: pygame.font.Font, max_width: int) -> list[str]:
+        """Word-wrap text to fit within max_width pixels."""
+        words = text.split()
+        lines: list[str] = []
+        current = ""
+        for word in words:
+            test = f"{current} {word}".strip()
+            if font.size(test)[0] > max_width and current:
+                lines.append(current)
+                current = word
+            else:
+                current = test
+        if current:
+            lines.append(current)
+        return lines if lines else [text]
+
     def _render_zone_tooltip(self, screen: pygame.Surface, zone: StationZone) -> None:
         """Render a detailed tooltip above/below the hovered zone."""
         loc = zone.location
-        lines: list[tuple[str, tuple[int, int, int]]] = []
+        font = self._tooltip_font
+        pad = 10
+        max_text_w = scale_x(380)
 
+        # Build lines with proper word wrapping
+        lines: list[tuple[str, tuple[int, int, int]]] = []
         lines.append((loc.name, Colors.TEXT_HIGHLIGHT))
+
         if loc.description:
-            # Word-wrap description
-            desc = loc.description
-            if len(desc) > 60:
-                # Simple split at ~60 chars
-                mid = desc.rfind(" ", 0, 60)
-                if mid > 20:
-                    lines.append((desc[:mid], Colors.TEXT_PRIMARY))
-                    lines.append((desc[mid + 1 :], Colors.TEXT_PRIMARY))
-                else:
-                    lines.append((desc, Colors.TEXT_PRIMARY))
-            else:
-                lines.append((desc, Colors.TEXT_PRIMARY))
+            for wrapped in self._wrap_text(loc.description, font, max_text_w):
+                lines.append((wrapped, Colors.TEXT_PRIMARY))
+
         if hasattr(loc, "flavor_text") and loc.flavor_text:
-            flavor = loc.flavor_text
-            if len(flavor) > 65:
-                flavor = flavor[:62] + "..."
-            lines.append((f'"{flavor}"', Colors.TEXT_SECONDARY))
+            for wrapped in self._wrap_text(f'"{loc.flavor_text}"', font, max_text_w):
+                lines.append((wrapped, Colors.TEXT_SECONDARY))
 
         if not lines:
             return
 
-        font = self._tooltip_font
         line_h = font.get_linesize() + 2
-        pad = 8
         tip_w = max(font.size(text)[0] for text, _ in lines) + pad * 2
+        tip_w = min(max(tip_w, scale_x(200)), max_text_w + pad * 2)
         tip_h = len(lines) * line_h + pad * 2
-        tip_w = min(tip_w, scale_x(350))
 
         # Position: above the zone if space, below if not
         tip_x = zone.rect.centerx - tip_w // 2
