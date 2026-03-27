@@ -1054,6 +1054,7 @@
           "id": "accept",
           "speaker_id": "forgeworks_clerk",
           "text": "*He checks the manifest, taps twice, and nods.* Odom's shipment. Ten iron, standard grade. Looks right. I'll flag it as received and let him know it made it in one piece. Credits should hit your account within the hour.",
+          "set_flag": "talked_to_forgeworks_clerk",
           "responses": [
             {
               "text": "Appreciate it.",

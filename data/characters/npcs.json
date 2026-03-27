@@ -477,6 +477,7 @@
       "home_system_id": "forgeworks",
       "dialogue_id": "forgeworks_intake",
       "faction_id": "",
+      "auto_trigger_gate_flag": "talked_to_forgeworks_clerk",
       "auto_trigger_prerequisites": [
         "talked_to_cargo_broker"
       ],
