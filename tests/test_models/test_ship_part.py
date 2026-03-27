@@ -89,20 +89,19 @@ class TestPartSizeCompatibility:
             base_cost=0,
         )
 
-    def test_small_part_fits_all(self) -> None:
-        part = self._make_part("small")
-        assert part.fits_in_slot_size("small")
-        assert part.fits_in_slot_size("medium")
-        assert part.fits_in_slot_size("large")
+    def test_strict_size_matching(self) -> None:
+        """Parts must match the slot's exact size."""
+        small = self._make_part("small")
+        assert small.fits_in_slot_size("small")
+        assert not small.fits_in_slot_size("medium")
+        assert not small.fits_in_slot_size("large")
 
-    def test_medium_part_fits_medium_and_large(self) -> None:
-        part = self._make_part("medium")
-        assert not part.fits_in_slot_size("small")
-        assert part.fits_in_slot_size("medium")
-        assert part.fits_in_slot_size("large")
+        medium = self._make_part("medium")
+        assert not medium.fits_in_slot_size("small")
+        assert medium.fits_in_slot_size("medium")
+        assert not medium.fits_in_slot_size("large")
 
-    def test_large_part_only_fits_large(self) -> None:
-        part = self._make_part("large")
-        assert not part.fits_in_slot_size("small")
-        assert not part.fits_in_slot_size("medium")
-        assert part.fits_in_slot_size("large")
+        large = self._make_part("large")
+        assert not large.fits_in_slot_size("small")
+        assert not large.fits_in_slot_size("medium")
+        assert large.fits_in_slot_size("large")

@@ -46,10 +46,9 @@ class ShipPart:
     def fits_in_slot_size(self, slot_size: str) -> bool:
         """Check if this part fits in a slot of the given size.
 
-        A small part fits any slot. Medium fits medium or large.
-        Large only fits large.
+        Strict matching: Small fits Small, Medium fits Medium, Large fits Large.
         """
-        return SIZE_ORDER.get(self.min_size, 0) <= SIZE_ORDER.get(slot_size, 0)
+        return self.min_size == slot_size
 
     def to_dict(self) -> dict:
         """Serialize to a JSON-compatible dict."""

@@ -118,17 +118,16 @@ class TestSlotDefinitionCreation:
 
 
 class TestSizeCompatibility:
-    def test_small_part_fits_all_slots(self) -> None:
+    def test_strict_size_matching(self) -> None:
+        """Parts must match the slot's exact size."""
         assert SlotDefinition.part_fits_slot("small", "small")
-        assert SlotDefinition.part_fits_slot("small", "medium")
-        assert SlotDefinition.part_fits_slot("small", "large")
+        assert not SlotDefinition.part_fits_slot("small", "medium")
+        assert not SlotDefinition.part_fits_slot("small", "large")
 
-    def test_medium_part_fits_medium_and_large(self) -> None:
         assert not SlotDefinition.part_fits_slot("medium", "small")
         assert SlotDefinition.part_fits_slot("medium", "medium")
-        assert SlotDefinition.part_fits_slot("medium", "large")
+        assert not SlotDefinition.part_fits_slot("medium", "large")
 
-    def test_large_part_only_fits_large(self) -> None:
         assert not SlotDefinition.part_fits_slot("large", "small")
         assert not SlotDefinition.part_fits_slot("large", "medium")
         assert SlotDefinition.part_fits_slot("large", "large")

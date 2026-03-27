@@ -162,19 +162,19 @@ class SlotDefinition:
 
     @staticmethod
     def part_fits_slot(part_size: str, slot_size: str) -> bool:
-        """Check if a part of the given size fits in a slot of the given size.
+        """Check if a part fits in a slot — strict size matching only.
 
-        A small part fits any slot. A medium part fits medium or large.
-        A large part only fits large.
+        Parts must match the slot's exact size. A Small part only fits
+        Small slots, Medium only fits Medium, Large only fits Large.
 
         Args:
-            part_size: The part's minimum size requirement.
+            part_size: The part's size.
             slot_size: The slot's size.
 
         Returns:
-            True if the part fits in the slot.
+            True if the sizes match.
         """
-        return SIZE_ORDER.get(part_size, 0) <= SIZE_ORDER.get(slot_size, 0)
+        return part_size == slot_size
 
     def to_dict(self) -> dict:
         """Serialize to a JSON-compatible dict."""

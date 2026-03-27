@@ -1621,12 +1621,8 @@ class ShipyardView(BaseView):
                 (f"This is a {size_full} {type_name_lower} slot.", Colors.TEXT_SECONDARY),
             ]
             # Size compatibility hint
-            if slot_def.size == "small":
-                guide_lines.append(("Accepts: Small parts only.", Colors.TEXT_SECONDARY))
-            elif slot_def.size == "medium":
-                guide_lines.append(("Accepts: Small or Medium parts.", Colors.TEXT_SECONDARY))
-            else:
-                guide_lines.append(("Accepts: Small, Medium, or Large parts.", Colors.TEXT_SECONDARY))
+            size_name = slot_def.size.title()
+            guide_lines.append((f"Requires: {size_name} parts.", Colors.TEXT_SECONDARY))
 
             for line_text, line_color in guide_lines:
                 if line_text:
