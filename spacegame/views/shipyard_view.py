@@ -82,6 +82,10 @@ class ShipyardView(BaseView):
         # Scrolling
         self._scroll_offset: int = 0
 
+        # SI4: Post-build guidance banner
+        self._guidance_banner_timer: float = 0.0
+        self._guidance_banner_text: str = ""
+
         # Enhancement/tuning state
         self._tuning_mode: bool = False
         self._tuning_upgrade_id: Optional[str] = None
@@ -167,10 +171,50 @@ class ShipyardView(BaseView):
         self._tuning_mode = False
         self._load_ship_anim()
         self._create_ui()
+        # SI4: Show guidance banner if ship has empty slots
+        self._check_guidance_banner()
 
     def on_exit(self) -> None:
         super().on_exit()
         self._destroy_ui()
+
+    def _check_guidance_banner(self) -> None:
+        """Show a guidance banner if the ship has empty slots after a build."""
+        empty_slots = self._get_empty_slots_by_type()
+        total_empty = sum(info.get("empty", 0) for info in empty_slots.values())
+        total_slots = sum(info.get("total", 0) for info in empty_slots.values())
+
+        if total_empty > 0 and total_slots > 0:
+            self._guidance_banner_text = (
+                f"Ship has {total_empty} empty slot{'s' if total_empty != 1 else ''}. "
+                f"Browse the Shop to buy parts, then equip them in Loadout."
+            )
+            self._guidance_banner_timer = 8.0  # Show for 8 seconds
+            # Auto-switch to Shop tab to guide the player
+            self.viewing = "shop"
+        else:
+            self._guidance_banner_timer = 0.0
+
+    def _render_guidance_banner(self, screen: pygame.Surface) -> None:
+        """Render the post-build guidance banner at the top of content area."""
+        if self._guidance_banner_timer <= 0:
+            return
+
+        # Fade out in the last 2 seconds
+        alpha = min(255, int(255 * min(1.0, self._guidance_banner_timer / 2.0)))
+
+        banner_h = scale_y(28)
+        banner_y = scale_y(110)
+        banner_surf = pygame.Surface((WINDOW_WIDTH, banner_h), pygame.SRCALPHA)
+        banner_surf.fill((40, 50, 20, min(200, alpha)))
+        screen.blit(banner_surf, (0, banner_y))
+
+        text_surf = self.small_font.render(self._guidance_banner_text, True, (220, 200, 80))
+        text_surf.set_alpha(alpha)
+        screen.blit(
+            text_surf,
+            text_surf.get_rect(center=(WINDOW_WIDTH // 2, banner_y + banner_h // 2)),
+        )
 
     # Tab subtitle descriptions (rendered below buttons)
     _TAB_SUBTITLES: dict[str, str] = {
@@ -681,6 +725,8 @@ class ShipyardView(BaseView):
         self._glow_time += dt
         if self.message_timer > 0:
             self.message_timer -= dt
+        if self._guidance_banner_timer > 0:
+            self._guidance_banner_timer -= dt
 
     def render(self, screen: pygame.Surface) -> None:
         # Background
@@ -748,6 +794,9 @@ class ShipyardView(BaseView):
 
         # Particles
         self.particles.render(screen)
+
+        # SI4: Guidance banner
+        self._render_guidance_banner(screen)
 
         # Message
         if self.message_timer > 0:
