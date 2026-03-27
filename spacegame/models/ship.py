@@ -447,7 +447,10 @@ class Ship:
         Returns:
             Actual amount repaired.
         """
-        max_hull = self.ship_type.combat_hull
+        if self._computed_stats and self._computed_stats.hull > 0:
+            max_hull = self._computed_stats.hull
+        else:
+            max_hull = self.ship_type.combat_hull
         space = max_hull - self.current_hull
         actual = min(amount, space)
         self.current_hull += actual
@@ -455,7 +458,10 @@ class Ship:
 
     def restore_shields(self) -> None:
         """Restore shields to maximum (e.g., on docking)."""
-        self.current_shields = self.ship_type.combat_shields
+        if self._computed_stats and self._computed_stats.shields > 0:
+            self.current_shields = self._computed_stats.shields
+        else:
+            self.current_shields = self.ship_type.combat_shields
 
     def get_fuel_percentage(self) -> float:
         """
