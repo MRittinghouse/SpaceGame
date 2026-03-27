@@ -1709,7 +1709,7 @@ class ShipyardView(BaseView):
                 dmg_val = 0
                 for eff in cm.get("effects", []):
                     if eff.get("type") == "damage":
-                        dmg_val = eff.get("amount", 0)
+                        dmg_val = int(eff.get("value", 0))
                         break
                 energy_cost = cm.get("energy_cost", 0)
                 stat_text = f"Dmg: {dmg_val} | E: {energy_cost}"
