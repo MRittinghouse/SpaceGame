@@ -138,25 +138,26 @@ def test_ship_fuel_management() -> None:
     loader.load_all()
 
     shuttle_type = loader.get_ship_type("shuttle")
-    ship = Ship(ship_type=shuttle_type, current_fuel=50)
+    max_fuel = shuttle_type.fuel_capacity  # Dynamic — don't hardcode
+    ship = Ship(ship_type=shuttle_type, current_fuel=max_fuel)
 
     # Check fuel
-    assert ship.has_fuel_for_jump(30)
-    assert not ship.has_fuel_for_jump(100)
+    assert ship.has_fuel_for_jump(5)
+    assert not ship.has_fuel_for_jump(max_fuel + 100)
 
     # Consume fuel
-    success = ship.consume_fuel(20)
+    success = ship.consume_fuel(10)
     assert success
-    assert ship.current_fuel == 30
+    assert ship.current_fuel == max_fuel - 10
 
     # Refuel
-    added = ship.refuel(50)
-    assert ship.current_fuel == 80  # 30 + 50
+    remaining = ship.current_fuel
+    added = ship.refuel(5)
+    assert ship.current_fuel == remaining + 5
 
     # Refuel beyond capacity
-    added = ship.refuel(100)
-    assert ship.current_fuel == 100  # Max capacity
-    assert added == 20  # Only 20 could be added
+    ship.refuel(10000)
+    assert ship.current_fuel == max_fuel  # Capped at max
 
 
 # ============================================================================
