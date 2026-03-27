@@ -1199,17 +1199,19 @@ class ShipyardView(BaseView):
         screen.blit(size_surf, (lx_col, ly))
         ly += size_surf.get_height() + scale_y(4)
 
-        # Manufacturer
-        mfg = part.manufacturer.replace("_", " ").title()
-        mfg_surf = self.small_font.render(f"Mfg: {mfg}", True, Colors.TEXT_SECONDARY)
-        screen.blit(mfg_surf, (lx_col, ly))
-        ly += mfg_surf.get_height() + scale_y(8)
+        # Manufacturer (only show if set)
+        if part.manufacturer:
+            mfg = part.manufacturer.replace("_", " ").title()
+            mfg_surf = self.small_font.render(f"Mfg: {mfg}", True, Colors.TEXT_SECONDARY)
+            screen.blit(mfg_surf, (lx_col, ly))
+            ly += mfg_surf.get_height() + scale_y(4)
 
-        # Weight
-        weight_surf = self.small_font.render(
-            f"Weight: {part.weight:.1f}", True, Colors.TEXT_SECONDARY
-        )
-        screen.blit(weight_surf, (lx_col, ly))
+        # Weight (only show if non-zero)
+        if part.weight > 0:
+            weight_surf = self.small_font.render(
+                f"Weight: {part.weight:.1f}", True, Colors.TEXT_SECONDARY
+            )
+            screen.blit(weight_surf, (lx_col, ly))
         ly += weight_surf.get_height() + scale_y(8)
 
         # Description (word-wrapped)
@@ -1259,7 +1261,7 @@ class ShipyardView(BaseView):
             effects = cm.get("effects", [])
             for eff in effects:
                 if eff.get("type") == "damage":
-                    dmg_val = eff.get("amount", 0)
+                    dmg_val = int(eff.get("value", 0))
                     screen.blit(
                         self.small_font.render(f"  Damage: {dmg_val}", True, Colors.TEXT),
                         (rx, ry),
