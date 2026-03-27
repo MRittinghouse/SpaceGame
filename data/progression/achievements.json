@@ -3,10 +3,10 @@
     {
       "id": "first_trade",
       "name": "Novice Trader",
-      "description": "Complete your first trade.",
+      "description": "Complete 25 trades.",
       "category": "trading",
       "stat_key": "trades_completed",
-      "threshold": 1,
+      "threshold": 25,
       "reward_type": "xp",
       "reward_value": 50,
       "hidden": false
@@ -14,10 +14,10 @@
     {
       "id": "ten_trades",
       "name": "Seasoned Trader",
-      "description": "Complete 10 trades.",
+      "description": "Complete 100 trades.",
       "category": "trading",
       "stat_key": "trades_completed",
-      "threshold": 10,
+      "threshold": 100,
       "reward_type": "credits",
       "reward_value": 500,
       "hidden": false
@@ -25,10 +25,10 @@
     {
       "id": "fifty_trades",
       "name": "Trade Baron",
-      "description": "Complete 50 trades.",
+      "description": "Complete 500 trades.",
       "category": "trading",
       "stat_key": "trades_completed",
-      "threshold": 50,
+      "threshold": 500,
       "reward_type": "skill_point",
       "reward_value": 1,
       "hidden": false
@@ -36,10 +36,10 @@
     {
       "id": "first_profit",
       "name": "First Profit",
-      "description": "Earn 1,000 credits in lifetime earnings.",
+      "description": "Earn 5,000 credits total.",
       "category": "trading",
       "stat_key": "credits_earned_lifetime",
-      "threshold": 1000,
+      "threshold": 5000,
       "reward_type": "xp",
       "reward_value": 75,
       "hidden": false
@@ -47,10 +47,10 @@
     {
       "id": "big_earner",
       "name": "Big Earner",
-      "description": "Earn 50,000 credits in lifetime earnings.",
+      "description": "Earn 200,000 credits total.",
       "category": "wealth",
       "stat_key": "credits_earned_lifetime",
-      "threshold": 50000,
+      "threshold": 200000,
       "reward_type": "credits",
       "reward_value": 2000,
       "hidden": false
@@ -58,10 +58,10 @@
     {
       "id": "whale",
       "name": "Space Whale",
-      "description": "Earn 200,000 credits in lifetime earnings.",
+      "description": "Earn 1,000,000 credits total.",
       "category": "wealth",
       "stat_key": "credits_earned_lifetime",
-      "threshold": 200000,
+      "threshold": 1000000,
       "reward_type": "skill_point",
       "reward_value": 1,
       "hidden": false
@@ -69,10 +69,10 @@
     {
       "id": "big_spender",
       "name": "Big Spender",
-      "description": "Spend 25,000 credits total.",
+      "description": "Spend 100,000 credits total.",
       "category": "wealth",
       "stat_key": "credits_spent_lifetime",
-      "threshold": 25000,
+      "threshold": 100000,
       "reward_type": "xp",
       "reward_value": 100,
       "hidden": false
@@ -80,10 +80,10 @@
     {
       "id": "jackpot_trade",
       "name": "Jackpot Trade",
-      "description": "Make 2,000+ credits profit on a single sale.",
+      "description": "Make 10,000 credits in a single trade.",
       "category": "trading",
       "stat_key": "largest_single_profit",
-      "threshold": 2000,
+      "threshold": 10000,
       "reward_type": "xp",
       "reward_value": 150,
       "hidden": false
@@ -102,10 +102,10 @@
     {
       "id": "frequent_flyer",
       "name": "Frequent Flyer",
-      "description": "Make 20 jumps between systems.",
+      "description": "Make 50 jumps.",
       "category": "exploration",
       "stat_key": "jumps_traveled",
-      "threshold": 20,
+      "threshold": 50,
       "reward_type": "credits",
       "reward_value": 1000,
       "hidden": false
@@ -135,10 +135,10 @@
     {
       "id": "fuel_guzzler",
       "name": "Fuel Guzzler",
-      "description": "Consume 500 units of fuel.",
+      "description": "Consume 2,000 fuel.",
       "category": "exploration",
       "stat_key": "fuel_consumed",
-      "threshold": 500,
+      "threshold": 2000,
       "reward_type": "xp",
       "reward_value": 100,
       "hidden": false
@@ -157,10 +157,10 @@
     {
       "id": "mining_veteran",
       "name": "Mining Veteran",
-      "description": "Mine 50 units of ore.",
+      "description": "Mine 200 ore.",
       "category": "mining",
       "stat_key": "ore_mined",
-      "threshold": 50,
+      "threshold": 200,
       "reward_type": "credits",
       "reward_value": 1000,
       "hidden": false
@@ -179,10 +179,10 @@
     {
       "id": "salvage_veteran",
       "name": "Salvage Veteran",
-      "description": "Salvage 30 items.",
+      "description": "Salvage 100 items.",
       "category": "salvage",
       "stat_key": "items_salvaged",
-      "threshold": 30,
+      "threshold": 100,
       "reward_type": "credits",
       "reward_value": 1000,
       "hidden": false
@@ -256,10 +256,10 @@
     {
       "id": "master_prospector",
       "name": "Master Prospector",
-      "description": "Mine 500 units of ore.",
+      "description": "Mine 1,000 ore.",
       "category": "mining",
       "stat_key": "ore_mined",
-      "threshold": 500,
+      "threshold": 1000,
       "reward_type": "skill_point",
       "reward_value": 1,
       "hidden": false
@@ -278,10 +278,10 @@
     {
       "id": "salvage_expert",
       "name": "Salvage Expert",
-      "description": "Salvage 200 items.",
+      "description": "Salvage 500 items.",
       "category": "salvage",
       "stat_key": "items_salvaged",
-      "threshold": 200,
+      "threshold": 500,
       "reward_type": "skill_point",
       "reward_value": 1,
       "hidden": false
@@ -487,10 +487,10 @@
     {
       "id": "combat_veteran",
       "name": "Combat Veteran",
-      "description": "Win 10 combats.",
+      "description": "Win 25 combats.",
       "category": "combat",
       "stat_key": "combats_won",
-      "threshold": 10,
+      "threshold": 25,
       "reward_type": "credits",
       "reward_value": 1500,
       "hidden": false
@@ -498,10 +498,10 @@
     {
       "id": "combat_ace",
       "name": "Combat Ace",
-      "description": "Win 25 combats.",
+      "description": "Win 75 combats.",
       "category": "combat",
       "stat_key": "combats_won",
-      "threshold": 25,
+      "threshold": 75,
       "reward_type": "skill_point",
       "reward_value": 1,
       "hidden": false
@@ -586,10 +586,10 @@
     {
       "id": "seen_it_all",
       "name": "Seen It All",
-      "description": "Survive 50 encounters.",
+      "description": "Survive 100 encounters.",
       "category": "exploration",
       "stat_key": "encounters_survived",
-      "threshold": 50,
+      "threshold": 100,
       "reward_type": "skill_point",
       "reward_value": 1,
       "hidden": false
@@ -652,10 +652,10 @@
     {
       "id": "fleet_destroyer",
       "name": "Fleet Destroyer",
-      "description": "Win 50 combats.",
+      "description": "Win 150 combats.",
       "category": "combat",
       "stat_key": "combats_won",
-      "threshold": 50,
+      "threshold": 150,
       "reward_type": "skill_point",
       "reward_value": 1,
       "hidden": true
