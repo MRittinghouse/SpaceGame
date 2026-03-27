@@ -831,6 +831,8 @@ class ShipyardView(BaseView):
             for ps in build.placed_slots:
                 sd = slot_defs.get(ps.slot_def_id)
                 stype = sd.slot_type if sd else ps.slot_def_id.split("_")[0]
+                if stype == "cockpit":
+                    continue  # Cockpit is self-fulfilling
                 total, equipped = slot_counts.get(stype, (0, 0))
                 total += 1
                 if ps.equipped_part_id:
@@ -915,6 +917,10 @@ class ShipyardView(BaseView):
             sd = slot_defs.get(ps.slot_def_id)
             stype = sd.slot_type if sd else ps.slot_def_id.split("_")[0]
             ssize = sd.size if sd else "small"
+
+            # Cockpit slots are self-fulfilling — no separate part needed
+            if stype == "cockpit":
+                continue
 
             if stype not in result:
                 result[stype] = {
@@ -1824,11 +1830,13 @@ class ShipyardView(BaseView):
                     self._loadout_equip(part_id)
                     return
 
-        # Check grid slot clicks
+        # Check grid slot clicks (cockpit slots are self-fulfilling, skip)
         for idx, ps in enumerate(build.placed_slots):
             slot_def = self._get_slot_def_for_placed(ps)
             if not slot_def:
                 continue
+            if slot_def.slot_type == "cockpit":
+                continue  # Cockpit doesn't need a part
             rect = self._slot_screen_rect(ps, slot_def, gp)
             if rect.collidepoint(pos):
                 self._loadout_selected_slot_idx = idx
