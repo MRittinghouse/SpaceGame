@@ -277,7 +277,7 @@ if not getattr(sys, "frozen", False):
 # ============================================================================
 
 # Starting conditions
-STARTING_CREDITS = 3000
+STARTING_CREDITS = 4000
 STARTING_FUEL = 100
 
 # Game timing (if using turn-based or timed mechanics)

@@ -32,8 +32,8 @@ class TestConfigConstants:
     """Verify rebalanced config.py constants."""
 
     def test_starting_credits(self) -> None:
-        assert config.STARTING_CREDITS == 3000, (
-            f"Starting credits should be 3000, got {config.STARTING_CREDITS}"
+        assert config.STARTING_CREDITS == 4000, (
+            f"Starting credits should be 4000, got {config.STARTING_CREDITS}"
         )
 
     def test_xp_per_mining(self) -> None:
@@ -199,7 +199,7 @@ class TestGameStartingCredits:
 
     def test_config_starting_credits_is_authoritative(self) -> None:
         """The config value should be the single source of truth."""
-        assert config.STARTING_CREDITS == 3000
+        assert config.STARTING_CREDITS == 4000
 
 
 # ============================================================================

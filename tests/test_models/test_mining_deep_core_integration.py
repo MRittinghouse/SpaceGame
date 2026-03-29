@@ -24,7 +24,7 @@ class TestDepthAdvanceResult:
         session = MiningSession(config)
         # Depth starts at 1, regenerate advances to 2
         result = session.regenerate_field()
-        # Strata for clearing depth 1 = floor(1 * 1.5) = 1
+        # Strata for clearing depth 1 = max(1, floor(1 * 0.15)) = 1
         assert result.strata_earned == 1
 
     def test_full_clear_gives_bonus(self) -> None:
@@ -35,8 +35,7 @@ class TestDepthAdvanceResult:
             rock.depleted = True
         result = session.regenerate_field()
         assert result.was_full_clear
-        # depth 1: base=1, bonus=floor(1*0.5)=0, total=1
-        # Actually bonus for depth 1 is floor(1*0.5) = 0
+        # depth 1: base=max(1,0)=1, bonus=floor(1*0.05)=0, total=1
         assert result.strata_earned == 1
 
     def test_partial_clear_no_bonus(self) -> None:
@@ -49,18 +48,36 @@ class TestDepthAdvanceResult:
     def test_deeper_depth_earns_more_strata(self) -> None:
         config = MiningConfig(system_id="breakstone")
         session = MiningSession(config)
-        session.depth = 9  # Will advance to 10
+        session.depth = 99  # Will advance to 100
         result = session.regenerate_field()
-        # Strata for clearing depth 9 = floor(9 * 1.5) = 13
-        assert result.strata_earned == 13
+        # Strata for clearing depth 99 = max(1, floor(99*0.15))=14, depth_mult=1.0 -> 14
+        assert result.strata_earned == 14
+
+    def test_deep_core_strata_multiplier(self) -> None:
+        """Deep Core (100+) gives 1.5x strata."""
+        config = MiningConfig(system_id="breakstone")
+        session = MiningSession(config)
+        session.depth = 100  # Will advance to 101
+        result = session.regenerate_field()
+        # depth 100: base=15, depth_mult=1.5 -> 22
+        assert result.strata_earned == 22
+
+    def test_abyssal_strata_multiplier(self) -> None:
+        """Abyssal Vein (150+) gives 2x strata."""
+        config = MiningConfig(system_id="breakstone")
+        session = MiningSession(config)
+        session.depth = 150  # Will advance to 151
+        result = session.regenerate_field()
+        # depth 150: base=max(1,floor(150*0.15))=22, depth_mult=2.0 -> 44
+        assert result.strata_earned == 44
 
     def test_prestige_multiplier_applied(self) -> None:
         config = MiningConfig(system_id="breakstone")
         session = MiningSession(config, prestige_level=5)
-        session.depth = 9
+        session.depth = 99
         result = session.regenerate_field()
-        base = calculate_strata_earned(9, full_clear=False, prestige_level=0)
-        expected = calculate_strata_earned(9, full_clear=False, prestige_level=5)
+        base = calculate_strata_earned(99, full_clear=False, prestige_level=0)
+        expected = calculate_strata_earned(99, full_clear=False, prestige_level=5)
         assert result.strata_earned == expected
         assert expected > base
 

@@ -234,10 +234,10 @@
     {
       "id": "deep_delver",
       "name": "Deep Delver",
-      "description": "Reach mining depth 4.",
+      "description": "Reach mining depth 30.",
       "category": "mining",
       "stat_key": "max_mining_depth",
-      "threshold": 4,
+      "threshold": 30,
       "reward_type": "xp",
       "reward_value": 200,
       "hidden": false

@@ -1092,17 +1092,17 @@ class TradingView(BaseView):
             impact_hint = self.info_font.render(
                 "Your trades are affecting local prices", True, Colors.TEXT_SECONDARY
             )
-            screen.blit(impact_hint, (160, market_label_y + 4))
+            screen.blit(impact_hint, (scale_x(160), market_label_y + scale_y(4)))
 
         cargo_label = self.header_font.render("YOUR CARGO", True, Colors.TEXT_HIGHLIGHT)
-        screen.blit(cargo_label, (WINDOW_WIDTH - 420, 75))
+        screen.blit(cargo_label, (WINDOW_WIDTH - scale_x(420), scale_y(75)))
 
         # Cargo/Fuel status
         commodity_volumes = {c.id: c.volume_per_unit for c in self.commodities.values()}
         used_cargo = self.player.ship.get_used_cargo(commodity_volumes)
         cargo_text = f"Space: {used_cargo}/{self.player.ship.max_cargo} | Fuel: {self.player.ship.current_fuel}/{self.player.ship.max_fuel}"
         cargo_surf = self.info_font.render(cargo_text, True, Colors.TEXT_SECONDARY)
-        screen.blit(cargo_surf, (WINDOW_WIDTH - 420, 95))
+        screen.blit(cargo_surf, (WINDOW_WIDTH - scale_x(420), scale_y(95)))
 
         # Table widgets
         if self.market_table:
@@ -1111,10 +1111,10 @@ class TradingView(BaseView):
             self.cargo_table.render(screen)
 
         # Cargo fill bar
-        bar_x = WINDOW_WIDTH - 420
-        bar_y = 505
-        bar_w = 400
-        bar_h = 8
+        bar_x = WINDOW_WIDTH - scale_x(420)
+        bar_y = scale_y(505)
+        bar_w = scale_x(400)
+        bar_h = scale_y(8)
         fill_pct = used_cargo / self.player.ship.max_cargo if self.player.ship.max_cargo > 0 else 0
         fill_color = Colors.TEXT_HIGHLIGHT if fill_pct < 0.9 else Colors.RED
         draw_bar(
@@ -1134,20 +1134,20 @@ class TradingView(BaseView):
             hc = self.player.hidden_compartment
             hidden_text = f"Hidden Hold: {hc.hidden_used}/{hc.hidden_capacity}"
             hidden_surf = self.info_font.render(hidden_text, True, (180, 140, 200))
-            screen.blit(hidden_surf, (WINDOW_WIDTH - 220, bar_y + 14))
+            screen.blit(hidden_surf, (WINDOW_WIDTH - scale_x(220), bar_y + scale_y(14)))
 
         # Action label
         action_label = self.header_font.render("Quantity:", True, Colors.TEXT)
         screen.blit(action_label, (scale_x(650), scale_y(120)))
 
         # Trading tips (normal) or active contracts (black market)
-        tip_y = 520
+        tip_y = scale_y(520)
         if self._black_market_mode and self.smuggling_contracts:
             active = self.smuggling_contracts.get_active_contracts()
             header = self.header_font.render(
                 f"SMUGGLING CONTRACTS ({len(active)}/3 active)", True, Colors.GOLD
             )
-            screen.blit(header, (20, tip_y))
+            screen.blit(header, (scale_x(20), tip_y))
             # Contract list buttons are rendered by pygame_gui below the header
         else:
             tip_lines = [
@@ -1160,7 +1160,7 @@ class TradingView(BaseView):
             for i, tip in enumerate(tip_lines):
                 color = Colors.TEXT_HIGHLIGHT if i == 0 else Colors.TEXT_SECONDARY
                 tip_surf = self.info_font.render(tip, True, color)
-                screen.blit(tip_surf, (20, tip_y + i * 20))
+                screen.blit(tip_surf, (scale_x(20), tip_y + i * scale_y(20)))
 
         # Particles
         self.particles.render(screen)

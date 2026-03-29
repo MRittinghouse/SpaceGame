@@ -854,8 +854,8 @@ class RefiningView(BaseView):
             job_count = len(self.session.job_queue)
             flame_chance = min(0.05 + job_count * 0.05, 0.30)
             if job_count > 0 and random.random() < flame_chance:
-                forge_x = WINDOW_WIDTH - 350 + 48
-                forge_y = 70
+                forge_x = WINDOW_WIDTH - scale_x(350) + scale_x(48)
+                forge_y = scale_y(70)
                 self.particles.emit(forge_x, forge_y, FORGE_FLAME)
 
             results = self.session.update(dt)
@@ -936,8 +936,8 @@ class RefiningView(BaseView):
         # Completion particle burst + forge flash + output icon float
         get_audio_manager().play_sfx("refine_complete")
         self._forge_flash_timer = 0.6
-        forge_x = WINDOW_WIDTH - 350 + 48
-        forge_y = 70
+        forge_x = WINDOW_WIDTH - scale_x(350) + scale_x(48)
+        forge_y = scale_y(70)
         self.particles.emit(forge_x, forge_y, FORGE_COMPLETE_FLASH)
 
         # Float output icon from forge to buffer bar area

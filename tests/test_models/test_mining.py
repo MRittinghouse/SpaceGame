@@ -253,7 +253,7 @@ class TestMiningSession:
         )
         # Iron = 1.0s hardness, with passive_drill_bonus the passive rate
         # should be faster. Use start_drill compat wrapper.
-        session = MiningSession(config, passive_drill_bonus=1.0, starting_depth=3)
+        session = MiningSession(config, passive_drill_bonus=1.0, starting_depth=20)
         session.start_drill(0, 0)
         # base_passive_rate=0.05, bonus=1.0 → effective rate = 0.05*(1+1.0)=0.10
         # On iron (hardness=1.0): 0.10 progress/sec → 10s to break
@@ -328,12 +328,12 @@ class TestMiningSessionClickMine:
             base_click_power=0.12,
         )
         # No bonus
-        session_base = MiningSession(config, starting_depth=3)
+        session_base = MiningSession(config, starting_depth=20)
         session_base.click_rock(0, 0)
         base_progress = session_base.active_rock.drill_progress
 
         # 100% bonus
-        session_bonus = MiningSession(config, click_power_bonus=1.0, starting_depth=3)
+        session_bonus = MiningSession(config, click_power_bonus=1.0, starting_depth=20)
         session_bonus.click_rock(0, 0)
         bonus_progress = session_bonus.active_rock.drill_progress
 
@@ -360,7 +360,7 @@ class TestMiningSessionPassiveDrill:
             rock_distribution={"iron": 1.0},
             base_passive_rate=0.10,
         )
-        session = MiningSession(config, starting_depth=3)
+        session = MiningSession(config, starting_depth=20)
         session.click_rock(0, 0)
         initial_progress = session.active_rock.drill_progress
         session.update(1.0)
@@ -386,7 +386,7 @@ class TestMiningSessionPassiveDrill:
             rock_distribution={"iron": 1.0},
             base_passive_rate=0.10,
         )
-        session = MiningSession(config, passive_drill_bonus=1.0, starting_depth=3)
+        session = MiningSession(config, passive_drill_bonus=1.0, starting_depth=20)
         session.click_rock(0, 0)
         session.update(1.0)
         # Iron hardness=1.0, rate=0.10*(1+1.0)=0.20 → 0.20 progress
@@ -442,7 +442,7 @@ class TestMiningSessionDrones:
             rock_distribution={"iron": 1.0},
         )
         drone = MiningDrone(tier=DroneTier.BASIC)
-        session = MiningSession(config, drones=[drone], starting_depth=3)
+        session = MiningSession(config, drones=[drone], starting_depth=20)
         session.click_rock(0, 0)
         session.update(0.1)
         # Drone should target (1,0), not (0,0)
@@ -470,7 +470,7 @@ class TestMiningSessionDrones:
         )
         drone = MiningDrone(tier=DroneTier.ADVANCED)
         drone.set_target_preference(RockType.IRON)
-        session = MiningSession(config, drones=[drone], starting_depth=3)
+        session = MiningSession(config, drones=[drone], starting_depth=20)
         session.update(0.1)
         target = session.drone_targets.get(0)
         assert target is not None
@@ -607,7 +607,7 @@ class TestEnergySystem:
             rock_distribution={"iron": 1.0},
             base_passive_rate=0.10,
         )
-        session = MiningSession(config, starting_depth=3)
+        session = MiningSession(config, starting_depth=20)
         session.click_rock(0, 0)
         energy_after_click = session.energy
         session.update(1.0)
@@ -705,13 +705,13 @@ class TestRareChanceWiring:
         # No bonus — count crystals
         counts_base = 0
         for _ in range(20):
-            session = MiningSession(config, rare_chance_bonus=0.0, starting_depth=9)
+            session = MiningSession(config, rare_chance_bonus=0.0, starting_depth=80)
             counts_base += sum(1 for r in session.rocks if r.rock_type == RockType.CRYSTAL)
 
         # Large bonus
         counts_bonus = 0
         for _ in range(20):
-            session = MiningSession(config, rare_chance_bonus=5.0, starting_depth=9)
+            session = MiningSession(config, rare_chance_bonus=5.0, starting_depth=80)
             counts_bonus += sum(1 for r in session.rocks if r.rock_type == RockType.CRYSTAL)
 
         assert counts_bonus > counts_base, (
@@ -732,13 +732,13 @@ class TestRareChanceWiring:
         rng_module.seed(42)
         counts_base = 0
         for _ in range(50):
-            session = MiningSession(config, rare_chance_bonus=0.0, starting_depth=9)
+            session = MiningSession(config, rare_chance_bonus=0.0, starting_depth=80)
             counts_base += sum(1 for r in session.rocks if r.rock_type == RockType.RARE)
 
         rng_module.seed(42)
         counts_bonus = 0
         for _ in range(50):
-            session = MiningSession(config, rare_chance_bonus=5.0, starting_depth=9)
+            session = MiningSession(config, rare_chance_bonus=5.0, starting_depth=80)
             counts_bonus += sum(1 for r in session.rocks if r.rock_type == RockType.RARE)
 
         assert counts_bonus > counts_base, (
@@ -769,7 +769,7 @@ class TestRareChanceWiring:
         counts_common_iron_base = 0
         total_base = 0
         for _ in range(20):
-            session = MiningSession(config, rare_chance_bonus=0.0, starting_depth=9)
+            session = MiningSession(config, rare_chance_bonus=0.0, starting_depth=80)
             counts_common_iron_base += sum(
                 1 for r in session.rocks if r.rock_type in (RockType.COMMON, RockType.IRON)
             )
@@ -778,7 +778,7 @@ class TestRareChanceWiring:
         counts_common_iron_bonus = 0
         total_bonus = 0
         for _ in range(20):
-            session = MiningSession(config, rare_chance_bonus=5.0, starting_depth=9)
+            session = MiningSession(config, rare_chance_bonus=5.0, starting_depth=80)
             counts_common_iron_bonus += sum(
                 1 for r in session.rocks if r.rock_type in (RockType.COMMON, RockType.IRON)
             )
@@ -800,7 +800,7 @@ class TestRareChanceWiring:
             rock_distribution={"common": 0.50, "iron": 0.30, "crystal": 0.15, "rare": 0.05},
         )
         # Count rare+crystal across multiple regenerations with large bonus
-        session = MiningSession(config, rare_chance_bonus=5.0, starting_depth=9)
+        session = MiningSession(config, rare_chance_bonus=5.0, starting_depth=80)
         rare_count = sum(
             1 for r in session.rocks if r.rock_type in (RockType.CRYSTAL, RockType.RARE)
         )
@@ -831,63 +831,63 @@ class TestDepthScaling:
         session.regenerate_field()
         assert session.depth == 3
 
-    def test_depth_modifiers_1_through_3(self) -> None:
-        """Depths 1-3: no rare bonus, energy_mult=1, yield=0."""
+    def test_depth_modifiers_surface(self) -> None:
+        """Depths 1-20 (Surface): no rare bonus, energy_mult=1, yield=0."""
         config = MiningConfig(system_id="test")
         session = MiningSession(config)
-        for d in range(1, 4):
+        for d in (1, 10, 20):
             session.depth = d
             mods = session.get_depth_modifiers()
             assert mods.rare_weight_bonus == 0.0, f"depth {d}"
             assert mods.energy_cost_multiplier == 1, f"depth {d}"
             assert mods.yield_bonus == 0.0, f"depth {d}"
 
-    def test_depth_modifiers_4(self) -> None:
+    def test_depth_modifiers_shallow(self) -> None:
         config = MiningConfig(system_id="test")
         session = MiningSession(config)
-        session.depth = 4
+        session.depth = 30
         mods = session.get_depth_modifiers()
         assert mods.rare_weight_bonus == pytest.approx(0.10)
         assert mods.energy_cost_multiplier == 1
         assert mods.yield_bonus == pytest.approx(0.10)
 
-    def test_depth_modifiers_6(self) -> None:
+    def test_depth_modifiers_shallow_end(self) -> None:
         config = MiningConfig(system_id="test")
         session = MiningSession(config)
-        session.depth = 6
+        session.depth = 50
         mods = session.get_depth_modifiers()
         assert mods.rare_weight_bonus == pytest.approx(0.30)
         assert mods.energy_cost_multiplier == 1
         assert mods.yield_bonus == pytest.approx(0.10)
 
-    def test_depth_modifiers_7(self) -> None:
+    def test_depth_modifiers_mid_strata(self) -> None:
         config = MiningConfig(system_id="test")
         session = MiningSession(config)
-        session.depth = 7
+        session.depth = 60
         mods = session.get_depth_modifiers()
-        assert mods.rare_weight_bonus == pytest.approx(0.50)
+        assert mods.rare_weight_bonus == pytest.approx(0.42)
         assert mods.energy_cost_multiplier == 2
         assert mods.yield_bonus == pytest.approx(0.20)
 
-    def test_depth_modifiers_10_plus(self) -> None:
+    def test_depth_modifiers_deep_core(self) -> None:
         config = MiningConfig(system_id="test")
         session = MiningSession(config)
-        session.depth = 10
+        session.depth = 100
         mods = session.get_depth_modifiers()
-        assert mods.rare_weight_bonus == pytest.approx(1.20)
+        assert mods.rare_weight_bonus == pytest.approx(0.93)
         assert mods.energy_cost_multiplier == 2
         assert mods.yield_bonus == pytest.approx(0.30)
 
-    def test_energy_cost_doubles_at_depth_7(self) -> None:
+    def test_energy_cost_doubles_at_mid_strata(self) -> None:
         config = MiningConfig(system_id="test")
         session = MiningSession(config)
-        session.depth = 7
+        session.depth = 60
         assert session.get_click_energy_cost() == 2
 
-    def test_energy_cost_is_1_at_depth_6(self) -> None:
+    def test_energy_cost_is_1_at_shallow(self) -> None:
         config = MiningConfig(system_id="test")
         session = MiningSession(config)
-        session.depth = 6
+        session.depth = 50
         assert session.get_click_energy_cost() == 1
 
     def test_yield_bonus_click_break(self) -> None:
@@ -900,7 +900,7 @@ class TestDepthScaling:
             base_click_power=0.50,
         )
         session = MiningSession(config)
-        session.depth = 7  # yield_bonus = 0.20
+        session.depth = 60  # yield_bonus = 0.20
 
         # Break a rock — common yields 1-3, with 20% bonus: floor(base * 0.20) extra
         # Use 1x1 grid to prevent chain detonation interference
@@ -917,7 +917,7 @@ class TestDepthScaling:
             base_passive_rate=0.50,
         )
         session = MiningSession(config)
-        session.depth = 7
+        session.depth = 60
         session.click_rock(0, 0)  # Set active rock
         results = session.update(2.0)  # Enough time to break common
         assert len(results) >= 1
@@ -932,7 +932,7 @@ class TestDepthScaling:
         )
         drone = MiningDrone(tier=DroneTier.ELITE)
         session = MiningSession(config, drones=[drone])
-        session.depth = 7
+        session.depth = 60
         results = session.update(2.0)
         assert len(results) >= 1
 
@@ -945,20 +945,18 @@ class TestDepthScaling:
             rock_distribution={"common": 0.50, "iron": 0.30, "crystal": 0.15, "rare": 0.05},
         )
         # Skill bonus only
-        session_skill = MiningSession(config, rare_chance_bonus=1.0, starting_depth=9)
+        session_skill = MiningSession(config, rare_chance_bonus=1.0, starting_depth=80)
         session_skill.depth = 1  # No depth bonus
         crystal_skill = sum(
             1 for r in session_skill.rocks if r.rock_type in (RockType.CRYSTAL, RockType.RARE)
         )
 
-        # Skill + depth bonus (depth=10 adds 1.20)
-        session_both = MiningSession(config, rare_chance_bonus=1.0, starting_depth=9)
-        session_both.depth = 10
+        # Skill + depth bonus (depth=100 is Deep Core)
+        session_both = MiningSession(config, rare_chance_bonus=1.0, starting_depth=80)
+        session_both.depth = 100
         session_both.regenerate_field()  # Regenerate to apply depth bonus
-        # Depth 10 → depth 11 after regen, so 0.90 + 2*0.30 = 1.50
-        # Total: 1.0 (skill) + 1.50 (depth) = 2.50
         # Just verify the field was regenerated with bonus applied
-        # Rocks + hazards should total the grid size (hazards replace rocks at depth 10+)
+        # At depth 101: no hazards yet (those start at 100), grid should be full
         assert len(session_both.rocks) + len(session_both.hazards) == 100
 
     def test_regenerate_refills_energy(self) -> None:
@@ -1012,7 +1010,7 @@ class TestChainDetonation:
             base_click_power=0.50,
         )
         # chain_chance_bonus high enough to guarantee chain
-        session = MiningSession(config, chain_chance_bonus=10.0, starting_depth=3)
+        session = MiningSession(config, chain_chance_bonus=10.0, starting_depth=20)
         # All iron. Break middle rock.
         # Iron hardness=1.0, power=0.50 → 0.50 progress per click, need 2 clicks
         session.click_rock(1, 0)
@@ -1296,7 +1294,7 @@ class TestSessionMilestones:
             base_click_power=5.0,
         )
         milestones = self._make_milestones("rare_ores", threshold=1)
-        session = MiningSession(config, milestones=milestones, starting_depth=9)
+        session = MiningSession(config, milestones=milestones, starting_depth=80)
         # Crystal and rare both count as rare ores. At depth 9,
         # depth gating adds iron/dense/rare alongside crystal.
         # Click all rocks to guarantee at least one crystal or rare.
@@ -1325,7 +1323,7 @@ class TestSessionMilestones:
     def test_depth_milestone_completes(self) -> None:
         config = MiningConfig(system_id="test")
         milestones = self._make_milestones("depth_reached", threshold=3)
-        session = MiningSession(config, milestones=milestones)
+        session = MiningSession(config, milestones=milestones, starting_depth=1)
         assert not milestones[0].completed
         session.regenerate_field()  # depth 2
         session.regenerate_field()  # depth 3

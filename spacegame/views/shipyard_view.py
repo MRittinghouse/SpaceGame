@@ -252,41 +252,45 @@ class ShipyardView(BaseView):
         hud_h = scale_y(HUD_BASE_HEIGHT)
         self.buy_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
-                WINDOW_WIDTH - 200, WINDOW_HEIGHT - hud_h - scale_y(120), 170, 40
+                WINDOW_WIDTH - scale_x(200), WINDOW_HEIGHT - hud_h - scale_y(120),
+                scale_x(170), scale_y(40)
             ),
             text="Buy",
             manager=self.ui_manager,
         )
         self.uninstall_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
-                WINDOW_WIDTH - 200, WINDOW_HEIGHT - hud_h - scale_y(70), 170, 40
+                WINDOW_WIDTH - scale_x(200), WINDOW_HEIGHT - hud_h - scale_y(70),
+                scale_x(170), scale_y(40)
             ),
             text="Uninstall",
             manager=self.ui_manager,
         )
         self.enhance_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
-                WINDOW_WIDTH - 200, WINDOW_HEIGHT - hud_h - scale_y(120), 170, 40
+                WINDOW_WIDTH - scale_x(200), WINDOW_HEIGHT - hud_h - scale_y(120),
+                scale_x(170), scale_y(40)
             ),
             text="Enhance",
             manager=self.ui_manager,
         )
         self.buy_ship_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
-                WINDOW_WIDTH - 200, WINDOW_HEIGHT - hud_h - scale_y(120), 170, 40
+                WINDOW_WIDTH - scale_x(200), WINDOW_HEIGHT - hud_h - scale_y(120),
+                scale_x(170), scale_y(40)
             ),
             text="Buy Frame",
             manager=self.ui_manager,
         )
         # Tuning choice buttons (hidden by default)
-        tuning_y = WINDOW_HEIGHT // 2 - 30
+        tuning_y = WINDOW_HEIGHT // 2 - scale_y(30)
         self.tuning_btn_a = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(WINDOW_WIDTH // 2 - 200, tuning_y, 180, 40),
+            relative_rect=pygame.Rect(WINDOW_WIDTH // 2 - scale_x(200), tuning_y, scale_x(180), scale_y(40)),
             text="Option A",
             manager=self.ui_manager,
         )
         self.tuning_btn_b = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(WINDOW_WIDTH // 2 + 20, tuning_y, 180, 40),
+            relative_rect=pygame.Rect(WINDOW_WIDTH // 2 + scale_x(20), tuning_y, scale_x(180), scale_y(40)),
             text="Option B",
             manager=self.ui_manager,
         )
@@ -754,17 +758,17 @@ class ShipyardView(BaseView):
         screen.blit(self._bg_dim, (0, 0))
 
         title = self.title_font.render("SHIPYARD", True, Colors.TEXT_HIGHLIGHT)
-        screen.blit(title, title.get_rect(center=(WINDOW_WIDTH // 2, 30)))
+        screen.blit(title, title.get_rect(center=(WINDOW_WIDTH // 2, scale_y(30))))
 
         # Ship composite in header (player's designed ship only)
         if self._ship_fallback and not self._ship_anim:
             # Composite was loaded — show it
-            screen.blit(self._ship_fallback, (WINDOW_WIDTH - 160, 15))
+            screen.blit(self._ship_fallback, (WINDOW_WIDTH - scale_x(160), scale_y(15)))
         elif self._ship_anim:
             # Only show animated sprite if no composite exists (legacy save)
             ship_surf = self._ship_anim.get_surface()
             if ship_surf:
-                screen.blit(ship_surf, (WINDOW_WIDTH - 160, 15))
+                screen.blit(ship_surf, (WINDOW_WIDTH - scale_x(160), scale_y(15)))
 
         # Credits and per-category slot display
         self._render_slot_summary(screen)

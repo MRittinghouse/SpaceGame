@@ -894,8 +894,8 @@ class SalvageView(BaseView):
             get_audio_manager().play_sfx("salvage_reveal")
 
             # Float item icon from cell to hold bar
-            hold_bar_x = float(WINDOW_WIDTH - 180)
-            hold_bar_y = float(370)
+            hold_bar_x = float(WINDOW_WIDTH - scale_x(180))
+            hold_bar_y = float(scale_y(370))
             self._floats.add_icon_float(
                 text=f"+{result.quantity} {name}",
                 origin=(float(fx), float(fy)),
@@ -1063,18 +1063,19 @@ class SalvageView(BaseView):
         subtitle = self.info_font.render(
             "Choose a derelict hull to salvage:", True, Colors.TEXT_SECONDARY
         )
-        screen.blit(subtitle, subtitle.get_rect(center=(cx, 80)))
+        screen.blit(subtitle, subtitle.get_rect(center=(cx, scale_y(80))))
 
         self._derelict_choice_rects.clear()
         mouse_pos = pygame.mouse.get_pos()
-        card_w = 340
-        card_h = 140
-        total_w = len(DERELICT_TYPES) * (card_w + 20) - 20
+        card_w = scale_x(340)
+        card_h = scale_y(140)
+        card_gap = scale_x(20)
+        total_w = len(DERELICT_TYPES) * (card_w + card_gap) - card_gap
         start_x = cx - total_w // 2
 
         for i, dt in enumerate(DERELICT_TYPES):
-            x = start_x + i * (card_w + 20)
-            y = 140
+            x = start_x + i * (card_w + card_gap)
+            y = scale_y(140)
             rect = pygame.Rect(x, y, card_w, card_h)
             self._derelict_choice_rects.append((dt, rect))
 
@@ -1092,13 +1093,13 @@ class SalvageView(BaseView):
             if bg_id:
                 thumb = self._sprite_mgr.get_static_sprite("salvage", bg_id, scale=res_scale(1))
                 if thumb:
-                    thumb_scaled = pygame.transform.scale(thumb, (card_w - 20, 60))
+                    thumb_scaled = pygame.transform.scale(thumb, (card_w - scale_x(20), scale_y(60)))
                     thumb_scaled.set_alpha(100)
-                    screen.blit(thumb_scaled, (x + 10, y + 30))
+                    screen.blit(thumb_scaled, (x + scale_x(10), y + scale_y(30)))
 
             # Name
             name_surf = self.info_font.render(dt.name, True, Colors.TEXT_HIGHLIGHT)
-            screen.blit(name_surf, (x + 10, y + 8))
+            screen.blit(name_surf, (x + scale_x(10), y + scale_y(8)))
 
             # Stats
             stats = [
@@ -1112,13 +1113,13 @@ class SalvageView(BaseView):
 
             for j, line in enumerate(stats):
                 s = self.small_font.render(line, True, Colors.TEXT_SECONDARY)
-                screen.blit(s, (x + 10, y + 95 + j * 16))
+                screen.blit(s, (x + scale_x(10), y + scale_y(95) + j * scale_y(16)))
 
         # Hint
         hint = self.small_font.render(
             "Click a hull type to begin salvaging", True, Colors.TEXT_SECONDARY
         )
-        screen.blit(hint, hint.get_rect(center=(cx, 310)))
+        screen.blit(hint, hint.get_rect(center=(cx, scale_y(310))))
 
     def _render_corruption_timer(self, screen: pygame.Surface) -> None:
         """Render corruption countdown bar above the grid with urgency effects."""
@@ -1382,14 +1383,14 @@ class SalvageView(BaseView):
                 pygame.draw.rect(screen, hover_color, rect, 2)
 
     def _render_stats(self, screen: pygame.Surface) -> None:
-        panel_x = WINDOW_WIDTH - 280
-        panel_y = 120
+        panel_x = WINDOW_WIDTH - scale_x(280)
+        panel_y = scale_y(120)
         theme_color = self._get_theme_color()
 
         # Panel background
         draw_nine_slice_panel(
             screen,
-            (panel_x - 10, panel_y - 8, 270, 240),
+            (panel_x - scale_x(10), panel_y - scale_y(8), scale_x(270), scale_y(240)),
             alpha=160,
             border_color=(theme_color[0] // 2, theme_color[1] // 2, theme_color[2] // 2),
         )
@@ -1468,10 +1469,10 @@ class SalvageView(BaseView):
 
     def _render_hold_bar_panel(self, screen: pygame.Surface) -> None:
         """Render salvage hold capacity bar below the stats panel."""
-        panel_x = WINDOW_WIDTH - 280
-        panel_y = 370  # Below stats panel
-        bar_w = 200
-        bar_h = 18
+        panel_x = WINDOW_WIDTH - scale_x(280)
+        panel_y = scale_y(370)
+        bar_w = scale_x(200)
+        bar_h = scale_y(18)
 
         stored = self._hold.get_total_stored()
         capacity = self._hold.capacity

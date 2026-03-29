@@ -1230,11 +1230,11 @@ class MiningView(BaseView):
                 msgs = self.progression.add_xp(ms.reward_xp)
                 for m in msgs:
                     logger.info(m)
-                self._add_feedback(f"+{ms.reward_xp} XP", WINDOW_WIDTH - 200, 80, Colors.BLUE)
+                self._add_feedback(f"+{ms.reward_xp} XP", WINDOW_WIDTH - scale_x(200), scale_y(80), Colors.BLUE)
             if ms.reward_credits > 0:
                 self.player.credits += ms.reward_credits
                 self._add_feedback(
-                    f"+{ms.reward_credits} CR", WINDOW_WIDTH - 200, 100, Colors.GREEN
+                    f"+{ms.reward_credits} CR", WINDOW_WIDTH - scale_x(200), scale_y(100), Colors.GREEN
                 )
             logger.info(f"Mining milestone complete: {ms.description}")
 
@@ -1783,18 +1783,16 @@ class MiningView(BaseView):
     @staticmethod
     def _get_depth_descriptor(depth: int) -> str:
         """Return a short label for the current mining depth."""
-        if depth <= 1:
+        if depth <= 20:
             return "Surface layer. Common ores."
-        elif depth <= 3:
-            return "Shallow strata. Moderate yields."
-        elif depth <= 5:
-            return "Mid strata. Dense ore deposits."
-        elif depth <= 7:
-            return "Deep strata. Rare minerals appear."
-        elif depth <= 9:
-            return "Abyssal layer. Rich exotic veins."
+        elif depth <= 50:
+            return "Shallow rock. Iron deposits."
+        elif depth <= 99:
+            return "Mid strata. Crystal veins appear."
+        elif depth <= 149:
+            return "Deep Core. Strata x1.5"
         else:
-            return "Core layer. Maximum yield potential."
+            return "Abyssal Vein. Strata x2"
 
     def _render_energy_bar(self, screen: pygame.Surface) -> None:
         """Render energy bar below the mining grid."""

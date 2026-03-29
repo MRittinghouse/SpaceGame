@@ -57,11 +57,11 @@
     {
       "id": "depth_scanner",
       "name": "Depth Scanner",
-      "description": "Start sessions at depth (1 + level)",
+      "description": "Start sessions 5 depths deeper per level",
       "max_level": 3,
       "costs": [10, 20, 35],
       "effect_type": "starting_depth_bonus",
-      "effect_per_level": 1.0
+      "effect_per_level": 5.0
     },
     {
       "id": "automaton_core",

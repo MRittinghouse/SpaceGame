@@ -1268,6 +1268,13 @@ class Game:
                     # Check for journal auto-entries triggered by new flags
                     self._check_journal_triggers()
 
+                    # Immediately update mission availability — dialogue may have set
+                    # flags that unlock or auto-accept missions (e.g. Petra's quest)
+                    if self.mission_manager:
+                        self.mission_manager.update_availability(
+                            self.player.dialogue_flags
+                        )
+
                     # Handle mission failures triggered by dialogue
                     if (
                         self.player.dialogue_flags.get("iron_delivery_failed")
@@ -3381,8 +3388,10 @@ class Game:
 
         if success:
             logger.info(f"Game saved successfully to slot {slot}")
+            self._mission_notifications.append(f"Game saved to slot {slot}.")
         else:
             logger.error(f"Failed to save game to slot {slot}")
+            self._mission_notifications.append("Save failed! Check disk space and permissions.")
 
     def _load_game(self, slot: int) -> None:
         """
@@ -4612,10 +4621,22 @@ class Game:
 
                 # Check for ESC key to toggle pause (only during gameplay)
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                    if self.player and not self.paused:
+                    if (
+                        self.player
+                        and not self.paused
+                        and self.state_manager.current_state
+                        not in (
+                            GameState.MAIN_MENU,
+                            GameState.STARTUP,
+                            GameState.NAME_INPUT,
+                            GameState.CHARACTER_CREATION,
+                        )
+                    ):
                         self._open_pause_menu()
+                        continue  # Consume ESC — don't leak to views
                     elif self.paused:
                         self._close_pause_menu()
+                        continue  # Consume ESC — don't leak to views
 
                 self.ui_manager.process_events(event)
 

@@ -419,7 +419,10 @@ class SettingsView(BaseView):
                 self.save_dir_display.kill()
                 self.save_dir_display = pygame_gui.elements.UITextBox(
                     html_text=f"<font size=4>{self.new_save_dir!s}</font>",
-                    relative_rect=pygame.Rect((WINDOW_WIDTH - 800) // 2, 160, 640, 60),
+                    relative_rect=pygame.Rect(
+                        (WINDOW_WIDTH - scale_x(800)) // 2, scale_y(160),
+                        scale_x(640), scale_y(60)
+                    ),
                     manager=self.ui_manager,
                 )
 
@@ -451,11 +454,11 @@ class SettingsView(BaseView):
         logger.info(f"Reset to default save directory: {self.new_save_dir}")
 
         # Update display
-        panel_x = (WINDOW_WIDTH - 800) // 2
+        panel_x = (WINDOW_WIDTH - scale_x(800)) // 2
         self.save_dir_display.kill()
         self.save_dir_display = pygame_gui.elements.UITextBox(
             html_text=f"<font size=4>{self.new_save_dir!s}</font>",
-            relative_rect=pygame.Rect(panel_x, 160, 640, 60),
+            relative_rect=pygame.Rect(panel_x, scale_y(160), scale_x(640), scale_y(60)),
             manager=self.ui_manager,
         )
 

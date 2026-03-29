@@ -1094,7 +1094,7 @@ class GalaxyMapView(BaseView):
         if not headlines:
             return
 
-        ticker_y = WINDOW_HEIGHT - 28
+        ticker_y = WINDOW_HEIGHT - scale_y(28)
         separator = "  \u2022  "  # bullet separator
         ticker_text = separator.join(headlines)
         surf = self.info_font.render(ticker_text, True, Colors.TEXT_SECONDARY)

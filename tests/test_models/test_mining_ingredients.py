@@ -59,20 +59,20 @@ class TestChainBreakIngredients:
 class TestIngredientDropRolling:
     """MiningSession._roll_ingredient_drops() depth-gated logic."""
 
-    def test_no_drops_below_depth_8(self) -> None:
+    def test_no_drops_below_depth_60(self) -> None:
         session = MiningSession(_make_config())
-        session.depth = 7
+        session.depth = 50
         # Run 100 rolls — should never drop anything
         drops_found = False
         for _ in range(100):
             drops = session._roll_ingredient_drops()
             if drops:
                 drops_found = True
-        assert not drops_found, "No ingredient drops should occur below depth 8"
+        assert not drops_found, "No ingredient drops should occur below depth 60"
 
-    def test_flux_catalyst_at_depth_8(self) -> None:
+    def test_flux_catalyst_at_depth_60(self) -> None:
         session = MiningSession(_make_config())
-        session.depth = 8
+        session.depth = 60
         # Run many rolls to verify flux_catalyst can drop
         found = False
         for _ in range(500):
@@ -80,31 +80,31 @@ class TestIngredientDropRolling:
             if "flux_catalyst" in drops:
                 found = True
                 break
-        assert found, "flux_catalyst should drop at depth 8+"
+        assert found, "flux_catalyst should drop at depth 60+"
 
-    def test_no_resonance_core_at_depth_8(self) -> None:
+    def test_no_resonance_core_at_depth_60(self) -> None:
         session = MiningSession(_make_config())
-        session.depth = 8
-        # Resonance core requires depth 15+
+        session.depth = 60
+        # Resonance core requires depth 150+
         for _ in range(500):
             drops = session._roll_ingredient_drops()
-            assert "resonance_core" not in drops, "resonance_core needs depth 15+"
+            assert "resonance_core" not in drops, "resonance_core needs depth 150+"
 
-    def test_resonance_core_at_depth_15(self) -> None:
+    def test_resonance_core_at_depth_150(self) -> None:
         session = MiningSession(_make_config())
-        session.depth = 15
+        session.depth = 150
         found = False
         for _ in range(500):
             drops = session._roll_ingredient_drops()
             if "resonance_core" in drops:
                 found = True
                 break
-        assert found, "resonance_core should drop at depth 15+"
+        assert found, "resonance_core should drop at depth 150+"
 
-    def test_both_can_drop_at_depth_15(self) -> None:
-        """At depth 15+, both resonance_core and flux_catalyst are possible."""
+    def test_both_can_drop_at_depth_150(self) -> None:
+        """At depth 150+, both resonance_core and flux_catalyst are possible."""
         session = MiningSession(_make_config())
-        session.depth = 15
+        session.depth = 150
         found_flux = False
         found_resonance = False
         for _ in range(1000):
@@ -115,12 +115,12 @@ class TestIngredientDropRolling:
                 found_resonance = True
             if found_flux and found_resonance:
                 break
-        assert found_flux, "flux_catalyst should still drop at depth 15+"
-        assert found_resonance, "resonance_core should drop at depth 15+"
+        assert found_flux, "flux_catalyst should still drop at depth 150+"
+        assert found_resonance, "resonance_core should drop at depth 150+"
 
     def test_drops_are_quantity_1(self) -> None:
         session = MiningSession(_make_config())
-        session.depth = 15
+        session.depth = 150
         for _ in range(500):
             drops = session._roll_ingredient_drops()
             for qty in drops.values():
@@ -138,7 +138,7 @@ class TestClickRockIngredientDrop:
         for seed in range(50):
             random.seed(seed)
             session = MiningSession(config)
-            session.depth = 10
+            session.depth = 100
             for rock in session.rocks:
                 if not rock.depleted:
                     success, msg, result = session.click_rock(rock.grid_x, rock.grid_y)
@@ -159,7 +159,7 @@ class TestPassiveDrillIngredientDrop:
         for seed in range(50):
             random.seed(seed)
             session = MiningSession(config)
-            session.depth = 10
+            session.depth = 100
             # Pick an active rock and set it nearly done
             for rock in session.rocks:
                 if not rock.depleted:

@@ -13,31 +13,48 @@ class TestStrataCalculation:
     """Tests for strata token earning formulas."""
 
     def test_depth_1_earns_1(self) -> None:
+        # max(1, floor(1 * 0.15)) = max(1, 0) = 1
         assert calculate_strata_earned(1) == 1
 
-    def test_depth_5_earns_7(self) -> None:
-        assert calculate_strata_earned(5) == 7
+    def test_depth_50_earns_7(self) -> None:
+        # max(1, floor(50 * 0.15)) = 7
+        assert calculate_strata_earned(50) == 7
 
-    def test_depth_10_earns_15(self) -> None:
-        assert calculate_strata_earned(10) == 15
+    def test_depth_100_earns_22(self) -> None:
+        # base=max(1, floor(100*0.15))=15, depth_mult=1.5 (Deep Core) -> 22
+        assert calculate_strata_earned(100) == 22
 
-    def test_depth_20_earns_30(self) -> None:
-        assert calculate_strata_earned(20) == 30
+    def test_depth_150_earns_44(self) -> None:
+        # base=max(1, floor(150*0.15))=22, depth_mult=2.0 (Abyssal) -> 44
+        assert calculate_strata_earned(150) == 44
+
+    def test_depth_200_earns_60(self) -> None:
+        # base=max(1, floor(200*0.15))=30, depth_mult=2.0 (Abyssal) -> 60
+        assert calculate_strata_earned(200) == 60
+
+    def test_shallow_depth_no_multiplier(self) -> None:
+        # base=max(1, floor(50*0.15))=7, depth_mult=1.0 -> 7
+        assert calculate_strata_earned(50) == 7
 
     def test_full_clear_bonus(self) -> None:
-        base = calculate_strata_earned(10)
-        with_bonus = calculate_strata_earned(10, full_clear=True)
-        assert with_bonus == base + 5  # floor(10 * 0.5)
+        base = calculate_strata_earned(100)
+        with_bonus = calculate_strata_earned(100, full_clear=True)
+        # base=15, bonus=floor(100*0.05)=5, subtotal=20, depth_mult=1.5 -> 30
+        assert with_bonus == 30
+        assert with_bonus > base
 
     def test_prestige_multiplier(self) -> None:
-        base = calculate_strata_earned(10)
-        with_prestige = calculate_strata_earned(10, prestige_level=5)
-        assert with_prestige == int(base * 1.5)  # 1 + 0.1 * 5
+        base = calculate_strata_earned(100)
+        with_prestige = calculate_strata_earned(100, prestige_level=5)
+        # base=15, depth_mult=1.5 -> 22 (no prestige)
+        # With prestige: 15 * 1.5 * 1.5 = 33
+        assert with_prestige == 33
 
     def test_full_clear_and_prestige_stack(self) -> None:
-        result = calculate_strata_earned(10, full_clear=True, prestige_level=2)
-        # base=15, bonus=5, subtotal=20, prestige=1.2 -> 24
-        assert result == 24
+        result = calculate_strata_earned(100, full_clear=True, prestige_level=2)
+        # base=15, bonus=5, subtotal=20, depth_mult=1.5, prestige=1.2
+        # 20 * 1.5 * 1.2 = 36
+        assert result == 36
 
 
 class TestDeepCoreUpgrade:

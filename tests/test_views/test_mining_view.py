@@ -309,10 +309,10 @@ class TestDeepCoreBonuses:
 
     def test_depth_scanner_sets_starting_depth(self) -> None:
         player = _make_player()
-        # Simulate depth_scanner level 2 (start at depth 3)
+        # Simulate depth_scanner level 2 (start at depth 11: 1 + 2*5)
         player.deep_core_upgrades._levels["depth_scanner"] = 2
         view = _make_view(player)
-        assert view.session.depth == 3
+        assert view.session.depth == 11
         view.on_exit()
 
     def test_automaton_core_increases_drone_speed(self) -> None:

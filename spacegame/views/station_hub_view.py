@@ -912,6 +912,8 @@ class StationHubView(BaseView):
         success, _msg = self.mission_manager.accept_mission(mission_id)
         if success:
             self.pending_contract_id = mission_id
+            # Set accepted flag so NPCs gated on this mission can appear
+            self.player.dialogue_flags[f"{mission_id}_accepted"] = True
             # Grant on_accept_cargo if any
             mission = self.mission_manager.get_mission(mission_id)
             if mission and mission.on_accept_cargo:

@@ -38,7 +38,7 @@ class TestHazardCell:
 
 
 class TestUnstableCellSpawning:
-    """Tests for Unstable Cell spawning at depth 10+."""
+    """Tests for Unstable Cell spawning at depth 100+."""
 
     def test_no_hazards_at_shallow_depth(self) -> None:
         config = MiningConfig(system_id="breakstone")
@@ -46,22 +46,22 @@ class TestUnstableCellSpawning:
         assert session.depth == 1
         assert len(session.hazards) == 0
 
-    def test_no_hazards_at_depth_9(self) -> None:
+    def test_no_hazards_at_depth_99(self) -> None:
         config = MiningConfig(system_id="breakstone")
         session = MiningSession(config)
-        session.depth = 8
+        session.depth = 98
         session.regenerate_field()
-        assert session.depth == 9
+        assert session.depth == 99
         unstable = [h for h in session.hazards if h.hazard_type == HazardType.UNSTABLE_CELL]
         assert len(unstable) == 0
 
-    def test_unstable_cells_at_depth_10(self) -> None:
-        """Unstable cells should appear at depth 10+."""
+    def test_unstable_cells_at_depth_100(self) -> None:
+        """Unstable cells should appear at depth 100+."""
         config = MiningConfig(system_id="breakstone")
         session = MiningSession(config)
-        session.depth = 9
+        session.depth = 99
         session.regenerate_field()
-        assert session.depth == 10
+        assert session.depth == 100
         unstable = [h for h in session.hazards if h.hazard_type == HazardType.UNSTABLE_CELL]
         assert len(unstable) >= 1
 
@@ -69,7 +69,7 @@ class TestUnstableCellSpawning:
         """Unstable cells should not occupy the same position as a rock."""
         config = MiningConfig(system_id="breakstone")
         session = MiningSession(config)
-        session.depth = 9
+        session.depth = 99
         session.regenerate_field()
         rock_positions = {(r.grid_x, r.grid_y) for r in session.rocks}
         for h in session.hazards:
@@ -153,23 +153,23 @@ class TestUnstableCellDetonation:
 
 
 class TestPressureVentSpawning:
-    """Tests for Pressure Vent spawning at depth 15+."""
+    """Tests for Pressure Vent spawning at depth 150+."""
 
-    def test_no_vents_at_depth_14(self) -> None:
+    def test_no_vents_at_depth_149(self) -> None:
         config = MiningConfig(system_id="breakstone")
         session = MiningSession(config)
-        session.depth = 13
+        session.depth = 148
         session.regenerate_field()
-        assert session.depth == 14
+        assert session.depth == 149
         vents = [h for h in session.hazards if h.hazard_type == HazardType.PRESSURE_VENT]
         assert len(vents) == 0
 
-    def test_vents_at_depth_15(self) -> None:
+    def test_vents_at_depth_150(self) -> None:
         config = MiningConfig(system_id="breakstone")
         session = MiningSession(config)
-        session.depth = 14
+        session.depth = 149
         session.regenerate_field()
-        assert session.depth == 15
+        assert session.depth == 150
         vents = [h for h in session.hazards if h.hazard_type == HazardType.PRESSURE_VENT]
         assert len(vents) >= 1
 

@@ -306,6 +306,24 @@
       "hide_after_flag": "price_of_info_complete"
     },
     {
+      "id": "dock_investigator",
+      "name": "Sgt. Mossa",
+      "title": "Dock Security",
+      "portrait_color": [
+        100,
+        120,
+        160
+      ],
+      "home_system_id": "nexus_prime",
+      "dialogue_id": "dead_ledger_investigation",
+      "faction_id": "",
+      "auto_trigger_gate_flag": "met_dock_investigator",
+      "auto_trigger_prerequisites": [
+        "the_dead_ledger_accepted"
+      ],
+      "hide_after_flag": "dead_ledger_complete"
+    },
+    {
       "id": "petra_vance",
       "name": "Petra Vance",
       "title": "Factory Supervisor",

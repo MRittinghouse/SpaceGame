@@ -34,13 +34,13 @@ class TestDenseRock:
         for rock in session.rocks:
             assert rock.rock_type != RockType.DENSE
 
-    def test_dense_appears_at_depth_5(self) -> None:
-        """DENSE rocks should appear in the distribution at depth 5+."""
+    def test_dense_appears_at_depth_40(self) -> None:
+        """DENSE rocks should appear in the distribution at depth 40+."""
         config = MiningConfig(system_id="breakstone")
         session = MiningSession(config)
-        session.depth = 4  # Will become 5 after regen
+        session.depth = 39  # Will become 40 after regen
         session.regenerate_field()
-        assert session.depth == 5
+        assert session.depth == 40
         # Check that dense is possible (might not appear due to RNG,
         # but the distribution should include it)
         dist = session._get_depth_rock_distribution()
@@ -79,21 +79,21 @@ class TestVolatileRock:
         assert cfg.max_yield == 4
 
     def test_volatile_not_in_shallow_depths(self) -> None:
-        """VOLATILE rocks should not appear at depths below 12."""
+        """VOLATILE rocks should not appear at depths below 120."""
         config = MiningConfig(system_id="breakstone")
         session = MiningSession(config)
-        session.depth = 10
+        session.depth = 100
         session.regenerate_field()
         dist = session._get_depth_rock_distribution()
         assert "volatile" not in dist
 
-    def test_volatile_appears_at_depth_12(self) -> None:
-        """VOLATILE rocks should appear at depth 12+."""
+    def test_volatile_appears_at_depth_120(self) -> None:
+        """VOLATILE rocks should appear at depth 120+."""
         config = MiningConfig(system_id="breakstone")
         session = MiningSession(config)
-        session.depth = 11
+        session.depth = 119
         session.regenerate_field()
-        assert session.depth == 12
+        assert session.depth == 120
         dist = session._get_depth_rock_distribution()
         assert "volatile" in dist
 
@@ -135,50 +135,50 @@ class TestDepthRockDistribution:
         session = MiningSession(config)
         dist = session._get_depth_rock_distribution()
         assert "common" in dist
-        assert "iron" not in dist, "Iron should be gated to depth 3+"
-        assert "crystal" not in dist, "Crystal should be gated to depth 6+"
-        assert "rare" not in dist, "Rare should be gated to depth 9+"
+        assert "iron" not in dist, "Iron should be gated to depth 20+"
+        assert "crystal" not in dist, "Crystal should be gated to depth 50+"
+        assert "rare" not in dist, "Rare should be gated to depth 80+"
         assert "dense" not in dist
         assert "volatile" not in dist
 
-    def test_iron_appears_at_depth_3(self) -> None:
-        """Iron ore unlocks at depth 3."""
+    def test_iron_appears_at_depth_20(self) -> None:
+        """Iron ore unlocks at depth 20."""
         config = MiningConfig(system_id="breakstone")
         session = MiningSession(config)
-        session.depth = 3
+        session.depth = 20
         dist = session._get_depth_rock_distribution()
         assert "iron" in dist
 
-    def test_crystal_appears_at_depth_6(self) -> None:
-        """Crystal ore unlocks at depth 6."""
+    def test_crystal_appears_at_depth_50(self) -> None:
+        """Crystal ore unlocks at depth 50."""
         config = MiningConfig(system_id="breakstone")
         session = MiningSession(config)
-        session.depth = 6
+        session.depth = 50
         dist = session._get_depth_rock_distribution()
         assert "crystal" in dist
 
-    def test_rare_appears_at_depth_9(self) -> None:
-        """Rare ore unlocks at depth 9."""
+    def test_rare_appears_at_depth_80(self) -> None:
+        """Rare ore unlocks at depth 80."""
         config = MiningConfig(system_id="breakstone")
         session = MiningSession(config)
-        session.depth = 9
+        session.depth = 80
         dist = session._get_depth_rock_distribution()
         assert "rare" in dist
 
-    def test_distribution_at_depth_7(self) -> None:
+    def test_distribution_at_depth_60(self) -> None:
         config = MiningConfig(system_id="breakstone")
         session = MiningSession(config)
-        session.depth = 7
+        session.depth = 60
         dist = session._get_depth_rock_distribution()
         assert "dense" in dist
         assert "iron" in dist
         assert "crystal" in dist
         assert "volatile" not in dist
 
-    def test_distribution_at_depth_15(self) -> None:
+    def test_distribution_at_depth_150(self) -> None:
         config = MiningConfig(system_id="breakstone")
         session = MiningSession(config)
-        session.depth = 15
+        session.depth = 150
         dist = session._get_depth_rock_distribution()
         assert "dense" in dist
         assert "volatile" in dist

@@ -47,8 +47,8 @@ class HazardCell:
 
 
 # Hazard depth thresholds
-HAZARD_UNSTABLE_DEPTH = 10
-HAZARD_VENT_DEPTH = 15
+HAZARD_UNSTABLE_DEPTH = 100
+HAZARD_VENT_DEPTH = 150
 UNSTABLE_ENERGY_COST = 3
 UNSTABLE_PROGRESS_AMOUNT = 0.30
 VENT_PULSE_INTERVAL = 8.0
@@ -124,9 +124,9 @@ ROCK_TYPE_CONFIGS = {
     ),
     RockType.MONOLITH: RockTypeConfig(
         rock_type=RockType.MONOLITH,
-        hardness=10.0,  # Base; actual is 10.0 + depth * 0.5
+        hardness=10.0,  # Base; actual is 10.0 + depth * 0.05
         min_yield=5,
-        max_yield=5,  # Base; actual is 5 + depth
+        max_yield=5,  # Base; actual is 5 + depth // 10
         commodity_id="iron_ore",  # Overridden per-system
         color=(40, 40, 60),
         chain_immune=True,
@@ -136,11 +136,11 @@ ROCK_TYPE_CONFIGS = {
 
 # Depth thresholds for new rock types
 DEPTH_ROCK_THRESHOLDS: dict[str, int] = {
-    "iron": 3,
-    "crystal": 6,
-    "rare": 9,
-    "dense": 5,
-    "volatile": 12,
+    "iron": 20,
+    "crystal": 50,
+    "rare": 80,
+    "dense": 40,
+    "volatile": 120,
 }
 
 # Ore types that are removed from the base distribution and only appear via depth gating
@@ -352,25 +352,33 @@ MILESTONE_POOL: list[dict] = [
         "reward_credits": 100,
     },
     {
-        "id": "depth_3",
-        "description": "Reach depth 3",
+        "id": "depth_20",
+        "description": "Reach depth 20",
         "category": "depth_reached",
-        "threshold": 3,
+        "threshold": 20,
         "reward_xp": 30,
     },
     {
-        "id": "depth_5",
-        "description": "Reach depth 5",
+        "id": "depth_50",
+        "description": "Reach depth 50",
         "category": "depth_reached",
-        "threshold": 5,
+        "threshold": 50,
         "reward_xp": 60,
     },
     {
-        "id": "depth_10",
-        "description": "Reach depth 10",
+        "id": "depth_100",
+        "description": "Reach depth 100",
         "category": "depth_reached",
-        "threshold": 10,
+        "threshold": 100,
         "reward_credits": 200,
+    },
+    {
+        "id": "depth_150",
+        "description": "Reach the Abyssal Vein",
+        "category": "depth_reached",
+        "threshold": 150,
+        "reward_xp": 100,
+        "reward_credits": 500,
     },
     {
         "id": "chains_3",
@@ -512,10 +520,10 @@ class MiningSession:
             if self.depth >= threshold and type_name not in dist:
                 if type_name in DEPTH_GATED_ORES:
                     base_weight = self.config.rock_distribution.get(type_name, 0.10)
-                    depth_bonus = 0.02 * (self.depth - threshold)
+                    depth_bonus = 0.002 * (self.depth - threshold)
                     dist[type_name] = min(base_weight + depth_bonus, 0.35)
                 else:
-                    weight = 0.10 + 0.02 * (self.depth - threshold)
+                    weight = 0.10 + 0.002 * (self.depth - threshold)
                     dist[type_name] = min(weight, 0.25)
                 if "common" in dist:
                     dist["common"] = max(0.10, dist["common"] - 0.02)
@@ -552,9 +560,9 @@ class MiningSession:
                 if rt in (RockType.CRYSTAL, RockType.RARE):
                     weights[i] *= 1 + effective_rare
 
-        # Reserve one cell for monolith at every 5 depths
+        # Reserve one cell for monolith at every 25 depths
         monolith_cell = None
-        if self.depth > 1 and self.depth % 5 == 0:
+        if self.depth > 1 and self.depth % 25 == 0:
             monolith_cell = (
                 random.randint(0, self.config.grid_width - 1),
                 random.randint(0, self.config.grid_height - 1),
@@ -568,9 +576,9 @@ class MiningSession:
                             rock_type=RockType.MONOLITH,
                             grid_x=x,
                             grid_y=y,
-                            hardness_override=10.0 + self.depth * 0.5,
-                            yield_override=5 + self.depth,
-                            strata_reward=self.depth * 2,
+                            hardness_override=10.0 + self.depth * 0.05,
+                            yield_override=5 + self.depth // 10,
+                            strata_reward=self.depth // 5,
                         )
                     )
                 else:
@@ -594,10 +602,10 @@ class MiningSession:
         # Determine how many hazard cells to place (1-2 at threshold, scaling)
         hazard_types: list[HazardType] = []
         if self.depth >= HAZARD_UNSTABLE_DEPTH:
-            count = 1 + (self.depth - HAZARD_UNSTABLE_DEPTH) // 5
+            count = 1 + (self.depth - HAZARD_UNSTABLE_DEPTH) // 50
             hazard_types.extend([HazardType.UNSTABLE_CELL] * min(count, 3))
         if self.depth >= HAZARD_VENT_DEPTH:
-            count = 1 + (self.depth - HAZARD_VENT_DEPTH) // 5
+            count = 1 + (self.depth - HAZARD_VENT_DEPTH) // 50
             hazard_types.extend([HazardType.PRESSURE_VENT] * min(count, 2))
 
         if not hazard_types:
@@ -625,14 +633,14 @@ class MiningSession:
     def get_depth_modifiers(self) -> DepthModifiers:
         """Get modifiers for the current mining depth."""
         d = self.depth
-        if d <= 3:
+        if d <= 20:
             return DepthModifiers(0.0, 1, 0.0)
-        elif d <= 6:
-            return DepthModifiers((d - 3) * 0.10, 1, 0.10)
-        elif d <= 9:
-            return DepthModifiers(0.30 + (d - 6) * 0.20, 2, 0.20)
+        elif d <= 50:
+            return DepthModifiers((d - 20) * 0.01, 1, 0.10)
+        elif d <= 99:
+            return DepthModifiers(0.30 + (d - 50) * 0.012, 2, 0.20)
         else:
-            return DepthModifiers(0.90 + (d - 9) * 0.30, 2, 0.30)
+            return DepthModifiers(0.90 + (d - 99) * 0.03, 2, 0.30)
 
     def get_click_energy_cost(self) -> int:
         """Get energy cost per click at current depth."""
@@ -660,11 +668,11 @@ class MiningSession:
             Dict of ingredient_id -> quantity (empty if nothing dropped).
         """
         drops: dict[str, int] = {}
-        # Resonance core: 5% at depth 15+ (checked first — rarer, higher priority)
-        if self.depth >= 15 and random.random() < 0.05:
+        # Resonance core: 5% at depth 150+ (checked first — rarer, higher priority)
+        if self.depth >= 150 and random.random() < 0.05:
             drops["resonance_core"] = 1
-        # Flux catalyst: 10% at depth 8+
-        if self.depth >= 8 and random.random() < 0.10:
+        # Flux catalyst: 10% at depth 60+
+        if self.depth >= 60 and random.random() < 0.10:
             drops["flux_catalyst"] = 1
         return drops
 

@@ -199,7 +199,8 @@ class SkillTreeView(BaseView):
         )
         self.respec_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
-                WINDOW_WIDTH - 170, WINDOW_HEIGHT - hud_h - scale_y(55), 150, 38
+                WINDOW_WIDTH - scale_x(170), WINDOW_HEIGHT - hud_h - scale_y(55),
+                scale_x(150), scale_y(38)
             ),
             text="Respec Skills",
             manager=self.ui_manager,

@@ -174,4 +174,4 @@ class TestDesignTradeoffs:
 
     def test_deep_explorer_max_fuel(self, ships: dict) -> None:
         s = ships["deep_explorer"]
-        assert s.fuel_capacity == 125  # Rebalanced: 25% of original 500
+        assert s.fuel_capacity == 500  # 4x scale for travel balance

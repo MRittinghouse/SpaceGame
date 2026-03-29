@@ -22,11 +22,18 @@ def calculate_strata_earned(
     Returns:
         Total strata tokens earned.
     """
-    base = math.floor(depth * 1.5)
-    bonus = math.floor(depth * 0.5) if full_clear else 0
+    base = max(1, math.floor(depth * 0.15))
+    bonus = math.floor(depth * 0.05) if full_clear else 0
     subtotal = base + bonus
-    multiplier = 1.0 + (0.1 * prestige_level)
-    return int(subtotal * multiplier)
+    # Deep zone strata multiplier: reward players who push past prestige threshold
+    if depth >= 150:
+        depth_mult = 2.0  # Abyssal Vein: 2x strata
+    elif depth >= 100:
+        depth_mult = 1.5  # Deep Core: 1.5x strata
+    else:
+        depth_mult = 1.0
+    prestige_mult = 1.0 + (0.1 * prestige_level)
+    return int(subtotal * depth_mult * prestige_mult)
 
 
 @dataclass

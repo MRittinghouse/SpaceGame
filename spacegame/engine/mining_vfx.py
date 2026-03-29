@@ -29,7 +29,7 @@ _DEPTH_LAYERS = [
     {
         "name": "Surface",
         "min_depth": 1,
-        "max_depth": 3,
+        "max_depth": 20,
         "bg_color": (35, 30, 22),  # Warm rocky brown
         "accent": (160, 140, 100),  # Sandy
         "particle_color": (120, 110, 90),  # Dust
@@ -38,8 +38,8 @@ _DEPTH_LAYERS = [
     },
     {
         "name": "Shallow Rock",
-        "min_depth": 4,
-        "max_depth": 6,
+        "min_depth": 21,
+        "max_depth": 50,
         "bg_color": (28, 25, 20),  # Darker brown
         "accent": (180, 120, 60),  # Iron tones
         "particle_color": (180, 130, 60),  # Iron dust
@@ -48,8 +48,8 @@ _DEPTH_LAYERS = [
     },
     {
         "name": "Mid Strata",
-        "min_depth": 7,
-        "max_depth": 9,
+        "min_depth": 51,
+        "max_depth": 99,
         "bg_color": (22, 22, 28),  # Cool gray
         "accent": (100, 160, 200),  # Crystal blue hints
         "particle_color": (80, 140, 180),  # Crystal glint
@@ -58,8 +58,8 @@ _DEPTH_LAYERS = [
     },
     {
         "name": "Deep Core",
-        "min_depth": 10,
-        "max_depth": 14,
+        "min_depth": 100,
+        "max_depth": 149,
         "bg_color": (18, 15, 22),  # Deep purple-dark
         "accent": (160, 80, 200),  # Rare purple glow
         "particle_color": (140, 60, 180),  # Energy wisps
@@ -68,8 +68,8 @@ _DEPTH_LAYERS = [
     },
     {
         "name": "Abyssal Vein",
-        "min_depth": 15,
-        "max_depth": 999,
+        "min_depth": 150,
+        "max_depth": 9999,
         "bg_color": (15, 10, 10),  # Near black with red tint
         "accent": (200, 60, 40),  # Magma orange-red
         "particle_color": (220, 80, 30),  # Magma embers
@@ -228,9 +228,9 @@ class MiningAtmosphere:
             screen.blit(ps, (int(p["x"]) - size, int(p["y"]) - size))
 
         # Depth intensity effect: subtle pulsing glow at edges for deep layers
-        if self._depth >= 10:
+        if self._depth >= 100:
             pulse = 0.5 + 0.5 * math.sin(self._elapsed * 2.0)
-            glow_alpha = int(15 * pulse * min(1.0, (self._depth - 9) / 5))
+            glow_alpha = int(15 * pulse * min(1.0, (self._depth - 99) / 50))
             glow_surf = pygame.Surface((area.width, area.height), pygame.SRCALPHA)
             glow_surf.fill((*accent, glow_alpha))
             screen.blit(glow_surf, area.topleft)
@@ -248,7 +248,7 @@ class DepthMeter:
     labeled depth layer markers and the current position highlighted.
     """
 
-    def __init__(self, x: int, y: int, height: int, max_display_depth: int = 20) -> None:
+    def __init__(self, x: int, y: int, height: int, max_display_depth: int = 200) -> None:
         """Initialize the depth meter.
 
         Args:

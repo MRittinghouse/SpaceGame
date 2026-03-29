@@ -19,6 +19,7 @@ from spacegame.config import (
     WINDOW_WIDTH,
     Colors,
     GameState,
+    scale_x,
     scale_y,
 )
 from spacegame.engine.audio_manager import get_audio_manager
@@ -232,7 +233,7 @@ class GroundExplorationView(BaseView):
         # Place below minimap to avoid overlap
         btn_y = MINIMAP_MARGIN + MINIMAP_SIZE + 5
         self._back_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect((WINDOW_WIDTH - 120, btn_y), (110, 35)),
+            relative_rect=pygame.Rect((WINDOW_WIDTH - scale_x(120), btn_y), (scale_x(110), scale_y(35))),
             text="Exit (Esc)",
             manager=self.ui_manager,
         )
@@ -683,7 +684,7 @@ class GroundExplorationView(BaseView):
         self._render_combat_dice(screen, WINDOW_WIDTH // 2, panel_y + 20, cs)
 
         # === Right section: Enemy info ===
-        self._render_combat_enemy_info(screen, WINDOW_WIDTH - 280, panel_y + 12, cs)
+        self._render_combat_enemy_info(screen, WINDOW_WIDTH - scale_x(280), panel_y + scale_y(12), cs)
 
         # === Bottom strip: Action hints ===
         self._render_combat_actions(screen, panel_y + GROUND_COMBAT_PANEL_HEIGHT - 35, cs)

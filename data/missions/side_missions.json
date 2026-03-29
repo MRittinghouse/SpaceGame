@@ -70,7 +70,7 @@
       "id": "the_dead_ledger",
       "name": "The Dead Ledger",
       "description": "A shipping clerk named Patel was found dead on Dock 7. Station security called it an accident. Pressure seal failure. But pressure seals don't fail on occupied docks, and the access logs show three visitors that night: a Guild auditor, a Union freight handler, and a Frontier trader. Everyone has a reason. Nobody has an alibi.",
-      "hint": "Check the Nexus Prime station board for details on the dock incident. Investigate witnesses and examine the dock log.",
+      "hint": "Speak with Sgt. Mossa in Nexus Prime dock security. She has the access logs and suspect files.",
       "mission_type": "side",
       "available_at": [
         "nexus_prime"
