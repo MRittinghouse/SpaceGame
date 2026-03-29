@@ -5,9 +5,7 @@ modifiers, identity detection, and serialization.
 """
 
 from spacegame.models.ship_build import (
-    SLOT_POOLS,
     WEIGHT_CLASSES,
-    DesignatedSlot,
     HullMaterial,
     HullShape,
     PlacedPixel,
@@ -366,14 +364,13 @@ class TestShipStatsComputer:
         assert stats.defensive_identity is None
 
     def test_total_cost_computed(self) -> None:
-        """Total cost includes material pixels and slot designation costs."""
+        """Total cost includes material pixels."""
         build = ShipBuild(weight_class="medium")
         for i in range(10):
             build.pixels.append(PlacedPixel(i, 0, "standard_plate"))
-        build.slots.append(DesignatedSlot(slot_type="weapon", x=0, y=0))
         stats = ShipStatsComputer.compute(build, _materials())
-        # 10 pixels * 15 cost/px + 1 weapon slot * 3000 = 3150
-        assert stats.total_cost == 3150
+        # 10 pixels * 15 cost/px = 150
+        assert stats.total_cost == 150
 
 
 # ============================================================================
@@ -385,12 +382,12 @@ class TestSerialization:
     """Round-trip serialization for all data types."""
 
     def test_ship_build_round_trip(self) -> None:
+        from spacegame.models.ship_build import PlacedSlot
+
         build = ShipBuild(
             weight_class="medium",
             pixels=[PlacedPixel(5, 5, "standard_plate"), PlacedPixel(6, 5, "heavy_armor")],
-            slots=[
-                DesignatedSlot(slot_type="weapon", x=5, y=5, equipment_id="laser_cannon", mark=2)
-            ],
+            placed_slots=[PlacedSlot(slot_def_id="weapon_small", x=5, y=5)],
             preset_name="My Ship",
         )
         data = build.to_dict()
@@ -399,9 +396,8 @@ class TestSerialization:
         assert len(restored.pixels) == 2
         assert restored.pixels[0].x == 5
         assert restored.pixels[1].material_id == "heavy_armor"
-        assert len(restored.slots) == 1
-        assert restored.slots[0].equipment_id == "laser_cannon"
-        assert restored.slots[0].mark == 2
+        assert len(restored.placed_slots) == 1
+        assert restored.placed_slots[0].slot_def_id == "weapon_small"
         assert restored.preset_name == "My Ship"
 
     def test_material_round_trip(self) -> None:
@@ -412,22 +408,6 @@ class TestSerialization:
         assert restored.hull_per_pixel == mat.hull_per_pixel
         assert restored.weight_per_pixel == mat.weight_per_pixel
         assert restored.color_primary == mat.color_primary
-
-    def test_designated_slot_round_trip(self) -> None:
-        slot = DesignatedSlot(
-            slot_type="core",
-            x=10,
-            y=10,
-            equipment_id="power_core_t2",
-            mark=3,
-            tuning="overclocked",
-        )
-        data = slot.to_dict()
-        restored = DesignatedSlot.from_dict(data)
-        assert restored.slot_type == "core"
-        assert restored.size == 3
-        assert restored.equipment_id == "power_core_t2"
-        assert restored.tuning == "overclocked"
 
 
 # ============================================================================
@@ -458,10 +438,6 @@ class TestWeightClassConstants:
             WEIGHT_CLASSES[k]["canvas_h"] for k in ["tiny", "small", "medium", "large", "xlarge"]
         ]
         assert heights == sorted(heights)
-
-    def test_slot_pools_match_weight_classes(self) -> None:
-        for wc_id in WEIGHT_CLASSES:
-            assert wc_id in SLOT_POOLS, f"{wc_id} missing from SLOT_POOLS"
 
     def test_tiny_is_free(self) -> None:
         assert WEIGHT_CLASSES["tiny"]["unlock_cost"] == 0

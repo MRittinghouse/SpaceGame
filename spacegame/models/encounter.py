@@ -258,6 +258,9 @@ def filter_enemies_for_system(
     allowed_tiers = _ALLOWED_TIERS.get(system_danger, {"low", "moderate"})
     result: list[str] = []
     for eid, template in all_templates.items():
+        # Boss enemies are reserved for scripted encounters with level gates
+        if getattr(template, "is_boss", False):
+            continue
         # Tier filter
         if template.danger_tier not in allowed_tiers:
             continue

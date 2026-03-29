@@ -121,6 +121,8 @@ class CombatMove:
     accuracy_modifier: int = 0
     element: WeaponElement = WeaponElement.KINETIC
     aoe: bool = False  # True = hits all enemies (Broadside etc.)
+    category: str = ""  # Slot type: "weapon", "defense", "utility", etc.
+    slot_key: str = ""  # Unique key per equipped slot (e.g., "phantom_cloak_3")
 
     def to_dict(self) -> dict:
         """Serialize to dictionary."""
@@ -265,6 +267,7 @@ class EnemyShipTemplate:
     phases: list[BossPhase] = field(default_factory=list)
     immune_to: list[str] = field(default_factory=list)  # Effect types the boss is immune to
     max_suppressed_stacks: int = 3  # Default 3, bosses may cap lower
+    sprite_rotation: int = 0  # Degrees to rotate sprite (fix orientation, e.g., -90 for upward-facing)
     trophy_drop: str = ""  # Shape/material ID dropped on first kill
 
 
@@ -640,20 +643,59 @@ def build_player_combat_state(
                 build_ref = ship.build
 
                 # Extract combat moves from equipped parts
+                from spacegame.utils.logger import logger as _combat_log
+
+                equipped_count = sum(
+                    1 for ps in ship.build.placed_slots if ps.equipped_part_id
+                )
+                _combat_log.info(
+                    f"Combat init: {len(ship.build.placed_slots)} slots, "
+                    f"{equipped_count} equipped, {len(slot_defs)} slot_defs, "
+                    f"{len(parts_cat)} parts in catalog"
+                )
+                for ps in ship.build.placed_slots:
+                    sdef = slot_defs.get(ps.slot_def_id)
+                    stype = sdef.slot_type if sdef else "?"
+                    if ps.equipped_part_id:
+                        part = parts_cat.get(ps.equipped_part_id)
+                        has_cm = bool(part and part.combat_move) if part else False
+                        _combat_log.info(
+                            f"  Slot {ps.slot_def_id} ({stype}): "
+                            f"equipped={ps.equipped_part_id} "
+                            f"part_found={part is not None} "
+                            f"combat_move={has_cm}"
+                        )
+                    else:
+                        _combat_log.info(
+                            f"  Slot {ps.slot_def_id} ({stype}): EMPTY"
+                        )
                 slot_moves = get_slot_equipment_moves(ship.build, slot_defs, parts_cat)
+                _combat_log.info(
+                    f"Combat moves extracted: {len(slot_moves)} from slots"
+                )
                 for sm in slot_moves:
                     cm = sm.get("combat_move")
                     if cm:
-                        move = CombatMove.from_dict(cm)
-                        mark = sm.get("mark", 1)
-                        if mark > 1:
-                            mark_mult = {1: 1.0, 2: 1.25, 3: 1.50}.get(mark, 1.0)
-                            for eff in move.effects:
-                                if eff.type == EffectType.DAMAGE:
-                                    eff.value = eff.value * mark_mult
-                        equipment_moves_list.append(move)
-            except Exception:
-                pass
+                        try:
+                            move = CombatMove.from_dict(cm)
+                            move.category = sm.get("slot_type", "weapon")
+                            slot_idx = sm.get("slot_idx", 0)
+                            move.slot_key = f"{move.id}_{slot_idx}"
+                            mark = sm.get("mark", 1)
+                            if mark > 1:
+                                mark_mult = {1: 1.0, 2: 1.25, 3: 1.50}.get(mark, 1.0)
+                                for eff in move.effects:
+                                    if eff.type == EffectType.DAMAGE:
+                                        eff.value = eff.value * mark_mult
+                            equipment_moves_list.append(move)
+                        except Exception as move_err:
+                            _combat_log.warning(
+                                f"Skipping move from {sm.get('equipped_part_id')}: {move_err}"
+                            )
+            except Exception as e:
+                from spacegame.utils.logger import logger
+
+                logger.error(f"Failed to extract slot equipment moves: {e}")
 
             # Legendary effects from equipped parts
             try:
@@ -699,55 +741,27 @@ def build_player_combat_state(
                                     legendary_state.phase_shift_interval,
                                     p.get("phase_shift_interval", 0),
                                 )
-            except Exception:
-                pass
+            except Exception as e:
+                from spacegame.utils.logger import logger
 
-        # === LEGACY: Module path ===
-        elif ship.build and ship.build.modules:
-            try:
-                from spacegame.data_loader import get_data_loader
-                from spacegame.models.module_combat import init_module_combat_states
-
-                dl = get_data_loader()
-                module_catalog_ref = getattr(dl, "ship_modules", {})
-                module_states_list = init_module_combat_states(ship.build, module_catalog_ref)
-                build_ref = ship.build
-            except (ImportError, Exception):
-                pass
-            # Initialize legendary module effects
-            try:
-                from spacegame.models.legendary_effects import init_legendary_state
-
-                legendary_state = init_legendary_state(ship.build, module_catalog_ref)
-            except (ImportError, Exception):
-                pass
-
-            # Extract combat moves from module-installed equipment
-            try:
-                from spacegame.data_loader import get_data_loader
-                from spacegame.models.ship_module import get_module_equipment_slots
-
-                all_upgrades = getattr(get_data_loader(), "upgrades", {})
-                slots = get_module_equipment_slots(ship.build, module_catalog_ref)
-                for slot in slots:
-                    uid = slot.get("installed_upgrade_id")
-                    if uid and uid in all_upgrades:
-                        upgrade = all_upgrades[uid]
-                        if hasattr(upgrade, "combat_move") and upgrade.combat_move:
-                            move = CombatMove.from_dict(upgrade.combat_move)
-                            mark = slot.get("upgrade_mark", 1)
-                            if mark > 1:
-                                mark_mult = {1: 1.0, 2: 1.25, 3: 1.50}.get(mark, 1.0)
-                                for eff in move.effects:
-                                    if eff.type == EffectType.DAMAGE:
-                                        eff.value = eff.value * mark_mult
-                            equipment_moves_list.append(move)
-            except Exception:
-                pass
+                logger.error(f"Failed to extract legendary effects: {e}")
 
         # Fallback: use old system's combat_moves if no equipment found
         if not equipment_moves_list:
             equipment_moves_list = cs.combat_moves
+            from spacegame.utils.logger import logger as _combat_log
+
+            _combat_log.warning(
+                f"No equipment moves found — fell back to cs.combat_moves "
+                f"({len(cs.combat_moves)} moves)"
+            )
+        else:
+            from spacegame.utils.logger import logger as _combat_log
+
+            _combat_log.info(
+                f"Final equipment moves: "
+                f"{[m.name for m in equipment_moves_list]}"
+            )
 
         return PlayerCombatState(
             hull=ship.current_hull,

@@ -178,13 +178,13 @@ class TradingView(BaseView):
     def _create_ui(self) -> None:
         # Market table — fixed-column widget (not pygame_gui)
         self.market_table = TableWidget(
-            rect=pygame.Rect(scale_x(20), scale_y(100), scale_x(560), scale_y(400)),
+            rect=pygame.Rect(scale_x(20), scale_y(100), scale_x(620), scale_y(400)),
             columns=[
-                ColumnDef("COMMODITY", scale_x(170), "left"),
-                ColumnDef("PRICE", scale_x(100), "right"),
-                ColumnDef("STOCK", scale_x(70), "right"),
-                ColumnDef("WT", scale_x(50), "right"),
-                ColumnDef("TREND", scale_x(130), "left"),
+                ColumnDef("COMMODITY", scale_x(240), "left"),
+                ColumnDef("PRICE", scale_x(90), "right"),
+                ColumnDef("STOCK", scale_x(65), "right"),
+                ColumnDef("WT", scale_x(45), "right"),
+                ColumnDef("TREND", scale_x(120), "left"),
             ],
             font=self.info_font,
             header_font=self.header_font,
@@ -208,38 +208,38 @@ class TradingView(BaseView):
         self._refresh_tables()
 
         self.quantity_input = pygame_gui.elements.UITextEntryLine(
-            relative_rect=pygame.Rect(scale_x(590), scale_y(150), scale_x(100), scale_y(40)),
+            relative_rect=pygame.Rect(scale_x(650), scale_y(150), scale_x(100), scale_y(40)),
             manager=self.ui_manager,
         )
         self.quantity_input.set_text("1")
 
         self.buy_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(scale_x(590), scale_y(200), scale_x(100), scale_y(36)),
+            relative_rect=pygame.Rect(scale_x(650), scale_y(200), scale_x(100), scale_y(36)),
             text="BUY",
             manager=self.ui_manager,
         )
         self.buy_max_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(scale_x(590), scale_y(240), scale_x(100), scale_y(36)),
+            relative_rect=pygame.Rect(scale_x(650), scale_y(240), scale_x(100), scale_y(36)),
             text="BUY MAX",
             manager=self.ui_manager,
         )
         self.sell_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(scale_x(590), scale_y(284), scale_x(100), scale_y(36)),
+            relative_rect=pygame.Rect(scale_x(650), scale_y(284), scale_x(100), scale_y(36)),
             text="SELL",
             manager=self.ui_manager,
         )
         self.sell_max_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(scale_x(590), scale_y(324), scale_x(100), scale_y(36)),
+            relative_rect=pygame.Rect(scale_x(650), scale_y(324), scale_x(100), scale_y(36)),
             text="SELL MAX",
             manager=self.ui_manager,
         )
         self.refuel_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(scale_x(590), scale_y(368), scale_x(100), scale_y(36)),
+            relative_rect=pygame.Rect(scale_x(650), scale_y(368), scale_x(100), scale_y(36)),
             text="REFUEL",
             manager=self.ui_manager,
         )
         self.rest_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(scale_x(590), scale_y(408), scale_x(100), scale_y(36)),
+            relative_rect=pygame.Rect(scale_x(650), scale_y(408), scale_x(100), scale_y(36)),
             text="REST",
             manager=self.ui_manager,
         )
@@ -250,7 +250,7 @@ class TradingView(BaseView):
 
         self.back_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
-                scale_x(590),
+                scale_x(650),
                 WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - scale_y(60),
                 scale_x(100),
                 scale_y(40),
@@ -279,7 +279,7 @@ class TradingView(BaseView):
         # Black market toggle (only shown when player has access)
         if self._has_black_market:
             self.black_market_button = pygame_gui.elements.UIButton(
-                relative_rect=pygame.Rect(scale_x(590), scale_y(496), scale_x(100), scale_y(36)),
+                relative_rect=pygame.Rect(scale_x(650), scale_y(496), scale_x(100), scale_y(36)),
                 text="BLACK MKT",
                 manager=self.ui_manager,
             )
@@ -1138,7 +1138,7 @@ class TradingView(BaseView):
 
         # Action label
         action_label = self.header_font.render("Quantity:", True, Colors.TEXT)
-        screen.blit(action_label, (590, 120))
+        screen.blit(action_label, (scale_x(650), scale_y(120)))
 
         # Trading tips (normal) or active contracts (black market)
         tip_y = 520

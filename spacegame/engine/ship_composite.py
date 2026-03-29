@@ -84,14 +84,8 @@ class ShipComposite:
     def _build_pixel_map(self) -> None:
         """Build the (x, y) -> material_id lookup from modules + hull pixels."""
         self._pixel_map.clear()
-        if self._module_catalog and self._build.modules:
-            from spacegame.models.ship_module import resolve_all_pixels
-
-            for p in resolve_all_pixels(self._build, self._module_catalog):
-                self._pixel_map[(p.x, p.y)] = p.material_id
-        else:
-            for p in self._build.pixels:
-                self._pixel_map[(p.x, p.y)] = p.material_id
+        for p in self._build.pixels:
+            self._pixel_map[(p.x, p.y)] = p.material_id
 
     def invalidate(self) -> None:
         """Mark as needing rebuild (call when build changes)."""
@@ -429,29 +423,41 @@ class ShipComposite:
             surf.set_at((x, y), outline_color)
 
     def _apply_slot_indicators(self, surf: pygame.Surface) -> None:
-        """Step 5: Draw subtle colored overlays on equipment slot positions."""
-        slot_colors = {
-            "weapon": (200, 60, 60, 35),
-            "defense": (60, 120, 200, 35),
-            "engine": (200, 140, 40, 35),
-            "utility": (60, 180, 80, 35),
-            "core": (200, 180, 60, 40),
-        }
-        for slot in self._build.slots:
-            color = slot_colors.get(slot.slot_type, (150, 150, 150, 30))
-            size = slot.size
-            for dy in range(size):
-                for dx in range(size):
-                    px, py = slot.x + dx, slot.y + dy
-                    if (px, py) in self._pixel_map:
+        """Step 5: Draw subtle colored overlays on equipment slot positions.
+
+        Uses placed_slots with SlotDefinition lookups for slot type/footprint.
+        """
+        if not self._build.placed_slots:
+            return
+        try:
+            from spacegame.data_loader import get_data_loader
+
+            slot_defs = getattr(get_data_loader(), "slot_definitions", {})
+        except Exception:
+            return
+        if not slot_defs:
+            return
+        for ps in self._build.placed_slots:
+            sdef = slot_defs.get(ps.slot_def_id)
+            if not sdef:
+                continue
+            color = sdef.color  # (r, g, b) from slot definition
+            alpha = 40 / 255.0  # Subtle overlay
+            fw, fh, mask = sdef.get_rotated(ps.rotation)
+            for dy in range(fh):
+                for dx in range(fw):
+                    if mask and dy < len(mask) and dx < len(mask[dy]) and not mask[dy][dx]:
+                        continue
+                    px, py = ps.x + dx, ps.y + dy
+                    if 0 <= px < surf.get_width() and 0 <= py < surf.get_height():
                         current = surf.get_at((px, py))
-                        # Blend slot color over existing
-                        alpha = color[3] / 255.0
+                        if current.a == 0:
+                            continue  # Skip transparent pixels
                         blended = (
                             int(current.r * (1 - alpha) + color[0] * alpha),
                             int(current.g * (1 - alpha) + color[1] * alpha),
                             int(current.b * (1 - alpha) + color[2] * alpha),
-                            255,
+                            current.a,
                         )
                         surf.set_at((px, py), blended)
 
@@ -466,29 +472,12 @@ class ShipComposite:
         """
         if self._engine_frame == 0:
             glow_color = self.ENGINE_COLOR_BRIGHT
-            surround = self.ENGINE_SURROUND
         else:
             glow_color = self.ENGINE_COLOR_DIM
-            surround = _darken(self.ENGINE_SURROUND, 0.7)
 
         sw, sh = surf.get_width(), surf.get_height()
 
-        # Legacy: glow at engine slot centers
-        for slot in self._build.slots:
-            if slot.slot_type != "engine":
-                continue
-            cx = slot.x + slot.size // 2
-            cy = slot.y + slot.size // 2
-
-            if 0 <= cx < sw and 0 <= cy < sh:
-                surf.set_at((cx, cy), (*glow_color, 255))
-
-            for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
-                nx, ny = cx + dx, cy + dy
-                if 0 <= nx < sw and 0 <= ny < sh and (nx, ny) in self._pixel_map:
-                    surf.set_at((nx, ny), (*surround, 220))
-
-        # Module-based: glow on exhaust_port pixels directly
+        # Glow on exhaust_port pixels directly
         for (x, y), mat_id in self._pixel_map.items():
             if mat_id == "exhaust_port":
                 if 0 <= x < sw and 0 <= y < sh:

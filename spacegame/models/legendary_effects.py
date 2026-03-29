@@ -17,7 +17,6 @@ import random
 from dataclasses import dataclass
 
 from spacegame.models.ship_build import ShipBuild
-from spacegame.models.ship_module import ShipModule
 
 
 @dataclass
@@ -49,24 +48,26 @@ class LegendaryState:
 
 def init_legendary_state(
     build: ShipBuild,
-    module_catalog: dict[str, ShipModule],
+    parts_catalog: dict,
 ) -> LegendaryState:
-    """Scan a build's modules for legendary provides and init state.
+    """Scan a build's equipped parts for legendary provides and init state.
 
     Args:
-        build: The ship build with placed modules.
-        module_catalog: Module blueprints for provides lookup.
+        build: The ship build with placed slots.
+        parts_catalog: Ship part catalog keyed by part ID.
 
     Returns:
-        LegendaryState populated from any legendary modules found.
+        LegendaryState populated from any legendary parts found.
     """
     state = LegendaryState()
 
-    for placed in build.modules:
-        module = module_catalog.get(placed.module_id)
-        if not module:
+    for placed_slot in build.placed_slots:
+        if not placed_slot.equipped_part_id:
             continue
-        p = module.provides
+        part = parts_catalog.get(placed_slot.equipped_part_id)
+        if not part or not hasattr(part, "provides"):
+            continue
+        p = part.provides
 
         # Chain Fire
         if "chain_fire_chance" in p:

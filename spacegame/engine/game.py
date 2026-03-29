@@ -51,6 +51,8 @@ from spacegame.config import (
     WINDOW_WIDTH,
     Colors,
     GameState,
+    scale_x,
+    scale_y,
 )
 from spacegame.data_loader import get_data_loader
 from spacegame.engine.activity_registry import create_default_registry
@@ -163,8 +165,9 @@ class Game:
         self.event_banner_timer: float = 0.0
         self._event_notification_view = None
 
-        # Banner font (created lazily to avoid pygame init order issues)
+        # Banner/label fonts (created lazily to avoid pygame init order issues)
         self._banner_font: Optional[pygame.font.Font] = None
+        self._label_font: Optional[pygame.font.Font] = None
 
         # Save/Load system
         self.save_manager = SaveManager()
@@ -1005,7 +1008,7 @@ class Game:
                     if encounter:
                         self.start_combat(
                             encounter,
-                            return_state=GameState.STATION_HUB,
+                            return_state=GameState.GALAXY_MAP,
                             transition_type=TransitionType.WARP,
                         )
                         return
@@ -1195,6 +1198,28 @@ class Game:
                                     f"Cargo Loaded: {cargo.quantity} {cargo.commodity_id}"
                                 )
                         self._mission_notifications.append(f"Mission Accepted: {name}")
+
+                # Handle pending mission abandon
+                abandon_id = getattr(self.mission_log_view, "pending_abandon_id", None)
+                if abandon_id and self.mission_manager:
+                    self.mission_log_view.pending_abandon_id = None
+                    mission = self.mission_manager.get_mission(abandon_id)
+                    success, msg = self.mission_manager.abandon_mission(abandon_id)
+                    if success:
+                        name = mission.name if mission else abandon_id
+                        # Remove on-accept cargo the mission granted
+                        if mission and self.player:
+                            for cargo in mission.on_accept_cargo:
+                                removed = self.player.ship.remove_cargo(
+                                    cargo.commodity_id, cargo.quantity
+                                )
+                                if removed:
+                                    self._mission_notifications.append(
+                                        f"Cargo Removed: {cargo.quantity}x "
+                                        f"{cargo.commodity_id.replace('_', ' ').title()}"
+                                    )
+                        self._mission_notifications.append(f"Mission Abandoned: {name}")
+                        logger.info(f"Mission abandoned: {name}")
 
                 def _do():
                     # Update galaxy map mission markers and forced encounters
@@ -1387,6 +1412,14 @@ class Game:
             next_state = self.encounter_view.get_next_state()
             if next_state:
                 self.encounter_view.next_state = None
+                # Determine return destination: galaxy map if travel is pending,
+                # otherwise trading/cantina.
+                _resume_travel = (
+                    self.galaxy_map_view
+                    and getattr(self.galaxy_map_view, "_resume_travel_after_encounter", False)
+                )
+                _enc_return = GameState.GALAXY_MAP if _resume_travel else GameState.TRADING
+
                 if self.encounter_view.pending_combat:
                     # Combat from encounter choice: resolve and start combat
                     enc_ref = self.encounter_view.encounter_ref
@@ -1395,11 +1428,11 @@ class Game:
                         self._apply_encounter_result()
                         self.start_combat(
                             combat_encounter,
-                            return_state=GameState.TRADING,
+                            return_state=_enc_return,
                             transition_type=TransitionType.WARP,
                         )
                         return
-                # Non-combat: apply rewards and go to trading
+                # Non-combat: apply rewards and route appropriately
                 self._apply_encounter_result()
 
                 # Check if encounter result triggered bounty combat
@@ -1410,14 +1443,14 @@ class Game:
                     if bounty_combat:
                         self.start_combat(
                             bounty_combat,
-                            return_state=GameState.TRADING,
+                            return_state=_enc_return,
                             transition_type=TransitionType.WARP,
                         )
                         return
 
                 def _do():
                     self.auto_save()
-                    self.state_manager.change_state(GameState.TRADING)
+                    self.state_manager.change_state(_enc_return)
 
                 self._start_transition(TransitionType.FADE, 0.3, _do)
 
@@ -2279,11 +2312,14 @@ class Game:
                 return defn
 
         # Random weighted selection (procedural encounters)
+        # Use the travel destination system if available (current_system_id
+        # may still be the origin during deferred travel).
         danger = "moderate"
         system_id = ""
         faction_id = ""
         if self.player:
-            system_id = self.player.current_system_id
+            dest_id = getattr(self.galaxy_map_view, "_deferred_system_id", None)
+            system_id = dest_id or self.player.current_system_id
             system = self.data_loader.systems.get(system_id)
             if system:
                 danger = getattr(system, "danger_level", "moderate")
@@ -3135,6 +3171,7 @@ class Game:
         self.paused = False
         if self.pause_menu_view:
             self.pause_menu_view.on_exit()
+            self.pause_menu_view = None
         self.audio_manager.resume_music()
         logger.info("Game resumed")
 
@@ -3143,21 +3180,25 @@ class Game:
         if not self.pause_menu_view or not self.paused:
             return
 
-        # Check if resume requested
+        # Check if resume or navigation requested
         next_state = self.pause_menu_view.get_next_state()
         if next_state == "resume":
             self._close_pause_menu()
+            return
         elif next_state == GameState.MAIN_MENU:
             self._close_pause_menu()
             self.state_manager.change_state(GameState.MAIN_MENU)
+            return
         elif next_state == GameState.STATISTICS:
             self._close_pause_menu()
             self._ensure_statistics_view()
             self.state_manager.change_state(GameState.STATISTICS)
+            return
         elif next_state == GameState.ACHIEVEMENTS:
             self._close_pause_menu()
             self._ensure_achievements_view()
             self.state_manager.change_state(GameState.ACHIEVEMENTS)
+            return
 
         # Check if save dialog requested
         if self.pause_menu_view.should_show_save_dialog():
@@ -3187,6 +3228,21 @@ class Game:
         self.save_load_view.on_enter()
         logger.info("Opened load dialog")
 
+    def _set_pause_buttons_visible(self, visible: bool) -> None:
+        """Show or hide all pause menu buttons."""
+        if not self.pause_menu_view:
+            return
+        for attr in (
+            "resume_button", "save_button", "load_button", "settings_button",
+            "stats_button", "achievements_button", "main_menu_button", "quit_button",
+        ):
+            btn = getattr(self.pause_menu_view, attr, None)
+            if btn:
+                if visible:
+                    btn.show()
+                else:
+                    btn.hide()
+
     def _open_settings_dialog(self) -> None:
         """Open settings dialog."""
         from spacegame.views.settings_view import SettingsView
@@ -3201,9 +3257,6 @@ class Game:
 
     def _open_settings_from_menu(self) -> None:
         """Open settings dialog from the main menu."""
-        # Hide main menu buttons so they don't show through settings
-        if self.main_menu_view:
-            self.main_menu_view._set_menu_buttons_visible(False)
         self._open_settings_dialog()
 
     def _handle_save_load_dialog(self) -> None:
@@ -3256,9 +3309,6 @@ class Game:
             # Close dialog
             self.settings_view.on_exit()
             self.settings_view = None
-            # Restore main menu buttons if we came from the main menu
-            if self.main_menu_view and self.main_menu_view.active:
-                self.main_menu_view._set_menu_buttons_visible(True)
 
     def _save_game(self, slot: int) -> None:
         """
@@ -3587,11 +3637,21 @@ class Game:
             self._combat_trophies_checked = False
 
         # Combat-specific contextual hints (Phase 11)
+        # Only show after INTRO completes AND a brief grace period so the
+        # player can orient themselves before a hint covers the arena.
         if current_state == GameState.COMBAT:
-            combat_hint = self._get_combat_tutorial_hint()
-            if combat_hint and self.tutorial_manager.should_show_hint(combat_hint):
-                self._tutorial_overlay.show_hint(combat_hint)
-                return
+            combat_view = self.state_manager.states.get(GameState.COMBAT)
+            from spacegame.views.combat_view import CombatPhase
+
+            if (
+                combat_view
+                and getattr(combat_view, "phase", None) == CombatPhase.PLAYER_INPUT
+                and getattr(combat_view, "phase_timer", 0) >= 1.5
+            ):
+                combat_hint = self._get_combat_tutorial_hint()
+                if combat_hint and self.tutorial_manager.should_show_hint(combat_hint):
+                    self._tutorial_overlay.show_hint(combat_hint)
+                    return
 
         # --- 5-step tutorial (only when tutorial is active) ---
         if not self.tutorial_manager.active or self.tutorial_manager.completed:
@@ -4340,48 +4400,68 @@ class Game:
         if not msg:
             return
 
+        # Fade: full opacity for first 3s, fade out in last 1s
         alpha = 255
         if self._achievement_notify_timer < 1.0:
             alpha = int(255 * self._achievement_notify_timer)
 
-        # Prominent centered card — unmissable against any background
-        card_w = scale_x(500)
-        card_h = scale_y(70)
-        card_x = (WINDOW_WIDTH - card_w) // 2
-        card_y = scale_y(80)
+        # Full-screen dim overlay — makes the achievement the focus
+        dim_alpha = int(180 * (alpha / 255))
+        dim = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA)
+        dim.fill((0, 0, 0, dim_alpha))
+        screen.blit(dim, (0, 0))
 
-        # Solid dark card background
+        # Large centered card
+        card_w = scale_x(600)
+        card_h = scale_y(160)
+        card_x = (WINDOW_WIDTH - card_w) // 2
+        card_y = (WINDOW_HEIGHT - card_h) // 2 - scale_y(40)
+
+        # Card background — dark with gold tint
         card_surf = pygame.Surface((card_w, card_h), pygame.SRCALPHA)
-        card_surf.fill((8, 20, 8, min(240, alpha)))
+        card_surf.fill((12, 18, 8, min(240, alpha)))
         screen.blit(card_surf, (card_x, card_y))
 
-        # Gold border for prestige feel
-        border_color = (255, 215, 80, alpha)
+        # Gold border
         border_surf = pygame.Surface((card_w, card_h), pygame.SRCALPHA)
-        pygame.draw.rect(border_surf, border_color, (0, 0, card_w, card_h), 2, border_radius=8)
+        pygame.draw.rect(border_surf, (255, 215, 80, alpha), (0, 0, card_w, card_h), 2, border_radius=8)
         screen.blit(border_surf, (card_x, card_y))
 
-        # Top accent line
-        accent_surf = pygame.Surface((card_w - 20, 2), pygame.SRCALPHA)
+        # Top and bottom accent lines
+        accent_surf = pygame.Surface((card_w - 40, 2), pygame.SRCALPHA)
         accent_surf.fill((255, 215, 80, alpha))
-        screen.blit(accent_surf, (card_x + 10, card_y + 2))
+        screen.blit(accent_surf, (card_x + 20, card_y + 4))
+        screen.blit(accent_surf, (card_x + 20, card_y + card_h - 6))
 
-        # "ACHIEVEMENT UNLOCKED" label
+        # Trophy icon (star symbol)
         if self._label_font is None:
             self._label_font = get_font("label", 16)
+        star = self._banner_font.render("\u2605", True, (255, 215, 80))
+        star.set_alpha(alpha)
+        screen.blit(star, star.get_rect(centerx=WINDOW_WIDTH // 2, top=card_y + scale_y(16)))
+
+        # "ACHIEVEMENT UNLOCKED" label
         label_surf = self._label_font.render("ACHIEVEMENT UNLOCKED", True, (255, 215, 80))
         label_surf.set_alpha(alpha)
         screen.blit(
             label_surf,
-            label_surf.get_rect(centerx=WINDOW_WIDTH // 2, top=card_y + scale_y(10)),
+            label_surf.get_rect(centerx=WINDOW_WIDTH // 2, top=card_y + scale_y(52)),
         )
 
-        # Achievement name (larger, prominent)
+        # Achievement name (large, white, prominent)
         text_surf = self._banner_font.render(msg, True, (255, 255, 255))
         text_surf.set_alpha(alpha)
         screen.blit(
             text_surf,
-            text_surf.get_rect(centerx=WINDOW_WIDTH // 2, top=card_y + scale_y(32)),
+            text_surf.get_rect(centerx=WINDOW_WIDTH // 2, top=card_y + scale_y(80)),
+        )
+
+        # Subtle hint at bottom of card
+        hint = self._label_font.render("Progress tracked in Achievements menu", True, (140, 150, 120))
+        hint.set_alpha(int(alpha * 0.6))
+        screen.blit(
+            hint,
+            hint.get_rect(centerx=WINDOW_WIDTH // 2, top=card_y + scale_y(115)),
         )
 
     def _render_celebration(self, screen: pygame.Surface) -> None:
@@ -4541,6 +4621,9 @@ class Game:
 
                 # Route events to event notification, save/load, pause menu, or game state
                 if self.settings_view:
+                    # Process events through settings' own UIManager
+                    if hasattr(self.settings_view, '_own_ui_manager'):
+                        self.settings_view._own_ui_manager.process_events(event)
                     self.settings_view.handle_event(event)
                 elif self._event_notification_view and self._event_notification_view.active:
                     self._event_notification_view.handle_event(event)
@@ -4553,6 +4636,8 @@ class Game:
 
             # Update UI manager
             self.ui_manager.update(dt)
+            if self.settings_view and hasattr(self.settings_view, '_own_ui_manager'):
+                self.settings_view._own_ui_manager.update(dt)
 
             # Update cockpit HUD visibility based on current state
             if self._cockpit_hud and self.player:
@@ -4654,8 +4739,13 @@ class Game:
             # Mission notification banner (below UI)
             self._render_mission_notification(render_surface)
 
-            # pygame_gui elements
-            self.ui_manager.draw_ui(render_surface)
+            # pygame_gui elements (game UI — skip when settings is covering everything)
+            if not self.settings_view:
+                self.ui_manager.draw_ui(render_surface)
+
+            # Settings has its own UIManager — draw it on top of everything
+            if self.settings_view and hasattr(self.settings_view, '_own_ui_manager'):
+                self.settings_view._own_ui_manager.draw_ui(render_surface)
 
             # Achievement notification — renders ABOVE all UI so it's never hidden
             self._render_achievement_notification(render_surface)

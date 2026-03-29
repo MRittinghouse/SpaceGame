@@ -26,7 +26,7 @@ from spacegame.models.ship_build import (
     HullMaterial,
     WEIGHT_CLASSES,
 )
-from spacegame.models.ship_module import ShipModule, PlacedModule
+from spacegame.models.ship_module import ShipModule
 
 
 # ============================================================================
@@ -52,40 +52,12 @@ def _materials() -> dict[str, HullMaterial]:
 
 
 def _module_catalog() -> dict[str, ShipModule]:
-    return {
-        "cockpit_rk": ShipModule(
-            id="cockpit_rk",
-            name="Cockpit",
-            description="",
-            category="cockpit",
-            manufacturer="reyes_kowalski",
-            pixel_grid=[["H", "H"], ["H", "H"]],
-            material_map={"H": "m"},
-            provides={"slot_type": "core"},
-            weight=2.0,
-            base_cost=1000,
-        ),
-        "engine_rk": ShipModule(
-            id="engine_rk",
-            name="Engine",
-            description="",
-            category="engine",
-            manufacturer="reyes_kowalski",
-            pixel_grid=[["H", "E", "H"]],
-            material_map={"H": "m", "E": "m"},
-            provides={"slot_type": "engine"},
-            weight=1.5,
-            base_cost=800,
-        ),
-    }
+    """Module catalog kept for import_build_code API compatibility."""
+    return {}
 
 
 def _sample_build() -> ShipBuild:
     build = ShipBuild(weight_class="tiny")
-    build.modules = [
-        PlacedModule(module_id="cockpit_rk", x=5, y=5, rotation=0, flipped=False),
-        PlacedModule(module_id="engine_rk", x=0, y=5, rotation=1, flipped=True),
-    ]
     build.pixels = [
         PlacedPixel(x=3, y=5, material_id="standard_plate"),
         PlacedPixel(x=4, y=5, material_id="standard_plate"),
@@ -138,7 +110,7 @@ class TestExport:
 class TestImportRoundTrip:
     """Test export → import round-trip preserves build data."""
 
-    def test_round_trip_modules(self) -> None:
+    def test_round_trip_pixels(self) -> None:
         build = _sample_build()
         catalog = _module_catalog()
         materials = _materials()
@@ -146,12 +118,8 @@ class TestImportRoundTrip:
         restored, err = import_build_code(code, catalog, materials)
         assert restored is not None, f"Import failed: {err}"
         assert restored.weight_class == "tiny"
-        assert len(restored.modules) == 2
-        assert restored.modules[0].module_id == "cockpit_rk"
-        assert restored.modules[0].x == 5
-        assert restored.modules[0].y == 5
-        assert restored.modules[1].rotation == 1
-        assert restored.modules[1].flipped is True
+        assert len(restored.pixels) == 2
+        assert restored.pixels[0].material_id == "standard_plate"
 
     def test_round_trip_hull_pixels(self) -> None:
         build = _sample_build()
@@ -180,7 +148,6 @@ class TestImportRoundTrip:
         restored, err = import_build_code(code, catalog, materials)
         assert restored is not None, f"Import failed: {err}"
         assert restored.weight_class == "small"
-        assert len(restored.modules) == 0
         assert len(restored.pixels) == 0
 
 
@@ -242,7 +209,8 @@ class TestImportSchemaValidation:
         result, err = import_build_code(code, _module_catalog(), _materials())
         assert result is None
 
-    def test_reject_unknown_module_id(self) -> None:
+    def test_unknown_module_id_ignored(self) -> None:
+        """Legacy modules in 'm' field are ignored during import."""
         code = self._make_code(
             {
                 "v": 1,
@@ -254,7 +222,7 @@ class TestImportSchemaValidation:
             }
         )
         result, err = import_build_code(code, _module_catalog(), _materials())
-        assert result is None
+        assert result is not None, "Legacy modules should be ignored, not rejected"
 
     def test_reject_unknown_material_id(self) -> None:
         code = self._make_code(
@@ -270,7 +238,8 @@ class TestImportSchemaValidation:
         result, err = import_build_code(code, _module_catalog(), _materials())
         assert result is None
 
-    def test_reject_out_of_bounds_module(self) -> None:
+    def test_out_of_bounds_module_ignored(self) -> None:
+        """Legacy modules are ignored; out-of-bounds modules don't cause rejection."""
         code = self._make_code(
             {
                 "v": 1,
@@ -282,7 +251,7 @@ class TestImportSchemaValidation:
             }
         )
         result, err = import_build_code(code, _module_catalog(), _materials())
-        assert result is None
+        assert result is not None
 
     def test_reject_out_of_bounds_pixel(self) -> None:
         code = self._make_code(
@@ -298,7 +267,8 @@ class TestImportSchemaValidation:
         result, err = import_build_code(code, _module_catalog(), _materials())
         assert result is None
 
-    def test_reject_negative_coordinates(self) -> None:
+    def test_negative_module_coords_ignored(self) -> None:
+        """Legacy modules are ignored; negative coords don't cause rejection."""
         code = self._make_code(
             {
                 "v": 1,
@@ -310,9 +280,10 @@ class TestImportSchemaValidation:
             }
         )
         result, err = import_build_code(code, _module_catalog(), _materials())
-        assert result is None
+        assert result is not None
 
-    def test_reject_invalid_rotation(self) -> None:
+    def test_invalid_module_rotation_ignored(self) -> None:
+        """Legacy modules are ignored; invalid rotation doesn't cause rejection."""
         code = self._make_code(
             {
                 "v": 1,
@@ -324,9 +295,10 @@ class TestImportSchemaValidation:
             }
         )
         result, err = import_build_code(code, _module_catalog(), _materials())
-        assert result is None
+        assert result is not None
 
     def test_reject_too_many_modules(self) -> None:
+        """Module count limit is still enforced at the schema level."""
         mods = [{"id": "cockpit_rk", "x": 0, "y": 0, "r": 0, "f": False}] * (MAX_MODULE_COUNT + 1)
         code = self._make_code({"v": 1, "wc": "tiny", "m": mods, "p": []})
         result, err = import_build_code(code, _module_catalog(), _materials())
@@ -343,9 +315,7 @@ class TestImportSchemaValidation:
             {
                 "v": 1,
                 "wc": "tiny",
-                "m": [
-                    {"id": "cockpit_rk", "x": 5, "y": 5, "r": 0, "f": False},
-                ],
+                "m": [],
                 "p": [
                     {"x": 3, "y": 5, "m": "standard_plate"},
                 ],
@@ -419,41 +389,21 @@ class TestImportMalformedInput:
 
 
 class TestBlueprintAvailability:
-    """Test blueprint availability checking for imported builds."""
+    """Test blueprint availability checking for imported builds.
 
-    def test_all_owned(self) -> None:
-        build = _sample_build()
-        catalog = _module_catalog()
-        unlocked = {"cockpit_rk", "engine_rk"}
-        missing = check_blueprint_availability(build, catalog, unlocked)
-        assert missing == []
+    Since legacy modules were removed, check_blueprint_availability
+    always returns an empty list. These tests verify that contract.
+    """
 
-    def test_missing_one(self) -> None:
-        build = _sample_build()
-        catalog = _module_catalog()
-        unlocked = {"cockpit_rk"}  # Missing engine_rk
-        missing = check_blueprint_availability(build, catalog, unlocked)
-        assert len(missing) == 1
-        assert missing[0]["module_id"] == "engine_rk"
-
-    def test_missing_all(self) -> None:
+    def test_always_empty_for_new_builds(self) -> None:
         build = _sample_build()
         catalog = _module_catalog()
         unlocked: set[str] = set()
         missing = check_blueprint_availability(build, catalog, unlocked)
-        assert len(missing) == 2
+        assert missing == []
 
     def test_empty_build_no_missing(self) -> None:
         build = ShipBuild(weight_class="tiny")
         catalog = _module_catalog()
         missing = check_blueprint_availability(build, catalog, set())
         assert missing == []
-
-    def test_missing_includes_unlock_info(self) -> None:
-        build = _sample_build()
-        catalog = _module_catalog()
-        unlocked = {"cockpit_rk"}
-        missing = check_blueprint_availability(build, catalog, unlocked)
-        assert "module_id" in missing[0]
-        assert "name" in missing[0]
-        assert "category" in missing[0]

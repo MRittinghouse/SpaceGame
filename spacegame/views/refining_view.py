@@ -1464,15 +1464,31 @@ class RefiningView(BaseView):
         if panel_y > WINDOW_HEIGHT - 80:
             return
 
+        # Panel background
+        upgrade_count = len(forge_upgrades)
+        row_h = scale_y(24)
+        panel_h = scale_y(28) + upgrade_count * row_h + scale_y(8)
+        panel_w = scale_x(320)
+        from spacegame.engine.draw_utils import draw_panel
+
+        draw_panel(screen, (panel_x - 8, panel_y - 6, panel_w + 16, panel_h), alpha=160)
+
+        # Header
         header = self.small_font.render("FURNACE UPGRADES", True, FORGE_COLOR)
         screen.blit(header, (panel_x, panel_y))
 
-        token_surf = self.small_font.render(f"FT: {self.player.forge_tokens}", True, FORGE_COLOR)
-        screen.blit(token_surf, (panel_x + 160, panel_y))
+        token_surf = self.small_font.render(
+            f"FT: {self.player.forge_tokens}", True, FORGE_COLOR
+        )
+        screen.blit(token_surf, (panel_x + panel_w - token_surf.get_width(), panel_y))
 
-        y = panel_y + 22
+        y = panel_y + scale_y(24)
         mouse_pos = pygame.mouse.get_pos()
         self._upgrade_rects.clear()
+
+        pip_size = scale_y(8)
+        pip_gap = 2
+        cost_x = panel_x + panel_w - scale_x(50)
 
         for uid, definition in forge_upgrades.items():
             if y > WINDOW_HEIGHT - 70:
@@ -1480,28 +1496,47 @@ class RefiningView(BaseView):
             level = fu_state.get_level(uid)
             next_cost = definition.get_cost(level + 1)
 
-            btn_rect = pygame.Rect(panel_x, y, scale_x(320), scale_y(22))
+            btn_rect = pygame.Rect(panel_x, y, panel_w, row_h)
             self._upgrade_rects[uid] = btn_rect
 
             is_hover = btn_rect.collidepoint(mouse_pos)
             if is_hover:
-                pygame.draw.rect(screen, (50, 35, 20), btn_rect)
+                pygame.draw.rect(screen, (50, 35, 20), btn_rect, border_radius=3)
 
-            pip_str = ""
-            for i in range(definition.max_level):
-                pip_str += "[X]" if i < level else "[ ]"
-
+            # Upgrade name
             if next_cost is not None:
                 can_buy = self.player.forge_tokens >= next_cost
-                cost_color = Colors.TEXT if can_buy else Colors.RED
-                text = f"{definition.name} {pip_str}  ({next_cost} FT)"
-                surf = self.small_font.render(text, True, cost_color)
+                name_color = Colors.TEXT if can_buy else Colors.TEXT_SECONDARY
             else:
-                text = f"{definition.name} {pip_str}  MAX"
-                surf = self.small_font.render(text, True, Colors.TEXT_SECONDARY)
+                name_color = Colors.TEXT_SECONDARY
+            name_surf = self.small_font.render(definition.name, True, name_color)
+            screen.blit(name_surf, (panel_x + 4, y + 3))
 
-            screen.blit(surf, (panel_x + 4, y + 2))
-            y += 24
+            # Level pips (after name, forge-orange theme)
+            pip_x = panel_x + 4 + name_surf.get_width() + 6
+            pip_y = y + 6
+            for i in range(definition.max_level):
+                pip_rect = pygame.Rect(pip_x, pip_y, pip_size, pip_size)
+                if i < level:
+                    pygame.draw.rect(screen, (180, 120, 40), pip_rect)
+                    pygame.draw.rect(screen, (220, 160, 60), pip_rect, 1)
+                else:
+                    pygame.draw.rect(screen, (35, 28, 18), pip_rect)
+                    pygame.draw.rect(screen, (70, 55, 35), pip_rect, 1)
+                pip_x += pip_size + pip_gap
+
+            # Cost (right-aligned)
+            if next_cost is not None:
+                cost_color = Colors.TEXT if can_buy else Colors.RED
+                cost_surf = self.small_font.render(f"{next_cost} FT", True, cost_color)
+            else:
+                cost_surf = self.small_font.render("MAX", True, (220, 160, 60))
+            screen.blit(
+                cost_surf,
+                (panel_x + panel_w - cost_surf.get_width(), y + 3),
+            )
+
+            y += row_h
 
     def _calculate_rating(self) -> None:
         """Calculate session performance rating."""

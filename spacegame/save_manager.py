@@ -770,6 +770,9 @@ class SaveManager:
             from spacegame.models.ship_build import ShipBuild
 
             build = ShipBuild.from_dict(data["build"])
+            # Migration: backfill ship_type_id on legacy builds
+            if not build.ship_type_id:
+                build.ship_type_id = ship_type.id
             ship.set_build(build)
         elif data.get("ship_type_id"):
             # Old save without build: generate preset for migration

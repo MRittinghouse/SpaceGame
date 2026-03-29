@@ -661,6 +661,10 @@ class SalvageView(BaseView):
         )
         self._vfx_atmosphere = SalvageAtmosphere(grid_rect, derelict_id)
         self._vfx_atmosphere.set_deck(self.session.current_deck)
+        # Anchor deck meter to grid's right edge with buffer
+        grid_right = self.GRID_OFFSET_X + self.CELL_SIZE * self.session.derelict_type.grid_size
+        self._vfx_deck_meter.x = grid_right + scale_x(20)
+        self._vfx_deck_meter.height = self.CELL_SIZE * self.session.derelict_type.grid_size
         self._vfx_deck_meter.max_decks = self.session.derelict_type.max_decks
         self._vfx_deck_meter.set_state(self.session.current_deck, derelict_id)
         self._vfx_corruption = CorruptionOverlay(
@@ -927,25 +931,14 @@ class SalvageView(BaseView):
 
         theme_color = self._get_theme_color()
 
-        # Mode indicator with icon
-        mode_icon = self._mode_icons.get(self.mode)
+        # Instruction text (above structural integrity bar)
         mode_label = "SCAN" if self.mode == "scan" else "EXTRACT"
-        if mode_icon is not None:
-            screen.blit(mode_icon, (self.GRID_OFFSET_X, 56))
-            mode_surf = self.info_font.render(mode_label, True, Colors.YELLOW)
-            screen.blit(mode_surf, (self.GRID_OFFSET_X + 36, 60))
-        else:
-            mode_surf = self.small_font.render(f"Mode: {mode_label}", True, Colors.YELLOW)
-            screen.blit(mode_surf, (self.GRID_OFFSET_X, 60))
-
-        # Derelict info with themed accent
-        derelict_name = self.session.derelict_type.name
         tip = self.small_font.render(
-            f"Derelict: {derelict_name} — {self._get_instruction_text()}",
+            f"{mode_label} Mode — {self._get_instruction_text()}",
             True,
             theme_color,
         )
-        screen.blit(tip, (self.GRID_OFFSET_X, 85))
+        screen.blit(tip, (self.GRID_OFFSET_X, scale_y(62)))
 
         # Derelict background behind grid
         if self._derelict_bg is not None:
@@ -1525,24 +1518,39 @@ class SalvageView(BaseView):
 
         wu_state = self.player.wreck_upgrades
 
-        panel_x = self.GRID_OFFSET_X
+        # Position below the grid on the left side (avoids right-side button conflicts)
         grid_size = self.session.derelict_type.grid_size if self.session else 5
-        panel_y = self.GRID_OFFSET_Y + grid_size * self.CELL_SIZE + 20
+        panel_x = self.GRID_OFFSET_X
+        panel_y = self.GRID_OFFSET_Y + grid_size * self.CELL_SIZE + scale_y(24)
+        if panel_y > WINDOW_HEIGHT - scale_y(120):
+            return  # Not enough room below grid
 
-        if panel_y > WINDOW_HEIGHT - 120:
-            return
+        # Panel background
+        upgrade_count = len(wreck_upgrades)
+        row_h = scale_y(24)
+        panel_w = grid_size * self.CELL_SIZE  # Match grid width
+        panel_h = scale_y(28) + upgrade_count * row_h + scale_y(8)
+        from spacegame.engine.draw_utils import draw_panel
 
+        draw_panel(screen, (panel_x - 8, panel_y - 6, panel_w + 16, panel_h), alpha=160)
+
+        # Header
         header = self.small_font.render("WRECK UPGRADES", True, Colors.SALVAGE_THEME)
         screen.blit(header, (panel_x, panel_y))
 
         intel_surf = self.small_font.render(
             f"Intel: {self.player.salvage_intel}", True, Colors.SALVAGE_THEME
         )
-        screen.blit(intel_surf, (panel_x + 160, panel_y))
+        screen.blit(intel_surf, (panel_x + panel_w - intel_surf.get_width(), panel_y))
 
-        y = panel_y + 22
+        y = panel_y + scale_y(24)
         mouse_pos = pygame.mouse.get_pos()
         self._upgrade_rects.clear()
+
+        pip_size = scale_y(8)
+        pip_gap = 2
+        # Fixed pip column for alignment (based on widest upgrade name)
+        pip_col_x = panel_x + scale_x(140)
 
         for uid, definition in wreck_upgrades.items():
             if y > WINDOW_HEIGHT - 70:
@@ -1550,28 +1558,46 @@ class SalvageView(BaseView):
             level = wu_state.get_level(uid)
             next_cost = definition.get_cost(level + 1)
 
-            btn_rect = pygame.Rect(panel_x, y, scale_x(320), scale_y(22))
+            btn_rect = pygame.Rect(panel_x, y, panel_w, row_h)
             self._upgrade_rects[uid] = btn_rect
 
             is_hover = btn_rect.collidepoint(mouse_pos)
             if is_hover:
-                pygame.draw.rect(screen, (25, 40, 55), btn_rect)
+                pygame.draw.rect(screen, (25, 40, 55), btn_rect, border_radius=3)
 
-            pip_str = ""
-            for i in range(definition.max_level):
-                pip_str += "[X]" if i < level else "[ ]"
-
+            # Upgrade name
             if next_cost is not None:
                 can_buy = self.player.salvage_intel >= next_cost
-                cost_color = Colors.TEXT if can_buy else Colors.RED
-                text = f"{definition.name} {pip_str}  ({next_cost} SI)"
-                surf = self.small_font.render(text, True, cost_color)
+                name_color = Colors.TEXT if can_buy else Colors.TEXT_SECONDARY
             else:
-                text = f"{definition.name} {pip_str}  MAX"
-                surf = self.small_font.render(text, True, Colors.TEXT_SECONDARY)
+                name_color = Colors.TEXT_SECONDARY
+            name_surf = self.small_font.render(definition.name, True, name_color)
+            screen.blit(name_surf, (panel_x + 4, y + 3))
 
-            screen.blit(surf, (panel_x + 4, y + 2))
-            y += 24
+            # Level pips (aligned column, salvage cyan-blue theme)
+            pip_x = pip_col_x
+            pip_y = y + 6
+            for i in range(definition.max_level):
+                pip_rect = pygame.Rect(pip_x, pip_y, pip_size, pip_size)
+                if i < level:
+                    pygame.draw.rect(screen, (60, 140, 200), pip_rect)
+                    pygame.draw.rect(screen, (100, 200, 255), pip_rect, 1)
+                else:
+                    pygame.draw.rect(screen, (20, 30, 40), pip_rect)
+                    pygame.draw.rect(screen, (40, 60, 80), pip_rect, 1)
+                pip_x += pip_size + pip_gap
+
+            # Cost (right-aligned)
+            if next_cost is not None:
+                cost_color = Colors.TEXT if can_buy else Colors.RED
+                cost_surf = self.small_font.render(f"{next_cost} SI", True, cost_color)
+            else:
+                cost_surf = self.small_font.render("MAX", True, (100, 200, 255))
+            screen.blit(
+                cost_surf,
+                (panel_x + panel_w - cost_surf.get_width(), y + 3),
+            )
+            y += row_h
 
     def _handle_upgrade_click(self, pos: tuple) -> None:
         """Check if click hit an upgrade button and attempt purchase."""

@@ -81,12 +81,14 @@ class TestSettingsViewCleanup:
         import tempfile
 
         view = SettingsView(mgr, Path(tempfile.gettempdir()))
-        before = _count_alive_elements(mgr)
+        # Settings uses its own UIManager, so check that one
+        own_mgr = view._own_ui_manager
+        before = _count_alive_elements(own_mgr)
         view.on_enter()
-        during = _count_alive_elements(mgr)
+        during = _count_alive_elements(own_mgr)
         assert during > before, "on_enter should create UI elements"
         view.on_exit()
-        after = _count_alive_elements(mgr)
+        after = _count_alive_elements(own_mgr)
         assert after == before, f"on_exit should kill all elements: {after} != {before}"
 
 

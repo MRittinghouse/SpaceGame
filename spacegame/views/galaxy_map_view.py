@@ -20,6 +20,9 @@ from spacegame.engine.particles import SCAN_PULSE, WARP_TRAIL, ParticlePool
 from spacegame.engine.procedural import generate_planet
 from spacegame.engine.sprites import AnimatedSprite, get_sprite_manager, res_scale
 from spacegame.models.encounter import (
+    ENCOUNTER_CHANCE_DANGEROUS,
+    ENCOUNTER_CHANCE_MODERATE,
+    ENCOUNTER_CHANCE_SAFE,
     EncounterRef,
     calculate_encounter_chance,
     check_travel_encounter,
@@ -162,6 +165,9 @@ class GalaxyMapView(BaseView):
         self._travel_encounter: Optional[EncounterRef] = None
         self._travel_encounter_stop: float = 1.0
         self._travel_alert_showing: bool = False
+        self._deferred_system_id: Optional[str] = None
+        self._resume_travel_after_encounter: bool = False
+        self._resume_travel_progress: float = 0.0
         self._travel_alert_timer: float = 0.0
         self._pending_encounter: Optional[EncounterRef] = None
 
@@ -184,10 +190,16 @@ class GalaxyMapView(BaseView):
 
     @staticmethod
     def _clip_to_circle(surface: pygame.Surface) -> pygame.Surface:
-        """Clip a rectangular surface to a circular mask."""
+        """Clip a rectangular surface to a circular mask.
+
+        Uses an odd-sized canvas so the circle center is on a true pixel
+        (avoids half-pixel rounding that shifts the portrait off-center).
+        """
         w, h = surface.get_size()
-        size = max(w, h)
+        # Use odd size so center pixel is unambiguous
+        size = max(w, h) | 1  # Ensure odd
         radius = size // 2
+        center = size // 2
 
         # Create circular output
         clipped = pygame.Surface((size, size), pygame.SRCALPHA)
@@ -198,7 +210,7 @@ class GalaxyMapView(BaseView):
 
         # Apply circular mask
         mask = pygame.Surface((size, size), pygame.SRCALPHA)
-        pygame.draw.circle(mask, (255, 255, 255, 255), (radius, radius), radius)
+        pygame.draw.circle(mask, (255, 255, 255, 255), (center, center), radius)
         clipped.blit(mask, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
         return clipped
 
@@ -218,6 +230,27 @@ class GalaxyMapView(BaseView):
                     self.player.ship.ship_type.id, category="player", scale=res_scale(1)
                 )
         self._create_ui()
+
+        # Resume travel animation after an encounter resolved mid-route
+        if self._resume_travel_after_encounter and self._travel_origin_id and self._travel_dest_id:
+            self._resume_travel_after_encounter = False
+            self._travel_animating = True
+            self._travel_progress = self._resume_travel_progress
+            self._travel_encounter = None  # No second encounter
+            self._travel_encounter_stop = 1.0  # No more stops
+            self._travel_alert_showing = False
+            # Recalculate remaining duration proportionally
+            remaining_frac = 1.0 - self._resume_travel_progress
+            origin = self.systems.get(self._travel_origin_id)
+            dest = self.systems.get(self._travel_dest_id)
+            if origin and dest:
+                full_duration = 0.5 + origin.distance_to(dest) / 180.0
+                self._travel_duration = full_duration * remaining_frac
+            else:
+                self._travel_duration = 0.5
+            logger.info(
+                f"Resuming travel from {self._resume_travel_progress:.0%} to destination"
+            )
 
     def on_exit(self) -> None:
         super().on_exit()
@@ -453,7 +486,22 @@ class GalaxyMapView(BaseView):
         distance = origin_system.distance_to(dest_system)
 
         fuel_cost = self._calculate_fuel_cost(self.selected_system)
-        success, msg = self.player.travel_to_system(self.selected_system, fuel_cost)
+
+        # Consume fuel and advance day, but DON'T update current_system_id yet.
+        # The system ID changes when the travel animation completes (or after
+        # an encounter resolves), so missions/dialogues don't trigger mid-flight.
+        if not self.player.ship.has_fuel_for_jump(fuel_cost):
+            self.message = f"Insufficient fuel. Need {fuel_cost}."
+            self.message_timer = 3.0
+            return
+        self.player.ship.consume_fuel(fuel_cost)
+        self.player.game_day += 1
+        self.player.decay_criminal_heat(1)
+        self.player.jumps_traveled += 1
+        self.player.fuel_consumed += fuel_cost
+        self._deferred_system_id = self.selected_system
+        success = True
+        msg = f"Traveling to {self.selected_system}. Day {self.player.game_day}"
 
         logger.info(f"Travel result: {msg}")
         if success:
@@ -682,6 +730,29 @@ class GalaxyMapView(BaseView):
         """Cancel the quick-add without saving."""
         self._dismiss_journal_quick_add()
 
+    def _finalize_arrival(self) -> None:
+        """Set the player's current_system_id to the travel destination.
+
+        Called when the travel animation completes or when an encounter
+        triggers (so the player lands at the destination after the encounter).
+        Deferred from _execute_travel() so that missions and dialogues don't
+        trigger while the ship is still mid-flight.
+        """
+        dest_id = getattr(self, "_deferred_system_id", None)
+        if dest_id:
+            self.player.current_system_id = dest_id
+            self.player.systems_visited.add(dest_id)
+            self._deferred_system_id = None
+            logger.info(f"System ID finalized: {dest_id}")
+
+            # Arrival feedback
+            if dest_id in self.systems:
+                dest = self.systems[dest_id]
+                dx, dy = self._world_to_screen(dest.coordinates.x, dest.coordinates.y)
+                self.particles.emit(dx, dy, SCAN_PULSE)
+                get_audio_manager().play_sfx("nav_arrive")
+                self.arrival_message = f"Arrived at {dest.name}"
+
     def update(self, dt: float) -> None:
         self.background.update(dt)
         self.particles.update(dt)
@@ -701,8 +772,13 @@ class GalaxyMapView(BaseView):
             if self._travel_alert_timer <= 0:
                 self._travel_alert_showing = False
                 self._travel_animating = False
-                self._travel_origin_id = None
-                self._travel_dest_id = None
+
+                # DON'T finalize arrival yet — we'll resume travel after the
+                # encounter resolves and animate the remaining journey.
+                # Preserve origin/dest so on_enter can resume.
+                self._resume_travel_after_encounter = True
+                self._resume_travel_progress = self._travel_encounter_stop
+
                 enc = self._travel_encounter
                 if enc and enc.encounter_type == "hostile":
                     # Hostile: transition to combat
@@ -756,13 +832,8 @@ class GalaxyMapView(BaseView):
         if self._travel_progress >= 1.0:
             self._travel_animating = False
 
-            # Arrival feedback: particle burst + notification
-            if self._travel_dest_id:
-                dest = self.systems[self._travel_dest_id]
-                dx, dy = self._world_to_screen(dest.coordinates.x, dest.coordinates.y)
-                self.particles.emit(dx, dy, SCAN_PULSE)
-                get_audio_manager().play_sfx("nav_arrive")
-                self.arrival_message = f"Arrived at {dest.name}"
+            # Finalize arrival: update current_system_id now that animation is done
+            self._finalize_arrival()
 
             self._travel_origin_id = None
             self._travel_dest_id = None
@@ -1116,19 +1187,20 @@ class GalaxyMapView(BaseView):
             sprite_x = int(ship_x - ship_w // 2)
             sprite_y = int(ship_y - ship_h // 2 + y_offset)
 
-            # Glow behind ship
-            glow_radius = max(ship_w, ship_h) // 2 + 4
-            glow_size = glow_radius * 2
+            # Subtle glow ring behind ship (not filled — avoids obscuring planet)
+            glow_radius = max(ship_w, ship_h) // 2 + 2
+            glow_size = glow_radius * 2 + 2
             glow_surf = pygame.Surface((glow_size, glow_size), pygame.SRCALPHA)
             pygame.draw.circle(
                 glow_surf,
-                (*Colors.TEXT_HIGHLIGHT, 60),
-                (glow_radius, glow_radius),
+                (*Colors.TEXT_HIGHLIGHT, 40),
+                (glow_radius + 1, glow_radius + 1),
                 glow_radius,
+                2,
             )
             screen.blit(
                 glow_surf,
-                (int(ship_x) - glow_radius, int(ship_y + y_offset) - glow_radius),
+                (int(ship_x) - glow_radius - 1, int(ship_y + y_offset) - glow_radius - 1),
             )
 
             screen.blit(rotated, (sprite_x, sprite_y))
@@ -1166,12 +1238,12 @@ class GalaxyMapView(BaseView):
         distance = origin.distance_to(dest)
         fuel_cost = self._calculate_fuel_cost(self._confirm_dest_id)
 
-        # Encounter risk %
+        # Encounter risk % — use canonical constants from encounter.py
         base_chance = {
-            "safe": 0,
-            "moderate": 15,
-            "dangerous": 30,
-        }.get(dest.danger_level, 15)
+            "safe": ENCOUNTER_CHANCE_SAFE,
+            "moderate": ENCOUNTER_CHANCE_MODERATE,
+            "dangerous": ENCOUNTER_CHANCE_DANGEROUS,
+        }.get(dest.danger_level, ENCOUNTER_CHANCE_MODERATE)
         risk_pct = calculate_encounter_chance(base_chance, distance)
 
         # Dim overlay

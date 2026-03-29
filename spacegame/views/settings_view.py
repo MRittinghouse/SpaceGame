@@ -41,7 +41,12 @@ class SettingsView(BaseView):
             tutorial_manager: Optional tutorial manager for replay.
         """
         super().__init__()
-        self.ui_manager = ui_manager
+        # Settings uses its own UIManager so its elements don't mix with
+        # the game's main ui_manager. This prevents button overlap when
+        # settings is opened from any context (main menu, pause, in-game).
+        self._own_ui_manager = pygame_gui.UIManager((WINDOW_WIDTH, WINDOW_HEIGHT))
+        self.ui_manager = self._own_ui_manager
+        self._game_ui_manager = ui_manager  # Keep reference for theme compat
 
         self.current_save_dir = current_save_dir
         self.tutorial_manager = tutorial_manager
@@ -63,7 +68,7 @@ class SettingsView(BaseView):
         self.background = AnimatedBackground("deep_space", WINDOW_WIDTH, WINDOW_HEIGHT, seed=96)
         self._bg_dim = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
         self._bg_dim.fill((0, 0, 0))
-        self._bg_dim.set_alpha(230)  # Nearly opaque so game doesn't bleed through
+        self._bg_dim.set_alpha(255)  # Fully opaque — covers all underlying UI
 
         # UI Elements — save directory
         self.save_dir_label: Optional[pygame_gui.elements.UILabel] = None
@@ -254,7 +259,7 @@ class SettingsView(BaseView):
         # === Bottom buttons ===
         self.back_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
-                panel_x, WINDOW_HEIGHT - scale_y(80), scale_x(150), scale_y(50)
+                panel_x, WINDOW_HEIGHT - scale_y(110), scale_x(150), scale_y(44)
             ),
             text="BACK",
             manager=self.ui_manager,
@@ -263,9 +268,9 @@ class SettingsView(BaseView):
         self.apply_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
                 panel_x + panel_width - scale_x(150),
-                WINDOW_HEIGHT - scale_y(80),
+                WINDOW_HEIGHT - scale_y(110),
                 scale_x(150),
-                scale_y(50),
+                scale_y(44),
             ),
             text="APPLY",
             manager=self.ui_manager,
@@ -361,14 +366,17 @@ class SettingsView(BaseView):
         elem_id = id(event.ui_element)
         if elem_id in slider_map:
             _name, setter, pct_obj_id = slider_map[elem_id]
-            value = event.value / 100.0
+            # Apply logarithmic curve so volume changes feel perceptually linear.
+            # Linear sliders sound wrong because human hearing is logarithmic.
+            linear = event.value / 100.0
+            value = linear * linear  # Quadratic curve: gentle at top, steep near zero
             setter(value)
             self._audio_changed = True
             self.apply_button.enable()
 
             # Update percentage label
             pct_text = f"{int(event.value)}%"
-            for elem in self.ui_manager.get_sprite_group():
+            for elem in self.ui_manager.get_sprite_group().sprites():
                 if hasattr(elem, "object_ids") and pct_obj_id in [
                     str(oid) for oid in elem.object_ids
                 ]:

@@ -291,13 +291,13 @@ class DepthMeter:
                 continue
             zone_h = y_end - y_start
             zone_surf = pygame.Surface((self.width - 2, zone_h), pygame.SRCALPHA)
-            zone_surf.fill((*layer["accent"], 30))
+            zone_surf.fill((*layer["accent"], 40))
             screen.blit(zone_surf, (self.x + 1, y_start))
 
-            # Layer name label (rotated text would be ideal, but just use small text)
+            # Layer name label — use white text for readability against colored zone
             if zone_h > scale_y(25):
-                label = self._label_font.render(layer["name"], True, (*layer["accent"],))
-                label.set_alpha(80)
+                label = self._label_font.render(layer["name"], True, (220, 220, 220))
+                label.set_alpha(180)
                 lx = self.x + (self.width - label.get_width()) // 2
                 ly = y_start + 3
                 screen.blit(label, (lx, ly))

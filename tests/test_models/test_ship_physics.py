@@ -11,8 +11,8 @@ from spacegame.models.ship_physics import (
     compute_frontal_profile,
     BalanceRating,
 )
-from spacegame.models.ship_build import PlacedPixel, HullMaterial, ShipBuild
-from spacegame.models.ship_module import PlacedModule, ShipModule
+from spacegame.models.ship_build import PlacedPixel, PlacedSlot, HullMaterial, ShipBuild
+from spacegame.models.slot_definition import SlotDefinition
 
 
 # ============================================================================
@@ -45,18 +45,16 @@ def _materials() -> dict[str, HullMaterial]:
     }
 
 
-def _module(mid: str, weight: float = 2.0) -> ShipModule:
-    return ShipModule(
-        id=mid,
-        name="Test",
-        description="",
-        category="structural",
-        manufacturer="reyes_kowalski",
-        pixel_grid=[["H", "H"], ["H", "H"]],
-        material_map={"H": "m"},
-        provides={},
+def _slot_def(sid: str, weight: float = 2.0) -> SlotDefinition:
+    return SlotDefinition(
+        id=sid,
+        slot_type="utility",
+        size="small",
+        footprint_w=2,
+        footprint_h=2,
         weight=weight,
-        base_cost=0,
+        placement_cost=0,
+        color=(128, 128, 128),
     )
 
 
@@ -180,16 +178,17 @@ class TestCenterOfMass:
         assert offset_pct == 0.0
         assert rating == BalanceRating.BALANCED
 
-    def test_modules_affect_com(self) -> None:
-        """Modules should contribute to CoM based on their weight."""
+    def test_heavy_pixels_pull_com(self) -> None:
+        """Heavy pixels on one side should shift CoM toward that side."""
         build = ShipBuild(weight_class="tiny")
-        # Heavy module on the right
-        build.modules = [PlacedModule(module_id="heavy_mod", x=12, y=7)]
-        catalog = {"heavy_mod": _module("heavy_mod", weight=10.0)}
+        # Light pixel on the left
+        build.pixels.append(PlacedPixel(x=0, y=8, material_id="light_alloy"))
+        # Heavy pixels on the far right
+        for x in range(12, 16):
+            build.pixels.append(PlacedPixel(x=x, y=8, material_id="heavy_armor"))
         materials = _materials()
-        com_x, _, _, _ = compute_center_of_mass(build, materials, catalog)
-        # CoM should be pulled right toward x=12-13
-        assert com_x > 10.0, f"CoM should be pulled by heavy module, got {com_x}"
+        com_x, _, _, _ = compute_center_of_mass(build, materials, {})
+        assert com_x > 10.0, f"CoM should be pulled right by heavy pixels, got {com_x}"
 
 
 # ============================================================================

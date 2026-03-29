@@ -27,7 +27,54 @@
       "combat_accuracy": 65,
       "weapon_slots": 2,
       "defense_slots": 1,
-      "utility_slots": 3
+      "utility_slots": 3,
+      "frame_requirements": {
+        "cockpit": {
+          "min": 1,
+          "max": 1,
+          "min_size": "small"
+        },
+        "engine": {
+          "min": 1,
+          "max": 1,
+          "min_size": "small"
+        },
+        "fuel": {
+          "min": 1,
+          "max": 1,
+          "min_size": "small"
+        },
+        "reactor": {
+          "min": 1,
+          "max": 1,
+          "min_size": "small"
+        },
+        "crew_quarters": {
+          "min": 0,
+          "max": 1,
+          "min_size": "small"
+        },
+        "weapon": {
+          "min": 0,
+          "max": 2,
+          "min_size": "small"
+        },
+        "defense": {
+          "min": 0,
+          "max": 1,
+          "min_size": "small"
+        },
+        "utility": {
+          "min": 0,
+          "max": 3,
+          "min_size": "small"
+        },
+        "cargo": {
+          "min": 0,
+          "max": 2,
+          "min_size": "small"
+        }
+      }
     },
     {
       "id": "light_freighter",
@@ -56,7 +103,54 @@
       "combat_accuracy": 70,
       "weapon_slots": 2,
       "defense_slots": 2,
-      "utility_slots": 4
+      "utility_slots": 4,
+      "frame_requirements": {
+        "cockpit": {
+          "min": 1,
+          "max": 1,
+          "min_size": "small"
+        },
+        "engine": {
+          "min": 1,
+          "max": 1,
+          "min_size": "small"
+        },
+        "fuel": {
+          "min": 1,
+          "max": 1,
+          "min_size": "small"
+        },
+        "reactor": {
+          "min": 1,
+          "max": 1,
+          "min_size": "small"
+        },
+        "crew_quarters": {
+          "min": 0,
+          "max": 1,
+          "min_size": "small"
+        },
+        "weapon": {
+          "min": 0,
+          "max": 2,
+          "min_size": "small"
+        },
+        "defense": {
+          "min": 0,
+          "max": 2,
+          "min_size": "small"
+        },
+        "utility": {
+          "min": 0,
+          "max": 4,
+          "min_size": "small"
+        },
+        "cargo": {
+          "min": 0,
+          "max": 3,
+          "min_size": "small"
+        }
+      }
     },
     {
       "id": "prospector",
@@ -85,7 +179,54 @@
       "combat_accuracy": 60,
       "weapon_slots": 1,
       "defense_slots": 2,
-      "utility_slots": 5
+      "utility_slots": 5,
+      "frame_requirements": {
+        "cockpit": {
+          "min": 1,
+          "max": 1,
+          "min_size": "small"
+        },
+        "engine": {
+          "min": 1,
+          "max": 1,
+          "min_size": "small"
+        },
+        "fuel": {
+          "min": 1,
+          "max": 1,
+          "min_size": "small"
+        },
+        "reactor": {
+          "min": 1,
+          "max": 1,
+          "min_size": "small"
+        },
+        "crew_quarters": {
+          "min": 0,
+          "max": 1,
+          "min_size": "small"
+        },
+        "weapon": {
+          "min": 0,
+          "max": 1,
+          "min_size": "small"
+        },
+        "defense": {
+          "min": 0,
+          "max": 2,
+          "min_size": "small"
+        },
+        "utility": {
+          "min": 0,
+          "max": 5,
+          "min_size": "small"
+        },
+        "cargo": {
+          "min": 0,
+          "max": 3,
+          "min_size": "small"
+        }
+      }
     },
     {
       "id": "patrol_cutter",
@@ -114,7 +255,54 @@
       "combat_accuracy": 74,
       "weapon_slots": 3,
       "defense_slots": 2,
-      "utility_slots": 3
+      "utility_slots": 3,
+      "frame_requirements": {
+        "cockpit": {
+          "min": 1,
+          "max": 1,
+          "min_size": "small"
+        },
+        "engine": {
+          "min": 1,
+          "max": 1,
+          "min_size": "small"
+        },
+        "fuel": {
+          "min": 1,
+          "max": 1,
+          "min_size": "small"
+        },
+        "reactor": {
+          "min": 1,
+          "max": 1,
+          "min_size": "small"
+        },
+        "crew_quarters": {
+          "min": 0,
+          "max": 1,
+          "min_size": "small"
+        },
+        "weapon": {
+          "min": 0,
+          "max": 3,
+          "min_size": "small"
+        },
+        "defense": {
+          "min": 0,
+          "max": 2,
+          "min_size": "small"
+        },
+        "utility": {
+          "min": 0,
+          "max": 3,
+          "min_size": "small"
+        },
+        "cargo": {
+          "min": 0,
+          "max": 3,
+          "min_size": "small"
+        }
+      }
     },
     {
       "id": "medium_freighter",
@@ -143,7 +331,54 @@
       "combat_accuracy": 70,
       "weapon_slots": 2,
       "defense_slots": 3,
-      "utility_slots": 4
+      "utility_slots": 4,
+      "frame_requirements": {
+        "cockpit": {
+          "min": 1,
+          "max": 1,
+          "min_size": "small"
+        },
+        "engine": {
+          "min": 1,
+          "max": 2,
+          "min_size": "medium"
+        },
+        "fuel": {
+          "min": 1,
+          "max": 2,
+          "min_size": "small"
+        },
+        "reactor": {
+          "min": 1,
+          "max": 1,
+          "min_size": "small"
+        },
+        "crew_quarters": {
+          "min": 1,
+          "max": 2,
+          "min_size": "small"
+        },
+        "weapon": {
+          "min": 0,
+          "max": 2,
+          "min_size": "small"
+        },
+        "defense": {
+          "min": 0,
+          "max": 3,
+          "min_size": "small"
+        },
+        "utility": {
+          "min": 0,
+          "max": 4,
+          "min_size": "small"
+        },
+        "cargo": {
+          "min": 0,
+          "max": 4,
+          "min_size": "small"
+        }
+      }
     },
     {
       "id": "fast_courier",
@@ -174,7 +409,54 @@
       "combat_accuracy": 75,
       "weapon_slots": 3,
       "defense_slots": 2,
-      "utility_slots": 3
+      "utility_slots": 3,
+      "frame_requirements": {
+        "cockpit": {
+          "min": 1,
+          "max": 1,
+          "min_size": "small"
+        },
+        "engine": {
+          "min": 1,
+          "max": 2,
+          "min_size": "medium"
+        },
+        "fuel": {
+          "min": 1,
+          "max": 2,
+          "min_size": "small"
+        },
+        "reactor": {
+          "min": 1,
+          "max": 1,
+          "min_size": "small"
+        },
+        "crew_quarters": {
+          "min": 1,
+          "max": 2,
+          "min_size": "small"
+        },
+        "weapon": {
+          "min": 0,
+          "max": 3,
+          "min_size": "small"
+        },
+        "defense": {
+          "min": 0,
+          "max": 2,
+          "min_size": "small"
+        },
+        "utility": {
+          "min": 0,
+          "max": 3,
+          "min_size": "small"
+        },
+        "cargo": {
+          "min": 0,
+          "max": 4,
+          "min_size": "small"
+        }
+      }
     },
     {
       "id": "armed_trader",
@@ -203,7 +485,54 @@
       "combat_accuracy": 72,
       "weapon_slots": 3,
       "defense_slots": 3,
-      "utility_slots": 3
+      "utility_slots": 3,
+      "frame_requirements": {
+        "cockpit": {
+          "min": 1,
+          "max": 1,
+          "min_size": "small"
+        },
+        "engine": {
+          "min": 1,
+          "max": 2,
+          "min_size": "medium"
+        },
+        "fuel": {
+          "min": 1,
+          "max": 2,
+          "min_size": "small"
+        },
+        "reactor": {
+          "min": 1,
+          "max": 1,
+          "min_size": "small"
+        },
+        "crew_quarters": {
+          "min": 1,
+          "max": 2,
+          "min_size": "small"
+        },
+        "weapon": {
+          "min": 0,
+          "max": 3,
+          "min_size": "small"
+        },
+        "defense": {
+          "min": 0,
+          "max": 3,
+          "min_size": "small"
+        },
+        "utility": {
+          "min": 0,
+          "max": 3,
+          "min_size": "small"
+        },
+        "cargo": {
+          "min": 0,
+          "max": 4,
+          "min_size": "small"
+        }
+      }
     },
     {
       "id": "scout_vessel",
@@ -234,7 +563,54 @@
       "combat_accuracy": 68,
       "weapon_slots": 2,
       "defense_slots": 2,
-      "utility_slots": 5
+      "utility_slots": 5,
+      "frame_requirements": {
+        "cockpit": {
+          "min": 1,
+          "max": 1,
+          "min_size": "small"
+        },
+        "engine": {
+          "min": 1,
+          "max": 2,
+          "min_size": "medium"
+        },
+        "fuel": {
+          "min": 1,
+          "max": 3,
+          "min_size": "small"
+        },
+        "reactor": {
+          "min": 1,
+          "max": 1,
+          "min_size": "small"
+        },
+        "crew_quarters": {
+          "min": 1,
+          "max": 2,
+          "min_size": "small"
+        },
+        "weapon": {
+          "min": 0,
+          "max": 2,
+          "min_size": "small"
+        },
+        "defense": {
+          "min": 0,
+          "max": 2,
+          "min_size": "small"
+        },
+        "utility": {
+          "min": 0,
+          "max": 5,
+          "min_size": "small"
+        },
+        "cargo": {
+          "min": 0,
+          "max": 3,
+          "min_size": "small"
+        }
+      }
     },
     {
       "id": "corsair",
@@ -263,7 +639,54 @@
       "combat_accuracy": 76,
       "weapon_slots": 4,
       "defense_slots": 2,
-      "utility_slots": 3
+      "utility_slots": 3,
+      "frame_requirements": {
+        "cockpit": {
+          "min": 1,
+          "max": 1,
+          "min_size": "small"
+        },
+        "engine": {
+          "min": 1,
+          "max": 2,
+          "min_size": "medium"
+        },
+        "fuel": {
+          "min": 1,
+          "max": 2,
+          "min_size": "small"
+        },
+        "reactor": {
+          "min": 1,
+          "max": 1,
+          "min_size": "small"
+        },
+        "crew_quarters": {
+          "min": 1,
+          "max": 2,
+          "min_size": "small"
+        },
+        "weapon": {
+          "min": 0,
+          "max": 4,
+          "min_size": "small"
+        },
+        "defense": {
+          "min": 0,
+          "max": 2,
+          "min_size": "small"
+        },
+        "utility": {
+          "min": 0,
+          "max": 3,
+          "min_size": "small"
+        },
+        "cargo": {
+          "min": 0,
+          "max": 2,
+          "min_size": "small"
+        }
+      }
     },
     {
       "id": "mining_barge",
@@ -292,7 +715,54 @@
       "combat_accuracy": 55,
       "weapon_slots": 1,
       "defense_slots": 3,
-      "utility_slots": 6
+      "utility_slots": 6,
+      "frame_requirements": {
+        "cockpit": {
+          "min": 1,
+          "max": 1,
+          "min_size": "small"
+        },
+        "engine": {
+          "min": 1,
+          "max": 2,
+          "min_size": "medium"
+        },
+        "fuel": {
+          "min": 1,
+          "max": 2,
+          "min_size": "small"
+        },
+        "reactor": {
+          "min": 1,
+          "max": 1,
+          "min_size": "small"
+        },
+        "crew_quarters": {
+          "min": 1,
+          "max": 2,
+          "min_size": "small"
+        },
+        "weapon": {
+          "min": 0,
+          "max": 1,
+          "min_size": "small"
+        },
+        "defense": {
+          "min": 0,
+          "max": 3,
+          "min_size": "small"
+        },
+        "utility": {
+          "min": 0,
+          "max": 6,
+          "min_size": "small"
+        },
+        "cargo": {
+          "min": 0,
+          "max": 5,
+          "min_size": "small"
+        }
+      }
     },
     {
       "id": "smugglers_sloop",
@@ -323,7 +793,54 @@
       "combat_accuracy": 68,
       "weapon_slots": 2,
       "defense_slots": 2,
-      "utility_slots": 4
+      "utility_slots": 4,
+      "frame_requirements": {
+        "cockpit": {
+          "min": 1,
+          "max": 1,
+          "min_size": "small"
+        },
+        "engine": {
+          "min": 1,
+          "max": 2,
+          "min_size": "medium"
+        },
+        "fuel": {
+          "min": 1,
+          "max": 2,
+          "min_size": "small"
+        },
+        "reactor": {
+          "min": 1,
+          "max": 1,
+          "min_size": "small"
+        },
+        "crew_quarters": {
+          "min": 1,
+          "max": 2,
+          "min_size": "small"
+        },
+        "weapon": {
+          "min": 0,
+          "max": 2,
+          "min_size": "small"
+        },
+        "defense": {
+          "min": 0,
+          "max": 2,
+          "min_size": "small"
+        },
+        "utility": {
+          "min": 0,
+          "max": 4,
+          "min_size": "small"
+        },
+        "cargo": {
+          "min": 0,
+          "max": 4,
+          "min_size": "small"
+        }
+      }
     },
     {
       "id": "salvage_rig",
@@ -354,7 +871,54 @@
       "combat_accuracy": 65,
       "weapon_slots": 2,
       "defense_slots": 2,
-      "utility_slots": 5
+      "utility_slots": 5,
+      "frame_requirements": {
+        "cockpit": {
+          "min": 1,
+          "max": 1,
+          "min_size": "small"
+        },
+        "engine": {
+          "min": 1,
+          "max": 2,
+          "min_size": "medium"
+        },
+        "fuel": {
+          "min": 1,
+          "max": 2,
+          "min_size": "small"
+        },
+        "reactor": {
+          "min": 1,
+          "max": 1,
+          "min_size": "small"
+        },
+        "crew_quarters": {
+          "min": 1,
+          "max": 2,
+          "min_size": "small"
+        },
+        "weapon": {
+          "min": 0,
+          "max": 2,
+          "min_size": "small"
+        },
+        "defense": {
+          "min": 0,
+          "max": 3,
+          "min_size": "small"
+        },
+        "utility": {
+          "min": 0,
+          "max": 5,
+          "min_size": "small"
+        },
+        "cargo": {
+          "min": 0,
+          "max": 5,
+          "min_size": "small"
+        }
+      }
     },
     {
       "id": "bulk_hauler",
@@ -385,7 +949,54 @@
       "combat_accuracy": 65,
       "weapon_slots": 3,
       "defense_slots": 3,
-      "utility_slots": 5
+      "utility_slots": 4,
+      "frame_requirements": {
+        "cockpit": {
+          "min": 1,
+          "max": 1,
+          "min_size": "medium"
+        },
+        "engine": {
+          "min": 2,
+          "max": 2,
+          "min_size": "medium"
+        },
+        "fuel": {
+          "min": 1,
+          "max": 2,
+          "min_size": "medium"
+        },
+        "reactor": {
+          "min": 1,
+          "max": 2,
+          "min_size": "small"
+        },
+        "crew_quarters": {
+          "min": 1,
+          "max": 3,
+          "min_size": "small"
+        },
+        "weapon": {
+          "min": 0,
+          "max": 3,
+          "min_size": "small"
+        },
+        "defense": {
+          "min": 0,
+          "max": 3,
+          "min_size": "small"
+        },
+        "utility": {
+          "min": 0,
+          "max": 4,
+          "min_size": "small"
+        },
+        "cargo": {
+          "min": 0,
+          "max": 6,
+          "min_size": "small"
+        }
+      }
     },
     {
       "id": "luxury_yacht",
@@ -417,7 +1028,54 @@
       "combat_accuracy": 70,
       "weapon_slots": 2,
       "defense_slots": 4,
-      "utility_slots": 4
+      "utility_slots": 4,
+      "frame_requirements": {
+        "cockpit": {
+          "min": 1,
+          "max": 1,
+          "min_size": "medium"
+        },
+        "engine": {
+          "min": 2,
+          "max": 2,
+          "min_size": "medium"
+        },
+        "fuel": {
+          "min": 1,
+          "max": 2,
+          "min_size": "medium"
+        },
+        "reactor": {
+          "min": 1,
+          "max": 2,
+          "min_size": "small"
+        },
+        "crew_quarters": {
+          "min": 1,
+          "max": 3,
+          "min_size": "small"
+        },
+        "weapon": {
+          "min": 0,
+          "max": 2,
+          "min_size": "small"
+        },
+        "defense": {
+          "min": 0,
+          "max": 4,
+          "min_size": "small"
+        },
+        "utility": {
+          "min": 0,
+          "max": 4,
+          "min_size": "small"
+        },
+        "cargo": {
+          "min": 0,
+          "max": 5,
+          "min_size": "small"
+        }
+      }
     },
     {
       "id": "clipper",
@@ -449,7 +1107,54 @@
       "combat_accuracy": 70,
       "weapon_slots": 3,
       "defense_slots": 2,
-      "utility_slots": 4
+      "utility_slots": 4,
+      "frame_requirements": {
+        "cockpit": {
+          "min": 1,
+          "max": 1,
+          "min_size": "medium"
+        },
+        "engine": {
+          "min": 2,
+          "max": 2,
+          "min_size": "medium"
+        },
+        "fuel": {
+          "min": 1,
+          "max": 2,
+          "min_size": "medium"
+        },
+        "reactor": {
+          "min": 1,
+          "max": 2,
+          "min_size": "small"
+        },
+        "crew_quarters": {
+          "min": 1,
+          "max": 3,
+          "min_size": "small"
+        },
+        "weapon": {
+          "min": 0,
+          "max": 3,
+          "min_size": "small"
+        },
+        "defense": {
+          "min": 0,
+          "max": 2,
+          "min_size": "small"
+        },
+        "utility": {
+          "min": 0,
+          "max": 4,
+          "min_size": "small"
+        },
+        "cargo": {
+          "min": 0,
+          "max": 5,
+          "min_size": "small"
+        }
+      }
     },
     {
       "id": "war_frigate",
@@ -459,7 +1164,7 @@
       "defensive_identity": "juggernaut",
       "combat_armor": 4,
       "combat_shield_regen": 0,
-      "description": "A dedicated warship bristling with weapon hardpoints and thick armor plating. Four weapon slots and three defense slots make this the most combat-capable vessel money can buy, and its heavy hull absorbs punishment that would shatter lighter ships. The tiny cargo bay is a statement: this ship earns its keep through firepower.",
+      "description": "A dedicated warship bristling with weapon hardpoints and thick armor plating. Five weapon slots and four defense slots make this the most combat-capable vessel money can buy, and its heavy hull absorbs punishment that would shatter lighter ships. The tiny cargo bay is a statement: this ship earns its keep through firepower.",
       "cargo_capacity": 240,
       "fuel_capacity": 60,
       "fuel_efficiency": 24,
@@ -478,7 +1183,54 @@
       "combat_accuracy": 78,
       "weapon_slots": 5,
       "defense_slots": 4,
-      "utility_slots": 3
+      "utility_slots": 3,
+      "frame_requirements": {
+        "cockpit": {
+          "min": 1,
+          "max": 1,
+          "min_size": "medium"
+        },
+        "engine": {
+          "min": 2,
+          "max": 2,
+          "min_size": "medium"
+        },
+        "fuel": {
+          "min": 1,
+          "max": 2,
+          "min_size": "medium"
+        },
+        "reactor": {
+          "min": 1,
+          "max": 2,
+          "min_size": "small"
+        },
+        "crew_quarters": {
+          "min": 1,
+          "max": 3,
+          "min_size": "small"
+        },
+        "weapon": {
+          "min": 0,
+          "max": 5,
+          "min_size": "small"
+        },
+        "defense": {
+          "min": 0,
+          "max": 4,
+          "min_size": "small"
+        },
+        "utility": {
+          "min": 0,
+          "max": 3,
+          "min_size": "small"
+        },
+        "cargo": {
+          "min": 0,
+          "max": 2,
+          "min_size": "small"
+        }
+      }
     },
     {
       "id": "deep_explorer",
@@ -509,7 +1261,54 @@
       "combat_accuracy": 70,
       "weapon_slots": 2,
       "defense_slots": 3,
-      "utility_slots": 6
+      "utility_slots": 6,
+      "frame_requirements": {
+        "cockpit": {
+          "min": 1,
+          "max": 1,
+          "min_size": "medium"
+        },
+        "engine": {
+          "min": 2,
+          "max": 2,
+          "min_size": "medium"
+        },
+        "fuel": {
+          "min": 1,
+          "max": 3,
+          "min_size": "medium"
+        },
+        "reactor": {
+          "min": 1,
+          "max": 2,
+          "min_size": "small"
+        },
+        "crew_quarters": {
+          "min": 1,
+          "max": 3,
+          "min_size": "small"
+        },
+        "weapon": {
+          "min": 0,
+          "max": 2,
+          "min_size": "small"
+        },
+        "defense": {
+          "min": 0,
+          "max": 3,
+          "min_size": "small"
+        },
+        "utility": {
+          "min": 0,
+          "max": 6,
+          "min_size": "small"
+        },
+        "cargo": {
+          "min": 0,
+          "max": 5,
+          "min_size": "small"
+        }
+      }
     },
     {
       "id": "phantom",
@@ -541,7 +1340,54 @@
       "combat_accuracy": 72,
       "weapon_slots": 3,
       "defense_slots": 2,
-      "utility_slots": 5
+      "utility_slots": 5,
+      "frame_requirements": {
+        "cockpit": {
+          "min": 1,
+          "max": 1,
+          "min_size": "medium"
+        },
+        "engine": {
+          "min": 2,
+          "max": 3,
+          "min_size": "medium"
+        },
+        "fuel": {
+          "min": 1,
+          "max": 2,
+          "min_size": "medium"
+        },
+        "reactor": {
+          "min": 1,
+          "max": 2,
+          "min_size": "small"
+        },
+        "crew_quarters": {
+          "min": 1,
+          "max": 3,
+          "min_size": "small"
+        },
+        "weapon": {
+          "min": 0,
+          "max": 3,
+          "min_size": "small"
+        },
+        "defense": {
+          "min": 0,
+          "max": 2,
+          "min_size": "small"
+        },
+        "utility": {
+          "min": 0,
+          "max": 5,
+          "min_size": "small"
+        },
+        "cargo": {
+          "min": 0,
+          "max": 5,
+          "min_size": "small"
+        }
+      }
     },
     {
       "id": "industrial_titan",
@@ -572,7 +1418,54 @@
       "combat_accuracy": 50,
       "weapon_slots": 1,
       "defense_slots": 4,
-      "utility_slots": 7
+      "utility_slots": 7,
+      "frame_requirements": {
+        "cockpit": {
+          "min": 1,
+          "max": 1,
+          "min_size": "medium"
+        },
+        "engine": {
+          "min": 2,
+          "max": 2,
+          "min_size": "medium"
+        },
+        "fuel": {
+          "min": 1,
+          "max": 2,
+          "min_size": "medium"
+        },
+        "reactor": {
+          "min": 1,
+          "max": 2,
+          "min_size": "small"
+        },
+        "crew_quarters": {
+          "min": 1,
+          "max": 3,
+          "min_size": "small"
+        },
+        "weapon": {
+          "min": 0,
+          "max": 1,
+          "min_size": "small"
+        },
+        "defense": {
+          "min": 0,
+          "max": 4,
+          "min_size": "small"
+        },
+        "utility": {
+          "min": 0,
+          "max": 7,
+          "min_size": "small"
+        },
+        "cargo": {
+          "min": 0,
+          "max": 6,
+          "min_size": "small"
+        }
+      }
     },
     {
       "id": "diplomatic_cruiser",
@@ -604,7 +1497,54 @@
       "combat_accuracy": 68,
       "weapon_slots": 2,
       "defense_slots": 4,
-      "utility_slots": 5
+      "utility_slots": 5,
+      "frame_requirements": {
+        "cockpit": {
+          "min": 1,
+          "max": 1,
+          "min_size": "medium"
+        },
+        "engine": {
+          "min": 2,
+          "max": 2,
+          "min_size": "medium"
+        },
+        "fuel": {
+          "min": 1,
+          "max": 2,
+          "min_size": "medium"
+        },
+        "reactor": {
+          "min": 1,
+          "max": 2,
+          "min_size": "small"
+        },
+        "crew_quarters": {
+          "min": 1,
+          "max": 3,
+          "min_size": "small"
+        },
+        "weapon": {
+          "min": 0,
+          "max": 2,
+          "min_size": "small"
+        },
+        "defense": {
+          "min": 0,
+          "max": 4,
+          "min_size": "small"
+        },
+        "utility": {
+          "min": 0,
+          "max": 5,
+          "min_size": "small"
+        },
+        "cargo": {
+          "min": 0,
+          "max": 5,
+          "min_size": "small"
+        }
+      }
     },
     {
       "id": "consortium_merchantman",
@@ -637,7 +1577,54 @@
       "defense_slots": 3,
       "utility_slots": 5,
       "faction_required": "nexus_trade",
-      "faction_rep_required": 50
+      "faction_rep_required": 50,
+      "frame_requirements": {
+        "cockpit": {
+          "min": 1,
+          "max": 1,
+          "min_size": "medium"
+        },
+        "engine": {
+          "min": 2,
+          "max": 2,
+          "min_size": "medium"
+        },
+        "fuel": {
+          "min": 1,
+          "max": 2,
+          "min_size": "medium"
+        },
+        "reactor": {
+          "min": 1,
+          "max": 2,
+          "min_size": "small"
+        },
+        "crew_quarters": {
+          "min": 1,
+          "max": 4,
+          "min_size": "small"
+        },
+        "weapon": {
+          "min": 0,
+          "max": 3,
+          "min_size": "small"
+        },
+        "defense": {
+          "min": 0,
+          "max": 3,
+          "min_size": "small"
+        },
+        "utility": {
+          "min": 0,
+          "max": 5,
+          "min_size": "small"
+        },
+        "cargo": {
+          "min": 0,
+          "max": 6,
+          "min_size": "small"
+        }
+      }
     },
     {
       "id": "syndicate_enforcer",
@@ -670,7 +1657,54 @@
       "defense_slots": 4,
       "utility_slots": 4,
       "faction_required": "forgeworks_industrial",
-      "faction_rep_required": 50
+      "faction_rep_required": 50,
+      "frame_requirements": {
+        "cockpit": {
+          "min": 1,
+          "max": 1,
+          "min_size": "medium"
+        },
+        "engine": {
+          "min": 2,
+          "max": 2,
+          "min_size": "medium"
+        },
+        "fuel": {
+          "min": 1,
+          "max": 2,
+          "min_size": "medium"
+        },
+        "reactor": {
+          "min": 1,
+          "max": 2,
+          "min_size": "small"
+        },
+        "crew_quarters": {
+          "min": 1,
+          "max": 3,
+          "min_size": "small"
+        },
+        "weapon": {
+          "min": 0,
+          "max": 4,
+          "min_size": "small"
+        },
+        "defense": {
+          "min": 0,
+          "max": 4,
+          "min_size": "small"
+        },
+        "utility": {
+          "min": 0,
+          "max": 4,
+          "min_size": "small"
+        },
+        "cargo": {
+          "min": 0,
+          "max": 5,
+          "min_size": "small"
+        }
+      }
     },
     {
       "id": "frontier_runner",
@@ -703,7 +1737,54 @@
       "defense_slots": 2,
       "utility_slots": 5,
       "faction_required": "free_salvagers",
-      "faction_rep_required": 50
+      "faction_rep_required": 50,
+      "frame_requirements": {
+        "cockpit": {
+          "min": 1,
+          "max": 1,
+          "min_size": "medium"
+        },
+        "engine": {
+          "min": 2,
+          "max": 2,
+          "min_size": "medium"
+        },
+        "fuel": {
+          "min": 1,
+          "max": 2,
+          "min_size": "medium"
+        },
+        "reactor": {
+          "min": 1,
+          "max": 2,
+          "min_size": "small"
+        },
+        "crew_quarters": {
+          "min": 1,
+          "max": 3,
+          "min_size": "small"
+        },
+        "weapon": {
+          "min": 0,
+          "max": 3,
+          "min_size": "small"
+        },
+        "defense": {
+          "min": 0,
+          "max": 2,
+          "min_size": "small"
+        },
+        "utility": {
+          "min": 0,
+          "max": 5,
+          "min_size": "small"
+        },
+        "cargo": {
+          "min": 0,
+          "max": 6,
+          "min_size": "small"
+        }
+      }
     },
     {
       "id": "institute_vessel",
@@ -736,7 +1817,54 @@
       "defense_slots": 3,
       "utility_slots": 6,
       "faction_required": "axiom_research",
-      "faction_rep_required": 50
+      "faction_rep_required": 50,
+      "frame_requirements": {
+        "cockpit": {
+          "min": 1,
+          "max": 1,
+          "min_size": "medium"
+        },
+        "engine": {
+          "min": 2,
+          "max": 2,
+          "min_size": "medium"
+        },
+        "fuel": {
+          "min": 1,
+          "max": 2,
+          "min_size": "medium"
+        },
+        "reactor": {
+          "min": 1,
+          "max": 2,
+          "min_size": "small"
+        },
+        "crew_quarters": {
+          "min": 1,
+          "max": 3,
+          "min_size": "small"
+        },
+        "weapon": {
+          "min": 0,
+          "max": 2,
+          "min_size": "small"
+        },
+        "defense": {
+          "min": 0,
+          "max": 4,
+          "min_size": "small"
+        },
+        "utility": {
+          "min": 0,
+          "max": 6,
+          "min_size": "small"
+        },
+        "cargo": {
+          "min": 0,
+          "max": 5,
+          "min_size": "small"
+        }
+      }
     }
   ]
 }

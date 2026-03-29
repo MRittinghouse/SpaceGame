@@ -1982,7 +1982,7 @@
         "description": "Activate sensor spoofing to become nearly untargetable for one turn.",
         "effects": [
           {
-            "type": "evasion_buff",
+            "type": "evasion_mod",
             "value": 90.0
           }
         ],

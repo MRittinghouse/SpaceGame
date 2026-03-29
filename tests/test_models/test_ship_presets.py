@@ -88,7 +88,7 @@ class TestPresetGeneration:
             build = generate_preset_from_ship_type(st)
             # Ships with weapon or defense slots should have some slots
             if st.weapon_slots > 0 or st.defense_slots > 0:
-                assert len(build.slots) > 0, f"{ship_id} has no slots"
+                assert len(build.placed_slots) > 0, f"{ship_id} has no placed_slots"
 
     def test_preset_serialization_round_trip(self) -> None:
         ship_types = _load_ship_types()

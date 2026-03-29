@@ -14,10 +14,7 @@ from dataclasses import dataclass
 from typing import Optional
 
 from spacegame.models.ship_build import ShipBuild
-from spacegame.models.ship_module import (
-    ShipModule,
-    resolve_placed_module,
-)
+from spacegame.models.ship_module import ShipModule
 
 # Module HP scales linearly with pixel count
 HP_PER_MODULE_PIXEL = 5
@@ -28,7 +25,7 @@ class ModuleCombatState:
     """Tracks a single module's combat state."""
 
     module_id: str
-    placed_index: int  # Index into ShipBuild.modules
+    placed_index: int  # Index into ShipBuild.placed_slots
     max_hp: int
     current_hp: int
     disabled: bool = False
@@ -40,38 +37,6 @@ class ModuleCombatState:
         return self.current_hp / self.max_hp if self.max_hp > 0 else 0.0
 
 
-def init_module_combat_states(
-    build: ShipBuild,
-    module_catalog: dict[str, ShipModule],
-) -> list[ModuleCombatState]:
-    """Initialize combat states for all placed modules in a build.
-
-    Each module's max HP = pixel_count * HP_PER_MODULE_PIXEL.
-
-    Args:
-        build: The ship build containing placed modules.
-        module_catalog: Module blueprint catalog.
-
-    Returns:
-        List of ModuleCombatState, one per placed module.
-    """
-    states: list[ModuleCombatState] = []
-    for i, placed in enumerate(build.modules):
-        module = module_catalog.get(placed.module_id)
-        if not module:
-            continue
-        max_hp = module.pixel_count * HP_PER_MODULE_PIXEL
-        states.append(
-            ModuleCombatState(
-                module_id=placed.module_id,
-                placed_index=i,
-                max_hp=max_hp,
-                current_hp=max_hp,
-                disabled=False,
-                category=module.category,
-            )
-        )
-    return states
 
 
 # HP per grid cell for slot-based builds (slots use footprint area instead of pixel count)
@@ -169,43 +134,30 @@ def resolve_module_hit(
     module_catalog: dict[str, ShipModule],
     states: list[ModuleCombatState],
 ) -> Optional[int]:
-    """Determine which module (or hull) a hit lands on.
+    """Determine which slot (or hull) a hit lands on.
 
-    Uses probabilistic targeting based on pixel coverage: each module's
-    hit probability = (module pixel count / total pixel count). Hull
-    pixels get the remaining probability.
+    Uses probabilistic targeting based on combat state HP pools.
+    Each slot's hit probability is proportional to its max HP.
+    Hull pixels get the remaining probability.
 
     Args:
         build: The ship build.
-        module_catalog: Module blueprint catalog.
+        module_catalog: Module/slot catalog (kept for API compat).
         states: Current module combat states.
 
     Returns:
-        Module state index (into states list) if a module is hit,
+        Module state index (into states list) if a slot is hit,
         or None if hull pixels are hit.
     """
-    # Count pixels per module and hull
-    module_pixel_counts: list[int] = []
-    for placed in build.modules:
-        module = module_catalog.get(placed.module_id)
-        if module:
-            module_pixel_counts.append(module.pixel_count)
-        else:
-            module_pixel_counts.append(0)
-
     hull_pixel_count = len(build.pixels)
-    total = sum(module_pixel_counts) + hull_pixel_count
 
-    if total == 0:
-        return None
-
-    # Build weighted choices: one entry per module + one for hull
+    # Build weighted choices from combat states
     choices: list[Optional[int]] = []
     weights: list[int] = []
-    for i, count in enumerate(module_pixel_counts):
-        if count > 0:
+    for i, state in enumerate(states):
+        if state.max_hp > 0 and not state.disabled:
             choices.append(i)
-            weights.append(count)
+            weights.append(state.max_hp)
     if hull_pixel_count > 0:
         choices.append(None)
         weights.append(hull_pixel_count)
@@ -295,39 +247,38 @@ def check_severing(
     module_catalog: dict[str, ShipModule],
     states: list[ModuleCombatState],
 ) -> list[int]:
-    """Check if any disabled modules have caused structural severing.
+    """Check if any disabled slots have caused structural severing.
 
-    When a module is destroyed, its pixels are removed from the ship's
-    connectivity graph. If this disconnects the graph, all modules on
-    the smaller disconnected section are also disabled.
+    When a slot is destroyed, its footprint pixels are removed from the
+    ship's connectivity graph. If this disconnects the graph, all slots
+    on the smaller disconnected section are also disabled.
 
     Args:
         build: The ship build.
-        module_catalog: Module blueprint catalog.
+        module_catalog: Catalog reference (slot_definitions for slot builds).
         states: Current module combat states.
 
     Returns:
-        List of module state indices that were newly disabled by severing.
+        List of state indices that were newly disabled by severing.
     """
-    from spacegame.models.ship_module import resolve_all_pixels
-
-    # Only check severing if at least one module is disabled
+    # Only check severing if at least one slot is disabled
     has_disabled = any(s.disabled for s in states)
     if not has_disabled:
         return []
 
-    # Build the full pixel set, excluding pixels from disabled modules
-    all_pixels = resolve_all_pixels(build, module_catalog)
-    disabled_pixel_set: set[tuple[int, int]] = set()
-    for state in states:
-        if state.disabled and state.placed_index < len(build.modules):
-            placed = build.modules[state.placed_index]
-            if placed.module_id in module_catalog:
-                for p in resolve_placed_module(placed, module_catalog):
-                    disabled_pixel_set.add((p.x, p.y))
+    # Build the full pixel set from hull pixels
+    all_pixel_coords = {(p.x, p.y) for p in build.pixels}
+    if len(all_pixel_coords) <= 1:
+        return []
 
-    # Remaining connected pixels
-    remaining = {(p.x, p.y) for p in all_pixels} - disabled_pixel_set
+    # For slot-based builds, we approximate severing by connectivity
+    # of hull pixels (slots don't own pixels, they overlay them)
+    # Simplified: no severing for pixel-only builds
+    if not build.placed_slots:
+        return []
+
+    # Remaining connected pixels (hull pixels are the connectivity substrate)
+    remaining = set(all_pixel_coords)
     if len(remaining) <= 1:
         return []
 
@@ -361,19 +312,27 @@ def check_severing(
         if comp is not largest:
             severed_pixels |= comp
 
-    # Disable all non-disabled modules whose pixels fall entirely in severed sections
+    # Disable all non-disabled slots whose footprint falls in severed sections
     newly_severed: list[int] = []
     for i, state in enumerate(states):
         if state.disabled:
             continue
-        if state.placed_index >= len(build.modules):
+        if state.placed_index >= len(build.placed_slots):
             continue
-        placed = build.modules[state.placed_index]
-        if placed.module_id not in module_catalog:
+        placed_slot = build.placed_slots[state.placed_index]
+        # Get slot footprint from catalog
+        slot_def = module_catalog.get(placed_slot.slot_def_id)
+        if not slot_def:
             continue
-        mod_pixels = {(p.x, p.y) for p in resolve_placed_module(placed, module_catalog)}
-        # Module is severed if ALL its non-disabled pixels are in severed sections
-        active_pixels = mod_pixels - disabled_pixel_set
+        fw = getattr(slot_def, "footprint_w", 1)
+        fh = getattr(slot_def, "footprint_h", 1)
+        slot_pixels = {
+            (placed_slot.x + dx, placed_slot.y + dy)
+            for dx in range(fw)
+            for dy in range(fh)
+        }
+        # Slot is severed if ALL its pixels are in severed sections
+        active_pixels = slot_pixels & all_pixel_coords
         if active_pixels and active_pixels.issubset(severed_pixels):
             state.disabled = True
             state.current_hp = 0
@@ -396,46 +355,50 @@ def build_adjacency_map(
     build: "ShipBuild",
     module_catalog: dict[str, ShipModule],
 ) -> dict[int, list[int]]:
-    """Build a map of which modules are 4-connected adjacent.
+    """Build a map of which slots are 4-connected adjacent.
 
-    Two modules are adjacent if any of their pixels share a
+    Two slots are adjacent if any of their footprint cells share a
     4-connected edge (orthogonal neighbors).
 
     Args:
         build: The ship build.
-        module_catalog: Module blueprints.
+        module_catalog: Slot definition catalog.
 
     Returns:
-        Dict mapping module index → list of adjacent module indices.
+        Dict mapping slot index -> list of adjacent slot indices.
     """
-    if not build.modules:
+    if not build.placed_slots:
         return {}
 
-    # Resolve pixel sets per module
-    module_pixel_sets: list[set[tuple[int, int]]] = []
-    for placed in build.modules:
-        if placed.module_id in module_catalog:
-            pixels = resolve_placed_module(placed, module_catalog)
-            module_pixel_sets.append({(p.x, p.y) for p in pixels})
+    # Resolve footprint pixel sets per slot
+    slot_pixel_sets: list[set[tuple[int, int]]] = []
+    for ps in build.placed_slots:
+        slot_def = module_catalog.get(ps.slot_def_id)
+        if slot_def:
+            fw = getattr(slot_def, "footprint_w", 1)
+            fh = getattr(slot_def, "footprint_h", 1)
+            slot_pixel_sets.append({
+                (ps.x + dx, ps.y + dy)
+                for dx in range(fw)
+                for dy in range(fh)
+            })
         else:
-            module_pixel_sets.append(set())
+            slot_pixel_sets.append(set())
 
-    # Build adjacency by checking if any pixels are 4-adjacent between pairs
-    adjacency: dict[int, list[int]] = {i: [] for i in range(len(build.modules))}
+    # Build adjacency by checking if any cells are 4-adjacent between pairs
+    adjacency: dict[int, list[int]] = {i: [] for i in range(len(build.placed_slots))}
 
-    for i in range(len(module_pixel_sets)):
-        if not module_pixel_sets[i]:
+    for i in range(len(slot_pixel_sets)):
+        if not slot_pixel_sets[i]:
             continue
-        # Build the set of all 4-neighbors of module i's pixels
         neighbors_of_i: set[tuple[int, int]] = set()
-        for x, y in module_pixel_sets[i]:
+        for x, y in slot_pixel_sets[i]:
             for dx, dy in ((0, 1), (0, -1), (1, 0), (-1, 0)):
                 neighbors_of_i.add((x + dx, y + dy))
-        # Check if any other module's pixels overlap with these neighbors
-        for j in range(i + 1, len(module_pixel_sets)):
-            if not module_pixel_sets[j]:
+        for j in range(i + 1, len(slot_pixel_sets)):
+            if not slot_pixel_sets[j]:
                 continue
-            if neighbors_of_i & module_pixel_sets[j]:
+            if neighbors_of_i & slot_pixel_sets[j]:
                 adjacency[i].append(j)
                 adjacency[j].append(i)
 

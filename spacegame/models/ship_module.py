@@ -5,8 +5,7 @@ Defines ShipModule (a functional ship component blueprint) and PlacedModule
 unit — pre-designed, multi-pixel parts with fixed stats, named identity,
 and manufacturer affiliation.
 
-Also provides build-level functions: resolve_all_pixels, can_place_module,
-validate_connectivity, and validate_requirements.
+Also provides build-level functions: resolve_all_pixels, can_place_module.
 
 Part of the Shipbuilder Upgrade — Phases 1-2.
 """
@@ -440,25 +439,19 @@ def resolve_all_pixels(
     build: "ShipBuild",
     module_catalog: dict[str, ShipModule],
 ) -> list[PlacedPixel]:
-    """Flatten all module pixels and hull pixels into one list.
+    """Return all hull pixels from the build.
 
-    This is the bridge between the module abstraction and the pixel-based
-    rendering pipeline. The renderer sees only PlacedPixels.
+    Legacy modules are no longer supported; this returns only hull pixels.
+    The module_catalog parameter is kept for API compatibility.
 
     Args:
-        build: The ship build with modules and hull pixels.
-        module_catalog: Dict of all module blueprints keyed by ID.
+        build: The ship build with hull pixels.
+        module_catalog: Module blueprints (unused, kept for compatibility).
 
     Returns:
-        Combined list of PlacedPixel (module pixels first, then hull pixels).
+        List of PlacedPixel from the build's hull pixels.
     """
-
-    pixels: list[PlacedPixel] = []
-    for placed_mod in build.modules:
-        if placed_mod.module_id in module_catalog:
-            pixels.extend(resolve_placed_module(placed_mod, module_catalog))
-    pixels.extend(build.pixels)
-    return pixels
+    return list(build.pixels)
 
 
 def can_place_module(
@@ -495,12 +488,8 @@ def can_place_module(
     if placed.y + oriented.height > build.canvas_h:
         return False, "Module extends beyond canvas (bottom)"
 
-    # Build set of occupied coordinates (existing modules + hull pixels)
+    # Build set of occupied coordinates (hull pixels)
     occupied: set[tuple[int, int]] = set()
-    for existing_mod in build.modules:
-        if existing_mod.module_id in module_catalog:
-            for p in resolve_placed_module(existing_mod, module_catalog):
-                occupied.add((p.x, p.y))
     for p in build.pixels:
         occupied.add((p.x, p.y))
 
@@ -512,10 +501,6 @@ def can_place_module(
 
     # Weight check
     current_weight = 0.0
-    for existing_mod in build.modules:
-        existing_module = module_catalog.get(existing_mod.module_id)
-        if existing_module:
-            current_weight += existing_module.weight
     for p in build.pixels:
         mat = materials_catalog.get(p.material_id)
         if mat:
@@ -525,168 +510,6 @@ def can_place_module(
     if new_weight > build.max_weight:
         return False, (f"Exceeds weight limit ({new_weight:.1f}/{build.max_weight})")
 
-    # Module category cap check
-    from spacegame.models.ship_build import MODULE_CAPS
-
-    caps = MODULE_CAPS.get(build.weight_class, {})
-    if module.category in caps:
-        max_allowed = caps[module.category]
-        current_count = sum(
-            1
-            for m in build.modules
-            if m.module_id in module_catalog
-            and module_catalog[m.module_id].category == module.category
-        )
-        if current_count >= max_allowed:
-            cat_name = module.category.replace("_", " ").title()
-            return False, (
-                f"{cat_name} limit reached ({current_count}/{max_allowed} for {build.weight_class})"
-            )
-
     return True, "OK"
 
 
-def validate_connectivity(
-    build: "ShipBuild",
-    module_catalog: dict[str, ShipModule],
-) -> tuple[bool, str]:
-    """Validate that all filled pixels form a single 4-connected component.
-
-    Args:
-        build: The ship build to validate.
-        module_catalog: Dict of all module blueprints keyed by ID.
-
-    Returns:
-        (success, message) tuple.
-    """
-    all_pixels = resolve_all_pixels(build, module_catalog)
-    if len(all_pixels) <= 1:
-        return True, "OK"
-
-    coords = {(p.x, p.y) for p in all_pixels}
-
-    # BFS from the first pixel
-    start = next(iter(coords))
-    visited: set[tuple[int, int]] = set()
-    queue = [start]
-    visited.add(start)
-
-    while queue:
-        cx, cy = queue.pop()
-        for dx, dy in ((0, 1), (0, -1), (1, 0), (-1, 0)):
-            nx, ny = cx + dx, cy + dy
-            if (nx, ny) in coords and (nx, ny) not in visited:
-                visited.add((nx, ny))
-                queue.append((nx, ny))
-
-    if len(visited) == len(coords):
-        return True, "OK"
-    return False, (f"Ship is not connected: {len(visited)} of {len(coords)} pixels reachable")
-
-
-def get_module_equipment_slots(
-    build: "ShipBuild",
-    module_catalog: dict[str, ShipModule],
-) -> list[dict]:
-    """Extract equipment slot info from all placed modules.
-
-    Returns a list of dicts for each module that provides a slot_type,
-    including the module index, slot type, and installed equipment.
-    Modules without slot_type (cargo, structural, crew, reactor) are
-    excluded — they provide intrinsic stats, not equipment slots.
-
-    Args:
-        build: The ship build.
-        module_catalog: Module blueprints.
-
-    Returns:
-        List of dicts: {module_idx, slot_type, module_id, module_name,
-        installed_upgrade_id, upgrade_mark, upgrade_tuning}
-    """
-    slots: list[dict] = []
-    for i, placed in enumerate(build.modules):
-        module = module_catalog.get(placed.module_id)
-        if not module:
-            continue
-        slot_type = module.provides.get("slot_type")
-        if not slot_type:
-            continue
-        slots.append(
-            {
-                "module_idx": i,
-                "slot_type": slot_type,
-                "module_id": module.id,
-                "module_name": module.name,
-                "installed_upgrade_id": placed.installed_upgrade_id,
-                "upgrade_mark": placed.upgrade_mark,
-                "upgrade_tuning": placed.upgrade_tuning,
-            }
-        )
-    return slots
-
-
-def validate_requirements(
-    build: "ShipBuild",
-    module_catalog: dict[str, ShipModule],
-) -> tuple[bool, str]:
-    """Validate that all mandatory module categories are present.
-
-    Requirements:
-    - All ships: cockpit (1), engine (1+), weapon (1+), shield (1+), cargo (1+)
-    - Medium+: crew quarters (1+)
-    - Large+: reactor (1+)
-    - Engine must be in rear 30% of canvas (stern = left side)
-
-    Args:
-        build: The ship build to validate.
-        module_catalog: Dict of all module blueprints keyed by ID.
-
-    Returns:
-        (success, message) tuple.
-    """
-    # Count modules by category
-    category_counts: dict[str, int] = {}
-    for placed_mod in build.modules:
-        module = module_catalog.get(placed_mod.module_id)
-        if module:
-            cat = module.category
-            category_counts[cat] = category_counts.get(cat, 0) + 1
-
-    # Mandatory categories for all ships
-    mandatory = {
-        "cockpit": "Ship requires a cockpit module",
-        "engine": "Ship requires at least one engine module",
-        "weapon": "Ship requires at least one weapon mount",
-        "shield": "Ship requires at least one shield generator",
-        "cargo": "Ship requires at least one cargo bay",
-    }
-    for cat, error_msg in mandatory.items():
-        if category_counts.get(cat, 0) < 1:
-            return False, error_msg
-
-    # Conditional requirements based on weight class
-    weight_class = build.weight_class
-    medium_plus = weight_class in ("medium", "large", "xlarge")
-    large_plus = weight_class in ("large", "xlarge")
-
-    if medium_plus and category_counts.get("crew", 0) < 1:
-        return False, "Medium+ ships require crew quarters"
-    if large_plus and category_counts.get("reactor", 0) < 1:
-        return False, "Large+ ships require a reactor core"
-
-    # Engine placement: must be in rear 30% of canvas
-    # Ships face right, stern is left. Rear 30% = left 30% of canvas width.
-    rear_threshold = int(build.canvas_w * 0.30)
-    for placed_mod in build.modules:
-        module = module_catalog.get(placed_mod.module_id)
-        if module and module.category == "engine":
-            oriented = _get_oriented_module(placed_mod, module_catalog)
-            # Engine's rightmost pixel must be within rear zone
-            engine_right_x = placed_mod.x + oriented.width - 1
-            if engine_right_x >= rear_threshold:
-                return False, (
-                    f"Engine module must be in rear 30% of ship "
-                    f"(x < {rear_threshold}, but extends to x={engine_right_x})"
-                )
-
-    return True, "OK"

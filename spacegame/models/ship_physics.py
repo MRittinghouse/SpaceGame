@@ -13,10 +13,7 @@ from enum import Enum
 from typing import Optional
 
 from spacegame.models.ship_build import HullMaterial, ShipBuild
-from spacegame.models.ship_module import (
-    ShipModule,
-    resolve_placed_module,
-)
+from spacegame.models.ship_module import ShipModule
 
 
 class BalanceRating(Enum):
@@ -191,20 +188,6 @@ def compute_center_of_mass(
         weighted_x += p.x * w
         weighted_y += p.y * w
 
-    # Module contributions: distribute module weight evenly across its pixels
-    for placed_mod in build.modules:
-        module = module_catalog.get(placed_mod.module_id)
-        if not module:
-            continue
-        mod_pixels = resolve_placed_module(placed_mod, module_catalog)
-        if not mod_pixels:
-            continue
-        per_pixel_weight = module.weight / len(mod_pixels)
-        for mp in mod_pixels:
-            total_weight += per_pixel_weight
-            weighted_x += mp.x * per_pixel_weight
-            weighted_y += mp.y * per_pixel_weight
-
     if total_weight == 0:
         return 0.0, 0.0, 0.0, BalanceRating.BALANCED
 
@@ -214,11 +197,6 @@ def compute_center_of_mass(
     # Compute offset from geometric center of bounding box
     all_xs: list[int] = [p.x for p in build.pixels]
     all_ys: list[int] = [p.y for p in build.pixels]
-    for placed_mod in build.modules:
-        if placed_mod.module_id in module_catalog:
-            for mp in resolve_placed_module(placed_mod, module_catalog):
-                all_xs.append(mp.x)
-                all_ys.append(mp.y)
 
     if not all_xs:
         return com_x, com_y, 0.0, BalanceRating.BALANCED

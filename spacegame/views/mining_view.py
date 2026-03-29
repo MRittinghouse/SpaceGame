@@ -97,10 +97,11 @@ class MiningView(BaseView):
     GRID_OFFSET_X = scale_x(60)
     GRID_OFFSET_Y = scale_y(120)
 
-    # Right-side info cards: two columns with consistent spacing
-    CARD_COL_W = scale_x(240)
-    CARD_COL_GAP = scale_x(12)
-    CARD_COL_RIGHT_X = WINDOW_WIDTH - CARD_COL_W - scale_x(10)
+    # Right-side info cards: two columns anchored from right edge
+    CARD_COL_W = scale_x(220)  # Left column width (Drones, Session Stats)
+    CARD_COL_W_RIGHT = scale_x(260)  # Right column width (Depth, Rock Types, Deep Core)
+    CARD_COL_GAP = scale_x(20)
+    CARD_COL_RIGHT_X = WINDOW_WIDTH - CARD_COL_W_RIGHT - scale_x(20)
     CARD_COL_LEFT_X = CARD_COL_RIGHT_X - CARD_COL_W - CARD_COL_GAP
     CARD_TOP_Y = scale_y(135)  # Aligned with grid top
     CARD_PAD = scale_y(8)  # Consistent vertical gap between cards
@@ -237,15 +238,17 @@ class MiningView(BaseView):
         self._tooltip = TooltipState(delay=0.3, fade_in=0.15)
 
         # Depth visual systems
+        grid_w = self.CELL_SIZE * 7
         grid_rect = pygame.Rect(
             self.GRID_OFFSET_X,
             self.GRID_OFFSET_Y,
-            self.CELL_SIZE * 7,
+            grid_w,
             self.CELL_SIZE * 5,
         )
         self._mining_atmosphere = MiningAtmosphere(grid_rect)
+        # Snap depth meter to the grid's right edge (outside border + label room)
         self._depth_meter = DepthMeter(
-            x=self.CARD_COL_LEFT_X - scale_x(65),
+            x=self.GRID_OFFSET_X + grid_w + scale_x(40),
             y=self.CARD_TOP_Y,
             height=scale_y(400),
         )
@@ -274,6 +277,7 @@ class MiningView(BaseView):
         RockType.RARE: "rock_rare_ore",
         RockType.DENSE: "rock_common_metals",
         RockType.VOLATILE: "rock_unstable",
+        RockType.MONOLITH: "rock_monolith",
     }
 
     # Number of visual variants per rock type
@@ -282,8 +286,9 @@ class MiningView(BaseView):
         RockType.IRON: 3,
         RockType.CRYSTAL: 3,
         RockType.RARE: 3,
-        RockType.DENSE: 2,
-        RockType.VOLATILE: 2,
+        RockType.DENSE: 3,
+        RockType.VOLATILE: 3,
+        RockType.MONOLITH: 1,
     }
 
     def _load_rock_sprites(self) -> None:
@@ -1187,7 +1192,13 @@ class MiningView(BaseView):
         """Handle chain-broken rocks: add cargo, emit particles, show feedback."""
         if not self.session:
             return
-        self.player.total_chains_triggered += len(self.session.chain_results)
+        chain_count = len(self.session.chain_results)
+        self.player.total_chains_triggered += chain_count
+        # Each chain reaction event grants a flat 15 XP bonus
+        if chain_count > 0 and self.progression:
+            msgs = self.progression.add_xp(15)
+            for m in msgs:
+                logger.info(m)
         for i, chain in enumerate(self.session.chain_results):
             self._silo.add_ore(chain.commodity_id, chain.quantity)
             self.player.ore_mined += chain.quantity
@@ -1617,18 +1628,24 @@ class MiningView(BaseView):
             tier_val = drone.tier.value
             color = tier_colors.get(tier_val, (120, 120, 120))
 
-            # Drone tier sprite or fallback circle
+            # Drone tier icon (small, left-aligned) + label
             drone_sprite = self._drone_sprites.get(tier_val)
+            icon_w = 0
             if drone_sprite is not None:
-                screen.blit(drone_sprite, (panel_x - 2, y - 6))
+                # Scale icon down to fit the text row (~18px tall)
+                icon_size = scale_y(18)
+                icon = pygame.transform.smoothscale(drone_sprite, (icon_size, icon_size))
+                screen.blit(icon, (panel_x, y))
+                icon_w = icon_size + 4
             else:
                 pygame.draw.circle(screen, color, (panel_x + 8, y + 8), 6)
                 pygame.draw.circle(screen, (200, 200, 200), (panel_x + 8, y + 8), 6, 1)
+                icon_w = 20
 
-            # Drone label
+            # Drone label (offset past icon)
             label = f"T{tier_val} {tier_names.get(tier_val, '???')}"
             label_surf = self.small_font.render(label, True, Colors.TEXT)
-            screen.blit(label_surf, (panel_x + 20, y))
+            screen.blit(label_surf, (panel_x + icon_w, y))
 
             # Status: current target or idle
             target = self.session.drone_targets.get(i) if self.session else None
@@ -1697,7 +1714,7 @@ class MiningView(BaseView):
         from spacegame.models.mining import DEPTH_ROCK_THRESHOLDS
 
         panel_x = self.CARD_COL_RIGHT_X
-        panel_w = self.CARD_COL_W
+        panel_w = self.CARD_COL_W_RIGHT
         panel_y = self.CARD_TOP_Y
 
         # Pre-calculate content height
@@ -1915,7 +1932,7 @@ class MiningView(BaseView):
 
         # Position below depth panel in right column
         panel_x = self.CARD_COL_RIGHT_X
-        panel_w = self.CARD_COL_W
+        panel_w = self.CARD_COL_W_RIGHT
         panel_y = getattr(self, "_depth_panel_bottom_y", 300) + self.CARD_PAD
 
         # Calculate content height for card background
@@ -1929,7 +1946,7 @@ class MiningView(BaseView):
         strata_surf = self.small_font.render(
             f"Strata: {self.player.strata_tokens}", True, (180, 140, 255)
         )
-        screen.blit(strata_surf, (panel_x + 180, panel_y))
+        screen.blit(strata_surf, (panel_x + panel_w - strata_surf.get_width(), panel_y))
 
         y = panel_y + 22
         mouse_pos = pygame.mouse.get_pos()

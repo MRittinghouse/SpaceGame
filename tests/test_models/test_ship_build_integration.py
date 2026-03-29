@@ -9,7 +9,6 @@ from spacegame.models.ship import Ship, ShipType
 from spacegame.models.ship_build import (
     ShipBuild,
     PlacedPixel,
-    DesignatedSlot,
     HullMaterial,
     ShipStatsComputer,
     ComputedShipStats,

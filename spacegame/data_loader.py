@@ -342,6 +342,7 @@ class DataLoader:
             weapon_slots=data.get("weapon_slots", 0),
             defense_slots=data.get("defense_slots", 0),
             utility_slots=data.get("utility_slots", 3),
+            frame_requirements=data.get("frame_requirements", {}),
             faction_required=data.get("faction_required"),
             faction_rep_required=data.get("faction_rep_required", 0),
             unlock_condition=data.get("unlock_condition"),
@@ -1279,6 +1280,7 @@ class DataLoader:
             phases=[BossPhase.from_dict(p) for p in data.get("phases", [])],
             immune_to=data.get("immune_to", []),
             max_suppressed_stacks=data.get("max_suppressed_stacks", 3),
+            sprite_rotation=data.get("sprite_rotation", 0),
             trophy_drop=data.get("trophy_drop", ""),
         )
 

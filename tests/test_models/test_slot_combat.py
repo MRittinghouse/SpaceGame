@@ -197,14 +197,10 @@ class TestGetSlotEquipmentMoves:
         assert len(moves) == 2
 
 
-class TestLegacyModulePathUnchanged:
-    """Verify that builds with modules (not placed_slots) still work."""
+class TestEmptyBuildProducesNoStates:
+    """Verify that builds without placed_slots produce no combat states."""
 
-    def test_module_build_produces_states(self) -> None:
-        """Module-based builds should still use init_module_combat_states."""
-        from spacegame.models.module_combat import init_module_combat_states
-
-        # This test just verifies the function still exists and works
+    def test_empty_build_no_states(self) -> None:
         build = ShipBuild(weight_class="small")
-        states = init_module_combat_states(build, {})
+        states = init_slot_combat_states(build, {})
         assert states == []

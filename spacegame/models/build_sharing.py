@@ -31,7 +31,7 @@ from spacegame.models.ship_build import (
     PlacedPixel,
     ShipBuild,
 )
-from spacegame.models.ship_module import PlacedModule, ShipModule
+from spacegame.models.ship_module import ShipModule
 from spacegame.utils.logger import logger
 
 # ============================================================================
@@ -82,20 +82,8 @@ def export_build_code(build: ShipBuild) -> str:
     if build.frame_variant:
         payload["fv"] = build.frame_variant
 
-    # Modules: only structural data (id, position, orientation)
-    if build.modules:
-        payload["m"] = [
-            {
-                "id": m.module_id,
-                "x": m.x,
-                "y": m.y,
-                "r": m.rotation,
-                "f": m.flipped,
-            }
-            for m in build.modules
-        ]
-    else:
-        payload["m"] = []
+    # Modules: legacy field, always empty for new builds
+    payload["m"] = []
 
     # Hull pixels: only position and material
     if build.pixels:
@@ -248,40 +236,8 @@ def _import_build_code_inner(
     if len(raw_pixels) > MAX_PIXEL_COUNT:
         return None, generic_error
 
-    # --- Stage 7: Module validation ---
-    validated_modules: list[PlacedModule] = []
-    for entry in raw_modules:
-        if not isinstance(entry, dict):
-            return None, generic_error
-
-        mod_id = entry.get("id")
-        if not isinstance(mod_id, str) or mod_id not in module_catalog:
-            return None, generic_error
-
-        x = entry.get("x")
-        y = entry.get("y")
-        if not isinstance(x, int) or not isinstance(y, int):
-            return None, generic_error
-        if x < 0 or y < 0 or x >= canvas_w or y >= canvas_h:
-            return None, generic_error
-
-        rot = entry.get("r", 0)
-        if not isinstance(rot, int) or rot not in VALID_ROTATIONS:
-            return None, generic_error
-
-        flipped = entry.get("f", False)
-        if not isinstance(flipped, bool):
-            return None, generic_error
-
-        validated_modules.append(
-            PlacedModule(
-                module_id=mod_id,
-                x=x,
-                y=y,
-                rotation=rot,
-                flipped=flipped,
-            )
-        )
+    # --- Stage 7: Module validation (legacy, skip) ---
+    # Legacy modules are no longer supported in builds; raw_modules is ignored.
 
     # --- Stage 8: Pixel validation ---
     validated_pixels: list[PlacedPixel] = []
@@ -306,12 +262,11 @@ def _import_build_code_inner(
     build = ShipBuild(
         weight_class=wc,
         frame_variant=fv,
-        modules=validated_modules,
         pixels=validated_pixels,
     )
 
     logger.debug(
-        f"Build code imported: {wc}, {len(validated_modules)} modules, "
+        f"Build code imported: {wc}, "
         f"{len(validated_pixels)} pixels"
     )
     return build, ""
@@ -329,54 +284,18 @@ def check_blueprint_availability(
 ) -> list[dict]:
     """Check which module blueprints in a build the player hasn't unlocked.
 
+    Legacy module builds are no longer supported; this always returns
+    an empty list. Kept for API compatibility with import flow callers.
+
     Args:
         build: The imported build to check.
         module_catalog: Module blueprints for metadata lookup.
         unlocked_modules: Player's set of unlocked module IDs.
 
     Returns:
-        List of dicts with module_id, name, category, unlock_method,
-        unlock_source for each missing blueprint. Empty if all owned.
+        Empty list (legacy modules removed).
     """
-    missing: list[dict] = []
-    seen: set[str] = set()
-
-    for placed in build.modules:
-        mid = placed.module_id
-        if mid in seen:
-            continue
-        seen.add(mid)
-
-        if mid in unlocked_modules:
-            continue
-
-        module = module_catalog.get(mid)
-        if module:
-            missing.append(
-                {
-                    "module_id": mid,
-                    "name": module.name,
-                    "category": module.category,
-                    "manufacturer": module.manufacturer,
-                    "unlock_method": module.unlock_method,
-                    "unlock_source": module.unlock_source,
-                    "unlock_cost": module.unlock_cost,
-                }
-            )
-        else:
-            missing.append(
-                {
-                    "module_id": mid,
-                    "name": mid,
-                    "category": "unknown",
-                    "manufacturer": "unknown",
-                    "unlock_method": "unknown",
-                    "unlock_source": "",
-                    "unlock_cost": 0,
-                }
-            )
-
-    return missing
+    return []
 
 
 # ============================================================================

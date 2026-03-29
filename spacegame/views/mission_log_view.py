@@ -90,11 +90,13 @@ class _MissionItem:
         mission: Mission,
         font: pygame.font.Font,
         badge_font: pygame.font.Font,
+        status: Optional[MissionStatus] = None,
     ) -> None:
         self.rect = rect
         self.mission = mission
         self.font = font
         self.badge_font = badge_font
+        self.status = status
         self.selected = False
         self.hovered = False
 
@@ -117,8 +119,14 @@ class _MissionItem:
         text_rect = text_surf.get_rect(midleft=(self.rect.x + 14, self.rect.centery))
         screen.blit(text_surf, text_rect)
 
-        # Type badge on the right
-        if self.mission.mission_type == "side":
+        # Status/type badge on the right
+        if self.status == MissionStatus.ABANDONED:
+            badge_text = "ABANDONED"
+            badge_color = (160, 80, 80)
+        elif self.status == MissionStatus.FAILED:
+            badge_text = "FAILED"
+            badge_color = (200, 60, 60)
+        elif self.mission.mission_type == "side":
             badge_text = "SIDE"
             badge_color = _SIDE_BADGE_COLOR
         else:
@@ -168,6 +176,40 @@ class _AcceptButton:
         return False
 
 
+class _AbandonButton:
+    """Abandon mission button shown in detail panel for active side missions."""
+
+    def __init__(self, rect: pygame.Rect, font: pygame.font.Font) -> None:
+        self.rect = rect
+        self.font = font
+        self.hovered = False
+        self.visible = False
+
+    def update_hover(self, mouse_pos: tuple[int, int]) -> None:
+        if self.visible:
+            self.hovered = self.rect.collidepoint(mouse_pos)
+        else:
+            self.hovered = False
+
+    def render(self, screen: pygame.Surface) -> None:
+        if not self.visible:
+            return
+        bg = (80, 30, 30) if self.hovered else (50, 25, 25)
+        border = (200, 60, 60) if self.hovered else (120, 50, 50)
+        pygame.draw.rect(screen, bg, self.rect, border_radius=4)
+        pygame.draw.rect(screen, border, self.rect, 1, border_radius=4)
+        text_surf = self.font.render("ABANDON", True, (200, 80, 80))
+        text_rect = text_surf.get_rect(center=self.rect.center)
+        screen.blit(text_surf, text_rect)
+
+    def was_clicked(self, event: pygame.event.Event) -> bool:
+        if not self.visible:
+            return False
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            return self.rect.collidepoint(event.pos)
+        return False
+
+
 class MissionLogView(BaseView):
     """Mission log showing active, available, and completed missions."""
 
@@ -185,6 +227,9 @@ class MissionLogView(BaseView):
         self._current_tab: str = "active"
         self._selected_mission_id: Optional[str] = None
         self.pending_accept_id: Optional[str] = None
+        self.pending_abandon_id: Optional[str] = None
+        self._abandon_confirm_active: bool = False
+        self._abandon_confirm_mission_id: Optional[str] = None
 
         # Scroll
         self._scroll_offset: int = 0
@@ -239,6 +284,11 @@ class MissionLogView(BaseView):
             pygame.Rect(detail_x + 20, WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - 140, 140, 38),
             self._label_font,
         )
+        # Abandon button (same position, different tab)
+        self._abandon_btn = _AbandonButton(
+            pygame.Rect(detail_x + 20, WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - 140, 140, 38),
+            self._label_font,
+        )
 
     def _destroy_ui(self) -> None:
         if self.back_button:
@@ -271,6 +321,10 @@ class MissionLogView(BaseView):
         }
         status = status_map.get(self._current_tab, MissionStatus.ACTIVE)
         missions = self.mission_manager.get_missions_by_status(status)
+        # Completed tab also shows abandoned and failed missions
+        if self._current_tab == "completed":
+            missions.extend(self.mission_manager.get_missions_by_status(MissionStatus.ABANDONED))
+            missions.extend(self.mission_manager.get_missions_by_status(MissionStatus.FAILED))
         # Sort: campaign missions first, then side missions
         missions.sort(key=lambda m: (0 if m.mission_type == "campaign" else 1, m.name))
 
@@ -281,7 +335,8 @@ class MissionLogView(BaseView):
                 LIST_WIDTH - 8,
                 ITEM_HEIGHT,
             )
-            item = _MissionItem(rect, mission, self._name_font, self._badge_font)
+            mission_status = self.mission_manager.get_status(mission.id) if self.mission_manager else None
+            item = _MissionItem(rect, mission, self._name_font, self._badge_font, status=mission_status)
             self._mission_items.append(item)
 
         # Auto-select first if available
@@ -296,6 +351,22 @@ class MissionLogView(BaseView):
             self._accept_btn.visible = (
                 self._current_tab == "available" and self._selected_mission_id is not None
             )
+        self._update_abandon_visibility()
+
+    def _update_abandon_visibility(self) -> None:
+        """Show abandon button only for active side missions."""
+        if not self._abandon_btn:
+            return
+        if self._current_tab != "active" or not self._selected_mission_id:
+            self._abandon_btn.visible = False
+            return
+        # Only side missions can be abandoned
+        mission = (
+            self.mission_manager.get_mission(self._selected_mission_id)
+            if self.mission_manager
+            else None
+        )
+        self._abandon_btn.visible = mission is not None and mission.mission_type == "side"
 
     def _select_mission(self, mission_id: str) -> None:
         self._selected_mission_id = mission_id
@@ -305,6 +376,7 @@ class MissionLogView(BaseView):
             self._accept_btn.visible = (
                 self._current_tab == "available" and self._selected_mission_id is not None
             )
+        self._update_abandon_visibility()
 
     def handle_event(self, event: pygame.event.Event) -> None:
         if event.type == pygame_gui.UI_BUTTON_PRESSED:
@@ -328,11 +400,46 @@ class MissionLogView(BaseView):
                 self._select_mission(item.mission.id)
                 return
 
+        # Confirmation overlay intercepts all clicks when active
+        if self._abandon_confirm_active:
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                mx, my = event.pos
+                # Yes/No button hit detection (centered overlay)
+                cx = WINDOW_WIDTH // 2
+                cy = WINDOW_HEIGHT // 2
+                yes_rect = pygame.Rect(cx - 120, cy + 20, 100, 36)
+                no_rect = pygame.Rect(cx + 20, cy + 20, 100, 36)
+                if yes_rect.collidepoint(mx, my):
+                    self.pending_abandon_id = self._abandon_confirm_mission_id
+                    self._abandon_confirm_active = False
+                    self._abandon_confirm_mission_id = None
+                    self.next_state = GameState.GALAXY_MAP
+                elif no_rect.collidepoint(mx, my):
+                    self._abandon_confirm_active = False
+                    self._abandon_confirm_mission_id = None
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE or event.key == pygame.K_n:
+                    self._abandon_confirm_active = False
+                    self._abandon_confirm_mission_id = None
+                elif event.key == pygame.K_y or event.key == pygame.K_RETURN:
+                    self.pending_abandon_id = self._abandon_confirm_mission_id
+                    self._abandon_confirm_active = False
+                    self._abandon_confirm_mission_id = None
+                    self.next_state = GameState.GALAXY_MAP
+            return  # Consume all events while confirm is open
+
         # Accept button
         if self._accept_btn and self._accept_btn.was_clicked(event):
             if self._selected_mission_id:
                 self.pending_accept_id = self._selected_mission_id
                 self.next_state = GameState.GALAXY_MAP
+                return
+
+        # Abandon button
+        if self._abandon_btn and self._abandon_btn.was_clicked(event):
+            if self._selected_mission_id:
+                self._abandon_confirm_active = True
+                self._abandon_confirm_mission_id = self._selected_mission_id
                 return
 
         # Scroll
@@ -348,6 +455,8 @@ class MissionLogView(BaseView):
             item.update_hover(mouse_pos)
         if self._accept_btn:
             self._accept_btn.update_hover(mouse_pos)
+        if self._abandon_btn:
+            self._abandon_btn.update_hover(mouse_pos)
 
     def render(self, screen: pygame.Surface) -> None:
         self.background.render(screen)
@@ -389,6 +498,66 @@ class MissionLogView(BaseView):
         # Accept button
         if self._accept_btn:
             self._accept_btn.render(screen)
+
+        # Abandon button
+        if self._abandon_btn:
+            self._abandon_btn.render(screen)
+
+        # Abandon confirmation overlay
+        if self._abandon_confirm_active:
+            self._render_abandon_confirm(screen)
+
+    def _render_abandon_confirm(self, screen: pygame.Surface) -> None:
+        """Render the 'Are you sure?' confirmation overlay."""
+        # Dim background
+        dim = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA)
+        dim.fill((0, 0, 0, 160))
+        screen.blit(dim, (0, 0))
+
+        # Panel
+        pw, ph = scale_x(360), scale_y(140)
+        cx, cy = WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2
+        px, py = cx - pw // 2, cy - ph // 2
+        panel = pygame.Surface((pw, ph), pygame.SRCALPHA)
+        panel.fill((14, 18, 32, 240))
+        screen.blit(panel, (px, py))
+        pygame.draw.rect(screen, (200, 80, 80), (px, py, pw, ph), 2, border_radius=6)
+
+        # Title
+        title = self._detail_title_font.render("Abandon Mission?", True, (220, 100, 100))
+        screen.blit(title, title.get_rect(centerx=cx, top=py + scale_y(14)))
+
+        # Mission name
+        mission = (
+            self.mission_manager.get_mission(self._abandon_confirm_mission_id)
+            if self.mission_manager and self._abandon_confirm_mission_id
+            else None
+        )
+        if mission:
+            name_surf = self._desc_font.render(mission.name, True, Colors.TEXT_SECONDARY)
+            screen.blit(name_surf, name_surf.get_rect(centerx=cx, top=py + scale_y(50)))
+
+        # Subtitle
+        sub = self._desc_font.render(
+            "No rewards will be given.", True, Colors.TEXT_SECONDARY
+        )
+        screen.blit(sub, sub.get_rect(centerx=cx, top=py + scale_y(70)))
+
+        # Yes / No buttons
+        yes_rect = pygame.Rect(cx - 120, cy + 20, 100, 36)
+        no_rect = pygame.Rect(cx + 20, cy + 20, 100, 36)
+        mouse = pygame.mouse.get_pos()
+
+        for rect, label, base_bg, hover_bg, border_c, text_c in [
+            (yes_rect, "YES", (60, 25, 25), (100, 35, 35), (200, 60, 60), (220, 80, 80)),
+            (no_rect, "NO", (25, 35, 50), (35, 50, 70), (80, 120, 180), Colors.TEXT_PRIMARY),
+        ]:
+            hovered = rect.collidepoint(mouse)
+            bg = hover_bg if hovered else base_bg
+            pygame.draw.rect(screen, bg, rect, border_radius=4)
+            pygame.draw.rect(screen, border_c, rect, 1, border_radius=4)
+            t = self._label_font.render(label, True, text_c)
+            screen.blit(t, t.get_rect(center=rect.center))
 
     def _render_detail_panel(self, screen: pygame.Surface, x: int, y: int) -> None:
         """Render the selected mission's details."""

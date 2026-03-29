@@ -24,6 +24,7 @@ class QueuedAction:
     target_idx: int  # -1 for self-targeted abilities
     energy_cost: int
     move_name: str = ""
+    slot_key: str = ""  # Per-slot unique key for cooldown/dedup tracking
 
 
 class ActionQueue:
@@ -91,13 +92,16 @@ class ActionQueue:
         Returns:
             (success, message) tuple.
         """
-        # Once-per-turn check
-        if move_id in self._used_this_turn:
-            return False, f"{move.name} already queued this turn (once per turn)"
+        # Use slot_key for per-slot independent cooldowns/once-per-turn
+        queue_key = getattr(move, "slot_key", "") or move_id
 
-        # Cooldown check
-        if move_id in self._cooldowns and self._cooldowns[move_id] > 0:
-            remaining = self._cooldowns[move_id]
+        # Once-per-turn check (per slot, not per move name)
+        if queue_key in self._used_this_turn:
+            return False, f"{move.name} already queued this turn"
+
+        # Cooldown check (per slot)
+        if queue_key in self._cooldowns and self._cooldowns[queue_key] > 0:
+            remaining = self._cooldowns[queue_key]
             return False, f"{move.name} on cooldown ({remaining} turns)"
 
         # Energy check
@@ -113,10 +117,11 @@ class ActionQueue:
             target_idx=target_idx,
             energy_cost=move.energy_cost,
             move_name=move.name,
+            slot_key=queue_key,
         )
         self._actions.append(action)
         self._energy_committed += move.energy_cost
-        self._used_this_turn.add(move_id)
+        self._used_this_turn.add(queue_key)
         return True, f"Queued: {move.name}"
 
     def remove_last(self) -> bool:
@@ -130,7 +135,7 @@ class ActionQueue:
 
         removed = self._actions.pop()
         self._energy_committed -= removed.energy_cost
-        self._used_this_turn.discard(removed.move_id)
+        self._used_this_turn.discard(removed.slot_key or removed.move_id)
         return True
 
     def clear(self) -> None:
@@ -153,10 +158,11 @@ class ActionQueue:
         Returns:
             (can_add, reason) tuple.
         """
-        if move_id in self._used_this_turn:
+        queue_key = getattr(move, "slot_key", "") or move_id
+        if queue_key in self._used_this_turn:
             return False, "Already queued this turn"
-        if move_id in self._cooldowns and self._cooldowns[move_id] > 0:
-            return False, f"On cooldown ({self._cooldowns[move_id]})"
+        if queue_key in self._cooldowns and self._cooldowns[queue_key] > 0:
+            return False, f"On cooldown ({self._cooldowns[queue_key]})"
         if move.energy_cost > self.energy_remaining:
             return False, "Not enough energy"
         return True, "OK"

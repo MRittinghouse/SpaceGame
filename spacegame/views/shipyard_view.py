@@ -16,8 +16,14 @@ from spacegame.engine.fonts import FONT_LG, FONT_MD, FONT_TITLE, FONT_XL, get_fo
 from spacegame.engine.particles import ParticleConfig, ParticlePool
 from spacegame.engine.sprites import AnimatedSprite, get_sprite_manager, res_scale
 from spacegame.models.player import Player
+from spacegame.utils.logger import logger
 from spacegame.models.ship import ShipType
-from spacegame.models.ship_build import WEIGHT_CLASSES, ComputedShipStats, ShipStatsComputer
+from spacegame.models.ship_build import (
+    WEIGHT_CLASSES,
+    ComputedShipStats,
+    FrameRequirements,
+    ShipStatsComputer,
+)
 from spacegame.models.slot_definition import _SIZE_DISPLAY, _TYPE_DISPLAY, SlotDefinition
 from spacegame.models.upgrades import MARK_MULTIPLIERS, ShipUpgrade, ShipUpgradeManager
 from spacegame.views.base_view import BaseView
@@ -248,7 +254,7 @@ class ShipyardView(BaseView):
             relative_rect=pygame.Rect(
                 WINDOW_WIDTH - 200, WINDOW_HEIGHT - hud_h - scale_y(120), 170, 40
             ),
-            text="Buy & Install",
+            text="Buy",
             manager=self.ui_manager,
         )
         self.uninstall_button = pygame_gui.elements.UIButton(
@@ -327,9 +333,10 @@ class ShipyardView(BaseView):
         if upgrade.faction_required:
             rep = self.player.get_reputation(upgrade.faction_required)
             if rep < upgrade.faction_rep_required:
+                fname = self._faction_display_name(upgrade.faction_required)
                 return (
                     True,
-                    f"Requires {upgrade.faction_required} rep {upgrade.faction_rep_required}",
+                    f"Requires {fname} reputation {upgrade.faction_rep_required}",
                 )
         if upgrade.unlock_condition:
             if not self.player.dialogue_flags.get(upgrade.unlock_condition, False):
@@ -341,14 +348,27 @@ class ShipyardView(BaseView):
         if ship_type.faction_required:
             rep = self.player.get_reputation(ship_type.faction_required)
             if rep < ship_type.faction_rep_required:
+                fname = self._faction_display_name(ship_type.faction_required)
                 return (
                     True,
-                    f"Requires {ship_type.faction_required} rep {ship_type.faction_rep_required}",
+                    f"Requires {fname} reputation {ship_type.faction_rep_required}",
                 )
         if ship_type.unlock_condition:
             if not self.player.dialogue_flags.get(ship_type.unlock_condition, False):
                 return (True, f"Requires: {ship_type.unlock_condition.replace('_', ' ').title()}")
         return (False, "")
+
+    def _faction_display_name(self, faction_id: str) -> str:
+        """Resolve a faction ID to its player-facing display name."""
+        try:
+            from spacegame.data_loader import get_data_loader
+
+            faction = get_data_loader().factions.get(faction_id)
+            if faction and faction.name:
+                return faction.name
+        except Exception:
+            pass
+        return faction_id.replace("_", " ").title()
 
     # ========================================================================
     # List builders
@@ -1218,7 +1238,9 @@ class ShipyardView(BaseView):
                 f"Weight: {part.weight:.1f}", True, Colors.TEXT_SECONDARY
             )
             screen.blit(weight_surf, (lx_col, ly))
-        ly += weight_surf.get_height() + scale_y(8)
+            ly += weight_surf.get_height() + scale_y(8)
+        else:
+            ly += scale_y(8)
 
         # Description (word-wrapped)
         if part.description:
@@ -1868,6 +1890,17 @@ class ShipyardView(BaseView):
         ps.equipped_part_id = part_id
         self.player.ship.set_build(build)
         self._recompute_loadout_stats()
+        logger.info(
+            f"Loadout equip: slot {self._loadout_selected_slot_idx} "
+            f"({ps.slot_def_id}) <- {part_id}"
+        )
+        # Verify persistence
+        verify_build = self.player.ship.build
+        if verify_build:
+            vps = verify_build.placed_slots[self._loadout_selected_slot_idx]
+            logger.info(
+                f"  Verify: slot equipped_part_id = {vps.equipped_part_id}"
+            )
 
         from spacegame.data_loader import get_data_loader
 
@@ -2159,14 +2192,78 @@ class ShipyardView(BaseView):
         screen.blit(self.small_font.render(weight_text, True, Colors.TEXT_SECONDARY), (lx, ly))
         ly += scale_y(14)
 
-        # Slot counts
-        slot_text = (
-            f"Weapon: {ship_type.weapon_slots} | "
-            f"Defense: {ship_type.defense_slots} | "
-            f"Utility: {ship_type.utility_slots}"
+        # Slot requirements table (from frame_requirements)
+        _SIZE_TAG = {"small": "", "medium": "(M+)", "large": "(L+)"}
+        _DISPLAY_ORDER = [
+            "engine", "weapon", "defense", "utility", "cargo", "crew_quarters",
+        ]
+        _DISPLAY_NAMES = {
+            "engine": "Engine",
+            "weapon": "Weapon",
+            "defense": "Defense",
+            "utility": "Utility",
+            "cargo": "Cargo",
+            "crew_quarters": "Crew",
+        }
+        frame_reqs = FrameRequirements(ship_type.frame_requirements) if ship_type.frame_requirements else None
+        # Current frame for comparison delta
+        current_reqs = (
+            FrameRequirements(current.frame_requirements)
+            if getattr(current, "frame_requirements", None)
+            else None
         )
-        screen.blit(self.small_font.render(slot_text, True, Colors.TEXT), (lx, ly))
-        ly += scale_y(18)
+        if frame_reqs:
+            # Slot requirements table — use info_font for readability
+            slot_font = self.info_font
+            col_min_x = lx + scale_x(110)
+            col_max_x = lx + scale_x(150)
+            col_delta_x = lx + scale_x(195)
+            slot_row_h = scale_y(16)
+            # Header row
+            screen.blit(self.small_font.render("Slots", True, Colors.TEXT_SECONDARY), (lx, ly))
+            screen.blit(self.small_font.render("Min", True, Colors.TEXT_SECONDARY), (col_min_x, ly))
+            screen.blit(self.small_font.render("Max", True, Colors.TEXT_SECONDARY), (col_max_x, ly))
+            if current_reqs:
+                screen.blit(self.small_font.render("vs Now", True, Colors.TEXT_SECONDARY), (col_delta_x, ly))
+            ly += scale_y(15)
+            for cat in _DISPLAY_ORDER:
+                mx = frame_reqs.get_max(cat)
+                mn = frame_reqs.get_min(cat)
+                if mx == 0 and mn == 0:
+                    continue
+                sz = _SIZE_TAG.get(frame_reqs.get_min_size(cat), "")
+                name = _DISPLAY_NAMES.get(cat, cat)
+                if sz:
+                    name = f"{name}{sz}"
+                row_color = Colors.TEXT if mn > 0 else Colors.TEXT_SECONDARY
+                screen.blit(slot_font.render(name, True, row_color), (lx, ly))
+                screen.blit(slot_font.render(str(mn), True, row_color), (col_min_x, ly))
+                screen.blit(slot_font.render(str(mx), True, row_color), (col_max_x, ly))
+                # Delta vs current frame
+                if current_reqs:
+                    cur_max = current_reqs.get_max(cat)
+                    diff = mx - cur_max
+                    if diff > 0:
+                        delta_text = f"+{diff}"
+                        delta_color = Colors.GREEN
+                    elif diff < 0:
+                        delta_text = str(diff)
+                        delta_color = Colors.RED
+                    else:
+                        delta_text = "="
+                        delta_color = Colors.TEXT_SECONDARY
+                    screen.blit(slot_font.render(delta_text, True, delta_color), (col_delta_x, ly))
+                ly += slot_row_h
+            ly += scale_y(6)
+        else:
+            # Fallback: legacy single-line display
+            slot_text = (
+                f"Weapon: {ship_type.weapon_slots} | "
+                f"Defense: {ship_type.defense_slots} | "
+                f"Utility: {ship_type.utility_slots}"
+            )
+            screen.blit(self.small_font.render(slot_text, True, Colors.TEXT), (lx, ly))
+            ly += scale_y(18)
 
         # Description (word-wrapped in left column)
         desc = ship_type.description
@@ -2181,11 +2278,13 @@ class ShipyardView(BaseView):
         # Stats header
         stats_label = self.small_font.render("Stats:", True, Colors.TEXT_HIGHLIGHT)
         screen.blit(stats_label, (rx, ry))
-        ry += stats_label.get_height() + scale_y(4)
+        ry += stats_label.get_height() + scale_y(6)
 
-        # Column positions (relative to right column)
-        col_new_x = rx + scale_x(90)
-        col_diff_x = rx + scale_x(155)
+        # Column positions (relative to right column) — wider for info_font
+        stat_font = self.info_font
+        col_new_x = rx + scale_x(105)
+        col_diff_x = rx + scale_x(170)
+        stat_row_h = scale_y(16)
 
         hdr_new = self.small_font.render("New", True, Colors.TEXT_SECONDARY)
         hdr_diff = self.small_font.render("Current", True, Colors.TEXT_SECONDARY)
@@ -2203,8 +2302,8 @@ class ShipyardView(BaseView):
         ]
 
         for label, new_val, old_val in stat_rows:
-            screen.blit(self.small_font.render(label, True, Colors.TEXT), (rx, ry))
-            screen.blit(self.small_font.render(str(new_val), True, Colors.TEXT), (col_new_x, ry))
+            screen.blit(stat_font.render(label, True, Colors.TEXT), (rx, ry))
+            screen.blit(stat_font.render(str(new_val), True, Colors.TEXT), (col_new_x, ry))
 
             diff = new_val - old_val
             if diff > 0:
@@ -2216,8 +2315,8 @@ class ShipyardView(BaseView):
             else:
                 diff_color = Colors.TEXT_SECONDARY
                 diff_text = "="
-            screen.blit(self.small_font.render(diff_text, True, diff_color), (col_diff_x, ry))
-            ry += scale_y(15)
+            screen.blit(stat_font.render(diff_text, True, diff_color), (col_diff_x, ry))
+            ry += stat_row_h
 
         ry += scale_y(8)
 

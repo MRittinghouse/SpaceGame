@@ -172,7 +172,7 @@ ACTION_PANEL_H = scale_y(195)
 ACTION_PANEL_Y = WINDOW_HEIGHT - ACTION_PANEL_H
 PLAYER_PANEL_H = ACTION_PANEL_Y - PLAYER_PANEL_Y - _MARGIN
 
-MOVE_BTN_W = scale_x(170)
+MOVE_BTN_W = scale_x(210)
 MOVE_BTN_H = scale_y(55)
 MOVE_BTN_GAP = scale_y(8)
 MOVE_BTN_COLS = 2
@@ -308,6 +308,13 @@ class CombatView(BaseView):
         self.move_buttons: list[_MoveButton] = []
         self.skip_crew_ids: set[str] = set()
 
+        # Action panel category tabs
+        self._action_tab: str = "attack"  # "attack", "defend", "utility"
+        self._action_tab_scroll: dict[str, int] = {"attack": 0, "defend": 0, "utility": 0}
+        self._categorized_moves: dict[str, list[_MoveButton]] = {
+            "attack": [], "defend": [], "utility": [],
+        }
+
         # Ship destruction animation tracking
         # Maps enemy index -> (x, y, AnimatedSprite) for dying enemies
         self._destroying_enemies: dict[int, tuple[int, int, "AnimatedSprite"]] = {}
@@ -362,10 +369,10 @@ class CombatView(BaseView):
         self.background = AnimatedBackground("deep_space", WINDOW_WIDTH, WINDOW_HEIGHT, seed=100)
         self._bg_dim = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
         self._bg_dim.fill((0, 0, 0))
-        self._bg_dim.set_alpha(140)
+        self._bg_dim.set_alpha(25)
         self.particles = ParticlePool(500)
         self.screen_shake = ScreenShake()
-        self.vignette = Vignette(WINDOW_WIDTH, WINDOW_HEIGHT, intensity=0.4)
+        self.vignette = Vignette(WINDOW_WIDTH, WINDOW_HEIGHT, intensity=0.2)
 
         # Damage state overlays (96x96 at 3x scale)
         self._damage_overlay_light = self._create_damage_overlay(severity="light")
@@ -643,9 +650,6 @@ class CombatView(BaseView):
             banner_rect = banner_surf.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 3))
             screen.blit(banner_surf, banner_rect)
 
-        # Vignette
-        self.vignette.render(screen)
-
         # Intro banner
         if self.phase == CombatPhase.INTRO:
             self._render_intro_banner(screen)
@@ -677,6 +681,17 @@ class CombatView(BaseView):
 
         if event.type == pygame.MOUSEMOTION:
             self._handle_hover(event.pos)
+
+        # Scroll action tabs with mouse wheel
+        if event.type == pygame.MOUSEWHEEL and self.phase == CombatPhase.PLAYER_INPUT:
+            _mx, my = pygame.mouse.get_pos()
+            if my >= ACTION_PANEL_Y:  # Mouse is in action panel area
+                tab = self._action_tab
+                active_count = len(self._categorized_moves.get(tab, []))
+                max_scroll = max(0, active_count - 3)
+                current = self._action_tab_scroll.get(tab, 0)
+                new_scroll = max(0, min(max_scroll, current - event.y))
+                self._action_tab_scroll[tab] = new_scroll
 
     def _handle_key(self, event: pygame.event.Event) -> None:
         """Handle keyboard shortcuts."""
@@ -719,19 +734,30 @@ class CombatView(BaseView):
             self._undo_last_queued_action()
             return
 
-        # Number keys 1-6: queue equipment moves
+        # Number keys 1-6: queue moves from active tab
         key_to_idx = {
-            pygame.K_1: 0,
-            pygame.K_2: 1,
-            pygame.K_3: 2,
-            pygame.K_4: 3,
-            pygame.K_5: 4,
-            pygame.K_6: 5,
+            pygame.K_1: 0, pygame.K_2: 1, pygame.K_3: 2,
+            pygame.K_4: 3, pygame.K_5: 4, pygame.K_6: 5,
         }
         if event.key in key_to_idx:
             idx = key_to_idx[event.key]
-            if idx < len(self.move_buttons) and self.move_buttons[idx].enabled:
-                self._execute_player_action(self.move_buttons[idx].move.id)
+            active_moves = self._categorized_moves.get(self._action_tab, [])
+            scroll = self._action_tab_scroll.get(self._action_tab, 0)
+            actual_idx = idx + scroll
+            if actual_idx < len(active_moves) and active_moves[actual_idx].enabled:
+                m = active_moves[actual_idx].move
+                self._execute_player_action(m.id, move=m)
+            return
+
+        # Q/W/E: switch action tabs
+        if event.key == pygame.K_q:
+            self._action_tab = "attack"
+            return
+        if event.key == pygame.K_w:
+            self._action_tab = "defend"
+            return
+        if event.key == pygame.K_e:
+            self._action_tab = "utility"
             return
 
         # Tab: cycle target
@@ -786,10 +812,19 @@ class CombatView(BaseView):
                         self._selected_combo_id = None  # Crew ability replaces combo
                     return
 
-            # Move buttons (weapon — queues action)
-            for btn in self.move_buttons:
-                if btn.rect.collidepoint(pos) and btn.enabled:
-                    self._execute_player_action(btn.move.id)
+            # Action tab clicks
+            for tab_id, tab_rect in getattr(self, "_tab_rects", {}).items():
+                if tab_rect.collidepoint(pos):
+                    self._action_tab = tab_id
+                    return
+
+            # Move buttons (active tab only — queues action)
+            active_moves = self._categorized_moves.get(self._action_tab, [])
+            scroll = self._action_tab_scroll.get(self._action_tab, 0)
+            for idx, btn in enumerate(active_moves):
+                vis_idx = idx - scroll
+                if 0 <= vis_idx < 3 and btn.rect.collidepoint(pos) and btn.enabled:
+                    self._execute_player_action(btn.move.id, move=btn.move)
                     return
 
             # Execute Turn button (action queue)
@@ -934,7 +969,7 @@ class CombatView(BaseView):
     # Player actions
     # ------------------------------------------------------------------
 
-    def _execute_player_action(self, move_id: str) -> None:
+    def _execute_player_action(self, move_id: str, move: Optional[CombatMove] = None) -> None:
         """Queue a player move for execution this turn.
 
         In the multi-action system, clicking a move button adds it to
@@ -947,8 +982,9 @@ class CombatView(BaseView):
         if self._action_queue is None:
             return
 
-        # Find the move object
-        move = self.engine._find_player_move(move_id)
+        # Use provided move object (preserves slot_key), or look up by ID
+        if move is None:
+            move = self.engine._find_player_move(move_id)
         if move is None:
             return
 
@@ -1101,31 +1137,42 @@ class CombatView(BaseView):
     # ------------------------------------------------------------------
 
     def _build_move_buttons(self) -> None:
-        """Build move button list from current player state."""
+        """Build categorized move button lists from current player state."""
         state = self.engine.get_state()
         self.move_buttons = []
+        self._categorized_moves = {"attack": [], "defend": [], "utility": []}
 
-        for i, move in enumerate(state.player.equipment_moves):
-            col = i % MOVE_BTN_COLS
-            row = i // MOVE_BTN_COLS
-            bx = MOVE_BTN_X_START + col * (MOVE_BTN_W + MOVE_BTN_GAP)
-            by = MOVE_BTN_Y_START + row * (MOVE_BTN_H + MOVE_BTN_GAP)
-            rect = pygame.Rect(bx, by, MOVE_BTN_W, MOVE_BTN_H)
+        # Categorize by slot_type stored in move.category
+        _TAB_MAP = {"weapon": "attack", "defense": "defend"}
 
-            # Check if affordable and off cooldown
-            on_cooldown = move.id in state.player.cooldowns
-            cd_remaining = state.player.cooldowns.get(move.id, 0)
+        for move in state.player.equipment_moves:
+            tab = _TAB_MAP.get(move.category, "utility")
+
+            cd_key = move.slot_key or move.id
+            on_cooldown = cd_key in state.player.cooldowns
+            cd_remaining = state.player.cooldowns.get(cd_key, 0)
             affordable = state.player.energy >= move.energy_cost
             enabled = affordable and not on_cooldown
 
-            self.move_buttons.append(
-                _MoveButton(
-                    rect=rect,
-                    move=move,
-                    enabled=enabled,
-                    cooldown_remaining=cd_remaining,
-                )
+            btn = _MoveButton(
+                rect=pygame.Rect(0, 0, 0, 0),  # Positioned dynamically during render
+                move=move,
+                enabled=enabled,
+                cooldown_remaining=cd_remaining,
             )
+            self._categorized_moves[tab].append(btn)
+            self.move_buttons.append(btn)  # Flat list for cooldown/enable refresh
+
+        # Auto-select first tab that has moves
+        if self._categorized_moves["attack"]:
+            self._action_tab = "attack"
+        elif self._categorized_moves["defend"]:
+            self._action_tab = "defend"
+        elif self._categorized_moves["utility"]:
+            self._action_tab = "utility"
+
+        # Pre-calculate button positions for the active tab
+        self._update_active_tab_rects()
 
         # Build crew ability buttons (player chooses ONE or skips)
         self._crew_move_buttons = []
@@ -1138,7 +1185,6 @@ class CombatView(BaseView):
 
         for i, crew_move in enumerate(state.player.crew_moves):
             bx = crew_btn_x + i * (crew_btn_w + crew_btn_gap)
-            # Wrap to next row if too wide
             if bx + crew_btn_w > ACTION_PANEL_Y + scale_x(500):
                 bx = crew_btn_x + (i % 4) * (crew_btn_w + crew_btn_gap)
             rect = pygame.Rect(bx, crew_btn_y, crew_btn_w, crew_btn_h)
@@ -1149,15 +1195,10 @@ class CombatView(BaseView):
             enabled = affordable and not on_cooldown
 
             self._crew_move_buttons.append(
-                _MoveButton(
-                    rect=rect,
-                    move=crew_move,
-                    enabled=enabled,
-                    cooldown_remaining=cd_remaining,
-                )
+                _MoveButton(rect=rect, move=crew_move, enabled=enabled, cooldown_remaining=cd_remaining)
             )
 
-        # Build combo buttons (Phase 9 — available when momentum ≥ 25%)
+        # Build combo buttons (Phase 9 — available when momentum >= 25%)
         self._combo_buttons = []
         self._selected_combo_id = None
         if hasattr(self, "player") and self.player:
@@ -1171,7 +1212,6 @@ class CombatView(BaseView):
             discovered = getattr(self.player, "discovered_combos", set())
             momentum_pct = state.player.momentum.current if state.player.momentum else 0.0
 
-            # Check for new discoveries (both crew recruited = combo discoverable)
             newly = check_combo_discoveries(recruited, discovered)
             for combo in newly:
                 discovered.add(combo.id)
@@ -1188,12 +1228,23 @@ class CombatView(BaseView):
                 cx = crew_btn_x + ci * (combo_w + crew_btn_gap)
                 combo_rect = pygame.Rect(cx, combo_y, combo_w, combo_h)
                 self._combo_buttons.append(
-                    {
-                        "rect": combo_rect,
-                        "combo": combo,
-                        "enabled": True,
-                    }
+                    {"rect": combo_rect, "combo": combo, "enabled": True}
                 )
+
+    def _update_active_tab_rects(self) -> None:
+        """Pre-calculate button positions for the active tab's visible moves."""
+        tab_header_h = scale_y(22) + scale_y(6) + scale_y(4)
+        btn_y_start = ACTION_PANEL_Y + tab_header_h
+        btn_w = scale_x(430)
+        btn_h = scale_y(48)
+        btn_gap = scale_y(4)
+        btn_x = MOVE_BTN_X_START
+        scroll = self._action_tab_scroll.get(self._action_tab, 0)
+        active = self._categorized_moves.get(self._action_tab, [])
+        for idx, btn in enumerate(active):
+            vis_idx = idx - scroll
+            by = btn_y_start + vis_idx * (btn_h + btn_gap)
+            btn.rect = pygame.Rect(btn_x, by, btn_w, btn_h)
 
     # ------------------------------------------------------------------
     # Flee
@@ -1519,29 +1570,77 @@ class CombatView(BaseView):
                 )
             return
 
+        # Non-attack actions (Flee, Frozen, system) — floating text only, no projectile
+        non_attack_actions = {"Flee", "Frozen", "Fled"}
+        if log.action in non_attack_actions or log.actor == "system":
+            ty = target_y if is_enemy_source else source_y
+            tx = target_x if is_enemy_source else source_x
+            for effect_text in log.effects_applied:
+                if "FROZEN" in effect_text:
+                    text_color = (100, 200, 255)  # Ice blue
+                elif "Escaped" in effect_text:
+                    text_color = Colors.GREEN
+                elif "Failed" in effect_text:
+                    text_color = (255, 120, 80)  # Warm red
+                else:
+                    text_color = Colors.TEXT_SECONDARY
+                self.floating_texts.append(
+                    {
+                        "text": effect_text,
+                        "x": tx,
+                        "y": ty,
+                        "color": text_color,
+                        "timer": 1.0,
+                        "max_timer": 1.0,
+                        "vy": -30.0,
+                    }
+                )
+                ty -= 20
+            return
+
         # Build impact callback — deferred until projectile arrives
         def _on_impact() -> None:
             # Floating damage/effect text
             ty = target_y
             for effect_text in log.effects_applied:
+                # Split module hit info out of damage text for distinct display
+                display_text = effect_text
+                module_text = ""
+                if "[" in effect_text and "]" in effect_text:
+                    bracket_start = effect_text.index("[")
+                    bracket_end = effect_text.index("]") + 1
+                    module_text = effect_text[bracket_start + 1 : bracket_end - 1]
+                    display_text = effect_text[:bracket_start].rstrip()
+
                 # Color coding for defensive identity feedback
-                if "Armor absorbed" in effect_text:
+                if "Armor absorbed" in display_text:
                     text_color = (180, 180, 200)  # Silver — armor deflection
-                elif "GRAZE" in effect_text:
+                elif "GRAZE" in display_text:
                     text_color = (255, 180, 80)  # Orange — near miss
-                elif "Shield regen" in effect_text:
+                elif "Shield regen" in display_text:
                     text_color = (80, 180, 255)  # Cyan — shield regen
-                elif "Overclock" in effect_text:
+                elif "Overclock" in display_text:
                     text_color = (180, 100, 255)  # Purple — energy boost
-                elif "Momentum" in effect_text:
+                elif "Momentum" in display_text:
                     text_color = (255, 220, 100)  # Gold — momentum threshold
-                    # Audio cue for momentum thresholds (Gap #5)
                     get_audio_manager().play_sfx("ui_confirm")
+                elif "FROZEN" in display_text:
+                    text_color = (100, 200, 255)  # Ice blue — cryo freeze
+                elif "Chill" in display_text:
+                    text_color = (140, 210, 255)  # Light blue — chill stacks
+                elif "Burn" in display_text and "x" in display_text:
+                    text_color = (255, 140, 60)  # Warm orange — burn stacks
+                elif "Suppressed" in display_text:
+                    text_color = (200, 160, 255)  # Lavender — voltaic suppress
+                elif "Counterstrike" in display_text:
+                    text_color = (100, 220, 255)  # Cyan — ghost counterstrike
+                elif "SHIELDS BROKEN" in display_text:
+                    text_color = (255, 100, 100)  # Red — sentinel vulnerability
                 else:
                     text_color = Colors.RED if is_player_source else Colors.YELLOW
                 self.floating_texts.append(
                     {
-                        "text": effect_text,
+                        "text": display_text,
                         "x": target_x,
                         "y": ty,
                         "color": text_color,
@@ -1551,6 +1650,21 @@ class CombatView(BaseView):
                     }
                 )
                 ty -= 20
+
+                # Module hit: separate line in warm orange
+                if module_text:
+                    self.floating_texts.append(
+                        {
+                            "text": module_text,
+                            "x": target_x,
+                            "y": ty,
+                            "color": (255, 140, 60),  # Warm orange — module damage
+                            "timer": 1.0,
+                            "max_timer": 1.0,
+                            "vy": -30.0,
+                        }
+                    )
+                    ty -= 20
 
             # Screen shake — severity based on action
             is_missile = "missile" in action_lower or "torpedo" in action_lower
@@ -2990,8 +3104,9 @@ class CombatView(BaseView):
             )
             enemy_sprite = enemy_anim.get_surface() if enemy_anim else None
             if enemy_sprite:
-                # No flip needed — sprites natively face left
-                rotated = enemy_sprite
+                # Apply per-template rotation fix (0 for most, -90 for upward-facing)
+                rot = getattr(enemy.template, "sprite_rotation", 0)
+                rotated = pygame.transform.rotate(enemy_sprite, rot) if rot else enemy_sprite
                 # Damage overlay (scorch marks / sparks based on hull %)
                 rotated = self._apply_damage_overlay(rotated, e_hull_ratio)
                 if e_hull_ratio < 0.5:
@@ -3124,10 +3239,11 @@ class CombatView(BaseView):
         cx, cy = w // 2 + 4, h // 2 + 4
 
         # Hull color: tint more red as hull drops
-        r = int(60 + (1.0 - hull_ratio) * 140)
-        g = int(80 + hull_ratio * 100)
-        b = int(120 + hull_ratio * 60)
-        body_color = (min(255, r), min(255, g), min(255, b), 220)
+        hr = max(0.0, min(1.0, hull_ratio))
+        r = int(60 + (1.0 - hr) * 140)
+        g = int(80 + hr * 100)
+        b = int(120 + hr * 60)
+        body_color = (max(0, min(255, r)), max(0, min(255, g)), max(0, min(255, b)), 220)
 
         # Wedge points
         if facing_right:
@@ -3185,14 +3301,69 @@ class CombatView(BaseView):
             (720 + ox, ACTION_PANEL_Y + oy),
         )
 
-        # "ACTIONS" header
-        header = self.info_font.render("ACTIONS", True, Colors.TEXT_HIGHLIGHT)
-        screen.blit(header, (MOVE_BTN_X_START + ox, ACTION_PANEL_Y + 6 + oy))
+        # Category tabs
+        tab_y = ACTION_PANEL_Y + 4 + oy
+        tab_w = scale_x(100)
+        tab_h = scale_y(22)
+        tab_gap = scale_x(4)
+        tab_x_start = MOVE_BTN_X_START + ox
 
-        # Move buttons
+        _TAB_CONFIG = [
+            ("attack", "ATK", (200, 80, 80), (140, 50, 50)),
+            ("defend", "DEF", (80, 140, 220), (40, 80, 140)),
+            ("utility", "UTL", (80, 180, 100), (40, 110, 55)),
+        ]
+        self._tab_rects: dict[str, pygame.Rect] = {}
+        for i, (tab_id, label, active_color, dim_color) in enumerate(_TAB_CONFIG):
+            tx = tab_x_start + i * (tab_w + tab_gap)
+            rect = pygame.Rect(tx, tab_y, tab_w, tab_h)
+            self._tab_rects[tab_id] = rect
+            is_active = self._action_tab == tab_id
+            count = len(self._categorized_moves.get(tab_id, []))
+            bg = active_color if is_active else (20, 25, 40)
+            border = active_color if is_active else dim_color
+            pygame.draw.rect(screen, bg, rect, border_radius=3)
+            pygame.draw.rect(screen, border, rect, 1, border_radius=3)
+            tab_text = f"{label} ({count})" if count > 0 else label
+            text_color = Colors.TEXT_PRIMARY if is_active else (
+                active_color if count > 0 else (50, 55, 65)
+            )
+            t = self.small_font.render(tab_text, True, text_color)
+            screen.blit(t, (tx + tab_w // 2 - t.get_width() // 2, tab_y + tab_h // 2 - t.get_height() // 2))
+
+        # Move buttons for active tab (single column, scrollable)
         is_input = self.phase == CombatPhase.PLAYER_INPUT
-        for btn in self.move_buttons:
-            self._render_move_button(screen, btn, ox, oy, is_input)
+        active_moves = self._categorized_moves.get(self._action_tab, [])
+        btn_x = MOVE_BTN_X_START + ox
+        btn_y_start = tab_y + tab_h + scale_y(6)
+        btn_w = scale_x(430)
+        btn_h = scale_y(48)
+        btn_gap = scale_y(4)
+        max_visible = 3
+        scroll = self._action_tab_scroll.get(self._action_tab, 0)
+
+        # Clip region for scrollable area
+        clip_h = max_visible * (btn_h + btn_gap)
+        clip_rect = pygame.Rect(btn_x - 2, btn_y_start, btn_w + 4, clip_h)
+        screen.set_clip(clip_rect)
+
+        for idx, btn in enumerate(active_moves):
+            vis_idx = idx - scroll
+            by = btn_y_start + vis_idx * (btn_h + btn_gap)
+            btn.rect = pygame.Rect(btn_x, by, btn_w, btn_h)
+            if vis_idx >= 0 and vis_idx < max_visible:
+                self._render_move_button(screen, btn, 0, 0, is_input)
+
+        screen.set_clip(None)
+
+        # Scroll indicator
+        if len(active_moves) > max_visible:
+            if scroll > 0:
+                up_surf = self.small_font.render("\u25b2", True, Colors.TEXT_SECONDARY)
+                screen.blit(up_surf, (btn_x + btn_w + 4, btn_y_start))
+            if scroll + max_visible < len(active_moves):
+                dn_surf = self.small_font.render("\u25bc", True, Colors.TEXT_SECONDARY)
+                screen.blit(dn_surf, (btn_x + btn_w + 4, btn_y_start + clip_h - scale_y(14)))
 
         # Crew ability buttons (below special buttons)
         if self._crew_move_buttons:
@@ -3597,11 +3768,12 @@ class CombatView(BaseView):
 
         # Queued actions list
         queue_y = panel_y + scale_y(24)
-        if self._action_queue and not self._action_queue.is_empty:
+        has_actions = self._action_queue and not self._action_queue.is_empty
+        if has_actions:
             for i, action in enumerate(self._action_queue.actions):
                 line_y = queue_y + i * scale_y(18)
-                if line_y + scale_y(18) > panel_y + panel_h - scale_y(30):
-                    break  # Don't overflow panel
+                if line_y + scale_y(18) > panel_y + panel_h - scale_y(52):
+                    break  # Don't overflow into summary/buttons
                 # Queue number
                 num = self.small_font.render(f"{i + 1}.", True, (80, 140, 220))
                 screen.blit(num, (panel_x + 8, line_y))
@@ -3621,12 +3793,97 @@ class CombatView(BaseView):
                         tgt_text = self.small_font.render(f"→ {tgt_name}", True, (120, 140, 160))
                         screen.blit(tgt_text, (panel_x + 140, line_y))
         else:
-            empty = self.small_font.render("No actions queued", True, Colors.TEXT_SECONDARY)
-            screen.blit(empty, (panel_x + 8, queue_y + scale_y(10)))
-            hint = self.small_font.render(
-                "Click weapons to queue, Enter to execute", True, (80, 90, 110)
-            )
-            screen.blit(hint, (panel_x + 8, queue_y + scale_y(28)))
+            # Empty queue: show last round recap for strategic context
+            state_recap = self.engine.get_state()
+            prev_round = state_recap.round_number - 1
+            if prev_round >= 1:
+                # Gather enemy actions from last round
+                recap_entries = [
+                    log
+                    for log in state_recap.combat_log
+                    if log.round_number == prev_round
+                    and log.actor.startswith("enemy")
+                ]
+                if recap_entries:
+                    label = self.small_font.render(
+                        "Last Round:", True, (90, 100, 130)
+                    )
+                    screen.blit(label, (panel_x + 8, queue_y))
+                    ry = queue_y + scale_y(16)
+                    recap_line_h = scale_y(15)
+                    max_recap_y = panel_y + panel_h - scale_y(60)
+                    for entry in recap_entries[:3]:
+                        if ry + recap_line_h > max_recap_y:
+                            break
+                        # Extract enemy name from actor "enemy:0" → template name
+                        enemy_name = entry.actor.replace(":", " ").title()
+                        try:
+                            eidx = int(entry.actor.split(":")[1])
+                            if eidx < len(state_recap.enemies):
+                                enemy_name = state_recap.enemies[eidx].template.name
+                        except (ValueError, IndexError):
+                            pass
+                        # Extract damage from effects if present
+                        dmg_text = ""
+                        for eff in entry.effects_applied:
+                            if "Dealt" in eff and "damage" in eff:
+                                # "Dealt 45 damage ..." → "45 dmg"
+                                try:
+                                    dmg_val = eff.split("Dealt ")[1].split(" damage")[0]
+                                    dmg_text = f" ({dmg_val} dmg)"
+                                except (IndexError, ValueError):
+                                    pass
+                                break
+                            if "Missed" in eff:
+                                dmg_text = " (missed)"
+                                break
+                            if "Frozen" in eff or "frozen" in eff:
+                                dmg_text = " (frozen)"
+                                break
+                        recap_line = f"{enemy_name}: {entry.action}{dmg_text}"
+                        recap_surf = self.small_font.render(
+                            recap_line, True, (80, 90, 115)
+                        )
+                        screen.blit(recap_surf, (panel_x + 12, ry))
+                        ry += recap_line_h
+                    # Hint below recap
+                    hint_y = ry + scale_y(4)
+                    hint = self.small_font.render(
+                        "Click weapons to queue", True, (60, 65, 80)
+                    )
+                    screen.blit(hint, (panel_x + 8, hint_y))
+                else:
+                    # No enemy actions last round (rare)
+                    hint = self.small_font.render(
+                        "Click weapons to queue, Enter to execute",
+                        True,
+                        (80, 90, 110),
+                    )
+                    screen.blit(hint, (panel_x + 8, queue_y + scale_y(10)))
+            else:
+                # Round 1: no previous round to recap
+                empty = self.small_font.render(
+                    "No actions queued", True, Colors.TEXT_SECONDARY
+                )
+                screen.blit(empty, (panel_x + 8, queue_y + scale_y(10)))
+                hint = self.small_font.render(
+                    "Click weapons to queue, Enter to execute",
+                    True,
+                    (80, 90, 110),
+                )
+                screen.blit(hint, (panel_x + 8, queue_y + scale_y(28)))
+
+        # Queue summary line (above buttons, when actions are queued)
+        if self._action_queue and not self._action_queue.is_empty:
+            n_actions = len(self._action_queue.actions)
+            committed = self._action_queue.energy_committed
+            state_q = self.engine.get_state()
+            total_e = state_q.player.max_energy
+            summary_text = f"{n_actions} action{'s' if n_actions != 1 else ''}, {committed}/{total_e} energy"
+            summary_color = (100, 130, 170)
+            summary_surf = self.small_font.render(summary_text, True, summary_color)
+            summary_y = panel_y + panel_h - scale_y(50)
+            screen.blit(summary_surf, (panel_x + 8, summary_y))
 
         # Execute and Undo buttons
         btn_y = panel_y + panel_h - scale_y(28)
@@ -3667,10 +3924,10 @@ class CombatView(BaseView):
         )
         self._undo_btn_rect = undo_rect
 
-        # Skip Turn hint
-        skip_x = panel_x + exec_w + undo_w + 24
-        skip = self.small_font.render("or Enter with empty queue to skip", True, (60, 65, 75))
-        screen.blit(skip, (skip_x, btn_y + 6))
+        # Skip Turn hint (below buttons, centered in panel)
+        skip = self.small_font.render("Enter with empty queue to skip turn", True, (55, 60, 70))
+        skip_x = panel_x + (panel_w - skip.get_width()) // 2
+        screen.blit(skip, (skip_x, btn_y + scale_y(26)))
 
         # Legendary ability buttons (Void Release, Overdrive)
         self._void_release_rect = None
@@ -3844,6 +4101,28 @@ class CombatView(BaseView):
 
         if summary["result"] == CombatResult.BRIBED:
             stats.append(("Enemies stood down", Colors.YELLOW))
+
+        # Module damage report (player ship)
+        state_end = self.engine.get_state()
+        if state_end.player.module_states:
+            damaged = [
+                ms
+                for ms in state_end.player.module_states
+                if ms.current_hp < ms.max_hp
+            ]
+            if damaged:
+                disabled = [ms for ms in damaged if ms.disabled]
+                intact = [ms for ms in damaged if not ms.disabled]
+                if disabled:
+                    names = ", ".join(ms.category.title() for ms in disabled[:3])
+                    suffix = f" +{len(disabled) - 3} more" if len(disabled) > 3 else ""
+                    stats.append((f"Modules destroyed: {names}{suffix}", Colors.RED))
+                if intact:
+                    names = ", ".join(ms.category.title() for ms in intact[:3])
+                    suffix = f" +{len(intact) - 3} more" if len(intact) > 3 else ""
+                    stats.append((f"Modules damaged: {names}{suffix}", (255, 180, 80)))
+            else:
+                stats.append(("All modules intact", (100, 180, 100)))
 
         # Calculate panel height dynamically
         title_h = scale_y(80)  # Title + separator

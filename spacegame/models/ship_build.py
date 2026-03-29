@@ -10,11 +10,7 @@ Part of the Shipyard Overhaul — Phase A1.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Optional
-
-if TYPE_CHECKING:
-    from spacegame.models.ship_module import PlacedModule
-
+from typing import Optional
 
 # ============================================================================
 # Weight Classes
@@ -49,79 +45,6 @@ WEIGHT_CLASSES: dict[str, dict] = {
         "max_weight": 550,
         "max_slots": 18,
         "unlock_cost": 500000,
-    },
-}
-
-# LEGACY: Old slot pool system, kept only for backward compatibility
-# with saves created before the module-based builder. New builds use
-# MODULE_CAPS instead. Do not reference in new code.
-SLOT_POOLS: dict[str, dict[str, int]] = {
-    "tiny": {"weapon": 1, "defense": 1, "utility": 1, "engine": 1},
-    "small": {"weapon": 2, "defense": 1, "utility": 2, "engine": 2},
-    "medium": {"weapon": 3, "defense": 2, "utility": 3, "engine": 2},
-    "large": {"weapon": 4, "defense": 3, "utility": 4, "engine": 3},
-    "xlarge": {"weapon": 6, "defense": 4, "utility": 5, "engine": 3},
-}
-
-# Maximum modules per category per weight class.
-# These are soft caps — more generous than SLOT_POOLS since modules
-# now serve as both structure and equipment slots. Prevents degenerate
-# builds (20-weapon turret arrays) while preserving creative freedom.
-MODULE_CAPS: dict[str, dict[str, int]] = {
-    "tiny": {
-        "cockpit": 1,
-        "engine": 2,
-        "weapon": 2,
-        "shield": 2,
-        "cargo": 2,
-        "crew": 1,
-        "reactor": 1,
-        "utility": 3,
-        "structural": 50,
-    },
-    "small": {
-        "cockpit": 1,
-        "engine": 3,
-        "weapon": 3,
-        "shield": 3,
-        "cargo": 3,
-        "crew": 2,
-        "reactor": 1,
-        "utility": 4,
-        "structural": 50,
-    },
-    "medium": {
-        "cockpit": 1,
-        "engine": 4,
-        "weapon": 5,
-        "shield": 4,
-        "cargo": 4,
-        "crew": 3,
-        "reactor": 2,
-        "utility": 6,
-        "structural": 50,
-    },
-    "large": {
-        "cockpit": 1,
-        "engine": 5,
-        "weapon": 7,
-        "shield": 5,
-        "cargo": 5,
-        "crew": 4,
-        "reactor": 3,
-        "utility": 8,
-        "structural": 50,
-    },
-    "xlarge": {
-        "cockpit": 1,
-        "engine": 6,
-        "weapon": 9,
-        "shield": 7,
-        "cargo": 6,
-        "crew": 5,
-        "reactor": 4,
-        "utility": 10,
-        "structural": 50,
     },
 }
 
@@ -394,55 +317,6 @@ class PlacedPixel:
 
 
 @dataclass
-class DesignatedSlot:
-    """LEGACY: Equipment slot from the old pixel-based builder.
-
-    Kept for backward compatibility with saves created before the
-    module-based system. New builds use PlacedModule.installed_upgrade_id
-    instead. Do not use in new code.
-
-    Originally: An equipment slot placed on the ship grid.
-
-    Each slot occupies a 2×2 area (3×3 for core) of filled pixels.
-    Equipment modules are installed into slots to provide combat moves
-    and stat bonuses.
-    """
-
-    slot_type: str  # "weapon", "defense", "engine", "utility", "core"
-    x: int
-    y: int
-    equipment_id: Optional[str] = None
-    mark: int = 1
-    tuning: Optional[str] = None
-
-    @property
-    def size(self) -> int:
-        """Grid footprint: 3 for core slots, 2 for all others."""
-        return 3 if self.slot_type == "core" else 2
-
-    def to_dict(self) -> dict:
-        return {
-            "slot_type": self.slot_type,
-            "x": self.x,
-            "y": self.y,
-            "equipment_id": self.equipment_id,
-            "mark": self.mark,
-            "tuning": self.tuning,
-        }
-
-    @classmethod
-    def from_dict(cls, data: dict) -> DesignatedSlot:
-        return cls(
-            slot_type=data["slot_type"],
-            x=data["x"],
-            y=data["y"],
-            equipment_id=data.get("equipment_id"),
-            mark=data.get("mark", 1),
-            tuning=data.get("tuning"),
-        )
-
-
-@dataclass
 class PlacedSlot:
     """A slot placed on the ship's pixel grid.
 
@@ -489,8 +363,9 @@ class PlacedSlot:
         )
 
 
-# Frame slot limits — maximum number of each slot type per weight class.
-# These replace MODULE_CAPS for the new slot-based builder.
+# DEPRECATED: Per-weight-class slot limits. Superseded by per-frame
+# FrameRequirements (loaded from ship_types.json frame_requirements).
+# Kept as fallback for builds without ship_type_id (legacy saves).
 FRAME_SLOT_LIMITS: dict[str, dict[str, int]] = {
     "tiny": {
         "cockpit": 1,
@@ -549,27 +424,204 @@ FRAME_SLOT_LIMITS: dict[str, dict[str, int]] = {
     },
 }
 
+# Ship class → weight class mapping (used by FrameRequirements.from_ship_type)
+_CLASS_TO_WEIGHT: dict[str, str] = {
+    "starter": "tiny",
+    "early_game": "small",
+    "mid_game": "medium",
+    "late_game": "large",
+    "faction": "large",
+}
+
+# Infrastructure minimum defaults by weight class (for fallback generation)
+_INFRA_MINS: dict[str, dict[str, dict[str, int | str]]] = {
+    "tiny": {
+        "cockpit": {"min": 1, "min_size": "small"},
+        "engine": {"min": 1, "min_size": "small"},
+        "fuel": {"min": 1, "min_size": "small"},
+        "reactor": {"min": 1, "min_size": "small"},
+        "crew_quarters": {"min": 0, "min_size": "small"},
+    },
+    "small": {
+        "cockpit": {"min": 1, "min_size": "small"},
+        "engine": {"min": 1, "min_size": "small"},
+        "fuel": {"min": 1, "min_size": "small"},
+        "reactor": {"min": 1, "min_size": "small"},
+        "crew_quarters": {"min": 0, "min_size": "small"},
+    },
+    "medium": {
+        "cockpit": {"min": 1, "min_size": "small"},
+        "engine": {"min": 1, "min_size": "medium"},
+        "fuel": {"min": 1, "min_size": "small"},
+        "reactor": {"min": 1, "min_size": "small"},
+        "crew_quarters": {"min": 1, "min_size": "small"},
+    },
+    "large": {
+        "cockpit": {"min": 1, "min_size": "medium"},
+        "engine": {"min": 2, "min_size": "medium"},
+        "fuel": {"min": 1, "min_size": "medium"},
+        "reactor": {"min": 1, "min_size": "small"},
+        "crew_quarters": {"min": 1, "min_size": "small"},
+    },
+    "xlarge": {
+        "cockpit": {"min": 1, "min_size": "medium"},
+        "engine": {"min": 2, "min_size": "large"},
+        "fuel": {"min": 2, "min_size": "medium"},
+        "reactor": {"min": 2, "min_size": "small"},
+        "crew_quarters": {"min": 2, "min_size": "small"},
+    },
+}
+
+_SIZE_ORDER: dict[str, int] = {"small": 0, "medium": 1, "large": 2}
+
+
+@dataclass
+class FrameRequirements:
+    """Per-frame slot requirements with min/max/min_size per slot type.
+
+    Each slot type entry is a dict with keys:
+        min: int — minimum slots required for flight readiness
+        max: int — maximum slots the frame supports
+        min_size: str — smallest acceptable slot size ("small"/"medium"/"large")
+    """
+
+    requirements: dict[str, dict[str, int | str]]
+
+    def get_min(self, slot_type: str) -> int:
+        """Return minimum required count for a slot type."""
+        spec = self.requirements.get(slot_type)
+        if spec is None:
+            return 0
+        return int(spec.get("min", 0))
+
+    def get_max(self, slot_type: str) -> int:
+        """Return maximum allowed count for a slot type."""
+        spec = self.requirements.get(slot_type)
+        if spec is None:
+            return 0
+        return int(spec.get("max", 0))
+
+    def get_min_size(self, slot_type: str) -> str:
+        """Return minimum acceptable slot size for a slot type."""
+        spec = self.requirements.get(slot_type)
+        if spec is None:
+            return "small"
+        return str(spec.get("min_size", "small"))
+
+    def is_slot_size_valid(self, slot_type: str, slot_size: str) -> bool:
+        """Check if a slot size meets the minimum size requirement.
+
+        Args:
+            slot_type: The slot category (e.g., "engine").
+            slot_size: The slot's size ("small", "medium", "large").
+
+        Returns:
+            True if slot_size >= min_size for this slot type.
+        """
+        min_size = self.get_min_size(slot_type)
+        return _SIZE_ORDER.get(slot_size, 0) >= _SIZE_ORDER.get(min_size, 0)
+
+    def check_flight_ready(
+        self,
+        slot_counts: dict[str, int],
+        slot_sizes: dict[str, list[str]],
+    ) -> tuple[bool, list[str]]:
+        """Check if a build meets all minimum requirements for flight.
+
+        Args:
+            slot_counts: Count of placed slots per type (e.g., {"engine": 2}).
+            slot_sizes: List of sizes per type (e.g., {"engine": ["medium", "large"]}).
+
+        Returns:
+            Tuple of (is_ready, list_of_failure_reasons).
+        """
+        reasons: list[str] = []
+        for slot_type, spec in self.requirements.items():
+            min_count = int(spec.get("min", 0))
+            if min_count == 0:
+                continue
+            actual = slot_counts.get(slot_type, 0)
+            if actual < min_count:
+                reasons.append(
+                    f"{slot_type}: need {min_count}, have {actual}"
+                )
+                continue
+            # Check size constraint on placed slots
+            min_size = str(spec.get("min_size", "small"))
+            sizes = slot_sizes.get(slot_type, [])
+            valid_count = sum(
+                1 for s in sizes
+                if _SIZE_ORDER.get(s, 0) >= _SIZE_ORDER.get(min_size, 0)
+            )
+            if valid_count < min_count:
+                reasons.append(
+                    f"{slot_type}: need {min_count} at size {min_size}+, "
+                    f"only {valid_count} qualify"
+                )
+        return (len(reasons) == 0, reasons)
+
+    @classmethod
+    def from_ship_type(cls, ship_type: object) -> FrameRequirements:
+        """Create FrameRequirements from a ShipType instance.
+
+        Falls back to weight-class defaults if the ShipType has no
+        frame_requirements field or it's empty.
+
+        Args:
+            ship_type: ShipType with optional frame_requirements dict.
+
+        Returns:
+            FrameRequirements instance.
+        """
+        reqs = getattr(ship_type, "frame_requirements", {})
+        if reqs:
+            return cls(reqs)
+        # Fallback: derive from weight class
+        ship_class = getattr(ship_type, "ship_class", "")
+        weight_class = _CLASS_TO_WEIGHT.get(ship_class, "small")
+        return cls.fallback_from_weight_class(weight_class)
+
+    @classmethod
+    def fallback_from_weight_class(cls, weight_class: str) -> FrameRequirements:
+        """Generate FrameRequirements from FRAME_SLOT_LIMITS for legacy builds.
+
+        Uses the weight-class slot limits as maximums and infrastructure
+        defaults as minimums.
+
+        Args:
+            weight_class: Weight class string (tiny/small/medium/large/xlarge).
+
+        Returns:
+            FrameRequirements with reasonable defaults.
+        """
+        limits = FRAME_SLOT_LIMITS.get(weight_class, {})
+        infra = _INFRA_MINS.get(weight_class, _INFRA_MINS.get("small", {}))
+        reqs: dict[str, dict[str, int | str]] = {}
+        for slot_type, max_val in limits.items():
+            infra_spec = infra.get(slot_type, {})
+            reqs[slot_type] = {
+                "min": infra_spec.get("min", 0),
+                "max": max_val,
+                "min_size": infra_spec.get("min_size", "small"),
+            }
+        return cls(reqs)
+
 
 @dataclass
 class ShipBuild:
-    """Complete ship configuration — the central data structure.
+    """Complete ship configuration -- the central data structure.
 
     A ShipBuild defines everything about a player's ship: the weight
     class (canvas size), every filled pixel with its material, and
-    every designated equipment slot with installed modules.
-
-    The placed_slots field is the new slot-based model. The modules
-    field is the legacy module-based model. Both can coexist for
-    backward compatibility during migration.
+    every placed slot with optional equipped parts.
     """
 
     weight_class: str
     pixels: list[PlacedPixel] = field(default_factory=list)
-    slots: list[DesignatedSlot] = field(default_factory=list)
     preset_name: Optional[str] = None
-    modules: list[PlacedModule] = field(default_factory=list)
     frame_variant: Optional[str] = None
     placed_slots: list[PlacedSlot] = field(default_factory=list)
+    ship_type_id: Optional[str] = None
 
     @property
     def canvas_size(self) -> int:
@@ -600,37 +652,31 @@ class ShipBuild:
         return WEIGHT_CLASSES.get(self.weight_class, {}).get("max_weight", 140)
 
     def to_dict(self) -> dict:
-        """Serialize build to dict, including modules, slots, and frame variant."""
+        """Serialize build to dict."""
         result: dict = {
             "weight_class": self.weight_class,
             "pixels": [p.to_dict() for p in self.pixels],
-            "slots": [s.to_dict() for s in self.slots],
             "preset_name": self.preset_name,
         }
-        if self.modules:
-            result["modules"] = [m.to_dict() for m in self.modules]
         if self.placed_slots:
             result["placed_slots"] = [ps.to_dict() for ps in self.placed_slots]
         if self.frame_variant:
             result["frame_variant"] = self.frame_variant
+        if self.ship_type_id:
+            result["ship_type_id"] = self.ship_type_id
         return result
 
     @classmethod
     def from_dict(cls, data: dict) -> ShipBuild:
-        """Restore build from dict. Backward-compatible with old saves."""
-        # Local import to avoid circular dependency
-        from spacegame.models.ship_module import PlacedModule as PM
-
-        modules = [PM.from_dict(m) for m in data.get("modules", [])]
+        """Restore build from dict."""
         placed_slots = [PlacedSlot.from_dict(ps) for ps in data.get("placed_slots", [])]
         return cls(
             weight_class=data["weight_class"],
             pixels=[PlacedPixel.from_dict(p) for p in data.get("pixels", [])],
-            slots=[DesignatedSlot.from_dict(s) for s in data.get("slots", [])],
             preset_name=data.get("preset_name"),
-            modules=modules,
             frame_variant=data.get("frame_variant"),
             placed_slots=placed_slots,
+            ship_type_id=data.get("ship_type_id"),
         )
 
 
@@ -848,6 +894,9 @@ class ShipStatsComputer:
             stats.shields += getattr(ship_type, "combat_shields", 0)
             stats.speed += getattr(ship_type, "combat_speed", 0)
             stats.evasion += getattr(ship_type, "combat_evasion", 0)
+            stats.energy_pool += getattr(ship_type, "combat_energy", 0)
+            stats.energy_regen += getattr(ship_type, "combat_energy_regen", 0)
+            stats.accuracy += getattr(ship_type, "combat_accuracy", 0)
 
         # --- NEW: Slot + Part stat contributions ---
         if build.placed_slots:
@@ -871,32 +920,13 @@ class ShipStatsComputer:
                         stats.armor += provides.get("armor_bonus", 0)
                         stats.fuel_capacity += provides.get("fuel_capacity", 0)
                         stats.power_max += provides.get("power_output", 0)
+                        stats.energy_pool += provides.get("power_output", 0)
+                        stats.energy_regen += provides.get("energy_regen", 0)
                         stats.evasion += provides.get("evasion_bonus", 0)
                         stats.accuracy += provides.get("accuracy_bonus", 0)
                         stats.hull += provides.get("hull_hp", 0)
                         stats.weight_current += part.weight
                         stats.total_cost += part.base_cost
-
-        # --- LEGACY: Module stat contributions (fixed stats from provides dict) ---
-        for placed_mod in build.modules:
-            module = module_catalog.get(placed_mod.module_id)
-            if module is None:
-                continue
-            provides = module.provides
-            stats.shields += provides.get("shield_hp", 0)
-            stats.shield_regen += provides.get("shield_regen", 0)
-            stats.cargo_capacity += provides.get("cargo_capacity", 0)
-            stats.crew_slots += provides.get("crew_capacity", 0)
-            stats.speed += provides.get("thrust", 0)
-            stats.armor += provides.get("armor_bonus", 0)
-            stats.fuel_capacity += provides.get("fuel_capacity", 0)
-            stats.power_max += provides.get("power_output", 0)
-            stats.evasion += provides.get("evasion_bonus", 0)
-            stats.accuracy += provides.get("accuracy_bonus", 0)
-            stats.hull += provides.get("hull_hp", 0)
-            # Module weight and cost
-            stats.weight_current += module.weight
-            stats.total_cost += module.instantiation_cost
 
         # --- Hull pixel stat contributions (per-pixel material accumulation) ---
         material_counts: dict[str, int] = {}
@@ -940,7 +970,7 @@ class ShipStatsComputer:
         stats.speed = int(stats.speed * speed_mult) if stats.speed > 0 else 0
 
         # Physics-based modifiers (CoM balance, frontal profile)
-        if module_catalog and (build.modules or build.pixels):
+        if module_catalog and build.pixels:
             try:
                 from spacegame.models.ship_physics import compute_physics_modifiers
 
@@ -950,18 +980,6 @@ class ShipStatsComputer:
                     stats.evasion = int(stats.evasion * physics_evasion_mult)
             except Exception:
                 pass  # Physics computation failed gracefully (import, data, etc.)
-
-        # Equipment contributions (from slots with installed equipment)
-        for slot in build.slots:
-            if slot.equipment_id and slot.equipment_id in equipment:
-                upgrade = equipment[slot.equipment_id]
-                if hasattr(upgrade, "combat_move") and upgrade.combat_move:
-                    stats.combat_moves.append(upgrade.combat_move)
-
-        # Slot cost
-        slot_costs = {"weapon": 3000, "defense": 2500, "engine": 2000, "utility": 1500, "core": 0}
-        for slot in build.slots:
-            stats.total_cost += slot_costs.get(slot.slot_type, 0)
 
         # Defensive identity detection (hull pixels only)
         total_pixels = len(build.pixels)

@@ -293,6 +293,7 @@
       "id": "patrol_vessel",
       "name": "Patrol Vessel",
       "description": "A well-maintained patrol ship. Fights defensively and hard to negotiate with.",
+      "sprite_rotation": -90,
       "behavior": "defensive",
       "hull": 90,
       "shields": 30,

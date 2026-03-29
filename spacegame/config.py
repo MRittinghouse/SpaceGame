@@ -322,9 +322,9 @@ SALVAGE_CHARGE_REGEN_SECONDS = 5.0
 # ============================================================================
 
 XP_PER_TRADE = 5
-XP_PER_MINING = 1
-XP_PER_SALVAGE = 1
-XP_PER_REFINE = 3
+XP_PER_MINING = 3
+XP_PER_SALVAGE = 6
+XP_PER_REFINE = 10
 XP_PER_TRAVEL = 10
 MAX_LEVEL = 999  # Effectively uncapped — formula-based XP scaling
 SKILL_POINT_CAP_LEVEL = 40  # Stop granting skill points after this level

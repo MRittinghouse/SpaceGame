@@ -5,11 +5,6 @@ module combat integration feedback, and visual feedback state.
 """
 
 from spacegame.models.ship_build import ShipBuild, PlacedPixel
-from spacegame.models.ship_module import (
-    ShipModule,
-    PlacedModule,
-    validate_requirements,
-)
 from spacegame.models.ship_physics import (
     compute_center_of_mass,
     compute_hull_efficiency,

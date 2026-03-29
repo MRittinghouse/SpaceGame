@@ -113,6 +113,11 @@ class TutorialOverlay:
         """Show the tutorial overlay with current step."""
         if self.active:
             return
+        # Validate that there's actually a step to display
+        step = self.tutorial_manager.get_current_step()
+        if not step:
+            logger.warning("Tutorial show() called with no valid step — skipping")
+            return
         self._hint_mode = False
         self.active = True
         logger.info(f"Tutorial step {self.tutorial_manager.current_step} shown")
@@ -218,8 +223,20 @@ class TutorialOverlay:
             return
 
         if self._hint_mode:
+            if not self._hint_data:
+                # Safety: active with no hint data — auto-dismiss to prevent
+                # invisible overlay blocking all input
+                logger.warning("Tutorial overlay active in hint mode with no data — auto-hiding")
+                self.hide()
+                return
             self._render_hint(screen)
         else:
+            step = self.tutorial_manager.get_current_step()
+            if not step:
+                # Safety: active with no valid step — auto-dismiss
+                logger.warning("Tutorial overlay active with no valid step — auto-hiding")
+                self.hide()
+                return
             self._render_tutorial_step(screen)
 
     def _render_hint(self, screen: pygame.Surface) -> None:
@@ -261,15 +278,6 @@ class TutorialOverlay:
 
         # GOT IT button
         self.got_it_button.render(screen)
-
-        # Keyboard hint below button
-        hint_surf = self.step_font.render(
-            "Press ENTER or click to dismiss", True, Colors.TEXT_SECONDARY
-        )
-        hint_rect = hint_surf.get_rect(
-            midtop=(WINDOW_WIDTH // 2, self.got_it_button.rect.bottom + 6)
-        )
-        screen.blit(hint_surf, hint_rect)
 
     def _render_tutorial_step(self, screen: pygame.Surface) -> None:
         """Render a tutorial step panel."""

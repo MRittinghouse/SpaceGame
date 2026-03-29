@@ -8,8 +8,6 @@ size requirement (a medium part fits medium or large slots, not small).
 from dataclasses import dataclass, field
 from typing import Optional
 
-from spacegame.models.slot_definition import SIZE_ORDER
-
 
 @dataclass
 class ShipPart:

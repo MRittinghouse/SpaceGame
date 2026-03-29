@@ -261,8 +261,8 @@ class TestActiveRouteHighlight:
         assert view._travel_dest_id is None, "Dest should clear after peaceful travel"
         view.on_exit()
 
-    def test_active_route_ids_cleared_after_encounter(self) -> None:
-        """Origin/dest IDs should clear when encounter alert completes."""
+    def test_route_preserved_for_resume_after_encounter(self) -> None:
+        """Origin/dest IDs should be preserved after encounter for travel resume."""
         view = _make_view()
         view.on_enter()
         encounter = EncounterRef(enemy_template_ids=["pirate_scout"], encounter_seed=42)
@@ -276,8 +276,9 @@ class TestActiveRouteHighlight:
         view._travel_alert_timer = 1.2
         view._travel_duration = 1.0
         view.update(1.3)
-        assert view._travel_origin_id is None, "Origin should clear after encounter"
-        assert view._travel_dest_id is None, "Dest should clear after encounter"
+        assert view._travel_origin_id == "nexus_prime", "Origin should be preserved for resume"
+        assert view._travel_dest_id == "breakstone", "Dest should be preserved for resume"
+        assert view._resume_travel_after_encounter is True
         view.on_exit()
 
 
@@ -296,6 +297,7 @@ class TestArrivalFeedback:
         view._travel_animating = True
         view._travel_origin_id = "nexus_prime"
         view._travel_dest_id = "breakstone"
+        view._deferred_system_id = "breakstone"
         view._travel_progress = 0.0
         view._travel_duration = 1.0
         view._travel_encounter = None

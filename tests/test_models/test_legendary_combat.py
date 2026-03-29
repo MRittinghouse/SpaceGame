@@ -17,8 +17,8 @@ from spacegame.models.legendary_effects import (
     check_phase_shift,
     process_void_release,
 )
-from spacegame.models.ship_module import ShipModule, PlacedModule
-from spacegame.models.ship_build import ShipBuild
+from spacegame.models.ship_build import PlacedSlot, ShipBuild
+from spacegame.models.ship_part import ShipPart
 
 
 # ============================================================================
@@ -26,26 +26,26 @@ from spacegame.models.ship_build import ShipBuild
 # ============================================================================
 
 
-def _legendary_module(mid: str, **provides) -> ShipModule:
-    return ShipModule(
-        id=mid,
-        name=mid,
+def _legendary_part(part_id: str, **provides) -> ShipPart:
+    return ShipPart(
+        id=part_id,
+        name=part_id,
         description="",
-        category="weapon",
+        slot_type="weapon",
+        min_size="small",
         manufacturer="salvage_rat",
-        pixel_grid=[["H", "H"], ["H", "H"]],
-        material_map={"H": "legendary_hull"},
         provides=provides,
-        weight=5.0,
         base_cost=0,
-        unlock_method="boss_drop",
+        combat_move=None,
     )
 
 
-def _build_with_legendary(mod_id: str, **provides) -> tuple[ShipBuild, dict]:
-    catalog = {mod_id: _legendary_module(mod_id, **provides)}
-    build = ShipBuild(weight_class="tiny")
-    build.modules = [PlacedModule(module_id=mod_id, x=5, y=5)]
+def _build_with_legendary(part_id: str, **provides) -> tuple[ShipBuild, dict]:
+    catalog = {part_id: _legendary_part(part_id, **provides)}
+    build = ShipBuild(
+        weight_class="tiny",
+        placed_slots=[PlacedSlot(slot_def_id="weapon_small", x=5, y=5, equipped_part_id=part_id)],
+    )
     return build, catalog
 
 

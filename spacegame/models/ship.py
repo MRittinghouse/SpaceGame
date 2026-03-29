@@ -46,6 +46,8 @@ class ShipType:
     weapon_slots: int = 0
     defense_slots: int = 0
     utility_slots: int = 3
+    # Per-frame slot requirements (min/max/min_size per slot type)
+    frame_requirements: dict[str, dict[str, int | str]] = field(default_factory=dict)
     # Faction/quest gating (optional)
     faction_required: str | None = None
     faction_rep_required: int = 0
@@ -194,7 +196,9 @@ class Ship:
             True if the equipment is installed in any slot.
         """
         if self._build:
-            return any(s.equipment_id == equipment_id for s in self._build.slots)
+            return any(
+                ps.equipped_part_id == equipment_id for ps in self._build.placed_slots
+            )
         # Fallback: check upgrade manager
         if self._upgrade_manager:
             return self._upgrade_manager.has_upgrade(equipment_id)
@@ -210,9 +214,19 @@ class Ship:
             True if any slot of this type has equipment.
         """
         if self._build:
-            return any(
-                s.slot_type == slot_type and s.equipment_id is not None for s in self._build.slots
-            )
+            # Need slot definitions to map slot_def_id -> slot_type
+            try:
+                from spacegame.data_loader import get_data_loader
+
+                slot_defs = getattr(get_data_loader(), "slot_definitions", {})
+                return any(
+                    slot_defs.get(ps.slot_def_id) is not None
+                    and slot_defs[ps.slot_def_id].slot_type == slot_type
+                    and ps.equipped_part_id is not None
+                    for ps in self._build.placed_slots
+                )
+            except Exception:
+                pass
         return False
 
     @property

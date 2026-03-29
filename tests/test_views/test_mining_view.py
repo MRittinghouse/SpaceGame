@@ -386,13 +386,13 @@ class TestRockSpriteWiring:
             assert len(sprites_seen) > 1, "Should see multiple variants across grid"
         view.on_exit()
 
-    def test_monolith_has_no_sprite(self) -> None:
-        """Monolith rocks should fall back to procedural rendering."""
+    def test_monolith_has_sprite(self) -> None:
+        """Monolith rocks should have a dedicated sprite."""
         from spacegame.models.mining import RockType
 
         view = _make_view()
         surf = view._get_rock_sprite(RockType.MONOLITH, 0, 0)
-        assert surf is None, "Monolith should not have a sprite (uses procedural)"
+        assert surf is not None, "Monolith should have a sprite"
         view.on_exit()
 
     def test_hazard_sprites_loaded(self) -> None:

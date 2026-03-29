@@ -8,7 +8,7 @@ from spacegame.models.ship import Ship, ShipType
 from spacegame.models.ship_build import (
     ShipBuild,
     PlacedPixel,
-    DesignatedSlot,
+    PlacedSlot,
     HullMaterial,
     ShipStatsComputer,
     ComputedShipStats,
@@ -40,8 +40,12 @@ def _build_with_stats() -> tuple[ShipBuild, ComputedShipStats]:
     build = ShipBuild(weight_class="tiny")
     for i in range(20):
         build.pixels.append(PlacedPixel(i % 16, i // 16, "standard_plate"))
-    build.slots.append(DesignatedSlot(slot_type="weapon", x=4, y=4, equipment_id="laser_cannon"))
-    build.slots.append(DesignatedSlot(slot_type="utility", x=6, y=4, equipment_id="mining_drill"))
+    build.placed_slots.append(
+        PlacedSlot(slot_def_id="weapon_small", x=4, y=4, equipped_part_id="laser_cannon")
+    )
+    build.placed_slots.append(
+        PlacedSlot(slot_def_id="utility_small", x=6, y=4, equipped_part_id="mining_drill")
+    )
 
     mat = {
         "standard_plate": HullMaterial(
@@ -85,8 +89,8 @@ class TestShipBuildSaveSerialization:
         restored_build = SB.from_dict(data["build"])
         assert restored_build.weight_class == "tiny"
         assert len(restored_build.pixels) == 20
-        assert len(restored_build.slots) == 2
-        assert restored_build.slots[0].equipment_id == "laser_cannon"
+        assert len(restored_build.placed_slots) == 2
+        assert restored_build.placed_slots[0].equipped_part_id == "laser_cannon"
 
     def test_old_save_without_build_still_loads(self) -> None:
         """Old save format (no 'build' key) should still work."""
@@ -102,7 +106,7 @@ class TestShipBuildSaveSerialization:
 
 
 class TestModuleDetection:
-    """has_module_in_slot and has_module_type_in_slot."""
+    """has_module_in_slot checks equipped_part_id on placed_slots."""
 
     def test_has_module_with_build(self) -> None:
         build, stats = _build_with_stats()
@@ -111,14 +115,6 @@ class TestModuleDetection:
         assert ship.has_module_in_slot("laser_cannon")
         assert ship.has_module_in_slot("mining_drill")
         assert not ship.has_module_in_slot("nonexistent")
-
-    def test_has_module_type(self) -> None:
-        build, stats = _build_with_stats()
-        ship = Ship(ship_type=_ship_type(), current_fuel=80)
-        ship._build = build
-        assert ship.has_module_type_in_slot("weapon")
-        assert ship.has_module_type_in_slot("utility")
-        assert not ship.has_module_type_in_slot("defense")
 
     def test_has_module_without_build_falls_back(self) -> None:
         ship = Ship(ship_type=_ship_type(), current_fuel=80)

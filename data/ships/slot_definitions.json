@@ -534,6 +534,18 @@
       "variant_name": "Cabin"
     },
     {
+      "id": "crew_quarters_large",
+      "slot_type": "crew_quarters",
+      "size": "large",
+      "footprint_w": 4,
+      "footprint_h": 4,
+      "weight": 8.0,
+      "placement_cost": 2500,
+      "color": [160, 120, 200],
+      "variant_group": "crew_quarters_large",
+      "variant_name": "Standard"
+    },
+    {
       "id": "reactor_small",
       "slot_type": "reactor",
       "size": "small",

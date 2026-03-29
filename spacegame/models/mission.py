@@ -33,6 +33,7 @@ class MissionStatus(Enum):
     ACTIVE = "active"
     COMPLETED = "completed"
     FAILED = "failed"
+    ABANDONED = "abandoned"
 
 
 @dataclass
@@ -386,6 +387,29 @@ class MissionManager:
             return (False, f"Mission is {self._status[mission_id].value}, not active")
         self._status[mission_id] = MissionStatus.FAILED
         return (True, f"Failed: {self._missions[mission_id].name}")
+
+    def abandon_mission(self, mission_id: str) -> tuple[bool, str]:
+        """Move a side mission from ACTIVE to ABANDONED.
+
+        Only side missions can be abandoned. Campaign missions cannot.
+        No rewards are granted. Returns the mission's on_accept_cargo
+        list so the caller can remove cargo from the player's ship.
+
+        Args:
+            mission_id: Mission to abandon.
+
+        Returns:
+            Tuple of (success, message).
+        """
+        if mission_id not in self._missions:
+            return (False, "Mission not found")
+        mission = self._missions[mission_id]
+        if self._status[mission_id] != MissionStatus.ACTIVE:
+            return (False, f"Mission is {self._status[mission_id].value}, not active")
+        if mission.mission_type != "side":
+            return (False, "Only side missions can be abandoned")
+        self._status[mission_id] = MissionStatus.ABANDONED
+        return (True, f"Abandoned: {mission.name}")
 
     def check_objectives(
         self,

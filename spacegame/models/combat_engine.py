@@ -123,8 +123,9 @@ class CombatEngine:
             self._state.combat_log.append(entry)
             return [entry]
 
-        # Check cooldown
-        if move_id in player.cooldowns:
+        # Check cooldown — use slot_key for per-slot independent cooldowns
+        cooldown_key = getattr(move, "slot_key", "") or move_id
+        if cooldown_key in player.cooldowns:
             entry = CombatLogEntry(
                 round_number=self._state.round_number,
                 actor="player",
@@ -150,9 +151,9 @@ class CombatEngine:
         # Spend energy
         player.energy -= move.energy_cost
 
-        # Set cooldown
+        # Set cooldown — per-slot so duplicate equipment has independent cooldowns
         if move.cooldown > 0:
-            player.cooldowns[move_id] = move.cooldown
+            player.cooldowns[cooldown_key] = move.cooldown
 
         # Overdriven Weapon: 2x damage on next weapon attack (momentum 50% threshold)
         overdriven_active = False
@@ -1085,9 +1086,15 @@ class CombatEngine:
                             isinstance(defender, PlayerCombatState)
                             and defender.defensive_identity == "ghost"
                         ):
+                            prev_stacks = defender.counterstrike_stacks
                             defender.counterstrike_stacks = min(
                                 defender.counterstrike_stacks + 1, 3
                             )
+                            if defender.counterstrike_stacks > prev_stacks:
+                                pct = defender.counterstrike_stacks * 12
+                                effects_applied.append(
+                                    f"Counterstrike +{pct}%"
+                                )
 
             if hit or graze:
                 # Track if enemy was alive before applying effects
@@ -1112,8 +1119,9 @@ class CombatEngine:
                     # Evasion decay: -5 evasion for 1 turn after being hit
                     defender.evasion_decay = 5
                     # Ghost Counterstrike resets on being hit
-                    if defender.defensive_identity == "ghost":
+                    if defender.defensive_identity == "ghost" and defender.counterstrike_stacks > 0:
                         defender.counterstrike_stacks = 0
+                        effects_applied.append("Counterstrike reset!")
                     # Sentinel Shield Break detection
                     if (
                         defender.defensive_identity == "sentinel"
@@ -1121,6 +1129,7 @@ class CombatEngine:
                         and not defender.shield_break_vulnerable
                     ):
                         defender.shield_break_vulnerable = True
+                        effects_applied.append("SHIELDS BROKEN! +25% vulnerability")
 
                 # Momentum: player dealt a hit
                 if is_player_attack and isinstance(defender, EnemyShip):
@@ -1389,8 +1398,7 @@ class CombatEngine:
                             )
                             frozen_effect._frozen = True  # type: ignore[attr-defined]
                             target.active_effects.append((frozen_effect, 1))
-                            messages.append("FROZEN! Enemy loses next turn")
-                        messages.append("FROZEN! Enemy loses next turn")
+                            messages.append("FROZEN! Skips next turn")
 
                 elif eff_element == WeaponElement.VOLTAIC:
                     # 85% damage + Suppressed stack
@@ -1636,8 +1644,8 @@ class CombatEngine:
                                 )
                             # Weapon offline: remove combat move from available moves
                             if effects.get("weapon_offline") and target._ship_build:
-                                placed_mod = target._ship_build.modules[mod_state.placed_index]
-                                offline_uid = getattr(placed_mod, "installed_upgrade_id", None)
+                                placed_mod = target._ship_build.placed_slots[mod_state.placed_index]
+                                offline_uid = getattr(placed_mod, "equipped_part_id", None)
                                 if offline_uid:
                                     target.equipment_moves = [
                                         m for m in target.equipment_moves if m.id != offline_uid

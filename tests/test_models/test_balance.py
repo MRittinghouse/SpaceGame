@@ -37,13 +37,13 @@ class TestConfigConstants:
         )
 
     def test_xp_per_mining(self) -> None:
-        assert config.XP_PER_MINING == 1, f"Mining XP should be 1, got {config.XP_PER_MINING}"
+        assert config.XP_PER_MINING == 3, f"Mining XP should be 3, got {config.XP_PER_MINING}"
 
     def test_xp_per_salvage(self) -> None:
-        assert config.XP_PER_SALVAGE == 1, f"Salvage XP should be 1, got {config.XP_PER_SALVAGE}"
+        assert config.XP_PER_SALVAGE == 6, f"Salvage XP should be 6, got {config.XP_PER_SALVAGE}"
 
     def test_xp_per_refine(self) -> None:
-        assert config.XP_PER_REFINE == 3, f"Refine XP should be 3, got {config.XP_PER_REFINE}"
+        assert config.XP_PER_REFINE == 10, f"Refine XP should be 10, got {config.XP_PER_REFINE}"
 
     def test_xp_per_trade(self) -> None:
         assert config.XP_PER_TRADE == 5, "Trade XP should be 5"

@@ -566,13 +566,6 @@ class ModeOverlay:
         overlay.fill((r, g, b, alpha))
         screen.blit(overlay, gr.topleft)
 
-        # Mode label in corner
-        label_color = (80, 160, 255) if self._mode == "scan" else (220, 170, 60)
-        label_text = "SCAN MODE" if self._mode == "scan" else "EXTRACT MODE"
-        font = get_font("machine", FONT_XS)
-        label = font.render(label_text, True, label_color)
-        screen.blit(label, (gr.right - label.get_width() - 4, gr.top + 3))
-
 
 # ==========================================================================
 # Deck Transition Effect

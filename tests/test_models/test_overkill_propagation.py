@@ -15,8 +15,8 @@ from spacegame.models.module_combat import (
     CHAIN_DAMAGE_RATIO,
     MIN_EXCESS_FOR_CHAIN,
 )
-from spacegame.models.ship_module import ShipModule, PlacedModule
-from spacegame.models.ship_build import ShipBuild
+from spacegame.models.ship_build import PlacedSlot, ShipBuild
+from spacegame.models.slot_definition import SlotDefinition
 
 
 # ============================================================================
@@ -24,18 +24,16 @@ from spacegame.models.ship_build import ShipBuild
 # ============================================================================
 
 
-def _module_2x2(mid: str) -> ShipModule:
-    return ShipModule(
-        id=mid,
-        name=mid,
-        description="",
-        category="weapon",
-        manufacturer="reyes_kowalski",
-        pixel_grid=[["H", "H"], ["H", "H"]],
-        material_map={"H": "m"},
-        provides={},
+def _slot_def_2x2(sid: str) -> SlotDefinition:
+    return SlotDefinition(
+        id=sid,
+        slot_type="weapon",
+        size="small",
+        footprint_w=2,
+        footprint_h=2,
         weight=2.0,
-        base_cost=0,
+        placement_cost=0,
+        color=(200, 60, 60),
     )
 
 
@@ -87,54 +85,58 @@ class TestExcessDamage:
 
 
 class TestAdjacencyMap:
-    def test_adjacent_modules(self) -> None:
-        """Two modules placed side by side should be adjacent."""
-        catalog = {"mod": _module_2x2("mod")}
-        build = ShipBuild(weight_class="tiny")
-        # Module 0 at (0,0): pixels (0,0),(1,0),(0,1),(1,1)
-        # Module 1 at (2,0): pixels (2,0),(3,0),(2,1),(3,1)
-        # (1,0) and (2,0) are 4-adjacent
-        build.modules = [
-            PlacedModule(module_id="mod", x=0, y=0),
-            PlacedModule(module_id="mod", x=2, y=0),
-        ]
+    def test_adjacent_slots(self) -> None:
+        """Two slots placed side by side should be adjacent."""
+        catalog = {"mod": _slot_def_2x2("mod")}
+        build = ShipBuild(
+            weight_class="tiny",
+            placed_slots=[
+                PlacedSlot(slot_def_id="mod", x=0, y=0),
+                PlacedSlot(slot_def_id="mod", x=2, y=0),
+            ],
+        )
         adj = build_adjacency_map(build, catalog)
-        assert 1 in adj.get(0, []), "Module 0 should be adjacent to module 1"
-        assert 0 in adj.get(1, []), "Module 1 should be adjacent to module 0"
+        assert 1 in adj.get(0, []), "Slot 0 should be adjacent to slot 1"
+        assert 0 in adj.get(1, []), "Slot 1 should be adjacent to slot 0"
 
-    def test_non_adjacent_modules(self) -> None:
-        """Modules far apart should not be adjacent."""
-        catalog = {"mod": _module_2x2("mod")}
-        build = ShipBuild(weight_class="tiny")
-        build.modules = [
-            PlacedModule(module_id="mod", x=0, y=0),
-            PlacedModule(module_id="mod", x=10, y=10),
-        ]
+    def test_non_adjacent_slots(self) -> None:
+        """Slots far apart should not be adjacent."""
+        catalog = {"mod": _slot_def_2x2("mod")}
+        build = ShipBuild(
+            weight_class="tiny",
+            placed_slots=[
+                PlacedSlot(slot_def_id="mod", x=0, y=0),
+                PlacedSlot(slot_def_id="mod", x=10, y=10),
+            ],
+        )
         adj = build_adjacency_map(build, catalog)
         assert 1 not in adj.get(0, [])
         assert 0 not in adj.get(1, [])
 
     def test_diagonal_not_adjacent(self) -> None:
-        """Diagonally touching modules should NOT be adjacent (4-connected only)."""
-        catalog = {"mod": _module_2x2("mod")}
-        build = ShipBuild(weight_class="tiny")
-        # Module 0 at (0,0), Module 1 at (2,2) — diagonal, not 4-adjacent
-        build.modules = [
-            PlacedModule(module_id="mod", x=0, y=0),
-            PlacedModule(module_id="mod", x=2, y=2),
-        ]
+        """Diagonally touching slots should NOT be adjacent (4-connected only)."""
+        catalog = {"mod": _slot_def_2x2("mod")}
+        build = ShipBuild(
+            weight_class="tiny",
+            placed_slots=[
+                PlacedSlot(slot_def_id="mod", x=0, y=0),
+                PlacedSlot(slot_def_id="mod", x=2, y=2),
+            ],
+        )
         adj = build_adjacency_map(build, catalog)
         assert 1 not in adj.get(0, [])
 
-    def test_three_modules_in_chain(self) -> None:
+    def test_three_slots_in_chain(self) -> None:
         """A-B-C chain: A adjacent to B, B adjacent to C, A not adjacent to C."""
-        catalog = {"mod": _module_2x2("mod")}
-        build = ShipBuild(weight_class="tiny")
-        build.modules = [
-            PlacedModule(module_id="mod", x=0, y=0),  # A
-            PlacedModule(module_id="mod", x=2, y=0),  # B (adjacent to A)
-            PlacedModule(module_id="mod", x=4, y=0),  # C (adjacent to B, not A)
-        ]
+        catalog = {"mod": _slot_def_2x2("mod")}
+        build = ShipBuild(
+            weight_class="tiny",
+            placed_slots=[
+                PlacedSlot(slot_def_id="mod", x=0, y=0),  # A
+                PlacedSlot(slot_def_id="mod", x=2, y=0),  # B (adjacent to A)
+                PlacedSlot(slot_def_id="mod", x=4, y=0),  # C (adjacent to B, not A)
+            ],
+        )
         adj = build_adjacency_map(build, catalog)
         assert 1 in adj[0]
         assert 0 in adj[1]

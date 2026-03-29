@@ -111,20 +111,17 @@ class TestShipBuildWithPlacedSlots:
 
     def test_backward_compat_no_placed_slots(self) -> None:
         """Old saves without placed_slots should load with empty list."""
-        d = {"weight_class": "small", "pixels": [], "slots": []}
+        d = {"weight_class": "small", "pixels": []}
         build = ShipBuild.from_dict(d)
         assert build.placed_slots == []
-        assert build.modules == []
 
-    def test_build_can_have_both_modules_and_slots(self) -> None:
-        """During migration, builds might have both legacy modules and new slots."""
+    def test_build_defaults_to_empty_slots(self) -> None:
+        """New build defaults to empty placed_slots."""
         build = ShipBuild(
             weight_class="small",
             placed_slots=[PlacedSlot(slot_def_id="weapon_small", x=5, y=2)],
         )
-        # Both fields coexist
         assert len(build.placed_slots) == 1
-        assert len(build.modules) == 0
 
 
 class TestFrameSlotLimits:
