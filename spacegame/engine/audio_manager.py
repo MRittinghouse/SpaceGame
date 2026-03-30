@@ -319,11 +319,14 @@ class AudioManager:
             default_vol = entry.get("volume", 1.0)
             effective = self._effective_ambient_volume() * default_vol
 
+            # Set the Sound object's volume BEFORE playing so the fade-in
+            # ramps toward the correct target instead of the default 1.0
+            sound.set_volume(effective)
             self._ambient_channel = sound.play(loops=-1, fade_ms=int(fade_in * 1000))
             if self._ambient_channel:
                 self._ambient_channel.set_volume(effective)
             self._current_ambient_id = ambient_id
-            logger.info("Playing ambient: %s", ambient_id)
+            logger.info("Playing ambient: %s (vol=%.2f)", ambient_id, effective)
         except pygame.error as e:
             logger.error("Failed to play ambient '%s': %s", ambient_id, e)
 

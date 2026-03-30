@@ -159,9 +159,18 @@ class DeepCoreUpgradeState:
                         total += cost
         return total
 
+    # Upgrades that persist across prestiges (cumulative investment rewards)
+    PRESTIGE_PERSISTENT: set[str] = {"silo_expansion", "energy_conduit"}
+
     def reset(self) -> None:
-        """Reset all upgrade levels to 0 (used by prestige)."""
+        """Reset upgrade levels to 0, preserving prestige-persistent upgrades."""
+        preserved = {
+            uid: level
+            for uid, level in self._levels.items()
+            if uid in self.PRESTIGE_PERSISTENT
+        }
         self._levels.clear()
+        self._levels.update(preserved)
 
     def to_dict(self) -> dict[str, Any]:
         """Serialize to dictionary."""

@@ -608,6 +608,10 @@ class MiningView(BaseView):
             bonus_pct,
         )
 
+    def _has_auto_regen(self) -> bool:
+        """Check if Deep Strata auto-regen upgrade is purchased."""
+        return self.player.deep_core_upgrades.get_level("deep_strata") >= 1
+
     def _get_wholesale_rate(self) -> float:
         """Get the effective wholesale rate including prestige bonus."""
         base = 0.10 + self.mining_config.perk_wholesale_bonus
@@ -879,50 +883,56 @@ class MiningView(BaseView):
                             f"Clear at least 50% of the field first ({pct_display}% cleared)"
                         )
                     else:
-                        advance = self.session.regenerate_field()
-                        self.player.max_mining_depth = max(
-                            self.player.max_mining_depth, self.session.depth
-                        )
-                        # Award strata tokens
-                        if advance.strata_earned > 0:
-                            self.player.add_strata_tokens(advance.strata_earned)
-                            self._session_strata += advance.strata_earned
-                            bonus_text = " (full clear!)" if advance.was_full_clear else ""
-                            self._add_feedback(
-                                f"+{advance.strata_earned} Strata{bonus_text}",
-                                WINDOW_WIDTH // 2,
-                                80,
-                                (180, 140, 255),
-                            )
-                        self._rock_shapes.clear()
-                        # Depth transition particles across the grid
-                        for gx in range(self.mining_config.grid_width):
-                            fx = self.GRID_OFFSET_X + gx * self.CELL_SIZE + self.CELL_SIZE // 2
-                            fy = self.GRID_OFFSET_Y + 10
-                            self.particles.emit(fx, fy, DEPTH_TRANSITION)
-                        # Sync depth VFX and trigger layer transition
-                        self._mining_atmosphere.set_depth(self.session.depth)
-                        self._depth_meter.set_depth(self.session.depth)
-                        cols = self.mining_config.grid_width
-                        rows = self.mining_config.grid_height
-                        vfx_grid_rect = pygame.Rect(
-                            self.GRID_OFFSET_X,
-                            self.GRID_OFFSET_Y,
-                            self.CELL_SIZE * cols,
-                            self.CELL_SIZE * rows,
-                        )
-                        self._layer_transition.trigger(self.session.depth, vfx_grid_rect)
+                        self._perform_regen()
 
-                        self._show_message(
-                            f"Depth {self.session.depth}! +{advance.strata_earned} Strata"
-                        )
-                        # One-time prestige tutorial when first eligible
-                        if (
-                            self.session.depth >= self._get_prestige_depth_requirement()
-                            and not self.player.prestige_hint_shown
-                        ):
-                            self._show_prestige_hint = True
-                            self.player.prestige_hint_shown = True
+    def _perform_regen(self) -> None:
+        """Regenerate the field and advance depth (shared by button and auto-regen)."""
+        if not self.session:
+            return
+        advance = self.session.regenerate_field()
+        self.player.max_mining_depth = max(
+            self.player.max_mining_depth, self.session.depth
+        )
+        # Award strata tokens
+        if advance.strata_earned > 0:
+            self.player.add_strata_tokens(advance.strata_earned)
+            self._session_strata += advance.strata_earned
+            bonus_text = " (full clear!)" if advance.was_full_clear else ""
+            self._add_feedback(
+                f"+{advance.strata_earned} Strata{bonus_text}",
+                WINDOW_WIDTH // 2,
+                scale_y(80),
+                (180, 140, 255),
+            )
+        self._rock_shapes.clear()
+        # Depth transition particles across the grid
+        for gx in range(self.mining_config.grid_width):
+            fx = self.GRID_OFFSET_X + gx * self.CELL_SIZE + self.CELL_SIZE // 2
+            fy = self.GRID_OFFSET_Y + 10
+            self.particles.emit(fx, fy, DEPTH_TRANSITION)
+        # Sync depth VFX and trigger layer transition
+        self._mining_atmosphere.set_depth(self.session.depth)
+        self._depth_meter.set_depth(self.session.depth)
+        cols = self.mining_config.grid_width
+        rows = self.mining_config.grid_height
+        vfx_grid_rect = pygame.Rect(
+            self.GRID_OFFSET_X,
+            self.GRID_OFFSET_Y,
+            self.CELL_SIZE * cols,
+            self.CELL_SIZE * rows,
+        )
+        self._layer_transition.trigger(self.session.depth, vfx_grid_rect)
+
+        self._show_message(
+            f"Depth {self.session.depth}! +{advance.strata_earned} Strata"
+        )
+        # One-time prestige tutorial when first eligible
+        if (
+            self.session.depth >= self._get_prestige_depth_requirement()
+            and not self.player.prestige_hint_shown
+        ):
+            self._show_prestige_hint = True
+            self.player.prestige_hint_shown = True
 
     def _click_rock(self, gx: int, gy: int, empowered: bool = False) -> None:
         if not self.session:
@@ -1050,7 +1060,7 @@ class MiningView(BaseView):
 
         # Flash decay
         if self._flash_alpha > 0:
-            self._flash_alpha = max(0, self._flash_alpha - 600 * dt)
+            self._flash_alpha = max(0, self._flash_alpha - 200 * dt)
 
         # Floating icon animations
         self._floats.update(dt)
@@ -1070,6 +1080,10 @@ class MiningView(BaseView):
             new_text = f"Regen ({pct}%)"
             if self.regen_button.text != new_text:
                 self.regen_button.set_text(new_text)
+
+            # Deep Strata auto-regen: automatically advance when 100% cleared
+            if pct == 100 and self._has_auto_regen():
+                self._perform_regen()
 
         # Tooltip update
         self._update_upgrade_tooltip()
@@ -1153,7 +1167,7 @@ class MiningView(BaseView):
 
         self.particles.emit(fx, fy, ROCK_BREAK)
         self.particles.emit(fx, fy, COLLECT_SPARKLE)
-        self._flash_alpha = 80.0
+        self._flash_alpha = 25.0
         self._rock_shakes.pop((gx, gy), None)
         get_audio_manager().play_sfx("mine_break")
         get_audio_manager().play_sfx("mine_collect")
@@ -1260,7 +1274,7 @@ class MiningView(BaseView):
 
         self.particles.emit(fx, fy, ROCK_BREAK)
         self.particles.emit(fx, fy, COLLECT_SPARKLE)
-        self._flash_alpha = 60.0
+        self._flash_alpha = min(self._flash_alpha + 12.0, 25.0)
         get_audio_manager().play_sfx("mine_break")
         get_audio_manager().play_sfx("mine_collect")
 

@@ -190,13 +190,18 @@ class TestDeepCoreUpgradeState:
         upgrades = self._make_upgrades()
         assert state.get_effect("core_resonance", upgrades) == 0.0
 
-    def test_reset_clears_all_levels(self) -> None:
+    def test_reset_clears_non_persistent_levels(self) -> None:
         state = DeepCoreUpgradeState()
         state._levels["core_resonance"] = 3
         state._levels["energy_conduit"] = 2
+        state._levels["silo_expansion"] = 4
+        state._levels["deep_strata"] = 1
         state.reset()
         assert state.get_level("core_resonance") == 0
-        assert state.get_level("energy_conduit") == 0
+        assert state.get_level("deep_strata") == 0
+        # Persistent upgrades survive prestige
+        assert state.get_level("energy_conduit") == 2
+        assert state.get_level("silo_expansion") == 4
 
     def test_get_total_invested(self) -> None:
         state = DeepCoreUpgradeState()

@@ -71,6 +71,15 @@
       "costs": [15, 30, 50],
       "effect_type": "drone_speed_bonus",
       "effect_per_level": 0.15
+    },
+    {
+      "id": "deep_strata",
+      "name": "Deep Strata",
+      "description": "Automatically regenerates the field when 100% cleared. Resets on prestige.",
+      "max_level": 1,
+      "costs": [10000],
+      "effect_type": "auto_regen",
+      "effect_per_level": 1.0
     }
   ]
 }
