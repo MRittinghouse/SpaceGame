@@ -7,311 +7,362 @@ Tutorial system for new players.
 from typing import Optional
 
 # Tutorial step definitions
+# Narrative voice (QA Pass 6 pre-playtest polish, 2026-04-21). Tutorials
+# build on the `intro_narration` dialogue — second-person internal voice,
+# grounded in the protagonist's recent history (father's death, the
+# scrapyard build, 4000 credits, leaving the colony ship). Style reference:
+# requirements/dialogue_writing_guide.md §3 (writing for ordinary people)
+# and §6 (AI anti-patterns). No em-dashes, no "couldn't help but", no
+# "no X, no Y" constructions.
+
 TUTORIAL_STEPS = [
     {
         "id": 0,
-        "title": "Welcome to Aurelia!",
+        "title": "The Map",
         "description": (
-            "You are a trader in a galaxy of opportunity. "
-            "Your goal is to buy low, sell high, and build your fortune.\n\n"
-            "The Galaxy Map shows all star systems you can visit. "
-            "Click a system to see its details, then use the buttons to trade or travel."
+            "Eleven systems on the nav display. Your father worked mining "
+            "rigs in three of them on paper. In person he only ever saw "
+            "this one. The permit clears you for the others. The fuel "
+            "tank clears you for two jumps if you're careful, maybe "
+            "three.\n\n"
+            "Click a system to see what it is. Click Travel when you're "
+            "ready to burn fuel. Nothing gets better while you're sitting "
+            "here."
         ),
         "trigger": "galaxy_map",
     },
     {
         "id": 1,
-        "title": "Trading Basics",
+        "title": "The Markets",
         "description": (
-            "At any system, you can buy and sell commodities at the local market.\n\n"
-            "Prices vary by system — buy where prices are LOW, "
-            "travel to a system where they're HIGH, and sell for profit.\n\n"
-            "Watch for price trends shown in the market list."
+            "You've seen trading posts your whole life. This one looks "
+            "the same as the ones in the colony ship. Prices run "
+            "different everywhere. Food is cheap where farms are, "
+            "expensive where miners are. Manufactured goods are cheap "
+            "where factories are, expensive out on the frontier.\n\n"
+            "Buy where they grow it. Sell where they need it. The trend "
+            "arrows show which way prices are heading. The math isn't "
+            "hard. The waiting is."
         ),
         "trigger": "trading",
     },
     {
         "id": 2,
-        "title": "Traveling the Galaxy",
+        "title": "The Fuel Bill",
         "description": (
-            "To travel, select a destination system on the Galaxy Map "
-            "and click 'Travel'. Each jump costs fuel and advances one day.\n\n"
-            "Market prices change daily, so plan your route carefully. "
-            "You can also REST at a system to wait for better prices."
+            "Your first profit. Most of it just went to fuel cells. "
+            "That's trading. Every jump costs. Every day at rest costs "
+            "nothing but time.\n\n"
+            "Prices shift daily. Sometimes waiting IS the trade. You "
+            "can REST at any system to pass time without burning fuel. "
+            "Your father used to say, 'Plan twice, move once.' He "
+            "didn't always follow his own advice."
         ),
         "trigger": "after_first_trade",
     },
     {
         "id": 3,
-        "title": "Activities: Mining, Salvage & Refining",
+        "title": "The Sidework",
         "description": (
-            "Some systems offer special activities:\n\n"
-            "Mining: Drill asteroids to extract valuable ores.\n"
-            "Salvage: Scan debris fields to find useful materials.\n"
-            "Refining: Process raw materials into higher-value goods.\n\n"
-            "Check the trading screen for available activities."
+            "Some systems pay in ore if you're willing to pull a shift "
+            "on the rocks. Some have wrecks to pick through. Some run "
+            "refineries that turn raw junk into parts worth ten times "
+            "what you paid. Your father pulled mining shifts his whole "
+            "adult life. Loud work. Dangerous work. Honest work.\n\n"
+            "Look at the trading screen for available activities in the "
+            "current system. The veterans have a rule: don't turn down "
+            "paying work when your hold is empty."
         ),
         "trigger": "activity",
     },
     {
         "id": 4,
-        "title": "Your Journey Ahead",
+        "title": "The Long Haul",
         "description": (
-            "You're all set! Here are some goals to work toward:\n\n"
-            "- Earn achievements for trading, exploring, and crafting\n"
-            "- Level up to unlock powerful skills\n"
-            "- Upgrade your ship at the Shipyard\n"
-            "- Visit all 10 systems in the galaxy\n\n"
-            "Check your progress in the Statistics and Achievements screens "
-            "(accessible from the pause menu)."
+            "First jump made. Now you understand why the old dockhands "
+            "talk about fuel like it's bread. You'll level up by trading, "
+            "fighting, mining, surviving. Skills unlock. Ships get "
+            "better.\n\n"
+            "Every system will tell you something if you listen. Some "
+            "of them might tell you who buried your father's report. "
+            "That's a long way from here. First you need credits. "
+            "Then you need friends. Then you need leverage."
         ),
         "trigger": "after_first_travel",
     },
 ]
 
 
-# Contextual hints shown once per mini-game (independent of the 5-step tutorial)
+# Contextual hints shown once per mini-game (independent of the 5-step tutorial).
+# Narrative voice (QA Pass 6 pre-playtest polish, 2026-04-21) — same style
+# rules as TUTORIAL_STEPS above. Each hint grounds mechanical facts in the
+# protagonist's voice or a working-class NPC's voice, rather than breaking
+# the fourth wall.
 MINIGAME_HINTS: dict[str, dict[str, str]] = {
     "mining": {
-        "title": "Asteroid Mining",
+        "title": "The Drill Line",
         "description": (
-            "Click rocks to mine them! Each rock has a hardness rating "
-            "that determines how long it takes to break.\n\n"
-            "LEFT-CLICK: Free click — mine at normal power.\n"
-            "RIGHT-CLICK: Empowered click — uses energy, deals 3x damage.\n\n"
-            "The energy bar refills over time. Drones (if unlocked) mine automatically. "
-            "When your cargo hold is full, mining stops.\n\n"
-            "Use 'Regenerate Field' to dig deeper for rarer ores."
+            "Your father could read a rock face by the dust it threw. "
+            "You don't have that yet. You will.\n\n"
+            "LEFT-CLICK breaks a rock one swing at a time.\n"
+            "RIGHT-CLICK is the empowered strike. Costs energy. Three "
+            "times the damage.\n\n"
+            "Energy refills while you work the lighter rocks. Drones "
+            "mine the common stuff automatically once you can afford "
+            "them. When your hold is full, the drill stops. Regenerate "
+            "the field to dig deeper. Rarer ores are further down. So "
+            "is everything harder."
         ),
     },
     "salvage": {
-        "title": "Salvage Operations",
+        "title": "The Wreck",
         "description": (
-            "Explore derelict hulls to find valuable salvage!\n\n"
-            "SCAN MODE: Click cells to reveal their contents. Each scan costs a charge "
-            "(charges regenerate over time). Numbers show how many items are nearby.\n\n"
-            "EXTRACT MODE: Click revealed items to begin extraction. "
-            "Extraction takes time — multiple items can extract in parallel.\n\n"
-            "Watch out for corruption! Once triggered, a timer counts down "
-            "and corrupted cells are lost forever."
+            "Everything you see here was someone's bad day. The "
+            "wreckage is going to be picked clean regardless. Might as "
+            "well be you.\n\n"
+            "SCAN reveals what's in a cell. Costs a charge. Numbers "
+            "show how many items are nearby.\n"
+            "EXTRACT pulls items out. Takes time. You can run several "
+            "at once.\n\n"
+            "Red cells are corrupted. Once the timer starts, you lose "
+            "the contents fast. The scanner flashes when it spots one. "
+            "Watch the flash."
         ),
     },
     "refining": {
-        "title": "Refining",
+        "title": "The Crucible",
         "description": (
-            "Process raw materials into valuable refined goods.\n\n"
-            "Select a recipe from the list on the left. "
-            "Recipes show what materials are NEEDED and what they MAKE.\n\n"
-            "Click 'Start' to queue a job. Jobs process in real-time — "
-            "you can queue multiple jobs and watch them complete. "
-            "Use +/- to batch multiple copies of the same recipe.\n\n"
-            "Refined goods sell for much more than raw materials!"
+            "Raw metals pay less than finished parts. That's not "
+            "philosophy, that's margin.\n\n"
+            "Select a recipe. It lists what it NEEDS and what it "
+            "MAKES. Queue a job with Start. Jobs process in real time "
+            "and you can stack them.\n\n"
+            "Some recipes want ingredients you haven't found yet. "
+            "You'll trip them as you trade. The old line on the docks: "
+            "miners break, refiners build, shippers get paid. Learn "
+            "all three."
         ),
     },
-    # === Combat System Tutorials (Phase 11) ===
+    # === Combat System Tutorials ===
     "combat_momentum": {
-        "title": "Momentum Gauge",
+        "title": "The Momentum Bar",
         "description": (
-            "Your Momentum gauge builds as you fight. Dealing damage, "
-            "taking hits, using crew abilities, and applying elemental "
-            "effects all build Momentum.\n\n"
-            "At key thresholds, powerful abilities unlock:\n"
-            "25% — Crew Combos available\n"
-            "50% — Overdriven Weapon (2x damage)\n"
-            "75% — System Overclock (+3 energy regen)\n"
-            "100% — Ship Ultimate (unique per ship class)\n\n"
-            "Watch the Momentum bar on the left!"
+            "You feel the fight settle into rhythm. Every hit landed, "
+            "every hit taken, every crew move, every status effect "
+            "feeds a pool the old pilots call momentum.\n\n"
+            "25% unlocks Crew Combos.\n"
+            "50% doubles your weapon damage for a turn.\n"
+            "75% adds +3 energy regen.\n"
+            "100% fires your ship's Ultimate, whatever that is.\n\n"
+            "The bar sits on your left. The bar doesn't lie."
         ),
     },
     "combat_crew_combo": {
-        "title": "Crew Combo Unlocked!",
+        "title": "Crew Combo",
         "description": (
-            "When two specific crew members are recruited and your "
-            "Momentum reaches 25%, Crew Combos unlock!\n\n"
-            "Combos are more powerful than individual crew abilities. "
-            "Look for the gold COMBO button in the crew row.\n\n"
-            "Using a combo replaces your crew ability for that turn. "
-            "Each pair of companions has a unique combo."
+            "Two of your crew just synced on a shared move. The gold "
+            "COMBO button in the crew row is the opportunity.\n\n"
+            "Press it in place of the regular crew ability. Combos "
+            "hit harder than solo moves. Different pairs unlock "
+            "different combos.\n\n"
+            "Your crew works better together than apart. That's not a "
+            "metaphor, that's mechanics."
         ),
     },
     "combat_ultimate": {
-        "title": "Ship Ultimate Ready!",
+        "title": "Ultimate Ready",
         "description": (
-            "Your Momentum has reached 100%! Your ship's unique "
-            "Ultimate ability is now available.\n\n"
-            "Press [U] or click the gold ULTIMATE button to activate. "
-            "Ultimates are devastating one-shot abilities — each ship "
-            "class has a different one.\n\n"
-            "Using the Ultimate resets your Momentum to zero."
+            "Full momentum. Your ship's Ultimate is live.\n\n"
+            "Press [U] or click the gold ULTIMATE button. What "
+            "happens depends on the ship class. Some ultimates are "
+            "finishing blows. Some are tactical resets. Using one "
+            "drops the bar back to zero.\n\n"
+            "Pick your moment. Don't waste it on an enemy that was "
+            "already going to die."
         ),
     },
     "combat_boss": {
-        "title": "Boss Encounter!",
+        "title": "Boss Contact",
         "description": (
-            "This is a powerful boss enemy with far more health than "
-            "normal foes. Watch for PHASE CHANGES as their health "
-            "drops.\n\n"
-            "Boss enemies change tactics at health thresholds — they "
-            "may become more aggressive, call reinforcements, or "
-            "unleash devastating attacks.\n\n"
-            "Read the telegraphs carefully. Bosses are immune to "
-            "Freeze and resist Suppression."
+            "This enemy is different. Higher hull. Phase transitions.\n\n"
+            "When their hull drops past certain thresholds, their "
+            "tactics shift. They might call reinforcements. They "
+            "might unleash a saved attack. They might rebuild shields.\n\n"
+            "Read the telegraphs before you commit your queue. Bosses "
+            "don't freeze. They resist voltaic suppression. Fight "
+            "them slow. Fight them patient."
         ),
     },
     "combat_elemental": {
-        "title": "Elemental Effects",
+        "title": "Elemental Weapons",
         "description": (
-            "Your weapon applied an elemental status effect! Elements "
-            "stack across turns for increasing power:\n\n"
-            "Plasma — BURN: Damage over time (3 turns, stacks to 3)\n"
-            "Cryo — CHILL: Reduces evasion. At 3 stacks: FROZEN!\n"
-            "Voltaic — SUPPRESS: Reduces enemy damage output\n"
-            "Ion — Bonus shield damage (150%), weak vs hull\n\n"
-            "Kinetic deals the highest raw damage but has no effect."
+            "Your weapon just applied a status effect. The element "
+            "determines what happens next.\n\n"
+            "Plasma: BURN ticks damage over three turns. Stacks to 3.\n"
+            "Cryo: CHILL reduces evasion. Three stacks FREEZES the "
+            "target for a turn.\n"
+            "Voltaic: SUPPRESSED cuts enemy damage output.\n"
+            "Ion: 150% vs shields, 75% vs hull.\n"
+            "Kinetic: no effects, pure damage.\n\n"
+            "Different fights want different tools. Pack for the "
+            "fight you expect."
         ),
     },
     # === Ship Builder Tutorials (Phase F) ===
     "builder_welcome": {
-        "title": "Welcome to the Drydock",
+        "title": "The Drydock",
         "description": (
-            "This is where you build your ship. Every pixel you place "
-            "becomes part of your ship's hull and sprite.\n\n"
-            "LEFT panel: Shape palette — pick a shape to stamp\n"
-            "RIGHT panel: Material selector — pick what it's made of\n"
-            "CENTER: Your ship grid — click to place shapes\n\n"
-            "The stats panel at the bottom shows your ship's capabilities "
-            "in real-time as you build.\n\n"
-            "Don't want to build from scratch? Click BACK and load a "
-            "preset from the Shipyard."
+            "This is where you build. Every pixel you lay down becomes "
+            "part of your ship's hull and sprite, and flies with you "
+            "from here on.\n\n"
+            "LEFT panel is your shape palette. Pick a shape to stamp.\n"
+            "RIGHT panel is your material selector. Pick what the "
+            "shape is made of.\n"
+            "CENTER is your ship grid. Click to place.\n\n"
+            "The stats panel at the bottom updates in real time so "
+            "you can see what your choices actually mean. Don't want "
+            "to build from scratch? Click BACK and load a preset from "
+            "the Shipyard."
         ),
     },
     "builder_shapes": {
-        "title": "Shapes & Materials",
+        "title": "Shapes and Materials",
         "description": (
-            "Shapes are your building blocks. Select one from the left "
-            "panel, then click the grid to stamp it down.\n\n"
-            "[R] Rotate the shape 90°\n"
-            "[Q] Flip horizontally\n"
-            "[X] Mirror Mode — auto-duplicate across the center line\n\n"
-            "Materials determine what each pixel contributes to your "
-            "ship's stats. Standard Plate is balanced. Heavy Armor is "
-            "tough but heavy. Light Alloy is fast but fragile.\n\n"
-            "The color of each pixel on your ship IS the material color."
+            "Shapes are your building blocks. Pick one from the left, "
+            "click the grid to stamp it down.\n\n"
+            "[R] rotates the shape 90 degrees.\n"
+            "[Q] flips horizontally.\n"
+            "[X] mirrors across the center line.\n\n"
+            "Materials decide what each pixel contributes. Standard "
+            "Plate is the honest middle of the road. Heavy Armor is "
+            "tough and slow. Light Alloy is fast and fragile. The "
+            "pixel color IS the material color. The ship shows its "
+            "materials by showing its colors."
         ),
     },
     "builder_tools": {
-        "title": "Builder Tools (Hull Mode)",
+        "title": "Builder Tools",
         "description": (
-            "[S] Stamp — place shapes (default tool)\n"
-            "[P] Pencil — place single pixels for detail\n"
-            "[M] Brush — repaint pixels with a different material\n"
-            "[F] Fill — flood-fill an enclosed area\n"
-            "[E] Eraser — remove pixels\n\n"
-            "Right-click always erases. Ctrl+Z undoes, Ctrl+Y redoes.\n\n"
-            "Switch to EQUIP mode [Tab] to install weapons and "
-            "shields into your module slots."
+            "[S] Stamp places shapes. This is the default tool.\n"
+            "[P] Pencil places single pixels for detail.\n"
+            "[M] Brush repaints pixels with a different material.\n"
+            "[F] Fill floods an enclosed area.\n"
+            "[E] Eraser removes pixels.\n\n"
+            "Right-click always erases. Ctrl+Z undoes. Ctrl+Y redoes. "
+            "Press [Tab] to switch to EQUIP mode and install weapons "
+            "and shields into your module slots."
         ),
     },
     "builder_confirm": {
-        "title": "Confirming Your Build",
+        "title": "Confirming the Build",
         "description": (
-            "When you're satisfied, click CONFIRM BUILD. Your ship's "
-            "sprite will update everywhere — combat, galaxy map, HUD.\n\n"
-            "You can return to the Drydock at any shipyard to rebuild. "
-            "Nothing is permanent. Experiment freely.\n\n"
-            "The weight system creates natural trade-offs:\n"
-            "• Hull materials are HEAVY → slow but tanky\n"
-            "• Shield materials are MEDIUM → balanced sustain\n"
-            "• Light materials are FAST → evasive but fragile\n\n"
-            "Your ship tells your story. Build it YOUR way."
+            "Click CONFIRM BUILD when you're satisfied. The ship's "
+            "sprite updates everywhere. Combat, galaxy map, HUD. "
+            "All of it.\n\n"
+            "Nothing is permanent. Any shipyard lets you rebuild. "
+            "The weight system creates natural trade-offs. Hull "
+            "materials are heavy but durable. Shields are medium and "
+            "balanced. Light materials are fast but fragile.\n\n"
+            "Your ship tells your story. Build the ship you want, "
+            "and rebuild it when you learn more."
         ),
     },
     # === Ship Builder Tutorials (Slot-Based System) ===
     "builder_module_welcome": {
-        "title": "Ship Builder -- Drydock",
+        "title": "Drydock Intake",
         "description": (
-            "Welcome to the Drydock. Design your ship by placing "
-            "slots on the grid. Each slot type serves a purpose:\n\n"
-            "SLOTS tab: Place weapon, defense, engine, and other slots\n"
-            "HULL tab: Paint hull pixels for armor and cosmetics\n\n"
-            "Select a slot type from the palette on the left, "
-            "then click the grid to place it.\n\n"
-            "[R] Rotate  [Tab] Switch mode\n"
-            "Right-click to remove a placed slot."
+            "This is the Drydock. You design your ship by placing "
+            "slots on the grid. Each slot type does a different job.\n\n"
+            "SLOTS tab: weapon, defense, engine, and utility mounts.\n"
+            "HULL tab: paint hull pixels for armor and character.\n\n"
+            "Pick a slot type from the palette on the left. Click the "
+            "grid to place it. [R] rotates. [Tab] switches modes. "
+            "Right-click removes a placed slot. The grid doesn't "
+            "judge. That's what the stats panel is for."
         ),
     },
     "builder_module_engine": {
-        "title": "Place Your Engine",
+        "title": "Engine First",
         "description": (
-            "Your ship needs propulsion. Select an Engine slot "
-            "from the palette and place it on the grid.\n\n"
-            "Ships face RIGHT. Place engines toward the left "
-            "(stern) for realistic positioning.\n\n"
-            "After placing the slot here, you will buy an engine "
-            "part in the Shop and equip it in the Loadout tab."
+            "Your ship needs propulsion before anything else. Pick an "
+            "Engine slot from the palette, click the grid to place.\n\n"
+            "Ships face RIGHT in this view. Engines go toward the "
+            "left (stern) so the nozzle faces the right direction.\n\n"
+            "After placing the slot, buy an engine part in the Shop "
+            "tab and equip it in the Loadout tab. Without an engine, "
+            "you're space debris."
         ),
     },
     "builder_module_requirements": {
-        "title": "Ship Requirements",
+        "title": "Minimum Viable Ship",
         "description": (
             "Every ship needs at minimum:\n\n"
             "1. Engine slot (propulsion)\n"
             "2. Reactor slot (power)\n\n"
-            "Additional slots expand your capabilities:\n"
-            "• Weapon slots for combat\n"
-            "• Defense slots for shields\n"
-            "• Cargo slots for trading\n"
-            "• Utility slots for fuel, sensors\n"
-            "• Crew quarters for crew members\n\n"
-            "Your frame determines the maximum of each slot type."
+            "Everything else is preference. Weapons if you expect to "
+            "fight. Defense if you expect to be fought. Cargo if you "
+            "plan to trade. Utility for fuel and sensors. Crew "
+            "quarters if you want crew aboard.\n\n"
+            "Your frame caps how many of each slot type you can "
+            "place. Work within the cap. That's part of the design, "
+            "not a barrier to it."
         ),
     },
     "builder_module_hull": {
-        "title": "Hull Pixel Mode",
+        "title": "Hull Pixels",
         "description": (
-            "Press [Tab] to switch to Hull mode. Here you can "
-            "paint structural pixels around your slots to add "
-            "hull points, armor, and visual detail.\n\n"
+            "Press [Tab] to switch to Hull mode. You paint hull "
+            "pixels around your slots to add hit points and armor.\n\n"
             "Four hull materials:\n"
-            "• Light Alloy — fast, fragile\n"
-            "• Standard Plate — balanced\n"
-            "• Heavy Armor — tough, slow\n"
-            "• Stealth Composite — evasive\n\n"
-            "Slots define function; hull pixels define form."
+            "Light Alloy is fast and fragile.\n"
+            "Standard Plate is balanced.\n"
+            "Heavy Armor is tough and slow.\n"
+            "Stealth Composite is evasive.\n\n"
+            "Slots define what the ship does. Hull pixels define "
+            "what it looks like and how much damage it absorbs "
+            "before something vital breaks. Both matter."
         ),
     },
     "builder_module_confirm": {
         "title": "Ready to Fly",
         "description": (
-            "All requirements met! Your ship layout is ready.\n\n"
+            "All requirements met. Your layout works.\n\n"
             "Click CONFIRM BUILD to finalize. Slot and pixel "
-            "fabrication costs will be deducted.\n\n"
-            "After confirming, visit the Shop tab to buy parts, "
-            "then the Loadout tab to equip them.\n\n"
-            "Overlays (right panel) show structural integrity and "
-            "center of mass. Use them to find weak points in your "
-            "design before committing."
+            "fabrication costs come out of your credits. After "
+            "confirming, the Shop tab sells parts that fit your "
+            "slots and the Loadout tab equips them.\n\n"
+            "The overlays on the right panel show structural "
+            "integrity and center of mass. Use them to find weak "
+            "points in your design before you commit. A bad center "
+            "of mass in the builder is a worse one in combat."
         ),
     },
     "combat_defensive_identity": {
-        "title": "Defensive Identity",
+        "title": "Your Ship's Identity",
         "description": (
-            "Your ship has a defensive identity that grants passive "
-            "combat bonuses:\n\n"
-            "JUGGERNAUT (Hull) — Armor reduces incoming damage. "
+            "Your build shapes how your ship fights. The ship tells "
+            "you which identity it leans into.\n\n"
+            "JUGGERNAUT (hull-heavy): armor reduces incoming damage. "
             "Last Stand activates below 25% hull.\n"
-            "SENTINEL (Shield) — Shields regenerate each turn. "
-            "Shield Break leaves you briefly vulnerable.\n"
-            "GHOST (Evasion) — Dodge attacks to build Counterstrike "
-            "damage. Light frame means hits hurt more.\n\n"
-            "Your identity is shown on the left combat panel."
+            "SENTINEL (shield-heavy): shields regenerate every turn. "
+            "Shield Break leaves a short vulnerability window.\n"
+            "GHOST (light and evasive): clean dodges build "
+            "Counterstrike stacks. Hits hurt more when they land.\n\n"
+            "Your identity shows on the left combat panel. Play the "
+            "identity your ship actually has, not the one you wanted."
         ),
     },
 }
 
 
 class TutorialManager:
-    """Manages the tutorial progression and state."""
+    """Manages the tutorial progression and state.
+
+    Two modes:
+    - "story" (default): 5-step overlay is suppressed. Story-tied tutorials
+      (P1-P5) teach through gameplay. MINIGAME_HINTS still fire on repeat visits.
+    - "classic": Original 5-step overlay tutorial fires as before.
+    """
 
     def __init__(self) -> None:
         """Initialize tutorial in not-started state."""
@@ -321,9 +372,13 @@ class TutorialManager:
         self.active: bool = False
         self._show_step: bool = False
         self.hints_dismissed: set[str] = set()
+        self.tutorial_approach: str = "story"  # "story" or "classic"
 
     def should_show_step(self, trigger: str) -> bool:
         """Check if a tutorial step should show for the given trigger.
+
+        In "story" mode, overlay steps are suppressed (story tutorials handle teaching).
+        In "classic" mode, overlay steps fire normally.
 
         Args:
             trigger: The trigger context (e.g., "galaxy_map", "trading").
@@ -331,6 +386,8 @@ class TutorialManager:
         Returns:
             True if the current step matches this trigger and should show.
         """
+        if self.tutorial_approach == "story":
+            return False  # Story tutorials replace overlay steps
         if self.completed or self.skipped or not self.active:
             return False
         if self.current_step >= len(TUTORIAL_STEPS):
@@ -432,6 +489,7 @@ class TutorialManager:
             "skipped": self.skipped,
             "active": self.active,
             "hints_dismissed": list(self.hints_dismissed),
+            "tutorial_approach": self.tutorial_approach,
         }
 
     @classmethod
@@ -450,4 +508,5 @@ class TutorialManager:
         tm.skipped = data.get("skipped", False)
         tm.active = data.get("active", False)
         tm.hints_dismissed = set(data.get("hints_dismissed", []))
+        tm.tutorial_approach = data.get("tutorial_approach", "story")
         return tm

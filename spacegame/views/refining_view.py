@@ -75,6 +75,10 @@ class RefiningView(BaseView):
         self.system_id = system_id
         self.progression = progression
 
+        # Tutorial mode (set externally by game.py)
+        self._tutorial_mode: bool = False
+        self._tutorial_step: int = 0
+
         self.session: Optional[RefiningSession] = None
         self.next_state: Optional[GameState] = None
         self.selected_recipe_idx: int = 0
@@ -253,7 +257,7 @@ class RefiningView(BaseView):
         yield_bonus = 0.0
         if self.progression:
             speed_bonus = self.progression.get_bonus("refining_speed")
-            yield_bonus = self.progression.get_bonus("gathering_yield_bonus")
+            yield_bonus = self.progression.get_bonus("refining_yield_bonus")
 
         # Apply ship upgrade bonuses (stacks with skill tree)
         speed_bonus += self.player.upgrade_manager.get_bonus("refining_speed_bonus")
@@ -497,6 +501,9 @@ class RefiningView(BaseView):
                 # Map back to index in full available_recipes for craft button
                 full_idx = self.session.available_recipes.index(recipe)
                 self.selected_recipe_idx = full_idx
+                # Tutorial step: selecting a recipe advances to step 1
+                if self._tutorial_mode and self._tutorial_step == 0:
+                    self._tutorial_step = 1
                 break
 
     def _handle_schematic_click(self, pos: tuple) -> bool:
@@ -609,6 +616,9 @@ class RefiningView(BaseView):
         self._show_message(msg)
         if success:
             get_audio_manager().play_sfx("refine_start")
+            # Tutorial: starting a job completes the tutorial guidance
+            if self._tutorial_mode and self._tutorial_step < 2:
+                self._tutorial_step = 2
             if self.batch_count > 1:
                 self.player.batch_jobs_queued += self.batch_count
             self.batch_count = 1
@@ -1053,6 +1063,10 @@ class RefiningView(BaseView):
         # Mastery level-up celebration overlay
         self._mastery_levelup.render(screen)
 
+        # Tutorial narration (above summary)
+        if self._tutorial_mode:
+            self._render_tutorial_narration(screen)
+
         # Summary overlay (drawn last, on top of everything)
         if self._show_summary:
             self._render_summary(screen)
@@ -1477,9 +1491,7 @@ class RefiningView(BaseView):
         header = self.small_font.render("FURNACE UPGRADES", True, FORGE_COLOR)
         screen.blit(header, (panel_x, panel_y))
 
-        token_surf = self.small_font.render(
-            f"FT: {self.player.forge_tokens}", True, FORGE_COLOR
-        )
+        token_surf = self.small_font.render(f"FT: {self.player.forge_tokens}", True, FORGE_COLOR)
         screen.blit(token_surf, (panel_x + panel_w - token_surf.get_width(), panel_y))
 
         y = panel_y + scale_y(24)
@@ -1691,6 +1703,34 @@ class RefiningView(BaseView):
             dimmed = forge_sprite.copy()
             dimmed.set_alpha(80)
             screen.blit(dimmed, (fx, fy))
+
+    def _render_tutorial_narration(self, screen: pygame.Surface) -> None:
+        """Render refining tutorial guidance."""
+        if not self._tutorial_mode:
+            return
+        from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH, Colors, scale_x, scale_y
+        from spacegame.engine.draw_utils import draw_panel
+        from spacegame.engine.fonts import FONT_BODY, get_font
+        from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
+
+        # The forge operator doesn't care who you are. You have raw materials, they have heat.
+        narration_steps = [
+            "Pick a recipe. Raw ore's worthless until it goes through the forge. This is where it stops being rocks.",
+            "Queue it up. The forge runs until it's done. Stack jobs if you've got the materials.",
+        ]
+        step = min(self._tutorial_step, len(narration_steps) - 1)
+
+        font = get_font("narration", FONT_BODY)
+        panel_w = WINDOW_WIDTH - scale_x(160)
+        panel_h = scale_y(45)
+        panel_x = (WINDOW_WIDTH - panel_w) // 2
+        panel_y = WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - panel_h - scale_y(10)
+
+        draw_panel(screen, (panel_x, panel_y, panel_w, panel_h), alpha=220)
+        sp = font.render("Forgemaster: ", True, Colors.TEXT_HIGHLIGHT)
+        screen.blit(sp, (panel_x + 16, panel_y + 12))
+        txt = font.render(narration_steps[step], True, Colors.TEXT_PRIMARY)
+        screen.blit(txt, (panel_x + 16 + sp.get_width(), panel_y + 12))
 
     def get_next_state(self) -> Optional[GameState]:
         return self.next_state

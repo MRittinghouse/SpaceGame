@@ -1170,6 +1170,70 @@
       "text": "NOTICE: Recording devices are prohibited in all sections. This includes personal logs. Compliance is not optional.",
       "category": "notice",
       "weight": 7
-    }
+    },
+
+    {"id": "np_life_01", "system_id": "nexus_prime", "text": "Third customs delay this week. The clerk said my paperwork was 'technically incomplete.' The form hasn't changed in six years.", "category": "overheard", "weight": 10},
+    {"id": "np_life_02", "system_id": "nexus_prime", "text": "The cantina started charging extra for hot water. Hot water. My grandmother would have words.", "category": "overheard", "weight": 10},
+    {"id": "np_life_03", "system_id": "nexus_prime", "text": "Director Huang's quarterly address is tomorrow. Taking bets on how many times she says 'responsible growth.'", "category": "overheard", "faction_id": "commerce_guild", "weight": 10},
+    {"id": "np_life_04", "system_id": "nexus_prime", "text": "The docking fee went up again. The memo said 'adjusted for market conditions.' The market conditions are that they want more money.", "category": "overheard", "weight": 10},
+    {"id": "np_prog_01", "system_id": "nexus_prime", "text": "Someone cracked a Guild cipher last week. The officers aren't denying it hard enough.", "category": "overheard", "faction_id": "commerce_guild", "weight": 8, "required_flags": ["crimson_underground_access"], "one_shot": true},
+
+    {"id": "sp_life_01", "system_id": "stellaris_port", "text": "The Kerensky auction went for twelve thousand. The buyer's never been to a colony. Bought it for the 'cultural significance.'", "category": "overheard", "faction_id": "commerce_guild", "weight": 10},
+    {"id": "sp_life_02", "system_id": "stellaris_port", "text": "Maintenance says the climate system is working fine. Then why does Level 3 smell like engine coolant every morning?", "category": "overheard", "weight": 10},
+    {"id": "sp_life_03", "system_id": "stellaris_port", "text": "The new gallery opening got delayed. Something about provenance verification on three of the centerpieces.", "category": "overheard", "weight": 10},
+    {"id": "sp_life_04", "system_id": "stellaris_port", "text": "A freighter captain paid for a promenade dinner with salvage scrip. The waiter's face was worth the meal.", "category": "overheard", "weight": 10},
+    {"id": "sp_prog_01", "system_id": "stellaris_port", "text": "The Maren collection got pulled from the exchange. Nobody's saying why. The serious buyers are saying plenty.", "category": "overheard", "weight": 8, "required_flags": ["forgery_resolved"], "one_shot": true},
+
+    {"id": "bs_life_01", "system_id": "breakstone", "text": "Commissary's serving the same stew as yesterday. And the day before. Cook says it's 'developing complexity.' We say it's Tuesday.", "category": "overheard", "faction_id": "miners_union", "weight": 10},
+    {"id": "bs_life_02", "system_id": "breakstone", "text": "My kid drew a picture of the mines today. Used every color. I didn't tell her it's all gray down there.", "category": "overheard", "weight": 10},
+    {"id": "bs_life_03", "system_id": "breakstone", "text": "New shift roster's up. Fourteen people for a twenty-person job. Union says they're 'reviewing staffing levels.'", "category": "overheard", "faction_id": "miners_union", "weight": 10},
+    {"id": "bs_life_04", "system_id": "breakstone", "text": "Somebody painted a mural in the common hall. Nobody's taking credit. Management hasn't noticed yet. Give it time.", "category": "atmosphere", "weight": 10},
+    {"id": "bs_prog_01", "system_id": "breakstone", "text": "That independent captain brought food through the embargo. Word is they didn't even charge extra. People remember that.", "category": "overheard", "weight": 8, "required_flags": ["miners_plight_complete"], "one_shot": true},
+
+    {"id": "id_life_01", "system_id": "iron_depths", "text": "Vibration alarms triggered on Level 6 again. Third time this cycle. The drill team says it's normal. Normal doesn't used to mean that.", "category": "overheard", "faction_id": "miners_union", "weight": 10},
+    {"id": "id_life_02", "system_id": "iron_depths", "text": "Somebody left a suit of playing cards in the break room. Every face card has a shift supervisor's name on it.", "category": "overheard", "weight": 10},
+    {"id": "id_life_03", "system_id": "iron_depths", "text": "It's quiet down here. The kind of quiet that makes you check your oxygen readout twice.", "category": "atmosphere", "weight": 10},
+    {"id": "id_life_04", "system_id": "iron_depths", "text": "The new auditor keeps asking questions nobody wants to answer. At least he's asking.", "category": "overheard", "weight": 10},
+    {"id": "id_prog_01", "system_id": "iron_depths", "text": "Vek's warning got around. Three supervisors resigned. Management's calling it 'voluntary transition.' The rest of us call it overdue.", "category": "overheard", "weight": 8, "required_flags": ["met_sienna_vek"], "one_shot": true},
+
+    {"id": "fw_life_01", "system_id": "forgeworks", "text": "The furnace calibration's off by half a degree. Half a degree. You'd think it doesn't matter. Tell that to the hull plating that cracked on the test stand.", "category": "overheard", "weight": 10},
+    {"id": "fw_life_02", "system_id": "forgeworks", "text": "Guild contract says we produce sixty units a month. Union contract says overtime starts at forty hours. Nobody asked the metal what it thinks.", "category": "overheard", "weight": 10},
+    {"id": "fw_life_03", "system_id": "forgeworks", "text": "The apprentice welded her first clean seam today. Whole shop stopped to look. You'd think we won a contract.", "category": "overheard", "faction_id": "miners_union", "weight": 10},
+    {"id": "fw_life_04", "system_id": "forgeworks", "text": "Somebody from Stellaris Port ordered a custom hull fitting. The spec sheet was three pages. The deposit was four months' wages.", "category": "overheard", "weight": 10},
+    {"id": "fw_prog_01", "system_id": "forgeworks", "text": "That journalist at Nexus Prime ran a story about our injury rates. Management's furious. The floor workers are passing it around like contraband.", "category": "overheard", "weight": 8, "required_flags": ["whistleblower_complete"], "one_shot": true},
+
+    {"id": "al_life_01", "system_id": "axiom_labs", "text": "The cafeteria's serving 'nutritionally optimized protein.' That's a careful way to say it tastes like nothing.", "category": "overheard", "faction_id": "science_collective", "weight": 10},
+    {"id": "al_life_02", "system_id": "axiom_labs", "text": "Peer review rejected my paper. Reviewer's critique was longer than the paper. I respect that, honestly.", "category": "overheard", "faction_id": "science_collective", "weight": 10},
+    {"id": "al_life_03", "system_id": "axiom_labs", "text": "The Okafor Institute has a six-week wait for non-emergency consultations. In a sector with four medical stations.", "category": "overheard", "weight": 10},
+    {"id": "al_life_04", "system_id": "axiom_labs", "text": "Grant application deadline is next week. Half the department is writing proposals instead of running experiments.", "category": "overheard", "faction_id": "science_collective", "weight": 10},
+    {"id": "al_prog_01", "system_id": "axiom_labs", "text": "A junior researcher published something about gravitational anomalies. Faculty tried to bury it. Apparently someone independent verified the data.", "category": "overheard", "weight": 8, "required_flags": ["scholars_dilemma_complete"], "one_shot": true},
+
+    {"id": "nr_life_01", "system_id": "nova_research", "text": "They changed the security clearance levels again. My badge worked yesterday. Today it's a polite argument with a scanner.", "category": "overheard", "weight": 10},
+    {"id": "nr_life_02", "system_id": "nova_research", "text": "The applied physics team celebrated a breakthrough. They wouldn't say what kind. The champagne was real though.", "category": "overheard", "faction_id": "science_collective", "weight": 10},
+    {"id": "nr_life_03", "system_id": "nova_research", "text": "Transfer request: pending. Again. The form says 'under review.' I think 'under review' means 'in a drawer.'", "category": "overheard", "weight": 10},
+    {"id": "nr_life_04", "system_id": "nova_research", "text": "Somebody left a potted plant outside Lab 7. Security investigated it for two hours before concluding it was, in fact, a plant.", "category": "overheard", "weight": 10},
+
+    {"id": "hr_life_01", "system_id": "havens_rest", "text": "The community council meeting ran three hours. Half of it was about the new irrigation schedule. The other half was about whose grandmother's recipe won the cook-off.", "category": "overheard", "faction_id": "frontier_alliance", "weight": 10},
+    {"id": "hr_life_02", "system_id": "havens_rest", "text": "Harvest festival's in two weeks. The kids are already building lanterns. Station hasn't been this loud in months.", "category": "atmosphere", "faction_id": "frontier_alliance", "weight": 10},
+    {"id": "hr_life_03", "system_id": "havens_rest", "text": "The soil in Greenhouse 4 tested positive for a new beneficial microbe. Nobody planted it. Sometimes the ecosystem just figures things out.", "category": "overheard", "weight": 10},
+    {"id": "hr_life_04", "system_id": "havens_rest", "text": "A trader docked yesterday and asked if we had a luxury goods exchange. The dock clerk laughed for five minutes.", "category": "overheard", "faction_id": "frontier_alliance", "weight": 10},
+    {"id": "hr_prog_01", "system_id": "havens_rest", "text": "More arrivals this week. The coordinator is running out of housing. She hasn't slept in two days. Someone brought her soup.", "category": "overheard", "weight": 8, "required_flags": ["adrift_complete"], "one_shot": true},
+
+    {"id": "vd_life_01", "system_id": "verdant", "text": "Rain cycle starts at fourteen hundred. Actual rain, not mist. The kids go out and stand in it. They've never seen the real thing.", "category": "atmosphere", "weight": 10},
+    {"id": "vd_life_02", "system_id": "verdant", "text": "The Guild renegotiated transport rates again. Up six percent. They call it inflation. We call it their second yacht.", "category": "overheard", "faction_id": "frontier_alliance", "weight": 10},
+    {"id": "vd_life_03", "system_id": "verdant", "text": "A Collective researcher's been taking soil samples from the south field. Says she's studying microbes. The farmers say she's standing in their crop rows.", "category": "overheard", "weight": 10},
+    {"id": "vd_life_04", "system_id": "verdant", "text": "My grandfather planted the first cassava crop on this station. Sixty years later, it's still the best thing on the menu.", "category": "overheard", "faction_id": "frontier_alliance", "weight": 10},
+    {"id": "vd_prog_01", "system_id": "verdant", "text": "The botanist's seed distribution project went through. Three stations confirmed. Her life's work, scattered to the safest hands she could find.", "category": "overheard", "weight": 8, "required_flags": ["heirloom_seeds_complete"], "one_shot": true},
+
+    {"id": "cr_life_01", "system_id": "crimson_reach", "text": "Somebody sold a hull section from a decommissioned patrol cruiser. Nobody asked which patrol. Nobody ever does.", "category": "overheard", "weight": 10},
+    {"id": "cr_life_02", "system_id": "crimson_reach", "text": "The Wrecker's Guild fixed the atmospheric processor. Took them four hours. The station voted to buy them drinks. Democracy in action.", "category": "overheard", "weight": 10},
+    {"id": "cr_life_03", "system_id": "crimson_reach", "text": "New face at the bar. Asking a lot of questions. Nobody's answering. That's how introductions work here.", "category": "overheard", "weight": 10},
+    {"id": "cr_life_04", "system_id": "crimson_reach", "text": "The salvage haul last week turned up pre-colony navigation charts. Genuine ones. Worth more than the ship they came from.", "category": "overheard", "weight": 10},
+    {"id": "cr_prog_01", "system_id": "crimson_reach", "text": "Torres pulled some strings for that captain who helped with the cipher. Around here, that's the highest compliment.", "category": "overheard", "weight": 8, "required_flags": ["crimson_underground_access"], "one_shot": true},
+
+    {"id": "fu_life_01", "system_id": "the_fulcrum", "text": "The relay station's signal strength dropped again. Maintenance says it's atmospheric interference. Atmospheric interference in a vacuum.", "category": "overheard", "weight": 10},
+    {"id": "fu_life_02", "system_id": "the_fulcrum", "text": "Someone brought a cat aboard last month. Station regulation says no pets. Nobody's enforcing it. The cat knows.", "category": "overheard", "weight": 10},
+    {"id": "fu_life_03", "system_id": "the_fulcrum", "text": "The observation deck faces open space. On a clear cycle, you can see the Expanse's edge. It looks like nothing. That's what makes it terrifying.", "category": "atmosphere", "weight": 10},
+    {"id": "fu_life_04", "system_id": "the_fulcrum", "text": "Supply shipment's late again. Third time this quarter. The cook's getting creative with what's left. 'Creative' is not a compliment.", "category": "overheard", "weight": 10}
   ]
 }

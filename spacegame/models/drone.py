@@ -174,9 +174,9 @@ class MiningDroneFleet:
 def apply_drone_skill_effects(player: Player) -> None:
     """Sync drone fleet state with skill tree.
 
-    Calculates max_slots from drone_bay skills and grants
-    missing drones of the appropriate tier. Idempotent — safe
-    to call on load and after every skill-up.
+    Reads the ``drone_fleet`` skill level and grants drones of
+    increasing tier (BASIC at lv1, ADVANCED at lv2, ELITE at lv3).
+    Idempotent — safe to call on load and after every skill-up.
 
     Args:
         player: Player whose fleet to update.
@@ -184,19 +184,18 @@ def apply_drone_skill_effects(player: Player) -> None:
     prog = player.progression
     fleet = player.drone_fleet
 
-    tier_map: dict[str, DroneTier] = {
-        "drone_bay_1": DroneTier.BASIC,
-        "drone_bay_2": DroneTier.ADVANCED,
-        "drone_bay_3": DroneTier.ELITE,
-    }
+    # drone_fleet is a single skill with max_level=3
+    level_tiers: list[DroneTier] = [
+        DroneTier.BASIC,
+        DroneTier.ADVANCED,
+        DroneTier.ELITE,
+    ]
 
-    # Calculate total drone slots and expected drone tiers
-    expected_drones: list[DroneTier] = []
-    for skill_id in ("drone_bay_1", "drone_bay_2", "drone_bay_3"):
-        skill = prog.skills.get(skill_id)
-        if skill and skill.is_unlocked:
-            expected_drones.append(tier_map[skill_id])
+    skill = prog.skills.get("drone_fleet")
+    level = skill.current_level if skill else 0
 
+    # Each level grants one additional drone slot
+    expected_drones: list[DroneTier] = level_tiers[:level]
     fleet.max_slots = len(expected_drones)
 
     # Grant drones that haven't been granted yet

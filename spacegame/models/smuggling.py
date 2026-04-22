@@ -1231,12 +1231,25 @@ class HiddenCompartment:
     total_cargo_capacity: int
     hidden_cargo: dict[str, int] = field(default_factory=dict)
 
+    def __post_init__(self) -> None:
+        """Initialize optional progression reference."""
+        if not hasattr(self, "_progression"):
+            self._progression = None
+
+    def set_progression(self, progression: object) -> None:
+        """Link a progression for contraband_slots skill bonus."""
+        self._progression = progression
+
     @property
     def hidden_capacity(self) -> int:
-        """Hidden hold capacity: 30% of total, min 3."""
+        """Hidden hold capacity: 30% of total, min 3, plus contraband_slots bonus."""
         if self.total_cargo_capacity <= 0:
             return 0
-        return max(3, int(self.total_cargo_capacity * 0.30))
+        base = max(3, int(self.total_cargo_capacity * 0.30))
+        # Commerce skill: contraband_slots adds flat extra hidden slots
+        if self._progression:
+            base += int(self._progression.get_bonus("contraband_slots"))
+        return base
 
     @property
     def main_capacity(self) -> int:

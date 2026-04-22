@@ -79,6 +79,20 @@ FRAME_VARIANTS: dict[str, dict[str, tuple[int, int]]] = {
 # Identity detection: material pixel ratio threshold
 IDENTITY_THRESHOLD = 0.35
 
+# Minimum hull-pixel count for a player-built ship to qualify for any
+# defensive identity. Below this, the ship is too small to carry an
+# archetype's thematic and mechanical weight — it's a scrap build, not a
+# classified frame. A 16x16 tutorial shuttle usually lands below this
+# cap even at high material-family ratios.
+MIN_IDENTITY_PIXELS = 50
+
+# Juggernaut additionally requires absolute mass. A juggernaut is a bulk
+# ship — dominant, imposing, hard to dodge. A tiny 30-pixel build can't
+# feel like one regardless of material composition. Sentinel (shield-
+# centric) and Ghost (stealth) can scale to smaller ships, so they only
+# need the general MIN_IDENTITY_PIXELS gate.
+MIN_JUGGERNAUT_PIXELS = 100
+
 # Materials that count toward each identity
 JUGGERNAUT_MATERIALS = {
     "heavy_armor",
@@ -230,18 +244,27 @@ class HullShape:
 
 @dataclass
 class HullMaterial:
-    """A material type that determines per-pixel stats and visual color.
+    """A material type that determines per-pixel stats and visual appearance.
 
     Materials are the primary way players express defensive identity.
     Each pixel filled with a material contributes its stats to the ship.
+
+    Visual appearance is driven by ``shade_band`` naming a canonical palette
+    band (see ``engine/material_palette.py``). Render parameters tune the
+    ShipComposite pipeline: rivets, wear, gloss, optional emissive overlay.
     """
 
     id: str
     name: str
     description: str
-    color_primary: tuple[int, int, int]
-    color_accent: tuple[int, int, int] = (0, 0, 0)
-    color_highlight: tuple[int, int, int] = (0, 0, 0)
+    shade_band: str
+    category_offset: int = 0
+    noise_intensity: float = 0.15
+    rivet_density: float = 40.0
+    wear_intensity: float = 0.10
+    gloss: float = 0.30
+    emissive_role: Optional[str] = None
+    signature_stripe_role: Optional[str] = None
     hull_per_pixel: float = 0.0
     armor_per_pixel: float = 0.0
     shield_per_pixel: float = 0.0
@@ -254,15 +277,53 @@ class HullMaterial:
     unlock_cost: int = 0
     unlock_source: str = ""
 
+    @property
+    def color_primary(self) -> tuple[int, int, int]:
+        """Representative base color derived from the material's shade band.
+
+        Returns the band midpoint. Prefer direct ``get_band`` access in new
+        rendering code; this property exists for consumers that only need
+        a single representative RGB (UI swatches, minimap pixels, etc.).
+        """
+        band = self._resolved_band()
+        return band[len(band) // 2]
+
+    @property
+    def color_accent(self) -> tuple[int, int, int]:
+        """Darker variant of the base color (one band stop below midpoint)."""
+        band = self._resolved_band()
+        return band[max(0, len(band) // 2 - 1)]
+
+    @property
+    def color_highlight(self) -> tuple[int, int, int]:
+        """Brighter variant of the base color (one band stop above midpoint)."""
+        band = self._resolved_band()
+        return band[min(len(band) - 1, len(band) // 2 + 1)]
+
+    def _resolved_band(self) -> tuple[tuple[int, int, int], ...]:
+        from spacegame.engine.material_palette import apply_category_offset, get_band, is_valid_band
+
+        if not is_valid_band(self.shade_band):
+            return ((90, 90, 100), (128, 128, 140), (160, 160, 180))
+        band = get_band(self.shade_band)
+        if self.category_offset:
+            band = apply_category_offset(band, self.category_offset)
+        return band
+
     def to_dict(self) -> dict:
         """Serialize material to dict."""
         return {
             "id": self.id,
             "name": self.name,
             "description": self.description,
-            "color_primary": list(self.color_primary),
-            "color_accent": list(self.color_accent),
-            "color_highlight": list(self.color_highlight),
+            "shade_band": self.shade_band,
+            "category_offset": self.category_offset,
+            "noise_intensity": self.noise_intensity,
+            "rivet_density": self.rivet_density,
+            "wear_intensity": self.wear_intensity,
+            "gloss": self.gloss,
+            "emissive_role": self.emissive_role,
+            "signature_stripe_role": self.signature_stripe_role,
             "hull_per_pixel": self.hull_per_pixel,
             "armor_per_pixel": self.armor_per_pixel,
             "shield_per_pixel": self.shield_per_pixel,
@@ -283,9 +344,14 @@ class HullMaterial:
             id=data["id"],
             name=data["name"],
             description=data.get("description", ""),
-            color_primary=tuple(data.get("color_primary", [128, 128, 128])),
-            color_accent=tuple(data.get("color_accent", [0, 0, 0])),
-            color_highlight=tuple(data.get("color_highlight", [0, 0, 0])),
+            shade_band=data["shade_band"],
+            category_offset=data.get("category_offset", 0),
+            noise_intensity=data.get("noise_intensity", 0.15),
+            rivet_density=data.get("rivet_density", 40.0),
+            wear_intensity=data.get("wear_intensity", 0.10),
+            gloss=data.get("gloss", 0.30),
+            emissive_role=data.get("emissive_role"),
+            signature_stripe_role=data.get("signature_stripe_role"),
             hull_per_pixel=data.get("hull_per_pixel", 0.0),
             armor_per_pixel=data.get("armor_per_pixel", 0.0),
             shield_per_pixel=data.get("shield_per_pixel", 0.0),
@@ -542,21 +608,17 @@ class FrameRequirements:
                 continue
             actual = slot_counts.get(slot_type, 0)
             if actual < min_count:
-                reasons.append(
-                    f"{slot_type}: need {min_count}, have {actual}"
-                )
+                reasons.append(f"{slot_type}: need {min_count}, have {actual}")
                 continue
             # Check size constraint on placed slots
             min_size = str(spec.get("min_size", "small"))
             sizes = slot_sizes.get(slot_type, [])
             valid_count = sum(
-                1 for s in sizes
-                if _SIZE_ORDER.get(s, 0) >= _SIZE_ORDER.get(min_size, 0)
+                1 for s in sizes if _SIZE_ORDER.get(s, 0) >= _SIZE_ORDER.get(min_size, 0)
             )
             if valid_count < min_count:
                 reasons.append(
-                    f"{slot_type}: need {min_count} at size {min_size}+, "
-                    f"only {valid_count} qualify"
+                    f"{slot_type}: need {min_count} at size {min_size}+, only {valid_count} qualify"
                 )
         return (len(reasons) == 0, reasons)
 
@@ -981,9 +1043,14 @@ class ShipStatsComputer:
             except Exception:
                 pass  # Physics computation failed gracefully (import, data, etc.)
 
-        # Defensive identity detection (hull pixels only)
+        # Defensive identity detection (hull pixels only).
+        # Gated by MIN_IDENTITY_PIXELS: a tiny scrap build does not
+        # inherit an archetype label, because at that scale the identity
+        # framing (and the mechanical bonuses downstream in combat_engine)
+        # is thematically wrong. Juggernaut carries an extra size gate via
+        # MIN_JUGGERNAUT_PIXELS since "juggernaut" implies bulk.
         total_pixels = len(build.pixels)
-        if total_pixels > 0:
+        if total_pixels >= MIN_IDENTITY_PIXELS:
             juggernaut_count = sum(material_counts.get(mid, 0) for mid in JUGGERNAUT_MATERIALS)
             sentinel_count = sum(material_counts.get(mid, 0) for mid in SENTINEL_MATERIALS)
             ghost_count = sum(material_counts.get(mid, 0) for mid in GHOST_MATERIALS)
@@ -995,7 +1062,10 @@ class ShipStatsComputer:
             best_ratio = max(juggernaut_ratio, sentinel_ratio, ghost_ratio)
             if best_ratio >= IDENTITY_THRESHOLD:
                 if juggernaut_ratio == best_ratio:
-                    stats.defensive_identity = "juggernaut"
+                    # Extra bulk gate for juggernaut: tiny ships don't
+                    # qualify even at high armor-material ratios.
+                    if juggernaut_count >= MIN_JUGGERNAUT_PIXELS:
+                        stats.defensive_identity = "juggernaut"
                 elif sentinel_ratio == best_ratio:
                     stats.defensive_identity = "sentinel"
                 else:

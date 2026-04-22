@@ -124,16 +124,14 @@ class TestProgressionLoop:
         assert success, f"Skill investment should succeed: {msg}"
         assert player.progression.skill_points_spent > 0
 
-    def test_milestone_level_grants_extra_sp(self) -> None:
-        """Level 5 (milestone) grants 2 skill points instead of 1."""
+    def test_clean_one_point_per_level(self) -> None:
+        """Every level grants exactly 1 skill point (S3: no milestones)."""
         player = _make_player()
-        # Get to level 5 by adding lots of XP
         player.progression.add_xp(5000)
-        # Should have hit level 5+ milestone at some point
         assert player.progression.level >= 5, "Should be level 5+"
-        # Milestone gives 2 SP, so total SP should be > level count
-        # (1+1+1+1+2 = 6 SP for 5 levels if level 5 is first milestone)
-        assert player.progression.skill_points >= 6
+        # 1 point per level-up, no milestones
+        expected_sp = player.progression.level - 1  # level 1 is starting
+        assert player.progression.skill_points == expected_sp
 
 
 class TestAchievementLoop:

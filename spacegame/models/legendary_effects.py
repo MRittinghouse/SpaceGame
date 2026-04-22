@@ -44,6 +44,10 @@ class LegendaryState:
 
     # Phase Shift (Phantom Shroud)
     phase_shift_interval: int = 0
+    # Per-round one-shot: design doc §8 specifies "blocks first incoming
+    # attack per round" — so once Phase Shift consumes a dodge in a given
+    # round, subsequent attacks that round hit normally. Reset at end_round.
+    phase_shift_used_this_round: bool = False
 
 
 def init_legendary_state(
@@ -240,19 +244,50 @@ def check_phase_shift(
     state: LegendaryState,
     round_number: int,
 ) -> bool:
-    """Check if phase shift activates this round.
+    """Check if phase shift activates this round (without consuming it).
 
-    Phase shift triggers every N rounds, granting guaranteed dodge
-    on the next incoming attack.
+    Pure predicate — returns True if the round satisfies the interval and
+    phase_shift hasn't been used yet this round. Callers that actually
+    consume the dodge should use :func:`consume_phase_shift` instead.
 
     Args:
         state: Legendary combat state.
         round_number: Current combat round (1-indexed).
 
     Returns:
-        True if phase shift is active this round.
+        True if phase shift is active this round AND not yet used.
     """
     if state.phase_shift_interval <= 0 or round_number <= 0:
         return False
-
+    if state.phase_shift_used_this_round:
+        return False
     return round_number % state.phase_shift_interval == 0
+
+
+def consume_phase_shift(
+    state: LegendaryState,
+    round_number: int,
+) -> bool:
+    """Consume the phase shift dodge for this round, if eligible.
+
+    Matches spec §8: "blocks first incoming attack per round". Sets the
+    ``phase_shift_used_this_round`` flag so subsequent attacks in the same
+    round hit normally. Reset via :func:`reset_phase_shift_for_round` at
+    ``end_round``.
+
+    Args:
+        state: Legendary combat state.
+        round_number: Current combat round (1-indexed).
+
+    Returns:
+        True if the dodge fired (attacker misses); False otherwise.
+    """
+    if not check_phase_shift(state, round_number):
+        return False
+    state.phase_shift_used_this_round = True
+    return True
+
+
+def reset_phase_shift_for_round(state: LegendaryState) -> None:
+    """Clear the per-round phase-shift-used flag. Call at end_round."""
+    state.phase_shift_used_this_round = False

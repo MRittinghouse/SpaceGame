@@ -6,17 +6,20 @@ from spacegame.models.combat import EnemyShipTemplate, CombatMove
 
 VALID_DANGER_TIERS = {"low", "moderate", "dangerous"}
 
-# Expected ranges per tier
+# Expected ranges per tier.
+# Ranges widened in B2 (U2.5d balance pass) to accommodate the new
+# 18-template roster. Design doc §4.3 scales rewards with tier depth;
+# the pre-B2 bands were calibrated to the flatter old roster.
 TIER_XP_RANGES = {
     "low": (10, 20),
-    "moderate": (20, 35),
-    "dangerous": (35, 200),  # Upper bound loose for elite enemies
+    "moderate": (20, 50),
+    "dangerous": (35, 400),  # Includes T3 dangerous + elite bosses (non-is_boss path).
 }
 
 TIER_CREDIT_RANGES = {
-    "low": (0, 25),
-    "moderate": (25, 75),
-    "dangerous": (75, 200),
+    "low": (0, 35),
+    "moderate": (25, 150),
+    "dangerous": (75, 400),
 }
 
 
@@ -43,9 +46,9 @@ class TestEnemyDangerTiers:
             )
 
     def test_enemy_count(self) -> None:
-        """28 base + 7 bosses = 35 enemy templates."""
+        """42 legacy templates + 18 B2 balance-pass templates = 60."""
         enemies = _load_enemies()
-        assert len(enemies) == 42
+        assert len(enemies) == 60
 
     def test_no_duplicate_enemy_ids(self) -> None:
         enemies = _load_enemies()

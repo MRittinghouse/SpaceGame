@@ -187,14 +187,15 @@ class TestViewCombatCrewBonuses:
         """Player stats in combat use progression skills."""
         prog = PlayerProgression()
         prog.add_xp(5200)
-        prog.level_up_skill("scrapper")
+        prog.level_up_skill("weapon_specialization")
+        prog.level_up_skill("ground_veteran")
         enemy = GroundEnemy(id="guard", x=6, y=5, facing=Direction.LEFT, vision_range=5)
         view, mission = _make_crew_view(player_x=5, player_y=5, enemies=[enemy], progression=prog)
         self._start_combat(view, mission)
         cs = view._combat_state
         assert cs is not None
-        # Scrapper +1 attack
-        assert cs.player.attack_mod >= 1
+        # ground_veteran grants +1 reroll
+        assert cs.player.rerolls >= 1
         view.on_exit()
 
     def test_priya_analyze_in_combat(self) -> None:

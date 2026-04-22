@@ -118,6 +118,7 @@ class TestEffectType:
             "SUPPRESSED",
             "CLEANSE",
             "ABSORB",
+            "SPAWN_REINFORCEMENT",  # Added Tier 3.E (2026-04-21)
         }
         actual = {e.name for e in EffectType}
         assert actual == expected
@@ -127,9 +128,24 @@ class TestEffectTarget:
     """Tests for EffectTarget enum values."""
 
     def test_all_targets_exist(self) -> None:
-        expected = {"SELF", "ENEMY"}
+        # ALLY added Tier 3.D (2026-04-21) for Support archetype heal routing.
+        expected = {"SELF", "ENEMY", "ALLY"}
         actual = {t.name for t in EffectTarget}
         assert actual == expected
+
+    def test_ally_target_serializes(self) -> None:
+        """Round-trip an ALLY effect through to_dict/from_dict."""
+        from spacegame.models.combat import CombatEffect, EffectType
+
+        effect = CombatEffect(
+            type=EffectType.HULL_RESTORE,
+            value=30.0,
+            target=EffectTarget.ALLY,
+        )
+        restored = CombatEffect.from_dict(effect.to_dict())
+        assert restored.target == EffectTarget.ALLY
+        assert restored.type == EffectType.HULL_RESTORE
+        assert restored.value == 30.0
 
 
 # ============================================================================

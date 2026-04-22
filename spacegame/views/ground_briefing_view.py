@@ -243,19 +243,31 @@ class GroundBriefingView(BaseView):
 
     def _render_header(self, screen: pygame.Surface) -> None:
         """Render mission title and difficulty badge."""
-        # Title
-        title_surf = self.title_font.render(self.mission_config.name, True, Colors.TEXT_PRIMARY)
+        # Difficulty badge first so we can reserve its width against the title.
+        diff = self.mission_config.difficulty
+        diff_color = _DIFFICULTY_COLORS.get(diff.value, Colors.TEXT_SECONDARY)
+        diff_surf = self.subtitle_font.render(diff.value.upper(), True, diff_color)
+        diff_x = self.PANEL_X + self.PANEL_W - diff_surf.get_width() - 30
+
+        # Title. Truncate with "..." when it would otherwise overlap the
+        # right-anchored difficulty badge. Keeps Sprint 1's drydock-class
+        # pattern from ever reappearing here.
+        title_max_w = diff_x - (self.PANEL_X + 30) - 16  # 16px gap to badge
+        name = self.mission_config.name
+        title_surf = self.title_font.render(name, True, Colors.TEXT_PRIMARY)
+        if title_surf.get_width() > title_max_w:
+            trimmed = name
+            while len(trimmed) > 3 and title_surf.get_width() > title_max_w:
+                trimmed = trimmed[:-1]
+                title_surf = self.title_font.render(
+                    trimmed.rstrip() + "...", True, Colors.TEXT_PRIMARY
+                )
         screen.blit(title_surf, (self.PANEL_X + 30, self.PANEL_Y + 20))
 
         # "GROUND MISSION BRIEFING" label
         label_surf = self.small_font.render("GROUND MISSION BRIEFING", True, Colors.TEXT_SECONDARY)
         screen.blit(label_surf, (self.PANEL_X + 30, self.PANEL_Y + 58))
 
-        # Difficulty badge
-        diff = self.mission_config.difficulty
-        diff_color = _DIFFICULTY_COLORS.get(diff.value, Colors.TEXT_SECONDARY)
-        diff_surf = self.subtitle_font.render(diff.value.upper(), True, diff_color)
-        diff_x = self.PANEL_X + self.PANEL_W - diff_surf.get_width() - 30
         screen.blit(diff_surf, (diff_x, self.PANEL_Y + 24))
 
         # Separator

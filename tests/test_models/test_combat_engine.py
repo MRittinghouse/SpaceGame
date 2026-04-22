@@ -1,22 +1,19 @@
 """Tests for CombatEngine — core turn resolution."""
 
-import pytest
 from spacegame.models.combat import (
     CombatEffect,
-    CombatLogEntry,
+    CombatEncounter,
     CombatMove,
     CombatResult,
     CombatState,
-    CombatEncounter,
+    EffectTarget,
+    EffectType,
     EnemyBehavior,
     EnemyShip,
     EnemyShipTemplate,
-    EffectTarget,
-    EffectType,
     PlayerCombatState,
 )
 from spacegame.models.combat_engine import CombatEngine
-
 
 # ============================================================================
 # Helpers
@@ -335,7 +332,7 @@ class TestCrewMoves:
         player = _make_player_state(hull=50, crew_moves=[heal_move])
         engine = _make_engine(player=player, seed=42)
 
-        logs = engine.execute_crew_moves(skip_ids={"repair"})
+        engine.execute_crew_moves(skip_ids={"repair"})
         state = engine.get_state()
         assert state.player.hull == 50, "Skipped move should not apply"
 
@@ -364,7 +361,7 @@ class TestEnemyAI:
         engine = _make_engine(enemy_templates=[enemy_t], seed=42)
         state = engine.get_state()
         state.enemies[0].current_hull = 30  # 30% hull, below 40% threshold
-        logs = engine.execute_enemy_turns()
+        engine.execute_enemy_turns()
         # Cowardly enemy should flee
         assert state.enemies[0].is_fled
 
@@ -429,14 +426,14 @@ class TestFleeMechanic:
         player = _make_player_state(speed=2)
         enemy_t = _make_enemy_template(speed=15)
         engine = _make_engine(player=player, enemy_templates=[enemy_t], seed=42)
-        success, logs = engine.attempt_flee()
+        success, _logs = engine.attempt_flee()
         assert isinstance(success, bool)
 
     def test_flee_parting_shots(self) -> None:
         player = _make_player_state(speed=20, shields=100, max_shields=100, hull=200, max_hull=200)
         enemy_t = _make_enemy_template(speed=5, accuracy=100, evasion=0)
         engine = _make_engine(player=player, enemy_templates=[enemy_t], seed=42)
-        success, logs = engine.attempt_flee()
+        _success, logs = engine.attempt_flee()
         # Parting shot log entries should exist
         parting = [l for l in logs if "parting" in l.action.lower() or l.actor.startswith("enemy:")]
         assert len(parting) >= 1
@@ -462,13 +459,13 @@ class TestNegotiateMechanic:
         engine = _make_engine(seed=42)
         state = engine.get_state()
         state.negotiate_used = True
-        success, msg, logs = engine.attempt_negotiate("persuasion", None)
+        success, msg, _logs = engine.attempt_negotiate("persuasion", None)
         assert not success
         assert "already" in msg.lower()
 
     def test_negotiate_without_social_manager(self) -> None:
         engine = _make_engine(seed=42)
-        success, msg, logs = engine.attempt_negotiate("persuasion", None)
+        success, _msg, _logs = engine.attempt_negotiate("persuasion", None)
         # Without social manager, should fail gracefully
         assert not success
 
@@ -566,7 +563,7 @@ class TestBribe:
         """Bribe succeeds when player has enough credits."""
         template = _make_enemy_template(bribe_cost=100)
         engine = _make_engine(enemy_templates=[template])
-        success, cost, logs = engine.attempt_bribe(player_credits=500)
+        success, cost, _logs = engine.attempt_bribe(player_credits=500)
         assert success
         assert cost == 100
         assert engine.get_state().result == CombatResult.BRIBED
@@ -575,7 +572,7 @@ class TestBribe:
         """Bribe fails when player can't afford it."""
         template = _make_enemy_template(bribe_cost=100)
         engine = _make_engine(enemy_templates=[template])
-        success, cost, logs = engine.attempt_bribe(player_credits=50)
+        success, cost, _logs = engine.attempt_bribe(player_credits=50)
         assert not success
         assert cost == 100
         assert engine.get_state().result == CombatResult.IN_PROGRESS
@@ -585,7 +582,7 @@ class TestBribe:
         t1 = _make_enemy_template(id="a", bribe_cost=100)
         t2 = _make_enemy_template(id="b", bribe_cost=200)
         engine = _make_engine(enemy_templates=[t1, t2])
-        success, cost, logs = engine.attempt_bribe(player_credits=300)
+        success, cost, _logs = engine.attempt_bribe(player_credits=300)
         assert success
         assert cost == 300
 
@@ -594,7 +591,7 @@ class TestBribe:
         template = _make_enemy_template(bribe_cost=100)
         engine = _make_engine(enemy_templates=[template])
         engine.attempt_bribe(player_credits=50)  # Fail first
-        success, cost, logs = engine.attempt_bribe(player_credits=500)
+        success, _cost, logs = engine.attempt_bribe(player_credits=500)
         assert not success
         assert "already" in logs[0].effects_applied[0].lower()
 
@@ -602,7 +599,7 @@ class TestBribe:
         """Persuasion level reduces bribe cost by 10% per level."""
         template = _make_enemy_template(bribe_cost=200)
         engine = _make_engine(enemy_templates=[template])
-        success, cost, logs = engine.attempt_bribe(player_credits=500, persuasion_level=3)
+        success, cost, _logs = engine.attempt_bribe(player_credits=500, persuasion_level=3)
         assert success
         assert cost == 140  # 200 * (1 - 0.30) = 140
 
@@ -610,7 +607,7 @@ class TestBribe:
         """Persuasion discount caps at 50%."""
         template = _make_enemy_template(bribe_cost=200)
         engine = _make_engine(enemy_templates=[template])
-        success, cost, logs = engine.attempt_bribe(player_credits=500, persuasion_level=10)
+        success, cost, _logs = engine.attempt_bribe(player_credits=500, persuasion_level=10)
         assert success
         assert cost == 100  # 200 * 0.50 = 100 (max 50% discount)
 
@@ -625,7 +622,7 @@ class TestBribe:
         """Enemy with 0 bribe cost can be bribed for free."""
         template = _make_enemy_template(bribe_cost=0)
         engine = _make_engine(enemy_templates=[template])
-        success, cost, logs = engine.attempt_bribe(player_credits=0)
+        success, cost, _logs = engine.attempt_bribe(player_credits=0)
         assert success
         assert cost == 0
 
@@ -636,7 +633,7 @@ class TestBribe:
         engine = _make_engine(enemy_templates=[t1, t2])
         # Kill the first enemy
         engine.get_state().enemies[0].current_hull = 0
-        success, cost, logs = engine.attempt_bribe(player_credits=200)
+        success, cost, _logs = engine.attempt_bribe(player_credits=200)
         assert success
         assert cost == 200  # Only second enemy's cost
 
@@ -644,7 +641,7 @@ class TestBribe:
         """Bribe attempt produces a log entry."""
         template = _make_enemy_template(bribe_cost=100)
         engine = _make_engine(enemy_templates=[template])
-        success, cost, logs = engine.attempt_bribe(player_credits=500)
+        _success, _cost, logs = engine.attempt_bribe(player_credits=500)
         assert len(logs) == 1
         assert "Bribe" in logs[0].action
 
@@ -728,7 +725,7 @@ class TestEnhancedNegotiation:
         social = _FakeSocialManager(pass_check=True)
         template = _make_enemy_template(negotiate_difficulty=3)
         engine = _make_engine(enemy_templates=[template])
-        success, msg, logs = engine.attempt_negotiate("persuasion", social)
+        success, _msg, _logs = engine.attempt_negotiate("persuasion", social)
         assert success
         assert social.last_difficulty == 3
 
@@ -860,3 +857,421 @@ class TestCombatResultFlags:
         engine = _make_engine(enemy_templates=[template])
         engine.attempt_negotiate("persuasion", social, faction_reputation_tier="Allied")
         assert social.last_difficulty == 3  # 5 - 2 = 3
+
+
+# ============================================================================
+# Ally-targeted heals (Tier 3.D)
+# ============================================================================
+
+
+class TestAllyTargetedHeals:
+    """EffectTarget.ALLY routes HULL_RESTORE to a teammate of the caster.
+
+    For an enemy attacker, the "team" is other living enemies (not the
+    caster, not the player). For a player attacker, there are no allies
+    in the current combat model — the effect falls back to self.
+    """
+
+    def _medic_template(self) -> EnemyShipTemplate:
+        """A support enemy with an ally-heal move."""
+        heal_move = _make_move(
+            id="medical_relay",
+            name="Medical Relay",
+            damage=0,
+            energy_cost=2,
+            cooldown=0,
+            effects=[
+                CombatEffect(
+                    type=EffectType.HULL_RESTORE,
+                    value=30.0,
+                    target=EffectTarget.ALLY,
+                )
+            ],
+        )
+        return _make_enemy_template(
+            id="medic",
+            hull=100,
+            energy=10,
+            behavior=EnemyBehavior.DEFENSIVE,
+            moves=[heal_move],
+        )
+
+    def _striker_template(self) -> EnemyShipTemplate:
+        """A damaged-but-alive ally for the medic to heal."""
+        return _make_enemy_template(id="striker", hull=100, moves=[_make_move()])
+
+    def test_ally_heal_restores_wounded_teammate(self) -> None:
+        medic = self._medic_template()
+        striker = self._striker_template()
+        engine = _make_engine(enemy_templates=[medic, striker])
+        state = engine.get_state()
+
+        # Damage the striker to 20/100 hull
+        state.enemies[1].current_hull = 20
+
+        # Run the medic's turn — should heal the striker up, not itself
+        medic_enemy = state.enemies[0]
+        heal_move = medic_enemy.template.moves[0]
+        engine._resolve_move(
+            heal_move,
+            attacker=medic_enemy,
+            defender=state.player,  # Ignored for ALLY effects
+            actor_name="enemy_0",
+            attacker_accuracy=medic_enemy.get_effective_accuracy(),
+        )
+
+        assert state.enemies[1].current_hull == 50, (
+            f"Striker should heal from 20 → 50 (+30). Got {state.enemies[1].current_hull}"
+        )
+        assert state.enemies[0].current_hull == 100, (
+            "Medic should NOT heal itself when an ally is available"
+        )
+
+    def test_ally_heal_picks_lowest_hp_when_multiple_allies(self) -> None:
+        medic = self._medic_template()
+        wounded = _make_enemy_template(id="wounded", hull=200, moves=[_make_move()])
+        healthy = _make_enemy_template(id="healthy", hull=200, moves=[_make_move()])
+        engine = _make_engine(enemy_templates=[medic, wounded, healthy])
+        state = engine.get_state()
+
+        # wounded at 30% HP, healthy at 90% HP — lowest-HP wins
+        state.enemies[1].current_hull = 60   # 30% hull ratio
+        state.enemies[2].current_hull = 180  # 90% hull ratio
+
+        heal_move = state.enemies[0].template.moves[0]
+        engine._resolve_move(
+            heal_move,
+            attacker=state.enemies[0],
+            defender=state.player,
+            actor_name="enemy_0",
+            attacker_accuracy=state.enemies[0].get_effective_accuracy(),
+        )
+
+        assert state.enemies[1].current_hull == 90, (
+            "Wounded ally (lowest HP) must be the heal target"
+        )
+        assert state.enemies[2].current_hull == 180, (
+            "Healthy ally should be untouched"
+        )
+
+    def test_ally_heal_skips_dead_allies(self) -> None:
+        medic = self._medic_template()
+        dead = _make_enemy_template(id="dead", hull=100, moves=[_make_move()])
+        alive = _make_enemy_template(id="alive", hull=100, moves=[_make_move()])
+        engine = _make_engine(enemy_templates=[medic, dead, alive])
+        state = engine.get_state()
+
+        state.enemies[1].current_hull = 0  # Dead
+        state.enemies[2].current_hull = 50  # Alive, wounded
+
+        heal_move = state.enemies[0].template.moves[0]
+        engine._resolve_move(
+            heal_move,
+            attacker=state.enemies[0],
+            defender=state.player,
+            actor_name="enemy_0",
+            attacker_accuracy=state.enemies[0].get_effective_accuracy(),
+        )
+
+        assert state.enemies[1].current_hull == 0, "Dead ally stays dead"
+        assert state.enemies[2].current_hull == 80, (
+            "Alive ally (despite higher HP) should be healed since dead one was skipped"
+        )
+
+    def test_ally_heal_with_no_allies_redirects_to_self(self) -> None:
+        """Solo medic (no teammates alive) falls back to self-heal."""
+        medic = self._medic_template()
+        engine = _make_engine(enemy_templates=[medic])
+        state = engine.get_state()
+
+        state.enemies[0].current_hull = 30  # Medic itself is wounded
+
+        heal_move = state.enemies[0].template.moves[0]
+        engine._resolve_move(
+            heal_move,
+            attacker=state.enemies[0],
+            defender=state.player,
+            actor_name="enemy_0",
+            attacker_accuracy=state.enemies[0].get_effective_accuracy(),
+        )
+
+        assert state.enemies[0].current_hull == 60, (
+            "With no allies, heal falls back to self (30 → 60)"
+        )
+
+    def test_player_ally_heal_falls_back_to_self(self) -> None:
+        """Player has no distinct allies (crew are part of PlayerCombatState).
+        An ally effect from a player move routes to the player itself."""
+        heal_move = _make_move(
+            "self_patch",
+            "Self Patch",
+            0,
+            energy_cost=0,
+            effects=[
+                CombatEffect(
+                    type=EffectType.HULL_RESTORE,
+                    value=25.0,
+                    target=EffectTarget.ALLY,
+                )
+            ],
+        )
+        player = _make_player_state(hull=40, max_hull=100, equipment_moves=[heal_move])
+        engine = _make_engine(player=player)
+
+        engine._resolve_move(
+            heal_move,
+            attacker=player,
+            defender=engine.get_state().enemies[0],
+            actor_name="player",
+            attacker_accuracy=player.accuracy,
+        )
+
+        assert player.hull == 65, (
+            f"Player ally heal should route to self (40 → 65). Got {player.hull}"
+        )
+
+
+class TestAllyHealLogEntry:
+    """Pure ally-effect moves (no offensive, no self) must still produce a
+    log entry so players can see the action happen."""
+
+    def test_ally_only_move_produces_log_entry(self) -> None:
+        heal_move = _make_move(
+            id="medical_relay",
+            name="Medical Relay",
+            damage=0,
+            energy_cost=2,
+            effects=[
+                CombatEffect(
+                    type=EffectType.HULL_RESTORE,
+                    value=30.0,
+                    target=EffectTarget.ALLY,
+                )
+            ],
+        )
+        medic = _make_enemy_template(
+            id="medic", hull=100, behavior=EnemyBehavior.DEFENSIVE, moves=[heal_move]
+        )
+        striker = _make_enemy_template(id="striker", hull=100, moves=[_make_move()])
+        engine = _make_engine(enemy_templates=[medic, striker])
+        state = engine.get_state()
+        state.enemies[1].current_hull = 30
+
+        log_len_before = len(state.combat_log)
+        engine._resolve_move(
+            heal_move,
+            attacker=state.enemies[0],
+            defender=state.player,
+            actor_name="enemy_0",
+            attacker_accuracy=state.enemies[0].get_effective_accuracy(),
+        )
+        new_entries = state.combat_log[log_len_before:]
+
+        assert len(new_entries) >= 1, "Ally-only move must produce a log entry"
+        # The action name should appear in the log
+        assert any(e.action == "Medical Relay" for e in new_entries)
+
+
+# ============================================================================
+# Reinforcement spawning (Tier 3.E)
+# ============================================================================
+
+
+class TestReinforcementSpawning:
+    """EffectType.SPAWN_REINFORCEMENT appends a new EnemyShip to
+    state.enemies mid-combat, respecting the living-enemy cap."""
+
+    def _caller_template(self, spawn_template_id: str = "pirate") -> EnemyShipTemplate:
+        """Template with a single call_reinforcement move."""
+        spawn_move = _make_move(
+            id="call_reinforcement",
+            name="Call Backup",
+            damage=0,
+            energy_cost=0,
+            effects=[
+                CombatEffect(
+                    type=EffectType.SPAWN_REINFORCEMENT,
+                    value=1.0,
+                    metadata={"template_id": spawn_template_id},
+                )
+            ],
+        )
+        return _make_enemy_template(
+            id="caller",
+            hull=100,
+            behavior=EnemyBehavior.DEFENSIVE,
+            moves=[spawn_move],
+        )
+
+    def test_spawn_appends_to_enemies_list(self) -> None:
+        from spacegame.data_loader import get_data_loader
+
+        dl = get_data_loader()
+        dl.load_all()
+        # Confirm the template we want to spawn actually exists in data
+        assert "pirate_scout" in dl.enemy_templates
+
+        caller = self._caller_template(spawn_template_id="pirate_scout")
+        engine = _make_engine(enemy_templates=[caller])
+        state = engine.get_state()
+        enemies_before = len(state.enemies)
+
+        spawn_move = state.enemies[0].template.moves[0]
+        engine._resolve_move(
+            spawn_move,
+            attacker=state.enemies[0],
+            defender=state.player,
+            actor_name="enemy_0",
+            attacker_accuracy=state.enemies[0].get_effective_accuracy(),
+        )
+
+        assert len(state.enemies) == enemies_before + 1, (
+            "Reinforcement spawn should append one enemy to state.enemies"
+        )
+        assert state.enemies[-1].template.id == "pirate_scout"
+        assert state.enemies[-1].is_alive
+
+    def test_spawn_respects_max_living_cap(self) -> None:
+        """With MAX_LIVING_ENEMIES living already, the spawn is declined."""
+        from spacegame.models.combat_engine import MAX_LIVING_ENEMIES
+
+        # Build an arena at the cap — caller + (cap-1) extras
+        templates = [self._caller_template(spawn_template_id="pirate_scout")]
+        for i in range(MAX_LIVING_ENEMIES - 1):
+            templates.append(_make_enemy_template(id=f"filler_{i}", hull=50))
+        engine = _make_engine(enemy_templates=templates)
+        state = engine.get_state()
+
+        assert len(state.enemies) == MAX_LIVING_ENEMIES
+        spawn_move = state.enemies[0].template.moves[0]
+        engine._resolve_move(
+            spawn_move,
+            attacker=state.enemies[0],
+            defender=state.player,
+            actor_name="enemy_0",
+            attacker_accuracy=state.enemies[0].get_effective_accuracy(),
+        )
+        assert len(state.enemies) == MAX_LIVING_ENEMIES, (
+            "Spawn must be declined when cap is reached"
+        )
+
+    def test_spawn_unknown_template_noop_with_log(self) -> None:
+        caller = self._caller_template(spawn_template_id="nonexistent_template")
+        engine = _make_engine(enemy_templates=[caller])
+        state = engine.get_state()
+        enemies_before = len(state.enemies)
+
+        log_len_before = len(state.combat_log)
+        spawn_move = state.enemies[0].template.moves[0]
+        engine._resolve_move(
+            spawn_move,
+            attacker=state.enemies[0],
+            defender=state.player,
+            actor_name="enemy_0",
+            attacker_accuracy=state.enemies[0].get_effective_accuracy(),
+        )
+
+        # State did not grow
+        assert len(state.enemies) == enemies_before, (
+            "Unknown template must not add a phantom enemy"
+        )
+        # A log entry surfaces the failure
+        new_entries = state.combat_log[log_len_before:]
+        failure_msg = [
+            e for e in new_entries if any("failed" in m.lower() for m in e.effects_applied)
+        ]
+        assert failure_msg, "Failed spawn should log a failure message"
+
+    def test_spawn_value_controls_count(self) -> None:
+        """value=2 spawns two reinforcements (up to cap)."""
+        spawn_move = _make_move(
+            id="call_two",
+            name="Call Two",
+            damage=0,
+            energy_cost=0,
+            effects=[
+                CombatEffect(
+                    type=EffectType.SPAWN_REINFORCEMENT,
+                    value=2.0,
+                    metadata={"template_id": "pirate_scout"},
+                )
+            ],
+        )
+        caller = _make_enemy_template(
+            id="caller",
+            hull=100,
+            behavior=EnemyBehavior.DEFENSIVE,
+            moves=[spawn_move],
+        )
+        engine = _make_engine(enemy_templates=[caller])
+        state = engine.get_state()
+        enemies_before = len(state.enemies)
+
+        engine._resolve_move(
+            spawn_move,
+            attacker=state.enemies[0],
+            defender=state.player,
+            actor_name="enemy_0",
+            attacker_accuracy=state.enemies[0].get_effective_accuracy(),
+        )
+
+        assert len(state.enemies) == enemies_before + 2
+
+    def test_spawn_missing_template_id_noop(self) -> None:
+        """Effect without a template_id in metadata is declined gracefully."""
+        spawn_move = _make_move(
+            id="malformed",
+            name="Malformed Spawn",
+            damage=0,
+            energy_cost=0,
+            effects=[
+                CombatEffect(
+                    type=EffectType.SPAWN_REINFORCEMENT,
+                    value=1.0,
+                    metadata={},  # missing template_id
+                )
+            ],
+        )
+        caller = _make_enemy_template(
+            id="caller",
+            hull=100,
+            behavior=EnemyBehavior.DEFENSIVE,
+            moves=[spawn_move],
+        )
+        engine = _make_engine(enemy_templates=[caller])
+        state = engine.get_state()
+        enemies_before = len(state.enemies)
+
+        engine._resolve_move(
+            spawn_move,
+            attacker=state.enemies[0],
+            defender=state.player,
+            actor_name="enemy_0",
+            attacker_accuracy=state.enemies[0].get_effective_accuracy(),
+        )
+
+        assert len(state.enemies) == enemies_before
+
+
+class TestCombatEffectMetadata:
+    """CombatEffect.metadata field round-trips through to_dict/from_dict."""
+
+    def test_metadata_serializes(self) -> None:
+        effect = CombatEffect(
+            type=EffectType.SPAWN_REINFORCEMENT,
+            value=1.0,
+            metadata={"template_id": "pirate_scout"},
+        )
+        restored = CombatEffect.from_dict(effect.to_dict())
+        assert restored.metadata == {"template_id": "pirate_scout"}
+        assert restored.type == EffectType.SPAWN_REINFORCEMENT
+
+    def test_metadata_empty_dict_omitted_from_serialization(self) -> None:
+        """Keeps existing JSON minimal — don't emit metadata:{} for every effect."""
+        effect = CombatEffect(type=EffectType.DAMAGE, value=10.0)
+        assert "metadata" not in effect.to_dict()
+
+    def test_metadata_missing_in_dict_loads_empty(self) -> None:
+        """Backward compat: old JSON without metadata loads with empty dict."""
+        restored = CombatEffect.from_dict({"type": "damage", "value": 10.0})
+        assert restored.metadata == {}

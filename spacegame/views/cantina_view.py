@@ -218,14 +218,15 @@ class CantinaView(BaseView):
             if board_missions:
                 btn_y += SECTION_PAD + 24
                 for mission in board_missions[:5]:
-                    reward_text = ""
-                    for r in mission.rewards:
-                        if r.reward_type == "credits":
-                            reward_text = f" \u2014 {r.amount:,} CR"
-                            break
+                    # Reward lives in the hover tooltip, not in the button
+                    # label — embedding it in the button text caused long
+                    # mission names to truncate the credits payout per
+                    # playtest feedback 2026-04-22. Button label carries
+                    # just the contract name; tooltip carries the full
+                    # details including reward.
                     btn = pygame_gui.elements.UIButton(
                         relative_rect=pygame.Rect(btn_x, btn_y, BUTTON_W, BUTTON_H),
-                        text=f"Contract: {mission.name}{reward_text}",
+                        text=f"Contract: {mission.name}",
                         manager=self.ui_manager,
                     )
                     self._contract_buttons[mission.id] = btn
@@ -305,7 +306,15 @@ class CantinaView(BaseView):
         # Section labels
         self._render_section_labels(screen)
 
-        # Contract tooltip (rendered last, on top)
+    def render_top(self, screen: pygame.Surface) -> None:
+        """Draw the contract tooltip above pygame_gui buttons.
+
+        Playtester 2026-04-22 reported the tooltip rendering BEHIND the
+        Station Board / Crew / Contacts buttons. Root cause: the tooltip
+        was drawn in ``render()``, which runs before
+        ``ui_manager.draw_ui()`` in the game loop, so pygame_gui elements
+        were overdrawing it. Moved to ``render_top`` which runs after UI.
+        """
         self._render_contract_tooltip(screen)
 
     def _render_header(self, screen: pygame.Surface) -> None:

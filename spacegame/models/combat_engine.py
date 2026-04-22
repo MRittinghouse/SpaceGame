@@ -43,6 +43,13 @@ FLEE_MIN_CHANCE = 10
 FLEE_MAX_CHANCE = 90
 FLEE_ACCURACY_PENALTY = 20
 
+# Tier 3.E: cap on simultaneous living enemies. Reinforcement spawns are
+# silently declined above this cap so a misconfigured move can't flood
+# the combat arena. Matches the combat view's tested-layout budget of up
+# to 5 enemy cards (3 arena render slots + 2 on the card panel when
+# necessary). Raise with care — bigger arenas need UI rework.
+MAX_LIVING_ENEMIES = 5
+
 
 class CombatEngine:
     """Resolves turn-based combat. All mutable state lives in CombatState."""
@@ -50,6 +57,13 @@ class CombatEngine:
     def __init__(self, state: CombatState, seed: int = 0) -> None:
         self._state = state
         self._rng = random.Random(seed)
+
+    def _skill_bonus(self, bonus_type: str) -> float:
+        """Get a skill bonus from progression, or 0.0 if not available."""
+        prog = self._state.progression
+        if prog and hasattr(prog, "get_bonus"):
+            return prog.get_bonus(bonus_type)
+        return 0.0
 
     # ------------------------------------------------------------------
     # Player actions
@@ -98,6 +112,12 @@ class CombatEngine:
             logs = self.execute_player_move(action.move_id, action.target_idx)
             all_logs.extend(logs)
 
+        # Fire at Will (B8.2): flag is turn-scoped. Clear after all queued
+        # actions resolve so the discount doesn't leak into enemy or
+        # end-of-round paths.
+        if getattr(player, "fire_at_will_active", False):
+            player.fire_at_will_active = False
+
         return all_logs
 
     def execute_player_move(self, move_id: str, target_idx: int = 0) -> list[CombatLogEntry]:
@@ -136,8 +156,38 @@ class CombatEngine:
             self._state.combat_log.append(entry)
             return [entry]
 
+        # Dual tech (B8.2): Crew Sync is once-per-combat — reject early,
+        # before energy/cooldown are spent, if already used this combat.
+        if move.id == "crew_sync" and getattr(player, "crew_sync_used", False):
+            entry = CombatLogEntry(
+                round_number=self._state.round_number,
+                actor="player",
+                action=move.name,
+                effects_applied=["Crew Sync already used this combat"],
+                hit=False,
+            )
+            self._state.combat_log.append(entry)
+            return [entry]
+
+        # Compute effective energy cost (shield_energy_discount reduces shield moves)
+        effective_cost = move.energy_cost
+        is_shield_move = any(e.type == EffectType.SHIELD_RESTORE for e in move.effects)
+        if is_shield_move:
+            discount = int(self._skill_bonus("shield_energy_discount"))
+            effective_cost = max(0, effective_cost - discount)
+
+        # Fire at Will (B8.2): when the flag is set, weapon moves fire at
+        # half energy. A "weapon move" is any move with a DAMAGE effect.
+        # Fire at Will itself has no DAMAGE effect, so it can't be
+        # recursively discounted by its own activation.
+        is_weapon_move = any(e.type == EffectType.DAMAGE for e in move.effects)
+        fire_at_will_discount_applied = False
+        if is_weapon_move and getattr(player, "fire_at_will_active", False):
+            effective_cost = max(0, effective_cost // 2)
+            fire_at_will_discount_applied = True
+
         # Check energy
-        if player.energy < move.energy_cost:
+        if player.energy < effective_cost:
             entry = CombatLogEntry(
                 round_number=self._state.round_number,
                 actor="player",
@@ -149,11 +199,90 @@ class CombatEngine:
             return [entry]
 
         # Spend energy
-        player.energy -= move.energy_cost
+        player.energy -= effective_cost
 
-        # Set cooldown — per-slot so duplicate equipment has independent cooldowns
-        if move.cooldown > 0:
+        # Set cooldown — per-slot so duplicate equipment has independent cooldowns.
+        # Fire at Will skips cooldown assignment for weapon moves fired under it.
+        if move.cooldown > 0 and not fire_at_will_discount_applied:
             player.cooldowns[cooldown_key] = move.cooldown
+
+        # Dual tech (B8.2 / B8.3): apply activation side-effects AFTER
+        # energy/cooldown accounting but BEFORE the effect pipeline runs.
+        # These helpers set flags and apply immediate state changes the
+        # CombatEffect system can't express.
+        dual_tech_logs: list[str] = []
+        _dual_tech_dispatched_ids = {
+            "power_drift",
+            "fire_at_will",
+            "crew_sync",
+            "total_commitment",
+            "daring_gambit",
+        }
+        if move.id in _dual_tech_dispatched_ids:
+            from spacegame.models.dual_tech import (
+                activate_crew_sync,
+                activate_daring_gambit_counter,
+                activate_fire_at_will,
+                activate_power_drift,
+                activate_total_commitment,
+            )
+
+            if move.id == "power_drift":
+                dual_tech_logs = activate_power_drift(player)
+            elif move.id == "fire_at_will":
+                dual_tech_logs = activate_fire_at_will(player)
+            elif move.id == "crew_sync":
+                _applied, dual_tech_logs = activate_crew_sync(player)
+            elif move.id == "total_commitment":
+                dual_tech_logs = activate_total_commitment(player)
+            elif move.id == "daring_gambit":
+                # Evasion buff is already in move.effects — this helper just
+                # arms the counter-on-dodge window.
+                dual_tech_logs = activate_daring_gambit_counter(player)
+
+        # B8.4 tail: first-use cinematic reveal. Emit BEFORE the
+        # mechanical activation log so the scene lands first in the UI.
+        if move.id in _dual_tech_dispatched_ids or move.id in (
+            "gun_run",
+            "focused_barrage",
+        ):
+            try:
+                from spacegame.models.dual_tech_dialogue import (
+                    check_and_mark_reveal,
+                )
+
+                reveal = check_and_mark_reveal(player.dialogue_flags, move.id)
+                if reveal is not None:
+                    reveal_entry = CombatLogEntry(
+                        round_number=self._state.round_number,
+                        actor="player",
+                        action=f"{move.name} (reveal)",
+                        effects_applied=reveal.to_log_entries(),
+                        hit=True,
+                    )
+                    self._state.combat_log.append(reveal_entry)
+            except Exception:
+                pass
+
+        if dual_tech_logs:
+            entry = CombatLogEntry(
+                round_number=self._state.round_number,
+                actor="player",
+                action=move.name,
+                effects_applied=dual_tech_logs,
+                hit=True,
+            )
+            self._state.combat_log.append(entry)
+
+        # Fire at Will, Power Drift, Total Commitment have no effects
+        # payload — their entire work is done by the activation helpers
+        # above. Skip the normal resolve pipeline so the engine doesn't
+        # try to target an enemy with a zero-effect move.
+        if (
+            move.id in ("fire_at_will", "power_drift", "total_commitment")
+            and not move.effects
+        ):
+            return [entry] if dual_tech_logs else []
 
         # Overdriven Weapon: 2x damage on next weapon attack (momentum 50% threshold)
         overdriven_active = False
@@ -459,10 +588,26 @@ class CombatEngine:
                 self._state.combat_log.append(entry)
                 return [entry]
 
-        # Cowardly behavior: flee when hull is low
+        # Engine-destruction tempo skip (Combat C4 §11.2). Destroying the
+        # engine subsystem grants one free turn. Mirrors the frozen path.
+        from spacegame.models.enemy_subsystems import consume_engine_tempo_skip
+
+        if consume_engine_tempo_skip(enemy):
+            entry = CombatLogEntry(
+                round_number=self._state.round_number,
+                actor=actor,
+                action="Crippled",
+                effects_applied=[f"{enemy.template.name} drifts, engines dark!"],
+                hit=False,
+            )
+            self._state.combat_log.append(entry)
+            return [entry]
+
+        # Cowardly behavior: flee when hull is low (blocked if engine destroyed)
         if (
             enemy.template.behavior == EnemyBehavior.COWARDLY
             and enemy.hull_ratio <= enemy.template.flee_threshold
+            and enemy.can_flee
         ):
             enemy.is_fled = True
             entry = CombatLogEntry(
@@ -872,6 +1017,10 @@ class CombatEngine:
             modifier = _TIER_MODIFIERS.get(faction_reputation_tier, 0)
             difficulty = max(1, difficulty + modifier)
 
+        # Peacemaker capstone: reduce difficulty by 2 (always available)
+        if self._skill_bonus("peaceful_resolution") > 0:
+            difficulty = max(1, difficulty - 2)
+
         # Use social manager's can_pass_check
         # We use empty npc_id since enemies aren't NPCs
         success = social_manager.can_pass_check(skill_id, difficulty, "")
@@ -935,6 +1084,14 @@ class CombatEngine:
         player.tick_cooldowns()
         player.regenerate_energy()
 
+        # Dual tech (B8.3): tick turn-scoped flags and counters.
+        try:
+            from spacegame.models.dual_tech import tick_dual_tech_end_of_round
+
+            messages.extend(tick_dual_tech_end_of_round(player))
+        except Exception:
+            pass
+
         # Legendary: Cooldown Reduction — extra cooldown tick
         if player._legendary:
             try:
@@ -944,11 +1101,39 @@ class CombatEngine:
             except Exception:
                 pass
 
+            # Legendary: Phase Shift per-round reset (spec §8).
+            try:
+                from spacegame.models.legendary_effects import reset_phase_shift_for_round
+
+                reset_phase_shift_for_round(player._legendary)
+            except Exception:
+                pass
+
+        # Sentinel capstone: shield break → restore 20%
+        if (
+            player.shield_break_vulnerable
+            and player.defensive_identity == "sentinel"
+            and self._skill_bonus("sentinel_capstone") > 0
+            and player.max_shields > 0
+        ):
+            restored = int(player.max_shields * 0.20)
+            player.shields += restored
+            messages.append(f"Sentinel: shields restored +{restored}")
+
         # Passive shield regen (Phase 12A)
         if player.shield_regen > 0 and player.shields < player.max_shields:
             regen = min(player.shield_regen, player.max_shields - player.shields)
-            # Legendary: Forgeborn Bulwark — double regen when shields < 25%
+            # Sentinel capstone: double regen when shields > 50%
             if (
+                player.defensive_identity == "sentinel"
+                and self._skill_bonus("sentinel_capstone") > 0
+                and player.max_shields > 0
+                and player.shields / player.max_shields > 0.50
+            ):
+                regen = min(regen * 2, player.max_shields - player.shields)
+                messages.append(f"Sentinel surge: +{regen}")
+            # Legendary: Forgeborn Bulwark — double regen when shields < 25%
+            elif (
                 player._legendary
                 and player._legendary.low_shield_regen_mult > 1.0
                 and player.max_shields > 0
@@ -1015,9 +1200,20 @@ class CombatEngine:
         logs: list[CombatLogEntry] = []
         effects_applied: list[str] = []
 
-        # Separate offensive (target=ENEMY) and self-buff (target=SELF) effects
-        offensive_effects = [e for e in move.effects if e.target == EffectTarget.ENEMY]
-        self_effects = [e for e in move.effects if e.target == EffectTarget.SELF]
+        # Separate offensive (target=ENEMY), self-buff (target=SELF),
+        # ally-support (target=ALLY), and reinforcement-spawn effects.
+        # Spawn effects are caster-invoked regardless of target — they
+        # append to state.enemies, not hit any particular target, so
+        # they bypass the target-based bucketing (Tier 3.E).
+        spawn_effects = [
+            e for e in move.effects if e.type == EffectType.SPAWN_REINFORCEMENT
+        ]
+        non_spawn = [
+            e for e in move.effects if e.type != EffectType.SPAWN_REINFORCEMENT
+        ]
+        offensive_effects = [e for e in non_spawn if e.target == EffectTarget.ENEMY]
+        self_effects = [e for e in non_spawn if e.target == EffectTarget.SELF]
+        ally_effects = [e for e in non_spawn if e.target == EffectTarget.ALLY]
 
         # Resolve offensive effects (require hit roll)
         if offensive_effects:
@@ -1039,6 +1235,13 @@ class CombatEngine:
                 # Apply evasion decay (temporary penalty after being hit)
                 if isinstance(defender, PlayerCombatState):
                     raw_evasion = max(0, raw_evasion - defender.evasion_decay)
+                    # Ghost capstone: +30 evasion on first turn
+                    if (
+                        self._state.round_number == 1
+                        and defender.defensive_identity == "ghost"
+                        and self._skill_bonus("ghost_capstone") > 0
+                    ):
+                        raw_evasion += 30
                 effective_evasion = raw_evasion
                 if effective_evasion > 50:
                     effective_evasion = 50 + int((effective_evasion - 50) * 0.5)
@@ -1054,13 +1257,15 @@ class CombatEngine:
                     ),
                 )
 
-                # Legendary: Phase Shift — guaranteed dodge on interval
+                # Legendary: Phase Shift — spec §8 "blocks first incoming
+                # attack per round". Using consume_phase_shift ensures only
+                # ONE dodge per round even with multi-enemy encounters.
                 phase_shifted = False
                 if isinstance(defender, PlayerCombatState) and defender._legendary:
                     try:
-                        from spacegame.models.legendary_effects import check_phase_shift
+                        from spacegame.models.legendary_effects import consume_phase_shift
 
-                        if check_phase_shift(defender._legendary, self._state.round_number):
+                        if consume_phase_shift(defender._legendary, self._state.round_number):
                             phase_shifted = True
                     except Exception:
                         pass
@@ -1073,10 +1278,11 @@ class CombatEngine:
                 else:
                     roll = self._rng.randint(1, 100)
                     hit = roll <= hit_chance
-                graze = False
+                    graze = False
 
-                # Graze system: miss by ≤10 → 30% damage
-                if not hit:
+                # Graze system: miss by ≤10 → 30% damage.
+                # Phase shift fully negates the attack — no graze leak.
+                if not hit and not phase_shifted:
                     miss_margin = roll - hit_chance
                     if miss_margin <= 10:
                         graze = True
@@ -1092,22 +1298,76 @@ class CombatEngine:
                             )
                             if defender.counterstrike_stacks > prev_stacks:
                                 pct = defender.counterstrike_stacks * 12
-                                effects_applied.append(
-                                    f"Counterstrike +{pct}%"
-                                )
+                                effects_applied.append(f"Counterstrike +{pct}%")
+
+                        # Daring Gambit (B8.3): counter-on-dodge.
+                        # If the player is the defender and the gambit
+                        # counter window is open, punch 25 damage back
+                        # at the attacker for the dodge.
+                        if (
+                            isinstance(defender, PlayerCombatState)
+                            and getattr(defender, "daring_gambit_turns", 0) > 0
+                            and not isinstance(attacker, PlayerCombatState)
+                        ):
+                            counter_msgs: list[str] = []
+                            self._apply_direct_damage(
+                                attacker, 25.0, counter_msgs,
+                                self._get_target_name(attacker),
+                                attacker=defender,
+                            )
+                            effects_applied.append(
+                                "Daring Gambit COUNTER: 25 damage returned"
+                            )
+                            effects_applied.extend(counter_msgs)
 
             if hit or graze:
                 # Track if enemy was alive before applying effects
                 enemy_was_alive = defender.is_alive if isinstance(defender, EnemyShip) else True
 
-                # Apply effects with graze damage multiplier
+                # Crit system: player attacks can crit based on skill
+                crit = False
+                crit_mult = 1.0
+                if hit and not graze and is_player_attack:
+                    crit_pct = self._skill_bonus("crit_chance")  # 0.10/level
+                    # Ghost capstone: consecutive unhit rounds = guaranteed crit
+                    if (
+                        isinstance(attacker, PlayerCombatState)
+                        and attacker.defensive_identity == "ghost"
+                        and self._skill_bonus("ghost_capstone") > 0
+                        and attacker.counterstrike_stacks >= 2
+                    ):
+                        crit = True
+                    elif crit_pct > 0 and self._rng.random() < crit_pct:
+                        crit = True
+                    # Juggernaut capstone: defender immune to crits above 75% hull
+                    if (
+                        crit
+                        and isinstance(defender, PlayerCombatState)
+                        and defender.defensive_identity == "juggernaut"
+                        and defender.hull_ratio > 0.75
+                        and self._skill_bonus("juggernaut_capstone") > 0
+                    ):
+                        crit = False  # Immunity
+                    if crit:
+                        crit_mult = 1.5
+                        effects_applied.append("CRITICAL HIT!")
+
+                # Graze damage: 30% normally, 15% with Light Foot level 2
+                graze_mult = 0.30
+                if graze and isinstance(defender, PlayerCombatState):
+                    light_foot_lvl = self._skill_bonus("light_foot")
+                    if light_foot_lvl >= 2:
+                        graze_mult = 0.15
+
+                # Apply effects with damage multiplier
+                damage_mult = graze_mult if graze else crit_mult
                 msgs = self._apply_effects(
                     offensive_effects,
                     defender,
                     actor_name,
                     attacker_state=attacker,
                     element=move.element,
-                    damage_multiplier=0.30 if graze else 1.0,
+                    damage_multiplier=damage_mult,
                 )
                 effects_applied.extend(msgs)
 
@@ -1117,7 +1377,10 @@ class CombatEngine:
                 # Identity passives on being hit
                 if not is_player_attack and isinstance(defender, PlayerCombatState):
                     # Evasion decay: -5 evasion for 1 turn after being hit
-                    defender.evasion_decay = 5
+                    # Light Foot level 1: no evasion decay
+                    light_foot_lvl = self._skill_bonus("light_foot")
+                    if light_foot_lvl < 1:
+                        defender.evasion_decay = 5
                     # Ghost Counterstrike resets on being hit
                     if defender.defensive_identity == "ghost" and defender.counterstrike_stacks > 0:
                         defender.counterstrike_stacks = 0
@@ -1173,7 +1436,8 @@ class CombatEngine:
                             chain_msgs: list[str] = [f"CHAIN FIRE! ({int(chain_dmg)} damage)"]
                             chain_target_name = self._get_target_name(defender)
                             self._apply_direct_damage(
-                                defender, chain_dmg, chain_msgs, chain_target_name
+                                defender, chain_dmg, chain_msgs, chain_target_name,
+                                attacker=attacker,
                             )
                             chain_entry = CombatLogEntry(
                                 round_number=self._state.round_number,
@@ -1206,6 +1470,61 @@ class CombatEngine:
                     actor=actor_name,
                     action=move.name,
                     effects_applied=effects_applied_self,
+                    hit=True,
+                )
+                self._state.combat_log.append(entry)
+                logs.append(entry)
+
+        if ally_effects:
+            # Pick the lowest-HP ally on the caster's team. For an enemy
+            # caster, "ally" means another living enemy; for the player,
+            # "ally" falls back to self (crew are part of PlayerCombatState).
+            ally_target = self._select_ally_target(attacker, actor_name)
+            if ally_target is None:
+                # No ally available — graceful fallback: treat the caster
+                # as the target (equivalent to self-heal). Logs a note so
+                # players can tell the move found no teammate.
+                ally_target = (
+                    self._state.player
+                    if actor_name == "player" or actor_name.startswith("crew:")
+                    else attacker
+                )
+                no_ally_note = "no ally to support — redirected to self"
+            else:
+                no_ally_note = None
+
+            msgs = self._apply_effects(ally_effects, ally_target, actor_name)
+            if no_ally_note is not None:
+                msgs = [no_ally_note, *msgs]
+
+            # If the move ONLY contains ally effects (no offensive/self),
+            # create a log entry now so the action surfaces to the player.
+            if not offensive_effects and not self_effects:
+                entry = CombatLogEntry(
+                    round_number=self._state.round_number,
+                    actor=actor_name,
+                    action=move.name,
+                    effects_applied=msgs,
+                    hit=True,
+                )
+                self._state.combat_log.append(entry)
+                logs.append(entry)
+
+        if spawn_effects:
+            # Reinforcement-spawn effects resolve as caster-invoked actions
+            # outside the hit-roll system. Each effect spawns its configured
+            # template (bounded by MAX_LIVING_ENEMIES).
+            spawn_msgs: list[str] = []
+            for spawn_effect in spawn_effects:
+                spawn_msgs.extend(self._spawn_reinforcements(spawn_effect, actor_name))
+
+            if not offensive_effects and not self_effects and not ally_effects:
+                # Pure spawn move — log it so players see reinforcements arrive.
+                entry = CombatLogEntry(
+                    round_number=self._state.round_number,
+                    actor=actor_name,
+                    action=move.name,
+                    effects_applied=spawn_msgs,
                     hit=True,
                 )
                 self._state.combat_log.append(entry)
@@ -1301,14 +1620,30 @@ class CombatEngine:
                 # Graze multiplier (0.30 for near-miss, 1.0 for full hit)
                 raw *= damage_multiplier
 
+                # Weapon Specialization skill: +10% damage per level
+                if isinstance(atk, PlayerCombatState):
+                    weapon_dmg_bonus = self._skill_bonus("weapon_damage")
+                    if weapon_dmg_bonus > 0:
+                        raw *= 1.0 + weapon_dmg_bonus
+
+                # Crew combat damage bonus (Leadership): +15% per level
+                if source_name.startswith("crew:"):
+                    crew_dmg_bonus = self._skill_bonus("crew_combat_damage")
+                    if crew_dmg_bonus > 0:
+                        raw *= 1.0 + crew_dmg_bonus
+
                 # Attacker identity bonuses
                 if isinstance(atk, PlayerCombatState):
-                    # Juggernaut Last Stand: +15% damage below 25% hull
+                    # Juggernaut: below 25% hull = damage boost
+                    # Capstone upgrades +15% → +25%
                     if atk.defensive_identity == "juggernaut" and atk.hull_ratio < 0.25:
-                        raw *= 1.15
-                    # Ghost Counterstrike: +12% per stack (buffed from 10%)
+                        boost = 0.25 if self._skill_bonus("juggernaut_capstone") > 0 else 0.15
+                        raw *= 1.0 + boost
+                    # Ghost Counterstrike: base +12% per stack
+                    # counterstrike_bonus skill adds +5% per level per stack
                     if atk.defensive_identity == "ghost" and atk.counterstrike_stacks > 0:
-                        raw *= 1.0 + 0.12 * atk.counterstrike_stacks
+                        per_stack = 0.12 + self._skill_bonus("counterstrike_bonus")
+                        raw *= 1.0 + per_stack * atk.counterstrike_stacks
 
                 # Defender identity modifiers
                 if isinstance(target, PlayerCombatState):
@@ -1328,7 +1663,7 @@ class CombatEngine:
                     upfront = raw * 0.66
                     burn_per_turn = raw * 0.34 * 1.15  # 34% + 15% bonus
                     reduced = upfront * (1.0 - min(damage_reduction, 0.9))
-                    self._apply_direct_damage(target, reduced, messages, target_name)
+                    self._apply_direct_damage(target, reduced, messages, target_name, attacker=attacker_state)
                     # Apply Burn stack (stacks to 3, each lasts 3 turns)
                     burn_effect = CombatEffect(
                         type=EffectType.BURN,
@@ -1366,7 +1701,7 @@ class CombatEngine:
                 elif eff_element == WeaponElement.CRYO:
                     # 85% damage + Chill stack
                     reduced = raw * 0.85 * (1.0 - min(damage_reduction, 0.9))
-                    self._apply_direct_damage(target, reduced, messages, target_name)
+                    self._apply_direct_damage(target, reduced, messages, target_name, attacker=attacker_state)
                     chill_effect = CombatEffect(
                         type=EffectType.CHILL,
                         value=5.0,  # -5 evasion per stack
@@ -1403,7 +1738,7 @@ class CombatEngine:
                 elif eff_element == WeaponElement.VOLTAIC:
                     # 85% damage + Suppressed stack
                     reduced = raw * 0.85 * (1.0 - min(damage_reduction, 0.9))
-                    self._apply_direct_damage(target, reduced, messages, target_name)
+                    self._apply_direct_damage(target, reduced, messages, target_name, attacker=attacker_state)
                     suppress_effect = CombatEffect(
                         type=EffectType.SUPPRESSED,
                         value=12.0,  # -12% damage per stack
@@ -1424,7 +1759,7 @@ class CombatEngine:
                 else:
                     # Kinetic (default) — pure direct damage
                     reduced = raw * (1.0 - min(damage_reduction, 0.9))
-                    self._apply_direct_damage(target, reduced, messages, target_name)
+                    self._apply_direct_damage(target, reduced, messages, target_name, attacker=attacker_state)
 
             elif effect.type == EffectType.SHIELD_DRAIN:
                 if isinstance(target, PlayerCombatState):
@@ -1539,6 +1874,60 @@ class CombatEngine:
                 target.active_effects.append((effect, max(1, effect.duration)))
                 messages.append("Countermeasures deployed — next hit absorbed")
 
+            # SPAWN_REINFORCEMENT is handled by _resolve_move's dedicated
+            # spawn-effects bucket (Tier 3.E) — it's caster-invoked and
+            # target-independent, so it doesn't flow through _apply_effects.
+
+        return messages
+
+    def _spawn_reinforcements(
+        self,
+        effect: "CombatEffect",
+        source_name: str,
+    ) -> list[str]:
+        """Append N reinforcement enemies to state.enemies for the given effect.
+
+        Respects ``MAX_LIVING_ENEMIES`` — spawns are silently capped so a
+        badly-tuned template can't flood the arena. Caller already holds
+        the move-cooldown gate; no additional rate limiting here.
+
+        Returns per-spawn log messages (one per successful spawn, plus a
+        capped-out note when the cap is hit before the requested count).
+        """
+        template_id = effect.metadata.get("template_id", "")
+        count = max(1, int(effect.value))
+        messages: list[str] = []
+
+        if not template_id:
+            messages.append("Reinforcement call failed — no template specified")
+            return messages
+
+        # Lazy import to avoid a circular dependency at module load.
+        from spacegame.data_loader import get_data_loader
+
+        dl = get_data_loader()
+        template = dl.enemy_templates.get(template_id)
+        if template is None:
+            messages.append(f"Reinforcement call failed — unknown template '{template_id}'")
+            return messages
+
+        living = sum(1 for e in self._state.enemies if e.is_alive and not e.is_fled)
+        spawned = 0
+        for _ in range(count):
+            if living >= MAX_LIVING_ENEMIES:
+                messages.append(
+                    f"Reinforcement call capped — {MAX_LIVING_ENEMIES} enemies already engaged"
+                )
+                break
+            new_enemy = EnemyShip.from_template(template)
+            self._state.enemies.append(new_enemy)
+            living += 1
+            spawned += 1
+        if spawned > 0:
+            messages.append(
+                f"Reinforcement arrives: {template.name}"
+                + (f" ×{spawned}" if spawned > 1 else "")
+            )
         return messages
 
     @staticmethod
@@ -1547,12 +1936,23 @@ class CombatEngine:
         reduced: float,
         messages: list[str],
         target_name: str,
+        attacker: "PlayerCombatState | EnemyShip | None" = None,
     ) -> None:
         """Apply direct damage to a target's shields then hull.
 
         Applies armor reduction (flat damage subtraction) before shield/hull split.
         Burn DoT and other bypass-armor effects should reduce damage before calling.
+
+        Args:
+            attacker: When set, B8.3 armor-pierce (Crew Sync) is checked on
+                player-attacker. DOT-style callers pass None to skip the check.
         """
+        # Crew Sync armor-pierce (B8.3): player attacks bypass armor this turn.
+        armor_pierced = (
+            isinstance(attacker, PlayerCombatState)
+            and getattr(attacker, "armor_pierce_active", False)
+        )
+
         # Armor: flat reduction per hit (minimum 1 damage)
         armor = 0
         if isinstance(target, PlayerCombatState):
@@ -1562,6 +1962,10 @@ class CombatEngine:
                 armor += 2
         elif hasattr(target, "template"):
             armor = getattr(target.template, "combat_armor", 0)
+
+        if armor_pierced and armor > 0:
+            messages.append(f"Armor pierce: ignored {armor} armor")
+            armor = 0
 
         if armor > 0 and reduced > 0:
             armor_absorbed = min(armor, reduced - 1)  # Always deal at least 1
@@ -1573,6 +1977,26 @@ class CombatEngine:
             shield_absorbed = min(target.shields, reduced)
             hull_damage = reduced - shield_absorbed
             target.shields = max(0, target.shields - int(shield_absorbed))
+
+            # Total Commitment (B8.3): intercept hull hits, convert to armor.
+            # Must happen BEFORE Legendary Void Absorption / module-damage
+            # routing so the incoming hit is logically absorbed first.
+            if (
+                hull_damage > 0
+                and getattr(target, "total_commitment_hits_remaining", 0) > 0
+            ):
+                try:
+                    from spacegame.models.dual_tech import (
+                        intercept_total_commitment_hull_damage,
+                    )
+
+                    remaining, tc_logs = intercept_total_commitment_hull_damage(
+                        target, int(hull_damage)
+                    )
+                    hull_damage = float(remaining)
+                    messages.extend(tc_logs)
+                except Exception:
+                    pass
 
             # Legendary: Heat Hardening — gain armor when shields absorb damage
             if shield_absorbed > 0 and target._legendary:
@@ -1714,6 +2138,29 @@ class CombatEngine:
             target.current_shields = max(0, target.current_shields - int(shield_absorbed))
             target.current_hull = max(0, target.current_hull - int(hull_damage))
 
+            # Subsystem damage routing (Combat C4 §11.2). When the player
+            # has a focused subsystem on this enemy, the same hull-damage
+            # amount chips the subsystem's HP. Destruction applies the
+            # subsystem's mechanical effect + logs it.
+            focused = getattr(target, "focused_subsystem", None)
+            if focused and hull_damage > 0:
+                from spacegame.models.enemy_subsystems import (
+                    apply_subsystem_damage,
+                    apply_subsystem_destruction,
+                )
+
+                destroyed_effect = apply_subsystem_damage(
+                    target, int(hull_damage), focused
+                )
+                if destroyed_effect is not None:
+                    destruction_msgs = apply_subsystem_destruction(
+                        target, destroyed_effect
+                    )
+                    messages.extend(destruction_msgs)
+                    # Clear focus after destruction so next attack
+                    # doesn't try to re-damage a dead subsystem.
+                    target.focused_subsystem = None
+
         module_hit_msg = module_hit_msg if isinstance(target, PlayerCombatState) else ""
         damage_msg = (
             f"Dealt {int(reduced)} damage to {target_name} "
@@ -1723,27 +2170,36 @@ class CombatEngine:
             damage_msg += f" [{module_hit_msg}]"
         messages.append(damage_msg)
 
-    @staticmethod
     def _apply_stacking_effect(
+        self,
         target: PlayerCombatState | EnemyShip,
         effect: CombatEffect,
         max_stacks: int = 3,
     ) -> int:
         """Apply a stacking status effect, enforcing the stack cap.
 
+        Elemental Affinity skill extends duration by 1 turn when player
+        applies effects to enemies.
+
         Returns:
             Current stack count after application.
         """
+        # Elemental Affinity: +1 duration when player applies to enemy
+        duration = effect.duration
+        if isinstance(target, EnemyShip):
+            dur_bonus = int(self._skill_bonus("elemental_duration_bonus"))
+            duration += dur_bonus
+
         # Count existing stacks of this effect type
         current_stacks = sum(1 for eff, _ in target.active_effects if eff.type == effect.type)
         if current_stacks < max_stacks:
-            target.active_effects.append((effect, effect.duration))
+            target.active_effects.append((effect, duration))
             current_stacks += 1
         else:
             # Refresh the oldest stack's duration instead of adding a new one
             for i, (eff, _) in enumerate(target.active_effects):
                 if eff.type == effect.type:
-                    target.active_effects[i] = (effect, effect.duration)
+                    target.active_effects[i] = (effect, duration)
                     break
         return current_stacks
 
@@ -2213,11 +2669,59 @@ class CombatEngine:
     # ------------------------------------------------------------------
 
     def _find_player_move(self, move_id: str) -> Optional[CombatMove]:
-        """Find a move by ID across equipment and crew moves."""
+        """Find a move by ID across equipment, crew, and dual tech moves."""
         for m in self._state.player.equipment_moves:
             if m.id == move_id:
                 return m
         for m in self._state.player.crew_moves:
             if m.id == move_id:
                 return m
+        for m in getattr(self._state.player, "dual_tech_moves", []):
+            if m.id == move_id:
+                return m
         return None
+
+    def _select_ally_target(
+        self,
+        attacker: "PlayerCombatState | EnemyShip",
+        actor_name: str,
+    ) -> Optional["EnemyShip"]:
+        """Pick the lowest-HP living ally for an ALLY-targeted effect.
+
+        Tier 3.D: enemies can now heal allies (e.g., medical_relay). For
+        an enemy caster, "ally" means another enemy that is alive, not
+        fled, and not the caster itself. Hull ratio breaks ties so
+        critically-wounded teammates are prioritized over mildly damaged
+        ones.
+
+        The player side has no distinct allies in the current model —
+        crew are folded into PlayerCombatState — so ally-targeted moves
+        from a player source resolve to no ally (caller redirects to
+        self). This keeps the API uniform but declines to invent a crew-
+        selection mechanic that doesn't exist elsewhere.
+
+        Args:
+            attacker: The caster. Either PlayerCombatState or EnemyShip.
+            actor_name: Actor string ("player", "crew:<id>", or enemy tag).
+
+        Returns:
+            An EnemyShip if an ally is available, else None.
+        """
+        # Player side: no separate allies in the model.
+        if actor_name == "player" or actor_name.startswith("crew:"):
+            return None
+
+        candidates = [
+            e
+            for e in self._state.enemies
+            if e is not attacker and e.is_alive and not e.is_fled
+        ]
+        if not candidates:
+            return None
+
+        def _hull_ratio(e: "EnemyShip") -> float:
+            max_hull = max(1, e.template.hull)
+            return e.current_hull / max_hull
+
+        candidates.sort(key=_hull_ratio)
+        return candidates[0]

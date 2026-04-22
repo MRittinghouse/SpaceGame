@@ -19,9 +19,10 @@ from spacegame.utils.logger import logger
 from spacegame.views.base_view import BaseView
 from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
 
-# Layout constants (PANEL_LEFT/TOP shared with mission_log_view, crew_roster_view)
-PANEL_LEFT = scale_x(40)
-PANEL_TOP = scale_y(90)
+# Layout constants (shared margins from layout.py)
+from spacegame.views.layout import LIST_DETAIL_LEFT as PANEL_LEFT
+from spacegame.views.layout import LIST_DETAIL_TOP as PANEL_TOP
+
 LIST_WIDTH = WINDOW_WIDTH - PANEL_LEFT * 2  # Full width (no detail panel, unlike mission_log)
 LIST_HEIGHT = WINDOW_HEIGHT - PANEL_TOP - scale_y(80) - scale_y(HUD_BASE_HEIGHT)
 ENTRY_CARD_HEIGHT = scale_y(80)

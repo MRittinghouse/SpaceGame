@@ -109,14 +109,14 @@ class TestHUDNotificationBadges:
         player.progression.skill_points = 3
         hud = _make_hud(player=player)
         # Button index 1 = Skills
-        assert hud._check_badge(1)
+        assert hud._get_badge_count(1)
 
     def test_no_skills_badge_when_spent(self) -> None:
         """Skills button should NOT show badge when all points spent."""
         player = _make_player()
         player.progression.skill_points = 0
         hud = _make_hud(player=player)
-        assert not hud._check_badge(1)
+        assert not hud._get_badge_count(1)
 
     def test_missions_badge_when_available(self) -> None:
         """Missions button should show badge when missions are available."""
@@ -124,12 +124,12 @@ class TestHUDNotificationBadges:
         mm.get_missions_by_status.return_value = [MagicMock()]  # 1 available mission
         hud = _make_hud(mission_manager=mm)
         # Button index 3 = Missions
-        assert hud._check_badge(3)
+        assert hud._get_badge_count(3)
 
     def test_no_missions_badge_when_none_available(self) -> None:
         """Missions button should NOT show badge when no missions available."""
         hud = _make_hud()
-        assert not hud._check_badge(3)
+        assert not hud._get_badge_count(3)
 
     def test_crew_badge_when_pending_companions(self) -> None:
         """Crew button should show badge when companions are pending."""
@@ -137,14 +137,14 @@ class TestHUDNotificationBadges:
         crew.pending_companion_ids = {"elena_reeves"}
         hud = _make_hud(crew_roster=crew)
         # Button index 2 = Crew
-        assert hud._check_badge(2)
+        assert hud._get_badge_count(2)
 
     def test_no_crew_badge_when_no_pending(self) -> None:
         """Crew button should NOT show badge when no pending companions."""
         crew = MagicMock()
         crew.pending_companion_ids = set()
         hud = _make_hud(crew_roster=crew)
-        assert not hud._check_badge(2)
+        assert not hud._get_badge_count(2)
 
 
 class TestHUDQuestHint:
@@ -217,3 +217,32 @@ class TestHUDLayout:
         """HUD should have exactly 5 navigation buttons."""
         hud = _make_hud()
         assert len(hud._button_rects) == 5
+
+
+class TestHUDVoiceCompliance:
+    """Voice compliance guards per ui_design_standards.md principle 5.
+
+    The player is a scrapyard kid until the narrative promotes them. The
+    HUD must not address the player as Captain or any unearned honorific.
+    """
+
+    def test_nav_buttons_do_not_use_captain(self) -> None:
+        """No navigation button may use "Captain" as a static label."""
+        from spacegame.views.cockpit_hud import _NAV_BUTTONS
+
+        for short, full, _ in _NAV_BUTTONS:
+            assert "Captain" not in short, f"Short label {short!r} uses unearned rank"
+            assert "Captain" not in full, f"Full label {full!r} uses unearned rank"
+
+    def test_character_button_uses_player_name(self) -> None:
+        """The character button renders with the player's chosen name."""
+        from spacegame.config import GameState
+        from spacegame.views.cockpit_hud import _NAV_BUTTONS
+
+        char_entry = next(b for b in _NAV_BUTTONS if b[2] == GameState.CHARACTER)
+        short, full, _ = char_entry
+        # The static full label is empty (signals dynamic substitution).
+        # The short label is personal ("YOU") but carries no rank.
+        assert full == "", "Character button full label should be dynamic (empty sentinel)"
+        assert "Captain" not in short
+        assert "Cpt" not in short

@@ -51,9 +51,9 @@ class TestRespecSkills:
 
         prog.respec_skills(player_level=1, player_credits=10000)
         # Invest in a different tree instead
-        success, _ = prog.level_up_skill("weapons_training")
+        success, _ = prog.level_up_skill("weapon_specialization")
         assert success
-        assert prog.skills["weapons_training"].current_level == 1
+        assert prog.skills["weapon_specialization"].current_level == 1
         assert prog.skills["negotiator"].current_level == 0
 
     def test_get_bonus_zero_after_respec(self) -> None:
@@ -68,11 +68,11 @@ class TestRespecSkills:
     def test_respec_across_multiple_trees(self) -> None:
         prog = PlayerProgression()
         prog.skill_points = 5
-        prog.level_up_skill("negotiator")  # Trading
-        prog.level_up_skill("weapons_training")  # Combat
+        prog.level_up_skill("negotiator")  # Commerce
+        prog.level_up_skill("weapon_specialization")  # Combat
         assert prog.skill_points_spent == 2
 
         prog.respec_skills(player_level=1, player_credits=10000)
         assert prog.skill_points_spent == 0
         assert prog.skills["negotiator"].current_level == 0
-        assert prog.skills["weapons_training"].current_level == 0
+        assert prog.skills["weapon_specialization"].current_level == 0

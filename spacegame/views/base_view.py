@@ -65,3 +65,18 @@ class BaseView(ABC):
             event: Pygame event to process
         """
         # Optional override
+
+    def render_top(self, screen: pygame.Surface) -> None:  # noqa: B027
+        """Render overlays that must appear above pygame_gui UI elements.
+
+        The game loop calls ``render(screen)`` before ``ui_manager.draw_ui()``,
+        so anything drawn in ``render()`` sits BELOW pygame_gui buttons,
+        labels, and panels. Tooltips and other "always on top" overlays
+        should go in ``render_top`` instead, which the game loop calls
+        AFTER ``ui_manager.draw_ui()``.
+
+        Default is a no-op; views override only when they have top-layer
+        content (e.g., hover tooltips that need to float above their
+        own button surfaces).
+        """
+        # Optional override

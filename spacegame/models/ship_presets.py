@@ -26,7 +26,7 @@ _PRESET_MATERIALS: dict[str, HullMaterial] = {
         id="standard_plate",
         name="Standard Plate",
         description="Balanced",
-        color_primary=(112, 120, 136),
+        shade_band="steel",
         hull_per_pixel=2.5,
         weight_per_pixel=0.25,
         cost_per_pixel=15,
@@ -35,7 +35,7 @@ _PRESET_MATERIALS: dict[str, HullMaterial] = {
         id="light_alloy",
         name="Light Alloy",
         description="Light",
-        color_primary=(176, 184, 200),
+        shade_band="steel",
         hull_per_pixel=1.5,
         evasion_per_pixel=0.08,
         weight_per_pixel=0.15,
@@ -45,7 +45,8 @@ _PRESET_MATERIALS: dict[str, HullMaterial] = {
         id="shield_crystal",
         name="Shield Crystal",
         description="Shields",
-        color_primary=(64, 168, 208),
+        shade_band="collective_composite",
+        emissive_role="cryo_fractal",
         hull_per_pixel=1.0,
         shield_per_pixel=0.6,
         shield_regen_per_pixel=0.03,
@@ -56,7 +57,8 @@ _PRESET_MATERIALS: dict[str, HullMaterial] = {
         id="heavy_armor",
         name="Heavy Armor",
         description="Armor",
-        color_primary=(152, 112, 64),
+        shade_band="union_ceramic",
+        category_offset=1,
         hull_per_pixel=3.0,
         armor_per_pixel=0.06,
         weight_per_pixel=0.55,
@@ -66,7 +68,7 @@ _PRESET_MATERIALS: dict[str, HullMaterial] = {
         id="salvage_scrap",
         name="Salvage Scrap",
         description="Cheap",
-        color_primary=(136, 104, 72),
+        shade_band="frontier_canvas",
         hull_per_pixel=2.0,
         armor_per_pixel=0.02,
         weight_per_pixel=0.20,
@@ -251,8 +253,6 @@ def _place_pixels_in_silhouette(
     return pixels
 
 
-
-
 # Default slot definition IDs by (slot_type, size).
 # Presets use these as the standard variant for each type/size combo.
 _SLOT_DEF_IDS: dict[tuple[str, str], tuple[str, int, int]] = {
@@ -287,9 +287,7 @@ _SLOT_DEF_IDS: dict[tuple[str, str], tuple[str, int, int]] = {
 }
 
 
-def _select_slot_def(
-    slot_type: str, min_size: str, weight_class: str
-) -> tuple[str, int, int]:
+def _select_slot_def(slot_type: str, min_size: str, weight_class: str) -> tuple[str, int, int]:
     """Pick an appropriate slot definition for a preset build.
 
     Uses the frame's min_size requirement and the ship's weight class

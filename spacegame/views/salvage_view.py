@@ -91,6 +91,10 @@ class SalvageView(BaseView):
             salvage_config = SalvageConfig(system_id=player.current_system_id)
         self.salvage_config = salvage_config
 
+        # Tutorial mode (set externally by game.py)
+        self._tutorial_mode: bool = False
+        self._tutorial_step: int = 0  # 0=scan, 1=extract, 2=done
+
         # VFX objects (synced with session state in on_enter / deck advance)
         grid_rect = pygame.Rect(
             self.GRID_OFFSET_X,
@@ -267,11 +271,7 @@ class SalvageView(BaseView):
         extra_charges = 0
         extra_parallel = 0
         if self.progression:
-            extract_bonus += self.progression.get_bonus("extract_speed")
-            extra_charges = int(self.progression.get_bonus("extra_scan_charges"))
-            # master_extractor level 3 (3 * 0.20 = 0.60) unlocks 3rd parallel slot
-            if self.progression.get_bonus("extract_speed") >= 0.60:
-                extra_parallel = 1
+            extra_charges = int(self.progression.get_bonus("salvage_extra_charges"))
 
         # Apply ship upgrade bonuses (stacks with skill tree)
         extract_bonus += self.player.upgrade_manager.get_bonus("extract_speed_bonus")
@@ -279,6 +279,9 @@ class SalvageView(BaseView):
         self.salvage_config.perk_yield_bonus += self.player.upgrade_manager.get_bonus(
             "salvage_yield_bonus"
         )
+        # Exploration skill: salvage_yield boosts salvage output
+        if self.progression:
+            self.salvage_config.perk_yield_bonus += self.progression.get_bonus("salvage_yield")
 
         # Apply wreck upgrade bonuses
         from spacegame.data_loader import get_data_loader
@@ -607,6 +610,10 @@ class SalvageView(BaseView):
             max_radius = grid_size * self.CELL_SIZE * 0.6
             self._scan_waves.append([float(fx), float(fy), 0.0, max_radius, 300.0])
 
+            # Tutorial step: first scan advances to step 1 (extract prompt)
+            if self._tutorial_mode and self._tutorial_step == 0:
+                self._tutorial_step = 1
+
             # VFX: scan pulse sonar ripple
             cell_cx = self.GRID_OFFSET_X + gx * self.CELL_SIZE + self.CELL_SIZE // 2
             cell_cy = self.GRID_OFFSET_Y + gy * self.CELL_SIZE + self.CELL_SIZE // 2
@@ -631,6 +638,9 @@ class SalvageView(BaseView):
         success, msg = self.session.start_extract(gx, gy)
         if success:
             get_audio_manager().play_sfx("salvage_extract")
+            # Tutorial step: first extract advances to step 2 (keep going)
+            if self._tutorial_mode and self._tutorial_step == 1:
+                self._tutorial_step = 2
         else:
             self._show_message(msg)
 
@@ -1053,6 +1063,10 @@ class SalvageView(BaseView):
         if self._confirm_exit:
             self._render_confirm_exit(screen)
 
+        # Tutorial narration (above summary)
+        if self._tutorial_mode:
+            self._render_tutorial_narration(screen)
+
         # Summary overlay (drawn last, on top of everything)
         if self._show_summary:
             self._render_summary(screen)
@@ -1093,7 +1107,9 @@ class SalvageView(BaseView):
             if bg_id:
                 thumb = self._sprite_mgr.get_static_sprite("salvage", bg_id, scale=res_scale(1))
                 if thumb:
-                    thumb_scaled = pygame.transform.scale(thumb, (card_w - scale_x(20), scale_y(60)))
+                    thumb_scaled = pygame.transform.scale(
+                        thumb, (card_w - scale_x(20), scale_y(60))
+                    )
                     thumb_scaled.set_alpha(100)
                     screen.blit(thumb_scaled, (x + scale_x(10), y + scale_y(30)))
 
@@ -1769,6 +1785,34 @@ class SalvageView(BaseView):
             rating_color=RATING_COLORS.get(self._session_rating, Colors.TEXT_SECONDARY),
             panel_height=420,
         )
+
+    def _render_tutorial_narration(self, screen: pygame.Surface) -> None:
+        """Render first salvage run guidance — unglamorous work, no mentor."""
+        if not self._tutorial_mode:
+            return
+        # Nobody's teaching you. You're picking through wreckage because you need the credits.
+        narration_steps = [
+            "First time in a wreck? Scan the cells. The numbers tell you if something's worth pulling.",
+            "Found something. Extract it before the hull shifts. These wrecks don't hold together.",
+            "Structure's failing. Grab what you can. Nobody pays you for what you leave behind.",
+        ]
+        step = min(self._tutorial_step, len(narration_steps) - 1)
+
+        from spacegame.engine.draw_utils import draw_panel
+        from spacegame.engine.fonts import FONT_BODY, get_font
+        from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
+
+        font = get_font("narration", FONT_BODY)
+        panel_w = WINDOW_WIDTH - scale_x(160)
+        panel_h = scale_y(45)
+        panel_x = (WINDOW_WIDTH - panel_w) // 2
+        panel_y = WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - panel_h - scale_y(10)
+
+        draw_panel(screen, (panel_x, panel_y, panel_w, panel_h), alpha=220)
+        sp = font.render("Salvager: ", True, Colors.TEXT_HIGHLIGHT)
+        screen.blit(sp, (panel_x + 16, panel_y + 12))
+        txt = font.render(narration_steps[step], True, Colors.TEXT_PRIMARY)
+        screen.blit(txt, (panel_x + 16 + sp.get_width(), panel_y + 12))
 
     def get_next_state(self) -> Optional[GameState]:
         return self.next_state

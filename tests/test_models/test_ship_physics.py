@@ -31,7 +31,7 @@ def _mat(mat_id: str = "standard_plate", weight: float = 0.25) -> HullMaterial:
         id=mat_id,
         name="Test",
         description="",
-        color_primary=(128, 128, 128),
+        shade_band="steel",
         weight_per_pixel=weight,
     )
 

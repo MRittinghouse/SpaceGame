@@ -83,7 +83,7 @@ class TableWidget:
         self._separator_color = Colors.UI_BORDER
         self._selected_color = (40, 60, 100, 180)
         self._hovered_color = (30, 40, 60, 120)
-        self._alt_row_color = (20, 24, 42, 80)
+        self._alt_row_color = (22, 28, 48, 100)
         self._default_text_color = Colors.TEXT_PRIMARY
 
         # Scrollbar

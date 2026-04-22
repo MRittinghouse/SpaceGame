@@ -23,7 +23,7 @@ from spacegame.models.progression import PlayerProgression
 from spacegame.models.recipe_mastery import RecipeMasteryTracker
 from spacegame.models.salvage_hold import SalvageHoldManager
 from spacegame.models.ship import Ship, ShipType
-from spacegame.models.trade_route import TradeRouteTracker
+from spacegame.models.trade_route import PriceMemory, TradeRouteTracker
 from spacegame.models.upgrades import ShipUpgradeManager
 from spacegame.models.wreck_upgrade import WreckUpgradeState
 
@@ -97,6 +97,10 @@ class Player:
 
     # Trade route tracking
     trade_route_tracker: TradeRouteTracker = field(default_factory=TradeRouteTracker)
+    # Per-system price snapshots — gated behind the ``price_memory`` skill
+    # (QA Pass 5 Tier 3.F). Recorded on system arrival; displayed on the
+    # galaxy map.
+    price_memory: PriceMemory = field(default_factory=PriceMemory)
     previous_system_id: str = ""
 
     # Smuggling system
@@ -241,6 +245,11 @@ class Player:
         self.systems_visited.add(self.current_system_id)
         # Link upgrade manager to ship for bonus calculations
         self.ship.set_upgrade_manager(self.upgrade_manager)
+        # Link progression to ship for skill bonus calculations
+        self.ship.set_progression(self.progression)
+        # Link progression to hidden compartment for contraband_slots bonus
+        if self.hidden_compartment:
+            self.hidden_compartment.set_progression(self.progression)
 
     def can_afford(self, cost: int) -> bool:
         """
@@ -513,6 +522,7 @@ class Player:
             new_ship.set_upgrade_manager(upgrade_mgr)
         if crew_roster:
             new_ship.set_crew_roster(crew_roster)
+        new_ship.set_progression(self.progression)
 
         # Commit transaction
         self.credits = self.credits + resale - new_type.purchase_price
@@ -570,9 +580,13 @@ class Player:
             COMBAT_DEFEAT_REPUTATION_PENALTY,
         )
 
-        # Lose cargo (30% of each type)
+        # Lose cargo (30% of each type, halved with insurance skill)
+        has_insurance = self.progression.get_bonus("insurance") > 0
+        cargo_loss_pct = COMBAT_DEFEAT_CARGO_LOSS_PERCENT
+        if has_insurance:
+            cargo_loss_pct = cargo_loss_pct / 2  # Keep 50% more cargo
         for commodity_id, quantity in list(self.ship.current_cargo.items()):
-            loss = max(1, int(quantity * COMBAT_DEFEAT_CARGO_LOSS_PERCENT / 100))
+            loss = max(1, int(quantity * cargo_loss_pct / 100))
             self.ship.remove_cargo(commodity_id, loss)
 
         # Lose credits (10% — repair and salvage costs)
@@ -593,7 +607,7 @@ class Player:
         # Reputation hit with local faction (you needed rescuing)
         faction_id = self.get_faction_for_system(safe_system_id)
         if faction_id and COMBAT_DEFEAT_REPUTATION_PENALTY > 0:
-            self.add_reputation(faction_id, -COMBAT_DEFEAT_REPUTATION_PENALTY)
+            self.modify_reputation(faction_id, -COMBAT_DEFEAT_REPUTATION_PENALTY)
 
         # Move to safe system
         self.current_system_id = safe_system_id
@@ -769,10 +783,15 @@ class Player:
     def grant_black_market_access(self, system_id: str) -> None:
         """Grant black market access for a system.
 
+        Also sets the ``black_market_access`` dialogue flag so narrative
+        content (encounters, dialogues) can gate on "has the player made
+        black-market contacts anywhere" without walking the per-system set.
+
         Args:
             system_id: System to grant access for.
         """
         self.black_market_access.add(system_id)
+        self.dialogue_flags["black_market_access"] = True
 
     def get_faction_for_system(self, system_id: str) -> Optional[str]:
         """Get the faction ID controlling a system.
@@ -810,7 +829,12 @@ class Player:
         Returns:
             Reputation value (-100 to +100), defaults to 0.
         """
-        return self.faction_reputation.get(faction_id, 0)
+        base = self.faction_reputation.get(faction_id, 0)
+        # Exploration skill: frontier_rep_bonus adds starting rep with Frontier Alliance
+        if faction_id == "frontier_alliance":
+            bonus = int(self.progression.get_bonus("frontier_rep_bonus"))
+            base = min(100, base + bonus)
+        return base
 
     def get_reputation_tier(self, faction_id: str) -> ReputationTier:
         """Get the reputation tier with a faction.

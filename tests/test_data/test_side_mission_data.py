@@ -358,8 +358,8 @@ class TestSideMissionNPCIntegration:
                 f"NPC '{npc_id}' references missing dialogue '{npc.dialogue_id}'"
             )
 
-    def test_side_quest_npcs_have_hide_after_flag(self) -> None:
-        """All side quest NPCs have hide_after_flag set."""
+    def test_side_quest_npcs_have_lifecycle_management(self) -> None:
+        """All side quest NPCs have hide_after_flag or dialogue_states."""
         import json
 
         project_root = Path(__file__).parent.parent.parent
@@ -367,12 +367,10 @@ class TestSideMissionNPCIntegration:
             npcs_data = json.load(f)
         npc_map = {n["id"]: n for n in npcs_data["npcs"]}
 
-        expected = {
-            "neve_osei": "price_of_info_complete",
-            "petra_vance": "whistleblower_complete",
+        # NPCs must have either hide_after_flag or dialogue_states for lifecycle
+        expected_hide = {
             "tomasz_brennan": "old_debts_complete",
             "britt_vasara": "miners_plight_complete",
-            "cassiel_maren": "forgery_complete",
             "callum_rhee": "informant_complete",
             "verdant_farmer": "blight_season_complete",
             "verdant_botanist": "heirloom_seeds_complete",
@@ -380,12 +378,21 @@ class TestSideMissionNPCIntegration:
             "pirate_captain": "honor_thieves_complete",
             "nova_researcher": "signal_from_deep_complete",
         }
-        for npc_id, flag in expected.items():
+        # NPCs using multi-state system instead of hide_after_flag
+        expected_states = {"neve_osei", "petra_vance", "cassiel_maren"}
+
+        for npc_id, flag in expected_hide.items():
             npc = npc_map.get(npc_id)
             assert npc is not None, f"NPC '{npc_id}' not found"
             assert npc.get("hide_after_flag") == flag, (
                 f"NPC '{npc_id}' should have hide_after_flag='{flag}', "
                 f"got '{npc.get('hide_after_flag')}'"
+            )
+        for npc_id in expected_states:
+            npc = npc_map.get(npc_id)
+            assert npc is not None, f"NPC '{npc_id}' not found"
+            assert npc.get("dialogue_states"), (
+                f"NPC '{npc_id}' should have dialogue_states for lifecycle management"
             )
 
     def test_side_quest_dialogues_have_in_progress_branch(self) -> None:

@@ -1,0 +1,66 @@
+SPIKE: module render for 3 manufacturers
+Seed: 42
+Render time: gradient 12.3 ms, snapped 8.7 ms (both for 3 modules)
+
+========================================================================
+PASS 1: GRADIENT RENDERING (smooth intermediates)
+========================================================================
+CRITIQUE — module_solari (gradient)
+  [FAIL] palette_compliance           50.0% within 12 RGB of palette (target 90%)
+  [PASS] palette_line_compliance      100.0% within 10 RGB of palette graph (target 95%)
+  [PASS] silhouette_readability       avg edge contrast 342.6 (target ≥ 30.0)
+  [PASS] alpha_discipline             0.0% mid-alpha pixels (limit 15%)
+  [PASS] detail_density               edge/opaque density = 0.113 (target 0.04-0.35)
+  -> 4/5 checks passed
+
+CRITIQUE — module_reach (gradient)
+  [FAIL] palette_compliance           34.1% within 12 RGB of palette (target 90%)
+  [PASS] palette_line_compliance      100.0% within 10 RGB of palette graph (target 95%)
+  [PASS] silhouette_readability       avg edge contrast 122.8 (target ≥ 30.0)
+  [PASS] alpha_discipline             0.0% mid-alpha pixels (limit 15%)
+  [PASS] detail_density               edge/opaque density = 0.116 (target 0.04-0.35)
+  -> 4/5 checks passed
+
+CRITIQUE — module_union (gradient)
+  [FAIL] palette_compliance           31.1% within 12 RGB of palette (target 90%)
+  [PASS] palette_line_compliance      100.0% within 10 RGB of palette graph (target 95%)
+  [PASS] silhouette_readability       avg edge contrast 278.0 (target ≥ 30.0)
+  [PASS] alpha_discipline             0.0% mid-alpha pixels (limit 15%)
+  [PASS] detail_density               edge/opaque density = 0.118 (target 0.04-0.35)
+  -> 4/5 checks passed
+
+========================================================================
+PASS 2: PALETTE-SNAPPED (flat pixel-art look)
+========================================================================
+CRITIQUE — module_solari (snapped)
+  [PASS] palette_compliance           100.0% within 12 RGB of palette (target 90%)
+  [PASS] palette_line_compliance      100.0% within 10 RGB of palette graph (target 95%)
+  [PASS] silhouette_readability       avg edge contrast 341.1 (target ≥ 30.0)
+  [PASS] alpha_discipline             0.0% mid-alpha pixels (limit 15%)
+  [PASS] detail_density               edge/opaque density = 0.164 (target 0.04-0.35)
+  -> 5/5 checks passed
+
+CRITIQUE — module_reach (snapped)
+  [PASS] palette_compliance           100.0% within 12 RGB of palette (target 90%)
+  [PASS] palette_line_compliance      100.0% within 10 RGB of palette graph (target 95%)
+  [PASS] silhouette_readability       avg edge contrast 117.8 (target ≥ 30.0)
+  [PASS] alpha_discipline             0.0% mid-alpha pixels (limit 15%)
+  [PASS] detail_density               edge/opaque density = 0.148 (target 0.04-0.35)
+  -> 5/5 checks passed
+
+CRITIQUE — module_union (snapped)
+  [PASS] palette_compliance           100.0% within 12 RGB of palette (target 90%)
+  [PASS] palette_line_compliance      100.0% within 10 RGB of palette graph (target 95%)
+  [PASS] silhouette_readability       avg edge contrast 272.5 (target ≥ 30.0)
+  [PASS] alpha_discipline             0.0% mid-alpha pixels (limit 15%)
+  [PASS] detail_density               edge/opaque density = 0.190 (target 0.04-0.35)
+  -> 5/5 checks passed
+
+DETERMINISM (gradient)
+  [PASS] solari: 3 renders produced 1 distinct hash(es)
+  [PASS] reach: 3 renders produced 1 distinct hash(es)
+  [PASS] union: 3 renders produced 1 distinct hash(es)
+
+VARIANT DISTINCTNESS
+  [PASS] gradient: pairwise mean RGB diff = 53.4 (target ≥ 15.0)
+  [PASS] snapped:  pairwise mean RGB diff = 53.2 (target ≥ 15.0)

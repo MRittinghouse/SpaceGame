@@ -59,14 +59,18 @@ class TestTrendVisibilityGating:
         view = self._make_trading_view(trend_bonus=0.0)
         rows, ids = view._build_market_rows()
         assert len(rows) == 1
-        trend_cell = rows[0][4]  # 5th column is trend
+        # Post-Sprint 5b refactor: LEG column inserted at index 1, so
+        # trend is now at index 5 (was 4).
+        trend_cell = rows[0][5]  # 5th column is trend
         assert trend_cell[0] == "?"
 
     def test_with_skill_shows_trend(self) -> None:
         """With trend_visibility, trend column shows actual trend."""
         view = self._make_trading_view(trend_bonus=1.0)
         rows, ids = view._build_market_rows()
-        trend_cell = rows[0][4]
+        # Post-Sprint 5b refactor: LEG column inserted at index 1, so
+        # trend is now at index 5 (was 4).
+        trend_cell = rows[0][5]
         trend_text = trend_cell[0] if isinstance(trend_cell, tuple) else trend_cell
         assert trend_text == "Low"
 
@@ -79,7 +83,9 @@ class TestTrendVisibilityGating:
             "is_specialty_import": False,
         }
         rows, ids = view._build_market_rows()
-        trend_cell = rows[0][4]
+        # Post-Sprint 5b refactor: LEG column inserted at index 1, so
+        # trend is now at index 5 (was 4).
+        trend_cell = rows[0][5]
         assert trend_cell[0] == "BUY HERE"
 
     def test_history_trend_with_skill(self) -> None:
@@ -88,5 +94,7 @@ class TestTrendVisibilityGating:
         view.price_history = MagicMock()
         view.price_history.get_trend.return_value = "rising"
         rows, ids = view._build_market_rows()
-        trend_cell = rows[0][4]
+        # Post-Sprint 5b refactor: LEG column inserted at index 1, so
+        # trend is now at index 5 (was 4).
+        trend_cell = rows[0][5]
         assert "\u25b2" in trend_cell[0]  # Up arrow for rising

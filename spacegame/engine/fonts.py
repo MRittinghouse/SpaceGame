@@ -114,9 +114,9 @@ def scaled_font_size(base_size: int) -> int:
     Returns:
         Scaled size for the current WINDOW_HEIGHT.
     """
-    from spacegame.config import WINDOW_HEIGHT
+    from spacegame.config import FONT_SCALE, WINDOW_HEIGHT
 
-    return max(10, round(base_size * WINDOW_HEIGHT / _BASE_HEIGHT))
+    return max(10, round(base_size * WINDOW_HEIGHT / _BASE_HEIGHT * FONT_SCALE))
 
 
 class FontCache:

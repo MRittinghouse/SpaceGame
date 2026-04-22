@@ -128,6 +128,9 @@ class CrewRoster:
         self._state: dict[str, dict[str, Any]] = {}
         self._dismissed: dict[str, dict[str, Any]] = {}
         self._pending_companions: set[str] = set()
+        # Leadership skill bonuses (set by game engine when progression changes)
+        self.loyalty_floor: int = 0  # Minimum loyalty value (Unbreakable Bonds)
+        self.loyalty_flag_offset: int = 0  # Lower threshold for crew quest flags (Legend)
 
     @property
     def recruited_ids(self) -> set[str]:
@@ -409,13 +412,20 @@ class CrewRoster:
 
         old_loyalty = state["loyalty"]
         new_loyalty = max(0, min(100, old_loyalty + amount))
+
+        # Loyalty floor from Unbreakable Bonds skill
+        if self.loyalty_floor > 0:
+            new_loyalty = max(self.loyalty_floor, new_loyalty)
+
         state["loyalty"] = new_loyalty
 
         # Check for upward threshold crossings
+        # loyalty_flag_offset lowers the threshold (Legend of the Expanse: -10)
         flags: list[str] = []
         if new_loyalty > old_loyalty:
             for threshold in _LOYALTY_FLAG_THRESHOLDS:
-                if old_loyalty < threshold <= new_loyalty:
+                effective_threshold = threshold - self.loyalty_flag_offset
+                if old_loyalty < effective_threshold <= new_loyalty:
                     flags.append(f"crew_loyalty_{template_id}_{threshold}")
         return flags
 

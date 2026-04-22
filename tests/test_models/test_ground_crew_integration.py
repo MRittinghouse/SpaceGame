@@ -266,13 +266,12 @@ class TestCombatCrewBonuses:
     def test_build_player_stats_with_crew(self) -> None:
         attrs = _make_attrs(acu=4, res=4, syn=2)
         prog = PlayerProgression()
-        prog.skills["scrapper"].current_level = 1
         bonuses = GroundCrewBonuses.compute(crew_ids=["dr_priya_osei"], attributes=attrs)
         stats = build_player_ground_combat_stats(
             attributes=attrs, progression=prog, crew_bonuses=bonuses
         )
-        # Attack: ACU 4//2=2, scrapper +1 = 3
-        assert stats.attack_mod == 3
+        # Attack: ACU 4//2=2 = 2 (ground_attack_bonus wiring is S2)
+        assert stats.attack_mod == 2
         # HP: 10 base + RES 4//2=2 = 12
         assert stats.hp == 12
         # Analyze weakness from Priya should be tracked separately (not in stats)
@@ -318,20 +317,18 @@ class TestCombatCrewBonuses:
 class TestGroundSkillIntegration:
     """Tests that ground combat skills affect build_player_ground_combat_stats."""
 
-    def test_has_last_stand_from_skill(self) -> None:
+    def test_ground_reroll_from_skill(self) -> None:
+        """Ground Veteran grants rerolls via ground_reroll bonus."""
         prog = PlayerProgression()
-        prog.skills["tough_hide"].current_level = 1
-        prog.skills["last_stand"].current_level = 1
+        prog.skills["weapon_specialization"].current_level = 1
+        prog.skills["ground_veteran"].current_level = 1
         bonuses = GroundCrewBonuses()
         stats = build_player_ground_combat_stats(progression=prog, crew_bonuses=bonuses)
-        # The function returns stats; has_last_stand is tracked on CombatState
-        # But we can verify HP bonus from tough_hide
-        assert stats.hp == 12  # 10 + 2
+        assert stats.rerolls == 1
 
-    def test_intimidating_presence_from_skill(self) -> None:
+    def test_ground_reroll_stacks(self) -> None:
+        """Ground Veteran at level 2 grants +2 rerolls."""
         prog = PlayerProgression()
-        prog.skills["scrapper"].current_level = 1
-        prog.skills["quick_reflexes"].current_level = 1
-        prog.skills["intimidating_presence"].current_level = 1
-        # The has_intimidating_presence flag goes on CombatState, not stats
-        assert prog.get_bonus("ground_intimidating_presence") > 0
+        prog.skills["weapon_specialization"].current_level = 1
+        prog.skills["ground_veteran"].current_level = 2
+        assert prog.get_bonus("ground_reroll") == 2.0

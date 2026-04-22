@@ -440,6 +440,7 @@ class MiningSession:
         prestige_level: int = 0,
         auto_drill_level: int = 0,
         ore_scanner_level: int = 0,
+        guaranteed_rare: bool = False,
     ):
         """
         Initialize mining session.
@@ -457,6 +458,7 @@ class MiningSession:
             ore_scanner_level: Ore scanner upgrade level (0=off, 1-3=increasing detail).
             starting_depth: Initial depth (from Depth Scanner).
             drones: List of active MiningDrone instances.
+            guaranteed_rare: If True, first rock break yields rare ore (Ore Sense skill).
         """
         self.config = config
         self.drill_speed_bonus = drill_speed_bonus
@@ -470,6 +472,7 @@ class MiningSession:
         self.prestige_level: int = prestige_level
         self.auto_drill_level: int = auto_drill_level
         self.ore_scanner_level: int = ore_scanner_level
+        self.guaranteed_rare: bool = guaranteed_rare
         self._auto_drill_timer: float = 0.0
 
         # Energy state
@@ -722,22 +725,26 @@ class MiningSession:
 
         if yield_amount is not None:
             final_yield = self._apply_yield_bonus(yield_amount)
+            commodity = rock.commodity_id
+            rock_type = rock.rock_type
+            # Ore Sense: first rock break in session guaranteed rare
+            if self.guaranteed_rare and self.rocks_broken == 0:
+                commodity = "rare_ore"
+                rock_type = RockType.RARE
             result = MiningResult(
-                commodity_id=rock.commodity_id,
+                commodity_id=commodity,
                 quantity=final_yield,
-                rock_type=rock.rock_type,
+                rock_type=rock_type,
                 ingredient_drops=self._roll_ingredient_drops(),
             )
-            self.total_mined[rock.commodity_id] = (
-                self.total_mined.get(rock.commodity_id, 0) + final_yield
-            )
+            self.total_mined[commodity] = self.total_mined.get(commodity, 0) + final_yield
             self.active_rock = None
             self._on_rock_broken(rock)
             self._apply_volatile_splash(rock)
             self._check_chain_detonation(rock)
             self._check_unstable_detonation(rock)
             self._check_milestones()
-            return (True, f"Mined {final_yield} {rock.commodity_id}!", result)
+            return (True, f"Mined {final_yield} {commodity}!", result)
 
         return (True, f"Drilling {rock.rock_type.value} rock...", None)
 

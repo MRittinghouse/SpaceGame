@@ -164,6 +164,26 @@ class RepairBayView(BaseView):
             if self.message_timer <= 0:
                 self.message = None
 
+        # Sprint 5b follow-up: pre-emptive Repair button disable with
+        # tooltip reason. Replaces the click-then-error pattern for
+        # "already at full hull" and "can't afford the repair."
+        if self.repair_button is not None:
+            reason = self._why_cannot_repair()
+            if reason is not None:
+                self.repair_button.disable()
+                self.repair_button.tool_tip_text = reason
+            else:
+                self.repair_button.enable()
+                self.repair_button.tool_tip_text = None
+
+    def _why_cannot_repair(self) -> Optional[str]:
+        """Return an in-voice reason Repair is disabled, or None if valid."""
+        if self.get_damage_amount() <= 0:
+            return "Already at full hull."
+        if not self.can_afford_repair():
+            return "Can't afford the full repair."
+        return None
+
     def render(self, screen: pygame.Surface) -> None:
         """Render repair bay interface."""
         self.background.render(screen)

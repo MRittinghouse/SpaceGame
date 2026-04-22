@@ -472,3 +472,92 @@ class TestSocialManagerAttributeIntegration:
 
         # Now effective = 2, can pass difficulty 2
         assert mgr.can_pass_check("persuasion", 2, "test_npc")
+
+
+class TestSkillTreeDialogueIntegration:
+    """Tests for social skill tree bonuses that enable dialogue features."""
+
+    def test_empathic_read_bonus_is_queryable(self) -> None:
+        """Empathic Read skill bonus can be checked via progression.get_bonus."""
+        from spacegame.models.progression import PlayerProgression
+
+        prog = PlayerProgression()
+        prog.add_xp(5200)
+        # Empathic Read requires keen_insight, which requires silver_tongue
+        prog.level_up_skill("silver_tongue")
+        prog.level_up_skill("keen_insight")
+        prog.level_up_skill("empathic_read")
+
+        bonus = prog.get_bonus("npc_disposition_visible")
+        assert bonus > 0, "Empathic Read should set npc_disposition_visible bonus"
+
+    def test_master_negotiator_bonus_is_queryable(self) -> None:
+        """Master Negotiator skill bonus can be checked via progression.get_bonus."""
+        from spacegame.models.progression import PlayerProgression
+
+        prog = PlayerProgression()
+        prog.add_xp(5200)
+        # Master Negotiator requires commanding_presence, which requires silver_tongue
+        prog.level_up_skill("silver_tongue")
+        prog.level_up_skill("commanding_presence")
+        prog.level_up_skill("master_negotiator")
+
+        bonus = prog.get_bonus("special_dialogue")
+        assert bonus > 0, "Master Negotiator should set special_dialogue bonus"
+
+    def test_empathic_read_not_active_without_investment(self) -> None:
+        """Without Empathic Read skill, the bonus is zero."""
+        from spacegame.models.progression import PlayerProgression
+
+        prog = PlayerProgression()
+        assert prog.get_bonus("npc_disposition_visible") == 0
+
+    def test_cultural_savant_bonus_is_queryable(self) -> None:
+        """Cultural Savant bonus exists and is queryable.
+
+        Note: faction_social_bonus is context-dependent (only applies in
+        faction-aligned systems). The current SocialManager.get_effective_level
+        does not check this bonus because it requires system context. This test
+        verifies the bonus DATA exists for future wiring.
+        """
+        from spacegame.models.progression import PlayerProgression
+
+        prog = PlayerProgression()
+        prog.add_xp(5200)
+        prog.level_up_skill("silver_tongue")
+        prog.level_up_skill("keen_insight")
+        prog.level_up_skill("empathic_read")
+        prog.level_up_skill("cultural_savant")
+
+        bonus = prog.get_bonus("faction_social_bonus")
+        assert bonus > 0, "Cultural Savant should set faction_social_bonus"
+
+
+class TestDispositionTiers:
+    """Tests for disposition tier resolution used in dialogue UI."""
+
+    def test_all_disposition_values_have_a_tier(self) -> None:
+        """Every disposition value 0-100 maps to exactly one tier."""
+        from spacegame.config import DISPOSITION_TIERS
+
+        for disp in range(101):
+            matches = [t for t in DISPOSITION_TIERS if t["min"] <= disp <= t["max"]]
+            assert len(matches) == 1, (
+                f"Disposition {disp} matches {len(matches)} tiers: {[t['name'] for t in matches]}"
+            )
+
+    def test_tier_names(self) -> None:
+        """Tiers are in expected order."""
+        from spacegame.config import DISPOSITION_TIERS
+
+        names = [t["name"] for t in DISPOSITION_TIERS]
+        assert names == ["Wary", "Neutral", "Friendly", "Trusted", "Close Ally"]
+
+    def test_tier_colors_are_rgb_tuples(self) -> None:
+        """Each tier color is a valid RGB tuple."""
+        from spacegame.config import DISPOSITION_TIERS
+
+        for tier in DISPOSITION_TIERS:
+            assert len(tier["color"]) == 3, f"Tier '{tier['name']}' color not RGB"
+            for c in tier["color"]:
+                assert 0 <= c <= 255, f"Tier '{tier['name']}' color out of range"

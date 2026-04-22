@@ -502,6 +502,8 @@ class SaveManager:
             "player_presets": player.player_presets,
             "build_drafts": player.build_drafts,
             "trade_profit_total": player.trade_profit_total,
+            # Tier 3.F: per-system commodity price memory (gated by skill).
+            "price_memory": player.price_memory.to_dict(),
         }
         return result
 
@@ -631,6 +633,7 @@ class SaveManager:
             from spacegame.models.smuggling import HiddenCompartment
 
             player.hidden_compartment = HiddenCompartment.from_dict(hidden_data)
+            player.hidden_compartment.set_progression(player.progression)
         else:
             player.hidden_compartment = None
 
@@ -726,6 +729,11 @@ class SaveManager:
             player.build_drafts = data["build_drafts"]
         if "trade_profit_total" in data:
             player.trade_profit_total = data["trade_profit_total"]
+        # Tier 3.F: restore per-system price memory.
+        if "price_memory" in data:
+            from spacegame.models.trade_route import PriceMemory
+
+            player.price_memory = PriceMemory.from_dict(data["price_memory"])
 
         return player
 

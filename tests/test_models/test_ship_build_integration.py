@@ -54,7 +54,7 @@ def _make_materials() -> dict[str, HullMaterial]:
             id="standard_plate",
             name="Standard",
             description="test",
-            color_primary=(128, 128, 128),
+            shade_band="steel",
             hull_per_pixel=2.5,
             weight_per_pixel=0.7,
             cost_per_pixel=15,

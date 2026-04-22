@@ -16,7 +16,6 @@ from spacegame.engine.fonts import FONT_LG, FONT_MD, FONT_TITLE, FONT_XL, get_fo
 from spacegame.engine.particles import ParticleConfig, ParticlePool
 from spacegame.engine.sprites import AnimatedSprite, get_sprite_manager, res_scale
 from spacegame.models.player import Player
-from spacegame.utils.logger import logger
 from spacegame.models.ship import ShipType
 from spacegame.models.ship_build import (
     WEIGHT_CLASSES,
@@ -26,6 +25,7 @@ from spacegame.models.ship_build import (
 )
 from spacegame.models.slot_definition import _SIZE_DISPLAY, _TYPE_DISPLAY, SlotDefinition
 from spacegame.models.upgrades import MARK_MULTIPLIERS, ShipUpgrade, ShipUpgradeManager
+from spacegame.utils.logger import logger
 from spacegame.views.base_view import BaseView
 from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
 
@@ -144,32 +144,34 @@ class ShipyardView(BaseView):
         self._load_ship_anim()
 
     def _load_ship_anim(self) -> None:
-        """Load ship sprite — composite first, then stock, then fallback."""
-        # Prefer composite from player's build (the ship they designed)
-        # Force recompute to ensure composite is fresh after builder changes
-        if self.player and self.player.ship.build:
-            try:
-                self.player.ship._recompute_stats()
-            except Exception:
-                pass
-        composite = getattr(self.player.ship, "_composite", None) if self.player else None
-        if composite and hasattr(composite, "get_surface"):
-            self._ship_anim = None
-            self._ship_fallback = composite.get_surface(scale=res_scale(3))
+        """Load the top-right ship preview surface.
+
+        The composite (procedural render of the player's actual pixel build)
+        is the canonical representation. If no composite is available, the
+        preview is simply omitted — the main viewport already shows the
+        ship as a grid. Earlier versions fell back to a pre-baked PNG
+        sprite per ship_type id; those sprites were AI-generated assets
+        that did not reflect the player's customization. Playtester
+        2026-04-22 flagged the AI-sprite fallback as visually inconsistent
+        with the designed-ship experience, so we drop the fallback and
+        leave the preview area empty when no composite exists.
+        """
+        self._ship_anim = None
+        self._ship_fallback = None
+
+        if not self.player or not self.player.ship.build:
             return
 
-        ship_id = self.player.ship.ship_type.id
-        self._ship_anim = self._sprite_mgr.get_ship_animated(ship_id, scale=res_scale(3))
-        if self._ship_anim is None:
-            # Procedural fallback
-            surf = pygame.Surface((120, 60), pygame.SRCALPHA)
-            points = [(10, 30), (40, 10), (110, 30), (40, 50)]
-            pygame.draw.polygon(surf, (60, 80, 120), points)
-            pygame.draw.polygon(surf, (100, 130, 180), points, 2)
-            pygame.draw.circle(surf, (80, 150, 255, 120), (15, 30), 5)
-            self._ship_fallback = surf
-        else:
-            self._ship_fallback = None
+        try:
+            self.player.ship._recompute_stats()
+        except Exception:
+            pass
+
+        composite = getattr(self.player.ship, "_composite", None)
+        if composite is None or not hasattr(composite, "get_surface"):
+            return
+
+        self._ship_fallback = composite.get_surface(scale=res_scale(3))
 
     def on_enter(self) -> None:
         super().on_enter()
@@ -252,32 +254,40 @@ class ShipyardView(BaseView):
         hud_h = scale_y(HUD_BASE_HEIGHT)
         self.buy_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
-                WINDOW_WIDTH - scale_x(200), WINDOW_HEIGHT - hud_h - scale_y(120),
-                scale_x(170), scale_y(40)
+                WINDOW_WIDTH - scale_x(200),
+                WINDOW_HEIGHT - hud_h - scale_y(120),
+                scale_x(170),
+                scale_y(40),
             ),
             text="Buy",
             manager=self.ui_manager,
         )
         self.uninstall_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
-                WINDOW_WIDTH - scale_x(200), WINDOW_HEIGHT - hud_h - scale_y(70),
-                scale_x(170), scale_y(40)
+                WINDOW_WIDTH - scale_x(200),
+                WINDOW_HEIGHT - hud_h - scale_y(70),
+                scale_x(170),
+                scale_y(40),
             ),
             text="Uninstall",
             manager=self.ui_manager,
         )
         self.enhance_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
-                WINDOW_WIDTH - scale_x(200), WINDOW_HEIGHT - hud_h - scale_y(120),
-                scale_x(170), scale_y(40)
+                WINDOW_WIDTH - scale_x(200),
+                WINDOW_HEIGHT - hud_h - scale_y(120),
+                scale_x(170),
+                scale_y(40),
             ),
             text="Enhance",
             manager=self.ui_manager,
         )
         self.buy_ship_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
-                WINDOW_WIDTH - scale_x(200), WINDOW_HEIGHT - hud_h - scale_y(120),
-                scale_x(170), scale_y(40)
+                WINDOW_WIDTH - scale_x(200),
+                WINDOW_HEIGHT - hud_h - scale_y(120),
+                scale_x(170),
+                scale_y(40),
             ),
             text="Buy Frame",
             manager=self.ui_manager,
@@ -285,12 +295,16 @@ class ShipyardView(BaseView):
         # Tuning choice buttons (hidden by default)
         tuning_y = WINDOW_HEIGHT // 2 - scale_y(30)
         self.tuning_btn_a = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(WINDOW_WIDTH // 2 - scale_x(200), tuning_y, scale_x(180), scale_y(40)),
+            relative_rect=pygame.Rect(
+                WINDOW_WIDTH // 2 - scale_x(200), tuning_y, scale_x(180), scale_y(40)
+            ),
             text="Option A",
             manager=self.ui_manager,
         )
         self.tuning_btn_b = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(WINDOW_WIDTH // 2 + scale_x(20), tuning_y, scale_x(180), scale_y(40)),
+            relative_rect=pygame.Rect(
+                WINDOW_WIDTH // 2 + scale_x(20), tuning_y, scale_x(180), scale_y(40)
+            ),
             text="Option B",
             manager=self.ui_manager,
         )
@@ -575,10 +589,7 @@ class ShipyardView(BaseView):
             return
 
         if not self.upgrade_manager.can_install(upgrade):
-            category = self.upgrade_manager.get_category(upgrade.slot_type)
-            limit = self.upgrade_manager.get_category_limit(category)
-            used = self.upgrade_manager.get_category_used(category)
-            self._show_message(f"No {category} slots available! ({used}/{limit})")
+            self._show_message(f"{upgrade.name} is already installed")
             return
 
         self.player.deduct_credits(upgrade.price)
@@ -760,15 +771,10 @@ class ShipyardView(BaseView):
         title = self.title_font.render("SHIPYARD", True, Colors.TEXT_HIGHLIGHT)
         screen.blit(title, title.get_rect(center=(WINDOW_WIDTH // 2, scale_y(30))))
 
-        # Ship composite in header (player's designed ship only)
-        if self._ship_fallback and not self._ship_anim:
-            # Composite was loaded — show it
+        # Top-right preview: player's designed ship (composite only — no
+        # AI-sprite fallback; see _load_ship_anim docstring).
+        if self._ship_fallback:
             screen.blit(self._ship_fallback, (WINDOW_WIDTH - scale_x(160), scale_y(15)))
-        elif self._ship_anim:
-            # Only show animated sprite if no composite exists (legacy save)
-            ship_surf = self._ship_anim.get_surface()
-            if ship_surf:
-                screen.blit(ship_surf, (WINDOW_WIDTH - scale_x(160), scale_y(15)))
 
         # Credits and per-category slot display
         self._render_slot_summary(screen)
@@ -1039,9 +1045,7 @@ class ShipyardView(BaseView):
             and not p.legendary  # Legendary parts are boss drops, not shop items
         ]
         # Sort: size (S→M→L) then cost (low→high) — stable ordering
-        all_parts.sort(
-            key=lambda p: (SIZE_ORDER.get(p.min_size, 0), p.base_cost)
-        )
+        all_parts.sort(key=lambda p: (SIZE_ORDER.get(p.min_size, 0), p.base_cost))
         return all_parts
 
     def _render_parts_shop(self, screen: pygame.Surface) -> None:
@@ -1448,11 +1452,20 @@ class ShipyardView(BaseView):
     def _slot_screen_rect(
         self, placed_slot: object, slot_def: SlotDefinition, gp: dict
     ) -> pygame.Rect:
-        """Get the screen-space rect for a placed slot on the grid."""
+        """Get the screen-space rect for a placed slot on the grid.
+
+        Honors ``placed_slot.rotation`` so modules placed at 90°/270° in the
+        drydock render with swapped footprint dimensions in the loadout /
+        shop previews. Playtest finding 2026-04-22: a rotated engine was
+        rendering in its default orientation in the Loadout view because
+        this method used the unrotated ``footprint_w`` / ``footprint_h``.
+        """
+        rotation = getattr(placed_slot, "rotation", 0)
+        fw, fh, _ = slot_def.get_rotated(rotation)
         sx = gp["grid_x"] + placed_slot.x * gp["cell_size"]
         sy = gp["grid_y"] + placed_slot.y * gp["cell_size"]
-        sw = slot_def.footprint_w * gp["cell_size"]
-        sh = slot_def.footprint_h * gp["cell_size"]
+        sw = fw * gp["cell_size"]
+        sh = fh * gp["cell_size"]
         return pygame.Rect(sx, sy, sw, sh)
 
     def _render_loadout(self, screen: pygame.Surface) -> None:
@@ -1626,7 +1639,9 @@ class ShipyardView(BaseView):
             self._loadout_unequip_rect = unequip_rect
             cy += unequip_rect.height + scale_y(8)
         else:
-            empty_surf = self.small_font.render("Empty -- select a part below to equip", True, (220, 160, 60))
+            empty_surf = self.small_font.render(
+                "Empty. Pick a part below to equip.", True, (220, 160, 60)
+            )
             screen.blit(empty_surf, (cx, cy))
             cy += empty_surf.get_height() + scale_y(6)
             self._loadout_unequip_rect = None
@@ -1895,16 +1910,13 @@ class ShipyardView(BaseView):
         self.player.ship.set_build(build)
         self._recompute_loadout_stats()
         logger.info(
-            f"Loadout equip: slot {self._loadout_selected_slot_idx} "
-            f"({ps.slot_def_id}) <- {part_id}"
+            f"Loadout equip: slot {self._loadout_selected_slot_idx} ({ps.slot_def_id}) <- {part_id}"
         )
         # Verify persistence
         verify_build = self.player.ship.build
         if verify_build:
             vps = verify_build.placed_slots[self._loadout_selected_slot_idx]
-            logger.info(
-                f"  Verify: slot equipped_part_id = {vps.equipped_part_id}"
-            )
+            logger.info(f"  Verify: slot equipped_part_id = {vps.equipped_part_id}")
 
         from spacegame.data_loader import get_data_loader
 
@@ -2199,7 +2211,12 @@ class ShipyardView(BaseView):
         # Slot requirements table (from frame_requirements)
         _SIZE_TAG = {"small": "", "medium": "(M+)", "large": "(L+)"}
         _DISPLAY_ORDER = [
-            "engine", "weapon", "defense", "utility", "cargo", "crew_quarters",
+            "engine",
+            "weapon",
+            "defense",
+            "utility",
+            "cargo",
+            "crew_quarters",
         ]
         _DISPLAY_NAMES = {
             "engine": "Engine",
@@ -2209,7 +2226,11 @@ class ShipyardView(BaseView):
             "cargo": "Cargo",
             "crew_quarters": "Crew",
         }
-        frame_reqs = FrameRequirements(ship_type.frame_requirements) if ship_type.frame_requirements else None
+        frame_reqs = (
+            FrameRequirements(ship_type.frame_requirements)
+            if ship_type.frame_requirements
+            else None
+        )
         # Current frame for comparison delta
         current_reqs = (
             FrameRequirements(current.frame_requirements)
@@ -2228,7 +2249,9 @@ class ShipyardView(BaseView):
             screen.blit(self.small_font.render("Min", True, Colors.TEXT_SECONDARY), (col_min_x, ly))
             screen.blit(self.small_font.render("Max", True, Colors.TEXT_SECONDARY), (col_max_x, ly))
             if current_reqs:
-                screen.blit(self.small_font.render("vs Now", True, Colors.TEXT_SECONDARY), (col_delta_x, ly))
+                screen.blit(
+                    self.small_font.render("vs Now", True, Colors.TEXT_SECONDARY), (col_delta_x, ly)
+                )
             ly += scale_y(15)
             for cat in _DISPLAY_ORDER:
                 mx = frame_reqs.get_max(cat)
@@ -2518,12 +2541,10 @@ class ShipyardView(BaseView):
                     price = self.info_font.render(f"{upgrade.price:,} CR", True, price_color)
                     screen.blit(price, (rect.right - price.get_width() - 10, rect.y + 5))
 
-                    # Slot category indicator
+                    # Slot-type label (capacity is governed by ship modules, not upgrade manager)
                     category = self.upgrade_manager.get_category(upgrade.slot_type)
-                    avail = self.upgrade_manager.get_category_available(category)
-                    slot_color = Colors.TEXT_SECONDARY if avail > 0 else Colors.RED
                     slot_text = self.small_font.render(
-                        f"Slot: {upgrade.slot_type} ({category} {avail} free)", True, slot_color
+                        f"Slot: {upgrade.slot_type} ({category})", True, Colors.TEXT_SECONDARY
                     )
                     screen.blit(slot_text, (rect.x + 10, rect.y + 50))
             else:

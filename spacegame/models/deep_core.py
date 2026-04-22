@@ -165,9 +165,7 @@ class DeepCoreUpgradeState:
     def reset(self) -> None:
         """Reset upgrade levels to 0, preserving prestige-persistent upgrades."""
         preserved = {
-            uid: level
-            for uid, level in self._levels.items()
-            if uid in self.PRESTIGE_PERSISTENT
+            uid: level for uid, level in self._levels.items() if uid in self.PRESTIGE_PERSISTENT
         }
         self._levels.clear()
         self._levels.update(preserved)

@@ -8,6 +8,7 @@
                     "id": "start",
                     "speaker_id": "elena_reeves",
                     "text": "You've been staring at those boards for twenty minutes. Either you're trying to memorize them or you're hoping they'll start making sense on their own. They won't.",
+                    "subtext": "Her posture is precise, practiced. Ex-military or ex-corporate. But her eyes keep drifting to the departure boards like she's calculating routes she'll never fly.",
                     "responses": [
                         {
                             "text": "I'm trying to learn. Any advice?",
@@ -20,6 +21,12 @@
                         {
                             "text": "Can you help me understand them?",
                             "next_node_id": "lesson_warm"
+                        },
+                        {
+                            "text": "You're reading them too. And you already know the best routes. What would it take to get you to share?",
+                            "next_node_id": "lesson_warm",
+                            "required_flags": ["has_special_dialogue"],
+                            "disposition_change": 5
                         }
                     ],
                     "expression": "confident"
@@ -221,6 +228,7 @@
                     "id": "start",
                     "speaker_id": "marcus_jin",
                     "text": "What did you say your name was?",
+                    "subtext": "His hands stopped moving when he heard your voice. Whatever he's thinking, he's working hard to keep it off his face.",
                     "responses": [
                         {
                             "text": "I didn't. Why do you ask?",
@@ -766,7 +774,8 @@
                     "responses": [
                         {
                             "text": "Here is my registration, but I don't have a bill of landing.",
-                            "next_node_id": "no_bill"
+                            "next_node_id": "no_bill",
+                            "set_flag": "talked_to_larsen"
                         }
                     ],
                     "expression": "stern"
@@ -1073,7 +1082,6 @@
                     "id": "accept",
                     "speaker_id": "forgeworks_clerk",
                     "text": "*He checks the manifest, taps twice, and nods.* Odom's shipment. Ten iron, standard grade. Looks right. I'll flag it as received and let him know it made it in one piece. Credits should hit your account within the hour.",
-                    "set_flag": "talked_to_forgeworks_clerk",
                     "responses": [
                         {
                             "text": "Appreciate it.",
@@ -2731,6 +2739,7 @@
                     "id": "start",
                     "speaker_id": "neve_osei",
                     "text": "Captain. A word, if you have a moment. I'm Neve Osei. I deal in information. The kind that doesn't show up on public ledgers.",
+                    "subtext": "She chose this table for the sightlines. Two exits within reach, back to the wall. Whatever she's selling, she's been burned before.",
                     "responses": [
                         {
                             "text": "What kind of information?",
@@ -2784,6 +2793,12 @@
                         {
                             "text": "I'll do it. What's the pay?",
                             "next_node_id": "accept"
+                        },
+                        {
+                            "text": "I'll deliver it. But I want a copy of whatever's on it. Information has value on both ends of a delivery.",
+                            "next_node_id": "accept",
+                            "required_flags": ["has_special_dialogue"],
+                            "disposition_change": 5
                         }
                     ],
                     "expression": "neutral"
@@ -2855,6 +2870,7 @@
                     "id": "start",
                     "speaker_id": "petra_vance",
                     "text": "*She checks the corridor behind you before making eye contact.* You fly independent? Not Guild-contracted, not Union-dispatched? I need to be sure.",
+                    "subtext": "The clipboard she's holding has been rewritten three times. Whatever decision she's making, she's been making it for weeks.",
                     "responses": [
                         {
                             "text": "That's me. What do you need?",
@@ -2981,6 +2997,13 @@
                             "text": "I'll be discreet.",
                             "next_node_id": null,
                             "set_flag": "whistleblower_accepted"
+                        },
+                        {
+                            "text": "I'll split the data across two ships. My cargo manifest shows routine freight. Even if they scan one, they won't find the full picture.",
+                            "next_node_id": null,
+                            "set_flag": "whistleblower_accepted",
+                            "required_flags": ["has_special_dialogue"],
+                            "disposition_change": 5
                         }
                     ],
                     "expression": "worried"
@@ -3331,6 +3354,19 @@
                             "next_node_id": "in_progress",
                             "required_flags": [
                                 "forgery_job_accepted"
+                            ],
+                            "excluded_flags": [
+                                "forgery_appraised"
+                            ]
+                        },
+                        {
+                            "text": "We need to talk about the appraisal results.",
+                            "next_node_id": "confrontation",
+                            "required_flags": [
+                                "forgery_appraised"
+                            ],
+                            "excluded_flags": [
+                                "forgery_resolved"
                             ]
                         }
                     ],
@@ -3342,8 +3378,9 @@
                     "text": "The collection won't appraise itself, Captain. I trust you haven't lost your nerve.",
                     "responses": [
                         {
-                            "text": "[Leave]",
-                            "next_node_id": null
+                            "text": "[Leave and complete the appraisal off-screen]",
+                            "next_node_id": null,
+                            "set_flag": "forgery_appraised"
                         }
                     ],
                     "expression": "confident"
@@ -3405,6 +3442,13 @@
                             "text": "I'll handle it.",
                             "next_node_id": null,
                             "set_flag": "forgery_job_accepted"
+                        },
+                        {
+                            "text": "I'll handle the delivery. But I want to run my own appraisal on the way. If these pieces are what you say they are, the independent assessment strengthens your buyer's confidence.",
+                            "next_node_id": null,
+                            "set_flag": "forgery_job_accepted",
+                            "required_flags": ["has_special_dialogue"],
+                            "disposition_change": 3
                         }
                     ],
                     "expression": "happy"
@@ -4266,7 +4310,8 @@
                 {
                     "id": "greet",
                     "speaker_id": "dock_investigator",
-                    "text": "*A woman in dock security blues sits behind a terminal cluttered with evidence bags and coffee rings. She doesn't look up.* Pull up a crate. You took the Patel case off the board, which makes you the closest thing to a second opinion I've got. Station brass wants this closed yesterday.",
+                    "text": "*A woman in dock security blues sits behind a terminal cluttered with evidence bags and coffee rings. She doesn't look up.* Pull up a crate. Reshad Patel, shipping clerk, found dead in Loading Bay C. Pressure seal failure, supposedly. Except pressure seals don't fail on occupied docks. Station brass wants this closed yesterday, and I could use a second opinion.",
+                    "subtext": "The coffee rings overlap in layers. She's been at this desk for days. The evidence bags are organized by a system only she understands.",
                     "responses": [
                         {
                             "text": "Walk me through what happened.",
@@ -4297,11 +4342,11 @@
                     "id": "overview",
                     "speaker_id": "dock_investigator",
                     "text": "Reshad Patel. Shipping clerk, Dock 7. Fifteen years on station, not a single write-up. Found dead inside Loading Bay C three days ago. Pressure seal failed while he was inside alone. Official line is mechanical failure. *She pulls up a maintenance log.* Except that seal passed inspection forty-eight hours prior. And the override wasn't triggered from the bay's internal panel. It came from an external terminal.",
-                    "set_flag": "dead_ledger_investigated",
                     "responses": [
                         {
                             "text": "External terminal. So someone vented the bay remotely.",
-                            "next_node_id": "confirm_murder"
+                            "next_node_id": "confirm_murder",
+                            "set_flag": "dead_ledger_investigated"
                         }
                     ],
                     "expression": "neutral"
@@ -4355,15 +4400,16 @@
                     "id": "suspect_vey",
                     "speaker_id": "dock_investigator",
                     "text": "Torrin Vey. Commerce Guild sent him to audit Dock 7's manifests after discrepancies turned up in quarterly reports. Patel's records showed someone had been skimming cargo weights for months. If Patel filed that report, Vey's entire division would be under investigation. *She taps the screen.* Vey was logged into the dock supervisor's office that night. Says he was reviewing manifest files and never touched the environmental controls. But the supervisor's terminal is the only one with direct override access to Bay C's pressure seals.",
-                    "set_flag": "investigated_vey",
                     "responses": [
                         {
                             "text": "Who else?",
-                            "next_node_id": "suspects"
+                            "next_node_id": "suspects",
+                            "set_flag": "investigated_vey"
                         },
                         {
                             "text": "I've heard enough. It was Vey.",
-                            "next_node_id": "accuse_vey"
+                            "next_node_id": "accuse_vey",
+                            "set_flag": "investigated_vey"
                         }
                     ],
                     "expression": "neutral"
@@ -4372,15 +4418,16 @@
                     "id": "suspect_drum",
                     "speaker_id": "dock_investigator",
                     "text": "Kess Drum. Union freight handler. Worked alongside Patel for six years until a misrouted shipment two weeks back cost Drum a quarterly bonus. They had a public argument. Co-workers described it as ugly. *She pulls up another log.* Drum was logged into the freight operations console, but his cargo loader's GPS puts him on the far side of the dock during the incident window. Those loaders log position every thirty seconds. He'd have had to sprint across the dock, override the seal, and sprint back without a gap in the position log.",
-                    "set_flag": "investigated_drum",
                     "responses": [
                         {
                             "text": "Who else?",
-                            "next_node_id": "suspects"
+                            "next_node_id": "suspects",
+                            "set_flag": "investigated_drum"
                         },
                         {
                             "text": "I've heard enough. It was Drum.",
-                            "next_node_id": "accuse_drum"
+                            "next_node_id": "accuse_drum",
+                            "set_flag": "investigated_drum"
                         }
                     ],
                     "expression": "neutral"
@@ -4389,15 +4436,16 @@
                     "id": "suspect_solis",
                     "speaker_id": "dock_investigator",
                     "text": "Jun Solis. Independent Frontier trader. Patel flagged a discrepancy in her cargo declaration the week prior. If it stuck, she'd lose docking privileges at Nexus Prime. For a Frontier independent, that's a slow death sentence. *Mossa frowns.* Solis badged into the cargo inspection booth to file an appeal. Says Patel wasn't at his desk so she left. But her ship's departure log shows she didn't undock until twenty minutes after the estimated seal failure. The inspection booth's terminal can read Bay C's environmental status but can't write to it. Read-only access.",
-                    "set_flag": "investigated_solis",
                     "responses": [
                         {
                             "text": "Who else?",
-                            "next_node_id": "suspects"
+                            "next_node_id": "suspects",
+                            "set_flag": "investigated_solis"
                         },
                         {
                             "text": "I've heard enough. It was Solis.",
-                            "next_node_id": "accuse_solis"
+                            "next_node_id": "accuse_solis",
+                            "set_flag": "investigated_solis"
                         }
                     ],
                     "expression": "neutral"
@@ -4434,6 +4482,12 @@
                         {
                             "text": "I need to think about this.",
                             "next_node_id": null
+                        },
+                        {
+                            "text": "File all three names. Let the prosecutor sort the access logs. Whoever it was, the other two know something they're not sharing.",
+                            "next_node_id": "accuse_vey",
+                            "required_flags": ["has_special_dialogue"],
+                            "set_flag": "dead_ledger_accusation_made"
                         }
                     ],
                     "expression": "neutral"
@@ -4442,11 +4496,11 @@
                     "id": "accuse_vey",
                     "speaker_id": "dock_investigator",
                     "text": "*Mossa types the name and hits confirm without hesitation.* Vey. The supervisor's terminal, the audit motive, and a career's worth of reasons to keep Patel quiet. Commerce Guild will send lawyers before he's even in a holding cell, but the access logs don't lie. *She slides a credit chit across the desk.* Consultation fee. Officially you were never here.",
-                    "set_flag": "dead_ledger_accusation_made",
                     "responses": [
                         {
                             "text": "Hope it sticks.",
-                            "next_node_id": null
+                            "next_node_id": null,
+                            "set_flag": "dead_ledger_accusation_made"
                         }
                     ],
                     "expression": "neutral"
@@ -4455,11 +4509,11 @@
                     "id": "accuse_drum",
                     "speaker_id": "dock_investigator",
                     "text": "*Mossa pauses before typing.* Drum. The grudge angle. I'll be honest, the loader GPS makes this a hard sell to the prosecutor. But grudges make people stupid, and that corrupted surveillance footage in his section is convenient. *She files it anyway.* Union's going to fight this one. Here. *She slides a credit chit across the desk.* For your time.",
-                    "set_flag": "dead_ledger_accusation_made",
                     "responses": [
                         {
                             "text": "Follow the footage.",
-                            "next_node_id": null
+                            "next_node_id": null,
+                            "set_flag": "dead_ledger_accusation_made"
                         }
                     ],
                     "expression": "neutral"
@@ -4468,14 +4522,1334 @@
                     "id": "accuse_solis",
                     "speaker_id": "dock_investigator",
                     "text": "*Mossa's pen hovers.* Solis. The desperate independent. Problem is, her booth terminal was read-only for Bay C. She could watch the seal status but couldn't trigger it. Unless she found another way in. *She files the name with visible reluctance.* I'll pull her in, but between us, this one's thin. *A credit chit slides across the desk.* Consultation fee.",
-                    "set_flag": "dead_ledger_accusation_made",
                     "responses": [
                         {
                             "text": "Sometimes the desperate ones surprise you.",
+                            "next_node_id": null,
+                            "set_flag": "dead_ledger_accusation_made"
+                        }
+                    ],
+                    "expression": "neutral"
+                }
+            ]
+        },
+        {
+            "id": "scholars_dilemma_dialogue",
+            "start_node_id": "greet",
+            "nodes": [
+                {
+                    "id": "greet",
+                    "speaker_id": "axiom_researcher",
+                    "text": "*A junior researcher flags you down outside a sealed lab. Their hands are shaking, and they keep glancing at the security cameras.* You're not Collective. Good. I need someone who isn't on the faculty mailing list.",
+                    "responses": [
+                        {
+                            "text": "What's going on?",
+                            "next_node_id": "explain",
+                            "excluded_flags": ["scholar_data_received"]
+                        },
+                        {
+                            "text": "About the data you gave me...",
+                            "next_node_id": "in_progress",
+                            "required_flags": ["scholar_data_received"]
+                        }
+                    ],
+                    "expression": "worried"
+                },
+                {
+                    "id": "explain",
+                    "speaker_id": "axiom_researcher",
+                    "text": "Gravitational survey data. Three star systems shifted into an alignment that doesn't occur naturally. Not in any model we have. Publishing means funding, grants, my name on something real. But the senior faculty wants it buried. They say it's instrument error. I ran the calibrations four times. It's not error.",
+                    "responses": [
+                        {
+                            "text": "Why not publish it yourself?",
+                            "next_node_id": "risk"
+                        }
+                    ],
+                    "expression": "worried"
+                },
+                {
+                    "id": "risk",
+                    "speaker_id": "axiom_researcher",
+                    "text": "Because if I'm wrong, my career is over. And if I'm right, someone on the faculty buried this data for a reason. I need independent verification. Nova Research has the instruments and no political stake. Take the data there. Let their team run it. If it holds up, we publish. If it doesn't, I sleep again.",
+                    "responses": [
+                        {
+                            "text": "I'll take it to Nova Research.",
+                            "next_node_id": null,
+                            "set_flag": "scholar_data_received"
+                        },
+                        {
+                            "text": "This sounds like more trouble than it's worth.",
+                            "next_node_id": null
+                        }
+                    ],
+                    "expression": "hopeful"
+                },
+                {
+                    "id": "in_progress",
+                    "speaker_id": "axiom_researcher",
+                    "text": "Any word from Nova Research? I've been running the calibrations again while I wait. Same results every time. Whatever this is, it's consistent.",
+                    "responses": [
+                        {
+                            "text": "Still working on it.",
+                            "next_node_id": null
+                        }
+                    ],
+                    "expression": "worried"
+                }
+            ]
+        },
+        {
+            "id": "lab_rat_dialogue",
+            "start_node_id": "greet",
+            "nodes": [
+                {
+                    "id": "greet",
+                    "speaker_id": "axiom_test_coordinator",
+                    "text": "*A woman in a lab coat with 'FIELD TESTING' stitched on the pocket waves you over to a workbench covered in schematics.* You fly a combat-rated vessel, yes? Weapons, shields, the works?",
+                    "responses": [
+                        {
+                            "text": "That's right. Why?",
+                            "next_node_id": "pitch",
+                            "excluded_flags": ["lab_rat_accepted"]
+                        },
+                        {
+                            "text": "How's the test going?",
+                            "next_node_id": "in_progress",
+                            "required_flags": ["lab_rat_accepted"]
+                        }
+                    ],
+                    "expression": "confident"
+                },
+                {
+                    "id": "pitch",
+                    "speaker_id": "axiom_test_coordinator",
+                    "text": "The Collective developed an experimental shield modulator. Theory says it adapts to incoming weapon signatures in real-time. Problem is, theory doesn't file flight reports. We need someone to strap it to their hull and fly a live route to Forgeworks. High-traffic corridor, plenty of sensor noise. Free installation, and you keep the data bonus when it's done.",
+                    "responses": [
+                        {
+                            "text": "Strap experimental tech to my hull. What could go wrong.",
+                            "next_node_id": null,
+                            "set_flag": "lab_rat_accepted"
+                        },
+                        {
+                            "text": "Find another test pilot.",
+                            "next_node_id": null
+                        }
+                    ],
+                    "expression": "confident"
+                },
+                {
+                    "id": "in_progress",
+                    "speaker_id": "axiom_test_coordinator",
+                    "text": "The modulator is logging data from your shield interactions. Fly to Forgeworks and back. The more varied the sensor environment, the better the calibration data.",
+                    "responses": [
+                        {
+                            "text": "I'll get it done.",
                             "next_node_id": null
                         }
                     ],
                     "expression": "neutral"
+                }
+            ]
+        },
+        {
+            "id": "wrench_request_dialogue",
+            "start_node_id": "greet",
+            "nodes": [
+                {
+                    "id": "greet",
+                    "speaker_id": "torres_memorial",
+                    "text": "*Torres is hunched over a workbench, carefully sorting salvaged components by serial number. She doesn't look up right away.* Need something?",
+                    "responses": [
+                        {
+                            "text": "Just checking in.",
+                            "next_node_id": "request",
+                            "excluded_flags": ["wrench_request_accepted"]
+                        },
+                        {
+                            "text": "Still tracking down those parts.",
+                            "next_node_id": "in_progress",
+                            "required_flags": ["wrench_request_accepted"]
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "request",
+                    "speaker_id": "torres_memorial",
+                    "text": "Actually... yeah. There is something. I'm building a transponder. Memorial type. For the salvagers who didn't come back. Wren, Dak, Little Sou. Good people. I need three specific ship components. Old models, from ships that aren't flying anymore. The kind of parts you find in salvage yards and station surplus bins.",
+                    "responses": [
+                        {
+                            "text": "I'll find them.",
+                            "next_node_id": null,
+                            "set_flag": "wrench_request_accepted"
+                        },
+                        {
+                            "text": "I'm sorry for your loss, but I can't right now.",
+                            "next_node_id": null
+                        }
+                    ],
+                    "expression": "serious"
+                },
+                {
+                    "id": "in_progress",
+                    "speaker_id": "torres_memorial",
+                    "text": "Three Rare Parts. Specific alloy compositions from older ship frames. You'll find them at most stations with surplus inventory. Take your time. They waited this long.",
+                    "responses": [
+                        {
+                            "text": "I'll keep looking.",
+                            "next_node_id": null
+                        }
+                    ],
+                    "expression": "neutral"
+                }
+            ]
+        },
+        {
+            "id": "neve_post_quest",
+            "start_node_id": "greet",
+            "nodes": [
+                {
+                    "id": "greet",
+                    "speaker_id": "neve_osei",
+                    "text": "*She's at the same table, but the posture is different. Shoulders back. A data terminal open in front of her, three feeds running simultaneously.* Captain. I was wondering when you'd stop by.",
+                    "responses": [
+                        {
+                            "text": "How's business?",
+                            "next_node_id": "business"
+                        },
+                        {
+                            "text": "Staying out of trouble?",
+                            "next_node_id": "trouble"
+                        },
+                        {
+                            "text": "Just passing through.",
+                            "next_node_id": null
+                        }
+                    ],
+                    "expression": "confident"
+                },
+                {
+                    "id": "business",
+                    "speaker_id": "neve_osei",
+                    "text": "Better since you ran that delivery. Word travels fast when someone actually follows through. I've had three new contacts reach out this week. People who wouldn't talk to me before suddenly want to compare notes.",
+                    "responses": [
+                        {
+                            "text": "Glad I could help.",
+                            "next_node_id": "reflection",
+                            "disposition_change": 3
+                        },
+                        {
+                            "text": "Sounds profitable.",
+                            "next_node_id": "reflection"
+                        }
+                    ],
+                    "expression": "amused"
+                },
+                {
+                    "id": "trouble",
+                    "speaker_id": "neve_osei",
+                    "text": "Trouble finds the interesting people, Captain. I just make sure it finds me on my terms. The data chip you delivered opened a few doors. Some of them I probably should have left closed.",
+                    "responses": [
+                        {
+                            "text": "What kind of doors?",
+                            "next_node_id": "reflection"
+                        },
+                        {
+                            "text": "Be careful.",
+                            "next_node_id": "reflection",
+                            "disposition_change": 3
+                        }
+                    ],
+                    "expression": "thoughtful"
+                },
+                {
+                    "id": "reflection",
+                    "speaker_id": "neve_osei",
+                    "text": "I spent two years building a network one contact at a time. Careful. Quiet. Then you walk in and do in a week what took me months. *She shakes her head.* I'm not complaining. It's just funny how trust works out here. People don't trust credentials or reputation. They trust results.",
+                    "responses": [
+                        {
+                            "text": "Results I can do.",
+                            "next_node_id": null,
+                            "disposition_change": 2
+                        },
+                        {
+                            "text": "Take care of yourself, Neve.",
+                            "next_node_id": null,
+                            "disposition_change": 3
+                        }
+                    ],
+                    "expression": "grateful"
+                }
+            ]
+        },
+        {
+            "id": "petra_post_quest",
+            "start_node_id": "greet",
+            "nodes": [
+                {
+                    "id": "greet",
+                    "speaker_id": "petra_vance",
+                    "text": "*She looks up from her work and actually smiles. It changes her whole face.* You. The journalist ran the story. Front page of the Nexus Prime trade bulletin. Management is furious.",
+                    "responses": [
+                        {
+                            "text": "Good. They should be.",
+                            "next_node_id": "aftermath",
+                            "disposition_change": 5
+                        },
+                        {
+                            "text": "Any blowback on you?",
+                            "next_node_id": "personal"
+                        }
+                    ],
+                    "expression": "relieved"
+                },
+                {
+                    "id": "aftermath",
+                    "speaker_id": "petra_vance",
+                    "text": "Union safety board opened an investigation. First real one in four years. Thirty-seven injuries in six months, and it took a newspaper article to get someone to count them. That's what I keep thinking about. The counting.",
+                    "responses": [
+                        {
+                            "text": "At least they're counting now.",
+                            "next_node_id": "resolve"
+                        },
+                        {
+                            "text": "Will it actually change anything?",
+                            "next_node_id": "resolve"
+                        }
+                    ],
+                    "expression": "serious"
+                },
+                {
+                    "id": "personal",
+                    "speaker_id": "petra_vance",
+                    "text": "My supervisor called me into his office. Told me I'd embarrassed the company. I told him thirty-seven people got hurt and nobody filed a real report. He said those were different situations. I asked him to name one.",
+                    "responses": [
+                        {
+                            "text": "Could he?",
+                            "next_node_id": "resolve"
+                        },
+                        {
+                            "text": "That took guts.",
+                            "next_node_id": "resolve",
+                            "disposition_change": 3
+                        }
+                    ],
+                    "expression": "determined"
+                },
+                {
+                    "id": "resolve",
+                    "speaker_id": "petra_vance",
+                    "text": "I'm still here. Still supervising. They can't fire me without proving the records are wrong, and we both know they aren't. *She goes back to her clipboard.* Thanks, Captain. For running that delivery when nobody else would.",
+                    "responses": [
+                        {
+                            "text": "Any time.",
+                            "next_node_id": null,
+                            "disposition_change": 2
+                        }
+                    ],
+                    "expression": "grateful"
+                }
+            ]
+        },
+        {
+            "id": "cassiel_post_quest",
+            "start_node_id": "greet",
+            "nodes": [
+                {
+                    "id": "greet",
+                    "speaker_id": "cassiel_maren",
+                    "text": "*She's at a smaller table now, near the back. The tailored coat is the same, but she's wearing it like armor instead of costume.* Captain. I didn't expect to see you again.",
+                    "responses": [
+                        {
+                            "text": "How are you holding up?",
+                            "next_node_id": "holding_up"
+                        },
+                        {
+                            "text": "Still in the antiquities business?",
+                            "next_node_id": "business"
+                        },
+                        {
+                            "text": "Just wanted to check in.",
+                            "next_node_id": null,
+                            "disposition_change": 3
+                        }
+                    ],
+                    "expression": "cautious"
+                },
+                {
+                    "id": "holding_up",
+                    "speaker_id": "cassiel_maren",
+                    "text": "Holding. That's the operative word. I spent forty years building something beautiful out of lies. Now I'm sitting in a cantina trying to remember what I'm good at when I'm not pretending. *She turns her coffee cup slowly.* Turns out, not much. Yet.",
+                    "responses": [
+                        {
+                            "text": "You'll figure it out.",
+                            "next_node_id": "future",
+                            "disposition_change": 3
+                        },
+                        {
+                            "text": "Forty years of craft doesn't vanish overnight.",
+                            "next_node_id": "future",
+                            "disposition_change": 5
+                        }
+                    ],
+                    "expression": "vulnerable"
+                },
+                {
+                    "id": "business",
+                    "speaker_id": "cassiel_maren",
+                    "text": "Consulting, actually. Authentication work for buyers who want to make sure what they're purchasing is genuine. *The corner of her mouth twitches.* The irony isn't lost on me. But it turns out the best person to spot a forgery is someone who's made a few.",
+                    "responses": [
+                        {
+                            "text": "That's a better use of your talent.",
+                            "next_node_id": "future",
+                            "disposition_change": 3
+                        },
+                        {
+                            "text": "Poacher turned gamekeeper.",
+                            "next_node_id": "future"
+                        }
+                    ],
+                    "expression": "amused"
+                },
+                {
+                    "id": "future",
+                    "speaker_id": "cassiel_maren",
+                    "text": "I wanted to say thank you. Whatever you decided about the forgeries, you treated me like a person. Not everyone would have. Out here, that counts for something.",
+                    "responses": [
+                        {
+                            "text": "Take care, Cassiel.",
+                            "next_node_id": null,
+                            "disposition_change": 2
+                        }
+                    ],
+                    "expression": "grateful"
+                }
+            ]
+        },
+        {
+            "id": "jez_okafor_dialogue",
+            "start_node_id": "greet",
+            "nodes": [
+                {
+                    "id": "greet",
+                    "speaker_id": "jez_okafor",
+                    "text": "*A woman in a dust-caked hardsuit leans against the bulkhead, flexing her fingers one at a time.* You're not from the crews. Visitor?",
+                    "subtext": "Her right hand has a fine tremor she's trying to work out. Long-term vibration damage from deep-core drilling rigs.",
+                    "responses": [
+                        {
+                            "text": "Just passing through. What's it like down here?",
+                            "next_node_id": "life_below"
+                        },
+                        {
+                            "text": "Your hand. How long has it been doing that?",
+                            "next_node_id": "tremor",
+                            "required_flags": ["empathic_read_active"],
+                            "disposition_change": 5
+                        },
+                        {
+                            "text": "Who are you?",
+                            "next_node_id": "introduction"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "introduction",
+                    "speaker_id": "jez_okafor",
+                    "text": "Jez. Shift supervisor, C-deck deep core. Twenty-two years on station. Fourteen in the shafts.",
+                    "responses": [
+                        {
+                            "text": "That's a long time underground.",
+                            "next_node_id": "life_below",
+                            "disposition_change": 3
+                        },
+                        {
+                            "text": "What keeps you here?",
+                            "next_node_id": "why_stay"
+                        }
+                    ],
+                    "expression": "stern"
+                },
+                {
+                    "id": "life_below",
+                    "speaker_id": "jez_okafor",
+                    "text": "Quiet. That's the first thing people notice. The deep shafts don't echo. Sound just goes. You learn to watch for vibrations through the floor instead of listening for warnings. After a while, the silence feels normal. It's the noise topside that gets uncomfortable.",
+                    "responses": [
+                        {
+                            "text": "Sounds isolating.",
+                            "next_node_id": "the_work"
+                        },
+                        {
+                            "text": "Is the work as dangerous as people say?",
+                            "next_node_id": "the_work"
+                        }
+                    ],
+                    "expression": "thoughtful"
+                },
+                {
+                    "id": "the_work",
+                    "speaker_id": "jez_okafor",
+                    "text": "Third shift lost two drill heads this week. Management sent a memo about 'operational awareness.' I wrote that memo. Made me sick typing it. But if I don't write it, they send someone who writes it worse and means it.",
+                    "responses": [
+                        {
+                            "text": "Why not push back harder?",
+                            "next_node_id": "why_stay"
+                        },
+                        {
+                            "text": "At least the crew has someone who cares.",
+                            "next_node_id": "farewell",
+                            "disposition_change": 5
+                        }
+                    ],
+                    "expression": "frustrated"
+                },
+                {
+                    "id": "tremor",
+                    "speaker_id": "jez_okafor",
+                    "text": "*She stops flexing and looks at her hand like she's seeing it for the first time.* Eleven years. Started in the right, moved to the left about three years ago. The vibration from the deep-core rigs works into the joints. Medical calls it 'repetitive micro-trauma.' My crew calls it 'drill hands.' Everyone on C-deck has it eventually.",
+                    "responses": [
+                        {
+                            "text": "Is there treatment?",
+                            "next_node_id": "treatment"
+                        },
+                        {
+                            "text": "And management knows?",
+                            "next_node_id": "treatment"
+                        }
+                    ],
+                    "expression": "vulnerable"
+                },
+                {
+                    "id": "treatment",
+                    "speaker_id": "jez_okafor",
+                    "text": "There's a nerve stabilizer the Collective makes. Works well. Costs four months' pay per course. Union medical covers 'approved occupational injuries.' Drill hands isn't on the approved list. Too many people have it. Approving it would mean admitting the equipment should have been replaced ten years ago.",
+                    "responses": [
+                        {
+                            "text": "That's criminal.",
+                            "next_node_id": "farewell",
+                            "disposition_change": 3
+                        },
+                        {
+                            "text": "How do you keep going?",
+                            "next_node_id": "why_stay"
+                        }
+                    ],
+                    "expression": "bitter"
+                },
+                {
+                    "id": "why_stay",
+                    "speaker_id": "jez_okafor",
+                    "text": "Because if I leave, someone worse takes my chair. And my crew. Every one of them comes home from shift because I count heads and check seals and argue with scheduling about double rotations. That's not heroism. That's just what the job is when nobody else is doing it.",
+                    "responses": [
+                        {
+                            "text": "That counts for something, Jez.",
+                            "next_node_id": "farewell",
+                            "disposition_change": 5
+                        },
+                        {
+                            "text": "Take care of yourself.",
+                            "next_node_id": "farewell",
+                            "disposition_change": 3
+                        }
+                    ],
+                    "expression": "determined"
+                },
+                {
+                    "id": "farewell",
+                    "speaker_id": "jez_okafor",
+                    "text": "*She nods, once, and goes back to flexing her fingers.* Shift starts in forty. Stay safe up there, Captain.",
+                    "responses": [
+                        {
+                            "text": "[Leave]",
+                            "next_node_id": null
+                        }
+                    ],
+                    "expression": "neutral"
+                }
+            ]
+        },
+        {
+            "id": "jez_post_sienna",
+            "start_node_id": "greet",
+            "nodes": [
+                {
+                    "id": "greet",
+                    "speaker_id": "jez_okafor",
+                    "text": "*She's sitting straighter today. Something changed.* You heard about Vek's warning? Three supervisors resigned. Management's pretending it's unrelated. The rest of us are pretending we believe them.",
+                    "responses": [
+                        {
+                            "text": "Is anything actually changing?",
+                            "next_node_id": "change"
+                        },
+                        {
+                            "text": "Good. This place needed a shake-up.",
+                            "next_node_id": "change",
+                            "disposition_change": 3
+                        }
+                    ],
+                    "expression": "cautious"
+                },
+                {
+                    "id": "change",
+                    "speaker_id": "jez_okafor",
+                    "text": "They approved new drill dampeners for C-deck. First equipment upgrade in six years. Nobody's saying it's because of the warning. They're calling it 'scheduled modernization.' My crew doesn't care what they call it. Hands hurt less. That's enough.",
+                    "responses": [
+                        {
+                            "text": "One step at a time.",
+                            "next_node_id": null,
+                            "disposition_change": 3
+                        }
+                    ],
+                    "expression": "relieved"
+                }
+            ]
+        },
+        {
+            "id": "naveen_prakash_dialogue",
+            "start_node_id": "greet",
+            "nodes": [
+                {
+                    "id": "greet",
+                    "speaker_id": "naveen_prakash",
+                    "text": "*A man in a clean suit sits at a table covered in data pads, looking profoundly out of place.* Good afternoon. Naveen Prakash, Commerce Guild Compliance Division. I'm conducting a standard regulatory assessment. How can I direct your inquiry?",
+                    "subtext": "His suit is spotless but his eyes are bloodshot. He's been sleeping here, or not sleeping at all.",
+                    "responses": [
+                        {
+                            "text": "How's the assessment going?",
+                            "next_node_id": "assessment"
+                        },
+                        {
+                            "text": "You don't look like you belong here.",
+                            "next_node_id": "out_of_place",
+                            "disposition_change": -3
+                        },
+                        {
+                            "text": "What does compliance actually look like at Iron Depths?",
+                            "next_node_id": "reality"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "assessment",
+                    "speaker_id": "naveen_prakash",
+                    "text": "The assessment is proceeding within established parameters. I've reviewed safety logs, maintenance schedules, and personnel rotation records. My preliminary findings indicate... *He pauses, looks at the data pad, then sets it face-down.* ...several areas requiring further documentation.",
+                    "responses": [
+                        {
+                            "text": "That pause said more than the report will.",
+                            "next_node_id": "honest_moment",
+                            "disposition_change": 5
+                        },
+                        {
+                            "text": "Sounds thorough.",
+                            "next_node_id": "farewell"
+                        }
+                    ],
+                    "expression": "concerned"
+                },
+                {
+                    "id": "out_of_place",
+                    "speaker_id": "naveen_prakash",
+                    "text": "I requested a transfer to Stellaris Port six months ago. Then again three months ago. The Guild has a rotation policy. Apparently it doesn't rotate in the direction I'd prefer.",
+                    "responses": [
+                        {
+                            "text": "Maybe they need you here more than there.",
+                            "next_node_id": "reality",
+                            "disposition_change": 3
+                        },
+                        {
+                            "text": "That bad?",
+                            "next_node_id": "reality"
+                        }
+                    ],
+                    "expression": "frustrated"
+                },
+                {
+                    "id": "reality",
+                    "speaker_id": "naveen_prakash",
+                    "text": "The inspection forms have a field for 'worker satisfaction.' It's a dropdown menu. The options are 'Satisfactory,' 'Good,' and 'Excellent.' There is no field for 'The air filtration on C-deck hasn't been serviced in four months.' I've filed a supplementary note. Three times.",
+                    "responses": [
+                        {
+                            "text": "Does anyone read the supplementary notes?",
+                            "next_node_id": "honest_moment"
+                        },
+                        {
+                            "text": "The Union says the same thing.",
+                            "next_node_id": "factions",
+                            "faction_reputation_changes": [
+                                {"miners_union": 1},
+                                {"commerce_guild": -1}
+                            ]
+                        }
+                    ],
+                    "expression": "serious"
+                },
+                {
+                    "id": "factions",
+                    "speaker_id": "naveen_prakash",
+                    "text": "The Union files reports. The Guild files reports. Nobody reads each other's reports. I've started reading theirs. It's the same data in different columns. The same problems. The same recommendations ignored for the same reasons. *He straightens his data pads.* That observation is off the record.",
+                    "responses": [
+                        {
+                            "text": "Noted.",
+                            "next_node_id": "farewell",
+                            "disposition_change": 3
+                        }
+                    ],
+                    "expression": "cautious"
+                },
+                {
+                    "id": "honest_moment",
+                    "speaker_id": "naveen_prakash",
+                    "text": "I was trained to audit ledgers and cargo manifests. Clean numbers, clear outcomes. This posting is my first time auditing a place where the numbers represent people breathing recycled air at depth. The forms don't have a column for that. I'm learning to write in the margins.",
+                    "responses": [
+                        {
+                            "text": "Keep writing.",
+                            "next_node_id": "farewell",
+                            "disposition_change": 5
+                        },
+                        {
+                            "text": "The margins are where the truth goes.",
+                            "next_node_id": "farewell",
+                            "disposition_change": 5
+                        }
+                    ],
+                    "expression": "vulnerable"
+                },
+                {
+                    "id": "farewell",
+                    "speaker_id": "naveen_prakash",
+                    "text": "Thank you for your time, Captain. I should return to my documentation. *He picks up the data pad he set face-down and stares at it.* Good day.",
+                    "responses": [
+                        {
+                            "text": "[Leave]",
+                            "next_node_id": null
+                        }
+                    ],
+                    "expression": "neutral"
+                }
+            ]
+        },
+        {
+            "id": "dimi_torr_dialogue",
+            "start_node_id": "greet",
+            "nodes": [
+                {
+                    "id": "greet",
+                    "speaker_id": "dimi_torr",
+                    "text": "*A broad man behind a stall stacked with vacuum-sealed fish packets waves you over.* You! New face. You eat yet? Nobody makes good decisions on an empty stomach. My grandmother said that. She was right about most things.",
+                    "responses": [
+                        {
+                            "text": "What are you selling?",
+                            "next_node_id": "the_fish"
+                        },
+                        {
+                            "text": "Your grandmother sounds wise.",
+                            "next_node_id": "grandmother",
+                            "disposition_change": 3
+                        },
+                        {
+                            "text": "I'm fine, thanks.",
+                            "next_node_id": "farewell"
+                        }
+                    ],
+                    "expression": "happy"
+                },
+                {
+                    "id": "the_fish",
+                    "speaker_id": "dimi_torr",
+                    "text": "Tank-raised tilapia, best on the station. Fed on Verdant grain, purified water, not that recycled stuff the other vendors use. You can taste the difference. Or maybe you can't. Either way, I'll tell you it's better, and you'll believe me, because I'm smiling.",
+                    "responses": [
+                        {
+                            "text": "You're an honest salesman, at least.",
+                            "next_node_id": "station_life",
+                            "disposition_change": 3
+                        },
+                        {
+                            "text": "What else do you know about the station?",
+                            "next_node_id": "station_life"
+                        }
+                    ],
+                    "expression": "amused"
+                },
+                {
+                    "id": "grandmother",
+                    "speaker_id": "dimi_torr",
+                    "text": "She ran a stall on Earth. Lagos, before the flooding. Sold pepper soup to dock workers. When the family lottery came up for the colony ships, she packed her recipes before her clothes. Said you can buy new clothes anywhere. A good recipe is a conversation with everyone who made it before you.",
+                    "responses": [
+                        {
+                            "text": "She made it to the Expanse?",
+                            "next_node_id": "station_life"
+                        },
+                        {
+                            "text": "That's a good way to think about it.",
+                            "next_node_id": "station_life",
+                            "disposition_change": 3
+                        }
+                    ],
+                    "expression": "thoughtful"
+                },
+                {
+                    "id": "station_life",
+                    "speaker_id": "dimi_torr",
+                    "text": "Haven's Rest is the only station in the Expanse where you can smell soil from the docking bay. Real soil. People come here and breathe differently. Shoulders drop. Voices get quieter. Way I see it, that's worth more than any cargo in your hold.",
+                    "responses": [
+                        {
+                            "text": "It is a good station.",
+                            "next_node_id": "farewell",
+                            "disposition_change": 3
+                        },
+                        {
+                            "text": "Thanks for the conversation, Dimi.",
+                            "next_node_id": "farewell",
+                            "disposition_change": 3
+                        }
+                    ],
+                    "expression": "grateful"
+                },
+                {
+                    "id": "farewell",
+                    "speaker_id": "dimi_torr",
+                    "text": "You come back, I'll save you the good cuts. First-time customers get the sales pitch. Second-time customers get the truth. *He winks.* Third time, you get the recipes.",
+                    "responses": [
+                        {
+                            "text": "[Leave]",
+                            "next_node_id": null
+                        }
+                    ],
+                    "expression": "happy"
+                }
+            ]
+        },
+        {
+            "id": "issa_kadeer_dialogue",
+            "start_node_id": "greet",
+            "nodes": [
+                {
+                    "id": "greet",
+                    "speaker_id": "issa_kadeer",
+                    "text": "*A woman at a desk piled with intake forms looks up. Her eyes are kind and exhausted in equal measure.* Are you here about a placement, or do you need directions? I can do either, but not both at once right now.",
+                    "subtext": "The intake forms are color-coded by urgency. The red pile is taller than the others.",
+                    "responses": [
+                        {
+                            "text": "Neither. Just curious about the work you do here.",
+                            "next_node_id": "the_work"
+                        },
+                        {
+                            "text": "Busy day?",
+                            "next_node_id": "the_numbers"
+                        }
+                    ],
+                    "expression": "concerned"
+                },
+                {
+                    "id": "the_numbers",
+                    "speaker_id": "issa_kadeer",
+                    "text": "Seventeen arrivals this week. The youngest is four. She draws pictures of a ship she doesn't remember boarding. The oldest is seventy-one. He carried his wife's toolkit across three systems because she would have wanted someone to use it.",
+                    "responses": [
+                        {
+                            "text": "Where are they all coming from?",
+                            "next_node_id": "the_work"
+                        },
+                        {
+                            "text": "That's a lot of people to place.",
+                            "next_node_id": "the_work",
+                            "disposition_change": 3
+                        }
+                    ],
+                    "expression": "serious"
+                },
+                {
+                    "id": "the_work",
+                    "speaker_id": "issa_kadeer",
+                    "text": "Border systems, mostly. Small stations where the economics stopped working. A tariff increase here, a supply route cut there. Nobody made one big decision to displace them. A hundred small decisions added up. By the time anyone noticed, the station was empty and the people were here.",
+                    "responses": [
+                        {
+                            "text": "The Alliance takes them all in?",
+                            "next_node_id": "open_door"
+                        },
+                        {
+                            "text": "Is there someone specific you're worried about?",
+                            "next_node_id": "specific_case"
+                        }
+                    ],
+                    "expression": "thoughtful"
+                },
+                {
+                    "id": "open_door",
+                    "speaker_id": "issa_kadeer",
+                    "text": "The Alliance doesn't have a door to close. That's the policy. Anyone who arrives gets processed, placed, fed. It works until it doesn't. We're not at 'doesn't' yet. But I can see it from here.",
+                    "responses": [
+                        {
+                            "text": "What would help?",
+                            "next_node_id": "farewell",
+                            "disposition_change": 5
+                        },
+                        {
+                            "text": "I hope you get the help you need.",
+                            "next_node_id": "farewell",
+                            "disposition_change": 3
+                        }
+                    ],
+                    "expression": "determined"
+                },
+                {
+                    "id": "specific_case",
+                    "speaker_id": "issa_kadeer",
+                    "text": "There's a family from Outer Verge. Three kids, two parents, no documentation because their station's record system went down before they left. Without papers, I can't place them in permanent housing. Without housing, the kids can't enroll in school. Without school... *She picks up a red form.* I'm working on it.",
+                    "responses": [
+                        {
+                            "text": "That sounds like it matters more than most things I've done today.",
+                            "next_node_id": "farewell",
+                            "disposition_change": 5
+                        },
+                        {
+                            "text": "I hope you find a way.",
+                            "next_node_id": "farewell",
+                            "disposition_change": 3
+                        }
+                    ],
+                    "expression": "vulnerable"
+                },
+                {
+                    "id": "farewell",
+                    "speaker_id": "issa_kadeer",
+                    "text": "Thank you for asking. Most people dock, trade, leave. They don't stop at this desk. *She goes back to the red pile.* Safe travels, Captain.",
+                    "responses": [
+                        {
+                            "text": "[Leave]",
+                            "next_node_id": null
+                        }
+                    ],
+                    "expression": "grateful"
+                }
+            ]
+        },
+        {
+            "id": "rudo_kamara_dialogue",
+            "start_node_id": "greet",
+            "nodes": [
+                {
+                    "id": "greet",
+                    "speaker_id": "rudo_kamara",
+                    "text": "*A man in a tailored vest examines a small ceramic through a loupe, then sets it down with practiced indifference.* Captain. You have the look of someone who's never thought about provenance. Shall I be concerned?",
+                    "responses": [
+                        {
+                            "text": "I don't know what provenance means.",
+                            "next_node_id": "educate",
+                            "disposition_change": 3
+                        },
+                        {
+                            "text": "I know enough. What do you do here?",
+                            "next_node_id": "the_trade"
+                        },
+                        {
+                            "text": "Just browsing.",
+                            "next_node_id": "farewell"
+                        }
+                    ],
+                    "expression": "amused"
+                },
+                {
+                    "id": "educate",
+                    "speaker_id": "rudo_kamara",
+                    "text": "Provenance. The chain of ownership. Where a thing has been, who held it, and what they paid. In the art world, the story is half the value. A founding-era compass owned by Captain Mireille Lavoie is worth ten thousand credits. The same compass without the story is worth forty.",
+                    "responses": [
+                        {
+                            "text": "So you sell stories as much as objects.",
+                            "next_node_id": "the_trade",
+                            "disposition_change": 5
+                        },
+                        {
+                            "text": "Sounds like a market built on trust.",
+                            "next_node_id": "the_trade"
+                        }
+                    ],
+                    "expression": "confident"
+                },
+                {
+                    "id": "the_trade",
+                    "speaker_id": "rudo_kamara",
+                    "text": "I authenticate pre-colony artifacts for private buyers. Ceramics, metalwork, navigation instruments. Stellaris Port has the highest concentration of serious collectors in the Expanse. It also has the highest concentration of optimistic forgers.",
+                    "responses": [
+                        {
+                            "text": "You must see some interesting fakes.",
+                            "next_node_id": "fakes"
+                        },
+                        {
+                            "text": "Thanks for the education.",
+                            "next_node_id": "farewell",
+                            "disposition_change": 3
+                        }
+                    ],
+                    "expression": "confident"
+                },
+                {
+                    "id": "fakes",
+                    "speaker_id": "rudo_kamara",
+                    "text": "The best forgeries are the ones that make you want to believe. Technically perfect. Emotionally convincing. The isotope ratios betray them eventually, but for a moment, you hold something beautiful and you want it to be real. That wanting is what the forger sells.",
+                    "responses": [
+                        {
+                            "text": "You sound like you respect them.",
+                            "next_node_id": "farewell",
+                            "disposition_change": 3
+                        },
+                        {
+                            "text": "The truth matters more.",
+                            "next_node_id": "farewell"
+                        }
+                    ],
+                    "expression": "thoughtful"
+                },
+                {
+                    "id": "farewell",
+                    "speaker_id": "rudo_kamara",
+                    "text": "If you find anything interesting in your travels, Captain, bring it by. I'll give you an honest assessment. The first one's free. After that, we negotiate.",
+                    "responses": [
+                        {
+                            "text": "[Leave]",
+                            "next_node_id": null
+                        }
+                    ],
+                    "expression": "amused"
+                }
+            ]
+        },
+        {
+            "id": "rudo_post_cassiel",
+            "start_node_id": "greet",
+            "nodes": [
+                {
+                    "id": "greet",
+                    "speaker_id": "rudo_kamara",
+                    "text": "*He's polishing the same ceramic, but his expression is different. Sharper.* The Maren collection got pulled from the exchange last week. No official reason given. But the isotope results are circulating among the serious buyers. Forty years of work, undone by chemistry.",
+                    "responses": [
+                        {
+                            "text": "You knew her?",
+                            "next_node_id": "knew_her"
+                        },
+                        {
+                            "text": "The market's better off.",
+                            "next_node_id": null,
+                            "disposition_change": -3
+                        }
+                    ],
+                    "expression": "thoughtful"
+                },
+                {
+                    "id": "knew_her",
+                    "speaker_id": "rudo_kamara",
+                    "text": "Everyone on the exchange knew Cassiel. She had the steadiest hands and the most convincing smile in the business. I never caught her. I should have. That's what I keep thinking about. Not that she fooled buyers. That she fooled me.",
+                    "responses": [
+                        {
+                            "text": "That says more about her skill than your judgment.",
+                            "next_node_id": null,
+                            "disposition_change": 5
+                        }
+                    ],
+                    "expression": "bitter"
+                }
+            ]
+        },
+        {
+            "id": "suki_tannenbaum_dialogue",
+            "start_node_id": "greet",
+            "nodes": [
+                {
+                    "id": "greet",
+                    "speaker_id": "suki_tannenbaum",
+                    "text": "*A stocky woman in stained coveralls wipes her hands on a rag that's past the point of helping.* You lost? Promenade's two decks up. This is the part they don't put on the tourism feed.",
+                    "responses": [
+                        {
+                            "text": "What's down here?",
+                            "next_node_id": "below"
+                        },
+                        {
+                            "text": "I'm not a tourist.",
+                            "next_node_id": "not_tourist",
+                            "disposition_change": 3
+                        }
+                    ],
+                    "expression": "amused"
+                },
+                {
+                    "id": "not_tourist",
+                    "speaker_id": "suki_tannenbaum",
+                    "text": "Good. Tourists take pictures of the chandeliers and ask where the restroom is. At least you're looking at the right part of the station. The part that keeps the chandeliers lit.",
+                    "responses": [
+                        {
+                            "text": "Tell me about it.",
+                            "next_node_id": "below"
+                        }
+                    ],
+                    "expression": "amused"
+                },
+                {
+                    "id": "below",
+                    "speaker_id": "suki_tannenbaum",
+                    "text": "Upstairs they polish the chandeliers twice a week. Down here I've been requesting a new pressure valve for three months. Same station. Different gravity. The promenade staff gets uniforms with the Guild crest. We get coveralls and a tool allowance that hasn't been adjusted since before I was born.",
+                    "responses": [
+                        {
+                            "text": "That's a sharp contrast.",
+                            "next_node_id": "the_job",
+                            "disposition_change": 3
+                        },
+                        {
+                            "text": "Why do you stay?",
+                            "next_node_id": "the_job"
+                        }
+                    ],
+                    "expression": "frustrated"
+                },
+                {
+                    "id": "the_job",
+                    "speaker_id": "suki_tannenbaum",
+                    "text": "Because someone has to make sure the air doesn't run out while they're debating crystal futures upstairs. The station needs me more than it needs another art dealer. It just pays me like it doesn't.",
+                    "responses": [
+                        {
+                            "text": "You deserve better.",
+                            "next_node_id": "farewell",
+                            "disposition_change": 5
+                        },
+                        {
+                            "text": "Thanks for keeping the lights on.",
+                            "next_node_id": "farewell",
+                            "disposition_change": 3
+                        }
+                    ],
+                    "expression": "determined"
+                },
+                {
+                    "id": "farewell",
+                    "speaker_id": "suki_tannenbaum",
+                    "text": "*She picks up a wrench that looks older than the station.* Watch your head on the way out. The clearance signs are measured for people shorter than me, and I'm not tall.",
+                    "responses": [
+                        {
+                            "text": "[Leave]",
+                            "next_node_id": null
+                        }
+                    ],
+                    "expression": "amused"
+                }
+            ]
+        },
+        {
+            "id": "bren_solvay_dialogue",
+            "start_node_id": "greet",
+            "nodes": [
+                {
+                    "id": "greet",
+                    "speaker_id": "bren_solvay",
+                    "text": "*A weathered man sorting grain samples looks up with the kind of friendliness that's also sizing you up.* Captain. You buying or hauling? Either way, have a seat. I just brewed a fresh pot.",
+                    "responses": [
+                        {
+                            "text": "What are you selling?",
+                            "next_node_id": "the_grain"
+                        },
+                        {
+                            "text": "I'll take that cup. What's the news?",
+                            "next_node_id": "the_news",
+                            "disposition_change": 3
+                        }
+                    ],
+                    "expression": "confident"
+                },
+                {
+                    "id": "the_grain",
+                    "speaker_id": "bren_solvay",
+                    "text": "Verdant grain. Soil-grown, not hydroponic. You can taste the difference. The restaurants at Stellaris Port pay triple for it. The families at Haven's Rest can barely afford it. The Guild takes fourteen percent on every shipment for 'logistics facilitation.' That's the word they use when they mean tax.",
+                    "responses": [
+                        {
+                            "text": "Fourteen percent is steep.",
+                            "next_node_id": "the_margins",
+                            "disposition_change": 3,
+                            "faction_reputation_changes": [
+                                {"frontier_alliance": 1}
+                            ]
+                        },
+                        {
+                            "text": "That's how trade works.",
+                            "next_node_id": "farewell"
+                        }
+                    ],
+                    "expression": "frustrated"
+                },
+                {
+                    "id": "the_news",
+                    "speaker_id": "bren_solvay",
+                    "text": "Harvest was strong this season. Yields are up. Which means the Guild wants to renegotiate transport rates. Funny how that works. Good year for us, better year for their margin. My grandmother used to say, 'When the farmer does well, the landlord does better.'",
+                    "responses": [
+                        {
+                            "text": "Your grandmother had a point.",
+                            "next_node_id": "the_margins",
+                            "disposition_change": 3
+                        },
+                        {
+                            "text": "Can't you negotiate?",
+                            "next_node_id": "the_margins"
+                        }
+                    ],
+                    "expression": "bitter"
+                },
+                {
+                    "id": "the_margins",
+                    "speaker_id": "bren_solvay",
+                    "text": "We tried collective bargaining two seasons back. The Guild responded by rerouting grain shipments through Nexus Prime instead of direct to Haven's Rest. Added two days of transit. Spoilage went up. They called it 'logistical optimization.' We called it a message.",
+                    "responses": [
+                        {
+                            "text": "That's not optimization. That's leverage.",
+                            "next_node_id": "farewell",
+                            "disposition_change": 5,
+                            "faction_reputation_changes": [
+                                {"frontier_alliance": 1}
+                            ]
+                        },
+                        {
+                            "text": "I appreciate the honesty, Bren.",
+                            "next_node_id": "farewell",
+                            "disposition_change": 3
+                        }
+                    ],
+                    "expression": "determined"
+                },
+                {
+                    "id": "farewell",
+                    "speaker_id": "bren_solvay",
+                    "text": "You come through Verdant again, stop by. The grain won't change but the conversation might. *He refills your cup without asking.* That's how we do things here.",
+                    "responses": [
+                        {
+                            "text": "[Leave]",
+                            "next_node_id": null
+                        }
+                    ],
+                    "expression": "happy"
+                }
+            ]
+        },
+        {
+            "id": "chandra_osei_dialogue",
+            "start_node_id": "greet",
+            "nodes": [
+                {
+                    "id": "greet",
+                    "speaker_id": "chandra_osei",
+                    "text": "*A woman kneels beside a soil sampling array, dirt under her nails and data pad balanced on her knee.* Oh. Hello. I'm Chandra. If you're looking for someone important, try the admin office. If you're looking for someone who knows what makes things grow, you found her.",
+                    "subtext": "Her voice has the Collective's precision but none of its stiffness. She's been out of the lab long enough that the field rewired her.",
+                    "responses": [
+                        {
+                            "text": "What are you researching?",
+                            "next_node_id": "the_soil"
+                        },
+                        {
+                            "text": "Osei. Any relation to Dr. Priya Osei?",
+                            "next_node_id": "priya_connection"
+                        },
+                        {
+                            "text": "Just passing through.",
+                            "next_node_id": "farewell"
+                        }
+                    ],
+                    "expression": "happy"
+                },
+                {
+                    "id": "the_soil",
+                    "speaker_id": "chandra_osei",
+                    "text": "Verdant's soil microbiome. The founding colonists brought seed stock from Earth, but the bacteria that make soil work had to be cultivated from scratch. Three generations of farmers figured it out through trial and error. I'm trying to understand why it works so we can replicate it at other stations.",
+                    "responses": [
+                        {
+                            "text": "Farmers figured out what scientists couldn't?",
+                            "next_node_id": "farmers_vs_lab"
+                        },
+                        {
+                            "text": "That sounds important.",
+                            "next_node_id": "the_catch",
+                            "disposition_change": 3
+                        }
+                    ],
+                    "expression": "confident"
+                },
+                {
+                    "id": "farmers_vs_lab",
+                    "speaker_id": "chandra_osei",
+                    "text": "They figured out what works. I'm figuring out why. Different questions. Both matter. My grandmother knew which soil produced the best cassava. She didn't know the genus of the mycorrhizal fungi making it happen. She didn't need to. But if I can name it, I can grow it somewhere else. More stations eating real food instead of nutrient paste.",
+                    "responses": [
+                        {
+                            "text": "That could change a lot of lives.",
+                            "next_node_id": "the_catch",
+                            "disposition_change": 5
+                        }
+                    ],
+                    "expression": "determined"
+                },
+                {
+                    "id": "priya_connection",
+                    "speaker_id": "chandra_osei",
+                    "text": "Cousins. She sends me papers. I send her soil samples. She turns them into equations. I turn her equations into better yields. It works. *She pauses.* We don't talk about the parts where the Collective patents my grandmother's farming techniques and prices the applications out of reach for the stations that need them most.",
+                    "responses": [
+                        {
+                            "text": "That must be frustrating.",
+                            "next_node_id": "the_catch",
+                            "disposition_change": 5
+                        },
+                        {
+                            "text": "Does Priya see the problem?",
+                            "next_node_id": "the_catch"
+                        }
+                    ],
+                    "expression": "frustrated"
+                },
+                {
+                    "id": "the_catch",
+                    "speaker_id": "chandra_osei",
+                    "text": "The Collective funded my research. They own the results. If I publish independently, I lose the lab and the funding. If I don't, the data sits behind a paywall that Verdant's farmers can't afford. So I write very detailed field notes and leave them where the agricultural co-op can find them. The Collective calls it 'knowledge dissemination in controlled environments.' I call it doing the right thing slowly.",
+                    "responses": [
+                        {
+                            "text": "Slow is still forward.",
+                            "next_node_id": "farewell",
+                            "disposition_change": 3
+                        },
+                        {
+                            "text": "Keep leaving those notes, Chandra.",
+                            "next_node_id": "farewell",
+                            "disposition_change": 5
+                        }
+                    ],
+                    "expression": "hopeful"
+                },
+                {
+                    "id": "farewell",
+                    "speaker_id": "chandra_osei",
+                    "text": "*She brushes soil off her data pad and goes back to the sampling array.* Come back if you ever want to talk about dirt. Most people don't. Their loss.",
+                    "responses": [
+                        {
+                            "text": "[Leave]",
+                            "next_node_id": null
+                        }
+                    ],
+                    "expression": "happy"
+                }
+            ]
+        },
+        {
+            "id": "chandra_priya_recruited",
+            "start_node_id": "greet",
+            "nodes": [
+                {
+                    "id": "greet",
+                    "speaker_id": "chandra_osei",
+                    "text": "*She looks up with a wider smile than usual.* I heard Priya's flying with you now. Good. She needs to see what the data looks like when it's standing in a field instead of sitting in a spreadsheet. Take care of my cousin, Captain. She forgets to eat when she's focused.",
+                    "responses": [
+                        {
+                            "text": "She's in good hands.",
+                            "next_node_id": null,
+                            "disposition_change": 5
+                        },
+                        {
+                            "text": "I'll remind her.",
+                            "next_node_id": null,
+                            "disposition_change": 3
+                        }
+                    ],
+                    "expression": "grateful"
                 }
             ]
         }

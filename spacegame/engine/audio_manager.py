@@ -67,6 +67,11 @@ class AudioManager:
         self._audio_dir = AUDIO_DIR
         self._fade_target_volume: Optional[float] = None
         self._fade_speed: float = 0.0
+        # Duck multipliers applied on top of user volume config. The
+        # orchestrator (engine/audio_orchestrator.py) drives these so it can
+        # duck music/ambient without clobbering the player's preferences.
+        self._music_duck: float = 1.0
+        self._ambient_duck: float = 1.0
 
         # Check if mixer is initialized
         self._enabled = pygame.mixer.get_init() is not None
@@ -136,12 +141,34 @@ class AudioManager:
         return self._config.master_volume * self._config.sfx_volume
 
     def _effective_music_volume(self) -> float:
-        """Compute effective music volume (master * music)."""
-        return self._config.master_volume * self._config.music_volume
+        """Compute effective music volume (master * music * duck)."""
+        return self._config.master_volume * self._config.music_volume * self._music_duck
 
     def _effective_ambient_volume(self) -> float:
-        """Compute effective ambient volume (master * ambient)."""
-        return self._config.master_volume * self._config.ambient_volume
+        """Compute effective ambient volume (master * ambient * duck)."""
+        return self._config.master_volume * self._config.ambient_volume * self._ambient_duck
+
+    def set_music_duck(self, factor: float) -> None:
+        """Apply a ducking multiplier to music without changing user config.
+
+        ``factor=1.0`` means no duck, ``0.4`` means 40% of configured volume.
+        Drives the ducking rules in spec §4.3 — dialogue → 0.40, critical
+        SFX → 0.60, recovery → 1.0. The user-facing music_volume is
+        untouched so the preference survives volume settings UI.
+        """
+        self._music_duck = self._clamp(factor)
+        self._apply_volumes()
+
+    def set_ambient_duck(self, factor: float) -> None:
+        """Apply a ducking multiplier to ambient without changing user config."""
+        self._ambient_duck = self._clamp(factor)
+        self._apply_volumes()
+
+    def get_music_duck(self) -> float:
+        return self._music_duck
+
+    def get_ambient_duck(self) -> float:
+        return self._ambient_duck
 
     def _apply_volumes(self) -> None:
         """Apply current volume levels to active playback."""
@@ -222,6 +249,21 @@ class AudioManager:
             return None
 
     # === Music ===
+
+    def has_sound(self, sound_id: str) -> bool:
+        """Check if a sound ID exists in the manifest (any category).
+
+        Args:
+            sound_id: Sound ID to check.
+
+        Returns:
+            True if the sound exists in SFX, music, or ambient manifests.
+        """
+        return (
+            sound_id in self._manifest.get("sfx", {})
+            or sound_id in self._manifest.get("music", {})
+            or sound_id in self._manifest.get("ambient", {})
+        )
 
     def play_music(self, music_id: str, fade_in: float = 0.5, loop: bool = True) -> None:
         """Start playing a music track.

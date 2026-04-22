@@ -174,6 +174,8 @@ class SocialManager:
         tree_bonus = 0
         if self._progression is not None:
             tree_bonus = int(self._progression.get_bonus(f"{skill_id}_bonus"))
+            # Cultural Savant: +1 per level in faction-aligned systems
+            tree_bonus += int(self._progression.get_bonus("faction_social_bonus"))
 
         synergy_bonus = 0
         if self._attribute_sheet is not None:

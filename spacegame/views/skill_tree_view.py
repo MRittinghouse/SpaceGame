@@ -24,58 +24,40 @@ from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
 
 # Tree metadata for display
 _TREE_INFO: Dict[SkillTreeType, dict] = {
-    SkillTreeType.TRADING: {
-        "name": "Trading Mastery",
+    SkillTreeType.COMMERCE: {
+        "name": "Commerce",
         "attr": "Commerce",
-        "desc": "Market prices, bulk trading, trade networks",
+        "desc": "Prices, cargo, smuggling, trade networks",
         "color": Colors.FACTION_COMMERCE,
     },
-    SkillTreeType.GATHERING: {
-        "name": "Resource Gathering",
-        "attr": "Acuity",
-        "desc": "Drill efficiency, scanning, refining knowledge",
-        "color": Colors.FACTION_FRONTIER,
-    },
-    SkillTreeType.MINING: {
-        "name": "Mining Mastery",
-        "attr": "Resolve",
-        "desc": "Click power, drones, deep scanning, chain reactions",
-        "color": Colors.GLOW_ORANGE,
-    },
-    SkillTreeType.LEADERSHIP: {
-        "name": "Leadership",
-        "attr": "Ingenuity",
-        "desc": "Crew management, diplomacy, fleet coordination",
-        "color": Colors.FACTION_SCIENCE,
-    },
-    SkillTreeType.SOCIAL: {
-        "name": "Social Arts",
-        "attr": "Synergy",
-        "desc": "Persuasion, insight, faction diplomacy",
-        "color": Colors.ATTR_HIGHLIGHT,
-    },
-    SkillTreeType.GROUND: {
-        "name": "Ground Combat",
-        "attr": "Resolve",
-        "desc": "Melee skills, toughness, field tactics",
-        "color": Colors.RED,
-    },
     SkillTreeType.COMBAT: {
-        "name": "Combat & Tactics",
+        "name": "Combat",
         "attr": "Combat",
-        "desc": "Weapons, evasion, shields, ship combat",
+        "desc": "Weapons, evasion, shields, ground operations",
         "color": Colors.RED,
     },
     SkillTreeType.EXPLORATION: {
         "name": "Exploration",
         "attr": "Acuity",
-        "desc": "Fuel efficiency, scanning, hazard detection",
+        "desc": "Fuel efficiency, salvage, navigation, hazards",
         "color": Colors.FACTION_FRONTIER,
     },
-    SkillTreeType.SMUGGLING: {
-        "name": "Smuggling",
+    SkillTreeType.LEADERSHIP: {
+        "name": "Leadership",
         "attr": "Ingenuity",
-        "desc": "Hidden cargo, bribes, scan jamming",
+        "desc": "Crew management, diplomacy, fleet command",
+        "color": Colors.FACTION_SCIENCE,
+    },
+    SkillTreeType.SOCIAL: {
+        "name": "Social",
+        "attr": "Synergy",
+        "desc": "Persuasion, insight, faction diplomacy",
+        "color": Colors.ATTR_HIGHLIGHT,
+    },
+    SkillTreeType.INDUSTRY: {
+        "name": "Industry",
+        "attr": "Resolve",
+        "desc": "Mining, drones, refining, material science",
         "color": Colors.GLOW_ORANGE,
     },
 }
@@ -91,10 +73,26 @@ GRID_Y = scale_y(105)
 
 # Detail node layout
 NODE_RADIUS = scale_x(32)
+CAPSTONE_RADIUS = scale_x(38)
 DETAIL_TOP = scale_y(100)
 DETAIL_BOTTOM = WINDOW_HEIGHT - scale_y(80)
 DETAIL_LEFT = scale_x(100)
 DETAIL_RIGHT = WINDOW_WIDTH - scale_x(100)
+
+# Capstone skill IDs — identity-defining Tier 3 skills with special treatment
+_CAPSTONE_IDS = {
+    "insurance",
+    "juggernaut_capstone",
+    "sentinel_capstone",
+    "ghost_capstone",
+    "volley_commander",
+    "emergency_reserves",
+    "anomaly_sense",
+    "legend_of_the_expanse",
+    "peacemaker",
+    "ore_sense",
+    "material_science",
+}
 
 
 class SkillTreeView(BaseView):
@@ -199,8 +197,10 @@ class SkillTreeView(BaseView):
         )
         self.respec_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
-                WINDOW_WIDTH - scale_x(170), WINDOW_HEIGHT - hud_h - scale_y(55),
-                scale_x(150), scale_y(38)
+                WINDOW_WIDTH - scale_x(170),
+                WINDOW_HEIGHT - hud_h - scale_y(55),
+                scale_x(150),
+                scale_y(38),
             ),
             text="Respec Skills",
             manager=self.ui_manager,
@@ -497,10 +497,15 @@ class SkillTreeView(BaseView):
         title = self.title_font.render(info["name"].upper(), True, color)
         screen.blit(title, title.get_rect(center=(WINDOW_WIDTH // 2, 25)))
 
-        # Attribute + skill points
+        # Skill points + tree investment
         sp = self.progression.get_available_skill_points()
         sp_color = Colors.YELLOW if sp > 0 else Colors.TEXT_SECONDARY
-        sub = self.info_font.render(f"{info['attr']}  |  Skill Points: {sp}", True, sp_color)
+        tree_skills = self.progression.get_skill_tree(self._selected_tree)
+        invested = sum(s.current_level for s in tree_skills)
+        total_max = sum(s.max_level for s in tree_skills)
+        sub = self.info_font.render(
+            f"Skill Points: {sp}  |  Invested: {invested}/{total_max}", True, sp_color
+        )
         screen.blit(sub, sub.get_rect(center=(WINDOW_WIDTH // 2, 55)))
 
         # Description
@@ -604,9 +609,11 @@ class SkillTreeView(BaseView):
         if not skill:
             return
 
+        is_capstone = skill_id in _CAPSTONE_IDS
         is_hovered = self.hovered_skill == skill_id
         unlocked = {sid: s for sid, s in self.progression.skills.items() if s.is_unlocked}
         can_level = skill.can_level_up(self.progression.get_available_skill_points(), unlocked)
+        radius = CAPSTONE_RADIUS if is_capstone else NODE_RADIUS
 
         if skill.is_maxed:
             state_key = "maxed"
@@ -629,8 +636,26 @@ class SkillTreeView(BaseView):
             center = NODE_RADIUS + 2
             screen.blit(node_surf, (x - center, y - center))
 
-        # Maxed glow halo
-        if skill.is_maxed:
+        # Capstone: golden diamond border + CAPSTONE label
+        if is_capstone:
+            cap_color = Colors.YELLOW if not skill.is_maxed else Colors.SUCCESS
+            glow_a = int(180 + 60 * math.sin(self._glow_time * 2))
+            cap_surf = pygame.Surface((radius * 2 + 12, radius * 2 + 12), pygame.SRCALPHA)
+            cc = radius + 6
+            # Diamond shape (rotated square)
+            pts = [
+                (cc, cc - radius - 2),
+                (cc + radius + 2, cc),
+                (cc, cc + radius + 2),
+                (cc - radius - 2, cc),
+            ]
+            pygame.draw.polygon(cap_surf, (*cap_color[:3], glow_a), pts, 2)
+            screen.blit(cap_surf, (x - cc, y - cc))
+            # CAPSTONE label above
+            cap_label = self.node_font.render("CAPSTONE", True, cap_color)
+            screen.blit(cap_label, cap_label.get_rect(center=(x, y - radius - 10)))
+        elif skill.is_maxed:
+            # Maxed glow halo (non-capstone)
             glow_alpha = int(40 + 20 * math.sin(self._glow_time * 2))
             halo_surf = pygame.Surface((NODE_RADIUS * 3, NODE_RADIUS * 3), pygame.SRCALPHA)
             hc = NODE_RADIUS * 3 // 2
@@ -640,14 +665,14 @@ class SkillTreeView(BaseView):
             screen.blit(halo_surf, (x - hc, y - hc))
 
         # Available pulsing border
-        if can_level and not skill.is_maxed:
+        if can_level and not skill.is_maxed and not is_capstone:
             pulse_alpha = int(150 + 80 * math.sin(self._glow_time * 4))
             pulse_color = (*Colors.YELLOW[:3], pulse_alpha)
             pulse_surf = pygame.Surface((NODE_RADIUS * 2 + 8, NODE_RADIUS * 2 + 8), pygame.SRCALPHA)
             pc = NODE_RADIUS + 4
             pygame.draw.circle(pulse_surf, pulse_color, (pc, pc), NODE_RADIUS + 2, 2)
             screen.blit(pulse_surf, (x - pc, y - pc))
-        else:
+        elif not is_capstone:
             pygame.draw.circle(screen, border_color, (x, y), NODE_RADIUS, 2)
 
         # Skill icon
@@ -678,48 +703,62 @@ class SkillTreeView(BaseView):
         if not skill:
             return
 
+        is_capstone = self.hovered_skill in _CAPSTONE_IDS
         mx, my = pygame.mouse.get_pos()
-        tw, th = 280, 100
+        tw, th = 300, 130
         tx = min(mx + 15, WINDOW_WIDTH - tw - 10)
         ty = min(my + 15, WINDOW_HEIGHT - th - 10)
 
+        border_color = Colors.YELLOW if is_capstone else Colors.TEXT_HIGHLIGHT
         draw_panel(
             screen,
             pygame.Rect(tx, ty, tw, th),
             alpha=230,
             bg_color=(12, 12, 28),
-            border_color=Colors.TEXT_HIGHLIGHT,
+            border_color=border_color,
             border_radius=4,
         )
 
-        name = self.info_font.render(skill.name, True, Colors.TEXT_HIGHLIGHT)
+        # Name + capstone badge
+        name_color = Colors.YELLOW if is_capstone else Colors.TEXT_HIGHLIGHT
+        name_text = f"\u2605 {skill.name}" if is_capstone else skill.name
+        name = self.info_font.render(name_text, True, name_color)
         screen.blit(name, (tx + 8, ty + 5))
 
+        # Description
         desc = self.small_font.render(skill.description, True, Colors.TEXT)
         screen.blit(desc, (tx + 8, ty + 28))
 
+        # Level
         level = self.small_font.render(
             f"Level: {skill.current_level}/{skill.max_level}", True, Colors.TEXT_SECONDARY
         )
         screen.blit(level, (tx + 8, ty + 48))
 
+        # Prerequisite
         if skill.prerequisite_id:
             prereq = self.progression.skills.get(skill.prerequisite_id)
             prereq_name = prereq.name if prereq else skill.prerequisite_id
             prereq_text = self.small_font.render(f"Requires: {prereq_name}", True, Colors.YELLOW)
-            screen.blit(prereq_text, (tx + 8, ty + 68))
+            screen.blit(prereq_text, (tx + 8, ty + 66))
 
-        if skill.is_unlocked and skill.bonus_per_level > 0:
-            bonus = self.small_font.render(
-                (
-                    f"Current bonus: {skill.get_bonus():.0%}"
-                    if skill.bonus_per_level < 1
-                    else f"Current bonus: {skill.get_bonus():.0f}"
-                ),
-                True,
-                Colors.SUCCESS,
-            )
-            screen.blit(bonus, (tx + 8, ty + 80))
+        # Current + next level bonus
+        line_y = ty + 84
+        if skill.bonus_per_level > 0:
+            is_pct = skill.bonus_per_level < 1
+            if skill.is_unlocked:
+                cur = skill.get_bonus()
+                cur_text = f"{cur:.0%}" if is_pct else f"{cur:.0f}"
+                cur_surf = self.small_font.render(f"Current: {cur_text}", True, Colors.SUCCESS)
+                screen.blit(cur_surf, (tx + 8, line_y))
+                line_y += 16
+            if not skill.is_maxed:
+                nxt = skill.bonus_per_level * (skill.current_level + 1)
+                nxt_text = f"{nxt:.0%}" if is_pct else f"{nxt:.0f}"
+                nxt_surf = self.small_font.render(
+                    f"Next level: {nxt_text}", True, Colors.TEXT_SECONDARY
+                )
+                screen.blit(nxt_surf, (tx + 8, line_y))
 
     def get_next_state(self) -> Optional[GameState]:
         return self.next_state

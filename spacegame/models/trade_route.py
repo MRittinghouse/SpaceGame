@@ -96,3 +96,103 @@ class TradeRouteTracker:
         tracker = cls()
         tracker._routes = dict(data.get("routes", {}))
         return tracker
+
+
+@dataclass
+class PriceMemory:
+    """Last-seen commodity prices per visited system.
+
+    Unlocked by the ``price_memory`` skill (QA Pass 5 Tier 3.F, 2026-04-21).
+    When the player arrives at a system with the skill active, the current
+    market snapshot is recorded here. The galaxy map reads this data to
+    display "as of day N" price memory for unvisited (but previously-
+    visited) systems, helping players plan trade routes without needing
+    to re-travel to check prices.
+
+    Design notes:
+      - Always the LATEST snapshot per system — no history, no decay.
+        "Last known" price is the entire value proposition.
+      - Per-commodity day stamps so the UI can show "days ago" freshness
+        and players can tell if their memory is stale.
+      - Snapshots overwrite wholesale on re-visit — prices are independent
+        per commodity but the visit event updates all of them together.
+    """
+
+    # system_id → {commodity_id: (price, game_day_seen)}
+    _snapshots: dict[str, dict[str, tuple[int, int]]] = field(default_factory=dict)
+
+    def record(
+        self,
+        system_id: str,
+        prices: dict[str, int],
+        game_day: int,
+    ) -> None:
+        """Record a visit snapshot.
+
+        Args:
+            system_id: System the player just visited.
+            prices: All commodity prices at that system as of the visit.
+            game_day: Current in-game day for freshness tracking.
+        """
+        if not system_id or not prices:
+            return
+        snapshot: dict[str, tuple[int, int]] = {}
+        for commodity_id, price in prices.items():
+            if price <= 0:
+                continue  # Skip unavailable/quest commodities
+            snapshot[commodity_id] = (int(price), int(game_day))
+        self._snapshots[system_id] = snapshot
+
+    def get_last_known(
+        self,
+        system_id: str,
+        commodity_id: str,
+    ) -> tuple[int, int] | None:
+        """Return the last-known ``(price, day_seen)`` or None if unknown."""
+        return self._snapshots.get(system_id, {}).get(commodity_id)
+
+    def get_snapshot(self, system_id: str) -> dict[str, tuple[int, int]]:
+        """Return the full commodity snapshot for a system (empty dict if unknown)."""
+        return dict(self._snapshots.get(system_id, {}))
+
+    def known_systems(self) -> set[str]:
+        """Set of all system IDs with any recorded snapshot."""
+        return set(self._snapshots.keys())
+
+    def has_memory(self, system_id: str) -> bool:
+        """True if at least one price is remembered for ``system_id``."""
+        return bool(self._snapshots.get(system_id))
+
+    def clear(self) -> None:
+        """Wipe all snapshots (e.g., on new game)."""
+        self._snapshots.clear()
+
+    def to_dict(self) -> dict:
+        """Serialize to a save-friendly dict.
+
+        Tuple is flattened to list because JSON can't carry tuples directly.
+        """
+        return {
+            "snapshots": {
+                sys_id: {cid: list(entry) for cid, entry in snap.items()}
+                for sys_id, snap in self._snapshots.items()
+            }
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "PriceMemory":
+        """Deserialize from dict. Tolerant of missing/partial data."""
+        memory = cls()
+        raw = data.get("snapshots", {})
+        for sys_id, snap in raw.items():
+            restored: dict[str, tuple[int, int]] = {}
+            for cid, entry in snap.items():
+                # Entry is [price, day] — tolerate both list and tuple.
+                if isinstance(entry, (list, tuple)) and len(entry) >= 2:
+                    try:
+                        restored[cid] = (int(entry[0]), int(entry[1]))
+                    except (TypeError, ValueError):
+                        continue
+            if restored:
+                memory._snapshots[sys_id] = restored
+        return memory

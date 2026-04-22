@@ -129,6 +129,12 @@ class MiningView(BaseView):
         self.session: Optional[MiningSession] = None
         self.next_state: Optional[GameState] = None
 
+        # Tutorial mode (set externally by game.py)
+        self._tutorial_mode: bool = False
+        self._tutorial_step: int = 0  # 0=click rock, 1=empowered, 2=collect rare
+        self._tutorial_clicks: int = 0
+        self._tutorial_empowered: bool = False
+
         # Ore silo for this system (decouples mining from ship cargo)
         self._silo: OreSilo = player.ore_silo_manager.get_silo(
             mining_config.system_id if mining_config else player.current_system_id
@@ -403,13 +409,13 @@ class MiningView(BaseView):
         rare_chance_bonus = 0.0
         chain_chance_bonus = 0.0
 
+        guaranteed_rare = False
         if self.progression:
             click_power_bonus = self.progression.get_bonus("click_drill_power")
             passive_drill_bonus = self.progression.get_bonus("passive_drill_speed")
-            drone_speed_bonus = self.progression.get_bonus("drone_mining_speed")
-            rare_chance_bonus = self.progression.get_bonus("mining_rare_chance")
-            rare_chance_bonus += self.progression.get_bonus("rare_ore_chance")
-            chain_chance_bonus = self.progression.get_bonus("chain_chance")
+            rare_chance_bonus = self.progression.get_bonus("rare_ore_chance")
+            chain_chance_bonus = self.progression.get_bonus("chain_break_chance")
+            guaranteed_rare = self.progression.get_bonus("guaranteed_rare") >= 1.0
 
         # Apply ship upgrade bonuses (stacks with skill tree)
         click_power_bonus += self.player.upgrade_manager.get_bonus("drill_speed_bonus")
@@ -453,6 +459,7 @@ class MiningView(BaseView):
             prestige_level=self.player.mining_prestige_level,
             auto_drill_level=auto_drill_level,
             ore_scanner_level=ore_scanner_level,
+            guaranteed_rare=guaranteed_rare,
         )
 
         # Apply energy conduit bonus
@@ -890,9 +897,7 @@ class MiningView(BaseView):
         if not self.session:
             return
         advance = self.session.regenerate_field()
-        self.player.max_mining_depth = max(
-            self.player.max_mining_depth, self.session.depth
-        )
+        self.player.max_mining_depth = max(self.player.max_mining_depth, self.session.depth)
         # Award strata tokens
         if advance.strata_earned > 0:
             self.player.add_strata_tokens(advance.strata_earned)
@@ -923,9 +928,7 @@ class MiningView(BaseView):
         )
         self._layer_transition.trigger(self.session.depth, vfx_grid_rect)
 
-        self._show_message(
-            f"Depth {self.session.depth}! +{advance.strata_earned} Strata"
-        )
+        self._show_message(f"Depth {self.session.depth}! +{advance.strata_earned} Strata")
         # One-time prestige tutorial when first eligible
         if (
             self.session.depth >= self._get_prestige_depth_requirement()
@@ -946,6 +949,18 @@ class MiningView(BaseView):
         success, msg, result = self.session.click_rock(gx, gy, empowered=empowered)
 
         if success:
+            # Tutorial step tracking
+            if self._tutorial_mode:
+                self._tutorial_clicks += 1
+                if empowered and not self._tutorial_empowered:
+                    self._tutorial_empowered = True
+                if self._tutorial_step == 0 and self._tutorial_clicks >= 1:
+                    self._tutorial_step = 1  # Advance to "try empowered"
+                if self._tutorial_step == 1 and self._tutorial_empowered:
+                    self._tutorial_step = 2  # Advance to "mine the rare one"
+                if self._tutorial_step == 2 and result:
+                    self._tutorial_step = 3  # Final: keep going
+
             # Click hit particles at rock position
             fx = self.GRID_OFFSET_X + gx * self.CELL_SIZE + self.CELL_SIZE // 2
             fy = self.GRID_OFFSET_Y + gy * self.CELL_SIZE + self.CELL_SIZE // 2
@@ -1244,11 +1259,16 @@ class MiningView(BaseView):
                 msgs = self.progression.add_xp(ms.reward_xp)
                 for m in msgs:
                     logger.info(m)
-                self._add_feedback(f"+{ms.reward_xp} XP", WINDOW_WIDTH - scale_x(200), scale_y(80), Colors.BLUE)
+                self._add_feedback(
+                    f"+{ms.reward_xp} XP", WINDOW_WIDTH - scale_x(200), scale_y(80), Colors.BLUE
+                )
             if ms.reward_credits > 0:
                 self.player.credits += ms.reward_credits
                 self._add_feedback(
-                    f"+{ms.reward_credits} CR", WINDOW_WIDTH - scale_x(200), scale_y(100), Colors.GREEN
+                    f"+{ms.reward_credits} CR",
+                    WINDOW_WIDTH - scale_x(200),
+                    scale_y(100),
+                    Colors.GREEN,
                 )
             logger.info(f"Mining milestone complete: {ms.description}")
 
@@ -1392,6 +1412,9 @@ class MiningView(BaseView):
         # Prestige tutorial popup
         if self._show_prestige_hint:
             self._render_prestige_hint(screen)
+
+        # Tutorial narration (above summary)
+        self._render_tutorial_narration(screen)
 
         # Summary overlay (drawn last, on top of everything)
         if self._show_summary:
@@ -2492,6 +2515,37 @@ class MiningView(BaseView):
             rating_color=RATING_COLORS.get(self._session_rating, Colors.TEXT_SECONDARY),
             panel_height=480,
         )
+
+    def _render_tutorial_narration(self, screen: pygame.Surface) -> None:
+        """Render Jez's shift supervision during first mining session."""
+        if not self._tutorial_mode:
+            return
+
+        # Jez Okafor, shift supervisor. Not a teacher — a boss putting you to work.
+        narration_steps = [
+            "New blood? Alright. See those rocks? Click to mine. Start with the light ones. They break clean.",
+            "Right-click if you want it done faster. Burns energy, but the shift ends when the hold's full.",
+            "That crystal. That's why we come down here. Everything else pays the bills. That pays the debt.",
+            "Not bad for a first shift. Transfer to the silo and come back when you need credits.",
+        ]
+        step = min(self._tutorial_step, len(narration_steps) - 1)
+        narration = narration_steps[step]
+
+        from spacegame.engine.draw_utils import draw_panel
+        from spacegame.engine.fonts import FONT_BODY, get_font
+        from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
+
+        font = get_font("narration", FONT_BODY)
+        panel_w = WINDOW_WIDTH - scale_x(160)
+        panel_h = scale_y(45)
+        panel_x = (WINDOW_WIDTH - panel_w) // 2
+        panel_y = WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - panel_h - scale_y(10)
+
+        draw_panel(screen, (panel_x, panel_y, panel_w, panel_h), alpha=220)
+        sp = font.render("Jez: ", True, Colors.TEXT_HIGHLIGHT)
+        screen.blit(sp, (panel_x + 16, panel_y + 12))
+        txt = font.render(narration, True, Colors.TEXT_PRIMARY)
+        screen.blit(txt, (panel_x + 16 + sp.get_width(), panel_y + 12))
 
     def get_next_state(self) -> Optional[GameState]:
         return self.next_state

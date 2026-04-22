@@ -91,6 +91,8 @@ class Ship:
             self._upgrade_manager = None
         if not hasattr(self, "_crew_roster"):
             self._crew_roster = None
+        if not hasattr(self, "_progression"):
+            self._progression = None
         # Ship builder references (Phase A2)
         if not hasattr(self, "_build"):
             self._build = None
@@ -111,6 +113,10 @@ class Ship:
     def set_crew_roster(self, roster) -> None:
         """Link a crew roster for bonus calculations."""
         self._crew_roster = roster
+
+    def set_progression(self, progression) -> None:
+        """Link a progression for skill bonus calculations."""
+        self._progression = progression
 
     def get_crew_bonus(self, bonus_type: str) -> float:
         """Get a crew bonus by type, or 0.0 if no crew roster linked."""
@@ -153,16 +159,16 @@ class Ship:
                 parts_catalog=parts_catalog,
                 ship_type=self.ship_type,
             )
-            # Create or update the composite renderer
+            # Create or update the composite renderer.
+            # Uses the rebuilt 7-phase pipeline per
+            # requirements/overhaul/94_ship_composite_api.md. The constructor
+            # takes only the build — materials and module catalog are
+            # resolved internally via the data loader.
             try:
                 from spacegame.engine.ship_composite import ShipComposite
 
                 if not hasattr(self, "_composite") or self._composite is None:
-                    self._composite = ShipComposite(
-                        self._build,
-                        materials,
-                        module_catalog=module_catalog,
-                    )
+                    self._composite = ShipComposite(self._build)
                 else:
                     self._composite.invalidate()
             except ImportError:
@@ -196,9 +202,7 @@ class Ship:
             True if the equipment is installed in any slot.
         """
         if self._build:
-            return any(
-                ps.equipped_part_id == equipment_id for ps in self._build.placed_slots
-            )
+            return any(ps.equipped_part_id == equipment_id for ps in self._build.placed_slots)
         # Fallback: check upgrade manager
         if self._upgrade_manager:
             return self._upgrade_manager.has_upgrade(equipment_id)
@@ -255,6 +259,11 @@ class Ship:
                 base += int(self._upgrade_manager.get_bonus("cargo_bonus"))
         if self._crew_roster:
             base += int(self._crew_roster.get_bonus("cargo_bonus"))
+        # Commerce skill: cargo_capacity_bonus is a percentage increase
+        if self._progression:
+            cargo_pct = self._progression.get_bonus("cargo_capacity_bonus")
+            if cargo_pct > 0:
+                base = int(base * (1.0 + cargo_pct))
         return base
 
     @property

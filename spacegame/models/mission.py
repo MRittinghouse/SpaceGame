@@ -9,6 +9,8 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import TYPE_CHECKING, Any, Optional
 
+from spacegame.utils.logger import logger
+
 if TYPE_CHECKING:
     from spacegame.models.player import Player
 
@@ -165,6 +167,8 @@ class Mission:
     discovery_method: str = ""  # "npc", "station_board", "encounter", "automatic"
     discovery_text: str = ""  # First-person narrative hook for journal when mission unlocks
     crew_member_id: str = ""  # Crew member required in party for quest progression
+    # Faction reputation gate: [{"faction_id": str, "min_reputation": int}]
+    required_reputation: list[dict[str, Any]] = field(default_factory=list)
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "Mission":
@@ -205,6 +209,7 @@ class Mission:
             discovery_method=data.get("discovery_method", ""),
             discovery_text=data.get("discovery_text", ""),
             crew_member_id=data.get("crew_member_id", ""),
+            required_reputation=data.get("required_reputation", []),
         )
 
     def get_target_system_ids(self) -> list[str]:
@@ -250,6 +255,8 @@ class Mission:
             d["discovery_text"] = self.discovery_text
         if self.crew_member_id:
             d["crew_member_id"] = self.crew_member_id
+        if self.required_reputation:
+            d["required_reputation"] = self.required_reputation
         return d
 
 
@@ -316,7 +323,11 @@ class MissionManager:
         del self._progress[mission_id]
         return True
 
-    def update_availability(self, player_flags: Optional[dict[str, bool]] = None) -> list[str]:
+    def update_availability(
+        self,
+        player_flags: Optional[dict[str, bool]] = None,
+        player_reputation: Optional[dict[str, int]] = None,
+    ) -> list[str]:
         """Check prerequisites and flags, mark eligible missions as AVAILABLE.
 
         For side missions, also checks available_after (campaign mission must
@@ -324,12 +335,14 @@ class MissionManager:
 
         Args:
             player_flags: Current dialogue flags from player state.
+            player_reputation: Faction ID -> reputation value mapping.
 
         Returns:
             List of mission IDs that just became available.
         """
         completed_ids = self.get_completed_ids()
         flags = player_flags or {}
+        rep = player_reputation or {}
         newly_available: list[str] = []
         for mid, mission in self._missions.items():
             if self._status[mid] != MissionStatus.UNAVAILABLE:
@@ -338,11 +351,43 @@ class MissionManager:
             flags_met = all(flags.get(f, False) for f in mission.required_flags)
             # Side missions: check available_after campaign gate
             after_met = not mission.available_after or mission.available_after in completed_ids
-            if prereqs_met and flags_met and after_met:
+            # Faction reputation gate
+            rep_met = all(
+                rep.get(r["faction_id"], 0) >= r["min_reputation"]
+                for r in mission.required_reputation
+            )
+            if prereqs_met and flags_met and after_met and rep_met:
                 self._status[mid] = MissionStatus.AVAILABLE
                 newly_available.append(mid)
                 if mission.auto_accept:
                     self.accept_mission(mid)
+                    logger.debug(
+                        "Mission '%s' auto-accepted (prereqs=%s, flags=%s, after=%s)",
+                        mid,
+                        prereqs_met,
+                        flags_met,
+                        after_met,
+                    )
+                else:
+                    logger.debug("Mission '%s' now AVAILABLE", mid)
+            elif mission.required_flags or mission.prerequisites or mission.available_after:
+                # Log why blocked missions stay unavailable (only for gated missions)
+                missing_prereqs = [p for p in mission.prerequisites if p not in completed_ids]
+                missing_flags = [f for f in mission.required_flags if not flags.get(f, False)]
+                missing_after = (
+                    mission.available_after
+                    if mission.available_after and mission.available_after not in completed_ids
+                    else ""
+                )
+                if missing_prereqs or missing_flags or missing_after:
+                    logger.debug(
+                        "Mission '%s' blocked: missing_prereqs=%s, "
+                        "missing_flags=%s, missing_after=%s",
+                        mid,
+                        missing_prereqs,
+                        missing_flags,
+                        missing_after,
+                    )
         return newly_available
 
     def accept_mission(self, mission_id: str) -> tuple[bool, str]:
@@ -466,6 +511,13 @@ class MissionManager:
                     for i, obj in incomplete:
                         player.dialogue_flags[obj.target_id] = True
                         self._progress[mid][i] = True
+                        logger.warning(
+                            "Auto-resolved HAS_FLAG objective '%s' for "
+                            "mission '%s' — consider adding proper flag-setting "
+                            "in dialogue or encounters",
+                            obj.target_id,
+                            mid,
+                        )
 
             if all(self._progress[mid]):
                 self._status[mid] = MissionStatus.COMPLETED
@@ -538,16 +590,65 @@ class MissionManager:
         """Get objective completion flags for a mission."""
         return list(self._progress.get(mission_id, []))
 
-    def get_active_target_systems(self) -> set[str]:
-        """Get system IDs targeted by incomplete reach_system objectives in active missions."""
+    def get_active_target_systems(
+        self,
+        npc_home_systems: Optional[dict[str, str]] = None,
+    ) -> set[str]:
+        """Get system IDs targeted by incomplete objectives in active missions.
+
+        Includes reach_system targets and, if npc_home_systems is provided,
+        the home systems of NPCs referenced by talk_to_npc objectives.
+
+        Args:
+            npc_home_systems: Mapping of NPC ID -> home system ID.
+
+        Returns:
+            Set of system IDs the player should visit.
+        """
+        npc_systems = npc_home_systems or {}
         systems: set[str] = set()
         for mid, mission in self._missions.items():
             if self._status[mid] != MissionStatus.ACTIVE:
                 continue
             for i, obj in enumerate(mission.objectives):
-                if obj.type == ObjectiveType.REACH_SYSTEM and not self._progress[mid][i]:
+                if self._progress[mid][i]:
+                    continue
+                if obj.type == ObjectiveType.REACH_SYSTEM:
                     systems.add(obj.target_id)
+                elif obj.type == ObjectiveType.TALK_TO_NPC and obj.target_id in npc_systems:
+                    systems.add(npc_systems[obj.target_id])
         return systems
+
+    def get_contextual_hints(
+        self,
+        current_system_id: str,
+        npc_home_systems: Optional[dict[str, str]] = None,
+    ) -> list[str]:
+        """Get quest hints relevant to the player's current system.
+
+        Args:
+            current_system_id: System the player is currently docked at.
+            npc_home_systems: Mapping of NPC ID -> home system ID (from data loader).
+
+        Returns:
+            List of hint strings for active missions with objectives at this system.
+        """
+        npc_systems = npc_home_systems or {}
+        hints: list[str] = []
+        for mid, mission in self._missions.items():
+            if self._status[mid] != MissionStatus.ACTIVE:
+                continue
+            progress = self._progress[mid]
+            for i, obj in enumerate(mission.objectives):
+                if i < len(progress) and progress[i]:
+                    continue  # Already complete
+                if obj.type == ObjectiveType.REACH_SYSTEM and obj.target_id == current_system_id:
+                    hints.append(f"{mission.name}: {obj.description}")
+                elif obj.type == ObjectiveType.TALK_TO_NPC:
+                    npc_system = npc_systems.get(obj.target_id, "")
+                    if npc_system == current_system_id:
+                        hints.append(f"{mission.name}: {obj.description}")
+        return hints
 
     def get_active_forced_encounters(self) -> list[ForcedEncounter]:
         """Get forced encounters from all active missions."""
@@ -556,6 +657,58 @@ class MissionManager:
             for m in self.get_missions_by_status(MissionStatus.ACTIVE)
             if m.forced_encounter
         ]
+
+    def get_reputation_locked_teaser(
+        self,
+        system_id: str,
+        player_reputation: dict[str, int],
+    ) -> Optional[tuple[str, str, str]]:
+        """Get at most one reputation-locked mission for station board teaser.
+
+        Returns the locked mission closest to the player's current reputation,
+        or None if no missions are locked by reputation at this system.
+
+        Args:
+            system_id: Current system ID.
+            player_reputation: Faction ID -> reputation value.
+
+        Returns:
+            Tuple of (mission_name, faction_name, tier_name) or None.
+        """
+        from spacegame.models.faction import get_reputation_tier
+
+        best: Optional[tuple[str, str, str, int]] = None  # name, faction, tier, gap
+
+        for mid, mission in self._missions.items():
+            if self._status[mid] != MissionStatus.UNAVAILABLE:
+                continue
+            if not mission.required_reputation:
+                continue
+            if mission.available_at and system_id not in mission.available_at:
+                continue
+
+            # Check if reputation is the ONLY thing blocking this mission
+            # (other gates like flags/prereqs must already be met)
+            completed_ids = self.get_completed_ids()
+            prereqs_ok = all(pid in completed_ids for pid in mission.prerequisites)
+            after_ok = not mission.available_after or mission.available_after in completed_ids
+            if not prereqs_ok or not after_ok:
+                continue  # Blocked by something else, don't tease
+
+            for req in mission.required_reputation:
+                faction_id = req["faction_id"]
+                min_rep = req["min_reputation"]
+                current_rep = player_reputation.get(faction_id, 0)
+                if current_rep < min_rep:
+                    gap = min_rep - current_rep
+                    tier = get_reputation_tier(min_rep)
+                    faction_display = faction_id.replace("_", " ").title()
+                    if best is None or gap < best[3]:
+                        best = (mission.name, faction_display, tier.value, gap)
+
+        if best:
+            return (best[0], best[1], best[2])
+        return None
 
     def get_ground_mission_trigger(
         self,

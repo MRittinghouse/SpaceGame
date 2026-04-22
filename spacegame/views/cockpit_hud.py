@@ -6,6 +6,7 @@ Visual skin adapts to context: cockpit instruments when in space, station
 chrome when docked.
 """
 
+import math
 from enum import Enum
 from typing import Optional
 
@@ -77,12 +78,12 @@ _STATION_ACCENT = (200, 180, 100)  # Warm amber (default; overridden by faction)
 _STATION_ACCENT_DIM = (100, 90, 50)
 _STATION_TRIM_COLOR = (60, 60, 55)
 
-# Faction accent overrides for station skin
+# Faction accent overrides for station skin (canonical source: config.py Colors)
 FACTION_ACCENTS: dict[str, tuple[int, int, int]] = {
-    "commerce_guild": (80, 140, 220),  # Corporate blue
-    "miners_union": (220, 170, 60),  # Industrial amber
-    "science_collective": (180, 200, 240),  # Clean white-blue
-    "frontier_alliance": (80, 200, 120),  # Frontier green
+    "commerce_guild": Colors.FACTION_ACCENT_COMMERCE,
+    "miners_union": Colors.FACTION_ACCENT_MINERS,
+    "science_collective": Colors.FACTION_ACCENT_SCIENCE,
+    "frontier_alliance": Colors.FACTION_ACCENT_FRONTIER,
 }
 
 # Shared colors (used by both skins)
@@ -98,9 +99,12 @@ _FUEL_COLOR = (190, 140, 30)
 _BADGE_RED = (220, 40, 40)
 _CREDIT_GOLD = (255, 215, 100)
 
-# Navigation button definitions
+# Navigation button definitions.
+# The first entry's full label is intentionally empty — it's replaced at
+# render time with the player's chosen name, so the UI never calls the
+# player "Captain" before the narrative has earned the rank.
 _NAV_BUTTONS = [
-    ("CPT", "Captain", GameState.CHARACTER),
+    ("YOU", "", GameState.CHARACTER),
     ("SKL", "Skills", GameState.SKILL_TREE),
     ("CRW", "Crew", GameState.CREW_ROSTER),
     ("MSN", "Missions", GameState.MISSION_LOG),
@@ -393,7 +397,16 @@ class CockpitHUD:
             else (Colors.YELLOW if hull_ratio > 0.25 else Colors.RED)
         )
         self._draw_hud_bar(
-            screen, x, y, bar_w, bar_h, hull_ratio, hull_color, "HULL", f"{hull_current}/{hull_max}"
+            screen,
+            x,
+            y,
+            bar_w,
+            bar_h,
+            hull_ratio,
+            hull_color,
+            "HULL",
+            f"{hull_current}/{hull_max}",
+            label_color=Colors.GREEN,
         )
 
         # Shield bar
@@ -411,6 +424,7 @@ class CockpitHUD:
             _SHIELD_COLOR,
             "SHLD",
             f"{shield_current}/{shield_max}",
+            label_color=_SHIELD_COLOR,
         )
 
         # Fuel bar
@@ -429,6 +443,7 @@ class CockpitHUD:
             fuel_color,
             "FUEL",
             f"{fuel_current}/{fuel_max}",
+            label_color=_FUEL_COLOR,
         )
 
     def _draw_hud_bar(
@@ -442,14 +457,16 @@ class CockpitHUD:
         color: tuple[int, int, int],
         label: str,
         value: str = "",
+        label_color: Optional[tuple[int, int, int]] = None,
     ) -> None:
         """Render a single HUD status bar with label and inline value."""
-        label_w = scale_x(38)
+        label_w = scale_x(42)
         bar_x = x + label_w
         bar_w = width - label_w
 
-        # Label
-        label_surf = self._label_font.render(label, True, Colors.TEXT_SECONDARY)
+        # Label (color-coded to match bar for instant visual association)
+        lc = label_color or Colors.TEXT_SECONDARY
+        label_surf = self._label_font.render(label, True, lc)
         screen.blit(label_surf, (x, y + (height - label_surf.get_height()) // 2))
 
         # Bar background
@@ -488,6 +505,9 @@ class CockpitHUD:
     def _render_buttons(self, screen: pygame.Surface) -> None:
         """Render the 5 navigation buttons in the center section."""
         for i, (short_label, full_label, target_state) in enumerate(self._button_defs):
+            # Character button: use the player's chosen name as the full label.
+            if not full_label and target_state == GameState.CHARACTER:
+                full_label = self.player.name or short_label
             rect = self._button_rects[i]
             is_hovered = i == self._hovered_button
             is_active = self._current_state == target_state
@@ -506,21 +526,33 @@ class CockpitHUD:
             pygame.draw.rect(screen, bg, rect, border_radius=3)
             pygame.draw.rect(screen, border, rect, 1, border_radius=3)
 
-            # Button label
+            # Button label — use full word if it fits, abbreviated otherwise
             text_color = Colors.TEXT_HIGHLIGHT if is_active else Colors.TEXT_PRIMARY
-            label_surf = self._button_font.render(short_label, True, text_color)
+            full_fits = self._button_font.size(full_label)[0] < rect.width - scale_x(12)
+            display_label = full_label if full_fits else short_label
+            label_surf = self._button_font.render(display_label, True, text_color)
             screen.blit(
                 label_surf,
                 label_surf.get_rect(center=rect.center),
             )
 
-            # Notification badge
-            has_badge = self._check_badge(i)
-            if has_badge:
+            # Notification badge (pulsing, with count if applicable)
+            badge_count = self._get_badge_count(i)
+            if badge_count > 0:
                 badge_x = rect.right - scale_x(6)
                 badge_y = rect.top + scale_y(4)
-                pygame.draw.circle(screen, _BADGE_RED, (badge_x, badge_y), scale_x(4))
+                # Subtle pulse: radius oscillates
+                pulse = 1.0 + 0.15 * math.sin(self._pulse_timer * 4)
+                badge_r = int(scale_x(5) * pulse)
+                pygame.draw.circle(screen, _BADGE_RED, (badge_x, badge_y), badge_r)
                 pygame.draw.circle(screen, (255, 100, 100), (badge_x - 1, badge_y - 1), 1)
+                # Show count for 2+
+                if badge_count > 1:
+                    count_surf = self._label_font.render(str(badge_count), True, Colors.WHITE)
+                    screen.blit(
+                        count_surf,
+                        count_surf.get_rect(center=(badge_x, badge_y)),
+                    )
 
             # Tooltip on hover
             if is_hovered:
@@ -537,25 +569,24 @@ class CockpitHUD:
                 pygame.draw.rect(screen, _SHIP_PANEL_BORDER, tip_bg, 1)
                 screen.blit(tooltip, (tip_x, tip_y))
 
-    def _check_badge(self, button_index: int) -> bool:
-        """Check if a button should show a notification badge.
+    def _get_badge_count(self, button_index: int) -> int:
+        """Get notification count for a button (0 = no badge).
 
         Args:
             button_index: Index into _NAV_BUTTONS.
 
         Returns:
-            True if the button has pending content.
+            Count of pending items (0 means no badge shown).
         """
         if button_index == 1:  # Skills
-            return self.player.progression.skill_points > 0
+            return self.player.progression.skill_points
         if button_index == 3:  # Missions
             available = self.mission_manager.get_missions_by_status(MissionStatus.AVAILABLE)
-            return len(available) > 0
+            return len(available)
         if button_index == 2:  # Crew
             if self.crew_roster:
-                pending = self.crew_roster.pending_companion_ids
-                return len(pending) > 0
-        return False
+                return len(self.crew_roster.pending_companion_ids)
+        return 0
 
     def _render_info_panel(self, screen: pygame.Surface) -> None:
         """Render ship name, credits, cargo, and quest hint in the right section."""
@@ -588,18 +619,15 @@ class CockpitHUD:
         cargo_surf = self._value_font.render(cargo_text, True, cargo_color)
         screen.blit(cargo_surf, (x, y3))
 
-        # Line 4: Quest hint
+        # Line 4: Quest hint (clickable — opens mission log)
         y4 = y_base + line_spacing * 3
         quest_text = self._get_quest_hint()
         if quest_text:
-            quest_surf = self._quest_font.render(quest_text, True, Colors.TEXT_SECONDARY)
-            # Truncate if too wide
+            from spacegame.engine.draw_utils import truncate_text
+
             max_w = w - scale_x(4)
-            if quest_surf.get_width() > max_w:
-                while len(quest_text) > 3 and quest_surf.get_width() > max_w:
-                    quest_text = quest_text[:-1]
-                quest_text = quest_text.rstrip() + ".."
-                quest_surf = self._quest_font.render(quest_text, True, Colors.TEXT_SECONDARY)
+            display_text = truncate_text(quest_text, self._quest_font, max_w)
+            quest_surf = self._quest_font.render(display_text, True, Colors.TEXT_SECONDARY)
             screen.blit(quest_surf, (x, y4))
             self._quest_rect = pygame.Rect(x, y4, quest_surf.get_width(), quest_surf.get_height())
         else:

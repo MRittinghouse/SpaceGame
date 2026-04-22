@@ -12,21 +12,24 @@ import pygame_gui
 from spacegame.achievement_manager import AchievementManager
 from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH, Colors, GameState, scale_x, scale_y
 from spacegame.engine.backgrounds import AnimatedBackground
-from spacegame.engine.draw_utils import draw_bar
+from spacegame.engine.draw_utils import draw_bar, draw_panel
 from spacegame.engine.fonts import FONT_MD, FONT_SECTION, FONT_SM, FONT_SUBTITLE, get_font
 from spacegame.models.player import Player
 from spacegame.utils.logger import logger
 from spacegame.views.base_view import BaseView
 from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
 
-# Category badge colors and symbols
+# Category badge colors and symbols.
+# Themed palette: each entry is the signature tone for an achievement
+# category. Migration to PALETTE_ROLES deferred to Sprint 4; until then
+# these literals are centralized here rather than scattered inline.
 _BADGE_COLORS: dict[str, tuple[int, int, int]] = {
     "trading": (220, 180, 40),  # Gold
     "mining": (180, 100, 30),  # Rust
     "salvage": (100, 160, 200),  # Steel blue
     "exploration": (80, 180, 120),  # Green
     "ground": (200, 80, 80),  # Red
-    "wealth": (255, 215, 0),  # Bright gold
+    "wealth": Colors.GOLD,
     "smuggling": (140, 50, 160),  # Purple
     "progression": (100, 180, 255),  # Blue
     "economy": (200, 160, 50),  # Amber
@@ -34,6 +37,10 @@ _BADGE_COLORS: dict[str, tuple[int, int, int]] = {
     "combat": (200, 50, 50),  # Dark red
     "side_quest": (180, 140, 220),  # Lavender
 }
+
+# Card background tints.
+_CARD_BG_UNLOCKED: tuple[int, int, int] = (25, 35, 20)
+_CARD_BG_LOCKED: tuple[int, int, int] = (20, 20, 30)
 
 # Category display order and labels for filter tabs
 _CATEGORY_ORDER: list[tuple[str, str]] = [
@@ -119,7 +126,7 @@ class AchievementsView(BaseView):
         # Background
         self.background = AnimatedBackground("deep_space", WINDOW_WIDTH, WINDOW_HEIGHT, seed=77)
         self._bg_dim = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
-        self._bg_dim.fill((0, 0, 0))
+        self._bg_dim.fill(Colors.BLACK)
         self._bg_dim.set_alpha(140)
 
     def on_enter(self) -> None:
@@ -239,6 +246,22 @@ class AchievementsView(BaseView):
         start_y = scale_y(108) - self.scroll_offset
         spacing = 8
 
+        if not filtered:
+            # Filter landed on a category with no achievements.
+            empty_text = (
+                "No achievements in this category yet."
+                if self._active_filter != "all"
+                else "No achievements yet."
+            )
+            empty_surf = self.desc_font.render(empty_text, True, Colors.TEXT_SECONDARY)
+            screen.blit(
+                empty_surf,
+                (
+                    (WINDOW_WIDTH - empty_surf.get_width()) // 2,
+                    scale_y(160),
+                ),
+            )
+
         for i, achievement in enumerate(filtered):
             y = start_y + i * (card_height + spacing)
 
@@ -272,17 +295,20 @@ class AchievementsView(BaseView):
         height: int,
     ) -> None:
         """Render a single achievement card."""
-        # Card background
-        card_surf = pygame.Surface((width, height), pygame.SRCALPHA)
+        # Card panel: background tint + border conveyed by draw_panel in one call.
         if is_unlocked:
-            card_surf.fill((25, 35, 20, 200))  # Green tint
+            bg_color = _CARD_BG_UNLOCKED
+            border_color = Colors.GREEN
         else:
-            card_surf.fill((20, 20, 30, 200))  # Gray
-        screen.blit(card_surf, (x, y))
-
-        # Border
-        border_color = Colors.GREEN if is_unlocked else Colors.UI_BORDER
-        pygame.draw.rect(screen, border_color, (x, y, width, height), 1)
+            bg_color = _CARD_BG_LOCKED
+            border_color = Colors.UI_BORDER
+        draw_panel(
+            screen,
+            (x, y, width, height),
+            alpha=200,
+            bg_color=bg_color,
+            border_color=border_color,
+        )
 
         # Name
         if achievement.hidden and not is_unlocked:

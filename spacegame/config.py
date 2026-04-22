@@ -74,9 +74,91 @@ def scale_y(base_px: int) -> int:
 # ============================================================================
 # COLORS (RGB)
 # ============================================================================
+#
+# Colors is a thin wrapper over ``spacegame.engine.material_palette``.
+# Each attribute named in ``_COLORS_ROLE_MAP`` below resolves through
+# ``get_role`` at access time, so the active colorblind profile (if any)
+# remaps the value automatically. Attributes not in the map return their
+# literal tuple defined on the class — unchanged legacy behavior.
+#
+# This wrapper preserves the widely-used ``Colors.GREEN`` / ``Colors.RED``
+# call shape across 1,072 call sites while unifying the backend on the
+# palette infrastructure. See ``requirements/ui_sprint_4_findings.md``
+# for the migration design and scope.
+
+# Map: Colors attribute name → PALETTE_ROLES role name.
+# Only migrated attributes appear here. Non-migrated attributes stay as
+# literal class attributes and never go through the palette.
+_COLORS_ROLE_MAP: dict[str, str] = {
+    # Status colors
+    "GREEN": "status_success",
+    "RED": "status_critical",
+    "YELLOW": "status_warning",
+    "BLUE": "status_info",
+    "SUCCESS": "status_success",
+    "ERROR": "status_critical",
+    # Skill check colors
+    "CHECK_PASS": "check_pass",
+    "CHECK_MARGINAL": "check_marginal",
+    "CHECK_FAIL": "check_fail",
+    # Quality tier colors
+    "QUALITY_POOR": "quality_poor",
+    "QUALITY_NORMAL": "quality_normal",
+    "QUALITY_GOOD": "quality_good",
+    "QUALITY_EXCELLENT": "quality_excellent",
+    # Text colors (Sprint 4b)
+    "TEXT_PRIMARY": "text_primary",
+    "TEXT_SECONDARY": "text_secondary",
+    "TEXT_HIGHLIGHT": "text_highlight",
+    "TEXT": "text_primary",  # alias of TEXT_PRIMARY
+    # Faction primary colors (Sprint 4b)
+    "FACTION_COMMERCE": "faction_commerce",
+    "FACTION_MINERS": "faction_miners",
+    "FACTION_SCIENCE": "faction_science",
+    "FACTION_FRONTIER": "faction_frontier",
+    # Faction accent colors (Sprint 4b)
+    "FACTION_ACCENT_COMMERCE": "faction_accent_commerce",
+    "FACTION_ACCENT_MINERS": "faction_accent_miners",
+    "FACTION_ACCENT_SCIENCE": "faction_accent_science",
+    "FACTION_ACCENT_FRONTIER": "faction_accent_frontier",
+    # Faction tint colors (Sprint 4b)
+    "FACTION_TINT_COMMERCE": "faction_tint_commerce",
+    "FACTION_TINT_MINERS": "faction_tint_miners",
+    "FACTION_TINT_SCIENCE": "faction_tint_science",
+    "FACTION_TINT_FRONTIER": "faction_tint_frontier",
+}
 
 
-class Colors:
+class _ColorsMeta(type):
+    """Metaclass that routes select attribute accesses through the palette.
+
+    Uses ``__getattribute__`` so that even attributes defined on the class
+    go through the palette lookup first. If the palette lookup fails
+    (e.g., the role is not defined), falls back to the class attribute.
+    This keeps the class safe under missing-role scenarios and allows
+    literal defaults to coexist with palette-backed values.
+    """
+
+    def __getattribute__(cls, name: str):
+        # Cheap dunder bypass — never intercept internal protocol attrs.
+        if name.startswith("__"):
+            return super().__getattribute__(name)
+        role_map = super().__getattribute__("__dict__").get("_COLORS_ROLE_MAP")
+        if role_map is None:
+            # Map lives at module scope; read it lazily from globals().
+            role_map = _COLORS_ROLE_MAP
+        role = role_map.get(name)
+        if role is not None:
+            try:
+                from spacegame.engine.material_palette import get_role
+
+                return get_role(role)
+            except (KeyError, ImportError):
+                pass  # Fall through to the literal class attribute.
+        return super().__getattribute__(name)
+
+
+class Colors(metaclass=_ColorsMeta):
     """Standard color palette for the game."""
 
     # Base colors
@@ -133,11 +215,23 @@ class Colors:
     GLOW_GREEN = (40, 200, 100)
     GLOW_ORANGE = (255, 150, 40)
 
-    # Faction colors
+    # Faction primary colors (labels, emblems, indicators)
     FACTION_COMMERCE = (100, 150, 255)  # Blue - Commerce Guild
     FACTION_MINERS = (200, 150, 50)  # Orange/gold - Miners Union
     FACTION_SCIENCE = (150, 100, 200)  # Purple - Science Collective
     FACTION_FRONTIER = (100, 200, 100)  # Green - Frontier Alliance
+
+    # Faction accent colors (HUD highlights, active borders — brighter)
+    FACTION_ACCENT_COMMERCE = (80, 140, 220)
+    FACTION_ACCENT_MINERS = (220, 170, 60)
+    FACTION_ACCENT_SCIENCE = (140, 170, 220)
+    FACTION_ACCENT_FRONTIER = (80, 200, 120)
+
+    # Faction tint colors (subtle panel edge tints — dimmed)
+    FACTION_TINT_COMMERCE = (40, 60, 100)
+    FACTION_TINT_MINERS = (90, 70, 30)
+    FACTION_TINT_SCIENCE = (60, 50, 90)
+    FACTION_TINT_FRONTIER = (40, 80, 50)
 
     # Skill check colors
     CHECK_PASS = (80, 220, 120)  # Green - will pass
@@ -208,6 +302,10 @@ class GameState(Enum):
     SHIP_BUILDER = "ship_builder"
     SHIP_MANAGEMENT = "ship_management"
 
+    # Tutorial states
+    TUTORIAL_SHOP = "tutorial_shop"
+    TUTORIAL_BUILDER = "tutorial_builder"
+
     # Info screens
     STATISTICS = "statistics"
     ACHIEVEMENTS = "achievements"
@@ -273,11 +371,80 @@ if not getattr(sys, "frozen", False):
     BACKGROUNDS_IMAGE_DIR.mkdir(parents=True, exist_ok=True)
 
 # ============================================================================
+# ACCESSIBILITY
+# ============================================================================
+
+
+class ColorMode:
+    """Color mode for accessibility. Affects gain/loss indicator colors."""
+
+    NORMAL = "normal"
+    DEUTERANOPIA = "deuteranopia"  # Red-green (most common)
+    PROTANOPIA = "protanopia"  # Red-weak
+    TRITANOPIA = "tritanopia"  # Blue-yellow (rare)
+
+
+# Active color mode (changed via settings)
+_active_color_mode: str = ColorMode.NORMAL
+
+# Colorblind-safe palette remappings for gain/loss indicators
+_COLORBLIND_PALETTES: dict[str, dict[str, tuple[int, int, int]]] = {
+    ColorMode.NORMAL: {
+        "gain": Colors.GREEN,
+        "loss": Colors.RED,
+        "neutral": Colors.YELLOW,
+    },
+    ColorMode.DEUTERANOPIA: {
+        "gain": (0, 150, 255),  # Blue (instead of green)
+        "loss": (255, 150, 0),  # Orange (instead of red)
+        "neutral": (255, 255, 100),
+    },
+    ColorMode.PROTANOPIA: {
+        "gain": (0, 150, 255),  # Blue
+        "loss": (255, 170, 0),  # Amber
+        "neutral": (255, 255, 100),
+    },
+    ColorMode.TRITANOPIA: {
+        "gain": (0, 200, 100),  # Green (safe for blue-yellow)
+        "loss": (220, 50, 50),  # Red (safe for blue-yellow)
+        "neutral": (200, 200, 200),  # Gray
+    },
+}
+
+
+def set_color_mode(mode: str) -> None:
+    """Set the active colorblind mode."""
+    global _active_color_mode
+    _active_color_mode = mode
+
+
+def get_color_mode() -> str:
+    """Get the active colorblind mode."""
+    return _active_color_mode
+
+
+def get_gain_color() -> tuple[int, int, int]:
+    """Get the current gain/positive indicator color (colorblind-safe)."""
+    palette = _COLORBLIND_PALETTES.get(_active_color_mode, _COLORBLIND_PALETTES[ColorMode.NORMAL])
+    return palette["gain"]
+
+
+def get_loss_color() -> tuple[int, int, int]:
+    """Get the current loss/negative indicator color (colorblind-safe)."""
+    palette = _COLORBLIND_PALETTES.get(_active_color_mode, _COLORBLIND_PALETTES[ColorMode.NORMAL])
+    return palette["loss"]
+
+
+# Font scaling multiplier (changed via settings, applied in fonts.py)
+FONT_SCALE: float = 1.0
+
+
+# ============================================================================
 # GAME RULES (Placeholder - will expand)
 # ============================================================================
 
 # Starting conditions
-STARTING_CREDITS = 4000
+STARTING_CREDITS = 5500
 STARTING_FUEL = 100
 
 # Game timing (if using turn-based or timed mechanics)
@@ -327,7 +494,6 @@ XP_PER_SALVAGE = 6
 XP_PER_REFINE = 10
 XP_PER_TRAVEL = 10
 MAX_LEVEL = 999  # Effectively uncapped — formula-based XP scaling
-SKILL_POINT_CAP_LEVEL = 40  # Stop granting skill points after this level
 ATTRIBUTE_CAP_LEVEL = 25  # Last level that awards attribute points
 
 # ============================================================================
@@ -376,6 +542,16 @@ CREW_DEPARTED_SURCHARGE = 50000  # Harsh penalty if crew left due to loyalty 0
 DIALOGUE_TEXT_SPEED = 40  # Characters per second for typewriter effect (0 = instant)
 DIALOGUE_PORTRAIT_SIZE = (scale_x(100), scale_y(120))
 SOCIAL_CHECK_FEEDBACK_DURATION = 1.5  # Seconds to show check result overlay
+DISPOSITION_FEEDBACK_DURATION = 1.2  # Seconds to show disposition change text
+
+# Disposition tiers for the dialogue UI (Empathic Read skill)
+DISPOSITION_TIERS = [
+    {"name": "Wary", "min": 0, "max": 20, "color": (100, 140, 180)},
+    {"name": "Neutral", "min": 21, "max": 40, "color": (140, 140, 140)},
+    {"name": "Friendly", "min": 41, "max": 60, "color": (200, 180, 80)},
+    {"name": "Trusted", "min": 61, "max": 80, "color": (80, 180, 80)},
+    {"name": "Close Ally", "min": 81, "max": 100, "color": (220, 190, 60)},
+]
 
 # ============================================================================
 # GROUND EXPLORATION CONSTANTS

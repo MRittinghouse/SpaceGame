@@ -37,8 +37,6 @@ class ModuleCombatState:
         return self.current_hp / self.max_hp if self.max_hp > 0 else 0.0
 
 
-
-
 # HP per grid cell for slot-based builds (slots use footprint area instead of pixel count)
 HP_PER_SLOT_CELL = 8
 
@@ -327,9 +325,7 @@ def check_severing(
         fw = getattr(slot_def, "footprint_w", 1)
         fh = getattr(slot_def, "footprint_h", 1)
         slot_pixels = {
-            (placed_slot.x + dx, placed_slot.y + dy)
-            for dx in range(fw)
-            for dy in range(fh)
+            (placed_slot.x + dx, placed_slot.y + dy) for dx in range(fw) for dy in range(fh)
         }
         # Slot is severed if ALL its pixels are in severed sections
         active_pixels = slot_pixels & all_pixel_coords
@@ -377,11 +373,7 @@ def build_adjacency_map(
         if slot_def:
             fw = getattr(slot_def, "footprint_w", 1)
             fh = getattr(slot_def, "footprint_h", 1)
-            slot_pixel_sets.append({
-                (ps.x + dx, ps.y + dy)
-                for dx in range(fw)
-                for dy in range(fh)
-            })
+            slot_pixel_sets.append({(ps.x + dx, ps.y + dy) for dx in range(fw) for dy in range(fh)})
         else:
             slot_pixel_sets.append(set())
 

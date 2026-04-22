@@ -248,9 +248,7 @@ class GalaxyMapView(BaseView):
                 self._travel_duration = full_duration * remaining_frac
             else:
                 self._travel_duration = 0.5
-            logger.info(
-                f"Resuming travel from {self._resume_travel_progress:.0%} to destination"
-            )
+            logger.info(f"Resuming travel from {self._resume_travel_progress:.0%} to destination")
 
     def on_exit(self) -> None:
         super().on_exit()
@@ -368,7 +366,12 @@ class GalaxyMapView(BaseView):
     def _calculate_fuel_cost(self, target_system_id: str) -> int:
         current = self.systems[self.player.current_system_id]
         target = self.systems[target_system_id]
-        return current.fuel_cost_to(target, self.player.ship.effective_fuel_efficiency)
+        base_cost = current.fuel_cost_to(target, self.player.ship.effective_fuel_efficiency)
+        # Exploration skill: fuel_reduction lowers fuel cost per jump
+        fuel_reduction = self.player.progression.get_bonus("fuel_reduction")
+        if fuel_reduction > 0:
+            base_cost = max(1, int(base_cost * (1 - fuel_reduction)))
+        return base_cost
 
     def _world_to_screen(self, world_x: float, world_y: float) -> tuple[int, int]:
         screen_x = int(self.map_center_x + (world_x * self.zoom))
@@ -460,6 +463,13 @@ class GalaxyMapView(BaseView):
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_j and self.journal:
                 self._show_journal_quick_add()
+            # Enter/Return: travel to selected system (same as Travel button)
+            elif event.key == pygame.K_RETURN and self.selected_system:
+                self._on_travel_button()
+            # Escape: deselect system
+            elif event.key == pygame.K_ESCAPE and self.selected_system:
+                self.selected_system = None
+                self._update_button_states()
 
     def _check_forced_encounters(self) -> Optional[EncounterRef]:
         """Check for scripted encounters from active missions."""
@@ -495,6 +505,10 @@ class GalaxyMapView(BaseView):
             self.message_timer = 3.0
             return
         self.player.ship.consume_fuel(fuel_cost)
+        # Exploration skill: emergency_reserves ensures minimum 1 fuel after any jump
+        if self.player.progression.get_bonus("emergency_reserves") > 0:
+            if self.player.ship.current_fuel < 1:
+                self.player.ship.current_fuel = 1
         self.player.game_day += 1
         self.player.decay_criminal_heat(1)
         self.player.jumps_traveled += 1
@@ -541,6 +555,9 @@ class GalaxyMapView(BaseView):
                     distance=distance,
                     player_level=self.player.progression.level,
                     defensive_identity=self.player.ship.ship_type.defensive_identity,
+                    encounter_reduction=self.player.progression.get_bonus("encounter_reduction"),
+                    anomaly_sense=self.player.progression.get_bonus("anomaly_sense"),
+                    anomaly_chance_bonus=self.player.progression.get_bonus("anomaly_chance"),
                 )
 
                 # Apply reputation modifiers to encounter
@@ -745,6 +762,47 @@ class GalaxyMapView(BaseView):
             self._deferred_system_id = None
             logger.info(f"System ID finalized: {dest_id}")
 
+            # Tier 3.F: record a commodity price snapshot when the player
+            # has the price_memory skill active. Skill is a level-1 unlock
+            # (bonus_per_level=1.0) — any non-zero bonus enables tracking.
+            # Market is constructed on-demand (same pattern as the remote-
+            # price preview below) because prices are deterministic per
+            # (system, game_day) so a throwaway Market produces identical
+            # values to the persistent one.
+            try:
+                has_memory = self.player.progression.get_bonus("price_memory") > 0
+            except Exception:
+                has_memory = False
+            if has_memory and dest_id in self.systems:
+                try:
+                    from spacegame.data_loader import get_data_loader
+                    from spacegame.models.market import Market
+
+                    dl = get_data_loader()
+                    commodities = list(dl.commodities.values())
+                    system = self.systems[dest_id]
+                    market = Market(system, commodities, self.player.game_day)
+                    prices = market.get_all_prices()
+                    self.player.price_memory.record(
+                        dest_id, prices, self.player.game_day
+                    )
+                    logger.debug(
+                        f"Price memory recorded for {dest_id} at day {self.player.game_day}"
+                    )
+                except Exception as exc:
+                    logger.warning(f"Price memory record failed: {exc}")
+
+            # Exploration skill: jump_hull_restore heals % hull on arrival
+            hull_restore_pct = self.player.progression.get_bonus("jump_hull_restore")
+            if hull_restore_pct > 0:
+                max_hull = self.player.ship.ship_type.combat_hull
+                if self.player.ship._computed_stats and self.player.ship._computed_stats.hull > 0:
+                    max_hull = self.player.ship._computed_stats.hull
+                heal_amount = max(1, int(max_hull * hull_restore_pct))
+                healed = self.player.ship.repair_hull(heal_amount)
+                if healed > 0:
+                    logger.info(f"Field Repairs: restored {healed} hull on arrival")
+
             # Arrival feedback
             if dest_id in self.systems:
                 dest = self.systems[dest_id]
@@ -875,6 +933,24 @@ class GalaxyMapView(BaseView):
             target_pos = self._world_to_screen(target.coordinates.x, target.coordinates.y)
             route_color = self._get_danger_route_color(target.danger_level)
             self._draw_dashed_line(screen, route_color, current_pos, target_pos)
+
+            # Route preview: distance + fuel cost midway along the line
+            distance = current_system.distance_to(target)
+            fuel_cost = self._calculate_fuel_cost(route_target_id)
+            mid_x = (current_pos[0] + target_pos[0]) // 2
+            mid_y = (current_pos[1] + target_pos[1]) // 2
+            route_label = f"{distance:.0f}u  |  {fuel_cost} fuel"
+            route_surf = self.info_font.render(route_label, True, route_color)
+            # Dark pill behind text for readability against starfield
+            pill_w = route_surf.get_width() + 12
+            pill_h = route_surf.get_height() + 6
+            pill_bg = pygame.Surface((pill_w, pill_h), pygame.SRCALPHA)
+            pill_bg.fill((8, 10, 20, 200))
+            screen.blit(pill_bg, (mid_x - pill_w // 2, mid_y - pill_h // 2 - 10))
+            screen.blit(
+                route_surf,
+                (mid_x - route_surf.get_width() // 2, mid_y - route_surf.get_height() // 2 - 10),
+            )
 
         # Highlight active travel route
         if self._travel_animating and self._travel_origin_id and self._travel_dest_id:
@@ -1011,17 +1087,45 @@ class GalaxyMapView(BaseView):
                         screen.blit(pe_surf, (screen_x - half_w - 8, screen_y - half_h - 8))
                         break  # One indicator per system
 
-            # Mission destination marker (pulsing diamond)
+            # Mission destination marker (pulsing diamond, larger + outer glow)
             if system_id in self.mission_target_systems:
-                m_alpha = int(150 + 100 * math.sin(self._glow_time * 4))
-                marker_surf = pygame.Surface((14, 14), pygame.SRCALPHA)
-                points = [(7, 0), (14, 7), (7, 14), (0, 7)]
+                m_alpha = int(160 + 90 * math.sin(self._glow_time * 4))
+                # Outer glow (diffuse)
+                glow_size = 24
+                glow_surf = pygame.Surface((glow_size, glow_size), pygame.SRCALPHA)
+                glow_points = [
+                    (glow_size // 2, 2),
+                    (glow_size - 2, glow_size // 2),
+                    (glow_size // 2, glow_size - 2),
+                    (2, glow_size // 2),
+                ]
+                pygame.draw.polygon(
+                    glow_surf,
+                    (*Colors.TEXT_HIGHLIGHT, min(255, m_alpha // 3)),
+                    glow_points,
+                )
+                screen.blit(
+                    glow_surf,
+                    (screen_x - half_w - glow_size + 2, screen_y - glow_size // 2),
+                )
+                # Inner diamond (solid)
+                marker_size = 16
+                marker_surf = pygame.Surface((marker_size, marker_size), pygame.SRCALPHA)
+                points = [
+                    (marker_size // 2, 1),
+                    (marker_size - 1, marker_size // 2),
+                    (marker_size // 2, marker_size - 1),
+                    (1, marker_size // 2),
+                ]
                 pygame.draw.polygon(
                     marker_surf,
                     (*Colors.TEXT_HIGHLIGHT, min(255, m_alpha)),
                     points,
                 )
-                screen.blit(marker_surf, (screen_x - half_w - 12, screen_y - 7))
+                screen.blit(
+                    marker_surf,
+                    (screen_x - half_w - marker_size + 2, screen_y - marker_size // 2),
+                )
 
             # System name — rendered after all systems to allow overlap avoidance
             # (deferred to a second pass below)
@@ -1033,7 +1137,13 @@ class GalaxyMapView(BaseView):
             planet_surf = self._planet_surfaces.get(system_id)
             half_h = (planet_surf.get_height() // 2) if planet_surf else 12
 
-            name_color = Colors.TEXT_HIGHLIGHT if system_id == self.selected_system else Colors.TEXT
+            # Brighter for selected, normal for visited, dimmer for unvisited
+            if system_id == self.selected_system:
+                name_color = Colors.TEXT_HIGHLIGHT
+            elif system_id in self.player.systems_visited:
+                name_color = Colors.TEXT
+            else:
+                name_color = Colors.TEXT_SECONDARY
             name_surf = self.system_font.render(system.name, True, name_color)
             shadow = self.system_font.render(system.name, True, (0, 0, 0))
 
@@ -1383,6 +1493,10 @@ class GalaxyMapView(BaseView):
         screen.blit(label, (rect.x + (rect.width - label.get_width()) // 2, rect.y + scale_y(6)))
 
     def _draw_system_info(self, screen: pygame.Surface, system_id: str) -> None:
+        # Market price display is skill-gated — see the Market prices block
+        # below. remote_prices shows live prices; price_memory (Tier 3.F)
+        # shows last-known prices with "days ago" freshness on visited
+        # systems.
         system = self.systems[system_id]
 
         panel_x = scale_x(15)
@@ -1394,25 +1508,40 @@ class GalaxyMapView(BaseView):
 
         # --- Collect all content lines as (text, color) tuples ---
 
+        # system_intel skill gates info for unvisited systems:
+        #   Lv0: only type shown. Lv1+: danger. Lv2+: faction/economy.
+        #   Visited systems always show everything.
+        is_visited = system_id in self.player.systems_visited
+        intel_level = self.player.progression.get_bonus("system_intel")
+
         faction_id = self.player.get_faction_for_system(system_id)
 
         info_lines: list[tuple[str, tuple[int, int, int]]] = [
             (f"Type: {system.type.replace('_', ' ').title()}", Colors.TEXT),
         ]
 
-        # Faction and reputation on separate lines for readability
-        if faction_id:
-            tier = self.player.get_reputation_tier(faction_id)
-            rep_val = self.player.get_reputation(faction_id)
-            sign = "+" if rep_val >= 0 else ""
-            info_lines.append((f"Faction: {system.faction}", Colors.TEXT))
-            info_lines.append(
-                (f"  Reputation: {tier.value} ({sign}{rep_val})", Colors.TEXT_SECONDARY)
-            )
+        # Faction and reputation — gated behind system_intel >= 2 for unvisited
+        show_faction = is_visited or intel_level >= 2.0
+        if show_faction:
+            if faction_id:
+                tier = self.player.get_reputation_tier(faction_id)
+                rep_val = self.player.get_reputation(faction_id)
+                sign = "+" if rep_val >= 0 else ""
+                info_lines.append((f"Faction: {system.faction}", Colors.TEXT))
+                info_lines.append(
+                    (f"  Reputation: {tier.value} ({sign}{rep_val})", Colors.TEXT_SECONDARY)
+                )
+            else:
+                info_lines.append((f"Faction: {system.faction}", Colors.TEXT))
         else:
-            info_lines.append((f"Faction: {system.faction}", Colors.TEXT))
+            info_lines.append(("Faction: ???", Colors.TEXT_SECONDARY))
 
-        info_lines.append((f"Danger: {system.danger_level.title()}", Colors.TEXT))
+        # Danger — gated behind system_intel >= 1 for unvisited
+        show_danger = is_visited or intel_level >= 1.0
+        if show_danger:
+            info_lines.append((f"Danger: {system.danger_level.title()}", Colors.TEXT))
+        else:
+            info_lines.append(("Danger: ???", Colors.TEXT_SECONDARY))
         info_lines.append(("", Colors.TEXT))
 
         if system_id != self.player.current_system_id:
@@ -1472,15 +1601,20 @@ class GalaxyMapView(BaseView):
                     info_lines.append((f"  {pe.description[:40]}... ({days_left}d)", Colors.TEXT))
                     break
 
-        # Remote market prices
+        # Market prices on the map — priority:
+        #   1. remote_prices skill: live current prices (richest info)
+        #   2. price_memory skill + prior visit: remembered prices with age
+        #   3. neither: no price section
         remote_price_lines: list[tuple[str, tuple[int, int, int]]] = []
-        if (
-            system_id != self.player.current_system_id
-            and self.player.progression.get_bonus("remote_prices") > 0
-            and hasattr(system, "economy")
-            and system.economy
-        ):
-            remote_price_lines = self._get_remote_price_lines(system)
+        if system_id != self.player.current_system_id and hasattr(system, "economy") and system.economy:
+            if self.player.progression.get_bonus("remote_prices") > 0:
+                remote_price_lines = self._get_remote_price_lines(system)
+            elif (
+                self.player.progression.get_bonus("price_memory") > 0
+                and self.player.price_memory.has_memory(system_id)
+            ):
+                # Tier 3.F: fall back to the player's last-known snapshot.
+                remote_price_lines = self._get_price_memory_lines(system)
 
         # --- Calculate total panel height to fit ALL content ---
         panel_height = pad + header_height + len(info_lines) * line_height
@@ -1493,16 +1627,24 @@ class GalaxyMapView(BaseView):
         panel_surf.fill((15, 18, 35, 200))
         screen.blit(panel_surf, (panel_x, panel_y))
 
+        # Panel border with faction accent
+        from spacegame.views.layout import get_faction_accent
+
+        border_accent = get_faction_accent(faction_id) if faction_id else Colors.UI_BORDER
         pygame.draw.rect(
             screen,
             Colors.UI_BORDER,
             (panel_x, panel_y, panel_width, panel_height),
             1,
         )
-        inner_rect = pygame.Rect(panel_x + 1, panel_y + 1, panel_width - 2, panel_height - 2)
-        glow_surf = pygame.Surface((inner_rect.width, inner_rect.height), pygame.SRCALPHA)
-        pygame.draw.rect(glow_surf, (*Colors.TEXT_HIGHLIGHT, 30), glow_surf.get_rect(), 1)
-        screen.blit(glow_surf, inner_rect.topleft)
+        # Top accent line in faction color
+        pygame.draw.line(
+            screen,
+            border_accent,
+            (panel_x, panel_y),
+            (panel_x + panel_width, panel_y),
+            2,
+        )
 
         # --- Render content ---
         y_offset = panel_y + pad
@@ -1535,6 +1677,66 @@ class GalaxyMapView(BaseView):
                 surf = self.info_font.render(text, True, color)
                 screen.blit(surf, (panel_x + pad, y_offset))
                 y_offset += line_height
+
+    def _get_price_memory_lines(
+        self, system: "StarSystem"
+    ) -> list[tuple[str, tuple[int, int, int]]]:
+        """Build last-known-prices lines from the player's PriceMemory.
+
+        Tier 3.F: shown when the ``price_memory`` skill is active and the
+        player has a recorded snapshot for the system. Distinct from
+        ``_get_remote_price_lines`` (which shows live current prices when
+        ``remote_prices`` is active). Memory shows AGE per commodity so
+        players can judge staleness.
+        """
+        from spacegame.data_loader import get_data_loader
+
+        dl = get_data_loader()
+        snapshot = self.player.price_memory.get_snapshot(system.id)
+        if not snapshot:
+            return []
+
+        lines: list[tuple[str, tuple[int, int, int]]] = []
+        lines.append(("── Remembered Prices ──", Colors.TEXT_HIGHLIGHT))
+
+        # Prioritize commodities the system exports/imports (actionable info).
+        exports = system.economy.specialty_exports if system.economy else []
+        imports = system.economy.specialty_imports if system.economy else []
+
+        def _format_entry(commodity_id: str, price: int, day_seen: int) -> str:
+            name = dl.commodities[commodity_id].name if commodity_id in dl.commodities else commodity_id
+            days_ago = max(0, self.player.game_day - day_seen)
+            if days_ago == 0:
+                freshness = "today"
+            elif days_ago == 1:
+                freshness = "1d ago"
+            else:
+                freshness = f"{days_ago}d ago"
+            return f"  {name}: {price:,} CR ({freshness})"
+
+        shown: set[str] = set()
+        if exports:
+            lines.append(("Buy cheap:", Colors.GREEN))
+            for cid in exports[:3]:
+                if cid in snapshot:
+                    price, day = snapshot[cid]
+                    lines.append((_format_entry(cid, price, day), Colors.GREEN))
+                    shown.add(cid)
+        if imports:
+            lines.append(("Sell high:", (220, 180, 40)))
+            for cid in imports[:3]:
+                if cid in snapshot:
+                    price, day = snapshot[cid]
+                    lines.append((_format_entry(cid, price, day), (220, 180, 40)))
+                    shown.add(cid)
+
+        # If no export/import context produced lines, fall back to first
+        # few entries so at least something surfaces.
+        if len(shown) == 0:
+            for cid, (price, day) in list(snapshot.items())[:5]:
+                lines.append((_format_entry(cid, price, day), Colors.TEXT))
+
+        return lines
 
     def _get_remote_price_lines(self, system: StarSystem) -> list[tuple[str, tuple[int, int, int]]]:
         """Build price summary lines for a remote system."""

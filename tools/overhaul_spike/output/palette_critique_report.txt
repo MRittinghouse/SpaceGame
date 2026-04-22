@@ -1,0 +1,160 @@
+SPIKE C: palette stress test
+Seed: 42  |  Palettes tested: conservative, balanced, high_contrast, neon
+Render time (9 ships across 3 palettes): 179.4 ms
+Canvas: 240 x 160  |  Modules per ship: 6
+
+PALETTE DESCRIPTIVE STATS
+  conservative     lum_range= 235.2  warmth= +11.5  saturation=  62.2
+  balanced         lum_range= 239.2  warmth= +14.0  saturation=  65.2
+  high_contrast    lum_range= 247.7  warmth= +18.6  saturation=  71.0
+  neon             lum_range= 238.7  warmth=  -5.4  saturation=  64.7
+
+=== PALETTE: CONSERVATIVE ===
+  luminance_range=235.2  warmth_skew=+11.5  saturation_mean=62.2
+
+CRITIQUE — conservative/ship_solari
+  [PASS] palette_compliance           100.0% within 12 RGB of palette (target 90%)
+  [PASS] palette_line_compliance      100.0% within 10 RGB of palette graph (target 95%)
+  [PASS] silhouette_readability       avg edge contrast 327.9 (target ≥ 30.0)
+  [PASS] alpha_discipline             0.0% mid-alpha pixels (limit 15%)
+  [PASS] detail_density               edge/opaque density = 0.173 (target 0.04-0.35)
+  [PASS] ship_connected               4412/4412 opaque pixels in largest connected region
+  [FAIL] lighting_consistency         upper-right luminance 210.1 vs lower-left 206.3 (diff +3.7)
+  -> 6/7 checks passed
+
+CRITIQUE — conservative/ship_reach
+  [PASS] palette_compliance           100.0% within 12 RGB of palette (target 90%)
+  [PASS] palette_line_compliance      100.0% within 10 RGB of palette graph (target 95%)
+  [PASS] silhouette_readability       avg edge contrast 140.6 (target ≥ 30.0)
+  [PASS] alpha_discipline             0.0% mid-alpha pixels (limit 15%)
+  [PASS] detail_density               edge/opaque density = 0.141 (target 0.04-0.35)
+  [PASS] ship_connected               4647/4647 opaque pixels in largest connected region
+  [PASS] lighting_consistency         upper-right luminance 74.4 vs lower-left 64.1 (diff +10.4)
+  -> 7/7 checks passed
+
+CRITIQUE — conservative/ship_union
+  [PASS] palette_compliance           100.0% within 12 RGB of palette (target 90%)
+  [PASS] palette_line_compliance      100.0% within 10 RGB of palette graph (target 95%)
+  [PASS] silhouette_readability       avg edge contrast 266.0 (target ≥ 30.0)
+  [PASS] alpha_discipline             0.0% mid-alpha pixels (limit 15%)
+  [PASS] detail_density               edge/opaque density = 0.180 (target 0.04-0.35)
+  [PASS] ship_connected               4714/4714 opaque pixels in largest connected region
+  [PASS] lighting_consistency         upper-right luminance 179.9 vs lower-left 173.0 (diff +6.9)
+  -> 7/7 checks passed
+
+  [PASS] variant_distinctness: pairwise mean RGB diff (opaque) = 88.1 (target ≥ 15.0)
+
+=== PALETTE: BALANCED ===
+  luminance_range=239.2  warmth_skew=+14.0  saturation_mean=65.2
+
+CRITIQUE — balanced/ship_solari
+  [PASS] palette_compliance           100.0% within 12 RGB of palette (target 90%)
+  [PASS] palette_line_compliance      100.0% within 10 RGB of palette graph (target 95%)
+  [PASS] silhouette_readability       avg edge contrast 330.2 (target ≥ 30.0)
+  [PASS] alpha_discipline             0.0% mid-alpha pixels (limit 15%)
+  [PASS] detail_density               edge/opaque density = 0.175 (target 0.04-0.35)
+  [PASS] ship_connected               4412/4412 opaque pixels in largest connected region
+  [FAIL] lighting_consistency         upper-right luminance 213.3 vs lower-left 209.8 (diff +3.5)
+  -> 6/7 checks passed
+
+CRITIQUE — balanced/ship_reach
+  [PASS] palette_compliance           100.0% within 12 RGB of palette (target 90%)
+  [PASS] palette_line_compliance      100.0% within 10 RGB of palette graph (target 95%)
+  [PASS] silhouette_readability       avg edge contrast 144.8 (target ≥ 30.0)
+  [PASS] alpha_discipline             0.0% mid-alpha pixels (limit 15%)
+  [PASS] detail_density               edge/opaque density = 0.136 (target 0.04-0.35)
+  [PASS] ship_connected               4647/4647 opaque pixels in largest connected region
+  [PASS] lighting_consistency         upper-right luminance 75.3 vs lower-left 64.9 (diff +10.4)
+  -> 7/7 checks passed
+
+CRITIQUE — balanced/ship_union
+  [PASS] palette_compliance           100.0% within 12 RGB of palette (target 90%)
+  [PASS] palette_line_compliance      100.0% within 10 RGB of palette graph (target 95%)
+  [PASS] silhouette_readability       avg edge contrast 266.5 (target ≥ 30.0)
+  [PASS] alpha_discipline             0.0% mid-alpha pixels (limit 15%)
+  [PASS] detail_density               edge/opaque density = 0.175 (target 0.04-0.35)
+  [PASS] ship_connected               4714/4714 opaque pixels in largest connected region
+  [PASS] lighting_consistency         upper-right luminance 181.3 vs lower-left 174.8 (diff +6.5)
+  -> 7/7 checks passed
+
+  [PASS] variant_distinctness: pairwise mean RGB diff (opaque) = 89.1 (target ≥ 15.0)
+
+=== PALETTE: HIGH_CONTRAST ===
+  luminance_range=247.7  warmth_skew=+18.6  saturation_mean=71.0
+
+CRITIQUE — high_contrast/ship_solari
+  [PASS] palette_compliance           100.0% within 12 RGB of palette (target 90%)
+  [PASS] palette_line_compliance      100.0% within 10 RGB of palette graph (target 95%)
+  [PASS] silhouette_readability       avg edge contrast 336.3 (target ≥ 30.0)
+  [PASS] alpha_discipline             0.0% mid-alpha pixels (limit 15%)
+  [PASS] detail_density               edge/opaque density = 0.181 (target 0.04-0.35)
+  [PASS] ship_connected               4412/4412 opaque pixels in largest connected region
+  [FAIL] lighting_consistency         upper-right luminance 218.1 vs lower-left 218.3 (diff -0.2)
+  -> 6/7 checks passed
+
+CRITIQUE — high_contrast/ship_reach
+  [PASS] palette_compliance           100.0% within 12 RGB of palette (target 90%)
+  [PASS] palette_line_compliance      100.0% within 10 RGB of palette graph (target 95%)
+  [PASS] silhouette_readability       avg edge contrast 154.4 (target ≥ 30.0)
+  [PASS] alpha_discipline             0.0% mid-alpha pixels (limit 15%)
+  [PASS] detail_density               edge/opaque density = 0.130 (target 0.04-0.35)
+  [PASS] ship_connected               4647/4647 opaque pixels in largest connected region
+  [PASS] lighting_consistency         upper-right luminance 77.3 vs lower-left 65.7 (diff +11.5)
+  -> 7/7 checks passed
+
+CRITIQUE — high_contrast/ship_union
+  [PASS] palette_compliance           100.0% within 12 RGB of palette (target 90%)
+  [PASS] palette_line_compliance      100.0% within 10 RGB of palette graph (target 95%)
+  [PASS] silhouette_readability       avg edge contrast 266.2 (target ≥ 30.0)
+  [PASS] alpha_discipline             0.0% mid-alpha pixels (limit 15%)
+  [PASS] detail_density               edge/opaque density = 0.182 (target 0.04-0.35)
+  [PASS] ship_connected               4714/4714 opaque pixels in largest connected region
+  [PASS] lighting_consistency         upper-right luminance 183.7 vs lower-left 176.9 (diff +6.8)
+  -> 7/7 checks passed
+
+  [PASS] variant_distinctness: pairwise mean RGB diff (opaque) = 91.6 (target ≥ 15.0)
+
+=== PALETTE: NEON ===
+  luminance_range=238.7  warmth_skew=-5.4  saturation_mean=64.7
+
+CRITIQUE — neon/ship_solari
+  [PASS] palette_compliance           100.0% within 12 RGB of palette (target 90%)
+  [PASS] palette_line_compliance      100.0% within 10 RGB of palette graph (target 95%)
+  [PASS] silhouette_readability       avg edge contrast 338.9 (target ≥ 30.0)
+  [PASS] alpha_discipline             0.0% mid-alpha pixels (limit 15%)
+  [PASS] detail_density               edge/opaque density = 0.172 (target 0.04-0.35)
+  [PASS] ship_connected               4412/4412 opaque pixels in largest connected region
+  [FAIL] lighting_consistency         upper-right luminance 214.3 vs lower-left 212.2 (diff +2.1)
+  -> 6/7 checks passed
+
+CRITIQUE — neon/ship_reach
+  [PASS] palette_compliance           100.0% within 12 RGB of palette (target 90%)
+  [PASS] palette_line_compliance      100.0% within 10 RGB of palette graph (target 95%)
+  [PASS] silhouette_readability       avg edge contrast 180.8 (target ≥ 30.0)
+  [PASS] alpha_discipline             0.0% mid-alpha pixels (limit 15%)
+  [PASS] detail_density               edge/opaque density = 0.138 (target 0.04-0.35)
+  [PASS] ship_connected               4647/4647 opaque pixels in largest connected region
+  [PASS] lighting_consistency         upper-right luminance 90.8 vs lower-left 81.7 (diff +9.1)
+  -> 7/7 checks passed
+
+CRITIQUE — neon/ship_union
+  [PASS] palette_compliance           100.0% within 12 RGB of palette (target 90%)
+  [PASS] palette_line_compliance      100.0% within 10 RGB of palette graph (target 95%)
+  [PASS] silhouette_readability       avg edge contrast 263.7 (target ≥ 30.0)
+  [PASS] alpha_discipline             0.0% mid-alpha pixels (limit 15%)
+  [PASS] detail_density               edge/opaque density = 0.165 (target 0.04-0.35)
+  [PASS] ship_connected               4714/4714 opaque pixels in largest connected region
+  [PASS] lighting_consistency         upper-right luminance 173.4 vs lower-left 166.5 (diff +7.0)
+  -> 7/7 checks passed
+
+  [PASS] variant_distinctness: pairwise mean RGB diff (opaque) = 75.5 (target ≥ 15.0)
+
+CROSS-PALETTE DETERMINISM
+  [PASS] solari: conservative=2c34220e  balanced=7184c03a  high_contrast=3eb45f66  neon=ee253541
+  [PASS] reach: conservative=aae57005  balanced=65cd24ad  high_contrast=ec8daf23  neon=d463b608
+  [PASS] union: conservative=98614bdc  balanced=23cce49f  high_contrast=69d12266  neon=2e64f3b3
+
+SAME SHIP, DIFFERENT PALETTES (distinctness per manufacturer)
+  [FAIL] solari across palettes: pairwise mean RGB diff (opaque) = 9.9 (target ≥ 30.0)
+  [FAIL] reach across palettes: pairwise mean RGB diff (opaque) = 20.0 (target ≥ 30.0)
+  [FAIL] union across palettes: pairwise mean RGB diff (opaque) = 10.3 (target ≥ 30.0)

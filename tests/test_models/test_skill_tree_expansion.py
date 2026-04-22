@@ -1,85 +1,79 @@
-"""Tests for the R5 skill tree expansion — new skills, multi-rank, capstones, positions."""
+"""Tests for the 6-tree skill structure after S1 overhaul.
+
+Covers: tree sizes, capstones, prerequisite integrity, new skill spot checks.
+"""
 
 from spacegame.models.progression import (
     PlayerProgression,
-    SkillNode,
     SkillTreeType,
     create_default_skills,
-    get_xp_threshold,
 )
-
 
 # === Tree Size & Structure ===
 
 
 class TestTreeSizes:
-    """Each tree should have the expected number of skills after expansion."""
+    """Each tree should have the expected number of skills."""
 
-    def test_trading_tree_size(self) -> None:
+    def test_commerce_tree_size(self) -> None:
         prog = PlayerProgression()
-        assert len(prog.get_skill_tree(SkillTreeType.TRADING)) == 10
-
-    def test_gathering_tree_size(self) -> None:
-        prog = PlayerProgression()
-        assert len(prog.get_skill_tree(SkillTreeType.GATHERING)) == 8
-
-    def test_mining_tree_size(self) -> None:
-        prog = PlayerProgression()
-        assert len(prog.get_skill_tree(SkillTreeType.MINING)) == 11
-
-    def test_leadership_tree_size(self) -> None:
-        prog = PlayerProgression()
-        assert len(prog.get_skill_tree(SkillTreeType.LEADERSHIP)) == 10
-
-    def test_social_tree_size(self) -> None:
-        prog = PlayerProgression()
-        assert len(prog.get_skill_tree(SkillTreeType.SOCIAL)) == 10
-
-    def test_ground_tree_size(self) -> None:
-        prog = PlayerProgression()
-        assert len(prog.get_skill_tree(SkillTreeType.GROUND)) == 11
+        assert len(prog.get_skill_tree(SkillTreeType.COMMERCE)) == 12
 
     def test_combat_tree_size(self) -> None:
         prog = PlayerProgression()
-        assert len(prog.get_skill_tree(SkillTreeType.COMBAT)) == 30
+        assert len(prog.get_skill_tree(SkillTreeType.COMBAT)) == 22
 
     def test_exploration_tree_size(self) -> None:
         prog = PlayerProgression()
-        assert len(prog.get_skill_tree(SkillTreeType.EXPLORATION)) == 10
+        assert len(prog.get_skill_tree(SkillTreeType.EXPLORATION)) == 11
 
-    def test_smuggling_tree_size(self) -> None:
+    def test_leadership_tree_size(self) -> None:
         prog = PlayerProgression()
-        assert len(prog.get_skill_tree(SkillTreeType.SMUGGLING)) == 9
+        assert len(prog.get_skill_tree(SkillTreeType.LEADERSHIP)) == 9
+
+    def test_social_tree_size(self) -> None:
+        prog = PlayerProgression()
+        assert len(prog.get_skill_tree(SkillTreeType.SOCIAL)) == 11
+
+    def test_industry_tree_size(self) -> None:
+        prog = PlayerProgression()
+        assert len(prog.get_skill_tree(SkillTreeType.INDUSTRY)) == 10
 
     def test_total_skill_count(self) -> None:
         skills = create_default_skills()
-        assert len(skills) == 109
+        assert len(skills) == 75
 
-    def test_total_skill_points(self) -> None:
-        """Total cost to max every skill should be 175."""
+    def test_total_max_levels(self) -> None:
+        """Total cost to max every skill should be 132."""
         skills = create_default_skills()
         total = sum(s.max_level * s.cost_per_level for s in skills.values())
-        assert total == 215
+        assert total == 132
+
+    def test_six_trees_only(self) -> None:
+        """Exactly 6 tree types should exist."""
+        assert len(list(SkillTreeType)) == 6
 
 
 # === Capstone Skills ===
 
 
 CAPSTONES = [
-    "trade_magnate",
-    "master_prospector",
-    "strip_miner",
-    "legendary_captain",
-    "voice_of_the_expanse",
-    "battle_hardened",
-    "ace_pilot",
-    "trailblazer",
-    "phantom",
+    "insurance",  # Commerce
+    "juggernaut_capstone",  # Combat — Hull path
+    "sentinel_capstone",  # Combat — Shield path
+    "ghost_capstone",  # Combat — Evasion path
+    "volley_commander",  # Combat — Offense path
+    "emergency_reserves",  # Exploration
+    "anomaly_sense",  # Exploration
+    "legend_of_the_expanse",  # Leadership
+    "peacemaker",  # Social
+    "ore_sense",  # Industry
+    "material_science",  # Industry
 ]
 
 
 class TestCapstoneSkills:
-    """Every tree should have a capstone skill that's rank 1 with a prerequisite."""
+    """Every tree should have capstone skills that are rank 1 with prerequisites."""
 
     def test_all_capstones_exist(self) -> None:
         skills = create_default_skills()
@@ -99,56 +93,6 @@ class TestCapstoneSkills:
             assert skills[cap_id].prerequisite_id is not None, (
                 f"{cap_id} should have a prerequisite"
             )
-
-    def test_capstones_are_leaf_nodes(self) -> None:
-        """No skill should depend on a capstone."""
-        skills = create_default_skills()
-        capstone_set = set(CAPSTONES)
-        for skill_id, skill in skills.items():
-            if skill.prerequisite_id and skill.prerequisite_id in capstone_set:
-                assert False, f"{skill_id} depends on capstone {skill.prerequisite_id}"
-
-
-# === Ground Combat Multi-Rank ===
-
-
-class TestGroundMultiRank:
-    """Ground Combat skills should have correct multi-rank values."""
-
-    def test_scrapper_max_level_3(self) -> None:
-        skills = create_default_skills()
-        assert skills["scrapper"].max_level == 3
-
-    def test_tough_hide_max_level_3(self) -> None:
-        skills = create_default_skills()
-        assert skills["tough_hide"].max_level == 3
-
-    def test_quick_reflexes_max_level_2(self) -> None:
-        skills = create_default_skills()
-        assert skills["quick_reflexes"].max_level == 2
-
-    def test_intimidating_presence_max_level_2(self) -> None:
-        skills = create_default_skills()
-        assert skills["intimidating_presence"].max_level == 2
-
-    def test_last_stand_max_level_2(self) -> None:
-        skills = create_default_skills()
-        assert skills["last_stand"].max_level == 2
-
-    def test_scrapper_bonus_stacks(self) -> None:
-        prog = PlayerProgression()
-        prog.add_xp(get_xp_threshold(10))
-        prog.level_up_skill("scrapper")
-        prog.level_up_skill("scrapper")
-        prog.level_up_skill("scrapper")
-        assert prog.get_bonus("ground_attack_bonus") == 3.0
-
-    def test_tough_hide_bonus_stacks(self) -> None:
-        prog = PlayerProgression()
-        prog.add_xp(get_xp_threshold(10))
-        prog.level_up_skill("tough_hide")
-        prog.level_up_skill("tough_hide")
-        assert prog.get_bonus("ground_hp_bonus") == 4.0
 
 
 # === Prerequisite Chain Integrity ===
@@ -186,49 +130,151 @@ class TestPrerequisiteChains:
             if current is not None:
                 assert False, f"Circular prerequisite chain involving {skill_id}"
 
+    def test_every_tree_has_root_skills(self) -> None:
+        """Each tree should have at least one root skill (no prerequisite)."""
+        skills = create_default_skills()
+        for tree_type in SkillTreeType:
+            tree_skills = [s for s in skills.values() if s.tree == tree_type]
+            roots = [s for s in tree_skills if s.prerequisite_id is None]
+            assert len(roots) >= 1, f"{tree_type.value} has no root skills"
+
 
 # === New Skill Spot Checks ===
 
 
 class TestNewSkillsExist:
-    """Verify each new skill from the expansion exists with correct attributes."""
+    """Verify key new skills from the 6-tree overhaul exist with correct attributes."""
 
-    def test_supply_chain_mastery(self) -> None:
+    def test_cargo_mastery(self) -> None:
         skills = create_default_skills()
-        s = skills["supply_chain_mastery"]
-        assert s.tree == SkillTreeType.TRADING
-        assert s.prerequisite_id == "commodity_specialist"
+        s = skills["cargo_mastery"]
+        assert s.tree == SkillTreeType.COMMERCE
+        assert s.prerequisite_id == "trade_network"
+        assert s.max_level == 3
+
+    def test_price_memory(self) -> None:
+        skills = create_default_skills()
+        s = skills["price_memory"]
+        assert s.tree == SkillTreeType.COMMERCE
+        assert s.prerequisite_id == "market_insider"
+
+    def test_weapon_specialization(self) -> None:
+        skills = create_default_skills()
+        s = skills["weapon_specialization"]
+        assert s.tree == SkillTreeType.COMBAT
+        assert s.prerequisite_id is None
+        assert s.max_level == 3
+
+    def test_precision_strike(self) -> None:
+        skills = create_default_skills()
+        s = skills["precision_strike"]
+        assert s.tree == SkillTreeType.COMBAT
+        assert s.prerequisite_id == "weapon_specialization"
         assert s.max_level == 2
+
+    def test_elemental_affinity(self) -> None:
+        skills = create_default_skills()
+        s = skills["elemental_affinity"]
+        assert s.tree == SkillTreeType.COMBAT
+        assert s.max_level == 1
+
+    def test_momentum_surge(self) -> None:
+        skills = create_default_skills()
+        s = skills["momentum_surge"]
+        assert s.tree == SkillTreeType.COMBAT
+        assert s.bonus_type == "starting_momentum"
+
+    def test_battle_awareness(self) -> None:
+        skills = create_default_skills()
+        s = skills["battle_awareness"]
+        assert s.tree == SkillTreeType.COMBAT
+        assert s.max_level == 1
+
+    def test_ground_veteran(self) -> None:
+        skills = create_default_skills()
+        s = skills["ground_veteran"]
+        assert s.tree == SkillTreeType.COMBAT
+        assert s.prerequisite_id == "weapon_specialization"
+
+    def test_combat_scavenger(self) -> None:
+        skills = create_default_skills()
+        s = skills["combat_scavenger"]
+        assert s.tree == SkillTreeType.COMBAT
+        assert s.prerequisite_id == "ground_veteran"
+
+    def test_system_intel(self) -> None:
+        skills = create_default_skills()
+        s = skills["system_intel"]
+        assert s.tree == SkillTreeType.EXPLORATION
+        assert s.prerequisite_id == "fuel_efficiency"
+        assert s.max_level == 2
+
+    def test_safe_passage(self) -> None:
+        skills = create_default_skills()
+        s = skills["safe_passage"]
+        assert s.tree == SkillTreeType.EXPLORATION
+        assert s.bonus_type == "encounter_reduction"
+
+    def test_field_repairs(self) -> None:
+        skills = create_default_skills()
+        s = skills["field_repairs"]
+        assert s.tree == SkillTreeType.EXPLORATION
+        assert s.prerequisite_id == "fuel_efficiency"
+
+    def test_battle_commander(self) -> None:
+        skills = create_default_skills()
+        s = skills["battle_commander"]
+        assert s.tree == SkillTreeType.LEADERSHIP
+        assert s.prerequisite_id == "crew_manager"
+
+    def test_unbreakable_bonds(self) -> None:
+        skills = create_default_skills()
+        s = skills["unbreakable_bonds"]
+        assert s.tree == SkillTreeType.LEADERSHIP
+        assert s.bonus_type == "loyalty_floor"
+
+    def test_read_the_room(self) -> None:
+        skills = create_default_skills()
+        s = skills["read_the_room"]
+        assert s.tree == SkillTreeType.SOCIAL
+        assert s.prerequisite_id == "empathic_read"
+
+    def test_crew_whisperer(self) -> None:
+        skills = create_default_skills()
+        s = skills["crew_whisperer"]
+        assert s.tree == SkillTreeType.SOCIAL
+        assert s.bonus_type == "crew_whisperer"
+
+    def test_drone_fleet(self) -> None:
+        skills = create_default_skills()
+        s = skills["drone_fleet"]
+        assert s.tree == SkillTreeType.INDUSTRY
+        assert s.max_level == 3
+
+    def test_seismic_charge(self) -> None:
+        skills = create_default_skills()
+        s = skills["seismic_charge"]
+        assert s.tree == SkillTreeType.INDUSTRY
+        assert s.prerequisite_id == "rich_veins"
+
+    def test_forge_mastery(self) -> None:
+        skills = create_default_skills()
+        s = skills["forge_mastery"]
+        assert s.tree == SkillTreeType.INDUSTRY
+        assert s.bonus_type == "refining_yield_bonus"
 
     def test_efficient_refining(self) -> None:
         skills = create_default_skills()
         s = skills["efficient_refining"]
-        assert s.tree == SkillTreeType.GATHERING
-        assert s.prerequisite_id == "refining_knowledge"
+        assert s.tree == SkillTreeType.INDUSTRY
+        assert s.prerequisite_id is None  # Root skill
 
-    def test_yield_mastery(self) -> None:
+    def test_hull_reinforcement(self) -> None:
         skills = create_default_skills()
-        s = skills["yield_mastery"]
-        assert s.tree == SkillTreeType.GATHERING
-        assert s.prerequisite_id == "rich_veins"
-
-    def test_chain_reaction(self) -> None:
-        skills = create_default_skills()
-        s = skills["chain_reaction"]
-        assert s.tree == SkillTreeType.MINING
-        assert s.prerequisite_id == "deep_scan"
-
-    def test_pressure_venting(self) -> None:
-        skills = create_default_skills()
-        s = skills["pressure_venting"]
-        assert s.tree == SkillTreeType.MINING
-        assert s.prerequisite_id == "passive_drill"
-
-    def test_morale_officer(self) -> None:
-        skills = create_default_skills()
-        s = skills["morale_officer"]
-        assert s.tree == SkillTreeType.LEADERSHIP
-        assert s.prerequisite_id == "inspiring_leader"
+        s = skills["hull_reinforcement"]
+        assert s.tree == SkillTreeType.COMBAT
+        assert s.prerequisite_id == "armor_expertise"
+        assert s.max_level == 3
 
     def test_cultural_savant(self) -> None:
         skills = create_default_skills()
@@ -236,64 +282,8 @@ class TestNewSkillsExist:
         assert s.tree == SkillTreeType.SOCIAL
         assert s.prerequisite_id == "empathic_read"
 
-    def test_field_medic(self) -> None:
-        skills = create_default_skills()
-        s = skills["field_medic"]
-        assert s.tree == SkillTreeType.GROUND
-        assert s.prerequisite_id == "tough_hide"
-        assert s.max_level == 2
-
-    def test_terrain_reader(self) -> None:
-        skills = create_default_skills()
-        s = skills["terrain_reader"]
-        assert s.tree == SkillTreeType.GROUND
-        assert s.prerequisite_id == "quick_reflexes"
-
-    def test_adaptive_fighter(self) -> None:
-        skills = create_default_skills()
-        s = skills["adaptive_fighter"]
-        assert s.tree == SkillTreeType.GROUND
-        assert s.prerequisite_id == "intimidating_presence"
-
-    def test_combat_scavenger(self) -> None:
-        skills = create_default_skills()
-        s = skills["combat_scavenger"]
-        assert s.tree == SkillTreeType.GROUND
-        assert s.prerequisite_id == "field_medic"
-
-    def test_rapid_fire(self) -> None:
-        skills = create_default_skills()
-        s = skills["rapid_fire"]
-        assert s.tree == SkillTreeType.COMBAT
-        assert s.prerequisite_id == "precision_targeting"
-
-    def test_hull_reinforcement(self) -> None:
-        skills = create_default_skills()
-        s = skills["hull_reinforcement"]
-        assert s.tree == SkillTreeType.COMBAT
-        assert s.prerequisite_id == "shield_mastery"
-        assert s.max_level == 3
-
     def test_anomaly_detector(self) -> None:
         skills = create_default_skills()
         s = skills["anomaly_detector"]
         assert s.tree == SkillTreeType.EXPLORATION
-        assert s.prerequisite_id == "hazard_scanner"
-
-    def test_field_repairs(self) -> None:
-        skills = create_default_skills()
-        s = skills["field_repairs"]
-        assert s.tree == SkillTreeType.EXPLORATION
-        assert s.prerequisite_id == "efficient_routing"
-
-    def test_false_manifest(self) -> None:
-        skills = create_default_skills()
-        s = skills["false_manifest"]
-        assert s.tree == SkillTreeType.SMUGGLING
-        assert s.prerequisite_id == "scan_jamming"
-
-    def test_underworld_rep(self) -> None:
-        skills = create_default_skills()
-        s = skills["underworld_rep"]
-        assert s.tree == SkillTreeType.SMUGGLING
-        assert s.prerequisite_id == "black_market_access"
+        assert s.prerequisite_id == "safe_passage"

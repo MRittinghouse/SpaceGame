@@ -4,17 +4,17 @@ Verifies all rebalanced values across config constants, model defaults,
 JSON data files, and cross-system integration.
 """
 
-import pytest
 from pathlib import Path
+
 from spacegame import config
-from spacegame.models.social import SOCIAL_XP_THRESHOLDS, MAX_SOCIAL_LEVEL
+from spacegame.data_loader import DataLoader
 from spacegame.models.encounter import (
-    ENCOUNTER_CHANCE_SAFE,
-    ENCOUNTER_CHANCE_MODERATE,
     ENCOUNTER_CHANCE_DANGEROUS,
+    ENCOUNTER_CHANCE_MODERATE,
+    ENCOUNTER_CHANCE_SAFE,
 )
 from spacegame.models.event import EventGenerator
-from spacegame.data_loader import DataLoader
+from spacegame.models.social import MAX_SOCIAL_LEVEL, SOCIAL_XP_THRESHOLDS
 
 
 def _make_loader() -> DataLoader:
@@ -32,8 +32,8 @@ class TestConfigConstants:
     """Verify rebalanced config.py constants."""
 
     def test_starting_credits(self) -> None:
-        assert config.STARTING_CREDITS == 4000, (
-            f"Starting credits should be 4000, got {config.STARTING_CREDITS}"
+        assert config.STARTING_CREDITS == 5500, (
+            f"Starting credits should be 5500, got {config.STARTING_CREDITS}"
         )
 
     def test_xp_per_mining(self) -> None:
@@ -104,39 +104,49 @@ class TestMarketEventFrequency:
 
 
 class TestSkillPointProgression:
-    """Verify bonus skill points at milestone levels."""
+    """Verify clean 1 point per level (S3: no milestones, no cap)."""
 
-    def test_level_5_grants_bonus_skill_point(self) -> None:
+    def test_level_5_grants_4_points(self) -> None:
         from spacegame.models.progression import PlayerProgression, get_xp_threshold
 
         prog = PlayerProgression()
         prog.add_xp(get_xp_threshold(5))
         assert prog.level == 5
-        # Levels 2,3,4 = 1 each, level 5 = 2 → total 5
-        assert prog.skill_points == 5, (
-            f"Should have 5 skill points at level 5 (bonus at 5), got {prog.skill_points}"
+        # 4 level-ups (2→5), 1 point each = 4
+        assert prog.skill_points == 4, (
+            f"Should have 4 skill points at level 5, got {prog.skill_points}"
         )
 
-    def test_level_10_grants_bonus_skill_point(self) -> None:
+    def test_level_10_grants_9_points(self) -> None:
         from spacegame.models.progression import PlayerProgression, get_xp_threshold
 
         prog = PlayerProgression()
         prog.add_xp(get_xp_threshold(10))
         assert prog.level == 10
-        # Levels 2-4,6-9: 7×1, milestones 5,10: 2×2 → total 11
-        assert prog.skill_points == 11, (
-            f"Should have 11 skill points at level 10, got {prog.skill_points}"
+        # 9 level-ups (2→10), 1 point each = 9
+        assert prog.skill_points == 9, (
+            f"Should have 9 skill points at level 10, got {prog.skill_points}"
         )
 
     def test_skill_points_at_level_20(self) -> None:
-        """23 total skill points across 20 levels (milestone every 5th)."""
+        """19 total skill points across 20 levels (1 per level, no cap)."""
         from spacegame.models.progression import PlayerProgression, get_xp_threshold
 
         prog = PlayerProgression()
         prog.add_xp(get_xp_threshold(20))
         assert prog.level == 20
-        # 19 level-ups: milestones at 5,10,15,20 = 4*2=8, normal 15*1=15 → total 23
-        assert prog.skill_points == 23
+        # 19 level-ups, 1 point each = 19
+        assert prog.skill_points == 19
+
+    def test_skill_points_never_stop(self) -> None:
+        """Points keep being awarded past the old cap of 40."""
+        from spacegame.models.progression import PlayerProgression, get_xp_threshold
+
+        prog = PlayerProgression()
+        prog.add_xp(get_xp_threshold(50))
+        assert prog.level == 50
+        # 49 level-ups = 49 points
+        assert prog.skill_points == 49
 
 
 class TestCrewLoyalty:
@@ -199,7 +209,7 @@ class TestGameStartingCredits:
 
     def test_config_starting_credits_is_authoritative(self) -> None:
         """The config value should be the single source of truth."""
-        assert config.STARTING_CREDITS == 4000
+        assert config.STARTING_CREDITS == 5500
 
 
 # ============================================================================
@@ -343,12 +353,14 @@ class TestDualLaserWeapon:
         assert dl.price == 14000
 
     def test_dual_laser_damage(self) -> None:
+        """B4 retune: dual_laser is a T2 Tech weapon (22 dmg / 3E / 1cd).
+        See requirements/combat_balance_design.md §2.3."""
         loader = _make_loader()
         loader.load_upgrades()
         dl = loader.upgrades["dual_laser"]
         assert dl.combat_move is not None
         damage_effect = dl.combat_move["effects"][0]
-        assert damage_effect["value"] == 24
+        assert damage_effect["value"] == 22
 
     def test_weapon_count_updated(self) -> None:
         loader = _make_loader()
@@ -462,13 +474,14 @@ class TestBalanceIntegration:
         assert income >= 200, f"Salvage session should yield 200+ CR, got {income}"
 
     def test_skill_points_allow_meaningful_builds(self) -> None:
-        """11 skill points (was 10) allows one full tree + partial second."""
+        """Clean 1 point/level: 10000 XP should yield enough points to specialize."""
         from spacegame.models.progression import PlayerProgression
 
         prog = PlayerProgression()
         prog.add_xp(10000)
-        assert prog.skill_points >= 11, (
-            f"Need 11+ skill points for meaningful builds, got {prog.skill_points}"
+        # 1 point per level, no milestones — should still be enough to specialize
+        assert prog.skill_points >= 5, (
+            f"Need 5+ skill points for meaningful builds, got {prog.skill_points}"
         )
 
     def test_social_level_3_requires_meaningful_investment(self) -> None:

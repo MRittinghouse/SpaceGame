@@ -399,7 +399,9 @@ class Game:
         shuttle_type = self.data_loader.get_ship_type("shuttle")
         starting_ship = Ship(ship_type=shuttle_type, current_fuel=shuttle_type.fuel_capacity)
 
-        # Generate a preset build so the player has a composite from the start
+        # Generate a preset build (skipped if tutorial will handle ship building)
+        # The tutorial shop + builder (P1) lets the player build from scratch.
+        # For skipped tutorials or loaded saves, a preset ensures the ship works.
         from spacegame.models.ship_presets import generate_preset_from_ship_type
 
         try:
@@ -418,11 +420,6 @@ class Game:
             ship=starting_ship,
             ship_name=ship_name,
         )
-
-        # Sync upgrade manager slots from ship type (default_factory doesn't know ship type)
-        self.player.upgrade_manager._weapon_slots = shuttle_type.weapon_slots
-        self.player.upgrade_manager._defense_slots = shuttle_type.defense_slots
-        self.player.upgrade_manager._utility_slots = shuttle_type.utility_slots
 
         logger.info(f"Player created: {self.player.name} at {self.player.current_system_id}")
         logger.info(f"Starting credits: {self.player.credits} CR")
@@ -445,12 +442,19 @@ class Game:
 
         # Start tutorial for new game
         self.tutorial_manager.reset_tutorial()
+        self._new_game_tutorial_pending = True
+
+        # First-trade bonus: 50% premium on the player's first sell
+        self.player.dialogue_flags["first_trade_bonus_available"] = True
 
         # Initialize mission system
         from spacegame.models.mission import MissionManager
 
         self.mission_manager = MissionManager(self.data_loader.missions)
-        self.mission_manager.update_availability(self.player.dialogue_flags)
+        self.mission_manager.update_availability(
+            self.player.dialogue_flags,
+            player_reputation=getattr(self.player, "faction_reputation", {}),
+        )
 
         # Auto-start campaign mission: bill of landing
         self.mission_manager.accept_mission("bill_of_landing")
@@ -472,7 +476,9 @@ class Game:
         self.crew_roster = CrewRoster(self.data_loader.crew_templates)
         self.player.ship.set_crew_roster(self.crew_roster)
         self.dialogue_manager.set_crew_roster(self.crew_roster)
+        self._sync_crew_leadership_bonuses()
         self._crew_last_trades = 0
+        self._dock_rep_stations: set[str] = set()  # Track dock_rep_bonus per visit
 
         # Initialize ambient dialogue
         if self.data_loader.ambient_lines:
@@ -802,7 +808,11 @@ class Game:
     }
 
     def _update_audio_for_state(self) -> None:
-        """Update music and ambient sounds when game state changes."""
+        """Update music and ambient sounds when game state changes.
+
+        Context-aware: station music varies by faction, dialogue music
+        by NPC, and ambient by faction when docked.
+        """
         current = self.state_manager.current_state
         if current == self._last_audio_state:
             return
@@ -811,9 +821,22 @@ class Game:
         if current is None:
             return
 
-        # Music (dialogue state uses dynamic track based on NPC)
+        # Music — context-aware resolution
         if current == GameState.DIALOGUE:
             music_id = self._dialogue_music
+        elif current in (
+            GameState.STATION_HUB,
+            GameState.TRADING,
+            GameState.CANTINA,
+            GameState.REPAIR_BAY,
+            GameState.SHIPYARD,
+            GameState.INVESTMENT,
+            GameState.SALVAGING,
+            GameState.REFINING,
+        ):
+            # Docked: use station_hub as base, but the dialogue system
+            # already handles NPC-specific music overrides
+            music_id = "station_hub"
         else:
             music_id = self._STATE_MUSIC.get(current)
         if music_id:
@@ -821,8 +844,31 @@ class Game:
         # Don't stop music for unmapped states (skill tree, stats, etc.)
         # — they inherit the parent state's music
 
-        # Ambient
-        ambient_id = self._STATE_AMBIENT.get(current)
+        # Ambient — faction-aware when docked
+        faction_id = ""
+        if self.player:
+            system = self.data_loader.get_system(self.player.current_system_id)
+            if system:
+                faction_id = system.faction
+
+        if current in (
+            GameState.STATION_HUB,
+            GameState.TRADING,
+            GameState.CANTINA,
+            GameState.REPAIR_BAY,
+            GameState.SHIPYARD,
+            GameState.INVESTMENT,
+            GameState.SALVAGING,
+            GameState.REFINING,
+        ):
+            # Try faction-specific ambient first, fall back to generic
+            faction_ambient = f"ambient_station_{faction_id}" if faction_id else ""
+            if faction_ambient and self.audio_manager.has_sound(faction_ambient):
+                ambient_id = faction_ambient
+            else:
+                ambient_id = "ambient_station"
+        else:
+            ambient_id = self._STATE_AMBIENT.get(current)
         if ambient_id:
             self.audio_manager.play_ambient(ambient_id)
 
@@ -897,10 +943,44 @@ class Game:
                 if next_state == GameState.GALAXY_MAP:
                     self.character_creation_view.next_state = None
 
-                    def _do():
-                        self.state_manager.change_state(GameState.GALAXY_MAP)
+                    # New game flow: route through tutorial shop before galaxy map
+                    if getattr(self, "_new_game_tutorial_pending", False):
+                        self._new_game_tutorial_pending = False
 
-                    self._start_transition(TransitionType.FADE, 0.3, _do)
+                        def _do():
+                            self._ensure_tutorial_shop_view()
+                            self.state_manager.change_state(GameState.TUTORIAL_SHOP)
+
+                        self._start_transition(TransitionType.FADE, 0.5, _do)
+                    else:
+
+                        def _do():
+                            self.state_manager.change_state(GameState.GALAXY_MAP)
+
+                        self._start_transition(TransitionType.FADE, 0.3, _do)
+
+        # Check tutorial shop for transitions
+        if hasattr(self, "_tutorial_shop_view") and self._tutorial_shop_view:
+            if self._tutorial_shop_view.active:
+                next_state = self._tutorial_shop_view.get_next_state()
+                if next_state == GameState.TUTORIAL_BUILDER:
+                    self._tutorial_shop_view.next_state = None
+
+                    def _do():
+                        # Transition to builder in tutorial mode
+                        self._ensure_ship_builder_view()
+                        if hasattr(self, "ship_builder_view") and self.ship_builder_view:
+                            self.ship_builder_view._tutorial_mode = True
+                            self.ship_builder_view._tutorial_return_state = GameState.STATION_HUB
+                        self.state_manager.change_state(GameState.SHIP_BUILDER)
+                        # PT-007 bookend: mechanic greets the player at
+                        # the builder so the shop → builder transition
+                        # does not feel abrupt.
+                        self._mission_notifications.append(
+                            'Mechanic: "Bay\'s open. Grid\'s yours. Pick a part and drop it."'
+                        )
+
+                    self._start_transition(TransitionType.FADE, 0.5, _do)
 
         # Check galaxy map for transitions
         if self.galaxy_map_view and self.galaxy_map_view.active:
@@ -994,6 +1074,7 @@ class Game:
 
                 def _do():
                     self.auto_save()
+                    self._apply_dock_rep_bonus()
                     self._ensure_station_hub_view()
                     self.state_manager.change_state(GameState.STATION_HUB)
 
@@ -1225,7 +1306,9 @@ class Game:
                     # Update galaxy map mission markers and forced encounters
                     if self.galaxy_map_view and self.mission_manager:
                         self.galaxy_map_view.mission_target_systems = (
-                            self.mission_manager.get_active_target_systems()
+                            self.mission_manager.get_active_target_systems(
+                                self._get_npc_home_systems()
+                            )
                         )
                         self.galaxy_map_view.forced_encounters = (
                             self.mission_manager.get_active_forced_encounters()
@@ -1272,7 +1355,8 @@ class Game:
                     # flags that unlock or auto-accept missions (e.g. Petra's quest)
                     if self.mission_manager:
                         self.mission_manager.update_availability(
-                            self.player.dialogue_flags
+                            self.player.dialogue_flags,
+                            player_reputation=getattr(self.player, "faction_reputation", {}),
                         )
 
                     # Handle mission failures triggered by dialogue
@@ -1398,6 +1482,19 @@ class Game:
                 self._apply_combat_result()
                 target = next_state
 
+                # Safety: if travel was in progress when combat started,
+                # ensure we return to galaxy map so travel can resume.
+                _has_pending_travel = self.galaxy_map_view and getattr(
+                    self.galaxy_map_view, "_resume_travel_after_encounter", False
+                )
+                if _has_pending_travel and target != GameState.GALAXY_MAP:
+                    logger.warning(
+                        "Combat ended with pending travel but return_state=%s "
+                        "— overriding to GALAXY_MAP",
+                        target,
+                    )
+                    target = GameState.GALAXY_MAP
+
                 def _do():
                     # Ensure target view exists before switching
                     if target == GameState.TRADING:
@@ -1421,9 +1518,8 @@ class Game:
                 self.encounter_view.next_state = None
                 # Determine return destination: galaxy map if travel is pending,
                 # otherwise trading/cantina.
-                _resume_travel = (
-                    self.galaxy_map_view
-                    and getattr(self.galaxy_map_view, "_resume_travel_after_encounter", False)
+                _resume_travel = self.galaxy_map_view and getattr(
+                    self.galaxy_map_view, "_resume_travel_after_encounter", False
                 )
                 _enc_return = GameState.GALAXY_MAP if _resume_travel else GameState.TRADING
 
@@ -1583,6 +1679,24 @@ class Game:
                         self.state_manager.change_state(GameState.SHIPYARD)
 
                     self._start_transition(TransitionType.FADE, 0.3, _do_builder_back)
+                elif next_state == GameState.STATION_HUB:
+                    # Tutorial-mode confirm-build transition. Surfaces the
+                    # mechanic's farewell notification (PT-006 / PT-007) so
+                    # the player gets an explicit "what next" cue on
+                    # arrival at the station hub.
+                    self.ship_builder_view.next_state = None
+                    farewell = getattr(
+                        self.ship_builder_view, "_pending_tutorial_farewell", None
+                    )
+                    if farewell:
+                        self._mission_notifications.append(farewell)
+                        self.ship_builder_view._pending_tutorial_farewell = None
+
+                    def _do_builder_to_hub():
+                        self._ensure_station_hub_view()
+                        self.state_manager.change_state(GameState.STATION_HUB)
+
+                    self._start_transition(TransitionType.FADE, 0.4, _do_builder_to_hub)
 
         # Check station hub view for transitions
         if hasattr(self, "station_hub_view") and self.station_hub_view:
@@ -1655,6 +1769,16 @@ class Game:
 
                     def _do():
                         self._ensure_mining_view()
+                        # Activate tutorial mode on first mining after Marcus dialogue
+                        if (
+                            self.player
+                            and self.player.dialogue_flags.get("met_marcus_jin")
+                            and not self.player.dialogue_flags.get("mining_tutorial_done")
+                            and hasattr(self, "mining_view")
+                            and self.mining_view
+                        ):
+                            self.mining_view._tutorial_mode = True
+                            self.player.dialogue_flags["mining_tutorial_done"] = True
                         self.state_manager.change_state(GameState.MINING)
 
                     self._start_transition(TransitionType.SLIDE, 0.3, _do)
@@ -1663,6 +1787,15 @@ class Game:
 
                     def _do():
                         self._ensure_salvage_view()
+                        # Activate tutorial on first salvage visit
+                        if (
+                            self.player
+                            and not self.player.dialogue_flags.get("salvage_tutorial_done")
+                            and hasattr(self, "salvage_view")
+                            and self.salvage_view
+                        ):
+                            self.salvage_view._tutorial_mode = True
+                            self.player.dialogue_flags["salvage_tutorial_done"] = True
                         self.state_manager.change_state(GameState.SALVAGING)
 
                     self._start_transition(TransitionType.SLIDE, 0.3, _do)
@@ -1671,6 +1804,15 @@ class Game:
 
                     def _do():
                         self._ensure_refining_view()
+                        # Activate tutorial on first refining visit
+                        if (
+                            self.player
+                            and not self.player.dialogue_flags.get("refining_tutorial_done")
+                            and hasattr(self, "refining_view")
+                            and self.refining_view
+                        ):
+                            self.refining_view._tutorial_mode = True
+                            self.player.dialogue_flags["refining_tutorial_done"] = True
                         self.state_manager.change_state(GameState.REFINING)
 
                     self._start_transition(TransitionType.SLIDE, 0.3, _do)
@@ -1985,6 +2127,13 @@ class Game:
         )
         self.state_manager.register_state(GameState.SKILL_TREE, self.skill_tree_view)
 
+    def _ensure_tutorial_shop_view(self) -> None:
+        """Create tutorial ship parts shop view."""
+        from spacegame.views.tutorial_shop_view import TutorialShopView
+
+        self._tutorial_shop_view = TutorialShopView(self.ui_manager, self.player, self.data_loader)
+        self.state_manager.register_state(GameState.TUTORIAL_SHOP, self._tutorial_shop_view)
+
     def _ensure_character_creation_view(self) -> None:
         """Create character creation view for attribute allocation."""
         from spacegame.views.character_creation_view import CharacterCreationView
@@ -2041,7 +2190,9 @@ class Game:
         """Create or recreate mission log view."""
         from spacegame.views.mission_log_view import MissionLogView
 
-        self.mission_log_view = MissionLogView(self.ui_manager, self.mission_manager)
+        self.mission_log_view = MissionLogView(
+            self.ui_manager, self.mission_manager, self.data_loader, self.player
+        )
         self.state_manager.register_state(GameState.MISSION_LOG, self.mission_log_view)
 
     def _ensure_journal_view(self) -> None:
@@ -2094,9 +2245,13 @@ class Game:
             logger.warning(f"NPC not found: {npc_id}")
             return
 
-        tree = self.data_loader.get_dialogue(npc.dialogue_id)
+        # Resolve active dialogue tree from NPC state machine
+        active_dialogue_id = npc.get_active_dialogue_id(
+            self.player.dialogue_flags if self.player else {}
+        )
+        tree = self.data_loader.get_dialogue(active_dialogue_id)
         if not tree:
-            logger.warning(f"Dialogue tree not found: {npc.dialogue_id}")
+            logger.warning(f"Dialogue tree not found: {active_dialogue_id}")
             return
 
         # Track NPC for mission talk_to_npc objectives
@@ -2110,6 +2265,13 @@ class Game:
         # Sync flags and social state from player before starting
         self.dialogue_manager.load_flags(self.player.dialogue_flags)
         self.social_manager.load_state(self.player.social_state)
+
+        # Inject skill-tree-based dialogue flags
+        if self.player.progression:
+            if self.player.progression.get_bonus("npc_disposition_visible") > 0:
+                self.dialogue_manager.set_flag("empathic_read_active")
+            if self.player.progression.get_bonus("special_dialogue") > 0:
+                self.dialogue_manager.set_flag("has_special_dialogue")
 
         # Detect if player sold the cargo broker's iron ore
         if npc_id == "delivery_merchant" and self.mission_manager:
@@ -2225,6 +2387,10 @@ class Game:
             crew_moves,
             player_level=self.player.progression.level,
             progression=self.player.progression,
+            # Pass dialogue_flags by reference so first-use dual tech
+            # reveals persist across combats (and across saves, since
+            # Player.dialogue_flags is serialized).
+            dialogue_flags=self.player.dialogue_flags,
         )
         enemies = [EnemyShip.from_template(t) for t in encounter.enemy_templates]
         combat_state = CombatState(
@@ -2232,9 +2398,25 @@ class Game:
             enemies=enemies,
             encounter=encounter,
             combat_log=[],
+            progression=self.player.progression,
         )
+        # Starting momentum from skill (Momentum Surge)
+        starting_momentum = self.player.progression.get_bonus("starting_momentum")
+        if starting_momentum > 0 and combat_state.player.momentum:
+            combat_state.player.momentum.current = min(
+                starting_momentum / 100.0, 0.99
+            )  # Convert to 0-1 scale, cap below ultimate
+
         engine = CombatEngine(combat_state, seed=encounter.encounter_seed)
         self._ensure_combat_view(engine, return_state)
+
+        # Activate combat tutorial on player's first fight
+        if self.player and not self.player.dialogue_flags.get("combat_tutorial_done"):
+            from spacegame.models.combat_tutorial_helper import CombatTutorialHelper
+
+            self.combat_view._tutorial_helper = CombatTutorialHelper()
+            self.player.dialogue_flags["combat_tutorial_done"] = True
+            logger.info("Combat tutorial activated for first fight")
 
         def _do() -> None:
             self.state_manager.change_state(GameState.COMBAT)
@@ -2763,8 +2945,7 @@ class Game:
             self.player.combats_won += 1
             total_xp = sum(e.template.xp_reward for e in state.enemies)
             xp_msgs = self.player.progression.add_xp(total_xp)
-            for msg in xp_msgs:
-                self._mission_notifications.append(msg)
+            self._process_xp_messages(xp_msgs)
 
             # Distribute loot to player cargo
             for enemy in state.enemies:
@@ -3240,8 +3421,14 @@ class Game:
         if not self.pause_menu_view:
             return
         for attr in (
-            "resume_button", "save_button", "load_button", "settings_button",
-            "stats_button", "achievements_button", "main_menu_button", "quit_button",
+            "resume_button",
+            "save_button",
+            "load_button",
+            "settings_button",
+            "stats_button",
+            "achievements_button",
+            "main_menu_button",
+            "quit_button",
         ):
             btn = getattr(self.pause_menu_view, attr, None)
             if btn:
@@ -3456,8 +3643,13 @@ class Game:
         self.mission_manager = MissionManager(self.data_loader.missions)
         if self.player.mission_state:
             self.mission_manager.load_state(self.player.mission_state)
-        else:
-            self.mission_manager.update_availability(self.player.dialogue_flags)
+        # Always run update_availability after load — flags may have been set
+        # before the save but the mission status wasn't yet updated. Without
+        # this, quests can get stuck as UNAVAILABLE after save/load.
+        self.mission_manager.update_availability(
+            self.player.dialogue_flags,
+            player_reputation=getattr(self.player, "faction_reputation", {}),
+        )
 
         # Initialize procedural mission generator
         from spacegame.models.procedural_missions import ProceduralMissionGenerator
@@ -3479,6 +3671,8 @@ class Game:
         self.player.ship.set_crew_roster(self.crew_roster)
         self._crew_last_trades = self.player.trades_completed
         self._crew_last_jumps = self.player.jumps_traveled
+        self._dock_rep_stations = set()
+        self._sync_crew_leadership_bonuses()
 
         # Restore attribute system
         from spacegame.models.attributes import AttributeSheet
@@ -3748,7 +3942,7 @@ class Game:
         if hasattr(self, "salvage_view") and self.salvage_view:
             deck_type = getattr(self.salvage_view, "_deck_type", "cargo")
         skill_level = (
-            int(self.player.progression.get_bonus("salvage_expert") * 10)
+            int(self.player.progression.get_bonus("salvage_yield") * 10)
             if hasattr(self.player, "progression")
             else 0
         )
@@ -3772,7 +3966,7 @@ class Game:
         if hasattr(self, "mining_view") and self.mining_view:
             depth = getattr(self.mining_view, "_current_depth", 3)
         skill_level = (
-            int(self.player.progression.get_bonus("deep_mining") * 10)
+            int(self.player.progression.get_bonus("rare_ore_chance") * 10)
             if hasattr(self.player, "progression")
             else 0
         )
@@ -4036,10 +4230,42 @@ class Game:
                 self._celebration_subtitle = f"{achievement.description} {reward_msg}"
                 self._celebration_timer = 3.0
 
+    def _apply_dock_rep_bonus(self) -> None:
+        """Grant +1 faction rep on docking if Captain's Presence is active (once per visit)."""
+        if not self.player:
+            return
+        bonus = self.player.progression.get_bonus("dock_rep_bonus")
+        if bonus <= 0:
+            return
+        system_id = self.player.current_system_id
+        if system_id in self._dock_rep_stations:
+            return  # Already granted this visit
+        self._dock_rep_stations.add(system_id)
+        faction_id = self.player.get_faction_for_system(system_id)
+        if faction_id:
+            if self.politics_manager:
+                self.politics_manager.apply_reputation_with_spillover(
+                    self.player, faction_id, int(bonus)
+                )
+            else:
+                self.player.modify_reputation(faction_id, int(bonus))
+            logger.info("Dock rep bonus: +%d %s at %s", int(bonus), faction_id, system_id)
+
+    def _sync_crew_leadership_bonuses(self) -> None:
+        """Push leadership skill bonuses into the crew roster."""
+        if not self.player or not self.crew_roster:
+            return
+        self.crew_roster.loyalty_floor = int(self.player.progression.get_bonus("loyalty_floor"))
+        legendary = self.player.progression.get_bonus("legendary_captain")
+        self.crew_roster.loyalty_flag_offset = 10 if legendary > 0 else 0
+
     def check_crew_xp(self) -> None:
         """Award crew XP when trades or jumps occur."""
         if not self.player or not self.crew_roster:
             return
+
+        # Sync leadership skill bonuses into crew roster
+        self._sync_crew_leadership_bonuses()
 
         # Leadership skill bonuses for crew progression
         xp_bonus = int(self.player.progression.get_bonus("crew_xp_bonus"))
@@ -4101,23 +4327,84 @@ class Game:
         if not self.player or not self.mission_manager:
             return
 
+        # Snapshot progress before checking, for objective-level notifications
+        from spacegame.models.mission import MissionStatus as _MS
+
+        pre_progress: dict[str, list[bool]] = {}
+        for mid in self.mission_manager._missions:
+            if self.mission_manager.get_status(mid) == _MS.ACTIVE:
+                pre_progress[mid] = list(self.mission_manager.get_objective_progress(mid))
+
         recruited_crew_ids = self.crew_roster.recruited_ids if self.crew_roster else None
         completed_ids = self.mission_manager.check_objectives(
             self.player, recruited_crew_ids=recruited_crew_ids
         )
+
+        # Notify for individual objectives that just completed (not whole-mission completion)
+        for mid, old_progress in pre_progress.items():
+            if mid in completed_ids:
+                continue  # Whole mission completed — separate notification handles it
+            new_progress = self.mission_manager.get_objective_progress(mid)
+            mission = self.mission_manager.get_mission(mid)
+            if not mission:
+                continue
+            for i, (was_done, now_done) in enumerate(zip(old_progress, new_progress, strict=False)):
+                if not was_done and now_done and i < len(mission.objectives):
+                    self._mission_notifications.append(
+                        f"Quest Updated: {mission.objectives[i].description}"
+                    )
         for mission_id in completed_ids:
             reward_msgs = self.mission_manager.apply_rewards(mission_id, self.player)
             mission = self.mission_manager.get_mission(mission_id)
             name = mission.name if mission else mission_id
             reward_text = ", ".join(reward_msgs) if reward_msgs else ""
             self._mission_notifications.append(f"Mission Complete: {name}! {reward_text}")
+            self.audio_manager.play_sfx("quest_complete")
+
+            # Emotional peaks: enhanced effects for key campaign moments
+            _PEAK_MISSIONS = {
+                "the_foremans_son",  # Marcus reveals father's death
+                "the_crimson_run",  # First major ground mission
+                "the_favor_returned",  # Faction alliance
+                "the_ledger",  # Conspiracy revealed
+                "the_collapse",  # Act One finale
+            }
+            if mission_id in _PEAK_MISSIONS:
+                self.screen_shake.trigger(intensity=4.0, duration=0.3)
+                self.audio_manager.play_sfx("achievement")
+                logger.info(f"Emotional peak: {mission_id} complete")
             logger.info(f"Mission completed: {name}")
 
             # Track mission completion stats
             if mission and mission.mission_type == "side":
                 self.player.side_missions_completed += 1
+            # Campaign milestone flags — set when count crosses 5/10/15/20.
+            # Gate a number of campaign encounters; see qa_pass_2_findings.md.
+            if mission and mission.mission_type == "campaign":
+                campaign_completed = sum(
+                    1
+                    for mid in self.mission_manager.get_completed_ids()
+                    if (m := self.mission_manager.get_mission(mid)) is not None
+                    and m.mission_type == "campaign"
+                )
+                for milestone in (5, 10, 15, 20):
+                    if campaign_completed >= milestone:
+                        flag = f"completed_mission_{milestone}"
+                        if not self.player.dialogue_flags.get(flag):
+                            self.player.dialogue_flags[flag] = True
+                            logger.info(f"Campaign milestone reached: {flag}")
             if mission and mission.crew_member_id:
                 self.player.crew_quests_completed += 1
+                # Crew quest XP bonus (Leadership: Shared Experience)
+                xp_mult = self.player.progression.get_bonus("crew_quest_xp_bonus")
+                if xp_mult > 0:
+                    base_xp = sum(r.amount for r in mission.rewards if r.reward_type == "xp")
+                    bonus_xp = int(base_xp * xp_mult)
+                    if bonus_xp > 0:
+                        self.player.progression.add_xp(bonus_xp)
+                        self._mission_notifications.append(
+                            f"+{bonus_xp} Bonus XP (Shared Experience)"
+                        )
 
             # Handle special reward types (not processed in apply_rewards)
             if mission:
@@ -4130,6 +4417,9 @@ class Game:
                         success, crew_msg = self.crew_roster.recruit(reward.target_id, crew_slots)
                         if success:
                             self._mission_notifications.append(f"Crew Joined: {crew_msg}")
+                            # Emotional staging: crew recruitment is significant
+                            self.audio_manager.play_sfx("crew_recruit")
+                            self.screen_shake.trigger(intensity=3.0, duration=0.2)
                         else:
                             # Crew full — mark companion as pending for cantina recruitment
                             template = self.crew_roster.get_template(reward.target_id)
@@ -4217,7 +4507,10 @@ class Game:
                 self._trigger_crew_reaction("mission_expired")
 
         # Update availability (missions may unlock from completed prereqs or new flags)
-        newly_available = self.mission_manager.update_availability(self.player.dialogue_flags)
+        newly_available = self.mission_manager.update_availability(
+            self.player.dialogue_flags,
+            player_reputation=getattr(self.player, "faction_reputation", {}),
+        )
         if newly_available:
             discoverable_count = 0
             for mid in newly_available:
@@ -4260,6 +4553,41 @@ class Game:
                 self.galaxy_map_view.forced_encounters = (
                     self.mission_manager.get_active_forced_encounters()
                 )
+
+        self._log_mission_audit(newly_available)
+
+    def _process_xp_messages(self, xp_msgs: list[str]) -> None:
+        """Process XP gain messages, playing level-up SFX when appropriate."""
+        for msg in xp_msgs:
+            self._mission_notifications.append(msg)
+            if "Level Up" in msg:
+                self.audio_manager.play_sfx("level_up")
+
+    def _get_npc_home_systems(self) -> dict[str, str]:
+        """Build NPC ID -> home system ID mapping from data loader."""
+        if not self.data_loader:
+            return {}
+        return {npc_id: npc.home_system_id for npc_id, npc in self.data_loader.npcs.items()}
+
+    def _log_mission_audit(self, newly_available: list[str]) -> None:
+        """Log a concise mission state summary for diagnostics."""
+        if not self.mission_manager or not newly_available:
+            return
+
+        counts: dict[str, int] = {}
+        for mid in self.mission_manager._missions:
+            status = self.mission_manager.get_status(mid)
+            if status:
+                key = status.value
+                counts[key] = counts.get(key, 0) + 1
+        parts = [f"{v} {k}" for k, v in sorted(counts.items())]
+        summary = ", ".join(parts)
+        logger.debug(
+            "Mission audit (day %d): %s [+%d newly available]",
+            self.player.game_day if self.player else 0,
+            summary,
+            len(newly_available),
+        )
 
     def _check_journal_triggers(self) -> None:
         """Scan dialogue flags for new journal auto-entries to trigger."""
@@ -4433,7 +4761,9 @@ class Game:
 
         # Gold border
         border_surf = pygame.Surface((card_w, card_h), pygame.SRCALPHA)
-        pygame.draw.rect(border_surf, (255, 215, 80, alpha), (0, 0, card_w, card_h), 2, border_radius=8)
+        pygame.draw.rect(
+            border_surf, (255, 215, 80, alpha), (0, 0, card_w, card_h), 2, border_radius=8
+        )
         screen.blit(border_surf, (card_x, card_y))
 
         # Top and bottom accent lines
@@ -4466,7 +4796,9 @@ class Game:
         )
 
         # Subtle hint at bottom of card
-        hint = self._label_font.render("Progress tracked in Achievements menu", True, (140, 150, 120))
+        hint = self._label_font.render(
+            "Progress tracked in Achievements menu", True, (140, 150, 120)
+        )
         hint.set_alpha(int(alpha * 0.6))
         screen.blit(
             hint,
@@ -4643,7 +4975,7 @@ class Game:
                 # Route events to event notification, save/load, pause menu, or game state
                 if self.settings_view:
                     # Process events through settings' own UIManager
-                    if hasattr(self.settings_view, '_own_ui_manager'):
+                    if hasattr(self.settings_view, "_own_ui_manager"):
                         self.settings_view._own_ui_manager.process_events(event)
                     self.settings_view.handle_event(event)
                 elif self._event_notification_view and self._event_notification_view.active:
@@ -4657,7 +4989,7 @@ class Game:
 
             # Update UI manager
             self.ui_manager.update(dt)
-            if self.settings_view and hasattr(self.settings_view, '_own_ui_manager'):
+            if self.settings_view and hasattr(self.settings_view, "_own_ui_manager"):
                 self.settings_view._own_ui_manager.update(dt)
 
             # Update cockpit HUD visibility based on current state
@@ -4765,8 +5097,17 @@ class Game:
                 self.ui_manager.draw_ui(render_surface)
 
             # Settings has its own UIManager — draw it on top of everything
-            if self.settings_view and hasattr(self.settings_view, '_own_ui_manager'):
+            if self.settings_view and hasattr(self.settings_view, "_own_ui_manager"):
                 self.settings_view._own_ui_manager.draw_ui(render_surface)
+
+            # View-level top-layer overlays (hover tooltips, etc.) go here
+            # so they sit ABOVE pygame_gui buttons/labels. Default is no-op;
+            # views override render_top when they need top-layer content.
+            current_state = self.state_manager.current_state
+            if current_state is not None:
+                current_view_obj = self.state_manager.states.get(current_state)
+                if current_view_obj is not None and hasattr(current_view_obj, "render_top"):
+                    current_view_obj.render_top(render_surface)
 
             # Achievement notification — renders ABOVE all UI so it's never hidden
             self._render_achievement_notification(render_surface)

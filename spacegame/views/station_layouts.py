@@ -24,6 +24,7 @@ from spacegame.config import (
     scale_x,
     scale_y,
 )
+from spacegame.engine.draw_utils import truncate_text
 from spacegame.engine.fonts import (
     FONT_BODY,
     FONT_SM,
@@ -80,7 +81,7 @@ SYSTEM_LAYOUT_MAP: dict[str, str] = {
 # HUD height for layout area calculation
 _HUD_H = scale_y(HUD_BASE_HEIGHT)
 _LAYOUT_TOP = scale_y(125)  # Below header card (HEADER_CARD_Y=10 + HEADER_CARD_H=105 + margin)
-_LAYOUT_BOTTOM = WINDOW_HEIGHT - _HUD_H - scale_y(90)  # Above chatter + HUD
+_LAYOUT_BOTTOM = WINDOW_HEIGHT - _HUD_H - scale_y(75)  # Above chatter + HUD (tighter)
 _LAYOUT_H = _LAYOUT_BOTTOM - _LAYOUT_TOP
 
 
@@ -294,8 +295,13 @@ class StationLayout:
         else:
             text_x = r.x + 18
 
-        # Name
-        name_surf = self._name_font.render(zone.location.name, True, Colors.TEXT_PRIMARY)
+        # Name (truncated to fit card width)
+        max_name_w = r.right - text_x - 10
+        type_label = LOCATION_LABELS.get(zone.location.location_type, "")
+        if type_label:
+            max_name_w -= self._label_font.size(type_label)[0] + 16
+        name_text = truncate_text(zone.location.name, self._name_font, max_name_w)
+        name_surf = self._name_font.render(name_text, True, Colors.TEXT_PRIMARY)
         screen.blit(name_surf, (text_x, r.y + scale_y(8)))
 
         # Type label (top-right)
@@ -358,7 +364,7 @@ class StationLayout:
 class GuildDeckLayout(StationLayout):
     """Corporate deck-by-deck layout. Clean, hierarchical, blue accents."""
 
-    accent_color = (80, 140, 220)
+    accent_color = Colors.FACTION_ACCENT_COMMERCE
     bg_tint = (10, 15, 30, 15)
     faction_tagline = "Commerce. Order. Prosperity."
 
@@ -370,9 +376,9 @@ class GuildDeckLayout(StationLayout):
 
         margin_x = scale_x(60)
         deck_w = WINDOW_WIDTH - margin_x * 2
-        zone_h = scale_y(90)
+        zone_h = scale_y(110)
         zone_gap = scale_x(12)
-        deck_gap = scale_y(18)
+        deck_gap = scale_y(14)
         deck_label_h = scale_y(22)
 
         y = _LAYOUT_TOP + scale_y(10)
@@ -464,7 +470,7 @@ class GuildDeckLayout(StationLayout):
 class UnionBlueprintLayout(StationLayout):
     """Industrial blueprint layout. Rust accents, technical labels."""
 
-    accent_color = (220, 170, 60)
+    accent_color = Colors.FACTION_ACCENT_MINERS
     bg_tint = (15, 10, 5, 12)
     faction_tagline = "Built by hands, not contracts."
 
@@ -473,32 +479,36 @@ class UnionBlueprintLayout(StationLayout):
 
         self.zones = []
         margin_x = scale_x(60)
-        zone_w = scale_x(200)
-        zone_h = scale_y(90)
+        zone_w = scale_x(220)
+        zone_h = scale_y(110)
         gap_x = scale_x(15)
-        gap_y = scale_y(20)
+        gap_y = scale_y(16)
         cols = min(4, max(2, (WINDOW_WIDTH - margin_x * 2 + gap_x) // (zone_w + gap_x)))
 
-        total_w = cols * zone_w + (cols - 1) * gap_x
-        start_x = (WINDOW_WIDTH - total_w) // 2
-        y = _LAYOUT_TOP + scale_y(15)
+        y = _LAYOUT_TOP + scale_y(10)
+
+        total_locations = len(self.locations)
 
         for i, loc in enumerate(self.locations):
-            col = i % cols
             row = i // cols
-            x = start_x + col * (zone_w + gap_x)
+            col = i % cols
+
+            # Center partial rows (last row with fewer items)
+            items_in_row = min(cols, total_locations - row * cols)
+            row_w = items_in_row * zone_w + (items_in_row - 1) * gap_x
+            row_start_x = (WINDOW_WIDTH - row_w) // 2
+
+            x = row_start_x + col * (zone_w + gap_x)
             zy = y + row * (zone_h + gap_y)
             rect = pygame.Rect(x, zy, zone_w, zone_h)
             color = LOCATION_COLORS.get(loc.location_type, Colors.TEXT_HIGHLIGHT)
             icon = sprite_mgr.get_location_icon(loc.location_type, scale=res_scale(2))
 
-            # Technical label prefix
-            bay_num = f"BAY {i + 1:02d}"
             self.zones.append(
                 StationZone(
                     location=loc,
                     rect=rect,
-                    label=f"{bay_num}: {loc.name}",
+                    label=loc.name,
                     accent_color=color,
                     icon=icon,
                 )
@@ -568,21 +578,21 @@ class UnionBlueprintLayout(StationLayout):
         ]:
             pygame.draw.circle(screen, rivet_color, (cx, cy), 2)
 
-        # Bay number (top-left, small, amber)
-        bay_surf = self._label_font.render(zone.label.split(":")[0], True, self.accent_color)
-        screen.blit(bay_surf, (r.x + 12, r.y + 5))
-
-        # Location name
-        name = zone.location.name
+        # Location name (truncated to fit, accounting for type label)
+        type_label = LOCATION_LABELS.get(zone.location.location_type, "")
+        max_name_w = r.width - 24
+        if type_label:
+            max_name_w -= self._label_font.size(type_label)[0] + 16
+        name = truncate_text(zone.location.name, self._name_font, max_name_w)
         name_surf = self._name_font.render(name, True, Colors.TEXT_PRIMARY)
-        screen.blit(name_surf, (r.x + 12, r.y + scale_y(18)))
+        screen.blit(name_surf, (r.x + 12, r.y + scale_y(8)))
 
         # Description (word-wrapped)
         desc = zone.location.description or ""
         if desc and r.height >= scale_y(60):
             text_x = r.x + 12
             max_w = r.width - 24
-            desc_y = r.y + scale_y(38)
+            desc_y = r.y + scale_y(28)
             line_h = self._label_font.get_linesize()
             words = desc.split()
             line = ""
@@ -616,7 +626,7 @@ class UnionBlueprintLayout(StationLayout):
 class CollectiveRadialLayout(StationLayout):
     """Radial command display. Clean, holographic, data-driven."""
 
-    accent_color = (160, 200, 240)
+    accent_color = Colors.FACTION_ACCENT_SCIENCE
     bg_tint = (5, 8, 18, 10)
     faction_tagline = "Through knowledge, understanding."
 
@@ -628,7 +638,7 @@ class CollectiveRadialLayout(StationLayout):
         cy = _LAYOUT_TOP + _LAYOUT_H // 2
         radius = min(scale_x(280), _LAYOUT_H // 2 - scale_y(40))
         zone_w = scale_x(160)
-        zone_h = scale_y(85)
+        zone_h = scale_y(105)
 
         n = len(self.locations)
         for i, loc in enumerate(self.locations):
@@ -741,7 +751,7 @@ class CollectiveRadialLayout(StationLayout):
 class FrontierScatteredLayout(StationLayout):
     """Freeform scattered layout. Organic, improvised, colorful."""
 
-    accent_color = (80, 200, 120)
+    accent_color = Colors.FACTION_ACCENT_FRONTIER
     bg_tint = (8, 15, 8, 10)
     faction_tagline = "The frontier takes care of its own."
 
@@ -755,7 +765,7 @@ class FrontierScatteredLayout(StationLayout):
 
         # Scatter zones with controlled randomness (no overlap)
         zone_w = scale_x(190)
-        zone_h = scale_y(85)
+        zone_h = scale_y(105)
         margin = scale_x(50)
 
         placed: list[pygame.Rect] = []
@@ -890,7 +900,7 @@ class ReachDarkLayout(StationLayout):
 
         self.zones = []
         zone_w = scale_x(220)
-        zone_h = scale_y(85)
+        zone_h = scale_y(105)
         gap = scale_y(12)
         # Single column, centered, sparse
         total_h = len(self.locations) * zone_h + (len(self.locations) - 1) * gap

@@ -13,6 +13,8 @@ import pygame
 from spacegame.config import (
     DIALOGUE_PORTRAIT_SIZE,
     DIALOGUE_TEXT_SPEED,
+    DISPOSITION_FEEDBACK_DURATION,
+    DISPOSITION_TIERS,
     SOCIAL_CHECK_FEEDBACK_DURATION,
     WINDOW_HEIGHT,
     WINDOW_WIDTH,
@@ -49,12 +51,14 @@ class _ResponseButton:
         text: str,
         font: pygame.font.Font,
         check_info: Optional[dict] = None,
+        disposition_preview: int = 0,
     ) -> None:
         self.rect = rect
         self.text = text
         self.font = font
         self.hovered = False
         self.check_info = check_info  # {skill, difficulty, effective, can_pass}
+        self.disposition_preview = disposition_preview  # read_the_room: predicted change
 
     def update_hover(self, mouse_pos: tuple[int, int]) -> None:
         """Update hover state from current mouse position."""
@@ -85,6 +89,16 @@ class _ResponseButton:
             text_surf = self.font.render(prefix + display_text, True, text_color)
         text_rect = text_surf.get_rect(midleft=(self.rect.x + 12, self.rect.centery))
         screen.blit(text_surf, text_rect)
+
+        # read_the_room: show disposition change preview on the right side
+        if self.disposition_preview != 0:
+            sign = "+" if self.disposition_preview > 0 else ""
+            preview_color = (80, 200, 80) if self.disposition_preview > 0 else (200, 80, 80)
+            preview_surf = self.font.render(
+                f"{sign}{self.disposition_preview}", True, preview_color
+            )
+            preview_rect = preview_surf.get_rect(midright=(self.rect.right - 12, self.rect.centery))
+            screen.blit(preview_surf, preview_rect)
 
     def _render_check_indicator(self, screen: pygame.Surface) -> None:
         """Render the color-coded skill check stripe on the left edge."""
@@ -176,6 +190,13 @@ class DialogueView(BaseView):
         # Skill check feedback overlay
         self._check_feedback: Optional[dict] = None  # {text, timer, success}
 
+        # Disposition UI state
+        self._disposition_feedbacks: list[dict] = []  # [{text, timer, color, y_offset}]
+        self._cached_disposition: int = 50  # Snapshot for change detection
+
+        # Subtext font (italic-style for Empathic Read hints)
+        self._subtext_font = get_font("narration", FONT_BODY)
+
         # Sprite manager for NPC portraits
         self._sprite_mgr = get_sprite_manager()
         self._portrait_cache: dict[str, Optional[AnimatedSprite]] = {}
@@ -184,6 +205,7 @@ class DialogueView(BaseView):
         super().on_enter()
         logger.info("Entered dialogue view")
         self._check_feedback = None
+        self._disposition_feedbacks.clear()
         self._load_current_node()
 
     def on_exit(self) -> None:
@@ -216,6 +238,13 @@ class DialogueView(BaseView):
             if portrait is not None:
                 portrait.play("idle")
 
+        # Cache current disposition for change detection
+        npc_id = self.dialogue_manager._current_npc_id or ""
+        if self.social_manager and npc_id:
+            self._cached_disposition = self.social_manager.get_disposition(npc_id)
+        else:
+            self._cached_disposition = 50
+
         # Build response buttons (only shown when text is complete)
         self._build_response_buttons()
 
@@ -226,14 +255,22 @@ class DialogueView(BaseView):
         if not node:
             return
 
+        # read_the_room skill: preview disposition changes on responses
+        has_read_the_room = False
+        player = self.dialogue_manager._player
+        if player and hasattr(player, "progression"):
+            has_read_the_room = player.progression.get_bonus("read_the_room") > 0
+
         responses = self.dialogue_manager.get_available_responses()
         if not responses:
             # Terminal node — show a "[Continue]" button to end
             responses_text = ["[Continue]"]
             check_infos: list[Optional[dict]] = [None]
+            disposition_previews: list[int] = [0]
         else:
             responses_text = []
             check_infos = []
+            disposition_previews = []
             for r in responses:
                 if r.skill_check and self.social_manager:
                     sc = r.skill_check
@@ -254,6 +291,8 @@ class DialogueView(BaseView):
                 else:
                     responses_text.append(r.text)
                     check_infos.append(None)
+                # read_the_room: track disposition change for this response
+                disposition_previews.append(r.disposition_change if has_read_the_room else 0)
 
         # Calculate vertical position for responses
         text_area_bottom = self.panel_y + self.PANEL_HEIGHT - 20
@@ -266,7 +305,9 @@ class DialogueView(BaseView):
         for i, text in enumerate(responses_text):
             btn_y = response_start_y + i * (self.RESPONSE_HEIGHT + self.RESPONSE_GAP)
             rect = pygame.Rect(btn_x, btn_y, btn_width, self.RESPONSE_HEIGHT)
-            btn = _ResponseButton(rect, text, self.response_font, check_infos[i])
+            btn = _ResponseButton(
+                rect, text, self.response_font, check_infos[i], disposition_previews[i]
+            )
             self._response_buttons.append(btn)
 
     def handle_event(self, event: pygame.event.Event) -> None:
@@ -307,6 +348,24 @@ class DialogueView(BaseView):
             return
 
         next_node = self.dialogue_manager.select_response(index)
+
+        # Detect disposition changes (always visible, even without Empathic Read)
+        npc_id = self.dialogue_manager._current_npc_id or ""
+        if self.social_manager and npc_id:
+            new_disp = self.social_manager.get_disposition(npc_id)
+            delta = new_disp - self._cached_disposition
+            if delta != 0:
+                sign = "+" if delta > 0 else ""
+                color = (80, 200, 80) if delta > 0 else (200, 80, 80)
+                self._disposition_feedbacks.append(
+                    {
+                        "text": f"{sign}{delta} Trust",
+                        "timer": DISPOSITION_FEEDBACK_DURATION,
+                        "color": color,
+                        "y_offset": 0.0,
+                    }
+                )
+                self._cached_disposition = new_disp
 
         # Check for skill check result feedback
         check_result = self.dialogue_manager.get_last_check_result()
@@ -353,6 +412,12 @@ class DialogueView(BaseView):
             if self._check_feedback["timer"] <= 0:
                 self._check_feedback = None
 
+        # Disposition feedback timers (float upward and fade)
+        for fb in self._disposition_feedbacks:
+            fb["timer"] -= dt
+            fb["y_offset"] -= 30 * dt  # Float upward
+        self._disposition_feedbacks = [fb for fb in self._disposition_feedbacks if fb["timer"] > 0]
+
     def render(self, screen: pygame.Surface) -> None:
         # Background
         self.background.render(screen)
@@ -366,7 +431,9 @@ class DialogueView(BaseView):
             # NPC dialogue mode
             self._render_portrait(screen)
             self._render_speaker_info(screen)
+            self._render_disposition_indicator(screen)
             self._render_dialogue_text(screen)
+            self._render_subtext(screen)
         else:
             # Narrator/monologue mode — full-width text, no portrait
             self._render_narration_text(screen)
@@ -392,6 +459,9 @@ class DialogueView(BaseView):
         # Skill check feedback overlay
         if self._check_feedback:
             self._render_check_feedback(screen)
+
+        # Disposition change floating feedback
+        self._render_disposition_feedback(screen)
 
     def _get_portrait(self, npc_id: str) -> Optional[AnimatedSprite]:
         """Get a cached animated portrait for an NPC."""
@@ -533,6 +603,98 @@ class DialogueView(BaseView):
             bottom=self.panel_y - 10,
         )
         screen.blit(text_surf, text_rect)
+
+    def _render_disposition_indicator(self, screen: pygame.Surface) -> None:
+        """Render disposition tier below portrait. Gated on Empathic Read."""
+        if not self.dialogue_manager.get_flag("empathic_read_active"):
+            return
+        npc_id = self.dialogue_manager._current_npc_id or ""
+        if not self.social_manager or not npc_id:
+            return
+
+        disposition = self.social_manager.get_disposition(npc_id)
+        tier = DISPOSITION_TIERS[0]  # Default: Wary
+        for t in DISPOSITION_TIERS:
+            if t["min"] <= disposition <= t["max"]:
+                tier = t
+                break
+
+        # Position below portrait
+        px = self.panel_x + 25
+        py = self.panel_y + 25 + self.PORTRAIT_H + 8
+
+        # Tier label
+        label = self.response_font.render(tier["name"], True, tier["color"])
+        label_rect = label.get_rect(centerx=px + self.PORTRAIT_W // 2, top=py)
+        screen.blit(label, label_rect)
+
+        # Thin bar showing position within 0-100 range
+        bar_y = py + 20
+        bar_w = self.PORTRAIT_W
+        bar_h = 4
+        bar_x = px
+
+        # Background
+        pygame.draw.rect(screen, (40, 40, 50), (bar_x, bar_y, bar_w, bar_h), border_radius=2)
+        # Fill
+        fill_w = max(2, int(bar_w * disposition / 100))
+        pygame.draw.rect(screen, tier["color"], (bar_x, bar_y, fill_w, bar_h), border_radius=2)
+
+    def _render_subtext(self, screen: pygame.Surface) -> None:
+        """Render Empathic Read subtext hint below dialogue text."""
+        if not self.dialogue_manager.get_flag("empathic_read_active"):
+            return
+        node = self.dialogue_manager.get_current_node()
+        if not node or not node.subtext or not self._text_complete:
+            return
+
+        text_x = self.panel_x + self.TEXT_LEFT_MARGIN
+        # Position below the main text area, above the response separator
+        response_top = self._get_response_area_top()
+        subtext_y = response_top - 30
+
+        # Render in muted italic color
+        color = (140, 160, 180)
+        surf = self._subtext_font.render(f"* {node.subtext}", True, color)
+        # Truncate if too wide
+        max_w = self.PANEL_WIDTH - self.TEXT_LEFT_MARGIN - 30
+        if surf.get_width() > max_w:
+            # Word-wrap into up to 2 lines
+            words = f"* {node.subtext}".split()
+            line1 = ""
+            line2 = ""
+            for word in words:
+                test = f"{line1} {word}".strip()
+                if self._subtext_font.size(test)[0] > max_w and line1:
+                    line2 = word
+                    continue
+                if line2:
+                    line2 = f"{line2} {word}"
+                else:
+                    line1 = test
+            if line2:
+                s1 = self._subtext_font.render(line1, True, color)
+                s2 = self._subtext_font.render(line2, True, color)
+                screen.blit(s1, (text_x, subtext_y - 16))
+                screen.blit(s2, (text_x, subtext_y))
+            else:
+                screen.blit(surf, (text_x, subtext_y))
+        else:
+            screen.blit(surf, (text_x, subtext_y))
+
+    def _render_disposition_feedback(self, screen: pygame.Surface) -> None:
+        """Render floating disposition change text near portrait."""
+        if not self._disposition_feedbacks:
+            return
+        for fb in self._disposition_feedbacks:
+            alpha = min(255, int(255 * fb["timer"] / DISPOSITION_FEEDBACK_DURATION * 2))
+            surf = self.response_font.render(fb["text"], True, fb["color"])
+            surf.set_alpha(alpha)
+            # Float upward from below the portrait
+            base_x = self.panel_x + 25 + self.PORTRAIT_W // 2
+            base_y = self.panel_y + 25 + self.PORTRAIT_H + 40
+            rect = surf.get_rect(centerx=base_x, top=int(base_y + fb["y_offset"]))
+            screen.blit(surf, rect)
 
     def _get_response_area_top(self) -> int:
         """Get the Y coordinate where response buttons start."""

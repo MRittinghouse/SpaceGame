@@ -232,6 +232,7 @@ def draw_bar(
     bg_color: tuple[int, int, int] = Colors.BAR_BG,
     edge_color: tuple[int, int, int] = Colors.BAR_EDGE,
     border_color: tuple[int, int, int] = Colors.UI_BORDER,
+    label_color: Optional[tuple[int, int, int]] = None,
 ) -> None:
     """Render a progress bar with pixel art inset frame and fill.
 
@@ -261,9 +262,10 @@ def draw_bar(
     bar_x = x
     bar_w = width
 
-    # Optional label
+    # Optional label (color-coded if label_color provided)
     if label:
-        label_surf = font.render(label, True, Colors.TEXT_SECONDARY)
+        lc = label_color if label_color else Colors.TEXT_SECONDARY
+        label_surf = font.render(label, True, lc)
         screen.blit(label_surf, (x, y + (height - label_surf.get_height()) // 2))
         label_w = label_surf.get_width() + 6
         bar_x = x + label_w
@@ -404,6 +406,82 @@ def word_wrap(
             result.append(current_line)
 
     return result
+
+
+# ---------------------------------------------------------------------------
+# Text truncation
+# ---------------------------------------------------------------------------
+
+
+def truncate_text(
+    text: str,
+    font: pygame.font.Font,
+    max_width: int,
+    suffix: str = "...",
+) -> str:
+    """Truncate text to fit within max_width, appending suffix if truncated.
+
+    Args:
+        text: Text to truncate.
+        font: Font to measure with.
+        max_width: Maximum pixel width.
+        suffix: Appended when text is truncated.
+
+    Returns:
+        Original text if it fits, or truncated text with suffix.
+    """
+    if font.size(text)[0] <= max_width:
+        return text
+    suffix_w = font.size(suffix)[0]
+    for i in range(len(text), 0, -1):
+        if font.size(text[:i])[0] + suffix_w <= max_width:
+            return text[:i].rstrip() + suffix
+    return suffix
+
+
+# ---------------------------------------------------------------------------
+# Hover / selection color helpers
+# ---------------------------------------------------------------------------
+
+
+def brighten(
+    color: tuple[int, int, int],
+    amount: int = 40,
+) -> tuple[int, int, int]:
+    """Brighten a color by adding to each channel, clamped to 255.
+
+    Args:
+        color: Base RGB color.
+        amount: Amount to add to each channel.
+
+    Returns:
+        Brightened RGB color.
+    """
+    return (
+        min(255, color[0] + amount),
+        min(255, color[1] + amount),
+        min(255, color[2] + amount),
+    )
+
+
+def dim(
+    color: tuple[int, int, int],
+    amount: int = 30,
+) -> tuple[int, int, int]:
+    """Dim a color by subtracting from each channel, clamped to 0.
+
+    Args:
+        color: Base RGB color.
+        amount: Amount to subtract from each channel.
+
+    Returns:
+        Dimmed RGB color.
+    """
+    return (
+        max(0, color[0] - amount),
+        max(0, color[1] - amount),
+        max(0, color[2] - amount),
+    )
 
 
 def draw_summary_overlay(

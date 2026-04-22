@@ -17,9 +17,9 @@ from typing import Any
 class AttributeId(Enum):
     """The five character attributes."""
 
-    COM = "com"  # Commerce — governs Trading tree
-    ACU = "acu"  # Acuity — governs Gathering tree
-    RES = "res"  # Resolve — governs Mining tree
+    COM = "com"  # Commerce — governs Commerce tree
+    ACU = "acu"  # Acuity — governs Exploration tree
+    RES = "res"  # Resolve — governs Industry tree
     ING = "ing"  # Ingenuity — governs Leadership tree
     SYN = "syn"  # Synergy — governs Social tree
 

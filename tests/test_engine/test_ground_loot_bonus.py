@@ -28,10 +28,10 @@ class TestGroundLootBonusApplication:
 
         # Level up combat_scavenger to desired level
         if bonus_level > 0:
-            # Prerequisite chain: tough_hide -> field_medic -> combat_scavenger
+            # Prerequisite chain: weapon_specialization -> ground_veteran -> combat_scavenger
             game.player.progression.skill_points = 20
-            game.player.progression.level_up_skill("tough_hide")
-            game.player.progression.level_up_skill("field_medic")
+            game.player.progression.level_up_skill("weapon_specialization")
+            game.player.progression.level_up_skill("ground_veteran")
             for _ in range(bonus_level):
                 ok, msg = game.player.progression.level_up_skill("combat_scavenger")
                 assert ok, f"Failed to level combat_scavenger: {msg}"

@@ -48,7 +48,11 @@
           "chance": 0.3
         }
       ],
-      "danger_level": "safe"
+      "danger_level": "safe",
+      "targetable_subsystems": [
+        "engine",
+        "sensor_array"
+      ]
     },
     {
       "id": "pirate_raider",
@@ -125,7 +129,11 @@
         }
       ],
       "danger_level": "moderate",
-      "combat_armor": 2
+      "combat_armor": 2,
+      "targetable_subsystems": [
+        "weapon_array",
+        "engine"
+      ]
     },
     {
       "id": "pirate_heavy",
@@ -222,7 +230,11 @@
         }
       ],
       "danger_level": "dangerous",
-      "combat_armor": 4
+      "combat_armor": 4,
+      "targetable_subsystems": [
+        "shield_generator",
+        "reactor"
+      ]
     },
     {
       "id": "smuggler",
@@ -287,7 +299,11 @@
           "chance": 0.5
         }
       ],
-      "danger_level": "safe"
+      "danger_level": "safe",
+      "targetable_subsystems": [
+        "engine",
+        "sensor_array"
+      ]
     },
     {
       "id": "patrol_vessel",
@@ -358,7 +374,11 @@
           "chance": 0.4
         }
       ],
-      "danger_level": "dangerous"
+      "danger_level": "dangerous",
+      "targetable_subsystems": [
+        "shield_generator",
+        "reactor"
+      ]
     },
     {
       "id": "guild_enforcer",
@@ -429,7 +449,11 @@
         }
       ],
       "danger_level": "moderate",
-      "combat_armor": 2
+      "combat_armor": 2,
+      "targetable_subsystems": [
+        "shield_generator",
+        "reactor"
+      ]
     },
     {
       "id": "guild_dreadnought",
@@ -524,7 +548,12 @@
         }
       ],
       "danger_level": "dangerous",
-      "combat_armor": 4
+      "combat_armor": 4,
+      "targetable_subsystems": [
+        "weapon_array",
+        "engine",
+        "reactor"
+      ]
     },
     {
       "id": "union_brawler",
@@ -602,7 +631,11 @@
         }
       ],
       "danger_level": "dangerous",
-      "combat_armor": 1
+      "combat_armor": 1,
+      "targetable_subsystems": [
+        "weapon_array",
+        "engine"
+      ]
     },
     {
       "id": "union_crusher",
@@ -693,7 +726,12 @@
         }
       ],
       "danger_level": "dangerous",
-      "combat_armor": 6
+      "combat_armor": 6,
+      "targetable_subsystems": [
+        "weapon_array",
+        "engine",
+        "reactor"
+      ]
     },
     {
       "id": "science_probe",
@@ -774,7 +812,11 @@
           "chance": 0.4
         }
       ],
-      "danger_level": "moderate"
+      "danger_level": "moderate",
+      "targetable_subsystems": [
+        "engine",
+        "sensor_array"
+      ]
     },
     {
       "id": "science_sentinel",
@@ -876,7 +918,11 @@
         }
       ],
       "danger_level": "dangerous",
-      "combat_armor": 3
+      "combat_armor": 3,
+      "targetable_subsystems": [
+        "shield_generator",
+        "reactor"
+      ]
     },
     {
       "id": "frontier_raider",
@@ -954,7 +1000,11 @@
         }
       ],
       "danger_level": "moderate",
-      "combat_armor": 2
+      "combat_armor": 2,
+      "targetable_subsystems": [
+        "weapon_array",
+        "engine"
+      ]
     },
     {
       "id": "frontier_gunship",
@@ -1051,7 +1101,11 @@
         }
       ],
       "danger_level": "dangerous",
-      "combat_armor": 3
+      "combat_armor": 3,
+      "targetable_subsystems": [
+        "weapon_array",
+        "engine"
+      ]
     },
     {
       "id": "guild_revenue_cutter",
@@ -1119,7 +1173,11 @@
           "chance": 0.4
         }
       ],
-      "danger_level": "safe"
+      "danger_level": "safe",
+      "targetable_subsystems": [
+        "shield_generator",
+        "reactor"
+      ]
     },
     {
       "id": "union_picket",
@@ -1191,7 +1249,11 @@
         }
       ],
       "danger_level": "moderate",
-      "combat_armor": 2
+      "combat_armor": 2,
+      "targetable_subsystems": [
+        "weapon_array",
+        "engine"
+      ]
     },
     {
       "id": "science_surveyor",
@@ -1260,7 +1322,11 @@
           "chance": 0.4
         }
       ],
-      "danger_level": "safe"
+      "danger_level": "safe",
+      "targetable_subsystems": [
+        "engine",
+        "sensor_array"
+      ]
     },
     {
       "id": "frontier_skirmisher",
@@ -1331,7 +1397,11 @@
           "chance": 0.4
         }
       ],
-      "danger_level": "safe"
+      "danger_level": "safe",
+      "targetable_subsystems": [
+        "weapon_array",
+        "engine"
+      ]
     },
     {
       "id": "reach_rustrunner",
@@ -1406,7 +1476,11 @@
           "chance": 0.5
         }
       ],
-      "danger_level": "safe"
+      "danger_level": "safe",
+      "targetable_subsystems": [
+        "engine",
+        "sensor_array"
+      ]
     },
     {
       "id": "reach_wrecker",
@@ -1500,7 +1574,11 @@
           "chance": 0.4
         }
       ],
-      "danger_level": "dangerous"
+      "danger_level": "dangerous",
+      "targetable_subsystems": [
+        "weapon_array",
+        "engine"
+      ]
     },
     {
       "id": "reach_dreadwreck",
@@ -1615,7 +1693,12 @@
         }
       ],
       "danger_level": "dangerous",
-      "combat_armor": 4
+      "combat_armor": 4,
+      "targetable_subsystems": [
+        "weapon_array",
+        "engine",
+        "reactor"
+      ]
     },
     {
       "id": "bounty_tracker",
@@ -1697,7 +1780,11 @@
           "chance": 0.4
         }
       ],
-      "danger_level": "moderate"
+      "danger_level": "moderate",
+      "targetable_subsystems": [
+        "engine",
+        "sensor_array"
+      ]
     },
     {
       "id": "bounty_enforcer",
@@ -1782,7 +1869,11 @@
           "chance": 0.4
         }
       ],
-      "danger_level": "dangerous"
+      "danger_level": "dangerous",
+      "targetable_subsystems": [
+        "weapon_array",
+        "engine"
+      ]
     },
     {
       "id": "bounty_vanguard",
@@ -1884,7 +1975,11 @@
         }
       ],
       "danger_level": "dangerous",
-      "combat_armor": 4
+      "combat_armor": 4,
+      "targetable_subsystems": [
+        "shield_generator",
+        "reactor"
+      ]
     },
     {
       "id": "bounty_ace",
@@ -1999,7 +2094,11 @@
           "chance": 0.1
         }
       ],
-      "danger_level": "moderate"
+      "danger_level": "moderate",
+      "targetable_subsystems": [
+        "engine",
+        "sensor_array"
+      ]
     },
     {
       "id": "faction_enforcer",
@@ -2123,7 +2222,12 @@
         }
       ],
       "danger_level": "dangerous",
-      "combat_armor": 5
+      "combat_armor": 5,
+      "targetable_subsystems": [
+        "weapon_array",
+        "engine",
+        "reactor"
+      ]
     },
     {
       "id": "ledger_raider",
@@ -2203,7 +2307,11 @@
           "chance": 0.4
         }
       ],
-      "danger_level": "dangerous"
+      "danger_level": "dangerous",
+      "targetable_subsystems": [
+        "weapon_array",
+        "engine"
+      ]
     },
     {
       "id": "ledger_striker",
@@ -2280,7 +2388,11 @@
           "chance": 0.4
         }
       ],
-      "danger_level": "safe"
+      "danger_level": "safe",
+      "targetable_subsystems": [
+        "engine",
+        "sensor_array"
+      ]
     },
     {
       "id": "ledger_vanguard",
@@ -2395,7 +2507,11 @@
         }
       ],
       "danger_level": "dangerous",
-      "combat_armor": 3
+      "combat_armor": 3,
+      "targetable_subsystems": [
+        "weapon_array",
+        "engine"
+      ]
     },
     {
       "id": "corsair_king",
@@ -2539,7 +2655,13 @@
           "max_qty": 5
         }
       ],
-      "danger_level": "dangerous"
+      "danger_level": "dangerous",
+      "targetable_subsystems": [
+        "weapon_array",
+        "engine",
+        "reactor",
+        "cockpit"
+      ]
     },
     {
       "id": "guild_arbiter",
@@ -2692,7 +2814,11 @@
           "max_qty": 5
         }
       ],
-      "danger_level": "moderate"
+      "danger_level": "moderate",
+      "targetable_subsystems": [
+        "shield_generator",
+        "reactor"
+      ]
     },
     {
       "id": "iron_maw",
@@ -2827,7 +2953,13 @@
           "max_qty": 5
         }
       ],
-      "danger_level": "dangerous"
+      "danger_level": "dangerous",
+      "targetable_subsystems": [
+        "weapon_array",
+        "engine",
+        "reactor",
+        "cockpit"
+      ]
     },
     {
       "id": "ledger_phantom",
@@ -2974,7 +3106,13 @@
           "max_qty": 5
         }
       ],
-      "danger_level": "moderate"
+      "danger_level": "moderate",
+      "targetable_subsystems": [
+        "engine",
+        "sensor_array",
+        "weapon_array",
+        "cockpit"
+      ]
     },
     {
       "id": "the_collector",
@@ -3116,7 +3254,13 @@
           "max_qty": 5
         }
       ],
-      "danger_level": "dangerous"
+      "danger_level": "dangerous",
+      "targetable_subsystems": [
+        "shield_generator",
+        "reactor",
+        "weapon_array",
+        "cockpit"
+      ]
     },
     {
       "id": "void_leviathan",
@@ -3255,7 +3399,13 @@
           "max_qty": 5
         }
       ],
-      "danger_level": "dangerous"
+      "danger_level": "dangerous",
+      "targetable_subsystems": [
+        "weapon_array",
+        "engine",
+        "reactor",
+        "cockpit"
+      ]
     },
     {
       "id": "rogue_ai_vessel",
@@ -3402,7 +3552,11 @@
           "max_qty": 5
         }
       ],
-      "danger_level": "moderate"
+      "danger_level": "moderate",
+      "targetable_subsystems": [
+        "shield_generator",
+        "reactor"
+      ]
     },
     {
       "id": "shield_drone",
@@ -3459,7 +3613,11 @@
         }
       ],
       "rare_loot": [],
-      "danger_level": "safe"
+      "danger_level": "safe",
+      "targetable_subsystems": [
+        "shield_generator",
+        "reactor"
+      ]
     },
     {
       "id": "armored_transport",
@@ -3524,7 +3682,11 @@
         }
       ],
       "rare_loot": [],
-      "danger_level": "dangerous"
+      "danger_level": "dangerous",
+      "targetable_subsystems": [
+        "shield_generator",
+        "reactor"
+      ]
     },
     {
       "id": "ghost_raider",
@@ -3600,7 +3762,11 @@
           "chance": 0.15
         }
       ],
-      "danger_level": "safe"
+      "danger_level": "safe",
+      "targetable_subsystems": [
+        "engine",
+        "sensor_array"
+      ]
     },
     {
       "id": "ion_striker",
@@ -3662,7 +3828,11 @@
       ],
       "rare_loot": [],
       "danger_level": "moderate",
-      "combat_armor": 1
+      "combat_armor": 1,
+      "targetable_subsystems": [
+        "weapon_array",
+        "engine"
+      ]
     },
     {
       "id": "cryo_interceptor",
@@ -3720,7 +3890,11 @@
         }
       ],
       "rare_loot": [],
-      "danger_level": "moderate"
+      "danger_level": "moderate",
+      "targetable_subsystems": [
+        "weapon_array",
+        "engine"
+      ]
     },
     {
       "id": "plasma_bomber",
@@ -3792,7 +3966,11 @@
           "chance": 0.1
         }
       ],
-      "danger_level": "safe"
+      "danger_level": "safe",
+      "targetable_subsystems": [
+        "weapon_array",
+        "engine"
+      ]
     },
     {
       "id": "support_frigate",
@@ -3863,7 +4041,1703 @@
         }
       ],
       "rare_loot": [],
-      "danger_level": "moderate"
+      "danger_level": "moderate",
+      "targetable_subsystems": [
+        "shield_generator",
+        "reactor"
+      ]
+    },
+    {
+      "id": "skiff_raider",
+      "name": "Skiff Raider",
+      "description": "A light pirate skiff. Fast, fragile, and committed to the strafe.",
+      "behavior": "aggressive",
+      "hull": 40,
+      "shields": 0,
+      "energy": 6,
+      "energy_regen": 2,
+      "speed": 10,
+      "evasion": 15,
+      "accuracy": 55,
+      "negotiate_difficulty": 2,
+      "flee_threshold": 0.25,
+      "xp_reward": 15,
+      "faction_id": "",
+      "danger_tier": "low",
+      "bribe_cost": 40,
+      "credit_reward": 25,
+      "combat_armor": 0,
+      "moves": [
+        {
+          "id": "scatter_shot",
+          "name": "Scatter Shot",
+          "description": "A rapid burst from the skiff's forward autocannons.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 10.0
+            }
+          ],
+          "energy_cost": 2
+        }
+      ],
+      "loot_table": [
+        {
+          "commodity_id": "common_metals",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.6
+        }
+      ],
+      "targetable_subsystems": [
+        "weapon_array",
+        "engine"
+      ]
+    },
+    {
+      "id": "hulk_derelict",
+      "name": "Derelict Hulk",
+      "description": "A half-functional salvage hulk running on scavenged logic. Dangerous if you close the distance.",
+      "behavior": "aggressive",
+      "hull": 80,
+      "shields": 0,
+      "energy": 5,
+      "energy_regen": 1,
+      "speed": 3,
+      "evasion": 0,
+      "accuracy": 45,
+      "negotiate_difficulty": 1,
+      "flee_threshold": 0.0,
+      "xp_reward": 18,
+      "faction_id": "",
+      "danger_tier": "low",
+      "bribe_cost": 0,
+      "credit_reward": 30,
+      "combat_armor": 3,
+      "moves": [
+        {
+          "id": "ram",
+          "name": "Collision Ram",
+          "description": "Slams into the target with whatever hull it has left.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 14.0
+            }
+          ],
+          "energy_cost": 3,
+          "accuracy_modifier": -15
+        }
+      ],
+      "loot_table": [
+        {
+          "commodity_id": "common_metals",
+          "min_qty": 2,
+          "max_qty": 4,
+          "chance": 0.8
+        }
+      ],
+      "targetable_subsystems": [
+        "weapon_array",
+        "engine"
+      ]
+    },
+    {
+      "id": "frontier_interceptor",
+      "name": "Frontier Interceptor",
+      "description": "A Frontier Alliance patrol cutter. Plasma-tipped cannons and improvised armor plating.",
+      "behavior": "aggressive",
+      "hull": 100,
+      "shields": 20,
+      "energy": 10,
+      "energy_regen": 3,
+      "speed": 11,
+      "evasion": 25,
+      "accuracy": 65,
+      "negotiate_difficulty": 3,
+      "flee_threshold": 0.3,
+      "xp_reward": 35,
+      "faction_id": "frontier_alliance",
+      "danger_tier": "moderate",
+      "bribe_cost": 200,
+      "credit_reward": 60,
+      "combat_armor": 2,
+      "moves": [
+        {
+          "id": "focused_beam",
+          "name": "Focused Plasma Beam",
+          "description": "A sustained plasma lance that burns through armor.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 18.0
+            }
+          ],
+          "energy_cost": 3
+        },
+        {
+          "id": "shield_burst",
+          "name": "Shield Burst",
+          "description": "Dumps energy into the shield emitters for a quick recharge.",
+          "effects": [
+            {
+              "type": "shield_restore",
+              "value": 12.0,
+              "target": "self"
+            }
+          ],
+          "energy_cost": 2,
+          "cooldown": 1
+        }
+      ],
+      "loot_table": [
+        {
+          "commodity_id": "weapons_components",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.5
+        },
+        {
+          "commodity_id": "common_metals",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.6
+        }
+      ],
+      "targetable_subsystems": [
+        "weapon_array",
+        "engine"
+      ]
+    },
+    {
+      "id": "reach_scout_ace",
+      "name": "Reach Scout Ace",
+      "description": "A Crimson Reach pilot flying well above their frame's rating. Unpredictable.",
+      "behavior": "aggressive",
+      "hull": 90,
+      "shields": 10,
+      "energy": 10,
+      "energy_regen": 3,
+      "speed": 13,
+      "evasion": 30,
+      "accuracy": 65,
+      "negotiate_difficulty": 4,
+      "flee_threshold": 0.15,
+      "xp_reward": 35,
+      "faction_id": "",
+      "danger_tier": "moderate",
+      "bribe_cost": 150,
+      "credit_reward": 70,
+      "combat_armor": 0,
+      "moves": [
+        {
+          "id": "plasma_strike",
+          "name": "Plasma Strike",
+          "description": "A short, overcharged plasma burst that burns on contact.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 20.0
+            },
+            {
+              "type": "burn",
+              "value": 3.0,
+              "duration": 2
+            }
+          ],
+          "energy_cost": 4
+        },
+        {
+          "id": "evasive_burn",
+          "name": "Evasive Burn",
+          "description": "Cuts engines hot for a sharp evasive roll.",
+          "effects": [
+            {
+              "type": "evasion_mod",
+              "value": 20.0,
+              "duration": 1,
+              "target": "self"
+            }
+          ],
+          "energy_cost": 2,
+          "cooldown": 2
+        }
+      ],
+      "loot_table": [
+        {
+          "commodity_id": "weapons_components",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.5
+        }
+      ],
+      "targetable_subsystems": [
+        "weapon_array",
+        "engine"
+      ]
+    },
+    {
+      "id": "union_corvette",
+      "name": "Union Armored Corvette",
+      "description": "A Miners Union industrial escort. Heavy plating, heavy ordinance, little patience.",
+      "behavior": "aggressive",
+      "hull": 160,
+      "shields": 40,
+      "energy": 10,
+      "energy_regen": 3,
+      "speed": 5,
+      "evasion": 0,
+      "accuracy": 60,
+      "negotiate_difficulty": 4,
+      "flee_threshold": 0.1,
+      "xp_reward": 45,
+      "faction_id": "miners_union",
+      "danger_tier": "moderate",
+      "bribe_cost": 300,
+      "credit_reward": 90,
+      "combat_armor": 6,
+      "moves": [
+        {
+          "id": "focused_beam",
+          "name": "Industrial Cutter",
+          "description": "A repurposed mining cutter that chews through hulls.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 12.0
+            }
+          ],
+          "energy_cost": 3
+        },
+        {
+          "id": "shield_burst",
+          "name": "Emergency Shielding",
+          "description": "Diverts reactor power to stabilize shields.",
+          "effects": [
+            {
+              "type": "shield_restore",
+              "value": 20.0,
+              "target": "self"
+            }
+          ],
+          "energy_cost": 3,
+          "cooldown": 2
+        }
+      ],
+      "loot_table": [
+        {
+          "commodity_id": "iron_ore",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.6
+        },
+        {
+          "commodity_id": "common_metals",
+          "min_qty": 2,
+          "max_qty": 4,
+          "chance": 0.7
+        }
+      ],
+      "targetable_subsystems": [
+        "weapon_array",
+        "engine",
+        "reactor"
+      ]
+    },
+    {
+      "id": "reach_bulwark",
+      "name": "Reach Bulwark",
+      "description": "A Crimson Reach assault frigate built around a single idea: absorb everything, hit back harder.",
+      "behavior": "aggressive",
+      "hull": 150,
+      "shields": 20,
+      "energy": 8,
+      "energy_regen": 2,
+      "speed": 6,
+      "evasion": 0,
+      "accuracy": 55,
+      "negotiate_difficulty": 5,
+      "flee_threshold": 0.05,
+      "xp_reward": 45,
+      "faction_id": "",
+      "danger_tier": "moderate",
+      "bribe_cost": 200,
+      "credit_reward": 100,
+      "combat_armor": 5,
+      "moves": [
+        {
+          "id": "plasma_ram",
+          "name": "Plasma Ram",
+          "description": "Overloaded engines ram the target in a burning charge.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 14.0
+            },
+            {
+              "type": "burn",
+              "value": 2.0,
+              "duration": 2
+            }
+          ],
+          "energy_cost": 3
+        },
+        {
+          "id": "armor_harden",
+          "name": "Armor Harden",
+          "description": "Ablative plating locks into place, reducing incoming damage.",
+          "effects": [
+            {
+              "type": "damage_reduction",
+              "value": 30.0,
+              "duration": 2,
+              "target": "self"
+            }
+          ],
+          "energy_cost": 2,
+          "cooldown": 3
+        }
+      ],
+      "loot_table": [
+        {
+          "commodity_id": "weapons_components",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.5
+        }
+      ],
+      "targetable_subsystems": [
+        "weapon_array",
+        "engine",
+        "reactor"
+      ]
+    },
+    {
+      "id": "guild_signal_jammer",
+      "name": "Guild Signal Jammer",
+      "description": "A Commerce Guild denial platform. Its weapons are paperwork.",
+      "behavior": "defensive",
+      "hull": 80,
+      "shields": 30,
+      "energy": 12,
+      "energy_regen": 4,
+      "speed": 7,
+      "evasion": 10,
+      "accuracy": 55,
+      "negotiate_difficulty": 3,
+      "flee_threshold": 0.35,
+      "xp_reward": 40,
+      "faction_id": "commerce_guild",
+      "danger_tier": "moderate",
+      "bribe_cost": 400,
+      "credit_reward": 80,
+      "combat_armor": 2,
+      "moves": [
+        {
+          "id": "jam",
+          "name": "Signal Jam",
+          "description": "A targeted jamming pulse that saps reactor output.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 4.0
+            },
+            {
+              "type": "energy_drain",
+              "value": 3.0
+            }
+          ],
+          "energy_cost": 3
+        },
+        {
+          "id": "ion_pulse",
+          "name": "Ion Pulse",
+          "description": "A disruptive ion burst that fouls targeting systems.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 8.0
+            },
+            {
+              "type": "suppressed",
+              "value": 1.0,
+              "duration": 3
+            }
+          ],
+          "energy_cost": 4,
+          "cooldown": 1
+        }
+      ],
+      "loot_table": [
+        {
+          "commodity_id": "electronics",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.6
+        }
+      ],
+      "targetable_subsystems": [
+        "shield_generator",
+        "reactor"
+      ]
+    },
+    {
+      "id": "collective_medic",
+      "name": "Collective Medship",
+      "description": "A Science Collective research frigate with advanced repair systems. Hard to kill, slow to die.",
+      "behavior": "defensive",
+      "hull": 120,
+      "shields": 40,
+      "energy": 12,
+      "energy_regen": 4,
+      "speed": 6,
+      "evasion": 10,
+      "accuracy": 55,
+      "negotiate_difficulty": 3,
+      "flee_threshold": 0.3,
+      "xp_reward": 40,
+      "faction_id": "science_collective",
+      "danger_tier": "moderate",
+      "bribe_cost": 350,
+      "credit_reward": 75,
+      "combat_armor": 3,
+      "moves": [
+        {
+          "id": "medical_relay",
+          "name": "Medical Relay",
+          "description": "A hull-restoring beam that patches the most-wounded ally (or the medic itself when alone).",
+          "effects": [
+            {
+              "type": "hull_restore",
+              "value": 30.0,
+              "target": "ally"
+            }
+          ],
+          "energy_cost": 4,
+          "cooldown": 2
+        },
+        {
+          "id": "cryo_pulse",
+          "name": "Cryo Pulse",
+          "description": "A focused cryo beam that freezes subsystems.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 10.0
+            },
+            {
+              "type": "chill",
+              "value": 1.0,
+              "duration": 3
+            }
+          ],
+          "energy_cost": 3
+        }
+      ],
+      "loot_table": [
+        {
+          "commodity_id": "medical",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.6
+        },
+        {
+          "commodity_id": "electronics",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.4
+        }
+      ],
+      "targetable_subsystems": [
+        "shield_generator",
+        "reactor"
+      ]
+    },
+    {
+      "id": "reach_void_dancer",
+      "name": "Reach Void Dancer",
+      "description": "A fanatic pilot in a modified interceptor. Every move is a committed kill or a committed death.",
+      "behavior": "aggressive",
+      "hull": 180,
+      "shields": 40,
+      "energy": 14,
+      "energy_regen": 4,
+      "speed": 14,
+      "evasion": 30,
+      "accuracy": 70,
+      "negotiate_difficulty": 5,
+      "flee_threshold": 0.05,
+      "xp_reward": 70,
+      "faction_id": "",
+      "danger_tier": "dangerous",
+      "bribe_cost": 500,
+      "credit_reward": 150,
+      "combat_armor": 3,
+      "moves": [
+        {
+          "id": "plasma_lance",
+          "name": "Plasma Lance",
+          "description": "A concentrated plasma lance that crits through weak plating.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 28.0
+            }
+          ],
+          "energy_cost": 4,
+          "accuracy_modifier": 5
+        },
+        {
+          "id": "dispersal_field",
+          "name": "Dispersal Field",
+          "description": "The ship phases sideways, becoming nearly impossible to track.",
+          "effects": [
+            {
+              "type": "evasion_mod",
+              "value": 30.0,
+              "duration": 1,
+              "target": "self"
+            }
+          ],
+          "energy_cost": 3,
+          "cooldown": 2
+        },
+        {
+          "id": "alpha_volley",
+          "name": "Alpha Volley",
+          "description": "Commits every weapon mount in a single devastating barrage.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 45.0
+            }
+          ],
+          "energy_cost": 6,
+          "cooldown": 2
+        }
+      ],
+      "loot_table": [
+        {
+          "commodity_id": "weapons_components",
+          "min_qty": 2,
+          "max_qty": 4,
+          "chance": 0.7
+        }
+      ],
+      "rare_loot": [
+        {
+          "commodity_id": "weapons_components",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.12
+        },
+        {
+          "commodity_id": "exotic_goods",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.1
+        }
+      ],
+      "targetable_subsystems": [
+        "weapon_array",
+        "engine",
+        "reactor"
+      ]
+    },
+    {
+      "id": "frontier_raptor",
+      "name": "Frontier Raptor",
+      "description": "A Frontier Alliance strike fighter, modified past spec. Voltaic weapons, minimal armor.",
+      "behavior": "aggressive",
+      "hull": 160,
+      "shields": 30,
+      "energy": 14,
+      "energy_regen": 4,
+      "speed": 13,
+      "evasion": 25,
+      "accuracy": 70,
+      "negotiate_difficulty": 4,
+      "flee_threshold": 0.2,
+      "xp_reward": 70,
+      "faction_id": "frontier_alliance",
+      "danger_tier": "dangerous",
+      "bribe_cost": 450,
+      "credit_reward": 140,
+      "combat_armor": 2,
+      "moves": [
+        {
+          "id": "voltaic_pulse",
+          "name": "Voltaic Pulse",
+          "description": "An electrical discharge that fouls targeting systems.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 25.0
+            },
+            {
+              "type": "suppressed",
+              "value": 1.0,
+              "duration": 3
+            }
+          ],
+          "energy_cost": 4
+        },
+        {
+          "id": "sniper_shot",
+          "name": "Marksman Shot",
+          "description": "A precision shot from maximum range, lining up a single weak point.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 45.0
+            }
+          ],
+          "energy_cost": 5,
+          "cooldown": 2,
+          "accuracy_modifier": 15
+        },
+        {
+          "id": "evasive_roll",
+          "name": "Evasive Roll",
+          "description": "A sharp deflection to slip an incoming lock.",
+          "effects": [
+            {
+              "type": "evasion_mod",
+              "value": 25.0,
+              "duration": 1,
+              "target": "self"
+            }
+          ],
+          "energy_cost": 2,
+          "cooldown": 2
+        }
+      ],
+      "loot_table": [
+        {
+          "commodity_id": "electronics",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.5
+        },
+        {
+          "commodity_id": "weapons_components",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.5
+        }
+      ],
+      "rare_loot": [
+        {
+          "commodity_id": "exotic_goods",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.12
+        },
+        {
+          "commodity_id": "rare_parts",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.1
+        }
+      ],
+      "targetable_subsystems": [
+        "weapon_array",
+        "engine",
+        "reactor"
+      ]
+    },
+    {
+      "id": "union_siege_cruiser",
+      "name": "Union Siege Cruiser",
+      "description": "A Miners Union heavy industrial hull repurposed for war. Slow, armored, and patient.",
+      "behavior": "defensive",
+      "hull": 350,
+      "shields": 80,
+      "energy": 14,
+      "energy_regen": 4,
+      "speed": 4,
+      "evasion": 5,
+      "accuracy": 65,
+      "negotiate_difficulty": 5,
+      "flee_threshold": 0.0,
+      "xp_reward": 90,
+      "faction_id": "miners_union",
+      "danger_tier": "dangerous",
+      "bribe_cost": 800,
+      "credit_reward": 250,
+      "combat_armor": 10,
+      "moves": [
+        {
+          "id": "siege_cannon",
+          "name": "Siege Cannon",
+          "description": "A massive spinal cannon. Devastating when it lands.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 45.0
+            }
+          ],
+          "energy_cost": 5,
+          "cooldown": 2
+        },
+        {
+          "id": "focused_beam",
+          "name": "Industrial Cutter",
+          "description": "Sustained cutting beam.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 20.0
+            }
+          ],
+          "energy_cost": 3
+        },
+        {
+          "id": "shield_overclock",
+          "name": "Shield Overclock",
+          "description": "Forcing the shield array past rated output.",
+          "effects": [
+            {
+              "type": "shield_restore",
+              "value": 40.0,
+              "target": "self"
+            }
+          ],
+          "energy_cost": 4,
+          "cooldown": 3
+        }
+      ],
+      "loot_table": [
+        {
+          "commodity_id": "iron_ore",
+          "min_qty": 2,
+          "max_qty": 5,
+          "chance": 0.7
+        },
+        {
+          "commodity_id": "rare_parts",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.4
+        }
+      ],
+      "rare_loot": [
+        {
+          "commodity_id": "rare_ore",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.15
+        },
+        {
+          "commodity_id": "precious_metals",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.1
+        }
+      ],
+      "targetable_subsystems": [
+        "shield_generator",
+        "reactor",
+        "weapon_array",
+        "cockpit"
+      ]
+    },
+    {
+      "id": "collective_jammer_prime",
+      "name": "Collective Jammer Prime",
+      "description": "A Science Collective electronic warfare platform. Drains your reactor one pulse at a time.",
+      "behavior": "defensive",
+      "hull": 200,
+      "shields": 60,
+      "energy": 16,
+      "energy_regen": 5,
+      "speed": 8,
+      "evasion": 15,
+      "accuracy": 60,
+      "negotiate_difficulty": 4,
+      "flee_threshold": 0.3,
+      "xp_reward": 85,
+      "faction_id": "science_collective",
+      "danger_tier": "dangerous",
+      "bribe_cost": 700,
+      "credit_reward": 200,
+      "combat_armor": 4,
+      "moves": [
+        {
+          "id": "ion_drain",
+          "name": "Ion Drain",
+          "description": "A targeted ion field that leeches reactor energy.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 10.0
+            },
+            {
+              "type": "energy_drain",
+              "value": 4.0
+            }
+          ],
+          "energy_cost": 3
+        },
+        {
+          "id": "cryo_lock",
+          "name": "Cryo Lock",
+          "description": "A focused cryo beam that freezes components in place.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 10.0
+            },
+            {
+              "type": "chill",
+              "value": 1.0,
+              "duration": 3
+            }
+          ],
+          "energy_cost": 3,
+          "cooldown": 1
+        },
+        {
+          "id": "signal_burn",
+          "name": "Signal Burn",
+          "description": "A wide-spectrum jamming burst.",
+          "effects": [
+            {
+              "type": "suppressed",
+              "value": 1.0,
+              "duration": 4,
+              "target": "enemy"
+            }
+          ],
+          "energy_cost": 3,
+          "cooldown": 2
+        }
+      ],
+      "loot_table": [
+        {
+          "commodity_id": "electronics",
+          "min_qty": 2,
+          "max_qty": 4,
+          "chance": 0.7
+        },
+        {
+          "commodity_id": "rare_parts",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.4
+        }
+      ],
+      "rare_loot": [
+        {
+          "commodity_id": "restricted_tech",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.12
+        },
+        {
+          "commodity_id": "purified_crystal",
+          "min_qty": 1,
+          "max_qty": 1,
+          "chance": 0.08
+        }
+      ],
+      "targetable_subsystems": [
+        "shield_generator",
+        "reactor",
+        "weapon_array"
+      ]
+    },
+    {
+      "id": "guild_relay_nexus",
+      "name": "Guild Relay Nexus",
+      "description": "A Commerce Guild flagship of attrition. Heals itself and reinforces allies from behind the line.",
+      "behavior": "defensive",
+      "hull": 240,
+      "shields": 60,
+      "energy": 14,
+      "energy_regen": 4,
+      "speed": 6,
+      "evasion": 10,
+      "accuracy": 60,
+      "negotiate_difficulty": 5,
+      "flee_threshold": 0.25,
+      "xp_reward": 85,
+      "faction_id": "commerce_guild",
+      "danger_tier": "dangerous",
+      "bribe_cost": 900,
+      "credit_reward": 220,
+      "combat_armor": 5,
+      "moves": [
+        {
+          "id": "medical_relay",
+          "name": "Medical Relay",
+          "description": "Routes restorative pulses to the most-damaged ally (or the nexus itself when alone).",
+          "effects": [
+            {
+              "type": "hull_restore",
+              "value": 30.0,
+              "target": "ally"
+            }
+          ],
+          "energy_cost": 4,
+          "cooldown": 2
+        },
+        {
+          "id": "shield_buff",
+          "name": "Shield Matrix",
+          "description": "Restores shield integrity.",
+          "effects": [
+            {
+              "type": "shield_restore",
+              "value": 35.0,
+              "target": "self"
+            }
+          ],
+          "energy_cost": 3,
+          "cooldown": 2
+        },
+        {
+          "id": "ion_pulse",
+          "name": "Ion Pulse",
+          "description": "A disruptive ion burst.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 14.0
+            },
+            {
+              "type": "suppressed",
+              "value": 1.0,
+              "duration": 2
+            }
+          ],
+          "energy_cost": 3
+        }
+      ],
+      "loot_table": [
+        {
+          "commodity_id": "electronics",
+          "min_qty": 2,
+          "max_qty": 4,
+          "chance": 0.6
+        },
+        {
+          "commodity_id": "medical",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.4
+        }
+      ],
+      "rare_loot": [
+        {
+          "commodity_id": "restricted_tech",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.12
+        },
+        {
+          "commodity_id": "precious_metals",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.1
+        }
+      ],
+      "targetable_subsystems": [
+        "shield_generator",
+        "reactor",
+        "weapon_array"
+      ]
+    },
+    {
+      "id": "mercenary_ace",
+      "name": "Mercenary Ace",
+      "description": "A contract pilot in a well-tuned frame. Balanced loadout, veteran instincts.",
+      "behavior": "aggressive",
+      "hull": 280,
+      "shields": 60,
+      "energy": 14,
+      "energy_regen": 4,
+      "speed": 10,
+      "evasion": 15,
+      "accuracy": 70,
+      "negotiate_difficulty": 4,
+      "flee_threshold": 0.2,
+      "xp_reward": 90,
+      "faction_id": "",
+      "danger_tier": "dangerous",
+      "bribe_cost": 1200,
+      "credit_reward": 300,
+      "combat_armor": 4,
+      "moves": [
+        {
+          "id": "plasma_lance",
+          "name": "Plasma Lance",
+          "description": "A disciplined plasma beam from a licensed weapons hardpoint.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 22.0
+            }
+          ],
+          "energy_cost": 3
+        },
+        {
+          "id": "alpha_volley",
+          "name": "Alpha Volley",
+          "description": "A committed firing solution, all weapons at once.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 45.0
+            }
+          ],
+          "energy_cost": 6,
+          "cooldown": 2
+        },
+        {
+          "id": "dispersal_field",
+          "name": "Dispersal Field",
+          "description": "Active countermeasures spin up.",
+          "effects": [
+            {
+              "type": "evasion_mod",
+              "value": 25.0,
+              "duration": 1,
+              "target": "self"
+            }
+          ],
+          "energy_cost": 2,
+          "cooldown": 2
+        }
+      ],
+      "loot_table": [
+        {
+          "commodity_id": "weapons_components",
+          "min_qty": 2,
+          "max_qty": 4,
+          "chance": 0.7
+        },
+        {
+          "commodity_id": "rare_parts",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.5
+        }
+      ],
+      "rare_loot": [
+        {
+          "commodity_id": "weapons_components",
+          "min_qty": 2,
+          "max_qty": 3,
+          "chance": 0.15
+        },
+        {
+          "commodity_id": "rare_parts",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.1
+        }
+      ],
+      "targetable_subsystems": [
+        "weapon_array",
+        "engine",
+        "reactor"
+      ]
+    },
+    {
+      "id": "rogue_ace",
+      "name": "Rogue Ace",
+      "description": "A Frontier Alliance ace gone off-script. Voltaic weapons, no signature, no quarter.",
+      "behavior": "aggressive",
+      "hull": 260,
+      "shields": 40,
+      "energy": 14,
+      "energy_regen": 4,
+      "speed": 12,
+      "evasion": 20,
+      "accuracy": 70,
+      "negotiate_difficulty": 5,
+      "flee_threshold": 0.15,
+      "xp_reward": 90,
+      "faction_id": "frontier_alliance",
+      "danger_tier": "dangerous",
+      "bribe_cost": 1000,
+      "credit_reward": 320,
+      "combat_armor": 3,
+      "moves": [
+        {
+          "id": "voltaic_pulse",
+          "name": "Voltaic Pulse",
+          "description": "A voltaic burst that jams targeting systems.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 25.0
+            },
+            {
+              "type": "suppressed",
+              "value": 1.0,
+              "duration": 3
+            }
+          ],
+          "energy_cost": 4
+        },
+        {
+          "id": "burn_run",
+          "name": "Burn Run",
+          "description": "A strafing pass with plasma weapons hot.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 30.0
+            },
+            {
+              "type": "burn",
+              "value": 3.0,
+              "duration": 2
+            }
+          ],
+          "energy_cost": 5,
+          "cooldown": 1
+        },
+        {
+          "id": "evasive_roll",
+          "name": "Evasive Roll",
+          "description": "Sharp deflection.",
+          "effects": [
+            {
+              "type": "evasion_mod",
+              "value": 25.0,
+              "duration": 1,
+              "target": "self"
+            }
+          ],
+          "energy_cost": 2,
+          "cooldown": 2
+        }
+      ],
+      "loot_table": [
+        {
+          "commodity_id": "electronics",
+          "min_qty": 2,
+          "max_qty": 3,
+          "chance": 0.5
+        },
+        {
+          "commodity_id": "weapons_components",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.6
+        }
+      ],
+      "rare_loot": [
+        {
+          "commodity_id": "exotic_goods",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.15
+        },
+        {
+          "commodity_id": "rare_parts",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.12
+        }
+      ],
+      "targetable_subsystems": [
+        "weapon_array",
+        "engine",
+        "reactor"
+      ]
+    },
+    {
+      "id": "pirate_lord",
+      "name": "Pirate Lord Voryn",
+      "description": "A named pirate commander. Veteran loadout, full crew, knows exactly when to commit the alpha strike.",
+      "behavior": "aggressive",
+      "hull": 500,
+      "shields": 120,
+      "energy": 18,
+      "energy_regen": 5,
+      "speed": 9,
+      "evasion": 20,
+      "accuracy": 75,
+      "negotiate_difficulty": 6,
+      "flee_threshold": 0.0,
+      "xp_reward": 300,
+      "faction_id": "",
+      "danger_tier": "dangerous",
+      "bribe_cost": 5000,
+      "credit_reward": 1000,
+      "combat_armor": 6,
+      "is_boss": true,
+      "boss_hp_multiplier": 1,
+      "max_suppressed_stacks": 2,
+      "phases": [
+        {
+          "name": "opening",
+          "hp_threshold": 1.0,
+          "behavior": "aggressive",
+          "move_ids": [
+            "plasma_lance",
+            "multi_target_barrage",
+            "shield_overclock"
+          ]
+        },
+        {
+          "name": "berserk",
+          "hp_threshold": 0.5,
+          "behavior": "berserker",
+          "move_ids": [
+            "plasma_lance",
+            "siege_cannon",
+            "multi_target_barrage"
+          ],
+          "on_enter_text": "Voryn's voice cuts through the comms. 'Now we burn together.'"
+        }
+      ],
+      "moves": [
+        {
+          "id": "plasma_lance",
+          "name": "Plasma Lance",
+          "description": "Practiced, precise plasma beam.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 28.0
+            }
+          ],
+          "energy_cost": 3
+        },
+        {
+          "id": "siege_cannon",
+          "name": "Siege Cannon",
+          "description": "The ship's bow cannon pivots to bear.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 50.0
+            }
+          ],
+          "energy_cost": 6,
+          "cooldown": 2
+        },
+        {
+          "id": "shield_overclock",
+          "name": "Shield Overclock",
+          "description": "A sharp shield recharge.",
+          "effects": [
+            {
+              "type": "shield_restore",
+              "value": 50.0,
+              "target": "self"
+            }
+          ],
+          "energy_cost": 4,
+          "cooldown": 4
+        },
+        {
+          "id": "multi_target_barrage",
+          "name": "Multi-Target Barrage",
+          "description": "Weapons spread fire across the target's systems.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 20.0
+            },
+            {
+              "type": "burn",
+              "value": 2.0,
+              "duration": 2
+            }
+          ],
+          "energy_cost": 4,
+          "cooldown": 1
+        }
+      ],
+      "loot_table": [
+        {
+          "commodity_id": "weapons_components",
+          "min_qty": 3,
+          "max_qty": 6,
+          "chance": 1.0
+        },
+        {
+          "commodity_id": "rare_parts",
+          "min_qty": 2,
+          "max_qty": 4,
+          "chance": 0.9
+        }
+      ],
+      "rare_loot": [
+        {
+          "commodity_id": "exotic_goods",
+          "min_qty": 2,
+          "max_qty": 4,
+          "chance": 0.35
+        },
+        {
+          "commodity_id": "rare_parts",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.3
+        },
+        {
+          "commodity_id": "restricted_tech",
+          "min_qty": 1,
+          "max_qty": 2,
+          "chance": 0.2
+        }
+      ],
+      "targetable_subsystems": [
+        "weapon_array",
+        "engine",
+        "reactor",
+        "cockpit"
+      ]
+    },
+    {
+      "id": "reach_dreadnought",
+      "name": "Crimson Dreadnought",
+      "description": "A Crimson Reach capital ship. Two phases. One objective.",
+      "behavior": "aggressive",
+      "hull": 700,
+      "shields": 150,
+      "energy": 20,
+      "energy_regen": 6,
+      "speed": 5,
+      "evasion": 5,
+      "accuracy": 70,
+      "negotiate_difficulty": 9,
+      "flee_threshold": 0.0,
+      "xp_reward": 400,
+      "faction_id": "",
+      "danger_tier": "dangerous",
+      "bribe_cost": 0,
+      "credit_reward": 1500,
+      "combat_armor": 8,
+      "is_boss": true,
+      "boss_hp_multiplier": 1,
+      "max_suppressed_stacks": 2,
+      "phases": [
+        {
+          "name": "approach",
+          "hp_threshold": 1.0,
+          "behavior": "aggressive",
+          "move_ids": [
+            "siege_cannon",
+            "multi_target_barrage",
+            "focused_beam"
+          ]
+        },
+        {
+          "name": "wrath",
+          "hp_threshold": 0.5,
+          "behavior": "berserker",
+          "move_ids": [
+            "siege_cannon",
+            "multi_target_barrage",
+            "phase_shift_tech",
+            "shield_overclock"
+          ],
+          "on_enter_text": "The dreadnought's hull plating splits. Reactor light bleeds through the cracks."
+        }
+      ],
+      "moves": [
+        {
+          "id": "siege_cannon",
+          "name": "Spinal Cannon",
+          "description": "The dreadnought's dorsal weapon rotates into firing position.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 50.0
+            }
+          ],
+          "energy_cost": 6,
+          "cooldown": 2
+        },
+        {
+          "id": "multi_target_barrage",
+          "name": "Broadside Barrage",
+          "description": "Every port-side gun fires.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 22.0
+            },
+            {
+              "type": "burn",
+              "value": 2.0,
+              "duration": 2
+            }
+          ],
+          "energy_cost": 4,
+          "cooldown": 1
+        },
+        {
+          "id": "focused_beam",
+          "name": "Focused Lance",
+          "description": "A sustained plasma lance.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 32.0
+            }
+          ],
+          "energy_cost": 4
+        },
+        {
+          "id": "phase_shift_tech",
+          "name": "Reactor Vent",
+          "description": "Venting reactor heat into the engagement zone.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 15.0
+            },
+            {
+              "type": "burn",
+              "value": 4.0,
+              "duration": 3
+            }
+          ],
+          "energy_cost": 5,
+          "cooldown": 2
+        },
+        {
+          "id": "shield_overclock",
+          "name": "Reactor Flare",
+          "description": "Pours reactor power into the shield emitters.",
+          "effects": [
+            {
+              "type": "shield_restore",
+              "value": 70.0,
+              "target": "self"
+            }
+          ],
+          "energy_cost": 5,
+          "cooldown": 4
+        }
+      ],
+      "loot_table": [
+        {
+          "commodity_id": "weapons_components",
+          "min_qty": 4,
+          "max_qty": 8,
+          "chance": 1.0
+        },
+        {
+          "commodity_id": "rare_parts",
+          "min_qty": 3,
+          "max_qty": 5,
+          "chance": 1.0
+        }
+      ],
+      "rare_loot": [
+        {
+          "commodity_id": "restricted_tech",
+          "min_qty": 2,
+          "max_qty": 3,
+          "chance": 0.4
+        },
+        {
+          "commodity_id": "weapons_components",
+          "min_qty": 2,
+          "max_qty": 4,
+          "chance": 0.35
+        },
+        {
+          "commodity_id": "exotic_goods",
+          "min_qty": 1,
+          "max_qty": 3,
+          "chance": 0.25
+        }
+      ],
+      "targetable_subsystems": [
+        "weapon_array",
+        "engine",
+        "reactor",
+        "cockpit"
+      ]
+    },
+    {
+      "id": "union_behemoth",
+      "name": "Union Behemoth",
+      "description": "A Miners Union industrial leviathan. Built to break moons. Just as effective on ships.",
+      "behavior": "defensive",
+      "hull": 800,
+      "shields": 180,
+      "energy": 18,
+      "energy_regen": 5,
+      "speed": 3,
+      "evasion": 0,
+      "accuracy": 65,
+      "negotiate_difficulty": 8,
+      "flee_threshold": 0.0,
+      "xp_reward": 400,
+      "faction_id": "miners_union",
+      "danger_tier": "dangerous",
+      "bribe_cost": 15000,
+      "credit_reward": 1800,
+      "combat_armor": 12,
+      "is_boss": true,
+      "boss_hp_multiplier": 1,
+      "max_suppressed_stacks": 2,
+      "phases": [
+        {
+          "name": "industrial",
+          "hp_threshold": 1.0,
+          "behavior": "defensive",
+          "move_ids": [
+            "siege_cannon",
+            "focused_beam",
+            "shield_overclock"
+          ]
+        },
+        {
+          "name": "awakened",
+          "hp_threshold": 0.5,
+          "behavior": "aggressive",
+          "move_ids": [
+            "siege_cannon",
+            "focused_beam",
+            "multi_target_barrage",
+            "armor_harden"
+          ],
+          "on_enter_text": "The Behemoth's hull panels peel back. Drilling lasers pivot outward."
+        }
+      ],
+      "moves": [
+        {
+          "id": "siege_cannon",
+          "name": "Industrial Core Cannon",
+          "description": "The main cutting core, repurposed.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 48.0
+            }
+          ],
+          "energy_cost": 6,
+          "cooldown": 2
+        },
+        {
+          "id": "focused_beam",
+          "name": "Drilling Lance",
+          "description": "A mining lance that cuts straight through armor.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 30.0
+            }
+          ],
+          "energy_cost": 4
+        },
+        {
+          "id": "multi_target_barrage",
+          "name": "Ore Cluster Launcher",
+          "description": "Hurls pulverized asteroid fragments at the target.",
+          "effects": [
+            {
+              "type": "damage",
+              "value": 18.0
+            },
+            {
+              "type": "suppressed",
+              "value": 1.0,
+              "duration": 2
+            }
+          ],
+          "energy_cost": 4,
+          "cooldown": 1
+        },
+        {
+          "id": "shield_overclock",
+          "name": "Reinforced Plating",
+          "description": "Deploys additional ablative armor layers.",
+          "effects": [
+            {
+              "type": "shield_restore",
+              "value": 60.0,
+              "target": "self"
+            }
+          ],
+          "energy_cost": 5,
+          "cooldown": 4
+        },
+        {
+          "id": "armor_harden",
+          "name": "Bulwark Mode",
+          "description": "Ablative plates lock rigid.",
+          "effects": [
+            {
+              "type": "damage_reduction",
+              "value": 40.0,
+              "duration": 3,
+              "target": "self"
+            }
+          ],
+          "energy_cost": 3,
+          "cooldown": 4
+        },
+        {
+          "id": "call_reinforcement",
+          "name": "Call the Yard",
+          "description": "The Behemoth broadcasts a tight-beam directive. A Union picket arrives to support.",
+          "effects": [
+            {
+              "type": "spawn_reinforcement",
+              "value": 1.0,
+              "metadata": {
+                "template_id": "union_picket"
+              }
+            }
+          ],
+          "energy_cost": 6,
+          "cooldown": 99
+        }
+      ],
+      "loot_table": [
+        {
+          "commodity_id": "iron_ore",
+          "min_qty": 5,
+          "max_qty": 10,
+          "chance": 1.0
+        },
+        {
+          "commodity_id": "rare_parts",
+          "min_qty": 3,
+          "max_qty": 5,
+          "chance": 1.0
+        }
+      ],
+      "rare_loot": [
+        {
+          "commodity_id": "rare_ore",
+          "min_qty": 3,
+          "max_qty": 6,
+          "chance": 0.4
+        },
+        {
+          "commodity_id": "crystal_ore",
+          "min_qty": 2,
+          "max_qty": 4,
+          "chance": 0.35
+        },
+        {
+          "commodity_id": "precious_metals",
+          "min_qty": 2,
+          "max_qty": 3,
+          "chance": 0.25
+        }
+      ],
+      "targetable_subsystems": [
+        "shield_generator",
+        "reactor",
+        "weapon_array",
+        "cockpit"
+      ]
     }
   ]
 }

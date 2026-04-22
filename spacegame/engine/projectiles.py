@@ -2,7 +2,9 @@
 
 Manages projectiles that travel from source to target with distinct
 visual identities per weapon type: laser beams, missile arcs, and
-cannon bursts.
+cannon bursts. All colors resolve through ``engine.material_palette``
+roles per Combat overhaul §4.5 — element identity drives projectile
+appearance.
 """
 
 import math
@@ -13,6 +15,7 @@ from typing import Callable, Optional
 import pygame
 
 from spacegame.config import scale_x, scale_y
+from spacegame.engine.material_palette import get_role
 
 
 class WeaponType(Enum):
@@ -24,12 +27,25 @@ class WeaponType(Enum):
     REPAIR = "repair"
 
 
-# Weapon colors
-_LASER_CORE = (255, 240, 220)
-_LASER_GLOW = (255, 120, 40)
-_MISSILE_BODY = (200, 210, 220)
-_MISSILE_TRAIL = (255, 160, 40)
-_CANNON_ROUND = (255, 255, 180)
+# Element → primary emissive role (spec §4.5 element-palette table).
+# Used for laser-beam glow, cannon muzzle accent, and repair beams.
+_ELEMENT_PRIMARY_ROLE: dict[str, str] = {
+    "kinetic": "glow_warm",  # Neutral kinetic — warm muzzle, no element tint
+    "plasma": "plasma_core",
+    "ion": "ion_arc",
+    "cryo": "cryo_fractal",
+    "voltaic": "voltaic_strike",
+    "repair": "glow_cool",
+}
+
+# Default fallback when a projectile has no declared element.
+_DEFAULT_ELEMENT = "plasma"
+
+
+def _resolve_element_role(element: Optional[str]) -> str:
+    """Return the palette-role key for a weapon element, with safe fallback."""
+    key = (element or _DEFAULT_ELEMENT).lower()
+    return _ELEMENT_PRIMARY_ROLE.get(key, _ELEMENT_PRIMARY_ROLE[_DEFAULT_ELEMENT])
 
 
 @dataclass
@@ -46,6 +62,7 @@ class Projectile:
     hit: bool = True  # False for misses (deflected trajectory)
     on_impact: Optional[Callable[[], None]] = None
     arc_height: float = 0.0  # Vertical arc for missiles (pixels)
+    element: Optional[str] = None  # Lowercase element key — drives palette role
 
     # Internal state
     _trail_timer: float = 0.0
@@ -109,6 +126,7 @@ class ProjectileManager:
         end: tuple[float, float],
         on_impact: Optional[Callable[[], None]] = None,
         hit: bool = True,
+        element: Optional[str] = None,
     ) -> None:
         """Spawn a laser beam projectile.
 
@@ -117,6 +135,9 @@ class ProjectileManager:
             end: Target position (impact point).
             on_impact: Callback fired when beam reaches target.
             hit: False for misses (beam deflects past target).
+            element: Weapon element ("plasma"/"ion"/"cryo"/"voltaic"/
+                "kinetic"/"repair"). Drives the laser glow palette per
+                spec §4.5. None falls back to plasma.
         """
         miss_end = end
         if not hit:
@@ -138,6 +159,7 @@ class ProjectileManager:
                 speed=800.0,  # Fast — beam extends quickly
                 on_impact=on_impact if hit else None,
                 hit=hit,
+                element=element,
             )
         )
         self._muzzle_flashes.append(
@@ -146,6 +168,7 @@ class ProjectileManager:
                 "y": start[1],
                 "timer": 0.08,
                 "max_timer": 0.08,
+                "element": element,
             }
         )
 
@@ -155,6 +178,7 @@ class ProjectileManager:
         end: tuple[float, float],
         on_impact: Optional[Callable[[], None]] = None,
         hit: bool = True,
+        element: Optional[str] = None,
     ) -> None:
         """Spawn a missile with arcing trajectory.
 
@@ -184,6 +208,7 @@ class ProjectileManager:
                 arc_height=float(scale_y(35)),
                 on_impact=on_impact if hit else None,
                 hit=hit,
+                element=element,
             )
         )
         self._muzzle_flashes.append(
@@ -192,6 +217,7 @@ class ProjectileManager:
                 "y": start[1],
                 "timer": 0.05,
                 "max_timer": 0.05,
+                "element": element,
             }
         )
 
@@ -202,6 +228,7 @@ class ProjectileManager:
         on_impact: Optional[Callable[[], None]] = None,
         hit: bool = True,
         burst_count: int = 3,
+        element: Optional[str] = None,
     ) -> None:
         """Spawn a burst of cannon rounds.
 
@@ -234,6 +261,7 @@ class ProjectileManager:
                 speed=600.0,
                 on_impact=impact_cb,
                 hit=hit,
+                element=element,
             )
             # Stagger launch: each round delayed slightly
             proj.progress = -(i * 0.08 * 600.0 / max(1.0, proj.distance))
@@ -246,6 +274,7 @@ class ProjectileManager:
                 "y": start[1],
                 "timer": 0.12,
                 "max_timer": 0.12,
+                "element": element,
             }
         )
 
@@ -285,13 +314,14 @@ class ProjectileManager:
         Args:
             screen: Surface to draw on.
         """
-        # Muzzle flashes
+        # Muzzle flashes — color picks up the firing weapon's element role.
         for flash in self._muzzle_flashes:
             t = flash["timer"] / flash["max_timer"]
             radius = int(scale_x(8) * t + scale_x(4))
             alpha = int(220 * t)
+            flash_color = get_role(_resolve_element_role(flash.get("element")))
             flash_surf = pygame.Surface((radius * 2, radius * 2), pygame.SRCALPHA)
-            pygame.draw.circle(flash_surf, (255, 240, 200, alpha), (radius, radius), radius)
+            pygame.draw.circle(flash_surf, (*flash_color, alpha), (radius, radius), radius)
             screen.blit(flash_surf, (int(flash["x"]) - radius, int(flash["y"]) - radius))
 
         # Projectiles
@@ -307,30 +337,42 @@ class ProjectileManager:
                 self._render_cannon(screen, proj)
 
     def _render_laser(self, screen: pygame.Surface, proj: Projectile) -> None:
-        """Render a laser beam that extends from source toward target."""
-        # Beam extends progressively (not a dot traveling — a LINE growing)
+        """Render a laser beam that extends from source toward target.
+
+        Per spec §4.5, the laser glow color is the element's primary
+        emissive role. Inner core stays at ``plasma_hot`` for legibility
+        across all elements (a near-white that reads as "energy").
+        """
         beam_end_x = proj.start_x + (proj.end_x - proj.start_x) * proj.progress
         beam_end_y = proj.start_y + (proj.end_y - proj.start_y) * proj.progress
 
         sx, sy = int(proj.start_x), int(proj.start_y)
         ex, ey = int(beam_end_x), int(beam_end_y)
 
-        # Outer glow (wider, dimmer)
-        pygame.draw.line(screen, _LASER_GLOW, (sx, sy), (ex, ey), max(1, scale_x(4)))
-        # Inner core (thinner, brighter)
-        pygame.draw.line(screen, _LASER_CORE, (sx, sy), (ex, ey), max(1, scale_x(2)))
+        glow_color = get_role(_resolve_element_role(proj.element))
+        core_color = get_role("plasma_hot")  # near-white energy core
+
+        pygame.draw.line(screen, glow_color, (sx, sy), (ex, ey), max(1, scale_x(4)))
+        pygame.draw.line(screen, core_color, (sx, sy), (ex, ey), max(1, scale_x(2)))
 
         # Bright tip
         tip_radius = scale_x(4)
         tip_surf = pygame.Surface((tip_radius * 2, tip_radius * 2), pygame.SRCALPHA)
-        pygame.draw.circle(tip_surf, (255, 255, 255, 200), (tip_radius, tip_radius), tip_radius)
+        pygame.draw.circle(tip_surf, (*core_color, 200), (tip_radius, tip_radius), tip_radius)
         screen.blit(tip_surf, (ex - tip_radius, ey - tip_radius))
 
     def _render_missile(self, screen: pygame.Surface, proj: Projectile) -> None:
-        """Render a missile projectile with exhaust trail."""
+        """Render a missile projectile with exhaust trail.
+
+        Spec §4.5: ``plasma_hot`` additive trail with element-tinted core.
+        """
         px, py = int(proj.x), int(proj.y)
 
-        # Exhaust trail: draw a few fading dots behind the missile
+        trail_color = get_role("plasma_hot")
+        body_color = get_role(_resolve_element_role(proj.element))
+        nose_color = get_role("plasma_hot")  # near-white nose, element-agnostic
+
+        # Exhaust trail
         trail_points = 5
         for i in range(trail_points):
             t = max(0.0, proj.progress - i * 0.04)
@@ -344,21 +386,24 @@ class ProjectileManager:
             alpha = int(180 * (1.0 - i / trail_points))
             radius = max(1, scale_x(3) - i)
             trail_surf = pygame.Surface((radius * 2, radius * 2), pygame.SRCALPHA)
-            pygame.draw.circle(trail_surf, (*_MISSILE_TRAIL, alpha), (radius, radius), radius)
+            pygame.draw.circle(trail_surf, (*trail_color, alpha), (radius, radius), radius)
             screen.blit(trail_surf, (int(tx) - radius, int(ty) - radius))
 
-        # Missile body
         body_radius = scale_x(5)
-        pygame.draw.circle(screen, _MISSILE_BODY, (px, py), body_radius)
-        # Bright nose
-        pygame.draw.circle(screen, (255, 255, 255), (px, py), max(1, body_radius // 2))
+        pygame.draw.circle(screen, body_color, (px, py), body_radius)
+        pygame.draw.circle(screen, nose_color, (px, py), max(1, body_radius // 2))
 
     def _render_cannon(self, screen: pygame.Surface, proj: Projectile) -> None:
-        """Render a small bright cannon round."""
+        """Render a small bright cannon round.
+
+        Spec §4.5: ``glow_warm`` muzzle/round; ``voltaic_strike`` accent
+        when firing voltaic-tech weapons. Core stays bright (plasma_hot).
+        """
         px, py = int(proj.x), int(proj.y)
         radius = max(1, scale_x(3))
 
-        # Bright round
-        pygame.draw.circle(screen, _CANNON_ROUND, (px, py), radius)
-        # Core
-        pygame.draw.circle(screen, (255, 255, 255), (px, py), max(1, radius - 1))
+        round_color = get_role(_resolve_element_role(proj.element))
+        core_color = get_role("plasma_hot")
+
+        pygame.draw.circle(screen, round_color, (px, py), radius)
+        pygame.draw.circle(screen, core_color, (px, py), max(1, radius - 1))

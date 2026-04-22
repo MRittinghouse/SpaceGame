@@ -62,6 +62,8 @@ def manager() -> AudioManager:
     mgr._audio_dir = Path(".")
     mgr._fade_target_volume = None
     mgr._fade_speed = 0.0
+    mgr._music_duck = 1.0
+    mgr._ambient_duck = 1.0
     return mgr
 
 

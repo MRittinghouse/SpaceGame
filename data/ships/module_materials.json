@@ -4,153 +4,217 @@
       "id": "module_hull_rk",
       "name": "Reyes-Kowalski Hull",
       "description": "Clean, professional hull plating from the industry standard.",
-      "color_primary": [176, 196, 222],
-      "color_accent": [140, 160, 190],
-      "color_highlight": [200, 220, 240]
+      "shade_band": "steel",
+      "noise_intensity": 0.12,
+      "rivet_density": 35.0,
+      "wear_intensity": 0.08,
+      "gloss": 0.40
     },
     {
       "id": "module_hull_foundry",
       "name": "Foundry Collective Hull",
       "description": "Industrial-grade riveted plating. Built to last.",
-      "color_primary": [160, 130, 80],
-      "color_accent": [130, 100, 60],
-      "color_highlight": [190, 160, 110]
+      "shade_band": "union_ceramic",
+      "noise_intensity": 0.20,
+      "rivet_density": 65.0,
+      "wear_intensity": 0.18,
+      "gloss": 0.20
     },
     {
       "id": "module_hull_talon",
       "name": "Talon Systems Hull",
       "description": "Sharp-angled combat plating in aggressive dark red.",
-      "color_primary": [139, 26, 26],
-      "color_accent": [100, 20, 20],
-      "color_highlight": [180, 50, 50]
+      "shade_band": "reach_crimson",
+      "noise_intensity": 0.15,
+      "rivet_density": 45.0,
+      "wear_intensity": 0.12,
+      "gloss": 0.35
     },
     {
       "id": "module_hull_sable",
       "name": "Sable Dynamics Hull",
       "description": "Low-signature stealth plating. Nearly invisible.",
-      "color_primary": [47, 54, 64],
-      "color_accent": [35, 40, 50],
-      "color_highlight": [70, 80, 95]
+      "shade_band": "collective_composite",
+      "category_offset": -2,
+      "noise_intensity": 0.22,
+      "rivet_density": 20.0,
+      "wear_intensity": 0.12,
+      "gloss": 0.05
     },
     {
       "id": "module_hull_meridian",
       "name": "Meridian Works Hull",
       "description": "Luxury-grade hull with a warm golden sheen.",
-      "color_primary": [212, 175, 55],
-      "color_accent": [170, 140, 45],
-      "color_highlight": [240, 210, 100]
+      "shade_band": "solari_chrome",
+      "noise_intensity": 0.08,
+      "rivet_density": 25.0,
+      "wear_intensity": 0.05,
+      "gloss": 0.75,
+      "signature_stripe_role": "hud_accent_warm"
     },
     {
       "id": "module_hull_salvage",
       "name": "Salvage Rat Hull",
       "description": "Mismatched scrap plating. Ugly but functional.",
-      "color_primary": [120, 115, 100],
-      "color_accent": [95, 90, 80],
-      "color_highlight": [145, 140, 125]
+      "shade_band": "frontier_canvas",
+      "noise_intensity": 0.38,
+      "rivet_density": 60.0,
+      "wear_intensity": 0.50,
+      "gloss": 0.08,
+      "signature_stripe_role": "weld"
     },
     {
       "id": "cockpit_glass",
       "name": "Cockpit Glass",
       "description": "Reinforced transparent canopy material.",
-      "color_primary": [100, 160, 220],
-      "color_accent": [70, 130, 190],
-      "color_highlight": [140, 200, 255]
+      "shade_band": "glass_viewport",
+      "noise_intensity": 0.05,
+      "rivet_density": 0.0,
+      "wear_intensity": 0.02,
+      "gloss": 0.90,
+      "emissive_role": "glow_cool"
     },
     {
       "id": "console_panel",
       "name": "Console Panel",
       "description": "Instrument panels and control displays.",
-      "color_primary": [50, 80, 60],
-      "color_accent": [40, 65, 50],
-      "color_highlight": [80, 140, 90]
+      "shade_band": "steel",
+      "category_offset": -2,
+      "noise_intensity": 0.08,
+      "rivet_density": 5.0,
+      "wear_intensity": 0.05,
+      "gloss": 0.20,
+      "emissive_role": "cryo_fractal"
     },
     {
       "id": "exhaust_port",
       "name": "Exhaust Port",
       "description": "High-temperature thruster nozzle housing.",
-      "color_primary": [60, 45, 30],
-      "color_accent": [45, 35, 25],
-      "color_highlight": [200, 140, 50]
+      "shade_band": "steel",
+      "category_offset": -2,
+      "noise_intensity": 0.25,
+      "rivet_density": 15.0,
+      "wear_intensity": 0.45,
+      "gloss": 0.15,
+      "emissive_role": "plasma_core"
     },
     {
       "id": "weapon_barrel",
       "name": "Weapon Barrel",
       "description": "Hardened gunmetal weapon housing.",
-      "color_primary": [55, 55, 65],
-      "color_accent": [40, 40, 50],
-      "color_highlight": [90, 90, 110]
+      "shade_band": "steel",
+      "category_offset": -1,
+      "noise_intensity": 0.12,
+      "rivet_density": 20.0,
+      "wear_intensity": 0.20,
+      "gloss": 0.35
     },
     {
       "id": "shield_emitter",
       "name": "Shield Emitter",
       "description": "Energy projection hardware for shield generation.",
-      "color_primary": [60, 200, 230],
-      "color_accent": [40, 160, 200],
-      "color_highlight": [120, 240, 255]
+      "shade_band": "collective_composite",
+      "noise_intensity": 0.06,
+      "rivet_density": 12.0,
+      "wear_intensity": 0.02,
+      "gloss": 0.80,
+      "emissive_role": "cryo_fractal"
     },
     {
       "id": "sensor_dish",
       "name": "Sensor Dish",
       "description": "High-sensitivity detection and scanning array.",
-      "color_primary": [190, 200, 210],
-      "color_accent": [160, 170, 180],
-      "color_highlight": [230, 240, 255]
+      "shade_band": "steel",
+      "category_offset": 1,
+      "noise_intensity": 0.06,
+      "rivet_density": 15.0,
+      "wear_intensity": 0.04,
+      "gloss": 0.60,
+      "emissive_role": "hud_cyan"
     },
     {
       "id": "cargo_interior",
       "name": "Cargo Interior",
       "description": "Reinforced storage bay interior.",
-      "color_primary": [70, 65, 55],
-      "color_accent": [55, 50, 45],
-      "color_highlight": [95, 90, 75]
+      "shade_band": "steel",
+      "category_offset": -1,
+      "noise_intensity": 0.20,
+      "rivet_density": 45.0,
+      "wear_intensity": 0.22,
+      "gloss": 0.15
     },
     {
       "id": "reactor_core",
       "name": "Reactor Core",
       "description": "Shielded power generation chamber.",
-      "color_primary": [120, 60, 160],
-      "color_accent": [90, 40, 130],
-      "color_highlight": [170, 100, 220]
+      "shade_band": "steel",
+      "category_offset": -2,
+      "noise_intensity": 0.10,
+      "rivet_density": 20.0,
+      "wear_intensity": 0.08,
+      "gloss": 0.40,
+      "emissive_role": "ion_arc"
     },
     {
       "id": "crew_quarters_interior",
       "name": "Crew Quarters Interior",
       "description": "Life support and habitation systems.",
-      "color_primary": [80, 100, 75],
-      "color_accent": [60, 80, 55],
-      "color_highlight": [110, 135, 100]
+      "shade_band": "steel",
+      "noise_intensity": 0.12,
+      "rivet_density": 30.0,
+      "wear_intensity": 0.15,
+      "gloss": 0.25,
+      "signature_stripe_role": "glow_warm"
     },
     {
       "id": "legendary_hull",
       "name": "Legendary Alloy",
       "description": "Salvaged from a superboss. The metal hums with residual power.",
-      "color_primary": [220, 180, 60],
-      "color_accent": [180, 140, 40],
-      "color_highlight": [255, 220, 100]
+      "shade_band": "solari_chrome",
+      "category_offset": 1,
+      "noise_intensity": 0.08,
+      "rivet_density": 30.0,
+      "wear_intensity": 0.05,
+      "gloss": 0.80,
+      "emissive_role": "voltaic_strike",
+      "signature_stripe_role": "voltaic_strike"
     },
     {
       "id": "legendary_core",
       "name": "Legendary Core",
       "description": "An energy source that defies conventional engineering.",
-      "color_primary": [180, 60, 220],
-      "color_accent": [140, 40, 180],
-      "color_highlight": [220, 120, 255]
+      "shade_band": "solari_chrome",
+      "category_offset": -1,
+      "noise_intensity": 0.06,
+      "rivet_density": 15.0,
+      "wear_intensity": 0.03,
+      "gloss": 0.85,
+      "emissive_role": "ion_arc",
+      "signature_stripe_role": "ion_arc"
     },
     {
       "id": "void_material",
       "name": "Void Matter",
       "description": "Material that seems to absorb light. Cold to the touch.",
-      "color_primary": [20, 10, 40],
-      "color_accent": [10, 5, 25],
-      "color_highlight": [60, 30, 100]
+      "shade_band": "collective_composite",
+      "category_offset": -2,
+      "noise_intensity": 0.35,
+      "rivet_density": 5.0,
+      "wear_intensity": 0.08,
+      "gloss": 0.10,
+      "emissive_role": "ion_arc"
     },
     {
       "id": "phantom_material",
       "name": "Phase-Shift Alloy",
       "description": "Flickers between states of matter. Sometimes your hand passes through it.",
-      "color_primary": [140, 180, 200],
-      "color_accent": [100, 140, 170],
-      "color_highlight": [200, 230, 255]
+      "shade_band": "collective_composite",
+      "noise_intensity": 0.20,
+      "rivet_density": 10.0,
+      "wear_intensity": 0.05,
+      "gloss": 0.65,
+      "emissive_role": "ion_arc",
+      "signature_stripe_role": "ion_arc"
     }
   ]
 }

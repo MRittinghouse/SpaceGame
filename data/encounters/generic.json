@@ -2121,6 +2121,201 @@
           }
         }
       ]
+    },
+    {
+      "id": "cargo_stowaway",
+      "encounter_type": "refugee",
+      "name": "Unauthorized Passenger",
+      "description": "A routine cargo check turns up something the manifest didn't account for: a teenager wedged between crate thirty-nine and forty, half-starved, wearing clothes three sizes too big. They flinch when you open the panel. They can't produce an ID. The story changes every time they tell it. The only consistent details are the bruise patterns on their arms and the way they keep watching the airlock like it might open on its own.",
+      "icon_color": [
+        200,
+        180,
+        100
+      ],
+      "weight": 8,
+      "danger_levels": [
+        "safe",
+        "moderate",
+        "dangerous"
+      ],
+      "tone": "neutral",
+      "category": "generic",
+      "unique": true,
+      "choices": [
+        {
+          "id": "turn_in",
+          "label": "Report to Station Security",
+          "description": "File the stowaway report at the next port. There's a small bounty for unauthorized passengers.",
+          "outcome": {
+            "description": "You file the report at the next station. Security takes the kid into processing without a second glance. The bounty hits your account before they're through the door. You try not to think about where processing leads for someone with no ID and no story that holds together.",
+            "rewards": [
+              {
+                "reward_type": "credits",
+                "amount": 150
+              },
+              {
+                "reward_type": "xp",
+                "amount": 20
+              },
+              {
+                "reward_type": "set_flag",
+                "amount": 0,
+                "target_id": "stowaway_discovered"
+              },
+              {
+                "reward_type": "set_flag",
+                "amount": 0,
+                "target_id": "stowaway_resolved"
+              }
+            ]
+          }
+        },
+        {
+          "id": "haven",
+          "label": "Divert to Haven's Rest",
+          "description": "The refugee center at Haven's Rest takes in people with nowhere else to go. It's a detour, but they won't ask questions.",
+          "outcome": {
+            "description": "Haven's Rest takes the kid in without paperwork or judgment. The intake coordinator gives you a look that's half gratitude, half exhaustion. On the way out, the kid stops at the door and says something too quiet to hear. The coordinator translates: 'They said thank you.' You pretend the detour was on your route anyway.",
+            "rewards": [
+              {
+                "reward_type": "xp",
+                "amount": 30
+              },
+              {
+                "reward_type": "modify_reputation",
+                "amount": 10,
+                "target_id": "frontier_alliance"
+              },
+              {
+                "reward_type": "set_flag",
+                "amount": 0,
+                "target_id": "stowaway_discovered"
+              },
+              {
+                "reward_type": "set_flag",
+                "amount": 0,
+                "target_id": "stowaway_resolved"
+              }
+            ]
+          }
+        },
+        {
+          "id": "work",
+          "label": "Put Them to Work",
+          "description": "An extra pair of hands in the cargo hold. They eat less than they're worth, and they clearly know their way around a shipping crate.",
+          "outcome": {
+            "description": "The kid works without complaint and without rest. Within a day they've reorganized the hold by weight distribution, something your loading algorithm missed. They don't talk about where they came from. You don't ask. It's a temporary arrangement, but temporary has a way of stretching out here.",
+            "rewards": [
+              {
+                "reward_type": "xp",
+                "amount": 40
+              },
+              {
+                "reward_type": "set_flag",
+                "amount": 0,
+                "target_id": "stowaway_discovered"
+              },
+              {
+                "reward_type": "set_flag",
+                "amount": 0,
+                "target_id": "stowaway_resolved"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "escape_pod_adrift",
+      "encounter_type": "distress_signal",
+      "name": "Escape Pod Adrift",
+      "description": "A faint life sign registers on your sensors. An escape pod tumbles in a slow spin. The beacon is dead and the transponder has been gutted. The hull is scorched along one side, the viewport dark. Whoever is inside stopped trying to signal a long time ago. You can match velocity and pull them aboard, or log the coordinates and move on.",
+      "icon_color": [
+        200,
+        100,
+        80
+      ],
+      "weight": 6,
+      "danger_levels": [
+        "moderate",
+        "dangerous"
+      ],
+      "tone": "neutral",
+      "category": "generic",
+      "unique": true,
+      "choices": [
+        {
+          "id": "rescue",
+          "label": "Match Velocity and Dock",
+          "description": "Burn fuel to match the pod's tumble and bring the survivor aboard. It'll cost time and a docking clamp you might need later.",
+          "outcome": {
+            "description": "The docking clamp locks onto the pod with a shudder that travels through your whole hull. Inside, a woman in a torn flight suit is barely conscious. Her first words are coordinates, repeated like a prayer. She's been drifting for three days. You set course for the nearest station.",
+            "rewards": [
+              {
+                "reward_type": "xp",
+                "amount": 30
+              },
+              {
+                "reward_type": "modify_reputation",
+                "amount": 5,
+                "target_id": "frontier_alliance"
+              },
+              {
+                "reward_type": "set_flag",
+                "amount": 0,
+                "target_id": "adrift_survivor_found"
+              },
+              {
+                "reward_type": "set_flag",
+                "amount": 0,
+                "target_id": "adrift_resolved"
+              }
+            ]
+          }
+        },
+        {
+          "id": "salvage",
+          "label": "Salvage the Pod",
+          "description": "The pod's hull plating has salvage value. Check for a survivor first, then strip what you can.",
+          "outcome": {
+            "description": "You crack the pod's hatch. The survivor inside is dehydrated and incoherent but alive. You pull her out, strip the pod's intact hull plating and fuel cell, and set course for the nearest station. She'll recover. The pod won't.",
+            "rewards": [
+              {
+                "reward_type": "credits",
+                "amount": 100
+              },
+              {
+                "reward_type": "xp",
+                "amount": 15
+              },
+              {
+                "reward_type": "set_flag",
+                "amount": 0,
+                "target_id": "adrift_survivor_found"
+              },
+              {
+                "reward_type": "set_flag",
+                "amount": 0,
+                "target_id": "adrift_resolved"
+              }
+            ]
+          }
+        },
+        {
+          "id": "log_coords",
+          "label": "Log Coordinates and Move On",
+          "description": "Someone closer might reach them. Or someone with more time. You flag the position for the next patrol.",
+          "outcome": {
+            "description": "You log the coordinates and transmit them on the emergency frequency. The pod shrinks in your rear sensors until it's just another point of light. The patrol frequency doesn't acknowledge.",
+            "rewards": [
+              {
+                "reward_type": "xp",
+                "amount": 5
+              }
+            ]
+          }
+        }
+      ]
     }
   ]
 }

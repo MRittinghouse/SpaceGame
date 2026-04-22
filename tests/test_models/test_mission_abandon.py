@@ -21,9 +21,7 @@ class TestAbandonMission:
     def test_abandon_active_side_mission(self) -> None:
         mm = _make_manager()
         # Find a side mission and activate it
-        side_ids = [
-            m.id for m in mm._missions.values() if m.mission_type == "side"
-        ]
+        side_ids = [m.id for m in mm._missions.values() if m.mission_type == "side"]
         assert side_ids, "Should have at least one side mission"
         mid = side_ids[0]
         mm._status[mid] = MissionStatus.ACTIVE
@@ -33,9 +31,7 @@ class TestAbandonMission:
 
     def test_cannot_abandon_campaign_mission(self) -> None:
         mm = _make_manager()
-        campaign_ids = [
-            m.id for m in mm._missions.values() if m.mission_type == "campaign"
-        ]
+        campaign_ids = [m.id for m in mm._missions.values() if m.mission_type == "campaign"]
         assert campaign_ids, "Should have at least one campaign mission"
         mid = campaign_ids[0]
         mm._status[mid] = MissionStatus.ACTIVE
@@ -45,9 +41,7 @@ class TestAbandonMission:
 
     def test_cannot_abandon_non_active_mission(self) -> None:
         mm = _make_manager()
-        side_ids = [
-            m.id for m in mm._missions.values() if m.mission_type == "side"
-        ]
+        side_ids = [m.id for m in mm._missions.values() if m.mission_type == "side"]
         mid = side_ids[0]
         # Mission is UNAVAILABLE by default
         success, msg = mm.abandon_mission(mid)
@@ -56,9 +50,7 @@ class TestAbandonMission:
 
     def test_abandoned_status_serializes(self) -> None:
         mm = _make_manager()
-        side_ids = [
-            m.id for m in mm._missions.values() if m.mission_type == "side"
-        ]
+        side_ids = [m.id for m in mm._missions.values() if m.mission_type == "side"]
         mid = side_ids[0]
         mm._status[mid] = MissionStatus.ACTIVE
         mm.abandon_mission(mid)
@@ -70,9 +62,7 @@ class TestAbandonMission:
 
     def test_abandoned_appears_in_completed_query(self) -> None:
         mm = _make_manager()
-        side_ids = [
-            m.id for m in mm._missions.values() if m.mission_type == "side"
-        ]
+        side_ids = [m.id for m in mm._missions.values() if m.mission_type == "side"]
         mid = side_ids[0]
         mm._status[mid] = MissionStatus.ACTIVE
         mm.abandon_mission(mid)

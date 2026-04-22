@@ -4,7 +4,7 @@
       "id": "elena_old_charts",
       "name": "Old Charts",
       "description": "Elena hasn't talked about Captain Koren in years. But she kept the coordinates, his last known position scrawled on a nav chip she carries everywhere. The Guild archives at Stellaris Port might fill in the blanks. Or confirm what she already suspects.",
-      "hint": "Travel to Stellaris Port and help Elena access the Guild navigation archives.",
+      "hint": "Travel to Stellaris Port with Elena in your crew, then speak with her at the cantina to access the Guild navigation archives.",
       "mission_type": "crew",
       "available_at": [],
       "available_after": "",

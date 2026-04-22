@@ -29,7 +29,7 @@ class TestEnemyTemplateLoading:
     def test_load_all_enemies(self) -> None:
         loader = _make_loader()
         loader.load_enemy_templates()
-        assert len(loader.enemy_templates) == 42
+        assert len(loader.enemy_templates) == 60
 
     def test_pirate_scout_template(self) -> None:
         loader = _make_loader()
@@ -130,10 +130,10 @@ class TestEnemyTemplateLoading:
         assert template.bribe_cost == 0
 
     def test_total_enemy_count_with_factions(self) -> None:
-        """Should have 25 total enemies: 13 generic + 12 faction."""
+        """42 legacy + 18 B2 balance-pass templates = 60."""
         loader = _make_loader()
         loader.load_enemy_templates()
-        assert len(loader.enemy_templates) == 42
+        assert len(loader.enemy_templates) == 60
 
     def test_faction_enemies_have_correct_faction_ids(self) -> None:
         """Faction enemies should reference valid faction IDs."""
@@ -146,7 +146,8 @@ class TestEnemyTemplateLoading:
             "frontier_alliance",
         }
         faction_enemies = [t for t in loader.enemy_templates.values() if t.faction_id != ""]
-        assert len(faction_enemies) == 15
+        # 15 legacy + 10 B2 balance-pass faction templates = 25.
+        assert len(faction_enemies) == 25
         for t in faction_enemies:
             assert t.faction_id in valid_factions, f"{t.id} has invalid faction: {t.faction_id}"
 

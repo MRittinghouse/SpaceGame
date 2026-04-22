@@ -22,18 +22,27 @@ from spacegame.engine.fonts import (
     FONT_XS,
     get_font,
 )
-from spacegame.models.mission import Mission, MissionManager, MissionStatus
+from spacegame.models.mission import Mission, MissionManager, MissionStatus, ObjectiveType
 from spacegame.utils.logger import logger
 from spacegame.views.base_view import BaseView
 from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
 
-# Layout constants (list-detail pattern, shared with crew_roster_view and journal_view)
-PANEL_LEFT = scale_x(40)
-PANEL_TOP = scale_y(90)
-LIST_WIDTH = scale_x(360)
-DETAIL_WIDTH = WINDOW_WIDTH - LIST_WIDTH - PANEL_LEFT * 2 - scale_x(30)
-LIST_HEIGHT = WINDOW_HEIGHT - PANEL_TOP - scale_y(80) - scale_y(HUD_BASE_HEIGHT)
-ITEM_HEIGHT = scale_y(44)
+# Layout constants (shared source: layout.py)
+from spacegame.views.layout import (
+    DETAIL_WIDTH,
+    LIST_HEIGHT,
+    LIST_WIDTH,
+)
+from spacegame.views.layout import (
+    LIST_DETAIL_LEFT as PANEL_LEFT,
+)
+from spacegame.views.layout import (
+    LIST_DETAIL_TOP as PANEL_TOP,
+)
+from spacegame.views.layout import (
+    LIST_ITEM_HEIGHT as ITEM_HEIGHT,
+)
+
 TAB_HEIGHT = scale_y(36)
 TAB_WIDTH = scale_x(130)
 
@@ -217,10 +226,14 @@ class MissionLogView(BaseView):
         self,
         ui_manager: pygame_gui.UIManager,
         mission_manager: Optional[MissionManager],
+        data_loader: Optional[object] = None,
+        player: Optional[object] = None,
     ) -> None:
         super().__init__()
         self.ui_manager = ui_manager
         self.mission_manager = mission_manager
+        self._data_loader = data_loader
+        self._player = player
         self.next_state: Optional[GameState] = None
 
         # Tab state
@@ -242,6 +255,7 @@ class MissionLogView(BaseView):
         self._detail_title_font = get_font("header", FONT_XL)
         self._label_font = get_font("dialogue", FONT_BODY)
         self._badge_font = get_font("label", FONT_XS)
+        self._small_font = get_font("dialogue", FONT_XS)
 
         # UI
         self.back_button: Optional[pygame_gui.elements.UIButton] = None
@@ -335,8 +349,12 @@ class MissionLogView(BaseView):
                 LIST_WIDTH - 8,
                 ITEM_HEIGHT,
             )
-            mission_status = self.mission_manager.get_status(mission.id) if self.mission_manager else None
-            item = _MissionItem(rect, mission, self._name_font, self._badge_font, status=mission_status)
+            mission_status = (
+                self.mission_manager.get_status(mission.id) if self.mission_manager else None
+            )
+            item = _MissionItem(
+                rect, mission, self._name_font, self._badge_font, status=mission_status
+            )
             self._mission_items.append(item)
 
         # Auto-select first if available
@@ -477,15 +495,36 @@ class MissionLogView(BaseView):
         # Mission items (clipped to list panel)
         clip_prev = screen.get_clip()
         screen.set_clip(list_rect)
-        for item in self._mission_items:
-            # Apply scroll offset
-            shifted_rect = item.rect.move(0, -self._scroll_offset)
-            if shifted_rect.bottom < list_rect.top or shifted_rect.top > list_rect.bottom:
-                continue
-            orig_rect = item.rect
-            item.rect = shifted_rect
-            item.render(screen)
-            item.rect = orig_rect
+        if not self._mission_items:
+            # Empty-state copy varies per tab so the player knows whether
+            # the absence is "nothing accepted yet" vs "none pending" vs
+            # "nothing finished yet."
+            _TAB_EMPTY_COPY = {
+                "active": "Nothing active. Pick something up from Available.",
+                "available": "Nothing on the board yet.",
+                "completed": "Nothing finished yet.",
+            }
+            empty_text = _TAB_EMPTY_COPY.get(
+                self._current_tab, "Nothing here yet."
+            )
+            empty_surf = self._desc_font.render(empty_text, True, Colors.TEXT_SECONDARY)
+            screen.blit(
+                empty_surf,
+                (
+                    list_rect.x + (list_rect.width - empty_surf.get_width()) // 2,
+                    list_rect.y + scale_y(40),
+                ),
+            )
+        else:
+            for item in self._mission_items:
+                # Apply scroll offset
+                shifted_rect = item.rect.move(0, -self._scroll_offset)
+                if shifted_rect.bottom < list_rect.top or shifted_rect.top > list_rect.bottom:
+                    continue
+                orig_rect = item.rect
+                item.rect = shifted_rect
+                item.render(screen)
+                item.rect = orig_rect
         screen.set_clip(clip_prev)
 
         # Detail panel
@@ -538,9 +577,7 @@ class MissionLogView(BaseView):
             screen.blit(name_surf, name_surf.get_rect(centerx=cx, top=py + scale_y(50)))
 
         # Subtitle
-        sub = self._desc_font.render(
-            "No rewards will be given.", True, Colors.TEXT_SECONDARY
-        )
+        sub = self._desc_font.render("No rewards will be given.", True, Colors.TEXT_SECONDARY)
         screen.blit(sub, sub.get_rect(centerx=cx, top=py + scale_y(70)))
 
         # Yes / No buttons
@@ -609,7 +646,7 @@ class MissionLogView(BaseView):
         screen.blit(obj_header, (pad_x, cur_y))
         cur_y += 26
 
-        # Objective checklist
+        # Objective checklist with location details
         progress = self.mission_manager.get_objective_progress(self._selected_mission_id)
         for i, obj in enumerate(mission.objectives):
             completed = progress[i] if i < len(progress) else False
@@ -618,7 +655,16 @@ class MissionLogView(BaseView):
             obj_text = f"{check} {obj.description}"
             obj_surf = self._desc_font.render(obj_text, True, color)
             screen.blit(obj_surf, (pad_x + 10, cur_y))
-            cur_y += 22
+            cur_y += 20
+
+            # Show location hint for incomplete objectives
+            if not completed:
+                detail = self._get_objective_detail(obj)
+                if detail:
+                    detail_surf = self._small_font.render(detail, True, (120, 140, 170))
+                    screen.blit(detail_surf, (pad_x + 30, cur_y))
+                    cur_y += 16
+            cur_y += 4
 
         # Hint (actionable guidance)
         if mission.hint:
@@ -672,6 +718,23 @@ class MissionLogView(BaseView):
                 Colors.TEXT_SECONDARY,
             )
             screen.blit(prereq_surf, (pad_x, cur_y))
+
+    def _get_objective_detail(self, obj: "MissionObjective") -> str:
+        """Get a location/quantity hint for an objective, or empty string."""
+        if obj.type == ObjectiveType.REACH_SYSTEM and self._data_loader:
+            system = self._data_loader.get_system(obj.target_id)
+            if system:
+                return f"\u2192 {system.name}"
+        if obj.type == ObjectiveType.TALK_TO_NPC and self._data_loader:
+            npc = self._data_loader.get_npc(obj.target_id)
+            if npc:
+                system = self._data_loader.get_system(npc.home_system_id)
+                loc = system.name if system else npc.home_system_id
+                return f"\u2192 {npc.name} at {loc}"
+        if obj.type == ObjectiveType.COLLECT_CARGO and self._player:
+            current = self._player.ship.get_cargo_quantity(obj.target_id)
+            return f"\u2192 {current}/{obj.target_quantity} in cargo"
+        return ""
 
     def _render_wrapped(
         self,

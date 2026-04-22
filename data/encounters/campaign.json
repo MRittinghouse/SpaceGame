@@ -109,7 +109,7 @@
       "icon_color": [200, 140, 80],
       "weight": 7,
       "danger_levels": ["moderate", "dangerous"],
-      "requires_flags": ["met_torres", "completed_mission_10"],
+      "requires_flags": ["met_malia_torres", "completed_mission_10"],
       "unique": true,
       "tone": "mysterious",
       "category": "campaign",

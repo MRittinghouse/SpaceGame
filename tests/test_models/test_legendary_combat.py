@@ -5,21 +5,19 @@ and Phase Shift — the 5 unique mechanics from superboss drops.
 """
 
 import random
-from dataclasses import dataclass, field
 
 from spacegame.models.legendary_effects import (
     LegendaryState,
-    init_legendary_state,
-    process_chain_fire,
-    process_void_absorption,
-    process_heat_hardening,
     apply_cooldown_reduction,
     check_phase_shift,
+    init_legendary_state,
+    process_chain_fire,
+    process_heat_hardening,
+    process_void_absorption,
     process_void_release,
 )
 from spacegame.models.ship_build import PlacedSlot, ShipBuild
 from spacegame.models.ship_part import ShipPart
-
 
 # ============================================================================
 # Helpers
@@ -272,3 +270,56 @@ class TestPhaseShift:
     def test_round_zero_does_not_activate(self) -> None:
         state = LegendaryState(phase_shift_interval=3)
         assert check_phase_shift(state, round_number=0) is False
+
+
+class TestPhaseShiftFirstAttackOnly:
+    """Spec §8: Phase Shift blocks the FIRST incoming attack per round.
+    Previously (pre-Tier-2.1) it blocked all attacks in an active round —
+    a 3-enemy encounter on a shift round dodged all 3 attacks. Now it
+    dodges exactly one."""
+
+    def test_consume_fires_once_then_returns_false(self) -> None:
+        from spacegame.models.legendary_effects import consume_phase_shift
+
+        state = LegendaryState(phase_shift_interval=3)
+
+        # First attack on round 3: dodges
+        assert consume_phase_shift(state, round_number=3) is True
+        # Subsequent attacks in the same round: hit normally
+        assert consume_phase_shift(state, round_number=3) is False
+        assert consume_phase_shift(state, round_number=3) is False
+
+    def test_check_returns_false_after_consume(self) -> None:
+        """check_phase_shift (pure predicate) respects the used flag."""
+        from spacegame.models.legendary_effects import consume_phase_shift
+
+        state = LegendaryState(phase_shift_interval=3)
+        assert check_phase_shift(state, round_number=3) is True
+        consume_phase_shift(state, round_number=3)
+        assert check_phase_shift(state, round_number=3) is False
+
+    def test_reset_unlocks_next_round(self) -> None:
+        from spacegame.models.legendary_effects import (
+            consume_phase_shift,
+            reset_phase_shift_for_round,
+        )
+
+        state = LegendaryState(phase_shift_interval=3)
+        assert consume_phase_shift(state, round_number=3) is True
+        assert consume_phase_shift(state, round_number=3) is False
+
+        # end_round resets
+        reset_phase_shift_for_round(state)
+        # On next shift round (6), the dodge is available again
+        assert consume_phase_shift(state, round_number=6) is True
+
+    def test_off_interval_rounds_still_do_not_fire(self) -> None:
+        """Consume on a non-interval round must not succeed, and must not
+        burn the flag for the next valid round."""
+        from spacegame.models.legendary_effects import consume_phase_shift
+
+        state = LegendaryState(phase_shift_interval=3)
+        assert consume_phase_shift(state, round_number=1) is False
+        assert consume_phase_shift(state, round_number=2) is False
+        # Round 3 still has its dodge
+        assert consume_phase_shift(state, round_number=3) is True

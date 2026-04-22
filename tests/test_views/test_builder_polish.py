@@ -101,14 +101,14 @@ class TestAdvisoryWarnings:
                 id="light",
                 name="L",
                 description="",
-                color_primary=(180, 180, 200),
+                shade_band="steel",
                 weight_per_pixel=0.15,
             ),
             "heavy": HullMaterial(
                 id="heavy",
                 name="H",
                 description="",
-                color_primary=(150, 110, 60),
+                shade_band="union_ceramic",
                 weight_per_pixel=0.55,
             ),
         }

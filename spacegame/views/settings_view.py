@@ -315,7 +315,6 @@ class SettingsView(BaseView):
             elif event.ui_element == self.reset_button:
                 self._reset_to_default()
 
-
             elif event.ui_element == self._fullscreen_button:
                 self._selected_fullscreen = not self._selected_fullscreen
                 fs_label = "Fullscreen: ON" if self._selected_fullscreen else "Fullscreen: OFF"
@@ -420,8 +419,7 @@ class SettingsView(BaseView):
                 self.save_dir_display = pygame_gui.elements.UITextBox(
                     html_text=f"<font size=4>{self.new_save_dir!s}</font>",
                     relative_rect=pygame.Rect(
-                        (WINDOW_WIDTH - scale_x(800)) // 2, scale_y(160),
-                        scale_x(640), scale_y(60)
+                        (WINDOW_WIDTH - scale_x(800)) // 2, scale_y(160), scale_x(640), scale_y(60)
                     ),
                     manager=self.ui_manager,
                 )

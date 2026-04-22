@@ -4,21 +4,11 @@
       "id": "light_alloy",
       "name": "Light Alloy",
       "description": "Lightweight silver plating. Low weight means high evasion potential, but less hull per pixel than heavier materials.",
-      "color_primary": [
-        176,
-        184,
-        200
-      ],
-      "color_accent": [
-        140,
-        148,
-        168
-      ],
-      "color_highlight": [
-        200,
-        208,
-        224
-      ],
+      "shade_band": "steel",
+      "noise_intensity": 0.12,
+      "rivet_density": 30.0,
+      "wear_intensity": 0.08,
+      "gloss": 0.45,
       "hull_per_pixel": 1.5,
       "armor_per_pixel": 0,
       "shield_per_pixel": 0,
@@ -32,21 +22,11 @@
       "id": "standard_plate",
       "name": "Standard Plate",
       "description": "Balanced hull plating. The workhorse material of the Aurelia Expanse. Neither light nor heavy, neither cheap nor expensive.",
-      "color_primary": [
-        112,
-        120,
-        136
-      ],
-      "color_accent": [
-        88,
-        96,
-        112
-      ],
-      "color_highlight": [
-        140,
-        148,
-        168
-      ],
+      "shade_band": "steel",
+      "noise_intensity": 0.15,
+      "rivet_density": 40.0,
+      "wear_intensity": 0.10,
+      "gloss": 0.30,
       "hull_per_pixel": 2.5,
       "armor_per_pixel": 0,
       "shield_per_pixel": 0,
@@ -60,21 +40,12 @@
       "id": "salvage_scrap",
       "name": "Salvage Scrap",
       "description": "Reclaimed hull fragments welded together. Cheap, functional, and it shows. The frontier builder's best friend.",
-      "color_primary": [
-        136,
-        104,
-        72
-      ],
-      "color_accent": [
-        112,
-        80,
-        56
-      ],
-      "color_highlight": [
-        168,
-        136,
-        96
-      ],
+      "shade_band": "frontier_canvas",
+      "noise_intensity": 0.35,
+      "rivet_density": 55.0,
+      "wear_intensity": 0.45,
+      "gloss": 0.10,
+      "signature_stripe_role": "weld",
       "hull_per_pixel": 2.0,
       "armor_per_pixel": 0.01,
       "shield_per_pixel": 0,
@@ -88,21 +59,12 @@
       "id": "heavy_armor",
       "name": "Heavy Armor",
       "description": "Dense bronze-toned plating. Every pixel absorbs punishment. The weight adds up fast, but so does the armor.",
-      "color_primary": [
-        152,
-        112,
-        64
-      ],
-      "color_accent": [
-        120,
-        88,
-        48
-      ],
-      "color_highlight": [
-        184,
-        144,
-        80
-      ],
+      "shade_band": "union_ceramic",
+      "category_offset": 1,
+      "noise_intensity": 0.18,
+      "rivet_density": 60.0,
+      "wear_intensity": 0.15,
+      "gloss": 0.20,
       "hull_per_pixel": 3.0,
       "armor_per_pixel": 0.03,
       "shield_per_pixel": 0,
@@ -118,21 +80,12 @@
       "id": "reinforced_plate",
       "name": "Reinforced Plate",
       "description": "Military-spec dark steel. Denser than standard plate, with integral armor channels. The professional's choice.",
-      "color_primary": [
-        80,
-        88,
-        104
-      ],
-      "color_accent": [
-        60,
-        68,
-        84
-      ],
-      "color_highlight": [
-        108,
-        116,
-        136
-      ],
+      "shade_band": "steel",
+      "category_offset": -1,
+      "noise_intensity": 0.12,
+      "rivet_density": 55.0,
+      "wear_intensity": 0.08,
+      "gloss": 0.35,
       "hull_per_pixel": 3.5,
       "armor_per_pixel": 0.02,
       "shield_per_pixel": 0,
@@ -148,21 +101,12 @@
       "id": "shield_crystal",
       "name": "Shield Crystal",
       "description": "Cyan crystalline panels that generate energy barriers. Each pixel contributes to your shield pool. The Sentinel's foundation.",
-      "color_primary": [
-        64,
-        168,
-        208
-      ],
-      "color_accent": [
-        40,
-        136,
-        176
-      ],
-      "color_highlight": [
-        96,
-        200,
-        240
-      ],
+      "shade_band": "collective_composite",
+      "noise_intensity": 0.08,
+      "rivet_density": 15.0,
+      "wear_intensity": 0.03,
+      "gloss": 0.70,
+      "emissive_role": "cryo_fractal",
       "hull_per_pixel": 1.0,
       "armor_per_pixel": 0,
       "shield_per_pixel": 0.6,
@@ -178,21 +122,13 @@
       "id": "barrier_lattice",
       "name": "Barrier Lattice",
       "description": "Deep blue energy lattice. Higher shield output per pixel than crystal, but heavier. For dedicated Sentinel builds.",
-      "color_primary": [
-        56,
-        104,
-        176
-      ],
-      "color_accent": [
-        40,
-        80,
-        144
-      ],
-      "color_highlight": [
-        80,
-        136,
-        208
-      ],
+      "shade_band": "collective_composite",
+      "category_offset": -1,
+      "noise_intensity": 0.06,
+      "rivet_density": 12.0,
+      "wear_intensity": 0.02,
+      "gloss": 0.80,
+      "emissive_role": "ion_arc",
       "hull_per_pixel": 0.5,
       "armor_per_pixel": 0,
       "shield_per_pixel": 0.8,
@@ -208,21 +144,12 @@
       "id": "stealth_composite",
       "name": "Stealth Composite",
       "description": "Matte black panels that absorb radar returns. Barely there on sensors. The Ghost's signature material.",
-      "color_primary": [
-        40,
-        40,
-        56
-      ],
-      "color_accent": [
-        28,
-        28,
-        40
-      ],
-      "color_highlight": [
-        56,
-        56,
-        72
-      ],
+      "shade_band": "collective_composite",
+      "category_offset": -2,
+      "noise_intensity": 0.22,
+      "rivet_density": 20.0,
+      "wear_intensity": 0.12,
+      "gloss": 0.05,
       "hull_per_pixel": 1.0,
       "armor_per_pixel": 0,
       "shield_per_pixel": 0,
@@ -238,21 +165,14 @@
       "id": "phase_alloy",
       "name": "Phase Alloy",
       "description": "Dark violet metal that seems to shift when you look at it. Incredible evasion potential. Found only in the Phantom's wake.",
-      "color_primary": [
-        56,
-        48,
-        80
-      ],
-      "color_accent": [
-        40,
-        32,
-        64
-      ],
-      "color_highlight": [
-        80,
-        72,
-        112
-      ],
+      "shade_band": "collective_composite",
+      "category_offset": -2,
+      "noise_intensity": 0.30,
+      "rivet_density": 10.0,
+      "wear_intensity": 0.08,
+      "gloss": 0.55,
+      "emissive_role": "ion_arc",
+      "signature_stripe_role": "ion_arc",
       "hull_per_pixel": 0.8,
       "armor_per_pixel": 0,
       "shield_per_pixel": 0,
@@ -267,21 +187,12 @@
       "id": "composite_weave",
       "name": "Composite Weave",
       "description": "Teal-toned hybrid material. A bit of everything: hull, shields, evasion. Jack of all trades, master of none.",
-      "color_primary": [
-        64,
-        96,
-        104
-      ],
-      "color_accent": [
-        48,
-        72,
-        80
-      ],
-      "color_highlight": [
-        88,
-        120,
-        128
-      ],
+      "shade_band": "collective_composite",
+      "category_offset": -1,
+      "noise_intensity": 0.18,
+      "rivet_density": 30.0,
+      "wear_intensity": 0.10,
+      "gloss": 0.35,
       "hull_per_pixel": 2.0,
       "armor_per_pixel": 0.01,
       "shield_per_pixel": 0.2,
@@ -297,21 +208,13 @@
       "id": "nano_fiber",
       "name": "Nano-Fiber Hull",
       "description": "Silver-blue material laced with self-repairing nanobots. Hull damage slowly mends itself between fights. Union engineering at its finest.",
-      "color_primary": [
-        144,
-        160,
-        192
-      ],
-      "color_accent": [
-        112,
-        128,
-        160
-      ],
-      "color_highlight": [
-        176,
-        192,
-        224
-      ],
+      "shade_band": "steel",
+      "category_offset": 1,
+      "noise_intensity": 0.10,
+      "rivet_density": 25.0,
+      "wear_intensity": 0.05,
+      "gloss": 0.50,
+      "signature_stripe_role": "glow_cool",
       "hull_per_pixel": 3.0,
       "armor_per_pixel": 0.025,
       "shield_per_pixel": 0,
@@ -327,21 +230,14 @@
       "id": "quantum_lattice",
       "name": "Quantum Lattice",
       "description": "Bright cyan energy matrix. The highest shield output per pixel in the sector. Collective research pushed past theoretical limits.",
-      "color_primary": [
-        80,
-        192,
-        224
-      ],
-      "color_accent": [
-        48,
-        160,
-        192
-      ],
-      "color_highlight": [
-        112,
-        224,
-        255
-      ],
+      "shade_band": "collective_composite",
+      "category_offset": 1,
+      "noise_intensity": 0.05,
+      "rivet_density": 10.0,
+      "wear_intensity": 0.02,
+      "gloss": 0.85,
+      "emissive_role": "cryo_fractal",
+      "signature_stripe_role": "cryo_fractal",
       "hull_per_pixel": 0.5,
       "armor_per_pixel": 0,
       "shield_per_pixel": 1.0,
@@ -356,21 +252,13 @@
       "id": "ablative_plating",
       "name": "Ablative Plating",
       "description": "Orange-brown armor that sacrifices outer layers to protect the core. Each hit strips a layer, but the ship endures.",
-      "color_primary": [
-        192,
-        136,
-        64
-      ],
-      "color_accent": [
-        160,
-        104,
-        40
-      ],
-      "color_highlight": [
-        224,
-        168,
-        96
-      ],
+      "shade_band": "union_ceramic",
+      "category_offset": 1,
+      "noise_intensity": 0.25,
+      "rivet_density": 65.0,
+      "wear_intensity": 0.30,
+      "gloss": 0.18,
+      "signature_stripe_role": "hud_warning",
       "hull_per_pixel": 4.0,
       "armor_per_pixel": 0.04,
       "shield_per_pixel": 0,
@@ -386,21 +274,12 @@
       "id": "bio_hull",
       "name": "Bio-Hull",
       "description": "Living green panels that grow and repair themselves. The Alliance cultivates them in orbital greenhouses. Regenerates hull over time.",
-      "color_primary": [
-        64,
-        136,
-        72
-      ],
-      "color_accent": [
-        48,
-        104,
-        56
-      ],
-      "color_highlight": [
-        96,
-        168,
-        104
-      ],
+      "shade_band": "frontier_canvas",
+      "noise_intensity": 0.22,
+      "rivet_density": 12.0,
+      "wear_intensity": 0.05,
+      "gloss": 0.25,
+      "signature_stripe_role": "glow_cool",
       "hull_per_pixel": 2.0,
       "armor_per_pixel": 0,
       "shield_per_pixel": 0,
@@ -416,21 +295,13 @@
       "id": "void_glass",
       "name": "Void Glass",
       "description": "Deep purple material so thin it's nearly transparent. Almost no hull, but enemies can barely see you. For Ghost builds that push the limit.",
-      "color_primary": [
-        32,
-        24,
-        48
-      ],
-      "color_accent": [
-        20,
-        16,
-        32
-      ],
-      "color_highlight": [
-        48,
-        40,
-        72
-      ],
+      "shade_band": "glass_viewport",
+      "category_offset": -1,
+      "noise_intensity": 0.08,
+      "rivet_density": 8.0,
+      "wear_intensity": 0.04,
+      "gloss": 0.90,
+      "emissive_role": "ion_arc",
       "hull_per_pixel": 0.3,
       "armor_per_pixel": 0,
       "shield_per_pixel": 0,
@@ -446,21 +317,11 @@
       "id": "crimson_steel",
       "name": "Crimson Steel",
       "description": "Blood-red metal from the Reach's illegal forges. Strong hull, decent armor, and rumored to make weapons hit harder.",
-      "color_primary": [
-        128,
-        32,
-        32
-      ],
-      "color_accent": [
-        96,
-        24,
-        24
-      ],
-      "color_highlight": [
-        168,
-        48,
-        48
-      ],
+      "shade_band": "reach_crimson",
+      "noise_intensity": 0.20,
+      "rivet_density": 50.0,
+      "wear_intensity": 0.18,
+      "gloss": 0.25,
       "hull_per_pixel": 3.5,
       "armor_per_pixel": 0.025,
       "shield_per_pixel": 0,

@@ -234,7 +234,7 @@ class TestPhaseStateMachine:
         view = _make_view()
         view.on_enter()
         assert view.phase == CombatPhase.INTRO
-        view.update(1.0)  # 1 second > 0.8s intro duration
+        view.update(1.6)  # 1 second > 0.8s intro duration
         assert view.phase == CombatPhase.PLAYER_INPUT
         view.on_exit()
 
@@ -248,7 +248,7 @@ class TestPhaseStateMachine:
     def test_player_input_waits_for_action(self) -> None:
         view = _make_view()
         view.on_enter()
-        view.update(1.0)  # Past intro
+        view.update(1.6)  # Past intro
         assert view.phase == CombatPhase.PLAYER_INPUT
         view.update(5.0)  # Even after 5 seconds, still waiting
         assert view.phase == CombatPhase.PLAYER_INPUT
@@ -329,7 +329,7 @@ class TestAnimationQueue:
         view._enqueue_animation(log, source="player")
         view.update(0.1)
         assert view.current_animation is not None
-        view.update(1.0)  # Complete (> default duration)
+        view.update(1.6)  # Complete (> default duration)
         assert view.current_animation is None
         view.on_exit()
 
@@ -387,7 +387,7 @@ class TestCombatFlow:
     def test_player_move_transitions_to_animation(self) -> None:
         view = _make_view()
         view.on_enter()
-        view.update(1.0)  # Past intro
+        view.update(1.6)  # Past intro
         assert view.phase == CombatPhase.PLAYER_INPUT
         view._execute_player_action("test_laser")  # Queue the action
         view._execute_queued_turn()  # Execute the queue
@@ -397,7 +397,7 @@ class TestCombatFlow:
     def test_full_round_reaches_player_input_again(self) -> None:
         view = _make_view()
         view.on_enter()
-        view.update(1.0)  # Past intro → PLAYER_INPUT
+        view.update(1.6)  # Past intro → PLAYER_INPUT
         view._execute_player_action("test_laser")
         view._execute_queued_turn()
         # Drain all animation phases with enough time
@@ -410,7 +410,7 @@ class TestCombatFlow:
     def test_combat_over_on_victory(self) -> None:
         view = _make_view()
         view.on_enter()
-        view.update(1.0)  # Past intro
+        view.update(1.6)  # Past intro
         state = view.engine.get_state()
         state.enemies[0].current_hull = 0
         state.result = CombatResult.VICTORY
@@ -721,7 +721,7 @@ class TestKeyboardInput:
         moves = [_make_move("laser", "Laser"), _make_move("missile", "Missile", energy_cost=3)]
         view = _make_view(player_moves=moves)
         view.on_enter()
-        view.update(1.0)  # Past intro
+        view.update(1.6)  # Past intro
         assert view.phase == CombatPhase.PLAYER_INPUT
         view._build_move_buttons()
         # Simulate pressing '1' to queue first move
@@ -739,7 +739,7 @@ class TestKeyboardInput:
     def test_tab_cycles_target(self) -> None:
         view = _make_view(num_enemies=3)
         view.on_enter()
-        view.update(1.0)  # Past intro
+        view.update(1.6)  # Past intro
         assert view.selected_target_idx == 0
         event = pygame.event.Event(pygame.KEYDOWN, key=pygame.K_TAB)
         view.handle_event(event)
@@ -749,7 +749,7 @@ class TestKeyboardInput:
     def test_f_key_attempts_flee(self) -> None:
         view = _make_view()
         view.on_enter()
-        view.update(1.0)  # Past intro
+        view.update(1.6)  # Past intro
         event = pygame.event.Event(pygame.KEYDOWN, key=pygame.K_f)
         view.handle_event(event)
         # Should either be animating (flee attempt) or still in player_input
@@ -760,7 +760,7 @@ class TestKeyboardInput:
     def test_escape_key_attempts_flee(self) -> None:
         view = _make_view()
         view.on_enter()
-        view.update(1.0)
+        view.update(1.6)
         event = pygame.event.Event(pygame.KEYDOWN, key=pygame.K_ESCAPE)
         view.handle_event(event)
         assert view.phase in (CombatPhase.ANIMATING_PLAYER, CombatPhase.COMBAT_OVER)
@@ -838,8 +838,8 @@ class TestAnimationEffects:
         assert any("MISS" in ft["text"] for ft in view.floating_texts)
         view.on_exit()
 
-    def test_hit_triggers_screen_shake(self) -> None:
-        """A successful hit should trigger screen shake after projectile arrives."""
+    def test_hit_triggers_camera_shake(self) -> None:
+        """A successful hit should trigger camera shake after projectile arrives."""
         view = _make_view()
         view.on_enter()
         log = CombatLogEntry(
@@ -852,11 +852,12 @@ class TestAnimationEffects:
         anim = AnimationEvent(log_entry=log, source="player")
         view._start_animation_effects(anim)
         view._projectile_mgr.update(2.0)
-        assert view.screen_shake.duration > 0
+        # Camera shake fires on projectile impact (migrated from ScreenShake to SceneCamera in C1).
+        assert view.scene_camera.has_active_shakes
         view.on_exit()
 
-    def test_miss_no_screen_shake(self) -> None:
-        """A miss should not trigger screen shake."""
+    def test_miss_no_camera_shake(self) -> None:
+        """A miss should not trigger camera shake."""
         view = _make_view()
         view.on_enter()
         log = CombatLogEntry(
@@ -868,7 +869,7 @@ class TestAnimationEffects:
         )
         anim = AnimationEvent(log_entry=log, source="player")
         view._start_animation_effects(anim)
-        assert view.screen_shake.duration == 0
+        assert not view.scene_camera.has_active_shakes
         view.on_exit()
 
     def test_enemy_hit_triggers_enemy_flash(self) -> None:
@@ -956,7 +957,7 @@ class TestPhaseSequencingWithAnimations:
         """Full sequence: ANIMATING_PLAYER → CREW → ENEMIES → ROUND_END."""
         view = _make_view()
         view.on_enter()
-        view.update(1.0)  # Past intro → PLAYER_INPUT
+        view.update(1.6)  # Past intro → PLAYER_INPUT
         view._execute_player_action("test_laser")
         view._execute_queued_turn()
         # Drain all phases
@@ -1149,7 +1150,7 @@ class TestMouseClickHandling:
         moves = [_make_move("laser", "Laser", energy_cost=2)]
         view = _make_view(player_moves=moves)
         view.on_enter()
-        view.update(1.0)  # Past intro → PLAYER_INPUT
+        view.update(1.6)  # Past intro → PLAYER_INPUT
         view._build_move_buttons()
         assert len(view.move_buttons) == 1
 
@@ -1171,7 +1172,7 @@ class TestMouseClickHandling:
         expensive = _make_move("big_gun", "Big Gun", energy_cost=99)
         view = _make_view(player_moves=[expensive])
         view.on_enter()
-        view.update(1.0)
+        view.update(1.6)
         view._build_move_buttons()
         assert not view.move_buttons[0].enabled
 
@@ -1195,7 +1196,7 @@ class TestMouseClickHandling:
 
         view = _make_view()
         view.on_enter()
-        view.update(1.0)
+        view.update(1.6)
 
         cx = FLEE_BTN_X + SPECIAL_BTN_W // 2
         cy = SPECIAL_BTN_Y + SPECIAL_BTN_H // 2
@@ -1214,7 +1215,7 @@ class TestMouseClickHandling:
 
         view = _make_view(num_enemies=2)
         view.on_enter()
-        view.update(1.0)
+        view.update(1.6)
         assert view.selected_target_idx == 0
 
         # Click on enemy card #1 (second enemy)
@@ -1236,7 +1237,7 @@ class TestMouseClickHandling:
 
         view = _make_view()
         view.on_enter()
-        view.update(1.0)
+        view.update(1.6)
 
         # The negotiate button is wider (SPECIAL_BTN_W + 20)
         cx = NEGOTIATE_BTN_X + (SPECIAL_BTN_W + 20) // 2
@@ -1264,7 +1265,7 @@ class TestNegotiateSubMenu:
         """Opening negotiate should present skill choices."""
         view = _make_view()
         view.on_enter()
-        view.update(1.0)
+        view.update(1.6)
         view._open_negotiate_menu()
         assert view._negotiate_menu_open is True
         assert len(view._negotiate_skills) == 3
@@ -1274,7 +1275,7 @@ class TestNegotiateSubMenu:
         """Selecting a skill executes negotiate with that skill."""
         view = _make_view()
         view.on_enter()
-        view.update(1.0)
+        view.update(1.6)
         view._open_negotiate_menu()
         view._select_negotiate_skill("intimidation")
         assert view._negotiate_menu_open is False
@@ -1285,7 +1286,7 @@ class TestNegotiateSubMenu:
     def test_negotiate_menu_closes_on_cancel(self) -> None:
         view = _make_view()
         view.on_enter()
-        view.update(1.0)
+        view.update(1.6)
         view._open_negotiate_menu()
         assert view._negotiate_menu_open is True
         view._close_negotiate_menu()
@@ -1297,7 +1298,7 @@ class TestNegotiateSubMenu:
         """N key opens menu, then 1/2/3 selects skill."""
         view = _make_view()
         view.on_enter()
-        view.update(1.0)
+        view.update(1.6)
         # First N press opens menu
         event = pygame.event.Event(pygame.KEYDOWN, key=pygame.K_n)
         view.handle_event(event)
@@ -1481,4 +1482,314 @@ class TestBribeButton:
         summary = view._get_outcome_summary()
         assert summary["title"] == "BRIBED"
         assert summary["color"] != Colors.TEXT_PRIMARY  # Has a specific color
+
+
+# ============================================================================
+# Dual tech cinematic wiring (Combat C5 §4.3)
+# ============================================================================
+
+
+def _portrait_config():  # type: ignore[no-untyped-def]
+    from spacegame.engine.dual_tech_portraits import PortraitConfig
+
+    surf = pygame.Surface((32, 32), pygame.SRCALPHA)
+    surf.fill((180, 180, 200, 255))
+    return PortraitConfig(surface=surf)
+
+
+class TestDualTechCinematicWiring:
+    """Combat view exposes trigger_dual_tech() and drives the cinematic
+    through update + render without disturbing normal combat flow."""
+
+    def test_controller_slot_empty_by_default(self) -> None:
+        view = _make_view()
+        view.on_enter()
+        assert view._dual_tech_controller is None
+        assert not view.dual_tech_active
+        view.on_exit()
+
+    def test_trigger_populates_controller(self) -> None:
+        view = _make_view()
+        view.on_enter()
+        view.trigger_dual_tech(
+            tech_name="FROST LANCE",
+            dominant_element="ion",
+            secondary_element="cryo",
+            left_portrait=_portrait_config(),
+            right_portrait=_portrait_config(),
+            trail_start=(100.0, 400.0),
+            trail_end=(600.0, 400.0),
+        )
+        assert view._dual_tech_controller is not None
+        assert view.dual_tech_active
+        view.on_exit()
+
+    def test_trigger_snapshots_camera_zoom(self) -> None:
+        view = _make_view()
+        view.on_enter()
+        view.scene_camera.zoom = 1.0
+        view.trigger_dual_tech(
+            tech_name="TEST",
+            dominant_element="plasma",
+            secondary_element="cryo",
+            left_portrait=_portrait_config(),
+            right_portrait=_portrait_config(),
+            trail_start=(0.0, 0.0),
+            trail_end=(100.0, 0.0),
+        )
+        assert view._pre_cinematic_zoom == 1.0
+        view.on_exit()
+
+    def test_update_advances_and_completes_controller(self) -> None:
+        from spacegame.engine.dual_tech_cinematic import STANDARD_TOTAL
+
+        view = _make_view()
+        view.on_enter()
+        view.trigger_dual_tech(
+            tech_name="TEST",
+            dominant_element="plasma",
+            secondary_element="cryo",
+            left_portrait=_portrait_config(),
+            right_portrait=_portrait_config(),
+            trail_start=(0.0, 0.0),
+            trail_end=(100.0, 0.0),
+        )
+        # Fast-forward past total duration.
+        view.update(STANDARD_TOTAL + 0.1)
+        # Controller should clear and camera zoom should restore.
+        assert view._dual_tech_controller is None
+        assert view.scene_camera.zoom == view._pre_cinematic_zoom
+        view.on_exit()
+
+    def test_on_impact_callback_fires(self) -> None:
+        fired: list[int] = []
+
+        def _cb() -> None:
+            fired.append(1)
+
+        view = _make_view()
+        view.on_enter()
+        view.trigger_dual_tech(
+            tech_name="TEST",
+            dominant_element="plasma",
+            secondary_element="cryo",
+            left_portrait=_portrait_config(),
+            right_portrait=_portrait_config(),
+            trail_start=(0.0, 0.0),
+            trail_end=(100.0, 0.0),
+            on_impact=_cb,
+        )
+        # Advance enough to trigger the IMPACT phase boundary.
+        view.update(2.8)
+        assert len(fired) == 1
+        view.on_exit()
+
+    def test_camera_zoom_interpolates_during_cinematic(self) -> None:
+        view = _make_view()
+        view.on_enter()
+        view.scene_camera.zoom = 1.0
+        view.trigger_dual_tech(
+            tech_name="TEST",
+            dominant_element="plasma",
+            secondary_element="cryo",
+            left_portrait=_portrait_config(),
+            right_portrait=_portrait_config(),
+            trail_start=(0.0, 0.0),
+            trail_end=(100.0, 0.0),
+        )
+        # Mid CAMERA_ZOOM phase — zoom should be between 1.0 and 1.25.
+        view.update(0.3)
+        assert 1.0 < view.scene_camera.zoom < 1.25
+        view.on_exit()
+
+    def test_controller_render_is_callable_directly(self) -> None:
+        """The active controller is addressable from the view for direct
+        render — combat view delegates to it during normal render()."""
+        view = _make_view()
+        view.on_enter()
+        view.trigger_dual_tech(
+            tech_name="TEST",
+            dominant_element="plasma",
+            secondary_element="cryo",
+            left_portrait=_portrait_config(),
+            right_portrait=_portrait_config(),
+            trail_start=(100.0, 200.0),
+            trail_end=(600.0, 200.0),
+        )
+        view.update(1.6)
+        assert view._dual_tech_controller is not None
+        screen = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA)
+        # Directly invoke controller render — combat view's render path
+        # delegates here after all other layers.
+        view._dual_tech_controller.render(screen)
+        view.on_exit()
+
+
+# ============================================================================
+# Turn-clock pause hook (C5 deferral) + ArenaEntry intro (C3 deferral)
+# ============================================================================
+
+
+class TestTurnClockPauseHook:
+    """Phase advancement is blocked while a dual tech cinematic runs."""
+
+    def test_phase_advances_without_cinematic_active(self) -> None:
+        """Baseline: intro phase advances when entry completes."""
+        from spacegame.engine.arena_entry import TOTAL_DURATION as ARENA_ENTRY_TOTAL
+
+        view = _make_view()
+        view.on_enter()
+        assert view.phase == CombatPhase.INTRO
+        view.update(ARENA_ENTRY_TOTAL + 0.1)
+        assert view.phase == CombatPhase.PLAYER_INPUT
+        view.on_exit()
+
+    def test_phase_stalls_while_cinematic_active(self) -> None:
+        """Firing a dual tech during INTRO should freeze the phase."""
+        view = _make_view()
+        view.on_enter()
+        # Fire cinematic immediately — before the intro entry completes.
+        view.trigger_dual_tech(
+            tech_name="FROST LANCE",
+            dominant_element="ion",
+            secondary_element="cryo",
+            left_portrait=_portrait_config(),
+            right_portrait=_portrait_config(),
+            trail_start=(100.0, 400.0),
+            trail_end=(600.0, 400.0),
+        )
+        starting_phase = view.phase
+        # Advance 2 seconds — INTRO would normally complete (1.5s), but
+        # cinematic is active so phase holds.
+        view.update(2.0)
+        assert view.dual_tech_active
+        # Phase must not have advanced during the cinematic.
+        assert view.phase == starting_phase
+        view.on_exit()
+
+    def test_phase_resumes_after_cinematic_completes(self) -> None:
+        from spacegame.engine.dual_tech_cinematic import STANDARD_TOTAL
+
+        view = _make_view()
+        view.on_enter()
+        view.trigger_dual_tech(
+            tech_name="FROST LANCE",
+            dominant_element="ion",
+            secondary_element="cryo",
+            left_portrait=_portrait_config(),
+            right_portrait=_portrait_config(),
+            trail_start=(100.0, 400.0),
+            trail_end=(600.0, 400.0),
+        )
+        # Complete cinematic; then a few more frames to let intro advance.
+        view.update(STANDARD_TOTAL + 0.1)
+        view.update(2.0)
+        assert not view.dual_tech_active
+        # After cinematic ends, intro phase resumes + completes.
+        assert view.phase == CombatPhase.PLAYER_INPUT
+        view.on_exit()
+
+
+class TestArenaEntryIntroWiring:
+    """Combat view now uses ArenaEntry timeline to drive the INTRO phase."""
+
+    def test_arena_entry_constructed_on_enter(self) -> None:
+        view = _make_view()
+        view.on_enter()
+        assert view._arena_entry is not None
+        view.on_exit()
+
+    def test_arena_entry_cleared_after_intro_completes(self) -> None:
+        from spacegame.engine.arena_entry import TOTAL_DURATION as ARENA_ENTRY_TOTAL
+
+        view = _make_view()
+        view.on_enter()
+        view.update(ARENA_ENTRY_TOTAL + 0.1)
+        assert view._arena_entry is None
+        assert view.phase == CombatPhase.PLAYER_INPUT
+        view.on_exit()
+
+    def test_arena_entry_interpolates_camera_zoom(self) -> None:
+        """Camera zoom ramps from WIDE (0.85) toward DEFAULT (1.0)."""
+        view = _make_view()
+        view.on_enter()
+        # At t=0 camera should be at wide-ish (since camera_push_factor is 0).
+        view.update(0.1)
+        zoom_early = view.scene_camera.zoom
+        # Mid-push: camera zoom should be closer to default.
+        view.update(0.6)  # t≈0.7, mid-push phase
+        zoom_mid = view.scene_camera.zoom
+        # Zoom should have increased (camera pushing in).
+        assert zoom_mid > zoom_early
+        view.on_exit()
+
+    def test_arena_entry_enemy_count_matches_state(self) -> None:
+        view = _make_view(num_enemies=2)
+        view.on_enter()
+        assert view._arena_entry is not None
+        assert view._arena_entry.enemy_count == 2
+        view.on_exit()
+
+
+# ============================================================================
+# Dual tech cinematic trigger from action queue (C5 Impl 2)
+# ============================================================================
+
+
+class TestDualTechTriggerFromQueue:
+    """A dual tech move in the action queue fires the cinematic at
+    turn dispatch."""
+
+    def test_dual_tech_move_fires_cinematic(self) -> None:
+        """Queueing `fire_at_will` + executing the turn triggers the cinematic."""
+        from spacegame.models.action_queue import ActionQueue
+
+        view = _make_view()
+        view.on_enter()
+        view.phase = CombatPhase.PLAYER_INPUT
+        view._action_queue = ActionQueue(energy_available=20)
+        # Inject a dual-tech queued action directly.
+        from spacegame.models.action_queue import QueuedAction
+        view._action_queue._actions.append(
+            QueuedAction(
+                move_id="fire_at_will",
+                target_idx=0,
+                energy_cost=6,
+                move_name="Fire at Will",
+            )
+        )
+        view._execute_queued_turn()
+        assert view.dual_tech_active
+        view.on_exit()
+
+    def test_non_dual_tech_move_does_not_fire_cinematic(self) -> None:
+        """A regular move (e.g., a laser shot) shouldn't trigger the cinematic."""
+        from spacegame.models.action_queue import ActionQueue, QueuedAction
+
+        view = _make_view()
+        view.on_enter()
+        view.phase = CombatPhase.PLAYER_INPUT
+        view._action_queue = ActionQueue(energy_available=20)
+        view._action_queue._actions.append(
+            QueuedAction(
+                move_id="laser_shot",  # not a dual tech
+                target_idx=0,
+                energy_cost=2,
+                move_name="Laser Shot",
+            )
+        )
+        view._execute_queued_turn()
+        assert not view.dual_tech_active
+        view.on_exit()
+
+    def test_empty_queue_does_not_fire_cinematic(self) -> None:
+        view = _make_view()
+        view.on_enter()
+        view.phase = CombatPhase.PLAYER_INPUT
+        from spacegame.models.action_queue import ActionQueue
+
+        view._action_queue = ActionQueue(energy_available=20)  # empty
+        view._execute_queued_turn()
+        assert not view.dual_tech_active
+        view.on_exit()
         view.on_exit()

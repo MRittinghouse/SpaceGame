@@ -5,18 +5,15 @@ import pytest
 from spacegame.models.attributes import AttributeSheet
 from spacegame.models.ground_combat import (
     GROUND_ENEMY_TEMPLATES,
-    CombatAction,
     CombatOutcome,
-    ExchangeResult,
+    GroundCombatantStats,
     GroundCombatEngine,
     GroundCombatState,
-    GroundCombatantStats,
     SocialSkillType,
     build_player_ground_combat_stats,
     make_enemy_from_template,
 )
 from spacegame.models.progression import PlayerProgression, SkillTreeType
-
 
 # ---------------------------------------------------------------------------
 # Helper factories
@@ -704,108 +701,76 @@ class TestBuildPlayerStats:
         assert stats.defense_mod == 2
         assert stats.hp == 12
 
-    def test_scrapper_skill_bonus(self) -> None:
+    def test_ground_veteran_reroll(self) -> None:
+        """Ground Veteran skill grants +1 reroll per level."""
         prog = PlayerProgression()
-        prog.skills["scrapper"].current_level = 1
-        stats = build_player_ground_combat_stats(progression=prog)
-        assert stats.attack_mod == 1
-
-    def test_tough_hide_skill_bonus(self) -> None:
-        prog = PlayerProgression()
-        prog.skills["tough_hide"].current_level = 1
-        stats = build_player_ground_combat_stats(progression=prog)
-        assert stats.hp == 12  # 10 base + 2
-
-    def test_quick_reflexes_reroll(self) -> None:
-        prog = PlayerProgression()
-        prog.skills["scrapper"].current_level = 1
-        prog.skills["quick_reflexes"].current_level = 1
+        prog.skills["weapon_specialization"].current_level = 1
+        prog.skills["ground_veteran"].current_level = 1
         stats = build_player_ground_combat_stats(progression=prog)
         assert stats.rerolls == 1
 
-    def test_veteran_bonus(self) -> None:
+    def test_ground_veteran_reroll_stacks(self) -> None:
+        """Ground Veteran at level 2 grants +2 rerolls."""
         prog = PlayerProgression()
-        # Unlock prereq chain
-        prog.skills["scrapper"].current_level = 1
-        prog.skills["quick_reflexes"].current_level = 1
-        prog.skills["intimidating_presence"].current_level = 1
-        prog.skills["tough_hide"].current_level = 1
-        prog.skills["last_stand"].current_level = 1
-        prog.skills["veteran"].current_level = 1
+        prog.skills["weapon_specialization"].current_level = 1
+        prog.skills["ground_veteran"].current_level = 2
         stats = build_player_ground_combat_stats(progression=prog)
-        # Veteran: +1 reroll, +1 HP on top of quick reflexes (+1 reroll) and tough hide (+2 HP)
         assert stats.rerolls == 2
-        assert stats.hp == 13  # 10 + 2 (tough hide) + 1 (veteran)
 
     def test_full_integration(self) -> None:
-        """All bonuses stacked together."""
+        """Attribute bonuses stacked with skills."""
         attrs = AttributeSheet(values={"acu": 4, "res": 4, "com": 1, "ing": 1, "syn": 1})
         prog = PlayerProgression()
-        prog.skills["scrapper"].current_level = 1
-        prog.skills["tough_hide"].current_level = 1
+        prog.skills["weapon_specialization"].current_level = 1
+        prog.skills["ground_veteran"].current_level = 1
         stats = build_player_ground_combat_stats(attributes=attrs, progression=prog)
-        # HP: 10 base + 2 (RES) + 2 (tough hide) = 14
-        assert stats.hp == 14
-        # Attack: 0 + 2 (ACU) + 1 (scrapper) = 3
-        assert stats.attack_mod == 3
+        # HP: 10 base + 2 (RES) = 12 (ground HP wiring is S2)
+        assert stats.hp == 12
+        # Attack: 0 + 2 (ACU) = 2 (ground attack wiring is S2)
+        assert stats.attack_mod == 2
         # Defense: 0 + 2 (RES) = 2
         assert stats.defense_mod == 2
+        # Rerolls: 1 from ground_veteran
+        assert stats.rerolls == 1
 
 
 class TestGroundSkillTree:
-    """Tests for ground combat skill nodes in the progression system."""
+    """Tests for ground combat skills (now in COMBAT tree after S1 overhaul)."""
 
-    def test_ground_tree_type_exists(self) -> None:
-        assert SkillTreeType.GROUND.value == "ground"
-
-    def test_ground_skills_in_default_progression(self) -> None:
+    def test_ground_skills_in_combat_tree(self) -> None:
+        """Ground combat skills are now part of the Combat tree."""
         prog = PlayerProgression()
-        ground_skills = prog.get_skill_tree(SkillTreeType.GROUND)
-        assert len(ground_skills) == 11
-
-    def test_ground_skill_ids(self) -> None:
-        prog = PlayerProgression()
-        ground_ids = {s.id for s in prog.get_skill_tree(SkillTreeType.GROUND)}
-        expected = {
-            "scrapper",
-            "tough_hide",
-            "quick_reflexes",
-            "intimidating_presence",
-            "last_stand",
-            "veteran",
-            "field_medic",
-            "terrain_reader",
-            "adaptive_fighter",
-            "combat_scavenger",
-            "battle_hardened",
+        combat_skills = prog.get_skill_tree(SkillTreeType.COMBAT)
+        ground_ids = {
+            s.id
+            for s in combat_skills
+            if "ground" in s.id or s.id == "battle_hardened" or s.id == "combat_scavenger"
         }
+        expected = {"ground_veteran", "battle_hardened", "combat_scavenger"}
         assert ground_ids == expected
 
-    def test_scrapper_no_prerequisite(self) -> None:
+    def test_ground_veteran_requires_weapon_specialization(self) -> None:
         prog = PlayerProgression()
-        assert prog.skills["scrapper"].prerequisite_id is None
+        assert prog.skills["ground_veteran"].prerequisite_id == "weapon_specialization"
 
-    def test_tough_hide_no_prerequisite(self) -> None:
+    def test_battle_hardened_requires_ground_veteran(self) -> None:
         prog = PlayerProgression()
-        assert prog.skills["tough_hide"].prerequisite_id is None
+        assert prog.skills["battle_hardened"].prerequisite_id == "ground_veteran"
 
-    def test_quick_reflexes_requires_scrapper(self) -> None:
+    def test_combat_scavenger_requires_ground_veteran(self) -> None:
         prog = PlayerProgression()
-        assert prog.skills["quick_reflexes"].prerequisite_id == "scrapper"
+        assert prog.skills["combat_scavenger"].prerequisite_id == "ground_veteran"
 
-    def test_veteran_requires_intimidating_presence(self) -> None:
+    def test_can_level_ground_veteran_with_prereq(self) -> None:
         prog = PlayerProgression()
-        assert prog.skills["veteran"].prerequisite_id == "intimidating_presence"
-
-    def test_can_level_scrapper_with_points(self) -> None:
-        prog = PlayerProgression()
-        prog.skill_points = 1
-        success, msg = prog.level_up_skill("scrapper")
+        prog.skill_points = 5
+        prog.level_up_skill("weapon_specialization")
+        success, msg = prog.level_up_skill("ground_veteran")
         assert success, msg
-        assert prog.skills["scrapper"].current_level == 1
+        assert prog.skills["ground_veteran"].current_level == 1
 
-    def test_cannot_level_quick_reflexes_without_scrapper(self) -> None:
+    def test_cannot_level_ground_veteran_without_prereq(self) -> None:
         prog = PlayerProgression()
         prog.skill_points = 1
-        success, _ = prog.level_up_skill("quick_reflexes")
+        success, _ = prog.level_up_skill("ground_veteran")
         assert not success

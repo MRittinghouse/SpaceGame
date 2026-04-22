@@ -40,13 +40,13 @@ def _materials() -> dict[str, HullMaterial]:
             id="standard_plate",
             name="SP",
             description="",
-            color_primary=(112, 120, 136),
+            shade_band="steel",
         ),
         "m": HullMaterial(
             id="m",
             name="M",
             description="",
-            color_primary=(128, 128, 128),
+            shade_band="steel",
         ),
     }
 

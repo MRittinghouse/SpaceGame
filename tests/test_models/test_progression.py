@@ -3,12 +3,11 @@ Tests for the player progression system.
 """
 
 import pytest
+
 from spacegame.models.progression import (
     PlayerProgression,
     SkillNode,
     SkillTreeType,
-    LEVEL_XP_THRESHOLDS,
-    create_default_skills,
     get_xp_threshold,
 )
 
@@ -21,7 +20,7 @@ class TestPlayerProgression:
         assert prog.xp == 0
         assert prog.level == 1
         assert prog.skill_points == 0
-        assert len(prog.skills) == 109  # 9 trees, 89 base + 20 Phase 12C combat expansion
+        assert len(prog.skills) == 75  # 6 trees after S1 overhaul
 
     def test_add_xp(self):
         prog = PlayerProgression()
@@ -69,7 +68,7 @@ class TestSkillNode:
             id="test",
             name="Test",
             description="Test",
-            tree=SkillTreeType.TRADING,
+            tree=SkillTreeType.COMMERCE,
             max_level=3,
             bonus_type="test_bonus",
             bonus_per_level=0.1,
@@ -83,7 +82,7 @@ class TestSkillNode:
             id="test",
             name="Test",
             description="Test",
-            tree=SkillTreeType.TRADING,
+            tree=SkillTreeType.COMMERCE,
             max_level=3,
             bonus_type="test_bonus",
             bonus_per_level=0.1,
@@ -97,7 +96,7 @@ class TestSkillNode:
             id="test",
             name="Test",
             description="Test",
-            tree=SkillTreeType.TRADING,
+            tree=SkillTreeType.COMMERCE,
             max_level=3,
             bonus_type="test_bonus",
             bonus_per_level=0.1,
@@ -142,7 +141,6 @@ class TestSkillInvestment:
         prog.add_xp(get_xp_threshold(15))  # Lots of points
         prog.level_up_skill("negotiator")
         prog.level_up_skill("negotiator")
-        prog.level_up_skill("negotiator")
         success, msg = prog.level_up_skill("negotiator")
         assert not success
         assert "maxed" in msg.lower()
@@ -153,16 +151,16 @@ class TestSkillInvestment:
         prog.level_up_skill("negotiator")
         prog.level_up_skill("negotiator")
         bonus = prog.get_bonus("buy_price_reduction")
-        assert bonus == pytest.approx(0.04)
+        assert bonus == pytest.approx(0.10)
 
     def test_get_skill_tree(self):
         prog = PlayerProgression()
-        trading_skills = prog.get_skill_tree(SkillTreeType.TRADING)
-        gathering_skills = prog.get_skill_tree(SkillTreeType.GATHERING)
+        commerce_skills = prog.get_skill_tree(SkillTreeType.COMMERCE)
+        combat_skills = prog.get_skill_tree(SkillTreeType.COMBAT)
         leadership_skills = prog.get_skill_tree(SkillTreeType.LEADERSHIP)
-        assert len(trading_skills) == 10
-        assert len(gathering_skills) == 8
-        assert len(leadership_skills) == 10
+        assert len(commerce_skills) == 12
+        assert len(combat_skills) == 22
+        assert len(leadership_skills) == 9
 
 
 class TestProgressionSerialization:
@@ -195,7 +193,7 @@ class TestProgressionSerialization:
         prog = PlayerProgression()
         prog.add_xp(1200)  # Enough for level 3 (2 skill points)
         prog.level_up_skill("negotiator")
-        prog.level_up_skill("efficient_drills")
+        prog.level_up_skill("click_power")
 
         data = prog.to_dict()
         restored = PlayerProgression.from_dict(data)
@@ -203,7 +201,7 @@ class TestProgressionSerialization:
         assert restored.xp == prog.xp
         assert restored.level == prog.level
         assert restored.skills["negotiator"].current_level == 1
-        assert restored.skills["efficient_drills"].current_level == 1
+        assert restored.skills["click_power"].current_level == 1
 
 
 class TestLeadershipTree:
@@ -215,8 +213,8 @@ class TestLeadershipTree:
             "crew_manager",
             "diplomatic_relations",
             "inspiring_leader",
-            "tariff_negotiation",
             "crew_mentor",
+            "battle_commander",
         ]
         for skill_id in expected:
             assert skill_id in prog.skills, f"{skill_id} missing from skills"
@@ -225,13 +223,13 @@ class TestLeadershipTree:
         prog = PlayerProgression()
         skill = prog.skills["crew_manager"]
         assert skill.prerequisite_id is None
-        assert skill.max_level == 1
+        assert skill.max_level == 2
         assert skill.tree == SkillTreeType.LEADERSHIP
 
-    def test_diplomatic_relations_prereq(self):
+    def test_diplomatic_relations_is_root(self):
         prog = PlayerProgression()
         skill = prog.skills["diplomatic_relations"]
-        assert skill.prerequisite_id == "crew_manager"
+        assert skill.prerequisite_id is None
         assert skill.max_level == 2
 
     def test_inspiring_leader_prereq(self):
@@ -240,10 +238,10 @@ class TestLeadershipTree:
         assert skill.prerequisite_id == "crew_manager"
         assert skill.max_level == 2
 
-    def test_tariff_negotiation_prereq(self):
+    def test_battle_commander_prereq(self):
         prog = PlayerProgression()
-        skill = prog.skills["tariff_negotiation"]
-        assert skill.prerequisite_id == "diplomatic_relations"
+        skill = prog.skills["battle_commander"]
+        assert skill.prerequisite_id == "crew_manager"
         assert skill.max_level == 2
 
     def test_crew_mentor_prereq(self):
@@ -261,19 +259,17 @@ class TestLeadershipTree:
     def test_diplomatic_relations_bonus(self):
         prog = PlayerProgression()
         prog.add_xp(get_xp_threshold(15))
-        prog.level_up_skill("crew_manager")
         prog.level_up_skill("diplomatic_relations")
         prog.level_up_skill("diplomatic_relations")
         assert prog.get_bonus("reputation_gain_bonus") == pytest.approx(2.0)
 
-    def test_tariff_negotiation_bonus(self):
+    def test_battle_commander_bonus(self):
         prog = PlayerProgression()
         prog.add_xp(get_xp_threshold(15))
         prog.level_up_skill("crew_manager")
-        prog.level_up_skill("diplomatic_relations")
-        prog.level_up_skill("tariff_negotiation")
-        prog.level_up_skill("tariff_negotiation")
-        assert prog.get_bonus("tariff_reduction") == pytest.approx(0.10)
+        prog.level_up_skill("battle_commander")
+        prog.level_up_skill("battle_commander")
+        assert prog.get_bonus("crew_combat_damage") == pytest.approx(0.30)
 
     def test_crew_mentor_bonus(self):
         prog = PlayerProgression()
@@ -285,10 +281,10 @@ class TestLeadershipTree:
         assert prog.get_bonus("crew_xp_bonus") == pytest.approx(4.0)
 
     def test_prerequisite_blocks_investment(self):
-        """Cannot invest in diplomatic_relations without crew_manager."""
+        """Cannot invest in inspiring_leader without crew_manager."""
         prog = PlayerProgression()
         prog.add_xp(get_xp_threshold(15))
-        success, msg = prog.level_up_skill("diplomatic_relations")
+        success, msg = prog.level_up_skill("inspiring_leader")
         assert not success
         assert "Requires" in msg
 
@@ -313,24 +309,24 @@ class TestSocialTree:
         assert skill.tree == SkillTreeType.SOCIAL
         assert skill.bonus_type == "persuasion_bonus"
 
-    def test_commanding_presence_prereq(self):
+    def test_commanding_presence_is_root(self):
         prog = PlayerProgression()
         skill = prog.skills["commanding_presence"]
-        assert skill.prerequisite_id == "silver_tongue"
+        assert skill.prerequisite_id is None
         assert skill.max_level == 2
         assert skill.bonus_type == "intimidation_bonus"
 
-    def test_keen_insight_prereq(self):
+    def test_keen_insight_is_root(self):
         prog = PlayerProgression()
         skill = prog.skills["keen_insight"]
-        assert skill.prerequisite_id == "silver_tongue"
+        assert skill.prerequisite_id is None
         assert skill.max_level == 2
         assert skill.bonus_type == "observation_bonus"
 
     def test_social_tree_count(self):
         prog = PlayerProgression()
         social_skills = prog.get_skill_tree(SkillTreeType.SOCIAL)
-        assert len(social_skills) == 10
+        assert len(social_skills) == 11
 
     def test_social_skill_bonuses(self):
         prog = PlayerProgression()
@@ -340,10 +336,10 @@ class TestSocialTree:
         assert prog.get_bonus("persuasion_bonus") == pytest.approx(2.0)
 
     def test_social_prereq_blocks(self):
-        """Cannot invest in commanding_presence without silver_tongue."""
+        """Cannot invest in master_negotiator without commanding_presence."""
         prog = PlayerProgression()
         prog.add_xp(get_xp_threshold(15))
-        success, msg = prog.level_up_skill("commanding_presence")
+        success, msg = prog.level_up_skill("master_negotiator")
         assert not success
         assert "Requires" in msg
 

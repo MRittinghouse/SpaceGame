@@ -1,0 +1,42 @@
+SPIKE B: ship composition for 3 manufacturers (palette-snapped)
+Seed: 42
+Render time (3 ships, snapped): 41.3 ms
+Canvas: 240 x 160  |  Modules per ship: 6
+
+CRITIQUE — ship_solari
+  [PASS] palette_compliance           100.0% within 12 RGB of palette (target 90%)
+  [PASS] palette_line_compliance      100.0% within 10 RGB of palette graph (target 95%)
+  [PASS] silhouette_readability       avg edge contrast 327.9 (target ≥ 30.0)
+  [PASS] alpha_discipline             0.0% mid-alpha pixels (limit 15%)
+  [PASS] detail_density               edge/opaque density = 0.173 (target 0.04-0.35)
+  [PASS] ship_connected               4412/4412 opaque pixels in largest connected region
+  [FAIL] lighting_consistency         upper-right luminance 210.1 vs lower-left 206.3 (diff +3.7)
+  -> 6/7 checks passed
+
+CRITIQUE — ship_reach
+  [PASS] palette_compliance           100.0% within 12 RGB of palette (target 90%)
+  [PASS] palette_line_compliance      100.0% within 10 RGB of palette graph (target 95%)
+  [PASS] silhouette_readability       avg edge contrast 140.6 (target ≥ 30.0)
+  [PASS] alpha_discipline             0.0% mid-alpha pixels (limit 15%)
+  [PASS] detail_density               edge/opaque density = 0.141 (target 0.04-0.35)
+  [PASS] ship_connected               4647/4647 opaque pixels in largest connected region
+  [PASS] lighting_consistency         upper-right luminance 74.4 vs lower-left 64.1 (diff +10.4)
+  -> 7/7 checks passed
+
+CRITIQUE — ship_union
+  [PASS] palette_compliance           100.0% within 12 RGB of palette (target 90%)
+  [PASS] palette_line_compliance      100.0% within 10 RGB of palette graph (target 95%)
+  [PASS] silhouette_readability       avg edge contrast 266.0 (target ≥ 30.0)
+  [PASS] alpha_discipline             0.0% mid-alpha pixels (limit 15%)
+  [PASS] detail_density               edge/opaque density = 0.180 (target 0.04-0.35)
+  [PASS] ship_connected               4714/4714 opaque pixels in largest connected region
+  [PASS] lighting_consistency         upper-right luminance 179.9 vs lower-left 173.0 (diff +6.9)
+  -> 7/7 checks passed
+
+DETERMINISM
+  [PASS] solari: 1 distinct hash(es)
+  [PASS] reach: 1 distinct hash(es)
+  [PASS] union: 1 distinct hash(es)
+
+VARIANT DISTINCTNESS
+  [PASS] 3 manufacturers (snapped): pairwise mean RGB diff (opaque) = 88.1 (target ≥ 15.0)

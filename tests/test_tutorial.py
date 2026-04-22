@@ -52,15 +52,24 @@ class TestTutorialProgression:
         assert result is None
 
     def test_should_show_step_matching_trigger(self) -> None:
-        """should_show_step returns True for matching trigger."""
+        """should_show_step returns True for matching trigger in classic mode."""
         tm = TutorialManager()
+        tm.tutorial_approach = "classic"
         tm.reset_tutorial()
         assert tm.should_show_step("galaxy_map")
         assert not tm.should_show_step("trading")
 
+    def test_should_show_step_suppressed_in_story_mode(self) -> None:
+        """should_show_step returns False in story mode (default)."""
+        tm = TutorialManager()
+        tm.reset_tutorial()
+        assert tm.tutorial_approach == "story"
+        assert not tm.should_show_step("galaxy_map")
+
     def test_should_show_step_not_while_showing(self) -> None:
         """should_show_step returns False if already showing."""
         tm = TutorialManager()
+        tm.tutorial_approach = "classic"
         tm.reset_tutorial()
         tm.start_step()
         assert not tm.should_show_step("galaxy_map")
@@ -254,7 +263,10 @@ class TestMinigameHints:
         tm = TutorialManager()
         hint = tm.get_hint("mining")
         assert hint is not None
-        assert hint["title"] == "Asteroid Mining"
+        # Title post-narrative-polish (2026-04-21) — see
+        # test_tutorial_narrative_voice.py for the compliance guard.
+        assert hint["title"] == "The Drill Line"
+        assert "title" in hint and "description" in hint
 
     def test_get_hint_unknown_returns_none(self) -> None:
         """get_hint should return None for unknown IDs."""

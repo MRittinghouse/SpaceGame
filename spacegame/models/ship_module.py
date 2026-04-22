@@ -511,5 +511,3 @@ def can_place_module(
         return False, (f"Exceeds weight limit ({new_weight:.1f}/{build.max_weight})")
 
     return True, "OK"
-
-

@@ -8,7 +8,7 @@
     },
     {
       "crew_id": "elena_reeves",
-      "text": "Guild territory. Say what you will about the bureaucracy -- their docking procedures are impeccable.",
+      "text": "Guild territory. Say what you will about the bureaucracy. Their docking procedures are impeccable.",
       "context": "faction_territory",
       "faction_id": "commerce_guild"
     },
@@ -42,7 +42,7 @@
     },
     {
       "crew_id": "marcus_jin",
-      "text": "Union steel. You can always tell by the welds -- clean, even, no shortcuts.",
+      "text": "Union steel. You can always tell by the welds. Clean, even, no shortcuts.",
       "context": "faction_territory",
       "faction_id": "industrial_union"
     },
@@ -64,7 +64,7 @@
     },
     {
       "crew_id": "marcus_jin",
-      "text": "Reeves, those departure calculations you sent -- good work. Saved us twenty minutes on the approach.",
+      "text": "Reeves, those departure calculations you sent. Good work. Saved us twenty minutes on the approach.",
       "context": "inter_crew",
       "required_crew": "elena_reeves"
     },
@@ -76,7 +76,7 @@
     },
     {
       "crew_id": "dr_priya_osei",
-      "text": "Collective space. The data networks here are exceptional -- if they'd only share them more freely.",
+      "text": "Collective space. The data networks here are exceptional. If they'd only share them more freely.",
       "context": "faction_territory",
       "faction_id": "science_collective"
     },

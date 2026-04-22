@@ -3,7 +3,8 @@
 ShieldRenderer manages per-ship shield bubble overlays with hit ripples
 and break/restore sequences. DamageStateManager tracks progressive visual
 degradation (smoke, sparks) and hit recoil effects. DestructionSequence
-orchestrates spectacular ship explosion timelines.
+orchestrates spectacular ship explosion timelines. All colors route
+through ``engine.material_palette`` per Combat overhaul §4.5.
 """
 
 import math
@@ -14,15 +15,27 @@ from typing import Optional
 import pygame
 
 from spacegame.config import scale_x
+from spacegame.engine.material_palette import get_role
 
 # ==========================================================================
 # Shield Visualization
 # ==========================================================================
 
-# Shield colors
-_SHIELD_BUBBLE_COLOR = (60, 180, 255)  # Cyan bubble
-_SHIELD_RIPPLE_COLOR = (120, 210, 255)  # Brighter ripple
-_SHIELD_BREAK_COLOR = (80, 200, 255)  # Fragment color
+# Shield element → palette role for the bubble fill (spec §4.5).
+# Default cryo_fractal reads as a cyan ice barrier; ion_arc reads as
+# violet electrical containment. New shield elements add an entry here.
+_SHIELD_ELEMENT_ROLE: dict[str, str] = {
+    "cryo": "cryo_fractal",
+    "ion": "ion_arc",
+}
+_DEFAULT_SHIELD_ELEMENT = "cryo"
+
+
+def _shield_color_for(element: Optional[str]) -> tuple[int, int, int]:
+    """Resolve shield bubble + ripple color from an element identifier."""
+    key = (element or _DEFAULT_SHIELD_ELEMENT).lower()
+    role = _SHIELD_ELEMENT_ROLE.get(key, _SHIELD_ELEMENT_ROLE[_DEFAULT_SHIELD_ELEMENT])
+    return get_role(role)
 
 
 @dataclass
@@ -31,6 +44,7 @@ class ShieldState:
 
     active: bool = False
     ratio: float = 1.0  # 0.0-1.0 shield fullness
+    element: Optional[str] = None  # "cryo" (default) or "ion"
 
     # Idle shimmer
     shimmer_phase: float = 0.0
@@ -159,6 +173,7 @@ class ShieldRenderer:
             return
 
         bubble_r = radius + scale_x(8)
+        bubble_color = _shield_color_for(state.element)
 
         # Break fragments
         if state.breaking:
@@ -171,7 +186,7 @@ class ShieldRenderer:
                     alpha = int(min(255, frag["alpha"]))
                     pygame.draw.polygon(
                         frag_surf,
-                        (*_SHIELD_BREAK_COLOR, alpha),
+                        (*bubble_color, alpha),
                         [(size, 0), (size * 2, size * 2), (0, size * 2)],
                     )
                     screen.blit(frag_surf, (fx - size, fy - size))
@@ -181,7 +196,7 @@ class ShieldRenderer:
         if state.restoring:
             t = 1.0 - state.restore_timer / state.restore_max
             alpha = int(30 * t)
-            self._draw_bubble(screen, cx, cy, bubble_r, alpha)
+            self._draw_bubble(screen, cx, cy, bubble_r, alpha, bubble_color)
             return
 
         # Active shield bubble
@@ -189,32 +204,44 @@ class ShieldRenderer:
             # Base shimmer alpha (gentle oscillation)
             shimmer = 0.5 + 0.5 * math.sin(state.shimmer_phase * math.pi)
             base_alpha = int(20 + 12 * shimmer)
-            self._draw_bubble(screen, cx, cy, bubble_r, base_alpha)
+            self._draw_bubble(screen, cx, cy, bubble_r, base_alpha, bubble_color)
 
             # Ripple effect on hit
             if state.ripple_timer > 0:
                 ripple_t = state.ripple_timer / state.ripple_max
-                self._draw_ripple(screen, cx, cy, bubble_r, ripple_t, state.ripple_angle)
+                self._draw_ripple(
+                    screen, cx, cy, bubble_r, ripple_t, state.ripple_angle, bubble_color
+                )
 
     @staticmethod
-    def _draw_bubble(screen: pygame.Surface, cx: int, cy: int, radius: int, alpha: int) -> None:
+    def _draw_bubble(
+        screen: pygame.Surface,
+        cx: int,
+        cy: int,
+        radius: int,
+        alpha: int,
+        color: tuple[int, int, int],
+    ) -> None:
         """Draw a translucent shield bubble."""
         size = radius * 2 + 4
         surf = pygame.Surface((size, size), pygame.SRCALPHA)
         center = size // 2
-        # Filled circle (translucent)
-        pygame.draw.circle(surf, (*_SHIELD_BUBBLE_COLOR, alpha), (center, center), radius)
-        # Edge ring (brighter)
+        pygame.draw.circle(surf, (*color, alpha), (center, center), radius)
         edge_alpha = min(255, alpha * 3)
-        pygame.draw.circle(surf, (*_SHIELD_BUBBLE_COLOR, edge_alpha), (center, center), radius, 2)
+        pygame.draw.circle(surf, (*color, edge_alpha), (center, center), radius, 2)
         screen.blit(surf, (cx - center, cy - center))
 
     @staticmethod
     def _draw_ripple(
-        screen: pygame.Surface, cx: int, cy: int, radius: int, t: float, angle: float
+        screen: pygame.Surface,
+        cx: int,
+        cy: int,
+        radius: int,
+        t: float,
+        angle: float,
+        color: tuple[int, int, int],
     ) -> None:
         """Draw expanding concentric ripple rings at impact point."""
-        # Impact point on the bubble surface
         impact_x = cx + int(math.cos(angle) * radius * 0.8)
         impact_y = cy + int(math.sin(angle) * radius * 0.8)
 
@@ -226,7 +253,7 @@ class ShieldRenderer:
             ring_alpha = int(180 * ring_t)
             ring_surf = pygame.Surface((ring_r * 2 + 4, ring_r * 2 + 4), pygame.SRCALPHA)
             rc = ring_r + 2
-            pygame.draw.circle(ring_surf, (*_SHIELD_RIPPLE_COLOR, ring_alpha), (rc, rc), ring_r, 2)
+            pygame.draw.circle(ring_surf, (*color, ring_alpha), (rc, rc), ring_r, 2)
             screen.blit(ring_surf, (impact_x - rc, impact_y - rc))
 
     @staticmethod
@@ -480,8 +507,25 @@ class DamageStateManager:
 # Destruction Sequence
 # ==========================================================================
 
+# Hull-fragment colors. These represent torn metal — kept as neutral
+# steel/rust tones until the §4.1 unified ship pipeline lands and ship
+# fragments inherit their parent material's band entries. Tracked in the
+# Combat C4 phase per spec §7.
 _FRAG_COLORS = [(180, 160, 140), (140, 120, 100), (100, 80, 60)]
-_FIRE_COLORS = [(255, 200, 60), (255, 140, 30), (255, 80, 10), (200, 40, 0)]
+
+
+def _fire_palette() -> list[tuple[int, int, int]]:
+    """Destruction fire gradient — spec §4.5: plasma_core → plasma_hot → glow_warm.
+
+    Resolved at call time so the colorblind remap (§5 of palette spec) can
+    flip the gradient without invalidating any cached constant.
+    """
+    return [
+        get_role("plasma_core"),
+        get_role("plasma_hot"),
+        get_role("glow_warm"),
+        get_role("plasma_core"),  # bookend for index variance
+    ]
 _SECONDARY_EXPLOSION_OFFSETS = [
     (-0.3, -0.2),
     (0.4, 0.1),
@@ -651,7 +695,7 @@ class DestructionSequence:
                         "life": rng.uniform(0.3, 0.6),
                         "max_life": 0.6,
                         "size": rng.uniform(3, 8),
-                        "color_idx": rng.randint(0, len(_FIRE_COLORS) - 1),
+                        "color_idx": rng.randint(0, len(_fire_palette()) - 1),
                     }
                 )
 
@@ -753,10 +797,12 @@ class DestructionSequence:
                 )
                 screen.blit(sec_surf, (sx - sr, sy - sr))
 
-        # Fire/smoke particles
+        # Fire/smoke particles — palette gradient resolved per-frame so
+        # colorblind remap stays live.
+        fire_palette = _fire_palette()
         for p in self._fire_particles:
             t = p["life"] / p["max_life"]
-            color = _FIRE_COLORS[p["color_idx"]]
+            color = fire_palette[p["color_idx"] % len(fire_palette)]
             alpha = int(180 * t)
             size = int(p["size"] * (0.5 + 0.5 * t))
             fire_surf = pygame.Surface((size * 2, size * 2), pygame.SRCALPHA)
@@ -782,37 +828,88 @@ class DestructionSequence:
 # Combat Atmosphere
 # ==========================================================================
 
-# Danger-level atmosphere palettes
-_ATMOSPHERE = {
+# Danger-level atmosphere config. Per spec §4.5, dust motes use the
+# canonical ``void_light`` role with a ``glow_cool`` twinkle accent —
+# danger differentiation now comes from alpha + density + tint, not from
+# off-palette dust hues. Tint colors are resolved at construction time
+# from palette roles so they remain colorblind-remappable.
+#
+# Per spec §4.6, dangerous + crimson tiers add debris streaks; crimson
+# also adds a pulsing edge glow. All additions are palette-role sourced.
+_ATMOSPHERE: dict[str, dict] = {
     "safe": {
-        "dust_color": (100, 120, 160),
         "dust_alpha": 30,
         "dust_count": 15,
-        "tint": None,
+        "tint_role": None,
+        "tint_alpha": 0,
         "dust_speed": (3, 10),
+        "debris_rate": 0.0,
+        "debris_role": None,
+        "edge_glow_role": None,
     },
     "moderate": {
-        "dust_color": (140, 120, 90),
         "dust_alpha": 40,
         "dust_count": 22,
-        "tint": (40, 30, 10, 12),  # Subtle warm tint
+        "tint_role": "hud_accent_warm",
+        "tint_alpha": 12,
         "dust_speed": (5, 15),
+        "debris_rate": 0.0,
+        "debris_role": None,
+        "edge_glow_role": None,
     },
     "dangerous": {
-        "dust_color": (160, 80, 60),
         "dust_alpha": 50,
         "dust_count": 30,
-        "tint": (60, 15, 10, 18),  # Red-tinged
+        "tint_role": "hud_warning",
+        "tint_alpha": 18,
         "dust_speed": (6, 18),
+        "debris_rate": 0.25,  # 1 streak every 4s — "occasional" per spec
+        "debris_role": "hud_warning",
+        "edge_glow_role": None,
     },
     "crimson": {
-        "dust_color": (180, 50, 40),
         "dust_alpha": 60,
         "dust_count": 40,
-        "tint": (80, 10, 5, 25),  # Heavy red
+        "tint_role": "hud_critical",
+        "tint_alpha": 25,
         "dust_speed": (8, 22),
+        "debris_rate": 1.5,  # Heavy debris per spec
+        "debris_role": "hud_critical",
+        "edge_glow_role": "hud_critical",
     },
 }
+
+# Debris streak parameters. Spec §4.6: "elongated streak, 2-3s lifespan".
+_DEBRIS_LIFE_RANGE = (2.0, 3.0)
+_DEBRIS_LENGTH_RANGE = (28.0, 56.0)
+_DEBRIS_WIDTH = 2
+_DEBRIS_SPEED_RANGE = (180.0, 360.0)
+
+# Edge-glow pulse envelope. Crimson-tier encounters get a low-alpha
+# ``hud_critical`` border that oscillates via sine — faint enough to
+# read as ambient mood, not an alarm.
+_EDGE_GLOW_BASE_ALPHA = 22
+_EDGE_GLOW_AMPLITUDE = 18
+_EDGE_GLOW_PERIOD = 2.5  # seconds per full pulse
+_EDGE_GLOW_THICKNESS = 10  # pixels inward from arena edge
+
+# Arc-flash (crimson only, spec §4.6): random voltaic-style screen-edge
+# flash 1-2 times per minute. Thicker than edge glow; peaks bright then
+# decays. Uses ``voltaic_strike`` role per spec's "voltaic-style".
+_ARC_FLASH_INTERVAL_RANGE = (30.0, 60.0)  # seconds between flashes
+_ARC_FLASH_DURATION = 0.35  # peak → decay
+_ARC_FLASH_PEAK_ALPHA = 120
+_ARC_FLASH_THICKNESS = 24  # edge band thickness (thicker than glow)
+
+
+def _atmosphere_dust_color() -> tuple[int, int, int]:
+    """Canonical dust-mote color (spec §4.5). Resolved fresh each call."""
+    return get_role("void_light")
+
+
+def _atmosphere_twinkle_color() -> tuple[int, int, int]:
+    """Twinkle accent color used at the brightest twinkle phase."""
+    return get_role("glow_cool")
 
 
 @dataclass
@@ -827,6 +924,38 @@ class _DustMote:
     alpha: float
     twinkle_phase: float
     twinkle_speed: float
+
+
+@dataclass
+class _DebrisStreak:
+    """An elongated debris streak drifting across the arena.
+
+    Per spec §4.6, appears at dangerous + crimson danger tiers. 2-3s
+    lifespan, direction parallel to velocity vector. Alpha ramps in on
+    spawn, holds, fades on expiry.
+    """
+
+    x: float
+    y: float
+    vx: float
+    vy: float
+    length: float
+    life_remaining: float
+    max_life: float
+
+    @property
+    def alpha_factor(self) -> float:
+        """Ramp-in + hold + ramp-out envelope across life_remaining."""
+        if self.max_life <= 0:
+            return 0.0
+        age = self.max_life - self.life_remaining
+        # Ramp in first 10% of life.
+        if age < self.max_life * 0.10:
+            return age / (self.max_life * 0.10)
+        # Ramp out last 20%.
+        if self.life_remaining < self.max_life * 0.20:
+            return self.life_remaining / (self.max_life * 0.20)
+        return 1.0
 
 
 class CombatAtmosphere:
@@ -863,14 +992,33 @@ class CombatAtmosphere:
         self._frame_surface: Optional[pygame.Surface] = None
         self._build_arena_frame()
 
-        # Tint overlay (pre-rendered)
+        # Tint overlay (pre-rendered) — palette-role-derived per spec §4.5.
         self._tint_surface: Optional[pygame.Surface] = None
-        if self._config["tint"]:
-            r, g, b, a = self._config["tint"]
+        tint_role = self._config.get("tint_role")
+        tint_alpha = self._config.get("tint_alpha", 0)
+        if tint_role and tint_alpha > 0:
+            r, g, b = get_role(tint_role)
             self._tint_surface = pygame.Surface(
                 (arena_rect.width, arena_rect.height), pygame.SRCALPHA
             )
-            self._tint_surface.fill((r, g, b, a))
+            self._tint_surface.fill((r, g, b, tint_alpha))
+
+        # Debris + edge-glow state (spec §4.6). Debris list is empty at
+        # safe/moderate tiers; spawn_accumulator drives rate-based spawn
+        # via update(dt).
+        self._debris: list[_DebrisStreak] = []
+        self._debris_spawn_accumulator: float = 0.0
+
+        # Arc-flash (crimson-only, spec §4.6). Timer counts down to the
+        # next flash; elapsed tracks the current flash's decay. When the
+        # danger tier has no edge_glow_role, both stay at sentinel values.
+        if self._config.get("edge_glow_role") is not None:
+            self._arc_flash_timer: float = self._rng.uniform(*_ARC_FLASH_INTERVAL_RANGE)
+        else:
+            self._arc_flash_timer = -1.0
+        # Initialize elapsed past the duration so no flash renders until
+        # the first trigger.
+        self._arc_flash_elapsed: float = _ARC_FLASH_DURATION + 1.0
 
     def _spawn_dust(self) -> None:
         """Generate initial dust mote positions across the arena."""
@@ -925,7 +1073,7 @@ class CombatAtmosphere:
         )
 
     def update(self, dt: float) -> None:
-        """Advance dust motes and twinkle animations.
+        """Advance dust motes, twinkle animations, and debris streaks.
 
         Args:
             dt: Delta time in seconds.
@@ -942,47 +1090,268 @@ class CombatAtmosphere:
                 mote.x = self._arena.left - 5
                 mote.y = self._rng.uniform(self._arena.top, self._arena.bottom)
 
-    def render_background(self, screen: pygame.Surface) -> None:
-        """Render atmosphere elements BEHIND ships (tint, dust, frame).
+        # Debris streaks — advance position, decay life, prune expired.
+        for streak in self._debris:
+            streak.x += streak.vx * dt
+            streak.y += streak.vy * dt
+            streak.life_remaining = max(0.0, streak.life_remaining - dt)
+        self._debris = [s for s in self._debris if s.life_remaining > 0]
+
+        # Rate-based spawn. Accumulator advances with dt * rate; whenever
+        # it crosses 1.0, spawn a streak and subtract.
+        rate = self._config.get("debris_rate", 0.0)
+        if rate > 0:
+            self._debris_spawn_accumulator += dt * rate
+            while self._debris_spawn_accumulator >= 1.0:
+                self._spawn_debris_streak()
+                self._debris_spawn_accumulator -= 1.0
+
+        # Arc-flash (crimson only). Advance active flash decay and the
+        # interval timer. When the timer hits zero, fire a new flash.
+        self._arc_flash_elapsed += dt
+        if self._arc_flash_timer >= 0:
+            self._arc_flash_timer -= dt
+            if self._arc_flash_timer <= 0:
+                self.trigger_arc_flash()
+
+    def trigger_arc_flash(self) -> None:
+        """Fire a new arc-flash and schedule the next one.
+
+        Public so tests can fire deterministically without waiting on
+        the random interval timer. No-op for danger tiers that don't
+        have arc-flash enabled (safe / moderate / dangerous).
+        """
+        # Enablement is keyed on the config (not timer value) because
+        # the automatic-fire path drives the timer negative just before
+        # calling us — a timer-value guard would incorrectly short-circuit.
+        if self._config.get("edge_glow_role") is None:
+            return
+        self._arc_flash_elapsed = 0.0
+        self._arc_flash_timer = self._rng.uniform(*_ARC_FLASH_INTERVAL_RANGE)
+
+    @property
+    def is_arc_flash_active(self) -> bool:
+        return self._arc_flash_elapsed < _ARC_FLASH_DURATION
+
+    def _spawn_debris_streak(self) -> None:
+        """Emit one debris streak with random lane + direction + lifespan."""
+        speed_min, speed_max = _DEBRIS_SPEED_RANGE
+        life_min, life_max = _DEBRIS_LIFE_RANGE
+        length_min, length_max = _DEBRIS_LENGTH_RANGE
+
+        # Direction: mostly right-to-left (opposing dust drift so debris
+        # reads as incoming hostile matter); slight vertical component.
+        vx = -self._rng.uniform(speed_min, speed_max)
+        vy = self._rng.uniform(-40.0, 40.0)
+
+        # Spawn just off the right edge at a random y.
+        x = self._arena.right + 10
+        y = self._rng.uniform(self._arena.top, self._arena.bottom)
+        life = self._rng.uniform(life_min, life_max)
+        length = self._rng.uniform(length_min, length_max)
+        self._debris.append(
+            _DebrisStreak(
+                x=x,
+                y=y,
+                vx=vx,
+                vy=vy,
+                length=length,
+                life_remaining=life,
+                max_life=life,
+            )
+        )
+
+    def render_background(
+        self,
+        screen: pygame.Surface,
+        alpha_factor: float = 1.0,
+    ) -> None:
+        """Render atmosphere elements BEHIND ships (tint, dust, debris, glow).
 
         Call this before rendering ships.
 
-        Args:
-            screen: Surface to draw on.
+        ``alpha_factor`` scales tint + dust alpha globally (1.0 = normal).
+        Combat C3 §4.8 uses this during the ArenaEntry intro to fade
+        atmosphere in from 0 → 1 over the tint-fade phase.
         """
-        # Danger tint overlay
-        if self._tint_surface:
-            screen.blit(self._tint_surface, self._arena.topleft)
+        factor = max(0.0, min(1.0, alpha_factor))
 
-        # Space dust
-        dust_base_color = self._config["dust_color"]
+        # Danger tint overlay — scaled by factor during intro fade-in.
+        if self._tint_surface and factor > 0:
+            if factor >= 1.0:
+                screen.blit(self._tint_surface, self._arena.topleft)
+            else:
+                # Stage a faded copy so we don't mutate the cached surface.
+                faded = self._tint_surface.copy()
+                faded.set_alpha(int(255 * factor))
+                screen.blit(faded, self._arena.topleft)
+
+        # Debris streaks — drawn before dust so they appear behind it.
+        self._render_debris(screen)
+
+        # Edge glow — crimson-tier only; pulses with sine.
+        self._render_edge_glow(screen)
+
+        # Arc-flash — crimson-tier only; brief bright pulse on random
+        # timer. Renders above the sustained edge glow so it reads as
+        # a distinct event rather than a pulse spike.
+        self._render_arc_flash(screen)
+
+        # Space dust — canonical void_light hue, glow_cool twinkle accent.
+        dust_base_color = _atmosphere_dust_color()
+        twinkle_color = _atmosphere_twinkle_color()
         dust_base_alpha = self._config["dust_alpha"]
 
         for mote in self._dust:
-            # Only render if within arena bounds (with small margin)
             if not (self._arena.left - 5 <= mote.x <= self._arena.right + 5):
                 continue
 
-            # Twinkle: alpha oscillates gently
+            # Twinkle: alpha oscillates gently; at peak twinkle pixels lean
+            # toward glow_cool for the "twinkle" accent. ``factor`` scales
+            # dust alpha during the ArenaEntry fade-in.
             twinkle = 0.5 + 0.5 * math.sin(mote.twinkle_phase)
-            alpha = int(dust_base_alpha * mote.alpha * twinkle)
+            alpha = int(dust_base_alpha * mote.alpha * twinkle * factor)
             if alpha <= 0:
                 continue
 
+            color = twinkle_color if twinkle > 0.85 else dust_base_color
             size = max(1, int(mote.size))
             mx, my = int(mote.x), int(mote.y)
 
             if size <= 1:
-                # Single pixel — draw directly
                 if 0 <= mx < screen.get_width() and 0 <= my < screen.get_height():
                     try:
-                        screen.set_at((mx, my), (*dust_base_color, alpha))
+                        screen.set_at((mx, my), (*color, alpha))
                     except (IndexError, TypeError):
                         pass
             else:
                 mote_surf = pygame.Surface((size * 2, size * 2), pygame.SRCALPHA)
-                pygame.draw.circle(mote_surf, (*dust_base_color, alpha), (size, size), size)
+                pygame.draw.circle(mote_surf, (*color, alpha), (size, size), size)
                 screen.blit(mote_surf, (mx - size, my - size))
+
+    def _render_debris(self, screen: pygame.Surface) -> None:
+        """Paint each active debris streak as a short oriented line.
+
+        Line direction parallels the streak velocity; color is the
+        danger tier's ``debris_role`` RGB. Alpha follows the streak's
+        ramp-in/hold/ramp-out envelope.
+        """
+        if not self._debris:
+            return
+        role = self._config.get("debris_role")
+        if role is None:
+            return
+        color = get_role(role)
+        for streak in self._debris:
+            alpha = max(0, min(255, int(200 * streak.alpha_factor)))
+            if alpha == 0:
+                continue
+            # Skip streaks that have drifted out of arena bounds.
+            if streak.x < self._arena.left - 20 or streak.x > self._arena.right + 20:
+                continue
+            if streak.y < self._arena.top - 20 or streak.y > self._arena.bottom + 20:
+                continue
+            # Draw a short line along the velocity direction.
+            speed = math.sqrt(streak.vx * streak.vx + streak.vy * streak.vy)
+            if speed <= 0:
+                continue
+            nx = streak.vx / speed
+            ny = streak.vy / speed
+            end_x = streak.x + nx * streak.length
+            end_y = streak.y + ny * streak.length
+            # Render onto an SRCALPHA surface so the line's per-pixel
+            # alpha composites over the ship layers beneath it.
+            w = int(abs(end_x - streak.x)) + _DEBRIS_WIDTH * 2 + 2
+            h = int(abs(end_y - streak.y)) + _DEBRIS_WIDTH * 2 + 2
+            if w <= 0 or h <= 0:
+                continue
+            strip = pygame.Surface((w, h), pygame.SRCALPHA)
+            origin_x = int(min(streak.x, end_x)) - 1
+            origin_y = int(min(streak.y, end_y)) - 1
+            pygame.draw.line(
+                strip,
+                (*color, alpha),
+                (int(streak.x) - origin_x, int(streak.y) - origin_y),
+                (int(end_x) - origin_x, int(end_y) - origin_y),
+                _DEBRIS_WIDTH,
+            )
+            screen.blit(strip, (origin_x, origin_y))
+
+    def _render_edge_glow(self, screen: pygame.Surface) -> None:
+        """Crimson-tier pulsing edge glow (spec §4.6).
+
+        Paints a ``hud_critical`` frame band around the arena, with
+        alpha oscillating via sine so the glow reads as ambient mood.
+        No-op for non-crimson tiers.
+        """
+        role = self._config.get("edge_glow_role")
+        if role is None:
+            return
+        color = get_role(role)
+        # Sine pulse: base alpha ± amplitude over the period.
+        pulse = math.sin(2.0 * math.pi * self._elapsed / _EDGE_GLOW_PERIOD)
+        alpha = max(0, min(255, int(_EDGE_GLOW_BASE_ALPHA + _EDGE_GLOW_AMPLITUDE * pulse)))
+        if alpha == 0:
+            return
+        thickness = _EDGE_GLOW_THICKNESS
+        # Four edge rectangles — simpler than a gradient; reads clean at
+        # arena scale.
+        glow = pygame.Surface((self._arena.width, self._arena.height), pygame.SRCALPHA)
+        # Top
+        pygame.draw.rect(glow, (*color, alpha), (0, 0, self._arena.width, thickness))
+        # Bottom
+        pygame.draw.rect(
+            glow,
+            (*color, alpha),
+            (0, self._arena.height - thickness, self._arena.width, thickness),
+        )
+        # Left
+        pygame.draw.rect(glow, (*color, alpha), (0, 0, thickness, self._arena.height))
+        # Right
+        pygame.draw.rect(
+            glow,
+            (*color, alpha),
+            (self._arena.width - thickness, 0, thickness, self._arena.height),
+        )
+        screen.blit(glow, self._arena.topleft)
+
+    def _render_arc_flash(self, screen: pygame.Surface) -> None:
+        """Crimson-tier arc-flash (spec §4.6).
+
+        Thick ``voltaic_strike`` band on all four edges; alpha peaks at
+        flash start and decays linearly over ``_ARC_FLASH_DURATION``.
+        No-op when not active or not enabled for the tier.
+        """
+        if not self.is_arc_flash_active:
+            return
+        # Only crimson-tier enables arc-flash via the timer; double-check
+        # in case the config diverges.
+        if self._config.get("edge_glow_role") is None:
+            return
+        color = get_role("voltaic_strike")
+        progress = self._arc_flash_elapsed / _ARC_FLASH_DURATION
+        alpha = max(0, min(255, int(_ARC_FLASH_PEAK_ALPHA * (1.0 - progress))))
+        if alpha == 0:
+            return
+        thickness = _ARC_FLASH_THICKNESS
+        flash = pygame.Surface((self._arena.width, self._arena.height), pygame.SRCALPHA)
+        # Top
+        pygame.draw.rect(flash, (*color, alpha), (0, 0, self._arena.width, thickness))
+        # Bottom
+        pygame.draw.rect(
+            flash,
+            (*color, alpha),
+            (0, self._arena.height - thickness, self._arena.width, thickness),
+        )
+        # Left
+        pygame.draw.rect(flash, (*color, alpha), (0, 0, thickness, self._arena.height))
+        # Right
+        pygame.draw.rect(
+            flash,
+            (*color, alpha),
+            (self._arena.width - thickness, 0, thickness, self._arena.height),
+        )
+        screen.blit(flash, self._arena.topleft)
 
     def render_foreground(self, screen: pygame.Surface) -> None:
         """Render atmosphere elements IN FRONT of ships (arena frame).

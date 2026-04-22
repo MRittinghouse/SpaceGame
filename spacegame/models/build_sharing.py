@@ -265,10 +265,7 @@ def _import_build_code_inner(
         pixels=validated_pixels,
     )
 
-    logger.debug(
-        f"Build code imported: {wc}, "
-        f"{len(validated_pixels)} pixels"
-    )
+    logger.debug(f"Build code imported: {wc}, {len(validated_pixels)} pixels")
     return build, ""
 
 

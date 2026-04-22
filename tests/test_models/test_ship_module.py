@@ -758,8 +758,8 @@ class TestDataLoaderModules:
                 f"Module references material '{mat_id}' which is not in hull_materials"
             )
             mat = loader.hull_materials[mat_id]
-            assert mat.color_primary != (0, 0, 0) or mat_id == "exhaust_port", (
-                f"Material '{mat_id}' has default black color_primary"
+            assert mat.shade_band, (
+                f"Material '{mat_id}' has empty shade_band"
             )
 
     def test_rotation_works_for_all_loaded_modules(self) -> None:

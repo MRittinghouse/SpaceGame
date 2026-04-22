@@ -1391,3 +1391,61 @@ class TestSessionMilestones:
         session = MiningSession(config, milestones=custom)
         assert len(session.milestones) == 1
         assert session.milestones[0].id == "custom_1"
+
+
+class TestGuaranteedRare:
+    """Tests for Ore Sense guaranteed_rare skill."""
+
+    def test_first_rock_yields_rare_ore(self) -> None:
+        """With guaranteed_rare, first click-break yields rare_ore regardless of rock type."""
+        config = MiningConfig(system_id="test")
+        session = MiningSession(config, guaranteed_rare=True, click_power_bonus=50.0)
+        # Find a common rock (not rare)
+        common_rock = None
+        for rock in session.rocks:
+            if rock.rock_type == RockType.COMMON:
+                common_rock = rock
+                break
+        if common_rock is None:
+            pytest.skip("No common rock generated")
+        success, msg, result = session.click_rock(common_rock.grid_x, common_rock.grid_y)
+        assert success, f"Click should succeed: {msg}"
+        assert result is not None, "Rock should break with high click power"
+        assert result.commodity_id == "rare_ore", "First rock should yield rare_ore"
+        assert result.rock_type == RockType.RARE, "First rock result should be RARE type"
+
+    def test_second_rock_not_guaranteed(self) -> None:
+        """Only the first rock break gets the guaranteed rare treatment."""
+        config = MiningConfig(system_id="test")
+        session = MiningSession(config, guaranteed_rare=True, click_power_bonus=50.0)
+        # Break the first rock
+        first = session.rocks[0]
+        session.click_rock(first.grid_x, first.grid_y)
+        assert session.rocks_broken >= 1
+        # Break a second common rock
+        common_rock = None
+        for rock in session.rocks:
+            if not rock.depleted and rock.rock_type == RockType.COMMON:
+                common_rock = rock
+                break
+        if common_rock is None:
+            pytest.skip("No undepleted common rock")
+        _, _, result = session.click_rock(common_rock.grid_x, common_rock.grid_y)
+        assert result is not None, "Rock should break"
+        assert result.commodity_id == "raw_ore", "Second common rock yields raw_ore normally"
+
+    def test_no_guaranteed_rare_by_default(self) -> None:
+        """Without guaranteed_rare flag, first rock is normal."""
+        config = MiningConfig(system_id="test")
+        session = MiningSession(config, click_power_bonus=50.0)
+        assert not session.guaranteed_rare
+        common_rock = None
+        for rock in session.rocks:
+            if rock.rock_type == RockType.COMMON:
+                common_rock = rock
+                break
+        if common_rock is None:
+            pytest.skip("No common rock")
+        _, _, result = session.click_rock(common_rock.grid_x, common_rock.grid_y)
+        assert result is not None
+        assert result.commodity_id == "raw_ore", "Common rock should yield raw_ore"

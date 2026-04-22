@@ -55,7 +55,7 @@ def _mat_standard() -> HullMaterial:
         id="standard_plate",
         name="Standard Plate",
         description="Balanced",
-        color_primary=(112, 120, 136),
+        shade_band="steel",
         hull_per_pixel=2.5,
         weight_per_pixel=0.25,
         cost_per_pixel=15,
@@ -68,7 +68,8 @@ def _mat_heavy() -> HullMaterial:
         id="heavy_armor",
         name="Heavy Armor",
         description="Tank",
-        color_primary=(152, 112, 64),
+        shade_band="union_ceramic",
+        category_offset=1,
         hull_per_pixel=3.0,
         armor_per_pixel=0.06,
         weight_per_pixel=0.55,
@@ -82,7 +83,8 @@ def _mat_shield() -> HullMaterial:
         id="shield_crystal",
         name="Shield Crystal",
         description="Shields",
-        color_primary=(64, 168, 208),
+        shade_band="collective_composite",
+        emissive_role="cryo_fractal",
         hull_per_pixel=1.0,
         shield_per_pixel=0.6,
         shield_regen_per_pixel=0.03,
@@ -97,7 +99,7 @@ def _mat_light() -> HullMaterial:
         id="light_alloy",
         name="Light Alloy",
         description="Evasion",
-        color_primary=(176, 184, 200),
+        shade_band="steel",
         hull_per_pixel=1.5,
         evasion_per_pixel=0.08,
         weight_per_pixel=0.4,
@@ -295,13 +297,20 @@ class TestShipStatsComputer:
         )
 
     def test_identity_juggernaut(self) -> None:
-        """35%+ heavy_armor pixels → Juggernaut identity."""
+        """35%+ heavy_armor ratio AND >=100 heavy pixels → Juggernaut identity.
+
+        Sprint 5c playtest follow-up: juggernaut now additionally requires
+        bulk (MIN_JUGGERNAUT_PIXELS=100). A small ship with high armor
+        ratio but low absolute armor-pixel count does NOT qualify —
+        juggernaut implies real mass, not just composition.
+        """
         build = ShipBuild(weight_class="medium")
-        # 40 heavy_armor + 20 standard = 60 total, 40/60 = 67% heavy_armor
-        for i in range(40):
+        # 110 heavy_armor + 40 standard = 150 total, 110/150 = 73% heavy_armor
+        # and heavy_armor count (110) clears the MIN_JUGGERNAUT_PIXELS gate.
+        for i in range(110):
             build.pixels.append(PlacedPixel(i % 32, i // 32, "heavy_armor"))
-        for i in range(20):
-            build.pixels.append(PlacedPixel((i + 10) % 32, 2, "standard_plate"))
+        for i in range(40):
+            build.pixels.append(PlacedPixel((i + 10) % 32, 5 + i // 32, "standard_plate"))
         stats = ShipStatsComputer.compute(build, _materials())
         assert stats.defensive_identity == "juggernaut"
 
@@ -340,18 +349,106 @@ class TestShipStatsComputer:
         assert stats.defensive_identity is None
 
     def test_identity_highest_wins(self) -> None:
-        """When multiple cross threshold, highest ratio wins."""
+        """When multiple cross threshold (and size gates), highest ratio wins.
+
+        Uses large pixel counts so both families clear their size gates;
+        heavy_armor's higher ratio wins.
+        """
         build = ShipBuild(weight_class="medium")
-        # 25 heavy + 22 shield + 10 standard = 57 total
-        # heavy: 25/57 = 43.9%, shield: 22/57 = 38.6%
+        # 110 heavy + 55 shield + 25 standard = 190 total
+        # heavy: 110/190 = 57.9% (clears 35% and MIN_JUGGERNAUT_PIXELS=100)
+        # shield: 55/190 = 28.9% (below 35%, so ratio-gate excludes)
+        # heavy wins.
+        for i in range(110):
+            build.pixels.append(PlacedPixel(i % 32, i // 32, "heavy_armor"))
+        for i in range(55):
+            build.pixels.append(PlacedPixel(i % 32, 5 + i // 32, "shield_crystal"))
         for i in range(25):
-            build.pixels.append(PlacedPixel(i, 0, "heavy_armor"))
-        for i in range(22):
-            build.pixels.append(PlacedPixel(i, 1, "shield_crystal"))
-        for i in range(10):
-            build.pixels.append(PlacedPixel(i, 2, "standard_plate"))
+            build.pixels.append(PlacedPixel(i, 10, "standard_plate"))
         stats = ShipStatsComputer.compute(build, _materials())
         assert stats.defensive_identity == "juggernaut"
+
+    def test_tiny_shuttle_never_gets_juggernaut_identity(self) -> None:
+        """Sprint 5c playtest regression: a 16x16 shuttle's worth of heavy
+        armor must not be classified as JUGGERNAUT.
+
+        Playtester report: a tiny scrapyard-build shuttle was being labeled
+        JUGGERNAUT, which is thematically wrong — juggernaut implies bulk.
+        Even at 100% heavy_armor composition, a ship under
+        MIN_JUGGERNAUT_PIXELS (100) should not receive the identity.
+        """
+        build = ShipBuild(weight_class="light")
+        # 40 heavy_armor pixels (representative of a small tutorial build).
+        # Ratio is 100%, well above IDENTITY_THRESHOLD, but absolute count
+        # is well below MIN_JUGGERNAUT_PIXELS.
+        for i in range(40):
+            build.pixels.append(PlacedPixel(i % 16, i // 16, "heavy_armor"))
+        stats = ShipStatsComputer.compute(build, _materials())
+        assert stats.defensive_identity is None, (
+            f"Tiny shuttle with all-heavy-armor should not be a juggernaut. "
+            f"Got: {stats.defensive_identity}"
+        )
+
+    def test_very_small_ship_gets_no_identity(self) -> None:
+        """A build below MIN_IDENTITY_PIXELS (50) gets no identity regardless
+        of material family.
+        """
+        build = ShipBuild(weight_class="light")
+        # 30 shield crystal — 100% ratio but below MIN_IDENTITY_PIXELS.
+        for i in range(30):
+            build.pixels.append(PlacedPixel(i, 0, "shield_crystal"))
+        stats = ShipStatsComputer.compute(build, _materials())
+        assert stats.defensive_identity is None
+
+    def test_small_sentinel_still_qualifies(self) -> None:
+        """Sentinel has no bulk gate — a small shield-focused ship qualifies
+        as long as it clears MIN_IDENTITY_PIXELS and the 35% ratio.
+        """
+        build = ShipBuild(weight_class="light")
+        # 55 shield_crystal + 15 standard = 70 total.
+        # ratio 78.6% (above 35%), total 70 (above MIN_IDENTITY_PIXELS=50).
+        for i in range(55):
+            build.pixels.append(PlacedPixel(i % 32, i // 32, "shield_crystal"))
+        for i in range(15):
+            build.pixels.append(PlacedPixel(i, 3, "standard_plate"))
+        stats = ShipStatsComputer.compute(build, _materials())
+        assert stats.defensive_identity == "sentinel"
+
+    def test_small_ghost_still_qualifies(self) -> None:
+        """Ghost has no bulk gate — a small stealth build qualifies.
+
+        This matches the genre: scout shuttles, runners, and reconnaissance
+        craft can legitimately carry a ghost (stealth) identity without
+        needing the mass of a juggernaut.
+        """
+        build = ShipBuild(weight_class="light")
+        # 60 light_alloy + 10 standard = 70 total.
+        for i in range(60):
+            build.pixels.append(PlacedPixel(i % 32, i // 32, "light_alloy"))
+        for i in range(10):
+            build.pixels.append(PlacedPixel(i, 3, "standard_plate"))
+        stats = ShipStatsComputer.compute(build, _materials())
+        assert stats.defensive_identity == "ghost"
+
+    def test_juggernaut_size_gate_boundary(self) -> None:
+        """A build at exactly MIN_JUGGERNAUT_PIXELS qualifies; one below does not."""
+        # Just above the threshold: 100 heavy armor + 20 standard = 120 total
+        build = ShipBuild(weight_class="heavy")
+        for i in range(100):
+            build.pixels.append(PlacedPixel(i % 32, i // 32, "heavy_armor"))
+        for i in range(20):
+            build.pixels.append(PlacedPixel(i, 5, "standard_plate"))
+        stats = ShipStatsComputer.compute(build, _materials())
+        assert stats.defensive_identity == "juggernaut"
+
+        # Just below: 99 heavy + 20 standard = 119 total.
+        build2 = ShipBuild(weight_class="heavy")
+        for i in range(99):
+            build2.pixels.append(PlacedPixel(i % 32, i // 32, "heavy_armor"))
+        for i in range(20):
+            build2.pixels.append(PlacedPixel(i, 5, "standard_plate"))
+        stats2 = ShipStatsComputer.compute(build2, _materials())
+        assert stats2.defensive_identity is None
 
     def test_empty_build_zero_stats(self) -> None:
         """Empty build produces all-zero stats."""
@@ -407,7 +504,104 @@ class TestSerialization:
         assert restored.id == mat.id
         assert restored.hull_per_pixel == mat.hull_per_pixel
         assert restored.weight_per_pixel == mat.weight_per_pixel
+        assert restored.shade_band == mat.shade_band
+        assert restored.category_offset == mat.category_offset
         assert restored.color_primary == mat.color_primary
+
+
+class TestHullMaterialBandSchema:
+    """Verify the new palette-band schema drives HullMaterial visuals."""
+
+    def test_shade_band_is_required(self) -> None:
+        mat = HullMaterial(
+            id="x",
+            name="x",
+            description="",
+            shade_band="steel",
+        )
+        assert mat.shade_band == "steel"
+
+    def test_color_properties_derive_from_band(self) -> None:
+        from spacegame.engine.material_palette import get_band
+
+        mat = HullMaterial(id="x", name="x", description="", shade_band="steel")
+        steel = get_band("steel")
+        midpoint = len(steel) // 2
+        assert mat.color_primary == steel[midpoint]
+        assert mat.color_accent == steel[midpoint - 1]
+        assert mat.color_highlight == steel[midpoint + 1]
+
+    def test_default_render_params(self) -> None:
+        mat = HullMaterial(id="x", name="x", description="", shade_band="steel")
+        assert mat.category_offset == 0
+        assert mat.noise_intensity == 0.15
+        assert mat.rivet_density == 40.0
+        assert mat.wear_intensity == 0.10
+        assert mat.gloss == 0.30
+        assert mat.emissive_role is None
+        assert mat.signature_stripe_role is None
+
+    def test_emissive_role_stored(self) -> None:
+        mat = HullMaterial(
+            id="x",
+            name="x",
+            description="",
+            shade_band="collective_composite",
+            emissive_role="cryo_fractal",
+        )
+        assert mat.emissive_role == "cryo_fractal"
+
+    def test_signature_stripe_role_stored(self) -> None:
+        mat = HullMaterial(
+            id="x",
+            name="x",
+            description="",
+            shade_band="steel",
+            signature_stripe_role="hud_accent_warm",
+        )
+        assert mat.signature_stripe_role == "hud_accent_warm"
+
+    def test_from_dict_loads_new_schema(self) -> None:
+        data = {
+            "id": "m",
+            "name": "Example",
+            "description": "Test",
+            "shade_band": "reach_crimson",
+            "category_offset": -1,
+            "noise_intensity": 0.22,
+            "rivet_density": 55.0,
+            "wear_intensity": 0.18,
+            "gloss": 0.40,
+            "emissive_role": "plasma_core",
+            "signature_stripe_role": "hud_warning",
+            "hull_per_pixel": 2.0,
+        }
+        mat = HullMaterial.from_dict(data)
+        assert mat.shade_band == "reach_crimson"
+        assert mat.category_offset == -1
+        assert mat.noise_intensity == 0.22
+        assert mat.rivet_density == 55.0
+        assert mat.wear_intensity == 0.18
+        assert mat.gloss == 0.40
+        assert mat.emissive_role == "plasma_core"
+        assert mat.signature_stripe_role == "hud_warning"
+        assert mat.hull_per_pixel == 2.0
+
+    def test_glass_viewport_band_derives_valid_colors(self) -> None:
+        """Glass band has 4 stops; midpoint derivation must still work."""
+        from spacegame.engine.material_palette import get_band
+
+        mat = HullMaterial(id="x", name="x", description="", shade_band="glass_viewport")
+        glass = get_band("glass_viewport")
+        assert mat.color_primary in glass
+        assert mat.color_accent in glass
+        assert mat.color_highlight in glass
+
+    def test_invalid_shade_band_falls_back_gracefully(self) -> None:
+        """Unknown shade_band returns a safe placeholder, not a crash."""
+        mat = HullMaterial(id="x", name="x", description="", shade_band="nonexistent_band")
+        assert isinstance(mat.color_primary, tuple)
+        assert len(mat.color_primary) == 3
 
 
 # ============================================================================

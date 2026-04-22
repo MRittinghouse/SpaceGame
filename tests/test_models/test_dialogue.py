@@ -1,12 +1,12 @@
 """Tests for dialogue system models."""
 
-import pytest
 from spacegame.models.dialogue import (
     NPC,
-    DialogueResponse,
-    DialogueNode,
-    DialogueTree,
     DialogueManager,
+    DialogueNode,
+    DialogueResponse,
+    DialogueState,
+    DialogueTree,
     SkillCheck,
 )
 from spacegame.models.social import SocialManager
@@ -95,6 +95,117 @@ class TestNPC:
         )
         assert npc.auto_trigger_gate_flag == "talked_to_elena_cantina"
         assert npc.auto_trigger_prerequisites == ["iron_ore_delivered"]
+
+
+# ============================================================================
+# NPC Dialogue State Resolution Tests
+# ============================================================================
+
+
+class TestNPCDialogueStates:
+    """Tests for NPC multi-state dialogue resolution."""
+
+    def _make_npc(self, **overrides: object) -> NPC:
+        defaults: dict = {
+            "id": "test_npc",
+            "name": "Test NPC",
+            "title": "Tester",
+            "portrait_color": (100, 100, 100),
+            "home_system_id": "nexus_prime",
+            "dialogue_id": "base_dialogue",
+        }
+        defaults.update(overrides)
+        return NPC(**defaults)
+
+    def test_no_states_returns_base_dialogue(self) -> None:
+        """NPC with no dialogue_states returns base dialogue_id."""
+        npc = self._make_npc()
+        assert npc.get_active_dialogue_id({}) == "base_dialogue"
+
+    def test_empty_states_returns_base_dialogue(self) -> None:
+        """NPC with empty dialogue_states list returns base dialogue_id."""
+        npc = self._make_npc(dialogue_states=[])
+        assert npc.get_active_dialogue_id({}) == "base_dialogue"
+
+    def test_matching_state_returns_state_dialogue(self) -> None:
+        """When a state's required_flags are met, its dialogue_id is returned."""
+        npc = self._make_npc(
+            dialogue_states=[
+                DialogueState(
+                    state_id="post_quest",
+                    dialogue_id="post_quest_tree",
+                    required_flags=["quest_complete"],
+                )
+            ]
+        )
+        assert npc.get_active_dialogue_id({"quest_complete": True}) == "post_quest_tree"
+
+    def test_unmet_state_falls_through_to_base(self) -> None:
+        """When no state matches, falls back to base dialogue_id."""
+        npc = self._make_npc(
+            dialogue_states=[
+                DialogueState(
+                    state_id="post_quest",
+                    dialogue_id="post_quest_tree",
+                    required_flags=["quest_complete"],
+                )
+            ]
+        )
+        assert npc.get_active_dialogue_id({}) == "base_dialogue"
+
+    def test_first_matching_state_wins(self) -> None:
+        """States are evaluated in order; first match wins."""
+        npc = self._make_npc(
+            dialogue_states=[
+                DialogueState(
+                    state_id="active",
+                    dialogue_id="active_tree",
+                    required_flags=["quest_accepted"],
+                    excluded_flags=["quest_complete"],
+                ),
+                DialogueState(
+                    state_id="post",
+                    dialogue_id="post_tree",
+                    required_flags=["quest_complete"],
+                ),
+            ]
+        )
+        # Both flags set: active state has excluded_flags blocking it
+        flags = {"quest_accepted": True, "quest_complete": True}
+        assert npc.get_active_dialogue_id(flags) == "post_tree"
+
+        # Only accepted: active state matches
+        flags = {"quest_accepted": True}
+        assert npc.get_active_dialogue_id(flags) == "active_tree"
+
+    def test_excluded_flags_prevent_match(self) -> None:
+        """State with excluded_flags set does not match."""
+        npc = self._make_npc(
+            dialogue_states=[
+                DialogueState(
+                    state_id="active",
+                    dialogue_id="active_tree",
+                    required_flags=["quest_started"],
+                    excluded_flags=["quest_done"],
+                )
+            ]
+        )
+        flags = {"quest_started": True, "quest_done": True}
+        assert npc.get_active_dialogue_id(flags) == "base_dialogue"
+
+    def test_multiple_required_flags_all_needed(self) -> None:
+        """All required_flags must be set for a state to match."""
+        npc = self._make_npc(
+            dialogue_states=[
+                DialogueState(
+                    state_id="special",
+                    dialogue_id="special_tree",
+                    required_flags=["flag_a", "flag_b"],
+                )
+            ]
+        )
+        assert npc.get_active_dialogue_id({"flag_a": True}) == "base_dialogue"
+        assert npc.get_active_dialogue_id({"flag_a": True, "flag_b": True}) == "special_tree"
 
 
 # ============================================================================

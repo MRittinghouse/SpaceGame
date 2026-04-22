@@ -43,12 +43,17 @@ class ActionQueue:
         self,
         energy_available: int,
         cooldowns: Optional[dict[str, int]] = None,
+        extra_action: bool = False,
     ) -> None:
         self._energy_available = energy_available
         self._energy_committed = 0
         self._cooldowns = dict(cooldowns) if cooldowns else {}
         self._actions: list[QueuedAction] = []
         self._used_this_turn: set[str] = set()
+        self._extra_action_available = extra_action  # Volley Commander skill
+        # B8.4: once Fire at Will is queued, subsequent weapon adds apply
+        # the 50% energy discount so the player can pre-plan bigger alphas.
+        self._fire_at_will_queued: bool = False
 
     @property
     def actions(self) -> list[QueuedAction]:
@@ -96,33 +101,59 @@ class ActionQueue:
         queue_key = getattr(move, "slot_key", "") or move_id
 
         # Once-per-turn check (per slot, not per move name)
+        # Volley Commander: allow one weapon to bypass this restriction
         if queue_key in self._used_this_turn:
-            return False, f"{move.name} already queued this turn"
+            if self._extra_action_available:
+                self._extra_action_available = False  # Consumed
+            else:
+                return False, f"{move.name} already queued this turn"
 
         # Cooldown check (per slot)
         if queue_key in self._cooldowns and self._cooldowns[queue_key] > 0:
             remaining = self._cooldowns[queue_key]
             return False, f"{move.name} on cooldown ({remaining} turns)"
 
+        # B8.4: apply Fire at Will discount to weapons queued after FAW.
+        effective_cost = self._effective_cost(move)
+
         # Energy check
-        if move.energy_cost > self.energy_remaining:
+        if effective_cost > self.energy_remaining:
             return False, (
                 f"Not enough energy for {move.name} "
-                f"({move.energy_cost} needed, {self.energy_remaining} available)"
+                f"({effective_cost} needed, {self.energy_remaining} available)"
             )
 
         # Add to queue
         action = QueuedAction(
             move_id=move_id,
             target_idx=target_idx,
-            energy_cost=move.energy_cost,
+            energy_cost=effective_cost,
             move_name=move.name,
             slot_key=queue_key,
         )
         self._actions.append(action)
-        self._energy_committed += move.energy_cost
+        self._energy_committed += effective_cost
         self._used_this_turn.add(queue_key)
+
+        if move_id == "fire_at_will":
+            self._fire_at_will_queued = True
+
         return True, f"Queued: {move.name}"
+
+    def _effective_cost(self, move: CombatMove) -> int:
+        """Return the energy cost after any queued-earlier dual tech discounts."""
+        base = int(move.energy_cost)
+        # Fire at Will halves weapon energy when queued earlier this turn.
+        # A weapon is any move with a damage effect.
+        if self._fire_at_will_queued:
+            is_weapon = any(
+                getattr(e, "type", None) is not None
+                and getattr(e.type, "value", "") == "damage"
+                for e in move.effects
+            )
+            if is_weapon:
+                return max(0, base // 2)
+        return base
 
     def remove_last(self) -> bool:
         """Remove the last queued action and refund its energy.
@@ -143,6 +174,7 @@ class ActionQueue:
         self._actions.clear()
         self._energy_committed = 0
         self._used_this_turn.clear()
+        self._fire_at_will_queued = False
 
     def can_add(
         self,
@@ -163,6 +195,6 @@ class ActionQueue:
             return False, "Already queued this turn"
         if queue_key in self._cooldowns and self._cooldowns[queue_key] > 0:
             return False, f"On cooldown ({self._cooldowns[queue_key]})"
-        if move.energy_cost > self.energy_remaining:
+        if self._effective_cost(move) > self.energy_remaining:
             return False, "Not enough energy"
         return True, "OK"

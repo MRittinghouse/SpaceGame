@@ -149,12 +149,14 @@ class TestMaterialCatalogIntegrity:
             cost = m.get("cost_per_pixel", 0)
             assert cost > 0, f"Material {m['id']} has no cost"
 
-    def test_all_have_valid_color(self) -> None:
+    def test_all_have_valid_shade_band(self) -> None:
+        from spacegame.engine.material_palette import is_valid_band
+
         materials = _load_materials()
         for m in materials:
-            color = m.get("color_primary", [])
-            assert len(color) == 3, f"Material {m['id']} needs RGB color"
-            assert all(0 <= c <= 255 for c in color), f"Material {m['id']} has invalid color"
+            band = m.get("shade_band", "")
+            assert band, f"Material {m['id']} needs a shade_band"
+            assert is_valid_band(band), f"Material {m['id']} has unknown shade_band '{band}'"
 
     def test_starter_materials_are_free(self) -> None:
         materials = _load_materials()
@@ -212,3 +214,131 @@ class TestMaterialCatalogIntegrity:
 
         assert scrap["cost_per_pixel"] < standard["cost_per_pixel"]
         assert standard["cost_per_pixel"] < ablative["cost_per_pixel"]
+
+
+def _load_module_materials() -> list[dict]:
+    with open("data/ships/module_materials.json") as f:
+        return json.load(f)["module_materials"]
+
+
+class TestPaletteDataCompliance:
+    """Enforce palette-field discipline across all material JSON data.
+
+    Every material (hull + module) must:
+      - Name a valid canonical shade_band
+      - If it sets emissive_role or signature_stripe_role, the role must
+        be a valid PALETTE_ROLES entry
+      - Keep category_offset bounded within what apply_category_offset can
+        meaningfully express (|offset| <= 4 covers the widest 5-stop band)
+      - Keep noise_intensity / wear_intensity / gloss in [0, 1] and
+        rivet_density >= 0
+
+    Catches regressions where a new material lands with a stale color_primary
+    triplet or a typo'd band name.
+    """
+
+    def _all_materials(self) -> list[tuple[str, dict]]:
+        """Return (source_tag, material_dict) across hull + module catalogs."""
+        entries: list[tuple[str, dict]] = []
+        for m in _load_materials():
+            entries.append(("materials.json", m))
+        for m in _load_module_materials():
+            entries.append(("module_materials.json", m))
+        return entries
+
+    def test_every_material_declares_valid_shade_band(self) -> None:
+        from spacegame.engine.material_palette import is_valid_band
+
+        for source, m in self._all_materials():
+            band = m.get("shade_band")
+            assert band, f"{source}:{m['id']} missing shade_band"
+            assert is_valid_band(band), (
+                f"{source}:{m['id']} has unknown shade_band '{band}'"
+            )
+
+    def test_emissive_role_is_valid_palette_role_when_set(self) -> None:
+        from spacegame.engine.material_palette import is_valid_role
+
+        for source, m in self._all_materials():
+            role = m.get("emissive_role")
+            if role is None:
+                continue
+            assert is_valid_role(role), (
+                f"{source}:{m['id']} has unknown emissive_role '{role}'"
+            )
+
+    def test_signature_stripe_role_is_valid_palette_role_when_set(self) -> None:
+        from spacegame.engine.material_palette import is_valid_role
+
+        for source, m in self._all_materials():
+            role = m.get("signature_stripe_role")
+            if role is None:
+                continue
+            assert is_valid_role(role), (
+                f"{source}:{m['id']} has unknown signature_stripe_role '{role}'"
+            )
+
+    def test_category_offset_within_bounds(self) -> None:
+        # A 5-stop band can meaningfully shift -4..+4 (clamping beyond that
+        # flattens the band). Flag wider values as likely typos.
+        for source, m in self._all_materials():
+            offset = m.get("category_offset", 0)
+            assert isinstance(offset, int), (
+                f"{source}:{m['id']} category_offset must be int, got {type(offset).__name__}"
+            )
+            assert -4 <= offset <= 4, (
+                f"{source}:{m['id']} category_offset={offset} outside [-4, 4]"
+            )
+
+    def test_render_params_in_unit_range(self) -> None:
+        """noise_intensity, wear_intensity, gloss must lie in [0, 1]."""
+        for source, m in self._all_materials():
+            for field in ("noise_intensity", "wear_intensity", "gloss"):
+                value = m.get(field)
+                if value is None:
+                    continue
+                assert 0.0 <= value <= 1.0, (
+                    f"{source}:{m['id']} {field}={value} outside [0, 1]"
+                )
+
+    def test_rivet_density_non_negative(self) -> None:
+        for source, m in self._all_materials():
+            density = m.get("rivet_density")
+            if density is None:
+                continue
+            assert density >= 0.0, (
+                f"{source}:{m['id']} rivet_density={density} negative"
+            )
+
+    def test_legacy_color_fields_fully_purged(self) -> None:
+        """No material JSON retains color_primary / color_accent / color_highlight."""
+        banned = {"color_primary", "color_accent", "color_highlight"}
+        for source, m in self._all_materials():
+            leaked = banned & m.keys()
+            assert not leaked, (
+                f"{source}:{m['id']} still carries legacy color fields: {leaked}"
+            )
+
+    def test_module_materials_emissive_coverage_matches_bible_intent(self) -> None:
+        """Bible §3.5 identifies these module kinds as emissive. Enforce it.
+
+        Prevents silent regressions where a refactor strips emissive_role
+        off a glowing module, making the ship go visually dead.
+        """
+        expected_emissive = {
+            "cockpit_glass",
+            "console_panel",
+            "exhaust_port",
+            "reactor_core",
+            "shield_emitter",
+            "sensor_dish",
+            "legendary_hull",
+            "legendary_core",
+        }
+        mat_map = {m["id"]: m for m in _load_module_materials()}
+        for mid in expected_emissive:
+            assert mid in mat_map, f"Module material '{mid}' missing from catalog"
+            assert mat_map[mid].get("emissive_role"), (
+                f"Module material '{mid}' must declare an emissive_role "
+                f"(Bible §3.5 identifies it as a light source)"
+            )

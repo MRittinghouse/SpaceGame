@@ -1374,11 +1374,12 @@
         "effects": [
           {
             "type": "damage",
-            "value": 6.0
+            "value": 10.0
           }
         ],
-        "energy_cost": 1,
-        "accuracy_modifier": 0
+        "energy_cost": 2,
+        "accuracy_modifier": 0,
+        "cooldown": 0
       }
     },
     {
@@ -1404,7 +1405,8 @@
           }
         ],
         "energy_cost": 2,
-        "accuracy_modifier": 5
+        "accuracy_modifier": 5,
+        "cooldown": 0
       }
     },
     {
@@ -1429,8 +1431,9 @@
             "value": 18.0
           }
         ],
-        "energy_cost": 3,
-        "accuracy_modifier": 10
+        "energy_cost": 2,
+        "accuracy_modifier": 10,
+        "cooldown": 0
       }
     },
     {
@@ -1452,11 +1455,12 @@
         "effects": [
           {
             "type": "damage",
-            "value": 24.0
+            "value": 22.0
           }
         ],
-        "energy_cost": 4,
-        "accuracy_modifier": 5
+        "energy_cost": 3,
+        "accuracy_modifier": 5,
+        "cooldown": 1
       }
     },
     {
@@ -1505,7 +1509,7 @@
         "effects": [
           {
             "type": "damage",
-            "value": 10.0
+            "value": 22.0
           },
           {
             "type": "shield_drain",
@@ -1536,7 +1540,7 @@
         "effects": [
           {
             "type": "damage",
-            "value": 54.0
+            "value": 55.0
           }
         ],
         "energy_cost": 6,
@@ -1702,11 +1706,12 @@
         "effects": [
           {
             "type": "damage",
-            "value": 10.0
+            "value": 12.0
           }
         ],
         "energy_cost": 2,
-        "accuracy_modifier": 15
+        "accuracy_modifier": 15,
+        "cooldown": 0
       }
     },
     {
@@ -1728,7 +1733,7 @@
         "effects": [
           {
             "type": "damage",
-            "value": 40.0
+            "value": 32.0
           }
         ],
         "energy_cost": 5,
@@ -1758,8 +1763,9 @@
             "value": 15.0
           }
         ],
-        "energy_cost": 3,
-        "accuracy_modifier": -5
+        "energy_cost": 2,
+        "accuracy_modifier": -5,
+        "cooldown": 0
       }
     },
     {
@@ -1898,11 +1904,11 @@
         "effects": [
           {
             "type": "damage",
-            "value": 54.0
+            "value": 50.0
           }
         ],
         "energy_cost": 6,
-        "cooldown": 2,
+        "cooldown": 3,
         "accuracy_modifier": 10
       }
     },
@@ -2039,7 +2045,7 @@
         "effects": [
           {
             "type": "damage",
-            "value": 48.0
+            "value": 45.0
           },
           {
             "type": "shield_pierce",
@@ -2047,7 +2053,7 @@
           }
         ],
         "energy_cost": 6,
-        "cooldown": 2,
+        "cooldown": 3,
         "accuracy_modifier": 15
       }
     },
@@ -2159,11 +2165,12 @@
         "effects": [
           {
             "type": "damage",
-            "value": 10.0
+            "value": 13.0
           }
         ],
         "energy_cost": 2,
-        "element": "kinetic"
+        "element": "kinetic",
+        "cooldown": 0
       }
     },
     {
@@ -2185,11 +2192,12 @@
         "effects": [
           {
             "type": "damage",
-            "value": 22.0
+            "value": 24.0
           }
         ],
         "energy_cost": 3,
-        "element": "kinetic"
+        "element": "kinetic",
+        "cooldown": 1
       }
     },
     {
@@ -2211,7 +2219,7 @@
         "effects": [
           {
             "type": "damage",
-            "value": 38.0
+            "value": 35.0
           }
         ],
         "energy_cost": 5,
@@ -2242,7 +2250,8 @@
           }
         ],
         "energy_cost": 2,
-        "element": "plasma"
+        "element": "plasma",
+        "cooldown": 0
       }
     },
     {
@@ -2264,11 +2273,12 @@
         "effects": [
           {
             "type": "damage",
-            "value": 25.0
+            "value": 28.0
           }
         ],
         "energy_cost": 4,
-        "element": "plasma"
+        "element": "plasma",
+        "cooldown": 1
       }
     },
     {
@@ -2290,7 +2300,7 @@
         "effects": [
           {
             "type": "damage",
-            "value": 40.0
+            "value": 35.0
           }
         ],
         "energy_cost": 5,
@@ -2317,11 +2327,12 @@
         "effects": [
           {
             "type": "damage",
-            "value": 12.0
+            "value": 13.0
           }
         ],
         "energy_cost": 2,
-        "element": "ion"
+        "element": "ion",
+        "cooldown": 0
       }
     },
     {
@@ -2347,7 +2358,8 @@
           }
         ],
         "energy_cost": 3,
-        "element": "ion"
+        "element": "ion",
+        "cooldown": 1
       }
     },
     {
@@ -2369,7 +2381,7 @@
         "effects": [
           {
             "type": "damage",
-            "value": 36.0
+            "value": 32.0
           }
         ],
         "energy_cost": 5,
@@ -2396,11 +2408,12 @@
         "effects": [
           {
             "type": "damage",
-            "value": 10.0
+            "value": 13.0
           }
         ],
         "energy_cost": 2,
-        "element": "cryo"
+        "element": "cryo",
+        "cooldown": 0
       }
     },
     {
@@ -2422,11 +2435,12 @@
         "effects": [
           {
             "type": "damage",
-            "value": 19.0
+            "value": 22.0
           }
         ],
         "energy_cost": 3,
-        "element": "cryo"
+        "element": "cryo",
+        "cooldown": 1
       }
     },
     {
@@ -2448,7 +2462,7 @@
         "effects": [
           {
             "type": "damage",
-            "value": 29.0
+            "value": 28.0
           }
         ],
         "energy_cost": 4,
@@ -2475,11 +2489,12 @@
         "effects": [
           {
             "type": "damage",
-            "value": 10.0
+            "value": 14.0
           }
         ],
         "energy_cost": 2,
-        "element": "voltaic"
+        "element": "voltaic",
+        "cooldown": 0
       }
     },
     {
@@ -2501,11 +2516,12 @@
         "effects": [
           {
             "type": "damage",
-            "value": 19.0
+            "value": 22.0
           }
         ],
         "energy_cost": 3,
-        "element": "voltaic"
+        "element": "voltaic",
+        "cooldown": 1
       }
     },
     {
@@ -2527,7 +2543,7 @@
         "effects": [
           {
             "type": "damage",
-            "value": 29.0
+            "value": 28.0
           }
         ],
         "energy_cost": 4,
@@ -2582,7 +2598,7 @@
         "effects": [
           {
             "type": "damage",
-            "value": 5.0
+            "value": 10.0
           },
           {
             "type": "energy_drain",
@@ -2700,7 +2716,7 @@
         "effects": [
           {
             "type": "damage",
-            "value": 15.0
+            "value": 45.0
           }
         ],
         "energy_cost": 6,
@@ -2727,11 +2743,11 @@
         "effects": [
           {
             "type": "damage",
-            "value": 40.0
+            "value": 50.0
           }
         ],
-        "energy_cost": 8,
-        "cooldown": 5,
+        "energy_cost": 7,
+        "cooldown": 4,
         "element": "kinetic"
       }
     },

@@ -37,7 +37,10 @@ import math
 import random as _random
 from dataclasses import dataclass
 from enum import Enum
-from typing import Optional
+from typing import TYPE_CHECKING, Callable, Optional
+
+if TYPE_CHECKING:
+    from spacegame.engine.dual_tech_portraits import PortraitConfig
 
 import pygame
 import pygame_gui
@@ -56,6 +59,7 @@ from spacegame.engine.particles import (
     SPARK_BURST,
     ParticlePool,
 )
+from spacegame.engine.scene_camera import SceneCamera
 from spacegame.engine.screen_effects import ScreenShake, Vignette
 from spacegame.engine.sprites import AnimatedSprite, get_sprite_manager, res_scale
 from spacegame.models.combat import (
@@ -97,13 +101,125 @@ ENEMY_PANEL_W = PLAYER_PANEL_W
 ENEMY_PANEL_X = WINDOW_WIDTH - ENEMY_PANEL_W - _MARGIN
 ENEMY_PANEL_Y = _TOP_Y
 ENEMY_CARD_H = scale_y(145)
-ENEMY_CARD_GAP = scale_y(10)
+ENEMY_CARD_GAP = scale_y(14)
 
 # Bar rendering
-BAR_HEIGHT = scale_y(14)
+BAR_HEIGHT = scale_y(18)
 BAR_LABEL_W = scale_x(50)
-SHIELD_COLOR = (80, 180, 255)
-ENERGY_COLOR = (180, 100, 255)
+
+# Themed palette for the combat view.
+# Keys are semantic roles. Values live here (not inline) so colorblind
+# profile work in Sprint 4 can remap each role by updating this table.
+# Migration target for Sprint 4: resolve entries through PALETTE_ROLES
+# via the Colors-wrapper design chosen in Sprint 1.
+_COMBAT_COLORS: dict[str, tuple[int, int, int]] = {
+    # --- Core element signatures ---
+    "shield": (80, 180, 255),
+    "energy": (180, 100, 255),
+
+    # --- Banners / callouts ---
+    "combo_banner": (255, 220, 100),
+    "boss_header": (255, 200, 60),
+    "boss_accent": (255, 80, 60),
+    "boss_bg_dark": (20, 15, 10),
+    "boss_bg_border": (100, 60, 30),
+    "combo_tag": (180, 150, 50),
+    "ult_text_pulse": (255, 255, 200),
+
+    # --- Momentum / ultimate bar thresholds ---
+    "momentum_charged": (100, 200, 255),
+    "momentum_surging": (80, 200, 80),
+    "momentum_overload": (220, 180, 50),
+    "momentum_blazing": (255, 255, 220),
+    "double_damage": (80, 220, 80),
+
+    # --- Telegraph (enemy intent) ---
+    "tele_evading": (100, 200, 255),
+    "tele_fortifying": (100, 255, 150),
+    "tele_draining": (200, 100, 255),
+    "tele_charging": (255, 100, 60),
+    "tele_attacking": (255, 180, 60),
+    "tele_frozen": (150, 220, 255),
+
+    # --- Archetype identities (shared visual with ship builder) ---
+    "archetype_juggernaut": (200, 150, 50),
+    "archetype_sentinel": (80, 180, 255),
+    "archetype_ghost": (160, 100, 200),
+
+    # --- Boss bar stages ---
+    "boss_bar_low": (200, 60, 40),
+    "boss_bar_mid": (220, 120, 30),
+    "boss_bar_danger": (255, 40, 40),
+
+    # --- Damage text palette ---
+    "dmg_cryo": (100, 200, 255),
+    "dmg_generic_warm": (255, 120, 80),
+    "dmg_armor_deflect": (180, 180, 200),
+    "dmg_near_miss": (255, 180, 80),
+    "dmg_shield_regen": (80, 180, 255),
+    "dmg_energy_boost": (180, 100, 255),
+    "dmg_momentum": (255, 220, 100),
+    "dmg_chill": (140, 210, 255),
+    "dmg_burn": (255, 140, 60),
+    "dmg_voltaic": (200, 160, 255),
+    "dmg_counterstrike": (100, 220, 255),
+    "dmg_vulnerability": (255, 100, 100),
+
+    # --- Passive text colors ---
+    "passive_last_stand": (255, 80, 80),
+    "passive_positive_dim": (100, 180, 100),
+    "passive_counterstrike_bright": (200, 255, 100),
+
+    # --- Modal / summary panel bg ---
+    "panel_modal_bg": (15, 20, 40),
+    "panel_modal_bg_dark": (12, 16, 32),
+
+    # --- Action tab bg / border pairs ---
+    "tab_attack_bg": (200, 80, 80),
+    "tab_attack_border": (140, 50, 50),
+    "tab_defend_bg": (80, 140, 220),
+    "tab_defend_border": (40, 80, 140),
+    "tab_utility_bg": (80, 180, 100),
+    "tab_utility_border": (40, 110, 55),
+    "tab_coord_bg": (220, 180, 80),
+    "tab_coord_border": (150, 120, 50),
+    "tab_inactive_text": (50, 55, 65),
+
+    # --- Queue / execute button ---
+    "exec_active_bg": (40, 100, 60),
+    "exec_inactive_bg": (25, 35, 30),
+    "exec_inactive_border": (50, 60, 55),
+    "exec_inactive_text": (60, 70, 65),
+    "undo_active_bg": (50, 40, 30),
+    "undo_inactive_bg": (25, 25, 25),
+    "undo_active_border": (100, 80, 60),
+    "undo_inactive_border": (40, 40, 40),
+    "undo_inactive_text": (50, 50, 50),
+    "skip_hint_text": (55, 60, 70),
+    "queue_hint_dim": (60, 65, 80),
+    "queue_bullet_dim": (80, 90, 110),
+    "queue_recap_text": (80, 90, 115),
+    "queue_recap_label": (90, 100, 130),
+    "queue_summary_color": (100, 130, 170),
+    "queue_target_dim": (120, 140, 160),
+    "queue_number": (80, 140, 220),
+
+    # --- Legendary active buttons ---
+    "void_release_bg": (40, 15, 60),
+    "void_release_border": (140, 60, 200),
+    "void_release_text": (180, 100, 240),
+    "overdrive_bg": (50, 40, 15),
+    "overdrive_border": (200, 170, 60),
+    "overdrive_text": (220, 190, 80),
+
+    # --- Notification accents ---
+    "notify_warning_red": (220, 80, 80),
+    "notify_amber": (200, 160, 60),
+}
+
+# Module-level aliases, kept as named constants for legacy call sites.
+SHIELD_COLOR = _COMBAT_COLORS["shield"]
+ENERGY_COLOR = _COMBAT_COLORS["energy"]
 BAR_BG_COLOR = Colors.BAR_BG
 BAR_EDGE_HIGHLIGHT = Colors.BAR_EDGE
 
@@ -137,6 +253,28 @@ class CombatPhase(Enum):
     ANIMATING_ENEMIES = "anim_enemies"
     ROUND_END = "round_end"
     COMBAT_OVER = "combat_over"
+
+
+class ArenaCameraState(Enum):
+    """Canonical camera states for the combat view. Driven through
+    SceneCamera via _enter_camera_state.
+    """
+
+    DEFAULT = "default"
+    FOCUS_PLAYER = "focus_player"
+    FOCUS_ENEMY = "focus_enemy"
+    WIDE = "wide"
+
+
+# Camera state parameters: (offset_x, offset_y, zoom, duration_seconds).
+# FOCUS_ENEMY's offset is computed dynamically toward the targeted enemy;
+# this table holds zoom/duration only for that state.
+_CAMERA_STATE_PARAMS = {
+    ArenaCameraState.DEFAULT: ((0.0, 0.0), 1.0, 0.25),      # 250ms pacing beat
+    ArenaCameraState.FOCUS_PLAYER: ((-80.0, 0.0), 1.25, 0.3),
+    ArenaCameraState.FOCUS_ENEMY: ((60.0, 0.0), 1.25, 0.3),  # toward right side where enemies are
+    ArenaCameraState.WIDE: ((0.0, 0.0), 0.85, 0.5),
+}
 
 
 # ============================================================================
@@ -272,6 +410,9 @@ class CombatView(BaseView):
         self.current_animation: Optional[AnimationEvent] = None
         self.animation_timer: float = 0.0
 
+        # Tutorial helper (set externally when first combat tutorial is active)
+        self._tutorial_helper: Optional[object] = None
+
         # Target selection
         self.selected_target_idx: int = 0
 
@@ -309,10 +450,17 @@ class CombatView(BaseView):
         self.skip_crew_ids: set[str] = set()
 
         # Action panel category tabs
-        self._action_tab: str = "attack"  # "attack", "defend", "utility"
-        self._action_tab_scroll: dict[str, int] = {"attack": 0, "defend": 0, "utility": 0}
+        self._action_tab: str = "attack"  # "attack", "defend", "utility", "coordinated"
+        self._action_tab_scroll: dict[str, int] = {
+            "attack": 0,
+            "defend": 0,
+            "utility": 0,
+            "coordinated": 0,
+        }
         self._categorized_moves: dict[str, list[_MoveButton]] = {
-            "attack": [], "defend": [], "utility": [],
+            "attack": [],
+            "defend": [],
+            "utility": [],
         }
 
         # Ship destruction animation tracking
@@ -346,6 +494,43 @@ class CombatView(BaseView):
         self._sprite_mgr = get_sprite_manager()
         self._ship_sprite_cache: dict[str, Optional[AnimatedSprite]] = {}
 
+        # ShipComposite-backed enemy portrait provider (Combat C4 §4.1).
+        # Lazily constructs builds + composites per enemy template. Falls
+        # back to the legacy AnimatedSprite path when a template isn't
+        # registered with the data loader (defensive; shouldn't happen in
+        # production, but keeps the view stable if a save file references
+        # a since-removed template).
+        from spacegame.engine.enemy_composite_provider import EnemyCompositeProvider
+
+        def _enemy_template_lookup(template_id: str):  # type: ignore[no-untyped-def]
+            from spacegame.data_loader import get_data_loader
+            return get_data_loader().enemy_templates.get(template_id)
+
+        self._enemy_composite_provider = EnemyCompositeProvider(
+            lookup=_enemy_template_lookup
+        )
+
+        # Tier 3.C: per-enemy module overlays. Painted over the card
+        # composite for subsystem targeting feedback (focus highlight,
+        # destruction marks, hit flashes). Construction is lazy via
+        # get_overlay on first render.
+        from spacegame.engine.enemy_overlay_provider import (
+            EnemyModuleOverlayProvider,
+        )
+
+        self._enemy_overlay_provider = EnemyModuleOverlayProvider()
+
+        # Dual tech cinematic slot (Combat C5 §4.3). None when no
+        # cinematic is playing; populated by ``trigger_dual_tech()``
+        # and cleared on completion. The controller owns all cinematic
+        # rendering + timing; combat view just forwards dt + screen.
+        from spacegame.engine.dual_tech_controller import DualTechController
+
+        self._dual_tech_controller: Optional[DualTechController] = None
+        # Snapshot of the camera zoom at cinematic start so we can
+        # restore on completion. Set when a cinematic triggers.
+        self._pre_cinematic_zoom: float = 1.0
+
         # Projectile system for weapon visualization
         from spacegame.engine.projectiles import ProjectileManager
 
@@ -368,10 +553,11 @@ class CombatView(BaseView):
         # Visual systems
         self.background = AnimatedBackground("deep_space", WINDOW_WIDTH, WINDOW_HEIGHT, seed=100)
         self._bg_dim = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
-        self._bg_dim.fill((0, 0, 0))
+        self._bg_dim.fill(Colors.BLACK)
         self._bg_dim.set_alpha(25)
         self.particles = ParticlePool(500)
-        self.screen_shake = ScreenShake()
+        self.screen_shake = ScreenShake()  # retained for legacy compat — superseded by scene_camera for shake
+        self.scene_camera = SceneCamera()
         self.vignette = Vignette(WINDOW_WIDTH, WINDOW_HEIGHT, intensity=0.2)
 
         # Damage state overlays (96x96 at 3x scale)
@@ -401,15 +587,23 @@ class CombatView(BaseView):
         self._damage_state_mgr.clear()
         self._destruction_sequences.clear()
         self._persistent_debris.clear()
+        # Combat §11.4: clear destruction progress on cached composites so
+        # prior-encounter wreckage doesn't bleed into a fresh fight.
+        self._enemy_composite_provider.reset_destruction()
+        # Tier 3.A: evict stale per-instance entries from prior encounters.
+        # Current enemy list is the living-instance set we want to keep.
+        state = self.engine.get_state()
+        self._enemy_composite_provider.prune_dead_instances(state.enemies)
+        # Tier 3.C: same for module overlays.
+        self._enemy_overlay_provider.prune_dead_instances(state.enemies)
 
         # Initialize displayed bar values from actual state
-        state = self.engine.get_state()
         self._displayed_player_hull = float(state.player.hull)
         self._displayed_player_shields = float(state.player.shields)
         self._displayed_player_energy = float(state.player.energy)
         self._displayed_player_momentum = 0.0
         self._momentum_pulse_timer = 0.0  # Brief glow on threshold cross
-        self._momentum_pulse_color: tuple[int, int, int] = (100, 200, 255)
+        self._momentum_pulse_color: tuple[int, int, int] = _COMBAT_COLORS["momentum_charged"]
         self._dodge_jink_timer = 0.0  # Lateral ship offset on dodge
         self._dodge_jink_direction = 1  # 1 = right, -1 = left
         self._rng_visual = _random.Random(42)  # Visual variety RNG
@@ -451,13 +645,29 @@ class CombatView(BaseView):
         self._player_sprite_flash = 0.0
         self._player_shield_flash = 0.0
         self._destroying_enemies.clear()
+
+        # ArenaEntry scripted intro (Combat C3 §4.8). Replaces the legacy
+        # timer-based INTRO phase — drives camera push, tint fade-in,
+        # and dust fade-in through the 1.5s choreography.
+        from spacegame.engine.arena_entry import ArenaEntry
+
+        self._arena_entry: Optional[ArenaEntry] = ArenaEntry(
+            enemy_count=len(state.enemies)
+        )
         self._previously_dead: set[int] = set()  # Enemy indices dead before this round
+
+        # Camera at DEFAULT; combat opens at neutral viewport.
+        self.scene_camera.reset_immediate()
 
         self._create_ui()
         logger.info("Entered combat view")
 
     def on_exit(self) -> None:
         """Called when leaving combat view."""
+        # Clear camera state so leftover shake/transitions don't bleed
+        # into the next view.
+        self.scene_camera.clear_shakes()
+        self.scene_camera.reset_immediate()
         self._destroy_ui()
         super().on_exit()
         logger.info("Exited combat view")
@@ -486,18 +696,64 @@ class CombatView(BaseView):
         return self.next_state
 
     # ------------------------------------------------------------------
+    # Target index safety
+    # ------------------------------------------------------------------
+
+    def _render_combat_tutorial(self, screen: pygame.Surface) -> None:
+        """Render crew member guidance during combat tutorial."""
+        hint = self._tutorial_helper.get_current_hint() if self._tutorial_helper else ""
+        if not hint:
+            return
+        from spacegame.engine.draw_utils import draw_panel
+        from spacegame.engine.fonts import FONT_BODY, get_font
+
+        font = get_font("narration", FONT_BODY)
+        panel_w = scale_x(500)
+        panel_h = scale_y(40)
+        panel_x = (WINDOW_WIDTH - panel_w) // 2
+        panel_y = scale_y(25)
+
+        draw_panel(screen, (panel_x, panel_y, panel_w, panel_h), alpha=220)
+        sp = font.render("Crew: ", True, Colors.TEXT_HIGHLIGHT)
+        screen.blit(sp, (panel_x + 12, panel_y + 10))
+        txt = font.render(hint, True, Colors.TEXT_PRIMARY)
+        screen.blit(txt, (panel_x + 12 + sp.get_width(), panel_y + 10))
+
+    def _clamp_selected_target(self) -> None:
+        """Ensure selected_target_idx is within bounds of the enemy list.
+
+        Called at the start of update/render to prevent stale indices from
+        causing IndexError crashes in multi-ship combat when enemies die.
+        """
+        if not hasattr(self, "engine") or not self.engine:
+            return
+        enemies = self.engine.get_state().enemies
+        if not enemies:
+            self.selected_target_idx = 0
+            return
+        if self.selected_target_idx >= len(enemies):
+            self.selected_target_idx = len(enemies) - 1
+
+    # ------------------------------------------------------------------
     # Update
     # ------------------------------------------------------------------
 
     def update(self, dt: float) -> None:
         """Update combat view each frame."""
+        self._clamp_selected_target()
         self.phase_timer += dt
         self.background.update(dt)
         self.particles.update(dt)
         self.screen_shake.update(dt)
+        self.scene_camera.update(dt)
         self._projectile_mgr.update(dt)
         self._shield_renderer.update(dt)
         self._damage_state_mgr.update(dt)
+        # Tier 3.C: advance module-overlay flash timers for every cached
+        # enemy overlay. Cheap — overlays only tick flashes; persistent
+        # state is set from game state on render.
+        for overlay in self._enemy_overlay_provider.all_overlays():
+            overlay.update(dt)
         if self._atmosphere:
             self._atmosphere.update(dt)
 
@@ -558,9 +814,53 @@ class CombatView(BaseView):
             if sprite is not None:
                 sprite.update(dt)
 
-        # Phase-specific logic
-        if self.phase == CombatPhase.INTRO:
-            if self.phase_timer >= INTRO_DURATION:
+        # Dual tech cinematic (Combat C5 §4.3) — owns camera zoom while
+        # active. Fires on_impact callback at IMPACT phase for damage
+        # resolution, then clears on completion.
+        if self._dual_tech_controller is not None:
+            self._dual_tech_controller.update(dt)
+            # Drive camera zoom from the controller — lerps from 1.0 to
+            # a cinematic zoom during CAMERA_ZOOM phase, holds through
+            # the rest of the timeline.
+            zoom_factor = self._dual_tech_controller.camera_zoom_factor
+            cinematic_zoom = 1.25
+            self.scene_camera.zoom = (
+                self._pre_cinematic_zoom
+                + (cinematic_zoom - self._pre_cinematic_zoom) * zoom_factor
+            )
+            if self._dual_tech_controller.is_complete:
+                # Restore camera and clear the slot. Camera shake from
+                # the impact (triggered via on_impact callback) has its
+                # own decay managed by SceneCamera.
+                self.scene_camera.zoom = self._pre_cinematic_zoom
+                self._dual_tech_controller = None
+
+        # Phase-specific logic — pauses during dual tech cinematic (spec §5.1
+        # "turn-clock pause"). Animation queue + phase timers keep ticking
+        # for continuity (ambient effects + projectile physics mid-flight)
+        # but phase *advancement* is frozen until the cinematic completes.
+        if self.dual_tech_active:
+            pass
+        elif self.phase == CombatPhase.INTRO:
+            # ArenaEntry drives the 1.5s scripted intro (spec §4.8). Update
+            # the entry and apply camera-push-factor to SceneCamera zoom
+            # (WIDE 0.85 → DEFAULT 1.0). Advance to PLAYER_INPUT when the
+            # entry completes — the old INTRO_DURATION timer path is
+            # retained as a fallback for defensive cases where no
+            # arena_entry is present.
+            if self._arena_entry is not None:
+                self._arena_entry.update(dt)
+                wide_zoom = 0.85
+                default_zoom = 1.0
+                self.scene_camera.zoom = (
+                    wide_zoom
+                    + (default_zoom - wide_zoom) * self._arena_entry.camera_push_factor
+                )
+                if self._arena_entry.is_complete:
+                    self.scene_camera.zoom = default_zoom
+                    self._arena_entry = None
+                    self._advance_phase(CombatPhase.PLAYER_INPUT)
+            elif self.phase_timer >= INTRO_DURATION:
                 self._advance_phase(CombatPhase.PLAYER_INPUT)
 
         elif self.phase == CombatPhase.PLAYER_INPUT:
@@ -591,40 +891,60 @@ class CombatView(BaseView):
 
     def render(self, screen: pygame.Surface) -> None:
         """Render the combat view."""
-        # Background
-        self.background.render(screen)
+        self._clamp_selected_target()
+        # Background — parallax starfield reads the SceneCamera offset so
+        # far/mid/near layers shift at their respective factors during
+        # cinematic camera pushes + shakes (Combat overhaul §4.6). Uses
+        # full offset (shake + pan) to avoid the starfield feeling
+        # detached from the arena when the camera pushes in.
+        bg_offset = self.scene_camera.get_offset()
+        self.background.render(screen, camera_offset=bg_offset)
         screen.blit(self._bg_dim, (0, 0))
 
-        ox, oy = self.screen_shake.offset
+        # UI elements use shake-only offset (screen-anchored; don't pan with camera).
+        # Arena content uses full camera offset (shake + pan) so the arena can lean
+        # in toward player-committed actions during FOCUS states.
+        shake_ox_f, shake_oy_f = self.scene_camera.get_shake_offset()
+        arena_ox_f, arena_oy_f = self.scene_camera.get_offset()
+        ui_ox, ui_oy = int(shake_ox_f), int(shake_oy_f)
+        arena_ox, arena_oy = int(arena_ox_f), int(arena_oy_f)
 
         # Header
-        self._render_header(screen, ox, oy)
+        self._render_header(screen, ui_ox, ui_oy)
 
         # Player panel
-        self._render_player_panel(screen, ox, oy)
+        self._render_player_panel(screen, ui_ox, ui_oy)
 
         # Enemy panels
-        self._render_enemy_panels(screen, ox, oy)
+        self._render_enemy_panels(screen, ui_ox, ui_oy)
 
         # Atmosphere background (dust, tint — behind ships)
         if self._atmosphere:
-            self._atmosphere.render_background(screen)
+            # During the scripted intro (spec §4.8), fade atmosphere in
+            # with the entry's tint_alpha_factor so tint + dust appear
+            # progressively. After intro, render at full alpha.
+            intro_factor = (
+                self._arena_entry.tint_alpha_factor
+                if self._arena_entry is not None
+                else 1.0
+            )
+            self._atmosphere.render_background(screen, alpha_factor=intro_factor)
 
-        # Combat arena (ships, damage overlays)
-        self._render_combat_arena(screen, ox, oy)
+        # Combat arena (ships, damage overlays) — uses full camera offset for pan
+        self._render_combat_arena(screen, arena_ox, arena_oy)
 
         # Atmosphere foreground (arena frame — in front of ships)
         if self._atmosphere:
             self._atmosphere.render_foreground(screen)
 
         # Action panel
-        self._render_action_panel(screen, ox, oy)
+        self._render_action_panel(screen, ui_ox, ui_oy)
 
         # Action queue (during player input) or combat log (during animations)
         if self.phase == CombatPhase.PLAYER_INPUT and self._action_queue is not None:
-            self._render_action_queue_panel(screen, ox, oy)
+            self._render_action_queue_panel(screen, ui_ox, ui_oy)
         else:
-            self._render_combat_log(screen, ox, oy)
+            self._render_combat_log(screen, ui_ox, ui_oy)
 
         # Projectiles (rendered between arena and particles for layering)
         self._projectile_mgr.render(screen)
@@ -645,7 +965,7 @@ class CombatView(BaseView):
         # Combo name banner (Gap #7)
         if self._combo_banner_timer > 0:
             banner_alpha = int(255 * min(1.0, self._combo_banner_timer / 0.3))
-            banner_surf = self.banner_font.render(self._combo_banner_text, True, (255, 220, 100))
+            banner_surf = self.banner_font.render(self._combo_banner_text, True, _COMBAT_COLORS["combo_banner"])
             banner_surf.set_alpha(banner_alpha)
             banner_rect = banner_surf.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 3))
             screen.blit(banner_surf, banner_rect)
@@ -654,9 +974,68 @@ class CombatView(BaseView):
         if self.phase == CombatPhase.INTRO:
             self._render_intro_banner(screen)
 
+        # Tutorial narration panel
+        if self._tutorial_helper and self._tutorial_helper.get_current_hint():
+            self._render_combat_tutorial(screen)
+
         # Combat over overlay
         if self.phase == CombatPhase.COMBAT_OVER:
             self._render_combat_over_overlay(screen)
+
+        # Dual tech cinematic renders last — stops the world. Covers
+        # UI + tutorial + combat-over overlays if any are active when
+        # the cinematic fires (shouldn't happen in practice, but the
+        # z-order enforces it if it ever does).
+        if self._dual_tech_controller is not None:
+            self._dual_tech_controller.render(screen)
+
+    # ------------------------------------------------------------------
+    # Dual tech cinematic (Combat C5 §4.3)
+    # ------------------------------------------------------------------
+
+    def trigger_dual_tech(
+        self,
+        tech_name: str,
+        dominant_element: str,
+        secondary_element: str,
+        left_portrait: "PortraitConfig",
+        right_portrait: "PortraitConfig",
+        trail_start: tuple[float, float],
+        trail_end: tuple[float, float],
+        is_ultimate: bool = False,
+        on_impact: Optional[Callable[[], None]] = None,
+    ) -> None:
+        """Fire a dual tech cinematic.
+
+        Spec §4.3 stops the world for ~3.2s (ultimates: ~4.5s) while
+        the cinematic plays. Combat view constructs a controller and
+        lets it own camera + screen + damage dispatch. The impact
+        callback wires into the combat engine's damage resolution.
+
+        **Trigger-detection is intentionally external** — this method
+        exposes the cinematic as a primitive. Content/mechanics code
+        (combat engine, combo detector, scripted encounters) decides
+        which moves qualify as dual techs and invokes this method.
+        """
+        from spacegame.engine.dual_tech_controller import DualTechController
+
+        self._pre_cinematic_zoom = self.scene_camera.zoom
+        self._dual_tech_controller = DualTechController.from_inputs(
+            tech_name=tech_name,
+            dominant_element=dominant_element,
+            secondary_element=secondary_element,
+            left_portrait=left_portrait,
+            right_portrait=right_portrait,
+            trail_start=trail_start,
+            trail_end=trail_end,
+            is_ultimate=is_ultimate,
+            on_impact=on_impact,
+        )
+
+    @property
+    def dual_tech_active(self) -> bool:
+        """True while a dual tech cinematic is playing."""
+        return self._dual_tech_controller is not None
 
     # ------------------------------------------------------------------
     # Event handling
@@ -736,8 +1115,12 @@ class CombatView(BaseView):
 
         # Number keys 1-6: queue moves from active tab
         key_to_idx = {
-            pygame.K_1: 0, pygame.K_2: 1, pygame.K_3: 2,
-            pygame.K_4: 3, pygame.K_5: 4, pygame.K_6: 5,
+            pygame.K_1: 0,
+            pygame.K_2: 1,
+            pygame.K_3: 2,
+            pygame.K_4: 3,
+            pygame.K_5: 4,
+            pygame.K_6: 5,
         }
         if event.key in key_to_idx:
             idx = key_to_idx[event.key]
@@ -749,7 +1132,7 @@ class CombatView(BaseView):
                 self._execute_player_action(m.id, move=m)
             return
 
-        # Q/W/E: switch action tabs
+        # Q/W/E/R: switch action tabs (R = Coordinated / dual techs)
         if event.key == pygame.K_q:
             self._action_tab = "attack"
             return
@@ -759,6 +1142,9 @@ class CombatView(BaseView):
         if event.key == pygame.K_e:
             self._action_tab = "utility"
             return
+        if event.key == pygame.K_r:
+            self._action_tab = "coordinated"
+            return
 
         # Tab: cycle target
         if event.key == pygame.K_TAB:
@@ -766,6 +1152,11 @@ class CombatView(BaseView):
             if enemies:
                 next_idx = (self.selected_target_idx + 1) % len(enemies)
                 self.select_target(next_idx)
+            return
+
+        # Backtick: cycle subsystem focus on current target (Combat §11.2)
+        if event.key == pygame.K_BACKQUOTE:
+            self._cycle_subsystem_focus()
             return
 
         # F or Escape: flee
@@ -927,6 +1318,18 @@ class CombatView(BaseView):
     # Phase management
     # ------------------------------------------------------------------
 
+    def _enter_camera_state(self, state: ArenaCameraState) -> None:
+        """Drive the SceneCamera toward a canonical combat state.
+
+        FOCUS_PLAYER: camera leans left (-80, zoom 1.25) emphasizing the
+        player ship during committed actions.
+        FOCUS_ENEMY: camera leans right toward enemy position, zoom 1.25.
+        DEFAULT: resolved viewport, zoom 1.0. 250ms relax = pacing beat.
+        WIDE: zoomed-out establishing shot for cinematic moments (C5 scope).
+        """
+        offset, zoom, duration = _CAMERA_STATE_PARAMS[state]
+        self.scene_camera.transition_to(offset=offset, zoom=zoom, duration=duration)
+
     def _advance_phase(self, new_phase: CombatPhase) -> None:
         """Transition to a new combat phase."""
         self.phase = new_phase
@@ -934,16 +1337,40 @@ class CombatView(BaseView):
         self.current_animation = None
         self.animation_queue.clear()
 
+        # Camera state follows phase. PLAYER_INPUT returns to DEFAULT (250ms
+        # relax = pacing beat between turns). ANIMATING_* phases focus the
+        # camera to emphasize action. ROUND_END uses DEFAULT's relax so the
+        # breathing room between actions is palpable.
+        if new_phase == CombatPhase.PLAYER_INPUT:
+            self._enter_camera_state(ArenaCameraState.DEFAULT)
+        elif new_phase in (CombatPhase.ANIMATING_PLAYER, CombatPhase.ANIMATING_CREW):
+            self._enter_camera_state(ArenaCameraState.FOCUS_PLAYER)
+        elif new_phase == CombatPhase.ANIMATING_ENEMIES:
+            self._enter_camera_state(ArenaCameraState.FOCUS_ENEMY)
+        elif new_phase == CombatPhase.ROUND_END:
+            self._enter_camera_state(ArenaCameraState.DEFAULT)
+        elif new_phase == CombatPhase.COMBAT_OVER:
+            self._enter_camera_state(ArenaCameraState.DEFAULT)
+
         if new_phase == CombatPhase.PLAYER_INPUT:
             self._build_move_buttons()
             self._auto_advance_target()
+            # Tutorial: provide guidance at start of each player turn
+            if self._tutorial_helper:
+                self._tutorial_helper.on_round_start(self.engine.get_state())
             # Initialize action queue for this turn
             from spacegame.models.action_queue import ActionQueue
 
             state = self.engine.get_state()
+            # Volley Commander: allow one extra action per turn
+            has_volley = False
+            prog = state.progression
+            if prog and hasattr(prog, "get_bonus"):
+                has_volley = prog.get_bonus("extra_combat_action") > 0
             self._action_queue = ActionQueue(
                 energy_available=state.player.energy,
                 cooldowns=dict(state.player.cooldowns),
+                extra_action=has_volley,
             )
             # Telegraph enemy intentions so player can react
             self.engine.telegraph_enemy_moves()
@@ -956,6 +1383,9 @@ class CombatView(BaseView):
             self._start_enemy_phase()
         elif new_phase == CombatPhase.ROUND_END:
             self._start_round_end()
+            # Tutorial: analyze what happened this round
+            if self._tutorial_helper:
+                self._tutorial_helper.on_round_end(self.engine.get_state())
         elif new_phase == CombatPhase.COMBAT_OVER:
             result = self.engine.get_state().result
             if result == CombatResult.VICTORY:
@@ -1004,7 +1434,7 @@ class CombatView(BaseView):
                     "x": WINDOW_WIDTH // 2,
                     "y": ACTION_PANEL_Y - 20,
                     "timer": 1.5,
-                    "color": (220, 80, 80),
+                    "color": _COMBAT_COLORS["notify_warning_red"],
                     "size": "small",
                 }
             )
@@ -1035,14 +1465,17 @@ class CombatView(BaseView):
             state.combat_log.append(log_entry)
             self._enqueue_animation(log_entry, source="player")
             self._append_log_line(log_entry)
+            from spacegame.engine.damage_text import DamageTier
+            from spacegame.engine.material_palette import get_role
             self.floating_texts.append(
                 {
                     "text": f"VOID RELEASE: {damage}",
                     "x": WINDOW_WIDTH // 2,
                     "y": scale_y(200),
-                    "timer": 2.0,
-                    "color": (180, 60, 240),
-                    "size": "large",
+                    "timer": 2.4,
+                    "max_timer": 2.4,
+                    "color": get_role("ion_arc"),  # Spec §4.5: ion_arc violet
+                    "tier": DamageTier.CINEMATIC,
                 }
             )
             try:
@@ -1068,19 +1501,27 @@ class CombatView(BaseView):
             # Reinitialize queue for second wave of actions
             from spacegame.models.action_queue import ActionQueue
 
+            has_volley_2 = False
+            prog = state.progression
+            if prog and hasattr(prog, "get_bonus"):
+                has_volley_2 = prog.get_bonus("extra_combat_action") > 0
             self._action_queue = ActionQueue(
                 energy_available=state.player.energy,
                 cooldowns=dict(state.player.cooldowns),
+                extra_action=has_volley_2,
             )
             self._displayed_player_energy = float(state.player.energy)
+            from spacegame.engine.damage_text import DamageTier
+            from spacegame.engine.material_palette import get_role
             self.floating_texts.append(
                 {
                     "text": "OVERDRIVE: Queue again!",
                     "x": WINDOW_WIDTH // 2,
                     "y": scale_y(200),
-                    "timer": 2.0,
-                    "color": (220, 190, 60),
-                    "size": "large",
+                    "timer": 2.4,
+                    "max_timer": 2.4,
+                    "color": get_role("voltaic_strike"),  # Spec §4.5: voltaic yellow
+                    "tier": DamageTier.CINEMATIC,
                 }
             )
             try:
@@ -1094,7 +1535,7 @@ class CombatView(BaseView):
                     "x": WINDOW_WIDTH // 2,
                     "y": ACTION_PANEL_Y - 20,
                     "timer": 1.5,
-                    "color": (200, 160, 60),
+                    "color": _COMBAT_COLORS["notify_amber"],
                     "size": "small",
                 }
             )
@@ -1119,6 +1560,13 @@ class CombatView(BaseView):
             self._advance_phase(CombatPhase.ANIMATING_PLAYER)
             return
 
+        # Dual tech cinematic trigger (Combat C5 §4.3). If any queued move
+        # is a registered dual tech, fire the cinematic BEFORE engine
+        # dispatch. The turn-clock pause hook (§5.1) freezes phase
+        # advancement during the 3.2s cinematic so normal ANIMATING_PLAYER
+        # resumes after the cinematic completes.
+        self._maybe_trigger_dual_tech_cinematic()
+
         logs = self.engine.execute_player_turn(self._action_queue)
         for log in logs:
             self._enqueue_animation(log, source="player")
@@ -1132,6 +1580,69 @@ class CombatView(BaseView):
         self._action_queue = None  # Queue consumed
         self._advance_phase(CombatPhase.ANIMATING_PLAYER)
 
+    def _maybe_trigger_dual_tech_cinematic(self) -> None:
+        """Scan the action queue for a dual tech move; fire cinematic if found.
+
+        The first dual tech in the queue wins — in practice there's
+        usually only one per turn. Uses placeholder portrait surfaces
+        (colored rectangles) until the real portrait-sprite pipeline is
+        wired; element palette + tech name come from the bridge.
+        """
+        if self._action_queue is None:
+            return
+        from spacegame.models.dual_tech_cinematic_bridge import (
+            get_cinematic_inputs,
+            is_dual_tech_move,
+        )
+
+        for action in self._action_queue.actions:
+            if not is_dual_tech_move(action.move_id):
+                continue
+            inputs = get_cinematic_inputs(action.move_id)
+            if inputs is None:
+                continue
+            left_portrait = self._dual_tech_placeholder_portrait(
+                inputs.crew_ids[0] if inputs.crew_ids else ""
+            )
+            right_portrait = self._dual_tech_placeholder_portrait(
+                inputs.crew_ids[-1] if inputs.crew_ids else ""
+            )
+            # Trail endpoints — start at player ship, end at first enemy.
+            trail_start = (float(PLAYER_SHIP_POS[0]), float(PLAYER_SHIP_POS[1]))
+            trail_end = (float(ENEMY_SHIP_POS[0]), float(ENEMY_SHIP_POS[1]))
+            self.trigger_dual_tech(
+                tech_name=inputs.tech_name,
+                dominant_element=inputs.dominant_element,
+                secondary_element=inputs.secondary_element,
+                left_portrait=left_portrait,
+                right_portrait=right_portrait,
+                trail_start=trail_start,
+                trail_end=trail_end,
+                is_ultimate=inputs.is_ultimate,
+            )
+            return
+
+    def _dual_tech_placeholder_portrait(self, crew_id: str) -> "PortraitConfig":
+        """Build a placeholder portrait for a crew member.
+
+        Real portrait-sprite integration is tracked separately. For now
+        we render a 64x80 solid rectangle in a neutral hud role so the
+        slide-in reads clearly during playtests. The faction_role is
+        left unset; callers can add crew-to-faction lookup later.
+        """
+        from spacegame.engine.dual_tech_portraits import PortraitConfig
+        from spacegame.engine.material_palette import get_role
+
+        surf = pygame.Surface((64, 80), pygame.SRCALPHA)
+        # Deterministic colorization by crew id so each crew reads distinct.
+        if crew_id:
+            role = "hud_accent_warm" if hash(crew_id) % 2 == 0 else "hud_cyan"
+        else:
+            role = "hud_muted"
+        color = get_role(role)
+        surf.fill((*color, 230))
+        return PortraitConfig(surface=surf, faction_role=role)
+
     # ------------------------------------------------------------------
     # Move buttons
     # ------------------------------------------------------------------
@@ -1140,12 +1651,22 @@ class CombatView(BaseView):
         """Build categorized move button lists from current player state."""
         state = self.engine.get_state()
         self.move_buttons = []
-        self._categorized_moves = {"attack": [], "defend": [], "utility": []}
+        self._categorized_moves = {"attack": [], "defend": [], "utility": [], "coordinated": []}
 
         # Categorize by slot_type stored in move.category
-        _TAB_MAP = {"weapon": "attack", "defense": "defend"}
+        _TAB_MAP = {
+            "weapon": "attack",
+            "defense": "defend",
+            "coordinated": "coordinated",
+        }
 
-        for move in state.player.equipment_moves:
+        # B8.4: combine equipment moves with any injected dual techs so
+        # coordinated abilities render alongside weapons. Dual techs use
+        # category "coordinated" and fall back to the utility tab via
+        # _TAB_MAP's default.
+        for move in list(state.player.equipment_moves) + list(
+            getattr(state.player, "dual_tech_moves", [])
+        ):
             tab = _TAB_MAP.get(move.category, "utility")
 
             cd_key = move.slot_key or move.id
@@ -1195,7 +1716,9 @@ class CombatView(BaseView):
             enabled = affordable and not on_cooldown
 
             self._crew_move_buttons.append(
-                _MoveButton(rect=rect, move=crew_move, enabled=enabled, cooldown_remaining=cd_remaining)
+                _MoveButton(
+                    rect=rect, move=crew_move, enabled=enabled, cooldown_remaining=cd_remaining
+                )
             )
 
         # Build combo buttons (Phase 9 — available when momentum >= 25%)
@@ -1227,9 +1750,7 @@ class CombatView(BaseView):
                 combo_h = scale_y(30)
                 cx = crew_btn_x + ci * (combo_w + crew_btn_gap)
                 combo_rect = pygame.Rect(cx, combo_y, combo_w, combo_h)
-                self._combo_buttons.append(
-                    {"rect": combo_rect, "combo": combo, "enabled": True}
-                )
+                self._combo_buttons.append({"rect": combo_rect, "combo": combo, "enabled": True})
 
     def _update_active_tab_rects(self) -> None:
         """Pre-calculate button positions for the active tab's visible moves."""
@@ -1305,7 +1826,7 @@ class CombatView(BaseView):
 
         # Trigger pulse animation
         self._momentum_pulse_timer = 0.8
-        self._momentum_pulse_color = (255, 255, 200)
+        self._momentum_pulse_color = _COMBAT_COLORS["ult_text_pulse"]
 
         # Cinematic zoom effect (Gap #6)
         self._ultimate_zoom_timer = 0.4
@@ -1533,7 +2054,11 @@ class CombatView(BaseView):
         move_element = _WE.KINETIC  # Default
         if hasattr(self, "engine") and self.engine:
             cs = self.engine.get_state()
-            all_moves = list(cs.player.equipment_moves) + list(cs.player.crew_moves)
+            all_moves = (
+                list(cs.player.equipment_moves)
+                + list(cs.player.crew_moves)
+                + list(getattr(cs.player, "dual_tech_moves", []))
+            )
             for m in all_moves:
                 if m.name == log.action:
                     move_element = m.element
@@ -1577,11 +2102,11 @@ class CombatView(BaseView):
             tx = target_x if is_enemy_source else source_x
             for effect_text in log.effects_applied:
                 if "FROZEN" in effect_text:
-                    text_color = (100, 200, 255)  # Ice blue
+                    text_color = _COMBAT_COLORS["dmg_cryo"]  # Ice blue
                 elif "Escaped" in effect_text:
                     text_color = Colors.GREEN
                 elif "Failed" in effect_text:
-                    text_color = (255, 120, 80)  # Warm red
+                    text_color = _COMBAT_COLORS["dmg_generic_warm"]  # Warm red
                 else:
                     text_color = Colors.TEXT_SECONDARY
                 self.floating_texts.append(
@@ -1614,41 +2139,56 @@ class CombatView(BaseView):
 
                 # Color coding for defensive identity feedback
                 if "Armor absorbed" in display_text:
-                    text_color = (180, 180, 200)  # Silver — armor deflection
+                    text_color = _COMBAT_COLORS["dmg_armor_deflect"]  # Silver — armor deflection
                 elif "GRAZE" in display_text:
-                    text_color = (255, 180, 80)  # Orange — near miss
+                    text_color = _COMBAT_COLORS["dmg_near_miss"]  # Orange — near miss
                 elif "Shield regen" in display_text:
-                    text_color = (80, 180, 255)  # Cyan — shield regen
+                    text_color = _COMBAT_COLORS["dmg_shield_regen"]  # Cyan — shield regen
                 elif "Overclock" in display_text:
-                    text_color = (180, 100, 255)  # Purple — energy boost
+                    text_color = _COMBAT_COLORS["dmg_energy_boost"]  # Purple — energy boost
                 elif "Momentum" in display_text:
-                    text_color = (255, 220, 100)  # Gold — momentum threshold
+                    text_color = _COMBAT_COLORS["dmg_momentum"]  # Gold — momentum threshold
                     get_audio_manager().play_sfx("ui_confirm")
                 elif "FROZEN" in display_text:
-                    text_color = (100, 200, 255)  # Ice blue — cryo freeze
+                    text_color = _COMBAT_COLORS["dmg_cryo"]  # Ice blue — cryo freeze
                 elif "Chill" in display_text:
-                    text_color = (140, 210, 255)  # Light blue — chill stacks
+                    text_color = _COMBAT_COLORS["dmg_chill"]  # Light blue — chill stacks
                 elif "Burn" in display_text and "x" in display_text:
-                    text_color = (255, 140, 60)  # Warm orange — burn stacks
+                    text_color = _COMBAT_COLORS["dmg_burn"]  # Warm orange — burn stacks
                 elif "Suppressed" in display_text:
-                    text_color = (200, 160, 255)  # Lavender — voltaic suppress
+                    text_color = _COMBAT_COLORS["dmg_voltaic"]  # Lavender — voltaic suppress
                 elif "Counterstrike" in display_text:
-                    text_color = (100, 220, 255)  # Cyan — ghost counterstrike
+                    text_color = _COMBAT_COLORS["dmg_counterstrike"]  # Cyan — ghost counterstrike
                 elif "SHIELDS BROKEN" in display_text:
-                    text_color = (255, 100, 100)  # Red — sentinel vulnerability
+                    text_color = _COMBAT_COLORS["dmg_vulnerability"]  # Red — sentinel vulnerability
                 else:
                     text_color = Colors.RED if is_player_source else Colors.YELLOW
-                self.floating_texts.append(
-                    {
-                        "text": display_text,
-                        "x": target_x,
-                        "y": ty,
-                        "color": text_color,
-                        "timer": 0.8,
-                        "max_timer": 0.8,
-                        "vy": -40.0,
-                    }
-                )
+                # Tier classification per spec §4.7 — threshold/cinematic
+                # events get the heavier weight treatment.
+                from spacegame.engine.damage_text import classify_damage_text
+                auto_tier = classify_damage_text(display_text)
+                ft_entry: dict = {
+                    "text": display_text,
+                    "x": target_x,
+                    "y": ty,
+                    "color": text_color,
+                    "timer": 0.8,
+                    "max_timer": 0.8,
+                    "vy": -40.0,
+                }
+                # Only attach tier for above-standard classifications so the
+                # dispatcher falls back to the legacy info_font path for the
+                # common case (no visual regression on standard damage).
+                from spacegame.engine.damage_text import DamageTier
+                if auto_tier in (DamageTier.THRESHOLD, DamageTier.CINEMATIC):
+                    ft_entry["tier"] = auto_tier
+                    # Threshold duration matches cfg.total_duration so the
+                    # pop + hold + fade reads cleanly.
+                    from spacegame.engine.damage_text import get_tier_config
+                    total = get_tier_config(auto_tier).total_duration
+                    ft_entry["timer"] = total
+                    ft_entry["max_timer"] = total
+                self.floating_texts.append(ft_entry)
                 ty -= 20
 
                 # Module hit: separate line in warm orange
@@ -1658,7 +2198,7 @@ class CombatView(BaseView):
                             "text": module_text,
                             "x": target_x,
                             "y": ty,
-                            "color": (255, 140, 60),  # Warm orange — module damage
+                            "color": _COMBAT_COLORS["dmg_burn"],  # Warm orange — module damage
                             "timer": 1.0,
                             "max_timer": 1.0,
                             "vy": -30.0,
@@ -1666,11 +2206,11 @@ class CombatView(BaseView):
                     )
                     ty -= 20
 
-            # Screen shake — severity based on action
+            # Camera shake — severity based on action
             is_missile = "missile" in action_lower or "torpedo" in action_lower
             shake_intensity = 4.5 if is_missile else 3.0
             shake_duration = 0.2 if is_missile else 0.15
-            self.screen_shake.trigger(intensity=shake_intensity, duration=shake_duration)
+            self.scene_camera.add_shake(amplitude=shake_intensity, duration=shake_duration)
 
             # Impact particles
             if has_shield_text and not has_shield_restore:
@@ -1739,31 +2279,47 @@ class CombatView(BaseView):
             if is_player_source or anim.source == "crew":
                 self._check_enemy_deaths()
 
-        # Choose projectile type based on element and action keywords
+        # Choose projectile type based on element and action keywords.
+        # Element string is forwarded to the projectile so its color
+        # resolves through the canonical palette per spec §4.5.
         def _spawn_projectile(hit: bool) -> None:
             cb = _on_impact if hit else None
             src = (source_x, source_y)
             tgt = (impact_x, impact_y)
+            element_str = move_element.value if move_element is not None else None
 
-            # Element-specific or keyword-based projectile selection
             if "missile" in action_lower or "torpedo" in action_lower:
-                self._projectile_mgr.spawn_missile(src, tgt, on_impact=cb, hit=hit)
+                self._projectile_mgr.spawn_missile(
+                    src, tgt, on_impact=cb, hit=hit, element=element_str
+                )
             elif move_element == _WE.PLASMA:
                 # Plasma: missile-style fireball with arc
-                self._projectile_mgr.spawn_missile(src, tgt, on_impact=cb, hit=hit)
+                self._projectile_mgr.spawn_missile(
+                    src, tgt, on_impact=cb, hit=hit, element=element_str
+                )
             elif move_element == _WE.ION:
                 # Ion: fast laser-style bolt
-                self._projectile_mgr.spawn_laser(src, tgt, on_impact=cb, hit=hit)
+                self._projectile_mgr.spawn_laser(
+                    src, tgt, on_impact=cb, hit=hit, element=element_str
+                )
             elif move_element == _WE.CRYO:
                 # Cryo: laser-style shard
-                self._projectile_mgr.spawn_laser(src, tgt, on_impact=cb, hit=hit)
+                self._projectile_mgr.spawn_laser(
+                    src, tgt, on_impact=cb, hit=hit, element=element_str
+                )
             elif move_element == _WE.VOLTAIC:
                 # Voltaic: cannon-style burst
-                self._projectile_mgr.spawn_cannon(src, tgt, on_impact=cb, hit=hit)
+                self._projectile_mgr.spawn_cannon(
+                    src, tgt, on_impact=cb, hit=hit, element=element_str
+                )
             elif "cannon" in action_lower or "kinetic" in action_lower or "burst" in action_lower:
-                self._projectile_mgr.spawn_cannon(src, tgt, on_impact=cb, hit=hit)
+                self._projectile_mgr.spawn_cannon(
+                    src, tgt, on_impact=cb, hit=hit, element=element_str
+                )
             else:
-                self._projectile_mgr.spawn_laser(src, tgt, on_impact=cb, hit=hit)
+                self._projectile_mgr.spawn_laser(
+                    src, tgt, on_impact=cb, hit=hit, element=element_str
+                )
 
         if log.hit:
             _spawn_projectile(hit=True)
@@ -1819,8 +2375,8 @@ class CombatView(BaseView):
                 )
                 self._destruction_sequences.append(seq)
                 if enemy.template.is_boss:
-                    # Extra screen shake for boss death
-                    self.screen_shake.trigger(intensity=8.0, duration=0.4)
+                    # Extra camera shake for boss death
+                    self.scene_camera.add_shake(amplitude=8.0, duration=0.4)
 
                 # Also track in old dict for backward compat (animation playback)
                 anim = self._get_ship_sprite(
@@ -1830,12 +2386,15 @@ class CombatView(BaseView):
                     anim.play("destroy")
                     self._destroying_enemies[idx] = (enemy_x, enemy_y, anim)
 
-                # Explosion particles + SFX + heavy screen shake
+                # Explosion particles + SFX + heavy camera shake
                 self.particles.emit(float(enemy_x), float(enemy_y), MISSILE_EXPLOSION)
                 get_audio_manager().play_sfx("combat_explosion")
-                self.screen_shake.trigger(intensity=8.0, duration=0.35)
+                self.scene_camera.add_shake(amplitude=8.0, duration=0.35)
 
                 self._previously_dead.add(idx)
+
+        # Auto-advance target away from dead enemies immediately
+        self._auto_advance_target()
 
     def _on_animation_phase_complete(self) -> None:
         """Called when an animation phase's queue is fully drained."""
@@ -1864,6 +2423,32 @@ class CombatView(BaseView):
             idx = self._find_next_living_target(idx)
 
         self.selected_target_idx = idx
+
+    def _cycle_subsystem_focus(self) -> None:
+        """Cycle focused_subsystem through available subsystems on the selected enemy.
+
+        Cycle order: None -> tag[0] -> tag[1] -> ... -> None. Destroyed subsystems
+        are skipped. No-op when the enemy has no targetable subsystems.
+        """
+        enemies = self.engine.get_state().enemies
+        if not enemies or self.selected_target_idx >= len(enemies):
+            return
+        enemy = enemies[self.selected_target_idx]
+        if not enemy.is_alive or enemy.is_fled:
+            return
+        tags = [t for t in enemy.template.targetable_subsystems if t not in enemy.subsystems_destroyed]
+        if not tags:
+            return
+        current = getattr(enemy, "focused_subsystem", None)
+        if current is None:
+            enemy.focused_subsystem = tags[0]
+            return
+        if current in tags:
+            pos = tags.index(current)
+            next_pos = pos + 1
+            enemy.focused_subsystem = tags[next_pos] if next_pos < len(tags) else None
+        else:
+            enemy.focused_subsystem = tags[0]
 
     def _auto_advance_target(self) -> None:
         """Auto-advance target if current target is dead/fled."""
@@ -2025,6 +2610,19 @@ class CombatView(BaseView):
     def _get_enemy_display_state(self, idx: int) -> dict:
         """Get display info for an enemy card."""
         state = self.engine.get_state()
+        if idx >= len(state.enemies):
+            return {
+                "name": "???",
+                "alive": False,
+                "fled": False,
+                "selected": False,
+                "hull": 0,
+                "max_hull": 1,
+                "shields": 0,
+                "max_shields": 0,
+                "behavior": "aggressive",
+                "active_effects": [],
+            }
         enemy = state.enemies[idx]
         return {
             "name": enemy.template.name,
@@ -2079,13 +2677,13 @@ class CombatView(BaseView):
         if boss.template.phases and boss.current_phase_idx < len(boss.template.phases):
             phase_name = f" — {boss.template.phases[boss.current_phase_idx].name}"
         name_text = f"{boss.template.name}{phase_name}"
-        name_surf = self.small_font.render(name_text, True, (255, 200, 60))
+        name_surf = self.small_font.render(name_text, True, _COMBAT_COLORS["boss_header"])
         screen.blit(name_surf, (bar_x, bar_y - 14))
 
         # Background
         bg_rect = pygame.Rect(bar_x, bar_y, bar_w, bar_h)
-        pygame.draw.rect(screen, (20, 15, 10), bg_rect)
-        pygame.draw.rect(screen, (100, 60, 30), bg_rect, 1)
+        pygame.draw.rect(screen, _COMBAT_COLORS["boss_bg_dark"], bg_rect)
+        pygame.draw.rect(screen, _COMBAT_COLORS["boss_bg_border"], bg_rect, 1)
 
         # HP fill (hull + shields combined)
         total_max = boss.max_hull + boss.max_shields
@@ -2096,11 +2694,11 @@ class CombatView(BaseView):
 
             # Color shifts with HP: red → orange → red
             if ratio > 0.5:
-                bar_color = (200, 60, 40)  # Dark red
+                bar_color = _COMBAT_COLORS["boss_bar_low"]  # Dark red
             elif ratio > 0.25:
-                bar_color = (220, 120, 30)  # Orange-red
+                bar_color = _COMBAT_COLORS["boss_bar_mid"]  # Orange-red
             else:
-                bar_color = (255, 40, 40)  # Bright red — danger
+                bar_color = _COMBAT_COLORS["boss_bar_danger"]  # Bright red — danger
 
             if fill_w > 0:
                 pygame.draw.rect(screen, bar_color, (bar_x + 1, bar_y + 1, fill_w, bar_h - 2))
@@ -2109,7 +2707,7 @@ class CombatView(BaseView):
             for phase in boss.template.phases:
                 if phase.hp_threshold < 1.0:
                     mx = bar_x + 1 + int((bar_w - 2) * phase.hp_threshold)
-                    pygame.draw.line(screen, (255, 200, 60), (mx, bar_y), (mx, bar_y + bar_h), 1)
+                    pygame.draw.line(screen, _COMBAT_COLORS["boss_header"], (mx, bar_y), (mx, bar_y + bar_h), 1)
 
             # HP text
             hp_text = f"{total_current}/{total_max}"
@@ -2128,15 +2726,15 @@ class CombatView(BaseView):
             screen,
             (px, py, PLAYER_PANEL_W, PLAYER_PANEL_H),
             alpha=200,
-            bg_color=(15, 20, 40),
+            bg_color=_COMBAT_COLORS["panel_modal_bg"],
             border_radius=4,
         )
 
         # Identity accent line at top of panel (Phase 12E)
         identity_colors = {
-            "juggernaut": (200, 150, 50),  # Bronze
-            "sentinel": (80, 180, 255),  # Cyan
-            "ghost": (160, 100, 200),  # Purple
+            "juggernaut": _COMBAT_COLORS["archetype_juggernaut"],  # Bronze
+            "sentinel": _COMBAT_COLORS["archetype_sentinel"],  # Cyan
+            "ghost": _COMBAT_COLORS["archetype_ghost"],  # Purple
         }
         id_accent = identity_colors.get(state.player.defensive_identity)
         if id_accent:
@@ -2169,7 +2767,7 @@ class CombatView(BaseView):
         bar_w = PLAYER_PANEL_W - 20
         y = sep_y + 12
 
-        # Hull bar
+        # Hull bar (label color-coded green to match bar)
         hull_ratio = (
             self._displayed_player_hull / state.player.max_hull if state.player.max_hull > 0 else 0
         )
@@ -2184,10 +2782,11 @@ class CombatView(BaseView):
             state.player.max_hull,
             hull_color,
             "Hull",
+            label_color=Colors.GREEN,
         )
-        y += BAR_HEIGHT + 10
+        y += BAR_HEIGHT + 8
 
-        # Shield bar
+        # Shield bar (label color-coded blue)
         self._render_bar(
             screen,
             bar_x,
@@ -2198,10 +2797,11 @@ class CombatView(BaseView):
             state.player.max_shields,
             SHIELD_COLOR,
             "Shld",
+            label_color=SHIELD_COLOR,
         )
-        y += BAR_HEIGHT + 10
+        y += BAR_HEIGHT + 8
 
-        # Energy bar
+        # Energy bar (label color-coded purple)
         self._render_bar(
             screen,
             bar_x,
@@ -2212,8 +2812,9 @@ class CombatView(BaseView):
             state.player.max_energy,
             ENERGY_COLOR,
             "Engy",
+            label_color=ENERGY_COLOR,
         )
-        y += BAR_HEIGHT + 10
+        y += BAR_HEIGHT + 8
 
         # Momentum bar
         if state.player.momentum:
@@ -2226,9 +2827,9 @@ class CombatView(BaseView):
         identity = state.player.defensive_identity
         if identity:
             identity_colors = {
-                "juggernaut": (200, 150, 50),  # Bronze
-                "sentinel": (80, 180, 255),  # Cyan
-                "ghost": (160, 100, 200),  # Purple
+                "juggernaut": _COMBAT_COLORS["archetype_juggernaut"],  # Bronze
+                "sentinel": _COMBAT_COLORS["archetype_sentinel"],  # Cyan
+                "ghost": _COMBAT_COLORS["archetype_ghost"],  # Purple
             }
             id_color = identity_colors.get(identity, Colors.TEXT_SECONDARY)
             id_label = identity.upper()
@@ -2239,20 +2840,20 @@ class CombatView(BaseView):
                 if state.player.armor > 0:
                     passive_texts.append((f"Armor: {state.player.armor}", id_color))
                 if state.player.hull_ratio < 0.25:
-                    passive_texts.append(("LAST STAND!", (255, 80, 80)))
+                    passive_texts.append(("LAST STAND!", _COMBAT_COLORS["passive_last_stand"]))
                 elif state.player.hull_ratio > 0.75:
-                    passive_texts.append(("Integrity: +5% DR", (100, 180, 100)))
+                    passive_texts.append(("Integrity: +5% DR", _COMBAT_COLORS["passive_positive_dim"]))
             elif identity == "sentinel":
                 if state.player.shield_regen > 0:
                     passive_texts.append((f"Regen: +{state.player.shield_regen}/turn", id_color))
                 if state.player.shield_break_vulnerable:
-                    passive_texts.append(("SHIELDS BROKEN!", (255, 80, 80)))
+                    passive_texts.append(("SHIELDS BROKEN!", _COMBAT_COLORS["passive_last_stand"]))
             elif identity == "ghost":
                 if state.player.counterstrike_stacks > 0:
                     pct = state.player.counterstrike_stacks * 10
-                    passive_texts.append((f"Counterstrike: +{pct}%", (200, 255, 100)))
+                    passive_texts.append((f"Counterstrike: +{pct}%", _COMBAT_COLORS["passive_counterstrike_bright"]))
                 if state.player.evasion_decay > 0:
-                    passive_texts.append(("Shaken: -5 evasion", (255, 180, 80)))
+                    passive_texts.append(("Shaken: -5 evasion", _COMBAT_COLORS["dmg_near_miss"]))
 
             id_surf = self.small_font.render(id_label, True, id_color)
             screen.blit(id_surf, (bar_x, y))
@@ -2318,7 +2919,7 @@ class CombatView(BaseView):
             screen,
             (x, y, ENEMY_PANEL_W, ENEMY_CARD_H),
             alpha=200,
-            bg_color=(15, 20, 40),
+            bg_color=_COMBAT_COLORS["panel_modal_bg"],
             border_color=None,
             border_radius=4,
         )
@@ -2361,10 +2962,50 @@ class CombatView(BaseView):
             self._render_enemy_overlay(screen, x, y, "FLED", Colors.YELLOW)
             return
 
-        # Small ship sprite (top-right of card)
-        card_anim = self._get_ship_sprite(enemy.template.id, "enemy", scale=res_scale(1))
-        card_sprite = card_anim.get_surface() if card_anim else None
-        if card_sprite:
+        # Small ship sprite (top-right of card).
+        # Combat C4 §4.1: prefer the ShipComposite path when available,
+        # fall back to the legacy AnimatedSprite so any template the
+        # composite provider can't resolve still renders something.
+        # Combat §11.4 (wired QA Pass 5 Tier 3.B — 2026-04-21):
+        # destruction progress is now driven from hull damage. Per-instance
+        # composite caching (Tier 3.A) means two enemies of the same
+        # template keep their own destruction state, so this no longer
+        # thrashes the cache.
+        card_composite = self._enemy_composite_provider.get_composite(
+            enemy.template.id, instance_key=enemy
+        )
+        if card_composite is not None and enemy.template.hull > 0:
+            hull_ratio = max(0.0, min(1.0, enemy.current_hull / enemy.template.hull))
+            card_composite.set_destruction_progress(1.0 - hull_ratio)
+        card_sprite: Optional[pygame.Surface] = (
+            self._enemy_composite_provider.get_surface(
+                enemy.template.id, instance_key=enemy
+            )
+        )
+        if card_sprite is None:
+            card_anim = self._get_ship_sprite(
+                enemy.template.id, "enemy", scale=res_scale(1)
+            )
+            card_sprite = card_anim.get_surface() if card_anim else None
+        # Tier 3.C: module overlay (subsystem targeting feedback). Rendered
+        # over the card composite only — the legacy sprite path doesn't
+        # have overlay-compatible regions. Fetched lazily; state synced
+        # from enemy.subsystems_destroyed + enemy.focused_subsystem.
+        if card_sprite is not None and card_composite is not None:
+            build = self._enemy_composite_provider.get_build(enemy.template.id)
+            if build is not None and enemy.template.targetable_subsystems:
+                overlay = self._enemy_overlay_provider.get_overlay(
+                    template_id=enemy.template.id,
+                    build=build,
+                    subsystem_tags=enemy.template.targetable_subsystems,
+                    instance_key=enemy,
+                )
+                self._enemy_overlay_provider.sync_state_from_enemy(overlay, enemy)
+                # card_sprite is cached by ShipComposite — copy before
+                # drawing so overlay doesn't bleed into the cached frame.
+                card_sprite = card_sprite.copy()
+                overlay.render(card_sprite, 0, 0, cell_size=1)
+        if card_sprite is not None:
             sprite_rect = card_sprite.get_rect(topright=(x + ENEMY_PANEL_W - 6, y + 4))
             screen.blit(card_sprite, sprite_rect)
 
@@ -2377,6 +3018,23 @@ class CombatView(BaseView):
         behavior_surf = self.small_font.render(behavior_text, True, Colors.TEXT_SECONDARY)
         screen.blit(behavior_surf, (x + 8, y + 26))
 
+        # Subsystem focus badge (Combat §11.2) — shows currently focused subsystem
+        # on the selected target. Tucked in the top-right under the sprite area.
+        focused = getattr(enemy, "focused_subsystem", None)
+        if is_selected and focused and focused not in enemy.subsystems_destroyed:
+            focus_label = focused.replace("_", " ").upper()
+            focus_surf = self.small_font.render(
+                f"> {focus_label}", True, Colors.TEXT_HIGHLIGHT
+            )
+            focus_bg = pygame.Surface(
+                (focus_surf.get_width() + 6, focus_surf.get_height() + 2), pygame.SRCALPHA
+            )
+            focus_bg.fill((0, 0, 0, 140))
+            focus_x = x + ENEMY_PANEL_W - focus_bg.get_width() - 6
+            focus_y = y + 26
+            screen.blit(focus_bg, (focus_x, focus_y))
+            screen.blit(focus_surf, (focus_x + 3, focus_y + 1))
+
         # Telegraph indicator (what enemy plans to do next)
         # Check for frozen state (Cryo 3-stack)
         is_frozen = any(hasattr(eff, "_frozen") and eff._frozen for eff, _ in enemy.active_effects)
@@ -2384,7 +3042,7 @@ class CombatView(BaseView):
             from spacegame.engine.fonts import FONT_XS as _FXS
 
             tele_font = get_font("machine", _FXS)
-            tele_surf = tele_font.render("FROZEN", True, (150, 220, 255))
+            tele_surf = tele_font.render("FROZEN", True, _COMBAT_COLORS["tele_frozen"])
             tele_bg = pygame.Surface(
                 (tele_surf.get_width() + 8, tele_surf.get_height() + 4), pygame.SRCALPHA
             )
@@ -2411,15 +3069,15 @@ class CombatView(BaseView):
             is_drain = any(e.type == EffectType.ENERGY_DRAIN for e in tele_move.effects)
 
             if is_eva:
-                tele_label, tele_color = "EVADING", (100, 200, 255)
+                tele_label, tele_color = "EVADING", _COMBAT_COLORS["tele_evading"]
             elif is_def:
-                tele_label, tele_color = "FORTIFYING", (100, 255, 150)
+                tele_label, tele_color = "FORTIFYING", _COMBAT_COLORS["tele_fortifying"]
             elif is_drain:
-                tele_label, tele_color = "DRAINING", (200, 100, 255)
+                tele_label, tele_color = "DRAINING", _COMBAT_COLORS["tele_draining"]
             elif has_dmg and tele_move.energy_cost >= 4:
-                tele_label, tele_color = "CHARGING", (255, 100, 60)
+                tele_label, tele_color = "CHARGING", _COMBAT_COLORS["tele_charging"]
             elif has_dmg:
-                tele_label, tele_color = "ATTACKING", (255, 180, 60)
+                tele_label, tele_color = "ATTACKING", _COMBAT_COLORS["tele_attacking"]
             else:
                 tele_label, tele_color = "ACTING", Colors.TEXT_SECONDARY
 
@@ -2722,7 +3380,7 @@ class CombatView(BaseView):
         # Color based on current level (gradient: blue → cyan → green → gold → white)
         pct = momentum.current
         if pct >= 1.0:
-            bar_color = (255, 255, 220)  # Blazing white-gold
+            bar_color = _COMBAT_COLORS["momentum_blazing"]  # Blazing white-gold
         elif pct >= 0.75:
             t = (pct - 0.75) / 0.25
             bar_color = (
@@ -2761,9 +3419,9 @@ class CombatView(BaseView):
         inner_w = width - label_w - 4
 
         for threshold, marker_color in [
-            (THRESHOLD_CHARGED, (100, 200, 255)),  # Cyan
-            (THRESHOLD_SURGING, (80, 200, 80)),  # Green
-            (THRESHOLD_OVERLOAD, (220, 180, 50)),  # Gold
+            (THRESHOLD_CHARGED, _COMBAT_COLORS["momentum_charged"]),  # Cyan
+            (THRESHOLD_SURGING, _COMBAT_COLORS["momentum_surging"]),  # Green
+            (THRESHOLD_OVERLOAD, _COMBAT_COLORS["momentum_overload"]),  # Gold
         ]:
             mx = inner_x + int(inner_w * threshold)
             pygame.draw.line(screen, marker_color, (mx, y + 1), (mx, y + BAR_HEIGHT - 2), 1)
@@ -2777,13 +3435,13 @@ class CombatView(BaseView):
 
         # Ultimate ready indicator
         if momentum.ultimate_available:
-            ult_text = self.small_font.render("ULTIMATE READY!", True, (255, 255, 200))
+            ult_text = self.small_font.render("ULTIMATE READY!", True, _COMBAT_COLORS["ult_text_pulse"])
             ult_rect = ult_text.get_rect(centerx=x + width // 2, top=y + BAR_HEIGHT + 2)
             screen.blit(ult_text, ult_rect)
 
         # Overdriven indicator
         if momentum.overdriven_available:
-            ovd_text = self.small_font.render("2X DAMAGE", True, (80, 220, 80))
+            ovd_text = self.small_font.render("2X DAMAGE", True, _COMBAT_COLORS["double_damage"])
             ovd_rect = ovd_text.get_rect(right=x + width, top=y + BAR_HEIGHT + 2)
             screen.blit(ovd_text, ovd_rect)
 
@@ -2798,6 +3456,7 @@ class CombatView(BaseView):
         maximum: float,
         color: tuple,
         label: str,
+        label_color: tuple | None = None,
     ) -> None:
         """Render a labeled health/shield/energy bar with fill and highlight edge."""
         draw_bar(
@@ -2811,6 +3470,7 @@ class CombatView(BaseView):
             color,
             label=label,
             font=self.small_font,
+            label_color=label_color,
         )
 
     # ------------------------------------------------------------------
@@ -2838,6 +3498,9 @@ class CombatView(BaseView):
             if move.id == move_id:
                 return move.name
         for move in state.player.crew_moves:
+            if move.id == move_id:
+                return move.name
+        for move in getattr(state.player, "dual_tech_moves", []):
             if move.id == move_id:
                 return move.name
         return move_id
@@ -3047,6 +3710,15 @@ class CombatView(BaseView):
                 jink_ox = int(12 * jink_t * self._dodge_jink_direction)
             draw_x = player_x + recoil_ox + jink_ox
             draw_y = player_y + recoil_oy
+            # ArenaEntry engine ignite fade (Combat C3 §4.8). During INTRO
+            # the player ship fades from dim (engines dormant) to full
+            # brightness as engines "ignite" over the camera-push phase.
+            # After intro, _arena_entry is None and rendering is unaffected.
+            if self._arena_entry is not None:
+                ignite_factor = self._arena_entry.player_engine_ignite_factor
+                ignite_alpha = max(0, min(255, int(255 * ignite_factor)))
+                rotated = rotated.copy()
+                rotated.set_alpha(ignite_alpha)
             rect = rotated.get_rect(center=(draw_x, draw_y))
             screen.blit(rotated, rect)
 
@@ -3088,7 +3760,14 @@ class CombatView(BaseView):
                 IDLE_BOB_AMPLITUDE
                 * math.sin((self.phase_timer + j * 0.7) * 2 * math.pi / IDLE_BOB_PERIOD)
             )
-            enemy_x = ENEMY_SHIP_POS[0] + ox
+            # ArenaEntry slide-in (Combat C3 §4.8). During INTRO each enemy
+            # starts offset right of its rest position and slides in on a
+            # 100ms per-enemy stagger. After intro, _arena_entry is None
+            # and slide_offset is 0 so enemies render at rest position.
+            slide_offset = 0
+            if self._arena_entry is not None:
+                slide_offset = int(self._arena_entry.enemy_slide_offset(j))
+            enemy_x = ENEMY_SHIP_POS[0] + ox + slide_offset
             enemy_y = (
                 ENEMY_SHIP_POS[1]
                 + oy
@@ -3290,7 +3969,7 @@ class CombatView(BaseView):
             screen,
             panel_rect,
             alpha=200,
-            bg_color=(12, 16, 32),
+            bg_color=_COMBAT_COLORS["panel_modal_bg_dark"],
             border_color=None,
             border_radius=0,
         )
@@ -3309,9 +3988,10 @@ class CombatView(BaseView):
         tab_x_start = MOVE_BTN_X_START + ox
 
         _TAB_CONFIG = [
-            ("attack", "ATK", (200, 80, 80), (140, 50, 50)),
-            ("defend", "DEF", (80, 140, 220), (40, 80, 140)),
-            ("utility", "UTL", (80, 180, 100), (40, 110, 55)),
+            ("attack", "ATK", _COMBAT_COLORS["tab_attack_bg"], _COMBAT_COLORS["tab_attack_border"]),
+            ("defend", "DEF", _COMBAT_COLORS["tab_defend_bg"], _COMBAT_COLORS["tab_defend_border"]),
+            ("utility", "UTL", _COMBAT_COLORS["tab_utility_bg"], _COMBAT_COLORS["tab_utility_border"]),
+            ("coordinated", "CREW", _COMBAT_COLORS["tab_coord_bg"], _COMBAT_COLORS["tab_coord_border"]),
         ]
         self._tab_rects: dict[str, pygame.Rect] = {}
         for i, (tab_id, label, active_color, dim_color) in enumerate(_TAB_CONFIG):
@@ -3320,16 +4000,18 @@ class CombatView(BaseView):
             self._tab_rects[tab_id] = rect
             is_active = self._action_tab == tab_id
             count = len(self._categorized_moves.get(tab_id, []))
-            bg = active_color if is_active else (20, 25, 40)
+            bg = active_color if is_active else Colors.UI_PANEL
             border = active_color if is_active else dim_color
             pygame.draw.rect(screen, bg, rect, border_radius=3)
             pygame.draw.rect(screen, border, rect, 1, border_radius=3)
             tab_text = f"{label} ({count})" if count > 0 else label
-            text_color = Colors.TEXT_PRIMARY if is_active else (
-                active_color if count > 0 else (50, 55, 65)
+            text_color = (
+                Colors.TEXT_PRIMARY if is_active else (active_color if count > 0 else _COMBAT_COLORS["tab_inactive_text"])
             )
             t = self.small_font.render(tab_text, True, text_color)
-            screen.blit(t, (tx + tab_w // 2 - t.get_width() // 2, tab_y + tab_h // 2 - t.get_height() // 2))
+            screen.blit(
+                t, (tx + tab_w // 2 - t.get_width() // 2, tab_y + tab_h // 2 - t.get_height() // 2)
+            )
 
         # Move buttons for active tab (single column, scrollable)
         is_input = self.phase == CombatPhase.PLAYER_INPUT
@@ -3448,18 +4130,18 @@ class CombatView(BaseView):
             screen.blit(combo_surf, (bx, by))
 
             # Gold border (brighter when selected)
-            border = (255, 200, 60) if is_selected else (180, 150, 50)
+            border = _COMBAT_COLORS["boss_header"] if is_selected else _COMBAT_COLORS["combo_tag"]
             pygame.draw.rect(screen, border, (bx, by, bw, bh), 1, border_radius=3)
 
             # Combo name
-            combo_name = self.small_font.render(combo.name, True, (255, 220, 100))
+            combo_name = self.small_font.render(combo.name, True, _COMBAT_COLORS["combo_banner"])
             max_name_w = bw - scale_x(30)
             if combo_name.get_width() > max_name_w:
                 name_text = combo.name
                 while len(name_text) > 3 and self.small_font.size(name_text)[0] > max_name_w:
                     name_text = name_text[:-1]
                 name_text = name_text.rstrip() + ".."
-                combo_name = self.small_font.render(name_text, True, (255, 220, 100))
+                combo_name = self.small_font.render(name_text, True, _COMBAT_COLORS["combo_banner"])
             screen.blit(combo_name, (bx + 4, by + (bh - combo_name.get_height()) // 2))
 
             # Energy cost (right side)
@@ -3471,7 +4153,7 @@ class CombatView(BaseView):
             )
 
             # "COMBO" tag (small label)
-            tag_surf = self.small_font.render("COMBO", True, (180, 150, 50))
+            tag_surf = self.small_font.render("COMBO", True, _COMBAT_COLORS["combo_tag"])
             screen.blit(tag_surf, (bx + bw - tag_surf.get_width() - 4, by - 10))
 
         # Enhanced tooltip for hovered move (rendered on top of all buttons)
@@ -3557,16 +4239,16 @@ class CombatView(BaseView):
 
             # Gold border
             pygame.draw.rect(
-                screen, (255, 200, 60), (ult_x, ult_y, ult_w, ult_h), 2, border_radius=4
+                screen, _COMBAT_COLORS["boss_header"], (ult_x, ult_y, ult_w, ult_h), 2, border_radius=4
             )
 
             # Text
-            ult_text = self.info_font.render(f"[U] {ult_name}", True, (255, 220, 100))
+            ult_text = self.info_font.render(f"[U] {ult_name}", True, _COMBAT_COLORS["combo_banner"])
             text_rect = ult_text.get_rect(center=(ult_x + ult_w // 2, ult_y + ult_h // 2))
             screen.blit(ult_text, text_rect)
 
         # Target indicator
-        if state.enemies:
+        if state.enemies and self.selected_target_idx < len(state.enemies):
             target = state.enemies[self.selected_target_idx]
             target_text = f"Target: {target.template.name}"
             target_surf = self.small_font.render(target_text, True, Colors.TEXT_HIGHLIGHT)
@@ -3703,7 +4385,7 @@ class CombatView(BaseView):
                     screen.blit(q_surf, (bx, by))
                     # Queue number badge
                     badge_text = str(qi + 1)
-                    badge = self.info_font.render(badge_text, True, (255, 255, 255))
+                    badge = self.info_font.render(badge_text, True, Colors.WHITE)
                     badge_bg = pygame.Surface((22, 22), pygame.SRCALPHA)
                     badge_bg.fill((40, 100, 200, 220))
                     screen.blit(badge_bg, (bx + bw - 24, by + 2))
@@ -3775,7 +4457,7 @@ class CombatView(BaseView):
                 if line_y + scale_y(18) > panel_y + panel_h - scale_y(52):
                     break  # Don't overflow into summary/buttons
                 # Queue number
-                num = self.small_font.render(f"{i + 1}.", True, (80, 140, 220))
+                num = self.small_font.render(f"{i + 1}.", True, _COMBAT_COLORS["queue_number"])
                 screen.blit(num, (panel_x + 8, line_y))
                 # Move name
                 name = self.small_font.render(action.move_name, True, Colors.TEXT_PRIMARY)
@@ -3790,7 +4472,7 @@ class CombatView(BaseView):
                     enemies = self.engine.get_state().enemies
                     if action.target_idx < len(enemies):
                         tgt_name = enemies[action.target_idx].template.name
-                        tgt_text = self.small_font.render(f"→ {tgt_name}", True, (120, 140, 160))
+                        tgt_text = self.small_font.render(f"→ {tgt_name}", True, _COMBAT_COLORS["queue_target_dim"])
                         screen.blit(tgt_text, (panel_x + 140, line_y))
         else:
             # Empty queue: show last round recap for strategic context
@@ -3801,13 +4483,10 @@ class CombatView(BaseView):
                 recap_entries = [
                     log
                     for log in state_recap.combat_log
-                    if log.round_number == prev_round
-                    and log.actor.startswith("enemy")
+                    if log.round_number == prev_round and log.actor.startswith("enemy")
                 ]
                 if recap_entries:
-                    label = self.small_font.render(
-                        "Last Round:", True, (90, 100, 130)
-                    )
+                    label = self.small_font.render("Last Round:", True, _COMBAT_COLORS["queue_recap_label"])
                     screen.blit(label, (panel_x + 8, queue_y))
                     ry = queue_y + scale_y(16)
                     recap_line_h = scale_y(15)
@@ -3841,35 +4520,29 @@ class CombatView(BaseView):
                                 dmg_text = " (frozen)"
                                 break
                         recap_line = f"{enemy_name}: {entry.action}{dmg_text}"
-                        recap_surf = self.small_font.render(
-                            recap_line, True, (80, 90, 115)
-                        )
+                        recap_surf = self.small_font.render(recap_line, True, _COMBAT_COLORS["queue_recap_text"])
                         screen.blit(recap_surf, (panel_x + 12, ry))
                         ry += recap_line_h
                     # Hint below recap
                     hint_y = ry + scale_y(4)
-                    hint = self.small_font.render(
-                        "Click weapons to queue", True, (60, 65, 80)
-                    )
+                    hint = self.small_font.render("Click weapons to queue", True, _COMBAT_COLORS["queue_hint_dim"])
                     screen.blit(hint, (panel_x + 8, hint_y))
                 else:
                     # No enemy actions last round (rare)
                     hint = self.small_font.render(
                         "Click weapons to queue, Enter to execute",
                         True,
-                        (80, 90, 110),
+                        _COMBAT_COLORS["queue_bullet_dim"],
                     )
                     screen.blit(hint, (panel_x + 8, queue_y + scale_y(10)))
             else:
                 # Round 1: no previous round to recap
-                empty = self.small_font.render(
-                    "No actions queued", True, Colors.TEXT_SECONDARY
-                )
+                empty = self.small_font.render("No actions queued", True, Colors.TEXT_SECONDARY)
                 screen.blit(empty, (panel_x + 8, queue_y + scale_y(10)))
                 hint = self.small_font.render(
                     "Click weapons to queue, Enter to execute",
                     True,
-                    (80, 90, 110),
+                    _COMBAT_COLORS["queue_bullet_dim"],
                 )
                 screen.blit(hint, (panel_x + 8, queue_y + scale_y(28)))
 
@@ -3879,8 +4552,10 @@ class CombatView(BaseView):
             committed = self._action_queue.energy_committed
             state_q = self.engine.get_state()
             total_e = state_q.player.max_energy
-            summary_text = f"{n_actions} action{'s' if n_actions != 1 else ''}, {committed}/{total_e} energy"
-            summary_color = (100, 130, 170)
+            summary_text = (
+                f"{n_actions} action{'s' if n_actions != 1 else ''}, {committed}/{total_e} energy"
+            )
+            summary_color = _COMBAT_COLORS["queue_summary_color"]
             summary_surf = self.small_font.render(summary_text, True, summary_color)
             summary_y = panel_y + panel_h - scale_y(50)
             screen.blit(summary_surf, (panel_x + 8, summary_y))
@@ -3892,15 +4567,15 @@ class CombatView(BaseView):
 
         # Execute Turn button
         has_actions = self._action_queue and not self._action_queue.is_empty
-        exec_bg = (40, 100, 60) if has_actions else (25, 35, 30)
-        exec_border = Colors.GREEN if has_actions else (50, 60, 55)
+        exec_bg = _COMBAT_COLORS["exec_active_bg"] if has_actions else _COMBAT_COLORS["exec_inactive_bg"]
+        exec_border = Colors.GREEN if has_actions else _COMBAT_COLORS["exec_inactive_border"]
         exec_rect = pygame.Rect(panel_x + 8, btn_y, exec_w, scale_y(24))
         pygame.draw.rect(screen, exec_bg, exec_rect, border_radius=3)
         pygame.draw.rect(screen, exec_border, exec_rect, 1, border_radius=3)
         exec_label = self.small_font.render(
             "EXECUTE [Enter]",
             True,
-            Colors.GREEN if has_actions else (60, 70, 65),
+            Colors.GREEN if has_actions else _COMBAT_COLORS["exec_inactive_text"],
         )
         screen.blit(
             exec_label, (exec_rect.x + exec_w // 2 - exec_label.get_width() // 2, btn_y + 4)
@@ -3908,16 +4583,16 @@ class CombatView(BaseView):
         self._execute_btn_rect = exec_rect
 
         # Undo button
-        undo_bg = (50, 40, 30) if has_actions else (25, 25, 25)
+        undo_bg = _COMBAT_COLORS["undo_active_bg"] if has_actions else _COMBAT_COLORS["undo_inactive_bg"]
         undo_rect = pygame.Rect(panel_x + exec_w + 16, btn_y, undo_w, scale_y(24))
         pygame.draw.rect(screen, undo_bg, undo_rect, border_radius=3)
         pygame.draw.rect(
-            screen, (100, 80, 60) if has_actions else (40, 40, 40), undo_rect, 1, border_radius=3
+            screen, _COMBAT_COLORS["undo_active_border"] if has_actions else _COMBAT_COLORS["undo_inactive_border"], undo_rect, 1, border_radius=3
         )
         undo_label = self.small_font.render(
             "Undo [←]",
             True,
-            Colors.TEXT_SECONDARY if has_actions else (50, 50, 50),
+            Colors.TEXT_SECONDARY if has_actions else _COMBAT_COLORS["undo_inactive_text"],
         )
         screen.blit(
             undo_label, (undo_rect.x + undo_w // 2 - undo_label.get_width() // 2, btn_y + 4)
@@ -3925,7 +4600,7 @@ class CombatView(BaseView):
         self._undo_btn_rect = undo_rect
 
         # Skip Turn hint (below buttons, centered in panel)
-        skip = self.small_font.render("Enter with empty queue to skip turn", True, (55, 60, 70))
+        skip = self.small_font.render("Enter with empty queue to skip turn", True, _COMBAT_COLORS["skip_hint_text"])
         skip_x = panel_x + (panel_w - skip.get_width()) // 2
         screen.blit(skip, (skip_x, btn_y + scale_y(26)))
 
@@ -3942,10 +4617,10 @@ class CombatView(BaseView):
             # Void Release — available when void_charge > 0 and release available
             if getattr(legendary, "void_release_available", False) and legendary.void_charge > 0:
                 vr_rect = pygame.Rect(panel_x + 8, leg_y, leg_btn_w, leg_btn_h)
-                pygame.draw.rect(screen, (40, 15, 60), vr_rect, border_radius=3)
-                pygame.draw.rect(screen, (140, 60, 200), vr_rect, 1, border_radius=3)
+                pygame.draw.rect(screen, _COMBAT_COLORS["void_release_bg"], vr_rect, border_radius=3)
+                pygame.draw.rect(screen, _COMBAT_COLORS["void_release_border"], vr_rect, 1, border_radius=3)
                 vr_text = self.small_font.render(
-                    f"Void Release ({legendary.void_charge} dmg)", True, (180, 100, 240)
+                    f"Void Release ({legendary.void_charge} dmg)", True, _COMBAT_COLORS["void_release_text"]
                 )
                 screen.blit(vr_text, (vr_rect.x + 4, leg_y + 3))
                 self._void_release_rect = vr_rect
@@ -3954,9 +4629,9 @@ class CombatView(BaseView):
             if getattr(legendary, "overdrive_available", False):
                 od_x = panel_x + 8 + (leg_btn_w + 8 if self._void_release_rect else 0)
                 od_rect = pygame.Rect(od_x, leg_y, leg_btn_w, leg_btn_h)
-                pygame.draw.rect(screen, (50, 40, 15), od_rect, border_radius=3)
-                pygame.draw.rect(screen, (200, 170, 60), od_rect, 1, border_radius=3)
-                od_text = self.small_font.render("Overdrive (2x turn)", True, (220, 190, 80))
+                pygame.draw.rect(screen, _COMBAT_COLORS["overdrive_bg"], od_rect, border_radius=3)
+                pygame.draw.rect(screen, _COMBAT_COLORS["overdrive_border"], od_rect, 1, border_radius=3)
+                od_text = self.small_font.render("Overdrive (2x turn)", True, _COMBAT_COLORS["overdrive_text"])
                 screen.blit(od_text, (od_rect.x + 4, leg_y + 3))
                 self._overdrive_rect = od_rect
 
@@ -3974,12 +4649,52 @@ class CombatView(BaseView):
             y += 18
 
     def _render_floating_texts(self, screen: pygame.Surface) -> None:
-        """Render floating damage/heal numbers."""
+        """Render floating damage/heal numbers.
+
+        Dict-entries may carry a ``tier`` key (DamageTier) — when present,
+        the renderer uses the tier's canonical font size + bold + stroke
+        per spec §4.7 rather than the default info_font treatment.
+        """
+        from spacegame.engine.damage_text import DamageTier, get_tier_config
+
         for ft in self.floating_texts:
             alpha = max(0, min(255, int(255 * (ft["timer"] / ft.get("max_timer", 0.8)))))
-            surf = self.info_font.render(ft["text"], True, ft["color"])
-            surf.set_alpha(alpha)
-            screen.blit(surf, (int(ft["x"]) - surf.get_width() // 2, int(ft["y"])))
+            tier = ft.get("tier")
+            if isinstance(tier, DamageTier):
+                cfg = get_tier_config(tier)
+                font = self._get_tier_font(cfg.font_size, cfg.bold)
+                surf = font.render(ft["text"], False, ft["color"])
+                if cfg.stroke:
+                    # Void-deep stroke for cinematic-tier legibility.
+                    from spacegame.engine.material_palette import get_role
+
+                    stroke_color = get_role("void_deep")
+                    stroke_surf = font.render(ft["text"], False, stroke_color)
+                    stroke_surf.set_alpha(alpha)
+                    bx = int(ft["x"]) - surf.get_width() // 2
+                    by = int(ft["y"])
+                    for dx, dy in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+                        screen.blit(stroke_surf, (bx + dx, by + dy))
+                surf.set_alpha(alpha)
+                screen.blit(surf, (int(ft["x"]) - surf.get_width() // 2, int(ft["y"])))
+            else:
+                surf = self.info_font.render(ft["text"], True, ft["color"])
+                surf.set_alpha(alpha)
+                screen.blit(surf, (int(ft["x"]) - surf.get_width() // 2, int(ft["y"])))
+
+    def _get_tier_font(self, size: int, bold: bool) -> pygame.font.Font:
+        """Tier-font cache. Keeps the bold toggle from mutating the shared
+        get_font() instances."""
+        cache = getattr(self, "_damage_tier_font_cache", None)
+        if cache is None:
+            cache = {}
+            self._damage_tier_font_cache = cache
+        key = (size, bold)
+        if key not in cache:
+            font = pygame.font.Font(None, size)
+            font.set_bold(bold)
+            cache[key] = font
+        return cache[key]
 
     def _render_intro_banner(self, screen: pygame.Surface) -> None:
         """Render the intro banner. Boss encounters get a dramatic treatment."""
@@ -4001,13 +4716,13 @@ class CombatView(BaseView):
             if boss:
                 # Boss intro: dramatic red-gold treatment
                 # "BOSS ENCOUNTER" header
-                header = self.info_font.render("BOSS ENCOUNTER", True, (255, 200, 60))
+                header = self.info_font.render("BOSS ENCOUNTER", True, _COMBAT_COLORS["boss_header"])
                 header.set_alpha(alpha)
                 header_rect = header.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 - 60))
                 screen.blit(header, header_rect)
 
                 # Boss name in large dramatic text
-                name_surf = self.banner_font.render(boss.template.name.upper(), True, (255, 80, 60))
+                name_surf = self.banner_font.render(boss.template.name.upper(), True, _COMBAT_COLORS["boss_accent"])
                 name_surf.set_alpha(alpha)
                 name_rect = name_surf.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 - 10))
                 screen.blit(name_surf, name_rect)
@@ -4023,7 +4738,7 @@ class CombatView(BaseView):
                 # Phase 1 name
                 if boss.template.phases:
                     phase_name = boss.template.phases[0].name
-                    phase_surf = self.small_font.render(phase_name, True, (255, 200, 60))
+                    phase_surf = self.small_font.render(phase_name, True, _COMBAT_COLORS["boss_header"])
                     phase_surf.set_alpha(alpha)
                     phase_rect = phase_surf.get_rect(
                         center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 + 60)
@@ -4031,7 +4746,7 @@ class CombatView(BaseView):
                     screen.blit(phase_surf, phase_rect)
 
                 # Accent lines (decorative)
-                accent_color = (255, 80, 60)
+                accent_color = _COMBAT_COLORS["boss_accent"]
                 cx = WINDOW_WIDTH // 2
                 cy = WINDOW_HEIGHT // 2 - 75
                 line_w = int(200 * t)
@@ -4105,11 +4820,7 @@ class CombatView(BaseView):
         # Module damage report (player ship)
         state_end = self.engine.get_state()
         if state_end.player.module_states:
-            damaged = [
-                ms
-                for ms in state_end.player.module_states
-                if ms.current_hp < ms.max_hp
-            ]
+            damaged = [ms for ms in state_end.player.module_states if ms.current_hp < ms.max_hp]
             if damaged:
                 disabled = [ms for ms in damaged if ms.disabled]
                 intact = [ms for ms in damaged if not ms.disabled]
@@ -4120,9 +4831,9 @@ class CombatView(BaseView):
                 if intact:
                     names = ", ".join(ms.category.title() for ms in intact[:3])
                     suffix = f" +{len(intact) - 3} more" if len(intact) > 3 else ""
-                    stats.append((f"Modules damaged: {names}{suffix}", (255, 180, 80)))
+                    stats.append((f"Modules damaged: {names}{suffix}", _COMBAT_COLORS["dmg_near_miss"]))
             else:
-                stats.append(("All modules intact", (100, 180, 100)))
+                stats.append(("All modules intact", _COMBAT_COLORS["passive_positive_dim"]))
 
         # Calculate panel height dynamically
         title_h = scale_y(80)  # Title + separator
@@ -4138,7 +4849,7 @@ class CombatView(BaseView):
             screen,
             (panel_x, panel_y, panel_w, panel_h),
             alpha=240,
-            bg_color=(12, 16, 32),
+            bg_color=_COMBAT_COLORS["panel_modal_bg_dark"],
             border_color=summary["color"],
             border_radius=6,
         )

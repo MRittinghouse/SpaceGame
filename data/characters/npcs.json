@@ -303,7 +303,13 @@
       "home_system_id": "nexus_prime",
       "dialogue_id": "neve_osei_price_of_info",
       "faction_id": "frontier_alliance",
-      "hide_after_flag": "price_of_info_complete"
+      "dialogue_states": [
+        {
+          "state_id": "post_quest",
+          "dialogue_id": "neve_post_quest",
+          "required_flags": ["price_of_info_complete"]
+        }
+      ]
     },
     {
       "id": "dock_investigator",
@@ -317,10 +323,6 @@
       "home_system_id": "nexus_prime",
       "dialogue_id": "dead_ledger_investigation",
       "faction_id": "",
-      "auto_trigger_gate_flag": "met_dock_investigator",
-      "auto_trigger_prerequisites": [
-        "the_dead_ledger_accepted"
-      ],
       "hide_after_flag": "dead_ledger_complete"
     },
     {
@@ -335,8 +337,14 @@
       "home_system_id": "forgeworks",
       "dialogue_id": "petra_vance_whistleblower",
       "faction_id": "miners_union",
-      "hide_after_flag": "whistleblower_complete",
-      "dialogue_music": "dialogue_intimate"
+      "dialogue_music": "dialogue_intimate",
+      "dialogue_states": [
+        {
+          "state_id": "post_quest",
+          "dialogue_id": "petra_post_quest",
+          "required_flags": ["whistleblower_complete"]
+        }
+      ]
     },
     {
       "id": "tomasz_brennan",
@@ -380,7 +388,13 @@
       "home_system_id": "stellaris_port",
       "dialogue_id": "cassiel_maren_forgery",
       "faction_id": "commerce_guild",
-      "hide_after_flag": "forgery_complete"
+      "dialogue_states": [
+        {
+          "state_id": "post_quest",
+          "dialogue_id": "cassiel_post_quest",
+          "required_flags": ["forgery_resolved"]
+        }
+      ]
     },
     {
       "id": "callum_rhee",
@@ -481,7 +495,7 @@
       ],
       "home_system_id": "forgeworks",
       "dialogue_id": "marcus_inspector_dialogue",
-      "faction_id": "industrial_union"
+      "faction_id": "miners_union"
     },
     {
       "id": "forgeworks_clerk",
@@ -522,6 +536,193 @@
       "home_system_id": "the_fulcrum",
       "dialogue_id": "tomas_fulcrum_dialogue",
       "faction_id": ""
+    },
+    {
+      "id": "elena_archives_npc",
+      "name": "Elena Reeves",
+      "title": "Navigator",
+      "portrait_color": [
+        100,
+        180,
+        255
+      ],
+      "home_system_id": "stellaris_port",
+      "dialogue_id": "elena_archives_dialogue",
+      "faction_id": "",
+      "auto_trigger_prerequisites": [
+        "crew_loyalty_elena_reeves_50"
+      ],
+      "hide_after_flag": "elena_archives_accessed"
+    },
+    {
+      "id": "axiom_researcher",
+      "name": "Dr. Senn Hadid",
+      "title": "Junior Researcher",
+      "portrait_color": [
+        140,
+        180,
+        200
+      ],
+      "home_system_id": "axiom_labs",
+      "dialogue_id": "scholars_dilemma_dialogue",
+      "faction_id": "science_collective",
+      "hide_after_flag": "scholars_dilemma_complete"
+    },
+    {
+      "id": "axiom_test_coordinator",
+      "name": "Lani Okoro",
+      "title": "Field Testing Coordinator",
+      "portrait_color": [
+        170,
+        140,
+        190
+      ],
+      "home_system_id": "axiom_labs",
+      "dialogue_id": "lab_rat_dialogue",
+      "faction_id": "science_collective",
+      "hide_after_flag": "lab_rat_complete"
+    },
+    {
+      "id": "torres_memorial",
+      "name": "Malia Torres",
+      "title": "Salvage Specialist",
+      "portrait_color": [
+        180,
+        130,
+        90
+      ],
+      "home_system_id": "crimson_reach",
+      "dialogue_id": "wrench_request_dialogue",
+      "faction_id": "",
+      "auto_trigger_prerequisites": [
+        "met_malia_torres"
+      ],
+      "hide_after_flag": "wrenchs_request_complete"
+    },
+    {
+      "id": "jez_okafor",
+      "name": "Jez Okafor",
+      "title": "Shift Supervisor",
+      "portrait_color": [
+        160,
+        120,
+        80
+      ],
+      "home_system_id": "iron_depths",
+      "dialogue_id": "jez_okafor_dialogue",
+      "faction_id": "miners_union",
+      "dialogue_states": [
+        {
+          "state_id": "post_sienna",
+          "dialogue_id": "jez_post_sienna",
+          "required_flags": ["met_sienna_vek"]
+        }
+      ]
+    },
+    {
+      "id": "naveen_prakash",
+      "name": "Naveen Prakash",
+      "title": "Compliance Auditor",
+      "portrait_color": [
+        130,
+        150,
+        180
+      ],
+      "home_system_id": "iron_depths",
+      "dialogue_id": "naveen_prakash_dialogue",
+      "faction_id": "commerce_guild"
+    },
+    {
+      "id": "dimi_torr",
+      "name": "Dimi Torr",
+      "title": "Fishmonger",
+      "portrait_color": [
+        170,
+        140,
+        90
+      ],
+      "home_system_id": "havens_rest",
+      "dialogue_id": "dimi_torr_dialogue",
+      "faction_id": "frontier_alliance"
+    },
+    {
+      "id": "issa_kadeer",
+      "name": "Issa Kadeer",
+      "title": "Refugee Coordinator",
+      "portrait_color": [
+        150,
+        130,
+        160
+      ],
+      "home_system_id": "havens_rest",
+      "dialogue_id": "issa_kadeer_dialogue",
+      "faction_id": ""
+    },
+    {
+      "id": "rudo_kamara",
+      "name": "Rudo Kamara",
+      "title": "Art Appraiser",
+      "portrait_color": [
+        140,
+        160,
+        120
+      ],
+      "home_system_id": "stellaris_port",
+      "dialogue_id": "rudo_kamara_dialogue",
+      "faction_id": "commerce_guild",
+      "dialogue_states": [
+        {
+          "state_id": "post_cassiel",
+          "dialogue_id": "rudo_post_cassiel",
+          "required_flags": ["forgery_resolved"]
+        }
+      ]
+    },
+    {
+      "id": "suki_tannenbaum",
+      "name": "Suki Tannenbaum",
+      "title": "Maintenance Chief",
+      "portrait_color": [
+        170,
+        150,
+        130
+      ],
+      "home_system_id": "stellaris_port",
+      "dialogue_id": "suki_tannenbaum_dialogue",
+      "faction_id": ""
+    },
+    {
+      "id": "bren_solvay",
+      "name": "Bren Solvay",
+      "title": "Grain Trader",
+      "portrait_color": [
+        140,
+        160,
+        100
+      ],
+      "home_system_id": "verdant",
+      "dialogue_id": "bren_solvay_dialogue",
+      "faction_id": "frontier_alliance"
+    },
+    {
+      "id": "chandra_osei",
+      "name": "Chandra Osei",
+      "title": "Field Researcher",
+      "portrait_color": [
+        150,
+        140,
+        170
+      ],
+      "home_system_id": "verdant",
+      "dialogue_id": "chandra_osei_dialogue",
+      "faction_id": "science_collective",
+      "dialogue_states": [
+        {
+          "state_id": "priya_recruited",
+          "dialogue_id": "chandra_priya_recruited",
+          "required_flags": ["crew_loyalty_dr_priya_osei_50"]
+        }
+      ]
     }
   ]
 }

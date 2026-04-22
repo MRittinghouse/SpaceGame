@@ -12,7 +12,20 @@ from spacegame.engine.procedural import generate_background
 
 
 class ParallaxStarfield:
-    """3-layer parallax scrolling starfield."""
+    """3-layer parallax scrolling starfield.
+
+    Each layer drifts at its own speed (far = slow, near = fast). When a
+    camera offset is supplied to :meth:`render`, layers additionally
+    translate by ``offset * layer_parallax_factor`` — far layers shift
+    the least, matching how distant objects parallax less than near ones.
+    Combat view wires this to :class:`SceneCamera` so cinematic pushes
+    + shakes propagate through the starfield (Combat overhaul §4.6).
+    """
+
+    # Parallax factors per layer — far < mid < near. Shared between
+    # scroll update (drift speed) and render-time camera offset so the
+    # two mechanisms feel coherent.
+    LAYER_PARALLAX = (0.3, 0.7, 1.2)
 
     def __init__(self, width: int, height: int, seed: int = 0):
         self.width = width
@@ -60,11 +73,9 @@ class ParallaxStarfield:
 
     def update(self, dt: float, speed_x: float = 8.0, speed_y: float = 2.0) -> None:
         """Scroll all layers at different speeds."""
-        layer_speeds = [0.3, 0.7, 1.2]
-
         for layer_idx, stars in enumerate(self.layers):
-            sx = speed_x * layer_speeds[layer_idx] * dt
-            sy = speed_y * layer_speeds[layer_idx] * dt
+            sx = speed_x * self.LAYER_PARALLAX[layer_idx] * dt
+            sy = speed_y * self.LAYER_PARALLAX[layer_idx] * dt
 
             for star in stars:
                 star[0] -= sx
@@ -80,12 +91,34 @@ class ParallaxStarfield:
                 elif star[1] >= self.height:
                     star[1] -= self.height
 
-    def render(self, screen: pygame.Surface) -> None:
-        """Render all star layers."""
-        for stars in self.layers:
+    def render(
+        self,
+        screen: pygame.Surface,
+        camera_offset: tuple[float, float] = (0.0, 0.0),
+    ) -> None:
+        """Render all star layers with optional camera-driven parallax.
+
+        ``camera_offset`` is the offset from the :class:`SceneCamera`;
+        each layer shifts by ``offset * LAYER_PARALLAX[layer]`` so far
+        layers move less than near ones (Combat overhaul §4.6). Zero
+        offset matches the legacy behavior.
+        """
+        cam_x, cam_y = camera_offset
+        sw = screen.get_width()
+        sh = screen.get_height()
+        for layer_idx, stars in enumerate(self.layers):
+            factor = self.LAYER_PARALLAX[layer_idx]
+            dx = cam_x * factor
+            dy = cam_y * factor
             for star in stars:
-                x, y, brightness, size = int(star[0]), int(star[1]), star[2], star[3]
+                x = int(star[0] + dx) % self.width
+                y = int(star[1] + dy) % self.height
+                brightness = star[2]
+                size = star[3]
                 color = (brightness, brightness, min(255, brightness + 10))
+                # After modulo wrap, make sure we're still on-screen.
+                if x < 0 or y < 0 or x >= sw or y >= sh:
+                    continue
                 if size <= 1:
                     screen.set_at((x, y), color)
                 else:
@@ -116,7 +149,18 @@ class AnimatedBackground:
         """Update animated elements."""
         self.parallax.update(dt)
 
-    def render(self, screen: pygame.Surface) -> None:
-        """Render the full animated background."""
+    def render(
+        self,
+        screen: pygame.Surface,
+        camera_offset: tuple[float, float] = (0.0, 0.0),
+    ) -> None:
+        """Render the full animated background.
+
+        ``camera_offset`` passes through to the parallax layer so the
+        starfield responds to a :class:`SceneCamera` during cinematic
+        camera pushes + shakes (Combat overhaul §4.6). The static base
+        image doesn't parallax — it's treated as the backdrop at
+        infinite depth.
+        """
         screen.blit(self.static_bg, (0, 0))
-        self.parallax.render(screen)
+        self.parallax.render(screen, camera_offset=camera_offset)

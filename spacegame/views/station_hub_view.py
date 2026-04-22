@@ -40,6 +40,7 @@ from spacegame.models.player import Player
 from spacegame.models.system import StarSystem
 from spacegame.utils.logger import logger
 from spacegame.views.base_view import BaseView
+from spacegame.views.layout import FACTION_COLORS as _FACTION_COLORS
 from spacegame.views.station_layouts import create_station_layout
 
 # Location type → GameState mapping
@@ -78,14 +79,6 @@ _LOCATION_LABELS: dict[str, str] = {
     "shipyard": "SHIPS",
     "unique": "EXPLORE",
     "investment": "INVEST",
-}
-
-# Faction name → color
-_FACTION_COLORS: dict[str, tuple[int, int, int]] = {
-    "commerce_guild": Colors.FACTION_COMMERCE,
-    "miners_union": Colors.FACTION_MINERS,
-    "science_collective": Colors.FACTION_SCIENCE,
-    "frontier_alliance": Colors.FACTION_FRONTIER,
 }
 
 # Layout constants
@@ -214,6 +207,7 @@ class StationHubView(BaseView):
         self._rerecruit_buttons: dict[str, pygame_gui.elements.UIButton] = {}
         self._hire_buttons: dict[str, pygame_gui.elements.UIButton] = {}
         self._contract_buttons: dict[str, pygame_gui.elements.UIButton] = {}
+        self._rep_teaser: Optional[dict] = None  # Reputation-locked mission teaser
         self.pending_contract_id: Optional[str] = None
         self._detail_close_button: Optional[pygame_gui.elements.UIButton] = None
 
@@ -260,7 +254,10 @@ class StationHubView(BaseView):
                 rep = 0
                 if hasattr(self.player, "faction_reputation"):
                     rep = self.player.faction_reputation.get(self.system.faction, 0)
-                chatter_lines = self.station_chatter.get_chatter(self.system.id, rep, [], count=3)
+                pflags = getattr(self.player, "dialogue_flags", {})
+                chatter_lines = self.station_chatter.get_chatter(
+                    self.system.id, rep, [], count=3, player_flags=pflags
+                )
                 if chatter_lines:
                     self._flavor_texts = chatter_lines + self._flavor_texts
                     self._flavor_index = 0
@@ -340,6 +337,7 @@ class StationHubView(BaseView):
         for btn in self._contract_buttons.values():
             btn.kill()
         self._contract_buttons = {}
+        self._rep_teaser = None
 
     def _get_crew_slots(self) -> int:
         """Get total crew slots including skill bonuses."""
@@ -452,6 +450,21 @@ class StationHubView(BaseView):
                     self._contract_buttons[mission.id] = btn
                     btn_index += 1
 
+            # Reputation-locked mission teaser (at most 1)
+            if hasattr(self.mission_manager, "get_reputation_locked_teaser"):
+                rep = getattr(self.player, "faction_reputation", {})
+                teaser = self.mission_manager.get_reputation_locked_teaser(self.system.id, rep)
+                if teaser:
+                    mission_name, faction_name, tier_name = teaser
+                    btn_index += 1
+                    teaser_y = base_y + btn_index * 38
+                    # Store teaser text for rendering in render() pass
+                    self._rep_teaser = {
+                        "text": f"\u2605 {mission_name}",
+                        "req": f"Requires: {faction_name} \u2014 {tier_name}",
+                        "y": teaser_y,
+                    }
+
     def handle_event(self, event: pygame.event.Event) -> None:
         """Handle card clicks and navigation."""
         if event.type == pygame_gui.UI_BUTTON_PRESSED:
@@ -494,16 +507,28 @@ class StationHubView(BaseView):
         if self._station_layout and event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             zone = self._station_layout.get_clicked_zone(event.pos)
             if zone:
-                get_audio_manager().play_sfx("ui_confirm")
-                self._select_location_type(zone.location.location_type)
-                if zone.location.location_type == "unique":
-                    self._detail_location = zone.location
+                self._activate_zone(zone)
                 return
 
-        # Keyboard: Escape to undock
+        # Keyboard shortcuts
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 self._request_back()
+                return
+            # Number keys 1-9 to select locations by index
+            if self._station_layout and self._station_layout.zones:
+                num_key = event.key - pygame.K_1  # 0-indexed
+                if 0 <= num_key < len(self._station_layout.zones):
+                    zone = self._station_layout.zones[num_key]
+                    self._activate_zone(zone)
+                    return
+
+    def _activate_zone(self, zone: object) -> None:
+        """Activate a station zone (from click or keyboard shortcut)."""
+        get_audio_manager().play_sfx("ui_confirm")
+        self._select_location_type(zone.location.location_type)
+        if zone.location.location_type == "unique":
+            self._detail_location = zone.location
 
     def update(self, dt: float) -> None:
         """Update background animation, layout hover, and flavor text rotation."""
@@ -536,6 +561,20 @@ class StationHubView(BaseView):
             self._station_layout.render_background(screen)
             self._station_layout.render_zones(screen)
             self._station_layout.render_atmosphere(screen)
+
+        # Quest hints for objectives at this station
+        self._render_quest_hints(screen)
+
+        # Reputation-locked mission teaser
+        if self._rep_teaser:
+            teaser = self._rep_teaser
+            teaser_font = self.chatter_font
+            # Muted gold for the mission name
+            name_surf = teaser_font.render(teaser["text"], True, (140, 120, 70))
+            screen.blit(name_surf, (CARD_AREA_X + 10, teaser["y"] + 6))
+            # Dimmer text for the requirement
+            req_surf = teaser_font.render(teaser["req"], True, (100, 90, 60))
+            screen.blit(req_surf, (CARD_AREA_X + 10, teaser["y"] + 22))
 
         # Station chatter (bottom card)
         self._render_chatter(screen)
@@ -578,8 +617,9 @@ class StationHubView(BaseView):
         # Semi-transparent header card
         draw_panel(screen, (card_x, card_y, card_w, card_h), alpha=180)
 
-        # Faction accent line at top of card
+        # Faction accent lines (top and bottom of header card)
         pygame.draw.rect(screen, fc, (card_x, card_y, card_w, 2))
+        pygame.draw.rect(screen, fc, (card_x, card_y + card_h - 2, card_w, 2))
 
         # System name in faction color
         title = self.title_font.render(f"DOCKED \u2014 {self.system.name.upper()}", True, fc)
@@ -626,9 +666,10 @@ class StationHubView(BaseView):
         desc_lines = self._count_wrapped_lines(loc.description, self.detail_font, content_w)
         flavor_lines = 0
         if loc.flavor_text:
-            flavor_lines = self._count_wrapped_lines(
-                f'"{loc.flavor_text}"', self.detail_font, content_w - 24
-            ) + 1  # +1 for gap
+            flavor_lines = (
+                self._count_wrapped_lines(f'"{loc.flavor_text}"', self.detail_font, content_w - 24)
+                + 1
+            )  # +1 for gap
         line_h = self.detail_font.get_linesize()
         panel_h = header_h + (desc_lines + flavor_lines) * line_h + 70  # 70 for padding + close btn
         panel_h = max(180, min(panel_h, 450))  # Allow taller panels for long flavor text
@@ -742,6 +783,25 @@ class StationHubView(BaseView):
         if line:
             count += 1
         return max(1, count)
+
+    def _render_quest_hints(self, screen: pygame.Surface) -> None:
+        """Render contextual quest hints above the chatter card."""
+        if not self.mission_manager or not self.system:
+            return
+        npc_home_systems: dict[str, str] = {}
+        if self.data_loader and hasattr(self.data_loader, "npcs"):
+            npc_home_systems = {
+                npc_id: npc.home_system_id for npc_id, npc in self.data_loader.npcs.items()
+            }
+        hints = self.mission_manager.get_contextual_hints(self.system.id, npc_home_systems)
+        if not hints:
+            return
+        hint_x = CHATTER_CARD_X
+        hint_y = CHATTER_CARD_Y - len(hints) * 22 - 10
+        for hint in hints[:3]:
+            surf = self.chatter_font.render(f"\u2605 {hint}", True, (200, 180, 100))
+            screen.blit(surf, (hint_x + 16, hint_y))
+            hint_y += 22
 
     def _render_chatter(self, screen: pygame.Surface) -> None:
         """Render station chatter in a card at the bottom of the screen."""

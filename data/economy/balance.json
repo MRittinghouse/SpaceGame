@@ -1,0 +1,42 @@
+{
+  "_comment": "Balance configuration. Values here override defaults in config.py. Change these to tune game difficulty without modifying code.",
+
+  "starting_conditions": {
+    "credits": 5500,
+    "fuel": 100,
+    "ship_type": "shuttle"
+  },
+
+  "xp_rates": {
+    "per_trade": 5,
+    "per_mining": 3,
+    "per_salvage": 6,
+    "per_refine": 10,
+    "per_travel": 10
+  },
+
+  "progression": {
+    "attribute_cap_level": 25
+  },
+
+  "encounter_chances": {
+    "safe": 0,
+    "moderate": 20,
+    "dangerous": 40
+  },
+
+  "early_game_protection": {
+    "level_threshold": 3,
+    "non_hostile_chance": 55,
+    "flee_bonus": 10
+  },
+
+  "economy": {
+    "rest_cost_per_day": 0,
+    "rep_per_trade": 1,
+    "stock_regen_rate": 0.30,
+    "player_price_impact_per_unit": 0.02,
+    "player_price_impact_cap": 0.30,
+    "player_price_decay_rate": 0.30
+  }
+}

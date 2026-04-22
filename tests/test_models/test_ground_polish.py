@@ -92,16 +92,18 @@ class TestMissionStateAttributesProgression:
         attrs = _make_attrs(acu=4, res=4)
         prog = PlayerProgression()
         prog.add_xp(5200)
-        prog.level_up_skill("scrapper")
-        prog.level_up_skill("tough_hide")
+        prog.level_up_skill("weapon_specialization")
+        prog.level_up_skill("ground_veteran")
         bonuses = GroundCrewBonuses()
         stats = build_player_ground_combat_stats(
             attributes=attrs, progression=prog, crew_bonuses=bonuses
         )
-        # ACU 4 // 2 = 2 attack, scrapper +1 = 3
-        assert stats.attack_mod == 3
-        # Base 10 + RES 4//2=2 + tough_hide +2 = 14
-        assert stats.hp == 14
+        # ACU 4 // 2 = 2 attack (ground attack wiring is S2)
+        assert stats.attack_mod == 2
+        # Base 10 + RES 4//2=2 = 12 (ground HP wiring is S2)
+        assert stats.hp == 12
+        # Rerolls: ground_veteran +1
+        assert stats.rerolls == 1
         # RES 4//2 = 2 defense
         assert stats.defense_mod == 2
 

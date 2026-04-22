@@ -10,7 +10,7 @@ from typing import Optional
 import pygame
 import pygame_gui
 
-from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH, Colors, GameState, scale_x, scale_y
+from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH, Colors, GameState, scale_y
 from spacegame.engine.backgrounds import AnimatedBackground
 from spacegame.engine.draw_utils import draw_bar, draw_panel
 from spacegame.engine.fonts import FONT_BODY, FONT_LG, FONT_MD, FONT_SECTION, FONT_XL, get_font
@@ -21,13 +21,21 @@ from spacegame.utils.logger import logger
 from spacegame.views.base_view import BaseView
 from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
 
-# Layout constants (list-detail pattern, shared with mission_log_view and journal_view)
-PANEL_LEFT = scale_x(40)
-PANEL_TOP = scale_y(90)
-LIST_WIDTH = scale_x(360)
-DETAIL_WIDTH = WINDOW_WIDTH - LIST_WIDTH - PANEL_LEFT * 2 - scale_x(30)
-LIST_HEIGHT = WINDOW_HEIGHT - PANEL_TOP - scale_y(80) - scale_y(HUD_BASE_HEIGHT)
-ITEM_HEIGHT = scale_y(44)
+# Layout constants (shared source: layout.py)
+from spacegame.views.layout import (
+    DETAIL_WIDTH,
+    LIST_HEIGHT,
+    LIST_WIDTH,
+)
+from spacegame.views.layout import (
+    LIST_DETAIL_LEFT as PANEL_LEFT,
+)
+from spacegame.views.layout import (
+    LIST_DETAIL_TOP as PANEL_TOP,
+)
+from spacegame.views.layout import (
+    LIST_ITEM_HEIGHT as ITEM_HEIGHT,
+)
 
 
 class _CrewItem:
@@ -200,10 +208,11 @@ class CrewRosterView(BaseView):
             manager=self.ui_manager,
         )
 
-        # Dismiss button in detail panel area
+        # Dismiss button below detail panel, aligned with back button row
         detail_x = PANEL_LEFT + LIST_WIDTH + 30
+        dismiss_y = WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - scale_y(60)
         self._dismiss_btn = _DismissButton(
-            pygame.Rect(detail_x + 20, WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - 140, 140, 38),
+            pygame.Rect(detail_x + 20, dismiss_y, 140, 40),
             self._label_font,
         )
 
@@ -371,11 +380,7 @@ class CrewRosterView(BaseView):
         """Render the selected crew member's details."""
         if not self._selected_crew_id or not self.crew_roster:
             self._attr_plus_rects.clear()
-            # Empty state
-            no_sel = self._desc_font.render(
-                "Select a crew member to view details.", True, Colors.TEXT_SECONDARY
-            )
-            screen.blit(no_sel, (x + 20, y + 30))
+            self._render_dual_tech_overview(screen, x, y)
             return
 
         template = self.crew_roster.get_template(self._selected_crew_id)
@@ -564,6 +569,93 @@ class CrewRosterView(BaseView):
                     screen.blit(plus_surf, plus_surf.get_rect(center=plus_rect.center))
 
                 cur_y += 20
+
+    def _render_dual_tech_overview(
+        self, screen: pygame.Surface, x: int, y: int
+    ) -> None:
+        """Render the dual tech status list when no crew is selected.
+
+        Shows every tech in the palette with its participating crew,
+        loyalty requirement, and availability — a discovery point that
+        tells the player "unlock Elena + Marcus at Loyalty 2 to get
+        Fire at Will" without them having to read the code.
+        """
+        from spacegame.models.dual_tech import describe_all_dual_techs
+
+        pad_x = x + 20
+        cur_y = y + 18
+
+        title = self._detail_title_font.render(
+            "COORDINATED ABILITIES", True, Colors.TEXT_HIGHLIGHT
+        )
+        screen.blit(title, (pad_x, cur_y))
+        cur_y += title.get_height() + 6
+
+        hint = self._label_font.render(
+            "Crew pairings that unlock when loyalty is earned.",
+            True,
+            Colors.TEXT_SECONDARY,
+        )
+        screen.blit(hint, (pad_x, cur_y))
+        cur_y += hint.get_height() + 12
+
+        statuses = describe_all_dual_techs(self.crew_roster)
+
+        # Build quick display-name lookup from templates.
+        name_of: dict[str, str] = {}
+        if self.crew_roster is not None:
+            for cid, _ in (
+                [(c, None) for s in statuses for c, _ in s.crew_loyalties]
+            ):
+                tmpl = self.crew_roster.get_template(cid)
+                if tmpl is not None:
+                    # Display first name only for compactness.
+                    name_of[cid] = tmpl.name.split()[0]
+
+        available_color = (120, 220, 160)
+        locked_color = (200, 150, 150)
+        dim_color = (140, 140, 150)
+
+        for status in statuses:
+            if cur_y + 46 > y + LIST_HEIGHT - 20:
+                # Out of room — ellipsize.
+                more = self._label_font.render(
+                    f"(+{len(statuses) - statuses.index(status)} more)",
+                    True,
+                    dim_color,
+                )
+                screen.blit(more, (pad_x, cur_y))
+                break
+
+            # Header: name + status badge
+            color = available_color if status.is_available else locked_color
+            name_surf = self._label_font.render(
+                status.tech.name, True, color
+            )
+            screen.blit(name_surf, (pad_x, cur_y))
+            badge_text = "AVAILABLE" if status.is_available else "LOCKED"
+            badge = self._label_font.render(badge_text, True, color)
+            screen.blit(
+                badge,
+                (x + DETAIL_WIDTH - 40 - badge.get_width(), cur_y),
+            )
+            cur_y += name_surf.get_height() + 2
+
+            # Participating crew + loyalty state
+            parts: list[str] = []
+            for cid, loy in status.crew_loyalties:
+                label = name_of.get(cid, cid)
+                if loy is None:
+                    parts.append(f"{label} (not recruited)")
+                else:
+                    bar = "OK" if loy >= status.tech.loyalty_req else f"{loy}/{status.tech.loyalty_req}"
+                    parts.append(f"{label} {bar}")
+            crew_line = " + ".join(parts)
+            crew_surf = self._label_font.render(
+                crew_line, True, Colors.TEXT_SECONDARY
+            )
+            screen.blit(crew_surf, (pad_x + 8, cur_y))
+            cur_y += crew_surf.get_height() + 10
 
     def _render_wrapped(
         self,

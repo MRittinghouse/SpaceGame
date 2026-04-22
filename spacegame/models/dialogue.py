@@ -16,6 +16,20 @@ if TYPE_CHECKING:
 
 
 @dataclass
+class DialogueState:
+    """A single state in an NPC's dialogue state machine.
+
+    NPCs can have multiple dialogue states, each with its own dialogue tree
+    and flag-based conditions. The first matching state is used.
+    """
+
+    state_id: str
+    dialogue_id: str
+    required_flags: list[str] = field(default_factory=list)
+    excluded_flags: list[str] = field(default_factory=list)
+
+
+@dataclass
 class NPC:
     """An NPC character that the player can interact with."""
 
@@ -30,12 +44,33 @@ class NPC:
     auto_trigger_prerequisites: list[str] = field(default_factory=list)
     hide_after_flag: str = ""
     dialogue_music: str = ""
+    dialogue_states: list[DialogueState] = field(default_factory=list)
 
     def get_display_name(self) -> str:
         """Get formatted display name with title."""
         if self.title:
             return f"{self.name} \u2014 {self.title}"
         return self.name
+
+    def get_active_dialogue_id(self, flags: dict[str, bool]) -> str:
+        """Resolve the current dialogue tree ID based on player flags.
+
+        Iterates dialogue_states in order, returns the first whose
+        conditions match. Falls back to base dialogue_id if no states
+        are defined or none match.
+
+        Args:
+            flags: Current player dialogue flags.
+
+        Returns:
+            The dialogue tree ID to use for this NPC.
+        """
+        for state in self.dialogue_states:
+            required_met = all(flags.get(f, False) for f in state.required_flags)
+            excluded_met = not any(flags.get(f, False) for f in state.excluded_flags)
+            if required_met and excluded_met:
+                return state.dialogue_id
+        return self.dialogue_id
 
 
 @dataclass
@@ -74,6 +109,7 @@ class DialogueNode:
     text: str
     responses: list[DialogueResponse] = field(default_factory=list)
     expression: Optional[str] = None  # Portrait expression (e.g. "happy", "angry")
+    subtext: str = ""  # Empathic Read hint (only shown when skill is active)
 
     @property
     def is_terminal(self) -> bool:
@@ -214,10 +250,14 @@ class DialogueManager:
                         self._player, faction_id, amount
                     )
 
-        # Apply crew loyalty changes
+        # Apply crew loyalty changes (crew_whisperer skill: +50% loyalty gains)
         if response.crew_loyalty_changes and self._crew_roster:
+            crew_whisperer_bonus = 0.0
+            if self._player and hasattr(self._player, "progression"):
+                crew_whisperer_bonus = self._player.progression.get_bonus("crew_whisperer")
             for crew_id, amount in response.crew_loyalty_changes.items():
-                self._crew_roster.adjust_loyalty(crew_id, amount)
+                adjusted = int(amount * (1.0 + crew_whisperer_bonus)) if amount > 0 else amount
+                self._crew_roster.adjust_loyalty(crew_id, adjusted)
 
         # Handle skill check
         if response.skill_check:

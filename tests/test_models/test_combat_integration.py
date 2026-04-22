@@ -1,6 +1,5 @@
 """Tests for combat extensions to existing models (ShipType, Ship, ShipUpgrade, CrewTemplate)."""
 
-import pytest
 from spacegame.models.ship import ShipType, Ship
 from spacegame.models.upgrades import ShipUpgrade, ShipUpgradeManager
 from spacegame.models.crew import CrewTemplate, CrewRoster
@@ -9,7 +8,6 @@ from spacegame.models.combat import (
     CombatEffect,
     EffectType,
     EffectTarget,
-    PlayerCombatState,
     build_player_combat_state,
 )
 
@@ -243,11 +241,16 @@ class TestShipUpgradeCombatMove:
 # ============================================================================
 
 
-class TestShipUpgradeManagerCategories:
-    """Tests for per-category slot management."""
+class TestShipUpgradeManagerCombatIntegration:
+    """Tests the surface of ShipUpgradeManager that combat depends on.
+
+    Per-category slot caps were retired in U5; module placement on the
+    ShipBuild governs capacity. What remains here is combat-move
+    extraction and the category-mapping helper used for UI grouping.
+    """
 
     def test_category_mapping(self) -> None:
-        mgr = ShipUpgradeManager(weapon_slots=1, defense_slots=1, utility_slots=3)
+        mgr = ShipUpgradeManager()
         assert mgr.get_category("cargo") == "utility"
         assert mgr.get_category("fuel") == "utility"
         assert mgr.get_category("engine") == "utility"
@@ -257,61 +260,9 @@ class TestShipUpgradeManagerCategories:
         assert mgr.get_category("defense") == "defense"
         assert mgr.get_category("unknown") == "utility"  # fallback
 
-    def test_per_category_limits(self) -> None:
-        mgr = ShipUpgradeManager(weapon_slots=2, defense_slots=1, utility_slots=3)
-        assert mgr.get_category_limit("weapon") == 2
-        assert mgr.get_category_limit("defense") == 1
-        assert mgr.get_category_limit("utility") == 3
-
-    def test_install_weapon_checks_weapon_slots(self) -> None:
-        mgr = ShipUpgradeManager(weapon_slots=1, defense_slots=0, utility_slots=3)
-        w1 = _make_weapon_upgrade("laser1")
-        w2 = _make_weapon_upgrade("laser2")
-        success1, _ = mgr.install(w1)
-        assert success1
-        success2, msg = mgr.install(w2)
-        assert not success2, "Should fail — only 1 weapon slot"
-        assert "slot" in msg.lower()
-
-    def test_install_defense_checks_defense_slots(self) -> None:
-        mgr = ShipUpgradeManager(weapon_slots=1, defense_slots=0, utility_slots=3)
-        d = _make_defense_upgrade()
-        success, msg = mgr.install(d)
-        assert not success, "Should fail — 0 defense slots"
-
-    def test_install_utility_checks_utility_slots(self) -> None:
-        mgr = ShipUpgradeManager(weapon_slots=0, defense_slots=0, utility_slots=1)
-        u1 = _make_utility_upgrade("cargo1")
-        u2 = _make_utility_upgrade("cargo2")
-        success1, _ = mgr.install(u1)
-        assert success1
-        success2, _ = mgr.install(u2)
-        assert not success2
-
-    def test_mixed_categories_independent(self) -> None:
-        mgr = ShipUpgradeManager(weapon_slots=1, defense_slots=1, utility_slots=1)
-        assert mgr.install(_make_weapon_upgrade())[0]
-        assert mgr.install(_make_defense_upgrade())[0]
-        assert mgr.install(_make_utility_upgrade())[0]
-        assert mgr.slots_used == 3
-
-    def test_get_category_used(self) -> None:
-        mgr = ShipUpgradeManager(weapon_slots=2, defense_slots=1, utility_slots=3)
-        mgr.install(_make_weapon_upgrade("w1"))
-        mgr.install(_make_utility_upgrade("u1"))
-        assert mgr.get_category_used("weapon") == 1
-        assert mgr.get_category_used("utility") == 1
-        assert mgr.get_category_used("defense") == 0
-
-    def test_get_category_available(self) -> None:
-        mgr = ShipUpgradeManager(weapon_slots=2, defense_slots=1, utility_slots=3)
-        mgr.install(_make_weapon_upgrade())
-        assert mgr.get_category_available("weapon") == 1
-        assert mgr.get_category_available("defense") == 1
-        assert mgr.get_category_available("utility") == 3
-
-    def test_get_combat_moves(self) -> None:
-        mgr = ShipUpgradeManager(weapon_slots=2, defense_slots=1, utility_slots=3)
+    def test_get_combat_moves_only_from_weapons_and_defenses(self) -> None:
+        """Only upgrades with combat_move contribute moves; utility upgrades do not."""
+        mgr = ShipUpgradeManager()
         mgr.install(_make_weapon_upgrade("laser"))
         mgr.install(_make_defense_upgrade("shield"))
         mgr.install(_make_utility_upgrade("cargo"))
@@ -321,87 +272,14 @@ class TestShipUpgradeManagerCategories:
         assert "laser" in move_ids
         assert "shield" in move_ids
 
-    def test_force_install_bypasses_slot_checks(self) -> None:
-        mgr = ShipUpgradeManager(weapon_slots=0, defense_slots=0, utility_slots=0)
-        w = _make_weapon_upgrade()
-        success, _ = mgr.install(w, force=True)
-        assert success
-        assert mgr.slots_used == 1
-
-    def test_backward_compat_max_slots_constructor(self) -> None:
-        mgr = ShipUpgradeManager(max_slots=5)
-        assert mgr.get_category_limit("utility") == 5
-        assert mgr.get_category_limit("weapon") == 0
-        assert mgr.get_category_limit("defense") == 0
-
-    def test_backward_compat_default_constructor(self) -> None:
+    def test_mixed_install_no_longer_gated_by_category(self) -> None:
+        """Without slot caps, weapons/defenses/utilities all install freely."""
         mgr = ShipUpgradeManager()
-        assert mgr.get_category_limit("utility") == 3
-        assert mgr.slots_available == 3
-
-    def test_serialization_includes_categories(self) -> None:
-        mgr = ShipUpgradeManager(weapon_slots=2, defense_slots=1, utility_slots=3)
-        mgr.install(_make_weapon_upgrade("w1"))
-        d = mgr.to_dict()
-        assert d["weapon_slots"] == 2
-        assert d["defense_slots"] == 1
-        assert d["utility_slots"] == 3
-        assert "w1" in d["installed_ids"]
-
-    def test_from_dict_with_categories(self) -> None:
-        w1 = _make_weapon_upgrade("w1")
-        data = {
-            "weapon_slots": 2,
-            "defense_slots": 1,
-            "utility_slots": 3,
-            "installed_ids": ["w1"],
-        }
-        mgr = ShipUpgradeManager.from_dict(data, {"w1": w1})
-        assert mgr.get_category_limit("weapon") == 2
-        assert mgr.get_category_limit("defense") == 1
-        assert mgr.get_category_limit("utility") == 3
-        assert mgr.slots_used == 1
-
-    def test_from_dict_backward_compat_old_format(self) -> None:
-        u1 = _make_utility_upgrade("u1")
-        data = {"max_slots": 3, "installed_ids": ["u1"]}
-        mgr = ShipUpgradeManager.from_dict(data, {"u1": u1})
-        assert mgr.get_category_limit("utility") == 3
-        assert mgr.slots_used == 1
-
-    def test_default_factory_has_zero_weapon_defense_slots(self) -> None:
-        """Default-constructed upgrade manager has 0 weapon/defense slots.
-
-        This documents the bug: Player.__init__ uses default_factory which
-        gives weapon_slots=0, defense_slots=0. Game.initialize_new_game
-        must sync slots from ship type to fix this.
-        """
-        mgr = ShipUpgradeManager()
-        assert mgr.get_category_limit("weapon") == 0
-        assert mgr.get_category_limit("defense") == 0
-        # Weapons should NOT be installable with default factory
-        w = _make_weapon_upgrade()
-        assert not mgr.can_install(w), "Default manager should have 0 weapon slots"
-
-    def test_shuttle_slot_counts_match_ship_type(self) -> None:
-        """Starter ship (shuttle) should have weapon_slots=1 per ship_types.json."""
-        from spacegame.data_loader import get_data_loader
-
-        dl = get_data_loader()
-        shuttle = dl.get_ship_type("shuttle")
-        assert shuttle is not None
-        assert shuttle.weapon_slots == 2, "Shuttle should have 2 weapon slots (+1 expansion)"
-        assert shuttle.defense_slots == 1, "Shuttle should have 1 defense slot (+1 expansion)"
-        assert shuttle.utility_slots == 3, "Shuttle should have 3 utility slots (+1 expansion)"
-
-        # Verify upgrade manager created with these values can install weapons
-        mgr = ShipUpgradeManager(
-            weapon_slots=shuttle.weapon_slots,
-            defense_slots=shuttle.defense_slots,
-            utility_slots=shuttle.utility_slots,
-        )
-        w = _make_weapon_upgrade()
-        assert mgr.can_install(w), "Shuttle-configured manager should accept weapons"
+        assert mgr.install(_make_weapon_upgrade("w1"))[0]
+        assert mgr.install(_make_weapon_upgrade("w2"))[0]
+        assert mgr.install(_make_defense_upgrade("d1"))[0]
+        assert mgr.install(_make_utility_upgrade("u1"))[0]
+        assert len(mgr.installed) == 4
 
 
 # ============================================================================
@@ -450,7 +328,7 @@ class TestBuildPlayerCombatState:
             utility_slots=3,
         )
         ship = Ship(ship_type=st, current_fuel=150)
-        mgr = ShipUpgradeManager(weapon_slots=1, defense_slots=1, utility_slots=3)
+        mgr = ShipUpgradeManager()
         mgr.install(_make_weapon_upgrade())
 
         state = build_player_combat_state(ship, mgr, None, {})

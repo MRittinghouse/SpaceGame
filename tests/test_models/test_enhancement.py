@@ -145,14 +145,14 @@ class TestMarkMultipliers:
 
     def test_mk1_bonus_unchanged(self) -> None:
         """Mk1 upgrade bonus should be the base value."""
-        mgr = ShipUpgradeManager(utility_slots=3)
+        mgr = ShipUpgradeManager()
         upgrade = _make_upgrade(bonus_value=20.0)
         mgr.install(upgrade)
         assert mgr.get_bonus("cargo_bonus") == pytest.approx(20.0)
 
     def test_mk2_bonus_scaled(self) -> None:
         """Mk2 upgrade bonus should be base × 1.25."""
-        mgr = ShipUpgradeManager(utility_slots=3)
+        mgr = ShipUpgradeManager()
         upgrade = _make_upgrade(bonus_value=20.0)
         mgr.install(upgrade)
         mgr.enhance("test_upgrade", mark=2)
@@ -160,7 +160,7 @@ class TestMarkMultipliers:
 
     def test_mk3_bonus_scaled(self) -> None:
         """Mk3 upgrade bonus should be base × 1.50."""
-        mgr = ShipUpgradeManager(utility_slots=3)
+        mgr = ShipUpgradeManager()
         upgrade = _make_upgrade(bonus_value=20.0)
         mgr.install(upgrade)
         mgr.enhance("test_upgrade", mark=2)
@@ -169,7 +169,7 @@ class TestMarkMultipliers:
 
     def test_multiple_upgrades_independent_marks(self) -> None:
         """Different upgrades can have different mark levels."""
-        mgr = ShipUpgradeManager(utility_slots=3)
+        mgr = ShipUpgradeManager()
         u1 = _make_upgrade("u1", bonus_type="cargo_bonus", bonus_value=20.0)
         u2 = _make_upgrade("u2", bonus_type="cargo_bonus", bonus_value=10.0)
         mgr.install(u1)
@@ -188,14 +188,14 @@ class TestEnhanceMethod:
     """Tests for ShipUpgradeManager.enhance()."""
 
     def test_enhance_mk1_to_mk2(self) -> None:
-        mgr = ShipUpgradeManager(utility_slots=3)
+        mgr = ShipUpgradeManager()
         mgr.install(_make_upgrade())
         success, msg = mgr.enhance("test_upgrade", mark=2)
         assert success
         assert "Mk2" in msg or "mk2" in msg.lower() or "enhanced" in msg.lower()
 
     def test_enhance_mk2_to_mk3(self) -> None:
-        mgr = ShipUpgradeManager(utility_slots=3)
+        mgr = ShipUpgradeManager()
         mgr.install(_make_upgrade())
         mgr.enhance("test_upgrade", mark=2)
         success, msg = mgr.enhance("test_upgrade", mark=3)
@@ -203,27 +203,27 @@ class TestEnhanceMethod:
 
     def test_cannot_skip_marks(self) -> None:
         """Cannot jump from Mk1 directly to Mk3."""
-        mgr = ShipUpgradeManager(utility_slots=3)
+        mgr = ShipUpgradeManager()
         mgr.install(_make_upgrade())
         success, msg = mgr.enhance("test_upgrade", mark=3)
         assert not success
 
     def test_cannot_enhance_past_max(self) -> None:
         """Cannot enhance beyond max_mark."""
-        mgr = ShipUpgradeManager(utility_slots=3)
+        mgr = ShipUpgradeManager()
         mgr.install(_make_upgrade(max_mark=2))
         mgr.enhance("test_upgrade", mark=2)
         success, msg = mgr.enhance("test_upgrade", mark=3)
         assert not success
 
     def test_cannot_enhance_uninstalled(self) -> None:
-        mgr = ShipUpgradeManager(utility_slots=3)
+        mgr = ShipUpgradeManager()
         success, msg = mgr.enhance("nonexistent", mark=2)
         assert not success
 
     def test_enhance_already_at_mark(self) -> None:
         """Cannot enhance to the current mark level."""
-        mgr = ShipUpgradeManager(utility_slots=3)
+        mgr = ShipUpgradeManager()
         mgr.install(_make_upgrade())
         mgr.enhance("test_upgrade", mark=2)
         success, msg = mgr.enhance("test_upgrade", mark=2)
@@ -239,7 +239,7 @@ class TestTuningSystem:
     """Tests for tuning specialization at Mk2."""
 
     def test_set_tuning_at_mk2(self) -> None:
-        mgr = ShipUpgradeManager(utility_slots=3)
+        mgr = ShipUpgradeManager()
         upgrade = _make_upgrade(tuning_options=SAMPLE_TUNINGS)
         mgr.install(upgrade)
         success, msg = mgr.enhance("test_upgrade", mark=2, tuning="reinforced")
@@ -247,7 +247,7 @@ class TestTuningSystem:
 
     def test_tuning_adds_secondary_bonus(self) -> None:
         """Tuning should add a bonus of the tuning's type."""
-        mgr = ShipUpgradeManager(utility_slots=3)
+        mgr = ShipUpgradeManager()
         upgrade = _make_upgrade(
             bonus_type="cargo_bonus", bonus_value=20.0, tuning_options=SAMPLE_TUNINGS
         )
@@ -260,7 +260,7 @@ class TestTuningSystem:
 
     def test_tuning_doubles_at_mk3(self) -> None:
         """Tuning bonus should double when going from Mk2 to Mk3."""
-        mgr = ShipUpgradeManager(utility_slots=3)
+        mgr = ShipUpgradeManager()
         upgrade = _make_upgrade(
             bonus_type="cargo_bonus", bonus_value=20.0, tuning_options=SAMPLE_TUNINGS
         )
@@ -274,7 +274,7 @@ class TestTuningSystem:
 
     def test_different_tuning_choice(self) -> None:
         """Choosing 'optimized' adds cargo_bonus (stacks with base)."""
-        mgr = ShipUpgradeManager(utility_slots=3)
+        mgr = ShipUpgradeManager()
         upgrade = _make_upgrade(
             bonus_type="cargo_bonus", bonus_value=20.0, tuning_options=SAMPLE_TUNINGS
         )
@@ -285,7 +285,7 @@ class TestTuningSystem:
 
     def test_invalid_tuning_rejected(self) -> None:
         """Cannot set a tuning ID that isn't in the upgrade's options."""
-        mgr = ShipUpgradeManager(utility_slots=3)
+        mgr = ShipUpgradeManager()
         upgrade = _make_upgrade(tuning_options=SAMPLE_TUNINGS)
         mgr.install(upgrade)
         success, msg = mgr.enhance("test_upgrade", mark=2, tuning="nonexistent")
@@ -293,7 +293,7 @@ class TestTuningSystem:
 
     def test_tuning_optional_if_no_options(self) -> None:
         """Upgrade with no tuning_options can enhance without tuning."""
-        mgr = ShipUpgradeManager(utility_slots=3)
+        mgr = ShipUpgradeManager()
         upgrade = _make_upgrade(tuning_options=[])
         mgr.install(upgrade)
         success, msg = mgr.enhance("test_upgrade", mark=2)
@@ -301,7 +301,7 @@ class TestTuningSystem:
 
     def test_mk3_preserves_mk2_tuning(self) -> None:
         """Mk3 enhancement doesn't need tuning param — it keeps Mk2 choice."""
-        mgr = ShipUpgradeManager(utility_slots=3)
+        mgr = ShipUpgradeManager()
         upgrade = _make_upgrade(tuning_options=SAMPLE_TUNINGS)
         mgr.install(upgrade)
         mgr.enhance("test_upgrade", mark=2, tuning="reinforced")
@@ -351,7 +351,7 @@ class TestEnhancementSerialization:
     """Tests for save/load with mark and tuning data."""
 
     def test_to_dict_includes_enhancement(self) -> None:
-        mgr = ShipUpgradeManager(utility_slots=3)
+        mgr = ShipUpgradeManager()
         upgrade = _make_upgrade(tuning_options=SAMPLE_TUNINGS)
         mgr.install(upgrade)
         mgr.enhance("test_upgrade", mark=2, tuning="reinforced")
@@ -374,7 +374,7 @@ class TestEnhancementSerialization:
             "installed": [{"upgrade_id": "test_upgrade", "mark": 2, "tuning": "reinforced"}],
         }
         mgr = ShipUpgradeManager.from_dict(data, all_upgrades)
-        assert mgr.slots_used == 1
+        assert len(mgr.installed) == 1
         # Mk2 bonus: 20 * 1.25 = 25
         assert mgr.get_bonus("cargo_bonus") == pytest.approx(25.0)
         # Tuning bonus
@@ -390,7 +390,7 @@ class TestEnhancementSerialization:
             "installed_ids": ["test_upgrade"],
         }
         mgr = ShipUpgradeManager.from_dict(data, all_upgrades)
-        assert mgr.slots_used == 1
+        assert len(mgr.installed) == 1
         assert mgr.get_bonus("cargo_bonus") == pytest.approx(20.0)
         inst = mgr.get_installed("test_upgrade")
         assert inst is not None
@@ -401,7 +401,7 @@ class TestEnhancementSerialization:
         upgrade = _make_upgrade(tuning_options=SAMPLE_TUNINGS)
         all_upgrades = {"test_upgrade": upgrade}
 
-        mgr = ShipUpgradeManager(utility_slots=3)
+        mgr = ShipUpgradeManager()
         mgr.install(upgrade)
         mgr.enhance("test_upgrade", mark=2, tuning="optimized")
 
@@ -424,18 +424,18 @@ class TestUninstallEnhanced:
     """Uninstalling an enhanced upgrade loses enhancement state."""
 
     def test_uninstall_enhanced_upgrade(self) -> None:
-        mgr = ShipUpgradeManager(utility_slots=3)
+        mgr = ShipUpgradeManager()
         upgrade = _make_upgrade()
         mgr.install(upgrade)
         mgr.enhance("test_upgrade", mark=2)
         success, msg = mgr.uninstall("test_upgrade")
         assert success
-        assert mgr.slots_used == 0
+        assert mgr.installed == []
         assert mgr.get_bonus("cargo_bonus") == 0.0
 
     def test_reinstall_starts_at_mk1(self) -> None:
         """Reinstalling after uninstall resets to Mk1."""
-        mgr = ShipUpgradeManager(utility_slots=3)
+        mgr = ShipUpgradeManager()
         upgrade = _make_upgrade()
         mgr.install(upgrade)
         mgr.enhance("test_upgrade", mark=2)
@@ -453,12 +453,12 @@ class TestGetInstalled:
     """Tests for the get_installed() convenience method."""
 
     def test_get_installed_exists(self) -> None:
-        mgr = ShipUpgradeManager(utility_slots=3)
+        mgr = ShipUpgradeManager()
         mgr.install(_make_upgrade())
         inst = mgr.get_installed("test_upgrade")
         assert inst is not None
         assert inst.upgrade_id == "test_upgrade"
 
     def test_get_installed_missing(self) -> None:
-        mgr = ShipUpgradeManager(utility_slots=3)
+        mgr = ShipUpgradeManager()
         assert mgr.get_installed("nonexistent") is None

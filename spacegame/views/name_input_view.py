@@ -71,7 +71,10 @@ class NameInputView(BaseView):
             relative_rect=input_rect,
             manager=self.ui_manager,
         )
-        self.name_input.set_text("Captain")
+        # Left empty so the player types their own name. The intro narration
+        # establishes them as a scrapyard kid; pre-filling "Captain" would
+        # undercut the unearned-rank discipline enforced elsewhere.
+        self.name_input.set_text("")
         self.name_input.set_text_length_limit(MAX_NAME_LENGTH)
 
         # Ship name text input
@@ -83,11 +86,13 @@ class NameInputView(BaseView):
         self.ship_name_input.set_text("")
         self.ship_name_input.set_text_length_limit(MAX_NAME_LENGTH)
 
-        # Begin Journey button
+        # Launch button. Avoided "Begin Journey" style per the Writing
+        # Bible's corporate-voice ban. "Launch" is action-oriented and
+        # native to the genre.
         btn_width = scale_x(200)
         self.begin_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(cx - btn_width // 2, scale_y(510), btn_width, scale_y(45)),
-            text="BEGIN JOURNEY",
+            text="LAUNCH",
             manager=self.ui_manager,
         )
 
@@ -108,13 +113,13 @@ class NameInputView(BaseView):
             if event.ui_element == self.begin_button:
                 name = self.name_input.get_text().strip() if self.name_input else ""
                 if not name:
-                    self._error_message = "Please enter a name."
+                    self._error_message = "Type a name first."
                     self._error_timer = 3.0
                 elif len(name) > MAX_NAME_LENGTH:
-                    self._error_message = f"Name must be {MAX_NAME_LENGTH} characters or fewer."
+                    self._error_message = f"Name too long. Keep it under {MAX_NAME_LENGTH} characters."
                     self._error_timer = 3.0
                 elif not _VALID_NAME_PATTERN.match(name):
-                    self._error_message = "Name can only contain letters, numbers, and spaces."
+                    self._error_message = "Letters, numbers, and spaces only."
                     self._error_timer = 3.0
                 else:
                     self._player_name = name

@@ -107,17 +107,25 @@ def calculate_encounter_chance(base_chance: float, distance: float) -> float:
     return max(0.0, min(100.0, result))
 
 
-def _select_non_hostile_type(rng: _rng.Random, system_danger: str) -> str:
+def _select_non_hostile_type(
+    rng: _rng.Random, system_danger: str, anomaly_chance_bonus: float = 0.0
+) -> str:
     """Select a non-hostile encounter type using weighted random selection.
 
     Args:
         rng: Seeded Random instance.
         system_danger: System danger level for weight table lookup.
+        anomaly_chance_bonus: Fraction (0-1) to boost anomaly weight
+            (from exploration skill "anomaly_chance").
 
     Returns:
         Encounter type string (e.g. "distress_signal", "derelict").
     """
-    weights = _NON_HOSTILE_WEIGHTS.get(system_danger, _NON_HOSTILE_WEIGHTS["moderate"])
+    weights = dict(_NON_HOSTILE_WEIGHTS.get(system_danger, _NON_HOSTILE_WEIGHTS["moderate"]))
+    # Exploration skill: anomaly_chance boosts anomaly discovery weight
+    if anomaly_chance_bonus > 0:
+        base_anomaly = weights.get("anomaly", 5)
+        weights["anomaly"] = base_anomaly + int(anomaly_chance_bonus * 100)
     types = list(weights.keys())
     type_weights = list(weights.values())
     total = sum(type_weights)
@@ -138,6 +146,9 @@ def check_travel_encounter(
     distance: float = 80.0,
     player_level: int = 0,
     defensive_identity: str = "",
+    encounter_reduction: float = 0.0,
+    anomaly_sense: float = 0.0,
+    anomaly_chance_bonus: float = 0.0,
 ) -> Optional[EncounterRef]:
     """Check if a random combat encounter triggers on travel.
 
@@ -157,6 +168,12 @@ def check_travel_encounter(
         distance: Travel distance in world units (default 80.0).
         player_level: Current player level. Below EARLY_GAME_LEVEL,
             encounters skew toward non-hostile types.
+        encounter_reduction: Fraction (0-1) to reduce encounter chance
+            (from exploration skill "encounter_reduction").
+        anomaly_sense: Fraction to add to non-hostile encounter percentage
+            (from exploration skill "anomaly_sense").
+        anomaly_chance_bonus: Fraction to boost anomaly-type weight in
+            non-hostile table (from exploration skill "anomaly_chance").
 
     Returns:
         EncounterRef if triggered, None otherwise.
@@ -174,6 +191,10 @@ def check_travel_encounter(
         avoidance = min(30.0, 15.0)  # 15% base avoidance for Ghost ships
         chance = max(0, chance - avoidance)
 
+    # Exploration skill: encounter_reduction lowers encounter chance
+    if encounter_reduction > 0:
+        chance *= 1 - encounter_reduction
+
     if chance <= 0:
         return None
 
@@ -189,15 +210,38 @@ def check_travel_encounter(
     if not enemy_template_ids:
         return None
 
+    # Defense-in-depth (combat_balance §12 B3): strip bosses from the pool
+    # even if a future caller forgets the filter. Bosses belong in
+    # narrative encounters, not random travel rolls. Filtering here means
+    # misuse downstream can't leak a boss.
+    try:
+        from spacegame.data_loader import get_data_loader
+
+        _dl = get_data_loader()
+        enemy_template_ids = [
+            tid
+            for tid in enemy_template_ids
+            if not getattr(_dl.enemy_templates.get(tid), "is_boss", False)
+        ]
+    except Exception:
+        # If DataLoader isn't ready (tests mocking tid strings), leave the
+        # pool alone — the caller is responsible in that path.
+        pass
+    if not enemy_template_ids:
+        return None
+
     # Determine encounter category: non-hostile vs hostile
     # Early-game players get a higher non-hostile ratio
     non_hostile_pct = (
         EARLY_GAME_NON_HOSTILE_CHANCE if player_level < EARLY_GAME_LEVEL else NON_HOSTILE_CHANCE
     )
+    # Exploration skill: anomaly_sense increases non-hostile encounter rate
+    if anomaly_sense > 0:
+        non_hostile_pct = min(90, non_hostile_pct + anomaly_sense * 100)
     type_roll = rng.uniform(0, 100)
     if type_roll < non_hostile_pct:
         # Non-hostile: select specific type via weighted table
-        enc_type = _select_non_hostile_type(rng, system_danger)
+        enc_type = _select_non_hostile_type(rng, system_danger, anomaly_chance_bonus)
 
         # Shakedown: single enemy demands credits
         if enc_type == "shakedown":

@@ -199,7 +199,7 @@
       "auto_accept": true,
       "on_accept_cargo": [
         {
-          "commodity_id": "heirloom_seeds",
+          "commodity_id": "food",
           "quantity": 3
         }
       ],
@@ -377,7 +377,7 @@
       "id": "miners_plight",
       "name": "Miners' Plight",
       "description": "Britt Vasara's daughter has a fever that won't break and medicine that won't come. Forgeworks slapped an embargo on Breakstone pharmaceuticals as leverage in a contract dispute that has nothing to do with a sick child. Britt needs five units smuggled past the blockade. You can help her, or you can report the request and sleep fine. Probably.",
-      "hint": "Talk to Britt Vasara at Breakstone. She needs 5 units of medicine delivered past the embargo.",
+      "hint": "Talk to Britt Vasara at Breakstone. She needs 5 units of Medical Supplies delivered past the embargo.",
       "mission_type": "side",
       "available_at": [
         "breakstone"
@@ -401,9 +401,9 @@
         },
         {
           "type": "collect_cargo",
-          "target_id": "medicine",
+          "target_id": "medical",
           "target_quantity": 5,
-          "description": "Acquire 5 units of medicine"
+          "description": "Acquire 5 units of Medical Supplies"
         },
         {
           "type": "reach_system",
@@ -497,6 +497,12 @@
           "reward_type": "set_flag",
           "amount": 0,
           "target_id": "long_shift_complete"
+        }
+      ],
+      "required_reputation": [
+        {
+          "faction_id": "miners_union",
+          "min_reputation": 15
         }
       ]
     },
@@ -749,6 +755,12 @@
           "amount": 0,
           "target_id": "lost_registry_complete"
         }
+      ],
+      "required_reputation": [
+        {
+          "faction_id": "frontier_alliance",
+          "min_reputation": 15
+        }
       ]
     },
     {
@@ -868,6 +880,12 @@
           "amount": 0,
           "target_id": "counterfeit_complete"
         }
+      ],
+      "required_reputation": [
+        {
+          "faction_id": "commerce_guild",
+          "min_reputation": 15
+        }
       ]
     },
     {
@@ -899,9 +917,9 @@
         },
         {
           "type": "collect_cargo",
-          "target_id": "ship_parts",
+          "target_id": "rare_parts",
           "target_quantity": 3,
-          "description": "Collect 3 ship components"
+          "description": "Collect 3 Rare Parts"
         },
         {
           "type": "reach_system",

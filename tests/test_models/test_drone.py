@@ -224,30 +224,26 @@ class TestApplyDroneSkillEffects:
         assert player.drone_fleet.max_slots == 0
         assert player.drone_fleet.slot_count == 0
 
-    def test_drone_bay_1_grants_basic(self) -> None:
+    def test_drone_fleet_lv1_grants_basic(self) -> None:
         player = self._make_player()
-        # Unlock drone_bay_1
-        player.progression.skills["drone_bay_1"].current_level = 1
+        player.progression.skills["drone_fleet"].current_level = 1
         apply_drone_skill_effects(player)
         assert player.drone_fleet.max_slots == 1
         assert player.drone_fleet.slot_count == 1
         assert player.drone_fleet.drones[0].tier == DroneTier.BASIC
 
-    def test_drone_bay_2_grants_advanced(self) -> None:
+    def test_drone_fleet_lv2_grants_advanced(self) -> None:
         player = self._make_player()
-        player.progression.skills["drone_bay_1"].current_level = 1
-        player.progression.skills["drone_bay_2"].current_level = 1
+        player.progression.skills["drone_fleet"].current_level = 2
         apply_drone_skill_effects(player)
         assert player.drone_fleet.max_slots == 2
         assert player.drone_fleet.slot_count == 2
         assert player.drone_fleet.drones[0].tier == DroneTier.BASIC
         assert player.drone_fleet.drones[1].tier == DroneTier.ADVANCED
 
-    def test_all_three_bays(self) -> None:
+    def test_drone_fleet_lv3_grants_all(self) -> None:
         player = self._make_player()
-        player.progression.skills["drone_bay_1"].current_level = 1
-        player.progression.skills["drone_bay_2"].current_level = 1
-        player.progression.skills["drone_bay_3"].current_level = 1
+        player.progression.skills["drone_fleet"].current_level = 3
         apply_drone_skill_effects(player)
         assert player.drone_fleet.max_slots == 3
         assert player.drone_fleet.slot_count == 3
@@ -257,7 +253,7 @@ class TestApplyDroneSkillEffects:
 
     def test_idempotent(self) -> None:
         player = self._make_player()
-        player.progression.skills["drone_bay_1"].current_level = 1
+        player.progression.skills["drone_fleet"].current_level = 1
         apply_drone_skill_effects(player)
         apply_drone_skill_effects(player)
         assert player.drone_fleet.slot_count == 1, "Should not duplicate drones"
@@ -268,6 +264,6 @@ class TestApplyDroneSkillEffects:
         # Simulate loaded state: fleet already has a drone
         player.drone_fleet.max_slots = 1
         player.drone_fleet.drones.append(MiningDrone(tier=DroneTier.BASIC))
-        player.progression.skills["drone_bay_1"].current_level = 1
+        player.progression.skills["drone_fleet"].current_level = 1
         apply_drone_skill_effects(player)
         assert player.drone_fleet.slot_count == 1, "Should not add duplicate"

@@ -37,15 +37,12 @@ from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
 
 # Map tree types to their governing attribute for display
 _TREE_ATTRIBUTE_MAP = {
-    SkillTreeType.TRADING: "Commerce",
-    SkillTreeType.GATHERING: "Acuity",
-    SkillTreeType.MINING: "Resolve",
-    SkillTreeType.LEADERSHIP: "Ingenuity",
-    SkillTreeType.SOCIAL: "Synergy",
-    SkillTreeType.GROUND: "Resolve",
+    SkillTreeType.COMMERCE: "Commerce",
     SkillTreeType.COMBAT: "Combat",
     SkillTreeType.EXPLORATION: "Acuity",
-    SkillTreeType.SMUGGLING: "Ingenuity",
+    SkillTreeType.LEADERSHIP: "Ingenuity",
+    SkillTreeType.SOCIAL: "Synergy",
+    SkillTreeType.INDUSTRY: "Resolve",
 }
 
 # Layout constants
@@ -353,15 +350,12 @@ class CharacterView(BaseView):
 
         prog = self.player.progression
         tree_colors = {
-            SkillTreeType.TRADING: Colors.FACTION_COMMERCE,
-            SkillTreeType.GATHERING: Colors.FACTION_FRONTIER,
-            SkillTreeType.MINING: Colors.GLOW_ORANGE,
-            SkillTreeType.LEADERSHIP: Colors.FACTION_SCIENCE,
-            SkillTreeType.SOCIAL: Colors.ATTR_HIGHLIGHT,
-            SkillTreeType.GROUND: Colors.RED,
+            SkillTreeType.COMMERCE: Colors.FACTION_COMMERCE,
             SkillTreeType.COMBAT: Colors.RED,
             SkillTreeType.EXPLORATION: Colors.FACTION_FRONTIER,
-            SkillTreeType.SMUGGLING: Colors.GLOW_ORANGE,
+            SkillTreeType.LEADERSHIP: Colors.FACTION_SCIENCE,
+            SkillTreeType.SOCIAL: Colors.ATTR_HIGHLIGHT,
+            SkillTreeType.INDUSTRY: Colors.GLOW_ORANGE,
         }
 
         for tree_type in SkillTreeType:

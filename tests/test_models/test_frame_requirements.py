@@ -344,9 +344,7 @@ class TestDataIntegrity:
 
     def test_all_ships_have_frame_requirements(self, ship_types: list[dict]) -> None:
         for ship in ship_types:
-            assert "frame_requirements" in ship, (
-                f"{ship['id']} missing frame_requirements"
-            )
+            assert "frame_requirements" in ship, f"{ship['id']} missing frame_requirements"
             assert isinstance(ship["frame_requirements"], dict)
 
     def test_all_ships_min_lte_max(self, ship_types: list[dict]) -> None:
@@ -372,16 +370,12 @@ class TestDataIntegrity:
     def test_all_ships_have_cockpit_min_1(self, ship_types: list[dict]) -> None:
         for ship in ship_types:
             reqs = FrameRequirements(ship.get("frame_requirements", {}))
-            assert reqs.get_min("cockpit") >= 1, (
-                f"{ship['id']} has cockpit min < 1"
-            )
+            assert reqs.get_min("cockpit") >= 1, f"{ship['id']} has cockpit min < 1"
 
     def test_all_ships_have_engine_min_gte_1(self, ship_types: list[dict]) -> None:
         for ship in ship_types:
             reqs = FrameRequirements(ship.get("frame_requirements", {}))
-            assert reqs.get_min("engine") >= 1, (
-                f"{ship['id']} has engine min < 1"
-            )
+            assert reqs.get_min("engine") >= 1, f"{ship['id']} has engine min < 1"
 
     def test_weapon_max_gte_weapon_slots(self, ship_types: list[dict]) -> None:
         """frame_requirements weapon max must be >= legacy weapon_slots field."""
@@ -389,8 +383,7 @@ class TestDataIntegrity:
             reqs = FrameRequirements(ship.get("frame_requirements", {}))
             weapon_slots = ship.get("weapon_slots", 0)
             assert reqs.get_max("weapon") >= weapon_slots, (
-                f"{ship['id']}: weapon max {reqs.get_max('weapon')} < "
-                f"weapon_slots {weapon_slots}"
+                f"{ship['id']}: weapon max {reqs.get_max('weapon')} < weapon_slots {weapon_slots}"
             )
 
     def test_defense_max_gte_defense_slots(self, ship_types: list[dict]) -> None:
@@ -411,9 +404,7 @@ class TestDataIntegrity:
                 f"utility_slots {utility_slots}"
             )
 
-    def test_all_ships_have_unique_frame_requirements(
-        self, ship_types: list[dict]
-    ) -> None:
+    def test_all_ships_have_unique_frame_requirements(self, ship_types: list[dict]) -> None:
         """Each ship should have distinct frame_requirements for identity."""
         import json
 
@@ -421,10 +412,7 @@ class TestDataIntegrity:
         for ship in ship_types:
             sig = json.dumps(ship.get("frame_requirements", {}), sort_keys=True)
             if sig in seen:
-                assert False, (
-                    f"{ship['id']} has identical frame_requirements to "
-                    f"{seen[sig]}"
-                )
+                assert False, f"{ship['id']} has identical frame_requirements to {seen[sig]}"
             seen[sig] = ship["id"]
 
 
@@ -448,14 +436,10 @@ class TestPresetGeneration:
         from spacegame.models.ship_presets import generate_preset_from_ship_type
 
         build = generate_preset_from_ship_type(ship_type)
-        engine_defs = [
-            ps.slot_def_id for ps in build.placed_slots if "engine" in ps.slot_def_id
-        ]
+        engine_defs = [ps.slot_def_id for ps in build.placed_slots if "engine" in ps.slot_def_id]
         assert len(engine_defs) >= 2, "War Frigate should have >= 2 engines"
         for def_id in engine_defs:
-            assert "small" not in def_id, (
-                f"War Frigate engine should be medium+, got {def_id}"
-            )
+            assert "small" not in def_id, f"War Frigate engine should be medium+, got {def_id}"
 
     def test_tiny_ship_uses_small_slots(self) -> None:
         """Shuttle preset should use small slots."""

@@ -22,6 +22,7 @@ from spacegame.models.dialogue import (
     NPC,
     DialogueNode,
     DialogueResponse,
+    DialogueState,
     DialogueTree,
     SkillCheck,
 )
@@ -104,6 +105,7 @@ class DataLoader:
         self.station_chatter_lines: list = []
         self.news_templates: list = []
         self.travel_log_templates: dict = {}
+        self.balance_config: Dict = {}  # Economy/balance overrides from balance.json
         self.deep_core_upgrades: Dict[str, "DeepCoreUpgrade"] = {}
         self.wreck_upgrades: Dict[str, "WreckUpgrade"] = {}
         self.forge_upgrades: Dict[str, "ForgeUpgrade"] = {}
@@ -180,6 +182,7 @@ class DataLoader:
         self._safe_load("station_chatter", self.load_station_chatter)
         self._safe_load("news_templates", self.load_news_templates)
         self._safe_load("travel_log_templates", self.load_travel_log_templates)
+        self._safe_load("balance_config", self.load_balance_config)
         logger.info(
             f"Data loaded: {len(self.systems)} systems, "
             f"{len(self.commodities)} commodities, "
@@ -193,6 +196,104 @@ class DataLoader:
             f"{len(self.enemy_templates)} enemy templates, "
             f"{len(self.journal_entries)} journal entries"
         )
+
+    def validate(self) -> list[str]:
+        """Cross-reference all loaded data and log warnings for mismatches.
+
+        Non-fatal: the game continues regardless. Call after load_all().
+
+        Returns:
+            List of warning messages (also logged).
+        """
+        warnings: list[str] = []
+        commodity_ids = set(self.commodities.keys())
+        system_ids = set(self.systems.keys())
+        npc_ids = set(self.npcs.keys())
+        faction_ids = set(self.factions.keys())
+        tree_ids = set(self.dialogue_trees.keys())
+        mission_ids = {m.id for m in self.missions}
+
+        for mission in self.missions:
+            # Commodity references
+            for obj in mission.objectives:
+                if obj.type == ObjectiveType.COLLECT_CARGO:
+                    if obj.target_id not in commodity_ids:
+                        warnings.append(
+                            f"Mission '{mission.id}': collect_cargo target "
+                            f"'{obj.target_id}' not in commodities"
+                        )
+                if obj.type == ObjectiveType.REACH_SYSTEM:
+                    if obj.target_id not in system_ids:
+                        warnings.append(
+                            f"Mission '{mission.id}': reach_system target "
+                            f"'{obj.target_id}' not in systems"
+                        )
+                if obj.type == ObjectiveType.TALK_TO_NPC:
+                    if obj.target_id not in npc_ids:
+                        warnings.append(
+                            f"Mission '{mission.id}': talk_to_npc target "
+                            f"'{obj.target_id}' not in NPCs"
+                        )
+            for cargo in mission.on_accept_cargo:
+                if cargo.commodity_id not in commodity_ids:
+                    warnings.append(
+                        f"Mission '{mission.id}': on_accept_cargo "
+                        f"'{cargo.commodity_id}' not in commodities"
+                    )
+            # Mission chain references
+            for prereq in mission.prerequisites:
+                if prereq not in mission_ids:
+                    warnings.append(
+                        f"Mission '{mission.id}': prerequisite '{prereq}' not in missions"
+                    )
+            if mission.available_after and mission.available_after not in mission_ids:
+                warnings.append(
+                    f"Mission '{mission.id}': available_after "
+                    f"'{mission.available_after}' not in missions"
+                )
+            # Reputation reward targets
+            for reward in mission.rewards:
+                if reward.reward_type == "modify_reputation":
+                    if reward.target_id not in faction_ids:
+                        warnings.append(
+                            f"Mission '{mission.id}': modify_reputation "
+                            f"target '{reward.target_id}' not in factions"
+                        )
+
+        # NPC references
+        for npc in self.npcs.values():
+            if npc.dialogue_id and npc.dialogue_id not in tree_ids:
+                warnings.append(
+                    f"NPC '{npc.id}': dialogue_id '{npc.dialogue_id}' not in dialogue trees"
+                )
+            if npc.home_system_id and npc.home_system_id not in system_ids:
+                warnings.append(
+                    f"NPC '{npc.id}': home_system_id '{npc.home_system_id}' not in systems"
+                )
+            if npc.faction_id and npc.faction_id not in faction_ids:
+                warnings.append(f"NPC '{npc.id}': faction_id '{npc.faction_id}' not in factions")
+
+        # Dialogue node references
+        for tree in self.dialogue_trees.values():
+            if tree.start_node_id not in tree.nodes:
+                warnings.append(
+                    f"Dialogue '{tree.id}': start_node_id '{tree.start_node_id}' not in nodes"
+                )
+            for node in tree.nodes.values():
+                for resp in node.responses:
+                    if resp.next_node_id and resp.next_node_id not in tree.nodes:
+                        warnings.append(
+                            f"Dialogue '{tree.id}' node '{node.id}': "
+                            f"next_node_id '{resp.next_node_id}' not in nodes"
+                        )
+
+        for w in warnings:
+            logger.warning(f"Data validation: {w}")
+        if not warnings:
+            logger.info("Data validation: all cross-references OK")
+        else:
+            logger.warning(f"Data validation: {len(warnings)} issue(s) found")
+        return warnings
 
     def load_systems(self) -> Dict[str, StarSystem]:
         """
@@ -712,6 +813,9 @@ class DataLoader:
                     max_reputation=entry.get("max_reputation", 100),
                     requires_event_type=entry.get("requires_event_type", ""),
                     weight=entry.get("weight", 10),
+                    required_flags=entry.get("required_flags", []),
+                    excluded_flags=entry.get("excluded_flags", []),
+                    one_shot=entry.get("one_shot", False),
                 )
             )
         logger.info(f"Loaded {len(self.station_chatter_lines)} station chatter lines")
@@ -756,6 +860,85 @@ class DataLoader:
         first_visit_count = len(self.travel_log_templates.get("first_visit", {}))
         logger.info(f"Loaded travel log templates ({first_visit_count} first-visit entries)")
         return self.travel_log_templates
+
+    def load_balance_config(self) -> Dict:
+        """Load economy/balance configuration from JSON.
+
+        Values in balance.json override defaults in config.py. This allows
+        tuning game difficulty without modifying code, and enables difficulty
+        presets (Easy/Normal/Hard) by swapping config files.
+        """
+        file_path = self.data_dir / "economy" / "balance.json"
+        if not file_path.exists():
+            logger.info("No balance.json found, using config.py defaults")
+            return self.balance_config
+
+        with open(file_path, "r", encoding="utf-8") as f:
+            self.balance_config = json.load(f)
+
+        # Apply overrides to config.py constants
+        import spacegame.config as cfg
+
+        sc = self.balance_config.get("starting_conditions", {})
+        if "credits" in sc:
+            cfg.STARTING_CREDITS = sc["credits"]
+        if "fuel" in sc:
+            cfg.STARTING_FUEL = sc["fuel"]
+
+        xp = self.balance_config.get("xp_rates", {})
+        if "per_trade" in xp:
+            cfg.XP_PER_TRADE = xp["per_trade"]
+        if "per_mining" in xp:
+            cfg.XP_PER_MINING = xp["per_mining"]
+        if "per_salvage" in xp:
+            cfg.XP_PER_SALVAGE = xp["per_salvage"]
+        if "per_refine" in xp:
+            cfg.XP_PER_REFINE = xp["per_refine"]
+        if "per_travel" in xp:
+            cfg.XP_PER_TRAVEL = xp["per_travel"]
+
+        prog = self.balance_config.get("progression", {})
+        if "attribute_cap_level" in prog:
+            cfg.ATTRIBUTE_CAP_LEVEL = prog["attribute_cap_level"]
+
+        enc = self.balance_config.get("encounter_chances", {})
+        from spacegame.models import encounter as enc_mod
+
+        if "safe" in enc:
+            enc_mod.ENCOUNTER_CHANCE_SAFE = enc["safe"]
+        if "moderate" in enc:
+            enc_mod.ENCOUNTER_CHANCE_MODERATE = enc["moderate"]
+        if "dangerous" in enc:
+            enc_mod.ENCOUNTER_CHANCE_DANGEROUS = enc["dangerous"]
+
+        early = self.balance_config.get("early_game_protection", {})
+        if "level_threshold" in early:
+            enc_mod.EARLY_GAME_LEVEL = early["level_threshold"]
+        if "non_hostile_chance" in early:
+            enc_mod.EARLY_GAME_NON_HOSTILE_CHANCE = early["non_hostile_chance"]
+        if "flee_bonus" in early:
+            enc_mod.EARLY_GAME_FLEE_BONUS = early["flee_bonus"]
+
+        logger.info("Loaded balance config from balance.json")
+        return self.balance_config
+
+    def get_balance_value(self, *keys: str, default: object = None) -> object:
+        """Get a nested value from balance config.
+
+        Args:
+            *keys: Path of keys, e.g. ("economy", "rest_cost_per_day").
+            default: Default if path not found.
+
+        Returns:
+            The value, or default.
+        """
+        current = self.balance_config
+        for key in keys:
+            if isinstance(current, dict) and key in current:
+                current = current[key]
+            else:
+                return default
+        return current
 
     def get_mining_config(self, system_id: str) -> Optional[MiningConfig]:
         """Get mining config for a system, or None if not a mining system."""
@@ -834,6 +1017,17 @@ class DataLoader:
 
         self.npcs.clear()
         for npc_data in data.get("npcs", []):
+            # Parse dialogue states (multi-state NPC system)
+            states: list[DialogueState] = []
+            for sd in npc_data.get("dialogue_states", []):
+                states.append(
+                    DialogueState(
+                        state_id=sd["state_id"],
+                        dialogue_id=sd["dialogue_id"],
+                        required_flags=sd.get("required_flags", []),
+                        excluded_flags=sd.get("excluded_flags", []),
+                    )
+                )
             npc = NPC(
                 id=npc_data["id"],
                 name=npc_data["name"],
@@ -846,6 +1040,7 @@ class DataLoader:
                 auto_trigger_prerequisites=npc_data.get("auto_trigger_prerequisites", []),
                 hide_after_flag=npc_data.get("hide_after_flag", ""),
                 dialogue_music=npc_data.get("dialogue_music", ""),
+                dialogue_states=states,
             )
             self.npcs[npc.id] = npc
 
@@ -910,6 +1105,7 @@ class DataLoader:
                 text=node_data["text"],
                 responses=responses,
                 expression=node_data.get("expression"),
+                subtext=node_data.get("subtext", ""),
             )
             nodes[node.id] = node
 
@@ -1004,6 +1200,8 @@ class DataLoader:
             available_before=data.get("available_before", ""),
             repeatable=data.get("repeatable", False),
             discovery_method=data.get("discovery_method", ""),
+            crew_member_id=data.get("crew_member_id", ""),
+            required_reputation=data.get("required_reputation", []),
         )
 
     def get_mission(self, mission_id: str) -> Optional[Mission]:
@@ -1282,6 +1480,8 @@ class DataLoader:
             max_suppressed_stacks=data.get("max_suppressed_stacks", 3),
             sprite_rotation=data.get("sprite_rotation", 0),
             trophy_drop=data.get("trophy_drop", ""),
+            composite_build=data.get("composite_build"),
+            targetable_subsystems=data.get("targetable_subsystems", []),
         )
 
     def _parse_combat_move(self, data: dict) -> CombatMove:
@@ -1602,4 +1802,5 @@ def get_data_loader() -> DataLoader:
     if _data_loader is None:
         _data_loader = DataLoader()
         _data_loader.load_all()
+        _data_loader.validate()
     return _data_loader

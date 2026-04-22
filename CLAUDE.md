@@ -1,6 +1,14 @@
-# SpaceGame
+# SpaceGame (Aurelia: A Ledger of Stars)
 
 Narrative-driven space trading RPG built with Python 3.13+, pygame-ce, and pygame_gui. Features trading, mining, salvaging, refining, skill trees, ship upgrades, and a procedurally-varied galaxy map.
+
+## Before You Explore
+
+**Read the architecture map first.** Before doing any broad codebase search, file exploration, or structural investigation, read the codebase architecture document in memory:
+
+> `memory/codebase_architecture.md` (in the user's `.claude/projects/` memory directory)
+
+It contains: layer diagrams, every module's purpose, all GameState transitions, model class summaries, data flow walkthroughs, and architectural patterns. This will save significant time and prevent redundant exploration.
 
 ## Quick Commands
 
@@ -153,6 +161,27 @@ def buy_commodity(self, commodity_id: str, quantity: int,
 3. Write tests **before** implementing model logic (TDD)
 4. Add loading to `DataLoader.load_all()` if new data type
 
+## Skill System (6 Trees)
+
+The progression uses 6 skill trees with 75 total skills. Skills are defined in Python code (`create_default_skills()` in `progression.py`), NOT in JSON. The old `data/progression/skill_trees.json` was removed.
+
+- **Trees**: Commerce, Combat, Exploration, Leadership, Social, Industry
+- **Point economy**: 1 skill point per level, no cap, no milestones
+- **Bonus pattern**: Every system reads bonuses via `progression.get_bonus("bonus_type_name")`
+- **Prerequisites**: Tier 1 (roots) → Tier 2 (specialization) → Tier 3 (capstones)
+- **Capstones**: Identity-defining skills (Juggernaut, Sentinel, Ghost, Peacemaker, etc.)
+
+When modifying any gameplay system, check if a skill bonus should apply. Search `create_default_skills()` for existing bonus_types before adding new ones.
+
+## Save Migration
+
+Any change to model data structures MUST maintain backward compatibility:
+- `from_dict()` must handle missing keys with sensible defaults
+- New fields: use `data.get("new_field", default_value)`
+- Renamed fields: add migration logic in `from_dict()` (see `_SKILL_MIGRATION_MAP` in `progression.py` for an example)
+- Removed fields: silently ignore in `from_dict()` — don't crash on old save data
+- Never change the semantics of existing serialized field names
+
 ## Gameplay Philosophy
 
 - **Player agency**: every choice should have meaningful trade-offs
@@ -161,6 +190,7 @@ def buy_commodity(self, commodity_id: str, quantity: int,
 - **Satisfying feedback**: particle effects, transitions, clear success/failure messages
 - **Clarity**: the player should always understand what happened and why
 - **Information asymmetry**: players learn market patterns through play; skills reveal more data
+- **Deterministic outcomes**: social skill checks use threshold comparison (effective_level >= difficulty), NOT random rolls. No save scumming. Skills and investment determine success, not luck.
 
 ## Logging
 
@@ -172,6 +202,31 @@ from spacegame.utils.logger import logger
 - `logger.warning()` — recoverable issues (missing data files, version mismatches)
 - `logger.error()` — failures (save errors, data load failures)
 
+## Narrative & Writing
+
+- **Writing guide**: `requirements/dialogue_writing_guide.md` — 11-section Writing Bible. Read it before writing dialogue or narration.
+- **Character voices**: `requirements/character_voices.md` — voice sheets for primary crew (Elena, Marcus, Priya, Tomas)
+- **Cultural guide**: `requirements/cultural_guide.md` — worldbuilding bible (year 2335, Aurelia Expanse)
+- **Banned NPC names**: Yara, Elara, Kael, Mara, Lydia, Clive, Magnus, Ambrose (AI-overused)
+- **Anti-patterns**: No em-dashes. No "no X, no Y" constructions. No "a testament to" or "couldn't help but." These are GenAI tells.
+- **Tutorial voice**: Tutorials should feel like dirty jobs and earned progressions, not hand-holding. NPCs supervise, they don't teach. The mechanic is impatient, not helpful. The shift supervisor gives orders, not lessons.
+- **Flag-gated content**: Story progression uses `player.dialogue_flags` (a flat dict of string→bool). Missions, dialogues, and tutorials all gate on these flags.
+
+## Cross-Cutting Concerns
+
+When modifying a gameplay system, check these secondary impacts:
+
+| If you change... | Also update... |
+|-----------------|----------------|
+| Model fields | `to_dict()`, `from_dict()`, relevant tests |
+| Skill bonus_types | `create_default_skills()`, the system that reads it, integration test |
+| GameState enum | `game.py` transition router, `_ensure_*_view()` factory, cockpit_hud context map |
+| Commodity/system data | `test_cross_references.py` data validation tests |
+| Dialogue flags | Check all `dialogue_flags.get("flag_name")` consumers |
+| Ship stats | Both build-derived path AND legacy ShipType path in `build_player_combat_state()` |
+| Crew abilities | `crew.py` template, `game.py` crew bonus application, combat engine crew moves |
+| Tutorial flow | Shop → builder → station hub chain; check narration, completion flags, view lifecycle |
+
 ## Common Pitfalls
 
 - Views **must** call `super().on_enter()` / `super().on_exit()` — these set `self.active`
@@ -182,3 +237,9 @@ from spacegame.utils.logger import logger
 - Never create Surfaces inside `update()` — create in `__init__` or `on_enter()`, reuse each frame
 - Use `.convert_alpha()` on loaded images for rendering performance
 - Pool particles and reuse objects — avoid GC pressure in the game loop
+- Use `pytest.approx()` for float comparisons — skill bonuses accumulate floating point error
+- `SocialManager()` takes no constructor args — use `sm.set_progression(prog)` after creation
+- `ActionQueue.actions` returns a **copy** — don't append to it directly, use `queue.add()`
+- `ShipType` has many required fields — avoid constructing in tests; use data loader or mock
+- `build_player_combat_state()` has TWO code paths (build-derived vs legacy) — skill bonuses must be applied in BOTH
+- Tutorial views set `_tutorial_mode = True` on the view instance, but this is NOT persisted to save files
