@@ -34,6 +34,18 @@ DISPOSITION_MAX: int = 100
 DISPOSITION_ON_CHECK_SUCCESS: int = 3
 DISPOSITION_ON_CHECK_FAILURE: int = -2
 
+# Specialization bonus: soft modifier that rewards focusing on a skill
+# relative to your other social skills. Measured from base_level only —
+# tree/synergy/disposition contribute to effective_level orthogonally.
+#
+# Ratio = skill_X.base_level / mean(all_social_base_levels)
+# Bonus = int((ratio - 1.0) * SPEC_BONUS_SCALE), clamped to [SPEC_BONUS_MIN,
+# SPEC_BONUS_MAX]. Truncation (not rounding) means you have to earn a full
+# point — a ratio of 1.25 is not a specialist.
+SPEC_BONUS_SCALE: float = 2.0
+SPEC_BONUS_MAX: int = 2
+SPEC_BONUS_MIN: int = -2
+
 
 # ============================================================================
 # SocialSkill
@@ -153,12 +165,61 @@ class SocialManager:
         current = self.get_disposition(npc_id)
         self._npc_disposition[npc_id] = max(DISPOSITION_MIN, min(DISPOSITION_MAX, current + amount))
 
+    # --- Specialization (soft modifier) ---
+
+    def get_specialization_ratio(self, skill_id: str) -> float:
+        """Ratio of this skill's base level vs the mean across all social skills.
+
+        Ratio 1.0 = balanced (skill matches average). Ratio > 1.0 = specialized.
+        Ratio < 1.0 = neglected relative to others.
+
+        Uses base_level only (the use-based component) — the player's
+        dialogue-path choices, not their stat allocations.
+
+        Args:
+            skill_id: Social skill to measure.
+
+        Returns:
+            Float ratio. Returns 1.0 if no skills are leveled (edge case).
+        """
+        levels = [s.level for s in self._skills.values()]
+        if not levels:
+            return 1.0
+        avg = sum(levels) / len(levels)
+        if avg <= 0:
+            return 1.0
+        return self.get_skill_level(skill_id) / avg
+
+    def get_specialization_bonus(self, skill_id: str) -> int:
+        """Integer bonus (or penalty) to effective level from specialization.
+
+        Formula: int((ratio - 1.0) * SPEC_BONUS_SCALE), clamped to
+        [SPEC_BONUS_MIN, SPEC_BONUS_MAX]. Truncation (not rounding) means a
+        specialist must earn a full point — a ratio of 1.25 doesn't cross
+        the threshold.
+
+        Args:
+            skill_id: Social skill to measure.
+
+        Returns:
+            Integer bonus, typically -2 to +2.
+        """
+        ratio = self.get_specialization_ratio(skill_id)
+        raw = (ratio - 1.0) * SPEC_BONUS_SCALE
+        if raw >= 0:
+            return min(SPEC_BONUS_MAX, int(raw))
+        return max(SPEC_BONUS_MIN, int(raw))
+
     # --- Effective level & check resolution ---
 
     def get_effective_level(self, skill_id: str, npc_id: str) -> int:
-        """Get skill level adjusted by disposition, tree bonuses, and attributes.
+        """Get skill level adjusted by disposition, tree, attributes, and spec.
 
-        Formula: use_level + disposition_modifier + tree_bonus + synergy_bonus
+        Formula: base + disposition_modifier + tree_bonus + synergy_bonus
+        + specialization_bonus.
+
+        Specialization bonus rewards players for focusing on a skill
+        relative to their other social skills (NV-0 soft modifier).
 
         Args:
             skill_id: Social skill to check.
@@ -181,7 +242,11 @@ class SocialManager:
         if self._attribute_sheet is not None:
             synergy_bonus = self._attribute_sheet.get_synergy_social_bonus()
 
-        return max(0, base_level + disp_modifier + tree_bonus + synergy_bonus)
+        spec_bonus = self.get_specialization_bonus(skill_id)
+
+        return max(
+            0, base_level + disp_modifier + tree_bonus + synergy_bonus + spec_bonus
+        )
 
     def can_pass_check(self, skill_id: str, difficulty: int, npc_id: str) -> bool:
         """Check if the player can pass a skill check (for display purposes).

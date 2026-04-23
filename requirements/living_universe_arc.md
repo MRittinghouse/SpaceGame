@@ -86,6 +86,13 @@ This:
 
 ### Sub-sprint breakdown
 
+**NV-0: Specialization soft modifier** (~1 day) — mechanic infrastructure that governs both existing checks and NV-7 expansion.
+- Add `get_specialization_ratio(skill_id)` and `get_specialization_bonus(skill_id)` on `SocialManager`.
+- Formula: `ratio = skill_base / mean(all_social_base_levels)`; `bonus = int((ratio - 1.0) * 2)` clamped `[-2, +2]`.
+- Integrate bonus into `get_effective_level`.
+- Tests: balanced (bonus 0), specialist (bonus +1/+2), neglector (bonus -1/-2), edge cases.
+- Rewards focused investment over passive level-grinding across the entire game.
+
 **NV-1: Audit + tooling** (~1 day)
 - Write `tools/nv_audit.py`: scans `data/dialogue/dialogues.json`, identifies response options with skill-derived `required_flags`, outputs a CSV + markdown catalog.
 - Generate `requirements/nv_audit_findings.md` with the complete catalog grouped by skill type, current quality grade (manually tagged), and rewrite priority.
