@@ -25,29 +25,35 @@ class TestTreeSizes:
 
     def test_exploration_tree_size(self) -> None:
         prog = PlayerProgression()
-        assert len(prog.get_skill_tree(SkillTreeType.EXPLORATION)) == 11
+        # +1 (steady_stick, NV-6.5 Piloting base)
+        assert len(prog.get_skill_tree(SkillTreeType.EXPLORATION)) == 12
 
     def test_leadership_tree_size(self) -> None:
         prog = PlayerProgression()
-        assert len(prog.get_skill_tree(SkillTreeType.LEADERSHIP)) == 9
+        # +2 (give_the_word + command_presence, NV-6.5 Leadership axis)
+        assert len(prog.get_skill_tree(SkillTreeType.LEADERSHIP)) == 11
 
     def test_social_tree_size(self) -> None:
         prog = PlayerProgression()
-        assert len(prog.get_skill_tree(SkillTreeType.SOCIAL)) == 11
+        # +2 (poker_face + ghost_protocol, NV-6.5 Deception axis)
+        assert len(prog.get_skill_tree(SkillTreeType.SOCIAL)) == 13
 
     def test_industry_tree_size(self) -> None:
         prog = PlayerProgression()
-        assert len(prog.get_skill_tree(SkillTreeType.INDUSTRY)) == 10
+        # +2 (tool_sense + engineer_insight, NV-6.5 Technical axis)
+        assert len(prog.get_skill_tree(SkillTreeType.INDUSTRY)) == 12
 
     def test_total_skill_count(self) -> None:
         skills = create_default_skills()
-        assert len(skills) == 75
+        # NV-6.5: 75 + 7 new skill-check axis skills
+        assert len(skills) == 82
 
     def test_total_max_levels(self) -> None:
-        """Total cost to max every skill should be 132."""
+        """Total cost to max every skill should be 146."""
         skills = create_default_skills()
         total = sum(s.max_level * s.cost_per_level for s in skills.values())
-        assert total == 132
+        # NV-6.5: 132 + (7 skills × max_level 2) = 146
+        assert total == 146
 
     def test_six_trees_only(self) -> None:
         """Exactly 6 tree types should exist."""

@@ -2145,6 +2145,7 @@ class Game:
             recipes=self.data_loader.recipes,
             system_id=self.player.current_system_id,
             progression=self.player.progression,
+            social_manager=self.social_manager,
         )
         self.refining_view._get_crew_line = self._make_crew_commentary_fn()
         self.state_manager.register_state(GameState.REFINING, self.refining_view)
@@ -2981,6 +2982,10 @@ class Game:
             total_xp = sum(e.template.xp_reward for e in state.enemies)
             xp_msgs = self.player.progression.add_xp(total_xp)
             self._process_xp_messages(xp_msgs)
+            # NV-6.5: grant Piloting XP so the skill keeps growing when
+            # dialogue Piloting checks are sparse. Only on true victory —
+            # negotiated outcomes don't prove piloting.
+            self._grant_piloting_xp_on_combat_win()
 
             # Distribute loot to player cargo
             for enemy in state.enemies:
@@ -4609,6 +4614,29 @@ class Game:
             self._mission_notifications.append(msg)
             if "Level Up" in msg:
                 self.audio_manager.play_sfx("level_up")
+
+    def _grant_piloting_xp_on_combat_win(self) -> None:
+        """Award Piloting XP on combat victory (NV-6.5).
+
+        Keeps the Piloting skill axis growing for players who fight but
+        rarely see dialogue Piloting checks. Only called from true
+        VICTORY — negotiated wins don't prove piloting.
+        """
+        if self.social_manager is None:
+            return
+        from spacegame.models.social import (
+            MAX_SOCIAL_LEVEL,
+            SOCIAL_XP_THRESHOLDS,
+            XP_ON_COMBAT_WIN,
+        )
+
+        pilot = self.social_manager.get_skill("piloting")
+        if pilot is None:
+            return
+        msgs = pilot.add_xp(XP_ON_COMBAT_WIN, MAX_SOCIAL_LEVEL, SOCIAL_XP_THRESHOLDS)
+        # Surface level-up messages through the same notification channel
+        for msg in msgs:
+            self._mission_notifications.append(msg)
 
     def _get_npc_home_systems(self) -> dict[str, str]:
         """Build NPC ID -> home system ID mapping from data loader."""

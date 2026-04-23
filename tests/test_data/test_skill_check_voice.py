@@ -44,10 +44,17 @@ from typing import Iterator, Optional
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 DIALOGUES_PATH = PROJECT_ROOT / "data" / "dialogue" / "dialogues.json"
 
-# Registered skill_check skills as of NV-5. Keep in sync with
-# ``spacegame.models.social.SOCIAL_SKILL_DEFINITIONS``. NV-6.5 will
-# expand this; update both locations together.
-VALID_SKILLS = {"persuasion", "intimidation", "observation"}
+# Registered skill_check skills as of NV-6.5. Keep in sync with
+# ``spacegame.models.social.SOCIAL_SKILL_DEFINITIONS``.
+VALID_SKILLS = {
+    "persuasion",
+    "intimidation",
+    "observation",
+    "deception",
+    "technical",
+    "piloting",
+    "leadership",
+}
 
 # Grade-D bare declaratives — single-clause acknowledgments that carry no
 # skill-derived insight. Match against the stripped, lowercased body.

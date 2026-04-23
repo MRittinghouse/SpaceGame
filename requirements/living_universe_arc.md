@@ -93,6 +93,28 @@ This:
 - Tests: balanced (bonus 0), specialist (bonus +1/+2), neglector (bonus -1/-2), edge cases.
 - Rewards focused investment over passive level-grinding across the entire game.
 
+**NV-6.5: Skill registry expansion** (~1-2 days) — **SHIPPED 2026-04-23**
+
+Infrastructure sprint before NV-7 content. Registered four new skills so the authoring palette goes from 3 to 7.
+
+- Added `deception`, `technical`, `piloting`, `leadership` to `SOCIAL_SKILL_DEFINITIONS`. Same XP thresholds, same max level 5, same ±2 growth on success/failure.
+- New `SKILL_TO_ATTRIBUTE` map routes synergy per skill: socials → SYN, Technical → ING, Piloting → ACU. New `AttributeSheet.get_attribute_check_bonus(attr_id)` method.
+- New `SKILLS_USING_DISPOSITION` set selectively applies disposition modifier — only social-interaction skills respond to NPC mood; Technical/Piloting ignore it (NPC opinion doesn't change whether you can read a circuit).
+- `faction_social_bonus` (Cultural Savant) also now correctly scoped to social skills only.
+- Tree skills added (4 base + 3 variants):
+  - Base (Tier 1, +1 to checks, max_level 2): `poker_face` (Social→Deception), `tool_sense` (Industry→Technical), `steady_stick` (Exploration→Piloting), `give_the_word` (Leadership→Leadership).
+  - Variants (Tier 2, narrowly-scoped, prerequisites the base): `ghost_protocol` (Deception+contraband), `engineer_insight` (Technical+refining), `command_presence` (Leadership+crew).
+- XP growth hooks outside dialogue (proactive — addresses "new skills stagnate if NV-7 dialogue is sparse"):
+  - `refining_view._handle_result` grants Technical +2 XP per successful refine.
+  - `game._grant_piloting_xp_on_combat_win` grants Piloting +2 XP per true VICTORY (not negotiated).
+- Downstream wiring: `tests/test_data/test_skill_check_voice.py` VALID_SKILLS expanded; `tools/nv_audit.py` skill inference updated with heuristics for all 7; `dialogue_writing_guide.md` infrastructure note rewritten with attribute mapping, disposition rules, XP growth, and per-skill authoring notes with GOOD/BAD examples for each new skill.
+- Back-compat: `SocialManager.load_state` existing behavior handles old 3-skill saves cleanly (new skills default to level 1); test coverage confirms.
+- Total new tests: +29 in `tests/test_models/test_nv_skill_registry.py` covering registry, attribute mapping, selective disposition, tree bonuses, save/load, XP hook wiring.
+
+Total skill count: 75 → 82. Total max levels: 132 → 146.
+
+---
+
 **NV-0.5: Long-response tooltip UI** (~1-2 days) — UI infrastructure for voice-rich skill-gated responses.
 - `_ResponseButton` gains `is_truncated` flag, detected at init from font+rect+text.
 - Truncation indicator switched from `..` to styled `…` in highlight color.

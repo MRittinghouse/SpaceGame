@@ -22,6 +22,10 @@ SOCIAL_SKILL_DEFINITIONS: dict[str, str] = {
     "persuasion": "Persuasion",
     "intimidation": "Intimidation",
     "observation": "Observation",
+    "deception": "Deception",
+    "technical": "Technical",
+    "piloting": "Piloting",
+    "leadership": "Leadership",
 }
 
 SOCIAL_XP_THRESHOLDS: list[int] = [0, 8, 25, 55, 100]
@@ -35,16 +39,46 @@ DISPOSITION_ON_CHECK_SUCCESS: int = 3
 DISPOSITION_ON_CHECK_FAILURE: int = -2
 
 # Specialization bonus: soft modifier that rewards focusing on a skill
-# relative to your other social skills. Measured from base_level only —
+# relative to your other skills. Measured from base_level only —
 # tree/synergy/disposition contribute to effective_level orthogonally.
 #
-# Ratio = skill_X.base_level / mean(all_social_base_levels)
+# Ratio = skill_X.base_level / mean(all_skill_base_levels)
 # Bonus = int((ratio - 1.0) * SPEC_BONUS_SCALE), clamped to [SPEC_BONUS_MIN,
 # SPEC_BONUS_MAX]. Truncation (not rounding) means you have to earn a full
 # point — a ratio of 1.25 is not a specialist.
 SPEC_BONUS_SCALE: float = 2.0
 SPEC_BONUS_MAX: int = 2
 SPEC_BONUS_MIN: int = -2
+
+# Which attribute contributes synergy bonus to each skill. Socials share
+# Synergy (SYN); Technical draws on Ingenuity (ING, "technical creativity");
+# Piloting draws on Acuity (ACU, "analytical precision").
+SKILL_TO_ATTRIBUTE: dict[str, str] = {
+    "persuasion": "syn",
+    "intimidation": "syn",
+    "observation": "syn",
+    "deception": "syn",
+    "leadership": "syn",
+    "technical": "ing",
+    "piloting": "acu",
+}
+
+# Skills whose effective level is influenced by NPC disposition. Social-
+# interaction skills respond to NPC mood; expertise skills (Technical,
+# Piloting) don't — the NPC's opinion of you doesn't change whether you
+# can read a circuit or thread a nebula.
+SKILLS_USING_DISPOSITION: set[str] = {
+    "persuasion",
+    "intimidation",
+    "observation",
+    "deception",
+    "leadership",
+}
+
+# XP grants outside of dialogue — keep Technical and Piloting from stagnating
+# when they're rarely exercised in conversation.
+XP_ON_REFINE_SUCCESS: int = 2  # Technical growth from successful refines
+XP_ON_COMBAT_WIN: int = 2  # Piloting growth from combat victories
 
 
 # ============================================================================
@@ -218,29 +252,41 @@ class SocialManager:
         Formula: base + disposition_modifier + tree_bonus + synergy_bonus
         + specialization_bonus.
 
-        Specialization bonus rewards players for focusing on a skill
-        relative to their other social skills (NV-0 soft modifier).
+        - Disposition modifier only applies to social-interaction skills
+          (Persuasion, Intimidation, Deception, Observation, Leadership).
+          Expertise skills (Technical, Piloting) ignore NPC mood.
+        - Synergy bonus draws from the skill's matching attribute per
+          ``SKILL_TO_ATTRIBUTE``.
+        - Specialization rewards focusing on a skill relative to peers
+          (NV-0 soft modifier).
 
         Args:
-            skill_id: Social skill to check.
-            npc_id: NPC whose disposition modifies the check.
+            skill_id: Skill to check.
+            npc_id: NPC whose disposition modifies the check (if applicable).
 
         Returns:
             Effective level (minimum 0).
         """
         base_level = self.get_skill_level(skill_id)
-        disposition = self.get_disposition(npc_id)
-        disp_modifier = (disposition - DISPOSITION_DEFAULT) // 10
+
+        disp_modifier = 0
+        if skill_id in SKILLS_USING_DISPOSITION:
+            disposition = self.get_disposition(npc_id)
+            disp_modifier = (disposition - DISPOSITION_DEFAULT) // 10
 
         tree_bonus = 0
         if self._progression is not None:
             tree_bonus = int(self._progression.get_bonus(f"{skill_id}_bonus"))
-            # Cultural Savant: +1 per level in faction-aligned systems
-            tree_bonus += int(self._progression.get_bonus("faction_social_bonus"))
+            # Cultural Savant: +1 per level in faction-aligned systems — only
+            # relevant to social-interaction skills.
+            if skill_id in SKILLS_USING_DISPOSITION:
+                tree_bonus += int(self._progression.get_bonus("faction_social_bonus"))
 
         synergy_bonus = 0
         if self._attribute_sheet is not None:
-            synergy_bonus = self._attribute_sheet.get_synergy_social_bonus()
+            attr = SKILL_TO_ATTRIBUTE.get(skill_id)
+            if attr is not None:
+                synergy_bonus = self._attribute_sheet.get_attribute_check_bonus(attr)
 
         spec_bonus = self.get_specialization_bonus(skill_id)
 

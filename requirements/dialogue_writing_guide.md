@@ -457,9 +457,36 @@ No check, no difficulty, should ever fully lock a mission. Failure paths must le
 
 ### Infrastructure note (as of NV-6.5)
 
-Valid `skill_check.skill` values: `persuasion`, `intimidation`, `observation`.
+Valid `skill_check.skill` values: `persuasion`, `intimidation`, `observation`, `deception`, `technical`, `piloting`, `leadership`. Seven registered skills — the full authoring palette for NV-7.
 
-NV-6.5 will expand this to include `deception`, `technical`, `piloting`, `leadership`. Until that infrastructure lands, NV-7 expansion authoring uses only the three valid skills. Post-NV-6.5, the full eight-skill palette opens up.
+**Attribute mapping** (each skill draws synergy from its matching attribute):
+- Socials (Persuasion, Intimidation, Observation, Deception, Leadership) → Synergy (SYN)
+- Technical → Ingenuity (ING)
+- Piloting → Acuity (ACU)
+
+**Disposition modifier** applies only to social-interaction skills (Persuasion, Intimidation, Observation, Deception, Leadership). Expertise skills (Technical, Piloting) ignore NPC mood — the NPC's opinion of you doesn't change whether you can read a circuit or thread a nebula.
+
+**XP growth outside dialogue** (NV-6.5):
+- Technical: +2 XP per successful refining job. Keeps the skill growing for players who refine often but see dialogue Technical checks rarely.
+- Piloting: +2 XP per combat victory (true VICTORY only; negotiated outcomes don't count).
+
+### Per-skill authoring notes (new in NV-6.5)
+
+**Deception Checks** — frame as misdirection, not lies.
+- GOOD: `[Deception 2] "You're looking for a cargo skiff with Guild paint. I came in on the freight lane."`
+- BAD: `[Deception] Lie to them.`
+
+**Technical Checks** — frame as engineering insight, not computer wizardry.
+- GOOD: `[Technical 2] This relay's been patched twice. Third time's a fire.`
+- BAD: `[Technical] Hack the terminal.`
+
+**Piloting Checks** — frame as pilot instinct, not stat rolls.
+- GOOD: `[Piloting 2] "Angle of approach is wrong for a freighter. He's been in a fighter cockpit."`
+- BAD: `[Piloting] Maneuver skillfully.`
+
+**Leadership Checks** — frame as command-presence, not giving orders.
+- GOOD: `[Leadership 2] "Everyone in this room wants to hear someone say the next thing. Be quiet while I say it."`
+- BAD: `[Leadership] Lead them.`
 
 ---
 

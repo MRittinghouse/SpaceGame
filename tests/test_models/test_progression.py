@@ -20,7 +20,7 @@ class TestPlayerProgression:
         assert prog.xp == 0
         assert prog.level == 1
         assert prog.skill_points == 0
-        assert len(prog.skills) == 75  # 6 trees after S1 overhaul
+        assert len(prog.skills) == 82  # 6 trees + 7 NV-6.5 skill-axis additions
 
     def test_add_xp(self):
         prog = PlayerProgression()
@@ -160,7 +160,7 @@ class TestSkillInvestment:
         leadership_skills = prog.get_skill_tree(SkillTreeType.LEADERSHIP)
         assert len(commerce_skills) == 12
         assert len(combat_skills) == 22
-        assert len(leadership_skills) == 9
+        assert len(leadership_skills) == 11  # +2 NV-6.5 (give_the_word, command_presence)
 
 
 class TestProgressionSerialization:
@@ -326,7 +326,7 @@ class TestSocialTree:
     def test_social_tree_count(self):
         prog = PlayerProgression()
         social_skills = prog.get_skill_tree(SkillTreeType.SOCIAL)
-        assert len(social_skills) == 11
+        assert len(social_skills) == 13  # +2 NV-6.5 (poker_face, ghost_protocol)
 
     def test_social_skill_bonuses(self):
         prog = PlayerProgression()

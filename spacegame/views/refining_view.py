@@ -66,6 +66,7 @@ class RefiningView(BaseView):
         recipes: List[Recipe],
         system_id: str,
         progression=None,
+        social_manager=None,
     ):
         super().__init__()
         self.ui_manager = ui_manager
@@ -74,6 +75,9 @@ class RefiningView(BaseView):
         self.all_recipes = recipes
         self.system_id = system_id
         self.progression = progression
+        # NV-6.5: Technical XP grows from completed refining jobs so the
+        # skill doesn't stagnate when dialogue checks alone are sparse.
+        self.social_manager = social_manager
 
         # Tutorial mode (set externally by game.py)
         self._tutorial_mode: bool = False
@@ -881,6 +885,19 @@ class RefiningView(BaseView):
         self.player.recipes_crafted.add(result.recipe_id)
         self._jobs_completed_count += 1
         self._session_recipes.add(result.recipe_id)
+
+        # NV-6.5: grant Technical XP so the skill keeps growing even when
+        # dialogue Technical checks are sparse.
+        if self.social_manager is not None:
+            from spacegame.models.social import (
+                MAX_SOCIAL_LEVEL,
+                SOCIAL_XP_THRESHOLDS,
+                XP_ON_REFINE_SUCCESS,
+            )
+
+            tech = self.social_manager.get_skill("technical")
+            if tech is not None:
+                tech.add_xp(XP_ON_REFINE_SUCCESS, MAX_SOCIAL_LEVEL, SOCIAL_XP_THRESHOLDS)
 
         # Award forge tokens with animated counter
         if result.forge_tokens_earned > 0:

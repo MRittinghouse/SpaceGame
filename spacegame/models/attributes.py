@@ -126,6 +126,23 @@ class AttributeSheet:
         """
         return self.get_value("syn") // 2
 
+    def get_attribute_check_bonus(self, attr_id: str) -> int:
+        """Get an attribute's contribution to skill-check effective level.
+
+        Used by ``SocialManager`` via ``SKILL_TO_ATTRIBUTE`` so each
+        skill can draw synergy from the attribute it logically belongs
+        to: socials from SYN, Technical from ING, Piloting from ACU.
+
+        Args:
+            attr_id: Attribute ID (``syn``, ``ing``, ``acu``, etc.).
+
+        Returns:
+            Bonus to effective level (attribute value // 2).
+        """
+        if attr_id not in self.values:
+            return 0
+        return self.get_value(attr_id) // 2
+
     def allocate_point(self, attr_id: str) -> tuple[bool, str]:
         """Allocate one unspent point to an attribute.
 

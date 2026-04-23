@@ -607,10 +607,11 @@ class TestPointEconomy:
         assert prog.skill_points == 99
 
     def test_total_levels_vs_points(self) -> None:
-        """132 total max levels means full mastery requires level 133."""
+        """After NV-6.5: 146 total max levels (132 + 14 from 7 new
+        skill-axis skills at max_level=2). Full mastery needs level 147."""
         skills = create_default_skills()
         total_max = sum(s.max_level for s in skills.values())
-        assert total_max == 132
+        assert total_max == 146
 
 
 # ============================================================================
@@ -633,6 +634,20 @@ class TestNoOrphanedSkills:
             "persuasion_bonus",  # SocialManager uses f"{skill_id}_bonus"
             "intimidation_bonus",
             "observation_bonus",
+            # NV-6.5 — same f"{skill_id}_bonus" dynamic lookup
+            "deception_bonus",
+            "technical_bonus",
+            "piloting_bonus",
+            "leadership_bonus",
+        }
+        # NV-6.5 variant bonuses — narrowly-scoped context bonuses that
+        # will be read by future context-aware callers (NV-7 dialogue,
+        # customs events, crew-presence checks). Currently defined but
+        # not yet consumed; track here until gameplay reads them.
+        nv_6_5_pending_variants = {
+            "deception_contraband_bonus",
+            "technical_refining_bonus",
+            "leadership_crew_bonus",
         }
         # Skill read via direct attribute access, not get_bonus()
         direct_access = {
@@ -648,7 +663,13 @@ class TestNoOrphanedSkills:
             "route_planner",  # Fuel cost display always active
         }
 
-        skip = dynamic_bonus_types | direct_access | deferred | by_design
+        skip = (
+            dynamic_bonus_types
+            | direct_access
+            | deferred
+            | by_design
+            | nv_6_5_pending_variants
+        )
 
         missing = []
         for bt in sorted(bonus_types):

@@ -74,11 +74,13 @@ SKILL_TAG_PREFIXES = (
     "[LEADERSHIP",
 )
 
-# Known skill identifiers (values that skill_check.skill typically holds).
+# Known skill identifiers — seven registered skill_check skills as of NV-6.5.
+# "perception" retained as an inference fallback (pre-NV-2/3 audit mapped
+# skim/watch/tap patterns to "perception"; we now map to "observation"
+# since perception isn't a real skill_check skill).
 KNOWN_SKILLS = {
     "persuasion",
     "intimidation",
-    "perception",
     "observation",
     "deception",
     "technical",
@@ -149,15 +151,24 @@ def _infer_skill_from_flag_name(flag: str) -> str:
     these for manual skill assignment during grading.
     """
     low = flag.lower()
-    # Content-based hints, all mapped to the three valid skill_check skills.
+    # Content-based hints mapped to the seven registered skill_check skills
+    # (NV-6.5 expanded the registry from 3 to 7).
     if "skim" in low or "watch" in low or "tap" in low or "spot" in low:
+        return "observation"
+    if "observ" in low or "notice" in low or "saw_" in low:
         return "observation"
     if "persuad" in low or "convince" in low:
         return "persuasion"
     if "intimidat" in low or "threat" in low:
         return "intimidation"
-    if "observ" in low or "notice" in low:
-        return "observation"
+    if "deceiv" in low or "lied_" in low or "bluff" in low:
+        return "deception"
+    if "tech_" in low or "engineer" in low or "hack" in low or "repair" in low:
+        return "technical"
+    if "pilot" in low or "evasive" in low or "maneuver" in low:
+        return "piloting"
+    if "command" in low or "led_" in low or "rally" in low:
+        return "leadership"
     return "unknown"
 
 

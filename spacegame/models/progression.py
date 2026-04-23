@@ -765,6 +765,16 @@ def create_default_skills() -> Dict[str, SkillNode]:
         bonus_type="salvage_yield",
         bonus_per_level=0.15,
     )
+    # NV-6.5: Piloting base — entry into the Piloting skill-check axis.
+    skills["steady_stick"] = SkillNode(
+        id="steady_stick",
+        name="Steady Stick",
+        description="+1 Piloting level per level",
+        tree=SkillTreeType.EXPLORATION,
+        max_level=2,
+        bonus_type="piloting_bonus",
+        bonus_per_level=1.0,
+    )
 
     # --- Tier 2: Specialization ---
     skills["system_intel"] = SkillNode(
@@ -885,6 +895,16 @@ def create_default_skills() -> Dict[str, SkillNode]:
         bonus_type="reputation_gain_bonus",
         bonus_per_level=1.0,
     )
+    # NV-6.5: Leadership base — entry into the Leadership skill-check axis.
+    skills["give_the_word"] = SkillNode(
+        id="give_the_word",
+        name="Give the Word",
+        description="+1 Leadership level per level",
+        tree=SkillTreeType.LEADERSHIP,
+        max_level=2,
+        bonus_type="leadership_bonus",
+        bonus_per_level=1.0,
+    )
 
     # --- Tier 2: Specialization ---
     skills["inspiring_leader"] = SkillNode(
@@ -916,6 +936,17 @@ def create_default_skills() -> Dict[str, SkillNode]:
         prerequisite_id="crew_manager",
         bonus_type="crew_combat_damage",
         bonus_per_level=0.15,
+    )
+    # NV-6.5 variant: command-presence check bonus when 2+ crew aboard.
+    skills["command_presence"] = SkillNode(
+        id="command_presence",
+        name="Command Presence",
+        description="+1 Leadership per level when 2+ crew are aboard",
+        tree=SkillTreeType.LEADERSHIP,
+        max_level=2,
+        prerequisite_id="give_the_word",
+        bonus_type="leadership_crew_bonus",
+        bonus_per_level=1.0,
     )
     skills["unbreakable_bonds"] = SkillNode(
         id="unbreakable_bonds",
@@ -993,6 +1024,16 @@ def create_default_skills() -> Dict[str, SkillNode]:
         bonus_type="observation_bonus",
         bonus_per_level=1.0,
     )
+    # NV-6.5: Deception base skill — social-tree entry.
+    skills["poker_face"] = SkillNode(
+        id="poker_face",
+        name="Poker Face",
+        description="+1 Deception level per level",
+        tree=SkillTreeType.SOCIAL,
+        max_level=2,
+        bonus_type="deception_bonus",
+        bonus_per_level=1.0,
+    )
 
     # --- Tier 2: Specialization ---
     skills["empathic_read"] = SkillNode(
@@ -1043,6 +1084,19 @@ def create_default_skills() -> Dict[str, SkillNode]:
         max_level=2,
         prerequisite_id="master_negotiator",
         bonus_type="faction_rep_multiplier",
+        bonus_per_level=1.0,
+    )
+    # NV-6.5 variant: context-narrow Deception bonus for contraband-aware
+    # checks. Stacks with the base deception_bonus but only when the
+    # encounter flag contraband_present is active.
+    skills["ghost_protocol"] = SkillNode(
+        id="ghost_protocol",
+        name="Ghost Protocol",
+        description="+1 Deception per level when carrying contraband",
+        tree=SkillTreeType.SOCIAL,
+        max_level=2,
+        prerequisite_id="poker_face",
+        bonus_type="deception_contraband_bonus",
         bonus_per_level=1.0,
     )
     skills["underworld_contacts"] = SkillNode(
@@ -1111,6 +1165,16 @@ def create_default_skills() -> Dict[str, SkillNode]:
         bonus_type="refining_speed",
         bonus_per_level=0.15,
     )
+    # NV-6.5: Technical base — entry into the Technical skill-check axis.
+    skills["tool_sense"] = SkillNode(
+        id="tool_sense",
+        name="Tool Sense",
+        description="+1 Technical level per level",
+        tree=SkillTreeType.INDUSTRY,
+        max_level=2,
+        bonus_type="technical_bonus",
+        bonus_per_level=1.0,
+    )
 
     # --- Tier 2: Specialization ---
     skills["rich_veins"] = SkillNode(
@@ -1122,6 +1186,18 @@ def create_default_skills() -> Dict[str, SkillNode]:
         prerequisite_id="click_power",
         bonus_type="rare_ore_chance",
         bonus_per_level=0.25,
+    )
+    # NV-6.5 variant: Technical bonus specifically for refining/inspection
+    # contexts. Stacks with the base technical_bonus at those moments.
+    skills["engineer_insight"] = SkillNode(
+        id="engineer_insight",
+        name="Engineer's Insight",
+        description="+1 Technical per level during refining or inspection",
+        tree=SkillTreeType.INDUSTRY,
+        max_level=2,
+        prerequisite_id="tool_sense",
+        bonus_type="technical_refining_bonus",
+        bonus_per_level=1.0,
     )
     skills["drone_fleet"] = SkillNode(
         id="drone_fleet",

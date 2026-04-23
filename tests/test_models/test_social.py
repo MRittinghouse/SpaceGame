@@ -106,27 +106,38 @@ class TestSocialManagerSkills:
         assert mgr.get_skill("persuasion") is not None
         assert mgr.get_skill("intimidation") is not None
         assert mgr.get_skill("observation") is not None
+        assert mgr.get_skill("deception") is not None
+        assert mgr.get_skill("technical") is not None
+        assert mgr.get_skill("piloting") is not None
+        assert mgr.get_skill("leadership") is not None
 
     def test_all_skills_start_at_level_1(self) -> None:
         mgr = SocialManager()
-        assert mgr.get_skill_level("persuasion") == 1
-        assert mgr.get_skill_level("intimidation") == 1
-        assert mgr.get_skill_level("observation") == 1
+        for skill in mgr.get_all_skills():
+            assert skill.level == 1
 
     def test_get_skill_nonexistent(self) -> None:
         mgr = SocialManager()
-        assert mgr.get_skill("deception") is None
+        assert mgr.get_skill("telepathy") is None
 
     def test_get_skill_level_nonexistent(self) -> None:
         mgr = SocialManager()
-        assert mgr.get_skill_level("deception") == 0
+        assert mgr.get_skill_level("telepathy") == 0
 
     def test_get_all_skills(self) -> None:
         mgr = SocialManager()
         skills = mgr.get_all_skills()
-        assert len(skills) == 3
+        assert len(skills) == 7
         ids = {s.id for s in skills}
-        assert ids == {"persuasion", "intimidation", "observation"}
+        assert ids == {
+            "persuasion",
+            "intimidation",
+            "observation",
+            "deception",
+            "technical",
+            "piloting",
+            "leadership",
+        }
 
 
 # ============================================================================
@@ -208,7 +219,7 @@ class TestSocialManagerEffectiveLevel:
 
     def test_effective_level_unknown_skill(self) -> None:
         mgr = SocialManager()
-        assert mgr.get_effective_level("deception", "elena_reeves") == 0
+        assert mgr.get_effective_level("telepathy", "elena_reeves") == 0
 
 
 # ============================================================================
@@ -271,7 +282,7 @@ class TestSocialManagerChecks:
 
     def test_resolve_check_unknown_skill(self) -> None:
         mgr = SocialManager()
-        success, msg = mgr.resolve_check("deception", 1, "elena_reeves")
+        success, msg = mgr.resolve_check("telepathy", 1, "elena_reeves")
         assert success is False
         assert "unknown" in msg.lower()
 
