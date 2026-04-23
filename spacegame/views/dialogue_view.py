@@ -26,7 +26,7 @@ from spacegame.config import (
 from spacegame.data_loader import DataLoader
 from spacegame.engine.audio_manager import get_audio_manager
 from spacegame.engine.backgrounds import AnimatedBackground
-from spacegame.engine.draw_utils import draw_panel
+from spacegame.engine.draw_utils import draw_panel, word_wrap
 from spacegame.engine.fonts import (
     FONT_BODY,
     FONT_DISPLAY,
@@ -43,7 +43,15 @@ from spacegame.views.base_view import BaseView
 
 
 class _ResponseButton:
-    """Manually-rendered response button for the dialogue view."""
+    """Manually-rendered response button for the dialogue view.
+
+    Long response text is character-truncated to fit the button width and
+    gets a styled ``…`` indicator in highlight color. When truncated, the
+    view can render a tooltip near the button with the full wrapped text —
+    see ``DialogueView._render_response_tooltip``.
+    """
+
+    _TRUNCATION_GLYPH = "\u2026"  # …
 
     def __init__(
         self,
@@ -59,10 +67,25 @@ class _ResponseButton:
         self.hovered = False
         self.check_info = check_info  # {skill, difficulty, effective, can_pass}
         self.disposition_preview = disposition_preview  # read_the_room: predicted change
+        # Whether the button's text was character-truncated to fit. Used by
+        # DialogueView to decide if a tooltip should show on hover. Cached
+        # at init so repeated render passes don't re-measure.
+        self.is_truncated: bool = self._compute_truncated()
 
     def update_hover(self, mouse_pos: tuple[int, int]) -> None:
         """Update hover state from current mouse position."""
         self.hovered = self.rect.collidepoint(mouse_pos)
+
+    def _max_text_width(self) -> int:
+        """Inner text width budget after left/right padding."""
+        return self.rect.width - 24
+
+    def _compute_truncated(self) -> bool:
+        """Measure whether the full text fits inside the button."""
+        # Use the wider (hover) prefix so both states agree on truncation.
+        prefix = "\u25b8 "
+        surf = self.font.render(prefix + self.text, True, (255, 255, 255))
+        return surf.get_width() > self._max_text_width()
 
     def render(self, screen: pygame.Surface) -> None:
         """Draw the response button."""
@@ -80,15 +103,30 @@ class _ResponseButton:
         # Arrow prefix — clip text to button width
         prefix = "\u25b8 " if self.hovered else "  "
         display_text = self.text
-        max_text_w = self.rect.width - 24  # 12px padding each side
+        max_text_w = self._max_text_width()
         text_surf = self.font.render(prefix + display_text, True, text_color)
-        if text_surf.get_width() > max_text_w:
-            while len(display_text) > 3 and text_surf.get_width() > max_text_w:
+        truncated_this_frame = text_surf.get_width() > max_text_w
+        if truncated_this_frame:
+            # Reserve room for the ellipsis glyph and trim until the
+            # body-plus-glyph fits.
+            glyph_surf = self.font.render(self._TRUNCATION_GLYPH, True, Colors.TEXT_HIGHLIGHT)
+            budget = max_text_w - glyph_surf.get_width()
+            body_surf = self.font.render(prefix + display_text, True, text_color)
+            while len(display_text) > 3 and body_surf.get_width() > budget:
                 display_text = display_text[:-1]
-            display_text = display_text.rstrip() + ".."
-            text_surf = self.font.render(prefix + display_text, True, text_color)
-        text_rect = text_surf.get_rect(midleft=(self.rect.x + 12, self.rect.centery))
-        screen.blit(text_surf, text_rect)
+                body_surf = self.font.render(prefix + display_text, True, text_color)
+            display_text = display_text.rstrip()
+            body_surf = self.font.render(prefix + display_text, True, text_color)
+            body_rect = body_surf.get_rect(midleft=(self.rect.x + 12, self.rect.centery))
+            screen.blit(body_surf, body_rect)
+            # Draw the ellipsis in highlight color, directly after the body.
+            glyph_rect = glyph_surf.get_rect(
+                midleft=(body_rect.right, self.rect.centery)
+            )
+            screen.blit(glyph_surf, glyph_rect)
+        else:
+            text_rect = text_surf.get_rect(midleft=(self.rect.x + 12, self.rect.centery))
+            screen.blit(text_surf, text_rect)
 
         # read_the_room: show disposition change preview on the right side
         if self.disposition_preview != 0:
@@ -462,6 +500,8 @@ class DialogueView(BaseView):
             for btn in self._response_buttons:
                 btn.update_hover(mouse_pos)
                 btn.render(screen)
+            # Tooltip for the hovered truncated button (at most one)
+            self._render_response_tooltip(screen)
 
         # Skill check feedback overlay
         if self._check_feedback:
@@ -469,6 +509,85 @@ class DialogueView(BaseView):
 
         # Disposition change floating feedback
         self._render_disposition_feedback(screen)
+
+    # Tooltip geometry constants — exposed as class attributes so tests can
+    # exercise positioning logic deterministically.
+    TOOLTIP_MAX_WIDTH = scale_x(440)
+    TOOLTIP_PADDING = 12
+    TOOLTIP_GAP = 8  # space between button edge and tooltip
+
+    def _find_hovered_truncated_button(self) -> Optional[_ResponseButton]:
+        """Return the currently-hovered button if it's truncated, else None."""
+        for btn in self._response_buttons:
+            if btn.hovered and btn.is_truncated:
+                return btn
+        return None
+
+    def _tooltip_rect_for_button(
+        self, btn: _ResponseButton, content_w: int, content_h: int
+    ) -> pygame.Rect:
+        """Decide where to draw a tooltip panel of the given content size.
+
+        Prefers the right side of the button. Flips left if a right-side
+        tooltip would clip the screen; clamps to screen edges as a final
+        safety. Returns the OUTER panel rect (including padding).
+
+        Args:
+            btn: The button the tooltip is anchored to.
+            content_w: Width of the wrapped text content (no padding).
+            content_h: Height of the wrapped text content (no padding).
+        """
+        panel_w = content_w + self.TOOLTIP_PADDING * 2
+        panel_h = content_h + self.TOOLTIP_PADDING * 2
+
+        # Default: right of the button, top-aligned.
+        x = btn.rect.right + self.TOOLTIP_GAP
+        y = btn.rect.y
+
+        # Flip left if the right-side panel would clip the screen.
+        if x + panel_w > WINDOW_WIDTH - self.TOOLTIP_GAP:
+            x = btn.rect.left - self.TOOLTIP_GAP - panel_w
+
+        # Final clamps — if neither side fits, pin to an edge.
+        if x < self.TOOLTIP_GAP:
+            x = self.TOOLTIP_GAP
+        if y + panel_h > WINDOW_HEIGHT - self.TOOLTIP_GAP:
+            y = max(self.TOOLTIP_GAP, WINDOW_HEIGHT - self.TOOLTIP_GAP - panel_h)
+
+        return pygame.Rect(x, y, panel_w, panel_h)
+
+    def _render_response_tooltip(self, screen: pygame.Surface) -> None:
+        """Draw a tooltip with full wrapped text for the hovered truncated button."""
+        btn = self._find_hovered_truncated_button()
+        if btn is None:
+            return
+
+        font = btn.font
+        content_w = self.TOOLTIP_MAX_WIDTH - self.TOOLTIP_PADDING * 2
+        lines = word_wrap(btn.text, font, content_w)
+        if not lines:
+            return
+
+        line_h = font.get_linesize()
+        content_h = line_h * len(lines)
+
+        panel_rect = self._tooltip_rect_for_button(btn, content_w, content_h)
+        draw_panel(
+            screen,
+            panel_rect,
+            alpha=240,
+            bg_color=Colors.PANEL,
+            border_color=Colors.TEXT_HIGHLIGHT,
+            border_radius=4,
+        )
+
+        # Render each wrapped line with normal text color so the tooltip
+        # reads like spoken/narrated text, not a UI affordance.
+        x = panel_rect.x + self.TOOLTIP_PADDING
+        y = panel_rect.y + self.TOOLTIP_PADDING
+        for i, line in enumerate(lines):
+            surf = font.render(line, True, Colors.TEXT_PRIMARY)
+            screen.blit(surf, (x, y + i * line_h))
 
     def _get_portrait(self, npc_id: str) -> Optional[AnimatedSprite]:
         """Get a cached animated portrait for an NPC."""

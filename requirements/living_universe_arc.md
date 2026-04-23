@@ -93,6 +93,14 @@ This:
 - Tests: balanced (bonus 0), specialist (bonus +1/+2), neglector (bonus -1/-2), edge cases.
 - Rewards focused investment over passive level-grinding across the entire game.
 
+**NV-0.5: Long-response tooltip UI** (~1-2 days) — UI infrastructure for voice-rich skill-gated responses.
+- `_ResponseButton` gains `is_truncated` flag, detected at init from font+rect+text.
+- Truncation indicator switched from `..` to styled `…` in highlight color.
+- `DialogueView._render_response_tooltip` draws full wrapped text near the hovered truncated button.
+- Tooltip auto-positions right of button; flips left if it would clip; clamps to screen edges.
+- Layout remains stable (no button height changes, no stack re-flow).
+- Tests cover truncation detection, tooltip positioning (right/flip/clamp), visibility logic.
+
 **NV-1: Audit + tooling** (~1 day)
 - Write `tools/nv_audit.py`: scans `data/dialogue/dialogues.json`, identifies response options with skill-derived `required_flags`, outputs a CSV + markdown catalog.
 - Generate `requirements/nv_audit_findings.md` with the complete catalog grouped by skill type, current quality grade (manually tagged), and rewrite priority.
