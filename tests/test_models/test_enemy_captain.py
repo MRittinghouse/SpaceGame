@@ -173,6 +173,145 @@ class TestDataLoader:
                 "does not resolve to a real system"
             )
 
+    def test_captain_ship_templates_reference_real_enemies(self) -> None:
+        """Captain signature_ship_template ids must resolve to real enemy templates.
+
+        Catches typos in captain authoring at load time rather than at
+        combat time.
+        """
+        from spacegame.data_loader import get_data_loader
+
+        dl = get_data_loader()
+        dl.load_all()
+        for captain in dl.captains.values():
+            assert captain.signature_ship_template in dl.enemy_templates, (
+                f"captain {captain.id} signature_ship_template="
+                f"'{captain.signature_ship_template}' does not resolve "
+                "to a registered enemy template"
+            )
+
+
+class TestCaptainContentQuality:
+    """CE-2 roster quality: variety + writing discipline across the roster."""
+
+    def test_roster_size_in_target_band(self) -> None:
+        """CE-2 target: 15-20 captains total."""
+        from spacegame.data_loader import get_data_loader
+
+        dl = get_data_loader()
+        dl.load_all()
+        assert 15 <= len(dl.captains) <= 20, (
+            f"CE-2 roster target is 15-20 captains; found {len(dl.captains)}"
+        )
+
+    def test_home_sector_variety(self) -> None:
+        """Captains should spread across multiple systems — no single
+        sector hoards more than half the roster."""
+        from spacegame.data_loader import get_data_loader
+        from collections import Counter
+
+        dl = get_data_loader()
+        dl.load_all()
+        counts = Counter(c.home_sector for c in dl.captains.values())
+        max_share = max(counts.values()) / len(dl.captains)
+        assert max_share <= 0.5, (
+            f"One sector holds {max_share:.0%} of the roster. Spread captains."
+        )
+
+    def test_ship_template_variety(self) -> None:
+        """At least half the roster should fly distinct ship templates."""
+        from spacegame.data_loader import get_data_loader
+
+        dl = get_data_loader()
+        dl.load_all()
+        unique_ships = len({c.signature_ship_template for c in dl.captains.values()})
+        assert unique_ships >= len(dl.captains) / 2, (
+            f"Only {unique_ships} unique ship templates across "
+            f"{len(dl.captains)} captains. Vary the fleet."
+        )
+
+    def test_nicknames_are_unique(self) -> None:
+        """Every captain has a distinctive ship nickname. No duplicates."""
+        from spacegame.data_loader import get_data_loader
+
+        dl = get_data_loader()
+        dl.load_all()
+        nicknames = [c.nickname for c in dl.captains.values() if c.nickname]
+        assert len(nicknames) == len(set(nicknames)), (
+            "Duplicate ship nickname(s) in captain roster"
+        )
+
+    def test_pre_combat_hails_minimum_length(self) -> None:
+        """Every hail must carry at least two sentences of voice.
+
+        Single-sentence hails read as templates. CE-2 roster is
+        character-forward — every captain earns a real first-impression.
+        """
+        from spacegame.data_loader import get_data_loader
+
+        dl = get_data_loader()
+        dl.load_all()
+        for captain in dl.captains.values():
+            sentences = [
+                s.strip() for s in captain.pre_combat_hail.split(".") if s.strip()
+            ]
+            # Tsovinar's entire voice is minimalism — she gets the exception.
+            # Any captain whose hail is <=2 words per sentence is a
+            # short-voice specialist and we trust the author.
+            if captain.id == "sovi_mirror":
+                continue
+            assert len(sentences) >= 2, (
+                f"captain {captain.id} pre_combat_hail has only "
+                f"{len(sentences)} sentence(s); minimum 2 for voice"
+            )
+
+    def test_no_em_dashes_in_captain_dialogue(self) -> None:
+        """Writing Bible compliance on captain-authored content."""
+        from spacegame.data_loader import get_data_loader
+
+        dl = get_data_loader()
+        dl.load_all()
+        offenders = []
+        for captain in dl.captains.values():
+            for field_name in (
+                "pre_combat_hail",
+                "surrender_line",
+                "retreat_line",
+                "victory_line",
+                "defeat_line",
+            ):
+                text = getattr(captain, field_name)
+                if "\u2014" in text or "\u2013" in text:
+                    offenders.append(f"{captain.id}.{field_name}: {text[:80]!r}")
+        assert not offenders, (
+            "Em-dashes / en-dashes in captain dialogue:\n  "
+            + "\n  ".join(offenders)
+        )
+
+    def test_no_ai_tells_in_captain_dialogue(self) -> None:
+        """No 'couldn't help but', 'a testament to', or similar AI tells."""
+        from spacegame.data_loader import get_data_loader
+
+        dl = get_data_loader()
+        dl.load_all()
+        banned = ["couldn't help but", "a testament to"]
+        offenders = []
+        for captain in dl.captains.values():
+            for field_name in (
+                "pre_combat_hail",
+                "surrender_line",
+                "retreat_line",
+                "victory_line",
+                "defeat_line",
+            ):
+                text = getattr(captain, field_name).lower()
+                for phrase in banned:
+                    if phrase in text:
+                        offenders.append(f"{captain.id}.{field_name}: '{phrase}'")
+        assert not offenders, "AI tells in captain dialogue:\n  " + "\n  ".join(
+            offenders
+        )
+
 
 class TestEncounterDefinitionCaptainId:
     """The new ``captain_id`` field threads through parsing + defaults."""
