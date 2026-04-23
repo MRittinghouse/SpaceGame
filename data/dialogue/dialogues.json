@@ -15,6 +15,17 @@
                             "next_node_id": "lesson"
                         },
                         {
+                            "text": "[Piloting 2] \"You're running jump-fuel math under that. You're not looking at the prices. You're looking at the routes between them.\"",
+                            "next_node_id": "lesson_warm",
+                            "skill_check": {
+                                "skill": "piloting",
+                                "difficulty": 2,
+                                "success_node_id": "lesson_warm",
+                                "failure_node_id": "lesson",
+                                "set_flag_on_success": "read_elena_navigator"
+                            }
+                        },
+                        {
                             "text": "Mind your own business.",
                             "next_node_id": "bristle"
                         },
@@ -103,6 +114,17 @@
                             "next_node_id": "press_further"
                         },
                         {
+                            "text": "[Persuasion 2] \"Between contracts is a place people live for a week. You've been living here long enough to know everyone's first drink order.\"",
+                            "next_node_id": "press_further",
+                            "skill_check": {
+                                "skill": "persuasion",
+                                "difficulty": 2,
+                                "success_node_id": "press_further",
+                                "failure_node_id": "about_elena",
+                                "set_flag_on_success": "read_elena_grounded"
+                            }
+                        },
+                        {
                             "text": "Fair enough. Thanks for the trading lesson.",
                             "next_node_id": "farewell"
                         }
@@ -180,6 +202,28 @@
                             "next_node_id": "food_reason"
                         },
                         {
+                            "text": "[Leadership 2] \"Five units isn't a test. Name a real number. Whatever your miners need to eat through next shift change, I can move that load.\"",
+                            "next_node_id": "food_task",
+                            "skill_check": {
+                                "skill": "leadership",
+                                "difficulty": 2,
+                                "success_node_id": "food_task",
+                                "failure_node_id": "food_task",
+                                "set_flag_on_success": "offered_voss_real_load"
+                            }
+                        },
+                        {
+                            "text": "[Intimidation 3] \"I read your dock security. You're three hands short on the rotation. You need traders more than traders need you. Make the deal real.\"",
+                            "next_node_id": "food_reason",
+                            "skill_check": {
+                                "skill": "intimidation",
+                                "difficulty": 3,
+                                "success_node_id": "food_task",
+                                "failure_node_id": "food_reason",
+                                "set_flag_on_success": "leaned_on_voss"
+                            }
+                        },
+                        {
                             "text": "Tell me about those murals on the walls.",
                             "next_node_id": "optional_chat",
                             "set_flag": "talked_to_voss"
@@ -237,6 +281,17 @@
                         {
                             "text": "[Give your name]",
                             "next_node_id": "recognition"
+                        },
+                        {
+                            "text": "[Observation 2] Your hands stopped when you heard me talk. You knew my name before you asked.",
+                            "next_node_id": "recognition",
+                            "skill_check": {
+                                "skill": "observation",
+                                "difficulty": 2,
+                                "success_node_id": "recognition",
+                                "failure_node_id": "recognition",
+                                "set_flag_on_success": "read_marcus_recognition"
+                            }
                         }
                     ],
                     "expression": "neutral"
@@ -266,6 +321,18 @@
                             "text": "What happened to the report?",
                             "next_node_id": "report_buried",
                             "set_flag": "learned_father_story"
+                        },
+                        {
+                            "text": "[Technical 2] \"Air recycler report. That wasn't a line item. That was forty pages of spec, CO2 curves, particulate counts. You wrote the real thing.\"",
+                            "next_node_id": "report_buried",
+                            "set_flag": "learned_father_story",
+                            "skill_check": {
+                                "skill": "technical",
+                                "difficulty": 2,
+                                "success_node_id": "report_buried",
+                                "failure_node_id": "report_buried",
+                                "set_flag_on_success": "read_marcus_engineer"
+                            }
                         }
                     ],
                     "expression": "neutral"
@@ -412,6 +479,17 @@
                         {
                             "text": "That sounds urgent. Let's go.",
                             "next_node_id": "agree_transport"
+                        },
+                        {
+                            "text": "[Technical 2] Isotope decay. That's cosmogenic, not radiogenic. You need refrigeration in my hold within twenty minutes or you're hauling noise.",
+                            "next_node_id": "agree_transport",
+                            "skill_check": {
+                                "skill": "technical",
+                                "difficulty": 2,
+                                "success_node_id": "agree_transport",
+                                "failure_node_id": "agree_transport",
+                                "set_flag_on_success": "read_priya_sample_urgency"
+                            }
                         }
                     ],
                     "expression": "stern"
@@ -447,6 +525,17 @@
                         {
                             "text": "He wasn't a statistic. He was my father.",
                             "next_node_id": "push_back"
+                        },
+                        {
+                            "text": "[Leadership 2] \"This is my ship. If you're going to talk about my father, you're going to say his name first. Aldus. Go on.\"",
+                            "next_node_id": "push_back",
+                            "skill_check": {
+                                "skill": "leadership",
+                                "difficulty": 2,
+                                "success_node_id": "push_back",
+                                "failure_node_id": "let_slide",
+                                "set_flag_on_success": "named_father_to_priya"
+                            }
                         },
                         {
                             "text": "Go on.",
@@ -597,6 +686,17 @@
                         {
                             "text": "Why should I trust you?",
                             "next_node_id": "why_trust"
+                        },
+                        {
+                            "text": "[Deception 2] \"Textile bales don't scan. If I split the load into three manifest lines, customs reads it as three cheaper shipments. Same textiles, a third of the tariff.\"",
+                            "next_node_id": "what_if_caught",
+                            "skill_check": {
+                                "skill": "deception",
+                                "difficulty": 2,
+                                "success_node_id": "what_if_caught",
+                                "failure_node_id": "what_if_caught",
+                                "set_flag_on_success": "proposed_manifest_split"
+                            }
                         },
                         {
                             "text": "What if I get caught?",
@@ -788,6 +888,17 @@
                         {
                             "text": "The only items in the hull are personal living supplies.",
                             "next_node_id": "personal_supplies"
+                        },
+                        {
+                            "text": "[Deception 2] \"Standard personal-kit loadout. Emergency rations, med-kit, a second jacket. Scan it if you want, but your shift ends at eighteen-hundred and my rations don't flag.\"",
+                            "next_node_id": "personal_supplies",
+                            "skill_check": {
+                                "skill": "deception",
+                                "difficulty": 2,
+                                "success_node_id": "personal_supplies",
+                                "failure_node_id": "personal_supplies",
+                                "set_flag_on_success": "bluffed_larsen"
+                            }
                         }
                     ],
                     "expression": "stern"
@@ -1160,6 +1271,20 @@
                             ]
                         },
                         {
+                            "text": "[Technical 2] \"Your crucible readout is running hot. Left-side bank, around the ninety-minute mark. Worth looking at before your next shift.\"",
+                            "next_node_id": "accept",
+                            "excluded_flags": [
+                                "iron_ore_delivered"
+                            ],
+                            "skill_check": {
+                                "skill": "technical",
+                                "difficulty": 2,
+                                "success_node_id": "accept",
+                                "failure_node_id": "accept",
+                                "set_flag_on_success": "flagged_forge_crucible"
+                            }
+                        },
+                        {
                             "text": "How's business?",
                             "next_node_id": "post_delivery",
                             "required_flags": [
@@ -1341,6 +1466,17 @@
                         {
                             "text": "Why are you telling me this?",
                             "next_node_id": "pattern"
+                        },
+                        {
+                            "text": "[Intimidation 3] \"You're not telling me for nothing. Name who you think is leaking. If I'm going to carry your intel, I carry a name with it.\"",
+                            "next_node_id": "pattern",
+                            "skill_check": {
+                                "skill": "intimidation",
+                                "difficulty": 3,
+                                "success_node_id": "patrol_data",
+                                "failure_node_id": "pattern",
+                                "set_flag_on_success": "pressed_reva_cold"
+                            }
                         }
                     ],
                     "expression": "stern"
@@ -1479,6 +1615,17 @@
                         {
                             "text": "What does that have to do with the convoy raids?",
                             "next_node_id": "the_favor"
+                        },
+                        {
+                            "text": "[Observation 2] \"The auditor's buying the pitcher and she's not drinking from it. She's there to be seen. The dockworker's her cover.\"",
+                            "next_node_id": "the_favor",
+                            "skill_check": {
+                                "skill": "observation",
+                                "difficulty": 2,
+                                "success_node_id": "the_favor",
+                                "failure_node_id": "the_favor",
+                                "set_flag_on_success": "spotted_auditor_cover"
+                            }
                         },
                         {
                             "text": "[Persuasion 3] \"You pulled me in here because you've already made up your mind. Say it.\"",
@@ -1624,6 +1771,17 @@
                         {
                             "text": "[Hand over the data chip]",
                             "next_node_id": "analysis"
+                        },
+                        {
+                            "text": "[Intimidation 3] \"If the chip leaks, I find you. Fifteen years on this station means fifteen years of faces who know where you sleep.\"",
+                            "next_node_id": "analysis",
+                            "skill_check": {
+                                "skill": "intimidation",
+                                "difficulty": 3,
+                                "success_node_id": "analysis",
+                                "failure_node_id": "analysis",
+                                "set_flag_on_success": "warned_torres"
+                            }
                         }
                     ],
                     "expression": "confident"
@@ -2066,6 +2224,17 @@
                             "next_node_id": "suspicious"
                         },
                         {
+                            "text": "[Observation 2] Your right hand stays near your coat pocket the whole time you're talking. Whatever you carry in there, you want me to see you reach for it.",
+                            "next_node_id": "suspicious",
+                            "skill_check": {
+                                "skill": "observation",
+                                "difficulty": 2,
+                                "success_node_id": "suspicious",
+                                "failure_node_id": "suspicious",
+                                "set_flag_on_success": "read_oren_holdout"
+                            }
+                        },
+                        {
                             "text": "I'm just passing through.",
                             "next_node_id": "dismissive"
                         }
@@ -2238,6 +2407,17 @@
                         {
                             "text": "What is it?",
                             "next_node_id": "revelation"
+                        },
+                        {
+                            "text": "[Technical 3] \"Environmental controls for deep-core mining don't use gravitational lensing arrays. Whatever you've been maintaining, it isn't mining gear. Name it.\"",
+                            "next_node_id": "revelation",
+                            "skill_check": {
+                                "skill": "technical",
+                                "difficulty": 3,
+                                "success_node_id": "revelation",
+                                "failure_node_id": "revelation",
+                                "set_flag_on_success": "technical_named_convergence"
+                            }
                         },
                         {
                             "text": "Why should I trust a Guild engineer?",
@@ -6155,6 +6335,34 @@
                             "next_node_id": "accepted"
                         },
                         {
+                            "text": "[Observation 2] \"Your 'contact is solid' voice is the same voice you use for things you aren't sure about.\"",
+                            "next_node_id": "catch",
+                            "skill_check": {
+                                "skill": "observation",
+                                "difficulty": 2,
+                                "success_node_id": "catch_seen",
+                                "failure_node_id": "catch",
+                                "set_flag_on_success": "read_arna_contact_hedge"
+                            }
+                        },
+                        {
+                            "text": "[I will think on it.]",
+                            "next_node_id": "think"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "catch_seen",
+                    "speaker_id": "arna",
+                    "text": "Fair read. It's solid enough. I've traded with him three times clean. If I'm wrong about him this time, that's on me, not you.",
+                    "subtext": "She doesn't like being read. She also doesn't deny it.",
+                    "responses": [
+                        {
+                            "text": "[Fine. I am in.]",
+                            "next_node_id": "accepted"
+                        },
+                        {
                             "text": "[I will think on it.]",
                             "next_node_id": "think"
                         }
@@ -6235,7 +6443,31 @@
                             "next_node_id": "about_site"
                         },
                         {
+                            "text": "[Observation 2] \"You already knew the second number would match the first. You weren't counting. You were watching me watch you.\"",
+                            "next_node_id": "whats_next",
+                            "skill_check": {
+                                "skill": "observation",
+                                "difficulty": 2,
+                                "success_node_id": "weighing_caught",
+                                "failure_node_id": "whats_next",
+                                "set_flag_on_success": "read_arna_weighing"
+                            }
+                        },
+                        {
                             "text": "[What's next?]",
+                            "next_node_id": "whats_next"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "weighing_caught",
+                    "speaker_id": "arna",
+                    "text": "Huh. Not much gets past you, does it. Yeah. I was. Good to know. Next time I won't try to hide it. Come on, let's talk about what's next.",
+                    "subtext": "She doesn't apologize. She respects the catch.",
+                    "responses": [
+                        {
+                            "text": "[What's next, then.]",
                             "next_node_id": "whats_next"
                         }
                     ],
@@ -6284,8 +6516,32 @@
                             "next_node_id": "inspect"
                         },
                         {
+                            "text": "[Observation 3] His hands haven't left his pockets. Men who want to handle cargo take their hands out first.",
+                            "next_node_id": "inspect",
+                            "skill_check": {
+                                "skill": "observation",
+                                "difficulty": 3,
+                                "success_node_id": "keren_tell_caught",
+                                "failure_node_id": "inspect",
+                                "set_flag_on_success": "saw_keren_tell"
+                            }
+                        },
+                        {
                             "text": "[Hold on. Arna, you okay?]",
                             "next_node_id": "hold"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "keren_tell_caught",
+                    "speaker_id": "keren",
+                    "text": "Sharp eyes. Relax, friend. I'm a careful man. Let me see the haul. No surprises.",
+                    "subtext": "His hands come out of his pockets. Empty. But his smile doesn't change, and his eyes keep finding the side hatch. You noted the exit before he did.",
+                    "responses": [
+                        {
+                            "text": "[Show him the cargo. Stay ready.]",
+                            "next_node_id": "inspect"
                         }
                     ],
                     "expression": "neutral"
@@ -6362,6 +6618,17 @@
                         {
                             "text": "[That math feels heavy.]",
                             "next_node_id": "defend"
+                        },
+                        {
+                            "text": "[Persuasion 2] \"Three plus seven plus twelve plus four plus two is twenty-eight percent. That's the number you didn't add. Bring it down.\"",
+                            "next_node_id": "defend",
+                            "skill_check": {
+                                "skill": "persuasion",
+                                "difficulty": 2,
+                                "success_node_id": "defend",
+                                "failure_node_id": "defend",
+                                "set_flag_on_success": "added_tev_fees"
+                            }
                         },
                         {
                             "text": "[Fine. Run it.]",
@@ -6520,6 +6787,30 @@
                     "id": "okay",
                     "speaker_id": "arna",
                     "text": "I'll live. Hit a rib, not a lung. Patched well enough to talk. Ask the other question.",
+                    "responses": [
+                        {
+                            "text": "[Who was that?]",
+                            "next_node_id": "who"
+                        },
+                        {
+                            "text": "[Leadership 2] \"Wound first. Questions after. Sit. Compress harder on the rib. Talk when the bleeding stops.\"",
+                            "next_node_id": "who",
+                            "skill_check": {
+                                "skill": "leadership",
+                                "difficulty": 2,
+                                "success_node_id": "who_commanded",
+                                "failure_node_id": "who",
+                                "set_flag_on_success": "took_command_post_ambush"
+                            }
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "who_commanded",
+                    "speaker_id": "arna",
+                    "text": "Huh. Okay. Okay. You're not wrong. Give me a minute.",
+                    "subtext": "She listens. Takes the minute. The bleeding slows. When she speaks again, her voice is steadier than it was.",
                     "responses": [
                         {
                             "text": "[Who was that?]",

@@ -1230,9 +1230,14 @@ class TestChapter3FullChain:
         assert node is not None
         assert node.id == "tension"
 
-        # Find the persuasion check response
+        # Find the persuasion check response specifically (NV-7 added an
+        # Observation check on this node too; filter by skill).
         responses = dm.get_available_responses()
-        check_idx = next(i for i, r in enumerate(responses) if r.skill_check is not None)
+        check_idx = next(
+            i
+            for i, r in enumerate(responses)
+            if r.skill_check is not None and r.skill_check.skill == "persuasion"
+        )
         next_node = dm.select_response(check_idx)
         assert next_node is not None
         assert next_node.id == "chip_truth"  # Success path

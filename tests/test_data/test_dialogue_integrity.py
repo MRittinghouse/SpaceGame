@@ -644,6 +644,33 @@ KNOWN_PRODUCER_ONLY_ORPHANS: set[str] = {
     # reward flag exposed when NV-2/3 extended the scanner to walk
     # skill_check.set_flag_on_success. Not currently read by any consumer.
     "reva_shared_patrol_data",
+    # === NV-7 skill-check success flags ===
+    # Set by NV-7 skill checks to record that the player caught a specific
+    # tell or took a specific action. These are "insight flags" — they
+    # preserve narrative memory for potential future content to consume
+    # (closeout variants, crew recognition lines, later-scene callbacks).
+    # Flags stay in the allowlist until a consumer is authored.
+    "read_arna_contact_hedge",
+    "read_arna_weighing",
+    "saw_keren_tell",
+    "took_command_post_ambush",
+    "read_elena_navigator",
+    "read_elena_grounded",
+    "read_marcus_recognition",
+    "read_marcus_engineer",
+    "read_priya_sample_urgency",
+    "named_father_to_priya",
+    "proposed_manifest_split",
+    "bluffed_larsen",
+    "offered_voss_real_load",
+    "leaned_on_voss",
+    "pressed_reva_cold",
+    "spotted_auditor_cover",
+    "flagged_forge_crucible",
+    "warned_torres",
+    "read_oren_holdout",
+    "technical_named_convergence",
+    "added_tev_fees",
     "alliance_formed",
     "ancient_chamber_discovered",
     "anomaly_coordinates_found",

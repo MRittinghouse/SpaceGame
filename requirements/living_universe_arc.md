@@ -93,6 +93,47 @@ This:
 - Tests: balanced (bonus 0), specialist (bonus +1/+2), neglector (bonus -1/-2), edge cases.
 - Rewards focused investment over passive level-grinding across the entire game.
 
+**NV-7: Skill check expansion** (~3-5 days) — **FIRST WAVE SHIPPED 2026-04-23**
+
+21 new skill checks authored across 14 high-traffic dialogue trees. All 7 skill types registered by NV-6.5 now have gameplay presence; four of them (Intimidation, Deception, Technical, Piloting, Leadership) went from zero existing checks to active coverage.
+
+**Distribution (checks added in this wave):**
+| Skill | Added | After |
+|-------|-------|-------|
+| Persuasion | +2 | 9 |
+| Intimidation | +3 | 3 |
+| Observation | +6 | 9 |
+| Deception | +2 | 2 |
+| Technical | +4 | 4 |
+| Piloting | +1 | 1 |
+| Leadership | +3 | 3 |
+| **Total** | **+21** | **31** |
+
+**Dialogues enriched:**
+- **Arna arc** (4): `arna_post_completion::catch` (Observation 2, catches her contact-hedge), `arna_post_ore_tip::start` (Observation 2, catches double-weigh), `keren_meet::start` (Observation 3, catches the hands-in-pockets tell), `arna_post_ambush::okay` (Leadership 2, take command while she's bleeding).
+- **Companions** (7): Elena gets Piloting (reads her routes-math) and Persuasion (presses past "between contracts"). Marcus gets Observation (catches his name-recognition) and Technical (reads the air-recycler-report depth). Priya gets Technical (isotope decay insight) and Leadership (captain-claims-father-by-name). Tomas gets Deception (manifest-splitting bluff).
+- **Starter NPCs** (3): Larsen gets Deception (personal-kit bluff at customs), Forgeworks clerk gets Technical (flags the hot crucible), Odom has no check this wave (deferred to NV-7 continuation).
+- **Faction** (7): Hanna gets Leadership (real-load offer) AND Intimidation (reads her understaffed dock). Reva gets Intimidation (cold-path pressure for names). Dex gets Observation (spots the Guild auditor's cover). Torres gets Intimidation (threaten before handing over chip). Oren gets Observation (spots his holdout hand). Sienna gets Technical (names the gravitational lensing array).
+- **Tev** (1): Persuasion 2 on fee breakdown (forces the real total out of him).
+
+**"Insight flags" introduced:** 17 new producer-only flags (e.g., `read_arna_weighing`, `read_marcus_engineer`, `spotted_auditor_cover`, `intimidated_ambush_squad` — removed during the keren_meet fix). All flags catalogued in `KNOWN_PRODUCER_ONLY_ORPHANS` with a note explaining they're "insight flags" that preserve narrative memory for future content to consume.
+
+**Compliance:** all 21 new checks pass NV-5 gating (bracket prefix, skill registered, skill/difficulty match, ≥6 words body, no bare declaratives). Writing Bible compliance verified across the full dialogue corpus.
+
+**Balance fix:** `test_dex_persuasion_branching` updated to filter for the Persuasion check specifically (NV-7 added an Observation check at the same node).
+
+**Integrity fix:** discovered that `skill_check.success_node_id` / `failure_node_id` must be non-null; removed one planned Intimidation check at `keren_meet::inspect` that required null node refs (scripted ambush terminal response).
+
+**What's deferred to NV-7 continuation / NV-8:**
+- Distribution target (43) only 49% hit — wave two can expand Deception, Intimidation, Persuasion (still under target).
+- Ground mission NPCs (14 dialogue trees, 0 checks) untouched this wave. Quick-win target for continuation.
+- Odom's `merchant_delivery` (25 responses) skipped. Good Persuasion/Observation target.
+- NV-8 will playthrough-verify the content in context.
+
+Tests: 7,711 passing, zero regressions.
+
+---
+
 **NV-6.5: Skill registry expansion** (~1-2 days) — **SHIPPED 2026-04-23**
 
 Infrastructure sprint before NV-7 content. Registered four new skills so the authoring palette goes from 3 to 7.
