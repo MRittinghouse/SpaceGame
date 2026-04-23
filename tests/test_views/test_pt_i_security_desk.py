@@ -37,10 +37,11 @@ class TestDecisionLock:
             r for r in greet["responses"]
             if "dead_ledger_accusation_made" in r.get("excluded_flags", [])
         ]
-        # Four pre-accusation responses must all exclude the accusation flag:
-        # walk me through, review suspects, make accusation, come back later.
-        assert len(gated) == 4, (
-            f"expected 4 responses gated on dead_ledger_accusation_made, found {len(gated)}"
+        # Five pre-accusation responses must all exclude the accusation flag:
+        # walk me through, NV-7 [Leadership] lead-the-investigation, review
+        # suspects, make accusation, come back later.
+        assert len(gated) == 5, (
+            f"expected 5 responses gated on dead_ledger_accusation_made, found {len(gated)}"
         )
 
     def test_greet_recap_response_requires_accusation_flag(self) -> None:

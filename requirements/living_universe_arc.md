@@ -93,21 +93,37 @@ This:
 - Tests: balanced (bonus 0), specialist (bonus +1/+2), neglector (bonus -1/-2), edge cases.
 - Rewards focused investment over passive level-grinding across the entire game.
 
-**NV-7: Skill check expansion** (~3-5 days) — **FIRST WAVE SHIPPED 2026-04-23**
+**NV-7: Skill check expansion** (~3-5 days) — **FULL SHIPPED 2026-04-23 (waves 1+2)**
 
-21 new skill checks authored across 14 high-traffic dialogue trees. All 7 skill types registered by NV-6.5 now have gameplay presence; four of them (Intimidation, Deception, Technical, Piloting, Leadership) went from zero existing checks to active coverage.
+33 new skill checks authored across 26 dialogue trees. All 7 skill types registered by NV-6.5 now have gameplay presence. Combined with 10 existing pre-NV-7 checks, total skill checks in dialogue: **43** (hits the original distribution target on total count).
 
-**Distribution (checks added in this wave):**
-| Skill | Added | After |
-|-------|-------|-------|
-| Persuasion | +2 | 9 |
-| Intimidation | +3 | 3 |
-| Observation | +6 | 9 |
-| Deception | +2 | 2 |
-| Technical | +4 | 4 |
-| Piloting | +1 | 1 |
-| Leadership | +3 | 3 |
-| **Total** | **+21** | **31** |
+Wave 2 (12 checks added to wave 1's 21):
+- neve_osei_price_of_info::start — Observation 2 (reads her exit/sightline setup)
+- petra_vance_whistleblower::start — Persuasion 2 (pushes the weeks-deferred decision)
+- tomasz_brennan_old_debts::start — Deception 2 (off-books carriage offer)
+- britt_vasara_miners_plight::start — Leadership 2 (take command, walk to dock)
+- cassiel_maren_forgery::start — Observation 2 (reads her forger tells)
+- callum_rhee_informant::start — Intimidation 2 (presses his "clean jacket" audition)
+- orin_blight_season::start — Technical 2 (vector-carrier diagnosis)
+- amara_heirloom_seeds::start — Persuasion 2 (commits to carry her life's work)
+- soren_lost_registry::start — Piloting 2 (reads off-lane coordinates)
+- rook_honor_thieves::start — Intimidation 3 (flips the recruit-to-contract dynamic)
+- yuki_signal_deep::start — Piloting 3 (threads the debris-field math)
+- dead_ledger_investigation::greet — Leadership 2 (offers to lead the investigation)
+
+**Distribution (NV-7 total across both waves):**
+| Skill | Wave 1 | Wave 2 | NV-7 Total | After (w/ existing) | Target |
+|-------|--------|--------|-----------|---------------------|--------|
+| Persuasion | +2 | +2 | +4 | 11 | 12 |
+| Intimidation | +3 | +2 | +5 | 5 | 8 |
+| Observation | +6 | +2 | +8 | 11 | 11 |
+| Deception | +2 | +1 | +3 | 3 | 8 |
+| Technical | +4 | +1 | +5 | 5 | 6 |
+| Piloting | +1 | +2 | +3 | 3 | 3 |
+| Leadership | +3 | +2 | +5 | 5 | 5 |
+| **Total** | **+21** | **+12** | **+33** | **43** | **43** |
+
+Distribution summary: hit the 43 total target exactly. Individual skill targets hit on Observation (11), Piloting (3), Leadership (5). Close on Persuasion (11/12) and Technical (5/6). Under on Intimidation (5/8) and Deception (3/8) — those are NV-7+ future work candidates since authoring more requires narrative moments that fit (hostile NPCs, smuggler contexts).
 
 **Dialogues enriched:**
 - **Arna arc** (4): `arna_post_completion::catch` (Observation 2, catches her contact-hedge), `arna_post_ore_tip::start` (Observation 2, catches double-weigh), `keren_meet::start` (Observation 3, catches the hands-in-pockets tell), `arna_post_ambush::okay` (Leadership 2, take command while she's bleeding).

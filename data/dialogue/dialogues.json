@@ -3036,6 +3036,20 @@
                             ]
                         },
                         {
+                            "text": "[Observation 2] Two exits in reach. Back to the wall. You weren't waiting for me. You were waiting for someone, and I'm just what showed up.",
+                            "next_node_id": "pitch",
+                            "excluded_flags": [
+                                "price_of_info_accepted"
+                            ],
+                            "skill_check": {
+                                "skill": "observation",
+                                "difficulty": 2,
+                                "success_node_id": "pitch",
+                                "failure_node_id": "pitch",
+                                "set_flag_on_success": "read_neve_setup"
+                            }
+                        },
+                        {
                             "text": "I don't deal with information brokers.",
                             "next_node_id": "decline",
                             "excluded_flags": [
@@ -3165,6 +3179,20 @@
                             "excluded_flags": [
                                 "whistleblower_accepted"
                             ]
+                        },
+                        {
+                            "text": "[Persuasion 2] \"Whatever's on that clipboard, you've been deciding to hand it over for weeks. Today is the day. Hand it over.\"",
+                            "next_node_id": "explain",
+                            "excluded_flags": [
+                                "whistleblower_accepted"
+                            ],
+                            "skill_check": {
+                                "skill": "persuasion",
+                                "difficulty": 2,
+                                "success_node_id": "explain",
+                                "failure_node_id": "introduce",
+                                "set_flag_on_success": "pushed_petra_decision"
+                            }
                         },
                         {
                             "text": "Depends on who's asking.",
@@ -3326,6 +3354,20 @@
                             ]
                         },
                         {
+                            "text": "[Deception 2] \"Anything I carry runs under my personal kit allowance. I don't file it, customs doesn't scan it. Your package stays off the books.\"",
+                            "next_node_id": "the_package",
+                            "excluded_flags": [
+                                "old_debts_accepted"
+                            ],
+                            "skill_check": {
+                                "skill": "deception",
+                                "difficulty": 2,
+                                "success_node_id": "the_package",
+                                "failure_node_id": "the_package",
+                                "set_flag_on_success": "offered_tomasz_off_books"
+                            }
+                        },
+                        {
                             "text": "I haul cargo. What's the job?",
                             "next_node_id": "the_package",
                             "excluded_flags": [
@@ -3460,6 +3502,20 @@
                             "excluded_flags": [
                                 "miners_plight_accepted"
                             ]
+                        },
+                        {
+                            "text": "[Leadership 2] \"Stop asking everyone. Walk with me to the dock. Tell me the medicine name on the way. I'll file the intercept myself.\"",
+                            "next_node_id": "about_lenna",
+                            "excluded_flags": [
+                                "miners_plight_accepted"
+                            ],
+                            "skill_check": {
+                                "skill": "leadership",
+                                "difficulty": 2,
+                                "success_node_id": "about_lenna",
+                                "failure_node_id": "about_lenna",
+                                "set_flag_on_success": "took_command_britt"
+                            }
                         },
                         {
                             "text": "Tell me about the embargo.",
@@ -3628,6 +3684,20 @@
                             "excluded_flags": [
                                 "forgery_job_accepted"
                             ]
+                        },
+                        {
+                            "text": "[Observation 2] Jeweler's grip. Mirror-practiced smile. You don't deal in antiquities. You deal in the kind of antique that gets sold three times before anyone checks the provenance.",
+                            "next_node_id": "reassure",
+                            "excluded_flags": [
+                                "forgery_job_accepted"
+                            ],
+                            "skill_check": {
+                                "skill": "observation",
+                                "difficulty": 2,
+                                "success_node_id": "reassure",
+                                "failure_node_id": "reassure",
+                                "set_flag_on_success": "read_cassiel_forger"
+                            }
                         },
                         {
                             "text": "Discretion usually means trouble.",
@@ -3845,6 +3915,20 @@
                             ]
                         },
                         {
+                            "text": "[Intimidation 2] \"Ten minutes of watching. Clean jacket in a docking corridor. You're not a passenger, you're an audition. Convince me.\"",
+                            "next_node_id": "deflect_smooth",
+                            "excluded_flags": [
+                                "informant_passenger_accepted"
+                            ],
+                            "skill_check": {
+                                "skill": "intimidation",
+                                "difficulty": 2,
+                                "success_node_id": "deflect_smooth",
+                                "failure_node_id": "deflect_smooth",
+                                "set_flag_on_success": "pressed_callum"
+                            }
+                        },
+                        {
                             "text": "'No questions' usually means there are questions worth asking.",
                             "next_node_id": "deflect_smooth",
                             "excluded_flags": [
@@ -3961,6 +4045,20 @@
                             "excluded_flags": [
                                 "blight_season_accepted"
                             ]
+                        },
+                        {
+                            "text": "[Technical 2] \"Forty hectares in a week is vector-carried, not a spore wave. You don't need a pesticide. You need the vector source before the next wind cycle.\"",
+                            "next_node_id": "how_bad",
+                            "excluded_flags": [
+                                "blight_season_accepted"
+                            ],
+                            "skill_check": {
+                                "skill": "technical",
+                                "difficulty": 2,
+                                "success_node_id": "how_bad",
+                                "failure_node_id": "how_bad",
+                                "set_flag_on_success": "diagnosed_blight_vector"
+                            }
                         },
                         {
                             "text": "Why won't the Collective sell to you?",
@@ -4080,6 +4178,20 @@
                             "excluded_flags": [
                                 "heirloom_seeds_accepted"
                             ]
+                        },
+                        {
+                            "text": "[Persuasion 2] \"Forty years is a life. If you ask me to carry it, I'm carrying it. Tell me what happens to Verdant that you haven't told the rest.\"",
+                            "next_node_id": "why_worried",
+                            "excluded_flags": [
+                                "heirloom_seeds_accepted"
+                            ],
+                            "skill_check": {
+                                "skill": "persuasion",
+                                "difficulty": 2,
+                                "success_node_id": "why_worried",
+                                "failure_node_id": "the_task",
+                                "set_flag_on_success": "pressed_amara_worried"
+                            }
                         },
                         {
                             "text": "Why are you worried about something happening to Verdant?",
@@ -4202,6 +4314,20 @@
                             ]
                         },
                         {
+                            "text": "[Piloting 2] \"Stellaris to here doesn't route through Reach space. Her transport was off-lane, or her captain was. The coordinates alone are worth following.\"",
+                            "next_node_id": "limited_info",
+                            "excluded_flags": [
+                                "registry_search_started"
+                            ],
+                            "skill_check": {
+                                "skill": "piloting",
+                                "difficulty": 2,
+                                "success_node_id": "limited_info",
+                                "failure_node_id": "limited_info",
+                                "set_flag_on_success": "read_meridian_off_lane"
+                            }
+                        },
+                        {
                             "text": "What do you know about what happened?",
                             "next_node_id": "limited_info",
                             "excluded_flags": [
@@ -4319,6 +4445,20 @@
                             "excluded_flags": [
                                 "thieves_job_accepted"
                             ]
+                        },
+                        {
+                            "text": "[Intimidation 3] \"Captain's pins and a drink across the table. You're recruiting, not contracting. Name what you lost or name another pilot.\"",
+                            "next_node_id": "evasive",
+                            "excluded_flags": [
+                                "thieves_job_accepted"
+                            ],
+                            "skill_check": {
+                                "skill": "intimidation",
+                                "difficulty": 3,
+                                "success_node_id": "evasive",
+                                "failure_node_id": "evasive",
+                                "set_flag_on_success": "leaned_on_rook"
+                            }
                         },
                         {
                             "text": "How much are we talking?",
@@ -4446,6 +4586,20 @@
                             "excluded_flags": [
                                 "signal_mission_accepted"
                             ]
+                        },
+                        {
+                            "text": "[Piloting 3] \"Debris field past the charted boundary. That's two-axis drift plus micro-asteroid vector math under an array deployment. I can thread it. Your research vessels can't.\"",
+                            "next_node_id": "why_independent",
+                            "excluded_flags": [
+                                "signal_mission_accepted"
+                            ],
+                            "skill_check": {
+                                "skill": "piloting",
+                                "difficulty": 3,
+                                "success_node_id": "why_independent",
+                                "failure_node_id": "why_independent",
+                                "set_flag_on_success": "read_yuki_debris_math"
+                            }
                         },
                         {
                             "text": "Why me? Don't you have research vessels?",
@@ -4606,6 +4760,20 @@
                             "excluded_flags": [
                                 "dead_ledger_accusation_made"
                             ]
+                        },
+                        {
+                            "text": "[Leadership 2] \"You've been at this desk too long. You need hands, not another set of eyes. Tell me what to look at first and I'll bring back what you ask for.\"",
+                            "next_node_id": "overview",
+                            "excluded_flags": [
+                                "dead_ledger_accusation_made"
+                            ],
+                            "skill_check": {
+                                "skill": "leadership",
+                                "difficulty": 2,
+                                "success_node_id": "overview",
+                                "failure_node_id": "overview",
+                                "set_flag_on_success": "offered_to_lead_investigation"
+                            }
                         },
                         {
                             "text": "I'd like to review the suspects again.",
