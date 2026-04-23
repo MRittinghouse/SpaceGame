@@ -488,6 +488,55 @@ Valid `skill_check.skill` values: `persuasion`, `intimidation`, `observation`, `
 - GOOD: `[Leadership 2] "Everyone in this room wants to hear someone say the next thing. Be quiet while I say it."`
 - BAD: `[Leadership] Lead them.`
 
+### NV-7 Best-of Gallery (patterns that work)
+
+These 7 examples ship in the game. Each demonstrates a specific voice pattern; use them as templates for future skill-check authoring.
+
+**Observation — reads a specific physical tell, names what it means.**
+> `[Observation] The Guild rep keeps checking her chrono. The Alliance rep hasn't looked at her once. One of them knows this ends today.`
+>
+> *Pattern: two physical observations, one synthesis. The synthesis is the thing Observation reveals that baseline perception wouldn't.*
+
+**Intimidation — reads a weakness in the NPC's position and weaponizes it.**
+> `[Intimidation 3] "I read your dock security. You're three hands short on the rotation. You need traders more than traders need you. Make the deal real."`
+>
+> *Pattern: specific external fact → inverted power dynamic → command. Intimidation doesn't work through volume; it works through angle.*
+
+**Persuasion — reads the NPC's unspoken conclusion and asks them to voice it.**
+> `[Persuasion 2] "You've run convoys for ten years. You know the difference between bad luck and inside information. You've already decided which this is."`
+>
+> *Pattern: establish their expertise → narrow their options → make them name what they already believe. Persuasion as midwifery, not argument.*
+
+**Deception — proposes a concrete misdirection mechanism, not a bare lie.**
+> `[Deception 2] "Textile bales don't scan. If I split the load into three manifest lines, customs reads it as three cheaper shipments. Same textiles, a third of the tariff."`
+>
+> *Pattern: specific technical vulnerability + concrete workaround. Deception checks don't sound like lying; they sound like operational expertise.*
+
+**Technical — names a specific system detail the baseline character wouldn't know.**
+> `[Technical 3] "Environmental controls for deep-core mining don't use gravitational lensing arrays. Whatever you've been maintaining, it isn't mining gear. Name it."`
+>
+> *Pattern: name the claimed system → name what doesn't fit → demand the real answer. Technical is the check that sees through the lie because it knows what the truth looks like.*
+
+**Piloting — names vector / motion / angle details that reveal hidden context.**
+> `[Piloting 3] "Debris field past the charted boundary. That's two-axis drift plus micro-asteroid vector math under an array deployment. I can thread it. Your research vessels can't."`
+>
+> *Pattern: breaks the problem into pilot-specific sub-problems, then asserts competence. Piloting sees the physics first.*
+
+**Leadership — takes command without shouting; redirects attention by reframing the situation.**
+> `[Leadership 2] "Wound first. Questions after. Sit. Compress harder on the rib. Talk when the bleeding stops."`
+>
+> *Pattern: establish priority (what matters now) → give specific actionable steps → invert NPC's momentum. Leadership lands by competence, not volume.*
+
+### Authoring anti-patterns from NV-7 (what almost shipped, then didn't)
+
+**Don't stack identical rhetorical structures.** Two Persuasion checks back-to-back that both end "Let me." felt template-y. Vary sentence cadence across nearby checks.
+
+**Don't use skill_check success / failure node IDs that don't exist.** The scanner catches null refs at integrity check time. If a check terminates the dialogue, make it a plain response (no skill_check) with `next_node_id: null`.
+
+**Don't gate on the wrong skill.** Perception in-narrative maps to Observation mechanically. If a flag like `knows_X_skimmed` feels Perception-ish but the registry doesn't have Perception, the tag is Observation. Voice in-narrative, mechanic in-registry.
+
+**Don't let subtext give away the check.** If the narrator-voice subtext already names "second tap," the Observation check's reveal is robbed of weight. Keep subtext ambiguous for check-gated reveals.
+
 ---
 
 ## 9. Station Atmosphere Through Dialogue

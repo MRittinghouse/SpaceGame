@@ -293,3 +293,174 @@ class TestSpecializationAsTieBreaker:
             )
             dm.select_response(idx)
             assert dm.get_current_node().id == "chip_truth"
+
+
+# ---------------------------------------------------------------------------
+# NV-8c — NV-7 content integration scenarios
+#
+# Each scenario below exercises a *different interaction pattern* — not
+# just "specialist passes, neglector fails." The point is to prove that
+# NV-7 content works the way its author expected when specialization,
+# disposition, attribute mapping, and dialogue routing all meet.
+# ---------------------------------------------------------------------------
+
+
+class TestIntimidationD3BranchesCorrectly:
+    """Hanna Voss's Intimidation 3 — high-difficulty check that actually
+    branches (success routes to food_task, failure to food_reason).
+    NV-7 wave 1 content."""
+
+    def test_intimidation_specialist_skips_food_reason(self, dl) -> None:
+        """Intimidation 5, others 1 → effective 5 + spec +2 = 7. Passes D3.
+        Routes to food_task, skipping food_reason's 'why food' explanation."""
+        mgr = _manager_with_levels(intimidation=5, persuasion=1, observation=1)
+        dm = DialogueManager()
+        dm.set_social_manager(mgr)
+        _start_dialogue(dl, dm, "hanna_voss_dock", npc_id="hanna_voss")
+        _walk_to_node(dm, "union_way")
+
+        idx = _find_response_index(
+            dm,
+            lambda r: (r.skill_check is not None)
+            and r.skill_check.skill == "intimidation",
+        )
+        dm.select_response(idx)
+        assert dm.get_current_node().id == "food_task"
+
+    def test_intimidation_neglector_routes_to_explanation(self, dl) -> None:
+        """All other skills up, Intimidation 1 → effective 1 + spec -1 = 0.
+        Fails D3. Routes to food_reason (the normal 'why food' branch)."""
+        mgr = _manager_with_levels(intimidation=1, persuasion=5, observation=5)
+        dm = DialogueManager()
+        dm.set_social_manager(mgr)
+        _start_dialogue(dl, dm, "hanna_voss_dock", npc_id="hanna_voss")
+        _walk_to_node(dm, "union_way")
+
+        idx = _find_response_index(
+            dm,
+            lambda r: (r.skill_check is not None)
+            and r.skill_check.skill == "intimidation",
+        )
+        dm.select_response(idx)
+        assert dm.get_current_node().id == "food_reason"
+
+
+class TestTechnicalD3VirtuosoCheck:
+    """Sienna's Technical 3 — tests attribute mapping (Technical draws
+    from Ingenuity, not Synergy). Proves NV-6.5 wiring holds on content."""
+
+    def test_ingenuity_attribute_contributes_to_technical(self, dl) -> None:
+        """Low base Technical (1), but high Ingenuity (6). Attribute synergy
+        pushes effective level to 4. Still fails D3. Proves synergy alone
+        isn't enough — base matters."""
+        from spacegame.models.attributes import AttributeSheet
+
+        mgr = _manager_with_levels(technical=1)
+        sheet = AttributeSheet()
+        sheet.values["ing"] = 6
+        mgr.set_attribute_sheet(sheet)
+        dm = DialogueManager()
+        dm.set_social_manager(mgr)
+        _start_dialogue(dl, dm, "sienna_vek_warning", npc_id="sienna_vek")
+        _walk_to_node(dm, "introduction")
+
+        # Before clicking: confirm effective_level = base(1) + spec_bonus + synergy
+        # base 1 + spec from all-1-except-technical = 0 + synergy (6//2=3) = 4
+        effective = mgr.get_effective_level("technical", "sienna_vek")
+        assert effective == 4  # 1 base + 0 spec + 3 synergy
+
+        # But the dialogue ROUTING: both success/failure node_ids are
+        # the same ("revelation") — NV-7 authored this as cosmetic.
+        idx = _find_response_index(
+            dm,
+            lambda r: (r.skill_check is not None)
+            and r.skill_check.skill == "technical",
+        )
+        dm.select_response(idx)
+        assert dm.get_current_node().id == "revelation"
+
+
+class TestPilotingD3AttributeRoute:
+    """Yuki's Piloting 3 — tests that Piloting routes through Acuity
+    attribute (not Synergy)."""
+
+    def test_acuity_bonus_helps_piloting_specialist(self, dl) -> None:
+        """Piloting 3, others 1, Acuity 5 → effective 3 + spec +2 + (5//2)=2 = 7.
+        Comfortably passes D3."""
+        from spacegame.models.attributes import AttributeSheet
+
+        mgr = _manager_with_levels(piloting=3)
+        sheet = AttributeSheet()
+        sheet.values["acu"] = 5
+        mgr.set_attribute_sheet(sheet)
+        # Piloting specialist: others should be at 1 (default).
+        effective = mgr.get_effective_level("piloting", "nova_researcher")
+        assert effective == 7  # 3 + 2 spec + 2 acuity
+
+
+class TestDeceptionD2Routing:
+    """Larsen Deception 2 — proves Deception routes correctly and both
+    paths lead to personal_supplies (cosmetic only)."""
+
+    def test_deception_skill_check_resolves_cleanly(self, dl) -> None:
+        """Any build hits the skill check; both paths route to
+        personal_supplies. The flag only sets on success."""
+        mgr = _manager_with_levels(deception=3)
+        dm = DialogueManager()
+        dm.set_social_manager(mgr)
+        _start_dialogue(dl, dm, "larsen_customs", npc_id="officer_larsen")
+        _walk_to_node(dm, "no_bill")
+
+        idx = _find_response_index(
+            dm,
+            lambda r: (r.skill_check is not None)
+            and r.skill_check.skill == "deception",
+        )
+        dm.select_response(idx)
+        assert dm.get_current_node().id == "personal_supplies"
+
+
+class TestDispositionSelectivityOnContent:
+    """Verifies the NV-6.5 selective-disposition rule holds on real content:
+    NPC disposition affects social skills but not Technical/Piloting."""
+
+    def test_low_disposition_does_not_harm_technical(self, dl) -> None:
+        """Hostile NPC (disposition 20). Technical check succeeds anyway
+        because it doesn't depend on NPC mood."""
+        mgr = _manager_with_levels(technical=3)
+        mgr.modify_disposition("sienna_vek", -30)  # 50 - 30 = 20
+        # Technical: base 3 + disp 0 (skipped for technical) + spec +2 = 5
+        effective = mgr.get_effective_level("technical", "sienna_vek")
+        assert effective == 5
+
+    def test_low_disposition_DOES_harm_persuasion(self, dl) -> None:
+        """Same hostile NPC. Persuasion check takes a disposition hit
+        because persuasion IS disposition-sensitive."""
+        mgr = _manager_with_levels(persuasion=3)
+        mgr.modify_disposition("sienna_vek", -30)
+        # Persuasion: base 3 + disp -3 + spec +2 = 2
+        effective = mgr.get_effective_level("persuasion", "sienna_vek")
+        assert effective == 2
+
+
+class TestLeadershipContentRouting:
+    """dead_ledger_investigation Leadership 2 — proves the new check
+    routes to overview on both paths (cosmetic), setting the
+    offered_to_lead_investigation flag only on success."""
+
+    def test_leadership_check_sets_flag_and_routes(self, dl) -> None:
+        mgr = _manager_with_levels(leadership=5, persuasion=1)
+        dm = DialogueManager()
+        dm.set_social_manager(mgr)
+        _start_dialogue(dl, dm, "dead_ledger_investigation", npc_id="dock_investigator")
+
+        idx = _find_response_index(
+            dm,
+            lambda r: (r.skill_check is not None)
+            and r.skill_check.skill == "leadership",
+        )
+        dm.select_response(idx)
+        assert dm.get_current_node().id == "overview"
+        assert dm.get_flag("offered_to_lead_investigation"), (
+            "Leadership specialist should pass D2 and set the flag"
+        )

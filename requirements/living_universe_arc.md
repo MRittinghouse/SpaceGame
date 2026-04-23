@@ -1,6 +1,6 @@
 # Living Universe Arc
 
-**Status:** Staged. Not yet implemented. Approved for sequential execution starting with Phase 1 (NV).
+**Status:** NV phase **COMPLETE** (2026-04-23). CE/TW/RC/CB sprints pending.
 
 **Thesis:** Aurelia has breadth. What it needs next is *specificity* — dialogue that carries voice, combat that carries memory, time that carries weight, enemies that carry grudges, crew that carry conversation. Each phase targets one of those. Together they deliver on a single promise: the universe is alive, reactive, and specific — not just populated.
 
@@ -254,6 +254,72 @@ Tests after NV-6: 7,682 passing (+10 integration scenarios, +0 regressions). Ful
 
 - **Editorial drift.** Rewriter might introduce new AI tells. → Compliance tests run on every commit.
 - **Mechanical regression.** Rewriting a response could accidentally change its required_flags. → Audit tool + diff review pre-commit.
+
+---
+
+### NV-8: Expansion polish (~1-2 days) — **SHIPPED 2026-04-23**
+
+Final sprint of the NV phase. Six sub-sprints.
+
+**NV-8a — Integrity sweep.** Diagnostic walker reported 42 explicit skill_checks (+ 1 knowledge-flag) = 43 total. Distribution D2: 31, D3: 11 — no D1/D4/D5 variety. 12 checks over 150 chars (handled by NV-0.5 tooltip). 19 branching / 23 cosmetic ratio — healthy mix. No structural issues found.
+
+**NV-8b — Content critique pass.** Read every NV-7 check in full dialogue context, walked each branching check's success/failure routing. Finding: all 33 NV-7 checks route sensibly, voice holds, no tonal drift. Zero fixes needed. The long lines (150+ chars) earn their length; tightening would weaken them.
+
+**NV-8c — Integration test expansion.** +8 new scenarios in `test_scenario_nv_skill_checks.py`:
+- Hanna Intimidation D3 branching (specialist skips vs neglector routes to explanation)
+- Sienna Technical D3 attribute mapping (Ingenuity contributes to Technical)
+- Yuki Piloting D3 attribute mapping (Acuity contributes to Piloting)
+- Larsen Deception D2 cosmetic routing
+- Disposition selectivity (low disposition doesn't harm Technical, DOES harm Persuasion)
+- Dead_ledger Leadership flag-set
+
+Each scenario proves a *different* interaction pattern — not rote variations on "specialist passes." 18 total integration scenarios now (10 NV-6c + 8 NV-8c).
+
+**NV-8d — Writing guide NV-7 Best-of Gallery.** Added a per-skill-type pattern section to `dialogue_writing_guide.md` section 8. Each of the 7 skills has a concrete NV-7 example + a "what pattern this teaches" explanation. Plus an anti-patterns section documenting near-ship-break mistakes (stacked rhetorical structures, null skill_check refs, wrong-skill tagging, subtext spoilers).
+
+**NV-8e — This section.** Arc phase-status marker flipped to COMPLETE.
+
+**NV-8f — Final compliance sweep + commit.** All existing tests green: dialogue integrity, Writing Bible compliance, skill-check voice compliance, cross-reference integrity, save/load, NV-specialization, all 18 integration scenarios. Test count on arc completion: 7,719 (was 7,711 before NV-8c expansion).
+
+### NV Phase — Final Accounting
+
+The NV phase shipped across 9 sub-sprints (NV-0, 0.5, 1, 2/3, 4, 5, 6, 6.5, 7, 8) over ~9 days of focused work. What landed:
+
+**Mechanics:**
+- Specialization soft modifier (NV-0) — ±2 bonus based on skill-level investment pattern, uniform 7-skill pool
+- Dialogue response tooltip (NV-0.5) — fixed-layout UI with full-text reveal on hover of truncated options
+- Skill registry expansion (NV-6.5) — 3 → 7 registered skills with selective disposition, attribute mapping, XP growth hooks from refining (Technical) and combat (Piloting)
+
+**Content:**
+- 10 existing skill-gated responses rewritten to grade B/A voice (NV-2/3)
+- Tev setter upgraded from flag-auto-grant to real Observation 2 skill check (NV-2/3)
+- 33 new skill checks authored across 26 dialogue trees (NV-7 waves 1+2)
+- **43 total skill checks in dialogue, all 7 skill types represented**
+
+**Infrastructure:**
+- NV-5 compliance suite gates every new skill check against the Grading Rubric
+- NV-7 content is covered by 18 integration scenarios (NV-6c + NV-8c) exercising specialization × skill_check × real content
+- Dialogue integrity scanner extended to walk `skill_check.set_flag_on_success` / `_on_failure`
+- 29 "insight flags" catalogued in `KNOWN_PRODUCER_ONLY_ORPHANS` — narrative memory for future content to harvest
+
+**Documentation:**
+- `dialogue_writing_guide.md` Section 8 rewritten with: grading rubric, canonical format, dual-voice convention, difficulty guidance, specialization-authoring principles, per-skill GOOD/BAD notes, NV-7 Best-of Gallery, anti-patterns
+- `nv_audit_findings.md` canonical audit artifact
+- `living_universe_arc.md` phase-by-phase detail
+
+**Test count progression across the NV phase:**
+7,606 → 7,627 (+21 from AR-PK) → ... → 7,719 (end of NV-8).
+
+Tests added during NV phase: NV-0 (+20), NV-0.5 (+11), NV-5 (+9), NV-6c (+10), NV-6.5 (+29), NV-8c (+8). ~90 new tests total.
+
+### Deferred from NV (acknowledged, not dropped)
+
+- **Distribution gap in Deception (3/8) and Intimidation (5/8).** Requires narrative surface (more hostile NPCs, more smuggler contexts) that doesn't exist yet. NV-7 continuation candidate.
+- **D1 / D4 / D5 difficulty variety.** Current content is D2 (74%) + D3 (26%). No checks at extremes. NV-7 continuation candidate.
+- **Insight-flag consumer authoring.** 29 insight flags are produced but never consumed. Future content (crew recognition lines, closeout variants, scene callbacks) is the natural consumer layer.
+- **NV-UI polish.** Skill-tag color coding per skill type (Persuasion blue, Observation green, etc.) — nice-to-have, not blocking.
+
+None of these block the next phase (CE). NV phase is complete.
 
 ---
 
