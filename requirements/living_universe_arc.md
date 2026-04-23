@@ -8,12 +8,12 @@
 
 | Phase | Name | Estimated effort | Risk |
 |-------|------|------------------|------|
-| NV | Narrative Voice (Skill Check Pass) | 5-7 days | Low |
+| NV | Narrative Voice (Skill Check Pass + Expansion) | 10-14 days | Low |
 | CE | Combat Encounters Non-Generic | 13-19 days | Moderate |
 | TW | Time Weight (Moderate) | 8-12 days | High (balance) |
 | RC | Recurring Rival Captains | 15-20 days | Moderate (scope) |
 | CB | Crew Banter During Travel | 11-15 days | Low |
-| **Total** | | **~52-73 days** | |
+| **Total** | | **~57-80 days** | |
 
 **Sequence:** `NV → CE → TW → RC → CB` — matches user preference and respects technical dependencies (NV first so later content inherits the voice standard; CE before RC so rivals reuse captain infrastructure; TW before RC so "days since last encounter" is a concept; CB last because it benefits from rival state, time signals, and post-NV voice discipline).
 
@@ -31,27 +31,39 @@
 
 ### Goal
 
-Every skill-gated dialogue response is a moment of narrative insight — the skill IS the observation, not a prefix-plus-unlock. Produces a permanent voice guideline that governs all future content.
+Every skill-gated dialogue response is a moment of narrative insight — the skill IS the observation, not a prefix-plus-unlock. Produces a permanent voice guideline that governs all future content. NV also expands the skill check footprint so the player's build is felt across more of the game, not just in the eight places it currently fires.
 
 ### Design philosophy
 
-A skill-gated response should answer: *"What does this character see because of this skill that the baseline character wouldn't?"*
+A skill-gated response should answer: *"What does this character see, say, or do because of this skill that the baseline character wouldn't?"*
 
-The canonical format:
+The existing text prefix format `[Persuasion 2]` (skill + difficulty) is preserved unchanged — NV is a content pass, not infrastructure work.
 
-```
-[PERCEPTION] His second tap was for him, not the scale.
-```
+**Dual-voice convention (loose guideline, not rigid rule):**
 
-The `[SKILL]` tag is a subtle UI prefix. The text after IS the observation — what expertise reveals. The player doesn't just say "I caught him"; they voice the specific thing they saw.
+Default voice per skill category, with freedom to mix when narrative demands:
+
+- **Speech skills** (Persuasion, Intimidation, Deception) — default to in-quote spoken dialogue
+  `[Persuasion 2] "You want out of this. I can help you find it."`
+- **Observation skills** (Perception, Observation) — default to internal-observation statement
+  `[Perception] His second tap was for him, not the scale.`
+- **Hybrid skills** (Technical, Piloting, Leadership) — author's choice per line
+
+**Mix formats when the line serves both.** Examples:
+- Observation setting up speech: `[Persuasion 2] His shoulders are down. "I can help you find the exit."`
+- Internal self-direction: `[Perception] You already know the answer. You just want permission to say it out loud.`
+
+The rule under the guideline: **skill should produce insight.** Whether that insight is voiced out loud or lands internally is a craft call per line.
 
 **Ladder of quality:**
-- **D:** `[Persuasion] I disagree.` — skill is a gate, response is empty
-- **C:** `[Persuasion] You're not wrong, but there's another angle.` — skill colors tone
-- **B:** `[Persuasion] You want to be talked out of this. I can help.` — skill reads the NPC
-- **A:** `[PERCEPTION] His second tap was for him, not the scale.` — skill IS the insight
+- **D:** `[Persuasion 2] I disagree.` — skill is a gate, response is empty
+- **C:** `[Persuasion 2] You're not wrong, but there's an angle.` — skill colors tone
+- **B:** `[Persuasion 2] "You want to be talked out of this. I can help."` — skill reads the NPC
+- **A:** `[Perception] His second tap was for him, not the scale.` — skill IS the insight
 
 Target: every skill-gated response at grade A or B. Zero at grade D.
+
+**Scope contract (scope-explosion handling):** if the NV-1 audit finds significantly more existing skill-gated responses than anticipated (current estimate ~70-140), prioritize rewrites by dialogue traffic — rewrite high-traffic first (Arna arc, companion onboarding, faction introductions, starter NPCs), defer lower-traffic rewrites to a follow-up pass. Calendar is held; coverage is phased.
 
 ### Architecture
 
@@ -111,13 +123,33 @@ This:
 - Verify all pass existing dialogue integrity + Writing Bible scans.
 - Optional: UI update for skill-tag rendering (distinctive prefix color per skill). If deferred, add a follow-up NV-UI task.
 
+**NV-7: Skill check expansion** (~3-5 days)
+- **Contract:** never gate plot progression. Every mission outcome reachable without any skill check. New checks only change FLAVOR (richer beat, unique line, NPC color), EFFICIENCY (skip 2 dialogue nodes, unlock a shortcut response), or UNLOCK DETAIL (set a knowledge flag that colors later scenes).
+- **Variety target:** every skill type (Persuasion, Intimidation, Deception, Perception, Observation, Technical, Piloting, Leadership) gets new checks. Weighted toward currently under-used skills.
+- **Focus:** high-traffic dialogue surface first — Arna arc, 4 companion trees, faction introductions, Odom/Larsen/Broker starters, cantina recruit NPCs.
+- **Target volume:** 40-60 new skill checks across ~15-20 dialogue trees. 2-3 checks per dialogue average.
+- **Difficulty distribution:** mixed. Tier 1 (frequent, low-investment hit) through Tier 3 (high-investment payoff). Nobody locked out; everybody's build matters somewhere.
+- **Authoring discipline:** each new check follows the NV voice standard from NV-2/3. Compliance tests from NV-5 catch violations.
+- **Never breaks the dialogue graph.** New responses added as additional options, not replacements. Existing flow preserved.
+
+**NV-8: Expansion polish, tests, integrity** (~1-2 days)
+- Cross-reference integrity: every new skill_check resolves (skill name valid, success/failure nodes exist, flags resolve).
+- Writing Bible compliance scan on all new content.
+- Playthrough test: walk a full dialogue tour, verify all new checks trigger correctly.
+- Distribution audit: confirm skill variety target met (no skill over-represented).
+- Update `dialogue_writing_guide.md` with the NV-7 examples as a "skill check authoring" section.
+
 ### Acceptance criteria
 
-- [ ] All skill-gated responses in `dialogues.json` rewritten to grade A or B.
-- [ ] `requirements/dialogue_writing_guide.md` has a "Skill Check as Voice" section with examples.
-- [ ] `test_skill_check_voice.py` has at least 5 compliance tests, all passing.
+- [ ] All skill-gated responses in `dialogues.json` rewritten to grade A or B (NV-2/3).
+- [ ] `requirements/dialogue_writing_guide.md` has a "Skill Check as Voice" section with examples (NV-4).
+- [ ] `test_skill_check_voice.py` has at least 5 compliance tests, all passing (NV-5).
 - [ ] Zero bare declaratives on skill-gated responses.
-- [ ] Audit findings doc committed for permanent reference.
+- [ ] Audit findings doc committed for permanent reference (NV-1).
+- [ ] 40-60 new skill checks authored across high-traffic dialogues, covering all 8 skill types (NV-7).
+- [ ] Distribution audit confirms no skill over-represented (NV-8).
+- [ ] All new checks preserve existing dialogue flow — every mission outcome still reachable without any skill check (NV-8 verified via playthrough test).
+- [ ] `dialogue_writing_guide.md` gains an authoring section with examples drawn from NV-7 (NV-8).
 
 ### Risks
 
@@ -792,13 +824,13 @@ TDD cadence per sub-sprint:
 5. Full suite green before commit.
 
 Test count targets per phase:
-- NV: +10-15 tests
+- NV: +15-25 tests (compliance + expansion cross-refs)
 - CE: +40-50 tests
 - TW: +20-30 tests
 - RC: +80-100 tests
 - CB: +40-60 tests
 
-Arc total test growth: ~190-255 tests.
+Arc total test growth: ~195-265 tests.
 
 ### Achievements + progression integration
 
@@ -831,11 +863,11 @@ Add to `data/progression/achievements.json` at phase completion, not in-phase (a
 ## Timeline + milestones
 
 ```
-Week 1       [NV-1 NV-2 NV-3 NV-4 NV-5 NV-6]  →  NV SHIP
-Week 2-4     [CE-1 CE-2 CE-3 CE-4 CE-5 CE-6]  →  CE SHIP
-Week 5-6     [TW-1 TW-2 TW-3 TW-4 TW-5 TW-6]  →  TW SHIP
-Week 7-9     [RC-1 ... RC-10]                 →  RC SHIP
-Week 10-12   [CB-1 ... CB-9]                  →  CB SHIP
+Week 1-2     [NV-1 ... NV-8]                  →  NV SHIP
+Week 3-5     [CE-1 CE-2 CE-3 CE-4 CE-5 CE-6]  →  CE SHIP
+Week 6-7     [TW-1 TW-2 TW-3 TW-4 TW-5 TW-6]  →  TW SHIP
+Week 8-10    [RC-1 ... RC-10]                 →  RC SHIP
+Week 11-13   [CB-1 ... CB-9]                  →  CB SHIP
 ```
 
 **After each SHIP milestone:** arc is in a committable, shippable state. Stop here if priorities shift.
