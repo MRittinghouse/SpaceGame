@@ -370,6 +370,97 @@ When the player has invested in Master Negotiator:
 - These should be creative third options: not just "better persuasion" but lateral thinking that reframes the problem
 - Example: Instead of "Pay the fine" or "Argue about the fine," Master Negotiator might offer: "What if I hauled a shipment for you instead? Covers the fine and you get free logistics."
 
+### Grading Rubric — Skill Checks as Voice
+
+Every skill-gated response must answer: *"What does this character see, say, or do because of this skill that the baseline character wouldn't?"* Grade every skill check against this ladder before committing it.
+
+**D — bare declarative**
+- Skill is a gate, response is empty.
+- `[Persuasion] I disagree.`
+- `[Observation] Watch the delegates carefully.` — meta-instruction, not observation
+- **Never ship at grade D.**
+
+**C — skill colors tone**
+- Response has voice but no insight.
+- `[Persuasion] What do you think is really going on?`
+- Acceptable only as a temporary placeholder.
+
+**B — skill reads the NPC / situation**
+- Response voiced in a way that demonstrates skill-level awareness of the other party.
+- `[Persuasion] People are dying. Your pension won't matter if the sector falls apart.`
+
+**A — skill IS the insight**
+- Response carries what expertise specifically reveals. Could not be written by a character without this skill.
+- `[Observation] His second tap was for him, not the scale.`
+- `[Perception] The serial number's been filed and re-etched. Whoever did it was in a hurry. Whoever sold it to him wasn't.`
+
+**Target:** every shipped skill-gated response at B or A. Zero at D.
+
+### Canonical Format
+
+```
+[Skill N] body-as-insight
+```
+
+- `Skill` — the check's skill name, title-cased. Valid `skill_check` skills today: `Persuasion`, `Intimidation`, `Observation`. More to come.
+- `N` — difficulty number. Omit if the response is knowledge-flag-gated with no numeric check.
+- `body-as-insight` — the voice payload. See "Dual-voice convention" below.
+
+### Dual-voice convention (loose guideline)
+
+Default per skill category. Mix when narrative demands.
+
+- **Speech skills** (Persuasion, Intimidation, Deception) default to in-quote spoken dialogue.
+  `[Persuasion 2] "You have a son in the academy. Three years. I don't touch anyone I might see again at graduation. Let me pass."`
+- **Observation skills** (Perception / Observation) default to internal observation.
+  `[Observation] His second tap was for him, not the scale.`
+- **Hybrid skills** (Technical, Piloting, Leadership) — author's choice per line.
+- **Mixing is encouraged** when a beat serves both. Observation setting up speech, self-directed internal voice, and so on are all fair.
+
+The rule under the guideline: **skill produces insight.** Format is craft.
+
+### Before / After Gallery (from NV-2/3)
+
+These rewrites ship in `dialogues.json`. Use them as templates for new skill-check authoring.
+
+| Before (grade) | After (grade) | Why |
+|----------------|---------------|-----|
+| `[Persuasion 3] What do you think is really going on?` (C) | `[Persuasion 3] "You pulled me in here because you've already made up your mind. Say it."` (B) | Reads Dex's decision state; presses him to name what he already believes |
+| `[Observation] Watch the delegates carefully.` (D) | `[Observation] The Guild rep keeps checking her chrono. The Alliance rep hasn't looked at her once. One of them knows the clock runs out today.` (A) | Replaces meta-instruction with the specific read Observation reveals |
+| `[Persuasion] May I address the delegates?` (C) | `[Persuasion] "One minute. Before the next person walks out of this room."` (B) | Reads room-collapse state; urgency + economy commands attention |
+| `[Persuasion] Whatever you saw, it's connected to the pirate attacks. People are dying on those convoy routes.` (B) | `[Persuasion] "Forty years in the tunnels. You sealed your mouth when the Union asked. Convoy crews are dying now and nobody's asked them to stay quiet. Flip the question."` (A) | Turns Oren's own silence-logic against him |
+| `[Persuasion 2] Any idea who's behind the leaks?` (C) | `[Persuasion 2] "You've run convoys for ten years. You know the difference between bad luck and inside information. You've already decided which this is."` (B) | Reads Reva's expertise and existing conclusion |
+| `[Persuasion] Give me the data. Schematics, authorization codes, everything. I'll make sure the right people see it.` (C) | `[Persuasion] "You've been carrying this alone for weeks. Hand it off. Let me be the one they come for when it leaks."` (B) | Reframes demand as burden-transfer offer — reads her actual weight |
+| `[Tev skimmed you.]` (D) | `[Observation] "His second tap was for him, not the scale. Your friend skimmed you. You saw the same thing I did. You just didn't want to."` (A) | Voices the specific observation AND reads Arna's denial |
+
+### Specialization authoring (NV-0)
+
+`SocialManager.get_effective_level` applies a ±2 specialization bonus based on how a skill's base level compares to the player's mean social skill level. A true specialist (Persuasion 5, others 1) gets +2. A generalist (all equal) gets 0. A neglector (-2).
+
+When authoring skill checks:
+- **Don't design around the bonus.** Pick the difficulty that matches the narrative weight. Let specialization tilt the pass rate naturally.
+- **A specialist should pass most D2-D3 checks in their specialty.** A generalist should pass only D1-D2. That's the intended feel.
+- **D5 is virtuoso territory** — reserved for moments where a max-invested specialist in a favorable NPC context just barely passes. Use sparingly.
+- **Never gate plot progression on skill checks.** Specialization is about COLOR, not about locking content.
+
+### Difficulty guidance
+
+| Difficulty | Use case |
+|------------|----------|
+| 1 | Trivial social gesture. Any investment passes. Use for texture, not gating. |
+| 2 | Common skill moment. Moderately invested players pass. Most frequent. |
+| 3 | Specialist territory. Significant investment required. Use for notable beats. |
+| 4 | Expert challenge. Near-cap + specialization. Rare. |
+| 5 | Virtuoso. Max skill + specialization + favorable disposition. Critical story moments only. |
+
+No check, no difficulty, should ever fully lock a mission. Failure paths must lead to the same eventual outcome by a costlier route.
+
+### Infrastructure note (as of NV-6.5)
+
+Valid `skill_check.skill` values: `persuasion`, `intimidation`, `observation`.
+
+NV-6.5 will expand this to include `deception`, `technical`, `piloting`, `leadership`. Until that infrastructure lands, NV-7 expansion authoring uses only the three valid skills. Post-NV-6.5, the full eight-skill palette opens up.
+
 ---
 
 ## 9. Station Atmosphere Through Dialogue
