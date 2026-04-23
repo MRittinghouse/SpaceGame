@@ -166,11 +166,43 @@ class TestTevDialogue:
         assert "processing" in text
 
     def test_perception_path_sets_knows_skims(self) -> None:
-        """Player who chooses to weigh output themselves should learn Tev skims."""
+        """NV-2/3 upgrade: catching the skim now requires passing an
+        Observation skill check. The flag moves from direct ``set_flag``
+        to ``skill_check.set_flag_on_success``."""
         tree = _tree("tev_refining_intro")
         weigh = _node(tree, "weigh_output")
-        set_flags = [r.get("set_flag") for r in weigh["responses"]]
-        assert "knows_tev_skims" in set_flags
+        flags_set: list[str] = []
+        for r in weigh["responses"]:
+            if r.get("set_flag"):
+                flags_set.append(r["set_flag"])
+            sc = r.get("skill_check") or {}
+            if sc.get("set_flag_on_success"):
+                flags_set.append(sc["set_flag_on_success"])
+        assert "knows_tev_skims" in flags_set
+
+    def test_weigh_output_has_observation_check(self) -> None:
+        """NV-2/3: knowing Tev skims is gated behind an Observation 2 check,
+        not automatically granted to anyone who picks 'weigh the output'."""
+        tree = _tree("tev_refining_intro")
+        weigh = _node(tree, "weigh_output")
+        obs_checks = [
+            r
+            for r in weigh["responses"]
+            if (r.get("skill_check") or {}).get("skill") == "observation"
+        ]
+        assert len(obs_checks) == 1, "expected one Observation check on weigh_output"
+        check = obs_checks[0]["skill_check"]
+        assert check["difficulty"] == 2
+        assert check["set_flag_on_success"] == "knows_tev_skims"
+
+    def test_weigh_output_subtext_is_ambiguous(self) -> None:
+        """NV-2/3: ambiguous subtext — the specific 'second tap' detail is
+        reserved for the Observation-check response, not the narrator."""
+        tree = _tree("tev_refining_intro")
+        weigh = _node(tree, "weigh_output")
+        subtext = weigh.get("subtext", "").lower()
+        assert "second tap" not in subtext
+        assert "calibration" not in subtext
 
     def test_completion_sets_refining_flag(self) -> None:
         tree = _tree("tev_refining_intro")

@@ -1316,7 +1316,7 @@
                             "next_node_id": "pattern"
                         },
                         {
-                            "text": "[Persuasion 2] Any idea who's behind the leaks?",
+                            "text": "[Persuasion 2] \"You've run convoys for ten years. You know the difference between bad luck and inside information. You've already decided which this is.\"",
                             "next_node_id": null,
                             "skill_check": {
                                 "skill": "persuasion",
@@ -1481,7 +1481,7 @@
                             "next_node_id": "the_favor"
                         },
                         {
-                            "text": "[Persuasion 3] What do you think is really going on?",
+                            "text": "[Persuasion 3] \"You pulled me in here because you've already made up your mind. Say it.\"",
                             "next_node_id": null,
                             "skill_check": {
                                 "skill": "persuasion",
@@ -1823,7 +1823,7 @@
                     "text": "The session has reached an impasse. The Guild won't fund patrols without oversight authority. The Union won't accept oversight. The Collective won't share sensor technology without data governance rights. The Alliance won't participate in any centralized system. The charter on the wall behind me reads 'Together We Build', but today, together seems very far away.",
                     "responses": [
                         {
-                            "text": "[Persuasion] May I address the delegates?",
+                            "text": "[Persuasion] \"One minute. Before the next person walks out of this room.\"",
                             "next_node_id": "observation_moment",
                             "skill_check": {
                                 "skill": "persuasion",
@@ -1885,7 +1885,7 @@
                     "text": "The session winds down. Delegates gather their materials and exchange stiff courtesies. As the room empties, you have a last chance to observe.",
                     "responses": [
                         {
-                            "text": "[Observation] Watch the delegates carefully.",
+                            "text": "[Observation] The Guild rep keeps checking her chrono. The Alliance rep hasn't looked at her once. One of them knows the clock runs out today.",
                             "next_node_id": "missed_signal",
                             "skill_check": {
                                 "skill": "observation",
@@ -2095,7 +2095,7 @@
                     "text": "Dex. That name buys you thirty seconds. The tunnels are sealed for a reason, and I sealed my mouth about them for a reason too. Union brass made that very clear when they pensioned me off early.",
                     "responses": [
                         {
-                            "text": "[Persuasion] Whatever you saw, it's connected to the pirate attacks. People are dying on those convoy routes.",
+                            "text": "[Persuasion] \"Forty years in the tunnels. You sealed your mouth when the Union asked. Convoy crews are dying now and nobody's asked them to stay quiet. Flip the question.\"",
                             "next_node_id": "refuse",
                             "skill_check": {
                                 "skill": "persuasion",
@@ -2117,7 +2117,7 @@
                     "text": "Threaten? Nothing so dramatic. They just made my pension conditional on my silence. Forty years in the tunnels, and my retirement depends on pretending I never saw what I saw. You think I'm going to throw that away for Dex Halloran?",
                     "responses": [
                         {
-                            "text": "[Persuasion] People are being killed with military weapons that shouldn't exist. Your pension won't mean much if the whole sector falls apart.",
+                            "text": "[Persuasion] \"Your pension buys what. Forty years in, you know what a Union promise is worth when the Union's falling apart. Talk.\"",
                             "next_node_id": "refuse",
                             "skill_check": {
                                 "skill": "persuasion",
@@ -2292,7 +2292,7 @@
                     "text": "That's what I can't figure out. The Guild's entire operation depends on the Expanse. Tariffs, trade routes, mining concessions, all of it gone. Unless they have somewhere else to go. The schematics reference coordinates outside the Expanse. Another system, maybe multiple systems. Whoever authorized Project Convergence isn't planning to be here when it fires.",
                     "responses": [
                         {
-                            "text": "[Persuasion] I need copies of those schematics. Everything you have on Project Convergence.",
+                            "text": "[Persuasion] \"Everything. Whatever's on those files has been eating you. Stop carrying it. Let me.\"",
                             "next_node_id": "refuse_data",
                             "skill_check": {
                                 "skill": "persuasion",
@@ -2314,7 +2314,7 @@
                     "text": "The authorization codes trace to the Guild's Inner Ledger, the executive council that handles off-book operations. No individual names on the documents I've seen, just Ledger seals. But the logistics chain runs through Nexus Prime. That's where the coordination happens.",
                     "responses": [
                         {
-                            "text": "[Persuasion] Give me the data. Schematics, authorization codes, everything. I'll make sure the right people see it.",
+                            "text": "[Persuasion] \"You've been carrying this alone for weeks. Hand it off. Let me be the one they come for when it leaks.\"",
                             "next_node_id": "refuse_data",
                             "skill_check": {
                                 "skill": "persuasion",
@@ -6395,12 +6395,22 @@
                     "id": "weigh_output",
                     "speaker_id": "tev",
                     "text": "Sure. Weigh it yourself. I use the same scale either way.",
-                    "subtext": "He doesn't stop smiling. But his hands move faster, and the scale gets a second tap this time. A calibration he doesn't explain.",
+                    "subtext": "He doesn't stop smiling. He works quickly now.",
                     "responses": [
                         {
-                            "text": "[Noted. Run it.]",
+                            "text": "[Observation 2] His second tap was for him, not the scale.",
                             "next_node_id": "run_it",
-                            "set_flag": "knows_tev_skims"
+                            "skill_check": {
+                                "skill": "observation",
+                                "difficulty": 2,
+                                "success_node_id": "run_it",
+                                "failure_node_id": "run_it",
+                                "set_flag_on_success": "knows_tev_skims"
+                            }
+                        },
+                        {
+                            "text": "[Noted. Run it.]",
+                            "next_node_id": "run_it"
                         }
                     ],
                     "expression": "neutral"
@@ -6449,7 +6459,7 @@
                             "next_node_id": "defend_tev"
                         },
                         {
-                            "text": "[Tev skimmed you.]",
+                            "text": "[Observation] \"His second tap was for him, not the scale. Your friend skimmed you. You saw the same thing I did. You just didn't want to.\"",
                             "next_node_id": "defend_tev",
                             "required_flags": ["knows_tev_skims"]
                         }

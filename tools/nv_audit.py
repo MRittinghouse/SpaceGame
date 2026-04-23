@@ -140,23 +140,24 @@ def _infer_skill_from_prefix(text: str) -> str:
 def _infer_skill_from_flag_name(flag: str) -> str:
     """Best-effort skill inference from a knowledge flag name.
 
-    Returns ``unknown`` when heuristics can't decide. The audit flags these
-    for manual skill assignment during grading.
+    Maps narrative patterns to one of the three real social skills
+    (persuasion, intimidation, observation). The game's attribute system
+    has Acuity (narratively "perception") but no skill_check skill named
+    "perception" — noticing-type checks use Observation.
+
+    Returns ``unknown`` when heuristics can't decide. The audit flags
+    these for manual skill assignment during grading.
     """
     low = flag.lower()
-    # Specific content-based hints
-    if "skim" in low or "watch" in low or "tap" in low:
-        return "perception"
-    if "lie" in low or "bluff" in low or "deception" in low:
-        return "deception"
+    # Content-based hints, all mapped to the three valid skill_check skills.
+    if "skim" in low or "watch" in low or "tap" in low or "spot" in low:
+        return "observation"
     if "persuad" in low or "convince" in low:
         return "persuasion"
     if "intimidat" in low or "threat" in low:
         return "intimidation"
     if "observ" in low or "notice" in low:
         return "observation"
-    if "tech" in low or "engineer" in low:
-        return "technical"
     return "unknown"
 
 

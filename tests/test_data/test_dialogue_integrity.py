@@ -452,6 +452,17 @@ def _collect_all_flag_uses() -> tuple[dict[str, set[str]], dict[str, set[str]]]:
             for response in node.responses:
                 if getattr(response, "set_flag", None):
                     producers[response.set_flag].add(f"dialogue:{tree.id}")
+                # Flags set via skill_check pass/fail branches are producers too.
+                sc = getattr(response, "skill_check", None)
+                if sc is not None:
+                    if getattr(sc, "set_flag_on_success", None):
+                        producers[sc.set_flag_on_success].add(
+                            f"dialogue:{tree.id}:skill_check_success"
+                        )
+                    if getattr(sc, "set_flag_on_failure", None):
+                        producers[sc.set_flag_on_failure].add(
+                            f"dialogue:{tree.id}:skill_check_failure"
+                        )
                 for flag in getattr(response, "required_flags", []) or []:
                     consumers[flag].add(f"dialogue:{tree.id}:response_required")
                 for flag in getattr(response, "forbidden_flags", []) or []:
@@ -629,6 +640,10 @@ KNOWN_CONSUMER_ONLY_ORPHANS: set[str] = {
 KNOWN_PRODUCER_ONLY_ORPHANS: set[str] = {
     # === Player-choice memory + Act One ending state ===
     "alliance_followed",
+    # Set on reva_distress Persuasion 2 success. Pre-existing narrative
+    # reward flag exposed when NV-2/3 extended the scanner to walk
+    # skill_check.set_flag_on_success. Not currently read by any consumer.
+    "reva_shared_patrol_data",
     "alliance_formed",
     "ancient_chamber_discovered",
     "anomaly_coordinates_found",
