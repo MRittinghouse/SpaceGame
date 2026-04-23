@@ -367,12 +367,19 @@ class DialogueView(BaseView):
                 )
                 self._cached_disposition = new_disp
 
-        # Check for skill check result feedback
+        # Check for skill check result feedback. PT-K: prefer the detailed
+        # readout (skill level vs difficulty) so the player sees what was
+        # actually checked. Falls back to the generic pass/fail if the
+        # dialogue manager has no social manager wired.
         check_result = self.dialogue_manager.get_last_check_result()
         if check_result is not None:
             success, msg = check_result
+            readout = self.dialogue_manager.get_last_check_readout()
+            feedback_text = readout if readout else (
+                "Check Passed!" if success else "Check Failed."
+            )
             self._check_feedback = {
-                "text": "Check Passed!" if success else "Check Failed.",
+                "text": feedback_text,
                 "timer": SOCIAL_CHECK_FEEDBACK_DURATION,
                 "success": success,
             }

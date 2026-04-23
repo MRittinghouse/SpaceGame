@@ -1309,6 +1309,77 @@
           "target_id": "adrift_complete"
         }
       ]
+    },
+    {
+      "id": "coolant_run",
+      "name": "Verdant Machinery Run",
+      "description": "Arna pulled a pallet of harvest machinery out of a stalled manifest and handed it to you. Verdant's agri hub has been waiting on it. A woman named Rhea signs for the delivery on their end. Straightforward run. Don't get cute.",
+      "hint": "Jump to Verdant. Find Rhea at the agri hub. Hand off the pallet.",
+      "discovery_text": "Arna at the concourse handed me eighteen units of machinery and a destination. Verdant Agri Hub. First run.",
+      "mission_type": "side",
+      "available_at": [
+        "nexus_prime"
+      ],
+      "available_after": "",
+      "available_before": "",
+      "discovery_method": "npc",
+      "repeatable": false,
+      "prerequisites": [],
+      "required_flags": [
+        "arna_delivery_accepted"
+      ],
+      "auto_accept": true,
+      "on_accept_cargo": [
+        {
+          "commodity_id": "machinery",
+          "quantity": 18
+        }
+      ],
+      "objectives": [
+        {
+          "type": "reach_system",
+          "target_id": "verdant",
+          "target_quantity": 1,
+          "description": "Jump to Verdant"
+        },
+        {
+          "type": "talk_to_npc",
+          "target_id": "rhea",
+          "target_quantity": 1,
+          "description": "Find Rhea at the agri hub and hand over the pallet"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "arna_delivery_resolved",
+          "target_quantity": 1,
+          "description": "Complete the delivery"
+        }
+      ],
+      "rewards": [
+        {
+          "reward_type": "remove_cargo",
+          "amount": 18,
+          "target_id": "machinery"
+        },
+        {
+          "reward_type": "credits",
+          "amount": 2000
+        },
+        {
+          "reward_type": "xp",
+          "amount": 50
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "arna_delivery_complete"
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "first_delivery_complete"
+        }
+      ]
     }
   ]
 }

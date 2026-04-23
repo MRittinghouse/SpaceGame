@@ -348,7 +348,7 @@ class TutorialShopView(BaseView):
         card_h: int,
     ) -> None:
         """Render a single part card."""
-        from spacegame.engine.draw_utils import truncate_text
+        from spacegame.engine.draw_utils import word_wrap
 
         purchased = self._purchased[index]
         is_choice = index >= self._num_mandatory
@@ -382,19 +382,23 @@ class TutorialShopView(BaseView):
         name_surf = self._name_font.render(part["name"], True, Colors.TEXT_PRIMARY)
         screen.blit(name_surf, (cx + 10, cy + 6))
 
-        # Description
-        desc_surf = self._desc_font.render(part["description"], True, Colors.TEXT_SECONDARY)
+        # Description — PT-008: word-wrap so longer descriptions render fully
+        # across two lines instead of truncating with an ellipsis. Card height
+        # (120px at 720p base) has room; single-line truncation was hiding the
+        # back half of every description.
         max_w = card_w - 20
-        if desc_surf.get_width() > max_w:
-            desc_text = truncate_text(part["description"], self._desc_font, max_w)
-            desc_surf = self._desc_font.render(desc_text, True, Colors.TEXT_SECONDARY)
-        screen.blit(desc_surf, (cx + 10, cy + 30))
+        lines = word_wrap(part["description"], self._desc_font, max_w)
+        line_h = self._desc_font.get_linesize()
+        for i, line in enumerate(lines[:2]):  # cap at 2 lines to reserve room for cost
+            line_surf = self._desc_font.render(line, True, Colors.TEXT_SECONDARY)
+            screen.blit(line_surf, (cx + 10, cy + 30 + i * line_h))
 
-        # Cost
+        # Cost — pinned to the card bottom so the wrapped description above
+        # has room to breathe without pushing cost off the card.
         cost_text = f"{part['cost']} CR" if not purchased else "PURCHASED"
         cost_color = Colors.YELLOW if not purchased else Colors.GREEN
         cost_surf = self._cost_font.render(cost_text, True, cost_color)
-        screen.blit(cost_surf, (cx + 10, cy + 52))
+        screen.blit(cost_surf, (cx + 10, cy + card_h - cost_surf.get_height() - 6))
 
     def get_next_state(self) -> Optional[GameState]:
         return self.next_state

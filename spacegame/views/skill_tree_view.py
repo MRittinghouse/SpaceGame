@@ -111,6 +111,11 @@ class SkillTreeView(BaseView):
         self.next_state: Optional[GameState] = None
         self.hovered_skill: Optional[str] = None
 
+        # PT-M: first-time tip overlay
+        from spacegame.views.first_time_tip import FirstTimeTipOverlay
+
+        self._first_time_tip: Optional[FirstTimeTipOverlay] = None
+
         # View mode
         self._selected_tree: Optional[SkillTreeType] = None  # None = selector mode
 
@@ -153,6 +158,30 @@ class SkillTreeView(BaseView):
         self._build_node_cache()
         self._selected_tree = None
         self._create_ui()
+        self._maybe_show_tip()
+
+    def _maybe_show_tip(self) -> None:
+        """PT-M: first-time skill tree tip."""
+        if self._player is None:
+            return
+        if self._player.dialogue_flags.get("seen_tip_skill_tree", False):
+            return
+        from spacegame.views.first_time_tip import FirstTimeTipOverlay
+
+        self._first_time_tip = FirstTimeTipOverlay(
+            title="Skill Trees",
+            body=(
+                "You gain one skill point per level. Tier-1 roots unlock "
+                "tier-2 branches, which unlock tier-3 capstones. Capstones "
+                "define your build identity. Pick a direction early; "
+                "dabbling spreads you thin."
+            ),
+            on_dismiss=self._mark_skill_tree_tip_seen,
+        )
+
+    def _mark_skill_tree_tip_seen(self) -> None:
+        if self._player is not None:
+            self._player.dialogue_flags["seen_tip_skill_tree"] = True
 
     def on_exit(self) -> None:
         super().on_exit()
@@ -269,6 +298,10 @@ class SkillTreeView(BaseView):
     # === Event handling ===
 
     def handle_event(self, event: pygame.event.Event) -> None:
+        # PT-M: first-time tip consumes events while active
+        if self._first_time_tip is not None and not self._first_time_tip.dismissed:
+            if self._first_time_tip.handle_event(event):
+                return
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             if self._selected_tree is not None:
                 self._selected_tree = None
@@ -346,6 +379,11 @@ class SkillTreeView(BaseView):
         self.message_timer = 3.0
 
     def update(self, dt: float) -> None:
+        # PT-M: tick tip overlay; clear once dismissed
+        if self._first_time_tip is not None:
+            self._first_time_tip.update(dt)
+            if self._first_time_tip.dismissed:
+                self._first_time_tip = None
         self.background.update(dt)
         self.particles.update(dt)
         self._glow_time += dt
@@ -759,6 +797,11 @@ class SkillTreeView(BaseView):
                     f"Next level: {nxt_text}", True, Colors.TEXT_SECONDARY
                 )
                 screen.blit(nxt_surf, (tx + 8, line_y))
+
+    def render_top(self, screen: pygame.Surface) -> None:
+        """PT-M: draw the first-time tip above pygame_gui elements."""
+        if self._first_time_tip is not None:
+            self._first_time_tip.render(screen)
 
     def get_next_state(self) -> Optional[GameState]:
         return self.next_state

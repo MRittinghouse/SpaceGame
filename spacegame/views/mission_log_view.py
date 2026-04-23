@@ -260,6 +260,11 @@ class MissionLogView(BaseView):
         # UI
         self.back_button: Optional[pygame_gui.elements.UIButton] = None
 
+        # PT-M: first-time tip overlay (None unless unseen on this entry)
+        from spacegame.views.first_time_tip import FirstTimeTipOverlay
+
+        self._first_time_tip: Optional[FirstTimeTipOverlay] = None
+
         # Tab buttons
         self._tabs: list[_TabButton] = []
         self._mission_items: list[_MissionItem] = []
@@ -276,7 +281,32 @@ class MissionLogView(BaseView):
         self._create_ui()
         self._build_tabs()
         self._refresh_list()
+        self._maybe_show_tip()
         logger.info("Entered mission log view")
+
+    def _maybe_show_tip(self) -> None:
+        """PT-M: show the first-time mission log tip if the player hasn't
+        dismissed it yet. Literal flag strings stay in this file so the
+        dialogue-integrity scanner sees both the read and the write."""
+        if self._player is None:
+            return
+        if self._player.dialogue_flags.get("seen_tip_mission_log", False):
+            return
+        from spacegame.views.first_time_tip import FirstTimeTipOverlay
+
+        self._first_time_tip = FirstTimeTipOverlay(
+            title="Mission Log",
+            body=(
+                "Active contracts, available work, and completed history in one place. "
+                "Select a mission to see objectives and rewards. The cockpit hint line "
+                "tracks the top active mission if you want it to."
+            ),
+            on_dismiss=self._mark_mission_log_tip_seen,
+        )
+
+    def _mark_mission_log_tip_seen(self) -> None:
+        if self._player is not None:
+            self._player.dialogue_flags["seen_tip_mission_log"] = True
 
     def on_exit(self) -> None:
         self._destroy_ui()
@@ -339,6 +369,15 @@ class MissionLogView(BaseView):
         if self._current_tab == "completed":
             missions.extend(self.mission_manager.get_missions_by_status(MissionStatus.ABANDONED))
             missions.extend(self.mission_manager.get_missions_by_status(MissionStatus.FAILED))
+        # PT-J: Available tab hides missions that surface through other channels.
+        # NPC-initiated missions appear when the player accepts them in dialogue;
+        # encounter missions appear when the player triggers the encounter.
+        # Surfacing them here before that happens breaks the "jobs come from
+        # people, not menus" framing (playtest finding PT-013). Station-board
+        # and campaign missions stay visible because they're meant to be
+        # discovered at this surface.
+        if self._current_tab == "available":
+            missions = [m for m in missions if m.discovery_method not in ("npc", "encounter")]
         # Sort: campaign missions first, then side missions
         missions.sort(key=lambda m: (0 if m.mission_type == "campaign" else 1, m.name))
 
@@ -397,6 +436,10 @@ class MissionLogView(BaseView):
         self._update_abandon_visibility()
 
     def handle_event(self, event: pygame.event.Event) -> None:
+        # PT-M: tip overlay consumes events while active
+        if self._first_time_tip is not None and not self._first_time_tip.dismissed:
+            if self._first_time_tip.handle_event(event):
+                return
         if event.type == pygame_gui.UI_BUTTON_PRESSED:
             if event.ui_element == self.back_button:
                 self.next_state = GameState.GALAXY_MAP
@@ -465,6 +508,11 @@ class MissionLogView(BaseView):
             self._scroll_offset = max(0, self._scroll_offset - event.y * 20)
 
     def update(self, dt: float) -> None:
+        # PT-M: tick tip overlay; clear once dismissed
+        if self._first_time_tip is not None:
+            self._first_time_tip.update(dt)
+            if self._first_time_tip.dismissed:
+                self._first_time_tip = None
         self.background.update(dt)
         mouse_pos = pygame.mouse.get_pos()
         for tab in self._tabs:
@@ -766,6 +814,11 @@ class MissionLogView(BaseView):
             screen.blit(surf, (x, y))
             y += font.get_linesize()
         return y
+
+    def render_top(self, screen: pygame.Surface) -> None:
+        """PT-M: draw the first-time tip above pygame_gui elements."""
+        if self._first_time_tip is not None:
+            self._first_time_tip.render(screen)
 
     def get_next_state(self) -> Optional[GameState]:
         return self.next_state

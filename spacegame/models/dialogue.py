@@ -153,6 +153,10 @@ class DialogueManager:
         self._player: Optional[object] = None
         self._crew_roster: Optional[CrewRoster] = None
         self._last_check_result: Optional[tuple[bool, str]] = None
+        # PT-K: short readout of the most recent check ("Persuasion 3 vs 2 PASS")
+        # for the dialogue view to display as a fading overlay. Cleared on next
+        # response selection so the overlay only shows the immediate result.
+        self._last_check_readout: Optional[str] = None
 
     def set_social_manager(self, manager: SocialManager) -> None:
         """Set the social manager for skill check resolution."""
@@ -216,6 +220,14 @@ class DialogueManager:
         """Get the result of the most recent skill check, or None."""
         return self._last_check_result
 
+    def get_last_check_readout(self) -> Optional[str]:
+        """Get a short UI readout of the most recent skill check, or None.
+
+        PT-K: surfaces skill level vs difficulty to the player so check
+        mechanics are visible. Cleared on next response selection.
+        """
+        return self._last_check_readout
+
     def select_response(self, index: int) -> Optional[DialogueNode]:
         """Select a response by index, advancing the dialogue.
 
@@ -231,6 +243,7 @@ class DialogueManager:
 
         response = available[index]
         self._last_check_result = None
+        self._last_check_readout = None
 
         # Set flag if specified
         if response.set_flag:
@@ -281,9 +294,19 @@ class DialogueManager:
         if self._social_manager:
             success, msg = self._social_manager.resolve_check(check.skill, check.difficulty, npc_id)
             self._last_check_result = (success, msg)
+            # PT-K: format a compact level-vs-difficulty readout. Shows what
+            # actually got checked so the player learns how checks work.
+            effective = self._social_manager.get_effective_level(check.skill, npc_id)
+            skill_obj = self._social_manager._skills.get(check.skill)
+            skill_name = skill_obj.name.upper() if skill_obj else check.skill.upper()
+            verdict = "PASS" if success else "FAIL"
+            self._last_check_readout = (
+                f"{skill_name} {effective} vs {check.difficulty}  {verdict}"
+            )
         else:
             # No social manager — fall back to success path
             success = True
+            self._last_check_readout = None
 
         if success:
             if check.set_flag_on_success:

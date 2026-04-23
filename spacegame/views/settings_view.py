@@ -92,8 +92,12 @@ class SettingsView(BaseView):
         # UI Elements — display settings
         self._resolution_buttons: list[pygame_gui.elements.UIButton] = []
         self._fullscreen_button: Optional[pygame_gui.elements.UIButton] = None
+        self._objective_hint_button: Optional[pygame_gui.elements.UIButton] = None
         self._selected_resolution: tuple[int, int] = (WINDOW_WIDTH, WINDOW_HEIGHT)
         self._selected_fullscreen: bool = FULLSCREEN
+        # PT-H: objective hint toggle. Default on; player opts out when
+        # they've found their footing.
+        self._selected_objective_hint: bool = True
         self._restart_label: Optional[pygame_gui.elements.UILabel] = None
 
     def on_enter(self) -> None:
@@ -201,6 +205,19 @@ class SettingsView(BaseView):
         )
         y += 45
 
+        # Objective hint toggle (PT-H). Controls the cockpit HUD's active-
+        # mission hint line. Default on for new players; off for veterans
+        # who don't want the training wheels.
+        oh_label = (
+            "Objective Hint: ON" if self._selected_objective_hint else "Objective Hint: OFF"
+        )
+        self._objective_hint_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(panel_x, y, scale_x(200), scale_y(35)),
+            text=oh_label,
+            manager=self.ui_manager,
+        )
+        y += 45
+
         # Restart required label (hidden until display setting changes)
         self._restart_label = pygame_gui.elements.UILabel(
             relative_rect=pygame.Rect(panel_x, y, panel_width, 22),
@@ -295,6 +312,7 @@ class SettingsView(BaseView):
             self._sfx_label,
             self._ambient_label,
             self._fullscreen_button,
+            self._objective_hint_button,
             self._restart_label,
         ]:
             if elem:
@@ -319,6 +337,16 @@ class SettingsView(BaseView):
                 self._selected_fullscreen = not self._selected_fullscreen
                 fs_label = "Fullscreen: ON" if self._selected_fullscreen else "Fullscreen: OFF"
                 self._fullscreen_button.set_text(fs_label)
+
+            elif event.ui_element == self._objective_hint_button:
+                self._selected_objective_hint = not self._selected_objective_hint
+                oh_label = (
+                    "Objective Hint: ON"
+                    if self._selected_objective_hint
+                    else "Objective Hint: OFF"
+                )
+                if self._objective_hint_button:
+                    self._objective_hint_button.set_text(oh_label)
                 self.apply_button.enable()
                 if self._restart_label:
                     self._restart_label.set_text("Restart required to apply display changes")
@@ -392,12 +420,21 @@ class SettingsView(BaseView):
         """Get the selected display settings for persistence.
 
         Returns:
-            Dict with 'resolution' and 'fullscreen' keys.
+            Dict with 'resolution', 'fullscreen', and 'show_objective_hint' keys.
         """
         return {
             "resolution": list(self._selected_resolution),
             "fullscreen": self._selected_fullscreen,
+            "show_objective_hint": self._selected_objective_hint,
         }
+
+    def set_objective_hint(self, value: bool) -> None:
+        """Set the initial objective-hint toggle state before UI is built.
+
+        Called by game.py when opening the settings dialog so the toggle
+        reflects the current cockpit HUD state.
+        """
+        self._selected_objective_hint = value
 
     def _browse_save_directory(self) -> None:
         """Open directory browser to select save directory."""

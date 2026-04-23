@@ -237,11 +237,19 @@ class TestSideMissionRewards:
                     )
 
     def test_credit_rewards_reasonable(self) -> None:
-        """Credit rewards are in a reasonable range for side missions."""
+        """Credit rewards are in a reasonable range for side missions.
+
+        Exception: PT-H onboarding mission (coolant_run) pays more because
+        it is the player's only income source at the moment it fires — a
+        safe-first-run that needs to cover fuel plus meaningful progress
+        toward the first upgrade. Ceiling raised to 2500 for this mission.
+        """
+        onboarding_exceptions = {"coolant_run"}
         for m in _load_side():
+            ceiling = 2500 if m.id in onboarding_exceptions else 1000
             for r in m.rewards:
                 if r.reward_type == "credits":
-                    assert 50 <= r.amount <= 1000, (
+                    assert 50 <= r.amount <= ceiling, (
                         f"Side mission {m.id} has unusual credit reward of {r.amount}"
                     )
 

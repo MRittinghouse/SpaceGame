@@ -91,6 +91,11 @@ class GalaxyMapView(BaseView):
         self.hovered_system: Optional[str] = None
         self.next_state: Optional[GameState] = None
 
+        # PT-M: first-time tip (None unless the player hasn't seen it yet)
+        from spacegame.views.first_time_tip import FirstTimeTipOverlay
+
+        self._first_time_tip: Optional[FirstTimeTipOverlay] = None
+
         # Fonts — role-based
         from spacegame.engine.fonts import FONT_SUBTITLE
 
@@ -250,6 +255,30 @@ class GalaxyMapView(BaseView):
                 self._travel_duration = 0.5
             logger.info(f"Resuming travel from {self._resume_travel_progress:.0%} to destination")
 
+        self._maybe_show_tip()
+
+    def _maybe_show_tip(self) -> None:
+        """PT-M: first-time galaxy map tip."""
+        if self.player is None:
+            return
+        if self.player.dialogue_flags.get("seen_tip_galaxy_map", False):
+            return
+        from spacegame.views.first_time_tip import FirstTimeTipOverlay
+
+        self._first_time_tip = FirstTimeTipOverlay(
+            title="Galaxy Map",
+            body=(
+                "Hover any system to see distance and fuel cost. Click to "
+                "inspect, click again to travel. Danger level shapes the "
+                "encounter risk along your route."
+            ),
+            on_dismiss=self._mark_galaxy_map_tip_seen,
+        )
+
+    def _mark_galaxy_map_tip_seen(self) -> None:
+        if self.player is not None:
+            self.player.dialogue_flags["seen_tip_galaxy_map"] = True
+
     def on_exit(self) -> None:
         super().on_exit()
         self._destroy_ui()
@@ -395,6 +424,10 @@ class GalaxyMapView(BaseView):
         return None
 
     def handle_event(self, event: pygame.event.Event) -> None:
+        # PT-M: first-time tip consumes events while active
+        if self._first_time_tip is not None and not self._first_time_tip.dismissed:
+            if self._first_time_tip.handle_event(event):
+                return
         # Block all input during travel animation
         if self._travel_animating:
             return
@@ -812,6 +845,11 @@ class GalaxyMapView(BaseView):
                 self.arrival_message = f"Arrived at {dest.name}"
 
     def update(self, dt: float) -> None:
+        # PT-M: tick tip overlay; clear once dismissed
+        if self._first_time_tip is not None:
+            self._first_time_tip.update(dt)
+            if self._first_time_tip.dismissed:
+                self._first_time_tip = None
         self.background.update(dt)
         self.particles.update(dt)
         self._glow_time += dt
@@ -1193,8 +1231,62 @@ class GalaxyMapView(BaseView):
         if self.selected_system:
             self._draw_system_info(screen, self.selected_system)
 
+        # PT-K: lightweight hover tooltip — fuel cost visible before commit.
+        # Only renders when hovering over a system that's NOT the current one
+        # (no point telling the player "0 fuel to stay where you are") and
+        # NOT the one already selected (the full info panel covers that).
+        if (
+            self.hovered_system
+            and self.hovered_system != self.player.current_system_id
+            and self.hovered_system != self.selected_system
+        ):
+            self._draw_hover_tooltip(screen, self.hovered_system)
+
         # News ticker at bottom
         self._draw_news_ticker(screen)
+
+    def _draw_hover_tooltip(self, screen: pygame.Surface, system_id: str) -> None:
+        """Render a compact fuel/distance tooltip next to the hovered system."""
+        system = self.systems.get(system_id)
+        if system is None:
+            return
+        current = self.systems.get(self.player.current_system_id)
+        if current is None:
+            return
+        distance = current.distance_to(system)
+        fuel_cost = self._calculate_fuel_cost(system_id)
+        has_fuel = self.player.ship.has_fuel_for_jump(fuel_cost)
+
+        # Anchor next to the system's on-screen position
+        sx, sy = self._world_to_screen(system.coordinates.x, system.coordinates.y)
+        pad_x = scale_x(6)
+        pad_y = scale_y(4)
+        name_surf = self.info_font.render(system.name, True, Colors.TEXT_HIGHLIGHT)
+        dist_surf = self.info_font.render(f"{distance:.0f}u", True, Colors.TEXT_SECONDARY)
+        fuel_color = Colors.TEXT if has_fuel else Colors.RED
+        fuel_surf = self.info_font.render(f"{fuel_cost} fuel", True, fuel_color)
+
+        tip_w = max(name_surf.get_width(), dist_surf.get_width(), fuel_surf.get_width()) + pad_x * 2
+        tip_h = name_surf.get_height() + dist_surf.get_height() + fuel_surf.get_height() + pad_y * 2
+
+        # Offset to the right of the system unless that clips the right edge
+        tx = sx + scale_x(16)
+        if tx + tip_w > WINDOW_WIDTH - scale_x(4):
+            tx = sx - tip_w - scale_x(16)
+        ty = sy - tip_h // 2
+
+        # Background
+        bg = pygame.Surface((tip_w, tip_h), pygame.SRCALPHA)
+        bg.fill((0, 0, 0, 200))
+        screen.blit(bg, (tx, ty))
+        pygame.draw.rect(screen, Colors.UI_BORDER, (tx, ty, tip_w, tip_h), 1)
+
+        screen.blit(name_surf, (tx + pad_x, ty + pad_y))
+        screen.blit(dist_surf, (tx + pad_x, ty + pad_y + name_surf.get_height()))
+        screen.blit(
+            fuel_surf,
+            (tx + pad_x, ty + pad_y + name_surf.get_height() + dist_surf.get_height()),
+        )
 
     def _draw_news_ticker(self, screen: pygame.Surface) -> None:
         """Render scrolling news ticker at the bottom of the map."""
@@ -1787,6 +1879,11 @@ class GalaxyMapView(BaseView):
             "moderate": (220, 180, 60, 200),
             "dangerous": (220, 60, 60, 200),
         }.get(danger_level)
+
+    def render_top(self, screen: pygame.Surface) -> None:
+        """PT-M: draw the first-time tip above pygame_gui elements."""
+        if self._first_time_tip is not None:
+            self._first_time_tip.render(screen)
 
     def get_next_state(self) -> Optional[GameState]:
         return self.next_state

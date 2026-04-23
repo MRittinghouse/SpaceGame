@@ -98,6 +98,11 @@ class TradingView(BaseView):
         # Trading tutorial state (driven by player.dialogue_flags)
         self._tutorial_narration_font = get_font("narration", FONT_BODY)
 
+        # PT-M: first-time tip overlay
+        from spacegame.views.first_time_tip import FirstTimeTipOverlay
+
+        self._first_time_tip: Optional[FirstTimeTipOverlay] = None
+
         # UI state
         self.selected_commodity: Optional[str] = None
         self.quantity_input: Optional[pygame_gui.elements.UITextEntryLine] = None
@@ -154,7 +159,30 @@ class TradingView(BaseView):
     def on_enter(self) -> None:
         super().on_enter()
         self._trade_rep_awarded = False
+        self._maybe_show_tip()
         logger.info(f"Entered trading at {self.player.current_system_id}")
+
+    def _maybe_show_tip(self) -> None:
+        """PT-M: first-time trading view tip."""
+        if self.player is None:
+            return
+        if self.player.dialogue_flags.get("seen_tip_trading", False):
+            return
+        from spacegame.views.first_time_tip import FirstTimeTipOverlay
+
+        self._first_time_tip = FirstTimeTipOverlay(
+            title="Trading",
+            body=(
+                "Prices shift by system. Buy low in one port, sell high in "
+                "another. The LEG column flags restricted goods: R is "
+                "restricted here, ! is outright illegal."
+            ),
+            on_dismiss=self._mark_trading_tip_seen,
+        )
+
+    def _mark_trading_tip_seen(self) -> None:
+        if self.player is not None:
+            self.player.dialogue_flags["seen_tip_trading"] = True
 
         current_system = self.systems[self.player.current_system_id]
         all_commodities = list(self.commodities.values())
@@ -1169,6 +1197,10 @@ class TradingView(BaseView):
         logger.info(f"Transaction: {message}")
 
     def handle_event(self, event: pygame.event.Event) -> None:
+        # PT-M: first-time tip consumes events while active
+        if self._first_time_tip is not None and not self._first_time_tip.dismissed:
+            if self._first_time_tip.handle_event(event):
+                return
         # Route mouse events to table widgets first
         if self.market_table:
             self.market_table.handle_event(event)
@@ -1248,6 +1280,11 @@ class TradingView(BaseView):
                         break
 
     def update(self, dt: float) -> None:
+        # PT-M: tick tip overlay; clear once dismissed
+        if self._first_time_tip is not None:
+            self._first_time_tip.update(dt)
+            if self._first_time_tip.dismissed:
+                self._first_time_tip = None
         self.background.update(dt)
         self.particles.update(dt)
         if self.message_timer > 0:
@@ -1483,6 +1520,11 @@ class TradingView(BaseView):
         screen.blit(sp_surf, (panel_x + 16, panel_y + 12))
         txt_surf = self._tutorial_narration_font.render(narration, True, Colors.TEXT_PRIMARY)
         screen.blit(txt_surf, (panel_x + 16 + sp_surf.get_width(), panel_y + 12))
+
+    def render_top(self, screen: pygame.Surface) -> None:
+        """PT-M: draw the first-time tip above pygame_gui elements."""
+        if self._first_time_tip is not None:
+            self._first_time_tip.render(screen)
 
     def get_next_state(self) -> Optional[GameState]:
         return self.next_state

@@ -269,6 +269,20 @@ class StationHubView(BaseView):
         self._detail_location = None
         self._create_ui()
 
+        # PT-H: Arna intercepts the player on first arrival at Nexus Prime
+        # after the tutorial builder. Flag is set before the transition so
+        # re-entry (e.g., player escapes the dialogue and comes back) does
+        # not re-fire the auto-trigger. Arna remains clickable afterward
+        # via the NPC list; her dialogue_states route to the right tree
+        # based on mission flag state.
+        if self.system.id == "nexus_prime" and hasattr(self.player, "dialogue_flags"):
+            tutorial_done = self.player.dialogue_flags.get("tutorial_builder_complete", False)
+            already_met = self.player.dialogue_flags.get("met_arna", False)
+            if tutorial_done and not already_met:
+                self.player.dialogue_flags["met_arna"] = True
+                self.pending_npc_id = "arna"
+                self.next_state = GameState.DIALOGUE
+
     def on_exit(self) -> None:
         """Deactivate view, clean up UI."""
         self._destroy_ui()

@@ -87,6 +87,11 @@ class CharacterView(BaseView):
         self.politics_manager = politics_manager
         self.next_state: Optional[GameState] = None
 
+        # PT-M: first-time tip overlay
+        from spacegame.views.first_time_tip import FirstTimeTipOverlay
+
+        self._first_time_tip: Optional[FirstTimeTipOverlay] = None
+
         # Fonts
         self.title_font = get_font("header", FONT_XL2)
         self.header_font = get_font("header", FONT_BODY)
@@ -118,6 +123,29 @@ class CharacterView(BaseView):
         super().on_enter()
         logger.info("Entered character view")
         self._create_ui()
+        self._maybe_show_tip()
+
+    def _maybe_show_tip(self) -> None:
+        """PT-M: first-time character sheet tip."""
+        if self.player is None:
+            return
+        if self.player.dialogue_flags.get("seen_tip_character", False):
+            return
+        from spacegame.views.first_time_tip import FirstTimeTipOverlay
+
+        self._first_time_tip = FirstTimeTipOverlay(
+            title="Character Sheet",
+            body=(
+                "Your attributes, level, and milestones. Attribute points "
+                "come from specific level thresholds. Milestones are one-time "
+                "rewards tied to specific achievements."
+            ),
+            on_dismiss=self._mark_character_tip_seen,
+        )
+
+    def _mark_character_tip_seen(self) -> None:
+        if self.player is not None:
+            self.player.dialogue_flags["seen_tip_character"] = True
 
     def on_exit(self) -> None:
         super().on_exit()
@@ -175,6 +203,11 @@ class CharacterView(BaseView):
         if not self.active:
             return
 
+        # PT-M: first-time tip consumes events while active
+        if self._first_time_tip is not None and not self._first_time_tip.dismissed:
+            if self._first_time_tip.handle_event(event):
+                return
+
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             self.next_state = GameState.GALAXY_MAP
             return
@@ -201,6 +234,11 @@ class CharacterView(BaseView):
                         return
 
     def update(self, dt: float) -> None:
+        # PT-M: tick tip overlay; clear once dismissed
+        if self._first_time_tip is not None:
+            self._first_time_tip.update(dt)
+            if self._first_time_tip.dismissed:
+                self._first_time_tip = None
         self.background.update(dt)
         if self.message_timer > 0:
             self.message_timer -= dt
@@ -464,6 +502,11 @@ class CharacterView(BaseView):
             )
             screen.blit(rep_surf, (text_x + name_surf.get_width() + 6, fy))
             fy += 22
+
+    def render_top(self, screen: pygame.Surface) -> None:
+        """PT-M: draw the first-time tip above pygame_gui elements."""
+        if self._first_time_tip is not None:
+            self._first_time_tip.render(screen)
 
     def get_next_state(self) -> Optional[GameState]:
         return self.next_state

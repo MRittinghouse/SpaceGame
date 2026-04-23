@@ -85,6 +85,11 @@ class ShipyardView(BaseView):
         self.viewing: str = "shop"  # Default to shop tab
         self._shop_sub_tab: str = "frames"  # Sub-tab within Shop
 
+        # PT-M: first-time tip overlay
+        from spacegame.views.first_time_tip import FirstTimeTipOverlay
+
+        self._first_time_tip: Optional[FirstTimeTipOverlay] = None
+
         # Scrolling
         self._scroll_offset: int = 0
 
@@ -181,6 +186,29 @@ class ShipyardView(BaseView):
         self._create_ui()
         # SI4: Show guidance banner if ship has empty slots
         self._check_guidance_banner()
+        self._maybe_show_tip()
+
+    def _maybe_show_tip(self) -> None:
+        """PT-M: first-time shipyard view tip."""
+        if self.player is None:
+            return
+        if self.player.dialogue_flags.get("seen_tip_shipyard", False):
+            return
+        from spacegame.views.first_time_tip import FirstTimeTipOverlay
+
+        self._first_time_tip = FirstTimeTipOverlay(
+            title="Shipyard",
+            body=(
+                "Repair your hull, equip or swap parts, and check ship stats. "
+                "Changes cost credits. Open the builder from here to rework the "
+                "grid itself."
+            ),
+            on_dismiss=self._mark_shipyard_tip_seen,
+        )
+
+    def _mark_shipyard_tip_seen(self) -> None:
+        if self.player is not None:
+            self.player.dialogue_flags["seen_tip_shipyard"] = True
 
     def on_exit(self) -> None:
         super().on_exit()
@@ -466,6 +494,10 @@ class ShipyardView(BaseView):
     # ========================================================================
 
     def handle_event(self, event: pygame.event.Event) -> None:
+        # PT-M: first-time tip consumes events while active
+        if self._first_time_tip is not None and not self._first_time_tip.dismissed:
+            if self._first_time_tip.handle_event(event):
+                return
         if event.type == pygame_gui.UI_BUTTON_PRESSED:
             # Tuning mode buttons take priority
             if self._tuning_mode:
@@ -753,6 +785,11 @@ class ShipyardView(BaseView):
     # ========================================================================
 
     def update(self, dt: float) -> None:
+        # PT-M: tick tip overlay; clear once dismissed
+        if self._first_time_tip is not None:
+            self._first_time_tip.update(dt)
+            if self._first_time_tip.dismissed:
+                self._first_time_tip = None
         self.background.update(dt)
         self.particles.update(dt)
         if self._ship_anim:
@@ -2636,6 +2673,11 @@ class ShipyardView(BaseView):
         pygame.draw.rect(
             screen, Colors.SCROLLBAR_THUMB, (track_x, thumb_y, bar_w, thumb_h), border_radius=2
         )
+
+    def render_top(self, screen: pygame.Surface) -> None:
+        """PT-M: draw the first-time tip above pygame_gui elements."""
+        if self._first_time_tip is not None:
+            self._first_time_tip.render(screen)
 
     def get_next_state(self) -> Optional[GameState]:
         return self.next_state

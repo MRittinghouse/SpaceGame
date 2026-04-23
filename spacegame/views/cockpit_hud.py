@@ -138,6 +138,10 @@ class CockpitHUD:
         self.crew_roster = crew_roster
         self.visible = False
         self._current_state: Optional[GameState] = None
+        # PT-H: toggle for the objective hint line (line 4, right section).
+        # Default on; players can disable in Settings once they don't need
+        # the training wheels.
+        self.show_objective_hint: bool = True
 
         # Contextual skin tracking
         self._context: HUDContext = HUDContext.HIDDEN
@@ -609,13 +613,22 @@ class CockpitHUD:
         cr_surf = self._value_font.render(credits_text, True, Colors.TEXT_SECONDARY)
         screen.blit(cr_surf, (x, y2))
 
-        # Line 3: Cargo
+        # Line 3: Cargo — PT-K surface mass %. Color thresholds give the
+        # player a read on weight impact before combat or mining reveals it:
+        # green under 60%, yellow 60-90%, red at/over 90%. Count display
+        # stays for continuity with existing glance habits.
         y3 = y_base + line_spacing * 2
         ship = self.player.ship
         used = sum(ship.current_cargo.values())
         capacity = ship.max_cargo
-        cargo_text = f"Cargo: {used}/{capacity}"
-        cargo_color = Colors.TEXT_SECONDARY if used < capacity else Colors.RED
+        pct = 0 if capacity <= 0 else min(100, int(used * 100 / capacity))
+        if pct >= 90:
+            cargo_color = Colors.RED
+        elif pct >= 60:
+            cargo_color = Colors.YELLOW
+        else:
+            cargo_color = Colors.TEXT_SECONDARY
+        cargo_text = f"Cargo: {used}/{capacity} ({pct}%)"
         cargo_surf = self._value_font.render(cargo_text, True, cargo_color)
         screen.blit(cargo_surf, (x, y3))
 
@@ -637,8 +650,11 @@ class CockpitHUD:
         """Get a short quest hint from the first active mission.
 
         Returns:
-            Quest hint string, or empty string if no active missions.
+            Quest hint string, or empty string if no active missions or
+            if the player has disabled the objective hint in settings.
         """
+        if not self.show_objective_hint:
+            return ""
         active = self.mission_manager.get_missions_by_status(MissionStatus.ACTIVE)
         if not active:
             return ""

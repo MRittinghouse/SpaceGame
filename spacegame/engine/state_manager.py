@@ -123,3 +123,13 @@ class StateManager:
         """
         if self.current_state and self.current_state in self.states:
             self.states[self.current_state].handle_event(event)
+
+    def get_current_view(self) -> Optional[object]:
+        """Return the currently active view, or None if no state is bound.
+
+        PT-M: lets the main loop ask the active view whether it has a modal
+        tip overlay that should consume events before pygame_gui processing.
+        """
+        if self.current_state and self.current_state in self.states:
+            return self.states[self.current_state]
+        return None

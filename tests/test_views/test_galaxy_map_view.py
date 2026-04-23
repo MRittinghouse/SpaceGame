@@ -105,6 +105,11 @@ def _make_view(
 ) -> GalaxyMapView:
     ui_manager = pygame_gui.UIManager((WINDOW_WIDTH, WINDOW_HEIGHT))
     p = player or _make_player()
+    # PT-M: existing tests exercise galaxy-map behavior that would be
+    # blocked by the first-time tip modal. Mark the tip as already seen
+    # so tests run against the steady-state view. PT-M's own tests
+    # bypass this helper and construct views directly with an unseen flag.
+    p.dialogue_flags["seen_tip_galaxy_map"] = True
     s = systems or _make_systems()
     return GalaxyMapView(ui_manager, p, s)
 

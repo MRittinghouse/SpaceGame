@@ -73,6 +73,28 @@ from spacegame.tutorial_manager import TutorialManager
 from spacegame.utils.logger import logger
 
 
+def build_display_flags(fullscreen: bool) -> int:
+    """Build pygame display flags for the main window.
+
+    PT-F: RESIZABLE in windowed mode lets the player drag the window to
+    any size; pygame.SCALED handles rendering-to-window translation with
+    aspect-preserving letterbox. Fullscreen excludes RESIZABLE because it
+    has no effect there.
+
+    Args:
+        fullscreen: True for fullscreen mode, False for windowed.
+
+    Returns:
+        OR'd pygame display flags.
+    """
+    flags = pygame.SCALED
+    if fullscreen:
+        flags |= pygame.FULLSCREEN
+    else:
+        flags |= pygame.RESIZABLE
+    return flags
+
+
 class Game:
     """
     Main game class that manages the game loop and core systems.
@@ -105,10 +127,11 @@ class Game:
         timer.end("pygame_init")
 
         # Create window
+        # PT-F: build_display_flags() composes SCALED + (RESIZABLE or
+        # FULLSCREEN). pygame.SCALED handles rendering-to-window scaling
+        # so scale_x/scale_y math stays valid regardless of window size.
         timer.begin("display_setup")
-        flags = pygame.SCALED
-        if FULLSCREEN:
-            flags |= pygame.FULLSCREEN
+        flags = build_display_flags(FULLSCREEN)
 
         self.screen = pygame.display.set_mode(
             (WINDOW_WIDTH, WINDOW_HEIGHT), flags=flags, vsync=1 if VSYNC else 0
@@ -180,6 +203,12 @@ class Game:
             from spacegame.engine.audio_manager import AudioConfig
 
             self.audio_manager.set_config(AudioConfig.from_dict(saved_settings["audio"]))
+
+        # PT-H: persisted objective-hint preference (default on for new players).
+        # Applied to the cockpit HUD after it's constructed in _init_cockpit_hud.
+        self._persisted_show_objective_hint: bool = saved_settings.get(
+            "show_objective_hint", True
+        )
 
         # Markets (system_id -> Market)
         self.markets: dict[str, Market] = {}
@@ -589,6 +618,10 @@ class Game:
             player=self.player,
             mission_manager=self.mission_manager,
             crew_roster=self.crew_roster,
+        )
+        # Apply persisted objective-hint preference (PT-H).
+        self._cockpit_hud.show_objective_hint = getattr(
+            self, "_persisted_show_objective_hint", True
         )
 
     def _ensure_view_for_state(self, state: GameState) -> None:
@@ -3446,6 +3479,13 @@ class Game:
             self.save_manager.save_dir,
             tutorial_manager=self.tutorial_manager,
         )
+        # PT-H: sync toggle state from the live HUD before UI builds.
+        if self._cockpit_hud is not None:
+            self.settings_view.set_objective_hint(self._cockpit_hud.show_objective_hint)
+        else:
+            self.settings_view.set_objective_hint(
+                getattr(self, "_persisted_show_objective_hint", True)
+            )
         self.settings_view.on_enter()
         logger.info("Opened settings dialog")
 
@@ -3498,7 +3538,12 @@ class Game:
                 display = self.settings_view.get_display_settings()
                 settings["resolution"] = display["resolution"]
                 settings["fullscreen"] = display["fullscreen"]
+                settings["show_objective_hint"] = display["show_objective_hint"]
                 self.save_manager.save_settings(settings)
+                # PT-H: propagate objective-hint toggle to live HUD.
+                if self._cockpit_hud is not None:
+                    self._cockpit_hud.show_objective_hint = display["show_objective_hint"]
+                self._persisted_show_objective_hint = display["show_objective_hint"]
 
             # Close dialog
             self.settings_view.on_exit()
@@ -4661,6 +4706,43 @@ class Game:
                 if success:
                     self._mission_notifications.append(msg)
 
+    def check_soft_break_retirement(self) -> None:
+        """PT-L: auto-retire the cockpit objective hint after 3 missions.
+
+        One-time fade from guided onboarding to autonomous play. Silent — no
+        banner, no achievement, no announcement. The player just notices the
+        hint line stopped appearing. Once the retirement flag sets, this
+        check never fires again, so the player's manual toggle is respected
+        permanently after that point.
+
+        Does nothing if the hint is already disabled (player's call trumps
+        auto-retire).
+        """
+        if not self.player or not self.mission_manager or not self._cockpit_hud:
+            return
+        if self.player.dialogue_flags.get("objective_hint_auto_retired", False):
+            return  # Already fired
+        completed = self.mission_manager.get_completed_ids()
+        if len(completed) < 3:
+            return
+        # Fire the one-time retirement. Set the flag unconditionally so this
+        # check never runs again, but only flip the hint if it's currently on.
+        self.player.dialogue_flags["objective_hint_auto_retired"] = True
+        if self._cockpit_hud.show_objective_hint:
+            self._cockpit_hud.show_objective_hint = False
+            try:
+                settings = self.save_manager.load_settings()
+                settings["show_objective_hint"] = False
+                self.save_manager.save_settings(settings)
+                self._persisted_show_objective_hint = False
+            except Exception:
+                # Persistence is best-effort — the in-memory toggle is
+                # what drives the next render, which is the important part.
+                pass
+            logger.info(
+                "PT-L soft break: objective hint auto-retired after 3 missions completed"
+            )
+
     def _handle_event_notifications(self, dt: float) -> None:
         """Handle pending event notifications and banner timer."""
         # Check if notification view was dismissed
@@ -4946,9 +5028,19 @@ class Game:
                     if event.type == pygame.MOUSEBUTTONDOWN and event.pos[1] >= self._cockpit_hud.y:
                         continue
 
-                # F11 — toggle fullscreen
+                # F11 — toggle fullscreen. PT-F: rebuild the display mode
+                # via build_display_flags so RESIZABLE is restored when
+                # returning to windowed (pygame.display.toggle_fullscreen's
+                # flag preservation varies by platform).
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_F11:
-                    pygame.display.toggle_fullscreen()
+                    current_flags = self.screen.get_flags()
+                    going_fullscreen = not bool(current_flags & pygame.FULLSCREEN)
+                    new_flags = build_display_flags(going_fullscreen)
+                    self.screen = pygame.display.set_mode(
+                        (WINDOW_WIDTH, WINDOW_HEIGHT),
+                        flags=new_flags,
+                        vsync=1 if VSYNC else 0,
+                    )
                     continue
 
                 # Check for ESC key to toggle pause (only during gameplay)
@@ -4969,6 +5061,16 @@ class Game:
                     elif self.paused:
                         self._close_pause_menu()
                         continue  # Consume ESC — don't leak to views
+
+                # PT-M: when the active view has a live first-time tip, the
+                # overlay consumes input before pygame_gui processes it.
+                # Prevents clicks on the tip's "Got it." button from leaking
+                # through to underlying UIButton elements.
+                active_view = self.state_manager.get_current_view()
+                active_tip = getattr(active_view, "_first_time_tip", None)
+                if active_tip is not None and not active_tip.dismissed:
+                    if active_tip.handle_event(event):
+                        continue
 
                 self.ui_manager.process_events(event)
 
@@ -5037,6 +5139,7 @@ class Game:
                     self.check_missions()
                 self.check_crew_xp()
                 self.check_attribute_milestones()
+                self.check_soft_break_retirement()
 
             # Update achievement notification timer
             if self._achievement_notify_timer > 0:
@@ -5088,6 +5191,19 @@ class Game:
 
             # Event banner (above vignette, below UI)
             self._render_event_banner(render_surface)
+
+            # PT-K: drain faction-standing deltas into the notification queue
+            # so shifts surface to the player in-band with mission events.
+            # modify_reputation appends to player._pending_faction_deltas;
+            # we format and move them here each frame.
+            if self.player is not None:
+                pending = getattr(self.player, "_pending_faction_deltas", None)
+                if pending:
+                    for faction_id, delta in pending:
+                        sign = "+" if delta > 0 else ""
+                        label = faction_id.replace("_", " ").title()
+                        self._mission_notifications.append(f"{label}: {sign}{delta}")
+                    pending.clear()
 
             # Mission notification banner (below UI)
             self._render_mission_notification(render_surface)

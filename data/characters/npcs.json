@@ -723,6 +723,53 @@
           "required_flags": ["crew_loyalty_dr_priya_osei_50"]
         }
       ]
+    },
+    {
+      "id": "arna",
+      "name": "Arna",
+      "title": "Dockmaster",
+      "portrait_color": [
+        100,
+        115,
+        130
+      ],
+      "home_system_id": "nexus_prime",
+      "dialogue_id": "arna_first_encounter",
+      "faction_id": "",
+      "dialogue_states": [
+        {
+          "state_id": "arna_pre_completion",
+          "dialogue_id": "arna_pre_completion",
+          "required_flags": ["arna_delivery_accepted"],
+          "excluded_flags": ["arna_delivery_complete"]
+        },
+        {
+          "state_id": "arna_post_completion",
+          "dialogue_id": "arna_post_completion",
+          "required_flags": ["arna_delivery_complete"],
+          "excluded_flags": ["arna_retired"]
+        },
+        {
+          "state_id": "arna_retired",
+          "dialogue_id": "arna_retired",
+          "required_flags": ["arna_retired"]
+        }
+      ]
+    },
+    {
+      "id": "rhea",
+      "name": "Rhea",
+      "title": "Agri Hub Receiver",
+      "portrait_color": [
+        130,
+        155,
+        110
+      ],
+      "home_system_id": "verdant",
+      "dialogue_id": "rhea_receives_coolant",
+      "faction_id": "",
+      "auto_trigger_prerequisites": ["arna_delivery_accepted"],
+      "hide_after_flag": "arna_delivery_complete"
     }
   ]
 }

@@ -380,11 +380,15 @@ class ShipBuilderView(BaseView):
         self._naming_active: bool = False
         self._naming_text: str = ""
         self._naming_cursor_timer: float = 0.0
+        # PT-012: rename-only vs. confirm-then-name paths share the dialog
+        # but have different exit behavior. See _handle_naming_event.
+        self._rename_only: bool = False
 
         # UI elements
         self.confirm_button: Optional[pygame_gui.elements.UIButton] = None
         self.clear_button: Optional[pygame_gui.elements.UIButton] = None
         self.back_button: Optional[pygame_gui.elements.UIButton] = None
+        self.rename_button: Optional[pygame_gui.elements.UIButton] = None
 
     def _get_initial_weight_class(self) -> str:
         """Get the best weight class the player has unlocked."""
@@ -520,6 +524,21 @@ class ShipBuilderView(BaseView):
             text="IMPORT",
             manager=self.ui_manager,
         )
+        # PT-012: explicit RENAME button. Confirmation no longer opens the
+        # naming dialog; players who want to rename their ship open it here.
+        # Hidden in tutorial mode — rename is not a tutorial concern.
+        self.rename_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(
+                scale_x(710),
+                btn_y,
+                scale_x(110),
+                btn_h,
+            ),
+            text="RENAME",
+            manager=self.ui_manager,
+        )
+        if self._tutorial_mode:
+            self.rename_button.hide()
         self._help_overlay_open = False
         self._import_modal_open = False
         self._import_text = ""
@@ -536,12 +555,14 @@ class ShipBuilderView(BaseView):
             getattr(self, "save_draft_button", None),
             getattr(self, "share_button", None),
             getattr(self, "import_button", None),
+            self.rename_button,
         ]:
             if btn:
                 btn.kill()
         self.confirm_button = None
         self.clear_button = None
         self.back_button = None
+        self.rename_button = None
 
     # ------------------------------------------------------------------
     # Event Handling
@@ -572,6 +593,16 @@ class ShipBuilderView(BaseView):
                 self._selected_slot_def_id = None
                 self._modified = True
                 self._recompute_stats()
+                return
+            if self.rename_button is not None and event.ui_element == self.rename_button:
+                # PT-012: open naming dialog on demand. Player names their
+                # ship at game start; this is the re-rename path.
+                self._naming_active = True
+                self._naming_text = (
+                    self.player.ship_name or self.player.ship.ship_type.name
+                )
+                self._naming_cursor_timer = 0.0
+                self._rename_only = True
                 return
             if hasattr(self, "load_preset_button") and event.ui_element == self.load_preset_button:
                 logger.info("Load Preset button clicked")
@@ -1648,12 +1679,24 @@ class ShipBuilderView(BaseView):
             self._pending_tutorial_farewell = (
                 'Mechanic: "That\'ll fly. I\'ll push you off. Galaxy\'s waiting."'
             )
+            # PT-H: tutorial_builder_complete gates Arna's first-encounter
+            # interception on first STATION_HUB entry after tutorial. Set
+            # here (not in StationHubView) so the flag is available the
+            # moment the transition fires.
+            self.player.dialogue_flags["tutorial_builder_complete"] = True
             self.next_state = self._tutorial_return_state
             logger.info("Tutorial build confirmed — transitioning to station hub")
             return
-        # Show naming dialog before finalizing
+        # PT-012: auto-skip the naming dialog when the ship already has a
+        # name. Players named their ship at game start (or via the explicit
+        # RENAME button); re-prompting on every confirm is noise. If they
+        # want to rename, the RENAME button is always available on the toolbar.
+        if self.player.ship_name:
+            self._finalize_build()
+            return
+        # No name yet — show naming dialog before finalizing
         self._naming_active = True
-        self._naming_text = self.player.ship_name or self.player.ship.ship_type.name
+        self._naming_text = self.player.ship.ship_type.name
         self._naming_cursor_timer = 0.0
 
     def _finalize_build(self) -> None:
@@ -3898,10 +3941,23 @@ class ShipBuilderView(BaseView):
     def _handle_naming_event(self, event: pygame.event.Event) -> None:
         """Handle input while the ship naming dialog is active."""
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_RETURN:
-                self._finalize_build()
+            # PT-012: accept both main Enter and numpad Enter. Playtest
+            # report "press Enter didn't work" is consistent with a numpad
+            # user whose keyboard sends K_KP_ENTER instead of K_RETURN.
+            if event.key in (pygame.K_RETURN, pygame.K_KP_ENTER):
+                # PT-012: rename-only path saves the name and closes; build
+                # finalize stays gated behind the CONFIRM BUILD button.
+                if getattr(self, "_rename_only", False):
+                    new_name = self._naming_text.strip()
+                    if new_name:
+                        self.player.ship_name = new_name
+                    self._naming_active = False
+                    self._rename_only = False
+                else:
+                    self._finalize_build()
             elif event.key == pygame.K_ESCAPE:
                 self._naming_active = False
+                self._rename_only = False
             elif event.key == pygame.K_BACKSPACE:
                 self._naming_text = self._naming_text[:-1]
             else:

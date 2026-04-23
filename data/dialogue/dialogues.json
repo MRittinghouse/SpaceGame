@@ -893,6 +893,24 @@
                     "text": "*A heavyset man flips through shipping manifests, muttering numbers under his breath. He holds up one finger without looking up.* One second. Three shipments behind today.",
                     "responses": [
                         {
+                            "text": "I'm trying to figure out how work moves through here.",
+                            "next_node_id": "teach_intro",
+                            "excluded_flags": [
+                                "odom_taught_intro",
+                                "first_delivery_complete"
+                            ]
+                        },
+                        {
+                            "text": "What routes pay best right now?",
+                            "next_node_id": "teach_routes",
+                            "required_flags": [
+                                "odom_taught_intro"
+                            ],
+                            "excluded_flags": [
+                                "first_delivery_complete"
+                            ]
+                        },
+                        {
                             "text": "I heard you have a delivery job.",
                             "next_node_id": "offer",
                             "excluded_flags": [
@@ -923,6 +941,36 @@
                             "required_flags": [
                                 "broker_ore_sold"
                             ]
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "teach_intro",
+                    "speaker_id": "delivery_merchant",
+                    "text": "*Odom sets the manifest down. Looks at you properly for the first time.* Fine. Quick. Any port's board gets its listings from brokers. People like me. We see what moves. We track what pays. You want to know who to ask, it's the people standing at terminals, not the ones staring at the board.",
+                    "responses": [
+                        {
+                            "text": "And what about routes?",
+                            "next_node_id": "teach_routes",
+                            "set_flag": "odom_taught_intro"
+                        },
+                        {
+                            "text": "Thanks. I'll ask around.",
+                            "next_node_id": null,
+                            "set_flag": "odom_taught_intro"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "teach_routes",
+                    "speaker_id": "delivery_merchant",
+                    "text": "*He drums his fingers on the terminal.* Concord pays for coolant. Always. Union pays for grain, always. Fringe pays for weapons, never legally. You're green. Stick to Concord. Don't go Fringe. Don't ask about Union until you have papers. That's free. Next time, bring credits or cargo.",
+                    "responses": [
+                        {
+                            "text": "Understood.",
+                            "next_node_id": null
                         }
                     ],
                     "expression": "neutral"
@@ -4310,18 +4358,24 @@
                 {
                     "id": "greet",
                     "speaker_id": "dock_investigator",
-                    "text": "*A woman in dock security blues sits behind a terminal cluttered with evidence bags and coffee rings. She doesn't look up.* Pull up a crate. Reshad Patel, shipping clerk, found dead in Loading Bay C. Pressure seal failure, supposedly. Except pressure seals don't fail on occupied docks. Station brass wants this closed yesterday, and I could use a second opinion.",
+                    "text": "*A woman in dock security blues sits behind a terminal cluttered with evidence bags and coffee rings. She doesn't look up.* Pull up a crate. Reshad Patel, shipping clerk, found dead in Loading Bay C. Pressure seal failure, supposedly. Except pressure seals don't fail on occupied docks. Station brass wants this closed yesterday. I need someone outside the dock's gossip. You fly in, you fly out. That's why you.",
                     "subtext": "The coffee rings overlap in layers. She's been at this desk for days. The evidence bags are organized by a system only she understands.",
                     "responses": [
                         {
                             "text": "Walk me through what happened.",
-                            "next_node_id": "overview"
+                            "next_node_id": "overview",
+                            "excluded_flags": [
+                                "dead_ledger_accusation_made"
+                            ]
                         },
                         {
                             "text": "I'd like to review the suspects again.",
                             "next_node_id": "suspects",
                             "required_flags": [
                                 "dead_ledger_investigated"
+                            ],
+                            "excluded_flags": [
+                                "dead_ledger_accusation_made"
                             ]
                         },
                         {
@@ -4329,11 +4383,24 @@
                             "next_node_id": "accuse_prompt",
                             "required_flags": [
                                 "dead_ledger_investigated"
+                            ],
+                            "excluded_flags": [
+                                "dead_ledger_accusation_made"
                             ]
                         },
                         {
                             "text": "I'll come back later.",
-                            "next_node_id": null
+                            "next_node_id": null,
+                            "excluded_flags": [
+                                "dead_ledger_accusation_made"
+                            ]
+                        },
+                        {
+                            "text": "Any word from the prosecutor?",
+                            "next_node_id": "case_closed",
+                            "required_flags": [
+                                "dead_ledger_accusation_made"
+                            ]
                         }
                     ],
                     "expression": "neutral"
@@ -4392,6 +4459,10 @@
                         {
                             "text": "I'm ready to name someone.",
                             "next_node_id": "accuse_prompt"
+                        },
+                        {
+                            "text": "I need more time with this.",
+                            "next_node_id": null
                         }
                     ],
                     "expression": "neutral"
@@ -4458,6 +4529,10 @@
                         {
                             "text": "Let's make it official.",
                             "next_node_id": "accuse_prompt"
+                        },
+                        {
+                            "text": "Give me a minute with this.",
+                            "next_node_id": null
                         }
                     ],
                     "expression": "neutral"
@@ -4527,6 +4602,19 @@
                             "text": "Sometimes the desperate ones surprise you.",
                             "next_node_id": null,
                             "set_flag": "dead_ledger_accusation_made"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "case_closed",
+                    "speaker_id": "dock_investigator",
+                    "text": "Filed. Prosecutor's running it now. Your name's sealed on the referral, so whatever shakes out, you're not in the paperwork. *She glances up for the first time.* That's how these close. Record sticks. Truth wobbles. Work's done.",
+                    "subtext": "There's no satisfaction in her voice. Just the fact of it.",
+                    "responses": [
+                        {
+                            "text": "[Leave]",
+                            "next_node_id": null
                         }
                     ],
                     "expression": "neutral"
@@ -5850,6 +5938,206 @@
                         }
                     ],
                     "expression": "grateful"
+                }
+            ]
+        },
+        {
+            "id": "arna_first_encounter",
+            "start_node_id": "start",
+            "nodes": [
+                {
+                    "id": "start",
+                    "speaker_id": "arna",
+                    "text": "Kid. Just built that rig?",
+                    "subtext": "She doesn't look up from the manifest terminal. Just knows.",
+                    "responses": [
+                        {
+                            "text": "[Yeah. Off the line this hour.]",
+                            "next_node_id": "board_is_ledger",
+                            "set_flag": "met_arna"
+                        },
+                        {
+                            "text": "[Stand there and wait.]",
+                            "next_node_id": "board_is_ledger",
+                            "set_flag": "met_arna"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "board_is_ledger",
+                    "speaker_id": "arna",
+                    "text": "Yeah. Figured. Listen once. You're standing in the concourse of a station that runs on cargo. Shipyard's portside. Mess is down-deck. Board's on the wall, logs every contract hitting this port.",
+                    "subtext": "Her eyes flick to you. Then back to the terminal.",
+                    "responses": [
+                        {
+                            "text": "[The board tells me what to do next?]",
+                            "next_node_id": "the_offer"
+                        },
+                        {
+                            "text": "[Not sure what I'm doing here yet.]",
+                            "next_node_id": "the_offer"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "the_offer",
+                    "speaker_id": "arna",
+                    "text": "Board's a ledger. Not a source. Jobs come from people. I've got one. Verdant needs a pallet of machinery. Harvest tooling, mostly. Nobody local wants the run. Take it, make the jump, find the woman at their agri hub. Hand it off. She pays. Come back, we talk again.",
+                    "subtext": "She taps the terminal. A manifest opens on a side screen. Eighteen units. Consigned to Verdant Agri Hub.",
+                    "responses": [
+                        {
+                            "text": "[Take the job.]",
+                            "next_node_id": "accepted_confirm"
+                        },
+                        {
+                            "text": "[Not yet.]",
+                            "next_node_id": "not_yet"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "accepted_confirm",
+                    "speaker_id": "arna",
+                    "text": "Good. Pallet's on your ship. Nav's updated. Don't get cute out there. If you come back, come back with the manifest signed.",
+                    "responses": [
+                        {
+                            "text": "[Understood.]",
+                            "next_node_id": null,
+                            "set_flag": "arna_delivery_accepted"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "not_yet",
+                    "speaker_id": "arna",
+                    "text": "Door's there. Come back when you're ready. Pallet won't keep forever.",
+                    "responses": [
+                        {
+                            "text": "[Leave]",
+                            "next_node_id": null
+                        }
+                    ],
+                    "expression": "neutral"
+                }
+            ]
+        },
+        {
+            "id": "arna_pre_completion",
+            "start_node_id": "start",
+            "nodes": [
+                {
+                    "id": "start",
+                    "speaker_id": "arna",
+                    "text": "You're still here? Pallet's still on your ship. Verdant's not moving.",
+                    "responses": [
+                        {
+                            "text": "[Leave]",
+                            "next_node_id": null
+                        }
+                    ],
+                    "expression": "neutral"
+                }
+            ]
+        },
+        {
+            "id": "arna_post_completion",
+            "start_node_id": "start",
+            "nodes": [
+                {
+                    "id": "start",
+                    "speaker_id": "arna",
+                    "text": "You came back. Good. Most first-timers don't. They see credits and keep flying. Doesn't matter. Board's there. People are there. You know where the shipyard is. You know where the mess is. I'm going back to work.",
+                    "subtext": "She's already turned back to the manifest terminal before the sentence ends.",
+                    "responses": [
+                        {
+                            "text": "[Leave]",
+                            "next_node_id": null,
+                            "set_flag": "arna_retired"
+                        }
+                    ],
+                    "expression": "neutral"
+                }
+            ]
+        },
+        {
+            "id": "arna_retired",
+            "start_node_id": "start",
+            "nodes": [
+                {
+                    "id": "start",
+                    "speaker_id": "arna",
+                    "text": "Spacer.",
+                    "responses": [
+                        {
+                            "text": "[Leave]",
+                            "next_node_id": null
+                        }
+                    ],
+                    "expression": "neutral"
+                }
+            ]
+        },
+        {
+            "id": "rhea_receives_coolant",
+            "start_node_id": "start",
+            "nodes": [
+                {
+                    "id": "start",
+                    "speaker_id": "rhea",
+                    "text": "You came from Nexus? Good. I was expecting coolant yesterday.",
+                    "subtext": "She glances at your hold reading on a dock terminal. Nods at the pallet marker.",
+                    "responses": [
+                        {
+                            "text": "[Hand over the pallet.]",
+                            "next_node_id": "paid",
+                            "set_flag": "arna_delivery_resolved"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "paid",
+                    "speaker_id": "rhea",
+                    "text": "Clean pallet. Didn't lose a unit. That's better than half the haulers I see. Pay's on your account. First run?",
+                    "responses": [
+                        {
+                            "text": "[Yeah.]",
+                            "next_node_id": "advice"
+                        },
+                        {
+                            "text": "[Don't remember.]",
+                            "next_node_id": "closeout"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "advice",
+                    "speaker_id": "rhea",
+                    "text": "Then hear this. Don't go empty on the way back. Check Verdant's board. Even a small load pays for fuel. Nexus has its own board when you land. Work stacks up if you keep moving.",
+                    "responses": [
+                        {
+                            "text": "[Thanks.]",
+                            "next_node_id": null
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "closeout",
+                    "speaker_id": "rhea",
+                    "text": "Sure. Spacer's memory. Go on.",
+                    "responses": [
+                        {
+                            "text": "[Leave]",
+                            "next_node_id": null
+                        }
+                    ],
+                    "expression": "neutral"
                 }
             ]
         }

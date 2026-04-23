@@ -816,7 +816,16 @@ class Player:
         """
         current = self.faction_reputation.get(faction_id, 0)
         new_rep = max(-100, min(100, current + amount))
+        # Compute the effective delta (honors clamping). PT-K: surface faction
+        # standing shifts to the player via a notification. Store as plain
+        # attribute so it's not serialized — the list is ephemeral UI state
+        # drained each frame by the game loop.
+        effective_delta = new_rep - current
         self.faction_reputation[faction_id] = new_rep
+        if effective_delta != 0:
+            if not hasattr(self, "_pending_faction_deltas"):
+                self._pending_faction_deltas: list[tuple[str, int]] = []
+            self._pending_faction_deltas.append((faction_id, effective_delta))
         sign = "+" if amount >= 0 else ""
         return (True, f"{sign}{amount} reputation with {faction_id}")
 
