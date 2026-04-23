@@ -354,7 +354,15 @@ class EncounterContext:
 
 @dataclass
 class EncounterDefinition:
-    """Data-driven encounter template loaded from JSON."""
+    """Data-driven encounter template loaded from JSON.
+
+    ``captain_id`` (CE-1) attaches a named ``EnemyCaptain`` to this
+    encounter. When present, the encounter view displays the captain's
+    ``pre_combat_hail`` as the description and the captain's
+    ``display_name`` in the panel header, replacing the generic
+    ``description`` / ``name`` fields. Encounters without a
+    ``captain_id`` behave exactly as before.
+    """
 
     id: str
     encounter_type: str
@@ -374,6 +382,10 @@ class EncounterDefinition:
     max_level: int = 0
     tone: str = ""
     category: str = ""
+    # CE-1: named captain attached to this encounter. Optional. When set,
+    # the encounter view pulls ``pre_combat_hail`` and ``display_name``
+    # from the captain, replacing this definition's static fields.
+    captain_id: str = ""
 
 
 def lookup_encounter_definition(

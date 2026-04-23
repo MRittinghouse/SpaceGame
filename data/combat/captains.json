@@ -1,0 +1,30 @@
+{
+  "captains": [
+    {
+      "id": "vela_wolfs_ear",
+      "name": "Captain Vela",
+      "nickname": "Wolf's Ear",
+      "home_sector": "havens_rest",
+      "signature_ship_template": "pirate_raider",
+      "pre_combat_hail": "Wolf's Ear. Been tracking your wake for two jumps. Nothing personal, spacer — your cargo's on my list. Pay, pass, or fight. Clock's running.",
+      "surrender_line": "Wolf's Ear yielding. Name your price. I've walked off worse deals.",
+      "retreat_line": "Wolf's Ear pulling out. Lean on the tracker if you want company. You'll see me again.",
+      "victory_line": "Tell your friends. Vela runs this stretch. Next spacer who thinks otherwise pays full.",
+      "defeat_line": "Good flying. The Wolf's Ear isn't the whole pack. Watch your wake, captain.",
+      "is_recurring": false
+    },
+    {
+      "id": "calder_cold_read",
+      "name": "Calder the Reader",
+      "nickname": "Cold Read",
+      "home_sector": "iron_depths",
+      "signature_ship_template": "mercenary_gunship",
+      "pre_combat_hail": "Calder. Cold Read. I read ships before I fight them and yours reads expensive. You're going to want to listen before you reach for that stick.",
+      "surrender_line": "Fair read. You surprise me, spacer. Not many do. Walk it back and we walk away.",
+      "retreat_line": "Cold Read withdrawing. You read me as well as I read you. Good.",
+      "victory_line": "I said you'd want to listen. You didn't. Cold read proved out.",
+      "defeat_line": "I misread the ship. I never misread the pilot. Your turn, spacer.",
+      "is_recurring": false
+    }
+  ]
+}

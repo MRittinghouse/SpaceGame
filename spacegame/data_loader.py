@@ -90,6 +90,7 @@ class DataLoader:
         self.crew_templates: Dict[str, CrewTemplate] = {}
         self.ambient_lines: List[AmbientLine] = []
         self.enemy_templates: Dict[str, EnemyShipTemplate] = {}
+        self.captains: Dict[str, "EnemyCaptain"] = {}
         self.journal_entries: List[JournalEntry] = []
         self.encounter_definitions: List[EncounterDefinition] = []
         self.ground_equipment: Dict[str, "GroundEquipment"] = {}
@@ -160,6 +161,7 @@ class DataLoader:
         self._safe_load("crew_templates", self.load_crew_templates)
         self._safe_load("ambient_dialogue", self.load_ambient_dialogue)
         self._safe_load("enemy_templates", self.load_enemy_templates)
+        self._safe_load("captains", self.load_captains)
         self._safe_load("ship_ultimates", self.load_ship_ultimates)
         self._safe_load("hull_shapes", self.load_hull_shapes)
         self._safe_load("hull_materials", self.load_hull_materials)
@@ -1308,6 +1310,31 @@ class DataLoader:
         logger.info(f"Loaded {len(self.enemy_templates)} enemy templates")
         return self.enemy_templates
 
+    def load_captains(self) -> Dict[str, "EnemyCaptain"]:
+        """Load named combat captains from ``data/combat/captains.json``.
+
+        CE-1 ships with a stub roster (~2 captains). CE-2 will expand to
+        the full flavor-tier roster (15-20). RC flips specific captains
+        to ``is_recurring=True`` when rival infrastructure lands.
+        """
+        from spacegame.models.enemy_captain import EnemyCaptain
+
+        file_path = self.data_dir / "combat" / "captains.json"
+        if not file_path.exists():
+            logger.warning(f"Captains file not found: {file_path}")
+            return self.captains
+
+        with open(file_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        self.captains.clear()
+        for cap_data in data.get("captains", []):
+            captain = EnemyCaptain.from_dict(cap_data)
+            self.captains[captain.id] = captain
+
+        logger.info(f"Loaded {len(self.captains)} captains")
+        return self.captains
+
     def load_ship_ultimates(self) -> Dict[str, ShipUltimate]:
         """Load ship class ultimate abilities from JSON."""
         file_path = self.data_dir / "combat" / "ultimates.json"
@@ -1619,6 +1646,7 @@ class DataLoader:
             max_level=data.get("max_level", 0),
             tone=data.get("tone", ""),
             category=data.get("category", ""),
+            captain_id=data.get("captain_id", ""),
         )
 
     def load_ground_equipment(self) -> Dict[str, "GroundEquipment"]:

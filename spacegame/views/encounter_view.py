@@ -87,9 +87,24 @@ class EncounterView(BaseView):
         self._bg_dim.fill((0, 0, 0))
         self._bg_dim.set_alpha(140)
 
-        # Template substitution for shakedown encounters
+        # CE-1: captain attribution — when the encounter has a captain_id,
+        # use the captain's pre_combat_hail + display_name instead of the
+        # definition's static description + name. Falls back cleanly when
+        # no captain is attached or the id doesn't resolve.
+        self._captain = self._resolve_captain()
+
+        # Template substitution for shakedown encounters — applied to the
+        # effective description (captain hail or static description).
         subs = {"shakedown_demand": str(encounter_ref.shakedown_demand)}
-        self.display_description = encounter_def.description.format_map(_SafeFormatMap(subs))
+        base_description = (
+            self._captain.pre_combat_hail
+            if self._captain is not None
+            else encounter_def.description
+        )
+        self.display_description = base_description.format_map(_SafeFormatMap(subs))
+        self.display_name = (
+            self._captain.display_name if self._captain is not None else encounter_def.name
+        )
         self.display_choices = _substitute_choices(encounter_def.choices, subs)
 
         # UI element refs (created in _create_ui)
@@ -98,10 +113,31 @@ class EncounterView(BaseView):
         self.description_box: Optional[UITextBox] = None
         self.outcome_box: Optional[UITextBox] = None
 
+    def _resolve_captain(self):
+        """Look up the ``EnemyCaptain`` attached to this encounter, if any.
+
+        Returns ``None`` when the encounter has no ``captain_id`` or when
+        the id doesn't resolve (treated as a content-data warning, not a
+        hard failure — the encounter falls back to its static fields).
+        """
+        captain_id = getattr(self.encounter_def, "captain_id", "")
+        if not captain_id:
+            return None
+        from spacegame.data_loader import get_data_loader
+
+        dl = get_data_loader()
+        captain = dl.captains.get(captain_id) if hasattr(dl, "captains") else None
+        if captain is None:
+            logger.warning(
+                f"Encounter '{self.encounter_def.id}' references unknown "
+                f"captain_id='{captain_id}' — falling back to static description"
+            )
+        return captain
+
     def on_enter(self) -> None:
         """Initialize encounter UI."""
         super().on_enter()
-        logger.info(f"Entering encounter: {self.encounter_def.name}")
+        logger.info(f"Entering encounter: {self.display_name}")
         self._create_ui()
         self._maybe_show_tip()
 
@@ -254,7 +290,7 @@ class EncounterView(BaseView):
         )
 
         # Title
-        title_surf = self.title_font.render(self.encounter_def.name, True, color)
+        title_surf = self.title_font.render(self.display_name, True, color)
         title_x = _PANEL_X + (_PANEL_W - title_surf.get_width()) // 2
         screen.blit(title_surf, (title_x, _PANEL_Y + 16))
 
