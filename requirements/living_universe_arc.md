@@ -132,11 +132,16 @@ This:
   - Minimum length: skill-tagged responses ≥ 6 words.
   - No AI tells within skill-tagged responses (extends existing Writing Bible scanner to apply to this subset explicitly).
 
-**NV-6: Integration polish** (~0.5-1 day)
-- Re-read all rewritten lines in game flow (spawn in nodes, walk them).
-- Adjust any that read awkwardly in context.
-- Verify all pass existing dialogue integrity + Writing Bible scans.
-- Optional: UI update for skill-tag rendering (distinctive prefix color per skill). If deferred, add a follow-up NV-UI task.
+**NV-6: Integration polish** (~1-2 days) — **SHIPPED 2026-04-23**
+
+Five sub-sprints:
+- **NV-6a**: Narrative flow verification. Read every downstream NPC node for each of the 10 rewrites — ~14 nodes total. Verify each NPC's next beat still lands with the new player voice. Finding: all paths align; an unexpected win at summit where the new `[Observation 2]` text primes the `noticed_signal` reveal as a genuine callback.
+- **NV-6b**: Character voice verification. Cross-check rewrites against `character_voices.md` for Reva, Dex, Oren, Priya. Each rewrite provokes exactly the NPC register the sheet calls for: Reva drops briefing tone, Dex drops the mask, Oren's jaw works chewing bitter.
+- **NV-6c**: Playthrough integration tests. New `tests/test_scenarios/test_scenario_nv_skill_checks.py` with 10 scenarios exercising NV-0 + NV-2/3 + NV-5 on real content. Specialist vs generalist vs neglector at Observation 2 (Tev), Persuasion 3 (Dex), and specialization-as-tie-breaker at borderline D3.
+- **NV-6d**: Critical re-read. One tightening applied: summit Observation changed "runs out today" → "ends today" (more concrete, ties to summit situation). Nine others at A/strong-B, no adjustment.
+- **NV-6e**: Arc closeout documentation (this section).
+
+Tests after NV-6: 7,682 passing (+10 integration scenarios, +0 regressions). Full suite still green on parallel run.
 
 **NV-7: Skill check expansion** (~3-5 days)
 - **Contract:** never gate plot progression. Every mission outcome reachable without any skill check. New checks only change FLAVOR (richer beat, unique line, NPC color), EFFICIENCY (skip 2 dialogue nodes, unlock a shortcut response), or UNLOCK DETAIL (set a knowledge flag that colors later scenes).

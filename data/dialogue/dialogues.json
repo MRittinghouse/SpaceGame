@@ -1885,7 +1885,7 @@
                     "text": "The session winds down. Delegates gather their materials and exchange stiff courtesies. As the room empties, you have a last chance to observe.",
                     "responses": [
                         {
-                            "text": "[Observation 2] The Guild rep keeps checking her chrono. The Alliance rep hasn't looked at her once. One of them knows the clock runs out today.",
+                            "text": "[Observation 2] The Guild rep keeps checking her chrono. The Alliance rep hasn't looked at her once. One of them knows this ends today.",
                             "next_node_id": "missed_signal",
                             "skill_check": {
                                 "skill": "observation",
