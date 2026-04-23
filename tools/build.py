@@ -1,4 +1,4 @@
-"""Build script for creating SpaceGame distribution.
+"""Build script for the Aurelia: A Ledger of Stars distribution.
 
 Runs tests, then invokes PyInstaller to produce a standalone executable.
 
@@ -14,7 +14,10 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 SPEC_FILE = PROJECT_ROOT / "spacegame.spec"
-DIST_DIR = PROJECT_ROOT / "dist" / "SpaceGame"
+# PyInstaller emits under the product name declared in spacegame.spec (Aurelia),
+# not the repo folder name (SpaceGame). Keep this in sync with the spec.
+DIST_DIR = PROJECT_ROOT / "dist" / "Aurelia"
+EXE_NAME = "Aurelia.exe"
 ICON_PATH = PROJECT_ROOT / "spacegame" / "data" / "assets" / "images" / "icon.ico"
 
 
@@ -52,13 +55,13 @@ def _format_size(size_bytes: int) -> str:
 
 def main() -> int:
     """Run the full build pipeline."""
-    parser = argparse.ArgumentParser(description="Build SpaceGame distribution.")
+    parser = argparse.ArgumentParser(description="Build Aurelia distribution.")
     parser.add_argument(
         "--skip-tests", action="store_true", help="Skip running tests before building."
     )
     args = parser.parse_args()
 
-    print("SpaceGame Build Pipeline")
+    print("Aurelia Build Pipeline")
     print(f"  Project: {PROJECT_ROOT}")
     print(f"  Spec:    {SPEC_FILE}")
 
@@ -94,7 +97,7 @@ def main() -> int:
     if DIST_DIR.exists():
         total_size = _get_dir_size(DIST_DIR)
         file_count = sum(1 for f in DIST_DIR.rglob("*") if f.is_file())
-        exe_path = DIST_DIR / "SpaceGame.exe"
+        exe_path = DIST_DIR / EXE_NAME
 
         print(f"\n{'=' * 60}")
         print("  BUILD COMPLETE")
