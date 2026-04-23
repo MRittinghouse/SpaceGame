@@ -17,6 +17,8 @@ VALID_SYSTEM_IDS = {
     "iron_depths",
     "crimson_reach",
     "the_fulcrum",
+    # AR-3: derelict platform for the Arna mini-campaign's buyer meeting.
+    "herons_mark",
 }
 
 VALID_FACTION_IDS = {
@@ -244,9 +246,17 @@ class TestSideMissionRewards:
         safe-first-run that needs to cover fuel plus meaningful progress
         toward the first upgrade. Ceiling raised to 2500 for this mission.
         """
-        onboarding_exceptions = {"coolant_run"}
+        # Onboarding mission (PT-H) and Arna branch-A climax (AR-4) both
+        # pay above the standard side-mission ceiling. Explicit exceptions.
+        onboarding_exceptions = {"coolant_run", "arna_05b_clean_pull"}
+        arna_climax_exceptions = {"arna_05a_last_freight_out"}
         for m in _load_side():
-            ceiling = 2500 if m.id in onboarding_exceptions else 1000
+            if m.id in arna_climax_exceptions:
+                ceiling = 5000
+            elif m.id in onboarding_exceptions:
+                ceiling = 2500
+            else:
+                ceiling = 1000
             for r in m.rewards:
                 if r.reward_type == "credits":
                     assert 50 <= r.amount <= ceiling, (

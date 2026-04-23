@@ -131,7 +131,12 @@ class TestLocationDataLoading:
         loader = DataLoader()
         loader.load_systems()
         loader.load_locations()
-        for system_id in loader.systems:
+        for system_id, system in loader.systems.items():
+            # AR-3: derelict systems are mission waypoints with no civic
+            # infrastructure. They dock the player's ship but have no
+            # services. Exempt.
+            if system.type == "derelict":
+                continue
             locs = loader.get_locations_for_system(system_id)
             assert len(locs) > 0, f"{system_id} should have at least one location"
 
@@ -141,7 +146,12 @@ class TestLocationDataLoading:
         loader = DataLoader()
         loader.load_systems()
         loader.load_locations()
-        for system_id in loader.systems:
+        for system_id, system in loader.systems.items():
+            # AR-3: derelict systems are abandoned orbital platforms with no
+            # civic infrastructure. Exempt them from the civic-location
+            # requirements — they're mission waypoints, not service hubs.
+            if system.type == "derelict":
+                continue
             locs = loader.get_locations_for_system(system_id)
             types = [loc.location_type for loc in locs]
             assert "market" in types, f"{system_id} should have a market"
@@ -152,7 +162,9 @@ class TestLocationDataLoading:
         loader = DataLoader()
         loader.load_systems()
         loader.load_locations()
-        for system_id in loader.systems:
+        for system_id, system in loader.systems.items():
+            if system.type == "derelict":
+                continue
             locs = loader.get_locations_for_system(system_id)
             types = [loc.location_type for loc in locs]
             assert "repair_bay" in types, f"{system_id} should have a repair bay"
@@ -163,7 +175,9 @@ class TestLocationDataLoading:
         loader = DataLoader()
         loader.load_systems()
         loader.load_locations()
-        for system_id in loader.systems:
+        for system_id, system in loader.systems.items():
+            if system.type == "derelict":
+                continue
             locs = loader.get_locations_for_system(system_id)
             types = [loc.location_type for loc in locs]
             assert "cantina" in types, f"{system_id} should have a cantina"

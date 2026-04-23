@@ -139,6 +139,48 @@
       "trigger_flag": "iron_delivery_failed",
       "system_id": "nexus_prime",
       "mission_id": "iron_delivery"
+    },
+    {
+      "entry_id": "auto_arna_smuggling_primer",
+      "text": "What Arna told me about running hot. Three legality tiers: legal moves anywhere; restricted needs papers (faction permits, customs stamps, full manifest trail); illegal is contraband (weapons, narcotics, biohazards, stolen goods). Penalties escalate: warn, fine, confiscate, ban. Each faction enforces differently. Every system has an inspection rate tied to its enforcement. Heat builds when you run dirty and decays when you do not. Smuggling compartments installed at shipyards hide contraband from routine checks (persistent searches still find it). Black markets are hidden behind rep or introductions. She taught me all of this while bleeding through a compress.",
+      "trigger_flag": "smuggling_primer_received",
+      "system_id": "herons_mark",
+      "mission_id": "arna_04_the_buyer"
+    },
+    {
+      "entry_id": "auto_arna_brother_reveal",
+      "text": "Arna has a younger brother on a Union refinery station. His lungs are giving out from processed air. Union healthcare gave him two options: keep working or pay out of pocket for transfer. The transfer costs more than she makes in ten years. The ore, the refining, the sale, the ambush, all of it was for him. She hid that like she hides everything, because telling would have meant admitting she was desperate.",
+      "trigger_flag": "arna_scheme_revealed",
+      "system_id": "herons_mark",
+      "mission_id": "arna_04_the_buyer"
+    },
+    {
+      "entry_id": "auto_arna_branch_a",
+      "text": "Went back to Heron's Mark. Keren was waiting, thought it was quiet. It wasn't. The depot held more than the sale was worth and the Crimson Reach will notice. Arna is packing a bag now. Two blacklists instead of one. She said something smaller than I expected and walked off toward the dock.",
+      "trigger_flag": "arna_branch_a_complete",
+      "system_id": "nexus_prime",
+      "mission_id": "arna_05a_last_freight_out"
+    },
+    {
+      "entry_id": "auto_arna_branch_b",
+      "text": "Clean pull at a derelict in Havens Rest. Nothing followed us out. Arna stayed behind at the manifest desk the whole time. When I got back she called it a fair trade for a scar and a lesson. She is not going to save her brother this way. She said so. She is staying anyway.",
+      "trigger_flag": "arna_branch_b_complete",
+      "system_id": "nexus_prime",
+      "mission_id": "arna_05b_clean_pull"
+    },
+    {
+      "entry_id": "auto_arna_branch_c",
+      "text": "I turned Arna in. She did not see it coming. She wouldn't have. She said 'oh, that's what this is' and put her hands flat on the terminal. She didn't look at me. I didn't look at her either. I got paid. The docks kept running.",
+      "trigger_flag": "arna_betrayal_resolved",
+      "system_id": "nexus_prime",
+      "mission_id": "arna_05c_clean_paper"
+    },
+    {
+      "entry_id": "auto_arna_departure",
+      "text": "Said goodbye to Arna at the departure bay. She had a duffel bag at her feet. Not much else. She told me about the pendant before she went: it was her mother's, not any of the three stories she'd told me. She said she wanted one thing she'd said to me to be true. Then she walked toward the freighter bound for Port Kestrel and she did not look back. She never wrote the letter to her brother. He is still waiting.",
+      "trigger_flag": "arna_pendant_revealed",
+      "system_id": "nexus_prime",
+      "mission_id": ""
     }
   ]
 }

@@ -210,6 +210,61 @@ class ShipyardView(BaseView):
         if self.player is not None:
             self.player.dialogue_flags["seen_tip_shipyard"] = True
 
+    def _install_hidden_compartment(self) -> None:
+        """Wire up the HiddenCompartment object the upgrade represents.
+
+        The upgrade_manager tracks that "hidden_compartment" is installed,
+        but the player needs a live HiddenCompartment instance so the
+        trading view's hide/retrieve buttons and the save system have
+        something to talk to.
+        """
+        from spacegame.models.smuggling import HiddenCompartment
+
+        if self.player.hidden_compartment is not None:
+            return  # Already wired (double-install guard)
+
+        self.player.hidden_compartment = HiddenCompartment(
+            total_cargo_capacity=self.player.ship.max_cargo,
+        )
+        self.player.hidden_compartment.set_progression(self.player.progression)
+
+        if self.player.dialogue_flags.get("seen_tip_hidden_compartment", False):
+            return
+        from spacegame.views.first_time_tip import FirstTimeTipOverlay
+
+        self._first_time_tip = FirstTimeTipOverlay(
+            title="Hidden Compartment",
+            body=(
+                "Your hold is split. Routine customs scans only check the main "
+                "hold. Move contraband to the hidden hold from the trading view. "
+                "If a deep scan catches hidden contraband, penalties double."
+            ),
+            on_dismiss=self._mark_hidden_compartment_tip_seen,
+        )
+
+    def _mark_hidden_compartment_tip_seen(self) -> None:
+        if self.player is not None:
+            self.player.dialogue_flags["seen_tip_hidden_compartment"] = True
+
+    def _uninstall_hidden_compartment(self) -> None:
+        """Retire the HiddenCompartment and merge stored cargo back to main.
+
+        The split capacities always sum to the ship's full pool, so cargo
+        that lived in the hidden hold has guaranteed room in the main
+        hold once the split is removed. No space check needed.
+        """
+        hc = self.player.hidden_compartment
+        if hc is None:
+            return
+        merged = 0
+        for commodity_id, qty in list(hc.hidden_cargo.items()):
+            if qty > 0:
+                self.player.ship.add_cargo(commodity_id, qty)
+                merged += qty
+        self.player.hidden_compartment = None
+        if merged:
+            self._show_message(f"Hidden cargo: {merged} unit(s) moved to main hold.")
+
     def on_exit(self) -> None:
         super().on_exit()
         self._destroy_ui()
@@ -631,6 +686,8 @@ class ShipyardView(BaseView):
         if success:
             get_audio_manager().play_sfx("trade_buy")
             self.particles.emit(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2, PURCHASE_FLASH)
+            if upgrade.id == "hidden_compartment":
+                self._install_hidden_compartment()
 
     def _uninstall_selected(self) -> None:
         installed = self.upgrade_manager.installed
@@ -639,6 +696,10 @@ class ShipyardView(BaseView):
 
         upgrade = installed[self.selected_upgrade_idx]
         refund = upgrade.price // 2
+        # Hidden compartment: handle cargo retrieval BEFORE upgrade uninstall
+        # so the compartment object and its inventory are still accessible.
+        if upgrade.id == "hidden_compartment":
+            self._uninstall_hidden_compartment()
         success, msg = self.upgrade_manager.uninstall(upgrade.id)
         if success:
             self.player.add_credits(refund)

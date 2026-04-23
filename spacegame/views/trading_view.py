@@ -94,6 +94,11 @@ class TradingView(BaseView):
         self._black_market_name: Optional[str] = black_market_name
         self._black_market_mode: bool = False
         self._has_black_market: bool = black_market_name is not None
+        # Whether a black market exists at this station regardless of access.
+        # When it exists but access is denied, the toggle button shows
+        # disabled with a tooltip reason — the player learns where to look.
+        self._black_market_exists: bool = False
+        self._black_market_denial_reason: str = ""
 
         # Trading tutorial state (driven by player.dialogue_flags)
         self._tutorial_narration_font = get_font("narration", FONT_BODY)
@@ -159,7 +164,12 @@ class TradingView(BaseView):
     def on_enter(self) -> None:
         super().on_enter()
         self._trade_rep_awarded = False
-        self._maybe_show_tip()
+        if self.player is not None and self.player.dialogue_flags.get(
+            "seen_tip_trading", False
+        ):
+            self._init_station_state()
+        else:
+            self._maybe_show_tip()
         logger.info(f"Entered trading at {self.player.current_system_id}")
 
     def _maybe_show_tip(self) -> None:
@@ -183,7 +193,16 @@ class TradingView(BaseView):
     def _mark_trading_tip_seen(self) -> None:
         if self.player is not None:
             self.player.dialogue_flags["seen_tip_trading"] = True
+        self._init_station_state()
 
+    def _init_station_state(self) -> None:
+        """Build market, resolve black market access, and create UI.
+
+        Runs every on_enter — either directly (return visit) or via the
+        first-time tip's dismiss callback (first visit). Previously the
+        tip-dismiss path was the only caller, which broke return visits
+        once seen_tip_trading was set.
+        """
         current_system = self.systems[self.player.current_system_id]
         all_commodities = list(self.commodities.values())
         self.market = Market(current_system, all_commodities, self.player.game_day)
@@ -193,14 +212,25 @@ class TradingView(BaseView):
         from spacegame.models.smuggling import get_black_market_name
 
         system_id = self.player.current_system_id
+        market_name = get_black_market_name(system_id)
+        self._black_market_exists = market_name is not None
         # Underworld Contacts skill grants black market access at all stations
         has_contacts = self.player.progression.get_bonus("underworld_contacts") > 0
-        if has_contacts or self.player.has_black_market_access(system_id):
-            self._black_market_name = get_black_market_name(system_id)
-            self._has_black_market = self._black_market_name is not None
+        player_has_access = has_contacts or self.player.has_black_market_access(system_id)
+        if player_has_access and market_name is not None:
+            self._black_market_name = market_name
+            self._has_black_market = True
+            self._black_market_denial_reason = ""
         else:
             self._black_market_name = None
             self._has_black_market = False
+            if self._black_market_exists:
+                self._black_market_denial_reason = (
+                    f"{market_name} operates here, but you need the right "
+                    "contacts to get in."
+                )
+            else:
+                self._black_market_denial_reason = ""
         self._black_market_mode = False
 
         self._create_ui()
@@ -321,13 +351,24 @@ class TradingView(BaseView):
                 manager=self.ui_manager,
             )
 
-        # Black market toggle (only shown when player has access)
+        # Black market toggle. When the player has access, enabled. When a
+        # market exists here but access is denied, a disabled variant with
+        # a tooltip reason signals "there's something here — find a way in."
+        bm_rect = pygame.Rect(scale_x(650), scale_y(496), scale_x(100), scale_y(36))
         if self._has_black_market:
             self.black_market_button = pygame_gui.elements.UIButton(
-                relative_rect=pygame.Rect(scale_x(650), scale_y(496), scale_x(100), scale_y(36)),
+                relative_rect=bm_rect,
                 text="BLACK MKT",
                 manager=self.ui_manager,
             )
+        elif self._black_market_exists and self._black_market_denial_reason:
+            self.black_market_button = pygame_gui.elements.UIButton(
+                relative_rect=bm_rect,
+                text="BLACK MKT",
+                manager=self.ui_manager,
+                tool_tip_text=self._black_market_denial_reason,
+            )
+            self.black_market_button.disable()
 
     def _destroy_ui(self) -> None:
         # Tables are plain objects — no .kill() needed
@@ -743,6 +784,31 @@ class TradingView(BaseView):
             self.black_market_button.set_text("NORMAL" if self._black_market_mode else "BLACK MKT")
         self._refresh_tables()
         self._refresh_contract_buttons()
+        if self._black_market_mode:
+            self._maybe_show_black_market_tip()
+
+    def _maybe_show_black_market_tip(self) -> None:
+        """First-time teaching on black market entry."""
+        if self.player is None:
+            return
+        if self.player.dialogue_flags.get("seen_tip_black_market", False):
+            return
+        from spacegame.views.first_time_tip import FirstTimeTipOverlay
+
+        self._first_time_tip = FirstTimeTipOverlay(
+            title="Black Market",
+            body=(
+                "Restricted and illegal goods trade here. Prices swing both "
+                "ways: you'll pay a premium for clean goods, move contraband "
+                "cheaper. Selling dirty goods adds heat. Too much heat draws "
+                "bounty hunters."
+            ),
+            on_dismiss=self._mark_black_market_tip_seen,
+        )
+
+    def _mark_black_market_tip_seen(self) -> None:
+        if self.player is not None:
+            self.player.dialogue_flags["seen_tip_black_market"] = True
 
     def _refresh_contract_buttons(self) -> None:
         """Rebuild smuggling contract accept buttons for black market mode."""

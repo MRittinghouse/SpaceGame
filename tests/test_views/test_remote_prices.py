@@ -45,10 +45,16 @@ class TestRemoteMarketComputation:
     """Test creating temporary Markets for remote systems."""
 
     def test_can_create_market_for_any_system(self) -> None:
-        """A Market can be created for any system to compute prices."""
+        """A Market can be created for any system to compute prices.
+
+        AR-3: derelict systems exempt — they have no economy, no commodity
+        list, and aren't valid trading destinations. Mission waypoints only.
+        """
         dl = get_data_loader()
         commodities = list(dl.commodities.values())
         for system_id, system in dl.systems.items():
+            if system.type == "derelict":
+                continue
             market = Market(system, commodities, game_day=10)
             prices = market.get_all_prices()
             assert len(prices) > 0, f"System {system_id} should have market prices"

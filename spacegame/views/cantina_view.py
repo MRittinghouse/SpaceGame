@@ -98,6 +98,11 @@ class CantinaView(BaseView):
         # UI element refs
         self.back_button: Optional[pygame_gui.elements.UIButton] = None
         self._npc_buttons: dict[str, pygame_gui.elements.UIButton] = {}
+        # PT-016: NPC ids that are active-quest receivers. Cached at UI build
+        # time, consumed by render_top to draw a pulsing glow around the
+        # corresponding button rects.
+        self._quest_receiver_npc_ids: set[str] = set()
+        self._glow_time: float = 0.0
         self._rerecruit_buttons: dict[str, pygame_gui.elements.UIButton] = {}
         self._hire_buttons: dict[str, pygame_gui.elements.UIButton] = {}
         self._contract_buttons: dict[str, pygame_gui.elements.UIButton] = {}
@@ -151,18 +156,27 @@ class CantinaView(BaseView):
         btn_x = WINDOW_WIDTH // 2 - BUTTON_W // 2
         btn_y = HEADER_CARD_Y + HEADER_CARD_H + SECTION_PAD + 30
 
-        # NPC talk buttons with name | title
+        # NPC talk buttons with name | title.
+        # PT-016: receiver NPCs (targets of an active talk_to_npc objective)
+        # get a clear "(Active Quest)" text marker plus a pulsing glow rendered
+        # in render(), so the player can tell "this NPC advances my quest" vs
+        # "this NPC might start a new one" at a glance.
         npcs = self._get_available_npcs()
+        self._quest_receiver_npc_ids = set()
         if npcs:
             btn_y += 24  # Space for section label
             for npc in npcs:
-                label = f"{npc.name}  |  {npc.title}" if npc.title else npc.name
+                is_receiver = self._npc_is_quest_receiver(npc.id)
+                base_label = f"{npc.name}  |  {npc.title}" if npc.title else npc.name
+                label = f"{base_label}  (Active Quest)" if is_receiver else base_label
                 btn = pygame_gui.elements.UIButton(
                     relative_rect=pygame.Rect(btn_x, btn_y, BUTTON_W, BUTTON_H),
                     text=label,
                     manager=self.ui_manager,
                 )
                 self._npc_buttons[npc.id] = btn
+                if is_receiver:
+                    self._quest_receiver_npc_ids.add(npc.id)
                 btn_y += BUTTON_H + BUTTON_PAD
 
         # Dismissed crew for re-recruitment
@@ -294,6 +308,8 @@ class CantinaView(BaseView):
         """Update background animation and tooltip state."""
         self.background.update(dt)
         self._update_contract_tooltip(dt)
+        # PT-016: advance pulsing-glow timer for receiver NPC highlights
+        self._glow_time += dt
 
     def render(self, screen: pygame.Surface) -> None:
         """Render cantina view."""
@@ -315,7 +331,42 @@ class CantinaView(BaseView):
         ``ui_manager.draw_ui()`` in the game loop, so pygame_gui elements
         were overdrawing it. Moved to ``render_top`` which runs after UI.
         """
+        # PT-016: pulsing glow around NPC buttons that advance an active
+        # quest. Drawn in render_top so the accent sits on top of the
+        # pygame_gui button chrome.
+        self._render_quest_receiver_glow(screen)
         self._render_contract_tooltip(screen)
+
+    def _render_quest_receiver_glow(self, screen: pygame.Surface) -> None:
+        """Pulsing cyan outline around NPC buttons that receive active quests."""
+        if not self._quest_receiver_npc_ids:
+            return
+        import math
+
+        # Oscillate alpha between 120 and 220 at ~1 Hz
+        pulse = int(170 + 50 * math.sin(self._glow_time * 2 * math.pi))
+        pulse = max(100, min(240, pulse))
+        for npc_id in self._quest_receiver_npc_ids:
+            btn = self._npc_buttons.get(npc_id)
+            if btn is None:
+                continue
+            rect = btn.rect.copy()
+            # Two-layer glow: outer soft halo + inner crisp border
+            halo = pygame.Surface((rect.width + 8, rect.height + 8), pygame.SRCALPHA)
+            pygame.draw.rect(
+                halo,
+                (100, 220, 255, pulse // 3),
+                halo.get_rect(),
+                border_radius=6,
+            )
+            pygame.draw.rect(
+                halo,
+                (100, 220, 255, pulse),
+                halo.get_rect().inflate(-4, -4),
+                width=2,
+                border_radius=4,
+            )
+            screen.blit(halo, (rect.x - 4, rect.y - 4))
 
     def _render_header(self, screen: pygame.Surface) -> None:
         """Render header card with cantina name and description."""
@@ -529,6 +580,34 @@ class CantinaView(BaseView):
             return []
         all_npcs = self.data_loader.get_npcs_at_system(self.system.id)
         return [npc for npc in all_npcs if self._is_npc_available(npc)]
+
+    def _npc_is_quest_receiver(self, npc_id: str) -> bool:
+        """PT-016: does any active mission need the player to talk to this NPC?
+
+        Walks all ACTIVE missions and their talk_to_npc objectives. Returns
+        True if any incomplete objective targets npc_id — that means clicking
+        this NPC will advance or complete a quest, not start a new one.
+        """
+        if not self.mission_manager:
+            return False
+        from spacegame.models.mission import MissionStatus, ObjectiveType
+
+        try:
+            active = self.mission_manager.get_missions_by_status(MissionStatus.ACTIVE)
+        except Exception:
+            return False
+        for mission in active:
+            progress = self.mission_manager.get_objective_progress(mission.id) or []
+            for i, obj in enumerate(mission.objectives):
+                if obj.type != ObjectiveType.TALK_TO_NPC:
+                    continue
+                if obj.target_id != npc_id:
+                    continue
+                # Completed objectives don't need advancing anymore
+                if i < len(progress) and progress[i]:
+                    continue
+                return True
+        return False
 
     def _is_npc_available(self, npc: object) -> bool:
         """Check if an NPC should appear in the cantina."""

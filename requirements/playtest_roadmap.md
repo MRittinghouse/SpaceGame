@@ -40,11 +40,11 @@ The second two hours are the first test of whether gameplay loops compound. That
 
 | Metric | Pre-playtest (2026-04-22) | Current |
 |---|---|---|
-| Tests passing | 7,316 | **7,439** |
+| Tests passing | 7,316 | **7,498** |
 | Tests skipped | 98 | 98 |
 | xfails | 0 | 0 |
-| Playtest findings received | 0 | 15 |
-| Findings fixed | 0 | **15** |
+| Playtest findings received | 0 | 16 |
+| Findings fixed | 0 | **16** |
 | Findings scoped, awaiting direction | 0 | 0 |
 | Findings pending investigation | 0 | 0 |
 
@@ -268,6 +268,25 @@ Format: `[ID] Theme · Severity · Status · Title`. Severity scale: **blocker**
 
 **Sprint**: N/A — closed as a decision record. Sprints PT-H through PT-L implement the decision.
 
+### [PT-016] P7 · medium · SHIPPED · Quest-receiver NPCs indistinguishable in cantina
+
+**Reported**: 2026-04-23. When an NPC in the cantina is the *receiver* of an active quest (hand off a pallet, deliver 10 iron ore), clicking them advances the quest rather than starting a new one. Current UI gives no signal which is which, so the player can't tell at a glance whether a click will open a new mission or complete an existing one.
+
+**Read**: straightforward system-transparency gap. The data exists — active missions carry `talk_to_npc` objectives with target NPC ids — but nothing in the cantina view reads it.
+
+**Direction**: add a visual indicator. Playtester suggested "some kind of glow."
+
+**Status**: SHIPPED in PT-016 sprint (2026-04-23). New `CantinaView._npc_is_quest_receiver(npc_id)` walks active missions' `talk_to_npc` objectives and returns True if any incomplete one targets the given NPC. Buttons for receiver NPCs:
+- Carry an `(Active Quest)` text marker in the label for accessibility
+- Are tracked in `_quest_receiver_npc_ids` for per-frame rendering
+- Get a pulsing cyan double-layer glow (outer halo + inner crisp border) drawn in `render_top`, so the accent sits on top of the pygame_gui button chrome
+
+Helper handles edge cases: no mission manager, no active missions, non-talk objectives (reach_system, has_flag), and completed talk objectives (once the player has talked to the NPC, the glow retires). Defensive against mission-manager exceptions — returns False rather than crashing the UI.
+
++12 regression tests (`tests/test_views/test_pt_16_quest_receiver_highlight.py`). 7,439 → 7,451 passing.
+
+**Sprint**: PT-016 (single-finding, same-day response).
+
 ### [PT-015] P1 · high · OPEN · No "safe path" signpost NPC
 
 **Reported**: 2026-04-22. "Maybe having an NPC that tells you like 'the safe path' could help, that way on first playthrough someone can kind of have a good idea of where to go and then experiment more on other playthroughs."
@@ -393,6 +412,42 @@ Literal flag strings live in each view's code so the dialogue-integrity scanner 
 - **Cockpit objective auto-retire** — new `check_soft_break_retirement()` method on Game, called every frame from the gameplay update loop next to `check_attribute_milestones`. When completed mission count reaches 3: flip `cockpit_hud.show_objective_hint` off (if still on), persist to settings.json, set `dialogue_flags["objective_hint_auto_retired"]` so the check never runs again. Silent — no banner, no announcement. Respects manual toggles: if the player has already disabled the hint OR re-enables it post-retirement, we don't interfere.
 
 +8 regression tests (`tests/test_engine/test_pt_l_soft_break.py`) covering fire conditions, no-re-fire guard, persistence failure resilience, missing-HUD/missing-player guards. 7,402 → 7,410 passing.
+
+### Sprint PT-N — "Teach the build" (SHIPPED 2026-04-23)
+
+**Problem**: The shipbuilding tutorial wasn't representative of the actual post-tutorial shipbuilding flow. Playtester report: "parts" sold in the tutorial shop were actually slot definitions, there was no hull-painting phase, no part-equipping phase, and Arna could interrupt the tutorial before the player finished placing slots.
+
+**Scope**: complete rebuild of the tutorial shop + builder arc to teach the real frame / slots / hull / parts / confirm flow with narrative-first guidance.
+
+**Shop rework** (`tutorial_shop_view.py`):
+- Sells real parts (not slot definitions), stored in `player.parts_inventory` via `Player.add_part()` — same path as real shipyard purchases.
+- Four scrapyard-tier parts authored (`scrapyard_thruster`, `scrapyard_reactor`, `scrapyard_fuel_cell`, `scrapyard_hold`) plus existing `salvaged_pulse_emitter` for the weapon choice. Sub-stat, higher weight, cheaper cost than entry-tier — junk but functional.
+- Cockpit removed from shop (self-fulfilling per commit d9cf3d3). 3 mandatory + 1 choice = 4 purchases.
+- Narration frames the three-phase drydock flow ahead. Father-thread continuity preserved.
+
+**Three-phase tutorial builder** (`ship_builder_view.py`):
+- **Phase state machine**: `_tutorial_phase()` computes "slots" / "hull" / "complete" from build state and dialogue_flags.
+- **Phase A (slots)**: player places 5 slots (cockpit + 4 purchased-part types). HULL mode button blocked during this phase.
+- **Phase B (hull)**: player paints ≥20 pixels. Live stat preview + weight warnings teach the trade-offs.
+- **Phase C (complete)**: CONFIRM BUILD enables. On confirm, `_tutorial_auto_equip()` matches bought parts to slots by `slot_type`, narration notes "real game does this at the Loadout tab."
+- **Tutorial pricing**: placement 50% + hull full cost. Parts prepaid at shop (no double charge). Computed via `_tutorial_charge_amount()`.
+
+**Narrative guidance** (Mechanic voice throughout):
+- **`TutorialNarrationModal`** — extends PT-M's `FirstTimeTipOverlay` with a speaker label and larger panel for multi-sentence narration. Renders via `render_top` hook (PT-005). One-shot per phase via `tutorial_phase_*_narration_seen` flags (survives save/reload).
+- **Persistent phase objective strip** — top-of-screen banner replaces the DRYDOCK title during tutorial. Shows "PHASE 1 OF 3: PLACE SLOTS" + live progress ("Slots placed: 3/5"). Accent stripe turns positive-color when gate met.
+- **Weight threshold warnings** — two Mechanic modals at 80% (HEAVY) and 95% (OVERLOADED) weight. Fires once per threshold via persisted flags, doesn't stack with other modals.
+- **Fact-checked claims**: before writing narration, investigated actual game math. Confirmed trade-offs: weight-ratio → speed/evasion penalty, center-of-mass balance, frontal profile all feed evasion. Rejected claims that couldn't be backed by code (no Mk2/Mk3 part tiers — field exists but all parts `mark=1`; no "exposed slots" combat mechanic; structural integrity soft penalty only).
+
+**Live stat preview panel** — new `_render_tutorial_stat_preview()` replaces the requirements checklist in the right panel during tutorial. Shows Hull / Armor / Shields / Speed / Evasion values, a weight gauge with HEAVY and OVERLOADED threshold ticks, and shape classifications (NARROW/NORMAL/WIDE, BALANCED/OFF-BALANCE/SEVERELY OFF) with their evasion effects. Colors pull from `PALETTE_ROLES` (`_palette_role_color()` helper) so colorblind profiles remap automatically.
+
+**Structural Arna-interruption fix** — `_can_confirm` now forces False whenever `_tutorial_phase() != "complete"`. CONFIRM is the only path to station hub; no CONFIRM means no station hub means no Arna interruption. Arna-interruption is structurally impossible now.
+
++66 regression tests across `tests/test_views/test_pt_n_phase_machine.py` (18) and `tests/test_views/test_pt_n_narration.py` (29 — 4 modal, 5 phase narration firing, 3 progress text, 7 weight warnings, 7 stat preview, 3 Writing Bible compliance) + 19 across existing suite additions. 7,451 → 7,498 passing, zero regressions.
+
+**What's next** (deferred to later sprints):
+- Delta arrows on stat preview (nice-to-have; dropped in v1 for scope).
+- Save/load mid-tutorial integration testing (structurally supported via persisted flags; untested explicitly).
+- Tutorial loadout tab if user decides to split Phase C into a separate shipyard experience.
 
 ### Subsequent sprints — reactive
 

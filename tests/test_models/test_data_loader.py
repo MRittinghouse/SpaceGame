@@ -24,8 +24,8 @@ def test_load_systems() -> None:
     loader = DataLoader()
     systems = loader.load_systems()
 
-    # Should have 11 systems (5 original + 5 expansion + 1 fulcrum)
-    assert len(systems) == 11, "Should load exactly 11 systems"
+    # 11 canonical + herons_mark derelict (AR-3)
+    assert len(systems) == 12, "Should load exactly 12 systems"
 
     # Check Nexus Prime system exists and has correct properties
     assert "nexus_prime" in systems, "Nexus Prime system should exist"

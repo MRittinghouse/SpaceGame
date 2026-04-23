@@ -147,6 +147,7 @@ _TIP_SOURCE_FILES = [
     "spacegame/views/shipyard_view.py",
     "spacegame/views/skill_tree_view.py",
     "spacegame/views/character_view.py",
+    "spacegame/views/encounter_view.py",
 ]
 
 
@@ -171,8 +172,11 @@ class TestTipBodyWritingCompliance:
         return bodies
 
     def test_all_six_tips_registered(self) -> None:
+        # Six primary view tips + three smuggling sub-feature tips
+        # (hidden_compartment in shipyard_view, black_market in trading_view,
+        # customs_inspection in encounter_view).
         bodies = self._tip_bodies_raw()
-        assert len(bodies) == 6, f"expected 6 tip bodies, found {len(bodies)}"
+        assert len(bodies) == 9, f"expected 9 tip bodies, found {len(bodies)}"
 
     def test_no_em_dashes(self) -> None:
         for body in self._tip_bodies_raw():

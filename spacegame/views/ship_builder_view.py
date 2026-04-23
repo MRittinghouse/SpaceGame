@@ -100,6 +100,17 @@ _SLOT_TYPE_ORDER: list[str] = [
     "reactor",
 ]
 
+# PT-N: helper for the tutorial stat preview — pulls colors from the
+# PALETTE_ROLES system so colorblind profiles remap automatically.
+def _palette_role_color(role: str, fallback: tuple[int, int, int]) -> tuple[int, int, int]:
+    try:
+        from spacegame.engine.material_palette import get_role
+
+        return get_role(role)
+    except (KeyError, ImportError):
+        return fallback
+
+
 # Layout constants — widened panels, centered grid
 SHAPE_PANEL_X = scale_x(8)
 SHAPE_PANEL_Y = scale_y(58)
@@ -277,6 +288,22 @@ class ShipBuilderView(BaseView):
         self._tutorial_return_state: GameState = GameState.SHIPYARD
         self._tutorial_step: int = 0  # 0=cockpit, 1=engine, 2=reactor, 3=cargo
         self._tutorial_narration_font = get_font("narration", FONT_BODY)
+
+        # PT-N: tutorial narration modal + objective strip state
+        from spacegame.views.tutorial_narration_modal import TutorialNarrationModal
+
+        self._tutorial_narration_modal: Optional[TutorialNarrationModal] = None
+        # Phases for which a narration modal has been shown this session.
+        # Persisted to dialogue_flags as tutorial_phase_*_narration_seen.
+        self._tutorial_last_phase_shown: str = ""
+
+        # PT-N stat preview deltas: snapshot of last stats + per-stat
+        # fade timers. When the player takes an action and a stat changes,
+        # we flash "+N" or "-N" next to the stat for ~1.8s then clear.
+        # Teaches action → outcome viscerally ("I painted a pixel and my
+        # hull went up by 2.5").
+        self._tutorial_stat_snapshot: dict[str, float] = {}
+        self._tutorial_stat_deltas: dict[str, tuple[float, float]] = {}  # stat → (delta, timer)
 
         # Build state
         self.build: ShipBuild = ShipBuild(
@@ -573,6 +600,11 @@ class ShipBuilderView(BaseView):
         if self._confirm_anim_timer > 0:
             return
 
+        # PT-N: tutorial narration modal intercepts all input while visible
+        if self._tutorial_narration_modal is not None and not self._tutorial_narration_modal.dismissed:
+            if self._tutorial_narration_modal.handle_event(event):
+                return
+
         # Ship naming dialog intercepts all input
         if self._naming_active:
             self._handle_naming_event(event)
@@ -654,10 +686,18 @@ class ShipBuilderView(BaseView):
                 return  # Block all other keys when modal is open
 
             if event.key == pygame.K_TAB:
-                # Cycle through module → hull → equip
+                # Cycle through slot → hull → slot
+                # PT-N: block keyboard cycling during Phase A so the player
+                # follows the slots-first order. The click-handler mode lock
+                # was previously the only guard — Tab would have bypassed it.
+                if self._tutorial_mode and self._tutorial_phase() == "slots":
+                    try:
+                        get_audio_manager().play_sfx("ui_deny")
+                    except Exception:
+                        pass
+                    return
                 cycle = {"slot": "hull", "hull": "slot"}
                 self._builder_mode = cycle.get(self._builder_mode, "slot")
-                # EQUIP mode removed
                 try:
                     get_audio_manager().play_sfx("ui_click")
                 except Exception:
@@ -682,6 +722,17 @@ class ShipBuilderView(BaseView):
             elif event.key == pygame.K_DELETE or event.key == pygame.K_BACKSPACE:
                 pass  # Legacy module deletion removed
             elif event.key == pygame.K_ESCAPE:
+                # PT-N: block Escape in tutorial mode so the player can only
+                # exit via CONFIRM (which is itself gated on phase complete).
+                # Without this guard the player could press Escape mid-tutorial,
+                # land in the shipyard with a half-built ship, back out to
+                # station hub, and sidestep the entire guided flow.
+                if self._tutorial_mode:
+                    try:
+                        get_audio_manager().play_sfx("ui_deny")
+                    except Exception:
+                        pass
+                    return
                 self.next_state = GameState.SHIPYARD
             # Tool switching (Phase B2)
             elif event.key == pygame.K_s:
@@ -826,8 +877,21 @@ class ShipBuilderView(BaseView):
             for i, mode_id in enumerate(modes):
                 bx = start_x + i * (btn_w + gap)
                 if bx <= mx < bx + btn_w:
+                    # PT-N: lock HULL mode during tutorial Phase A so the
+                    # player follows the slots-first order the narration
+                    # describes. Phase B unlocks both modes (player can flip
+                    # back to SLOT to tweak placement).
+                    if (
+                        self._tutorial_mode
+                        and mode_id == "hull"
+                        and self._tutorial_phase() == "slots"
+                    ):
+                        try:
+                            get_audio_manager().play_sfx("ui_deny")
+                        except Exception:
+                            pass
+                        return
                     self._builder_mode = mode_id
-                    # EQUIP mode removed
                     return
 
         # --- Frame variant click (header area, Medium+ only) ---
@@ -1662,6 +1726,470 @@ class ShipBuilderView(BaseView):
         except Exception:
             pass
 
+    # ------------------------------------------------------------------
+    # PT-N: Tutorial phase state machine
+    # ------------------------------------------------------------------
+    # Three-phase guided build:
+    #   Phase A ("slots"):    place all 5 slots (4 purchased parts + cockpit)
+    #   Phase B ("hull"):     paint at least MIN_TUTORIAL_HULL_PIXELS pixels
+    #   Phase C ("complete"): CONFIRM enables; on confirm, parts auto-equip
+    #                         and the build finalizes with tutorial pricing
+    #                         (50% placement discount + hull at full cost;
+    #                         parts already paid at the shop)
+
+    _MIN_TUTORIAL_HULL_PIXELS: int = 20
+
+    # Phase-transition narration content, Mechanic voice. Voice-checked:
+    # no em-dashes, no "couldn't help but," no parallel-negation rhetoric.
+    _TUTORIAL_NARRATION: dict[str, tuple[str, str]] = {
+        "slots": (
+            "Phase 1 of 3: Place the Slots",
+            "Bay is yours. Frame is tiny, canvas is small, cheap to work with. "
+            "Start with slots. Cockpit, engine, reactor, fuel, and your choice. "
+            "Treat them like the skeleton. Drop them where you want them on the grid. "
+            "Placement cost hits your wallet at CONFIRM, not while you are sliding "
+            "them around. No penalty until you commit.",
+        ),
+        "hull": (
+            "Phase 2 of 3: Paint the Hull",
+            "Good layout. Now plating. Hull pixels give you armor, hull points, "
+            "and shields, split across the materials you choose. Standard plate is "
+            "the cheap default. Weight is the trade. Past eighty percent of your "
+            "frame budget, your speed and evasion start dropping. Past ninety-five, "
+            "you are overloaded. Shape matters too: narrow profiles evade more, "
+            "balanced mass evades more. Paint what you need. Do not over-plate.",
+        ),
+        "complete": (
+            "Phase 3 of 3: Mount and Confirm",
+            "Hull is on. CONFIRM BUILD locks it in. I will mount the parts you "
+            "bought into the slots you placed. One-time favor for the shakedown. "
+            "Next time you do that yourself at any shipyard Loadout tab. Same idea: "
+            "click a slot, pick a part. Swap whenever you want without redoing the "
+            "hull. Hit CONFIRM when you are ready.",
+        ),
+    }
+
+    def _tutorial_required_slot_types(self) -> set[str]:
+        """Slot types the player needs to place in Phase A.
+
+        Cockpit is always required. The other four are inferred from what
+        the player bought in the tutorial shop via tutorial_bought_part_*
+        flags, mapping the purchased part to its slot_type via parts_catalog.
+        """
+        required = {"cockpit"}  # always needed, self-fulfilling
+        flags = getattr(self.player, "dialogue_flags", {})
+        parts_catalog = getattr(self.data_loader, "ship_parts", {})
+        for flag_name, enabled in flags.items():
+            if not enabled or not flag_name.startswith("tutorial_bought_part_"):
+                continue
+            part_id = flag_name.replace("tutorial_bought_part_", "", 1)
+            part = parts_catalog.get(part_id)
+            if part is not None:
+                required.add(part.slot_type)
+        return required
+
+    def _is_tutorial_phase_a_complete(self) -> bool:
+        """Phase A is complete when every required slot type has a placement."""
+        slot_defs = getattr(self.data_loader, "slot_definitions", {})
+        placed_types = set()
+        for ps in self.build.placed_slots:
+            sd = slot_defs.get(ps.slot_def_id)
+            if sd:
+                placed_types.add(sd.slot_type)
+        return self._tutorial_required_slot_types().issubset(placed_types)
+
+    def _is_tutorial_phase_b_complete(self) -> bool:
+        """Phase B is complete when enough hull pixels are painted."""
+        return len(self.build.pixels) >= self._MIN_TUTORIAL_HULL_PIXELS
+
+    def _tutorial_phase(self) -> str:
+        """Return the current tutorial phase name."""
+        if not self._tutorial_mode:
+            return "n/a"
+        if not self._is_tutorial_phase_a_complete():
+            return "slots"
+        if not self._is_tutorial_phase_b_complete():
+            return "hull"
+        return "complete"
+
+    def _tutorial_charge_amount(self) -> int:
+        """Credits the player owes on CONFIRM in tutorial mode.
+
+        Formula: hull (full cost) + slot placement (50% shakedown rate).
+        Parts were paid at the shop; don't double-charge.
+        """
+        slot_defs = getattr(self.data_loader, "slot_definitions", {})
+        materials = getattr(self.data_loader, "hull_materials", {})
+        placement_total = 0
+        for ps in self.build.placed_slots:
+            sd = slot_defs.get(ps.slot_def_id)
+            if sd:
+                placement_total += sd.placement_cost
+        hull_total = 0
+        for px in self.build.pixels:
+            mat = materials.get(px.material_id)
+            if mat:
+                hull_total += mat.cost_per_pixel
+        return (placement_total // 2) + hull_total
+
+    def _tutorial_maybe_fire_phase_narration(self) -> None:
+        """If the player has entered a new phase, fire the Mechanic modal
+        once. Uses dialogue_flags to ensure it fires at most once per phase
+        per save (survives save/reload)."""
+        if not self._tutorial_mode:
+            return
+        phase = self._tutorial_phase()
+        if phase == "n/a" or phase == self._tutorial_last_phase_shown:
+            return
+        flag = f"tutorial_phase_{phase}_narration_seen"
+        if self.player.dialogue_flags.get(flag, False):
+            self._tutorial_last_phase_shown = phase
+            return
+        # First time entering this phase — fire the modal
+        narration = self._TUTORIAL_NARRATION.get(phase)
+        if narration is None:
+            self._tutorial_last_phase_shown = phase
+            return
+        title, body = narration
+        from spacegame.views.tutorial_narration_modal import TutorialNarrationModal
+
+        self._tutorial_narration_modal = TutorialNarrationModal(
+            speaker="Mechanic",
+            title=title,
+            body=body,
+            on_dismiss=lambda: self._tutorial_mark_phase_seen(phase),
+        )
+        self._tutorial_last_phase_shown = phase
+
+    def _tutorial_mark_phase_seen(self, phase: str) -> None:
+        """Persist that the player has seen this phase's narration so it
+        does not re-fire on save/reload."""
+        self.player.dialogue_flags[f"tutorial_phase_{phase}_narration_seen"] = True
+
+    # Weight-threshold warning narration content, Mechanic voice.
+    _TUTORIAL_WEIGHT_WARNINGS: dict[str, tuple[str, str]] = {
+        "heavy": (
+            "Over Weight Budget",
+            "You are past eighty percent of your frame's weight cap. Evasion "
+            "and speed are taking a hit from this point on. You can keep "
+            "painting if you want the durability, but know what you are "
+            "trading.",
+        ),
+        "overloaded": (
+            "Overloaded",
+            "Past ninety-five percent now. Evasion is tanking hard and speed "
+            "is down with it. You can still fly, but you will be slow and "
+            "easier to hit. Past one hundred percent the frame refuses more "
+            "plating. Pull back if you want to be nimble.",
+        ),
+    }
+
+    def _tutorial_maybe_fire_weight_warning(self) -> None:
+        """If in tutorial mode and weight has crossed a threshold for the
+        first time, fire the Mechanic warning modal. One-shot per threshold,
+        persisted via dialogue_flags so it doesn't re-fire on save/reload
+        or after the player drops below and climbs back up."""
+        if not self._tutorial_mode:
+            return
+        if self._tutorial_narration_modal is not None:
+            return  # Don't stack modals
+        stats = self._computed_stats
+        if stats is None or stats.weight_max <= 0:
+            return
+        ratio = stats.weight_current / stats.weight_max
+        # Ordered so OVERLOADED fires before HEAVY if the player somehow
+        # jumps multiple thresholds in one action — player should hear the
+        # worse warning.
+        threshold_checks = [
+            ("overloaded", 0.95),
+            ("heavy", 0.80),
+        ]
+        for key, threshold in threshold_checks:
+            if ratio < threshold:
+                continue
+            flag = f"tutorial_weight_{key}_seen"
+            if self.player.dialogue_flags.get(flag, False):
+                continue
+            content = self._TUTORIAL_WEIGHT_WARNINGS.get(key)
+            if content is None:
+                continue
+            title, body = content
+            from spacegame.views.tutorial_narration_modal import TutorialNarrationModal
+
+            self._tutorial_narration_modal = TutorialNarrationModal(
+                speaker="Mechanic",
+                title=title,
+                body=body,
+                on_dismiss=lambda k=key: self._tutorial_mark_weight_warning_seen(k),
+            )
+            # Mark flag immediately so the modal doesn't re-arm while visible
+            self.player.dialogue_flags[flag] = True
+            return
+
+    def _tutorial_mark_weight_warning_seen(self, key: str) -> None:
+        """Persist weight-warning dismissal (already set pre-emptively on
+        fire; this is a safety net in case the pre-set was missed)."""
+        self.player.dialogue_flags[f"tutorial_weight_{key}_seen"] = True
+
+    def _render_tutorial_phase_strip(self, screen: pygame.Surface) -> None:
+        """Render the persistent phase objective strip at the top of the
+        screen during the tutorial. High-contrast band with current phase,
+        objective, and live progress."""
+        strip_h = scale_y(38)
+        # Background band
+        band = pygame.Surface((WINDOW_WIDTH, strip_h), pygame.SRCALPHA)
+        band.fill((12, 18, 30, 235))
+        screen.blit(band, (0, 0))
+        # Accent stripe — flips positive when the current gate is met
+        phase = self._tutorial_phase()
+        accent = Colors.TEXT_HIGHLIGHT  # neutral "in progress"
+        if phase == "complete":
+            try:
+                from spacegame.engine.material_palette import get_role
+                accent = get_role("status_positive")
+            except Exception:
+                accent = Colors.GREEN
+        pygame.draw.rect(screen, accent, (0, 0, scale_x(4), strip_h))
+
+        # Phase label (left)
+        phase_label_map = {
+            "slots": "PHASE 1 OF 3: PLACE SLOTS",
+            "hull": "PHASE 2 OF 3: PAINT HULL",
+            "complete": "PHASE 3 OF 3: MOUNT AND CONFIRM",
+        }
+        label_text = phase_label_map.get(phase, "TUTORIAL")
+        label_surf = self.title_font.render(label_text, True, Colors.TEXT_HIGHLIGHT)
+        screen.blit(label_surf, (scale_x(16), (strip_h - label_surf.get_height()) // 2))
+
+        # Progress (right)
+        progress_text = self._tutorial_progress_text()
+        if progress_text:
+            prog_surf = self.small_font.render(progress_text, True, Colors.TEXT_SECONDARY)
+            px = WINDOW_WIDTH - prog_surf.get_width() - scale_x(18)
+            py = (strip_h - prog_surf.get_height()) // 2
+            screen.blit(prog_surf, (px, py))
+
+    def _tutorial_progress_text(self) -> str:
+        """Return the live-progress string shown on the phase strip's right side."""
+        phase = self._tutorial_phase()
+        if phase == "slots":
+            required = self._tutorial_required_slot_types()
+            slot_defs = getattr(self.data_loader, "slot_definitions", {})
+            placed_types = set()
+            for ps in self.build.placed_slots:
+                sd = slot_defs.get(ps.slot_def_id)
+                if sd:
+                    placed_types.add(sd.slot_type)
+            placed = len(required & placed_types)
+            total = len(required)
+            return f"Slots placed: {placed}/{total}"
+        if phase == "hull":
+            pixels = len(self.build.pixels)
+            return f"Hull pixels: {pixels}/{self._MIN_TUTORIAL_HULL_PIXELS}+"
+        if phase == "complete":
+            return "CONFIRM BUILD to continue"
+        return ""
+
+    def render_top(self, screen: pygame.Surface) -> None:
+        """PT-N: draw the tutorial narration modal above pygame_gui elements."""
+        if self._tutorial_narration_modal is not None:
+            self._tutorial_narration_modal.render(screen)
+
+    def _render_tutorial_stat_preview(self, screen: pygame.Surface) -> None:
+        """Live stat preview panel shown during the tutorial.
+
+        Contents:
+          - Core combat stats (Hull, Armor, Shields, Speed, Evasion)
+          - Weight gauge with HEAVY (80%) and OVERLOADED (95%) threshold marks
+          - Shape classification tags (narrow/balanced) with evasion effect
+
+        The gauge and classification tags teach the hull-painting trade-offs
+        the Phase B narration describes. Colors pull from PALETTE_ROLES so
+        colorblind profiles remap automatically.
+        """
+        panel_x = MATERIAL_PANEL_X
+        panel_y = MATERIAL_PANEL_Y
+        panel_w = MATERIAL_PANEL_W
+        panel_h = MATERIAL_PANEL_H
+
+        draw_panel(screen, (panel_x, panel_y, panel_w, panel_h), alpha=220)
+
+        title = self.small_font.render("LIVE STATS", True, Colors.TEXT_HIGHLIGHT)
+        screen.blit(title, (panel_x + scale_x(10), panel_y + scale_y(6)))
+
+        stats = self._computed_stats
+        if stats is None:
+            return
+
+        # --- Core stats ---
+        y = panel_y + scale_y(28)
+        x = panel_x + scale_x(10)
+        val_x = panel_x + panel_w - scale_x(10)
+        stat_rows = [
+            ("Hull", "hull", str(stats.hull)),
+            ("Armor", "armor", str(stats.armor)),
+            ("Shields", "shields", str(stats.shields)),
+            ("Speed", "speed", str(stats.speed)),
+            ("Evasion", "evasion", str(stats.evasion)),
+        ]
+        pos_color = _palette_role_color("status_positive", Colors.GREEN)
+        neg_color = _palette_role_color("status_negative", Colors.RED)
+        for label, key, value in stat_rows:
+            lbl = self.label_font.render(label, True, Colors.TEXT_SECONDARY)
+            val = self.label_font.render(value, True, Colors.TEXT_PRIMARY)
+            screen.blit(lbl, (x, y))
+            screen.blit(val, (val_x - val.get_width(), y))
+            # PT-N: delta flash — "+2" or "-3" next to the stat, fades
+            # with the timer in _tutorial_stat_deltas. Alpha scales off
+            # the timer for a smooth fade. getattr guards the rare path
+            # where the view is built via __new__ in tests.
+            delta_entry = getattr(self, "_tutorial_stat_deltas", {}).get(key)
+            if delta_entry is not None:
+                delta_val, timer = delta_entry
+                sign = "+" if delta_val > 0 else ""
+                delta_text = f"{sign}{int(delta_val)}"
+                color = pos_color if delta_val > 0 else neg_color
+                delta_surf = self.label_font.render(delta_text, True, color)
+                # Fade out over last 0.6s of 1.8s lifetime
+                alpha = int(min(255, 255 * (timer / 0.6))) if timer < 0.6 else 255
+                delta_surf.set_alpha(alpha)
+                # Position right of the value, same row
+                delta_x = val_x - val.get_width() - scale_x(6) - delta_surf.get_width()
+                screen.blit(delta_surf, (delta_x, y))
+            y += scale_y(15)
+
+        # --- Weight gauge ---
+        y += scale_y(6)
+        pos = _palette_role_color("status_positive", Colors.GREEN)
+        warn = _palette_role_color("status_warning", Colors.YELLOW)
+        neg = _palette_role_color("status_negative", Colors.RED)
+        ratio = 0.0
+        if stats.weight_max > 0:
+            ratio = stats.weight_current / stats.weight_max
+        weight_label = self.label_font.render(
+            f"Weight {stats.weight_current:.0f}/{stats.weight_max}  ({int(ratio * 100)}%)",
+            True,
+            Colors.TEXT_SECONDARY,
+        )
+        screen.blit(weight_label, (x, y))
+        y += scale_y(14)
+
+        # Gauge bar
+        bar_w = panel_w - scale_x(20)
+        bar_h = scale_y(10)
+        bar_x = x
+        bar_y = y
+        # Background
+        pygame.draw.rect(screen, Colors.UI_PANEL, (bar_x, bar_y, bar_w, bar_h))
+        # Fill color depends on threshold
+        if ratio >= 0.95:
+            fill_color = neg
+        elif ratio >= 0.80:
+            fill_color = warn
+        else:
+            fill_color = pos
+        fill_w = max(0, min(bar_w, int(bar_w * ratio)))
+        pygame.draw.rect(screen, fill_color, (bar_x, bar_y, fill_w, bar_h))
+        # Threshold ticks at 80% and 95%
+        for t in (0.80, 0.95):
+            tx = bar_x + int(bar_w * t)
+            pygame.draw.rect(screen, Colors.TEXT_SECONDARY, (tx, bar_y - 1, 1, bar_h + 2))
+        # Border
+        pygame.draw.rect(screen, Colors.UI_BORDER, (bar_x, bar_y, bar_w, bar_h), 1)
+        y += bar_h + scale_y(4)
+        tick_hint = self.label_font.render("80%   95%", True, Colors.TEXT_SECONDARY)
+        screen.blit(tick_hint, (bar_x, y))
+        y += scale_y(16)
+
+        # --- Shape classifications ---
+        y += scale_y(4)
+        shape_label = self.small_font.render("SHAPE", True, Colors.TEXT_HIGHLIGHT)
+        screen.blit(shape_label, (x, y))
+        y += scale_y(16)
+
+        profile_tag, profile_effect, profile_color = self._tutorial_profile_classification()
+        balance_tag, balance_effect, balance_color = self._tutorial_balance_classification()
+
+        for tag, effect, color in (
+            (profile_tag, profile_effect, profile_color),
+            (balance_tag, balance_effect, balance_color),
+        ):
+            tag_surf = self.label_font.render(tag, True, color)
+            screen.blit(tag_surf, (x, y))
+            if effect:
+                eff_surf = self.label_font.render(effect, True, Colors.TEXT_SECONDARY)
+                screen.blit(eff_surf, (x + tag_surf.get_width() + scale_x(6), y))
+            y += scale_y(14)
+
+    def _tutorial_profile_classification(self) -> tuple[str, str, tuple[int, int, int]]:
+        """Return (tag, effect_label, color) for the ship's frontal profile.
+
+        Matches the thresholds used in compute_physics_modifiers:
+          <0.3 → NARROW, +10% evasion
+          0.3-0.6 → NORMAL, no change
+          >0.6 → WIDE, -10% evasion
+        """
+        from spacegame.models.ship_physics import compute_frontal_profile
+
+        coords = [(p.x, p.y) for p in self.build.pixels]
+        if not coords:
+            return ("NORMAL", "", Colors.TEXT_SECONDARY)
+        _, _, ratio = compute_frontal_profile(coords, self.build.canvas_w)
+        pos = _palette_role_color("status_positive", Colors.GREEN)
+        neg = _palette_role_color("status_negative", Colors.RED)
+        if ratio < 0.3:
+            return ("NARROW", "+10% eva", pos)
+        if ratio > 0.6:
+            return ("WIDE", "-10% eva", neg)
+        return ("NORMAL", "", Colors.TEXT_SECONDARY)
+
+    def _tutorial_balance_classification(self) -> tuple[str, str, tuple[int, int, int]]:
+        """Return (tag, effect_label, color) for center-of-mass balance."""
+        from spacegame.models.ship_physics import BalanceRating, compute_center_of_mass
+
+        materials = getattr(self.data_loader, "hull_materials", {})
+        module_catalog = getattr(self.data_loader, "ship_modules", {})
+        _, _, _, rating = compute_center_of_mass(self.build, materials, module_catalog)
+        pos = _palette_role_color("status_positive", Colors.GREEN)
+        warn = _palette_role_color("status_warning", Colors.YELLOW)
+        neg = _palette_role_color("status_negative", Colors.RED)
+        if rating == BalanceRating.BALANCED:
+            return ("BALANCED", "", pos)
+        if rating == BalanceRating.OFF_BALANCE:
+            return ("OFF-BALANCE", "-10% eva", warn)
+        return ("SEVERELY OFF", "-25% eva", neg)
+
+    def _tutorial_auto_equip(self) -> None:
+        """Auto-equip tutorial parts from player inventory into matching slots.
+
+        Narratively framed (elsewhere) as "I mounted the parts for you this
+        once — at any shipyard you'll do this yourself at the Loadout tab."
+        Matches part to slot by slot_type; uses the first matching unequipped
+        slot. Cockpit slots are self-fulfilling and skipped.
+        """
+        slot_defs = getattr(self.data_loader, "slot_definitions", {})
+        parts_catalog = getattr(self.data_loader, "ship_parts", {})
+        inventory = dict(getattr(self.player, "parts_inventory", {}))
+        for ps in self.build.placed_slots:
+            if ps.equipped_part_id:
+                continue
+            sd = slot_defs.get(ps.slot_def_id)
+            if sd is None or sd.slot_type == "cockpit":
+                continue
+            # Find a part in inventory matching this slot's type
+            for part_id, count in list(inventory.items()):
+                if count <= 0:
+                    continue
+                part = parts_catalog.get(part_id)
+                if part is None or part.slot_type != sd.slot_type:
+                    continue
+                ps.equipped_part_id = part_id
+                inventory[part_id] = count - 1
+                # Deduct from the player's real inventory too
+                if hasattr(self.player, "remove_part"):
+                    self.player.remove_part(part_id)
+                break
+
     def _confirm_build(self) -> None:
         """Start the build confirmation flow — shows naming dialog first."""
         if not self._can_confirm:
@@ -1669,23 +2197,46 @@ class ShipBuilderView(BaseView):
         # Tutorial mode: skip naming, auto-finalize, and return to tutorial flow
         # Set entry_cost = new build cost so delta is 0 (shop already charged)
         if self._tutorial_mode:
-            self._entry_cost = self._computed_stats.total_cost if self._computed_stats else 0
-            self._finalize_build()
-            # PT-007 bookend: mechanic signs off. The notification queue is
-            # consumed by game.py's _render_mission_notification pipeline,
-            # so the message appears on the destination screen — giving
-            # the player a concrete "I'm done here, now what" answer
-            # instead of a silent hand-off (addresses PT-006).
+            # PT-N: tutorial CONFIRM pipeline.
+            # 1. Verify phase complete (already gated via _can_confirm, but
+            #    defensive re-check).
+            # 2. Auto-equip bought parts into matching slots (narrated as
+            #    "I mounted these for you this once — Loadout tab next time").
+            # 3. Charge the tutorial discount amount (placement 50% + hull).
+            # 4. Apply the build, set completion flag, transition.
+            if self._tutorial_phase() != "complete":
+                return
+            self._tutorial_auto_equip()
+            charge = self._tutorial_charge_amount()
+            if charge > self.player.credits:
+                self._validation_warnings.append(
+                    f"Not enough credits ({charge:,} needed, {self.player.credits:,} on hand)"
+                )
+                return
+            self.player.credits -= charge
+            # Apply the build directly (don't route through _finalize_build's
+            # delta path — tutorial pricing uses a custom charge).
+            self._recompute_stats()
+            self.player.ship.set_build(self.build, full_heal=True)
+            if self._computed_stats:
+                self.player.ship.current_hull = self._computed_stats.hull
+                self.player.ship.current_shields = self._computed_stats.shields
+            self._modified = False
+            if self._naming_text.strip():
+                self.player.ship_name = self._naming_text.strip()
+            self._naming_active = False
+            logger.info(
+                f"Tutorial build confirmed: charged {charge:,} CR "
+                f"(placement 50%, hull full, parts prepaid at shop)"
+            )
+            # PT-007 bookend: mechanic signs off.
             self._pending_tutorial_farewell = (
                 'Mechanic: "That\'ll fly. I\'ll push you off. Galaxy\'s waiting."'
             )
             # PT-H: tutorial_builder_complete gates Arna's first-encounter
-            # interception on first STATION_HUB entry after tutorial. Set
-            # here (not in StationHubView) so the flag is available the
-            # moment the transition fires.
+            # interception on first STATION_HUB entry after tutorial.
             self.player.dialogue_flags["tutorial_builder_complete"] = True
             self.next_state = self._tutorial_return_state
-            logger.info("Tutorial build confirmed — transitioning to station hub")
             return
         # PT-012: auto-skip the naming dialog when the ship already has a
         # name. Players named their ship at game start (or via the explicit
@@ -1834,6 +2385,13 @@ class ShipBuilderView(BaseView):
         self._advisory_warnings = advisories
         was_confirmable = self._can_confirm
         self._can_confirm = has_content and len(warnings) == 0
+        # PT-N: in tutorial mode, CONFIRM is additionally gated on all three
+        # phases completing. This is the structural fix for the Arna-
+        # interruption report — the only path to station hub is CONFIRM,
+        # and CONFIRM won't fire until slots + hull are done. Arna physically
+        # cannot interrupt mid-tutorial anymore.
+        if self._tutorial_mode and self._tutorial_phase() != "complete":
+            self._can_confirm = False
 
         # Play positive feedback when all requirements first met
         if self._can_confirm and not was_confirmable and has_slots:
@@ -1943,6 +2501,49 @@ class ShipBuilderView(BaseView):
         self._cached_integrity = None
         self._cached_exposure = None
         self._preview_dirty = True
+        # PT-N: compute deltas for the tutorial stat preview. Each stat
+        # change generates a "+N" or "-N" indicator that fades after ~1.8s.
+        # Only tracks in tutorial mode — non-tutorial doesn't need the
+        # teaching reinforcement.
+        if self._tutorial_mode and self._computed_stats is not None:
+            self._tutorial_record_stat_deltas()
+
+    def _tutorial_record_stat_deltas(self) -> None:
+        """Compare current stats to the snapshot; record deltas for any
+        changed stat; refresh snapshot."""
+        stats = self._computed_stats
+        if stats is None:
+            return
+        tracked = {
+            "hull": stats.hull,
+            "armor": stats.armor,
+            "shields": stats.shields,
+            "speed": stats.speed,
+            "evasion": stats.evasion,
+        }
+        for key, current in tracked.items():
+            prev = self._tutorial_stat_snapshot.get(key)
+            if prev is None:
+                # First-ever snapshot — no delta
+                continue
+            delta = current - prev
+            if abs(delta) >= 0.5:  # ignore sub-integer float noise
+                # Timer: 1.8 seconds of visibility
+                self._tutorial_stat_deltas[key] = (delta, 1.8)
+        # Refresh snapshot after comparing
+        self._tutorial_stat_snapshot = dict(tracked)
+
+    def _tutorial_tick_stat_deltas(self, dt: float) -> None:
+        """Tick down delta display timers; drop expired entries."""
+        to_remove: list[str] = []
+        for key, (delta, timer) in list(self._tutorial_stat_deltas.items()):
+            new_timer = timer - dt
+            if new_timer <= 0:
+                to_remove.append(key)
+            else:
+                self._tutorial_stat_deltas[key] = (delta, new_timer)
+        for key in to_remove:
+            del self._tutorial_stat_deltas[key]
 
     def _get_filtered_shapes(self) -> list[HullShape]:
         shapes = list(getattr(self.data_loader, "hull_shapes", {}).values())
@@ -2008,6 +2609,20 @@ class ShipBuilderView(BaseView):
         self.background.update(dt)
         self.particles.update(dt)
 
+        # PT-N: drive tutorial narration modal — fire on phase transitions
+        # once per phase, tick fade-in timer, clear when dismissed. Weight
+        # warnings fire via the same modal when ratio crosses thresholds.
+        # Also tick stat-delta fade timers so "+2 Hull" indicators dismiss
+        # after their visible window.
+        if self._tutorial_mode:
+            self._tutorial_maybe_fire_phase_narration()
+            self._tutorial_maybe_fire_weight_warning()
+            self._tutorial_tick_stat_deltas(dt)
+            if self._tutorial_narration_modal is not None:
+                self._tutorial_narration_modal.update(dt)
+                if self._tutorial_narration_modal.dismissed:
+                    self._tutorial_narration_modal = None
+
         # Track builder hint triggers (QA Fix #7)
         self._check_builder_hint_triggers()
 
@@ -2048,13 +2663,18 @@ class ShipBuilderView(BaseView):
         self.background.render(screen)
         screen.blit(self._bg_dim, (0, 0))
 
-        # Header with mode toggle
-        title = self.title_font.render(
-            f"DRYDOCK — {self.build.weight_class.upper()} ({self.build.canvas_w}×{self.build.canvas_h})",
-            True,
-            Colors.TEXT_HIGHLIGHT,
-        )
-        screen.blit(title, (WINDOW_WIDTH // 2 - title.get_width() // 2, 6))
+        # Header with mode toggle. PT-N: in tutorial mode, the phase
+        # objective strip replaces the normal title line — it is the
+        # "what do I do right now" anchor.
+        if self._tutorial_mode:
+            self._render_tutorial_phase_strip(screen)
+        else:
+            title = self.title_font.render(
+                f"DRYDOCK \u2014 {self.build.weight_class.upper()} ({self.build.canvas_w}×{self.build.canvas_h})",
+                True,
+                Colors.TEXT_HIGHLIGHT,
+            )
+            screen.blit(title, (WINDOW_WIDTH // 2 - title.get_width() // 2, 6))
 
         # Mode toggle indicator (below title)
         self._render_mode_toggle(screen)
@@ -2071,10 +2691,20 @@ class ShipBuilderView(BaseView):
         self._render_grid(screen)
         if self._builder_mode == "slot":
             self._render_slot_palette(screen)
-            self._render_requirements_checklist(screen)
+            # PT-N: tutorial mode replaces requirements checklist with the
+            # live stat preview — more teaching-focused for the player
+            # learning the trade-offs. Non-tutorial players see the normal
+            # checklist.
+            if self._tutorial_mode:
+                self._render_tutorial_stat_preview(screen)
+            else:
+                self._render_requirements_checklist(screen)
         else:
             self._render_shape_palette(screen)
-            self._render_material_panel(screen)
+            if self._tutorial_mode:
+                self._render_tutorial_stat_preview(screen)
+            else:
+                self._render_material_panel(screen)
         self._render_stats_panel(screen)
         self._render_ship_preview(screen)
 

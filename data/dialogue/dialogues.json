@@ -893,6 +893,24 @@
                     "text": "*A heavyset man flips through shipping manifests, muttering numbers under his breath. He holds up one finger without looking up.* One second. Three shipments behind today.",
                     "responses": [
                         {
+                            "text": "You knew Arna?",
+                            "next_node_id": "odom_arna_branch_a",
+                            "required_flags": ["arna_branch_a_complete"],
+                            "excluded_flags": ["odom_spoke_of_arna"]
+                        },
+                        {
+                            "text": "You knew Arna?",
+                            "next_node_id": "odom_arna_branch_b",
+                            "required_flags": ["arna_branch_b_complete"],
+                            "excluded_flags": ["odom_spoke_of_arna"]
+                        },
+                        {
+                            "text": "You knew Arna?",
+                            "next_node_id": "odom_arna_branch_c",
+                            "required_flags": ["arna_branch_c_complete"],
+                            "excluded_flags": ["odom_spoke_of_arna"]
+                        },
+                        {
                             "text": "I'm trying to figure out how work moves through here.",
                             "next_node_id": "teach_intro",
                             "excluded_flags": [
@@ -1078,6 +1096,47 @@
                                     "science_collective": -5
                                 }
                             ]
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "odom_arna_branch_a",
+                    "speaker_id": "delivery_merchant",
+                    "text": "*Odom does not look up from the manifest. Keeps muttering numbers for a beat, then stops.* Your friend cleared out. Owed me seventy credits for a coolant run I fronted her last year. Figured she would. That kind does.",
+                    "subtext": "He goes back to the manifest without waiting for a response.",
+                    "responses": [
+                        {
+                            "text": "[Leave it.]",
+                            "next_node_id": null,
+                            "set_flag": "odom_spoke_of_arna"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "odom_arna_branch_b",
+                    "speaker_id": "delivery_merchant",
+                    "text": "*Odom grunts without looking up.* Still at the desk, I hear. Good. Some people shouldn't fly. She still owes me seventy credits. I'll get it out of her next week.",
+                    "responses": [
+                        {
+                            "text": "[Leave it.]",
+                            "next_node_id": null,
+                            "set_flag": "odom_spoke_of_arna"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "odom_arna_branch_c",
+                    "speaker_id": "delivery_merchant",
+                    "text": "*Odom looks up for the first time. His face does not change.* Heard about your friend. She owed me seventy credits.",
+                    "subtext": "He goes back to the manifest. He does not say anything else. He does not need to.",
+                    "responses": [
+                        {
+                            "text": "[Leave it.]",
+                            "next_node_id": null,
+                            "set_flag": "odom_spoke_of_arna"
                         }
                     ],
                     "expression": "neutral"
@@ -6050,8 +6109,965 @@
                 {
                     "id": "start",
                     "speaker_id": "arna",
-                    "text": "You came back. Good. Most first-timers don't. They see credits and keep flying. Doesn't matter. Board's there. People are there. You know where the shipyard is. You know where the mess is. I'm going back to work.",
-                    "subtext": "She's already turned back to the manifest terminal before the sentence ends.",
+                    "text": "You came back. Good. Most first-timers don't. They see credits and keep flying. Listen. That was the test. I needed to know you don't chicken out on a clean run. You didn't. So here's the real thing.",
+                    "subtext": "She puts the manifest down for the first time and meets your eyes.",
+                    "responses": [
+                        {
+                            "text": "[Tell me.]",
+                            "next_node_id": "ore_pitch"
+                        },
+                        {
+                            "text": "[I am out.]",
+                            "next_node_id": "retire_early"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "ore_pitch",
+                    "speaker_id": "arna",
+                    "text": "I have got a tip on a vein nobody is working. Breakstone outer belt, rare metals. Site is marginal. Enforcement is thin, the tax collectors forgot it exists. We pull a load, I get it refined cheap through a friend of mine, we sell it to a contact I have been cultivating. Split is fair. Cut that pays for more than coolant.",
+                    "subtext": "She is talking fast now. Excited in a way she was not before.",
+                    "responses": [
+                        {
+                            "text": "[I am in.]",
+                            "next_node_id": "accepted"
+                        },
+                        {
+                            "text": "[What is the catch?]",
+                            "next_node_id": "catch"
+                        },
+                        {
+                            "text": "[I need to think about it.]",
+                            "next_node_id": "think"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "catch",
+                    "speaker_id": "arna",
+                    "text": "Catch? Nothing you and a half-decent rig can't handle. Breakstone's moderate danger, bring weapons, keep your eyes up. Site has been picked over some, but I know the angles. Refining is off-books, yeah, but cheap and fast. Sale we will worry about when we get there. My contact is solid.",
+                    "subtext": "She says 'my contact is solid' the way she says everything she is not sure about. Too confident. Too specific.",
+                    "responses": [
+                        {
+                            "text": "[Fine. I am in.]",
+                            "next_node_id": "accepted"
+                        },
+                        {
+                            "text": "[I will think on it.]",
+                            "next_node_id": "think"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "accepted",
+                    "speaker_id": "arna",
+                    "text": "Good. Coordinates are in your nav. Come back with ore. Don't spend it before it is in my hand.",
+                    "responses": [
+                        {
+                            "text": "[Understood.]",
+                            "next_node_id": null,
+                            "set_flag": "arna_accepted_ore_tip"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "think",
+                    "speaker_id": "arna",
+                    "text": "Door is open. Don't take too long. Rare metals are rare for a reason, and marginal sites don't stay marginal forever.",
+                    "responses": [
+                        {
+                            "text": "[Leave]",
+                            "next_node_id": null
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "retire_early",
+                    "speaker_id": "arna",
+                    "text": "Fair enough. Not everyone wants the trouble. Board's there. People are there. I am going back to work.",
+                    "subtext": "She looks a little disappointed. A little relieved.",
+                    "responses": [
+                        {
+                            "text": "[Leave]",
+                            "next_node_id": null,
+                            "set_flag": "arna_retired"
+                        }
+                    ],
+                    "expression": "neutral"
+                }
+            ]
+        },
+        {
+            "id": "arna_ore_tip_pending",
+            "start_node_id": "start",
+            "nodes": [
+                {
+                    "id": "start",
+                    "speaker_id": "arna",
+                    "text": "Still here? Breakstone is not moving. Get the ore, get back.",
+                    "responses": [
+                        {
+                            "text": "[Leave]",
+                            "next_node_id": null
+                        }
+                    ],
+                    "expression": "neutral"
+                }
+            ]
+        },
+        {
+            "id": "arna_post_ore_tip",
+            "start_node_id": "start",
+            "nodes": [
+                {
+                    "id": "start",
+                    "speaker_id": "arna",
+                    "text": "That's the haul? Huh. Less than I was projecting, but not nothing. Edge seams, probably. They always run light.",
+                    "subtext": "She weighs the ore, then weighs it again. The second number matches the first. She does the math in her head and her face does not change.",
+                    "responses": [
+                        {
+                            "text": "[Ask about the site]",
+                            "next_node_id": "about_site"
+                        },
+                        {
+                            "text": "[What's next?]",
+                            "next_node_id": "whats_next"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "about_site",
+                    "speaker_id": "arna",
+                    "text": "What about it? Marginal yield on a marginal site. That's how it works. Whoever flagged the tip didn't have the refining angle. That's where we do better.",
+                    "subtext": "The answer comes too fast. Like she had it ready.",
+                    "responses": [
+                        {
+                            "text": "[Fine. What's next?]",
+                            "next_node_id": "whats_next"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "whats_next",
+                    "speaker_id": "arna",
+                    "text": "Next is Forgeworks. My friend Tev runs a refining outfit there. Off-books, cheap, fast. Take the ore to him. Tell him I sent you. He will process it into something we can sell. Coordinates are in your nav when you leave.",
+                    "responses": [
+                        {
+                            "text": "[On my way.]",
+                            "next_node_id": null,
+                            "set_flag": "arna_sent_to_tev"
+                        }
+                    ],
+                    "expression": "neutral"
+                }
+            ]
+        },
+        {
+            "id": "keren_meet",
+            "start_node_id": "start",
+            "nodes": [
+                {
+                    "id": "start",
+                    "speaker_id": "keren",
+                    "text": "Arna. There you are. Thought I'd be waiting longer. Let me see what we are working with.",
+                    "subtext": "Keren is all smiles, hands in pockets, not meeting Arna's eyes. The station lights flicker twice. Arna's shoulders tighten.",
+                    "responses": [
+                        {
+                            "text": "[Show him the cargo.]",
+                            "next_node_id": "inspect"
+                        },
+                        {
+                            "text": "[Hold on. Arna, you okay?]",
+                            "next_node_id": "hold"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "hold",
+                    "speaker_id": "arna",
+                    "text": "I am fine. Let him look.",
+                    "subtext": "She is not fine. But she waves you on anyway.",
+                    "responses": [
+                        {
+                            "text": "[Show him the cargo.]",
+                            "next_node_id": "inspect"
+                        }
+                    ],
+                    "expression": "concerned"
+                },
+                {
+                    "id": "inspect",
+                    "speaker_id": "keren",
+                    "text": "Yeah. Yeah, this is solid work. Tev did good. Let me grab the credit chit from the back. One sec, Ernie.",
+                    "subtext": "Arna freezes. Nobody calls her Ernie. Keren disappears through a side hatch. Three figures step out from behind cargo containers, weapons already up.",
+                    "responses": [
+                        {
+                            "text": "[Weapons up.]",
+                            "next_node_id": null,
+                            "set_flag": "keren_ambush_triggered"
+                        }
+                    ],
+                    "expression": "neutral"
+                }
+            ]
+        },
+        {
+            "id": "tev_refining_intro",
+            "start_node_id": "start",
+            "nodes": [
+                {
+                    "id": "start",
+                    "speaker_id": "tev",
+                    "text": "Arna sent you? Yeah. She said something about a haul. Let me have a look.",
+                    "subtext": "Tev is a broad man in his forties, hands permanently stained from refining residue. He smiles easily and measures twice. His scale is old. The readout flickers.",
+                    "responses": [
+                        {
+                            "text": "[Hand over the ore.]",
+                            "next_node_id": "weigh_in"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "weigh_in",
+                    "speaker_id": "tev",
+                    "text": "Five units. Solid. Rare metals, good grade. Let me run the numbers while I set up the crucible.",
+                    "subtext": "He taps the readout twice. The number flickers, settles a hair lower. He doesn't comment.",
+                    "responses": [
+                        {
+                            "text": "[Wait and watch.]",
+                            "next_node_id": "fee_breakdown"
+                        },
+                        {
+                            "text": "[Ask to watch the process.]",
+                            "next_node_id": "fee_breakdown"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "fee_breakdown",
+                    "speaker_id": "tev",
+                    "text": "Calibration fee is three percent. Everyone charges it, I'm not gouging you. Tolerance allowance, seven percent. Processing itself is twelve. Storage during the melt, four. Transfer out to your cargo, two. Not including cleanup.",
+                    "subtext": "He says the numbers quickly. He doesn't add them up.",
+                    "responses": [
+                        {
+                            "text": "[That math feels heavy.]",
+                            "next_node_id": "defend"
+                        },
+                        {
+                            "text": "[Fine. Run it.]",
+                            "next_node_id": "run_it"
+                        },
+                        {
+                            "text": "[I want to weigh the output myself.]",
+                            "next_node_id": "weigh_output"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "defend",
+                    "speaker_id": "tev",
+                    "text": "Heavy? It's standard. Ask anyone. Arna and me, we've done this dance a dozen times. She'd tell you if I was cutting her. She wouldn't keep coming back.",
+                    "subtext": "He's smiling. The smile has been there the whole time.",
+                    "responses": [
+                        {
+                            "text": "[Drop it. Run it.]",
+                            "next_node_id": "run_it"
+                        },
+                        {
+                            "text": "[I want to weigh the output.]",
+                            "next_node_id": "weigh_output"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "weigh_output",
+                    "speaker_id": "tev",
+                    "text": "Sure. Weigh it yourself. I use the same scale either way.",
+                    "subtext": "He doesn't stop smiling. But his hands move faster, and the scale gets a second tap this time. A calibration he doesn't explain.",
+                    "responses": [
+                        {
+                            "text": "[Noted. Run it.]",
+                            "next_node_id": "run_it",
+                            "set_flag": "knows_tev_skims"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "run_it",
+                    "speaker_id": "tev",
+                    "text": "Alright. Fire's hot. Give it twenty minutes. Grab a seat.",
+                    "subtext": "The crucible sparks to life. The facility smells like hot metal and old grease.",
+                    "responses": [
+                        {
+                            "text": "[Wait it out.]",
+                            "next_node_id": "finished"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "finished",
+                    "speaker_id": "tev",
+                    "text": "Done. Here's your refined product. Two units of marketable alloy. Not as much as you brought me raw, but that's how it goes. Tell Arna I said hi. Tell her I miss her laugh.",
+                    "subtext": "Two units out of five raw. You do the math he didn't. The fees add up to more than he said.",
+                    "responses": [
+                        {
+                            "text": "[Take the alloy and leave.]",
+                            "next_node_id": null,
+                            "set_flag": "tev_refining_complete"
+                        }
+                    ],
+                    "expression": "neutral"
+                }
+            ]
+        },
+        {
+            "id": "arna_post_refining",
+            "start_node_id": "start",
+            "nodes": [
+                {
+                    "id": "start",
+                    "speaker_id": "arna",
+                    "text": "That's it? That's the refined yield? Two units from five raw?",
+                    "subtext": "She weighs it. Sets it down. Looks at the wall for a second. She is doing the math.",
+                    "responses": [
+                        {
+                            "text": "[Stay silent.]",
+                            "next_node_id": "defend_tev"
+                        },
+                        {
+                            "text": "[Tev skimmed you.]",
+                            "next_node_id": "defend_tev",
+                            "required_flags": ["knows_tev_skims"]
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "defend_tev",
+                    "speaker_id": "arna",
+                    "text": "Tev's been with me a long time. Calibration tolerances, processing loss, storage. It adds up. That's how refining works. He wouldn't. He's not like that.",
+                    "subtext": "She says 'he's not like that' the way she says everything she does not want to think about. Too certain. Too specific.",
+                    "responses": [
+                        {
+                            "text": "[Drop it. What's next?]",
+                            "next_node_id": "whats_next"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "whats_next",
+                    "speaker_id": "arna",
+                    "text": "Buyer. That's next. I have a contact at a derelict station off the Breakstone edge. Place called Heron's Mark. He pays premium for untraced alloy. We go in person, we come out with credits. Bring your ship. I am coming with you this time.",
+                    "subtext": "She hasn't been off-station in a year. She's trying to act like it's routine.",
+                    "responses": [
+                        {
+                            "text": "[Understood. Let's go.]",
+                            "next_node_id": null,
+                            "set_flag": "arna_arranging_buyer"
+                        }
+                    ],
+                    "expression": "neutral"
+                }
+            ]
+        },
+        {
+            "id": "arna_post_ambush",
+            "start_node_id": "start",
+            "nodes": [
+                {
+                    "id": "start",
+                    "speaker_id": "arna",
+                    "text": "He's gone. I should have known. He mispronounced my name. Ernie. My own cousin calls me Ernie.",
+                    "subtext": "She is holding a bloody gash on her side. Alive. Angrier about the name than the wound.",
+                    "responses": [
+                        {
+                            "text": "[Who was that?]",
+                            "next_node_id": "who"
+                        },
+                        {
+                            "text": "[Are you okay?]",
+                            "next_node_id": "okay"
+                        }
+                    ],
+                    "expression": "worried"
+                },
+                {
+                    "id": "okay",
+                    "speaker_id": "arna",
+                    "text": "I'll live. Hit a rib, not a lung. Patched well enough to talk. Ask the other question.",
+                    "responses": [
+                        {
+                            "text": "[Who was that?]",
+                            "next_node_id": "who"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "who",
+                    "speaker_id": "arna",
+                    "text": "Keren. My cousin. The one who 'went straight.' He went straight to the Crimson Reach. That's what 'straight' meant. He's their informant now. Low-ranking. Probably owed them a favor. Offered me up to clear it.",
+                    "subtext": "Her voice stays even. Her eyes do not.",
+                    "responses": [
+                        {
+                            "text": "[What was that meet actually about?]",
+                            "next_node_id": "come_clean"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "come_clean",
+                    "speaker_id": "arna",
+                    "text": "I need to come clean. Everything we have been doing, the ore, the refining, the sale, none of it was clean. Rare metals are legal commodity. What we did isn't. No manifest. No registration. No customs stamp. That makes it trafficking.",
+                    "subtext": "She takes a breath. Looks at you straight for the first time since the ambush.",
+                    "responses": [
+                        {
+                            "text": "[Why didn't you tell me?]",
+                            "next_node_id": "why_hid"
+                        },
+                        {
+                            "text": "[Tell me what I'm actually in.]",
+                            "next_node_id": "primer_legality"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "why_hid",
+                    "speaker_id": "arna",
+                    "text": "Because you would have said no. Or because I didn't want to say it out loud. Both. I have been running this kind of scheme for two years. Small stuff. Nobody noticed. I thought if I kept the scale small enough, I would be small enough to ignore. This was supposed to be my last one. I got greedy.",
+                    "responses": [
+                        {
+                            "text": "[Tell me what I'm actually in.]",
+                            "next_node_id": "primer_legality"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "primer_legality",
+                    "speaker_id": "arna",
+                    "text": "Three legality tiers. Legal, you can move anywhere. Restricted, you need papers, faction permits, customs stamps, the whole manifest trail. Illegal, that's contraband, weapons, narcotics, biohazards, stolen goods. Different penalties if caught depending on which tier and which faction.",
+                    "responses": [
+                        {
+                            "text": "[Go on.]",
+                            "next_node_id": "primer_penalties"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "primer_penalties",
+                    "speaker_id": "arna",
+                    "text": "Penalties go warn, fine, confiscate, ban. Warn is a slap. Fine bleeds your account. Confiscate takes the cargo. Ban locks you out of that faction's stations. Commerce Guild inspects everything. Frontier Alliance barely looks. Crimson Reach, they just shoot you.",
+                    "responses": [
+                        {
+                            "text": "[How do they catch you?]",
+                            "next_node_id": "primer_inspections"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "primer_inspections",
+                    "speaker_id": "arna",
+                    "text": "Inspections. Every system has an inspection rate. High traffic, high enforcement, high rate. Frontier edges, lower. And there's heat. Criminal attention. Do dirty work and eyes start following you. Heat decays when you stay clean. Builds when you don't.",
+                    "responses": [
+                        {
+                            "text": "[Any way to beat inspections?]",
+                            "next_node_id": "primer_compartments"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "primer_compartments",
+                    "speaker_id": "arna",
+                    "text": "Smuggling compartment. Install at any shipyard. Hides contraband from routine inspections. Not foolproof, persistent searches find it, but good for most checkpoints. You want one now. That's what this mess was supposed to fund.",
+                    "responses": [
+                        {
+                            "text": "[Where do I actually sell this stuff?]",
+                            "next_node_id": "primer_black_market"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "primer_black_market",
+                    "speaker_id": "arna",
+                    "text": "Black markets. Not every station has one. The ones that do hide it behind rep or introductions. You just met one of the intros. Keren. He is not the only one. The access doesn't leave you once you have it. Primer's in your journal now. You can read it back when it matters.",
+                    "responses": [
+                        {
+                            "text": "[What about your brother?]",
+                            "next_node_id": "brother"
+                        },
+                        {
+                            "text": "[What's next?]",
+                            "next_node_id": "branches"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "brother",
+                    "speaker_id": "arna",
+                    "text": "My brother. Yeah. I owe you that one. He's on a Union refinery station. Processed air his whole life. His lungs are giving out. Union healthcare gave him two options, keep working the same atmosphere that is killing him, or pay out of pocket for transfer. Second one costs more than I make in ten years at the manifest desk. That is why the scheme. That is why all of it. I was not going to stop until I had the money.",
+                    "subtext": "She does not cry. She does not even look at you. She just says it flat because the words have been sitting under her tongue for two years.",
+                    "responses": [
+                        {
+                            "text": "[What's next?]",
+                            "next_node_id": "branches"
+                        }
+                    ],
+                    "expression": "worried"
+                },
+                {
+                    "id": "branches",
+                    "speaker_id": "arna",
+                    "text": "Three options on the table. I have been thinking while you were shooting. One, we go after Keren. Take what he took, take what he owes us, take his contraband and flip it. Risky, payback, full commitment. Two, we walk. There's a derelict I have had coordinates on for a year, clean, nobody watching. Small score, nothing follows us. Three, you turn me in. Security or Reach. Either way you walk with a bounty, I go somewhere worse. Your call.",
+                    "responses": [
+                        {
+                            "text": "[We go after Keren.]",
+                            "next_node_id": "chose_payback"
+                        },
+                        {
+                            "text": "[We walk. One clean pull.]",
+                            "next_node_id": "chose_walkaway"
+                        },
+                        {
+                            "text": "[I am turning you in.]",
+                            "next_node_id": "chose_betray"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "chose_payback",
+                    "speaker_id": "arna",
+                    "text": "Good. I was hoping. Keren's depot coordinates are in your nav. Get me patched up at Nexus first, then we move. Bring weapons.",
+                    "responses": [
+                        {
+                            "text": "[Understood.]",
+                            "next_node_id": null,
+                            "set_flag": "arna_branch_payback"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "chose_walkaway",
+                    "speaker_id": "arna",
+                    "text": "Smart. Derelict coordinates are in your nav. Clean run, no entanglements. Smaller pull than I hoped, but nothing follows us out. I'll meet you back at Nexus.",
+                    "responses": [
+                        {
+                            "text": "[See you there.]",
+                            "next_node_id": null,
+                            "set_flag": "arna_branch_walkaway"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "chose_betray",
+                    "speaker_id": "arna",
+                    "text": "Huh. Okay. Fair read, I guess. I'd probably have done the same. Go on then.",
+                    "subtext": "She sounds tired. She doesn't look surprised. Somewhere under the tiredness there is something small that wishes you had chosen different.",
+                    "responses": [
+                        {
+                            "text": "[Leave]",
+                            "next_node_id": null,
+                            "set_flag": "arna_branch_betray"
+                        }
+                    ],
+                    "expression": "sad"
+                }
+            ]
+        },
+        {
+            "id": "arna_post_payback",
+            "start_node_id": "start",
+            "nodes": [
+                {
+                    "id": "start",
+                    "speaker_id": "arna",
+                    "text": "You're back. I can tell by your face how it went. You got him?",
+                    "subtext": "She is in the same chair at the same terminal, bandage changed, color better. She looks up this time.",
+                    "responses": [
+                        {
+                            "text": "[He's gone.]",
+                            "next_node_id": "gone"
+                        },
+                        {
+                            "text": "[I let him go.]",
+                            "next_node_id": "spared"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "gone",
+                    "speaker_id": "arna",
+                    "text": "Good. Good, okay. That's better for both of us, probably. Reach doesn't forget a dead informant fast, but they forget eventually. I don't.",
+                    "subtext": "She takes a long breath. Puts both hands flat on the terminal. Doesn't cry. Doesn't smile either.",
+                    "responses": [
+                        {
+                            "text": "[What now?]",
+                            "next_node_id": "what_now"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "spared",
+                    "speaker_id": "arna",
+                    "text": "Huh. Probably smarter than killing him. Reach respects a mercy they didn't expect. He might even remember it. He probably won't. But might.",
+                    "responses": [
+                        {
+                            "text": "[What now?]",
+                            "next_node_id": "what_now"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "what_now",
+                    "speaker_id": "arna",
+                    "text": "Now I'm on two blacklists instead of one. Dock rats don't get to stay when the file gets too thick. I know a freighter pulling out of Nexus in two days. Going to Port Kestrel. I can ride out on it. After that I'm not your problem.",
+                    "subtext": "She says 'not your problem' the way people say the last line of a letter they already wrote.",
+                    "responses": [
+                        {
+                            "text": "[Take care of yourself.]",
+                            "next_node_id": null,
+                            "set_flag": "arna_closeout_ready"
+                        }
+                    ],
+                    "expression": "neutral"
+                }
+            ]
+        },
+        {
+            "id": "arna_post_walkaway",
+            "start_node_id": "start",
+            "nodes": [
+                {
+                    "id": "start",
+                    "speaker_id": "arna",
+                    "text": "Small score. Clean paper. Fair trade for a scar and a lesson. You held up your end.",
+                    "subtext": "She's quieter than before. The fast-talk register has slowed. She has been thinking a lot.",
+                    "responses": [
+                        {
+                            "text": "[You okay?]",
+                            "next_node_id": "okay"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "okay",
+                    "speaker_id": "arna",
+                    "text": "I'm fine. I'll be fine. The scheme was the plan. The plan fell apart. That's fine too. I have been running this kind of scheme for two years, you know that now. Three times smaller it worked. Once bigger it didn't. Lesson's in the numbers.",
+                    "responses": [
+                        {
+                            "text": "[What's next for you?]",
+                            "next_node_id": "what_next"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "what_next",
+                    "speaker_id": "arna",
+                    "text": "Manifest desk. Not leaving Nexus. Can't tell you why, so don't ask. I'll keep the terminal running. Maybe I'll find smaller schemes that work, and I'll remember not to step up. Maybe I won't. Either way, this is my home and I'm staying in it.",
+                    "subtext": "She is not going to save her brother this way. She knows. She is saying it anyway.",
+                    "responses": [
+                        {
+                            "text": "[Understood.]",
+                            "next_node_id": null,
+                            "set_flag": "arna_closeout_ready"
+                        }
+                    ],
+                    "expression": "neutral"
+                }
+            ]
+        },
+        {
+            "id": "arna_betray_followthrough",
+            "start_node_id": "start",
+            "nodes": [
+                {
+                    "id": "start",
+                    "speaker_id": "arna",
+                    "text": "You're back. Good trip? You disappeared for a day there. I figured you were patching something on the ship.",
+                    "subtext": "She's in the same chair. The bandage is a cleaner one. She is acting like nothing happened because she doesn't know anything has.",
+                    "responses": [
+                        {
+                            "text": "[I need to ask you something.]",
+                            "next_node_id": "ask"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "ask",
+                    "speaker_id": "arna",
+                    "text": "Shoot.",
+                    "subtext": "You already made the call. The comms unit is warm in your pocket. Somebody is already on their way.",
+                    "responses": [
+                        {
+                            "text": "[Turn her in to Nexus Security.]",
+                            "next_node_id": "security"
+                        },
+                        {
+                            "text": "[Sell her to the Crimson Reach.]",
+                            "next_node_id": "reach"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "security",
+                    "speaker_id": "arna",
+                    "text": "Oh. That's what this is.",
+                    "subtext": "Two security officers walk up behind you. They are very quiet. Arna doesn't stand. She puts both hands flat on the terminal, the way she did after the ambush, only this time her hands are steadier. She doesn't look at you.",
+                    "responses": [
+                        {
+                            "text": "[Leave.]",
+                            "next_node_id": null,
+                            "set_flag": "arna_betrayal_resolved"
+                        }
+                    ],
+                    "expression": "sad"
+                },
+                {
+                    "id": "reach",
+                    "speaker_id": "arna",
+                    "text": "Huh. Not security. The Reach. Okay. That's worse.",
+                    "subtext": "She says it like she is noting the weather. A figure in a Reach uniform steps into the concourse. Arna does not stand. The figure is not quiet. Arna does not look at you.",
+                    "responses": [
+                        {
+                            "text": "[Leave.]",
+                            "next_node_id": null,
+                            "set_flag": "arna_betrayal_resolved"
+                        }
+                    ],
+                    "expression": "sad"
+                }
+            ]
+        },
+        {
+            "id": "arna_last_freight_out_closeout",
+            "start_node_id": "start",
+            "nodes": [
+                {
+                    "id": "start",
+                    "speaker_id": "arna",
+                    "text": "You're early. Freighter doesn't pull out for another hour. But you came to see me off. Most people wouldn't have.",
+                    "subtext": "She has a duffel bag at her feet. Smaller than you expected. Dock rat's worth of things fits in one bag.",
+                    "responses": [
+                        {
+                            "text": "[Where are you going?]",
+                            "next_node_id": "destination"
+                        },
+                        {
+                            "text": "[What's next for you?]",
+                            "next_node_id": "next_step"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "destination",
+                    "speaker_id": "arna",
+                    "text": "Port Kestrel first. Freighter's destination. After that I'll figure something out. I have maybe eighteen hundred credits. That buys a month of cheap room and a week of thinking.",
+                    "subtext": "She is not looking at you. She is looking at the main concourse exit, the one that goes toward the bays.",
+                    "responses": [
+                        {
+                            "text": "[Your brother?]",
+                            "next_node_id": "brother"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "next_step",
+                    "speaker_id": "arna",
+                    "text": "Don't know. Maybe I find work on Kestrel. Maybe a berth on a longer run. Maybe the Reach finds me first. Hard to say.",
+                    "responses": [
+                        {
+                            "text": "[Your brother?]",
+                            "next_node_id": "brother"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "brother",
+                    "speaker_id": "arna",
+                    "text": "Still on the refinery. I was going to write him a letter. Didn't. Can't tell him what happened and can't tell him I am not coming. Either way he waits. That's the cruel thing about this plan failing. He still waits.",
+                    "subtext": "Her voice stays flat. It has been flat since the ambush.",
+                    "responses": [
+                        {
+                            "text": "[Can I help somehow?]",
+                            "next_node_id": "help_offer"
+                        },
+                        {
+                            "text": "[Take care of yourself.]",
+                            "next_node_id": "pendant"
+                        }
+                    ],
+                    "expression": "sad"
+                },
+                {
+                    "id": "help_offer",
+                    "speaker_id": "arna",
+                    "text": "Not in any way that matters. Thanks for offering. That's more than most would.",
+                    "subtext": "She almost smiles. Not quite.",
+                    "responses": [
+                        {
+                            "text": "[Take care of yourself.]",
+                            "next_node_id": "pendant"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "pendant",
+                    "speaker_id": "arna",
+                    "text": "Before I go. You have seen this.",
+                    "subtext": "She pulls the silver pendant out from under her shirt. You have seen it three times across three different stories. This time her eyes finally meet yours.",
+                    "responses": [
+                        {
+                            "text": "[I have. Three times.]",
+                            "next_node_id": "pendant_truth"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "pendant_truth",
+                    "speaker_id": "arna",
+                    "text": "Not my brother's. Not a lover's. Not a market find. It was my mother's. She died when I was seven. I have been telling people whatever story felt right that day. You got three of them, I think. Truth is I do not remember her well enough to deserve it. But I carry it anyway.",
+                    "responses": [
+                        {
+                            "text": "[Why tell me now?]",
+                            "next_node_id": "why_now"
+                        }
+                    ],
+                    "expression": "sad"
+                },
+                {
+                    "id": "why_now",
+                    "speaker_id": "arna",
+                    "text": "Because I am not going to see you again. And I wanted one thing I said to you to be true.",
+                    "subtext": "She tucks the pendant back under her shirt.",
+                    "responses": [
+                        {
+                            "text": "[Walk her to the bay.]",
+                            "next_node_id": "farewell",
+                            "set_flag": "arna_pendant_revealed"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "farewell",
+                    "speaker_id": "arna",
+                    "text": "Freighter's this way. Don't follow me past the airlock. Let me walk that part alone.",
+                    "subtext": "She does not offer a handshake. She picks up the bag. Walks toward the departure bay. She does not look back.",
+                    "responses": [
+                        {
+                            "text": "[Goodbye, Arna.]",
+                            "next_node_id": null,
+                            "set_flag": "arna_gone_from_nexus"
+                        }
+                    ],
+                    "expression": "neutral"
+                }
+            ]
+        },
+        {
+            "id": "arna_stays_closeout",
+            "start_node_id": "start",
+            "nodes": [
+                {
+                    "id": "start",
+                    "speaker_id": "arna",
+                    "text": "Back for something?",
+                    "subtext": "She is at the manifest terminal. Same seat, same posture. The bandage has been replaced with a smaller dressing.",
+                    "responses": [
+                        {
+                            "text": "[Wanted to check on you.]",
+                            "next_node_id": "check"
+                        },
+                        {
+                            "text": "[Got a spot on the ship if you want it.]",
+                            "next_node_id": "offer"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "check",
+                    "speaker_id": "arna",
+                    "text": "I'm fine. Clean papers, desk job, scar that will heal. Better than a lot of my cousins.",
+                    "responses": [
+                        {
+                            "text": "[Got a spot on the ship if you want it.]",
+                            "next_node_id": "offer"
+                        },
+                        {
+                            "text": "[Take care.]",
+                            "next_node_id": "farewell"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "offer",
+                    "speaker_id": "arna",
+                    "text": "You are asking me to come with you. Like a real offer.",
+                    "subtext": "She looks up. Something almost happens in her face. Then doesn't.",
+                    "responses": [
+                        {
+                            "text": "[Yeah.]",
+                            "next_node_id": "offer_decline"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "offer_decline",
+                    "speaker_id": "arna",
+                    "text": "Kind of you. But no. Nexus is the only place I have lived. I have a brother on a refinery who needs a sister who does not move around. I need the terminal. I need the desk. I need the noise. If I left here I would not know who I was the next morning.",
+                    "responses": [
+                        {
+                            "text": "[Understood.]",
+                            "next_node_id": "farewell"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "farewell",
+                    "speaker_id": "arna",
+                    "text": "You check in when you're docked. I'll be here. I'll always be here. That's the deal I made with myself. Fly safe.",
+                    "subtext": "She goes back to the manifest. The numbers scroll past. She starts humming under her breath. You have not heard her hum before.",
                     "responses": [
                         {
                             "text": "[Leave]",

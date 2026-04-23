@@ -3088,11 +3088,11 @@ class TestActOneFinalCounts:
         )
 
     def test_total_systems(self) -> None:
-        """Should have 11 star systems."""
+        """Should have 12 star systems (11 canonical + herons_mark derelict for AR-3)."""
         _load_data()
         dl = get_data_loader()
-        assert len(dl.systems) == 11, (
-            f"Expected 11 systems, got {len(dl.systems)}: {sorted(dl.systems.keys())}"
+        assert len(dl.systems) == 12, (
+            f"Expected 12 systems, got {len(dl.systems)}: {sorted(dl.systems.keys())}"
         )
 
     def test_total_campaign_maps(self) -> None:

@@ -2578,7 +2578,9 @@ class Game:
         """
         from spacegame.views.encounter_view import EncounterView
 
-        self.encounter_view = EncounterView(self.ui_manager, encounter_def, encounter_ref)
+        self.encounter_view = EncounterView(
+            self.ui_manager, encounter_def, encounter_ref, player=self.player
+        )
         self.state_manager.register_state(GameState.ENCOUNTER, self.encounter_view)
 
     def _check_bounty_hunter_encounter(self) -> bool:

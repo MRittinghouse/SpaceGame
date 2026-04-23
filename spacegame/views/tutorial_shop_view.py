@@ -1,11 +1,17 @@
 """Tutorial ship parts shop — first experience after character creation.
 
-The player buys ship components from a scrapyard mechanic with their
-starting credits. Four parts are mandatory (cockpit, engine, reactor,
-fuel tank) and one slot is a choice between cargo bay or weapon mount.
+PT-N rewrite (2026-04-23): the shop now sells real parts (scrapyard-tier)
+rather than slot-definition placeholders. Parts land in the player's
+parts_inventory via Player.add_part() on purchase, matching the real-game
+shipyard shop flow. The builder reads parts_inventory in Phase C (equip).
 
-After purchasing all required parts + one choice, transitions to the
-ship builder in tutorial mode for guided assembly.
+Three parts are mandatory (thruster, reactor, fuel cell — all scrapyard-
+grade) and one is a choice (cargo hold or pulse emitter). Cockpit is
+self-fulfilling per commit d9cf3d3 (placed as a slot, no part needed).
+
+After purchasing all required + one choice, transitions to the ship
+builder in tutorial mode for a three-phase guided assembly (slots, hull,
+equip).
 """
 
 from typing import Optional
@@ -35,38 +41,32 @@ from spacegame.engine.fonts import (
 from spacegame.utils.logger import logger
 from spacegame.views.base_view import BaseView
 
-# Mandatory parts — required for flight
+# Mandatory parts — required for flight. Cockpit omitted because cockpit
+# slots are self-fulfilling (commit d9cf3d3). Placed as a slot in the
+# builder, no part needed. Narration in Phase A handles that beat.
 TUTORIAL_MANDATORY = [
     {
-        "slot_def_id": "cockpit_scout_pod",
-        "name": "Scout Pod Cockpit",
-        "description": "Secondhand flight controls. Coffee stain on the console.",
-        "cost": 300,
-        "narration": "Cockpit. Unless you plan to steer from outside.",
-        "tag": "REQUIRED",
-    },
-    {
-        "slot_def_id": "engine_small",
-        "name": "Light Engine Array",
-        "description": "Reconditioned thruster block. Gets you between systems. Slowly.",
+        "part_id": "scrapyard_thruster",
+        "name": "Scrapyard Thruster",
+        "description": "Pulled from a decommissioned freighter. Coolant lines patched twice.",
         "cost": 600,
-        "narration": "Engine. Reconditioned, but it fires. That's all you need.",
+        "narration": "Thruster. Mounts into the engine slot you'll place on the grid.",
         "tag": "REQUIRED",
     },
     {
-        "slot_def_id": "reactor_small",
-        "name": "Compact Reactor Core",
-        "description": "Entry-level power plant. Runs hot, runs loud, runs.",
-        "cost": 800,
-        "narration": "Reactor. Most of your budget. Power isn't cheap.",
+        "part_id": "scrapyard_reactor",
+        "name": "Scrapyard Reactor",
+        "description": "Second-hand plasma core. Dented casing. Holds power.",
+        "cost": 1500,
+        "narration": "Reactor. Junk-grade, but it's what fits the wallet today.",
         "tag": "REQUIRED",
     },
     {
-        "slot_def_id": "fuel_small",
-        "name": "Small Fuel Tank",
-        "description": "Standard fuel reserves. Enough for a few jumps.",
-        "cost": 250,
-        "narration": "Fuel tank. No fuel, no jumps. Simple math.",
+        "part_id": "scrapyard_fuel_cell",
+        "name": "Scrapyard Fuel Cell",
+        "description": "Reconditioned tank. Previous owner drained it at a bad dock-rate.",
+        "cost": 500,
+        "narration": "Fuel cell. Holds enough for a few jumps. Upgrade when you can.",
         "tag": "REQUIRED",
     },
 ]
@@ -74,17 +74,17 @@ TUTORIAL_MANDATORY = [
 # Choice parts — player picks one, defines early playstyle
 TUTORIAL_CHOICES = [
     {
-        "slot_def_id": "cargo_small",
-        "name": "Standard Cargo Bay",
-        "description": "Bare-bones hold. Fits enough to make a trade run worthwhile.",
-        "cost": 200,
+        "part_id": "scrapyard_hold",
+        "name": "Scrapyard Hold",
+        "description": "Rust-flecked cargo box. Door latches twice. Dry goods only.",
+        "cost": 800,
         "narration": "Cargo hold. You'll haul goods, find margins, make a living.",
         "tag": "CHOOSE ONE",
     },
     {
-        "slot_def_id": "weapon_small",
-        "name": "Light Weapon Mount",
-        "description": "A hardpoint for a basic weapon. Won't win wars, but it shoots.",
+        "part_id": "salvaged_pulse_emitter",
+        "name": "Salvaged Pulse Emitter",
+        "description": "Jury-rigged energy weapon pulled from scrap. Weak but it shoots.",
         "cost": 500,
         "narration": "Weapon mount. Space isn't friendly. This gives you teeth.",
         "tag": "CHOOSE ONE",
@@ -213,8 +213,13 @@ class TutorialShopView(BaseView):
         self.player.credits -= part["cost"]
         self._purchased[index] = True
         self._buy_buttons[index].disable()
-        # Track purchase so the builder knows which parts to show
-        self.player.dialogue_flags[f"tutorial_bought_{part['slot_def_id']}"] = True
+        # PT-N: land the part in the player's inventory (same path as real
+        # shipyard shop purchases). The builder's Phase C reads inventory
+        # to show equippable parts. Also set a tutorial-specific flag the
+        # builder uses to know which slots to pre-place.
+        if hasattr(self.player, "add_part"):
+            self.player.add_part(part["part_id"])
+        self.player.dialogue_flags[f"tutorial_bought_part_{part['part_id']}"] = True
         get_audio_manager().play_sfx("trade_buy")
         logger.info(f"Tutorial: purchased {part['name']} for {part['cost']} CR")
 
@@ -244,9 +249,10 @@ class TutorialShopView(BaseView):
         title = self._title_font.render("SCRAPYARD DRYDOCK", True, Colors.TEXT_HIGHLIGHT)
         screen.blit(title, (WINDOW_WIDTH // 2 - title.get_width() // 2, scale_y(20)))
 
-        # Subtitle
+        # Subtitle — PT-N: frame the three-phase flow that follows so the
+        # player has a mental map before buying.
         subtitle = self._desc_font.render(
-            "Buy the essentials, then make a choice. Keep credits for fuel.",
+            "Buy parts here. In the drydock you'll place slots, paint the hull, and equip what you bought.",
             True,
             Colors.TEXT_SECONDARY,
         )
@@ -314,10 +320,11 @@ class TutorialShopView(BaseView):
             # Closing line carries a small emotional beat from the neighbor-
             # mechanic (see intro_narration where a maintenance neighbor
             # helps source an engine). Reinforces the father thread without
-            # exposition — acknowledges who you are, sends you off.
+            # exposition. PT-N: references the three-phase drydock so the
+            # player has an ordering model for what comes next.
             narration = (
-                "That'll do. Head to the build bay and bolt it all together. "
-                "Your old man would have liked this build. Careful kid. "
+                "That'll do. In the drydock you'll place slots first, paint the hull around them, "
+                "then mount these parts. Your old man would have liked this build. Careful kid. "
                 "Too careful, maybe. That's how he was when I knew him."
             )
         else:

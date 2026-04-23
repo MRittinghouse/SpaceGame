@@ -3499,6 +3499,68 @@
       "mark": 1,
       "weight": 0.0,
       "legendary": false
+    },
+    {
+      "id": "scrapyard_thruster",
+      "name": "Scrapyard Thruster",
+      "description": "Pulled from a decommissioned freighter. Coolant lines patched twice. Runs hot but runs.",
+      "slot_type": "engine",
+      "min_size": "small",
+      "manufacturer": "",
+      "provides": {
+        "slot_type": "engine",
+        "thrust": 4,
+        "fuel_efficiency": 0.85
+      },
+      "base_cost": 600,
+      "mark": 1,
+      "weight": 3.0,
+      "legendary": false
+    },
+    {
+      "id": "scrapyard_reactor",
+      "name": "Scrapyard Reactor",
+      "description": "Second-hand plasma core. The casing is dented and the output is shy of spec, but it holds power without venting.",
+      "slot_type": "reactor",
+      "min_size": "small",
+      "manufacturer": "",
+      "provides": {
+        "power_output": 6
+      },
+      "base_cost": 1500,
+      "mark": 1,
+      "weight": 4.0,
+      "legendary": false
+    },
+    {
+      "id": "scrapyard_fuel_cell",
+      "name": "Scrapyard Fuel Cell",
+      "description": "Reconditioned tank. Previous owner flew it through six systems before a bad dock-rate drained the last of it. Holds pressure now.",
+      "slot_type": "fuel",
+      "min_size": "small",
+      "manufacturer": "",
+      "provides": {
+        "fuel_capacity": 25
+      },
+      "base_cost": 500,
+      "mark": 1,
+      "weight": 2.5,
+      "legendary": false
+    },
+    {
+      "id": "scrapyard_hold",
+      "name": "Scrapyard Hold",
+      "description": "Rust-flecked cargo box. Door latches twice. Good enough for anything that isn't a liquid.",
+      "slot_type": "cargo",
+      "min_size": "small",
+      "manufacturer": "",
+      "provides": {
+        "cargo_capacity": 8
+      },
+      "base_cost": 800,
+      "mark": 1,
+      "weight": 2.5,
+      "legendary": false
     }
   ]
 }

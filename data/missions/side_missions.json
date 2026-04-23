@@ -1380,6 +1380,428 @@
           "target_id": "first_delivery_complete"
         }
       ]
+    },
+    {
+      "id": "arna_05a_last_freight_out",
+      "name": "Last Freight Out",
+      "description": "Arna got patched up at Nexus and handed you Keren's staging coordinates. He went back to Heron's Mark thinking he'd earned a quiet week. Fly out, take what he owes, take what he tried to take, take the contraband he's been sitting on. Come back heavy. Come back hot.",
+      "hint": "Consider buying a Hidden Compartment at Crimson Reach first. Then jump to Heron's Mark, finish what Keren started, and return to Arna at Nexus.",
+      "discovery_text": "Arna said one thing on the ride back from the ambush: 'He thinks it worked.' She said it three times over the course of the jump. By the time we docked at Nexus she had a plan. I didn't ask if it was good.",
+      "mission_type": "side",
+      "available_at": [
+        "nexus_prime"
+      ],
+      "available_after": "",
+      "available_before": "",
+      "discovery_method": "npc",
+      "repeatable": false,
+      "prerequisites": [],
+      "required_flags": [
+        "arna_branch_payback"
+      ],
+      "auto_accept": true,
+      "on_accept_cargo": [],
+      "forced_encounter": {
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "pirate_scout",
+          "pirate_scout",
+          "pirate_raider"
+        ],
+        "trigger_flag": "arna_payback_combat_triggered"
+      },
+      "objectives": [
+        {
+          "type": "reach_system",
+          "target_id": "herons_mark",
+          "target_quantity": 1,
+          "description": "Return to Heron's Mark"
+        },
+        {
+          "type": "reach_system",
+          "target_id": "nexus_prime",
+          "target_quantity": 1,
+          "description": "Return to Nexus Prime with the contraband"
+        },
+        {
+          "type": "talk_to_npc",
+          "target_id": "arna",
+          "target_quantity": 1,
+          "description": "Talk to Arna"
+        }
+      ],
+      "rewards": [
+        {
+          "reward_type": "credits",
+          "amount": 3500
+        },
+        {
+          "reward_type": "xp",
+          "amount": 120
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "taught_salvage"
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "taught_smuggling"
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "arna_branch_a_complete"
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "reach_hunts_player"
+        }
+      ]
+    },
+    {
+      "id": "arna_05b_clean_pull",
+      "name": "The Clean Pull",
+      "description": "Arna's sitting this one out. Her side's still bleeding and her plan fell apart. But she's had coordinates on a derelict in Havens Rest for a year. Nobody's worked it. No factions are watching. Small score, clean paper, nothing follows you out.",
+      "hint": "Jump to Havens Rest. Salvage what you can. Return to Arna at Nexus.",
+      "discovery_text": "Arna walked me to the dock and handed me a data chip with coordinates on it. 'This one's clean,' she said. 'Small. But clean.' She didn't come aboard.",
+      "mission_type": "side",
+      "available_at": [
+        "nexus_prime"
+      ],
+      "available_after": "",
+      "available_before": "",
+      "discovery_method": "npc",
+      "repeatable": false,
+      "prerequisites": [],
+      "required_flags": [
+        "arna_branch_walkaway"
+      ],
+      "auto_accept": true,
+      "on_accept_cargo": [],
+      "objectives": [
+        {
+          "type": "reach_system",
+          "target_id": "havens_rest",
+          "target_quantity": 1,
+          "description": "Jump to Havens Rest"
+        },
+        {
+          "type": "collect_cargo",
+          "target_id": "scrap_metal",
+          "target_quantity": 4,
+          "description": "Salvage scrap metal from the derelict"
+        },
+        {
+          "type": "reach_system",
+          "target_id": "nexus_prime",
+          "target_quantity": 1,
+          "description": "Return to Arna at Nexus Prime"
+        },
+        {
+          "type": "talk_to_npc",
+          "target_id": "arna",
+          "target_quantity": 1,
+          "description": "Report back to Arna"
+        }
+      ],
+      "rewards": [
+        {
+          "reward_type": "credits",
+          "amount": 1200
+        },
+        {
+          "reward_type": "xp",
+          "amount": 70
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "taught_salvage"
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "arna_branch_b_complete"
+        }
+      ]
+    },
+    {
+      "id": "arna_05c_clean_paper",
+      "name": "Clean Paper",
+      "description": "Arna is still on Nexus, waiting for your call on the next move. She doesn't know you already made it. Walk back to the concourse and close the loop.",
+      "hint": "Return to Arna at Nexus Prime. Make the call.",
+      "discovery_text": "Arna didn't argue when I said I was turning her in. She said 'fair read' and went back to her manifest terminal. She thinks I meant it as a question. I didn't.",
+      "mission_type": "side",
+      "available_at": [
+        "nexus_prime"
+      ],
+      "available_after": "",
+      "available_before": "",
+      "discovery_method": "npc",
+      "repeatable": false,
+      "prerequisites": [],
+      "required_flags": [
+        "arna_branch_betray"
+      ],
+      "auto_accept": true,
+      "on_accept_cargo": [],
+      "objectives": [
+        {
+          "type": "reach_system",
+          "target_id": "nexus_prime",
+          "target_quantity": 1,
+          "description": "Return to Nexus Prime"
+        },
+        {
+          "type": "talk_to_npc",
+          "target_id": "arna",
+          "target_quantity": 1,
+          "description": "Close the loop with Arna"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "arna_betrayal_resolved",
+          "target_quantity": 1,
+          "description": "Make the call"
+        }
+      ],
+      "rewards": [
+        {
+          "reward_type": "xp",
+          "amount": 40
+        },
+        {
+          "reward_type": "credits",
+          "amount": 800
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "arna_branch_c_complete"
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "arna_gone_from_nexus"
+        }
+      ]
+    },
+    {
+      "id": "arna_04_the_buyer",
+      "name": "The Buyer",
+      "description": "Arna's buyer is waiting at a derelict called Heron's Mark off the outer edge of Breakstone space. She is coming in person this time. Get her there, make the sale, get paid. That's the pitch.",
+      "hint": "Travel to Heron's Mark. Meet Arna's buyer. Return to Arna at Nexus Prime.",
+      "discovery_text": "Arna insisted on coming along to Heron's Mark. She does not trust either of us alone with this buyer. Her hands were steadier than her voice when she said it.",
+      "mission_type": "side",
+      "available_at": [
+        "nexus_prime"
+      ],
+      "available_after": "",
+      "available_before": "",
+      "discovery_method": "npc",
+      "repeatable": false,
+      "prerequisites": [],
+      "required_flags": [
+        "arna_arranging_buyer"
+      ],
+      "auto_accept": true,
+      "on_accept_cargo": [],
+      "forced_encounter": {
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "pirate_scout",
+          "pirate_scout",
+          "pirate_scout"
+        ],
+        "trigger_flag": "arna_heron_ambush_triggered"
+      },
+      "objectives": [
+        {
+          "type": "reach_system",
+          "target_id": "herons_mark",
+          "target_quantity": 1,
+          "description": "Jump to Heron's Mark"
+        },
+        {
+          "type": "talk_to_npc",
+          "target_id": "keren",
+          "target_quantity": 1,
+          "description": "Meet Arna's buyer"
+        },
+        {
+          "type": "reach_system",
+          "target_id": "nexus_prime",
+          "target_quantity": 1,
+          "description": "Return to Nexus Prime"
+        },
+        {
+          "type": "talk_to_npc",
+          "target_id": "arna",
+          "target_quantity": 1,
+          "description": "Talk to Arna at the concourse"
+        }
+      ],
+      "rewards": [
+        {
+          "reward_type": "credits",
+          "amount": 100
+        },
+        {
+          "reward_type": "xp",
+          "amount": 80
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "taught_combat"
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "smuggling_primer_received"
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "arna_scheme_revealed"
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "keren_escaped"
+        },
+        {
+          "reward_type": "black_market_access",
+          "amount": 0,
+          "target_id": "crimson_reach"
+        }
+      ]
+    },
+    {
+      "id": "arna_03_refinement",
+      "name": "Refinement",
+      "description": "Arna sent you to her refining friend Tev at Forgeworks. He'll process the rare metals into something sellable. Off-books, cheap, fast. That's the pitch. The math will tell you the rest.",
+      "hint": "Travel to Forgeworks. Find Tev and refine Arna's ore.",
+      "discovery_text": "Arna wants the ore refined at a place called Tev's. Off-books. Forgeworks industrial district. She keeps calling him her friend.",
+      "mission_type": "side",
+      "available_at": [
+        "nexus_prime"
+      ],
+      "available_after": "",
+      "available_before": "",
+      "discovery_method": "npc",
+      "repeatable": false,
+      "prerequisites": [],
+      "required_flags": [
+        "arna_sent_to_tev"
+      ],
+      "auto_accept": true,
+      "on_accept_cargo": [],
+      "objectives": [
+        {
+          "type": "reach_system",
+          "target_id": "forgeworks",
+          "target_quantity": 1,
+          "description": "Jump to Forgeworks"
+        },
+        {
+          "type": "talk_to_npc",
+          "target_id": "tev",
+          "target_quantity": 1,
+          "description": "Deliver the ore to Tev for refining"
+        },
+        {
+          "type": "has_flag",
+          "target_id": "tev_refining_complete",
+          "target_quantity": 1,
+          "description": "Complete the refining"
+        },
+        {
+          "type": "talk_to_npc",
+          "target_id": "arna",
+          "target_quantity": 1,
+          "description": "Return to Arna with the refined alloy"
+        }
+      ],
+      "rewards": [
+        {
+          "reward_type": "credits",
+          "amount": 200
+        },
+        {
+          "reward_type": "xp",
+          "amount": 40
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "taught_refining"
+        }
+      ]
+    },
+    {
+      "id": "arna_02_ore_tip",
+      "name": "The Ore Tip",
+      "description": "Arna has coordinates for a marginal mining site in Breakstone's outer belt. She claims the enforcement presence is thin and the rare metals are worth enough to make the run profitable. You're the rig she's been waiting for. Pull a load, bring it back.",
+      "hint": "Travel to Breakstone. Mine at least 5 units of rare metals and return to Arna at Nexus Prime.",
+      "discovery_text": "Arna pitched me a rare-metal run at Breakstone's outer belt. Says the site is marginal, enforcement is thin, and the margin is better than she let on with coolant. She had coordinates ready before I said yes.",
+      "mission_type": "side",
+      "available_at": [
+        "nexus_prime"
+      ],
+      "available_after": "",
+      "available_before": "",
+      "discovery_method": "npc",
+      "repeatable": false,
+      "prerequisites": [],
+      "required_flags": [
+        "arna_accepted_ore_tip"
+      ],
+      "auto_accept": true,
+      "on_accept_cargo": [],
+      "objectives": [
+        {
+          "type": "reach_system",
+          "target_id": "breakstone",
+          "target_quantity": 1,
+          "description": "Jump to Breakstone"
+        },
+        {
+          "type": "collect_cargo",
+          "target_id": "rare_metals",
+          "target_quantity": 5,
+          "description": "Mine at least 5 units of rare metals"
+        },
+        {
+          "type": "talk_to_npc",
+          "target_id": "arna",
+          "target_quantity": 1,
+          "description": "Return to Arna at Nexus Prime with the ore"
+        }
+      ],
+      "rewards": [
+        {
+          "reward_type": "credits",
+          "amount": 400
+        },
+        {
+          "reward_type": "xp",
+          "amount": 40
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "arna_ore_delivered"
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "taught_mining"
+        }
+      ]
     }
   ]
 }

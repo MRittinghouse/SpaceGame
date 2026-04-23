@@ -702,6 +702,29 @@ KNOWN_PRODUCER_ONLY_ORPHANS: set[str] = {
     "builder_module_requirements_seen",
     "builder_module_welcome_seen",
     "trading_tutorial_sell_pending",
+    # Arna mini-campaign (AR-1 + AR-2) — taught_* flags are narrative state
+    # markers that future content (NPC dialogue, achievements) may read but
+    # don't yet.
+    "taught_mining",
+    "taught_refining",
+    "taught_combat",
+    "taught_salvage",
+    "taught_smuggling",
+    # Arna mini-campaign (AR-3) — narrative state flags.
+    "arna_scheme_revealed",
+    "keren_escaped",
+    "smuggling_primer_received",
+    # Arna mini-campaign (AR-5) — odom_spoke_of_arna is a pure producer
+    # (dialogue flags for one-time gating, no further consumer expected).
+    # arna_pendant_revealed triggers a journal entry but the scanner doesn't
+    # detect journal trigger_flag as a consumer. arna_gone_from_nexus is
+    # consumed by NPC hide_after_flag but the scanner doesn't pick that up.
+    "odom_spoke_of_arna",
+    "arna_pendant_revealed",
+    "arna_gone_from_nexus",
+    # Narrative state flag — post-branch-A, Reach watches the player. No
+    # mechanical gating yet; future encounter / journal content may consume.
+    "reach_hunts_player",
 }
 
 

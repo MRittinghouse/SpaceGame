@@ -24,8 +24,10 @@ from spacegame.models.encounter import (
     EncounterRef,
 )
 from spacegame.models.mission import MissionReward
+from spacegame.models.player import Player
 from spacegame.utils.logger import logger
 from spacegame.views.base_view import BaseView
+from spacegame.views.first_time_tip import FirstTimeTipOverlay
 
 
 class EncounterPhase(str, Enum):
@@ -58,11 +60,14 @@ class EncounterView(BaseView):
         ui_manager: pygame_gui.UIManager,
         encounter_def: EncounterDefinition,
         encounter_ref: EncounterRef,
+        player: Optional[Player] = None,
     ) -> None:
         super().__init__(ui_manager)
         self.encounter_def = encounter_def
         self.encounter_ref = encounter_ref
+        self.player = player
         self.next_state: Optional[GameState] = None
+        self._first_time_tip: Optional[FirstTimeTipOverlay] = None
 
         # Phase state
         self.phase = EncounterPhase.CHOOSING
@@ -98,6 +103,36 @@ class EncounterView(BaseView):
         super().on_enter()
         logger.info(f"Entering encounter: {self.encounter_def.name}")
         self._create_ui()
+        self._maybe_show_tip()
+
+    def _maybe_show_tip(self) -> None:
+        """First-time teaching tip keyed on encounter_type.
+
+        Customs inspection is the only teachable case today. Others can
+        be added later by extending the type→flag check.
+        """
+        if self.player is None:
+            return
+        etype = self.encounter_def.encounter_type
+        if etype != "customs_inspection":
+            return
+        if self.player.dialogue_flags.get("seen_tip_customs_inspection", False):
+            return
+
+        self._first_time_tip = FirstTimeTipOverlay(
+            title="Customs",
+            body=(
+                "Four options: comply, persuade, bribe, intimidate. Each "
+                "costs something different. Hidden Compartments hide cargo "
+                "from routine scans, but deep scans still find it and "
+                "double the penalty."
+            ),
+            on_dismiss=self._mark_customs_tip_seen,
+        )
+
+    def _mark_customs_tip_seen(self) -> None:
+        if self.player is not None:
+            self.player.dialogue_flags["seen_tip_customs_inspection"] = True
 
     def on_exit(self) -> None:
         """Clean up UI."""
@@ -195,6 +230,10 @@ class EncounterView(BaseView):
 
     def update(self, dt: float) -> None:
         """Update background animation."""
+        if self._first_time_tip is not None:
+            self._first_time_tip.update(dt)
+            if self._first_time_tip.dismissed:
+                self._first_time_tip = None
         self.background.update(dt)
 
     def render(self, screen: pygame.Surface) -> None:
@@ -247,10 +286,18 @@ class EncounterView(BaseView):
 
     def handle_event(self, event: pygame.event.Event) -> None:
         """Handle keyboard and button events."""
+        if self._first_time_tip is not None and not self._first_time_tip.dismissed:
+            if self._first_time_tip.handle_event(event):
+                return
         if event.type == pygame.KEYDOWN:
             self._handle_keydown(event)
         elif event.type == pygame_gui.UI_BUTTON_PRESSED:
             self._handle_button(event)
+
+    def render_top(self, screen: pygame.Surface) -> None:
+        """Draw the first-time tip above pygame_gui elements."""
+        if self._first_time_tip is not None:
+            self._first_time_tip.render(screen)
 
     def _handle_keydown(self, event: pygame.event.Event) -> None:
         """Handle keyboard input."""

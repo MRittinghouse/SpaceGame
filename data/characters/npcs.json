@@ -736,25 +736,115 @@
       "home_system_id": "nexus_prime",
       "dialogue_id": "arna_first_encounter",
       "faction_id": "",
+      "hide_after_flag": "arna_gone_from_nexus",
       "dialogue_states": [
         {
-          "state_id": "arna_pre_completion",
-          "dialogue_id": "arna_pre_completion",
-          "required_flags": ["arna_delivery_accepted"],
-          "excluded_flags": ["arna_delivery_complete"]
+          "state_id": "arna_retired",
+          "dialogue_id": "arna_retired",
+          "required_flags": ["arna_retired"]
+        },
+        {
+          "state_id": "arna_last_freight_out_closeout",
+          "dialogue_id": "arna_last_freight_out_closeout",
+          "required_flags": ["arna_closeout_ready", "arna_branch_a_complete"],
+          "excluded_flags": ["arna_gone_from_nexus", "arna_retired"]
+        },
+        {
+          "state_id": "arna_stays_closeout",
+          "dialogue_id": "arna_stays_closeout",
+          "required_flags": ["arna_closeout_ready", "arna_branch_b_complete"],
+          "excluded_flags": ["arna_retired"]
+        },
+        {
+          "state_id": "arna_betray_followthrough",
+          "dialogue_id": "arna_betray_followthrough",
+          "required_flags": ["arna_branch_betray"],
+          "excluded_flags": ["arna_betrayal_resolved", "arna_retired", "arna_gone_from_nexus"]
+        },
+        {
+          "state_id": "arna_post_payback",
+          "dialogue_id": "arna_post_payback",
+          "required_flags": ["arna_branch_a_complete"],
+          "excluded_flags": ["arna_closeout_ready", "arna_retired"]
+        },
+        {
+          "state_id": "arna_post_walkaway",
+          "dialogue_id": "arna_post_walkaway",
+          "required_flags": ["arna_branch_b_complete"],
+          "excluded_flags": ["arna_closeout_ready", "arna_retired"]
+        },
+        {
+          "state_id": "arna_post_ambush",
+          "dialogue_id": "arna_post_ambush",
+          "required_flags": ["keren_ambush_triggered"],
+          "excluded_flags": [
+            "arna_branch_payback",
+            "arna_branch_walkaway",
+            "arna_branch_betray",
+            "arna_retired"
+          ]
+        },
+        {
+          "state_id": "arna_post_refining",
+          "dialogue_id": "arna_post_refining",
+          "required_flags": ["tev_refining_complete"],
+          "excluded_flags": ["arna_arranging_buyer", "arna_retired", "keren_ambush_triggered"]
+        },
+        {
+          "state_id": "arna_post_ore_tip",
+          "dialogue_id": "arna_post_ore_tip",
+          "required_flags": ["arna_ore_delivered"],
+          "excluded_flags": ["arna_sent_to_tev", "arna_retired"]
+        },
+        {
+          "state_id": "arna_ore_tip_pending",
+          "dialogue_id": "arna_ore_tip_pending",
+          "required_flags": ["arna_accepted_ore_tip"],
+          "excluded_flags": ["arna_ore_delivered", "arna_retired"]
         },
         {
           "state_id": "arna_post_completion",
           "dialogue_id": "arna_post_completion",
           "required_flags": ["arna_delivery_complete"],
-          "excluded_flags": ["arna_retired"]
+          "excluded_flags": ["arna_retired", "arna_accepted_ore_tip"]
         },
         {
-          "state_id": "arna_retired",
-          "dialogue_id": "arna_retired",
-          "required_flags": ["arna_retired"]
+          "state_id": "arna_pre_completion",
+          "dialogue_id": "arna_pre_completion",
+          "required_flags": ["arna_delivery_accepted"],
+          "excluded_flags": ["arna_delivery_complete"]
         }
       ]
+    },
+    {
+      "id": "keren",
+      "name": "Keren",
+      "title": "Cousin",
+      "portrait_color": [
+        140,
+        95,
+        105
+      ],
+      "home_system_id": "herons_mark",
+      "dialogue_id": "keren_meet",
+      "faction_id": "",
+      "auto_trigger_prerequisites": ["arna_arranging_buyer"],
+      "hide_after_flag": "keren_escaped"
+    },
+    {
+      "id": "tev",
+      "name": "Tev",
+      "title": "Off-Books Refiner",
+      "portrait_color": [
+        150,
+        130,
+        95
+      ],
+      "home_system_id": "forgeworks",
+      "dialogue_id": "tev_refining_intro",
+      "faction_id": "",
+      "auto_trigger_prerequisites": ["arna_sent_to_tev"],
+      "hide_after_flag": "tev_refining_complete"
     },
     {
       "id": "rhea",

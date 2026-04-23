@@ -410,6 +410,37 @@
         "specialty_imports": ["fuel", "food", "medical"]
       },
       "rest_cost": 0
+    },
+    {
+      "id": "herons_mark",
+      "name": "Heron's Mark",
+      "type": "derelict",
+      "description": "A derelict orbital platform drifting along the outer edge of Breakstone space. The name comes from its original builder, a mining concern that folded decades ago. Nobody patrols it. Nobody lists it. The dock lights flicker because someone is keeping them on for a reason.",
+      "coordinates": {
+        "x": 20,
+        "y": -120
+      },
+      "danger_level": "dangerous",
+      "faction": "",
+      "stations": [
+        {
+          "id": "herons_mark_derelict",
+          "name": "Heron's Mark",
+          "type": "minor",
+          "description": "An abandoned orbital platform kept barely functional by whoever is using it this month. The airlocks work. The records do not.",
+          "docking_fee": 0,
+          "market_variety": "none"
+        }
+      ],
+      "economy": {
+        "production_tags": [],
+        "consumption_tags": [],
+        "tariff_rate": 0.0,
+        "available_commodities": [],
+        "specialty_exports": [],
+        "specialty_imports": []
+      },
+      "rest_cost": 0
     }
   ]
 }

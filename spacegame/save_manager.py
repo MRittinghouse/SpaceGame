@@ -637,6 +637,20 @@ class SaveManager:
         else:
             player.hidden_compartment = None
 
+        # Backward-compat migration: players with the hidden_compartment
+        # upgrade from before AR-PK's install-flow fix have no
+        # HiddenCompartment object on the save. Create one now so trading
+        # view's hide/retrieve actually works on old saves.
+        if player.hidden_compartment is None and player.upgrade_manager.has_upgrade(
+            "hidden_compartment"
+        ):
+            from spacegame.models.smuggling import HiddenCompartment
+
+            player.hidden_compartment = HiddenCompartment(
+                total_cargo_capacity=player.ship.max_cargo,
+            )
+            player.hidden_compartment.set_progression(player.progression)
+
         # Restore ground contract state
         player.ground_contract_state = data.get("ground_contract_state", {})
 
