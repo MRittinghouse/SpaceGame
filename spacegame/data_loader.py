@@ -91,6 +91,7 @@ class DataLoader:
         self.ambient_lines: List[AmbientLine] = []
         self.enemy_templates: Dict[str, EnemyShipTemplate] = {}
         self.captains: Dict[str, "EnemyCaptain"] = {}
+        self.complications: Dict[str, "CombatComplication"] = {}
         self.journal_entries: List[JournalEntry] = []
         self.encounter_definitions: List[EncounterDefinition] = []
         self.ground_equipment: Dict[str, "GroundEquipment"] = {}
@@ -162,6 +163,7 @@ class DataLoader:
         self._safe_load("ambient_dialogue", self.load_ambient_dialogue)
         self._safe_load("enemy_templates", self.load_enemy_templates)
         self._safe_load("captains", self.load_captains)
+        self._safe_load("complications", self.load_complications)
         self._safe_load("ship_ultimates", self.load_ship_ultimates)
         self._safe_load("hull_shapes", self.load_hull_shapes)
         self._safe_load("hull_materials", self.load_hull_materials)
@@ -1335,6 +1337,33 @@ class DataLoader:
         logger.info(f"Loaded {len(self.captains)} captains")
         return self.captains
 
+    def load_complications(self) -> Dict[str, "CombatComplication"]:
+        """Load combat complication definitions (CE-3).
+
+        Each complication is a scripted mid-combat event that fires when
+        its trigger condition is met. Effects mutate the combat state
+        (spawning reinforcements, applying environmental modifiers) or
+        produce narration. Encounters reference complications by id
+        via ``EncounterDefinition.complication_ids``.
+        """
+        from spacegame.models.combat_complication import CombatComplication
+
+        file_path = self.data_dir / "combat" / "complications.json"
+        if not file_path.exists():
+            logger.warning(f"Complications file not found: {file_path}")
+            return self.complications
+
+        with open(file_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        self.complications.clear()
+        for comp_data in data.get("complications", []):
+            comp = CombatComplication.from_dict(comp_data)
+            self.complications[comp.id] = comp
+
+        logger.info(f"Loaded {len(self.complications)} combat complications")
+        return self.complications
+
     def load_ship_ultimates(self) -> Dict[str, ShipUltimate]:
         """Load ship class ultimate abilities from JSON."""
         file_path = self.data_dir / "combat" / "ultimates.json"
@@ -1647,6 +1676,7 @@ class DataLoader:
             tone=data.get("tone", ""),
             category=data.get("category", ""),
             captain_id=data.get("captain_id", ""),
+            complication_ids=list(data.get("complication_ids", [])),
         )
 
     def load_ground_equipment(self) -> Dict[str, "GroundEquipment"]:

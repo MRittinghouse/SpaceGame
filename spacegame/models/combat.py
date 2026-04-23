@@ -679,6 +679,23 @@ class CombatState:
     # Skill tree reference for per-round bonus checks (S2a)
     progression: object = field(default=None, repr=False)
 
+    # ----------------------------------------------------------------------
+    # CE-3: Combat complications
+    # ----------------------------------------------------------------------
+    # Complication ids that have fired this combat — prevents re-firing
+    # once-shot complications across multiple rounds.
+    fired_complication_ids: set[str] = field(default_factory=set)
+    # Environmental modifiers applied by ``environmental`` effect handlers.
+    # Default values mean "no modifier active"; complications multiply /
+    # add to these and the combat engine reads them during resolution.
+    shield_regen_multiplier: float = 1.0
+    player_evasion_modifier: int = 0  # added to effective evasion
+    enemy_accuracy_multiplier: float = 1.0
+    # Narrative flags set by ``narration`` effect handlers (morale_shift,
+    # third_party_hail). Not save-persisted; purely informational for
+    # per-combat UI.
+    complication_flags: set[str] = field(default_factory=set)
+
     @property
     def all_enemies_defeated(self) -> bool:
         """Whether all enemies are dead or fled."""

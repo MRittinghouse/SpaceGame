@@ -82,5 +82,14 @@ VALID_TRIGGER_TYPES: frozenset[str] = frozenset(
 )
 
 VALID_EFFECT_TYPES: frozenset[str] = frozenset(
-    {"spawn_reinforcement", "environmental", "choice_prompt", "iff_change"}
+    {
+        "spawn_reinforcement",
+        "environmental",
+        "choice_prompt",
+        "iff_change",
+        # CE-3: narration-only complications that set a flag on CombatState
+        # without altering combat mechanics. Useful for dramatic beats
+        # (morale_shift, third_party_hail) that future UI can render.
+        "narration",
+    }
 )

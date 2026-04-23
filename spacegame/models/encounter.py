@@ -386,6 +386,10 @@ class EncounterDefinition:
     # the encounter view pulls ``pre_combat_hail`` and ``display_name``
     # from the captain, replacing this definition's static fields.
     captain_id: str = ""
+    # CE-3: complications attached to this encounter's combat phase.
+    # Ids resolve against ``DataLoader.complications``. Empty list means
+    # the encounter fights without scripted mid-fight events.
+    complication_ids: list[str] = field(default_factory=list)
 
 
 def lookup_encounter_definition(

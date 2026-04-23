@@ -1,0 +1,64 @@
+{
+  "complications": [
+    {
+      "id": "reinforcement_arrival",
+      "name": "Reinforcement Arrival",
+      "description": "A second ship warps in on the enemy's flank at round 3.",
+      "trigger_type": "turn_counter",
+      "trigger_params": { "turn": 3 },
+      "effect_type": "spawn_reinforcement",
+      "effect_params": { "template_ids": ["pirate_scout"] },
+      "narration": "A contact lights up the long-range scanner. One more ship just dropped out of warp. The fight just got bigger."
+    },
+    {
+      "id": "shield_harmonic",
+      "name": "Shield Harmonic Resonance",
+      "description": "Local field resonance interferes with shield regeneration for both sides.",
+      "trigger_type": "turn_counter",
+      "trigger_params": { "turn": 1 },
+      "effect_type": "environmental",
+      "effect_params": { "shield_regen_multiplier": 0.5 },
+      "narration": "Your shield emitters stutter against something in the local field. Regeneration is running at half. Same for them."
+    },
+    {
+      "id": "asteroid_closure",
+      "name": "Asteroid Field Closing",
+      "description": "The engagement drifted into a tightening asteroid cluster. Maneuvering room is vanishing.",
+      "trigger_type": "turn_counter",
+      "trigger_params": { "turn": 2 },
+      "effect_type": "environmental",
+      "effect_params": { "player_evasion_modifier": -3 },
+      "narration": "The asteroid field is closing in. Your evasion window just got tighter. Fly straighter than you'd like to."
+    },
+    {
+      "id": "morale_shift",
+      "name": "Morale Shift",
+      "description": "Player hull under 30% — a dramatic beat where the captain's tone shifts.",
+      "trigger_type": "hp_threshold",
+      "trigger_params": { "target": "player", "hp_pct": 0.3 },
+      "effect_type": "narration",
+      "effect_params": { "flag_name": "player_low_hp_moment" },
+      "narration": "Your hull's screaming. Whoever's on the other end of the comms just heard your ship shift. They know."
+    },
+    {
+      "id": "third_party_hail",
+      "name": "Third-Party Hail",
+      "description": "At round 4, a neutral comm channel opens with someone watching the fight.",
+      "trigger_type": "turn_counter",
+      "trigger_params": { "turn": 4 },
+      "effect_type": "narration",
+      "effect_params": { "flag_name": "third_party_watching" },
+      "narration": "Comms open on a channel you didn't tune. Someone's watching. Not talking. Watching."
+    },
+    {
+      "id": "battle_damage_marker",
+      "name": "Battle Damage",
+      "description": "Enemy hull under 50% — accuracy degrades as their fire control limps.",
+      "trigger_type": "hp_threshold",
+      "trigger_params": { "target": "enemy", "hp_pct": 0.5 },
+      "effect_type": "environmental",
+      "effect_params": { "enemy_accuracy_multiplier": 0.9 },
+      "narration": "You see a plasma conduit rupture on their hull. Their next volleys will be less sure than the first."
+    }
+  ]
+}
