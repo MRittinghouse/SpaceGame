@@ -41,29 +41,46 @@ SHAKEDOWN_CHANCE = 15
 # Percentage of encounters that are non-hostile (have choices via EncounterView)
 NON_HOSTILE_CHANCE = 35
 
-# Non-hostile type weights per danger level
+# Non-hostile type weights per danger level. CE-4 added five skill-gated
+# encounter types: ransom_demand, cargo_shakedown, distress_bait,
+# wandering_trader, and derelict_encounter. They share table space with the
+# pre-existing types so the player meets the new content organically.
 _NON_HOSTILE_WEIGHTS: dict[str, dict[str, int]] = {
     "moderate": {
-        "distress_signal": 25,
-        "derelict": 20,
-        "merchant": 25,
-        "debris": 10,
-        "patrol": 8,
+        "distress_signal": 22,
+        "derelict": 18,
+        "merchant": 22,
+        "debris": 8,
+        "patrol": 7,
         "comm_intercept": 5,
-        "refugee": 7,
+        "refugee": 6,
+        # CE-4 additions (lighter pressure in moderate space)
+        "ransom_demand": 4,
+        "cargo_shakedown": 3,
+        "distress_bait": 4,
+        "wandering_trader": 5,
+        "derelict_encounter": 5,
     },
     "dangerous": {
-        "distress_signal": 15,
-        "derelict": 15,
-        "merchant": 10,
-        "debris": 8,
-        "anomaly": 8,
-        "shakedown": 15,
-        "smuggler": 8,
-        "patrol": 5,
-        "comm_intercept": 7,
-        "refugee": 4,
+        "distress_signal": 12,
+        "derelict": 12,
+        "merchant": 8,
+        "debris": 6,
+        "anomaly": 7,
+        "shakedown": 10,
+        "smuggler": 6,
+        "patrol": 4,
+        "comm_intercept": 6,
+        "refugee": 3,
         "wildlife": 3,
+        # CE-4 additions (QA tuned 2026-04-23: down from 4-8 to keep
+        # combined CE-4 share at ~19% so repeat exposure isn't obvious
+        # given only 4 instances per type).
+        "ransom_demand": 5,
+        "cargo_shakedown": 4,
+        "distress_bait": 4,
+        "wandering_trader": 3,
+        "derelict_encounter": 4,
     },
 }
 
@@ -254,6 +271,20 @@ def check_travel_encounter(
                 shakedown_demand=demand,
             )
 
+        # CE-4: pressure / variety types whose "refuse" branch leads to
+        # combat need an enemy template baked into the ref so the combat
+        # path has someone to fight when the player declines.
+        # ``derelict_encounter`` and ``wandering_trader`` outcomes carry
+        # their own enemy lists (drones, optional rob attempt) so they
+        # don't need a baked enemy.
+        if enc_type in ("ransom_demand", "cargo_shakedown", "distress_bait"):
+            chosen_enemy = rng.choice(enemy_template_ids)
+            return EncounterRef(
+                enemy_template_ids=[chosen_enemy],
+                encounter_seed=seed,
+                encounter_type=enc_type,
+            )
+
         # All other non-hostile types: no enemies
         return EncounterRef(
             enemy_template_ids=[],
@@ -330,13 +361,41 @@ class EncounterOutcome:
 
 
 @dataclass
+class EncounterSkillCheck:
+    """A skill check attached to an encounter choice (CE-4).
+
+    Mirrors ``dialogue.SkillCheck``'s shape so the resolution path is
+    identical: pass when the player's effective skill level meets or
+    exceeds ``difficulty``. Resolution uses ``SocialManager.resolve_check``
+    with an empty ``npc_id`` (encounters have no persistent NPC).
+    """
+
+    skill: str
+    difficulty: int
+    set_flag_on_success: Optional[str] = None
+    set_flag_on_failure: Optional[str] = None
+
+
+@dataclass
 class EncounterChoice:
-    """A player choice within a non-hostile encounter."""
+    """A player choice within a non-hostile encounter.
+
+    CE-4 additions:
+    - ``skill_check`` — when set, the choice resolves through the social
+      check pipeline; success returns ``outcome``, failure returns
+      ``failure_outcome`` (or ``outcome`` if no failure path is authored).
+    - ``failure_outcome`` — outcome branch when ``skill_check`` fails.
+    - ``requires_credits`` — gates the choice; UI greys it out when
+      the player can't afford it.
+    """
 
     id: str
     label: str
     description: str
     outcome: EncounterOutcome
+    skill_check: Optional["EncounterSkillCheck"] = None
+    failure_outcome: Optional["EncounterOutcome"] = None
+    requires_credits: int = 0
 
 
 @dataclass
@@ -350,6 +409,11 @@ class EncounterContext:
     faction_id: str = ""
     player_level: int = 1
     dialogue_flags: dict[str, bool] = field(default_factory=dict)
+    # RC-5: captain_ids whose rivalries the player has resolved
+    # (defeated / truce / bribed_off / wanderer). Encounters attached to
+    # these captains are filtered out of random selection so the player's
+    # choices stick. Empty set = no filtering (backward compatible).
+    resolved_captain_ids: set[str] = field(default_factory=set)
 
 
 @dataclass
@@ -440,6 +504,12 @@ def _is_eligible(defn: EncounterDefinition, ctx: EncounterContext) -> bool:
     if defn.unique and ctx.dialogue_flags.get(f"encounter_seen_{defn.id}"):
         return False
     if defn.excludes_flags and any(ctx.dialogue_flags.get(f) for f in defn.excludes_flags):
+        return False
+    # RC-5: captain-attached encounters drop out of the random pool once
+    # the player has resolved that captain (defeated/truce/bribed_off/
+    # wanderer). Direct lookup via encounter_def_id bypasses _is_eligible
+    # so scripted re-encounters still work.
+    if defn.captain_id and defn.captain_id in ctx.resolved_captain_ids:
         return False
     return True
 

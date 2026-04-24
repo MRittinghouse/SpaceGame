@@ -11,8 +11,17 @@ from typing import TYPE_CHECKING, Any, Optional
 
 from spacegame.utils.logger import logger
 
+
+def _parse_soft_deadline(data: dict[str, Any]):
+    """Defer import to runtime to avoid circular imports."""
+    from spacegame.models.soft_deadline import SoftDeadline
+
+    return SoftDeadline.from_dict(data)
+
+
 if TYPE_CHECKING:
     from spacegame.models.player import Player
+    from spacegame.models.soft_deadline import SoftDeadline
 
 
 class ObjectiveType(Enum):
@@ -169,6 +178,15 @@ class Mission:
     crew_member_id: str = ""  # Crew member required in party for quest progression
     # Faction reputation gate: [{"faction_id": str, "min_reputation": int}]
     required_reputation: list[dict[str, Any]] = field(default_factory=list)
+    # TW-4: optional soft deadline. When set, completing the mission
+    # past the full/partial thresholds multiplies the credit reward.
+    # Never zero — "drift, not fail".
+    soft_deadline: Optional["SoftDeadline"] = None
+    # TW follow-up: optional NPC commentary by timeliness tier. Keys:
+    # "timely" | "late" | "very_late" — matching SoftDeadline.resolve_tier.
+    # Authored per-mission so the delivering NPC reacts in voice to how
+    # long the player took. Empty/None = no commentary.
+    timeliness_comments: dict[str, str] = field(default_factory=dict)
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "Mission":
@@ -210,11 +228,54 @@ class Mission:
             discovery_text=data.get("discovery_text", ""),
             crew_member_id=data.get("crew_member_id", ""),
             required_reputation=data.get("required_reputation", []),
+            soft_deadline=(
+                _parse_soft_deadline(data["soft_deadline"])
+                if "soft_deadline" in data
+                else None
+            ),
+            timeliness_comments=dict(data.get("timeliness_comments", {})),
         )
 
     def get_target_system_ids(self) -> list[str]:
         """Get system IDs referenced by reach_system objectives."""
         return [obj.target_id for obj in self.objectives if obj.type == ObjectiveType.REACH_SYSTEM]
+
+    def get_reward_multiplier(self, days_elapsed: int) -> float:
+        """TW-4: resolve the effective reward multiplier for this mission.
+
+        Returns 1.0 when no ``soft_deadline`` is configured. Otherwise
+        delegates to the deadline's tier resolver. Never zero — the
+        "drift, not fail" constraint holds.
+
+        Args:
+            days_elapsed: Days between mission accept and completion.
+
+        Returns:
+            Multiplier in [late_multiplier, 1.0].
+        """
+        if self.soft_deadline is None:
+            return 1.0
+        return self.soft_deadline.resolve_multiplier(days_elapsed)
+
+    def get_timeliness_comment(self, days_elapsed: int) -> Optional[str]:
+        """TW follow-up: resolve the NPC's voiced reaction to delivery pace.
+
+        Returns ``None`` when no ``soft_deadline`` is configured, no
+        ``timeliness_comments`` authored, or no comment matches the
+        resolved tier. Callers display the returned string as its own
+        narrative line so it reads as NPC dialogue, not a reward stat.
+
+        Args:
+            days_elapsed: Days between accept and completion.
+
+        Returns:
+            The authored comment for the tier, or None if absent.
+        """
+        if self.soft_deadline is None or not self.timeliness_comments:
+            return None
+        tier = self.soft_deadline.resolve_tier(days_elapsed)
+        comment = self.timeliness_comments.get(tier, "").strip()
+        return comment or None
 
     def to_dict(self) -> dict[str, Any]:
         """Serialize to dict."""
@@ -257,6 +318,10 @@ class Mission:
             d["crew_member_id"] = self.crew_member_id
         if self.required_reputation:
             d["required_reputation"] = self.required_reputation
+        if self.soft_deadline is not None:
+            d["soft_deadline"] = self.soft_deadline.to_dict()
+        if self.timeliness_comments:
+            d["timeliness_comments"] = dict(self.timeliness_comments)
         return d
 
 
@@ -279,6 +344,10 @@ class MissionManager:
         self._progress: dict[str, list[bool]] = {
             m.id: [False] * len(m.objectives) for m in missions
         }
+        # TW follow-up: game_day when each mission transitioned AVAILABLE
+        # -> ACTIVE. Used to compute soft-deadline reward multipliers at
+        # completion. Missions never accepted have no entry.
+        self._accepted_day: dict[str, int] = {}
 
     def add_mission(
         self,
@@ -327,6 +396,8 @@ class MissionManager:
         self,
         player_flags: Optional[dict[str, bool]] = None,
         player_reputation: Optional[dict[str, int]] = None,
+        game_day: Optional[int] = None,
+        player: Optional["Player"] = None,
     ) -> list[str]:
         """Check prerequisites and flags, mark eligible missions as AVAILABLE.
 
@@ -336,6 +407,9 @@ class MissionManager:
         Args:
             player_flags: Current dialogue flags from player state.
             player_reputation: Faction ID -> reputation value mapping.
+            game_day: Current game day. When auto-accept fires for an
+                eligible mission, the day is recorded for soft-deadline
+                multiplier resolution at completion.
 
         Returns:
             List of mission IDs that just became available.
@@ -360,7 +434,9 @@ class MissionManager:
                 self._status[mid] = MissionStatus.AVAILABLE
                 newly_available.append(mid)
                 if mission.auto_accept:
-                    self.accept_mission(mid)
+                    self.accept_mission(
+                        mid, game_day=game_day, player=player
+                    )
                     logger.debug(
                         "Mission '%s' auto-accepted (prereqs=%s, flags=%s, after=%s)",
                         mid,
@@ -390,11 +466,27 @@ class MissionManager:
                     )
         return newly_available
 
-    def accept_mission(self, mission_id: str) -> tuple[bool, str]:
+    def accept_mission(
+        self,
+        mission_id: str,
+        game_day: Optional[int] = None,
+        player: Optional["Player"] = None,
+    ) -> tuple[bool, str]:
         """Move a mission from AVAILABLE to ACTIVE.
 
         Args:
             mission_id: Mission to accept.
+            game_day: Current game day when the mission is accepted.
+                Recorded so soft-deadline multipliers can be resolved
+                at completion. ``None`` skips recording (tests that
+                don't care about deadlines).
+            player: Optional Player. When passed, records the mission's
+                accept as a TW interaction — drops
+                ``{mission_id}_accepted`` + ``any_mission_accepted`` into
+                ``player.last_interaction_day`` so TimedThreads watching
+                those keys reset their drift clocks. Also sets the
+                matching dialogue_flags so existing NPC-gating consumers
+                keep working consistently across all accept paths.
 
         Returns:
             Tuple of (success, message).
@@ -404,7 +496,40 @@ class MissionManager:
         if self._status[mission_id] != MissionStatus.AVAILABLE:
             return (False, f"Mission is {self._status[mission_id].value}, not available")
         self._status[mission_id] = MissionStatus.ACTIVE
+        if game_day is not None:
+            self._accepted_day[mission_id] = game_day
+        # QA-F-1 / QA-F-3: centralize accepted-flag + TW interaction
+        # recording here so every accept path (game auto-accept, cantina,
+        # station hub, mission log) behaves identically. Callers no
+        # longer need to remember to set the flag themselves.
+        if player is not None:
+            accept_flag = f"{mission_id}_accepted"
+            player.dialogue_flags[accept_flag] = True
+            player.record_interaction(accept_flag, game_day=game_day)
+            player.record_interaction("any_mission_accepted", game_day=game_day)
         return (True, f"Accepted: {self._missions[mission_id].name}")
+
+    def get_accepted_day(self, mission_id: str) -> Optional[int]:
+        """Return the game_day when the mission was accepted, or None."""
+        return self._accepted_day.get(mission_id)
+
+    def get_timeliness_comment(
+        self, mission_id: str, player: "Player"
+    ) -> Optional[str]:
+        """TW follow-up: get the voiced NPC comment about delivery pace.
+
+        Returns None when the mission has no authored comments, no
+        soft_deadline, or no accepted_day recorded (can't compute
+        elapsed time — fall back to silence rather than a wrong tier).
+        """
+        mission = self._missions.get(mission_id)
+        if mission is None:
+            return None
+        accepted = self._accepted_day.get(mission_id)
+        if accepted is None:
+            return None
+        days_elapsed = max(0, player.game_day - accepted)
+        return mission.get_timeliness_comment(days_elapsed)
 
     def get_status(self, mission_id: str) -> Optional[MissionStatus]:
         """Get the current status of a mission.
@@ -546,6 +671,12 @@ class MissionManager:
     def apply_rewards(self, mission_id: str, player: "Player") -> list[str]:
         """Apply all rewards from a mission to the player.
 
+        TW follow-up: when the mission has a ``soft_deadline`` and the
+        player's current game_day vs recorded accept day puts it past a
+        deadline threshold, credit rewards are scaled by the multiplier.
+        Non-credit rewards (XP, flags, cargo, access grants) are never
+        scaled — those express narrative progress and shouldn't decay.
+
         Args:
             mission_id: The mission whose rewards to apply.
             player: Player to receive rewards.
@@ -556,11 +687,26 @@ class MissionManager:
         mission = self._missions.get(mission_id)
         if not mission:
             return []
+
+        # Resolve credit multiplier from soft deadline (if set).
+        credit_mult = 1.0
+        accepted = self._accepted_day.get(mission_id)
+        if mission.soft_deadline is not None and accepted is not None:
+            days_elapsed = max(0, player.game_day - accepted)
+            credit_mult = mission.get_reward_multiplier(days_elapsed)
+
         messages: list[str] = []
         for reward in mission.rewards:
             if reward.reward_type == "credits":
-                player.add_credits(reward.amount)
-                messages.append(f"+{reward.amount:,} Credits")
+                scaled = int(reward.amount * credit_mult)
+                player.add_credits(scaled)
+                if credit_mult < 1.0:
+                    messages.append(
+                        f"+{scaled:,} Credits "
+                        f"(late, {int(credit_mult * 100)}% of {reward.amount:,})"
+                    )
+                else:
+                    messages.append(f"+{scaled:,} Credits")
             elif reward.reward_type == "xp":
                 player.progression.add_xp(reward.amount)
                 messages.append(f"+{reward.amount} XP")
@@ -829,6 +975,7 @@ class MissionManager:
         return {
             "status": {mid: s.value for mid, s in self._status.items()},
             "progress": {mid: list(p) for mid, p in self._progress.items()},
+            "accepted_day": dict(self._accepted_day),
         }
 
     def load_state(self, data: dict[str, Any]) -> None:
@@ -846,3 +993,8 @@ class MissionManager:
                 saved_progress = progress_data[mid]
                 for i in range(min(len(saved_progress), len(self._progress[mid]))):
                     self._progress[mid][i] = saved_progress[i]
+        # Restore accept days (TW follow-up). Empty for legacy saves.
+        self._accepted_day = {
+            mid: int(day)
+            for mid, day in data.get("accepted_day", {}).items()
+        }

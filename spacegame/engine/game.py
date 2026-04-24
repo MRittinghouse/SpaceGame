@@ -483,10 +483,16 @@ class Game:
         self.mission_manager.update_availability(
             self.player.dialogue_flags,
             player_reputation=getattr(self.player, "faction_reputation", {}),
+            game_day=self.player.game_day,
+            player=self.player,
         )
 
         # Auto-start campaign mission: bill of landing
-        self.mission_manager.accept_mission("bill_of_landing")
+        self.mission_manager.accept_mission(
+            "bill_of_landing",
+            game_day=self.player.game_day,
+            player=self.player,
+        )
 
         # Initialize procedural mission generator
         from spacegame.models.procedural_missions import ProceduralMissionGenerator
@@ -1300,7 +1306,11 @@ class Game:
                 accept_id = getattr(self.mission_log_view, "pending_accept_id", None)
                 if accept_id and self.mission_manager:
                     self.mission_log_view.pending_accept_id = None
-                    success, msg = self.mission_manager.accept_mission(accept_id)
+                    success, msg = self.mission_manager.accept_mission(
+                        accept_id,
+                        game_day=self.player.game_day,
+                        player=self.player,
+                    )
                     if success:
                         mission = self.mission_manager.get_mission(accept_id)
                         name = mission.name if mission else accept_id
@@ -1379,6 +1389,11 @@ class Game:
                         flag_key = f"talked_to_{self._last_dialogue_npc_id}"
                         self.player.dialogue_flags[flag_key] = True
                         self.dialogue_manager.set_flag(flag_key)
+                        # TW (QA-F-1): record the CURRENT-day interaction so
+                        # recurring threads (elena_unspoken, marcus_lead_cold)
+                        # reset their drift clocks — not just on the first
+                        # conversation ever.
+                        self.player.record_interaction(flag_key)
                         self._last_dialogue_npc_id = None
 
                     # Check for journal auto-entries triggered by new flags
@@ -1390,6 +1405,8 @@ class Game:
                         self.mission_manager.update_availability(
                             self.player.dialogue_flags,
                             player_reputation=getattr(self.player, "faction_reputation", {}),
+                            game_day=self.player.game_day,
+                            player=self.player,
                         )
 
                     # Handle mission failures triggered by dialogue
@@ -1561,6 +1578,14 @@ class Game:
                     enc_ref = self.encounter_view.encounter_ref
                     combat_encounter = self._resolve_encounter_ref(enc_ref)
                     if combat_encounter:
+                        # CE-6: thread captain_id and complication_ids from the
+                        # encounter definition into the combat encounter so the
+                        # combat view + engine see them.
+                        encounter_def = self.encounter_view.encounter_def
+                        combat_encounter.captain_id = encounter_def.captain_id
+                        combat_encounter.complication_ids = list(
+                            encounter_def.complication_ids
+                        )
                         self._apply_encounter_result()
                         self.start_combat(
                             combat_encounter,
@@ -2387,7 +2412,13 @@ class Game:
         """
         from spacegame.views.combat_view import CombatView
 
-        self.combat_view = CombatView(self.ui_manager, engine, self.player, self.social_manager)
+        self.combat_view = CombatView(
+            self.ui_manager,
+            engine,
+            self.player,
+            self.social_manager,
+            journal=self.journal,
+        )
         self.combat_view._return_state = return_state
         if self.player:
             self.combat_view._bribe_credits_available = self.player.credits
@@ -2441,7 +2472,19 @@ class Game:
                 starting_momentum / 100.0, 0.99
             )  # Convert to 0-1 scale, cap below ultimate
 
-        engine = CombatEngine(combat_state, seed=encounter.encounter_seed)
+        # CE-3 Wave 2: resolve attached complication ids against the
+        # data loader so the engine sees real CombatComplication objects.
+        # Unknown ids are silently dropped — content tests catch typos.
+        resolved_complications = [
+            self.data_loader.complications[cid]
+            for cid in encounter.complication_ids
+            if cid in self.data_loader.complications
+        ]
+        engine = CombatEngine(
+            combat_state,
+            seed=encounter.encounter_seed,
+            complications=resolved_complications,
+        )
         self._ensure_combat_view(engine, return_state)
 
         # Activate combat tutorial on player's first fight
@@ -2548,6 +2591,16 @@ class Game:
                 danger = getattr(system, "danger_level", "moderate")
                 faction_id = getattr(system, "faction_id", "")
 
+        # RC-5: collect captain_ids the player has already resolved so
+        # _is_eligible can filter out their encounters from random rolls.
+        # Scripted encounters via encounter_def_id bypass this filter.
+        resolved_caps: set[str] = set()
+        if self.player and hasattr(self.player, "captain_memory"):
+            resolved_caps = {
+                cid for cid, mem in self.player.captain_memory.items()
+                if mem.is_resolved
+            }
+
         context = EncounterContext(
             encounter_type=ref.encounter_type,
             danger_level=danger,
@@ -2556,6 +2609,7 @@ class Game:
             faction_id=faction_id,
             player_level=self.player.progression.level if self.player else 1,
             dialogue_flags=self.player.dialogue_flags if self.player else {},
+            resolved_captain_ids=resolved_caps,
         )
 
         defn = select_encounter_definition(
@@ -2580,7 +2634,12 @@ class Game:
         from spacegame.views.encounter_view import EncounterView
 
         self.encounter_view = EncounterView(
-            self.ui_manager, encounter_def, encounter_ref, player=self.player
+            self.ui_manager,
+            encounter_def,
+            encounter_ref,
+            player=self.player,
+            social_manager=self.social_manager,
+            journal=self.journal,
         )
         self.state_manager.register_state(GameState.ENCOUNTER, self.encounter_view)
 
@@ -3701,6 +3760,8 @@ class Game:
         self.mission_manager.update_availability(
             self.player.dialogue_flags,
             player_reputation=getattr(self.player, "faction_reputation", {}),
+            game_day=self.player.game_day,
+            player=self.player,
         )
 
         # Initialize procedural mission generator
@@ -4121,6 +4182,11 @@ class Game:
         # Decay criminal heat (1 point per day)
         self.player.decay_criminal_heat(1)
 
+        # TW: evaluate timed threads for drift transitions. Any newly
+        # entered drift state emits a DriftEvent; we surface journal
+        # entries and log narration so the galaxy visibly moves.
+        self._evaluate_timed_threads()
+
         # Check expired smuggling contracts
         if self.smuggling_contract_manager:
             expired = self.smuggling_contract_manager.get_expired_contracts(current_day)
@@ -4266,6 +4332,36 @@ class Game:
         "first_combat_win",
     }
 
+    def _evaluate_timed_threads(self) -> None:
+        """TW-2: evaluate timed threads on day advance.
+
+        Hooks newly-entered drift states into:
+        - journal (auto entry with the drift's journal_entry_on_enter)
+        - notification stream (so the player sees it in the log)
+        Drift's flag_to_set is set by the evaluator itself.
+        """
+        if not self.player or not self.data_loader.timed_threads:
+            return
+
+        from spacegame.models.timed_thread_evaluator import evaluate_threads
+
+        events = evaluate_threads(self.player, self.data_loader.timed_threads)
+        for event in events:
+            if event.journal_entry and self.journal is not None:
+                self.journal.add_auto_entry(
+                    entry_id=f"drift_{event.thread_id}_{event.state_id}",
+                    text=event.journal_entry,
+                    game_day=event.game_day,
+                    system_id=self.player.current_system_id,
+                    tag="goals",
+                )
+            if event.narration:
+                self._mission_notifications.append(event.narration)
+            logger.info(
+                f"TW drift: thread={event.thread_id} state={event.state_id} "
+                f"day={event.game_day}"
+            )
+
     def check_achievements(self) -> None:
         """Check for newly unlocked achievements and queue notifications."""
         if not self.player:
@@ -4406,11 +4502,22 @@ class Game:
                         f"Quest Updated: {mission.objectives[i].description}"
                     )
         for mission_id in completed_ids:
+            # TW follow-up: surface the timeliness comment BEFORE
+            # apply_rewards. apply_rewards uses the player's current
+            # game_day against the recorded accept_day, same source the
+            # comment resolver reads — both see the same elapsed window.
+            timeliness_comment = self.mission_manager.get_timeliness_comment(
+                mission_id, self.player
+            )
             reward_msgs = self.mission_manager.apply_rewards(mission_id, self.player)
             mission = self.mission_manager.get_mission(mission_id)
             name = mission.name if mission else mission_id
             reward_text = ", ".join(reward_msgs) if reward_msgs else ""
             self._mission_notifications.append(f"Mission Complete: {name}! {reward_text}")
+            if timeliness_comment:
+                # Separate notification line so it reads as NPC dialogue
+                # rather than a reward stat.
+                self._mission_notifications.append(timeliness_comment)
             self.audio_manager.play_sfx("quest_complete")
 
             # Emotional peaks: enhanced effects for key campaign moments

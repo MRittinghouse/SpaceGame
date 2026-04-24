@@ -440,6 +440,14 @@ class SaveManager:
             "faction_reputation": player.faction_reputation,
             "faction_assignments": player.faction_assignments,
             "dialogue_flags": player.dialogue_flags,
+            "captain_memory": {
+                cid: mem.to_dict() for cid, mem in player.captain_memory.items()
+            },
+            "timed_thread_state": {
+                tid: st.to_dict()
+                for tid, st in player.timed_thread_state.items()
+            },
+            "last_interaction_day": dict(player.last_interaction_day),
             "trade_permits": list(player.trade_permits),
             "black_market_access": list(player.black_market_access),
             "mission_state": player.mission_state,
@@ -588,6 +596,28 @@ class SaveManager:
 
         # Restore dialogue flags
         player.dialogue_flags = data.get("dialogue_flags", {})
+
+        # Restore captain memory (RC). Empty dict for legacy saves.
+        from spacegame.models.captain_memory import CaptainMemory
+
+        captain_mem_raw = data.get("captain_memory", {})
+        player.captain_memory = {
+            cid: CaptainMemory.from_dict(mem_data)
+            for cid, mem_data in captain_mem_raw.items()
+        }
+
+        # Restore TW timed thread state. Empty dict for legacy saves.
+        from spacegame.models.timed_thread import TimedThreadState
+
+        thread_raw = data.get("timed_thread_state", {})
+        player.timed_thread_state = {
+            tid: TimedThreadState.from_dict(st)
+            for tid, st in thread_raw.items()
+        }
+        # Restore interaction-day map (QA-F-1 fix). Empty for legacy.
+        player.last_interaction_day = {
+            k: int(v) for k, v in data.get("last_interaction_day", {}).items()
+        }
 
         # Restore trade permits (bills of landing)
         trade_permits_data = data.get("trade_permits")

@@ -562,7 +562,10 @@ class CantinaView(BaseView):
         """Accept a station board contract mission."""
         if not self.mission_manager:
             return
-        success, _msg = self.mission_manager.accept_mission(mission_id)
+        game_day = self.player.game_day if self.player else None
+        success, _msg = self.mission_manager.accept_mission(
+            mission_id, game_day=game_day, player=self.player
+        )
         if success:
             self.pending_contract_id = mission_id
             mission = self.mission_manager.get_mission(mission_id)

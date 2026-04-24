@@ -1,0 +1,721 @@
+{
+  "_comment": "CE-4 pressure encounters: ransom_demand and cargo_shakedown. Exercise the new EncounterChoice.skill_check + failure_outcome + requires_credits fields.",
+  "encounters": [
+    {
+      "id": "ransom_pirate_corvette_01",
+      "encounter_type": "ransom_demand",
+      "name": "Pirate Corvette Demands Tribute",
+      "min_level": 2,
+      "description": "A pirate corvette warps onto your tail. The captain opens a channel without bothering to mask his face. He wants 200 credits or your hull will pay the difference.",
+      "icon_color": [
+        200,
+        80,
+        60
+      ],
+      "weight": 10,
+      "danger_levels": [
+        "moderate",
+        "dangerous"
+      ],
+      "tone": "tense",
+      "category": "pressure",
+      "captain_id": "vela_wolfs_ear",
+      "complication_ids": [
+        "morale_shift"
+      ],
+      "choices": [
+        {
+          "id": "pay",
+          "label": "Pay the Tribute",
+          "description": "Hand over the credits. They leave. Your reputation does not.",
+          "requires_credits": 200,
+          "outcome": {
+            "description": "You authorize the transfer. The corvette acknowledges, banks away, and is gone before your hands stop shaking.",
+            "rewards": [
+              {
+                "reward_type": "xp",
+                "amount": 5
+              }
+            ]
+          }
+        },
+        {
+          "id": "talk_down",
+          "label": "Talk Him Down",
+          "description": "Make the math sound bad for him. Loss of life. Patrols. Lost ships are bad for the brand.",
+          "skill_check": {
+            "skill": "persuasion",
+            "difficulty": 3,
+            "set_flag_on_success": "ce4_ransom_talked_down"
+          },
+          "outcome": {
+            "description": "You walk him through the cost of pressing the issue. He grumbles, says you're not worth the noise, and breaks off.",
+            "rewards": [
+              {
+                "reward_type": "xp",
+                "amount": 25
+              }
+            ]
+          },
+          "failure_outcome": {
+            "description": "He listens for two seconds and laughs over the channel. The weapons run hot.",
+            "rewards": [],
+            "leads_to_combat": true,
+            "enemy_template_ids": [
+              "pirate_raider"
+            ]
+          }
+        },
+        {
+          "id": "threaten",
+          "label": "Promise to Hunt Him",
+          "description": "Tell him your contacts will know his ship's serial number before lunch tomorrow.",
+          "skill_check": {
+            "skill": "intimidation",
+            "difficulty": 4
+          },
+          "outcome": {
+            "description": "Something in your voice convinces him you'll follow through. He veers off without another word.",
+            "rewards": [
+              {
+                "reward_type": "xp",
+                "amount": 30
+              }
+            ]
+          },
+          "failure_outcome": {
+            "description": "He doesn't believe you. Or doesn't care. Either way, his guns are powering up.",
+            "rewards": [],
+            "leads_to_combat": true,
+            "enemy_template_ids": [
+              "pirate_raider"
+            ]
+          }
+        },
+        {
+          "id": "refuse",
+          "label": "Tell Him to Try It",
+          "description": "Skip the negotiation. Skip the talk. Get to it.",
+          "outcome": {
+            "description": "The channel cuts. The corvette accelerates.",
+            "rewards": [],
+            "leads_to_combat": true,
+            "enemy_template_ids": [
+              "pirate_raider"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "ransom_reach_collector_01",
+      "encounter_type": "ransom_demand",
+      "name": "Crimson Reach Collector",
+      "min_level": 3,
+      "description": "A Crimson Reach skiff matches your speed. The pilot reads from a slate. Your ship's transponder is on a list. The list says 350 credits. The list also says what happens if the line stays empty.",
+      "icon_color": [
+        180,
+        40,
+        50
+      ],
+      "weight": 8,
+      "danger_levels": [
+        "moderate",
+        "dangerous"
+      ],
+      "tone": "tense",
+      "category": "pressure",
+      "captain_id": "calder_cold_read",
+      "complication_ids": [
+        "morale_shift"
+      ],
+      "choices": [
+        {
+          "id": "pay",
+          "label": "Settle the Ledger",
+          "description": "The Reach respects paid debts. They remember unpaid ones longer.",
+          "requires_credits": 350,
+          "outcome": {
+            "description": "The collector logs the entry, salutes without warmth, and burns away. The line is closed. For now.",
+            "rewards": [
+              {
+                "reward_type": "xp",
+                "amount": 5
+              }
+            ]
+          }
+        },
+        {
+          "id": "negotiate",
+          "label": "Argue the Number",
+          "description": "Push back on the figure. Reach collectors expect haggling. Sometimes they like it.",
+          "skill_check": {
+            "skill": "persuasion",
+            "difficulty": 3,
+            "set_flag_on_success": "ce4_reach_negotiated"
+          },
+          "outcome": {
+            "description": "The collector hears you out, scratches a note, and revises the figure to nothing this run. He warns you the line stays open.",
+            "rewards": [
+              {
+                "reward_type": "xp",
+                "amount": 25
+              }
+            ]
+          },
+          "failure_outcome": {
+            "description": "He closes the slate. Says the books don't bend. The skiff's guns swivel.",
+            "rewards": [],
+            "leads_to_combat": true,
+            "enemy_template_ids": [
+              "mercenary_ace"
+            ]
+          }
+        },
+        {
+          "id": "refuse",
+          "label": "Tell Him to File a Complaint",
+          "description": "Insult the bookkeeping. See what happens.",
+          "outcome": {
+            "description": "The collector says nothing. Just makes a tick on the slate. The skiff opens fire.",
+            "rewards": [],
+            "leads_to_combat": true,
+            "enemy_template_ids": [
+              "mercenary_ace"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "ransom_frontier_brigand_01",
+      "encounter_type": "ransom_demand",
+      "name": "Frontier Brigand on the Lane",
+      "description": "A patched-up Frontier interceptor cuts your nav line. The pilot's voice is loud and smiling. He calls it a toll. He wants 150 credits and one of your stories before he lets you go.",
+      "icon_color": [
+        220,
+        140,
+        80
+      ],
+      "weight": 9,
+      "danger_levels": [
+        "moderate",
+        "dangerous"
+      ],
+      "tone": "tense",
+      "category": "pressure",
+      "captain_id": "fyodor_fourth_try",
+      "complication_ids": [
+        "morale_shift"
+      ],
+      "choices": [
+        {
+          "id": "pay",
+          "label": "Pay the Toll",
+          "description": "Push the credits over. Tell him a story. Get on with your day.",
+          "requires_credits": 150,
+          "outcome": {
+            "description": "He accepts the credits, laughs at your story, and tells one of his own. Then he waves you through like an old friend.",
+            "rewards": [
+              {
+                "reward_type": "xp",
+                "amount": 10
+              },
+              {
+                "reward_type": "set_flag",
+                "amount": 1,
+                "target_id": "ce4_frontier_friendly"
+              }
+            ]
+          }
+        },
+        {
+          "id": "outtalk",
+          "label": "Out-Talk Him",
+          "description": "Keep him laughing. Frontier brigands let people through if the talk is good enough.",
+          "skill_check": {
+            "skill": "persuasion",
+            "difficulty": 3,
+            "set_flag_on_success": "ce4_frontier_friendly"
+          },
+          "outcome": {
+            "description": "You match him line for line. He calls you a menace, says your stories are worse than his, and lets you pass.",
+            "rewards": [
+              {
+                "reward_type": "xp",
+                "amount": 25
+              }
+            ]
+          },
+          "failure_outcome": {
+            "description": "Your last line lands wrong. The smile drops. He decides he wants the credits the hard way.",
+            "rewards": [],
+            "leads_to_combat": true,
+            "enemy_template_ids": [
+              "frontier_gunship"
+            ]
+          }
+        },
+        {
+          "id": "refuse",
+          "label": "Burn Past Him",
+          "description": "Tell him the toll is closed. Throttle up.",
+          "outcome": {
+            "description": "He shouts something colorful and chases.",
+            "rewards": [],
+            "leads_to_combat": true,
+            "enemy_template_ids": [
+              "frontier_gunship"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "ransom_guild_audit_01",
+      "encounter_type": "ransom_demand",
+      "name": "Commerce Guild Revenue Cutter",
+      "min_level": 2,
+      "description": "A Commerce Guild revenue cutter pulls alongside. The officer cites a transit assessment. He produces a number. The paperwork looks real enough that you're not sure if this is policy or piracy. Either way, it's 250 credits.",
+      "icon_color": [
+        120,
+        180,
+        220
+      ],
+      "weight": 7,
+      "danger_levels": [
+        "moderate",
+        "dangerous"
+      ],
+      "tone": "tense",
+      "category": "pressure",
+      "captain_id": "anatolia_kestrel_crow",
+      "complication_ids": [
+        "morale_shift",
+        "third_party_hail"
+      ],
+      "choices": [
+        {
+          "id": "pay",
+          "label": "Pay the Assessment",
+          "description": "Treat it like a fee. Move on.",
+          "requires_credits": 250,
+          "outcome": {
+            "description": "She stamps a receipt and transmits it to your records. The cutter banks away with bureaucratic precision.",
+            "rewards": [
+              {
+                "reward_type": "xp",
+                "amount": 5
+              },
+              {
+                "reward_type": "set_flag",
+                "amount": 1,
+                "target_id": "ce4_guild_assessed"
+              }
+            ]
+          }
+        },
+        {
+          "id": "expose",
+          "label": "Cite the Wrong Form",
+          "description": "Tell her the assessment number doesn't match any current Guild ordinance. Watch her face.",
+          "skill_check": {
+            "skill": "deception",
+            "difficulty": 3,
+            "set_flag_on_success": "ce4_guild_called_out"
+          },
+          "outcome": {
+            "description": "She pauses, taps her slate, and turns a small shade of grey. She apologizes for the confusion and moves off without filing the receipt.",
+            "rewards": [
+              {
+                "reward_type": "xp",
+                "amount": 30
+              }
+            ]
+          },
+          "failure_outcome": {
+            "description": "She listens, then explains in detail which subsection your reading missed. Either pay or watch the cutter's authorization for force.",
+            "rewards": [],
+            "leads_to_combat": true,
+            "enemy_template_ids": [
+              "guild_revenue_cutter"
+            ]
+          }
+        },
+        {
+          "id": "refuse",
+          "label": "Refuse and Run",
+          "description": "Treat the paperwork as hostile.",
+          "outcome": {
+            "description": "She logs the refusal with mechanical patience and authorizes engagement.",
+            "rewards": [],
+            "leads_to_combat": true,
+            "enemy_template_ids": [
+              "guild_revenue_cutter"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "shakedown_food_blockade_01",
+      "encounter_type": "cargo_shakedown",
+      "name": "Hungry Ship Wants Your Stores",
+      "description": "A patched skiff moves into your envelope. The pilot says her crew hasn't eaten a real meal in three weeks. She isn't asking for credits. She's asking for whatever food you've got in the hold.",
+      "icon_color": [
+        180,
+        140,
+        60
+      ],
+      "weight": 8,
+      "danger_levels": [
+        "moderate",
+        "dangerous"
+      ],
+      "tone": "wary",
+      "category": "pressure",
+      "captain_id": "odalys_kindling",
+      "complication_ids": [
+        "battle_damage_marker"
+      ],
+      "choices": [
+        {
+          "id": "give",
+          "label": "Send Across the Water and Rations",
+          "description": "It costs you 80 credits worth of basic stores. It buys her crew a week.",
+          "requires_credits": 80,
+          "outcome": {
+            "description": "She thanks you with the kind of voice that hasn't said thank you in a while. The skiff peels off, slower than it came in.",
+            "rewards": [
+              {
+                "reward_type": "xp",
+                "amount": 20
+              },
+              {
+                "reward_type": "set_flag",
+                "amount": 1,
+                "target_id": "ce4_fed_the_hungry"
+              }
+            ]
+          }
+        },
+        {
+          "id": "talk_down",
+          "label": "Tell Her Where to Find Better",
+          "description": "Direct her to a relief station two jumps over. Cost you nothing but a moment.",
+          "skill_check": {
+            "skill": "persuasion",
+            "difficulty": 3,
+            "set_flag_on_success": "ce4_redirected_hungry"
+          },
+          "outcome": {
+            "description": "She listens, asks twice if you're sure, and then thanks you anyway. The skiff turns onto the heading you gave her.",
+            "rewards": [
+              {
+                "reward_type": "xp",
+                "amount": 25
+              }
+            ]
+          },
+          "failure_outcome": {
+            "description": "She doesn't believe the relief station exists. Says you're trying to send her to nothing. Says she'll take what she came for.",
+            "rewards": [],
+            "leads_to_combat": true,
+            "enemy_template_ids": [
+              "reach_bulwark"
+            ]
+          }
+        },
+        {
+          "id": "refuse",
+          "label": "Tell Her No",
+          "description": "There's no good way to say it. Say it anyway.",
+          "outcome": {
+            "description": "Her voice gets very flat. The skiff opens up.",
+            "rewards": [],
+            "leads_to_combat": true,
+            "enemy_template_ids": [
+              "reach_bulwark"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "shakedown_contraband_intercept_01",
+      "encounter_type": "cargo_shakedown",
+      "name": "Smugglers Want Your Cargo",
+      "description": "A Reach rustrunner blocks your lane. The pilot says her sources tell her you're carrying restricted goods, and her sources are usually right. She'd like the contraband and you can keep moving.",
+      "icon_color": [
+        140,
+        60,
+        60
+      ],
+      "weight": 7,
+      "danger_levels": [
+        "moderate",
+        "dangerous"
+      ],
+      "tone": "predatory",
+      "category": "pressure",
+      "captain_id": "wren_departure_angle",
+      "complication_ids": [
+        "battle_damage_marker"
+      ],
+      "choices": [
+        {
+          "id": "deny",
+          "label": "Tell Him the Sources Are Wrong",
+          "description": "Sell it. Look bored. Look insulted.",
+          "skill_check": {
+            "skill": "deception",
+            "difficulty": 4,
+            "set_flag_on_success": "ce4_smuggler_fooled"
+          },
+          "outcome": {
+            "description": "He holds the line for a long beat. Then mutters about sloppy intel and breaks off.",
+            "rewards": [
+              {
+                "reward_type": "xp",
+                "amount": 35
+              }
+            ]
+          },
+          "failure_outcome": {
+            "description": "He doesn't buy it for a second. Says the sources are paid well for a reason. The rustrunner's guns swing into line.",
+            "rewards": [],
+            "leads_to_combat": true,
+            "enemy_template_ids": [
+              "smuggler"
+            ]
+          }
+        },
+        {
+          "id": "intimidate",
+          "label": "Promise Worse Trouble",
+          "description": "Tell him the cargo's spoken for by people he doesn't want to disappoint. Make it sound like you wish you weren't telling him.",
+          "skill_check": {
+            "skill": "intimidation",
+            "difficulty": 3,
+            "set_flag_on_success": "ce4_smuggler_warned_off"
+          },
+          "outcome": {
+            "description": "He does the math on his face. Then peels off without another word.",
+            "rewards": [
+              {
+                "reward_type": "xp",
+                "amount": 30
+              }
+            ]
+          },
+          "failure_outcome": {
+            "description": "He laughs. Says his bosses scare him more than yours. Weapons hot.",
+            "rewards": [],
+            "leads_to_combat": true,
+            "enemy_template_ids": [
+              "smuggler"
+            ]
+          }
+        },
+        {
+          "id": "refuse",
+          "label": "Refuse and Brace",
+          "description": "No talk. Power up.",
+          "outcome": {
+            "description": "He doesn't talk either. The rustrunner accelerates.",
+            "rewards": [],
+            "leads_to_combat": true,
+            "enemy_template_ids": [
+              "smuggler"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "shakedown_ore_holdup_01",
+      "encounter_type": "cargo_shakedown",
+      "name": "Union Hardliners Want the Ore",
+      "description": "Two Miners Union pickets fall in beside you. The lead pilot says the ore in your hold should never have been sold to outsiders. He'd like it back. He says the word back as if it always belonged to him.",
+      "icon_color": [
+        80,
+        120,
+        180
+      ],
+      "weight": 7,
+      "danger_levels": [
+        "moderate",
+        "dangerous"
+      ],
+      "tone": "tense",
+      "category": "pressure",
+      "captain_id": "ngozi_pale_reckoning",
+      "complication_ids": [
+        "battle_damage_marker",
+        "morale_shift"
+      ],
+      "choices": [
+        {
+          "id": "appeal",
+          "label": "Appeal to Solidarity",
+          "description": "Tell him the ore's already been priced into a contract with another working crew. Take it and you're stealing from someone like him.",
+          "skill_check": {
+            "skill": "persuasion",
+            "difficulty": 3,
+            "set_flag_on_success": "ce4_union_appealed"
+          },
+          "outcome": {
+            "description": "He chews on that. Then he tells the other picket to stand down. Says the contract holds.",
+            "rewards": [
+              {
+                "reward_type": "xp",
+                "amount": 30
+              }
+            ]
+          },
+          "failure_outcome": {
+            "description": "He says the contract's the problem, not the answer. The pickets close in.",
+            "rewards": [],
+            "leads_to_combat": true,
+            "enemy_template_ids": [
+              "union_brawler"
+            ]
+          }
+        },
+        {
+          "id": "stand_off",
+          "label": "Stand Him Down",
+          "description": "Two pickets is two pickets. Make him reconsider the math.",
+          "skill_check": {
+            "skill": "intimidation",
+            "difficulty": 4,
+            "set_flag_on_success": "ce4_union_backed_off"
+          },
+          "outcome": {
+            "description": "He looks at his wingman. He looks at you. He says they have other contracts to break.",
+            "rewards": [
+              {
+                "reward_type": "xp",
+                "amount": 35
+              }
+            ]
+          },
+          "failure_outcome": {
+            "description": "Two pickets is more than enough for him. They open the engagement.",
+            "rewards": [],
+            "leads_to_combat": true,
+            "enemy_template_ids": [
+              "union_brawler"
+            ]
+          }
+        },
+        {
+          "id": "refuse",
+          "label": "Refuse",
+          "description": "It's your hold. Tell him so.",
+          "outcome": {
+            "description": "He answers in volley fire.",
+            "rewards": [],
+            "leads_to_combat": true,
+            "enemy_template_ids": [
+              "union_brawler"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "shakedown_medical_strongarm_01",
+      "encounter_type": "cargo_shakedown",
+      "name": "Frontier Crew Wants the Med Crates",
+      "description": "A Frontier raider pulls in close. The pilot looks tired and angry. Says his settlement has a sick child and the nearest clinic burned out two weeks ago. Says if you've got medical in the hold, you're going to give it to him.",
+      "icon_color": [
+        200,
+        100,
+        80
+      ],
+      "weight": 8,
+      "danger_levels": [
+        "moderate",
+        "dangerous"
+      ],
+      "tone": "wary",
+      "category": "pressure",
+      "captain_id": "ink_silverback_gospel",
+      "complication_ids": [
+        "battle_damage_marker"
+      ],
+      "choices": [
+        {
+          "id": "give",
+          "label": "Hand Over the Crates",
+          "description": "Cost you 120 credits in supplies. Saves a kid you'll never meet.",
+          "requires_credits": 120,
+          "outcome": {
+            "description": "He thanks you twice and then a third time. The raider banks away fast, like the kid won't keep until he gets there.",
+            "rewards": [
+              {
+                "reward_type": "xp",
+                "amount": 30
+              },
+              {
+                "reward_type": "set_flag",
+                "amount": 1,
+                "target_id": "ce4_saved_a_kid"
+              }
+            ]
+          }
+        },
+        {
+          "id": "verify",
+          "label": "Spot the Lie or Spot the Truth",
+          "description": "Look him in the eye. Listen to the words behind the words.",
+          "skill_check": {
+            "skill": "observation",
+            "difficulty": 3,
+            "set_flag_on_success": "ce4_read_frontier_truth"
+          },
+          "outcome": {
+            "description": "His grief is real. You give him what you can spare and he's gone. The cost is 60 credits in supplies.",
+            "rewards": [
+              {
+                "reward_type": "deduct_credits",
+                "amount": 60
+              },
+              {
+                "reward_type": "xp",
+                "amount": 35
+              },
+              {
+                "reward_type": "set_flag",
+                "amount": 1,
+                "target_id": "ce4_saved_a_kid"
+              }
+            ]
+          },
+          "failure_outcome": {
+            "description": "You can't tell. He sees you hesitate. Decides you've already chosen.",
+            "rewards": [],
+            "leads_to_combat": true,
+            "enemy_template_ids": [
+              "mercenary_ace"
+            ]
+          }
+        },
+        {
+          "id": "refuse",
+          "label": "Refuse",
+          "description": "He could be lying. Hold what you've got.",
+          "outcome": {
+            "description": "He doesn't argue. He just opens fire.",
+            "rewards": [],
+            "leads_to_combat": true,
+            "enemy_template_ids": [
+              "mercenary_ace"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

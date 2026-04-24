@@ -215,6 +215,8 @@ _COMBAT_COLORS: dict[str, tuple[int, int, int]] = {
     # --- Notification accents ---
     "notify_warning_red": (220, 80, 80),
     "notify_amber": (200, 160, 60),
+    # CE-5: crew interjection floating subtitle
+    "interjection_text": (180, 200, 220),
 }
 
 # Module-level aliases, kept as named constants for legacy call sites.
@@ -394,12 +396,15 @@ class CombatView(BaseView):
         combat_engine: CombatEngine,
         player: Optional[Player],
         social_manager: object = None,
+        journal: Optional[object] = None,
     ) -> None:
         super().__init__()
         self.ui_manager = ui_manager
         self.engine = combat_engine
         self.player = player
         self.social_manager = social_manager
+        # RC-6: optional Journal reference for first-meeting captain entries.
+        self.journal = journal
 
         # Phase state machine
         self.phase: CombatPhase = CombatPhase.INTRO
@@ -478,6 +483,20 @@ class CombatView(BaseView):
         # Bribe state (credits set by game.py before on_enter)
         self._bribe_credits_available: int = 0
         self._bribe_cost: int = 0  # Set after successful bribe for game.py to read
+
+        # CE-5: crew interjection resolver. Built lazily in on_enter once we
+        # know the player's crew roster. Fired at ROUND_END and COMBAT_OVER
+        # transitions. Kept view-local because interjections are purely
+        # cosmetic — the engine doesn't need to know they exist.
+        self._interjection_resolver = None
+        # Throttle: max 1 interjection per round, max 4 per fight
+        self._interjections_this_fight: int = 0
+        self._interjection_round_lock: int = -1
+        self._interjection_max_per_fight: int = 4
+
+        # RC-2: per-fight guard so the captain encounter recorder fires
+        # exactly once at COMBAT_OVER. Reset in on_enter for each fight.
+        self._captain_encounter_recorded: bool = False
 
         # Return state
         self.next_state: Optional[GameState] = None
@@ -621,6 +640,13 @@ class CombatView(BaseView):
         self._player_flash_timer = 0.0
         self._enemy_sprite_flashes = [0.0] * len(state.enemies)
         self._enemy_shield_flashes = [0.0] * len(state.enemies)
+
+        # CE-5: build the per-fight crew interjection resolver.
+        self._build_interjection_resolver()
+        self._interjections_this_fight = 0
+        self._interjection_round_lock = -1
+        # RC-2: reset captain-encounter idempotency guard per fight
+        self._captain_encounter_recorded = False
 
         # Initialize combat atmosphere based on enemy danger tiers
         from spacegame.engine.combat_vfx import CombatAtmosphere
@@ -1394,6 +1420,16 @@ class CombatView(BaseView):
                 get_audio_manager().play_sfx("combat_defeat")
             elif result in (CombatResult.FLED, CombatResult.NEGOTIATED, CombatResult.BRIBED):
                 get_audio_manager().play_sfx("combat_defeat")
+            # CE-5: closing crew line on victory or defeat
+            self._maybe_surface_outcome_interjection()
+            # CE-6/RC-3: closing captain line — must run BEFORE the recorder
+            # so the surfaced line uses the relationship state going into
+            # this fight, not the resolved state the recorder will write.
+            self._maybe_surface_captain_outcome_line()
+            # RC-2: record the encounter outcome on player's captain memory.
+            # Runs last so the recorded resolution doesn't poison the
+            # variant lookup for THIS encounter's outcome line.
+            self._maybe_record_captain_encounter()
 
     # ------------------------------------------------------------------
     # Player actions
@@ -1989,6 +2025,312 @@ class CombatView(BaseView):
         logs = self.engine.end_round()
         for log in logs:
             self._append_log_line(log)
+        # CE-5: surface a crew interjection if any are eligible this round.
+        self._maybe_surface_round_interjection()
+
+    # ------------------------------------------------------------------
+    # CE-5: crew combat interjections
+    # ------------------------------------------------------------------
+
+    def _build_interjection_resolver(self) -> None:
+        """Instantiate the per-fight CrewInterjectionResolver.
+
+        Pulls crew aboard from ``player.crew_roster`` and the interjection
+        bank from the data loader. When either is unavailable (tests, no
+        recruited crew, missing data file) the resolver becomes ``None``
+        and all surface paths no-op.
+        """
+        from spacegame.data_loader import get_data_loader
+        from spacegame.models.crew_interjection import CrewInterjectionResolver
+
+        if self.player is None or not hasattr(self.player, "crew_roster"):
+            self._interjection_resolver = None
+            return
+
+        roster = getattr(self.player, "crew_roster", None)
+        if roster is None or not hasattr(roster, "get_recruited_members"):
+            self._interjection_resolver = None
+            return
+
+        crew_aboard: list[tuple[str, str]] = [
+            (template.id, template.name)
+            for template, _state in roster.get_recruited_members()
+        ]
+        if not crew_aboard:
+            self._interjection_resolver = None
+            return
+
+        try:
+            dl = get_data_loader()
+            bank = list(dl.crew_interjections)
+        except Exception:
+            bank = []
+        if not bank:
+            self._interjection_resolver = None
+            return
+
+        seed = self.engine.get_state().encounter.encounter_seed
+        self._interjection_resolver = CrewInterjectionResolver(
+            bank, crew_aboard, seed=seed
+        )
+
+    # Trigger priority: dramatic stuff first so the throttled single
+    # event per round picks the most narratively impactful one.
+    _INTERJECTION_TRIGGER_PRIORITY = {
+        "enemy_type_match": 0,
+        "player_low_hp": 1,
+        "enemy_low_hp": 2,
+        "first_turn": 3,
+    }
+
+    def _maybe_surface_round_interjection(self) -> None:
+        """Pick at most one eligible interjection per round, by priority."""
+        if self._interjection_resolver is None:
+            return
+        if self._interjections_this_fight >= self._interjection_max_per_fight:
+            return
+        state = self.engine.get_state()
+        if self._interjection_round_lock == state.round_number:
+            return  # Already surfaced one this round
+        events = self._interjection_resolver.evaluate_round(state)
+        if not events:
+            return
+        events.sort(
+            key=lambda e: self._INTERJECTION_TRIGGER_PRIORITY.get(e.trigger, 99)
+        )
+        self._surface_interjection(events[0])
+        self._interjection_round_lock = state.round_number
+
+    def _maybe_surface_outcome_interjection(self) -> None:
+        """Pick one combat-outcome interjection on COMBAT_OVER."""
+        if self._interjection_resolver is None:
+            return
+        state = self.engine.get_state()
+        from spacegame.models.combat import CombatResult
+
+        if state.result == CombatResult.VICTORY:
+            outcome = "victory"
+        elif state.result == CombatResult.DEFEAT:
+            outcome = "defeat"
+        else:
+            return  # No interjection on flee / negotiate / bribe
+        events = self._interjection_resolver.evaluate_outcome(state, outcome)
+        if events:
+            self._surface_interjection(events[0])
+
+    # CombatResult enum value -> captain_memory OUTCOME_* string
+    _RESULT_TO_OUTCOME: dict[str, str] = {
+        "victory": "victory",
+        "defeat": "defeat",
+        "negotiated": "negotiated",
+        "bribed": "bribed",
+        "fled": "fled",
+    }
+
+    def _maybe_record_captain_encounter(self) -> None:
+        """RC-2: record the encounter outcome on player's captain memory.
+
+        Fires once per fight at COMBAT_OVER. Does nothing when:
+        - the encounter has no captain_id (most random combats)
+        - the player isn't set (test scenarios)
+        - the result is IN_PROGRESS (combat hasn't ended)
+        - already recorded for this fight (idempotency)
+        """
+        if self._captain_encounter_recorded:
+            return
+        if self.player is None:
+            return
+        state = self.engine.get_state()
+        captain_id = getattr(state.encounter, "captain_id", "")
+        if not captain_id:
+            return
+
+        # Map CombatResult to OUTCOME_* via the enum's value attribute
+        result_value = getattr(state.result, "value", str(state.result))
+        outcome = self._RESULT_TO_OUTCOME.get(result_value)
+        if outcome is None:
+            return  # IN_PROGRESS or unrecognized — don't record
+
+        # RC-6: journal entry for first meeting (BEFORE recording so
+        # is_first_meeting still reads true).
+        memory = self.player.get_captain_memory(captain_id)
+        if memory.is_first_meeting:
+            self._add_first_meeting_journal_entry(captain_id)
+        # QA-F-2: snapshot status before recording so we can detect a
+        # fresh transition to wanderer (silent auto-retire otherwise).
+        was_wanderer = memory.status == "wanderer"
+
+        self.player.record_captain_encounter(captain_id, outcome)
+        self._captain_encounter_recorded = True
+
+        if not was_wanderer and memory.status == "wanderer":
+            self._add_wanderer_journal_entry(captain_id)
+
+    def _add_wanderer_journal_entry(self, captain_id: str) -> None:
+        """QA-F-2: drop a journal entry when a captain auto-retires to
+        wanderer. Without this, the rivalry-ending transition is silent
+        and the player never learns the captain moved on."""
+        if self.journal is None:
+            return
+        from spacegame.data_loader import get_data_loader
+
+        try:
+            captain = get_data_loader().captains.get(captain_id)
+        except Exception:
+            captain = None
+        if captain is None:
+            return
+        text = (
+            f"Word came back through the docks. {captain.name} moved on. "
+            "Whatever they were chasing, they're chasing it somewhere you "
+            "aren't."
+        )
+        self.journal.add_auto_entry(
+            entry_id=f"captain_wanderer_{captain_id}",
+            text=text,
+            game_day=getattr(self.player, "game_day", 1),
+            system_id=getattr(self.player, "current_system_id", ""),
+            tag="people",
+        )
+
+    def _add_first_meeting_journal_entry(self, captain_id: str) -> None:
+        """RC-6: drop a journal entry on first captain meeting.
+
+        Mirrors EncounterView's handler so combat-only first meetings
+        (where the player skipped EncounterView and went straight to
+        combat — currently rare but possible) also get an entry.
+        """
+        if self.journal is None:
+            return
+        from spacegame.data_loader import get_data_loader
+
+        try:
+            captain = get_data_loader().captains.get(captain_id)
+        except Exception:
+            captain = None
+        if captain is None:
+            return
+        # Use captain.name + captain.nickname directly. display_name uses
+        # an em-dash separator that's fine for headers but a Writing Bible
+        # violation in narrative text.
+        nickname_phrase = (
+            f', the {captain.nickname},' if captain.nickname else ','
+        )
+        text = (
+            f"Met {captain.name}{nickname_phrase} for the first time. "
+            f"Their ship runs the {captain.signature_ship_template} hull. "
+            f"They keep a base out of {captain.home_sector or 'parts unknown'}."
+        )
+        self.journal.add_auto_entry(
+            entry_id=f"captain_met_{captain_id}",
+            text=text,
+            game_day=getattr(self.player, "game_day", 1),
+            system_id=getattr(self.player, "current_system_id", ""),
+            tag="people",
+        )
+
+    def _maybe_surface_captain_outcome_line(self) -> None:
+        """CE-6/RC-3: surface a captain's outcome line if attributed.
+
+        Resolves the effective dialogue (base captain + any authored
+        variant overlay) using the player's captain memory BEFORE the
+        recorder updates it. Maps combat result to the matching field:
+        - VICTORY (player won)   -> defeat_line
+        - DEFEAT (player lost)   -> victory_line
+        - NEGOTIATED             -> surrender_line
+        - FLED / BRIBED          -> no line (player exited, captain silent)
+        """
+        from spacegame.models.combat import CombatLogEntry, CombatResult
+
+        state = self.engine.get_state()
+        captain_id = getattr(state.encounter, "captain_id", "")
+        if not captain_id:
+            return
+
+        from spacegame.data_loader import get_data_loader
+        from spacegame.models.captain_variant import (
+            get_effective_captain_dialogue,
+        )
+
+        try:
+            dl = get_data_loader()
+            captain = dl.captains.get(captain_id)
+        except Exception:
+            captain = None
+        if captain is None:
+            return
+
+        # Pre-recorder memory snapshot — the in-flight outcome must use
+        # the relationship state going INTO this fight.
+        memory = None
+        if self.player is not None and hasattr(self.player, "captain_memory"):
+            memory = self.player.captain_memory.get(captain_id)
+        effective = get_effective_captain_dialogue(captain, memory, dl.captain_variants)
+
+        result = state.result
+        if result == CombatResult.VICTORY:
+            line = effective.defeat_line
+        elif result == CombatResult.DEFEAT:
+            line = effective.victory_line
+        elif result == CombatResult.NEGOTIATED:
+            line = effective.surrender_line
+        else:
+            return  # FLED / BRIBED: no captain outcome line
+
+        if not line.strip():
+            return
+
+        formatted = f'{effective.display_name}: "{line}"'
+        log_entry = CombatLogEntry(
+            round_number=state.round_number,
+            actor=f"captain:{captain_id}",
+            action="Captain Outcome",
+            effects_applied=[formatted],
+        )
+        state.combat_log.append(log_entry)
+        self._append_log_line(log_entry)
+        self.floating_texts.append(
+            {
+                "text": formatted,
+                "x": 730 + 200,
+                "y": 540,
+                "timer": 5.0,
+                "max_timer": 5.0,
+                "color": _COMBAT_COLORS["interjection_text"],
+                "size": "small",
+            }
+        )
+
+    def _surface_interjection(self, event) -> None:
+        """Commit the event, append to combat log, schedule subtitle."""
+        from spacegame.models.combat import CombatLogEntry
+
+        if self._interjection_resolver is not None:
+            self._interjection_resolver.commit(event)
+        formatted = f'{event.crew_name}: "{event.line}"'
+        state = self.engine.get_state()
+        log_entry = CombatLogEntry(
+            round_number=state.round_number,
+            actor=f"crew:{event.crew_id}",
+            action="Interjection",
+            effects_applied=[formatted],
+        )
+        state.combat_log.append(log_entry)
+        self._append_log_line(log_entry)
+        # Floating subtitle: positioned over the combat log zone, longer
+        # fade than damage numbers so the player can read it.
+        self.floating_texts.append(
+            {
+                "text": formatted,
+                "x": 730 + 200,  # combat log zone center-ish
+                "y": 510,
+                "timer": 4.0,
+                "max_timer": 4.0,
+                "color": _COMBAT_COLORS["interjection_text"],
+                "size": "small",
+            }
+        )
+        self._interjections_this_fight += 1
 
     # ------------------------------------------------------------------
     # Animation queue

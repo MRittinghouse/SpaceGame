@@ -19,6 +19,12 @@ VALID_ENCOUNTER_TYPES = {
     "refugee",
     "comm_intercept",
     "wildlife",
+    # CE-4: pressure + variety encounter types with optional skill checks.
+    "ransom_demand",
+    "cargo_shakedown",
+    "distress_bait",
+    "wandering_trader",
+    "derelict_encounter",
 }
 
 VALID_DANGER_LEVELS = {"safe", "moderate", "dangerous"}
@@ -38,7 +44,18 @@ VALID_REWARD_TYPES = {
     "start_bounty_combat",
 }
 
-VALID_TONES = {"", "neutral", "humorous", "mysterious", "aggressive", "dark_humor"}
+VALID_TONES = {
+    "",
+    "neutral",
+    "humorous",
+    "mysterious",
+    "aggressive",
+    "dark_humor",
+    # CE-4
+    "tense",
+    "predatory",
+    "wary",
+}
 
 VALID_CATEGORIES = {
     "",
@@ -48,6 +65,9 @@ VALID_CATEGORIES = {
     "campaign",
     "lore",
     "easter_egg",
+    # CE-4: skill-gated pressure / variety encounters
+    "pressure",
+    "variety",
 }
 
 VALID_FACTION_IDS = {
@@ -130,11 +150,15 @@ class TestEncounterDataLoading:
             assert len(defn.choices) >= 1, f"Encounter {defn.id} has no choices"
 
     def test_choice_count_range(self) -> None:
-        """Every encounter has 2-3 choices (except campaign weight-0)."""
+        """Every encounter has 2-4 choices.
+
+        CE-4 raised the cap from 3 to 4 — pressure encounters need
+        pay/persuade/intimidate/refuse to feel rich.
+        """
         definitions = self._load()
         for defn in definitions:
-            assert 2 <= len(defn.choices) <= 3, (
-                f"Encounter {defn.id} has {len(defn.choices)} choices, expected 2-3"
+            assert 2 <= len(defn.choices) <= 4, (
+                f"Encounter {defn.id} has {len(defn.choices)} choices, expected 2-4"
             )
 
     def test_all_choices_have_outcomes(self) -> None:

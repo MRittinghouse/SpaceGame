@@ -5,10 +5,18 @@
       "encounter_type": "merchant",
       "name": "Market Panic on the Exchange Floor",
       "description": "Nexus Prime's commercial band is jammed with frantic chatter. A rumor about Forge Sector supply chain failures has traders dumping cargo at fire-sale prices, and the exit lanes from Central Exchange Station are gridlocked with freighters trying to get out before the bottom drops. A panicked broker hails you on a private channel: \"You look like someone with cargo space. I've got forty crates of processed alloy I need off my books in the next ten minutes. Name your price.\"",
-      "icon_color": [100, 150, 220],
+      "icon_color": [
+        100,
+        150,
+        220
+      ],
       "weight": 10,
-      "danger_levels": ["safe"],
-      "only_systems": ["nexus_prime"],
+      "danger_levels": [
+        "safe"
+      ],
+      "only_systems": [
+        "nexus_prime"
+      ],
       "tone": "neutral",
       "category": "system",
       "choices": [
@@ -17,11 +25,21 @@
           "label": "Buy at Panic Prices",
           "description": "Take the broker's cargo at a steep discount while everyone else is selling.",
           "outcome": {
-            "description": "You pick up the crates for a fraction of their value. The broker transfers the goods so fast you barely have time to verify the manifest. An hour later, the Guild Board issues a correction  -- the supply chain rumor was overblown. Prices stabilize. You're sitting on a tidy profit.",
+            "description": "You pick up the crates for a fraction of their value. The broker transfers the goods so fast you barely have time to verify the manifest. An hour later, the Guild Board issues a correction . The supply chain rumor was overblown. Prices stabilize. You're sitting on a tidy profit.",
             "rewards": [
-              {"reward_type": "credits", "amount": 200},
-              {"reward_type": "xp", "amount": 15},
-              {"reward_type": "modify_reputation", "amount": 5, "target_id": "commerce_guild"}
+              {
+                "reward_type": "credits",
+                "amount": 200
+              },
+              {
+                "reward_type": "xp",
+                "amount": 15
+              },
+              {
+                "reward_type": "modify_reputation",
+                "amount": 5,
+                "target_id": "commerce_guild"
+              }
             ]
           }
         },
@@ -32,8 +50,15 @@
           "outcome": {
             "description": "Your broadcast cuts through the noise. A few captains pause to check their sources, and the stampede slows. A Guild traffic controller sends you a grateful ping and flags your ship as a 'cooperative vessel' in the system registry.",
             "rewards": [
-              {"reward_type": "xp", "amount": 20},
-              {"reward_type": "modify_reputation", "amount": 10, "target_id": "commerce_guild"}
+              {
+                "reward_type": "xp",
+                "amount": 20
+              },
+              {
+                "reward_type": "modify_reputation",
+                "amount": 10,
+                "target_id": "commerce_guild"
+              }
             ]
           }
         },
@@ -42,7 +67,7 @@
           "label": "Stay Out of It",
           "description": "Market volatility is someone else's problem.",
           "outcome": {
-            "description": "You thread through the gridlocked exit lanes and leave the chaos behind. Nexus Prime's market will sort itself out  -- it always does.",
+            "description": "You thread through the gridlocked exit lanes and leave the chaos behind. Nexus Prime's market will sort itself out . It always does.",
             "rewards": []
           }
         }
@@ -52,11 +77,19 @@
       "id": "sys_nexus_board_meeting_01",
       "encounter_type": "patrol",
       "name": "Guild Board Emergency Session",
-      "description": "Commerce Guild patrol corvettes have established a restricted traffic zone around the Board Chamber module of Nexus Prime Station. A clipped, official voice broadcasts on repeat: \"Attention all vessels  -- Guild Board in emergency closed session. Sections 14 through 22 of the outer ring are restricted to authorized traffic only. Violators will be detained.\" Your current heading takes you right through the exclusion zone.",
-      "icon_color": [100, 150, 220],
+      "description": "Commerce Guild patrol corvettes have established a restricted traffic zone around the Board Chamber module of Nexus Prime Station. A clipped, official voice broadcasts on repeat: \"Attention all vessels . Guild Board in emergency closed session. Sections 14 through 22 of the outer ring are restricted to authorized traffic only. Violators will be detained.\" Your current heading takes you right through the exclusion zone.",
+      "icon_color": [
+        100,
+        150,
+        220
+      ],
       "weight": 8,
-      "danger_levels": ["safe"],
-      "only_systems": ["nexus_prime"],
+      "danger_levels": [
+        "safe"
+      ],
+      "only_systems": [
+        "nexus_prime"
+      ],
       "tone": "neutral",
       "category": "system",
       "choices": [
@@ -67,9 +100,19 @@
           "outcome": {
             "description": "The detour costs you time, but a Guild logistics officer notices your compliance and pings a small fuel credit to your account. \"Appreciate the cooperation, Captain. Half the independents out here try to barrel through.\"",
             "rewards": [
-              {"reward_type": "credits", "amount": 75},
-              {"reward_type": "xp", "amount": 10},
-              {"reward_type": "modify_reputation", "amount": 5, "target_id": "commerce_guild"}
+              {
+                "reward_type": "credits",
+                "amount": 75
+              },
+              {
+                "reward_type": "xp",
+                "amount": 10
+              },
+              {
+                "reward_type": "modify_reputation",
+                "amount": 5,
+                "target_id": "commerce_guild"
+              }
             ]
           }
         },
@@ -78,9 +121,12 @@
           "label": "Drift Near the Zone and Listen",
           "description": "Park at the edge of the exclusion perimeter and scan for any comms leakage.",
           "outcome": {
-            "description": "You catch fragments of an encrypted debate  -- something about tariff adjustments and a 'Forge Sector proposal.' Nothing actionable, but you file it away. A patrol vessel gives you a long look before moving on.",
+            "description": "You catch fragments of an encrypted debate . Something about tariff adjustments and a 'Forge Sector proposal.' Nothing actionable, but you file it away. A patrol vessel gives you a long look before moving on.",
             "rewards": [
-              {"reward_type": "xp", "amount": 15}
+              {
+                "reward_type": "xp",
+                "amount": 15
+              }
             ]
           }
         },
@@ -99,11 +145,19 @@
       "id": "sys_stellaris_art_dealer_01",
       "encounter_type": "merchant",
       "name": "Voss Galerie Appraisal Service",
-      "description": "A sleek yacht with gold-leaf hull trim hails you with an elaborately formatted message: \"Greetings, traveler! Stellaris Port's own Voss Galerie offers complimentary cargo appraisal for passing captains. Our certified assessor, Tariq Voss, can identify hidden value in your hold  -- antiques, rare minerals, artisan goods. No obligation, darling. We simply adore finding treasure in unexpected places.\" The message ends with a holographic wink.",
-      "icon_color": [220, 180, 100],
+      "description": "A sleek yacht with gold-leaf hull trim hails you with an elaborately formatted message: \"Greetings, traveler! Stellaris Port's own Voss Galerie offers complimentary cargo appraisal for passing captains. Our certified assessor, Tariq Voss, can identify hidden value in your hold . Antiques, rare minerals, artisan goods. No obligation, darling. We simply adore finding treasure in unexpected places.\" The message ends with a holographic wink.",
+      "icon_color": [
+        220,
+        180,
+        100
+      ],
       "weight": 10,
-      "danger_levels": ["safe"],
-      "only_systems": ["stellaris_port"],
+      "danger_levels": [
+        "safe"
+      ],
+      "only_systems": [
+        "stellaris_port"
+      ],
       "tone": "humorous",
       "category": "system",
       "choices": [
@@ -112,10 +166,16 @@
           "label": "Let Them Appraise Your Cargo",
           "description": "Dock with the yacht and let Tariq Voss poke through your hold.",
           "outcome": {
-            "description": "Tariq  -- a man in a velvet jacket who smells like sandalwood and money  -- spends twenty minutes examining your cargo with a jeweler's loupe. He identifies a crate of industrial sealant as a 'brutalist sculpture in packaging form' and offers to buy it for triple its market value. You're not sure if he's joking, but his credits are real.",
+            "description": "Tariq . A man in a velvet jacket who smells like sandalwood and money . Spends twenty minutes examining your cargo with a jeweler's loupe. He identifies a crate of industrial sealant as a 'brutalist sculpture in packaging form' and offers to buy it for triple its market value. You're not sure if he's joking, but his credits are real.",
             "rewards": [
-              {"reward_type": "credits", "amount": 180},
-              {"reward_type": "xp", "amount": 10}
+              {
+                "reward_type": "credits",
+                "amount": 180
+              },
+              {
+                "reward_type": "xp",
+                "amount": 10
+              }
             ]
           }
         },
@@ -126,8 +186,14 @@
           "outcome": {
             "description": "You describe a perfectly ordinary shipping crate as a 'pre-Expansion artifact container' with a straight face. Tariq's eyes light up. He pays you a finder's fee just for the story. \"Marvelous provenance, darling. Simply marvelous.\" You feel slightly guilty. Slightly.",
             "rewards": [
-              {"reward_type": "credits", "amount": 120},
-              {"reward_type": "xp", "amount": 15}
+              {
+                "reward_type": "credits",
+                "amount": 120
+              },
+              {
+                "reward_type": "xp",
+                "amount": 15
+              }
             ]
           }
         },
@@ -146,11 +212,19 @@
       "id": "sys_stellaris_tourist_01",
       "encounter_type": "distress_signal",
       "name": "Lost Luxury Yacht",
-      "description": "A gleaming pleasure yacht is drifting in lazy circles near the outer navigation buoys, broadcasting on every frequency at once. A flustered voice comes through: \"Hello? Hello? Is this the Stellaris Port concierge channel? We booked the Premium Celestial Tour package and our autopilot seems to have  -- oh dear, are we in the shipping lane? Reginald, I told you not to touch the console!\"",
-      "icon_color": [220, 200, 100],
+      "description": "A gleaming pleasure yacht is drifting in lazy circles near the outer navigation buoys, broadcasting on every frequency at once. A flustered voice comes through: \"Hello? Hello? Is this the Stellaris Port concierge channel? We booked the Premium Celestial Tour package and our autopilot seems to have . Oh dear, are we in the shipping lane? Reginald, I told you not to touch the console!\"",
+      "icon_color": [
+        220,
+        200,
+        100
+      ],
       "weight": 9,
-      "danger_levels": ["safe"],
-      "only_systems": ["stellaris_port"],
+      "danger_levels": [
+        "safe"
+      ],
+      "only_systems": [
+        "stellaris_port"
+      ],
       "tone": "humorous",
       "category": "system",
       "choices": [
@@ -161,8 +235,14 @@
           "outcome": {
             "description": "You walk the tourists through resetting their autopilot, which takes longer than it should because Reginald keeps pressing the wrong buttons. Eventually the yacht lurches onto the correct heading. The grateful passenger transfers a generous tip. \"You're a lifesaver, Captain! Much better service than the concierge, honestly.\"",
             "rewards": [
-              {"reward_type": "credits", "amount": 150},
-              {"reward_type": "xp", "amount": 10}
+              {
+                "reward_type": "credits",
+                "amount": 150
+              },
+              {
+                "reward_type": "xp",
+                "amount": 10
+              }
             ]
           }
         },
@@ -171,10 +251,16 @@
           "label": "Escort Them Personally",
           "description": "Fly alongside and guide them back to the tourist docks.",
           "outcome": {
-            "description": "You spend half an hour babysitting the yacht back to Stellaris Port's tourist ring. The passengers treat it like an adventure, taking holographs of your ship from every angle. The port authority logs your assist and the tourists insist on paying for your docking fees plus a 'hazard bonus'  -- their words.",
+            "description": "You spend half an hour babysitting the yacht back to Stellaris Port's tourist ring. The passengers treat it like an adventure, taking holographs of your ship from every angle. The port authority logs your assist and the tourists insist on paying for your docking fees plus a 'hazard bonus' . Their words.",
             "rewards": [
-              {"reward_type": "credits", "amount": 250},
-              {"reward_type": "xp", "amount": 15}
+              {
+                "reward_type": "credits",
+                "amount": 250
+              },
+              {
+                "reward_type": "xp",
+                "amount": 15
+              }
             ]
           }
         },
@@ -193,11 +279,19 @@
       "id": "sys_verdant_crop_run_01",
       "encounter_type": "merchant",
       "name": "Harvest Express Convoy",
-      "description": "A convoy of battered agricultural haulers is burning hard toward the trade lanes, their hulls streaked with atmospheric entry scorch marks. The lead ship broadcasts on a local frequency: \"Verdant Harvest Express, fourteen ships, carrying Grade-A quickfruit from the Lowland Cooperatives. Spoilage window is nine hours. Repeat  -- nine hours. All traffic, please yield lanes.\" One of the trailing haulers is falling behind, its engine flickering.",
-      "icon_color": [80, 180, 80],
+      "description": "A convoy of battered agricultural haulers is burning hard toward the trade lanes, their hulls streaked with atmospheric entry scorch marks. The lead ship broadcasts on a local frequency: \"Verdant Harvest Express, fourteen ships, carrying Grade-A quickfruit from the Lowland Cooperatives. Spoilage window is nine hours. Repeat . Nine hours. All traffic, please yield lanes.\" One of the trailing haulers is falling behind, its engine flickering.",
+      "icon_color": [
+        80,
+        180,
+        80
+      ],
       "weight": 10,
-      "danger_levels": ["safe"],
-      "only_systems": ["verdant"],
+      "danger_levels": [
+        "safe"
+      ],
+      "only_systems": [
+        "verdant"
+      ],
       "tone": "neutral",
       "category": "system",
       "choices": [
@@ -208,9 +302,19 @@
           "outcome": {
             "description": "You burn extra fuel to tow the straggler back into formation. The convoy captain, a weathered Frontier Alliance veteran named Patel, sends you a crate of premium quickfruit and a fuel credit. \"Cooperative folks get cooperative treatment. That's how we do things in the Lowlands.\"",
             "rewards": [
-              {"reward_type": "credits", "amount": 130},
-              {"reward_type": "xp", "amount": 15},
-              {"reward_type": "modify_reputation", "amount": 5, "target_id": "frontier_alliance"}
+              {
+                "reward_type": "credits",
+                "amount": 130
+              },
+              {
+                "reward_type": "xp",
+                "amount": 15
+              },
+              {
+                "reward_type": "modify_reputation",
+                "amount": 5,
+                "target_id": "frontier_alliance"
+              }
             ]
           }
         },
@@ -219,10 +323,16 @@
           "label": "Offer to Buy Surplus",
           "description": "Hail the convoy and ask if they have any excess they'd sell at a discount.",
           "outcome": {
-            "description": "The straggling hauler is happy to offload a few crates at below-market prices  -- less cargo means less strain on their engines. You get fresh produce at a bargain, and they get a fighting chance at making the spoilage window.",
+            "description": "The straggling hauler is happy to offload a few crates at below-market prices . Less cargo means less strain on their engines. You get fresh produce at a bargain, and they get a fighting chance at making the spoilage window.",
             "rewards": [
-              {"reward_type": "credits", "amount": 100},
-              {"reward_type": "xp", "amount": 10}
+              {
+                "reward_type": "credits",
+                "amount": 100
+              },
+              {
+                "reward_type": "xp",
+                "amount": 10
+              }
             ]
           }
         },
@@ -233,7 +343,10 @@
           "outcome": {
             "description": "You pull to the outer lane and watch the convoy thunder past. Fourteen haulers loaded with the Lowlands' finest, racing against biology. There's something admirable about it.",
             "rewards": [
-              {"reward_type": "xp", "amount": 5}
+              {
+                "reward_type": "xp",
+                "amount": 5
+              }
             ]
           }
         }
@@ -243,42 +356,64 @@
       "id": "sys_verdant_tariff_protest_01",
       "encounter_type": "comm_intercept",
       "name": "Open-Channel Tariff Protest",
-      "description": "Your comms receiver picks up a loud, unencrypted broadcast from a cluster of farming vessels holding position near Verdant's main trade hub. A gravelly voice is mid-rant: \" -- and the Guild takes twenty-two percent off the top before our crop even clears the system! Twenty-two! My grandfather grew sweetroot on the same soil for forty years and never paid more than eight. This ain't trade policy, it's theft with paperwork.\" A chorus of horn blasts from the other ships punctuates each point.",
-      "icon_color": [80, 180, 80],
+      "description": "Your comms receiver picks up a loud, unencrypted broadcast from a cluster of farming vessels holding position near Verdant's main trade hub. A gravelly voice is mid-rant: \". And the Guild takes twenty-two percent off the top before our crop even clears the system! Twenty-two! My grandfather grew sweetroot on the same soil for forty years and never paid more than eight. This ain't trade policy, it's theft with paperwork.\" A chorus of horn blasts from the other ships punctuates each point.",
+      "icon_color": [
+        80,
+        180,
+        80
+      ],
       "weight": 9,
-      "danger_levels": ["safe"],
-      "only_systems": ["verdant"],
+      "danger_levels": [
+        "safe"
+      ],
+      "only_systems": [
+        "verdant"
+      ],
       "tone": "neutral",
       "category": "system",
       "choices": [
         {
           "id": "support",
           "label": "Broadcast Support",
-          "description": "Add your voice to the protest  -- the tariffs are unfair.",
+          "description": "Add your voice to the protest . The tariffs are unfair.",
           "outcome": {
             "description": "You open your comms and voice your agreement. The farmers cheer. The protest leader, a woman named Dozier, sends you a bushel of sweetroot and a handshake over comms. \"Spread the word out there, Captain. The Expanse needs to hear us.\" The Guild won't love this, but the Alliance will remember.",
             "rewards": [
-              {"reward_type": "xp", "amount": 15},
-              {"reward_type": "modify_reputation", "amount": 10, "target_id": "frontier_alliance"},
-              {"reward_type": "modify_reputation", "amount": -5, "target_id": "commerce_guild"}
+              {
+                "reward_type": "xp",
+                "amount": 15
+              },
+              {
+                "reward_type": "modify_reputation",
+                "amount": 10,
+                "target_id": "frontier_alliance"
+              },
+              {
+                "reward_type": "modify_reputation",
+                "amount": -5,
+                "target_id": "commerce_guild"
+              }
             ]
           }
         },
         {
           "id": "record",
           "label": "Record the Broadcast",
-          "description": "Log the transmission  -- this intel could be valuable to someone.",
+          "description": "Log the transmission . This intel could be valuable to someone.",
           "outcome": {
             "description": "You record the full broadcast and the ship identifiers involved. Political intelligence has a market, whether you sell it to the Guild, the Alliance, or just file it away for leverage later.",
             "rewards": [
-              {"reward_type": "xp", "amount": 20}
+              {
+                "reward_type": "xp",
+                "amount": 20
+              }
             ]
           }
         },
         {
           "id": "ignore",
           "label": "Change the Channel",
-          "description": "Politics and farming  -- two things you'd rather avoid.",
+          "description": "Politics and farming . Two things you'd rather avoid.",
           "outcome": {
             "description": "You switch frequencies and let the protest fade to static. Verdant's problems will still be here next time you visit.",
             "rewards": []
@@ -290,11 +425,19 @@
       "id": "sys_haven_supply_run_01",
       "encounter_type": "refugee",
       "name": "Community Council Supply Ship",
-      "description": "A retrofitted cargo vessel flying Haven's Rest Community Council colors limps along the trade lane, its hold doors visibly patched with mismatched hull plates. The captain, a tired-sounding woman, hails you: \"Independent vessel, this is the CC Perseverance. We're running medical supplies to Settlement Ring Seven, but our manifest is short by thirty percent. If you've got anything to spare  -- bandages, water purifiers, nutri-packs  -- the Council will remember your generosity.\"",
-      "icon_color": [100, 200, 150],
+      "description": "A retrofitted cargo vessel flying Haven's Rest Community Council colors limps along the trade lane, its hold doors visibly patched with mismatched hull plates. The captain, a tired-sounding woman, hails you: \"Independent vessel, this is the CC Perseverance. We're running medical supplies to Settlement Ring Seven, but our manifest is short by thirty percent. If you've got anything to spare . Bandages, water purifiers, nutri-packs . The Council will remember your generosity.\"",
+      "icon_color": [
+        100,
+        200,
+        150
+      ],
       "weight": 10,
-      "danger_levels": ["safe"],
-      "only_systems": ["havens_rest"],
+      "danger_levels": [
+        "safe"
+      ],
+      "only_systems": [
+        "havens_rest"
+      ],
       "tone": "neutral",
       "category": "system",
       "choices": [
@@ -303,23 +446,40 @@
           "label": "Donate Supplies",
           "description": "Transfer what you can spare from your own stores.",
           "outcome": {
-            "description": "You dock with the Perseverance and hand over a crate of supplies. The captain  -- her name tag reads 'Okonkwo'  -- shakes your hand firmly. \"Ring Seven has three hundred people waiting on this shipment. You just made a difference.\" She transfers a small credit voucher and a heartfelt thanks.",
+            "description": "You dock with the Perseverance and hand over a crate of supplies. The captain . Her name tag reads 'Okonkwo' . Shakes your hand firmly. \"Ring Seven has three hundred people waiting on this shipment. You just made a difference.\" She transfers a small credit voucher and a heartfelt thanks.",
             "rewards": [
-              {"reward_type": "credits", "amount": 75},
-              {"reward_type": "xp", "amount": 20},
-              {"reward_type": "modify_reputation", "amount": 10, "target_id": "frontier_alliance"}
+              {
+                "reward_type": "credits",
+                "amount": 75
+              },
+              {
+                "reward_type": "xp",
+                "amount": 20
+              },
+              {
+                "reward_type": "modify_reputation",
+                "amount": 10,
+                "target_id": "frontier_alliance"
+              }
             ]
           }
         },
         {
           "id": "escort",
           "label": "Offer to Escort Them",
-          "description": "Fly alongside  -- a supply ship this vulnerable could attract trouble.",
+          "description": "Fly alongside . A supply ship this vulnerable could attract trouble.",
           "outcome": {
             "description": "You escort the Perseverance to Ring Seven without incident. The settlement crew waves from the docking platform as you peel off. Captain Okonkwo marks your ship as a 'friend of the Council' in their registry. It won't pay the fuel bill, but it feels right.",
             "rewards": [
-              {"reward_type": "xp", "amount": 15},
-              {"reward_type": "modify_reputation", "amount": 15, "target_id": "frontier_alliance"}
+              {
+                "reward_type": "xp",
+                "amount": 15
+              },
+              {
+                "reward_type": "modify_reputation",
+                "amount": 15,
+                "target_id": "frontier_alliance"
+              }
             ]
           }
         },
@@ -328,9 +488,12 @@
           "label": "Wish Them Well",
           "description": "You can't help everyone, but you can be kind about it.",
           "outcome": {
-            "description": "You send a brief message of goodwill and continue on your route. The Perseverance shrinks on your rear sensors, still limping toward Ring Seven. Haven's Rest is full of ships like that  -- doing too much with too little.",
+            "description": "You send a brief message of goodwill and continue on your route. The Perseverance shrinks on your rear sensors, still limping toward Ring Seven. Haven's Rest is full of ships like that . Doing too much with too little.",
             "rewards": [
-              {"reward_type": "xp", "amount": 5}
+              {
+                "reward_type": "xp",
+                "amount": 5
+              }
             ]
           }
         }
@@ -340,11 +503,19 @@
       "id": "sys_haven_newcomer_01",
       "encounter_type": "refugee",
       "name": "Family From the Outer Rings",
-      "description": "A tiny civilian shuttle, barely rated for interstellar travel, drifts near Haven's Rest's outer beacon. Its transponder reads 'Kaur Family  -- Settlers.' A young voice comes over the comms, halting and uncertain: \"Excuse me  -- we were told Haven's Rest accepts newcomers? We've come from Breakstone. My father was a shaft miner, but the conditions... We just need to know where to register. The beacon directory is confusing.\"",
-      "icon_color": [100, 200, 150],
+      "description": "A tiny civilian shuttle, barely rated for interstellar travel, drifts near Haven's Rest's outer beacon. Its transponder reads 'Kaur Family . Settlers.' A young voice comes over the comms, halting and uncertain: \"Excuse me . We were told Haven's Rest accepts newcomers? We've come from Breakstone. My father was a shaft miner, but the conditions.. We just need to know where to register. The beacon directory is confusing.\"",
+      "icon_color": [
+        100,
+        200,
+        150
+      ],
       "weight": 9,
-      "danger_levels": ["safe"],
-      "only_systems": ["havens_rest"],
+      "danger_levels": [
+        "safe"
+      ],
+      "only_systems": [
+        "havens_rest"
+      ],
       "tone": "neutral",
       "category": "system",
       "choices": [
@@ -353,10 +524,17 @@
           "label": "Transmit Settlement Coordinates",
           "description": "Send them the registration beacon frequency and a nav path to the intake center.",
           "outcome": {
-            "description": "You transmit the coordinates for Haven's Rest Intake Station and walk them through the beacon system. The young voice  -- a teenager, you realize  -- thanks you three times before signing off. Their shuttle wobbles toward the station with the careful precision of someone who learned to fly out of necessity.",
+            "description": "You transmit the coordinates for Haven's Rest Intake Station and walk them through the beacon system. The young voice . A teenager, you realize . Thanks you three times before signing off. Their shuttle wobbles toward the station with the careful precision of someone who learned to fly out of necessity.",
             "rewards": [
-              {"reward_type": "xp", "amount": 15},
-              {"reward_type": "modify_reputation", "amount": 5, "target_id": "frontier_alliance"}
+              {
+                "reward_type": "xp",
+                "amount": 15
+              },
+              {
+                "reward_type": "modify_reputation",
+                "amount": 5,
+                "target_id": "frontier_alliance"
+              }
             ]
           }
         },
@@ -365,10 +543,17 @@
           "label": "Send Them a Care Package",
           "description": "Transfer some credits and supplies to help them get started.",
           "outcome": {
-            "description": "You transfer a small credit bundle and a crate of nutri-packs to the shuttle. The father's voice comes on  -- rough, quiet, dignified. \"We'll pay this forward when we're settled, Captain. That's a promise.\" You believe him.",
+            "description": "You transfer a small credit bundle and a crate of nutri-packs to the shuttle. The father's voice comes on . Rough, quiet, dignified. \"We'll pay this forward when we're settled, Captain. That's a promise.\" You believe him.",
             "rewards": [
-              {"reward_type": "xp", "amount": 20},
-              {"reward_type": "modify_reputation", "amount": 10, "target_id": "frontier_alliance"}
+              {
+                "reward_type": "xp",
+                "amount": 20
+              },
+              {
+                "reward_type": "modify_reputation",
+                "amount": 10,
+                "target_id": "frontier_alliance"
+              }
             ]
           }
         },
@@ -387,11 +572,19 @@
       "id": "sys_forge_factory_fire_01",
       "encounter_type": "distress_signal",
       "name": "Industrial Accident at Crucible Station",
-      "description": "Alarms flood the local channel  -- Crucible Station, Forgeworks' largest orbital factory platform, is venting atmosphere from its Delta processing wing. Emergency beacons strobe across your sensors. A strained voice cuts through the noise: \"All vessels in Forge Sector  -- this is Crucible Station Delta Wing. We have a containment breach in Smelter Array Six. Seventeen workers are sealed in the emergency shelter, but our rescue shuttles are committed to the Alpha Wing fire. We need external assist. Repeat  -- we need external assist.\"",
-      "icon_color": [220, 140, 60],
+      "description": "Alarms flood the local channel . Crucible Station, Forgeworks' largest orbital factory platform, is venting atmosphere from its Delta processing wing. Emergency beacons strobe across your sensors. A strained voice cuts through the noise: \"All vessels in Forge Sector . This is Crucible Station Delta Wing. We have a containment breach in Smelter Array Six. Seventeen workers are sealed in the emergency shelter, but our rescue shuttles are committed to the Alpha Wing fire. We need external assist. Repeat . We need external assist.\"",
+      "icon_color": [
+        220,
+        140,
+        60
+      ],
       "weight": 10,
-      "danger_levels": ["moderate"],
-      "only_systems": ["forgeworks"],
+      "danger_levels": [
+        "moderate"
+      ],
+      "only_systems": [
+        "forgeworks"
+      ],
       "tone": "neutral",
       "category": "system",
       "choices": [
@@ -400,10 +593,16 @@
           "label": "Dock and Assist Evacuation",
           "description": "Maneuver to Delta Wing and help extract the trapped workers.",
           "outcome": {
-            "description": "You navigate through venting gas and debris to reach the Delta Wing emergency lock. The workers  -- soot-covered, shaken, but alive  -- crowd into your cargo bay. The last one out, a shift foreman named Brennan, grips your hand hard enough to hurt. Crucible Station transfers an emergency services bounty to your account.",
+            "description": "You navigate through venting gas and debris to reach the Delta Wing emergency lock. The workers . Soot-covered, shaken, but alive . Crowd into your cargo bay. The last one out, a shift foreman named Brennan, grips your hand hard enough to hurt. Crucible Station transfers an emergency services bounty to your account.",
             "rewards": [
-              {"reward_type": "credits", "amount": 200},
-              {"reward_type": "xp", "amount": 25}
+              {
+                "reward_type": "credits",
+                "amount": 200
+              },
+              {
+                "reward_type": "xp",
+                "amount": 25
+              }
             ]
           }
         },
@@ -412,9 +611,12 @@
           "label": "Boost Their Distress Signal",
           "description": "Amplify the signal to reach ships better equipped for rescue operations.",
           "outcome": {
-            "description": "You pump power into your comms array and rebroadcast the distress call on every frequency. Two mining haulers with heavy shielding respond within minutes and head for the station. You did your part  -- sometimes the best help is getting the right people there faster.",
+            "description": "You pump power into your comms array and rebroadcast the distress call on every frequency. Two mining haulers with heavy shielding respond within minutes and head for the station. You did your part . Sometimes the best help is getting the right people there faster.",
             "rewards": [
-              {"reward_type": "xp", "amount": 15}
+              {
+                "reward_type": "xp",
+                "amount": 15
+              }
             ]
           }
         },
@@ -433,11 +635,19 @@
       "id": "sys_forge_smuggle_parts_01",
       "encounter_type": "smuggler",
       "name": "Surplus Parts, No Questions",
-      "description": "A nondescript cargo shuttle sidles up to your vessel with its transponder running on minimum power. A hushed voice contacts you on a narrow-beam channel: \"Hey  -- you the independent? I work Line 9 at Crucible Station. We've got a batch of military-spec hull plating that came off the production line with 'cosmetic defects.' Station QA rejected the lot, but there's nothing wrong with these plates. Management's going to scrap them for insurance. I can get you twenty panels at a quarter of market price  -- but this conversation never happened.\"",
-      "icon_color": [180, 160, 100],
+      "description": "A nondescript cargo shuttle sidles up to your vessel with its transponder running on minimum power. A hushed voice contacts you on a narrow-beam channel: \"Hey . You the independent? I work Line 9 at Crucible Station. We've got a batch of military-spec hull plating that came off the production line with 'cosmetic defects.' Station QA rejected the lot, but there's nothing wrong with these plates. Management's going to scrap them for insurance. I can get you twenty panels at a quarter of market price . But this conversation never happened.\"",
+      "icon_color": [
+        180,
+        160,
+        100
+      ],
       "weight": 8,
-      "danger_levels": ["moderate"],
-      "only_systems": ["forgeworks"],
+      "danger_levels": [
+        "moderate"
+      ],
+      "only_systems": [
+        "forgeworks"
+      ],
       "tone": "neutral",
       "category": "system",
       "choices": [
@@ -446,22 +656,34 @@
           "label": "Buy the Surplus Panels",
           "description": "Good hull plating at a quarter price is hard to pass up.",
           "outcome": {
-            "description": "The transfer is quick and quiet. The panels are exactly as described  -- pristine mil-spec plating with a tiny stamp reading 'REJECTED: cosmetic.' You can sell these anywhere outside Forgeworks for a healthy profit. The worker vanishes back into the station's traffic pattern without a trace.",
+            "description": "The transfer is quick and quiet. The panels are exactly as described . Pristine mil-spec plating with a tiny stamp reading 'REJECTED: cosmetic.' You can sell these anywhere outside Forgeworks for a healthy profit. The worker vanishes back into the station's traffic pattern without a trace.",
             "rewards": [
-              {"reward_type": "credits", "amount": 175},
-              {"reward_type": "xp", "amount": 10}
+              {
+                "reward_type": "credits",
+                "amount": 175
+              },
+              {
+                "reward_type": "xp",
+                "amount": 10
+              }
             ]
           }
         },
         {
           "id": "report",
           "label": "Report the Theft",
-          "description": "Tip off station security  -- stolen goods are stolen goods.",
+          "description": "Tip off station security . Stolen goods are stolen goods.",
           "outcome": {
             "description": "You relay the shuttle's ID and frequency to Crucible Station security. The worker scrambles, but the shuttle is too slow to outrun a patrol. Station management sends you a modest informant's reward. The worker's coworkers won't thank you for this, but the books will balance.",
             "rewards": [
-              {"reward_type": "credits", "amount": 100},
-              {"reward_type": "xp", "amount": 10}
+              {
+                "reward_type": "credits",
+                "amount": 100
+              },
+              {
+                "reward_type": "xp",
+                "amount": 10
+              }
             ]
           }
         },
@@ -480,11 +702,19 @@
       "id": "sys_forge_union_guild_01",
       "encounter_type": "comm_intercept",
       "name": "Shipping Priority Dispute",
-      "description": "Your comms pick up a heated argument on the Forgeworks commercial frequency. A Union bulk carrier and a Guild express freighter are both claiming priority access to Docking Bay 7  -- the only bay rated for heavy cargo at Anvil Platform. The Union captain's voice is flat and immovable: \"We've been in the queue for six hours. Our manifest was filed first.\" The Guild captain's tone is silk over steel: \"My cargo is time-sensitive luxury goods under Guild priority charter. Your ore can wait.\" Anvil Platform's dockmaster sounds like she wants to space them both.",
-      "icon_color": [180, 160, 100],
+      "description": "Your comms pick up a heated argument on the Forgeworks commercial frequency. A Union bulk carrier and a Guild express freighter are both claiming priority access to Docking Bay 7 . The only bay rated for heavy cargo at Anvil Platform. The Union captain's voice is flat and immovable: \"We've been in the queue for six hours. Our manifest was filed first.\" The Guild captain's tone is silk over steel: \"My cargo is time-sensitive luxury goods under Guild priority charter. Your ore can wait.\" Anvil Platform's dockmaster sounds like she wants to space them both.",
+      "icon_color": [
+        180,
+        160,
+        100
+      ],
       "weight": 9,
-      "danger_levels": ["moderate"],
-      "only_systems": ["forgeworks"],
+      "danger_levels": [
+        "moderate"
+      ],
+      "only_systems": [
+        "forgeworks"
+      ],
       "tone": "dark_humor",
       "category": "system",
       "choices": [
@@ -495,24 +725,52 @@
           "outcome": {
             "description": "You broadcast your support for the Union captain's claim. Two other independents chime in agreement. The dockmaster, outnumbered, waves the Union ship in. The Guild captain sends you a frosty silence. The Union captain sends you a crate of refined tungsten and a curt nod over comms. Forge rules: first come, first served.",
             "rewards": [
-              {"reward_type": "credits", "amount": 100},
-              {"reward_type": "xp", "amount": 10},
-              {"reward_type": "modify_reputation", "amount": 10, "target_id": "miners_union"},
-              {"reward_type": "modify_reputation", "amount": -5, "target_id": "commerce_guild"}
+              {
+                "reward_type": "credits",
+                "amount": 100
+              },
+              {
+                "reward_type": "xp",
+                "amount": 10
+              },
+              {
+                "reward_type": "modify_reputation",
+                "amount": 10,
+                "target_id": "miners_union"
+              },
+              {
+                "reward_type": "modify_reputation",
+                "amount": -5,
+                "target_id": "commerce_guild"
+              }
             ]
           }
         },
         {
           "id": "side_guild",
           "label": "Back the Guild Ship",
-          "description": "Time-sensitive cargo should take priority  -- that's just business.",
+          "description": "Time-sensitive cargo should take priority . That's just business.",
           "outcome": {
             "description": "You back the Guild captain's charter claim. The dockmaster relents, citing commercial priority regulations. The Union captain's silence is louder than any argument. The Guild express freighter captain tips you a finder's fee for 'facilitating efficient commerce.' The Union remembers.",
             "rewards": [
-              {"reward_type": "credits", "amount": 120},
-              {"reward_type": "xp", "amount": 10},
-              {"reward_type": "modify_reputation", "amount": 10, "target_id": "commerce_guild"},
-              {"reward_type": "modify_reputation", "amount": -5, "target_id": "miners_union"}
+              {
+                "reward_type": "credits",
+                "amount": 120
+              },
+              {
+                "reward_type": "xp",
+                "amount": 10
+              },
+              {
+                "reward_type": "modify_reputation",
+                "amount": 10,
+                "target_id": "commerce_guild"
+              },
+              {
+                "reward_type": "modify_reputation",
+                "amount": -5,
+                "target_id": "miners_union"
+              }
             ]
           }
         },
@@ -523,7 +781,10 @@
           "outcome": {
             "description": "You lean back and listen to the argument escalate until the dockmaster threatens to close Bay 7 entirely and send them both to the overflow platform. They settle it themselves, grudgingly. Free entertainment.",
             "rewards": [
-              {"reward_type": "xp", "amount": 5}
+              {
+                "reward_type": "xp",
+                "amount": 5
+              }
             ]
           }
         }
@@ -534,10 +795,18 @@
       "encounter_type": "merchant",
       "name": "Axiom Institute Field Calibration",
       "description": "A small Collective research shuttle bearing the Axiom Research Institute crest approaches on a careful heading. A precise, academic voice hails you: \"Independent vessel, this is ARI Field Team Seven. We are conducting gravitometric sensor calibration in this sector and require baseline readings from a non-Collective ship's standard sensor array. Your participation would contribute to peer-reviewed research. We can offer compensation in the form of Collective research credits redeemable at any ARI facility.\"",
-      "icon_color": [140, 120, 220],
+      "icon_color": [
+        140,
+        120,
+        220
+      ],
       "weight": 9,
-      "danger_levels": ["moderate"],
-      "only_systems": ["axiom_labs"],
+      "danger_levels": [
+        "moderate"
+      ],
+      "only_systems": [
+        "axiom_labs"
+      ],
       "tone": "neutral",
       "category": "system",
       "choices": [
@@ -546,23 +815,39 @@
           "label": "Share Your Sensor Data",
           "description": "Run the calibration sequence and transmit your readings.",
           "outcome": {
-            "description": "You run the requested sensor sweep while the ARI team records. The lead researcher  -- Dr. Soren Mak  -- reviews your data with visible satisfaction. \"Excellent baseline variance. This will strengthen our confidence interval considerably.\" They transfer research credits to your account and flag your ship as a 'cooperative independent' in the ARI registry.",
+            "description": "You run the requested sensor sweep while the ARI team records. The lead researcher . Dr. Soren Mak . Reviews your data with visible satisfaction. \"Excellent baseline variance. This will strengthen our confidence interval considerably.\" They transfer research credits to your account and flag your ship as a 'cooperative independent' in the ARI registry.",
             "rewards": [
-              {"reward_type": "credits", "amount": 130},
-              {"reward_type": "xp", "amount": 20},
-              {"reward_type": "modify_reputation", "amount": 5, "target_id": "science_collective"}
+              {
+                "reward_type": "credits",
+                "amount": 130
+              },
+              {
+                "reward_type": "xp",
+                "amount": 20
+              },
+              {
+                "reward_type": "modify_reputation",
+                "amount": 5,
+                "target_id": "science_collective"
+              }
             ]
           }
         },
         {
           "id": "negotiate",
           "label": "Ask for More Compensation",
-          "description": "Your sensor data isn't free  -- especially not to the Collective.",
+          "description": "Your sensor data isn't free . Especially not to the Collective.",
           "outcome": {
-            "description": "Dr. Mak looks mildly offended, then pragmatic. After a brief negotiation, they agree to a higher rate plus a copy of their published calibration tables  -- genuinely useful nav data. Science and commerce find their equilibrium.",
+            "description": "Dr. Mak looks mildly offended, then pragmatic. After a brief negotiation, they agree to a higher rate plus a copy of their published calibration tables . Genuinely useful nav data. Science and commerce find their equilibrium.",
             "rewards": [
-              {"reward_type": "credits", "amount": 180},
-              {"reward_type": "xp", "amount": 10}
+              {
+                "reward_type": "credits",
+                "amount": 180
+              },
+              {
+                "reward_type": "xp",
+                "amount": 10
+              }
             ]
           }
         },
@@ -581,11 +866,19 @@
       "id": "sys_axiom_containment_01",
       "encounter_type": "patrol",
       "name": "Research Containment Alert",
-      "description": "Every ship in the sector receives a priority broadcast from Axiom Station's Central Safety Office: \"CONTAINMENT ALERT  -- Level Three. All non-Collective vessels are instructed to hold position and maintain minimum two-kilometer separation from Axiom Station. A controlled experiment in Laboratory Module Theta-9 has exceeded expected parameters. This is a precautionary measure. Do not  -- repeat, do not  -- approach the station until the all-clear is issued.\" The broadcast cuts out. A long silence follows. Then, faintly, your sensors register an energy signature from Theta-9 that your computer can't classify.",
-      "icon_color": [140, 120, 220],
+      "description": "Every ship in the sector receives a priority broadcast from Axiom Station's Central Safety Office: \"CONTAINMENT ALERT . Level Three. All non-Collective vessels are instructed to hold position and maintain minimum two-kilometer separation from Axiom Station. A controlled experiment in Laboratory Module Theta-9 has exceeded expected parameters. This is a precautionary measure. Do not . Repeat, do not . Approach the station until the all-clear is issued.\" The broadcast cuts out. A long silence follows. Then, faintly, your sensors register an energy signature from Theta-9 that your computer can't classify.",
+      "icon_color": [
+        140,
+        120,
+        220
+      ],
       "weight": 8,
-      "danger_levels": ["moderate"],
-      "only_systems": ["axiom_labs"],
+      "danger_levels": [
+        "moderate"
+      ],
+      "only_systems": [
+        "axiom_labs"
+      ],
       "tone": "mysterious",
       "category": "system",
       "unique": true,
@@ -597,8 +890,15 @@
           "outcome": {
             "description": "You maintain position for forty tense minutes. The unclassified energy signature pulses twice more, then fades. The all-clear comes through with no further explanation. A Collective patrol ship sweeps past your position, sensors clearly scanning you, before moving on. Whatever happened in Theta-9, the Institute isn't talking.",
             "rewards": [
-              {"reward_type": "xp", "amount": 15},
-              {"reward_type": "modify_reputation", "amount": 5, "target_id": "science_collective"}
+              {
+                "reward_type": "xp",
+                "amount": 15
+              },
+              {
+                "reward_type": "modify_reputation",
+                "amount": 5,
+                "target_id": "science_collective"
+              }
             ]
           }
         },
@@ -607,11 +907,22 @@
           "label": "Point Your Sensors at Theta-9",
           "description": "An unclassifiable energy reading? That's worth investigating from a safe distance.",
           "outcome": {
-            "description": "Your sensors capture fragmented data before a Collective patrol ship moves to block your line of sight. The readings are strange  -- energy patterns that don't match any known reactor type or weapon system. The patrol captain sends you a terse warning: \"Cease unauthorized scanning.\" But the data is already in your logs.",
+            "description": "Your sensors capture fragmented data before a Collective patrol ship moves to block your line of sight. The readings are strange . Energy patterns that don't match any known reactor type or weapon system. The patrol captain sends you a terse warning: \"Cease unauthorized scanning.\" But the data is already in your logs.",
             "rewards": [
-              {"reward_type": "xp", "amount": 25},
-              {"reward_type": "set_flag", "amount": 1, "target_id": "axiom_theta9_scanned"},
-              {"reward_type": "modify_reputation", "amount": -5, "target_id": "science_collective"}
+              {
+                "reward_type": "xp",
+                "amount": 25
+              },
+              {
+                "reward_type": "set_flag",
+                "amount": 1,
+                "target_id": "axiom_theta9_scanned"
+              },
+              {
+                "reward_type": "modify_reputation",
+                "amount": -5,
+                "target_id": "science_collective"
+              }
             ]
           }
         },
@@ -622,7 +933,10 @@
           "outcome": {
             "description": "You don't need to be told twice. 'Exceeded expected parameters' is scientist for 'something went wrong and we're not sure what.' You plot a course out of Axiom space and don't look back until the station is a dot on your rear sensors.",
             "rewards": [
-              {"reward_type": "xp", "amount": 5}
+              {
+                "reward_type": "xp",
+                "amount": 5
+              }
             ]
           }
         }
@@ -632,11 +946,19 @@
       "id": "sys_nova_prototype_01",
       "encounter_type": "anomaly",
       "name": "Erratic Prototype Drone",
-      "description": "Your proximity alarm trips as an unregistered drone spirals into sensor range, trailing sparks from a cracked thruster housing. It's broadcasting a Nova Applied Sciences test frequency and executing what might be evasive maneuvers  -- or might just be a broken nav system. A harried Nova technician breaks in on a wide-band channel: \"Attention all vessels  -- Nova Applied Sciences Prototype NAS-7 has left its designated test corridor. The drone is not armed. Repeat, not armed. Please do not engage. We are attempting remote recovery.\" The drone executes a perfect barrel roll, then slams into an asteroid at low speed and bounces off.",
-      "icon_color": [180, 140, 220],
+      "description": "Your proximity alarm trips as an unregistered drone spirals into sensor range, trailing sparks from a cracked thruster housing. It's broadcasting a Nova Applied Sciences test frequency and executing what might be evasive maneuvers . Or might just be a broken nav system. A harried Nova technician breaks in on a wide-band channel: \"Attention all vessels . Nova Applied Sciences Prototype NAS-7 has left its designated test corridor. The drone is not armed. Repeat, not armed. Please do not engage. We are attempting remote recovery.\" The drone executes a perfect barrel roll, then slams into an asteroid at low speed and bounces off.",
+      "icon_color": [
+        180,
+        140,
+        220
+      ],
       "weight": 9,
-      "danger_levels": ["moderate"],
-      "only_systems": ["nova_research"],
+      "danger_levels": [
+        "moderate"
+      ],
+      "only_systems": [
+        "nova_research"
+      ],
       "tone": "mysterious",
       "category": "system",
       "choices": [
@@ -647,9 +969,19 @@
           "outcome": {
             "description": "You spend ten minutes playing sheepdog with a malfunctioning drone that seems to actively resist your efforts. Eventually you box it against a debris field and the Nova recovery shuttle snags it with a magnetic grapple. The technician sends you a payment and a weary thanks. \"Third time this week. The autonomy algorithms are... ambitious.\"",
             "rewards": [
-              {"reward_type": "credits", "amount": 140},
-              {"reward_type": "xp", "amount": 15},
-              {"reward_type": "modify_reputation", "amount": 5, "target_id": "science_collective"}
+              {
+                "reward_type": "credits",
+                "amount": 140
+              },
+              {
+                "reward_type": "xp",
+                "amount": 15
+              },
+              {
+                "reward_type": "modify_reputation",
+                "amount": 5,
+                "target_id": "science_collective"
+              }
             ]
           }
         },
@@ -658,10 +990,17 @@
           "label": "Scan the Drone While It's Loose",
           "description": "A Nova prototype outside its test corridor? This is a rare look at their work.",
           "outcome": {
-            "description": "You run a deep scan before the recovery team arrives. The drone's internal architecture is unusual  -- the autonomy core uses a design philosophy you've never seen in civilian tech. Nova's 'applied research' label is doing a lot of heavy lifting. You file the scan data away. Knowledge is leverage.",
+            "description": "You run a deep scan before the recovery team arrives. The drone's internal architecture is unusual . The autonomy core uses a design philosophy you've never seen in civilian tech. Nova's 'applied research' label is doing a lot of heavy lifting. You file the scan data away. Knowledge is leverage.",
             "rewards": [
-              {"reward_type": "xp", "amount": 25},
-              {"reward_type": "set_flag", "amount": 1, "target_id": "nova_drone_scanned"}
+              {
+                "reward_type": "xp",
+                "amount": 25
+              },
+              {
+                "reward_type": "set_flag",
+                "amount": 1,
+                "target_id": "nova_drone_scanned"
+              }
             ]
           }
         },
@@ -680,11 +1019,19 @@
       "id": "sys_nova_whistleblower_01",
       "encounter_type": "comm_intercept",
       "name": "Anonymous Warning",
-      "description": "Your comms receive a text-only message on an anonymized relay, routed through at least four system proxies. The message is brief: \"To any independent captain in Nova Research space  -- Project Kindling is not what they're telling the Collective Council. Check the energy consumption reports for Lab Complex Auriga. The numbers don't add up. Someone needs to ask why a 'materials science' project is drawing enough power to run a warship's main battery. I can't say more. They monitor everything here.  -- A concerned researcher.\"",
-      "icon_color": [180, 140, 220],
+      "description": "Your comms receive a text-only message on an anonymized relay, routed through at least four system proxies. The message is brief: \"To any independent captain in Nova Research space . Project Kindling is not what they're telling the Collective Council. Check the energy consumption reports for Lab Complex Auriga. The numbers don't add up. Someone needs to ask why a 'materials science' project is drawing enough power to run a warship's main battery. I can't say more. They monitor everything here. A concerned researcher.\"",
+      "icon_color": [
+        180,
+        140,
+        220
+      ],
       "weight": 8,
-      "danger_levels": ["moderate"],
-      "only_systems": ["nova_research"],
+      "danger_levels": [
+        "moderate"
+      ],
+      "only_systems": [
+        "nova_research"
+      ],
       "tone": "mysterious",
       "category": "system",
       "unique": true,
@@ -694,10 +1041,17 @@
           "label": "Log It and Dig Deeper",
           "description": "Save the message and see if you can verify the energy consumption claims.",
           "outcome": {
-            "description": "You cross-reference public Collective energy allocation data with the anonymous tip. The numbers are publicly available but nobody looks at them  -- and the whistleblower is right. Lab Complex Auriga's power draw tripled eighteen months ago. The official explanation is 'expanded materials testing.' You save the analysis. This could be valuable to the right people.",
+            "description": "You cross-reference public Collective energy allocation data with the anonymous tip. The numbers are publicly available but nobody looks at them . And the whistleblower is right. Lab Complex Auriga's power draw tripled eighteen months ago. The official explanation is 'expanded materials testing.' You save the analysis. This could be valuable to the right people.",
             "rewards": [
-              {"reward_type": "xp", "amount": 25},
-              {"reward_type": "set_flag", "amount": 1, "target_id": "nova_kindling_tip"}
+              {
+                "reward_type": "xp",
+                "amount": 25
+              },
+              {
+                "reward_type": "set_flag",
+                "amount": 1,
+                "target_id": "nova_kindling_tip"
+              }
             ]
           }
         },
@@ -706,10 +1060,17 @@
           "label": "Forward to the Collective Council",
           "description": "If something shady is happening, the Council should know.",
           "outcome": {
-            "description": "You relay the message to a Collective Council oversight channel. A bureaucratic acknowledgment comes back: \"Thank you for your civic engagement. Your report has been logged.\" Whether anything actually happens is anyone's guess. The Collective protects its own  -- but at least it's on record.",
+            "description": "You relay the message to a Collective Council oversight channel. A bureaucratic acknowledgment comes back: \"Thank you for your civic engagement. Your report has been logged.\" Whether anything actually happens is anyone's guess. The Collective protects its own . But at least it's on record.",
             "rewards": [
-              {"reward_type": "xp", "amount": 15},
-              {"reward_type": "modify_reputation", "amount": 5, "target_id": "science_collective"}
+              {
+                "reward_type": "xp",
+                "amount": 15
+              },
+              {
+                "reward_type": "modify_reputation",
+                "amount": 5,
+                "target_id": "science_collective"
+              }
             ]
           }
         },
@@ -728,11 +1089,19 @@
       "id": "sys_breakstone_cave_in_02",
       "encounter_type": "distress_signal",
       "name": "Collapsed Mine Shaft Distress Beacon",
-      "description": "Your sensors pick up an automated distress beacon from Shaft 14-Gamma, one of Breakstone's mid-depth mining operations. The signal is repeating on a loop  -- no voice, just the standard Union emergency code for structural collapse. You try hailing on the local frequency. Nothing. The shaft's surface relay is intact but nobody is responding. The beacon timestamp shows it activated forty minutes ago.",
-      "icon_color": [200, 140, 80],
+      "description": "Your sensors pick up an automated distress beacon from Shaft 14-Gamma, one of Breakstone's mid-depth mining operations. The signal is repeating on a loop . No voice, just the standard Union emergency code for structural collapse. You try hailing on the local frequency. Nothing. The shaft's surface relay is intact but nobody is responding. The beacon timestamp shows it activated forty minutes ago.",
+      "icon_color": [
+        200,
+        140,
+        80
+      ],
       "weight": 10,
-      "danger_levels": ["dangerous"],
-      "only_systems": ["breakstone"],
+      "danger_levels": [
+        "dangerous"
+      ],
+      "only_systems": [
+        "breakstone"
+      ],
       "tone": "neutral",
       "category": "system",
       "choices": [
@@ -741,11 +1110,21 @@
           "label": "Approach and Scan the Shaft",
           "description": "Get close enough to run deep scans through the collapsed section.",
           "outcome": {
-            "description": "Your sensors penetrate the rubble and detect life signs  -- faint but present. You relay the scan data to the nearest Union rescue team, cutting their search time in half. The rescue coordinator, a gruff woman named Kowalski, patches through when the miners are pulled out alive: \"Your scans saved three people today, Captain. Union doesn't forget that.\"",
+            "description": "Your sensors penetrate the rubble and detect life signs . Faint but present. You relay the scan data to the nearest Union rescue team, cutting their search time in half. The rescue coordinator, a gruff woman named Kowalski, patches through when the miners are pulled out alive: \"Your scans saved three people today, Captain. Union doesn't forget that.\"",
             "rewards": [
-              {"reward_type": "credits", "amount": 150},
-              {"reward_type": "xp", "amount": 25},
-              {"reward_type": "modify_reputation", "amount": 10, "target_id": "miners_union"}
+              {
+                "reward_type": "credits",
+                "amount": 150
+              },
+              {
+                "reward_type": "xp",
+                "amount": 25
+              },
+              {
+                "reward_type": "modify_reputation",
+                "amount": 10,
+                "target_id": "miners_union"
+              }
             ]
           }
         },
@@ -754,10 +1133,17 @@
           "label": "Relay the Beacon to Union HQ",
           "description": "Boost the signal and make sure the Union's emergency teams know about it.",
           "outcome": {
-            "description": "You amplify the distress beacon and broadcast it on Union priority channels. A rescue team acknowledges within minutes. You've done what you can from out here  -- the rest is on the people with the drilling equipment and the nerve to go underground.",
+            "description": "You amplify the distress beacon and broadcast it on Union priority channels. A rescue team acknowledges within minutes. You've done what you can from out here . The rest is on the people with the drilling equipment and the nerve to go underground.",
             "rewards": [
-              {"reward_type": "xp", "amount": 15},
-              {"reward_type": "modify_reputation", "amount": 5, "target_id": "miners_union"}
+              {
+                "reward_type": "xp",
+                "amount": 15
+              },
+              {
+                "reward_type": "modify_reputation",
+                "amount": 5,
+                "target_id": "miners_union"
+              }
             ]
           }
         },
@@ -766,7 +1152,7 @@
           "label": "Log It and Move On",
           "description": "Breakstone has its own rescue infrastructure. They don't need you.",
           "outcome": {
-            "description": "You log the beacon coordinates and continue on your route. Shaft collapses happen in Breakstone  -- the Union has teams for this. You tell yourself that, anyway.",
+            "description": "You log the beacon coordinates and continue on your route. Shaft collapses happen in Breakstone . The Union has teams for this. You tell yourself that, anyway.",
             "rewards": []
           }
         }
@@ -776,11 +1162,19 @@
       "id": "sys_breakstone_ore_heist_01",
       "encounter_type": "debris",
       "name": "Ore Transport Hijacking",
-      "description": "Weapons fire lights up your forward sensors. Two fast-attack corvettes have boxed in a Union ore transport on the main shipping lane, and they're not being subtle about it. The transport  -- a heavy hauler tagged 'UMV Solidarity'  -- is venting cargo pods under threat while the pirates scoop them up with magnetic grapples. The Solidarity's captain is broadcasting on an open channel: \"Any vessels in range  -- this is Union Mining Vessel Solidarity under attack on Lane Seven. Two hostiles. They're taking our titanium shipment. Requesting immediate assistance!\"",
-      "icon_color": [220, 100, 80],
+      "description": "Weapons fire lights up your forward sensors. Two fast-attack corvettes have boxed in a Union ore transport on the main shipping lane, and they're not being subtle about it. The transport . A heavy hauler tagged 'UMV Solidarity' . Is venting cargo pods under threat while the pirates scoop them up with magnetic grapples. The Solidarity's captain is broadcasting on an open channel: \"Any vessels in range . This is Union Mining Vessel Solidarity under attack on Lane Seven. Two hostiles. They're taking our titanium shipment. Requesting immediate assistance!\"",
+      "icon_color": [
+        220,
+        100,
+        80
+      ],
       "weight": 8,
-      "danger_levels": ["dangerous"],
-      "only_systems": ["breakstone"],
+      "danger_levels": [
+        "dangerous"
+      ],
+      "only_systems": [
+        "breakstone"
+      ],
       "tone": "aggressive",
       "category": "system",
       "choices": [
@@ -791,9 +1185,19 @@
           "outcome": {
             "description": "You burn hard toward the engagement zone, weapons hot. The pirates, not expecting reinforcements, break off their grapple runs and scatter. They're fast enough to escape, but they leave half the cargo pods behind. The Solidarity's captain, a veteran named Fen Okoro, sends you a share of the recovered titanium's value. \"Breakstone remembers its friends, Captain. Every shift, every shaft.\"",
             "rewards": [
-              {"reward_type": "credits", "amount": 225},
-              {"reward_type": "xp", "amount": 20},
-              {"reward_type": "modify_reputation", "amount": 15, "target_id": "miners_union"}
+              {
+                "reward_type": "credits",
+                "amount": 225
+              },
+              {
+                "reward_type": "xp",
+                "amount": 20
+              },
+              {
+                "reward_type": "modify_reputation",
+                "amount": 15,
+                "target_id": "miners_union"
+              }
             ]
           }
         },
@@ -804,9 +1208,19 @@
           "outcome": {
             "description": "You hold back and watch the pirates strip the hauler. When they warp out, you move in and collect three cargo pods they missed. The Solidarity's captain sees you on sensors and says nothing. The silence speaks volumes. Titanium is titanium, but you won't be popular at Breakstone after this.",
             "rewards": [
-              {"reward_type": "credits", "amount": 175},
-              {"reward_type": "xp", "amount": 5},
-              {"reward_type": "modify_reputation", "amount": -10, "target_id": "miners_union"}
+              {
+                "reward_type": "credits",
+                "amount": 175
+              },
+              {
+                "reward_type": "xp",
+                "amount": 5
+              },
+              {
+                "reward_type": "modify_reputation",
+                "amount": -10,
+                "target_id": "miners_union"
+              }
             ]
           }
         },
@@ -815,9 +1229,12 @@
           "label": "Alter Course to Avoid",
           "description": "Two armed corvettes? That's a fight you can't win.",
           "outcome": {
-            "description": "You adjust your heading to give the engagement a wide berth. The Solidarity's distress call echoes on your comms as you pull away. Breakstone's lanes are dangerous for a reason  -- and discretion keeps you alive to fly another day.",
+            "description": "You adjust your heading to give the engagement a wide berth. The Solidarity's distress call echoes on your comms as you pull away. Breakstone's lanes are dangerous for a reason . And discretion keeps you alive to fly another day.",
             "rewards": [
-              {"reward_type": "xp", "amount": 5}
+              {
+                "reward_type": "xp",
+                "amount": 5
+              }
             ]
           }
         }
@@ -827,11 +1244,19 @@
       "id": "sys_iron_deep_signal_01",
       "encounter_type": "anomaly",
       "name": "Impossible Deep-Core Readings",
-      "description": "A DCMC deep-core survey probe surfaces on the Iron Depths mining network, broadcasting raw telemetry data that should have been encrypted. The readings are from Bore Shaft Omega-12, the deepest active mine in the system  -- and they don't make sense. Spectral analysis shows mineral compositions that don't exist in any geological database. Thermal readings suggest a heat source that isn't magma, isn't radioactive decay, and isn't any known exothermic reaction. A DCMC technician's voice, tight with professional alarm, is audible in the background of the broadcast: \"These readings are wrong. They have to be wrong. Run the calibration again.\"",
-      "icon_color": [160, 100, 200],
+      "description": "A DCMC deep-core survey probe surfaces on the Iron Depths mining network, broadcasting raw telemetry data that should have been encrypted. The readings are from Bore Shaft Omega-12, the deepest active mine in the system . And they don't make sense. Spectral analysis shows mineral compositions that don't exist in any geological database. Thermal readings suggest a heat source that isn't magma, isn't radioactive decay, and isn't any known exothermic reaction. A DCMC technician's voice, tight with professional alarm, is audible in the background of the broadcast: \"These readings are wrong. They have to be wrong. Run the calibration again.\"",
+      "icon_color": [
+        160,
+        100,
+        200
+      ],
       "weight": 8,
-      "danger_levels": ["dangerous"],
-      "only_systems": ["iron_depths"],
+      "danger_levels": [
+        "dangerous"
+      ],
+      "only_systems": [
+        "iron_depths"
+      ],
       "tone": "mysterious",
       "category": "system",
       "unique": true,
@@ -841,10 +1266,17 @@
           "label": "Record the Telemetry",
           "description": "Capture every byte of this unencrypted data before DCMC locks it down.",
           "outcome": {
-            "description": "You grab the full telemetry dump before the DCMC network kills the broadcast  -- twelve seconds of data that paints a picture of something that shouldn't be there. The Collective would pay well for this. The Union would want to know what DCMC found under their claims. Even the Guild might be interested. You encrypt the data and store it in your secure logs.",
+            "description": "You grab the full telemetry dump before the DCMC network kills the broadcast . Twelve seconds of data that paints a picture of something that shouldn't be there. The Collective would pay well for this. The Union would want to know what DCMC found under their claims. Even the Guild might be interested. You encrypt the data and store it in your secure logs.",
             "rewards": [
-              {"reward_type": "xp", "amount": 25},
-              {"reward_type": "set_flag", "amount": 1, "target_id": "iron_depths_anomaly_recorded"}
+              {
+                "reward_type": "xp",
+                "amount": 25
+              },
+              {
+                "reward_type": "set_flag",
+                "amount": 1,
+                "target_id": "iron_depths_anomaly_recorded"
+              }
             ]
           }
         },
@@ -855,9 +1287,19 @@
           "outcome": {
             "description": "You relay the readings to a Union safety officer. The officer goes quiet for a long moment, then: \"We've heard rumors about Omega-12 for months. This is the first hard data. I'm escalating this.\" The Union transfers a discretionary payment for the tip.",
             "rewards": [
-              {"reward_type": "credits", "amount": 150},
-              {"reward_type": "xp", "amount": 15},
-              {"reward_type": "modify_reputation", "amount": 10, "target_id": "miners_union"}
+              {
+                "reward_type": "credits",
+                "amount": 150
+              },
+              {
+                "reward_type": "xp",
+                "amount": 15
+              },
+              {
+                "reward_type": "modify_reputation",
+                "amount": 10,
+                "target_id": "miners_union"
+              }
             ]
           }
         },
@@ -877,10 +1319,18 @@
       "encounter_type": "patrol",
       "name": "DCMC Security Checkpoint",
       "description": "A heavy patrol cutter bearing Deep Core Mining Corporation markings drops out of cover and locks targeting sensors on your hull. The pilot's voice is flat, corporate, and brooks no argument: \"Unidentified vessel, you are entering a DCMC-secured extraction corridor. Transmit your credentials, cargo manifest, and intended destination. You have thirty seconds to comply before we escalate.\" Two more DCMC security drones flank your ship, weapons powered but not locked. Yet.",
-      "icon_color": [200, 100, 80],
+      "icon_color": [
+        200,
+        100,
+        80
+      ],
       "weight": 9,
-      "danger_levels": ["dangerous"],
-      "only_systems": ["iron_depths"],
+      "danger_levels": [
+        "dangerous"
+      ],
+      "only_systems": [
+        "iron_depths"
+      ],
       "tone": "aggressive",
       "category": "system",
       "choices": [
@@ -891,19 +1341,29 @@
           "outcome": {
             "description": "You send your credentials, manifest, and destination without argument. The patrol officer reviews them with agonizing thoroughness, then: \"Credentials verified. You are cleared to transit Corridor 7-Alpha. Maintain heading and speed. Deviation will be treated as hostile intent.\" The drones peel off. You exhale.",
             "rewards": [
-              {"reward_type": "xp", "amount": 10}
+              {
+                "reward_type": "xp",
+                "amount": 10
+              }
             ]
           }
         },
         {
           "id": "negotiate",
           "label": "Push Back on the Scan",
-          "description": "DCMC doesn't own this corridor  -- they lease it. Assert your transit rights.",
+          "description": "DCMC doesn't own this corridor . They lease it. Assert your transit rights.",
           "outcome": {
-            "description": "You cite Union-recognized transit rights and refuse the full manifest disclosure. The patrol officer pauses  -- they know the regulations. \"Fine. Credentials and destination only. But we're logging this interaction, Captain.\" You transit without the invasive cargo scan, but DCMC has your name on a list now.",
+            "description": "You cite Union-recognized transit rights and refuse the full manifest disclosure. The patrol officer pauses . They know the regulations. \"Fine. Credentials and destination only. But we're logging this interaction, Captain.\" You transit without the invasive cargo scan, but DCMC has your name on a list now.",
             "rewards": [
-              {"reward_type": "xp", "amount": 15},
-              {"reward_type": "modify_reputation", "amount": 5, "target_id": "miners_union"}
+              {
+                "reward_type": "xp",
+                "amount": 15
+              },
+              {
+                "reward_type": "modify_reputation",
+                "amount": 5,
+                "target_id": "miners_union"
+              }
             ]
           }
         },
@@ -912,10 +1372,16 @@
           "label": "Offer a 'Transit Fee'",
           "description": "Grease the wheels. Corporate security isn't known for idealism.",
           "outcome": {
-            "description": "You transfer a quiet credit bundle to the patrol officer's personal account. The targeting lock drops immediately. \"Cleared for transit. Have a productive day, Captain.\" Corruption runs deep in Iron Depths  -- sometimes the fastest route is through someone's wallet.",
+            "description": "You transfer a quiet credit bundle to the patrol officer's personal account. The targeting lock drops immediately. \"Cleared for transit. Have a productive day, Captain.\" Corruption runs deep in Iron Depths . Sometimes the fastest route is through someone's wallet.",
             "rewards": [
-              {"reward_type": "credits", "amount": -50},
-              {"reward_type": "xp", "amount": 10}
+              {
+                "reward_type": "credits",
+                "amount": -50
+              },
+              {
+                "reward_type": "xp",
+                "amount": 10
+              }
             ]
           }
         }
@@ -925,11 +1391,19 @@
       "id": "sys_crimson_wreck_claim_01",
       "encounter_type": "derelict",
       "name": "Wrecker Race",
-      "description": "Two Wrecker crews have spotted the same derelict at the same time  -- a gutted colony transport with its cargo bays still sealed. Both ships are burning hard toward the wreck, broadcasting increasingly creative threats at each other on an open channel. \"Back off, Juno, that's MY claim! I tagged it first!\" \"You tagged NOTHING, Rook! Your scanner couldn't find a station in docking range!\" The derelict drifts between them, indifferent to the argument. There's room for a third ship to slip in while they're busy shouting.",
-      "icon_color": [220, 80, 80],
+      "description": "Two Wrecker crews have spotted the same derelict at the same time . A gutted colony transport with its cargo bays still sealed. Both ships are burning hard toward the wreck, broadcasting increasingly creative threats at each other on an open channel. \"Back off, Juno, that's MY claim! I tagged it first!\" \"You tagged NOTHING, Rook! Your scanner couldn't find a station in docking range!\" The derelict drifts between them, indifferent to the argument. There's room for a third ship to slip in while they're busy shouting.",
+      "icon_color": [
+        220,
+        80,
+        80
+      ],
       "weight": 10,
-      "danger_levels": ["dangerous"],
-      "only_systems": ["crimson_reach"],
+      "danger_levels": [
+        "dangerous"
+      ],
+      "only_systems": [
+        "crimson_reach"
+      ],
       "tone": "dark_humor",
       "category": "system",
       "choices": [
@@ -938,22 +1412,34 @@
           "label": "Beat Them Both to the Wreck",
           "description": "While they argue, you act. Classic Crimson Reach.",
           "outcome": {
-            "description": "You punch your engines and dock with the derelict while Rook and Juno are still screaming at each other. By the time they notice, you've already cracked the cargo bay and started loading. The comms erupt with outrage, but neither Wrecker is willing to fire on a docked ship  -- bad form, even in the Reach. You leave with a full hold and two new enemies.",
+            "description": "You punch your engines and dock with the derelict while Rook and Juno are still screaming at each other. By the time they notice, you've already cracked the cargo bay and started loading. The comms erupt with outrage, but neither Wrecker is willing to fire on a docked ship . Bad form, even in the Reach. You leave with a full hold and two new enemies.",
             "rewards": [
-              {"reward_type": "credits", "amount": 250},
-              {"reward_type": "xp", "amount": 15}
+              {
+                "reward_type": "credits",
+                "amount": 250
+              },
+              {
+                "reward_type": "xp",
+                "amount": 15
+              }
             ]
           }
         },
         {
           "id": "mediate",
           "label": "Offer to Split Three Ways",
-          "description": "Suggest a fair division  -- everyone walks away with something.",
+          "description": "Suggest a fair division . Everyone walks away with something.",
           "outcome": {
-            "description": "You broker a three-way split. Rook and Juno grumble but agree  -- three shares of something beats zero shares of a firefight. The cargo turns out to be pre-Expansion machine parts worth decent money. Rook raises a flask on the comms: \"Not bad for a peacemaker. You're alright.\"",
+            "description": "You broker a three-way split. Rook and Juno grumble but agree . Three shares of something beats zero shares of a firefight. The cargo turns out to be pre-Expansion machine parts worth decent money. Rook raises a flask on the comms: \"Not bad for a peacemaker. You're alright.\"",
             "rewards": [
-              {"reward_type": "credits", "amount": 150},
-              {"reward_type": "xp", "amount": 20}
+              {
+                "reward_type": "credits",
+                "amount": 150
+              },
+              {
+                "reward_type": "xp",
+                "amount": 20
+              }
             ]
           }
         },
@@ -962,9 +1448,12 @@
           "label": "Watch Them Sort It Out",
           "description": "Wrecker disputes are better than holovids.",
           "outcome": {
-            "description": "You settle in at a safe distance and watch the drama unfold. Juno eventually rams Rook's ship  -- gently, by Crimson Reach standards  -- and the argument devolves into a slow-speed hull-bumping contest. The derelict drifts away while they're distracted. Nobody wins.",
+            "description": "You settle in at a safe distance and watch the drama unfold. Juno eventually rams Rook's ship . Gently, by Crimson Reach standards . And the argument devolves into a slow-speed hull-bumping contest. The derelict drifts away while they're distracted. Nobody wins.",
             "rewards": [
-              {"reward_type": "xp", "amount": 5}
+              {
+                "reward_type": "xp",
+                "amount": 5
+              }
             ]
           }
         }
@@ -974,11 +1463,19 @@
       "id": "sys_crimson_outlaw_offer_01",
       "encounter_type": "shakedown",
       "name": "Protection Racket",
-      "description": "A scarred raider drops out of the debris field that passes for normal space in Crimson Reach and slides into an escort position off your port side. The captain hails you with the easy confidence of someone who does this every day: \"Welcome to the Reach, traveler. Name's Vex. I run security for this corridor  -- freelance, of course. For a reasonable fee, I guarantee safe passage to the nearest beacon. Without my services, well... the Reach is unpredictable. Things happen. Ships disappear. I'd hate for that to be you.\" Vex's weapons are powered but not locked. A courtesy, or a warning.",
-      "icon_color": [220, 80, 80],
+      "description": "A scarred raider drops out of the debris field that passes for normal space in Crimson Reach and slides into an escort position off your port side. The captain hails you with the easy confidence of someone who does this every day: \"Welcome to the Reach, traveler. Name's Vex. I run security for this corridor . Freelance, of course. For a reasonable fee, I guarantee safe passage to the nearest beacon. Without my services, well.. the Reach is unpredictable. Things happen. Ships disappear. I'd hate for that to be you.\" Vex's weapons are powered but not locked. A courtesy, or a warning.",
+      "icon_color": [
+        220,
+        80,
+        80
+      ],
       "weight": 10,
-      "danger_levels": ["dangerous"],
-      "only_systems": ["crimson_reach"],
+      "danger_levels": [
+        "dangerous"
+      ],
+      "only_systems": [
+        "crimson_reach"
+      ],
       "tone": "aggressive",
       "category": "system",
       "choices": [
@@ -987,10 +1484,16 @@
           "label": "Pay for 'Protection'",
           "description": "It's cheaper than a hull repair.",
           "outcome": {
-            "description": "You transfer the credits. Vex is surprisingly professional  -- they escort you through two debris fields and past a cluster of ships that definitely would have tried something. At the beacon, Vex peels off with a wave. \"Pleasure doing business. Tell your friends.\" Extortion with a smile. The Crimson Reach way.",
+            "description": "You transfer the credits. Vex is surprisingly professional . They escort you through two debris fields and past a cluster of ships that definitely would have tried something. At the beacon, Vex peels off with a wave. \"Pleasure doing business. Tell your friends.\" Extortion with a smile. The Crimson Reach way.",
             "rewards": [
-              {"reward_type": "credits", "amount": -75},
-              {"reward_type": "xp", "amount": 10}
+              {
+                "reward_type": "credits",
+                "amount": -75
+              },
+              {
+                "reward_type": "xp",
+                "amount": 10
+              }
             ]
           }
         },
@@ -1001,7 +1504,10 @@
           "outcome": {
             "description": "You tell Vex where they can put their offer. There's a long pause, then a chuckle. \"Brave. Stupid, but brave. Your call, Captain.\" Vex breaks off and vanishes into the debris field. You spend the next thirty minutes with your weapons hot and your nerves frayed, but nothing happens. This time.",
             "rewards": [
-              {"reward_type": "xp", "amount": 20}
+              {
+                "reward_type": "xp",
+                "amount": 20
+              }
             ]
           }
         },
@@ -1010,10 +1516,16 @@
           "label": "Counter-Offer: Hire Them as a Guide",
           "description": "Turn the shakedown into a legitimate business arrangement.",
           "outcome": {
-            "description": "You negotiate Vex down to a flat guide fee in exchange for safe corridor mapping data. Vex seems amused  -- and a little impressed. They hand over a surprisingly detailed nav chart of the local debris fields. \"You've got hustle, Captain. I respect that.\" The chart alone is worth more than the fee.",
+            "description": "You negotiate Vex down to a flat guide fee in exchange for safe corridor mapping data. Vex seems amused . And a little impressed. They hand over a surprisingly detailed nav chart of the local debris fields. \"You've got hustle, Captain. I respect that.\" The chart alone is worth more than the fee.",
             "rewards": [
-              {"reward_type": "credits", "amount": -50},
-              {"reward_type": "xp", "amount": 20}
+              {
+                "reward_type": "credits",
+                "amount": -50
+              },
+              {
+                "reward_type": "xp",
+                "amount": 20
+              }
             ]
           }
         }
@@ -1023,11 +1535,19 @@
       "id": "sys_crimson_ghost_ship_01",
       "encounter_type": "derelict",
       "name": "The Ship That Came Back",
-      "description": "Your sensors register a vessel at extreme range  -- transponder code matches the FTV Margrave, a Frontier Alliance survey ship that vanished in the Crimson Reach three years ago. All hands presumed lost. No wreckage was ever recovered. But there it is on your sensors: intact, powered, drifting on a heading that leads nowhere. No response to hails. No visible damage. Life support is running, but you're reading zero life signs.",
-      "icon_color": [160, 80, 180],
+      "description": "Your sensors register a vessel at extreme range . Transponder code matches the FTV Margrave, a Frontier Alliance survey ship that vanished in the Crimson Reach three years ago. All hands presumed lost. No wreckage was ever recovered. But there it is on your sensors: intact, powered, drifting on a heading that leads nowhere. No response to hails. No visible damage. Life support is running, but you're reading zero life signs.",
+      "icon_color": [
+        160,
+        80,
+        180
+      ],
       "weight": 8,
-      "danger_levels": ["dangerous"],
-      "only_systems": ["crimson_reach"],
+      "danger_levels": [
+        "dangerous"
+      ],
+      "only_systems": [
+        "crimson_reach"
+      ],
       "tone": "mysterious",
       "category": "system",
       "unique": true,
@@ -1037,11 +1557,21 @@
           "label": "Board the Margrave",
           "description": "Three years missing and now it reappears? You have to know why.",
           "outcome": {
-            "description": "The Margrave's interior is pristine  -- too pristine. Personal effects are neatly stowed. The galley has food set out for a meal that was never eaten. The nav logs show the ship's last recorded position as deep in uncharted Reach space, then nothing for three years, then a course correction logged yesterday. By whom? The ship's computer won't say. You copy the nav logs and leave. The Margrave drifts on, going wherever it's going.",
+            "description": "The Margrave's interior is pristine . Too pristine. Personal effects are neatly stowed. The galley has food set out for a meal that was never eaten. The nav logs show the ship's last recorded position as deep in uncharted Reach space, then nothing for three years, then a course correction logged yesterday. By whom? The ship's computer won't say. You copy the nav logs and leave. The Margrave drifts on, going wherever it's going.",
             "rewards": [
-              {"reward_type": "xp", "amount": 25},
-              {"reward_type": "credits", "amount": 100},
-              {"reward_type": "set_flag", "amount": 1, "target_id": "margrave_boarded"}
+              {
+                "reward_type": "xp",
+                "amount": 25
+              },
+              {
+                "reward_type": "credits",
+                "amount": 100
+              },
+              {
+                "reward_type": "set_flag",
+                "amount": 1,
+                "target_id": "margrave_boarded"
+              }
             ]
           }
         },
@@ -1050,10 +1580,17 @@
           "label": "Report to the Frontier Alliance",
           "description": "The Alliance lost people on that ship. They deserve to know it's been found.",
           "outcome": {
-            "description": "You transmit the Margrave's coordinates and transponder confirmation to the nearest Alliance relay. The response is immediate and tense  -- they're dispatching a recovery team. An Alliance officer asks you to maintain visual contact until they arrive, then thanks you with the careful formality of someone who just received very complicated news.",
+            "description": "You transmit the Margrave's coordinates and transponder confirmation to the nearest Alliance relay. The response is immediate and tense . They're dispatching a recovery team. An Alliance officer asks you to maintain visual contact until they arrive, then thanks you with the careful formality of someone who just received very complicated news.",
             "rewards": [
-              {"reward_type": "xp", "amount": 20},
-              {"reward_type": "modify_reputation", "amount": 15, "target_id": "frontier_alliance"}
+              {
+                "reward_type": "xp",
+                "amount": 20
+              },
+              {
+                "reward_type": "modify_reputation",
+                "amount": 15,
+                "target_id": "frontier_alliance"
+              }
             ]
           }
         },
@@ -1064,7 +1601,10 @@
           "outcome": {
             "description": "Every instinct you have says to stay away from the Margrave. You alter course and give it the widest berth your nav computer will allow. On your rear sensors, the ship continues its silent drift into the dark. Whatever happened to its crew, you'd rather not find out firsthand.",
             "rewards": [
-              {"reward_type": "xp", "amount": 5}
+              {
+                "reward_type": "xp",
+                "amount": 5
+              }
             ]
           }
         }
@@ -1074,11 +1614,19 @@
       "id": "sys_fulcrum_encrypted_01",
       "encounter_type": "comm_intercept",
       "name": "Encrypted Transmission from Station Core",
-      "description": "Your comms array picks up a burst of military-grade encrypted data emanating from deep inside The Fulcrum's central structure. The transmission is dense, compressed, and uses an encryption standard your computer flags as 'DEPRECATED  -- Pre-Expansion Military Grade.' Nobody uses pre-Expansion encryption anymore. Nobody should have the hardware to generate it. The transmission is directed at a relay buoy on the system's edge  -- a buoy that isn't on any official chart.",
-      "icon_color": [180, 80, 80],
+      "description": "Your comms array picks up a burst of military-grade encrypted data emanating from deep inside The Fulcrum's central structure. The transmission is dense, compressed, and uses an encryption standard your computer flags as 'DEPRECATED . Pre-Expansion Military Grade.' Nobody uses pre-Expansion encryption anymore. Nobody should have the hardware to generate it. The transmission is directed at a relay buoy on the system's edge . A buoy that isn't on any official chart.",
+      "icon_color": [
+        180,
+        80,
+        80
+      ],
       "weight": 9,
-      "danger_levels": ["dangerous"],
-      "only_systems": ["the_fulcrum"],
+      "danger_levels": [
+        "dangerous"
+      ],
+      "only_systems": [
+        "the_fulcrum"
+      ],
       "tone": "mysterious",
       "category": "system",
       "unique": true,
@@ -1086,24 +1634,38 @@
         {
           "id": "intercept",
           "label": "Attempt Partial Decryption",
-          "description": "Pre-Expansion encryption is old. Old means crackable  -- maybe.",
+          "description": "Pre-Expansion encryption is old. Old means crackable . Maybe.",
           "outcome": {
-            "description": "Your computer grinds through the deprecated cipher for twenty minutes before extracting fragments: coordinates, a personnel roster with no names  -- only numbers  -- and a phrase that repeats in the header: 'THRESHOLD PROTOCOL.' The rest is gibberish. You save what you can. Someone went to a lot of trouble to keep this quiet.",
+            "description": "Your computer grinds through the deprecated cipher for twenty minutes before extracting fragments: coordinates, a personnel roster with no names . Only numbers . And a phrase that repeats in the header: 'THRESHOLD PROTOCOL.' The rest is gibberish. You save what you can. Someone went to a lot of trouble to keep this quiet.",
             "rewards": [
-              {"reward_type": "xp", "amount": 25},
-              {"reward_type": "set_flag", "amount": 1, "target_id": "fulcrum_threshold_intercepted"}
+              {
+                "reward_type": "xp",
+                "amount": 25
+              },
+              {
+                "reward_type": "set_flag",
+                "amount": 1,
+                "target_id": "fulcrum_threshold_intercepted"
+              }
             ]
           }
         },
         {
           "id": "trace",
           "label": "Track the Relay Buoy",
-          "description": "Forget the message  -- find out where it's going.",
+          "description": "Forget the message . Find out where it's going.",
           "outcome": {
             "description": "You run a passive trace on the transmission's destination. The relay buoy is 40,000 kilometers out, hidden in an asteroid shadow. It's small, automated, and definitely not Guild infrastructure. You log its coordinates before it cycles to standby mode. Whoever placed it there doesn't want it found.",
             "rewards": [
-              {"reward_type": "xp", "amount": 20},
-              {"reward_type": "set_flag", "amount": 1, "target_id": "fulcrum_relay_located"}
+              {
+                "reward_type": "xp",
+                "amount": 20
+              },
+              {
+                "reward_type": "set_flag",
+                "amount": 1,
+                "target_id": "fulcrum_relay_located"
+              }
             ]
           }
         },
@@ -1122,11 +1684,19 @@
       "id": "sys_fulcrum_patrol_01",
       "encounter_type": "patrol",
       "name": "Unmarked Patrol Vessel",
-      "description": "A patrol ship with no transponder code and no faction markings materializes from behind a debris screen, already at weapons range. Its hull is matte black, sensor-absorbent, and built for speed. A synthesized voice  -- deliberately stripped of identifying characteristics  -- hails you: \"Vessel, state your business in this sector. You have ten seconds.\" The ship's weapons are already locked. This isn't a checkpoint. This is a warning.",
-      "icon_color": [180, 80, 80],
+      "description": "A patrol ship with no transponder code and no faction markings materializes from behind a debris screen, already at weapons range. Its hull is matte black, sensor-absorbent, and built for speed. A synthesized voice . Deliberately stripped of identifying characteristics . Hails you: \"Vessel, state your business in this sector. You have ten seconds.\" The ship's weapons are already locked. This isn't a checkpoint. This is a warning.",
+      "icon_color": [
+        180,
+        80,
+        80
+      ],
       "weight": 9,
-      "danger_levels": ["dangerous"],
-      "only_systems": ["the_fulcrum"],
+      "danger_levels": [
+        "dangerous"
+      ],
+      "only_systems": [
+        "the_fulcrum"
+      ],
       "tone": "aggressive",
       "category": "system",
       "choices": [
@@ -1137,7 +1707,10 @@
           "outcome": {
             "description": "You transmit your credentials and state you're passing through on a trade route. The synthesized voice processes this for an uncomfortable five seconds. \"Acknowledged. Maintain your declared heading. Do not deviate. Do not scan.\" The patrol ship holds position as you pass, its sensors tracking you until you're out of range. You feel watched long after it's gone.",
             "rewards": [
-              {"reward_type": "xp", "amount": 10}
+              {
+                "reward_type": "xp",
+                "amount": 10
+              }
             ]
           }
         },
@@ -1146,10 +1719,16 @@
           "label": "Claim Guild Authorization",
           "description": "Name-drop the Commerce Guild and hope they're not willing to check.",
           "outcome": {
-            "description": "You transmit a confident Guild transit authorization  -- slightly embellished, but convincing. The patrol ship pauses, then: \"Authorization noted. Proceed to Corridor 3. Do not access station approach vectors.\" They let you through. Whether they bought it or simply decided you weren't worth the paperwork, you'll never know.",
+            "description": "You transmit a confident Guild transit authorization . Slightly embellished, but convincing. The patrol ship pauses, then: \"Authorization noted. Proceed to Corridor 3. Do not access station approach vectors.\" They let you through. Whether they bought it or simply decided you weren't worth the paperwork, you'll never know.",
             "rewards": [
-              {"reward_type": "xp", "amount": 15},
-              {"reward_type": "credits", "amount": 75}
+              {
+                "reward_type": "xp",
+                "amount": 15
+              },
+              {
+                "reward_type": "credits",
+                "amount": 75
+              }
             ]
           }
         },
@@ -1160,7 +1739,10 @@
           "outcome": {
             "description": "You don't argue. You throw your engines into reverse and back out of the sector with your hands metaphorically raised. The patrol ship watches you go without comment. Your heart rate takes ten minutes to normalize. Whatever The Fulcrum is hiding, it has guards who take their job very seriously.",
             "rewards": [
-              {"reward_type": "xp", "amount": 5}
+              {
+                "reward_type": "xp",
+                "amount": 5
+              }
             ]
           }
         }
@@ -1170,11 +1752,19 @@
       "id": "sys_fulcrum_weapons_test_01",
       "encounter_type": "anomaly",
       "name": "Distant Weapons Test",
-      "description": "A shockwave rolls through the sector  -- not strong enough to damage your hull, but enough to rattle every loose panel on your ship. Your sensors trace the origin to a section of The Fulcrum's outer structure that doesn't appear on any public schematic. For three seconds, your instruments record an energy discharge that dwarfs anything a station this size should be capable of producing. Then silence. Your threat assessment system flags the event and helpfully suggests: 'RECOMMEND IMMEDIATE DEPARTURE.'",
-      "icon_color": [180, 80, 80],
+      "description": "A shockwave rolls through the sector . Not strong enough to damage your hull, but enough to rattle every loose panel on your ship. Your sensors trace the origin to a section of The Fulcrum's outer structure that doesn't appear on any public schematic. For three seconds, your instruments record an energy discharge that dwarfs anything a station this size should be capable of producing. Then silence. Your threat assessment system flags the event and helpfully suggests: 'RECOMMEND IMMEDIATE DEPARTURE.'",
+      "icon_color": [
+        180,
+        80,
+        80
+      ],
       "weight": 8,
-      "danger_levels": ["dangerous"],
-      "only_systems": ["the_fulcrum"],
+      "danger_levels": [
+        "dangerous"
+      ],
+      "only_systems": [
+        "the_fulcrum"
+      ],
       "tone": "mysterious",
       "category": "system",
       "unique": true,
@@ -1184,10 +1774,17 @@
           "label": "Run a Full Spectrum Analysis",
           "description": "That energy signature could tell you what kind of weapon they're testing.",
           "outcome": {
-            "description": "Your sensors capture the residual energy pattern before it dissipates. The analysis is disturbing: the discharge profile doesn't match any known weapons system  -- not Guild, not Union, not Collective. It's something new. Something powerful. You encrypt the data and bury it deep in your secure logs. This is the kind of information that gets people killed.",
+            "description": "Your sensors capture the residual energy pattern before it dissipates. The analysis is disturbing: the discharge profile doesn't match any known weapons system . Not Guild, not Union, not Collective. It's something new. Something powerful. You encrypt the data and bury it deep in your secure logs. This is the kind of information that gets people killed.",
             "rewards": [
-              {"reward_type": "xp", "amount": 25},
-              {"reward_type": "set_flag", "amount": 1, "target_id": "fulcrum_weapons_scanned"}
+              {
+                "reward_type": "xp",
+                "amount": 25
+              },
+              {
+                "reward_type": "set_flag",
+                "amount": 1,
+                "target_id": "fulcrum_weapons_scanned"
+              }
             ]
           }
         },
@@ -1198,7 +1795,10 @@
           "outcome": {
             "description": "You send a concerned hail to The Fulcrum's public channel. A bored-sounding operator responds: \"Routine maintenance discharge from the station's waste processing system. Nothing to be concerned about.\" Your instruments recorded an energy output equivalent to a capital ship's main battery, and they're calling it waste processing. You file the lie alongside the sensor data.",
             "rewards": [
-              {"reward_type": "xp", "amount": 20}
+              {
+                "reward_type": "xp",
+                "amount": 20
+              }
             ]
           }
         },
@@ -1207,9 +1807,12 @@
           "label": "Take Your Computer's Advice and Leave",
           "description": "When your own ship tells you to run, you run.",
           "outcome": {
-            "description": "You don't need to be told twice  -- or even once, since your computer already said it. You plot the fastest course out of The Fulcrum's sensor range and don't look back. The shockwave echoes in your hull for minutes after you've cleared the sector. Whatever they're building in there, you want no part of it.",
+            "description": "You don't need to be told twice . Or even once, since your computer already said it. You plot the fastest course out of The Fulcrum's sensor range and don't look back. The shockwave echoes in your hull for minutes after you've cleared the sector. Whatever they're building in there, you want no part of it.",
             "rewards": [
-              {"reward_type": "xp", "amount": 5}
+              {
+                "reward_type": "xp",
+                "amount": 5
+              }
             ]
           }
         }

@@ -7,6 +7,7 @@ Tracks player credits, location, ship, and game progress.
 from dataclasses import dataclass, field
 from typing import Optional
 
+from spacegame.models.captain_memory import CaptainMemory
 from spacegame.models.deep_core import DeepCoreUpgradeState
 from spacegame.models.drone import MiningDroneFleet
 from spacegame.models.faction import ReputationTier, get_reputation_tier
@@ -23,6 +24,7 @@ from spacegame.models.progression import PlayerProgression
 from spacegame.models.recipe_mastery import RecipeMasteryTracker
 from spacegame.models.salvage_hold import SalvageHoldManager
 from spacegame.models.ship import Ship, ShipType
+from spacegame.models.timed_thread import TimedThreadState
 from spacegame.models.trade_route import PriceMemory, TradeRouteTracker
 from spacegame.models.upgrades import ShipUpgradeManager
 from spacegame.models.wreck_upgrade import WreckUpgradeState
@@ -55,6 +57,26 @@ class Player:
 
     # Dialogue system
     dialogue_flags: dict[str, bool] = field(default_factory=dict)
+
+    # RC: per-captain memory (encounter count, last outcome, resolution
+    # status). Persists across saves so recurring captains can remember
+    # the player and rivalries can resolve into terminal states. Empty
+    # dict = no captains met yet. See ``models/captain_memory.py``.
+    captain_memory: dict[str, "CaptainMemory"] = field(default_factory=dict)
+
+    # TW: per-thread runtime state (last touched day + entered drift
+    # states). Keyed by thread_id. Empty = no thread has had its clock
+    # started. See ``models/timed_thread.py``.
+    timed_thread_state: dict[str, "TimedThreadState"] = field(
+        default_factory=dict
+    )
+    # TW (QA-F-1 fix): most-recent game_day each interaction key was
+    # recorded. Powers touch semantics for TimedThreads — both one-time
+    # and recurring. Populated via record_interaction() at action
+    # points (dialogue end, mission accept). The evaluator consults
+    # this instead of sniffing dialogue_flags so touches can be
+    # distinguished from "flag set long ago and still True".
+    last_interaction_day: dict[str, int] = field(default_factory=dict)
 
     # Trade permit system (bills of landing)
     trade_permits: set[str] = field(default_factory=set)
@@ -658,6 +680,55 @@ class Player:
     def playstyle_label(self) -> str:
         """Get the player's playstyle as a human-readable label."""
         return get_playstyle_label(**self._identity_stats())
+
+    # ------------------------------------------------------------------
+    # RC: captain memory helpers
+    # ------------------------------------------------------------------
+
+    def get_captain_memory(self, captain_id: str) -> CaptainMemory:
+        """Get the player's memory for a captain, creating it if absent.
+
+        Returns a ``CaptainMemory`` with default state for never-met
+        captains. Mutating the returned object updates the player's
+        records in place.
+        """
+        if captain_id not in self.captain_memory:
+            self.captain_memory[captain_id] = CaptainMemory(captain_id=captain_id)
+        return self.captain_memory[captain_id]
+
+    def record_interaction(self, key: str, game_day: Optional[int] = None) -> None:
+        """TW: mark an interaction-key as happening on the given day.
+
+        Used by the TimedThread evaluator to reset drift clocks on
+        threads that watch this key. Callers invoke this at action
+        points — dialogue end, mission accept, etc. — so touches are
+        distinguishable from flags that merely stay True over time.
+
+        Args:
+            key: Interaction identifier (e.g. ``"talked_to_marcus_jin"``,
+                ``"the_scholars_errand_accepted"``, ``"any_mission_accepted"``).
+            game_day: Day the interaction happened. Defaults to
+                ``self.game_day``.
+        """
+        day = game_day if game_day is not None else self.game_day
+        self.last_interaction_day[key] = day
+
+    def record_captain_encounter(
+        self, captain_id: str, outcome: str
+    ) -> CaptainMemory:
+        """Record a meeting with a captain and apply resolution rules.
+
+        Increments encounter_count, sets last_outcome, updates day stamps,
+        and transitions status if the outcome triggers resolution. Returns
+        the (possibly newly-created) memory for the caller to inspect.
+
+        Args:
+            captain_id: The captain's id.
+            outcome: One of ``OUTCOME_*`` strings from captain_memory.
+        """
+        mem = self.get_captain_memory(captain_id)
+        mem.record_encounter(outcome, self.game_day)
+        return mem
 
     def make_news_context(
         self, detail: str = "", commodity: str = "", amount: str = ""

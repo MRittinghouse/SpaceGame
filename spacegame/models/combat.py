@@ -653,6 +653,15 @@ class CombatEncounter:
 
     enemy_templates: list[EnemyShipTemplate]
     encounter_seed: int
+    # CE-3 Wave 2: ids of complications attached to this encounter. The
+    # combat engine resolves them through the data loader at construction
+    # time. Default empty so callers building plain combat fights stay
+    # unaffected.
+    complication_ids: list[str] = field(default_factory=list)
+    # CE-6: id of the named captain attached to this encounter (if any).
+    # The combat view surfaces the matching outcome line (defeat / victory
+    # / surrender) at COMBAT_OVER. Empty string = unattributed combat.
+    captain_id: str = ""
 
 
 @dataclass

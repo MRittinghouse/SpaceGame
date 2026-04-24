@@ -5,9 +5,16 @@
       "encounter_type": "patrol",
       "name": "Bureau Audit",
       "description": "A sleek Commerce Bureau cutter matches your velocity and hails on an official channel. The officer aboard identifies herself as Director Tanith Voss, Bureau of Commerce Compliance Division. She informs you that your recent transactions have been flagged for review and requests you transmit your trade logs immediately.",
-      "icon_color": [80, 130, 200],
+      "icon_color": [
+        80,
+        130,
+        200
+      ],
       "weight": 10,
-      "danger_levels": ["safe", "moderate"],
+      "danger_levels": [
+        "safe",
+        "moderate"
+      ],
       "required_faction": "commerce_guild",
       "tone": "neutral",
       "category": "faction",
@@ -19,8 +26,15 @@
           "outcome": {
             "description": "Director Voss reviews your records with practiced efficiency. After several minutes, she nods. \"Your accounts are in order. The Bureau appreciates your cooperation, and I have noted your compliance in our files.\"",
             "rewards": [
-              {"reward_type": "xp", "amount": 10},
-              {"reward_type": "modify_reputation", "amount": 5, "target_id": "commerce_guild"}
+              {
+                "reward_type": "xp",
+                "amount": 10
+              },
+              {
+                "reward_type": "modify_reputation",
+                "amount": 5,
+                "target_id": "commerce_guild"
+              }
             ]
           }
         },
@@ -31,7 +45,10 @@
           "outcome": {
             "description": "Director Voss pauses, then concedes the point. \"You are within your rights, of course. I will note that you requested counsel and schedule a formal review at Nexus Prime. Good day.\" She cuts the channel. The audit is delayed, but not forgotten.",
             "rewards": [
-              {"reward_type": "xp", "amount": 5}
+              {
+                "reward_type": "xp",
+                "amount": 5
+              }
             ]
           }
         },
@@ -42,7 +59,11 @@
           "outcome": {
             "description": "Director Voss's expression hardens. \"I will note your refusal in the Bureau's records. I trust you understand the implications for your standing with the Commerce Guild.\" The cutter peels away without another word.",
             "rewards": [
-              {"reward_type": "modify_reputation", "amount": -8, "target_id": "commerce_guild"}
+              {
+                "reward_type": "modify_reputation",
+                "amount": -8,
+                "target_id": "commerce_guild"
+              }
             ]
           }
         }
@@ -53,9 +74,16 @@
       "encounter_type": "merchant",
       "name": "Exclusive Contract",
       "description": "A Meridian Trading House vessel hails you with an encrypted business proposal. Representative Oren Sable introduces himself and explains that Meridian is seeking independent haulers for an exclusive supply contract. The terms are generous, but the exclusivity clause would tie you to Guild-approved routes for the foreseeable future.",
-      "icon_color": [100, 150, 220],
+      "icon_color": [
+        100,
+        150,
+        220
+      ],
       "weight": 9,
-      "danger_levels": ["safe", "moderate"],
+      "danger_levels": [
+        "safe",
+        "moderate"
+      ],
       "required_faction": "commerce_guild",
       "tone": "neutral",
       "category": "faction",
@@ -67,9 +95,19 @@
           "outcome": {
             "description": "Representative Sable transmits the contract, and you press your ident to the agreement. A substantial signing bonus appears in your account moments later. \"Meridian Trading House looks forward to a productive partnership,\" he says with practiced warmth.",
             "rewards": [
-              {"reward_type": "credits", "amount": 200},
-              {"reward_type": "xp", "amount": 15},
-              {"reward_type": "modify_reputation", "amount": 10, "target_id": "commerce_guild"}
+              {
+                "reward_type": "credits",
+                "amount": 200
+              },
+              {
+                "reward_type": "xp",
+                "amount": 15
+              },
+              {
+                "reward_type": "modify_reputation",
+                "amount": 10,
+                "target_id": "commerce_guild"
+              }
             ]
           }
         },
@@ -80,9 +118,19 @@
           "outcome": {
             "description": "Sable listens to your counter-proposal and consults his datapad. \"I am not authorized to modify the exclusivity clause, but I can offer an improved rate on your first three deliveries.\" The compromise leaves both sides satisfied, if not thrilled.",
             "rewards": [
-              {"reward_type": "credits", "amount": 120},
-              {"reward_type": "xp", "amount": 10},
-              {"reward_type": "modify_reputation", "amount": 5, "target_id": "commerce_guild"}
+              {
+                "reward_type": "credits",
+                "amount": 120
+              },
+              {
+                "reward_type": "xp",
+                "amount": 10
+              },
+              {
+                "reward_type": "modify_reputation",
+                "amount": 5,
+                "target_id": "commerce_guild"
+              }
             ]
           }
         },
@@ -93,7 +141,10 @@
           "outcome": {
             "description": "Sable takes the rejection with professional grace. \"I understand. Independence has its own value in these lanes. Should you reconsider, Meridian's offer remains open for thirty standard days.\" He signs off with a courteous nod.",
             "rewards": [
-              {"reward_type": "xp", "amount": 5}
+              {
+                "reward_type": "xp",
+                "amount": 5
+              }
             ]
           }
         }
@@ -104,12 +155,20 @@
       "encounter_type": "patrol",
       "name": "Tariff Enforcement",
       "description": "A Commerce Guild enforcement frigate drops out of transit directly ahead of you. The vessel's transponder identifies it as the CGS Ledger's Due. An officer broadcasts on an open channel: \"Attention, independent vessel. You are carrying goods through a Guild-regulated corridor. Standard tariff applies. Transmit payment or submit to cargo seizure.\"",
-      "icon_color": [80, 130, 200],
+      "icon_color": [
+        80,
+        130,
+        200
+      ],
       "weight": 10,
-      "danger_levels": ["moderate", "dangerous"],
+      "danger_levels": [
+        "moderate",
+        "dangerous"
+      ],
       "required_faction": "commerce_guild",
       "tone": "aggressive",
       "category": "faction",
+      "complication_ids": ["third_party_hail"],
       "choices": [
         {
           "id": "pay",
@@ -118,8 +177,15 @@
           "outcome": {
             "description": "You authorize the payment, and the enforcement officer logs your compliance. \"Your tariff receipt has been filed. You are cleared to proceed. The Commerce Guild thanks you for your contribution to regulated trade.\" The frigate moves on to its next target.",
             "rewards": [
-              {"reward_type": "deduct_credits", "amount": -100},
-              {"reward_type": "modify_reputation", "amount": 5, "target_id": "commerce_guild"}
+              {
+                "reward_type": "deduct_credits",
+                "amount": -100
+              },
+              {
+                "reward_type": "modify_reputation",
+                "amount": 5,
+                "target_id": "commerce_guild"
+              }
             ]
           }
         },
@@ -128,10 +194,17 @@
           "label": "Dispute the Tariff",
           "description": "Challenge the legality of the tariff in this corridor.",
           "outcome": {
-            "description": "You cite corridor jurisdiction precedents from the Bureau's own charter. There is a long silence before the officer responds. \"Your objection has been noted and will be reviewed by the Bureau. You may proceed  -- for now.\" No credits change hands, but you sense this is not over.",
+            "description": "You cite corridor jurisdiction precedents from the Bureau's own charter. There is a long silence before the officer responds. \"Your objection has been noted and will be reviewed by the Bureau. You may proceed . For now.\" No credits change hands, but you sense this is not over.",
             "rewards": [
-              {"reward_type": "xp", "amount": 15},
-              {"reward_type": "modify_reputation", "amount": -5, "target_id": "commerce_guild"}
+              {
+                "reward_type": "xp",
+                "amount": 15
+              },
+              {
+                "reward_type": "modify_reputation",
+                "amount": -5,
+                "target_id": "commerce_guild"
+              }
             ]
           }
         },
@@ -142,7 +215,11 @@
           "outcome": {
             "description": "The enforcement officer's tone shifts from bureaucratic to cold. \"Noncompliance noted. Enforcement protocols are now in effect.\" The frigate's weapon ports begin to glow.",
             "rewards": [
-              {"reward_type": "modify_reputation", "amount": -10, "target_id": "commerce_guild"}
+              {
+                "reward_type": "modify_reputation",
+                "amount": -10,
+                "target_id": "commerce_guild"
+              }
             ],
             "leads_to_combat": true
           }
@@ -154,9 +231,16 @@
       "encounter_type": "comm_intercept",
       "name": "Market Manipulation",
       "description": "Your comms array picks up a fragmented transmission on a semi-encrypted frequency. After running it through your decoder, the message becomes clear: an anonymous source is alleging that a senior Meridian Trading House director has been artificially inflating commodity prices at Nexus Prime. The source claims to have documentation.",
-      "icon_color": [80, 130, 200],
+      "icon_color": [
+        80,
+        130,
+        200
+      ],
       "weight": 8,
-      "danger_levels": ["safe", "moderate"],
+      "danger_levels": [
+        "safe",
+        "moderate"
+      ],
       "required_faction": "commerce_guild",
       "tone": "mysterious",
       "category": "faction",
@@ -168,9 +252,19 @@
           "outcome": {
             "description": "You transmit the intercepted data to the Bureau's fraud division. Hours later, a terse acknowledgment arrives: \"Your report has been received and assigned case number BCC-7741. The Bureau appreciates citizens who uphold market integrity.\" A modest informant's fee accompanies the message.",
             "rewards": [
-              {"reward_type": "credits", "amount": 100},
-              {"reward_type": "xp", "amount": 15},
-              {"reward_type": "modify_reputation", "amount": 8, "target_id": "commerce_guild"}
+              {
+                "reward_type": "credits",
+                "amount": 100
+              },
+              {
+                "reward_type": "xp",
+                "amount": 15
+              },
+              {
+                "reward_type": "modify_reputation",
+                "amount": 8,
+                "target_id": "commerce_guild"
+              }
             ]
           }
         },
@@ -181,8 +275,14 @@
           "outcome": {
             "description": "You adjust your trade route to capitalize on the inflated prices before the manipulation is discovered. The profits are immediate and satisfying, though you cannot shake the feeling that someone is watching.",
             "rewards": [
-              {"reward_type": "credits", "amount": 200},
-              {"reward_type": "xp", "amount": 10}
+              {
+                "reward_type": "credits",
+                "amount": 200
+              },
+              {
+                "reward_type": "xp",
+                "amount": 10
+              }
             ]
           }
         },
@@ -193,7 +293,10 @@
           "outcome": {
             "description": "You wipe the transmission from your logs. Whatever games the Guild's upper echelon plays with commodity prices, it has nothing to do with you. Probably.",
             "rewards": [
-              {"reward_type": "xp", "amount": 5}
+              {
+                "reward_type": "xp",
+                "amount": 5
+              }
             ]
           }
         }
@@ -204,9 +307,16 @@
       "encounter_type": "distress_signal",
       "name": "Convoy Escort Request",
       "description": "A Solari Logistics convoy of three heavy freighters broadcasts a priority request. Their escort vessel suffered a drive malfunction two systems back, and they are transiting a corridor with recent pirate activity. The convoy master, Associate Director Pell Novik, is offering payment for any capable vessel willing to fly escort until they reach the next Guild waystation.",
-      "icon_color": [100, 150, 220],
+      "icon_color": [
+        100,
+        150,
+        220
+      ],
       "weight": 10,
-      "danger_levels": ["moderate", "dangerous"],
+      "danger_levels": [
+        "moderate",
+        "dangerous"
+      ],
       "required_faction": "commerce_guild",
       "tone": "neutral",
       "category": "faction",
@@ -218,9 +328,19 @@
           "outcome": {
             "description": "You fall into formation with the convoy and maintain a watchful sensor sweep. The transit passes without incident, though your presence likely deterred at least one contact that appeared on long-range scans and then vanished. Associate Director Novik transfers your fee with a formal note of thanks from Solari Logistics.",
             "rewards": [
-              {"reward_type": "credits", "amount": 175},
-              {"reward_type": "xp", "amount": 20},
-              {"reward_type": "modify_reputation", "amount": 8, "target_id": "commerce_guild"}
+              {
+                "reward_type": "credits",
+                "amount": 175
+              },
+              {
+                "reward_type": "xp",
+                "amount": 20
+              },
+              {
+                "reward_type": "modify_reputation",
+                "amount": 8,
+                "target_id": "commerce_guild"
+              }
             ]
           }
         },
@@ -231,9 +351,19 @@
           "outcome": {
             "description": "Novik hesitates, then consults with his logistics team. \"Solari Logistics is authorized to increase the offer by forty percent, given the elevated threat assessment. Do we have an agreement?\" You accept, and the convoy proceeds under your watchful eye.",
             "rewards": [
-              {"reward_type": "credits", "amount": 250},
-              {"reward_type": "xp", "amount": 15},
-              {"reward_type": "modify_reputation", "amount": 5, "target_id": "commerce_guild"}
+              {
+                "reward_type": "credits",
+                "amount": 250
+              },
+              {
+                "reward_type": "xp",
+                "amount": 15
+              },
+              {
+                "reward_type": "modify_reputation",
+                "amount": 5,
+                "target_id": "commerce_guild"
+              }
             ]
           }
         },
@@ -244,7 +374,10 @@
           "outcome": {
             "description": "Novik accepts your refusal with the composure of a man accustomed to logistics setbacks. \"Understood. Safe travels, Captain.\" The convoy tightens formation and continues on, their running lights blinking nervously in the dark.",
             "rewards": [
-              {"reward_type": "xp", "amount": 5}
+              {
+                "reward_type": "xp",
+                "amount": 5
+              }
             ]
           }
         }
@@ -255,9 +388,16 @@
       "encounter_type": "merchant",
       "name": "Surplus Liquidation",
       "description": "A Guild warehouse ship, the MTS Overstock, is broadcasting a clearance sale on open frequencies. Their cargo master explains that a shipment rerouting left them with surplus goods they need to offload before reaching port. Prices are well below market rate, but the selection is limited to what they have on hand.",
-      "icon_color": [100, 150, 220],
+      "icon_color": [
+        100,
+        150,
+        220
+      ],
       "weight": 10,
-      "danger_levels": ["safe", "moderate"],
+      "danger_levels": [
+        "safe",
+        "moderate"
+      ],
       "required_faction": "commerce_guild",
       "tone": "neutral",
       "category": "faction",
@@ -269,9 +409,18 @@
           "outcome": {
             "description": "You dock briefly and load up on discounted commodities. The cargo master stamps your receipt with a Guild authentication seal. \"These goods are fully documented and tariff-cleared. Resale at any Guild-affiliated port should be straightforward.\"",
             "rewards": [
-              {"reward_type": "deduct_credits", "amount": -75},
-              {"reward_type": "credits", "amount": 175},
-              {"reward_type": "xp", "amount": 10}
+              {
+                "reward_type": "deduct_credits",
+                "amount": -75
+              },
+              {
+                "reward_type": "credits",
+                "amount": 175
+              },
+              {
+                "reward_type": "xp",
+                "amount": 10
+              }
             ]
           }
         },
@@ -282,7 +431,10 @@
           "outcome": {
             "description": "You review the manifest but nothing catches your eye at the right price point. The cargo master shrugs philosophically. \"No obligation, Captain. The Overstock will be in this corridor for another twelve hours if you change your mind.\"",
             "rewards": [
-              {"reward_type": "xp", "amount": 5}
+              {
+                "reward_type": "xp",
+                "amount": 5
+              }
             ]
           }
         }
@@ -293,9 +445,16 @@
       "encounter_type": "merchant",
       "name": "Diplomatic Passage",
       "description": "A small Guild courier vessel hails you with an unusual request. Aboard is Associate Consul Davia Rhett, a Commerce Guild diplomat en route to trade negotiations. Her vessel's transit drive is cycling erratically, and she needs passage to the nearest Guild-controlled station. She offers compensation commensurate with the inconvenience.",
-      "icon_color": [80, 130, 200],
+      "icon_color": [
+        80,
+        130,
+        200
+      ],
       "weight": 8,
-      "danger_levels": ["safe", "moderate"],
+      "danger_levels": [
+        "safe",
+        "moderate"
+      ],
       "required_faction": "commerce_guild",
       "tone": "neutral",
       "category": "faction",
@@ -307,9 +466,19 @@
           "outcome": {
             "description": "Associate Consul Rhett boards with minimal luggage and impeccable manners. During the transit, she shares insights about upcoming trade policy shifts that could affect commodity prices in neighboring systems. When she disembarks, she transfers payment and a personal commendation to your Guild file.",
             "rewards": [
-              {"reward_type": "credits", "amount": 150},
-              {"reward_type": "xp", "amount": 20},
-              {"reward_type": "modify_reputation", "amount": 8, "target_id": "commerce_guild"}
+              {
+                "reward_type": "credits",
+                "amount": 150
+              },
+              {
+                "reward_type": "xp",
+                "amount": 20
+              },
+              {
+                "reward_type": "modify_reputation",
+                "amount": 8,
+                "target_id": "commerce_guild"
+              }
             ]
           }
         },
@@ -320,9 +489,19 @@
           "outcome": {
             "description": "Rhett raises an eyebrow but does not argue. \"I suppose urgency commands its own premium. Very well.\" She pays without further comment, though her thank-you note upon departure is notably brief.",
             "rewards": [
-              {"reward_type": "credits", "amount": 225},
-              {"reward_type": "xp", "amount": 10},
-              {"reward_type": "modify_reputation", "amount": 3, "target_id": "commerce_guild"}
+              {
+                "reward_type": "credits",
+                "amount": 225
+              },
+              {
+                "reward_type": "xp",
+                "amount": 10
+              },
+              {
+                "reward_type": "modify_reputation",
+                "amount": 3,
+                "target_id": "commerce_guild"
+              }
             ]
           }
         },
@@ -333,7 +512,10 @@
           "outcome": {
             "description": "Rhett accepts the refusal graciously. \"I understand, Captain. I will arrange alternative transport. Thank you for your time.\" Her courier vessel limps onward, and you wonder briefly if the drive will hold.",
             "rewards": [
-              {"reward_type": "xp", "amount": 5}
+              {
+                "reward_type": "xp",
+                "amount": 5
+              }
             ]
           }
         }
@@ -344,12 +526,20 @@
       "encounter_type": "patrol",
       "name": "Routine Inspection",
       "description": "A Commerce Bureau patrol vessel cuts across your bow and broadcasts an official inspection notice. The lead officer, Inspector Second-Class Brenn Holloway, announces that all vessels in this sector are subject to cargo verification under Bureau Directive 4412. His tone suggests that \"routine\" is a generous description of the scrutiny your hold is about to receive.",
-      "icon_color": [80, 130, 200],
+      "icon_color": [
+        80,
+        130,
+        200
+      ],
       "weight": 10,
-      "danger_levels": ["moderate", "dangerous"],
+      "danger_levels": [
+        "moderate",
+        "dangerous"
+      ],
       "required_faction": "commerce_guild",
       "tone": "aggressive",
       "category": "faction",
+      "complication_ids": ["third_party_hail"],
       "choices": [
         {
           "id": "submit",
@@ -358,8 +548,15 @@
           "outcome": {
             "description": "Inspector Holloway's team spends an unreasonable amount of time scanning every container and cross-referencing serial numbers. Eventually, he declares your cargo compliant. \"Everything appears to be in order. You may proceed.\" His disappointment is almost palpable.",
             "rewards": [
-              {"reward_type": "xp", "amount": 10},
-              {"reward_type": "modify_reputation", "amount": 5, "target_id": "commerce_guild"}
+              {
+                "reward_type": "xp",
+                "amount": 10
+              },
+              {
+                "reward_type": "modify_reputation",
+                "amount": 5,
+                "target_id": "commerce_guild"
+              }
             ]
           }
         },
@@ -370,8 +567,14 @@
           "outcome": {
             "description": "Holloway glances at his crew, then back at you. \"An expedited review can be arranged for a standard facilitation fee.\" The credits vanish into what is almost certainly not an official Bureau account, and Holloway waves you through with suspicious efficiency.",
             "rewards": [
-              {"reward_type": "deduct_credits", "amount": -80},
-              {"reward_type": "xp", "amount": 5}
+              {
+                "reward_type": "deduct_credits",
+                "amount": -80
+              },
+              {
+                "reward_type": "xp",
+                "amount": 5
+              }
             ]
           }
         },
@@ -382,7 +585,11 @@
           "outcome": {
             "description": "Holloway's jaw tightens. \"Refusal to comply with Bureau Directive 4412 constitutes obstruction of regulated commerce. I am authorized to enforce compliance.\" His vessel's weapon arrays begin their targeting sequence.",
             "rewards": [
-              {"reward_type": "modify_reputation", "amount": -10, "target_id": "commerce_guild"}
+              {
+                "reward_type": "modify_reputation",
+                "amount": -10,
+                "target_id": "commerce_guild"
+              }
             ],
             "leads_to_combat": true
           }
@@ -393,10 +600,17 @@
       "id": "guild_blackmail_01",
       "encounter_type": "comm_intercept",
       "name": "Compromising Transmission",
-      "description": "Your communications array intercepts a partially decrypted transmission between two Guild officials. The content is damning: a senior Meridian Trading House director has been funneling profits through shell companies to avoid Guild taxation. The transmission includes account numbers, dates, and enough detail to ruin a career  -- or make someone very grateful for your discretion.",
-      "icon_color": [80, 130, 200],
+      "description": "Your communications array intercepts a partially decrypted transmission between two Guild officials. The content is damning: a senior Meridian Trading House director has been funneling profits through shell companies to avoid Guild taxation. The transmission includes account numbers, dates, and enough detail to ruin a career . Or make someone very grateful for your discretion.",
+      "icon_color": [
+        80,
+        130,
+        200
+      ],
       "weight": 8,
-      "danger_levels": ["moderate", "dangerous"],
+      "danger_levels": [
+        "moderate",
+        "dangerous"
+      ],
       "required_faction": "commerce_guild",
       "tone": "mysterious",
       "category": "faction",
@@ -408,9 +622,19 @@
           "outcome": {
             "description": "You forward the transmission to the Bureau of Commerce's internal oversight division. Days later, a discreet message arrives confirming that an investigation has been opened. A modest but official reward accompanies the acknowledgment, along with a note: \"The Guild values integrity above all else.\"",
             "rewards": [
-              {"reward_type": "credits", "amount": 150},
-              {"reward_type": "xp", "amount": 20},
-              {"reward_type": "modify_reputation", "amount": 10, "target_id": "commerce_guild"}
+              {
+                "reward_type": "credits",
+                "amount": 150
+              },
+              {
+                "reward_type": "xp",
+                "amount": 20
+              },
+              {
+                "reward_type": "modify_reputation",
+                "amount": 10,
+                "target_id": "commerce_guild"
+              }
             ]
           }
         },
@@ -419,11 +643,21 @@
           "label": "Contact the Director",
           "description": "The director might pay handsomely for this to disappear.",
           "outcome": {
-            "description": "You reach out through back channels. The response is swift and generous. A large sum appears in an untraceable account, and a curt message follows: \"This matter is concluded. I trust we understand each other.\" You have made a powerful friend  -- or a dangerous enemy.",
+            "description": "You reach out through back channels. The response is swift and generous. A large sum appears in an untraceable account, and a curt message follows: \"This matter is concluded. I trust we understand each other.\" You have made a powerful friend . Or a dangerous enemy.",
             "rewards": [
-              {"reward_type": "credits", "amount": 250},
-              {"reward_type": "xp", "amount": 15},
-              {"reward_type": "modify_reputation", "amount": -5, "target_id": "commerce_guild"}
+              {
+                "reward_type": "credits",
+                "amount": 250
+              },
+              {
+                "reward_type": "xp",
+                "amount": 15
+              },
+              {
+                "reward_type": "modify_reputation",
+                "amount": -5,
+                "target_id": "commerce_guild"
+              }
             ]
           }
         },
@@ -434,7 +668,10 @@
           "outcome": {
             "description": "You wipe the transmission and scrub your comm logs. Guild politics are a labyrinth, and you have no interest in being someone's pawn. The data is gone, but you cannot quite forget those account numbers.",
             "rewards": [
-              {"reward_type": "xp", "amount": 10}
+              {
+                "reward_type": "xp",
+                "amount": 10
+              }
             ]
           }
         }
@@ -444,10 +681,17 @@
       "id": "guild_merger_01",
       "encounter_type": "merchant",
       "name": "Contract Dispute",
-      "description": "Two merchant vessels are parked nose-to-nose in the shipping lane, their captains arguing over an open channel. The dispute concerns a bulk commodity contract  -- both claim exclusive rights to the same delivery route. Captain Fenn of the Steady Margin insists her contract predates Captain Dorr's by three days. Dorr counters that his was filed with the Bureau first. They spot your vessel and simultaneously request you serve as an impartial arbiter.",
-      "icon_color": [100, 150, 220],
+      "description": "Two merchant vessels are parked nose-to-nose in the shipping lane, their captains arguing over an open channel. The dispute concerns a bulk commodity contract . Both claim exclusive rights to the same delivery route. Captain Fenn of the Steady Margin insists her contract predates Captain Dorr's by three days. Dorr counters that his was filed with the Bureau first. They spot your vessel and simultaneously request you serve as an impartial arbiter.",
+      "icon_color": [
+        100,
+        150,
+        220
+      ],
       "weight": 9,
-      "danger_levels": ["safe", "moderate"],
+      "danger_levels": [
+        "safe",
+        "moderate"
+      ],
       "required_faction": "commerce_guild",
       "tone": "humorous",
       "category": "faction",
@@ -459,9 +703,19 @@
           "outcome": {
             "description": "You review both contracts and cite the Guild's own precedent guidelines: signature date supersedes filing date. Captain Fenn nods triumphantly. Captain Dorr grumbles but accepts the ruling. Fenn transfers a \"mediator's honorarium\" to your account and both vessels go their separate ways.",
             "rewards": [
-              {"reward_type": "credits", "amount": 100},
-              {"reward_type": "xp", "amount": 15},
-              {"reward_type": "modify_reputation", "amount": 5, "target_id": "commerce_guild"}
+              {
+                "reward_type": "credits",
+                "amount": 100
+              },
+              {
+                "reward_type": "xp",
+                "amount": 15
+              },
+              {
+                "reward_type": "modify_reputation",
+                "amount": 5,
+                "target_id": "commerce_guild"
+              }
             ]
           }
         },
@@ -472,9 +726,19 @@
           "outcome": {
             "description": "You point out that the Bureau filing date constitutes the legal record of agreement. Captain Dorr smirks. Captain Fenn protests loudly but eventually concedes when you quote the relevant subsection. Dorr pays you for your trouble, and Fenn vows to file faster next time.",
             "rewards": [
-              {"reward_type": "credits", "amount": 100},
-              {"reward_type": "xp", "amount": 15},
-              {"reward_type": "modify_reputation", "amount": 5, "target_id": "commerce_guild"}
+              {
+                "reward_type": "credits",
+                "amount": 100
+              },
+              {
+                "reward_type": "xp",
+                "amount": 15
+              },
+              {
+                "reward_type": "modify_reputation",
+                "amount": 5,
+                "target_id": "commerce_guild"
+              }
             ]
           }
         },
@@ -483,11 +747,21 @@
           "label": "Propose a Split",
           "description": "Suggest they divide the route between them.",
           "outcome": {
-            "description": "You propose they split the delivery route at the midpoint  -- Fenn takes the coreward leg, Dorr takes the rimward. Both captains stare at you, then at each other, then reluctantly agree. \"Fine. But I am filing a formal precedent objection,\" Dorr mutters. They each tip you for your Solomonic wisdom.",
+            "description": "You propose they split the delivery route at the midpoint . Fenn takes the coreward leg, Dorr takes the rimward. Both captains stare at you, then at each other, then reluctantly agree. \"Fine. But I am filing a formal precedent objection,\" Dorr mutters. They each tip you for your Solomonic wisdom.",
             "rewards": [
-              {"reward_type": "credits", "amount": 75},
-              {"reward_type": "xp", "amount": 20},
-              {"reward_type": "modify_reputation", "amount": 8, "target_id": "commerce_guild"}
+              {
+                "reward_type": "credits",
+                "amount": 75
+              },
+              {
+                "reward_type": "xp",
+                "amount": 20
+              },
+              {
+                "reward_type": "modify_reputation",
+                "amount": 8,
+                "target_id": "commerce_guild"
+              }
             ]
           }
         }
@@ -497,10 +771,17 @@
       "id": "guild_distress_luxury_01",
       "encounter_type": "distress_signal",
       "name": "Luxury Liner Crisis",
-      "description": "A Commerce Guild luxury liner, the MTS Golden Dividend, is broadcasting a distress signal on a priority channel. When you respond, the ship's purser explains the situation with barely contained panic: the primary galley's heating array has failed, and the one hundred and twelve passengers  -- all Guild executives on a corporate retreat  -- have been without hot meals for six hours. The purser describes the situation as \"approaching mutiny.\"",
-      "icon_color": [100, 150, 220],
+      "description": "A Commerce Guild luxury liner, the MTS Golden Dividend, is broadcasting a distress signal on a priority channel. When you respond, the ship's purser explains the situation with barely contained panic: the primary galley's heating array has failed, and the one hundred and twelve passengers . All Guild executives on a corporate retreat . Have been without hot meals for six hours. The purser describes the situation as \"approaching mutiny.\"",
+      "icon_color": [
+        100,
+        150,
+        220
+      ],
       "weight": 8,
-      "danger_levels": ["safe", "moderate"],
+      "danger_levels": [
+        "safe",
+        "moderate"
+      ],
       "required_faction": "commerce_guild",
       "tone": "humorous",
       "category": "faction",
@@ -512,9 +793,19 @@
           "outcome": {
             "description": "You dock with the Golden Dividend and help their engineer jury-rig the heating array with components from your own ship. Within an hour, the galley is operational again. The executives applaud as the first hot meal in six hours emerges from the kitchen. The purser pays you with the desperate generosity of a person whose job was on the line.",
             "rewards": [
-              {"reward_type": "credits", "amount": 200},
-              {"reward_type": "xp", "amount": 15},
-              {"reward_type": "modify_reputation", "amount": 8, "target_id": "commerce_guild"}
+              {
+                "reward_type": "credits",
+                "amount": 200
+              },
+              {
+                "reward_type": "xp",
+                "amount": 15
+              },
+              {
+                "reward_type": "modify_reputation",
+                "amount": 8,
+                "target_id": "commerce_guild"
+              }
             ]
           }
         },
@@ -525,9 +816,19 @@
           "outcome": {
             "description": "You heat up your entire stock of emergency ration packs and shuttle them over. The executives eye the bland nutrient bars with undisguised horror, but hunger wins. The purser pays you triple the going rate and thanks you through gritted teeth. \"The passengers have been... adequately sustained.\"",
             "rewards": [
-              {"reward_type": "credits", "amount": 150},
-              {"reward_type": "xp", "amount": 10},
-              {"reward_type": "modify_reputation", "amount": 5, "target_id": "commerce_guild"}
+              {
+                "reward_type": "credits",
+                "amount": 150
+              },
+              {
+                "reward_type": "xp",
+                "amount": 10
+              },
+              {
+                "reward_type": "modify_reputation",
+                "amount": 5,
+                "target_id": "commerce_guild"
+              }
             ]
           }
         },
@@ -538,7 +839,10 @@
           "outcome": {
             "description": "You log the distress signal, note that no lives are in danger, and continue on your route. Behind you, the Golden Dividend's purser can be heard arguing with an executive who is demanding to speak with \"whoever is in charge of the universe's logistics.\"",
             "rewards": [
-              {"reward_type": "xp", "amount": 5}
+              {
+                "reward_type": "xp",
+                "amount": 5
+              }
             ]
           }
         }
@@ -548,10 +852,17 @@
       "id": "guild_signal_encoded_01",
       "encounter_type": "comm_intercept",
       "name": "Encoded Priority Signal",
-      "description": "Your comms array flags an anomalous signal on a restricted Guild frequency  -- a burst transmission using heavy encryption that your systems can only partially decode. What you can read references \"Project Dividend\" and includes coordinates deep in the Fulcrum, along with a warning: \"Ensure all assets are in position before the quarter closes. No exceptions.\" The rest is garbled.",
-      "icon_color": [80, 130, 200],
+      "description": "Your comms array flags an anomalous signal on a restricted Guild frequency . A burst transmission using heavy encryption that your systems can only partially decode. What you can read references \"Project Dividend\" and includes coordinates deep in the Fulcrum, along with a warning: \"Ensure all assets are in position before the quarter closes. No exceptions.\" The rest is garbled.",
+      "icon_color": [
+        80,
+        130,
+        200
+      ],
       "weight": 8,
-      "danger_levels": ["moderate", "dangerous"],
+      "danger_levels": [
+        "moderate",
+        "dangerous"
+      ],
       "required_faction": "commerce_guild",
       "tone": "mysterious",
       "category": "faction",
@@ -561,10 +872,16 @@
           "label": "Attempt Full Decode",
           "description": "Devote processing power to cracking the encryption.",
           "outcome": {
-            "description": "Your systems grind through the encryption layers for hours, but the Guild's cryptographers are thorough. You extract fragments  -- shipping manifests, personnel codes, a reference to \"controlled market correction\"  -- but the full picture remains elusive. Still, the data you have recovered could be valuable to the right buyer.",
+            "description": "Your systems grind through the encryption layers for hours, but the Guild's cryptographers are thorough. You extract fragments . Shipping manifests, personnel codes, a reference to \"controlled market correction\" . But the full picture remains elusive. Still, the data you have recovered could be valuable to the right buyer.",
             "rewards": [
-              {"reward_type": "credits", "amount": 125},
-              {"reward_type": "xp", "amount": 25}
+              {
+                "reward_type": "credits",
+                "amount": 125
+              },
+              {
+                "reward_type": "xp",
+                "amount": 25
+              }
             ]
           }
         },
@@ -575,9 +892,19 @@
           "outcome": {
             "description": "You transmit a sanitized report to the Bureau of Commerce, alerting them that their restricted frequency has been intercepted. A terse reply arrives: \"Your discretion is noted and appreciated. The Commerce Guild remembers those who act in good faith.\" A reward follows shortly after.",
             "rewards": [
-              {"reward_type": "credits", "amount": 100},
-              {"reward_type": "xp", "amount": 15},
-              {"reward_type": "modify_reputation", "amount": 10, "target_id": "commerce_guild"}
+              {
+                "reward_type": "credits",
+                "amount": 100
+              },
+              {
+                "reward_type": "xp",
+                "amount": 15
+              },
+              {
+                "reward_type": "modify_reputation",
+                "amount": 10,
+                "target_id": "commerce_guild"
+              }
             ]
           }
         },
@@ -588,7 +915,10 @@
           "outcome": {
             "description": "You purge the intercept from your comm logs and recalibrate your array to avoid the restricted band. Whatever \"Project Dividend\" is, it is none of your concern. The signal fades into the background noise of the void.",
             "rewards": [
-              {"reward_type": "xp", "amount": 5}
+              {
+                "reward_type": "xp",
+                "amount": 5
+              }
             ]
           }
         }

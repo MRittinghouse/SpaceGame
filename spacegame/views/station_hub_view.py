@@ -983,11 +983,15 @@ class StationHubView(BaseView):
         """
         if not self.mission_manager:
             return
-        success, _msg = self.mission_manager.accept_mission(mission_id)
+        game_day = self.player.game_day if self.player else None
+        # QA-F-3: accept_mission(player=...) now centralizes the
+        # {mission_id}_accepted flag + TW interaction recording across
+        # all accept paths, so no separate flag-set needed here.
+        success, _msg = self.mission_manager.accept_mission(
+            mission_id, game_day=game_day, player=self.player
+        )
         if success:
             self.pending_contract_id = mission_id
-            # Set accepted flag so NPCs gated on this mission can appear
-            self.player.dialogue_flags[f"{mission_id}_accepted"] = True
             # Grant on_accept_cargo if any
             mission = self.mission_manager.get_mission(mission_id)
             if mission and mission.on_accept_cargo:

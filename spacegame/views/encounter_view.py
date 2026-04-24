@@ -25,6 +25,7 @@ from spacegame.models.encounter import (
 )
 from spacegame.models.mission import MissionReward
 from spacegame.models.player import Player
+from spacegame.models.social import SocialManager
 from spacegame.utils.logger import logger
 from spacegame.views.base_view import BaseView
 from spacegame.views.first_time_tip import FirstTimeTipOverlay
@@ -61,11 +62,20 @@ class EncounterView(BaseView):
         encounter_def: EncounterDefinition,
         encounter_ref: EncounterRef,
         player: Optional[Player] = None,
+        social_manager: Optional[SocialManager] = None,
+        journal: Optional[object] = None,
     ) -> None:
         super().__init__(ui_manager)
         self.encounter_def = encounter_def
         self.encounter_ref = encounter_ref
         self.player = player
+        # CE-4: SocialManager is consulted for skill_check resolution on
+        # encounter choices. When None, skill-check choices fall back to
+        # their failure_outcome (or outcome if no failure_outcome) and
+        # display "[skill ?]" so the missing wiring is visible.
+        self.social_manager = social_manager
+        # RC-6: optional Journal reference for first-meeting captain entries.
+        self.journal = journal
         self.next_state: Optional[GameState] = None
         self._first_time_tip: Optional[FirstTimeTipOverlay] = None
 
@@ -91,19 +101,25 @@ class EncounterView(BaseView):
         # use the captain's pre_combat_hail + display_name instead of the
         # definition's static description + name. Falls back cleanly when
         # no captain is attached or the id doesn't resolve.
+        # RC-3: when the player has met this captain before, an authored
+        # ``CaptainVariant`` overlays the base hail with a return-meeting
+        # version. self._effective_dialogue holds the resolved overlay.
         self._captain = self._resolve_captain()
+        self._effective_dialogue = self._resolve_effective_dialogue()
 
         # Template substitution for shakedown encounters — applied to the
         # effective description (captain hail or static description).
         subs = {"shakedown_demand": str(encounter_ref.shakedown_demand)}
         base_description = (
-            self._captain.pre_combat_hail
-            if self._captain is not None
+            self._effective_dialogue.pre_combat_hail
+            if self._effective_dialogue is not None
             else encounter_def.description
         )
         self.display_description = base_description.format_map(_SafeFormatMap(subs))
         self.display_name = (
-            self._captain.display_name if self._captain is not None else encounter_def.name
+            self._effective_dialogue.display_name
+            if self._effective_dialogue is not None
+            else encounter_def.name
         )
         self.display_choices = _substitute_choices(encounter_def.choices, subs)
 
@@ -133,6 +149,26 @@ class EncounterView(BaseView):
                 f"captain_id='{captain_id}' — falling back to static description"
             )
         return captain
+
+    def _resolve_effective_dialogue(self):
+        """RC-3: overlay any authored CaptainVariant onto the base captain.
+
+        Reads the player's ``CaptainMemory`` to pick the meeting state,
+        then consults ``DataLoader.captain_variants`` for an override.
+        Returns ``None`` when no captain is attached.
+        """
+        if self._captain is None:
+            return None
+        from spacegame.data_loader import get_data_loader
+        from spacegame.models.captain_variant import get_effective_captain_dialogue
+
+        dl = get_data_loader()
+        memory = None
+        if self.player is not None and hasattr(self.player, "captain_memory"):
+            memory = self.player.captain_memory.get(self._captain.id)
+        return get_effective_captain_dialogue(
+            self._captain, memory, dl.captain_variants
+        )
 
     def on_enter(self) -> None:
         """Initialize encounter UI."""
@@ -210,13 +246,58 @@ class EncounterView(BaseView):
                 button_w,
                 _BUTTON_H,
             )
+            label, tooltip, disabled = self._format_choice_button(i, choice)
             btn = UIButton(
                 relative_rect=btn_rect,
-                text=f"{i + 1}. {choice.label}",
+                text=label,
                 manager=self.ui_manager,
-                tool_tip_text=choice.description,
+                tool_tip_text=tooltip,
             )
+            if disabled:
+                btn.disable()
             self.choice_buttons.append(btn)
+
+    def _format_choice_button(
+        self, index: int, choice: EncounterChoice
+    ) -> tuple[str, str, bool]:
+        """Compose the button label + tooltip + disabled-flag for a choice.
+
+        - When ``skill_check`` is set, append "[Skill N PASS|FAIL]" so the
+          player sees the deterministic outcome before clicking.
+        - When ``requires_credits`` is unmet, prefix with "Need Xc" and
+          disable the button.
+        """
+        label = f"{index + 1}. {choice.label}"
+        tooltip_lines = [choice.description] if choice.description else []
+        disabled = False
+
+        if choice.requires_credits and self.player is not None:
+            if self.player.credits < choice.requires_credits:
+                disabled = True
+                label = f"{label} ({choice.requires_credits}c)"
+                tooltip_lines.append(
+                    f"Need {choice.requires_credits} credits — short by "
+                    f"{choice.requires_credits - self.player.credits}."
+                )
+            else:
+                label = f"{label} ({choice.requires_credits}c)"
+
+        if choice.skill_check is not None:
+            sc = choice.skill_check
+            if self.social_manager is not None:
+                will_pass = self.social_manager.can_pass_check(
+                    sc.skill, sc.difficulty, ""
+                )
+                marker = "PASS" if will_pass else "FAIL"
+                label = f"{label}  [{sc.skill.title()} {sc.difficulty} {marker}]"
+                effective = self.social_manager.get_effective_level(sc.skill, "")
+                tooltip_lines.append(
+                    f"{sc.skill.title()} check: your {effective} vs {sc.difficulty}."
+                )
+            else:
+                label = f"{label}  [{sc.skill.title()} {sc.difficulty}]"
+
+        return label, "\n".join(tooltip_lines), disabled
 
     def _create_outcome_ui(self) -> None:
         """Create outcome display for the OUTCOME phase."""
@@ -294,6 +375,15 @@ class EncounterView(BaseView):
         title_x = _PANEL_X + (_PANEL_W - title_surf.get_width()) // 2
         screen.blit(title_surf, (title_x, _PANEL_Y + 16))
 
+        # RC-6: "Met before" badge for captain-attached encounters when
+        # the player has prior history with this captain. Subtle line
+        # under the title.
+        badge_text = self._met_before_badge_text()
+        if badge_text:
+            badge_surf = self.body_font.render(badge_text, True, (160, 160, 180))
+            badge_x = _PANEL_X + (_PANEL_W - badge_surf.get_width()) // 2
+            screen.blit(badge_surf, (badge_x, _PANEL_Y + 36))
+
         # Horizontal rule
         rule_y = _PANEL_Y + 50
         pygame.draw.line(
@@ -306,6 +396,23 @@ class EncounterView(BaseView):
         # Phase-specific rendering
         if self.phase == EncounterPhase.OUTCOME and self.chosen_outcome:
             self._render_rewards(screen)
+
+    def _met_before_badge_text(self) -> str:
+        """RC-6: subtle 'Met before' tag for captains the player has history with.
+
+        Returns empty string when no captain attached, no player, or never
+        met. Plural-aware so "1 time" and "3 times" both read clean.
+        """
+        if self._captain is None or self.player is None:
+            return ""
+        if not hasattr(self.player, "captain_memory"):
+            return ""
+        memory = self.player.captain_memory.get(self._captain.id)
+        if memory is None or memory.encounter_count == 0:
+            return ""
+        n = memory.encounter_count
+        suffix = "time" if n == 1 else "times"
+        return f"Met before. {n} {suffix}."
 
     def _render_rewards(self, screen: pygame.Surface) -> None:
         """Render reward summary lines in OUTCOME phase."""
@@ -361,9 +468,23 @@ class EncounterView(BaseView):
                 self._finish()
 
     def _select_choice(self, index: int) -> None:
-        """Process a player choice selection."""
+        """Process a player choice selection.
+
+        CE-4: when ``choice.skill_check`` is set, resolve via SocialManager
+        and pick ``outcome`` on success or ``failure_outcome`` on failure
+        (falling back to ``outcome`` if no failure path is authored).
+        Skill check flags (set_flag_on_success/failure) write into
+        ``player.dialogue_flags`` so other systems can react.
+        """
         choice = self.display_choices[index]
+
+        # CE-4: resolve skill_check first; outcome selection follows.
         outcome = choice.outcome
+        skill_check_succeeded = False
+        if choice.skill_check is not None:
+            skill_check_succeeded = self._resolve_choice_skill_check(choice)
+            if not skill_check_succeeded and choice.failure_outcome is not None:
+                outcome = choice.failure_outcome
 
         # Resolve shakedown sentinel: deduct_credits with amount=-1
         resolved_rewards = []
@@ -375,6 +496,15 @@ class EncounterView(BaseView):
             else:
                 resolved_rewards.append(reward)
 
+        # CE-4: convert requires_credits into an automatic deduct_credits
+        # reward so the existing reward pipeline handles the spend.
+        if choice.requires_credits and not any(
+            r.reward_type == "deduct_credits" for r in resolved_rewards
+        ):
+            resolved_rewards.insert(
+                0, MissionReward("deduct_credits", choice.requires_credits)
+            )
+
         self.chosen_outcome = EncounterOutcome(
             description=outcome.description,
             rewards=resolved_rewards,
@@ -382,7 +512,7 @@ class EncounterView(BaseView):
         )
         self.pending_combat = outcome.leads_to_combat
 
-        # Boss encounters: override enemy_template_ids from outcome
+        # Boss / encounter-spawn enemies: outcome may name the templates.
         if (
             outcome.leads_to_combat
             and hasattr(outcome, "enemy_template_ids")
@@ -390,9 +520,138 @@ class EncounterView(BaseView):
         ):
             self.encounter_ref.enemy_template_ids = list(outcome.enemy_template_ids)
 
+        # RC-6: record the captain encounter for non-combat resolutions.
+        # Combat-bound outcomes are recorded by CombatView at COMBAT_OVER
+        # so we skip them here to avoid double-counting.
+        if not self.pending_combat:
+            self._maybe_record_captain_encounter(choice, skill_check_succeeded)
+
         self.phase = EncounterPhase.OUTCOME
         self._create_ui()
         logger.info(f"Encounter choice: {choice.id} (combat={self.pending_combat})")
+
+    def _maybe_record_captain_encounter(
+        self, choice: EncounterChoice, skill_check_succeeded: bool
+    ) -> None:
+        """RC-6: record a non-combat captain meeting on player memory.
+
+        Maps the choice path to a captain_memory outcome:
+        - ``requires_credits`` (Pay)        -> ``OUTCOME_BRIBED``
+        - successful skill check            -> ``OUTCOME_NEGOTIATED``
+        - other peaceful resolutions        -> not recorded (no engagement)
+
+        Skips silently when the encounter has no captain or no player.
+        """
+        captain_id = getattr(self.encounter_def, "captain_id", "")
+        if not captain_id or self.player is None:
+            return
+
+        from spacegame.models.captain_memory import (
+            OUTCOME_BRIBED,
+            OUTCOME_NEGOTIATED,
+        )
+
+        if choice.requires_credits and choice.requires_credits > 0:
+            outcome = OUTCOME_BRIBED
+        elif choice.skill_check is not None and skill_check_succeeded:
+            outcome = OUTCOME_NEGOTIATED
+        else:
+            return  # Walk-away / pass — not a meaningful captain meeting
+
+        # RC-6: journal entry for first meeting (BEFORE recording so
+        # is_first_meeting still reads true).
+        memory = self.player.get_captain_memory(captain_id)
+        if memory.is_first_meeting:
+            self._add_first_meeting_journal_entry(captain_id)
+        was_wanderer = memory.status == "wanderer"
+
+        self.player.record_captain_encounter(captain_id, outcome)
+
+        # QA-F-2: wanderer auto-retire journal entry.
+        if not was_wanderer and memory.status == "wanderer":
+            self._add_wanderer_journal_entry(captain_id)
+
+    def _add_wanderer_journal_entry(self, captain_id: str) -> None:
+        """QA-F-2: silent wanderer retirement fix. Fires when a captain
+        auto-retires after N unresolved encounters, so the player sees
+        the rivalry end instead of the captain just disappearing."""
+        if self.journal is None:
+            return
+        from spacegame.data_loader import get_data_loader
+
+        try:
+            captain = get_data_loader().captains.get(captain_id)
+        except Exception:
+            captain = None
+        if captain is None:
+            return
+        text = (
+            f"Word came back through the docks. {captain.name} moved on. "
+            "Whatever they were chasing, they're chasing it somewhere you "
+            "aren't."
+        )
+        self.journal.add_auto_entry(
+            entry_id=f"captain_wanderer_{captain_id}",
+            text=text,
+            game_day=getattr(self.player, "game_day", 1),
+            system_id=getattr(self.player, "current_system_id", ""),
+            tag="people",
+        )
+
+    def _add_first_meeting_journal_entry(self, captain_id: str) -> None:
+        """RC-6: drop a journal entry the first time the player meets a captain.
+
+        No-op when no journal is wired or the captain doesn't resolve.
+        """
+        if self.journal is None:
+            return
+        from spacegame.data_loader import get_data_loader
+
+        try:
+            captain = get_data_loader().captains.get(captain_id)
+        except Exception:
+            captain = None
+        if captain is None:
+            return
+        # Use captain.name + captain.nickname directly. display_name uses
+        # an em-dash separator that's fine for headers but a Writing Bible
+        # violation in narrative text.
+        nickname_phrase = (
+            f', the {captain.nickname},' if captain.nickname else ','
+        )
+        text = (
+            f"Met {captain.name}{nickname_phrase} for the first time. "
+            f"Their ship runs the {captain.signature_ship_template} hull. "
+            f"They keep a base out of {captain.home_sector or 'parts unknown'}."
+        )
+        self.journal.add_auto_entry(
+            entry_id=f"captain_met_{captain_id}",
+            text=text,
+            game_day=getattr(self.player, "game_day", 1),
+            system_id=getattr(self.player, "current_system_id", ""),
+            tag="people",
+        )
+
+    def _resolve_choice_skill_check(self, choice: EncounterChoice) -> bool:
+        """Resolve a CE-4 encounter skill check and apply its flags.
+
+        Returns ``True`` on pass. When ``social_manager`` is missing the
+        check is treated as failed so authored failure_outcomes still
+        play — the flag side-effects are skipped because there's no XP /
+        disposition system to update in that path.
+        """
+        sc = choice.skill_check
+        assert sc is not None
+        if self.social_manager is None:
+            return False
+        success, _msg = self.social_manager.resolve_check(
+            sc.skill, sc.difficulty, ""
+        )
+        if self.player is not None:
+            flag = sc.set_flag_on_success if success else sc.set_flag_on_failure
+            if flag:
+                self.player.dialogue_flags[flag] = True
+        return success
 
     def _finish(self) -> None:
         """Transition from OUTCOME to DONE."""
@@ -422,8 +681,21 @@ class _SafeFormatMap(dict):
 def _substitute_choices(
     choices: list[EncounterChoice], subs: dict[str, str]
 ) -> list[EncounterChoice]:
-    """Create copies of choices with template strings substituted."""
+    """Create copies of choices with template strings substituted.
+
+    CE-4: passes ``skill_check``, ``failure_outcome``, and
+    ``requires_credits`` through unchanged.
+    """
     fmt = _SafeFormatMap(subs)
+
+    def _sub_outcome(o: EncounterOutcome) -> EncounterOutcome:
+        return EncounterOutcome(
+            description=o.description.format_map(fmt),
+            rewards=list(o.rewards),
+            leads_to_combat=o.leads_to_combat,
+            enemy_template_ids=list(o.enemy_template_ids),
+        )
+
     result = []
     for c in choices:
         result.append(
@@ -431,11 +703,14 @@ def _substitute_choices(
                 id=c.id,
                 label=c.label.format_map(fmt),
                 description=c.description.format_map(fmt),
-                outcome=EncounterOutcome(
-                    description=c.outcome.description.format_map(fmt),
-                    rewards=list(c.outcome.rewards),
-                    leads_to_combat=c.outcome.leads_to_combat,
+                outcome=_sub_outcome(c.outcome),
+                skill_check=c.skill_check,
+                failure_outcome=(
+                    _sub_outcome(c.failure_outcome)
+                    if c.failure_outcome is not None
+                    else None
                 ),
+                requires_credits=c.requires_credits,
             )
         )
     return result

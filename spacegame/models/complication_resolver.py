@@ -120,9 +120,11 @@ class ComplicationResolver:
             if target == "enemy":
                 # Any surviving enemy below threshold qualifies — a single
                 # damaged ship is enough to trip "battle damage" effects.
+                # EnemyShip stores live hp on ``current_hull`` (field), with
+                # ``max_hull`` exposed as a property.
                 for enemy in state.surviving_enemies:
                     max_hp = max(1, enemy.max_hull)
-                    if enemy.hull / max_hp <= threshold:
+                    if enemy.current_hull / max_hp <= threshold:
                         return True
                 return False
 

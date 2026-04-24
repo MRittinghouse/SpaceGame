@@ -971,6 +971,12 @@ class TestNonHostileDistribution:
             "patrol",
             "comm_intercept",
             "refugee",
+            # CE-4 additions to the moderate weight table
+            "ransom_demand",
+            "cargo_shakedown",
+            "distress_bait",
+            "wandering_trader",
+            "derelict_encounter",
         }
         assert types_seen.issubset(valid_moderate), (
             f"Unexpected types in moderate: {types_seen - valid_moderate}"

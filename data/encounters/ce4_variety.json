@@ -1,0 +1,939 @@
+{
+  "_comment": "CE-4 variety encounters: distress_bait (ambush traps with reinforcement_arrival), wandering_trader (rare goods + haggle), derelict_encounter (salvage with drone risk + asteroid_closure).",
+  "encounters": [
+    {
+      "id": "bait_civilian_lure_01",
+      "encounter_type": "distress_bait",
+      "name": "Civilian Distress, Civilian Voice",
+      "description": "A small transport's beacon blinks red on your scope. The voice on the channel sounds like someone's mother. She says her engines are gone and her two passengers are kids and please don't make her ask twice.",
+      "icon_color": [
+        120,
+        200,
+        120
+      ],
+      "weight": 9,
+      "danger_levels": [
+        "moderate",
+        "dangerous"
+      ],
+      "tone": "wary",
+      "category": "variety",
+      "complication_ids": [
+        "reinforcement_arrival"
+      ],
+      "choices": [
+        {
+          "id": "approach_blind",
+          "label": "Burn In to Help",
+          "description": "Don't think. Help.",
+          "outcome": {
+            "description": "You close the gap. The transport's beacon flickers off. Two armed ships you didn't see drop out of stealth.",
+            "rewards": [],
+            "leads_to_combat": true
+          }
+        },
+        {
+          "id": "scan_first",
+          "label": "Scan the Drive Signature First",
+          "description": "Cycle through the heat patterns. Civilian transports run cold. Pirates don't.",
+          "skill_check": {
+            "skill": "observation",
+            "difficulty": 3,
+            "set_flag_on_success": "ce4_spotted_civilian_bait"
+          },
+          "outcome": {
+            "description": "The drive readouts are wrong for a civilian. Heat blooms behind the transport tell you there are escorts holding station. You veer off, mark the coordinates for patrol, and burn clean.",
+            "rewards": [
+              {
+                "reward_type": "xp",
+                "amount": 35
+              },
+              {
+                "reward_type": "credits",
+                "amount": 60
+              }
+            ]
+          },
+          "failure_outcome": {
+            "description": "The scans look fine. You commit. The trap closes.",
+            "rewards": [],
+            "leads_to_combat": true
+          }
+        },
+        {
+          "id": "ignore",
+          "label": "Mark It and Keep Going",
+          "description": "Log the coordinates. Trust the next ship to handle it.",
+          "outcome": {
+            "description": "You log the coordinates and keep your heading. If she was real, she'll wait. If she wasn't, the next ship that passes will learn.",
+            "rewards": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "bait_mining_rig_01",
+      "encounter_type": "distress_bait",
+      "name": "Stranded Mining Rig",
+      "description": "A mining rig is broadcasting a fault on its primary drive. The pilot says he's out of fuel and his oxygen scrubbers are down to two hours. He doesn't want a tow. He wants help fixing the drive in place.",
+      "icon_color": [
+        180,
+        160,
+        100
+      ],
+      "weight": 8,
+      "danger_levels": [
+        "moderate",
+        "dangerous"
+      ],
+      "tone": "wary",
+      "category": "variety",
+      "complication_ids": [
+        "reinforcement_arrival"
+      ],
+      "choices": [
+        {
+          "id": "approach_blind",
+          "label": "Dock and Help",
+          "description": "Mining rigs don't lie. Or so you tell yourself.",
+          "outcome": {
+            "description": "You dock. The pilot wasn't a pilot. The rig was a shell. Two skiffs unhide from behind it.",
+            "rewards": [],
+            "leads_to_combat": true
+          }
+        },
+        {
+          "id": "scan_drive",
+          "label": "Pulse the Drive Yourself",
+          "description": "Run a remote diagnostic on his drive. A real fault shows. A faked one doesn't.",
+          "skill_check": {
+            "skill": "technical",
+            "difficulty": 3,
+            "set_flag_on_success": "ce4_spotted_mining_bait"
+          },
+          "outcome": {
+            "description": "The diagnostic comes back clean. His drive is fine. You acknowledge the call, say you're sending coordinates to a tow, and burn out before he can answer.",
+            "rewards": [
+              {
+                "reward_type": "xp",
+                "amount": 35
+              },
+              {
+                "reward_type": "credits",
+                "amount": 50
+              }
+            ]
+          },
+          "failure_outcome": {
+            "description": "The remote diagnostic times out. You can't tell from here. You commit and dock.",
+            "rewards": [],
+            "leads_to_combat": true
+          }
+        },
+        {
+          "id": "ignore",
+          "label": "Pass By",
+          "description": "If the rig's real, he won't last anyway. If it's not, you saved your ship.",
+          "outcome": {
+            "description": "You hold your line. The rig fades behind you.",
+            "rewards": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "bait_patrol_officer_01",
+      "encounter_type": "distress_bait",
+      "name": "Officer Down",
+      "description": "A patrol channel cuts in. A man identifies himself as a Frontier customs officer in a damaged cutter. He says raiders boarded him and he barely escaped. He needs an escort to the nearest jump.",
+      "icon_color": [
+        140,
+        180,
+        220
+      ],
+      "weight": 7,
+      "danger_levels": [
+        "dangerous"
+      ],
+      "tone": "wary",
+      "category": "variety",
+      "complication_ids": [
+        "reinforcement_arrival"
+      ],
+      "choices": [
+        {
+          "id": "escort",
+          "label": "Escort Him",
+          "description": "Officers don't lie. Officers don't lie. Officers don't lie.",
+          "outcome": {
+            "description": "You move into formation. He flies clean for thirty seconds. Then his weapons rotate to your side and three other ships uncloak.",
+            "rewards": [],
+            "leads_to_combat": true
+          }
+        },
+        {
+          "id": "verify_id",
+          "label": "Hail Patrol Authority",
+          "description": "Bounce his ID through your contacts. Real customs officers have a registry. Fake ones don't.",
+          "skill_check": {
+            "skill": "observation",
+            "difficulty": 4,
+            "set_flag_on_success": "ce4_spotted_fake_officer"
+          },
+          "outcome": {
+            "description": "His ID returns no record. You decline the escort, mark the cutter for patrol, and put distance between you.",
+            "rewards": [
+              {
+                "reward_type": "xp",
+                "amount": 40
+              },
+              {
+                "reward_type": "credits",
+                "amount": 80
+              }
+            ]
+          },
+          "failure_outcome": {
+            "description": "The check times out. You decide to trust the badge.",
+            "rewards": [],
+            "leads_to_combat": true
+          }
+        },
+        {
+          "id": "decline",
+          "label": "Decline the Escort",
+          "description": "Tell him you can't spare the time. Wish him luck.",
+          "outcome": {
+            "description": "He thanks you, professional and clipped. The cutter falls behind. You don't look back.",
+            "rewards": [
+              {
+                "reward_type": "xp",
+                "amount": 5
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "bait_comm_relay_01",
+      "encounter_type": "distress_bait",
+      "name": "Damaged Comm Relay",
+      "description": "An automated comm relay is rebroadcasting a layered distress loop. The signal has the right pattern. The carrier wave doesn't quite match the standard.",
+      "icon_color": [
+        160,
+        160,
+        200
+      ],
+      "weight": 7,
+      "danger_levels": [
+        "moderate",
+        "dangerous"
+      ],
+      "tone": "mysterious",
+      "category": "variety",
+      "complication_ids": [
+        "reinforcement_arrival"
+      ],
+      "choices": [
+        {
+          "id": "approach_blind",
+          "label": "Approach to Investigate",
+          "description": "Maybe the relay's just damaged. Maybe.",
+          "outcome": {
+            "description": "You close range. The relay's broadcast cuts. A masked transponder lights up behind it and a second one pings off your starboard. Ambush.",
+            "rewards": [],
+            "leads_to_combat": true
+          }
+        },
+        {
+          "id": "decode",
+          "label": "Decode the Carrier",
+          "description": "Pull apart the signal layers. A real relay doesn't have a signature this clean.",
+          "skill_check": {
+            "skill": "technical",
+            "difficulty": 4,
+            "set_flag_on_success": "ce4_spotted_relay_bait"
+          },
+          "outcome": {
+            "description": "The carrier resolves into a forged signature. You tag the relay coordinates for patrol, and steer wide. Patrol confirms the find a day later. They cut you in for the bounty.",
+            "rewards": [
+              {
+                "reward_type": "xp",
+                "amount": 45
+              },
+              {
+                "reward_type": "credits",
+                "amount": 120
+              }
+            ]
+          },
+          "failure_outcome": {
+            "description": "The decode runs slow. By the time you have the answer, you're already inside the kill zone.",
+            "rewards": [],
+            "leads_to_combat": true
+          }
+        },
+        {
+          "id": "skip",
+          "label": "Skip It",
+          "description": "Mark the relay and move.",
+          "outcome": {
+            "description": "You log the relay's coordinates and burn past. Whatever it was, it isn't your problem this hour.",
+            "rewards": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "trader_spice_01",
+      "encounter_type": "wandering_trader",
+      "name": "Spice Runner Heading Out",
+      "description": "A small trade ship hails you on the open channel. The pilot says she has a half-crate of Verdant cinnamon she needs to move before it spoils. The asking price is high, but cinnamon at any price is hard to come by out here.",
+      "icon_color": [
+        220,
+        180,
+        100
+      ],
+      "weight": 9,
+      "danger_levels": [
+        "moderate",
+        "dangerous"
+      ],
+      "tone": "neutral",
+      "category": "variety",
+      "choices": [
+        {
+          "id": "buy",
+          "label": "Buy the Crate",
+          "description": "300 credits. Resells well at the right station.",
+          "requires_credits": 300,
+          "outcome": {
+            "description": "She transfers the crate, thanks you for the rescue, and is gone. Your hold smells like a kitchen now.",
+            "rewards": [
+              {
+                "reward_type": "credits",
+                "amount": 200
+              },
+              {
+                "reward_type": "xp",
+                "amount": 15
+              }
+            ]
+          }
+        },
+        {
+          "id": "haggle",
+          "label": "Haggle the Price",
+          "description": "She knows it'll spoil. Use that.",
+          "skill_check": {
+            "skill": "persuasion",
+            "difficulty": 3,
+            "set_flag_on_success": "ce4_haggled_spice"
+          },
+          "outcome": {
+            "description": "She sighs, calls you a bandit with manners, and meets you at 180 credits.",
+            "rewards": [
+              {
+                "reward_type": "deduct_credits",
+                "amount": 180
+              },
+              {
+                "reward_type": "credits",
+                "amount": 280
+              },
+              {
+                "reward_type": "xp",
+                "amount": 30
+              }
+            ]
+          },
+          "failure_outcome": {
+            "description": "She's not in the mood. The price holds at 300 or she finds another buyer.",
+            "rewards": []
+          }
+        },
+        {
+          "id": "pass",
+          "label": "Pass on the Deal",
+          "description": "Cargo space is for things you know will sell.",
+          "outcome": {
+            "description": "She accepts the no with grace and pulls away.",
+            "rewards": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "trader_weapons_dealer_01",
+      "encounter_type": "wandering_trader",
+      "name": "Quiet Weapons Dealer",
+      "description": "An unmarked freighter matches your speed. The pilot's voice is calm and very tired. He says he has one rare emitter coil, surplus from a deal that went bad. He wants 800 credits and a promise you won't ask where it came from.",
+      "icon_color": [
+        180,
+        140,
+        220
+      ],
+      "weight": 6,
+      "danger_levels": [
+        "dangerous"
+      ],
+      "tone": "mysterious",
+      "category": "variety",
+      "choices": [
+        {
+          "id": "buy",
+          "label": "Take the Coil",
+          "description": "Don't ask. Don't think.",
+          "requires_credits": 800,
+          "outcome": {
+            "description": "He transfers the part, signs off without his name, and his ship is gone before you've stowed the crate.",
+            "rewards": [
+              {
+                "reward_type": "credits",
+                "amount": 500
+              },
+              {
+                "reward_type": "xp",
+                "amount": 25
+              }
+            ]
+          }
+        },
+        {
+          "id": "press",
+          "label": "Press Him for the Story",
+          "description": "Read his face. He'll either spook or settle.",
+          "skill_check": {
+            "skill": "observation",
+            "difficulty": 4,
+            "set_flag_on_success": "ce4_dealer_settled"
+          },
+          "outcome": {
+            "description": "He settles. Tells you enough that you know the coil's clean. Knocks 200 off the price for the trust.",
+            "rewards": [
+              {
+                "reward_type": "deduct_credits",
+                "amount": 600
+              },
+              {
+                "reward_type": "credits",
+                "amount": 600
+              },
+              {
+                "reward_type": "xp",
+                "amount": 35
+              }
+            ]
+          },
+          "failure_outcome": {
+            "description": "He spooks. The freighter accelerates and the channel cuts.",
+            "rewards": []
+          }
+        },
+        {
+          "id": "pass",
+          "label": "Decline",
+          "description": "Quiet deals on quiet ships are how careers end.",
+          "outcome": {
+            "description": "He thanks you for the time and is gone.",
+            "rewards": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "trader_antique_01",
+      "encounter_type": "wandering_trader",
+      "name": "Antique Collector",
+      "description": "A small shuttle with painted markings hails you. The pilot is older than the shuttle. He says he's looking for a buyer for a pre-Federation chronometer. He'd like 450 credits. He'd like more, but he'd like 450.",
+      "icon_color": [
+        200,
+        200,
+        160
+      ],
+      "weight": 7,
+      "danger_levels": [
+        "moderate",
+        "dangerous"
+      ],
+      "tone": "neutral",
+      "category": "variety",
+      "choices": [
+        {
+          "id": "buy",
+          "label": "Buy the Chronometer",
+          "description": "Old metal. Older provenance.",
+          "requires_credits": 450,
+          "outcome": {
+            "description": "He hands the piece over wrapped in cloth that may be older than the chronometer. He thanks you in three different ways and pulls away.",
+            "rewards": [
+              {
+                "reward_type": "credits",
+                "amount": 380
+              },
+              {
+                "reward_type": "xp",
+                "amount": 20
+              }
+            ]
+          }
+        },
+        {
+          "id": "haggle",
+          "label": "Haggle Down",
+          "description": "He needs the sale. Use it gently.",
+          "skill_check": {
+            "skill": "persuasion",
+            "difficulty": 3,
+            "set_flag_on_success": "ce4_haggled_antique"
+          },
+          "outcome": {
+            "description": "He smiles a small, tired smile. Says you remind him of his daughter. Settles at 320.",
+            "rewards": [
+              {
+                "reward_type": "deduct_credits",
+                "amount": 320
+              },
+              {
+                "reward_type": "credits",
+                "amount": 380
+              },
+              {
+                "reward_type": "xp",
+                "amount": 30
+              }
+            ]
+          },
+          "failure_outcome": {
+            "description": "He shakes his head. Not today. The price is the price.",
+            "rewards": []
+          }
+        },
+        {
+          "id": "pass",
+          "label": "Pass",
+          "description": "Antiques are for stations with display cases.",
+          "outcome": {
+            "description": "He bows from the cockpit and is gone.",
+            "rewards": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "trader_contraband_01",
+      "encounter_type": "wandering_trader",
+      "name": "Contraband Merchant",
+      "description": "An armed trader pulls level. The pilot says she has a sealed crate she'd rather not describe. She wants 500 credits and your discretion. Discretion she has more confidence in than your credits.",
+      "icon_color": [
+        180,
+        80,
+        180
+      ],
+      "weight": 6,
+      "danger_levels": [
+        "dangerous"
+      ],
+      "tone": "predatory",
+      "category": "variety",
+      "choices": [
+        {
+          "id": "buy",
+          "label": "Take the Crate",
+          "description": "Risky cargo. Risky resale.",
+          "requires_credits": 500,
+          "outcome": {
+            "description": "She transfers the crate without a word. The seal looks expensive. She's gone before you can ask anything you'd regret asking.",
+            "rewards": [
+              {
+                "reward_type": "credits",
+                "amount": 700
+              },
+              {
+                "reward_type": "add_criminal_heat",
+                "amount": 5
+              },
+              {
+                "reward_type": "xp",
+                "amount": 30
+              }
+            ]
+          }
+        },
+        {
+          "id": "verify",
+          "label": "Read Her First",
+          "description": "Stare at the seal. Stare at her hands. Decide if she's the kind of trouble that pays back.",
+          "skill_check": {
+            "skill": "observation",
+            "difficulty": 4,
+            "set_flag_on_success": "ce4_contraband_verified"
+          },
+          "outcome": {
+            "description": "Her hands are steady. The seal's official enough to clear minor scans. You buy and resell with the right intermediary, no heat.",
+            "rewards": [
+              {
+                "reward_type": "deduct_credits",
+                "amount": 500
+              },
+              {
+                "reward_type": "credits",
+                "amount": 800
+              },
+              {
+                "reward_type": "xp",
+                "amount": 40
+              }
+            ]
+          },
+          "failure_outcome": {
+            "description": "You can't read her. Could be clean. Could be a setup. You don't bite.",
+            "rewards": []
+          }
+        },
+        {
+          "id": "pass",
+          "label": "Pass",
+          "description": "Some doors stay closed.",
+          "outcome": {
+            "description": "She nods once. The trader peels off.",
+            "rewards": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "derelict_civilian_wreck_01",
+      "encounter_type": "derelict_encounter",
+      "name": "Civilian Freighter, No Beacon",
+      "description": "A civilian freighter drifts dark. No beacon, no transponder, no answer to hails. The hull is intact enough that the cargo bay might still be sealed. The cockpit has a smear across the viewport that you don't want to look at long.",
+      "icon_color": [
+        160,
+        140,
+        100
+      ],
+      "weight": 9,
+      "danger_levels": [
+        "moderate",
+        "dangerous"
+      ],
+      "tone": "mysterious",
+      "category": "variety",
+      "complication_ids": [
+        "asteroid_closure"
+      ],
+      "choices": [
+        {
+          "id": "board_blind",
+          "label": "Board the Wreck",
+          "description": "Crack the airlock. See what's inside.",
+          "outcome": {
+            "description": "You find the cargo bay half-stripped and three boarding drones still active. Their lights come on as you step in.",
+            "rewards": [],
+            "leads_to_combat": true,
+            "enemy_template_ids": [
+              "shield_drone",
+              "shield_drone"
+            ]
+          }
+        },
+        {
+          "id": "scan_logs",
+          "label": "Pull the Ship's Logs Remotely",
+          "description": "The freighter's log buffer is on a passive port. Read it before you commit.",
+          "skill_check": {
+            "skill": "technical",
+            "difficulty": 3,
+            "set_flag_on_success": "ce4_read_civilian_logs"
+          },
+          "outcome": {
+            "description": "The log shows automated drones came online when the crew died. You burn the cargo bay's lock with a remote charge, scoop the loose containers with a tractor pass, and don't board.",
+            "rewards": [
+              {
+                "reward_type": "credits",
+                "amount": 200
+              },
+              {
+                "reward_type": "xp",
+                "amount": 35
+              }
+            ]
+          },
+          "failure_outcome": {
+            "description": "The log buffer's corrupted. You can't tell what's still active inside.",
+            "rewards": []
+          }
+        },
+        {
+          "id": "pass",
+          "label": "Mark the Coordinates and Move On",
+          "description": "Salvage crews charge for risk like this.",
+          "outcome": {
+            "description": "You log the wreck for the next salvage license you sell to. Small finder's fee.",
+            "rewards": [
+              {
+                "reward_type": "credits",
+                "amount": 40
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "derelict_military_hulk_01",
+      "encounter_type": "derelict_encounter",
+      "name": "Military Hulk",
+      "description": "A military patrol vessel drifts at angle, its main reactor cold. Faction colors stripped from the hull. Whoever did the stripping wasn't gentle about it. Whatever's still aboard is worth what's still aboard.",
+      "icon_color": [
+        120,
+        120,
+        160
+      ],
+      "weight": 7,
+      "danger_levels": [
+        "dangerous"
+      ],
+      "tone": "mysterious",
+      "category": "variety",
+      "complication_ids": [
+        "asteroid_closure"
+      ],
+      "choices": [
+        {
+          "id": "board_blind",
+          "label": "Board the Hulk",
+          "description": "Military lockboxes pay well. Drones don't usually survive a stripped reactor.",
+          "outcome": {
+            "description": "Three drones survived a stripped reactor. They were waiting for someone like you.",
+            "rewards": [],
+            "leads_to_combat": true,
+            "enemy_template_ids": [
+              "shield_drone",
+              "shield_drone",
+              "shield_drone"
+            ]
+          }
+        },
+        {
+          "id": "spot_threats",
+          "label": "Spot the Live Wires",
+          "description": "Look for the heat signatures of dormant systems waking up.",
+          "skill_check": {
+            "skill": "observation",
+            "difficulty": 4,
+            "set_flag_on_success": "ce4_spotted_hulk_drones"
+          },
+          "outcome": {
+            "description": "You spot three faint heat blooms inside. You target them with hull-piercing rounds from your own guns, then board to a quiet ship. The lockboxes are intact.",
+            "rewards": [
+              {
+                "reward_type": "credits",
+                "amount": 450
+              },
+              {
+                "reward_type": "xp",
+                "amount": 50
+              }
+            ]
+          },
+          "failure_outcome": {
+            "description": "You can't get a clean read. Could be safe. Could be live.",
+            "rewards": []
+          }
+        },
+        {
+          "id": "pass",
+          "label": "Mark and Move",
+          "description": "Military wrecks bring scavenger crews. Crews bring trouble.",
+          "outcome": {
+            "description": "You note the hulk and move on. Someone else's problem. Someone else's payday.",
+            "rewards": [
+              {
+                "reward_type": "credits",
+                "amount": 60
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "derelict_research_vessel_01",
+      "encounter_type": "derelict_encounter",
+      "name": "Science Collective Research Ship",
+      "description": "A Science Collective survey ship drifts in the lane. The hull is intact but the running lights are off. Whatever the crew was studying, they didn't get to file the report.",
+      "icon_color": [
+        140,
+        200,
+        200
+      ],
+      "weight": 7,
+      "danger_levels": [
+        "moderate",
+        "dangerous"
+      ],
+      "tone": "mysterious",
+      "category": "variety",
+      "complication_ids": [
+        "asteroid_closure"
+      ],
+      "choices": [
+        {
+          "id": "board_blind",
+          "label": "Board for the Data Cores",
+          "description": "Research data sells. Even half of it sells.",
+          "outcome": {
+            "description": "The data cores are intact. So are the security drones the crew set on a hair trigger before whatever happened, happened.",
+            "rewards": [],
+            "leads_to_combat": true,
+            "enemy_template_ids": [
+              "shield_drone",
+              "shield_drone"
+            ]
+          }
+        },
+        {
+          "id": "decode_security",
+          "label": "Decode the Security Loop",
+          "description": "Science Collective ships use signed handshake patterns. If you spoof the signature, the drones don't see you.",
+          "skill_check": {
+            "skill": "technical",
+            "difficulty": 4,
+            "set_flag_on_success": "ce4_spoofed_collective_security"
+          },
+          "outcome": {
+            "description": "You spoof the signature. The drones acknowledge you as crew. You walk the ship, pull two cores, and leave clean.",
+            "rewards": [
+              {
+                "reward_type": "credits",
+                "amount": 300
+              },
+              {
+                "reward_type": "xp",
+                "amount": 50
+              }
+            ]
+          },
+          "failure_outcome": {
+            "description": "Your spoof half-takes. The drones go to standby instead of friendly. You still have to go in with weapons live.",
+            "rewards": [],
+            "leads_to_combat": true,
+            "enemy_template_ids": [
+              "shield_drone"
+            ]
+          }
+        },
+        {
+          "id": "pass",
+          "label": "Leave the Cores",
+          "description": "The Collective will send their own crew.",
+          "outcome": {
+            "description": "You ping the Collective's recovery channel with the coordinates. They thank you and credit you a finder's fee.",
+            "rewards": [
+              {
+                "reward_type": "credits",
+                "amount": 80
+              },
+              {
+                "reward_type": "xp",
+                "amount": 10
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "derelict_smuggler_stash_01",
+      "encounter_type": "derelict_encounter",
+      "name": "Smuggler's Stash",
+      "description": "A small fast ship drifts hull-up. The drive's still warm, which means the crew left in a hurry. Smugglers leave hurries when patrol's close. Smugglers also rig their stashes.",
+      "icon_color": [
+        180,
+        120,
+        80
+      ],
+      "weight": 6,
+      "danger_levels": [
+        "dangerous"
+      ],
+      "tone": "predatory",
+      "category": "variety",
+      "complication_ids": [
+        "asteroid_closure"
+      ],
+      "choices": [
+        {
+          "id": "board_blind",
+          "label": "Board for the Stash",
+          "description": "Smuggler holds carry the kind of cargo that makes a month.",
+          "outcome": {
+            "description": "Two drones in the cargo bay come online the moment you step in. The crate behind them is what you came for.",
+            "rewards": [],
+            "leads_to_combat": true,
+            "enemy_template_ids": [
+              "shield_drone",
+              "shield_drone"
+            ]
+          }
+        },
+        {
+          "id": "find_traps",
+          "label": "Find the Traps First",
+          "description": "Walk the hull seam by seam. Smugglers leave tells if you know where to look.",
+          "skill_check": {
+            "skill": "observation",
+            "difficulty": 4,
+            "set_flag_on_success": "ce4_found_smuggler_traps"
+          },
+          "outcome": {
+            "description": "You find two contact charges and a pressure plate. You bypass each one. The cargo lifts clean.",
+            "rewards": [
+              {
+                "reward_type": "credits",
+                "amount": 500
+              },
+              {
+                "reward_type": "add_criminal_heat",
+                "amount": 3
+              },
+              {
+                "reward_type": "xp",
+                "amount": 50
+              }
+            ]
+          },
+          "failure_outcome": {
+            "description": "You miss something. A charge thumps your hull as you back out. Repairs cost. You still don't have the cargo.",
+            "rewards": [
+              {
+                "reward_type": "deduct_credits",
+                "amount": 100
+              }
+            ]
+          }
+        },
+        {
+          "id": "pass",
+          "label": "Don't Touch It",
+          "description": "Smuggler ships are always rigged.",
+          "outcome": {
+            "description": "You log the wreck for the smuggler network. They'll send a crew and pay you finder's.",
+            "rewards": [
+              {
+                "reward_type": "credits",
+                "amount": 100
+              },
+              {
+                "reward_type": "add_criminal_heat",
+                "amount": 1
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

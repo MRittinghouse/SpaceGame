@@ -41,7 +41,7 @@ def _state(
     than constructing a full CombatState.
     """
     enemy = MagicMock()
-    enemy.hull = enemy_hull
+    enemy.current_hull = enemy_hull
     enemy.max_hull = enemy_max
 
     state = MagicMock()

@@ -92,6 +92,13 @@ class DataLoader:
         self.enemy_templates: Dict[str, EnemyShipTemplate] = {}
         self.captains: Dict[str, "EnemyCaptain"] = {}
         self.complications: Dict[str, "CombatComplication"] = {}
+        self.crew_interjections: List["CrewInterjection"] = []
+        # RC-3: keyed lookup for captain dialogue variants. Built by
+        # load_captain_variants() so EncounterView / CombatView can
+        # resolve effective dialogue in O(1).
+        self.captain_variants: Dict[tuple, "CaptainVariant"] = {}
+        # TW: loaded timed thread definitions, keyed by thread id.
+        self.timed_threads: Dict[str, "TimedThread"] = {}
         self.journal_entries: List[JournalEntry] = []
         self.encounter_definitions: List[EncounterDefinition] = []
         self.ground_equipment: Dict[str, "GroundEquipment"] = {}
@@ -164,6 +171,9 @@ class DataLoader:
         self._safe_load("enemy_templates", self.load_enemy_templates)
         self._safe_load("captains", self.load_captains)
         self._safe_load("complications", self.load_complications)
+        self._safe_load("crew_interjections", self.load_crew_interjections)
+        self._safe_load("captain_variants", self.load_captain_variants)
+        self._safe_load("timed_threads", self.load_timed_threads)
         self._safe_load("ship_ultimates", self.load_ship_ultimates)
         self._safe_load("hull_shapes", self.load_hull_shapes)
         self._safe_load("hull_materials", self.load_hull_materials)
@@ -1183,6 +1193,12 @@ class DataLoader:
         forced_encounter = None
         if "forced_encounter" in data:
             forced_encounter = ForcedEncounter.from_dict(data["forced_encounter"])
+        # TW-4: optional soft_deadline
+        soft_deadline = None
+        if "soft_deadline" in data:
+            from spacegame.models.soft_deadline import SoftDeadline
+
+            soft_deadline = SoftDeadline.from_dict(data["soft_deadline"])
         return Mission(
             id=data["id"],
             name=data["name"],
@@ -1206,6 +1222,8 @@ class DataLoader:
             discovery_method=data.get("discovery_method", ""),
             crew_member_id=data.get("crew_member_id", ""),
             required_reputation=data.get("required_reputation", []),
+            soft_deadline=soft_deadline,
+            timeliness_comments=dict(data.get("timeliness_comments", {})),
         )
 
     def get_mission(self, mission_id: str) -> Optional[Mission]:
@@ -1363,6 +1381,80 @@ class DataLoader:
 
         logger.info(f"Loaded {len(self.complications)} combat complications")
         return self.complications
+
+    def load_timed_threads(self) -> Dict[str, "TimedThread"]:
+        """Load TimedThread definitions (TW-2).
+
+        Each thread drifts through one or more ``DriftState`` entries when
+        untouched for longer than the threshold. Empty file is fine.
+        """
+        from spacegame.models.timed_thread import TimedThread
+
+        file_path = self.data_dir / "progression" / "timed_threads.json"
+        if not file_path.exists():
+            logger.warning(f"Timed threads file not found: {file_path}")
+            return self.timed_threads
+
+        with open(file_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        self.timed_threads.clear()
+        for raw in data.get("threads", []):
+            thread = TimedThread.from_dict(raw)
+            self.timed_threads[thread.id] = thread
+
+        logger.info(f"Loaded {len(self.timed_threads)} timed threads")
+        return self.timed_threads
+
+    def load_captain_variants(self) -> Dict[tuple, "CaptainVariant"]:
+        """Load per-meeting-state captain dialogue variants (RC-3).
+
+        Builds a (captain_id, meeting_state) -> CaptainVariant lookup
+        for O(1) resolution. Empty file is fine: no variants is a valid
+        starting state (RC-4 authors content).
+        """
+        from spacegame.models.captain_variant import CaptainVariant
+
+        file_path = self.data_dir / "combat" / "captain_variants.json"
+        if not file_path.exists():
+            logger.warning(f"Captain variants file not found: {file_path}")
+            return self.captain_variants
+
+        with open(file_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        self.captain_variants.clear()
+        for raw in data.get("variants", []):
+            variant = CaptainVariant.from_dict(raw)
+            key = (variant.captain_id, variant.meeting_state)
+            self.captain_variants[key] = variant
+
+        logger.info(f"Loaded {len(self.captain_variants)} captain dialogue variants")
+        return self.captain_variants
+
+    def load_crew_interjections(self) -> List["CrewInterjection"]:
+        """Load crew combat interjections (CE-5).
+
+        Each entry binds one (crew_id, trigger) pair to a bank of
+        interchangeable lines. The combat view's CrewInterjectionResolver
+        picks one line per fire and throttles display.
+        """
+        from spacegame.models.crew_interjection import CrewInterjection
+
+        file_path = self.data_dir / "combat" / "crew_interjections.json"
+        if not file_path.exists():
+            logger.warning(f"Crew interjections file not found: {file_path}")
+            return self.crew_interjections
+
+        with open(file_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        self.crew_interjections.clear()
+        for raw in data.get("interjections", []):
+            self.crew_interjections.append(CrewInterjection.from_dict(raw))
+
+        logger.info(f"Loaded {len(self.crew_interjections)} crew interjections")
+        return self.crew_interjections
 
     def load_ship_ultimates(self) -> Dict[str, ShipUltimate]:
         """Load ship class ultimate abilities from JSON."""
@@ -1627,22 +1719,42 @@ class DataLoader:
         Returns:
             EncounterDefinition instance.
         """
-        choices = []
-        for choice_data in data.get("choices", []):
-            outcome_data = choice_data.get("outcome", {})
+        from spacegame.models.encounter import EncounterSkillCheck
+
+        def _parse_outcome(raw: dict) -> EncounterOutcome:
             rewards = [
                 MissionReward(
                     reward_type=r["reward_type"],
                     amount=r["amount"],
                     target_id=r.get("target_id", ""),
                 )
-                for r in outcome_data.get("rewards", [])
+                for r in raw.get("rewards", [])
             ]
-            outcome = EncounterOutcome(
-                description=outcome_data.get("description", ""),
+            return EncounterOutcome(
+                description=raw.get("description", ""),
                 rewards=rewards,
-                leads_to_combat=outcome_data.get("leads_to_combat", False),
-                enemy_template_ids=outcome_data.get("enemy_template_ids", []),
+                leads_to_combat=raw.get("leads_to_combat", False),
+                enemy_template_ids=raw.get("enemy_template_ids", []),
+            )
+
+        choices = []
+        for choice_data in data.get("choices", []):
+            outcome = _parse_outcome(choice_data.get("outcome", {}))
+            failure_outcome = (
+                _parse_outcome(choice_data["failure_outcome"])
+                if "failure_outcome" in choice_data
+                else None
+            )
+            skill_check_raw = choice_data.get("skill_check")
+            skill_check = (
+                EncounterSkillCheck(
+                    skill=skill_check_raw["skill"],
+                    difficulty=int(skill_check_raw["difficulty"]),
+                    set_flag_on_success=skill_check_raw.get("set_flag_on_success"),
+                    set_flag_on_failure=skill_check_raw.get("set_flag_on_failure"),
+                )
+                if skill_check_raw
+                else None
             )
             choices.append(
                 EncounterChoice(
@@ -1650,6 +1762,9 @@ class DataLoader:
                     label=choice_data["label"],
                     description=choice_data.get("description", ""),
                     outcome=outcome,
+                    skill_check=skill_check,
+                    failure_outcome=failure_outcome,
+                    requires_credits=int(choice_data.get("requires_credits", 0)),
                 )
             )
 

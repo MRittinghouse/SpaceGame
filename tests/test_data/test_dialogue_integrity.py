@@ -671,6 +671,14 @@ KNOWN_PRODUCER_ONLY_ORPHANS: set[str] = {
     "read_oren_holdout",
     "technical_named_convergence",
     "added_tev_fees",
+    # === CE-4 encounter texture flags ===
+    # Set on player choices in CE-4 encounters to remember mercy /
+    # negotiation outcomes. Reserved for future TW (Time Weight) and
+    # RC (Recurring Captains) phases that may surface callbacks.
+    "ce4_fed_the_hungry",
+    "ce4_frontier_friendly",
+    "ce4_guild_assessed",
+    "ce4_saved_a_kid",
     # NV-7 wave 2 insight flags — ground mission NPCs + factions
     "read_neve_setup",
     "pushed_petra_decision",

@@ -1,0 +1,204 @@
+{
+  "_comment": "CE-5 crew combat interjections. Each entry binds (crew_id, trigger) to a bank of interchangeable lines voiced per character_voices.md. The combat view picks one event per round (priority + throttle) and surfaces it as a log line + floating subtitle.",
+  "interjections": [
+    {
+      "crew_id": "elena_reeves",
+      "trigger": "first_turn",
+      "lines": [
+        "Captain. Hostile signature confirmed. I have a vector.",
+        "Engagement window opens. Standard rules of evasion apply, sir. Sorry. Captain."
+      ]
+    },
+    {
+      "crew_id": "elena_reeves",
+      "trigger": "player_low_hp",
+      "lines": [
+        "Hull integrity at thirty. Captain, I would recommend a course correction or a miracle.",
+        "We are not on course for surviving this. Adjust."
+      ]
+    },
+    {
+      "crew_id": "elena_reeves",
+      "trigger": "enemy_low_hp",
+      "lines": [
+        "Their hull is failing. Press the advantage.",
+        "Final approach. They cannot weather another pass."
+      ]
+    },
+    {
+      "crew_id": "elena_reeves",
+      "trigger": "enemy_type_match",
+      "conditions": { "enemy_template_id": "guild_revenue_cutter" },
+      "lines": [
+        "Guild revenue cutter. I know that hull. I know the man flying it.",
+        "Guild markings. Of course. Some things never let you go."
+      ]
+    },
+    {
+      "crew_id": "elena_reeves",
+      "trigger": "combat_outcome",
+      "conditions": { "outcome": "victory" },
+      "lines": [
+        "Engagement closed. Adding 'survived' to the after-action report."
+      ]
+    },
+    {
+      "crew_id": "elena_reeves",
+      "trigger": "combat_outcome",
+      "conditions": { "outcome": "defeat" },
+      "lines": [
+        "Captain. We did what we could. I am sorry."
+      ]
+    },
+
+    {
+      "crew_id": "marcus_jin",
+      "trigger": "first_turn",
+      "lines": [
+        "They want a fight. Give them one.",
+        "Enemy on scope. Steady hands."
+      ]
+    },
+    {
+      "crew_id": "marcus_jin",
+      "trigger": "player_low_hp",
+      "lines": [
+        "Hull's screaming. You hear it?",
+        "We are not in good shape. Decide quick."
+      ]
+    },
+    {
+      "crew_id": "marcus_jin",
+      "trigger": "enemy_low_hp",
+      "lines": [
+        "He's leaking. Finish him.",
+        "Their hull's done. One more pass."
+      ]
+    },
+    {
+      "crew_id": "marcus_jin",
+      "trigger": "enemy_type_match",
+      "conditions": { "enemy_template_id": "union_brawler" },
+      "lines": [
+        "Union pickets. They know me. That's worse.",
+        "Union hull. I've welded those plates. I know where they're thin."
+      ]
+    },
+    {
+      "crew_id": "marcus_jin",
+      "trigger": "combat_outcome",
+      "conditions": { "outcome": "victory" },
+      "lines": [
+        "Done. Patch list comes after."
+      ]
+    },
+    {
+      "crew_id": "marcus_jin",
+      "trigger": "combat_outcome",
+      "conditions": { "outcome": "defeat" },
+      "lines": [
+        "I'm sorry, Captain. We'll fix what's left."
+      ]
+    },
+
+    {
+      "crew_id": "dr_priya_osei",
+      "trigger": "first_turn",
+      "lines": [
+        "Hostile contact. Engagement parameters are within tolerance.",
+        "I am tracking shield harmonics. The data will be useful regardless of outcome."
+      ]
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "trigger": "player_low_hp",
+      "lines": [
+        "Hull integrity has fallen below acceptable thresholds. I would prefer we did not test the failure point.",
+        "Captain. My estimate of our survival probability has dropped substantially. Please adjust."
+      ]
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "trigger": "enemy_low_hp",
+      "lines": [
+        "Their hull is approaching catastrophic failure. The next strike is likely terminal.",
+        "Statistically, one more well-placed hit ends this."
+      ]
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "trigger": "enemy_type_match",
+      "conditions": { "enemy_template_id": "science_surveyor" },
+      "lines": [
+        "A Collective surveyor. I helped certify that frame. I am not. I am not pleased to see it here.",
+        "Collective markings. The situation is more interesting than I would prefer."
+      ]
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "trigger": "combat_outcome",
+      "conditions": { "outcome": "victory" },
+      "lines": [
+        "Engagement concluded. I will compile the data when my hands stop shaking."
+      ]
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "trigger": "combat_outcome",
+      "conditions": { "outcome": "defeat" },
+      "lines": [
+        "Captain. I do not have words for this. I am sorry."
+      ]
+    },
+
+    {
+      "crew_id": "tomas_drifter",
+      "trigger": "first_turn",
+      "lines": [
+        "Way I see it, this is just business. They came for a fight and we are the fight.",
+        "Captain. Smile. They cannot tell when you are scared."
+      ]
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "trigger": "player_low_hp",
+      "lines": [
+        "Captain. We are bleeding bad. Time to be smart instead of brave.",
+        "This is a bad trade, Captain. Fold or raise. Either is better than this."
+      ]
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "trigger": "enemy_low_hp",
+      "lines": [
+        "He is on the ropes. Way I see it, that is when most folk get desperate. Watch him.",
+        "Done deal. Close it before he closes it for us."
+      ]
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "trigger": "enemy_type_match",
+      "conditions": { "enemy_template_id": "frontier_interceptor" },
+      "lines": [
+        "Frontier colors. I know that paint job. He will not run, Captain. He cannot.",
+        "Alliance interceptor. Fellow I used to drink with flies that hull. Or used to."
+      ]
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "trigger": "combat_outcome",
+      "conditions": { "outcome": "victory" },
+      "lines": [
+        "Way I see it, that was a good day's work. Drinks on me when we dock."
+      ]
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "trigger": "combat_outcome",
+      "conditions": { "outcome": "defeat" },
+      "lines": [
+        "Captain. I am sorry. I really am."
+      ]
+    }
+  ]
+}

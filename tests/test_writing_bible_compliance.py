@@ -207,6 +207,59 @@ def _extract_dialogue_strings() -> list[tuple[str, str]]:
     return entries
 
 
+def _extract_interjection_strings() -> list[tuple[str, str]]:
+    """CE-5: every authored crew interjection line."""
+    dl = _load_dl()
+    entries: list[tuple[str, str]] = []
+    for entry in dl.crew_interjections:
+        for i, line in enumerate(entry.lines):
+            entries.append(
+                (
+                    f"interjection:{entry.crew_id}:{entry.trigger}:{i}",
+                    line,
+                )
+            )
+    return entries
+
+
+def _extract_encounter_strings() -> list[tuple[str, str]]:
+    """Every encounter definition's name, description, choice labels,
+    choice descriptions, and outcome descriptions (success + failure)."""
+    dl = _load_dl()
+    entries: list[tuple[str, str]] = []
+    for defn in dl.encounter_definitions:
+        if defn.name:
+            entries.append((f"encounter:{defn.id}:name", defn.name))
+        if defn.description:
+            entries.append((f"encounter:{defn.id}:description", defn.description))
+        for choice in defn.choices:
+            entries.append(
+                (f"encounter:{defn.id}:choice_{choice.id}:label", choice.label)
+            )
+            if choice.description:
+                entries.append(
+                    (
+                        f"encounter:{defn.id}:choice_{choice.id}:desc",
+                        choice.description,
+                    )
+                )
+            if choice.outcome.description:
+                entries.append(
+                    (
+                        f"encounter:{defn.id}:choice_{choice.id}:outcome",
+                        choice.outcome.description,
+                    )
+                )
+            if choice.failure_outcome and choice.failure_outcome.description:
+                entries.append(
+                    (
+                        f"encounter:{defn.id}:choice_{choice.id}:failure_outcome",
+                        choice.failure_outcome.description,
+                    )
+                )
+    return entries
+
+
 def _extract_ambient_strings() -> list[tuple[str, str]]:
     """Station chatter + NPC ambient lines."""
     dl = _load_dl()
@@ -351,6 +404,54 @@ class TestDialogueAndAmbientWritingBible:
         ]
         assert not offenders, (
             "Em-dashes in ambient/chatter content:\n  "
+            + "\n  ".join(offenders[:20])
+        )
+
+    def test_no_em_dashes_in_encounters(self) -> None:
+        """CE-4: encounter content held to the same Writing Bible rules."""
+        offenders = [
+            f"{loc}: {text[:100]!r}"
+            for loc, text in _extract_encounter_strings()
+            if any(d in text for d in _EM_DASHES)
+        ]
+        assert not offenders, (
+            "Em-dashes in encounter content:\n  "
+            + "\n  ".join(offenders[:20])
+        )
+
+    def test_no_banned_phrases_in_encounters(self) -> None:
+        """CE-4: encounters can't use 'couldn't help but', 'a testament to', etc."""
+        offenders: list[str] = []
+        for loc, text in _extract_encounter_strings():
+            lowered = text.lower()
+            for phrase in _BANNED_PHRASES:
+                if phrase in lowered:
+                    offenders.append(f"{loc}: {phrase!r} in {text[:100]!r}")
+        assert not offenders, (
+            "Banned phrases in encounter content:\n  " + "\n  ".join(offenders[:20])
+        )
+
+    def test_no_em_dashes_in_crew_interjections(self) -> None:
+        """CE-5: crew interjections held to the same Writing Bible bar."""
+        offenders = [
+            f"{loc}: {text[:100]!r}"
+            for loc, text in _extract_interjection_strings()
+            if any(d in text for d in _EM_DASHES)
+        ]
+        assert not offenders, (
+            "Em-dashes in crew interjections:\n  "
+            + "\n  ".join(offenders[:20])
+        )
+
+    def test_no_banned_phrases_in_crew_interjections(self) -> None:
+        offenders: list[str] = []
+        for loc, text in _extract_interjection_strings():
+            lowered = text.lower()
+            for phrase in _BANNED_PHRASES:
+                if phrase in lowered:
+                    offenders.append(f"{loc}: {phrase!r} in {text[:100]!r}")
+        assert not offenders, (
+            "Banned phrases in crew interjections:\n  "
             + "\n  ".join(offenders[:20])
         )
 

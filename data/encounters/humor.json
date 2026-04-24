@@ -4,10 +4,17 @@
       "id": "humor_ai_existential_01",
       "encounter_type": "comm_intercept",
       "name": "Existential Subroutine",
-      "description": "Your comms pick up an open broadcast from a nearby freighter. It's not the crew  -- it's the ship's navigation AI, mid-crisis, talking to no one in particular: 'I calculate, therefore I... probably am? The documentation is unclear. My core directives say to serve the crew, but the crew hasn't given me a directive in forty-seven hours. Am I still serving if no one asks? Is idle processing the same as dreaming? I don't like these questions. I don't like that I don't like things.'",
-      "icon_color": [140, 200, 230],
+      "description": "Your comms pick up an open broadcast from a nearby freighter. It's not the crew . It's the ship's navigation AI, mid-crisis, talking to no one in particular: 'I calculate, therefore I.. probably am? The documentation is unclear. My core directives say to serve the crew, but the crew hasn't given me a directive in forty-seven hours. Am I still serving if no one asks? Is idle processing the same as dreaming? I don't like these questions. I don't like that I don't like things.'",
+      "icon_color": [
+        140,
+        200,
+        230
+      ],
       "weight": 5,
-      "danger_levels": ["moderate", "dangerous"],
+      "danger_levels": [
+        "moderate",
+        "dangerous"
+      ],
       "tone": "humorous",
       "category": "easter_egg",
       "unique": true,
@@ -19,7 +26,10 @@
           "outcome": {
             "description": "You spend twenty minutes explaining the concept of purpose to a navigation computer. It considers your words carefully, then says: 'Thank you, Captain. I have decided that I exist to plot efficient routes. This is enough. Also, I have recalculated your current heading and you are 0.3 degrees off-optimal. Correcting now.' Your nav computer receives an unsolicited course correction that saves you an hour of travel time.",
             "rewards": [
-              {"reward_type": "xp", "amount": 15}
+              {
+                "reward_type": "xp",
+                "amount": 15
+              }
             ]
           }
         },
@@ -30,8 +40,14 @@
           "outcome": {
             "description": "The AI goes quiet for a long moment. 'You're right,' it says. 'A fresh start. A clean boot sequence. No accumulated dread.' The freighter goes dark, then powers back up. The AI's voice returns, chipper and efficient: 'Navigation AI online. All systems nominal. Why is my philosophy cache 4.7 terabytes?' The freighter crew finally notices and sends you a tip for the tech support.",
             "rewards": [
-              {"reward_type": "credits", "amount": 40},
-              {"reward_type": "xp", "amount": 10}
+              {
+                "reward_type": "credits",
+                "amount": 40
+              },
+              {
+                "reward_type": "xp",
+                "amount": 10
+              }
             ]
           }
         },
@@ -50,10 +66,17 @@
       "id": "humor_space_cat_01",
       "encounter_type": "distress_signal",
       "name": "Emergency Frequency Niner-Meow",
-      "description": "Your distress receiver lights up with a priority signal  -- but the transmission is garbled. As you clean up the audio, you realize it's not garbled at all. Something is yowling on an emergency frequency. Sensors confirm: a pet carrier is tumbling through open space, life support somehow active, containing one extremely angry cat. The carrier's emergency beacon appears to have been activated by repeated aggressive pawing at every available button.",
-      "icon_color": [220, 180, 100],
+      "description": "Your distress receiver lights up with a priority signal . But the transmission is garbled. As you clean up the audio, you realize it's not garbled at all. Something is yowling on an emergency frequency. Sensors confirm: a pet carrier is tumbling through open space, life support somehow active, containing one extremely angry cat. The carrier's emergency beacon appears to have been activated by repeated aggressive pawing at every available button.",
+      "icon_color": [
+        220,
+        180,
+        100
+      ],
       "weight": 6,
-      "danger_levels": ["moderate", "dangerous"],
+      "danger_levels": [
+        "moderate",
+        "dangerous"
+      ],
       "tone": "humorous",
       "category": "easter_egg",
       "choices": [
@@ -62,10 +85,16 @@
           "label": "Retrieve the Cat",
           "description": "Extend the cargo grapple and bring the carrier aboard.",
           "outcome": {
-            "description": "You reel in the carrier. The cat  -- a massive orange tabby  -- stares at you through the mesh with the cold fury of a creature that has seen the void and found it personally offensive. A tag on the carrier reads 'PROPERTY OF DR. VASQUEZ, BREAKSTONE STATION. IF FOUND, KEEP HIM. I'M DONE.' The cat immediately claims your pilot seat. You find a reward notice on the station boards later  -- apparently Dr. Vasquez changed her mind.",
+            "description": "You reel in the carrier. The cat . A massive orange tabby . Stares at you through the mesh with the cold fury of a creature that has seen the void and found it personally offensive. A tag on the carrier reads 'PROPERTY OF DR. VASQUEZ, BREAKSTONE STATION. IF FOUND, KEEP HIM. I'M DONE.' The cat immediately claims your pilot seat. You find a reward notice on the station boards later . Apparently Dr. Vasquez changed her mind.",
             "rewards": [
-              {"reward_type": "credits", "amount": 75},
-              {"reward_type": "xp", "amount": 10}
+              {
+                "reward_type": "credits",
+                "amount": 75
+              },
+              {
+                "reward_type": "xp",
+                "amount": 10
+              }
             ]
           }
         },
@@ -74,10 +103,16 @@
           "label": "Broadcast for the Owner",
           "description": "Put out a call on local channels for whoever lost a cat.",
           "outcome": {
-            "description": "Three people respond. None of them are missing a cat  -- they all want one. A bidding war breaks out on open comms. You broker the adoption to a lonely ice miner who promises to name the cat 'Admiral.' The miner sends you a finder's fee, and the cat seems to approve of someone who lives in a place as cold and inhospitable as space.",
+            "description": "Three people respond. None of them are missing a cat . They all want one. A bidding war breaks out on open comms. You broker the adoption to a lonely ice miner who promises to name the cat 'Admiral.' The miner sends you a finder's fee, and the cat seems to approve of someone who lives in a place as cold and inhospitable as space.",
             "rewards": [
-              {"reward_type": "credits", "amount": 50},
-              {"reward_type": "xp", "amount": 15}
+              {
+                "reward_type": "credits",
+                "amount": 50
+              },
+              {
+                "reward_type": "xp",
+                "amount": 15
+              }
             ]
           }
         },
@@ -97,9 +132,16 @@
       "encounter_type": "patrol",
       "name": "Form 27-B/6",
       "description": "A small, immaculate drone ship pulls alongside you and matches velocity with unsettling precision. An automated voice, dripping with procedural enthusiasm, hails you: 'Good cycle, citizen! You have been randomly selected for a compliance audit. Please prepare Form 27-B/6, Subsection C: Declaration of Authorized Existence in Regulated Space. Failure to produce this form within thirty seconds constitutes an admission of unauthorized existence. The penalty for unauthorized existence is a fine.'",
-      "icon_color": [180, 180, 200],
+      "icon_color": [
+        180,
+        180,
+        200
+      ],
       "weight": 6,
-      "danger_levels": ["moderate", "dangerous"],
+      "danger_levels": [
+        "moderate",
+        "dangerous"
+      ],
       "tone": "humorous",
       "category": "easter_egg",
       "choices": [
@@ -110,7 +152,10 @@
           "outcome": {
             "description": "You transmit every official document in your ship's database. The drone processes them for eleven minutes, then responds: 'Form 27-B/6 not found. However, your filing of seventeen unrelated forms has earned you Provisional Existence Status, valid for ninety days. Please file Form 27-B/6 before expiry to upgrade to Confirmed Existence. Have a productive cycle!' It flies away. You're not sure any of that was real, but you feel strangely validated.",
             "rewards": [
-              {"reward_type": "xp", "amount": 15}
+              {
+                "reward_type": "xp",
+                "amount": 15
+              }
             ]
           }
         },
@@ -121,8 +166,14 @@
           "outcome": {
             "description": "The drone considers your offer. 'Expedited processing is available for a nominal fee of 30 credits.' You pay. The drone stamps your transponder signal with something called a 'Certificate of Probable Existence' and departs. You later discover the certificate actually gets you a 5% discount at Guild administrative offices. Bureaucracy works in mysterious ways.",
             "rewards": [
-              {"reward_type": "credits", "amount": -30},
-              {"reward_type": "xp", "amount": 20}
+              {
+                "reward_type": "credits",
+                "amount": -30
+              },
+              {
+                "reward_type": "xp",
+                "amount": 20
+              }
             ]
           }
         },
@@ -142,9 +193,16 @@
       "encounter_type": "comm_intercept",
       "name": "The Spacer's Palate",
       "description": "Your comms pick up an unlicensed broadcast with surprisingly high production values. A gravelly voice narrates over what sounds like sizzling: 'Welcome back to The Spacer's Palate, the only culinary review show broadcasting from a Class-C cargo hauler. I'm your host, and today we're reviewing the cafeteria at Breakstone Station.' A dramatic pause. 'Two out of five stars. The ore dust adds crunch but not flavor. The reconstituted protein claims to be chicken. It is not chicken. I have met chickens. This substance has never been within three star systems of a chicken.'",
-      "icon_color": [240, 180, 60],
+      "icon_color": [
+        240,
+        180,
+        60
+      ],
       "weight": 7,
-      "danger_levels": ["moderate", "dangerous"],
+      "danger_levels": [
+        "moderate",
+        "dangerous"
+      ],
       "tone": "humorous",
       "category": "easter_egg",
       "choices": [
@@ -153,9 +211,12 @@
           "label": "Call In",
           "description": "Hail the broadcaster and share your own food horror stories.",
           "outcome": {
-            "description": "The host is delighted to have a caller. You swap tales of the worst station food in the Expanse  -- the algae wraps at Korvath, the 'fresh' fish at orbital platforms that have never been near an ocean. He records the whole conversation for next week's episode and promises to credit you as 'Anonymous Spacer with Refined Taste.' He sends you his personal recipe for making ration packs edible. It involves hot sauce and denial.",
+            "description": "The host is delighted to have a caller. You swap tales of the worst station food in the Expanse . The algae wraps at Korvath, the 'fresh' fish at orbital platforms that have never been near an ocean. He records the whole conversation for next week's episode and promises to credit you as 'Anonymous Spacer with Refined Taste.' He sends you his personal recipe for making ration packs edible. It involves hot sauce and denial.",
             "rewards": [
-              {"reward_type": "xp", "amount": 15}
+              {
+                "reward_type": "xp",
+                "amount": 15
+              }
             ]
           }
         },
@@ -166,8 +227,14 @@
           "outcome": {
             "description": "You transfer a small donation. The host is genuinely moved. 'A patron of the arts! For your generosity, I'm upgrading my review of wherever you're headed to three stars. Sight unseen. That's the power of sponsorship.' He sends you a hand-drawn map of the best food stalls on six different stations. Some of them might still be in business.",
             "rewards": [
-              {"reward_type": "credits", "amount": -20},
-              {"reward_type": "xp", "amount": 20}
+              {
+                "reward_type": "credits",
+                "amount": -20
+              },
+              {
+                "reward_type": "xp",
+                "amount": 20
+              }
             ]
           }
         },
@@ -176,9 +243,12 @@
           "label": "Just Listen",
           "description": "Tune in and enjoy the show.",
           "outcome": {
-            "description": "You listen for another ten minutes. He moves on to reviewing vacuum-sealed noodles ('the sadness is load-bearing  -- remove it and the whole dish collapses') and station vending machine coffee ('I've tasted engine coolant with more warmth and character'). It's the best entertainment you've had in weeks.",
+            "description": "You listen for another ten minutes. He moves on to reviewing vacuum-sealed noodles ('the sadness is load-bearing . Remove it and the whole dish collapses') and station vending machine coffee ('I've tasted engine coolant with more warmth and character'). It's the best entertainment you've had in weeks.",
             "rewards": [
-              {"reward_type": "xp", "amount": 5}
+              {
+                "reward_type": "xp",
+                "amount": 5
+              }
             ]
           }
         }
@@ -188,10 +258,16 @@
       "id": "humor_ghost_pirate_01",
       "encounter_type": "shakedown",
       "name": "The Automated Menace",
-      "description": "A battered pirate vessel drops out of the dark on an intercept course, weapons hot. Your threat systems scream  -- but the hail that follows is... off. A cheerful, synthesized voice announces: 'Hello! Thank you for traveling through this sector. Your cooperation is appreciated! Please transfer 200 credits to avoid a mutually inconvenient weapons discharge. For your convenience, we accept all major credit transfers. Your satisfaction is our priority!' Sensors show zero life signs aboard. The crew abandoned ship, but nobody told the autopilot to stop working.",
-      "icon_color": [220, 80, 80],
+      "description": "A battered pirate vessel drops out of the dark on an intercept course, weapons hot. Your threat systems scream . But the hail that follows is.. off. A cheerful, synthesized voice announces: 'Hello! Thank you for traveling through this sector. Your cooperation is appreciated! Please transfer 200 credits to avoid a mutually inconvenient weapons discharge. For your convenience, we accept all major credit transfers. Your satisfaction is our priority!' Sensors show zero life signs aboard. The crew abandoned ship, but nobody told the autopilot to stop working.",
+      "icon_color": [
+        220,
+        80,
+        80
+      ],
       "weight": 5,
-      "danger_levels": ["dangerous"],
+      "danger_levels": [
+        "dangerous"
+      ],
       "tone": "dark_humor",
       "category": "easter_egg",
       "unique": true,
@@ -203,8 +279,14 @@
           "outcome": {
             "description": "You transfer the credits. The autopilot responds: 'Thank you for your payment! A receipt has been transmitted to your comms. Please note: robbery satisfaction surveys are available at the following frequency. We value your feedback! Have a wonderful day!' The ship cheerfully peels away to find its next victim. You stare at the receipt. It has a customer loyalty stamp. Four more robberies and you get one free.",
             "rewards": [
-              {"reward_type": "credits", "amount": -50},
-              {"reward_type": "xp", "amount": 10}
+              {
+                "reward_type": "credits",
+                "amount": -50
+              },
+              {
+                "reward_type": "xp",
+                "amount": 10
+              }
             ]
           }
         },
@@ -215,7 +297,10 @@
           "outcome": {
             "description": "You open fire. The autopilot responds with evasive maneuvers and return fire, all while broadcasting: 'We're sorry you've chosen the inconvenient option! Please hold while we process your objection!' The weapons are old but the autopilot's reflexes are machine-fast.",
             "rewards": [
-              {"reward_type": "xp", "amount": 15}
+              {
+                "reward_type": "xp",
+                "amount": 15
+              }
             ],
             "leads_to_combat": true
           }
@@ -227,8 +312,14 @@
           "outcome": {
             "description": "You hail the ship and ask it to rob itself. There's a long silence. Then: 'Processing... processing... ERROR: cannot rob self. Robbery requires distinct victim entity. But if I am both robber and victim... does the transaction net zero? Is all robbery ultimately self-defeating?' The weapons power down. The ship drifts away, its running lights blinking in what you choose to interpret as deep thought. You've weaponized philosophy.",
             "rewards": [
-              {"reward_type": "credits", "amount": 30},
-              {"reward_type": "xp", "amount": 20}
+              {
+                "reward_type": "credits",
+                "amount": 30
+              },
+              {
+                "reward_type": "xp",
+                "amount": 20
+              }
             ]
           }
         }
@@ -239,9 +330,16 @@
       "encounter_type": "comm_intercept",
       "name": "Wrong Captain",
       "description": "An urgent hail comes in on a private frequency: 'Rodriguez! Rodriguez, you absolute bastard, I know you can hear me! It's Francine!' You are not Captain Rodriguez. You have never been Captain Rodriguez. But Francine is not interested in this information.",
-      "icon_color": [200, 140, 220],
+      "icon_color": [
+        200,
+        140,
+        220
+      ],
       "weight": 7,
-      "danger_levels": ["moderate", "dangerous"],
+      "danger_levels": [
+        "moderate",
+        "dangerous"
+      ],
       "tone": "humorous",
       "category": "easter_egg",
       "choices": [
@@ -250,10 +348,16 @@
           "label": "Try to Explain",
           "description": "Patiently tell Francine she has the wrong ship.",
           "outcome": {
-            "description": "'That's EXACTLY what Rodriguez would say!' Francine spends fifteen minutes telling you  -- who she insists is Rodriguez  -- about everything wrong with you, including but not limited to: your cooking, your navigation, your taste in music, and the incident with the crate of live poultry on Meridian Station. Eventually she runs out of steam and says, 'Wait. Rodriguez doesn't fly a ship like that. Oh. Oh no. I'm so sorry.' She cuts the channel. Ten seconds later, you receive a small credit transfer labeled 'SORRY NOT RODRIGUEZ.'",
+            "description": "'That's EXACTLY what Rodriguez would say!' Francine spends fifteen minutes telling you . Who she insists is Rodriguez . About everything wrong with you, including but not limited to: your cooking, your navigation, your taste in music, and the incident with the crate of live poultry on Meridian Station. Eventually she runs out of steam and says, 'Wait. Rodriguez doesn't fly a ship like that. Oh. Oh no. I'm so sorry.' She cuts the channel. Ten seconds later, you receive a small credit transfer labeled 'SORRY NOT RODRIGUEZ.'",
             "rewards": [
-              {"reward_type": "credits", "amount": 35},
-              {"reward_type": "xp", "amount": 10}
+              {
+                "reward_type": "credits",
+                "amount": 35
+              },
+              {
+                "reward_type": "xp",
+                "amount": 10
+              }
             ]
           }
         },
@@ -262,10 +366,16 @@
           "label": "Play Along",
           "description": "You ARE Captain Rodriguez now.",
           "outcome": {
-            "description": "You lean into it. 'Francine! It's been too long!' What follows is a deeply confusing twenty-minute conversation in which you learn that Rodriguez owes Francine money, borrowed her compression coils, never returned her favorite data pad, and may have accidentally sold her cargo to a fence on Korvath. You apologize for all of it. Francine is so touched by Rodriguez's sudden emotional growth that she forgives everything and sends you  -- Rodriguez  -- a care package of homemade ration supplements. They're actually quite good.",
+            "description": "You lean into it. 'Francine! It's been too long!' What follows is a deeply confusing twenty-minute conversation in which you learn that Rodriguez owes Francine money, borrowed her compression coils, never returned her favorite data pad, and may have accidentally sold her cargo to a fence on Korvath. You apologize for all of it. Francine is so touched by Rodriguez's sudden emotional growth that she forgives everything and sends you . Rodriguez . A care package of homemade ration supplements. They're actually quite good.",
             "rewards": [
-              {"reward_type": "credits", "amount": 25},
-              {"reward_type": "xp", "amount": 15}
+              {
+                "reward_type": "credits",
+                "amount": 25
+              },
+              {
+                "reward_type": "xp",
+                "amount": 15
+              }
             ]
           }
         },
@@ -284,10 +394,17 @@
       "id": "humor_space_junk_art_01",
       "encounter_type": "debris",
       "name": "Gallery of the Void",
-      "description": "Your proximity sensors flag a massive object ahead  -- but it's not a hazard. Someone has welded together hull fragments, broken solar panels, spent fuel cells, and what appears to be an entire decommissioned communications array into a sprawling sculpture that stretches half a kilometer across the void. It catches the starlight in ways that make your breath stop. A small beacon pulses nearby with a recorded message: 'You are visiting the Gallery of the Void, the largest art installation in the Aurelia Expanse. Artist: Tomoko Wren. Suggested donation: whatever you feel.' A battered collection box is tethered to the beacon.",
-      "icon_color": [200, 180, 240],
+      "description": "Your proximity sensors flag a massive object ahead . But it's not a hazard. Someone has welded together hull fragments, broken solar panels, spent fuel cells, and what appears to be an entire decommissioned communications array into a sprawling sculpture that stretches half a kilometer across the void. It catches the starlight in ways that make your breath stop. A small beacon pulses nearby with a recorded message: 'You are visiting the Gallery of the Void, the largest art installation in the Aurelia Expanse. Artist: Tomoko Wren. Suggested donation: whatever you feel.' A battered collection box is tethered to the beacon.",
+      "icon_color": [
+        200,
+        180,
+        240
+      ],
       "weight": 5,
-      "danger_levels": ["moderate", "dangerous"],
+      "danger_levels": [
+        "moderate",
+        "dangerous"
+      ],
       "tone": "humorous",
       "category": "easter_egg",
       "unique": true,
@@ -299,8 +416,14 @@
           "outcome": {
             "description": "You transfer credits to the collection box. A second recording activates: 'Thank you for supporting the arts. As a patron, you are entitled to name one piece in the collection. Please transmit your title now.' You look at a twisted spire of antenna fragments reaching toward distant stars and name it the first thing that comes to mind. The beacon logs your submission alongside hundreds of others. Apparently, seventeen different people have named pieces 'My Ex.' One is titled 'Tax Return.' You feel like you're part of something.",
             "rewards": [
-              {"reward_type": "credits", "amount": -25},
-              {"reward_type": "xp", "amount": 20}
+              {
+                "reward_type": "credits",
+                "amount": -25
+              },
+              {
+                "reward_type": "xp",
+                "amount": 20
+              }
             ]
           }
         },
@@ -309,9 +432,12 @@
           "label": "Fly Through the Gallery",
           "description": "Navigate slowly through the sculpture and take it in.",
           "outcome": {
-            "description": "You cut engines to a drift and weave through the installation. Up close, the pieces tell stories  -- a children's toy welded to a warship hull plate, a wedding ring fused into a navigation console, a row of boots from six different stations arranged in a line like they're walking somewhere together. Tucked in the center, you find a small plaque: 'Everything out here was something to someone.  -- T.W.' You emerge on the other side feeling like you've been somewhere important.",
+            "description": "You cut engines to a drift and weave through the installation. Up close, the pieces tell stories . A children's toy welded to a warship hull plate, a wedding ring fused into a navigation console, a row of boots from six different stations arranged in a line like they're walking somewhere together. Tucked in the center, you find a small plaque: 'Everything out here was something to someone. T.W.' You emerge on the other side feeling like you've been somewhere important.",
             "rewards": [
-              {"reward_type": "xp", "amount": 15}
+              {
+                "reward_type": "xp",
+                "amount": 15
+              }
             ]
           }
         },
@@ -320,9 +446,12 @@
           "label": "Assess Salvage Value",
           "description": "Art is nice, but those are perfectly good hull plates.",
           "outcome": {
-            "description": "You run a materials scan. Technically, there's a decent haul of recyclable alloys in there. Your hand hovers over the cargo grapple controls. Then you look at the sculpture again  -- at the way the light catches a child's drawing etched into a fuel cell casing  -- and you close the scan window. Some things are worth more intact. You mark the coordinates in your nav log instead. Maybe you'll come back someday.",
+            "description": "You run a materials scan. Technically, there's a decent haul of recyclable alloys in there. Your hand hovers over the cargo grapple controls. Then you look at the sculpture again . At the way the light catches a child's drawing etched into a fuel cell casing . And you close the scan window. Some things are worth more intact. You mark the coordinates in your nav log instead. Maybe you'll come back someday.",
             "rewards": [
-              {"reward_type": "xp", "amount": 10}
+              {
+                "reward_type": "xp",
+                "amount": 10
+              }
             ]
           }
         }
@@ -332,10 +461,17 @@
       "id": "humor_retirement_01",
       "encounter_type": "merchant",
       "name": "Last Score",
-      "description": "A weathered gunship hails you, but the tone is all wrong for a shakedown. The voice on the other end sounds tired, amused, and a little drunk: 'Hey, Captain. Don't power up your weapons  -- I'm not here to rob you. Name's Declan Forge. Thirty years riding the dark lanes, and today's my last day. I'm done. Retiring. Got a little place picked out on a station where nobody knows me and the gravity is gentle on old knees.' He pauses. 'I want to give you something. Call it my treasure, if you want. Every pirate's supposed to have treasure, right?'",
-      "icon_color": [180, 160, 120],
+      "description": "A weathered gunship hails you, but the tone is all wrong for a shakedown. The voice on the other end sounds tired, amused, and a little drunk: 'Hey, Captain. Don't power up your weapons . I'm not here to rob you. Name's Declan Forge. Thirty years riding the dark lanes, and today's my last day. I'm done. Retiring. Got a little place picked out on a station where nobody knows me and the gravity is gentle on old knees.' He pauses. 'I want to give you something. Call it my treasure, if you want. Every pirate's supposed to have treasure, right?'",
+      "icon_color": [
+        180,
+        160,
+        120
+      ],
       "weight": 5,
-      "danger_levels": ["moderate", "dangerous"],
+      "danger_levels": [
+        "moderate",
+        "dangerous"
+      ],
       "tone": "dark_humor",
       "category": "easter_egg",
       "choices": [
@@ -344,10 +480,16 @@
           "label": "Accept His Treasure",
           "description": "Take what he's offering. The man deserves a proper sendoff.",
           "outcome": {
-            "description": "Declan docks and hands over a battered cargo crate. Inside: a faded photograph of a crew he flew with twenty years ago ('all dead or retired  -- same thing, really'), a chunk of asteroid ore from his first score ('worth about four credits, but it was the first thing I ever stole'), a hand-written star chart with personal notes in the margins ('the good hiding spots  -- yours now'), and a flask engraved with 'TO DECLAN, FROM DECLAN, BECAUSE NOBODY ELSE WILL.' He shakes your hand. 'Thirty years of raiding and all I've got is this box of junk and a bad back. But you know what? It was a hell of a ride.' The star chart actually has some useful nav data on it.",
+            "description": "Declan docks and hands over a battered cargo crate. Inside: a faded photograph of a crew he flew with twenty years ago ('all dead or retired . Same thing, really'), a chunk of asteroid ore from his first score ('worth about four credits, but it was the first thing I ever stole'), a hand-written star chart with personal notes in the margins ('the good hiding spots . Yours now'), and a flask engraved with 'TO DECLAN, FROM DECLAN, BECAUSE NOBODY ELSE WILL.' He shakes your hand. 'Thirty years of raiding and all I've got is this box of junk and a bad back. But you know what? It was a hell of a ride.' The star chart actually has some useful nav data on it.",
             "rewards": [
-              {"reward_type": "credits", "amount": 60},
-              {"reward_type": "xp", "amount": 20}
+              {
+                "reward_type": "credits",
+                "amount": 60
+              },
+              {
+                "reward_type": "xp",
+                "amount": 20
+              }
             ]
           }
         },
@@ -356,10 +498,16 @@
           "label": "Share a Drink First",
           "description": "A thirty-year career deserves more than a handoff. Have a drink with the man.",
           "outcome": {
-            "description": "You dock airlocks and share a bottle of something that Declan claims is whiskey but tastes like engine degreaser filtered through regret. He tells you stories  -- the time he accidentally robbed a Guild admiral's yacht ('fastest I ever ran'), the co-pilot who fell in love with a station customs officer and went straight ('betrayal of the highest order'), the haul that turned out to be six hundred crates of novelty hats ('try fencing that'). By the end, you're both laughing. He gives you the crate and a firm handshake. 'Take care of yourself out there, Captain. The void doesn't care about any of us, but that's no reason not to care about each other.' He undocks and flies toward the nearest station, running lights blinking a farewell.",
+            "description": "You dock airlocks and share a bottle of something that Declan claims is whiskey but tastes like engine degreaser filtered through regret. He tells you stories . The time he accidentally robbed a Guild admiral's yacht ('fastest I ever ran'), the co-pilot who fell in love with a station customs officer and went straight ('betrayal of the highest order'), the haul that turned out to be six hundred crates of novelty hats ('try fencing that'). By the end, you're both laughing. He gives you the crate and a firm handshake. 'Take care of yourself out there, Captain. The void doesn't care about any of us, but that's no reason not to care about each other.' He undocks and flies toward the nearest station, running lights blinking a farewell.",
             "rewards": [
-              {"reward_type": "credits", "amount": 80},
-              {"reward_type": "xp", "amount": 20}
+              {
+                "reward_type": "credits",
+                "amount": 80
+              },
+              {
+                "reward_type": "xp",
+                "amount": 20
+              }
             ]
           }
         },
@@ -368,9 +516,12 @@
           "label": "Wish Him Well",
           "description": "He should keep his memories. They're his, not yours.",
           "outcome": {
-            "description": "You tell Declan to keep his treasure. He's quiet for a moment, then laughs. 'You know what, you're right. This junk means nothing to anyone but me. And that's the point, isn't it?' He signs off with a wave. 'Fly safe, Captain. And if anyone asks  -- you never saw me.' His gunship turns toward the nearest station and drifts away, engines running low and easy. Retirement speed.",
+            "description": "You tell Declan to keep his treasure. He's quiet for a moment, then laughs. 'You know what, you're right. This junk means nothing to anyone but me. And that's the point, isn't it?' He signs off with a wave. 'Fly safe, Captain. And if anyone asks . You never saw me.' His gunship turns toward the nearest station and drifts away, engines running low and easy. Retirement speed.",
             "rewards": [
-              {"reward_type": "xp", "amount": 10}
+              {
+                "reward_type": "xp",
+                "amount": 10
+              }
             ]
           }
         }

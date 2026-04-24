@@ -23,6 +23,8 @@ from spacegame.models.combat import (
     PlayerCombatState,
     WeaponElement,
 )
+from spacegame.models.combat_complication import CombatComplication
+from spacegame.models.complication_resolver import ComplicationResolver
 from spacegame.models.momentum import (
     MOMENTUM_ON_CREW_ABILITY,
     MOMENTUM_ON_CRITICAL_HP,
@@ -54,9 +56,21 @@ MAX_LIVING_ENEMIES = 5
 class CombatEngine:
     """Resolves turn-based combat. All mutable state lives in CombatState."""
 
-    def __init__(self, state: CombatState, seed: int = 0) -> None:
+    def __init__(
+        self,
+        state: CombatState,
+        seed: int = 0,
+        complications: Optional[list[CombatComplication]] = None,
+    ) -> None:
         self._state = state
         self._rng = random.Random(seed)
+        # CE-3 Wave 2: live complication resolution. Caller resolves
+        # ``EncounterDefinition.complication_ids`` against the data loader
+        # and passes the actual CombatComplication instances. The engine
+        # evaluates them at well-defined hook points (start of player turn
+        # and end of round) so ``turn_counter`` and ``hp_threshold`` triggers
+        # both fire promptly.
+        self._resolver = ComplicationResolver(complications or [])
 
     def _skill_bonus(self, bonus_type: str) -> float:
         """Get a skill bonus from progression, or 0.0 if not available."""
@@ -87,6 +101,12 @@ class CombatEngine:
 
         all_logs: list[CombatLogEntry] = []
         player = self._state.player
+
+        # CE-3 Wave 2: evaluate complications before the player commits
+        # to actions for the round. Catches turn_counter triggers on the
+        # first round and any hp_threshold triggers that became true on
+        # the previous round's enemy phase.
+        all_logs.extend(self._evaluate_complications())
 
         for action in queue.actions:
             # Check if target is still valid (alive)
@@ -636,12 +656,18 @@ class CombatEngine:
         if move.cooldown > 0:
             enemy.cooldowns[move.id] = move.cooldown
 
+        # CE-3 Wave 2: ``battle_damage_marker`` and similar environmental
+        # complications scale enemy accuracy at the resolve site so the
+        # multiplier composes cleanly with per-enemy effects.
+        effective_accuracy = int(
+            enemy.get_effective_accuracy() * self._state.enemy_accuracy_multiplier
+        )
         return self._resolve_move(
             move,
             enemy,
             self._state.player,
             actor,
-            enemy.get_effective_accuracy(),
+            effective_accuracy,
         )
 
     def _select_enemy_move(self, enemy: EnemyShip) -> Optional[CombatMove]:
@@ -1070,6 +1096,58 @@ class CombatEngine:
     # Round management
     # ------------------------------------------------------------------
 
+    def _evaluate_complications(self) -> list[CombatLogEntry]:
+        """Run the complication resolver and surface events as log entries.
+
+        Spawns reinforcements directly into ``state.enemies`` (respecting
+        ``MAX_LIVING_ENEMIES``). Environmental and narration effects have
+        already mutated ``state`` inside the resolver — this method only
+        materializes player-visible output.
+        """
+        events = self._resolver.evaluate(self._state)
+        logs: list[CombatLogEntry] = []
+        if not events:
+            return logs
+
+        from spacegame.data_loader import get_data_loader
+
+        for event in events:
+            messages: list[str] = []
+            if event.narration:
+                messages.append(event.narration)
+
+            if event.spawned_template_ids:
+                dl = get_data_loader()
+                living = sum(
+                    1 for e in self._state.enemies if e.is_alive and not e.is_fled
+                )
+                for tid in event.spawned_template_ids:
+                    if living >= MAX_LIVING_ENEMIES:
+                        messages.append(
+                            f"Reinforcement call capped — {MAX_LIVING_ENEMIES} "
+                            "enemies already engaged"
+                        )
+                        break
+                    template = dl.enemy_templates.get(tid)
+                    if template is None:
+                        messages.append(
+                            f"Reinforcement call failed — unknown template '{tid}'"
+                        )
+                        continue
+                    self._state.enemies.append(EnemyShip.from_template(template))
+                    living += 1
+                    messages.append(f"Reinforcement arrives: {template.name}")
+
+            entry = CombatLogEntry(
+                round_number=self._state.round_number,
+                actor="system",
+                action=f"Complication: {event.complication_id}",
+                effects_applied=messages or [event.complication_id],
+            )
+            self._state.combat_log.append(entry)
+            logs.append(entry)
+        return logs
+
     def end_round(self) -> list[CombatLogEntry]:
         """Process end of round: tick effects, regen energy, check win/lose.
 
@@ -1122,7 +1200,14 @@ class CombatEngine:
 
         # Passive shield regen (Phase 12A)
         if player.shield_regen > 0 and player.shields < player.max_shields:
-            regen = min(player.shield_regen, player.max_shields - player.shields)
+            # CE-3 Wave 2: ``shield_harmonic`` and similar environmental
+            # complications scale base regen. Floor at 0 so a degenerate
+            # multiplier can't reverse the regen direction.
+            base_regen = max(
+                0,
+                int(player.shield_regen * self._state.shield_regen_multiplier),
+            )
+            regen = min(base_regen, player.max_shields - player.shields)
             # Sentinel capstone: double regen when shields > 50%
             if (
                 player.defensive_identity == "sentinel"
@@ -1143,8 +1228,10 @@ class CombatEngine:
                 regen = min(regen, player.max_shields - player.shields)
                 messages.append(f"Forgeborn regen surge: +{regen}")
             else:
-                messages.append(f"Shield regen: +{regen}")
-            player.shields += regen
+                if regen > 0:
+                    messages.append(f"Shield regen: +{regen}")
+            if regen > 0:
+                player.shields += regen
 
         # Reset evasion decay (Phase 12A — penalty clears each round)
         player.evasion_decay = 0
@@ -1177,6 +1264,11 @@ class CombatEngine:
             logs.append(entry)
 
         self._state.round_number += 1
+        # CE-3 Wave 2: evaluate complications after the round counter
+        # advances so the next round's turn_counter triggers fire here
+        # rather than waiting for execute_player_turn. Idempotent thanks
+        # to fired_complication_ids.
+        logs.extend(self._evaluate_complications())
         self._check_combat_end()
         return logs
 
@@ -1235,6 +1327,12 @@ class CombatEngine:
                 # Apply evasion decay (temporary penalty after being hit)
                 if isinstance(defender, PlayerCombatState):
                     raw_evasion = max(0, raw_evasion - defender.evasion_decay)
+                    # CE-3 Wave 2: environmental complications
+                    # (``asteroid_closure``, etc.) add a flat evasion delta.
+                    # Floor at 0 in case multiple negative modifiers stack.
+                    raw_evasion = max(
+                        0, raw_evasion + self._state.player_evasion_modifier
+                    )
                     # Ghost capstone: +30 evasion on first turn
                     if (
                         self._state.round_number == 1

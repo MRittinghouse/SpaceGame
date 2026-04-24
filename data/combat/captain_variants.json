@@ -1,0 +1,151 @@
+{
+  "_comment": "RC-4: per-meeting-state captain dialogue variants. Each entry is a partial overlay of EnemyCaptain dialogue. Empty fields fall back to the base captain. Authored to mirror the captain's established voice (see requirements/character_voices.md and the base entries in captains.json).",
+  "variants": [
+    {
+      "captain_id": "vela_wolfs_ear",
+      "meeting_state": "return",
+      "pre_combat_hail": "Wolf's Ear again. Different cargo. Same list. Same clock.",
+      "defeat_line": "You're on my list. Permanently. Pack better next time."
+    },
+    {
+      "captain_id": "vela_wolfs_ear",
+      "meeting_state": "post_bribed_off",
+      "pre_combat_hail": "Wolf's Ear. Same toll as last time, spacer. You know the drill. Pay and we both go home happy."
+    },
+
+    {
+      "captain_id": "calder_cold_read",
+      "meeting_state": "return",
+      "pre_combat_hail": "Cold Read again. Same captain. Different read this time. You're worth more or less than I figured. Going to find out which.",
+      "defeat_line": "Misread you twice. Won't be a third."
+    },
+    {
+      "captain_id": "calder_cold_read",
+      "meeting_state": "post_bribed_off",
+      "pre_combat_hail": "Cold Read calling. Same target ship as last time. Same offer: you pay, I read it as paid. Otherwise I read what I read."
+    },
+
+    {
+      "captain_id": "rin_wheat_dagger",
+      "meeting_state": "return",
+      "pre_combat_hail": "Back through Verdant. Same paper, same answer. Or different paper, same answer. Your pick still."
+    },
+
+    {
+      "captain_id": "pesh_off_ledger",
+      "meeting_state": "return",
+      "pre_combat_hail": "Hey, it's you again! Pesh remembers. Pesh is good with faces, less good with names. Same deal as last time?"
+    },
+    {
+      "captain_id": "pesh_off_ledger",
+      "meeting_state": "post_truce",
+      "pre_combat_hail": "Hey hey hey, look who it is! Pesh remembers you. We had a deal last time. Today's deal is the same deal. You're paying the loyalty discount."
+    },
+
+    {
+      "captain_id": "anatolia_kestrel_crow",
+      "meeting_state": "return",
+      "pre_combat_hail": "Captain. The contract's still open. You knew that. I knew that. Let's not pretend either of us is surprised."
+    },
+
+    {
+      "captain_id": "ink_silverback_gospel",
+      "meeting_state": "return",
+      "pre_combat_hail": "Captain. Ink. Again. The kids are still sick. The cargo's still needed. I wish you'd remember that."
+    },
+    {
+      "captain_id": "ink_silverback_gospel",
+      "meeting_state": "post_truce",
+      "pre_combat_hail": "Captain. Ink. The hospital still needs cargo. Last time we kept it civil. Let's again."
+    },
+
+    {
+      "captain_id": "dowager_chamberlains_regret",
+      "meeting_state": "return",
+      "pre_combat_hail": "Captain. We dance again. The Guild still strikes me from the registry. You still fly under their flag. You should know your role by now."
+    },
+
+    {
+      "captain_id": "juno_red_line_runner",
+      "meeting_state": "return",
+      "pre_combat_hail": "You again. Still stealing. I'm getting better at this. You should be too. Heads up."
+    },
+
+    {
+      "captain_id": "thayer_clear_signal",
+      "meeting_state": "return",
+      "pre_combat_hail": "Subject Seventeen. Engagement two of a planned series. Your hull data has changed. Refining the model. Begin.",
+      "defeat_line": "Subject Seventeen reclassified. Cooperative under pressure. Compelling data."
+    },
+
+    {
+      "captain_id": "sovi_mirror",
+      "meeting_state": "return",
+      "pre_combat_hail": "Same contract. Same call."
+    },
+
+    {
+      "captain_id": "dusty_slow_star",
+      "meeting_state": "return",
+      "pre_combat_hail": "Through my claim again. Patience getting thinner."
+    },
+
+    {
+      "captain_id": "ngozi_pale_reckoning",
+      "meeting_state": "return",
+      "pre_combat_hail": "Eighteen names. Still. Different freight today, same blood. Pale Reckoning opens fire.",
+      "defeat_line": "Nineteen names now. They will know your name too.",
+      "victory_line": "Twenty next month. The line keeps growing."
+    },
+
+    {
+      "captain_id": "wren_departure_angle",
+      "meeting_state": "return",
+      "pre_combat_hail": "Here we are. Again. I'm Wren, you remember. Good business doesn't require introductions twice. Pay, or pay the hard way."
+    },
+    {
+      "captain_id": "wren_departure_angle",
+      "meeting_state": "post_bribed_off",
+      "pre_combat_hail": "Captain. Wren. The arrangement's been profitable for both of us. Let's keep it going. Standard rate."
+    },
+
+    {
+      "captain_id": "odalys_kindling",
+      "meeting_state": "return",
+      "pre_combat_hail": "Captain. Hello again. The kids ate well last time. Or didn't. I don't always remember which. Today's another meal either way."
+    },
+    {
+      "captain_id": "odalys_kindling",
+      "meeting_state": "post_truce",
+      "pre_combat_hail": "Captain. The kids remember your face. They asked if you'd come back. I told them to stop asking. Hand over what you can spare."
+    },
+
+    {
+      "captain_id": "fyodor_fourth_try",
+      "meeting_state": "return",
+      "pre_combat_hail": "Yeah, hi. Fyodor. Trip. Fourth Try. Yes I know what I said. Fifth try? No. Sixth try. Definitely the last one this time. Make it true and I owe you."
+    },
+    {
+      "captain_id": "fyodor_fourth_try",
+      "meeting_state": "post_truce",
+      "pre_combat_hail": "Hey! Captain! Last time you let Trip walk. Trip still owes you. Trip is paying that debt right now by warning you: turn around. Go anywhere else. I have to do this if you don't."
+    },
+
+    {
+      "captain_id": "rhiannon_deep_veil",
+      "meeting_state": "return",
+      "pre_combat_hail": "The specimen returns. Interesting. Did you replace the Keller-Vos? No. Your ship is suboptimal but the cataloging value remains."
+    },
+
+    {
+      "captain_id": "marat_old_friend",
+      "meeting_state": "return",
+      "pre_combat_hail": "Captain. Papa Serik again. Old friend now, eh? Warm welcome for a returning face. Same Guild paper, same concerning conversation."
+    },
+    {
+      "captain_id": "marat_old_friend",
+      "meeting_state": "post_truce",
+      "pre_combat_hail": "Captain! My friend! Papa is so glad to see you. We had our talk, we had our peace. You drink with me at the dock when this is over, yes? But for now, the Union still has questions about your manifest."
+    }
+  ]
+}

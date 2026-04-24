@@ -138,7 +138,7 @@
       "signature_ship_template": "iron_maw",
       "pre_combat_hail": "Got a seat and a wrench. Don't have patience for boarders. You came through my claim. Back up or don't.",
       "surrender_line": "Good. Fly straight out. Don't come back.",
-      "retreat_line": "",
+      "retreat_line": "Pulling back. Claim's still mine.",
       "victory_line": "Told you.",
       "defeat_line": "Well. That's fair.",
       "is_recurring": false

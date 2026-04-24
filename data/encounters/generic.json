@@ -51,7 +51,7 @@
       "id": "distress_engine_01",
       "encounter_type": "distress_signal",
       "name": "Engine Failure",
-      "description": "A cargo hauler is adrift with a blown fuel converter. The pilot sounds panicked  -- their orbit is decaying toward an asteroid field. They're offering credits for a tow to the nearest station.",
+      "description": "A cargo hauler is adrift with a blown fuel converter. The pilot sounds panicked . Their orbit is decaying toward an asteroid field. They're offering credits for a tow to the nearest station.",
       "icon_color": [
         100,
         200,
@@ -149,7 +149,7 @@
       "id": "derelict_freighter_01",
       "encounter_type": "derelict",
       "name": "Abandoned Freighter",
-      "description": "Your sensors detect a derelict freighter drifting in the void. No life signs, no active transponder. The cargo bay appears partially intact  -- there could be salvageable goods aboard.",
+      "description": "Your sensors detect a derelict freighter drifting in the void. No life signs, no active transponder. The cargo bay appears partially intact . There could be salvageable goods aboard.",
       "icon_color": [
         180,
         140,
@@ -210,7 +210,7 @@
       "id": "derelict_wreck_01",
       "encounter_type": "derelict",
       "name": "Battle-Scarred Wreck",
-      "description": "A ship bearing heavy weapons damage floats dead ahead. Scorch marks suggest a recent firefight. The wreck could hold valuable components  -- but whatever hit this ship might still be nearby.",
+      "description": "A ship bearing heavy weapons damage floats dead ahead. Scorch marks suggest a recent firefight. The wreck could hold valuable components . But whatever hit this ship might still be nearby.",
       "icon_color": [
         180,
         140,
@@ -228,7 +228,7 @@
           "label": "Risk Salvage",
           "description": "Board quickly and grab what you can.",
           "outcome": {
-            "description": "You work fast, stripping the ship of its remaining weapons components and emergency fuel reserves. No sign of whoever did this  -- today is your lucky day.",
+            "description": "You work fast, stripping the ship of its remaining weapons components and emergency fuel reserves. No sign of whoever did this . Today is your lucky day.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -308,7 +308,7 @@
       "id": "merchant_convoy_01",
       "encounter_type": "merchant",
       "name": "Supply Convoy",
-      "description": "A Guild-flagged supply convoy is making a scheduled fuel run. The convoy leader offers to top off your reserves at cost  -- professional courtesy between spacers.",
+      "description": "A Guild-flagged supply convoy is making a scheduled fuel run. The convoy leader offers to top off your reserves at cost . Professional courtesy between spacers.",
       "icon_color": [
         100,
         150,
@@ -359,7 +359,7 @@
       "id": "debris_cargo_01",
       "encounter_type": "debris",
       "name": "Scattered Cargo",
-      "description": "Your proximity sensors light up  -- a cargo container has broken apart, scattering crates across your flight path. Looks like someone lost a shipment. Finders keepers?",
+      "description": "Your proximity sensors light up . A cargo container has broken apart, scattering crates across your flight path. Looks like someone lost a shipment. Finders keepers?",
       "icon_color": [
         160,
         160,
@@ -406,7 +406,7 @@
       "id": "debris_ghost_01",
       "encounter_type": "debris",
       "name": "Sensor Ghost",
-      "description": "Your sensors register a brief anomalous reading  -- mass signature, thermal spike, then nothing. Could be debris, could be a sensor glitch, could be something more interesting.",
+      "description": "Your sensors register a brief anomalous reading . Mass signature, thermal spike, then nothing. Could be debris, could be a sensor glitch, could be something more interesting.",
       "icon_color": [
         160,
         160,
@@ -439,7 +439,7 @@
           "label": "File It Under 'Unexplained'",
           "description": "Your sensor log is full of ghosts. One more won't change anything.",
           "outcome": {
-            "description": "You log the anomaly and move on. Your nav computer files it under 'unexplained readings'  -- a list that grows longer every week.",
+            "description": "You log the anomaly and move on. Your nav computer files it under 'unexplained readings' . A list that grows longer every week.",
             "rewards": []
           }
         }
@@ -449,7 +449,7 @@
       "id": "anomaly_energy_01",
       "encounter_type": "anomaly",
       "name": "Energy Phenomenon",
-      "description": "An unusual energy signature pulses ahead  -- a swirling pattern of charged particles that doesn't match any known natural formation. Collective research buoys mark the area as 'under study.'",
+      "description": "An unusual energy signature pulses ahead . A swirling pattern of charged particles that doesn't match any known natural formation. Collective research buoys mark the area as 'under study.'",
       "icon_color": [
         180,
         100,
@@ -513,6 +513,7 @@
       ],
       "tone": "aggressive",
       "category": "generic",
+      "complication_ids": ["shield_harmonic", "battle_damage_marker"],
       "choices": [
         {
           "id": "pay",
@@ -533,7 +534,7 @@
           "label": "Power Up Weapons",
           "description": "The toll is your dignity. Today you're not paying.",
           "outcome": {
-            "description": "You power up weapons and angle your shields. The pirate grins  -- they were hoping you'd say that.",
+            "description": "You power up weapons and angle your shields. The pirate grins . They were hoping you'd say that.",
             "rewards": [],
             "leads_to_combat": true
           }
@@ -562,7 +563,7 @@
           "label": "Pay Fee",
           "description": "Pay the fee and move along.",
           "outcome": {
-            "description": "The enforcer accepts payment without ceremony. They mark your transponder as 'cleared'  -- whatever that means out here.",
+            "description": "The enforcer accepts payment without ceremony. They mark your transponder as 'cleared' . Whatever that means out here.",
             "rewards": [
               {
                 "reward_type": "deduct_credits",
@@ -576,7 +577,7 @@
           "label": "Stand Your Ground",
           "description": "Call their bluff.",
           "outcome": {
-            "description": "You hold course and charge weapons. The enforcer's professional demeanor cracks  -- they expected compliance, not resistance.",
+            "description": "You hold course and charge weapons. The enforcer's professional demeanor cracks . They expected compliance, not resistance.",
             "rewards": [],
             "leads_to_combat": true
           }
@@ -586,7 +587,7 @@
           "label": "Claim Authority",
           "description": "Insist you have official clearance.",
           "outcome": {
-            "description": "You transmit a confident-sounding string of authorization codes. The enforcer hesitates, then backs off  -- they can't risk tangling with someone who might have real backing.",
+            "description": "You transmit a confident-sounding string of authorization codes. The enforcer hesitates, then backs off . They can't risk tangling with someone who might have real backing.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -600,8 +601,8 @@
     {
       "id": "cargo_lost_distress",
       "encounter_type": "distress_signal",
-      "name": "Distress Signal  -- Disabled Convoy Escort",
-      "description": "Your comms light up with a repeating distress signal. A Guild convoy escort is adrift  -- engines disabled, life support failing. The captain is broadcasting on an open channel: 'This is Captain Sato of the Guild escort Heron. We were hit by raiders. Engines are gone. Life support has maybe six hours. If anyone can hear this...'",
+      "name": "Distress Signal . Disabled Convoy Escort",
+      "description": "Your comms light up with a repeating distress signal. A Guild convoy escort is adrift . Engines disabled, life support failing. The captain is broadcasting on an open channel: 'This is Captain Sato of the Guild escort Heron. We were hit by raiders. Engines are gone. Life support has maybe six hours. If anyone can hear this..'",
       "icon_color": [
         220,
         80,
@@ -620,7 +621,7 @@
           "label": "Answer the Signal",
           "description": "Divert from your route to assist the disabled escort. It will cost time and fuel, but someone's life is at stake.",
           "outcome": {
-            "description": "You pull alongside the Heron and patch your fuel line into their auxiliary systems. Captain Sato's voice comes through, steady but exhausted: 'I owe you one, Captain. The raiders took everything  -- cargo, navigation data, even the crew manifests. This wasn't random. They knew exactly where we'd be.' She transfers a small credit bounty from the escort's emergency fund.",
+            "description": "You pull alongside the Heron and patch your fuel line into their auxiliary systems. Captain Sato's voice comes through, steady but exhausted: 'I owe you one, Captain. The raiders took everything . Cargo, navigation data, even the crew manifests. This wasn't random. They knew exactly where we'd be.' She transfers a small credit bounty from the escort's emergency fund.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -688,7 +689,7 @@
         },
         {
           "id": "chat",
-          "label": "Comply  -- and Ask About the Lanes",
+          "label": "Comply . And Ask About the Lanes",
           "description": "A patrol officer who's chatty is worth more than ten nav updates. Buy goodwill with small talk.",
           "outcome": {
             "description": "The officer warms up once your papers clear. She mentions increased raider activity two systems over and flags a few safe waypoints on your chart. 'Watch yourself out there,' she says before signing off.",
@@ -706,7 +707,7 @@
       "id": "comm_intercept_static_01",
       "encounter_type": "comm_intercept",
       "name": "Encrypted Fragment",
-      "description": "Your comms array picks up a burst of encrypted traffic on a non-standard frequency. The signal is fragmented  -- repeating coordinates, a callsign you don't recognize, and what sounds like a countdown.",
+      "description": "Your comms array picks up a burst of encrypted traffic on a non-standard frequency. The signal is fragmented . Repeating coordinates, a callsign you don't recognize, and what sounds like a countdown.",
       "icon_color": [
         200,
         180,
@@ -725,7 +726,7 @@
           "label": "Attempt Decryption",
           "description": "Run the signal through your ship's cipher banks.",
           "outcome": {
-            "description": "Your systems crack the outer layer of encryption. It's a supply drop schedule  -- someone is running unauthorized cargo through this sector. The coordinates alone are worth something to the right buyer.",
+            "description": "Your systems crack the outer layer of encryption. It's a supply drop schedule . Someone is running unauthorized cargo through this sector. The coordinates alone are worth something to the right buyer.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -884,7 +885,7 @@
       "id": "debris_minefield_01",
       "encounter_type": "debris",
       "name": "Dormant Minefield",
-      "description": "Your proximity alarm screams as your sensors paint a constellation of small metallic objects ahead. Old mines  -- relics of a border skirmish decades past. Most are dormant, but a few still show faint power signatures.",
+      "description": "Your proximity alarm screams as your sensors paint a constellation of small metallic objects ahead. Old mines . Relics of a border skirmish decades past. Most are dormant, but a few still show faint power signatures.",
       "icon_color": [
         160,
         160,
@@ -954,7 +955,7 @@
           "label": "Hard-Dock and Cycle Your Atmosphere",
           "description": "Two hours of air from your reserves could mean the difference. You can smell recycled air for a while.",
           "outcome": {
-            "description": "You hard-dock and cycle fresh atmosphere into the prospector's cabin. Color returns to her face as she gulps clean air. She insists on transferring her claim credits  -- 'Won't need them if I'm dead.'",
+            "description": "You hard-dock and cycle fresh atmosphere into the prospector's cabin. Color returns to her face as she gulps clean air. She insists on transferring her claim credits .'Won't need them if I'm dead.'",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -987,7 +988,7 @@
       "id": "derelict_station_01",
       "encounter_type": "derelict",
       "name": "Abandoned Relay Station",
-      "description": "A pre-Expansion relay station hangs in the void, its solar arrays dark and twisted. The structure predates modern navigation  -- built when these lanes were first charted. Faint power readings flicker from deep inside.",
+      "description": "A pre-Expansion relay station hangs in the void, its solar arrays dark and twisted. The structure predates modern navigation . Built when these lanes were first charted. Faint power readings flicker from deep inside.",
       "icon_color": [
         180,
         140,
@@ -1006,7 +1007,7 @@
           "label": "Suit Up and Go Inside",
           "description": "Pre-Expansion stations have century-old databanks. Historians pay well for primary sources.",
           "outcome": {
-            "description": "The station's corridors are silent and cold. You find the main control room still partially functional  -- its databanks contain century-old star charts and communication logs. Historians would pay well for this.",
+            "description": "The station's corridors are silent and cold. You find the main control room still partially functional . Its databanks contain century-old star charts and communication logs. Historians would pay well for this.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -1024,7 +1025,7 @@
           "label": "Scan Without Docking",
           "description": "Map the architecture from your cockpit. Less risk, less reward, but old stations have old problems.",
           "outcome": {
-            "description": "Your scan reveals the station's architecture in detail  -- pre-Expansion construction techniques, obsolete but fascinating. You compile the data into a survey package worth a modest sum.",
+            "description": "Your scan reveals the station's architecture in detail . Pre-Expansion construction techniques, obsolete but fascinating. You compile the data into a survey package worth a modest sum.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -1052,7 +1053,7 @@
       "id": "anomaly_gravity_01",
       "encounter_type": "anomaly",
       "name": "Gravity Anomaly",
-      "description": "Your ship lurches as an invisible force tugs at the hull. Instruments spin wildly  -- a localized gravity distortion, dense and shifting, like something massive that isn't there. The void around it shimmers with lensed starlight.",
+      "description": "Your ship lurches as an invisible force tugs at the hull. Instruments spin wildly . A localized gravity distortion, dense and shifting, like something massive that isn't there. The void around it shimmers with lensed starlight.",
       "icon_color": [
         180,
         100,
@@ -1070,7 +1071,7 @@
           "label": "Ride the Gradient",
           "description": "Hold at the edge and let your instruments record. Twenty minutes of harrowing readings the Collective would kill for.",
           "outcome": {
-            "description": "You ride the gravity gradient for twenty harrowing minutes, instruments drinking in data. The readings are extraordinary  -- spatial compression at a scale that shouldn't exist this far from a stellar body. The Collective will want this.",
+            "description": "You ride the gravity gradient for twenty harrowing minutes, instruments drinking in data. The readings are extraordinary . Spatial compression at a scale that shouldn't exist this far from a stellar body. The Collective will want this.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -1104,7 +1105,7 @@
       "id": "smuggler_offer_01",
       "encounter_type": "smuggler",
       "name": "Backchanel Deal",
-      "description": "A nondescript freighter matches your velocity, running dark  -- no transponder, no hail frequency, just a tight-beam text burst: 'Got surplus. Good prices. No manifests. Interested?'",
+      "description": "A nondescript freighter matches your velocity, running dark . No transponder, no hail frequency, just a tight-beam text burst: 'Got surplus. Good prices. No manifests. Interested?'",
       "icon_color": [
         180,
         80,
@@ -1122,7 +1123,7 @@
           "label": "Dock Dark and Browse",
           "description": "No transponders, no manifests. The prices are good because the provenance is bad.",
           "outcome": {
-            "description": "You dock in silence  -- no names, no pleasantries. The goods are quality, probably lifted from a Guild shipment. You pay a fraction of market rate and part ways with a nod. What the manifest doesn't show won't hurt it.",
+            "description": "You dock in silence . No names, no pleasantries. The goods are quality, probably lifted from a Guild shipment. You pay a fraction of market rate and part ways with a nod. What the manifest doesn't show won't hurt it.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -1164,7 +1165,7 @@
       "id": "wildlife_swarm_01",
       "encounter_type": "wildlife",
       "name": "Void-Drifter Swarm",
-      "description": "Your viewport fills with drifting shapes  -- bioluminescent organisms the size of cargo crates, trailing tendrils of soft blue light. Void-drifters, feeding on the ionized particles that stream between stars. They pulse gently against your hull, curious and harmless.",
+      "description": "Your viewport fills with drifting shapes . Bioluminescent organisms the size of cargo crates, trailing tendrils of soft blue light. Void-drifters, feeding on the ionized particles that stream between stars. They pulse gently against your hull, curious and harmless.",
       "icon_color": [
         100,
         220,
@@ -1182,7 +1183,7 @@
           "label": "Cut Engines and Film",
           "description": "Drift among them with cameras rolling. Xenobiologists pay a fortune for behavioral footage.",
           "outcome": {
-            "description": "You drift among them for half an hour, cameras rolling. The organisms seem to communicate through light patterns  -- complex, almost rhythmic. Your footage will make some biologist's career.",
+            "description": "You drift among them for half an hour, cameras rolling. The organisms seem to communicate through light patterns . Complex, almost rhythmic. Your footage will make some biologist's career.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -1280,7 +1281,7 @@
       "id": "distress_pirate_attack_01",
       "encounter_type": "distress_signal",
       "name": "Ship Under Attack",
-      "description": "Weapons fire flashes in the distance  -- a freighter is taking hits from two raider skiffs, its shields flickering. The captain's voice cuts through the static: 'Mayday! Any vessel  -- we're under attack! They're cutting through our --' The transmission dissolves into noise.",
+      "description": "Weapons fire flashes in the distance. A freighter is taking hits from two raider skiffs, its shields flickering. The captain's voice cuts through the static. \"Mayday! Any vessel. We're under attack! They're cutting through our.\" The transmission dissolves into noise.",
       "icon_color": [
         100,
         200,
@@ -1292,13 +1293,14 @@
       ],
       "tone": "aggressive",
       "category": "generic",
+      "complication_ids": ["shield_harmonic"],
       "choices": [
         {
           "id": "intervene",
           "label": "Burn Hard Toward the Fight",
           "description": "Two against two changes the odds. The raiders might break off when they see you coming.",
           "outcome": {
-            "description": "You burn hard toward the firefight, weapons hot. The raiders see you coming and break off  -- two against two isn't the odds they wanted. The freighter captain nearly weeps with relief and transfers every credit she can spare.",
+            "description": "You burn hard toward the firefight, weapons hot. The raiders see you coming and break off . Two against two isn't the odds they wanted. The freighter captain nearly weeps with relief and transfers every credit she can spare.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -1341,7 +1343,7 @@
       "id": "debris_escape_pod_01",
       "encounter_type": "debris",
       "name": "Lone Escape Pod",
-      "description": "A single escape pod tumbles end over end through the void, its emergency beacon pulsing weakly. No parent vessel in sight. The pod's power cells are nearly drained  -- whoever is inside doesn't have long.",
+      "description": "A single escape pod tumbles end over end through the void, its emergency beacon pulsing weakly. No parent vessel in sight. The pod's power cells are nearly drained . Whoever is inside doesn't have long.",
       "icon_color": [
         160,
         160,
@@ -1358,7 +1360,7 @@
         {
           "id": "retrieve",
           "label": "Grapple It and Crack the Seal",
-          "description": "Whoever's inside has been tumbling for days. The power cells are almost dead  -- this is their last window.",
+          "description": "Whoever's inside has been tumbling for days. The power cells are almost dead . This is their last window.",
           "outcome": {
             "description": "You snag the tumbling pod and crack it open. Inside, a shivering engineer blinks in the sudden light. She was aboard a mining vessel that broke apart three days ago. She transfers her emergency fund and asks for a ride to the nearest station.",
             "rewards": [
@@ -1393,7 +1395,7 @@
       "id": "comm_intercept_music_01",
       "encounter_type": "comm_intercept",
       "name": "Old Earth Broadcast",
-      "description": "Your comms array catches a signal on a frequency nobody uses anymore  -- an old Earth music broadcast, centuries out of date, bouncing between relay stations that should have gone dark long ago. A piano sonata fills your cockpit, hauntingly clear.",
+      "description": "Your comms array catches a signal on a frequency nobody uses anymore . An old Earth music broadcast, centuries out of date, bouncing between relay stations that should have gone dark long ago. A piano sonata fills your cockpit, hauntingly clear.",
       "icon_color": [
         200,
         180,
@@ -1412,7 +1414,7 @@
           "label": "Trace the Signal",
           "description": "Follow the relay chain to find the source.",
           "outcome": {
-            "description": "You trace the signal through three dead relays to a fourth that shouldn't exist  -- a tiny automated station, jury-rigged to keep broadcasting. Someone went to great trouble to keep this music alive. You archive the broadcast and log the station's coordinates.",
+            "description": "You trace the signal through three dead relays to a fourth that shouldn't exist . A tiny automated station, jury-rigged to keep broadcasting. Someone went to great trouble to keep this music alive. You archive the broadcast and log the station's coordinates.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -1445,7 +1447,7 @@
       "id": "patrol_warning_01",
       "encounter_type": "patrol",
       "name": "Danger Advisory",
-      "description": "A patrol frigate cuts across your bow, its warning lights cycling amber. The officer broadcasts on an open channel: 'Attention all vessels  -- we've confirmed raider activity in the next sector. Multiple contacts, well-armed. Proceed at your own risk.'",
+      "description": "A patrol frigate cuts across your bow, its warning lights cycling amber. The officer broadcasts on an open channel: 'Attention all vessels . We've confirmed raider activity in the next sector. Multiple contacts, well-armed. Proceed at your own risk.'",
       "icon_color": [
         120,
         180,
@@ -1464,7 +1466,7 @@
           "label": "Ask for Tactical Data",
           "description": "Raider positions, ship profiles, ambush points. This kind of intel saves lives.",
           "outcome": {
-            "description": "The officer shares tactical data  -- raider positions, ship profiles, their preferred ambush points. You update your nav charts with safe corridors. This kind of intel saves lives.",
+            "description": "The officer shares tactical data . Raider positions, ship profiles, their preferred ambush points. You update your nav charts with safe corridors. This kind of intel saves lives.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -1512,7 +1514,7 @@
       "id": "distress_cold_signal_01",
       "encounter_type": "distress_signal",
       "name": "Cold Signal",
-      "description": "Your comms pick up a distress beacon  -- automated, looping, no voice. The signal metadata is eleven days old. The coordinates point to empty space. No ship on sensors.",
+      "description": "Your comms pick up a distress beacon . Automated, looping, no voice. The signal metadata is eleven days old. The coordinates point to empty space. No ship on sensors.",
       "icon_color": [
         100,
         200,
@@ -1531,7 +1533,7 @@
           "label": "Divert to the Beacon Source",
           "description": "Eleven days is a long time. Whatever you find won't be a rescue. But someone should look.",
           "outcome": {
-            "description": "You find debris. Not much  -- a sheared hull panel, frozen coolant, a cargo manifest floating in the void. The ship's name was the Perihelion. Crew of four. Nobody's coming for them anymore. You log the coordinates and move on.",
+            "description": "You find debris. Not much . A sheared hull panel, frozen coolant, a cargo manifest floating in the void. The ship's name was the Perihelion. Crew of four. Nobody's coming for them anymore. You log the coordinates and move on.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -1578,7 +1580,7 @@
           "label": "Bear Witness",
           "description": "Approach the signal and document what you find.",
           "outcome": {
-            "description": "The Sundog is venting atmosphere from a dozen hull breaches. Not pirates  -- the damage pattern is internal. Stress fractures in the alloy composite. Cheap materials, corners cut. The captain's last log names the manufacturer and the contract that approved the hull grade. You copy everything.",
+            "description": "The Sundog is venting atmosphere from a dozen hull breaches. Not pirates . The damage pattern is internal. Stress fractures in the alloy composite. Cheap materials, corners cut. The captain's last log names the manufacturer and the contract that approved the hull grade. You copy everything.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -1606,7 +1608,7 @@
       "id": "distress_already_saved_01",
       "encounter_type": "distress_signal",
       "name": "Already Handled",
-      "description": "A distress signal flares on comms  -- a mining shuttle with engine trouble. You're plotting an intercept course when a second signature appears: a cargo hauler, already docking with the shuttle. Someone beat you to it.",
+      "description": "A distress signal flares on comms . A mining shuttle with engine trouble. You're plotting an intercept course when a second signature appears: a cargo hauler, already docking with the shuttle. Someone beat you to it.",
       "icon_color": [
         100,
         200,
@@ -1625,7 +1627,7 @@
           "label": "Open a Channel to the Hauler",
           "description": "They beat you to it, but an extra pair of hands never hurts. At minimum, you get a name to remember.",
           "outcome": {
-            "description": "'Appreciate it, but we've got it handled,' the hauler captain replies. 'Name's Maren. We run this lane twice a week  -- you see enough breakdowns, you keep a tow rig handy.' You're not the only one out here who stops. Good to remember.",
+            "description": "'Appreciate it, but we've got it handled,' the hauler captain replies. 'Name's Maren. We run this lane twice a week . You see enough breakdowns, you keep a tow rig handy.' You're not the only one out here who stops. Good to remember.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -1649,7 +1651,7 @@
       "id": "derelict_micro_story_01",
       "encounter_type": "derelict",
       "name": "The Sleeping Dog",
-      "description": "Sensors flag a small derelict  -- a single-crew courier, engines cold, transponder dead. The hull is intact. No signs of weapon damage. The cockpit lights are still on.",
+      "description": "Sensors flag a small derelict . A single-crew courier, engines cold, transponder dead. The hull is intact. No signs of weapon damage. The cockpit lights are still on.",
       "icon_color": [
         180,
         140,
@@ -1668,7 +1670,7 @@
           "label": "Dock and Open the Cockpit",
           "description": "The lights are still on. Intact hull, no weapons damage. Something happened to the pilot. You should find out what.",
           "outcome": {
-            "description": "The pilot is still in the chair. Natural causes, the med-scanner says  -- heart failure. The nav computer shows a course for Haven's Rest. The cargo hold has a single crate: children's clothes, hand-sewn, carefully folded. A note on top reads: 'For Emi. See you Thursday.' You seal the ship and transmit the location to the nearest station. Someone should know.",
+            "description": "The pilot is still in the chair. Natural causes, the med-scanner says . Heart failure. The nav computer shows a course for Haven's Rest. The cargo hold has a single crate: children's clothes, hand-sewn, carefully folded. A note on top reads: 'For Emi. See you Thursday.' You seal the ship and transmit the location to the nearest station. Someone should know.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -1706,7 +1708,7 @@
       "id": "derelict_cargo_log_01",
       "encounter_type": "derelict",
       "name": "The Manifest",
-      "description": "A gutted freighter hull drifts in a slow tumble. The cargo bay has been stripped clean  -- salvage crews already picked the bones. But the nav console is still powered, flight recorder blinking.",
+      "description": "A gutted freighter hull drifts in a slow tumble. The cargo bay has been stripped clean . Salvage crews already picked the bones. But the nav console is still powered, flight recorder blinking.",
       "icon_color": [
         180,
         140,
@@ -1723,9 +1725,9 @@
         {
           "id": "download",
           "label": "Pull the Nav Logs",
-          "description": "The flight recorder tells a story. Data like this has value  -- or consequences. Depends who reads it.",
+          "description": "The flight recorder tells a story. Data like this has value . Or consequences. Depends who reads it.",
           "outcome": {
-            "description": "The manifest tells a story: medical supplies, purchased legally at Axiom Labs, bound for Breakstone. The last entry is a course correction  -- toward Crimson Reach. Someone rerouted the shipment. The medical supplies never reached the miners. The data might interest someone. Or it might get you in trouble.",
+            "description": "The manifest tells a story: medical supplies, purchased legally at Axiom Labs, bound for Breakstone. The last entry is a course correction . Toward Crimson Reach. Someone rerouted the shipment. The medical supplies never reached the miners. The data might interest someone. Or it might get you in trouble.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -1771,7 +1773,7 @@
       "id": "comm_ghost_signal_01",
       "encounter_type": "comm_intercept",
       "name": "Ghost Signal",
-      "description": "Your comms array catches a transmission fragment  -- a ship-to-ship hail, automated, bouncing off relay buoys. The call sign doesn't match any registered vessel. The transmission timestamp is from six months ago, still echoing through the network.",
+      "description": "Your comms array catches a transmission fragment . A ship-to-ship hail, automated, bouncing off relay buoys. The call sign doesn't match any registered vessel. The transmission timestamp is from six months ago, still echoing through the network.",
       "icon_color": [
         150,
         150,
@@ -1790,7 +1792,7 @@
           "label": "Follow the Relay Chain",
           "description": "Seven buoys, a route that doesn't exist on current charts. Someone was using dead infrastructure. Find out who.",
           "outcome": {
-            "description": "The signal bounced through seven relay buoys  -- a route that doesn't exist on current charts. Someone was using decommissioned infrastructure. The origin coordinates point to deep space between Crimson Reach and The Fulcrum. There's nothing there. Officially.",
+            "description": "The signal bounced through seven relay buoys . A route that doesn't exist on current charts. Someone was using decommissioned infrastructure. The origin coordinates point to deep space between Crimson Reach and The Fulcrum. There's nothing there. Officially.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -1814,7 +1816,7 @@
       "id": "debris_graveyard_01",
       "encounter_type": "debris",
       "name": "The Graveyard Shift",
-      "description": "You enter a dense debris field  -- not natural asteroid scatter, but the remains of ships. Multiple ships. Hull fragments from at least three different vessels, all relatively recent. The damage patterns are consistent: weapons fire, concentrated on engine sections. Someone hunted here.",
+      "description": "You enter a dense debris field . Not natural asteroid scatter, but the remains of ships. Multiple ships. Hull fragments from at least three different vessels, all relatively recent. The damage patterns are consistent: weapons fire, concentrated on engine sections. Someone hunted here.",
       "icon_color": [
         160,
         120,
@@ -1832,7 +1834,7 @@
           "label": "Pick Through the Wreckage",
           "description": "Three ships, weapons fire, no survivors. Whatever happened here left cargo behind. And maybe answers.",
           "outcome": {
-            "description": "No survivors. You find cargo containers stamped with Commerce Guild seals  -- all empty, contents transferred to whoever did this. One hull fragment still has a name visible: Patience of Kaur. A registered Guild freighter. The attack was recent enough that the metal is still warm in places. You take what you can and leave fast.",
+            "description": "No survivors. You find cargo containers stamped with Commerce Guild seals . All empty, contents transferred to whoever did this. One hull fragment still has a name visible: Patience of Kaur. A registered Guild freighter. The attack was recent enough that the metal is still warm in places. You take what you can and leave fast.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -1850,7 +1852,7 @@
           "label": "Scan and Leave Quickly",
           "description": "Whoever did this might still be nearby. Get the data and go.",
           "outcome": {
-            "description": "You run a fast sweep  -- three ship IDs, weapon signature profiles, debris age estimates. Enough for a report, if you trust anyone enough to file one. You don't linger. Smart pilots learn from other pilots' mistakes.",
+            "description": "You run a fast sweep . Three ship IDs, weapon signature profiles, debris age estimates. Enough for a report, if you trust anyone enough to file one. You don't linger. Smart pilots learn from other pilots' mistakes.",
             "rewards": [
               {
                 "reward_type": "xp",

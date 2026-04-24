@@ -607,9 +607,10 @@ class CockpitHUD:
             name_surf = self._credit_font.render(ship_name, True, _CREDIT_GOLD)
             screen.blit(name_surf, (x, y_base))
 
-        # Line 2: Credits
+        # Line 2: Credits + game day (TW follow-up — clean date indicator)
         y2 = y_base + line_spacing
-        credits_text = f"{self.player.credits:,} CR"
+        day_n = getattr(self.player, "game_day", 0)
+        credits_text = f"{self.player.credits:,} CR  ·  Day {day_n}"
         cr_surf = self._value_font.render(credits_text, True, Colors.TEXT_SECONDARY)
         screen.blit(cr_surf, (x, y2))
 

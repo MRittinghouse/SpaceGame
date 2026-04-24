@@ -1,0 +1,60 @@
+{
+  "_comment": "TW timed threads — QA-F-1 revision. touch_triggers are interaction keys recorded via Player.record_interaction() at action points (dialogue end, mission accept), NOT raw dialogue flags. This correctly handles both one-time touches (flag flips once) and recurring touches (repeated NPC interactions reset the clock). Threads with last_touched_day=None stay inactive until an interaction kicks them off — so no drift fires on the first 30 days of a fresh playthrough.",
+  "threads": [
+    {
+      "id": "marcus_lead_cold",
+      "touch_triggers": ["talked_to_marcus_jin"],
+      "drift_states": [
+        {
+          "id": "cold",
+          "threshold_days": 30,
+          "journal_entry_on_enter": "Marcus's lead has gone cold. He stopped sending check-ins two weeks back. Next time you dock, he'll have less to say.",
+          "flag_to_set_on_enter": "marcus_lead_cold",
+          "narration": "Marcus's messages have gone quiet."
+        },
+        {
+          "id": "silent",
+          "threshold_days": 60,
+          "journal_entry_on_enter": "Marcus isn't sending anything anymore. Whatever was going to happen, happened without you.",
+          "flag_to_set_on_enter": "marcus_gone_silent"
+        }
+      ]
+    },
+    {
+      "id": "priya_impatience",
+      "touch_triggers": ["the_scholars_errand_accepted"],
+      "drift_states": [
+        {
+          "id": "concerned",
+          "threshold_days": 20,
+          "journal_entry_on_enter": "Priya's delivery has been sitting in your hold for three weeks. She's started asking about it in clipped, formal language.",
+          "flag_to_set_on_enter": "priya_delivery_overdue"
+        }
+      ]
+    },
+    {
+      "id": "tomas_restless",
+      "touch_triggers": ["any_mission_accepted"],
+      "drift_states": [
+        {
+          "id": "restless",
+          "threshold_days": 30,
+          "journal_entry_on_enter": "Tomas cornered you in the galley. A month without a real run and he's getting twitchy. He has a name in mind if you want one.",
+          "flag_to_set_on_enter": "tomas_suggesting_work"
+        }
+      ]
+    },
+    {
+      "id": "elena_unspoken",
+      "touch_triggers": ["talked_to_elena_reeves"],
+      "drift_states": [
+        {
+          "id": "acknowledged",
+          "threshold_days": 45,
+          "journal_entry_on_enter": "Elena's been quiet for over a month and a half. Her next greeting will acknowledge it. Her way.",
+          "flag_to_set_on_enter": "elena_noted_absence"
+        }
+      ]
+    }
+  ]
+}

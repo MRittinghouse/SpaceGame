@@ -2,6 +2,12 @@
   "missions": [
     {
       "id": "bill_of_landing",
+      "soft_deadline": {
+        "full_reward_day_count": 10,
+        "partial_reward_day_count": 15,
+        "partial_reward_multiplier": 0.75,
+        "late_multiplier": 0.5
+      },
       "name": "Bill of Landing",
       "description": "Nobody trades in the Expanse without paperwork. Customs Officer Larsen at Nexus Prime can issue a bill of landing, assuming you can cover the filing fee and don't mind the way she looks at your ship.",
       "hint": "Speak with Customs Officer Larsen at the Nexus Prime cantina to get your trade permit.",
@@ -32,6 +38,17 @@
     },
     {
       "id": "iron_delivery",
+      "soft_deadline": {
+        "full_reward_day_count": 14,
+        "partial_reward_day_count": 18,
+        "partial_reward_multiplier": 0.75,
+        "late_multiplier": 0.5
+      },
+      "timeliness_comments": {
+        "timely": "Intake clerk checks the count, nods once. \"On the clock. Clean haul. Pay's good.\"",
+        "late": "Intake clerk thumbs through the docket, doesn't look up. \"Ran long. Pay's docked, not blocked. Don't make a habit of it.\"",
+        "very_late": "Intake clerk leans on the crate and sighs. \"Figured you'd forgotten. Had to source the last of it from the scrapyards. This is what's left of your pay.\""
+      },
       "name": "Iron Ore Delivery",
       "description": "A cargo broker at Nexus Prime needs ten units of iron ore moved to Forgeworks. Straightforward hauling work, the kind that keeps your fuel tank full and your name on the reliable list. Every trader in the Expanse started with a run like this.",
       "hint": "Talk to the cargo broker at Nexus Prime, then fly the iron ore to the intake clerk at the Neutral Ground on Forgeworks.",
@@ -207,6 +224,12 @@
     },
     {
       "id": "the_scholars_errand",
+      "soft_deadline": {
+        "full_reward_day_count": 20,
+        "partial_reward_day_count": 25,
+        "partial_reward_multiplier": 0.75,
+        "late_multiplier": 0.5
+      },
       "name": "The Scholar's Errand",
       "description": "Dr. Priya Osei's chartered transport was quietly reassigned. She suspects political pressure, though she's too polite to say it outright. Her research samples degrade by the hour, and Axiom Labs is the only facility that can process them. She needs a ride. You need a reason to visit Science Collective space.",
       "hint": "Transport Dr. Priya Osei to Axiom Labs. She's waiting at Nexus Prime.",
@@ -801,6 +824,12 @@
     },
     {
       "id": "the_ledger",
+      "soft_deadline": {
+        "full_reward_day_count": 40,
+        "partial_reward_day_count": 60,
+        "partial_reward_multiplier": 0.75,
+        "late_multiplier": 0.5
+      },
       "name": "The Ledger",
       "description": "You have hard evidence of Project Convergence, a Commerce Guild operation to collapse the Aurelia star using gravitational lensing arrays. Dr. Osei can verify the data. But the Guild's institutional power may make official channels useless. Someone needs to find where the arrays are being assembled.",
       "hint": "Bring the Convergence data to Dr. Osei at Axiom Labs for verification.",
