@@ -1087,15 +1087,19 @@ class Game:
                 self.galaxy_map_view.next_state = None
 
                 # Auto-trigger campaign dialogue at Nexus Prime (one-time only)
+                from spacegame.constants.flags import talked_to_npc
+
                 if (
                     self.player
                     and self.player.current_system_id == "nexus_prime"
-                    and not self.player.dialogue_flags.get("talked_to_officer_larsen", False)
+                    and not self.player.dialogue_flags.get(
+                        talked_to_npc("officer_larsen"), False
+                    )
                 ):
                     # Set flag immediately so the trigger can never re-fire,
                     # even if the dialogue is interrupted or game exits early.
-                    self.player.dialogue_flags["talked_to_officer_larsen"] = True
-                    self.dialogue_manager.set_flag("talked_to_officer_larsen")
+                    self.player.dialogue_flags[talked_to_npc("officer_larsen")] = True
+                    self.dialogue_manager.set_flag(talked_to_npc("officer_larsen"))
                     self.start_dialogue("officer_larsen", return_state=GameState.STATION_HUB)
                     return
 
@@ -1386,7 +1390,9 @@ class Game:
 
                     # Set talked_to flag for mission objectives
                     if self._last_dialogue_npc_id:
-                        flag_key = f"talked_to_{self._last_dialogue_npc_id}"
+                        from spacegame.constants.flags import talked_to_npc
+
+                        flag_key = talked_to_npc(self._last_dialogue_npc_id)
                         self.player.dialogue_flags[flag_key] = True
                         self.dialogue_manager.set_flag(flag_key)
                         # TW (QA-F-1): record the CURRENT-day interaction so
@@ -1826,11 +1832,13 @@ class Game:
                     self.station_hub_view.next_state = None
 
                     def _do():
+                        from spacegame.constants.flags import met_npc
+
                         self._ensure_mining_view()
                         # Activate tutorial mode on first mining after Marcus dialogue
                         if (
                             self.player
-                            and self.player.dialogue_flags.get("met_marcus_jin")
+                            and self.player.dialogue_flags.get(met_npc("marcus_jin"))
                             and not self.player.dialogue_flags.get("mining_tutorial_done")
                             and hasattr(self, "mining_view")
                             and self.mining_view
@@ -2988,7 +2996,9 @@ class Game:
         # Mark unique encounters as seen so they don't repeat
         enc_def = getattr(self.encounter_view, "encounter_def", None)
         if enc_def and getattr(enc_def, "unique", False):
-            flag = f"encounter_seen_{enc_def.id}"
+            from spacegame.constants.flags import encounter_seen
+
+            flag = encounter_seen(enc_def.id)
             self.player.dialogue_flags[flag] = True
             if self.dialogue_manager:
                 self.dialogue_manager.set_flag(flag)
@@ -3234,6 +3244,12 @@ class Game:
 
         for c in self.ground_contract_manager.active_contracts:
             if c.id == contract_id and not c.completed:
+                # QA-G-2: ground contracts don't flow through
+                # MissionManager.accept_mission, so they need to record
+                # the TW interaction directly. Otherwise tomas_restless
+                # incorrectly drifts even when the player IS working.
+                if self.player:
+                    self.player.record_interaction("any_mission_accepted")
                 self.start_ground_mission(c.config)
                 return
 
@@ -3293,10 +3309,18 @@ class Game:
                     if state is not None:
                         state["xp"] = state.get("xp", 0) + result.config.rewards.crew_xp
 
-            # Reputation
+            # Reputation — same pattern as the encounter dispatch
+            # (game.py:2959): prefer politics_manager for spillover-aware
+            # updates, fall back to direct player API. The previous
+            # ``faction_reputation.modify`` call was a latent crash —
+            # ``Player.faction_reputation`` is a plain dict.
             for faction_id, rep in result.config.rewards.reputation.items():
-                if hasattr(self.player, "faction_reputation"):
-                    self.player.faction_reputation.modify(faction_id, rep)
+                if self.politics_manager:
+                    self.politics_manager.apply_reputation_with_spillover(
+                        self.player, faction_id, rep
+                    )
+                else:
+                    self.player.modify_reputation(faction_id, rep)
 
             # Complete associated contract (awards bonus credits)
             if self.ground_contract_manager:
@@ -4546,9 +4570,11 @@ class Game:
                     if (m := self.mission_manager.get_mission(mid)) is not None
                     and m.mission_type == "campaign"
                 )
+                from spacegame.constants.flags import campaign_mission_milestone
+
                 for milestone in (5, 10, 15, 20):
                     if campaign_completed >= milestone:
-                        flag = f"completed_mission_{milestone}"
+                        flag = campaign_mission_milestone(milestone)
                         if not self.player.dialogue_flags.get(flag):
                             self.player.dialogue_flags[flag] = True
                             logger.info(f"Campaign milestone reached: {flag}")

@@ -794,7 +794,9 @@ def check_black_market_access(
         return BlackMarketAccess(available=True, market_name=market_name)
 
     if rule_type == "alliance_contact":
-        has_contact = dialogue_flags.get("met_malia_torres", False)
+        from spacegame.constants.flags import met_npc
+
+        has_contact = dialogue_flags.get(met_npc("malia_torres"), False)
         rep = faction_reputation.get(_ALLIANCE_FACTION, 0)
         if not has_contact:
             return BlackMarketAccess(
@@ -809,7 +811,9 @@ def check_black_market_access(
         return BlackMarketAccess(available=True, market_name=market_name)
 
     if rule_type == "dex_heat":
-        has_contact = dialogue_flags.get("met_dex_halloran", False)
+        from spacegame.constants.flags import met_npc
+
+        has_contact = dialogue_flags.get(met_npc("dex_halloran"), False)
         if not has_contact:
             return BlackMarketAccess(
                 available=False,

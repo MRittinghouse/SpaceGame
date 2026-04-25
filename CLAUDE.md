@@ -210,7 +210,7 @@ from spacegame.utils.logger import logger
 - **Banned NPC names**: Yara, Elara, Kael, Mara, Lydia, Clive, Magnus, Ambrose (AI-overused)
 - **Anti-patterns**: No em-dashes. No "no X, no Y" constructions. No "a testament to" or "couldn't help but." These are GenAI tells.
 - **Tutorial voice**: Tutorials should feel like dirty jobs and earned progressions, not hand-holding. NPCs supervise, they don't teach. The mechanic is impatient, not helpful. The shift supervisor gives orders, not lessons.
-- **Flag-gated content**: Story progression uses `player.dialogue_flags` (a flat dict of string→bool). Missions, dialogues, and tutorials all gate on these flags.
+- **Flag-gated content**: Story progression uses `player.dialogue_flags` (a flat dict of string→bool). Missions, dialogues, and tutorials all gate on these flags. Cross-module flag strings go through `spacegame/constants/flags.py` — see `requirements/si3_flag_registry_cookbook.md` for the migration recipe and helper conventions.
 
 ## Cross-Cutting Concerns
 
@@ -222,7 +222,8 @@ When modifying a gameplay system, check these secondary impacts:
 | Skill bonus_types | `create_default_skills()`, the system that reads it, integration test |
 | GameState enum | `game.py` transition router, `_ensure_*_view()` factory, cockpit_hud context map |
 | Commodity/system data | `test_cross_references.py` data validation tests |
-| Dialogue flags | Check all `dialogue_flags.get("flag_name")` consumers |
+| Dialogue flags | Use `spacegame/constants/flags.py` helpers for cross-module flags (cookbook: `requirements/si3_flag_registry_cookbook.md`); check all `dialogue_flags.get(...)` consumers |
+| Module-level content tables | If declaring a `list[dict]` or `dict[str, dict]` at module scope, use `@dataclass(frozen=True)` instead — Scanner B fails the build otherwise (cookbook: `requirements/si2_dataclass_migration_cookbook.md`) |
 | Ship stats | Both build-derived path AND legacy ShipType path in `build_player_combat_state()` |
 | Crew abilities | `crew.py` template, `game.py` crew bonus application, combat engine crew moves |
 | Tutorial flow | Shop → builder → station hub chain; check narration, completion flags, view lifecycle |

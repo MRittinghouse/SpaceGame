@@ -117,12 +117,12 @@ class TestTradeMilestones:
     def test_first_milestone(self) -> None:
         crossed = check_trade_milestones(12000, 5000)
         assert len(crossed) == 1
-        assert crossed[0]["name"] == "Merchant"
+        assert crossed[0].name == "Merchant"
 
     def test_multiple_milestones_at_once(self) -> None:
         """Large profit jump can cross multiple milestones."""
         crossed = check_trade_milestones(300000, 0)
-        names = {m["name"] for m in crossed}
+        names = {m.name for m in crossed}
         assert "Merchant" in names
         assert "Trader" in names
         assert "Magnate" in names

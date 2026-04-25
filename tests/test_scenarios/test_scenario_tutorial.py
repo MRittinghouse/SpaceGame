@@ -33,7 +33,7 @@ class TestTutorialStateMachineDefaults:
         # Without being activated, no trigger should show a step
         mgr.tutorial_approach = "classic"  # disable story-mode suppression
         for step in TUTORIAL_STEPS:
-            assert mgr.should_show_step(step["trigger"]) is False
+            assert mgr.should_show_step(step.trigger) is False
 
     def test_reset_activates_fresh(self) -> None:
         mgr = TutorialManager()
@@ -64,7 +64,7 @@ class TestTutorialStepProgression:
         mgr.start_step()  # Step 0
         next_step = mgr.advance_step()
         assert next_step is not None
-        assert next_step["trigger"] == "trading"
+        assert next_step.trigger == "trading"
         assert mgr.current_step == 1
 
     def test_full_walkthrough_completes_tutorial(self) -> None:
@@ -98,7 +98,7 @@ class TestTutorialSkipContract:
         assert mgr.skipped is True
         # No step should ever show after skip
         for step in TUTORIAL_STEPS:
-            assert mgr.should_show_step(step["trigger"]) is False
+            assert mgr.should_show_step(step.trigger) is False
 
     def test_skip_does_not_set_completed(self) -> None:
         """Skipped != completed — players who skip haven't earned tutorial
@@ -119,7 +119,7 @@ class TestTutorialApproachGating:
         mgr.reset_tutorial()
         mgr.tutorial_approach = "story"  # default
         for step in TUTORIAL_STEPS:
-            assert mgr.should_show_step(step["trigger"]) is False
+            assert mgr.should_show_step(step.trigger) is False
 
     def test_classic_approach_enables_overlays(self) -> None:
         mgr = TutorialManager()
@@ -163,13 +163,13 @@ class TestTutorialStepDataIntegrity:
 
     def test_every_step_has_id_title_description_trigger(self) -> None:
         for i, step in enumerate(TUTORIAL_STEPS):
-            assert step["id"] == i
-            assert step["title"]
-            assert step["description"]
-            assert step["trigger"]
+            assert step.id == i
+            assert step.title
+            assert step.description
+            assert step.trigger
 
     def test_triggers_are_unique(self) -> None:
-        triggers = [s["trigger"] for s in TUTORIAL_STEPS]
+        triggers = [s.trigger for s in TUTORIAL_STEPS]
         assert len(triggers) == len(set(triggers)), (
             f"Duplicate trigger in TUTORIAL_STEPS: {triggers}"
         )

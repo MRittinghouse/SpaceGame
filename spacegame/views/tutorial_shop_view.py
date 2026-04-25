@@ -14,6 +14,7 @@ builder in tutorial mode for a three-phase guided assembly (slots, hull,
 equip).
 """
 
+from dataclasses import dataclass
 from typing import Optional
 
 import pygame
@@ -27,6 +28,7 @@ from spacegame.config import (
     scale_x,
     scale_y,
 )
+from spacegame.constants.flags import tutorial_bought_part
 from spacegame.engine.audio_manager import get_audio_manager
 from spacegame.engine.backgrounds import AnimatedBackground
 from spacegame.engine.draw_utils import draw_panel
@@ -41,58 +43,76 @@ from spacegame.engine.fonts import (
 from spacegame.utils.logger import logger
 from spacegame.views.base_view import BaseView
 
+
+@dataclass(frozen=True)
+class TutorialPart:
+    """Schema for the static TUTORIAL_PARTS table.
+
+    SI-1b migration: replaces ``list[dict]`` so MyPy catches key-access
+    mistakes (the ``p['slot_def_id']`` class of crash) at import time
+    rather than at runtime in rarely-exercised code paths. Frozen so
+    accidental mutation of shared content is impossible.
+    """
+
+    part_id: str
+    name: str
+    description: str
+    cost: int
+    narration: str
+    tag: str
+
 # Mandatory parts — required for flight. Cockpit omitted because cockpit
 # slots are self-fulfilling (commit d9cf3d3). Placed as a slot in the
 # builder, no part needed. Narration in Phase A handles that beat.
-TUTORIAL_MANDATORY = [
-    {
-        "part_id": "scrapyard_thruster",
-        "name": "Scrapyard Thruster",
-        "description": "Pulled from a decommissioned freighter. Coolant lines patched twice.",
-        "cost": 600,
-        "narration": "Thruster. Mounts into the engine slot you'll place on the grid.",
-        "tag": "REQUIRED",
-    },
-    {
-        "part_id": "scrapyard_reactor",
-        "name": "Scrapyard Reactor",
-        "description": "Second-hand plasma core. Dented casing. Holds power.",
-        "cost": 1500,
-        "narration": "Reactor. Junk-grade, but it's what fits the wallet today.",
-        "tag": "REQUIRED",
-    },
-    {
-        "part_id": "scrapyard_fuel_cell",
-        "name": "Scrapyard Fuel Cell",
-        "description": "Reconditioned tank. Previous owner drained it at a bad dock-rate.",
-        "cost": 500,
-        "narration": "Fuel cell. Holds enough for a few jumps. Upgrade when you can.",
-        "tag": "REQUIRED",
-    },
+TUTORIAL_MANDATORY: list[TutorialPart] = [
+    TutorialPart(
+        part_id="scrapyard_thruster",
+        name="Scrapyard Thruster",
+        description="Pulled from a decommissioned freighter. Coolant lines patched twice.",
+        cost=600,
+        narration="Thruster. Mounts into the engine slot you'll place on the grid.",
+        tag="REQUIRED",
+    ),
+    TutorialPart(
+        part_id="scrapyard_reactor",
+        name="Scrapyard Reactor",
+        description="Second-hand plasma core. Dented casing. Holds power.",
+        cost=1500,
+        narration="Reactor. Junk-grade, but it's what fits the wallet today.",
+        tag="REQUIRED",
+    ),
+    TutorialPart(
+        part_id="scrapyard_fuel_cell",
+        name="Scrapyard Fuel Cell",
+        description="Reconditioned tank. Previous owner drained it at a bad dock-rate.",
+        cost=500,
+        narration="Fuel cell. Holds enough for a few jumps. Upgrade when you can.",
+        tag="REQUIRED",
+    ),
 ]
 
 # Choice parts — player picks one, defines early playstyle
-TUTORIAL_CHOICES = [
-    {
-        "part_id": "scrapyard_hold",
-        "name": "Scrapyard Hold",
-        "description": "Rust-flecked cargo box. Door latches twice. Dry goods only.",
-        "cost": 800,
-        "narration": "Cargo hold. You'll haul goods, find margins, make a living.",
-        "tag": "CHOOSE ONE",
-    },
-    {
-        "part_id": "salvaged_pulse_emitter",
-        "name": "Salvaged Pulse Emitter",
-        "description": "Jury-rigged energy weapon pulled from scrap. Weak but it shoots.",
-        "cost": 500,
-        "narration": "Weapon mount. Space isn't friendly. This gives you teeth.",
-        "tag": "CHOOSE ONE",
-    },
+TUTORIAL_CHOICES: list[TutorialPart] = [
+    TutorialPart(
+        part_id="scrapyard_hold",
+        name="Scrapyard Hold",
+        description="Rust-flecked cargo box. Door latches twice. Dry goods only.",
+        cost=800,
+        narration="Cargo hold. You'll haul goods, find margins, make a living.",
+        tag="CHOOSE ONE",
+    ),
+    TutorialPart(
+        part_id="salvaged_pulse_emitter",
+        name="Salvaged Pulse Emitter",
+        description="Jury-rigged energy weapon pulled from scrap. Weak but it shoots.",
+        cost=500,
+        narration="Weapon mount. Space isn't friendly. This gives you teeth.",
+        tag="CHOOSE ONE",
+    ),
 ]
 
 # Combined for display: mandatory first, then choices
-TUTORIAL_PARTS = TUTORIAL_MANDATORY + TUTORIAL_CHOICES
+TUTORIAL_PARTS: list[TutorialPart] = TUTORIAL_MANDATORY + TUTORIAL_CHOICES
 
 
 class TutorialShopView(BaseView):
@@ -165,7 +185,7 @@ class TutorialShopView(BaseView):
             btn_y = mand_y + card_h - scale_y(38)
             btn = pygame_gui.elements.UIButton(
                 relative_rect=pygame.Rect(btn_x, btn_y, scale_x(100), scale_y(28)),
-                text=f"BUY ({part['cost']} CR)",
+                text=f"BUY ({part.cost} CR)",
                 manager=self.ui_manager,
             )
             self._buy_buttons.append(btn)
@@ -182,7 +202,7 @@ class TutorialShopView(BaseView):
             btn_y = choice_y + card_h - scale_y(38)
             btn = pygame_gui.elements.UIButton(
                 relative_rect=pygame.Rect(btn_x, btn_y, scale_x(100), scale_y(28)),
-                text=f"BUY ({part['cost']} CR)",
+                text=f"BUY ({part.cost} CR)",
                 manager=self.ui_manager,
             )
             self._buy_buttons.append(btn)
@@ -202,7 +222,7 @@ class TutorialShopView(BaseView):
     def _buy_part(self, index: int) -> None:
         """Purchase a tutorial part."""
         part = TUTORIAL_PARTS[index]
-        if self.player.credits < part["cost"]:
+        if self.player.credits < part.cost:
             return
 
         # If this is a choice part, check if a choice was already made
@@ -210,18 +230,18 @@ class TutorialShopView(BaseView):
         if is_choice and self._choice_made:
             return
 
-        self.player.credits -= part["cost"]
+        self.player.credits -= part.cost
         self._purchased[index] = True
         self._buy_buttons[index].disable()
         # PT-N: land the part in the player's inventory (same path as real
         # shipyard shop purchases). The builder's Phase C reads inventory
-        # to show equippable parts. Also set a tutorial-specific flag the
-        # builder uses to know which slots to pre-place.
+        # to show equippable parts. SI-1a: flag goes through the registry
+        # helper so readers can't drift from setters.
         if hasattr(self.player, "add_part"):
-            self.player.add_part(part["part_id"])
-        self.player.dialogue_flags[f"tutorial_bought_part_{part['part_id']}"] = True
+            self.player.add_part(part.part_id)
+        self.player.dialogue_flags[tutorial_bought_part(part.part_id)] = True
         get_audio_manager().play_sfx("trade_buy")
-        logger.info(f"Tutorial: purchased {part['name']} for {part['cost']} CR")
+        logger.info(f"Tutorial: purchased {part.name} for {part.cost} CR")
 
         # If a choice was made, disable the other choice
         if is_choice:
@@ -311,7 +331,7 @@ class TutorialShopView(BaseView):
         # Narration text
         mandatory_done = all(self._purchased[: self._num_mandatory])
         if not mandatory_done and self._current_step < self._num_mandatory:
-            narration = TUTORIAL_PARTS[self._current_step]["narration"]
+            narration = TUTORIAL_PARTS[self._current_step].narration
         elif mandatory_done and not self._choice_made:
             narration = (
                 "Essentials sorted. Now pick your edge: cargo for trading, or a weapon for trouble."
@@ -331,7 +351,7 @@ class TutorialShopView(BaseView):
             # Still buying mandatory parts, show next one
             for j in range(self._num_mandatory):
                 if not self._purchased[j]:
-                    narration = TUTORIAL_PARTS[j]["narration"]
+                    narration = TUTORIAL_PARTS[j].narration
                     break
             else:
                 # Fallback if state gets weird — mechanic's voice, no
@@ -348,7 +368,7 @@ class TutorialShopView(BaseView):
         self,
         screen: pygame.Surface,
         index: int,
-        part: dict,
+        part: TutorialPart,
         cx: int,
         cy: int,
         card_w: int,
@@ -385,8 +405,13 @@ class TutorialShopView(BaseView):
         # each row carries the same information cleanly. Card status is
         # communicated via border color (active/purchased/inactive).
 
-        # Part name
-        name_surf = self._name_font.render(part["name"], True, Colors.TEXT_PRIMARY)
+        # Part name — truncate if it overflows the card. Long names like
+        # "Salvaged Pulse Emitter" were spilling past the card border at
+        # standard widths.
+        from spacegame.engine.draw_utils import truncate_text
+
+        name_text = truncate_text(part.name, self._name_font, card_w - 20)
+        name_surf = self._name_font.render(name_text, True, Colors.TEXT_PRIMARY)
         screen.blit(name_surf, (cx + 10, cy + 6))
 
         # Description — PT-008: word-wrap so longer descriptions render fully
@@ -394,7 +419,7 @@ class TutorialShopView(BaseView):
         # (120px at 720p base) has room; single-line truncation was hiding the
         # back half of every description.
         max_w = card_w - 20
-        lines = word_wrap(part["description"], self._desc_font, max_w)
+        lines = word_wrap(part.description, self._desc_font, max_w)
         line_h = self._desc_font.get_linesize()
         for i, line in enumerate(lines[:2]):  # cap at 2 lines to reserve room for cost
             line_surf = self._desc_font.render(line, True, Colors.TEXT_SECONDARY)
@@ -402,7 +427,7 @@ class TutorialShopView(BaseView):
 
         # Cost — pinned to the card bottom so the wrapped description above
         # has room to breathe without pushing cost off the card.
-        cost_text = f"{part['cost']} CR" if not purchased else "PURCHASED"
+        cost_text = f"{part.cost} CR" if not purchased else "PURCHASED"
         cost_color = Colors.YELLOW if not purchased else Colors.GREEN
         cost_surf = self._cost_font.render(cost_text, True, cost_color)
         screen.blit(cost_surf, (cx + 10, cy + card_h - cost_surf.get_height() - 6))

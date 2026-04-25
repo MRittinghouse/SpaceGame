@@ -50,28 +50,28 @@ class TestTutorialHints:
             "builder_module_confirm",
         ]:
             hint = MINIGAME_HINTS[hint_id]
-            assert "title" in hint, f"Hint {hint_id} missing title"
-            assert "description" in hint, f"Hint {hint_id} missing description"
-            assert len(hint["title"]) > 0
-            assert len(hint["description"]) > 10
+            assert hint.title, f"Hint {hint_id} missing title"
+            assert hint.description, f"Hint {hint_id} missing description"
+            assert len(hint.title) > 0
+            assert len(hint.description) > 10
 
     def test_welcome_hint_mentions_slots(self) -> None:
         from spacegame.tutorial_manager import MINIGAME_HINTS
 
-        desc = MINIGAME_HINTS["builder_module_welcome"]["description"].lower()
+        desc = MINIGAME_HINTS["builder_module_welcome"].description.lower()
         assert "slot" in desc, "Welcome hint should mention slots"
         assert "drydock" in desc, "Welcome hint should mention Drydock"
 
     def test_engine_hint_mentions_stern(self) -> None:
         from spacegame.tutorial_manager import MINIGAME_HINTS
 
-        desc = MINIGAME_HINTS["builder_module_engine"]["description"].lower()
+        desc = MINIGAME_HINTS["builder_module_engine"].description.lower()
         assert "stern" in desc or "left" in desc, "Engine hint should mention stern/left"
 
     def test_requirements_hint_lists_slot_types(self) -> None:
         from spacegame.tutorial_manager import MINIGAME_HINTS
 
-        desc = MINIGAME_HINTS["builder_module_requirements"]["description"].lower()
+        desc = MINIGAME_HINTS["builder_module_requirements"].description.lower()
         assert "engine" in desc
         assert "reactor" in desc
         assert "weapon" in desc

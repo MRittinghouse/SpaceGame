@@ -274,48 +274,70 @@ class PoliticalEvent:
         )
 
 
-# Default event templates for generation when no JSON is loaded
-_DEFAULT_EVENT_TEMPLATES: list[dict[str, Any]] = [
-    {
-        "event_type": "trade_dispute",
-        "descriptions": [
+# Default event templates for generation when no JSON is loaded.
+# SI-2 migration (see requirements/si2_dataclass_migration_cookbook.md):
+# converted from ``list[dict]`` to ``list[PoliticalEventTemplate]`` so
+# a typo in a reader (``template['descriptoins']``) crashes at access
+# time rather than handing back ``None`` in a cold code path.
+
+
+@dataclass(frozen=True)
+class PoliticalEventTemplate:
+    """Schema for the political event templates used by
+    :meth:`PoliticsManager._generate_political_event`.
+
+    ``descriptions`` are format strings; ``{a}`` and ``{b}`` are
+    substituted with the two faction display names at generation time.
+    ``relationship_drift`` is added to the pair's relationship on
+    generation (negative = sours, positive = warms).
+    """
+
+    event_type: str
+    descriptions: list[str]
+    relationship_drift: int
+
+
+_DEFAULT_EVENT_TEMPLATES: list[PoliticalEventTemplate] = [
+    PoliticalEventTemplate(
+        event_type="trade_dispute",
+        descriptions=[
             "{a} imposes tariff surcharge on {b} shipments",
             "{a} accuses {b} of dumping commodities below cost",
         ],
-        "relationship_drift": -2,
-    },
-    {
-        "event_type": "border_incident",
-        "descriptions": [
+        relationship_drift=-2,
+    ),
+    PoliticalEventTemplate(
+        event_type="border_incident",
+        descriptions=[
             "Armed {a} patrol confronts {b} vessel near contested route",
             "{b} freighter detained by {a} security at border checkpoint",
         ],
-        "relationship_drift": -3,
-    },
-    {
-        "event_type": "aid_request",
-        "descriptions": [
+        relationship_drift=-3,
+    ),
+    PoliticalEventTemplate(
+        event_type="aid_request",
+        descriptions=[
             "{a} requests emergency supply shipments from {b}",
             "{b} calls for humanitarian aid in {a} territory",
         ],
-        "relationship_drift": 1,
-    },
-    {
-        "event_type": "sanction",
-        "descriptions": [
+        relationship_drift=1,
+    ),
+    PoliticalEventTemplate(
+        event_type="sanction",
+        descriptions=[
             "{a} restricts export licenses for {b}-bound cargo",
             "{a} suspends preferential trade terms with {b}",
         ],
-        "relationship_drift": -2,
-    },
-    {
-        "event_type": "pirate_crisis",
-        "descriptions": [
+        relationship_drift=-2,
+    ),
+    PoliticalEventTemplate(
+        event_type="pirate_crisis",
+        descriptions=[
             "Pirate raids disrupt both {a} and {b} shipping lanes",
             "{a} and {b} blame each other for inadequate pirate response",
         ],
-        "relationship_drift": -1,
-    },
+        relationship_drift=-1,
+    ),
 ]
 
 
@@ -450,7 +472,7 @@ class PoliticsManager:
         faction_b = faction_ids[1]
 
         # Pick description
-        descriptions = template.get("descriptions", ["Political event"])
+        descriptions = template.descriptions or ["Political event"]
         desc_template = rng.choice(descriptions)
         faction_a_name = self._factions[faction_a].name
         faction_b_name = self._factions[faction_b].name
@@ -459,14 +481,14 @@ class PoliticsManager:
         duration = rng.randint(POLITICAL_EVENT_MIN_DURATION, POLITICAL_EVENT_MAX_DURATION)
 
         event = PoliticalEvent(
-            id=f"political_{current_day}_{template['event_type']}",
-            event_type=PoliticalEventType(template["event_type"]),
+            id=f"political_{current_day}_{template.event_type}",
+            event_type=PoliticalEventType(template.event_type),
             faction_a_id=faction_a,
             faction_b_id=faction_b,
             description=description,
             day_started=current_day,
             duration_days=duration,
-            relationship_drift=template.get("relationship_drift", -1),
+            relationship_drift=template.relationship_drift,
         )
         self._active_events.append(event)
         return event

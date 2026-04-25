@@ -370,8 +370,14 @@ class EncounterView(BaseView):
             border_radius=8,
         )
 
-        # Title
-        title_surf = self.title_font.render(self.display_name, True, color)
+        # Title — truncate if it overflows the panel (QA-G-4 fix).
+        # Several captain display_names exceed 700px at the title font;
+        # without truncation they render past the panel edges.
+        from spacegame.engine.draw_utils import truncate_text
+
+        max_title_w = _PANEL_W - _INNER_PAD * 2
+        title_text = truncate_text(self.display_name, self.title_font, max_title_w)
+        title_surf = self.title_font.render(title_text, True, color)
         title_x = _PANEL_X + (_PANEL_W - title_surf.get_width()) // 2
         screen.blit(title_surf, (title_x, _PANEL_Y + 16))
 

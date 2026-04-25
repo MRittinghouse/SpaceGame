@@ -757,6 +757,38 @@ class MissionLogView(BaseView):
             screen.blit(rew_surf, (pad_x + 10, cur_y))
             cur_y += 22
 
+        # QA-G-3: Soft-deadline indicator (TW). Only meaningful for active
+        # missions where we have an accept_day to compare against. Three
+        # tier colors so the player can see at a glance whether they're
+        # still in the full-reward window.
+        if (
+            mission.soft_deadline is not None
+            and self._current_tab == "active"
+            and self._player is not None
+            and self.mission_manager is not None
+        ):
+            cur_y += 12
+            accepted = self.mission_manager.get_accepted_day(mission.id)
+            if accepted is not None:
+                elapsed = max(0, self._player.game_day - accepted)
+                full = mission.soft_deadline.full_reward_day_count
+                partial = mission.soft_deadline.partial_reward_day_count
+                if elapsed <= full:
+                    days_left = full - elapsed
+                    text = f"Deadline: {days_left} day{'s' if days_left != 1 else ''} left for full reward."
+                    color = Colors.GREEN
+                elif elapsed <= partial:
+                    days_left = partial - elapsed
+                    pct = int(mission.soft_deadline.partial_reward_multiplier * 100)
+                    text = f"Late. Partial reward ({pct}%). {days_left} day{'s' if days_left != 1 else ''} before reward floors."
+                    color = Colors.YELLOW
+                else:
+                    pct = int(mission.soft_deadline.late_multiplier * 100)
+                    text = f"Past deadline. Reward at {pct}%."
+                    color = Colors.RED
+                deadline_surf = self._desc_font.render(text, True, color)
+                screen.blit(deadline_surf, (pad_x, cur_y))
+
         # Prerequisites (if any and on available tab)
         if mission.prerequisites and self._current_tab == "available":
             cur_y += 12

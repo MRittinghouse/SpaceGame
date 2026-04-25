@@ -10,34 +10,40 @@ Part of the Shipyard Overhaul — Phase D2.
 from __future__ import annotations
 
 import random
+from dataclasses import dataclass
 from typing import Optional
 
 # ============================================================================
 # Trading Milestones
 # ============================================================================
+#
+# SI-2 migration (see requirements/si2_dataclass_migration_cookbook.md):
+# converted from ``list[dict]`` to ``list[TradeMilestone]``. The reward
+# schema was stable (threshold, reward_type, reward_id, name), so the
+# dataclass version is a 1:1 attribute-access translation.
 
-TRADE_MILESTONES: list[dict] = [
-    {
-        "threshold": 10000,
-        "reward_type": "equipment",
-        "reward_id": "trade_computer",
-        "name": "Merchant",
-    },
-    {
-        "threshold": 50000,
-        "reward_type": "discount",
-        "reward_id": "medium_weight_20",
-        "name": "Trader",
-    },
-    {"threshold": 100000, "reward_type": "shape", "reward_id": "hull_section", "name": "Magnate"},
-    {"threshold": 250000, "reward_type": "shape", "reward_id": "cargo_rack", "name": "Tycoon"},
-    {
-        "threshold": 500000,
-        "reward_type": "discount",
-        "reward_id": "large_weight_15",
-        "name": "Baron",
-    },
-    {"threshold": 1000000, "reward_type": "shape", "reward_id": "merchants_keel", "name": "Mogul"},
+
+@dataclass(frozen=True)
+class TradeMilestone:
+    """Schema for a cumulative-trade-profit milestone.
+
+    Crossed milestones unlock equipment, discounts, or builder shapes
+    (see :func:`check_trade_milestones`).
+    """
+
+    threshold: int
+    reward_type: str  # "equipment" | "discount" | "shape"
+    reward_id: str
+    name: str
+
+
+TRADE_MILESTONES: list[TradeMilestone] = [
+    TradeMilestone(threshold=10000, reward_type="equipment", reward_id="trade_computer", name="Merchant"),
+    TradeMilestone(threshold=50000, reward_type="discount", reward_id="medium_weight_20", name="Trader"),
+    TradeMilestone(threshold=100000, reward_type="shape", reward_id="hull_section", name="Magnate"),
+    TradeMilestone(threshold=250000, reward_type="shape", reward_id="cargo_rack", name="Tycoon"),
+    TradeMilestone(threshold=500000, reward_type="discount", reward_id="large_weight_15", name="Baron"),
+    TradeMilestone(threshold=1000000, reward_type="shape", reward_id="merchants_keel", name="Mogul"),
 ]
 
 # Faction rep → builder unlocks (threshold, unlocks)
@@ -327,7 +333,7 @@ def check_combat_trophy_module(
 def check_trade_milestones(
     current_profit: int,
     previous_profit: int,
-) -> list[dict]:
+) -> list[TradeMilestone]:
     """Check if any trading milestones were crossed.
 
     Args:
@@ -335,12 +341,11 @@ def check_trade_milestones(
         previous_profit: Total before this trade.
 
     Returns:
-        List of newly crossed milestone dicts.
+        List of newly crossed milestones.
     """
-    crossed = []
+    crossed: list[TradeMilestone] = []
     for milestone in TRADE_MILESTONES:
-        threshold = milestone["threshold"]
-        if previous_profit < threshold <= current_profit:
+        if previous_profit < milestone.threshold <= current_profit:
             crossed.append(milestone)
     return crossed
 

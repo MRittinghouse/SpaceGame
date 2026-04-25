@@ -558,6 +558,13 @@ def _collect_all_flag_uses() -> tuple[dict[str, set[str]], dict[str, set[str]]]:
     consumed_pat = re.compile(
         r'(?:has_flag|dialogue_flags\.get|dialogue_flags\.pop)\s*\(\s*["\']([a-z_][a-z0-9_]*)["\']'
     )
+    # Helper-routed accesses: SI-3 migrates flag strings behind helpers in
+    # ``spacegame/constants/flags.py`` so producers/consumers share the
+    # canonical prefix. Each helper looks like
+    # ``def met_npc(npc_id): return f"met_{npc_id}"``. Discover the prefix
+    # at runtime so the scanner stays in sync without per-migration edits.
+    helper_patterns = _helper_access_patterns()
+
     for py_file in (project_root / "spacegame").rglob("*.py"):
         text = py_file.read_text(encoding="utf-8", errors="ignore")
         rel = str(py_file.relative_to(project_root))
@@ -565,8 +572,69 @@ def _collect_all_flag_uses() -> tuple[dict[str, set[str]], dict[str, set[str]]]:
             producers[m.group(1)].add(f"code:{rel}")
         for m in consumed_pat.finditer(text):
             consumers[m.group(1)].add(f"code:{rel}")
+        for prefix, suffix, producer_re, consumer_re in helper_patterns:
+            for m in producer_re.finditer(text):
+                arg = m.group(1) or m.group(2)
+                producers[f"{prefix}{arg}{suffix}"].add(f"code:{rel}")
+            for m in consumer_re.finditer(text):
+                arg = m.group(1) or m.group(2)
+                consumers[f"{prefix}{arg}{suffix}"].add(f"code:{rel}")
 
     return producers, consumers
+
+
+def _helper_access_patterns() -> list[tuple[str, str, "re.Pattern[str]", "re.Pattern[str]"]]:
+    """Build (prefix, suffix, producer_regex, consumer_regex) for each
+    parameterized setter helper in ``spacegame.constants.flags``.
+
+    Discovery is runtime-introspective: call each non-private,
+    non-``extract_*`` helper with a sentinel value; if it returns a
+    string containing the sentinel, the prefix is text before the
+    substitution and the suffix is text after. The ``suffix`` matters
+    for helpers that sandwich the arg (e.g.
+    ``f"dual_tech_{tech_id}_revealed"``) — without it, scanners would
+    over-match unrelated strings.
+
+    The integrity scanner consumes the returned list to recognize both:
+      - ``dialogue_flags[helper("x")] = True``  (producer)
+      - ``dialogue_flags.get(helper("x"))``     (consumer)
+    """
+    import inspect
+    import re as _re
+
+    from spacegame.constants import flags
+
+    patterns: list[tuple[str, str, _re.Pattern[str], _re.Pattern[str]]] = []
+    string_sentinel = "__SI3_FLAG_SENTINEL__"
+    int_sentinel = 123456789
+    arg_pat = r'["\']([a-z_][a-z0-9_]*)["\']|(\d+)'
+
+    for name, obj in inspect.getmembers(flags):
+        if name.startswith(("_", "extract_")):
+            continue
+        if not callable(obj):
+            continue
+        prefix: str | None = None
+        suffix: str = ""
+        for sentinel in (string_sentinel, int_sentinel):
+            try:
+                result = obj(sentinel)
+            except Exception:
+                continue
+            if isinstance(result, str) and str(sentinel) in result:
+                idx = result.index(str(sentinel))
+                prefix = result[:idx]
+                suffix = result[idx + len(str(sentinel)):]
+                break
+        if prefix is None:
+            continue
+        helper_call = rf"{_re.escape(name)}\(\s*(?:{arg_pat})\s*\)"
+        producer_re = _re.compile(rf"dialogue_flags\[\s*{helper_call}\s*\]\s*=")
+        consumer_re = _re.compile(
+            rf"(?:has_flag|dialogue_flags\.get|dialogue_flags\.pop)\(\s*{helper_call}"
+        )
+        patterns.append((prefix, suffix, producer_re, consumer_re))
+    return patterns
 
 
 # ---------------------------------------------------------------------------

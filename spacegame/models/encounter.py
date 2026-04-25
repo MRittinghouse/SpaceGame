@@ -12,6 +12,8 @@ import random as _rng
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Optional
 
+from spacegame.constants.flags import encounter_seen
+
 if TYPE_CHECKING:
     from spacegame.models.combat import EnemyShipTemplate
     from spacegame.models.mission import MissionReward
@@ -501,7 +503,7 @@ def _is_eligible(defn: EncounterDefinition, ctx: EncounterContext) -> bool:
         return False
     if defn.requires_flags and not all(ctx.dialogue_flags.get(f) for f in defn.requires_flags):
         return False
-    if defn.unique and ctx.dialogue_flags.get(f"encounter_seen_{defn.id}"):
+    if defn.unique and ctx.dialogue_flags.get(encounter_seen(defn.id)):
         return False
     if defn.excludes_flags and any(ctx.dialogue_flags.get(f) for f in defn.excludes_flags):
         return False

@@ -178,8 +178,15 @@ DUAL_TECH_REVEALS: dict[str, DualTechReveal] = {
 
 
 def reveal_flag_key(tech_id: str) -> str:
-    """The ``dialogue_flags`` key used to record that a tech has been revealed."""
-    return f"dual_tech_{tech_id}_revealed"
+    """The ``dialogue_flags`` key used to record that a tech has been revealed.
+
+    Delegates to :func:`spacegame.constants.flags.dual_tech_revealed` —
+    the registry is the single source of truth (SI-3 Pass 3.5). Existing
+    callers that import ``reveal_flag_key`` continue to work unchanged.
+    """
+    from spacegame.constants.flags import dual_tech_revealed
+
+    return dual_tech_revealed(tech_id)
 
 
 def check_and_mark_reveal(

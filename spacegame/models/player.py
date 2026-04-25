@@ -705,8 +705,11 @@ class Player:
         distinguishable from flags that merely stay True over time.
 
         Args:
-            key: Interaction identifier (e.g. ``"talked_to_marcus_jin"``,
-                ``"the_scholars_errand_accepted"``, ``"any_mission_accepted"``).
+            key: Interaction identifier — frequently a flag built via the
+                helpers in ``spacegame.constants.flags`` (e.g.
+                ``talked_to_npc("marcus_jin")``), or a free-form mission
+                interaction key (e.g. ``"the_scholars_errand_accepted"``,
+                ``"any_mission_accepted"``).
             game_day: Day the interaction happened. Defaults to
                 ``self.game_day``.
         """

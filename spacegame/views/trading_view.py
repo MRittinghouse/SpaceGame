@@ -862,6 +862,10 @@ class TradingView(BaseView):
         success, msg = self.smuggling_contracts.accept_contract(
             contract.id, accepted_day=self.player.game_day
         )
+        if success:
+            # QA-G-2: smuggling contracts skip MissionManager, so record
+            # the TW interaction directly for tomas_restless to pick up.
+            self.player.record_interaction("any_mission_accepted")
         self._show_message(msg if not success else f"Contract accepted: {contract.client_name}")
         self._refresh_contract_buttons()
 

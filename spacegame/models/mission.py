@@ -655,7 +655,9 @@ class MissionManager:
         if obj.type == ObjectiveType.REACH_SYSTEM:
             return player.current_system_id == obj.target_id
         elif obj.type == ObjectiveType.TALK_TO_NPC:
-            return player.dialogue_flags.get(f"talked_to_{obj.target_id}", False)
+            from spacegame.constants.flags import talked_to_npc
+
+            return player.dialogue_flags.get(talked_to_npc(obj.target_id), False)
         elif obj.type == ObjectiveType.HAVE_CREDITS:
             return player.credits >= obj.target_quantity
         elif obj.type == ObjectiveType.COLLECT_CARGO:

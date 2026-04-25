@@ -304,7 +304,7 @@ class TutorialOverlay:
 
         # Step indicator
         total_steps = len(TUTORIAL_STEPS)
-        step_text = f"Step {step['id'] + 1}/{total_steps}"
+        step_text = f"Step {step.id + 1}/{total_steps}"
         step_surf = self.step_font.render(step_text, True, Colors.TEXT_SECONDARY)
         step_rect = step_surf.get_rect(
             topright=(self.panel_x + self.PANEL_WIDTH - 15, self.panel_y + 10)
@@ -312,14 +312,14 @@ class TutorialOverlay:
         screen.blit(step_surf, step_rect)
 
         # Title
-        title_surf = self.title_font.render(step["title"], True, Colors.TEXT_HIGHLIGHT)
+        title_surf = self.title_font.render(step.title, True, Colors.TEXT_HIGHLIGHT)
         title_rect = title_surf.get_rect(midtop=(WINDOW_WIDTH // 2, self.panel_y + 20))
         screen.blit(title_surf, title_rect)
 
         # Description (word-wrapped)
         self._render_wrapped_text(
             screen,
-            step["description"],
+            step.description,
             self.panel_x + 25,
             self.panel_y + 65,
             self.PANEL_WIDTH - 50,

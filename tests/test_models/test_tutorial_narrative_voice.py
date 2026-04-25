@@ -36,11 +36,11 @@ def _all_tutorial_text() -> list[tuple[str, str]]:
     """Yield (identifier, body) for every tutorial string we own."""
     entries: list[tuple[str, str]] = []
     for step in TUTORIAL_STEPS:
-        entries.append((f"step:{step['id']}:title", step["title"]))
-        entries.append((f"step:{step['id']}:body", step["description"]))
+        entries.append((f"step:{step.id}:title", step.title))
+        entries.append((f"step:{step.id}:body", step.description))
     for key, hint in MINIGAME_HINTS.items():
-        entries.append((f"hint:{key}:title", hint["title"]))
-        entries.append((f"hint:{key}:body", hint["description"]))
+        entries.append((f"hint:{key}:title", hint.title))
+        entries.append((f"hint:{key}:body", hint.description))
     return entries
 
 
@@ -77,11 +77,12 @@ class TestTutorialStepContract:
         assert len(TUTORIAL_STEPS) == 5
 
     def test_each_step_has_required_keys(self) -> None:
+        """Dataclass schema enforces the field set at construction. Sanity
+        check that the expected fields carry non-empty values."""
         for step in TUTORIAL_STEPS:
-            assert "id" in step
-            assert "title" in step
-            assert "description" in step
-            assert "trigger" in step
+            assert step.title
+            assert step.description
+            assert step.trigger
 
     def test_triggers_cover_canonical_set(self) -> None:
         """Triggers map to events in the game loop; drift breaks firing."""
@@ -92,15 +93,15 @@ class TestTutorialStepContract:
             "activity",
             "after_first_travel",
         }
-        actual = {s["trigger"] for s in TUTORIAL_STEPS}
+        actual = {s.trigger for s in TUTORIAL_STEPS}
         assert actual == expected
 
     def test_bodies_are_substantive_but_not_bloated(self) -> None:
         """40-120 words per step — not a tooltip, not a lecture."""
         for step in TUTORIAL_STEPS:
-            word_count = len(step["description"].split())
+            word_count = len(step.description.split())
             assert 40 <= word_count <= 120, (
-                f"Step {step['id']} '{step['title']}' has {word_count} words "
+                f"Step {step.id} '{step.title}' has {word_count} words "
                 f"(expect 40-120)"
             )
 
@@ -112,7 +113,7 @@ class TestNarrativeThreadsPresent:
 
     def test_father_referenced_in_steps(self) -> None:
         """At least one TUTORIAL_STEPS entry mentions the father."""
-        bodies = " ".join(s["description"] for s in TUTORIAL_STEPS).lower()
+        bodies = " ".join(s.description for s in TUTORIAL_STEPS).lower()
         assert "father" in bodies, (
             "Narrative tutorials must build on the intro_narration "
             "backstory — at least one step should reference the father."
@@ -121,13 +122,13 @@ class TestNarrativeThreadsPresent:
     def test_father_referenced_in_hints(self) -> None:
         """Mining hint specifically should connect to the father's mining "
         background (he worked mining rigs per intro_narration)."""
-        assert "father" in MINIGAME_HINTS["mining"]["description"].lower()
+        assert "father" in MINIGAME_HINTS["mining"].description.lower()
 
     def test_fuel_as_economic_constraint_appears(self) -> None:
         """The 'every jump costs fuel' mental model is a core gameplay
         grounding — it should surface in the trading / map flow."""
-        map_body = TUTORIAL_STEPS[0]["description"].lower()
-        fuel_body = TUTORIAL_STEPS[2]["description"].lower()
+        map_body = TUTORIAL_STEPS[0].description.lower()
+        fuel_body = TUTORIAL_STEPS[2].description.lower()
         assert "fuel" in map_body or "fuel" in fuel_body
 
 
@@ -139,12 +140,12 @@ class TestNoLegacyTraderIdentity:
     def test_step_0_title_is_not_generic_welcome(self) -> None:
         """'Welcome to Aurelia!' was the old 4th-wall opener. Confirm
         we've moved past it."""
-        assert TUTORIAL_STEPS[0]["title"].lower() != "welcome to aurelia!"
+        assert TUTORIAL_STEPS[0].title.lower() != "welcome to aurelia!"
 
     def test_step_0_body_does_not_assert_trader_identity(self) -> None:
         """'You are a trader in a galaxy of opportunity' was the old
         pre-narrative opening line."""
-        body = TUTORIAL_STEPS[0]["description"].lower()
+        body = TUTORIAL_STEPS[0].description.lower()
         assert "you are a trader" not in body
         assert "galaxy of opportunity" not in body
 
@@ -179,15 +180,15 @@ class TestMinigameHintInventory:
 
     def test_each_hint_has_title_and_description(self) -> None:
         for key, hint in MINIGAME_HINTS.items():
-            assert hint.get("title"), f"Hint '{key}' missing title"
-            assert hint.get("description"), (
+            assert hint.title, f"Hint '{key}' missing title"
+            assert hint.description, (
                 f"Hint '{key}' missing description"
             )
 
     def test_hint_bodies_are_substantive(self) -> None:
         """30-150 words per hint — too short = not useful, too long = a lecture."""
         for key, hint in MINIGAME_HINTS.items():
-            word_count = len(hint["description"].split())
+            word_count = len(hint.description.split())
             assert 30 <= word_count <= 150, (
                 f"Hint '{key}' has {word_count} words (expect 30-150)"
             )

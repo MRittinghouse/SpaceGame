@@ -4,7 +4,33 @@ Tutorial system for new players.
 5-step guided tutorial that auto-triggers on new game with skip and replay options.
 """
 
+from dataclasses import dataclass
 from typing import Optional
+
+# SI-2 migration (see requirements/si2_dataclass_migration_cookbook.md):
+# TUTORIAL_STEPS and MINIGAME_HINTS converted from dict-shaped content to
+# frozen dataclasses. Attribute access replaces dict indexing so a typo
+# (step['tittle']) becomes an AttributeError at access time rather than
+# passing silently through a .get() default.
+
+
+@dataclass(frozen=True)
+class TutorialStep:
+    """Schema for a 5-step tutorial overlay entry."""
+
+    id: int
+    title: str
+    description: str
+    trigger: str  # "galaxy_map" | "trading" | "after_first_trade" | "activity" | "after_first_travel"
+
+
+@dataclass(frozen=True)
+class MinigameHint:
+    """Schema for a contextual mini-game hint shown once per mini-game."""
+
+    title: str
+    description: str
+
 
 # Tutorial step definitions
 # Narrative voice (QA Pass 6 pre-playtest polish, 2026-04-21). Tutorials
@@ -15,11 +41,11 @@ from typing import Optional
 # and §6 (AI anti-patterns). No em-dashes, no "couldn't help but", no
 # "no X, no Y" constructions.
 
-TUTORIAL_STEPS = [
-    {
-        "id": 0,
-        "title": "The Map",
-        "description": (
+TUTORIAL_STEPS: list[TutorialStep] = [
+    TutorialStep(
+        id=0,
+        title="The Map",
+        description=(
             "Eleven systems on the nav display. Your father worked mining "
             "rigs in three of them on paper. In person he only ever saw "
             "this one. The permit clears you for the others. The fuel "
@@ -29,12 +55,12 @@ TUTORIAL_STEPS = [
             "ready to burn fuel. Nothing gets better while you're sitting "
             "here."
         ),
-        "trigger": "galaxy_map",
-    },
-    {
-        "id": 1,
-        "title": "The Markets",
-        "description": (
+        trigger="galaxy_map",
+    ),
+    TutorialStep(
+        id=1,
+        title="The Markets",
+        description=(
             "You've seen trading posts your whole life. This one looks "
             "the same as the ones in the colony ship. Prices run "
             "different everywhere. Food is cheap where farms are, "
@@ -44,12 +70,12 @@ TUTORIAL_STEPS = [
             "arrows show which way prices are heading. The math isn't "
             "hard. The waiting is."
         ),
-        "trigger": "trading",
-    },
-    {
-        "id": 2,
-        "title": "The Fuel Bill",
-        "description": (
+        trigger="trading",
+    ),
+    TutorialStep(
+        id=2,
+        title="The Fuel Bill",
+        description=(
             "Your first profit. Most of it just went to fuel cells. "
             "That's trading. Every jump costs. Every day at rest costs "
             "nothing but time.\n\n"
@@ -58,12 +84,12 @@ TUTORIAL_STEPS = [
             "Your father used to say, 'Plan twice, move once.' He "
             "didn't always follow his own advice."
         ),
-        "trigger": "after_first_trade",
-    },
-    {
-        "id": 3,
-        "title": "The Sidework",
-        "description": (
+        trigger="after_first_trade",
+    ),
+    TutorialStep(
+        id=3,
+        title="The Sidework",
+        description=(
             "Some systems pay in ore if you're willing to pull a shift "
             "on the rocks. Some have wrecks to pick through. Some run "
             "refineries that turn raw junk into parts worth ten times "
@@ -73,12 +99,12 @@ TUTORIAL_STEPS = [
             "current system. The veterans have a rule: don't turn down "
             "paying work when your hold is empty."
         ),
-        "trigger": "activity",
-    },
-    {
-        "id": 4,
-        "title": "The Long Haul",
-        "description": (
+        trigger="activity",
+    ),
+    TutorialStep(
+        id=4,
+        title="The Long Haul",
+        description=(
             "First jump made. Now you understand why the old dockhands "
             "talk about fuel like it's bread. You'll level up by trading, "
             "fighting, mining, surviving. Skills unlock. Ships get "
@@ -88,8 +114,8 @@ TUTORIAL_STEPS = [
             "That's a long way from here. First you need credits. "
             "Then you need friends. Then you need leverage."
         ),
-        "trigger": "after_first_travel",
-    },
+        trigger="after_first_travel",
+    ),
 ]
 
 
@@ -98,10 +124,10 @@ TUTORIAL_STEPS = [
 # rules as TUTORIAL_STEPS above. Each hint grounds mechanical facts in the
 # protagonist's voice or a working-class NPC's voice, rather than breaking
 # the fourth wall.
-MINIGAME_HINTS: dict[str, dict[str, str]] = {
-    "mining": {
-        "title": "The Drill Line",
-        "description": (
+MINIGAME_HINTS: dict[str, MinigameHint] = {
+    "mining": MinigameHint(
+        title="The Drill Line",
+        description=(
             "Your father could read a rock face by the dust it threw. "
             "You don't have that yet. You will.\n\n"
             "LEFT-CLICK breaks a rock one swing at a time.\n"
@@ -113,10 +139,10 @@ MINIGAME_HINTS: dict[str, dict[str, str]] = {
             "the field to dig deeper. Rarer ores are further down. So "
             "is everything harder."
         ),
-    },
-    "salvage": {
-        "title": "The Wreck",
-        "description": (
+    ),
+    "salvage": MinigameHint(
+        title="The Wreck",
+        description=(
             "Everything you see here was someone's bad day. The "
             "wreckage is going to be picked clean regardless. Might as "
             "well be you.\n\n"
@@ -128,10 +154,10 @@ MINIGAME_HINTS: dict[str, dict[str, str]] = {
             "the contents fast. The scanner flashes when it spots one. "
             "Watch the flash."
         ),
-    },
-    "refining": {
-        "title": "The Crucible",
-        "description": (
+    ),
+    "refining": MinigameHint(
+        title="The Crucible",
+        description=(
             "Raw metals pay less than finished parts. That's not "
             "philosophy, that's margin.\n\n"
             "Select a recipe. It lists what it NEEDS and what it "
@@ -142,11 +168,11 @@ MINIGAME_HINTS: dict[str, dict[str, str]] = {
             "miners break, refiners build, shippers get paid. Learn "
             "all three."
         ),
-    },
+    ),
     # === Combat System Tutorials ===
-    "combat_momentum": {
-        "title": "The Momentum Bar",
-        "description": (
+    "combat_momentum": MinigameHint(
+        title="The Momentum Bar",
+        description=(
             "You feel the fight settle into rhythm. Every hit landed, "
             "every hit taken, every crew move, every status effect "
             "feeds a pool the old pilots call momentum.\n\n"
@@ -156,10 +182,10 @@ MINIGAME_HINTS: dict[str, dict[str, str]] = {
             "100% fires your ship's Ultimate, whatever that is.\n\n"
             "The bar sits on your left. The bar doesn't lie."
         ),
-    },
-    "combat_crew_combo": {
-        "title": "Crew Combo",
-        "description": (
+    ),
+    "combat_crew_combo": MinigameHint(
+        title="Crew Combo",
+        description=(
             "Two of your crew just synced on a shared move. The gold "
             "COMBO button in the crew row is the opportunity.\n\n"
             "Press it in place of the regular crew ability. Combos "
@@ -168,10 +194,10 @@ MINIGAME_HINTS: dict[str, dict[str, str]] = {
             "Your crew works better together than apart. That's not a "
             "metaphor, that's mechanics."
         ),
-    },
-    "combat_ultimate": {
-        "title": "Ultimate Ready",
-        "description": (
+    ),
+    "combat_ultimate": MinigameHint(
+        title="Ultimate Ready",
+        description=(
             "Full momentum. Your ship's Ultimate is live.\n\n"
             "Press [U] or click the gold ULTIMATE button. What "
             "happens depends on the ship class. Some ultimates are "
@@ -180,10 +206,10 @@ MINIGAME_HINTS: dict[str, dict[str, str]] = {
             "Pick your moment. Don't waste it on an enemy that was "
             "already going to die."
         ),
-    },
-    "combat_boss": {
-        "title": "Boss Contact",
-        "description": (
+    ),
+    "combat_boss": MinigameHint(
+        title="Boss Contact",
+        description=(
             "This enemy is different. Higher hull. Phase transitions.\n\n"
             "When their hull drops past certain thresholds, their "
             "tactics shift. They might call reinforcements. They "
@@ -192,10 +218,10 @@ MINIGAME_HINTS: dict[str, dict[str, str]] = {
             "don't freeze. They resist voltaic suppression. Fight "
             "them slow. Fight them patient."
         ),
-    },
-    "combat_elemental": {
-        "title": "Elemental Weapons",
-        "description": (
+    ),
+    "combat_elemental": MinigameHint(
+        title="Elemental Weapons",
+        description=(
             "Your weapon just applied a status effect. The element "
             "determines what happens next.\n\n"
             "Plasma: BURN ticks damage over three turns. Stacks to 3.\n"
@@ -207,11 +233,11 @@ MINIGAME_HINTS: dict[str, dict[str, str]] = {
             "Different fights want different tools. Pack for the "
             "fight you expect."
         ),
-    },
+    ),
     # === Ship Builder Tutorials (Phase F) ===
-    "builder_welcome": {
-        "title": "The Drydock",
-        "description": (
+    "builder_welcome": MinigameHint(
+        title="The Drydock",
+        description=(
             "This is where you build. Every pixel you lay down becomes "
             "part of your ship's hull and sprite, and flies with you "
             "from here on.\n\n"
@@ -224,10 +250,10 @@ MINIGAME_HINTS: dict[str, dict[str, str]] = {
             "to build from scratch? Click BACK and load a preset from "
             "the Shipyard."
         ),
-    },
-    "builder_shapes": {
-        "title": "Shapes and Materials",
-        "description": (
+    ),
+    "builder_shapes": MinigameHint(
+        title="Shapes and Materials",
+        description=(
             "Shapes are your building blocks. Pick one from the left, "
             "click the grid to stamp it down.\n\n"
             "[R] rotates the shape 90 degrees.\n"
@@ -239,10 +265,10 @@ MINIGAME_HINTS: dict[str, dict[str, str]] = {
             "pixel color IS the material color. The ship shows its "
             "materials by showing its colors."
         ),
-    },
-    "builder_tools": {
-        "title": "Builder Tools",
-        "description": (
+    ),
+    "builder_tools": MinigameHint(
+        title="Builder Tools",
+        description=(
             "[S] Stamp places shapes. This is the default tool.\n"
             "[P] Pencil places single pixels for detail.\n"
             "[M] Brush repaints pixels with a different material.\n"
@@ -252,10 +278,10 @@ MINIGAME_HINTS: dict[str, dict[str, str]] = {
             "Press [Tab] to switch to EQUIP mode and install weapons "
             "and shields into your module slots."
         ),
-    },
-    "builder_confirm": {
-        "title": "Confirming the Build",
-        "description": (
+    ),
+    "builder_confirm": MinigameHint(
+        title="Confirming the Build",
+        description=(
             "Click CONFIRM BUILD when you're satisfied. The ship's "
             "sprite updates everywhere. Combat, galaxy map, HUD. "
             "All of it.\n\n"
@@ -266,11 +292,11 @@ MINIGAME_HINTS: dict[str, dict[str, str]] = {
             "Your ship tells your story. Build the ship you want, "
             "and rebuild it when you learn more."
         ),
-    },
+    ),
     # === Ship Builder Tutorials (Slot-Based System) ===
-    "builder_module_welcome": {
-        "title": "Drydock Intake",
-        "description": (
+    "builder_module_welcome": MinigameHint(
+        title="Drydock Intake",
+        description=(
             "This is the Drydock. You design your ship by placing "
             "slots on the grid. Each slot type does a different job.\n\n"
             "SLOTS tab: weapon, defense, engine, and utility mounts.\n"
@@ -280,10 +306,10 @@ MINIGAME_HINTS: dict[str, dict[str, str]] = {
             "Right-click removes a placed slot. The grid doesn't "
             "judge. That's what the stats panel is for."
         ),
-    },
-    "builder_module_engine": {
-        "title": "Engine First",
-        "description": (
+    ),
+    "builder_module_engine": MinigameHint(
+        title="Engine First",
+        description=(
             "Your ship needs propulsion before anything else. Pick an "
             "Engine slot from the palette, click the grid to place.\n\n"
             "Ships face RIGHT in this view. Engines go toward the "
@@ -292,10 +318,10 @@ MINIGAME_HINTS: dict[str, dict[str, str]] = {
             "tab and equip it in the Loadout tab. Without an engine, "
             "you're space debris."
         ),
-    },
-    "builder_module_requirements": {
-        "title": "Minimum Viable Ship",
-        "description": (
+    ),
+    "builder_module_requirements": MinigameHint(
+        title="Minimum Viable Ship",
+        description=(
             "Every ship needs at minimum:\n\n"
             "1. Engine slot (propulsion)\n"
             "2. Reactor slot (power)\n\n"
@@ -307,10 +333,10 @@ MINIGAME_HINTS: dict[str, dict[str, str]] = {
             "place. Work within the cap. That's part of the design, "
             "not a barrier to it."
         ),
-    },
-    "builder_module_hull": {
-        "title": "Hull Pixels",
-        "description": (
+    ),
+    "builder_module_hull": MinigameHint(
+        title="Hull Pixels",
+        description=(
             "Press [Tab] to switch to Hull mode. You paint hull "
             "pixels around your slots to add hit points and armor.\n\n"
             "Four hull materials:\n"
@@ -322,10 +348,10 @@ MINIGAME_HINTS: dict[str, dict[str, str]] = {
             "what it looks like and how much damage it absorbs "
             "before something vital breaks. Both matter."
         ),
-    },
-    "builder_module_confirm": {
-        "title": "Ready to Fly",
-        "description": (
+    ),
+    "builder_module_confirm": MinigameHint(
+        title="Ready to Fly",
+        description=(
             "All requirements met. Your layout works.\n\n"
             "Click CONFIRM BUILD to finalize. Slot and pixel "
             "fabrication costs come out of your credits. After "
@@ -336,10 +362,10 @@ MINIGAME_HINTS: dict[str, dict[str, str]] = {
             "points in your design before you commit. A bad center "
             "of mass in the builder is a worse one in combat."
         ),
-    },
-    "combat_defensive_identity": {
-        "title": "Your Ship's Identity",
-        "description": (
+    ),
+    "combat_defensive_identity": MinigameHint(
+        title="Your Ship's Identity",
+        description=(
             "Your build shapes how your ship fights. The ship tells "
             "you which identity it leans into.\n\n"
             "JUGGERNAUT (hull-heavy): armor reduces incoming damage. "
@@ -351,7 +377,7 @@ MINIGAME_HINTS: dict[str, dict[str, str]] = {
             "Your identity shows on the left combat panel. Play the "
             "identity your ship actually has, not the one you wanted."
         ),
-    },
+    ),
 }
 
 
@@ -393,13 +419,13 @@ class TutorialManager:
         if self.current_step >= len(TUTORIAL_STEPS):
             return False
         step = TUTORIAL_STEPS[self.current_step]
-        return step["trigger"] == trigger and not self._show_step
+        return step.trigger == trigger and not self._show_step
 
-    def start_step(self) -> Optional[dict]:
+    def start_step(self) -> Optional[TutorialStep]:
         """Begin showing the current step.
 
         Returns:
-            Step content dict, or None if no step to show.
+            The current TutorialStep, or None if no step to show.
         """
         if self.completed or self.skipped or not self.active:
             return None
@@ -409,11 +435,11 @@ class TutorialManager:
         self._show_step = True
         return TUTORIAL_STEPS[self.current_step]
 
-    def advance_step(self) -> Optional[dict]:
+    def advance_step(self) -> Optional[TutorialStep]:
         """Advance to the next tutorial step.
 
         Returns:
-            Next step content dict, or None if tutorial is complete.
+            The next TutorialStep, or None if tutorial is complete.
         """
         self.current_step += 1
         self._show_step = False
@@ -439,11 +465,11 @@ class TutorialManager:
         """Check if a tutorial step is currently being shown."""
         return self._show_step and self.active and not self.completed and not self.skipped
 
-    def get_current_step(self) -> Optional[dict]:
+    def get_current_step(self) -> Optional[TutorialStep]:
         """Get the current step content if showing.
 
         Returns:
-            Current step dict or None.
+            The current TutorialStep or None.
         """
         if not self.is_showing():
             return None
@@ -462,14 +488,14 @@ class TutorialManager:
         """
         return hint_id in MINIGAME_HINTS and hint_id not in self.hints_dismissed
 
-    def get_hint(self, hint_id: str) -> Optional[dict]:
+    def get_hint(self, hint_id: str) -> Optional[MinigameHint]:
         """Get hint content by ID.
 
         Args:
             hint_id: ID of the hint.
 
         Returns:
-            Hint dict with 'title' and 'description', or None.
+            MinigameHint with title/description, or None.
         """
         return MINIGAME_HINTS.get(hint_id)
 

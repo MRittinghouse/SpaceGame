@@ -276,10 +276,12 @@ class StationHubView(BaseView):
         # via the NPC list; her dialogue_states route to the right tree
         # based on mission flag state.
         if self.system.id == "nexus_prime" and hasattr(self.player, "dialogue_flags"):
+            from spacegame.constants.flags import met_npc
+
             tutorial_done = self.player.dialogue_flags.get("tutorial_builder_complete", False)
-            already_met = self.player.dialogue_flags.get("met_arna", False)
+            already_met = self.player.dialogue_flags.get(met_npc("arna"), False)
             if tutorial_done and not already_met:
-                self.player.dialogue_flags["met_arna"] = True
+                self.player.dialogue_flags[met_npc("arna")] = True
                 self.pending_npc_id = "arna"
                 self.next_state = GameState.DIALOGUE
 

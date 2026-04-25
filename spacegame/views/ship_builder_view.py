@@ -1130,20 +1130,39 @@ class ShipBuilderView(BaseView):
         """
         slot_defs = getattr(self.data_loader, "slot_definitions", {})
 
-        # Tutorial mode: show only the parts the player actually purchased
+        # Tutorial mode: show only slot types matching parts the player
+        # actually purchased, plus cockpit (always available).
+        #
+        # Bug fix (2026-04-24): the prior implementation crashed with
+        # KeyError 'slot_def_id' because TUTORIAL_PARTS dicts use the key
+        # 'part_id' (matching the inventory + flag wiring in the tutorial
+        # shop). It also mismatched the flag name (shop sets
+        # 'tutorial_bought_part_X', not 'tutorial_bought_X') AND filtered
+        # slot_defs by part_id, which never matched any slot_def key.
+        # Correct relationship: parts have slot_types; we filter slot_defs
+        # by the slot_types of purchased parts.
         if self._tutorial_mode:
+            from spacegame.constants.flags import tutorial_bought_part
             from spacegame.views.tutorial_shop_view import TUTORIAL_PARTS
 
-            # Only include parts that were purchased (tracked via player flag)
-            purchased_ids = set()
+            purchased_slot_types: set[str] = {"cockpit"}  # always available
             for p in TUTORIAL_PARTS:
-                flag_key = f"tutorial_bought_{p['slot_def_id']}"
+                flag_key = tutorial_bought_part(p.part_id)
                 if self.player.dialogue_flags.get(flag_key):
-                    purchased_ids.add(p["slot_def_id"])
-            # Fallback: if no flags set, show all (backwards compat)
-            if not purchased_ids:
-                purchased_ids = {p["slot_def_id"] for p in TUTORIAL_PARTS}
-            filtered = {k: v for k, v in slot_defs.items() if k in purchased_ids}
+                    part = self.data_loader.ship_parts.get(p.part_id)
+                    if part is not None:
+                        purchased_slot_types.add(part.slot_type)
+            # Fallback for first-render before any purchase flag is set:
+            # show all tutorial slot types so the player can see the palette.
+            if len(purchased_slot_types) == 1:
+                for p in TUTORIAL_PARTS:
+                    part = self.data_loader.ship_parts.get(p.part_id)
+                    if part is not None:
+                        purchased_slot_types.add(part.slot_type)
+            filtered = {
+                k: v for k, v in slot_defs.items()
+                if v.slot_type in purchased_slot_types
+            }
             result: list[tuple[str, list[SlotDefinition]]] = []
             for slot_type in _SLOT_TYPE_ORDER:
                 group = [sd for sd in filtered.values() if sd.slot_type == slot_type]
@@ -1776,13 +1795,17 @@ class ShipBuilderView(BaseView):
         the player bought in the tutorial shop via tutorial_bought_part_*
         flags, mapping the purchased part to its slot_type via parts_catalog.
         """
+        from spacegame.constants.flags import extract_tutorial_bought_part_id
+
         required = {"cockpit"}  # always needed, self-fulfilling
         flags = getattr(self.player, "dialogue_flags", {})
         parts_catalog = getattr(self.data_loader, "ship_parts", {})
         for flag_name, enabled in flags.items():
-            if not enabled or not flag_name.startswith("tutorial_bought_part_"):
+            if not enabled:
                 continue
-            part_id = flag_name.replace("tutorial_bought_part_", "", 1)
+            part_id = extract_tutorial_bought_part_id(flag_name)
+            if part_id is None:
+                continue
             part = parts_catalog.get(part_id)
             if part is not None:
                 required.add(part.slot_type)
@@ -4322,7 +4345,7 @@ class ShipBuilderView(BaseView):
         self,
         placed_ids: set[str],
         part_narration: dict[str, str],
-        tutorial_parts: list,
+        tutorial_parts: list,  # list[TutorialPart] — avoid import cycle
     ) -> str:
         """Pick the current mechanic line based on build progress.
 
@@ -4332,10 +4355,15 @@ class ShipBuilderView(BaseView):
           3. Per-part placement prompt (parts bought but unplaced)
           4. Completion (all bought parts placed — point at CONFIRM BUILD)
         """
+        # SI-1a/b: TUTORIAL_PARTS is now list[TutorialPart] (attribute access,
+        # not dict subscript), and the flag name goes through the registry so
+        # shop-set / builder-read can't drift apart.
+        from spacegame.constants.flags import tutorial_bought_part
+
         bought_parts = [
             p
             for p in tutorial_parts
-            if self.player.dialogue_flags.get(f"tutorial_bought_{p['slot_def_id']}")
+            if self.player.dialogue_flags.get(tutorial_bought_part(p.part_id))
         ]
 
         # 1. Welcome: nothing bought is placed yet AND nothing selected.
@@ -4346,16 +4374,34 @@ class ShipBuilderView(BaseView):
         # Fires when the player has selected a non-square slot but hasn't
         # yet rotated it this session. Discoverability of the R key is
         # the single most reported friction point.
+        slot_defs = getattr(self.data_loader, "slot_definitions", {}) or {}
         if self._selected_slot_def_id and not getattr(self, "_shown_rotation_tip", False):
-            slot_defs = getattr(self.data_loader, "slot_definitions", {}) or {}
             sel_def = slot_defs.get(self._selected_slot_def_id)
             if sel_def and sel_def.footprint_w != sel_def.footprint_h:
                 return "Tall module? Press R to rotate before you drop it."
 
-        # 3. Per-part prompt: first bought-but-unplaced part.
+        # 3. Per-part prompt: first bought part whose slot_type hasn't been
+        # placed yet. Bought parts carry part_id; we look up the
+        # corresponding slot_type from ship_parts, then find the matching
+        # narration line keyed by tutorial slot_def_id.
+        ship_parts = getattr(self.data_loader, "ship_parts", {}) or {}
+        placed_slot_types = {
+            slot_defs[sid].slot_type
+            for sid in placed_ids
+            if sid in slot_defs
+        }
         for p in bought_parts:
-            if p["slot_def_id"] not in placed_ids:
-                return part_narration.get(p["slot_def_id"], "Place the next part.")
+            part = ship_parts.get(p.part_id)
+            if part is None:
+                continue
+            if part.slot_type in placed_slot_types:
+                continue
+            # Find a part_narration entry whose slot_def matches this slot_type
+            for narration_sd_id, narration_text in part_narration.items():
+                narration_sd = slot_defs.get(narration_sd_id)
+                if narration_sd and narration_sd.slot_type == part.slot_type:
+                    return narration_text
+            return "Place the next part."
 
         # 4. Completion: all bought parts placed. Point at the exit.
         return "That'll fly. Hit CONFIRM BUILD, bottom-right, when you're ready."

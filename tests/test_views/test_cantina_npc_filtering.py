@@ -4,8 +4,8 @@ Verifies that NPCs are properly filtered based on their auto_trigger_prerequisit
 and auto_trigger_gate_flag, preventing story-sequence-breaking dialogue options.
 """
 
-from unittest.mock import MagicMock
 
+from spacegame.constants.flags import met_npc
 from spacegame.models.dialogue import NPC
 
 
@@ -58,7 +58,7 @@ class TestNpcAvailability:
         """NPCs with unmet prerequisites should not appear."""
         npc = _make_npc(
             npc_id="dex_halloran",
-            auto_trigger_gate_flag="met_dex_halloran",
+            auto_trigger_gate_flag=met_npc("dex_halloran"),
             auto_trigger_prerequisites=["cargo_lost_resolved"],
         )
         # No flags set - prerequisites not met
@@ -68,7 +68,7 @@ class TestNpcAvailability:
         """NPCs appear when prerequisites are met and gate flag not yet set."""
         npc = _make_npc(
             npc_id="dex_halloran",
-            auto_trigger_gate_flag="met_dex_halloran",
+            auto_trigger_gate_flag=met_npc("dex_halloran"),
             auto_trigger_prerequisites=["cargo_lost_resolved"],
         )
         flags = {"cargo_lost_resolved": True}
@@ -78,17 +78,17 @@ class TestNpcAvailability:
         """NPCs hidden once their gate flag is set (dialogue already happened)."""
         npc = _make_npc(
             npc_id="dex_halloran",
-            auto_trigger_gate_flag="met_dex_halloran",
+            auto_trigger_gate_flag=met_npc("dex_halloran"),
             auto_trigger_prerequisites=["cargo_lost_resolved"],
         )
-        flags = {"cargo_lost_resolved": True, "met_dex_halloran": True}
+        flags = {"cargo_lost_resolved": True, met_npc("dex_halloran"): True}
         assert not self._check_available(npc, flags)
 
     def test_multiple_dex_entries_only_one_visible(self) -> None:
         """Only the Dex Halloran NPC whose prereqs are met should appear."""
         dex1 = _make_npc(
             npc_id="dex_halloran",
-            auto_trigger_gate_flag="met_dex_halloran",
+            auto_trigger_gate_flag=met_npc("dex_halloran"),
             auto_trigger_prerequisites=["cargo_lost_resolved"],
         )
         dex2 = _make_npc(
@@ -112,7 +112,7 @@ class TestNpcAvailability:
         """As story progresses, only the current Dex NPC is visible."""
         dex1 = _make_npc(
             npc_id="dex_halloran",
-            auto_trigger_gate_flag="met_dex_halloran",
+            auto_trigger_gate_flag=met_npc("dex_halloran"),
             auto_trigger_prerequisites=["cargo_lost_resolved"],
         )
         dex2 = _make_npc(
@@ -129,7 +129,7 @@ class TestNpcAvailability:
         all_dex = [dex1, dex2, dex3]
 
         # After first Dex dialogue, before second prereqs
-        flags = {"cargo_lost_resolved": True, "met_dex_halloran": True}
+        flags = {"cargo_lost_resolved": True, met_npc("dex_halloran"): True}
         visible = [n for n in all_dex if self._check_available(n, flags)]
         assert len(visible) == 0, "No Dex should be visible between story beats"
 

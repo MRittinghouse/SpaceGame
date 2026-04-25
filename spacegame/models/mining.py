@@ -322,78 +322,82 @@ class MiningMilestone:
     completed: bool = False
 
 
-MILESTONE_POOL: list[dict] = [
-    {
-        "id": "rocks_10",
-        "description": "Mine 10 rocks",
-        "category": "rocks_mined",
-        "threshold": 10,
-        "reward_xp": 25,
-    },
-    {
-        "id": "rocks_20",
-        "description": "Mine 20 rocks",
-        "category": "rocks_mined",
-        "threshold": 20,
-        "reward_xp": 50,
-    },
-    {
-        "id": "rare_3",
-        "description": "Find 3 rare ores",
-        "category": "rare_ores",
-        "threshold": 3,
-        "reward_xp": 40,
-    },
-    {
-        "id": "rare_5",
-        "description": "Find 5 rare ores",
-        "category": "rare_ores",
-        "threshold": 5,
-        "reward_credits": 100,
-    },
-    {
-        "id": "depth_20",
-        "description": "Reach depth 20",
-        "category": "depth_reached",
-        "threshold": 20,
-        "reward_xp": 30,
-    },
-    {
-        "id": "depth_50",
-        "description": "Reach depth 50",
-        "category": "depth_reached",
-        "threshold": 50,
-        "reward_xp": 60,
-    },
-    {
-        "id": "depth_100",
-        "description": "Reach depth 100",
-        "category": "depth_reached",
-        "threshold": 100,
-        "reward_credits": 200,
-    },
-    {
-        "id": "depth_150",
-        "description": "Reach the Abyssal Vein",
-        "category": "depth_reached",
-        "threshold": 150,
-        "reward_xp": 100,
-        "reward_credits": 500,
-    },
-    {
-        "id": "chains_3",
-        "description": "Trigger 3 chain detonations",
-        "category": "chains_triggered",
-        "threshold": 3,
-        "reward_xp": 35,
-    },
-    {
-        "id": "chains_10",
-        "description": "Trigger 10 chain detonations",
-        "category": "chains_triggered",
-        "threshold": 10,
-        "reward_credits": 150,
-    },
+# SI-2 migration (see requirements/si2_dataclass_migration_cookbook.md):
+# converted from ``list[dict]`` to ``list[MiningMilestone]``. The reader
+# in ``_select_milestones`` previously rebuilt each dict into a
+# MiningMilestone via ``MiningMilestone(**m)`` — that layer's now gone.
+MILESTONE_POOL: list[MiningMilestone] = [
+    MiningMilestone(
+        id="rocks_10",
+        description="Mine 10 rocks",
+        category="rocks_mined",
+        threshold=10,
+        reward_xp=25,
+    ),
+    MiningMilestone(
+        id="rocks_20",
+        description="Mine 20 rocks",
+        category="rocks_mined",
+        threshold=20,
+        reward_xp=50,
+    ),
+    MiningMilestone(
+        id="rare_3",
+        description="Find 3 rare ores",
+        category="rare_ores",
+        threshold=3,
+        reward_xp=40,
+    ),
+    MiningMilestone(
+        id="rare_5",
+        description="Find 5 rare ores",
+        category="rare_ores",
+        threshold=5,
+        reward_credits=100,
+    ),
+    MiningMilestone(
+        id="depth_20",
+        description="Reach depth 20",
+        category="depth_reached",
+        threshold=20,
+        reward_xp=30,
+    ),
+    MiningMilestone(
+        id="depth_50",
+        description="Reach depth 50",
+        category="depth_reached",
+        threshold=50,
+        reward_xp=60,
+    ),
+    MiningMilestone(
+        id="depth_100",
+        description="Reach depth 100",
+        category="depth_reached",
+        threshold=100,
+        reward_credits=200,
+    ),
+    MiningMilestone(
+        id="depth_150",
+        description="Reach the Abyssal Vein",
+        category="depth_reached",
+        threshold=150,
+        reward_xp=100,
+        reward_credits=500,
+    ),
+    MiningMilestone(
+        id="chains_3",
+        description="Trigger 3 chain detonations",
+        category="chains_triggered",
+        threshold=3,
+        reward_xp=35,
+    ),
+    MiningMilestone(
+        id="chains_10",
+        description="Trigger 10 chain detonations",
+        category="chains_triggered",
+        threshold=10,
+        reward_credits=150,
+    ),
 ]
 
 
@@ -938,12 +942,17 @@ class MiningSession:
 
     def _select_milestones(self) -> list[MiningMilestone]:
         """Select 3 random milestones (one per category, then sample 3)."""
-        by_category: dict[str, list[dict]] = {}
+        import dataclasses
+
+        by_category: dict[str, list[MiningMilestone]] = {}
         for m in MILESTONE_POOL:
-            by_category.setdefault(m["category"], []).append(m)
+            by_category.setdefault(m.category, []).append(m)
         candidates = [random.choice(v) for v in by_category.values()]
         selected = random.sample(candidates, min(3, len(candidates)))
-        return [MiningMilestone(**m) for m in selected]
+        # Fresh per-session copy — session mutates ``completed`` on the
+        # returned instances and those writes must not leak back into the
+        # shared MILESTONE_POOL templates.
+        return [dataclasses.replace(m) for m in selected]
 
     def _on_rock_broken(self, rock: AsteroidRock) -> None:
         """Track stats when any rock breaks (click, passive, drone, chain)."""

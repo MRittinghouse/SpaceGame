@@ -33,7 +33,7 @@ class TestTutorialProgression:
             assert not tm.completed
             step = tm.start_step()
             assert step is not None
-            assert step["id"] == i
+            assert step.id == i
             tm.advance_step()
 
         assert tm.completed, "Tutorial should be completed after all steps"
@@ -233,10 +233,10 @@ class TestMinigameHints:
     def test_hints_have_title_and_description(self) -> None:
         """Each hint should have title and description."""
         for hint_id, hint in MINIGAME_HINTS.items():
-            assert "title" in hint, f"{hint_id} missing title"
-            assert "description" in hint, f"{hint_id} missing description"
-            assert len(hint["title"]) > 0
-            assert len(hint["description"]) > 0
+            assert hint.title, f"{hint_id} missing title"
+            assert hint.description, f"{hint_id} missing description"
+            assert len(hint.title) > 0
+            assert len(hint.description) > 0
 
     def test_should_show_hint_first_time(self) -> None:
         """Hint should show when not yet dismissed."""
@@ -265,8 +265,8 @@ class TestMinigameHints:
         assert hint is not None
         # Title post-narrative-polish (2026-04-21) — see
         # test_tutorial_narrative_voice.py for the compliance guard.
-        assert hint["title"] == "The Drill Line"
-        assert "title" in hint and "description" in hint
+        assert hint.title == "The Drill Line"
+        assert hint.title and hint.description
 
     def test_get_hint_unknown_returns_none(self) -> None:
         """get_hint should return None for unknown IDs."""

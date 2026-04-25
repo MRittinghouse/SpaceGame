@@ -239,13 +239,15 @@ class TestPTHWritingCompliance:
 
 class TestStationHubInterception:
     def test_intercepts_on_first_arrival_after_tutorial(self) -> None:
+        from spacegame.constants.flags import met_npc
+
         view, player, _ = _make_hub_env("nexus_prime")
         player.dialogue_flags["tutorial_builder_complete"] = True
-        assert not player.dialogue_flags.get("met_arna", False)
+        assert not player.dialogue_flags.get(met_npc("arna"), False)
         view.on_enter()
         assert view.next_state == GameState.DIALOGUE
         assert view.pending_npc_id == "arna"
-        assert player.dialogue_flags.get("met_arna", False) is True
+        assert player.dialogue_flags.get(met_npc("arna"), False) is True
 
     def test_no_intercept_without_tutorial_complete(self) -> None:
         view, player, _ = _make_hub_env("nexus_prime")
@@ -275,8 +277,9 @@ class TestStationHubInterception:
 
 class TestCockpitObjectiveHintToggle:
     def test_default_on(self) -> None:
-        from spacegame.views.cockpit_hud import CockpitHUD
         from unittest.mock import MagicMock
+
+        from spacegame.views.cockpit_hud import CockpitHUD
 
         hud = CockpitHUD(player=MagicMock(), mission_manager=MagicMock())
         assert hud.show_objective_hint is True
@@ -284,8 +287,9 @@ class TestCockpitObjectiveHintToggle:
     def test_hides_hint_when_off(self) -> None:
         """With toggle off, _get_quest_hint returns empty string even with
         active missions."""
-        from spacegame.views.cockpit_hud import CockpitHUD
         from unittest.mock import MagicMock
+
+        from spacegame.views.cockpit_hud import CockpitHUD
 
         mgr = MagicMock()
         mgr.get_missions_by_status.return_value = [MagicMock()]
@@ -294,9 +298,10 @@ class TestCockpitObjectiveHintToggle:
         assert hud._get_quest_hint() == ""
 
     def test_shows_hint_when_on(self) -> None:
+        from unittest.mock import MagicMock
+
         from spacegame.models.mission import MissionObjective
         from spacegame.views.cockpit_hud import CockpitHUD
-        from unittest.mock import MagicMock
 
         obj = MissionObjective(
             type="reach_system",
@@ -325,8 +330,9 @@ class TestCockpitObjectiveHintToggle:
 
 class TestSettingsObjectiveHintRoundtrip:
     def test_toggle_persists_through_get_display_settings(self) -> None:
-        from spacegame.views.settings_view import SettingsView
         from pathlib import Path
+
+        from spacegame.views.settings_view import SettingsView
 
         manager = pygame_gui.UIManager((WINDOW_WIDTH, WINDOW_HEIGHT))
         view = SettingsView(manager, Path("."))
@@ -336,8 +342,9 @@ class TestSettingsObjectiveHintRoundtrip:
         assert view.get_display_settings()["show_objective_hint"] is True
 
     def test_default_is_on(self) -> None:
-        from spacegame.views.settings_view import SettingsView
         from pathlib import Path
+
+        from spacegame.views.settings_view import SettingsView
 
         manager = pygame_gui.UIManager((WINDOW_WIDTH, WINDOW_HEIGHT))
         view = SettingsView(manager, Path("."))

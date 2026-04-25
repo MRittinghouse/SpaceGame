@@ -35,7 +35,14 @@ def _pygame_init():
 
 class TestTutorialShopDescriptions:
     def test_descriptions_use_word_wrap_not_truncate(self) -> None:
-        """Verify _render_part_card uses word_wrap (not truncate_text)."""
+        """Verify _render_part_card uses word_wrap on the description so
+        full text shows across two lines instead of single-line ellipsis.
+
+        Truncation is allowed for the part NAME (which is single-line and
+        was overflowing card width on long names like 'Salvaged Pulse
+        Emitter' — fixed 2026-04-24). What's banned is truncating the
+        DESCRIPTION text.
+        """
         from pathlib import Path
 
         source = Path("spacegame/views/tutorial_shop_view.py").read_text(encoding="utf-8")
@@ -43,9 +50,13 @@ class TestTutorialShopDescriptions:
         render_end = source.index("def ", render_start + 1)
         body = source[render_start:render_end]
         assert "word_wrap" in body, "tutorial shop should call word_wrap on descriptions"
-        # Truncate call should no longer be in _render_part_card (can still
-        # appear elsewhere in the file for different purposes).
-        assert "truncate_text" not in body, (
+        # The description rendering block must use word_wrap, not truncate.
+        # Locate the description section by its anchor comment + ensure
+        # truncate_text is not invoked on `part["description"]`.
+        assert 'truncate_text(part["description"]' not in body, (
+            "tutorial shop should render full descriptions via word_wrap, not truncate"
+        )
+        assert "truncate_text(part.description" not in body, (
             "tutorial shop should render full descriptions via word_wrap, not truncate"
         )
 
@@ -54,9 +65,9 @@ class TestTutorialShopDescriptions:
         from spacegame.views.tutorial_shop_view import TUTORIAL_CHOICES, TUTORIAL_PARTS
 
         for part in TUTORIAL_PARTS + TUTORIAL_CHOICES:
-            assert part.get("description"), f"part missing description: {part.get('name')}"
-            assert len(part["description"]) > 10, (
-                f"part description too short: {part.get('name')}"
+            assert part.description, f"part missing description: {part.name}"
+            assert len(part.description) > 10, (
+                f"part description too short: {part.name}"
             )
 
 
