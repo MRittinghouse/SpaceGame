@@ -4368,7 +4368,10 @@ class ShipBuilderView(BaseView):
 
         # 1. Welcome: nothing bought is placed yet AND nothing selected.
         if bought_parts and not placed_ids and not self._selected_slot_def_id:
-            return "Bay's yours. Pick a part from the list, drop it on the grid."
+            return (
+                "Bay's yours. Pick a part from the list, drop it on the grid. "
+                "We don't waste space if we can help it."
+            )
 
         # 2. Rotation tip: a selected module's rotated orientation would help.
         # Fires when the player has selected a non-square slot but hasn't
@@ -4404,7 +4407,10 @@ class ShipBuilderView(BaseView):
             return "Place the next part."
 
         # 4. Completion: all bought parts placed. Point at the exit.
-        return "That'll fly. Hit CONFIRM BUILD, bottom-right, when you're ready."
+        return (
+            "That'll fly. Your father would've spent another hour second-guessing. "
+            "Hit CONFIRM BUILD, bottom-right, when you're ready."
+        )
 
     def _render_help_overlay(self, screen: pygame.Surface) -> None:
         """Render the in-builder help panel (Phase F)."""

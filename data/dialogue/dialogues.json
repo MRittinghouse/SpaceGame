@@ -845,7 +845,7 @@
                 {
                     "id": "intro_4",
                     "speaker_id": "narrator",
-                    "text": "Perhaps there is another path. With the last of your father's savings, you spend a few days cleaning up his possessions before pawning them off at the ship's trading post. You can barely afford the hull of a broken shuttle. A neighbor in maintenance helps you source an engine. As your credits dry out, you only just barely manage to get the shuttle working and charge the fuel rods.",
+                    "text": "You spend a week cleaning out your father's bunk. Coveralls, a few tools, a wedding ring you don't remember him wearing. The trading post pays less than you'd hoped. What's left of his savings goes in the same pocket. Four thousand credits. Not enough for a working ship. Enough for a hull and a promise.",
                     "responses": [
                         {
                             "text": "[Continue]",
@@ -857,7 +857,7 @@
                 {
                     "id": "intro_5",
                     "speaker_id": "narrator",
-                    "text": "Departing from the colony ship, you find yourself in the orbit of Nexus Prime, with the system at your disposal. You have 4,000 credits to your name. You are woefully unaware of the system, its politics, its people. Your goal is simple, to survive and find new horizons. Anywhere away from here.",
+                    "text": "The scrapyard drydock smells like ozone and bad coolant. Your neighbor in maintenance, the mechanic he goes by, has a salvaged shuttle frame waiting under a tarp. He pulls it back, looks at you the way he used to look at your father. \"You count what you've got. I'll show you what fits. We don't waste a credit if we can help it.\"",
                     "responses": [],
                     "expression": "neutral"
                 }
