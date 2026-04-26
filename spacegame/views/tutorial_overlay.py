@@ -13,7 +13,7 @@ import pygame
 
 from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH, Colors, scale_x, scale_y
 from spacegame.engine.fonts import FONT_BODY, FONT_LG, FONT_SM, FONT_TITLE, get_font
-from spacegame.tutorial_manager import TUTORIAL_STEPS, TutorialManager
+from spacegame.tutorial_manager import TUTORIAL_STEPS, MinigameHint, TutorialManager
 from spacegame.utils.logger import logger
 
 
@@ -62,7 +62,7 @@ class TutorialOverlay:
 
         # Hint mode: shows a contextual hint instead of a tutorial step
         self._hint_mode: bool = False
-        self._hint_data: Optional[dict] = None
+        self._hint_data: Optional[MinigameHint] = None
         self._hint_id: Optional[str] = None
 
         # Fonts
@@ -261,7 +261,7 @@ class TutorialOverlay:
         pygame.draw.rect(screen, Colors.TEXT_HIGHLIGHT, panel_rect, 2)
 
         # Title
-        title_surf = self.title_font.render(self._hint_data["title"], True, Colors.TEXT_HIGHLIGHT)
+        title_surf = self.title_font.render(self._hint_data.title, True, Colors.TEXT_HIGHLIGHT)
         title_rect = title_surf.get_rect(midtop=(WINDOW_WIDTH // 2, py + 20))
         screen.blit(title_surf, title_rect)
 
@@ -269,7 +269,7 @@ class TutorialOverlay:
         max_text_y = self.got_it_button.rect.top - 10
         self._render_wrapped_text(
             screen,
-            self._hint_data["description"],
+            self._hint_data.description,
             self.panel_x + 25,
             py + 65,
             self.PANEL_WIDTH - 50,

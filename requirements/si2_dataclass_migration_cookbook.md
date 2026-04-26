@@ -128,6 +128,20 @@ Before marking a migration done:
 
 - [ ] `pytest tests/test_compliance/` — scanner passes, allowlist is not stale
 - [ ] `ruff check spacegame/ tests/` — clean on touched files
-- [ ] `mypy spacegame/` — no new errors
+- [ ] **`mypy spacegame/` — no new errors. NON-NEGOTIABLE for migrations
+      that change a function's return type.** Stale `Optional[dict]`
+      annotations on cached fields in *caller* files won't surface in
+      pytest — runtime works fine until the affected code path actually
+      executes (e.g., a player opens the view). A playtester crashed on
+      this exact gap in the SI-2 Pass 2.3 `MinigameHint` migration:
+      `tutorial_overlay.py` cached `get_hint()`'s result in a field
+      typed `Optional[dict]`, and the consumer indexed it with
+      `["title"]`. The dataclass migration changed `get_hint`'s return
+      type but the cache field's annotation stayed dict, the dict
+      indexer kept type-checking, and the bug fired in production.
 - [ ] Full test suite runs — no broken fixtures
+- [ ] **Grep callers of any function whose return type changed** — not
+      just references to the underlying table. If `get_X()` used to
+      return `dict` and now returns `MyType`, search for `get_X(` and
+      audit every consumer.
 - [ ] Commit message cites this cookbook by path
