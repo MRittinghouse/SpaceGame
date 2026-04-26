@@ -84,6 +84,18 @@ _LAYOUT_TOP = scale_y(125)  # Below header card (HEADER_CARD_Y=10 + HEADER_CARD_
 _LAYOUT_BOTTOM = WINDOW_HEIGHT - _HUD_H - scale_y(75)  # Above chatter + HUD (tighter)
 _LAYOUT_H = _LAYOUT_BOTTOM - _LAYOUT_TOP
 
+# SL-1 (station_legibility.md): the layout area splits into an action grid
+# (above) and a Points of Interest footer strip (below) for `unique`-typed
+# locations that aren't currently mission-relevant. Subclass `build_zones`
+# methods place cards within the action grid; `build_strip_zones` (base
+# class) populates the strip.
+_POI_STRIP_H = scale_y(40)
+_POI_STRIP_GAP = scale_y(8)  # Gap between action grid and strip
+_ACTION_GRID_BOTTOM = _LAYOUT_BOTTOM - _POI_STRIP_H - _POI_STRIP_GAP
+_ACTION_GRID_H = _ACTION_GRID_BOTTOM - _LAYOUT_TOP
+_POI_STRIP_TOP = _ACTION_GRID_BOTTOM + _POI_STRIP_GAP
+_POI_STRIP_BOTTOM = _LAYOUT_BOTTOM
+
 
 @dataclass
 class StationZone:
@@ -106,15 +118,45 @@ class StationLayout:
     label_prefix: str = ""
     faction_tagline: str = ""  # Atmospheric motto displayed in layout
 
-    def __init__(self, locations: list, system_id: str) -> None:
+    def __init__(
+        self,
+        locations: list,
+        system_id: str,
+        elevated_location_ids: Optional[set[str]] = None,
+    ) -> None:
+        """Initialize the layout.
+
+        Args:
+            locations: All visitable locations at this station.
+            system_id: System identifier for faction lookup.
+            elevated_location_ids: `unique`-typed location IDs that should
+                stay in the main action grid rather than demote to the POI
+                footer strip. Computed by the caller (typically as the set
+                of unique IDs at this station when the system is mission-
+                relevant; empty otherwise). See SL-1 in
+                requirements/station_legibility.md.
+        """
         self.locations = locations
         self.system_id = system_id
+        self._elevated_ids: set[str] = elevated_location_ids or set()
+        # Split locations into action-grid-bound and strip-bound. A `unique`
+        # location goes to the strip unless it's in elevated_location_ids;
+        # all non-unique locations always go to the grid.
+        self._grid_locations: list = []
+        self._strip_locations: list = []
+        for loc in locations:
+            if loc.location_type == "unique" and loc.id not in self._elevated_ids:
+                self._strip_locations.append(loc)
+            else:
+                self._grid_locations.append(loc)
         self.zones: list[StationZone] = []
+        self.poi_zones: list[StationZone] = []
         self._label_font = get_font("label", FONT_XS)
         self._name_font = get_font("dialogue", FONT_BODY)
         self._section_font = get_font("label", FONT_SM)
         self._tooltip_font = get_font("dialogue", FONT_XS)
         self._tagline_font = get_font("narration", FONT_SM)
+        self._strip_font = get_font("label", FONT_XS)  # Smaller, dimmer strip text
         self._elapsed: float = 0.0
         self._entrance_timer: float = 0.0  # Fade-in on dock
 
@@ -126,6 +168,54 @@ class StationLayout:
         """Build zone rects for all locations. Override in subclasses."""
         self.zones = []
         return self.zones
+
+    def build_strip_zones(self, sprite_mgr: object) -> list[StationZone]:
+        """Build POI strip zones for demoted `unique`-typed locations.
+
+        Strip styling is uniform across faction layouts (the design intent
+        of SL-1: worldbuilding reads consistently as worldbuilding). Each
+        strip zone is a small horizontal slot with name and icon; the lore
+        tooltip on hover surfaces the full description and flavor text via
+        the existing `_render_zone_tooltip` path.
+
+        Args:
+            sprite_mgr: SpriteManager for loading icons.
+
+        Returns:
+            List of StationZone for the strip, populating `self.poi_zones`.
+        """
+        from spacegame.engine.sprites import res_scale
+
+        self.poi_zones = []
+        if not self._strip_locations:
+            return self.poi_zones
+
+        n = len(self._strip_locations)
+        margin_x = scale_x(60)
+        gap = scale_x(10)
+        max_zone_w = scale_x(220)
+        avail_w = WINDOW_WIDTH - margin_x * 2
+        zone_w = min(max_zone_w, (avail_w - (n - 1) * gap) // max(1, n))
+        total_w = n * zone_w + (n - 1) * gap
+        start_x = (WINDOW_WIDTH - total_w) // 2
+        zone_h = _POI_STRIP_H
+        y = _POI_STRIP_TOP
+
+        for i, loc in enumerate(self._strip_locations):
+            x = start_x + i * (zone_w + gap)
+            rect = pygame.Rect(x, y, zone_w, zone_h)
+            color = LOCATION_COLORS.get(loc.location_type, Colors.TEXT_SECONDARY)
+            icon = sprite_mgr.get_location_icon(loc.location_type, scale=res_scale(1))
+            self.poi_zones.append(
+                StationZone(
+                    location=loc,
+                    rect=rect,
+                    label=loc.name,
+                    accent_color=color,
+                    icon=icon,
+                )
+            )
+        return self.poi_zones
 
     def update(self, dt: float) -> None:
         """Update animations, entrance fade, and ambient particles."""
@@ -141,13 +231,23 @@ class StationLayout:
         self._ambient_particles = [p for p in self._ambient_particles if p["life"] > 0]
 
     def handle_hover(self, pos: tuple[int, int]) -> None:
-        """Update hover state on zones."""
+        """Update hover state on zones (action grid + POI strip)."""
         for zone in self.zones:
+            zone.hovered = zone.rect.collidepoint(pos)
+        for zone in self.poi_zones:
             zone.hovered = zone.rect.collidepoint(pos)
 
     def get_clicked_zone(self, pos: tuple[int, int]) -> Optional[StationZone]:
-        """Return the zone at the click position, or None."""
+        """Return the zone at the click position, or None.
+
+        Action-grid zones take priority over POI-strip zones when checking
+        click resolution (they don't overlap geometrically, so the order is
+        defensive).
+        """
         for zone in self.zones:
+            if zone.rect.collidepoint(pos):
+                return zone
+        for zone in self.poi_zones:
             if zone.rect.collidepoint(pos):
                 return zone
         return None
@@ -165,6 +265,48 @@ class StationLayout:
         for zone in self.zones:
             self._render_default_zone(screen, zone, alpha_mult)
 
+    def render_poi_strip(self, screen: pygame.Surface) -> None:
+        """Render the Points of Interest strip below the action grid.
+
+        Uniform styling across faction layouts: small dim cards with a
+        narrow horizontal layout. Hover tooltip surfaces the full lore
+        text via the shared `_render_zone_tooltip` path.
+        """
+        if not self.poi_zones:
+            return
+        alpha_mult = self._entrance_timer
+        for zone in self.poi_zones:
+            self._render_strip_zone(screen, zone, alpha_mult)
+
+    def _render_strip_zone(
+        self, screen: pygame.Surface, zone: StationZone, alpha_mult: float = 1.0
+    ) -> None:
+        """Render a single POI strip zone — small, dim, name + optional icon."""
+        r = zone.rect
+        bg_alpha = int((150 if zone.hovered else 80) * alpha_mult)
+        zone_surf = pygame.Surface((r.width, r.height), pygame.SRCALPHA)
+        zone_surf.fill((18, 22, 38, bg_alpha))
+        screen.blit(zone_surf, r.topleft)
+
+        # Subtle border (brighter on hover)
+        border_color = zone.accent_color if zone.hovered else (60, 70, 90)
+        pygame.draw.rect(screen, border_color, r, 1, border_radius=3)
+
+        text_x = r.x + 8
+        if zone.icon:
+            icon_y = r.y + (r.height - zone.icon.get_height()) // 2
+            screen.blit(zone.icon, (r.x + 6, icon_y))
+            text_x = r.x + 6 + zone.icon.get_width() + 6
+
+        # Name only — description lives in the hover tooltip.
+        # Lower contrast than action zones (lore-tier, not actionable).
+        name_color = Colors.TEXT_PRIMARY if zone.hovered else Colors.TEXT_SECONDARY
+        max_name_w = r.right - text_x - 8
+        name_text = truncate_text(zone.location.name, self._strip_font, max_name_w)
+        name_surf = self._strip_font.render(name_text, True, name_color)
+        name_y = r.y + (r.height - name_surf.get_height()) // 2
+        screen.blit(name_surf, (text_x, name_y))
+
     def render_atmosphere(self, screen: pygame.Surface) -> None:
         """Render ambient particles, tagline, and hover tooltips."""
         # Ambient particles
@@ -179,20 +321,24 @@ class StationLayout:
             pygame.draw.circle(ps, (*color, alpha), (size, size), size)
             screen.blit(ps, (int(p["x"]) - size, int(p["y"]) - size))
 
-        # Faction tagline (bottom of layout area, subtle)
+        # Faction tagline above the POI strip (was at _LAYOUT_BOTTOM pre-SL-1).
         if self.faction_tagline and self._entrance_timer >= 0.8:
             tag_alpha = int(60 * min(1.0, (self._entrance_timer - 0.8) / 0.2))
             tag_surf = self._tagline_font.render(self.faction_tagline, True, self.accent_color)
             tag_surf.set_alpha(tag_alpha)
             tag_x = WINDOW_WIDTH // 2 - tag_surf.get_width() // 2
-            tag_y = _LAYOUT_BOTTOM - scale_y(15)
+            tag_y = _ACTION_GRID_BOTTOM - scale_y(15)
             screen.blit(tag_surf, (tag_x, tag_y))
 
-        # Hover tooltip for the hovered zone
+        # Hover tooltip for the hovered zone (action grid OR POI strip).
         for zone in self.zones:
             if zone.hovered:
                 self._render_zone_tooltip(screen, zone)
-                break
+                return
+        for zone in self.poi_zones:
+            if zone.hovered:
+                self._render_zone_tooltip(screen, zone)
+                return
 
     @staticmethod
     def _wrap_text(text: str, font: pygame.font.Font, max_width: int) -> list[str]:
@@ -340,12 +486,18 @@ class StationLayout:
                 screen.blit(desc_surf, (text_x, desc_y + i * line_h))
 
     def _categorize_locations(self) -> dict[str, list]:
-        """Sort locations into upper/service/industrial categories."""
+        """Sort grid-bound locations into upper/service/industrial categories.
+
+        Operates on `self._grid_locations`, not `self.locations` — strip-bound
+        `unique` cards are excluded by construction. Mission-elevated unique
+        cards stay in the grid and land in the `service` category alongside
+        cantina and repair_bay.
+        """
         upper = []  # Commerce: market, shipyard, investment
-        service = []  # Services: cantina, repair, unique
+        service = []  # Services: cantina, repair, unique (when elevated)
         industrial = []  # Industrial: mining, salvaging, refining
 
-        for loc in self.locations:
+        for loc in self._grid_locations:
             lt = loc.location_type
             if lt in ("market", "shipyard", "investment"):
                 upper.append(loc)
@@ -487,9 +639,9 @@ class UnionBlueprintLayout(StationLayout):
 
         y = _LAYOUT_TOP + scale_y(10)
 
-        total_locations = len(self.locations)
+        total_locations = len(self._grid_locations)
 
-        for i, loc in enumerate(self.locations):
+        for i, loc in enumerate(self._grid_locations):
             row = i // cols
             col = i % cols
 
@@ -635,13 +787,13 @@ class CollectiveRadialLayout(StationLayout):
 
         self.zones = []
         cx = WINDOW_WIDTH // 2
-        cy = _LAYOUT_TOP + _LAYOUT_H // 2
-        radius = min(scale_x(280), _LAYOUT_H // 2 - scale_y(40))
+        cy = _LAYOUT_TOP + _ACTION_GRID_H // 2
+        radius = min(scale_x(280), _ACTION_GRID_H // 2 - scale_y(40))
         zone_w = scale_x(160)
         zone_h = scale_y(105)
 
-        n = len(self.locations)
-        for i, loc in enumerate(self.locations):
+        n = len(self._grid_locations)
+        for i, loc in enumerate(self._grid_locations):
             angle = -math.pi / 2 + (2 * math.pi * i / n)
             zx = cx + int(radius * math.cos(angle)) - zone_w // 2
             zy = cy + int(radius * math.sin(angle)) - zone_h // 2
@@ -669,7 +821,9 @@ class CollectiveRadialLayout(StationLayout):
         self._ambient_emit_timer += dt
         if self._ambient_emit_timer >= 0.3:
             self._ambient_emit_timer -= 0.3
-            cx, cy = getattr(self, "_center", (WINDOW_WIDTH // 2, _LAYOUT_TOP + _LAYOUT_H // 2))
+            cx, cy = getattr(
+                self, "_center", (WINDOW_WIDTH // 2, _LAYOUT_TOP + _ACTION_GRID_H // 2)
+            )
             angle = self._elapsed * 0.8 + _rng.uniform(0, math.pi * 2)
             r = getattr(self, "_radius", scale_x(200)) * _rng.uniform(0.3, 0.9)
             self._ambient_particles.append(
@@ -769,11 +923,12 @@ class FrontierScatteredLayout(StationLayout):
         margin = scale_x(50)
 
         placed: list[pygame.Rect] = []
-        for loc in self.locations:
-            # Try random positions, avoid overlap
+        for loc in self._grid_locations:
+            # Try random positions, avoid overlap. Scatter is bounded to the
+            # action-grid area so the POI strip below stays clean.
             for _ in range(50):
                 x = rng.randint(margin, WINDOW_WIDTH - margin - zone_w)
-                y = rng.randint(_LAYOUT_TOP + scale_y(10), _LAYOUT_BOTTOM - zone_h)
+                y = rng.randint(_LAYOUT_TOP + scale_y(10), _ACTION_GRID_BOTTOM - zone_h)
                 rect = pygame.Rect(x, y, zone_w, zone_h)
                 # Check overlap with placed zones
                 if not any(rect.inflate(10, 10).colliderect(p) for p in placed):
@@ -903,10 +1058,11 @@ class ReachDarkLayout(StationLayout):
         zone_h = scale_y(105)
         gap = scale_y(12)
         # Single column, centered, sparse
-        total_h = len(self.locations) * zone_h + (len(self.locations) - 1) * gap
-        start_y = _LAYOUT_TOP + (_LAYOUT_H - total_h) // 2
+        n = len(self._grid_locations)
+        total_h = n * zone_h + max(0, n - 1) * gap
+        start_y = _LAYOUT_TOP + (_ACTION_GRID_H - total_h) // 2
 
-        for i, loc in enumerate(self.locations):
+        for i, loc in enumerate(self._grid_locations):
             # Alternate left/right offset for asymmetry
             offset = scale_x(30) if i % 2 == 0 else scale_x(-30)
             x = (WINDOW_WIDTH - zone_w) // 2 + offset
@@ -1006,6 +1162,7 @@ def create_station_layout(
     locations: list,
     system_id: str,
     sprite_mgr: object,
+    elevated_location_ids: Optional[set[str]] = None,
 ) -> StationLayout:
     """Factory: create the appropriate layout for a system.
 
@@ -1013,12 +1170,18 @@ def create_station_layout(
         locations: List of Location objects at this system.
         system_id: System identifier for faction lookup.
         sprite_mgr: SpriteManager for loading icons.
+        elevated_location_ids: SL-1 — `unique`-typed location IDs that
+            should stay in the main action grid rather than demote to the
+            POI footer strip. Caller computes this (typically: all unique
+            IDs at this system if mission-relevant, else empty). When
+            None, all `unique` cards demote.
 
     Returns:
-        Initialized StationLayout with zones built.
+        Initialized StationLayout with action zones and POI strip both built.
     """
     layout_key = SYSTEM_LAYOUT_MAP.get(system_id, "reach")
     layout_cls = _LAYOUT_CLASSES.get(layout_key, ReachDarkLayout)
-    layout = layout_cls(locations, system_id)
+    layout = layout_cls(locations, system_id, elevated_location_ids=elevated_location_ids)
     layout.build_zones(sprite_mgr)
+    layout.build_strip_zones(sprite_mgr)
     return layout

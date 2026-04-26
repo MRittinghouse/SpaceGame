@@ -201,13 +201,18 @@ This is a content arc, not a layout sprint. It should run in parallel to or afte
 
 Six sprints. Sequenced so each builds on the prior without forward-dependency hazards.
 
-### SL-1 — Points of Interest strip
-- Add a POI footer strip region below the main card grid in `station_layouts.py`'s base class. Full-width, sits above the chatter band, narrow vertical extent.
-- Render `unique` locations in the strip by default, **except** when a `unique` card is the current mission objective — those render in the main action grid for SL-3 to highlight. The "is this a mission objective?" check is shared with SL-3.
-- Strip styling: smaller font, lower contrast, no flavor description visible (just name + small icon). Hover still surfaces the full lore tooltip via the existing `_render_zone_tooltip` path.
-- Update each of the five layout subclasses to specify where their strip sits. Frontier scatter is the trickiest — the strip lives in a clean row at the bottom even if the action grid above is scattered.
-- Acceptance: every station drops lore-only `unique` cards from the action grid. Mission-objective `unique` cards stay in the grid. Lore is still reachable from the strip. No layout regression at any of the six tested resolutions (per Sprint 3a's subprocess bounds harness).
-- Tests: extend `test_subprocess_bounds.py` to cover the strip region. Scenario tests for both branches: a `unique` location with no active mission renders in the strip; the same location with an active mission objective pointing to it renders in the main grid.
+### SL-1 — Points of Interest strip — SHIPPED 2026-04-26
+- POI footer strip added to `station_layouts.py` base class. Full-width, sits above the HUD/chatter band, ~40px vertical extent.
+- `unique` locations demote to the strip by default. **Mission-relevance is evaluated at the system level**, not per-location: per data audit (no mission targets sub-station location IDs as objectives), when a system has any active mission objective (REACH_SYSTEM or TALK_TO_NPC at an NPC whose home is here), ALL `unique` cards at that system stay in the main grid. The Fulcrum case is handled this way: campaign mission to `the_fulcrum` → all unique cards at the Fulcrum, including `fulcrum_core`, stay in the action grid.
+- Strip styling: smaller font, lower contrast, no description text in the card body. Hover surfaces the full lore tooltip via the existing `_render_zone_tooltip` path.
+- All five layout subclasses share base-class strip rendering. Strip is uniform across factions per design (the whole point: worldbuilding reads consistently as worldbuilding).
+- Frontier scatter handled — the random scatter is now bounded to the action-grid area, so the strip below stays clean.
+- API: `StationLayout.__init__` accepts `elevated_location_ids: set[str] | None`. Factory `create_station_layout()` accepts the same. View computes the set as either `{all unique IDs at this system}` (when relevant) or `set()` (when not).
+- New module: `spacegame/models/station_salience.py` with `is_system_mission_relevant`. SL-3 will extend this module with `get_recommended_card`.
+- Tests: 8 unit tests for `is_system_mission_relevant` + 30 layout demotion tests (parametrized over all 5 layout subclasses × 6 behaviors). Total +38 tests, full suite 8,186 passing.
+- Acceptance met: every station drops lore-only `unique` cards from the action grid; mission-relevant unique cards stay; lore reachable from the strip via hover.
+
+**Acceptance gap deferred**: extending `test_subprocess_bounds.py` to cover the strip region requires first folding `station_hub_view` into the bounds harness — which isn't currently one of the 16 views it exercises. Tracked as a follow-up; the parametrized layout tests cover the strip's geometry across all five faction layouts at default resolution and the full test suite catches structural regressions. Bounds-harness extension lands when station_hub gets harness coverage in a future UI sprint.
 
 ### SL-2 — Investment gating
 - Add credit-threshold logic: investment cards do not render until lifetime credits crossed (proposed: 25,000 CR).

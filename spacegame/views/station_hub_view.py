@@ -317,10 +317,39 @@ class StationHubView(BaseView):
             manager=self.ui_manager,
         )
 
-        # Create faction-specific station layout (replaces card buttons)
+        # Create faction-specific station layout (replaces card buttons).
+        # SL-1 (station_legibility.md): if the system has any active mission
+        # objective, all `unique`-typed locations stay in the main action
+        # grid. Otherwise they demote to the POI footer strip.
+        elevated_ids = self._compute_elevated_unique_ids()
         self._station_layout = create_station_layout(
-            self.locations, self.system.id, self._sprite_mgr
+            self.locations,
+            self.system.id,
+            self._sprite_mgr,
+            elevated_location_ids=elevated_ids,
         )
+
+    def _compute_elevated_unique_ids(self) -> set[str]:
+        """Return `unique`-location IDs that should stay in the main grid.
+
+        SL-1 rule: when this system is mission-relevant (any active mission
+        has an objective at this system), elevate all `unique` cards here.
+        Otherwise return an empty set (all `unique` cards demote to strip).
+
+        Per `requirements/station_legibility.md`'s data audit: mission
+        objectives don't target sub-station location IDs, so relevance is
+        evaluated at the system level.
+        """
+        from spacegame.models.station_salience import is_system_mission_relevant
+
+        npc_home_systems: dict[str, str] = {}
+        if self.data_loader is not None and hasattr(self.data_loader, "npcs"):
+            npc_home_systems = {
+                npc_id: npc.home_system_id for npc_id, npc in self.data_loader.npcs.items()
+            }
+        if not is_system_mission_relevant(self.mission_manager, self.system.id, npc_home_systems):
+            return set()
+        return {loc.id for loc in self.locations if loc.location_type == "unique"}
 
     def _create_denied_ui(self) -> None:
         """Create minimal UI for docking denial — only a Leave button."""
@@ -584,6 +613,7 @@ class StationHubView(BaseView):
         if self._station_layout:
             self._station_layout.render_background(screen)
             self._station_layout.render_zones(screen)
+            self._station_layout.render_poi_strip(screen)
             self._station_layout.render_atmosphere(screen)
 
         # Quest hints for objectives at this station
