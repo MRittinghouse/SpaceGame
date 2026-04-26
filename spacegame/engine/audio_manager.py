@@ -136,17 +136,36 @@ class AudioManager:
         self._config.ambient_volume = self._clamp(volume)
         self._apply_volumes()
 
+    @staticmethod
+    def _perceptual_curve(linear: float) -> float:
+        """Quadratic curve so slider 0-1 input feels perceptually linear.
+
+        Stored config values are LINEAR (matches slider position 0-1) so
+        round-trips preserve player intent. The curve is applied here at
+        output time, not at input time. Previous code applied the curve
+        in settings_view and stored the squared value, which compounded
+        on every save+load cycle — playtesters' sliders silently
+        collapsed toward 0.
+        """
+        return linear * linear
+
     def _effective_sfx_volume(self) -> float:
-        """Compute effective SFX volume (master * sfx)."""
-        return self._config.master_volume * self._config.sfx_volume
+        """Compute effective SFX volume (master * sfx, perceptually curved)."""
+        return self._perceptual_curve(
+            self._config.master_volume * self._config.sfx_volume
+        )
 
     def _effective_music_volume(self) -> float:
-        """Compute effective music volume (master * music * duck)."""
-        return self._config.master_volume * self._config.music_volume * self._music_duck
+        """Compute effective music volume (master * music * duck, perceptually curved)."""
+        return self._perceptual_curve(
+            self._config.master_volume * self._config.music_volume
+        ) * self._music_duck
 
     def _effective_ambient_volume(self) -> float:
-        """Compute effective ambient volume (master * ambient * duck)."""
-        return self._config.master_volume * self._config.ambient_volume * self._ambient_duck
+        """Compute effective ambient volume (master * ambient * duck, perceptually curved)."""
+        return self._perceptual_curve(
+            self._config.master_volume * self._config.ambient_volume
+        ) * self._ambient_duck
 
     def set_music_duck(self, factor: float) -> None:
         """Apply a ducking multiplier to music without changing user config.

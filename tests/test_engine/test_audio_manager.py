@@ -71,10 +71,12 @@ class TestAudioConfig:
     """AudioConfig dataclass defaults and behavior."""
 
     def test_default_volumes(self, config: AudioConfig) -> None:
+        # Defaults rebalanced (playtest feedback): SFX dropped + Ambient
+        # bumped so the mix favors atmosphere on cheap speakers.
         assert config.master_volume == 1.0
         assert config.music_volume == 0.7
-        assert config.sfx_volume == 0.9
-        assert config.ambient_volume == 0.6
+        assert config.sfx_volume == 0.55
+        assert config.ambient_volume == 0.65
 
     def test_custom_volumes(self) -> None:
         cfg = AudioConfig(master_volume=0.5, music_volume=0.3)
@@ -85,8 +87,8 @@ class TestAudioConfig:
         d = config.to_dict()
         assert d["master_volume"] == 1.0
         assert d["music_volume"] == 0.7
-        assert d["sfx_volume"] == 0.9
-        assert d["ambient_volume"] == 0.6
+        assert d["sfx_volume"] == 0.55
+        assert d["ambient_volume"] == 0.65
 
     def test_from_dict_roundtrip(self) -> None:
         original = AudioConfig(master_volume=0.8, sfx_volume=0.5)
@@ -156,19 +158,25 @@ class TestVolumeControl:
         assert manager._config.master_volume == 0.0
 
     def test_effective_sfx_volume(self, manager: AudioManager) -> None:
+        # Stored values are LINEAR (slider position 0-1); the perceptual
+        # quadratic curve is applied at output time. So
+        # ``_effective_sfx_volume = (master * sfx) ** 2``.
+        # 0.5 * 0.8 = 0.4 (linear) → 0.4**2 = 0.16 (perceptual).
         manager.set_master_volume(0.5)
         manager.set_sfx_volume(0.8)
-        assert manager._effective_sfx_volume() == pytest.approx(0.4)
+        assert manager._effective_sfx_volume() == pytest.approx(0.16)
 
     def test_effective_music_volume(self, manager: AudioManager) -> None:
+        # 0.5 * 0.6 = 0.3 (linear) → 0.3**2 = 0.09 (perceptual).
         manager.set_master_volume(0.5)
         manager.set_music_volume(0.6)
-        assert manager._effective_music_volume() == pytest.approx(0.3)
+        assert manager._effective_music_volume() == pytest.approx(0.09)
 
     def test_effective_ambient_volume(self, manager: AudioManager) -> None:
+        # 1.0 * 0.5 = 0.5 (linear) → 0.5**2 = 0.25 (perceptual).
         manager.set_master_volume(1.0)
         manager.set_ambient_volume(0.5)
-        assert manager._effective_ambient_volume() == pytest.approx(0.5)
+        assert manager._effective_ambient_volume() == pytest.approx(0.25)
 
     def test_get_config_returns_copy(self, manager: AudioManager) -> None:
         cfg = manager.get_config()
@@ -234,12 +242,14 @@ class TestAudioConfigPersistence:
     """AudioConfig serialization round-trip."""
 
     def test_to_dict_default_values(self) -> None:
+        # Defaults rebalanced (playtest feedback): SFX dropped + Ambient
+        # bumped so the mix favors atmosphere on cheap speakers.
         config = AudioConfig()
         d = config.to_dict()
         assert d["master_volume"] == 1.0
         assert d["music_volume"] == 0.7
-        assert d["sfx_volume"] == 0.9
-        assert d["ambient_volume"] == 0.6
+        assert d["sfx_volume"] == 0.55
+        assert d["ambient_volume"] == 0.65
 
     def test_round_trip(self) -> None:
         config = AudioConfig(
@@ -256,7 +266,7 @@ class TestAudioConfigPersistence:
         restored = AudioConfig.from_dict({"master_volume": 0.8})
         assert restored.master_volume == 0.8
         assert restored.music_volume == 0.7  # default
-        assert restored.sfx_volume == 0.9  # default
+        assert restored.sfx_volume == 0.55  # default
 
     def test_from_dict_empty_uses_all_defaults(self) -> None:
         restored = AudioConfig.from_dict({})

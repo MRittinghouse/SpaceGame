@@ -126,15 +126,29 @@ class Game:
         pygame.init()
         timer.end("pygame_init")
 
+        # Early-load saved display settings before set_mode so the
+        # player's previous fullscreen + resolution choice is honored.
+        # SaveManager init is lightweight (no pygame deps) so it's safe
+        # to instantiate this early. The full ``self.save_manager`` is
+        # the same instance — we just hoisted construction.
+        self.save_manager = SaveManager()
+        _early_settings = self.save_manager.load_settings()
+        _saved_fullscreen = bool(_early_settings.get("fullscreen", FULLSCREEN))
+        _saved_resolution = _early_settings.get("resolution")
+        if isinstance(_saved_resolution, list) and len(_saved_resolution) == 2:
+            _initial_window_size = (int(_saved_resolution[0]), int(_saved_resolution[1]))
+        else:
+            _initial_window_size = (WINDOW_WIDTH, WINDOW_HEIGHT)
+
         # Create window
         # PT-F: build_display_flags() composes SCALED + (RESIZABLE or
         # FULLSCREEN). pygame.SCALED handles rendering-to-window scaling
         # so scale_x/scale_y math stays valid regardless of window size.
         timer.begin("display_setup")
-        flags = build_display_flags(FULLSCREEN)
+        flags = build_display_flags(_saved_fullscreen)
 
         self.screen = pygame.display.set_mode(
-            (WINDOW_WIDTH, WINDOW_HEIGHT), flags=flags, vsync=1 if VSYNC else 0
+            _initial_window_size, flags=flags, vsync=1 if VSYNC else 0
         )
         pygame.display.set_caption(WINDOW_TITLE)
 
@@ -192,13 +206,15 @@ class Game:
         self._banner_font: Optional[pygame.font.Font] = None
         self._label_font: Optional[pygame.font.Font] = None
 
-        # Save/Load system
-        self.save_manager = SaveManager()
+        # Save/Load system — ``self.save_manager`` was created earlier
+        # (above ``set_mode``) so we could honor the player's saved
+        # display choice at startup. Reuse the same settings dict.
         self.playtime_start = time.time()
         self.total_playtime_seconds = 0
 
-        # Restore persisted audio settings
-        saved_settings = self.save_manager.load_settings()
+        # Restore persisted audio settings (uses the same dict loaded
+        # for display above; this avoids a redundant disk read).
+        saved_settings = _early_settings
         if "audio" in saved_settings:
             from spacegame.engine.audio_manager import AudioConfig
 
@@ -648,6 +664,25 @@ class Game:
         ensure_fn = ensure_map.get(state)
         if ensure_fn:
             ensure_fn()
+
+    def _apply_display_settings(self, width: int, height: int, fullscreen: bool) -> None:
+        """Apply a new display mode live (no game restart needed).
+
+        Used by the settings-Apply path and the F11 toggle. Calls
+        ``pygame.display.set_mode`` with the right flag composition.
+        ``pygame.SCALED`` keeps the logical canvas (``WINDOW_WIDTH`` x
+        ``WINDOW_HEIGHT``) intact; the new size only affects the
+        physical window dimensions, so layout code that references the
+        canvas constants keeps working.
+        """
+        flags = build_display_flags(fullscreen)
+        self.screen = pygame.display.set_mode(
+            (width, height), flags=flags, vsync=1 if VSYNC else 0
+        )
+        logger.info(
+            f"Display reconfigured live: {width}x{height} "
+            f"({'fullscreen' if fullscreen else 'windowed'})"
+        )
 
     def _set_pixel_cursor(self) -> None:
         """Set a custom 16x16 pixel art cursor matching the game aesthetic."""
@@ -3629,6 +3664,14 @@ class Game:
                 settings["resolution"] = display["resolution"]
                 settings["fullscreen"] = display["fullscreen"]
                 settings["show_objective_hint"] = display["show_objective_hint"]
+                # Apply display changes LIVE so the player doesn't need to
+                # restart. Earlier behavior wrote settings to disk and
+                # waited for restart, but the startup path also ignored
+                # them — so display settings were effectively no-ops.
+                res = display["resolution"]
+                self._apply_display_settings(
+                    int(res[0]), int(res[1]), bool(display["fullscreen"])
+                )
                 self.save_manager.save_settings(settings)
                 # PT-H: propagate objective-hint toggle to live HUD.
                 if self._cockpit_hud is not None:
@@ -5198,11 +5241,9 @@ class Game:
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_F11:
                     current_flags = self.screen.get_flags()
                     going_fullscreen = not bool(current_flags & pygame.FULLSCREEN)
-                    new_flags = build_display_flags(going_fullscreen)
-                    self.screen = pygame.display.set_mode(
-                        (WINDOW_WIDTH, WINDOW_HEIGHT),
-                        flags=new_flags,
-                        vsync=1 if VSYNC else 0,
+                    cur_size = self.screen.get_size()
+                    self._apply_display_settings(
+                        cur_size[0], cur_size[1], going_fullscreen
                     )
                     continue
 

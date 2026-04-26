@@ -12,6 +12,10 @@ import pygame
 import pygame_gui
 
 from spacegame.config import (
+    DEFAULT_AMBIENT_VOLUME,
+    DEFAULT_MASTER_VOLUME,
+    DEFAULT_MUSIC_VOLUME,
+    DEFAULT_SFX_VOLUME,
     FULLSCREEN,
     SUPPORTED_RESOLUTIONS,
     WINDOW_HEIGHT,
@@ -337,6 +341,10 @@ class SettingsView(BaseView):
                 self._selected_fullscreen = not self._selected_fullscreen
                 fs_label = "Fullscreen: ON" if self._selected_fullscreen else "Fullscreen: OFF"
                 self._fullscreen_button.set_text(fs_label)
+                # Bug fix: this handler used to forget to enable Apply,
+                # leaving the player unable to commit a fullscreen
+                # toggle unless they ALSO touched another setting first.
+                self.apply_button.enable()
 
             elif event.ui_element == self._objective_hint_button:
                 self._selected_objective_hint = not self._selected_objective_hint
@@ -348,8 +356,8 @@ class SettingsView(BaseView):
                 if self._objective_hint_button:
                     self._objective_hint_button.set_text(oh_label)
                 self.apply_button.enable()
-                if self._restart_label:
-                    self._restart_label.set_text("Restart required to apply display changes")
+                # No restart-required label needed — display changes
+                # apply live in game.py:_apply_display_settings.
 
             elif event.ui_element in self._resolution_buttons:
                 idx = self._resolution_buttons.index(event.ui_element)
@@ -361,8 +369,8 @@ class SettingsView(BaseView):
                     else:
                         btn.enable()
                 self.apply_button.enable()
-                if self._restart_label:
-                    self._restart_label.set_text("Restart required to apply display changes")
+                # No restart-required label needed — display changes
+                # apply live in game.py:_apply_display_settings.
 
             elif event.ui_element == self.back_button:
                 # Revert audio changes on cancel
@@ -393,11 +401,15 @@ class SettingsView(BaseView):
         elem_id = id(event.ui_element)
         if elem_id in slider_map:
             _name, setter, pct_obj_id = slider_map[elem_id]
-            # Apply logarithmic curve so volume changes feel perceptually linear.
-            # Linear sliders sound wrong because human hearing is logarithmic.
-            linear = event.value / 100.0
-            value = linear * linear  # Quadratic curve: gentle at top, steep near zero
-            setter(value)
+            # Store LINEAR slider position (0-1). The perceptual quadratic
+            # curve is applied inside ``audio_manager._effective_*_volume``
+            # at output time. Storing the raw slider value here means
+            # save→load→re-render round-trips preserve the player's chosen
+            # position. Earlier code applied the curve here AND stored the
+            # squared value; every save+reopen cycle re-squared the
+            # values until sliders collapsed to 0% (the playtester's
+            # screenshot was caused by this compounding).
+            setter(event.value / 100.0)
             self._audio_changed = True
             self.apply_button.enable()
 
@@ -474,21 +486,62 @@ class SettingsView(BaseView):
             logger.info("Tutorial reset for replay")
 
     def _reset_to_default(self) -> None:
-        """Reset save directory to default."""
+        """Reset all settings to factory defaults.
+
+        Earlier this only touched the save directory, which surprised
+        playtesters who expected Reset to revert their volume + display
+        choices too. Now resets the full surface: audio volumes, display
+        resolution + fullscreen, objective hint, AND save directory.
+        """
         import os
 
-        # Calculate default directory
+        # --- Audio: reset to factory defaults ---
+        audio = get_audio_manager()
+        audio.set_master_volume(DEFAULT_MASTER_VOLUME)
+        audio.set_music_volume(DEFAULT_MUSIC_VOLUME)
+        audio.set_sfx_volume(DEFAULT_SFX_VOLUME)
+        audio.set_ambient_volume(DEFAULT_AMBIENT_VOLUME)
+        # Re-position the sliders to match. start_value can't be set
+        # post-construction, so set the underlying value via
+        # ``set_current_value`` if the slider exists.
+        slider_defaults = {
+            self._master_slider: int(DEFAULT_MASTER_VOLUME * 100),
+            self._music_slider: int(DEFAULT_MUSIC_VOLUME * 100),
+            self._sfx_slider: int(DEFAULT_SFX_VOLUME * 100),
+            self._ambient_slider: int(DEFAULT_AMBIENT_VOLUME * 100),
+        }
+        for slider, value in slider_defaults.items():
+            if slider is not None:
+                slider.set_current_value(value)
+        self._audio_changed = True
+
+        # --- Display: reset resolution + fullscreen + objective hint ---
+        self._selected_resolution = (WINDOW_WIDTH, WINDOW_HEIGHT)
+        self._selected_fullscreen = FULLSCREEN
+        self._selected_objective_hint = True
+        if self._fullscreen_button:
+            self._fullscreen_button.set_text(
+                "Fullscreen: ON" if self._selected_fullscreen else "Fullscreen: OFF"
+            )
+        if self._objective_hint_button:
+            self._objective_hint_button.set_text(
+                "Objective Hint: ON" if self._selected_objective_hint else "Objective Hint: OFF"
+            )
+        # Re-sync the resolution buttons (disabled = currently selected).
+        for i, btn in enumerate(self._resolution_buttons):
+            if SUPPORTED_RESOLUTIONS[i] == self._selected_resolution:
+                btn.disable()
+            else:
+                btn.enable()
+
+        # --- Save directory: reset to platform default ---
         if os.name == "nt":  # Windows
             appdata = os.getenv("APPDATA")
             default_dir = Path(appdata) / "SpaceGame" / "saves"
         else:  # Unix/Mac
             home = Path.home()
             default_dir = home / ".spacegame" / "saves"
-
         self.new_save_dir = default_dir
-        logger.info(f"Reset to default save directory: {self.new_save_dir}")
-
-        # Update display
         panel_x = (WINDOW_WIDTH - scale_x(800)) // 2
         self.save_dir_display.kill()
         self.save_dir_display = pygame_gui.elements.UITextBox(
@@ -497,7 +550,7 @@ class SettingsView(BaseView):
             manager=self.ui_manager,
         )
 
-        # Enable apply button
+        logger.info("Reset all settings to factory defaults")
         self.apply_button.enable()
 
     def update(self, dt: float) -> None:

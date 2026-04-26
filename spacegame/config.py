@@ -625,10 +625,15 @@ MIXER_SIZE = -16  # 16-bit signed
 MIXER_CHANNELS = 2  # Stereo
 MIXER_BUFFER = 1024
 
+# Default audio mix tuned for narrative atmosphere on cheap laptop
+# speakers (playtest feedback). Values are LINEAR slider positions 0-1;
+# audio_manager applies the perceptual quadratic curve at output time.
+# Music slightly above ambient, SFX noticeably below — favors mood over
+# punch by default. Players can crank SFX up if they want it loud.
 DEFAULT_MASTER_VOLUME = 1.0
 DEFAULT_MUSIC_VOLUME = 0.7
-DEFAULT_SFX_VOLUME = 0.9
-DEFAULT_AMBIENT_VOLUME = 0.6
+DEFAULT_SFX_VOLUME = 0.55
+DEFAULT_AMBIENT_VOLUME = 0.65
 
 MUSIC_FADE_MS = 1000  # Default music cross-fade in milliseconds
 
