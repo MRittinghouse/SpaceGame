@@ -214,13 +214,19 @@ Six sprints. Sequenced so each builds on the prior without forward-dependency ha
 
 **Acceptance gap deferred**: extending `test_subprocess_bounds.py` to cover the strip region requires first folding `station_hub_view` into the bounds harness — which isn't currently one of the 16 views it exercises. Tracked as a follow-up; the parametrized layout tests cover the strip's geometry across all five faction layouts at default resolution and the full test suite catches structural regressions. Bounds-harness extension lands when station_hub gets harness coverage in a future UI sprint.
 
-### SL-2 — Investment gating
-- Add credit-threshold logic: investment cards do not render until lifetime credits crossed (proposed: 25,000 CR).
-- Author a small Cargo-Broker-led mission that introduces investment, sets `dialogue_flags["investment_introduced"]`, and unlocks the cards regardless of threshold.
-- Both gates are OR'd: card visible if either threshold met or flag set.
-- Per memory's flag registry rule: `investment_introduced` goes through `spacegame/constants/flags.py`.
-- Acceptance: a fresh save shows zero investment cards across all 11 systems until threshold or flag. After either trigger, all 10 investment cards become available.
-- Tests: scenario test in `tests/test_scenarios/` covering before-threshold, after-threshold, before-flag, after-flag, and combined states.
+### SL-2 — Investment gating — SHIPPED 2026-04-26 (gating mechanism, mission TBD)
+- Credit-threshold logic shipped: `is_investment_unlocked(player, threshold=25_000)` in `spacegame/models/station_salience.py`. Reads `player.credits_earned_lifetime` (existing field) and the `investment_introduced` dialogue flag.
+- `INVESTMENT_UNLOCK_CREDIT_THRESHOLD = 25_000` constant locked at 25k CR per the 2026-04-26 decision.
+- Flag helper `investment_introduced()` added to `spacegame/constants/flags.py` per the registry rule. Flag-string is the canonical `"investment_introduced"`.
+- Both gates OR'd: a player who crosses the credit threshold OR has the flag set sees investment cards.
+- View-level filter: `station_hub_view.__init__` filters `investment`-typed locations from the locations list before constructing the layout. Filter at `__init__` time so flavor-text rotation, layout zones, and any other downstream consumer all respect the gate.
+- Source data fact (corrected during SL-2): of the 11 systems, **10 have an investment card** (nexus_prime, stellaris_port, breakstone, iron_depths, forgeworks, axiom_labs, nova_research, havens_rest, verdant, crimson_reach). The one without is **the_fulcrum** (campaign-only military location). The earlier doc note saying "Crimson Reach has no investment card" was wrong. Both Crimson Reach and Verdant ship investment locations.
+- 19-case scenario test covers fresh-save lock across all 10 investment-bearing systems, threshold-boundary unlock (24,999 vs 25,000), flag-set unlock, the_fulcrum graceful no-op (locked + unlocked), and the falsy-flag-doesn't-unlock edge case.
+- Total tests: 8,186 → **8,205 passing** (+19) post-SL-2.
+
+**Mission deferred to SL-2b**: the Cargo-Broker introduction beat. The flag plumbing is in place to receive whatever sets it; no mission currently writes the flag, so unlock occurs only via the threshold gate today. A player crossing the threshold gets a silent unlock — no introduction. Authoring the mission is a content sprint and lands separately. The credit-gate mechanism alone is shippable and meets the immediate cognitive-load goal: a new player at hour one sees no investment cards.
+
+**Scanner gap surfaced during SL-2** (track separately): the SI-3 flag-integrity scanner in `tests/test_data/test_dialogue_integrity.py` introspects parameterized helpers in `spacegame/constants/flags.py` (e.g., `met_npc(npc_id)`) by calling them with sentinel values to discover prefix/suffix patterns. **No-arg helpers like `investment_introduced()` aren't introspectable by this method** — the call fails with TypeError when the scanner passes a sentinel arg. Result: the helper-routed consumer in `is_investment_unlocked` (which calls `dialogue_flags.get(investment_introduced(), False)`) is invisible to the scanner. Today this is fine because no producer exists either. **When SL-2b lands and the mission's `set_flag` action writes the flag, the flag will appear as a producer-only orphan** — the producer is detected (mission JSON) but the consumer isn't (helper not introspectable). At that point either (a) extend the scanner to handle no-arg helpers, or (b) add `investment_introduced` to `KNOWN_PRODUCER_ONLY_ORPHANS` with a comment. Tracked as a small follow-up alongside `writing_bible_scanner_gaps.md`.
 
 ### SL-3 — Salience layer (highlight one card)
 - Implement `get_recommended_card(player, system) -> Optional[tuple[location_id, source]]` in a new `spacegame/models/station_salience.py` module. Pure function reading existing state; no model changes. Source enum: `MISSION_OBJECTIVE` | `RECOMMENDATION`.
@@ -327,7 +333,7 @@ These gaps don't block SL-1 through SL-5. Tracked here so the connection isn't l
 ## Open questions
 
 - ~~The Fulcrum (4 cards, campaign location) plays by different rules.~~ **Resolved**: handled by the SL-1 conditional-demotion rule (a `unique` card stays in the main grid when it's the current mission objective). The Fulcrum's `fulcrum_core` is a campaign objective every time the player docks there, so it stays prominent.
-- Crimson Reach has no investment card. The credit-gate logic should handle this gracefully (no card appears regardless of state). Worth confirming during SL-2.
+- ~~Crimson Reach has no investment card.~~ **Resolved during SL-2 — that was wrong.** The system without an investment card is `the_fulcrum`. Crimson Reach has `crimson_reach_investment` ("Crimson Reach Salvage Op"). The graceful-no-op test now exercises `the_fulcrum`.
 - Do any existing missions assume the player has already noticed a `unique` card on some station? An audit of mission-objective text against `unique`-typed locations is a small task that should run before SL-1.
 - Should the POI strip include any non-`unique` content? E.g., pinned faction-information or "system overview" panels? Recommendation: not in SL-1. Keep the strip narrow in purpose. Revisit later.
 

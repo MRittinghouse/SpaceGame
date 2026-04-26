@@ -37,6 +37,7 @@ from spacegame.engine.fonts import (
 from spacegame.engine.sprites import get_sprite_manager, res_scale
 from spacegame.models.location import Location
 from spacegame.models.player import Player
+from spacegame.models.station_salience import is_investment_unlocked
 from spacegame.models.system import StarSystem
 from spacegame.utils.logger import logger
 from spacegame.views.base_view import BaseView
@@ -157,6 +158,13 @@ class StationHubView(BaseView):
         self.ui_manager = ui_manager
         self.player = player
         self.system = system
+        # SL-2 (station_legibility.md): investment cards are gated until the
+        # player crosses a lifetime-credits threshold OR has been introduced
+        # to investment via the Cargo-Broker mission. Filter at __init__ so
+        # the gate covers everything downstream (layout zones, flavor-text
+        # rotation, hub computations) — not just the layout build.
+        if not is_investment_unlocked(player):
+            locations = [loc for loc in locations if loc.location_type != "investment"]
         self.locations = locations
         self.activity_registry = activity_registry
         self.data_loader = data_loader

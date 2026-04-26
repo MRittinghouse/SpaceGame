@@ -44,7 +44,7 @@ def extract_tutorial_bought_part_id(flag_name: str) -> Optional[str]:
     this helper so the prefix lives in exactly one module.
     """
     if flag_name.startswith(_TUTORIAL_BOUGHT_PART_PREFIX):
-        return flag_name[len(_TUTORIAL_BOUGHT_PART_PREFIX):]
+        return flag_name[len(_TUTORIAL_BOUGHT_PART_PREFIX) :]
     return None
 
 
@@ -140,6 +140,31 @@ def dual_tech_revealed(tech_id: str) -> str:
     Consumers: combat engine (gates whether to emit the scene), tests.
     """
     return f"dual_tech_{tech_id}_revealed"
+
+
+# ---------------------------------------------------------------------------
+# Investment introduction
+# ---------------------------------------------------------------------------
+#
+# SL-2 (requirements/station_legibility.md). Set when the Cargo Broker
+# introduces investment to the player. Read by
+# ``models/station_salience.is_investment_unlocked`` to decide whether
+# investment-typed location cards render in the station hub. The flag
+# is one of two OR'd gates — the other is a credit threshold
+# (``INVESTMENT_UNLOCK_CREDIT_THRESHOLD``). Either gate unlocks the cards.
+
+
+def investment_introduced() -> str:
+    """Flag set when the Cargo Broker introduces investment to the player.
+
+    Producer: SL-2 introduction mission (Cargo-Broker dialogue beat,
+    sets the flag via ``set_flag`` action). Threshold-only unlocks do
+    NOT set this flag — a player who unlocks via credits never gets
+    the introduction beat unless the mission also fires.
+
+    Consumer: :func:`spacegame.models.station_salience.is_investment_unlocked`.
+    """
+    return "investment_introduced"
 
 
 # ---------------------------------------------------------------------------

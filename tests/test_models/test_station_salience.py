@@ -1,8 +1,15 @@
 """Tests for spacegame.models.station_salience.
 
 SL-1 (station_legibility.md): introduces system-mission relevance for
-`unique`-card demotion in the station hub view. SL-3 will extend this
-module with `get_recommended_card` for per-card cyan-glow highlighting.
+`unique`-card demotion in the station hub view.
+
+SL-2: investment-card gating. `investment`-typed cards do not render
+until the player crosses a credit threshold OR has been introduced to
+investment via the Cargo-Broker mission (sets the `investment_introduced`
+flag).
+
+SL-3 will extend this module with `get_recommended_card` for per-card
+cyan-glow highlighting.
 
 Mission objectives target *systems* (REACH_SYSTEM) or NPCs (TALK_TO_NPC,
 which resolves to the NPC's home system). No objective type targets a
@@ -13,6 +20,7 @@ locations at that system are elevated together.
 
 from __future__ import annotations
 
+from spacegame.constants.flags import investment_introduced
 from spacegame.models.mission import (
     Mission,
     MissionManager,
@@ -20,7 +28,11 @@ from spacegame.models.mission import (
     MissionStatus,
     ObjectiveType,
 )
-from spacegame.models.station_salience import is_system_mission_relevant
+from spacegame.models.station_salience import (
+    INVESTMENT_UNLOCK_CREDIT_THRESHOLD,
+    is_investment_unlocked,
+    is_system_mission_relevant,
+)
 
 
 def _make_manager(missions: list[Mission]) -> MissionManager:
@@ -118,3 +130,70 @@ class TestIsSystemMissionRelevant:
         assert is_system_mission_relevant(mgr, "iron_depths") is True
         assert is_system_mission_relevant(mgr, "the_fulcrum") is True
         assert is_system_mission_relevant(mgr, "nexus_prime") is False
+
+
+class _StubPlayer:
+    """Minimal player stub for is_investment_unlocked tests.
+
+    is_investment_unlocked reads only ``credits_earned_lifetime`` and
+    ``dialogue_flags``, so a full Player (which requires Ship + ShipType)
+    is unnecessary here. Tests exercising the full save/load chain or
+    flag wiring through MissionManager use the real Player elsewhere.
+    """
+
+    def __init__(self, lifetime: int = 0, flags: dict[str, bool] | None = None) -> None:
+        self.credits_earned_lifetime = lifetime
+        self.dialogue_flags: dict[str, bool] = flags or {}
+
+
+class TestIsInvestmentUnlocked:
+    """is_investment_unlocked — credit threshold OR introduction flag."""
+
+    def test_default_threshold_is_25k(self) -> None:
+        """SL-2 locked decision: 25,000 CR floor."""
+        assert INVESTMENT_UNLOCK_CREDIT_THRESHOLD == 25_000
+
+    def test_returns_false_for_fresh_save(self) -> None:
+        """Zero credits, no flag → locked."""
+        assert is_investment_unlocked(_StubPlayer()) is False
+
+    def test_returns_false_below_threshold_no_flag(self) -> None:
+        """24,999 lifetime credits is one short of 25,000 — still locked."""
+        assert is_investment_unlocked(_StubPlayer(lifetime=24_999)) is False
+
+    def test_returns_true_at_threshold_no_flag(self) -> None:
+        """Exactly 25,000 lifetime credits unlocks (boundary inclusive)."""
+        assert is_investment_unlocked(_StubPlayer(lifetime=25_000)) is True
+
+    def test_returns_true_above_threshold_no_flag(self) -> None:
+        """Comfortably above threshold → unlocked via credit gate."""
+        assert is_investment_unlocked(_StubPlayer(lifetime=50_000)) is True
+
+    def test_returns_true_below_threshold_with_flag(self) -> None:
+        """Cargo Broker mission has fired but credits are low → unlocked via flag."""
+        flags = {investment_introduced(): True}
+        assert is_investment_unlocked(_StubPlayer(lifetime=1_000, flags=flags)) is True
+
+    def test_returns_true_when_both_gates_met(self) -> None:
+        """Both gates true → unlocked (OR semantics, no toggle)."""
+        flags = {investment_introduced(): True}
+        assert is_investment_unlocked(_StubPlayer(lifetime=100_000, flags=flags)) is True
+
+    def test_custom_threshold_respected(self) -> None:
+        """Threshold is parametrizable for playtest tuning."""
+        assert is_investment_unlocked(_StubPlayer(lifetime=11_000), threshold=10_000) is True
+        assert is_investment_unlocked(_StubPlayer(lifetime=9_000), threshold=10_000) is False
+
+    def test_falsy_flag_value_does_not_unlock(self) -> None:
+        """A flag set to False (explicitly cleared) does not unlock."""
+        flags = {investment_introduced(): False}
+        assert is_investment_unlocked(_StubPlayer(lifetime=0, flags=flags)) is False
+
+
+class TestInvestmentIntroducedFlag:
+    """The flag-registry helper produces a stable string."""
+
+    def test_flag_name_is_canonical(self) -> None:
+        """Flag string is the SL-2 canonical name. Producer (mission) and
+        consumer (is_investment_unlocked) must agree on this exact value."""
+        assert investment_introduced() == "investment_introduced"
