@@ -228,13 +228,23 @@ Six sprints. Sequenced so each builds on the prior without forward-dependency ha
 
 **Scanner gap surfaced during SL-2** (track separately): the SI-3 flag-integrity scanner in `tests/test_data/test_dialogue_integrity.py` introspects parameterized helpers in `spacegame/constants/flags.py` (e.g., `met_npc(npc_id)`) by calling them with sentinel values to discover prefix/suffix patterns. **No-arg helpers like `investment_introduced()` aren't introspectable by this method** — the call fails with TypeError when the scanner passes a sentinel arg. Result: the helper-routed consumer in `is_investment_unlocked` (which calls `dialogue_flags.get(investment_introduced(), False)`) is invisible to the scanner. Today this is fine because no producer exists either. **When SL-2b lands and the mission's `set_flag` action writes the flag, the flag will appear as a producer-only orphan** — the producer is detected (mission JSON) but the consumer isn't (helper not introspectable). At that point either (a) extend the scanner to handle no-arg helpers, or (b) add `investment_introduced` to `KNOWN_PRODUCER_ONLY_ORPHANS` with a comment. Tracked as a small follow-up alongside `writing_bible_scanner_gaps.md`.
 
-### SL-3 — Salience layer (highlight one card)
-- Implement `get_recommended_card(player, system) -> Optional[tuple[location_id, source]]` in a new `spacegame/models/station_salience.py` module. Pure function reading existing state; no model changes. Source enum: `MISSION_OBJECTIVE` | `RECOMMENDATION`.
-- Hierarchy as defined in Lever 3.
-- Visual treatment: **reuse the cantina quest-receiver glow** (`_render_quest_receiver_glow` pattern from `cantina_view.py`, PT-016). Two-layer pulse: soft halo + crisp inner border, ~1Hz oscillation, alpha 100-240. Factor the pulse into a shared helper (proposed: `spacegame/views/_glow.py`) so cantina and station-hub both call into it.
-- Color rule: cyan `(100, 220, 255)` when source is `MISSION_OBJECTIVE` (matches cantina semantic); the card's own `accent_color` when source is `RECOMMENDATION`.
-- Acceptance: each player state in the hierarchy table produces the expected highlight on a fresh dock. Highlight does not cause performance regression (frame time unchanged within noise). Cantina's existing quest-receiver glow is identical in feel after the helper extraction.
-- Tests: unit tests for `get_recommended_card` covering each hierarchy branch. Visual regression check on the shared glow helper. Integration test for the visual-treatment hook in one layout (others are mechanical reuse). Snapshot test confirming cantina's PT-016 behavior is preserved post-refactor.
+### SL-3 — Salience layer (highlight one card) — SHIPPED 2026-04-26
+- `get_recommended_card(player, system_id, faction_id, locations, mission_manager, ...)` shipped in `spacegame/models/station_salience.py`. Pure function over the locked hierarchy. Returns `Optional[tuple[location_id, RecommendationSource]]`.
+- `RecommendationSource` enum: `MISSION_OBJECTIVE` | `RECOMMENDATION`.
+- Hierarchy implemented (first match wins):
+  1. **Mission objective** — TALK_TO_NPC objective whose NPC's home system is here → cantina, MISSION_OBJECTIVE source. (REACH_SYSTEM objectives don't suggest a card; player has already arrived and the objective auto-completes on dock.)
+  2. **Damaged hull** — strict less-than 70% (default `DAMAGED_HULL_THRESHOLD`) → repair_bay, RECOMMENDATION.
+  3. **Empty cargo** — no commodities held + station has market → market, RECOMMENDATION.
+  4. **First-faction visit** — no other system in this faction visited + station has cantina → cantina, RECOMMENDATION.
+  5. **Resource opportunity** — station has mining or salvaging → mining/salvaging, RECOMMENDATION.
+  6. **Investment** — `is_investment_unlocked` AND station has investment → investment, RECOMMENDATION.
+  7. None.
+- Shared visual helper: new `spacegame/views/_glow.py` exports `render_pulsing_glow(screen, rect, color, elapsed)`. Two-layer pattern (soft halo + crisp inner border), 1 Hz pulse, alpha 100-240. Identical parameters to PT-016.
+- `cantina_view._render_quest_receiver_glow` refactored to call the shared helper. PT-016 source-level tests still pass (12/12); behavior is visually identical to pre-extraction.
+- `station_hub_view` wires up: `_compute_recommendation()` runs once per dock in `_create_ui`. `_glow_time` ticks in `update`. `_render_recommendation_glow` paints the cyan or accent-color pulse on the matching action zone, between `render_zones` and `render_atmosphere` (so the hover tooltip stays on top).
+- Color rule: cyan `(100, 220, 255)` for `MISSION_OBJECTIVE`; the zone's `accent_color` for `RECOMMENDATION`.
+- 11 new unit tests for `get_recommended_card` covering each hierarchy branch, the no-match fallthrough, and the hierarchy ordering (mission > damage > cargo). Boundary case for the damage threshold tested.
+- Total tests: 8,215 → **8,228 passing** post-SL-3 (+13 net: +11 SL-3 unit + 2 tagging from existing-suite reordering).
 
 ### SL-4 — Action grid standardization
 - Define the canonical grid: deck-by-deck (upper / service / industrial), as Guild's current arrangement.

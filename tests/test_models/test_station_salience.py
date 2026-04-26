@@ -8,8 +8,12 @@ until the player crosses a credit threshold OR has been introduced to
 investment via the Cargo-Broker mission (sets the `investment_introduced`
 flag).
 
-SL-3 will extend this module with `get_recommended_card` for per-card
-cyan-glow highlighting.
+SL-3: `get_recommended_card` highlight selection. Pure function that
+walks a hierarchy (mission objective → damage → cargo → faction-first →
+resource opportunity → investment) and returns the most relevant card
+to glow. Source enum distinguishes mission-objective glows (cyan, same
+as the cantina PT-016 pattern) from broader recommendations (the card's
+own accent color).
 
 Mission objectives target *systems* (REACH_SYSTEM) or NPCs (TALK_TO_NPC,
 which resolves to the NPC's home system). No objective type targets a
@@ -21,6 +25,7 @@ locations at that system are elevated together.
 from __future__ import annotations
 
 from spacegame.constants.flags import investment_introduced
+from spacegame.models.location import Location
 from spacegame.models.mission import (
     Mission,
     MissionManager,
@@ -28,8 +33,12 @@ from spacegame.models.mission import (
     MissionStatus,
     ObjectiveType,
 )
+from spacegame.models.player import Player
+from spacegame.models.ship import Ship, ShipType
 from spacegame.models.station_salience import (
     INVESTMENT_UNLOCK_CREDIT_THRESHOLD,
+    RecommendationSource,
+    get_recommended_card,
     is_investment_unlocked,
     is_system_mission_relevant,
 )
@@ -197,3 +206,350 @@ class TestInvestmentIntroducedFlag:
         """Flag string is the SL-2 canonical name. Producer (mission) and
         consumer (is_investment_unlocked) must agree on this exact value."""
         assert investment_introduced() == "investment_introduced"
+
+
+# ---------------------------------------------------------------------------
+# SL-3: get_recommended_card hierarchy
+# ---------------------------------------------------------------------------
+
+
+def _make_ship_type(combat_hull: int = 100, cargo_capacity: int = 50) -> ShipType:
+    """Minimal ShipType for SL-3 tests that need real hull/cargo math."""
+    return ShipType(
+        id="test_shuttle",
+        name="Test Shuttle",
+        ship_class="light",
+        description="",
+        cargo_capacity=cargo_capacity,
+        fuel_capacity=100,
+        fuel_efficiency=1.0,
+        speed_multiplier=1.0,
+        purchase_price=0,
+        resale_value=0,
+        crew_slots=1,
+        special_abilities=[],
+        availability="all",
+        combat_hull=combat_hull,
+    )
+
+
+def _make_player(
+    *,
+    hull_pct: float = 1.0,
+    cargo: dict[str, int] | None = None,
+    systems_visited: set[str] | None = None,
+    lifetime_credits: int = 0,
+    flags: dict[str, bool] | None = None,
+) -> Player:
+    """Build a minimal Player with controllable hull, cargo, faction history."""
+    st = _make_ship_type()
+    ship = Ship(ship_type=st, current_fuel=100)
+    ship.current_hull = max(1, int(st.combat_hull * hull_pct))
+    if cargo is not None:
+        ship.current_cargo = dict(cargo)
+    p = Player(
+        name="Test",
+        credits=1000,
+        current_system_id="test_system",
+        ship=ship,
+    )
+    p.credits_earned_lifetime = lifetime_credits
+    if systems_visited is not None:
+        p.systems_visited = set(systems_visited)
+    if flags is not None:
+        p.dialogue_flags = dict(flags)
+    return p
+
+
+def _make_loc(loc_id: str, loc_type: str, system_id: str = "test_system") -> Location:
+    """Build a minimal Location."""
+    return Location(
+        id=loc_id,
+        name=f"Test {loc_id}",
+        location_type=loc_type,
+        description="",
+        flavor_text="",
+        system_id=system_id,
+    )
+
+
+# Locations on a typical mid-tier station — has every category we test against.
+def _full_station_locs(system_id: str = "test_system") -> list[Location]:
+    return [
+        _make_loc("test_market", "market", system_id),
+        _make_loc("test_repair", "repair_bay", system_id),
+        _make_loc("test_cantina", "cantina", system_id),
+        _make_loc("test_mining", "mining", system_id),
+        _make_loc("test_investment", "investment", system_id),
+    ]
+
+
+def _system_with_factions_visited(*systems: str) -> set[str]:
+    return set(systems)
+
+
+class TestGetRecommendedCard:
+    """Hierarchy: mission > damage > cargo > faction-first > resource > investment."""
+
+    def test_returns_none_when_no_relevant_state(self) -> None:
+        """Player healthy, has cargo, faction already visited, no missions →
+        no recommendation. The function must produce None rather than
+        defaulting to a card."""
+        player = _make_player(
+            hull_pct=1.0,
+            cargo={"test_commodity": 5},  # not empty
+            systems_visited={"test_system", "another_in_same_faction"},
+        )
+        # Locations include only neutral types so no resource branch fires.
+        locs = [
+            _make_loc("test_repair", "repair_bay"),
+            _make_loc("test_cantina", "cantina"),
+        ]
+        result = get_recommended_card(
+            player=player,
+            system_id="test_system",
+            faction_id="test_faction",
+            locations=locs,
+            mission_manager=None,
+        )
+        assert result is None
+
+    def test_mission_objective_returns_cantina_with_mission_source(self) -> None:
+        """TALK_TO_NPC with NPC at this system → cantina, MISSION_OBJECTIVE source."""
+        m = Mission(
+            id="m1",
+            name="Talk",
+            description="",
+            objectives=[
+                MissionObjective(
+                    type=ObjectiveType.TALK_TO_NPC,
+                    target_id="test_npc",
+                    description="Talk to test_npc",
+                )
+            ],
+        )
+        mgr = MissionManager([m])
+        mgr._status["m1"] = MissionStatus.ACTIVE
+        player = _make_player(cargo={"x": 1}, systems_visited={"test_system", "other"})
+        result = get_recommended_card(
+            player=player,
+            system_id="test_system",
+            faction_id="test_faction",
+            locations=_full_station_locs(),
+            mission_manager=mgr,
+            npc_home_systems={"test_npc": "test_system"},
+        )
+        assert result == ("test_cantina", RecommendationSource.MISSION_OBJECTIVE)
+
+    def test_damaged_hull_returns_repair_bay(self) -> None:
+        """Hull at 50% with repair_bay available → repair_bay, RECOMMENDATION."""
+        player = _make_player(
+            hull_pct=0.5,
+            cargo={"x": 1},
+            systems_visited={"test_system", "other"},
+        )
+        result = get_recommended_card(
+            player=player,
+            system_id="test_system",
+            faction_id="test_faction",
+            locations=_full_station_locs(),
+            mission_manager=None,
+        )
+        assert result == ("test_repair", RecommendationSource.RECOMMENDATION)
+
+    def test_damaged_hull_no_repair_bay_falls_through(self) -> None:
+        """Hull damaged but station has no repair_bay → next branch wins."""
+        player = _make_player(
+            hull_pct=0.5,
+            cargo={},  # empty → market branch
+            systems_visited={"test_system", "other"},
+        )
+        # Station has market but no repair_bay
+        locs = [_make_loc("test_market", "market"), _make_loc("test_cantina", "cantina")]
+        result = get_recommended_card(
+            player=player,
+            system_id="test_system",
+            faction_id="test_faction",
+            locations=locs,
+            mission_manager=None,
+        )
+        assert result == ("test_market", RecommendationSource.RECOMMENDATION)
+
+    def test_empty_cargo_returns_market(self) -> None:
+        """Empty cargo + market available → market, RECOMMENDATION."""
+        player = _make_player(
+            hull_pct=1.0,
+            cargo={},
+            systems_visited={"test_system", "other"},
+        )
+        result = get_recommended_card(
+            player=player,
+            system_id="test_system",
+            faction_id="test_faction",
+            locations=_full_station_locs(),
+            mission_manager=None,
+        )
+        assert result == ("test_market", RecommendationSource.RECOMMENDATION)
+
+    def test_first_faction_visit_returns_cantina(self) -> None:
+        """This is the only system in this faction → cantina, RECOMMENDATION.
+
+        Faction-first-visit is detected when the player has no other
+        systems-visited entries belonging to the same faction. A cantina
+        introduces the faction's NPCs.
+        """
+        player = _make_player(
+            hull_pct=1.0,
+            cargo={"x": 1},  # not empty (skips market branch)
+            systems_visited={"test_system"},  # this is the only system visited
+        )
+        locs = [
+            _make_loc("test_market", "market"),
+            _make_loc("test_cantina", "cantina"),
+        ]
+        result = get_recommended_card(
+            player=player,
+            system_id="test_system",
+            faction_id="test_faction",
+            locations=locs,
+            mission_manager=None,
+            faction_systems={"test_faction": {"test_system", "another_test_system"}},
+        )
+        assert result == ("test_cantina", RecommendationSource.RECOMMENDATION)
+
+    def test_faction_already_visited_skips_cantina_branch(self) -> None:
+        """Having visited another system in this faction → no faction-first branch."""
+        player = _make_player(
+            hull_pct=1.0,
+            cargo={"x": 1},
+            systems_visited={"test_system", "another_test_system"},
+        )
+        locs = [
+            _make_loc("test_market", "market"),
+            _make_loc("test_cantina", "cantina"),
+        ]
+        result = get_recommended_card(
+            player=player,
+            system_id="test_system",
+            faction_id="test_faction",
+            locations=locs,
+            mission_manager=None,
+            faction_systems={"test_faction": {"test_system", "another_test_system"}},
+        )
+        # No higher branch fires; faction-first doesn't apply → None.
+        assert result is None
+
+    def test_mining_system_returns_mining(self) -> None:
+        """Station has mining + cargo space → mining, RECOMMENDATION."""
+        player = _make_player(
+            hull_pct=1.0,
+            cargo={"x": 1},  # not empty (skips market)
+            systems_visited={"test_system", "other"},
+        )
+        locs = [
+            _make_loc("test_market", "market"),
+            _make_loc("test_mining", "mining"),
+        ]
+        result = get_recommended_card(
+            player=player,
+            system_id="test_system",
+            faction_id="test_faction",
+            locations=locs,
+            mission_manager=None,
+        )
+        assert result == ("test_mining", RecommendationSource.RECOMMENDATION)
+
+    def test_investment_unlocked_returns_investment(self) -> None:
+        """Investment unlocked (via threshold) + station has investment → investment."""
+        player = _make_player(
+            hull_pct=1.0,
+            cargo={"x": 1},
+            systems_visited={"test_system", "other"},
+            lifetime_credits=INVESTMENT_UNLOCK_CREDIT_THRESHOLD,
+        )
+        locs = [
+            _make_loc("test_market", "market"),
+            _make_loc("test_investment", "investment"),
+        ]
+        result = get_recommended_card(
+            player=player,
+            system_id="test_system",
+            faction_id="test_faction",
+            locations=locs,
+            mission_manager=None,
+        )
+        assert result == ("test_investment", RecommendationSource.RECOMMENDATION)
+
+    def test_investment_locked_does_not_recommend(self) -> None:
+        """Investment locked → no investment branch; falls through."""
+        player = _make_player(
+            hull_pct=1.0,
+            cargo={"x": 1},
+            systems_visited={"test_system", "other"},
+            lifetime_credits=0,
+        )
+        locs = [_make_loc("test_investment", "investment")]
+        result = get_recommended_card(
+            player=player,
+            system_id="test_system",
+            faction_id="test_faction",
+            locations=locs,
+            mission_manager=None,
+        )
+        assert result is None
+
+    def test_hierarchy_mission_beats_damage(self) -> None:
+        """Both mission objective and damaged hull active → mission wins."""
+        m = Mission(
+            id="m1",
+            name="Talk",
+            description="",
+            objectives=[
+                MissionObjective(
+                    type=ObjectiveType.TALK_TO_NPC,
+                    target_id="test_npc",
+                    description="",
+                )
+            ],
+        )
+        mgr = MissionManager([m])
+        mgr._status["m1"] = MissionStatus.ACTIVE
+        player = _make_player(
+            hull_pct=0.3, cargo={"x": 1}, systems_visited={"test_system", "other"}
+        )
+        result = get_recommended_card(
+            player=player,
+            system_id="test_system",
+            faction_id="test_faction",
+            locations=_full_station_locs(),
+            mission_manager=mgr,
+            npc_home_systems={"test_npc": "test_system"},
+        )
+        assert result == ("test_cantina", RecommendationSource.MISSION_OBJECTIVE)
+
+    def test_hierarchy_damage_beats_cargo(self) -> None:
+        """Damaged hull AND empty cargo → damage wins."""
+        player = _make_player(hull_pct=0.5, cargo={}, systems_visited={"test_system", "other"})
+        result = get_recommended_card(
+            player=player,
+            system_id="test_system",
+            faction_id="test_faction",
+            locations=_full_station_locs(),
+            mission_manager=None,
+        )
+        assert result == ("test_repair", RecommendationSource.RECOMMENDATION)
+
+    def test_damage_threshold_is_inclusive_of_70_percent(self) -> None:
+        """Hull at exactly 70% should NOT trigger repair (default threshold is < 0.7)."""
+        player = _make_player(
+            hull_pct=0.7, cargo={"x": 1}, systems_visited={"test_system", "other"}
+        )
+        result = get_recommended_card(
+            player=player,
+            system_id="test_system",
+            faction_id="test_faction",
+            locations=_full_station_locs(),
+            mission_manager=None,
+        )
+        # Hull at 70% is not damaged enough (strict <). Falls through.
+        assert result != ("test_repair", RecommendationSource.RECOMMENDATION)

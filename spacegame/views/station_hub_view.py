@@ -37,9 +37,14 @@ from spacegame.engine.fonts import (
 from spacegame.engine.sprites import get_sprite_manager, res_scale
 from spacegame.models.location import Location
 from spacegame.models.player import Player
-from spacegame.models.station_salience import is_investment_unlocked
+from spacegame.models.station_salience import (
+    RecommendationSource,
+    get_recommended_card,
+    is_investment_unlocked,
+)
 from spacegame.models.system import StarSystem
 from spacegame.utils.logger import logger
+from spacegame.views._glow import render_pulsing_glow
 from spacegame.views.base_view import BaseView
 from spacegame.views.layout import FACTION_COLORS as _FACTION_COLORS
 from spacegame.views.station_layouts import create_station_layout
@@ -184,6 +189,12 @@ class StationHubView(BaseView):
 
         # Detail panel (for unique locations)
         self._detail_location: Optional[Location] = None
+
+        # SL-3 (station_legibility.md): the cyan/accent glow on a single
+        # recommended card. Computed once per dock in _create_ui from
+        # player state; pulsed via _glow_time advanced in update().
+        self._glow_time: float = 0.0
+        self._recommendation: Optional[tuple[str, RecommendationSource]] = None
 
         # Faction color for header accent
         self._faction_color = _FACTION_COLORS.get(system.faction, Colors.TEXT_HIGHLIGHT)
@@ -335,6 +346,67 @@ class StationHubView(BaseView):
             self.system.id,
             self._sprite_mgr,
             elevated_location_ids=elevated_ids,
+        )
+
+        # SL-3: compute the single recommended card to glow.
+        self._recommendation = self._compute_recommendation()
+
+    # SL-3: cyan for mission-objective-driven highlights (matches the cantina
+    # PT-016 semantic — "the campaign points here"). The recommendation
+    # branch uses the card's own accent_color so the card itself feels
+    # like it's calling to the player.
+    _MISSION_OBJECTIVE_GLOW_COLOR: tuple[int, int, int] = (100, 220, 255)
+
+    def _render_recommendation_glow(self, screen: pygame.Surface) -> None:
+        """Render the SL-3 pulsing glow on the recommended action zone, if any.
+
+        Looks up the zone whose location ID matches `self._recommendation`
+        and paints the shared `render_pulsing_glow` helper around its
+        rect. Skips silently when no recommendation is active or the
+        zone isn't in the action grid (e.g., the recommendation pointed
+        at a card that ended up demoted to the POI strip — defensive
+        check; with current hierarchy logic this shouldn't happen).
+        """
+        if self._recommendation is None or self._station_layout is None:
+            return
+        target_id, source = self._recommendation
+        for zone in self._station_layout.zones:
+            if zone.location.id == target_id:
+                color = (
+                    self._MISSION_OBJECTIVE_GLOW_COLOR
+                    if source is RecommendationSource.MISSION_OBJECTIVE
+                    else zone.accent_color
+                )
+                render_pulsing_glow(screen, zone.rect, color, self._glow_time)
+                return
+
+    def _compute_recommendation(self) -> Optional[tuple[str, RecommendationSource]]:
+        """Compute the SL-3 highlight target for this dock, or None.
+
+        Pulls NPC home systems and faction-system mappings from the data
+        loader and delegates to `get_recommended_card`. Result is cached
+        for the duration of the dock — recomputing every frame is
+        unnecessary because none of the inputs change while the player
+        sits at the station hub.
+        """
+        npc_home_systems: dict[str, str] = {}
+        faction_systems: dict[str, set[str]] = {}
+        if self.data_loader is not None:
+            if hasattr(self.data_loader, "npcs"):
+                npc_home_systems = {
+                    npc_id: npc.home_system_id for npc_id, npc in self.data_loader.npcs.items()
+                }
+            if hasattr(self.data_loader, "systems"):
+                for sid, sys_obj in self.data_loader.systems.items():
+                    faction_systems.setdefault(sys_obj.faction, set()).add(sid)
+        return get_recommended_card(
+            player=self.player,
+            system_id=self.system.id,
+            faction_id=self.system.faction,
+            locations=self.locations,
+            mission_manager=self.mission_manager,
+            npc_home_systems=npc_home_systems,
+            faction_systems=faction_systems,
         )
 
     def _compute_elevated_unique_ids(self) -> set[str]:
@@ -594,6 +666,8 @@ class StationHubView(BaseView):
     def update(self, dt: float) -> None:
         """Update background animation, layout hover, and flavor text rotation."""
         self.background.update(dt)
+        # SL-3: advance the salience pulse timer.
+        self._glow_time += dt
         if self._station_layout:
             self._station_layout.handle_hover(pygame.mouse.get_pos())
             self._station_layout.update(dt)
@@ -622,6 +696,10 @@ class StationHubView(BaseView):
             self._station_layout.render_background(screen)
             self._station_layout.render_zones(screen)
             self._station_layout.render_poi_strip(screen)
+            # SL-3: pulsing glow around the recommended action card.
+            # Painted between zones and atmosphere so the tooltip in
+            # render_atmosphere sits on top.
+            self._render_recommendation_glow(screen)
             self._station_layout.render_atmosphere(screen)
 
         # Quest hints for objectives at this station

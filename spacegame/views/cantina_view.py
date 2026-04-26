@@ -20,12 +20,13 @@ from spacegame.config import (
 from spacegame.engine.audio_manager import get_audio_manager
 from spacegame.engine.backgrounds import AnimatedBackground
 from spacegame.engine.draw_utils import draw_panel
-from spacegame.engine.fonts import FONT_BODY, FONT_HEADING, FONT_MD, FONT_SM, get_font
+from spacegame.engine.fonts import FONT_BODY, FONT_HEADING, FONT_MD, get_font
 from spacegame.engine.tooltip import TooltipState
 from spacegame.models.location import Location
 from spacegame.models.player import Player
 from spacegame.models.system import StarSystem
 from spacegame.utils.logger import logger
+from spacegame.views._glow import render_pulsing_glow
 from spacegame.views.base_view import BaseView
 
 # Layout constants
@@ -354,35 +355,20 @@ class CantinaView(BaseView):
         self._render_contract_tooltip(screen)
 
     def _render_quest_receiver_glow(self, screen: pygame.Surface) -> None:
-        """Pulsing cyan outline around NPC buttons that receive active quests."""
+        """Pulsing cyan outline around NPC buttons that receive active quests.
+
+        Visual treatment factored to ``spacegame.views._glow.render_pulsing_glow``
+        for SL-3 (station_legibility.md) so the station hub view shares the
+        same vocabulary. Behavior is identical to the pre-extraction PT-016
+        implementation; the helper accepts the same color and timing inputs.
+        """
         if not self._quest_receiver_npc_ids:
             return
-        import math
-
-        # Oscillate alpha between 120 and 220 at ~1 Hz
-        pulse = int(170 + 50 * math.sin(self._glow_time * 2 * math.pi))
-        pulse = max(100, min(240, pulse))
         for npc_id in self._quest_receiver_npc_ids:
             btn = self._npc_buttons.get(npc_id)
             if btn is None:
                 continue
-            rect = btn.rect.copy()
-            # Two-layer glow: outer soft halo + inner crisp border
-            halo = pygame.Surface((rect.width + 8, rect.height + 8), pygame.SRCALPHA)
-            pygame.draw.rect(
-                halo,
-                (100, 220, 255, pulse // 3),
-                halo.get_rect(),
-                border_radius=6,
-            )
-            pygame.draw.rect(
-                halo,
-                (100, 220, 255, pulse),
-                halo.get_rect().inflate(-4, -4),
-                width=2,
-                border_radius=4,
-            )
-            screen.blit(halo, (rect.x - 4, rect.y - 4))
+            render_pulsing_glow(screen, btn.rect, (100, 220, 255), self._glow_time)
 
     def _render_header(self, screen: pygame.Surface) -> None:
         """Render header card with cantina name and description."""
