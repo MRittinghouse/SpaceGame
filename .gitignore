@@ -64,3 +64,9 @@ nul
 .qodo/
 scratch/
 spacegame/data/_theme_scaled.json
+
+# Ralph harness runtime
+ralph/logs/*
+!ralph/logs/.gitkeep
+ralph/state.json
+STOP
