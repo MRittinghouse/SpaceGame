@@ -22,7 +22,7 @@ from pathlib import Path
 from typing import Optional
 
 from ralph import agents, roadmap_state
-from ralph.agents import Outcome, Phase, PhaseResult
+from ralph.agents import Outcome, Phase, PhaseContext, PhaseResult
 from ralph.config import (
     DEFAULT_MAX_SPRINTS_PER_RUN,
     DRY_RUN,
@@ -156,8 +156,16 @@ def log(msg: str) -> None:
 # ---------------------------------------------------------------------------
 
 
-def execute_sprint(sprint_id: str, state: HarnessState) -> Outcome:
+def execute_sprint(
+    sprint_id: str,
+    state: HarnessState,
+    test_baseline: tuple[int, int] = (0, 0),
+) -> Outcome:
     """Run plan → (implement → review) cycles for one sprint.
+
+    test_baseline: (passing, skipped) counts captured before this sprint.
+    Threaded through to agents as PhaseContext so they can detect NEW
+    failures (item L).
 
     Returns the final Outcome (OK, BLOCKED, TIMEOUT, ERROR).
     """
@@ -165,13 +173,19 @@ def execute_sprint(sprint_id: str, state: HarnessState) -> Outcome:
     sprint_state.started_at = sprint_state.started_at or datetime.now().isoformat()
     sprint_state.last_touched_at = datetime.now().isoformat()
 
+    base_pass, base_skip = test_baseline
+    phase_context = PhaseContext(
+        test_baseline_passing=base_pass,
+        test_baseline_skipped=base_skip,
+    )
+
     # ---- Phase 1: Plan ----
     log(f"{sprint_id}: phase=plan starting")
     roadmap_state.update_status(sprint_id, STATUS_PLANNING)
     roadmap_state.append_activity_log(
         sprint_id, "harness: plan phase starting"
     )
-    plan_result = agents.run_phase(Phase.PLAN, sprint_id)
+    plan_result = agents.run_phase(Phase.PLAN, sprint_id, context=phase_context)
     sprint_state.plan_runs += 1
     sprint_state.last_phase = "plan"
     sprint_state.last_outcome = plan_result.outcome.value
@@ -205,7 +219,7 @@ def execute_sprint(sprint_id: str, state: HarnessState) -> Outcome:
             sprint_id,
             f"harness: implement phase starting (rework cycle {sprint_state.rework_cycles})",
         )
-        impl_result = agents.run_phase(Phase.IMPLEMENT, sprint_id)
+        impl_result = agents.run_phase(Phase.IMPLEMENT, sprint_id, context=phase_context)
         sprint_state.implement_runs += 1
         sprint_state.last_phase = "implement"
         sprint_state.last_outcome = impl_result.outcome.value
@@ -238,7 +252,7 @@ def execute_sprint(sprint_id: str, state: HarnessState) -> Outcome:
             sprint_id,
             f"harness: review phase starting (rework cycle {sprint_state.rework_cycles})",
         )
-        review_result = agents.run_phase(Phase.REVIEW, sprint_id)
+        review_result = agents.run_phase(Phase.REVIEW, sprint_id, context=phase_context)
         sprint_state.review_runs += 1
         sprint_state.last_phase = "review"
         sprint_state.last_outcome = review_result.outcome.value
@@ -297,6 +311,46 @@ def execute_sprint(sprint_id: str, state: HarnessState) -> Outcome:
 # ---------------------------------------------------------------------------
 # Main loop
 # ---------------------------------------------------------------------------
+
+
+def _capture_test_baseline() -> tuple[int, int]:
+    """Run pytest -q to capture the current test pass/skip baseline.
+
+    Returns (passing, skipped). On failure to run pytest, returns (0, 0)
+    and the prompt addendum is suppressed (the agent runs with no
+    baseline rather than a misleading one).
+
+    This is item L: a known baseline so agents can detect NEW failures
+    without freaking out about pre-existing ones.
+    """
+    import re as _re
+
+    try:
+        result = subprocess.run(
+            [sys.executable, "-m", "pytest", "-n", "auto", "-q", "--no-header"],
+            cwd=str(PROJECT_ROOT),
+            capture_output=True,
+            text=True,
+            timeout=600,
+            encoding="utf-8",
+            errors="replace",
+        )
+    except (FileNotFoundError, subprocess.TimeoutExpired):
+        return 0, 0
+
+    # Last "N passed, M skipped" line in pytest -q output.
+    out = result.stdout + result.stderr
+    pass_count = 0
+    skip_count = 0
+    for line in reversed(out.splitlines()):
+        m = _re.search(r"(\d+) passed", line)
+        if m:
+            pass_count = int(m.group(1))
+            m2 = _re.search(r"(\d+) skipped", line)
+            if m2:
+                skip_count = int(m2.group(1))
+            break
+    return pass_count, skip_count
 
 
 def _run_git(args: list[str], timeout: int = 30) -> tuple[int, str, str]:
@@ -546,6 +600,80 @@ def _recover_stuck_sprints(state: "HarnessState") -> int:
 # ---------------------------------------------------------------------------
 
 
+def _write_sprint_summary(
+    sprint_id: str,
+    state: "HarnessState",
+    final_outcome: Outcome,
+) -> None:
+    """Write a per-sprint summary to ralph/logs/<SPRINT-ID>/SUMMARY.md.
+
+    Pulls from state.json (per-phase counts, timestamps) and from git
+    log (commits made during the sprint window). Provides a postmortem-
+    friendly snapshot for human review of completed or blocked sprints.
+    """
+    sprint_state = state.sprints.get(sprint_id)
+    summary_dir = LOGS_DIR / sprint_id
+    summary_dir.mkdir(parents=True, exist_ok=True)
+    summary_path = summary_dir / "SUMMARY.md"
+
+    started = sprint_state.started_at if sprint_state else None
+    finished = datetime.now().isoformat()
+
+    # Pull commits made since started — best-effort.
+    commits_block = ""
+    if started:
+        try:
+            since_arg = started
+            rc, stdout, _stderr = _run_git(
+                ["log", "--oneline", f"--since={since_arg}"], timeout=10
+            )
+            if rc == 0:
+                # Filter for commits referencing this sprint ID.
+                relevant = [
+                    line
+                    for line in stdout.splitlines()
+                    if sprint_id in line
+                ]
+                if relevant:
+                    commits_block = "\n".join(f"- {line}" for line in relevant)
+        except Exception:
+            pass
+
+    # Latest log files per phase.
+    log_links: list[str] = []
+    if summary_dir.exists():
+        for log_file in sorted(summary_dir.glob("*.log")):
+            log_links.append(f"- [{log_file.name}]({log_file.name})")
+
+    body = [
+        f"# Sprint summary: {sprint_id}",
+        "",
+        f"**Final outcome**: {final_outcome.value}",
+        f"**Started**: {started or 'unknown'}",
+        f"**Finished**: {finished}",
+        "",
+        "## Phase iterations",
+        "",
+        f"- Plan runs: {sprint_state.plan_runs if sprint_state else 0}",
+        f"- Implement runs: {sprint_state.implement_runs if sprint_state else 0}",
+        f"- Review runs: {sprint_state.review_runs if sprint_state else 0}",
+        f"- Rework cycles: {sprint_state.rework_cycles if sprint_state else 0}",
+        f"- Last phase: {sprint_state.last_phase if sprint_state else 'n/a'}",
+        f"- Last outcome: {sprint_state.last_outcome if sprint_state else 'n/a'}",
+        "",
+    ]
+    if commits_block:
+        body.extend(["## Commits", "", commits_block, ""])
+    if log_links:
+        body.extend(["## Phase logs", "", *log_links, ""])
+    body.append(
+        "Generated by the ralph harness on sprint termination. See "
+        "`requirements/roadmap/ROADMAP.md` for the sprint section + "
+        "Activity log."
+    )
+    summary_path.write_text("\n".join(body), encoding="utf-8")
+
+
 def _push_after_sprint(sprint_id: str, outcome: Outcome, push_enabled: bool) -> None:
     """Push current branch to origin after sprint completion.
 
@@ -601,6 +729,11 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Don't auto-reset stuck-in-progress sprints from prior runs.",
     )
+    p.add_argument(
+        "--skip-baseline",
+        action="store_true",
+        help="Don't capture pre-run test baseline. Faster startup; agents won't know the test count target.",
+    )
     return p.parse_args()
 
 
@@ -640,9 +773,21 @@ def main() -> int:
             if recovered:
                 log(f"Recovered {recovered} stuck sprint(s) from prior run.")
 
+        # Test baseline (item L). Captured once at startup; refreshed
+        # after every successful sprint so the baseline tracks the
+        # growing test count.
+        test_baseline = (0, 0)
+        if not args.dry_run and not DRY_RUN and not args.skip_baseline:
+            log("Capturing test-suite baseline (this can take a minute)...")
+            test_baseline = _capture_test_baseline()
+            log(
+                f"Baseline: {test_baseline[0]} passing, {test_baseline[1]} skipped."
+            )
+
         log(
             f"Harness starting. max_sprints={args.max_sprints} "
-            f"dry_run={DRY_RUN or args.dry_run} push={push_enabled}"
+            f"dry_run={DRY_RUN or args.dry_run} push={push_enabled} "
+            f"baseline={test_baseline[0]}p/{test_baseline[1]}s"
         )
         if args.sprint:
             log(f"Forced sprint pickup: {args.sprint}")
@@ -686,11 +831,41 @@ def main() -> int:
                 picked = eligible[0]
 
             log(f"Picking up sprint {picked.sprint_id}: {picked.title}")
-            outcome = execute_sprint(picked.sprint_id, state)
+            outcome = execute_sprint(
+                picked.sprint_id, state, test_baseline=test_baseline
+            )
             sprints_processed += 1
             state.total_sprints_processed += 1
             state.save()
             log(f"Sprint {picked.sprint_id} finished with outcome={outcome.value}")
+
+            # Refresh baseline after a successful sprint (item L).
+            if (
+                outcome == Outcome.OK
+                and not args.dry_run
+                and not DRY_RUN
+                and not args.skip_baseline
+            ):
+                new_baseline = _capture_test_baseline()
+                if new_baseline[0] > 0:
+                    log(
+                        f"Refreshed baseline: {new_baseline[0]} passing "
+                        f"(was {test_baseline[0]}), {new_baseline[1]} skipped."
+                    )
+                    test_baseline = new_baseline
+
+            # Per-sprint summary (item G).
+            try:
+                _write_sprint_summary(picked.sprint_id, state, outcome)
+            except OSError as e:
+                log(f"{picked.sprint_id}: could not write SUMMARY.md: {e}")
+
+            # Index regen (item J). Best-effort: failure here is non-fatal.
+            try:
+                if roadmap_state.regenerate_index():
+                    log(f"{picked.sprint_id}: regenerated SA-arc index")
+            except Exception as e:
+                log(f"{picked.sprint_id}: index regen failed: {e}")
 
             # Auto-push (item A) after sprint completion.
             _push_after_sprint(picked.sprint_id, outcome, push_enabled)

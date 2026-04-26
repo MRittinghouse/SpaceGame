@@ -38,6 +38,13 @@ _SPRINT_HEADER_RE = re.compile(
 # sub-state, e.g., `in-progress (planning)`).
 _STATUS_LINE_RE = re.compile(r"^\*\*Status\*\*:\s*(.+?)\s*$", re.MULTILINE)
 
+# Phase line: `**Phase**: Phase I — Cluster B Anchors | **Size**: L | ...`
+_PHASE_RE = re.compile(r"\*\*Phase\*\*:\s*(.+?)\s*\|", re.MULTILINE)
+_PHASE_RE_END = re.compile(r"\*\*Phase\*\*:\s*(.+?)\s*$", re.MULTILINE)
+
+# Size line: `**Size**: L` or in metadata line `| **Size**: L |`.
+_SIZE_RE = re.compile(r"\*\*Size\*\*:\s*([SMLX]+)", re.MULTILINE)
+
 # Depends-on line. Captures the comma-separated list (or "none").
 _DEPENDS_RE = re.compile(r"^\*\*Depends on\*\*:\s*(.+?)\s*\|", re.MULTILINE)
 _DEPENDS_RE_END = re.compile(r"^\*\*Depends on\*\*:\s*(.+?)\s*$", re.MULTILINE)
@@ -54,6 +61,8 @@ class Sprint:
     title: str
     status: str
     depends_on: list[str] = field(default_factory=list)
+    phase: str = ""
+    size: str = ""
     section_start: int = 0  # byte offset of `### SA-1 ...`
     section_end: int = 0  # byte offset of next `### ` or `## `
 
@@ -117,11 +126,19 @@ def parse_sprints_from_text(content: str) -> dict[str, Sprint]:
             if raw.lower() != "none":
                 depends_on = [tok.strip() for tok in raw.split(",") if tok.strip()]
 
+        phase_match = _PHASE_RE.search(section_text) or _PHASE_RE_END.search(section_text)
+        phase = phase_match.group(1).strip() if phase_match else ""
+
+        size_match = _SIZE_RE.search(section_text)
+        size = size_match.group(1).strip() if size_match else ""
+
         sprints[sprint_id] = Sprint(
             sprint_id=sprint_id,
             title=title,
             status=status,
             depends_on=depends_on,
+            phase=phase,
+            size=size,
             section_start=section_start,
             section_end=section_end,
         )
@@ -336,6 +353,9 @@ def validate_post_agent(
         )
 
     # Check 3: no non-claimed existing sprint was modified.
+    # Compare section text after stripping trailing whitespace, because
+    # section_end byte offsets shift when new sprints are appended at end-of-file
+    # even though the actual content of the existing sprint didn't change.
     modified_violations: list[str] = []
     for sid in snap_sprints:
         if sid == claimed_sprint_id:
@@ -344,10 +364,10 @@ def validate_post_agent(
             continue  # Already covered by deletion check above.
         snap_section = snapshot[
             snap_sprints[sid].section_start : snap_sprints[sid].section_end
-        ]
+        ].rstrip()
         curr_section = current_text[
             curr_sprints[sid].section_start : curr_sprints[sid].section_end
-        ]
+        ].rstrip()
         if snap_section != curr_section:
             modified_violations.append(sid)
     if modified_violations:
@@ -362,3 +382,74 @@ def validate_post_agent(
         raise RoadmapValidationError(
             f"agent added new sprints in a phase that disallows it: {sorted(new_sprints)}"
         )
+
+
+# ---------------------------------------------------------------------------
+# Index regeneration (item J)
+# ---------------------------------------------------------------------------
+
+# Markers around the auto-generated SA-arc index table. Anything between
+# is replaced by `regenerate_index()`. Followups index stays
+# hand-maintained because some columns (e.g., "Source") aren't structural.
+_INDEX_MARKER_START = "<!-- AUTO_GENERATED_SA_INDEX_START -->"
+_INDEX_MARKER_END = "<!-- AUTO_GENERATED_SA_INDEX_END -->"
+
+
+def _build_sa_index_table(sprints: dict[str, Sprint]) -> str:
+    """Build the markdown table of SA-prefixed sprints in document order."""
+    sa_sprints = [s for s in sprints.values() if s.sprint_id.startswith("SA-")]
+    sa_sprints.sort(key=lambda s: s.section_start)
+
+    lines = [
+        "| ID | Title | Phase | Size | Status | Depends on |",
+        "|---|---|---|---|---|---|",
+    ]
+    for s in sa_sprints:
+        anchor_slug = s.sprint_id.lower()
+        title_slug = re.sub(r"[^a-z0-9 -]", "", s.title.lower()).replace(" ", "-")
+        # Markdown anchors: GitHub-flavored uses lowercased text with hyphens.
+        anchor = f"#{anchor_slug}--{title_slug}"
+        deps = ", ".join(s.depends_on) if s.depends_on else "none"
+        # Truncate phase to a short label for the table (the `Phase I — Cluster B`
+        # format the doc uses gets noisy).
+        phase_short = s.phase
+        if "Phase " in phase_short:
+            # Strip "Phase " prefix and take only the first token (e.g., "I", "0", "A").
+            phase_short = phase_short.replace("Phase ", "").split(" ")[0]
+        lines.append(
+            f"| [{s.sprint_id}]({anchor}) | {s.title} | {phase_short} | "
+            f"{s.size or '?'} | {s.status} | {deps} |"
+        )
+    return "\n".join(lines)
+
+
+def regenerate_index() -> bool:
+    """Rebuild the auto-generated SA-arc index table in ROADMAP.md.
+
+    Looks for `<!-- AUTO_GENERATED_SA_INDEX_START -->` ...
+    `<!-- AUTO_GENERATED_SA_INDEX_END -->` markers and replaces the
+    content between with a freshly generated table from the parsed
+    sprint sections.
+
+    Returns True if regeneration ran (markers found and content updated),
+    False if markers are absent (the harness logs and continues — the
+    file's hand-maintained, that's fine).
+    """
+    content = _read_roadmap()
+    start_idx = content.find(_INDEX_MARKER_START)
+    end_idx = content.find(_INDEX_MARKER_END)
+    if start_idx < 0 or end_idx < 0 or end_idx < start_idx:
+        return False
+
+    sprints = parse_sprints_from_text(content)
+    new_table = _build_sa_index_table(sprints)
+
+    new_content = (
+        content[: start_idx + len(_INDEX_MARKER_START)]
+        + "\n"
+        + new_table
+        + "\n"
+        + content[end_idx:]
+    )
+    _write_roadmap(new_content)
+    return True

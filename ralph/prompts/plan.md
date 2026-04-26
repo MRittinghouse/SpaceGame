@@ -13,6 +13,14 @@ You are running inside the multi-agent ralph loop harness. The harness has selec
 
 If the sprint references a strategic vision doc (e.g., `requirements/station_anchors.md`), read that doc's section relevant to this sprint.
 
+## Verify Context-to-read docs exist BEFORE planning
+
+For each entry in the sprint's `Context to read` field, verify the path exists. If any referenced doc is missing (a common case: the sprint references a doc that should have been authored by an earlier sprint that hasn't run yet), DO NOT plan around the missing doc.
+
+Set `PHASE_BLOCKED: missing context — <doc paths>` in your sentinel. The dispatcher will mark this sprint blocked; the missing doc must be authored (likely by an earlier sprint, or by a human) before this sprint becomes plannable.
+
+This is a hard rule. Planning around guesses about missing context produces sprints that fail in implementation.
+
 ## Your job
 
 1. **Assess vision alignment**. Does the sprint as written reflect the strategic vision the doc commits to? If the sprint is a pale shadow of what the vision describes (e.g., "a contract board" when the vision says "a contract board with membership tiers, recurring NPCs, lockout consequences"), expand it.
@@ -46,16 +54,46 @@ Do NOT modify any other sprint's section.
 Do NOT modify code, data files, or tests in this phase.
 Do NOT push to remote.
 
-## Output requirements — sentinel for the harness
+## Output requirements — sentinel + structured report
 
 Append a final entry to the sprint's `**Activity log.**` block before you finish. The entry MUST contain ONE of these exact sentinels:
 
 - `PHASE_OK` — planning complete, sprint is ready for the implementer.
-- `PHASE_BLOCKED: <reason>` — planning surfaced a blocker that needs human attention. Examples: vision doc is missing required design decisions; sprint depends on infrastructure that isn't built; scope is ambiguous in ways planning alone can't resolve.
+- `PHASE_BLOCKED: <reason>` — planning surfaced a blocker that needs human attention. Examples: vision doc is missing required design decisions; sprint depends on infrastructure that isn't built; missing Context-to-read doc; scope is ambiguous in ways planning alone can't resolve.
 
-The sentinel goes in the Activity log as a new line, e.g.:
+Then append a `**Last phase report.**` block (REPLACING any prior phase report block in this sprint's section, so the most recent phase's report is always the visible one). Format:
+
+```markdown
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-04-26 14:00
+- Completed: 2026-04-26 14:30
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: <hash if you committed, else "none">
+- New_sprints_proposed: <comma-separated IDs, or "none">
+- Polish_items_folded_in: <bullet summary, or "none">
+- Decisions_locked: <count>
+- Notes: <one-or-two-line summary of what the planner decided>
 ```
-- 2026-04-26 14:30 — planning complete. PHASE_OK
+
+This is human-and-machine-readable structured output. Always overwrite the previous block — only the latest phase's report stays visible.
+
+Sentinel + report example:
+```
+- 2026-04-26 14:30 — planning complete; expanded scope to include 2 polish items, locked 3 decisions. PHASE_OK
+
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-04-26 14:00
+- Completed: 2026-04-26 14:30
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: abc1234
+- New_sprints_proposed: none
+- Polish_items_folded_in: tutorial-integration, journal-entry
+- Decisions_locked: 3
+- Notes: Verified all 5 context docs exist. Folded tutorial integration into this sprint per locked decision; journal entry as well.
 ```
 
 Do NOT use `PHASE_NEEDS_REWORK` (that sentinel is for the reviewer).

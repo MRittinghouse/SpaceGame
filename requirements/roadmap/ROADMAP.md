@@ -21,6 +21,9 @@ Status flow: `todo` → `in-progress` → `review` → `done`. Also: `blocked` (
 
 ### SA Arc — Station Anchors (Phase 0 through Phase VI)
 
+The SA-arc table below is **auto-regenerated** by the ralph harness from the sprint sections. Don't hand-edit between the markers; edits get overwritten on the next harness run.
+
+<!-- AUTO_GENERATED_SA_INDEX_START -->
 | ID | Title | Phase | Size | Status | Depends on |
 |---|---|---|---|---|---|
 | [SA-PREP-1](#sa-prep-1--npc-voice-sheet-audit) | NPC voice-sheet audit | 0 | M | todo | none |
@@ -34,17 +37,17 @@ Status flow: `todo` → `in-progress` → `review` → `done`. Also: `blocked` (
 | [SA-0](#sa-0--cluster-a-confirmation-pass) | Cluster A confirmation pass | I | S | todo | SA-PREP-2 |
 | [SA-1](#sa-1--wreckers-guild-hall-salvage-contracts) | Wreckers' Guild Hall (Salvage Contracts) | I | L | todo | SA-PREP-1, SA-A2, SA-B-EXT-1 |
 | [SA-2](#sa-2--deep-shafts-memorial--pilgrimage) | Deep Shafts memorial / pilgrimage | I | L | todo | SA-PREP-1 |
-| [SA-V](#sa-v--cargo-broker-arc--investment-introduction) | Cargo Broker arc + investment introduction | I | M | todo | SA-PREP-1 |
+| [SA-V](#sa-v--cargo-broker-arc--investment-introduction) | Cargo Broker arc + Investment Introduction | I | M | todo | SA-PREP-1 |
 | [SA-P1](#sa-p1--politics-system-design) | Politics System Design | II | M | todo | SA-PREP-1, SA-C2 |
 | [SA-P2](#sa-p2--politics-core) | Politics Core | II | XL | todo | SA-P1, SA-A2, SA-C2, SA-B-EXT-1 |
-| [SA-P3](#sa-p3--mayors-council-chamber-verdant-venue) | Mayors' Council Chamber (Verdant) | II | L | todo | SA-P2 |
-| [SA-P4](#sa-p4--alliance-congress-hall-havens-rest-venue) | Alliance Congress Hall (Haven's Rest) | II | L | todo | SA-P2, SA-P3 |
-| [SA-P5](#sa-p5--wreckers-guild-gray-market-mediation-venue) | Wreckers' Guild gray-market (Reach venue) | II | M | todo | SA-P2, SA-1 |
+| [SA-P3](#sa-p3--mayors-council-chamber-verdant-venue) | Mayors' Council Chamber (Verdant Venue) | II | L | todo | SA-P2 |
+| [SA-P4](#sa-p4--alliance-congress-hall-havens-rest-venue) | Alliance Congress Hall (Haven's Rest Venue) | II | L | todo | SA-P2, SA-P3 |
+| [SA-P5](#sa-p5--wreckers-guild-gray-market-mediation-venue) | Wreckers' Guild gray-market mediation venue | II | M | todo | SA-P2, SA-1 |
 | [SA-P6](#sa-p6--politics-polish--tuning) | Politics polish + tuning | II | M | todo | SA-P3, SA-P4, SA-P5 |
 | [SA-B1](#sa-b1--bidding-system-design) | Bidding System Design | III | M | todo | SA-PREP-1 |
 | [SA-B2](#sa-b2--bidding-core) | Bidding Core | III | XL | todo | SA-B1, SA-A2, SA-C2 |
-| [SA-B3](#sa-b3--stellaris-auction-house-primary-venue) | Stellaris Auction House (primary) | III | L | todo | SA-B2 |
-| [SA-B4](#sa-b4--crimson-reach-black-market-auctions) | Crimson Reach Black Market | III | L | todo | SA-B2, SA-1 |
+| [SA-B3](#sa-b3--stellaris-auction-house-primary-venue) | Stellaris Auction House (primary venue) | III | L | todo | SA-B2 |
+| [SA-B4](#sa-b4--crimson-reach-black-market-auctions) | Crimson Reach Black Market auctions | III | L | todo | SA-B2, SA-1 |
 | [SA-B5](#sa-b5--player-initiated-auctions) | Player-Initiated Auctions | III | L | todo | SA-B2 |
 | [SA-B6](#sa-b6--bidding-polish--tuning) | Bidding polish + tuning | III | M | todo | SA-B3, SA-B4, SA-B5 |
 | [SA-R1](#sa-r1--okafor-institute-research-patronage) | Okafor Institute (Research Patronage) | IV | L | todo | SA-PREP-1, SA-C2 |
@@ -57,16 +60,17 @@ Status flow: `todo` → `in-progress` → `review` → `done`. Also: `blocked` (
 | [SA-F5](#sa-f5--insurance-sub-system) | Insurance sub-system | V | M | todo | SA-F2 |
 | [SA-F6](#sa-f6--market-manipulation-threats) | Market Manipulation threats | V | M | todo | SA-F2, SA-F4 |
 | [SA-F7](#sa-f7--financial-crisis-event-arc) | Financial Crisis Event Arc | V | L | todo | SA-F2, SA-F4, SA-F5, SA-F6 |
-| [SA-X1](#sa-x1--cross-anchor-narrative-threading) | Cross-anchor narrative threading | VI | M | todo | (most Cluster B+C work done) |
+| [SA-X1](#sa-x1--cross-anchor-narrative-threading) | Cross-anchor narrative threading | VI | M | todo | SA-1, SA-2, SA-V, SA-P6, SA-B6, SA-R3, SA-F3, SA-F7 |
 | [SA-X2](#sa-x2--reputation-consistency-audit--rebalance) | Reputation consistency audit + rebalance | VI | M | todo | SA-1, SA-P6, SA-B6, SA-R3, SA-F3 |
-| [SA-X3](#sa-x3--tutorial-integration) | Tutorial integration (per-anchor first-time tips) | VI | M | todo | SA-1, SA-2, SA-V, SA-P3, SA-B3, SA-R1, SA-F3 |
+| [SA-X3](#sa-x3--tutorial-integration) | Tutorial integration | VI | M | todo | SA-1, SA-2, SA-V, SA-P3, SA-B3, SA-R1, SA-F3 |
 | [SA-X4](#sa-x4--journal-pass) | Journal pass | VI | S | todo | SA-1, SA-2, SA-P6, SA-B6, SA-R3, SA-F3 |
 | [SA-X5](#sa-x5--news-ticker-integration) | News ticker integration | VI | M | todo | SA-P6, SA-B6, SA-R3, SA-F3 |
 | [SA-X6](#sa-x6--crew-reactions--anchor-banter) | Crew reactions / anchor banter | VI | M | todo | SA-A2, SA-1, SA-2, SA-P6, SA-B6, SA-R3, SA-F3 |
 | [SA-X7](#sa-x7--achievement-pass) | Achievement pass | VI | S | todo | SA-P6, SA-B6, SA-R3, SA-F3 |
-| [SA-X8](#sa-x8--cross-anchor-mega-arc) | Cross-anchor mega-arc | VI | XL | todo | SA-P6, SA-B6, SA-F3 |
+| [SA-X8](#sa-x8--cross-anchor-mega-arc) | Cross-anchor mega-arc | VI | XL | todo | SA-P6, SA-B6, SA-F3, SA-F7 |
 | [SA-X9](#sa-x9--audio--music-pass) | Audio + music pass | VI | M | todo | SA-P6, SA-B6, SA-R3, SA-F3 |
 | [SA-X10](#sa-x10--visual-identity-per-venue) | Visual identity per venue | VI | M | todo | SA-1, SA-P3, SA-B3, SA-R1, SA-F3 |
+<!-- AUTO_GENERATED_SA_INDEX_END -->
 
 ### Followups
 

@@ -23,6 +23,14 @@ Walk every entry in the sprint's Acceptance criteria. For each:
 - Confirm it actually holds in the implementer's output.
 - If a criterion isn't actually met, that's a finding.
 
+### Verify the planner's polish-item additions actually shipped
+
+Read the sprint's Plan section. The planner may have expanded scope to include polish items (tutorial integration, journal entries, save/load coverage, achievement unlocks, etc.) or may have proposed new follow-up sprints.
+
+For each polish item the planner folded into THIS sprint's scope, verify the implementer actually delivered it. Don't accept "well, they did the main feature" if the planner committed to additional polish — those items are part of the acceptance bar now.
+
+If a planner-folded polish item didn't ship, that's an Option C (rework) finding unless it's a one-line trivial fix you can handle in your phase.
+
 ### Verify code works as intended
 
 - Run the full test suite: `python -m pytest -n auto -q`. Note the test count delta vs. baseline.
@@ -77,7 +85,7 @@ Edit `{ROADMAP_PATH}` for sprint `{SPRINT_ID}`'s section ONLY:
 - Do NOT change the Status field — the harness manages that.
 - Do NOT modify any other sprint's section unless you're proposing a new follow-up sprint (in which case add a fully-formed new `<h3>` section + index-table row, same as the planner would).
 
-## Output requirements — sentinel for the harness
+## Output requirements — sentinel + structured report
 
 Append a final entry to the Activity log with EXACTLY one sentinel:
 
@@ -85,10 +93,46 @@ Append a final entry to the Activity log with EXACTLY one sentinel:
 - `PHASE_NEEDS_REWORK: <reason>` — return to implementation (Option C). Be specific so the next implementer knows what to address.
 - `PHASE_BLOCKED: <reason>` — escalate to human (Option D).
 
-Format:
+Then append a `**Last phase report.**` block (REPLACING any prior phase report block). Format:
+
+```markdown
+**Last phase report.**
+- Phase: review
+- Outcome: PHASE_OK
+- Started: 2026-04-26 17:30
+- Completed: 2026-04-26 18:15
+- Files_changed: <comma-separated paths if you fixed anything, else "none">
+- Commits: <comma-separated hashes if you committed, else "none">
+- Tests_passing: <count>
+- Acceptance_criteria_verified: <count>/<total>
+- Polish_items_verified: <count>/<total>  (or "n/a" if planner folded none in)
+- Findings_critical: <count>
+- Findings_minor_fixed_directly: <count>
+- Followup_sprints_added: <comma-separated IDs, or "none">
+- Notes: <one-or-two-line summary>
 ```
-- 2026-04-26 18:15 — review complete: <one-line summary>. PHASE_OK
+
+Sentinel + report example:
 ```
+- 2026-04-26 18:15 — review complete; 1 minor finding fixed directly, all acceptance criteria met. PHASE_OK
+
+**Last phase report.**
+- Phase: review
+- Outcome: PHASE_OK
+- Started: 2026-04-26 17:30
+- Completed: 2026-04-26 18:15
+- Files_changed: data/missions/wreckers_contracts.json
+- Commits: ghi9012
+- Tests_passing: 8287
+- Acceptance_criteria_verified: 8/8
+- Polish_items_verified: 2/2
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 1
+- Followup_sprints_added: none
+- Notes: Fixed an em-dash in one mission description directly; otherwise clean.
+```
+
+Always overwrite the previous block.
 
 ## Rework cycle limit
 

@@ -68,6 +68,23 @@ class PhaseResult:
     reason: str = ""
 
 
+@dataclass
+class PhaseContext:
+    """Optional pre-phase context the harness passes through to agents.
+
+    test_baseline_passing: pre-sprint pass count from the test suite.
+      Agents use this to detect whether they introduced new failures
+      (their pass count must be >= baseline).
+    test_baseline_skipped: skipped count for the same reason.
+    pre_phase_head: git HEAD SHA before the phase invocation. Used by
+      cross-validation to detect whether the agent committed.
+    """
+
+    test_baseline_passing: int = 0
+    test_baseline_skipped: int = 0
+    pre_phase_head: str = ""
+
+
 # ---------------------------------------------------------------------------
 # Prompt loading
 # ---------------------------------------------------------------------------
@@ -78,18 +95,35 @@ def _load_prompt_template(phase: Phase) -> str:
     return template_path.read_text(encoding="utf-8")
 
 
-def _build_prompt(phase: Phase, sprint_id: str) -> str:
+def _build_prompt(
+    phase: Phase, sprint_id: str, context: Optional[PhaseContext] = None
+) -> str:
     """Build the full prompt for a phase by substituting sprint context
-    into the template.
+    into the template. If `context` is provided, append a baseline
+    addendum so the agent knows what the pre-sprint test state was.
     """
     template = _load_prompt_template(phase)
-    return template.replace("{SPRINT_ID}", sprint_id).replace(
-        "{ROADMAP_PATH}", str(ROADMAP_PATH.relative_to(PROJECT_ROOT))
-    ).replace(
-        "{CONVENTIONS_PATH}", str(CONVENTIONS_PATH.relative_to(PROJECT_ROOT))
-    ).replace(
-        "{AGENT_GUIDE_PATH}", str(AGENT_GUIDE_PATH.relative_to(PROJECT_ROOT))
+    rendered = (
+        template.replace("{SPRINT_ID}", sprint_id)
+        .replace("{ROADMAP_PATH}", str(ROADMAP_PATH.relative_to(PROJECT_ROOT)))
+        .replace("{CONVENTIONS_PATH}", str(CONVENTIONS_PATH.relative_to(PROJECT_ROOT)))
+        .replace("{AGENT_GUIDE_PATH}", str(AGENT_GUIDE_PATH.relative_to(PROJECT_ROOT)))
     )
+    if context is not None and context.test_baseline_passing > 0:
+        addendum = (
+            "\n\n---\n\n"
+            "## Pre-phase test baseline (item L)\n\n"
+            f"- Tests passing: **{context.test_baseline_passing}**\n"
+            f"- Tests skipped: **{context.test_baseline_skipped}**\n\n"
+            "Your acceptance bar for the test suite is: pass count must be "
+            "**>=** the baseline above. New failures vs. this baseline are a "
+            "blocker. Pre-existing skips are fine. If you discover a "
+            "pre-existing FAILURE that's already in the baseline, that's "
+            "noteworthy but not your sprint's problem to fix unless your work "
+            "made it worse.\n"
+        )
+        rendered += addendum
+    return rendered
 
 
 # ---------------------------------------------------------------------------
@@ -209,14 +243,62 @@ def _detect_outcome(sprint_id: str, returncode: int) -> tuple[Outcome, str]:
 # ---------------------------------------------------------------------------
 
 
-def run_phase(phase: Phase, sprint_id: str) -> PhaseResult:
+def _git_head_sha() -> str:
+    """Return current HEAD SHA. Empty string on error."""
+    import subprocess
+
+    try:
+        result = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            cwd=str(PROJECT_ROOT),
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+        if result.returncode == 0:
+            return result.stdout.strip()
+    except Exception:
+        pass
+    return ""
+
+
+def _commits_since(sha: str, sprint_id: str) -> list[str]:
+    """Return the oneline commits since `sha` whose subject contains
+    `sprint_id`. Used by sentinel cross-validation (item E).
+    """
+    import subprocess
+
+    if not sha:
+        return []
+    try:
+        result = subprocess.run(
+            ["git", "log", "--oneline", f"{sha}..HEAD"],
+            cwd=str(PROJECT_ROOT),
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+        if result.returncode != 0:
+            return []
+        return [line for line in result.stdout.splitlines() if sprint_id in line]
+    except Exception:
+        return []
+
+
+def run_phase(
+    phase: Phase, sprint_id: str, context: Optional[PhaseContext] = None
+) -> PhaseResult:
     """Invoke the agent for the given phase against the given sprint.
 
     Wraps subprocess invocation with:
       - Pre-phase ROADMAP.md snapshot (item B + C).
+      - Pre-phase git HEAD capture for sentinel cross-validation (item E).
+      - Optional pre-phase test baseline included in the prompt (item L).
       - Post-phase validation: roadmap parses cleanly, claimed sprint
         still exists, no out-of-claim modifications, no deletions, new
         sprints only in phases that allow it.
+      - Post-PHASE_OK cross-check: was a commit made referencing the
+        sprint ID? If not, override outcome (item E).
       - On validation failure: restore the snapshot, return ERROR with
         the validation reason.
 
@@ -224,7 +306,13 @@ def run_phase(phase: Phase, sprint_id: str) -> PhaseResult:
     this to decide whether to advance, retry, or block the sprint.
     """
     log_path = _log_path_for(sprint_id, phase)
-    prompt = _build_prompt(phase, sprint_id)
+    prompt = _build_prompt(phase, sprint_id, context=context)
+
+    # Capture pre-phase HEAD for sentinel cross-validation (item E).
+    if context is None:
+        context = PhaseContext()
+    if not context.pre_phase_head:
+        context.pre_phase_head = _git_head_sha()
 
     # Snapshot ROADMAP.md before the agent runs (item B + C).
     pre_snapshot = roadmap_state.snapshot_roadmap()
@@ -288,6 +376,34 @@ def run_phase(phase: Phase, sprint_id: str) -> PhaseResult:
             )
 
     outcome, reason = _detect_outcome(sprint_id, returncode)
+
+    # Sentinel cross-validation (item E): a PHASE_OK on a phase that
+    # should have produced commits must show at least one. If no commit
+    # references the sprint ID, override the OK to ERROR.
+    if (
+        outcome == Outcome.OK
+        and not DRY_RUN
+        and context is not None
+        and context.pre_phase_head
+    ):
+        commits = _commits_since(context.pre_phase_head, sprint_id)
+        if not commits:
+            with log_path.open("a", encoding="utf-8") as f:
+                f.write(
+                    f"\n--- SENTINEL CROSS-VALIDATION: PHASE_OK but no commits "
+                    f"reference {sprint_id} since {context.pre_phase_head[:8]} ---\n"
+                )
+            return PhaseResult(
+                outcome=Outcome.ERROR,
+                phase=phase,
+                sprint_id=sprint_id,
+                log_path=log_path,
+                reason=(
+                    f"sentinel says PHASE_OK but no commits reference {sprint_id}. "
+                    "Agent claimed completion without committing — protocol violation."
+                ),
+            )
+
     return PhaseResult(
         outcome=outcome,
         phase=phase,
