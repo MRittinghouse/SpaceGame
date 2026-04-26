@@ -259,12 +259,14 @@ Six sprints. Sequenced so each builds on the prior without forward-dependency ha
 - Tests: 15 new parametrized tests in `TestCanonicalDeckGrid` covering all five subclasses across three behaviors (deck ordering, intra-deck row sharing, empty-deck collapse). Total tests: 8,228 → **8,243 passing** (+15).
 - Acceptance: a player who has docked at any one station encounters the same upper/service/industrial deck arrangement at every other station, modulo faction-specific atmosphere. Verified via the parametrized tests asserting deck-Y ordering and intra-deck row alignment for all five layouts.
 
-### SL-5 — Faction-first-dock orientation tip
-- One-time first-time-tip on a player's first dock at *each* faction's territory. Single sentence, terse: "Guild stations group services by deck." / "Union stations are organized like a blueprint." / etc.
-- Uses existing `first_time_tip` infrastructure (PT-M).
-- Five tips, fires once per faction, never re-fires.
-- Acceptance: first dock at each faction shows the tip; second dock at the same faction does not; first dock at a *different* faction shows that faction's tip.
-- Tests: scenario tests for the five faction-first-dock paths.
+### SL-5 — Faction-first-dock orientation tip — SHIPPED 2026-04-26
+- Five tips shipped, one per layout key (guild / union / collective / frontier / reach). Stored in `_FACTION_TIPS: dict[str, tuple[str, str]]` in `station_hub_view.py` — title + 1-2 sentence body each. Voice-checked: declarative, no em-dashes, no flavor. Each one establishes the deck pattern in its own terms (so the player learns the universal abstraction regardless of which faction they encounter first) and names the faction's specific texture.
+- Tips fire on `on_enter` after `_create_ui` and the recommendation computation, via the existing `FirstTimeTipOverlay` infrastructure (PT-M). Identical lifecycle to character_view.py's tip.
+- Per-faction state: `seen_faction_tip(layout_key)` helper in `spacegame/constants/flags.py` returns the canonical flag string. Pattern: `seen_faction_tip_<layout_key>`. Producer: the overlay's on-dismiss callback. Consumer: the `_maybe_show_faction_tip` gate.
+- **Suppression rule** (per locked decision 5): if a mission-objective glow is already active on this dock (`_recommendation[1] is RecommendationSource.MISSION_OBJECTIVE`), the tip is suppressed and the seen flag is NOT set — the tip will fire on the next dock at this faction. Avoids stacking two new pieces of information at the same moment.
+- 16 scenario tests in `tests/test_scenarios/test_scenario_faction_first_dock_tip.py` covering: first-dock fires for each of the five factions, correct title and body per faction, already-seen flag suppresses the tip, dismiss callback persists the flag, seeing one faction's tip doesn't silence others, mission-objective suppression, sanity baseline (no mission → tip fires), and the flag-helper string contract.
+- Total tests: 8,243 → **8,259 passing** (+16) post-SL-5.
+- Acceptance met: first dock at each faction shows the tip exactly once; subsequent docks at the same faction don't re-fire; different factions show their own tips; mission-objective conflict defers cleanly.
 
 ### SL-6 — Unique-content arc (parallel / deferred)
 - Per-location content authoring as described in Lever 5.

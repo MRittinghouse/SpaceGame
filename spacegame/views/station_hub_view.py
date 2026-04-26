@@ -19,6 +19,7 @@ from spacegame.config import (
     scale_x,
     scale_y,
 )
+from spacegame.constants.flags import seen_faction_tip
 from spacegame.engine.activity_registry import ActivityRegistry
 from spacegame.engine.audio_manager import get_audio_manager
 from spacegame.engine.backgrounds import AnimatedBackground
@@ -46,8 +47,9 @@ from spacegame.models.system import StarSystem
 from spacegame.utils.logger import logger
 from spacegame.views._glow import render_pulsing_glow
 from spacegame.views.base_view import BaseView
+from spacegame.views.first_time_tip import FirstTimeTipOverlay
 from spacegame.views.layout import FACTION_COLORS as _FACTION_COLORS
-from spacegame.views.station_layouts import create_station_layout
+from spacegame.views.station_layouts import SYSTEM_LAYOUT_MAP, create_station_layout
 
 # Location type → GameState mapping
 _LOCATION_STATE_MAP: dict[str, GameState] = {
@@ -108,6 +110,36 @@ BACK_BUTTON_H = scale_y(40)
 DETAIL_PANEL_X = scale_x(60)
 DETAIL_PANEL_W = WINDOW_WIDTH - scale_x(120)
 FLAVOR_ROTATION_INTERVAL = 10.0  # Seconds between flavor text changes
+
+# SL-5: faction-first-dock orientation tips. One per layout key. Each
+# fires once per save (gated by the `seen_faction_tip_<layout_key>`
+# dialogue flag). The tip text introduces the deck-by-deck pattern and
+# names the faction's specific texture, so the player learns the
+# universal abstraction regardless of which faction they encounter
+# first. Voice-checked: declarative, no em-dashes, no flavor.
+_FACTION_TIPS: dict[str, tuple[str, str]] = {
+    "guild": (
+        "Commerce Guild",
+        "Guild stations group services by deck. Commerce upper, support middle, industry below.",
+    ),
+    "union": (
+        "Miners' Union",
+        "Union stations stack like a blueprint. Trade upper, support middle, work below.",
+    ),
+    "collective": (
+        "Science Collective",
+        "Collective stations stack by deck. The central ring is decorative atmosphere, not navigation.",
+    ),
+    "frontier": (
+        "Frontier Alliance",
+        "Frontier stations use the deck pattern, dressed in the Alliance's hand-painted register.",
+    ),
+    "reach": (
+        "Crimson Reach",
+        "Reach stations use the deck pattern, but cards stay dim until you hover.",
+    ),
+}
+
 
 # Station atmosphere descriptions — evocative one-liners per system
 STATION_ATMOSPHERE: dict[str, str] = {
@@ -195,6 +227,12 @@ class StationHubView(BaseView):
         # player state; pulsed via _glow_time advanced in update().
         self._glow_time: float = 0.0
         self._recommendation: Optional[tuple[str, RecommendationSource]] = None
+
+        # SL-5: one-time faction-orientation tip. Reuses PT-M's
+        # FirstTimeTipOverlay infrastructure. Suppressed when a mission
+        # objective is also driving a glow (avoid stacking two new
+        # pieces of information on the same dock).
+        self._faction_tip: Optional[FirstTimeTipOverlay] = None
 
         # Faction color for header accent
         self._faction_color = _FACTION_COLORS.get(system.faction, Colors.TEXT_HIGHLIGHT)
@@ -311,6 +349,47 @@ class StationHubView(BaseView):
                 self.player.dialogue_flags[met_npc("arna")] = True
                 self.pending_npc_id = "arna"
                 self.next_state = GameState.DIALOGUE
+
+        # SL-5: maybe show the faction-orientation tip. Runs after
+        # _create_ui (which computed `self._recommendation` for SL-3),
+        # so the suppression rule can check whether a mission-objective
+        # glow is already active.
+        self._maybe_show_faction_tip()
+
+    def _maybe_show_faction_tip(self) -> None:
+        """SL-5: fire the faction-first-dock orientation tip, or skip.
+
+        Suppressed when:
+          - the player has already seen this faction's tip (flag set), OR
+          - a mission-objective highlight is already active on this dock
+            (avoid stacking two new pieces of information).
+
+        Players who have a mission objective on their first dock at a
+        new faction will see the tip on a later dock at the same faction.
+        """
+        layout_key = SYSTEM_LAYOUT_MAP.get(self.system.id)
+        if layout_key is None or layout_key not in _FACTION_TIPS:
+            return
+        flag = seen_faction_tip(layout_key)
+        if self.player.dialogue_flags.get(flag, False):
+            return
+        # Suppression rule: defer to next dock if a mission-objective
+        # glow is already drawing the player's eye.
+        if (
+            self._recommendation is not None
+            and self._recommendation[1] is RecommendationSource.MISSION_OBJECTIVE
+        ):
+            return
+        title, body = _FACTION_TIPS[layout_key]
+        self._faction_tip = FirstTimeTipOverlay(
+            title=title,
+            body=body,
+            on_dismiss=lambda key=layout_key: self._mark_faction_tip_seen(key),
+        )
+
+    def _mark_faction_tip_seen(self, layout_key: str) -> None:
+        """Persist the faction-tip-dismissed flag."""
+        self.player.dialogue_flags[seen_faction_tip(layout_key)] = True
 
     def on_exit(self) -> None:
         """Deactivate view, clean up UI."""
@@ -600,6 +679,12 @@ class StationHubView(BaseView):
 
     def handle_event(self, event: pygame.event.Event) -> None:
         """Handle card clicks and navigation."""
+        # SL-5: faction-orientation tip overlay is modal — consume the
+        # event before anything else if it claims it.
+        if self._faction_tip is not None and not self._faction_tip.dismissed:
+            if self._faction_tip.handle_event(event):
+                return
+
         if event.type == pygame_gui.UI_BUTTON_PRESSED:
             if event.ui_element == self.back_button:
                 self._request_back()
@@ -676,6 +761,12 @@ class StationHubView(BaseView):
             if self._flavor_timer >= FLAVOR_ROTATION_INTERVAL:
                 self._flavor_timer = 0.0
                 self._flavor_index = (self._flavor_index + 1) % len(self._flavor_texts)
+        # SL-5: advance the faction-orientation tip's fade-in. Drop the
+        # reference once dismissed so subsequent updates are no-ops.
+        if self._faction_tip is not None:
+            self._faction_tip.update(dt)
+            if self._faction_tip.dismissed:
+                self._faction_tip = None
 
     def render(self, screen: pygame.Surface) -> None:
         """Render station hub."""
@@ -724,6 +815,10 @@ class StationHubView(BaseView):
             self._render_detail_panel(screen)
 
         # Status bar removed — HUD bar now handles credits, hull, shields, fuel
+
+        # SL-5: faction-orientation tip overlay sits on top of everything.
+        if self._faction_tip is not None and not self._faction_tip.dismissed:
+            self._faction_tip.render(screen)
 
     def _render_denied(self, screen: pygame.Surface) -> None:
         """Render docking denial overlay."""

@@ -168,6 +168,35 @@ def investment_introduced() -> str:
 
 
 # ---------------------------------------------------------------------------
+# Faction-first-dock orientation tip
+# ---------------------------------------------------------------------------
+#
+# SL-5 (requirements/station_legibility.md). Set on first dock at each
+# faction's territory after the player dismisses the orientation tip.
+# Read by :class:`spacegame.views.station_hub_view.StationHubView` to
+# decide whether to fire the tip on the current dock.
+#
+# Layout keys are the stable identifiers (guild / union / collective /
+# frontier / reach) per ``SYSTEM_LAYOUT_MAP`` in
+# ``spacegame.views.station_layouts``.
+
+
+def seen_faction_tip(layout_key: str) -> str:
+    """Flag set when the player has dismissed a faction's orientation tip.
+
+    Producer: :class:`spacegame.views.station_hub_view.StationHubView`'s
+    on-dismiss callback for the faction-first-dock tip overlay.
+
+    Consumer: the same view's ``_maybe_show_faction_tip`` (gates the
+    next-dock fire).
+
+    ``layout_key`` is the canonical faction layout id (``"guild"``,
+    ``"union"``, ``"collective"``, ``"frontier"``, ``"reach"``).
+    """
+    return f"seen_faction_tip_{layout_key}"
+
+
+# ---------------------------------------------------------------------------
 # Encounter "seen" markers (unique encounters fire once per playthrough)
 # ---------------------------------------------------------------------------
 #
