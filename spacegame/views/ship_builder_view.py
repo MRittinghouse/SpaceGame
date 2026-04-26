@@ -1145,6 +1145,20 @@ class ShipBuilderView(BaseView):
             from spacegame.constants.flags import tutorial_bought_part
             from spacegame.views.tutorial_shop_view import TUTORIAL_PARTS
 
+            # Tutorial palette is intentionally minimal: ONE canonical
+            # slot per slot_type the player has bought a part for. The
+            # full multi-variant palette (Scout Pod / Observation Deck /
+            # Armored Cabin / Command Bridge / etc.) is overwhelming for
+            # a first-time player and not relevant to a scrapyard build.
+            tutorial_slot_def_for_type: dict[str, str] = {
+                "cockpit": "cockpit_scout_pod",
+                "engine": "engine_small",
+                "reactor": "reactor_small",
+                "fuel": "fuel_small",
+                "cargo": "cargo_small",
+                "weapon": "weapon_small",
+            }
+
             purchased_slot_types: set[str] = {"cockpit"}  # always available
             for p in TUTORIAL_PARTS:
                 flag_key = tutorial_bought_part(p.part_id)
@@ -1159,15 +1173,18 @@ class ShipBuilderView(BaseView):
                     part = self.data_loader.ship_parts.get(p.part_id)
                     if part is not None:
                         purchased_slot_types.add(part.slot_type)
-            filtered = {
-                k: v for k, v in slot_defs.items()
-                if v.slot_type in purchased_slot_types
-            }
+
             result: list[tuple[str, list[SlotDefinition]]] = []
             for slot_type in _SLOT_TYPE_ORDER:
-                group = [sd for sd in filtered.values() if sd.slot_type == slot_type]
-                if group:
-                    result.append((slot_type, group))
+                if slot_type not in purchased_slot_types:
+                    continue
+                tutorial_def_id = tutorial_slot_def_for_type.get(slot_type)
+                if tutorial_def_id is None:
+                    continue
+                sdef = slot_defs.get(tutorial_def_id)
+                if sdef is None:
+                    continue
+                result.append((slot_type, [sdef]))
             return result
 
         # Build variant lists for cycling (group_id -> ordered list of def IDs)
@@ -1779,7 +1796,7 @@ class ShipBuilderView(BaseView):
             "balanced mass evades more. Paint what you need. Do not over-plate.",
         ),
         "complete": (
-            "Phase 3 of 3: Mount and Confirm",
+            "Phase 3 of 3: Confirm Build",
             "Hull is on. CONFIRM BUILD locks it in. I will mount the parts you "
             "bought into the slots you placed. One-time favor for the shakedown. "
             "Next time you do that yourself at any shipyard Loadout tab. Same idea: "
@@ -1978,7 +1995,7 @@ class ShipBuilderView(BaseView):
         phase_label_map = {
             "slots": "PHASE 1 OF 3: PLACE SLOTS",
             "hull": "PHASE 2 OF 3: PAINT HULL",
-            "complete": "PHASE 3 OF 3: MOUNT AND CONFIRM",
+            "complete": "PHASE 3 OF 3: CONFIRM BUILD",
         }
         label_text = phase_label_map.get(phase, "TUTORIAL")
         label_surf = self.title_font.render(label_text, True, Colors.TEXT_HIGHLIGHT)
@@ -2252,9 +2269,12 @@ class ShipBuilderView(BaseView):
                 f"Tutorial build confirmed: charged {charge:,} CR "
                 f"(placement 50%, hull full, parts prepaid at shop)"
             )
-            # PT-007 bookend: mechanic signs off.
+            # PT-007 bookend: mechanic signs off, with explicit
+            # affirmation that auto-equip ran (so the player knows the
+            # parts they bought are now in the ship).
             self._pending_tutorial_farewell = (
-                'Mechanic: "That\'ll fly. I\'ll push you off. Galaxy\'s waiting."'
+                'Mechanic: "That\'ll fly. Parts mounted. '
+                'I\'ll push you off. Galaxy\'s waiting."'
             )
             # PT-H: tutorial_builder_complete gates Arna's first-encounter
             # interception on first STATION_HUB entry after tutorial.
