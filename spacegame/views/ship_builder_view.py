@@ -385,6 +385,18 @@ class ShipBuilderView(BaseView):
         # stops surfacing the "Press R to rotate" hint after that.
         self._shown_rotation_tip: bool = False
 
+        # Bottom-strip mechanic narration: dismissable + auto-fade.
+        # Earlier the strip was permanently visible, overlapping the
+        # stat HUD and irritating playtesters who wanted to read the
+        # numbers underneath. Now: click anywhere on the panel to
+        # dismiss immediately; otherwise it fades after 8 seconds. New
+        # narration text resets the timer + dismiss flag so a real
+        # state change gets the player's attention again.
+        self._tutorial_narration_text_seen: str = ""
+        self._tutorial_narration_age: float = 0.0
+        self._tutorial_narration_dismissed: bool = False
+        self._tutorial_narration_panel_rect: Optional[pygame.Rect] = None
+
         # EQUIP mode moved to Loadout tab (Phase S4)
 
         # Visual feedback (Phase 10)
@@ -765,6 +777,18 @@ class ShipBuilderView(BaseView):
             # Close help overlay on any click
             if getattr(self, "_help_overlay_open", False):
                 self._help_overlay_open = False
+                return
+            # Click-to-dismiss bottom mechanic narration. Eats the click
+            # so the player doesn't accidentally place/erase a slot
+            # while dismissing. Only consumes the click if the panel is
+            # currently visible and hit.
+            if (
+                self._tutorial_mode
+                and self._tutorial_narration_panel_rect is not None
+                and self._tutorial_narration_panel_rect.collidepoint(event.pos)
+                and not self._tutorial_narration_dismissed
+            ):
+                self._tutorial_narration_dismissed = True
                 return
             if event.button == 1:  # Left click
                 self._handle_left_click(event.pos)
@@ -1681,6 +1705,24 @@ class ShipBuilderView(BaseView):
             }
         )
         logger.info(f"Saved draft: {draft_name} ({len(self.player.build_drafts)} total)")
+        # Player feedback — earlier this method silently appended to
+        # ``build_drafts`` and logged. From the player's seat, clicking
+        # SAVE DRAFT looked like "the button does nothing" since there
+        # was no on-screen confirmation. Mirror the SFX + floating
+        # message pattern that ``_share_build`` already uses.
+        self._feedback_messages.append(
+            {
+                "text": f"Draft saved: {draft_name}",
+                "x": float(WINDOW_WIDTH // 2 - 80),
+                "y": float(WINDOW_HEIGHT // 2),
+                "timer": 2.0,
+                "color": Colors.GREEN,
+            }
+        )
+        try:
+            get_audio_manager().play_sfx("ui_confirm")
+        except Exception:
+            pass
 
     def _share_build(self) -> None:
         """Export current build as a shareable text code to clipboard."""
@@ -2665,6 +2707,8 @@ class ShipBuilderView(BaseView):
                 self._tutorial_narration_modal.update(dt)
                 if self._tutorial_narration_modal.dismissed:
                     self._tutorial_narration_modal = None
+            # Bottom-strip narration age — drives auto-fade after 8s.
+            self._tutorial_narration_age += dt
 
         # Track builder hint triggers (QA Fix #7)
         self._check_builder_hint_triggers()
@@ -4349,16 +4393,48 @@ class ShipBuilderView(BaseView):
         # Narration selection in priority order.
         narration = self._pick_tutorial_narration(placed_ids, _PART_NARRATION, TUTORIAL_PARTS)
 
+        # Detect a state-driven text change: reset age + dismiss flag so
+        # the player sees the new prompt fresh, even if they dismissed
+        # the previous one.
+        if narration != self._tutorial_narration_text_seen:
+            self._tutorial_narration_text_seen = narration
+            self._tutorial_narration_age = 0.0
+            self._tutorial_narration_dismissed = False
+
+        # Manually dismissed → render nothing.
+        if self._tutorial_narration_dismissed:
+            self._tutorial_narration_panel_rect = None
+            return
+
+        # Auto-fade after 8s; fully gone by 10s.
+        if self._tutorial_narration_age >= 10.0:
+            self._tutorial_narration_panel_rect = None
+            return
+        if self._tutorial_narration_age <= 8.0:
+            alpha_factor = 1.0
+        else:
+            alpha_factor = 1.0 - (self._tutorial_narration_age - 8.0) / 2.0
+        panel_alpha = int(220 * alpha_factor)
+        text_alpha = int(255 * alpha_factor)
+
         # Panel at bottom
         panel_w = WINDOW_WIDTH - scale_x(160)
         panel_h = scale_y(50)
         panel_x = (WINDOW_WIDTH - panel_w) // 2
         panel_y = WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - panel_h - scale_y(10)
+        # Track rect for click-to-dismiss hit testing in handle_event.
+        self._tutorial_narration_panel_rect = pygame.Rect(
+            panel_x, panel_y, panel_w, panel_h
+        )
 
-        draw_panel(screen, (panel_x, panel_y, panel_w, panel_h), alpha=220)
-        speaker = self._tutorial_narration_font.render("Mechanic: ", True, Colors.TEXT_HIGHLIGHT)
+        draw_panel(screen, (panel_x, panel_y, panel_w, panel_h), alpha=panel_alpha)
+        speaker = self._tutorial_narration_font.render(
+            "Mechanic: ", True, Colors.TEXT_HIGHLIGHT
+        )
+        speaker.set_alpha(text_alpha)
         screen.blit(speaker, (panel_x + 16, panel_y + 14))
         text = self._tutorial_narration_font.render(narration, True, Colors.TEXT_PRIMARY)
+        text.set_alpha(text_alpha)
         screen.blit(text, (panel_x + 16 + speaker.get_width(), panel_y + 14))
 
     def _pick_tutorial_narration(
