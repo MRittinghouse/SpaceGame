@@ -268,10 +268,10 @@ Six sprints. Sequenced so each builds on the prior without forward-dependency ha
 - Total tests: 8,243 → **8,259 passing** (+16) post-SL-5.
 - Acceptance met: first dock at each faction shows the tip exactly once; subsequent docks at the same faction don't re-fire; different factions show their own tips; mission-objective conflict defers cleanly.
 
-### SL-6 — Unique-content arc (parallel / deferred)
-- Per-location content authoring as described in Lever 5.
-- Not blocked by SL-1 through SL-5. Can run in parallel as a content-team workstream or be picked up after the layout work has stabilized.
-- Acknowledged so it doesn't fall off the roadmap.
+### SL-6 — Unique-content arc — UPGRADED to its own roadmap (2026-04-26)
+- Originally scoped here as "per-location content authoring." On further design review, this is fundamentally different from SL-1 through SL-5 — it's system-development with content as the surfacing layer, not content authoring on top of locked engineering.
+- **See `requirements/station_anchors.md`** for the dedicated SA (Station Anchors) roadmap. Six phases, 16-22 weeks total, three system clusters (Politics, Bidding, Financial). SL-2b folds in as SA-V (Cargo-Broker investment introduction).
+- The reframe is intentional: each `unique` location becomes a venue for a broader system (Wreckers' Guild Hall = first venue of Salvage Contracts; Mayors' Council + Alliance Congress = two venues of one Politics system; Stellaris Auction House = first venue of Bidding; etc.). This forces shared infrastructure, prevents disposable mini-systems, and gives the game cohesion that one-off content can't.
 
 ---
 

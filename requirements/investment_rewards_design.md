@@ -37,4 +37,5 @@ These are placeholder hooks from the SL doc's Lever 4.5. Each needs design work.
 ## Sister docs
 
 - `requirements/station_legibility.md` — gating and salience for investment cards (SL-2). The "when does the player see it?" half of the problem.
+- `requirements/station_anchors.md` (2026-04-26) — supersedes this stub for the Meridian Financial Exchange anchor. Phase V (SA-F) folds in the open threads here. Investment rewards beyond Meridian's scope (passive returns at the basic-investment cards across 10 systems) remain in scope for future iteration.
 - `requirements/onboarding_design.md` — six principles. Whatever this doc proposes inherits them.
