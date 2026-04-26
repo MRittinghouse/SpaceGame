@@ -5395,8 +5395,17 @@ class Game:
             if self._celebration_timer > 0:
                 self._render_celebration(render_surface)
 
-            # Cockpit HUD renders AFTER pygame_gui so it sits on top of view UI
-            if self._cockpit_hud and self.player:
+            # Cockpit HUD renders AFTER pygame_gui so it sits on top of
+            # view UI, EXCEPT when a modal dialog (settings, save/load)
+            # is active — those use the full screen and the HUD bars
+            # would obscure the modal's bottom controls (e.g., Apply /
+            # Back buttons in the settings panel).
+            if (
+                self._cockpit_hud
+                and self.player
+                and self.settings_view is None
+                and self.save_load_view is None
+            ):
                 self._cockpit_hud.render(render_surface)
 
             # Tutorial overlay renders AFTER HUD and ui_manager.draw_ui() so it
