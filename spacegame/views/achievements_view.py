@@ -13,7 +13,14 @@ from spacegame.achievement_manager import AchievementManager
 from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH, Colors, GameState, scale_x, scale_y
 from spacegame.engine.backgrounds import AnimatedBackground
 from spacegame.engine.draw_utils import draw_bar, draw_panel
-from spacegame.engine.fonts import FONT_MD, FONT_SECTION, FONT_SM, FONT_SUBTITLE, get_font
+from spacegame.engine.fonts import (
+    FONT_LG,
+    FONT_MD,
+    FONT_SECTION,
+    FONT_SM,
+    FONT_SUBTITLE,
+    get_font,
+)
 from spacegame.models.player import Player
 from spacegame.utils.logger import logger
 from spacegame.views.base_view import BaseView
@@ -113,7 +120,11 @@ class AchievementsView(BaseView):
         # Fonts
         self.title_font = get_font("header", FONT_SECTION)
         self.name_font = get_font("dialogue", FONT_SUBTITLE)
-        self.desc_font = get_font("dialogue", FONT_MD)
+        # Long-form descriptions read more cleanly in Silver (narration)
+        # than PixeloidSans (dialogue), which has subtle slanted verticals
+        # that read as italic at small sizes. Playtest pass — see
+        # station_hub_view.py for the canonical decision.
+        self.desc_font = get_font("narration", FONT_LG)
         self.progress_font = get_font("stats", FONT_SM)
         self.tab_font = get_font("label", FONT_SM)
 

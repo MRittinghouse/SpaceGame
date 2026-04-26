@@ -95,7 +95,9 @@ class CharacterView(BaseView):
         # Fonts
         self.title_font = get_font("header", FONT_XL2)
         self.header_font = get_font("header", FONT_BODY)
-        self.info_font = get_font("dialogue", FONT_MD)
+        # Info text reads more cleanly in Silver — see station_hub_view.py
+        # for the canonical font swap rationale.
+        self.info_font = get_font("narration", FONT_LG)
         self.small_font = get_font("label", FONT_XS)
         self.value_font = get_font("stats", FONT_LG)
         self.section_font = get_font("label", FONT_SM)

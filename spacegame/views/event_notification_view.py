@@ -11,7 +11,7 @@ import pygame
 import pygame_gui
 
 from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH, Colors, scale_x, scale_y
-from spacegame.engine.fonts import FONT_BODY, FONT_SECTION, FONT_SUBTITLE, get_font
+from spacegame.engine.fonts import FONT_BODY, FONT_LG, FONT_SECTION, FONT_SUBTITLE, get_font
 from spacegame.models.event import MarketEvent
 from spacegame.utils.logger import logger
 from spacegame.views.base_view import BaseView
@@ -29,7 +29,9 @@ class EventNotificationView(BaseView):
         # Fonts
         self.title_font = get_font("header", FONT_SECTION)
         self.body_font = get_font("dialogue", FONT_SUBTITLE)
-        self.detail_font = get_font("dialogue", FONT_BODY)
+        # Detail prose reads more cleanly in Silver — see
+        # station_hub_view.py for the canonical font swap rationale.
+        self.detail_font = get_font("narration", FONT_LG)
 
         # UI Elements
         self.ok_button: Optional[pygame_gui.elements.UIButton] = None

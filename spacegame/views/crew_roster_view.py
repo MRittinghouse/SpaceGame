@@ -165,7 +165,9 @@ class CrewRosterView(BaseView):
         # Fonts
         self._title_font = get_font("header", FONT_SECTION)
         self._name_font = get_font("dialogue", FONT_LG)
-        self._desc_font = get_font("dialogue", FONT_MD)
+        # Crew descriptions read more cleanly in Silver — see
+        # station_hub_view.py for the canonical font swap rationale.
+        self._desc_font = get_font("narration", FONT_LG)
         self._detail_title_font = get_font("header", FONT_XL)
         self._label_font = get_font("dialogue", FONT_BODY)
         self._slot_font = get_font("stats", FONT_LG)

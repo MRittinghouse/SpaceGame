@@ -464,9 +464,12 @@ class TestAudioManagerDuckMultipliers:
         am._enabled = False
         am._music_duck = 1.0
         am._ambient_duck = 1.0
-        assert am._effective_music_volume() == pytest.approx(
-            am._config.master_volume * am._config.music_volume
-        )
+        # Stored config values are LINEAR; perceptual quadratic curve
+        # applied at output time inside ``_effective_*_volume``. Duck
+        # multiplier is applied AFTER the curve (it's a separate
+        # ducking layer, not part of perceptual scaling).
+        linear = am._config.master_volume * am._config.music_volume
+        assert am._effective_music_volume() == pytest.approx(linear * linear)
 
     def test_set_music_duck_affects_effective_volume(self) -> None:
         from spacegame.engine.audio_manager import AudioManager
@@ -477,9 +480,8 @@ class TestAudioManagerDuckMultipliers:
         am._music_duck = 1.0
         am._ambient_duck = 1.0
         am.set_music_duck(0.40)
-        assert am._effective_music_volume() == pytest.approx(
-            am._config.master_volume * am._config.music_volume * 0.40
-        )
+        linear = am._config.master_volume * am._config.music_volume
+        assert am._effective_music_volume() == pytest.approx(linear * linear * 0.40)
         assert am.get_music_duck() == pytest.approx(0.40)
 
     def test_set_ambient_duck_affects_effective_volume(self) -> None:
@@ -491,9 +493,8 @@ class TestAudioManagerDuckMultipliers:
         am._music_duck = 1.0
         am._ambient_duck = 1.0
         am.set_ambient_duck(0.70)
-        assert am._effective_ambient_volume() == pytest.approx(
-            am._config.master_volume * am._config.ambient_volume * 0.70
-        )
+        linear = am._config.master_volume * am._config.ambient_volume
+        assert am._effective_ambient_volume() == pytest.approx(linear * linear * 0.70)
         assert am.get_ambient_duck() == pytest.approx(0.70)
 
     def test_duck_clamps_to_unit_range(self) -> None:

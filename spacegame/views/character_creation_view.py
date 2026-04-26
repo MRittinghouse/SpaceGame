@@ -47,7 +47,9 @@ class CharacterCreationView(BaseView):
         self.title_font = get_font("header", FONT_DISPLAY)
         self.subtitle_font = get_font("dialogue", FONT_LG)
         self.attr_font = get_font("header", FONT_XL)
-        self.desc_font = get_font("dialogue", FONT_MD)
+        # Attribute descriptions read more cleanly in Silver — see
+        # station_hub_view.py for the canonical font swap rationale.
+        self.desc_font = get_font("narration", FONT_LG)
         self.value_font = get_font("stats", FONT_TITLE)
         self.points_font = get_font("stats", FONT_XL2)
 

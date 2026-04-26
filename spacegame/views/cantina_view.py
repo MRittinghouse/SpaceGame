@@ -94,7 +94,9 @@ class CantinaView(BaseView):
         self.title_font = get_font("header", FONT_HEADING)
         self.subtitle_font = get_font("dialogue", FONT_BODY)
         self.label_font = get_font("dialogue", FONT_MD)
-        self.desc_font = get_font("dialogue", FONT_SM)
+        # Cantina hint/description text reads more cleanly in Silver —
+        # see station_hub_view.py for the canonical font swap rationale.
+        self.desc_font = get_font("narration", FONT_BODY)
         # UI element refs
         self.back_button: Optional[pygame_gui.elements.UIButton] = None
         self._npc_buttons: dict[str, pygame_gui.elements.UIButton] = {}
@@ -179,11 +181,23 @@ class CantinaView(BaseView):
                     self._quest_receiver_npc_ids.add(npc.id)
                 btn_y += BUTTON_H + BUTTON_PAD
 
+        # When the crew section is at capacity, the renderer adds a
+        # "Dismiss a crew member to make room" hint 18px below the slot
+        # count. Reserve extra vertical space so the first crew button
+        # doesn't overlap that hint (playtester saw "Hire: Kai Torren"
+        # rendered on top of the unreadable hint text).
+        _crew_full_hint_extra = 0
+        if self.crew_roster:
+            _crew_current = self._get_current_crew_count()
+            _crew_total = self._get_crew_slots()
+            if _crew_current >= _crew_total:
+                _crew_full_hint_extra = 22  # hint glyph height + a few px
+
         # Dismissed crew for re-recruitment
         if self.crew_roster and hasattr(self.crew_roster, "get_dismissed_at_system"):
             dismissed = self.crew_roster.get_dismissed_at_system(self.system.id)
             if dismissed:
-                btn_y += SECTION_PAD + 24  # Gap + label space
+                btn_y += SECTION_PAD + 24 + _crew_full_hint_extra  # Gap + label + hint reserve
                 for template, _state in dismissed:
                     cost = self.crew_roster.get_recruit_cost(template.id)
                     cost_text = f"{cost:,} cr" if cost > 0 else "Free"
@@ -204,7 +218,9 @@ class CantinaView(BaseView):
             available = self.crew_roster.get_available_crew_at_system(self.system.id)
             if available:
                 if not self._rerecruit_buttons:
-                    btn_y += SECTION_PAD + 24
+                    # First crew section button — needs the same label
+                    # + hint reserve as the re-recruit branch above.
+                    btn_y += SECTION_PAD + 24 + _crew_full_hint_extra
                 else:
                     btn_y += SECTION_PAD
                 crew_slots = self._get_crew_slots()
