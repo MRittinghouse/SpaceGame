@@ -193,7 +193,15 @@ class StationHubView(BaseView):
         self.subtitle_font = get_font("narration", FONT_LG)  # Station description
         self.flavor_font = get_font("narration", FONT_MD)  # Atmosphere text
         self.card_name_font = get_font("dialogue", FONT_XL)  # Location names
-        self.card_desc_font = get_font("dialogue", FONT_BODY)  # Location descriptions
+        # Card descriptions use the "narration" role (Silver) instead of
+        # "dialogue" (PixeloidSans). PixeloidSans has subtle slanted
+        # verticals that read as italic at small sizes; playtester
+        # flagged the descriptions as too narrow/italicized to read.
+        # Silver's wider glyphs + upright verticals are easier to
+        # parse, and at FONT_LG (24px) the descriptions get a small
+        # size bump too. Names stay PixeloidSans for typographic
+        # contrast against the descriptions.
+        self.card_desc_font = get_font("narration", FONT_LG)  # Location descriptions
         self.card_detail_font = get_font("label", FONT_SM2)  # Card detail labels
         self.card_label_font = get_font("label", FONT_XS)  # "TRADE", "REPAIR" badges
         self.detail_title_font = get_font("header", FONT_XL2)  # Detail panel headers
