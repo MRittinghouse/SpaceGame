@@ -77,29 +77,25 @@ def _write_roadmap(content: str) -> None:
     ROADMAP_PATH.write_text(content, encoding="utf-8")
 
 
-def parse_sprints() -> dict[str, Sprint]:
-    """Parse all sprints from ROADMAP.md.
+def parse_sprints_from_text(content: str) -> dict[str, Sprint]:
+    """Parse sprints from a roadmap-content string.
 
-    Returns a dict keyed by sprint ID. Section offsets are byte indices
-    into the raw file content; use `_read_roadmap()` to access them.
+    Used by validation paths that need to compare snapshots without
+    re-reading from disk. Public consumers usually want `parse_sprints`.
     """
-    content = _read_roadmap()
     headers = list(_SPRINT_HEADER_RE.finditer(content))
     sprints: dict[str, Sprint] = {}
 
     for i, m in enumerate(headers):
-        # group(1) = "###" or "####" (header depth, kept for future use)
+        # group(1) = "###" or "####" (header depth)
         # group(2) = sprint ID
         # group(3) = sprint title
         sprint_id = m.group(2)
         title = m.group(3).strip()
         section_start = m.start()
-        # Section ends at the next `### ` or `## ` header, whichever comes first.
-        # Look for the next h3 or h2 after this position.
         next_header_pos: int | None = None
         if i + 1 < len(headers):
             next_header_pos = headers[i + 1].start()
-        # Also check for `## ` between this h3 and the next h3.
         h2_match = re.search(r"^## ", content[m.end() :], re.MULTILINE)
         if h2_match is not None:
             h2_pos = m.end() + h2_match.start()
@@ -109,19 +105,17 @@ def parse_sprints() -> dict[str, Sprint]:
 
         section_text = content[section_start:section_end]
 
-        # Extract status (first match — there's exactly one per sprint).
         status_match = _STATUS_LINE_RE.search(section_text)
         status = status_match.group(1).strip() if status_match else "unknown"
 
-        # Extract depends-on (handle both pipe-terminated and end-of-line forms).
-        depends_match = _DEPENDS_RE.search(section_text) or _DEPENDS_RE_END.search(section_text)
+        depends_match = _DEPENDS_RE.search(section_text) or _DEPENDS_RE_END.search(
+            section_text
+        )
         depends_on: list[str] = []
         if depends_match:
             raw = depends_match.group(1).strip()
             if raw.lower() != "none":
-                depends_on = [
-                    tok.strip() for tok in raw.split(",") if tok.strip()
-                ]
+                depends_on = [tok.strip() for tok in raw.split(",") if tok.strip()]
 
         sprints[sprint_id] = Sprint(
             sprint_id=sprint_id,
@@ -133,6 +127,15 @@ def parse_sprints() -> dict[str, Sprint]:
         )
 
     return sprints
+
+
+def parse_sprints() -> dict[str, Sprint]:
+    """Parse all sprints from ROADMAP.md.
+
+    Returns a dict keyed by sprint ID. Section offsets are byte indices
+    into the raw file content; use `_read_roadmap()` to access them.
+    """
+    return parse_sprints_from_text(_read_roadmap())
 
 
 # ---------------------------------------------------------------------------
@@ -267,3 +270,95 @@ def get_sprint(sprint_id: str) -> Sprint:
 
 def roadmap_exists() -> bool:
     return ROADMAP_PATH.exists()
+
+
+# ---------------------------------------------------------------------------
+# Snapshot + validation (items B + C)
+# ---------------------------------------------------------------------------
+
+
+def snapshot_roadmap() -> str:
+    """Return the current ROADMAP.md content as a string (snapshot for restore)."""
+    return _read_roadmap()
+
+
+def restore_roadmap(snapshot: str) -> None:
+    """Write a previously-captured snapshot back to ROADMAP.md."""
+    _write_roadmap(snapshot)
+
+
+class RoadmapValidationError(Exception):
+    """Raised when post-agent validation detects roadmap corruption or
+    out-of-claim modifications. The harness restores the snapshot and
+    marks the sprint blocked with the validation reason.
+    """
+
+
+def validate_post_agent(
+    snapshot: str,
+    claimed_sprint_id: str,
+    phase_allows_new_sprints: bool,
+) -> None:
+    """Validate the current ROADMAP.md against a pre-agent snapshot.
+
+    Checks:
+      1. The current file parses cleanly (no markdown corruption).
+      2. The claimed sprint still exists.
+      3. No sprint other than the claimed one was modified, EXCEPT new
+         sprints added when the phase allows it (planner / reviewer).
+      4. No sprint that existed in the snapshot was deleted.
+
+    Raises RoadmapValidationError on violation. Caller is responsible
+    for restoring the snapshot.
+    """
+    try:
+        current_text = _read_roadmap()
+    except OSError as e:
+        raise RoadmapValidationError(f"could not read ROADMAP.md: {e}") from e
+
+    try:
+        snap_sprints = parse_sprints_from_text(snapshot)
+        curr_sprints = parse_sprints_from_text(current_text)
+    except Exception as e:  # broad: parsing should never raise but be defensive
+        raise RoadmapValidationError(f"parse failure on validation: {e}") from e
+
+    # Check 2: claimed sprint still exists.
+    if claimed_sprint_id not in curr_sprints:
+        raise RoadmapValidationError(
+            f"claimed sprint {claimed_sprint_id} disappeared from roadmap"
+        )
+
+    # Check 4: no snapshot sprint was deleted.
+    deleted = set(snap_sprints.keys()) - set(curr_sprints.keys())
+    if deleted:
+        raise RoadmapValidationError(
+            f"sprints deleted by agent: {sorted(deleted)}"
+        )
+
+    # Check 3: no non-claimed existing sprint was modified.
+    modified_violations: list[str] = []
+    for sid in snap_sprints:
+        if sid == claimed_sprint_id:
+            continue  # Agent owns its claimed sprint.
+        if sid not in curr_sprints:
+            continue  # Already covered by deletion check above.
+        snap_section = snapshot[
+            snap_sprints[sid].section_start : snap_sprints[sid].section_end
+        ]
+        curr_section = current_text[
+            curr_sprints[sid].section_start : curr_sprints[sid].section_end
+        ]
+        if snap_section != curr_section:
+            modified_violations.append(sid)
+    if modified_violations:
+        raise RoadmapValidationError(
+            f"sprints modified outside claim: {sorted(modified_violations)}. "
+            f"Claimed sprint was {claimed_sprint_id}."
+        )
+
+    # Check 5: new sprints added — only allowed in phases where it makes sense.
+    new_sprints = set(curr_sprints.keys()) - set(snap_sprints.keys())
+    if new_sprints and not phase_allows_new_sprints:
+        raise RoadmapValidationError(
+            f"agent added new sprints in a phase that disallows it: {sorted(new_sprints)}"
+        )

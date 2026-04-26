@@ -22,6 +22,7 @@ AGENT_GUIDE_PATH: Path = PROJECT_ROOT / "requirements" / "roadmap" / "AGENT_GUID
 PROMPTS_DIR: Path = RALPH_DIR / "prompts"
 LOGS_DIR: Path = RALPH_DIR / "logs"
 STATE_FILE: Path = RALPH_DIR / "state.json"
+LOCK_FILE: Path = RALPH_DIR / ".running"
 STOP_FILE: Path = PROJECT_ROOT / "STOP"
 
 # ---------------------------------------------------------------------------
@@ -78,3 +79,42 @@ STATUS_BLOCKED: str = "blocked"
 AGENT_OUTCOME_OK: str = "PHASE_OK"
 AGENT_OUTCOME_BLOCKED: str = "PHASE_BLOCKED"
 AGENT_OUTCOME_NEEDS_REWORK: str = "PHASE_NEEDS_REWORK"
+
+# ---------------------------------------------------------------------------
+# Auto-push (item A)
+# ---------------------------------------------------------------------------
+
+# When a sprint reaches a terminal outcome (done / blocked / needs-rework),
+# automatically `git push origin HEAD`. Disable with `--no-push` to keep
+# work local. Push failures are logged but don't crash the harness.
+PUSH_ON_SPRINT_COMPLETE: bool = True
+
+# Push subprocess timeout (a slow network shouldn't hang the harness).
+PUSH_TIMEOUT_SECONDS: int = 60
+
+# ---------------------------------------------------------------------------
+# Validation + recovery (items B, C, D)
+# ---------------------------------------------------------------------------
+
+# Validate ROADMAP.md after each agent phase. If parsing fails or the
+# agent corrupted unrelated sprint sections, restore the pre-phase
+# snapshot and mark the sprint blocked. Disable as an escape hatch in
+# case validation has false positives — but we should fix the false
+# positive rather than disable, normally.
+VALIDATE_ROADMAP_AFTER_AGENT: bool = True
+
+# An "in-progress" sprint older than this many minutes (no recent
+# Activity log entry, no recent state-file touch) is considered
+# abandoned by a previously-killed run. The startup recovery resets it
+# to `todo` so the next run can re-pick it up cleanly.
+IN_PROGRESS_STALE_MINUTES: int = 60
+
+# ---------------------------------------------------------------------------
+# Pre-flight checks (item F)
+# ---------------------------------------------------------------------------
+
+# Refuse to start if the working tree has uncommitted changes. Agents
+# commit during phases; mixing in unrelated dirty changes pollutes the
+# sprint history. Override with `--allow-dirty` if you know what you're
+# doing (e.g., debugging in a fresh worktree).
+REQUIRE_CLEAN_WORKING_TREE: bool = True

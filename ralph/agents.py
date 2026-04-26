@@ -32,14 +32,23 @@ from ralph.config import (
     PROJECT_ROOT,
     PROMPTS_DIR,
     ROADMAP_PATH,
+    VALIDATE_ROADMAP_AFTER_AGENT,
 )
 from ralph import roadmap_state
+from ralph.roadmap_state import RoadmapValidationError
 
 
 class Phase(Enum):
     PLAN = "plan"
     IMPLEMENT = "implement"
     REVIEW = "review"
+
+
+# Phases where it's legitimate for the agent to add new sprint sections
+# to the roadmap. Plan and Review can author new sprints (planner
+# proposes scope additions; reviewer files follow-ups). Implement should
+# only modify the claimed sprint.
+_PHASE_ALLOWS_NEW_SPRINTS: frozenset[Phase] = frozenset({Phase.PLAN, Phase.REVIEW})
 
 
 class Outcome(Enum):
@@ -203,15 +212,33 @@ def _detect_outcome(sprint_id: str, returncode: int) -> tuple[Outcome, str]:
 def run_phase(phase: Phase, sprint_id: str) -> PhaseResult:
     """Invoke the agent for the given phase against the given sprint.
 
+    Wraps subprocess invocation with:
+      - Pre-phase ROADMAP.md snapshot (item B + C).
+      - Post-phase validation: roadmap parses cleanly, claimed sprint
+        still exists, no out-of-claim modifications, no deletions, new
+        sprints only in phases that allow it.
+      - On validation failure: restore the snapshot, return ERROR with
+        the validation reason.
+
     Returns a PhaseResult with the detected outcome. The harness uses
     this to decide whether to advance, retry, or block the sprint.
     """
     log_path = _log_path_for(sprint_id, phase)
     prompt = _build_prompt(phase, sprint_id)
 
+    # Snapshot ROADMAP.md before the agent runs (item B + C).
+    pre_snapshot = roadmap_state.snapshot_roadmap()
+
     try:
         returncode, _stdout, _stderr = _invoke_claude(prompt, log_path)
     except subprocess.TimeoutExpired:
+        # Best-effort snapshot restore — the agent may have done partial
+        # writes before the timeout.
+        if VALIDATE_ROADMAP_AFTER_AGENT:
+            try:
+                roadmap_state.restore_roadmap(pre_snapshot)
+            except OSError:
+                pass
         return PhaseResult(
             outcome=Outcome.TIMEOUT,
             phase=phase,
@@ -227,6 +254,38 @@ def run_phase(phase: Phase, sprint_id: str) -> PhaseResult:
             log_path=log_path,
             reason=f"claude CLI not found: {e}. Check ralph/config.py CLAUDE_CMD.",
         )
+
+    # Validate the roadmap state after the agent's writes (item B + C).
+    if VALIDATE_ROADMAP_AFTER_AGENT and not DRY_RUN:
+        try:
+            roadmap_state.validate_post_agent(
+                snapshot=pre_snapshot,
+                claimed_sprint_id=sprint_id,
+                phase_allows_new_sprints=phase in _PHASE_ALLOWS_NEW_SPRINTS,
+            )
+        except RoadmapValidationError as e:
+            # Restore the pre-phase snapshot to undo whatever the agent
+            # did. The sprint is reported as ERROR with the validation
+            # reason; the harness will mark the sprint blocked.
+            try:
+                roadmap_state.restore_roadmap(pre_snapshot)
+                with log_path.open("a", encoding="utf-8") as f:
+                    f.write(
+                        f"\n--- ROADMAP VALIDATION FAILURE — RESTORED SNAPSHOT ---\n{e}\n"
+                    )
+            except OSError as restore_err:
+                with log_path.open("a", encoding="utf-8") as f:
+                    f.write(
+                        f"\n--- ROADMAP VALIDATION FAILURE + RESTORE FAILED ---\n"
+                        f"validation: {e}\nrestore: {restore_err}\n"
+                    )
+            return PhaseResult(
+                outcome=Outcome.ERROR,
+                phase=phase,
+                sprint_id=sprint_id,
+                log_path=log_path,
+                reason=f"roadmap validation failed: {e}",
+            )
 
     outcome, reason = _detect_outcome(sprint_id, returncode)
     return PhaseResult(

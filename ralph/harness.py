@@ -11,11 +11,13 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import signal
+import subprocess
 import sys
 import time
 from dataclasses import asdict, dataclass, field
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
@@ -25,8 +27,14 @@ from ralph.config import (
     DEFAULT_MAX_SPRINTS_PER_RUN,
     DRY_RUN,
     INTER_SPRINT_SLEEP,
+    IN_PROGRESS_STALE_MINUTES,
+    LOCK_FILE,
     LOGS_DIR,
     MAX_REWORK_CYCLES,
+    PROJECT_ROOT,
+    PUSH_ON_SPRINT_COMPLETE,
+    PUSH_TIMEOUT_SECONDS,
+    REQUIRE_CLEAN_WORKING_TREE,
     ROADMAP_PATH,
     STATE_FILE,
     STATUS_BLOCKED,
@@ -291,6 +299,274 @@ def execute_sprint(sprint_id: str, state: HarnessState) -> Outcome:
 # ---------------------------------------------------------------------------
 
 
+def _run_git(args: list[str], timeout: int = 30) -> tuple[int, str, str]:
+    """Run a git subcommand at the project root. Returns (rc, stdout, stderr)."""
+    try:
+        result = subprocess.run(
+            ["git", *args],
+            cwd=str(PROJECT_ROOT),
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            encoding="utf-8",
+            errors="replace",
+        )
+        return result.returncode, result.stdout, result.stderr
+    except FileNotFoundError:
+        return 127, "", "git not found on PATH"
+    except subprocess.TimeoutExpired:
+        return 124, "", f"git {args[0]} timed out after {timeout}s"
+
+
+# ---------------------------------------------------------------------------
+# Pre-flight checks (item F)
+# ---------------------------------------------------------------------------
+
+
+def _preflight_checks(allow_dirty: bool, push_enabled: bool) -> int:
+    """Verify environment before starting the loop. Returns 0 on success,
+    non-zero exit code on failure. Each check fails fast with a clear message.
+    """
+    # 1. ROADMAP.md exists.
+    if not roadmap_state.roadmap_exists():
+        log(f"ROADMAP.md not found at {ROADMAP_PATH}. Aborting.")
+        return 2
+
+    # 2. git is on PATH.
+    rc, _stdout, _stderr = _run_git(["--version"], timeout=10)
+    if rc != 0:
+        log(f"git unavailable: {_stderr.strip()}. Aborting.")
+        return 2
+
+    # 3. We're in a git repository.
+    rc, _stdout, _stderr = _run_git(["rev-parse", "--is-inside-work-tree"], timeout=10)
+    if rc != 0 or _stdout.strip() != "true":
+        log(f"Not in a git repo at {PROJECT_ROOT}. Aborting.")
+        return 2
+
+    # 4. Working tree clean (unless overridden).
+    if REQUIRE_CLEAN_WORKING_TREE and not allow_dirty:
+        rc, stdout, _stderr = _run_git(["status", "--porcelain"], timeout=15)
+        if rc != 0:
+            log("git status failed. Aborting.")
+            return 2
+        if stdout.strip():
+            log(
+                "Working tree is dirty. Agents will commit during phases; "
+                "mixing in unrelated changes pollutes sprint history. "
+                "Commit or stash, OR pass --allow-dirty to override."
+            )
+            log(f"Dirty files:\n{stdout}")
+            return 2
+
+    # 5. On a branch (not detached HEAD) — required for push.
+    if push_enabled:
+        rc, stdout, _stderr = _run_git(["symbolic-ref", "--short", "HEAD"], timeout=10)
+        if rc != 0:
+            log(
+                "Detached HEAD detected. Push needs a branch. "
+                "Either checkout a branch or pass --no-push."
+            )
+            return 2
+
+        # 6. Origin remote configured.
+        rc, _stdout, _stderr = _run_git(["remote", "get-url", "origin"], timeout=10)
+        if rc != 0:
+            log(
+                "No 'origin' remote configured. Either add origin or pass --no-push."
+            )
+            return 2
+
+    # 7. Claude CLI available (best-effort).
+    from ralph.config import CLAUDE_CMD
+
+    if not DRY_RUN:
+        try:
+            result = subprocess.run(
+                [CLAUDE_CMD[0], "--version"],
+                capture_output=True,
+                text=True,
+                timeout=10,
+            )
+            if result.returncode != 0:
+                log(
+                    f"Claude CLI '{CLAUDE_CMD[0]} --version' returned non-zero. "
+                    f"The harness will still attempt invocation, but check your install."
+                )
+        except FileNotFoundError:
+            log(
+                f"Claude CLI '{CLAUDE_CMD[0]}' not found on PATH. "
+                f"The first agent invocation will fail. "
+                f"Check ralph/config.py CLAUDE_CMD or your install."
+            )
+            return 2
+        except subprocess.TimeoutExpired:
+            log(
+                f"Claude CLI did not respond to --version within 10s. "
+                f"The harness will still attempt invocation."
+            )
+
+    log("Pre-flight checks passed.")
+    return 0
+
+
+# ---------------------------------------------------------------------------
+# Lock file (prevents concurrent harness runs)
+# ---------------------------------------------------------------------------
+
+
+def _acquire_lock() -> bool:
+    """Try to acquire the harness lock. Returns True on success.
+
+    If a stale lock exists (PID no longer running), remove it and acquire.
+    If a fresh lock exists (PID running), refuse to start.
+    """
+    if LOCK_FILE.exists():
+        try:
+            other_pid = int(LOCK_FILE.read_text(encoding="utf-8").strip())
+        except (ValueError, OSError):
+            other_pid = -1
+        if other_pid > 0 and _pid_alive(other_pid):
+            log(
+                f"Lock file {LOCK_FILE} held by PID {other_pid} (running). "
+                f"Refusing to start a concurrent harness."
+            )
+            return False
+        log(f"Stale lock from PID {other_pid} found; removing.")
+        try:
+            LOCK_FILE.unlink()
+        except OSError as e:
+            log(f"Could not remove stale lock: {e}. Aborting.")
+            return False
+    try:
+        LOCK_FILE.parent.mkdir(parents=True, exist_ok=True)
+        LOCK_FILE.write_text(str(os.getpid()), encoding="utf-8")
+    except OSError as e:
+        log(f"Could not create lock file: {e}. Aborting.")
+        return False
+    return True
+
+
+def _release_lock() -> None:
+    """Remove the lock file on clean exit. Best-effort."""
+    try:
+        if LOCK_FILE.exists():
+            LOCK_FILE.unlink()
+    except OSError:
+        pass
+
+
+def _pid_alive(pid: int) -> bool:
+    """Return True if a process with the given PID is currently running."""
+    if sys.platform == "win32":
+        # Windows: tasklist returns the process name if it exists.
+        try:
+            result = subprocess.run(
+                ["tasklist", "/FI", f"PID eq {pid}", "/NH"],
+                capture_output=True,
+                text=True,
+                timeout=5,
+            )
+            return str(pid) in result.stdout
+        except (FileNotFoundError, subprocess.TimeoutExpired):
+            # If we can't check, assume dead (conservative — let the new run start).
+            return False
+    else:
+        try:
+            os.kill(pid, 0)
+            return True
+        except (OSError, ProcessLookupError):
+            return False
+
+
+# ---------------------------------------------------------------------------
+# Stuck-sprint recovery (item D)
+# ---------------------------------------------------------------------------
+
+
+def _recover_stuck_sprints(state: "HarnessState") -> int:
+    """Reset sprints stuck in `in-progress (*)` Status from a prior run.
+
+    A sprint is stale if:
+      - Its Status starts with "in-progress"
+      - Its state.json `last_touched_at` is older than IN_PROGRESS_STALE_MINUTES
+        (or there's no state for it at all)
+
+    Stale sprints get their Status reset to `todo` with an Activity log
+    note explaining the recovery. The sprint becomes eligible for the
+    next pickup.
+
+    Returns the number of sprints recovered.
+    """
+    sprints = roadmap_state.parse_sprints()
+    now = datetime.now()
+    stale_threshold = timedelta(minutes=IN_PROGRESS_STALE_MINUTES)
+    recovered = 0
+
+    for sprint_id, sprint in sprints.items():
+        if not sprint.status.lower().startswith("in-progress"):
+            continue
+
+        sprint_state = state.sprints.get(sprint_id)
+        last_touched_str = sprint_state.last_touched_at if sprint_state else None
+        if last_touched_str:
+            try:
+                last_touched = datetime.fromisoformat(last_touched_str)
+            except ValueError:
+                last_touched = None
+        else:
+            last_touched = None
+
+        is_stale = last_touched is None or (now - last_touched) > stale_threshold
+        if not is_stale:
+            log(
+                f"Sprint {sprint_id} is in-progress but recently touched "
+                f"({last_touched_str}). Skipping recovery; another run may be active."
+            )
+            continue
+
+        log(
+            f"Recovering stuck sprint {sprint_id} (status={sprint.status!r}, "
+            f"last_touched={last_touched_str}). Resetting to todo."
+        )
+        roadmap_state.update_status(sprint_id, STATUS_TODO)
+        roadmap_state.append_activity_log(
+            sprint_id,
+            f"harness: stuck-sprint recovery — was {sprint.status!r}, reset to todo",
+        )
+        # Don't reset the iteration counters in state.json — they're useful
+        # signal for whether this sprint has been struggling.
+        recovered += 1
+
+    return recovered
+
+
+# ---------------------------------------------------------------------------
+# Auto-push (item A)
+# ---------------------------------------------------------------------------
+
+
+def _push_after_sprint(sprint_id: str, outcome: Outcome, push_enabled: bool) -> None:
+    """Push current branch to origin after sprint completion.
+
+    Pushes on terminal outcomes (OK, BLOCKED, NEEDS_REWORK). Skips
+    TIMEOUT and ERROR because state may be inconsistent. Push failures
+    are logged but don't crash the harness — a network blip shouldn't
+    stop the loop.
+    """
+    if not push_enabled:
+        return
+    if outcome not in (Outcome.OK, Outcome.BLOCKED, Outcome.NEEDS_REWORK):
+        log(f"{sprint_id}: skipping push (outcome={outcome.value} may be inconsistent)")
+        return
+
+    rc, stdout, stderr = _run_git(["push", "origin", "HEAD"], timeout=PUSH_TIMEOUT_SECONDS)
+    if rc == 0:
+        log(f"{sprint_id}: pushed to origin")
+    else:
+        log(f"{sprint_id}: push failed (rc={rc}): {stderr.strip() or stdout.strip()}")
+
+
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Ralph loop harness for the Aurelia roadmap")
     p.add_argument(
@@ -310,6 +586,21 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Don't actually invoke Claude; log what would happen",
     )
+    p.add_argument(
+        "--no-push",
+        action="store_true",
+        help="Don't `git push` after sprint completion. Default is to push.",
+    )
+    p.add_argument(
+        "--allow-dirty",
+        action="store_true",
+        help="Skip the working-tree-clean pre-flight check. Use only for debugging.",
+    )
+    p.add_argument(
+        "--skip-recovery",
+        action="store_true",
+        help="Don't auto-reset stuck-in-progress sprints from prior runs.",
+    )
     return p.parse_args()
 
 
@@ -317,79 +608,104 @@ def main() -> int:
     args = parse_args()
 
     if args.dry_run:
-        # Override config; agents will respect this via env or config import.
-        # Easiest path: set the config value directly.
         from ralph import config as _cfg
 
         _cfg.DRY_RUN = True
 
-    if not roadmap_state.roadmap_exists():
-        log(f"ROADMAP.md not found at {ROADMAP_PATH}. Aborting.")
-        return 2
+    push_enabled = not args.no_push and PUSH_ON_SPRINT_COMPLETE
+
+    # Pre-flight checks (item F). Fail fast.
+    rc = _preflight_checks(allow_dirty=args.allow_dirty, push_enabled=push_enabled)
+    if rc != 0:
+        return rc
 
     LOGS_DIR.mkdir(parents=True, exist_ok=True)
 
-    state = HarnessState.load()
-    state.last_run_started_at = datetime.now().isoformat()
-    state.save()
+    # Lock — refuse concurrent runs (paranoia / safety).
+    if not _acquire_lock():
+        return 2
 
-    signal.signal(signal.SIGINT, _sigint_handler)
-    if hasattr(signal, "SIGTERM"):
-        signal.signal(signal.SIGTERM, _sigint_handler)
-
-    log(f"Harness starting. max_sprints={args.max_sprints} dry_run={DRY_RUN or args.dry_run}")
-    if args.sprint:
-        log(f"Forced sprint pickup: {args.sprint}")
-
-    sprints_processed = 0
-    while sprints_processed < args.max_sprints:
-        if should_stop():
-            log("Stop signal honored before sprint pickup.")
-            consume_stop_file()
-            break
-
-        sprints = roadmap_state.parse_sprints()
-
-        if args.sprint:
-            target = sprints.get(args.sprint)
-            if target is None:
-                log(f"Forced sprint {args.sprint} not found. Aborting.")
-                return 2
-            if not target.is_todo():
-                log(f"Forced sprint {args.sprint} status={target.status!r}, not todo. Aborting.")
-                return 2
-            # Verify deps.
-            unmet = [d for d in target.depends_on if not sprints.get(d) or not sprints[d].is_done()]
-            if unmet:
-                log(
-                    f"Forced sprint {args.sprint} has unmet dependencies: {unmet}. Aborting."
-                )
-                return 2
-            picked = target
-            args.sprint = None  # Don't loop on the same sprint forever.
-        else:
-            eligible = roadmap_state.eligible_sprints(sprints)
-            if not eligible:
-                log("No eligible sprints. Exiting cleanly.")
-                break
-            picked = eligible[0]
-
-        log(f"Picking up sprint {picked.sprint_id}: {picked.title}")
-        outcome = execute_sprint(picked.sprint_id, state)
-        sprints_processed += 1
-        state.total_sprints_processed += 1
+    try:
+        state = HarnessState.load()
+        state.last_run_started_at = datetime.now().isoformat()
         state.save()
-        log(f"Sprint {picked.sprint_id} finished with outcome={outcome.value}")
 
-        if should_stop():
-            consume_stop_file()
-            break
+        signal.signal(signal.SIGINT, _sigint_handler)
+        if hasattr(signal, "SIGTERM"):
+            signal.signal(signal.SIGTERM, _sigint_handler)
 
-        time.sleep(INTER_SPRINT_SLEEP)
+        # Stuck-sprint recovery (item D).
+        if not args.skip_recovery:
+            recovered = _recover_stuck_sprints(state)
+            if recovered:
+                log(f"Recovered {recovered} stuck sprint(s) from prior run.")
 
-    log(f"Harness done. Sprints processed this run: {sprints_processed}.")
-    state.save()
-    return 0
+        log(
+            f"Harness starting. max_sprints={args.max_sprints} "
+            f"dry_run={DRY_RUN or args.dry_run} push={push_enabled}"
+        )
+        if args.sprint:
+            log(f"Forced sprint pickup: {args.sprint}")
+
+        sprints_processed = 0
+        while sprints_processed < args.max_sprints:
+            if should_stop():
+                log("Stop signal honored before sprint pickup.")
+                consume_stop_file()
+                break
+
+            sprints = roadmap_state.parse_sprints()
+
+            if args.sprint:
+                target = sprints.get(args.sprint)
+                if target is None:
+                    log(f"Forced sprint {args.sprint} not found. Aborting.")
+                    return 2
+                if not target.is_todo():
+                    log(
+                        f"Forced sprint {args.sprint} status={target.status!r}, not todo. Aborting."
+                    )
+                    return 2
+                unmet = [
+                    d
+                    for d in target.depends_on
+                    if not sprints.get(d) or not sprints[d].is_done()
+                ]
+                if unmet:
+                    log(
+                        f"Forced sprint {args.sprint} has unmet dependencies: {unmet}. Aborting."
+                    )
+                    return 2
+                picked = target
+                args.sprint = None
+            else:
+                eligible = roadmap_state.eligible_sprints(sprints)
+                if not eligible:
+                    log("No eligible sprints. Exiting cleanly.")
+                    break
+                picked = eligible[0]
+
+            log(f"Picking up sprint {picked.sprint_id}: {picked.title}")
+            outcome = execute_sprint(picked.sprint_id, state)
+            sprints_processed += 1
+            state.total_sprints_processed += 1
+            state.save()
+            log(f"Sprint {picked.sprint_id} finished with outcome={outcome.value}")
+
+            # Auto-push (item A) after sprint completion.
+            _push_after_sprint(picked.sprint_id, outcome, push_enabled)
+
+            if should_stop():
+                consume_stop_file()
+                break
+
+            time.sleep(INTER_SPRINT_SLEEP)
+
+        log(f"Harness done. Sprints processed this run: {sprints_processed}.")
+        state.save()
+        return 0
+    finally:
+        _release_lock()
 
 
 if __name__ == "__main__":
