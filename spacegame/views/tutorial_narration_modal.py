@@ -47,11 +47,15 @@ class TutorialNarrationModal(FirstTimeTipOverlay):
         self._panel_y = (WINDOW_HEIGHT - self._panel_h) // 2 + scale_y(20)
 
         # Rebuild the button rect against the new panel bounds.
+        # Bottom margin reserves room for the "Enter / Space / Esc"
+        # keyboard hint rendered below the button — without that
+        # reservation the hint clamps up into the button label.
         btn_w = scale_x(140)
         btn_h = scale_y(34)
+        hint_reserve = scale_y(20)  # hint glyphs (~14px) + 6px breathing room
         self._btn_rect = pygame.Rect(
             self._panel_x + (self._panel_w - btn_w) // 2,
-            self._panel_y + self._panel_h - btn_h - scale_y(14),
+            self._panel_y + self._panel_h - btn_h - scale_y(14) - hint_reserve,
             btn_w,
             btn_h,
         )
@@ -138,15 +142,14 @@ class TutorialNarrationModal(FirstTimeTipOverlay):
         lbl_rect = btn_label.get_rect(center=self._btn_rect.center)
         screen.blit(btn_label, lbl_rect)
 
-        # Keyboard hint below button
+        # Keyboard hint below button. The button's bottom margin in
+        # __init__ reserves space for this — no clamp needed.
         hint_surf = self._button_font.render(
             "Enter / Space / Esc", True, Colors.TEXT_SECONDARY
         )
         hint_surf.set_alpha(int(text_alpha * 0.7))
         hint_rect = hint_surf.get_rect(
             centerx=self._btn_rect.centerx,
-            top=self._btn_rect.bottom + scale_y(2),
+            top=self._btn_rect.bottom + scale_y(4),
         )
-        if hint_rect.bottom > self._panel_y + self._panel_h - scale_y(2):
-            hint_rect.bottom = self._panel_y + self._panel_h - scale_y(2)
         screen.blit(hint_surf, hint_rect)

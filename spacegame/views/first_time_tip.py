@@ -62,11 +62,15 @@ class FirstTimeTipOverlay:
         # Offset downward from center so the view's header area stays visible.
         self._panel_y = (WINDOW_HEIGHT - self._panel_h) // 2 + scale_y(40)
 
+        # Bottom margin reserves room for the "Enter / Space / Esc"
+        # keyboard hint rendered below the button — without that
+        # reservation the hint clamps up into the button label.
         btn_w = scale_x(120)
         btn_h = scale_y(32)
+        hint_reserve = scale_y(20)  # hint glyphs (~14px) + 6px breathing room
         self._btn_rect = pygame.Rect(
             self._panel_x + (self._panel_w - btn_w) // 2,
-            self._panel_y + self._panel_h - btn_h - scale_y(14),
+            self._panel_y + self._panel_h - btn_h - scale_y(14) - hint_reserve,
             btn_w,
             btn_h,
         )
@@ -213,10 +217,8 @@ class FirstTimeTipOverlay:
         hint_surf.set_alpha(int(text_alpha * 0.7))
         hint_rect = hint_surf.get_rect(
             centerx=self._btn_rect.centerx,
-            top=self._btn_rect.bottom + scale_y(2),
+            top=self._btn_rect.bottom + scale_y(4),
         )
-        # Hint sits below the panel if it would otherwise clip; simplest
-        # solution: paint it just above the panel bottom, inside the box.
-        if hint_rect.bottom > self._panel_y + self._panel_h - scale_y(2):
-            hint_rect.bottom = self._panel_y + self._panel_h - scale_y(2)
+        # The button's bottom margin in __init__ reserves space for this —
+        # no clamp needed.
         screen.blit(hint_surf, hint_rect)
