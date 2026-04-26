@@ -174,3 +174,76 @@ class TestBackwardCompatibility:
 
         assert "test_lore" not in _location_ids_in(layout.zones)
         assert "test_lore" in _location_ids_in(layout.poi_zones)
+
+
+@pytest.mark.parametrize("layout_cls, system_id", _LAYOUTS_AND_SYSTEMS)
+class TestCanonicalDeckGrid:
+    """SL-4: every layout subclass uses the canonical deck-by-deck arrangement.
+
+    Categories per `_categorize_locations`:
+      - Upper deck:      market, shipyard, investment
+      - Service deck:    cantina, repair_bay, (elevated unique)
+      - Industrial deck: mining, salvaging, refining
+
+    Deck order top-to-bottom, zones in horizontal rows within each deck.
+    Faction visual identity (background, accent_color, ambient particles,
+    `_render_default_zone` styling) is preserved per-subclass; only the
+    underlying zone placement is canonical.
+    """
+
+    def _build_layout_with_one_per_deck(self, layout_cls, system_id):
+        upper = _make_location("test_market", "market", system_id)
+        service = _make_location("test_repair", "repair_bay", system_id)
+        industrial = _make_location("test_mining", "mining", system_id)
+        layout = layout_cls([upper, service, industrial], system_id, elevated_location_ids=set())
+        layout.build_zones(_stub_sprite_mgr())
+        layout.build_strip_zones(_stub_sprite_mgr())
+        return layout, upper, service, industrial
+
+    def test_decks_ordered_top_to_bottom(self, layout_cls, system_id) -> None:
+        """Upper deck zones sit above service deck, which sits above industrial."""
+        layout, _upper, _service, _industrial = self._build_layout_with_one_per_deck(
+            layout_cls, system_id
+        )
+        zones_by_id = {z.location.id: z for z in layout.zones}
+        upper_y = zones_by_id["test_market"].rect.top
+        service_y = zones_by_id["test_repair"].rect.top
+        industrial_y = zones_by_id["test_mining"].rect.top
+        assert upper_y < service_y, (
+            f"Upper deck (market) at y={upper_y} should be above service deck "
+            f"(repair) at y={service_y}"
+        )
+        assert service_y < industrial_y, (
+            f"Service deck (repair) at y={service_y} should be above industrial "
+            f"deck (mining) at y={industrial_y}"
+        )
+
+    def test_zones_within_deck_share_y_coordinate(self, layout_cls, system_id) -> None:
+        """Multiple zones in the same deck render in a horizontal row."""
+        # Two cards in the upper deck (market + shipyard), one in service.
+        market = _make_location("test_market", "market", system_id)
+        shipyard = _make_location("test_shipyard", "shipyard", system_id)
+        cantina = _make_location("test_cantina", "cantina", system_id)
+        layout = layout_cls([market, shipyard, cantina], system_id, elevated_location_ids=set())
+        layout.build_zones(_stub_sprite_mgr())
+        zones_by_id = {z.location.id: z for z in layout.zones}
+        market_y = zones_by_id["test_market"].rect.top
+        shipyard_y = zones_by_id["test_shipyard"].rect.top
+        assert market_y == shipyard_y, (
+            f"Market and shipyard (both upper deck) should share y; "
+            f"got market={market_y}, shipyard={shipyard_y}"
+        )
+        # Cantina (service deck) should be at a different y.
+        assert zones_by_id["test_cantina"].rect.top != market_y
+
+    def test_empty_deck_does_not_consume_vertical_space(self, layout_cls, system_id) -> None:
+        """A station with only service-deck cards starts at the upper-deck Y position."""
+        cantina = _make_location("test_cantina", "cantina", system_id)
+        layout = layout_cls([cantina], system_id, elevated_location_ids=set())
+        layout.build_zones(_stub_sprite_mgr())
+        # If empty decks consumed space, the lone cantina would be pushed down.
+        # With proper skip-empty-decks behavior, it should be near the top of
+        # the action area (allowing for header card + small margin).
+        assert layout.zones[0].rect.top < 250, (
+            f"Single service-deck card should render high; got y={layout.zones[0].rect.top}"
+        )

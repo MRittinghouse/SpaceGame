@@ -507,24 +507,22 @@ class StationLayout:
                 service.append(loc)
         return {"upper": upper, "service": service, "industrial": industrial}
 
+    # SL-4: canonical deck-by-deck grid shared across all layout subclasses.
+    # Subclass `build_zones` implementations call `_build_deck_grid` to
+    # populate `self.zones`. Faction-specific styling stays in
+    # `_render_default_zone` overrides, ambient particles, background
+    # rendering, and taglines — only zone *placement* is canonical now.
+    def _build_deck_grid(self, sprite_mgr: object) -> None:
+        """Populate `self.zones` and `self._deck_labels` using the canonical
+        deck-by-deck arrangement (upper / service / industrial decks
+        stacked vertically, zones in horizontal rows within each deck).
 
-# ==========================================================================
-# Commerce Guild — Deck-by-Deck Vertical
-# ==========================================================================
-
-
-class GuildDeckLayout(StationLayout):
-    """Corporate deck-by-deck layout. Clean, hierarchical, blue accents."""
-
-    accent_color = Colors.FACTION_ACCENT_COMMERCE
-    bg_tint = (10, 15, 30, 15)
-    faction_tagline = "Commerce. Order. Prosperity."
-
-    def build_zones(self, sprite_mgr: object) -> list[StationZone]:
+        Empty decks consume no vertical space.
+        """
         from spacegame.engine.sprites import res_scale
 
         cats = self._categorize_locations()
-        self.zones = []
+        self._deck_labels: list[tuple[str, int, int]] = []
 
         margin_x = scale_x(60)
         deck_w = WINDOW_WIDTH - margin_x * 2
@@ -534,26 +532,22 @@ class GuildDeckLayout(StationLayout):
         deck_label_h = scale_y(22)
 
         y = _LAYOUT_TOP + scale_y(10)
-        deck_labels = [
+        deck_data = [
             ("UPPER DECK", cats["upper"]),
             ("SERVICE DECK", cats["service"]),
             ("INDUSTRIAL DECK", cats["industrial"]),
         ]
 
-        for deck_name, locations in deck_labels:
+        for deck_name, locations in deck_data:
             if not locations:
                 continue
 
-            # Deck label
-            self._deck_labels = getattr(self, "_deck_labels", [])
             self._deck_labels.append((deck_name, margin_x, y))
             y += deck_label_h
 
-            # Zones within deck
             num = len(locations)
             zone_w = (deck_w - (num - 1) * zone_gap) // max(1, num)
             zone_w = min(zone_w, scale_x(380))
-
             total_w = num * zone_w + (num - 1) * zone_gap
             start_x = (WINDOW_WIDTH - total_w) // 2
 
@@ -573,6 +567,43 @@ class GuildDeckLayout(StationLayout):
                 )
             y += zone_h + deck_gap
 
+    def _render_deck_labels(
+        self, screen: pygame.Surface, color: Optional[tuple[int, int, int]] = None
+    ) -> None:
+        """Render deck labels with horizontal rules, scaled to subclass accent.
+
+        Subclasses opt into this from their `render_background` if they
+        want visible deck labels; passing a custom color lets each
+        faction style the labels in its own register.
+        """
+        accent = color if color is not None else self.accent_color
+        for label, lx, ly in getattr(self, "_deck_labels", []):
+            label_surf = self._section_font.render(label, True, accent)
+            screen.blit(label_surf, (lx, ly + 2))
+            line_y = ly + scale_y(18)
+            pygame.draw.line(
+                screen,
+                (*accent, 60),
+                (lx + label_surf.get_width() + 10, line_y),
+                (WINDOW_WIDTH - lx, line_y),
+            )
+
+
+# ==========================================================================
+# Commerce Guild — Deck-by-Deck Vertical
+# ==========================================================================
+
+
+class GuildDeckLayout(StationLayout):
+    """Corporate deck-by-deck layout. Clean, hierarchical, blue accents."""
+
+    accent_color = Colors.FACTION_ACCENT_COMMERCE
+    bg_tint = (10, 15, 30, 15)
+    faction_tagline = "Commerce. Order. Prosperity."
+
+    def build_zones(self, sprite_mgr: object) -> list[StationZone]:
+        self.zones = []
+        self._build_deck_grid(sprite_mgr)
         return self.zones
 
     def update(self, dt: float) -> None:
@@ -599,19 +630,7 @@ class GuildDeckLayout(StationLayout):
 
     def render_background(self, screen: pygame.Surface) -> None:
         super().render_background(screen)
-
-        # Deck separator lines
-        for label, lx, ly in getattr(self, "_deck_labels", []):
-            label_surf = self._section_font.render(label, True, self.accent_color)
-            screen.blit(label_surf, (lx, ly + 2))
-            # Horizontal rule after label
-            line_y = ly + scale_y(18)
-            pygame.draw.line(
-                screen,
-                (*self.accent_color, 60),
-                (lx + label_surf.get_width() + 10, line_y),
-                (WINDOW_WIDTH - lx, line_y),
-            )
+        self._render_deck_labels(screen)
 
 
 # ==========================================================================
@@ -627,44 +646,12 @@ class UnionBlueprintLayout(StationLayout):
     faction_tagline = "Built by hands, not contracts."
 
     def build_zones(self, sprite_mgr: object) -> list[StationZone]:
-        from spacegame.engine.sprites import res_scale
-
+        # SL-4: canonical deck-by-deck grid. Union character ("Built by
+        # hands, not contracts") reads through the riveted-panel
+        # `_render_default_zone` styling, blueprint background grid lines,
+        # and amber industrial spark particles — not through grid layout.
         self.zones = []
-        margin_x = scale_x(60)
-        zone_w = scale_x(220)
-        zone_h = scale_y(110)
-        gap_x = scale_x(15)
-        gap_y = scale_y(16)
-        cols = min(4, max(2, (WINDOW_WIDTH - margin_x * 2 + gap_x) // (zone_w + gap_x)))
-
-        y = _LAYOUT_TOP + scale_y(10)
-
-        total_locations = len(self._grid_locations)
-
-        for i, loc in enumerate(self._grid_locations):
-            row = i // cols
-            col = i % cols
-
-            # Center partial rows (last row with fewer items)
-            items_in_row = min(cols, total_locations - row * cols)
-            row_w = items_in_row * zone_w + (items_in_row - 1) * gap_x
-            row_start_x = (WINDOW_WIDTH - row_w) // 2
-
-            x = row_start_x + col * (zone_w + gap_x)
-            zy = y + row * (zone_h + gap_y)
-            rect = pygame.Rect(x, zy, zone_w, zone_h)
-            color = LOCATION_COLORS.get(loc.location_type, Colors.TEXT_HIGHLIGHT)
-            icon = sprite_mgr.get_location_icon(loc.location_type, scale=res_scale(2))
-
-            self.zones.append(
-                StationZone(
-                    location=loc,
-                    rect=rect,
-                    label=loc.name,
-                    accent_color=color,
-                    icon=icon,
-                )
-            )
+        self._build_deck_grid(sprite_mgr)
         return self.zones
 
     def update(self, dt: float) -> None:
@@ -701,6 +688,9 @@ class UnionBlueprintLayout(StationLayout):
             pygame.draw.line(screen, grid_color, (x, _LAYOUT_TOP), (x, _LAYOUT_BOTTOM))
         for y in range(_LAYOUT_TOP, _LAYOUT_BOTTOM, grid_spacing):
             pygame.draw.line(screen, grid_color, (0, y), (WINDOW_WIDTH, y))
+
+        # Deck labels on top of the blueprint grid
+        self._render_deck_labels(screen)
 
     def _render_default_zone(
         self, screen: pygame.Surface, zone: StationZone, alpha_mult: float = 1.0
@@ -783,34 +773,19 @@ class CollectiveRadialLayout(StationLayout):
     faction_tagline = "Through knowledge, understanding."
 
     def build_zones(self, sprite_mgr: object) -> list[StationZone]:
-        from spacegame.engine.sprites import res_scale
-
+        # SL-4: radial folded into the canonical deck grid. Collective
+        # character (data-display, command center) reads through the
+        # holographic-node `_render_default_zone` styling, the orbiting
+        # data-node particles, and the central decorative ring rendered
+        # behind the deck labels.
         self.zones = []
-        cx = WINDOW_WIDTH // 2
-        cy = _LAYOUT_TOP + _ACTION_GRID_H // 2
-        radius = min(scale_x(280), _ACTION_GRID_H // 2 - scale_y(40))
-        zone_w = scale_x(160)
-        zone_h = scale_y(105)
-
-        n = len(self._grid_locations)
-        for i, loc in enumerate(self._grid_locations):
-            angle = -math.pi / 2 + (2 * math.pi * i / n)
-            zx = cx + int(radius * math.cos(angle)) - zone_w // 2
-            zy = cy + int(radius * math.sin(angle)) - zone_h // 2
-            rect = pygame.Rect(zx, zy, zone_w, zone_h)
-            color = LOCATION_COLORS.get(loc.location_type, Colors.TEXT_HIGHLIGHT)
-            icon = sprite_mgr.get_location_icon(loc.location_type, scale=res_scale(2))
-            self.zones.append(
-                StationZone(
-                    location=loc,
-                    rect=rect,
-                    label=loc.name,
-                    accent_color=color,
-                    icon=icon,
-                )
-            )
-        self._center = (cx, cy)
-        self._radius = radius
+        self._build_deck_grid(sprite_mgr)
+        # Cached center / radius for ambient orbital particles to
+        # reference. Center remains visually meaningful as the source of
+        # the ring; particles still orbit it even though zones no longer
+        # do.
+        self._center = (WINDOW_WIDTH // 2, _LAYOUT_TOP + _ACTION_GRID_H // 2)
+        self._radius = min(scale_x(280), _ACTION_GRID_H // 2 - scale_y(40))
         return self.zones
 
     def update(self, dt: float) -> None:
@@ -844,7 +819,9 @@ class CollectiveRadialLayout(StationLayout):
         super().render_background(screen)
         cx, cy = self._center
 
-        # Central ring
+        # SL-4: central ring stays as decorative atmosphere behind the
+        # deck labels. Was previously the focal point of a radial layout;
+        # now it's a Collective-flavored backdrop element.
         ring_alpha = 40 + int(15 * math.sin(self._elapsed * 1.5))
         ring_surf = pygame.Surface((self._radius * 2 + 20, self._radius * 2 + 20), pygame.SRCALPHA)
         rc = self._radius + 10
@@ -858,18 +835,12 @@ class CollectiveRadialLayout(StationLayout):
         )
         screen.blit(ring_surf, (cx - rc, cy - rc))
 
-        # Connecting lines from center to each zone
-        for zone in self.zones:
-            zx = zone.rect.centerx
-            zy = zone.rect.centery
-            line_color = zone.accent_color if zone.hovered else (*self.accent_color[:3],)
-            line_alpha = 80 if zone.hovered else 30
-            # Draw semi-transparent line
-            pygame.draw.line(screen, (*line_color[:3], line_alpha), (cx, cy), (zx, zy))
-
-        # Central station dot
+        # Central station dot — preserved as a small Collective signature.
         pygame.draw.circle(screen, self.accent_color, (cx, cy), scale_x(6))
         pygame.draw.circle(screen, Colors.TEXT_PRIMARY, (cx, cy), scale_x(3))
+
+        # Deck labels on top of the ring + dot.
+        self._render_deck_labels(screen)
 
     def _render_default_zone(
         self, screen: pygame.Surface, zone: StationZone, alpha_mult: float = 1.0
@@ -910,49 +881,14 @@ class FrontierScatteredLayout(StationLayout):
     faction_tagline = "The frontier takes care of its own."
 
     def build_zones(self, sprite_mgr: object) -> list[StationZone]:
-        import random as _random
-
-        from spacegame.engine.sprites import res_scale
-
+        # SL-4: scatter folded into the canonical deck grid. Frontier
+        # character ("the frontier takes care of its own") reads through
+        # the colorful per-zone borders, the warm green pollen particles,
+        # the rough hand-painted register, and the tagline — not through
+        # randomized placement. New-player legibility wins over the
+        # "improvised camp" metaphor.
         self.zones = []
-        rng = _random.Random(hash(self.system_id) + 42)
-
-        # Scatter zones with controlled randomness (no overlap)
-        zone_w = scale_x(190)
-        zone_h = scale_y(105)
-        margin = scale_x(50)
-
-        placed: list[pygame.Rect] = []
-        for loc in self._grid_locations:
-            # Try random positions, avoid overlap. Scatter is bounded to the
-            # action-grid area so the POI strip below stays clean.
-            for _ in range(50):
-                x = rng.randint(margin, WINDOW_WIDTH - margin - zone_w)
-                y = rng.randint(_LAYOUT_TOP + scale_y(10), _ACTION_GRID_BOTTOM - zone_h)
-                rect = pygame.Rect(x, y, zone_w, zone_h)
-                # Check overlap with placed zones
-                if not any(rect.inflate(10, 10).colliderect(p) for p in placed):
-                    placed.append(rect)
-                    break
-            else:
-                # Fallback: place in a grid-like position
-                idx = len(placed)
-                x = margin + (idx % 3) * (zone_w + scale_x(20))
-                y = _LAYOUT_TOP + scale_y(10) + (idx // 3) * (zone_h + scale_y(15))
-                rect = pygame.Rect(x, y, zone_w, zone_h)
-                placed.append(rect)
-
-            color = LOCATION_COLORS.get(loc.location_type, Colors.TEXT_HIGHLIGHT)
-            icon = sprite_mgr.get_location_icon(loc.location_type, scale=res_scale(2))
-            self.zones.append(
-                StationZone(
-                    location=loc,
-                    rect=rect,
-                    label=loc.name,
-                    accent_color=color,
-                    icon=icon,
-                )
-            )
+        self._build_deck_grid(sprite_mgr)
         return self.zones
 
     def update(self, dt: float) -> None:
@@ -983,27 +919,13 @@ class FrontierScatteredLayout(StationLayout):
 
     def render_background(self, screen: pygame.Surface) -> None:
         super().render_background(screen)
-
-        # Dashed connecting corridors between zones
-        if len(self.zones) >= 2:
-            for i in range(len(self.zones) - 1):
-                z1 = self.zones[i]
-                z2 = self.zones[i + 1]
-                x1, y1 = z1.rect.centerx, z1.rect.centery
-                x2, y2 = z2.rect.centerx, z2.rect.centery
-                # Dashed line
-                dx = x2 - x1
-                dy = y2 - y1
-                dist = max(1, int(math.sqrt(dx * dx + dy * dy)))
-                dash_len = 8
-                for d in range(0, dist, dash_len * 2):
-                    t1 = d / dist
-                    t2 = min(1.0, (d + dash_len) / dist)
-                    px1 = int(x1 + dx * t1)
-                    py1 = int(y1 + dy * t1)
-                    px2 = int(x1 + dx * t2)
-                    py2 = int(y1 + dy * t2)
-                    pygame.draw.line(screen, (60, 80, 60), (px1, py1), (px2, py2))
+        # SL-4: zone-to-zone dashed connectors removed. They were
+        # navigational metaphor for the scattered layout (improvised
+        # corridors between camps), but no longer make sense with the
+        # canonical deck grid where zones sit in straight rows. Frontier
+        # atmosphere now reads through pollen particles, accent colors,
+        # and the tagline.
+        self._render_deck_labels(screen)
 
     def _render_default_zone(
         self, screen: pygame.Surface, zone: StationZone, alpha_mult: float = 1.0
@@ -1051,34 +973,14 @@ class ReachDarkLayout(StationLayout):
     faction_tagline = "No laws. No mercy. No refunds."
 
     def build_zones(self, sprite_mgr: object) -> list[StationZone]:
-        from spacegame.engine.sprites import res_scale
-
+        # SL-4: asymmetric column folded into the canonical deck grid.
+        # Reach character ("no laws, no mercy, no refunds") reads through
+        # the dim-by-default `_render_default_zone` override — zones are
+        # barely visible until hovered — plus the dim red flickering
+        # ember particles and the lawless-bravado tagline. Layout is
+        # standardized; menace is preserved by visual treatment.
         self.zones = []
-        zone_w = scale_x(220)
-        zone_h = scale_y(105)
-        gap = scale_y(12)
-        # Single column, centered, sparse
-        n = len(self._grid_locations)
-        total_h = n * zone_h + max(0, n - 1) * gap
-        start_y = _LAYOUT_TOP + (_ACTION_GRID_H - total_h) // 2
-
-        for i, loc in enumerate(self._grid_locations):
-            # Alternate left/right offset for asymmetry
-            offset = scale_x(30) if i % 2 == 0 else scale_x(-30)
-            x = (WINDOW_WIDTH - zone_w) // 2 + offset
-            y = start_y + i * (zone_h + gap)
-            rect = pygame.Rect(x, y, zone_w, zone_h)
-            color = LOCATION_COLORS.get(loc.location_type, self.accent_color)
-            icon = sprite_mgr.get_location_icon(loc.location_type, scale=res_scale(2))
-            self.zones.append(
-                StationZone(
-                    location=loc,
-                    rect=rect,
-                    label=loc.name,
-                    accent_color=color,
-                    icon=icon,
-                )
-            )
+        self._build_deck_grid(sprite_mgr)
         return self.zones
 
     def update(self, dt: float) -> None:

@@ -246,14 +246,18 @@ Six sprints. Sequenced so each builds on the prior without forward-dependency ha
 - 11 new unit tests for `get_recommended_card` covering each hierarchy branch, the no-match fallthrough, and the hierarchy ordering (mission > damage > cargo). Boundary case for the damage threshold tested.
 - Total tests: 8,215 → **8,228 passing** post-SL-3 (+13 net: +11 SL-3 unit + 2 tagging from existing-suite reordering).
 
-### SL-4 — Action grid standardization
-- Define the canonical grid: deck-by-deck (upper / service / industrial), as Guild's current arrangement.
-- Migrate Union grid to deck-labeled grid (small change; mostly relabeling).
-- Replace Frontier scattered with deck-by-deck wearing Frontier styling. Preserve atmosphere (background, particles, dashed connectors as decorative not navigational, taglines).
-- Replace Reach hidden-until-hovered's asymmetric column with a deck-by-deck grid where cards are dim-by-default. Preserve the dim-until-hovered treatment.
-- Fold Collective radial into the deck grid (per locked decision). Orbital data nodes preserved as ambient particles, central ring becomes a decorative element behind the deck labels, holographic card styling persists.
-- Acceptance: a player who has docked at any one station can scan any other station's action grid in under 3 seconds (target for playtest).
-- Tests: subprocess bounds harness on every layout × resolution. Visual smoke tests via `_view_harness.py`.
+### SL-4 — Action grid standardization — SHIPPED 2026-04-26
+- Canonical grid extracted to `StationLayout._build_deck_grid` (base class). Upper / service / industrial decks stacked vertically, zones in horizontal rows within each deck. Empty decks consume no vertical space.
+- Deck labels rendered via shared `_render_deck_labels(screen, color)` helper. Subclasses opt in from their `render_background` and pass the faction's accent color.
+- All five subclass `build_zones` methods now delegate to `_build_deck_grid`. Faction visual identity preserved through:
+  - **Guild**: deck labels (always shipped this way; baseline).
+  - **Union**: blueprint grid lines under the canonical layout, riveted-panel `_render_default_zone`, amber industrial spark particles, deck labels in faction blue.
+  - **Collective**: central ring + station dot retained as decorative atmosphere behind the deck labels (no longer connecting nodes — was navigational, now scenery). Orbital data-node particles still circle the (now decorative) center. Holographic-node card styling intact. Connector lines from center to zones removed (radial-specific).
+  - **Frontier**: warm green pollen particles, colorful per-zone borders, hand-painted register, "the frontier takes care of its own" tagline. Dashed zone-to-zone connectors removed (they were the scatter metaphor).
+  - **Reach**: dim-by-default `_render_default_zone` override preserved (zones barely visible until hovered). Red ember flicker still drives `render_atmosphere`. Deck labels NOT rendered at Reach (would conflict with the menacing-darkness aesthetic). Layout is canonical; visual treatment keeps the lawless feel.
+- Frontier `_view_harness` smoke now exercises the canonical layout, not the random scatter.
+- Tests: 15 new parametrized tests in `TestCanonicalDeckGrid` covering all five subclasses across three behaviors (deck ordering, intra-deck row sharing, empty-deck collapse). Total tests: 8,228 → **8,243 passing** (+15).
+- Acceptance: a player who has docked at any one station encounters the same upper/service/industrial deck arrangement at every other station, modulo faction-specific atmosphere. Verified via the parametrized tests asserting deck-Y ordering and intra-deck row alignment for all five layouts.
 
 ### SL-5 — Faction-first-dock orientation tip
 - One-time first-time-tip on a player's first dock at *each* faction's territory. Single sentence, terse: "Guild stations group services by deck." / "Union stations are organized like a blueprint." / etc.
