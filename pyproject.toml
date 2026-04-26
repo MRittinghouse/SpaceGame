@@ -16,6 +16,7 @@ classifiers = [
 dependencies = [
     "pygame-ce>=2.5.0",
     "pygame-gui>=0.6.9",
+    "numpy>=2.0",  # ship_composite uses numpy arrays for pixel-grid math
 ]
 
 [project.optional-dependencies]

@@ -16,6 +16,11 @@ a = Analysis(
     hiddenimports=[
         "tkinter",
         "tkinter.filedialog",
+        # numpy is imported by spacegame/engine/ship_composite.py, used at
+        # combat init. Without an explicit hidden import, PyInstaller
+        # missed it on the bundled build and combat crashed for
+        # playtesters with ModuleNotFoundError.
+        "numpy",
     ],
     hookspath=[],
     hooksconfig={},
