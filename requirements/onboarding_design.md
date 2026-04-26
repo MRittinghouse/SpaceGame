@@ -2,6 +2,8 @@
 
 **Status**: scoping draft, 2026-04-22. Not a polished spec — this is the pass *before* the sprints.
 
+**Sister doc** (2026-04-26): `station_legibility.md` extends this doc to cover every dock after the first one. Where this doc covers Arna-supervised orientation at the starting station, that doc covers the cognitive load of arriving at any subsequent station for the rest of the game. Six principles inherit; the SL-N sprints are scoped there.
+
 **Context**: playtester feedback (PT-008, PT-010, PT-011, PT-013, PT-014, PT-015) revealed that the first two hours teach mechanics without teaching the game. The tutorial hand-holds through ship assembly, then the player is set free into a galaxy they've not been introduced to. Direction from user: significantly more guidance, verbally, preserving the feel of the world. This doc scopes how.
 
 ---

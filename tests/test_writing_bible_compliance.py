@@ -64,6 +64,27 @@ _BANNED_PHRASES = [
 
 _PARALLEL_NEGATION = re.compile(r"\bno \w+,\s*no \w+", re.IGNORECASE)
 
+# Strings explicitly exempted from parallel-negation enforcement. Each entry
+# requires a documented design rationale in a requirements doc. The check is
+# whole-string equality after `.strip()`, not substring — exemptions don't
+# leak into other content that happens to contain the string.
+#
+# Note: the current `_PARALLEL_NEGATION` regex requires comma-separated
+# parallelism ("no X, no Y"). Period-separated forms ("No X. No Y.") slip
+# through today, so listed strings using period parallelism are forward-
+# defensive: they won't trip current tests, but if regex coverage tightens
+# (or if a future per-surface scanner reads taglines directly), the
+# exemption is already in place.
+_PARALLEL_NEGATION_ALLOWLIST: frozenset[str] = frozenset(
+    {
+        # Crimson Reach faction tagline. Exempted per
+        # requirements/station_legibility.md (2026-04-26): in-character outlaw
+        # bravado, intentional parallelism for atmospheric register. No other
+        # taglines or content receive this exemption.
+        "No laws. No mercy. No refunds.",
+    }
+)
+
 
 def _find_violations(text: str) -> list[str]:
     """Return list of violation descriptions for a single text block."""
@@ -76,7 +97,7 @@ def _find_violations(text: str) -> list[str]:
     for phrase in _BANNED_PHRASES:
         if phrase in lowered:
             violations.append(f"banned phrase {phrase!r}")
-    if _PARALLEL_NEGATION.search(text):
+    if _PARALLEL_NEGATION.search(text) and text.strip() not in _PARALLEL_NEGATION_ALLOWLIST:
         violations.append("parallel-negation rhetoric ('no X, no Y')")
     return violations
 
@@ -201,9 +222,7 @@ def _extract_dialogue_strings() -> list[tuple[str, str]]:
             for i, resp in enumerate(getattr(node, "responses", []) or []):
                 resp_text = getattr(resp, "text", None)
                 if resp_text:
-                    entries.append(
-                        (f"dialogue:{dlg_id}:{node_id}:response_{i}", resp_text)
-                    )
+                    entries.append((f"dialogue:{dlg_id}:{node_id}:response_{i}", resp_text))
     return entries
 
 
@@ -233,9 +252,7 @@ def _extract_encounter_strings() -> list[tuple[str, str]]:
         if defn.description:
             entries.append((f"encounter:{defn.id}:description", defn.description))
         for choice in defn.choices:
-            entries.append(
-                (f"encounter:{defn.id}:choice_{choice.id}:label", choice.label)
-            )
+            entries.append((f"encounter:{defn.id}:choice_{choice.id}:label", choice.label))
             if choice.description:
                 entries.append(
                     (
@@ -293,9 +310,7 @@ class TestViewSourceWritingBible:
                     break
         if offenders:
             report = "\n  ".join(offenders[:30])
-            pytest.fail(
-                f"Em-dashes in view-source UI strings (first 30):\n  {report}"
-            )
+            pytest.fail(f"Em-dashes in view-source UI strings (first 30):\n  {report}")
 
     def test_no_banned_phrases_in_view_strings(self) -> None:
         """No 'couldn't help but' or 'a testament to' in view UI strings."""
@@ -305,9 +320,7 @@ class TestViewSourceWritingBible:
             for phrase in _BANNED_PHRASES:
                 if phrase in lowered:
                     offenders.append(f"{loc}: {phrase!r} in {text!r}")
-        assert not offenders, (
-            "Banned phrases in view UI strings:\n  " + "\n  ".join(offenders)
-        )
+        assert not offenders, "Banned phrases in view UI strings:\n  " + "\n  ".join(offenders)
 
     def test_no_parallel_negation_in_view_strings(self) -> None:
         """No 'no X, no Y' rhetoric in view UI strings."""
@@ -315,9 +328,8 @@ class TestViewSourceWritingBible:
         for loc, text in _extract_view_strings():
             if _PARALLEL_NEGATION.search(text):
                 offenders.append(f"{loc}: {text!r}")
-        assert not offenders, (
-            "Parallel-negation rhetoric in view UI strings:\n  "
-            + "\n  ".join(offenders)
+        assert not offenders, "Parallel-negation rhetoric in view UI strings:\n  " + "\n  ".join(
+            offenders
         )
 
 
@@ -335,9 +347,7 @@ class TestMissionAndJournalWritingBible:
             for loc, text in _extract_mission_strings()
             if any(d in text for d in _EM_DASHES)
         ]
-        assert not offenders, (
-            "Em-dashes in mission content:\n  " + "\n  ".join(offenders[:20])
-        )
+        assert not offenders, "Em-dashes in mission content:\n  " + "\n  ".join(offenders[:20])
 
     def test_no_em_dashes_in_journal(self) -> None:
         offenders = [
@@ -345,9 +355,7 @@ class TestMissionAndJournalWritingBible:
             for loc, text in _extract_journal_strings()
             if any(d in text for d in _EM_DASHES)
         ]
-        assert not offenders, (
-            "Em-dashes in journal content:\n  " + "\n  ".join(offenders[:20])
-        )
+        assert not offenders, "Em-dashes in journal content:\n  " + "\n  ".join(offenders[:20])
 
     def test_no_banned_phrases_in_missions(self) -> None:
         offenders: list[str] = []
@@ -356,9 +364,7 @@ class TestMissionAndJournalWritingBible:
             for phrase in _BANNED_PHRASES:
                 if phrase in lowered:
                     offenders.append(f"{loc}: {phrase!r} in {text[:100]!r}")
-        assert not offenders, (
-            "Banned phrases in mission content:\n  " + "\n  ".join(offenders[:20])
-        )
+        assert not offenders, "Banned phrases in mission content:\n  " + "\n  ".join(offenders[:20])
 
     def test_no_banned_phrases_in_journal(self) -> None:
         offenders: list[str] = []
@@ -367,9 +373,7 @@ class TestMissionAndJournalWritingBible:
             for phrase in _BANNED_PHRASES:
                 if phrase in lowered:
                     offenders.append(f"{loc}: {phrase!r} in {text[:100]!r}")
-        assert not offenders, (
-            "Banned phrases in journal content:\n  " + "\n  ".join(offenders[:20])
-        )
+        assert not offenders, "Banned phrases in journal content:\n  " + "\n  ".join(offenders[:20])
 
 
 # ---------------------------------------------------------------------------
@@ -392,9 +396,7 @@ class TestDialogueAndAmbientWritingBible:
             for loc, text in _extract_dialogue_strings()
             if any(d in text for d in _EM_DASHES)
         ]
-        assert not offenders, (
-            "Em-dashes in dialogue content:\n  " + "\n  ".join(offenders[:20])
-        )
+        assert not offenders, "Em-dashes in dialogue content:\n  " + "\n  ".join(offenders[:20])
 
     def test_no_em_dashes_in_ambient(self) -> None:
         offenders = [
@@ -402,9 +404,8 @@ class TestDialogueAndAmbientWritingBible:
             for loc, text in _extract_ambient_strings()
             if any(d in text for d in _EM_DASHES)
         ]
-        assert not offenders, (
-            "Em-dashes in ambient/chatter content:\n  "
-            + "\n  ".join(offenders[:20])
+        assert not offenders, "Em-dashes in ambient/chatter content:\n  " + "\n  ".join(
+            offenders[:20]
         )
 
     def test_no_em_dashes_in_encounters(self) -> None:
@@ -414,10 +415,7 @@ class TestDialogueAndAmbientWritingBible:
             for loc, text in _extract_encounter_strings()
             if any(d in text for d in _EM_DASHES)
         ]
-        assert not offenders, (
-            "Em-dashes in encounter content:\n  "
-            + "\n  ".join(offenders[:20])
-        )
+        assert not offenders, "Em-dashes in encounter content:\n  " + "\n  ".join(offenders[:20])
 
     def test_no_banned_phrases_in_encounters(self) -> None:
         """CE-4: encounters can't use 'couldn't help but', 'a testament to', etc."""
@@ -427,8 +425,8 @@ class TestDialogueAndAmbientWritingBible:
             for phrase in _BANNED_PHRASES:
                 if phrase in lowered:
                     offenders.append(f"{loc}: {phrase!r} in {text[:100]!r}")
-        assert not offenders, (
-            "Banned phrases in encounter content:\n  " + "\n  ".join(offenders[:20])
+        assert not offenders, "Banned phrases in encounter content:\n  " + "\n  ".join(
+            offenders[:20]
         )
 
     def test_no_em_dashes_in_crew_interjections(self) -> None:
@@ -438,10 +436,7 @@ class TestDialogueAndAmbientWritingBible:
             for loc, text in _extract_interjection_strings()
             if any(d in text for d in _EM_DASHES)
         ]
-        assert not offenders, (
-            "Em-dashes in crew interjections:\n  "
-            + "\n  ".join(offenders[:20])
-        )
+        assert not offenders, "Em-dashes in crew interjections:\n  " + "\n  ".join(offenders[:20])
 
     def test_no_banned_phrases_in_crew_interjections(self) -> None:
         offenders: list[str] = []
@@ -450,9 +445,8 @@ class TestDialogueAndAmbientWritingBible:
             for phrase in _BANNED_PHRASES:
                 if phrase in lowered:
                     offenders.append(f"{loc}: {phrase!r} in {text[:100]!r}")
-        assert not offenders, (
-            "Banned phrases in crew interjections:\n  "
-            + "\n  ".join(offenders[:20])
+        assert not offenders, "Banned phrases in crew interjections:\n  " + "\n  ".join(
+            offenders[:20]
         )
 
 
@@ -468,15 +462,12 @@ class TestCoverageSanity:
         """The view scanner finds a realistic number of UI strings."""
         entries = _extract_view_strings()
         assert len(entries) > 50, (
-            f"View scanner found only {len(entries)} strings. "
-            f"Regex may have drifted."
+            f"View scanner found only {len(entries)} strings. Regex may have drifted."
         )
 
     def test_mission_scanner_finds_content(self) -> None:
         entries = _extract_mission_strings()
-        assert len(entries) > 30, (
-            f"Mission scanner found only {len(entries)} strings."
-        )
+        assert len(entries) > 30, f"Mission scanner found only {len(entries)} strings."
 
     def test_journal_scanner_finds_content(self) -> None:
         entries = _extract_journal_strings()
