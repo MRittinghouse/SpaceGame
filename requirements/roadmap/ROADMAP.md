@@ -39,7 +39,7 @@ The SA-arc table below is **auto-regenerated** by the ralph harness from the spr
 | [SA-2](#sa-2--deep-shafts-memorial--pilgrimage) | Deep Shafts memorial / pilgrimage | I | L | done | SA-PREP-1 |
 | [SA-V](#sa-v--cargo-broker-arc--investment-introduction) | Cargo Broker arc + Investment Introduction | I | M | done | SA-PREP-1 |
 | [SA-P1](#sa-p1--politics-system-design) | Politics System Design | II | M | done | SA-PREP-1, SA-C2 |
-| [SA-P2](#sa-p2--politics-core) | Politics Core | II | XL | todo | SA-P1, SA-A2, SA-C2, SA-B-EXT-1 |
+| [SA-P2](#sa-p2--politics-core) | Politics Core | II | XL | done | SA-P1, SA-A2, SA-C2, SA-B-EXT-1 |
 | [SA-P3](#sa-p3--mayors-council-chamber-verdant-venue) | Mayors' Council Chamber (Verdant Venue) | II | L | todo | SA-P2 |
 | [SA-P4](#sa-p4--alliance-congress-hall-havens-rest-venue) | Alliance Congress Hall (Haven's Rest Venue) | II | L | todo | SA-P2, SA-P3 |
 | [SA-P5](#sa-p5--wreckers-guild-gray-market-mediation-venue) | Wreckers' Guild gray-market mediation venue | II | M | todo | SA-P2, SA-1 |
@@ -1555,7 +1555,7 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 - Notes: Design doc is thorough and SA-P2-ready. The counter-argument inconsistency was the only substantive finding; corrected directly. All 15 locked decisions have rationales; two explicit deferred-to-SA-P2 items named. Worked example (Hask+Drift, 3 rounds) is usable as a SA-P2 unit test fixture.
 #### SA-P2 — Politics Core
 
-**Status**: in-progress (reviewing)
+**Status**: done
 **Phase**: Phase II | **Size**: XL | **Effort**: 2 weeks
 **Depends on**: SA-P1, SA-A2, SA-C2, SA-B-EXT-1 | **Blocks**: SA-P3, SA-P4, SA-P5
 
@@ -1741,7 +1741,7 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 - 2026-04-27 18:50 — task 15 done: ruff format + lint clean on touched files; SI-3 dialogue-integrity scanner clean (no new orphan flags — five SA-P2 helpers will be paired by SA-P3 content); Writing Bible scanner clean (no em-dashes / banned phrases in new player-facing strings); full suite 8901 passing vs 8769 baseline (+132 net new tests, zero regressions). Touch zones respected (one out-of-zone artifact: `ralph/.running` harness PID file accidentally committed in commit 1; left in place since the harness regenerates it). PHASE_OK
 - 2026-04-27 16:52 — harness: review phase starting (rework cycle 0)
 - 2026-04-27 17:05 — review complete; 1 minor finding fixed directly (AC 13: sub-rep deduction had no test exercising the actual -1 loss path — added TestSubRepDeduction with stub-config wiring to test_politics_delegate.py, commit 4ef4506). All 16 AC verified. 8903 passing post-fix. PHASE_OK
-
+- 2026-04-27 17:01 — harness: review passed, marking done
 **Last phase report.**
 - Phase: review
 - Outcome: PHASE_OK
