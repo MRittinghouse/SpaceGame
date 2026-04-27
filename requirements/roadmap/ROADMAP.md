@@ -589,7 +589,7 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 
 #### SA-B-EXT-1 — Sub-reputation system
 
-**Status**: in-progress (implementing)
+**Status**: in-progress (reviewing)
 **Phase**: Phase B | **Size**: M | **Effort**: 5-7 days
 **Depends on**: none | **Blocks**: SA-1, SA-B3, SA-B4
 
@@ -669,24 +669,23 @@ The following decisions were locked during planning:
 - 2026-04-26 23:35 — plan re-pickup: verified all 6 Context-to-read paths exist; verified existing plan structure (9 plan steps, 12 acceptance criteria, 6 locked decisions, complete touch zones) aligns with `station_anchors.md` Phase B vision ("Extend the reputation model to support per-organization standing layered under per-faction standing. Tests, save support."); confirmed scope is correctly foundational (zero concrete configs ship — Wreckers' / Auctioneer / SA-B4 own theirs per registry pattern); polish items (tutorial integration, journal beats, achievement unlocks, crew banter, empty/loading/error states) all deferred to consumer sprints since this sprint ships no UI surfaces; refreshed acceptance criterion 12 + plan step 8 baseline from stale 8304 to current 8367 (skips 98); no scope expansion or new sprints needed. PHASE_OK
 - 2026-04-26 23:22 — harness: implement phase starting (rework cycle 0)
 - 2026-04-26 — implement: tests red (ModuleNotFoundError for sub_reputation, AttributeError on Player methods); sub_reputation.py implemented (26 model tests green, 27 Player tests red); Player helpers implemented (51 tests green, 2 save tests red); save_manager round-trip implemented (all 53 tests green); lint/format clean; full suite 8420/98 (+53). PHASE_OK
+- 2026-04-26 23:32 — harness: review phase starting (rework cycle 0)
+- 2026-04-26 23:45 — review complete; all 12 acceptance criteria verified; 53/53 tests passing; lint/format/mypy clean on touched files; 8420/98 (>= 8367 baseline); all 6 changed files within declared touch zones; no player-facing content (no Writing Bible or SI-3 checks needed); zero concrete configs correctly not shipped (registry pattern intact); design doc covers all spec deliverables. PHASE_OK
 
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-04-26 23:22
-- Completed: 2026-04-26
-- Files_changed: spacegame/models/sub_reputation.py, spacegame/models/player.py, spacegame/save_manager.py, tests/test_models/test_sub_reputation.py, requirements/sub_reputation_design.md
-- Commits: 31cc6ba, 8964b9b, eda9f59, d9194b0, 12a15e0
-- Tests_added: 53
-- Tests_baseline: 8367
+- Started: 2026-04-26 23:32
+- Completed: 2026-04-26 23:45
+- Files_changed: none
+- Commits: none
 - Tests_passing: 8420
-- Tests_skipped: 98
-- Lint_clean: yes
-- Format_clean: yes
-- SI3_scanner_clean: n/a
-- Writing_bible_clean: n/a
-- Touch_zones_respected: yes
-- Notes: Foundational sub-rep system: OrganizationConfig/OrganizationTier/SubReputationDelta frozen dataclasses; Player.sub_reputation field + 4 helper methods; notification queue mirroring _pending_faction_deltas; save round-trip with legacy-save compatibility. Zero concrete org configs shipped (registry pattern -- SA-1/SA-B3 own theirs). All 12 ACs satisfied.
+- Acceptance_criteria_verified: 12/12
+- Polish_items_verified: n/a
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 0
+- Followup_sprints_added: none
+- Notes: Clean implementation. OrganizationConfig/OrganizationTier/SubReputationDelta frozen dataclasses correct; Player helpers mirror modify_reputation pattern exactly; notification queue lifecycle matches _pending_faction_deltas; save round-trip with legacy-save compat; design doc resolves station_anchors.md open question. Ready for consumer sprints (SA-1, SA-B3, SA-B4).
 
 ### Phase C — Skill Tree Extensions
 
