@@ -35,7 +35,7 @@ Reference counts include indirect linkages (speaker home, system_id match). Dire
 |---|---|---|---|---|---|---|---|---|---|
 | Meridian Financial Exchange | nexus_financial_exchange | nexus_prime | 7 NPCs | 0 anchor-level | 0 | 0 | Yes (system) | 0 | Lore-only |
 | Stellaris Auction House | stellaris_auction_house | stellaris_port | 4 NPCs | 1 side | 0 | 0 | Yes (system) | 0 | Lore-only |
-| The Deep Shafts | breakstone_deep_mines | breakstone | 5 NPCs | 2 main + 1 side | 2 | 0 | Yes (system) | 0 | Has content (system-level) |
+| The Deep Shafts | breakstone_deep_mines | breakstone | 4 NPCs | 2 main + 1 side | 2 | 0 | Yes (system) | 0 | Has content (system-level) |
 | Restricted Sector 7 | iron_depths_restricted_zone | iron_depths | 3 NPCs | 2 main + 1 side + 1 crew | 1 | 0 | Yes (system) | 0 | Has campaign content |
 | Okafor Institute Medical Wing | axiom_research_wing | axiom_labs | 3 NPCs | 3 main + 2 side + 1 crew | 2 | 0 | Yes (system) | 0 | Has campaign content |
 | Restricted Research Wing | nova_restricted_labs | nova_research | 3 NPCs | 1 main + 2 side + 1 crew | 0 | 0 | Yes (system) | 0 | Has campaign content |
@@ -85,7 +85,9 @@ Themes: commodity futures activity ("futures on purified crystal are up three po
 
 #### Named NPCs Operating Here
 
-Cargo Broker (delivery_merchant), Dex Halloran, Elena Reeves (crew), Officer Larsen, Sgt. Mossa / dock_investigator, Neve Osei, Arna.
+Cargo Broker (delivery_merchant), Dex Halloran (+ dex_tunnel_contact / dex_final_lead variants), Elena Reeves (crew), Officer Larsen, Sgt. Mossa / dock_investigator, Neve Osei, Arna.
+
+Note: Dr. Priya Osei (`dr_priya_osei`) also has `home_system_id: nexus_prime` in `data/characters/npcs.json`, but is cataloged under Section 5 (Okafor Institute / axiom_labs) as her narrative operating context.
 
 The Meridian Financial Exchange itself has no named resident NPC assigned in current data. The Cargo Broker is thematically adjacent but is not framed as an Exchange employee.
 
@@ -173,7 +175,9 @@ Themes: shift culture ("Second shift just clocked in. Someone's whistling the ol
 
 #### Named NPCs Operating Here
 
-Marcus Jin (Mining Foreman, core crew), Hanna Voss (Dock Boss), Oren Tak (Retired Miner), Britt Vasara (Miner), Lira Feng (Union Safety Inspector).
+Marcus Jin (Mining Foreman, core crew), Hanna Voss (Dock Boss), Oren Tak (Retired Miner), Britt Vasara (Miner).
+
+Note: The audit originally listed Lira Feng (Union Safety Inspector) here, but her `home_system_id` in `data/characters/npcs.json` is `forgeworks`, not `breakstone`. She is a Forgeworks-based contact and does not operate at this anchor.
 
 No Deep Shafts caretaker or pilgrim NPC exists. SA-2 must author the caretaker ("Old Sten" or equivalent) from scratch. Marcus Jin's connection to his father at the Deep Shafts is referenced in the arc vision but not in current NPC data or dialogue.
 

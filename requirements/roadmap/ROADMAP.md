@@ -174,7 +174,7 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 
 #### SA-PREP-2 — Existing-data audit
 
-**Status**: in-progress (implementing)
+**Status**: in-progress (reviewing)
 **Phase**: Phase 0 | **Size**: S | **Effort**: 3-5 days
 **Depends on**: none | **Blocks**: SA-A1, SA-C1, SA-0
 
@@ -271,24 +271,23 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 - 2026-04-26 — implement: audited all 11 subjects across 10 data surfaces; key finding: all unique anchor location_ids are absent from encounter, dialogue, chatter, ambient, and news data; all references are system-level or speaker-home linkages
 - 2026-04-26 — implement: authored requirements/sa_audit_findings.md (640+ lines); 11 per-anchor sections, cross-cutting summary table, sub-faction catalog, 6-behavior regression checklist, 5-step save-state baseline procedure; voice-check clean (zero em-dashes, banned phrases, parallel negation)
 - 2026-04-26 — implement: test suite 8326 passed, 98 skipped; no regressions; lint/format n/a (docs-only sprint, no Python files touched). PHASE_OK
+- 2026-04-26 21:48 — harness: review phase starting (rework cycle 0)
+- 2026-04-26 22:30 — review complete; 2 minor findings fixed directly: (1) lira_feng incorrectly listed at breakstone (homes at forgeworks per npcs.json) -- removed from Section 3 named NPCs list and corrected summary table count 5 to 4; (2) dr_priya_osei (home_system_id=nexus_prime) not mentioned in Section 1 -- added clarifying note. All 9 acceptance criteria verified. Test suite 8326/8326. PHASE_OK
 
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-04-26 21:27
-- Completed: 2026-04-26 22:15
+- Started: 2026-04-26 22:15
+- Completed: 2026-04-26 22:30
 - Files_changed: requirements/sa_audit_findings.md, requirements/roadmap/ROADMAP.md
-- Commits: 4764953
-- Tests_added: 0
-- Tests_baseline: 8326
+- Commits: none
 - Tests_passing: 8326
-- Tests_skipped: 98
-- Lint_clean: n/a (no Python files touched)
-- Format_clean: n/a (no Python files touched)
-- SI3_scanner_clean: n/a (no dialogue flags added or modified)
-- Writing_bible_clean: yes (zero em-dashes, zero banned phrases, zero parallel-negation patterns in sa_audit_findings.md)
-- Touch_zones_respected: yes (only requirements/sa_audit_findings.md created; ROADMAP.md activity log updated per instructions)
-- Notes: Audit doc covers all 11 subjects (10 unique anchor locations + Cargo Broker). Cross-cutting finding: unique anchor location_ids do not appear in any encounter, dialogue tree, chatter, ambient, or news content; all references are system-level or speaker-home. Sub-faction catalog confirms no membership infrastructure exists in code. Regression checklist has 6 behaviors spanning 5 anchor locations. Save-state baseline is a 5-step procedural recipe. All 9 acceptance criteria satisfied.
+- Acceptance_criteria_verified: 9/9
+- Polish_items_verified: n/a
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 2
+- Followup_sprints_added: none
+- Notes: lira_feng NPC was listed at breakstone but homes at forgeworks; corrected. dr_priya_osei (nexus_prime NPC) was absent from Section 1; clarifying note added. All 9 ACs met; voice clean; test baseline held at 8326.
 
 #### SA-PREP-3 — Playtest baseline telemetry
 
