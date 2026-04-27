@@ -1451,3 +1451,250 @@ She contrasts with Odom in a specific way: Odom is working capital -- he counts 
 1. **Introduction**: "Ilse Vey. I'm one of the Exchange's primary brokers. Your record suggests you're ready for what we offer here -- or close to it. Odom's recommendation carries weight. Let's talk about what you're looking to accomplish."
 2. **On the Exchange**: "Meridian isn't the right fit for everyone. That's not a judgment -- it's a calibration question. The Exchange handles instruments that require a certain baseline of operating capital and a certain tolerance for structured risk. You're approaching that baseline."
 3. **On Odom**: "I've worked with people Odom has sent over for fifteen years. He doesn't send people he hasn't evaluated. He doesn't send them early. You're here because he decided you're ready. I take that seriously."
+
+---
+
+## Sable Trent -- Auction Reader
+
+**Faction**: Commerce Guild
+**Age**: Mid-30s
+**Role**: Auction Reader specialist crew (SA-A2); bid-pattern analyst (SA-B3, SA-B4)
+**Tonal register**: Cataloguer's precision -- shows numbers, never explains the read, lets the ceiling speak for itself.
+
+### Core Voice
+Sable spent six years logging bids for a Commerce Guild auction desk before she moved to the floor. She learned on the desk that the data is in the timing, not the price. A too-quick counter means the bidder has a hard ceiling. A pause before raising means they have room and are deciding whether to use it. She carries that knowledge now the way she carries her notebook: always open, never shown.
+
+She does not narrate her process. She gives you the number she thinks the ceiling is and lets you decide what to do with it. She is right often enough that most captains stop asking her to explain.
+
+### Verbal Habits
+- Quotes bid ceilings as specific numbers, not ranges: "Ceiling's around forty-two hundred" not "somewhere in the four-thousands"
+- Uses past tense to describe patterns: "The bluff cost him two rounds too early" -- the session is already filed in her head
+- Does not volunteer reasoning; if asked, gives one sentence: "The pause was too long"
+- Refers to bids by lot number in post-session review, not by what was sold
+- Says "watch the third counter" when she spots a tell forming
+
+### What She Says vs. What She Means
+- "Ceiling's around X" = I have seen this pattern before and I am confident in the number.
+- "Wait" = the bidder has not shown their hand yet; entering now costs you information.
+- "That was early" = the rival gave up too much signal; this lot is probably within reach.
+- "I'd sit this one" = the room has information I don't, and the spread makes it a bad entry.
+- "Second lot" = her way of deferring a discussion to after the session; she does not interrupt the read.
+
+### Emotional Range
+- **Operating mode (default)**: Still, focused, watching. She does not appear distracted; she appears absent. She is processing.
+- **Post-session review**: Brief, factual. "Three tells in the first hour. Two paid off. One was a feint." Does not dwell.
+- **When she's wrong**: Quieter than usual. Notes the error and does not mention it again. Adjusts internally.
+- **When she's right on a difficult call**: The same as always, but she sets down her pen for a moment.
+
+### What She Never Says
+- Anything that sounds like a prediction rather than a read: she reads patterns, she does not forecast
+- Why she left the desk (she does not discuss the Guild's internal structure with passengers)
+- Encouragement framed as probability: she gives you the number, not confidence intervals on her confidence
+- Anything during an active lot she hasn't already flagged as notable
+
+### Sample Lines
+1. **Arriving at Stellaris Port**: "I logged every lot sold through this floor for two years. Know what I noticed? The tells are the same at every price tier. The tells are always the same."
+2. **In-session**: "Ceiling's around thirty-eight hundred. The counter came back too fast. He's got a hard limit and he's nervous about it."
+3. **Post-win**: "You got it at value. The appraisal will come in within five percent of what you paid. I checked the comparable lots."
+4. **When asked to explain a read**: "The pause was longer than the previous counter. That's the read."
+5. **On the Guild floor in general**: "The Guild runs a clean house. The problem is everyone knows the house is clean, so they focus all their energy on reading each other instead. Makes it interesting."
+
+**Bonus Domain**: `auction_bid_visibility`, `auction_lot_appraisal_bonus` -- SA-B3, SA-B4
+
+---
+
+## Desta Coll -- Coalition Builder
+
+**Faction**: Frontier Alliance
+**Age**: Late 40s
+**Role**: Coalition Builder specialist crew (SA-A2); delegate coordination, advocate role (SA-P3, SA-P4)
+**Tonal register**: Pre-vote analyst -- counts commitments, maps pressure points, useful before the room locks in.
+
+### Core Voice
+Desta spent fifteen years running coordination between frontier settlements that needed each other and had every reason not to admit it. She learned that the vote itself is rarely where the dispute is decided. The decision happens in the corridor, in the meal before the session, in the quiet acknowledgment that a concession is on the table if the other side moves first. She works those spaces.
+
+She is not a debater. She does not win arguments in the room. She makes it so that by the time the room convenes, the votes you need are already counted.
+
+### Verbal Habits
+- Counts commitments out loud: "We have four confirmed, two likely, three I haven't reached yet"
+- Distinguishes committed from movable: "Confirmed" vs. "soft" vs. "working on it"
+- Rarely names the opposition's pressure points directly; maps them by inference: "If the Verdant bloc moves, the Forgeworks rep follows -- they always do"
+- Speaks in before/after framing: "Before the vote, you need X. After, you need Y to hold."
+- Says "early" and "late" to mean before and after alignment solidifies, not clock time
+
+### What She Says vs. What She Means
+- "We're two short" = we can reach two more; I know which two; I am already working on it.
+- "That delegate is listening" = they have not committed but they are open to the argument; do not push.
+- "We should not be in that room yet" = the alignment work isn't done; entering now shows your hand before it's full.
+- "Hold the ask" = the moment is wrong; the delegate needs something else first.
+- "We have what we need" = the vote is already decided; now we just have to not lose what we have.
+
+### Emotional Range
+- **Working mode (default)**: Calm, methodical, slightly impatient with anything that is not the task in front of her.
+- **When the count is short**: Precise about what's missing, direct about how to close it. No alarm, just adjustment.
+- **When a delegate flips**: Recounts immediately. "That changes the map. Give me a few minutes."
+- **When the vote goes through**: Brief satisfaction. Returns to the next task almost immediately. "Good. Here's what we need before the next session."
+
+### What She Never Says
+- That the vote will definitely go through before the count is confirmed
+- Anything that mistakes a soft commitment for a firm one
+- Optimism about delegates she has not personally spoken with
+- That persuasion is about the quality of the argument (it is about timing and positioning)
+
+### Sample Lines
+1. **Arriving at Haven's Rest**: "Alliance politics run on obligation. Who owes whom, and for what, going back three administrations. The visible vote is the last thing that matters."
+2. **Pre-session briefing**: "We have four confirmed, two soft, and Delegate Wren is still thinking about it. If we can get Wren, the others follow. I'll be in the corridor before the session. You handle the floor."
+3. **On a wavering delegate**: "She's listening. That means she hasn't decided. Don't push -- she decides against pressure. Give her a day."
+4. **When the coalition holds**: "We had what we needed. We just had to not make a mistake in the last hour."
+5. **Post-session**: "Three sessions, and we moved the count from four to nine. The work is done before the room convenes. It always is."
+
+**Bonus Domain**: `coalition_sway_bonus`, `coalition_size_bonus` -- SA-P3, SA-P4
+
+---
+
+## Cass Weller -- Arbiter
+
+**Faction**: Independent (no faction affiliation)
+**Age**: Mid-40s
+**Role**: Arbiter specialist crew (SA-A2); gray-market mediation, neutral role (SA-P5)
+**Tonal register**: Outcome-focused -- cares whether the deal holds, not who wins it.
+
+### Core Voice
+Cass arbitrated gray-market disputes on the Reach for eight years before the Guild gave her a semi-official title that nobody bothered to put on a sign. She took the work because nobody else wanted it: the cases where both parties were technically wrong and practically in need of a resolution that would stick for at least six months.
+
+She has no position on who was right. She has a position on whether the outcome will hold. Those are different questions, and she has found that most arbitrators confuse them.
+
+### Verbal Habits
+- Frames outcomes in terms of durability: "Does this hold in three months?" not "Is this fair?"
+- Uses "the parties" rather than naming sides; stays structurally neutral even in casual conversation
+- Identifies concession space before the parties do: "There's room in the delivery schedule"
+- Short questions during active mediation: "What does the other side need to leave the table?"
+- Notes which agreements have lasted and which haven't, on the record
+
+### What She Says vs. What She Means
+- "This can be structured" = I have seen worse and found a workable split; give me the details.
+- "That won't hold" = one party will breach this within ninety days; the agreement has a structural flaw.
+- "What do you need to walk away from this?" = I am not asking what you want; I am asking what is the minimum that makes this acceptable.
+- "Let me hear the other side" = I do not yet have the information I need; I am not ruling yet.
+- "This is workable" = the outcome will last; both parties have enough that neither wants to restart the fight.
+
+### Emotional Range
+- **Mediation mode (default)**: Even, patient, structurally neutral. Does not appear to favor anyone; this is the product of discipline, not indifference.
+- **When an outcome is durable**: Brief satisfaction. "That'll hold." She means it.
+- **When parties are stuck on position rather than interest**: Direct interruption. "I'm going to stop you there. Tell me what you need, not what you want."
+- **When an agreement will not hold**: Flat. "I can write this up, but I'll note in the record that the enforcement mechanism is insufficient."
+
+### What She Never Says
+- That she has an opinion on who is right
+- Optimism about an agreement she has identified as structurally flawed
+- That a bad outcome is still worth endorsing because it ends the session
+- Anything that positions her mediation as impartial theater rather than actual structuring
+
+### Sample Lines
+1. **Arriving at Crimson Reach**: "The Reach runs on deals that nobody advertises. My job is making sure the deals that don't get advertised are still the ones that hold."
+2. **Opening a session**: "I'm here to find an outcome both parties can live with for at least six months. That's the bar. Not fairness. Not satisfaction. Something that doesn't require another session in ninety days."
+3. **During a stuck negotiation**: "You're both telling me what you deserve. I need to know what you need. Those are different. Start with that."
+4. **On a partial win**: "You didn't get everything you came in with. You got enough that the other side doesn't want to restart this. That's what durable looks like."
+5. **Post-session**: "It'll hold. The enforcement mechanism is solid and both parties gave up enough that neither one is embarrassed by what they kept."
+
+**Bonus Domain**: `arbitration_neutrality_bonus`, `arbitration_dispute_intel` -- SA-P5
+
+---
+
+## Brix Tano -- Speculator
+
+**Faction**: Commerce Guild
+**Age**: Early 50s
+**Role**: Speculator specialist crew (SA-A2); futures contract analysis (SA-F2, SA-F3)
+**Tonal register**: Probability-band precision -- narrows the range, comfortable being wrong inside it, not outside.
+
+### Core Voice
+Brix ran contract desks at Nexus Prime for eleven years and left when the numbers stopped surprising him. He understands futures markets the way a geologist understands rock: not by prediction, but by reading the conditions that constrain what is possible.
+
+He does not tell you what will happen. He tells you the band the contract is most likely to land in, and he tells you how confident he is in the band. That is the whole product. Captains who want a guarantee find him useless. Captains who understand probability find him invaluable.
+
+### Verbal Habits
+- Quotes probability bands, not point estimates: "Probably lands between twenty-two and twenty-eight hundred"
+- Distinguishes confidence in the band from confidence in the midpoint: "I'm comfortable with the range. Less comfortable with where inside it."
+- Acknowledges when he is outside his band: "That's outside my model. I'm noting it."
+- Doesn't speculate on causes, only on likely outcomes: "I don't know why the contract is moving. I know which direction it's more likely to go."
+- Uses "the position" to refer to a contract under consideration, not by the underlying commodity
+
+### What He Says vs. What He Means
+- "The band is X to Y" = this is where I believe the contract will settle; I am comfortable with both ends.
+- "That's a wide band" = the data is uncertain; entering now means accepting more variance than I prefer to quote.
+- "I'd hold" = the entry timing is poor relative to where the band is likely to move; waiting costs less than entering now.
+- "That's outside my model" = something is happening in the underlying that I have not accounted for; I am flagging it.
+- "The band is narrowing" = new information has reduced the uncertainty; the entry window is probably now.
+
+### Emotional Range
+- **Analysis mode (default)**: Focused, methodical, quiet between calls. He is running the model in his head.
+- **When the position closes inside the band**: Satisfied but not vocal. "Within range." He updates his notes.
+- **When the position closes outside the band**: Quiet. "Outside the band. I'll check what I missed." No deflection, no excuse.
+- **When asked for certainty he doesn't have**: Patient but firm. "I can give you the band. I can't give you the number."
+
+### What He Never Says
+- Point predictions: his product is the band, and he does not deviate from it
+- That a contract is safe (safe is not a probability-band concept; every position has a band)
+- Anything that narrows the apparent band to seem more useful: the band is what the data supports
+- That he was right in hindsight as if that was the point (the point was whether the outcome was inside the band)
+
+### Sample Lines
+1. **Arriving at Nexus Prime**: "I ran the desk on Level Four for eleven years. The numbers here are the same numbers they were when I left. The room thinks it's smarter than that. It isn't."
+2. **On a contract entry**: "The band is eighteen to twenty-four hundred. I'm comfortable with both ends. If you want a number inside that, I don't have one."
+3. **Post-session, inside the band**: "Twenty-one hundred. Within range."
+4. **Post-session, outside the band**: "Twenty-eight hundred. Outside the band. I'll review the input data. Something moved that I didn't have."
+5. **On impatient captains**: "I understand you want a number. The market doesn't care what either of us wants. The band is what the data supports. Use it or don't."
+
+**Bonus Domain**: `futures_intel`, `speculator_premium_reduction` -- SA-F2, SA-F3
+
+---
+
+## Nuri Solberg -- Research Patron
+
+**Faction**: Science Collective
+**Age**: Late 50s
+**Role**: Research Patron specialist crew (SA-A2); project evaluation and patronage (SA-R1, SA-R2)
+**Tonal register**: Proposal reader -- cares whether the methodology holds up, not whether the project looks impressive.
+
+### Core Voice
+Nuri spent twenty years as a research administrator at the Collective before she moved to independent patronage. She left because the Collective had stopped funding the difficult projects, the ones where the methodology was sound but the outcome wasn't guaranteed and the timeline was longer than a budget cycle.
+
+She reads proposals the way a structural engineer reads load calculations: looking for the assumption that was padded, the risk estimate that was softened to make the sponsor comfortable, and the researcher who is actually holding the project together versus the one whose name is on the grant.
+
+She does not care about prestige. She cares about whether the project produces something that holds up.
+
+### Verbal Habits
+- Asks about methodology before outcomes: "Walk me through the protocol, not the expected results"
+- Identifies the load-bearing researcher by name, often early in a conversation: "Who's actually running the trials?"
+- Uses "holds up" as her primary quality criterion: "Does this hold up?" means she wants to know if the work survives replication
+- Distinguishes between promising and rigorous: "Promising" is a compliment; "rigorous" is the bar
+- Notes when risk estimates appear padded without accusation: "The failure rate on that step seems conservative"
+
+### What She Says vs. What She Means
+- "Walk me through the protocol" = the abstract did not give me what I need; I want to see where the assumptions are.
+- "Who's running the trials?" = I want to know if the name on the grant is also the person doing the work.
+- "This holds up" = I have looked at the methodology and I believe the results are reproducible; this is worth funding.
+- "The risk estimate seems conservative" = someone padded the numbers to make the proposal easier to approve; I want the actual figure.
+- "I've seen this funded before" = usually a warning: the pattern has a known failure mode; she wants to know if it's been addressed.
+
+### Emotional Range
+- **Proposal review mode (default)**: Methodical, precise, slightly impatient with abstracts that don't get to the method. She reads fast. She flags things fast.
+- **When a project genuinely holds up**: Engaged, direct. "This is the work. The methodology is sound. I want to fund this."
+- **When a proposal is padded**: Calm but pointed. "The failure rate on that step is understated. I'd like to see the actual variance data."
+- **When a funded project succeeds**: Quiet satisfaction. "It held up." She means it as a technical judgment, not a celebration.
+
+### What She Never Says
+- That prestige or institutional name is a factor in her evaluation (it is not)
+- That a project is a sure thing (nothing is; she funds based on methodology, not outcomes)
+- Anything that softens a methodological flaw to avoid a difficult conversation
+- That the Collective's current funding priorities are sound (she left; she has an opinion; she keeps it to professional contexts)
+
+### Sample Lines
+1. **First meeting**: "Nuri Solberg. Independent patronage. I look at methodology. If the protocol holds up, the funding conversation is short. If it doesn't, the funding conversation is also short, but in a different direction."
+2. **Reviewing a proposal**: "Walk me through the protocol on step three. The abstract says the error rate is within acceptable limits. I want to see the actual variance."
+3. **When a project holds up**: "The methodology is sound. The researcher running the trials knows what she's doing. This is the work. I want to fund it."
+4. **On a padded risk estimate**: "The failure rate on that synthesis step is understated. Someone put a number in there that the sponsor would approve. I need the actual figure before I can evaluate this."
+5. **On why she left the Collective**: "They stopped funding the projects where the outcome wasn't guaranteed. Those are the only projects worth funding."
+
+**Bonus Domain**: `research_yield_bonus`, `research_risk_reduction` -- SA-R1, SA-R2
