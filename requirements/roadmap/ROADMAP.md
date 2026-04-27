@@ -808,38 +808,94 @@ The following decisions were locked during planning:
 - Notes: Clean design sprint. All seven skill blocks accurate against live progression.py and crew_members.json. Prerequisite IDs verified present. Bonus type string spellings verified exact match in both directions.
 #### SA-C2 — Skill tree extension implementation
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Phase C | **Size**: M | **Effort**: 5-7 days
 **Depends on**: SA-C1 | **Blocks**: SA-P1, SA-P2, SA-B2, SA-F1, SA-R1
 
-**Goal.** Add the new SA skills per SA-C1's design. Wire bonuses through `progression.get_bonus()`. Update the skill tree view if the new skills require visual treatment.
+**Goal.** Add the seven new SA-arc skill nodes specified in `requirements/sa_skill_design.md` to `create_default_skills()`, wire the seven new bonus_type strings through `PlayerProgression.get_bonus()`, and confirm the existing skill tree view auto-arranges them at all six tested resolutions without crowding. No new view code, no new migration entries, no new capstones — this sprint is the mechanical implementation of the SA-C1 design.
 
 **Context to read.**
-- `requirements/sa_skill_design.md`
-- `spacegame/models/progression.py`
-- `spacegame/views/skill_tree_view.py`
-- `tests/test_models/test_progression.py`
+- `requirements/sa_skill_design.md` (sections 1, 2, 8, 9 — the SkillNode spec, bonus-naming table, handoff checklist, locked decisions)
+- `spacegame/models/progression.py` (lines 71-156 `_SKILL_MIGRATION_MAP`, 351-368 `from_dict`, 384-1265 `create_default_skills`)
+- `spacegame/views/skill_tree_view.py` (lines 83-95 `_CAPSTONE_IDS`, 250-296 `_compute_detail_positions`)
+- `tests/test_models/test_progression.py` (existing test patterns; lines 23, 161-163, 326-329 hold count assertions to update)
+- `tests/test_models/test_skill_expansion.py` (line 144 holds total skill count to update)
+- `tests/test_models/test_skill_tree_expansion.py` (lines 44, 49, 56 hold counts and total max-level cost to update)
+- `data/crew/crew_members.json` (verify the seven shared bonus_type strings against the SA-A1 crew side; spec is authoritative, this read is a sanity check)
 
 **Touch zones.**
 - `spacegame/models/progression.py`
-- `spacegame/views/skill_tree_view.py`
 - `tests/test_models/test_progression.py`
+- `tests/test_models/test_skill_expansion.py`
+- `tests/test_models/test_skill_tree_expansion.py`
+- `spacegame/views/skill_tree_view.py` (read-only verification at the six standard resolutions — only edited if a layout fix turns out to be required, in which case the implementer files PHASE_BLOCKED per SA-C1 handoff item 4)
 
 **Deliverables.**
-- New skills present in `create_default_skills()`.
-- Bonus types accessible via `get_bonus(...)`.
-- Skill tree view renders the new skills correctly at all 6 tested resolutions.
-- Tests for bonus integration + skill tree rendering.
+- Seven new `SkillNode` entries in `create_default_skills()` matching `sa_skill_design.md` section 1 verbatim (ids, names, descriptions, trees, prereqs, max_level, bonus_type, bonus_per_level).
+- Seven shared bonus_type strings accessible via `progression.get_bonus("...")` at the magnitudes in section 2.
+- Per-skill bonus + prereq + max-level test class in `tests/test_models/test_progression.py` covering all seven (level-0 zero, level-1 magnitude, level-2 magnitude, can't level past max, prereq blocks initial level).
+- Save round-trip tests: pre-SA-C2 fixture (without new IDs) loads with new skills at level 0; post-SA-C2 fixture round-trips leveled new skills.
+- Existing count-assertion tests updated: total 82 → 89, Commerce 12 → 14, Leadership 11 → 13, Social 13 → 15, Industry 12 → 13, total max-level cost 146 → 160. Combat (22) and Exploration (12) unchanged.
+- Layout regression confirmation: visual smoke at the six conftest resolutions (1280×720, 1600×900, 1920×1080, 1280×800, 1366×768, 2560×1440) with the four affected trees (Commerce, Social, Leadership, Industry) selected. Recorded in the Activity log.
 
 **Acceptance criteria.**
-1. Each new skill is unlockable, leveled, and grants its bonus correctly.
-2. Save/load round-trips ranks in new skills.
-3. Skill tree view layout doesn't regress at any resolution.
-4. Full test suite green.
+1. All seven new skill ids are present in `create_default_skills()` with the exact field values from `sa_skill_design.md` section 1; the bonus_type strings are exactly the seven from the section 2 table.
+2. For each new skill, `progression.get_bonus(bonus_type)` returns 0.0 at level 0, `bonus_per_level` at level 1, and `2 * bonus_per_level` at level 2 (using `pytest.approx` for float comparisons).
+3. For each new skill, `level_up_skill` fails with a "Requires" message when the prerequisite is at level 0, and succeeds once the prerequisite is unlocked.
+4. For each new skill, attempting to level past `max_level = 2` fails with a "maxed" message.
+5. A pre-SA-C2 save fixture (skills dict missing the seven new ids) loads via `from_dict` and yields `current_level == 0` for all seven; a post-SA-C2 save fixture with leveled new skills round-trips without loss.
+6. `_SKILL_MIGRATION_MAP` is unchanged (no new entries, no removed entries) — verified by an explicit assertion that none of the seven new ids appears as a key or value in the map.
+7. `_CAPSTONE_IDS` in `skill_tree_view.py` is unchanged (no edits in this sprint).
+8. Layout regression: at each of the six conftest resolutions, opening Commerce, Social, Leadership, and Industry detail views populates `_detail_positions` for all skills in that tree (including the new ones), every position is inside the `(DETAIL_LEFT, DETAIL_TOP, DETAIL_RIGHT, DETAIL_BOTTOM)` rectangle, and no two nodes in the same depth column overlap (centers at least `2 * NODE_RADIUS` apart vertically). If any tree fails this check, the implementer files `PHASE_BLOCKED` rather than tweaking the layout algorithm.
+9. Player-facing description strings copied verbatim from `sa_skill_design.md` section 1 pass the Writing Bible scanner (no em-dashes, no banned phrases, no parallel-negation rhetoric).
+10. Full test suite passes with count >= 8430 (pre-phase baseline) plus the new SA-C2 tests; no new failures.
+
+**Risks / open questions.**
+- None. SA-C1 locked all design decisions (sections 9.1-9.8 of the design doc): binary intel bonuses stay crew-only (Decision 1), placements in existing trees only (Decision 2), no new capstones (Decision 3), `max_level = 2` for all seven (Decision 4), naming avoids `negotiator`/`master_negotiator` collision (Decision 5), conservative `bonus_per_level` from SA-A1 range lower bound (Decision 6), no save migration (Decision 7), no view edits (Decision 8). The implementer's job is to land the design as specified.
+
+**Plan.**
+
+1. **Update existing count-assertion tests first (red).** Edit the four count assertions in `tests/test_models/test_progression.py` (line 23 → 89; line 161 → 14 commerce; line 163 → 13 leadership; line 329 → 15 social), `tests/test_models/test_skill_expansion.py` (line 144 → 89), and `tests/test_models/test_skill_tree_expansion.py` (line 44 → 13 industry; line 49 → 89; line 56 → 160 total max levels). Run `pytest tests/test_models/test_progression.py tests/test_models/test_skill_expansion.py tests/test_models/test_skill_tree_expansion.py` and confirm the new counts fail because the seven skills are not yet implemented. Risk: missing a count assertion elsewhere — grep for `== 82` and `== 12` (industry) and `== 13` (social) and `== 11` (leadership) under `tests/` to catch any.
+
+2. **Add `TestSACArcSkills` class to `tests/test_models/test_progression.py` (red).** One test class with five method groups covering all seven skills:
+   - `test_<skill>_exists_with_correct_fields` — id, name, description (verbatim from design section 1), tree, prereq, max_level, bonus_type, bonus_per_level.
+   - `test_<skill>_bonus_at_levels` — `get_bonus("...")` returns 0.0, `bonus_per_level`, and `2 * bonus_per_level` (via `pytest.approx`) at levels 0/1/2.
+   - `test_<skill>_prereq_gates_level_up` — `level_up_skill(<id>)` fails with "Requires" before prereq, succeeds after.
+   - `test_<skill>_cannot_exceed_max_level` — leveling three times with abundant points fails on the third with "maxed".
+   - `test_<skill>_not_in_migration_map` — `<id>` is neither key nor value in `_SKILL_MIGRATION_MAP`.
+
+   Plus two save round-trip tests at class scope: pre-SA-C2 fixture (skills dict missing all seven ids) → all seven `current_level == 0`; post-SA-C2 round-trip with leveled new skills returns identical levels.
+
+   Run the new tests and confirm they fail because the skills don't yet exist.
+
+3. **Implement the seven `SkillNode` entries (green).** Edit `spacegame/models/progression.py`. Place each new entry in the correct tree section of `create_default_skills()`, immediately after the prereq skill node, in the order they appear in design section 1: `lot_appraiser` after `market_eye` (Commerce Tier 2), `coalition_sway` after `silver_tongue` (Social Tier 2), `delegate_reach` after `give_the_word` (Leadership Tier 2), `mediation_instinct` after `empathic_read` (Social Tier 2), `spread_trader` after `tariff_negotiation` (Commerce Tier 2), `research_yield` after `efficient_refining` (Industry Tier 2), `research_oversight` after `diplomatic_relations` (Leadership Tier 2). Copy field values verbatim from design section 1; copy player-facing description strings exactly (already Writing-Bible cleared per design item 6). Re-run the new tests; confirm they pass.
+
+4. **Confirm save/load round-trips and migration map untouched.** Run the new save round-trip tests and the existing `TestProgressionSerialization` block. The `from_dict` loop already handles missing keys cleanly per design section 6; no code change to `from_dict` or `_SKILL_MIGRATION_MAP` is required. If a test fails, do not edit the migration map — re-read sa_skill_design.md section 6 to find the divergence.
+
+5. **Run `ruff check` + `ruff format` + `mypy` on the touched files only.** Per AGENT_GUIDE.md, scope to changed files: `ruff format spacegame/models/progression.py tests/test_models/test_progression.py tests/test_models/test_skill_expansion.py tests/test_models/test_skill_tree_expansion.py`, `ruff check` the same set, then `mypy spacegame/models/progression.py`. No project-wide format. Risk: a stray `Dict` vs `dict` mismatch — the file uses `Dict[str, SkillNode]`; match the surrounding style.
+
+6. **Layout regression check at six resolutions.** Add `tests/test_views/test_skill_tree_view_sa_c2.py` (NEW) that, for each of the four affected trees (Commerce, Social, Leadership, Industry), constructs a `SkillTreeView`, sets `_selected_tree`, calls `_compute_detail_positions`, and asserts: (a) every skill in that tree has a position, (b) every position is inside `(DETAIL_LEFT, DETAIL_TOP, DETAIL_RIGHT, DETAIL_BOTTOM)`, (c) within each depth column, sorted-by-y centers are at least `2 * NODE_RADIUS` apart vertically. The test parametrizes over the resolution matrix from `tests/test_ui_layout/conftest.py`. If any assertion fails, do NOT edit the layout algorithm — file `PHASE_BLOCKED` per design handoff item 4.
+
+7. **Run the full test suite.** `pytest -n auto -q`. Pass count must be `>= 8430` (pre-phase baseline) + the new SA-C2 tests; no new failures, pre-existing skips fine. Record the post-sprint pass count in the Activity log.
+
+8. **Validate against acceptance criteria, write activity log summary, set Status to review.** Walk all ten ACs explicitly; for each, name the test or check that validates it.
 
 **Activity log.**
 - 2026-04-26 — todo (created)
+- 2026-04-27 11:36 — harness: plan phase starting
+- 2026-04-27 — planning complete; verified all 4 context-to-read docs exist; expanded ACs from 4 → 10 (added explicit field-match, prereq/max gates, save round-trip, migration-map invariance, capstone invariance, layout regression with overlap rule, Writing Bible scan, baseline test count); expanded touch zones to include test_skill_expansion.py and test_skill_tree_expansion.py (both hold hard-coded `len(skills) == 82` and total max-level cost assertions that flip to 89/160); decision-locked the layout-fix escape hatch (block, don't patch the layout algorithm); plan section filled with 8 ordered tasks. PHASE_OK
 
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-04-27 11:36
+- Completed: 2026-04-27
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: pending
+- New_sprints_proposed: none
+- Polish_items_folded_in: none (sprint is a mechanical implementation of an already-locked design doc; no player-facing surfaces beyond skill descriptions, which the design pre-cleared against the Writing Bible)
+- Decisions_locked: 2 (existing-count test files added to touch zones rather than left for the implementer to discover; layout-fix path locked to PHASE_BLOCKED rather than algorithm tweaks per design handoff item 4)
+- Notes: SA-C1 design doc is unusually tight — every field value, magnitude, prereq, and stacking rule is fixed. Planning's contribution is hardening the AC list (10 vs 4), pre-flighting the count-assertion fan-out (three test files hold the 82 → 89 invariant, not just one), and turning "doesn't regress" into a measurable layout assertion (overlap rule with `2 * NODE_RADIUS` floor).
 ### Phase I — Cluster B Anchors
 
 #### SA-0 — Cluster A confirmation pass
