@@ -1555,7 +1555,7 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 - Notes: Design doc is thorough and SA-P2-ready. The counter-argument inconsistency was the only substantive finding; corrected directly. All 15 locked decisions have rationales; two explicit deferred-to-SA-P2 items named. Worked example (Hask+Drift, 3 rounds) is usable as a SA-P2 unit test fixture.
 #### SA-P2 — Politics Core
 
-**Status**: in-progress (planning)
+**Status**: in-progress (implementing)
 **Phase**: Phase II | **Size**: XL | **Effort**: 2 weeks
 **Depends on**: SA-P1, SA-A2, SA-C2, SA-B-EXT-1 | **Blocks**: SA-P3, SA-P4, SA-P5
 
@@ -1729,7 +1729,7 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 - 2026-04-26 — todo (created)
 - 2026-04-27 15:53 — harness: plan phase starting
 - 2026-04-27 16:35 — planning complete; expanded scope to include market-shift registry, sub-rep deduction wiring, Cass Weller intel reveal, empty/locked/loading/error UI states, live composer preview, and SA-P1 §7.3+§9.1 flag helpers. Locked 11 decisions and resolved 2 of 3 prior open questions. No new sprints proposed — the design doc explicitly defers content (templates, dialogue, named delegates) to SA-P3/P4/P5 and tutorial overlay wiring to SA-P3. Verified all 5 context-to-read paths exist on disk and the design doc covers sections 1-8 per the SA-P1 hand-off checklist. PHASE_OK
-
+- 2026-04-27 16:04 — harness: implement phase starting (rework cycle 0)
 **Last phase report.**
 - Phase: plan
 - Outcome: PHASE_OK

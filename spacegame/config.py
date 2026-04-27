@@ -327,6 +327,7 @@ class GameState(Enum):
     INVESTMENT = "investment"
     WRECKERS_GUILD = "wreckers_guild"
     DEEP_SHAFTS = "deep_shafts"
+    DISPUTE = "dispute"
 
     # Combat states
     COMBAT = "combat"

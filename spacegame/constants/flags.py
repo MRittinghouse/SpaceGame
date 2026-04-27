@@ -498,3 +498,78 @@ def marcus_uprising_inheritance_seen() -> str:
     Listed in :data:`KNOWN_PRODUCER_ONLY_ORPHANS` until those land.
     """
     return "marcus_uprising_inheritance_seen"
+
+
+# ---------------------------------------------------------------------------
+# Politics venue (SA-P2)
+# ---------------------------------------------------------------------------
+#
+# SA-P2 (requirements/sa_politics_design.md, sections 7.3 + 9.1). Outcome
+# and tutorial flags for the venue-based dispute system. SA-P2 ships
+# only the flag helpers; SA-P3 wires the FirstTimeTipOverlay calls and
+# authors dispute templates that consume the outcome flags via
+# ``required_flags`` / ``set_flag`` plumbing.
+
+
+def dispute_resolved(dispute_id: str) -> str:
+    """Flag set when a dispute reaches any final resolution.
+
+    Fires for every outcome category (``win``,
+    ``partial_win_coalition_thin``, ``partial_win_off_record``, ``loss``).
+    Producer: :class:`spacegame.models.politics_dispute.PoliticsDisputeManager`
+    when a dispute resolves.
+    Consumers: SA-P3/P4/P5 mission ``required_flags`` / journal
+    ``trigger_flag`` entries; future cross-anchor narrative threading.
+    """
+    return f"dispute_resolved_{dispute_id}"
+
+
+def coalition_won(dispute_id: str) -> str:
+    """Flag set when a dispute resolves as the full ``win`` outcome.
+
+    Indicates a passing vote with at least 60 percent of the delegate
+    roster pre-committed via corridor coalition-building. Distinguishes
+    a coalition-built win from a thin-margin victory.
+    Producer: :class:`spacegame.models.politics_dispute.PoliticsDisputeManager`.
+    Consumers: SA-P3/P4/P5 mission and journal gates that key off a
+    decisive coalition win specifically.
+    """
+    return f"coalition_won_{dispute_id}"
+
+
+def dispute_mediated(dispute_id: str) -> str:
+    """Flag set when a dispute resolves as ``partial_win_off_record``.
+
+    Off-record concessions saved a failed vote: at least one delegate
+    carried a ``conceded`` flag from a successful mediation when the
+    final tally fell short.
+    Producer: :class:`spacegame.models.politics_dispute.PoliticsDisputeManager`.
+    Consumers: SA-P3/P4/P5 mission gates that depend on a mediated
+    settlement; SA-X7 ``Council Mediator`` achievement seed.
+    """
+    return f"dispute_mediated_{dispute_id}"
+
+
+def seen_politics_venue_tip() -> str:
+    """Flag set after the player dismisses the politics-venue tip overlay.
+
+    One-shot per save. Producer (SA-P3): the venue view's on-dismiss
+    callback for the :class:`spacegame.views.first_time_tip.FirstTimeTipOverlay`
+    fired on first venue entry. Consumer (SA-P3): the same view's
+    first-entry guard. SA-P2 ships the helper so the SI-3 scanner can
+    pair the producer / consumer when SA-P3 wires the overlay.
+    """
+    return "seen_politics_venue_tip"
+
+
+def seen_argument_composer_tip() -> str:
+    """Flag set after the player dismisses the argument-composer tip overlay.
+
+    One-shot per save. Producer (SA-P3): the dispute view's on-dismiss
+    callback for the composer-substate
+    :class:`spacegame.views.first_time_tip.FirstTimeTipOverlay`. Consumer
+    (SA-P3): the same view's composer-open guard. SA-P2 ships the helper
+    so the SI-3 scanner can pair the producer / consumer when SA-P3
+    wires the overlay.
+    """
+    return "seen_argument_composer_tip"
