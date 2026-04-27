@@ -607,6 +607,11 @@ Three existing speaker IDs require downstream attention; noted here so downstrea
 | Commissioner Yuna Kade (Stellaris faction agent rival) | net-new | `yuna_kade` | SA-B3 |
 | Captain Fenn Salko (Cold-grudge rival captain) | net-new | `fenn_salko` | SA-B3, SA-B4 |
 | Ilse Vey (Meridian primary broker) | net-new | `ilse_vey` | SA-F3 |
+| Sable Trent (Auction Reader specialist) | net-new | `sable_trent` | SA-A2 (authoring), SA-B3, SA-B4 |
+| Desta Coll (Coalition Builder specialist) | net-new | `desta_coll` | SA-A2 (authoring), SA-P3, SA-P4 |
+| Cass Weller (Arbiter specialist) | net-new | `cass_weller` | SA-A2 (authoring), SA-P5 |
+| Brix Tano (Speculator specialist) | net-new | `brix_tano` | SA-A2 (authoring), SA-F2, SA-F3 |
+| Nuri Solberg (Patron specialist) | net-new | `nuri_solberg` | SA-A2 (authoring), SA-R1, SA-R2 |
 
 ### Speaker_id Registry Table
 
@@ -635,6 +640,11 @@ All deferred reconciliations noted with consuming sprint.
 | Yuna Kade | `yuna_kade` | net-new, register at SA-B3 | none |
 | Fenn Salko | `fenn_salko` | net-new, register at SA-B3 | none |
 | Ilse Vey | `ilse_vey` | net-new, register at SA-F3 | none |
+| Sable Trent | `sable_trent` | net-new, register at SA-A2 | none |
+| Desta Coll | `desta_coll` | net-new, register at SA-A2 | none |
+| Cass Weller | `cass_weller` | net-new, register at SA-A2 | none |
+| Brix Tano | `brix_tano` | net-new, register at SA-A2 | none |
+| Nuri Solberg | `nuri_solberg` | net-new, register at SA-A2 | none |
 
 ---
 
