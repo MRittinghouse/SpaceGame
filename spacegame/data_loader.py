@@ -840,6 +840,16 @@ class DataLoader:
             if isinstance(pair, (list, tuple)) and len(pair) == 2
         }
 
+        # SA-P4: optional betrayal_conditions map (delegate_id ->
+        # condition_string). Templates that omit the field parse to the empty
+        # dict and the engine never fires a betrayal flip for that template.
+        betrayal_conditions_raw = data.get("betrayal_conditions", {}) or {}
+        betrayal_conditions: Dict[str, str] = {
+            delegate_id: str(value)
+            for delegate_id, value in betrayal_conditions_raw.items()
+            if isinstance(value, str)
+        }
+
         return PoliticsDisputeTemplate(
             id=data["id"],
             headline=data["headline"],
@@ -856,6 +866,10 @@ class DataLoader:
             is_campaign_arc=bool(data.get("is_campaign_arc", False)),
             required_flags=tuple(data.get("required_flags", ())),
             counter_framings=counter_framings,
+            is_annual_congress=bool(data.get("is_annual_congress", False)),
+            opens_on_day_offset=int(data.get("opens_on_day_offset", 0)),
+            next_congress_offset_days=int(data.get("next_congress_offset_days", 0)),
+            betrayal_conditions=betrayal_conditions,
         )
 
     def load_faction_perks(self) -> Dict[str, Dict[str, list]]:

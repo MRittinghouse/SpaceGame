@@ -173,6 +173,21 @@ class PoliticsDisputeTemplate:
     # without each venue forking the engine. Empty dict preserves the SA-P2
     # default (``("soil_impact", "water_rights_change")``).
     counter_framings: dict[str, tuple[str, str]] = field(default_factory=dict)
+    # SA-P4 annual scheduling. ``is_annual_congress`` flags a template that
+    # only opens once per game-year cycle. ``opens_on_day_offset`` is the day
+    # within each cycle when the window opens (0 = window opens at cycle
+    # start). ``next_congress_offset_days`` is the cycle length (365 for the
+    # canonical Annual Congress); zero disables the annual lockout entirely.
+    # Templates that omit these fields parse identically to SA-P2 / SA-P3.
+    is_annual_congress: bool = False
+    opens_on_day_offset: int = 0
+    next_congress_offset_days: int = 0
+    # SA-P4 coalition betrayal mechanic. Per-delegate map: delegate_id ->
+    # condition name from the engine's ``_BETRAYAL_DISPATCH`` table. When the
+    # named condition resolves True at the start of a round, the delegate's
+    # pre-commit flips back to wavering. Empty dict preserves SA-P2 / SA-P3
+    # behavior (no betrayal possible).
+    betrayal_conditions: dict[str, str] = field(default_factory=dict)
 
 
 # ============================================================================
@@ -297,6 +312,15 @@ class PoliticsDispute:
     phase: DisputePhase = DisputePhase.CREATED
     resolved_outcome: Optional[str] = None
     round_log: list[str] = field(default_factory=list)
+    # SA-P4: True when at least one delegate experienced a betrayal flip
+    # during the arc. Drives the ``first_coalition_betrayal_handled`` journal
+    # gate. Persisted via to_dict / from_dict; defaults False on legacy saves.
+    had_betrayal: bool = False
+    # SA-P4: snapshot of the player's reputation with each delegate-relevant
+    # faction at dispute start, used by the rep-dropped-below-25 betrayal
+    # predicate so the comparison is "since the dispute started" rather than
+    # "since launch." Persisted; defaults to empty for legacy saves.
+    rep_at_start: dict[str, int] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         """Serialize the committed dispute state (round-boundary granularity)."""
@@ -317,6 +341,8 @@ class PoliticsDispute:
             "phase": self.phase.value,
             "resolved_outcome": self.resolved_outcome,
             "round_log": list(self.round_log),
+            "had_betrayal": self.had_betrayal,
+            "rep_at_start": dict(self.rep_at_start),
         }
 
     @classmethod
@@ -351,6 +377,8 @@ class PoliticsDispute:
             phase=DisputePhase(data.get("phase", DisputePhase.CREATED.value)),
             resolved_outcome=data.get("resolved_outcome"),
             round_log=list(data.get("round_log", [])),
+            had_betrayal=bool(data.get("had_betrayal", False)),
+            rep_at_start=dict(data.get("rep_at_start", {})),
         )
 
 
@@ -441,6 +469,118 @@ def qualitative_position_summary(position_vector: dict[str, float]) -> str:
 
 
 # ============================================================================
+# SA-P4: betrayal predicate dispatch (deterministic, content-extensible)
+# ============================================================================
+#
+# Predicate signature: ``(dispute, delegate, player) -> bool``. Each predicate
+# inspects a pre-committed delegate against the player and dispute state, and
+# returns True when the delegate's pre-commit should flip back to wavering.
+# The dispatch table is small and content-authored (template
+# ``betrayal_conditions`` maps a delegate_id to a condition string); SA-P5+
+# can extend by adding entries to ``_BETRAYAL_DISPATCH``.
+#
+# Condition strings carry one optional argument after a colon, e.g.
+# ``"rep_dropped_below_25:crimson_reach"``. The argument-bearing dispatch
+# wraps each named predicate in a closure so the manager can call it with
+# the standard 3-arg signature.
+
+_BETRAYAL_REP_DROP_FLOOR = 25
+
+
+def _betrayal_rep_dropped_below(
+    faction_id: str,
+) -> Callable[["PoliticsDispute", "PoliticsDelegate", "Player"], bool]:
+    """Predicate: True when player's rep with ``faction_id`` dropped under 25.
+
+    Compares against the dispute's ``rep_at_start`` snapshot — the betrayal
+    fires only when rep dropped *during* the arc (not when it was already
+    low at dispute start). The snapshot is captured by
+    :meth:`PoliticsDisputeManager.snapshot_rep_at_start`.
+    """
+
+    def _predicate(
+        dispute: "PoliticsDispute",
+        _delegate: "PoliticsDelegate",
+        player: "Player",
+    ) -> bool:
+        start = dispute.rep_at_start.get(faction_id)
+        if start is None or start < _BETRAYAL_REP_DROP_FLOOR:
+            # Either no snapshot or rep was already below the floor at start;
+            # the drop must have happened during the arc to count.
+            return False
+        current = player.get_reputation(faction_id)
+        return current < _BETRAYAL_REP_DROP_FLOOR
+
+    return _predicate
+
+
+def _betrayal_counter_framing_succeeded(
+    dispute: "PoliticsDispute",
+    delegate: "PoliticsDelegate",
+    _player: "Player",
+) -> bool:
+    """Predicate: True when a counter-argument moved this delegate during the arc.
+
+    A counter-framing landing on a pre-committed delegate breaks the
+    pre-commit — the room saw the delegate flinch. The dispute's round_log
+    carries one ``counter from <id> hit <delegate_id>`` line per landed
+    counter; we scan for any line naming this delegate.
+    """
+    needle = f"hit {delegate.delegate_id}"
+    return any(needle in line for line in dispute.round_log)
+
+
+def _betrayal_rival_faction_unfavored(
+    dispute: "PoliticsDispute",
+    _delegate: "PoliticsDelegate",
+    player: "Player",
+) -> bool:
+    """Predicate: True when any of the dispute's affected factions entered
+    a strongly-negative tier (rep < -25) since the arc started.
+
+    The "rival faction unfavored" reading: if the room's broader political
+    weather turns sharply against one of the factions in play, a delegate
+    whose pre-commit was contingent on that faction's standing flips.
+    """
+    for faction_id in dispute.factions_affected:
+        if player.get_reputation(faction_id) < -_BETRAYAL_REP_DROP_FLOOR:
+            return True
+    return False
+
+
+def _resolve_betrayal_predicate(
+    condition: str,
+) -> Optional[Callable[["PoliticsDispute", "PoliticsDelegate", "Player"], bool]]:
+    """Look up a betrayal predicate by its condition string.
+
+    Condition strings may carry one argument after a colon
+    (``"rep_dropped_below_25:crimson_reach"``). Unknown conditions return
+    None so the manager can silently skip them.
+    """
+    name, _, arg = condition.partition(":")
+    if name == "rep_dropped_below_25":
+        if not arg:
+            return None
+        return _betrayal_rep_dropped_below(arg)
+    if name == "counter_framing_succeeded":
+        return _betrayal_counter_framing_succeeded
+    if name == "rival_faction_unfavored":
+        return _betrayal_rival_faction_unfavored
+    return None
+
+
+# Names of the registered betrayal conditions, exposed for data-validation
+# tests so authors stay aligned with the engine dispatch table.
+BETRAYAL_CONDITION_NAMES: frozenset[str] = frozenset(
+    {
+        "rep_dropped_below_25",
+        "counter_framing_succeeded",
+        "rival_faction_unfavored",
+    }
+)
+
+
+# ============================================================================
 # Manager
 # ============================================================================
 
@@ -516,6 +656,11 @@ class PoliticsDisputeManager:
         # callback registered).
         self._outcome_callback: Optional[Callable[["PoliticsDispute", str], None]] = None
 
+        # SA-P4: per-template last-resolved-day registry for annual
+        # Congress scheduling. Persisted via to_dict / from_dict so the
+        # lockout window survives save/load.
+        self._annual_last_resolved: dict[str, int] = {}
+
     def set_player(self, player: "Player") -> None:
         """Bind the player whose state the manager mutates on resolution.
 
@@ -549,6 +694,123 @@ class PoliticsDisputeManager:
     def register_template(self, template: PoliticsDisputeTemplate) -> None:
         """Register a template (used by tests and by the data loader)."""
         self._templates[template.id] = template
+
+    # ------------------------------------------------------------------
+    # SA-P4: annual Congress scheduling (game-day cycles)
+    # ------------------------------------------------------------------
+
+    def is_dispute_active(self, template_id: str, current_game_day: int) -> bool:
+        """Return True when a template can be started on ``current_game_day``.
+
+        Non-annual templates are always active. Annual templates are active
+        until they resolve, then locked out for ``next_congress_offset_days``
+        before re-opening on the next cycle. Unknown templates report
+        inactive (defensive).
+
+        Args:
+            template_id: Registered template id.
+            current_game_day: Current game day from ``Player.game_day``.
+
+        Returns:
+            True if the template is currently inside its open window.
+        """
+        template = self._templates.get(template_id)
+        if template is None:
+            return False
+        if not template.is_annual_congress or template.next_congress_offset_days <= 0:
+            return True
+        last_resolved = self._annual_last_resolved.get(template_id)
+        if last_resolved is None:
+            return True
+        return (current_game_day - last_resolved) >= template.next_congress_offset_days
+
+    def next_session_in_days(self, template_id: str, current_game_day: int) -> int:
+        """Days until the annual template re-opens (0 when active or non-annual).
+
+        UI surface for the ``LOCKED_OUT_ANNUAL`` substate. Always returns a
+        non-negative integer.
+        """
+        template = self._templates.get(template_id)
+        if template is None or not template.is_annual_congress:
+            return 0
+        last_resolved = self._annual_last_resolved.get(template_id)
+        if last_resolved is None:
+            return 0
+        elapsed = current_game_day - last_resolved
+        remaining = template.next_congress_offset_days - elapsed
+        return max(0, remaining)
+
+    def record_annual_resolution(self, template_id: str, last_resolved_day: int) -> None:
+        """Mark an annual template as resolved on ``last_resolved_day``.
+
+        The next call to :meth:`is_dispute_active` will return False until
+        ``next_congress_offset_days`` elapse.
+        """
+        self._annual_last_resolved[template_id] = last_resolved_day
+
+    # ------------------------------------------------------------------
+    # SA-P4: coalition betrayal mechanic (deterministic predicate dispatch)
+    # ------------------------------------------------------------------
+
+    def snapshot_rep_at_start(
+        self,
+        dispute: PoliticsDispute,
+        faction_ids: tuple[str, ...],
+    ) -> None:
+        """Capture the player's reputation with each faction at dispute start.
+
+        The ``rep_dropped_below_25`` betrayal predicate compares the player's
+        current rep against the start-of-dispute snapshot, so the betrayal
+        fires only on rep that dropped *during* the arc. Call once at
+        ``start_dispute`` time (after ``set_player``).
+
+        Skipped silently when the player isn't wired or doesn't expose
+        ``get_reputation`` (test stubs that don't need the betrayal path).
+        """
+        if self._propagation_player is None:
+            return
+        getter = getattr(self._propagation_player, "get_reputation", None)
+        if not callable(getter):
+            return
+        for faction_id in faction_ids:
+            dispute.rep_at_start[faction_id] = int(getter(faction_id))
+
+    def _evaluate_betrayal_conditions(
+        self,
+        dispute: PoliticsDispute,
+        player: "Player",
+    ) -> list[str]:
+        """Walk pre-committed delegates and flip those whose condition fires.
+
+        Args:
+            dispute: The active dispute (uses ``template_id`` to look up
+                the template's ``betrayal_conditions`` map).
+            player: Player whose state the predicates inspect.
+
+        Returns:
+            List of delegate ids whose pre-commit was just flipped this
+            evaluation. Empty list when nothing changes (idempotent).
+        """
+        template = self._templates.get(dispute.template_id)
+        if template is None or not template.betrayal_conditions:
+            return []
+        flipped: list[str] = []
+        for delegate_id, condition_str in template.betrayal_conditions.items():
+            delegate = dispute.delegates.get(delegate_id)
+            if delegate is None or not delegate.pre_committed:
+                continue
+            predicate = _resolve_betrayal_predicate(condition_str)
+            if predicate is None:
+                continue
+            if predicate(dispute, delegate, player):
+                delegate.pre_committed = False
+                delegate.visible_state = "wavering"
+                dispute.had_betrayal = True
+                dispute.round_log.append(
+                    f"betrayal: {delegate.delegate_id} pre-commit broken ({condition_str})"
+                )
+                flipped.append(delegate_id)
+        return flipped
 
     # ------------------------------------------------------------------
     # Session lifecycle
@@ -589,7 +851,7 @@ class PoliticsDisputeManager:
                 faction_loyalty=dt.faction_loyalty,
                 sub_faction_id=dt.sub_faction_id,
             )
-        return PoliticsDispute(
+        dispute = PoliticsDispute(
             dispute_id=dispute_id or template.id,
             template_id=template.id,
             headline=template.headline,
@@ -606,6 +868,19 @@ class PoliticsDisputeManager:
             current_round=1,
             phase=DisputePhase.ROUND_OPEN,
         )
+        # SA-P4: snapshot rep with every faction the betrayal predicates
+        # might reference (factions_affected + any rep_dropped_below_25 arg
+        # in the template's betrayal_conditions). The snapshot is harmless
+        # on templates that declare no betrayals.
+        if self._propagation_player is not None:
+            faction_ids: set[str] = set(template.factions_affected)
+            for condition in template.betrayal_conditions.values():
+                if condition.startswith("rep_dropped_below_25:"):
+                    _, arg = condition.split(":", 1)
+                    if arg:
+                        faction_ids.add(arg)
+            self.snapshot_rep_at_start(dispute, tuple(sorted(faction_ids)))
+        return dispute
 
     # ------------------------------------------------------------------
     # Internal state-machine helpers
@@ -1001,7 +1276,14 @@ class PoliticsDisputeManager:
         dispute._pending_counters = []  # type: ignore[attr-defined]
 
     def advance_round(self, dispute: PoliticsDispute) -> None:
-        """Run counter-argument phase, conviction adjustments, then advance."""
+        """Run counter-argument phase, conviction adjustments, then advance.
+
+        SA-P4: at the start of the next round (just before opening it),
+        evaluate betrayal conditions on every pre-committed delegate. A
+        triggered betrayal flips ``pre_committed`` back to False and resets
+        ``visible_state`` to wavering, with one round_log entry per flip.
+        Idempotent: re-running the evaluation produces no further flips.
+        """
         self._run_counter_argument_phase(dispute)
         # Conviction adjustments are encoded in the position_vector
         # mutations applied during submit_argument and the counter phase;
@@ -1011,6 +1293,11 @@ class PoliticsDisputeManager:
         else:
             dispute.current_round += 1
             dispute.phase = DisputePhase.ROUND_OPEN
+            # SA-P4: evaluate betrayal conditions once per round at round
+            # start. Skipped silently when the player isn't wired (test
+            # mode without ``set_player``).
+            if self._propagation_player is not None:
+                self._evaluate_betrayal_conditions(dispute, self._propagation_player)
 
     def cast_vote(self, dispute: PoliticsDispute) -> None:
         """Player calls the vote: skip remaining counter phase, resolve immediately."""
@@ -1079,6 +1366,19 @@ class PoliticsDisputeManager:
         if dispute.dispute_id in self._pending_disputes:
             self._resolved_disputes[dispute.dispute_id] = dispute
             self._pending_disputes.pop(dispute.dispute_id, None)
+        # SA-P4: record the resolve day for annual templates so the lockout
+        # window opens. Uses the player's current game day when available;
+        # falls back to the dispute's closes_on_day for engine-only flows.
+        template = self._templates.get(dispute.template_id)
+        if template is not None and template.is_annual_congress:
+            resolved_day = (
+                getattr(self._propagation_player, "game_day", None)
+                if self._propagation_player is not None
+                else None
+            )
+            if resolved_day is None:
+                resolved_day = dispute.closes_on_day
+            self._annual_last_resolved[dispute.template_id] = int(resolved_day)
         # SA-P3 outcome callback (after propagation, so the engine sees
         # rep / market / mission flag side-effects already applied).
         if self._outcome_callback is not None:
@@ -1268,9 +1568,9 @@ class PoliticsDisputeManager:
 
         Only persists what's needed to restore a player mid-arc:
         pending disputes (state at last round boundary), resolved
-        disputes (for journal / mission gating). Per-session ephemeral
-        state (intel reveal flag, active venue) is NOT persisted by
-        design.
+        disputes (for journal / mission gating), and the SA-P4 annual
+        last-resolved registry. Per-session ephemeral state (intel
+        reveal flag, active venue) is NOT persisted by design.
         """
         return {
             "pending_disputes": {
@@ -1279,6 +1579,7 @@ class PoliticsDisputeManager:
             "resolved_disputes": {
                 d_id: dispute.to_dict() for d_id, dispute in self._resolved_disputes.items()
             },
+            "annual_last_resolved": dict(self._annual_last_resolved),
         }
 
     def from_dict(self, data: dict[str, Any]) -> None:
@@ -1301,3 +1602,7 @@ class PoliticsDisputeManager:
             if template is None:
                 continue
             self._resolved_disputes[d_id] = PoliticsDispute.from_dict(raw, template.outcome_matrix)
+        # SA-P4 annual lockout registry; legacy saves omit this key.
+        self._annual_last_resolved = {
+            tid: int(day) for tid, day in data.get("annual_last_resolved", {}).items()
+        }
