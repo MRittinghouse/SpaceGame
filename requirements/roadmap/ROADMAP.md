@@ -291,7 +291,7 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 
 #### SA-PREP-3 — Playtest baseline telemetry
 
-**Status**: in-progress (implementing)
+**Status**: in-progress (reviewing)
 **Phase**: Phase 0 | **Size**: S | **Effort**: 2-3 days
 **Depends on**: none | **Blocks**: (informational only — does not block subsequent sprints)
 
@@ -366,24 +366,23 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 - 2026-04-26 — station_hub_view click + dwell hooks implemented + 7 new tests green (8591f03)
 - 2026-04-26 — sa_baseline.md authored (all 10 unique anchors + SA-V covered) (c8e134e)
 - 2026-04-26 — full suite 8347 passed (baseline 8326, +21 new tests); all gates green. PHASE_OK
+- 2026-04-26 22:13 — harness: review phase starting (rework cycle 0)
+- 2026-04-26 — review complete; 1 minor finding fixed directly (missing disabled-dwell test for AC 6 "any path" coverage); all 7 ACs verified; 8348 passing (+22 vs baseline). PHASE_OK
 
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-04-26 22:00
-- Completed: 2026-04-26 23:30
-- Files_changed: spacegame/utils/telemetry.py, spacegame/views/station_hub_view.py, tests/test_utils/__init__.py, tests/test_utils/test_telemetry.py, tests/test_views/test_station_hub_view.py, requirements/sa_baseline.md
-- Commits: da4011c, 8591f03, c8e134e
-- Tests_added: 21
-- Tests_baseline: 8326
-- Tests_passing: 8347
-- Tests_skipped: 98
-- Lint_clean: yes
-- Format_clean: yes
-- SI3_scanner_clean: yes
-- Writing_bible_clean: n/a
-- Touch_zones_respected: yes
-- Notes: telemetry module (off by default, opt-in via SPACEGAME_TELEMETRY=1, JSONL output); anchor_card_clicked and anchor_detail_dwell hooks in station_hub_view covering all 3 dismissal paths; sa_baseline.md covers all 10 unique anchors + SA-V with >= 3 measurables and >= 1 unmeasurable each.
+- Started: 2026-04-26 22:13
+- Completed: 2026-04-26 23:45
+- Files_changed: tests/test_views/test_station_hub_view.py
+- Commits: de141ea
+- Tests_passing: 8348
+- Acceptance_criteria_verified: 7/7
+- Polish_items_verified: 3/3
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 1
+- Followup_sprints_added: none
+- Notes: AC 6 required "no events from any path when disabled" — implementer covered click-disabled but not dwell-disabled. Added test_dwell_no_event_when_telemetry_disabled directly. All other ACs met cleanly: telemetry module mypy-clean (0 new errors introduced), sa_baseline.md covers all 10 unique anchors + SA-V with correct schema, all 3 dwell dismissal paths wired and tested.
 
 ### Phase A — Crew Specialization Extension
 
