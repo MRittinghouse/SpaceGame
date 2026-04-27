@@ -1110,7 +1110,7 @@ The following decisions were locked during planning:
 - Started: 2026-04-27 12:38
 - Completed: 2026-04-27 12:44
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: <pending>
+- Commits: fa2c033
 - New_sprints_proposed: none
 - Polish_items_folded_in: tutorial first-time tip overlay; 4 flag-gated journal entries (first contract, journeyman promotion, master promotion, failure-recovery)
 - Decisions_locked: 7
