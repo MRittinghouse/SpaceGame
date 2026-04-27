@@ -348,3 +348,116 @@ def wreckers_made_up_journal() -> str:
     failure-recovery entry).
     """
     return "wreckers_made_up_journal"
+
+
+# ---------------------------------------------------------------------------
+# Deep Shafts Memorial (SA-2)
+# ---------------------------------------------------------------------------
+#
+# SA-2 (requirements/roadmap/ROADMAP.md). Flags scoped to the Deep Shafts
+# memorial / pilgrimage venue at Breakstone. Producers and consumers all
+# live inside the SA-2 surface (view, dialogue tree, mission, journal
+# triggers); centralizing the strings here keeps the SI-3 dialogue-
+# integrity scanner stable across producer / consumer pairs.
+
+
+def visited_deep_shafts() -> str:
+    """Flag set on first entry to the Deep Shafts memorial.
+
+    Producer: :class:`spacegame.views.deep_shafts_view.DeepShaftsView`
+    on first ``on_enter`` per save (also marks the scripted scene as
+    played).
+    Consumer: ``the_silent_shaft`` mission objective (``has_flag``);
+    journal trigger gate; subsequent venue entries (visit-count math).
+    """
+    return "visited_deep_shafts"
+
+
+def received_miners_blessing_first() -> str:
+    """Flag set when the first-visit +5 Miners' Union rep grant fires.
+
+    One-shot per save. Producer: :class:`spacegame.views.deep_shafts_view.DeepShaftsView`
+    on first entry. Consumer: same view's pilgrimage-tick gate (the
+    first-visit grant fires only when this flag is unset).
+    """
+    return "received_miners_blessing_first"
+
+
+def talked_to_sten_brygaard() -> str:
+    """Flag set after the player's first Sten Brygaard dialogue at the venue.
+
+    Producer: ``data/dialogue/dialogues.json`` (``set_flag`` on Sten's
+    first-meeting greeting node).
+    Consumer: Marcus venue branches B and C (gating); subsequent Sten
+    dialogue beats (``required_flags`` / ``forbidden_flags`` for the
+    return greeting).
+    """
+    return "talked_to_sten_brygaard"
+
+
+def seen_deep_shafts_tip() -> str:
+    """Flag set after the player dismisses the first-visit tip overlay.
+
+    Producer: :class:`spacegame.views.deep_shafts_view.DeepShaftsView`'s
+    on-dismiss callback for the
+    :class:`spacegame.views.first_time_tip.FirstTimeTipOverlay`.
+    Consumer: the same view's first-entry guard. The PT-M overlay never
+    re-fires once this flag is set.
+    """
+    return "seen_deep_shafts_tip"
+
+
+def pilgrimage_journal(n: int) -> str:
+    """Flag set when the ``n``th Sora Takahashi journal entry unlocks.
+
+    Producer: :class:`spacegame.views.deep_shafts_view.DeepShaftsView`
+    on visit thresholds [1, 3, 5, 8, 12] with a ≥3-game-day spacing
+    rule between consecutive unlocks.
+    Consumer: ``data/journal/entries.json`` (``trigger_flag`` for
+    ``pilgrimage_journal_<n>``).
+    """
+    return f"pilgrimage_journal_{n}"
+
+
+def attended_silent_shaft() -> str:
+    """Flag set on completion of ``the_silent_shaft`` mission.
+
+    Producer: ``the_silent_shaft`` mission reward (``set_flag``).
+    Consumer: future Act Two cascade (SA-X1 cross-anchor threading).
+    Listed in :data:`KNOWN_PRODUCER_ONLY_ORPHANS` until SA-X1 wires a
+    consumer.
+    """
+    return "attended_silent_shaft"
+
+
+def marcus_silent_vigil_seen() -> str:
+    """Flag set after Marcus's first-visit silent-vigil branch plays.
+
+    Producer: ``data/dialogue/dialogues.json`` (``set_flag`` on the
+    Marcus branch-A node).
+    Consumer: Marcus branches B and C (gates the next-visit father-
+    connection node so the silent vigil always lands first).
+    """
+    return "marcus_silent_vigil_seen"
+
+
+def marcus_father_connection_seen() -> str:
+    """Flag set after Marcus's father-as-Union-collegial branch plays.
+
+    Producer: ``data/dialogue/dialogues.json`` (``set_flag`` on the
+    Marcus branch-B node).
+    Consumer: Marcus branch C (the Uprising-inheritance node gates on
+    this flag so the arc lands in order).
+    """
+    return "marcus_father_connection_seen"
+
+
+def marcus_uprising_inheritance_seen() -> str:
+    """Flag set after Marcus's Uprising-inheritance branch plays.
+
+    Producer: ``data/dialogue/dialogues.json`` (``set_flag`` on the
+    Marcus branch-C node).
+    Consumer: future Act Two cascade (SA-X1) and crew-banter (SA-X6).
+    Listed in :data:`KNOWN_PRODUCER_ONLY_ORPHANS` until those land.
+    """
+    return "marcus_uprising_inheritance_seen"

@@ -445,6 +445,9 @@ class SaveManager:
                 if player.wreckers_guild_state is not None
                 else None
             ),
+            "deep_shafts_state": (
+                player.deep_shafts_state.to_dict() if player.deep_shafts_state is not None else None
+            ),
             "dialogue_flags": player.dialogue_flags,
             "captain_memory": {cid: mem.to_dict() for cid, mem in player.captain_memory.items()},
             "timed_thread_state": {
@@ -607,6 +610,16 @@ class SaveManager:
             player.wreckers_guild_state = WreckersGuildState.from_dict(wreckers_data)
         else:
             player.wreckers_guild_state = None
+
+        # SA-2: Deep Shafts memorial pilgrimage state (None for legacy
+        # saves and for players who have not yet entered the venue).
+        deep_shafts_data = data.get("deep_shafts_state")
+        if deep_shafts_data:
+            from spacegame.models.deep_shafts import DeepShaftsState
+
+            player.deep_shafts_state = DeepShaftsState.from_dict(deep_shafts_data)
+        else:
+            player.deep_shafts_state = None
 
         # Restore dialogue flags
         player.dialogue_flags = data.get("dialogue_flags", {})

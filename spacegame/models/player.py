@@ -9,6 +9,7 @@ from typing import Optional
 
 from spacegame.models.captain_memory import CaptainMemory
 from spacegame.models.deep_core import DeepCoreUpgradeState
+from spacegame.models.deep_shafts import DeepShaftsState
 from spacegame.models.drone import MiningDroneFleet
 from spacegame.models.faction import ReputationTier, get_reputation_tier
 from spacegame.models.forge_buffer import ForgeBufferManager
@@ -74,6 +75,12 @@ class Player:
     # per the SA-B-EXT-1 contract — *enrolled* and *standing* are
     # intentionally orthogonal.
     wreckers_guild_state: Optional[WreckersGuildState] = None
+
+    # SA-2: Deep Shafts memorial pilgrimage state. None until the player
+    # first enters the venue. Faction-rep value lives separately on
+    # ``faction_reputation["miners_union"]`` via the existing API; this
+    # state tracks the cap and cooldown bookkeeping.
+    deep_shafts_state: Optional[DeepShaftsState] = None
 
     # Dialogue system
     dialogue_flags: dict[str, bool] = field(default_factory=dict)
