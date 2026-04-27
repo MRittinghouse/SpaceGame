@@ -36,7 +36,7 @@ The SA-arc table below is **auto-regenerated** by the ralph harness from the spr
 | [SA-C2](#sa-c2--skill-tree-extension-implementation) | Skill tree extension implementation | C | M | done | SA-C1 |
 | [SA-0](#sa-0--cluster-a-confirmation-pass) | Cluster A confirmation pass | I | S | done | SA-PREP-2 |
 | [SA-1](#sa-1--wreckers-guild-hall-salvage-contracts) | Wreckers' Guild Hall (Salvage Contracts) | I | L | done | SA-PREP-1, SA-A2, SA-B-EXT-1 |
-| [SA-2](#sa-2--deep-shafts-memorial--pilgrimage) | Deep Shafts memorial / pilgrimage | I | L | todo | SA-PREP-1 |
+| [SA-2](#sa-2--deep-shafts-memorial--pilgrimage) | Deep Shafts memorial / pilgrimage | I | L | done | SA-PREP-1 |
 | [SA-V](#sa-v--cargo-broker-arc--investment-introduction) | Cargo Broker arc + Investment Introduction | I | M | todo | SA-PREP-1 |
 | [SA-P1](#sa-p1--politics-system-design) | Politics System Design | II | M | todo | SA-PREP-1, SA-C2 |
 | [SA-P2](#sa-p2--politics-core) | Politics Core | II | XL | todo | SA-P1, SA-A2, SA-C2, SA-B-EXT-1 |
@@ -1143,7 +1143,7 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 
 #### SA-2 — Deep Shafts memorial / pilgrimage
 
-**Status**: in-progress (reviewing)
+**Status**: done
 **Phase**: Phase I | **Size**: L | **Effort**: 2 weeks
 **Depends on**: SA-PREP-1 | **Blocks**: SA-X1, SA-X4, SA-X6
 
@@ -1277,7 +1277,7 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 - 2026-04-27 16:15 — full suite green: 8716 passed, 98 skipped (baseline 8634; +82 net new). Lint clean on 14 touched files. Format clean. mypy clean on the two new files (pre-existing 75 errors in unrelated files are baseline). Touch zones respected. NB the planner's declared test path `tests/test_save_load/test_deep_shafts_save_load.py` was redirected to `tests/test_models/test_save_load_deep_shafts.py` to mirror the existing `test_save_load_wreckers.py` location (no `tests/test_save_load/` directory exists). PHASE_OK
 - 2026-04-27 14:29 — harness: review phase starting (rework cycle 0)
 - 2026-04-27 14:31 — review complete; 14/14 acceptance criteria verified; 1 documented forward-reference deviation (AC #8); 1 minor voice-sheet miss noted as single-tighten; 82 new tests green; suite 8716/98 (baseline 8634/98). PHASE_OK
-
+- 2026-04-27 14:36 — harness: review passed, marking done
 **Last phase report.**
 - Phase: review
 - Outcome: PHASE_OK
