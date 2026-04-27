@@ -988,7 +988,7 @@ The following decisions were locked during planning:
 - Started: 2026-04-27 12:06
 - Completed: 2026-04-27 13:30
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending
+- Commits: f510c41
 - New_sprints_proposed: none
 - Polish_items_folded_in: journal-entries (per anchor), save/load-roundtrip, SI-3-flag-scanner-check
 - Decisions_locked: 5
