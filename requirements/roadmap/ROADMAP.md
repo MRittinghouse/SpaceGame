@@ -1736,7 +1736,7 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 - Started: 2026-04-27 16:00
 - Completed: 2026-04-27 16:35
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending
+- Commits: 0331e6f
 - New_sprints_proposed: none
 - Polish_items_folded_in: market-shift registry with stack rule + decay (AC 14); sub-reputation deduction on failed corridor visits (AC 13); Cass Weller arbitration_dispute_intel once-per-session reveal (AC 15); flags.py helper functions for outcome + tip flags (AC 12); empty/locked/loading/error UI states for dispute list (AC 10); live "Effective vs Difficulty" composer preview (AC 11); performance smoke <100ms (AC 16); save/load round-trip at three explicit boundaries (AC 6).
 - Decisions_locked: 11
