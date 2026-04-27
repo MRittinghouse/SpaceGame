@@ -24,6 +24,13 @@ from spacegame.models.progression import PlayerProgression
 from spacegame.models.recipe_mastery import RecipeMasteryTracker
 from spacegame.models.salvage_hold import SalvageHoldManager
 from spacegame.models.ship import Ship, ShipType
+from spacegame.models.sub_reputation import (
+    OrganizationConfig,
+    OrganizationTier,
+    SubReputationDelta,
+    get_tier_for_rep,
+    is_at_least,
+)
 from spacegame.models.timed_thread import TimedThreadState
 from spacegame.models.trade_route import PriceMemory, TradeRouteTracker
 from spacegame.models.upgrades import ShipUpgradeManager
@@ -55,6 +62,11 @@ class Player:
     faction_reputation: dict[str, int] = field(default_factory=dict)
     faction_assignments: dict[str, str] = field(default_factory=dict)
 
+    # Sub-reputation system (SA-B-EXT-1): per-organization standing layered
+    # under faction reputation.  Keyed by organization ID (e.g. "wreckers_guild").
+    # Notification queue lives on _pending_sub_rep_deltas (non-serialized).
+    sub_reputation: dict[str, int] = field(default_factory=dict)
+
     # Dialogue system
     dialogue_flags: dict[str, bool] = field(default_factory=dict)
 
@@ -67,9 +79,7 @@ class Player:
     # TW: per-thread runtime state (last touched day + entered drift
     # states). Keyed by thread_id. Empty = no thread has had its clock
     # started. See ``models/timed_thread.py``.
-    timed_thread_state: dict[str, "TimedThreadState"] = field(
-        default_factory=dict
-    )
+    timed_thread_state: dict[str, "TimedThreadState"] = field(default_factory=dict)
     # TW (QA-F-1 fix): most-recent game_day each interaction key was
     # recorded. Powers touch semantics for TimedThreads — both one-time
     # and recurring. Populated via record_interaction() at action
@@ -716,9 +726,7 @@ class Player:
         day = game_day if game_day is not None else self.game_day
         self.last_interaction_day[key] = day
 
-    def record_captain_encounter(
-        self, captain_id: str, outcome: str
-    ) -> CaptainMemory:
+    def record_captain_encounter(self, captain_id: str, outcome: str) -> CaptainMemory:
         """Record a meeting with a captain and apply resolution rules.
 
         Increments encounter_count, sets last_outcome, updates day stamps,
@@ -929,6 +937,90 @@ class Player:
             The ReputationTier enum value.
         """
         return get_reputation_tier(self.get_reputation(faction_id))
+
+    # ------------------------------------------------------------------
+    # Sub-reputation helpers (SA-B-EXT-1)
+    # ------------------------------------------------------------------
+
+    def modify_sub_reputation(
+        self, org_id: str, amount: int, config: OrganizationConfig
+    ) -> tuple[bool, str]:
+        """Modify sub-reputation with an organization, clamped to config range.
+
+        Queues a SubReputationDelta on _pending_sub_rep_deltas when the
+        modification crosses a tier threshold.  The queue is ephemeral
+        (not serialized) and should be drained each frame by consumer views.
+
+        Args:
+            org_id: Organization identifier.
+            amount: Amount to add (positive or negative).
+            config: OrganizationConfig defining range and tiers.
+
+        Returns:
+            Tuple of (success, message).
+        """
+        current = self.sub_reputation.get(org_id, 0)
+        old_tier = get_tier_for_rep(config, current)
+        new_val = max(config.min_rep, min(config.max_rep, current + amount))
+        effective_delta = new_val - current
+        self.sub_reputation[org_id] = new_val
+        new_tier = get_tier_for_rep(config, new_val)
+        if new_tier != old_tier:
+            if not hasattr(self, "_pending_sub_rep_deltas"):
+                self._pending_sub_rep_deltas: list[SubReputationDelta] = []
+            self._pending_sub_rep_deltas.append(
+                SubReputationDelta(
+                    org_id=org_id,
+                    effective_amount=effective_delta,
+                    old_tier=old_tier,
+                    new_tier=new_tier,
+                )
+            )
+        sign = "+" if amount >= 0 else ""
+        return (True, f"{sign}{amount} standing with {org_id}")
+
+    def get_sub_reputation(self, org_id: str) -> int:
+        """Get current sub-reputation with an organization.
+
+        Args:
+            org_id: Organization identifier.
+
+        Returns:
+            Current value, or 0 if the organization is not yet tracked.
+        """
+        return self.sub_reputation.get(org_id, 0)
+
+    def get_sub_reputation_tier(self, org_id: str, config: OrganizationConfig) -> OrganizationTier:
+        """Get the current tier with an organization.
+
+        Returns the lowest tier when the organization is absent from
+        sub_reputation (defaults to 0 rep, so the lowest-ranked tier).
+
+        Args:
+            org_id: Organization identifier.
+            config: OrganizationConfig defining the tier thresholds.
+
+        Returns:
+            The matching OrganizationTier.
+        """
+        value = self.sub_reputation.get(org_id, 0)
+        return get_tier_for_rep(config, value)
+
+    def is_at_least_tier(self, org_id: str, tier_id: str, config: OrganizationConfig) -> bool:
+        """Check whether the player meets or exceeds a given tier.
+
+        Returns False (not raises) when tier_id is unknown to the config.
+
+        Args:
+            org_id: Organization identifier.
+            tier_id: Target tier ID to test against.
+            config: OrganizationConfig to use for resolution.
+
+        Returns:
+            True if current tier rank >= target tier rank.
+        """
+        value = self.sub_reputation.get(org_id, 0)
+        return is_at_least(config, value, tier_id)
 
     def add_strata_tokens(self, amount: int) -> None:
         """Add strata tokens to player balance.
