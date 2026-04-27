@@ -1155,6 +1155,7 @@ class DataLoader:
             "side_missions.json",
             "crew_quests.json",
             "sa_2_pilgrimage.json",
+            "sa_v_investment_intro.json",
         ]:
             file_path = missions_dir / filename
             if not file_path.exists():

@@ -1,0 +1,43 @@
+{
+  "missions": [
+    {
+      "id": "sa_v_investment_intro",
+      "name": "The Longer Ledger",
+      "description": "The cargo broker at Nexus Prime called you back. Not for another haul. This is the kind of conversation he does not have with pilots who have not run a clean delivery first. He wants to show you a different part of the books.",
+      "hint": "Find Odom at the Nexus Prime cargo office and hear what he has to say about the longer ledger.",
+      "discovery_text": "Odom flagged me down after the iron ore job. Said he had something to show me. Not freight. The other side of the book.",
+      "prerequisites": [
+        "iron_delivery"
+      ],
+      "required_flags": [
+        "iron_ore_delivered"
+      ],
+      "objectives": [
+        {
+          "type": "has_flag",
+          "target_id": "odom_explained_investment",
+          "target_quantity": 1,
+          "description": "Talk to Odom at Nexus Prime about the longer ledger"
+        }
+      ],
+      "rewards": [
+        {
+          "reward_type": "xp",
+          "amount": 25
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "investment_introduced"
+        }
+      ],
+      "mission_type": "side",
+      "available_at": [
+        "nexus_prime"
+      ],
+      "discovery_method": "npc",
+      "auto_accept": true,
+      "repeatable": false
+    }
+  ]
+}
