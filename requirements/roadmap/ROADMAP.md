@@ -1912,7 +1912,7 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 - Started: 2026-04-27 17:02
 - Completed: 2026-04-27 17:50
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending
+- Commits: 25d093c
 - New_sprints_proposed: none
 - Polish_items_folded_in: PT-M tutorial overlay wiring; 3 journal entries (first_dispute_attended / first_partial_win / first_coalition_won); 2 crew-banter trigger flags (desta_corridor_pre_session_seen / cass_mediation_in_progress_seen); per-template news headlines authored inline
 - Decisions_locked: 9
