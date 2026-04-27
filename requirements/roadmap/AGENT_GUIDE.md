@@ -83,6 +83,17 @@ The dispatcher (or a follow-on validation agent, or a human) reviews and moves `
 
 ---
 
+## Required reading — every phase
+
+Beyond this guide and `{CONVENTIONS_PATH}`, every phase agent must read these two docs at the start:
+
+- **`requirements/agent_principles.md`** — meta-preferences for how to approach work on this project. Honesty over rubber-stamping, scope discipline, real engineering depth, when to block instead of guessing. Read in full once per phase.
+- **`requirements/aurelia_voice_examples.md`** — paired wrong/right examples and a 16-item diagnostic checklist for player-facing voice. Read in full when authoring or modifying any player-facing content (NPC dialogue, missions, journals, ambient lines, tutorial copy, UI strings); skim at minimum if your sprint touches none of these.
+
+These two docs concentrate judgment calls and pattern-matching that the per-prompt instructions and the Writing Bible scanner cannot encode.
+
+---
+
 ## Constraints the agent must respect
 
 ### Code style and project conventions
@@ -98,11 +109,12 @@ Per `CLAUDE.md` at the repo root:
 
 ### Worldbuilding
 
-Per `requirements/cultural_guide.md` and `requirements/dialogue_writing_guide.md`:
+Per `requirements/cultural_guide.md`, `requirements/dialogue_writing_guide.md`, and `requirements/aurelia_voice_examples.md`:
 - Year 2335, Aurelia Expanse setting.
 - Banned NPC names: Yara, Elara, Kael, Mara, Lydia, Clive, Magnus, Ambrose.
 - No "couldn't help but," no "a testament to," no "no X, no Y" parallel-negation rhetoric (Reach tagline excepted).
-- No GenAI tone defaults — read the writing guide.
+- No GenAI tone defaults — read the writing guide AND the 30 paired examples in `aurelia_voice_examples.md`. The Writing Bible scanner is the floor; the examples doc is the standard.
+- The scanner catches mechanical tells (em-dashes, banned phrases). It does not catch the structural tells in the diagnostic checklist (universal-wisdom NPCs, "Captain" default address, reverence-of-the-ordinary register, mysticism about the void). You are responsible for those.
 
 ### Onboarding principles
 

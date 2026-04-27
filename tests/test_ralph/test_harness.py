@@ -72,9 +72,7 @@ class TestStuckSprintRecovery:
         # SA-1 is in-progress. State has it last-touched 2 hours ago (stale).
         state = HarnessState()
         old_ts = (datetime.now() - timedelta(hours=2)).isoformat()
-        state.sprints["SA-1"] = SprintState(
-            sprint_id="SA-1", last_touched_at=old_ts
-        )
+        state.sprints["SA-1"] = SprintState(sprint_id="SA-1", last_touched_at=old_ts)
         recovered = harness._recover_stuck_sprints(state)
         assert recovered == 1
         sprints = roadmap_state.parse_sprints()
@@ -84,9 +82,7 @@ class TestStuckSprintRecovery:
         # SA-1 is in-progress, last touched 5 minutes ago (within stale threshold).
         state = HarnessState()
         recent_ts = (datetime.now() - timedelta(minutes=5)).isoformat()
-        state.sprints["SA-1"] = SprintState(
-            sprint_id="SA-1", last_touched_at=recent_ts
-        )
+        state.sprints["SA-1"] = SprintState(sprint_id="SA-1", last_touched_at=recent_ts)
         recovered = harness._recover_stuck_sprints(state)
         assert recovered == 0
         # Still in-progress.
@@ -110,6 +106,66 @@ class TestStuckSprintRecovery:
         assert sprints["SA-2"].status == "todo"
         # Only SA-1 should have been recovered.
         assert recovered == 1
+
+
+# ---------------------------------------------------------------------------
+# Stale-state reconciliation
+# ---------------------------------------------------------------------------
+
+
+class TestReconcileStaleState:
+    def test_clears_error_outcome_when_roadmap_is_todo(
+        self, isolated_roadmap
+    ) -> None:
+        # SA-2 is todo in ROADMAP. State says it last errored.
+        state = HarnessState()
+        state.sprints["SA-2"] = SprintState(
+            sprint_id="SA-2",
+            last_phase="plan",
+            last_outcome="error",
+        )
+        reconciled = harness._reconcile_stale_state(state)
+        assert reconciled == 1
+        assert state.sprints["SA-2"].last_outcome is None
+        assert state.sprints["SA-2"].last_phase is None
+
+    def test_preserves_iteration_counters(self, isolated_roadmap) -> None:
+        # Counters are historical signal — keep them even when clearing outcome.
+        state = HarnessState()
+        state.sprints["SA-2"] = SprintState(
+            sprint_id="SA-2",
+            plan_runs=2,
+            implement_runs=1,
+            last_outcome="error",
+        )
+        harness._reconcile_stale_state(state)
+        assert state.sprints["SA-2"].plan_runs == 2
+        assert state.sprints["SA-2"].implement_runs == 1
+
+    def test_does_not_touch_ok_outcomes(self, isolated_roadmap) -> None:
+        state = HarnessState()
+        state.sprints["SA-2"] = SprintState(
+            sprint_id="SA-2", last_outcome="ok"
+        )
+        reconciled = harness._reconcile_stale_state(state)
+        assert reconciled == 0
+        assert state.sprints["SA-2"].last_outcome == "ok"
+
+    def test_does_not_touch_in_progress_sprints(self, isolated_roadmap) -> None:
+        # SA-1 is in-progress in ROADMAP. Don't reconcile — it's mid-flight.
+        state = HarnessState()
+        state.sprints["SA-1"] = SprintState(
+            sprint_id="SA-1", last_outcome="error"
+        )
+        reconciled = harness._reconcile_stale_state(state)
+        assert reconciled == 0
+        assert state.sprints["SA-1"].last_outcome == "error"
+
+    def test_no_state_entry_no_op(self, isolated_roadmap) -> None:
+        # If a sprint has no state entry, nothing to reconcile.
+        state = HarnessState()
+        reconciled = harness._reconcile_stale_state(state)
+        assert reconciled == 0
 
 
 # ---------------------------------------------------------------------------

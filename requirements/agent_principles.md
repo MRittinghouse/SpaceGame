@@ -60,6 +60,24 @@ Anything the player will read — dialogue, missions, journals, UI strings, ambi
 
 If you write a line that sounds slightly off but you can't name why, copy a paired example from `aurelia_voice_examples.md` and rewrite in that register. Do not ship "passable" voice on player-facing content. Voice is the most visible quality dimension of this game.
 
+## Register variety across a cast
+
+When a single sprint authors multiple NPCs (crew templates, council delegates, faction operatives, etc.), the cast must have **emotional range** — not just internally-consistent voices. A previous sprint shipped five new specialists who were all internally well-written but shared a "professional, methodological, cataloguer's" register; the cast read as monotone.
+
+Before shipping any sprint with 3+ new NPCs, audit the set explicitly:
+- Does at least one voice run **warmer** than baseline?
+- Does at least one run **anxious or uncertain**?
+- Does at least one run **reckless, blunt, or self-interested**?
+- If every voice in the set is "competent expert speaking precisely," you have a cast-balance problem regardless of how good each individual voice is.
+
+Document the register diversity check in the sprint's Activity log. The reviewer should flag missing range.
+
+## Don't over-defend the design in review
+
+When reviewing, avoid the failure mode of "this looks fine because I can rationalize each pattern as intentional." The reviewer's job is to push, not to defend. If a foundational module has zero findings across hundreds of lines, the reviewer didn't read carefully enough.
+
+A useful framing: **identify the single thing you would tighten if you were going to tighten one thing.** Even if you accept the work as-is, naming that thing keeps the review from rubber-stamping. If you genuinely cannot identify one, say so explicitly with a one-line diagnostic of why ("module is small and the pattern matches established X").
+
 ## Pre-existing failures aren't yours
 
 If the test baseline shows pre-existing failures or skips, they're not your problem to fix unless your work made them worse. **Don't try to fix the world; just don't regress it.** Your acceptance bar is "pass count ≥ baseline."

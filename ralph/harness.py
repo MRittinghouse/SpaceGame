@@ -772,6 +772,44 @@ def _recover_stuck_sprints(state: "HarnessState") -> int:
     return recovered
 
 
+def _reconcile_stale_state(state: "HarnessState") -> int:
+    """Clear stale `last_outcome` entries from state.json.
+
+    When a sprint failed in a prior run (state recorded `last_outcome=error`
+    or similar), but the operator has since reset its ROADMAP status back
+    to `todo` (e.g., via a recovery commit, or by hand), the state entry
+    becomes misleading: it suggests the sprint is in trouble when it's
+    actually fresh.
+
+    For each sprint whose ROADMAP status is `todo` but whose state shows
+    a non-OK last_outcome, clear the outcome and last_phase fields. The
+    iteration counters (plan_runs, implement_runs, review_runs) are
+    preserved as historical signal.
+
+    Returns the number of entries reconciled.
+    """
+    sprints = roadmap_state.parse_sprints()
+    reconciled = 0
+    for sprint_id, sprint in sprints.items():
+        if not sprint.is_todo():
+            continue
+        sprint_state = state.sprints.get(sprint_id)
+        if sprint_state is None:
+            continue
+        if sprint_state.last_outcome in (None, "ok", ""):
+            continue
+        log(
+            f"Reconciling stale state for {sprint_id}: ROADMAP shows todo but "
+            f"state.last_outcome={sprint_state.last_outcome!r}. Clearing outcome."
+        )
+        sprint_state.last_outcome = None
+        sprint_state.last_phase = None
+        reconciled += 1
+    if reconciled:
+        state.save()
+    return reconciled
+
+
 # ---------------------------------------------------------------------------
 # Auto-push (item A)
 # ---------------------------------------------------------------------------
@@ -967,6 +1005,9 @@ def main() -> int:
             recovered = _recover_stuck_sprints(state)
             if recovered:
                 log(f"Recovered {recovered} stuck sprint(s) from prior run.")
+            reconciled = _reconcile_stale_state(state)
+            if reconciled:
+                log(f"Reconciled {reconciled} stale state entry/entries (todo in ROADMAP, error in state).")
 
         # Test baseline (item L). Captured once at startup; refreshed
         # after every successful sprint so the baseline tracks the

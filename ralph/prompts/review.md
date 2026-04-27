@@ -65,6 +65,19 @@ For any player-facing content (dialogue, missions, journals, UI strings, ambient
 - Cross-check named-NPC content against their voice sheet (`requirements/character_voices.md`).
 - Look for GenAI tells that the regex doesn't catch (over-elegant cadence, parallel-trio constructions, reverence-of-the-ordinary register that doesn't fit Aurelia's working-galaxy tone).
 
+### Surface at least one observation, even when accepting the work
+
+Before you decide the outcome, write down the **single thing you would tighten if you were going to tighten one thing**. This is not a manufactured nit — it's a calibration check. Across hundreds of lines of new prose or a new typed module, "zero findings" is statistically improbable; if you genuinely cannot identify a thing, you have not read carefully enough.
+
+Acceptable forms:
+- "The single tighten: comment at file.py:115 explains WHAT, not WHY — would delete on a second pass."
+- "The single tighten: the five new NPC voices all share a cataloguer's register; cast lacks warm/anxious/reckless range. Not a blocker for this sprint, flagging for future sprints in this arc."
+- "The single tighten: 53 tests is generous for foundational infrastructure; could collapse the three org-shape suites into a parameterized test. Not a blocker."
+
+If after careful reading you genuinely cannot find one, say so explicitly with a one-line diagnostic ("module is 30 lines and entirely matches the established `_pending_faction_deltas` pattern; nothing to tighten"). The point is to force critical engagement, not to fabricate.
+
+This observation goes into the Activity log alongside your sentinel. It is independent of the Outcome decision below — you can `PHASE_OK` AND record a tighten, or `PHASE_NEEDS_REWORK` with multiple findings. The single-tighten is the floor.
+
 ### Decide the outcome
 
 After your review you have FOUR options. Pick exactly one:
@@ -108,6 +121,7 @@ Then append a `**Last phase report.**` block (REPLACING any prior phase report b
 - Polish_items_verified: <count>/<total>  (or "n/a" if planner folded none in)
 - Findings_critical: <count>
 - Findings_minor_fixed_directly: <count>
+- Single_tighten: <one-line: the thing you'd tighten if you were going to tighten one thing, OR a diagnostic of why nothing applies>
 - Followup_sprints_added: <comma-separated IDs, or "none">
 - Notes: <one-or-two-line summary>
 ```
