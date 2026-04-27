@@ -1273,7 +1273,7 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 - Started: 2026-04-27 13:46
 - Completed: 2026-04-27 14:35
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending
+- Commits: 7eaceb8
 - New_sprints_proposed: none
 - Polish_items_folded_in: pt-m-first-time-tip-overlay, sora-takahashi-journal-arc-5-entries, the-silent-shaft-act-one-mission
 - Polish_items_deferred: cross-anchor-marcus-reactions→SA-X1, tutorial-pass-refinement→SA-X3, journal-voice-standardization→SA-X4, crew-banter→SA-X6, pilgrim-achievement→SA-X7, per-venue-visual-identity→SA-X10, act-two-cascade→SA-X1
