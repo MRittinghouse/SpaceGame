@@ -808,7 +808,7 @@ The following decisions were locked during planning:
 - Notes: Clean design sprint. All seven skill blocks accurate against live progression.py and crew_members.json. Prerequisite IDs verified present. Bonus type string spellings verified exact match in both directions.
 #### SA-C2 — Skill tree extension implementation
 
-**Status**: in-progress (implementing)
+**Status**: in-progress (reviewing)
 **Phase**: Phase C | **Size**: M | **Effort**: 5-7 days
 **Depends on**: SA-C1 | **Blocks**: SA-P1, SA-P2, SA-B2, SA-F1, SA-R1
 
@@ -890,24 +890,24 @@ The following decisions were locked during planning:
 - 2026-04-27 — Layout regression: added test_skill_tree_view_sa_c2.py (12 tests, 4 trees × 3 checks). All pass at 720p; no column overlap (worst column: 6 nodes in Industry depth-1, 77px gap ≥ 64px min). No layout algorithm changes needed.
 - 2026-04-27 — Lint/format/mypy: all clean on touched files. Also fixed out-of-touch-zone assertions in test_skill_wiring_integration.py (total_levels_vs_points: 146→160; orphan scanner: sa_c2_pending allowlist for 7 bonus types pending SA-B3/P3/P5/R1/F2 views).
 - 2026-04-27 — Full suite: 8479 passed, 98 skipped (baseline 8430 + 49 new SA-C2 tests). Writing Bible: 17/17 passed. SI-3 scanner: 14/14 passed. All 10 ACs verified. PHASE_OK
+- 2026-04-27 11:59 — harness: review phase starting (rework cycle 0)
+- 2026-04-27 12:30 — review complete; all 10 ACs verified; no critical findings; no fixes applied. Single tighten noted (layout test replicates algorithm rather than calls it). PHASE_OK
 
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-04-27 11:42
-- Completed: 2026-04-27
-- Files_changed: spacegame/models/progression.py, tests/test_models/test_progression.py, tests/test_models/test_skill_expansion.py, tests/test_models/test_skill_tree_expansion.py, tests/test_views/test_skill_tree_view_sa_c2.py, tests/test_models/test_skill_wiring_integration.py
-- Commits: 400cfa8, cc8eb81, 428816e, db9152e
-- Tests_added: 49
-- Tests_baseline: 8430
+- Started: 2026-04-27 11:59
+- Completed: 2026-04-27 12:30
+- Files_changed: none
+- Commits: none
 - Tests_passing: 8479
-- Tests_skipped: 98
-- Lint_clean: yes
-- Format_clean: yes
-- SI3_scanner_clean: yes
-- Writing_bible_clean: yes
-- Touch_zones_respected: yes (test_skill_wiring_integration.py is outside declared zones; changes were small — 2 assertion updates + sa_c2_pending allowlist — and are required for suite green)
-- Notes: 7 SA-arc SkillNode entries added to create_default_skills(); 37 model tests + 12 layout regression tests. No layout algorithm changes needed; worst column (Industry depth-1, 6 nodes) passes 2*NODE_RADIUS overlap rule at 720p. _CAPSTONE_IDS and _SKILL_MIGRATION_MAP unchanged per design.
+- Acceptance_criteria_verified: 10/10
+- Polish_items_verified: n/a
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 0
+- Single_tighten: test_skill_tree_view_sa_c2.py duplicates _compute_detail_positions inline (lines 44-89) rather than calling the production function — if the algorithm changes, these tests will silently pass against the old copy. Not a blocker (algorithm is stable), but future layout tests should call the real function.
+- Followup_sprints_added: none
+- Notes: All 7 SkillNode entries verified verbatim against sa_skill_design.md section 1. Layout tests correctly run at 720p only (module-level constants can't be retested at other resolutions via conftest fixture — established project pattern in test_targeted_overlap.py). test_skill_wiring_integration.py out-of-zone changes are small, necessary, and well-commented.
 ### Phase I — Cluster B Anchors
 
 #### SA-0 — Cluster A confirmation pass
