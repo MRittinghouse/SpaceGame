@@ -255,3 +255,96 @@ def heard_nas_intelligence() -> str:
         ``data/journal/entries.json`` (trigger_flag for auto_nas_intelligence).
     """
     return "heard_nas_intelligence"
+
+
+# ---------------------------------------------------------------------------
+# Wreckers' Guild Hall (SA-1)
+# ---------------------------------------------------------------------------
+#
+# SA-1 (requirements/roadmap/ROADMAP.md). Flags scoped to the Wreckers'
+# Guild Hall venue at Crimson Reach. Producers and consumers all live
+# inside the SA-1 surface (view, dialogue, journal triggers); this
+# section keeps the strings centralized so the SI-3 dialogue-integrity
+# scanner can pair them without missing a typo.
+
+
+def enrolled_wreckers_guild() -> str:
+    """Flag set when the player joins the Wreckers' Guild at apprentice tier.
+
+    Producer: :class:`spacegame.views.wreckers_guild_view.WreckersGuildView`
+    on first conversation with Malia Torres at the Hall (also seeds
+    ``Player.sub_reputation["wreckers_guild"] = 1``).
+    Consumers: dialogue gates (greet vs enrollment branch),
+    :func:`spacegame.engine.game.Game._drain_wreckers_sub_rep_queue`,
+    journal ``trigger_flag`` for the apprentice arc.
+    """
+    return "enrolled_wreckers_guild"
+
+
+def wreckers_promoted_tier(tier_id: str) -> str:
+    """Flag set when the player crosses into a new Wreckers' Guild tier.
+
+    Producer: :func:`spacegame.engine.game.Game._drain_wreckers_sub_rep_queue`
+    after a :class:`spacegame.models.sub_reputation.SubReputationDelta`
+    pushes the player into ``tier_id``. Set once per tier per save.
+    Consumers: ``data/journal/entries.json`` (trigger_flag for the
+    journeyman / master journal entries),
+    :class:`spacegame.views.wreckers_guild_view.WreckersGuildView`
+    (suppresses repeat promotion banners).
+
+    ``tier_id`` is the snake_case identifier from
+    :data:`spacegame.models.wreckers_guild.WRECKERS_GUILD_CONFIG`
+    (e.g. ``"journeyman"``, ``"master"``).
+    """
+    return f"wreckers_promoted_{tier_id}"
+
+
+def wreckers_made_up_apology() -> str:
+    """Flag set after Malia's post-lockout make-up beat plays.
+
+    Producer: :class:`spacegame.views.wreckers_guild_view.WreckersGuildView`
+    when the player accepts Malia's make-up branch following a
+    contract-failure lockout (see
+    :class:`spacegame.models.wreckers_guild.WreckersGuildState`).
+    Consumer: same view, gates re-enabling contract accepts. The flag
+    fires once per save; subsequent failures rerun the lockout but do
+    not re-fire the make-up beat.
+    """
+    return "wreckers_made_up_apology"
+
+
+def seen_wreckers_guild_tip() -> str:
+    """Flag set after the player dismisses the first-visit tip overlay.
+
+    Producer: :class:`spacegame.views.wreckers_guild_view.WreckersGuildView`'s
+    on-dismiss callback for the
+    :class:`spacegame.views.first_time_tip.FirstTimeTipOverlay`.
+    Consumer: the same view's first-entry guard. The PT-M overlay never
+    re-fires once this flag is set.
+    """
+    return "seen_wreckers_guild_tip"
+
+
+def wreckers_contract_completed() -> str:
+    """Flag set the first time the player turns in a Wreckers' contract.
+
+    Producer: :class:`spacegame.views.wreckers_guild_view.WreckersGuildView`
+    contract turn-in flow.
+    Consumer: ``data/journal/entries.json`` (trigger_flag for the
+    first-completion entry). Subsequent completions never refire the
+    journal entry because the journal manager dedupes by trigger_flag.
+    """
+    return "wreckers_contract_completed"
+
+
+def wreckers_made_up_journal() -> str:
+    """Flag set after the make-up beat resolves; gates the recovery journal entry.
+
+    Producer: :class:`spacegame.views.wreckers_guild_view.WreckersGuildView`
+    on the same code path as :func:`wreckers_made_up_apology`. Kept
+    distinct so the journal entry can fire once even if the apology
+    flag is loaded from a save written mid-beat.
+    Consumer: ``data/journal/entries.json`` (trigger_flag for the
+    failure-recovery entry).
+    """
+    return "wreckers_made_up_journal"
