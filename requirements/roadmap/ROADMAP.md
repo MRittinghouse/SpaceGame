@@ -388,7 +388,7 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 
 #### SA-A1 — Crew specialization design
 
-**Status**: in-progress (planning)
+**Status**: in-progress (implementing)
 **Phase**: Phase A | **Size**: S | **Effort**: 3-5 days
 **Depends on**: SA-PREP-2 | **Blocks**: SA-A2
 
@@ -457,18 +457,26 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 - 2026-04-26 — todo (created)
 - 2026-04-26 22:23 — harness: plan phase starting
 - 2026-04-26 22:55 — planning complete; locked 5 decisions (specialization set, naming-collision avoidance, net-new templates, dual crew+skill bonus reads, non-companion semantics); folded in 3 polish items (voice-sheet inventory update in `character_voices.md`, bonus-naming convention table as standalone section, cross-reference matrix); refined ACs from 3 → 10 to make every design-doc section mechanically verifiable; expanded Touch zones to include `character_voices.md` because the SA-PREP-1 inventory table is the canonical NPC registry. PHASE_OK
+- 2026-04-26 22:30 — harness: implement phase starting (rework cycle 0)
+- 2026-04-26 — implementation complete; authored requirements/sa_crew_design.md (218 lines: 5 specialization blocks, bonus-naming convention table, cross-reference matrix, 5 decisions, save-migration note, SA-A2 hand-off checklist); extended character_voices.md SA-PREP-1 inventory and speaker_id registry with 5 new rows (Sable Trent, Desta Coll, Cass Weller, Brix Tano, Nuri Solberg); all 10 new bonus_type strings confirmed unique; Writing Bible clean; test suite 8348 passed (no regressions). PHASE_OK
 
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-04-26 22:23
-- Completed: 2026-04-26 22:55
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 317bb44
-- New_sprints_proposed: none
-- Polish_items_folded_in: voice-sheet inventory update in character_voices.md (SA-PREP-1 registry stays canonical); bonus-naming convention table as standalone section (single source of truth for cross-sprint bonus_type discipline); cross-reference matrix specialization → consuming sprint → consuming view (forward-looking artifact for downstream planners).
-- Decisions_locked: 5
-- Notes: All four context-to-read paths exist and were read in full. Vision named the four anchor-system specializations explicitly, so planning's job was to lock the naming and integration pattern, not re-discover scope. Naming-collision risk was real (existing `negotiator` skill and `negotiator` crew role label) and is now resolved by using "Auction Reader" / "Arbiter" / "Coalition Builder" / "Speculator" / "Patron". Sprint stays Size S; no scope expansion past the design-doc deliverable.
+- Started: 2026-04-26 22:30
+- Completed: 2026-04-26 23:00
+- Files_changed: requirements/sa_crew_design.md, requirements/character_voices.md
+- Commits: 69768d7
+- Tests_added: 0
+- Tests_baseline: 8348
+- Tests_passing: 8348
+- Tests_skipped: 98
+- Lint_clean: n/a (no Python files touched)
+- Format_clean: n/a (no Python files touched)
+- SI3_scanner_clean: n/a (no flags added or modified)
+- Writing_bible_clean: yes
+- Touch_zones_respected: yes
+- Notes: Design-only sprint. Five specializations locked (Auction Reader, Coalition Builder, Arbiter, Speculator, Patron), 10 new bonus_type strings confirmed collision-free, character_voices.md SA-PREP-1 inventory and speaker_id registry extended with one row per net-new NPC. All 10 acceptance criteria satisfied.
 
 #### SA-A2 — Crew template implementation
 
