@@ -57,8 +57,7 @@ class TestStampTypeEnum:
                 f"is not a canonical palette role"
             )
             assert is_valid_role(palette["text_role"]), (
-                f"{stamp.name} text_role '{palette['text_role']}' "
-                f"is not a canonical palette role"
+                f"{stamp.name} text_role '{palette['text_role']}' is not a canonical palette role"
             )
 
     def test_permit_and_approved_distinct(self) -> None:
@@ -153,9 +152,7 @@ class TestDrawStamp:
         surf = _make_surface((80, 20))
         draw_stamp(surf, pygame.Rect(0, 0, 80, 20), stamp_type=StampType.PERMIT)
         # Interior must contain at least some opaque pixels.
-        any_opaque = any(
-            surf.get_at((x, y)).a > 0 for x in range(80) for y in range(20)
-        )
+        any_opaque = any(surf.get_at((x, y)).a > 0 for x in range(80) for y in range(20))
         assert any_opaque
 
     def test_draw_stamp_uses_type_background(self) -> None:
@@ -347,5 +344,7 @@ class TestChromePaletteCompliance:
         from spacegame.engine.ui_chrome import draw_glyph
 
         surf = _make_surface((24, 24))
-        draw_glyph(surf, (4, 4), glyph_id="faction_miners_union", color_role="hud_accent_warm", size=12)
+        draw_glyph(
+            surf, (4, 4), glyph_id="faction_miners_union", color_role="hud_accent_warm", size=12
+        )
         assert_role_compliance(surf, tolerance=2.0)

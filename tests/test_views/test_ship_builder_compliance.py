@@ -20,12 +20,7 @@ from pathlib import Path
 
 import pytest
 
-_VIEW_FILE = (
-    Path(__file__).resolve().parents[2]
-    / "spacegame"
-    / "views"
-    / "ship_builder_view.py"
-)
+_VIEW_FILE = Path(__file__).resolve().parents[2] / "spacegame" / "views" / "ship_builder_view.py"
 
 _RGB_PATTERN = re.compile(r"\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)")
 
@@ -106,6 +101,4 @@ class TestShipBuilderColorDiscipline:
             "stat_evasion",
         ]
         missing = [k for k in required_keys if f'"{k}"' not in text]
-        assert not missing, (
-            f"_BUILDER_COLORS is missing required semantic keys: {missing}"
-        )
+        assert not missing, f"_BUILDER_COLORS is missing required semantic keys: {missing}"

@@ -21,7 +21,9 @@ class TutorialStep:
     id: int
     title: str
     description: str
-    trigger: str  # "galaxy_map" | "trading" | "after_first_trade" | "activity" | "after_first_travel"
+    trigger: (
+        str  # "galaxy_map" | "trading" | "after_first_trade" | "activity" | "after_first_travel"
+    )
 
 
 @dataclass(frozen=True)

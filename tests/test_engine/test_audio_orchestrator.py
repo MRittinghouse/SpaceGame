@@ -84,9 +84,7 @@ class StubAudioManager:
         """Override what the next play_sfx call returns."""
         self._next_channel = channel
 
-    def play_music(
-        self, music_id: str, fade_in: float = 0.5, loop: bool = True
-    ) -> None:
+    def play_music(self, music_id: str, fade_in: float = 0.5, loop: bool = True) -> None:
         self.music_calls.append(MusicCall(music_id=music_id, fade_in=fade_in, loop=loop))
 
     def stop_music(self, fade_out: float = 1.0) -> None:
@@ -370,9 +368,7 @@ class TestCategoryCeilingApplied:
     def test_combat_sfx_uses_combat_ceiling(self) -> None:
         orch, stub = _orchestrator()
         orch.play_sfx("combat_hit", category=AudioCategory.COMBAT)
-        assert stub.sfx_calls[-1].volume == pytest.approx(
-            CATEGORY_CEILINGS[AudioCategory.COMBAT]
-        )
+        assert stub.sfx_calls[-1].volume == pytest.approx(CATEGORY_CEILINGS[AudioCategory.COMBAT])
 
 
 # ---------------------------------------------------------------------------
@@ -390,13 +386,9 @@ class TestPriorityCulling:
     def test_fifth_lower_priority_is_dropped(self) -> None:
         orch, stub = _orchestrator()
         for i in range(MAX_SFX_CHANNELS):
-            orch.play_sfx(
-                f"sfx_{i}", category=AudioCategory.UI, priority=SFXPriority.NORMAL
-            )
+            orch.play_sfx(f"sfx_{i}", category=AudioCategory.UI, priority=SFXPriority.NORMAL)
         # Fifth SFX at LOW priority — all channels are busy at NORMAL.
-        result = orch.play_sfx(
-            "sfx_extra", category=AudioCategory.UI, priority=SFXPriority.LOW
-        )
+        result = orch.play_sfx("sfx_extra", category=AudioCategory.UI, priority=SFXPriority.LOW)
         assert result is None
         # Manager was not called for the 5th.
         assert len(stub.sfx_calls) == MAX_SFX_CHANNELS
@@ -405,9 +397,7 @@ class TestPriorityCulling:
         orch, stub = _orchestrator()
         # Fill 4 channels with LOW priority.
         for i in range(MAX_SFX_CHANNELS):
-            orch.play_sfx(
-                f"sfx_{i}", category=AudioCategory.UI, priority=SFXPriority.LOW
-            )
+            orch.play_sfx(f"sfx_{i}", category=AudioCategory.UI, priority=SFXPriority.LOW)
         # Critical SFX arrives — should cull one of the LOW voices.
         result = orch.play_sfx(
             "sfx_critical",
@@ -422,30 +412,22 @@ class TestPriorityCulling:
     def test_equal_priority_does_not_cull(self) -> None:
         orch, _ = _orchestrator()
         for i in range(MAX_SFX_CHANNELS):
-            orch.play_sfx(
-                f"sfx_{i}", category=AudioCategory.UI, priority=SFXPriority.NORMAL
-            )
+            orch.play_sfx(f"sfx_{i}", category=AudioCategory.UI, priority=SFXPriority.NORMAL)
         # Equal priority incoming — spec §4.2: "if equal or lower, the
         # incoming is dropped".
-        result = orch.play_sfx(
-            "sfx_tied", category=AudioCategory.UI, priority=SFXPriority.NORMAL
-        )
+        result = orch.play_sfx("sfx_tied", category=AudioCategory.UI, priority=SFXPriority.NORMAL)
         assert result is None
 
     def test_finished_channels_free_up_slots(self) -> None:
         orch, _ = _orchestrator()
         channels: list[Any] = []
         for i in range(MAX_SFX_CHANNELS):
-            ch = orch.play_sfx(
-                f"sfx_{i}", category=AudioCategory.UI, priority=SFXPriority.NORMAL
-            )
+            ch = orch.play_sfx(f"sfx_{i}", category=AudioCategory.UI, priority=SFXPriority.NORMAL)
             channels.append(ch)
         # Mark first channel as finished.
         channels[0].is_busy = False
         # A new LOW-priority SFX should now fit.
-        result = orch.play_sfx(
-            "sfx_late", category=AudioCategory.UI, priority=SFXPriority.LOW
-        )
+        result = orch.play_sfx("sfx_late", category=AudioCategory.UI, priority=SFXPriority.LOW)
         assert result is not None
 
 

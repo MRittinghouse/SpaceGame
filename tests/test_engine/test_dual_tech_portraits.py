@@ -22,7 +22,12 @@ def _pygame_init() -> None:
     pygame.init()
 
 
-def _portrait(w: int = 32, h: int = 32, fill: tuple[int, int, int] = (180, 180, 200), faction: str | None = None) -> PortraitConfig:
+def _portrait(
+    w: int = 32,
+    h: int = 32,
+    fill: tuple[int, int, int] = (180, 180, 200),
+    faction: str | None = None,
+) -> PortraitConfig:
     surface = pygame.Surface((w, h), pygame.SRCALPHA)
     surface.fill((*fill, 255))
     return PortraitConfig(surface=surface, faction_role=faction)
@@ -76,8 +81,11 @@ class TestSlidePositioning:
         pixels should land on the visible canvas."""
         canvas = _canvas(300, 200)
         render_portraits(
-            canvas, _portrait(w=32, h=32), _portrait(w=32, h=32),
-            slide_factor=0.0, alpha=255,
+            canvas,
+            _portrait(w=32, h=32),
+            _portrait(w=32, h=32),
+            slide_factor=0.0,
+            alpha=255,
         )
         # Nothing opaque within the visible canvas bounds.
         assert not _any_opaque(canvas)
@@ -88,8 +96,12 @@ class TestSlidePositioning:
         corner regions."""
         canvas = _canvas(300, 200)
         render_portraits(
-            canvas, _portrait(w=32, h=32), _portrait(w=32, h=32),
-            slide_factor=1.0, alpha=255, bottom_y=190,
+            canvas,
+            _portrait(w=32, h=32),
+            _portrait(w=32, h=32),
+            slide_factor=1.0,
+            alpha=255,
+            bottom_y=190,
         )
         # Left corner: margin_x=20, so portrait spans x=20..52, y=190-32..190
         # Pixel at (30, 180) should be opaque (inside left portrait).
@@ -101,8 +113,12 @@ class TestSlidePositioning:
         """At slide=0.5, portraits are halfway between offscreen and rest."""
         canvas = _canvas(300, 200)
         render_portraits(
-            canvas, _portrait(w=32, h=32), _portrait(w=32, h=32),
-            slide_factor=0.5, alpha=255, bottom_y=190,
+            canvas,
+            _portrait(w=32, h=32),
+            _portrait(w=32, h=32),
+            slide_factor=0.5,
+            alpha=255,
+            bottom_y=190,
         )
         # Left portrait at x = round(-32 + (20+32)*0.5) = -6 → spans -6..26
         # Pixel at (10, 180) should be opaque.
@@ -112,16 +128,24 @@ class TestSlidePositioning:
         canvas = _canvas(300, 200)
         # slide_factor=2.0 is clamped to 1.0 — same as rest position.
         render_portraits(
-            canvas, _portrait(w=32, h=32), _portrait(w=32, h=32),
-            slide_factor=2.0, alpha=255, bottom_y=190,
+            canvas,
+            _portrait(w=32, h=32),
+            _portrait(w=32, h=32),
+            slide_factor=2.0,
+            alpha=255,
+            bottom_y=190,
         )
         assert canvas.get_at((30, 180)).a > 0
 
     def test_bottom_y_override_positions_portrait(self) -> None:
         canvas = _canvas(300, 200)
         render_portraits(
-            canvas, _portrait(w=32, h=32), _portrait(w=32, h=32),
-            slide_factor=1.0, alpha=255, bottom_y=100,
+            canvas,
+            _portrait(w=32, h=32),
+            _portrait(w=32, h=32),
+            slide_factor=1.0,
+            alpha=255,
+            bottom_y=100,
         )
         # Portraits span y = 100-32=68 .. 100. Pixel at (30, 90) should be opaque,
         # pixel at (30, 150) should not.

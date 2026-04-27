@@ -233,8 +233,7 @@ class TestSkillCheckConsistency:
                 )
         assert not violations, (
             f"{len(violations)} response(s) missing difficulty in prefix "
-            "(see dialogue_writing_guide.md §8 'Canonical Format'):\n"
-            + "\n".join(violations)
+            "(see dialogue_writing_guide.md §8 'Canonical Format'):\n" + "\n".join(violations)
         )
 
     def test_prefix_difficulty_matches_skill_check_difficulty(self) -> None:
@@ -272,8 +271,7 @@ class TestSkillCheckVoice:
                     "not acknowledgment."
                 )
         assert not violations, (
-            f"{len(violations)} grade-D bare-declarative violation(s):\n"
-            + "\n".join(violations)
+            f"{len(violations)} grade-D bare-declarative violation(s):\n" + "\n".join(violations)
         )
 
     def test_body_meets_minimum_word_count(self) -> None:
@@ -291,8 +289,7 @@ class TestSkillCheckVoice:
                     f"{MIN_BODY_WORDS}). Text: {s.text!r}"
                 )
         assert not violations, (
-            f"{len(violations)} response(s) below minimum body length:\n"
-            + "\n".join(violations)
+            f"{len(violations)} response(s) below minimum body length:\n" + "\n".join(violations)
         )
 
 
@@ -312,6 +309,4 @@ class TestScannerSelfCheck:
     def test_every_scanned_response_has_nonempty_text(self) -> None:
         """Data-integrity sanity."""
         for s in _iter_scanned():
-            assert s.text.strip(), (
-                f"{_loc(s)} has empty text — data corruption?"
-            )
+            assert s.text.strip(), f"{_loc(s)} has empty text — data corruption?"

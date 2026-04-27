@@ -92,9 +92,7 @@ class TestConstruction:
         assert c.secondary_role == "voltaic_strike"
 
     def test_trail_role_uses_secondary_when_present(self) -> None:
-        c = DualTechCinematic(
-            tech_name="X", dominant_element="ion", secondary_element="cryo"
-        )
+        c = DualTechCinematic(tech_name="X", dominant_element="ion", secondary_element="cryo")
         assert c.trail_role == "glow_cool"  # cryo's trail role
 
     def test_trail_role_falls_back_to_dominant(self) -> None:
@@ -102,9 +100,7 @@ class TestConstruction:
         assert c.trail_role == "plasma_hot"  # plasma's trail role
 
     def test_palette_valid_flag(self) -> None:
-        c = DualTechCinematic(
-            tech_name="X", dominant_element="plasma", secondary_element="cryo"
-        )
+        c = DualTechCinematic(tech_name="X", dominant_element="plasma", secondary_element="cryo")
         assert c.is_palette_valid
 
     def test_ultimate_total_is_longer_than_standard(self) -> None:
@@ -167,9 +163,7 @@ class TestStandardPhases:
 
 class TestUltimatePhases:
     def _tl(self) -> DualTechCinematic:
-        return DualTechCinematic(
-            tech_name="ULT", dominant_element="plasma", is_ultimate=True
-        )
+        return DualTechCinematic(tech_name="ULT", dominant_element="plasma", is_ultimate=True)
 
     def test_charge_replaces_combined_resolve(self) -> None:
         c = self._tl()

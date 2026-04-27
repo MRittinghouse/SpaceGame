@@ -61,6 +61,7 @@ class TutorialPart:
     narration: str
     tag: str
 
+
 # Mandatory parts — required for flight. Cockpit omitted because cockpit
 # slots are self-fulfilling (commit d9cf3d3). Placed as a slot in the
 # builder, no part needed. Narration in Phase A handles that beat.

@@ -290,9 +290,7 @@ class SocialManager:
 
         spec_bonus = self.get_specialization_bonus(skill_id)
 
-        return max(
-            0, base_level + disp_modifier + tree_bonus + synergy_bonus + spec_bonus
-        )
+        return max(0, base_level + disp_modifier + tree_bonus + synergy_bonus + spec_bonus)
 
     def can_pass_check(self, skill_id: str, difficulty: int, npc_id: str) -> bool:
         """Check if the player can pass a skill check (for display purposes).

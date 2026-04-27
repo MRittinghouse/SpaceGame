@@ -97,9 +97,7 @@ class TestPaletteConstants:
 
     def test_each_band_has_4_or_5_stops(self) -> None:
         for name, band in MATERIAL_BANDS.items():
-            assert 4 <= len(band) <= 5, (
-                f"Band {name!r} must have 4-5 stops, got {len(band)}"
-            )
+            assert 4 <= len(band) <= 5, f"Band {name!r} must have 4-5 stops, got {len(band)}"
 
     def test_glass_viewport_has_4_stops(self) -> None:
         """Per Bible §2.2, glass_viewport is the narrow-band exception."""
@@ -402,9 +400,9 @@ class TestColorblindInfrastructure:
         from spacegame.engine.material_palette import get_band, get_role
 
         for profile in (PROTANOPIA, DEUTERANOPIA, TRITANOPIA):
-            assert (
-                profile.band_remap or profile.role_remap
-            ), f"Profile '{profile.id}' has no remaps — stub regression"
+            assert profile.band_remap or profile.role_remap, (
+                f"Profile '{profile.id}' has no remaps — stub regression"
+            )
             # Every remap target must resolve to a canonical band/role.
             for target in profile.band_remap.values():
                 assert get_band(target) is not None, (

@@ -28,8 +28,7 @@ class TestVariantCoverage:
         from spacegame.models.captain_variant import MEETING_STATE_RETURN
 
         captains_with_return = {
-            cid for (cid, state) in dl.captain_variants
-            if state == MEETING_STATE_RETURN
+            cid for (cid, state) in dl.captain_variants if state == MEETING_STATE_RETURN
         }
         missing = set(dl.captains.keys()) - captains_with_return
         assert not missing, (
@@ -54,16 +53,12 @@ class TestVariantStructure:
     def test_every_variant_captain_id_resolves(self, dl) -> None:
         """No variant references a non-existent captain."""
         for (captain_id, _state), variant in dl.captain_variants.items():
-            assert captain_id in dl.captains, (
-                f"Variant references unknown captain '{captain_id}'"
-            )
+            assert captain_id in dl.captains, f"Variant references unknown captain '{captain_id}'"
             assert variant.captain_id == captain_id
 
     def test_every_variant_meeting_state_in_registry(self, dl) -> None:
         for (_captain_id, state), variant in dl.captain_variants.items():
-            assert state in VALID_MEETING_STATES, (
-                f"Variant uses invalid meeting_state '{state}'"
-            )
+            assert state in VALID_MEETING_STATES, f"Variant uses invalid meeting_state '{state}'"
             assert variant.meeting_state == state
 
     def test_every_variant_has_at_least_one_authored_field(self, dl) -> None:
@@ -80,9 +75,7 @@ class TestVariantStructure:
                     "defeat_line",
                 )
             )
-            assert authored, (
-                f"Variant ({cid}, {state}) has no authored fields"
-            )
+            assert authored, f"Variant ({cid}, {state}) has no authored fields"
 
     def test_no_duplicate_variant_keys(self, dl) -> None:
         """The lookup dict deduplicates by definition. If the source file
@@ -93,9 +86,7 @@ class TestVariantStructure:
 
         path = Path(__file__).parent.parent.parent / "data" / "combat" / "captain_variants.json"
         raw = json.loads(path.read_text(encoding="utf-8"))
-        keys_in_file = [
-            (v["captain_id"], v["meeting_state"]) for v in raw.get("variants", [])
-        ]
+        keys_in_file = [(v["captain_id"], v["meeting_state"]) for v in raw.get("variants", [])]
         assert len(keys_in_file) == len(set(keys_in_file)), (
             "Duplicate (captain_id, meeting_state) entries in variants file"
         )
@@ -130,9 +121,7 @@ class TestVariantWritingBible:
                 if dash in text:
                     offenders.append(f"{loc}: {text[:80]!r}")
                     break
-        assert not offenders, (
-            "Em-dashes in captain variants:\n  " + "\n  ".join(offenders)
-        )
+        assert not offenders, "Em-dashes in captain variants:\n  " + "\n  ".join(offenders)
 
     def test_no_banned_phrases(self, dl) -> None:
         offenders = []
@@ -141,6 +130,4 @@ class TestVariantWritingBible:
             for phrase in self.BANNED_PHRASES:
                 if phrase in text_lower:
                     offenders.append(f"{loc}: {phrase!r}")
-        assert not offenders, (
-            "Banned phrases in captain variants:\n  " + "\n  ".join(offenders)
-        )
+        assert not offenders, "Banned phrases in captain variants:\n  " + "\n  ".join(offenders)

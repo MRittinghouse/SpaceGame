@@ -35,6 +35,7 @@ from spacegame.views.base_view import BaseView
 # Pygame + display init (idempotent)
 # ---------------------------------------------------------------------------
 
+
 def ensure_pygame() -> None:
     """Initialize pygame + display, tolerant of upstream ``pygame.quit()`` calls.
 
@@ -336,7 +337,10 @@ def _cantina_view(ui: pygame_gui.UIManager) -> BaseView:
     dl.load_all()
     system = dl.systems["nexus_prime"]
     locations = dl.locations.get("nexus_prime", [])
-    location = next((loc for loc in locations if loc.location_type == "cantina"), locations[0] if locations else None)
+    location = next(
+        (loc for loc in locations if loc.location_type == "cantina"),
+        locations[0] if locations else None,
+    )
     return CantinaView(
         ui_manager=ui,
         player=smoke_player(),

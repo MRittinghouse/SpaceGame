@@ -51,9 +51,7 @@ class TestCe4Coverage:
             if defn.encounter_type in per_type:
                 per_type[defn.encounter_type] += 1
         for enc_type, count in per_type.items():
-            assert count >= 4, (
-                f"CE-4 type '{enc_type}' has {count} encounters, expected >=4"
-            )
+            assert count >= 4, f"CE-4 type '{enc_type}' has {count} encounters, expected >=4"
 
     def test_each_type_in_weight_tables(self) -> None:
         for enc_type in CE4_TYPES:
@@ -73,8 +71,7 @@ class TestCe4ComplicationsResolve:
             if defn.encounter_type != "distress_bait":
                 continue
             assert "reinforcement_arrival" in defn.complication_ids, (
-                f"distress_bait encounter '{defn.id}' missing "
-                f"reinforcement_arrival complication"
+                f"distress_bait encounter '{defn.id}' missing reinforcement_arrival complication"
             )
 
     def test_derelict_encounter_uses_asteroid_closure(self, dl) -> None:
@@ -93,8 +90,7 @@ class TestCe4ComplicationsResolve:
                 continue
             for cid in defn.complication_ids:
                 assert cid in dl.complications, (
-                    f"CE-4 encounter '{defn.id}' references unknown "
-                    f"complication '{cid}'"
+                    f"CE-4 encounter '{defn.id}' references unknown complication '{cid}'"
                 )
 
 
@@ -182,8 +178,7 @@ class TestCe4OutcomeShape:
                 continue
             for choice in defn.choices:
                 assert choice.outcome.description.strip(), (
-                    f"CE-4 encounter '{defn.id}' choice '{choice.id}' has "
-                    "empty outcome description"
+                    f"CE-4 encounter '{defn.id}' choice '{choice.id}' has empty outcome description"
                 )
                 if choice.failure_outcome is not None:
                     assert choice.failure_outcome.description.strip(), (

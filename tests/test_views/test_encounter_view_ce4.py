@@ -78,17 +78,13 @@ class TestSkillCheckResolution:
         social._skills["persuasion"].level = 5
 
         success = EncounterOutcome(description="They back off.", rewards=[])
-        failure = EncounterOutcome(
-            description="They open fire.", rewards=[], leads_to_combat=True
-        )
+        failure = EncounterOutcome(description="They open fire.", rewards=[], leads_to_combat=True)
         choice = EncounterChoice(
             id="talk",
             label="Talk",
             description="d",
             outcome=success,
-            skill_check=EncounterSkillCheck(
-                "persuasion", 3, set_flag_on_success="ce4_pass"
-            ),
+            skill_check=EncounterSkillCheck("persuasion", 3, set_flag_on_success="ce4_pass"),
             failure_outcome=failure,
         )
         player = _FakePlayer()
@@ -105,17 +101,13 @@ class TestSkillCheckResolution:
         social = SocialManager()
         # Persuasion 0 vs difficulty 3 → fail
         success = EncounterOutcome(description="ok", rewards=[])
-        failure = EncounterOutcome(
-            description="They open fire.", rewards=[], leads_to_combat=True
-        )
+        failure = EncounterOutcome(description="They open fire.", rewards=[], leads_to_combat=True)
         choice = EncounterChoice(
             id="talk",
             label="Talk",
             description="d",
             outcome=success,
-            skill_check=EncounterSkillCheck(
-                "persuasion", 3, set_flag_on_failure="ce4_fail"
-            ),
+            skill_check=EncounterSkillCheck("persuasion", 3, set_flag_on_failure="ce4_fail"),
             failure_outcome=failure,
         )
         player = _FakePlayer()
@@ -195,9 +187,7 @@ class TestRequiresCredits:
         view = _make_view([choice], player=_FakePlayer(credits=1000))
         view.on_enter()
         view._select_choice(0)
-        deductions = [
-            r for r in view.chosen_outcome.rewards if r.reward_type == "deduct_credits"
-        ]
+        deductions = [r for r in view.chosen_outcome.rewards if r.reward_type == "deduct_credits"]
         assert len(deductions) == 1
         assert deductions[0].amount == 200
         view.on_exit()

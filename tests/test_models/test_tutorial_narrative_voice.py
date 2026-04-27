@@ -54,8 +54,7 @@ class TestWritingBibleCompliance:
                 if dash in body:
                     offenders.append(f"{ident}: contains {dash!r}")
         assert not offenders, (
-            "Writing Bible: no em-dashes. Use periods + new sentences.\n  "
-            + "\n  ".join(offenders)
+            "Writing Bible: no em-dashes. Use periods + new sentences.\n  " + "\n  ".join(offenders)
         )
 
     def test_no_banned_genai_constructions(self) -> None:
@@ -65,8 +64,8 @@ class TestWritingBibleCompliance:
             for pattern in _BANNED_PATTERNS:
                 if re.search(pattern, lowered):
                     offenders.append(f"{ident}: matches /{pattern}/")
-        assert not offenders, (
-            "Writing Bible: AI-tell construction found.\n  " + "\n  ".join(offenders)
+        assert not offenders, "Writing Bible: AI-tell construction found.\n  " + "\n  ".join(
+            offenders
         )
 
 
@@ -101,8 +100,7 @@ class TestTutorialStepContract:
         for step in TUTORIAL_STEPS:
             word_count = len(step.description.split())
             assert 40 <= word_count <= 120, (
-                f"Step {step.id} '{step.title}' has {word_count} words "
-                f"(expect 40-120)"
+                f"Step {step.id} '{step.title}' has {word_count} words (expect 40-120)"
             )
 
 
@@ -181,17 +179,13 @@ class TestMinigameHintInventory:
     def test_each_hint_has_title_and_description(self) -> None:
         for key, hint in MINIGAME_HINTS.items():
             assert hint.title, f"Hint '{key}' missing title"
-            assert hint.description, (
-                f"Hint '{key}' missing description"
-            )
+            assert hint.description, f"Hint '{key}' missing description"
 
     def test_hint_bodies_are_substantive(self) -> None:
         """30-150 words per hint — too short = not useful, too long = a lecture."""
         for key, hint in MINIGAME_HINTS.items():
             word_count = len(hint.description.split())
-            assert 30 <= word_count <= 150, (
-                f"Hint '{key}' has {word_count} words (expect 30-150)"
-            )
+            assert 30 <= word_count <= 150, f"Hint '{key}' has {word_count} words (expect 30-150)"
 
 
 class TestTutorialShopMechanicVoice:
@@ -205,10 +199,7 @@ class TestTutorialShopMechanicVoice:
         from pathlib import Path
 
         source_path = (
-            Path(__file__).resolve().parents[2]
-            / "spacegame"
-            / "views"
-            / "tutorial_shop_view.py"
+            Path(__file__).resolve().parents[2] / "spacegame" / "views" / "tutorial_shop_view.py"
         )
         text = source_path.read_text(encoding="utf-8")
         assert "your old man would have liked this build" in text.lower()

@@ -70,9 +70,7 @@ class TestEngineDestructionChain:
         assert effect is not None
         apply_subsystem_destruction(enemy, effect)
 
-        assert enemy.can_flee is False, (
-            "Cowardly enemy must not flee once engines are destroyed"
-        )
+        assert enemy.can_flee is False, "Cowardly enemy must not flee once engines are destroyed"
 
 
 class TestShieldGeneratorDestruction:

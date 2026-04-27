@@ -73,7 +73,4 @@ class TestViewConstructionRobustness:
             view = factory(ui)
             assert view is not None
         except Exception as exc:
-            pytest.fail(
-                f"View '{view_name}' failed to construct: "
-                f"{type(exc).__name__}: {exc}"
-            )
+            pytest.fail(f"View '{view_name}' failed to construct: {type(exc).__name__}: {exc}")

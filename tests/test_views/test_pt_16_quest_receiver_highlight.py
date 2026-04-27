@@ -173,9 +173,7 @@ class TestReceiverHighlightIntegration:
         from pathlib import Path
 
         src = Path("spacegame/views/cantina_view.py").read_text(encoding="utf-8")
-        assert "_render_quest_receiver_glow" in src, (
-            "cantina_view must render the receiver glow"
-        )
+        assert "_render_quest_receiver_glow" in src, "cantina_view must render the receiver glow"
         assert "_quest_receiver_npc_ids" in src, (
             "cantina_view must track receiver ids for rendering"
         )

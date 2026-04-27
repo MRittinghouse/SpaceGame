@@ -300,9 +300,7 @@ class DialogueManager:
             skill_obj = self._social_manager._skills.get(check.skill)
             skill_name = skill_obj.name.upper() if skill_obj else check.skill.upper()
             verdict = "PASS" if success else "FAIL"
-            self._last_check_readout = (
-                f"{skill_name} {effective} vs {check.difficulty}  {verdict}"
-            )
+            self._last_check_readout = f"{skill_name} {effective} vs {check.difficulty}  {verdict}"
         else:
             # No social manager — fall back to success path
             success = True

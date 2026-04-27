@@ -112,10 +112,7 @@ def _make_engine(seed: int = 42, enemy_tid: str = "pirate_scout") -> CombatEngin
 
 def _player_with_crew(crew: list[tuple[str, str]]) -> object:
     """Build a player stub whose crew_roster yields the listed crew."""
-    members = [
-        (MagicMock(id=cid, name=cname), MagicMock())
-        for cid, cname in crew
-    ]
+    members = [(MagicMock(id=cid, name=cname), MagicMock()) for cid, cname in crew]
     roster = MagicMock()
     roster.get_recruited_members.return_value = members
     player = MagicMock()
@@ -185,9 +182,7 @@ class TestResolverWiring:
 
 
 class TestRoundEndSurfacing:
-    def test_first_turn_interjection_surfaces_at_round_end(
-        self, monkeypatch
-    ) -> None:
+    def test_first_turn_interjection_surfaces_at_round_end(self, monkeypatch) -> None:
         bank = [CrewInterjection("elena_reeves", "first_turn", ["Engagement."])]
         _patch_data_loader_with(monkeypatch, bank)
         view = CombatView(
@@ -198,9 +193,7 @@ class TestRoundEndSurfacing:
         view.on_enter()
         view._maybe_surface_round_interjection()
         # Combat log gets the line
-        assert any(
-            "Elena" in line for line in view.visible_log_lines
-        ), view.visible_log_lines
+        assert any("Elena" in line for line in view.visible_log_lines), view.visible_log_lines
         # Floating subtitle pushed
         assert view.floating_texts, "expected floating subtitle"
         view.on_exit()
@@ -214,9 +207,7 @@ class TestRoundEndSurfacing:
         view = CombatView(
             _ui_manager(),
             _make_engine(),
-            _player_with_crew(
-                [("elena_reeves", "Elena"), ("marcus_jin", "Marcus")]
-            ),
+            _player_with_crew([("elena_reeves", "Elena"), ("marcus_jin", "Marcus")]),
         )
         view.on_enter()
         view._maybe_surface_round_interjection()
@@ -282,9 +273,7 @@ class TestOutcomeSurfacing:
         assert any("Engagement closed." in line for line in view.visible_log_lines)
         view.on_exit()
 
-    def test_captain_outcome_line_surfaces_on_victory(
-        self, monkeypatch
-    ) -> None:
+    def test_captain_outcome_line_surfaces_on_victory(self, monkeypatch) -> None:
         """CE-6: when encounter has captain_id, defeat_line surfaces on victory."""
         from spacegame.models.enemy_captain import EnemyCaptain
 
@@ -320,14 +309,12 @@ class TestOutcomeSurfacing:
         view.on_enter()
         view._maybe_surface_captain_outcome_line()
         # Captain's defeat_line should appear (player won → captain lost)
-        assert any(
-            "captain_defeated_text" in line for line in view.visible_log_lines
-        ), view.visible_log_lines
+        assert any("captain_defeated_text" in line for line in view.visible_log_lines), (
+            view.visible_log_lines
+        )
         view.on_exit()
 
-    def test_captain_outcome_line_surfaces_on_negotiate(
-        self, monkeypatch
-    ) -> None:
+    def test_captain_outcome_line_surfaces_on_negotiate(self, monkeypatch) -> None:
         from spacegame.models.enemy_captain import EnemyCaptain
 
         captain = EnemyCaptain(
@@ -360,14 +347,10 @@ class TestOutcomeSurfacing:
         view = CombatView(_ui_manager(), engine, _player_with_crew([]))
         view.on_enter()
         view._maybe_surface_captain_outcome_line()
-        assert any(
-            "surrender_text" in line for line in view.visible_log_lines
-        )
+        assert any("surrender_text" in line for line in view.visible_log_lines)
         view.on_exit()
 
-    def test_captain_outcome_silent_when_no_captain_attached(
-        self, monkeypatch
-    ) -> None:
+    def test_captain_outcome_silent_when_no_captain_attached(self, monkeypatch) -> None:
         engine = _make_engine()
         engine.get_state().result = CombatResult.VICTORY
         view = CombatView(_ui_manager(), engine, _player_with_crew([]))
@@ -379,11 +362,7 @@ class TestOutcomeSurfacing:
         view.on_exit()
 
     def test_no_outcome_on_flee(self, monkeypatch) -> None:
-        bank = [
-            CrewInterjection(
-                "elena_reeves", "combat_outcome", ["x"]
-            )
-        ]
+        bank = [CrewInterjection("elena_reeves", "combat_outcome", ["x"])]
         _patch_data_loader_with(monkeypatch, bank)
         view = CombatView(
             _ui_manager(),

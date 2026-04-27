@@ -298,10 +298,7 @@ class CombatEngine:
         # payload — their entire work is done by the activation helpers
         # above. Skip the normal resolve pipeline so the engine doesn't
         # try to target an enemy with a zero-effect move.
-        if (
-            move.id in ("fire_at_will", "power_drift", "total_commitment")
-            and not move.effects
-        ):
+        if move.id in ("fire_at_will", "power_drift", "total_commitment") and not move.effects:
             return [entry] if dual_tech_logs else []
 
         # Overdriven Weapon: 2x damage on next weapon attack (momentum 50% threshold)
@@ -1118,9 +1115,7 @@ class CombatEngine:
 
             if event.spawned_template_ids:
                 dl = get_data_loader()
-                living = sum(
-                    1 for e in self._state.enemies if e.is_alive and not e.is_fled
-                )
+                living = sum(1 for e in self._state.enemies if e.is_alive and not e.is_fled)
                 for tid in event.spawned_template_ids:
                     if living >= MAX_LIVING_ENEMIES:
                         messages.append(
@@ -1130,9 +1125,7 @@ class CombatEngine:
                         break
                     template = dl.enemy_templates.get(tid)
                     if template is None:
-                        messages.append(
-                            f"Reinforcement call failed — unknown template '{tid}'"
-                        )
+                        messages.append(f"Reinforcement call failed — unknown template '{tid}'")
                         continue
                     self._state.enemies.append(EnemyShip.from_template(template))
                     living += 1
@@ -1297,12 +1290,8 @@ class CombatEngine:
         # Spawn effects are caster-invoked regardless of target — they
         # append to state.enemies, not hit any particular target, so
         # they bypass the target-based bucketing (Tier 3.E).
-        spawn_effects = [
-            e for e in move.effects if e.type == EffectType.SPAWN_REINFORCEMENT
-        ]
-        non_spawn = [
-            e for e in move.effects if e.type != EffectType.SPAWN_REINFORCEMENT
-        ]
+        spawn_effects = [e for e in move.effects if e.type == EffectType.SPAWN_REINFORCEMENT]
+        non_spawn = [e for e in move.effects if e.type != EffectType.SPAWN_REINFORCEMENT]
         offensive_effects = [e for e in non_spawn if e.target == EffectTarget.ENEMY]
         self_effects = [e for e in non_spawn if e.target == EffectTarget.SELF]
         ally_effects = [e for e in non_spawn if e.target == EffectTarget.ALLY]
@@ -1330,9 +1319,7 @@ class CombatEngine:
                     # CE-3 Wave 2: environmental complications
                     # (``asteroid_closure``, etc.) add a flat evasion delta.
                     # Floor at 0 in case multiple negative modifiers stack.
-                    raw_evasion = max(
-                        0, raw_evasion + self._state.player_evasion_modifier
-                    )
+                    raw_evasion = max(0, raw_evasion + self._state.player_evasion_modifier)
                     # Ghost capstone: +30 evasion on first turn
                     if (
                         self._state.round_number == 1
@@ -1409,13 +1396,13 @@ class CombatEngine:
                         ):
                             counter_msgs: list[str] = []
                             self._apply_direct_damage(
-                                attacker, 25.0, counter_msgs,
+                                attacker,
+                                25.0,
+                                counter_msgs,
                                 self._get_target_name(attacker),
                                 attacker=defender,
                             )
-                            effects_applied.append(
-                                "Daring Gambit COUNTER: 25 damage returned"
-                            )
+                            effects_applied.append("Daring Gambit COUNTER: 25 damage returned")
                             effects_applied.extend(counter_msgs)
 
             if hit or graze:
@@ -1534,7 +1521,10 @@ class CombatEngine:
                             chain_msgs: list[str] = [f"CHAIN FIRE! ({int(chain_dmg)} damage)"]
                             chain_target_name = self._get_target_name(defender)
                             self._apply_direct_damage(
-                                defender, chain_dmg, chain_msgs, chain_target_name,
+                                defender,
+                                chain_dmg,
+                                chain_msgs,
+                                chain_target_name,
                                 attacker=attacker,
                             )
                             chain_entry = CombatLogEntry(
@@ -1761,7 +1751,9 @@ class CombatEngine:
                     upfront = raw * 0.66
                     burn_per_turn = raw * 0.34 * 1.15  # 34% + 15% bonus
                     reduced = upfront * (1.0 - min(damage_reduction, 0.9))
-                    self._apply_direct_damage(target, reduced, messages, target_name, attacker=attacker_state)
+                    self._apply_direct_damage(
+                        target, reduced, messages, target_name, attacker=attacker_state
+                    )
                     # Apply Burn stack (stacks to 3, each lasts 3 turns)
                     burn_effect = CombatEffect(
                         type=EffectType.BURN,
@@ -1799,7 +1791,9 @@ class CombatEngine:
                 elif eff_element == WeaponElement.CRYO:
                     # 85% damage + Chill stack
                     reduced = raw * 0.85 * (1.0 - min(damage_reduction, 0.9))
-                    self._apply_direct_damage(target, reduced, messages, target_name, attacker=attacker_state)
+                    self._apply_direct_damage(
+                        target, reduced, messages, target_name, attacker=attacker_state
+                    )
                     chill_effect = CombatEffect(
                         type=EffectType.CHILL,
                         value=5.0,  # -5 evasion per stack
@@ -1836,7 +1830,9 @@ class CombatEngine:
                 elif eff_element == WeaponElement.VOLTAIC:
                     # 85% damage + Suppressed stack
                     reduced = raw * 0.85 * (1.0 - min(damage_reduction, 0.9))
-                    self._apply_direct_damage(target, reduced, messages, target_name, attacker=attacker_state)
+                    self._apply_direct_damage(
+                        target, reduced, messages, target_name, attacker=attacker_state
+                    )
                     suppress_effect = CombatEffect(
                         type=EffectType.SUPPRESSED,
                         value=12.0,  # -12% damage per stack
@@ -1857,7 +1853,9 @@ class CombatEngine:
                 else:
                     # Kinetic (default) — pure direct damage
                     reduced = raw * (1.0 - min(damage_reduction, 0.9))
-                    self._apply_direct_damage(target, reduced, messages, target_name, attacker=attacker_state)
+                    self._apply_direct_damage(
+                        target, reduced, messages, target_name, attacker=attacker_state
+                    )
 
             elif effect.type == EffectType.SHIELD_DRAIN:
                 if isinstance(target, PlayerCombatState):
@@ -2023,8 +2021,7 @@ class CombatEngine:
             spawned += 1
         if spawned > 0:
             messages.append(
-                f"Reinforcement arrives: {template.name}"
-                + (f" ×{spawned}" if spawned > 1 else "")
+                f"Reinforcement arrives: {template.name}" + (f" ×{spawned}" if spawned > 1 else "")
             )
         return messages
 
@@ -2046,9 +2043,8 @@ class CombatEngine:
                 player-attacker. DOT-style callers pass None to skip the check.
         """
         # Crew Sync armor-pierce (B8.3): player attacks bypass armor this turn.
-        armor_pierced = (
-            isinstance(attacker, PlayerCombatState)
-            and getattr(attacker, "armor_pierce_active", False)
+        armor_pierced = isinstance(attacker, PlayerCombatState) and getattr(
+            attacker, "armor_pierce_active", False
         )
 
         # Armor: flat reduction per hit (minimum 1 damage)
@@ -2079,10 +2075,7 @@ class CombatEngine:
             # Total Commitment (B8.3): intercept hull hits, convert to armor.
             # Must happen BEFORE Legendary Void Absorption / module-damage
             # routing so the incoming hit is logically absorbed first.
-            if (
-                hull_damage > 0
-                and getattr(target, "total_commitment_hits_remaining", 0) > 0
-            ):
+            if hull_damage > 0 and getattr(target, "total_commitment_hits_remaining", 0) > 0:
                 try:
                     from spacegame.models.dual_tech import (
                         intercept_total_commitment_hull_damage,
@@ -2247,13 +2240,9 @@ class CombatEngine:
                     apply_subsystem_destruction,
                 )
 
-                destroyed_effect = apply_subsystem_damage(
-                    target, int(hull_damage), focused
-                )
+                destroyed_effect = apply_subsystem_damage(target, int(hull_damage), focused)
                 if destroyed_effect is not None:
-                    destruction_msgs = apply_subsystem_destruction(
-                        target, destroyed_effect
-                    )
+                    destruction_msgs = apply_subsystem_destruction(target, destroyed_effect)
                     messages.extend(destruction_msgs)
                     # Clear focus after destruction so next attack
                     # doesn't try to re-damage a dead subsystem.
@@ -2810,9 +2799,7 @@ class CombatEngine:
             return None
 
         candidates = [
-            e
-            for e in self._state.enemies
-            if e is not attacker and e.is_alive and not e.is_fled
+            e for e in self._state.enemies if e is not attacker and e.is_alive and not e.is_fled
         ]
         if not candidates:
             return None

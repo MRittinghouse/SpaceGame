@@ -175,9 +175,7 @@ class TestDialogueResponseButtonTruncation:
         # Compute disposition preview rect.
         preview_text = f"+{disposition}"
         preview_surf = font.render(preview_text, True, (0, 0, 0))
-        preview_rect = preview_surf.get_rect(
-            midright=(button_rect.right - 12, button_rect.centery)
-        )
+        preview_rect = preview_surf.get_rect(midright=(button_rect.right - 12, button_rect.centery))
 
         # Known limitation (flagged as finding): the view's truncation math
         # does NOT subtract preview_rect.width, so overlap CAN occur. This
@@ -221,10 +219,7 @@ class TestGroundBriefingHeaderOverlap:
 
         diff_surf = subtitle_font.render(difficulty_value.upper(), True, (0, 0, 0))
         diff_x = (
-            GroundBriefingView.PANEL_X
-            + GroundBriefingView.PANEL_W
-            - diff_surf.get_width()
-            - 30
+            GroundBriefingView.PANEL_X + GroundBriefingView.PANEL_W - diff_surf.get_width() - 30
         )
         diff_rect = diff_surf.get_rect(topleft=(diff_x, GroundBriefingView.PANEL_Y + 24))
 
@@ -246,8 +241,7 @@ class TestGroundBriefingHeaderOverlap:
         """Typical-length mission name leaves room for the difficulty badge."""
         title_rect, diff_rect = self._render_rects("Recon Op", "low")
         assert not _rects_overlap(title_rect, diff_rect), (
-            f"Short mission name unexpectedly collided. "
-            f"title={title_rect}, diff={diff_rect}"
+            f"Short mission name unexpectedly collided. title={title_rect}, diff={diff_rect}"
         )
 
     def test_long_mission_name_truncates_cleanly(self) -> None:

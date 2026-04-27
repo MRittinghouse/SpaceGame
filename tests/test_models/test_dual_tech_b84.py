@@ -49,9 +49,7 @@ class _FakeRoster:
 
 
 def _roster(**crew_loyalties: int) -> _FakeRoster:
-    return _FakeRoster(
-        states={cid: {"loyalty": loy} for cid, loy in crew_loyalties.items()}
-    )
+    return _FakeRoster(states={cid: {"loyalty": loy} for cid, loy in crew_loyalties.items()})
 
 
 def _player() -> PlayerCombatState:
@@ -111,9 +109,7 @@ class TestInjection:
         n = inject_available_dual_techs(player, roster)
         # 6 pairs + 1 triad.
         assert n == 7
-        assert {m.id for m in player.dual_tech_moves} == set(
-            DUAL_TECH_PALETTE.keys()
-        )
+        assert {m.id for m in player.dual_tech_moves} == set(DUAL_TECH_PALETTE.keys())
 
     def test_injected_moves_are_tagged_coordinated(self) -> None:
         """The UI uses the ``category`` field to route to tabs."""
@@ -186,9 +182,7 @@ class TestBuildPlayerCombatStateInjection:
         )
         assert hasattr(state, "dual_tech_moves")
         ids = {m.id for m in state.dual_tech_moves}
-        assert "fire_at_will" in ids, (
-            f"Elena + Marcus @ 100 should unlock Fire at Will; got {ids}"
-        )
+        assert "fire_at_will" in ids, f"Elena + Marcus @ 100 should unlock Fire at Will; got {ids}"
 
 
 # ============================================================================
@@ -266,11 +260,7 @@ class TestFireAtWillQueueTimePrediction:
             id="buff",
             name="Buff",
             description="",
-            effects=[
-                CombatEffect(
-                    type=EffectType.EVASION_MOD, value=10.0, duration=2
-                )
-            ],
+            effects=[CombatEffect(type=EffectType.EVASION_MOD, value=10.0, duration=2)],
             energy_cost=4,
             cooldown=0,
         )

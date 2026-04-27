@@ -117,9 +117,7 @@ def _format_violation_report(result: dict) -> str:
     if len(result.get("violations", [])) > 20:
         lines.append(f"  ... and {len(result['violations']) - 20} more")
     for e in result.get("errors", [])[:5]:
-        lines.append(
-            f"  ERROR in {e['view']}: {e['error_type']}: {e['error_message']}"
-        )
+        lines.append(f"  ERROR in {e['view']}: {e['error_type']}: {e['error_message']}")
     return "\n".join(lines)
 
 
@@ -136,17 +134,14 @@ class TestSubprocessBoundsMatrix:
         RESOLUTIONS,
         ids=[r[2] for r in RESOLUTIONS],
     )
-    def test_bounds_at_resolution(
-        self, width: int, height: int, label: str, category: str
-    ) -> None:
+    def test_bounds_at_resolution(self, width: int, height: int, label: str, category: str) -> None:
         returncode, result, stderr = _run_inner(width, height)
 
         if returncode == 2:
             # Subprocess raised — surface the traceback.
             errors = result.get("errors", [])
             error_report = "\n".join(
-                f"{e['view']}: {e['error_type']}: {e['error_message']}"
-                for e in errors[:5]
+                f"{e['view']}: {e['error_type']}: {e['error_message']}" for e in errors[:5]
             )
             pytest.fail(
                 f"Subprocess error at {label} ({width}x{height}):\n"

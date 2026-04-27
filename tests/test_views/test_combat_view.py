@@ -1750,6 +1750,7 @@ class TestDualTechTriggerFromQueue:
         view._action_queue = ActionQueue(energy_available=20)
         # Inject a dual-tech queued action directly.
         from spacegame.models.action_queue import QueuedAction
+
         view._action_queue._actions.append(
             QueuedAction(
                 move_id="fire_at_will",

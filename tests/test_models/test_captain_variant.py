@@ -81,9 +81,7 @@ class TestMeetingStateForMemory:
         assert meeting_state_for_memory(mem) == MEETING_STATE_FIRST
 
     def test_active_with_count_means_return(self) -> None:
-        mem = CaptainMemory(
-            captain_id="x", encounter_count=1, status=STATUS_ACTIVE
-        )
+        mem = CaptainMemory(captain_id="x", encounter_count=1, status=STATUS_ACTIVE)
         assert meeting_state_for_memory(mem) == MEETING_STATE_RETURN
 
     @pytest.mark.parametrize(
@@ -96,9 +94,7 @@ class TestMeetingStateForMemory:
         ],
     )
     def test_resolved_status_maps_to_post_state(self, status, expected) -> None:
-        mem = CaptainMemory(
-            captain_id="x", encounter_count=1, status=status
-        )
+        mem = CaptainMemory(captain_id="x", encounter_count=1, status=status)
         assert meeting_state_for_memory(mem) == expected
 
 

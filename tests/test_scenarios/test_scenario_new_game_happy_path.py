@@ -110,25 +110,22 @@ class TestNewGameHappyPath:
             assert player.dialogue_flags.get(tutorial_bought_part(p.part_id)), (
                 f"Expected tutorial flag for {p.part_id} after purchase"
             )
-        assert player.dialogue_flags.get(
-            tutorial_bought_part("scrapyard_hold")
-        ), "Expected cargo hold flag after choice purchase"
+        assert player.dialogue_flags.get(tutorial_bought_part("scrapyard_hold")), (
+            "Expected cargo hold flag after choice purchase"
+        )
 
         # --- 4b. Parts live in inventory (same path as real shipyard shop) ---
         inventory = getattr(player, "parts_inventory", {}) or {}
         for p in TUTORIAL_MANDATORY:
             assert p.part_id in inventory, (
-                f"Expected {p.part_id} in parts_inventory after purchase; "
-                f"inventory={inventory}"
+                f"Expected {p.part_id} in parts_inventory after purchase; inventory={inventory}"
             )
 
         shop.on_exit()
 
         # --- 5/6. Ship builder renders in tutorial mode ---
         builder_ui = _ui()
-        builder = ShipBuilderView(
-            ui_manager=builder_ui, player=player, data_loader=dl
-        )
+        builder = ShipBuilderView(ui_manager=builder_ui, player=player, data_loader=dl)
         builder._tutorial_mode = True
         builder.on_enter()
         builder.update(0.016)
@@ -153,9 +150,7 @@ class TestNewGameHappyPath:
             "fuel_small": "Fuel narration",
             "cargo_small": "Cargo narration",
         }
-        welcome = builder._pick_tutorial_narration(
-            set(), part_narration, TUTORIAL_PARTS
-        )
+        welcome = builder._pick_tutorial_narration(set(), part_narration, TUTORIAL_PARTS)
         assert welcome and isinstance(welcome, str)
 
         # 8b. Per-part: cockpit placed, engine pending → engine narration
@@ -174,9 +169,7 @@ class TestNewGameHappyPath:
             "fuel_small",
             "cargo_small",
         }
-        completion = builder._pick_tutorial_narration(
-            fully_placed, part_narration, TUTORIAL_PARTS
-        )
+        completion = builder._pick_tutorial_narration(fully_placed, part_narration, TUTORIAL_PARTS)
         assert "confirm build" in completion.lower()
 
         # --- 9. Lifecycle teardown clean ---

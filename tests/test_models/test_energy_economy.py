@@ -61,9 +61,7 @@ class _FakeDataLoader:
     slot_definitions: dict[str, _FakeSlotDef] = field(default_factory=dict)
 
 
-def _weapon(
-    part_id: str, damage: float, energy: int, cooldown: int
-) -> _FakePart:
+def _weapon(part_id: str, damage: float, energy: int, cooldown: int) -> _FakePart:
     return _FakePart(
         id=part_id,
         slot_type="weapon",
@@ -86,10 +84,7 @@ def _build(
     slot_defs = {"weapon_slot": _FakeSlotDef(slot_type="weapon")}
     dl = _FakeDataLoader(ship_parts=parts_catalog, slot_definitions=slot_defs)
 
-    placed = [
-        _FakePlacedSlot(slot_def_id="weapon_slot", equipped_part_id=w.id)
-        for w in weapons
-    ]
+    placed = [_FakePlacedSlot(slot_def_id="weapon_slot", equipped_part_id=w.id) for w in weapons]
     build = _FakeBuild(
         placed_slots=placed,
         modules=[],

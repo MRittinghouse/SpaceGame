@@ -116,9 +116,7 @@ def _run_scenario(
             anything — measures cooldown idleness).
     """
     encounter = CombatEncounter(enemy_templates=enemy_templates, encounter_seed=seed)
-    state = CombatState(
-        player=player, enemies=enemies, encounter=encounter, combat_log=[]
-    )
+    state = CombatState(player=player, enemies=enemies, encounter=encounter, combat_log=[])
     engine = CombatEngine(state, seed=seed)
 
     total_starting_hp = sum(e.current_hull + e.current_shields for e in enemies)
@@ -164,9 +162,7 @@ def _run_scenario(
         engine.end_round()
         rounds += 1
 
-    total_ending_hp = sum(
-        max(0, e.current_hull) + max(0, e.current_shields) for e in enemies
-    )
+    total_ending_hp = sum(max(0, e.current_hull) + max(0, e.current_shields) for e in enemies)
     damage_dealt = max(0, total_starting_hp - total_ending_hp)
     hull_ratio = player.hull / max(player.max_hull, 1)
 
@@ -273,18 +269,10 @@ class TestScenario1GlassCannonDamageIdentity:
         gc_totals = []
         tk_totals = []
         for seed in (42, 1337, 2024, 9999, 101):
-            enemies_gc, tpl = _make_enemies(
-                ["frontier_interceptor", "frontier_interceptor"]
-            )
-            gc_out = _run_scenario(
-                _glass_cannon(), tpl, enemies_gc, seed=seed, max_rounds=6
-            )
-            enemies_tk, tpl = _make_enemies(
-                ["frontier_interceptor", "frontier_interceptor"]
-            )
-            tk_out = _run_scenario(
-                _tank(), tpl, enemies_tk, seed=seed, max_rounds=6
-            )
+            enemies_gc, tpl = _make_enemies(["frontier_interceptor", "frontier_interceptor"])
+            gc_out = _run_scenario(_glass_cannon(), tpl, enemies_gc, seed=seed, max_rounds=6)
+            enemies_tk, tpl = _make_enemies(["frontier_interceptor", "frontier_interceptor"])
+            tk_out = _run_scenario(_tank(), tpl, enemies_tk, seed=seed, max_rounds=6)
             gc_totals.append(gc_out["damage_dealt"])
             tk_totals.append(tk_out["damage_dealt"])
 
@@ -310,14 +298,10 @@ class TestScenario2TankDurabilityIdentity:
         gc = _glass_cannon()
         tk = _tank()
 
-        enemies_gc, tpl = _make_enemies(
-            ["frontier_interceptor", "frontier_interceptor"]
-        )
+        enemies_gc, tpl = _make_enemies(["frontier_interceptor", "frontier_interceptor"])
         gc_out = _run_scenario(gc, tpl, enemies_gc, seed=seed, max_rounds=15)
 
-        enemies_tk, tpl = _make_enemies(
-            ["frontier_interceptor", "frontier_interceptor"]
-        )
+        enemies_tk, tpl = _make_enemies(["frontier_interceptor", "frontier_interceptor"])
         tk_out = _run_scenario(tk, tpl, enemies_tk, seed=seed, max_rounds=15)
 
         assert tk_out["player_hull_ratio"] >= gc_out["player_hull_ratio"], (
@@ -332,9 +316,7 @@ class TestScenario2TankDurabilityIdentity:
         """Tank must survive at least 10 rounds against 2× T2 strikers
         and deal nontrivial damage."""
         tk = _tank()
-        enemies, tpl = _make_enemies(
-            ["frontier_interceptor", "frontier_interceptor"]
-        )
+        enemies, tpl = _make_enemies(["frontier_interceptor", "frontier_interceptor"])
         out = _run_scenario(tk, tpl, enemies, seed=seed, max_rounds=15)
         assert out["player_hull_ratio"] > 0.3, (
             f"Tank reduced to {out['player_hull_ratio']:.2f} hull in 15 "
@@ -358,9 +340,7 @@ class TestScenario3BalancedTierUsage:
         should fire something on a large majority of turns —
         it has rotation, not cooldown gaps."""
         balanced = _balanced()
-        enemies, tpl = _make_enemies(
-            ["union_siege_cruiser", "collective_jammer_prime"]
-        )
+        enemies, tpl = _make_enemies(["union_siege_cruiser", "collective_jammer_prime"])
         out = _run_scenario(balanced, tpl, enemies, seed=seed, max_rounds=15)
         fire_ratio = out["turns_with_fire"] / max(out["rounds"], 1)
         assert fire_ratio >= 0.80, (
@@ -392,9 +372,7 @@ class TestScenario4MissileBoatCooldownPacing:
         )
 
     @pytest.mark.parametrize("seed", [42, 1337, 2024])
-    def test_missile_boat_burst_strike_damage_per_fire_is_high(
-        self, seed: int
-    ) -> None:
+    def test_missile_boat_burst_strike_damage_per_fire_is_high(self, seed: int) -> None:
         """When the boat DOES fire, its per-fire damage must be high —
         that's the tradeoff for the idle turns. If turns_with_fire is
         low, damage_per_fire must be large."""
@@ -422,9 +400,7 @@ class TestArchetypeSeparation:
     statistically identical outcomes, the design doesn't differentiate them."""
 
     @pytest.mark.parametrize("seed", [42, 1337, 2024])
-    def test_missile_boat_alpha_damage_exceeds_sidearm_turn(
-        self, seed: int
-    ) -> None:
+    def test_missile_boat_alpha_damage_exceeds_sidearm_turn(self, seed: int) -> None:
         """Single-turn damage from missile boat alpha strike must
         exceed what a sidearm-only turn could plausibly deal.
         This confirms the 'burst fantasy' is present."""

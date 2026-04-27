@@ -242,9 +242,7 @@ def _render_text(tier: DamageTier, color_role: str = "hud_text") -> pygame.Surfa
 class TestDamageTextRendering:
     def test_rendering_produces_opaque_pixels(self) -> None:
         surf = _render_text(DamageTier.STANDARD)
-        any_opaque = any(
-            surf.get_at((x, y)).a > 0 for y in range(80) for x in range(200)
-        )
+        any_opaque = any(surf.get_at((x, y)).a > 0 for y in range(80) for x in range(200))
         assert any_opaque
 
     def test_rendering_uses_requested_role_color(self) -> None:
@@ -297,9 +295,7 @@ class TestDamageTextRendering:
         surf = pygame.Surface((200, 80), pygame.SRCALPHA)
         mgr.render(surf)
         # No pixels drawn (item is at alpha 0).
-        assert not any(
-            surf.get_at((x, y)).a > 0 for y in range(80) for x in range(200)
-        )
+        assert not any(surf.get_at((x, y)).a > 0 for y in range(80) for x in range(200))
 
 
 class TestDamageTextPaletteCompliance:

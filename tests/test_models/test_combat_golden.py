@@ -360,8 +360,7 @@ class TestMonotonicityInvariants:
         large_queued = sum(1 for m in moves if large.add(m.id, 0, m)[0])
 
         assert large_queued > small_queued, (
-            f"Larger pool should queue more actions "
-            f"(small={small_queued}, large={large_queued})"
+            f"Larger pool should queue more actions (small={small_queued}, large={large_queued})"
         )
 
 
@@ -522,9 +521,7 @@ class TestActionQueueMoveIdFootgun:
         )
         # A log entry with 'Move not found' was emitted
         new_entries = state.combat_log[log_len_before:]
-        found = any(
-            "Move not found" in entry.effects_applied for entry in new_entries
-        )
+        found = any("Move not found" in entry.effects_applied for entry in new_entries)
         assert found, (
             "Engine must emit 'Move not found' log on unknown move_id. "
             "Callers passing slot_key instead of move.id depend on this "

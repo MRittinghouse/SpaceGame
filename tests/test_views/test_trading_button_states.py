@@ -71,25 +71,15 @@ def _make_trading_view(
     ui = pygame_gui.UIManager((1280, 720))
     rect = pygame.Rect(0, 0, 100, 30)
     view.buy_button = pygame_gui.elements.UIButton(rect, "BUY", ui)
-    view.buy_max_button = pygame_gui.elements.UIButton(
-        pygame.Rect(0, 30, 100, 30), "MAX", ui
-    )
-    view.sell_button = pygame_gui.elements.UIButton(
-        pygame.Rect(0, 60, 100, 30), "SELL", ui
-    )
-    view.sell_max_button = pygame_gui.elements.UIButton(
-        pygame.Rect(0, 90, 100, 30), "MAX", ui
-    )
+    view.buy_max_button = pygame_gui.elements.UIButton(pygame.Rect(0, 30, 100, 30), "MAX", ui)
+    view.sell_button = pygame_gui.elements.UIButton(pygame.Rect(0, 60, 100, 30), "SELL", ui)
+    view.sell_max_button = pygame_gui.elements.UIButton(pygame.Rect(0, 90, 100, 30), "MAX", ui)
 
     # Selection helpers
     view._selected_market_id: str | None = "food"
     view._selected_cargo_id: str | None = None
-    view._get_selected_market_commodity = MagicMock(
-        side_effect=lambda: view._selected_market_id
-    )
-    view._get_selected_cargo_commodity = MagicMock(
-        side_effect=lambda: view._selected_cargo_id
-    )
+    view._get_selected_market_commodity = MagicMock(side_effect=lambda: view._selected_market_id)
+    view._get_selected_cargo_commodity = MagicMock(side_effect=lambda: view._selected_cargo_id)
 
     return view
 

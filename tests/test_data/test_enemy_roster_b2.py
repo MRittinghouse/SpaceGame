@@ -242,9 +242,7 @@ class TestFactionAttribution:
 
     def test_union_templates_use_miners_faction(self, enemies: dict) -> None:
         for eid in ("union_corvette", "union_siege_cruiser", "union_behemoth"):
-            assert enemies[eid].faction_id == "miners_union", (
-                f"{eid} should belong to miners_union"
-            )
+            assert enemies[eid].faction_id == "miners_union", f"{eid} should belong to miners_union"
 
     def test_frontier_templates_use_frontier_faction(self, enemies: dict) -> None:
         for eid in ("frontier_interceptor", "frontier_raptor", "rogue_ace"):
@@ -273,9 +271,7 @@ class TestRewardScaling:
     def test_credits_rise_with_tier(self, enemies: dict) -> None:
         t1_max = max(enemies[e].credit_reward for e in T1_IDS)
         t4_min = min(enemies[e].credit_reward for e in T4_IDS)
-        assert t4_min > t1_max, (
-            f"T4 minimum credits ({t4_min}) should exceed T1 maximum ({t1_max})"
-        )
+        assert t4_min > t1_max, f"T4 minimum credits ({t4_min}) should exceed T1 maximum ({t1_max})"
 
 
 # ============================================================================

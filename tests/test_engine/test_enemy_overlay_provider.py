@@ -119,9 +119,7 @@ class TestPerInstanceOverlays:
     def test_regions_registered_on_first_fetch(self) -> None:
         provider = EnemyModuleOverlayProvider()
         build = _build("small")
-        overlay = provider.get_overlay(
-            "scout", build, ["engine", "reactor"], instance_key=object()
-        )
+        overlay = provider.get_overlay("scout", build, ["engine", "reactor"], instance_key=object())
         assert set(overlay.module_ids()) == {"engine", "reactor"}
 
 
@@ -145,9 +143,7 @@ class TestSyncStateFromEnemy:
     def test_destroyed_sets_destroyed_state(self) -> None:
         provider = EnemyModuleOverlayProvider()
         build = _build("tiny")
-        overlay = provider.get_overlay(
-            "scout", build, ["engine", "reactor"], instance_key=object()
-        )
+        overlay = provider.get_overlay("scout", build, ["engine", "reactor"], instance_key=object())
         enemy = _FakeEnemy(destroyed={"engine"})
 
         provider.sync_state_from_enemy(overlay, enemy)
@@ -158,9 +154,7 @@ class TestSyncStateFromEnemy:
     def test_focused_sets_highlighted_state(self) -> None:
         provider = EnemyModuleOverlayProvider()
         build = _build("tiny")
-        overlay = provider.get_overlay(
-            "scout", build, ["engine", "reactor"], instance_key=object()
-        )
+        overlay = provider.get_overlay("scout", build, ["engine", "reactor"], instance_key=object())
         enemy = _FakeEnemy(focused="engine")
 
         provider.sync_state_from_enemy(overlay, enemy)
@@ -172,9 +166,7 @@ class TestSyncStateFromEnemy:
         """If a subsystem is both destroyed AND focused (stale UI), DESTROYED wins."""
         provider = EnemyModuleOverlayProvider()
         build = _build("tiny")
-        overlay = provider.get_overlay(
-            "scout", build, ["engine"], instance_key=object()
-        )
+        overlay = provider.get_overlay("scout", build, ["engine"], instance_key=object())
         enemy = _FakeEnemy(destroyed={"engine"}, focused="engine")
 
         provider.sync_state_from_enemy(overlay, enemy)
@@ -185,9 +177,7 @@ class TestSyncStateFromEnemy:
         """If state was previously HIGHLIGHTED and now unfocused, revert to NORMAL."""
         provider = EnemyModuleOverlayProvider()
         build = _build("tiny")
-        overlay = provider.get_overlay(
-            "scout", build, ["engine"], instance_key=object()
-        )
+        overlay = provider.get_overlay("scout", build, ["engine"], instance_key=object())
         # First sync: focused
         provider.sync_state_from_enemy(overlay, _FakeEnemy(focused="engine"))
         assert overlay.get_region("engine").state == ModuleOverlayState.HIGHLIGHTED
@@ -200,9 +190,7 @@ class TestSyncStateFromEnemy:
         """Defensive: a minimal enemy missing the runtime fields must not blow up."""
         provider = EnemyModuleOverlayProvider()
         build = _build("tiny")
-        overlay = provider.get_overlay(
-            "scout", build, ["engine"], instance_key=object()
-        )
+        overlay = provider.get_overlay("scout", build, ["engine"], instance_key=object())
 
         class MinimalEnemy:
             pass  # No subsystems_destroyed, no focused_subsystem

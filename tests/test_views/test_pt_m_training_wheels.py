@@ -165,9 +165,7 @@ class TestTipBodyWritingCompliance:
             text = Path(fn).read_text(encoding="utf-8")
             for m in pat.finditer(text):
                 # Collapse the concatenated string literals into one body.
-                body = "".join(
-                    s.strip().strip('"').strip("'") for s in m.group(1).split("\n")
-                )
+                body = "".join(s.strip().strip('"').strip("'") for s in m.group(1).split("\n"))
                 bodies.append(body)
         return bodies
 
@@ -192,7 +190,9 @@ class TestTipBodyWritingCompliance:
     def test_bodies_are_concise(self) -> None:
         """Design doc says 1-3 sentences. Allow up to 4 for complex screens."""
         for body in self._tip_bodies_raw():
-            sentences = [s for s in body.replace("!", ".").replace("?", ".").split(".") if s.strip()]
+            sentences = [
+                s for s in body.replace("!", ".").replace("?", ".").split(".") if s.strip()
+            ]
             assert 1 <= len(sentences) <= 4, (
                 f"tip body has {len(sentences)} sentences (expected 1-4): {body!r}"
             )
@@ -220,16 +220,12 @@ class TestViewIntegration:
     def test_all_views_instantiate_overlay(self) -> None:
         for path in _TIP_SOURCE_FILES:
             src = Path(path).read_text(encoding="utf-8")
-            assert "FirstTimeTipOverlay(" in src, (
-                f"view missing tip overlay instantiation: {path}"
-            )
+            assert "FirstTimeTipOverlay(" in src, f"view missing tip overlay instantiation: {path}"
 
     def test_all_views_call_maybe_show_tip(self) -> None:
         for path in _TIP_SOURCE_FILES:
             src = Path(path).read_text(encoding="utf-8")
-            assert "_maybe_show_tip" in src, (
-                f"view missing _maybe_show_tip hook: {path}"
-            )
+            assert "_maybe_show_tip" in src, f"view missing _maybe_show_tip hook: {path}"
 
     def test_all_views_override_render_top(self) -> None:
         for path in _TIP_SOURCE_FILES:
@@ -259,9 +255,7 @@ class TestViewIntegration:
                 f"flag read for '{flag}' missing in {path}"
             )
             # Write pattern
-            assert f'dialogue_flags["{flag}"]' in src, (
-                f"flag write for '{flag}' missing in {path}"
-            )
+            assert f'dialogue_flags["{flag}"]' in src, f"flag write for '{flag}' missing in {path}"
 
 
 # ---------------------------------------------------------------------------
@@ -300,9 +294,7 @@ class TestMissionLogViewTipRuntime:
         view, player = self._make_view(player_flags={})
         assert view._first_time_tip is not None
         # Simulate Escape dismiss
-        evt = pygame.event.Event(
-            pygame.KEYDOWN, {"key": pygame.K_ESCAPE, "unicode": ""}
-        )
+        evt = pygame.event.Event(pygame.KEYDOWN, {"key": pygame.K_ESCAPE, "unicode": ""})
         view._first_time_tip.handle_event(evt)
         assert player.dialogue_flags.get("seen_tip_mission_log") is True
 

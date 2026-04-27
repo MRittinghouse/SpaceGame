@@ -113,10 +113,12 @@ class TestTimedThreadState:
         """Legacy saves wrote last_touched_day=0 as the 'never touched'
         sentinel. Load should treat zero as None so those threads stay
         inactive instead of spuriously drifting."""
-        state = TimedThreadState.from_dict({
-            "last_touched_day": 0,
-            "entered_states": [],
-        })
+        state = TimedThreadState.from_dict(
+            {
+                "last_touched_day": 0,
+                "entered_states": [],
+            }
+        )
         assert state.last_touched_day is None
 
     def test_initial_state_for_thread_is_inactive(self) -> None:
@@ -180,14 +182,24 @@ def _make_player():
     from spacegame.models.ship import Ship, ShipType
 
     ship_type = ShipType(
-        id="shuttle", name="Shuttle", ship_class="light",
-        description="x", cargo_capacity=10, fuel_capacity=50,
-        fuel_efficiency=1.0, speed_multiplier=1.0, purchase_price=0,
-        resale_value=0, crew_slots=2, special_abilities=[],
+        id="shuttle",
+        name="Shuttle",
+        ship_class="light",
+        description="x",
+        cargo_capacity=10,
+        fuel_capacity=50,
+        fuel_efficiency=1.0,
+        speed_multiplier=1.0,
+        purchase_price=0,
+        resale_value=0,
+        crew_slots=2,
+        special_abilities=[],
         availability="all",
     )
     return Player(
-        name="T", credits=500, current_system_id="nexus_prime",
+        name="T",
+        credits=500,
+        current_system_id="nexus_prime",
         ship=Ship(ship_type=ship_type, current_fuel=50),
     )
 
@@ -239,7 +251,10 @@ class TestSaveLoadRoundTrip:
 
         sm = SaveManager(save_directory=tmp_path)
         ok = sm.save_game(
-            slot=0, player=player, markets={}, active_events={},
+            slot=0,
+            player=player,
+            markets={},
+            active_events={},
             playtime_seconds=0,
         )
         assert ok
@@ -258,9 +273,7 @@ class TestSaveLoadRoundTrip:
         assert loaded_player.last_interaction_day["talked_to_marcus_jin"] == 12
         assert loaded_player.last_interaction_day["any_mission_accepted"] == 15
 
-    def test_legacy_save_without_interaction_day_loads_empty(
-        self, tmp_path
-    ) -> None:
+    def test_legacy_save_without_interaction_day_loads_empty(self, tmp_path) -> None:
         """Pre-QA-F-1 saves don't have last_interaction_day field."""
         import json
 
@@ -269,7 +282,10 @@ class TestSaveLoadRoundTrip:
         player = _make_player()
         sm = SaveManager(save_directory=tmp_path)
         sm.save_game(
-            slot=0, player=player, markets={}, active_events={},
+            slot=0,
+            player=player,
+            markets={},
+            active_events={},
             playtime_seconds=0,
         )
 

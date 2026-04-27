@@ -624,7 +624,7 @@ def _helper_access_patterns() -> list[tuple[str, str, "re.Pattern[str]", "re.Pat
             if isinstance(result, str) and str(sentinel) in result:
                 idx = result.index(str(sentinel))
                 prefix = result[:idx]
-                suffix = result[idx + len(str(sentinel)):]
+                suffix = result[idx + len(str(sentinel)) :]
                 break
         if prefix is None:
             continue
@@ -876,8 +876,7 @@ class TestDialogueFlagAudit:
         assert not new_orphans, (
             f"NEW flags are READ but never SET ({len(new_orphans)}). Either "
             f"wire a producer or add to KNOWN_CONSUMER_ONLY_ORPHANS with a "
-            f"REAL BUG / DETECTOR MISS classification:\n"
-            + "\n".join(sorted(new_orphans))
+            f"REAL BUG / DETECTOR MISS classification:\n" + "\n".join(sorted(new_orphans))
         )
 
     def test_no_new_producer_only_flags(self) -> None:

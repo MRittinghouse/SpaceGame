@@ -144,9 +144,7 @@ def _build_state(
 ) -> tuple[CombatState, CombatEngine]:
     enemies = [EnemyShip.from_template(t) for t in templates]
     encounter = CombatEncounter(enemy_templates=templates, encounter_seed=seed)
-    state = CombatState(
-        player=player, enemies=enemies, encounter=encounter, combat_log=[]
-    )
+    state = CombatState(player=player, enemies=enemies, encounter=encounter, combat_log=[])
     engine = CombatEngine(state, seed=seed)
     return state, engine
 
@@ -165,9 +163,7 @@ class TestChainFireMultiAction:
         produce one chain-fire entry. Grazes don't trigger chain fire
         (engine design: mechanics fire on hits, not partial hits)."""
         random.seed(0)
-        legendary = LegendaryState(
-            chain_fire_chance=1.0, chain_fire_damage_mult=0.5
-        )
+        legendary = LegendaryState(chain_fire_chance=1.0, chain_fire_damage_mult=0.5)
         weapons = [
             _move(move_id="a", damage=20, energy=2, cooldown=0),
             _move(move_id="b", damage=20, energy=2, cooldown=0),
@@ -185,13 +181,9 @@ class TestChainFireMultiAction:
         full_hits = [
             e
             for e in state.combat_log
-            if e.actor == "player"
-            and e.hit
-            and "chain" not in (e.action or "").lower()
+            if e.actor == "player" and e.hit and "chain" not in (e.action or "").lower()
         ]
-        chain_hits = [
-            e for e in state.combat_log if "chain" in (e.action or "").lower()
-        ]
+        chain_hits = [e for e in state.combat_log if "chain" in (e.action or "").lower()]
         assert len(chain_hits) == len(full_hits), (
             f"Chain Fire must trigger exactly once per FULL HIT. "
             f"Got {len(full_hits)} full hits and {len(chain_hits)} chain fires. "
@@ -199,9 +191,7 @@ class TestChainFireMultiAction:
         )
         # Sanity: at chance=1.0 with 3 weapons, expect at least 2 chain fires
         # (allowing for up to one graze in the seed-dependent roll).
-        assert len(chain_hits) >= 2, (
-            f"At chance=1.0 expected ≥2 chain fires, got {len(chain_hits)}"
-        )
+        assert len(chain_hits) >= 2, f"At chance=1.0 expected ≥2 chain fires, got {len(chain_hits)}"
 
     def test_chain_fire_never_triggers_at_zero_chance(self) -> None:
         """Belt-and-suspenders: with chain_fire_chance=0, no chain-fire
@@ -222,9 +212,7 @@ class TestChainFireMultiAction:
         engine.execute_player_turn(queue)
 
         chain_hits = [
-            entry
-            for entry in state.combat_log
-            if "chain" in (entry.action or "").lower()
+            entry for entry in state.combat_log if "chain" in (entry.action or "").lower()
         ]
         assert chain_hits == []
 
@@ -239,9 +227,7 @@ class TestVoidAbsorptionAcrossTurns:
     once per combat."""
 
     def test_accumulates_across_multiple_hits(self) -> None:
-        state = LegendaryState(
-            void_absorption_rate=0.15, void_release_available=True
-        )
+        state = LegendaryState(void_absorption_rate=0.15, void_release_available=True)
         process_void_absorption(state, hull_damage=50)
         process_void_absorption(state, hull_damage=50)
         process_void_absorption(state, hull_damage=50)
@@ -250,9 +236,7 @@ class TestVoidAbsorptionAcrossTurns:
     def test_accumulates_across_simulated_turns(self) -> None:
         """State persists across multiple combat rounds — void_charge
         grows over a 3-turn pummeling."""
-        state = LegendaryState(
-            void_absorption_rate=0.20, void_release_available=True
-        )
+        state = LegendaryState(void_absorption_rate=0.20, void_release_available=True)
         # Turn 1: 2 hits of 40 each
         process_void_absorption(state, hull_damage=40)
         process_void_absorption(state, hull_damage=40)
@@ -301,22 +285,17 @@ class TestHeatHardeningCapAndReset:
             gained_per_hit.append(process_heat_hardening(state, shield_absorbed=10))
         assert state.heat_stacks == 5
         assert gained_per_hit == [1, 1, 1, 1, 1, 0, 0], (
-            f"Expected first 5 hits to add 1 armor, remaining to add 0; "
-            f"got {gained_per_hit}"
+            f"Expected first 5 hits to add 1 armor, remaining to add 0; got {gained_per_hit}"
         )
 
     def test_new_combat_starts_with_zero_stacks(self) -> None:
         """A fresh LegendaryState (built at the start of each combat) has
         0 heat stacks regardless of what prior combat accumulated."""
-        stale = LegendaryState(
-            heat_hardening_per_hit=1, heat_hardening_max=5, heat_stacks=5
-        )
+        stale = LegendaryState(heat_hardening_per_hit=1, heat_hardening_max=5, heat_stacks=5)
         # Player ends old combat with stacks full.
         assert stale.heat_stacks == 5
         # New combat = new state (this is how the engine creates them).
-        fresh = LegendaryState(
-            heat_hardening_per_hit=1, heat_hardening_max=5
-        )
+        fresh = LegendaryState(heat_hardening_per_hit=1, heat_hardening_max=5)
         assert fresh.heat_stacks == 0
 
     def test_zero_shield_absorbed_does_not_add_stacks(self) -> None:
@@ -413,9 +392,7 @@ class TestPhaseShiftPerRound:
             accuracy=95,
             armor=0,
         )
-        templates = [
-            _enemy_template(eid=f"e{i}", hull=200, damage=20) for i in range(3)
-        ]
+        templates = [_enemy_template(eid=f"e{i}", hull=200, damage=20) for i in range(3)]
         _, engine = _build_state(player, templates, seed=7)
 
         queue = ActionQueue(energy_available=player.energy)
@@ -460,6 +437,5 @@ class TestPhaseShiftPerRound:
         hull_loss = starting_hull - player.hull
         # One enemy, 20 damage, hit expected → substantial hull loss.
         assert hull_loss > 0, (
-            f"Inactive phase-shift round should take normal damage; "
-            f"hull loss was {hull_loss}"
+            f"Inactive phase-shift round should take normal damage; hull loss was {hull_loss}"
         )

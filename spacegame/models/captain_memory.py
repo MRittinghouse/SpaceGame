@@ -26,11 +26,11 @@ from dataclasses import dataclass
 from typing import Any
 
 # Status constants — captain's current standing relative to the player.
-STATUS_ACTIVE = "active"          # Still in the recurring rotation.
-STATUS_DEFEATED = "defeated"       # Player won the rivalry in combat.
-STATUS_TRUCE = "truce"             # Negotiated peace.
-STATUS_BRIBED_OFF = "bribed_off"   # Player paid them off.
-STATUS_WANDERER = "wanderer"       # Auto-retired after threshold.
+STATUS_ACTIVE = "active"  # Still in the recurring rotation.
+STATUS_DEFEATED = "defeated"  # Player won the rivalry in combat.
+STATUS_TRUCE = "truce"  # Negotiated peace.
+STATUS_BRIBED_OFF = "bribed_off"  # Player paid them off.
+STATUS_WANDERER = "wanderer"  # Auto-retired after threshold.
 
 VALID_STATUSES: frozenset[str] = frozenset(
     {

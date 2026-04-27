@@ -46,24 +46,12 @@ def _make_builder():
     view.data_loader = MagicMock()
     # slot_definitions: tutorial slot_def_ids with slot_type + footprint
     view.data_loader.slot_definitions = {
-        "cockpit_scout_pod": MagicMock(
-            slot_type="cockpit", footprint_w=2, footprint_h=2
-        ),
-        "engine_small": MagicMock(
-            slot_type="engine", footprint_w=1, footprint_h=2
-        ),
-        "reactor_small": MagicMock(
-            slot_type="reactor", footprint_w=2, footprint_h=2
-        ),
-        "fuel_small": MagicMock(
-            slot_type="fuel", footprint_w=1, footprint_h=1
-        ),
-        "cargo_small": MagicMock(
-            slot_type="cargo", footprint_w=1, footprint_h=2
-        ),
-        "weapon_small": MagicMock(
-            slot_type="weapon", footprint_w=1, footprint_h=1
-        ),
+        "cockpit_scout_pod": MagicMock(slot_type="cockpit", footprint_w=2, footprint_h=2),
+        "engine_small": MagicMock(slot_type="engine", footprint_w=1, footprint_h=2),
+        "reactor_small": MagicMock(slot_type="reactor", footprint_w=2, footprint_h=2),
+        "fuel_small": MagicMock(slot_type="fuel", footprint_w=1, footprint_h=1),
+        "cargo_small": MagicMock(slot_type="cargo", footprint_w=1, footprint_h=2),
+        "weapon_small": MagicMock(slot_type="weapon", footprint_w=1, footprint_h=1),
     }
     # ship_parts: real tutorial part_ids with their slot_types
     view.data_loader.ship_parts = {
@@ -186,12 +174,8 @@ class TestNarrationPriorities:
         """Bought thruster (engine slot_type) + reactor; placed cockpit but
         not engine; narration points to engine next."""
         view = _make_builder()
-        view.player.dialogue_flags[
-            "tutorial_bought_part_scrapyard_thruster"
-        ] = True
-        view.player.dialogue_flags[
-            "tutorial_bought_part_scrapyard_reactor"
-        ] = True
+        view.player.dialogue_flags["tutorial_bought_part_scrapyard_thruster"] = True
+        view.player.dialogue_flags["tutorial_bought_part_scrapyard_reactor"] = True
         narration = view._pick_tutorial_narration(
             placed_ids={"cockpit_scout_pod"},  # cockpit placed, engine not
             part_narration=_part_narration(),
@@ -205,10 +189,10 @@ class TestNarrationPriorities:
         # Place a slot_def for every slot_type the bought parts use
         placed = {
             "cockpit_scout_pod",  # cockpit (always)
-            "engine_small",       # scrapyard_thruster slot_type
-            "reactor_small",      # scrapyard_reactor slot_type
-            "fuel_small",         # scrapyard_fuel_cell slot_type
-            "cargo_small",        # scrapyard_hold slot_type
+            "engine_small",  # scrapyard_thruster slot_type
+            "reactor_small",  # scrapyard_reactor slot_type
+            "fuel_small",  # scrapyard_fuel_cell slot_type
+            "cargo_small",  # scrapyard_hold slot_type
         }
         narration = view._pick_tutorial_narration(
             placed_ids=placed,
@@ -225,9 +209,7 @@ class TestPriorityOrdering:
         """Tall module selected AND bought-unplaced parts exist:
         rotation tip wins (more actionable in the moment)."""
         view = _make_builder()
-        view.player.dialogue_flags[
-            "tutorial_bought_part_scrapyard_thruster"
-        ] = True
+        view.player.dialogue_flags["tutorial_bought_part_scrapyard_thruster"] = True
         view._selected_slot_def_id = "engine_small"  # 1x2
         view._shown_rotation_tip = False
         narration = view._pick_tutorial_narration(

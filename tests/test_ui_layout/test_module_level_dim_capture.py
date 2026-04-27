@@ -24,9 +24,7 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-_VIEWS_DIR = (
-    Path(__file__).resolve().parents[2] / "spacegame" / "views"
-)
+_VIEWS_DIR = Path(__file__).resolve().parents[2] / "spacegame" / "views"
 
 # Captures like:
 #   from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT

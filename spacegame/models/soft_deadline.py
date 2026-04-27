@@ -43,12 +43,8 @@ class SoftDeadline:
         return cls(
             full_reward_day_count=int(data["full_reward_day_count"]),
             partial_reward_day_count=int(data["partial_reward_day_count"]),
-            partial_reward_multiplier=float(
-                data.get("partial_reward_multiplier", 0.75)
-            ),
-            late_multiplier=float(
-                data.get("late_multiplier", DEFAULT_LATE_MULTIPLIER)
-            ),
+            partial_reward_multiplier=float(data.get("partial_reward_multiplier", 0.75)),
+            late_multiplier=float(data.get("late_multiplier", DEFAULT_LATE_MULTIPLIER)),
         )
 
     def to_dict(self) -> dict[str, Any]:

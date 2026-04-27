@@ -139,9 +139,7 @@ def _new_engine(
 ) -> CombatEngine:
     enemies, templates = _sponge_enemy()
     encounter = CombatEncounter(enemy_templates=templates, encounter_seed=seed)
-    state = CombatState(
-        player=player, enemies=enemies, encounter=encounter, combat_log=[]
-    )
+    state = CombatState(player=player, enemies=enemies, encounter=encounter, combat_log=[])
     return CombatEngine(state, seed=seed)
 
 
@@ -285,9 +283,7 @@ class TestDaringGambitExecution:
             for (eff, dur) in player.active_effects
             if eff.type == EffectType.EVASION_MOD and eff.value == 40.0
         ]
-        assert len(evasion_effects) == 1, (
-            f"Expected one EVASION_MOD +40; got {evasion_effects}"
-        )
+        assert len(evasion_effects) == 1, f"Expected one EVASION_MOD +40; got {evasion_effects}"
         _eff, duration = evasion_effects[0]
         assert duration == 2
 
@@ -335,17 +331,12 @@ class TestCrewSyncExecution:
         logs = _run_move(engine, move)
         # Second activation rejected — energy unchanged.
         assert player.energy == energy_before_second
-        assert any(
-            "already used" in "".join(e.effects_applied).lower() for e in logs
-        )
+        assert any("already used" in "".join(e.effects_applied).lower() for e in logs)
 
     def test_crew_sync_applies_evasion_and_damage_boost(self) -> None:
         player = _player()
         engine = _new_engine(player)
         _run_move(engine, build_crew_sync_move())
-        eff_types = [
-            (eff.type, eff.value)
-            for (eff, _dur) in player.active_effects
-        ]
+        eff_types = [(eff.type, eff.value) for (eff, _dur) in player.active_effects]
         assert (EffectType.EVASION_MOD, 4.0) in eff_types
         assert (EffectType.DAMAGE_BOOST, 100.0) in eff_types

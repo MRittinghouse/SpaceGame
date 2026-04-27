@@ -355,8 +355,7 @@ class EnemyShip:
         mult = template.boss_hp_multiplier if template.is_boss else 1
         max_hull = template.hull * mult
         subsystem_hp = {
-            tag: subsystem_max_hp(tag, max_hull)
-            for tag in template.targetable_subsystems
+            tag: subsystem_max_hp(tag, max_hull) for tag in template.targetable_subsystems
         }
         return cls(
             template=template,

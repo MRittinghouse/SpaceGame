@@ -214,9 +214,7 @@ class TestFadeTiming:
             overlay.update(0.1)
             alphas.append(overlay.current_alpha())
         for i in range(len(alphas) - 1):
-            assert alphas[i] >= alphas[i + 1], (
-                f"Alpha should not re-brighten: {alphas}"
-            )
+            assert alphas[i] >= alphas[i + 1], f"Alpha should not re-brighten: {alphas}"
 
     def test_voice_clears_after_total_duration(self) -> None:
         overlay = _overlay_with_voices(_ORE_SENSE)

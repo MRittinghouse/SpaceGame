@@ -178,9 +178,7 @@ class TestLiveTemplateCoverage:
 
         dl = get_data_loader()
         dl.load_enemy_templates()
-        provider = EnemyCompositeProvider(
-            lookup=lambda tid: dl.enemy_templates.get(tid)
-        )
+        provider = EnemyCompositeProvider(lookup=lambda tid: dl.enemy_templates.get(tid))
         for template_id in dl.enemy_templates.keys():
             surface = provider.get_surface(template_id)
             assert surface is not None, f"{template_id} failed to produce a surface"
@@ -192,9 +190,7 @@ class TestLiveTemplateCoverage:
         dl = get_data_loader()
         dl.load_enemy_templates()
         first_id = next(iter(dl.enemy_templates.keys()))
-        provider = EnemyCompositeProvider(
-            lookup=lambda tid: dl.enemy_templates.get(tid)
-        )
+        provider = EnemyCompositeProvider(lookup=lambda tid: dl.enemy_templates.get(tid))
         c1 = provider.get_composite(first_id)
         c2 = provider.get_composite(first_id)
         assert c1 is c2
@@ -343,7 +339,7 @@ class TestPerInstanceCaching:
         comp_b = provider.get_composite("scout", instance_key=enemy_b)
 
         comp_a.set_destruction_progress(0.75)  # heavy damage on A
-        comp_b.set_destruction_progress(0.0)   # full health on B
+        comp_b.set_destruction_progress(0.0)  # full health on B
 
         assert comp_a.destruction_bucket == 0.75
         assert comp_b.destruction_bucket == 0.0, (

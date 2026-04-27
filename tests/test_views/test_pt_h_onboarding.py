@@ -98,9 +98,7 @@ class TestPTHDataIntegrity:
     def test_coolant_run_mission_loaded(self) -> None:
         loader = DataLoader()
         loader.load_all()
-        mission = next(
-            (m for m in loader.missions if m.id == "coolant_run"), None
-        )
+        mission = next((m for m in loader.missions if m.id == "coolant_run"), None)
         assert mission is not None
         assert mission.available_at == ["nexus_prime"]
         assert "arna_delivery_accepted" in mission.required_flags
@@ -109,9 +107,7 @@ class TestPTHDataIntegrity:
     def test_coolant_run_rewards(self) -> None:
         loader = DataLoader()
         loader.load_all()
-        mission = next(
-            (m for m in loader.missions if m.id == "coolant_run"), None
-        )
+        mission = next((m for m in loader.missions if m.id == "coolant_run"), None)
         assert mission is not None
         credits_rewards = [r for r in mission.rewards if r.reward_type == "credits"]
         assert credits_rewards and credits_rewards[0].amount == 2000
@@ -123,9 +119,7 @@ class TestPTHDataIntegrity:
         """Accept of the mission should give 18 machinery."""
         loader = DataLoader()
         loader.load_all()
-        mission = next(
-            (m for m in loader.missions if m.id == "coolant_run"), None
-        )
+        mission = next((m for m in loader.missions if m.id == "coolant_run"), None)
         assert mission is not None
         assert len(mission.on_accept_cargo) == 1
         cargo = mission.on_accept_cargo[0]
@@ -213,9 +207,7 @@ class TestPTHWritingCompliance:
         with open(os.path.join(base, "missions", "side_missions.json"), encoding="utf-8") as f:
             missions = json.load(f)["missions"]
         cr = next(m for m in missions if m["id"] == "coolant_run")
-        texts.extend(
-            [cr["name"], cr["description"], cr["hint"], cr.get("discovery_text", "")]
-        )
+        texts.extend([cr["name"], cr["description"], cr["hint"], cr.get("discovery_text", "")])
         for obj in cr.get("objectives", []):
             texts.append(obj.get("description", ""))
         return texts

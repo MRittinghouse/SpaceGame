@@ -54,14 +54,24 @@ def _ui_manager() -> pygame_gui.UIManager:
 
 def _make_player(game_day: int = 5) -> Player:
     ship_type = ShipType(
-        id="shuttle", name="Shuttle", ship_class="light",
-        description="x", cargo_capacity=10, fuel_capacity=50,
-        fuel_efficiency=1.0, speed_multiplier=1.0, purchase_price=0,
-        resale_value=0, crew_slots=2, special_abilities=[],
+        id="shuttle",
+        name="Shuttle",
+        ship_class="light",
+        description="x",
+        cargo_capacity=10,
+        fuel_capacity=50,
+        fuel_efficiency=1.0,
+        speed_multiplier=1.0,
+        purchase_price=0,
+        resale_value=0,
+        crew_slots=2,
+        special_abilities=[],
         availability="all",
     )
     player = Player(
-        name="Test", credits=500, current_system_id="nexus_prime",
+        name="Test",
+        credits=500,
+        current_system_id="nexus_prime",
         ship=Ship(ship_type=ship_type, current_fuel=50),
     )
     player.game_day = game_day
@@ -70,13 +80,29 @@ def _make_player(game_day: int = 5) -> Player:
 
 def _make_engine(captain_id: str = "vela_wolfs_ear") -> CombatEngine:
     template = EnemyShipTemplate(
-        id="pirate_scout", name="Pirate", description="x",
-        behavior=EnemyBehavior.AGGRESSIVE, hull=80, shields=0, energy=10,
-        energy_regen=3, speed=8, evasion=0, accuracy=70,
-        moves=[CombatMove(id="m", name="m", description="",
-            effects=[CombatEffect(type=EffectType.DAMAGE, value=5.0)],
-            energy_cost=2)],
-        loot_table=[], negotiate_difficulty=3, flee_threshold=0.0,
+        id="pirate_scout",
+        name="Pirate",
+        description="x",
+        behavior=EnemyBehavior.AGGRESSIVE,
+        hull=80,
+        shields=0,
+        energy=10,
+        energy_regen=3,
+        speed=8,
+        evasion=0,
+        accuracy=70,
+        moves=[
+            CombatMove(
+                id="m",
+                name="m",
+                description="",
+                effects=[CombatEffect(type=EffectType.DAMAGE, value=5.0)],
+                energy_cost=2,
+            )
+        ],
+        loot_table=[],
+        negotiate_difficulty=3,
+        flee_threshold=0.0,
         bribe_cost=0,
     )
     encounter = CombatEncounter(
@@ -84,10 +110,20 @@ def _make_engine(captain_id: str = "vela_wolfs_ear") -> CombatEngine:
     )
     state = CombatState(
         player=PlayerCombatState(
-            hull=100, max_hull=100, shields=20, max_shields=40,
-            energy=10, max_energy=10, energy_regen=3, speed=8,
-            evasion=10, accuracy=80, equipment_moves=[], crew_moves=[],
-            active_effects=[], cooldowns={},
+            hull=100,
+            max_hull=100,
+            shields=20,
+            max_shields=40,
+            energy=10,
+            max_energy=10,
+            energy_regen=3,
+            speed=8,
+            evasion=10,
+            accuracy=80,
+            equipment_moves=[],
+            crew_moves=[],
+            active_effects=[],
+            cooldowns={},
         ),
         enemies=[EnemyShip.from_template(template)],
         encounter=encounter,
@@ -127,9 +163,9 @@ class TestVariantSurfacing:
         from spacegame.data_loader import get_data_loader
 
         captain = get_data_loader().captains["vela_wolfs_ear"]
-        assert any(
-            captain.surrender_line in line for line in view.visible_log_lines
-        ), view.visible_log_lines
+        assert any(captain.surrender_line in line for line in view.visible_log_lines), (
+            view.visible_log_lines
+        )
         view.on_exit()
 
     def test_return_meeting_uses_variant_when_authored(self, monkeypatch) -> None:
@@ -139,9 +175,7 @@ class TestVariantSurfacing:
             meeting_state=MEETING_STATE_RETURN,
             surrender_line="Wolf's Ear standing down again. We keep meeting.",
         )
-        _patch_dl_with_variants(
-            monkeypatch, {("vela_wolfs_ear", MEETING_STATE_RETURN): variant}
-        )
+        _patch_dl_with_variants(monkeypatch, {("vela_wolfs_ear", MEETING_STATE_RETURN): variant})
         player = _make_player()
         # Pre-existing memory: met once, fled (no resolution)
         player.captain_memory["vela_wolfs_ear"] = CaptainMemory(
@@ -156,9 +190,7 @@ class TestVariantSurfacing:
         view.on_enter()
         view.engine.get_state().result = CombatResult.NEGOTIATED
         view._maybe_surface_captain_outcome_line()
-        assert any(
-            "We keep meeting" in line for line in view.visible_log_lines
-        )
+        assert any("We keep meeting" in line for line in view.visible_log_lines)
         view.on_exit()
 
     def test_post_truce_meeting_uses_variant(self, monkeypatch) -> None:
@@ -181,9 +213,7 @@ class TestVariantSurfacing:
         view.on_enter()
         view.engine.get_state().result = CombatResult.VICTORY
         view._maybe_surface_captain_outcome_line()
-        assert any(
-            "Truce broken twice over" in line for line in view.visible_log_lines
-        )
+        assert any("Truce broken twice over" in line for line in view.visible_log_lines)
         view.on_exit()
 
 
@@ -198,9 +228,7 @@ class TestSurfaceBeforeRecordOrdering:
     authoring distinct variants for `return` and `post_defeated` and
     observing which fires when the player wins for the first time."""
 
-    def test_first_victory_uses_first_meeting_variant_not_post_defeated(
-        self, monkeypatch
-    ) -> None:
+    def test_first_victory_uses_first_meeting_variant_not_post_defeated(self, monkeypatch) -> None:
         # Author distinct variants for both states
         return_variant = CaptainVariant(
             captain_id="vela_wolfs_ear",
@@ -237,13 +265,10 @@ class TestSurfaceBeforeRecordOrdering:
         view._maybe_surface_captain_outcome_line()
         view._maybe_record_captain_encounter()
 
-        assert any(
-            "RETURN-state defeat line" in line
-            for line in view.visible_log_lines
-        ), view.visible_log_lines
-        assert not any(
-            "POST-DEFEATED-state" in line for line in view.visible_log_lines
+        assert any("RETURN-state defeat line" in line for line in view.visible_log_lines), (
+            view.visible_log_lines
         )
+        assert not any("POST-DEFEATED-state" in line for line in view.visible_log_lines)
         # Memory is now updated for next time
         assert player.captain_memory["vela_wolfs_ear"].status == "defeated"
         view.on_exit()

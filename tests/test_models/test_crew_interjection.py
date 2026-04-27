@@ -147,17 +147,13 @@ class TestEnemyLowHpTrigger:
     def test_fires_when_any_enemy_below_threshold(self) -> None:
         entry = CrewInterjection("elena_reeves", "enemy_low_hp", ["He's done."])
         resolver = CrewInterjectionResolver([entry], _crew_aboard())
-        events = resolver.evaluate_round(
-            _state(enemies=[(15, 80, "pirate_scout")])
-        )
+        events = resolver.evaluate_round(_state(enemies=[(15, 80, "pirate_scout")]))
         assert len(events) == 1
 
     def test_does_not_fire_when_all_enemies_healthy(self) -> None:
         entry = CrewInterjection("elena_reeves", "enemy_low_hp", ["He's done."])
         resolver = CrewInterjectionResolver([entry], _crew_aboard())
-        events = resolver.evaluate_round(
-            _state(enemies=[(80, 80, "pirate_scout")])
-        )
+        events = resolver.evaluate_round(_state(enemies=[(80, 80, "pirate_scout")]))
         assert events == []
 
 
@@ -175,9 +171,7 @@ class TestEnemyTypeMatchTrigger:
             conditions={"enemy_template_id": "union_brawler"},
         )
         resolver = CrewInterjectionResolver([entry], _crew_aboard())
-        events = resolver.evaluate_round(
-            _state(enemies=[(80, 80, "union_brawler")])
-        )
+        events = resolver.evaluate_round(_state(enemies=[(80, 80, "union_brawler")]))
         assert len(events) == 1
 
     def test_does_not_fire_when_template_absent(self) -> None:
@@ -188,15 +182,11 @@ class TestEnemyTypeMatchTrigger:
             conditions={"enemy_template_id": "union_brawler"},
         )
         resolver = CrewInterjectionResolver([entry], _crew_aboard())
-        events = resolver.evaluate_round(
-            _state(enemies=[(80, 80, "pirate_scout")])
-        )
+        events = resolver.evaluate_round(_state(enemies=[(80, 80, "pirate_scout")]))
         assert events == []
 
     def test_no_template_id_means_no_fire(self) -> None:
-        entry = CrewInterjection(
-            "marcus_jin", "enemy_type_match", ["x"], conditions={}
-        )
+        entry = CrewInterjection("marcus_jin", "enemy_type_match", ["x"], conditions={})
         resolver = CrewInterjectionResolver([entry], _crew_aboard())
         events = resolver.evaluate_round(_state())
         assert events == []
@@ -231,9 +221,7 @@ class TestCombatOutcomeTrigger:
         assert events == []
 
     def test_outcome_unspecified_fires_for_either(self) -> None:
-        entry = CrewInterjection(
-            "elena_reeves", "combat_outcome", ["Done."]
-        )
+        entry = CrewInterjection("elena_reeves", "combat_outcome", ["Done."])
         resolver = CrewInterjectionResolver([entry], _crew_aboard())
         # Fires on victory
         events = resolver.evaluate_outcome(_state(), "victory")
@@ -274,9 +262,7 @@ class TestCommitGatesFutureFiring:
         assert resolver.evaluate_round(_state(round_number=1)) == []
 
     def test_outcome_event_only_gated_after_commit(self) -> None:
-        entry = CrewInterjection(
-            "elena_reeves", "combat_outcome", ["Engagement closed."]
-        )
+        entry = CrewInterjection("elena_reeves", "combat_outcome", ["Engagement closed."])
         resolver = CrewInterjectionResolver([entry], _crew_aboard())
         a = resolver.evaluate_outcome(_state(), "victory")
         # Without commit, second evaluate still returns the candidate
@@ -304,9 +290,7 @@ class TestMultipleEligible:
         # Caller (the view) decides which to display this tick
 
     def test_line_picked_from_bank_deterministically(self) -> None:
-        entry = CrewInterjection(
-            "elena_reeves", "first_turn", ["alpha", "beta", "gamma"]
-        )
+        entry = CrewInterjection("elena_reeves", "first_turn", ["alpha", "beta", "gamma"])
         resolver_a = CrewInterjectionResolver([entry], _crew_aboard(), seed=42)
         resolver_b = CrewInterjectionResolver([entry], _crew_aboard(), seed=42)
         a = resolver_a.evaluate_round(_state(round_number=1))

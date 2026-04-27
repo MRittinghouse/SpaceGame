@@ -38,12 +38,20 @@ class TradeMilestone:
 
 
 TRADE_MILESTONES: list[TradeMilestone] = [
-    TradeMilestone(threshold=10000, reward_type="equipment", reward_id="trade_computer", name="Merchant"),
-    TradeMilestone(threshold=50000, reward_type="discount", reward_id="medium_weight_20", name="Trader"),
+    TradeMilestone(
+        threshold=10000, reward_type="equipment", reward_id="trade_computer", name="Merchant"
+    ),
+    TradeMilestone(
+        threshold=50000, reward_type="discount", reward_id="medium_weight_20", name="Trader"
+    ),
     TradeMilestone(threshold=100000, reward_type="shape", reward_id="hull_section", name="Magnate"),
     TradeMilestone(threshold=250000, reward_type="shape", reward_id="cargo_rack", name="Tycoon"),
-    TradeMilestone(threshold=500000, reward_type="discount", reward_id="large_weight_15", name="Baron"),
-    TradeMilestone(threshold=1000000, reward_type="shape", reward_id="merchants_keel", name="Mogul"),
+    TradeMilestone(
+        threshold=500000, reward_type="discount", reward_id="large_weight_15", name="Baron"
+    ),
+    TradeMilestone(
+        threshold=1000000, reward_type="shape", reward_id="merchants_keel", name="Mogul"
+    ),
 ]
 
 # Faction rep → builder unlocks (threshold, unlocks)

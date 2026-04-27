@@ -5,7 +5,6 @@ Unit tests cover transitions, shake composition, parallax layers,
 immediate reset, world-to-screen transform, and state queries.
 """
 
-
 import pytest
 
 from spacegame.engine.easing import ease_out_cubic, linear

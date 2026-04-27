@@ -4,7 +4,6 @@ Verifies that NPCs are properly filtered based on their auto_trigger_prerequisit
 and auto_trigger_gate_flag, preventing story-sequence-breaking dialogue options.
 """
 
-
 from spacegame.constants.flags import met_npc
 from spacegame.models.dialogue import NPC
 

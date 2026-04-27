@@ -164,9 +164,7 @@ class TradingView(BaseView):
     def on_enter(self) -> None:
         super().on_enter()
         self._trade_rep_awarded = False
-        if self.player is not None and self.player.dialogue_flags.get(
-            "seen_tip_trading", False
-        ):
+        if self.player is not None and self.player.dialogue_flags.get("seen_tip_trading", False):
             self._init_station_state()
         else:
             self._maybe_show_tip()
@@ -226,8 +224,7 @@ class TradingView(BaseView):
             self._has_black_market = False
             if self._black_market_exists:
                 self._black_market_denial_reason = (
-                    f"{market_name} operates here, but you need the right "
-                    "contacts to get in."
+                    f"{market_name} operates here, but you need the right contacts to get in."
                 )
             else:
                 self._black_market_denial_reason = ""

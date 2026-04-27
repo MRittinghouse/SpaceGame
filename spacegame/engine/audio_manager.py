@@ -151,21 +151,21 @@ class AudioManager:
 
     def _effective_sfx_volume(self) -> float:
         """Compute effective SFX volume (master * sfx, perceptually curved)."""
-        return self._perceptual_curve(
-            self._config.master_volume * self._config.sfx_volume
-        )
+        return self._perceptual_curve(self._config.master_volume * self._config.sfx_volume)
 
     def _effective_music_volume(self) -> float:
         """Compute effective music volume (master * music * duck, perceptually curved)."""
-        return self._perceptual_curve(
-            self._config.master_volume * self._config.music_volume
-        ) * self._music_duck
+        return (
+            self._perceptual_curve(self._config.master_volume * self._config.music_volume)
+            * self._music_duck
+        )
 
     def _effective_ambient_volume(self) -> float:
         """Compute effective ambient volume (master * ambient * duck, perceptually curved)."""
-        return self._perceptual_curve(
-            self._config.master_volume * self._config.ambient_volume
-        ) * self._ambient_duck
+        return (
+            self._perceptual_curve(self._config.master_volume * self._config.ambient_volume)
+            * self._ambient_duck
+        )
 
     def set_music_duck(self, factor: float) -> None:
         """Apply a ducking multiplier to music without changing user config.

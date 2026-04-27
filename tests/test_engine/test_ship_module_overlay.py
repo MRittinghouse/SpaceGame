@@ -211,9 +211,7 @@ def _render(ov: ShipModuleOverlay, w: int = 80, h: int = 60) -> pygame.Surface:
     return target
 
 
-def _surface_contains_color(
-    surf: pygame.Surface, expected: tuple[int, int, int]
-) -> bool:
+def _surface_contains_color(surf: pygame.Surface, expected: tuple[int, int, int]) -> bool:
     for y in range(surf.get_height()):
         for x in range(surf.get_width()):
             px = surf.get_at((x, y))
@@ -288,9 +286,7 @@ class TestStateRendering:
 
         def alpha_sum(s: pygame.Surface) -> int:
             return sum(
-                s.get_at((x, y)).a
-                for y in range(s.get_height())
-                for x in range(s.get_width())
+                s.get_at((x, y)).a for y in range(s.get_height()) for x in range(s.get_width())
             )
 
         assert alpha_sum(surf_late) < alpha_sum(surf_early)
@@ -371,9 +367,7 @@ class TestRenderLayering:
         # No pixels before origin.
         assert all(target.get_at((x, y)).a == 0 for y in range(14) for x in range(14))
         # Some pixels inside the expected region.
-        any_opaque = any(
-            target.get_at((x, y)).a > 0 for y in range(14, 22) for x in range(14, 22)
-        )
+        any_opaque = any(target.get_at((x, y)).a > 0 for y in range(14, 22) for x in range(14, 22))
         assert any_opaque
 
     def test_cell_size_scales_region(self) -> None:
@@ -386,7 +380,5 @@ class TestRenderLayering:
         # Pixels at (20, 20) are outside the 16x16 region.
         assert target.get_at((20, 20)).a == 0
         # Pixels inside.
-        any_opaque = any(
-            target.get_at((x, y)).a > 0 for y in range(2, 14) for x in range(2, 14)
-        )
+        any_opaque = any(target.get_at((x, y)).a > 0 for y in range(2, 14) for x in range(2, 14))
         assert any_opaque

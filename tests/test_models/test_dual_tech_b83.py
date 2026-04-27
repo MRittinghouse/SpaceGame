@@ -136,9 +136,7 @@ def _build(
 ) -> tuple[CombatState, CombatEngine]:
     enemies = [EnemyShip.from_template(t) for t in templates]
     encounter = CombatEncounter(enemy_templates=templates, encounter_seed=seed)
-    state = CombatState(
-        player=player, enemies=enemies, encounter=encounter, combat_log=[]
-    )
+    state = CombatState(player=player, enemies=enemies, encounter=encounter, combat_log=[])
     return state, CombatEngine(state, seed=seed)
 
 
@@ -189,9 +187,7 @@ class TestTotalCommitmentExecution:
         assert player.total_commitment_hits_remaining == 0
         # Three hits absorbed, fourth landed — some hull damage should
         # have taken through by the 4th hit.
-        assert player.hull < hull_before, (
-            "Hit #4 should land normally after the tech disarms"
-        )
+        assert player.hull < hull_before, "Hit #4 should land normally after the tech disarms"
 
     def test_armor_gained_caps_at_eight(self) -> None:
         """Per-hit armor gain is {TOTAL_COMMITMENT_ARMOR_PER_HIT}, cap {cap}.

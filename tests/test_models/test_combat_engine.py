@@ -935,7 +935,7 @@ class TestAllyTargetedHeals:
         state = engine.get_state()
 
         # wounded at 30% HP, healthy at 90% HP — lowest-HP wins
-        state.enemies[1].current_hull = 60   # 30% hull ratio
+        state.enemies[1].current_hull = 60  # 30% hull ratio
         state.enemies[2].current_hull = 180  # 90% hull ratio
 
         heal_move = state.enemies[0].template.moves[0]
@@ -950,9 +950,7 @@ class TestAllyTargetedHeals:
         assert state.enemies[1].current_hull == 90, (
             "Wounded ally (lowest HP) must be the heal target"
         )
-        assert state.enemies[2].current_hull == 180, (
-            "Healthy ally should be untouched"
-        )
+        assert state.enemies[2].current_hull == 180, "Healthy ally should be untouched"
 
     def test_ally_heal_skips_dead_allies(self) -> None:
         medic = self._medic_template()
@@ -1172,9 +1170,7 @@ class TestReinforcementSpawning:
         )
 
         # State did not grow
-        assert len(state.enemies) == enemies_before, (
-            "Unknown template must not add a phantom enemy"
-        )
+        assert len(state.enemies) == enemies_before, "Unknown template must not add a phantom enemy"
         # A log entry surfaces the failure
         new_entries = state.combat_log[log_len_before:]
         failure_msg = [

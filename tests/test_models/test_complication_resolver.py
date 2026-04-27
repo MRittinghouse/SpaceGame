@@ -65,8 +65,12 @@ def _state(
 class TestTurnCounterTrigger:
     def test_fires_on_target_turn(self) -> None:
         comp = CombatComplication(
-            id="t", name="t", description="", trigger_type="turn_counter",
-            trigger_params={"turn": 3}, effect_type="narration",
+            id="t",
+            name="t",
+            description="",
+            trigger_type="turn_counter",
+            trigger_params={"turn": 3},
+            effect_type="narration",
             effect_params={"flag_name": "f"},
         )
         resolver = ComplicationResolver([comp])
@@ -75,8 +79,12 @@ class TestTurnCounterTrigger:
 
     def test_does_not_fire_before_target_turn(self) -> None:
         comp = CombatComplication(
-            id="t", name="t", description="", trigger_type="turn_counter",
-            trigger_params={"turn": 3}, effect_type="narration",
+            id="t",
+            name="t",
+            description="",
+            trigger_type="turn_counter",
+            trigger_params={"turn": 3},
+            effect_type="narration",
         )
         resolver = ComplicationResolver([comp])
         events = resolver.evaluate(_state(round_number=2))
@@ -86,8 +94,12 @@ class TestTurnCounterTrigger:
         """Turn-counter triggers fire at or after target — if the resolver
         wasn't called on turn 3, it should still fire on turn 4."""
         comp = CombatComplication(
-            id="t", name="t", description="", trigger_type="turn_counter",
-            trigger_params={"turn": 3}, effect_type="narration",
+            id="t",
+            name="t",
+            description="",
+            trigger_type="turn_counter",
+            trigger_params={"turn": 3},
+            effect_type="narration",
         )
         resolver = ComplicationResolver([comp])
         events = resolver.evaluate(_state(round_number=4))
@@ -97,9 +109,13 @@ class TestTurnCounterTrigger:
 class TestHpThresholdTrigger:
     def test_player_threshold_fires(self) -> None:
         comp = CombatComplication(
-            id="t", name="t", description="", trigger_type="hp_threshold",
+            id="t",
+            name="t",
+            description="",
+            trigger_type="hp_threshold",
             trigger_params={"target": "player", "hp_pct": 0.3},
-            effect_type="narration", effect_params={"flag_name": "f"},
+            effect_type="narration",
+            effect_params={"flag_name": "f"},
         )
         resolver = ComplicationResolver([comp])
         # 25 / 100 = 25% ≤ 30% threshold
@@ -108,7 +124,10 @@ class TestHpThresholdTrigger:
 
     def test_player_threshold_not_met(self) -> None:
         comp = CombatComplication(
-            id="t", name="t", description="", trigger_type="hp_threshold",
+            id="t",
+            name="t",
+            description="",
+            trigger_type="hp_threshold",
             trigger_params={"target": "player", "hp_pct": 0.3},
             effect_type="narration",
         )
@@ -118,7 +137,10 @@ class TestHpThresholdTrigger:
 
     def test_enemy_threshold_fires(self) -> None:
         comp = CombatComplication(
-            id="t", name="t", description="", trigger_type="hp_threshold",
+            id="t",
+            name="t",
+            description="",
+            trigger_type="hp_threshold",
             trigger_params={"target": "enemy", "hp_pct": 0.5},
             effect_type="environmental",
             effect_params={"enemy_accuracy_multiplier": 0.9},
@@ -136,8 +158,12 @@ class TestHpThresholdTrigger:
 class TestOnceOnlyFiring:
     def test_complication_does_not_re_fire(self) -> None:
         comp = CombatComplication(
-            id="t", name="t", description="", trigger_type="turn_counter",
-            trigger_params={"turn": 1}, effect_type="narration",
+            id="t",
+            name="t",
+            description="",
+            trigger_type="turn_counter",
+            trigger_params={"turn": 1},
+            effect_type="narration",
         )
         resolver = ComplicationResolver([comp])
         state = _state(round_number=1)
@@ -157,8 +183,12 @@ class TestSpawnReinforcementEffect:
         """Resolver does not touch state.enemies — that's the engine's job.
         It returns spawn intent in the event."""
         comp = CombatComplication(
-            id="t", name="t", description="", trigger_type="turn_counter",
-            trigger_params={"turn": 1}, effect_type="spawn_reinforcement",
+            id="t",
+            name="t",
+            description="",
+            trigger_type="turn_counter",
+            trigger_params={"turn": 1},
+            effect_type="spawn_reinforcement",
             effect_params={"template_ids": ["pirate_scout", "pirate_raider"]},
         )
         resolver = ComplicationResolver([comp])
@@ -170,8 +200,12 @@ class TestSpawnReinforcementEffect:
 class TestEnvironmentalEffect:
     def test_shield_regen_multiplier_applies(self) -> None:
         comp = CombatComplication(
-            id="t", name="t", description="", trigger_type="turn_counter",
-            trigger_params={"turn": 1}, effect_type="environmental",
+            id="t",
+            name="t",
+            description="",
+            trigger_type="turn_counter",
+            trigger_params={"turn": 1},
+            effect_type="environmental",
             effect_params={"shield_regen_multiplier": 0.5},
         )
         resolver = ComplicationResolver([comp])
@@ -181,8 +215,12 @@ class TestEnvironmentalEffect:
 
     def test_evasion_modifier_adds(self) -> None:
         comp = CombatComplication(
-            id="t", name="t", description="", trigger_type="turn_counter",
-            trigger_params={"turn": 1}, effect_type="environmental",
+            id="t",
+            name="t",
+            description="",
+            trigger_type="turn_counter",
+            trigger_params={"turn": 1},
+            effect_type="environmental",
             effect_params={"player_evasion_modifier": -3},
         )
         resolver = ComplicationResolver([comp])
@@ -192,7 +230,10 @@ class TestEnvironmentalEffect:
 
     def test_enemy_accuracy_multiplier(self) -> None:
         comp = CombatComplication(
-            id="t", name="t", description="", trigger_type="hp_threshold",
+            id="t",
+            name="t",
+            description="",
+            trigger_type="hp_threshold",
             trigger_params={"target": "enemy", "hp_pct": 0.5},
             effect_type="environmental",
             effect_params={"enemy_accuracy_multiplier": 0.9},
@@ -206,8 +247,11 @@ class TestEnvironmentalEffect:
 class TestNarrationEffect:
     def test_sets_flag_on_state(self) -> None:
         comp = CombatComplication(
-            id="morale_shift", name="Morale Shift", description="",
-            trigger_type="turn_counter", trigger_params={"turn": 1},
+            id="morale_shift",
+            name="Morale Shift",
+            description="",
+            trigger_type="turn_counter",
+            trigger_params={"turn": 1},
             effect_type="narration",
             effect_params={"flag_name": "player_low_hp_moment"},
         )
@@ -218,8 +262,11 @@ class TestNarrationEffect:
 
     def test_flag_defaults_to_complication_id(self) -> None:
         comp = CombatComplication(
-            id="my_beat", name="m", description="",
-            trigger_type="turn_counter", trigger_params={"turn": 1},
+            id="my_beat",
+            name="m",
+            description="",
+            trigger_type="turn_counter",
+            trigger_params={"turn": 1},
             effect_type="narration",
         )
         resolver = ComplicationResolver([comp])
@@ -241,9 +288,7 @@ class TestComplicationsJsonContent:
 
         dl = get_data_loader()
         dl.load_all()
-        assert len(dl.complications) >= 6, (
-            "CE-3 ships at least 6 complications"
-        )
+        assert len(dl.complications) >= 6, "CE-3 ships at least 6 complications"
 
     def test_all_trigger_types_valid(self) -> None:
         from spacegame.data_loader import get_data_loader
@@ -287,9 +332,7 @@ class TestComplicationsJsonContent:
         dl = get_data_loader()
         dl.load_all()
         for comp in dl.complications.values():
-            assert comp.narration.strip(), (
-                f"{comp.id} has empty narration"
-            )
+            assert comp.narration.strip(), f"{comp.id} has empty narration"
 
     def test_no_em_dashes_in_complication_narration(self) -> None:
         """Writing Bible discipline on complication content."""
@@ -301,9 +344,7 @@ class TestComplicationsJsonContent:
         for comp in dl.complications.values():
             if "\u2014" in comp.narration or "\u2013" in comp.narration:
                 offenders.append(f"{comp.id}: {comp.narration[:80]!r}")
-        assert not offenders, (
-            "Em/en dashes in complication narration:\n  " + "\n  ".join(offenders)
-        )
+        assert not offenders, "Em/en dashes in complication narration:\n  " + "\n  ".join(offenders)
 
 
 class TestEncounterComplicationIdsField:
@@ -315,10 +356,15 @@ class TestEncounterComplicationIdsField:
         )
 
         defn = EncounterDefinition(
-            id="x", encounter_type="t", name="n", description="d",
+            id="x",
+            encounter_type="t",
+            name="n",
+            description="d",
             choices=[
                 EncounterChoice(
-                    id="c", label="l", description="",
+                    id="c",
+                    label="l",
+                    description="",
                     outcome=EncounterOutcome(description="", rewards=[]),
                 )
             ],

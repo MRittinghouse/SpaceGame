@@ -126,15 +126,9 @@ class SceneAudio:
 # Scene-to-music + scene-to-ambient mapping (spec §5.1 + §5.2).
 SCENE_MAP: dict[AudioScene, SceneAudio] = {
     AudioScene.MAIN_MENU: SceneAudio(music_id="main_theme", ambient_id=None),
-    AudioScene.GALAXY_MAP: SceneAudio(
-        music_id="galaxy_exploration", ambient_id="ambient_space"
-    ),
-    AudioScene.STATION_HUB: SceneAudio(
-        music_id="station_hub", ambient_id="ambient_station"
-    ),
-    AudioScene.COCKPIT_STATION: SceneAudio(
-        music_id=None, ambient_id="ambient_station"
-    ),
+    AudioScene.GALAXY_MAP: SceneAudio(music_id="galaxy_exploration", ambient_id="ambient_space"),
+    AudioScene.STATION_HUB: SceneAudio(music_id="station_hub", ambient_id="ambient_station"),
+    AudioScene.COCKPIT_STATION: SceneAudio(music_id=None, ambient_id="ambient_station"),
     AudioScene.COCKPIT_SPACE: SceneAudio(music_id=None, ambient_id="ambient_space"),
     AudioScene.COMBAT: SceneAudio(
         music_id="combat_intense",
@@ -152,18 +146,12 @@ SCENE_MAP: dict[AudioScene, SceneAudio] = {
     AudioScene.COMBAT_DEFEAT: SceneAudio(
         music_id="defeat_somber", ambient_id=None, music_loops=False
     ),
-    AudioScene.GROUND_STEALTH: SceneAudio(
-        music_id="ground_stealth", ambient_id="ambient_ground"
-    ),
+    AudioScene.GROUND_STEALTH: SceneAudio(music_id="ground_stealth", ambient_id="ambient_ground"),
     AudioScene.MINING: SceneAudio(music_id="mining_rhythm", ambient_id="ambient_space"),
     AudioScene.SALVAGE: SceneAudio(music_id=None, ambient_id="ambient_combat"),
     AudioScene.REFINING: SceneAudio(music_id=None, ambient_id="ambient_station"),
-    AudioScene.DIALOGUE_INTIMATE: SceneAudio(
-        music_id="dialogue_intimate", ambient_id=None
-    ),
-    AudioScene.DIALOGUE_NEUTRAL: SceneAudio(
-        music_id="dialogue_neutral", ambient_id=None
-    ),
+    AudioScene.DIALOGUE_INTIMATE: SceneAudio(music_id="dialogue_intimate", ambient_id=None),
+    AudioScene.DIALOGUE_NEUTRAL: SceneAudio(music_id="dialogue_neutral", ambient_id=None),
 }
 
 
@@ -328,9 +316,7 @@ class AudioOrchestrator:
         state is tracked for when dialogue ends.
         """
         channel = self.play_sfx(sfx_id, category=category, priority=SFXPriority.CRITICAL)
-        self._critical_duck_remaining = max(
-            self._critical_duck_remaining, duck_duration
-        )
+        self._critical_duck_remaining = max(self._critical_duck_remaining, duck_duration)
         if not self._dialogue_active:
             self._audio.set_music_duck(_CRITICAL_MUSIC_DUCK)
         return channel
@@ -399,9 +385,7 @@ class AudioOrchestrator:
         if dt <= 0:
             return
         if self._critical_duck_remaining > 0:
-            self._critical_duck_remaining = max(
-                0.0, self._critical_duck_remaining - dt
-            )
+            self._critical_duck_remaining = max(0.0, self._critical_duck_remaining - dt)
             if self._critical_duck_remaining == 0 and not self._dialogue_active:
                 self._audio.set_music_duck(1.0)
 

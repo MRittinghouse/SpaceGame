@@ -104,7 +104,12 @@ class TestTutorialNarrationModal:
 class TestPhaseNarrationFiring:
     def test_fires_on_first_entry_to_slots_phase(self) -> None:
         view = _make_builder_tutorial(
-            bought_part_ids=["scrapyard_thruster", "scrapyard_reactor", "scrapyard_fuel_cell", "scrapyard_hold"]
+            bought_part_ids=[
+                "scrapyard_thruster",
+                "scrapyard_reactor",
+                "scrapyard_fuel_cell",
+                "scrapyard_hold",
+            ]
         )
         assert view._tutorial_narration_modal is None
         view._tutorial_maybe_fire_phase_narration()
@@ -163,7 +168,12 @@ def _paint_pixels(view, count: int) -> None:
 class TestPhaseProgressText:
     def test_slots_phase_progress(self) -> None:
         view = _make_builder_tutorial(
-            bought_part_ids=["scrapyard_thruster", "scrapyard_reactor", "scrapyard_fuel_cell", "scrapyard_hold"]
+            bought_part_ids=[
+                "scrapyard_thruster",
+                "scrapyard_reactor",
+                "scrapyard_fuel_cell",
+                "scrapyard_hold",
+            ]
         )
         text = view._tutorial_progress_text()
         assert "Slots placed: 0/5" == text

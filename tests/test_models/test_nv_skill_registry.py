@@ -277,7 +277,12 @@ class TestSaveLoadBackCompat:
         old_state = {
             "skills": {
                 "persuasion": {"id": "persuasion", "name": "Persuasion", "level": 3, "xp": 30},
-                "intimidation": {"id": "intimidation", "name": "Intimidation", "level": 2, "xp": 10},
+                "intimidation": {
+                    "id": "intimidation",
+                    "name": "Intimidation",
+                    "level": 2,
+                    "xp": 10,
+                },
                 "observation": {"id": "observation", "name": "Observation", "level": 1, "xp": 0},
             },
             "disposition": {"elena_reeves": 60},

@@ -116,7 +116,9 @@ class NameInputView(BaseView):
                     self._error_message = "Type a name first."
                     self._error_timer = 3.0
                 elif len(name) > MAX_NAME_LENGTH:
-                    self._error_message = f"Name too long. Keep it under {MAX_NAME_LENGTH} characters."
+                    self._error_message = (
+                        f"Name too long. Keep it under {MAX_NAME_LENGTH} characters."
+                    )
                     self._error_timer = 3.0
                 elif not _VALID_NAME_PATTERN.match(name):
                     self._error_message = "Letters, numbers, and spaces only."

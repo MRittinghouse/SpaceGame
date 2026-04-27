@@ -59,24 +59,22 @@ def _wire_upgrade_manager(player) -> ShipUpgradeManager:
 
 def _is_locked(player, upgrade: ShipUpgrade) -> tuple[bool, str]:
     """Mirror ShipyardView._is_upgrade_locked (shipyard_view.py:426)."""
-    if (
-        upgrade.available_systems
-        and player.current_system_id not in upgrade.available_systems
-    ):
+    if upgrade.available_systems and player.current_system_id not in upgrade.available_systems:
         return (True, "wrong system")
     if upgrade.faction_required:
         rep = player.get_reputation(upgrade.faction_required)
         if rep < upgrade.faction_rep_required:
-            return (True, f"need {upgrade.faction_rep_required} rep with {upgrade.faction_required}")
+            return (
+                True,
+                f"need {upgrade.faction_rep_required} rep with {upgrade.faction_required}",
+            )
     if upgrade.unlock_condition:
         if not player.dialogue_flags.get(upgrade.unlock_condition, False):
             return (True, f"requires flag {upgrade.unlock_condition}")
     return (False, "")
 
 
-def _buy_upgrade(
-    player, mgr: ShipUpgradeManager, upgrade: ShipUpgrade
-) -> tuple[bool, str]:
+def _buy_upgrade(player, mgr: ShipUpgradeManager, upgrade: ShipUpgrade) -> tuple[bool, str]:
     """Mirror ShipyardView._buy_selected (shipyard_view.py:661)."""
     locked, reason = _is_locked(player, upgrade)
     if locked:
@@ -288,9 +286,7 @@ class TestMarkEnhancementBonus:
             if opt["bonus_type"] != "cargo_bonus":
                 tuning_opt = opt
                 break
-        assert tuning_opt, (
-            "expected at least one non-cargo tuning on cargo_bay_ext"
-        )
+        assert tuning_opt, "expected at least one non-cargo tuning on cargo_bay_ext"
         tuning_id = tuning_opt["id"]
         tuning_bonus_type = tuning_opt["bonus_type"]
         tuning_value = float(tuning_opt["bonus_value"])

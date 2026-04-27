@@ -202,8 +202,7 @@ class TestKnowledgeFlagGating:
         available = dm.get_available_responses()
         accusation = [r for r in available if r.text.startswith("[Observation]")]
         assert len(accusation) == 1, (
-            "Players who caught the skim should see the [Observation] "
-            "accusation response"
+            "Players who caught the skim should see the [Observation] accusation response"
         )
         assert "skimmed" in accusation[0].text.lower()
 
@@ -247,8 +246,7 @@ class TestSpecializationAsTieBreaker:
 
         idx = _find_response_index(
             dm,
-            lambda r: (r.skill_check is not None)
-            and r.skill_check.difficulty == 3,
+            lambda r: (r.skill_check is not None) and r.skill_check.difficulty == 3,
         )
         dm.select_response(idx)
         # Effective 3 meets difficulty 3 — passes
@@ -266,15 +264,12 @@ class TestSpecializationAsTieBreaker:
 
         idx = _find_response_index(
             dm,
-            lambda r: (r.skill_check is not None)
-            and r.skill_check.difficulty == 3,
+            lambda r: (r.skill_check is not None) and r.skill_check.difficulty == 3,
         )
         dm.select_response(idx)
         assert dm.get_current_node().id == "chip_truth"
 
-    def test_higher_absolute_generalist_beats_lower_specialist_at_d5(
-        self, dl
-    ) -> None:
+    def test_higher_absolute_generalist_beats_lower_specialist_at_d5(self, dl) -> None:
         """A Persuasion 5 generalist (all 5) scores effective 5 + spec 0 = 5.
         A Persuasion 4 specialist (others 1) scores 4 + spec +2 = 6. The
         specialist still wins at the high end. But neither misses D3."""
@@ -288,8 +283,7 @@ class TestSpecializationAsTieBreaker:
             _walk_to_node(dm, "tension")
             idx = _find_response_index(
                 dm,
-                lambda r: (r.skill_check is not None)
-                and r.skill_check.difficulty == 3,
+                lambda r: (r.skill_check is not None) and r.skill_check.difficulty == 3,
             )
             dm.select_response(idx)
             assert dm.get_current_node().id == "chip_truth"
@@ -321,8 +315,7 @@ class TestIntimidationD3BranchesCorrectly:
 
         idx = _find_response_index(
             dm,
-            lambda r: (r.skill_check is not None)
-            and r.skill_check.skill == "intimidation",
+            lambda r: (r.skill_check is not None) and r.skill_check.skill == "intimidation",
         )
         dm.select_response(idx)
         assert dm.get_current_node().id == "food_task"
@@ -338,8 +331,7 @@ class TestIntimidationD3BranchesCorrectly:
 
         idx = _find_response_index(
             dm,
-            lambda r: (r.skill_check is not None)
-            and r.skill_check.skill == "intimidation",
+            lambda r: (r.skill_check is not None) and r.skill_check.skill == "intimidation",
         )
         dm.select_response(idx)
         assert dm.get_current_node().id == "food_reason"
@@ -373,8 +365,7 @@ class TestTechnicalD3VirtuosoCheck:
         # the same ("revelation") — NV-7 authored this as cosmetic.
         idx = _find_response_index(
             dm,
-            lambda r: (r.skill_check is not None)
-            and r.skill_check.skill == "technical",
+            lambda r: (r.skill_check is not None) and r.skill_check.skill == "technical",
         )
         dm.select_response(idx)
         assert dm.get_current_node().id == "revelation"
@@ -413,8 +404,7 @@ class TestDeceptionD2Routing:
 
         idx = _find_response_index(
             dm,
-            lambda r: (r.skill_check is not None)
-            and r.skill_check.skill == "deception",
+            lambda r: (r.skill_check is not None) and r.skill_check.skill == "deception",
         )
         dm.select_response(idx)
         assert dm.get_current_node().id == "personal_supplies"
@@ -456,8 +446,7 @@ class TestLeadershipContentRouting:
 
         idx = _find_response_index(
             dm,
-            lambda r: (r.skill_check is not None)
-            and r.skill_check.skill == "leadership",
+            lambda r: (r.skill_check is not None) and r.skill_check.skill == "leadership",
         )
         dm.select_response(idx)
         assert dm.get_current_node().id == "overview"

@@ -252,9 +252,7 @@ class TestPaletteDataCompliance:
         for source, m in self._all_materials():
             band = m.get("shade_band")
             assert band, f"{source}:{m['id']} missing shade_band"
-            assert is_valid_band(band), (
-                f"{source}:{m['id']} has unknown shade_band '{band}'"
-            )
+            assert is_valid_band(band), f"{source}:{m['id']} has unknown shade_band '{band}'"
 
     def test_emissive_role_is_valid_palette_role_when_set(self) -> None:
         from spacegame.engine.material_palette import is_valid_role
@@ -263,9 +261,7 @@ class TestPaletteDataCompliance:
             role = m.get("emissive_role")
             if role is None:
                 continue
-            assert is_valid_role(role), (
-                f"{source}:{m['id']} has unknown emissive_role '{role}'"
-            )
+            assert is_valid_role(role), f"{source}:{m['id']} has unknown emissive_role '{role}'"
 
     def test_signature_stripe_role_is_valid_palette_role_when_set(self) -> None:
         from spacegame.engine.material_palette import is_valid_role
@@ -286,9 +282,7 @@ class TestPaletteDataCompliance:
             assert isinstance(offset, int), (
                 f"{source}:{m['id']} category_offset must be int, got {type(offset).__name__}"
             )
-            assert -4 <= offset <= 4, (
-                f"{source}:{m['id']} category_offset={offset} outside [-4, 4]"
-            )
+            assert -4 <= offset <= 4, f"{source}:{m['id']} category_offset={offset} outside [-4, 4]"
 
     def test_render_params_in_unit_range(self) -> None:
         """noise_intensity, wear_intensity, gloss must lie in [0, 1]."""
@@ -297,27 +291,21 @@ class TestPaletteDataCompliance:
                 value = m.get(field)
                 if value is None:
                     continue
-                assert 0.0 <= value <= 1.0, (
-                    f"{source}:{m['id']} {field}={value} outside [0, 1]"
-                )
+                assert 0.0 <= value <= 1.0, f"{source}:{m['id']} {field}={value} outside [0, 1]"
 
     def test_rivet_density_non_negative(self) -> None:
         for source, m in self._all_materials():
             density = m.get("rivet_density")
             if density is None:
                 continue
-            assert density >= 0.0, (
-                f"{source}:{m['id']} rivet_density={density} negative"
-            )
+            assert density >= 0.0, f"{source}:{m['id']} rivet_density={density} negative"
 
     def test_legacy_color_fields_fully_purged(self) -> None:
         """No material JSON retains color_primary / color_accent / color_highlight."""
         banned = {"color_primary", "color_accent", "color_highlight"}
         for source, m in self._all_materials():
             leaked = banned & m.keys()
-            assert not leaked, (
-                f"{source}:{m['id']} still carries legacy color fields: {leaked}"
-            )
+            assert not leaked, f"{source}:{m['id']} still carries legacy color fields: {leaked}"
 
     def test_module_materials_emissive_coverage_matches_bible_intent(self) -> None:
         """Bible §3.5 identifies these module kinds as emissive. Enforce it.

@@ -573,10 +573,7 @@ class TestMaterialBandDerivation:
         )
         band = _derive_material_band(mat)
         # Luminance approximation: R*0.299 + G*0.587 + B*0.114
-        luminances = [
-            0.299 * r + 0.587 * g + 0.114 * b
-            for (r, g, b) in band
-        ]
+        luminances = [0.299 * r + 0.587 * g + 0.114 * b for (r, g, b) in band]
         for i in range(len(luminances) - 1):
             assert luminances[i] < luminances[i + 1], (
                 f"Band not monotonic at index {i}: {luminances}"
@@ -1010,7 +1007,9 @@ class TestPhase4ConnectionDetail:
 # ---------------------------------------------------------------------------
 
 
-def _count_darkened_pixels(baseline_surf, decorated_surf, silhouette_pixels: list[tuple[int, int]]) -> int:
+def _count_darkened_pixels(
+    baseline_surf, decorated_surf, silhouette_pixels: list[tuple[int, int]]
+) -> int:
     """Count how many silhouette pixels are darker in decorated vs baseline."""
     count = 0
     for x, y in silhouette_pixels:
@@ -1168,8 +1167,7 @@ class TestPhase5Decoration:
         high_darkened = _count_darkened_pixels(baseline, high_surf, silhouette_pixels)
 
         assert high_darkened >= low_darkened, (
-            f"Higher wear should darken more pixels; "
-            f"got low={low_darkened}, high={high_darkened}"
+            f"Higher wear should darken more pixels; got low={low_darkened}, high={high_darkened}"
         )
 
     def test_phase5_determinism(self) -> None:
@@ -1311,9 +1309,7 @@ class TestPhase7PaletteSnap:
         pygame.init()
         # Mixed-material ship
         pixels = [
-            (x, y, "hull_cold" if x < 3 else "reinforced_plate")
-            for x in range(6)
-            for y in range(6)
+            (x, y, "hull_cold" if x < 3 else "reinforced_plate") for x in range(6) for y in range(6)
         ]
         config = ShipCompositeConfig(
             enable_rivets=False,
@@ -1325,7 +1321,9 @@ class TestPhase7PaletteSnap:
         surf = comp.get_surface()
 
         hull_band = {tuple(c) for c in _derive_material_band(_resolve_material("hull_cold"))}
-        plate_band = {tuple(c) for c in _derive_material_band(_resolve_material("reinforced_plate"))}
+        plate_band = {
+            tuple(c) for c in _derive_material_band(_resolve_material("reinforced_plate"))
+        }
 
         for y in range(6):
             for x in range(6):
@@ -1400,7 +1398,6 @@ class TestEmissiveMask:
     Phase 6 to overlay them with animated glow)."""
 
     def test_non_emissive_materials_not_masked(self) -> None:
-
         build = _make_build([(0, 0, "hull_cold")])
         comp = ShipComposite(build)
         mask = comp._compute_emissive_mask()
@@ -1454,8 +1451,7 @@ class TestPhase6Emissive:
         on_lum = on_px.r * 0.299 + on_px.g * 0.587 + on_px.b * 0.114
         off_lum = off_px.r * 0.299 + off_px.g * 0.587 + off_px.b * 0.114
         assert on_lum > off_lum, (
-            f"Phase 6 should brighten emissive pixels; "
-            f"got on={on_lum:.1f}, off={off_lum:.1f}"
+            f"Phase 6 should brighten emissive pixels; got on={on_lum:.1f}, off={off_lum:.1f}"
         )
 
     def test_non_emissive_pixels_unchanged_by_phase6(self) -> None:
@@ -1491,8 +1487,7 @@ class TestPhase6Emissive:
         peak_lum = peak_px.r * 0.299 + peak_px.g * 0.587 + peak_px.b * 0.114
         trough_lum = trough_px.r * 0.299 + trough_px.g * 0.587 + trough_px.b * 0.114
         assert peak_lum > trough_lum, (
-            f"Pulse should modulate brightness; "
-            f"peak={peak_lum:.1f}, trough={trough_lum:.1f}"
+            f"Pulse should modulate brightness; peak={peak_lum:.1f}, trough={trough_lum:.1f}"
         )
 
     def test_enable_engine_glow_false_skips_phase6(self) -> None:

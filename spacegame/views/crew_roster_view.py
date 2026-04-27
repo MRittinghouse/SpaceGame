@@ -572,9 +572,7 @@ class CrewRosterView(BaseView):
 
                 cur_y += 20
 
-    def _render_dual_tech_overview(
-        self, screen: pygame.Surface, x: int, y: int
-    ) -> None:
+    def _render_dual_tech_overview(self, screen: pygame.Surface, x: int, y: int) -> None:
         """Render the dual tech status list when no crew is selected.
 
         Shows every tech in the palette with its participating crew,
@@ -587,9 +585,7 @@ class CrewRosterView(BaseView):
         pad_x = x + 20
         cur_y = y + 18
 
-        title = self._detail_title_font.render(
-            "COORDINATED ABILITIES", True, Colors.TEXT_HIGHLIGHT
-        )
+        title = self._detail_title_font.render("COORDINATED ABILITIES", True, Colors.TEXT_HIGHLIGHT)
         screen.blit(title, (pad_x, cur_y))
         cur_y += title.get_height() + 6
 
@@ -606,9 +602,7 @@ class CrewRosterView(BaseView):
         # Build quick display-name lookup from templates.
         name_of: dict[str, str] = {}
         if self.crew_roster is not None:
-            for cid, _ in (
-                [(c, None) for s in statuses for c, _ in s.crew_loyalties]
-            ):
+            for cid, _ in [(c, None) for s in statuses for c, _ in s.crew_loyalties]:
                 tmpl = self.crew_roster.get_template(cid)
                 if tmpl is not None:
                     # Display first name only for compactness.
@@ -631,9 +625,7 @@ class CrewRosterView(BaseView):
 
             # Header: name + status badge
             color = available_color if status.is_available else locked_color
-            name_surf = self._label_font.render(
-                status.tech.name, True, color
-            )
+            name_surf = self._label_font.render(status.tech.name, True, color)
             screen.blit(name_surf, (pad_x, cur_y))
             badge_text = "AVAILABLE" if status.is_available else "LOCKED"
             badge = self._label_font.render(badge_text, True, color)
@@ -650,12 +642,14 @@ class CrewRosterView(BaseView):
                 if loy is None:
                     parts.append(f"{label} (not recruited)")
                 else:
-                    bar = "OK" if loy >= status.tech.loyalty_req else f"{loy}/{status.tech.loyalty_req}"
+                    bar = (
+                        "OK"
+                        if loy >= status.tech.loyalty_req
+                        else f"{loy}/{status.tech.loyalty_req}"
+                    )
                     parts.append(f"{label} {bar}")
             crew_line = " + ".join(parts)
-            crew_surf = self._label_font.render(
-                crew_line, True, Colors.TEXT_SECONDARY
-            )
+            crew_surf = self._label_font.render(crew_line, True, Colors.TEXT_SECONDARY)
             screen.blit(crew_surf, (pad_x + 8, cur_y))
             cur_y += crew_surf.get_height() + 10
 

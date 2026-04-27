@@ -88,8 +88,7 @@ class TestPerkBonusFlowsToQueryAPI:
         # Could be positive or negative depending on perk values;
         # just assert it's non-zero at ALLIED with commerce_guild.
         assert bonus != 0.0, (
-            f"ALLIED with commerce_guild should give a non-zero buy_price_bonus. "
-            f"Got {bonus}."
+            f"ALLIED with commerce_guild should give a non-zero buy_price_bonus. Got {bonus}."
         )
 
     def test_unrelated_perk_type_returns_zero(self) -> None:

@@ -120,9 +120,7 @@ class _ResponseButton:
             body_rect = body_surf.get_rect(midleft=(self.rect.x + 12, self.rect.centery))
             screen.blit(body_surf, body_rect)
             # Draw the ellipsis in highlight color, directly after the body.
-            glyph_rect = glyph_surf.get_rect(
-                midleft=(body_rect.right, self.rect.centery)
-            )
+            glyph_rect = glyph_surf.get_rect(midleft=(body_rect.right, self.rect.centery))
             screen.blit(glyph_surf, glyph_rect)
         else:
             text_rect = text_surf.get_rect(midleft=(self.rect.x + 12, self.rect.centery))
@@ -413,8 +411,8 @@ class DialogueView(BaseView):
         if check_result is not None:
             success, msg = check_result
             readout = self.dialogue_manager.get_last_check_readout()
-            feedback_text = readout if readout else (
-                "Check Passed!" if success else "Check Failed."
+            feedback_text = (
+                readout if readout else ("Check Passed!" if success else "Check Failed.")
             )
             self._check_feedback = {
                 "text": feedback_text,

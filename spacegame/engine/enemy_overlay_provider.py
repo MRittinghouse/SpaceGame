@@ -144,11 +144,7 @@ class EnemyModuleOverlayProvider:
         across fights.
         """
         living_ids = {id(e) for e in living_enemies}
-        stale = [
-            key
-            for key in self._overlays
-            if key[1] is not None and key[1] not in living_ids
-        ]
+        stale = [key for key in self._overlays if key[1] is not None and key[1] not in living_ids]
         for key in stale:
             del self._overlays[key]
 

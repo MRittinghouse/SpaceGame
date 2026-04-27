@@ -139,9 +139,7 @@ class CrewInterjectionResolver:
         """Read-only snapshot of (crew_id, trigger) pairs that have fired."""
         return set(self._fired)
 
-    def evaluate_round(
-        self, state: "CombatState"
-    ) -> list[InterjectionEvent]:
+    def evaluate_round(self, state: "CombatState") -> list[InterjectionEvent]:
         """Return eligible non-outcome interjections without committing.
 
         Builds a candidate event for every interjection whose trigger is
@@ -163,9 +161,7 @@ class CrewInterjectionResolver:
                 events.append(event)
         return events
 
-    def evaluate_outcome(
-        self, state: "CombatState", outcome: str
-    ) -> list[InterjectionEvent]:
+    def evaluate_outcome(self, state: "CombatState", outcome: str) -> list[InterjectionEvent]:
         """Return eligible ``combat_outcome`` events without committing.
 
         ``outcome`` is "victory" or "defeat" — matched against the entry's
@@ -202,25 +198,19 @@ class CrewInterjectionResolver:
     # Internal helpers
     # ------------------------------------------------------------------
 
-    def _round_trigger_satisfied(
-        self, entry: CrewInterjection, state: "CombatState"
-    ) -> bool:
+    def _round_trigger_satisfied(self, entry: CrewInterjection, state: "CombatState") -> bool:
         """Per-round triggers (everything except ``combat_outcome``)."""
         t = entry.trigger
         if t == "first_turn":
             return state.round_number == 1
 
         if t == "player_low_hp":
-            threshold = float(
-                entry.conditions.get("threshold", DEFAULT_PLAYER_LOW_HP_PCT)
-            )
+            threshold = float(entry.conditions.get("threshold", DEFAULT_PLAYER_LOW_HP_PCT))
             max_hp = max(1, state.player.max_hull)
             return state.player.hull / max_hp <= threshold
 
         if t == "enemy_low_hp":
-            threshold = float(
-                entry.conditions.get("threshold", DEFAULT_ENEMY_LOW_HP_PCT)
-            )
+            threshold = float(entry.conditions.get("threshold", DEFAULT_ENEMY_LOW_HP_PCT))
             for enemy in state.surviving_enemies:
                 max_hp = max(1, enemy.max_hull)
                 if enemy.current_hull / max_hp <= threshold:
@@ -239,9 +229,7 @@ class CrewInterjectionResolver:
         # combat_outcome handled in evaluate_outcome, never here
         return False
 
-    def _build_event(
-        self, entry: CrewInterjection
-    ) -> Optional[InterjectionEvent]:
+    def _build_event(self, entry: CrewInterjection) -> Optional[InterjectionEvent]:
         """Pick a line and build the candidate event (no commit)."""
         if not entry.lines:
             return None

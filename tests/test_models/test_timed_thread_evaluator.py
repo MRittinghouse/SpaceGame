@@ -19,14 +19,24 @@ def _make_player(game_day: int = 0):
     from spacegame.models.ship import Ship, ShipType
 
     ship_type = ShipType(
-        id="shuttle", name="Shuttle", ship_class="light",
-        description="x", cargo_capacity=10, fuel_capacity=50,
-        fuel_efficiency=1.0, speed_multiplier=1.0, purchase_price=0,
-        resale_value=0, crew_slots=2, special_abilities=[],
+        id="shuttle",
+        name="Shuttle",
+        ship_class="light",
+        description="x",
+        cargo_capacity=10,
+        fuel_capacity=50,
+        fuel_efficiency=1.0,
+        speed_multiplier=1.0,
+        purchase_price=0,
+        resale_value=0,
+        crew_slots=2,
+        special_abilities=[],
         availability="all",
     )
     player = Player(
-        name="T", credits=500, current_system_id="nexus_prime",
+        name="T",
+        credits=500,
+        current_system_id="nexus_prime",
         ship=Ship(ship_type=ship_type, current_fuel=50),
     )
     player.game_day = game_day
@@ -115,9 +125,7 @@ class TestTouchViaInteraction:
         player.game_day = 40
         player.record_interaction("talked_to_elena_reeves")
         evaluate_threads(player, threads)
-        assert (
-            player.timed_thread_state["elena_unspoken"].last_touched_day == 40
-        )
+        assert player.timed_thread_state["elena_unspoken"].last_touched_day == 40
 
         # Day 84 (44 after touch): still no drift
         player.game_day = 84
@@ -216,14 +224,12 @@ class TestMultipleThreads:
         thread_a = TimedThread(
             id="a",
             touch_triggers=["key_a"],
-            drift_states=[DriftState(id="a1", threshold_days=10,
-                journal_entry_on_enter="A drift")],
+            drift_states=[DriftState(id="a1", threshold_days=10, journal_entry_on_enter="A drift")],
         )
         thread_b = TimedThread(
             id="b",
             touch_triggers=["key_b"],
-            drift_states=[DriftState(id="b1", threshold_days=20,
-                journal_entry_on_enter="B drift")],
+            drift_states=[DriftState(id="b1", threshold_days=20, journal_entry_on_enter="B drift")],
         )
         player = _make_player(game_day=0)
         player.record_interaction("key_a")

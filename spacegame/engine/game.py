@@ -222,9 +222,7 @@ class Game:
 
         # PT-H: persisted objective-hint preference (default on for new players).
         # Applied to the cockpit HUD after it's constructed in _init_cockpit_hud.
-        self._persisted_show_objective_hint: bool = saved_settings.get(
-            "show_objective_hint", True
-        )
+        self._persisted_show_objective_hint: bool = saved_settings.get("show_objective_hint", True)
 
         # Markets (system_id -> Market)
         self.markets: dict[str, Market] = {}
@@ -676,9 +674,7 @@ class Game:
         canvas constants keeps working.
         """
         flags = build_display_flags(fullscreen)
-        self.screen = pygame.display.set_mode(
-            (width, height), flags=flags, vsync=1 if VSYNC else 0
-        )
+        self.screen = pygame.display.set_mode((width, height), flags=flags, vsync=1 if VSYNC else 0)
         logger.info(
             f"Display reconfigured live: {width}x{height} "
             f"({'fullscreen' if fullscreen else 'windowed'})"
@@ -1051,7 +1047,7 @@ class Game:
                         # the builder so the shop → builder transition
                         # does not feel abrupt.
                         self._mission_notifications.append(
-                            'Mechanic: "Bay\'s open. Grid\'s yours. Pick a part and drop it."'
+                            "Mechanic: \"Bay's open. Grid's yours. Pick a part and drop it.\""
                         )
 
                     self._start_transition(TransitionType.FADE, 0.5, _do)
@@ -1127,9 +1123,7 @@ class Game:
                 if (
                     self.player
                     and self.player.current_system_id == "nexus_prime"
-                    and not self.player.dialogue_flags.get(
-                        talked_to_npc("officer_larsen"), False
-                    )
+                    and not self.player.dialogue_flags.get(talked_to_npc("officer_larsen"), False)
                 ):
                     # Set flag immediately so the trigger can never re-fire,
                     # even if the dialogue is interrupted or game exits early.
@@ -1624,9 +1618,7 @@ class Game:
                         # combat view + engine see them.
                         encounter_def = self.encounter_view.encounter_def
                         combat_encounter.captain_id = encounter_def.captain_id
-                        combat_encounter.complication_ids = list(
-                            encounter_def.complication_ids
-                        )
+                        combat_encounter.complication_ids = list(encounter_def.complication_ids)
                         self._apply_encounter_result()
                         self.start_combat(
                             combat_encounter,
@@ -1784,9 +1776,7 @@ class Game:
                     # the player gets an explicit "what next" cue on
                     # arrival at the station hub.
                     self.ship_builder_view.next_state = None
-                    farewell = getattr(
-                        self.ship_builder_view, "_pending_tutorial_farewell", None
-                    )
+                    farewell = getattr(self.ship_builder_view, "_pending_tutorial_farewell", None)
                     if farewell:
                         self._mission_notifications.append(farewell)
                         self.ship_builder_view._pending_tutorial_farewell = None
@@ -2640,8 +2630,7 @@ class Game:
         resolved_caps: set[str] = set()
         if self.player and hasattr(self.player, "captain_memory"):
             resolved_caps = {
-                cid for cid, mem in self.player.captain_memory.items()
-                if mem.is_resolved
+                cid for cid, mem in self.player.captain_memory.items() if mem.is_resolved
             }
 
         context = EncounterContext(
@@ -3669,9 +3658,7 @@ class Game:
                 # waited for restart, but the startup path also ignored
                 # them — so display settings were effectively no-ops.
                 res = display["resolution"]
-                self._apply_display_settings(
-                    int(res[0]), int(res[1]), bool(display["fullscreen"])
-                )
+                self._apply_display_settings(int(res[0]), int(res[1]), bool(display["fullscreen"]))
                 self.save_manager.save_settings(settings)
                 # PT-H: propagate objective-hint toggle to live HUD.
                 if self._cockpit_hud is not None:
@@ -4425,8 +4412,7 @@ class Game:
             if event.narration:
                 self._mission_notifications.append(event.narration)
             logger.info(
-                f"TW drift: thread={event.thread_id} state={event.state_id} "
-                f"day={event.game_day}"
+                f"TW drift: thread={event.thread_id} state={event.state_id} day={event.game_day}"
             )
 
     def check_achievements(self) -> None:
@@ -4945,9 +4931,7 @@ class Game:
                 # Persistence is best-effort — the in-memory toggle is
                 # what drives the next render, which is the important part.
                 pass
-            logger.info(
-                "PT-L soft break: objective hint auto-retired after 3 missions completed"
-            )
+            logger.info("PT-L soft break: objective hint auto-retired after 3 missions completed")
 
     def _handle_event_notifications(self, dt: float) -> None:
         """Handle pending event notifications and banner timer."""
@@ -5242,9 +5226,7 @@ class Game:
                     current_flags = self.screen.get_flags()
                     going_fullscreen = not bool(current_flags & pygame.FULLSCREEN)
                     cur_size = self.screen.get_size()
-                    self._apply_display_settings(
-                        cur_size[0], cur_size[1], going_fullscreen
-                    )
+                    self._apply_display_settings(cur_size[0], cur_size[1], going_fullscreen)
                     continue
 
                 # Check for ESC key to toggle pause (only during gameplay)

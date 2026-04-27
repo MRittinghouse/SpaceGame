@@ -168,8 +168,7 @@ class TestRoleMapIntegrity:
 
         for color_name, role in _COLORS_ROLE_MAP.items():
             assert role in PALETTE_ROLES, (
-                f"Colors.{color_name} maps to role {role!r} which is not "
-                f"defined in PALETTE_ROLES."
+                f"Colors.{color_name} maps to role {role!r} which is not defined in PALETTE_ROLES."
             )
 
     def test_aliases_point_to_same_role_as_primary(self) -> None:

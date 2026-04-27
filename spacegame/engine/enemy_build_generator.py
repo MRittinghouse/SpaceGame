@@ -78,9 +78,7 @@ def resolve_primary_material(faction_id: str) -> str:
 
     Unknown factions fall back to the Crimson Reach (bandit) default.
     """
-    return _FACTION_PRIMARY_MATERIAL.get(
-        faction_id or "", _FACTION_PRIMARY_MATERIAL[""]
-    )
+    return _FACTION_PRIMARY_MATERIAL.get(faction_id or "", _FACTION_PRIMARY_MATERIAL[""])
 
 
 def resolve_weight_class(template: EnemyShipTemplate) -> str:

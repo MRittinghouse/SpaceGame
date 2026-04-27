@@ -235,9 +235,7 @@ class TestExtractedKeepsLootOnly:
     def test_extracted_no_mission_reward_keeps_loot(self) -> None:
         player = fresh_player(credits=1000)
         config = _make_config(credits=500, xp=100)
-        result = _make_result(
-            config, MissionOutcome.EXTRACTED, loot_credits=200
-        )
+        result = _make_result(config, MissionOutcome.EXTRACTED, loot_credits=200)
 
         _apply_ground_result(player, result)
 

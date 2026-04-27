@@ -100,6 +100,7 @@ _SLOT_TYPE_ORDER: list[str] = [
     "reactor",
 ]
 
+
 # PT-N: helper for the tutorial stat preview — pulls colors from the
 # PALETTE_ROLES system so colorblind profiles remap automatically.
 def _palette_role_color(role: str, fallback: tuple[int, int, int]) -> tuple[int, int, int]:
@@ -160,7 +161,6 @@ _BUILDER_COLORS: dict[str, tuple[int, int, int]] = {
     "import_warn_line": (180, 100, 100),
     "import_warn_dim": (140, 100, 100),
     "lock_hint": (120, 80, 80),
-
     # --- UI state backgrounds ---
     "cell_selected_cool": (40, 50, 80),
     "cell_selected": (45, 60, 100),
@@ -179,7 +179,6 @@ _BUILDER_COLORS: dict[str, tuple[int, int, int]] = {
     "panel_bg_soft": (40, 50, 70),
     "panel_divider": (50, 60, 80),
     "panel_dim_button": (40, 48, 65),
-
     # --- Text / border states ---
     "text_locked": (70, 70, 80),
     "text_locked_dim": (50, 50, 60),
@@ -192,27 +191,22 @@ _BUILDER_COLORS: dict[str, tuple[int, int, int]] = {
     "border_tab_subtle": (50, 55, 70),
     "border_toolbar_enabled": (60, 65, 80),
     "border_toolbar_disabled": (40, 42, 50),
-
     # --- Hint / label grays ---
     "label_mute_cool": (80, 90, 110),
     "label_mute_cool_soft": (80, 90, 120),
     "label_mute_warm": (100, 110, 130),
     "label_mute_warm_soft": (100, 110, 140),
     "label_trim_warm": (120, 90, 60),
-
     # --- Recolor UI ---
     "recolor_accent": (255, 200, 80),
-
     # --- Build confirm ---
     "build_confirm": (255, 220, 100),
-
     # --- Stat signatures (also used as archetype colors) ---
     "stat_shield": (80, 180, 255),
     "stat_armor": (200, 150, 50),
     "stat_evasion": (160, 100, 200),
     "stat_gold_fallback": (200, 180, 80),
     "stat_tier_ring": (180, 160, 80),
-
     # --- Tier letter grades ---
     "grade_s": (255, 215, 80),
     "grade_a": (80, 220, 80),
@@ -220,7 +214,6 @@ _BUILDER_COLORS: dict[str, tuple[int, int, int]] = {
     "grade_c": (220, 200, 60),
     "grade_d": (220, 140, 40),
     "grade_f": (200, 60, 60),
-
     # --- Module category signatures ---
     "cat_cockpit": (100, 180, 255),
     "cat_engine": (255, 180, 80),
@@ -231,13 +224,11 @@ _BUILDER_COLORS: dict[str, tuple[int, int, int]] = {
     "cat_structural": (160, 160, 180),
     "cat_crew": (120, 200, 120),
     "cat_reactor": (180, 100, 240),
-
     # --- Material / swatch fallbacks ---
     "material_fallback": (128, 128, 128),
     "material_fallback_dark": (100, 100, 100),
     "material_fallback_light": (120, 120, 130),
     "swatch_fallback_warm": (100, 70, 70),
-
     # --- Grid background ---
     "grid_bg": (8, 10, 20),
 }
@@ -613,7 +604,10 @@ class ShipBuilderView(BaseView):
             return
 
         # PT-N: tutorial narration modal intercepts all input while visible
-        if self._tutorial_narration_modal is not None and not self._tutorial_narration_modal.dismissed:
+        if (
+            self._tutorial_narration_modal is not None
+            and not self._tutorial_narration_modal.dismissed
+        ):
             if self._tutorial_narration_modal.handle_event(event):
                 return
 
@@ -642,9 +636,7 @@ class ShipBuilderView(BaseView):
                 # PT-012: open naming dialog on demand. Player names their
                 # ship at game start; this is the re-rename path.
                 self._naming_active = True
-                self._naming_text = (
-                    self.player.ship_name or self.player.ship.ship_type.name
-                )
+                self._naming_text = self.player.ship_name or self.player.ship.ship_type.name
                 self._naming_cursor_timer = 0.0
                 self._rename_only = True
                 return
@@ -2028,6 +2020,7 @@ class ShipBuilderView(BaseView):
         if phase == "complete":
             try:
                 from spacegame.engine.material_palette import get_role
+
                 accent = get_role("status_positive")
             except Exception:
                 accent = Colors.GREEN
@@ -2315,8 +2308,7 @@ class ShipBuilderView(BaseView):
             # affirmation that auto-equip ran (so the player knows the
             # parts they bought are now in the ship).
             self._pending_tutorial_farewell = (
-                'Mechanic: "That\'ll fly. Parts mounted. '
-                'I\'ll push you off. Galaxy\'s waiting."'
+                "Mechanic: \"That'll fly. Parts mounted. I'll push you off. Galaxy's waiting.\""
             )
             # PT-H: tutorial_builder_complete gates Arna's first-encounter
             # interception on first STATION_HUB entry after tutorial.
@@ -2926,13 +2918,18 @@ class ShipBuilderView(BaseView):
             # Size label in top-left corner (on first filled cell)
             size_letter = _SIZE_DISPLAY.get(sdef.size, "?")
             if cell >= 6:
-                size_surf = self.label_font.render(size_letter, True, _BUILDER_COLORS["text_softer_white"])
+                size_surf = self.label_font.render(
+                    size_letter, True, _BUILDER_COLORS["text_softer_white"]
+                )
                 screen.blit(size_surf, (sx + 2, sy + 1))
             # Equipped indicator dot (bottom-right)
             if ps.equipped_part_id:
                 dot_r = max(2, cell // 4)
                 pygame.draw.circle(
-                    screen, _BUILDER_COLORS["valid_place"], (sx + sw - dot_r - 2, sy + sh - dot_r - 2), dot_r
+                    screen,
+                    _BUILDER_COLORS["valid_place"],
+                    (sx + sw - dot_r - 2, sy + sh - dot_r - 2),
+                    dot_r,
                 )
 
         # Ghost preview — slot mode or hull mode
@@ -2946,7 +2943,9 @@ class ShipBuilderView(BaseView):
                 gx, gy = grid_pos
                 fw, fh, g_mask = ghost_sdef.get_rotated(self._module_rotation)
                 ok, _ = self._validate_slot_placement(gx, gy, ghost_sdef)
-                ghost_color = _BUILDER_COLORS["valid_place"] if ok else _BUILDER_COLORS["invalid_place"]
+                ghost_color = (
+                    _BUILDER_COLORS["valid_place"] if ok else _BUILDER_COLORS["invalid_place"]
+                )
                 ghost_sx = ox + gx * cell
                 ghost_sy = oy + gy * cell
                 ghost_sw = fw * cell
@@ -2997,7 +2996,9 @@ class ShipBuilderView(BaseView):
                         if 0 <= gx < cw and 0 <= gy < ch:
                             px = ox + gx * cell
                             py = oy + gy * cell
-                            preview_color = ghost_color if valid else _BUILDER_COLORS["invalid_preview"]
+                            preview_color = (
+                                ghost_color if valid else _BUILDER_COLORS["invalid_preview"]
+                            )
                             ghost_surf = pygame.Surface((cell - 1, cell - 1), pygame.SRCALPHA)
                             ghost_surf.fill((*preview_color, 100))
                             screen.blit(ghost_surf, (px + 1, py + 1))
@@ -3254,7 +3255,9 @@ class ShipBuilderView(BaseView):
                 current = self.build.frame_variant or "default"
                 is_active = variant_key == current
                 bg = _BUILDER_COLORS["tab_active"] if is_active else _BUILDER_COLORS["cell_alt"]
-                border = Colors.TEXT_HIGHLIGHT if is_active else _BUILDER_COLORS["border_tab_subtle"]
+                border = (
+                    Colors.TEXT_HIGHLIGHT if is_active else _BUILDER_COLORS["border_tab_subtle"]
+                )
                 rect = pygame.Rect(bx, frame_y, frame_btn_w, frame_h)
                 pygame.draw.rect(screen, bg, rect, border_radius=2)
                 pygame.draw.rect(screen, border, rect, 1, border_radius=2)
@@ -3374,7 +3377,9 @@ class ShipBuilderView(BaseView):
                     swatch_size = scale_y(14)
                     swatch_x = panel_x + 8
                     swatch_y = y_cursor + (item_h - swatch_size) // 2 - 1
-                    swatch_color = sdef.color if not at_limit else _BUILDER_COLORS["text_disabled_swatch"]
+                    swatch_color = (
+                        sdef.color if not at_limit else _BUILDER_COLORS["text_disabled_swatch"]
+                    )
                     pygame.draw.rect(
                         screen,
                         swatch_color,
@@ -3395,7 +3400,9 @@ class ShipBuilderView(BaseView):
                     screen.blit(name_surf, (text_x, y_cursor + 1))
 
                     # Info line: footprint, weight, cost + variant name
-                    info_color = _BUILDER_COLORS["text_locked_dim"] if at_limit else Colors.TEXT_SECONDARY
+                    info_color = (
+                        _BUILDER_COLORS["text_locked_dim"] if at_limit else Colors.TEXT_SECONDARY
+                    )
                     info_parts = (
                         f"{sdef.footprint_w}x{sdef.footprint_h}  "
                         f"W:{sdef.weight:.0f}  "
@@ -3417,12 +3424,17 @@ class ShipBuilderView(BaseView):
             bar_h = max(10, int(list_h * (list_h / total_content_h)))
             bar_y = list_top + int((self._slot_palette_scroll / max_scroll) * (list_h - bar_h))
             pygame.draw.rect(
-                screen, _BUILDER_COLORS["label_mute_cool_soft"], (panel_x + panel_w - 5, bar_y, 3, bar_h), border_radius=1
+                screen,
+                _BUILDER_COLORS["label_mute_cool_soft"],
+                (panel_x + panel_w - 5, bar_y, 3, bar_h),
+                border_radius=1,
             )
 
         # Tooltip for undersized slots (rendered outside clip region)
         if _undersized_tooltip:
-            tip_surf = self.label_font.render(_undersized_tooltip, True, _BUILDER_COLORS["warn_tip_text"])
+            tip_surf = self.label_font.render(
+                _undersized_tooltip, True, _BUILDER_COLORS["warn_tip_text"]
+            )
             tip_w = tip_surf.get_width() + 12
             tip_h = tip_surf.get_height() + 8
             # Position to the right of the palette, clamped to screen
@@ -3432,7 +3444,11 @@ class ShipBuilderView(BaseView):
             tip_bg.fill((20, 18, 32, 230))
             screen.blit(tip_bg, (tip_x, tip_y))
             pygame.draw.rect(
-                screen, _BUILDER_COLORS["warn_tip_border"], (tip_x, tip_y, tip_w, tip_h), 1, border_radius=3
+                screen,
+                _BUILDER_COLORS["warn_tip_border"],
+                (tip_x, tip_y, tip_w, tip_h),
+                1,
+                border_radius=3,
             )
             screen.blit(tip_surf, (tip_x + 6, tip_y + 4))
 
@@ -3602,7 +3618,10 @@ class ShipBuilderView(BaseView):
             bar_h = max(10, int(list_h * (list_h / (len(modules) * item_h))))
             bar_y = list_top + int((self._module_catalog_scroll / max_scroll) * (list_h - bar_h))
             pygame.draw.rect(
-                screen, _BUILDER_COLORS["label_mute_cool_soft"], (panel_x + panel_w - 5, bar_y, 3, bar_h), border_radius=1
+                screen,
+                _BUILDER_COLORS["label_mute_cool_soft"],
+                (panel_x + panel_w - 5, bar_y, 3, bar_h),
+                border_radius=1,
             )
 
     def _render_requirements_checklist(self, screen: pygame.Surface) -> None:
@@ -3812,7 +3831,9 @@ class ShipBuilderView(BaseView):
 
         # Integrity overlay toggle
         int_active = self._show_integrity_overlay
-        int_bg = _BUILDER_COLORS["cell_section_active"] if int_active else _BUILDER_COLORS["cell_alt"]
+        int_bg = (
+            _BUILDER_COLORS["cell_section_active"] if int_active else _BUILDER_COLORS["cell_alt"]
+        )
         int_rect = pygame.Rect(panel_x + 6, row_y, panel_w - 12, scale_y(16))
         pygame.draw.rect(screen, int_bg, int_rect, border_radius=2)
         int_label = self.label_font.render(
@@ -3828,7 +3849,9 @@ class ShipBuilderView(BaseView):
 
         # CoM overlay toggle
         com_active = self._show_com_overlay
-        com_bg = _BUILDER_COLORS["cell_section_active"] if com_active else _BUILDER_COLORS["cell_alt"]
+        com_bg = (
+            _BUILDER_COLORS["cell_section_active"] if com_active else _BUILDER_COLORS["cell_alt"]
+        )
         com_rect = pygame.Rect(panel_x + 6, row_y, panel_w - 12, scale_y(16))
         pygame.draw.rect(screen, com_bg, com_rect, border_radius=2)
         com_label = self.label_font.render(
@@ -3843,7 +3866,9 @@ class ShipBuilderView(BaseView):
 
         # Exposure overlay toggle (BP4)
         exp_active = self._show_exposure_overlay
-        exp_bg = _BUILDER_COLORS["cell_section_active"] if exp_active else _BUILDER_COLORS["cell_alt"]
+        exp_bg = (
+            _BUILDER_COLORS["cell_section_active"] if exp_active else _BUILDER_COLORS["cell_alt"]
+        )
         exp_rect = pygame.Rect(panel_x + 6, row_y, panel_w - 12, scale_y(16))
         pygame.draw.rect(screen, exp_bg, exp_rect, border_radius=2)
         exp_label = self.label_font.render(
@@ -3910,14 +3935,20 @@ class ShipBuilderView(BaseView):
 
         # Locked pixel hint
         lock_y = start_y + len(hull_mats) * (swatch_h + pad) + scale_y(10)
-        lock_hint = self.label_font.render("Functional pixels (glass,", True, _BUILDER_COLORS["lock_hint"])
+        lock_hint = self.label_font.render(
+            "Functional pixels (glass,", True, _BUILDER_COLORS["lock_hint"]
+        )
         screen.blit(lock_hint, (panel_x + 8, lock_y))
-        lock_hint2 = self.label_font.render("exhaust, etc.) are locked.", True, _BUILDER_COLORS["lock_hint"])
+        lock_hint2 = self.label_font.render(
+            "exhaust, etc.) are locked.", True, _BUILDER_COLORS["lock_hint"]
+        )
         screen.blit(lock_hint2, (panel_x + 8, lock_y + scale_y(12)))
 
         # Exit hint
         exit_y = lock_y + scale_y(30)
-        exit_hint = self.label_font.render("Press [C] to exit recolor", True, _BUILDER_COLORS["label_mute_warm_soft"])
+        exit_hint = self.label_font.render(
+            "Press [C] to exit recolor", True, _BUILDER_COLORS["label_mute_warm_soft"]
+        )
         screen.blit(exit_hint, (panel_x + 8, exit_y))
 
     def _render_module_tooltip(self, screen: pygame.Surface) -> None:
@@ -4284,16 +4315,32 @@ class ShipBuilderView(BaseView):
         def _draw_tool_btn(
             bx: int, by: int, w: int, label: str, active: bool, enabled: bool = True
         ) -> None:
-            bg = _BUILDER_COLORS["toolbar_active"] if active else (_BUILDER_COLORS["toolbar_enabled"] if enabled else _BUILDER_COLORS["toolbar_disabled"])
+            bg = (
+                _BUILDER_COLORS["toolbar_active"]
+                if active
+                else (
+                    _BUILDER_COLORS["toolbar_enabled"]
+                    if enabled
+                    else _BUILDER_COLORS["toolbar_disabled"]
+                )
+            )
             border = (
-                Colors.TEXT_HIGHLIGHT if active else (_BUILDER_COLORS["border_toolbar_enabled"] if enabled else _BUILDER_COLORS["border_toolbar_disabled"])
+                Colors.TEXT_HIGHLIGHT
+                if active
+                else (
+                    _BUILDER_COLORS["border_toolbar_enabled"]
+                    if enabled
+                    else _BUILDER_COLORS["border_toolbar_disabled"]
+                )
             )
             pygame.draw.rect(screen, bg, (bx, by, w, btn_h), border_radius=4)
             pygame.draw.rect(screen, border, (bx, by, w, btn_h), 1, border_radius=4)
             color = (
                 Colors.TEXT_PRIMARY
                 if active
-                else (Colors.TEXT_SECONDARY if enabled else _BUILDER_COLORS["text_toolbar_disabled"])
+                else (
+                    Colors.TEXT_SECONDARY if enabled else _BUILDER_COLORS["text_toolbar_disabled"]
+                )
             )
             t = self.small_font.render(label, True, color)
             screen.blit(
@@ -4423,14 +4470,10 @@ class ShipBuilderView(BaseView):
         panel_x = (WINDOW_WIDTH - panel_w) // 2
         panel_y = WINDOW_HEIGHT - scale_y(HUD_BASE_HEIGHT) - panel_h - scale_y(10)
         # Track rect for click-to-dismiss hit testing in handle_event.
-        self._tutorial_narration_panel_rect = pygame.Rect(
-            panel_x, panel_y, panel_w, panel_h
-        )
+        self._tutorial_narration_panel_rect = pygame.Rect(panel_x, panel_y, panel_w, panel_h)
 
         draw_panel(screen, (panel_x, panel_y, panel_w, panel_h), alpha=panel_alpha)
-        speaker = self._tutorial_narration_font.render(
-            "Mechanic: ", True, Colors.TEXT_HIGHLIGHT
-        )
+        speaker = self._tutorial_narration_font.render("Mechanic: ", True, Colors.TEXT_HIGHLIGHT)
         speaker.set_alpha(text_alpha)
         screen.blit(speaker, (panel_x + 16, panel_y + 14))
         text = self._tutorial_narration_font.render(narration, True, Colors.TEXT_PRIMARY)
@@ -4484,11 +4527,7 @@ class ShipBuilderView(BaseView):
         # corresponding slot_type from ship_parts, then find the matching
         # narration line keyed by tutorial slot_def_id.
         ship_parts = getattr(self.data_loader, "ship_parts", {}) or {}
-        placed_slot_types = {
-            slot_defs[sid].slot_type
-            for sid in placed_ids
-            if sid in slot_defs
-        }
+        placed_slot_types = {slot_defs[sid].slot_type for sid in placed_ids if sid in slot_defs}
         for p in bought_parts:
             part = ship_parts.get(p.part_id)
             if part is None:
@@ -4663,7 +4702,9 @@ class ShipBuilderView(BaseView):
         if display_text:
             text_surf = self.label_font.render(display_text, True, Colors.TEXT_PRIMARY)
         else:
-            text_surf = self.label_font.render("Paste code here...", True, _BUILDER_COLORS["text_placeholder"])
+            text_surf = self.label_font.render(
+                "Paste code here...", True, _BUILDER_COLORS["text_placeholder"]
+            )
         screen.blit(text_surf, (mx + 15, input_y + 8))
 
         # Blinking cursor
@@ -4680,13 +4721,17 @@ class ShipBuilderView(BaseView):
 
         # Error message
         if self._import_error:
-            err_surf = self.label_font.render(self._import_error, True, _BUILDER_COLORS["import_error"])
+            err_surf = self.label_font.render(
+                self._import_error, True, _BUILDER_COLORS["import_error"]
+            )
             screen.blit(err_surf, (mx + 15, input_y + input_h + 8))
 
         # Missing blueprints list
         if self._import_missing_blueprints:
             bp_y = input_y + input_h + scale_y(28)
-            header = self.label_font.render("Missing Blueprints:", True, _BUILDER_COLORS["import_warn_header"])
+            header = self.label_font.render(
+                "Missing Blueprints:", True, _BUILDER_COLORS["import_warn_header"]
+            )
             screen.blit(header, (mx + 15, bp_y))
             bp_y += scale_y(14)
             for bp in self._import_missing_blueprints[:5]:
@@ -4708,7 +4753,9 @@ class ShipBuilderView(BaseView):
         # Buttons hint
         hint_y = my + modal_h - scale_y(22)
         hint = self.label_font.render(
-            "[Enter] Import    [Esc] Cancel    [Ctrl+V] Paste", True, _BUILDER_COLORS["label_mute_cool"]
+            "[Enter] Import    [Esc] Cancel    [Ctrl+V] Paste",
+            True,
+            _BUILDER_COLORS["label_mute_cool"],
         )
         screen.blit(hint, (mx + 15, hint_y))
 
@@ -4939,7 +4986,9 @@ class ShipBuilderView(BaseView):
             screen.blit(scaled, rect)
 
             # "BUILD CONFIRMED" text
-            text = self.header_font.render("BUILD CONFIRMED", True, _BUILDER_COLORS["build_confirm"])
+            text = self.header_font.render(
+                "BUILD CONFIRMED", True, _BUILDER_COLORS["build_confirm"]
+            )
             text.set_alpha(min(255, alpha))
             text_rect = text.get_rect(
                 center=(

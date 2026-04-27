@@ -38,9 +38,7 @@ def _fake_game(completed_count: int, hint_on: bool, flag_already_set: bool = Fal
     }
     # Mission manager
     game.mission_manager = MagicMock()
-    game.mission_manager.get_completed_ids.return_value = {
-        f"m{i}" for i in range(completed_count)
-    }
+    game.mission_manager.get_completed_ids.return_value = {f"m{i}" for i in range(completed_count)}
     # HUD
     hud = MagicMock()
     hud.show_objective_hint = hint_on
@@ -66,9 +64,7 @@ class TestSoftBreakRetirement:
         game = _fake_game(completed_count=2, hint_on=True)
         game.check_soft_break_retirement()
         assert game._cockpit_hud.show_objective_hint is True
-        assert (
-            game.player.dialogue_flags.get("objective_hint_auto_retired", False) is False
-        )
+        assert game.player.dialogue_flags.get("objective_hint_auto_retired", False) is False
 
     def test_does_not_re_fire_after_retired(self) -> None:
         """Once the flag is set, the check should early-out even if the

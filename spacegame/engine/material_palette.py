@@ -38,65 +38,59 @@ if TYPE_CHECKING:
 MATERIAL_BANDS: dict[str, tuple[tuple[int, int, int], ...]] = {
     # Default hull metal — cool industrial steel
     "steel": (
-        (24, 30, 42),       # steel_shadow_deep — ambient floor
-        (52, 62, 82),       # steel_shadow
-        (88, 100, 122),     # steel_base
-        (140, 156, 188),    # steel_bright
-        (190, 210, 238),    # steel_specular
+        (24, 30, 42),  # steel_shadow_deep — ambient floor
+        (52, 62, 82),  # steel_shadow
+        (88, 100, 122),  # steel_base
+        (140, 156, 188),  # steel_bright
+        (190, 210, 238),  # steel_specular
     ),
-
     # Solari Chrome — polished mirror; forced-wide band per Spike 01/02/03
     # findings (naive narrow chrome collapses under palette-snap).
     "solari_chrome": (
-        (82, 92, 108),      # solari_pewter — darker than "real" chrome for legibility
-        (140, 152, 172),    # solari_dim
-        (200, 212, 226),    # solari_base
-        (232, 240, 248),    # solari_bright
-        (252, 253, 255),    # solari_mirror
+        (82, 92, 108),  # solari_pewter — darker than "real" chrome for legibility
+        (140, 152, 172),  # solari_dim
+        (200, 212, 226),  # solari_base
+        (232, 240, 248),  # solari_bright
+        (252, 253, 255),  # solari_mirror
     ),
-
     # Crimson Iron — Reach hull, patinated red-brown, matte
     "reach_crimson": (
-        (40, 10, 12),       # reach_shadow_deep
-        (78, 22, 24),       # reach_shadow
-        (138, 42, 40),      # reach_base
-        (186, 78, 62),      # reach_bright
-        (224, 128, 92),     # reach_specular — hue-shifts warm for rim glow
+        (40, 10, 12),  # reach_shadow_deep
+        (78, 22, 24),  # reach_shadow
+        (138, 42, 40),  # reach_base
+        (186, 78, 62),  # reach_bright
+        (224, 128, 92),  # reach_specular — hue-shifts warm for rim glow
     ),
-
     # Union Ceramic — matte heat-tile, warm undertone
     "union_ceramic": (
-        (78, 68, 58),       # union_shadow_deep
-        (132, 118, 98),     # union_shadow
-        (202, 192, 170),    # union_base
-        (232, 222, 202),    # union_bright
-        (248, 240, 222),    # union_specular
+        (78, 68, 58),  # union_shadow_deep
+        (132, 118, 98),  # union_shadow
+        (202, 192, 170),  # union_base
+        (232, 222, 202),  # union_bright
+        (248, 240, 222),  # union_specular
     ),
-
     # Frontier Canvas — welded patchwork, cooler / grittier
     "frontier_canvas": (
-        (32, 26, 22),       # frontier_shadow_deep
-        (62, 52, 44),       # frontier_shadow
-        (108, 92, 72),      # frontier_base — oxidized brown
-        (160, 142, 112),    # frontier_bright
-        (208, 192, 158),    # frontier_specular — fresh weld tan
+        (32, 26, 22),  # frontier_shadow_deep
+        (62, 52, 44),  # frontier_shadow
+        (108, 92, 72),  # frontier_base — oxidized brown
+        (160, 142, 112),  # frontier_bright
+        (208, 192, 158),  # frontier_specular — fresh weld tan
     ),
-
     # Collective Composite — science-clean blue-white
     "collective_composite": (
-        (40, 52, 68),       # collective_shadow_deep
-        (90, 108, 128),     # collective_shadow
-        (168, 192, 212),    # collective_base
-        (210, 228, 242),    # collective_bright
-        (240, 248, 254),    # collective_specular
+        (40, 52, 68),  # collective_shadow_deep
+        (90, 108, 128),  # collective_shadow
+        (168, 192, 212),  # collective_base
+        (210, 228, 242),  # collective_bright
+        (240, 248, 254),  # collective_specular
     ),
-
     # Glass Viewport — narrow 4-entry band by nature
     "glass_viewport": (
-        (14, 28, 42),       # glass_shadow
-        (30, 58, 80),       # glass_base_dim
-        (52, 96, 126),      # glass_base
-        (96, 146, 176),     # glass_bright
+        (14, 28, 42),  # glass_shadow
+        (30, 58, 80),  # glass_base_dim
+        (52, 96, 126),  # glass_base
+        (96, 146, 176),  # glass_bright
     ),
 }
 
@@ -111,81 +105,71 @@ MATERIAL_BANDS: dict[str, tuple[tuple[int, int, int], ...]] = {
 
 PALETTE_ROLES: dict[str, tuple[int, int, int]] = {
     # Void / sky (3 entries)
-    "void_deep":        (8, 10, 17),
-    "void_mid":         (17, 20, 33),
-    "void_light":       (29, 36, 53),
-
+    "void_deep": (8, 10, 17),
+    "void_mid": (17, 20, 33),
+    "void_light": (29, 36, 53),
     # Emissive cores (7 entries) — bypass snap; additive blend
-    "plasma_core":      (255, 175, 58),
-    "plasma_hot":       (255, 225, 180),
-    "cryo_fractal":     (127, 225, 255),
-    "ion_arc":          (198, 110, 255),
-    "voltaic_strike":   (255, 232, 108),
-    "glow_warm":        (255, 200, 120),
-    "glow_cool":        (108, 185, 255),
-
+    "plasma_core": (255, 175, 58),
+    "plasma_hot": (255, 225, 180),
+    "cryo_fractal": (127, 225, 255),
+    "ion_arc": (198, 110, 255),
+    "voltaic_strike": (255, 232, 108),
+    "glow_warm": (255, 200, 120),
+    "glow_cool": (108, 185, 255),
     # UI chrome (7 entries) — HUD layer
-    "hud_cyan":         (85, 207, 236),
-    "hud_warning":      (245, 145, 55),
-    "hud_critical":     (245, 65, 65),
-    "hud_muted":        (108, 119, 142),
-    "hud_text":         (225, 230, 240),
-    "hud_text_dim":     (160, 168, 185),
-    "hud_accent_warm":  (232, 180, 110),
-
+    "hud_cyan": (85, 207, 236),
+    "hud_warning": (245, 145, 55),
+    "hud_critical": (245, 65, 65),
+    "hud_muted": (108, 119, 142),
+    "hud_text": (225, 230, 240),
+    "hud_text_dim": (160, 168, 185),
+    "hud_accent_warm": (232, 180, 110),
     # Detail colors (4 entries)
-    "rivet":            (20, 23, 30),
-    "rivet_gloss":      (110, 128, 155),
-    "seam":             (14, 16, 22),
-    "weld":             (178, 148, 92),
-
+    "rivet": (20, 23, 30),
+    "rivet_gloss": (110, 128, 155),
+    "seam": (14, 16, 22),
+    "weld": (178, 148, 92),
     # Status roles (4 entries) — used by Colors.GREEN/RED/YELLOW/BLUE
     # wrappers. Values preserve the original Colors class literals exactly
     # so the Sprint 4 migration causes zero visual change.
-    "status_success":   (50, 200, 100),   # Colors.GREEN
-    "status_critical":  (220, 50, 50),    # Colors.RED
-    "status_warning":   (255, 200, 50),   # Colors.YELLOW
-    "status_info":      (80, 150, 255),   # Colors.BLUE
-
+    "status_success": (50, 200, 100),  # Colors.GREEN
+    "status_critical": (220, 50, 50),  # Colors.RED
+    "status_warning": (255, 200, 50),  # Colors.YELLOW
+    "status_info": (80, 150, 255),  # Colors.BLUE
     # Skill check roles (3 entries) — gameplay feedback on social and
     # skill outcomes. Distinct from status roles so their remaps can be
     # tuned separately.
-    "check_pass":       (80, 220, 120),   # Colors.CHECK_PASS
-    "check_marginal":   (220, 200, 60),   # Colors.CHECK_MARGINAL
-    "check_fail":       (200, 80, 80),    # Colors.CHECK_FAIL
-
+    "check_pass": (80, 220, 120),  # Colors.CHECK_PASS
+    "check_marginal": (220, 200, 60),  # Colors.CHECK_MARGINAL
+    "check_fail": (200, 80, 80),  # Colors.CHECK_FAIL
     # Quality tier roles (4 entries) — item quality grades.
-    "quality_poor":     (80, 80, 80),     # Colors.QUALITY_POOR
-    "quality_normal":   (140, 140, 140),  # Colors.QUALITY_NORMAL
-    "quality_good":     (100, 200, 100),  # Colors.QUALITY_GOOD
+    "quality_poor": (80, 80, 80),  # Colors.QUALITY_POOR
+    "quality_normal": (140, 140, 140),  # Colors.QUALITY_NORMAL
+    "quality_good": (100, 200, 100),  # Colors.QUALITY_GOOD
     "quality_excellent": (255, 220, 80),  # Colors.QUALITY_EXCELLENT
-
     # Text roles (3 entries) — ubiquitous foreground text colors used
     # across every view. Distinct from hud_text* (which targets the
     # persistent HUD overlay layer specifically).
-    "text_primary":     (220, 220, 230),  # Colors.TEXT_PRIMARY
-    "text_secondary":   (150, 160, 180),  # Colors.TEXT_SECONDARY
-    "text_highlight":   (100, 200, 255),  # Colors.TEXT_HIGHLIGHT
-
+    "text_primary": (220, 220, 230),  # Colors.TEXT_PRIMARY
+    "text_secondary": (150, 160, 180),  # Colors.TEXT_SECONDARY
+    "text_highlight": (100, 200, 255),  # Colors.TEXT_HIGHLIGHT
     # Faction primary roles (4 entries) — labels, emblems, indicators.
-    "faction_commerce":  (100, 150, 255),  # Colors.FACTION_COMMERCE
-    "faction_miners":    (200, 150, 50),   # Colors.FACTION_MINERS
-    "faction_science":   (150, 100, 200),  # Colors.FACTION_SCIENCE
-    "faction_frontier":  (100, 200, 100),  # Colors.FACTION_FRONTIER
-
+    "faction_commerce": (100, 150, 255),  # Colors.FACTION_COMMERCE
+    "faction_miners": (200, 150, 50),  # Colors.FACTION_MINERS
+    "faction_science": (150, 100, 200),  # Colors.FACTION_SCIENCE
+    "faction_frontier": (100, 200, 100),  # Colors.FACTION_FRONTIER
     # Faction accent roles (4 entries) — brighter variants for active
     # borders and HUD highlights.
-    "faction_accent_commerce":  (80, 140, 220),
-    "faction_accent_miners":    (220, 170, 60),
-    "faction_accent_science":   (140, 170, 220),
-    "faction_accent_frontier":  (80, 200, 120),
-
+    "faction_accent_commerce": (80, 140, 220),
+    "faction_accent_miners": (220, 170, 60),
+    "faction_accent_science": (140, 170, 220),
+    "faction_accent_frontier": (80, 200, 120),
     # Faction tint roles (4 entries) — dimmed variants for subtle panel
     # edge tints.
-    "faction_tint_commerce":  (40, 60, 100),
-    "faction_tint_miners":    (90, 70, 30),
-    "faction_tint_science":   (60, 50, 90),
-    "faction_tint_frontier":  (40, 80, 50),
+    "faction_tint_commerce": (40, 60, 100),
+    "faction_tint_miners": (90, 70, 30),
+    "faction_tint_science": (60, 50, 90),
+    "faction_tint_frontier": (40, 80, 50),
 }
 
 
@@ -203,13 +187,13 @@ PALETTE_ROLES: dict[str, tuple[int, int, int]] = {
 # them and this tuple becomes empty.
 
 RESERVED_BAND_NAMES: tuple[str, ...] = (
-    "sensor_glass",          # Translucent green-tint for radar/sensor domes
+    "sensor_glass",  # Translucent green-tint for radar/sensor domes
     "electronics_emissive",  # Targeting-computer window glow, sensor panels
-    "cooling_vent",          # Textured metal with heat-gradient emissive
-    "radar_mesh",            # Latticed reflective antenna surface
-    "shield_field",          # Emissive shield lattice, cool blue-cyan family
-    "voltaic_plate",         # Lightning-etched metal for voltaic-tech weapons
-    "cryo_frost",            # Frost accumulation on cryo weapons and hulls
+    "cooling_vent",  # Textured metal with heat-gradient emissive
+    "radar_mesh",  # Latticed reflective antenna surface
+    "shield_field",  # Emissive shield lattice, cool blue-cyan family
+    "voltaic_plate",  # Lightning-etched metal for voltaic-tech weapons
+    "cryo_frost",  # Frost accumulation on cryo weapons and hulls
 )
 
 
@@ -501,10 +485,7 @@ def apply_category_offset(
     if offset == 0:
         return band
     max_idx = len(band) - 1
-    return tuple(
-        band[max(0, min(max_idx, i + offset))]
-        for i in range(len(band))
-    )
+    return tuple(band[max(0, min(max_idx, i + offset))] for i in range(len(band)))
 
 
 # ---------------------------------------------------------------------------
@@ -570,8 +551,7 @@ def assert_role_compliance(
     if violations:
         sample = violations[:5]
         raise AssertionError(
-            f"{len(violations)} pixels not within {tolerance} of any role. "
-            f"Sample: {sample}"
+            f"{len(violations)} pixels not within {tolerance} of any role. Sample: {sample}"
         )
 
 

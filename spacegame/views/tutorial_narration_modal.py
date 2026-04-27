@@ -109,9 +109,7 @@ class TutorialNarrationModal(FirstTimeTipOverlay):
 
         # Speaker label — small caps, subtle
         assert self._speaker_font is not None
-        speaker_surf = self._speaker_font.render(
-            self.speaker.upper(), True, Colors.TEXT_SECONDARY
-        )
+        speaker_surf = self._speaker_font.render(self.speaker.upper(), True, Colors.TEXT_SECONDARY)
         speaker_surf.set_alpha(text_alpha)
         screen.blit(speaker_surf, (content_x, content_y))
 
@@ -144,9 +142,7 @@ class TutorialNarrationModal(FirstTimeTipOverlay):
 
         # Keyboard hint below button. The button's bottom margin in
         # __init__ reserves space for this — no clamp needed.
-        hint_surf = self._button_font.render(
-            "Enter / Space / Esc", True, Colors.TEXT_SECONDARY
-        )
+        hint_surf = self._button_font.render("Enter / Space / Esc", True, Colors.TEXT_SECONDARY)
         hint_surf.set_alpha(int(text_alpha * 0.7))
         hint_rect = hint_surf.get_rect(
             centerx=self._btn_rect.centerx,

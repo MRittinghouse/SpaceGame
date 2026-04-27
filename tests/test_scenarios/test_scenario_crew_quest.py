@@ -77,9 +77,7 @@ class TestCrewMembershipGatesQuestProgression:
                 player.dialogue_flags[obj.target_id] = True
 
         # Crew member IS recruited
-        newly = mgr.check_objectives(
-            player, recruited_crew_ids={quest.crew_member_id}
-        )
+        newly = mgr.check_objectives(player, recruited_crew_ids={quest.crew_member_id})
 
         # At least the objectives should have been evaluated — whether the
         # quest completes depends on objective types. Confirm the quest was
@@ -188,9 +186,7 @@ class TestCrewQuestRewardsFireNormally:
                 break
         assert quest is not None
 
-        credits_reward = sum(
-            r.amount for r in quest.rewards if r.reward_type == "credits"
-        )
+        credits_reward = sum(r.amount for r in quest.rewards if r.reward_type == "credits")
         before = player.credits
         mgr.apply_rewards(quest.id, player)
         assert player.credits == before + credits_reward

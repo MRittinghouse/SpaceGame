@@ -201,8 +201,7 @@ class TestViewElementsWithinBounds:
             view.on_enter()
         except Exception as exc:
             pytest.fail(
-                f"{view_name} on_enter raised at {resolution.label}: "
-                f"{type(exc).__name__}: {exc}"
+                f"{view_name} on_enter raised at {resolution.label}: {type(exc).__name__}: {exc}"
             )
 
         try:
@@ -212,8 +211,7 @@ class TestViewElementsWithinBounds:
                 pytest.fail(
                     f"{view_name} has {len(violations)} out-of-bounds pygame_gui "
                     f"element(s) at {resolution.label} "
-                    f"({resolution.width}x{resolution.height}):\n  "
-                    + "\n  ".join(violations[:10])
+                    f"({resolution.width}x{resolution.height}):\n  " + "\n  ".join(violations[:10])
                 )
         finally:
             view.on_exit()

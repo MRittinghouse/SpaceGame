@@ -210,9 +210,7 @@ class TestPriceMemoryIntegratesWithPlayer:
         dl = get_data_loader()
         dl.load_all()
         ship = Ship(ship_type=dl.ship_types["shuttle"], current_fuel=10)
-        player = Player(
-            name="Test", credits=100, current_system_id="nexus_prime", ship=ship
-        )
+        player = Player(name="Test", credits=100, current_system_id="nexus_prime", ship=ship)
         assert isinstance(player.price_memory, PriceMemory)
         assert player.price_memory.known_systems() == set()
 
@@ -225,9 +223,7 @@ class TestPriceMemoryIntegratesWithPlayer:
         dl = get_data_loader()
         dl.load_all()
         ship = Ship(ship_type=dl.ship_types["shuttle"], current_fuel=10)
-        player = Player(
-            name="Test", credits=100, current_system_id="nexus_prime", ship=ship
-        )
+        player = Player(name="Test", credits=100, current_system_id="nexus_prime", ship=ship)
         player.price_memory.record("nexus_prime", {"metals": 100}, game_day=1)
 
         mgr = SaveManager()
@@ -246,12 +242,8 @@ class TestPriceMemoryIntegratesWithPlayer:
         dl = get_data_loader()
         dl.load_all()
         ship = Ship(ship_type=dl.ship_types["shuttle"], current_fuel=10)
-        player = Player(
-            name="Test", credits=100, current_system_id="nexus_prime", ship=ship
-        )
-        player.price_memory.record(
-            "breakstone", {"metals": 120, "water": 20}, game_day=7
-        )
+        player = Player(name="Test", credits=100, current_system_id="nexus_prime", ship=ship)
+        player.price_memory.record("breakstone", {"metals": 120, "water": 20}, game_day=7)
 
         mgr = SaveManager()
         data = mgr._serialize_player(player)

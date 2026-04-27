@@ -45,11 +45,7 @@ class TestParallaxOffset:
         b.fill((0, 0, 0))
         field.render(a, camera_offset=(0.0, 0.0))
         field.render(b, camera_offset=(50.0, 0.0))
-        differ = any(
-            a.get_at((x, y)) != b.get_at((x, y))
-            for y in range(200)
-            for x in range(200)
-        )
+        differ = any(a.get_at((x, y)) != b.get_at((x, y)) for y in range(200) for x in range(200))
         assert differ
 
     def test_layer_parallax_factors_canonical(self) -> None:
@@ -65,11 +61,7 @@ class TestParallaxOffset:
         surf.fill((0, 0, 0))
         # Huge offset — should still render without crash + at least one star visible.
         field.render(surf, camera_offset=(10_000.0, 0.0))
-        any_lit = any(
-            surf.get_at((x, y)) != (0, 0, 0, 255)
-            for y in range(200)
-            for x in range(200)
-        )
+        any_lit = any(surf.get_at((x, y)) != (0, 0, 0, 255) for y in range(200) for x in range(200))
         assert any_lit
 
 
@@ -82,11 +74,7 @@ class TestAnimatedBackgroundOffset:
         bg.render(a, camera_offset=(0.0, 0.0))
         bg.render(b, camera_offset=(50.0, 20.0))
         # Parallax stars differ; static base is the same.
-        differ = any(
-            a.get_at((x, y)) != b.get_at((x, y))
-            for y in range(200)
-            for x in range(200)
-        )
+        differ = any(a.get_at((x, y)) != b.get_at((x, y)) for y in range(200) for x in range(200))
         assert differ
 
     def test_default_offset_is_backward_compatible(self) -> None:

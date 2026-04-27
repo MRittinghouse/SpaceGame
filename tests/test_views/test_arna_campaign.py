@@ -293,9 +293,7 @@ class TestPostRefiningDialogue:
         having actually observed Tev's skim (the knows_tev_skims flag)."""
         tree = _tree("arna_post_refining")
         start = _node(tree, "start")
-        accusation = next(
-            (r for r in start["responses"] if "skimmed" in r["text"].lower()), None
-        )
+        accusation = next((r for r in start["responses"] if "skimmed" in r["text"].lower()), None)
         assert accusation is not None
         assert "knows_tev_skims" in accusation.get("required_flags", [])
 
@@ -414,9 +412,7 @@ class TestBuyerMission:
         suggestion a concrete, reachable destination."""
         m = next(x for x in _missions() if x["id"] == "arna_04_the_buyer")
         bm_grants = [
-            r["target_id"]
-            for r in m["rewards"]
-            if r["reward_type"] == "black_market_access"
+            r["target_id"] for r in m["rewards"] if r["reward_type"] == "black_market_access"
         ]
         assert "crimson_reach" in bm_grants
 
@@ -508,9 +504,7 @@ class TestJournalEntries:
 
     def test_smuggling_primer_entry_exists(self) -> None:
         entries = self._entries()
-        primer = next(
-            (e for e in entries if e["entry_id"] == "auto_arna_smuggling_primer"), None
-        )
+        primer = next((e for e in entries if e["entry_id"] == "auto_arna_smuggling_primer"), None)
         assert primer is not None
         assert primer["trigger_flag"] == "smuggling_primer_received"
 
@@ -529,9 +523,7 @@ class TestJournalEntries:
 
     def test_brother_reveal_entry_exists(self) -> None:
         entries = self._entries()
-        brother = next(
-            (e for e in entries if e["entry_id"] == "auto_arna_brother_reveal"), None
-        )
+        brother = next((e for e in entries if e["entry_id"] == "auto_arna_brother_reveal"), None)
         assert brother is not None
         assert brother["trigger_flag"] == "arna_scheme_revealed"
 
@@ -548,7 +540,9 @@ class TestArnaStateMachineAR3:
     def test_post_ambush_excludes_branch_flags(self) -> None:
         """Once a branch is chosen, post_ambush should not re-fire."""
         arna = next(n for n in _npcs()["npcs"] if n["id"] == "arna")
-        post_ambush = next(s for s in arna["dialogue_states"] if s["state_id"] == "arna_post_ambush")
+        post_ambush = next(
+            s for s in arna["dialogue_states"] if s["state_id"] == "arna_post_ambush"
+        )
         excluded = set(post_ambush["excluded_flags"])
         assert "arna_branch_payback" in excluded
         assert "arna_branch_walkaway" in excluded
@@ -623,9 +617,7 @@ class TestWalkawayBranch:
 
     def test_salvage_collect_objective(self) -> None:
         m = next(x for x in _missions() if x["id"] == "arna_05b_clean_pull")
-        collect = next(
-            (o for o in m["objectives"] if o["type"] == "collect_cargo"), None
-        )
+        collect = next((o for o in m["objectives"] if o["type"] == "collect_cargo"), None)
         assert collect is not None
         assert collect["target_id"] == "scrap_metal"
 
@@ -652,9 +644,7 @@ class TestBetrayalBranch:
         (800 CR) — less than Branch A's 3,500 score, more than Branch B's
         1,200 clean pull. Betrayal is transactional, not heroic."""
         m = next(x for x in _missions() if x["id"] == "arna_05c_clean_paper")
-        credits = next(
-            (r["amount"] for r in m["rewards"] if r["reward_type"] == "credits"), 0
-        )
+        credits = next((r["amount"] for r in m["rewards"] if r["reward_type"] == "credits"), 0)
         assert 500 <= credits <= 1200, f"M5C bounty should be 500-1200, got {credits}"
 
 

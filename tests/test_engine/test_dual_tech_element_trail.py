@@ -244,9 +244,7 @@ class TestPaletteCompliance:
                 px = canvas.get_at((x, y))
                 if px.a > 0 and (px.r, px.g, px.b) != voltaic:
                     off_role.append((x, y, (px.r, px.g, px.b)))
-        assert not off_role, (
-            f"Every head pixel must equal voltaic_strike; stray: {off_role[:3]}"
-        )
+        assert not off_role, f"Every head pixel must equal voltaic_strike; stray: {off_role[:3]}"
 
 
 # ---------------------------------------------------------------------------

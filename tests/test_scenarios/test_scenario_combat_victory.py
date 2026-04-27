@@ -110,9 +110,7 @@ def _apply_victory_rewards(player, state: CombatState) -> dict[str, int]:
                 player.ship.add_cargo(cid, qty)
                 loot_added[cid] = loot_added.get(cid, 0) + qty
 
-    total_credits = sum(
-        e.template.credit_reward for e in state.enemies if not e.is_alive
-    )
+    total_credits = sum(e.template.credit_reward for e in state.enemies if not e.is_alive)
     if total_credits > 0:
         player.add_credits(total_credits)
 
@@ -199,9 +197,7 @@ class TestVictoryRewardsApply:
         # loot is rolled with chance < 1.0 — exact count varies, but units and
         # cargo state must increase if the seeded roll lands at all.
         new_cargo_units = sum(player.ship.current_cargo.values())
-        assert new_cargo_units >= starting_cargo_units, (
-            "cargo can only grow on victory"
-        )
+        assert new_cargo_units >= starting_cargo_units, "cargo can only grow on victory"
 
     def test_xp_award_sums_across_multiple_enemies(self) -> None:
         """Two pirate_scouts → 2× xp_reward."""

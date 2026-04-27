@@ -24,14 +24,24 @@ def _make_player(game_day: int = 0):
     from spacegame.models.ship import Ship, ShipType
 
     ship_type = ShipType(
-        id="shuttle", name="Shuttle", ship_class="light",
-        description="x", cargo_capacity=10, fuel_capacity=50,
-        fuel_efficiency=1.0, speed_multiplier=1.0, purchase_price=0,
-        resale_value=0, crew_slots=2, special_abilities=[],
+        id="shuttle",
+        name="Shuttle",
+        ship_class="light",
+        description="x",
+        cargo_capacity=10,
+        fuel_capacity=50,
+        fuel_efficiency=1.0,
+        speed_multiplier=1.0,
+        purchase_price=0,
+        resale_value=0,
+        crew_slots=2,
+        special_abilities=[],
         availability="all",
     )
     player = Player(
-        name="T", credits=0, current_system_id="nexus_prime",
+        name="T",
+        credits=0,
+        current_system_id="nexus_prime",
         ship=Ship(ship_type=ship_type, current_fuel=50),
     )
     player.game_day = game_day
@@ -77,17 +87,20 @@ class TestMissionGetTimelinessComment:
             description="d",
             rewards=[MissionReward(reward_type="credits", amount=100)],
             soft_deadline=SoftDeadline(
-                full_reward_day_count=10, partial_reward_day_count=15,
+                full_reward_day_count=10,
+                partial_reward_day_count=15,
             ),
             timeliness_comments=comments or {},
         )
 
     def test_returns_comment_for_tier(self) -> None:
-        m = self._mission({
-            "timely": "On time.",
-            "late": "Ran long.",
-            "very_late": "Forgot about you.",
-        })
+        m = self._mission(
+            {
+                "timely": "On time.",
+                "late": "Ran long.",
+                "very_late": "Forgot about you.",
+            }
+        )
         assert m.get_timeliness_comment(5) == "On time."
         assert m.get_timeliness_comment(12) == "Ran long."
         assert m.get_timeliness_comment(50) == "Forgot about you."
@@ -107,7 +120,9 @@ class TestMissionGetTimelinessComment:
 
     def test_returns_none_when_no_soft_deadline(self) -> None:
         m = Mission(
-            id="x", name="x", description="d",
+            id="x",
+            name="x",
+            description="d",
             timeliness_comments={"timely": "x"},
             soft_deadline=None,
         )
@@ -129,10 +144,12 @@ class TestMissionManagerGetTimelinessComment:
     def _mgr_with_accepted(self, accept_day: int) -> MissionManager:
         mission = Mission(
             id="deadline_test",
-            name="T", description="d",
+            name="T",
+            description="d",
             rewards=[MissionReward(reward_type="credits", amount=100)],
             soft_deadline=SoftDeadline(
-                full_reward_day_count=10, partial_reward_day_count=15,
+                full_reward_day_count=10,
+                partial_reward_day_count=15,
             ),
             timeliness_comments={
                 "timely": "On time.",
@@ -152,16 +169,17 @@ class TestMissionManagerGetTimelinessComment:
         player.game_day = 113  # 13 elapsed -> late
         assert mgr.get_timeliness_comment("deadline_test", player) == "Ran long."
         player.game_day = 200  # 100 elapsed -> very_late
-        assert (
-            mgr.get_timeliness_comment("deadline_test", player) == "Forgot about you."
-        )
+        assert mgr.get_timeliness_comment("deadline_test", player) == "Forgot about you."
 
     def test_none_when_no_accept_day_recorded(self) -> None:
         """Legacy save path: mission active but no accept_day stored."""
         mission = Mission(
-            id="x", name="x", description="d",
+            id="x",
+            name="x",
+            description="d",
             soft_deadline=SoftDeadline(
-                full_reward_day_count=10, partial_reward_day_count=15,
+                full_reward_day_count=10,
+                partial_reward_day_count=15,
             ),
             timeliness_comments={"timely": "x"},
         )
@@ -227,9 +245,7 @@ class TestIronDeliveryTorresContent:
 
 
 class TestEndToEndCompletion:
-    def test_iron_delivery_late_completion_produces_comment_and_scaled_credits(
-        self, dl
-    ) -> None:
+    def test_iron_delivery_late_completion_produces_comment_and_scaled_credits(self, dl) -> None:
         """Both the multiplier and the comment reference the same
         elapsed-days calculation — test they agree on the 'late' tier."""
         mgr = MissionManager(dl.missions)

@@ -20,12 +20,7 @@ from pathlib import Path
 
 import pytest
 
-_VIEW_FILE = (
-    Path(__file__).resolve().parents[2]
-    / "spacegame"
-    / "views"
-    / "combat_view.py"
-)
+_VIEW_FILE = Path(__file__).resolve().parents[2] / "spacegame" / "views" / "combat_view.py"
 
 _RGB_PATTERN = re.compile(r"\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)")
 
@@ -119,18 +114,14 @@ class TestCombatViewColorDiscipline:
             "overdrive_bg",
         ]
         missing = [k for k in required_keys if f'"{k}"' not in text]
-        assert not missing, (
-            f"_COMBAT_COLORS is missing required semantic keys: {missing}"
-        )
+        assert not missing, f"_COMBAT_COLORS is missing required semantic keys: {missing}"
 
     def test_module_level_aliases_reference_palette(self) -> None:
         """SHIELD_COLOR and ENERGY_COLOR must resolve through _COMBAT_COLORS."""
         text = _VIEW_FILE.read_text(encoding="utf-8")
         assert 'SHIELD_COLOR = _COMBAT_COLORS["shield"]' in text, (
-            "SHIELD_COLOR must be defined as a _COMBAT_COLORS reference, "
-            "not a raw tuple literal."
+            "SHIELD_COLOR must be defined as a _COMBAT_COLORS reference, not a raw tuple literal."
         )
         assert 'ENERGY_COLOR = _COMBAT_COLORS["energy"]' in text, (
-            "ENERGY_COLOR must be defined as a _COMBAT_COLORS reference, "
-            "not a raw tuple literal."
+            "ENERGY_COLOR must be defined as a _COMBAT_COLORS reference, not a raw tuple literal."
         )

@@ -167,9 +167,7 @@ class TestGenerationCap:
         }
 
         event = gen.try_generate_event(current_day=100, active_events=full_active)
-        assert event is None, (
-            "Cap exceeded — no new event should generate when the cap is full"
-        )
+        assert event is None, "Cap exceeded — no new event should generate when the cap is full"
 
     def test_chain_event_bypasses_cap(self) -> None:
         """Chain events fire regardless of cap — otherwise chain continuity

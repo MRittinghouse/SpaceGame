@@ -41,14 +41,24 @@ def _make_player(game_day: int = 0, credits: int = 0):
     from spacegame.models.ship import Ship, ShipType
 
     ship_type = ShipType(
-        id="shuttle", name="Shuttle", ship_class="light",
-        description="x", cargo_capacity=10, fuel_capacity=50,
-        fuel_efficiency=1.0, speed_multiplier=1.0, purchase_price=0,
-        resale_value=0, crew_slots=2, special_abilities=[],
+        id="shuttle",
+        name="Shuttle",
+        ship_class="light",
+        description="x",
+        cargo_capacity=10,
+        fuel_capacity=50,
+        fuel_efficiency=1.0,
+        speed_multiplier=1.0,
+        purchase_price=0,
+        resale_value=0,
+        crew_slots=2,
+        special_abilities=[],
         availability="all",
     )
     player = Player(
-        name="T", credits=credits, current_system_id="nexus_prime",
+        name="T",
+        credits=credits,
+        current_system_id="nexus_prime",
         ship=Ship(ship_type=ship_type, current_fuel=50),
     )
     player.game_day = game_day
@@ -86,20 +96,24 @@ class TestAcceptDayTracking:
 
     def test_load_state_restores_accepted_day(self) -> None:
         mgr = MissionManager([_make_mission()])
-        mgr.load_state({
-            "status": {"test_mission": "active"},
-            "progress": {"test_mission": []},
-            "accepted_day": {"test_mission": 15},
-        })
+        mgr.load_state(
+            {
+                "status": {"test_mission": "active"},
+                "progress": {"test_mission": []},
+                "accepted_day": {"test_mission": 15},
+            }
+        )
         assert mgr.get_accepted_day("test_mission") == 15
 
     def test_legacy_state_without_accepted_day_loads_empty(self) -> None:
         """Saves from before FU-1 don't have the accepted_day key."""
         mgr = MissionManager([_make_mission()])
-        mgr.load_state({
-            "status": {"test_mission": "active"},
-            "progress": {"test_mission": []},
-        })
+        mgr.load_state(
+            {
+                "status": {"test_mission": "active"},
+                "progress": {"test_mission": []},
+            }
+        )
         assert mgr.get_accepted_day("test_mission") is None
 
 
@@ -113,7 +127,8 @@ class TestRewardMultiplierAtCompletion:
         mission = _make_mission(
             credit_reward=1000,
             soft_deadline=SoftDeadline(
-                full_reward_day_count=10, partial_reward_day_count=15,
+                full_reward_day_count=10,
+                partial_reward_day_count=15,
             ),
         )
         mgr = MissionManager([mission])
@@ -130,7 +145,8 @@ class TestRewardMultiplierAtCompletion:
         mission = _make_mission(
             credit_reward=1000,
             soft_deadline=SoftDeadline(
-                full_reward_day_count=10, partial_reward_day_count=15,
+                full_reward_day_count=10,
+                partial_reward_day_count=15,
                 partial_reward_multiplier=0.75,
             ),
         )
@@ -148,7 +164,8 @@ class TestRewardMultiplierAtCompletion:
         mission = _make_mission(
             credit_reward=1000,
             soft_deadline=SoftDeadline(
-                full_reward_day_count=5, partial_reward_day_count=10,
+                full_reward_day_count=5,
+                partial_reward_day_count=10,
             ),
         )
         mgr = MissionManager([mission])
@@ -162,9 +179,11 @@ class TestRewardMultiplierAtCompletion:
     def test_xp_not_scaled_by_deadline(self) -> None:
         """Only credit rewards scale with deadline. XP stays full."""
         mission = _make_mission(
-            credit_reward=1000, xp_reward=200,
+            credit_reward=1000,
+            xp_reward=200,
             soft_deadline=SoftDeadline(
-                full_reward_day_count=5, partial_reward_day_count=10,
+                full_reward_day_count=5,
+                partial_reward_day_count=10,
             ),
         )
         mgr = MissionManager([mission])
@@ -176,9 +195,11 @@ class TestRewardMultiplierAtCompletion:
         mgr.apply_rewards(mission.id, player)
         # XP gained full amount (may have level-advanced; compare delta
         # modulo the fact that add_xp returns the value it applies)
-        assert player.progression.total_xp_earned() >= before_xp + 200 if hasattr(
-            player.progression, "total_xp_earned"
-        ) else True
+        assert (
+            player.progression.total_xp_earned() >= before_xp + 200
+            if hasattr(player.progression, "total_xp_earned")
+            else True
+        )
         # Credits scaled
         assert player.credits < 1000
 
@@ -199,7 +220,8 @@ class TestRewardMultiplierAtCompletion:
         mission = _make_mission(
             credit_reward=1000,
             soft_deadline=SoftDeadline(
-                full_reward_day_count=5, partial_reward_day_count=10,
+                full_reward_day_count=5,
+                partial_reward_day_count=10,
             ),
         )
         mgr = MissionManager([mission])
@@ -230,9 +252,7 @@ class TestEndToEndWithAuthoredDeadlines:
 
         mission = dl.get_mission("iron_delivery")
         # Find the credit reward amount from authored data
-        credit_rewards = [
-            r.amount for r in mission.rewards if r.reward_type == "credits"
-        ]
+        credit_rewards = [r.amount for r in mission.rewards if r.reward_type == "credits"]
         if not credit_rewards:
             pytest.skip("iron_delivery has no credit reward to scale")
         credit_amount = credit_rewards[0]
@@ -278,7 +298,8 @@ class TestSaveLoadAcceptDay:
             mid="deadline_test",
             credit_reward=1000,
             soft_deadline=SoftDeadline(
-                full_reward_day_count=10, partial_reward_day_count=15,
+                full_reward_day_count=10,
+                partial_reward_day_count=15,
             ),
         )
         player = _make_player(game_day=5, credits=100)
@@ -290,7 +311,10 @@ class TestSaveLoadAcceptDay:
 
         sm = SaveManager(save_directory=tmp_path)
         sm.save_game(
-            slot=0, player=player, markets={}, active_events={},
+            slot=0,
+            player=player,
+            markets={},
+            active_events={},
             playtime_seconds=0,
         )
         loaded = sm.load_game(slot=0)

@@ -70,7 +70,13 @@ class TestTutorialStepProgression:
     def test_full_walkthrough_completes_tutorial(self) -> None:
         mgr = self._active_classic_manager()
         # Walk all 5 steps in order
-        for expected_trigger in ("galaxy_map", "trading", "after_first_trade", "activity", "after_first_travel"):
+        for expected_trigger in (
+            "galaxy_map",
+            "trading",
+            "after_first_trade",
+            "activity",
+            "after_first_travel",
+        ):
             assert mgr.should_show_step(expected_trigger) is True
             mgr.start_step()
             mgr.advance_step()

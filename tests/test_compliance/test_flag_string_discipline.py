@@ -86,7 +86,7 @@ def _discover_registry_patterns() -> list[tuple[str, str, str]]:
             if isinstance(returned, str) and str(sentinel) in returned:
                 idx = returned.index(str(sentinel))
                 prefix = returned[:idx]
-                suffix = returned[idx + len(str(sentinel)):]
+                suffix = returned[idx + len(str(sentinel)) :]
                 if prefix or suffix:
                     result.append((name, prefix, suffix))
                 break
@@ -142,9 +142,7 @@ class TestFlagStringDiscipline:
         ``spacegame/constants/flags.py``. Replace it with the helper call
         (``met_npc("arna")``, ``campaign_mission_milestone(5)``, etc.).
         """
-        offenders = [
-            o for o in _scan_raw_registered_strings() if o not in KNOWN_ORPHANS
-        ]
+        offenders = [o for o in _scan_raw_registered_strings() if o not in KNOWN_ORPHANS]
         assert not offenders, (
             "Raw flag string matching a registered prefix detected outside "
             "the registry. Use the helper from spacegame.constants.flags "

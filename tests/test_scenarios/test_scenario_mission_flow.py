@@ -165,7 +165,9 @@ class TestRewardApplication:
         # Pick any mission whose first reward is credits; don't care about flow.
         target = None
         for _mid, mission in mgr._missions.items():
-            has_credits_reward = any(r.reward_type == "credits" and r.amount > 0 for r in mission.rewards)
+            has_credits_reward = any(
+                r.reward_type == "credits" and r.amount > 0 for r in mission.rewards
+            )
             if has_credits_reward:
                 target = mission
                 break
@@ -174,12 +176,8 @@ class TestRewardApplication:
         before_credits = player.credits
         before_xp = player.progression.xp
 
-        credit_rewards = sum(
-            r.amount for r in target.rewards if r.reward_type == "credits"
-        )
-        xp_rewards = sum(
-            r.amount for r in target.rewards if r.reward_type == "xp"
-        )
+        credit_rewards = sum(r.amount for r in target.rewards if r.reward_type == "credits")
+        xp_rewards = sum(r.amount for r in target.rewards if r.reward_type == "xp")
 
         messages = mgr.apply_rewards(target.id, player)
 

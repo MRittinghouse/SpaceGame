@@ -106,9 +106,7 @@ class TestScriptedOutcomePath:
         assert outcome.enemy_template_ids == [boss_id]
 
     @pytest.mark.parametrize("boss_id", T4_BOSS_IDS)
-    def test_outcome_boss_id_resolves_to_template(
-        self, enemies: dict, boss_id: str
-    ) -> None:
+    def test_outcome_boss_id_resolves_to_template(self, enemies: dict, boss_id: str) -> None:
         """The canonical 'leads_to_combat + enemy_template_ids' pattern: the
         ID must resolve to a real template in the data loader so the
         encounter view can instantiate combat from it."""

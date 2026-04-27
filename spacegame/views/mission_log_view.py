@@ -552,9 +552,7 @@ class MissionLogView(BaseView):
                 "available": "Nothing on the board yet.",
                 "completed": "Nothing finished yet.",
             }
-            empty_text = _TAB_EMPTY_COPY.get(
-                self._current_tab, "Nothing here yet."
-            )
+            empty_text = _TAB_EMPTY_COPY.get(self._current_tab, "Nothing here yet.")
             empty_surf = self._desc_font.render(empty_text, True, Colors.TEXT_SECONDARY)
             screen.blit(
                 empty_surf,

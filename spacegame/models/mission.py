@@ -229,9 +229,7 @@ class Mission:
             crew_member_id=data.get("crew_member_id", ""),
             required_reputation=data.get("required_reputation", []),
             soft_deadline=(
-                _parse_soft_deadline(data["soft_deadline"])
-                if "soft_deadline" in data
-                else None
+                _parse_soft_deadline(data["soft_deadline"]) if "soft_deadline" in data else None
             ),
             timeliness_comments=dict(data.get("timeliness_comments", {})),
         )
@@ -434,9 +432,7 @@ class MissionManager:
                 self._status[mid] = MissionStatus.AVAILABLE
                 newly_available.append(mid)
                 if mission.auto_accept:
-                    self.accept_mission(
-                        mid, game_day=game_day, player=player
-                    )
+                    self.accept_mission(mid, game_day=game_day, player=player)
                     logger.debug(
                         "Mission '%s' auto-accepted (prereqs=%s, flags=%s, after=%s)",
                         mid,
@@ -513,9 +509,7 @@ class MissionManager:
         """Return the game_day when the mission was accepted, or None."""
         return self._accepted_day.get(mission_id)
 
-    def get_timeliness_comment(
-        self, mission_id: str, player: "Player"
-    ) -> Optional[str]:
+    def get_timeliness_comment(self, mission_id: str, player: "Player") -> Optional[str]:
         """TW follow-up: get the voiced NPC comment about delivery pace.
 
         Returns None when the mission has no authored comments, no
@@ -996,7 +990,4 @@ class MissionManager:
                 for i in range(min(len(saved_progress), len(self._progress[mid]))):
                     self._progress[mid][i] = saved_progress[i]
         # Restore accept days (TW follow-up). Empty for legacy saves.
-        self._accepted_day = {
-            mid: int(day)
-            for mid, day in data.get("accepted_day", {}).items()
-        }
+        self._accepted_day = {mid: int(day) for mid, day in data.get("accepted_day", {}).items()}

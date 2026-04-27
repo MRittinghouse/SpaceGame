@@ -816,9 +816,7 @@ class GalaxyMapView(BaseView):
                     system = self.systems[dest_id]
                     market = Market(system, commodities, self.player.game_day)
                     prices = market.get_all_prices()
-                    self.player.price_memory.record(
-                        dest_id, prices, self.player.game_day
-                    )
+                    self.player.price_memory.record(dest_id, prices, self.player.game_day)
                     logger.debug(
                         f"Price memory recorded for {dest_id} at day {self.player.game_day}"
                     )
@@ -1698,13 +1696,16 @@ class GalaxyMapView(BaseView):
         #   2. price_memory skill + prior visit: remembered prices with age
         #   3. neither: no price section
         remote_price_lines: list[tuple[str, tuple[int, int, int]]] = []
-        if system_id != self.player.current_system_id and hasattr(system, "economy") and system.economy:
+        if (
+            system_id != self.player.current_system_id
+            and hasattr(system, "economy")
+            and system.economy
+        ):
             if self.player.progression.get_bonus("remote_prices") > 0:
                 remote_price_lines = self._get_remote_price_lines(system)
-            elif (
-                self.player.progression.get_bonus("price_memory") > 0
-                and self.player.price_memory.has_memory(system_id)
-            ):
+            elif self.player.progression.get_bonus(
+                "price_memory"
+            ) > 0 and self.player.price_memory.has_memory(system_id):
                 # Tier 3.F: fall back to the player's last-known snapshot.
                 remote_price_lines = self._get_price_memory_lines(system)
 
@@ -1796,7 +1797,11 @@ class GalaxyMapView(BaseView):
         imports = system.economy.specialty_imports if system.economy else []
 
         def _format_entry(commodity_id: str, price: int, day_seen: int) -> str:
-            name = dl.commodities[commodity_id].name if commodity_id in dl.commodities else commodity_id
+            name = (
+                dl.commodities[commodity_id].name
+                if commodity_id in dl.commodities
+                else commodity_id
+            )
             days_ago = max(0, self.player.game_day - day_seen)
             if days_ago == 0:
                 freshness = "today"

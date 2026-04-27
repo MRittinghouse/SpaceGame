@@ -18,14 +18,24 @@ def _make_player(game_day: int = 0):
     from spacegame.models.ship import Ship, ShipType
 
     ship_type = ShipType(
-        id="shuttle", name="Shuttle", ship_class="light",
-        description="x", cargo_capacity=10, fuel_capacity=50,
-        fuel_efficiency=1.0, speed_multiplier=1.0, purchase_price=0,
-        resale_value=0, crew_slots=2, special_abilities=[],
+        id="shuttle",
+        name="Shuttle",
+        ship_class="light",
+        description="x",
+        cargo_capacity=10,
+        fuel_capacity=50,
+        fuel_efficiency=1.0,
+        speed_multiplier=1.0,
+        purchase_price=0,
+        resale_value=0,
+        crew_slots=2,
+        special_abilities=[],
         availability="all",
     )
     player = Player(
-        name="T", credits=500, current_system_id="nexus_prime",
+        name="T",
+        credits=500,
+        current_system_id="nexus_prime",
         ship=Ship(ship_type=ship_type, current_fuel=50),
     )
     player.game_day = game_day
@@ -60,9 +70,7 @@ class TestAuthoredThreadContent:
         key — a thread with no triggers stays inactive forever and the
         content is dead."""
         for tid, t in dl.timed_threads.items():
-            assert t.touch_triggers, (
-                f"Thread '{tid}' has no touch_triggers — would never drift"
-            )
+            assert t.touch_triggers, f"Thread '{tid}' has no touch_triggers — would never drift"
 
     def test_drift_text_follows_writing_bible(self, dl) -> None:
         EM_DASHES = ("\u2014", "\u2013", " -- ")
@@ -74,16 +82,12 @@ class TestAuthoredThreadContent:
                     text = getattr(state, field_name, "")
                     for dash in EM_DASHES:
                         if dash in text:
-                            offenders.append(
-                                f"{tid}/{state.id}.{field_name}: em-dash"
-                            )
+                            offenders.append(f"{tid}/{state.id}.{field_name}: em-dash")
                             break
                     lowered = text.lower()
                     for phrase in BANNED:
                         if phrase in lowered:
-                            offenders.append(
-                                f"{tid}/{state.id}.{field_name}: {phrase!r}"
-                            )
+                            offenders.append(f"{tid}/{state.id}.{field_name}: {phrase!r}")
         assert not offenders, "\n  " + "\n  ".join(offenders)
 
     def test_thresholds_ascending_per_thread(self, dl) -> None:
@@ -173,9 +177,7 @@ class TestAuthoredSoftDeadlines:
 
 
 class TestEndToEndAuthoredThreads:
-    def test_marcus_talk_activates_thread_then_drifts_at_30_days(
-        self, dl
-    ) -> None:
+    def test_marcus_talk_activates_thread_then_drifts_at_30_days(self, dl) -> None:
         player = _make_player(game_day=5)
         # Simulate first Marcus conversation
         player.record_interaction("talked_to_marcus_jin")
@@ -200,9 +202,7 @@ class TestEndToEndAuthoredThreads:
         player.game_day = 20
         player.record_interaction("talked_to_marcus_jin")
         evaluate_threads(player, dl.timed_threads)
-        assert (
-            player.timed_thread_state["marcus_lead_cold"].last_touched_day == 20
-        )
+        assert player.timed_thread_state["marcus_lead_cold"].last_touched_day == 20
 
         # Day 49: 29 days past the last touch — no drift yet
         player.game_day = 49
@@ -241,12 +241,9 @@ class TestModerateInvariant:
                 for prefix in BLOCKING_PREFIXES:
                     if flag.startswith(prefix):
                         offenders.append(
-                            f"{tid}/{state.id}: flag '{flag}' "
-                            "looks like a content lock"
+                            f"{tid}/{state.id}: flag '{flag}' looks like a content lock"
                         )
-        assert not offenders, (
-            "Potentially-locking drift flags:\n  " + "\n  ".join(offenders)
-        )
+        assert not offenders, "Potentially-locking drift flags:\n  " + "\n  ".join(offenders)
 
     def test_every_soft_deadline_late_multiplier_nonzero(self, dl) -> None:
         for m in dl.missions:
@@ -261,9 +258,7 @@ class TestModerateInvariant:
 
 
 class TestTWSaveLoadWithOtherState:
-    def test_timed_thread_state_coexists_with_captain_memory(
-        self, dl, tmp_path
-    ) -> None:
+    def test_timed_thread_state_coexists_with_captain_memory(self, dl, tmp_path) -> None:
         from spacegame.models.captain_memory import OUTCOME_VICTORY
         from spacegame.save_manager import SaveManager
 
@@ -281,7 +276,10 @@ class TestTWSaveLoadWithOtherState:
 
         sm = SaveManager(save_directory=tmp_path)
         sm.save_game(
-            slot=0, player=player, markets={}, active_events={},
+            slot=0,
+            player=player,
+            markets={},
+            active_events={},
             playtime_seconds=0,
         )
         loaded = sm.load_game(slot=0)

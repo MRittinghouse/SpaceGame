@@ -212,9 +212,7 @@ class SettingsView(BaseView):
         # Objective hint toggle (PT-H). Controls the cockpit HUD's active-
         # mission hint line. Default on for new players; off for veterans
         # who don't want the training wheels.
-        oh_label = (
-            "Objective Hint: ON" if self._selected_objective_hint else "Objective Hint: OFF"
-        )
+        oh_label = "Objective Hint: ON" if self._selected_objective_hint else "Objective Hint: OFF"
         self._objective_hint_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(panel_x, y, scale_x(200), scale_y(35)),
             text=oh_label,
@@ -349,9 +347,7 @@ class SettingsView(BaseView):
             elif event.ui_element == self._objective_hint_button:
                 self._selected_objective_hint = not self._selected_objective_hint
                 oh_label = (
-                    "Objective Hint: ON"
-                    if self._selected_objective_hint
-                    else "Objective Hint: OFF"
+                    "Objective Hint: ON" if self._selected_objective_hint else "Objective Hint: OFF"
                 )
                 if self._objective_hint_button:
                     self._objective_hint_button.set_text(oh_label)

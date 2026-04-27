@@ -641,8 +641,7 @@ class TestEnemySubsystemTags:
             tags = getattr(template, "targetable_subsystems", [])
             if len(tags) > 4:
                 errors.append(
-                    f"Enemy '{template_id}' has {len(tags)} subsystems "
-                    f"(spec maxes out at 4)"
+                    f"Enemy '{template_id}' has {len(tags)} subsystems (spec maxes out at 4)"
                 )
         assert not errors, "\n".join(errors)
 
@@ -652,9 +651,7 @@ class TestEnemySubsystemTags:
         for template_id, template in loader.enemy_templates.items():
             tags = getattr(template, "targetable_subsystems", [])
             if len(tags) != len(set(tags)):
-                errors.append(
-                    f"Enemy '{template_id}' has duplicate subsystem tags: {tags}"
-                )
+                errors.append(f"Enemy '{template_id}' has duplicate subsystem tags: {tags}")
         assert not errors, "\n".join(errors)
 
 
@@ -735,8 +732,7 @@ class TestFactionPerks:
         for perk in self._all_perks(loader):
             if perk.faction_id not in faction_ids:
                 errors.append(
-                    f"Perk '{perk.id}' references faction '{perk.faction_id}' "
-                    f"which does not exist"
+                    f"Perk '{perk.id}' references faction '{perk.faction_id}' which does not exist"
                 )
         assert not errors, "\n".join(errors)
 
@@ -843,8 +839,7 @@ class TestModuleReferences:
                 installed = slot.get("installed_part_id")
                 if installed and installed not in valid:
                     errors.append(
-                        f"Enemy '{tid}' composite_build slot references unknown "
-                        f"part '{installed}'"
+                        f"Enemy '{tid}' composite_build slot references unknown part '{installed}'"
                     )
         assert not errors, "\n".join(errors)
 

@@ -154,9 +154,7 @@ class TestDataLoader:
             assert captain.signature_ship_template, (
                 "every captain must reference a signature_ship_template"
             )
-            assert captain.pre_combat_hail, (
-                "every captain must have a pre_combat_hail"
-            )
+            assert captain.pre_combat_hail, "every captain must have a pre_combat_hail"
             # Stub captains are all non-recurring (RC will flip specific
             # ones in a later phase).
             assert captain.is_recurring is False
@@ -214,9 +212,7 @@ class TestCaptainContentQuality:
         dl.load_all()
         counts = Counter(c.home_sector for c in dl.captains.values())
         max_share = max(counts.values()) / len(dl.captains)
-        assert max_share <= 0.5, (
-            f"One sector holds {max_share:.0%} of the roster. Spread captains."
-        )
+        assert max_share <= 0.5, f"One sector holds {max_share:.0%} of the roster. Spread captains."
 
     def test_ship_template_variety(self) -> None:
         """At least half the roster should fly distinct ship templates."""
@@ -237,9 +233,7 @@ class TestCaptainContentQuality:
         dl = get_data_loader()
         dl.load_all()
         nicknames = [c.nickname for c in dl.captains.values() if c.nickname]
-        assert len(nicknames) == len(set(nicknames)), (
-            "Duplicate ship nickname(s) in captain roster"
-        )
+        assert len(nicknames) == len(set(nicknames)), "Duplicate ship nickname(s) in captain roster"
 
     def test_pre_combat_hails_minimum_length(self) -> None:
         """Every hail must carry at least two sentences of voice.
@@ -252,9 +246,7 @@ class TestCaptainContentQuality:
         dl = get_data_loader()
         dl.load_all()
         for captain in dl.captains.values():
-            sentences = [
-                s.strip() for s in captain.pre_combat_hail.split(".") if s.strip()
-            ]
+            sentences = [s.strip() for s in captain.pre_combat_hail.split(".") if s.strip()]
             # Tsovinar's entire voice is minimalism — she gets the exception.
             # Any captain whose hail is <=2 words per sentence is a
             # short-voice specialist and we trust the author.
@@ -283,9 +275,8 @@ class TestCaptainContentQuality:
                 text = getattr(captain, field_name)
                 if "\u2014" in text or "\u2013" in text:
                     offenders.append(f"{captain.id}.{field_name}: {text[:80]!r}")
-        assert not offenders, (
-            "Em-dashes / en-dashes in captain dialogue:\n  "
-            + "\n  ".join(offenders)
+        assert not offenders, "Em-dashes / en-dashes in captain dialogue:\n  " + "\n  ".join(
+            offenders
         )
 
     def test_no_ai_tells_in_captain_dialogue(self) -> None:
@@ -308,9 +299,7 @@ class TestCaptainContentQuality:
                 for phrase in banned:
                     if phrase in text:
                         offenders.append(f"{captain.id}.{field_name}: '{phrase}'")
-        assert not offenders, "AI tells in captain dialogue:\n  " + "\n  ".join(
-            offenders
-        )
+        assert not offenders, "AI tells in captain dialogue:\n  " + "\n  ".join(offenders)
 
 
 class TestEncounterDefinitionCaptainId:

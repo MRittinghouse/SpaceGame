@@ -663,13 +663,7 @@ class TestNoOrphanedSkills:
             "route_planner",  # Fuel cost display always active
         }
 
-        skip = (
-            dynamic_bonus_types
-            | direct_access
-            | deferred
-            | by_design
-            | nv_6_5_pending_variants
-        )
+        skip = dynamic_bonus_types | direct_access | deferred | by_design | nv_6_5_pending_variants
 
         missing = []
         for bt in sorted(bonus_types):

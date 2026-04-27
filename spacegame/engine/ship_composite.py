@@ -278,7 +278,7 @@ class ShipCompositeConfig:
     """
 
     angles_to_cache: tuple[RenderAngle, ...] = (RenderAngle.THREE_QUARTER,)
-    emissive_pulse_hz: float = 0.83      # ~1.2s period; matches material §3.5 discipline
+    emissive_pulse_hz: float = 0.83  # ~1.2s period; matches material §3.5 discipline
     enable_engine_glow: bool = True
     enable_wear_overlay: bool = True
     enable_rivets: bool = True
@@ -460,8 +460,12 @@ class ShipComposite:
           - Phase 4 (Connection), 5 (Decoration), 7 (Palette snap) — cached
           - Phase 6 (Emissive) — per-call animated overlay
         """
-        base_key = (angle, self._wear, self._faction_overlay,
-                    frozenset(self._module_states.items()))
+        base_key = (
+            angle,
+            self._wear,
+            self._faction_overlay,
+            frozenset(self._module_states.items()),
+        )
         scale_key = (base_key, scale)
 
         # Check for fully-cached scaled surface (only possible when no
@@ -574,9 +578,7 @@ class ShipComposite:
         """
         import hashlib
 
-        positions = ";".join(
-            f"{p.x},{p.y},{p.material_id}" for p in self._build.pixels
-        )
+        positions = ";".join(f"{p.x},{p.y},{p.material_id}" for p in self._build.pixels)
         digest = hashlib.md5(positions.encode("utf-8")).digest()
         # Take first 4 bytes as a positive 31-bit int for numpy compat.
         return int.from_bytes(digest[:4], "big") & 0x7FFFFFFF
@@ -859,10 +861,7 @@ class ShipComposite:
                     break
                 x, y = positions[int(idx)]
                 # Minimum-spacing rejection (Manhattan distance).
-                too_close = any(
-                    abs(x - px) + abs(y - py) < min_spacing
-                    for px, py in placed
-                )
+                too_close = any(abs(x - px) + abs(y - py) < min_spacing for px, py in placed)
                 if not too_close:
                     placed.append((x, y))
 

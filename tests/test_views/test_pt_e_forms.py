@@ -66,9 +66,7 @@ class TestTutorialShopDescriptions:
 
         for part in TUTORIAL_PARTS + TUTORIAL_CHOICES:
             assert part.description, f"part missing description: {part.name}"
-            assert len(part.description) > 10, (
-                f"part description too short: {part.name}"
-            )
+            assert len(part.description) > 10, f"part description too short: {part.name}"
 
 
 # ---------------------------------------------------------------------------

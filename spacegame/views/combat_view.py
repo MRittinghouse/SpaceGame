@@ -116,7 +116,6 @@ _COMBAT_COLORS: dict[str, tuple[int, int, int]] = {
     # --- Core element signatures ---
     "shield": (80, 180, 255),
     "energy": (180, 100, 255),
-
     # --- Banners / callouts ---
     "combo_banner": (255, 220, 100),
     "boss_header": (255, 200, 60),
@@ -125,14 +124,12 @@ _COMBAT_COLORS: dict[str, tuple[int, int, int]] = {
     "boss_bg_border": (100, 60, 30),
     "combo_tag": (180, 150, 50),
     "ult_text_pulse": (255, 255, 200),
-
     # --- Momentum / ultimate bar thresholds ---
     "momentum_charged": (100, 200, 255),
     "momentum_surging": (80, 200, 80),
     "momentum_overload": (220, 180, 50),
     "momentum_blazing": (255, 255, 220),
     "double_damage": (80, 220, 80),
-
     # --- Telegraph (enemy intent) ---
     "tele_evading": (100, 200, 255),
     "tele_fortifying": (100, 255, 150),
@@ -140,17 +137,14 @@ _COMBAT_COLORS: dict[str, tuple[int, int, int]] = {
     "tele_charging": (255, 100, 60),
     "tele_attacking": (255, 180, 60),
     "tele_frozen": (150, 220, 255),
-
     # --- Archetype identities (shared visual with ship builder) ---
     "archetype_juggernaut": (200, 150, 50),
     "archetype_sentinel": (80, 180, 255),
     "archetype_ghost": (160, 100, 200),
-
     # --- Boss bar stages ---
     "boss_bar_low": (200, 60, 40),
     "boss_bar_mid": (220, 120, 30),
     "boss_bar_danger": (255, 40, 40),
-
     # --- Damage text palette ---
     "dmg_cryo": (100, 200, 255),
     "dmg_generic_warm": (255, 120, 80),
@@ -164,16 +158,13 @@ _COMBAT_COLORS: dict[str, tuple[int, int, int]] = {
     "dmg_voltaic": (200, 160, 255),
     "dmg_counterstrike": (100, 220, 255),
     "dmg_vulnerability": (255, 100, 100),
-
     # --- Passive text colors ---
     "passive_last_stand": (255, 80, 80),
     "passive_positive_dim": (100, 180, 100),
     "passive_counterstrike_bright": (200, 255, 100),
-
     # --- Modal / summary panel bg ---
     "panel_modal_bg": (15, 20, 40),
     "panel_modal_bg_dark": (12, 16, 32),
-
     # --- Action tab bg / border pairs ---
     "tab_attack_bg": (200, 80, 80),
     "tab_attack_border": (140, 50, 50),
@@ -184,7 +175,6 @@ _COMBAT_COLORS: dict[str, tuple[int, int, int]] = {
     "tab_coord_bg": (220, 180, 80),
     "tab_coord_border": (150, 120, 50),
     "tab_inactive_text": (50, 55, 65),
-
     # --- Queue / execute button ---
     "exec_active_bg": (40, 100, 60),
     "exec_inactive_bg": (25, 35, 30),
@@ -203,7 +193,6 @@ _COMBAT_COLORS: dict[str, tuple[int, int, int]] = {
     "queue_summary_color": (100, 130, 170),
     "queue_target_dim": (120, 140, 160),
     "queue_number": (80, 140, 220),
-
     # --- Legendary active buttons ---
     "void_release_bg": (40, 15, 60),
     "void_release_border": (140, 60, 200),
@@ -211,7 +200,6 @@ _COMBAT_COLORS: dict[str, tuple[int, int, int]] = {
     "overdrive_bg": (50, 40, 15),
     "overdrive_border": (200, 170, 60),
     "overdrive_text": (220, 190, 80),
-
     # --- Notification accents ---
     "notify_warning_red": (220, 80, 80),
     "notify_amber": (200, 160, 60),
@@ -272,7 +260,7 @@ class ArenaCameraState(Enum):
 # FOCUS_ENEMY's offset is computed dynamically toward the targeted enemy;
 # this table holds zoom/duration only for that state.
 _CAMERA_STATE_PARAMS = {
-    ArenaCameraState.DEFAULT: ((0.0, 0.0), 1.0, 0.25),      # 250ms pacing beat
+    ArenaCameraState.DEFAULT: ((0.0, 0.0), 1.0, 0.25),  # 250ms pacing beat
     ArenaCameraState.FOCUS_PLAYER: ((-80.0, 0.0), 1.25, 0.3),
     ArenaCameraState.FOCUS_ENEMY: ((60.0, 0.0), 1.25, 0.3),  # toward right side where enemies are
     ArenaCameraState.WIDE: ((0.0, 0.0), 0.85, 0.5),
@@ -523,11 +511,10 @@ class CombatView(BaseView):
 
         def _enemy_template_lookup(template_id: str):  # type: ignore[no-untyped-def]
             from spacegame.data_loader import get_data_loader
+
             return get_data_loader().enemy_templates.get(template_id)
 
-        self._enemy_composite_provider = EnemyCompositeProvider(
-            lookup=_enemy_template_lookup
-        )
+        self._enemy_composite_provider = EnemyCompositeProvider(lookup=_enemy_template_lookup)
 
         # Tier 3.C: per-enemy module overlays. Painted over the card
         # composite for subsystem targeting feedback (focus highlight,
@@ -575,7 +562,9 @@ class CombatView(BaseView):
         self._bg_dim.fill(Colors.BLACK)
         self._bg_dim.set_alpha(25)
         self.particles = ParticlePool(500)
-        self.screen_shake = ScreenShake()  # retained for legacy compat — superseded by scene_camera for shake
+        self.screen_shake = (
+            ScreenShake()
+        )  # retained for legacy compat — superseded by scene_camera for shake
         self.scene_camera = SceneCamera()
         self.vignette = Vignette(WINDOW_WIDTH, WINDOW_HEIGHT, intensity=0.2)
 
@@ -677,9 +666,7 @@ class CombatView(BaseView):
         # and dust fade-in through the 1.5s choreography.
         from spacegame.engine.arena_entry import ArenaEntry
 
-        self._arena_entry: Optional[ArenaEntry] = ArenaEntry(
-            enemy_count=len(state.enemies)
-        )
+        self._arena_entry: Optional[ArenaEntry] = ArenaEntry(enemy_count=len(state.enemies))
         self._previously_dead: set[int] = set()  # Enemy indices dead before this round
 
         # Camera at DEFAULT; combat opens at neutral viewport.
@@ -851,8 +838,7 @@ class CombatView(BaseView):
             zoom_factor = self._dual_tech_controller.camera_zoom_factor
             cinematic_zoom = 1.25
             self.scene_camera.zoom = (
-                self._pre_cinematic_zoom
-                + (cinematic_zoom - self._pre_cinematic_zoom) * zoom_factor
+                self._pre_cinematic_zoom + (cinematic_zoom - self._pre_cinematic_zoom) * zoom_factor
             )
             if self._dual_tech_controller.is_complete:
                 # Restore camera and clear the slot. Camera shake from
@@ -879,8 +865,7 @@ class CombatView(BaseView):
                 wide_zoom = 0.85
                 default_zoom = 1.0
                 self.scene_camera.zoom = (
-                    wide_zoom
-                    + (default_zoom - wide_zoom) * self._arena_entry.camera_push_factor
+                    wide_zoom + (default_zoom - wide_zoom) * self._arena_entry.camera_push_factor
                 )
                 if self._arena_entry.is_complete:
                     self.scene_camera.zoom = default_zoom
@@ -950,9 +935,7 @@ class CombatView(BaseView):
             # with the entry's tint_alpha_factor so tint + dust appear
             # progressively. After intro, render at full alpha.
             intro_factor = (
-                self._arena_entry.tint_alpha_factor
-                if self._arena_entry is not None
-                else 1.0
+                self._arena_entry.tint_alpha_factor if self._arena_entry is not None else 1.0
             )
             self._atmosphere.render_background(screen, alpha_factor=intro_factor)
 
@@ -991,7 +974,9 @@ class CombatView(BaseView):
         # Combo name banner (Gap #7)
         if self._combo_banner_timer > 0:
             banner_alpha = int(255 * min(1.0, self._combo_banner_timer / 0.3))
-            banner_surf = self.banner_font.render(self._combo_banner_text, True, _COMBAT_COLORS["combo_banner"])
+            banner_surf = self.banner_font.render(
+                self._combo_banner_text, True, _COMBAT_COLORS["combo_banner"]
+            )
             banner_surf.set_alpha(banner_alpha)
             banner_rect = banner_surf.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 3))
             screen.blit(banner_surf, banner_rect)
@@ -1503,6 +1488,7 @@ class CombatView(BaseView):
             self._append_log_line(log_entry)
             from spacegame.engine.damage_text import DamageTier
             from spacegame.engine.material_palette import get_role
+
             self.floating_texts.append(
                 {
                     "text": f"VOID RELEASE: {damage}",
@@ -1549,6 +1535,7 @@ class CombatView(BaseView):
             self._displayed_player_energy = float(state.player.energy)
             from spacegame.engine.damage_text import DamageTier
             from spacegame.engine.material_palette import get_role
+
             self.floating_texts.append(
                 {
                     "text": "OVERDRIVE: Queue again!",
@@ -2053,8 +2040,7 @@ class CombatView(BaseView):
             return
 
         crew_aboard: list[tuple[str, str]] = [
-            (template.id, template.name)
-            for template, _state in roster.get_recruited_members()
+            (template.id, template.name) for template, _state in roster.get_recruited_members()
         ]
         if not crew_aboard:
             self._interjection_resolver = None
@@ -2070,9 +2056,7 @@ class CombatView(BaseView):
             return
 
         seed = self.engine.get_state().encounter.encounter_seed
-        self._interjection_resolver = CrewInterjectionResolver(
-            bank, crew_aboard, seed=seed
-        )
+        self._interjection_resolver = CrewInterjectionResolver(bank, crew_aboard, seed=seed)
 
     # Trigger priority: dramatic stuff first so the throttled single
     # event per round picks the most narratively impactful one.
@@ -2095,9 +2079,7 @@ class CombatView(BaseView):
         events = self._interjection_resolver.evaluate_round(state)
         if not events:
             return
-        events.sort(
-            key=lambda e: self._INTERJECTION_TRIGGER_PRIORITY.get(e.trigger, 99)
-        )
+        events.sort(key=lambda e: self._INTERJECTION_TRIGGER_PRIORITY.get(e.trigger, 99))
         self._surface_interjection(events[0])
         self._interjection_round_lock = state.round_number
 
@@ -2213,9 +2195,7 @@ class CombatView(BaseView):
         # Use captain.name + captain.nickname directly. display_name uses
         # an em-dash separator that's fine for headers but a Writing Bible
         # violation in narrative text.
-        nickname_phrase = (
-            f', the {captain.nickname},' if captain.nickname else ','
-        )
+        nickname_phrase = f", the {captain.nickname}," if captain.nickname else ","
         text = (
             f"Met {captain.name}{nickname_phrase} for the first time. "
             f"Their ship runs the {captain.signature_ship_template} hull. "
@@ -2508,6 +2488,7 @@ class CombatView(BaseView):
                 # Tier classification per spec §4.7 — threshold/cinematic
                 # events get the heavier weight treatment.
                 from spacegame.engine.damage_text import classify_damage_text
+
                 auto_tier = classify_damage_text(display_text)
                 ft_entry: dict = {
                     "text": display_text,
@@ -2522,11 +2503,13 @@ class CombatView(BaseView):
                 # dispatcher falls back to the legacy info_font path for the
                 # common case (no visual regression on standard damage).
                 from spacegame.engine.damage_text import DamageTier
+
                 if auto_tier in (DamageTier.THRESHOLD, DamageTier.CINEMATIC):
                     ft_entry["tier"] = auto_tier
                     # Threshold duration matches cfg.total_duration so the
                     # pop + hold + fade reads cleanly.
                     from spacegame.engine.damage_text import get_tier_config
+
                     total = get_tier_config(auto_tier).total_duration
                     ft_entry["timer"] = total
                     ft_entry["max_timer"] = total
@@ -2778,7 +2761,9 @@ class CombatView(BaseView):
         enemy = enemies[self.selected_target_idx]
         if not enemy.is_alive or enemy.is_fled:
             return
-        tags = [t for t in enemy.template.targetable_subsystems if t not in enemy.subsystems_destroyed]
+        tags = [
+            t for t in enemy.template.targetable_subsystems if t not in enemy.subsystems_destroyed
+        ]
         if not tags:
             return
         current = getattr(enemy, "focused_subsystem", None)
@@ -3049,7 +3034,9 @@ class CombatView(BaseView):
             for phase in boss.template.phases:
                 if phase.hp_threshold < 1.0:
                     mx = bar_x + 1 + int((bar_w - 2) * phase.hp_threshold)
-                    pygame.draw.line(screen, _COMBAT_COLORS["boss_header"], (mx, bar_y), (mx, bar_y + bar_h), 1)
+                    pygame.draw.line(
+                        screen, _COMBAT_COLORS["boss_header"], (mx, bar_y), (mx, bar_y + bar_h), 1
+                    )
 
             # HP text
             hp_text = f"{total_current}/{total_max}"
@@ -3184,7 +3171,9 @@ class CombatView(BaseView):
                 if state.player.hull_ratio < 0.25:
                     passive_texts.append(("LAST STAND!", _COMBAT_COLORS["passive_last_stand"]))
                 elif state.player.hull_ratio > 0.75:
-                    passive_texts.append(("Integrity: +5% DR", _COMBAT_COLORS["passive_positive_dim"]))
+                    passive_texts.append(
+                        ("Integrity: +5% DR", _COMBAT_COLORS["passive_positive_dim"])
+                    )
             elif identity == "sentinel":
                 if state.player.shield_regen > 0:
                     passive_texts.append((f"Regen: +{state.player.shield_regen}/turn", id_color))
@@ -3193,7 +3182,9 @@ class CombatView(BaseView):
             elif identity == "ghost":
                 if state.player.counterstrike_stacks > 0:
                     pct = state.player.counterstrike_stacks * 10
-                    passive_texts.append((f"Counterstrike: +{pct}%", _COMBAT_COLORS["passive_counterstrike_bright"]))
+                    passive_texts.append(
+                        (f"Counterstrike: +{pct}%", _COMBAT_COLORS["passive_counterstrike_bright"])
+                    )
                 if state.player.evasion_decay > 0:
                     passive_texts.append(("Shaken: -5 evasion", _COMBAT_COLORS["dmg_near_miss"]))
 
@@ -3319,15 +3310,11 @@ class CombatView(BaseView):
         if card_composite is not None and enemy.template.hull > 0:
             hull_ratio = max(0.0, min(1.0, enemy.current_hull / enemy.template.hull))
             card_composite.set_destruction_progress(1.0 - hull_ratio)
-        card_sprite: Optional[pygame.Surface] = (
-            self._enemy_composite_provider.get_surface(
-                enemy.template.id, instance_key=enemy
-            )
+        card_sprite: Optional[pygame.Surface] = self._enemy_composite_provider.get_surface(
+            enemy.template.id, instance_key=enemy
         )
         if card_sprite is None:
-            card_anim = self._get_ship_sprite(
-                enemy.template.id, "enemy", scale=res_scale(1)
-            )
+            card_anim = self._get_ship_sprite(enemy.template.id, "enemy", scale=res_scale(1))
             card_sprite = card_anim.get_surface() if card_anim else None
         # Tier 3.C: module overlay (subsystem targeting feedback). Rendered
         # over the card composite only — the legacy sprite path doesn't
@@ -3365,9 +3352,7 @@ class CombatView(BaseView):
         focused = getattr(enemy, "focused_subsystem", None)
         if is_selected and focused and focused not in enemy.subsystems_destroyed:
             focus_label = focused.replace("_", " ").upper()
-            focus_surf = self.small_font.render(
-                f"> {focus_label}", True, Colors.TEXT_HIGHLIGHT
-            )
+            focus_surf = self.small_font.render(f"> {focus_label}", True, Colors.TEXT_HIGHLIGHT)
             focus_bg = pygame.Surface(
                 (focus_surf.get_width() + 6, focus_surf.get_height() + 2), pygame.SRCALPHA
             )
@@ -3777,7 +3762,9 @@ class CombatView(BaseView):
 
         # Ultimate ready indicator
         if momentum.ultimate_available:
-            ult_text = self.small_font.render("ULTIMATE READY!", True, _COMBAT_COLORS["ult_text_pulse"])
+            ult_text = self.small_font.render(
+                "ULTIMATE READY!", True, _COMBAT_COLORS["ult_text_pulse"]
+            )
             ult_rect = ult_text.get_rect(centerx=x + width // 2, top=y + BAR_HEIGHT + 2)
             screen.blit(ult_text, ult_rect)
 
@@ -4332,8 +4319,18 @@ class CombatView(BaseView):
         _TAB_CONFIG = [
             ("attack", "ATK", _COMBAT_COLORS["tab_attack_bg"], _COMBAT_COLORS["tab_attack_border"]),
             ("defend", "DEF", _COMBAT_COLORS["tab_defend_bg"], _COMBAT_COLORS["tab_defend_border"]),
-            ("utility", "UTL", _COMBAT_COLORS["tab_utility_bg"], _COMBAT_COLORS["tab_utility_border"]),
-            ("coordinated", "CREW", _COMBAT_COLORS["tab_coord_bg"], _COMBAT_COLORS["tab_coord_border"]),
+            (
+                "utility",
+                "UTL",
+                _COMBAT_COLORS["tab_utility_bg"],
+                _COMBAT_COLORS["tab_utility_border"],
+            ),
+            (
+                "coordinated",
+                "CREW",
+                _COMBAT_COLORS["tab_coord_bg"],
+                _COMBAT_COLORS["tab_coord_border"],
+            ),
         ]
         self._tab_rects: dict[str, pygame.Rect] = {}
         for i, (tab_id, label, active_color, dim_color) in enumerate(_TAB_CONFIG):
@@ -4348,7 +4345,9 @@ class CombatView(BaseView):
             pygame.draw.rect(screen, border, rect, 1, border_radius=3)
             tab_text = f"{label} ({count})" if count > 0 else label
             text_color = (
-                Colors.TEXT_PRIMARY if is_active else (active_color if count > 0 else _COMBAT_COLORS["tab_inactive_text"])
+                Colors.TEXT_PRIMARY
+                if is_active
+                else (active_color if count > 0 else _COMBAT_COLORS["tab_inactive_text"])
             )
             t = self.small_font.render(tab_text, True, text_color)
             screen.blit(
@@ -4581,11 +4580,17 @@ class CombatView(BaseView):
 
             # Gold border
             pygame.draw.rect(
-                screen, _COMBAT_COLORS["boss_header"], (ult_x, ult_y, ult_w, ult_h), 2, border_radius=4
+                screen,
+                _COMBAT_COLORS["boss_header"],
+                (ult_x, ult_y, ult_w, ult_h),
+                2,
+                border_radius=4,
             )
 
             # Text
-            ult_text = self.info_font.render(f"[U] {ult_name}", True, _COMBAT_COLORS["combo_banner"])
+            ult_text = self.info_font.render(
+                f"[U] {ult_name}", True, _COMBAT_COLORS["combo_banner"]
+            )
             text_rect = ult_text.get_rect(center=(ult_x + ult_w // 2, ult_y + ult_h // 2))
             screen.blit(ult_text, text_rect)
 
@@ -4814,7 +4819,9 @@ class CombatView(BaseView):
                     enemies = self.engine.get_state().enemies
                     if action.target_idx < len(enemies):
                         tgt_name = enemies[action.target_idx].template.name
-                        tgt_text = self.small_font.render(f"→ {tgt_name}", True, _COMBAT_COLORS["queue_target_dim"])
+                        tgt_text = self.small_font.render(
+                            f"→ {tgt_name}", True, _COMBAT_COLORS["queue_target_dim"]
+                        )
                         screen.blit(tgt_text, (panel_x + 140, line_y))
         else:
             # Empty queue: show last round recap for strategic context
@@ -4828,7 +4835,9 @@ class CombatView(BaseView):
                     if log.round_number == prev_round and log.actor.startswith("enemy")
                 ]
                 if recap_entries:
-                    label = self.small_font.render("Last Round:", True, _COMBAT_COLORS["queue_recap_label"])
+                    label = self.small_font.render(
+                        "Last Round:", True, _COMBAT_COLORS["queue_recap_label"]
+                    )
                     screen.blit(label, (panel_x + 8, queue_y))
                     ry = queue_y + scale_y(16)
                     recap_line_h = scale_y(15)
@@ -4862,12 +4871,16 @@ class CombatView(BaseView):
                                 dmg_text = " (frozen)"
                                 break
                         recap_line = f"{enemy_name}: {entry.action}{dmg_text}"
-                        recap_surf = self.small_font.render(recap_line, True, _COMBAT_COLORS["queue_recap_text"])
+                        recap_surf = self.small_font.render(
+                            recap_line, True, _COMBAT_COLORS["queue_recap_text"]
+                        )
                         screen.blit(recap_surf, (panel_x + 12, ry))
                         ry += recap_line_h
                     # Hint below recap
                     hint_y = ry + scale_y(4)
-                    hint = self.small_font.render("Click weapons to queue", True, _COMBAT_COLORS["queue_hint_dim"])
+                    hint = self.small_font.render(
+                        "Click weapons to queue", True, _COMBAT_COLORS["queue_hint_dim"]
+                    )
                     screen.blit(hint, (panel_x + 8, hint_y))
                 else:
                     # No enemy actions last round (rare)
@@ -4909,7 +4922,9 @@ class CombatView(BaseView):
 
         # Execute Turn button
         has_actions = self._action_queue and not self._action_queue.is_empty
-        exec_bg = _COMBAT_COLORS["exec_active_bg"] if has_actions else _COMBAT_COLORS["exec_inactive_bg"]
+        exec_bg = (
+            _COMBAT_COLORS["exec_active_bg"] if has_actions else _COMBAT_COLORS["exec_inactive_bg"]
+        )
         exec_border = Colors.GREEN if has_actions else _COMBAT_COLORS["exec_inactive_border"]
         exec_rect = pygame.Rect(panel_x + 8, btn_y, exec_w, scale_y(24))
         pygame.draw.rect(screen, exec_bg, exec_rect, border_radius=3)
@@ -4925,11 +4940,19 @@ class CombatView(BaseView):
         self._execute_btn_rect = exec_rect
 
         # Undo button
-        undo_bg = _COMBAT_COLORS["undo_active_bg"] if has_actions else _COMBAT_COLORS["undo_inactive_bg"]
+        undo_bg = (
+            _COMBAT_COLORS["undo_active_bg"] if has_actions else _COMBAT_COLORS["undo_inactive_bg"]
+        )
         undo_rect = pygame.Rect(panel_x + exec_w + 16, btn_y, undo_w, scale_y(24))
         pygame.draw.rect(screen, undo_bg, undo_rect, border_radius=3)
         pygame.draw.rect(
-            screen, _COMBAT_COLORS["undo_active_border"] if has_actions else _COMBAT_COLORS["undo_inactive_border"], undo_rect, 1, border_radius=3
+            screen,
+            _COMBAT_COLORS["undo_active_border"]
+            if has_actions
+            else _COMBAT_COLORS["undo_inactive_border"],
+            undo_rect,
+            1,
+            border_radius=3,
         )
         undo_label = self.small_font.render(
             "Undo [←]",
@@ -4942,7 +4965,9 @@ class CombatView(BaseView):
         self._undo_btn_rect = undo_rect
 
         # Skip Turn hint (below buttons, centered in panel)
-        skip = self.small_font.render("Enter with empty queue to skip turn", True, _COMBAT_COLORS["skip_hint_text"])
+        skip = self.small_font.render(
+            "Enter with empty queue to skip turn", True, _COMBAT_COLORS["skip_hint_text"]
+        )
         skip_x = panel_x + (panel_w - skip.get_width()) // 2
         screen.blit(skip, (skip_x, btn_y + scale_y(26)))
 
@@ -4959,10 +4984,16 @@ class CombatView(BaseView):
             # Void Release — available when void_charge > 0 and release available
             if getattr(legendary, "void_release_available", False) and legendary.void_charge > 0:
                 vr_rect = pygame.Rect(panel_x + 8, leg_y, leg_btn_w, leg_btn_h)
-                pygame.draw.rect(screen, _COMBAT_COLORS["void_release_bg"], vr_rect, border_radius=3)
-                pygame.draw.rect(screen, _COMBAT_COLORS["void_release_border"], vr_rect, 1, border_radius=3)
+                pygame.draw.rect(
+                    screen, _COMBAT_COLORS["void_release_bg"], vr_rect, border_radius=3
+                )
+                pygame.draw.rect(
+                    screen, _COMBAT_COLORS["void_release_border"], vr_rect, 1, border_radius=3
+                )
                 vr_text = self.small_font.render(
-                    f"Void Release ({legendary.void_charge} dmg)", True, _COMBAT_COLORS["void_release_text"]
+                    f"Void Release ({legendary.void_charge} dmg)",
+                    True,
+                    _COMBAT_COLORS["void_release_text"],
                 )
                 screen.blit(vr_text, (vr_rect.x + 4, leg_y + 3))
                 self._void_release_rect = vr_rect
@@ -4972,8 +5003,12 @@ class CombatView(BaseView):
                 od_x = panel_x + 8 + (leg_btn_w + 8 if self._void_release_rect else 0)
                 od_rect = pygame.Rect(od_x, leg_y, leg_btn_w, leg_btn_h)
                 pygame.draw.rect(screen, _COMBAT_COLORS["overdrive_bg"], od_rect, border_radius=3)
-                pygame.draw.rect(screen, _COMBAT_COLORS["overdrive_border"], od_rect, 1, border_radius=3)
-                od_text = self.small_font.render("Overdrive (2x turn)", True, _COMBAT_COLORS["overdrive_text"])
+                pygame.draw.rect(
+                    screen, _COMBAT_COLORS["overdrive_border"], od_rect, 1, border_radius=3
+                )
+                od_text = self.small_font.render(
+                    "Overdrive (2x turn)", True, _COMBAT_COLORS["overdrive_text"]
+                )
                 screen.blit(od_text, (od_rect.x + 4, leg_y + 3))
                 self._overdrive_rect = od_rect
 
@@ -5058,13 +5093,17 @@ class CombatView(BaseView):
             if boss:
                 # Boss intro: dramatic red-gold treatment
                 # "BOSS ENCOUNTER" header
-                header = self.info_font.render("BOSS ENCOUNTER", True, _COMBAT_COLORS["boss_header"])
+                header = self.info_font.render(
+                    "BOSS ENCOUNTER", True, _COMBAT_COLORS["boss_header"]
+                )
                 header.set_alpha(alpha)
                 header_rect = header.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 - 60))
                 screen.blit(header, header_rect)
 
                 # Boss name in large dramatic text
-                name_surf = self.banner_font.render(boss.template.name.upper(), True, _COMBAT_COLORS["boss_accent"])
+                name_surf = self.banner_font.render(
+                    boss.template.name.upper(), True, _COMBAT_COLORS["boss_accent"]
+                )
                 name_surf.set_alpha(alpha)
                 name_rect = name_surf.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 - 10))
                 screen.blit(name_surf, name_rect)
@@ -5080,7 +5119,9 @@ class CombatView(BaseView):
                 # Phase 1 name
                 if boss.template.phases:
                     phase_name = boss.template.phases[0].name
-                    phase_surf = self.small_font.render(phase_name, True, _COMBAT_COLORS["boss_header"])
+                    phase_surf = self.small_font.render(
+                        phase_name, True, _COMBAT_COLORS["boss_header"]
+                    )
                     phase_surf.set_alpha(alpha)
                     phase_rect = phase_surf.get_rect(
                         center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 + 60)
@@ -5173,7 +5214,9 @@ class CombatView(BaseView):
                 if intact:
                     names = ", ".join(ms.category.title() for ms in intact[:3])
                     suffix = f" +{len(intact) - 3} more" if len(intact) > 3 else ""
-                    stats.append((f"Modules damaged: {names}{suffix}", _COMBAT_COLORS["dmg_near_miss"]))
+                    stats.append(
+                        (f"Modules damaged: {names}{suffix}", _COMBAT_COLORS["dmg_near_miss"])
+                    )
             else:
                 stats.append(("All modules intact", _COMBAT_COLORS["passive_positive_dim"]))
 

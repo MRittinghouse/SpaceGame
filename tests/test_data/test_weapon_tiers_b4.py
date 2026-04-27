@@ -86,11 +86,7 @@ def _load_weapons(path: Path) -> dict[str, dict]:
     with open(path) as f:
         data = json.load(f)
     arr = data.get("parts") or data.get("upgrades") or data
-    return {
-        p["id"]: p
-        for p in arr
-        if p.get("slot_type") == "weapon" and p.get("combat_move")
-    }
+    return {p["id"]: p for p in arr if p.get("slot_type") == "weapon" and p.get("combat_move")}
 
 
 def _move_stats(weapon: dict) -> tuple[float, int, int]:
@@ -218,13 +214,13 @@ class TestTierMonotonicity:
         t3_avg = avg_dmg(T3_BURST_IDS)
 
         assert t1_avg < t2_avg < t3_avg, (
-            f"Tier damage averages must rise: T1={t1_avg:.1f}, "
-            f"T2={t2_avg:.1f}, T3={t3_avg:.1f}"
+            f"Tier damage averages must rise: T1={t1_avg:.1f}, T2={t2_avg:.1f}, T3={t3_avg:.1f}"
         )
 
     def test_tier_damage_per_energy_rises_with_tier(self, parts_weapons: dict) -> None:
         """Burst weapons have better damage-per-energy at the cost of
         cooldown. Investment in cooldown management pays back."""
+
         def avg_dpe(ids: set[str]) -> float:
             total = 0.0
             for wid in ids:
@@ -234,9 +230,7 @@ class TestTierMonotonicity:
 
         t1_dpe = avg_dpe(T1_SIDEARM_IDS)
         t3_dpe = avg_dpe(T3_BURST_IDS)
-        assert t3_dpe > t1_dpe, (
-            f"T3 damage-per-energy {t3_dpe:.1f} should exceed T1 {t1_dpe:.1f}"
-        )
+        assert t3_dpe > t1_dpe, f"T3 damage-per-energy {t3_dpe:.1f} should exceed T1 {t1_dpe:.1f}"
 
 
 # ============================================================================
@@ -296,15 +290,13 @@ class TestTurnPacingAgainstDesignDoc:
     """§2.5 example: Standard reactor (18 pool, 5 regen), mixed loadout of
     one sidearm + one tech + one burst. 5-turn total ~280 damage."""
 
-    def test_representative_loadout_matches_turn1_target(
-        self, parts_weapons: dict
-    ) -> None:
+    def test_representative_loadout_matches_turn1_target(self, parts_weapons: dict) -> None:
         """Turn 1 alpha strike: Burst + Tech + Sidearm all fire.
         Expected ~90 damage per §2.5."""
         # Pick representative medians of each tier.
-        sidearm = parts_weapons["laser_cannon"]       # T1 ceiling
-        tech = parts_weapons["missile_launcher"]       # T2 mid
-        burst = parts_weapons["plasma_torpedo"]        # T3 mid
+        sidearm = parts_weapons["laser_cannon"]  # T1 ceiling
+        tech = parts_weapons["missile_launcher"]  # T2 mid
+        burst = parts_weapons["plasma_torpedo"]  # T3 mid
 
         s_dmg, s_eng, _ = _move_stats(sidearm)
         t_dmg, t_eng, _ = _move_stats(tech)
@@ -320,20 +312,14 @@ class TestTurnPacingAgainstDesignDoc:
             f"Turn 1 total damage {total_dmg} outside design-doc §2.5 target ~90"
         )
 
-    def test_sidearm_sustainable_with_standard_regen(
-        self, parts_weapons: dict
-    ) -> None:
+    def test_sidearm_sustainable_with_standard_regen(self, parts_weapons: dict) -> None:
         """Every T1 sidearm costs at most 2E. With regen 5, two sidearms
         (4E) sustain forever. If a sidearm creeps above 2E, sustain breaks."""
         for wid in T1_SIDEARM_IDS:
             _, eng, _ = _move_stats(parts_weapons[wid])
-            assert eng <= 2, (
-                f"{wid} sidearm energy {eng} > 2 — breaks sustain math in §2.5"
-            )
+            assert eng <= 2, f"{wid} sidearm energy {eng} > 2 — breaks sustain math in §2.5"
 
-    def test_no_weapon_costs_more_than_standard_pool(
-        self, parts_weapons: dict
-    ) -> None:
+    def test_no_weapon_costs_more_than_standard_pool(self, parts_weapons: dict) -> None:
         """No single weapon should exceed Standard reactor pool (18E).
         Otherwise players with Standard reactor can't alpha-strike at all."""
         for wid, w in parts_weapons.items():

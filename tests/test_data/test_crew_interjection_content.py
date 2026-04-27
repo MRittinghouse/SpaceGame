@@ -39,9 +39,7 @@ class TestInterjectionLoading:
             if entry.crew_id in per_crew:
                 per_crew[entry.crew_id] += 1
         for crew_id, count in per_crew.items():
-            assert count >= 5, (
-                f"crew {crew_id} has {count} interjection entries, expected >=5"
-            )
+            assert count >= 5, f"crew {crew_id} has {count} interjection entries, expected >=5"
 
 
 class TestInterjectionStructure:
@@ -61,22 +59,16 @@ class TestInterjectionStructure:
 
     def test_lines_non_empty(self, dl) -> None:
         for entry in dl.crew_interjections:
-            assert entry.lines, (
-                f"empty line bank for {entry.crew_id} / {entry.trigger}"
-            )
+            assert entry.lines, f"empty line bank for {entry.crew_id} / {entry.trigger}"
             for line in entry.lines:
-                assert line.strip(), (
-                    f"empty line for {entry.crew_id} / {entry.trigger}"
-                )
+                assert line.strip(), f"empty line for {entry.crew_id} / {entry.trigger}"
 
     def test_enemy_type_match_template_resolves(self, dl) -> None:
         for entry in dl.crew_interjections:
             if entry.trigger != "enemy_type_match":
                 continue
             tid = entry.conditions.get("enemy_template_id", "")
-            assert tid, (
-                f"{entry.crew_id} enemy_type_match missing template_id"
-            )
+            assert tid, f"{entry.crew_id} enemy_type_match missing template_id"
             assert tid in dl.enemy_templates, (
                 f"{entry.crew_id} references unknown enemy template '{tid}'"
             )
@@ -108,9 +100,7 @@ class TestTriggerCoverage:
                 per_crew[entry.crew_id].add(entry.trigger)
         for crew_id, triggers in per_crew.items():
             missing = round_triggers - triggers
-            assert not missing, (
-                f"crew {crew_id} missing round triggers: {missing}"
-            )
+            assert not missing, f"crew {crew_id} missing round triggers: {missing}"
 
     def test_each_companion_covers_both_outcomes(self, dl) -> None:
         """Every companion has a victory line AND a defeat line."""

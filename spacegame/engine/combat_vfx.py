@@ -526,6 +526,8 @@ def _fire_palette() -> list[tuple[int, int, int]]:
         get_role("glow_warm"),
         get_role("plasma_core"),  # bookend for index variance
     ]
+
+
 _SECONDARY_EXPLOSION_OFFSETS = [
     (-0.3, -0.2),
     (0.4, 0.1),

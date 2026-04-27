@@ -60,9 +60,7 @@ def _place_slot(view, slot_def_id: str, x: int = 0, y: int = 0) -> None:
     placement logic, which isn't needed for phase-gate tests."""
     from spacegame.models.ship_build import PlacedSlot
 
-    view.build.placed_slots.append(
-        PlacedSlot(slot_def_id=slot_def_id, x=x, y=y, rotation=0)
-    )
+    view.build.placed_slots.append(PlacedSlot(slot_def_id=slot_def_id, x=x, y=y, rotation=0))
 
 
 def _paint_pixels(view, count: int, material_id: str = "standard_plate") -> None:
@@ -256,7 +254,7 @@ class TestConfirmGate:
         src = Path("spacegame/views/ship_builder_view.py").read_text(encoding="utf-8")
         # The gating block must be present, referencing both the tutorial
         # mode flag and the phase check.
-        assert "self._tutorial_mode and self._tutorial_phase() != \"complete\"" in src
+        assert 'self._tutorial_mode and self._tutorial_phase() != "complete"' in src
         assert "self._can_confirm = False" in src
 
     def test_confirm_build_bails_if_phase_not_complete(self) -> None:
@@ -319,7 +317,9 @@ class TestStatDeltas:
         return view
 
     def test_delta_recorded_on_stat_increase(self) -> None:
-        view = self._view_with_snapshot({"hull": 10, "armor": 0, "shields": 0, "speed": 8, "evasion": 10})
+        view = self._view_with_snapshot(
+            {"hull": 10, "armor": 0, "shields": 0, "speed": 8, "evasion": 10}
+        )
         stats = MagicMock()
         stats.hull = 15
         stats.armor = 0
@@ -334,7 +334,9 @@ class TestStatDeltas:
         assert timer == 1.8
 
     def test_delta_recorded_on_stat_decrease(self) -> None:
-        view = self._view_with_snapshot({"hull": 20, "armor": 0, "shields": 0, "speed": 8, "evasion": 10})
+        view = self._view_with_snapshot(
+            {"hull": 20, "armor": 0, "shields": 0, "speed": 8, "evasion": 10}
+        )
         stats = MagicMock()
         stats.hull = 15
         stats.armor = 0
@@ -347,7 +349,9 @@ class TestStatDeltas:
         assert delta == -5
 
     def test_sub_integer_float_noise_ignored(self) -> None:
-        view = self._view_with_snapshot({"hull": 10.0, "armor": 0, "shields": 0, "speed": 8, "evasion": 10})
+        view = self._view_with_snapshot(
+            {"hull": 10.0, "armor": 0, "shields": 0, "speed": 8, "evasion": 10}
+        )
         stats = MagicMock()
         stats.hull = 10.3  # <0.5 difference, should be ignored
         stats.armor = 0

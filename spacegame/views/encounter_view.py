@@ -166,9 +166,7 @@ class EncounterView(BaseView):
         memory = None
         if self.player is not None and hasattr(self.player, "captain_memory"):
             memory = self.player.captain_memory.get(self._captain.id)
-        return get_effective_captain_dialogue(
-            self._captain, memory, dl.captain_variants
-        )
+        return get_effective_captain_dialogue(self._captain, memory, dl.captain_variants)
 
     def on_enter(self) -> None:
         """Initialize encounter UI."""
@@ -257,9 +255,7 @@ class EncounterView(BaseView):
                 btn.disable()
             self.choice_buttons.append(btn)
 
-    def _format_choice_button(
-        self, index: int, choice: EncounterChoice
-    ) -> tuple[str, str, bool]:
+    def _format_choice_button(self, index: int, choice: EncounterChoice) -> tuple[str, str, bool]:
         """Compose the button label + tooltip + disabled-flag for a choice.
 
         - When ``skill_check`` is set, append "[Skill N PASS|FAIL]" so the
@@ -285,9 +281,7 @@ class EncounterView(BaseView):
         if choice.skill_check is not None:
             sc = choice.skill_check
             if self.social_manager is not None:
-                will_pass = self.social_manager.can_pass_check(
-                    sc.skill, sc.difficulty, ""
-                )
+                will_pass = self.social_manager.can_pass_check(sc.skill, sc.difficulty, "")
                 marker = "PASS" if will_pass else "FAIL"
                 label = f"{label}  [{sc.skill.title()} {sc.difficulty} {marker}]"
                 effective = self.social_manager.get_effective_level(sc.skill, "")
@@ -507,9 +501,7 @@ class EncounterView(BaseView):
         if choice.requires_credits and not any(
             r.reward_type == "deduct_credits" for r in resolved_rewards
         ):
-            resolved_rewards.insert(
-                0, MissionReward("deduct_credits", choice.requires_credits)
-            )
+            resolved_rewards.insert(0, MissionReward("deduct_credits", choice.requires_credits))
 
         self.chosen_outcome = EncounterOutcome(
             description=outcome.description,
@@ -622,9 +614,7 @@ class EncounterView(BaseView):
         # Use captain.name + captain.nickname directly. display_name uses
         # an em-dash separator that's fine for headers but a Writing Bible
         # violation in narrative text.
-        nickname_phrase = (
-            f', the {captain.nickname},' if captain.nickname else ','
-        )
+        nickname_phrase = f", the {captain.nickname}," if captain.nickname else ","
         text = (
             f"Met {captain.name}{nickname_phrase} for the first time. "
             f"Their ship runs the {captain.signature_ship_template} hull. "
@@ -650,9 +640,7 @@ class EncounterView(BaseView):
         assert sc is not None
         if self.social_manager is None:
             return False
-        success, _msg = self.social_manager.resolve_check(
-            sc.skill, sc.difficulty, ""
-        )
+        success, _msg = self.social_manager.resolve_check(sc.skill, sc.difficulty, "")
         if self.player is not None:
             flag = sc.set_flag_on_success if success else sc.set_flag_on_failure
             if flag:
@@ -712,9 +700,7 @@ def _substitute_choices(
                 outcome=_sub_outcome(c.outcome),
                 skill_check=c.skill_check,
                 failure_outcome=(
-                    _sub_outcome(c.failure_outcome)
-                    if c.failure_outcome is not None
-                    else None
+                    _sub_outcome(c.failure_outcome) if c.failure_outcome is not None else None
                 ),
                 requires_credits=c.requires_credits,
             )

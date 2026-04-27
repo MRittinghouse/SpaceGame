@@ -114,8 +114,7 @@ class TestMissionLogListOverflow:
             pytest.fail(
                 f"Mission names overflow list item at 720p "
                 f"(available={available}px). Fix: truncate name in "
-                f"_MissionItem.render the same way we fixed ground_briefing:\n"
-                + report
+                f"_MissionItem.render the same way we fixed ground_briefing:\n" + report
             )
 
 
@@ -155,8 +154,7 @@ class TestCrewRosterListOverflow:
                 for cid, name, width in offenders[:20]
             )
             pytest.fail(
-                f"Crew names overflow list item at 720p "
-                f"(available={available}px):\n" + report
+                f"Crew names overflow list item at 720p (available={available}px):\n" + report
             )
 
 
@@ -222,8 +220,7 @@ class TestTradingCommodityNameOverflow:
         for marker in ("R", "!", "R*", "!*"):
             width = font.size(marker)[0]
             assert width <= col_width, (
-                f"Legality marker {marker!r} ({width}px) exceeds LEG column "
-                f"budget ({col_width}px)."
+                f"Legality marker {marker!r} ({width}px) exceeds LEG column budget ({col_width}px)."
             )
 
 

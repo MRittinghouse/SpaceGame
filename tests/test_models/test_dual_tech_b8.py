@@ -46,9 +46,7 @@ class _FakeRoster:
 
 def _roster(**crew_loyalties: int) -> _FakeRoster:
     """Build a roster where each kwarg pairs crew_id → loyalty."""
-    return _FakeRoster(
-        states={cid: {"loyalty": loy} for cid, loy in crew_loyalties.items()}
-    )
+    return _FakeRoster(states={cid: {"loyalty": loy} for cid, loy in crew_loyalties.items()})
 
 
 # Companion IDs used across tests.
@@ -77,10 +75,7 @@ class TestPaletteIntegrity:
     def test_all_six_pairs_combine_distinct_crew(self) -> None:
         """The 6 pairs are exactly (4 choose 2) = 6 combinations of the
         senior crew. No duplicates, no same-person pairs."""
-        pair_sets = [
-            frozenset(DUAL_TECH_PALETTE[tid].crew_ids)
-            for tid in PAIR_TECH_IDS
-        ]
+        pair_sets = [frozenset(DUAL_TECH_PALETTE[tid].crew_ids) for tid in PAIR_TECH_IDS]
         assert len(set(pair_sets)) == 6, "Pairs must be distinct"
         for pair in pair_sets:
             assert len(pair) == 2, f"Pair has wrong size: {pair}"
@@ -263,11 +258,7 @@ class TestExecutableDualTechMoves:
             if build_dual_tech_move(tid) is not None:
                 executable.add(tid)
 
-        flagged = {
-            tid
-            for tid, tech in DUAL_TECH_PALETTE.items()
-            if tech.implementation_ready
-        }
+        flagged = {tid for tid, tech in DUAL_TECH_PALETTE.items() if tech.implementation_ready}
         assert executable == flagged, (
             f"implementation_ready={flagged} but executable={executable} — "
             f"factory map and flag must agree"
@@ -288,9 +279,7 @@ class TestDescribeAllDualTechs:
         statuses = describe_all_dual_techs(_roster())
         # One entry per palette tech, in canonical order.
         assert len(statuses) == len(DUAL_TECH_PALETTE)
-        assert all(not s.is_available for s in statuses), (
-            "Empty roster should lock every tech"
-        )
+        assert all(not s.is_available for s in statuses), "Empty roster should lock every tech"
 
     def test_order_follows_canonical_pair_then_triad(self) -> None:
         from spacegame.models.dual_tech import describe_all_dual_techs
@@ -346,8 +335,13 @@ class TestDualTechDataclass:
     def test_dualtech_is_hashable(self) -> None:
         """Frozen dataclass — usable as dict keys / set members."""
         tech = DualTech(
-            id="x", name="X", crew_ids=("a", "b"),
-            loyalty_req=50, energy_cost=4, cooldown=4, description="",
+            id="x",
+            name="X",
+            crew_ids=("a", "b"),
+            loyalty_req=50,
+            energy_cost=4,
+            cooldown=4,
+            description="",
         )
         d = {tech: 1}
         assert tech in d

@@ -80,16 +80,16 @@ class SubsystemEffect:
     """
 
     tag: str
-    log_text: str                     # Combat log line when destroyed
-    damage_multiplier: float = 1.0    # Multiplier on enemy's outgoing damage
-    accuracy_delta: int = 0           # Flat delta on enemy accuracy
+    log_text: str  # Combat log line when destroyed
+    damage_multiplier: float = 1.0  # Multiplier on enemy's outgoing damage
+    accuracy_delta: int = 0  # Flat delta on enemy accuracy
     disable_shield_regen: bool = False
     strip_current_shields: bool = False
     evasion_override: int | None = None  # None = unchanged; 0 = wipe
     disable_flee: bool = False
     disable_energy_regen: bool = False
     trigger_tempo_skip: bool = False  # Enemy skips next turn
-    instant_kill: bool = False        # Cockpit — sets hull to 0
+    instant_kill: bool = False  # Cockpit — sets hull to 0
 
 
 SUBSYSTEM_PALETTE: dict[str, SubsystemEffect] = {

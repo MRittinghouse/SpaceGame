@@ -248,14 +248,12 @@ class TestUntypedContentDiscipline:
         entry, this test catches it and forces the cleanup.
         """
         live_fingerprints = {
-            _fingerprint(rel, name)
-            for rel, name, _line in _scan_module_level_untyped_content()
+            _fingerprint(rel, name) for rel, name, _line in _scan_module_level_untyped_content()
         }
         stale = KNOWN_ORPHANS - live_fingerprints
         assert not stale, (
             "Stale SI-1d/2.4 allowlist entries — the underlying content "
-            "is gone (migrated?). Remove these from KNOWN_ORPHANS:\n  "
-            + "\n  ".join(sorted(stale))
+            "is gone (migrated?). Remove these from KNOWN_ORPHANS:\n  " + "\n  ".join(sorted(stale))
         )
 
 

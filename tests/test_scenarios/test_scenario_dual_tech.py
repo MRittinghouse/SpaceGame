@@ -117,15 +117,11 @@ class TestPaletteCoverage:
         for tech_id in DUAL_TECH_PALETTE:
             if tech_id not in DUAL_TECH_REVEALS:
                 missing.append(tech_id)
-        assert not missing, (
-            f"Every palette tech should have a reveal scene. Missing: {missing}"
-        )
+        assert not missing, f"Every palette tech should have a reveal scene. Missing: {missing}"
 
     def test_every_reveal_has_at_least_two_lines(self) -> None:
         """A reveal with <2 lines isn't a scene, it's a stub."""
-        thin = [
-            tid for tid, rev in DUAL_TECH_REVEALS.items() if len(rev.lines) < 2
-        ]
+        thin = [tid for tid, rev in DUAL_TECH_REVEALS.items() if len(rev.lines) < 2]
         assert not thin, f"Reveals too thin to be cinematic: {thin}"
 
 

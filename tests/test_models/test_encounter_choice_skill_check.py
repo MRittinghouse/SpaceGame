@@ -31,9 +31,7 @@ class TestEncounterSkillCheckModel:
 
     def test_choice_with_skill_check_carries_failure_outcome(self) -> None:
         outcome = EncounterOutcome(description="ok", rewards=[])
-        failure = EncounterOutcome(
-            description="fight", rewards=[], leads_to_combat=True
-        )
+        failure = EncounterOutcome(description="fight", rewards=[], leads_to_combat=True)
         choice = EncounterChoice(
             id="talk_down",
             label="Talk",
@@ -148,11 +146,7 @@ class TestCe4PressureFileLoads:
 
         dl = get_data_loader()
         dl.load_all()
-        match = [
-            d
-            for d in dl.encounter_definitions
-            if d.id == "ransom_pirate_corvette_01"
-        ]
+        match = [d for d in dl.encounter_definitions if d.id == "ransom_pirate_corvette_01"]
         assert len(match) == 1, "CE-4a template encounter missing"
         defn = match[0]
         assert defn.encounter_type == "ransom_demand"

@@ -17,9 +17,7 @@ import os
 
 
 def _tree() -> dict:
-    path = os.path.join(
-        os.path.dirname(__file__), "..", "..", "data", "dialogue", "dialogues.json"
-    )
+    path = os.path.join(os.path.dirname(__file__), "..", "..", "data", "dialogue", "dialogues.json")
     with open(path, encoding="utf-8") as f:
         data = json.load(f)
     return next(d for d in data["dialogues"] if d["id"] == "dead_ledger_investigation")
@@ -34,7 +32,8 @@ class TestDecisionLock:
         """After accusation, the three investigation paths disappear."""
         greet = _node(_tree(), "greet")
         gated = [
-            r for r in greet["responses"]
+            r
+            for r in greet["responses"]
             if "dead_ledger_accusation_made" in r.get("excluded_flags", [])
         ]
         # Five pre-accusation responses must all exclude the accusation flag:

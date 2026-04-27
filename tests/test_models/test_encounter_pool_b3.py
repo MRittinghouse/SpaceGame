@@ -60,16 +60,13 @@ class TestGenericEnemiesEverywhere:
     def test_t1_generic_appears_in_safe_unaligned_systems(self, enemies: dict) -> None:
         pool = set(filter_enemies_for_system(enemies, "", "safe"))
         assert T1_GENERIC_IDS.issubset(pool), (
-            f"T1 generics missing from safe/unaligned pool: "
-            f"{T1_GENERIC_IDS - pool}"
+            f"T1 generics missing from safe/unaligned pool: {T1_GENERIC_IDS - pool}"
         )
 
     def test_t1_generic_appears_in_faction_systems(self, enemies: dict) -> None:
         for fac in ("commerce_guild", "miners_union", "science_collective", "frontier_alliance"):
             pool = set(filter_enemies_for_system(enemies, fac, "moderate"))
-            assert T1_GENERIC_IDS.issubset(pool), (
-                f"T1 generics missing from {fac}/moderate pool"
-            )
+            assert T1_GENERIC_IDS.issubset(pool), f"T1 generics missing from {fac}/moderate pool"
 
     def test_t2_generic_reach_enemies_appear_in_dangerous_unaligned(self, enemies: dict) -> None:
         """reach_scout_ace and reach_bulwark are unaligned T2. Should appear
@@ -151,9 +148,7 @@ class TestBossExclusion:
             for danger in dangers:
                 pool = set(filter_enemies_for_system(enemies, fac, danger))
                 leaked = T4_BOSS_IDS & pool
-                assert not leaked, (
-                    f"Boss(es) {leaked} leaked into ({fac!r}, {danger}) pool"
-                )
+                assert not leaked, f"Boss(es) {leaked} leaked into ({fac!r}, {danger}) pool"
 
     def test_all_t4_templates_flagged_is_boss(self, enemies: dict) -> None:
         """Sanity: every T4 ID the filter should exclude is in fact is_boss=True."""
@@ -178,7 +173,12 @@ class TestPoolExpansion:
     def test_dangerous_faction_pool_has_at_least_3_b2_options(self, enemies: dict) -> None:
         """A dangerous same-faction system should offer multiple new-roster
         enemies (not just one), ensuring variety."""
-        for faction in ("commerce_guild", "miners_union", "science_collective", "frontier_alliance"):
+        for faction in (
+            "commerce_guild",
+            "miners_union",
+            "science_collective",
+            "frontier_alliance",
+        ):
             pool = set(filter_enemies_for_system(enemies, faction, "dangerous"))
             all_b2_non_boss = (
                 T1_GENERIC_IDS
@@ -189,8 +189,7 @@ class TestPoolExpansion:
             )
             b2_entries = pool & all_b2_non_boss
             assert len(b2_entries) >= 3, (
-                f"{faction}/dangerous pool only has {len(b2_entries)} B2 entries: "
-                f"{b2_entries}"
+                f"{faction}/dangerous pool only has {len(b2_entries)} B2 entries: {b2_entries}"
             )
 
 

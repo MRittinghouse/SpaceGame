@@ -46,8 +46,9 @@ def main() -> int:
         width = int(os.environ["SPACEGAME_TEST_W"])
         height = int(os.environ["SPACEGAME_TEST_H"])
     except (KeyError, ValueError) as exc:
-        print(f"ERROR: missing/invalid SPACEGAME_TEST_W or SPACEGAME_TEST_H: {exc}",
-              file=sys.stderr)
+        print(
+            f"ERROR: missing/invalid SPACEGAME_TEST_W or SPACEGAME_TEST_H: {exc}", file=sys.stderr
+        )
         return 2
 
     # Headless SDL must be set before pygame imports anywhere.

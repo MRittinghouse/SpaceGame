@@ -371,9 +371,7 @@ class JournalSurface:
             text_surf = font.render(entry.title, False, title_color)
             text_y = row_rect.top + (row_rect.height - text_surf.get_height()) // 2
             surface.blit(text_surf, (row_rect.left + _PADDING, text_y))
-            self._hit_regions.append(
-                (row_rect, JournalEvent("entry_selected", entry.entry_id))
-            )
+            self._hit_regions.append((row_rect, JournalEvent("entry_selected", entry.entry_id)))
             y += _ENTRY_ROW_HEIGHT
         surface.set_clip(prev_clip)
 
@@ -428,18 +426,14 @@ class JournalSurface:
             y += 8
 
         if entry.cross_references:
-            see_label = meta_font.render(
-                "See also:", False, get_role(theme.text_dim_role)
-            )
+            see_label = meta_font.render("See also:", False, get_role(theme.text_dim_role))
             surface.blit(see_label, (inner.left, y))
             y += see_label.get_height() + 4
             for ref_id in entry.cross_references:
                 ref_entry = self._get_entry(ref_id)
                 ref_label = ref_entry.title if ref_entry else ref_id
                 ref_surf = meta_font.render(ref_label, False, get_role(theme.accent_role))
-                ref_rect = pygame.Rect(
-                    inner.left, y, ref_surf.get_width(), ref_surf.get_height()
-                )
+                ref_rect = pygame.Rect(inner.left, y, ref_surf.get_width(), ref_surf.get_height())
                 surface.blit(ref_surf, (inner.left, y))
                 self._hit_regions.append(
                     (ref_rect, JournalEvent("cross_reference_clicked", ref_id))

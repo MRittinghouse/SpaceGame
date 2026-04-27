@@ -55,9 +55,7 @@ class TestElementPaletteTable:
         from spacegame.engine.material_palette import is_valid_role
 
         for element, role in _ELEMENT_PRIMARY_ROLE.items():
-            assert is_valid_role(role), (
-                f"Element '{element}' maps to off-palette role '{role}'"
-            )
+            assert is_valid_role(role), f"Element '{element}' maps to off-palette role '{role}'"
 
     def test_plasma_uses_plasma_core(self) -> None:
         assert _ELEMENT_PRIMARY_ROLE["plasma"] == "plasma_core"
@@ -104,9 +102,7 @@ def _render_projectile(weapon: WeaponType, element: str | None) -> pygame.Surfac
     return surf
 
 
-def _surface_contains_color(
-    surf: pygame.Surface, expected: tuple[int, int, int]
-) -> bool:
+def _surface_contains_color(surf: pygame.Surface, expected: tuple[int, int, int]) -> bool:
     for y in range(surf.get_height()):
         for x in range(surf.get_width()):
             px = surf.get_at((x, y))
@@ -312,10 +308,7 @@ class TestProjectileModuleDiscipline:
         from pathlib import Path
 
         source = (
-            Path(__file__).resolve().parents[2]
-            / "spacegame"
-            / "engine"
-            / "projectiles.py"
+            Path(__file__).resolve().parents[2] / "spacegame" / "engine" / "projectiles.py"
         ).read_text(encoding="utf-8")
         for legacy in (
             "_LASER_CORE",
@@ -324,17 +317,12 @@ class TestProjectileModuleDiscipline:
             "_MISSILE_TRAIL",
             "_CANNON_ROUND",
         ):
-            assert legacy not in source, (
-                f"Legacy hardcoded constant {legacy} must not reappear"
-            )
+            assert legacy not in source, f"Legacy hardcoded constant {legacy} must not reappear"
 
     def test_projectile_module_imports_palette(self) -> None:
         from pathlib import Path
 
         source = (
-            Path(__file__).resolve().parents[2]
-            / "spacegame"
-            / "engine"
-            / "projectiles.py"
+            Path(__file__).resolve().parents[2] / "spacegame" / "engine" / "projectiles.py"
         ).read_text(encoding="utf-8")
         assert "from spacegame.engine.material_palette import get_role" in source

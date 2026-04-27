@@ -97,9 +97,7 @@ class ComplicationResolver:
     # Trigger evaluation
     # ------------------------------------------------------------------
 
-    def _trigger_satisfied(
-        self, comp: "CombatComplication", state: "CombatState"
-    ) -> bool:
+    def _trigger_satisfied(self, comp: "CombatComplication", state: "CombatState") -> bool:
         """Return True if ``comp`` should fire given ``state``."""
         t = comp.trigger_type
         p = comp.trigger_params or {}

@@ -67,8 +67,7 @@ class TestRevealPaletteIntegrity:
         for tid, reveal in DUAL_TECH_REVEALS.items():
             assert reveal.announcement, f"{tid} reveal missing announcement"
             assert "available" in reveal.announcement.lower(), (
-                f"{tid} announcement should confirm the unlock: "
-                f"{reveal.announcement}"
+                f"{tid} announcement should confirm the unlock: {reveal.announcement}"
             )
 
     def test_tech_id_matches_key(self) -> None:
@@ -123,9 +122,7 @@ class TestCheckAndMarkReveal:
 # ============================================================================
 
 
-def _weapon(
-    wid: str = "laser", damage: float = 20.0, energy: int = 2
-) -> CombatMove:
+def _weapon(wid: str = "laser", damage: float = 20.0, energy: int = 2) -> CombatMove:
     return CombatMove(
         id=wid,
         name=wid.title(),
@@ -164,11 +161,20 @@ def _enemy_template() -> EnemyShipTemplate:
 
 def _build_engine(flags: dict[str, bool] | None = None) -> tuple[CombatEngine, PlayerCombatState]:
     player = PlayerCombatState(
-        hull=200, max_hull=200, shields=0, max_shields=0,
-        energy=30, max_energy=30, energy_regen=5,
-        speed=6, evasion=0, accuracy=95,
-        equipment_moves=[], crew_moves=[],
-        active_effects=[], cooldowns={},
+        hull=200,
+        max_hull=200,
+        shields=0,
+        max_shields=0,
+        energy=30,
+        max_energy=30,
+        energy_regen=5,
+        speed=6,
+        evasion=0,
+        accuracy=95,
+        equipment_moves=[],
+        crew_moves=[],
+        active_effects=[],
+        cooldowns={},
         dialogue_flags=flags if flags is not None else {},
     )
     tpl = _enemy_template()
@@ -222,8 +228,7 @@ class TestEngineRevealEmission:
         _fire_dual_tech(engine, player, "gun_run")
         reveals = _find_reveal_entries(engine.get_state(), "gun_run")
         assert reveals == [], (
-            f"Reveal should fire only once per combat history; "
-            f"got re-emission: {reveals}"
+            f"Reveal should fire only once per combat history; got re-emission: {reveals}"
         )
 
     def test_flag_persisted_across_engines(self) -> None:
@@ -379,6 +384,5 @@ class TestBuildPlayerCombatStateDialogueFlagsWireup:
         engine2 = CombatEngine(cs2, seed=0)
         _fire_dual_tech(engine2, state2, "gun_run")
         assert _find_reveal_entries(cs2, "gun_run") == [], (
-            "Reveal must not re-fire in a later combat built from the same "
-            "dialogue_flags dict"
+            "Reveal must not re-fire in a later combat built from the same dialogue_flags dict"
         )

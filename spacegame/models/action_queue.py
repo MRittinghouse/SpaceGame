@@ -147,8 +147,7 @@ class ActionQueue:
         # A weapon is any move with a damage effect.
         if self._fire_at_will_queued:
             is_weapon = any(
-                getattr(e, "type", None) is not None
-                and getattr(e.type, "value", "") == "damage"
+                getattr(e, "type", None) is not None and getattr(e.type, "value", "") == "damage"
                 for e in move.effects
             )
             if is_weapon:

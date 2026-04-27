@@ -30,14 +30,24 @@ def _make_player(credits: int = 5000):
     from spacegame.models.ship import Ship, ShipType
 
     ship_type = ShipType(
-        id="shuttle", name="Shuttle", ship_class="light",
-        description="x", cargo_capacity=10, fuel_capacity=50,
-        fuel_efficiency=1.0, speed_multiplier=1.0, purchase_price=0,
-        resale_value=0, crew_slots=2, special_abilities=[],
+        id="shuttle",
+        name="Shuttle",
+        ship_class="light",
+        description="x",
+        cargo_capacity=10,
+        fuel_capacity=50,
+        fuel_efficiency=1.0,
+        speed_multiplier=1.0,
+        purchase_price=0,
+        resale_value=0,
+        crew_slots=2,
+        special_abilities=[],
         availability="all",
     )
     return Player(
-        name="T", credits=credits, current_system_id="nexus_prime",
+        name="T",
+        credits=credits,
+        current_system_id="nexus_prime",
         ship=Ship(ship_type=ship_type, current_fuel=50),
     )
 
@@ -49,9 +59,9 @@ def _make_player(credits: int = 5000):
 
 class TestTutorialToBuilderNoCrash:
     """Reproduces the exact sequence that crashed:
-       1. Purchase a tutorial part (sets dialogue_flag)
-       2. Enter ship builder in tutorial mode
-       3. Render slot palette (calls _get_slot_definitions_grouped)
+    1. Purchase a tutorial part (sets dialogue_flag)
+    2. Enter ship builder in tutorial mode
+    3. Render slot palette (calls _get_slot_definitions_grouped)
     """
 
     def test_get_slot_definitions_grouped_does_not_crash_in_tutorial(
@@ -198,9 +208,7 @@ class TestPickTutorialNarrationNoCrash:
             "cargo_small": "Cargo narration",
         }
         # Empty placed_ids → welcome narration fires
-        result = view._pick_tutorial_narration(
-            set(), part_narration, TUTORIAL_PARTS
-        )
+        result = view._pick_tutorial_narration(set(), part_narration, TUTORIAL_PARTS)
         assert isinstance(result, str)
         assert len(result) > 0
 
@@ -231,9 +239,7 @@ class TestPickTutorialNarrationNoCrash:
         # Simulate cockpit already placed (so "welcome" doesn't fire),
         # but no cargo placed yet
         placed_ids = {"cockpit_scout_pod"}
-        result = view._pick_tutorial_narration(
-            placed_ids, part_narration, TUTORIAL_PARTS
-        )
+        result = view._pick_tutorial_narration(placed_ids, part_narration, TUTORIAL_PARTS)
         assert result == "CARGO_LINE", (
             f"Expected cargo narration for bought scrapyard_hold; got {result!r}"
         )
@@ -269,9 +275,7 @@ class TestNoMoreBrokenPatterns:
                 if stripped.startswith("#"):
                     continue
                 # Backtick-quoted (docstring prose, Sphinx-style ``x``)
-                if "``" in line and "p['slot_def_id']" in line.replace(
-                    "``p['slot_def_id']``", ""
-                ):
+                if "``" in line and "p['slot_def_id']" in line.replace("``p['slot_def_id']``", ""):
                     # Shouldn't reach here — the replace above zeros it out
                     offenders.append(f"{pyfile.name}:{i}: {line.strip()}")
                     continue
@@ -280,8 +284,7 @@ class TestNoMoreBrokenPatterns:
                 offenders.append(f"{pyfile.name}:{i}: {line.strip()}")
         assert not offenders, (
             "Found p['slot_def_id'] usage in files that iterate "
-            "TUTORIAL_PARTS. Those dicts use 'part_id'. Offenders:\n  "
-            + "\n  ".join(offenders)
+            "TUTORIAL_PARTS. Those dicts use 'part_id'. Offenders:\n  " + "\n  ".join(offenders)
         )
 
     def test_tutorial_bought_flag_name_consistent(self) -> None:
@@ -302,8 +305,7 @@ class TestNoMoreBrokenPatterns:
                     offenders.append(f"{pyfile.name}:{i}: {line.strip()}")
         assert not offenders, (
             "Found raw 'tutorial_bought_{...}' (missing 'part_' infix). "
-            "Shop sets 'tutorial_bought_part_{part_id}'. Offenders:\n  "
-            + "\n  ".join(offenders)
+            "Shop sets 'tutorial_bought_part_{part_id}'. Offenders:\n  " + "\n  ".join(offenders)
         )
 
 

@@ -82,12 +82,7 @@ class EnergyEconomy:
 
     @property
     def total_weapons(self) -> int:
-        return (
-            self.sidearm_count
-            + self.tech_count
-            + self.burst_count
-            + self.unknown_count
-        )
+        return self.sidearm_count + self.tech_count + self.burst_count + self.unknown_count
 
 
 # ============================================================================
@@ -161,9 +156,7 @@ def compute_energy_economy(
     eco.total_alpha_cost = sum(weapon_costs)
     eco.min_weapon_cost = min(weapon_costs) if weapon_costs else 0
     eco.sustain_capacity = eco.regen // 2 if eco.regen > 0 else 0
-    eco.can_alpha_strike = (
-        eco.total_weapons > 0 and eco.total_alpha_cost <= eco.pool
-    )
+    eco.can_alpha_strike = eco.total_weapons > 0 and eco.total_alpha_cost <= eco.pool
     eco.can_sustain_sidearm = eco.regen >= 2
 
     eco.advisories = _derive_advisories(eco)
@@ -222,8 +215,7 @@ def _derive_advisories(eco: EnergyEconomy) -> list[str]:
 
     if eco.unknown_count > 0:
         advisories.append(
-            f"{eco.unknown_count} weapon(s) outside tier bands — "
-            f"balance tuning is uncertain"
+            f"{eco.unknown_count} weapon(s) outside tier bands — balance tuning is uncertain"
         )
 
     return advisories

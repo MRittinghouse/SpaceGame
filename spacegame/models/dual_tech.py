@@ -234,9 +234,7 @@ def is_dual_tech_available(
         if loyalty is None:
             return False, f"{cid} not recruited"
         if loyalty < tech.loyalty_req:
-            return False, (
-                f"{cid} loyalty {loyalty} < required {tech.loyalty_req}"
-            )
+            return False, (f"{cid} loyalty {loyalty} < required {tech.loyalty_req}")
         if bridge_crew_ids is not None and cid not in bridge_crew_ids:
             return False, f"{cid} not on bridge this combat"
     return True, "OK"
@@ -535,9 +533,7 @@ def activate_total_commitment(player: Any) -> list[str]:
     """Prime the Total Commitment hit-to-armor intercept."""
     player.total_commitment_hits_remaining = TOTAL_COMMITMENT_HITS
     player.total_commitment_armor_gained = 0
-    return [
-        f"Total Commitment: next {TOTAL_COMMITMENT_HITS} hull hits convert to armor"
-    ]
+    return [f"Total Commitment: next {TOTAL_COMMITMENT_HITS} hull hits convert to armor"]
 
 
 def activate_daring_gambit_counter(player: Any) -> list[str]:
@@ -569,10 +565,7 @@ def intercept_total_commitment_hull_damage(
         what the engine should still apply after interception. Log
         messages describe armor gains or absorbed hits.
     """
-    if (
-        hull_damage <= 0
-        or getattr(player, "total_commitment_hits_remaining", 0) <= 0
-    ):
+    if hull_damage <= 0 or getattr(player, "total_commitment_hits_remaining", 0) <= 0:
         return hull_damage, []
 
     player.total_commitment_hits_remaining -= 1

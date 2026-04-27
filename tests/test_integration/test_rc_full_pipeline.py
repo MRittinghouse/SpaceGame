@@ -63,14 +63,24 @@ def _ui_manager() -> pygame_gui.UIManager:
 
 def _make_player(game_day: int = 5) -> Player:
     ship_type = ShipType(
-        id="shuttle", name="Shuttle", ship_class="light",
-        description="x", cargo_capacity=10, fuel_capacity=50,
-        fuel_efficiency=1.0, speed_multiplier=1.0, purchase_price=0,
-        resale_value=0, crew_slots=2, special_abilities=[],
+        id="shuttle",
+        name="Shuttle",
+        ship_class="light",
+        description="x",
+        cargo_capacity=10,
+        fuel_capacity=50,
+        fuel_efficiency=1.0,
+        speed_multiplier=1.0,
+        purchase_price=0,
+        resale_value=0,
+        crew_slots=2,
+        special_abilities=[],
         availability="all",
     )
     player = Player(
-        name="Test", credits=2000, current_system_id="havens_rest",
+        name="Test",
+        credits=2000,
+        current_system_id="havens_rest",
         ship=Ship(ship_type=ship_type, current_fuel=50),
     )
     player.game_day = game_day
@@ -95,10 +105,7 @@ class TestFullCaptainLifecycle:
 
     def test_pay_to_bribed_off_full_cycle(self, dl) -> None:
         # Use vela_wolfs_ear attached to ransom_pirate_corvette_01
-        defn = next(
-            d for d in dl.encounter_definitions
-            if d.id == "ransom_pirate_corvette_01"
-        )
+        defn = next(d for d in dl.encounter_definitions if d.id == "ransom_pirate_corvette_01")
         assert defn.captain_id == "vela_wolfs_ear"
 
         player = _make_player(game_day=5)
@@ -111,9 +118,7 @@ class TestFullCaptainLifecycle:
         view = EncounterView(
             ui_manager=_ui_manager(),
             encounter_def=defn,
-            encounter_ref=EncounterRef(
-                enemy_template_ids=["pirate_raider"], encounter_seed=42
-            ),
+            encounter_ref=EncounterRef(enemy_template_ids=["pirate_raider"], encounter_seed=42),
             player=player,
             journal=journal,
         )
@@ -127,9 +132,7 @@ class TestFullCaptainLifecycle:
 
         # === Phase 2: Player picks Pay (non-combat) ===
         # Find the "pay" choice index
-        pay_idx = next(
-            i for i, c in enumerate(view.display_choices) if c.id == "pay"
-        )
+        pay_idx = next(i for i, c in enumerate(view.display_choices) if c.id == "pay")
         view._select_choice(pay_idx)
 
         # === Phase 3: RC-6 recording fires, journal entry added ===
@@ -152,9 +155,7 @@ class TestFullCaptainLifecycle:
             danger_level="dangerous",
             seed=99,
             player_level=5,
-            resolved_captain_ids={
-                cid for cid, m in player.captain_memory.items() if m.is_resolved
-            },
+            resolved_captain_ids={cid for cid, m in player.captain_memory.items() if m.is_resolved},
         )
         for seed in range(1, 100):
             ctx.seed = seed
@@ -166,13 +167,9 @@ class TestFullCaptainLifecycle:
 
         # === Phase 5: Forced re-encounter uses post_bribed_off variant (RC-3+RC-4) ===
         # Vela has an authored post_bribed_off variant from RC-4
-        post_variant = dl.captain_variants.get(
-            ("vela_wolfs_ear", MEETING_STATE_POST_BRIBED_OFF)
-        )
+        post_variant = dl.captain_variants.get(("vela_wolfs_ear", MEETING_STATE_POST_BRIBED_OFF))
         assert post_variant is not None, "RC-4 should have authored vela post_bribed_off"
-        effective = get_effective_captain_dialogue(
-            captain, mem, dl.captain_variants
-        )
+        effective = get_effective_captain_dialogue(captain, mem, dl.captain_variants)
         assert effective.pre_combat_hail == post_variant.pre_combat_hail
         assert effective.meeting_state == MEETING_STATE_POST_BRIBED_OFF
 
@@ -189,10 +186,7 @@ class TestCompositionMagic:
 
     def test_anatolia_encounter_fires_elena_nemesis_interjection(self, dl) -> None:
         # Build the encounter the way game.py would
-        defn = next(
-            d for d in dl.encounter_definitions
-            if d.id == "ransom_guild_audit_01"
-        )
+        defn = next(d for d in dl.encounter_definitions if d.id == "ransom_guild_audit_01")
         assert defn.captain_id == "anatolia_kestrel_crow"
 
         # Find the spawn override for the refuse outcome
@@ -208,10 +202,20 @@ class TestCompositionMagic:
         )
         state = CombatState(
             player=PlayerCombatState(
-                hull=100, max_hull=100, shields=20, max_shields=40,
-                energy=10, max_energy=10, energy_regen=3, speed=8,
-                evasion=10, accuracy=80, equipment_moves=[], crew_moves=[],
-                active_effects=[], cooldowns={},
+                hull=100,
+                max_hull=100,
+                shields=20,
+                max_shields=40,
+                energy=10,
+                max_energy=10,
+                energy_regen=3,
+                speed=8,
+                evasion=10,
+                accuracy=80,
+                equipment_moves=[],
+                crew_moves=[],
+                active_effects=[],
+                cooldowns={},
             ),
             enemies=[EnemyShip.from_template(revenue_cutter)],
             encounter=encounter,
@@ -220,9 +224,9 @@ class TestCompositionMagic:
 
         # Find Elena's nemesis interjection entry
         elena_nemesis = next(
-            e for e in dl.crew_interjections
-            if e.crew_id == "elena_reeves"
-            and e.trigger == "enemy_type_match"
+            e
+            for e in dl.crew_interjections
+            if e.crew_id == "elena_reeves" and e.trigger == "enemy_type_match"
         )
         # Elena's nemesis must be guild_revenue_cutter (CE-6 alignment)
         assert elena_nemesis.conditions["enemy_template_id"] == "guild_revenue_cutter"
@@ -236,9 +240,7 @@ class TestCompositionMagic:
         events = resolver.evaluate_round(state)
         # Elena's nemesis interjection is in the eligible set
         nemesis_events = [
-            e for e in events
-            if e.trigger == "enemy_type_match"
-            and e.crew_id == "elena_reeves"
+            e for e in events if e.trigger == "enemy_type_match" and e.crew_id == "elena_reeves"
         ]
         assert len(nemesis_events) == 1, (
             "Elena's nemesis interjection should fire when fighting "
@@ -306,7 +308,7 @@ class TestPoolDegradation:
 
 class TestVariantContentQuality:
     HAIL_MAX_LENGTH = 280  # Fits the encounter view text box at all resolutions
-    HAIL_MIN_LENGTH = 8    # Reject dead-empty placeholders
+    HAIL_MIN_LENGTH = 8  # Reject dead-empty placeholders
 
     def test_no_variant_hail_is_a_copy_of_base(self, dl) -> None:
         """A variant pre_combat_hail that equals the base hail is dead
@@ -318,9 +320,7 @@ class TestVariantContentQuality:
             base = dl.captains[cid].pre_combat_hail
             if variant.pre_combat_hail == base:
                 offenders.append(f"{cid}: variant equals base hail")
-        assert not offenders, (
-            "Variant hails identical to base:\n  " + "\n  ".join(offenders)
-        )
+        assert not offenders, "Variant hails identical to base:\n  " + "\n  ".join(offenders)
 
     def test_variant_hail_length_within_bounds(self, dl) -> None:
         offenders = []
@@ -329,16 +329,10 @@ class TestVariantContentQuality:
                 continue
             n = len(variant.pre_combat_hail)
             if n < self.HAIL_MIN_LENGTH:
-                offenders.append(
-                    f"{cid}/{state}: hail too short ({n} chars)"
-                )
+                offenders.append(f"{cid}/{state}: hail too short ({n} chars)")
             if n > self.HAIL_MAX_LENGTH:
-                offenders.append(
-                    f"{cid}/{state}: hail too long ({n} chars)"
-                )
-        assert not offenders, (
-            "Variant hail length issues:\n  " + "\n  ".join(offenders)
-        )
+                offenders.append(f"{cid}/{state}: hail too long ({n} chars)")
+        assert not offenders, "Variant hail length issues:\n  " + "\n  ".join(offenders)
 
     def test_no_duplicate_variant_hails_across_captains(self, dl) -> None:
         """Different captains shouldn't share variant hail text — the
@@ -349,9 +343,7 @@ class TestVariantContentQuality:
                 continue
             seen.setdefault(variant.pre_combat_hail, []).append(cid)
         dups = {h: cids for h, cids in seen.items() if len(cids) > 1}
-        assert not dups, (
-            f"Duplicate variant hails across captains: {dups}"
-        )
+        assert not dups, f"Duplicate variant hails across captains: {dups}"
 
 
 # ---------------------------------------------------------------------------
@@ -373,7 +365,10 @@ class TestSaveLoadRichState:
 
         sm = SaveManager(save_directory=tmp_path)
         sm.save_game(
-            slot=0, player=player, markets={}, active_events={},
+            slot=0,
+            player=player,
+            markets={},
+            active_events={},
             playtime_seconds=0,
         )
 
@@ -387,13 +382,8 @@ class TestSaveLoadRichState:
         assert loaded_player.captain_memory["ngozi_pale_reckoning"].status == STATUS_BRIBED_OFF
 
         # Resolved captains drive the filter on load
-        resolved = {
-            cid for cid, m in loaded_player.captain_memory.items()
-            if m.is_resolved
-        }
-        assert resolved == {
-            "vela_wolfs_ear", "calder_cold_read", "ngozi_pale_reckoning"
-        }
+        resolved = {cid for cid, m in loaded_player.captain_memory.items() if m.is_resolved}
+        assert resolved == {"vela_wolfs_ear", "calder_cold_read", "ngozi_pale_reckoning"}
 
 
 # ---------------------------------------------------------------------------
@@ -412,9 +402,7 @@ class TestProgrammaticJournalCompliance:
         17 captains and assert no em-dashes leak."""
         offenders = []
         for cid, captain in dl.captains.items():
-            nickname_phrase = (
-                f', the {captain.nickname},' if captain.nickname else ','
-            )
+            nickname_phrase = f", the {captain.nickname}," if captain.nickname else ","
             text = (
                 f"Met {captain.name}{nickname_phrase} for the first time. "
                 f"Their ship runs the {captain.signature_ship_template} hull. "
@@ -424,6 +412,4 @@ class TestProgrammaticJournalCompliance:
                 if dash in text:
                     offenders.append(f"{cid}: em-dash in journal text")
                     break
-        assert not offenders, (
-            "Journal text contains em-dashes:\n  " + "\n  ".join(offenders)
-        )
+        assert not offenders, "Journal text contains em-dashes:\n  " + "\n  ".join(offenders)

@@ -91,7 +91,7 @@ class TestCockpitCargoPercentage:
         from pathlib import Path
 
         source = Path("spacegame/views/cockpit_hud.py").read_text(encoding="utf-8")
-        assert '({pct}%)' in source or '{pct}%' in source
+        assert "({pct}%)" in source or "{pct}%" in source
 
     def test_green_under_sixty_percent(self) -> None:
         from pathlib import Path

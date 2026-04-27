@@ -56,9 +56,7 @@ class _FakePlayer:
             self.captain_memory[captain_id] = CaptainMemory(captain_id=captain_id)
         return self.captain_memory[captain_id]
 
-    def record_captain_encounter(
-        self, captain_id: str, outcome: str
-    ) -> CaptainMemory:
+    def record_captain_encounter(self, captain_id: str, outcome: str) -> CaptainMemory:
         mem = self.get_captain_memory(captain_id)
         mem.record_encounter(outcome, self.game_day)
         return mem
@@ -273,12 +271,16 @@ class TestJournalEntryOnFirstMeeting:
 
 class TestMetBeforeBadge:
     def test_no_badge_for_first_meeting(self) -> None:
-        defn = _make_captain_encounter([
-            EncounterChoice(
-                id="x", label="x", description="",
-                outcome=EncounterOutcome(description="d", rewards=[]),
-            )
-        ])
+        defn = _make_captain_encounter(
+            [
+                EncounterChoice(
+                    id="x",
+                    label="x",
+                    description="",
+                    outcome=EncounterOutcome(description="d", rewards=[]),
+                )
+            ]
+        )
         player = _FakePlayer()
         view = _make_view(defn, player=player)
         view.on_enter()
@@ -286,12 +288,16 @@ class TestMetBeforeBadge:
         view.on_exit()
 
     def test_badge_for_one_prior_meeting(self) -> None:
-        defn = _make_captain_encounter([
-            EncounterChoice(
-                id="x", label="x", description="",
-                outcome=EncounterOutcome(description="d", rewards=[]),
-            )
-        ])
+        defn = _make_captain_encounter(
+            [
+                EncounterChoice(
+                    id="x",
+                    label="x",
+                    description="",
+                    outcome=EncounterOutcome(description="d", rewards=[]),
+                )
+            ]
+        )
         player = _FakePlayer()
         player.captain_memory["vela_wolfs_ear"] = CaptainMemory(
             captain_id="vela_wolfs_ear", encounter_count=1
@@ -302,12 +308,16 @@ class TestMetBeforeBadge:
         view.on_exit()
 
     def test_badge_pluralization_for_multiple_meetings(self) -> None:
-        defn = _make_captain_encounter([
-            EncounterChoice(
-                id="x", label="x", description="",
-                outcome=EncounterOutcome(description="d", rewards=[]),
-            )
-        ])
+        defn = _make_captain_encounter(
+            [
+                EncounterChoice(
+                    id="x",
+                    label="x",
+                    description="",
+                    outcome=EncounterOutcome(description="d", rewards=[]),
+                )
+            ]
+        )
         player = _FakePlayer()
         player.captain_memory["vela_wolfs_ear"] = CaptainMemory(
             captain_id="vela_wolfs_ear", encounter_count=3
@@ -321,7 +331,9 @@ class TestMetBeforeBadge:
         defn = _make_captain_encounter(
             [
                 EncounterChoice(
-                    id="x", label="x", description="",
+                    id="x",
+                    label="x",
+                    description="",
                     outcome=EncounterOutcome(description="d", rewards=[]),
                 )
             ],

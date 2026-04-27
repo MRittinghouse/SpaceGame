@@ -66,9 +66,7 @@ def _player_state() -> PlayerCombatState:
 
 
 class TestEncounterDefinitionToCombatPropagation:
-    def test_ransom_pirate_definition_loads_with_captain_and_complication(
-        self, dl
-    ) -> None:
+    def test_ransom_pirate_definition_loads_with_captain_and_complication(self, dl) -> None:
         """The encounter definition has captain_id + complication_ids; both
         must be present so the wiring chain has source data to thread."""
         defn = next(
@@ -103,9 +101,7 @@ class TestRealCaptainOutcomeSurfacing:
     resolves through DataLoader.captains."""
 
     def _make_state(self, captain_id: str, result: CombatResult) -> CombatState:
-        encounter = CombatEncounter(
-            enemy_templates=[], encounter_seed=42, captain_id=captain_id
-        )
+        encounter = CombatEncounter(enemy_templates=[], encounter_seed=42, captain_id=captain_id)
         state = CombatState(
             player=_player_state(),
             enemies=[],
@@ -182,8 +178,7 @@ class TestMinLevelGating:
             defn = select_encounter_definition(dl.encounter_definitions, ctx)
             if defn is not None:
                 assert defn.id not in gated_ids, (
-                    f"Level-1 player drew gated encounter '{defn.id}' "
-                    f"(min_level={defn.min_level})"
+                    f"Level-1 player drew gated encounter '{defn.id}' (min_level={defn.min_level})"
                 )
 
     def test_high_credit_ransoms_available_at_level_3(self, dl) -> None:
@@ -214,12 +209,8 @@ class TestCaptainShipSpawnAlignment:
     encounters so the spawned enemy class matches the captain's signature
     ship. Verify this holds across all 8 attached encounters."""
 
-    def test_every_captain_attached_encounter_spawns_signature_ship(
-        self, dl
-    ) -> None:
-        captain_ships = {
-            cap.id: cap.signature_ship_template for cap in dl.captains.values()
-        }
+    def test_every_captain_attached_encounter_spawns_signature_ship(self, dl) -> None:
+        captain_ships = {cap.id: cap.signature_ship_template for cap in dl.captains.values()}
         for d in dl.encounter_definitions:
             if not d.captain_id:
                 continue
@@ -264,7 +255,4 @@ class TestEncounterRateSanity:
             # Below 15% means CE-4 content is under-exposed (waste).
             # Above 25% means CE-4 dominates and repeat exposure becomes
             # obvious given only 4 instances per type.
-            assert 0.15 <= share <= 0.25, (
-                f"CE-4 share in {danger} = {share:.1%}, "
-                f"expected 15-25%"
-            )
+            assert 0.15 <= share <= 0.25, f"CE-4 share in {danger} = {share:.1%}, expected 15-25%"

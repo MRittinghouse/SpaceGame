@@ -31,24 +31,21 @@ class TestReferenceIntegrity:
             if not d.captain_id:
                 continue
             assert d.captain_id in dl.captains, (
-                f"Encounter '{d.id}' references unknown captain "
-                f"'{d.captain_id}'"
+                f"Encounter '{d.id}' references unknown captain '{d.captain_id}'"
             )
 
     def test_every_complication_id_referenced_by_encounter_resolves(self, dl) -> None:
         for d in dl.encounter_definitions:
             for cid in d.complication_ids:
                 assert cid in dl.complications, (
-                    f"Encounter '{d.id}' references unknown complication "
-                    f"'{cid}'"
+                    f"Encounter '{d.id}' references unknown complication '{cid}'"
                 )
 
     def test_captain_signature_ships_resolve(self, dl) -> None:
         """Every captain's signature_ship_template must be a real enemy."""
         for cid, cap in dl.captains.items():
             assert cap.signature_ship_template in dl.enemy_templates, (
-                f"Captain '{cid}' references unknown enemy template "
-                f"'{cap.signature_ship_template}'"
+                f"Captain '{cid}' references unknown enemy template '{cap.signature_ship_template}'"
             )
 
 
@@ -65,17 +62,13 @@ class TestCoverageFloors:
         for d in dl.encounter_definitions:
             referenced.update(d.complication_ids)
         orphans = set(dl.complications.keys()) - referenced
-        assert not orphans, (
-            f"Orphan complications (no encounter references): {sorted(orphans)}"
-        )
+        assert not orphans, f"Orphan complications (no encounter references): {sorted(orphans)}"
 
     def test_minimum_captain_attachments(self, dl) -> None:
         """CE-6 attached 8 captains. Hold the line so attachments don't
         regress. RC phase should raise this."""
         attached_count = sum(1 for d in dl.encounter_definitions if d.captain_id)
-        assert attached_count >= 8, (
-            f"Only {attached_count} captains attached, expected >=8"
-        )
+        assert attached_count >= 8, f"Only {attached_count} captains attached, expected >=8"
 
     def test_minimum_encounters_per_main_faction(self, dl) -> None:
         """Spec target: every faction has 3+ distinctive encounter types."""
@@ -92,8 +85,7 @@ class TestCoverageFloors:
             "science_collective",
         ):
             assert per_faction[faction] >= 3, (
-                f"Faction '{faction}' has {per_faction[faction]} encounters, "
-                f"expected >=3"
+                f"Faction '{faction}' has {per_faction[faction]} encounters, expected >=3"
             )
 
 
@@ -163,9 +155,7 @@ class TestCaptainCrewComposition:
                 if tid:
                     nemesis_targets[entry.crew_id] = tid
         unaligned = {
-            crew_id: tid
-            for crew_id, tid in nemesis_targets.items()
-            if tid not in captain_ships
+            crew_id: tid for crew_id, tid in nemesis_targets.items() if tid not in captain_ships
         }
         assert not unaligned, (
             f"Crew nemesis targets not in any captain's signature_ship pool: "
@@ -202,9 +192,7 @@ class TestCaptainDialogueWritingBible:
                     if dash in text:
                         offenders.append(f"{cid}.{field_name}: {text[:80]!r}")
                         break
-        assert not offenders, (
-            "Em-dashes in captain dialogue:\n  " + "\n  ".join(offenders)
-        )
+        assert not offenders, "Em-dashes in captain dialogue:\n  " + "\n  ".join(offenders)
 
     def test_no_banned_phrases_in_captain_dialogue(self, dl) -> None:
         offenders = []
@@ -219,9 +207,5 @@ class TestCaptainDialogueWritingBible:
                 text = getattr(cap, field_name, "").lower()
                 for phrase in self.BANNED_PHRASES:
                     if phrase in text:
-                        offenders.append(
-                            f"{cid}.{field_name}: {phrase!r}"
-                        )
-        assert not offenders, (
-            "Banned phrases in captain dialogue:\n  " + "\n  ".join(offenders)
-        )
+                        offenders.append(f"{cid}.{field_name}: {phrase!r}")
+        assert not offenders, "Banned phrases in captain dialogue:\n  " + "\n  ".join(offenders)

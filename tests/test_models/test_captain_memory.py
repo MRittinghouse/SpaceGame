@@ -58,9 +58,7 @@ class TestCaptainMemoryDefaults:
         assert restored == original
 
     def test_from_dict_falls_back_to_active_for_unknown_status(self) -> None:
-        mem = CaptainMemory.from_dict(
-            {"captain_id": "x", "status": "garbage_status"}
-        )
+        mem = CaptainMemory.from_dict({"captain_id": "x", "status": "garbage_status"})
         assert mem.status == STATUS_ACTIVE
 
     def test_from_dict_handles_missing_fields(self) -> None:
@@ -158,16 +156,22 @@ class TestPlayerCaptainMemoryAPI:
         from spacegame.models.ship import Ship, ShipType
 
         ship_type = ShipType(
-            id="shuttle", name="Shuttle", ship_class="light",
-            description="x", cargo_capacity=10, fuel_capacity=50,
-            fuel_efficiency=1.0, speed_multiplier=1.0, purchase_price=0,
-            resale_value=0, crew_slots=2, special_abilities=[],
+            id="shuttle",
+            name="Shuttle",
+            ship_class="light",
+            description="x",
+            cargo_capacity=10,
+            fuel_capacity=50,
+            fuel_efficiency=1.0,
+            speed_multiplier=1.0,
+            purchase_price=0,
+            resale_value=0,
+            crew_slots=2,
+            special_abilities=[],
             availability="all",
         )
         ship = Ship(ship_type=ship_type, current_fuel=50)
-        return Player(
-            name="Test", credits=500, current_system_id="nexus_prime", ship=ship
-        )
+        return Player(name="Test", credits=500, current_system_id="nexus_prime", ship=ship)
 
     def test_get_captain_memory_creates_on_first_access(self) -> None:
         player = self._make_player()
@@ -225,9 +229,7 @@ class TestCaptainMemorySerialization:
         # Serialize as save_manager does
         serialized = {cid: mem.to_dict() for cid, mem in memory.items()}
         # Reconstruct as load path does
-        restored = {
-            cid: CaptainMemory.from_dict(d) for cid, d in serialized.items()
-        }
+        restored = {cid: CaptainMemory.from_dict(d) for cid, d in serialized.items()}
         assert restored == memory
 
     def test_save_manager_includes_captain_memory_in_dict(self, tmp_path) -> None:
@@ -239,14 +241,24 @@ class TestCaptainMemorySerialization:
         from spacegame.save_manager import SaveManager
 
         ship_type = ShipType(
-            id="shuttle", name="Shuttle", ship_class="light",
-            description="x", cargo_capacity=10, fuel_capacity=50,
-            fuel_efficiency=1.0, speed_multiplier=1.0, purchase_price=0,
-            resale_value=0, crew_slots=2, special_abilities=[],
+            id="shuttle",
+            name="Shuttle",
+            ship_class="light",
+            description="x",
+            cargo_capacity=10,
+            fuel_capacity=50,
+            fuel_efficiency=1.0,
+            speed_multiplier=1.0,
+            purchase_price=0,
+            resale_value=0,
+            crew_slots=2,
+            special_abilities=[],
             availability="all",
         )
         player = Player(
-            name="Test", credits=500, current_system_id="nexus_prime",
+            name="Test",
+            credits=500,
+            current_system_id="nexus_prime",
             ship=Ship(ship_type=ship_type, current_fuel=50),
         )
         player.game_day = 8
@@ -263,6 +275,7 @@ class TestCaptainMemorySerialization:
         assert ok
 
         import json
+
         save_path = sm.get_save_file_path(0)
         raw = json.loads(save_path.read_text(encoding="utf-8"))
         assert "captain_memory" in raw["player"]
@@ -278,23 +291,31 @@ class TestCaptainMemorySerialization:
         from spacegame.save_manager import SaveManager
 
         ship_type = ShipType(
-            id="shuttle", name="Shuttle", ship_class="light",
-            description="x", cargo_capacity=10, fuel_capacity=50,
-            fuel_efficiency=1.0, speed_multiplier=1.0, purchase_price=0,
-            resale_value=0, crew_slots=2, special_abilities=[],
+            id="shuttle",
+            name="Shuttle",
+            ship_class="light",
+            description="x",
+            cargo_capacity=10,
+            fuel_capacity=50,
+            fuel_efficiency=1.0,
+            speed_multiplier=1.0,
+            purchase_price=0,
+            resale_value=0,
+            crew_slots=2,
+            special_abilities=[],
             availability="all",
         )
         player = Player(
-            name="Test", credits=500, current_system_id="nexus_prime",
+            name="Test",
+            credits=500,
+            current_system_id="nexus_prime",
             ship=Ship(ship_type=ship_type, current_fuel=50),
         )
         player.game_day = 8
         player.record_captain_encounter("ngozi_pale_reckoning", OUTCOME_NEGOTIATED)
 
         sm = SaveManager(save_directory=tmp_path)
-        sm.save_game(
-            slot=0, player=player, markets={}, active_events={}, playtime_seconds=0
-        )
+        sm.save_game(slot=0, player=player, markets={}, active_events={}, playtime_seconds=0)
         loaded = sm.load_game(slot=0)
         assert loaded is not None
         loaded_player = loaded["player"]
@@ -311,21 +332,29 @@ class TestCaptainMemorySerialization:
         from spacegame.save_manager import SaveManager
 
         ship_type = ShipType(
-            id="shuttle", name="Shuttle", ship_class="light",
-            description="x", cargo_capacity=10, fuel_capacity=50,
-            fuel_efficiency=1.0, speed_multiplier=1.0, purchase_price=0,
-            resale_value=0, crew_slots=2, special_abilities=[],
+            id="shuttle",
+            name="Shuttle",
+            ship_class="light",
+            description="x",
+            cargo_capacity=10,
+            fuel_capacity=50,
+            fuel_efficiency=1.0,
+            speed_multiplier=1.0,
+            purchase_price=0,
+            resale_value=0,
+            crew_slots=2,
+            special_abilities=[],
             availability="all",
         )
         player = Player(
-            name="Test", credits=500, current_system_id="nexus_prime",
+            name="Test",
+            credits=500,
+            current_system_id="nexus_prime",
             ship=Ship(ship_type=ship_type, current_fuel=50),
         )
 
         sm = SaveManager(save_directory=tmp_path)
-        sm.save_game(
-            slot=0, player=player, markets={}, active_events={}, playtime_seconds=0
-        )
+        sm.save_game(slot=0, player=player, markets={}, active_events={}, playtime_seconds=0)
         save_path = sm.get_save_file_path(0)
         raw = json.loads(save_path.read_text(encoding="utf-8"))
         raw["player"].pop("captain_memory", None)

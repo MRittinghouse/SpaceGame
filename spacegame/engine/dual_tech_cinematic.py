@@ -75,14 +75,14 @@ def resolve_trail_role(element: Optional[str]) -> str:
 # Timing constants (spec §4.3)
 # ---------------------------------------------------------------------------
 
-CAMERA_ZOOM_DURATION = 0.6   # t=0.0 → 0.6
+CAMERA_ZOOM_DURATION = 0.6  # t=0.0 → 0.6
 PORTRAIT_SLIDE_DURATION = 0.3  # t=0.6 → 0.9
-NAME_HOLD_DURATION = 0.6     # t=0.9 → 1.5
+NAME_HOLD_DURATION = 0.6  # t=0.9 → 1.5
 COMBINED_RESOLVE_DURATION = 1.2  # t=1.5 → 2.7
-IMPACT_DURATION = 0.5        # t=2.7 → 3.2
+IMPACT_DURATION = 0.5  # t=2.7 → 3.2
 
 # Ultimate adds a charge phase between name-hold and impact (t=1.5 → 3.0)
-CHARGE_DURATION = 1.5        # spec §4.3 ultimate note: 1.5s charge build
+CHARGE_DURATION = 1.5  # spec §4.3 ultimate note: 1.5s charge build
 
 # Derived phase boundaries
 _ZOOM_END = CAMERA_ZOOM_DURATION

@@ -252,9 +252,7 @@ class TestMiningToRefiningFullChain:
         session = RefiningSession([recipe], system_id=sys)
         ok, msg = session.start_job(recipe, player.ship.current_cargo)
         assert ok, msg
-        assert player.ship.current_cargo.get("raw_ore", 0) == 0, (
-            "raw_ore consumed by refining"
-        )
+        assert player.ship.current_cargo.get("raw_ore", 0) == 0, "raw_ore consumed by refining"
 
         # Step 6: tick to completion
         results = session.update(recipe.processing_time + 0.1)

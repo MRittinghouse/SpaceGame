@@ -50,27 +50,53 @@ def _ui_manager() -> pygame_gui.UIManager:
 
 def _make_player() -> Player:
     ship_type = ShipType(
-        id="shuttle", name="Shuttle", ship_class="light",
-        description="x", cargo_capacity=10, fuel_capacity=50,
-        fuel_efficiency=1.0, speed_multiplier=1.0, purchase_price=0,
-        resale_value=0, crew_slots=2, special_abilities=[],
+        id="shuttle",
+        name="Shuttle",
+        ship_class="light",
+        description="x",
+        cargo_capacity=10,
+        fuel_capacity=50,
+        fuel_efficiency=1.0,
+        speed_multiplier=1.0,
+        purchase_price=0,
+        resale_value=0,
+        crew_slots=2,
+        special_abilities=[],
         availability="all",
     )
     return Player(
-        name="T", credits=500, current_system_id="havens_rest",
+        name="T",
+        credits=500,
+        current_system_id="havens_rest",
         ship=Ship(ship_type=ship_type, current_fuel=50),
     )
 
 
 def _make_engine(captain_id: str) -> CombatEngine:
     template = EnemyShipTemplate(
-        id="pirate_scout", name="Pirate", description="x",
-        behavior=EnemyBehavior.AGGRESSIVE, hull=80, shields=0, energy=10,
-        energy_regen=3, speed=8, evasion=0, accuracy=70,
-        moves=[CombatMove(id="m", name="m", description="",
-            effects=[CombatEffect(type=EffectType.DAMAGE, value=5.0)],
-            energy_cost=2)],
-        loot_table=[], negotiate_difficulty=3, flee_threshold=0.0,
+        id="pirate_scout",
+        name="Pirate",
+        description="x",
+        behavior=EnemyBehavior.AGGRESSIVE,
+        hull=80,
+        shields=0,
+        energy=10,
+        energy_regen=3,
+        speed=8,
+        evasion=0,
+        accuracy=70,
+        moves=[
+            CombatMove(
+                id="m",
+                name="m",
+                description="",
+                effects=[CombatEffect(type=EffectType.DAMAGE, value=5.0)],
+                energy_cost=2,
+            )
+        ],
+        loot_table=[],
+        negotiate_difficulty=3,
+        flee_threshold=0.0,
         bribe_cost=0,
     )
     encounter = CombatEncounter(
@@ -78,10 +104,20 @@ def _make_engine(captain_id: str) -> CombatEngine:
     )
     state = CombatState(
         player=PlayerCombatState(
-            hull=100, max_hull=100, shields=20, max_shields=40,
-            energy=10, max_energy=10, energy_regen=3, speed=8,
-            evasion=10, accuracy=80, equipment_moves=[], crew_moves=[],
-            active_effects=[], cooldowns={},
+            hull=100,
+            max_hull=100,
+            shields=20,
+            max_shields=40,
+            energy=10,
+            max_energy=10,
+            energy_regen=3,
+            speed=8,
+            evasion=10,
+            accuracy=80,
+            equipment_moves=[],
+            crew_moves=[],
+            active_effects=[],
+            cooldowns={},
         ),
         enemies=[EnemyShip.from_template(template)],
         encounter=encounter,
@@ -120,9 +156,7 @@ class TestWandererJournalEntry:
         assert player.captain_memory["vela_wolfs_ear"].status == STATUS_WANDERER
         # Journal entry was added
         entries = journal.get_entries()
-        wanderer_entries = [
-            e for e in entries if "moved on" in e.text
-        ]
+        wanderer_entries = [e for e in entries if "moved on" in e.text]
         assert len(wanderer_entries) == 1
         view.on_exit()
 

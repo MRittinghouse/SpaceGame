@@ -220,9 +220,7 @@ class TestValidatePostAgent:
     def test_deletion_fails(self, roadmap_in_tmp) -> None:
         snapshot = roadmap_state.snapshot_roadmap()
         # Delete SA-2's section entirely.
-        modified = roadmap_in_tmp.read_text(encoding="utf-8").split(
-            "### SA-2 — Second sprint"
-        )[0]
+        modified = roadmap_in_tmp.read_text(encoding="utf-8").split("### SA-2 — Second sprint")[0]
         roadmap_in_tmp.write_text(modified, encoding="utf-8")
         with pytest.raises(RoadmapValidationError, match="deleted"):
             roadmap_state.validate_post_agent(

@@ -202,8 +202,7 @@ class TestResolverHooks:
         engine.execute_player_turn(ActionQueue(energy_available=10))
         # No system-actor complication entries appended
         assert all(
-            not entry.action.startswith("Complication:")
-            for entry in engine._state.combat_log
+            not entry.action.startswith("Complication:") for entry in engine._state.combat_log
         )
 
 
@@ -354,12 +353,10 @@ class TestNarrationFlagIntegration:
         narration_logs = [
             entry
             for entry in engine._state.combat_log
-            if entry.actor == "system"
-            and "Complication:" in entry.action
+            if entry.actor == "system" and "Complication:" in entry.action
         ]
         assert any(
-            "Hull's screaming." in " ".join(entry.effects_applied)
-            for entry in narration_logs
+            "Hull's screaming." in " ".join(entry.effects_applied) for entry in narration_logs
         )
 
 

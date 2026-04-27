@@ -114,9 +114,7 @@ class TestStuckSprintRecovery:
 
 
 class TestReconcileStaleState:
-    def test_clears_error_outcome_when_roadmap_is_todo(
-        self, isolated_roadmap
-    ) -> None:
+    def test_clears_error_outcome_when_roadmap_is_todo(self, isolated_roadmap) -> None:
         # SA-2 is todo in ROADMAP. State says it last errored.
         state = HarnessState()
         state.sprints["SA-2"] = SprintState(
@@ -144,9 +142,7 @@ class TestReconcileStaleState:
 
     def test_does_not_touch_ok_outcomes(self, isolated_roadmap) -> None:
         state = HarnessState()
-        state.sprints["SA-2"] = SprintState(
-            sprint_id="SA-2", last_outcome="ok"
-        )
+        state.sprints["SA-2"] = SprintState(sprint_id="SA-2", last_outcome="ok")
         reconciled = harness._reconcile_stale_state(state)
         assert reconciled == 0
         assert state.sprints["SA-2"].last_outcome == "ok"
@@ -154,9 +150,7 @@ class TestReconcileStaleState:
     def test_does_not_touch_in_progress_sprints(self, isolated_roadmap) -> None:
         # SA-1 is in-progress in ROADMAP. Don't reconcile — it's mid-flight.
         state = HarnessState()
-        state.sprints["SA-1"] = SprintState(
-            sprint_id="SA-1", last_outcome="error"
-        )
+        state.sprints["SA-1"] = SprintState(sprint_id="SA-1", last_outcome="error")
         reconciled = harness._reconcile_stale_state(state)
         assert reconciled == 0
         assert state.sprints["SA-1"].last_outcome == "error"

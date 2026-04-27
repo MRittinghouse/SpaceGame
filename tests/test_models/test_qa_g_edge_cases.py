@@ -25,14 +25,24 @@ def _make_player(game_day: int = 5):
     from spacegame.models.ship import Ship, ShipType
 
     ship_type = ShipType(
-        id="shuttle", name="Shuttle", ship_class="light",
-        description="x", cargo_capacity=10, fuel_capacity=50,
-        fuel_efficiency=1.0, speed_multiplier=1.0, purchase_price=0,
-        resale_value=0, crew_slots=2, special_abilities=[],
+        id="shuttle",
+        name="Shuttle",
+        ship_class="light",
+        description="x",
+        cargo_capacity=10,
+        fuel_capacity=50,
+        fuel_efficiency=1.0,
+        speed_multiplier=1.0,
+        purchase_price=0,
+        resale_value=0,
+        crew_slots=2,
+        special_abilities=[],
         availability="all",
     )
     player = Player(
-        name="T", credits=500, current_system_id="nexus_prime",
+        name="T",
+        credits=500,
+        current_system_id="nexus_prime",
         ship=Ship(ship_type=ship_type, current_fuel=50),
     )
     player.game_day = game_day
@@ -122,8 +132,8 @@ class TestCaptainDisplayNameOverflow:
         # The captains identified as overflowing in QA-G-4 measurements
         long_name_captain_ids = (
             "dowager_chamberlains_regret",  # 756px @ 1080p
-            "wren_departure_angle",          # 720px @ 1080p
-            "rin_wheat_dagger",              # 630px
+            "wren_departure_angle",  # 720px @ 1080p
+            "rin_wheat_dagger",  # 630px
             "odalys_kindling",
             "ink_silverback_gospel",
             "fyodor_fourth_try",
@@ -168,10 +178,15 @@ class TestMissingCaptainData:
 
         cap = EnemyCaptain(
             id="ghost_captain",
-            name="Ghost", nickname="Ghost",
-            home_sector="", signature_ship_template="pirate_scout",
-            pre_combat_hail="x", surrender_line="", retreat_line="",
-            victory_line="", defeat_line="",
+            name="Ghost",
+            nickname="Ghost",
+            home_sector="",
+            signature_ship_template="pirate_scout",
+            pre_combat_hail="x",
+            surrender_line="",
+            retreat_line="",
+            victory_line="",
+            defeat_line="",
         )
         # Empty variants dict — no overlay
         eff = get_effective_captain_dialogue(cap, None, {})

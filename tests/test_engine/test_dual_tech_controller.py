@@ -228,9 +228,7 @@ class TestRenderingGates:
 
     def test_name_hold_renders_tech_name(self) -> None:
         """During NAME_HOLD the tech name should be on-screen in the dominant role."""
-        c = _controller(
-            tech_name="FROST LANCE", dominant_element="cryo", secondary_element="ion"
-        )
+        c = _controller(tech_name="FROST LANCE", dominant_element="cryo", secondary_element="ion")
         c.update(1.1)  # mid NAME_HOLD
         screen = _screen()
         c.render(screen)

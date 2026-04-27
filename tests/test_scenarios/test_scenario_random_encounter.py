@@ -85,9 +85,7 @@ def _apply_outcome_rewards(player, outcome: EncounterOutcome) -> None:
             player.decay_criminal_heat(reward.amount)
 
 
-def _resolve_choice(
-    player, choice: EncounterChoice, social: SocialManager
-) -> EncounterOutcome:
+def _resolve_choice(player, choice: EncounterChoice, social: SocialManager) -> EncounterOutcome:
     """Mirror EncounterView._select_choice (encounter_view.py:476).
 
     Resolves the skill_check (if present), routes to outcome or
@@ -311,9 +309,7 @@ class TestSkillCheckBranching:
             id="talk",
             label="Talk",
             description="Convince them.",
-            outcome=EncounterOutcome(
-                description="Success", rewards=[]
-            ),
+            outcome=EncounterOutcome(description="Success", rewards=[]),
             skill_check=EncounterSkillCheck(
                 skill="persuasion",
                 difficulty=5,
@@ -341,12 +337,8 @@ class TestSkillCheckBranching:
             id="talk",
             label="Talk",
             description="Convince them.",
-            outcome=EncounterOutcome(
-                description="Single path", rewards=[]
-            ),
-            skill_check=EncounterSkillCheck(
-                skill="persuasion", difficulty=5
-            ),
+            outcome=EncounterOutcome(description="Single path", rewards=[]),
+            skill_check=EncounterSkillCheck(skill="persuasion", difficulty=5),
             failure_outcome=None,
         )
         outcome = _resolve_choice(player, choice, social)
@@ -403,11 +395,7 @@ class TestRewardDispatch:
         player = fresh_player()
         outcome = EncounterOutcome(
             description="story beat",
-            rewards=[
-                MissionReward(
-                    reward_type="set_flag", amount=1, target_id="met_torres"
-                )
-            ],
+            rewards=[MissionReward(reward_type="set_flag", amount=1, target_id="met_torres")],
         )
         _apply_outcome_rewards(player, outcome)
         assert player.dialogue_flags.get("met_torres") is True
@@ -426,9 +414,7 @@ class TestRewardDispatch:
             ],
         )
         _apply_outcome_rewards(player, outcome)
-        assert (
-            player.faction_reputation.get("commerce_guild", 0) == before + 5
-        )
+        assert player.faction_reputation.get("commerce_guild", 0) == before + 5
 
     def test_confiscate_cargo_removes_only_what_exists(self) -> None:
         player = fresh_player()
@@ -505,8 +491,6 @@ class TestFullEncounterChain:
         before_credits = player.credits
         _apply_outcome_rewards(player, outcome)
 
-        credits_in_reward = sum(
-            r.amount for r in outcome.rewards if r.reward_type == "credits"
-        )
+        credits_in_reward = sum(r.amount for r in outcome.rewards if r.reward_type == "credits")
         assert player.credits == before_credits + credits_in_reward
         assert player.encounters_survived == 1
