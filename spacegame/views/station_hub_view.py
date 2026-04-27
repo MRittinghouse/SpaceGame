@@ -6,6 +6,7 @@ the direct galaxy-map-to-trading transition.
 """
 
 import random
+import time
 from typing import Optional
 
 import pygame
@@ -44,6 +45,7 @@ from spacegame.models.station_salience import (
     is_investment_unlocked,
 )
 from spacegame.models.system import StarSystem
+from spacegame.utils import telemetry
 from spacegame.utils.logger import logger
 from spacegame.views._glow import render_pulsing_glow
 from spacegame.views.base_view import BaseView
@@ -221,6 +223,9 @@ class StationHubView(BaseView):
 
         # Detail panel (for unique locations)
         self._detail_location: Optional[Location] = None
+        # SA-PREP-3: dwell timer for open detail panels
+        self._detail_panel_opened_at: Optional[float] = None
+        self._detail_panel_anchor_id: Optional[str] = None
 
         # SL-3 (station_legibility.md): the cyan/accent glow on a single
         # recommended card. Computed once per dock in _create_ui from
@@ -391,8 +396,25 @@ class StationHubView(BaseView):
         """Persist the faction-tip-dismissed flag."""
         self.player.dialogue_flags[seen_faction_tip(layout_key)] = True
 
+    def _emit_detail_dwell_if_open(self) -> None:
+        """Emit anchor_detail_dwell for the currently-open detail panel, then clear state.
+
+        No-op when no detail panel is open or telemetry is disabled.
+        """
+        if self._detail_panel_anchor_id is None or self._detail_panel_opened_at is None:
+            return
+        duration_ms = int((time.monotonic() - self._detail_panel_opened_at) * 1000)
+        telemetry.record_event(
+            "anchor_detail_dwell",
+            anchor_id=self._detail_panel_anchor_id,
+            duration_ms=duration_ms,
+        )
+        self._detail_panel_opened_at = None
+        self._detail_panel_anchor_id = None
+
     def on_exit(self) -> None:
         """Deactivate view, clean up UI."""
+        self._emit_detail_dwell_if_open()
         self._destroy_ui()
         super().on_exit()
 
@@ -691,6 +713,7 @@ class StationHubView(BaseView):
                 return
 
             if event.ui_element == self._detail_close_button:
+                self._emit_detail_dwell_if_open()
                 self._detail_location = None
                 if self._detail_close_button:
                     self._detail_close_button.kill()
@@ -746,7 +769,17 @@ class StationHubView(BaseView):
         get_audio_manager().play_sfx("ui_confirm")
         self._select_location_type(zone.location.location_type)
         if zone.location.location_type == "unique":
+            # Emit dwell for any currently-open detail panel before replacing it
+            self._emit_detail_dwell_if_open()
             self._detail_location = zone.location
+            self._detail_panel_opened_at = time.monotonic()
+            self._detail_panel_anchor_id = zone.location.id
+            telemetry.record_event(
+                "anchor_card_clicked",
+                anchor_id=zone.location.id,
+                system_id=self.system.id,
+                game_day=self.player.game_day,
+            )
 
     def update(self, dt: float) -> None:
         """Update background animation, layout hover, and flavor text rotation."""

@@ -1,14 +1,18 @@
 """Tests for StationHubView — station location selection screen."""
 
+import json
+import sys
+import types
+
 import pygame
 import pygame_gui
-from spacegame.config import GameState, WINDOW_WIDTH, WINDOW_HEIGHT
+
+from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH, GameState
 from spacegame.data_loader import DataLoader
+from spacegame.engine.activity_registry import create_default_registry
 from spacegame.models.player import Player
 from spacegame.models.ship import Ship
-from spacegame.models.location import Location
 from spacegame.views.station_hub_view import StationHubView
-from spacegame.engine.activity_registry import create_default_registry
 
 
 def _make_test_env(
@@ -291,4 +295,184 @@ class TestStationHubCantina:
             view._select_npc(npcs[0].id)
             assert view.pending_npc_id == npcs[0].id
             assert view.get_next_state() == GameState.DIALOGUE
+        view.on_exit()
+
+
+def _reset_telemetry_state(tel: object) -> None:
+    """Reset module-level session state between tests."""
+    tel._session_id = None  # type: ignore[attr-defined]
+    tel._session_path = None  # type: ignore[attr-defined]
+
+
+def _setup_telemetry(monkeypatch: object, tmp_path: object) -> object:
+    """Enable telemetry pointing to tmp_path and return the fresh module."""
+    monkeypatch.setenv("SPACEGAME_TELEMETRY", "1")
+    monkeypatch.setenv("SPACEGAME_TELEMETRY_DIR", str(tmp_path))
+    # Reload to pick up new env vars and clear any stale session state
+    for key in list(sys.modules.keys()):
+        if "spacegame.utils.telemetry" in key:
+            del sys.modules[key]
+    import spacegame.utils.telemetry as tel
+
+    _reset_telemetry_state(tel)
+    return tel
+
+
+def _make_fake_zone(
+    location_type: str, location_id: str, system_id: str = "crimson_reach"
+) -> object:
+    """Build a minimal fake StationZone for testing _activate_zone."""
+    loc = types.SimpleNamespace(
+        location_type=location_type,
+        id=location_id,
+        name="Test Location",
+    )
+    return types.SimpleNamespace(location=loc, rect=pygame.Rect(0, 0, 100, 50))
+
+
+class TestStationHubTelemetryHooks:
+    """Telemetry events emitted by StationHubView click + dwell hooks."""
+
+    def _make_view_entered(self, system_id: str = "crimson_reach") -> StationHubView:
+        manager, player, loader = _make_test_env(system_id)
+        system = loader.get_system(system_id)
+        locations = loader.get_locations_for_system(system_id)
+        registry = create_default_registry()
+        view = StationHubView(
+            ui_manager=manager,
+            player=player,
+            system=system,
+            locations=locations,
+            activity_registry=registry,
+            data_loader=loader,
+        )
+        view.on_enter()
+        return view
+
+    def _read_events(self, tmp_path: object) -> list[dict]:
+        """Parse all JSONL events from any .jsonl file under tmp_path."""
+        events = []
+        for f in tmp_path.rglob("*.jsonl"):  # type: ignore[union-attr]
+            for line in f.read_text(encoding="utf-8").splitlines():
+                if line.strip():
+                    events.append(json.loads(line))
+        return events
+
+    # --- anchor_card_clicked ---
+
+    def test_unique_card_click_emits_anchor_card_clicked(self, monkeypatch, tmp_path) -> None:
+        """Clicking a unique card records anchor_card_clicked with required fields."""
+        _setup_telemetry(monkeypatch, tmp_path)
+        view = self._make_view_entered("crimson_reach")
+        zone = _make_fake_zone("unique", "crimson_wreckers_guild", "crimson_reach")
+        view._activate_zone(zone)
+
+        events = self._read_events(tmp_path)
+        clicked = [e for e in events if e.get("event_type") == "anchor_card_clicked"]
+        assert len(clicked) == 1, f"Expected 1 anchor_card_clicked, got {clicked}"
+        assert clicked[0]["anchor_id"] == "crimson_wreckers_guild"
+        assert "system_id" in clicked[0]
+        assert "game_day" in clicked[0]
+        view.on_exit()
+
+    def test_non_unique_card_click_does_not_emit(self, monkeypatch, tmp_path) -> None:
+        """Clicking a market card must NOT emit anchor_card_clicked."""
+        _setup_telemetry(monkeypatch, tmp_path)
+        view = self._make_view_entered("crimson_reach")
+        zone = _make_fake_zone("market", "crimson_market", "crimson_reach")
+        view._activate_zone(zone)
+
+        events = self._read_events(tmp_path)
+        clicked = [e for e in events if e.get("event_type") == "anchor_card_clicked"]
+        assert clicked == [], f"Unexpected anchor_card_clicked events: {clicked}"
+        view.on_exit()
+
+    def test_unique_card_click_disabled_telemetry_no_event(self, monkeypatch, tmp_path) -> None:
+        """When telemetry is disabled, clicking a unique card writes nothing."""
+        monkeypatch.delenv("SPACEGAME_TELEMETRY", raising=False)
+        monkeypatch.setenv("SPACEGAME_TELEMETRY_DIR", str(tmp_path))
+        for key in list(sys.modules.keys()):
+            if "spacegame.utils.telemetry" in key:
+                del sys.modules[key]
+        import spacegame.utils.telemetry as tel
+
+        _reset_telemetry_state(tel)
+
+        view = self._make_view_entered("crimson_reach")
+        zone = _make_fake_zone("unique", "crimson_wreckers_guild", "crimson_reach")
+        view._activate_zone(zone)
+
+        files = list(tmp_path.rglob("*.jsonl"))
+        assert files == [], f"Telemetry wrote files when disabled: {files}"
+        view.on_exit()
+
+    # --- anchor_detail_dwell (close button path) ---
+
+    def test_detail_dwell_emitted_on_close_button(self, monkeypatch, tmp_path) -> None:
+        """Closing the detail panel via close button emits anchor_detail_dwell."""
+        _setup_telemetry(monkeypatch, tmp_path)
+        view = self._make_view_entered("crimson_reach")
+        zone = _make_fake_zone("unique", "crimson_wreckers_guild", "crimson_reach")
+        view._activate_zone(zone)  # opens detail panel
+
+        # Emit dwell by calling the helper that the close button handler uses
+        view._emit_detail_dwell_if_open()
+
+        events = self._read_events(tmp_path)
+        dwell = [e for e in events if e.get("event_type") == "anchor_detail_dwell"]
+        assert len(dwell) == 1, f"Expected 1 anchor_detail_dwell, got {dwell}"
+        assert dwell[0]["anchor_id"] == "crimson_wreckers_guild"
+        assert dwell[0]["duration_ms"] >= 0
+        view.on_exit()
+
+    # --- anchor_detail_dwell (view exit path) ---
+
+    def test_detail_dwell_emitted_on_view_exit(self, monkeypatch, tmp_path) -> None:
+        """Navigating away with detail open emits anchor_detail_dwell."""
+        _setup_telemetry(monkeypatch, tmp_path)
+        view = self._make_view_entered("crimson_reach")
+        zone = _make_fake_zone("unique", "crimson_wreckers_guild", "crimson_reach")
+        view._activate_zone(zone)  # opens detail panel
+
+        view.on_exit()  # should emit dwell before destroying UI
+
+        events = self._read_events(tmp_path)
+        dwell = [e for e in events if e.get("event_type") == "anchor_detail_dwell"]
+        assert len(dwell) == 1, f"Expected 1 anchor_detail_dwell on exit, got {dwell}"
+        assert dwell[0]["anchor_id"] == "crimson_wreckers_guild"
+
+    # --- anchor_detail_dwell (replacement click path) ---
+
+    def test_detail_dwell_emitted_on_replacement_click(self, monkeypatch, tmp_path) -> None:
+        """Clicking a second unique card while first detail is open emits dwell for first."""
+        _setup_telemetry(monkeypatch, tmp_path)
+        view = self._make_view_entered("nexus_prime")
+        zone_a = _make_fake_zone("unique", "nexus_financial_exchange", "nexus_prime")
+        zone_b = _make_fake_zone("unique", "nexus_financial_exchange", "nexus_prime")
+        zone_b.location.id = "stellaris_auction_house"
+
+        view._activate_zone(zone_a)  # opens detail for first anchor
+
+        # Click a second unique card — should emit dwell for the FIRST anchor
+        view._activate_zone(zone_b)
+
+        events = self._read_events(tmp_path)
+        dwell = [e for e in events if e.get("event_type") == "anchor_detail_dwell"]
+        assert len(dwell) == 1, f"Expected 1 dwell for first anchor, got {dwell}"
+        assert dwell[0]["anchor_id"] == "nexus_financial_exchange", (
+            f"Dwell should name the CLOSED anchor, got {dwell[0]['anchor_id']}"
+        )
+        view.on_exit()
+
+    # --- dwell not emitted when no panel was open ---
+
+    def test_no_dwell_emitted_when_panel_not_open(self, monkeypatch, tmp_path) -> None:
+        """Calling _emit_detail_dwell_if_open with no open panel emits nothing."""
+        _setup_telemetry(monkeypatch, tmp_path)
+        view = self._make_view_entered("crimson_reach")
+        view._emit_detail_dwell_if_open()  # no panel open
+
+        events = self._read_events(tmp_path)
+        dwell = [e for e in events if e.get("event_type") == "anchor_detail_dwell"]
+        assert dwell == []
         view.on_exit()
