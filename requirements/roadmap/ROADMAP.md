@@ -159,7 +159,7 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 - Started: 2026-04-26 20:48
 - Completed: 2026-04-26 21:05
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending
+- Commits: c0370c0
 - New_sprints_proposed: none
 - Polish_items_folded_in: none (sprint is documentation-only; existing tasks 8–10 cover quality gates — tonal map, speaker_id registry, Writing Bible scanner pass)
 - Decisions_locked: 1 (Bidding rival personas; four prior decisions remained resolved from pilot)
