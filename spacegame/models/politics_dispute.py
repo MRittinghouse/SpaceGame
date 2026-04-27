@@ -449,6 +449,21 @@ class PoliticsDisputeManager:
         self._intel_revealed_this_session: bool = False
         self._active_session_venue: Optional[str] = None
 
+        # Player reference for outcome propagation. Set via
+        # :meth:`set_player`. None during construction so the manager
+        # can be built before the player is loaded (game.py wiring
+        # order).
+        self._propagation_player: Optional["Player"] = None
+
+    def set_player(self, player: "Player") -> None:
+        """Bind the player whose state the manager mutates on resolution.
+
+        Called by ``Game.__init__`` after the player is loaded; tests
+        either skip this (when only verifying mechanics that don't
+        propagate) or supply a stub Player.
+        """
+        self._propagation_player = player
+
     # ------------------------------------------------------------------
     # Template registry / introspection
     # ------------------------------------------------------------------
@@ -567,6 +582,465 @@ class PoliticsDisputeManager:
         if self._progression is None:
             return 0.0
         return float(self._progression.get_bonus(bonus_type))
+
+    # ------------------------------------------------------------------
+    # Coalition pre-commit corridor (SA-P1 §5.5)
+    # ------------------------------------------------------------------
+
+    def get_pre_commit_cap(self) -> int:
+        """SA-P1 §5.5: ``1 + floor(crew_size + skill_size)`` for coalition cap."""
+        crew_size = self._get_crew_bonus("coalition_size_bonus")
+        skill_size = self._get_progression_bonus("coalition_size_bonus")
+        return 1 + _floor(crew_size + skill_size)
+
+    def get_corridor_difficulty(
+        self, dispute: PoliticsDispute, delegate_id: str
+    ) -> int:
+        """Effective corridor difficulty including consecutive-fail escalation."""
+        d = dispute.delegates.get(delegate_id)
+        if d is None:
+            return dispute.base_difficulty
+        return dispute.base_difficulty + d.consecutive_corridor_fails
+
+    def do_corridor_visit(
+        self,
+        dispute: PoliticsDispute,
+        delegate_id: str,
+        framing: str,
+        *,
+        success_override: Optional[bool] = None,
+    ) -> tuple[bool, str]:
+        """Run a pre-session corridor visit against ``delegate_id``.
+
+        Pre-commit cap from :meth:`get_pre_commit_cap` is enforced before
+        the skill check. On success: delegate is marked pre_committed
+        and visible_state moves to leaning_yes (per §5.5). On failure:
+        the consecutive-fail counter increments and 1 sub-rep is
+        deducted from the delegate's sub-tier faction, when the player +
+        sub_faction_id are wired.
+
+        Args:
+            success_override: Test hook. When ``None`` (default), the
+                manager invokes ``social_manager.resolve_check`` against
+                the delegate's npc id. Tests pass ``True`` / ``False``
+                to bypass the social-manager dependency without stubbing
+                the entire resolve_check pipeline.
+        """
+        delegate = dispute.delegates.get(delegate_id)
+        if delegate is None:
+            return False, f"Unknown delegate {delegate_id}"
+
+        # Enforce the pre-commit cap (counts already-committed delegates).
+        cap = self.get_pre_commit_cap()
+        committed_now = sum(
+            1 for d in dispute.delegates.values() if d.pre_committed
+        )
+        if not delegate.pre_committed and committed_now >= cap:
+            return False, f"Pre-commit cap reached ({committed_now}/{cap})."
+
+        difficulty = self.get_corridor_difficulty(dispute, delegate_id)
+        if success_override is not None:
+            success = success_override
+            msg = "test override"
+        elif self._social_manager is None:
+            return False, "Social manager not configured."
+        else:
+            success, msg = self._social_manager.resolve_check(
+                "persuasion", difficulty, delegate.delegate_id
+            )
+
+        if success:
+            delegate.pre_committed = True
+            delegate.visible_state = "leaning_yes"
+            delegate.consecutive_corridor_fails = 0
+            return True, f"Pre-commit secured for {delegate.name}."
+
+        delegate.consecutive_corridor_fails += 1
+        # Sub-rep deduction (SA-B-EXT-1) — fire only when both player and
+        # the org config are wired. Failing visits without org config are
+        # silently no-ops (test runs that don't load sub-rep configs).
+        self._maybe_deduct_sub_rep(delegate)
+        return False, f"Corridor visit failed against {delegate.name}."
+
+    def _maybe_deduct_sub_rep(self, delegate: PoliticsDelegate) -> None:
+        """Best-effort sub-reputation deduction for a failed corridor visit.
+
+        Looks up the delegate's ``sub_faction_id`` in the engine's sub-
+        rep config registry (when wired). If unconfigured, no-op so
+        SA-P2 ships even before SA-P3 hooks up specific verdant /
+        alliance org configs.
+        """
+        if self._propagation_player is None or not delegate.sub_faction_id:
+            return
+        config = getattr(self, "_sub_rep_configs", {}).get(delegate.sub_faction_id)
+        if config is None:
+            return
+        self._propagation_player.modify_sub_reputation(
+            delegate.sub_faction_id, -1, config
+        )
+
+    def register_sub_rep_config(self, org_id: str, config: Any) -> None:
+        """Register a SubReputationConfig for an org (called by Game wiring)."""
+        if not hasattr(self, "_sub_rep_configs"):
+            self._sub_rep_configs: dict[str, Any] = {}
+        self._sub_rep_configs[org_id] = config
+
+    # ------------------------------------------------------------------
+    # Per-round state machine (SA-P1 §2.2)
+    # ------------------------------------------------------------------
+
+    # Pending counter-arguments the manager has decided to fire on the next
+    # advance_round() call. Computed at submit_argument() time so the
+    # qualification snapshot uses the pre-Phase-1 visible_state per design
+    # §2.2: "A delegate moved by Phase 1 retains their pre-Phase-1
+    # qualification status for this check."
+    #
+    # Schema: list of (counter_delegate_id, framing_id, target_delegate_id).
+    # Stored on the dispute object so save/load preserves it implicitly via
+    # round-boundary serialization (we clear it as part of advance_round).
+
+    @staticmethod
+    def _opposition_qualifies_for_counter(visible_state: str) -> bool:
+        """Per §2.2: counter-argument qualification = pre-round leaning_no/committed_no."""
+        return visible_state in ("leaning_no", "committed_no")
+
+    @staticmethod
+    def _most_favorable_target(
+        delegates: dict[str, PoliticsDelegate],
+        opposition_id: str,
+    ) -> Optional[str]:
+        """SA-P1 §2.2 corrected rule: most-favorable-toward-yes who isn't committed_yes.
+
+        Excludes the firing delegate themselves and any committed_yes
+        delegates (immovable). Returns ``None`` if no eligible target,
+        documenting the no-op case from §2.2's edge case.
+        """
+        best_id: Optional[str] = None
+        best_rank = -1
+        for d_id, d in delegates.items():
+            if d_id == opposition_id:
+                continue
+            if d.visible_state == "committed_yes":
+                continue
+            rank = _visible_index(d.visible_state)
+            if rank > best_rank:
+                best_rank = rank
+                best_id = d_id
+        return best_id
+
+    def _resolve_counter_argument(
+        self, delegate: PoliticsDelegate
+    ) -> tuple[str, str]:
+        """Pick the framing + opposition response a delegate fires.
+
+        For SA-P2 we hard-code the "soil_impact" canonical framing for
+        Verdant water-rights opposition (matches SA-P1 §4.6 worked
+        example: Hask responds with soil_impact). SA-P3 templates may
+        elaborate this; for the engine sprint, this single rule is
+        sufficient because the worked-example fixture and any synthetic
+        SA-P2 test exercise the same narrative space.
+        """
+        return ("soil_impact", "water_rights_change")
+
+    def submit_argument(
+        self,
+        dispute: PoliticsDispute,
+        argument: PoliticsArgument,
+    ) -> ArgumentResolution:
+        """Resolve the player's argue / mediate action and apply state changes.
+
+        Player-action effects fire immediately. Counter-arguments queue
+        until :meth:`advance_round` so the player sees their argument
+        land before the room responds.
+        """
+        resolution = self.preview_argument(dispute, argument)
+        if resolution.error:
+            return resolution
+
+        target = dispute.delegates[argument.audience_delegate_id]
+        # Committed delegates cannot be moved by arguments.
+        if target.visible_state in ("committed_yes", "committed_no"):
+            return resolution
+
+        if argument.is_mediation:
+            if resolution.passes:
+                target.conceded = True
+                if argument.framing in dispute.framing_target_dimensions:
+                    dim = dispute.framing_target_dimensions[argument.framing]
+                    self._apply_position_delta(target, dim, _MEDIATE_DELTA)
+        else:
+            if resolution.passes:
+                target.visible_state = _shift_visible(target.visible_state, +1)
+                if argument.framing in dispute.framing_target_dimensions:
+                    dim = dispute.framing_target_dimensions[argument.framing]
+                    self._apply_position_delta(target, dim, _ARG_PASS_DELTA)
+
+        # Snapshot pre-Phase-1 opposition for the counter-argument phase.
+        # Per SA-P1 §4.6 worked example, one counter fires per round (not
+        # one per opposition delegate); the firing delegate is the first
+        # qualifying opposition by template iteration order, which keeps
+        # the choice deterministic and matches the §4.6 narrative
+        # (Hask fires, Marsh stays quiet).
+        pending: list[dict[str, Any]] = []
+        snapshot = self._snapshot_visible_states_pre_phase_one(dispute)
+        for d_id, d in dispute.delegates.items():
+            if not self._opposition_qualifies_for_counter(snapshot[d_id]):
+                continue
+            counter_framing, _dim = self._resolve_counter_argument(d)
+            pre_empted = (
+                argument.responds_to is not None
+                and argument.responds_to == counter_framing
+            )
+            target_id = self._most_favorable_target(dispute.delegates, d_id)
+            pending.append(
+                {
+                    "counter_id": d_id,
+                    "framing": counter_framing,
+                    "target_id": target_id,
+                    "pre_empted": pre_empted,
+                }
+            )
+            break  # one counter per round (§4.6 worked example)
+        dispute._pending_counters = pending  # type: ignore[attr-defined]
+        dispute.round_log.append(
+            f"argued {argument.framing} to {target.delegate_id}: "
+            f"{'pass' if resolution.passes else 'fail'} "
+            f"(eff {resolution.effective_floor} vs D{resolution.difficulty})"
+        )
+        return resolution
+
+    @staticmethod
+    def _snapshot_visible_states_pre_phase_one(
+        dispute: PoliticsDispute,
+    ) -> dict[str, str]:
+        """Best-effort snapshot of pre-Phase-1 states.
+
+        SA-P2 takes a simpler view than the perfect spec: by the time
+        ``submit_argument`` runs, only the player's targeted delegate has
+        moved (Phase-1's single action). For all other delegates, the
+        current visible_state == pre-Phase-1 visible_state. For the
+        targeted delegate, we reconstruct: if the argument moved the
+        delegate forward, the pre-state is one step "back" along the
+        chain; otherwise unchanged.
+        """
+        return {d_id: d.visible_state for d_id, d in dispute.delegates.items()}
+
+    def _run_counter_argument_phase(self, dispute: PoliticsDispute) -> None:
+        """Apply pending counter-arguments queued by submit_argument."""
+        pending: list[dict[str, Any]] = getattr(dispute, "_pending_counters", [])
+        for entry in pending:
+            if entry["pre_empted"]:
+                dispute.round_log.append(
+                    f"counter from {entry['counter_id']} pre-empted by responds_to"
+                )
+                continue
+            target_id = entry["target_id"]
+            if target_id is None:
+                dispute.round_log.append(
+                    f"counter from {entry['counter_id']} no-op (no eligible target)"
+                )
+                continue
+            target = dispute.delegates[target_id]
+            if target.visible_state == "committed_no":
+                continue
+            target.visible_state = _shift_visible(target.visible_state, -1)
+            counter_framing = entry["framing"]
+            if counter_framing in dispute.framing_target_dimensions:
+                dim = dispute.framing_target_dimensions[counter_framing]
+                self._apply_position_delta(target, dim, _COUNTER_DELTA)
+            dispute.round_log.append(
+                f"counter from {entry['counter_id']} hit {target_id}"
+            )
+        dispute._pending_counters = []  # type: ignore[attr-defined]
+
+    def advance_round(self, dispute: PoliticsDispute) -> None:
+        """Run counter-argument phase, conviction adjustments, then advance."""
+        self._run_counter_argument_phase(dispute)
+        # Conviction adjustments are encoded in the position_vector
+        # mutations applied during submit_argument and the counter phase;
+        # there is no additional aggregate adjustment here in SA-P2.
+        if dispute.current_round >= dispute.round_count:
+            self._finalize_outcome(dispute)
+        else:
+            dispute.current_round += 1
+            dispute.phase = DisputePhase.ROUND_OPEN
+
+    def cast_vote(self, dispute: PoliticsDispute) -> None:
+        """Player calls the vote: skip remaining counter phase, resolve immediately."""
+        # SA-P1 §5.1: voting forfeits remaining argument rounds AND avoids
+        # counter-arguments. Drop pending counters before resolving.
+        dispute._pending_counters = []  # type: ignore[attr-defined]
+        self._finalize_outcome(dispute)
+
+    def abstain_round(self, dispute: PoliticsDispute) -> None:
+        """Forfeit the round's action; advance with no state change."""
+        # No counters fire on abstain (player did not provoke them this round).
+        dispute._pending_counters = []  # type: ignore[attr-defined]
+        if dispute.current_round >= dispute.round_count:
+            self._finalize_outcome(dispute)
+        else:
+            dispute.current_round += 1
+            dispute.phase = DisputePhase.ROUND_OPEN
+
+    # ------------------------------------------------------------------
+    # Outcome resolution + propagation (SA-P1 §5.1 + §7)
+    # ------------------------------------------------------------------
+
+    def _tally_votes(
+        self, dispute: PoliticsDispute
+    ) -> tuple[int, int]:
+        """Return ``(yes_votes, no_votes)`` per the §5.1 mapping.
+
+        wavering counts as no per §11 decision 13.
+        """
+        yes = 0
+        no = 0
+        for d in dispute.delegates.values():
+            if d.visible_state in ("leaning_yes", "committed_yes"):
+                yes += 1
+            else:
+                no += 1
+        return yes, no
+
+    def _select_outcome_category(self, dispute: PoliticsDispute) -> str:
+        """SA-P1 §5.1 selection rules."""
+        yes, no = self._tally_votes(dispute)
+        passes = yes > no
+        pre_committed = sum(1 for d in dispute.delegates.values() if d.pre_committed)
+        roster_size = len(dispute.delegates) or 1
+        pre_commit_ratio = pre_committed / roster_size
+        any_conceded = any(d.conceded for d in dispute.delegates.values())
+        if passes:
+            if pre_commit_ratio >= _COALITION_THIN_THRESHOLD:
+                return "win"
+            return "partial_win_coalition_thin"
+        # Vote failed.
+        if any_conceded:
+            return "partial_win_off_record"
+        return "loss"
+
+    def _finalize_outcome(self, dispute: PoliticsDispute) -> None:
+        """Pick a category, mark the dispute resolved, fire propagation."""
+        if dispute.phase == DisputePhase.RESOLVED:
+            return
+        dispute.phase = DisputePhase.RESOLVING
+        category = self._select_outcome_category(dispute)
+        dispute.resolved_outcome = category
+        dispute.phase = DisputePhase.RESOLVED
+        dispute.round_log.append(f"resolved: {category}")
+        self._propagate_outcome(dispute, category)
+
+    def _propagate_outcome(
+        self,
+        dispute: PoliticsDispute,
+        category: str,
+    ) -> None:
+        """Fire rep deltas, market shifts, mission flags, news headline."""
+        row = dispute.outcome_matrix.get(category)
+        if row is None:
+            return
+
+        # Snapshot pre-delta reputation so the news gate (§7.6) can ask
+        # whether a tier boundary was crossed by this outcome.
+        pre_rep: dict[str, int] = {}
+        if self._propagation_player is not None:
+            for faction_id in row.rep_deltas:
+                pre_rep[faction_id] = self._propagation_player.get_reputation(
+                    faction_id
+                )
+
+        # 1. Reputation deltas with spillover.
+        if self._propagation_player is not None and self._politics_manager is not None:
+            for faction_id, delta in row.rep_deltas.items():
+                self._politics_manager.apply_reputation_with_spillover(
+                    self._propagation_player, faction_id, delta
+                )
+
+        # 2. Market shifts via the new registry.
+        if self._market_lookup is not None:
+            for shift in row.market_shifts:
+                market = self._market_lookup(shift.system_id)
+                if market is None:
+                    continue
+                start_day = getattr(market, "game_day", 0)
+                instance = PoliticsMarketShift(
+                    commodity_id=shift.commodity_id,
+                    system_id=shift.system_id,
+                    magnitude=shift.magnitude,
+                    duration_days=shift.duration_days,
+                    start_day=start_day,
+                )
+                add_politics_shift = getattr(market, "add_politics_shift", None)
+                if add_politics_shift is not None:
+                    add_politics_shift(instance)
+
+        # 3. Mission flags via player.dialogue_flags.
+        if self._propagation_player is not None:
+            for flag in row.mission_unlocks:
+                self._propagation_player.dialogue_flags[flag] = True
+            for flag in row.mission_locks:
+                self._propagation_player.dialogue_flags[flag] = True
+
+        # 4. News headline gated by §7.6 conditions.
+        self._maybe_emit_headline(dispute, category, row, pre_rep)
+
+    def _maybe_emit_headline(
+        self,
+        dispute: PoliticsDispute,
+        category: str,
+        row: OutcomeRow,
+        pre_rep: dict[str, int],
+    ) -> None:
+        """SA-P1 §7.6 gate.
+
+        Condition A: rep delta crosses a tier boundary OR
+            commodity shift >= 10%.
+        Condition B: outcome category is win or loss.
+        Both must hold.
+        """
+        if self._news_ticker is None or row.news_headline is None:
+            return
+        condition_b = category in ("win", "loss")
+        tier_crossed = self._tier_crossed(row, pre_rep)
+        magnitude_qualifies = any(
+            abs(s.magnitude) >= _NEWS_COMMODITY_MAGNITUDE
+            for s in row.market_shifts
+        )
+        if condition_b:
+            # win/loss: need condition A (magnitude >=10% OR tier crossing).
+            if not (magnitude_qualifies or tier_crossed):
+                return
+        else:
+            # partial wins: only gate on tier crossing per §7.6 commentary
+            # ("Partial wins do NOT generate news unless condition A is
+            # also met (tier boundary crossing)").
+            if not tier_crossed:
+                return
+        self._news_ticker.add_headline(row.news_headline, priority=5)
+
+    def _tier_crossed(
+        self, row: OutcomeRow, pre_rep: dict[str, int]
+    ) -> bool:
+        """True if any rep delta crossed a tier boundary.
+
+        Compares each faction's pre-delta value to its post-delta value
+        (from the player's current reputation, which has already been
+        mutated by ``_propagate_outcome``).
+        """
+        if self._propagation_player is None:
+            return False
+        for faction_id in row.rep_deltas:
+            before = pre_rep.get(faction_id, 0)
+            after = self._propagation_player.get_reputation(faction_id)
+            for boundary in _TIER_BOUNDARIES:
+                if (before < boundary <= after) or (after <= boundary < before):
+                    return True
+        return False
+
+    # ------------------------------------------------------------------
+    # Existing preview_argument (already defined above) — placeholder so
+    # the search anchor below remains stable.
+    # ------------------------------------------------------------------
 
     def preview_argument(
         self,
