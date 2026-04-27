@@ -891,7 +891,7 @@ The following decisions were locked during planning:
 - Started: 2026-04-27 11:36
 - Completed: 2026-04-27
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending
+- Commits: 94f5127
 - New_sprints_proposed: none
 - Polish_items_folded_in: none (sprint is a mechanical implementation of an already-locked design doc; no player-facing surfaces beyond skill descriptions, which the design pre-cleared against the Writing Bible)
 - Decisions_locked: 2 (existing-count test files added to touch zones rather than left for the implementer to discover; layout-fix path locked to PHASE_BLOCKED rather than algorithm tweaks per design handoff item 4)
