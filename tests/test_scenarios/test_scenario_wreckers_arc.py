@@ -179,3 +179,58 @@ def _config():
     from spacegame.models.wreckers_guild import WRECKERS_GUILD_CONFIG
 
     return WRECKERS_GUILD_CONFIG
+
+
+# ---------------------------------------------------------------------------
+# Secondary contacts arc (R1)
+# ---------------------------------------------------------------------------
+
+
+def test_secondary_contacts_walk_full_dialogues_after_enrollment() -> None:
+    """End-to-end: enroll, then exercise each contact's full 3-node tree.
+
+    Acceptance criterion 12 requires each secondary contact to be a real
+    interactive speaker carrying a distinct register. This walks the
+    full greeting → craft → signoff path for Paz, Daro, and Ife and
+    asserts every node passes the Writing Bible scanner inline.
+    """
+    player = fresh_player(system_id="crimson_reach", credits=1000)
+    mm = MissionManager(missions=[])
+    _, view = _make_view(player, mm)
+    view.on_enter()
+    view._enroll_player()
+    contacts = view.get_contact_speaker_ids()
+    assert set(contacts) == {"paz_reina", "daro_teck", "ife_obi"}
+
+    forbidden_dashes = {"—", "–", " -- "}
+    banned_phrases = ("couldn't help but", "a testament to")
+    seen_texts: set[str] = set()
+
+    for contact_id in contacts:
+        view._open_contact_dialogue(contact_id)
+        node_ids_visited = []
+        for _ in range(4):  # safety bound — every tree should close inside 3 steps
+            node = view.get_active_dialogue_node()
+            if node is None:
+                break
+            node_ids_visited.append(node.id)
+            assert node.speaker_id == contact_id
+            # Per-node Writing Bible compliance.
+            assert not any(d in node.text for d in forbidden_dashes), (
+                f"em-dash in {contact_id}/{node.id}: {node.text!r}"
+            )
+            for phrase in banned_phrases:
+                assert phrase not in node.text.lower(), (
+                    f"banned phrase '{phrase}' in {contact_id}/{node.id}"
+                )
+            seen_texts.add(node.text)
+            view._advance_dialogue()
+        # Each tree must walk all three authored nodes before closing.
+        assert node_ids_visited == ["greeting", "craft", "signoff"], (
+            f"{contact_id} tree did not walk greeting → craft → signoff: {node_ids_visited}"
+        )
+        assert view.get_active_dialogue_node() is None
+
+    # Distinctness: 3 contacts × 3 nodes = 9 unique authored texts.
+    assert len(seen_texts) == 9, "secondary contact dialogue texts collapsed onto each other"
+    view.on_exit()

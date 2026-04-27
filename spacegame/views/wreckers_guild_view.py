@@ -30,8 +30,9 @@ from spacegame.constants.flags import (
     wreckers_made_up_journal,
     wreckers_promoted_tier,
 )
+from spacegame.data_loader import get_data_loader
 from spacegame.engine.backgrounds import AnimatedBackground
-from spacegame.engine.draw_utils import draw_panel
+from spacegame.engine.draw_utils import draw_panel, word_wrap
 from spacegame.engine.fonts import (
     FONT_BODY,
     FONT_LG,
@@ -40,6 +41,7 @@ from spacegame.engine.fonts import (
     FONT_TITLE,
     get_font,
 )
+from spacegame.models.dialogue import DialogueNode, DialogueTree
 from spacegame.models.mission import (
     Mission,
     MissionManager,
@@ -80,6 +82,15 @@ CARD_H = scale_y(80)
 CARD_PAD = scale_y(8)
 ACCENT_COLOR = (200, 160, 255)  # Same purple Reach unique cards use
 
+# Recurring secondary contacts at the Hall. Order is the render order in
+# the dock. Each speaker_id has a 3-node dialogue tree authored in
+# data/dialogue/dialogues.json with the matching dialogue_id.
+WRECKERS_CONTACTS: tuple[tuple[str, str, str, str], ...] = (
+    ("paz_reina", "Paz Reina", "Wreck Navigator", "paz_reina_guild_hall"),
+    ("daro_teck", "Daro Teck", "Salvage Engineer", "daro_teck_guild_hall"),
+    ("ife_obi", "Ife Obi", "Cartographer", "ife_obi_guild_hall"),
+)
+
 
 class WreckersGuildView(BaseView):
     """Contract board + Malia dock for the Wreckers' Guild Hall."""
@@ -119,6 +130,15 @@ class WreckersGuildView(BaseView):
         self.turn_in_button: Optional[pygame_gui.elements.UIButton] = None
         self.make_up_button: Optional[pygame_gui.elements.UIButton] = None
         self._accept_buttons: dict[str, pygame_gui.elements.UIButton] = {}
+        # Secondary contacts dock — one button per recurring speaker.
+        self._contact_buttons: dict[str, pygame_gui.elements.UIButton] = {}
+        self._dialogue_continue_button: Optional[pygame_gui.elements.UIButton] = None
+
+        # In-view dialogue panel state for the secondary contacts.
+        # When ``_active_dialogue_tree`` is non-None, the dock is showing
+        # a dialogue node rather than the contact list.
+        self._active_dialogue_tree: Optional[DialogueTree] = None
+        self._active_dialogue_node_id: Optional[str] = None
 
         # Status / feedback message
         self.message: Optional[str] = None
@@ -318,6 +338,48 @@ class WreckersGuildView(BaseView):
                 btn.tool_tip_text = "Square it with Malia first."
             self._accept_buttons[template_id] = btn
 
+        # Secondary-contacts dock: one button per recurring speaker. The
+        # dock sits below the contract board so it's a sibling, not a
+        # competitor, of the main board flow.
+        if self._active_dialogue_tree is None:
+            self._create_contact_buttons()
+        else:
+            self._create_dialogue_continue_button()
+
+    def _create_contact_buttons(self) -> None:
+        """Place the three contact-name buttons in the dock."""
+        dock_y = BOARD_TOP_Y + BOARD_H + scale_y(12)
+        col_w = scale_x(180)
+        gap = scale_x(20)
+        total_w = col_w * len(WRECKERS_CONTACTS) + gap * (len(WRECKERS_CONTACTS) - 1)
+        start_x = PANEL_X + (PANEL_W - total_w) // 2
+        for idx, (speaker_id, name, title, _dialogue_id) in enumerate(WRECKERS_CONTACTS):
+            btn = pygame_gui.elements.UIButton(
+                relative_rect=pygame.Rect(
+                    start_x + idx * (col_w + gap),
+                    dock_y,
+                    col_w,
+                    scale_y(40),
+                ),
+                text=f"{name} — {title}",
+                manager=self.ui_manager,
+            )
+            self._contact_buttons[speaker_id] = btn
+
+    def _create_dialogue_continue_button(self) -> None:
+        """Single Continue button while a contact dialogue is open."""
+        dock_y = BOARD_TOP_Y + BOARD_H + scale_y(12)
+        self._dialogue_continue_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(
+                PANEL_X + PANEL_W - scale_x(160),
+                dock_y + scale_y(60),
+                scale_x(140),
+                scale_y(36),
+            ),
+            text="Continue",
+            manager=self.ui_manager,
+        )
+
     def _destroy_ui(self) -> None:
         """Kill all pygame_gui elements (CLAUDE.md lifecycle invariant)."""
         for elem in (
@@ -325,6 +387,7 @@ class WreckersGuildView(BaseView):
             self.enroll_button,
             self.turn_in_button,
             self.make_up_button,
+            self._dialogue_continue_button,
         ):
             if elem:
                 elem.kill()
@@ -332,9 +395,13 @@ class WreckersGuildView(BaseView):
         self.enroll_button = None
         self.turn_in_button = None
         self.make_up_button = None
+        self._dialogue_continue_button = None
         for btn in self._accept_buttons.values():
             btn.kill()
         self._accept_buttons.clear()
+        for btn in self._contact_buttons.values():
+            btn.kill()
+        self._contact_buttons.clear()
 
     # ------------------------------------------------------------------
     # First-time tip
@@ -406,6 +473,84 @@ class WreckersGuildView(BaseView):
         self.player.dialogue_flags[wreckers_made_up_journal()] = True
         self._show_message("Done. Pick up where we left off.")
         self._create_ui()
+
+    # ------------------------------------------------------------------
+    # Secondary contacts dock (R1)
+    # ------------------------------------------------------------------
+
+    def get_contact_speaker_ids(self) -> list[str]:
+        """Return the speaker_ids surfaced by the contacts dock.
+
+        Returns an empty list before enrollment so the dock only appears
+        once the player has signed on with the Guild.
+        """
+        state = self._ensure_state()
+        if not state.enrolled:
+            return []
+        return [speaker_id for speaker_id, _name, _title, _did in WRECKERS_CONTACTS]
+
+    @staticmethod
+    def _dialogue_id_for_contact(speaker_id: str) -> Optional[str]:
+        for sid, _name, _title, dialogue_id in WRECKERS_CONTACTS:
+            if sid == speaker_id:
+                return dialogue_id
+        return None
+
+    @staticmethod
+    def _name_for_contact(speaker_id: str) -> str:
+        for sid, name, _title, _did in WRECKERS_CONTACTS:
+            if sid == speaker_id:
+                return name
+        return speaker_id
+
+    def _open_contact_dialogue(self, speaker_id: str) -> None:
+        """Begin a contact dialogue at the tree's start_node_id.
+
+        No-op for unknown ids (safe boundary handling).
+        """
+        dialogue_id = self._dialogue_id_for_contact(speaker_id)
+        if dialogue_id is None:
+            return
+        tree = get_data_loader().get_dialogue(dialogue_id)
+        if tree is None:
+            logger.warning("Wreckers contact dialogue '%s' not found", dialogue_id)
+            return
+        self._active_dialogue_tree = tree
+        self._active_dialogue_node_id = tree.start_node_id
+        self._create_ui()
+
+    def _advance_dialogue(self) -> None:
+        """Follow the first response's next_node_id; close on null/missing."""
+        tree = self._active_dialogue_tree
+        node_id = self._active_dialogue_node_id
+        if tree is None or node_id is None:
+            return
+        node = tree.nodes.get(node_id)
+        if node is None or not node.responses:
+            self._close_active_dialogue()
+            return
+        next_id = node.responses[0].next_node_id
+        if not next_id:
+            self._close_active_dialogue()
+            return
+        if next_id not in tree.nodes:
+            logger.warning("Wreckers contact dialogue: missing next_node '%s'", next_id)
+            self._close_active_dialogue()
+            return
+        self._active_dialogue_node_id = next_id
+
+    def _close_active_dialogue(self) -> None:
+        self._active_dialogue_tree = None
+        self._active_dialogue_node_id = None
+        self._create_ui()
+
+    def get_active_dialogue_node(self) -> Optional[DialogueNode]:
+        """Expose the active node for tests + the renderer."""
+        tree = self._active_dialogue_tree
+        node_id = self._active_dialogue_node_id
+        if tree is None or node_id is None:
+            return None
+        return tree.nodes.get(node_id)
 
     # ------------------------------------------------------------------
     # Auto-fail
@@ -676,12 +821,26 @@ class WreckersGuildView(BaseView):
             if event.ui_element == self.turn_in_button:
                 self._turn_in_active_contract()
                 return
+            if (
+                self._dialogue_continue_button is not None
+                and event.ui_element == self._dialogue_continue_button
+            ):
+                self._advance_dialogue()
+                return
             for template_id, btn in list(self._accept_buttons.items()):
                 if event.ui_element == btn:
                     self._accept_contract(template_id)
                     return
+            for speaker_id, btn in list(self._contact_buttons.items()):
+                if event.ui_element == btn:
+                    self._open_contact_dialogue(speaker_id)
+                    return
 
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+            # Close an open contact dialogue first; only then exit the view.
+            if self._active_dialogue_tree is not None:
+                self._close_active_dialogue()
+                return
             self._request_back()
 
     # ------------------------------------------------------------------
@@ -722,6 +881,10 @@ class WreckersGuildView(BaseView):
             self._render_enrollment_pitch(screen)
         else:
             self._render_board(screen)
+            if self._active_dialogue_tree is not None:
+                self._render_contact_dialogue(screen)
+            else:
+                self._render_contact_dock(screen)
 
         # Status / promotion banner
         if self._promotion_banner:
@@ -854,6 +1017,42 @@ class WreckersGuildView(BaseView):
         )
         target = self.body_font.render(target_label, True, Colors.TEXT_PRIMARY)
         screen.blit(target, (card_x + scale_x(16), y + scale_y(34)))
+
+    def _render_contact_dock(self, screen: pygame.Surface) -> None:
+        """Render the contact-name strip below the contract board."""
+        dock_y = BOARD_TOP_Y + BOARD_H + scale_y(4)
+        dock_h = scale_y(64)
+        draw_panel(screen, (PANEL_X, dock_y, PANEL_W, dock_h), alpha=200)
+        label = self.label_font.render(
+            "Recurring contacts at the Hall",
+            True,
+            Colors.TEXT_SECONDARY,
+        )
+        screen.blit(label, (PANEL_X + scale_x(20), dock_y + scale_y(8)))
+        # The buttons themselves are pygame_gui-managed and rendered by
+        # the UI manager; this panel is just the framing chrome.
+
+    def _render_contact_dialogue(self, screen: pygame.Surface) -> None:
+        """Render the active contact's current dialogue node."""
+        node = self.get_active_dialogue_node()
+        if node is None:
+            return
+        panel_y = BOARD_TOP_Y + BOARD_H + scale_y(4)
+        panel_h = scale_y(180)
+        draw_panel(screen, (PANEL_X, panel_y, PANEL_W, panel_h), alpha=220)
+        # Speaker line.
+        speaker = self._name_for_contact(node.speaker_id)
+        header = self.subtitle_font.render(speaker, True, Colors.TEXT_HIGHLIGHT)
+        screen.blit(header, (PANEL_X + scale_x(20), panel_y + scale_y(10)))
+        # Word-wrapped body text.
+        body_x = PANEL_X + scale_x(20)
+        body_y = panel_y + scale_y(40)
+        body_w = PANEL_W - scale_x(180)
+        lines = word_wrap(node.text, self.body_font, body_w)
+        line_h = self.body_font.get_linesize()
+        for idx, line in enumerate(lines):
+            surf = self.body_font.render(line, True, Colors.TEXT_PRIMARY)
+            screen.blit(surf, (body_x, body_y + idx * line_h))
 
     def _render_banner(
         self, screen: pygame.Surface, text: str, color: tuple[int, int, int]

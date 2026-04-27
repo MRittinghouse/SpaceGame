@@ -464,3 +464,117 @@ class TestNavigation:
         view._request_back()
         assert view.get_next_state() == GameState.STATION_HUB
         view.on_exit()
+
+
+# ---------------------------------------------------------------------------
+# Secondary contacts dock (R1 — Paz / Daro / Ife as interactive speakers)
+# ---------------------------------------------------------------------------
+
+
+class TestSecondaryContacts:
+    def test_dock_lists_all_three_contacts(self) -> None:
+        """Enrolled view exposes Paz, Daro, and Ife as openable contacts."""
+        manager, player, mm = _make_view_env(enrolled=True, sub_rep=1)
+        view = _make_view(player, manager, mm)
+        view.on_enter()
+        contact_ids = view.get_contact_speaker_ids()
+        assert set(contact_ids) == {"paz_reina", "daro_teck", "ife_obi"}
+        view.on_exit()
+
+    def test_dock_hidden_when_unenrolled(self) -> None:
+        """Unenrolled players don't get to chat with the contacts yet."""
+        manager, player, mm = _make_view_env()
+        view = _make_view(player, manager, mm)
+        view.on_enter()
+        assert view.get_contact_speaker_ids() == []
+        view.on_exit()
+
+    def test_open_paz_loads_greeting_node(self) -> None:
+        """Opening Paz starts at her dialogue tree's greeting node."""
+        manager, player, mm = _make_view_env(enrolled=True, sub_rep=1)
+        view = _make_view(player, manager, mm)
+        view.on_enter()
+        view._open_contact_dialogue("paz_reina")
+        node = view.get_active_dialogue_node()
+        assert node is not None
+        assert node.speaker_id == "paz_reina"
+        assert node.id == "greeting"
+        view.on_exit()
+
+    def test_open_daro_loads_greeting_node(self) -> None:
+        manager, player, mm = _make_view_env(enrolled=True, sub_rep=1)
+        view = _make_view(player, manager, mm)
+        view.on_enter()
+        view._open_contact_dialogue("daro_teck")
+        node = view.get_active_dialogue_node()
+        assert node is not None
+        assert node.speaker_id == "daro_teck"
+        view.on_exit()
+
+    def test_open_ife_loads_greeting_node(self) -> None:
+        manager, player, mm = _make_view_env(enrolled=True, sub_rep=1)
+        view = _make_view(player, manager, mm)
+        view.on_enter()
+        view._open_contact_dialogue("ife_obi")
+        node = view.get_active_dialogue_node()
+        assert node is not None
+        assert node.speaker_id == "ife_obi"
+        view.on_exit()
+
+    def test_advance_walks_three_nodes_then_closes(self) -> None:
+        """Each contact's tree is greeting → craft → signoff → close."""
+        manager, player, mm = _make_view_env(enrolled=True, sub_rep=1)
+        view = _make_view(player, manager, mm)
+        view.on_enter()
+        view._open_contact_dialogue("paz_reina")
+        node1 = view.get_active_dialogue_node()
+        assert node1 is not None and node1.id == "greeting"
+        view._advance_dialogue()
+        node2 = view.get_active_dialogue_node()
+        assert node2 is not None and node2.id == "craft"
+        view._advance_dialogue()
+        node3 = view.get_active_dialogue_node()
+        assert node3 is not None and node3.id == "signoff"
+        view._advance_dialogue()
+        # Sign-off response had next_node_id null — dialogue closes.
+        assert view.get_active_dialogue_node() is None
+        view.on_exit()
+
+    def test_unknown_contact_id_is_no_op(self) -> None:
+        """Bad input doesn't crash the view (boundary safety)."""
+        manager, player, mm = _make_view_env(enrolled=True, sub_rep=1)
+        view = _make_view(player, manager, mm)
+        view.on_enter()
+        view._open_contact_dialogue("not_a_real_contact")
+        assert view.get_active_dialogue_node() is None
+        view.on_exit()
+
+    def test_distinct_voice_registers(self) -> None:
+        """Each contact's greeting carries the verbal habit from their voice sheet.
+
+        Paz tags confirmed vs estimated. Daro leads with assessment-then-reasoning
+        ("borderline" + "because"). Ife uses cataloging language ("cataloging",
+        "anomalous", "pending"). The three texts must not collapse into
+        each other's register.
+        """
+        from spacegame.data_loader import get_data_loader
+
+        dl = get_data_loader()
+        dl.load_all()
+        paz = dl.get_dialogue("paz_reina_guild_hall")
+        daro = dl.get_dialogue("daro_teck_guild_hall")
+        ife = dl.get_dialogue("ife_obi_guild_hall")
+        assert paz is not None and daro is not None and ife is not None
+        # Paz: spatial-precision, confirmed vs estimated.
+        assert "confirmed" in paz.nodes["greeting"].text.lower()
+        # Daro: diagnostic-directness, assessment-first.
+        assert "borderline" in daro.nodes["greeting"].text.lower()
+        # Ife: indexing curiosity, cataloging language.
+        assert "cataloging" in ife.nodes["greeting"].text.lower()
+        # And every greeting is genuinely distinct text.
+        greetings = {
+            paz.nodes["greeting"].text,
+            daro.nodes["greeting"].text,
+            ife.nodes["greeting"].text,
+        }
+        assert len(greetings) == 3
