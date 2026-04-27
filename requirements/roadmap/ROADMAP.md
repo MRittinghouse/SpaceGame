@@ -1555,63 +1555,192 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 - Notes: Design doc is thorough and SA-P2-ready. The counter-argument inconsistency was the only substantive finding; corrected directly. All 15 locked decisions have rationales; two explicit deferred-to-SA-P2 items named. Worked example (Hask+Drift, 3 rounds) is usable as a SA-P2 unit test fixture.
 #### SA-P2 — Politics Core
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Phase II | **Size**: XL | **Effort**: 2 weeks
 **Depends on**: SA-P1, SA-A2, SA-C2, SA-B-EXT-1 | **Blocks**: SA-P3, SA-P4, SA-P5
 
-**Goal.** Implement the Politics system core mechanic: dispute representation, player choice flow, argument-construction submechanic, AI delegate behavior, multi-skill-check resolution, outcome propagation. Venue-agnostic engine.
+**Goal.** Implement the Politics system core mechanic: dispute representation, player choice flow, argument-construction submechanic, AI delegate behavior, multi-skill-check resolution, outcome propagation. Venue-agnostic engine. SA-P3/P4/P5 add content (templates, dialogue, named delegates) on top of this engine.
 
 **Context to read.**
-- `requirements/sa_politics_design.md`
-- `spacegame/models/social.py`
-- `spacegame/models/progression.py`
-- `spacegame/views/base_view.py`
-- `spacegame/save_manager.py`
+- `requirements/sa_politics_design.md` (sections 1-8 are load-bearing per the hand-off checklist)
+- `requirements/agent_principles.md`
+- `requirements/aurelia_voice_examples.md` (skim — SA-P2 authors no in-character dialogue; only flag strings, error/empty/locked-state copy, and the "Effective vs Difficulty" preview label)
+- `spacegame/models/politics.py` (existing `PoliticsManager`; reuses `apply_reputation_with_spillover` at line 399)
+- `spacegame/models/social.py` (`SocialManager.get_effective_level`, `resolve_check`, disposition modifier formula at line 249)
+- `spacegame/models/progression.py` (`get_bonus()` semantics; `coalition_sway`, `delegate_reach`, `mediation_instinct` skills already exist at lines 942/1054/1105)
+- `spacegame/models/crew.py` (`CrewRoster.get_bonus`; Desta Coll and Cass Weller already defined in `data/crew/crew_members.json:721-773` with the bonus types this sprint consumes)
+- `spacegame/models/market.py` (existing `MarketEvent` single-active-per-market pattern; this sprint adds a parallel multi-shift registry — see Plan task 9)
+- `spacegame/models/news_ticker.py` (`add_headline()` direct path; SA-P2 does not author templates)
+- `spacegame/models/sub_reputation.py` (SA-B-EXT-1 sub-rep tier model; corridor failure deducts here)
+- `spacegame/views/base_view.py`, `spacegame/views/CLAUDE.md`
+- `spacegame/views/first_time_tip.py` (PT-M `FirstTimeTipOverlay`; SA-P2 only adds the *flag helpers* — overlay wiring is SA-P3 per SA-P1 §11 decision 7)
+- `spacegame/views/station_hub_view.py` (`UNIQUE_HALL_TARGETS` mapping at line 97 — SA-P2 adds the verdant_mayors_council entry)
+- `spacegame/save_manager.py` (lines 471, 716 show the `political_state` save/load slot — SA-P2 adds a parallel `politics_dispute_state` slot)
+- `spacegame/constants/flags.py` (helper-function pattern; SA-P2 adds the five helpers from SA-P1 §7.3 + §9.1)
+- `requirements/onboarding_design.md` (SA-P2's only onboarding deliverable is the flag-helper plumbing for SA-P3 to consume)
+- `requirements/si3_flag_registry_cookbook.md`
 
 **Touch zones.**
-- `spacegame/models/politics_dispute.py` (NEW)
-- `spacegame/models/politics_delegate.py` (NEW)
-- `spacegame/models/politics_argument.py` (NEW)
-- `spacegame/models/politics.py` (extend or create)
-- `spacegame/models/player.py` (politics_state field)
-- `spacegame/save_manager.py`
-- `spacegame/views/dispute_view.py` (NEW)
-- `spacegame/engine/game.py`
-- `spacegame/config.py` (GameState.DISPUTE)
-- `spacegame/constants/flags.py` (politics outcome flags)
-- `tests/test_models/test_politics_dispute.py` (NEW)
-- `tests/test_models/test_politics_delegate.py` (NEW)
-- `tests/test_models/test_politics_argument.py` (NEW)
-- `tests/test_views/test_dispute_view.py` (NEW)
-- `tests/test_scenarios/test_scenario_politics_loop.py` (NEW)
+- `spacegame/models/politics_dispute.py` (NEW — `PoliticsDispute`, `PoliticsDelegate`, `PoliticsArgument`, `PoliticsDisputeTemplate`, `OutcomeRow`, `PoliticsMarketShift`, `PoliticsDisputeManager`, lifecycle enum `DisputePhase`)
+- `spacegame/models/player.py` (add `politics_dispute_state: dict` field, parallel to `political_state`)
+- `spacegame/models/market.py` (add `politics_shifts: dict[(commodity_id, system_id), list[PoliticsMarketShift]]` registry; hook into `_calculate_price`/`update_day` for largest-magnitude-wins stack rule and decay)
+- `spacegame/models/social.py` (no API changes; consume `get_effective_level` and `resolve_check`)
+- `spacegame/save_manager.py` (serialize/deserialize `politics_dispute_state`; additive — no `SAVE_VERSION` bump per SA-P1 §11 decision 15)
+- `spacegame/data_loader.py` (NEW `load_politics_disputes` + `_parse_politics_dispute_template`; reads `data/politics/*.json` if dir exists, otherwise empty dict — content is SA-P3/P4/P5)
+- `spacegame/views/dispute_view.py` (NEW — single view with internal substates: `LIST` / `CORRIDOR` / `SESSION` / `COMPOSER` / `TALLY`; empty/locked/loading/error states; live preview)
+- `spacegame/engine/game.py` (instantiate `PoliticsDisputeManager`; `_ensure_dispute_view()`; transition routing; news-headline hand-off; market-shift tick wiring)
+- `spacegame/config.py` (add `GameState.DISPUTE`; map it in any state-name lookup tables)
+- `spacegame/constants/flags.py` (add `dispute_resolved`, `coalition_won`, `dispute_mediated`, `seen_politics_venue_tip`, `seen_argument_composer_tip`)
+- `spacegame/views/station_hub_view.py` (add `verdant_mayors_council: GameState.DISPUTE` to `UNIQUE_HALL_TARGETS` so the engine has one wired venue for end-to-end tests; SA-P3 keeps this entry)
+- `tests/test_models/test_politics_dispute.py` (NEW — manager state machine, lifecycle, save/load round-trip)
+- `tests/test_models/test_politics_delegate.py` (NEW — visible-state transitions, position-vector caps, bias initialization)
+- `tests/test_models/test_politics_argument.py` (NEW — composer slot rules, resolution formula, framing-to-skill routing, evidence access)
+- `tests/test_models/test_politics_outcome_propagation.py` (NEW — rep deltas via spillover, market shifts, mission flags, news headline gating per §7.6)
+- `tests/test_models/test_market_politics_shifts.py` (NEW — stack rule, decay, expiry)
+- `tests/test_views/test_dispute_view.py` (NEW — substate transitions, empty/locked/loading/error renders, composer live-preview)
+- `tests/test_scenarios/test_scenario_politics_loop.py` (NEW — full Hask+Drift+Marsh worked example from SA-P1 §4.6 plus an alternate mediation path; both run end-to-end through manager and view)
 
 **Deliverables.**
-- Dispute, Delegate, Argument data models.
-- Argument-construction submechanic.
-- Multi-round structure.
-- Outcome resolution that emits faction-rep deltas, market shifts, mission unlocks, news events.
-- Dispute view venue UI.
-- Save/load support for in-progress disputes.
-- Synthetic-fixture tests at model + view + scenario layers.
+- `politics_dispute.py` module with the six dataclasses, manager class, and lifecycle enum.
+- `flags.py` helpers matching SA-P1 §7.3 + §9.1 exactly (no overlay wiring in this sprint).
+- DataLoader politics-template loader (gracefully empty when SA-P3 content not yet present).
+- Argument-construction resolution honoring skill routing (Persuasion / Leadership), framing modifier, disposition modifier, crew bonus, tree bonus, evidence-absent +1 difficulty.
+- Multi-round dispute state machine: open arguments → counter-arguments (with pre-emption) → conviction adjustments → vote-or-defer.
+- Coalition pre-commit corridor (skill check, sub-rep deduction on fail, escalating difficulty on repeated failure, cap formula from §5.5).
+- Outcome resolution emitting: rep deltas via `apply_reputation_with_spillover`; market shifts via the new registry (largest-magnitude-wins stack rule, 30-day decay); mission flags via the new helpers; news headline via `news_ticker.add_headline` gated on §7.6 conditions; Cass Weller `arbitration_dispute_intel` qualitative reveal once per session.
+- `dispute_view.py` with all substates including empty/locked/loading/error states and composer live preview.
+- `GameState.DISPUTE` plumbed end-to-end through `station_hub_view → game.py → dispute_view`, anchored at `verdant_mayors_council`.
+- Save/load round-trip at every dispute boundary.
+- 30-50+ new tests across model, view, and scenario layers.
 
 **Acceptance criteria.**
-1. Synthetic test dispute can run through every input path (vote/argue/mediate/abstain/coalition-build).
-2. Argument-construction applies skill weighting per SA-P1 design (verifiable).
-3. Delegate updates deterministic given same inputs (no resolution-stage randomness).
-4. Partial-win outcomes work.
-5. Outcome propagation: faction-rep deltas, market shifts, news events all fire in tests.
-6. Save/load round-trips an in-progress dispute at any round boundary.
-7. Coalition-building measurably improves starting positions vs. control.
-8. 30-50+ new tests.
-9. Full suite green; lint + format clean.
+1. Synthetic test dispute (in-test fixture mirroring SA-P1 §4.6 `water_rights_phasing`) runs through every input path: in-session `vote` / `argue` / `mediate` / `abstain`, plus pre-session `coalition-build`. Each path is exercised by at least one unit or scenario test.
+2. Argument-construction resolution matches the formula in SA-P1 §6.2 byte-for-byte: `floor(base_skill + framing_mod + disposition_mod + crew_bonus + tree_bonus) >= base_difficulty`. Worked numerical examples in §4.6 and §6.3 reproduce exactly in tests (Drift round-1 pass at effective 4 vs D4; Marsh community_benefit mediation fail at effective 3 vs D4).
+3. Delegate updates are deterministic — no `random.*` calls in the resolution stage. Same inputs always produce identical outputs across two manager runs (verified by a parameterized test).
+4. Partial-win outcomes are reachable in tests: both `partial_win_coalition_thin` (vote passes with <60% pre-committed) and `partial_win_off_record` (vote fails with at least one `conceded` flag) fire from the synthetic fixture, with the §11 decision-5 thresholds explicitly asserted.
+5. Outcome propagation: for the synthetic fixture, all four outcome categories propagate end-to-end. Tests assert (a) rep deltas applied through `apply_reputation_with_spillover` (spillover to rivals visible), (b) market shifts registered with correct magnitude/duration/system, (c) mission flags set via `dispute_resolved` / `coalition_won` / `dispute_mediated` helpers, (d) news headline fires when §7.6 conditions hold and is suppressed when they don't (both branches asserted).
+6. Save/load round-trips an in-progress dispute at every committed boundary: at start of `ROUND_OPEN` round 1, at `ROUND_PENDING` after a counter-argument resolved, after `RESOLVING` once outcome fires. Mid-round composer state (uncommitted) is not persisted, by design.
+7. Coalition-building measurably improves starting positions: in a controlled test, a player with 0 pre-commits, 1 pre-commit, and 2 pre-commits produces strictly different starting visible-state distributions. With Desta + delegate_reach L1, the cap reaches 2 and the 60% threshold is achievable on a 3-delegate dispute.
+8. 30-50+ new tests across the seven new test files, all passing. Pre-phase baseline of 8769 passing / 98 skipped is the floor; new failures vs. baseline block the sprint.
+9. Full suite green; `ruff format`, `ruff check`, `mypy` clean over the touched files (per AGENT_GUIDE — scope formatting to changed files only).
+10. Empty-state, locked-state (insufficient standing), loading-state, and error-state UI for the dispute list each render correctly under fixture inputs (verified by view tests).
+11. Argument composer live preview updates the "Effective N vs Difficulty M — PASSES/FAILS" indicator when framing / evidence / audience / responds-to selections change. Verified by view test that simulates four selection changes and asserts the preview text after each.
+12. `flags.py` helpers `dispute_resolved`, `coalition_won`, `dispute_mediated`, `seen_politics_venue_tip`, `seen_argument_composer_tip` exist and produce strings byte-for-byte matching SA-P1 §7.3 + §9.1. Tutorial overlays are NOT wired in SA-P2 (locked decision; SA-P3 wires them).
+13. Sub-reputation deduction (SA-B-EXT-1) fires on a failed corridor visit — 1-point loss with the delegate's sub-tier faction. Repeated consecutive failures with the same delegate raise corridor difficulty +1 the next session and reset on a successful visit or dispute resolution.
+14. Market-shift stack rule verified: when two active politics shifts target the same `(commodity_id, system_id)`, the larger absolute magnitude applies; both shifts decay independently after their own `duration_days`. Politics shifts coexist with the existing `MarketEvent` (no interference test).
+15. Cass Weller's `arbitration_dispute_intel` qualitative reveal fires once per session on first venue entry (when on crew); a second venue entry within the same session does not re-fire. The reveal text is derived from the delegate's hidden position vector and surfaces only the qualitative summary, not the raw floats.
+16. Performance smoke: a single argument resolution call (manager `submit_argument`) completes in <100 ms on the worked-example fixture, asserted via `time.perf_counter()`. (60-FPS UI budget remains a manual smoke check; not automated this sprint.)
+
+**Plan.**
+
+1. **Foundation scaffolding.** Add `GameState.DISPUTE` to `config.py`. Add the five helper functions to `spacegame/constants/flags.py`. Create empty `spacegame/models/politics_dispute.py` skeleton with the seven names (six dataclasses + manager) and a `DisputePhase` enum. No logic yet — just the shape that downstream tasks will fill in.
+   - Files: `spacegame/config.py`, `spacegame/constants/flags.py`, `spacegame/models/politics_dispute.py` (new).
+   - Tests: `tests/test_models/test_politics_dispute.py` covers the flag-helper string output (AC 12). Failing test first per TDD.
+   - Risks: none.
+
+2. **Dataclass shapes (TDD red-first).** Implement `PoliticsDisputeTemplate` (frozen, all fields from SA-P1 §3.1 required), `OutcomeRow`, `MarketShift`, `PoliticsDelegate` (mutable runtime, includes `visible_state`, `position_vector: dict[str, float]`, `disposition`, `conceded` flag, `pre_committed` flag), `PoliticsArgument` (composer state), `PoliticsDispute` (mutable runtime instance with `current_round`, `phase`, `delegates`, `resolved_outcome`, etc.), and `to_dict`/`from_dict` on the runtime classes. Bias-value application at session init.
+   - Files: `spacegame/models/politics_dispute.py`.
+   - Tests: `tests/test_models/test_politics_dispute.py` (round-trip serialization), `tests/test_models/test_politics_delegate.py` (state-machine transitions, position-cap at +/-1.0, bias-init formula).
+   - Risks: dataclass-table compliance scanner (per CLAUDE.md row 6) — dispute templates loaded from JSON must be `@dataclass(frozen=True)`.
+
+3. **DataLoader integration.** Add `load_politics_disputes` and `_parse_politics_dispute_template`. The loader reads any `data/politics/*.json` files (SA-P3 will populate; SA-P2 only ships the loader). The loader must tolerate an empty/missing directory and return an empty dict — no error. Templates loaded into `self.politics_disputes: dict[str, PoliticsDisputeTemplate]`.
+   - Files: `spacegame/data_loader.py`.
+   - Tests: integration test in `tests/test_models/test_politics_dispute.py` confirms an empty data dir returns `{}` and a fixture template parses correctly.
+   - Risks: low — same pattern used by every existing loader.
+
+4. **Argument-construction resolution.** Implement the resolution formula in `PoliticsDisputeManager._resolve_argument()`: skill routing by framing (Persuasion default, Leadership for `frontier_autonomy`), framing modifier, disposition modifier, crew bonus (`coalition_sway_bonus` for argue / `arbitration_neutrality_bonus` for mediate), tree bonus, evidence-absent +1 difficulty. `floor(effective) >= base_difficulty` = pass. Pull bonuses from `progression.get_bonus()` and `crew_roster.get_bonus()` exactly per `views/mining_view.py:417` stacking convention.
+   - Files: `spacegame/models/politics_dispute.py`.
+   - Tests: `tests/test_models/test_politics_argument.py` reproduces the §4.6 round-1 Drift pass and the §6.3 Marsh mediation fail by exact arithmetic.
+   - Risks: float ordering (use `pytest.approx` per CLAUDE.md). The `// 10` integer disposition mod must mirror `social.py:249` formula exactly — write a parameterized test against several disposition values.
+
+5. **Per-round state machine.** Implement the four-phase round (open arguments → counter-arguments → conviction adjustments → vote-or-defer) per SA-P1 §2.2. Counter-argument target-selection rule is the corrected one from SA-P1 §2.2 (most-favorable-toward-yes, not committed_yes). Pre-emption when player loaded `responds_to` matching the counter's framing. `committed` delegates are immovable by arguments. Position-vector caps at +/-1.0. Visible-state chain `committed_no → leaning_no → wavering → leaning_yes → committed_yes`.
+   - Files: `spacegame/models/politics_dispute.py`.
+   - Tests: `tests/test_models/test_politics_delegate.py` covers each transition rule from SA-P1 §4.4 table; `tests/test_scenarios/test_scenario_politics_loop.py` runs the full §4.6 worked example.
+   - Risks: counter-argument target-selection edge case (no eligible target → counter is no-op); document and assert.
+
+6. **Coalition pre-commit corridor.** Implement `start_corridor_visit(delegate_id, framing) → (success, msg)`. On success, set delegate `pre_committed = True` and `visible_state = leaning_yes`. On failure, deduct 1 sub-rep with the delegate's sub-tier faction (SA-B-EXT-1) and increment a per-delegate consecutive-fail counter that adds +1 to corridor difficulty next session. Counter resets on a successful visit OR when the dispute resolves. Cap formula: `1 + floor(crew_roster.get_bonus("coalition_size_bonus") + progression.get_bonus("coalition_size_bonus"))`.
+   - Files: `spacegame/models/politics_dispute.py`, `spacegame/models/sub_reputation.py` (read-only — call existing API).
+   - Tests: `tests/test_models/test_politics_delegate.py` covers cap formula across 0/1/2/3 pre-commits with crew + skill combinations; corridor-failure consecutive-fail escalation.
+   - Risks: `SocialManager` constructor takes no args (per CLAUDE.md pitfalls) — instantiate with `set_progression(prog)` after creation.
+
+7. **Outcome resolution + propagation.** Implement `_finalize_outcome()`: tally votes via §5.1 visible-state-to-vote mapping (wavering = no, per §11 decision 13); pick category by §5.1 rules (60% pre-commit threshold for win vs partial_win_coalition_thin; conceded flag rescues failed votes to partial_win_off_record). Apply `outcome_matrix[category]`: rep deltas via `apply_reputation_with_spillover`, market shifts via the new registry (task 9), mission flags via the new helpers, news headline via `news_ticker.add_headline` gated on §7.6 conditions. Move dispute from `pending_disputes` to `resolved_disputes` on player state.
+   - Files: `spacegame/models/politics_dispute.py`, `spacegame/engine/game.py` (provide `politics_manager` + `news_ticker` + `market` to manager constructor).
+   - Tests: `tests/test_models/test_politics_outcome_propagation.py` covers all four outcome categories end-to-end with a synthetic fixture, asserting each propagation channel and §7.6 news gating in both directions.
+   - Risks: `apply_reputation_with_spillover` mutates player rep — verify spillover-to-rival is observed in tests, not just primary delta.
+
+8. **Cass Weller intel reveal + `seen` flags.** Implement once-per-session reveal: on first venue entry where Cass is on crew, generate qualitative summary text from each delegate's hidden position vector ("Skeptical of modernization proposals. High resistance to outside evidence."). Store a per-session `intel_revealed` flag on the manager (not the player; resets on session leave) so it does not re-fire within the session. Subsequent sessions do re-fire.
+   - Files: `spacegame/models/politics_dispute.py`.
+   - Tests: `tests/test_models/test_politics_delegate.py` covers the float-to-text translation (positive / negative / neutral thresholds) and the once-per-session gate.
+   - Risks: text strings are player-facing — voice-check (declarative, no em-dashes, no banned phrases). Strings are SHORT and engine-emitted, not in-character dialogue, so the SL-5 "out-of-world UI copy" register applies (terse, no flavor text).
+
+9. **Market shift registry.** Add `politics_shifts: dict[tuple[str, str], list[PoliticsMarketShift]]` to `Market`. Each shift carries `commodity_id`, `system_id`, `magnitude`, `start_day`, `duration_days`. On `_calculate_price`/`get_current_price`, apply the largest-absolute-magnitude active shift for the (commodity, system) pair. On `update_day(new_day)`, expire shifts where `new_day >= start_day + duration_days`. Shifts coexist with the existing `MarketEvent` single-active-event slot — they multiply, not replace.
+   - Files: `spacegame/models/market.py`.
+   - Tests: `tests/test_models/test_market_politics_shifts.py` covers stack rule (two overlapping shifts), decay, coexistence with `MarketEvent`.
+   - Risks: existing market test suite must remain green — confirm by re-running `tests/test_models/test_market*.py`.
+
+10. **Save / load round-trip.** Add `politics_dispute_state` field to `Player` (default `dict`). Serialize the manager state (active session, pending disputes, resolved disputes, sub-rep escalation counters, market-shift registry — though shifts live on Market, snapshot them here for save fidelity). `from_dict` uses `data.get("politics_dispute_state", {})`. No `SAVE_VERSION` bump (additive, per SA-P1 §11 decision 15).
+    - Files: `spacegame/models/player.py`, `spacegame/save_manager.py`, `spacegame/models/politics_dispute.py` (manager `to_dict`/`from_dict`).
+    - Tests: `tests/test_models/test_politics_dispute.py` covers round-trip at three boundaries (ROUND_OPEN start, ROUND_PENDING mid-dispute, post-RESOLVING).
+    - Risks: omitting a field in `to_dict` and reading the old default in `from_dict` produces silent regression — write the round-trip test BEFORE adding new fields.
+
+11. **`dispute_view.py` substates.** Single `BaseView` subclass with internal substate enum (`LIST` / `CORRIDOR` / `SESSION` / `COMPOSER` / `TALLY`). Each substate has its own `_create_ui_*` / `_destroy_ui_*` paired methods; switching substate destroys the previous UI and rebuilds. Empty/locked/loading/error states render in the `LIST` substate; locked-state checks the player's faction standing against a configurable threshold (default −25 per §8.1 mock). Argument composer (`COMPOSER` substate) wires live preview: an `_update_preview()` method recomputes effective level on every selection change and updates the label text without rebuilding the UI.
+    - Files: `spacegame/views/dispute_view.py`.
+    - Tests: `tests/test_views/test_dispute_view.py` exercises substate transitions and live preview (drive UI events programmatically; check label text after each change). Use `tests/test_ui_layout/conftest.py` `SDL_VIDEODRIVER=dummy` pattern if needed.
+    - Risks: pygame_gui element leakage — every `_create_ui_*` must have a matching `_destroy_ui_*`; `on_exit()` calls the current substate's destroy. Run a leak test: create + destroy each substate twice, assert no `RuntimeError`.
+
+12. **Game.py wiring.** Add `_ensure_dispute_view()` factory mirroring `_ensure_deep_shafts_view()`. Instantiate `PoliticsDisputeManager` at startup (after `politics_manager` and `news_ticker` are ready) — it needs handles to those plus `market`, `crew_roster`, `progression`, `social_manager`. Add the transition handler in `_handle_state_transitions()` (FADE 0.3s, mirror Deep Shafts at line ~1867). Add `verdant_mayors_council: GameState.DISPUTE` to `UNIQUE_HALL_TARGETS` in `station_hub_view.py:97`. Wire dispute resolution to call `news_ticker.add_headline` directly when the §7.6 conditions hold.
+    - Files: `spacegame/engine/game.py`, `spacegame/views/station_hub_view.py`.
+    - Tests: scenario test (task 13) walks station_hub → dispute → outcome → station_hub.
+    - Risks: state-transition ordering — ensure manager is initialized BEFORE first frame; failing-test-first.
+
+13. **Scenario test (full loop).** `tests/test_scenarios/test_scenario_politics_loop.py`: build a synthetic in-test water_rights_phasing fixture (do NOT add to `data/politics/` — that's SA-P3). Run the §4.6 Hask+Drift+Marsh three-round walk-through end-to-end through manager + view, assert each integration channel after each round (delegate state, position vectors, save round-trip), assert the loss outcome at the end with all propagation. Run an alternate path: round-2 mediation of Marsh, vote at round 3, assert `partial_win_off_record` outcome and the appropriate flag set.
+    - Files: `tests/test_scenarios/test_scenario_politics_loop.py`.
+    - Risks: scenario tests can become brittle to refactors — keep the assertions on observable contract (rep, market, flags, news), not on internal manager fields.
+
+14. **Performance smoke.** Inside `tests/test_models/test_politics_dispute.py`, time `manager.submit_argument()` on the worked-example fixture with `time.perf_counter()`. Assert <100 ms. No automated 60-FPS check (UI rendering); rely on manual smoke during view-test runs.
+    - Files: `tests/test_models/test_politics_dispute.py`.
+    - Risks: low — argument resolution is arithmetic, no allocations beyond manager bookkeeping.
+
+15. **Lint + format + scanner pass.** `ruff format` and `ruff check` over the touched files only (per AGENT_GUIDE: do NOT run project-wide). `mypy spacegame/models/politics_dispute.py spacegame/views/dispute_view.py`. Writing Bible scanner over any new player-facing strings (the "Council in recess.", "You don't have standing.", "Effective N vs Difficulty M — PASSES" labels). The em-dash banned phrase rule applies; the existing copy uses em-dashes in some mocks — replace with semicolons or restructure before committing.
+    - Risks: scanner catches em-dashes in `dispute_view.py` mock-derived strings — review before commit.
+
+**Decisions locked in this planning phase.**
+1. **Field name lock**: player attribute is `politics_dispute_state: dict` (parallel to existing `political_state`, distinct keyspace). Rationale: avoids namespace collision with the existing ambient `PoliticsManager` state and lets save migration treat them independently.
+2. **Module name lock**: `spacegame/models/politics_dispute.py` houses all six dataclasses (`PoliticsDispute`, `PoliticsDelegate`, `PoliticsArgument`, `PoliticsDisputeTemplate`, `OutcomeRow`, `PoliticsMarketShift`) + `PoliticsDisputeManager` + `DisputePhase` enum. Rationale: single-module locality matches SA-P1 §1.6; downstream sprints test in isolation.
+3. **GameState lock**: single `GameState.DISPUTE` value covers all venues. Venue identity travels via the manager's `enter_venue(venue_id)` call. Per-venue visual identity is SA-X10. Rationale: one engine, many venues — a venue-per-state pattern would multiply the state machine without value.
+4. **News ticker hook lock**: dispute headlines fire via `news_ticker.add_headline(text, priority=N)` direct call, not via the templates JSON. Rationale: dispute headlines are per-instance, authored in the dispute template's `outcome_matrix`, not aggregated patterns; templates are for ambient world state.
+5. **Market shift implementation lock**: a NEW `politics_shifts` registry on `Market` rather than reusing `MarketEvent`. Rationale: existing `MarketEvent` is single-active-per-market and ambient-event-driven; politics shifts need multi-stack coexistence with §11 decision 14's largest-magnitude rule.
+6. **Save migration lock**: `politics_dispute_state` is additive. No `SAVE_VERSION` bump. `from_dict` uses `data.get("politics_dispute_state", {})`. Per SA-P1 §11 decision 15 + CLAUDE.md save migration rules.
+7. **Tutorial overlay scope lock**: SA-P2 ships `flags.py` helpers ONLY; the `FirstTimeTipOverlay` instances are wired by SA-P3 per SA-P1 §11 decision 7. Rationale: same pattern as SA-V (tip wired by the venue sprint, not a separate one).
+8. **Synthetic fixture lock**: the SA-P1 §4.6 worked example is a pure in-test Python fixture (built in `_make_water_rights_phasing_template()`), NOT a JSON file under `data/politics/`. Rationale: SA-P3 owns content; SA-P2 owns the engine and tests it with a synthetic-only fixture so this sprint can ship with no `data/politics/*.json` content.
+9. **UI scope lock**: SA-P2 implements the structural UI (substates, list/corridor/session/composer/tally, empty/locked/loading/error states, live preview). Pixel-level layout (button placement, font sizes, color choices) and venue-specific theming are deferred to SA-X10 / SA-P3, per SA-P1 §11 deferred items.
+10. **Counter-argument target rule lock**: the SA-P1 §2.2 corrected text is authoritative — opposition delegate fires counter at the most-favorable-toward-yes delegate who is not `committed_yes`, with pre-emption when the player stocked a matching `responds_to` framing.
+11. **`SAVE_VERSION` no-bump lock**: confirmed reading `save_manager.py:28` (`SAVE_VERSION = "1.0"`). Adding `politics_dispute_state` is additive and tolerated by the existing version check.
 
 **Risks / open questions.**
-- Argument-construction load-bearing: if SA-P1 left this ambiguous, this sprint blocks back.
-- Existing politics_manager scope: extend or replace? Audit during planning.
-- Performance: argument resolution <100ms; UI 60 FPS.
+- ~~Argument-construction load-bearing: if SA-P1 left this ambiguous, this sprint blocks back.~~ **Resolved.** SA-P1 sections 4-6 fully specify the resolution formula with two worked numerical examples (§4.6 Drift round-1 pass, §6.3 Marsh mediation fail). No ambiguity.
+- ~~Existing politics_manager scope: extend or replace?~~ **Resolved.** SA-P1 §1.3 + §11 decision 1 lock coexistence in a new module. Confirmed `apply_reputation_with_spillover` is the only shared primitive.
+- **Performance**: argument resolution <100 ms is captured as AC 16 (perf smoke). 60-FPS UI budget is a manual smoke during view test runs — not automated this sprint. If view rendering drops below budget, raise as a follow-up rather than blocking SA-P2 review.
+- **Sub-reputation faction mapping**: each delegate must declare which sub-tier faction takes the rep loss on a failed corridor visit. SA-P1 §5.5 says "the delegate's sub-tier faction" but doesn't specify the mapping. Locked here: `PoliticsDelegate` carries a `sub_faction_id: str` field set by the dispute template; SA-P3 content authors populate it per delegate. SA-P2 ships the field and the deduction call; the synthetic fixture sets sub_faction_ids inline.
+- **Cass Weller intel reveal text catalog**: the qualitative-summary text is generated from float thresholds (e.g., position < −0.5 → "Skeptical of"; > +0.5 → "Open to"). SA-P2 ships a small dispatch table for the three Verdant dimensions used by the synthetic fixture (`modernization`, `water_rights_change`, `outside_influence`); SA-P3/P4 extend the table when adding new dimension labels. This is engine code that emits text, not authored content — voice-check the strings against `aurelia_voice_examples.md` at commit time.
+- **Test count uncertainty**: 30-50+ is the AC range. The plan above implies roughly: 6 (flag helpers) + 12 (dataclass + state-machine) + 8 (resolution formula + worked examples) + 8 (outcome propagation) + 5 (market shifts) + 4 (corridor/coalition) + 6 (view substates) + 4 (scenario) + 1 (perf) ≈ 54 tests. If the actual count lands below 30, the implementer should add edge cases rather than artificially split assertions.
 
 **Activity log.**
 - 2026-04-26 — todo (created)
+- 2026-04-27 15:53 — harness: plan phase starting
+- 2026-04-27 16:35 — planning complete; expanded scope to include market-shift registry, sub-rep deduction wiring, Cass Weller intel reveal, empty/locked/loading/error UI states, live composer preview, and SA-P1 §7.3+§9.1 flag helpers. Locked 11 decisions and resolved 2 of 3 prior open questions. No new sprints proposed — the design doc explicitly defers content (templates, dialogue, named delegates) to SA-P3/P4/P5 and tutorial overlay wiring to SA-P3. Verified all 5 context-to-read paths exist on disk and the design doc covers sections 1-8 per the SA-P1 hand-off checklist. PHASE_OK
+
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-04-27 16:00
+- Completed: 2026-04-27 16:35
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: pending
+- New_sprints_proposed: none
+- Polish_items_folded_in: market-shift registry with stack rule + decay (AC 14); sub-reputation deduction on failed corridor visits (AC 13); Cass Weller arbitration_dispute_intel once-per-session reveal (AC 15); flags.py helper functions for outcome + tip flags (AC 12); empty/locked/loading/error UI states for dispute list (AC 10); live "Effective vs Difficulty" composer preview (AC 11); performance smoke <100ms (AC 16); save/load round-trip at three explicit boundaries (AC 6).
+- Decisions_locked: 11
+- Notes: Verified all five Context-to-read paths exist on disk. Confirmed Desta Coll and Cass Weller crew members already define the bonus types this sprint consumes (data/crew/crew_members.json:721-773); coalition_sway, delegate_reach, mediation_instinct skills already exist in progression.py. Locked field/module/state names. Sprint stays XL — no split — because the design doc explicitly partitions content (SA-P3/P4/P5) and tutorial wiring (SA-P3) out, leaving SA-P2 as a focused engine sprint with one reachable venue for end-to-end testing.
 
 #### SA-P3 — Mayors' Council Chamber (Verdant Venue)
 
