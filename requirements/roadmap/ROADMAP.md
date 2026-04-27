@@ -1906,17 +1906,37 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 - 2026-04-27 17:02 — harness: plan phase starting
 - 2026-04-27 17:50 — planning complete; verified all SA-P3 context-to-read paths exist on disk (one path correction: `data/galaxy/npcs.json` does not exist in this codebase — replaced in touch zones with `data/dialogue/dialogues.json`, the canonical pattern); locked 9 decisions (counter-framings extension via template-driven lookup; commodity additions for fresh_water + hydroponics_yield; npcs.json correction; SA-P3 owns journal authoring; SA-P3 only wires crew banter triggers; verdant_council sub-rep org config; locked-state threshold at -25; ship 8 templates not 12; engine-emitted journal flags); folded in 4 polish items as deliverables (PT-M tutorial overlay wiring; 3 journal entries; 2 crew-banter trigger flags; 8 per-template news headlines authored inline); refined acceptance criteria from 8 → 20 mechanically testable items; expanded touch zones to cover the 7 areas the implementer will touch (data/politics/, data/dialogue/, data/economy/commodities.json, data/journal/entries.json, politics_dispute.py engine extension, dispute_view.py overlay wiring, game.py outcome-callback wiring, new verdant_council.py module, plus data-validation + view + scenario test files); documented 3 OPEN-defer items (pixel theming → SA-X10; Alliance Congress dimensions → SA-P4; recurring delegate beyond the 4 voice sheets → escalate if surfaces). No new sprints proposed. PHASE_OK
 - 2026-04-27 17:13 — harness: implement phase starting (rework cycle 0)
+- 2026-04-27 17:35 — engine extension red: TestCounterFramingTemplateLookup fails on missing field. Added `counter_framings: dict[str, tuple[str, str]]` to `PoliticsDisputeTemplate`, generalized `_resolve_counter_argument(dispute, delegate)` to consult template overrides, extended `_parse_politics_dispute_template` to read the optional field. Tests green; SA-P2 worked-example scenario remained green (AC 17).
+- 2026-04-27 17:38 — Verdant council module shipped: `spacegame/models/verdant_council.py` defines `VERDANT_COUNCIL_CONFIG: OrganizationConfig` with five tiers (stranger/observer/regular/insider/advisor) and is registered in `Game._initialize_politics_dispute_manager`. AC 15 wired.
+- 2026-04-27 17:40 — `fresh_water` + `hydroponics_yield` added to `data/economy/commodities.json` with agricultural / water production tags. AC 7.
+- 2026-04-27 17:55 — eight Verdant dispute templates shipped in `data/politics/verdant_disputes.json` (water_rights_phasing / aquifer_concession_renewal / infrastructure_co_op_vote / forgeworks_partnership_extension / co_op_dividend_distribution / hydroponics_yield_quota / settler_food_credit_dispute / frontier_trade_route_levy). Two campaign arcs (infrastructure_co_op_vote + frontier_trade_route_levy) at 5 rounds; five templates declare per-delegate counter-framings; three water-rights/hydroponics templates rely on the SA-P2 default. All headlines ≤80 chars; all flag-helper strings round-trip; all rep deltas reference real factions in `data/factions.json`. AC 1-7, 18.
+- 2026-04-27 18:00 — four delegate corridor dialogue trees added to `data/dialogue/dialogues.json`: `mayor_vance_council_corridor`, `delegate_hask_council_corridor`, `delegate_drift_council_corridor`, `delegate_marsh_council_corridor`. Voice-checked against `character_voices.md:886-1056`. AC 14.
+- 2026-04-27 18:03 — three captain-notebook journal entries added to `data/journal/entries.json` (`auto_p3_first_dispute_attended`, `auto_p3_first_partial_win`, `auto_p3_first_coalition_won`). AC 12.
+- 2026-04-27 18:08 — engine outcome callback (`Game._on_dispute_outcome`) wired so `first_dispute_attended` / `first_partial_win` / `first_coalition_won` flags fire at most once per save and trigger the corresponding journal entries. Crew-banter trigger flags (`desta_corridor_pre_session_seen`, `cass_mediation_in_progress_seen`) set in the manager when Desta succeeds in corridor / Cass observes a mediate submit. AC 13, 20.
+- 2026-04-27 18:15 — PT-M tutorial overlay wiring in `dispute_view.py`: venue tip on `on_enter` (gated on `seen_politics_venue_tip`), composer tip on first composer open (gated on `seen_argument_composer_tip`). Both texts pulled byte-for-byte from SA-P1 §9.2 + §9.3. Overlay consumes events while live, renders on top, dismissal sets the flag, never re-fires. AC 9, 10, 11.
+- 2026-04-27 18:25 — 26 data-validation tests in `test_verdant_disputes_data.py` green (schema completeness, issue-family categorization, campaign-arc count, outcome-matrix completeness, headline length, flag-helper round-trip, cross-references against commodities/systems/factions, delegate roster, sub-faction id, counter-framings validity).
+- 2026-04-27 18:32 — 10 scenario tests in `test_scenario_verdant_politics.py` green covering: full win on `co_op_dividend_distribution` with corridor pre-commit, loss on `settler_food_credit_dispute` via abstain, partial_win_off_record on `water_rights_phasing` via mediation, sub-rep deduction on corridor fail, Desta and Cass banter trigger flags, modernization-arc save/load round-trip mid-arc, SA-P2 baseline preservation, legacy-save tolerance.
+- 2026-04-27 18:38 — counter-framing extension tests in `test_politics_dispute.py` (3) and tutorial-overlay tests in `test_dispute_view.py` (6) green.
+- 2026-04-27 18:42 — touch-zone delta: extended Verdant `data/galaxy/systems.json` economy with the two new commodities (one-line addition; needed for `test_all_commodities_available_somewhere`). Bumped four pre-existing commodity-count assertions from 61 → 63 (`test_data_loader.py`, `test_additional_recipes.py`, `test_crafted_gathering_upgrades.py`, `test_chapter3.py`). All small, mechanical; noted in commit message per AGENT_GUIDE small-out-of-zone clause.
+- 2026-04-27 18:48 — full suite green: 8948 passing, 98 skipped (baseline 8903 → +45). Ruff lint + format clean on touched files. Writing Bible scanner clean. SI-3 dialogue-integrity scanner clean. PHASE_OK
+
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-04-27 17:02
-- Completed: 2026-04-27 17:50
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 25d093c
-- New_sprints_proposed: none
-- Polish_items_folded_in: PT-M tutorial overlay wiring; 3 journal entries (first_dispute_attended / first_partial_win / first_coalition_won); 2 crew-banter trigger flags (desta_corridor_pre_session_seen / cass_mediation_in_progress_seen); per-template news headlines authored inline
-- Decisions_locked: 9
-- Notes: Verified all context-to-read paths; corrected one stale touch-zone reference (`data/galaxy/npcs.json` does not exist — dialogue lives in `data/dialogue/dialogues.json`). Folded in two engine extensions that materially affect SA-P3's touch zones: a template-driven counter-framings field on `PoliticsDisputeTemplate` (small, additive, default preserves SA-P2 behavior) and a Verdant council sub-rep config registration (mirrors `wreckers_guild.py` pattern). Added two new commodities (`fresh_water`, `hydroponics_yield`) referenced by every water-rights / hydroponics dispute. Acceptance criteria expanded from 8 to 20 to cover all polish items, data validation, and engine extensions. Pre-phase test baseline 8903 passing / 98 skipped recorded as the floor.
+- Started: 2026-04-27 17:13
+- Completed: 2026-04-27 18:48
+- Files_changed: data/politics/verdant_disputes.json, data/dialogue/dialogues.json, data/economy/commodities.json, data/journal/entries.json, data/galaxy/systems.json, spacegame/models/politics_dispute.py, spacegame/models/verdant_council.py, spacegame/data_loader.py, spacegame/engine/game.py, spacegame/views/dispute_view.py, tests/test_models/test_politics_dispute.py, tests/test_models/test_verdant_disputes_data.py, tests/test_views/test_dispute_view.py, tests/test_scenarios/test_scenario_verdant_politics.py, tests/test_models/test_data_loader.py, tests/test_models/test_additional_recipes.py, tests/test_models/test_crafted_gathering_upgrades.py, tests/test_models/test_chapter3.py
+- Commits: a09fcda, c82bae6
+- Tests_added: 45
+- Tests_baseline: 8903
+- Tests_passing: 8948
+- Tests_skipped: 98
+- Lint_clean: yes
+- Format_clean: yes
+- SI3_scanner_clean: yes
+- Writing_bible_clean: yes
+- Touch_zones_respected: yes (one out-of-zone systems.json economy line + four pre-existing commodity-count assertions bumped 61→63; both small, both noted per AGENT_GUIDE small-out-of-zone clause)
+- Notes: Eight Verdant dispute templates spanning all four issue families; two campaign arcs; five with per-delegate counter-framings; four corridor dialogue trees voice-checked against `character_voices.md`; three journal entries; PT-M overlays wired byte-for-byte to SA-P1 §9.2/§9.3; engine outcome callback fires first-time journal flags; Desta + Cass crew-banter triggers wired. All 20 acceptance criteria addressed.
 #### SA-P4 — Alliance Congress Hall (Haven's Rest Venue)
 
 **Status**: todo
