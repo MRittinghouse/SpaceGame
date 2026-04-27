@@ -60,17 +60,28 @@ Anything the player will read — dialogue, missions, journals, UI strings, ambi
 
 If you write a line that sounds slightly off but you can't name why, copy a paired example from `aurelia_voice_examples.md` and rewrite in that register. Do not ship "passable" voice on player-facing content. Voice is the most visible quality dimension of this game.
 
-## Register variety across a cast
+## Variety across a cast
 
-When a single sprint authors multiple NPCs (crew templates, council delegates, faction operatives, etc.), the cast must have **emotional range** — not just internally-consistent voices. A previous sprint shipped five new specialists who were all internally well-written but shared a "professional, methodological, cataloguer's" register; the cast read as monotone.
+When a single sprint authors multiple NPCs, the work that survives isn't just "are the individual voices good" — it's "does the set have range." A previous sprint shipped five new specialists who were each internally well-written but shared a single register (professional, methodological, cataloguer's eye). Internally coherent; as a set, monotone.
 
-Before shipping any sprint with 3+ new NPCs, audit the set explicitly:
-- Does at least one voice run **warmer** than baseline?
-- Does at least one run **anxious or uncertain**?
-- Does at least one run **reckless, blunt, or self-interested**?
-- If every voice in the set is "competent expert speaking precisely," you have a cast-balance problem regardless of how good each individual voice is.
+The aim is **variety, not archetypes.** Resist both the failure mode where every character in a sprint speaks with the same tonal default AND the opposite failure of mechanical archetype-checking ("did we cover the warm one, the anxious one, the reckless one?"). Aurelia's universe is rewarded by characters who are specifically, irreducibly themselves — not characters who fill slots. A cast of five people from broadly similar backgrounds can feel varied if each carries something the others don't, and a cast that mechanically distributes "temperaments" can still feel canned.
 
-Document the register diversity check in the sprint's Activity log. The reviewer should flag missing range.
+The dimensions of variety are wider than temperament. Some that work:
+- A relationship that shapes their speech (someone who lost a partner two years ago talks differently than someone who didn't)
+- A craft register from outside their current role (a former teacher who became a broker still teaches when they explain)
+- A learned silence (someone who knows when not to speak, in contrast to characters who narrate)
+- A regional cadence (Verdant rhythm vs. Reach rhythm vs. Forgeworks clip)
+- A contradiction the character has learned to carry (the gentlest voice in the cast is also the most uncompromising)
+- A specific obsession or unfinished business that surfaces in unexpected moments
+- A way of handling silence, or of refusing to fill it
+- An unfashionable belief held with conviction
+- Humor of a particular shape — wry, self-deprecating, sharp at others' expense, dry under pressure
+
+Think of it as a **standard curve with deliberate outliers.** Most working-class NPCs will use grounded specific speech; most professionals will speak more precisely. That curve exists and it's fine. The point is to reach past it sometimes, where a character's history or role earns it. A cast where every voice is on the curve reads as monotonous. A cast where every voice tries hard to break the curve reads as forced. The right shape is most-on-curve with a few real outliers, and the outliers feel earned by who the character is, not by a quota.
+
+When you finish drafting a multi-NPC sprint, read the cast aloud as a set. If two or three voices feel interchangeable once you cover the names, that's the alarm. The fix is rarely "swap one for a different archetype"; it's "give one of them something specific that nobody else in the cast has." Document a one-line note in the sprint's Activity log on what makes each voice non-substitutable. If you can't write that note, the voices are too close.
+
+Be brave about depth. The fear of "too quirky" produces flatter casts than the fear of "too generic." Lean toward the specific.
 
 ## Don't over-defend the design in review
 

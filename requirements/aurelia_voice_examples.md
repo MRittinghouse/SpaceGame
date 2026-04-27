@@ -12,6 +12,20 @@ A working galaxy in 2335. People do dirty jobs and live with the consequences. T
 
 What it is **not**: corporate-aspirational, mystical-about-space, sentimentally-egalitarian, parallel-elegant, or reverently-rephrasing-the-ordinary. Those are the tells of generic AI prose. They will appear unbidden if you don't train against them.
 
+## What Aurelia voice is *also* not — a single template
+
+The thirty paired examples below show transformations **from AI-generic patterns to grounded character-specific patterns.** They are not a single voice template applied uniformly across the cast.
+
+The Cargo Broker (Odom) does not speak like the Okafor Institute Director (Kweon). A miner's caretaker on the Deep Shafts does not speak like a Stellaris Auctioneer. A Verdant council delegate does not speak like a Crimson Reach mediator. They share Aurelia's overall texture — concrete over abstract, earned over aspirational, unsentimental about loss — but they are not interchangeable voices, and the writing should make that obvious within a few lines.
+
+When you draft a new character, the question isn't "does this sound like Aurelia?" — it's:
+1. Does this sound like **this specific person**, with their station, history, and habits?
+2. Does it avoid the AI tells listed in the diagnostic checklist below?
+
+The diagnostic exists to keep AI-default cadences out. The character work — voice, register, contradictions, silences, what they refuse to say — exists to make the person specific. Both matter. Treating the diagnostic as a positive template (everyone speaks in short concrete sentences with dock-floor metaphors) produces a cast that's monotone in a different direction.
+
+Reach for variety where the character earns it. A baroque, formal, wry-affected register is fine for a character whose history makes that register inevitable — provided the AI tells are absent. The Aurelia voice IS the absence of AI tells; it is NOT the presence of any one specific style.
+
 ---
 
 ## NPC Dialogue
@@ -286,7 +300,11 @@ Empty states report a fact and point at a resource. They do not exclaim.
 
 ## Diagnostic — the structural tells
 
-If you catch yourself writing one of these patterns, the line probably needs rework:
+These describe Aurelia's **default** registers, not absolute bans. Items 1–4 (mechanical AI tells like em-dashes and banned phrases) are hard rules — the scanner enforces them. Items 5–16 (structural patterns) are the registers Aurelia steers away from at the cast-wide level; individual characters can reach into them when their specific history, role, or moment earns it. A young apprentice with genuine wonder about tech, a prospector who's seen too much and now speaks of the void as an entity, a settler whose register is genuinely formal — those are not violations if the character earns the register and the writing avoids the mechanical tells.
+
+The default is the curve; deliberate, earned outliers are part of why the universe feels real. The failure mode the diagnostic targets is **unconscious drift** into AI-generic patterns, not the **conscious choice** to give a specific character a register that breaks the pattern.
+
+If you catch yourself writing one of these patterns without deliberate intent, the line probably needs rework:
 
 1. **Em-dashes in player content.** Long em (`—`) is fine in dev docs and design language; it's banned in NPC dialogue, mission text, journals, ambient, and UI. Double-hyphens (`--`) are also banned.
 2. **"Couldn't help but."** Banned phrase.
