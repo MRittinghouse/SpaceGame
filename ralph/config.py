@@ -53,7 +53,17 @@ INTER_SPRINT_SLEEP: float = 1.0
 
 # Claude CLI invocation. The harness appends the prompt as the final
 # argument. Override if your install uses a different binary or flag.
-CLAUDE_CMD: list[str] = ["claude", "-p"]
+#
+# `--dangerously-skip-permissions`: required for the harness's unattended
+# pattern. In `claude -p` non-interactive mode, tool calls (Edit, Write,
+# Bash) are otherwise sandbox-restricted, even for paths inside the
+# project root. Without this flag, agents read context successfully but
+# silently fail on writes — producing "no sentinel" outcomes that look
+# like agent disobedience but are actually permission denials. The flag
+# is documented as "dangerous" because the agent can do anything; that's
+# exactly the contract we want for autonomous sprint execution against
+# our own roadmap.
+CLAUDE_CMD: list[str] = ["claude", "-p", "--dangerously-skip-permissions"]
 
 # Dry-run mode: log what would happen, don't actually invoke Claude.
 # Useful for testing the loop logic. Override via `RALPH_DRY_RUN=1`.

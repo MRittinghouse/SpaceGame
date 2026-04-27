@@ -200,24 +200,26 @@ def _read_recent_activity_log(sprint_id: str) -> str:
     return log_match.group(1)
 
 
-def _detect_outcome(sprint_id: str, returncode: int) -> tuple[Outcome, str]:
-    """Determine the phase outcome from the agent's Activity-log update.
+_PERMISSION_DENIAL_PATTERNS = (
+    "permission denied",
+    "sandbox",
+    "not allowed",
+    "i don't have permission",
+    "i do not have permission",
+    "tool use was rejected",
+    "blocked by sandbox",
+    "operation not permitted",
+)
 
-    Sentinels (the agent is told to write one of these in its final log
-    entry):
-      - PHASE_OK
-      - PHASE_BLOCKED: <reason>
-      - PHASE_NEEDS_REWORK: <reason>
 
-    If the agent crashed (returncode != 0) and didn't write a sentinel,
-    treat as ERROR. If the subprocess succeeded but no sentinel appears,
-    treat as ERROR (agent didn't follow protocol).
+def _scan_for_sentinels(text: str) -> list[tuple[Outcome, str]]:
+    """Scan an arbitrary text for sentinel lines, in document order.
+
+    Returns a list of (Outcome, reason) tuples for each sentinel found.
+    Caller decides which to honor (typically the last).
     """
-    log = _read_recent_activity_log(sprint_id)
-    # Look at the most recent sentinel — the LAST occurrence in the log
-    # block. Agents are instructed to put one final sentinel line.
     matches: list[tuple[Outcome, str]] = []
-    for line in log.strip().splitlines():
+    for line in text.splitlines():
         if AGENT_OUTCOME_OK in line:
             matches.append((Outcome.OK, ""))
         elif AGENT_OUTCOME_BLOCKED in line:
@@ -228,14 +230,96 @@ def _detect_outcome(sprint_id: str, returncode: int) -> tuple[Outcome, str]:
             matches.append(
                 (Outcome.NEEDS_REWORK, reason or "agent reported rework needed")
             )
+    return matches
+
+
+def _diagnose_no_sentinel(
+    sprint_id: str,
+    returncode: int,
+    stdout: str,
+    pre_phase_head: str,
+) -> str:
+    """Build a specific failure reason when the agent wrote no sentinel.
+
+    Looks at: returncode, commit count vs. pre_phase_head, presence of
+    permission-denial keywords in stdout, stdout length. Returns a
+    one-line reason suitable for surfacing to the operator.
+    """
+    bits: list[str] = []
+    if returncode != 0:
+        bits.append(f"agent exited with returncode {returncode}")
+    else:
+        bits.append("agent exited cleanly")
+
+    # Count commits referencing this sprint since pre-phase HEAD.
+    if pre_phase_head:
+        commits = _commits_since(pre_phase_head, sprint_id)
+        bits.append(f"commits referencing {sprint_id}: {len(commits)}")
+
+    # Check stdout for telltale permission failures.
+    lowered = (stdout or "").lower()
+    hit = next((p for p in _PERMISSION_DENIAL_PATTERNS if p in lowered), None)
+    if hit:
+        bits.append(
+            f"stdout contains permission-denial signal ({hit!r}); "
+            f"check CLAUDE_CMD has `--dangerously-skip-permissions` "
+            f"and the write-permission probe at startup"
+        )
+
+    if not stdout:
+        bits.append("agent stdout was empty (subprocess may have failed early)")
+    elif len(stdout) < 200:
+        bits.append(f"agent stdout was short ({len(stdout)} chars) — likely an early bail")
+
+    bits.append("no sentinel in ROADMAP.md or in agent stdout")
+    return "; ".join(bits)
+
+
+def _detect_outcome(
+    sprint_id: str,
+    returncode: int,
+    stdout: str = "",
+    pre_phase_head: str = "",
+) -> tuple[Outcome, str]:
+    """Determine the phase outcome from the agent's Activity-log update.
+
+    Sentinels (the agent is told to write one of these in its final log
+    entry):
+      - PHASE_OK
+      - PHASE_BLOCKED: <reason>
+      - PHASE_NEEDS_REWORK: <reason>
+
+    Detection order:
+      1. Activity log of the sprint section in ROADMAP.md (canonical).
+      2. Agent stdout — fallback for the case where the agent decided
+         BLOCKED/NEEDS_REWORK but couldn't persist the write (sandbox,
+         filesystem failure). PHASE_OK from stdout is NOT honored —
+         claiming success without persisting is treated as ERROR.
+
+    If the agent crashed (returncode != 0) and didn't write a sentinel,
+    treat as ERROR. If the subprocess succeeded but no sentinel appears
+    in either place, treat as ERROR with a specific diagnostic.
+    """
+    activity_log = _read_recent_activity_log(sprint_id)
+    matches = _scan_for_sentinels(activity_log)
 
     if matches:
-        # Agent's last sentinel wins.
+        # Agent's last sentinel in the canonical log wins.
         return matches[-1]
 
-    if returncode != 0:
-        return Outcome.ERROR, f"agent exited with returncode {returncode}, no sentinel"
-    return Outcome.ERROR, "agent completed but wrote no sentinel"
+    # Fallback: scan stdout. Agents writing PHASE_BLOCKED to stdout when
+    # they couldn't write to ROADMAP.md should still be detectable.
+    if stdout:
+        stdout_matches = _scan_for_sentinels(stdout)
+        # Filter out OK — never trust a success claim that didn't persist.
+        non_ok = [m for m in stdout_matches if m[0] != Outcome.OK]
+        if non_ok:
+            outcome, reason = non_ok[-1]
+            qualifier = "(detected in stdout fallback — agent did not write to ROADMAP.md)"
+            return outcome, f"{reason} {qualifier}".strip()
+
+    reason = _diagnose_no_sentinel(sprint_id, returncode, stdout, pre_phase_head)
+    return Outcome.ERROR, reason
 
 
 # ---------------------------------------------------------------------------
@@ -375,7 +459,12 @@ def run_phase(
                 reason=f"roadmap validation failed: {e}",
             )
 
-    outcome, reason = _detect_outcome(sprint_id, returncode)
+    outcome, reason = _detect_outcome(
+        sprint_id,
+        returncode,
+        stdout=_stdout,
+        pre_phase_head=context.pre_phase_head if context else "",
+    )
 
     # Sentinel cross-validation (item E): a PHASE_OK on a phase that
     # should have produced commits must show at least one. If no commit

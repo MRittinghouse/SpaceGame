@@ -145,6 +145,92 @@ class TestDetectOutcome:
         assert outcome == Outcome.NEEDS_REWORK
 
 
+class TestStdoutFallback:
+    """When ROADMAP.md has no sentinel, fall back to scanning agent stdout.
+
+    Only BLOCKED and NEEDS_REWORK are honored from stdout. PHASE_OK in
+    stdout is treated as ERROR — the agent claimed success without
+    persisting the work to ROADMAP.md, which is a protocol violation.
+    """
+
+    def test_stdout_blocked_honored(self, roadmap_factory) -> None:
+        roadmap_factory(_ROADMAP_NO_SENTINEL)
+        stdout = (
+            "I'll plan SA-1.\n"
+            "I notice the prerequisite doc is missing.\n"
+            "PHASE_BLOCKED: missing context — requirements/foo.md\n"
+        )
+        outcome, reason = agents._detect_outcome(
+            "SA-1", returncode=0, stdout=stdout
+        )
+        assert outcome == Outcome.BLOCKED
+        assert "missing context" in reason
+        assert "stdout fallback" in reason
+
+    def test_stdout_needs_rework_honored(self, roadmap_factory) -> None:
+        roadmap_factory(_ROADMAP_NO_SENTINEL)
+        stdout = "Reviewing.\nPHASE_NEEDS_REWORK: tests don't cover the new path\n"
+        outcome, reason = agents._detect_outcome(
+            "SA-1", returncode=0, stdout=stdout
+        )
+        assert outcome == Outcome.NEEDS_REWORK
+        assert "tests don't cover" in reason
+        assert "stdout fallback" in reason
+
+    def test_stdout_ok_not_honored(self, roadmap_factory) -> None:
+        """PHASE_OK in stdout without ROADMAP write is a protocol violation,
+        not a success. The agent must persist work for OK to count."""
+        roadmap_factory(_ROADMAP_NO_SENTINEL)
+        stdout = "All done.\nPHASE_OK\n"
+        outcome, reason = agents._detect_outcome(
+            "SA-1", returncode=0, stdout=stdout
+        )
+        assert outcome == Outcome.ERROR
+        assert "no sentinel" in reason
+
+    def test_roadmap_sentinel_takes_precedence(self, roadmap_factory) -> None:
+        """If ROADMAP has a sentinel, stdout is ignored — canonical wins."""
+        roadmap_factory(_ROADMAP_WITH_BLOCKED)
+        stdout = "PHASE_NEEDS_REWORK: nope\n"  # contradictory stdout
+        outcome, _reason = agents._detect_outcome(
+            "SA-1", returncode=0, stdout=stdout
+        )
+        assert outcome == Outcome.BLOCKED  # roadmap wins
+
+
+class TestNoSentinelDiagnostic:
+    """The error reason for no-sentinel should be specific and actionable."""
+
+    def test_includes_returncode_when_nonzero(self, roadmap_factory) -> None:
+        roadmap_factory(_ROADMAP_NO_SENTINEL)
+        _outcome, reason = agents._detect_outcome("SA-1", returncode=137)
+        assert "returncode 137" in reason
+
+    def test_flags_permission_keyword_in_stdout(self, roadmap_factory) -> None:
+        roadmap_factory(_ROADMAP_NO_SENTINEL)
+        stdout = "I tried to use Write but got: Permission denied at the sandbox level."
+        _outcome, reason = agents._detect_outcome(
+            "SA-1", returncode=0, stdout=stdout
+        )
+        assert "permission-denial signal" in reason
+        assert "dangerously-skip-permissions" in reason
+
+    def test_flags_empty_stdout(self, roadmap_factory) -> None:
+        roadmap_factory(_ROADMAP_NO_SENTINEL)
+        _outcome, reason = agents._detect_outcome(
+            "SA-1", returncode=0, stdout=""
+        )
+        assert "empty" in reason
+
+    def test_flags_short_stdout(self, roadmap_factory) -> None:
+        roadmap_factory(_ROADMAP_NO_SENTINEL)
+        stdout = "early bail\n"
+        _outcome, reason = agents._detect_outcome(
+            "SA-1", returncode=0, stdout=stdout
+        )
+        assert "short" in reason
+
+
 # ---------------------------------------------------------------------------
 # Prompt building
 # ---------------------------------------------------------------------------

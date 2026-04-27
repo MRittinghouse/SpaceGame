@@ -377,7 +377,7 @@ def _run_git(args: list[str], timeout: int = 30) -> tuple[int, str, str]:
 # ---------------------------------------------------------------------------
 
 
-def _preflight_checks(allow_dirty: bool, push_enabled: bool) -> int:
+def _preflight_checks(allow_dirty: bool, push_enabled: bool, probe_writes: bool) -> int:
     """Verify environment before starting the loop. Returns 0 on success,
     non-zero exit code on failure. Each check fails fast with a clear message.
     """
@@ -460,8 +460,144 @@ def _preflight_checks(allow_dirty: bool, push_enabled: bool) -> int:
                 f"The harness will still attempt invocation."
             )
 
+    # 8. Claude can actually write files (item 2). Catches sandbox/permission
+    # failures before any sprint time is wasted on silent write rejections.
+    if probe_writes and not DRY_RUN:
+        ok, reason = _probe_claude_write_permission()
+        if not ok:
+            log(f"Write-permission probe FAILED: {reason}")
+            log(
+                "Aborting. The harness cannot drive agents that can't persist "
+                "files. To skip this check (e.g., known-good environment), "
+                "pass --skip-write-probe."
+            )
+            return 2
+        log("Write-permission probe passed.")
+
     log("Pre-flight checks passed.")
     return 0
+
+
+# ---------------------------------------------------------------------------
+# Claude write-permission probe (item 2)
+# ---------------------------------------------------------------------------
+#
+# In `claude -p` non-interactive mode, file writes fail silently inside
+# the project tree without `--dangerously-skip-permissions`. The probe
+# verifies the agent can actually persist a tiny test write before we
+# commit any time to a real sprint. If the probe fails, every subsequent
+# agent will silently fail in the same way — better to abort and surface
+# the cause now.
+
+WRITE_PROBE_TOKEN = "WRITE_PROBE_OK"
+WRITE_PROBE_FILENAME = ".write_probe"
+WRITE_PROBE_TIMEOUT_SECONDS = 180
+
+
+def _probe_claude_write_permission() -> tuple[bool, str]:
+    """Spawn a minimal claude subprocess to verify it can write files.
+
+    Returns (success, reason). On success, reason is "" or a brief note.
+    On failure, reason contains a human-readable diagnostic.
+
+    This is a real claude invocation (counts against quota), but tiny:
+    one prompt asking the agent to write a single token to a probe file.
+    Runs under WRITE_PROBE_TIMEOUT_SECONDS (default 180) to fail fast.
+    """
+    from ralph.config import CLAUDE_CMD
+
+    probe_dir = LOGS_DIR.parent  # ralph/
+    probe_dir.mkdir(parents=True, exist_ok=True)
+    probe_path = probe_dir / WRITE_PROBE_FILENAME
+    log_path = LOGS_DIR / "_write_probe.log"
+    LOGS_DIR.mkdir(parents=True, exist_ok=True)
+
+    # Clean any stale probe file from a prior run.
+    try:
+        if probe_path.exists():
+            probe_path.unlink()
+    except OSError as e:
+        return False, f"could not remove stale probe file at {probe_path}: {e}"
+
+    # Use the path relative to PROJECT_ROOT so the agent gets a sensible cwd
+    # reference. Agent runs with cwd=PROJECT_ROOT.
+    rel_probe_path = probe_path.relative_to(PROJECT_ROOT).as_posix()
+    prompt = (
+        f"Write the exact text `{WRITE_PROBE_TOKEN}` (no quotes, no newline) "
+        f"to the file `{rel_probe_path}` using the Write tool. "
+        f"This is a smoke test for the ralph harness — confirming you can "
+        f"actually persist files in this environment. Reply with 'done' "
+        f"after the write succeeds. If the Write tool reports a permission "
+        f"or sandbox error, reply with the exact error text instead."
+    )
+    cmd = list(CLAUDE_CMD) + [prompt]
+
+    log(f"Running write-permission probe (writes {rel_probe_path}, ~30-180s)...")
+    try:
+        with log_path.open("w", encoding="utf-8") as f:
+            f.write(f"# Write-permission probe\n# Started: {datetime.now().isoformat()}\n")
+            f.write(f"# Command: {cmd[0]} {' '.join(cmd[1:-1])} <prompt>\n")
+            f.write(f"# Probe file: {rel_probe_path}\n")
+            f.write(f"# Timeout: {WRITE_PROBE_TIMEOUT_SECONDS}s\n\n")
+            f.write(f"--- PROMPT ---\n{prompt}\n--- END PROMPT ---\n\n")
+            f.write(f"--- AGENT OUTPUT ---\n")
+            f.flush()
+
+            try:
+                result = subprocess.run(
+                    cmd,
+                    cwd=str(PROJECT_ROOT),
+                    capture_output=True,
+                    text=True,
+                    timeout=WRITE_PROBE_TIMEOUT_SECONDS,
+                    encoding="utf-8",
+                    errors="replace",
+                )
+            except FileNotFoundError as e:
+                f.write(f"\n--- claude CLI not found: {e} ---\n")
+                return False, f"claude CLI not found on PATH: {e}"
+            except subprocess.TimeoutExpired:
+                f.write(
+                    f"\n--- TIMEOUT after {WRITE_PROBE_TIMEOUT_SECONDS}s ---\n"
+                )
+                return False, (
+                    f"probe timed out after {WRITE_PROBE_TIMEOUT_SECONDS}s. "
+                    f"The agent did not respond — check {log_path}."
+                )
+
+            f.write(result.stdout)
+            if result.stderr:
+                f.write(f"\n--- STDERR ---\n{result.stderr}\n")
+            f.write(f"\n--- END (returncode {result.returncode}) ---\n")
+
+        # Verify the probe file was actually written with the expected token.
+        if not probe_path.exists():
+            return False, (
+                f"probe file {rel_probe_path} was not created. The agent "
+                f"likely hit a sandbox/permission denial. Check {log_path} "
+                f"for the agent's response. Common cause: missing "
+                f"`--dangerously-skip-permissions` in CLAUDE_CMD (config.py)."
+            )
+        try:
+            content = probe_path.read_text(encoding="utf-8").strip()
+        except OSError as e:
+            return False, f"probe file at {rel_probe_path} unreadable: {e}"
+        if content != WRITE_PROBE_TOKEN:
+            return False, (
+                f"probe file at {rel_probe_path} exists but content "
+                f"mismatch: got {content!r}, expected {WRITE_PROBE_TOKEN!r}. "
+                f"Agent wrote a file but didn't follow the prompt — "
+                f"unusual; check {log_path}."
+            )
+
+        # Clean up the probe file. Best-effort.
+        try:
+            probe_path.unlink()
+        except OSError:
+            pass
+        return True, ""
+    except OSError as e:
+        return False, f"could not run write-permission probe: {e}"
 
 
 # ---------------------------------------------------------------------------
@@ -734,6 +870,17 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Don't capture pre-run test baseline. Faster startup; agents won't know the test count target.",
     )
+    p.add_argument(
+        "--skip-write-probe",
+        action="store_true",
+        help=(
+            "Don't run the Claude write-permission probe at startup. "
+            "The probe is a tiny smoke-test that catches sandbox/permission "
+            "denials before sprint time is wasted. Skip only when you're "
+            "sure the environment is good (e.g., immediately after a "
+            "successful probe, or in dry-run)."
+        ),
+    )
     return p.parse_args()
 
 
@@ -748,7 +895,11 @@ def main() -> int:
     push_enabled = not args.no_push and PUSH_ON_SPRINT_COMPLETE
 
     # Pre-flight checks (item F). Fail fast.
-    rc = _preflight_checks(allow_dirty=args.allow_dirty, push_enabled=push_enabled)
+    rc = _preflight_checks(
+        allow_dirty=args.allow_dirty,
+        push_enabled=push_enabled,
+        probe_writes=not args.skip_write_probe,
+    )
     if rc != 0:
         return rc
 
