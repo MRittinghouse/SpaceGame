@@ -1760,7 +1760,7 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 
 #### SA-P3 — Mayors' Council Chamber (Verdant Venue)
 
-**Status**: in-progress (implementing)
+**Status**: in-progress (reviewing)
 **Phase**: Phase II | **Size**: L | **Effort**: 2 weeks
 **Depends on**: SA-P2 | **Blocks**: SA-P4, SA-P6
 
@@ -1919,24 +1919,24 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 - 2026-04-27 18:38 — counter-framing extension tests in `test_politics_dispute.py` (3) and tutorial-overlay tests in `test_dispute_view.py` (6) green.
 - 2026-04-27 18:42 — touch-zone delta: extended Verdant `data/galaxy/systems.json` economy with the two new commodities (one-line addition; needed for `test_all_commodities_available_somewhere`). Bumped four pre-existing commodity-count assertions from 61 → 63 (`test_data_loader.py`, `test_additional_recipes.py`, `test_crafted_gathering_upgrades.py`, `test_chapter3.py`). All small, mechanical; noted in commit message per AGENT_GUIDE small-out-of-zone clause.
 - 2026-04-27 18:48 — full suite green: 8948 passing, 98 skipped (baseline 8903 → +45). Ruff lint + format clean on touched files. Writing Bible scanner clean. SI-3 dialogue-integrity scanner clean. PHASE_OK
+- 2026-04-27 17:41 — harness: review phase starting (rework cycle 0)
+- 2026-04-27 — review complete; 0 critical findings, 0 minor fixes; all 20 acceptance criteria met. Test suite: 8948 passing, 98 skipped (baseline 8903, +45). All acceptance criteria walked individually: templates (AC 1-7) verified via data-validation tests and manual inspection; counter-framing extension (AC 8) verified by parameterized tests and SA-P2 baseline still green (5/5); tutorial overlays (AC 9-11) verified against §9.2/§9.3 byte-for-byte; journal entries (AC 12) voice-checked against `aurelia_voice_examples.md` items 20-23 — captain's working notebook register confirmed, no moralizing, no "today I learned" framing; engine outcome flags (AC 13) confirmed idempotent via scenario test; dialogue trees (AC 14) voice-fidelity confirmed against `character_voices.md:886-1056` (Hask "Show me the soil analysis", Drift "I anticipated half of that", Marsh "What does this proposal do to the belt allocation?" all present and in-register); sub-rep config (AC 15) confirmed; scenario test (AC 16) walks win/loss/partial_win_off_record/campaign-arc save-load; SA-P2 baseline (AC 17) green; Writing Bible + SI-3 scanners (AC 18-19) clean; crew-banter triggers (AC 20) verified. Single tighten: `data_loader.py:837` uses `Dict[str, tuple]` (untyped tuple) instead of `dict[str, tuple[str, str]]` — runtime len-2 guard is present but the type annotation doesn't express the full constraint. Not a blocker; consistent with file-wide `Dict` from typing pre-existing pattern. PHASE_OK
 
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-04-27 17:13
-- Completed: 2026-04-27 18:48
-- Files_changed: data/politics/verdant_disputes.json, data/dialogue/dialogues.json, data/economy/commodities.json, data/journal/entries.json, data/galaxy/systems.json, spacegame/models/politics_dispute.py, spacegame/models/verdant_council.py, spacegame/data_loader.py, spacegame/engine/game.py, spacegame/views/dispute_view.py, tests/test_models/test_politics_dispute.py, tests/test_models/test_verdant_disputes_data.py, tests/test_views/test_dispute_view.py, tests/test_scenarios/test_scenario_verdant_politics.py, tests/test_models/test_data_loader.py, tests/test_models/test_additional_recipes.py, tests/test_models/test_crafted_gathering_upgrades.py, tests/test_models/test_chapter3.py
-- Commits: a09fcda, c82bae6
-- Tests_added: 45
-- Tests_baseline: 8903
+- Started: 2026-04-27 17:41
+- Completed: 2026-04-27
+- Files_changed: none
+- Commits: none
 - Tests_passing: 8948
-- Tests_skipped: 98
-- Lint_clean: yes
-- Format_clean: yes
-- SI3_scanner_clean: yes
-- Writing_bible_clean: yes
-- Touch_zones_respected: yes (one out-of-zone systems.json economy line + four pre-existing commodity-count assertions bumped 61→63; both small, both noted per AGENT_GUIDE small-out-of-zone clause)
-- Notes: Eight Verdant dispute templates spanning all four issue families; two campaign arcs; five with per-delegate counter-framings; four corridor dialogue trees voice-checked against `character_voices.md`; three journal entries; PT-M overlays wired byte-for-byte to SA-P1 §9.2/§9.3; engine outcome callback fires first-time journal flags; Desta + Cass crew-banter triggers wired. All 20 acceptance criteria addressed.
+- Acceptance_criteria_verified: 20/20
+- Polish_items_verified: 4/4
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 0
+- Single_tighten: `data_loader.py:837` uses `Dict[str, tuple]` (untyped tuple) — runtime len-2 guard is present but annotation could be `dict[str, tuple[str, str]]` to express the constraint fully. File-wide `Dict` from typing is pre-existing, so this is consistent with the file style, not a regression.
+- Followup_sprints_added: none
+- Notes: Clean implementation. All 20 acceptance criteria met. Eight Verdant dispute templates, four voice-consistent corridor dialogue trees, tutorial overlays byte-for-byte to spec, engine outcome flags idempotent, SA-P2 baseline preserved, Writing Bible and SI-3 scanners both clean.
 #### SA-P4 — Alliance Congress Hall (Haven's Rest Venue)
 
 **Status**: todo
