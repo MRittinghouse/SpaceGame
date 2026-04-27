@@ -7693,6 +7693,132 @@
                     "expression": "neutral"
                 }
             ]
+        },
+        {
+            "id": "paz_reina_guild_hall",
+            "start_node_id": "greeting",
+            "nodes": [
+                {
+                    "id": "greeting",
+                    "speaker_id": "paz_reina",
+                    "text": "Back already. Last run, the tumble rate on the secondary hull held to six per minute, confirmed. Entry window came in at fourteen, also confirmed. The approach vector estimate was off by three degrees, which is within margin. That counts as clean by my book.",
+                    "responses": [
+                        {
+                            "text": "How do you read a field that fast?",
+                            "next_node_id": "craft"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "craft",
+                    "speaker_id": "paz_reina",
+                    "text": "Reading a debris field is not the same as reading a chart. A chart sits still. A field rotates, drifts, recombines. You read it twice before you commit, and you mark every estimate as estimate. The day you stop doing that is the day someone stops coming back.",
+                    "responses": [
+                        {
+                            "text": "Understood.",
+                            "next_node_id": "signoff"
+                        }
+                    ],
+                    "expression": "stern"
+                },
+                {
+                    "id": "signoff",
+                    "speaker_id": "paz_reina",
+                    "text": "Check your margin. I say it whether you need to hear it or not. Habit. It has kept people alive who would otherwise have not been.",
+                    "responses": [
+                        {
+                            "text": "[Leave]",
+                            "next_node_id": null
+                        }
+                    ],
+                    "expression": "neutral"
+                }
+            ]
+        },
+        {
+            "id": "daro_teck_guild_hall",
+            "start_node_id": "greeting",
+            "nodes": [
+                {
+                    "id": "greeting",
+                    "speaker_id": "daro_teck",
+                    "text": "Walk past the bench, third frame on the right. That one is borderline salvageable. I will tell you why before I tell you anything else, because the reasoning matters more than the call. Drive housing cracked but not shattered. Life support canisters depleted, system intact. Maybe sixty percent of a ship sitting there.",
+                    "responses": [
+                        {
+                            "text": "What do you read off a wreck first?",
+                            "next_node_id": "craft"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "craft",
+                    "speaker_id": "daro_teck",
+                    "text": "Every wreck answers two questions. What happened. When. Get those right and you know whether the breathing side of the engineering section is workable, or whether the drive was running hot for six months before whoever was flying it noticed. Read the hull before you open anything. We have worked worse than what you are bringing in.",
+                    "responses": [
+                        {
+                            "text": "Useful. Thanks.",
+                            "next_node_id": "signoff"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "signoff",
+                    "speaker_id": "daro_teck",
+                    "text": "If it still spins, we can work with it. If it does not, do not bring it to me unless you want a long answer about why it is scrap.",
+                    "responses": [
+                        {
+                            "text": "[Leave]",
+                            "next_node_id": null
+                        }
+                    ],
+                    "expression": "neutral"
+                }
+            ]
+        },
+        {
+            "id": "ife_obi_guild_hall",
+            "start_node_id": "greeting",
+            "nodes": [
+                {
+                    "id": "greeting",
+                    "speaker_id": "ife_obi",
+                    "text": "Hello. I am cataloging the secondary scatter from the latest recovery. Three anomalous elements so far. Two are confirmed off-profile, one is pending. I will flag all three before the chart updates.",
+                    "responses": [
+                        {
+                            "text": "What does the scatter pattern tell you?",
+                            "next_node_id": "craft"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "craft",
+                    "speaker_id": "ife_obi",
+                    "text": "The pattern of a debris field tells you what the wreck was doing before it stopped being a ship. I sort first, theorize second, and mark every claim as confirmed, estimated, or pending. Most of the work is sorting. The theorizing is the part people remember.",
+                    "responses": [
+                        {
+                            "text": "Noted.",
+                            "next_node_id": "signoff"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "signoff",
+                    "speaker_id": "ife_obi",
+                    "text": "I will be at the index station. If you bring back something unusual, I would like to log it before you sell the rest.",
+                    "responses": [
+                        {
+                            "text": "[Leave]",
+                            "next_node_id": null
+                        }
+                    ],
+                    "expression": "neutral"
+                }
+            ]
         }
     ]
 }

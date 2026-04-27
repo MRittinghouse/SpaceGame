@@ -600,6 +600,45 @@
       "hide_after_flag": "wrenchs_request_complete"
     },
     {
+      "id": "paz_reina",
+      "name": "Paz Reina",
+      "title": "Wreck Navigator",
+      "portrait_color": [
+        140,
+        180,
+        200
+      ],
+      "home_system_id": "crimson_reach",
+      "dialogue_id": "paz_reina_guild_hall",
+      "faction_id": "frontier_alliance"
+    },
+    {
+      "id": "daro_teck",
+      "name": "Daro Teck",
+      "title": "Salvage Engineer",
+      "portrait_color": [
+        180,
+        160,
+        110
+      ],
+      "home_system_id": "crimson_reach",
+      "dialogue_id": "daro_teck_guild_hall",
+      "faction_id": "frontier_alliance"
+    },
+    {
+      "id": "ife_obi",
+      "name": "Ife Obi",
+      "title": "Debris-Field Cartographer",
+      "portrait_color": [
+        160,
+        140,
+        200
+      ],
+      "home_system_id": "crimson_reach",
+      "dialogue_id": "ife_obi_guild_hall",
+      "faction_id": "frontier_alliance"
+    },
+    {
       "id": "jez_okafor",
       "name": "Jez Okafor",
       "title": "Shift Supervisor",
