@@ -20,7 +20,6 @@ import pygame
 import pygame_gui
 
 from spacegame.config import (
-    WINDOW_HEIGHT,
     WINDOW_WIDTH,
     Colors,
     GameState,
@@ -63,21 +62,21 @@ DEFAULT_STANDING_THRESHOLD = -25
 class DisputeSubstate(Enum):
     """Internal navigation states inside the venue view."""
 
-    LIST = "list"          # Dispute list, plus empty / locked / loading / error
+    LIST = "list"  # Dispute list, plus empty / locked / loading / error
     CORRIDOR = "corridor"  # Coalition pre-commit corridor
-    SESSION = "session"    # In-session round view
+    SESSION = "session"  # In-session round view
     COMPOSER = "composer"  # Three-slot argument composer
-    TALLY = "tally"        # Vote / outcome screen
+    TALLY = "tally"  # Vote / outcome screen
 
 
 class DisputeListState(Enum):
     """Sub-substates rendered inside LIST (only one is shown at a time)."""
 
-    READY = "ready"        # active disputes listed
-    EMPTY = "empty"        # no active disputes
-    LOCKED = "locked"      # insufficient standing
-    LOADING = "loading"    # data not yet ready
-    ERROR = "error"        # data unavailable
+    READY = "ready"  # active disputes listed
+    EMPTY = "empty"  # no active disputes
+    LOCKED = "locked"  # insufficient standing
+    LOADING = "loading"  # data not yet ready
+    ERROR = "error"  # data unavailable
 
 
 class DisputeView(BaseView):
@@ -199,9 +198,7 @@ class DisputeView(BaseView):
     # Substate routing
     # ------------------------------------------------------------------
 
-    def _switch_substate(
-        self, substate: DisputeSubstate, *, force_recreate: bool = False
-    ) -> None:
+    def _switch_substate(self, substate: DisputeSubstate, *, force_recreate: bool = False) -> None:
         """Tear down current UI, set the new substate, build its UI."""
         if substate == self.substate and not force_recreate:
             return
@@ -534,13 +531,9 @@ class DisputeView(BaseView):
                     elif key.startswith("framing:"):
                         self.update_composer_selection(framing=key.split(":", 1)[1])
                     elif key.startswith("audience:"):
-                        self.update_composer_selection(
-                            audience_delegate_id=key.split(":", 1)[1]
-                        )
+                        self.update_composer_selection(audience_delegate_id=key.split(":", 1)[1])
                     elif key.startswith("evidence:"):
-                        self.update_composer_selection(
-                            evidence=key.split(":", 1)[1]
-                        )
+                        self.update_composer_selection(evidence=key.split(":", 1)[1])
                     return
 
     # ------------------------------------------------------------------
@@ -579,9 +572,7 @@ class DisputeView(BaseView):
         if self.list_state == DisputeListState.EMPTY:
             text = "Council in recess. Next session in 3 days."
         elif self.list_state == DisputeListState.LOCKED:
-            text = (
-                "You don't have standing to participate in these sessions."
-            )
+            text = "You don't have standing to participate in these sessions."
         elif self.list_state == DisputeListState.LOADING:
             text = "Loading session data."
         elif self.list_state == DisputeListState.ERROR:
@@ -600,8 +591,7 @@ class DisputeView(BaseView):
         if self.active_dispute is None:
             return
         round_text = (
-            f"Round {self.active_dispute.current_round} "
-            f"of {self.active_dispute.round_count}"
+            f"Round {self.active_dispute.current_round} of {self.active_dispute.round_count}"
         )
         surf = self.subtitle_font.render(round_text, True, Colors.TEXT_HIGHLIGHT)
         screen.blit(surf, (PANEL_X + scale_x(20), BODY_TOP_Y + scale_y(20)))

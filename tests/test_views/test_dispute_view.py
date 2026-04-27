@@ -15,15 +15,11 @@ from typing import Optional
 
 import pygame
 import pygame_gui
-import pytest
 
-from tests.test_models.test_politics_dispute import _make_water_rights_phasing_template
-
-from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH, GameState
+from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH
 from spacegame.data_loader import get_data_loader
 from spacegame.models.player import Player
 from spacegame.models.politics_dispute import (
-    PoliticsArgument,
     PoliticsDisputeManager,
 )
 from spacegame.models.ship import Ship
@@ -32,6 +28,7 @@ from spacegame.views.dispute_view import (
     DisputeSubstate,
     DisputeView,
 )
+from tests.test_models.test_politics_dispute import _make_water_rights_phasing_template
 
 
 class _StubBonus:
@@ -79,12 +76,8 @@ def _build_view(
     tpl = _make_water_rights_phasing_template()
     dispute_mgr = PoliticsDisputeManager(
         templates={tpl.id: tpl},
-        crew_roster=_StubBonus(
-            {"coalition_sway_bonus": 0.15, "coalition_size_bonus": 1.0}
-        ),
-        progression=_StubBonus(
-            {"coalition_sway_bonus": 0.20, "coalition_size_bonus": 1.0}
-        ),
+        crew_roster=_StubBonus({"coalition_sway_bonus": 0.15, "coalition_size_bonus": 1.0}),
+        progression=_StubBonus({"coalition_sway_bonus": 0.20, "coalition_size_bonus": 1.0}),
         social_manager=_StubSocial({"persuasion": 3, "leadership": 3}),
     )
     dispute_mgr.set_player(player)
@@ -108,19 +101,19 @@ def _build_view(
 
 class TestConstruction:
     def test_construct_default(self) -> None:
-        manager, view, _ = _build_view()
+        _manager, view, _ = _build_view()
         assert view is not None
         assert view.next_state is None
 
     def test_on_enter_sets_active(self) -> None:
-        manager, view, _ = _build_view()
+        _manager, view, _ = _build_view()
         view.on_enter()
         assert view.active is True
         assert view.substate == DisputeSubstate.LIST
         view.on_exit()
 
     def test_on_exit_destroys_ui_and_resets_session(self) -> None:
-        manager, view, dispute_mgr = _build_view()
+        _manager, view, dispute_mgr = _build_view()
         view.on_enter()
         view.on_exit()
         assert view.back_button is None
@@ -135,7 +128,7 @@ class TestConstruction:
 
 class TestListSubstateRenders:
     def test_list_state_ready_when_disputes_pending(self) -> None:
-        manager, view, _ = _build_view()
+        _manager, view, _ = _build_view()
         view.on_enter()
         assert view.list_state == DisputeListState.READY
         # A pending dispute generates one button.
@@ -143,7 +136,7 @@ class TestListSubstateRenders:
         view.on_exit()
 
     def test_list_state_empty_when_no_pending_disputes(self) -> None:
-        manager, view, _ = _build_view(register_dispute=False)
+        _manager, view, _ = _build_view(register_dispute=False)
         view.on_enter()
         assert view.list_state == DisputeListState.EMPTY
         assert len(view._dispute_buttons) == 0
@@ -151,21 +144,21 @@ class TestListSubstateRenders:
 
     def test_list_state_locked_when_standing_below_threshold(self) -> None:
         player = _build_player(standing=-50)
-        manager, view, _ = _build_view(player)
+        _manager, view, _ = _build_view(player)
         view.on_enter()
         assert view.list_state == DisputeListState.LOCKED
         assert len(view._dispute_buttons) == 0
         view.on_exit()
 
     def test_list_state_loading(self) -> None:
-        manager, view, _ = _build_view()
+        _manager, view, _ = _build_view()
         view.on_enter()
         view.set_loading(True)
         assert view.list_state == DisputeListState.LOADING
         view.on_exit()
 
     def test_list_state_error(self) -> None:
-        manager, view, _ = _build_view()
+        _manager, view, _ = _build_view()
         view.on_enter()
         view.set_error(True)
         assert view.list_state == DisputeListState.ERROR
@@ -179,7 +172,7 @@ class TestListSubstateRenders:
 
 class TestSubstateTransitions:
     def test_open_dispute_switches_to_session(self) -> None:
-        manager, view, dispute_mgr = _build_view()
+        _manager, view, _dispute_mgr = _build_view()
         view.on_enter()
         view.open_dispute("water_rights_phasing")
         assert view.substate == DisputeSubstate.SESSION
@@ -187,7 +180,7 @@ class TestSubstateTransitions:
         view.on_exit()
 
     def test_open_corridor_switches_to_corridor(self) -> None:
-        manager, view, dispute_mgr = _build_view()
+        _manager, view, _dispute_mgr = _build_view()
         view.on_enter()
         view.open_dispute("water_rights_phasing")
         view.open_corridor()
@@ -195,7 +188,7 @@ class TestSubstateTransitions:
         view.on_exit()
 
     def test_open_composer_clears_argument_state(self) -> None:
-        manager, view, _ = _build_view()
+        _manager, view, _ = _build_view()
         view.on_enter()
         view.open_dispute("water_rights_phasing")
         view.open_composer()
@@ -205,7 +198,7 @@ class TestSubstateTransitions:
         view.on_exit()
 
     def test_back_to_list_clears_active_dispute(self) -> None:
-        manager, view, _ = _build_view()
+        _manager, view, _ = _build_view()
         view.on_enter()
         view.open_dispute("water_rights_phasing")
         view.back_to_list()
@@ -215,7 +208,7 @@ class TestSubstateTransitions:
 
     def test_destroy_create_destroy_no_runtime_error(self) -> None:
         """Pygame_gui leak test: switching substates twice does not throw."""
-        manager, view, _ = _build_view()
+        _manager, view, _ = _build_view()
         view.on_enter()
         view.open_dispute("water_rights_phasing")
         view.open_composer()
@@ -233,7 +226,7 @@ class TestSubstateTransitions:
 
 class TestComposerLivePreview:
     def test_initial_preview_text_is_error_until_selections_made(self) -> None:
-        manager, view, _ = _build_view()
+        _manager, view, _ = _build_view()
         view.on_enter()
         view.open_dispute("water_rights_phasing")
         view.open_composer()
@@ -242,7 +235,7 @@ class TestComposerLivePreview:
         view.on_exit()
 
     def test_preview_updates_on_framing_change(self) -> None:
-        manager, view, _ = _build_view()
+        _manager, view, _ = _build_view()
         view.on_enter()
         view.open_dispute("water_rights_phasing")
         view.open_composer()
@@ -259,7 +252,7 @@ class TestComposerLivePreview:
         view.on_exit()
 
     def test_preview_updates_when_evidence_removed(self) -> None:
-        manager, view, _ = _build_view()
+        _manager, view, _ = _build_view()
         view.on_enter()
         view.open_dispute("water_rights_phasing")
         view.open_composer()
@@ -277,7 +270,7 @@ class TestComposerLivePreview:
         view.on_exit()
 
     def test_preview_updates_when_audience_changes(self) -> None:
-        manager, view, _ = _build_view()
+        _manager, view, _ = _build_view()
         view.on_enter()
         view.open_dispute("water_rights_phasing")
         view.open_composer()
@@ -297,7 +290,7 @@ class TestComposerLivePreview:
         assert "Effective 7" in text2
 
     def test_preview_updates_after_responds_to_change(self) -> None:
-        manager, view, _ = _build_view()
+        _manager, view, _ = _build_view()
         view.on_enter()
         view.open_dispute("water_rights_phasing")
         view.open_composer()

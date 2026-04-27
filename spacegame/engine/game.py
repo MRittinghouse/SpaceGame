@@ -2012,9 +2012,7 @@ class Game:
                 if next_state == GameState.STATION_HUB:
                     self.dispute_view.next_state = None
                     if self.politics_dispute_manager and self.player:
-                        self.player.politics_dispute_state = (
-                            self.politics_dispute_manager.to_dict()
-                        )
+                        self.player.politics_dispute_state = self.politics_dispute_manager.to_dict()
 
                     def _do_dispute_back():
                         self._ensure_station_hub_view()

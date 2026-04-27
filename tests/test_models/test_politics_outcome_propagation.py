@@ -13,11 +13,9 @@ Uses the synthetic water_rights_phasing fixture from
 
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Optional
 
 import pytest
-
-from tests.test_models.test_politics_dispute import _make_water_rights_phasing_template
 
 from spacegame.constants.flags import (
     coalition_won,
@@ -28,7 +26,7 @@ from spacegame.models.politics_dispute import (
     PoliticsDisputeManager,
     PoliticsMarketShift,
 )
-
+from tests.test_models.test_politics_dispute import _make_water_rights_phasing_template
 
 # ---------------------------------------------------------------------------
 # Stubs for politics_manager / player / market / news_ticker
@@ -156,7 +154,7 @@ class TestOutcomePropagationLoss:
     """Loss path: vote fails, no concessions."""
 
     def test_loss_applies_negative_rep(self) -> None:
-        mgr, dispute, player, politics, news, market = _build_propagation_setup()
+        mgr, dispute, player, _politics, _news, _market = _build_propagation_setup()
         # No arguments, no pre-commits — three rounds of abstention.
         mgr.abstain_round(dispute)
         mgr.abstain_round(dispute)
@@ -167,7 +165,7 @@ class TestOutcomePropagationLoss:
         assert player.reputation["crimson_reach"] == 2
 
     def test_loss_registers_market_shift(self) -> None:
-        mgr, dispute, player, politics, news, market = _build_propagation_setup()
+        mgr, dispute, _player, _politics, _news, market = _build_propagation_setup()
         mgr.abstain_round(dispute)
         mgr.abstain_round(dispute)
         mgr.abstain_round(dispute)
@@ -179,18 +177,16 @@ class TestOutcomePropagationLoss:
         assert shift.duration_days == 30
 
     def test_loss_sets_mission_lock_flag(self) -> None:
-        mgr, dispute, player, politics, news, market = _build_propagation_setup()
+        mgr, dispute, player, _politics, _news, _market = _build_propagation_setup()
         mgr.abstain_round(dispute)
         mgr.abstain_round(dispute)
         mgr.abstain_round(dispute)
         # Loss row uses mission_locks (not mission_unlocks).
-        assert player.dialogue_flags.get(
-            dispute_resolved("water_rights_phasing")
-        ) is True
+        assert player.dialogue_flags.get(dispute_resolved("water_rights_phasing")) is True
 
     def test_loss_emits_news_headline_via_magnitude_qualifier(self) -> None:
         """Loss with -10% commodity shift satisfies §7.6 (>=10% AND loss)."""
-        mgr, dispute, player, politics, news, market = _build_propagation_setup()
+        mgr, dispute, _player, _politics, news, _market = _build_propagation_setup()
         mgr.abstain_round(dispute)
         mgr.abstain_round(dispute)
         mgr.abstain_round(dispute)
@@ -202,16 +198,10 @@ class TestOutcomePropagationWin:
     """Win path: full coalition pre-committed (>=60%) and vote passes."""
 
     def test_win_with_full_coalition(self) -> None:
-        from spacegame.models.politics_dispute import PoliticsArgument
-
-        mgr, dispute, player, politics, news, market = _build_propagation_setup()
+        mgr, dispute, player, _politics, _news, _market = _build_propagation_setup()
         # Pre-commit two of three delegates (>=60% threshold).
-        mgr.do_corridor_visit(
-            dispute, "samela_drift", "practical_cost", success_override=True
-        )
-        mgr.do_corridor_visit(
-            dispute, "ferron_hask", "practical_cost", success_override=True
-        )
+        mgr.do_corridor_visit(dispute, "samela_drift", "practical_cost", success_override=True)
+        mgr.do_corridor_visit(dispute, "ferron_hask", "practical_cost", success_override=True)
         # Both pre-committed delegates start at leaning_yes -> they vote yes.
         # That's 2 yes vs 1 no (Marsh leaning_no). Vote immediately to skip
         # the counter phase.
@@ -221,27 +211,17 @@ class TestOutcomePropagationWin:
         assert player.dialogue_flags.get(coalition_won("water_rights_phasing")) is True
 
     def test_win_emits_news_headline(self) -> None:
-        from spacegame.models.politics_dispute import PoliticsArgument
-
-        mgr, dispute, player, politics, news, market = _build_propagation_setup()
-        mgr.do_corridor_visit(
-            dispute, "samela_drift", "practical_cost", success_override=True
-        )
-        mgr.do_corridor_visit(
-            dispute, "ferron_hask", "practical_cost", success_override=True
-        )
+        mgr, dispute, _player, _politics, news, _market = _build_propagation_setup()
+        mgr.do_corridor_visit(dispute, "samela_drift", "practical_cost", success_override=True)
+        mgr.do_corridor_visit(dispute, "ferron_hask", "practical_cost", success_override=True)
         mgr.cast_vote(dispute)
         assert len(news.headlines) == 1
         assert "phases water rights" in news.headlines[0]
 
     def test_win_registers_two_market_shifts(self) -> None:
-        mgr, dispute, player, politics, news, market = _build_propagation_setup()
-        mgr.do_corridor_visit(
-            dispute, "samela_drift", "practical_cost", success_override=True
-        )
-        mgr.do_corridor_visit(
-            dispute, "ferron_hask", "practical_cost", success_override=True
-        )
+        mgr, dispute, _player, _politics, _news, market = _build_propagation_setup()
+        mgr.do_corridor_visit(dispute, "samela_drift", "practical_cost", success_override=True)
+        mgr.do_corridor_visit(dispute, "ferron_hask", "practical_cost", success_override=True)
         mgr.cast_vote(dispute)
         # Win row has TWO shifts (fresh_water +10%, hydroponics_yield -8%).
         # The hydroponics shift targets system "verdant" — both go to the
@@ -255,7 +235,7 @@ class TestOutcomePropagationPartialWinCoalitionThin:
     """Vote passes with <60% pre-committed (just won by argument push)."""
 
     def test_thin_win_no_news_no_tier_crossing(self) -> None:
-        mgr, dispute, player, politics, news, market = _build_propagation_setup(
+        mgr, dispute, player, _politics, _news, _market = _build_propagation_setup(
             starting_rep={"verdant": 0}
         )
         # Construct a thin win directly: set 2 of 3 delegates to
@@ -266,15 +246,10 @@ class TestOutcomePropagationPartialWinCoalitionThin:
         mgr.cast_vote(dispute)
         assert dispute.resolved_outcome == "partial_win_coalition_thin"
         assert player.reputation["verdant"] == 2
-        assert (
-            player.dialogue_flags.get(dispute_resolved("water_rights_phasing"))
-            is True
-        )
+        assert player.dialogue_flags.get(dispute_resolved("water_rights_phasing")) is True
 
     def test_thin_win_news_suppressed_unless_tier_crossing(self) -> None:
-        from spacegame.models.politics_dispute import PoliticsArgument
-
-        mgr, dispute, player, politics, news, market = _build_propagation_setup(
+        mgr, dispute, _player, _politics, news, _market = _build_propagation_setup(
             starting_rep={"verdant": 0}
         )
         dispute.delegates["samela_drift"].visible_state = "leaning_yes"
@@ -289,7 +264,7 @@ class TestOutcomePropagationPartialWinOffRecord:
     """Vote fails, but at least one delegate has the conceded flag."""
 
     def test_off_record_with_conceded_delegate(self) -> None:
-        mgr, dispute, player, politics, news, market = _build_propagation_setup()
+        mgr, dispute, player, _politics, _news, _market = _build_propagation_setup()
         # Mark one delegate conceded directly (mediation success would set this).
         dispute.delegates["ollo_marsh"].conceded = True
         mgr.cast_vote(dispute)
@@ -297,13 +272,10 @@ class TestOutcomePropagationPartialWinOffRecord:
         # rescues -> partial_win_off_record.
         assert dispute.resolved_outcome == "partial_win_off_record"
         assert player.reputation["verdant"] == 3
-        assert (
-            player.dialogue_flags.get(dispute_mediated("water_rights_phasing"))
-            is True
-        )
+        assert player.dialogue_flags.get(dispute_mediated("water_rights_phasing")) is True
 
     def test_off_record_news_suppressed_when_no_tier_crossing(self) -> None:
-        mgr, dispute, player, politics, news, market = _build_propagation_setup()
+        mgr, dispute, _player, _politics, news, _market = _build_propagation_setup()
         dispute.delegates["ollo_marsh"].conceded = True
         mgr.cast_vote(dispute)
         # news_headline is None in the row -> nothing emitted.
@@ -319,8 +291,6 @@ class TestNewsGatingPositiveAndNegative:
         from spacegame.models.politics_dispute import (
             OutcomeRow,
             PoliticsDisputeTemplate,
-            DelegateTemplate,
-            PoliticsMarketShift,
         )
 
         # Build a custom template whose partial_win_off_record row has a
@@ -349,9 +319,7 @@ class TestNewsGatingPositiveAndNegative:
         )
 
         player = _StubPlayer(reputation={"verdant": 0})
-        politics = _StubPoliticsManager(
-            factions={"verdant": _StubFaction(rivalry="")}
-        )
+        politics = _StubPoliticsManager(factions={"verdant": _StubFaction(rivalry="")})
         news = _StubNewsTicker()
         mgr = PoliticsDisputeManager(
             templates={custom.id: custom},
@@ -378,9 +346,7 @@ class TestNewsGatingPositiveAndNegative:
         new_matrix = dict(tpl.outcome_matrix)
         new_matrix["loss"] = OutcomeRow(
             rep_deltas={"verdant": -1},  # tiny, no boundary
-            market_shifts=(
-                PoliticsMarketShift("fresh_water", "verdant", 0.04),
-            ),  # under 10%
+            market_shifts=(PoliticsMarketShift("fresh_water", "verdant", 0.04),),  # under 10%
             news_headline="Verdant council declines small adjustment; minor effect.",
         )
         custom = PoliticsDisputeTemplate(
@@ -399,9 +365,7 @@ class TestNewsGatingPositiveAndNegative:
         )
 
         player = _StubPlayer(reputation={"verdant": 0})
-        politics = _StubPoliticsManager(
-            factions={"verdant": _StubFaction(rivalry="")}
-        )
+        politics = _StubPoliticsManager(factions={"verdant": _StubFaction(rivalry="")})
         news = _StubNewsTicker()
         mgr = PoliticsDisputeManager(
             templates={custom.id: custom},
@@ -423,15 +387,13 @@ class TestSpilloverPipelineUsed:
     """AC 5(a): rep deltas flow through apply_reputation_with_spillover."""
 
     def test_spillover_call_recorded(self) -> None:
-        mgr, dispute, player, politics, news, market = _build_propagation_setup(
-            spillover=True
-        )
+        mgr, dispute, _player, politics, _news, _market = _build_propagation_setup(spillover=True)
         mgr.abstain_round(dispute)
         mgr.abstain_round(dispute)
         mgr.abstain_round(dispute)
         # Loss row applies -2 to verdant, -1 to frontier_alliance, +2 to
         # crimson_reach. Spillover entries also recorded by the stub.
-        primary = [c for c in politics.calls]
+        primary = list(politics.calls)
         assert ("verdant", -2) in primary
         assert ("frontier_alliance", -1) in primary
         assert ("crimson_reach", 2) in primary

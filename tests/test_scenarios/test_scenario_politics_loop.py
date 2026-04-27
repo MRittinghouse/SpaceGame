@@ -9,14 +9,11 @@ late vote) that produces ``partial_win_off_record``.
 
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Optional
 
 import pytest
 
-from tests.test_models.test_politics_dispute import _make_water_rights_phasing_template
-
 from spacegame.constants.flags import (
-    coalition_won,
     dispute_mediated,
     dispute_resolved,
 )
@@ -27,7 +24,7 @@ from spacegame.models.politics_dispute import (
     PoliticsDisputeManager,
     PoliticsMarketShift,
 )
-
+from tests.test_models.test_politics_dispute import _make_water_rights_phasing_template
 
 # ---------------------------------------------------------------------------
 # Stubs for cross-cutting systems
@@ -162,7 +159,7 @@ class TestSA_P1_Section4_6_WorkedExample:
     """
 
     def test_full_three_round_walkthrough_ends_in_loss(self) -> None:
-        mgr, dispute, player, politics, news, market = _build_full_setup()
+        mgr, dispute, player, _politics, news, market = _build_full_setup()
 
         # Round 1: argue Drift with data_precedent + forgeworks evidence.
         resolution_r1 = mgr.submit_argument(
@@ -178,17 +175,15 @@ class TestSA_P1_Section4_6_WorkedExample:
         assert resolution_r1.difficulty == 4
         # Drift moved to leaning_yes by Phase 1.
         assert dispute.delegates["samela_drift"].visible_state == "leaning_yes"
-        assert dispute.delegates["samela_drift"].position_vector[
-            "modernization"
-        ] == pytest.approx(0.90)
+        assert dispute.delegates["samela_drift"].position_vector["modernization"] == pytest.approx(
+            0.90
+        )
 
         # Save round-trip at the round-1 boundary BEFORE counters fire
         # (the manager queues pending counters; advance_round applies them).
         snapshot_r1 = dispute.to_dict()
         restored_r1 = PoliticsDispute.from_dict(snapshot_r1, dispute.outcome_matrix)
-        assert (
-            restored_r1.delegates["samela_drift"].visible_state == "leaning_yes"
-        )
+        assert restored_r1.delegates["samela_drift"].visible_state == "leaning_yes"
 
         # Counter phase: Hask fires soil_impact at Drift; Drift -> wavering.
         mgr.advance_round(dispute)
@@ -231,10 +226,7 @@ class TestSA_P1_Section4_6_WorkedExample:
         assert player.reputation["frontier_alliance"] == -1
         assert player.reputation["crimson_reach"] == 2
         # Loss row's mission_locks set the dispute_resolved flag.
-        assert (
-            player.dialogue_flags.get(dispute_resolved("water_rights_phasing"))
-            is True
-        )
+        assert player.dialogue_flags.get(dispute_resolved("water_rights_phasing")) is True
         # Market shift registered.
         assert len(market.politics_shifts) == 1
         assert market.politics_shifts[0].magnitude == pytest.approx(-0.10)
@@ -246,7 +238,7 @@ class TestAlternatePath_PartialWinOffRecord:
     """Round-2 mediation of Marsh + later failed vote -> partial_win_off_record."""
 
     def test_mediation_then_failed_vote_yields_off_record_partial_win(self) -> None:
-        mgr, dispute, player, politics, news, market = _build_full_setup()
+        mgr, dispute, player, _politics, _news, _market = _build_full_setup()
 
         # Round 1: same argue Drift to leaning_yes.
         mgr.submit_argument(
@@ -279,12 +271,7 @@ class TestAlternatePath_PartialWinOffRecord:
         assert player.reputation["verdant"] == 3
         assert player.reputation["frontier_alliance"] == 1
         # Mission flag set.
-        assert (
-            player.dialogue_flags.get(
-                dispute_mediated("water_rights_phasing")
-            )
-            is True
-        )
+        assert player.dialogue_flags.get(dispute_mediated("water_rights_phasing")) is True
 
 
 class TestSaveLoadAtThreeBoundaries:
@@ -294,7 +281,9 @@ class TestSaveLoadAtThreeBoundaries:
         mgr, dispute, _, _, _, _ = _build_full_setup()
         snapshot = mgr.to_dict()
         # Build a fresh manager and restore.
-        mgr2 = PoliticsDisputeManager(templates={dispute.template_id: dispute_template_for(dispute, mgr)})
+        mgr2 = PoliticsDisputeManager(
+            templates={dispute.template_id: dispute_template_for(dispute, mgr)}
+        )
         mgr2.from_dict(snapshot)
         restored = mgr2.get_pending_dispute(dispute.dispute_id)
         assert restored is not None

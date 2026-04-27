@@ -105,9 +105,7 @@ class TestPoliticsShiftRegistry:
         if len(commodities) < 2:
             pytest.skip("Need at least two commodities at verdant for this test")
         a, b = commodities[0], commodities[1]
-        market.add_politics_shift(
-            PoliticsMarketShift(a, "verdant", 0.10, 30, market.game_day)
-        )
+        market.add_politics_shift(PoliticsMarketShift(a, "verdant", 0.10, 30, market.game_day))
         active_a = market.get_active_politics_shifts(a, "verdant")
         active_b = market.get_active_politics_shifts(b, "verdant")
         active_a_other = market.get_active_politics_shifts(a, "nexus_prime")
@@ -142,9 +140,7 @@ class TestPoliticsShiftCoexistsWithMarketEvent:
         # Price should reflect the combined effect (multiplied chain).
         # Our concern: politics shift didn't unset the active_event.
         assert market.active_event is event
-        assert (
-            len(market.get_active_politics_shifts(commodity_id, "verdant")) == 1
-        )
+        assert len(market.get_active_politics_shifts(commodity_id, "verdant")) == 1
 
     def test_serialize_restore_round_trip(self, loader) -> None:
         market = _build_market(loader, "verdant")

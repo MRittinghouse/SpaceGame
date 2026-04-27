@@ -18,15 +18,8 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import TYPE_CHECKING, Any, Optional
 
-from spacegame.constants.flags import (
-    coalition_won,
-    dispute_mediated,
-    dispute_resolved,
-)
-
 if TYPE_CHECKING:
     from spacegame.models.crew import CrewRoster
-    from spacegame.models.market import Market
     from spacegame.models.news_ticker import NewsTicker
     from spacegame.models.player import Player
     from spacegame.models.politics import PoliticsManager
@@ -341,15 +334,12 @@ class PoliticsDispute:
             round_count=data.get("round_count", 3),
             closes_on_day=data.get("closes_on_day", 0),
             delegates={
-                did: PoliticsDelegate.from_dict(d)
-                for did, d in data.get("delegates", {}).items()
+                did: PoliticsDelegate.from_dict(d) for did, d in data.get("delegates", {}).items()
             },
             eligible_framings=tuple(data.get("eligible_framings", ())),
             eligible_evidence=tuple(data.get("eligible_evidence", ())),
             framing_modifiers=dict(data.get("framing_modifiers", {})),
-            framing_target_dimensions=dict(
-                data.get("framing_target_dimensions", {})
-            ),
+            framing_target_dimensions=dict(data.get("framing_target_dimensions", {})),
             outcome_matrix=outcome_matrix,
             current_round=data.get("current_round", 1),
             phase=DisputePhase(data.get("phase", DisputePhase.CREATED.value)),
@@ -597,9 +587,7 @@ class PoliticsDisputeManager:
     # ------------------------------------------------------------------
 
     @staticmethod
-    def _apply_position_delta(
-        delegate: PoliticsDelegate, dimension: str, delta: float
-    ) -> None:
+    def _apply_position_delta(delegate: PoliticsDelegate, dimension: str, delta: float) -> None:
         """Mutate ``delegate.position_vector[dimension]`` clamped to +/-1.0."""
         current = delegate.position_vector.get(dimension, 0.0)
         new_value = max(-_POSITION_CAP, min(_POSITION_CAP, current + delta))
@@ -646,9 +634,7 @@ class PoliticsDisputeManager:
     # Cass Weller intel reveal (SA-P1 §7.5)
     # ------------------------------------------------------------------
 
-    def try_reveal_intel(
-        self, dispute: PoliticsDispute
-    ) -> Optional[dict[str, str]]:
+    def try_reveal_intel(self, dispute: PoliticsDispute) -> Optional[dict[str, str]]:
         """Return per-delegate qualitative position summaries, once per session.
 
         Fires only when Cass Weller is on crew (her
@@ -685,9 +671,7 @@ class PoliticsDisputeManager:
         skill_size = self._get_progression_bonus("coalition_size_bonus")
         return 1 + _floor(crew_size + skill_size)
 
-    def get_corridor_difficulty(
-        self, dispute: PoliticsDispute, delegate_id: str
-    ) -> int:
+    def get_corridor_difficulty(self, dispute: PoliticsDispute, delegate_id: str) -> int:
         """Effective corridor difficulty including consecutive-fail escalation."""
         d = dispute.delegates.get(delegate_id)
         if d is None:
@@ -724,20 +708,17 @@ class PoliticsDisputeManager:
 
         # Enforce the pre-commit cap (counts already-committed delegates).
         cap = self.get_pre_commit_cap()
-        committed_now = sum(
-            1 for d in dispute.delegates.values() if d.pre_committed
-        )
+        committed_now = sum(1 for d in dispute.delegates.values() if d.pre_committed)
         if not delegate.pre_committed and committed_now >= cap:
             return False, f"Pre-commit cap reached ({committed_now}/{cap})."
 
         difficulty = self.get_corridor_difficulty(dispute, delegate_id)
         if success_override is not None:
             success = success_override
-            msg = "test override"
         elif self._social_manager is None:
             return False, "Social manager not configured."
         else:
-            success, msg = self._social_manager.resolve_check(
+            success, _msg = self._social_manager.resolve_check(
                 "persuasion", difficulty, delegate.delegate_id
             )
 
@@ -767,9 +748,7 @@ class PoliticsDisputeManager:
         config = getattr(self, "_sub_rep_configs", {}).get(delegate.sub_faction_id)
         if config is None:
             return
-        self._propagation_player.modify_sub_reputation(
-            delegate.sub_faction_id, -1, config
-        )
+        self._propagation_player.modify_sub_reputation(delegate.sub_faction_id, -1, config)
 
     def register_sub_rep_config(self, org_id: str, config: Any) -> None:
         """Register a SubReputationConfig for an org (called by Game wiring)."""
@@ -820,9 +799,7 @@ class PoliticsDisputeManager:
                 best_id = d_id
         return best_id
 
-    def _resolve_counter_argument(
-        self, delegate: PoliticsDelegate
-    ) -> tuple[str, str]:
+    def _resolve_counter_argument(self, delegate: PoliticsDelegate) -> tuple[str, str]:
         """Pick the framing + opposition response a delegate fires.
 
         For SA-P2 we hard-code the "soil_impact" canonical framing for
@@ -880,8 +857,7 @@ class PoliticsDisputeManager:
                 continue
             counter_framing, _dim = self._resolve_counter_argument(d)
             pre_empted = (
-                argument.responds_to is not None
-                and argument.responds_to == counter_framing
+                argument.responds_to is not None and argument.responds_to == counter_framing
             )
             target_id = self._most_favorable_target(dispute.delegates, d_id)
             pending.append(
@@ -940,9 +916,7 @@ class PoliticsDisputeManager:
             if counter_framing in dispute.framing_target_dimensions:
                 dim = dispute.framing_target_dimensions[counter_framing]
                 self._apply_position_delta(target, dim, _COUNTER_DELTA)
-            dispute.round_log.append(
-                f"counter from {entry['counter_id']} hit {target_id}"
-            )
+            dispute.round_log.append(f"counter from {entry['counter_id']} hit {target_id}")
         dispute._pending_counters = []  # type: ignore[attr-defined]
 
     def advance_round(self, dispute: PoliticsDispute) -> None:
@@ -978,9 +952,7 @@ class PoliticsDisputeManager:
     # Outcome resolution + propagation (SA-P1 §5.1 + §7)
     # ------------------------------------------------------------------
 
-    def _tally_votes(
-        self, dispute: PoliticsDispute
-    ) -> tuple[int, int]:
+    def _tally_votes(self, dispute: PoliticsDispute) -> tuple[int, int]:
         """Return ``(yes_votes, no_votes)`` per the §5.1 mapping.
 
         wavering counts as no per §11 decision 13.
@@ -1037,9 +1009,7 @@ class PoliticsDisputeManager:
         pre_rep: dict[str, int] = {}
         if self._propagation_player is not None:
             for faction_id in row.rep_deltas:
-                pre_rep[faction_id] = self._propagation_player.get_reputation(
-                    faction_id
-                )
+                pre_rep[faction_id] = self._propagation_player.get_reputation(faction_id)
 
         # 1. Reputation deltas with spillover.
         if self._propagation_player is not None and self._politics_manager is not None:
@@ -1095,8 +1065,7 @@ class PoliticsDisputeManager:
         condition_b = category in ("win", "loss")
         tier_crossed = self._tier_crossed(row, pre_rep)
         magnitude_qualifies = any(
-            abs(s.magnitude) >= _NEWS_COMMODITY_MAGNITUDE
-            for s in row.market_shifts
+            abs(s.magnitude) >= _NEWS_COMMODITY_MAGNITUDE for s in row.market_shifts
         )
         if condition_b:
             # win/loss: need condition A (magnitude >=10% OR tier crossing).
@@ -1110,9 +1079,7 @@ class PoliticsDisputeManager:
                 return
         self._news_ticker.add_headline(row.news_headline, priority=5)
 
-    def _tier_crossed(
-        self, row: OutcomeRow, pre_rep: dict[str, int]
-    ) -> bool:
+    def _tier_crossed(self, row: OutcomeRow, pre_rep: dict[str, int]) -> bool:
         """True if any rep delta crossed a tier boundary.
 
         Compares each faction's pre-delta value to its post-delta value
@@ -1150,14 +1117,10 @@ class PoliticsDisputeManager:
         if not argument.framing:
             return ArgumentResolution(error="framing_required", difficulty=dispute.base_difficulty)
         if not argument.audience_delegate_id:
-            return ArgumentResolution(
-                error="audience_required", difficulty=dispute.base_difficulty
-            )
+            return ArgumentResolution(error="audience_required", difficulty=dispute.base_difficulty)
         delegate = dispute.delegates.get(argument.audience_delegate_id)
         if delegate is None:
-            return ArgumentResolution(
-                error="unknown_audience", difficulty=dispute.base_difficulty
-            )
+            return ArgumentResolution(error="unknown_audience", difficulty=dispute.base_difficulty)
 
         base_skill = self._get_skill_level(self._base_skill_id_for(argument))
         framing_mod = int(dispute.framing_modifiers.get(argument.framing, 0))
@@ -1165,9 +1128,7 @@ class PoliticsDisputeManager:
         bonus_key = self._bonus_keys_for(argument)
         crew_bonus = self._get_crew_bonus(bonus_key)
         tree_bonus = self._get_progression_bonus(bonus_key)
-        effective = (
-            base_skill + framing_mod + disposition_mod + crew_bonus + tree_bonus
-        )
+        effective = base_skill + framing_mod + disposition_mod + crew_bonus + tree_bonus
         evidence_penalty = 0 if argument.evidence else 1
         difficulty = dispute.base_difficulty + evidence_penalty
         effective_floor = _floor(effective)
@@ -1223,12 +1184,10 @@ class PoliticsDisputeManager:
         """
         return {
             "pending_disputes": {
-                d_id: dispute.to_dict()
-                for d_id, dispute in self._pending_disputes.items()
+                d_id: dispute.to_dict() for d_id, dispute in self._pending_disputes.items()
             },
             "resolved_disputes": {
-                d_id: dispute.to_dict()
-                for d_id, dispute in self._resolved_disputes.items()
+                d_id: dispute.to_dict() for d_id, dispute in self._resolved_disputes.items()
             },
         }
 
@@ -1245,14 +1204,10 @@ class PoliticsDisputeManager:
             template = self._templates.get(raw.get("template_id", ""))
             if template is None:
                 continue
-            self._pending_disputes[d_id] = PoliticsDispute.from_dict(
-                raw, template.outcome_matrix
-            )
+            self._pending_disputes[d_id] = PoliticsDispute.from_dict(raw, template.outcome_matrix)
         self._resolved_disputes = {}
         for d_id, raw in data.get("resolved_disputes", {}).items():
             template = self._templates.get(raw.get("template_id", ""))
             if template is None:
                 continue
-            self._resolved_disputes[d_id] = PoliticsDispute.from_dict(
-                raw, template.outcome_matrix
-            )
+            self._resolved_disputes[d_id] = PoliticsDispute.from_dict(raw, template.outcome_matrix)

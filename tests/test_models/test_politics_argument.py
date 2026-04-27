@@ -12,15 +12,11 @@ from typing import Optional
 
 import pytest
 
-from tests.test_models.test_politics_dispute import _make_water_rights_phasing_template
-
 from spacegame.models.politics_dispute import (
-    ArgumentResolution,
     PoliticsArgument,
-    PoliticsDelegate,
     PoliticsDisputeManager,
 )
-
+from tests.test_models.test_politics_dispute import _make_water_rights_phasing_template
 
 # ---------------------------------------------------------------------------
 # Stub bonus providers — keep resolution tests free of crew/progression deps.
@@ -266,9 +262,7 @@ class TestArgumentSlotRules:
 
         mgr = PoliticsDisputeManager(
             templates={
-                _make_water_rights_phasing_template().id: (
-                    _make_water_rights_phasing_template()
-                )
+                _make_water_rights_phasing_template().id: (_make_water_rights_phasing_template())
             },
             social_manager=_StubSocial({"persuasion": 3}),
         )
@@ -287,9 +281,7 @@ class TestArgumentSlotRules:
     def test_argument_without_audience_returns_failed_resolution(self) -> None:
         mgr = PoliticsDisputeManager(
             templates={
-                _make_water_rights_phasing_template().id: (
-                    _make_water_rights_phasing_template()
-                )
+                _make_water_rights_phasing_template().id: (_make_water_rights_phasing_template())
             },
             social_manager=_StubSocial({"persuasion": 3}),
         )

@@ -785,14 +785,10 @@ class DataLoader:
                 self.politics_disputes[template.id] = template
 
         if self.politics_disputes:
-            logger.info(
-                f"Loaded {len(self.politics_disputes)} politics dispute templates"
-            )
+            logger.info(f"Loaded {len(self.politics_disputes)} politics dispute templates")
         return self.politics_disputes
 
-    def _parse_politics_dispute_template(
-        self, data: dict
-    ) -> "PoliticsDisputeTemplate":
+    def _parse_politics_dispute_template(self, data: dict) -> "PoliticsDisputeTemplate":
         """Parse a single dispute template dict (from ``data/politics/*.json``)."""
         from spacegame.models.politics_dispute import (
             DelegateTemplate,
@@ -844,9 +840,7 @@ class DataLoader:
             eligible_framings=tuple(data.get("eligible_framings", ())),
             eligible_evidence=tuple(data.get("eligible_evidence", ())),
             framing_modifiers=dict(data.get("framing_modifiers", {})),
-            framing_target_dimensions=dict(
-                data.get("framing_target_dimensions", {})
-            ),
+            framing_target_dimensions=dict(data.get("framing_target_dimensions", {})),
             outcome_matrix=outcome_matrix,
             is_campaign_arc=bool(data.get("is_campaign_arc", False)),
             required_flags=tuple(data.get("required_flags", ())),

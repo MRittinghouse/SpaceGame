@@ -166,9 +166,7 @@ class Market:
         # Stack rule (§11 decision 14): the largest absolute magnitude
         # active for the pair is the one applied; shifts decay
         # independently after their own duration_days expire.
-        self._politics_shifts: Dict[
-            tuple[str, str], list["PoliticsMarketShift"]
-        ] = {}
+        self._politics_shifts: Dict[tuple[str, str], list["PoliticsMarketShift"]] = {}
         self._generate_prices()
 
     def _generate_prices(self) -> None:
@@ -605,13 +603,9 @@ class Market:
         """Return active (unexpired) politics shifts for this (commodity, system)."""
         key = (commodity_id, system_id)
         shifts = self._politics_shifts.get(key, [])
-        return [
-            s for s in shifts if self.game_day < s.start_day + s.duration_days
-        ]
+        return [s for s in shifts if self.game_day < s.start_day + s.duration_days]
 
-    def _dominant_politics_shift(
-        self, commodity_id: str
-    ) -> Optional["PoliticsMarketShift"]:
+    def _dominant_politics_shift(self, commodity_id: str) -> Optional["PoliticsMarketShift"]:
         """Largest-absolute-magnitude active shift for a commodity at this market."""
         actives = self.get_active_politics_shifts(commodity_id, self.system.id)
         if not actives:

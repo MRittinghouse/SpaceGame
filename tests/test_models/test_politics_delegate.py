@@ -9,19 +9,15 @@ from __future__ import annotations
 
 import pytest
 
-from tests.test_models.test_politics_dispute import _make_water_rights_phasing_template
-
 from spacegame.models.politics_dispute import (
     VISIBLE_STATES,
-    DelegateTemplate,
     DisputePhase,
     PoliticsDelegate,
-    PoliticsDispute,
     PoliticsDisputeManager,
     _shift_visible,
     _visible_index,
 )
-
+from tests.test_models.test_politics_dispute import _make_water_rights_phasing_template
 
 # ---------------------------------------------------------------------------
 # Visible-state chain helpers
@@ -100,9 +96,9 @@ class TestBiasInitialization:
 
         # Re-instantiate; original template starting position must persist.
         dispute2 = mgr.start_dispute(tpl.id, current_game_day=2)
-        assert dispute2.delegates["ferron_hask"].position_vector[
-            "modernization"
-        ] == pytest.approx(-0.8)
+        assert dispute2.delegates["ferron_hask"].position_vector["modernization"] == pytest.approx(
+            -0.8
+        )
 
     def test_session_init_default_disposition(self) -> None:
         tpl = _make_water_rights_phasing_template()
@@ -145,9 +141,7 @@ class TestBiasInitialization:
         tpl = _make_water_rights_phasing_template()
         mgr = PoliticsDisputeManager(templates={tpl.id: tpl})
         dispute = mgr.start_dispute(tpl.id, current_game_day=1)
-        assert (
-            dispute.delegates["ferron_hask"].sub_faction_id == "verdant_farmers_bloc"
-        )
+        assert dispute.delegates["ferron_hask"].sub_faction_id == "verdant_farmers_bloc"
 
 
 # ---------------------------------------------------------------------------
@@ -170,9 +164,9 @@ class TestPositionVectorCap:
                 "modernization",
                 0.20,
             )
-        assert dispute.delegates["samela_drift"].position_vector[
-            "modernization"
-        ] == pytest.approx(1.0)
+        assert dispute.delegates["samela_drift"].position_vector["modernization"] == pytest.approx(
+            1.0
+        )
 
     def test_apply_argument_fail_caps_at_negative_one(self) -> None:
         tpl = _make_water_rights_phasing_template()
@@ -355,9 +349,9 @@ class TestPerRoundStateMachine:
         # we're checking the open-arguments effect first; counter-argument
         # phase fires only on advance_round).
         assert dispute.delegates["samela_drift"].visible_state == "leaning_yes"
-        assert dispute.delegates["samela_drift"].position_vector[
-            "modernization"
-        ] == pytest.approx(0.90)  # +0.7 + 0.20
+        assert dispute.delegates["samela_drift"].position_vector["modernization"] == pytest.approx(
+            0.90
+        )  # +0.7 + 0.20
 
     def test_submit_argument_fail_no_state_change(self) -> None:
         from spacegame.models.politics_dispute import PoliticsArgument
@@ -370,15 +364,13 @@ class TestPerRoundStateMachine:
         )
         # 1 + 0 + 0 + 0.15 + 0.20 = 1.35 -> floor 1 vs D4 -> fail
         before_state = dispute.delegates["samela_drift"].visible_state
-        before_pos = dispute.delegates["samela_drift"].position_vector[
-            "modernization"
-        ]
+        before_pos = dispute.delegates["samela_drift"].position_vector["modernization"]
         result = mgr.submit_argument(dispute, arg)
         assert result.passes is False
         assert dispute.delegates["samela_drift"].visible_state == before_state
-        assert dispute.delegates["samela_drift"].position_vector[
-            "modernization"
-        ] == pytest.approx(before_pos)
+        assert dispute.delegates["samela_drift"].position_vector["modernization"] == pytest.approx(
+            before_pos
+        )
 
     def test_committed_delegate_immune_to_arguments(self) -> None:
         from spacegame.models.politics_dispute import PoliticsArgument
@@ -456,9 +448,7 @@ class TestPerRoundStateMachine:
 
     def test_abstain_advances_round_with_no_state_change(self) -> None:
         mgr, dispute = _make_full_setup()
-        before_states = {
-            d_id: d.visible_state for d_id, d in dispute.delegates.items()
-        }
+        before_states = {d_id: d.visible_state for d_id, d in dispute.delegates.items()}
         mgr.abstain_round(dispute)
         for d_id, d in dispute.delegates.items():
             assert d.visible_state == before_states[d_id]
@@ -520,7 +510,7 @@ class TestCorridorPreCommitVisit:
         mgr, dispute = _make_full_setup()
         # Force success by stubbing — the underlying resolve_check call
         # is mocked here via the manager's helper.
-        ok, msg = mgr.do_corridor_visit(
+        ok, _msg = mgr.do_corridor_visit(
             dispute,
             delegate_id="samela_drift",
             framing="practical_cost",
@@ -535,7 +525,7 @@ class TestCorridorPreCommitVisit:
     ) -> None:
         mgr, dispute = _make_full_setup()
         before_state = dispute.delegates["samela_drift"].visible_state
-        ok, msg = mgr.do_corridor_visit(
+        ok, _msg = mgr.do_corridor_visit(
             dispute,
             delegate_id="samela_drift",
             framing="practical_cost",
@@ -558,18 +548,14 @@ class TestCorridorPreCommitVisit:
             framing="practical_cost",
             success_override=False,
         )
-        assert (
-            mgr.get_corridor_difficulty(dispute, "samela_drift") == base_diff + 1
-        )
+        assert mgr.get_corridor_difficulty(dispute, "samela_drift") == base_diff + 1
         mgr.do_corridor_visit(
             dispute,
             delegate_id="samela_drift",
             framing="practical_cost",
             success_override=False,
         )
-        assert (
-            mgr.get_corridor_difficulty(dispute, "samela_drift") == base_diff + 2
-        )
+        assert mgr.get_corridor_difficulty(dispute, "samela_drift") == base_diff + 2
 
     def test_success_resets_consecutive_fail_counter(self) -> None:
         mgr, dispute = _make_full_setup()
@@ -589,21 +575,13 @@ class TestCorridorPreCommitVisit:
 
     def test_starting_position_distribution_changes_with_pre_commits(self) -> None:
         """AC 7: 0 / 1 / 2 pre-commits produce strictly different starting distributions."""
-        mgr_0, dispute_0 = _make_full_setup()
+        _mgr_0, dispute_0 = _make_full_setup()
         mgr_1, dispute_1 = _make_full_setup(coalition_size_crew=1.0)
-        mgr_2, dispute_2 = _make_full_setup(
-            coalition_size_crew=1.0, coalition_size_skill=1.0
-        )
+        mgr_2, dispute_2 = _make_full_setup(coalition_size_crew=1.0, coalition_size_skill=1.0)
 
-        mgr_1.do_corridor_visit(
-            dispute_1, "samela_drift", "practical_cost", success_override=True
-        )
-        mgr_2.do_corridor_visit(
-            dispute_2, "samela_drift", "practical_cost", success_override=True
-        )
-        mgr_2.do_corridor_visit(
-            dispute_2, "ferron_hask", "practical_cost", success_override=True
-        )
+        mgr_1.do_corridor_visit(dispute_1, "samela_drift", "practical_cost", success_override=True)
+        mgr_2.do_corridor_visit(dispute_2, "samela_drift", "practical_cost", success_override=True)
+        mgr_2.do_corridor_visit(dispute_2, "ferron_hask", "practical_cost", success_override=True)
 
         states_0 = sorted(d.visible_state for d in dispute_0.delegates.values())
         states_1 = sorted(d.visible_state for d in dispute_1.delegates.values())
@@ -615,9 +593,7 @@ class TestCorridorPreCommitVisit:
 
     def test_pre_commit_cap_blocks_excess_visits(self) -> None:
         """Bare base cap is 1; second commit attempt blocks even if check passes."""
-        mgr, dispute = _make_full_setup(
-            coalition_sway_crew=0.0, coalition_sway_skill=0.0
-        )
+        mgr, dispute = _make_full_setup(coalition_sway_crew=0.0, coalition_sway_skill=0.0)
         # Override the manager's coalition_size bonus to bare base.
         # _make_full_setup wires both to 0.15 by default, but
         # coalition_size_bonus is a separate key — it's already 0.0.
@@ -637,7 +613,6 @@ class TestCassWellerIntelReveal:
 
     def test_intel_reveal_returns_qualitative_text_per_dimension(self) -> None:
         from spacegame.models.politics_dispute import (
-            PoliticsDisputeManager,
             qualitative_position_summary,
         )
 
@@ -688,9 +663,7 @@ class TestCassWellerIntelReveal:
         crew_with_cass = _StubBonus({"arbitration_dispute_intel": 1.0})
         mgr = PoliticsDisputeManager(
             templates={
-                _make_water_rights_phasing_template().id: (
-                    _make_water_rights_phasing_template()
-                )
+                _make_water_rights_phasing_template().id: (_make_water_rights_phasing_template())
             },
             crew_roster=crew_with_cass,
         )
@@ -714,9 +687,7 @@ class TestCassWellerIntelReveal:
         crew_no_cass = _StubBonus({})
         mgr = PoliticsDisputeManager(
             templates={
-                _make_water_rights_phasing_template().id: (
-                    _make_water_rights_phasing_template()
-                )
+                _make_water_rights_phasing_template().id: (_make_water_rights_phasing_template())
             },
             crew_roster=crew_no_cass,
         )
@@ -758,8 +729,7 @@ class TestDeterministicResolution:
 
         for d_id in dispute_a.delegates:
             assert (
-                dispute_a.delegates[d_id].visible_state
-                == dispute_b.delegates[d_id].visible_state
+                dispute_a.delegates[d_id].visible_state == dispute_b.delegates[d_id].visible_state
             )
             assert (
                 dispute_a.delegates[d_id].position_vector
