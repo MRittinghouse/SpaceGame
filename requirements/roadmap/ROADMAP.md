@@ -291,7 +291,7 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 
 #### SA-PREP-3 — Playtest baseline telemetry
 
-**Status**: in-progress (planning)
+**Status**: in-progress (implementing)
 **Phase**: Phase 0 | **Size**: S | **Effort**: 2-3 days
 **Depends on**: none | **Blocks**: (informational only — does not block subsequent sprints)
 
@@ -361,18 +361,29 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 - 2026-04-26 — plan content recovered; ready for re-pickup by harness (next plan phase will see substantive existing plan and confirm/refine)
 - 2026-04-26 21:55 — harness: plan phase starting
 - 2026-04-26 22:35 — plan reconfirmed; folded in 3 polish items (dwell-on-view-exit, dwell-on-replacement-click, telemetry I/O error robustness); split AC into 7 (added explicit hook-coverage AC for station_hub_view tests); refreshed test baseline reference 8304 → 8326. PHASE_OK
+- 2026-04-26 22:00 — harness: implement phase starting (rework cycle 0)
+- 2026-04-26 — telemetry module implemented + 14 tests green (da4011c)
+- 2026-04-26 — station_hub_view click + dwell hooks implemented + 7 new tests green (8591f03)
+- 2026-04-26 — sa_baseline.md authored (all 10 unique anchors + SA-V covered) (c8e134e)
+- 2026-04-26 — full suite 8347 passed (baseline 8326, +21 new tests); all gates green. PHASE_OK
 
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-04-26 22:30
-- Completed: 2026-04-26 22:35
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: a6448e4
-- New_sprints_proposed: none
-- Polish_items_folded_in: dwell-on-view-exit, dwell-on-replacement-click, telemetry-IO-error-robustness
-- Decisions_locked: 6 (reconfirmed from prior recovery cache; no new locks needed)
-- Notes: Verified all 7 context targets exist; verified the 10 unique-typed location IDs match locations.json; confirmed no existing tests/test_utils/ directory; confirmed station_hub_view dismissal sites at lines 693 (close button), 749 (replacement), 394 (on_exit). Plan now names each dismissal path with line refs. AC6 split into AC6+AC7 to separate hook-coverage tests from telemetry-module tests. Test baseline refreshed from stale 8304 to current 8326. Scope holds at S; mission-acceptance-by-anchor remains deferred.
+- Started: 2026-04-26 22:00
+- Completed: 2026-04-26 23:30
+- Files_changed: spacegame/utils/telemetry.py, spacegame/views/station_hub_view.py, tests/test_utils/__init__.py, tests/test_utils/test_telemetry.py, tests/test_views/test_station_hub_view.py, requirements/sa_baseline.md
+- Commits: da4011c, 8591f03, c8e134e
+- Tests_added: 21
+- Tests_baseline: 8326
+- Tests_passing: 8347
+- Tests_skipped: 98
+- Lint_clean: yes
+- Format_clean: yes
+- SI3_scanner_clean: yes
+- Writing_bible_clean: n/a
+- Touch_zones_respected: yes
+- Notes: telemetry module (off by default, opt-in via SPACEGAME_TELEMETRY=1, JSONL output); anchor_card_clicked and anchor_detail_dwell hooks in station_hub_view covering all 3 dismissal paths; sa_baseline.md covers all 10 unique anchors + SA-V with >= 3 measurables and >= 1 unmeasurable each.
 
 ### Phase A — Crew Specialization Extension
 
