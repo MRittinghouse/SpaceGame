@@ -689,6 +689,141 @@
           "unlock_level": 1
         }
       ]
+    },
+    {
+      "id": "sable_trent",
+      "name": "Sable Trent",
+      "role": "auction reader",
+      "faction_id": "commerce_guild",
+      "home_system_id": "stellaris_port",
+      "description": "Six years on a Commerce Guild auction desk gave Sable a cataloguer's eye for bid patterns. She shows you the ceiling she thinks a lot will reach, and she's right often enough that you stop questioning it.",
+      "portrait_color": [90, 160, 200],
+      "base_attributes": {"com": 2, "acu": 3, "res": 1, "ing": 1, "syn": 1},
+      "max_level": 1,
+      "xp_thresholds": [0],
+      "is_companion": false,
+      "abilities": [
+        {
+          "bonus_type": "auction_bid_visibility",
+          "bonus_value": 1.0,
+          "description": "Bid Pattern Reading",
+          "unlock_level": 1
+        },
+        {
+          "bonus_type": "auction_lot_appraisal_bonus",
+          "bonus_value": 0.10,
+          "description": "Post-Win Valuation",
+          "unlock_level": 1
+        }
+      ]
+    },
+    {
+      "id": "desta_coll",
+      "name": "Desta Coll",
+      "role": "coalition builder",
+      "faction_id": "frontier_alliance",
+      "home_system_id": "havens_rest",
+      "description": "Fifteen years coordinating frontier settlements that had every reason not to trust each other. Desta maps pressure points and tells you exactly how many delegates you can move before the room starts pushing back.",
+      "portrait_color": [170, 210, 130],
+      "base_attributes": {"com": 3, "acu": 1, "res": 1, "ing": 1, "syn": 2},
+      "max_level": 1,
+      "xp_thresholds": [0],
+      "is_companion": false,
+      "abilities": [
+        {
+          "bonus_type": "coalition_sway_bonus",
+          "bonus_value": 0.15,
+          "description": "Delegate Persuasion",
+          "unlock_level": 1
+        },
+        {
+          "bonus_type": "coalition_size_bonus",
+          "bonus_value": 1.0,
+          "description": "Expanded Coalition",
+          "unlock_level": 1
+        }
+      ]
+    },
+    {
+      "id": "cass_weller",
+      "name": "Cass Weller",
+      "role": "arbiter",
+      "faction_id": "",
+      "home_system_id": "crimson_reach",
+      "description": "Eight years arbitrating gray-market disputes on the Reach, then the Guild gave her a semi-official role no one bothered to name. Cass doesn't care who wins. She cares whether the outcome holds.",
+      "portrait_color": [200, 170, 110],
+      "base_attributes": {"com": 2, "acu": 1, "res": 1, "ing": 1, "syn": 3},
+      "max_level": 1,
+      "xp_thresholds": [0],
+      "is_companion": false,
+      "abilities": [
+        {
+          "bonus_type": "arbitration_neutrality_bonus",
+          "bonus_value": 0.15,
+          "description": "Partial-Win Structuring",
+          "unlock_level": 1
+        },
+        {
+          "bonus_type": "arbitration_dispute_intel",
+          "bonus_value": 1.0,
+          "description": "Hidden Position Reveal",
+          "unlock_level": 1
+        }
+      ]
+    },
+    {
+      "id": "brix_tano",
+      "name": "Brix Tano",
+      "role": "speculator",
+      "faction_id": "commerce_guild",
+      "home_system_id": "nexus_prime",
+      "description": "Eleven years running contract desks at Nexus Prime. Brix doesn't predict the market; he narrows the range of what's possible and tells you which band the contract is most likely to land in.",
+      "portrait_color": [220, 140, 80],
+      "base_attributes": {"com": 1, "acu": 3, "res": 1, "ing": 2, "syn": 1},
+      "max_level": 1,
+      "xp_thresholds": [0],
+      "is_companion": false,
+      "abilities": [
+        {
+          "bonus_type": "futures_intel",
+          "bonus_value": 1.0,
+          "description": "Probability Band Analysis",
+          "unlock_level": 1
+        },
+        {
+          "bonus_type": "speculator_premium_reduction",
+          "bonus_value": 0.10,
+          "description": "Contract Entry Spread",
+          "unlock_level": 1
+        }
+      ]
+    },
+    {
+      "id": "nuri_solberg",
+      "name": "Nuri Solberg",
+      "role": "research patron",
+      "faction_id": "science_collective",
+      "home_system_id": "axiom_labs",
+      "description": "Two decades as a research administrator at the Collective before moving to independent patronage. Nuri reads a project proposal and immediately spots which risk estimate is padded and which researcher the team is actually built around.",
+      "portrait_color": [160, 130, 210],
+      "base_attributes": {"com": 1, "acu": 1, "res": 1, "ing": 2, "syn": 3},
+      "max_level": 1,
+      "xp_thresholds": [0],
+      "is_companion": false,
+      "abilities": [
+        {
+          "bonus_type": "research_yield_bonus",
+          "bonus_value": 0.10,
+          "description": "Project Return Increase",
+          "unlock_level": 1
+        },
+        {
+          "bonus_type": "research_risk_reduction",
+          "bonus_value": 0.10,
+          "description": "Failure Odds Reduction",
+          "unlock_level": 1
+        }
+      ]
     }
   ]
 }

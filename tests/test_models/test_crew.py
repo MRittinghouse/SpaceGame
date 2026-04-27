@@ -1,15 +1,18 @@
 """Tests for crew system models."""
 
+from pathlib import Path
+
 import pytest
+
+from spacegame.data_loader import DataLoader
 from spacegame.models.crew import (
     CrewAbility,
-    CrewTemplate,
     CrewRoster,
+    CrewTemplate,
 )
 from spacegame.models.player import Player
 from spacegame.models.ship import Ship, ShipType
-from spacegame.models.progression import PlayerProgression
-from spacegame.models.upgrades import ShipUpgradeManager, ShipUpgrade
+from spacegame.models.upgrades import ShipUpgrade, ShipUpgradeManager
 
 # ============================================================================
 # Helpers
@@ -539,3 +542,274 @@ class TestPendingCompanions:
         assert "elena_reeves" not in ids, (
             "Non-pending companions should not appear in available crew"
         )
+
+
+# ============================================================================
+# SA Arc Specialist Tests (SA-A2)
+# ============================================================================
+
+_PROJECT_ROOT = Path(__file__).parent.parent.parent
+_sa_loader_cache: DataLoader | None = None
+
+
+def _get_sa_loader() -> DataLoader:
+    """Load crew templates from live JSON once and cache for the SA-A2 test class."""
+    global _sa_loader_cache
+    if _sa_loader_cache is None:
+        loader = DataLoader(data_dir=_PROJECT_ROOT / "data")
+        loader.load_all()
+        _sa_loader_cache = loader
+    return _sa_loader_cache
+
+
+def _make_sa_roster() -> CrewRoster:
+    """Return a CrewRoster seeded with all live crew templates."""
+    loader = _get_sa_loader()
+    return CrewRoster(loader.crew_templates)
+
+
+class TestSAArcSpecialists:
+    """Integration tests for the five SA arc specialist crew members.
+
+    All tests use the live DataLoader against the real JSON files so that
+    JSON authoring — not test fixtures — is what's being verified.
+    """
+
+    # ------------------------------------------------------------------
+    # AC 2: DataLoader loads all five templates without warning
+    # ------------------------------------------------------------------
+
+    def test_sable_trent_template_loads(self) -> None:
+        loader = _get_sa_loader()
+        template = loader.get_crew_template("sable_trent")
+        assert template is not None, "sable_trent template should load from JSON"
+        assert template.name == "Sable Trent"
+        assert template.role == "auction reader"
+        assert template.max_level == 1
+        assert template.xp_thresholds == [0]
+        assert template.is_companion is False
+
+    def test_desta_coll_template_loads(self) -> None:
+        loader = _get_sa_loader()
+        template = loader.get_crew_template("desta_coll")
+        assert template is not None, "desta_coll template should load from JSON"
+        assert template.name == "Desta Coll"
+        assert template.role == "coalition builder"
+        assert template.max_level == 1
+        assert template.is_companion is False
+
+    def test_cass_weller_template_loads(self) -> None:
+        loader = _get_sa_loader()
+        template = loader.get_crew_template("cass_weller")
+        assert template is not None, "cass_weller template should load from JSON"
+        assert template.name == "Cass Weller"
+        assert template.role == "arbiter"
+        assert template.max_level == 1
+        assert template.is_companion is False
+
+    def test_brix_tano_template_loads(self) -> None:
+        loader = _get_sa_loader()
+        template = loader.get_crew_template("brix_tano")
+        assert template is not None, "brix_tano template should load from JSON"
+        assert template.name == "Brix Tano"
+        assert template.role == "speculator"
+        assert template.max_level == 1
+        assert template.is_companion is False
+
+    def test_nuri_solberg_template_loads(self) -> None:
+        loader = _get_sa_loader()
+        template = loader.get_crew_template("nuri_solberg")
+        assert template is not None, "nuri_solberg template should load from JSON"
+        assert template.name == "Nuri Solberg"
+        assert template.role == "research patron"
+        assert template.max_level == 1
+        assert template.is_companion is False
+
+    # ------------------------------------------------------------------
+    # AC 1: no combat_moves or combat_move field on any of the five
+    # ------------------------------------------------------------------
+
+    def test_no_specialist_has_combat_fields(self) -> None:
+        loader = _get_sa_loader()
+        for sid in ("sable_trent", "desta_coll", "cass_weller", "brix_tano", "nuri_solberg"):
+            tmpl = loader.get_crew_template(sid)
+            assert tmpl is not None
+            assert not tmpl.combat_moves, f"{sid} should have no combat_moves"
+
+    # ------------------------------------------------------------------
+    # AC 3: bonuses resolve to correct magnitudes after recruitment
+    # ------------------------------------------------------------------
+
+    def test_sable_trent_bonuses_resolve(self) -> None:
+        roster = _make_sa_roster()
+        success, msg = roster.recruit("sable_trent", crew_slots=10)
+        assert success, f"sable_trent recruit should succeed: {msg}"
+        assert roster.get_bonus("auction_bid_visibility") == pytest.approx(1.0)
+        assert roster.get_bonus("auction_lot_appraisal_bonus") == pytest.approx(0.10)
+
+    def test_desta_coll_bonuses_resolve(self) -> None:
+        roster = _make_sa_roster()
+        success, msg = roster.recruit("desta_coll", crew_slots=10)
+        assert success, f"desta_coll recruit should succeed: {msg}"
+        assert roster.get_bonus("coalition_sway_bonus") == pytest.approx(0.15)
+        assert roster.get_bonus("coalition_size_bonus") == pytest.approx(1.0)
+
+    def test_cass_weller_bonuses_resolve(self) -> None:
+        roster = _make_sa_roster()
+        success, msg = roster.recruit("cass_weller", crew_slots=10)
+        assert success, f"cass_weller recruit should succeed: {msg}"
+        assert roster.get_bonus("arbitration_neutrality_bonus") == pytest.approx(0.15)
+        assert roster.get_bonus("arbitration_dispute_intel") == pytest.approx(1.0)
+
+    def test_brix_tano_bonuses_resolve(self) -> None:
+        roster = _make_sa_roster()
+        success, msg = roster.recruit("brix_tano", crew_slots=10)
+        assert success, f"brix_tano recruit should succeed: {msg}"
+        assert roster.get_bonus("futures_intel") == pytest.approx(1.0)
+        assert roster.get_bonus("speculator_premium_reduction") == pytest.approx(0.10)
+
+    def test_nuri_solberg_bonuses_resolve(self) -> None:
+        roster = _make_sa_roster()
+        success, msg = roster.recruit("nuri_solberg", crew_slots=10)
+        assert success, f"nuri_solberg recruit should succeed: {msg}"
+        assert roster.get_bonus("research_yield_bonus") == pytest.approx(0.10)
+        assert roster.get_bonus("research_risk_reduction") == pytest.approx(0.10)
+
+    # ------------------------------------------------------------------
+    # AC 4: bonuses return 0.0 when specialist not recruited
+    # ------------------------------------------------------------------
+
+    def test_specialist_bonuses_zero_when_not_recruited(self) -> None:
+        roster = _make_sa_roster()
+        for bonus_type in (
+            "auction_bid_visibility",
+            "auction_lot_appraisal_bonus",
+            "coalition_sway_bonus",
+            "coalition_size_bonus",
+            "arbitration_neutrality_bonus",
+            "arbitration_dispute_intel",
+            "futures_intel",
+            "speculator_premium_reduction",
+            "research_yield_bonus",
+            "research_risk_reduction",
+        ):
+            assert roster.get_bonus(bonus_type) == 0.0, (
+                f"{bonus_type} should be 0.0 when no specialist recruited"
+            )
+
+    # ------------------------------------------------------------------
+    # AC 5: each specialist appears at their locked home system
+    # ------------------------------------------------------------------
+
+    def test_specialists_appear_at_home_systems(self) -> None:
+        roster = _make_sa_roster()
+
+        stellaris = [t.id for t in roster.get_available_crew_at_system("stellaris_port")]
+        assert "sable_trent" in stellaris, (
+            f"sable_trent should be at stellaris_port, got {stellaris}"
+        )
+        assert "rina_vasquez" in stellaris, "rina_vasquez should also be at stellaris_port"
+        assert "leah_chen" in stellaris, "leah_chen should also be at stellaris_port"
+
+        havens = [t.id for t in roster.get_available_crew_at_system("havens_rest")]
+        assert "desta_coll" in havens, f"desta_coll should be at havens_rest, got {havens}"
+        assert "adisa_nyongo" in havens, "adisa_nyongo should also be at havens_rest"
+
+        crimson = [t.id for t in roster.get_available_crew_at_system("crimson_reach")]
+        assert "cass_weller" in crimson, f"cass_weller should be at crimson_reach, got {crimson}"
+        assert "sgt_harkov" in crimson, "sgt_harkov should also be at crimson_reach"
+
+        nexus = [t.id for t in roster.get_available_crew_at_system("nexus_prime")]
+        assert "brix_tano" in nexus, f"brix_tano should be at nexus_prime, got {nexus}"
+        assert "kai_torren" in nexus, "kai_torren should also be at nexus_prime"
+
+        axiom = [t.id for t in roster.get_available_crew_at_system("axiom_labs")]
+        assert "nuri_solberg" in axiom, f"nuri_solberg should be at axiom_labs, got {axiom}"
+
+    def test_specialist_not_at_wrong_system(self) -> None:
+        roster = _make_sa_roster()
+        for specialist in ("sable_trent", "desta_coll", "cass_weller", "brix_tano", "nuri_solberg"):
+            # Check they don't appear at a system that is not their home
+            wrong_systems = [
+                s
+                for s in ("breakstone", "verdant", "forgeworks", "herons_mark")
+                if s
+                not in (
+                    "stellaris_port",
+                    "havens_rest",
+                    "crimson_reach",
+                    "nexus_prime",
+                    "axiom_labs",
+                )
+            ]
+            for sys_id in wrong_systems:
+                available_ids = [t.id for t in roster.get_available_crew_at_system(sys_id)]
+                assert specialist not in available_ids, (
+                    f"{specialist} should not appear at {sys_id}"
+                )
+
+    # ------------------------------------------------------------------
+    # AC 6: save/load round-trip preserves sable_trent
+    # ------------------------------------------------------------------
+
+    def test_sable_trent_save_load_roundtrip(self) -> None:
+        roster = _make_sa_roster()
+        roster.recruit("sable_trent", crew_slots=10)
+        assert roster.get_bonus("auction_bid_visibility") == pytest.approx(1.0)
+
+        saved = roster.get_state()
+
+        roster2 = _make_sa_roster()
+        roster2.load_state(saved)
+
+        assert roster2.is_recruited("sable_trent"), "sable_trent should survive round-trip"
+        assert roster2.get_bonus("auction_bid_visibility") == pytest.approx(1.0)
+        assert roster2.get_bonus("auction_lot_appraisal_bonus") == pytest.approx(0.10)
+
+    # ------------------------------------------------------------------
+    # AC 7: add_xp_to_all is a no-op for specialists (max_level=1)
+    # ------------------------------------------------------------------
+
+    def test_specialists_no_xp_gain(self) -> None:
+        roster = _make_sa_roster()
+        roster.recruit("sable_trent", crew_slots=10)
+        messages = roster.add_xp_to_all(10000)
+        specialist_messages = [m for m in messages if "Sable" in m or "sable_trent" in m]
+        assert len(specialist_messages) == 0, (
+            f"No level-up message should fire for a max_level=1 specialist; got: {specialist_messages}"
+        )
+
+    # ------------------------------------------------------------------
+    # AC 12: bonus-string collision regression
+    # ------------------------------------------------------------------
+
+    def test_no_duplicate_bonus_type_descriptions(self) -> None:
+        """No two crew templates share (bonus_type, description) across the roster.
+
+        Catches accidental copy-paste of an ability block between templates.
+        Internal duplicate within a single template is also prohibited.
+        """
+        loader = _get_sa_loader()
+        seen_pairs: dict[tuple[str, str], str] = {}
+        errors = []
+
+        for tid, template in loader.crew_templates.items():
+            internal: set[tuple[str, str]] = set()
+            for ability in template.abilities:
+                pair = (ability.bonus_type, ability.description)
+                # Internal duplicate within one template
+                if pair in internal:
+                    errors.append(
+                        f"Template '{tid}' has duplicate (bonus_type, description) pair: {pair}"
+                    )
+                internal.add(pair)
+                # Cross-template duplicate
+                if pair in seen_pairs and seen_pairs[pair] != tid:
+                    errors.append(
+                        f"Templates '{seen_pairs[pair]}' and '{tid}' share "
+                        f"(bonus_type, description) pair: {pair}"
+                    )
+                else:
+                    seen_pairs[pair] = tid
+
+        assert not errors, "\n".join(errors)
