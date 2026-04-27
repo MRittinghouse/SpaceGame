@@ -1431,7 +1431,7 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 
 #### SA-P1 — Politics System Design
 
-**Status**: in-progress (planning)
+**Status**: in-progress (implementing)
 **Phase**: Phase II | **Size**: M | **Effort**: 1 week
 **Depends on**: SA-PREP-1, SA-C2 | **Blocks**: SA-P2
 
@@ -1533,18 +1533,26 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 - 2026-04-26 — todo (created)
 - 2026-04-27 15:19 — harness: plan phase starting
 - 2026-04-27 15:55 — planning complete; verified all 13 context-to-read paths exist (no missing docs, so no PHASE_BLOCKED); verified SA-PREP-1 outputs (four Verdant council voice sheets and four Alliance Congress delegate voice sheets present and sufficient for SA-P3 / SA-P4 templates), SA-A2 outputs (Desta Coll + Cass Weller crew specialists shipped with `coalition_sway_bonus` / `coalition_size_bonus` / `arbitration_neutrality_bonus` / `arbitration_dispute_intel` bonus_types in `data/crew/crew_members.json`), SA-C2 outputs (`coalition_sway`, `delegate_reach`, `mediation_instinct` Tier-2 nodes in `progression.py` per `sa_skill_design.md` sections 1.2-1.4); locked 9 decisions (PoliticsManager coexists with new dispute system; player-paced rounds with game-day deadlines; round-boundary save granularity; deterministic partial-win categories at 60% coalition-thin threshold; coalition-build as pre-session corridor sub-view; tutorial fold-in lives in SA-P3, SA-P1 specifies tip flags + text; news threshold = faction-tier crossing OR ≥10% commodity shift AND win-or-loss; voice sheets sufficient; AI worked example uses Hask + Drift on water-rights phasing); folded in 3 polish items into the design-doc deliverables (PT-M tip-flag spec; journal-entry slot naming; news-ticker template format); refined acceptance criteria from 4 → 15 mechanically testable items; expanded touch zones from 1 to 2 (added `character_voices.md` Activity log only); documented two OPEN-defer-to-SA-P2 risks (pixel-level UI layout; exact dispute-model field names). No new sprints proposed. PHASE_OK
+- 2026-04-27 15:28 — harness: implement phase starting (rework cycle 0)
+- 2026-04-27 16:30 — authored `requirements/sa_politics_design.md` (60 KB, 11 sections); all 15 acceptance criteria satisfied; test suite 8769/98 unchanged; Writing Bible scanner + dialogue-integrity scanner both clean; no code changes. PHASE_OK
 
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-04-27 15:19
-- Completed: 2026-04-27 15:55
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 0189765
-- New_sprints_proposed: none
-- Polish_items_folded_in: PT-M tutorial tip flag spec (`seen_politics_venue_tip`, `seen_argument_composer_tip`) + draft tip text; three journal-entry slots (first-attended, first-partial, first-coalition-won); two crew-banter slots (Desta corridor, Cass mediation); news-ticker template format + headline threshold; empty / loading / locked / error UI states named in section 8
-- Decisions_locked: 9
-- Notes: Verified all 13 context paths exist — no PHASE_BLOCKED needed. SA-PREP-1 / SA-A2 / SA-C2 dependency outputs all confirmed in place. The design doc to be authored in SA-P1 has eleven load-bearing sections that map directly to SA-P2 / SA-P3 / SA-P4 / SA-P5 / SA-X1 / SA-X3 / SA-X6 / SA-X7 hand-off requirements. Two open items deferred to SA-P2 (pixel layout, exact field names) are documented as Risks rather than left ambiguous. Player-paced rounds + deterministic partial-win categories preserve the no-save-scumming axiom from CLAUDE.md. The existing `PoliticsManager` coexistence decision keeps ambient inter-faction events (`PoliticalEvent`) and venue disputes as separate but rep-spillover-shared systems.
+- Started: 2026-04-27 15:28
+- Completed: 2026-04-27 16:30
+- Files_changed: requirements/sa_politics_design.md
+- Commits: (pending -- see next commit)
+- Tests_added: 0
+- Tests_baseline: 8769
+- Tests_passing: 8769
+- Tests_skipped: 98
+- Lint_clean: n/a (no code changed)
+- Format_clean: n/a (no code changed)
+- SI3_scanner_clean: yes (no new flags in code; flag helper names documented in design doc section 7.3 for SA-P2 to implement)
+- Writing_bible_clean: yes (scanner passes; manual check: 0 em-dashes, 0 banned phrases, 0 banned NPC names; news headlines all <=80 chars; tip text in supervisor/declarative register)
+- Touch_zones_respected: yes (only requirements/sa_politics_design.md created; ROADMAP.md activity log updated)
+- Notes: Full 11-section design doc authored. All decisions locked including: coexistence vs merge, round-boundary save granularity, deterministic partial-win categories, player-paced rounds, pre-session corridor coalition-building, news threshold. 15 locked decisions + 2 explicit deferred-to-SA-P2 items. Three-round worked example for Hask+Drift usable as SA-P2 unit test fixture. Hand-off checklist maps SA-P2/P3/P4/P5/X1/X3/X6/X7 to their relevant sections.
 #### SA-P2 — Politics Core
 
 **Status**: todo
