@@ -405,3 +405,210 @@ class TestTutorialOverlays:
         # Tip dismissed, back_button still in the LIST substate.
         assert view._first_time_tip is None or view._first_time_tip.dismissed
         view.on_exit()
+
+
+# ---------------------------------------------------------------------------
+# SA-P4 — Annual Congress tutorial overlay (AC 12)
+# ---------------------------------------------------------------------------
+
+
+def _build_havens_view(
+    player: Optional[Player] = None,
+) -> tuple[pygame_gui.UIManager, DisputeView, PoliticsDisputeManager]:
+    """Build a dispute view targeting the Haven's Rest Alliance Congress."""
+    pygame.init()
+    pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+    manager = pygame_gui.UIManager((WINDOW_WIDTH, WINDOW_HEIGHT))
+    if player is None:
+        player = _build_player(faction_id="frontier_alliance", standing=0)
+    tpl = _make_water_rights_phasing_template()
+    dispute_mgr = PoliticsDisputeManager(
+        templates={tpl.id: tpl},
+        crew_roster=_StubBonus({"coalition_sway_bonus": 0.0}),
+        progression=_StubBonus({"coalition_sway_bonus": 0.0}),
+        social_manager=_StubSocial({"persuasion": 3, "leadership": 3}),
+    )
+    dispute_mgr.set_player(player)
+    view = DisputeView(
+        ui_manager=manager,
+        player=player,
+        dispute_manager=dispute_mgr,
+        venue_id="havens_congress_hall",
+        venue_faction_id="frontier_alliance",
+    )
+    return manager, view, dispute_mgr
+
+
+class TestAnnualCongressTip:
+    """SA-P4 — third PT-M overlay only fires at Haven's Rest."""
+
+    def test_fires_on_first_havens_entry(self) -> None:
+        # Skip the venue + composer tips so this one is the only candidate.
+        from spacegame.constants.flags import (
+            seen_annual_congress_tip,
+            seen_argument_composer_tip,
+            seen_politics_venue_tip,
+        )
+        from spacegame.views.dispute_view import (
+            ANNUAL_CONGRESS_TIP_BODY,
+            ANNUAL_CONGRESS_TIP_TITLE,
+        )
+
+        player = _build_player(faction_id="frontier_alliance", standing=0)
+        player.dialogue_flags[seen_politics_venue_tip()] = True
+        player.dialogue_flags[seen_argument_composer_tip()] = True
+        _manager, view, _ = _build_havens_view(player)
+        assert view.player.dialogue_flags.get(seen_annual_congress_tip(), False) is False
+        view.on_enter()
+        assert view._first_time_tip is not None
+        assert view._first_time_tip.title == ANNUAL_CONGRESS_TIP_TITLE
+        assert view._first_time_tip.body == ANNUAL_CONGRESS_TIP_BODY
+        view.on_exit()
+
+    def test_does_not_re_fire_after_dismiss(self) -> None:
+        from spacegame.constants.flags import (
+            seen_annual_congress_tip,
+            seen_argument_composer_tip,
+            seen_politics_venue_tip,
+        )
+
+        player = _build_player(faction_id="frontier_alliance", standing=0)
+        player.dialogue_flags[seen_politics_venue_tip()] = True
+        player.dialogue_flags[seen_argument_composer_tip()] = True
+        _manager, view, _ = _build_havens_view(player)
+        view.on_enter()
+        assert view._first_time_tip is not None
+        view._first_time_tip._dismiss()  # type: ignore[union-attr]
+        assert player.dialogue_flags[seen_annual_congress_tip()] is True
+        view.on_exit()
+        view.on_enter()
+        # Re-entry should not fire the annual congress tip again.
+        assert view._first_time_tip is None
+        view.on_exit()
+
+    def test_not_fired_at_verdant_venue(self) -> None:
+        """The Annual Congress tip must NOT fire at the Verdant venue."""
+        from spacegame.constants.flags import (
+            seen_annual_congress_tip,
+            seen_argument_composer_tip,
+            seen_politics_venue_tip,
+        )
+
+        # Build a Verdant view as usual; pre-set the SA-P3 tips so only the
+        # SA-P4 tip would have a chance to fire.
+        player = _build_player()
+        player.dialogue_flags[seen_politics_venue_tip()] = True
+        player.dialogue_flags[seen_argument_composer_tip()] = True
+        _manager, view, _ = _build_view(player)
+        view.on_enter()
+        # Tip not present.
+        assert view._first_time_tip is None
+        # Flag never gets set.
+        assert player.dialogue_flags.get(seen_annual_congress_tip(), False) is False
+        view.on_exit()
+
+
+# ---------------------------------------------------------------------------
+# SA-P4 — LOCKED_OUT_ANNUAL list substate (AC 13)
+# ---------------------------------------------------------------------------
+
+
+class TestLockedOutAnnualSubstate:
+    """The Haven's Rest list substate enters LOCKED_OUT_ANNUAL during recess."""
+
+    def _attach_annual_template(
+        self,
+        dispute_mgr: PoliticsDisputeManager,
+        *,
+        last_resolved_day: Optional[int] = None,
+    ) -> str:
+        """Register an annual template and optionally seed the lockout."""
+        from spacegame.models.politics_dispute import (
+            DelegateTemplate,
+            OutcomeRow,
+            PoliticsDisputeTemplate,
+        )
+
+        delegates = (
+            DelegateTemplate(
+                delegate_id="councillor_wentworth",
+                name="Councillor Wentworth",
+                starting_visible_state="wavering",
+                position_vector={"process_fidelity": 0.0},
+            ),
+        )
+        outcome_matrix = {
+            "win": OutcomeRow(rep_deltas={"frontier_alliance": 5}),
+            "partial_win_coalition_thin": OutcomeRow(rep_deltas={}, news_headline=None),
+            "partial_win_off_record": OutcomeRow(rep_deltas={}, news_headline=None),
+            "loss": OutcomeRow(rep_deltas={"frontier_alliance": -2}),
+        }
+        tpl = PoliticsDisputeTemplate(
+            id="annual_alliance_congress",
+            headline="Annual Alliance Congress",
+            factions_affected=("frontier_alliance",),
+            base_difficulty=4,
+            round_count=5,
+            deadline_days=20,
+            delegates=delegates,
+            eligible_framings=("process_fidelity",),
+            eligible_evidence=(),
+            framing_modifiers={"process_fidelity": 0},
+            framing_target_dimensions={"process_fidelity": "process_fidelity"},
+            outcome_matrix=outcome_matrix,
+            is_annual_congress=True,
+            opens_on_day_offset=0,
+            next_congress_offset_days=365,
+        )
+        dispute_mgr.register_template(tpl)
+        if last_resolved_day is not None:
+            dispute_mgr.record_annual_resolution(tpl.id, last_resolved_day)
+        return tpl.id
+
+    def test_substate_active_when_annual_locked_out(self) -> None:
+        """When the only annual template is locked out, the list shows recess."""
+        player = _build_player(faction_id="frontier_alliance", standing=0)
+        player.game_day = 100
+        _manager, view, mgr = _build_havens_view(player)
+        # Drop SA-P2's water_rights template so the only template is the annual.
+        mgr._templates.pop("water_rights_phasing", None)
+        self._attach_annual_template(mgr, last_resolved_day=50)
+        view.on_enter()
+        assert view.list_state == DisputeListState.LOCKED_OUT_ANNUAL
+        # Days remaining: 50 + 365 - 100 = 315.
+        assert view._annual_recess_days_remaining == 315
+        view.on_exit()
+
+    def test_substate_inactive_when_annual_open(self) -> None:
+        """When the annual template is in its open window, normal EMPTY/READY."""
+        player = _build_player(faction_id="frontier_alliance", standing=0)
+        player.game_day = 1
+        _manager, view, mgr = _build_havens_view(player)
+        mgr._templates.pop("water_rights_phasing", None)
+        # No prior resolution -> active.
+        self._attach_annual_template(mgr, last_resolved_day=None)
+        view.on_enter()
+        assert view.list_state == DisputeListState.EMPTY
+        view.on_exit()
+
+    def test_substate_does_not_fire_at_verdant(self) -> None:
+        """The Verdant venue has no annual templates and never enters lockout."""
+        player = _build_player()
+        _manager, view, _ = _build_view(player, register_dispute=False)
+        view.on_enter()
+        # No annual templates, so the substate stays at EMPTY.
+        assert view.list_state == DisputeListState.EMPTY
+        assert view._annual_recess_days_remaining == 0
+        view.on_exit()
+
+    def test_no_dispute_buttons_during_recess(self) -> None:
+        """Enter buttons are not built during the annual recess substate."""
+        player = _build_player(faction_id="frontier_alliance", standing=0)
+        player.game_day = 100
+        _manager, view, mgr = _build_havens_view(player)
+        mgr._templates.pop("water_rights_phasing", None)
+        self._attach_annual_template(mgr, last_resolved_day=50)
+        view.on_enter()
+        assert view.list_state == DisputeListState.LOCKED_OUT_ANNUAL
+        assert len(view._dispute_buttons) == 0
+        view.on_exit()

@@ -95,6 +95,37 @@ def build_display_flags(fullscreen: bool) -> int:
     return flags
 
 
+# SA-P4: politics venue dispatch table for ``_ensure_dispute_view``.
+# Maps a system id (the player's current docked system) to
+# ``(venue_id, venue_faction_id)`` for the dispute view. Each system in
+# the table has at most one Politics venue, so the system id is a
+# sufficient key. SA-P5 adds the Wreckers' Guild Reach mediation entry
+# (a third system id) when that venue ships.
+_VENUE_REGISTRY: dict[str, tuple[str, str]] = {
+    "verdant": ("verdant_mayors_council", "verdant"),
+    "havens_rest": ("havens_congress_hall", "frontier_alliance"),
+}
+
+# Default venue config when the player is not at a known politics venue.
+# Preserves the SA-P3 surface so existing scenario tests do not regress.
+_DEFAULT_VENUE_CONFIG: tuple[str, str] = ("verdant_mayors_council", "verdant")
+
+
+def _resolve_venue_config(player: Optional[Player]) -> tuple[str, str]:
+    """Return ``(venue_id, venue_faction_id)`` for the player's current dock.
+
+    Looks up ``player.current_system_id`` in :data:`_VENUE_REGISTRY`.
+    Misses default to the Verdant venue so the SA-P3 test surface stays
+    intact when the player is at neither Politics venue.
+    """
+    if player is None:
+        return _DEFAULT_VENUE_CONFIG
+    system_id = getattr(player, "current_system_id", "") or ""
+    if system_id in _VENUE_REGISTRY:
+        return _VENUE_REGISTRY[system_id]
+    return _DEFAULT_VENUE_CONFIG
+
+
 class Game:
     """
     Main game class that manages the game loop and core systems.
@@ -2265,6 +2296,7 @@ class Game:
         (``first_dispute_attended`` / ``first_partial_win`` /
         ``first_coalition_won``) at most once per save.
         """
+        from spacegame.models.alliance_congress import ALLIANCE_CONGRESS_CONFIG
         from spacegame.models.politics_dispute import PoliticsDisputeManager
         from spacegame.models.verdant_council import VERDANT_COUNCIL_CONFIG
 
@@ -2286,7 +2318,12 @@ class Game:
         self.politics_dispute_manager.register_sub_rep_config(
             VERDANT_COUNCIL_CONFIG.id, VERDANT_COUNCIL_CONFIG
         )
-        # SA-P3: outcome callback emits the three first-time journal flags.
+        # SA-P4: register Alliance Congress sub-rep config so corridor
+        # failures at Haven's Rest deduct sub-rep against alliance_congress.
+        self.politics_dispute_manager.register_sub_rep_config(
+            ALLIANCE_CONGRESS_CONFIG.id, ALLIANCE_CONGRESS_CONFIG
+        )
+        # SA-P3: outcome callback emits the first-time journal flags.
         self.politics_dispute_manager.set_outcome_callback(self._on_dispute_outcome)
         if self.player is not None:
             self.politics_dispute_manager.set_player(self.player)
@@ -2297,15 +2334,28 @@ class Game:
                 self.politics_dispute_manager.from_dict(saved)
 
     def _on_dispute_outcome(self, dispute, category: str) -> None:
-        """SA-P3 outcome callback: bump first-time journal-trigger flags.
+        """SA-P3 / SA-P4 outcome callback: bump first-time journal flags.
 
-        Three flags fire at most once per save:
+        SA-P3 flags (any venue):
           * ``first_dispute_attended`` on any dispute resolution.
           * ``first_partial_win`` on any partial-win category.
           * ``first_coalition_won`` on a ``win`` outcome where at least one
-            delegate started the session pre-committed (corridor work paid
-            off). The journal-entry trigger system reads these flags
-            directly in :meth:`Journal.trigger_auto_entry`.
+            delegate started the session pre-committed.
+
+        SA-P4 flags (Alliance Congress only):
+          * ``first_alliance_congress_attended`` on the first Congress
+            dispute resolution.
+          * ``first_coalition_betrayal_handled`` when a Congress dispute
+            had a betrayal mid-arc AND resolved as ``win`` or
+            ``partial_win_off_record`` (the player salvaged something).
+          * ``first_alliance_wide_vote_won`` on the first ``win`` outcome
+            on a Congress template whose outcome row affects 2+ Alliance
+            systems via market shifts.
+
+        Plus one SA-X6 trigger flag (``tomas_alliance_congress_attended_seen``)
+        when a Congress dispute resolves and Tomas Drifter is on crew.
+
+        Each flag is set at most once per save (idempotent).
         """
         if self.player is None:
             return
@@ -2330,6 +2380,60 @@ class Game:
                     flags[first_coalition] = True
                     self._maybe_trigger_dispute_journal(first_coalition)
 
+        # SA-P4: Congress-specific flags. Identify a Congress dispute by the
+        # delegate roster's sub_faction_id rather than venue id so the
+        # callback works regardless of where the player physically is.
+        is_congress_dispute = any(
+            d.sub_faction_id == "alliance_congress" for d in dispute.delegates.values()
+        )
+        if is_congress_dispute:
+            first_alliance = "first_alliance_congress_attended"
+            if first_alliance not in flags:
+                flags[first_alliance] = True
+                self._maybe_trigger_dispute_journal(first_alliance)
+
+            # First Congress dispute where a betrayal flip happened AND the
+            # player salvaged a positive outcome.
+            if dispute.had_betrayal and category in ("win", "partial_win_off_record"):
+                first_betrayal = "first_coalition_betrayal_handled"
+                if first_betrayal not in flags:
+                    flags[first_betrayal] = True
+                    self._maybe_trigger_dispute_journal(first_betrayal)
+
+            # First Alliance-wide vote won: ``win`` outcome with market
+            # shifts at 2+ Alliance systems.
+            if category == "win":
+                row = dispute.outcome_matrix.get("win")
+                alliance_systems = {"havens_rest", "verdant", "forgeworks", "crimson_reach"}
+                affected = (
+                    {s.system_id for s in row.market_shifts} & alliance_systems
+                    if row is not None
+                    else set()
+                )
+                if len(affected) >= 2:
+                    first_wide = "first_alliance_wide_vote_won"
+                    if first_wide not in flags:
+                        flags[first_wide] = True
+                        self._maybe_trigger_dispute_journal(first_wide)
+
+            # SA-X6 trigger flag for Tomas banter content. Set when Tomas is
+            # on crew at the moment a Congress dispute resolves.
+            self._maybe_set_tomas_congress_banter_flag()
+
+    def _maybe_set_tomas_congress_banter_flag(self) -> None:
+        """SA-P4 → SA-X6 trigger. One-shot; SA-X6 consumes for banter."""
+        if self.player is None or self.crew_roster is None:
+            return
+        recruited = getattr(self.crew_roster, "recruited_ids", None)
+        ids: set[str] = set()
+        if isinstance(recruited, (set, list, tuple)):
+            ids = set(recruited)
+        if "tomas_drifter" not in ids:
+            return
+        flag = "tomas_alliance_congress_attended_seen"
+        if flag not in self.player.dialogue_flags:
+            self.player.dialogue_flags[flag] = True
+
     def _maybe_trigger_dispute_journal(self, trigger_flag: str) -> None:
         """Fire the journal entry that consumes ``trigger_flag``, if any.
 
@@ -2345,21 +2449,23 @@ class Game:
     def _ensure_dispute_view(self) -> None:
         """SA-P2: create or recreate the venue dispute view.
 
-        SA-P3 / P4 / P5 swap the venue id and faction id per anchor;
-        the engine only ships the verdant_mayors_council route as the
-        end-to-end test surface.
+        SA-P4 dispatches the venue config from the player's current
+        station id via ``_VENUE_REGISTRY``. Falls back to the Verdant
+        venue when the player isn't at a known politics venue, so the
+        SA-P3 test surface stays intact.
         """
         from spacegame.views.dispute_view import DisputeView
 
         if self.politics_dispute_manager is None:
             self._initialize_politics_dispute_manager()
         assert self.politics_dispute_manager is not None
+        venue_id, venue_faction_id = _resolve_venue_config(self.player)
         self.dispute_view = DisputeView(
             ui_manager=self.ui_manager,
             player=self.player,
             dispute_manager=self.politics_dispute_manager,
-            venue_id="verdant_mayors_council",
-            venue_faction_id="verdant",
+            venue_id=venue_id,
+            venue_faction_id=venue_faction_id,
         )
         self.state_manager.register_state(GameState.DISPUTE, self.dispute_view)
 

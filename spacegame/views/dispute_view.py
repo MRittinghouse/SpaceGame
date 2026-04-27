@@ -27,6 +27,7 @@ from spacegame.config import (
     scale_y,
 )
 from spacegame.constants.flags import (
+    seen_annual_congress_tip,
     seen_argument_composer_tip,
     seen_politics_venue_tip,
 )
@@ -76,6 +77,15 @@ COMPOSER_TIP_BODY = (
     "Argument has three parts. Framing is how you say it. Evidence is what "
     "backs it. Audience is who you're persuading. Pick what fits the room."
 )
+# SA-P4 Annual Congress orientation tip. Fires once on first entry to the
+# Haven's Rest dispute view (and only there). Three short declarative
+# sentences, supervisor register, voice-checked against the Writing Bible.
+ANNUAL_CONGRESS_TIP_TITLE = "Annual Congress"
+ANNUAL_CONGRESS_TIP_BODY = (
+    "Congress meets once per year. Visit delegates between sessions to build "
+    "votes. The bigger the coalition before the floor opens, the better the "
+    "outcome."
+)
 
 
 class DisputeSubstate(Enum):
@@ -96,6 +106,7 @@ class DisputeListState(Enum):
     LOCKED = "locked"  # insufficient standing
     LOADING = "loading"  # data not yet ready
     ERROR = "error"  # data unavailable
+    LOCKED_OUT_ANNUAL = "locked_out_annual"  # SA-P4: annual Congress in recess
 
 
 class DisputeView(BaseView):
@@ -164,6 +175,11 @@ class DisputeView(BaseView):
         self._data_loading: bool = False
         self._data_error: bool = False
 
+        # SA-P4: days-remaining count for the LOCKED_OUT_ANNUAL substate.
+        # Recomputed each time ``_refresh_list_state`` runs so the body
+        # text reflects the current game day. Always non-negative.
+        self._annual_recess_days_remaining: int = 0
+
         # PT-M tutorial overlay (SA-P3). One overlay reference is enough
         # since only one tip is ever live at a time (venue tip on entry,
         # then composer tip on first composer open).
@@ -180,6 +196,10 @@ class DisputeView(BaseView):
         self.substate = DisputeSubstate.LIST
         self._create_ui()
         self._maybe_show_venue_tip()
+        self._maybe_show_annual_congress_tip()
+        # SA-P4: Track days remaining for the LOCKED_OUT_ANNUAL substate so
+        # the body text can render "Next session in N days." dynamically.
+        # Recomputed every time the list state refreshes.
 
     def on_exit(self) -> None:
         # End the per-session intel reveal gate; re-entering re-fires.
@@ -237,6 +257,31 @@ class DisputeView(BaseView):
     def _mark_composer_tip_seen(self) -> None:
         self.player.dialogue_flags[seen_argument_composer_tip()] = True
 
+    def _maybe_show_annual_congress_tip(self) -> None:
+        """SA-P4: fire the Annual Congress tip on first Haven's Rest entry.
+
+        Gated on ``venue_id == "havens_congress_hall"`` so the same overlay
+        does not fire at the Verdant venue. One-shot per save, gated on
+        :func:`flags.seen_annual_congress_tip` in ``player.dialogue_flags``.
+        """
+        if self.venue_id != "havens_congress_hall":
+            return
+        self._clear_dismissed_tip()
+        if self.player.dialogue_flags.get(seen_annual_congress_tip(), False):
+            return
+        # Suppress when another tip is already up so the player isn't hit by
+        # two overlays at once on first entry.
+        if self._first_time_tip is not None and not self._first_time_tip.dismissed:
+            return
+        self._first_time_tip = FirstTimeTipOverlay(
+            title=ANNUAL_CONGRESS_TIP_TITLE,
+            body=ANNUAL_CONGRESS_TIP_BODY,
+            on_dismiss=self._mark_annual_congress_tip_seen,
+        )
+
+    def _mark_annual_congress_tip_seen(self) -> None:
+        self.player.dialogue_flags[seen_annual_congress_tip()] = True
+
     # ------------------------------------------------------------------
     # State helpers
     # ------------------------------------------------------------------
@@ -265,9 +310,39 @@ class DisputeView(BaseView):
             self.list_state = DisputeListState.LOCKED
             return
         if not self.dispute_manager.get_pending_dispute_ids():
+            # SA-P4: when no pending disputes AND any registered annual
+            # template is currently in lockout, show the annual recess
+            # substate with a days-remaining count rather than the generic
+            # EMPTY copy.
+            recess_days = self._annual_lockout_days_remaining()
+            if recess_days > 0:
+                self.list_state = DisputeListState.LOCKED_OUT_ANNUAL
+                self._annual_recess_days_remaining = recess_days
+                return
             self.list_state = DisputeListState.EMPTY
             return
         self.list_state = DisputeListState.READY
+
+    def _annual_lockout_days_remaining(self) -> int:
+        """Return days remaining on any locked-out annual template at this venue.
+
+        Walks every registered template; for any annual template that
+        isn't currently active, returns the largest remaining days count.
+        Returns 0 when no annual templates are locked out (e.g., the
+        Verdant venue, which has no annual templates).
+        """
+        templates = getattr(self.dispute_manager, "_templates", {})
+        game_day = getattr(self.player, "game_day", 0)
+        max_remaining = 0
+        for tpl in templates.values():
+            if not getattr(tpl, "is_annual_congress", False):
+                continue
+            if self.dispute_manager.is_dispute_active(tpl.id, game_day):
+                continue
+            remaining = self.dispute_manager.next_session_in_days(tpl.id, game_day)
+            if remaining > max_remaining:
+                max_remaining = remaining
+        return max_remaining
 
     # ------------------------------------------------------------------
     # Substate routing
@@ -664,6 +739,9 @@ class DisputeView(BaseView):
             text = "Loading session data."
         elif self.list_state == DisputeListState.ERROR:
             text = "Session data unavailable."
+        elif self.list_state == DisputeListState.LOCKED_OUT_ANNUAL:
+            days = max(0, self._annual_recess_days_remaining)
+            text = f"Annual Congress in recess. Next session in {days} days."
         else:
             return
         for i, line in enumerate(word_wrap(text, self.body_font, PANEL_W - scale_x(40))):

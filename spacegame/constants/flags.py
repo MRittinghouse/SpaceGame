@@ -573,3 +573,17 @@ def seen_argument_composer_tip() -> str:
     wires the overlay.
     """
     return "seen_argument_composer_tip"
+
+
+def seen_annual_congress_tip() -> str:
+    """Flag set after the player dismisses the Annual Congress tip overlay.
+
+    One-shot per save. Producer (SA-P4): the dispute view's on-dismiss
+    callback for the Annual Congress tutorial overlay, fired only when
+    the player enters the Haven's Rest dispute view for the first time.
+    Consumer (SA-P4): the same view's Annual-Congress entry guard. The
+    overlay explains that Congress meets once per game-year and that the
+    coalition built before the floor opens determines the outcome —
+    mechanic-essential rather than flavor.
+    """
+    return "seen_annual_congress_tip"
