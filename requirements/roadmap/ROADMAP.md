@@ -1431,7 +1431,7 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 
 #### SA-P1 — Politics System Design
 
-**Status**: in-progress (implementing)
+**Status**: in-progress (reviewing)
 **Phase**: Phase II | **Size**: M | **Effort**: 1 week
 **Depends on**: SA-PREP-1, SA-C2 | **Blocks**: SA-P2
 
@@ -1535,24 +1535,24 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 - 2026-04-27 15:55 — planning complete; verified all 13 context-to-read paths exist (no missing docs, so no PHASE_BLOCKED); verified SA-PREP-1 outputs (four Verdant council voice sheets and four Alliance Congress delegate voice sheets present and sufficient for SA-P3 / SA-P4 templates), SA-A2 outputs (Desta Coll + Cass Weller crew specialists shipped with `coalition_sway_bonus` / `coalition_size_bonus` / `arbitration_neutrality_bonus` / `arbitration_dispute_intel` bonus_types in `data/crew/crew_members.json`), SA-C2 outputs (`coalition_sway`, `delegate_reach`, `mediation_instinct` Tier-2 nodes in `progression.py` per `sa_skill_design.md` sections 1.2-1.4); locked 9 decisions (PoliticsManager coexists with new dispute system; player-paced rounds with game-day deadlines; round-boundary save granularity; deterministic partial-win categories at 60% coalition-thin threshold; coalition-build as pre-session corridor sub-view; tutorial fold-in lives in SA-P3, SA-P1 specifies tip flags + text; news threshold = faction-tier crossing OR ≥10% commodity shift AND win-or-loss; voice sheets sufficient; AI worked example uses Hask + Drift on water-rights phasing); folded in 3 polish items into the design-doc deliverables (PT-M tip-flag spec; journal-entry slot naming; news-ticker template format); refined acceptance criteria from 4 → 15 mechanically testable items; expanded touch zones from 1 to 2 (added `character_voices.md` Activity log only); documented two OPEN-defer-to-SA-P2 risks (pixel-level UI layout; exact dispute-model field names). No new sprints proposed. PHASE_OK
 - 2026-04-27 15:28 — harness: implement phase starting (rework cycle 0)
 - 2026-04-27 16:30 — authored `requirements/sa_politics_design.md` (60 KB, 11 sections); all 15 acceptance criteria satisfied; test suite 8769/98 unchanged; Writing Bible scanner + dialogue-integrity scanner both clean; no code changes. PHASE_OK
+- 2026-04-27 15:44 — harness: review phase starting (rework cycle 0)
+- 2026-04-27 17:00 — review complete; 1 minor finding fixed directly (section 2.2 counter-argument mechanic had two errors: opposition qualifier listed as `leaning_yes/wavering` instead of `leaning_no/committed_no`, and counter-argument target described as "player's audience slot" contradicting Round 2 worked example where Hask targets Drift, not Hask). Fixed in commit e71ca89. All 15 acceptance criteria confirmed met. Test suite 8769/98. PHASE_OK
 
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-04-27 15:28
-- Completed: 2026-04-27 16:30
+- Started: 2026-04-27 15:44
+- Completed: 2026-04-27 17:00
 - Files_changed: requirements/sa_politics_design.md
-- Commits: 36ce939
-- Tests_added: 0
-- Tests_baseline: 8769
+- Commits: e71ca89
 - Tests_passing: 8769
-- Tests_skipped: 98
-- Lint_clean: n/a (no code changed)
-- Format_clean: n/a (no code changed)
-- SI3_scanner_clean: yes (no new flags in code; flag helper names documented in design doc section 7.3 for SA-P2 to implement)
-- Writing_bible_clean: yes (scanner passes; manual check: 0 em-dashes, 0 banned phrases, 0 banned NPC names; news headlines all <=80 chars; tip text in supervisor/declarative register)
-- Touch_zones_respected: yes (only requirements/sa_politics_design.md created; ROADMAP.md activity log updated)
-- Notes: Full 11-section design doc authored. All decisions locked including: coexistence vs merge, round-boundary save granularity, deterministic partial-win categories, player-paced rounds, pre-session corridor coalition-building, news threshold. 15 locked decisions + 2 explicit deferred-to-SA-P2 items. Three-round worked example for Hask+Drift usable as SA-P2 unit test fixture. Hand-off checklist maps SA-P2/P3/P4/P5/X1/X3/X6/X7 to their relevant sections.
+- Acceptance_criteria_verified: 15/15
+- Polish_items_verified: 3/3
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 1
+- Single_tighten: section 2.2 counter-argument description (fixed): opposition-delegate qualifier was inverted (leaning_yes→leaning_no) and target-selection rule contradicted the section 4.6 worked example -- SA-P2 implementers reading both would have gotten conflicting instructions.
+- Followup_sprints_added: none
+- Notes: Design doc is thorough and SA-P2-ready. The counter-argument inconsistency was the only substantive finding; corrected directly. All 15 locked decisions have rationales; two explicit deferred-to-SA-P2 items named. Worked example (Hask+Drift, 3 rounds) is usable as a SA-P2 unit test fixture.
 #### SA-P2 — Politics Core
 
 **Status**: todo
