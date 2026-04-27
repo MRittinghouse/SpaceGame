@@ -1,0 +1,30 @@
+{
+  "missions": [
+    {
+      "id": "the_silent_shaft",
+      "name": "The Silent Shaft",
+      "description": "Marcus has been quieter than usual since you talked through your father's report. He asked you to meet him at Section 3 of the Breakstone mining levels. Old workings. The custodian there, a man named Sten, keeps the story of the place. Marcus said: bring time. He did not say what for.",
+      "hint": "Meet Marcus at the Deep Shafts at Breakstone. Section 3.",
+      "prerequisites": ["the_foremans_son"],
+      "required_flags": ["learned_father_story"],
+      "objectives": [
+        {
+          "type": "has_flag",
+          "target_id": "visited_deep_shafts",
+          "target_quantity": 1,
+          "description": "Visit the Deep Shafts at Breakstone"
+        }
+      ],
+      "rewards": [
+        {"reward_type": "credits", "amount": 100},
+        {"reward_type": "xp", "amount": 50},
+        {"reward_type": "set_flag", "amount": 0, "target_id": "attended_silent_shaft"}
+      ],
+      "mission_type": "side",
+      "available_at": ["breakstone"],
+      "discovery_method": "npc",
+      "auto_accept": false,
+      "repeatable": false
+    }
+  ]
+}

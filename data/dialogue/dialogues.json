@@ -7819,6 +7819,168 @@
                     "expression": "neutral"
                 }
             ]
+        },
+        {
+            "id": "sten_brygaard_deep_shafts",
+            "start_node_id": "greeting",
+            "nodes": [
+                {
+                    "id": "greeting",
+                    "speaker_id": "sten_brygaard",
+                    "text": "Sten Brygaard. Custodian, third decade now. There is tea on the table if you sit a moment. The Shafts have been quiet this month, which is a good month to come down.",
+                    "responses": [
+                        {
+                            "text": "[Sit. Take a cup.]",
+                            "next_node_id": "sora_intro",
+                            "set_flag": "talked_to_sten_brygaard"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "sora_intro",
+                    "speaker_id": "sten_brygaard",
+                    "text": "You are standing where Cargo Bay 7 used to be. The boards are new. The plaque is from the Charter signing. The stain on the floor under the third girder was never sanded out, by deliberate decision. That is worth knowing.",
+                    "responses": [
+                        {
+                            "text": "[Listen.]",
+                            "next_node_id": "sora_speech"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "sora_speech",
+                    "speaker_id": "sten_brygaard",
+                    "text": "Third shift, morning cycle. Sora Takahashi climbed up on a shipping crate. She was short. Everyone forgets how short she was. She said: we built this. All of it. And we are done letting other people decide what it is worth. Nineteen days later, the Guild signed the Charter.",
+                    "responses": [
+                        {
+                            "text": "[Continue.]",
+                            "next_node_id": "father_note"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "father_note",
+                    "speaker_id": "sten_brygaard",
+                    "text": "Marcus Jin's father was at the walkout. He stayed the full nineteen days. That is the whole story. Marcus knows what the Union owes him and what it does not. He is a good one to bring along down here, when he is ready.",
+                    "responses": [
+                        {
+                            "text": "[Continue.]",
+                            "next_node_id": "closing"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "closing",
+                    "speaker_id": "sten_brygaard",
+                    "text": "Visitors leave when they are ready. The flowers refresh on a rotation. Come back when you are out this way again.",
+                    "responses": [
+                        {
+                            "text": "[Leave.]",
+                            "next_node_id": null
+                        }
+                    ],
+                    "expression": "neutral"
+                }
+            ]
+        },
+        {
+            "id": "marcus_jin_deep_shafts_silent_vigil",
+            "start_node_id": "silent_vigil",
+            "nodes": [
+                {
+                    "id": "silent_vigil",
+                    "speaker_id": "marcus_jin",
+                    "text": "Marcus has been standing in front of the plaque for a while. He looks at it. He does not say anything. After a long pause, he says: \"Yeah.\"",
+                    "responses": [
+                        {
+                            "text": "[Stand with him.]",
+                            "next_node_id": "leaving",
+                            "set_flag": "marcus_silent_vigil_seen"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "leaving",
+                    "speaker_id": "marcus_jin",
+                    "text": "I will catch up at the dock. Take your time on the way out.",
+                    "responses": [
+                        {
+                            "text": "[Leave him to it.]",
+                            "next_node_id": null
+                        }
+                    ],
+                    "expression": "neutral"
+                }
+            ]
+        },
+        {
+            "id": "marcus_jin_deep_shafts_father_connection",
+            "start_node_id": "father_inheritance",
+            "nodes": [
+                {
+                    "id": "father_inheritance",
+                    "speaker_id": "marcus_jin",
+                    "text": "Sten told you the story. Good. He tells it better than anyone. My father was at the walkout. Nineteen days, all of them. He came home with the cough that killed him fifteen years later. He did not consider that a fair price. He kept doing the work anyway.",
+                    "responses": [
+                        {
+                            "text": "[Listen.]",
+                            "next_node_id": "union_meaning",
+                            "set_flag": "marcus_father_connection_seen"
+                        }
+                    ],
+                    "expression": "stern",
+                    "required_flags": ["marcus_silent_vigil_seen", "talked_to_sten_brygaard"]
+                },
+                {
+                    "id": "union_meaning",
+                    "speaker_id": "marcus_jin",
+                    "text": "That is what the Union is. Not the speech. The nineteen days. The cough. The decision to keep at it. I carry his name. I do not carry hers. Sora is everyone's. He was mine.",
+                    "responses": [
+                        {
+                            "text": "[Stay with him.]",
+                            "next_node_id": null
+                        }
+                    ],
+                    "expression": "neutral"
+                }
+            ]
+        },
+        {
+            "id": "marcus_jin_deep_shafts_uprising",
+            "start_node_id": "uprising_inheritance",
+            "nodes": [
+                {
+                    "id": "uprising_inheritance",
+                    "speaker_id": "marcus_jin",
+                    "text": "She was not alone on that crate. She was the one who climbed up. The rest of them held the line. My father was one of the rest. So was yours, in his own shaft, on his own shift. The work continues.",
+                    "responses": [
+                        {
+                            "text": "[Listen.]",
+                            "next_node_id": "carrying_forward",
+                            "set_flag": "marcus_uprising_inheritance_seen"
+                        }
+                    ],
+                    "expression": "neutral",
+                    "required_flags": ["marcus_father_connection_seen"]
+                },
+                {
+                    "id": "carrying_forward",
+                    "speaker_id": "marcus_jin",
+                    "text": "I am not going to give you a speech. You came down here. You stood here. That is the part that mattered. The work continues. We will be at the dock when you are ready.",
+                    "responses": [
+                        {
+                            "text": "[Leave him to it.]",
+                            "next_node_id": null
+                        }
+                    ],
+                    "expression": "neutral"
+                }
+            ]
         }
     ]
 }

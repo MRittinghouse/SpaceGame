@@ -223,6 +223,41 @@
       "trigger_flag": "wreckers_made_up_journal",
       "system_id": "crimson_reach",
       "mission_id": ""
+    },
+    {
+      "entry_id": "pilgrimage_journal_1",
+      "text": "Sten Brygaard told the story the way he tells it. Cargo Bay 7. Third shift, morning cycle. Sora Takahashi climbed up on a shipping crate. She was short. Everyone forgets how short she was, he said. She told the bay: we built this, all of it, and we are done letting other people decide what it is worth. That was the speech. Sten said it twice, the second time for me to hear it.",
+      "trigger_flag": "pilgrimage_journal_1",
+      "system_id": "breakstone",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "pilgrimage_journal_2",
+      "text": "Sten said: nineteen days. He did not say it was a strike. He said it was nineteen days of people not coming up out of the shafts. He said: they did it worker by worker. Nobody made a list of heroes. The list would have been the whole roster. The Charter signed because the bays were quiet for nineteen days, not because of one speech.",
+      "trigger_flag": "pilgrimage_journal_2",
+      "system_id": "breakstone",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "pilgrimage_journal_3",
+      "text": "Sten poured a second cup. He said: the Breakstone Charter, 2267. The signing was in this bay. Sora signed first because she happened to be standing closest to the table. He says she would have hated being the symbol. He says she got over it.",
+      "trigger_flag": "pilgrimage_journal_3",
+      "system_id": "breakstone",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "pilgrimage_journal_4",
+      "text": "Sten said the collapse came forty years after the Charter. Section 6 went down on a third shift. Fourteen people. We got eleven names on that wall, he said. Three were never recovered. He pointed at the wall. He did not read the names out. He said: every shift change, somebody puts their hand on it. That is the rotation.",
+      "trigger_flag": "pilgrimage_journal_4",
+      "system_id": "breakstone",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "pilgrimage_journal_5",
+      "text": "Sten said: Marcus Jin's father was at the walkout. Stayed the full nineteen days. So was a thousand other people, he said. Marcus knows what the Union owes him and what it does not. He said the work continues. He said: come back when you are out this way again. The flowers refresh on a rotation.",
+      "trigger_flag": "pilgrimage_journal_5",
+      "system_id": "breakstone",
+      "mission_id": ""
     }
   ]
 }

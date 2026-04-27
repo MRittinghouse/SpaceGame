@@ -1150,7 +1150,12 @@ class DataLoader:
         missions_dir = self.data_dir / "missions"
         self.missions.clear()
 
-        for filename in ["missions.json", "side_missions.json", "crew_quests.json"]:
+        for filename in [
+            "missions.json",
+            "side_missions.json",
+            "crew_quests.json",
+            "sa_2_pilgrimage.json",
+        ]:
             file_path = missions_dir / filename
             if not file_path.exists():
                 if filename == "missions.json":

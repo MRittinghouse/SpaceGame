@@ -899,6 +899,19 @@
       "faction_id": "",
       "auto_trigger_prerequisites": ["arna_delivery_accepted"],
       "hide_after_flag": "arna_delivery_complete"
+    },
+    {
+      "id": "sten_brygaard",
+      "name": "Sten Brygaard",
+      "title": "Custodian, The Deep Shafts",
+      "portrait_color": [
+        160,
+        140,
+        110
+      ],
+      "home_system_id": "breakstone",
+      "dialogue_id": "sten_brygaard_deep_shafts",
+      "faction_id": "miners_union"
     }
   ]
 }
