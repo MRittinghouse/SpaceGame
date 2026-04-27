@@ -412,6 +412,17 @@ def create_default_skills() -> Dict[str, SkillNode]:
         bonus_type="trend_visibility",
         bonus_per_level=1.0,
     )
+    # SA-C2: Auction-system specialization (SA-B3/B4 consumer)
+    skills["lot_appraiser"] = SkillNode(
+        id="lot_appraiser",
+        name="Lot Appraiser",
+        description="+5% post-auction valuation accuracy per level",
+        tree=SkillTreeType.COMMERCE,
+        max_level=2,
+        prerequisite_id="market_eye",
+        bonus_type="auction_lot_appraisal_bonus",
+        bonus_per_level=0.05,
+    )
     skills["market_insider"] = SkillNode(
         id="market_insider",
         name="Market Insider",
@@ -461,6 +472,17 @@ def create_default_skills() -> Dict[str, SkillNode]:
         prerequisite_id="negotiator",
         bonus_type="tariff_reduction",
         bonus_per_level=0.10,
+    )
+    # SA-C2: Futures-market specialization (SA-F2/F3 consumer)
+    skills["spread_trader"] = SkillNode(
+        id="spread_trader",
+        name="Spread Trader",
+        description="+5% futures contract spread reduction per level on entry",
+        tree=SkillTreeType.COMMERCE,
+        max_level=2,
+        prerequisite_id="tariff_negotiation",
+        bonus_type="speculator_premium_reduction",
+        bonus_per_level=0.05,
     )
 
     # --- Smuggling Branch ---
@@ -895,6 +917,17 @@ def create_default_skills() -> Dict[str, SkillNode]:
         bonus_type="reputation_gain_bonus",
         bonus_per_level=1.0,
     )
+    # SA-C2: Research-institution specialization (SA-R1/R2 consumer)
+    skills["research_oversight"] = SkillNode(
+        id="research_oversight",
+        name="Research Oversight",
+        description="+5% project failure odds reduction per level at the Okafor Institute",
+        tree=SkillTreeType.LEADERSHIP,
+        max_level=2,
+        prerequisite_id="diplomatic_relations",
+        bonus_type="research_risk_reduction",
+        bonus_per_level=0.05,
+    )
     # NV-6.5: Leadership base — entry into the Leadership skill-check axis.
     skills["give_the_word"] = SkillNode(
         id="give_the_word",
@@ -904,6 +937,17 @@ def create_default_skills() -> Dict[str, SkillNode]:
         max_level=2,
         bonus_type="leadership_bonus",
         bonus_per_level=1.0,
+    )
+    # SA-C2: Politics-system specialization (SA-P3/P4 consumer)
+    skills["delegate_reach"] = SkillNode(
+        id="delegate_reach",
+        name="Delegate Reach",
+        description="+0.5 to delegate pre-commitment cap per level before a Politics vote",
+        tree=SkillTreeType.LEADERSHIP,
+        max_level=2,
+        prerequisite_id="give_the_word",
+        bonus_type="coalition_size_bonus",
+        bonus_per_level=0.5,
     )
 
     # --- Tier 2: Specialization ---
@@ -1006,6 +1050,17 @@ def create_default_skills() -> Dict[str, SkillNode]:
         bonus_type="persuasion_bonus",
         bonus_per_level=1.0,
     )
+    # SA-C2: Politics persuasion specialization (SA-P3/P4 consumer)
+    skills["coalition_sway"] = SkillNode(
+        id="coalition_sway",
+        name="Coalition Sway",
+        description="+10% delegate persuasion modifier per level in Politics disputes",
+        tree=SkillTreeType.SOCIAL,
+        max_level=2,
+        prerequisite_id="silver_tongue",
+        bonus_type="coalition_sway_bonus",
+        bonus_per_level=0.10,
+    )
     skills["commanding_presence"] = SkillNode(
         id="commanding_presence",
         name="Commanding Presence",
@@ -1045,6 +1100,17 @@ def create_default_skills() -> Dict[str, SkillNode]:
         prerequisite_id="keen_insight",
         bonus_type="npc_disposition_visible",
         bonus_per_level=1.0,
+    )
+    # SA-C2: Mediation specialization (SA-P5 consumer)
+    skills["mediation_instinct"] = SkillNode(
+        id="mediation_instinct",
+        name="Mediation Instinct",
+        description="+10% partial-win odds in mediation resolutions per level",
+        tree=SkillTreeType.SOCIAL,
+        max_level=2,
+        prerequisite_id="empathic_read",
+        bonus_type="arbitration_neutrality_bonus",
+        bonus_per_level=0.10,
     )
     skills["master_negotiator"] = SkillNode(
         id="master_negotiator",
@@ -1164,6 +1230,17 @@ def create_default_skills() -> Dict[str, SkillNode]:
         max_level=2,
         bonus_type="refining_speed",
         bonus_per_level=0.15,
+    )
+    # SA-C2: Research-patronage specialization (SA-R1/R2 consumer)
+    skills["research_yield"] = SkillNode(
+        id="research_yield",
+        name="Research Yield",
+        description="+5% project return at the Okafor Institute per level",
+        tree=SkillTreeType.INDUSTRY,
+        max_level=2,
+        prerequisite_id="efficient_refining",
+        bonus_type="research_yield_bonus",
+        bonus_per_level=0.05,
     )
     # NV-6.5: Technical base — entry into the Technical skill-check axis.
     skills["tool_sense"] = SkillNode(

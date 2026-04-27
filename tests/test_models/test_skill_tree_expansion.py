@@ -17,7 +17,7 @@ class TestTreeSizes:
 
     def test_commerce_tree_size(self) -> None:
         prog = PlayerProgression()
-        assert len(prog.get_skill_tree(SkillTreeType.COMMERCE)) == 12
+        assert len(prog.get_skill_tree(SkillTreeType.COMMERCE)) == 14  # +2 SA-C2
 
     def test_combat_tree_size(self) -> None:
         prog = PlayerProgression()
@@ -30,30 +30,30 @@ class TestTreeSizes:
 
     def test_leadership_tree_size(self) -> None:
         prog = PlayerProgression()
-        # +2 (give_the_word + command_presence, NV-6.5 Leadership axis)
-        assert len(prog.get_skill_tree(SkillTreeType.LEADERSHIP)) == 11
+        # +2 (give_the_word + command_presence, NV-6.5 Leadership axis) + 2 SA-C2
+        assert len(prog.get_skill_tree(SkillTreeType.LEADERSHIP)) == 13
 
     def test_social_tree_size(self) -> None:
         prog = PlayerProgression()
-        # +2 (poker_face + ghost_protocol, NV-6.5 Deception axis)
-        assert len(prog.get_skill_tree(SkillTreeType.SOCIAL)) == 13
+        # +2 (poker_face + ghost_protocol, NV-6.5 Deception axis) + 2 SA-C2
+        assert len(prog.get_skill_tree(SkillTreeType.SOCIAL)) == 15
 
     def test_industry_tree_size(self) -> None:
         prog = PlayerProgression()
-        # +2 (tool_sense + engineer_insight, NV-6.5 Technical axis)
-        assert len(prog.get_skill_tree(SkillTreeType.INDUSTRY)) == 12
+        # +2 (tool_sense + engineer_insight, NV-6.5 Technical axis) + 1 SA-C2
+        assert len(prog.get_skill_tree(SkillTreeType.INDUSTRY)) == 13
 
     def test_total_skill_count(self) -> None:
         skills = create_default_skills()
-        # NV-6.5: 75 + 7 new skill-check axis skills
-        assert len(skills) == 82
+        # NV-6.5: 75 + 7 new skill-check axis skills + 7 SA-C2
+        assert len(skills) == 89
 
     def test_total_max_levels(self) -> None:
-        """Total cost to max every skill should be 146."""
+        """Total cost to max every skill should be 160."""
         skills = create_default_skills()
         total = sum(s.max_level * s.cost_per_level for s in skills.values())
-        # NV-6.5: 132 + (7 skills × max_level 2) = 146
-        assert total == 146
+        # NV-6.5: 132 + (7 NV skills × max_level 2) + (7 SA-C2 skills × max_level 2) = 160
+        assert total == 160
 
     def test_six_trees_only(self) -> None:
         """Exactly 6 tree types should exist."""

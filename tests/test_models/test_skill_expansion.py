@@ -139,9 +139,9 @@ class TestSixTreeStructure:
         assert len(SkillTreeType) == 6
 
     def test_total_skill_count(self) -> None:
-        """Should have 82 skills after NV-6.5 (75 from S1 + 7 new skill-axis)."""
+        """Should have 89 skills after SA-C2 (82 from NV-6.5 + 7 SA-C2 SA-arc nodes)."""
         skills = create_default_skills()
-        assert len(skills) == 82
+        assert len(skills) == 89
 
     def test_all_trees_have_skills(self) -> None:
         prog = PlayerProgression()
