@@ -109,25 +109,47 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 
 **Touch zones.**
 - `requirements/character_voices.md`
-- `requirements/character_voices/` (NEW if splitting per-character)
 
 **Deliverables.**
-- Inventory table: every named NPC the SA arc touches.
-- For each: existing voice sheet (with consistency-pass edits) OR a new 1-page voice sheet.
+- Inventory table at the top of the SA section in `character_voices.md`: every named NPC the SA arc touches, with status (existing / extend / net-new), existing speaker_id (if any), and the SA sprint(s) that consume the sheet.
+- For each NPC: existing voice sheet (with consistency-pass edits) OR a new sheet at the Elena/Marcus/Priya/Tomas standard (six-section structure: Core voice, Verbal habits, What they say vs. mean, Emotional range, What they never say, Sample lines).
 - A "tonal map" identifying at least one distinguishing register feature per character.
+- A speaker_id registry table mapping every named SA NPC to its canonical snake_case `speaker_id`. Flags any deferred reconciliations (e.g., `delivery_merchant` to `odom_broker` belongs to SA-V; the `torres_memorial` duplicate of `malia_torres` is captured for SA-1).
 
 **Acceptance criteria.**
-1. Inventory covers Malia Torres, Marcus Jin, Dr. Okafor's successor, Cargo Broker, Verdant Mayor + 3 Verdant council delegates, 4 Alliance Congress delegates, Stellaris Auctioneer + 3 recurring rivals, Meridian primary broker, Deep Shafts miner caretaker, Wreckers' Guild secondary contacts (3).
-2. Every character has a voice sheet at the Elena/Marcus/Priya/Tomas standard.
-3. All sheets pass the Writing Bible scanner (no em-dashes, no banned phrases).
-4. Tonal map is concrete: each character has at least one named distinguishing register feature.
+1. Inventory covers Malia Torres, Marcus Jin, Dr. Okafor's successor (named, distinct from existing `jez_okafor`), Cargo Broker (canonical name **Odom** per locked decision), Verdant Mayor + 3 Verdant council delegates, 4 Alliance Congress delegates, Stellaris Auctioneer + 3 recurring rivals, Meridian primary broker, Deep Shafts miner caretaker, Wreckers' Guild secondary contacts (3 — wreck navigator, salvage engineer, debris-field cartographer).
+2. Every character has a voice sheet at the Elena/Marcus/Priya/Tomas standard. Six sections, minimum 3 sample lines, named verbal-habits and emotional-range tags.
+3. All new and edited sheets pass the Writing Bible scanner: no em-dashes (≤1 per long sheet by craft exception), no banned phrases ("a testament to", "couldn't help but", parallel-negation rhetoric), no banned names (Yara, Elara, Kael, Mara, Lydia, Clive, Magnus, Ambrose).
+4. Tonal map is concrete: each character has at least one named distinguishing register feature. Extends the existing Voice Interactions table with at least 3 new SA-relevant cross-character pairings.
+5. Speaker_id registry table committed alongside the inventory. Each NPC has a canonical snake_case id; reconciliations needed in downstream sprints are listed with the consuming sprint ID.
+6. Cargo Broker / Odom name reconciliation is captured: voice sheet upgraded from 3-line stub to full standard; explicit note that the `delivery_merchant` speaker_id and `talked_to_cargo_broker` flag should be reconciled in SA-V (not this sprint).
+
+**Plan.**
+
+| # | Task | Files touched | Verification | Risks |
+|---|---|---|---|---|
+| 1 | Inventory pass: walk `data/dialogue/dialogues.json` `speaker_id` set + cross-reference acceptance-criteria NPC list. Produce the inventory table at the top of a new `## Station Anchors arc — NPC inventory` section in `character_voices.md`. Tag each as existing / extend / net-new with the consuming SA sprint(s). | `requirements/character_voices.md` | Manual table check; numbers reconcile with criterion #1 (about 22 NPCs). | `delivery_merchant`, `torres_memorial`, `jez_okafor` are existing speaker_ids easy to mistake for SA characters. Spell out distinctions in the inventory. |
+| 2 | Reconcile Cargo Broker to Odom. Replace the current 3-line stub with a full Elena-standard sheet. The Broker carries SA-V to SA-F3 (graduation to Meridian) so this is the most-consumed sheet in the arc. Note the deferred speaker_id rename (`delivery_merchant` to `odom_broker`) as SA-V scope. | `requirements/character_voices.md` | Sheet length parity with Elena/Marcus/Priya. Six sections present. Writing Bible scanner clean. | Voice must square with existing dialogue text (lines around 1003-1243) without forcing SA-V to rewrite. Confirm Odom's existing voice is consistent. |
+| 3 | Consistency pass on existing sheets that SA-1 / SA-2 will consume: Malia Torres (SA-1 Wreckers' Guild membership-tier interactions, SA-P5 Reach-venue arbitration), Marcus Jin (SA-2 Deep Shafts pilgrimage). Add an "SA Notes" subsection to each. | `requirements/character_voices.md` | Diff review: only additive changes. | Marcus's father link to Sora Takahashi (Breakstone Uprising 2267) is implicit in cultural guide; SA-2 needs the elder caretaker as the primary teller. Don't conflate the historical figure with Marcus's actual father. |
+| 4 | Author Cluster B sheets: Dr. Okafor's successor (named distinct from `jez_okafor`); Deep Shafts miner caretaker (elder Union miner who tells the Sora Takahashi stories); 3 Wreckers' Guild secondary contacts (wreck navigator, salvage engineer, debris-field cartographer). | `requirements/character_voices.md` | Five new sheets, each at full standard. Surnames diversified; no overlap with existing `*_okafor` speakers. | Dr. Okafor's successor easy trap: defaults to "another scientist who sounds like Priya." Make register distinct: founder-shadow + institutional fatigue, not academic curiosity. |
+| 5 | Author Politics sheets: Verdant Mayor + 3 council delegates + 4 Alliance Congress delegates = 8 sheets. Verdant is Frontier-Alliance flavored; Alliance Congress speakers each represent a different settlement. | `requirements/character_voices.md` | Eight new sheets at full standard. Cross-faction contrast appears in tonal map. | Sheet fatigue → AI tells creep in. Author in two batches with Writing Bible re-read between. Include at least one obstinate, one self-interested, one grief-shaped voice in each set. |
+| 6 | Author Bidding sheets: Stellaris Auctioneer + 3 recurring rivals. Pick three rival personas during this task (collector, faction agent, rival captain or equivalent) and lock them. Auctioneer needs a verbal-cadence feature distinctive enough to be recognized by sound alone. | `requirements/character_voices.md` | Four new sheets at full standard. Three rivals with locked persona tags SA-B3 can consume. | Rival captain risks duplicating Tomas's charm. Push toward cold rivalry or earned grudge instead. |
+| 7 | Author Financial sheet: Meridian primary broker. Per SA-F3 the broker carries the Cargo Broker → Meridian graduation. Voice must contrast with Odom (Odom: working middleman; Meridian broker: institutional, polished, gatekeeper). | `requirements/character_voices.md` | One sheet at full standard. Voice contrast with Odom called out in SA Notes. | Easy to write Meridian broker as a Guild knock-off. Meridian is a financial exchange with its own register. |
+| 8 | Compile tonal map: per-NPC one-line distinguishing register feature appended to each sheet's header. Extend the `## Voice Interactions` table with ≥3 new SA-relevant pairings. | `requirements/character_voices.md` | Voice Interactions table grows by ≥3 rows. | Repeating "terse"/"warm" defeats the cohesion goal. Force unique adjectives per character. |
+| 9 | Compile speaker_id registry table: snake_case canonical id for each SA NPC. Flag deferred reconciliations. | `requirements/character_voices.md` | Diff between inventory table and registry: no NPC missing. | Missing registrations cause downstream drift. |
+| 10 | Writing Bible scanner pass on the new content. Fix violations. Re-read all new sheets aloud per dialogue guide §6 self-check. | `requirements/character_voices.md` | Scanner clean. Pass count from baseline (8304) preserved. | If a scanner flags a legitimate craft em-dash, document the exception inline; don't delete the line. |
 
 **Risks / open questions.**
-- Cargo Broker existing data: confirm whether the character is named in current dialogue trees.
-- Whether to split per-character into a subdirectory or keep all sheets in one doc.
+- ~~Cargo Broker existing data~~ — RESOLVED: dialogue tree (lines around 1003-1243) names him **Odom**; voice sheet is the 3-line stub. Decision locked: canonical name = Odom. Speaker_id reconciliation deferred to SA-V.
+- ~~Whether to split per-character into a subdirectory~~ — RESOLVED: keep all sheets in `character_voices.md`. Revisit if file exceeds ~2000 lines after SA-PREP-1.
+- ~~Sheet standard~~ — RESOLVED: full Elena/Marcus/Priya/Tomas six-section structure, minimum 3 sample lines per sheet.
+- ~~Dr. Okafor's successor naming~~ — RESOLVED: must be distinct from existing `jez_okafor` (Breakstone deep-shafts shift supervisor); the successor runs Axiom Labs' Okafor Institute Medical Wing. Lock the successor's full name during task 4.
+- Open: which three personas for the Bidding rivals? Lock during task 6 so SA-B3 inherits a stable cast.
 
 **Activity log.**
 - 2026-04-26 — todo (created)
+- 2026-04-26 17:32 — plan phase ran in pilot but blocked by sandbox; planning content recovered from agent stdout and applied to this sprint section
+- 2026-04-26 — plan content recovered; ready for re-pickup by harness (next plan phase will see substantive existing plan and confirm/refine)
 
 #### SA-PREP-2 — Existing-data audit
 
@@ -135,29 +157,92 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 **Phase**: Phase 0 | **Size**: S | **Effort**: 3-5 days
 **Depends on**: none | **Blocks**: SA-A1, SA-C1, SA-0
 
-**Goal.** Walk current dialogue trees, ambient lines, news headlines, journal entries, missions to see what already references each anchor. Identify what we need to extend vs. preserve. Save state baseline for regression checks.
+**Goal.** Walk every content surface (dialogue trees, missions, journal entries, ambient/station chatter, encounters, news templates, NPC home assignments) and produce a per-anchor inventory of what already references each Station Anchor location plus the Cargo Broker character. Surface the asymmetric content state (some anchors heavily seeded, others lore-only) so downstream SA sprints inherit a starting point. Capture a regression baseline so post-SA changes can be verified against the pre-SA state.
 
 **Context to read.**
+- `requirements/station_anchors.md` (anchor inventory + cluster definitions)
+- `data/galaxy/locations.json` (`location_type: unique` cards)
 - `data/dialogue/dialogues.json`
-- `data/missions/missions.json`, `side_missions.json`, `crew_quests.json`
-- `data/galaxy/locations.json`
-- `data/journal/*.json`
-- `requirements/station_anchors.md`
+- `data/missions/missions.json`, `data/missions/side_missions.json`, `data/missions/crew_quests.json`
+- `data/journal/entries.json`, `data/journal/travel_log_templates.json`
+- `data/characters/npcs.json` (NPC `home_system_id` mapping; anchor linkage is mostly indirect via this field)
+- `data/economy/news_templates.json`
+- `data/encounters/*.json`
+- `data/crew/station_chatter.json`, `data/crew/ambient_dialogue.json`
+- `tests/test_writing_bible_compliance.py` (voice-check regex patterns)
+- `requirements/character_voices.md` (cross-reference for named NPC presence)
 
 **Touch zones.**
 - `requirements/sa_audit_findings.md` (NEW)
 
 **Deliverables.**
-- A findings doc cataloging existing references per anchor.
-- A regression checklist: behaviors that must continue to work after SA changes.
+- A findings doc with: a cross-cutting summary table; one section per anchor subject (10 anchors + Cargo Broker = 11 subjects); per-section catalog of existing references by source path + identifier; per-section "Named NPCs operating here" list; per-section "Gaps for downstream sprints" subsection; a sub-faction / organization references section.
+- A regression checklist of at least 5 distinct existing player-facing behaviors spanning at least 3 different anchor locations.
+- A save-state baseline: a documented manual smoke-test recipe (not a binary save file) that a tester can run pre-SA-1 and post-SA-1 to verify no listed behavior regressed.
+
+**Plan.**
+
+1. **Anchor inventory + ID confirmation.** Read `data/galaxy/locations.json`. Cross-reference the 10 anchors named in `station_anchors.md` against actual `unique`-typed location IDs. Note any naming drift between the vision doc and live data. Output: anchor table at the top of `sa_audit_findings.md` with columns (Anchor name from vision, Live `id`, Host system, `location_type`).
+   - Files: read `data/galaxy/locations.json`; create `requirements/sa_audit_findings.md` skeleton.
+   - Tests: none (research artifact).
+   - Risk: vision-doc names like "Restricted Sector 7" may differ from `iron_depths_restricted_zone`. Catalog both forms so later greps do not miss content.
+
+2. **NPC home-mapping table.** Walk `data/characters/npcs.json` and tag each NPC by which anchor they operate at, joining on `home_system_id`. This is the linkage backbone since most anchor references are indirect via NPC speakers.
+   - Files: `data/characters/npcs.json` to audit doc.
+   - Risk: NPCs with no `home_system_id` should be flagged as `unhomed` so SA-PREP-1's voice-sheet audit knows to triage them.
+
+3. **Per-anchor reference walk: dialogue.** For each of the 11 subjects, enumerate dialogue trees that reference the anchor by direct name string OR by a `speaker_id` whose NPC homes at the anchor's system OR via `set_flag`/`requires_flag` patterns mentioning the anchor. Cite using `dialogues.json#tree_id:node_id`.
+   - Files: `data/dialogue/dialogues.json`.
+   - Gotcha: NPCs may speak from anywhere; mark indirect speaker-based linkage as "speaker home" versus "in-text reference."
+
+4. **Per-anchor reference walk: missions.** Walk all three mission files. Tag references by mission objective `target_id` (NPC at anchor), `available_at` host-system match, or anchor-name strings in `description`/`hint`. Cite as `missions.json#mission_id`.
+   - Files: `data/missions/missions.json`, `side_missions.json`, `crew_quests.json`.
+   - Gotcha: mission objectives reach systems, not locations. A system match is not necessarily anchor-specific; flag the difference.
+
+5. **Per-anchor reference walk: journal, news, encounters, chatter, ambient.** Walk `data/journal/*.json`, `data/economy/news_templates.json`, `data/encounters/*.json`, `data/crew/station_chatter.json`, `data/crew/ambient_dialogue.json` for anchor-name strings or `system_id` matches.
+   - Files: as listed.
+   - Gotcha: news templates use placeholders like `{system}`; record which systems can fill them rather than counting templates as direct references.
+
+6. **Sub-faction / organization references audit.** Grep across `data/` and `spacegame/` for: Wreckers' Guild membership concepts, Stellaris Auctioneer relationship, Meridian broker relationships, any other sub-faction tier structures. Document what already exists in code/data so SA-B-EXT-1 knows what to extend versus build from zero.
+   - Files: search-only across `data/` and `spacegame/`; output to audit doc's sub-faction section.
+   - Gotcha: do NOT design the sub-reputation system here. Catalog only. Designing it is SA-B-EXT-1's scope.
+
+7. **Gaps + expand-vs-preserve per anchor.** For each anchor section, write the "Gaps for downstream sprints" subsection, naming the specific SA sprint that owns the gap (SA-0, SA-1, SA-2, SA-V, SA-R1, SA-P3, SA-P4, SA-P5, SA-B3, SA-B4, SA-F3). Format: "What exists / What sprint X must add / What must be preserved."
+   - Files: audit doc.
+   - Risk: easy to overstate gaps. Stick to what the data shows. Avoid prescribing solutions; that is the downstream sprint's job.
+
+8. **Regression checklist + save-state baseline.** Write at least 5 player-facing behaviors that must survive SA changes (e.g., "Loading an existing save with `dialogue_flags['met_okafor']=True` continues to show the post-meeting Okafor dialogue branch"). Span at least 3 anchors. Write the save-state baseline as a numbered procedural recipe a tester can run from a clean checkout.
+   - Files: audit doc.
+   - Gotcha: behaviors must be observable from normal play, not from internal log inspection. Keep them player-facing.
+
+9. **Voice-check + final pass.** Run the three patterns from `tests/test_writing_bible_compliance.py` against the entire `sa_audit_findings.md` text: em-dashes (U+2014, U+2013, ` -- `), banned phrases (`couldn't help but` / `a testament to`), parallel-negation (`no X, no Y`). Zero violations required. Run `pytest -n auto -q` and confirm pass count is at least 8304 (pre-phase baseline). Move sprint to `review`.
+   - Files: audit doc; pytest invocation.
+   - Gotcha: pre-existing voice violations in the data being audited are OUT OF SCOPE for this sprint. Catalog them in the doc but do not fix; that is downstream content work.
 
 **Acceptance criteria.**
-1. Every `unique`-typed location has a list of existing references (mission, dialogue, journal, ambient).
-2. Regression checklist itemizes at least 5 distinct existing player-facing behaviors that SA must preserve.
-3. Findings doc voice-checked.
+1. `requirements/sa_audit_findings.md` exists and contains a cross-cutting summary table listing all 11 anchor subjects (10 `unique` locations + Cargo Broker character) with reference counts per content surface (dialogue, mission, journal, encounter, ambient/chatter, news).
+2. Each anchor subject has its own section listing every existing reference by source path + identifier (e.g., `dialogues.json#okafor_intro:greeting`, `missions.json#deliver_to_torres`), with linkage type noted (in-text name match, speaker home, system_id match, flag chain).
+3. Each anchor section includes a "Named NPCs operating here" list (cross-reference for SA-PREP-1).
+4. Each anchor section includes a "Gaps for downstream sprints" subsection naming the specific SA sprint(s) that own the gap, in the form "What exists / What sprint X must add / What must be preserved."
+5. The sub-faction / organization references section catalogs what exists today for Wreckers' Guild membership, Stellaris Auctioneer relationship, Meridian broker relationships, and any other tier/membership structures, with a note on whether the concept exists in current code/data.
+6. The regression checklist enumerates at least 5 distinct player-facing behaviors that SA changes must not break, spanning at least 3 different anchor locations (no single-location concentration).
+7. A save-state baseline is included as a documented manual smoke-test procedure (not a binary save file) that a tester can execute pre-SA-1 and post-SA-1 to verify no listed behavior regressed.
+8. The audit doc passes the three voice-check patterns from `tests/test_writing_bible_compliance.py` (em-dashes, banned phrases, parallel-negation) with zero violations. Pre-existing violations found in scanned data are documented but out of scope to fix.
+9. Full test suite passes at or above the pre-phase baseline of 8304 passing tests; no new failures.
+
+**Risks / open questions.**
+- **Locked: audit subject count = 11.** 10 unique-typed anchor locations plus the Cargo Broker character, since SA-V treats the Broker as an anchor-equivalent recurring NPC. Reason: leaving the Broker out would force a parallel mini-audit during SA-V planning.
+- **Locked: doc structure = per-anchor sections + cross-cutting summary table at top.** Per-anchor sections give downstream sprint owners a single section to read; the summary table gives the human reviewer a one-screen overview.
+- **Locked: voice-check method = run the three regex patterns from `tests/test_writing_bible_compliance.py` against the audit doc text.** Zero violations required. The doc itself does not need a pytest runner; the implementer runs the patterns manually or scripts a one-shot scan during step 9.
+- **Locked: save-state baseline = procedural smoke-test recipe, not a binary save file.** Save formats change; binary baselines rot. A documented procedure stays valid across save migrations.
+- **Locked: regression checklist = at least 5 behaviors spanning at least 3 anchors.** Prevents "all five behaviors are at Okafor because Okafor has the most existing content."
+- **Locked: pre-existing voice violations in scanned data are catalog-only, not fixed in this sprint.** Voice cleanup of pre-SA content is downstream work (likely a future SA-X polish sprint or a WB followup).
+- **Locked: per-anchor "Gaps for downstream sprints" subsection required.** Without this, the audit becomes inert reference material; with it, every downstream sprint inherits a concrete starting point.
 
 **Activity log.**
 - 2026-04-26 — todo (created)
+- 2026-04-26 17:45 — plan phase ran in pilot but blocked by sandbox; planning content recovered from agent stdout and applied to this sprint section
+- 2026-04-26 — plan content recovered; ready for re-pickup by harness (next plan phase will see substantive existing plan and confirm/refine)
 
 #### SA-PREP-3 — Playtest baseline telemetry
 
@@ -165,26 +250,69 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 **Phase**: Phase 0 | **Size**: S | **Effort**: 2-3 days
 **Depends on**: none | **Blocks**: (informational only — does not block subsequent sprints)
 
-**Goal.** Capture pre-arc telemetry for post-arc comparison. Measures of "what players do today" with `unique` cards: how often each is clicked, time spent, mission acceptance patterns at each station. Comparison data for evaluating whether the SA arc moved player behavior in intended directions.
+**Goal.** Stand up a minimal, off-by-default telemetry hook that captures pre-arc player behavior at every `unique`-typed anchor card, and write a baseline doc that catalogs what is measurable today (per anchor) vs. what is not. The deliverable is *enabling future comparison* — once the SA arc lands, we will be able to diff "what players do at anchors today" against "what players do at anchors after the arc." External-playtester data collection is a separate effort and out of scope here.
 
 **Context to read.**
-- Existing analytics or logging infrastructure (audit during planning).
-- `requirements/station_anchors.md` acceptance criteria.
+- `requirements/station_anchors.md` (per-anchor inventory; the arc-as-a-whole acceptance criteria define what the comparison is against)
+- `requirements/onboarding_design.md` (six teaching principles — apply unchanged)
+- `spacegame/utils/logger.py` (existing logging surface; the new telemetry module sits beside it, not on top of it)
+- `spacegame/views/station_hub_view.py` (where `unique` cards render and accept clicks; the hook lands here, around the `location_type == "unique"` click branch and the detail-panel render path)
+- `spacegame/models/player.py` (existing stat counters; `last_interaction_day` and `record_interaction()` are existing measurement surfaces we should *not* duplicate)
+- `data/galaxy/locations.json` (the 10 `unique`-typed location IDs the baseline must cover)
+- `.gitignore` (`logs/` is already ignored — telemetry output writes under `logs/telemetry/`)
 
 **Touch zones.**
-- `requirements/sa_baseline.md` (NEW — captured snapshot)
-- `spacegame/utils/logger.py` (potential telemetry hooks)
+- `requirements/sa_baseline.md` (NEW)
+- `spacegame/utils/telemetry.py` (NEW)
+- `spacegame/views/station_hub_view.py` (small additions: emit on unique-card click + detail-panel-dwell)
+- `tests/test_utils/__init__.py` (NEW, empty)
+- `tests/test_utils/test_telemetry.py` (NEW)
+- `tests/test_views/test_station_hub_view.py` (extend with telemetry hook coverage)
 
 **Deliverables.**
-- A captured baseline of current behavior per anchor (where measurable).
-- Documentation of what's measurable vs. what isn't.
+- `requirements/sa_baseline.md` — per-anchor table covering the 10 `unique` locations plus SA-V's Cargo Broker. For each entry: `anchor_id`, system, current content state (lore-only / has-content / has-campaign-content), at least 3 measurable behaviors with derivation method (Player counter, dialogue flag, telemetry event, JSONL grep, etc.), at least 1 unmeasurable behavior with reason, regression-checklist seed line.
+- `spacegame/utils/telemetry.py` — minimal opt-in telemetry module. Off by default; opt-in via `SPACEGAME_TELEMETRY=1`. Writes one JSON object per line to `logs/telemetry/<session_id>.jsonl`. Public API: `is_enabled()`, `record_event(event_type, **payload)`, `current_session_path()`. No-op when disabled (no file is created on import or on disabled `record_event`).
+- Telemetry hooks in `station_hub_view.py`: emit `anchor_card_clicked` (payload: `anchor_id`, `system_id`, `game_day`) when a `unique` card is clicked; emit `anchor_detail_dwell` (payload: `anchor_id`, `duration_ms`) when the detail panel closes. Both no-op when telemetry is disabled.
+- Test coverage in `tests/test_utils/test_telemetry.py` and an extension to `tests/test_views/test_station_hub_view.py`.
 
 **Acceptance criteria.**
-1. Baseline document committed.
-2. At least 3 measurable behaviors captured per anchor (or noted as unmeasurable with reason).
+1. `requirements/sa_baseline.md` exists and lists every `unique`-typed location (`nexus_financial_exchange`, `stellaris_auction_house`, `breakstone_deep_mines`, `iron_depths_restricted_zone`, `axiom_research_wing`, `nova_restricted_labs`, `havens_congress_hall`, `verdant_mayors_council`, `crimson_wreckers_guild`, `fulcrum_core`) plus SA-V's Cargo Broker. Each entry names at least 3 measurable behaviors (with derivation method) or marks them unmeasurable with stated reason.
+2. `spacegame/utils/telemetry.py` exposes `is_enabled() -> bool`, `record_event(event_type: str, **payload: object) -> None`, and `current_session_path() -> Path | None`. With `SPACEGAME_TELEMETRY` unset or set to `"0"`, all three are no-ops and no file is created.
+3. With `SPACEGAME_TELEMETRY=1`, `record_event(...)` appends one JSON object per call to `logs/telemetry/<session_id>.jsonl`. Each line parses with `json.loads`. Each event includes `event_type`, `timestamp_iso`, `session_id`, plus the supplied payload fields.
+4. `station_hub_view.py` emits an `anchor_card_clicked` event when a `unique`-typed location card is clicked, AND an `anchor_detail_dwell` event when the detail panel closes. Both events carry `anchor_id`. Both no-op when telemetry is disabled. Existing click behavior is unchanged (telemetry is purely additive).
+5. New tests in `tests/test_utils/test_telemetry.py` cover: disabled-by-default no-op (no file created), enabled `record_event` writes parseable JSONL, two events append two lines, event schema includes the required fields, malformed payload (non-JSON-serializable) logs a warning and does not raise. Tests use `monkeypatch.setenv` and `tmp_path` for isolation.
+6. Full test suite passes with pass count >= 8304 (the pre-phase baseline). New tests add to the count, not replace existing ones. `ruff format`, `ruff check`, `mypy spacegame/` all clean.
+
+**Risks / open questions.**
+- ~~Default state: telemetry on or off by default?~~ **LOCKED** — off by default, opt-in via `SPACEGAME_TELEMETRY=1`. We have no central collection backend, and players running the game from source should not be surprised by behavior tracking.
+- ~~Output format: SQLite, JSON-per-event, JSONL, CSV?~~ **LOCKED** — JSONL (one JSON object per line). Append-friendly, parseable line-by-line, no schema migration, easy to grep.
+- ~~Output location: where do telemetry files land?~~ **LOCKED** — `logs/telemetry/<session_id>.jsonl`. `logs/` is already gitignored, so no repo pollution. `session_id` format: `YYYYMMDD_HHMMSS_<pid>`.
+- ~~Save-state changes: do we add per-anchor counters to `Player`?~~ **LOCKED** — no. Telemetry stays out of the save chain. Existing `last_interaction_day` and `dialogue_flags` already cover save-side measurement; new metrics flow through telemetry only.
+- ~~Scope of metrics: which of "click count / time spent / mission acceptance patterns" do we instrument now?~~ **LOCKED** — click count (`anchor_card_clicked`) and detail-panel dwell time (`anchor_detail_dwell`). Both land entirely inside `station_hub_view.py`. Mission-acceptance-by-anchor is deferred — too cross-cutting for an S sprint, would touch the mission pipeline. Re-evaluate during Phase VI if a cohesion sprint needs it.
+- ~~Snapshot collection in this sprint: do we ship a captured dataset alongside the doc?~~ **LOCKED** — yes, but only as a "shape demonstration" appendix in the baseline doc: a sample JSONL line captured by the implementer running through one anchor with telemetry on. Not a comprehensive playtester dataset.
+
+**Plan.** (8 tasks, sequenced TDD-first per task)
+
+1. **Anchor inventory + measurement audit (read-only, ~1-2 hours).** Walk `data/galaxy/locations.json` for the 10 `unique` IDs. For each, grep `data/dialogue/`, `data/missions/`, `data/journal/` for existing references (this is *not* SA-PREP-2's full audit — just enough to fill the per-anchor "measurable behaviors" column with what exists today). Identify which `met_npc(...)` or `record_interaction(...)` keys already touch each anchor. Output: outline notes for the `sa_baseline.md` table. *Risk*: SA-PREP-2 (currently blocked) does the deep version. Stay surface-level so we do not pre-empt that sprint's deliverable.
+
+2. **Telemetry module — write failing tests first.** Create `tests/test_utils/__init__.py` (empty) and `tests/test_utils/test_telemetry.py`. Tests: (a) `is_enabled()` returns False with env unset; (b) disabled `record_event` is a no-op (no file created in `tmp_path`); (c) `is_enabled()` returns True with `SPACEGAME_TELEMETRY=1`; (d) enabled `record_event` writes one JSONL line with `event_type`, `timestamp_iso`, `session_id`, and the supplied payload; (e) two `record_event` calls append two parseable lines; (f) non-JSON-serializable payload logs a warning and does not raise. Use `monkeypatch.setenv` and `tmp_path` (override the output dir via a module constant or a constructor arg so tests do not write under repo `logs/`). *Gotcha*: env-var leakage between tests — `monkeypatch.setenv` scopes correctly; bare `os.environ[...]=` does not.
+
+3. **Implement telemetry module.** `spacegame/utils/telemetry.py`. Public API: `is_enabled() -> bool`, `record_event(event_type: str, **payload: object) -> None`, `current_session_path() -> Path | None`. Internals: lazy session_id (`YYYYMMDD_HHMMSS_<pid>`) generated on first enabled write; output dir defaults to `logs/telemetry/`, overridable via env (`SPACEGAME_TELEMETRY_DIR`) or test fixture; JSONL writer opens-appends-closes per event (or holds a file handle behind a module-level lock — keep it simple, open-per-event is fine for an S sprint); serialization errors caught and logged via `spacegame.utils.logger`. MyPy strict; no new dependencies. *Risk*: importing the module must not trigger file I/O. The output directory is created lazily on first enabled write only.
+
+4. **Station hub click hook — write failing test first.** Extend `tests/test_views/test_station_hub_view.py` with a test that constructs the view, simulates a click on a `unique`-typed location card with telemetry enabled (via `monkeypatch.setenv` + `tmp_path` redirect of the output dir), and asserts `anchor_card_clicked` is recorded with `anchor_id`, `system_id`, `game_day`. Add a parallel test asserting no event is recorded when telemetry is disabled. *Gotcha*: existing station-hub tests do not import telemetry — keep imports lazy inside the test to avoid import-order surprises.
+
+5. **Implement click hook in `station_hub_view.py`.** Find the click handler for `unique`-typed location cards (around line 748: `if zone.location.location_type == "unique":`). After the existing branch resolves (whichever branch — open detail panel, navigate, etc.), call `telemetry.record_event("anchor_card_clicked", anchor_id=zone.location.id, system_id=self.system.id, game_day=self.player.game_day)`. Import `telemetry` at module top (cheap import). *Risk*: do not change existing click behavior — telemetry is purely additive. The hook fires regardless of click outcome.
+
+6. **Detail-panel dwell timer — failing test, then implementation.** Test: open the detail panel for a `unique` card, advance time, close the panel, assert `anchor_detail_dwell` event was recorded with `anchor_id` and `duration_ms >= 0`. Implementation: add `_detail_panel_opened_at: Optional[float]` to the view; set on detail-panel open; on close, compute `duration_ms = int((now - opened_at) * 1000)` and emit. *Gotcha*: the detail panel can be dismissed in multiple ways (click elsewhere, ESC, navigate away). Identify the close path that all dismissals funnel through, OR emit on the most common dismissal path and document the limitation in `sa_baseline.md`.
+
+7. **Author `requirements/sa_baseline.md`.** Use the inventory from task 1. Per-anchor table with columns: `anchor_id`, system, content state, measurable-behaviors (with derivation source), unmeasurable-behaviors (with reason), regression seed. Plus a "How to enable telemetry" section (env var + log path + privacy posture). Plus a "Sample event shape" appendix with one captured JSONL line as a demonstration. *Risk*: do not duplicate SA-PREP-2's findings doc — this doc is about *measurement methods*, not *content references*.
+
+8. **Run full validation suite.** `ruff format spacegame/ tests/`, `ruff check spacegame/`, `mypy spacegame/`, `pytest -n auto -q`. Confirm pass count >= 8304 (pre-phase baseline) with new tests added to the count. Append validation lines to Activity log; commit; move Status to `review`.
 
 **Activity log.**
 - 2026-04-26 — todo (created)
+- 2026-04-26 18:00 — plan phase ran in pilot but blocked by sandbox; planning content recovered from agent stdout and applied to this sprint section
+- 2026-04-26 — plan content recovered; ready for re-pickup by harness (next plan phase will see substantive existing plan and confirm/refine)
 
 ### Phase A — Crew Specialization Extension
 
@@ -260,34 +388,78 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 **Phase**: Phase B | **Size**: M | **Effort**: 5-7 days
 **Depends on**: none | **Blocks**: SA-1, SA-B3, SA-B4
 
-**Goal.** Extend the reputation model to support per-organization standing layered under per-faction standing. Wreckers' Guild membership tier (apprentice/journeyman/master) is independent of Crimson Reach faction reputation. Stellaris Auctioneer relationship is independent of Stellaris Port faction reputation. Establishes the pattern for SA-1 and SA-B3/B4 to consume.
+**Goal.** Extend the reputation model to support per-organization standing layered under per-faction standing. Wreckers' Guild membership tier (apprentice/journeyman/master) is independent of Crimson Reach faction reputation. Stellaris Auctioneer relationship is independent of Stellaris Port faction reputation. Establishes the pattern for SA-1 and SA-B3/B4 to consume. SA-B-EXT-1 ships only the foundation: the `OrganizationConfig` / `OrganizationTier` shape, the `Player.sub_reputation` field, helper APIs, save round-trip, and a tier-promotion notification queue. Concrete organization configs (Wreckers' Guild, Stellaris Auctioneer, etc.) are declared by their owning consumer sprints.
 
 **Context to read.**
-- `spacegame/models/player.py` (`faction_reputation`)
-- `spacegame/save_manager.py`
-- `requirements/station_anchors.md`
+- `spacegame/models/player.py` (`faction_reputation`, `_pending_faction_deltas` pattern, `modify_reputation`)
+- `spacegame/models/faction.py` (`ReputationTier`, `_TIER_THRESHOLDS`, `get_reputation_tier` — the existing tier pattern this sprint mirrors)
+- `spacegame/save_manager.py` (`_player_to_dict`, `_player_from_dict` — `faction_reputation` round-trip path)
+- `spacegame/engine/game.py` (`_pending_faction_deltas` drain at line 5399 — model the sub-rep drain on this)
+- `requirements/station_anchors.md` (Phase B, plus open question line 253 on save-chain reuse)
+- `requirements/si2_dataclass_migration_cookbook.md` (frozen-dataclass requirement for module-level content tables)
 
 **Touch zones.**
 - `spacegame/models/sub_reputation.py` (NEW)
-- `spacegame/models/player.py` (add `sub_reputation` field)
+- `spacegame/models/player.py` (add `sub_reputation` field, helper methods, notification queue)
 - `spacegame/save_manager.py` (round-trip)
+- `requirements/sub_reputation_design.md` (NEW — short design doc for downstream consumers)
 - `tests/test_models/test_sub_reputation.py` (NEW)
 
 **Deliverables.**
-- New `SubReputation` model encoding per-organization standing with named tiers.
-- Player gains `sub_reputation: dict[str, int]` field with `to_dict`/`from_dict`.
-- Save migration: existing saves load with empty sub_reputation.
-- Tests covering tier promotion, tier-based gates, save/load.
+- `requirements/sub_reputation_design.md`: short design doc covering model shape, organization-config registry pattern, notification queue, range/clamping rules, interaction with faction reputation, save chain reuse. Resolves the open question from `station_anchors.md` line 253. Cites the consumer organizations (Wreckers' Guild, Stellaris Auctioneer) as worked examples without authoring their final tier tables.
+- `spacegame/models/sub_reputation.py`: `OrganizationTier` (frozen dataclass — `id`, `name`, `rank`, `min_rep`; ordering by `rank`); `OrganizationConfig` (frozen dataclass — `id`, `name`, `tiers: tuple[OrganizationTier, ...]`, `min_rep: int = 0`, `max_rep: int = 100`); `get_tier_for_rep(config, value)` returning the tier whose `min_rep` is the largest still <= `value`; `is_at_least(config, value, tier_id)` for gating; validation in `__post_init__` rejecting empty tier lists, duplicate IDs, non-ascending ranks, or non-ascending thresholds.
+- `Player.sub_reputation: dict[str, int]` field with `default_factory=dict`. Helper methods: `modify_sub_reputation(org_id, amount, config) -> tuple[bool, str]` (clamps to `[config.min_rep, config.max_rep]`, queues a `SubReputationDelta(org_id, effective_amount, old_tier, new_tier)` on `_pending_sub_rep_deltas` whenever the tier changes); `get_sub_reputation(org_id) -> int` (defaults to 0); `get_sub_reputation_tier(org_id, config) -> OrganizationTier` (computes tier from current value); `is_at_least_tier(org_id, tier_id, config) -> bool`. Mirrors `_pending_faction_deltas` lifecycle — non-serialized list, drained per-frame by consumer views.
+- Save round-trip in `save_manager.py`: `"sub_reputation": player.sub_reputation` written; `player.sub_reputation = data.get("sub_reputation", {})` read with default-empty for legacy saves.
+- Tests in `tests/test_models/test_sub_reputation.py` covering: config validation, tier lookup at edges, tier promotion/demotion notification queueing, sub-rep faction-rep orthogonality, helper APIs, save round-trip, legacy-save loading. Three organization shapes exercised: a 3-tier Wreckers'-shape (apprentice / journeyman / master), a 4-tier Stellaris-shape, and a 1-tier minimal config.
 
 **Acceptance criteria.**
-1. Player can have non-zero sub_reputation in one organization without affecting any other organization or any faction reputation.
-2. Tier thresholds are configurable per organization.
-3. Save/load round-trip clean across game sessions.
-4. Existing saves load without crash; sub_reputation defaults to empty.
-5. Tests cover at least 3 organizations with different tier structures.
+1. `OrganizationConfig` rejects empty tiers, duplicate tier IDs, non-ascending ranks, and non-ascending `min_rep` thresholds in `__post_init__`. Tested with an explicit failure case for each.
+2. `get_tier_for_rep(config, value)` returns the correct tier at every threshold edge (boundary above and at the threshold) and at `config.min_rep` / `config.max_rep`.
+3. `OrganizationTier.__ge__` / `__lt__` compare by `rank` so "is at least journeyman" gates work without consumers reaching into internals.
+4. `Player.modify_sub_reputation(org_id, amount, config)` clamps to `[config.min_rep, config.max_rep]` and returns `(success, message)` per project convention. Effective delta after clamping is what's reported in the message.
+5. Crossing a tier threshold upward or downward appends a `SubReputationDelta(org_id, effective_amount, old_tier, new_tier)` entry to `Player._pending_sub_rep_deltas`. No-tier-change modifications do not queue.
+6. Modifying `sub_reputation` for one organization does not modify `faction_reputation` for any faction, does not modify `sub_reputation` for any other organization, and `modify_reputation(faction_id, ...)` does not touch `sub_reputation`. Tested explicitly.
+7. `get_sub_reputation(org_id)` returns 0 when the organization is absent from `sub_reputation`. `get_sub_reputation_tier(org_id, config)` returns the lowest tier when absent (consumers gate "engaged vs. unengaged" via their own state, not sub-rep). `is_at_least_tier(org_id, tier_id, config)` returns False when the tier is unknown to the config (does not raise).
+8. Save/load round-trip preserves `sub_reputation` values across `_player_to_dict` -> `_player_from_dict`. A populated three-organization dict survives the round-trip with all values intact.
+9. Saves missing the `sub_reputation` key load with `player.sub_reputation == {}`. No crash. No warning that breaks tests.
+10. The notification queue (`_pending_sub_rep_deltas`) is NOT serialized — round-tripping a player drops the queue (matches `_pending_faction_deltas` precedent).
+11. Tests cover at least 3 organizations with different tier structures (1-tier, 3-tier, 4-tier).
+12. `ruff format`, `ruff check`, `mypy` clean. Full test suite green at >= 8304 passing (pre-phase baseline).
+
+**Plan.**
+1. **Author `requirements/sub_reputation_design.md`** (~30 minutes). Short design doc. Sections: (a) what sub-reputation is and isn't (per-organization standing; not a parallel faction system, not a lockout mechanism, not auto-tied to faction-rep gain), (b) the `OrganizationConfig` / `OrganizationTier` shape, (c) the registry pattern (consumer sprints declare their own configs in their own modules — SA-1 declares the Wreckers' Guild config in `spacegame/models/wreckers_guild.py`), (d) range and clamping rules (0-100 default; configurable), (e) notification queue contract for downstream views, (f) save chain (reuses Player serialization — single `sub_reputation` dict field, no separate save manager), (g) two worked examples shown as illustrative configurations (Wreckers' 3-tier, Stellaris 4-tier) explicitly marked "owned by SA-1 / SA-B3 — not implemented in this sprint." Resolves `station_anchors.md` line 253. Touches: `requirements/sub_reputation_design.md` (NEW). Tests: none (doc-only).
+
+2. **Write failing tests for `sub_reputation` model surface** (TDD red). `tests/test_models/test_sub_reputation.py`. Assert: (a) `OrganizationTier` is a frozen dataclass and orderable by `rank`; (b) `OrganizationConfig.__post_init__` rejects empty tiers, duplicate tier IDs, non-ascending ranks, non-ascending `min_rep`; (c) `get_tier_for_rep` returns the correct tier across edges (including value below the lowest threshold returns the lowest tier, value at `max_rep` returns the highest tier, value at exactly each threshold returns that threshold's tier); (d) `is_at_least` returns False for unknown tier IDs and True/False correctly otherwise. Touches: tests only. Risk: getting the lowest-tier-when-below-threshold semantics right — document and assert explicitly.
+
+3. **Implement `spacegame/models/sub_reputation.py`** (TDD green). Define `OrganizationTier`, `OrganizationConfig`, `SubReputationDelta` (the notification record — frozen dataclass with `org_id`, `effective_amount`, `old_tier`, `new_tier`), `get_tier_for_rep`, `is_at_least`. All three model dataclasses are `@dataclass(frozen=True)` per the SI-2 cookbook. Validation in `__post_init__` raises `ValueError` with descriptive messages. Touches: `spacegame/models/sub_reputation.py` (NEW). Tests: from step 2 turn green.
+
+4. **Write failing tests for `Player.modify_sub_reputation` and helpers** (TDD red). Continue `test_sub_reputation.py`. Assert: (a) new player has `sub_reputation == {}`; (b) `modify_sub_reputation` clamps, returns `(True, message)`, sets the dict entry; (c) tier-up appends a `SubReputationDelta` to `_pending_sub_rep_deltas`; (d) tier-down appends; (e) no-tier-change modifications do not append; (f) modifying sub-rep does not touch `faction_reputation`; (g) calling `modify_reputation` does not touch `sub_reputation`; (h) `get_sub_reputation` defaults to 0; (i) `get_sub_reputation_tier` returns the lowest tier when absent; (j) `is_at_least_tier` returns False for unknown tier_id, correct bool otherwise. Touches: tests only. Risk: clamping at exactly `max_rep` should not queue a no-op delta — pin the behavior.
+
+5. **Implement Player helpers** (TDD green). Add `sub_reputation: dict[str, int] = field(default_factory=dict)` next to `faction_reputation` in `spacegame/models/player.py`. Add `modify_sub_reputation`, `get_sub_reputation`, `get_sub_reputation_tier`, `is_at_least_tier`. Mirror `modify_reputation`'s shape exactly: clamp, compute effective delta, write back, conditionally append to `_pending_sub_rep_deltas` (lazily-initialized non-serialized list, same pattern as `_pending_faction_deltas`). Touches: `spacegame/models/player.py`. Tests: from step 4 turn green.
+
+6. **Write failing tests for save round-trip** (TDD red). `test_sub_reputation.py`. Build a player, set sub-rep on three organizations using synthetic configs, run through `SaveManager._player_to_dict` -> `_player_from_dict`, assert all three preserved. Build a save dict missing the `sub_reputation` key, run through `_player_from_dict`, assert `player.sub_reputation == {}`. Build a player, queue notifications via `modify_sub_reputation`, run through round-trip, assert the queue is reset to empty (notification queue is ephemeral). Touches: tests only. Risk: the save-manager test path has many required fixture fields — use the existing helper convention from `test_save_roundtrip.py` if applicable, otherwise inline the minimal fixture.
+
+7. **Implement save/load round-trip** (TDD green). In `spacegame/save_manager.py`: add `"sub_reputation": player.sub_reputation` to `_player_to_dict` next to `"faction_reputation"`. Add `player.sub_reputation = data.get("sub_reputation", {})` to `_player_from_dict` next to the corresponding faction-rep load. Touches: `spacegame/save_manager.py`. Tests: from step 6 turn green.
+
+8. **Run lint, format, type-check, full test suite**. `ruff format spacegame/ tests/`, `ruff check spacegame/ --fix`, `mypy spacegame/`, `pytest -n auto -q`. Confirm pass count >= 8304 and skip count == 98. If any pre-existing failure surfaces unrelated to this sprint, note in Activity log but do not chase. Touches: none (validation step).
+
+9. **Update Status to `review` and append phase report**. Move `Status` from `in-progress` to `review`. Append the `**Last phase report.**` block per agent convention. Commit with `SA-B-EXT-1: ...` prefix.
+
+**Risks / open questions.**
+
+The following decisions were locked during planning:
+
+- ~~Save chain: separate save manager vs. reuse Player chain~~. **LOCKED**: reuse Player chain. Single `sub_reputation: dict[str, int]` field on `Player`, serialized inside `_player_to_dict` next to `faction_reputation`. Rationale: zero migration risk; matches `faction_reputation`'s precedent exactly; consumers don't need to learn a new save mechanism. Resolves `station_anchors.md` line 253.
+- ~~Reputation range (negatives allowed for blacklist?)~~. **LOCKED**: 0-100 default with per-config `min_rep` / `max_rep`. No negatives in v1. Rationale: SA-1's failed-contract lockout already lives on a separate `wreckers_guild_state.lockout_until_day` field per the SA-1 risks list. Sub-rep is membership progression; lockouts are time-windowed bans. Conflating them muddies both. If a consumer sprint later wants negative ranges (such as "blacklisted Stellaris bidder"), they configure `min_rep = -50` on their own config — the foundation already supports it.
+- ~~Configuration source (JSON vs. Python dataclasses)~~. **LOCKED**: Python frozen dataclasses (`@dataclass(frozen=True)`) per the SI-2 dataclass migration cookbook. Same precedent as the skill system (`create_default_skills()` in `progression.py`, no JSON). Rationale: organization tier tables are content tied to game-design constants, not user-editable data; Scanner B requires frozen dataclasses for module-level content; mirrors the established pattern.
+- ~~Where do organization configs live~~. **LOCKED**: registry pattern. SA-B-EXT-1 ships zero concrete configs. Consumer sprints (SA-1 declares Wreckers' Guild in `spacegame/models/wreckers_guild.py`; SA-B3 declares Stellaris Auctioneer in `spacegame/models/bidding.py` or a sibling; SA-B4 reuses SA-1's config). Tests in this sprint use synthetic configs created inline. Rationale: keeps SA-B-EXT-1 truly foundational; avoids prematurely committing tier names that the narrative sprints should own.
+- ~~Default tier for an organization not yet in `sub_reputation`~~. **LOCKED**: `get_sub_reputation` returns 0; `get_sub_reputation_tier` returns the lowest tier (whose `min_rep <= 0`). Consumers that need an "engaged vs. unengaged" distinction track that on their own state (e.g., SA-1's `wreckers_guild_state["enrolled"]`). Rationale: separating "is the player a member?" from "what's the player's standing?" lets each consumer decide its onboarding flow without sub-rep semantics dictating it.
+- ~~Notification queue contract~~. **LOCKED**: `_pending_sub_rep_deltas: list[SubReputationDelta]` on Player, lazily initialized, NOT serialized. Drained by consumer views per frame, mirroring the `_pending_faction_deltas` pattern in `engine/game.py:5399`. Rationale: the existing pattern works; downstream venues (SA-1 wreckers view, SA-B3 auction view) can drain it the same way without learning a new mechanism.
 
 **Activity log.**
 - 2026-04-26 — todo (created)
+- 2026-04-26 18:14 — plan phase ran in pilot but blocked by sandbox; planning content recovered from agent stdout and applied to this sprint section
+- 2026-04-26 — plan content recovered; ready for re-pickup by harness (next plan phase will see substantive existing plan and confirm/refine)
 
 ### Phase C — Skill Tree Extensions
 
@@ -1661,32 +1833,90 @@ Smaller deferred items pulled from prior sprint findings. Each is independently 
 ### CB-1 — Crew Banter scope (scoping)
 
 **Status**: todo
-**Source**: Living Universe Arc deferral (see memory: "CB sprint (Crew Banter) remains deferred")
+**Source**: Living Universe Arc deferral; `requirements/living_universe_arc.md` Phase 5 design carries the as-imagined CB scope.
 **Size**: S | **Effort**: 3-5 days
 **Depends on**: none | **Blocks**: CB-2
 
-**Goal.** Define the actual scope of the CB Crew Banter sprint. The sprint has been deferred multiple times without explicit scope-locking. Produce a small scoping doc identifying: which crew banter currently exists, what gaps remain, what the deferred sprint was supposed to address, and whether CB content should be folded into SA-X6 or remain its own track.
+**Goal.** Lock the scope of the CB Crew Banter sprint. CB has been deferred without architectural decisions; this sprint produces `requirements/cb_scope.md`, a design contract that tells CB-2 exactly what to build, how it relates to existing crew dialogue infrastructure, where it ends and SA-X6 begins, and what the authoring quota is. The doc is the planning artifact CB-2 plans against.
 
 **Context to read.**
-- Memory entries on Living Universe Arc
-- `requirements/character_voices.md`
-- `data/crew/banter.json` (current state)
-- `requirements/station_anchors.md` (SA-X6 scope — overlap check)
+- `requirements/living_universe_arc.md` — Phase 5 (CB) section, lines ~793-940. The originally-designed CB architecture (BanterEntry, BanterTrigger, BanterEngine, Ship Log menu, sub-sprint breakdown CB-1 through CB-9). Treat as the maximalist starting point; CB-1 trims it to a shippable contract.
+- `requirements/character_voices.md` — voice sheets for Elena, Marcus, Priya, Tomas. Sample entries authored in this sprint must pass these voice rules.
+- `requirements/station_anchors.md` — SA-X6 description (line ~197) and the cohesion claim (line ~228, "Without crew reactions, the player navigates anchor systems alone"). Determines CB / SA-X6 boundary.
+- `data/crew/ambient_dialogue.json` — 224 existing ambient lines (home_system / faction_territory / idle / inter_crew / player_action). Note: the original sprint listed `data/crew/banter.json`, which does not exist; the existing crew-banter content lives in `ambient_dialogue.json` and is managed by `AmbientDialogueManager`. The absence of `banter.json` is itself a finding for the scope doc.
+- `spacegame/models/ambient_dialogue.py` — `AmbientLine` and `AmbientDialogueManager`. The existing engine. Decision: extend it, or replace it.
+- `spacegame/engine/game.py` — points where ambient_dialogue fires (warp, idle counter, player_action). Lines ~328, ~536, ~1080-1110, ~3192-3201, ~4370-4380.
+- `requirements/onboarding_design.md` — six-principle framing; banter must obey "voice-check everything" (principle 6).
 
 **Touch zones.**
 - `requirements/cb_scope.md` (NEW)
 
 **Deliverables.**
-- Scope doc.
-- Recommendation: fold into SA-X6, run parallel, or keep deferred indefinitely.
+- `requirements/cb_scope.md`, ~1000-1800 words, with the eight sections enumerated in the acceptance criteria.
+- 3-5 sample banter entries (in the locked schema) embedded in the doc as voice-checked exemplars.
 
 **Acceptance criteria.**
-1. Doc enumerates current crew banter coverage.
-2. Identifies specific gaps the deferred sprint was meant to address.
-3. Locks recommendation.
+1. **Current Coverage section** enumerates crew banter that exists today: speaker by context tabulation derived from `data/crew/ambient_dialogue.json`, plus a one-line description of `AmbientDialogueManager`'s selection / cooldown / save-state semantics. Include line-of-evidence pointers (file path, key class, key methods).
+2. **Gap Analysis section** maps each Living Universe Arc Phase 5 trigger type — `destination`, `crew_pair`, `flag`, `combat_after`, `rival_seen`, `idle` — to existing coverage as **covered / partial / missing**, with a one-sentence justification each.
+3. **Architecture Decision section** locks one of: (A) extend `AmbientDialogueManager` with new context types and trigger fields; (B) introduce `BanterEntry` / `BanterEngine` per Phase 5 design, deprecating `AmbientDialogueManager`; or (C) sister-system that shares the data file. Rationale must address save-migration cost, the 224 existing entries, scanner integration, and CB-2 implementation complexity.
+4. **SA-X6 Boundary section** explicitly states whether SA-X6 is (a) a subset of CB-2 (anchor-specific trigger category), (b) a sibling sprint that runs after CB-2 ships infrastructure, or (c) merged into CB-2 with SA-X6 retired. The `data/crew/banter.json` reference in SA-X6's touch zones must be reconciled (renamed or annotated).
+5. **CB-2 Authoring Quota section** specifies minimum entry counts per trigger type (e.g., destination >= 20, crew_pair >= 15, flag >= 10, combat_after >= 5, idle >= 10). Quota becomes CB-2's acceptance bar.
+6. **Sample Entries section** includes 3-5 banter entries written in the locked schema, voice-checked against `requirements/character_voices.md` and the Writing Bible (no em-dashes, no banned phrases, no parallel-negation rhetoric). These exemplars prove the locked schema is workable in practice.
+7. **Test Surface section** specifies which test files CB-2 will add or extend, and what each asserts (eligibility evaluation, cooldown, voice consistency, scanner coverage of new content file, speaker_id resolution, save round-trip).
+8. **Recommendation section** picks one of: fold-into-SA-X6, run-parallel-with-SA-X6, defer-indefinitely. Includes a one-paragraph justification grounded in the architecture decision and the SA-X6 boundary.
+
+**Plan.**
+
+1. **Catalog current banter coverage.** Read `data/crew/ambient_dialogue.json` end-to-end. Tabulate by `crew_id` x `context`. Note the 224 lines split across 5 contexts. Confirm `station_chatter.json` is non-crew (NPC overheard / announcement / atmosphere) and `crew_members.json` is metadata only. Output: Current Coverage section.
+   - Touches: read-only on `data/crew/*.json` and `spacegame/models/ambient_dialogue.py`. No tests at this step.
+   - Risk: tabulation must match the file exactly. Use a small Python one-liner or the data_loader rather than eyeballing.
+
+2. **Gap-map against Phase 5.** For each Living Universe Arc Phase 5 trigger type, classify existing coverage. Expected mapping: `destination` (partial, since `home_system` and `faction_territory` overlap, but per-destination weighting is missing), `crew_pair` (partial, since `inter_crew` exists but lines are single-speaker, not multi-line dialogues), `flag` (missing, no dialogue_flag conditions), `combat_after` (missing, no combat-recency trigger), `rival_seen` (missing, no rival/RC integration), `idle` (covered).
+   - Touches: read-only.
+   - Risk: don't over-catalog. The point is CB-2's gap surface, not a complete audit of every line.
+
+3. **Lock architecture decision (extend vs. new vs. sister).** Recommended posture: option **A (extend)**. Rationale: zero save-migration cost; preserves 224 voice-checked lines; the existing manager already serializes shown_indices and integrates at warp/idle/player_action; new contexts are additive (`destination_system`, `crew_pair_dialogue`, `flag_triggered`, `combat_after`, `rival_zone`); the doc commits to extending `AmbientLine` with optional fields rather than introducing a parallel data model. Document trade-offs.
+   - Touches: drafts the Architecture Decision section. Reads `spacegame/models/ambient_dialogue.py` and `spacegame/engine/game.py` to confirm extension feasibility.
+   - Risk: option A constrains CB-2 to a single-speaker line model. If multi-line crew_pair dialogues are non-negotiable, option C (sister-system, shared data file) is the fallback. The doc must document this fallback and the trigger that would force the switch.
+
+4. **Resolve SA-X6 boundary.** Re-read SA-X6 (line ~1520 in this file). Recommend: SA-X6 stays as a sibling sprint, but its touch zone `data/crew/banter.json` must be reconciled. Either rename to `data/crew/ambient_dialogue.json` (if option A locks) or update to whatever data file the locked architecture produces. The scoping doc surfaces this as a follow-up note for SA-X6's planner; CB-1 does NOT modify SA-X6.
+   - Touches: drafts the SA-X6 Boundary section. Reads ROADMAP.md SA-X6 section read-only.
+   - Risk: agent must NOT edit SA-X6. That's another sprint's section. Surface the reconciliation as a note in cb_scope.md.
+
+5. **Set CB-2 authoring quota.** Recommended starting numbers: destination >= 20, crew_pair >= 15, flag >= 10, combat_after >= 5, idle >= 10 (total >= 60, matches Phase 5's "40-60 entries at launch"). Lock the per-category floors so CB-2 cannot ship 50 idle lines and call it done.
+   - Touches: drafts the CB-2 Authoring Quota section.
+
+6. **Write 3-5 sample banter entries.** One per crew member with at least one crew_pair dialogue. Each must pass character_voices.md (read voice sheets for tonal alignment) and the Writing Bible (no em-dashes, no "couldn't help but," no "no X, no Y," no banned NPC names). Include the entries in the doc with the locked schema's field structure visible.
+   - Touches: drafts the Sample Entries section.
+   - Risk: voice fidelity. Re-read each character's voice sheet sample lines before drafting. If any sample line would fail the writing bible scanner, it does not belong in the scope doc.
+
+7. **Specify CB-2's test surface.** List the test files: `tests/test_models/test_ambient_dialogue.py` (extend with new context evaluation tests), `tests/test_writing_bible_compliance.py` (confirm the existing or new file is in the scan list), `tests/test_data/test_dialogue_integrity.py` (speaker_id and flag-id resolution tests for new entries), `tests/test_models/test_player.py` (save round-trip for any new state). Note that no NEW test file is needed if option A locks.
+   - Touches: drafts the Test Surface section.
+
+8. **Lock the recommendation.** Pick run-parallel as the default if architecture option A locks (CB-2 ships engine extensions and ~60 lines of general banter; SA-X6 reduces to ~25-40 lines of anchor-specific banter using CB-2's extended infrastructure). Defer fold-into-SA-X6 unless there's a strong cohesion argument; defer-indefinitely is rejected as it leaves the Phase 5 vision unimplemented.
+   - Touches: drafts the Recommendation section.
+
+9. **Compose `requirements/cb_scope.md` end-to-end.** ~1000-1800 words. Run a self-check against all 8 acceptance criteria before the agent moves to review. Voice-check the sample entries one more time.
+   - Touches: writes `requirements/cb_scope.md` (NEW).
+   - Risk: doc length sprawl. Each section should be tight. Bullets and short paragraphs over prose.
+
+**Risks / open questions.**
+
+The following decisions were locked during this planning phase. The implementer follows them; the reviewer can challenge them.
+
+- ~~Should the missing `data/crew/banter.json` reference block planning?~~ **LOCKED**: no. The file's absence is the current state. The scoping doc records it as a finding and the existing content lives in `ambient_dialogue.json`. The original Context-to-read entry has been corrected.
+- ~~Is the scoping doc just enumeration, or does it pre-lock architecture for CB-2?~~ **LOCKED**: pre-locks architecture. The doc IS the design contract for CB-2. Without architectural commitment, CB-2 will defer again.
+- ~~Should the doc include sample entries, or only describe them?~~ **LOCKED**: sample entries required (3-5, voice-checked). Paper designs hide voice-fidelity risk; sample entries surface it.
+- ~~Should CB-2 quotas be set in CB-1 or by CB-2's own planner?~~ **LOCKED**: set in CB-1, per-category. Without floor numbers, CB-2 can ship a tiny content drop and claim acceptance.
+- ~~Is SA-X6 a CB-2 subset, sibling, or merge target?~~ **LOCKED**: sibling, with the scope doc surfacing the touch-zone reconciliation as a follow-up for SA-X6's planner. CB-2 ships infrastructure plus general banter; SA-X6 authors anchor-specific lines using that infrastructure.
+
+Open question (reviewer judgment, not blocking implementation):
+- Architecture preference is option A (extend `AmbientDialogueManager`). Implementer may flip to option C (sister-system, shared data file) if the multi-line crew_pair dialogue requirement turns out non-negotiable while writing the sample entries. The doc must document whichever option locks and the trade-off the implementer evaluated.
 
 **Activity log.**
 - 2026-04-26 — todo (created)
+- 2026-04-26 18:25 — plan phase ran in pilot but blocked by sandbox; planning content recovered from agent stdout and applied to this sprint section
+- 2026-04-26 — plan content recovered; ready for re-pickup by harness (next plan phase will see substantive existing plan and confirm/refine)
 
 ### CB-2 — Crew Banter implementation
 
@@ -1707,7 +1937,7 @@ Smaller deferred items pulled from prior sprint findings. Each is independently 
 **Size**: S | **Effort**: 3-5 days
 **Depends on**: none | **Blocks**: WB-2
 
-**Goal.** Extend the Writing Bible compliance scanner to cover station tagline strings. Currently `faction_tagline = "..."` class attributes in `station_layouts.py` are invisible to the scanner because the regex only matches `.render("literal")` calls, not variable references.
+**Goal.** Extend the Writing Bible compliance scanner to cover station tagline strings. Currently `faction_tagline = "..."` class attributes in `station_layouts.py` are invisible to the scanner because the regex only matches `.render("literal")` calls, not variable references. Five faction tagline strings — Guild, Union, Collective, Frontier, Reach — must enter the scanner's coverage so future authors can't introduce em-dashes, banned phrases, or comma-form parallel-negation rhetoric without a test failure.
 
 **Context to read.**
 - `requirements/writing_bible_scanner_gaps.md`
@@ -1718,16 +1948,40 @@ Smaller deferred items pulled from prior sprint findings. Each is independently 
 - `tests/test_writing_bible_compliance.py` (add `_extract_tagline_strings` + tests)
 
 **Deliverables.**
-- New extractor pulling `faction_tagline` from each `StationLayout` subclass.
-- 3 new tests (em-dashes, banned phrases, parallel-negation) following existing pattern.
+- New extractor `_extract_tagline_strings()` pulling `faction_tagline` from every `StationLayout` subclass via `__subclasses__()`. Empty taglines (the base-class default `""`) are skipped.
+- New `TestStationTaglineWritingBible` class with 4 tests: em-dashes, banned phrases, parallel-negation (using `_find_violations()` so the existing allowlist is honored), and a coverage-sanity test that asserts >= 5 taglines are extracted (so silent drift to zero fails the suite).
+- The 5 currently-defined taglines remain clean under the existing rules; no production strings change.
 
 **Acceptance criteria.**
-1. Scanner now flags any future em-dash or banned-phrase introduction in faction taglines.
-2. Reach tagline allowlist correctly suppresses parallel-negation flag.
-3. Existing tests still pass.
+1. `_extract_tagline_strings()` returns one `(loc, text)` entry per non-empty `faction_tagline` declared on a `StationLayout` subclass; the extractor ignores the base-class `""` default and any future subclass that omits an override.
+2. `TestStationTaglineWritingBible.test_no_em_dashes_in_taglines` would fail if any tagline contained an em-dash, en-dash, or `" -- "`. (Verify by temporarily injecting an em-dash into a subclass and confirming the test fails; revert.)
+3. `TestStationTaglineWritingBible.test_no_banned_phrases_in_taglines` would fail if any tagline contained `"couldn't help but"` or `"a testament to"`.
+4. `TestStationTaglineWritingBible.test_no_parallel_negation_in_taglines` flags comma-form parallel-negation taglines, but the existing `_PARALLEL_NEGATION_ALLOWLIST` (containing the Reach tagline) still suppresses any allowlisted entry — confirmed by a small unit test that asserts `_find_violations("No laws. No mercy. No refunds.")` returns no parallel-negation entry, and that `_find_violations("No laws, no mercy.")` (a synthetic non-allowlisted string) does flag it.
+5. `TestStationTaglineWritingBible.test_tagline_scanner_finds_content` asserts `len(_extract_tagline_strings()) >= 5` so removal of the extractor or accidental import failure surfaces immediately.
+6. `python -m pytest -n auto -q tests/test_writing_bible_compliance.py` passes; full suite stays at >= 8304 passing.
+
+**Risks / open questions.**
+- ~~Discovery method: `__subclasses__()` introspection vs. hardcoded import list vs. AST parsing.~~ **Locked**: use `StationLayout.__subclasses__()` so future faction layouts are auto-discovered without touching the test file. The trade-off (subclasses must be imported before introspection runs) is satisfied by importing `spacegame.views.station_layouts` at extractor-call time.
+- ~~Allowlist enforcement in the new parallel-negation test: call `_find_violations()` (which honors the allowlist) or call `_PARALLEL_NEGATION.search()` directly?~~ **Locked**: use `_find_violations()` for the violation tests, mirroring the function the rest of the scanner relies on. This keeps the allowlist honored consistently and makes the test forward-compatible with WB-2's regex broadening.
+- ~~Empty-tagline handling: should the extractor emit the base-class `""` default?~~ **Locked**: skip empty/whitespace-only taglines so the scanner doesn't emit spurious zero-length entries. Subclass authors who *want* a blank-display layout can opt out by setting `faction_tagline = ""` (the current base-class default), and the scanner correctly skips them.
+- Nothing genuinely open. Sprint is implementation-ready.
+
+**Plan.**
+1. **Add the failing coverage-sanity test** in `tests/test_writing_bible_compliance.py`. Create `TestStationTaglineWritingBible` class with `test_tagline_scanner_finds_content` that calls `_extract_tagline_strings()` and asserts `len(...) >= 5`. The function does not exist yet so the test fails on `NameError`. (Risk: the test file's other tests must remain importable — make sure the new class sits at the end of the file, after the existing `TestCoverageSanity` block.)
+2. **Implement `_extract_tagline_strings()`**. Import `spacegame.views.station_layouts` (which transitively imports pygame + fonts; this matches the pattern used by other extractors). Walk `StationLayout.__subclasses__()`, for each subclass read `cls.faction_tagline`, skip if `not tagline.strip()`, append `(f"tagline:{cls.__name__}", tagline)` to the result list. Return the list. Coverage-sanity test now passes. (Gotcha: `__subclasses__()` returns only directly-imported subclasses; importing `spacegame.views.station_layouts` triggers all five class definitions to register, so this works in the test environment.)
+3. **Add the three violation tests.** Mirror the pattern of `TestViewSourceWritingBible` but against `_extract_tagline_strings()`:
+   - `test_no_em_dashes_in_taglines` — direct `if any(d in text for d in _EM_DASHES)` check.
+   - `test_no_banned_phrases_in_taglines` — direct `if phrase in text.lower()` loop.
+   - `test_no_parallel_negation_in_taglines` — call `_find_violations(text)` and inspect for the parallel-negation entry; this honors the allowlist.
+   All three pass against current content (Guild/Union/Collective/Frontier/Reach taglines are clean under the existing comma-only regex; Reach tagline is also explicitly allowlisted). Test surface: `tests/test_writing_bible_compliance.py::TestStationTaglineWritingBible`.
+4. **Add the allowlist-honored unit test.** Inside the same class, add `test_allowlist_suppresses_reach_tagline` that calls `_find_violations("No laws. No mercy. No refunds.")` and asserts the result contains no parallel-negation entry, then calls `_find_violations("No laws, no mercy.")` (a synthetic non-allowlisted string in comma form) and asserts the result *does* contain a parallel-negation entry. This pins both the allowlist behavior and the regex behavior in a single unit test, satisfying acceptance #4 today and forward-defending against WB-2's regex broadening.
+5. **Manual injection check (verifies acceptance #2 + #3).** Temporarily edit `GuildDeckLayout.faction_tagline` to include an em-dash. Run `pytest tests/test_writing_bible_compliance.py::TestStationTaglineWritingBible -q`. Confirm `test_no_em_dashes_in_taglines` fails with a clear offender report. Revert. Repeat with a banned phrase. Note the result in the Activity log so the implementation phase has evidence the tests bite.
+6. **Run full suite.** `python -m pytest -n auto -q`. Confirm pass count stays at >= 8304 and no new failures. Lint with `ruff check tests/test_writing_bible_compliance.py` and format with `ruff format tests/test_writing_bible_compliance.py`. Commit with sprint ID in the message.
 
 **Activity log.**
 - 2026-04-26 — todo (created)
+- 2026-04-26 18:36 — plan phase ran in pilot but blocked by sandbox; planning content recovered from agent stdout and applied to this sprint section
+- 2026-04-26 — plan content recovered; ready for re-pickup by harness (next plan phase will see substantive existing plan and confirm/refine)
 
 ### WB-2 — Parallel-negation regex broadening
 
