@@ -655,6 +655,4 @@ class TestCounterFramingTemplateLookup:
         loader = DataLoader(data_dir=tmp_path)
         templates = loader.load_politics_disputes()
         tpl = templates["with_counter_framings"]
-        assert tpl.counter_framings == {
-            "ferron_hask": ("practical_cost", "modernization")
-        }
+        assert tpl.counter_framings == {"ferron_hask": ("practical_cost", "modernization")}

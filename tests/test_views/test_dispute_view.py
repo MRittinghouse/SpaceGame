@@ -307,3 +307,101 @@ class TestComposerLivePreview:
         text_after = view.preview_label.text  # type: ignore[union-attr]
         # Math unchanged, but the call path executed without error.
         assert text_after == text_before
+
+
+# ---------------------------------------------------------------------------
+# SA-P3 PT-M tutorial overlays (AC 9 + AC 10 + AC 11)
+# ---------------------------------------------------------------------------
+
+
+class TestTutorialOverlays:
+    """The two PT-M tutorial overlays (venue + composer) fire once per save."""
+
+    def test_venue_tip_fires_on_first_entry(self) -> None:
+        from spacegame.constants.flags import seen_politics_venue_tip
+        from spacegame.views.dispute_view import VENUE_TIP_BODY, VENUE_TIP_TITLE
+
+        _manager, view, _ = _build_view()
+        # New player: no flag yet.
+        assert view.player.dialogue_flags.get(seen_politics_venue_tip(), False) is False
+        view.on_enter()
+        assert view._first_time_tip is not None
+        assert view._first_time_tip.title == VENUE_TIP_TITLE
+        assert view._first_time_tip.body == VENUE_TIP_BODY
+        view.on_exit()
+
+    def test_venue_tip_does_not_re_fire_after_dismiss(self) -> None:
+        from spacegame.constants.flags import seen_politics_venue_tip
+
+        _manager, view, _ = _build_view()
+        view.on_enter()
+        # Dismiss
+        view._first_time_tip._dismiss()  # type: ignore[union-attr]
+        assert view.player.dialogue_flags[seen_politics_venue_tip()] is True
+        view.on_exit()
+
+        # Re-enter: tip should not re-fire.
+        view.on_enter()
+        assert view._first_time_tip is None
+        view.on_exit()
+
+    def test_venue_tip_skipped_when_flag_already_set(self) -> None:
+        from spacegame.constants.flags import seen_politics_venue_tip
+
+        player = _build_player()
+        player.dialogue_flags[seen_politics_venue_tip()] = True
+        _manager, view, _ = _build_view(player)
+        view.on_enter()
+        assert view._first_time_tip is None
+        view.on_exit()
+
+    def test_composer_tip_fires_on_first_composer_open(self) -> None:
+        # Pre-set the venue flag so the composer tip is the only one tested.
+        from spacegame.constants.flags import seen_argument_composer_tip, seen_politics_venue_tip
+        from spacegame.views.dispute_view import COMPOSER_TIP_BODY, COMPOSER_TIP_TITLE
+
+        player = _build_player()
+        player.dialogue_flags[seen_politics_venue_tip()] = True
+        _manager, view, _ = _build_view(player)
+        view.on_enter()
+        assert view._first_time_tip is None  # venue tip suppressed
+        view.open_dispute("water_rights_phasing")
+        view.open_composer()
+        assert view._first_time_tip is not None
+        assert view._first_time_tip.title == COMPOSER_TIP_TITLE
+        assert view._first_time_tip.body == COMPOSER_TIP_BODY
+        assert view.player.dialogue_flags.get(seen_argument_composer_tip(), False) is False
+        view.on_exit()
+
+    def test_composer_tip_does_not_re_fire_after_dismiss(self) -> None:
+        from spacegame.constants.flags import (
+            seen_argument_composer_tip,
+            seen_politics_venue_tip,
+        )
+
+        player = _build_player()
+        player.dialogue_flags[seen_politics_venue_tip()] = True
+        _manager, view, _ = _build_view(player)
+        view.on_enter()
+        view.open_dispute("water_rights_phasing")
+        view.open_composer()
+        # Dismiss the composer tip.
+        view._first_time_tip._dismiss()  # type: ignore[union-attr]
+        assert player.dialogue_flags[seen_argument_composer_tip()] is True
+        # Re-open the composer: the tip must not refire.
+        view.back_to_list()
+        view.open_dispute("water_rights_phasing")
+        view.open_composer()
+        assert view._first_time_tip is None
+        view.on_exit()
+
+    def test_overlay_consumes_keydown_event(self) -> None:
+        _manager, view, _ = _build_view()
+        view.on_enter()
+        # While the venue tip is up, an Enter key should dismiss it and
+        # the back-to-list path should NOT fire from event leakage.
+        event = pygame.event.Event(pygame.KEYDOWN, {"key": pygame.K_RETURN})
+        view.handle_event(event)
+        # Tip dismissed, back_button still in the LIST substate.
+        assert view._first_time_tip is None or view._first_time_tip.dismissed
+        view.on_exit()

@@ -66,14 +66,15 @@
         }
       ],
       "economy": {
-        "production_tags": ["food", "textiles", "organic"],
+        "production_tags": ["food", "textiles", "organic", "agricultural", "water"],
         "consumption_tags": ["machinery", "fuel", "manufactured_goods"],
         "tariff_rate": 0.01,
         "available_commodities": [
           "food", "textiles", "fuel", "machinery", "electronics",
-          "manufactured_goods", "medical", "common_metals"
+          "manufactured_goods", "medical", "common_metals",
+          "fresh_water", "hydroponics_yield"
         ],
-        "specialty_exports": ["food", "textiles"],
+        "specialty_exports": ["food", "textiles", "fresh_water", "hydroponics_yield"],
         "specialty_imports": ["machinery", "electronics"]
       },
       "rest_cost": 75

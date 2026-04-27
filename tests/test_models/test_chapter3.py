@@ -724,10 +724,10 @@ class TestMissionCounts:
         assert len(dl.missions) >= 22, f"Expected >= 22 missions, got {len(dl.missions)}"
 
     def test_total_commodity_count(self) -> None:
-        """Total commodity count should be 61 (60 existing + 1 sealed_audit_chip)."""
+        """Total commodity count = 63 (60 existing + sealed_audit_chip + SA-P3 pair)."""
         _load_data()
         dl = get_data_loader()
-        assert len(dl.commodities) == 61, f"Expected 61 commodities, got {len(dl.commodities)}"
+        assert len(dl.commodities) == 63, f"Expected 63 commodities, got {len(dl.commodities)}"
 
     def test_total_encounter_count(self) -> None:
         """Total encounter definition count should be >= 120 after R3 expansion."""

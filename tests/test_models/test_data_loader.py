@@ -44,8 +44,8 @@ def test_load_commodities() -> None:
     loader = DataLoader()
     commodities = loader.load_commodities()
 
-    # 60 existing + 1 sealed_audit_chip = 61
-    assert len(commodities) == 61, "Should load exactly 61 commodities"
+    # 60 existing + 1 sealed_audit_chip + 2 SA-P3 (fresh_water, hydroponics_yield) = 63
+    assert len(commodities) == 63, "Should load exactly 63 commodities"
 
     # Check a basic commodity
     assert "food" in commodities

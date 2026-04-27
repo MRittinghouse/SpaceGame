@@ -514,9 +514,7 @@ class PoliticsDisputeManager:
         # propagated so the engine can bump first-time journal-trigger
         # flags and other cross-cutting state. Optional (None when no
         # callback registered).
-        self._outcome_callback: Optional[
-            Callable[["PoliticsDispute", str], None]
-        ] = None
+        self._outcome_callback: Optional[Callable[["PoliticsDispute", str], None]] = None
 
     def set_player(self, player: "Player") -> None:
         """Bind the player whose state the manager mutates on resolution.

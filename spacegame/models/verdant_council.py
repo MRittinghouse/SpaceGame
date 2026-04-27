@@ -11,7 +11,6 @@ from __future__ import annotations
 
 from spacegame.models.sub_reputation import OrganizationConfig, OrganizationTier
 
-
 VERDANT_COUNCIL_CONFIG = OrganizationConfig(
     id="verdant_council",
     name="Verdant Mayors' Council",

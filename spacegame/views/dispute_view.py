@@ -194,6 +194,16 @@ class DisputeView(BaseView):
     # PT-M tutorial overlays (SA-P3 §9.2 + §9.3)
     # ------------------------------------------------------------------
 
+    def _clear_dismissed_tip(self) -> None:
+        """Drop the overlay reference once the player has dismissed it.
+
+        Called from the lifecycle hooks that may want to fire a *new*
+        tip immediately after a previous one was dismissed (e.g.,
+        opening the composer right after closing the venue tip).
+        """
+        if self._first_time_tip is not None and self._first_time_tip.dismissed:
+            self._first_time_tip = None
+
     def _maybe_show_venue_tip(self) -> None:
         """Fire the SA-P3 venue tip on first entry, never again.
 
@@ -201,6 +211,7 @@ class DisputeView(BaseView):
         ``player.dialogue_flags``; on dismissal the on-dismiss callback
         sets the same flag, so the next venue entry skips the tip.
         """
+        self._clear_dismissed_tip()
         if self.player.dialogue_flags.get(seen_politics_venue_tip(), False):
             return
         self._first_time_tip = FirstTimeTipOverlay(
@@ -214,6 +225,7 @@ class DisputeView(BaseView):
 
     def _maybe_show_composer_tip(self) -> None:
         """Fire the SA-P3 composer tip on first composer open, never again."""
+        self._clear_dismissed_tip()
         if self.player.dialogue_flags.get(seen_argument_composer_tip(), False):
             return
         self._first_time_tip = FirstTimeTipOverlay(
