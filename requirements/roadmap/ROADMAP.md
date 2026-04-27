@@ -40,7 +40,7 @@ The SA-arc table below is **auto-regenerated** by the ralph harness from the spr
 | [SA-V](#sa-v--cargo-broker-arc--investment-introduction) | Cargo Broker arc + Investment Introduction | I | M | done | SA-PREP-1 |
 | [SA-P1](#sa-p1--politics-system-design) | Politics System Design | II | M | done | SA-PREP-1, SA-C2 |
 | [SA-P2](#sa-p2--politics-core) | Politics Core | II | XL | done | SA-P1, SA-A2, SA-C2, SA-B-EXT-1 |
-| [SA-P3](#sa-p3--mayors-council-chamber-verdant-venue) | Mayors' Council Chamber (Verdant Venue) | II | L | todo | SA-P2 |
+| [SA-P3](#sa-p3--mayors-council-chamber-verdant-venue) | Mayors' Council Chamber (Verdant Venue) | II | L | done | SA-P2 |
 | [SA-P4](#sa-p4--alliance-congress-hall-havens-rest-venue) | Alliance Congress Hall (Haven's Rest Venue) | II | L | todo | SA-P2, SA-P3 |
 | [SA-P5](#sa-p5--wreckers-guild-gray-market-mediation-venue) | Wreckers' Guild gray-market mediation venue | II | M | todo | SA-P2, SA-1 |
 | [SA-P6](#sa-p6--politics-polish--tuning) | Politics polish + tuning | II | M | todo | SA-P3, SA-P4, SA-P5 |
@@ -1760,7 +1760,7 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 
 #### SA-P3 — Mayors' Council Chamber (Verdant Venue)
 
-**Status**: in-progress (reviewing)
+**Status**: done
 **Phase**: Phase II | **Size**: L | **Effort**: 2 weeks
 **Depends on**: SA-P2 | **Blocks**: SA-P4, SA-P6
 
@@ -1921,7 +1921,7 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 - 2026-04-27 18:48 — full suite green: 8948 passing, 98 skipped (baseline 8903 → +45). Ruff lint + format clean on touched files. Writing Bible scanner clean. SI-3 dialogue-integrity scanner clean. PHASE_OK
 - 2026-04-27 17:41 — harness: review phase starting (rework cycle 0)
 - 2026-04-27 — review complete; 0 critical findings, 0 minor fixes; all 20 acceptance criteria met. Test suite: 8948 passing, 98 skipped (baseline 8903, +45). All acceptance criteria walked individually: templates (AC 1-7) verified via data-validation tests and manual inspection; counter-framing extension (AC 8) verified by parameterized tests and SA-P2 baseline still green (5/5); tutorial overlays (AC 9-11) verified against §9.2/§9.3 byte-for-byte; journal entries (AC 12) voice-checked against `aurelia_voice_examples.md` items 20-23 — captain's working notebook register confirmed, no moralizing, no "today I learned" framing; engine outcome flags (AC 13) confirmed idempotent via scenario test; dialogue trees (AC 14) voice-fidelity confirmed against `character_voices.md:886-1056` (Hask "Show me the soil analysis", Drift "I anticipated half of that", Marsh "What does this proposal do to the belt allocation?" all present and in-register); sub-rep config (AC 15) confirmed; scenario test (AC 16) walks win/loss/partial_win_off_record/campaign-arc save-load; SA-P2 baseline (AC 17) green; Writing Bible + SI-3 scanners (AC 18-19) clean; crew-banter triggers (AC 20) verified. Single tighten: `data_loader.py:837` uses `Dict[str, tuple]` (untyped tuple) instead of `dict[str, tuple[str, str]]` — runtime len-2 guard is present but the type annotation doesn't express the full constraint. Not a blocker; consistent with file-wide `Dict` from typing pre-existing pattern. PHASE_OK
-
+- 2026-04-27 17:48 — harness: review passed, marking done
 **Last phase report.**
 - Phase: review
 - Outcome: PHASE_OK
