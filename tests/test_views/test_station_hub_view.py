@@ -476,3 +476,25 @@ class TestStationHubTelemetryHooks:
         dwell = [e for e in events if e.get("event_type") == "anchor_detail_dwell"]
         assert dwell == []
         view.on_exit()
+
+    # --- dwell: disabled telemetry path ---
+
+    def test_dwell_no_event_when_telemetry_disabled(self, monkeypatch, tmp_path) -> None:
+        """With telemetry disabled, dwell events are not emitted from any path."""
+        monkeypatch.delenv("SPACEGAME_TELEMETRY", raising=False)
+        monkeypatch.setenv("SPACEGAME_TELEMETRY_DIR", str(tmp_path))
+        for key in list(sys.modules.keys()):
+            if "spacegame.utils.telemetry" in key:
+                del sys.modules[key]
+        import spacegame.utils.telemetry as tel
+
+        _reset_telemetry_state(tel)
+
+        view = self._make_view_entered("crimson_reach")
+        zone = _make_fake_zone("unique", "crimson_wreckers_guild", "crimson_reach")
+        view._activate_zone(zone)  # opens panel (click recorded... or not, since disabled)
+        view._emit_detail_dwell_if_open()  # dwell path
+
+        files = list(tmp_path.rglob("*.jsonl"))
+        assert files == [], f"Telemetry wrote files when disabled: {files}"
+        view.on_exit()
