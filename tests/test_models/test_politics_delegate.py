@@ -697,6 +697,70 @@ class TestCassWellerIntelReveal:
         assert result is None
 
 
+class TestSubRepDeduction:
+    """AC 13: sub-reputation deduction fires on a failed corridor visit.
+
+    The deduction path is conditional on a registered SubReputationConfig;
+    this test wires a stub config to verify the -1 deduction actually occurs
+    (not just that the consecutive-fail counter increments).
+    """
+
+    def test_failed_corridor_visit_deducts_sub_rep_when_config_registered(self) -> None:
+        from spacegame.models.politics_dispute import PoliticsDisputeManager
+
+        class _StubPlayer:
+            def __init__(self) -> None:
+                self.sub_reputation: dict[str, int] = {}
+                self.dialogue_flags: dict[str, bool] = {}
+
+            def modify_sub_reputation(self, org_id: str, amount: int, _config: object) -> None:
+                self.sub_reputation[org_id] = self.sub_reputation.get(org_id, 0) + amount
+
+            def get_reputation(self, _faction_id: str) -> int:
+                return 0
+
+        tpl = _make_water_rights_phasing_template()
+        player = _StubPlayer()
+        mgr = PoliticsDisputeManager(templates={tpl.id: tpl})
+        mgr.set_player(player)  # type: ignore[arg-type]
+        # Provide a stub config for Hask's sub-faction.
+        mgr.register_sub_rep_config("verdant_farmers_bloc", object())
+        dispute = mgr.start_dispute(tpl.id, current_game_day=1)
+        # Force a failed corridor visit against Hask (sub_faction_id = "verdant_farmers_bloc").
+        ok, _ = mgr.do_corridor_visit(
+            dispute,
+            delegate_id="ferron_hask",
+            framing="practical_cost",
+            success_override=False,
+        )
+        assert ok is False
+        # The -1 deduction must have fired.
+        assert player.sub_reputation.get("verdant_farmers_bloc", 0) == -1
+
+    def test_no_sub_rep_deduction_without_config_registered(self) -> None:
+        """Best-effort: when config not registered, deduction silently no-ops."""
+        from spacegame.models.politics_dispute import PoliticsDisputeManager
+
+        class _StubPlayer:
+            def __init__(self) -> None:
+                self.sub_reputation: dict[str, int] = {}
+                self.dialogue_flags: dict[str, bool] = {}
+
+            def modify_sub_reputation(self, org_id: str, amount: int, _config: object) -> None:
+                self.sub_reputation[org_id] = self.sub_reputation.get(org_id, 0) + amount
+
+        tpl = _make_water_rights_phasing_template()
+        player = _StubPlayer()
+        mgr = PoliticsDisputeManager(templates={tpl.id: tpl})
+        mgr.set_player(player)  # type: ignore[arg-type]
+        # No register_sub_rep_config call — deduction must be a no-op.
+        dispute = mgr.start_dispute(tpl.id, current_game_day=1)
+        mgr.do_corridor_visit(
+            dispute, delegate_id="ferron_hask", framing="practical_cost", success_override=False
+        )
+        assert player.sub_reputation == {}
+
+
 class TestDeterministicResolution:
     """AC 3: same inputs always produce identical outputs (no randomness)."""
 
