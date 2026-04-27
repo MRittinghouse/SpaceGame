@@ -573,7 +573,7 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 - Started: 2026-04-26 22:46
 - Completed: 2026-04-26 23:35
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending (planner commit follows this report write)
+- Commits: 4bec65c
 - New_sprints_proposed: none
 - Polish_items_folded_in: DataLoader live-load smoke test (AC 2), cross-reference smoke tests for crew home_system_id and faction_id (AC 11), bonus-string collision regression test (AC 12), "Bonus Domain" footer on each voice sheet (Deliverables + Decision 2)
 - Decisions_locked: 6
