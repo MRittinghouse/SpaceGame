@@ -212,3 +212,112 @@ class TestFlagHelpers:
             seen_argument_composer_tip(),
         }
         assert len(outs) == 5
+
+
+# ---------------------------------------------------------------------------
+# DataLoader politics-templates plumbing (Task 3)
+# ---------------------------------------------------------------------------
+
+
+class TestDataLoaderPoliticsTemplates:
+    """SA-P2 ships the loader; SA-P3 ships the templates.
+
+    The loader must therefore tolerate an empty / missing
+    ``data/politics/`` content directory and report no templates without
+    raising, so a default install with no SA-P3 content boots cleanly.
+    """
+
+    def test_loader_returns_empty_dict_when_no_files(self, tmp_path) -> None:
+        """An empty ``data/politics`` returns the empty registry."""
+        from spacegame.data_loader import DataLoader
+
+        # Build a sandbox data dir with politics/ but no dispute templates.
+        (tmp_path / "politics").mkdir()
+        loader = DataLoader(data_dir=tmp_path)
+        templates = loader.load_politics_disputes()
+        assert templates == {}
+        assert loader.politics_disputes == {}
+
+    def test_loader_returns_empty_dict_when_dir_missing(self, tmp_path) -> None:
+        from spacegame.data_loader import DataLoader
+
+        loader = DataLoader(data_dir=tmp_path)
+        templates = loader.load_politics_disputes()
+        assert templates == {}
+
+    def test_loader_parses_dispute_template_file(self, tmp_path) -> None:
+        """A minimal valid dispute file parses to a PoliticsDisputeTemplate."""
+        import json
+
+        from spacegame.data_loader import DataLoader
+
+        politics_dir = tmp_path / "politics"
+        politics_dir.mkdir()
+        (politics_dir / "verdant_disputes.json").write_text(
+            json.dumps(
+                {
+                    "disputes": [
+                        {
+                            "id": "minimal_test",
+                            "headline": "Minimal Test Bill",
+                            "factions_affected": ["verdant"],
+                            "base_difficulty": 3,
+                            "round_count": 3,
+                            "deadline_days": 10,
+                            "delegates": [
+                                {
+                                    "delegate_id": "test_one",
+                                    "name": "Test One",
+                                    "starting_visible_state": "wavering",
+                                    "position_vector": {"modernization": 0.0},
+                                    "faction_loyalty": 0.5,
+                                    "sub_faction_id": "verdant_test",
+                                }
+                            ],
+                            "eligible_framings": ["practical_cost"],
+                            "eligible_evidence": [],
+                            "framing_modifiers": {"practical_cost": 0},
+                            "framing_target_dimensions": {
+                                "practical_cost": "modernization"
+                            },
+                            "outcome_matrix": {
+                                "win": {
+                                    "rep_deltas": {"verdant": 5},
+                                    "market_shifts": [],
+                                    "mission_unlocks": [],
+                                    "mission_locks": [],
+                                    "news_headline": (
+                                        "Verdant council passes test bill; minor effect."
+                                    ),
+                                },
+                                "partial_win_coalition_thin": {
+                                    "rep_deltas": {"verdant": 2},
+                                    "news_headline": None,
+                                },
+                                "partial_win_off_record": {
+                                    "rep_deltas": {"verdant": 3},
+                                    "news_headline": None,
+                                },
+                                "loss": {
+                                    "rep_deltas": {"verdant": -2},
+                                    "news_headline": (
+                                        "Verdant council rejects test bill; minor effect."
+                                    ),
+                                },
+                            },
+                        }
+                    ]
+                }
+            ),
+            encoding="utf-8",
+        )
+
+        loader = DataLoader(data_dir=tmp_path)
+        templates = loader.load_politics_disputes()
+        assert "minimal_test" in templates
+        tpl = templates["minimal_test"]
+        assert tpl.headline == "Minimal Test Bill"
+        assert tpl.base_difficulty == 3
+        assert len(tpl.delegates) == 1
+        assert tpl.delegates[0].sub_faction_id == "verdant_test"
+        assert tpl.outcome_matrix["win"].rep_deltas == {"verdant": 5}

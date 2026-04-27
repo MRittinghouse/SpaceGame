@@ -234,6 +234,29 @@ class PoliticsDelegate:
 
 
 @dataclass
+class ArgumentResolution:
+    """Outcome of a single argument resolution.
+
+    Returned by both :meth:`PoliticsDisputeManager.preview_argument` (live
+    composer preview) and :meth:`PoliticsDisputeManager.submit_argument`
+    (commit). Holds every component of the SA-P1 §6.2 formula so the
+    composer's "Effective N vs Difficulty M" preview can name what each
+    contribution was.
+    """
+
+    base_skill: int = 0
+    framing_mod: int = 0
+    disposition_mod: int = 0
+    crew_bonus: float = 0.0
+    tree_bonus: float = 0.0
+    evidence_absent_penalty: int = 0
+    difficulty: int = 0
+    effective_floor: int = 0
+    passes: bool = False
+    error: Optional[str] = None
+
+
+@dataclass
 class PoliticsArgument:
     """Player-composed argument (design section 6.1).
 
@@ -425,3 +448,172 @@ class PoliticsDisputeManager:
         # Per-session ephemeral state (reset on session leave).
         self._intel_revealed_this_session: bool = False
         self._active_session_venue: Optional[str] = None
+
+    # ------------------------------------------------------------------
+    # Template registry / introspection
+    # ------------------------------------------------------------------
+
+    def get_template(self, template_id: str) -> Optional[PoliticsDisputeTemplate]:
+        """Return the loaded template by id, or None if not registered."""
+        return self._templates.get(template_id)
+
+    def register_template(self, template: PoliticsDisputeTemplate) -> None:
+        """Register a template (used by tests and by the data loader)."""
+        self._templates[template.id] = template
+
+    # ------------------------------------------------------------------
+    # Session lifecycle
+    # ------------------------------------------------------------------
+
+    def start_dispute(
+        self,
+        template_id: str,
+        current_game_day: int,
+        dispute_id: Optional[str] = None,
+    ) -> Optional[PoliticsDispute]:
+        """Instantiate a runtime dispute from its template.
+
+        Applies bias initialization (faction loyalty + prior-dispute
+        memory per design §4.5) and seeds the session state. Returns
+        ``None`` if ``template_id`` is unknown so callers can degrade
+        gracefully — empty data dirs are an expected runtime state
+        until SA-P3 ships content.
+
+        Args:
+            template_id: Template to instantiate.
+            current_game_day: Current game day; ``closes_on_day`` is
+                ``current_game_day + template.deadline_days``.
+            dispute_id: Optional override (defaults to the template id;
+                pass when multiple in-flight instances of the same
+                template are required).
+        """
+        template = self._templates.get(template_id)
+        if template is None:
+            return None
+        delegates: dict[str, PoliticsDelegate] = {}
+        for dt in template.delegates:
+            delegates[dt.delegate_id] = PoliticsDelegate(
+                delegate_id=dt.delegate_id,
+                name=dt.name,
+                visible_state=dt.starting_visible_state,
+                position_vector=dict(dt.position_vector),
+                faction_loyalty=dt.faction_loyalty,
+                sub_faction_id=dt.sub_faction_id,
+            )
+        return PoliticsDispute(
+            dispute_id=dispute_id or template.id,
+            template_id=template.id,
+            headline=template.headline,
+            factions_affected=template.factions_affected,
+            base_difficulty=template.base_difficulty,
+            round_count=template.round_count,
+            closes_on_day=current_game_day + template.deadline_days,
+            delegates=delegates,
+            eligible_framings=template.eligible_framings,
+            eligible_evidence=template.eligible_evidence,
+            framing_modifiers=dict(template.framing_modifiers),
+            framing_target_dimensions=dict(template.framing_target_dimensions),
+            outcome_matrix=template.outcome_matrix,
+            current_round=1,
+            phase=DisputePhase.ROUND_OPEN,
+        )
+
+    # ------------------------------------------------------------------
+    # Internal state-machine helpers
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def _apply_position_delta(
+        delegate: PoliticsDelegate, dimension: str, delta: float
+    ) -> None:
+        """Mutate ``delegate.position_vector[dimension]`` clamped to +/-1.0."""
+        current = delegate.position_vector.get(dimension, 0.0)
+        new_value = max(-_POSITION_CAP, min(_POSITION_CAP, current + delta))
+        delegate.position_vector[dimension] = new_value
+
+    # ------------------------------------------------------------------
+    # Argument resolution (SA-P1 §6)
+    # ------------------------------------------------------------------
+
+    def _base_skill_id_for(self, argument: PoliticsArgument) -> str:
+        """Per SA-P1 §6.4: frontier_autonomy uses Leadership in argue mode.
+
+        Mediation always uses Persuasion regardless of framing
+        (§6.2 closing line).
+        """
+        if argument.is_mediation:
+            return "persuasion"
+        if argument.framing in _LEADERSHIP_FRAMINGS:
+            return "leadership"
+        return "persuasion"
+
+    def _bonus_keys_for(self, argument: PoliticsArgument) -> str:
+        """Argue mode reads coalition_sway; mediate reads arbitration_neutrality."""
+        if argument.is_mediation:
+            return "arbitration_neutrality_bonus"
+        return "coalition_sway_bonus"
+
+    def _get_skill_level(self, skill_id: str) -> int:
+        if self._social_manager is None:
+            return 0
+        return int(self._social_manager.get_skill_level(skill_id))
+
+    def _get_crew_bonus(self, bonus_type: str) -> float:
+        if self._crew_roster is None:
+            return 0.0
+        return float(self._crew_roster.get_bonus(bonus_type))
+
+    def _get_progression_bonus(self, bonus_type: str) -> float:
+        if self._progression is None:
+            return 0.0
+        return float(self._progression.get_bonus(bonus_type))
+
+    def preview_argument(
+        self,
+        dispute: PoliticsDispute,
+        argument: PoliticsArgument,
+    ) -> ArgumentResolution:
+        """Resolve an argument deterministically without applying side effects.
+
+        The composer's live "Effective N vs Difficulty M" preview calls
+        this on every selection change; :meth:`submit_argument` calls it
+        too and then applies the state transitions. Pure function of
+        (dispute state, argument selections) per the
+        deterministic-outcomes axiom.
+        """
+        if not argument.framing:
+            return ArgumentResolution(error="framing_required", difficulty=dispute.base_difficulty)
+        if not argument.audience_delegate_id:
+            return ArgumentResolution(
+                error="audience_required", difficulty=dispute.base_difficulty
+            )
+        delegate = dispute.delegates.get(argument.audience_delegate_id)
+        if delegate is None:
+            return ArgumentResolution(
+                error="unknown_audience", difficulty=dispute.base_difficulty
+            )
+
+        base_skill = self._get_skill_level(self._base_skill_id_for(argument))
+        framing_mod = int(dispute.framing_modifiers.get(argument.framing, 0))
+        disposition_mod = _disposition_modifier(delegate.disposition)
+        bonus_key = self._bonus_keys_for(argument)
+        crew_bonus = self._get_crew_bonus(bonus_key)
+        tree_bonus = self._get_progression_bonus(bonus_key)
+        effective = (
+            base_skill + framing_mod + disposition_mod + crew_bonus + tree_bonus
+        )
+        evidence_penalty = 0 if argument.evidence else 1
+        difficulty = dispute.base_difficulty + evidence_penalty
+        effective_floor = _floor(effective)
+        passes = effective_floor >= difficulty
+        return ArgumentResolution(
+            base_skill=base_skill,
+            framing_mod=framing_mod,
+            disposition_mod=disposition_mod,
+            crew_bonus=crew_bonus,
+            tree_bonus=tree_bonus,
+            evidence_absent_penalty=evidence_penalty,
+            difficulty=difficulty,
+            effective_floor=effective_floor,
+            passes=passes,
+        )

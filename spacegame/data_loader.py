@@ -108,6 +108,9 @@ class DataLoader:
         self.locations: Dict[str, List[Location]] = {}
         self.investment_templates: Dict[str, InvestmentTemplate] = {}
         self.faction_relationships: list = []
+        # SA-P2 venue dispute templates, keyed by template id. Empty
+        # when no SA-P3/P4/P5 content is installed (the default).
+        self.politics_disputes: Dict[str, "PoliticsDisputeTemplate"] = {}
         self.faction_perks: Dict[str, Dict[str, list]] = {}
         self.galaxy_event_templates: List[Dict] = []
         self.galaxy_event_chains: List[Dict] = []
@@ -191,6 +194,7 @@ class DataLoader:
         self._safe_load("locations", self.load_locations)
         self._safe_load("investment_configs", self.load_investment_configs)
         self._safe_load("politics", self.load_politics)
+        self._safe_load("politics_disputes", self.load_politics_disputes)
         self._safe_load("faction_perks", self.load_faction_perks)
         self._safe_load("galaxy_events", self.load_galaxy_events)
         self._safe_load("station_chatter", self.load_station_chatter)
@@ -748,6 +752,105 @@ class DataLoader:
         ]
         logger.info(f"Loaded {len(self.faction_relationships)} faction relationships")
         return self.faction_relationships
+
+    def load_politics_disputes(self) -> Dict[str, "PoliticsDisputeTemplate"]:
+        """Load SA-P2 venue-dispute templates from ``data/politics/*.json``.
+
+        Reads every ``*.json`` file under ``data/politics/`` other than
+        the existing ``faction_relationships.json`` file (which
+        :meth:`load_politics` consumes). Each file may contain a
+        top-level ``"disputes": [...]`` list of template dicts.
+
+        SA-P3 / P4 / P5 author the content; SA-P2 ships the loader.
+        Empty / missing directory returns ``{}`` without error.
+
+        Returns:
+            ``{template_id: PoliticsDisputeTemplate}``.
+        """
+        from spacegame.models.politics_dispute import PoliticsDisputeTemplate  # noqa: F401
+
+        politics_dir = self.data_dir / "politics"
+        self.politics_disputes = {}
+        if not politics_dir.exists():
+            logger.debug("No data/politics/ directory; skipping dispute templates")
+            return self.politics_disputes
+
+        for path in sorted(politics_dir.glob("*.json")):
+            if path.name == "faction_relationships.json":
+                continue
+            with open(path, "r", encoding="utf-8") as f:
+                raw = json.load(f)
+            for entry in raw.get("disputes", []):
+                template = self._parse_politics_dispute_template(entry)
+                self.politics_disputes[template.id] = template
+
+        if self.politics_disputes:
+            logger.info(
+                f"Loaded {len(self.politics_disputes)} politics dispute templates"
+            )
+        return self.politics_disputes
+
+    def _parse_politics_dispute_template(
+        self, data: dict
+    ) -> "PoliticsDisputeTemplate":
+        """Parse a single dispute template dict (from ``data/politics/*.json``)."""
+        from spacegame.models.politics_dispute import (
+            DelegateTemplate,
+            OutcomeRow,
+            PoliticsDisputeTemplate,
+            PoliticsMarketShift,
+        )
+
+        delegates = tuple(
+            DelegateTemplate(
+                delegate_id=d["delegate_id"],
+                name=d.get("name", d["delegate_id"]),
+                starting_visible_state=d.get("starting_visible_state", "wavering"),
+                position_vector=dict(d.get("position_vector", {})),
+                faction_loyalty=float(d.get("faction_loyalty", 0.0)),
+                prior_dispute_memory=int(d.get("prior_dispute_memory", -1)),
+                sub_faction_id=d.get("sub_faction_id", ""),
+            )
+            for d in data.get("delegates", [])
+        )
+
+        outcome_matrix: Dict[str, OutcomeRow] = {}
+        for category, row in data.get("outcome_matrix", {}).items():
+            shifts = tuple(
+                PoliticsMarketShift(
+                    commodity_id=s["commodity_id"],
+                    system_id=s["system_id"],
+                    magnitude=float(s["magnitude"]),
+                    duration_days=int(s.get("duration_days", 30)),
+                )
+                for s in row.get("market_shifts", [])
+            )
+            outcome_matrix[category] = OutcomeRow(
+                rep_deltas=dict(row.get("rep_deltas", {})),
+                market_shifts=shifts,
+                mission_unlocks=tuple(row.get("mission_unlocks", [])),
+                mission_locks=tuple(row.get("mission_locks", [])),
+                news_headline=row.get("news_headline"),
+            )
+
+        return PoliticsDisputeTemplate(
+            id=data["id"],
+            headline=data["headline"],
+            factions_affected=tuple(data.get("factions_affected", ())),
+            base_difficulty=int(data.get("base_difficulty", 4)),
+            round_count=int(data.get("round_count", 3)),
+            deadline_days=int(data.get("deadline_days", 10)),
+            delegates=delegates,
+            eligible_framings=tuple(data.get("eligible_framings", ())),
+            eligible_evidence=tuple(data.get("eligible_evidence", ())),
+            framing_modifiers=dict(data.get("framing_modifiers", {})),
+            framing_target_dimensions=dict(
+                data.get("framing_target_dimensions", {})
+            ),
+            outcome_matrix=outcome_matrix,
+            is_campaign_arc=bool(data.get("is_campaign_arc", False)),
+            required_flags=tuple(data.get("required_flags", ())),
+        )
 
     def load_faction_perks(self) -> Dict[str, Dict[str, list]]:
         """Load faction perks from JSON."""
