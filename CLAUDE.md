@@ -128,7 +128,7 @@ def buy_commodity(self, commodity_id: str, quantity: int,
 - **pytest** — class-based tests with function-style also acceptable
 - Naming: `class TestClassName:` containing `def test_behavior_description(self):`
 - Helpers: `_make_<object>()` methods for creating test fixtures inline
-- No conftest.py / shared fixtures currently — each test is self-contained
+- conftest.py at `tests/` sets `SDL_AUDIODRIVER=dummy` so pygame audio is silent during the suite. `tests/test_ui_layout/conftest.py` sets `SDL_VIDEODRIVER=dummy` and provides the resolution-matrix fixture. No other shared fixtures — each test is self-contained.
 
 ### Test-Driven Development
 - **Write the failing test first** (Red), then implement (Green), then refactor
