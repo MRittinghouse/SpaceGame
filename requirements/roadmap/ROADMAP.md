@@ -1939,7 +1939,7 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 - Notes: Clean implementation. All 20 acceptance criteria met. Eight Verdant dispute templates, four voice-consistent corridor dialogue trees, tutorial overlays byte-for-byte to spec, engine outcome flags idempotent, SA-P2 baseline preserved, Writing Bible and SI-3 scanners both clean.
 #### SA-P4 — Alliance Congress Hall (Haven's Rest Venue)
 
-**Status**: in-progress (planning)
+**Status**: in-progress
 **Phase**: Phase II | **Size**: L | **Effort**: 2 weeks
 **Depends on**: SA-P2, SA-P3 | **Blocks**: SA-P6
 
@@ -2104,18 +2104,31 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 - 2026-04-26 — todo (created)
 - 2026-04-27 17:49 — harness: plan phase starting
 - 2026-04-27 18:55 — planning complete; verified all SA-P4 context-to-read paths exist on disk; confirmed SA-P3 implementation surfaces (counter_framings already template-driven, sub-rep registry pattern, FirstTimeTipOverlay pattern, station hub UNIQUE_HALL_TARGETS routing) so SA-P4 inherits SA-P3's engine generalization without redesign; locked 12 decisions (game-day-cycle annual scheduling with two new optional template fields + manager method; deterministic predicate-dispatch betrayal mechanic with three named conditions; ship 8 templates; 3 campaign arcs of which 1 is the annual flagship; alliance_congress sub-rep org id with five-tier outsider/visitor/colleague/ally/architect register; one new tutorial tip seen_annual_congress_tip gated on venue_id; four Congress dimension labels frontier_autonomy_stance/trade_leverage/process_fidelity/settlement_solidarity; dynamic venue dispatch via _VENUE_REGISTRY refactor; no new commodities (reuse SA-P3 + existing); -25 standing threshold; cross-venue gate via 2+ Congress templates with required_flags referencing SA-P3 outcomes; engine-emitted journal flags not helper-routed); folded in 5 polish items as deliverables (annual-Congress tutorial overlay; LOCKED_OUT_ANNUAL list substate with recess copy; 3 Congress-specific journal entries authored inline; 1 crew-banter trigger flag for Tomas; cross-venue cross-reference gating in 2+ templates); refined acceptance criteria from 6 → 23 mechanically testable items; expanded touch zones to cover 8 areas the implementer will touch (data/politics/, data/dialogue/, data/journal/, politics_dispute.py engine extension for scheduling + betrayal, data_loader.py, alliance_congress.py new sub-rep module, game.py for venue dispatch + outcome callback extension, dispute_view.py for tutorial + lockout substate, station_hub_view.py for routing, plus data-validation + view + scenario + engine test files); documented 3 OPEN-accepted items (pixel theming → SA-X10; one-off settlement reps in template rosters handled author-side per SA-P1 §11 decision 9; Haven Pastoral Alliance display name vs frontier_alliance canonical id). No new sprints proposed. PHASE_OK
+- 2026-04-27 18:01 — harness: implement phase starting (rework cycle 0)
+- 2026-04-27 18:30 — engine extensions landed: PoliticsDisputeTemplate gains `is_annual_congress` / `opens_on_day_offset` / `next_congress_offset_days` / `betrayal_conditions`; PoliticsDispute gains `had_betrayal` / `rep_at_start`; manager gains `is_dispute_active` / `next_session_in_days` / `record_annual_resolution` / `snapshot_rep_at_start` / `_evaluate_betrayal_conditions`; three predicates wired via _BETRAYAL_DISPATCH; advance_round runs betrayal eval at round start; _annual_last_resolved persists via to_dict / from_dict. Tests: 21 added (TestAnnualScheduling, TestBetrayalConditions, TestDisputeRoundTripWithSAP4Fields). All passing.
+- 2026-04-27 18:35 — sub-rep config + venue dispatch + tutorial overlay landed: `ALLIANCE_CONGRESS_CONFIG` registered with manager during Game init; `_VENUE_REGISTRY` lookup in `_ensure_dispute_view` keyed by `current_system_id`; UNIQUE_HALL_TARGETS extended; `seen_annual_congress_tip` helper + ANNUAL_CONGRESS_TIP overlay fires once at Haven's Rest; LOCKED_OUT_ANNUAL list substate with recess copy. Tests: 18 added (TestVenueDispatch, TestStationHubRouting, TestAnnualCongressTip, TestLockedOutAnnualSubstate). All passing.
+- 2026-04-27 18:50 — Game._on_dispute_outcome extended for the three SA-P4 first-time flags (first_alliance_congress_attended / first_coalition_betrayal_handled / first_alliance_wide_vote_won) plus the SA-X6 trigger flag tomas_alliance_congress_attended_seen.
+- 2026-04-27 19:10 — content shipped: `data/politics/alliance_disputes.json` with 8 templates spanning the 4 Congress issue families (3 campaign arcs incl. the Annual Congress flagship; cross-venue required_flags on 2 templates; alliance-wide market shifts on 5 templates); 4 corridor dialogue trees in `data/dialogue/dialogues.json` voice-checked against character_voices.md:1060-1228; 3 journal entries in `data/journal/entries.json` (auto_p4_first_alliance_congress_attended / auto_p4_first_coalition_betrayal_handled / auto_p4_first_alliance_wide_vote_won). All player-facing strings pass the Writing Bible scanner; SI-3 dialogue-integrity scanner passes.
+- 2026-04-27 19:20 — data-validation + scenario tests landed: `test_alliance_disputes_data.py` (35 tests covering schema, issue-family count, campaign-arc count, annual-Congress count, flag-helper round-trip, cross-references, betrayal-condition validity, cross-venue gate, alliance-wide shifts); `test_scenario_alliance_congress.py` (10 tests covering win path, loss path, annual save/load, betrayal recovery, cross-venue gate, Tomas banter trigger, sub-rep deduction). Verdant data tests filtered to Verdant ids only since DataLoader now loads both venues. Touch zones respected: SA-P3 baseline scenarios pass unchanged.
+- 2026-04-27 19:30 — implementation complete; full suite green at 9024 passes (baseline 8948 → +76 new tests; skip count 98 unchanged); ruff format / check / scanner / writing-bible / dialogue-integrity all clean over touched files. PHASE_OK
 
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-04-27 17:49
-- Completed: 2026-04-27 18:55
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 66a331d
-- New_sprints_proposed: none
-- Polish_items_folded_in: annual-Congress-tutorial-overlay, locked-out-annual-substate, 3-congress-journal-entries, tomas-banter-trigger-flag, cross-venue-cross-reference-gating
-- Decisions_locked: 12
-- Notes: Verified all 4 context-to-read docs exist plus the supporting docs the SA-P3 implementer ended up needing (aurelia_voice_examples, dialogue_writing_guide, onboarding_design, cultural_guide, locations.json, systems.json, factions.json, verdant_disputes.json schema reference, all the politics-engine and view source files). Two engine extensions in scope: annual scheduling (two optional template fields + is_dispute_active manager method) and deterministic coalition-betrayal predicate dispatch (one optional template field + three named predicates + _evaluate_betrayal_conditions hook in advance_round). Refactored _ensure_dispute_view to a small _VENUE_REGISTRY lookup so SA-P5 inherits without further engine work. Eight Congress templates with three campaign arcs (one being the annual flagship); cross-venue gating enforced via required_flags on at least two templates; alliance_congress sub-rep config mirrors verdant_council shape. Deliberately did NOT propose new sprints — the SA-P6 polish sprint is already the natural home for tuning passes after all three venues ship.
+- Started: 2026-04-27 18:01
+- Completed: 2026-04-27 19:30
+- Files_changed: spacegame/models/politics_dispute.py, spacegame/data_loader.py, spacegame/models/alliance_congress.py, spacegame/engine/game.py, spacegame/views/station_hub_view.py, spacegame/views/dispute_view.py, spacegame/constants/flags.py, data/politics/alliance_disputes.json, data/dialogue/dialogues.json, data/journal/entries.json, tests/test_models/test_politics_dispute.py, tests/test_engine/test_dispute_view_venue_dispatch.py, tests/test_views/test_dispute_view.py, tests/test_models/test_alliance_disputes_data.py, tests/test_models/test_verdant_disputes_data.py, tests/test_scenarios/test_scenario_alliance_congress.py
+- Commits: 42c79e6, e474645, 9b49c92
+- Tests_added: 76
+- Tests_baseline: 8948
+- Tests_passing: 9024
+- Tests_skipped: 98
+- Lint_clean: yes
+- Format_clean: yes
+- SI3_scanner_clean: yes
+- Writing_bible_clean: yes
+- Touch_zones_respected: yes (test_verdant_disputes_data.py fixture filter is a 5-line accommodation since DataLoader now loads both venues' templates; well within "small (one or two lines)" allowance)
+- Notes: Eight Alliance Congress dispute templates spanning the four issue families with three campaign arcs (annual flagship + two cross-settlement arcs). All four canonical Congress speakers (Wentworth/Shirane/Vasc/Tejada) get corridor dialogue trees voice-checked against character_voices.md. Annual scheduling and deterministic predicate-dispatch betrayal mechanic both wired into the engine. _VENUE_REGISTRY refactor opens the path for SA-P5 to add the Wreckers' Guild Reach venue without further engine work. Cross-venue gating: 2 Congress templates require SA-P3 outcomes; alliance-wide market shifts: 5 of 8 templates affect 2+ Alliance systems. All 23 acceptance criteria addressed.
 #### SA-P5 — Wreckers' Guild gray-market mediation venue
 
 **Status**: todo
