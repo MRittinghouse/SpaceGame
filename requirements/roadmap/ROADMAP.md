@@ -464,7 +464,7 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 - Started: 2026-04-26 22:23
 - Completed: 2026-04-26 22:55
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending
+- Commits: 317bb44
 - New_sprints_proposed: none
 - Polish_items_folded_in: voice-sheet inventory update in character_voices.md (SA-PREP-1 registry stays canonical); bonus-naming convention table as standalone section (single source of truth for cross-sprint bonus_type discipline); cross-reference matrix specialization → consuming sprint → consuming view (forward-looking artifact for downstream planners).
 - Decisions_locked: 5
