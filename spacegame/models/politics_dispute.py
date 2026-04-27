@@ -392,6 +392,58 @@ def _floor(value: float) -> int:
     return math.floor(value)
 
 
+# ----- Cass Weller intel reveal helpers (SA-P1 §7.5) -----------------------
+
+# Threshold values for the qualitative summary (Risks: "small dispatch table
+# for the three Verdant dimensions used by the synthetic fixture; SA-P3/P4
+# extend the table when adding new dimension labels"). Engine code emits
+# these strings; voice register matches the supervisor / out-of-world UI
+# convention from SL-5 (terse, declarative, no flavor).
+_INTEL_POSITIVE_THRESHOLD = 0.5
+_INTEL_NEGATIVE_THRESHOLD = -0.5
+
+# Display labels for known position-vector dimensions. SA-P3 / P4 / P5 may
+# extend; unknown dimensions fall back to a generic "this dimension" form
+# so the engine never crashes on an SA-P3-only label.
+_DIMENSION_LABELS: dict[str, str] = {
+    "modernization": "modernization",
+    "water_rights_change": "water rights change",
+    "outside_influence": "outside influence",
+    "frontier_autonomy_stance": "frontier autonomy",
+    "trade_leverage": "trade leverage",
+    "process_fidelity": "process fidelity",
+}
+
+
+def qualitative_position_summary(position_vector: dict[str, float]) -> str:
+    """Produce a qualitative summary line for a delegate's position vector.
+
+    Engine-emitted player-facing string. Voice-checked: terse,
+    declarative, no em-dashes, no banned phrases. SA-P1 §7.5 spec:
+    "qualitative summary on the delegate's corridor profile card.
+    Display text is derived from the vector ... Not the raw floats."
+
+    Args:
+        position_vector: ``{dimension: float}`` typically in [-1.0, +1.0].
+
+    Returns:
+        One line of summary text, no trailing newline. Empty string if
+        the vector itself is empty.
+    """
+    if not position_vector:
+        return ""
+    parts: list[str] = []
+    for dim, value in position_vector.items():
+        label = _DIMENSION_LABELS.get(dim, dim.replace("_", " "))
+        if value >= _INTEL_POSITIVE_THRESHOLD:
+            parts.append(f"Open to {label}")
+        elif value <= _INTEL_NEGATIVE_THRESHOLD:
+            parts.append(f"Skeptical of {label}")
+        else:
+            parts.append(f"Undecided on {label}")
+    return ". ".join(parts) + "."
+
+
 # ============================================================================
 # Manager
 # ============================================================================
@@ -448,6 +500,13 @@ class PoliticsDisputeManager:
         # Per-session ephemeral state (reset on session leave).
         self._intel_revealed_this_session: bool = False
         self._active_session_venue: Optional[str] = None
+
+        # Pending disputes by id (round-boundary persisted) and
+        # already-resolved disputes (for journal / mission gating). The
+        # manager owns these; player state mirrors them via to_dict /
+        # from_dict at the round boundary.
+        self._pending_disputes: dict[str, PoliticsDispute] = {}
+        self._resolved_disputes: dict[str, PoliticsDispute] = {}
 
         # Player reference for outcome propagation. Set via
         # :meth:`set_player`. None during construction so the manager
@@ -582,6 +641,39 @@ class PoliticsDisputeManager:
         if self._progression is None:
             return 0.0
         return float(self._progression.get_bonus(bonus_type))
+
+    # ------------------------------------------------------------------
+    # Cass Weller intel reveal (SA-P1 §7.5)
+    # ------------------------------------------------------------------
+
+    def try_reveal_intel(
+        self, dispute: PoliticsDispute
+    ) -> Optional[dict[str, str]]:
+        """Return per-delegate qualitative position summaries, once per session.
+
+        Fires only when Cass Weller is on crew (her
+        ``arbitration_dispute_intel`` bonus_value > 0). Subsequent calls
+        in the same session return ``None``. :meth:`end_session` resets
+        the gate so the next venue entry re-fires.
+
+        Returns:
+            ``{delegate_id: summary_text}`` on success; ``None`` if the
+            crew bonus is absent or the session has already revealed.
+        """
+        if self._intel_revealed_this_session:
+            return None
+        if self._get_crew_bonus("arbitration_dispute_intel") <= 0.0:
+            return None
+        self._intel_revealed_this_session = True
+        return {
+            d_id: qualitative_position_summary(d.position_vector)
+            for d_id, d in dispute.delegates.items()
+        }
+
+    def end_session(self) -> None:
+        """Mark the current venue session ended so per-session gates reset."""
+        self._intel_revealed_this_session = False
+        self._active_session_venue = None
 
     # ------------------------------------------------------------------
     # Coalition pre-commit corridor (SA-P1 §5.5)
@@ -1091,3 +1183,76 @@ class PoliticsDisputeManager:
             effective_floor=effective_floor,
             passes=passes,
         )
+
+    # ------------------------------------------------------------------
+    # Pending / resolved dispute registry (persisted at round boundary)
+    # ------------------------------------------------------------------
+
+    def register_pending_dispute(self, dispute: PoliticsDispute) -> None:
+        """Track ``dispute`` so it persists across save/load cycles.
+
+        Resolved disputes auto-move to the resolved registry.
+        """
+        if dispute.phase == DisputePhase.RESOLVED:
+            self._resolved_disputes[dispute.dispute_id] = dispute
+            self._pending_disputes.pop(dispute.dispute_id, None)
+        else:
+            self._pending_disputes[dispute.dispute_id] = dispute
+
+    def get_pending_dispute(self, dispute_id: str) -> Optional[PoliticsDispute]:
+        return self._pending_disputes.get(dispute_id)
+
+    def get_pending_dispute_ids(self) -> list[str]:
+        return list(self._pending_disputes.keys())
+
+    def get_resolved_dispute(self, dispute_id: str) -> Optional[PoliticsDispute]:
+        return self._resolved_disputes.get(dispute_id)
+
+    # ------------------------------------------------------------------
+    # Manager save / load (SA-P1 §11 decision 4: round boundary)
+    # ------------------------------------------------------------------
+
+    def to_dict(self) -> dict[str, Any]:
+        """Serialize the manager state for the save system.
+
+        Only persists what's needed to restore a player mid-arc:
+        pending disputes (state at last round boundary), resolved
+        disputes (for journal / mission gating). Per-session ephemeral
+        state (intel reveal flag, active venue) is NOT persisted by
+        design.
+        """
+        return {
+            "pending_disputes": {
+                d_id: dispute.to_dict()
+                for d_id, dispute in self._pending_disputes.items()
+            },
+            "resolved_disputes": {
+                d_id: dispute.to_dict()
+                for d_id, dispute in self._resolved_disputes.items()
+            },
+        }
+
+    def from_dict(self, data: dict[str, Any]) -> None:
+        """Restore manager state from save data.
+
+        Looks each dispute's outcome_matrix back up from the live
+        template registry — never persists the matrix itself, so post-
+        SA-P2 template tweaks carry through to in-flight disputes.
+        Disputes whose template is missing are silently dropped.
+        """
+        self._pending_disputes = {}
+        for d_id, raw in data.get("pending_disputes", {}).items():
+            template = self._templates.get(raw.get("template_id", ""))
+            if template is None:
+                continue
+            self._pending_disputes[d_id] = PoliticsDispute.from_dict(
+                raw, template.outcome_matrix
+            )
+        self._resolved_disputes = {}
+        for d_id, raw in data.get("resolved_disputes", {}).items():
+            template = self._templates.get(raw.get("template_id", ""))
+            if template is None:
+                continue
+            self._resolved_disputes[d_id] = PoliticsDispute.from_dict(
+                raw, template.outcome_matrix
+            )

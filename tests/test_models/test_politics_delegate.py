@@ -632,6 +632,100 @@ class TestCorridorPreCommitVisit:
         assert "cap" in msg.lower()
 
 
+class TestCassWellerIntelReveal:
+    """SA-P1 §7.5: Cass Weller's binary bonus reveals position vectors qualitatively."""
+
+    def test_intel_reveal_returns_qualitative_text_per_dimension(self) -> None:
+        from spacegame.models.politics_dispute import (
+            PoliticsDisputeManager,
+            qualitative_position_summary,
+        )
+
+        # High negative threshold -> "Skeptical of"; high positive -> "Open to";
+        # near zero -> "Undecided on" (neutral band).
+        summary_hask = qualitative_position_summary(
+            {
+                "modernization": -0.8,
+                "water_rights_change": -0.7,
+                "outside_influence": -0.6,
+            }
+        )
+        assert "Skeptical of modernization" in summary_hask
+        assert "Skeptical of outside influence" in summary_hask
+
+        summary_drift = qualitative_position_summary(
+            {
+                "modernization": 0.7,
+                "water_rights_change": 0.3,
+                "outside_influence": 0.5,
+            }
+        )
+        assert "Open to modernization" in summary_drift
+        assert "Open to outside influence" in summary_drift
+
+    def test_intel_reveal_text_has_no_em_dashes_or_banned_phrases(self) -> None:
+        from spacegame.models.politics_dispute import (
+            qualitative_position_summary,
+        )
+
+        sample = qualitative_position_summary(
+            {
+                "modernization": -0.8,
+                "water_rights_change": 0.3,
+                "outside_influence": 0.0,
+            }
+        )
+        # Writing Bible: no em-dashes, no banned phrases.
+        assert "—" not in sample
+        assert "–" not in sample
+        assert " -- " not in sample
+        assert "couldn't help but" not in sample.lower()
+        assert "a testament to" not in sample.lower()
+
+    def test_intel_reveal_fires_once_per_session(self) -> None:
+        from spacegame.models.politics_dispute import PoliticsDisputeManager
+
+        crew_with_cass = _StubBonus({"arbitration_dispute_intel": 1.0})
+        mgr = PoliticsDisputeManager(
+            templates={
+                _make_water_rights_phasing_template().id: (
+                    _make_water_rights_phasing_template()
+                )
+            },
+            crew_roster=crew_with_cass,
+        )
+        tpl = _make_water_rights_phasing_template()
+        dispute = mgr.start_dispute(tpl.id, current_game_day=1)
+        # First reveal returns content.
+        first = mgr.try_reveal_intel(dispute)
+        assert first is not None
+        assert len(first) > 0
+        # Second call same session returns None.
+        second = mgr.try_reveal_intel(dispute)
+        assert second is None
+        # New session resets the gate.
+        mgr.end_session()
+        third = mgr.try_reveal_intel(dispute)
+        assert third is not None
+
+    def test_intel_reveal_no_op_when_cass_not_on_crew(self) -> None:
+        from spacegame.models.politics_dispute import PoliticsDisputeManager
+
+        crew_no_cass = _StubBonus({})
+        mgr = PoliticsDisputeManager(
+            templates={
+                _make_water_rights_phasing_template().id: (
+                    _make_water_rights_phasing_template()
+                )
+            },
+            crew_roster=crew_no_cass,
+        )
+        tpl = _make_water_rights_phasing_template()
+        dispute = mgr.start_dispute(tpl.id, current_game_day=1)
+        result = mgr.try_reveal_intel(dispute)
+        assert result is None
+
+
 class TestDeterministicResolution:
     """AC 3: same inputs always produce identical outputs (no randomness)."""
 

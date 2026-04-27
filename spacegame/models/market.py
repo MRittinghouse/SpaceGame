@@ -4,13 +4,18 @@ Market and pricing system.
 Implements dynamic pricing based on supply/demand, system economy, and random variance.
 """
 
+from __future__ import annotations
+
 import random
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional
+from typing import TYPE_CHECKING, Dict, List, Optional
 
 from spacegame.models.commodity import Commodity
 from spacegame.models.event import MarketEvent
 from spacegame.models.system import StarSystem
+
+if TYPE_CHECKING:
+    from spacegame.models.politics_dispute import PoliticsMarketShift
 
 
 @dataclass
@@ -157,6 +162,13 @@ class Market:
         self._player_supply_demand: Dict[str, float] = {}
         self._stock: Dict[str, int] = {}
         self._base_stock: Dict[str, int] = {}
+        # SA-P2 politics market shifts. Keyed by (commodity_id, system_id).
+        # Stack rule (§11 decision 14): the largest absolute magnitude
+        # active for the pair is the one applied; shifts decay
+        # independently after their own duration_days expire.
+        self._politics_shifts: Dict[
+            tuple[str, str], list["PoliticsMarketShift"]
+        ] = {}
         self._generate_prices()
 
     def _generate_prices(self) -> None:
@@ -201,6 +213,13 @@ class Market:
             and self.active_event.is_active(self.game_day)
         ):
             final_price = int(final_price * self.active_event.price_multiplier)
+
+        # SA-P2: apply the largest-magnitude active politics shift for
+        # (commodity, system). Shifts coexist with `active_event`: they
+        # multiply on top, they don't replace.
+        politics_shift = self._dominant_politics_shift(commodity.id)
+        if politics_shift is not None:
+            final_price = int(final_price * (1.0 + politics_shift.magnitude))
 
         # Apply galaxy event effects (embargo, festival, breakthrough, strike)
         for ge in self.galaxy_events:
@@ -508,6 +527,8 @@ class Market:
         Regenerates prices with new random variance.
         Decays player supply/demand modifiers.
         Checks if active event has expired.
+        Expires SA-P2 politics shifts whose ``start_day + duration_days``
+        has elapsed.
 
         Args:
             new_day: New game day number
@@ -526,6 +547,17 @@ class Market:
         # Clear expired events
         if self.active_event and not self.active_event.is_active(new_day):
             self.active_event = None
+
+        # SA-P2: expire politics shifts whose duration has elapsed.
+        empty_keys: list[tuple[str, str]] = []
+        for key, shifts in self._politics_shifts.items():
+            self._politics_shifts[key] = [
+                s for s in shifts if new_day < s.start_day + s.duration_days
+            ]
+            if not self._politics_shifts[key]:
+                empty_keys.append(key)
+        for key in empty_keys:
+            del self._politics_shifts[key]
 
         self._generate_prices()
 
@@ -550,6 +582,42 @@ class Market:
             return self.active_event
         return None
 
+    # ------------------------------------------------------------------
+    # SA-P2 politics market shift registry (§7.2)
+    # ------------------------------------------------------------------
+
+    def add_politics_shift(self, shift: "PoliticsMarketShift") -> None:
+        """Register a politics-driven price shift on this market.
+
+        Multiple shifts may target the same (commodity, system) pair;
+        the largest absolute magnitude wins per §11 decision 14. Shifts
+        decay independently when their own duration_days expire.
+        """
+        if shift.system_id != self.system.id:
+            return
+        key = (shift.commodity_id, shift.system_id)
+        self._politics_shifts.setdefault(key, []).append(shift)
+        self._generate_prices()
+
+    def get_active_politics_shifts(
+        self, commodity_id: str, system_id: str
+    ) -> list["PoliticsMarketShift"]:
+        """Return active (unexpired) politics shifts for this (commodity, system)."""
+        key = (commodity_id, system_id)
+        shifts = self._politics_shifts.get(key, [])
+        return [
+            s for s in shifts if self.game_day < s.start_day + s.duration_days
+        ]
+
+    def _dominant_politics_shift(
+        self, commodity_id: str
+    ) -> Optional["PoliticsMarketShift"]:
+        """Largest-absolute-magnitude active shift for a commodity at this market."""
+        actives = self.get_active_politics_shifts(commodity_id, self.system.id)
+        if not actives:
+            return None
+        return max(actives, key=lambda s: abs(s.magnitude))
+
     def to_dict(self) -> dict:
         """Serialize player-driven supply/demand and stock state.
 
@@ -560,6 +628,17 @@ class Market:
             "player_supply_demand": dict(self._player_supply_demand),
             "stock": dict(self._stock),
             "base_stock": dict(self._base_stock),
+            "politics_shifts": [
+                {
+                    "commodity_id": s.commodity_id,
+                    "system_id": s.system_id,
+                    "magnitude": s.magnitude,
+                    "duration_days": s.duration_days,
+                    "start_day": s.start_day,
+                }
+                for shifts in self._politics_shifts.values()
+                for s in shifts
+            ],
         }
 
     def load_supply_demand(self, data: dict) -> None:
@@ -573,3 +652,16 @@ class Market:
             self._stock = dict(data["stock"])
         if "base_stock" in data:
             self._base_stock = dict(data["base_stock"])
+        # SA-P2 politics shifts.
+        from spacegame.models.politics_dispute import PoliticsMarketShift
+
+        self._politics_shifts = {}
+        for entry in data.get("politics_shifts", []):
+            shift = PoliticsMarketShift(
+                commodity_id=entry["commodity_id"],
+                system_id=entry["system_id"],
+                magnitude=float(entry["magnitude"]),
+                duration_days=int(entry.get("duration_days", 30)),
+                start_day=int(entry.get("start_day", 0)),
+            )
+            self.add_politics_shift(shift)

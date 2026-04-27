@@ -142,6 +142,11 @@ class Player:
     # Political system state
     political_state: dict = field(default_factory=dict)
 
+    # SA-P2 venue dispute system state. Distinct keyspace from
+    # ``political_state`` so the two managers serialize independently
+    # (per SA-P1 §11 decision 1: coexist, not merge).
+    politics_dispute_state: dict = field(default_factory=dict)
+
     # Trade route tracking
     trade_route_tracker: TradeRouteTracker = field(default_factory=TradeRouteTracker)
     # Per-system price snapshots — gated behind the ``price_memory`` skill

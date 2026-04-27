@@ -321,3 +321,198 @@ class TestDataLoaderPoliticsTemplates:
         assert len(tpl.delegates) == 1
         assert tpl.delegates[0].sub_faction_id == "verdant_test"
         assert tpl.outcome_matrix["win"].rep_deltas == {"verdant": 5}
+
+
+# ---------------------------------------------------------------------------
+# Save / load round trip — AC 6 + AC 8
+# ---------------------------------------------------------------------------
+
+
+class TestDisputeRoundTripSerialization:
+    def test_round_trip_at_round_open_round_one(self) -> None:
+        """Round-1 ROUND_OPEN: empty round_log, no resolved outcome."""
+        from spacegame.models.politics_dispute import (
+            DisputePhase,
+            PoliticsDispute,
+            PoliticsDisputeManager,
+        )
+
+        tpl = _make_water_rights_phasing_template()
+        mgr = PoliticsDisputeManager(templates={tpl.id: tpl})
+        dispute = mgr.start_dispute(tpl.id, current_game_day=1)
+        assert dispute.phase == DisputePhase.ROUND_OPEN
+        assert dispute.current_round == 1
+
+        snapshot = dispute.to_dict()
+        restored = PoliticsDispute.from_dict(snapshot, dispute.outcome_matrix)
+        assert restored.phase == DisputePhase.ROUND_OPEN
+        assert restored.current_round == 1
+        assert restored.dispute_id == dispute.dispute_id
+        assert restored.template_id == tpl.id
+        assert (
+            restored.delegates["ferron_hask"].visible_state
+            == dispute.delegates["ferron_hask"].visible_state
+        )
+
+    def test_round_trip_after_argument_resolved(self) -> None:
+        """ROUND_PENDING after a counter-argument resolved: state preserved."""
+        from spacegame.models.politics_dispute import (
+            PoliticsArgument,
+            PoliticsDispute,
+            PoliticsDisputeManager,
+        )
+
+        tpl = _make_water_rights_phasing_template()
+
+        class _Stub:
+            def get_skill_level(self, _id: str) -> int:
+                return 3
+
+        class _Bonus:
+            def get_bonus(self, _key: str) -> float:
+                if _key == "coalition_sway_bonus":
+                    return 0.35
+                return 0.0
+
+        mgr = PoliticsDisputeManager(
+            templates={tpl.id: tpl},
+            crew_roster=_Bonus(),
+            progression=_Bonus(),
+            social_manager=_Stub(),
+        )
+        dispute = mgr.start_dispute(tpl.id, current_game_day=1)
+        mgr.submit_argument(
+            dispute,
+            PoliticsArgument(
+                framing="data_precedent",
+                audience_delegate_id="samela_drift",
+                evidence="forgeworks_2324_partnership",
+            ),
+        )
+        mgr.advance_round(dispute)
+        # Now in round 2.
+        snapshot = dispute.to_dict()
+        restored = PoliticsDispute.from_dict(snapshot, dispute.outcome_matrix)
+        assert restored.current_round == 2
+        for d_id in dispute.delegates:
+            assert (
+                restored.delegates[d_id].visible_state
+                == dispute.delegates[d_id].visible_state
+            )
+            assert (
+                restored.delegates[d_id].position_vector
+                == dispute.delegates[d_id].position_vector
+            )
+
+    def test_round_trip_after_resolved(self) -> None:
+        """RESOLVED phase: outcome category preserved."""
+        from spacegame.models.politics_dispute import (
+            DisputePhase,
+            PoliticsDispute,
+            PoliticsDisputeManager,
+        )
+
+        tpl = _make_water_rights_phasing_template()
+        mgr = PoliticsDisputeManager(templates={tpl.id: tpl})
+        dispute = mgr.start_dispute(tpl.id, current_game_day=1)
+        mgr.abstain_round(dispute)
+        mgr.abstain_round(dispute)
+        mgr.abstain_round(dispute)
+        assert dispute.phase == DisputePhase.RESOLVED
+
+        snapshot = dispute.to_dict()
+        restored = PoliticsDispute.from_dict(snapshot, dispute.outcome_matrix)
+        assert restored.phase == DisputePhase.RESOLVED
+        assert restored.resolved_outcome == "loss"
+
+    def test_manager_round_trip_pending_disputes(self) -> None:
+        """Manager.to_dict / from_dict preserves a pending dispute by template id."""
+        from spacegame.models.politics_dispute import (
+            PoliticsDispute,
+            PoliticsDisputeManager,
+        )
+
+        tpl = _make_water_rights_phasing_template()
+        mgr = PoliticsDisputeManager(templates={tpl.id: tpl})
+        dispute = mgr.start_dispute(tpl.id, current_game_day=1)
+        mgr.register_pending_dispute(dispute)
+
+        snapshot = mgr.to_dict()
+        # Build a new manager with the same templates and restore.
+        mgr2 = PoliticsDisputeManager(templates={tpl.id: tpl})
+        mgr2.from_dict(snapshot)
+        assert tpl.id in mgr2.get_pending_dispute_ids()
+        restored = mgr2.get_pending_dispute(tpl.id)
+        assert restored is not None
+        assert restored.template_id == tpl.id
+        assert restored.current_round == dispute.current_round
+
+
+class TestPlayerPoliticsDisputeStateField:
+    """Player carries a ``politics_dispute_state: dict`` slot for the manager."""
+
+    def _make_player(self):
+        from spacegame.data_loader import get_data_loader
+        from spacegame.models.player import Player
+        from spacegame.models.ship import Ship
+
+        dl = get_data_loader()
+        if not dl.ship_types:
+            dl.load_all()
+        ship_type = next(iter(dl.ship_types.values()))
+        ship = Ship(ship_type=ship_type, current_fuel=100)
+        return Player(
+            name="Test",
+            credits=1000,
+            current_system_id="nexus_prime",
+            ship=ship,
+        )
+
+    def test_player_default_field_is_empty_dict(self) -> None:
+        player = self._make_player()
+        assert hasattr(player, "politics_dispute_state")
+        assert player.politics_dispute_state == {}
+
+    def test_save_load_of_politics_dispute_state(self) -> None:
+        """Save manager round-trips politics_dispute_state."""
+        player = self._make_player()
+        player.politics_dispute_state = {"pending_disputes": {"x": {"id": "x"}}}
+        assert player.politics_dispute_state == {
+            "pending_disputes": {"x": {"id": "x"}}
+        }
+
+
+class TestPerformanceSmoke:
+    """AC 16: argument resolution under 100 ms on the worked example."""
+
+    def test_submit_argument_under_100ms(self) -> None:
+        from spacegame.models.politics_dispute import (
+            PoliticsArgument,
+            PoliticsDisputeManager,
+        )
+
+        class _Stub:
+            def get_skill_level(self, _id: str) -> int:
+                return 3
+
+        class _Bonus:
+            def get_bonus(self, _key: str) -> float:
+                return 0.0
+
+        tpl = _make_water_rights_phasing_template()
+        mgr = PoliticsDisputeManager(
+            templates={tpl.id: tpl},
+            crew_roster=_Bonus(),
+            progression=_Bonus(),
+            social_manager=_Stub(),
+        )
+        dispute = mgr.start_dispute(tpl.id, current_game_day=1)
+        argument = PoliticsArgument(
+            framing="data_precedent",
+            audience_delegate_id="samela_drift",
+            evidence="forgeworks_2324_partnership",
+        )
+        start = time.perf_counter()
+        mgr.submit_argument(dispute, argument)
+        elapsed_ms = (time.perf_counter() - start) * 1000
+        assert elapsed_ms < 100, f"submit_argument took {elapsed_ms:.2f}ms"

@@ -469,6 +469,7 @@ class SaveManager:
             "smuggling_contract_state": player.smuggling_contract_state,
             "ground_contract_state": player.ground_contract_state,
             "political_state": player.political_state,
+            "politics_dispute_state": player.politics_dispute_state,
             "criminal_heat": player.criminal_heat,
             "goods_smuggled": player.goods_smuggled,
             "smuggling_contracts_completed": player.smuggling_contracts_completed,
@@ -714,6 +715,9 @@ class SaveManager:
 
         # Restore political state
         player.political_state = data.get("political_state", {})
+        # SA-P2: restore venue dispute state. Older saves default to
+        # empty per the additive-field rule (CLAUDE.md save migration).
+        player.politics_dispute_state = data.get("politics_dispute_state", {})
 
         # Restore smuggling stats
         player.criminal_heat = data.get("criminal_heat", 0)
