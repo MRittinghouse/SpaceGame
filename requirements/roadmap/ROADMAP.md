@@ -912,7 +912,7 @@ The following decisions were locked during planning:
 
 #### SA-0 — Cluster A confirmation pass
 
-**Status**: in-progress (planning)
+**Status**: in-progress (implementing)
 **Phase**: Phase I | **Size**: S | **Effort**: 3-5 days
 **Depends on**: SA-PREP-2 | **Blocks**: none
 
@@ -981,18 +981,30 @@ The following decisions were locked during planning:
 - 2026-04-26 — todo (created)
 - 2026-04-27 12:06 — harness: plan phase starting
 - 2026-04-27 13:30 — planning complete; verified all 8 context docs exist; locked 5 decisions (Fulcrum confirmation-only, NPC carriers Naveen/Yuki, no new voice sheets, one-shot flags); folded in 3 polish items (journal entries, save/load round-trip, SI-3 scanner check); 8-task plan keyed to specific files and tests; expected delta +12 to +16 tests, no scope creep beyond size S. PHASE_OK
+- 2026-04-27 12:12 — harness: implement phase starting (rework cycle 0)
+- 2026-04-27 — implemented flag helpers (heard_dcmc_intelligence, heard_nas_intelligence) + test_constants/test_flags.py (19 tests green)
+- 2026-04-27 — wrote failing scenario tests (RED): 9 tests fail as expected (dialogue nodes + journal entries not yet authored)
+- 2026-04-27 — added DCMC depth-tier branch to naveen_prakash_dialogue (2 nodes: dcmc_intelligence, dcmc_intelligence_reveal); NAS branch to yuki_signal_deep (2 nodes: nas_intelligence, nas_intelligence_reveal); journal entries auto_dcmc_intelligence and auto_nas_intelligence; all 35 scenario tests green
+- 2026-04-27 — SI-3 scanner: both flags appear as producer-only orphans due to 3 pre-existing scanner gaps (excluded_flags not scanned; journal trigger_flag not scanned; no-arg helpers not introspectable). Added to KNOWN_PRODUCER_ONLY_ORPHANS with DETECTOR MISS documentation. Scanner clean.
+- 2026-04-27 — Writing Bible scanner: all 31 tests pass (no em-dashes, no banned phrases, expressions valid). Full suite: 8533 passed / 98 skipped (baseline 8479 + 54 new). PHASE_OK
 
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-04-27 12:06
-- Completed: 2026-04-27 13:30
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: f510c41
-- New_sprints_proposed: none
-- Polish_items_folded_in: journal-entries (per anchor), save/load-roundtrip, SI-3-flag-scanner-check
-- Decisions_locked: 5
-- Notes: Fulcrum is confirmation-only (narrative endpoint, no between-beat state). Depth tier authored via existing NPCs Naveen Prakash (iron_depths) and Yuki Tanaka (nova_research) — no new voice sheets in SA-0. Flag helpers `heard_dcmc_intelligence` / `heard_nas_intelligence` go through `flags.py` per the cross-module rule. Sprint stays size S; estimated +12 to +16 net tests.
+- Started: 2026-04-27 12:12
+- Completed: 2026-04-27 15:00
+- Files_changed: spacegame/constants/flags.py, tests/test_constants/__init__.py, tests/test_constants/test_flags.py, tests/test_scenarios/test_scenario_cluster_a_anchors.py, data/dialogue/dialogues.json, data/journal/entries.json, tests/test_data/test_dialogue_integrity.py
+- Commits: 42e57ed, ff86c69, 69632ef
+- Tests_added: 54
+- Tests_baseline: 8479
+- Tests_passing: 8533
+- Tests_skipped: 98
+- Lint_clean: yes
+- Format_clean: yes
+- SI3_scanner_clean: yes
+- Writing_bible_clean: yes
+- Touch_zones_respected: yes
+- Notes: All 8 acceptance criteria satisfied. SL-1 elevation confirmed for all 3 Cluster A anchors. DCMC beat (Naveen/iron_depths) and NAS beat (Yuki/nova_research) authored, gated, voice-checked, save/load tested. Fulcrum confirmed-only scope documented in test module docstring. SI-3 allowlist updated with DETECTOR MISS classification for both new no-arg flags.
 
 #### SA-1 — Wreckers' Guild Hall (Salvage Contracts)
 
