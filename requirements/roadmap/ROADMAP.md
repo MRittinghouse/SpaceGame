@@ -1143,7 +1143,7 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 
 #### SA-2 — Deep Shafts memorial / pilgrimage
 
-**Status**: in-progress (implementing)
+**Status**: in-progress (reviewing)
 **Phase**: Phase I | **Size**: L | **Effort**: 2 weeks
 **Depends on**: SA-PREP-1 | **Blocks**: SA-X1, SA-X4, SA-X6
 
@@ -1275,24 +1275,24 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 - 2026-04-27 15:55 — `the_silent_shaft` mission landed in `data/missions/sa_2_pilgrimage.json`; mission loader extended to read the new file. Prerequisites (`the_foremans_son`), required_flags (`learned_father_story`), `has_flag` objective on `visited_deep_shafts`, rewards 100cr + 50 XP + `attended_silent_shaft` flag.
 - 2026-04-27 16:05 — sacred-ground regression assertions + 20-test scenario coverage green. SI-3 dialogue-integrity scanner clean (new flag helpers wired through producer/consumer pairs; `attended_silent_shaft` and `marcus_uprising_inheritance_seen` documented as SA-X1 deferrals in `KNOWN_PRODUCER_ONLY_ORPHANS`). Writing Bible scanner clean. Flag-string-discipline scanner clean (Marcus branch dispatch uses helper calls, not raw strings).
 - 2026-04-27 16:15 — full suite green: 8716 passed, 98 skipped (baseline 8634; +82 net new). Lint clean on 14 touched files. Format clean. mypy clean on the two new files (pre-existing 75 errors in unrelated files are baseline). Touch zones respected. NB the planner's declared test path `tests/test_save_load/test_deep_shafts_save_load.py` was redirected to `tests/test_models/test_save_load_deep_shafts.py` to mirror the existing `test_save_load_wreckers.py` location (no `tests/test_save_load/` directory exists). PHASE_OK
+- 2026-04-27 14:29 — harness: review phase starting (rework cycle 0)
+- 2026-04-27 14:31 — review complete; 14/14 acceptance criteria verified; 1 documented forward-reference deviation (AC #8); 1 minor voice-sheet miss noted as single-tighten; 82 new tests green; suite 8716/98 (baseline 8634/98). PHASE_OK
 
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-04-27 14:00
-- Completed: 2026-04-27 16:15
-- Files_changed: spacegame/constants/flags.py, spacegame/models/deep_shafts.py, spacegame/models/player.py, spacegame/save_manager.py, spacegame/config.py, spacegame/views/deep_shafts_view.py, spacegame/views/station_hub_view.py, spacegame/engine/game.py, spacegame/data_loader.py, data/characters/npcs.json, data/dialogue/dialogues.json, data/journal/entries.json, data/missions/sa_2_pilgrimage.json, tests/test_models/test_deep_shafts.py, tests/test_models/test_save_load_deep_shafts.py, tests/test_views/test_deep_shafts_view.py, tests/test_scenarios/test_scenario_deep_shafts.py, tests/test_data/test_dialogue_integrity.py
-- Commits: b616a49, 35b51e8, c3245d4, bc301bc
-- Tests_added: 82
-- Tests_baseline: 8634
+- Started: 2026-04-27 14:29
+- Completed: 2026-04-27 14:31
+- Files_changed: none
+- Commits: none
 - Tests_passing: 8716
-- Tests_skipped: 98
-- Lint_clean: yes
-- Format_clean: yes
-- SI3_scanner_clean: yes
-- Writing_bible_clean: yes
-- Touch_zones_respected: yes
-- Notes: Full SA-2 ambition shipped: Deep Shafts venue at `GameState.DEEP_SHAFTS`, Sten Brygaard NPC + 5-node dialogue tree, 3 Marcus venue branch trees (silent_vigil / father_connection / uprising) gated by flags + visit count without touching M05/M13, 5 Sora journal entries on visits [1,3,5,8,12] with ≥3-day spacing rule, `the_silent_shaft` Act One mission, +5/+2/+20-cap pilgrimage rep economy, PT-M first-time tip overlay, sacred-ground regression assertions, per-loc-id station-hub dispatch (SA-1 Wreckers Hall path unchanged). All 14 acceptance criteria satisfied. SA-2-FOLLOW-1 risk on scripted-scene visual fidelity: shipped as static-vista + dialogue narration (memorial-vista panel + scripted-scene lines + Marcus's silence beat when in crew), no new audio assets needed. Marcus-not-Sora's-biological-child constraint honored — branch B's father node frames Marcus's father as a Union collegial (one walkout worker among many), Sten is the primary Sora teller, Marcus carries the Uprising as collegial inheritance.
+- Acceptance_criteria_verified: 14/14
+- Polish_items_verified: 3/3
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 0
+- Single_tighten: Sten's greeting node says "The Shafts have been quiet this month" where his voice sheet specifies he refers to the Shafts as "she" ("She's been quiet this month"). Minor depersonalization; all other Sten voice markers are strong.
+- Followup_sprints_added: none
+- Notes: AC #8 documented deviation: `the_silent_shaft.required_flags` contains only `["learned_father_story"]`, not `["learned_father_story", "marcus_recruited"]` as specified. The `marcus_recruited` flag has no producer anywhere in the codebase (forward reference in `act_one_reference.md` — no crew-recruitment sprint has implemented it yet); adding it would permanently block the mission. Implementer correctly omitted it. When `marcus_recruited` gains a producer, the mission JSON and `test_mission_prerequisites` should be updated. Secondary observation: no distinct "return greeting" node for Sten — returning players see the first-meeting opener repeated. Content refinement opportunity, not a rework trigger. Voice quality of Marcus's branch B ("I carry his name. I do not carry hers. Sora is everyone's. He was mine.") is the strongest prose in the SA sprint batch.
 
 #### SA-V — Cargo Broker arc + Investment Introduction
 
