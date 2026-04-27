@@ -1008,7 +1008,7 @@ The following decisions were locked during planning:
 
 #### SA-1 — Wreckers' Guild Hall (Salvage Contracts)
 
-**Status**: in-progress (implementing)
+**Status**: in-progress (reviewing)
 **Phase**: Phase I | **Size**: L | **Effort**: 2-3 weeks
 **Depends on**: SA-PREP-1, SA-A2, SA-B-EXT-1 | **Blocks**: SA-P5, SA-B4
 
@@ -1099,6 +1099,10 @@ The following decisions were locked during planning:
 9. **Validation chain (~1 hr).** `ruff format` on touched files only (`agent_principles.md` line 110 — never project-wide during a sprint). `ruff check` on touched files. `mypy spacegame/`. `pytest -n auto -q`. Confirm pass count ≥ 8533 and skip count == 98. SI-3 scanner clear. Writing Bible scanner clear. If any pre-existing failure surfaces, note in Activity log; do not chase. Touches: validation only.
 10. **Status flip to `review` + phase report + commit (~15 min).** Move `Status` to `review`. Append `**Last phase report.**` block (overwriting any prior phase report block in the SA-1 section) per the agent convention. Commit with `SA-1: ...` prefix. Do NOT push. Touches: `requirements/roadmap/ROADMAP.md`.
 
+**Rework items (review cycle 0 → implement cycle 1).**
+R1. **Add secondary contacts as interactive speakers in `WreckersGuildView` (~3 hr).** Paz Reina, Daro Teck, and Ife Obi are named in contract text but have zero interactive presence. The deliverables require "standalone speakers... with a small dialogue tree each (greeting + craft observation + sign-off)" and acceptance criterion 12 requires each carry a distinct register. Read their voice sheets first (Paz 757-797, Daro 800-840, Ife 843-883) end-to-end before drafting a single line. Implement a secondary-contacts dock in the view: a small panel below the board with a button per contact; pressing a button opens a short dialogue sequence (3 nodes: greeting → craft observation → sign-off). Author in `data/dialogue/dialogues.json` using their speaker_ids. Register the speaker_ids in `data/galaxy/npcs.json` if needed (check whether SA-PREP-1 already added them). Voice-check every line against the 16-item diagnostic in `aurelia_voice_examples.md` — these four cast members must carry distinct frames, none collapsing to the others. TDD: add scenario-level tests in `tests/test_scenarios/test_scenario_wreckers_arc.py` asserting that each contact's greeting node fires and that their lines pass a per-node Writing Bible check. Touches: `spacegame/views/wreckers_guild_view.py`, `data/dialogue/dialogues.json`, `data/galaxy/npcs.json` (if needed), `tests/test_scenarios/test_scenario_wreckers_arc.py`.
+R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_state(GameState.WRECKERS_GUILD, self.wreckers_guild_view)` call at `_ensure_wreckers_guild_view` is formatted as a 3-line multi-arg call but fits on one line within the 100-char limit. Run `ruff format spacegame/engine/game.py` to fix it. Confirm `ruff format --check spacegame/engine/game.py` passes before committing. Touches: `spacegame/engine/game.py`.
+
 **Activity log.**
 - 2026-04-26 — todo (created)
 - 2026-04-27 12:38 — harness: plan phase starting
@@ -1110,24 +1114,24 @@ The following decisions were locked during planning:
 - 2026-04-27 14:15 — 4 flag-gated journal entries authored (`auto_wreckers_first_contract`, `auto_wreckers_promoted_journeyman`, `auto_wreckers_promoted_master`, `auto_wreckers_made_up`). Master entry retires the "kid" address per the SA Arc Note. Voice-checked.
 - 2026-04-27 14:25 — scenario test for full apprentice → master arc plus failure → make-up path; journal-trigger coverage for all 4 entries.
 - 2026-04-27 14:35 — validation chain: ruff format clean (touched files only), ruff check clean (touched files), mypy clean for new modules, full suite 8533 → 8625 (+92 tests, 0 new failures), Writing Bible scanner clean, SI-3 dialogue-integrity scanner clean, save-load coverage in place. PHASE_OK
+- 2026-04-27 13:19 — harness: review phase starting (rework cycle 0)
+- 2026-04-27 14:05 — review complete; 1 critical finding (Paz Reina / Daro Teck / Ife Obi not implemented as interactive speakers — named deliverable, Acceptance #12 unverifiable for secondary contacts), 1 minor finding (game.py format drift on touched file, pre-existing but uncleaned). Rework items R1-R2 added to Plan. PHASE_NEEDS_REWORK: secondary contacts (Paz, Daro, Ife) not implemented as interactive speakers; Acceptance criterion 12 unverifiable
 
 **Last phase report.**
-- Phase: implement
-- Outcome: PHASE_OK
-- Started: 2026-04-27 12:49
-- Completed: 2026-04-27 14:35
-- Files_changed: spacegame/constants/flags.py, spacegame/config.py, spacegame/models/player.py, spacegame/models/wreckers_guild.py, spacegame/save_manager.py, spacegame/views/station_hub_view.py, spacegame/views/wreckers_guild_view.py, spacegame/engine/game.py, data/journal/entries.json, tests/test_models/test_wreckers_guild.py, tests/test_models/test_save_load_wreckers.py, tests/test_views/test_wreckers_guild_view.py, tests/test_views/test_station_hub_view.py, tests/test_scenarios/test_scenario_wreckers_arc.py
-- Commits: 832a9b5, 6135701, dd65a75
-- Tests_added: 92
-- Tests_baseline: 8533
+- Phase: review
+- Outcome: PHASE_NEEDS_REWORK: secondary contacts (Paz, Daro, Ife) not implemented as interactive speakers; Acceptance criterion 12 unverifiable
+- Started: 2026-04-27 13:19
+- Completed: 2026-04-27 14:05
+- Files_changed: none
+- Commits: none
 - Tests_passing: 8625
-- Tests_skipped: 98
-- Lint_clean: yes
-- Format_clean: yes
-- SI3_scanner_clean: yes
-- Writing_bible_clean: yes
-- Touch_zones_respected: yes
-- Notes: All 14 acceptance criteria addressed. WreckersGuildView with contract board + first-time tip + lockout + make-up; 6 contract templates (2 cleanup / 2 recovery / 1 escort-salvage / 1 deep-derelict — escort-salvage shipped per plan, no SA-1-FOLLOW-1 needed); deterministic 24-day slot rolls; payout multipliers verified at 1000→1000/1100/1250 across tiers; sub-rep failure clamps at 0; legacy saves load as unjoined; full apprentice → master arc covered by scenario test. New flags wire through SI-3 scanner cleanly (all helpers in `spacegame/constants/flags.py`).
+- Acceptance_criteria_verified: 13/14
+- Polish_items_verified: 2/2
+- Findings_critical: 1
+- Findings_minor_fixed_directly: 0
+- Single_tighten: `_turn_in_active_contract()` in wreckers_guild_view.py:596-600 directly accesses MissionManager._status and ._progress as private attributes; a public `mark_completed(mission_id)` method on MissionManager would remove this fragile coupling.
+- Followup_sprints_added: none
+- Notes: Mechanical core fully implemented and tested (92 new tests, contract board, tier gating, payout math, save/load, journal entries, tip overlay, station hub Enter button all pass). Critical gap: three secondary contacts (Paz Reina, Daro Teck, Ife Obi) named in deliverables as standalone speakers with dialogue trees have zero interactive presence. game.py has pre-existing format drift that the implementer touched but did not clean.
 
 #### SA-2 — Deep Shafts memorial / pilgrimage
 
