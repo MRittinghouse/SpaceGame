@@ -29,11 +29,16 @@ from spacegame.constants.flags import heard_dcmc_intelligence, heard_nas_intelli
 from spacegame.data_loader import get_data_loader
 from spacegame.models.dialogue import DialogueManager
 from spacegame.models.journal import Journal
-from spacegame.models.mission import Mission, MissionManager, MissionObjective, MissionStatus, ObjectiveType
+from spacegame.models.mission import (
+    Mission,
+    MissionManager,
+    MissionObjective,
+    MissionStatus,
+    ObjectiveType,
+)
 from spacegame.models.station_salience import is_system_mission_relevant
 from spacegame.views.station_hub_view import StationHubView
 from tests.test_scenarios._helpers import fresh_player, round_trip_save
-
 
 # ---------------------------------------------------------------------------
 # Module-level pygame init (StationHubView requires fonts + a UIManager)
@@ -87,10 +92,12 @@ def _make_active_mission_manager(mission_id: str, system_id: str) -> MissionMana
         id=mission_id,
         name=mission_id,
         description="test mission",
-        objectives=[MissionObjective(
-            type=ObjectiveType.REACH_SYSTEM,
-            target_id=system_id,
-        )],
+        objectives=[
+            MissionObjective(
+                type=ObjectiveType.REACH_SYSTEM,
+                target_id=system_id,
+            )
+        ],
     )
     mm = MissionManager([m])
     mm._status[mission_id] = MissionStatus.ACTIVE
@@ -134,8 +141,7 @@ class TestSL1MissionRelevance:
         mm = _make_active_mission_manager(mission_id, system_id)
         result = is_system_mission_relevant(mm, system_id)
         assert result is True, (
-            f"is_system_mission_relevant should be True for {system_id} "
-            f"when {mission_id} is active"
+            f"is_system_mission_relevant should be True for {system_id} when {mission_id} is active"
         )
 
     @pytest.mark.parametrize("system_id, anchor_id, mission_id", _CLUSTER_A_TUPLES)
@@ -260,9 +266,7 @@ class TestDCMCDepthBeat:
         )
         responses = dm.get_available_responses()
         leads_to_dcmc = [r for r in responses if r.next_node_id == "dcmc_intelligence"]
-        assert not leads_to_dcmc, (
-            "Branch should not re-appear after heard_dcmc_intelligence is set"
-        )
+        assert not leads_to_dcmc, "Branch should not re-appear after heard_dcmc_intelligence is set"
 
 
 # ---------------------------------------------------------------------------
@@ -309,9 +313,7 @@ class TestNASDepthBeat:
         )
         responses = dm.get_available_responses()
         leads_to_nas = [r for r in responses if r.next_node_id == "nas_intelligence"]
-        assert not leads_to_nas, (
-            "NAS branch should be suppressed when cargo_lost_accepted is set"
-        )
+        assert not leads_to_nas, "NAS branch should be suppressed when cargo_lost_accepted is set"
 
     def test_nas_branch_suppressed_when_signal_mission_active(self) -> None:
         """Branch is hidden when the signal mission is already accepted."""
@@ -360,9 +362,7 @@ class TestNASDepthBeat:
         )
         responses = dm.get_available_responses()
         leads_to_nas = [r for r in responses if r.next_node_id == "nas_intelligence"]
-        assert not leads_to_nas, (
-            "Branch should not re-appear after heard_nas_intelligence is set"
-        )
+        assert not leads_to_nas, "Branch should not re-appear after heard_nas_intelligence is set"
 
 
 # ---------------------------------------------------------------------------
@@ -467,12 +467,8 @@ class TestSaveLoadRoundTrip:
         # Trigger both entries
         player.dialogue_flags[heard_dcmc_intelligence()] = True
         player.dialogue_flags[heard_nas_intelligence()] = True
-        journal.trigger_auto_entry(
-            heard_dcmc_intelligence(), game_day=5, system_id="iron_depths"
-        )
-        journal.trigger_auto_entry(
-            heard_nas_intelligence(), game_day=7, system_id="nova_research"
-        )
+        journal.trigger_auto_entry(heard_dcmc_intelligence(), game_day=5, system_id="iron_depths")
+        journal.trigger_auto_entry(heard_nas_intelligence(), game_day=7, system_id="nova_research")
 
         # Sync journal state into player before saving
         player.journal_state = journal.get_state()
@@ -561,9 +557,7 @@ class TestFulcrumConfirmationOnly:
         # The Fulcrum's NPCs do not have dcmc_intelligence or nas_intelligence
         # nodes in their dialogue trees. We confirm this by checking all
         # dialogue trees associated with Fulcrum NPCs.
-        fulcrum_npcs = [
-            npc for npc in dl.npcs.values() if npc.home_system_id == "the_fulcrum"
-        ]
+        fulcrum_npcs = [npc for npc in dl.npcs.values() if npc.home_system_id == "the_fulcrum"]
         for npc in fulcrum_npcs:
             tree_id = npc.dialogue_id
             if tree_id not in dl.dialogue_trees:

@@ -856,6 +856,17 @@ KNOWN_PRODUCER_ONLY_ORPHANS: set[str] = {
     # Narrative state flag — post-branch-A, Reach watches the player. No
     # mechanical gating yet; future encounter / journal content may consume.
     "reach_hunts_player",
+    # === SA-0 depth-tier flags — DETECTOR MISS on two consumer paths ===
+    # heard_dcmc_intelligence + heard_nas_intelligence each have two consumers:
+    #   1. excluded_flags on dialogue responses (scanner only checks forbidden_flags)
+    #   2. trigger_flag in data/journal/entries.json (scanner doesn't scan journal)
+    # Additionally, these are no-arg helpers; the introspection in
+    # _helper_access_patterns() can't call them with a sentinel arg and so
+    # generates no regex patterns to detect code-side accesses.
+    # All three detection gaps are pre-existing scanner limitations, not gaps
+    # in the flags' wiring. Both flags have real consumers; they are not orphans.
+    "heard_dcmc_intelligence",
+    "heard_nas_intelligence",
 }
 
 
