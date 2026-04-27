@@ -91,6 +91,14 @@ _LOCATION_LABELS: dict[str, str] = {
     "investment": "INVEST",
 }
 
+# Per-location-id dispatch for unique anchors that surface an "Enter"
+# button alongside "Close" on their detail panel. Adding a new venue is a
+# one-line change here plus a route in ``engine/game.py``.
+UNIQUE_HALL_TARGETS: dict[str, GameState] = {
+    "crimson_wreckers_guild": GameState.WRECKERS_GUILD,
+    "breakstone_deep_mines": GameState.DEEP_SHAFTS,
+}
+
 # Layout constants
 HEADER_CARD_Y = 10
 HEADER_CARD_H = scale_y(105)
@@ -731,11 +739,17 @@ class StationHubView(BaseView):
                     self._detail_enter_button = None
                 return
 
-            # SA-1: Enter the Wreckers' Guild Hall.
+            # SA-1 / SA-2: dispatch the Enter button to the right venue
+            # by location id (Wreckers' Guild, Deep Shafts, future halls).
             if (
                 self._detail_enter_button is not None
                 and event.ui_element == self._detail_enter_button
             ):
+                target_state = (
+                    UNIQUE_HALL_TARGETS.get(self._detail_location.id)
+                    if self._detail_location is not None
+                    else None
+                )
                 self._emit_detail_dwell_if_open()
                 self._detail_location = None
                 if self._detail_close_button:
@@ -743,7 +757,8 @@ class StationHubView(BaseView):
                     self._detail_close_button = None
                 self._detail_enter_button.kill()
                 self._detail_enter_button = None
-                self.next_state = GameState.WRECKERS_GUILD
+                if target_state is not None:
+                    self.next_state = target_state
                 return
 
             # Check NPC buttons
@@ -1020,10 +1035,10 @@ class StationHubView(BaseView):
                 content_w - 24,
             )
 
-        # SA-1: Wreckers' Guild Hall card gets an "Enter" button alongside
-        # Close so the player can step into the new venue. Other unique
-        # anchors keep their close-only layout — no regression.
-        is_wreckers_hall = loc.id == "crimson_wreckers_guild"
+        # SA-1 / SA-2: per-loc-id dispatch — unique anchors that have a
+        # dedicated venue view get an "Enter" button alongside Close.
+        # Other unique anchors keep their close-only layout (no regression).
+        is_unique_hall = loc.id in UNIQUE_HALL_TARGETS
 
         # Close button
         if not self._detail_close_button:
@@ -1038,8 +1053,8 @@ class StationHubView(BaseView):
                 manager=self.ui_manager,
             )
 
-        # Enter button (SA-1, Wreckers' Guild Hall only)
-        if is_wreckers_hall and not self._detail_enter_button:
+        # Enter button (unique-hall venues only)
+        if is_unique_hall and not self._detail_enter_button:
             self._detail_enter_button = pygame_gui.elements.UIButton(
                 relative_rect=pygame.Rect(
                     DETAIL_PANEL_X + DETAIL_PANEL_W - 175,
@@ -1050,8 +1065,8 @@ class StationHubView(BaseView):
                 text="Enter",
                 manager=self.ui_manager,
             )
-        elif not is_wreckers_hall and self._detail_enter_button:
-            # Switching detail anchors — kill the Hall's enter button.
+        elif not is_unique_hall and self._detail_enter_button:
+            # Switching detail anchors — kill the prior venue's enter button.
             self._detail_enter_button.kill()
             self._detail_enter_button = None
 

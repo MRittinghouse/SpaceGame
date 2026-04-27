@@ -283,6 +283,7 @@ class Game:
         self.investment_view = None
         self.cantina_view = None
         self.wreckers_guild_view = None
+        self.deep_shafts_view = None
 
         # Investment system
         from spacegame.models.investment import InvestmentManager
@@ -1863,6 +1864,15 @@ class Game:
                         self.state_manager.change_state(GameState.WRECKERS_GUILD)
 
                     self._start_transition(TransitionType.FADE, 0.3, _do_wreckers)
+                elif next_state == GameState.DEEP_SHAFTS:
+                    # SA-2: route the Deep Shafts memorial unique anchor.
+                    self.station_hub_view.next_state = None
+
+                    def _do_deep_shafts():
+                        self._ensure_deep_shafts_view()
+                        self.state_manager.change_state(GameState.DEEP_SHAFTS)
+
+                    self._start_transition(TransitionType.FADE, 0.3, _do_deep_shafts)
                 elif next_state == GameState.MINING:
                     self.station_hub_view.next_state = None
 
@@ -1957,6 +1967,19 @@ class Game:
                         self.state_manager.change_state(GameState.STATION_HUB)
 
                     self._start_transition(TransitionType.FADE, 0.3, _do_wreckers_back)
+
+        # SA-2: Deep Shafts memorial view returns to STATION_HUB on back.
+        if hasattr(self, "deep_shafts_view") and self.deep_shafts_view:
+            if self.deep_shafts_view.active:
+                next_state = self.deep_shafts_view.get_next_state()
+                if next_state == GameState.STATION_HUB:
+                    self.deep_shafts_view.next_state = None
+
+                    def _do_deep_shafts_back():
+                        self._ensure_station_hub_view()
+                        self.state_manager.change_state(GameState.STATION_HUB)
+
+                    self._start_transition(TransitionType.FADE, 0.3, _do_deep_shafts_back)
 
         # Check cantina view for transitions
         if hasattr(self, "cantina_view") and self.cantina_view:
@@ -2177,6 +2200,17 @@ class Game:
             mission_manager=self.mission_manager,
         )
         self.state_manager.register_state(GameState.WRECKERS_GUILD, self.wreckers_guild_view)
+
+    def _ensure_deep_shafts_view(self) -> None:
+        """SA-2: create or recreate the Deep Shafts memorial view."""
+        from spacegame.views.deep_shafts_view import DeepShaftsView
+
+        self.deep_shafts_view = DeepShaftsView(
+            ui_manager=self.ui_manager,
+            player=self.player,
+            crew_roster=self.crew_roster,
+        )
+        self.state_manager.register_state(GameState.DEEP_SHAFTS, self.deep_shafts_view)
 
     def _ensure_mining_view(self) -> None:
         """Create or recreate mining view for current system."""
