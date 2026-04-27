@@ -847,3 +847,42 @@ class TestModuleReferences:
                         f"part '{installed}'"
                     )
         assert not errors, "\n".join(errors)
+
+
+# ---------------------------------------------------------------------------
+# Crew template cross-reference validation (SA-A2)
+# ---------------------------------------------------------------------------
+
+
+class TestCrewCrossReferences:
+    """Crew template home_system_id and faction_id cross-reference validation.
+
+    Mirrors the NPC pattern (test_npc_home_systems_exist / test_npc_faction_ids_valid)
+    so future crew authoring inherits this regression net automatically.
+    """
+
+    def test_crew_template_home_systems_exist(self) -> None:
+        """Every crew template's non-empty home_system_id references a real system."""
+        loader = _get_loader()
+        system_ids = set(loader.systems.keys())
+        errors = []
+        for tid, template in loader.crew_templates.items():
+            if template.home_system_id and template.home_system_id not in system_ids:
+                errors.append(
+                    f"Crew template '{tid}' ({template.name}) home_system_id "
+                    f"'{template.home_system_id}' does not exist in systems"
+                )
+        assert not errors, "\n".join(errors)
+
+    def test_crew_template_faction_ids_valid(self) -> None:
+        """Every crew template's non-empty faction_id references a real faction."""
+        loader = _get_loader()
+        faction_ids = set(loader.factions.keys())
+        errors = []
+        for tid, template in loader.crew_templates.items():
+            if template.faction_id and template.faction_id not in faction_ids:
+                errors.append(
+                    f"Crew template '{tid}' ({template.name}) faction_id "
+                    f"'{template.faction_id}' does not exist in factions"
+                )
+        assert not errors, "\n".join(errors)
