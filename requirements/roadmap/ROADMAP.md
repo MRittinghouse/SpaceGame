@@ -31,7 +31,7 @@ The SA-arc table below is **auto-regenerated** by the ralph harness from the spr
 | [SA-PREP-3](#sa-prep-3--playtest-baseline-telemetry) | Playtest baseline telemetry | 0 | S | done | none |
 | [SA-A1](#sa-a1--crew-specialization-design) | Crew specialization design | A | S | done | SA-PREP-2 |
 | [SA-A2](#sa-a2--crew-template-implementation) | Crew template implementation | A | M | done | SA-A1 |
-| [SA-B-EXT-1](#sa-b-ext-1--sub-reputation-system) | Sub-reputation system | B | M | todo | none |
+| [SA-B-EXT-1](#sa-b-ext-1--sub-reputation-system) | Sub-reputation system | B | M | done | none |
 | [SA-C1](#sa-c1--skill-tree-extension-design) | Skill tree extension design | C | S | todo | SA-PREP-2 |
 | [SA-C2](#sa-c2--skill-tree-extension-implementation) | Skill tree extension implementation | C | M | todo | SA-C1 |
 | [SA-0](#sa-0--cluster-a-confirmation-pass) | Cluster A confirmation pass | I | S | todo | SA-PREP-2 |
@@ -589,7 +589,7 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 
 #### SA-B-EXT-1 — Sub-reputation system
 
-**Status**: in-progress (reviewing)
+**Status**: done
 **Phase**: Phase B | **Size**: M | **Effort**: 5-7 days
 **Depends on**: none | **Blocks**: SA-1, SA-B3, SA-B4
 
@@ -671,7 +671,7 @@ The following decisions were locked during planning:
 - 2026-04-26 — implement: tests red (ModuleNotFoundError for sub_reputation, AttributeError on Player methods); sub_reputation.py implemented (26 model tests green, 27 Player tests red); Player helpers implemented (51 tests green, 2 save tests red); save_manager round-trip implemented (all 53 tests green); lint/format clean; full suite 8420/98 (+53). PHASE_OK
 - 2026-04-26 23:32 — harness: review phase starting (rework cycle 0)
 - 2026-04-26 23:45 — review complete; all 12 acceptance criteria verified; 53/53 tests passing; lint/format/mypy clean on touched files; 8420/98 (>= 8367 baseline); all 6 changed files within declared touch zones; no player-facing content (no Writing Bible or SI-3 checks needed); zero concrete configs correctly not shipped (registry pattern intact); design doc covers all spec deliverables. PHASE_OK
-
+- 2026-04-26 23:37 — harness: review passed, marking done
 **Last phase report.**
 - Phase: review
 - Outcome: PHASE_OK
