@@ -54,6 +54,16 @@ class TestVenueDispatch:
             "frontier_alliance",
         )
 
+    def test_crimson_reach_resolves_to_wreckers_guild_venue(self) -> None:
+        """SA-P5: player at Crimson Reach dispatches to the Wreckers' Guild venue."""
+        player = _StubPlayer("crimson_reach")
+        assert _resolve_venue_config(player) == ("crimson_wreckers_guild", "crimson_reach")
+
+    def test_registry_contains_crimson_reach_entry(self) -> None:
+        """SA-P5: crimson_reach key added alongside SA-P3/SA-P4 entries."""
+        assert "crimson_reach" in _VENUE_REGISTRY
+        assert _VENUE_REGISTRY["crimson_reach"] == ("crimson_wreckers_guild", "crimson_reach")
+
 
 class TestStationHubRouting:
     """``UNIQUE_HALL_TARGETS`` includes the new Haven's Rest entry (AC 11)."""

@@ -578,3 +578,62 @@ class TestSecondaryContacts:
             ife.nodes["greeting"].text,
         }
         assert len(greetings) == 3
+
+
+# ---------------------------------------------------------------------------
+# SA-P5 — Arbitration Chamber button (tier-gated DISPUTE entry)
+# ---------------------------------------------------------------------------
+
+
+class TestArbitrationChamberButton:
+    """SA-P5: Arbitration Chamber button gated by tier; click routes to DISPUTE."""
+
+    def test_button_absent_for_unjoined_player(self) -> None:
+        manager, player, mm = _make_view_env()  # sub_rep=0, unjoined
+        view = _make_view(player, manager, mm)
+        view.on_enter()
+        assert view.arbitration_chamber_button is None
+        view.on_exit()
+
+    def test_button_present_for_apprentice(self) -> None:
+        manager, player, mm = _make_view_env(enrolled=True, sub_rep=1)
+        view = _make_view(player, manager, mm)
+        view.on_enter()
+        assert view.arbitration_chamber_button is not None
+        view.on_exit()
+
+    def test_button_present_for_journeyman(self) -> None:
+        manager, player, mm = _make_view_env(enrolled=True, sub_rep=30)
+        view = _make_view(player, manager, mm)
+        view.on_enter()
+        assert view.arbitration_chamber_button is not None
+        view.on_exit()
+
+    def test_button_present_for_master(self) -> None:
+        manager, player, mm = _make_view_env(enrolled=True, sub_rep=70)
+        view = _make_view(player, manager, mm)
+        view.on_enter()
+        assert view.arbitration_chamber_button is not None
+        view.on_exit()
+
+    def test_button_click_sets_dispute_next_state(self) -> None:
+        manager, player, mm = _make_view_env(enrolled=True, sub_rep=1)
+        view = _make_view(player, manager, mm)
+        view.on_enter()
+        assert view.arbitration_chamber_button is not None
+        import pygame_gui as _pgui
+
+        event = pygame.event.Event(
+            _pgui.UI_BUTTON_PRESSED, {"ui_element": view.arbitration_chamber_button}
+        )
+        view.handle_event(event)
+        assert view.get_next_state() == GameState.DISPUTE
+        view.on_exit()
+
+    def test_button_killed_on_exit(self) -> None:
+        manager, player, mm = _make_view_env(enrolled=True, sub_rep=1)
+        view = _make_view(player, manager, mm)
+        view.on_enter()
+        assert view.arbitration_chamber_button is not None
+        view.on_exit()
+        assert view.arbitration_chamber_button is None

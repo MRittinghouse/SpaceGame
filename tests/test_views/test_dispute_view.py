@@ -612,3 +612,232 @@ class TestLockedOutAnnualSubstate:
         assert view.list_state == DisputeListState.LOCKED_OUT_ANNUAL
         assert len(view._dispute_buttons) == 0
         view.on_exit()
+
+
+# ---------------------------------------------------------------------------
+# SA-P5 — helpers
+# ---------------------------------------------------------------------------
+
+
+def _build_reach_view(
+    player: Optional[Player] = None,
+    *,
+    register_dispute: bool = True,
+) -> tuple[pygame_gui.UIManager, DisputeView, PoliticsDisputeManager]:
+    """Build a DisputeView targeting the Crimson Reach Wreckers' Guild venue."""
+    pygame.init()
+    pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+    manager = pygame_gui.UIManager((WINDOW_WIDTH, WINDOW_HEIGHT))
+    if player is None:
+        player = _build_player(faction_id="crimson_reach", standing=0)
+        player.sub_reputation["wreckers_guild"] = 1  # apprentice
+    tpl = _make_water_rights_phasing_template()
+    dispute_mgr = PoliticsDisputeManager(
+        templates={tpl.id: tpl},
+        crew_roster=_StubBonus({"coalition_sway_bonus": 0.0}),
+        progression=_StubBonus({"coalition_sway_bonus": 0.0}),
+        social_manager=_StubSocial({"persuasion": 3, "leadership": 3}),
+    )
+    dispute_mgr.set_player(player)
+    if register_dispute:
+        dispute = dispute_mgr.start_dispute(tpl.id, current_game_day=1)
+        dispute_mgr.register_pending_dispute(dispute)
+    view = DisputeView(
+        ui_manager=manager,
+        player=player,
+        dispute_manager=dispute_mgr,
+        venue_id="crimson_wreckers_guild",
+        venue_faction_id="crimson_reach",
+    )
+    return manager, view, dispute_mgr
+
+
+# ---------------------------------------------------------------------------
+# SA-P5 — LOCKED_NO_MEMBERSHIP list substate (AC 10)
+# ---------------------------------------------------------------------------
+
+
+class TestLockedNoMembershipSubstate:
+    """SA-P5: Reach venue shows LOCKED_NO_MEMBERSHIP for unjoined players."""
+
+    def test_unjoined_player_at_reach_hits_locked_no_membership(self) -> None:
+        player = _build_player(faction_id="crimson_reach", standing=0)
+        # sub_reputation empty → unjoined tier
+        _manager, view, _ = _build_reach_view(player)
+        view.on_enter()
+        assert view.list_state == DisputeListState.LOCKED_NO_MEMBERSHIP
+        assert len(view._dispute_buttons) == 0
+        view.on_exit()
+
+    def test_enrolled_player_at_reach_bypasses_locked_no_membership(self) -> None:
+        player = _build_player(faction_id="crimson_reach", standing=0)
+        player.sub_reputation["wreckers_guild"] = 1  # apprentice
+        _manager, view, _ = _build_reach_view(player)
+        view.on_enter()
+        assert view.list_state != DisputeListState.LOCKED_NO_MEMBERSHIP
+        view.on_exit()
+
+    def test_locked_no_membership_not_triggered_at_verdant(self) -> None:
+        """Verdant venue never enters LOCKED_NO_MEMBERSHIP regardless of sub_rep."""
+        player = _build_player()  # default verdant, no wreckers sub_rep
+        _manager, view, _ = _build_view(player)
+        view.on_enter()
+        assert view.list_state != DisputeListState.LOCKED_NO_MEMBERSHIP
+        view.on_exit()
+
+    def test_locked_no_membership_text_constant_content(self) -> None:
+        from spacegame.views.dispute_view import LOCKED_NO_MEMBERSHIP_TEXT
+
+        player = _build_player(faction_id="crimson_reach", standing=0)
+        _manager, view, _ = _build_reach_view(player)
+        view.on_enter()
+        assert view.list_state == DisputeListState.LOCKED_NO_MEMBERSHIP
+        # Constant references the Guild floor and tier progression.
+        assert "Guild floor" in LOCKED_NO_MEMBERSHIP_TEXT
+        assert "journeymen" in LOCKED_NO_MEMBERSHIP_TEXT.lower()
+        view.on_exit()
+
+
+# ---------------------------------------------------------------------------
+# SA-P5 — per-tier action button gating (AC 11)
+# ---------------------------------------------------------------------------
+
+
+class TestTierGatedActionButtons:
+    """SA-P5: Reach venue session buttons gated by Wreckers' Guild tier."""
+
+    def _open_session(self, player: Player) -> DisputeView:
+        _manager, view, dispute_mgr = _build_reach_view(player)
+        view.on_enter()
+        ids = dispute_mgr.get_pending_dispute_ids()
+        assert ids, "No pending disputes to open"
+        view.open_dispute(ids[0])
+        return view
+
+    def test_apprentice_all_buttons_disabled(self) -> None:
+        player = _build_player(faction_id="crimson_reach", standing=0)
+        player.sub_reputation["wreckers_guild"] = 1  # apprentice
+        view = self._open_session(player)
+        assert view.substate == DisputeSubstate.SESSION
+        for key, btn in view._action_buttons.items():
+            assert not btn.is_enabled, f"Expected {key!r} disabled for apprentice"
+        view.on_exit()
+
+    def test_journeyman_argue_vote_abstain_enabled_mediate_disabled(self) -> None:
+        player = _build_player(faction_id="crimson_reach", standing=0)
+        player.sub_reputation["wreckers_guild"] = 30  # journeyman
+        view = self._open_session(player)
+        assert view.substate == DisputeSubstate.SESSION
+        assert view._action_buttons["argue"].is_enabled
+        assert view._action_buttons["vote_now"].is_enabled
+        assert view._action_buttons["abstain"].is_enabled
+        assert not view._action_buttons["mediate"].is_enabled
+        view.on_exit()
+
+    def test_master_all_buttons_enabled(self) -> None:
+        player = _build_player(faction_id="crimson_reach", standing=0)
+        player.sub_reputation["wreckers_guild"] = 70  # master
+        view = self._open_session(player)
+        assert view.substate == DisputeSubstate.SESSION
+        for key, btn in view._action_buttons.items():
+            assert btn.is_enabled, f"Expected {key!r} enabled for master"
+        view.on_exit()
+
+    def test_verdant_venue_all_buttons_enabled_regardless_of_sub_rep(self) -> None:
+        """Non-Reach venues must not apply tier gating."""
+        player = _build_player()  # verdant, no wreckers sub_rep
+        _manager, view, _ = _build_view(player)
+        view.on_enter()
+        view.open_dispute("water_rights_phasing")
+        assert view.substate == DisputeSubstate.SESSION
+        for key, btn in view._action_buttons.items():
+            assert btn.is_enabled, f"Expected {key!r} enabled at Verdant venue"
+        view.on_exit()
+
+
+# ---------------------------------------------------------------------------
+# SA-P5 — gray-market arbitration tip overlay (AC 9)
+# ---------------------------------------------------------------------------
+
+
+class TestGrayMarketArbitrationTip:
+    """SA-P5: gray-market arbitration tip fires once on first Reach entry."""
+
+    def test_fires_on_first_reach_entry(self) -> None:
+        from spacegame.constants.flags import (
+            seen_argument_composer_tip,
+            seen_gray_market_arbitration_tip,
+            seen_politics_venue_tip,
+        )
+        from spacegame.views.dispute_view import (
+            GRAY_MARKET_ARBITRATION_TIP_BODY,
+            GRAY_MARKET_ARBITRATION_TIP_TITLE,
+        )
+
+        player = _build_player(faction_id="crimson_reach", standing=0)
+        player.sub_reputation["wreckers_guild"] = 1
+        player.dialogue_flags[seen_politics_venue_tip()] = True
+        player.dialogue_flags[seen_argument_composer_tip()] = True
+        _manager, view, _ = _build_reach_view(player)
+        assert player.dialogue_flags.get(seen_gray_market_arbitration_tip(), False) is False
+        view.on_enter()
+        assert view._first_time_tip is not None
+        assert view._first_time_tip.title == GRAY_MARKET_ARBITRATION_TIP_TITLE
+        assert view._first_time_tip.body == GRAY_MARKET_ARBITRATION_TIP_BODY
+        view.on_exit()
+
+    def test_does_not_re_fire_after_dismiss(self) -> None:
+        from spacegame.constants.flags import (
+            seen_argument_composer_tip,
+            seen_gray_market_arbitration_tip,
+            seen_politics_venue_tip,
+        )
+
+        player = _build_player(faction_id="crimson_reach", standing=0)
+        player.sub_reputation["wreckers_guild"] = 1
+        player.dialogue_flags[seen_politics_venue_tip()] = True
+        player.dialogue_flags[seen_argument_composer_tip()] = True
+        _manager, view, _ = _build_reach_view(player)
+        view.on_enter()
+        assert view._first_time_tip is not None
+        view._first_time_tip._dismiss()  # type: ignore[union-attr]
+        assert player.dialogue_flags[seen_gray_market_arbitration_tip()] is True
+        view.on_exit()
+        # Re-entry must not refire.
+        view.on_enter()
+        assert view._first_time_tip is None
+        view.on_exit()
+
+    def test_not_fired_at_verdant_venue(self) -> None:
+        from spacegame.constants.flags import (
+            seen_argument_composer_tip,
+            seen_gray_market_arbitration_tip,
+            seen_politics_venue_tip,
+        )
+
+        player = _build_player()
+        player.dialogue_flags[seen_politics_venue_tip()] = True
+        player.dialogue_flags[seen_argument_composer_tip()] = True
+        _manager, view, _ = _build_view(player)
+        view.on_enter()
+        assert view._first_time_tip is None
+        assert player.dialogue_flags.get(seen_gray_market_arbitration_tip(), False) is False
+        view.on_exit()
+
+    def test_not_fired_at_havens_rest(self) -> None:
+        from spacegame.constants.flags import (
+            seen_annual_congress_tip,
+            seen_argument_composer_tip,
+            seen_gray_market_arbitration_tip,
+            seen_politics_venue_tip,
+        )
+
+        player = _build_player(faction_id="frontier_alliance", standing=0)
+        player.dialogue_flags[seen_politics_venue_tip()] = True
+        player.dialogue_flags[seen_argument_composer_tip()] = True
+        player.dialogue_flags[seen_annual_congress_tip()] = True
+        _manager, view, _ = _build_havens_view(player)
+        view.on_enter()
+        assert view._first_time_tip is None
+        assert player.dialogue_flags.get(seen_gray_market_arbitration_tip(), False) is False
+        view.on_exit()
