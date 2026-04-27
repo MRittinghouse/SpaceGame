@@ -30,7 +30,7 @@ The SA-arc table below is **auto-regenerated** by the ralph harness from the spr
 | [SA-PREP-2](#sa-prep-2--existing-data-audit) | Existing-data audit | 0 | S | done | none |
 | [SA-PREP-3](#sa-prep-3--playtest-baseline-telemetry) | Playtest baseline telemetry | 0 | S | done | none |
 | [SA-A1](#sa-a1--crew-specialization-design) | Crew specialization design | A | S | done | SA-PREP-2 |
-| [SA-A2](#sa-a2--crew-template-implementation) | Crew template implementation | A | M | todo | SA-A1 |
+| [SA-A2](#sa-a2--crew-template-implementation) | Crew template implementation | A | M | done | SA-A1 |
 | [SA-B-EXT-1](#sa-b-ext-1--sub-reputation-system) | Sub-reputation system | B | M | todo | none |
 | [SA-C1](#sa-c1--skill-tree-extension-design) | Skill tree extension design | C | S | todo | SA-PREP-2 |
 | [SA-C2](#sa-c2--skill-tree-extension-implementation) | Skill tree extension implementation | C | M | todo | SA-C1 |
@@ -479,7 +479,7 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 
 #### SA-A2 — Crew template implementation
 
-**Status**: in-progress (reviewing)
+**Status**: done
 **Phase**: Phase A | **Size**: M | **Effort**: 5-7 days
 **Depends on**: SA-A1 | **Blocks**: SA-1, SA-P2, SA-B2, SA-X6
 
@@ -570,7 +570,7 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 - 2026-04-26 — implement phase: TDD red (TestSAArcSpecialists 17 tests, all failing KeyError/None); JSON 5 templates authored; tests turn green; voice sheets authored (Writing Bible clean); 25 ambient banter lines authored; TestCrewCrossReferences 2 tests added; pre-existing faction_id bug fixed (industrial_union -> miners_union in 4 existing templates, corrected count assertions in test_crew_data.py and test_crew_quests.py); full suite 8367/98 (baseline 8348/98, +19). All 13 ACs satisfied. PHASE_OK
 - 2026-04-26 23:13 — harness: review phase starting (rework cycle 0)
 - 2026-04-26 23:16 — review complete; all 13 ACs verified, all 4 planner polish items delivered, 0 critical findings, 0 minor findings. Writing Bible scanner 17/17. Full suite 8367/98. JSON data, tests, voice sheets, ambient banter all confirmed correct against SA-A1 spec. PHASE_OK
-
+- 2026-04-26 23:18 — harness: review passed, marking done
 **Last phase report.**
 - Phase: review
 - Outcome: PHASE_OK
@@ -589,7 +589,7 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 
 #### SA-B-EXT-1 — Sub-reputation system
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Phase B | **Size**: M | **Effort**: 5-7 days
 **Depends on**: none | **Blocks**: SA-1, SA-B3, SA-B4
 
@@ -629,7 +629,7 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 9. Saves missing the `sub_reputation` key load with `player.sub_reputation == {}`. No crash. No warning that breaks tests.
 10. The notification queue (`_pending_sub_rep_deltas`) is NOT serialized — round-tripping a player drops the queue (matches `_pending_faction_deltas` precedent).
 11. Tests cover at least 3 organizations with different tier structures (1-tier, 3-tier, 4-tier).
-12. `ruff format`, `ruff check`, `mypy` clean. Full test suite green at >= 8304 passing (pre-phase baseline).
+12. `ruff format`, `ruff check`, `mypy` clean. Full test suite green at >= 8367 passing, skips == 98 (pre-phase baseline as of 2026-04-26 plan re-pickup).
 
 **Plan.**
 1. **Author `requirements/sub_reputation_design.md`** (~30 minutes). Short design doc. Sections: (a) what sub-reputation is and isn't (per-organization standing; not a parallel faction system, not a lockout mechanism, not auto-tied to faction-rep gain), (b) the `OrganizationConfig` / `OrganizationTier` shape, (c) the registry pattern (consumer sprints declare their own configs in their own modules — SA-1 declares the Wreckers' Guild config in `spacegame/models/wreckers_guild.py`), (d) range and clamping rules (0-100 default; configurable), (e) notification queue contract for downstream views, (f) save chain (reuses Player serialization — single `sub_reputation` dict field, no separate save manager), (g) two worked examples shown as illustrative configurations (Wreckers' 3-tier, Stellaris 4-tier) explicitly marked "owned by SA-1 / SA-B3 — not implemented in this sprint." Resolves `station_anchors.md` line 253. Touches: `requirements/sub_reputation_design.md` (NEW). Tests: none (doc-only).
@@ -646,7 +646,7 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 
 7. **Implement save/load round-trip** (TDD green). In `spacegame/save_manager.py`: add `"sub_reputation": player.sub_reputation` to `_player_to_dict` next to `"faction_reputation"`. Add `player.sub_reputation = data.get("sub_reputation", {})` to `_player_from_dict` next to the corresponding faction-rep load. Touches: `spacegame/save_manager.py`. Tests: from step 6 turn green.
 
-8. **Run lint, format, type-check, full test suite**. `ruff format spacegame/ tests/`, `ruff check spacegame/ --fix`, `mypy spacegame/`, `pytest -n auto -q`. Confirm pass count >= 8304 and skip count == 98. If any pre-existing failure surfaces unrelated to this sprint, note in Activity log but do not chase. Touches: none (validation step).
+8. **Run lint, format, type-check, full test suite**. `ruff format spacegame/ tests/`, `ruff check spacegame/ --fix`, `mypy spacegame/`, `pytest -n auto -q`. Confirm pass count >= 8367 and skip count == 98 (per 2026-04-26 baseline). If any pre-existing failure surfaces unrelated to this sprint, note in Activity log but do not chase. Touches: none (validation step).
 
 9. **Update Status to `review` and append phase report**. Move `Status` from `in-progress` to `review`. Append the `**Last phase report.**` block per agent convention. Commit with `SA-B-EXT-1: ...` prefix.
 
@@ -665,6 +665,20 @@ The following decisions were locked during planning:
 - 2026-04-26 — todo (created)
 - 2026-04-26 18:14 — plan phase ran in pilot but blocked by sandbox; planning content recovered from agent stdout and applied to this sprint section
 - 2026-04-26 — plan content recovered; ready for re-pickup by harness (next plan phase will see substantive existing plan and confirm/refine)
+- 2026-04-26 23:19 — harness: plan phase starting
+- 2026-04-26 23:35 — plan re-pickup: verified all 6 Context-to-read paths exist; verified existing plan structure (9 plan steps, 12 acceptance criteria, 6 locked decisions, complete touch zones) aligns with `station_anchors.md` Phase B vision ("Extend the reputation model to support per-organization standing layered under per-faction standing. Tests, save support."); confirmed scope is correctly foundational (zero concrete configs ship — Wreckers' / Auctioneer / SA-B4 own theirs per registry pattern); polish items (tutorial integration, journal beats, achievement unlocks, crew banter, empty/loading/error states) all deferred to consumer sprints since this sprint ships no UI surfaces; refreshed acceptance criterion 12 + plan step 8 baseline from stale 8304 to current 8367 (skips 98); no scope expansion or new sprints needed. PHASE_OK
+
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-04-26 23:19
+- Completed: 2026-04-26 23:35
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: pending
+- New_sprints_proposed: none
+- Polish_items_folded_in: none (foundation sprint; all polish belongs to consumer sprints SA-1, SA-B3, SA-B4)
+- Decisions_locked: 6 (carried forward from prior plan recovery — save chain reuse, 0-100 default range, frozen-dataclass configs, registry pattern, default-tier semantics, ephemeral notification queue)
+- Notes: Verified all 6 context docs exist. Verified existing plan was substantive and accurate against current source state (`Player.modify_reputation` at player.py:877, `_pending_faction_deltas` drain at engine/game.py:5386, save round-trip at save_manager.py:440/591). Refreshed test baseline references (criterion 12, plan step 8) to current 8367/98. No scope expansion warranted — sprint is correctly foundational, polish is correctly deferred. Ready for implementer pickup.
 
 ### Phase C — Skill Tree Extensions
 
