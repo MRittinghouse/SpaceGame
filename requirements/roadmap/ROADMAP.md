@@ -28,7 +28,7 @@ The SA-arc table below is **auto-regenerated** by the ralph harness from the spr
 |---|---|---|---|---|---|
 | [SA-PREP-1](#sa-prep-1--npc-voice-sheet-audit) | NPC voice-sheet audit | 0 | M | done | none |
 | [SA-PREP-2](#sa-prep-2--existing-data-audit) | Existing-data audit | 0 | S | done | none |
-| [SA-PREP-3](#sa-prep-3--playtest-baseline-telemetry) | Playtest baseline telemetry | 0 | S | todo | none |
+| [SA-PREP-3](#sa-prep-3--playtest-baseline-telemetry) | Playtest baseline telemetry | 0 | S | done | none |
 | [SA-A1](#sa-a1--crew-specialization-design) | Crew specialization design | A | S | todo | SA-PREP-2 |
 | [SA-A2](#sa-a2--crew-template-implementation) | Crew template implementation | A | M | todo | SA-A1 |
 | [SA-B-EXT-1](#sa-b-ext-1--sub-reputation-system) | Sub-reputation system | B | M | todo | none |
@@ -291,7 +291,7 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 
 #### SA-PREP-3 — Playtest baseline telemetry
 
-**Status**: in-progress (reviewing)
+**Status**: done
 **Phase**: Phase 0 | **Size**: S | **Effort**: 2-3 days
 **Depends on**: none | **Blocks**: (informational only — does not block subsequent sprints)
 
@@ -368,7 +368,7 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 - 2026-04-26 — full suite 8347 passed (baseline 8326, +21 new tests); all gates green. PHASE_OK
 - 2026-04-26 22:13 — harness: review phase starting (rework cycle 0)
 - 2026-04-26 — review complete; 1 minor finding fixed directly (missing disabled-dwell test for AC 6 "any path" coverage); all 7 ACs verified; 8348 passing (+22 vs baseline). PHASE_OK
-
+- 2026-04-26 22:22 — harness: review passed, marking done
 **Last phase report.**
 - Phase: review
 - Outcome: PHASE_OK
@@ -388,31 +388,87 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 
 #### SA-A1 — Crew specialization design
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Phase A | **Size**: S | **Effort**: 3-5 days
 **Depends on**: SA-PREP-2 | **Blocks**: SA-A2
 
-**Goal.** Identify which crew templates need new specializations to support SA systems (Negotiator for Bidding, Mediator/Coalition Builder for Politics, Speculator for Financial, Patron for Research). Decide whether to add new templates or extend existing.
+**Goal.** Lock the crew-specialization set that SA arc systems require to "feel right" (per `station_anchors.md` Phase A: "Bidding crew can read other bidders, Politics crew can sway delegates"). Produce a design doc that names each specialization, defines its `bonus_type` strings and magnitude ranges, identifies the anchor system(s) and consuming sprint(s) it integrates with, and decides for each one whether to extend an existing crew template or author a net-new one. The doc is the single source of truth that SA-A2 implements against and that SA-1 / SA-P / SA-B / SA-R / SA-F consume from when their views call `get_bonus(...)`. No code in this sprint.
 
 **Context to read.**
-- `data/crew/*.json` (existing templates)
-- `spacegame/models/crew.py`
-- `requirements/station_anchors.md`
-- `requirements/sa_audit_findings.md` (from SA-PREP-2)
+- `requirements/station_anchors.md` (Phase A section + integration commitments per system; Decision 3 — "extend existing trees" — anchors the bonus_type-string convention)
+- `requirements/sa_audit_findings.md` (especially "Sub-Faction and Organization References" + "Current Reputation Architecture": tells us what does NOT exist yet, so the design doesn't assume infrastructure SA-A2 cannot lean on)
+- `requirements/character_voices.md` lines 573-637 (SA-PREP-1 NPC inventory + speaker_id registry; new specialist crew must register here to keep the inventory canonical)
+- `requirements/onboarding_design.md` (six teaching principles — apply unchanged to specialist crew introductions)
+- `data/crew/crew_members.json` (existing templates; verify naming and bonus_type collisions before locking new strings)
+- `spacegame/models/crew.py` (CrewTemplate dataclass + CrewRoster.get_bonus aggregation; companion vs. non-companion behavior at lines 277-289)
+- `spacegame/models/progression.py` (existing skill IDs and bonus_type strings; the `negotiator` skill ID at line 385 collides with the vision's "Negotiator" label and forces a renaming decision)
+- `CLAUDE.md` (Skill System section — bonus_type discipline; Cross-Cutting Concerns table — crew abilities row)
 
 **Touch zones.**
 - `requirements/sa_crew_design.md` (NEW)
+- `requirements/character_voices.md` (extend the SA-PREP-1 inventory table + speaker_id registry with one row per net-new specialist crew; do not modify any other section)
 
 **Deliverables.**
-- Design doc covering: which specializations to add, whether new templates or extensions to existing, bonus ranges, how the bonus integrates with anchor mechanics.
+- `requirements/sa_crew_design.md` covering, in this order:
+  1. Specialization roster (one block per specialization: name, role label, target anchor system(s), `home_system_id` and `faction_id` candidates, persona seed of 3-5 sentences for SA-A2's voice sheet).
+  2. Bonus-naming convention table (every new `bonus_type` string the SA arc will consume, with description, magnitude range, intended consumer view file(s), and a note on whether it is read via `crew_roster.get_bonus()`, `progression.get_bonus()`, or both).
+  3. Cross-reference matrix: specialization → consuming SA sprint(s) → consuming view file(s) → integration mechanism (one row per specialization).
+  4. Decisions-locked section restating the resolved open questions with rationale.
+  5. Save-migration note explicitly confirming whether new bonus_type strings or template fields require save format changes.
+  6. Hand-off checklist for SA-A2 (JSON template entries, voice sheets, ambient banter, integration tests).
+- `requirements/character_voices.md` SA-PREP-1 inventory table extended with one row per net-new specialist crew NPC (status: net-new, speaker_id candidate, consuming sprint = SA-A2 plus relevant downstream sprint(s)). Speaker_id Registry Table (lines 615-637) extended in the same edit.
 
 **Acceptance criteria.**
-1. Each new specialization has a defined bonus type and bonus magnitude range.
-2. Each specialization names at least one anchor system it integrates with.
-3. Decision locked on extension vs. new templates.
+1. `requirements/sa_crew_design.md` exists.
+2. The doc names each new specialization with a label that does NOT collide with any existing skill ID in `spacegame/models/progression.py` (search target list at minimum: `negotiator`, `master_negotiator`, `mediator`, `tariff_negotiation`, `trade_network`) and does NOT collide with any existing crew `role` label in `data/crew/crew_members.json` (existing role labels include `negotiator`, `diplomatic aide`, `trader`, `market analyst`).
+3. Every anchor system that the strategic vision identifies as needing crew support (Bidding, Politics — both advocate and arbitration variants — Financial, Research) is covered by at least one specialization in the roster, AND each specialization names at least one anchor system AND one consuming SA sprint by ID.
+4. Every specialization in the roster declares at least one `bonus_type` string in snake_case with: description (one sentence), magnitude range (numeric, e.g., `0.05-0.15` or `+1 to +3`), the consuming view file path(s) where `get_bonus(...)` will be called by a downstream sprint.
+5. The bonus-naming convention table lists every new `bonus_type` string introduced by the design and confirms (per string) whether it is read via `crew_roster.get_bonus()`, `progression.get_bonus()` (matching SA-C1/SA-C2 skill bonus_types), or both. No string in the table collides with an existing bonus_type already used in `data/crew/crew_members.json` or `spacegame/models/progression.py` — collisions are listed and explicitly resolved.
+6. The cross-reference matrix has one row per specialization with non-empty values for: consuming SA sprint(s), consuming view file(s), integration mechanism (a one-sentence summary of how the bonus shows up in player-visible behavior).
+7. The decisions-locked section resolves all five items in the Risks / open questions block below, each with a one-paragraph rationale.
+8. The `character_voices.md` SA-PREP-1 NPC inventory table AND speaker_id registry both contain one new row per net-new specialist crew NPC. Each new row names: NPC name, status (`net-new`), speaker_id candidate (snake_case), consuming sprint(s) including SA-A2 as the authoring sprint. Banned-name policy from the cultural guide is honored.
+9. The save-migration note explicitly states whether new bonus_type strings, new template fields, or new crew state fields require any change to `CrewRoster.get_state()` / `load_state()` (`spacegame/models/crew.py` lines 637-679) and gives the reasoning. If migration is required, the note describes the back-compat default for old saves.
+10. Writing Bible scanner clean on all prose in `sa_crew_design.md` and the new `character_voices.md` rows: no em-dashes, no banned NPC names from the cultural guide (Yara, Elara, Kael, Mara, Lydia, Clive, Magnus, Ambrose), no "couldn't help but," no "a testament to," no "no X, no Y" parallel-negation rhetoric in any quoted persona-seed line.
+
+**Risks / open questions.**
+- ~~Decision 1 — Specialization set scope.~~ **LOCKED**: Five specializations, covering all four Phase A-named anchor systems plus the Politics arbitration variant the vision calls out at SA-P5. Set: **Auction Reader** (Bidding), **Coalition Builder** (Politics, advocate), **Arbiter** (Politics, neutral / SA-P5 gray-market mediation), **Speculator** (Financial), **Patron** (Research). *Rationale*: The vision (`station_anchors.md`, Phase A header + Phase II/III/IV/V integration commitments) names exactly these four anchor systems and explicitly distinguishes Mediator from Coalition Builder ("Politics neutral" vs. "Politics advocate"). Five is the minimum that lets every Phase II-V system find a crew slot. SA-A1 is design-only — adding a sixth speculative specialization would push the implementer (SA-A2) outside its M-size envelope without a known consumer.
+- ~~Decision 2 — Naming scheme to avoid collisions.~~ **LOCKED**: Use the five names above and explicitly **do not** reuse the label "Negotiator" or "Mediator" for the crew specialization. *Rationale*: `spacegame/models/progression.py` already defines a `negotiator` Commerce skill node (line 385) and a `master_negotiator` capstone (line 1049); `data/crew/crew_members.json` already gives Leah Chen the role label `"negotiator"` with trade-price bonuses unrelated to bidding. Reusing the Negotiator name for a Bidding-specialist crew would create three different things called "Negotiator" with three different bonus_types — exactly the kind of cross-cutting confusion the project's bonus_type discipline is supposed to prevent. "Auction Reader" makes the bidding-specific function legible at the hire screen without overloading existing terminology. "Arbiter" is similarly distinct from the SA-P5 venue label "Wreckers' Guild gray-market mediation" while staying readable.
+- ~~Decision 3 — Extend existing crew templates vs. author net-new.~~ **LOCKED**: **Net-new templates** for all five specializations. *Rationale*: The closest existing matches are Leah Chen (`negotiator` role; bonuses are `buy_price_reduction` + `sell_price_bonus`, neither of which maps to bidding mechanics) and Adisa Nyong'o (`diplomatic aide`; bonuses are `reputation_gain_bonus` + `diplomatic_rep_bonus`, neither of which maps to a Politics dispute UI). Extending those crew would require rewriting their identities and breaking the assumption that an existing recruited crew member's bonuses are stable across saves. Net-new templates are cheaper, give SA-A2 freedom on faction / home_system_id / voice, and keep loyalty/companion semantics for existing companions untouched.
+- ~~Decision 4 — Bonus integration pattern: crew-only, skill-only, or both.~~ **LOCKED**: **Both.** Each new `bonus_type` string is read via BOTH `crew_roster.get_bonus(...)` AND `progression.get_bonus(...)` in the consuming view; the values sum. SA-C1/SA-C2 (the skill-tree extension sprints) will introduce matching skill nodes that emit the same string. *Rationale*: This is the project's existing pattern — see `cargo_bonus`, `fuel_efficiency_bonus`, `salvage_yield`, `extra_scan_charges`, etc. all of which are read from both sources and summed in the consuming view (e.g., `views/mining_view.py:417`, `models/ship.py:259-265`). Using one source only would fork the SA arc's bonus aggregation off the project's standard pattern and produce surprises during integration.
+- ~~Decision 5 — Companion vs. non-companion semantics.~~ **LOCKED**: All five new specialist crew are **non-companions** (`is_companion: false`, `max_level: 1`, single-tier abilities, no XP, no per-NPC loyalty multiplier). *Rationale*: Per `spacegame/models/crew.py` lines 286-288, only companions receive the loyalty-multiplier scaling (1.25× at Loyal, 1.5× at Devoted) on `get_bonus`. Companions are story-bound (Elena, Marcus, Priya, Tomas) with full crew-quest arcs; the SA arc specialists are journeyman-tier hires keyed to the anchor systems, not story arcs. Treating them as non-companions keeps companion identity intact and gives SA-A2 a clean implementation envelope (no quest authoring, no loyalty curve tuning).
+
+**Plan.** (7 tasks, sequenced)
+
+1. **Read-only context pass (~30 min).** Re-read the locked-decision rationales above against the live state of `progression.py` (existing skill IDs and bonus_types), `crew_members.json` (existing crew labels and bonus_types), and the SA-PREP-1 inventory in `character_voices.md`. Confirm zero collisions on the five locked specialization names AND on the planned bonus_type strings BEFORE writing the design doc. Output: a short collision check (one line per specialization) saved as scratch notes for the design-doc draft. *Risk*: a string collision discovered after the doc is published forces SA-A2 to thrash. The point of this task is to catch it now.
+
+2. **Bonus-naming convention table (~45 min).** For each of the five specializations, define one or two `bonus_type` strings (snake_case, descriptive) plus magnitude ranges. Candidate strings to anchor on (final values lock during the draft, but these are the seeds): Auction Reader → `auction_bid_visibility` (binary 0/1, reveal one rival ceiling) and `auction_lot_appraisal_bonus` (0.05-0.15, post-win valuation accuracy); Coalition Builder → `coalition_sway_bonus` (0.10-0.25, delegate persuasion modifier) and `coalition_size_bonus` (+1 to +2, max delegates pre-committable per dispute); Arbiter → `arbitration_neutrality_bonus` (0.10-0.20, partial-win odds shift) and `arbitration_dispute_intel` (binary, reveal hidden delegate position); Speculator → `futures_intel` (binary, reveal one futures-contract probability band) and `speculator_premium_reduction` (0.05-0.15, lower spread on contract entry); Patron → `research_yield_bonus` (0.05-0.15, increased project return) and `research_risk_reduction` (0.05-0.15, lower failure odds). Each row in the table records: string, description, magnitude range, consuming view file path(s), source(s) read from (crew, skill, both). *Gotcha*: do not introduce strings that share a prefix with an existing string in a way that would break naive substring searches in tooling (e.g., `salvage_yield` already exists, so `research_salvage_yield` is fine but `salvage_yield_bonus` is not).
+
+3. **Per-specialization design blocks (~90 min).** One block per specialization. Each block contains: name, one-line role label suitable for `data/crew/crew_members.json#role`, the bonus_type strings from task 2 with locked magnitude values for level 1 (non-companion crew are flat-bonus only, so no per-level scaling), `home_system_id` candidate (one of the existing system IDs in `data/galaxy/systems.json`), `faction_id` candidate (one of the existing faction IDs), hireability gating note (any rep tier or flag prerequisite the SA-A2 implementer should consider), and a 3-5 sentence persona seed that gives SA-A2 enough character DNA to author the voice sheet. *Risk*: persona seeds can drift into voice-sheet authoring scope. Keep them seed-length only; SA-A2 owns the full sheet.
+
+4. **Cross-reference matrix (~30 min).** One row per specialization. Columns: specialization name, consuming SA sprint(s) (e.g., SA-1 / SA-P3 / SA-P4 / SA-P5 / SA-B3 / SA-B4 / SA-R1 / SA-F2 / SA-F3), consuming view file path(s) (predicted; the views may not exist yet — note that explicitly), integration mechanism (one sentence: how the bonus changes player-visible behavior in that view). The matrix is the artifact downstream sprint planners will read first. *Gotcha*: it is fine for the consuming view path to be `(view file authored in SA-P3 — does not exist yet)`; the matrix is forward-looking.
+
+5. **Update `character_voices.md` SA-PREP-1 inventory + speaker_id registry (~30 min).** Append five new rows to BOTH the inventory table (lines 587-609) and the speaker_id registry (lines 615-637). For each new specialist crew NPC: NPC name (a placeholder character name per the cultural guide's naming guidance, with banned-name policy honored), status `net-new`, speaker_id candidate (snake_case), consuming sprint = `SA-A2 (authoring), <downstream sprint ID(s)>`. Confirm names against the banned list (Yara, Elara, Kael, Mara, Lydia, Clive, Magnus, Ambrose) before committing. *Risk*: stepping on existing speaker_ids — search the file for the candidate string before writing it.
+
+6. **Decisions-locked + save-migration + hand-off sections (~30 min).** Restate the five decisions above in the design doc with one-paragraph rationale each (do not just link back to ROADMAP). Save-migration note: confirm new bonus_type strings require zero save migration (the `CrewRoster.get_state()` / `load_state()` chain serializes the recruited list, per-member state, and `bonus_abilities`; new bonus_type strings flow through unchanged because they are values inside an existing serialized dict, not new top-level fields). If the design adds any new template field, surface it explicitly. Hand-off section: bullet list of what SA-A2 produces (JSON template entries, voice sheets per `character_voices.md` standard, 3-5 ambient banter samples per specialist, integration tests in `tests/test_models/test_crew.py`).
+
+7. **Voice-check + commit (~15 min).** Read the doc end-to-end and remove em-dashes (replace with periods or commas), check for banned phrases ("couldn't help but," "a testament to," parallel-negation "no X, no Y"), confirm no banned NPC names. Commit `requirements/sa_crew_design.md` and the `character_voices.md` update in the same commit referencing SA-A1.
 
 **Activity log.**
 - 2026-04-26 — todo (created)
+- 2026-04-26 22:23 — harness: plan phase starting
+- 2026-04-26 22:55 — planning complete; locked 5 decisions (specialization set, naming-collision avoidance, net-new templates, dual crew+skill bonus reads, non-companion semantics); folded in 3 polish items (voice-sheet inventory update in `character_voices.md`, bonus-naming convention table as standalone section, cross-reference matrix); refined ACs from 3 → 10 to make every design-doc section mechanically verifiable; expanded Touch zones to include `character_voices.md` because the SA-PREP-1 inventory table is the canonical NPC registry. PHASE_OK
+
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-04-26 22:23
+- Completed: 2026-04-26 22:55
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: pending
+- New_sprints_proposed: none
+- Polish_items_folded_in: voice-sheet inventory update in character_voices.md (SA-PREP-1 registry stays canonical); bonus-naming convention table as standalone section (single source of truth for cross-sprint bonus_type discipline); cross-reference matrix specialization → consuming sprint → consuming view (forward-looking artifact for downstream planners).
+- Decisions_locked: 5
+- Notes: All four context-to-read paths exist and were read in full. Vision named the four anchor-system specializations explicitly, so planning's job was to lock the naming and integration pattern, not re-discover scope. Naming-collision risk was real (existing `negotiator` skill and `negotiator` crew role label) and is now resolved by using "Auction Reader" / "Arbiter" / "Coalition Builder" / "Speculator" / "Patron". Sprint stays Size S; no scope expansion past the design-doc deliverable.
 
 #### SA-A2 — Crew template implementation
 
