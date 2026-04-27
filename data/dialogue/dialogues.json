@@ -4621,6 +4621,11 @@
                             "required_flags": [
                                 "signal_mission_accepted"
                             ]
+                        },
+                        {
+                            "text": "What is the restricted wing on B-deck actually used for?",
+                            "next_node_id": "nas_intelligence",
+                            "excluded_flags": ["heard_nas_intelligence", "cargo_lost_accepted", "signal_mission_accepted"]
                         }
                     ],
                     "expression": "happy"
@@ -4741,6 +4746,35 @@
                         }
                     ],
                     "expression": "sad"
+                },
+                {
+                    "id": "nas_intelligence",
+                    "speaker_id": "nova_researcher",
+                    "text": "*She glances toward the corridor.* Three weeks ago, a signal came through on a frequency our array uses for deep-field reconnaissance. Normally that goes to the shared repository with a cross-section notification. This one went directly to the restricted wing on B-deck. I checked the logging system the next morning. The entry exists, but the data itself has been stripped. What remains is a timestamp and a routing code that does not match any current project.",
+                    "responses": [
+                        {
+                            "text": "What kind of signals end up there?",
+                            "next_node_id": "nas_intelligence_reveal"
+                        },
+                        {
+                            "text": "A routing code from where?",
+                            "next_node_id": "nas_intelligence_reveal"
+                        }
+                    ],
+                    "expression": "cautious"
+                },
+                {
+                    "id": "nas_intelligence_reveal",
+                    "speaker_id": "nova_researcher",
+                    "text": "I filed a data discrepancy report. Standard. The report was acknowledged within the hour. *She lowers her voice.* Then the access log for that acknowledgment was also stripped. Someone in the restricted wing has clearance that does not appear on any org chart I can access. I am probably on a list for telling you this. But you seem like someone who pays attention, and I thought it was worth saying out loud.",
+                    "responses": [
+                        {
+                            "text": "[Leave]",
+                            "next_node_id": null,
+                            "set_flag": "heard_nas_intelligence"
+                        }
+                    ],
+                    "expression": "cautious"
                 }
             ]
         },
@@ -5621,6 +5655,11 @@
                         {
                             "text": "What does compliance actually look like at Iron Depths?",
                             "next_node_id": "reality"
+                        },
+                        {
+                            "text": "There's been unusual activity near the restricted sector.",
+                            "next_node_id": "dcmc_intelligence",
+                            "excluded_flags": ["heard_dcmc_intelligence", "iron_depths_investigation_accepted"]
                         }
                     ],
                     "expression": "neutral"
@@ -5721,6 +5760,35 @@
                         }
                     ],
                     "expression": "neutral"
+                },
+                {
+                    "id": "dcmc_intelligence",
+                    "speaker_id": "naveen_prakash",
+                    "text": "Keep your voice down. My audit covers maintenance logs and personnel rotations. Three months ago, DCMC reclassified Sector 7 as a geological hazard zone. That reclassification should come with updated maintenance records. It did not. Someone adjusted the rotation schedules to exclude the standard inspection cycles. Two independent record systems changed on the same date. That is not how geological assessments work.",
+                    "responses": [
+                        {
+                            "text": "What are they hiding in there?",
+                            "next_node_id": "dcmc_intelligence_reveal"
+                        },
+                        {
+                            "text": "Could it really be geological?",
+                            "next_node_id": "dcmc_intelligence_reveal"
+                        }
+                    ],
+                    "expression": "cautious"
+                },
+                {
+                    "id": "dcmc_intelligence_reveal",
+                    "speaker_id": "naveen_prakash",
+                    "text": "The clearing form used in those records is not a standard Guild document. I have seen it once, in an internal review that was sealed three weeks after I submitted my findings. I am not drawing conclusions. That falls outside my remit. *He sets the data pad face-down on the table.* I have written this particular supplementary note four times now. Four.",
+                    "responses": [
+                        {
+                            "text": "[Leave]",
+                            "next_node_id": null,
+                            "set_flag": "heard_dcmc_intelligence"
+                        }
+                    ],
+                    "expression": "cautious"
                 }
             ]
         },

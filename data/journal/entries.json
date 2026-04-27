@@ -181,6 +181,20 @@
       "trigger_flag": "arna_pendant_revealed",
       "system_id": "nexus_prime",
       "mission_id": ""
+    },
+    {
+      "entry_id": "auto_dcmc_intelligence",
+      "text": "Naveen Prakash confirmed what the restricted sector's maintenance logs imply: the DCMC reclassification does not match any standard hazard assessment. Someone cleared the records using a document form he has only seen once before, in a review that was sealed weeks after he submitted his findings. He has filed four supplementary notes. None of them have been read.",
+      "trigger_flag": "heard_dcmc_intelligence",
+      "system_id": "iron_depths",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_nas_intelligence",
+      "text": "Yuki Tanaka flagged an anomaly at Nova Research. A deep-field reconnaissance signal was routed directly to the restricted wing, bypassing the shared logging repository. Her discrepancy report was acknowledged, then the acknowledgment's own access log was stripped. Someone in that wing has clearance that does not appear on any org chart she can access.",
+      "trigger_flag": "heard_nas_intelligence",
+      "system_id": "nova_research",
+      "mission_id": ""
     }
   ]
 }
