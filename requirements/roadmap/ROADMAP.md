@@ -38,7 +38,7 @@ The SA-arc table below is **auto-regenerated** by the ralph harness from the spr
 | [SA-1](#sa-1--wreckers-guild-hall-salvage-contracts) | Wreckers' Guild Hall (Salvage Contracts) | I | L | done | SA-PREP-1, SA-A2, SA-B-EXT-1 |
 | [SA-2](#sa-2--deep-shafts-memorial--pilgrimage) | Deep Shafts memorial / pilgrimage | I | L | done | SA-PREP-1 |
 | [SA-V](#sa-v--cargo-broker-arc--investment-introduction) | Cargo Broker arc + Investment Introduction | I | M | done | SA-PREP-1 |
-| [SA-P1](#sa-p1--politics-system-design) | Politics System Design | II | M | todo | SA-PREP-1, SA-C2 |
+| [SA-P1](#sa-p1--politics-system-design) | Politics System Design | II | M | done | SA-PREP-1, SA-C2 |
 | [SA-P2](#sa-p2--politics-core) | Politics Core | II | XL | todo | SA-P1, SA-A2, SA-C2, SA-B-EXT-1 |
 | [SA-P3](#sa-p3--mayors-council-chamber-verdant-venue) | Mayors' Council Chamber (Verdant Venue) | II | L | todo | SA-P2 |
 | [SA-P4](#sa-p4--alliance-congress-hall-havens-rest-venue) | Alliance Congress Hall (Haven's Rest Venue) | II | L | todo | SA-P2, SA-P3 |
@@ -1431,7 +1431,7 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 
 #### SA-P1 — Politics System Design
 
-**Status**: in-progress (reviewing)
+**Status**: done
 **Phase**: Phase II | **Size**: M | **Effort**: 1 week
 **Depends on**: SA-PREP-1, SA-C2 | **Blocks**: SA-P2
 
@@ -1537,7 +1537,7 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 - 2026-04-27 16:30 — authored `requirements/sa_politics_design.md` (60 KB, 11 sections); all 15 acceptance criteria satisfied; test suite 8769/98 unchanged; Writing Bible scanner + dialogue-integrity scanner both clean; no code changes. PHASE_OK
 - 2026-04-27 15:44 — harness: review phase starting (rework cycle 0)
 - 2026-04-27 17:00 — review complete; 1 minor finding fixed directly (section 2.2 counter-argument mechanic had two errors: opposition qualifier listed as `leaning_yes/wavering` instead of `leaning_no/committed_no`, and counter-argument target described as "player's audience slot" contradicting Round 2 worked example where Hask targets Drift, not Hask). Fixed in commit e71ca89. All 15 acceptance criteria confirmed met. Test suite 8769/98. PHASE_OK
-
+- 2026-04-27 15:52 — harness: review passed, marking done
 **Last phase report.**
 - Phase: review
 - Outcome: PHASE_OK
