@@ -1008,7 +1008,7 @@ The following decisions were locked during planning:
 
 #### SA-1 — Wreckers' Guild Hall (Salvage Contracts)
 
-**Status**: in-progress (implementing)
+**Status**: in-progress (reviewing)
 **Phase**: Phase I | **Size**: L | **Effort**: 2-3 weeks
 **Depends on**: SA-PREP-1, SA-A2, SA-B-EXT-1 | **Blocks**: SA-P5, SA-B4
 
@@ -1122,23 +1122,24 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 - 2026-04-27 14:10 — R1 view + tests: secondary-contacts dock in `WreckersGuildView` with 3 buttons + in-view dialogue panel (greeting → craft → signoff → close); `get_contact_speaker_ids`, `_open_contact_dialogue`, `_advance_dialogue`, `_close_active_dialogue`, `get_active_dialogue_node` exposed for tests; 8 red view tests written (TDD), then green; scenario test extended with full 3-contact arc and per-node Writing Bible compliance check (9 distinct authored strings asserted).
 - 2026-04-27 14:15 — R2: collapsed `register_state(GameState.WRECKERS_GUILD, ...)` from 3-line multi-arg call to single line in `spacegame/engine/game.py:2179`.
 - 2026-04-27 14:20 — validation chain: ruff format clean (touched files), ruff check clean (touched files), mypy clean for touched files (pre-existing errors in unrelated modules unchanged), full suite 8625 → 8634 (+9 tests, 0 new failures, 98 skipped unchanged), Writing Bible scanner clean, SI-3 dialogue-integrity scanner clean. PHASE_OK
+- 2026-04-27 13:39 — harness: review phase starting (rework cycle 1)
+- 2026-04-27 15:10 — review complete (rework cycle 1); 1 minor finding fixed directly (`character_voices.md` torres_memorial reconciliation entry left open by implementer — Plan task 1 required closing it; updated to "Resolved: SA-1"); all 14 acceptance criteria verified, both polish fold-ins verified (tip overlay AC 10, journal entries AC 11); 96 SA-1-specific tests pass, full suite 8634 ≥ 8533. Single tighten: Paz's signoff line at `paz_reina_guild_hall/signoff` reads "who would otherwise have not been" — the inverted negation is audible as a register quirk but grammatically borderline; would re-order to "who would otherwise not have been" on a second pass. Not a blocker. PHASE_OK
+
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-04-27 13:27
-- Completed: 2026-04-27 14:20
-- Files_changed: data/characters/npcs.json, data/dialogue/dialogues.json, spacegame/engine/game.py, spacegame/views/wreckers_guild_view.py, tests/test_scenarios/test_scenario_wreckers_arc.py, tests/test_views/test_wreckers_guild_view.py
-- Commits: 066c9dc, 821a64b, adade6c
-- Tests_added: 9
-- Tests_baseline: 8625
+- Started: 2026-04-27 15:00
+- Completed: 2026-04-27 15:10
+- Files_changed: requirements/character_voices.md
+- Commits: a774b03
 - Tests_passing: 8634
-- Tests_skipped: 98
-- Lint_clean: yes
-- Format_clean: yes
-- SI3_scanner_clean: yes
-- Writing_bible_clean: yes
-- Touch_zones_respected: yes (note: planner referenced `data/galaxy/npcs.json` for NPC entries; canonical path is `data/characters/npcs.json` — used the canonical path)
-- Notes: Rework cycle 1 closes both review findings. R1 lands Paz Reina / Daro Teck / Ife Obi as interactive speakers with 3-node dialogue trees each, surfaced through a secondary-contacts dock below the contract board; each contact's voice register is preserved (Paz's confirmed/estimated tagging, Daro's assessment-then-reasoning, Ife's cataloging language). R2 collapses the 3-line `register_state` call onto one line. Acceptance criterion 12 now verifiable end-to-end via `test_secondary_contacts_walk_full_dialogues_after_enrollment`.
+- Acceptance_criteria_verified: 14/14
+- Polish_items_verified: 2/2
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 1
+- Single_tighten: Paz's signoff node reads "who would otherwise have not been" — inverted negation is a register quirk; "who would otherwise not have been" is the standard form. Worth a single-pass fix, not a blocker.
+- Followup_sprints_added: none
+- Notes: R1 (secondary contacts dock) and R2 (register_state format) both land cleanly. AC 12 voice-register distinctness verified by scanner + per-node compliance + test_distinct_voice_registers. AC 13 (mission regression) clean via chapter3 + side-mission data tests. Minor direct fix: closed the torres_memorial reconciliation note that Plan task 1 required but the implementer left as "Resolution is SA-1 scope."
 
 #### SA-2 — Deep Shafts memorial / pilgrimage
 
