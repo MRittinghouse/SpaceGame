@@ -587,3 +587,17 @@ def seen_annual_congress_tip() -> str:
     mechanic-essential rather than flavor.
     """
     return "seen_annual_congress_tip"
+
+
+def seen_gray_market_arbitration_tip() -> str:
+    """Flag set after the player dismisses the gray-market arbitration tip overlay.
+
+    One-shot per save. Producer (SA-P5): the dispute view's on-dismiss
+    callback for the Crimson Reach arbitration tutorial overlay, fired
+    only when the player enters the Crimson Reach dispute view for the
+    first time. Consumer (SA-P5): the same view's Reach-entry guard.
+    The overlay explains the tier-based access model for the Guild floor.
+    Read in two places (overlay gate AND dismissal callback) per the
+    SA-P3/P4 LOCKED convention for tutorial flags.
+    """
+    return "seen_gray_market_arbitration_tip"

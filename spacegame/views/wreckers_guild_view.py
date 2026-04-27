@@ -130,6 +130,9 @@ class WreckersGuildView(BaseView):
         self.turn_in_button: Optional[pygame_gui.elements.UIButton] = None
         self.make_up_button: Optional[pygame_gui.elements.UIButton] = None
         self._accept_buttons: dict[str, pygame_gui.elements.UIButton] = {}
+        # SA-P5: tier-gated entry into the Arbitration Chamber dispute venue.
+        # Rendered only when current_tier_id != "unjoined".
+        self.arbitration_chamber_button: Optional[pygame_gui.elements.UIButton] = None
         # Secondary contacts dock — one button per recurring speaker.
         self._contact_buttons: dict[str, pygame_gui.elements.UIButton] = {}
         self._dialogue_continue_button: Optional[pygame_gui.elements.UIButton] = None
@@ -315,6 +318,21 @@ class WreckersGuildView(BaseView):
                 manager=self.ui_manager,
             )
 
+        # SA-P5: Arbitration Chamber entry — visible only to enrolled members.
+        # Rendered as a supplementary action button aligned with the turn-in
+        # row so the player can reach the dispute view from within the Hall.
+        if current_tier_id(self.player.sub_reputation) != "unjoined":
+            self.arbitration_chamber_button = pygame_gui.elements.UIButton(
+                relative_rect=pygame.Rect(
+                    PANEL_X + scale_x(20),
+                    BOARD_TOP_Y + scale_y(60),
+                    scale_x(220),
+                    scale_y(40),
+                ),
+                text="Arbitration Chamber",
+                manager=self.ui_manager,
+            )
+
         # Accept buttons — one per offer.
         for idx, template_id in enumerate(self._offer_template_ids):
             tpl = get_template(template_id)
@@ -388,6 +406,7 @@ class WreckersGuildView(BaseView):
             self.turn_in_button,
             self.make_up_button,
             self._dialogue_continue_button,
+            self.arbitration_chamber_button,
         ):
             if elem:
                 elem.kill()
@@ -396,6 +415,7 @@ class WreckersGuildView(BaseView):
         self.turn_in_button = None
         self.make_up_button = None
         self._dialogue_continue_button = None
+        self.arbitration_chamber_button = None
         for btn in self._accept_buttons.values():
             btn.kill()
         self._accept_buttons.clear()
@@ -820,6 +840,13 @@ class WreckersGuildView(BaseView):
                 return
             if event.ui_element == self.turn_in_button:
                 self._turn_in_active_contract()
+                return
+            # SA-P5: Arbitration Chamber — routes to the Reach dispute venue.
+            if (
+                self.arbitration_chamber_button is not None
+                and event.ui_element == self.arbitration_chamber_button
+            ):
+                self.next_state = GameState.DISPUTE
                 return
             if (
                 self._dialogue_continue_button is not None

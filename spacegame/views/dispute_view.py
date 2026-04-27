@@ -13,6 +13,7 @@ state-error coverage) only.
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from enum import Enum
 from typing import TYPE_CHECKING, Optional
 
@@ -29,6 +30,7 @@ from spacegame.config import (
 from spacegame.constants.flags import (
     seen_annual_congress_tip,
     seen_argument_composer_tip,
+    seen_gray_market_arbitration_tip,
     seen_politics_venue_tip,
 )
 from spacegame.engine.draw_utils import draw_panel, word_wrap
@@ -41,6 +43,7 @@ from spacegame.models.politics_dispute import (
     PoliticsDispute,
     PoliticsDisputeManager,
 )
+from spacegame.models.wreckers_guild import current_tier_id
 from spacegame.utils.logger import logger
 from spacegame.views.base_view import BaseView
 from spacegame.views.first_time_tip import FirstTimeTipOverlay
@@ -86,6 +89,63 @@ ANNUAL_CONGRESS_TIP_BODY = (
     "votes. The bigger the coalition before the floor opens, the better the "
     "outcome."
 )
+# SA-P5 gray-market arbitration tip. Fires once on first entry to the
+# Crimson Reach dispute view (and only there). Five short declaratives,
+# supervisor register, voice-checked against the Writing Bible.
+GRAY_MARKET_ARBITRATION_TIP_TITLE = "Gray-Market Arbitration"
+GRAY_MARKET_ARBITRATION_TIP_BODY = (
+    "The Guild settles what the law won't. Apprentices watch. "
+    "Journeymen argue. Masters mediate. "
+    "Earn your tier to unlock more of the room."
+)
+
+# SA-P5: Per-venue visual theme hook. Pulling palette values from the
+# ReachDarkLayout register (station_layouts.py:971-973) so the Crimson
+# Reach chamber reads dim-by-default. Verdant + Haven's Rest get neutral
+# defaults that preserve SA-P3/SA-P4 byte-for-byte rendering.
+
+
+@dataclass(frozen=True)
+class VenueTheme:
+    """Immutable per-venue color palette for the dispute view."""
+
+    accent_color: tuple[int, int, int]
+    bg_dim_alpha: int
+    panel_bg_color: tuple[int, int, int]
+
+
+_DEFAULT_VENUE_THEME = VenueTheme(
+    accent_color=(100, 130, 90),
+    bg_dim_alpha=120,
+    panel_bg_color=(15, 25, 15),
+)
+_REACH_VENUE_THEME = VenueTheme(
+    accent_color=(180, 50, 40),
+    bg_dim_alpha=160,
+    panel_bg_color=(12, 8, 8),
+)
+_VENUE_THEMES: dict[str, VenueTheme] = {
+    "verdant_mayors_council": _DEFAULT_VENUE_THEME,
+    "havens_congress_hall": _DEFAULT_VENUE_THEME,
+    "crimson_wreckers_guild": _REACH_VENUE_THEME,
+}
+
+# SA-P5: text for the LOCKED_NO_MEMBERSHIP list substate. Exact string
+# asserted byte-for-byte in the view tests per AC 10.
+LOCKED_NO_MEMBERSHIP_TEXT = (
+    "This is a Guild floor. Walk the contracts board until your name's known. "
+    "Apprentices observe; journeymen argue; masters mediate."
+)
+
+# SA-P5: per-tier action button enable map for the Crimson Reach venue.
+# Keys are tier ids; values are frozensets of enabled action keys.
+# Applied only when venue_id == "crimson_wreckers_guild".
+_TIER_ACTION_ENABLE: dict[str, frozenset[str]] = {
+    "unjoined": frozenset(),  # should never reach SESSION, but safe default
+    "apprentice": frozenset(),  # observer mode: all four disabled
+    "journeyman": frozenset({"argue", "vote_now", "abstain"}),
+    "master": frozenset({"argue", "mediate", "vote_now", "abstain"}),
+}
 
 
 class DisputeSubstate(Enum):
@@ -107,6 +167,7 @@ class DisputeListState(Enum):
     LOADING = "loading"  # data not yet ready
     ERROR = "error"  # data unavailable
     LOCKED_OUT_ANNUAL = "locked_out_annual"  # SA-P4: annual Congress in recess
+    LOCKED_NO_MEMBERSHIP = "locked_no_membership"  # SA-P5: Reach venue, unjoined tier
 
 
 class DisputeView(BaseView):
@@ -197,6 +258,8 @@ class DisputeView(BaseView):
         self._create_ui()
         self._maybe_show_venue_tip()
         self._maybe_show_annual_congress_tip()
+        # SA-P5: Gray-market arbitration tip fires on first Reach entry.
+        self._maybe_show_gray_market_arbitration_tip()
         # SA-P4: Track days remaining for the LOCKED_OUT_ANNUAL substate so
         # the body text can render "Next session in N days." dynamically.
         # Recomputed every time the list state refreshes.
@@ -282,6 +345,32 @@ class DisputeView(BaseView):
     def _mark_annual_congress_tip_seen(self) -> None:
         self.player.dialogue_flags[seen_annual_congress_tip()] = True
 
+    def _maybe_show_gray_market_arbitration_tip(self) -> None:
+        """SA-P5: fire the gray-market arbitration tip on first Reach entry.
+
+        Gated on ``venue_id == "crimson_wreckers_guild"`` so the overlay
+        does not fire at the Verdant or Haven's Rest venues. One-shot per
+        save, gated on :func:`flags.seen_gray_market_arbitration_tip` in
+        ``player.dialogue_flags``.
+        """
+        if self.venue_id != "crimson_wreckers_guild":
+            return
+        self._clear_dismissed_tip()
+        if self.player.dialogue_flags.get(seen_gray_market_arbitration_tip(), False):
+            return
+        # Suppress when another tip is already up so the player isn't hit
+        # by two overlays at once on first entry.
+        if self._first_time_tip is not None and not self._first_time_tip.dismissed:
+            return
+        self._first_time_tip = FirstTimeTipOverlay(
+            title=GRAY_MARKET_ARBITRATION_TIP_TITLE,
+            body=GRAY_MARKET_ARBITRATION_TIP_BODY,
+            on_dismiss=self._mark_gray_market_arbitration_tip_seen,
+        )
+
+    def _mark_gray_market_arbitration_tip_seen(self) -> None:
+        self.player.dialogue_flags[seen_gray_market_arbitration_tip()] = True
+
     # ------------------------------------------------------------------
     # State helpers
     # ------------------------------------------------------------------
@@ -305,6 +394,15 @@ class DisputeView(BaseView):
         if self._data_loading:
             self.list_state = DisputeListState.LOADING
             return
+        # SA-P5: Reach venue requires Guild membership. Unjoined players hit
+        # LOCKED_NO_MEMBERSHIP before the faction-standing check, because the
+        # fictional surfaces are distinct: one is "Crimson Reach hates you"
+        # and the other is "you haven't joined the Guild."
+        if self.venue_id == "crimson_wreckers_guild":
+            tier = current_tier_id(self.player.sub_reputation)
+            if tier == "unjoined":
+                self.list_state = DisputeListState.LOCKED_NO_MEMBERSHIP
+                return
         standing = self.player.get_reputation(self.venue_faction_id)
         if standing < self.standing_threshold:
             self.list_state = DisputeListState.LOCKED
@@ -439,10 +537,22 @@ class DisputeView(BaseView):
             self._composer_buttons[d_id] = btn
 
     def _create_ui_session(self) -> None:
-        """SESSION substate: round summary + ARGUE / MEDIATE / ABSTAIN / VOTE."""
+        """SESSION substate: round summary + ARGUE / MEDIATE / ABSTAIN / VOTE.
+
+        SA-P5: when venue_id is ``"crimson_wreckers_guild"`` the four action
+        buttons are enabled or disabled according to the player's Wreckers'
+        Guild tier. Apprentices are observers (all four disabled). Journeymen
+        can argue/vote/abstain but not mediate. Masters can do everything.
+        Other venues preserve the existing all-enabled flow.
+        """
         if self.active_dispute is None:
             return
         labels = ["Argue", "Mediate", "Abstain", "Vote Now"]
+        # Compute per-tier enable set only at the Reach venue.
+        enabled_keys: Optional[frozenset[str]] = None
+        if self.venue_id == "crimson_wreckers_guild":
+            tier = current_tier_id(self.player.sub_reputation)
+            enabled_keys = _TIER_ACTION_ENABLE.get(tier, frozenset())
         for idx, label in enumerate(labels):
             btn = pygame_gui.elements.UIButton(
                 relative_rect=pygame.Rect(
@@ -454,7 +564,11 @@ class DisputeView(BaseView):
                 text=label,
                 manager=self.ui_manager,
             )
-            self._action_buttons[label.lower().replace(" ", "_")] = btn
+            key = label.lower().replace(" ", "_")
+            self._action_buttons[key] = btn
+            # Disable buttons not in the tier's allowed set.
+            if enabled_keys is not None and key not in enabled_keys:
+                btn.disable()
 
     def _create_ui_composer(self) -> None:
         """COMPOSER substate: framing / evidence / audience selectors + preview."""
@@ -702,8 +816,24 @@ class DisputeView(BaseView):
             if self._first_time_tip.dismissed:
                 self._first_time_tip = None
 
+    def _apply_venue_theme(self, screen: pygame.Surface) -> None:
+        """SA-P5: apply per-venue color palette to the background surface.
+
+        Pulls the :class:`VenueTheme` for the current venue_id from
+        :data:`_VENUE_THEMES`. Verdant + Haven's Rest receive neutral
+        defaults so their SA-P3 / SA-P4 visuals are unchanged. Crimson
+        Reach gets a dim red tint pulled from the ReachDarkLayout palette.
+        Called once per render frame from :meth:`render` before the
+        main-panel draws, so the tint sits behind all panels.
+        """
+        theme = _VENUE_THEMES.get(self.venue_id, _DEFAULT_VENUE_THEME)
+        dim = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
+        dim.fill((*theme.panel_bg_color, theme.bg_dim_alpha))
+        screen.blit(dim, (0, 0))
+
     def render(self, screen: pygame.Surface) -> None:
         screen.fill(Colors.BG_DARK)
+        self._apply_venue_theme(screen)
         self._render_header(screen)
         if self.substate == DisputeSubstate.LIST:
             self._render_body_list(screen)
@@ -742,6 +872,8 @@ class DisputeView(BaseView):
         elif self.list_state == DisputeListState.LOCKED_OUT_ANNUAL:
             days = max(0, self._annual_recess_days_remaining)
             text = f"Annual Congress in recess. Next session in {days} days."
+        elif self.list_state == DisputeListState.LOCKED_NO_MEMBERSHIP:
+            text = LOCKED_NO_MEMBERSHIP_TEXT
         else:
             return
         for i, line in enumerate(word_wrap(text, self.body_font, PANEL_W - scale_x(40))):

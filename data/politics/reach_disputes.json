@@ -1,0 +1,710 @@
+{
+  "disputes": [
+    {
+      "id": "salvage_rights_phasing",
+      "headline": "Salvage Rights Phasing",
+      "factions_affected": ["crimson_reach", "miners_union"],
+      "base_difficulty": 4,
+      "round_count": 3,
+      "deadline_days": 10,
+      "is_campaign_arc": false,
+      "issue_family": "salvage_rights",
+      "delegates": [
+        {
+          "delegate_id": "malia_torres",
+          "name": "Malia Torres",
+          "starting_visible_state": "wavering",
+          "position_vector": {
+            "salvage_rights_position": 0.3,
+            "gray_market_compliance": -0.4,
+            "crew_solidarity": 0.6
+          },
+          "faction_loyalty": 0.7,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "wreckers_guild"
+        },
+        {
+          "delegate_id": "chief_riggs",
+          "name": "Chief Odessa Riggs",
+          "starting_visible_state": "leaning_yes",
+          "position_vector": {
+            "salvage_rights_position": 0.6,
+            "gray_market_compliance": -0.6,
+            "crew_solidarity": 0.7
+          },
+          "faction_loyalty": 0.8,
+          "prior_dispute_memory": 1,
+          "sub_faction_id": "wreckers_guild"
+        },
+        {
+          "delegate_id": "breaker_jess",
+          "name": "Breaker Jess",
+          "starting_visible_state": "wavering",
+          "position_vector": {
+            "salvage_rights_position": 0.1,
+            "gray_market_compliance": -0.7,
+            "crew_solidarity": 0.4
+          },
+          "faction_loyalty": 0.6,
+          "prior_dispute_memory": -1,
+          "sub_faction_id": "wreckers_guild"
+        },
+        {
+          "delegate_id": "field_drosa",
+          "name": "Field Ops Drosa",
+          "starting_visible_state": "leaning_no",
+          "position_vector": {
+            "salvage_rights_position": -0.3,
+            "gray_market_compliance": -0.5,
+            "crew_solidarity": 0.3
+          },
+          "faction_loyalty": 0.5,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "wreckers_guild"
+        }
+      ],
+      "eligible_framings": [
+        "salvage_precedent",
+        "crew_loyalty",
+        "street_authority",
+        "practical_cost",
+        "frontier_autonomy"
+      ],
+      "eligible_evidence": [
+        "derelict_registry_2333",
+        "debris_field_telemetry",
+        "wreckers_guild_precedent_log",
+        "salvage_claim_dispute_record"
+      ],
+      "framing_modifiers": {
+        "salvage_precedent": 1,
+        "crew_loyalty": 1,
+        "street_authority": 1,
+        "practical_cost": 0,
+        "frontier_autonomy": 0
+      },
+      "framing_target_dimensions": {
+        "salvage_precedent": "salvage_rights_position",
+        "crew_loyalty": "crew_solidarity",
+        "street_authority": "gray_market_compliance",
+        "practical_cost": "salvage_rights_position",
+        "frontier_autonomy": "gray_market_compliance"
+      },
+      "counter_framings": {},
+      "betrayal_conditions": {},
+      "outcome_matrix": {
+        "win": {
+          "rep_deltas": {"crimson_reach": 4, "miners_union": -2},
+          "market_shifts": [
+            {"commodity_id": "scrap_metal", "system_id": "crimson_reach", "magnitude": 0.10, "duration_days": 28},
+            {"commodity_id": "common_metals", "system_id": "crimson_reach", "magnitude": -0.06, "duration_days": 25}
+          ],
+          "mission_unlocks": [
+            "dispute_resolved_salvage_rights_phasing",
+            "coalition_won_salvage_rights_phasing"
+          ],
+          "mission_locks": [],
+          "news_headline": "Guild claim advances; outside salvage bid phased out at Reach sites."
+        },
+        "partial_win_coalition_thin": {
+          "rep_deltas": {"crimson_reach": 1, "miners_union": -1},
+          "market_shifts": [
+            {"commodity_id": "scrap_metal", "system_id": "crimson_reach", "magnitude": 0.04, "duration_days": 18}
+          ],
+          "mission_unlocks": ["dispute_resolved_salvage_rights_phasing"],
+          "mission_locks": [],
+          "news_headline": null
+        },
+        "partial_win_off_record": {
+          "rep_deltas": {"crimson_reach": 2, "miners_union": -1},
+          "market_shifts": [
+            {"commodity_id": "scrap_metal", "system_id": "crimson_reach", "magnitude": 0.06, "duration_days": 22}
+          ],
+          "mission_unlocks": [
+            "dispute_resolved_salvage_rights_phasing",
+            "dispute_mediated_salvage_rights_phasing"
+          ],
+          "mission_locks": [],
+          "news_headline": null
+        },
+        "loss": {
+          "rep_deltas": {"crimson_reach": -3, "miners_union": 2},
+          "market_shifts": [
+            {"commodity_id": "scrap_metal", "system_id": "crimson_reach", "magnitude": -0.08, "duration_days": 26}
+          ],
+          "mission_unlocks": [],
+          "mission_locks": ["dispute_resolved_salvage_rights_phasing"],
+          "news_headline": "Outside claim holds; Guild salvage rights rolled back at three Reach sites."
+        }
+      }
+    },
+    {
+      "id": "outsider_salvage_concession",
+      "headline": "Outsider Salvage Concession",
+      "factions_affected": ["crimson_reach", "commerce_guild"],
+      "base_difficulty": 3,
+      "round_count": 3,
+      "deadline_days": 12,
+      "is_campaign_arc": false,
+      "issue_family": "salvage_rights",
+      "delegates": [
+        {
+          "delegate_id": "malia_torres",
+          "name": "Malia Torres",
+          "starting_visible_state": "wavering",
+          "position_vector": {
+            "salvage_rights_position": 0.4,
+            "gray_market_compliance": -0.3,
+            "crew_solidarity": 0.5
+          },
+          "faction_loyalty": 0.7,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "wreckers_guild"
+        },
+        {
+          "delegate_id": "chief_riggs",
+          "name": "Chief Odessa Riggs",
+          "starting_visible_state": "leaning_yes",
+          "position_vector": {
+            "salvage_rights_position": 0.7,
+            "gray_market_compliance": -0.5,
+            "crew_solidarity": 0.8
+          },
+          "faction_loyalty": 0.8,
+          "prior_dispute_memory": 1,
+          "sub_faction_id": "wreckers_guild"
+        },
+        {
+          "delegate_id": "rec_holter",
+          "name": "Rec Holter",
+          "starting_visible_state": "wavering",
+          "position_vector": {
+            "salvage_rights_position": -0.2,
+            "gray_market_compliance": 0.2,
+            "crew_solidarity": 0.1
+          },
+          "faction_loyalty": 0.4,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "wreckers_guild"
+        },
+        {
+          "delegate_id": "field_drosa",
+          "name": "Field Ops Drosa",
+          "starting_visible_state": "leaning_no",
+          "position_vector": {
+            "salvage_rights_position": -0.1,
+            "gray_market_compliance": -0.6,
+            "crew_solidarity": 0.4
+          },
+          "faction_loyalty": 0.5,
+          "prior_dispute_memory": -1,
+          "sub_faction_id": "wreckers_guild"
+        }
+      ],
+      "eligible_framings": [
+        "salvage_precedent",
+        "crew_loyalty",
+        "street_authority",
+        "practical_cost",
+        "frontier_autonomy"
+      ],
+      "eligible_evidence": [
+        "derelict_registry_2333",
+        "wreckers_guild_precedent_log",
+        "salvage_claim_dispute_record",
+        "debris_field_telemetry"
+      ],
+      "framing_modifiers": {
+        "salvage_precedent": 1,
+        "crew_loyalty": 1,
+        "street_authority": 1,
+        "practical_cost": 0,
+        "frontier_autonomy": 0
+      },
+      "framing_target_dimensions": {
+        "salvage_precedent": "salvage_rights_position",
+        "crew_loyalty": "crew_solidarity",
+        "street_authority": "gray_market_compliance",
+        "practical_cost": "salvage_rights_position",
+        "frontier_autonomy": "gray_market_compliance"
+      },
+      "counter_framings": {
+        "rec_holter": ["practical_cost", "frontier_autonomy"]
+      },
+      "betrayal_conditions": {
+        "rec_holter": "counter_framing_succeeded"
+      },
+      "outcome_matrix": {
+        "win": {
+          "rep_deltas": {"crimson_reach": 5, "commerce_guild": -2},
+          "market_shifts": [
+            {"commodity_id": "salvaged_electronics", "system_id": "crimson_reach", "magnitude": 0.08, "duration_days": 30},
+            {"commodity_id": "rare_metals", "system_id": "crimson_reach", "magnitude": 0.05, "duration_days": 20}
+          ],
+          "mission_unlocks": [
+            "dispute_resolved_outsider_salvage_concession",
+            "coalition_won_outsider_salvage_concession"
+          ],
+          "mission_locks": [],
+          "news_headline": "Outsider salvage concession refused; Guild retains Reach site priority."
+        },
+        "partial_win_coalition_thin": {
+          "rep_deltas": {"crimson_reach": 2, "commerce_guild": -1},
+          "market_shifts": [
+            {"commodity_id": "salvaged_electronics", "system_id": "crimson_reach", "magnitude": 0.04, "duration_days": 18}
+          ],
+          "mission_unlocks": ["dispute_resolved_outsider_salvage_concession"],
+          "mission_locks": [],
+          "news_headline": null
+        },
+        "partial_win_off_record": {
+          "rep_deltas": {"crimson_reach": 3, "commerce_guild": -1},
+          "market_shifts": [
+            {"commodity_id": "salvaged_electronics", "system_id": "crimson_reach", "magnitude": 0.05, "duration_days": 24}
+          ],
+          "mission_unlocks": [
+            "dispute_resolved_outsider_salvage_concession",
+            "dispute_mediated_outsider_salvage_concession"
+          ],
+          "mission_locks": [],
+          "news_headline": null
+        },
+        "loss": {
+          "rep_deltas": {"crimson_reach": -3, "commerce_guild": 3},
+          "market_shifts": [
+            {"commodity_id": "salvaged_electronics", "system_id": "crimson_reach", "magnitude": -0.07, "duration_days": 28}
+          ],
+          "mission_unlocks": [],
+          "mission_locks": ["dispute_resolved_outsider_salvage_concession"],
+          "news_headline": "Guild concedes Reach site access; outside operators enter the wreck lanes."
+        }
+      }
+    },
+    {
+      "id": "wrecker_loyalty_oath_dispute",
+      "headline": "Wrecker Loyalty Oath Dispute",
+      "factions_affected": ["crimson_reach", "miners_union"],
+      "base_difficulty": 4,
+      "round_count": 3,
+      "deadline_days": 8,
+      "is_campaign_arc": false,
+      "issue_family": "wreckers_vs_unaffiliated",
+      "delegates": [
+        {
+          "delegate_id": "malia_torres",
+          "name": "Malia Torres",
+          "starting_visible_state": "leaning_yes",
+          "position_vector": {
+            "salvage_rights_position": 0.5,
+            "gray_market_compliance": -0.4,
+            "crew_solidarity": 0.7
+          },
+          "faction_loyalty": 0.7,
+          "prior_dispute_memory": 1,
+          "sub_faction_id": "wreckers_guild"
+        },
+        {
+          "delegate_id": "chief_riggs",
+          "name": "Chief Odessa Riggs",
+          "starting_visible_state": "leaning_yes",
+          "position_vector": {
+            "salvage_rights_position": 0.6,
+            "gray_market_compliance": -0.6,
+            "crew_solidarity": 0.8
+          },
+          "faction_loyalty": 0.8,
+          "prior_dispute_memory": 1,
+          "sub_faction_id": "wreckers_guild"
+        },
+        {
+          "delegate_id": "breaker_jess",
+          "name": "Breaker Jess",
+          "starting_visible_state": "wavering",
+          "position_vector": {
+            "salvage_rights_position": 0.3,
+            "gray_market_compliance": -0.5,
+            "crew_solidarity": 0.6
+          },
+          "faction_loyalty": 0.6,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "wreckers_guild"
+        },
+        {
+          "delegate_id": "rec_holter",
+          "name": "Rec Holter",
+          "starting_visible_state": "wavering",
+          "position_vector": {
+            "salvage_rights_position": -0.4,
+            "gray_market_compliance": -0.2,
+            "crew_solidarity": -0.1
+          },
+          "faction_loyalty": 0.4,
+          "prior_dispute_memory": -1,
+          "sub_faction_id": "wreckers_guild"
+        }
+      ],
+      "eligible_framings": [
+        "salvage_precedent",
+        "crew_loyalty",
+        "street_authority",
+        "practical_cost",
+        "frontier_autonomy"
+      ],
+      "eligible_evidence": [
+        "wreckers_guild_precedent_log",
+        "salvage_claim_dispute_record",
+        "derelict_registry_2333",
+        "debris_field_telemetry"
+      ],
+      "framing_modifiers": {
+        "salvage_precedent": 1,
+        "crew_loyalty": 1,
+        "street_authority": 1,
+        "practical_cost": 0,
+        "frontier_autonomy": 0
+      },
+      "framing_target_dimensions": {
+        "salvage_precedent": "salvage_rights_position",
+        "crew_loyalty": "crew_solidarity",
+        "street_authority": "gray_market_compliance",
+        "practical_cost": "salvage_rights_position",
+        "frontier_autonomy": "gray_market_compliance"
+      },
+      "counter_framings": {
+        "rec_holter": ["frontier_autonomy", "practical_cost"]
+      },
+      "betrayal_conditions": {
+        "rec_holter": "rep_dropped_below_25:crimson_reach"
+      },
+      "outcome_matrix": {
+        "win": {
+          "rep_deltas": {"crimson_reach": 4, "miners_union": -3},
+          "market_shifts": [
+            {"commodity_id": "scrap_metal", "system_id": "crimson_reach", "magnitude": 0.08, "duration_days": 25},
+            {"commodity_id": "raw_ore", "system_id": "crimson_reach", "magnitude": -0.05, "duration_days": 20}
+          ],
+          "mission_unlocks": [
+            "dispute_resolved_wrecker_loyalty_oath_dispute",
+            "coalition_won_wrecker_loyalty_oath_dispute"
+          ],
+          "mission_locks": [],
+          "news_headline": "Loyalty oath enforced; Free Salvager access revoked at Guild sites."
+        },
+        "partial_win_coalition_thin": {
+          "rep_deltas": {"crimson_reach": 1, "miners_union": -1},
+          "market_shifts": [
+            {"commodity_id": "scrap_metal", "system_id": "crimson_reach", "magnitude": 0.03, "duration_days": 16}
+          ],
+          "mission_unlocks": ["dispute_resolved_wrecker_loyalty_oath_dispute"],
+          "mission_locks": [],
+          "news_headline": null
+        },
+        "partial_win_off_record": {
+          "rep_deltas": {"crimson_reach": 2, "miners_union": -1},
+          "market_shifts": [
+            {"commodity_id": "scrap_metal", "system_id": "crimson_reach", "magnitude": 0.05, "duration_days": 20}
+          ],
+          "mission_unlocks": [
+            "dispute_resolved_wrecker_loyalty_oath_dispute",
+            "dispute_mediated_wrecker_loyalty_oath_dispute"
+          ],
+          "mission_locks": [],
+          "news_headline": null
+        },
+        "loss": {
+          "rep_deltas": {"crimson_reach": -3, "miners_union": 2},
+          "market_shifts": [
+            {"commodity_id": "scrap_metal", "system_id": "crimson_reach", "magnitude": -0.07, "duration_days": 22}
+          ],
+          "mission_unlocks": [],
+          "mission_locks": ["dispute_resolved_wrecker_loyalty_oath_dispute"],
+          "news_headline": "Loyalty oath fails; unaffiliated salvagers gain footing in Reach field lanes."
+        }
+      }
+    },
+    {
+      "id": "debris_field_territory_claim",
+      "headline": "Debris Field Territory Claim",
+      "factions_affected": ["crimson_reach", "miners_union"],
+      "base_difficulty": 5,
+      "round_count": 5,
+      "deadline_days": 14,
+      "is_campaign_arc": true,
+      "issue_family": "debris_field_territory",
+      "delegates": [
+        {
+          "delegate_id": "malia_torres",
+          "name": "Malia Torres",
+          "starting_visible_state": "wavering",
+          "position_vector": {
+            "salvage_rights_position": 0.4,
+            "gray_market_compliance": -0.3,
+            "crew_solidarity": 0.6
+          },
+          "faction_loyalty": 0.7,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "wreckers_guild"
+        },
+        {
+          "delegate_id": "chief_riggs",
+          "name": "Chief Odessa Riggs",
+          "starting_visible_state": "leaning_yes",
+          "position_vector": {
+            "salvage_rights_position": 0.7,
+            "gray_market_compliance": -0.6,
+            "crew_solidarity": 0.8
+          },
+          "faction_loyalty": 0.8,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "wreckers_guild"
+        },
+        {
+          "delegate_id": "breaker_jess",
+          "name": "Breaker Jess",
+          "starting_visible_state": "leaning_no",
+          "position_vector": {
+            "salvage_rights_position": -0.2,
+            "gray_market_compliance": -0.7,
+            "crew_solidarity": 0.5
+          },
+          "faction_loyalty": 0.6,
+          "prior_dispute_memory": -1,
+          "sub_faction_id": "wreckers_guild"
+        },
+        {
+          "delegate_id": "field_drosa",
+          "name": "Field Ops Drosa",
+          "starting_visible_state": "wavering",
+          "position_vector": {
+            "salvage_rights_position": 0.2,
+            "gray_market_compliance": -0.5,
+            "crew_solidarity": 0.4
+          },
+          "faction_loyalty": 0.5,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "wreckers_guild"
+        }
+      ],
+      "eligible_framings": [
+        "salvage_precedent",
+        "crew_loyalty",
+        "street_authority",
+        "practical_cost",
+        "frontier_autonomy"
+      ],
+      "eligible_evidence": [
+        "debris_field_telemetry",
+        "derelict_registry_2333",
+        "wreckers_guild_precedent_log",
+        "salvage_claim_dispute_record"
+      ],
+      "framing_modifiers": {
+        "salvage_precedent": 1,
+        "crew_loyalty": 1,
+        "street_authority": 1,
+        "practical_cost": 0,
+        "frontier_autonomy": 0
+      },
+      "framing_target_dimensions": {
+        "salvage_precedent": "salvage_rights_position",
+        "crew_loyalty": "crew_solidarity",
+        "street_authority": "gray_market_compliance",
+        "practical_cost": "salvage_rights_position",
+        "frontier_autonomy": "gray_market_compliance"
+      },
+      "counter_framings": {
+        "breaker_jess": ["frontier_autonomy", "practical_cost"],
+        "field_drosa": ["salvage_precedent"]
+      },
+      "betrayal_conditions": {
+        "breaker_jess": "rival_faction_unfavored",
+        "field_drosa": "counter_framing_succeeded"
+      },
+      "outcome_matrix": {
+        "win": {
+          "rep_deltas": {"crimson_reach": 5, "miners_union": -2},
+          "market_shifts": [
+            {"commodity_id": "raw_ore", "system_id": "crimson_reach", "magnitude": 0.12, "duration_days": 35},
+            {"commodity_id": "scrap_metal", "system_id": "crimson_reach", "magnitude": 0.08, "duration_days": 30}
+          ],
+          "mission_unlocks": [
+            "dispute_resolved_debris_field_territory_claim",
+            "coalition_won_debris_field_territory_claim"
+          ],
+          "mission_locks": [],
+          "news_headline": "Guild secures debris field claim; sector territorial rights formalized."
+        },
+        "partial_win_coalition_thin": {
+          "rep_deltas": {"crimson_reach": 2, "miners_union": -1},
+          "market_shifts": [
+            {"commodity_id": "raw_ore", "system_id": "crimson_reach", "magnitude": 0.05, "duration_days": 22}
+          ],
+          "mission_unlocks": ["dispute_resolved_debris_field_territory_claim"],
+          "mission_locks": [],
+          "news_headline": null
+        },
+        "partial_win_off_record": {
+          "rep_deltas": {"crimson_reach": 3, "miners_union": -1},
+          "market_shifts": [
+            {"commodity_id": "raw_ore", "system_id": "crimson_reach", "magnitude": 0.07, "duration_days": 28}
+          ],
+          "mission_unlocks": [
+            "dispute_resolved_debris_field_territory_claim",
+            "dispute_mediated_debris_field_territory_claim"
+          ],
+          "mission_locks": [],
+          "news_headline": null
+        },
+        "loss": {
+          "rep_deltas": {"crimson_reach": -4, "miners_union": 3},
+          "market_shifts": [
+            {"commodity_id": "raw_ore", "system_id": "crimson_reach", "magnitude": -0.10, "duration_days": 32}
+          ],
+          "mission_unlocks": [],
+          "mission_locks": ["dispute_resolved_debris_field_territory_claim"],
+          "news_headline": "Debris field claim rejected; rival operators divide sector access rights."
+        }
+      }
+    },
+    {
+      "id": "gray_market_goods_provenance",
+      "headline": "Gray-Market Goods Provenance",
+      "factions_affected": ["crimson_reach", "commerce_guild"],
+      "base_difficulty": 3,
+      "round_count": 3,
+      "deadline_days": 7,
+      "is_campaign_arc": false,
+      "issue_family": "gray_market_provenance",
+      "delegates": [
+        {
+          "delegate_id": "malia_torres",
+          "name": "Malia Torres",
+          "starting_visible_state": "wavering",
+          "position_vector": {
+            "salvage_rights_position": 0.2,
+            "gray_market_compliance": -0.5,
+            "crew_solidarity": 0.5
+          },
+          "faction_loyalty": 0.7,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "wreckers_guild"
+        },
+        {
+          "delegate_id": "chief_riggs",
+          "name": "Chief Odessa Riggs",
+          "starting_visible_state": "wavering",
+          "position_vector": {
+            "salvage_rights_position": 0.3,
+            "gray_market_compliance": -0.7,
+            "crew_solidarity": 0.7
+          },
+          "faction_loyalty": 0.8,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "wreckers_guild"
+        },
+        {
+          "delegate_id": "rec_holter",
+          "name": "Rec Holter",
+          "starting_visible_state": "leaning_no",
+          "position_vector": {
+            "salvage_rights_position": -0.3,
+            "gray_market_compliance": 0.3,
+            "crew_solidarity": 0.0
+          },
+          "faction_loyalty": 0.4,
+          "prior_dispute_memory": -1,
+          "sub_faction_id": "wreckers_guild"
+        },
+        {
+          "delegate_id": "field_drosa",
+          "name": "Field Ops Drosa",
+          "starting_visible_state": "leaning_no",
+          "position_vector": {
+            "salvage_rights_position": -0.1,
+            "gray_market_compliance": -0.4,
+            "crew_solidarity": 0.3
+          },
+          "faction_loyalty": 0.5,
+          "prior_dispute_memory": -1,
+          "sub_faction_id": "wreckers_guild"
+        }
+      ],
+      "eligible_framings": [
+        "salvage_precedent",
+        "crew_loyalty",
+        "street_authority",
+        "practical_cost",
+        "frontier_autonomy"
+      ],
+      "eligible_evidence": [
+        "salvage_claim_dispute_record",
+        "wreckers_guild_precedent_log",
+        "derelict_registry_2333",
+        "debris_field_telemetry"
+      ],
+      "framing_modifiers": {
+        "salvage_precedent": 1,
+        "crew_loyalty": 1,
+        "street_authority": 1,
+        "practical_cost": 0,
+        "frontier_autonomy": 0
+      },
+      "framing_target_dimensions": {
+        "salvage_precedent": "salvage_rights_position",
+        "crew_loyalty": "crew_solidarity",
+        "street_authority": "gray_market_compliance",
+        "practical_cost": "salvage_rights_position",
+        "frontier_autonomy": "gray_market_compliance"
+      },
+      "counter_framings": {
+        "rec_holter": ["street_authority", "crew_loyalty"]
+      },
+      "betrayal_conditions": {},
+      "outcome_matrix": {
+        "win": {
+          "rep_deltas": {"crimson_reach": 4, "commerce_guild": -2},
+          "market_shifts": [
+            {"commodity_id": "manufactured_goods", "system_id": "crimson_reach", "magnitude": 0.09, "duration_days": 28},
+            {"commodity_id": "common_metals", "system_id": "crimson_reach", "magnitude": 0.05, "duration_days": 20}
+          ],
+          "mission_unlocks": [
+            "dispute_resolved_gray_market_goods_provenance",
+            "coalition_won_gray_market_goods_provenance"
+          ],
+          "mission_locks": [],
+          "news_headline": "Provenance dispute settled; gray-market consignment cleared, Guild vouched."
+        },
+        "partial_win_coalition_thin": {
+          "rep_deltas": {"crimson_reach": 1, "commerce_guild": -1},
+          "market_shifts": [
+            {"commodity_id": "manufactured_goods", "system_id": "crimson_reach", "magnitude": 0.03, "duration_days": 16}
+          ],
+          "mission_unlocks": ["dispute_resolved_gray_market_goods_provenance"],
+          "mission_locks": [],
+          "news_headline": null
+        },
+        "partial_win_off_record": {
+          "rep_deltas": {"crimson_reach": 2, "commerce_guild": -1},
+          "market_shifts": [
+            {"commodity_id": "manufactured_goods", "system_id": "crimson_reach", "magnitude": 0.05, "duration_days": 22}
+          ],
+          "mission_unlocks": [
+            "dispute_resolved_gray_market_goods_provenance",
+            "dispute_mediated_gray_market_goods_provenance"
+          ],
+          "mission_locks": [],
+          "news_headline": null
+        },
+        "loss": {
+          "rep_deltas": {"crimson_reach": -3, "commerce_guild": 2},
+          "market_shifts": [
+            {"commodity_id": "manufactured_goods", "system_id": "crimson_reach", "magnitude": -0.08, "duration_days": 25}
+          ],
+          "mission_unlocks": [],
+          "mission_locks": ["dispute_resolved_gray_market_goods_provenance"],
+          "news_headline": "Provenance claim rejected; goods seized, gray-market lane closed at Reach."
+        }
+      }
+    }
+  ]
+}

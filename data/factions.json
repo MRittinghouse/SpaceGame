@@ -27,6 +27,13 @@
       "description": "A coalition of settlers, farmers, and frontier communities.",
       "color": [100, 200, 100],
       "rivalry": "science_collective"
+    },
+    {
+      "id": "crimson_reach",
+      "name": "Crimson Reach",
+      "description": "The lawless fringe sector anchored by the Wreckers' Guild. No formal government; the Guild is the closest thing to authority here.",
+      "color": [180, 50, 40],
+      "rivalry": "commerce_guild"
     }
   ]
 }

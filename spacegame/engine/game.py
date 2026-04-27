@@ -104,6 +104,11 @@ def build_display_flags(fullscreen: bool) -> int:
 _VENUE_REGISTRY: dict[str, tuple[str, str]] = {
     "verdant": ("verdant_mayors_council", "verdant"),
     "havens_rest": ("havens_congress_hall", "frontier_alliance"),
+    # SA-P5: Crimson Reach gray-market mediation — venue_id reuses the
+    # existing crimson_wreckers_guild location id (its description already
+    # names dispute mediation as a Hall function). The Wreckers' Guild
+    # view routes into the dispute view via its own tier-gated button.
+    "crimson_reach": ("crimson_wreckers_guild", "crimson_reach"),
 }
 
 # Default venue config when the player is not at a known politics venue.
@@ -2323,6 +2328,14 @@ class Game:
         self.politics_dispute_manager.register_sub_rep_config(
             ALLIANCE_CONGRESS_CONFIG.id, ALLIANCE_CONGRESS_CONFIG
         )
+        # SA-P5: register Wreckers' Guild sub-rep config so corridor failures
+        # at the Reach venue deduct sub-rep against wreckers_guild independently
+        # of the crimson_reach faction-reputation delta.
+        from spacegame.models.wreckers_guild import WRECKERS_GUILD_CONFIG
+
+        self.politics_dispute_manager.register_sub_rep_config(
+            WRECKERS_GUILD_CONFIG.id, WRECKERS_GUILD_CONFIG
+        )
         # SA-P3: outcome callback emits the first-time journal flags.
         self.politics_dispute_manager.set_outcome_callback(self._on_dispute_outcome)
         if self.player is not None:
@@ -2419,6 +2432,39 @@ class Game:
             # SA-X6 trigger flag for Tomas banter content. Set when Tomas is
             # on crew at the moment a Congress dispute resolves.
             self._maybe_set_tomas_congress_banter_flag()
+
+        # SA-P5: Reach-venue flags. Identify a Reach dispute by delegate
+        # sub_faction_id so the callback is venue-independent.
+        is_reach_dispute = any(
+            d.sub_faction_id == "wreckers_guild" for d in dispute.delegates.values()
+        )
+        if is_reach_dispute:
+            # First Reach arbitration (any outcome).
+            first_reach = "first_reach_arbitration"
+            if first_reach not in flags:
+                flags[first_reach] = True
+                self._maybe_trigger_dispute_journal(first_reach)
+
+            # First salvage-rights concession: partial_win_off_record at Reach.
+            if category == "partial_win_off_record":
+                first_concession = "first_salvage_rights_concession"
+                if first_concession not in flags:
+                    flags[first_concession] = True
+                    self._maybe_trigger_dispute_journal(first_concession)
+
+            # First master mediation won: win outcome while player is master tier.
+            if category == "win":
+                from spacegame.models.wreckers_guild import current_tier_id
+
+                player_tier = current_tier_id(
+                    self.player.sub_reputation if self.player is not None else {}
+                )
+                resolved_via_mediate = getattr(dispute, "resolved_via", None) == "mediate"
+                if player_tier == "master" and resolved_via_mediate:
+                    first_master = "first_master_mediation_won"
+                    if first_master not in flags:
+                        flags[first_master] = True
+                        self._maybe_trigger_dispute_journal(first_master)
 
     def _maybe_set_tomas_congress_banter_flag(self) -> None:
         """SA-P4 → SA-X6 trigger. One-shot; SA-X6 consumes for banter."""

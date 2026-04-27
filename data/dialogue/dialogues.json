@@ -8655,6 +8655,175 @@
                     "expression": "neutral"
                 }
             ]
+        },
+        {
+            "id": "torres_arbitration",
+            "start_node_id": "greeting",
+            "nodes": [
+                {
+                    "id": "greeting",
+                    "speaker_id": "malia_torres",
+                    "text": "Floor's open. You know the rules. I've heard twelve of these, and the ones that get a real resolution are the ones where both sides walk out owing me something. You want to argue, find your angle first.",
+                    "responses": [
+                        {
+                            "text": "What's your read on the room?",
+                            "next_node_id": "read_room"
+                        },
+                        {
+                            "text": "I'm ready to argue.",
+                            "next_node_id": "argue_ready"
+                        },
+                        {
+                            "text": "Just observing today.",
+                            "next_node_id": "observing"
+                        },
+                        {
+                            "text": "Request the mediation slot.",
+                            "next_node_id": "master_greeting"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "read_room",
+                    "speaker_id": "malia_torres",
+                    "text": "That's not your call to know. What you need to know is that everyone in that room came in with a number. Your job is to move the number. The framing you pick tells me what kind of operator you are. Choose carefully.",
+                    "responses": [
+                        {
+                            "text": "Understood.",
+                            "next_node_id": "farewell"
+                        }
+                    ],
+                    "expression": "stern"
+                },
+                {
+                    "id": "argue_ready",
+                    "speaker_id": "malia_torres",
+                    "text": "Then let's not waste time. Pick your angle.",
+                    "responses": [
+                        {
+                            "text": "[Social 3] Present the floor case.",
+                            "next_node_id": "argue_success",
+                            "skill_check": {
+                                "skill": "social",
+                                "difficulty": 3,
+                                "success_node_id": "argue_success",
+                                "failure_node_id": "argue_failure"
+                            }
+                        },
+                        {
+                            "text": "Withdraw for now.",
+                            "next_node_id": "refusal_success"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "observing",
+                    "speaker_id": "malia_torres",
+                    "text": "Smart. Most people try to talk before they've listened. Take a seat at the back.",
+                    "responses": [
+                        {
+                            "text": "[Take a seat]",
+                            "next_node_id": "farewell"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "argue_success",
+                    "speaker_id": "malia_torres",
+                    "text": "That landed. I'll mark it. Whether it holds is another matter. The room is quieter than it was. That seems settled.",
+                    "responses": [
+                        {
+                            "text": "Good.",
+                            "next_node_id": "farewell"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "argue_failure",
+                    "speaker_id": "malia_torres",
+                    "text": "That angle didn't move anyone. You pushed on a wall. Come back with something the room actually needs to hear, or stay out of my corridor.",
+                    "responses": [
+                        {
+                            "text": "I'll find another way.",
+                            "next_node_id": "farewell"
+                        }
+                    ],
+                    "expression": "stern"
+                },
+                {
+                    "id": "refusal_success",
+                    "speaker_id": "malia_torres",
+                    "text": "They passed. I don't make the outcome; I record it. Off the record, you read it right. The Guild holds the field another season.",
+                    "responses": [
+                        {
+                            "text": "Good enough.",
+                            "next_node_id": "farewell"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "refusal_failure",
+                    "speaker_id": "malia_torres",
+                    "text": "It didn't hold. The vote moved against us. I'll file it as resolved. I've had worse outcomes. You were in the room, which is more than most.",
+                    "responses": [
+                        {
+                            "text": "What happens now?",
+                            "next_node_id": "after_loss"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "after_loss",
+                    "speaker_id": "malia_torres",
+                    "text": "Now? We file the ruling, flag the territory in the database, and move to the next case. The Reach doesn't dwell. If you want to contest it, you do the corridor work before next session.",
+                    "responses": [
+                        {
+                            "text": "Understood.",
+                            "next_node_id": "farewell"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "master_greeting",
+                    "speaker_id": "malia_torres",
+                    "text": "You've done this before. I can tell. Floor's yours if you want the mediation slot. Standard rules apply. I'll stay out of it unless someone invokes procedure.",
+                    "responses": [
+                        {
+                            "text": "I'll take the mediation slot.",
+                            "next_node_id": "farewell"
+                        },
+                        {
+                            "text": "I'll argue instead.",
+                            "next_node_id": "argue_ready"
+                        },
+                        {
+                            "text": "[Social 4] Challenge a delegate's position before the floor opens.",
+                            "next_node_id": "refusal_failure",
+                            "skill_check": {
+                                "skill": "social",
+                                "difficulty": 4,
+                                "success_node_id": "refusal_success",
+                                "failure_node_id": "refusal_failure"
+                            }
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "farewell",
+                    "speaker_id": "malia_torres",
+                    "text": "Session closes when the vote closes. Don't leave before it does.",
+                    "responses": [],
+                    "expression": "neutral"
+                }
+            ]
         }
     ]
 }

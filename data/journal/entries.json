@@ -307,6 +307,27 @@
       "trigger_flag": "first_alliance_wide_vote_won",
       "system_id": "havens_rest",
       "mission_id": ""
+    },
+    {
+      "entry_id": "auto_p5_first_reach_arbitration",
+      "text": "First session at the Guild arbitration floor. Malia runs it like a transaction: no drama, just position and record. The delegates came in knowing what they wanted. Two of them had been in the same room before. The vote resolved. I walked out with a cleaner picture of what the Guild holds and what it does not. The Reach runs on informal consensus. The arbitration floor is where the informal gets written down.",
+      "trigger_flag": "first_reach_arbitration",
+      "system_id": "crimson_reach",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_p5_first_salvage_rights_concession",
+      "text": "Got the concession before the vote closed. The floor did not hold, but the work in the corridor moved one delegate enough to take it off the record. Malia wrote it neutral. The Guild field rights stay unchanged for now. What shifted was the delegate's position on the next case. I know what the concession cost and what it bought. Both were real.",
+      "trigger_flag": "first_salvage_rights_concession",
+      "system_id": "crimson_reach",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_p5_first_master_mediation_won",
+      "text": "Ran the mediation myself. Malia stepped back and recorded. The floor was cleaner than I expected. The position I had to hold was not the one I argued for, which meant two delegates heard something they trusted more than a pitch. The session closed on a win. Malia said nothing at the end. That seems settled.",
+      "trigger_flag": "first_master_mediation_won",
+      "system_id": "crimson_reach",
+      "mission_id": ""
     }
   ]
 }
