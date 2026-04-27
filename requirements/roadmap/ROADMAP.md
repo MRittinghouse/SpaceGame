@@ -691,32 +691,113 @@ The following decisions were locked during planning:
 
 #### SA-C1 — Skill tree extension design
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Phase C | **Size**: S | **Effort**: 3-5 days
 **Depends on**: SA-PREP-2 | **Blocks**: SA-C2
 
-**Goal.** Identify which new skills the SA arc needs. Candidates: Negotiator (Bidding), Mediator (Politics neutral arbiter), Speculator (Financial), Patron (Research), Coalition Builder (Politics advocate). Decide whether to extend the Social and Commerce trees or add a new tree. Confirm bonus types and magnitude ranges.
+**Goal.** Lock the SA-arc skill-tree extension set. Produce a design doc that names each new skill (id, display name, tree, tier, prerequisite, max_level, bonus_type, bonus_per_level, description), aligns its `bonus_type` strings with the seven "both"-source crew bonuses already locked in `requirements/sa_crew_design.md`, decides extend-existing-trees vs. new-tree (per `station_anchors.md` Decision 3), and records the per-tree population delta SA-C2 will introduce. The doc is the single source of truth that SA-C2 implements against. No code in this sprint.
 
 **Context to read.**
-- `spacegame/models/progression.py` (`create_default_skills`)
-- Memory: 6 trees / 75 skills / no JSON / 1 point per level
-- `requirements/station_anchors.md`
+- `requirements/station_anchors.md` (Phase C section + Decision 3 "extend existing trees rather than add new"; Phase II/III/IV/V integration commitments name the consuming systems)
+- `requirements/sa_crew_design.md` (SA-A1 output: section 2 bonus-naming convention table is the spec for the seven "both"-source `bonus_type` strings; section 4 Decision 4 documents the crew-only exception for the three binary intel bonuses)
+- `requirements/skill_tree_overhaul.md` (six-tree structure; "would I notice?" test; gateway-skill-over-stat-bump principle; identity through specialization)
+- `requirements/onboarding_design.md` (six teaching principles — apply unchanged; tier-3 capstones are identity-defining and should not proliferate)
+- `requirements/agent_principles.md` (scope discipline; the S-sized design sprint should not introduce new capstones or new trees unless required)
+- `spacegame/models/progression.py` (`create_default_skills` lines 371-1264; `SkillTreeType` enum lines 12-24; `_SKILL_MIGRATION_MAP` lines 71-170; `from_dict` lines 351-368; collision targets `negotiator` line 385 and `master_negotiator` line 1049)
+- `spacegame/views/skill_tree_view.py` (`_CAPSTONE_IDS` set lines 83-95; `_compute_detail_positions` lines 250-296 auto-arranges by prerequisite depth — no view code change needed for net-new mid-tier skills)
+- `data/crew/crew_members.json` lines 700-825 (the five SA-A2 specialist entries already carry all ten SA-A1 bonus_type strings; verify the seven "both"-source strings are spelled exactly as SA-C1 will emit them)
+- `tests/test_writing_bible_compliance.py` (voice-check regex patterns: em-dash / en-dash / ` -- ` set, banned phrases `couldn't help but` and `a testament to`, parallel-negation `\bno \w+,\s*no \w+`)
 
 **Touch zones.**
 - `requirements/sa_skill_design.md` (NEW)
 
 **Deliverables.**
-- Design doc covering: new skills, tree assignment (extension vs. new tree), bonus types, magnitude ranges, prerequisites, capstone implications.
+- `requirements/sa_skill_design.md` covering: per-skill block (id, display name, tree, tier, prerequisite_id, max_level, bonus_type, bonus_per_level, one-sentence description, magnitude rationale); bonus-naming convention table mirroring the format in `sa_crew_design.md` section 2; collision-check section (skill IDs and bonus_type strings vs. existing `progression.py` and `data/crew/crew_members.json`); pre-SA-C2 vs. post-SA-C2 per-tree skill count table; capstone analysis (new capstones yes/no, with rationale); save-migration analysis (whether `_SKILL_MIGRATION_MAP` entries are needed); cross-reference matrix to consuming SA sprints; handoff checklist for SA-C2; decisions-locked block.
 
 **Acceptance criteria.**
-1. Each new skill has named bonus_type and magnitude range.
-2. Tree assignment locked.
-3. Prerequisites and tier locked.
-4. Recommendation: extend existing trees rather than add new.
+1. `requirements/sa_skill_design.md` exists and contains exactly one design block per new skill with all fields filled (id, display name, tree, tier 1/2/3, prerequisite_id, max_level, bonus_type, bonus_per_level, one-sentence description, magnitude rationale).
+2. The bonus-naming convention table in the doc maps the seven "both"-source `bonus_type` strings 1-to-1 with `requirements/sa_crew_design.md` section 2 (`auction_lot_appraisal_bonus`, `coalition_sway_bonus`, `coalition_size_bonus`, `arbitration_neutrality_bonus`, `speculator_premium_reduction`, `research_yield_bonus`, `research_risk_reduction`). Each row notes that crew + skill values stack via `crew_roster.get_bonus(...) + progression.get_bonus(...)` summation per the SA-A1 Decision 4 pattern, and names the consuming view file (forward-looking) and consuming SA sprint(s).
+3. The doc explicitly states whether the three crew-only binary intel `bonus_type` strings (`auction_bid_visibility`, `arbitration_dispute_intel`, `futures_intel`) get matching skill nodes in v1, with rationale citing SA-A1 Decision 4. The locked answer is "no skill nodes for the binary intel bonuses in v1"; the doc must say this explicitly.
+4. Collision check: every new skill `id` is verified absent from `create_default_skills()` in `spacegame/models/progression.py`; every new `bonus_type` string is verified absent from `progression.py` and from `data/crew/crew_members.json` *except* for the seven shared with crew (intentional, documented). The check lists each id and bonus_type explicitly with pass/intentional-share status; not a blanket "no collisions found."
+5. Tree-population analysis: the doc reports current per-tree skill counts (Commerce, Combat, Exploration, Leadership, Social, Industry) and post-SA-C2 counts after adding the new skills. The doc states explicitly that no new tree is introduced and cites `station_anchors.md` Decision 3 as authority.
+6. Capstone analysis: each new skill is classified as Tier 1, Tier 2, or Tier 3. The doc states explicitly whether any new Tier 3 capstones are introduced. The locked answer is "no new capstones in v1"; the doc must say this explicitly with rationale, and confirm the existing `_CAPSTONE_IDS` set in `spacegame/views/skill_tree_view.py` does not need changes for SA-C2.
+7. Save-migration analysis: the doc confirms `from_dict()` (line 351 of `progression.py`) loads existing saves without crashing when new skill IDs are absent. The doc states whether any `_SKILL_MIGRATION_MAP` entries are needed (the locked answer for net-new IDs is "no") and notes the round-trip behavior expected for saves created post-SA-C2.
+8. Cross-reference matrix + handoff checklist: the doc lists each new skill against the consuming SA sprint(s) (SA-B3, SA-B4, SA-P3, SA-P4, SA-P5, SA-F2, SA-F3, SA-R1, SA-R2) and gives SA-C2 a numbered checklist of artifacts (new `SkillNode` entries in `create_default_skills()`, per-skill bonus-stack tests in `tests/test_models/test_progression.py`, save round-trip tests, no view code changes expected).
+9. Voice-check: the doc passes the three Writing Bible regex patterns from `tests/test_writing_bible_compliance.py` (em-dash / en-dash / ASCII ` -- `, banned phrases, parallel-negation) with zero violations. ASCII double-hyphen between space-separated tokens is forbidden; inline compound words (e.g., `multi-tier`) are unaffected.
+10. Full test suite passes at or above the pre-phase baseline of 8430 passing tests (98 skipped). No code is modified in this sprint, so this is a regression check: after authoring the doc, the implementer runs `pytest -n auto -q` and confirms `>= 8430` passing.
+
+**Risks / open questions.**
+- **Locked: skill set count = 7.** One new skill per "both"-source crew `bonus_type` from SA-A1. The three binary intel `bonus_type` strings stay crew-only in v1 per SA-A1 Decision 4 exception. Reason: introducing skill nodes for binary gates would deviate from the SA-A1 design without a locked consumer; defer to Phase VI cohesion if a skill-tree path becomes warranted.
+- **Locked: tree placement = extend Social, Commerce, Leadership, and Industry.** No new tree, per `station_anchors.md` Decision 3. Recommended placement (the doc may refine, but the locked authority is "extend, never new"):
+  - `auction_lot_appraisal_bonus` → Commerce (Tier 2; prereq `market_eye` or `market_insider`).
+  - `coalition_sway_bonus` → Social (Tier 2; prereq `silver_tongue` or `commanding_presence`).
+  - `coalition_size_bonus` → Leadership (Tier 2; prereq `crew_manager` or `give_the_word`).
+  - `arbitration_neutrality_bonus` → Social (Tier 2; prereq `keen_insight` or `empathic_read`).
+  - `speculator_premium_reduction` → Commerce (Tier 2; prereq `market_insider` or `tariff_negotiation`).
+  - `research_yield_bonus` → Industry (Tier 2; prereq `efficient_refining` or `tool_sense`).
+  - `research_risk_reduction` → Leadership (Tier 2; prereq `diplomatic_relations` or `give_the_word`).
+- **Locked: no new capstones in v1.** All seven new skills are Tier 2 specialization nodes. Existing capstones (`insurance`, `peacemaker`, `juggernaut_capstone`, `sentinel_capstone`, `ghost_capstone`, `volley_commander`, `legend_of_the_expanse`, `ore_sense`, `material_science`) remain unchanged. Reason: an S-sized design sprint should not introduce identity-defining capstones for every anchor system; capstones earn their place by the system's depth (Phase II Politics may justify a future Coalition Builder capstone in SA-X cohesion, not here). This also keeps `_CAPSTONE_IDS` in `spacegame/views/skill_tree_view.py` unchanged for SA-C2.
+- **Locked: naming avoids `negotiator` and `master_negotiator` collisions.** The display name "Negotiator" is taken by the existing Commerce Tier 1 skill (`negotiator`, +5% buy price reduction); the display name "Master Negotiator" is taken by the existing Social Tier 2 skill (`master_negotiator`, special dialogue options). New skills use distinct names that do not collide either as `id` or as display string. The doc author selects the exact names and runs the collision check listed in AC 4. SA-A1 made the same call for crew (used "Auction Reader" instead of "Negotiator"); SA-C1 follows the same convention.
+- **Locked: per-skill magnitude range matches SA-A1 ranges.** Each skill's `bonus_per_level` is selected from the range documented in `sa_crew_design.md` section 1 for the matching crew bonus. The skill's max_level (locked: 1 or 2 per skill, never 3) determines the upper-bound stack from the skill side; the crew side adds its level-1 magnitude on top, and the consumer view sums both per the established `cargo_bonus`/`fuel_efficiency_bonus` pattern. Reason: keeping the cap at the SA-A1 range upper bound prevents skill+crew stacking from overshooting balance assumptions baked into SA-B/P/R/F design when those phases run.
+- **Locked: max_level = 2 for additive bonuses, max_level = 1 for binary/gateway bonuses.** All seven SA-C1 skills are additive (none are binary in v1), so all seven have max_level = 2. Reason: max_level 2 gives a meaningful investment trade-off (1 point unlocks; 1 more point caps); max_level 3 is reserved for high-frequency utility skills (cargo_mastery, fuel_efficiency) where the effect is felt every session.
+- **Locked: save migration = none required.** Net-new skill IDs added to `create_default_skills()`. Old saves omit the new skills; `from_dict()` (line 351 of `progression.py`) iterates only over keys present in the saved dict, so absent keys default to current_level=0 via `__post_init__` re-instantiation. New saves include the new skills. No `_SKILL_MIGRATION_MAP` entries needed because no existing skill ID is being renamed or split. The doc must state this explicitly per AC 7.
+- **Locked: skill tree view changes = none.** `_compute_detail_positions` in `spacegame/views/skill_tree_view.py` auto-arranges nodes by prerequisite depth, so net-new mid-tier skills lay out without code changes. No new entries to `_CAPSTONE_IDS` because no new capstones. SA-C2's view-side work is therefore limited to a layout regression check at the established 6 resolutions; no skill_tree_view.py edits expected.
+
+**Plan.** (9 tasks, design-only sprint; no code changes; no failing tests to write because the deliverable is a `.md` artifact)
+
+1. **Skill set scope decision + naming.** Open `requirements/sa_skill_design.md`. Write section 1 (Skill Roster) with one block per new skill. Lock the skill `id` (snake_case), display name (Title Case, distinct from existing `negotiator` and `master_negotiator`), tree, tier (per locked decisions, all Tier 2), prerequisite_id, max_level (per locked decisions, all 2), bonus_type (must match SA-A1 section 2 exactly for the seven shared strings), and bonus_per_level (within SA-A1 range). Read `progression.py` lines 384-1264 once more before locking display names to confirm no collision.
+   - Files: `requirements/sa_skill_design.md` (NEW); read-only `spacegame/models/progression.py`, `requirements/sa_crew_design.md`.
+   - Risk: easy to pick a display name that already exists. Run a substring check against every `name=` field in `create_default_skills()` before locking.
+
+2. **Per-skill block authoring with magnitude rationale.** For each of the seven skills, expand the block from task 1 with a one-sentence description (player-readable, voice-checked), a magnitude rationale tying the chosen `bonus_per_level` to a specific point in the SA-A1 range, and a narrative hook (one sentence on what investing in this skill represents in-fiction).
+   - Files: `requirements/sa_skill_design.md`.
+   - Gotcha: descriptions become user-facing strings once SA-C2 lands them in `create_default_skills()`. Apply Writing Bible discipline now: terse, declarative, no em-dashes, no banned phrases, no parallel-negation rhetoric.
+
+3. **Bonus-naming convention table.** Mirror `sa_crew_design.md` section 2 format. Columns: `bonus_type`, description, level-1 magnitude on the skill side, range, consuming view file (forward-looking, e.g., `spacegame/views/auction_view.py` per SA-B3), source-read pattern (skill / crew / both — the seven shared strings are "both", any SA-C1-only string is "skill").
+   - Files: `requirements/sa_skill_design.md`.
+   - Risk: ensure 1-to-1 mapping with the SA-A1 "both" set. Mismatched spelling (e.g., `research_yield` vs. `research_yield_bonus`) is a silent bug because `progression.get_bonus()` falls through to 0.
+
+4. **Collision check.** For each new skill `id` and `bonus_type`, search `spacegame/models/progression.py` and `data/crew/crew_members.json`. Document each result inline (not a blanket "no collisions found"). Mirror SA-A1 collision-check format: name the strings checked, name the closest near-misses, confirm pass status. The seven shared crew bonus_types are explicit "intentional shared" rows.
+   - Files: `requirements/sa_skill_design.md`; read-only sources.
+   - Gotcha: substring checks find prefix collisions (e.g., `salvage_yield` vs. a hypothetical `salvage_yield_bonus`). Run both exact-string and prefix-substring checks.
+
+5. **Tree-population analysis.** Tally pre-SA-C2 skill count per tree (Commerce 12, Combat 17, Exploration ~10, Leadership 11, Social 13, Industry 12 — confirm by counting `tree=SkillTreeType.<NAME>` occurrences in `progression.py`). Show the post-SA-C2 delta after adding the seven new skills. Confirm no tree exceeds an upper bound that breaks the existing layout (the auto-arrange in `_compute_detail_positions` handles arbitrary counts, but rendering past ~18 nodes per tree starts to crowd the detail view at 1280x720; flag if any tree crosses 18).
+   - Files: `requirements/sa_skill_design.md`; read-only `progression.py`, `skill_tree_view.py`.
+   - Risk: if the locked tree placements push Social or Commerce past 18, propose a mitigation (split a node across two trees, or accept the crowding) before locking.
+
+6. **Capstone analysis.** Walk each new skill. Confirm none is Tier 3. Confirm the existing `_CAPSTONE_IDS` set in `spacegame/views/skill_tree_view.py` does not need new entries. Document explicitly: "no new capstones in v1." Cite the locked rationale and reserve future capstone considerations for Phase VI cohesion (SA-X).
+   - Files: `requirements/sa_skill_design.md`.
+   - Risk: scope creep. If a new skill feels capstone-worthy, log it as a future-arc note (under "Open future questions"), not as a SA-C1 deliverable.
+
+7. **Save-migration analysis.** Confirm `from_dict()` (line 351 of `progression.py`) skips skill IDs absent from a saved dict (it iterates `skills_data.items()`, not over `prog.skills`). Confirm the migration map at lines 71-170 has no entries colliding with the new skill IDs. Document the round-trip expected behavior: pre-SA-C2 saves load fine post-SA-C2 with new skills at level 0; post-SA-C2 saves with leveled new skills round-trip correctly.
+   - Files: `requirements/sa_skill_design.md`; read-only `progression.py`.
+   - Risk: a future skill rename in another sprint could need an entry in `_SKILL_MIGRATION_MAP`; out of scope here, but flag in the doc as a reminder for SA-C2.
+
+8. **Cross-reference matrix + handoff checklist for SA-C2.** Mirror `sa_crew_design.md` section 3 (cross-reference matrix) and section 6 (handoff checklist). Map each new skill to its consuming SA sprint(s) and consuming view file. List exactly what SA-C2 implements: seven new `SkillNode` entries in `create_default_skills()` with the locked fields; per-skill bonus-stack tests in `tests/test_models/test_progression.py` (verifying `progression.get_bonus(...)` returns the expected sum when a skill is unlocked at each level); save round-trip tests; layout regression check at the 6 standard resolutions; no view code changes.
+   - Files: `requirements/sa_skill_design.md`.
+   - Risk: hand-off ambiguity costs SA-C2 a planning round. Be explicit about what is and isn't in SA-C2's scope.
+
+9. **Decisions-locked block + voice-check + final regression pass.** Author the "Decisions Locked" section mirroring `sa_crew_design.md` section 4 format (one decision per block: title, rationale, trade-offs considered). Run the three voice-check regex patterns from `tests/test_writing_bible_compliance.py` against the entire doc text; zero violations required. Run `pytest -n auto -q` and confirm pass count >= 8430. Append to Activity log; status moves to `review` (the harness handles the transition).
+   - Files: `requirements/sa_skill_design.md`; pytest invocation.
+   - Gotcha: the voice-check regex requires surrounding spaces for the ASCII ` -- ` match. Inline compound words (`multi-tier`, `mid-tier`, `cross-reference`) are fine. When in doubt, prefer a comma or sentence break over the double-hyphen.
+   - Gotcha 2: pre-existing voice violations elsewhere in the repo are out of scope; only the SA-C1 doc needs to be clean.
 
 **Activity log.**
 - 2026-04-26 — todo (created)
+- 2026-04-27 11:07 — harness: plan phase starting
+- 2026-04-27 11:42 — planning complete; verified all 8 context-to-read paths exist (incl. `sa_crew_design.md` from SA-A1 done state); locked 8 decisions covering skill set count, tree placement, capstone count, naming collisions, magnitude bounds, max_level cap, save migration, and view code untouched; tightened acceptance criteria from 4 vague items to 10 mechanically verifiable ones; folded in 4 polish items (bonus-naming convention table, collision-check section, save-migration analysis, handoff checklist for SA-C2) into the deliverable rather than spawning new sprints; no scope expansion outside the SA-C1 design surface; no new sprints proposed. PHASE_OK
 
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-04-27 11:07
+- Completed: 2026-04-27 11:42
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: pending
+- New_sprints_proposed: none
+- Polish_items_folded_in: bonus-naming convention table; collision-check section; save-migration analysis; handoff checklist for SA-C2
+- Decisions_locked: 8
+- Notes: SA-A1 already locked the seven "both"-source crew bonus_type strings and the three crew-only binary intel exceptions. SA-C1 design follows that lock 1-to-1 (seven new mid-tier skills, no skill nodes for the binary intel bonuses in v1). All seven skills sit in existing trees per station_anchors.md Decision 3. No new capstones; existing `_CAPSTONE_IDS` in skill_tree_view.py stays untouched, which keeps SA-C2 view-side work to a layout regression check at the standard resolutions. Pre-phase test baseline 8430 passing / 98 skipped recorded into AC 10 as the regression bar.
 #### SA-C2 — Skill tree extension implementation
 
 **Status**: todo
