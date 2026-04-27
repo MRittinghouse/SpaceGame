@@ -254,8 +254,8 @@ class TestReachDisputeFlags:
     """SA-P5: first_reach_arbitration + first_salvage_rights_concession + first_master."""
 
     def test_any_resolution_fires_first_reach_arbitration(self) -> None:
-        """Loss outcome fires first_reach_arbitration on first resolution."""
-        mgr, player, _, _, _, journal = _build_manager()
+        """Loss outcome fires first_reach_arbitration and applies rep + market shifts."""
+        mgr, player, _politics, _news, market, journal = _build_manager()
         tpl_id = "salvage_rights_phasing"
         dispute = mgr.start_dispute(tpl_id, current_game_day=10)
         mgr.register_pending_dispute(dispute)
@@ -272,6 +272,17 @@ class TestReachDisputeFlags:
         assert player.dialogue_flags.get("first_dispute_attended") is True
         # Journal entry fired for first_reach_arbitration.
         assert any(e["trigger_flag"] == "first_reach_arbitration" for e in journal.entries)
+        # AC 18: crimson_reach rep delta applied independently via politics manager.
+        assert player.faction_reputation.get("crimson_reach", 0) == -3, (
+            "Loss outcome must apply crimson_reach rep_delta=-3 from salvage_rights_phasing"
+        )
+        # AC 18: market shift recorded at the crimson_reach market stub.
+        assert len(market.politics_shifts) >= 1, (
+            "Loss outcome must apply at least one market shift at crimson_reach"
+        )
+        assert any(s.system_id == "crimson_reach" for s in market.politics_shifts), (
+            "At least one market shift must target the crimson_reach system"
+        )
 
     def test_partial_win_off_record_fires_first_salvage_rights_concession(self) -> None:
         """partial_win_off_record emits first_salvage_rights_concession."""

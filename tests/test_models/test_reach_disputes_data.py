@@ -164,29 +164,21 @@ class TestIssueFamilyCategorization:
         assert count == 2, f"Expected 2 salvage_rights templates, got {count}"
 
     def test_one_wreckers_vs_unaffiliated(self, raw_disputes: list[dict]) -> None:
-        count = sum(
-            1 for t in raw_disputes if t.get("issue_family") == "wreckers_vs_unaffiliated"
-        )
+        count = sum(1 for t in raw_disputes if t.get("issue_family") == "wreckers_vs_unaffiliated")
         assert count == 1, f"Expected 1 wreckers_vs_unaffiliated template, got {count}"
 
     def test_one_debris_field_territory(self, raw_disputes: list[dict]) -> None:
-        count = sum(
-            1 for t in raw_disputes if t.get("issue_family") == "debris_field_territory"
-        )
+        count = sum(1 for t in raw_disputes if t.get("issue_family") == "debris_field_territory")
         assert count == 1, f"Expected 1 debris_field_territory template, got {count}"
 
     def test_one_gray_market_provenance(self, raw_disputes: list[dict]) -> None:
-        count = sum(
-            1 for t in raw_disputes if t.get("issue_family") == "gray_market_provenance"
-        )
+        count = sum(1 for t in raw_disputes if t.get("issue_family") == "gray_market_provenance")
         assert count == 1, f"Expected 1 gray_market_provenance template, got {count}"
 
     def test_all_issue_families_known(self, raw_disputes: list[dict]) -> None:
         for tpl in raw_disputes:
             fam = tpl.get("issue_family")
-            assert fam in ISSUE_FAMILIES, (
-                f"Template '{tpl['id']}' has unknown issue_family '{fam}'"
-            )
+            assert fam in ISSUE_FAMILIES, f"Template '{tpl['id']}' has unknown issue_family '{fam}'"
 
 
 # ---------------------------------------------------------------------------
@@ -220,9 +212,7 @@ class TestOutcomeMatrix:
         for tpl in raw_disputes:
             matrix = tpl["outcome_matrix"]
             missing = self.CATEGORIES - set(matrix.keys())
-            assert not missing, (
-                f"Template '{tpl['id']}' outcome_matrix missing: {missing}"
-            )
+            assert not missing, f"Template '{tpl['id']}' outcome_matrix missing: {missing}"
 
     def test_win_loss_have_non_null_headlines(self, raw_disputes: list[dict]) -> None:
         for tpl in raw_disputes:
@@ -301,9 +291,7 @@ class TestCrossReferences:
                         f"Template '{tpl['id']}': commodity '{cid}' not in commodities.json"
                     )
 
-    def test_all_systems_exist(
-        self, raw_disputes: list[dict], system_ids: frozenset[str]
-    ) -> None:
+    def test_all_systems_exist(self, raw_disputes: list[dict], system_ids: frozenset[str]) -> None:
         for tpl in raw_disputes:
             for cat in tpl["outcome_matrix"].values():
                 for shift in cat.get("market_shifts", []):
@@ -368,8 +356,7 @@ class TestCrossReferences:
         for tpl in raw_disputes:
             for framing, dim in tpl.get("framing_target_dimensions", {}).items():
                 assert dim in REACH_DIMENSIONS, (
-                    f"Template '{tpl['id']}' framing '{framing}' targets "
-                    f"unknown dimension '{dim}'"
+                    f"Template '{tpl['id']}' framing '{framing}' targets unknown dimension '{dim}'"
                 )
 
     def test_all_framings_in_eligible_framings(self, raw_disputes: list[dict]) -> None:
@@ -386,8 +373,11 @@ class TestCrossReferences:
             for d_id, condition in tpl.get("betrayal_conditions", {}).items():
                 # Validate against the full condition string (may have colon-arg suffix).
                 base = condition.split(":")[0]
-                valid_bases = {"rep_dropped_below_25", "counter_framing_succeeded",
-                               "rival_faction_unfavored"}
+                valid_bases = {
+                    "rep_dropped_below_25",
+                    "counter_framing_succeeded",
+                    "rival_faction_unfavored",
+                }
                 assert base in valid_bases, (
                     f"Template '{tpl['id']}' delegate '{d_id}' has unknown "
                     f"betrayal condition '{condition}'"
@@ -398,8 +388,7 @@ class TestCrossReferences:
             roster = {d["delegate_id"] for d in tpl["delegates"]}
             for d_id in tpl.get("betrayal_conditions", {}).keys():
                 assert d_id in roster, (
-                    f"Template '{tpl['id']}' betrayal_condition key '{d_id}' "
-                    f"not in delegate roster"
+                    f"Template '{tpl['id']}' betrayal_condition key '{d_id}' not in delegate roster"
                 )
 
     def test_counter_framing_delegates_in_roster(self, raw_disputes: list[dict]) -> None:
@@ -407,8 +396,7 @@ class TestCrossReferences:
             roster = {d["delegate_id"] for d in tpl["delegates"]}
             for d_id in tpl.get("counter_framings", {}).keys():
                 assert d_id in roster, (
-                    f"Template '{tpl['id']}' counter_framing key '{d_id}' "
-                    f"not in delegate roster"
+                    f"Template '{tpl['id']}' counter_framing key '{d_id}' not in delegate roster"
                 )
 
     def test_counter_framings_values_in_eligible(self, raw_disputes: list[dict]) -> None:

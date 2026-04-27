@@ -2131,7 +2131,7 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 - Notes: Clean sprint. All 23 acceptance criteria met across engine extensions (annual scheduling + predicate-dispatch betrayal), data content (8 templates, 4 dialogue trees, 3 journal entries), venue dispatch refactor, tutorial overlay, and sub-rep config. is_dispute_active takes 2 args (not 3 as spec'd) because last_resolved_day is manager-owned state — design improvement, behavior identical. SA-P4 introduced zero new mypy errors vs baseline. SA-P5 inherits _VENUE_REGISTRY without engine work.
 #### SA-P5 — Wreckers' Guild gray-market mediation venue
 
-**Status**: review
+**Status**: in-progress (reviewing)
 **Phase**: Phase II | **Size**: M | **Effort**: 1 week
 **Depends on**: SA-P2, SA-1 | **Blocks**: SA-P6
 
@@ -2300,18 +2300,24 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 - 2026-04-27 19:35 — planning complete; verified all SA-P5 context-to-read paths exist on disk; confirmed SA-P4 implementation surfaces (`_VENUE_REGISTRY` system-id-keyed registry, `register_sub_rep_config` manager method, `_maybe_deduct_sub_rep` per-delegate dispatch, `_resolve_betrayal_predicate` extensible dispatch, template-driven `counter_framings`, `FirstTimeTipOverlay` venue-id-gated pattern) so SA-P5 inherits without re-implementing any engine surface; locked 12 decisions (in-`WreckersGuildView` button as the sole route into the Reach venue, reusing `crimson_wreckers_guild` location id; ship 5 templates with 1 campaign arc; zero engine extensions to `politics_dispute.py`; reuse `malia_torres` speaker_id with the tonal shift in line content rather than a duplicate `torres_arbitrator` id; dual gating — `LOCKED_NO_MEMBERSHIP` for unjoined plus per-tier action enable map for apprentice/journeyman/master; no new commodities; -25 standing threshold; per-venue `_VENUE_THEMES` dict with Reach palette pulled from `ReachDarkLayout` register; no new crew banter trigger flag — SA-P3's existing `cass_mediation_in_progress_seen` covers Reach mediation; engine-emitted journal flags direct, tutorial flag helper-routed; zero new betrayal conditions; one-off per-template Reach delegates handled author-side per SA-P1 §11.9); folded in 5 polish items as deliverables (tier-gated Arbitration Chamber button in `WreckersGuildView`; LOCKED_NO_MEMBERSHIP list substate; per-tier action button gating; Reach-themed visual treatment via per-venue theme hook; 1 new tutorial tip + 3 SA-P5 journal entries authored inline); refined acceptance criteria from 5 → 21 mechanically testable items; expanded touch zones to cover 7 areas the implementer will touch (data/politics/reach_disputes.json new; data/dialogue/dialogues.json torres_arbitration tree; data/journal/entries.json three SA-P5 entries; spacegame/engine/game.py for `_VENUE_REGISTRY` + sub-rep registration + outcome-callback extension; spacegame/views/dispute_view.py for `LOCKED_NO_MEMBERSHIP` + per-tier action gating + per-venue theme hook + tutorial overlay; spacegame/views/wreckers_guild_view.py for the Arbitration Chamber button; spacegame/constants/flags.py for the new tutorial flag helper; plus data-validation + view + scenario + engine test files). Documented 4 OPEN-accepted items (pixel theming → SA-X10; one-off Reach delegates handled author-side per SA-P1 §11.9; `WreckersGuildView` button placement decision deferred to direct view read; dispute view "Leave" return target at the Reach a minor implementer's-call UX polish). No new sprints proposed. PHASE_OK
 - 2026-04-27 18:58 — harness: implement phase starting (rework cycle 0)
 - 2026-04-27 — implement phase complete; all deliverables shipped: 5 Reach dispute templates (reach_disputes.json); torres_arbitration dialogue tree (persuasion-keyed skill checks, 10 nodes, all reachable); 3 SA-P5 journal entries; crimson_reach faction added to factions.json; seen_gray_market_arbitration_tip flag helper; _VENUE_REGISTRY extended + WRECKERS_GUILD_CONFIG registered + _on_dispute_outcome extended for 3 SA-P5 flags; LOCKED_NO_MEMBERSHIP + VenueTheme + per-tier action gating + gray-market tip wired in dispute_view.py; Arbitration Chamber button in wreckers_guild_view.py; 60 new tests (32 data-validation + 12 dispute-view SA-P5 + 6 wreckers-guild-view + 2 venue-dispatch + 8 scenario); fixed [Social N] → [Persuasion N] skill prefix and expanded 4-word body to 7-word body per Writing Bible scanner; suite: 9084 passed / 98 skipped; ruff: 0 violations on touched files. PHASE_OK
+- 2026-04-27 19:25 — harness: review phase starting (rework cycle 0)
+- 2026-04-27 19:55 — review complete; 4 minor findings fixed directly: (1) ruff format applied to test_reach_disputes_data.py; (2) torres_arbitration voice fidelity gap — "kid" address missing from non-master nodes, added to `observing` and `argue_failure` per character_voices.md:380 + AC 17 register requirement; (3) test_politics_dispute.py extended with TestReachSubRepDeduction (3 new tests) covering AC 7 corridor-failure sub-rep deduction, independence from faction rep, and no-op when config absent; (4) scenario test assertion gaps for AC 18 fixed — added crimson_reach rep delta (-3 on loss) and market shift assertions to test_any_resolution_fires_first_reach_arbitration. All 21 acceptance criteria verified. Suite: 9087 passed / 98 skipped (+3 net vs implement baseline). Single tighten: the scenario test is model-only (no view-level navigation) — full navigation flow (station hub → guild hall → chamber button → dispute view) is covered by view tests individually but never exercised end-to-end in a single test. Acceptable for this sprint; SA-P6 owns integration polish. PHASE_OK
+
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-04-27 18:58
-- Completed: 2026-04-27
-- Files_changed: data/politics/reach_disputes.json (new), data/dialogue/dialogues.json, data/journal/entries.json, data/factions.json, spacegame/constants/flags.py, spacegame/engine/game.py, spacegame/views/dispute_view.py, spacegame/views/wreckers_guild_view.py, tests/test_models/test_reach_disputes_data.py (new), tests/test_views/test_dispute_view.py, tests/test_views/test_wreckers_guild_view.py, tests/test_engine/test_dispute_view_venue_dispatch.py, tests/test_scenarios/test_scenario_reach_mediation.py (new), requirements/roadmap/ROADMAP.md
-- Commits: d03ee9b (content + wiring), current (tests + scanner fix)
-- New_sprints_proposed: none
-- Polish_items_folded_in: none (all 5 SA-P5 polish items were already in the plan)
-- Decisions_locked: 0 new
-- Rework_cycles: 0
-- Notes: Zero engine extensions to politics_dispute.py as planned. Skill prefix scanner caught [Social N] in torres_arbitration responses — fixed to [Persuasion N] with body expanded to meet 6-word minimum. Test delta: 9084 - 9024 = 60 new tests. All Writing Bible scanner checks green.
+- Started: 2026-04-27 19:25
+- Completed: 2026-04-27 19:55
+- Files_changed: data/dialogue/dialogues.json, tests/test_models/test_politics_dispute.py, tests/test_models/test_reach_disputes_data.py, tests/test_scenarios/test_scenario_reach_mediation.py
+- Commits: none yet (committed below)
+- Tests_passing: 9087
+- Acceptance_criteria_verified: 21/21
+- Polish_items_verified: n/a (all 5 polish items were in the original plan, not folded in during review)
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 4
+- Single_tighten: scenario test exercises model layer only — no single end-to-end test walks the full view navigation chain (station hub → guild → arbitration chamber → dispute view); each leg is unit-tested separately. Acceptable for this sprint; SA-P6 integration pass would be the natural home.
+- Followup_sprints_added: none
+- Notes: Voice fidelity, test coverage gaps (sub-rep deduction + AC 18 market/rep assertions), and a format violation were the four issues. All fixed directly in this phase. SA-P3/P4 baselines untouched.
 #### SA-P6 — Politics polish + tuning
 
 **Status**: todo

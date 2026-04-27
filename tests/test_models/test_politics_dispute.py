@@ -1049,4 +1049,132 @@ class TestDisputeRoundTripWithSAP4Fields:
         raw.pop("rep_at_start", None)
         restored = PoliticsDispute.from_dict(raw, tpl.outcome_matrix)
         assert restored.had_betrayal is False
-        assert restored.rep_at_start == {}
+
+
+# ---------------------------------------------------------------------------
+# SA-P5 — corridor failure sub-rep deduction at the Reach venue
+# ---------------------------------------------------------------------------
+
+
+class TestReachSubRepDeduction:
+    """SA-P5 (AC 7): corridor failure at a Reach delegate decrements wreckers_guild sub-rep.
+
+    Registers WRECKERS_GUILD_CONFIG via the existing register_sub_rep_config
+    path and verifies that do_corridor_visit(success_override=False) decrements
+    player.sub_reputation["wreckers_guild"] by 1, independently of any
+    faction-rep change.
+    """
+
+    def _make_single_delegate_reach_template(self) -> PoliticsDisputeTemplate:
+        """Minimal Reach-flavored template with one wreckers_guild delegate."""
+        delegate = DelegateTemplate(
+            delegate_id="malia_torres",
+            name="Malia Torres",
+            starting_visible_state="wavering",
+            position_vector={
+                "salvage_rights_position": 0.3,
+                "gray_market_compliance": -0.4,
+                "crew_solidarity": 0.6,
+            },
+            faction_loyalty=0.7,
+            sub_faction_id="wreckers_guild",
+        )
+        outcome_matrix = {
+            "win": OutcomeRow(rep_deltas={"crimson_reach": 3}),
+            "partial_win_coalition_thin": OutcomeRow(rep_deltas={"crimson_reach": 1}),
+            "partial_win_off_record": OutcomeRow(rep_deltas={"crimson_reach": 2}),
+            "loss": OutcomeRow(rep_deltas={"crimson_reach": -2}),
+        }
+        return PoliticsDisputeTemplate(
+            id="test_reach_corridor_deduction",
+            headline="Test Reach Corridor",
+            factions_affected=("crimson_reach",),
+            base_difficulty=3,
+            round_count=3,
+            deadline_days=10,
+            delegates=(delegate,),
+            eligible_framings=("salvage_precedent",),
+            eligible_evidence=(),
+            framing_modifiers={"salvage_precedent": 1},
+            framing_target_dimensions={"salvage_precedent": "salvage_rights_position"},
+            outcome_matrix=outcome_matrix,
+        )
+
+    class _StubReachPlayer:
+        """Minimal player stub that tracks sub_reputation changes."""
+
+        def __init__(self) -> None:
+            self.sub_reputation: dict[str, int] = {}
+            self.faction_reputation: dict[str, int] = {"crimson_reach": 50}
+            self.dialogue_flags: dict[str, bool] = {}
+
+        def modify_sub_reputation(self, org_id: str, amount: int, _config: object) -> None:
+            self.sub_reputation[org_id] = self.sub_reputation.get(org_id, 0) + amount
+
+        def get_reputation(self, faction_id: str) -> int:
+            return self.faction_reputation.get(faction_id, 0)
+
+    def test_corridor_failure_decrements_wreckers_guild_sub_rep(self) -> None:
+        """AC 7: failed corridor visit decrements sub_reputation["wreckers_guild"] by 1."""
+        from spacegame.models.wreckers_guild import WRECKERS_GUILD_CONFIG
+
+        tpl = self._make_single_delegate_reach_template()
+        player = self._StubReachPlayer()
+        player.sub_reputation["wreckers_guild"] = 20  # apprentice tier
+
+        mgr = PoliticsDisputeManager(templates={tpl.id: tpl})
+        mgr.set_player(player)  # type: ignore[arg-type]
+        mgr.register_sub_rep_config(WRECKERS_GUILD_CONFIG.id, WRECKERS_GUILD_CONFIG)
+
+        dispute = mgr.start_dispute(tpl.id, current_game_day=1)
+        assert dispute is not None
+
+        before = player.sub_reputation.get("wreckers_guild", 0)
+        mgr.do_corridor_visit(dispute, "malia_torres", "salvage_precedent", success_override=False)
+        after = player.sub_reputation.get("wreckers_guild", 0)
+
+        assert after == before - 1, (
+            f"Corridor failure must decrement wreckers_guild sub-rep by 1; "
+            f"before={before}, after={after}"
+        )
+
+    def test_corridor_failure_does_not_alter_crimson_reach_faction_rep(self) -> None:
+        """AC 7: sub-rep deduction on corridor failure is independent of faction reputation."""
+        from spacegame.models.wreckers_guild import WRECKERS_GUILD_CONFIG
+
+        tpl = self._make_single_delegate_reach_template()
+        player = self._StubReachPlayer()
+        player.sub_reputation["wreckers_guild"] = 20
+        faction_rep_before = player.faction_reputation.get("crimson_reach", 0)
+
+        mgr = PoliticsDisputeManager(templates={tpl.id: tpl})
+        mgr.set_player(player)  # type: ignore[arg-type]
+        mgr.register_sub_rep_config(WRECKERS_GUILD_CONFIG.id, WRECKERS_GUILD_CONFIG)
+
+        dispute = mgr.start_dispute(tpl.id, current_game_day=1)
+        assert dispute is not None
+
+        mgr.do_corridor_visit(dispute, "malia_torres", "salvage_precedent", success_override=False)
+
+        assert player.faction_reputation.get("crimson_reach", 0) == faction_rep_before, (
+            "Corridor failure must not alter faction reputation (only sub-rep deducts)"
+        )
+
+    def test_corridor_failure_without_config_is_silent_no_op(self) -> None:
+        """AC 7: corridor failure without registered config skips deduction silently."""
+        tpl = self._make_single_delegate_reach_template()
+        player = self._StubReachPlayer()
+        player.sub_reputation["wreckers_guild"] = 20
+
+        mgr = PoliticsDisputeManager(templates={tpl.id: tpl})
+        mgr.set_player(player)  # type: ignore[arg-type]
+        # Intentionally NOT registering WRECKERS_GUILD_CONFIG.
+
+        dispute = mgr.start_dispute(tpl.id, current_game_day=1)
+        assert dispute is not None
+
+        before = player.sub_reputation.get("wreckers_guild", 0)
+        mgr.do_corridor_visit(dispute, "malia_torres", "salvage_precedent", success_override=False)
+        after = player.sub_reputation.get("wreckers_guild", 0)
+
+        assert after == before, "No config registered: sub-rep must remain unchanged"

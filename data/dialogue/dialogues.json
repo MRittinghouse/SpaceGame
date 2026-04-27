@@ -8779,7 +8779,7 @@
         {
           "id": "observing",
           "speaker_id": "malia_torres",
-          "text": "Smart. Most people try to talk before they've listened. Take a seat at the back.",
+          "text": "Smart, kid. Most people try to talk before they've listened. Take a seat at the back.",
           "responses": [
             {
               "text": "[Take a seat]",
@@ -8803,7 +8803,7 @@
         {
           "id": "argue_failure",
           "speaker_id": "malia_torres",
-          "text": "That angle didn't move anyone. You pushed on a wall. Come back with something the room actually needs to hear, or stay out of my corridor.",
+          "text": "That angle didn't move anyone, kid. You pushed on a wall. Come back with something the room actually needs to hear, or stay out of my corridor.",
           "responses": [
             {
               "text": "I'll find another way.",
