@@ -579,7 +579,7 @@ When drafting dialogue, verify each line against:
 Three existing speaker IDs require downstream attention; noted here so downstream sprints inherit a clear starting point rather than discovering the discrepancy mid-implementation.
 
 - `delivery_merchant` (Odom): rename to `odom_broker` is SA-V scope. Do not rename in this sprint.
-- `torres_memorial` (any future non-speaking plaque or memorial references to Malia Torres): if memorial text arises in SA arc content, use `torres_memorial` as distinct from `malia_torres` the speaking NPC. Resolution is SA-1 scope.
+- `torres_memorial` (legacy `wrenchs_request` delivery NPC): retained as-is for backward compatibility. It is a side-mission delivery stand-in, not a literal memorial to Malia Torres. All new SA arc dialogue uses the canonical `malia_torres` speaker_id. No rename or merge needed. *Resolved: SA-1.*
 - `jez_okafor` (Jez Okafor, Iron Depths shift supervisor, Miners' Union): unrelated to the Okafor Institute's current director, Dr. Nadia Kweon. The two Okafor-named characters are distinct by design; no reconciliation needed.
 
 ### Inventory Table
