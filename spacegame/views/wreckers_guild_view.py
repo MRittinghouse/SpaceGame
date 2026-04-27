@@ -55,7 +55,6 @@ from spacegame.models.wreckers_guild import (
     APPRENTICE_LATE_MULTIPLIER,
     APPRENTICE_PARTIAL_MULTIPLIER,
     SUB_REP_FAILURE_PENALTY,
-    WRECKERS_CONTRACT_TEMPLATES,
     WRECKERS_GUILD_CONFIG,
     WreckersContractTemplate,
     WreckersGuildState,
@@ -69,7 +68,6 @@ from spacegame.models.wreckers_guild import (
 from spacegame.utils.logger import logger
 from spacegame.views.base_view import BaseView
 from spacegame.views.first_time_tip import FirstTimeTipOverlay
-
 
 # Layout
 PANEL_X = scale_x(60)
@@ -140,9 +138,7 @@ class WreckersGuildView(BaseView):
         self._last_completed_id: Optional[str] = None
 
         # Background — neutral station theme; the Hall is dim, industrial.
-        self.background = AnimatedBackground(
-            "station", WINDOW_WIDTH, WINDOW_HEIGHT, seed=4321
-        )
+        self.background = AnimatedBackground("station", WINDOW_WIDTH, WINDOW_HEIGHT, seed=4321)
         self._bg_dim = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
         self._bg_dim.fill((0, 0, 0))
         self._bg_dim.set_alpha(150)
@@ -305,10 +301,7 @@ class WreckersGuildView(BaseView):
             if tpl is None:
                 continue
             button_y = (
-                BOARD_TOP_Y
-                + scale_y(180)
-                + idx * (CARD_H + CARD_PAD)
-                + (CARD_H - scale_y(34)) // 2
+                BOARD_TOP_Y + scale_y(180) + idx * (CARD_H + CARD_PAD) + (CARD_H - scale_y(34)) // 2
             )
             btn = pygame_gui.elements.UIButton(
                 relative_rect=pygame.Rect(
@@ -486,12 +479,8 @@ class WreckersGuildView(BaseView):
         # Don't double-accept the same template within the active set.
         if template_id in self._active_template_ids():
             return False
-        slot = (
-            state.slot_offers.index(template_id) if template_id in state.slot_offers else 0
-        )
-        mission_id = self._mission_id_for_template(
-            template_id, state.slot_seed_window, slot
-        )
+        slot = state.slot_offers.index(template_id) if template_id in state.slot_offers else 0
+        mission_id = self._mission_id_for_template(template_id, state.slot_seed_window, slot)
         mission = self._build_mission(tpl, mission_id)
         success, _msg = self.mission_manager.add_mission(
             mission, initial_status=MissionStatus.AVAILABLE
@@ -511,9 +500,7 @@ class WreckersGuildView(BaseView):
         self._show_message(f"Contract taken: {tpl.name}.")
         return True
 
-    def _build_mission(
-        self, tpl: WreckersContractTemplate, mission_id: str
-    ) -> Mission:
+    def _build_mission(self, tpl: WreckersContractTemplate, mission_id: str) -> Mission:
         """Construct a Mission instance from a template."""
         # Soft deadline: full window is 60% of the soft cap; partial is the
         # cap itself; past the cap the contract auto-fails.
@@ -593,9 +580,7 @@ class WreckersGuildView(BaseView):
             # Consume the listed cargo before applying credits so we don't
             # double-credit a partial fill from a stale objective slot.
             self.player.ship.remove_cargo(tpl.target_commodity_id, tpl.target_quantity)
-            multiplier = payout_multiplier_for_tier(
-                current_tier_id(self.player.sub_reputation)
-            )
+            multiplier = payout_multiplier_for_tier(current_tier_id(self.player.sub_reputation))
             payout = int(tpl.base_payout_credits * multiplier)
             self.player.add_credits(payout)
             # Sub-rep reward; queues a SubReputationDelta on tier crossings.
@@ -787,11 +772,9 @@ class WreckersGuildView(BaseView):
     def _render_enrollment_pitch(self, screen: pygame.Surface) -> None:
         """Render the unenrolled-state body: Malia's pitch + a Sign On button."""
         body_y = BOARD_TOP_Y
-        draw_panel(
-            screen, (PANEL_X, body_y, PANEL_W, BOARD_H), alpha=210
-        )
+        draw_panel(screen, (PANEL_X, body_y, PANEL_W, BOARD_H), alpha=210)
         lines = [
-            'Malia Torres, Wrench, looks up from a stripped reactor housing.',
+            "Malia Torres, Wrench, looks up from a stripped reactor housing.",
             '"Heard you do real work. Guild takes a cut, you take the rest. ',
             'Standing builds with completed contracts. Say the word."',
         ]
@@ -804,9 +787,7 @@ class WreckersGuildView(BaseView):
     def _render_board(self, screen: pygame.Surface) -> None:
         """Render the active contract board for enrolled players."""
         body_y = BOARD_TOP_Y
-        draw_panel(
-            screen, (PANEL_X, body_y, PANEL_W, BOARD_H), alpha=210
-        )
+        draw_panel(screen, (PANEL_X, body_y, PANEL_W, BOARD_H), alpha=210)
 
         # Active contract summary at the top.
         state = self._ensure_state()
@@ -821,10 +802,7 @@ class WreckersGuildView(BaseView):
                 if tpl is None:
                     continue
                 have = self.player.ship.get_cargo_quantity(tpl.target_commodity_id)
-                line = (
-                    f"Active: {tpl.name} — {have}/{tpl.target_quantity} "
-                    f"{tpl.target_commodity_id}"
-                )
+                line = f"Active: {tpl.name}. {have}/{tpl.target_quantity} {tpl.target_commodity_id}"
                 surf = self.subtitle_font.render(line, True, Colors.TEXT_HIGHLIGHT)
                 screen.blit(surf, (PANEL_X + scale_x(20), info_y))
                 info_y += scale_y(22)
@@ -862,7 +840,9 @@ class WreckersGuildView(BaseView):
         tier_color = (
             (180, 220, 180)
             if tpl.tier_required == "apprentice"
-            else (220, 200, 80) if tpl.tier_required == "journeyman" else ACCENT_COLOR
+            else (220, 200, 80)
+            if tpl.tier_required == "journeyman"
+            else ACCENT_COLOR
         )
         pygame.draw.rect(screen, tier_color, (card_x, y, scale_x(4), CARD_H))
         name = self.subtitle_font.render(tpl.name, True, Colors.TEXT_HIGHLIGHT)

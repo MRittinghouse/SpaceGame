@@ -127,9 +127,7 @@ WRECKERS_CONTRACT_TEMPLATES: tuple[WreckersContractTemplate, ...] = (
             "scrap metal off the books, no manifest, brought back here. "
             "Easy work for steady hands. Pays the rent."
         ),
-        turn_in_line=(
-            "Eight crates, weighed in. You did the work. Take the credits."
-        ),
+        turn_in_line=("Eight crates, weighed in. You did the work. Take the credits."),
     ),
     WreckersContractTemplate(
         id="cleanup_salvaged_electronics",
@@ -148,8 +146,7 @@ WRECKERS_CONTRACT_TEMPLATES: tuple[WreckersContractTemplate, ...] = (
             "where they go."
         ),
         turn_in_line=(
-            "Boards check out. Some of these might even still boot. "
-            "Credits in your account."
+            "Boards check out. Some of these might even still boot. Credits in your account."
         ),
     ),
     # === Recovery (journeyman-gated) ===
@@ -168,10 +165,7 @@ WRECKERS_CONTRACT_TEMPLATES: tuple[WreckersContractTemplate, ...] = (
             "documented chain of custody. The Guild covers your overhead "
             "if the wreck shifts on you. Bring them back here intact."
         ),
-        turn_in_line=(
-            "Four parts, all on the list. Paz and Daro can use these. "
-            "Solid work."
-        ),
+        turn_in_line=("Four parts, all on the list. Paz and Daro can use these. Solid work."),
     ),
     WreckersContractTemplate(
         id="recovery_alloy_composite",
@@ -211,8 +205,7 @@ WRECKERS_CONTRACT_TEMPLATES: tuple[WreckersContractTemplate, ...] = (
             "bring speed. Either way, bring the crates back."
         ),
         turn_in_line=(
-            "Three crates, no questions. The Guild appreciates a clean "
-            "delivery on a dirty run."
+            "Three crates, no questions. The Guild appreciates a clean delivery on a dirty run."
         ),
         forced_encounter_id="pirate_scout_intercept",
     ),
@@ -234,8 +227,7 @@ WRECKERS_CONTRACT_TEMPLATES: tuple[WreckersContractTemplate, ...] = (
             "risk on a job like this."
         ),
         turn_in_line=(
-            "Four crates of crystal. That wreck's been refusing visitors "
-            "for a year. Good run."
+            "Four crates of crystal. That wreck's been refusing visitors for a year. Good run."
         ),
     ),
 )

@@ -195,6 +195,34 @@
       "trigger_flag": "heard_nas_intelligence",
       "system_id": "nova_research",
       "mission_id": ""
+    },
+    {
+      "entry_id": "auto_wreckers_first_contract",
+      "text": "Turned in my first contract at the Wreckers' Guild Hall. Malia weighed the haul, logged it, paid me out. No ceremony. She said this is what the work looks like. Standing builds slow. Down here, slow counts.",
+      "trigger_flag": "wreckers_contract_completed",
+      "system_id": "crimson_reach",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_wreckers_promoted_journeyman",
+      "text": "Journeyman now. Malia signed off on it without making a thing of it. Recovery pulls open up. Higher-margin work, higher exposure. She said journeyman is when the Guild starts trusting you with the bigger pieces.",
+      "trigger_flag": "wreckers_promoted_journeyman",
+      "system_id": "crimson_reach",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_wreckers_promoted_master",
+      "text": "Master tier at the Guild Hall. Malia stopped calling me kid. She did not say so, just stopped. Deep-derelict work is on the board now. Old hulls, bad orientations, partial atmosphere. The kind of pulls that need a name on them.",
+      "trigger_flag": "wreckers_promoted_master",
+      "system_id": "crimson_reach",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_wreckers_made_up",
+      "text": "Squared the missed contract with Malia. She did not lecture. She just opened the board back up and said the Guild forgets a debt once. Then she handed me a torch and asked me to hold the line on the next one.",
+      "trigger_flag": "wreckers_made_up_journal",
+      "system_id": "crimson_reach",
+      "mission_id": ""
     }
   ]
 }

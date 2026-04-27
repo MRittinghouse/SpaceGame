@@ -18,7 +18,7 @@ from __future__ import annotations
 import pygame
 import pygame_gui
 
-from spacegame.config import GameState, WINDOW_HEIGHT, WINDOW_WIDTH
+from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH, GameState
 from spacegame.constants.flags import (
     enrolled_wreckers_guild,
     seen_wreckers_guild_tip,
@@ -32,9 +32,8 @@ from spacegame.models.player import Player
 from spacegame.models.ship import Ship
 from spacegame.models.sub_reputation import SubReputationDelta, get_tier_for_rep
 from spacegame.models.wreckers_guild import (
-    WRECKERS_CONTRACT_TEMPLATES,
-    WRECKERS_GUILD_CONFIG,
     LOCKOUT_DAYS,
+    WRECKERS_GUILD_CONFIG,
     WreckersGuildState,
     get_template,
     payout_multiplier_for_tier,
@@ -76,7 +75,9 @@ def _make_view_env(
     return manager, player, mission_manager
 
 
-def _make_view(player: Player, manager: pygame_gui.UIManager, mission_manager: MissionManager) -> WreckersGuildView:
+def _make_view(
+    player: Player, manager: pygame_gui.UIManager, mission_manager: MissionManager
+) -> WreckersGuildView:
     return WreckersGuildView(
         ui_manager=manager,
         player=player,
@@ -423,8 +424,7 @@ class TestPromotionDrain:
         view._drain_promotion_queue()
         # No wreckers promotion flags should be set
         assert not any(
-            k.startswith("wreckers_promoted_") and v
-            for k, v in player.dialogue_flags.items()
+            k.startswith("wreckers_promoted_") and v for k, v in player.dialogue_flags.items()
         )
         view.on_exit()
 

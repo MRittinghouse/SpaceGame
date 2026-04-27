@@ -39,7 +39,9 @@ class TestWreckersSaveLoad:
     def test_default_state_round_trips(self) -> None:
         # Default Player has no wreckers_guild_state attribute set —
         # behaves like a freshly-created game.
-        player = Player(name="Tester", credits=500, current_system_id="nexus_prime", ship=_shuttle())
+        player = Player(
+            name="Tester", credits=500, current_system_id="nexus_prime", ship=_shuttle()
+        )
         restored = _round_trip(player)
         assert restored.wreckers_guild_state is None
 

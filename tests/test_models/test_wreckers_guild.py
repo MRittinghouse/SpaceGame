@@ -32,7 +32,6 @@ from spacegame.models.wreckers_guild import (
     templates_for_tier,
 )
 
-
 # ---------------------------------------------------------------------------
 # Organization config + tier resolution
 # ---------------------------------------------------------------------------
@@ -130,9 +129,9 @@ class TestContractTemplates:
         dl.load_all()
         commodity_ids = set(dl.commodities.keys())
         for tpl in WRECKERS_CONTRACT_TEMPLATES:
-            assert (
-                tpl.target_commodity_id in commodity_ids
-            ), f"contract '{tpl.id}' targets unknown commodity '{tpl.target_commodity_id}'"
+            assert tpl.target_commodity_id in commodity_ids, (
+                f"contract '{tpl.id}' targets unknown commodity '{tpl.target_commodity_id}'"
+            )
 
     def test_template_targets_positive_quantity(self) -> None:
         for tpl in WRECKERS_CONTRACT_TEMPLATES:
@@ -173,9 +172,7 @@ class TestPayoutMultiplier:
             ("master", 1000, 1250),
         ],
     )
-    def test_acceptance_criterion_7(
-        self, tier_id: str, base: int, expected_payout: int
-    ) -> None:
+    def test_acceptance_criterion_7(self, tier_id: str, base: int, expected_payout: int) -> None:
         scaled = int(base * payout_multiplier_for_tier(tier_id))
         assert scaled == expected_payout
 
@@ -217,8 +214,6 @@ class TestRollOffers:
     def test_window_rollover_changes_offers_for_full_pool(self) -> None:
         # Master tier exercises the full pool; window rollover should
         # produce a measurably different sample (across reasonable seeds).
-        a = roll_offers("player_a", game_day=23, tier_id="master")
-        b = roll_offers("player_a", game_day=24, tier_id="master")
         # Order-insensitive: the sampled set should differ across windows
         # for at least some seed pairs. Test a few rollovers to keep this
         # robust against incidental collisions.
@@ -261,9 +256,7 @@ class TestRollOffers:
     def test_master_tier_can_roll_deep_derelict(self) -> None:
         # Across many seeds, master tier eventually rolls a deep_derelict
         # template. Check at least one seed produces one.
-        deep_ids = {
-            t.id for t in WRECKERS_CONTRACT_TEMPLATES if t.category == "deep_derelict"
-        }
+        deep_ids = {t.id for t in WRECKERS_CONTRACT_TEMPLATES if t.category == "deep_derelict"}
         assert deep_ids, "fixture: at least one deep_derelict template required"
         seen_deep = False
         for day in range(0, 24 * 50, 24):
@@ -336,9 +329,7 @@ class TestWreckersGuildState:
         assert "wreckers_contract_x" in state.active_contract_ids
 
     def test_clear_active_contract(self) -> None:
-        state = WreckersGuildState(
-            enrolled=True, active_contract_ids=["wreckers_contract_x"]
-        )
+        state = WreckersGuildState(enrolled=True, active_contract_ids=["wreckers_contract_x"])
         state.clear_active_contract("wreckers_contract_x")
         assert state.active_contract_ids == []
 
@@ -395,8 +386,10 @@ class TestConstants:
     def test_template_is_frozen(self) -> None:
         # Scanner B requires module-level content tables use frozen
         # dataclasses (CLAUDE.md cross-cutting table; SI-2 cookbook).
+        import dataclasses
+
         tpl = WRECKERS_CONTRACT_TEMPLATES[0]
         assert isinstance(tpl, WreckersContractTemplate)
-        with pytest.raises(Exception):
+        with pytest.raises(dataclasses.FrozenInstanceError):
             # Frozen dataclass rejects mutation.
             tpl.id = "mutated"  # type: ignore[misc]
