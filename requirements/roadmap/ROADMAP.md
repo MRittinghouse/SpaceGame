@@ -1760,7 +1760,7 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 
 #### SA-P3 — Mayors' Council Chamber (Verdant Venue)
 
-**Status**: in-progress (planning)
+**Status**: in-progress (implementing)
 **Phase**: Phase II | **Size**: L | **Effort**: 2 weeks
 **Depends on**: SA-P2 | **Blocks**: SA-P4, SA-P6
 
@@ -1905,7 +1905,7 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 - 2026-04-26 — todo (created)
 - 2026-04-27 17:02 — harness: plan phase starting
 - 2026-04-27 17:50 — planning complete; verified all SA-P3 context-to-read paths exist on disk (one path correction: `data/galaxy/npcs.json` does not exist in this codebase — replaced in touch zones with `data/dialogue/dialogues.json`, the canonical pattern); locked 9 decisions (counter-framings extension via template-driven lookup; commodity additions for fresh_water + hydroponics_yield; npcs.json correction; SA-P3 owns journal authoring; SA-P3 only wires crew banter triggers; verdant_council sub-rep org config; locked-state threshold at -25; ship 8 templates not 12; engine-emitted journal flags); folded in 4 polish items as deliverables (PT-M tutorial overlay wiring; 3 journal entries; 2 crew-banter trigger flags; 8 per-template news headlines authored inline); refined acceptance criteria from 8 → 20 mechanically testable items; expanded touch zones to cover the 7 areas the implementer will touch (data/politics/, data/dialogue/, data/economy/commodities.json, data/journal/entries.json, politics_dispute.py engine extension, dispute_view.py overlay wiring, game.py outcome-callback wiring, new verdant_council.py module, plus data-validation + view + scenario test files); documented 3 OPEN-defer items (pixel theming → SA-X10; Alliance Congress dimensions → SA-P4; recurring delegate beyond the 4 voice sheets → escalate if surfaces). No new sprints proposed. PHASE_OK
-
+- 2026-04-27 17:13 — harness: implement phase starting (rework cycle 0)
 **Last phase report.**
 - Phase: plan
 - Outcome: PHASE_OK

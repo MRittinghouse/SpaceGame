@@ -2257,8 +2257,16 @@ class Game:
         Called after the player, politics_manager, news_ticker,
         crew_roster, progression, and social_manager are wired so the
         dispute manager can read all of them.
+
+        SA-P3 also registers the ``verdant_council`` sub-rep config so
+        corridor-visit failures actually deduct a point of standing with
+        the council, and installs the outcome callback that bumps the
+        three engine-emitted journal-trigger flags
+        (``first_dispute_attended`` / ``first_partial_win`` /
+        ``first_coalition_won``) at most once per save.
         """
         from spacegame.models.politics_dispute import PoliticsDisputeManager
+        from spacegame.models.verdant_council import VERDANT_COUNCIL_CONFIG
 
         def _market_lookup(system_id: str):
             return self.markets.get(system_id) if hasattr(self, "markets") else None
@@ -2272,6 +2280,14 @@ class Game:
             social_manager=self.social_manager,
             market_lookup=_market_lookup,
         )
+        # SA-P3: register Verdant council sub-rep config so the SA-P2
+        # ``_maybe_deduct_sub_rep`` deduction path actually fires for the
+        # four Verdant delegates when a corridor visit fails.
+        self.politics_dispute_manager.register_sub_rep_config(
+            VERDANT_COUNCIL_CONFIG.id, VERDANT_COUNCIL_CONFIG
+        )
+        # SA-P3: outcome callback emits the three first-time journal flags.
+        self.politics_dispute_manager.set_outcome_callback(self._on_dispute_outcome)
         if self.player is not None:
             self.politics_dispute_manager.set_player(self.player)
             # SA-P2: restore any saved manager state (additive field;
@@ -2279,6 +2295,52 @@ class Game:
             saved = self.player.politics_dispute_state or {}
             if saved:
                 self.politics_dispute_manager.from_dict(saved)
+
+    def _on_dispute_outcome(self, dispute, category: str) -> None:
+        """SA-P3 outcome callback: bump first-time journal-trigger flags.
+
+        Three flags fire at most once per save:
+          * ``first_dispute_attended`` on any dispute resolution.
+          * ``first_partial_win`` on any partial-win category.
+          * ``first_coalition_won`` on a ``win`` outcome where at least one
+            delegate started the session pre-committed (corridor work paid
+            off). The journal-entry trigger system reads these flags
+            directly in :meth:`Journal.trigger_auto_entry`.
+        """
+        if self.player is None:
+            return
+        flags = self.player.dialogue_flags
+        # First dispute attended (fires for any resolution).
+        first_attended = "first_dispute_attended"
+        if first_attended not in flags:
+            flags[first_attended] = True
+            self._maybe_trigger_dispute_journal(first_attended)
+        # First partial-win.
+        if category in ("partial_win_coalition_thin", "partial_win_off_record"):
+            first_partial = "first_partial_win"
+            if first_partial not in flags:
+                flags[first_partial] = True
+                self._maybe_trigger_dispute_journal(first_partial)
+        # First coalition-built win (at least one pre-commit going in).
+        if category == "win":
+            had_pre_commit = any(d.pre_committed for d in dispute.delegates.values())
+            if had_pre_commit:
+                first_coalition = "first_coalition_won"
+                if first_coalition not in flags:
+                    flags[first_coalition] = True
+                    self._maybe_trigger_dispute_journal(first_coalition)
+
+    def _maybe_trigger_dispute_journal(self, trigger_flag: str) -> None:
+        """Fire the journal entry that consumes ``trigger_flag``, if any.
+
+        The journal manager dedupes by ``trigger_flag`` so repeat calls
+        are no-ops. Called from :meth:`_on_dispute_outcome`.
+        """
+        if self.journal is None:
+            return
+        system_id = self.player.current_system_id if self.player is not None else ""
+        game_day = self.player.game_day if self.player is not None else 0
+        self.journal.trigger_auto_entry(trigger_flag, game_day, system_id)
 
     def _ensure_dispute_view(self) -> None:
         """SA-P2: create or recreate the venue dispute view.

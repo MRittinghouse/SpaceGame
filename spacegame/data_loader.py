@@ -829,6 +829,17 @@ class DataLoader:
                 news_headline=row.get("news_headline"),
             )
 
+        # SA-P3: optional ``counter_framings`` map (delegate_id -> [framing,
+        # target_dimension]). Templates that omit the field parse identically
+        # to SA-P2 fixtures; the engine falls back to its SA-P2 default at
+        # resolution time.
+        counter_framings_raw = data.get("counter_framings", {}) or {}
+        counter_framings: Dict[str, tuple] = {
+            delegate_id: (pair[0], pair[1])
+            for delegate_id, pair in counter_framings_raw.items()
+            if isinstance(pair, (list, tuple)) and len(pair) == 2
+        }
+
         return PoliticsDisputeTemplate(
             id=data["id"],
             headline=data["headline"],
@@ -844,6 +855,7 @@ class DataLoader:
             outcome_matrix=outcome_matrix,
             is_campaign_arc=bool(data.get("is_campaign_arc", False)),
             required_flags=tuple(data.get("required_flags", ())),
+            counter_framings=counter_framings,
         )
 
     def load_faction_perks(self) -> Dict[str, Dict[str, list]]:

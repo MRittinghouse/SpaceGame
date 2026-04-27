@@ -26,6 +26,10 @@ from spacegame.config import (
     scale_x,
     scale_y,
 )
+from spacegame.constants.flags import (
+    seen_argument_composer_tip,
+    seen_politics_venue_tip,
+)
 from spacegame.engine.draw_utils import draw_panel, word_wrap
 from spacegame.engine.fonts import FONT_BODY, FONT_MD, FONT_TITLE, get_font
 from spacegame.models.player import Player
@@ -38,6 +42,7 @@ from spacegame.models.politics_dispute import (
 )
 from spacegame.utils.logger import logger
 from spacegame.views.base_view import BaseView
+from spacegame.views.first_time_tip import FirstTimeTipOverlay
 
 if TYPE_CHECKING:  # pragma: no cover
     pass
@@ -57,6 +62,20 @@ BODY_H = scale_y(420)
 # (design §8.1 mock: "requires -25 or above"). SA-P3 may override per
 # venue.
 DEFAULT_STANDING_THRESHOLD = -25
+
+# SA-P3 PT-M tutorial copy. Pulled byte-for-byte from
+# requirements/sa_politics_design.md §9.2 and §9.3 so an authoring drift
+# would surface in the view test that asserts the literal strings.
+VENUE_TIP_TITLE = "Council Session"
+VENUE_TIP_BODY = (
+    "Council convenes here. Vote, argue your case, mediate, or step back. "
+    "Disputes close on a deadline; missing the deadline counts as abstention."
+)
+COMPOSER_TIP_TITLE = "Argument"
+COMPOSER_TIP_BODY = (
+    "Argument has three parts. Framing is how you say it. Evidence is what "
+    "backs it. Audience is who you're persuading. Pick what fits the room."
+)
 
 
 class DisputeSubstate(Enum):
@@ -145,6 +164,11 @@ class DisputeView(BaseView):
         self._data_loading: bool = False
         self._data_error: bool = False
 
+        # PT-M tutorial overlay (SA-P3). One overlay reference is enough
+        # since only one tip is ever live at a time (venue tip on entry,
+        # then composer tip on first composer open).
+        self._first_time_tip: Optional[FirstTimeTipOverlay] = None
+
     # ------------------------------------------------------------------
     # Lifecycle
     # ------------------------------------------------------------------
@@ -155,12 +179,51 @@ class DisputeView(BaseView):
         self._refresh_list_state()
         self.substate = DisputeSubstate.LIST
         self._create_ui()
+        self._maybe_show_venue_tip()
 
     def on_exit(self) -> None:
-        # End the per-session intel reveal gate — re-entering re-fires.
+        # End the per-session intel reveal gate; re-entering re-fires.
         self.dispute_manager.end_session()
+        # Drop any active overlay reference so a re-entry constructs a
+        # fresh one (the dismissal flag is what gates re-fire, not this).
+        self._first_time_tip = None
         self._destroy_ui()
         super().on_exit()
+
+    # ------------------------------------------------------------------
+    # PT-M tutorial overlays (SA-P3 §9.2 + §9.3)
+    # ------------------------------------------------------------------
+
+    def _maybe_show_venue_tip(self) -> None:
+        """Fire the SA-P3 venue tip on first entry, never again.
+
+        Gates on ``flags.seen_politics_venue_tip()`` in
+        ``player.dialogue_flags``; on dismissal the on-dismiss callback
+        sets the same flag, so the next venue entry skips the tip.
+        """
+        if self.player.dialogue_flags.get(seen_politics_venue_tip(), False):
+            return
+        self._first_time_tip = FirstTimeTipOverlay(
+            title=VENUE_TIP_TITLE,
+            body=VENUE_TIP_BODY,
+            on_dismiss=self._mark_venue_tip_seen,
+        )
+
+    def _mark_venue_tip_seen(self) -> None:
+        self.player.dialogue_flags[seen_politics_venue_tip()] = True
+
+    def _maybe_show_composer_tip(self) -> None:
+        """Fire the SA-P3 composer tip on first composer open, never again."""
+        if self.player.dialogue_flags.get(seen_argument_composer_tip(), False):
+            return
+        self._first_time_tip = FirstTimeTipOverlay(
+            title=COMPOSER_TIP_TITLE,
+            body=COMPOSER_TIP_BODY,
+            on_dismiss=self._mark_composer_tip_seen,
+        )
+
+    def _mark_composer_tip_seen(self) -> None:
+        self.player.dialogue_flags[seen_argument_composer_tip()] = True
 
     # ------------------------------------------------------------------
     # State helpers
@@ -463,6 +526,7 @@ class DisputeView(BaseView):
             is_mediation=is_mediation,
         )
         self._switch_substate(DisputeSubstate.COMPOSER)
+        self._maybe_show_composer_tip()
 
     def submit_composer(self) -> Optional[ArgumentResolution]:
         if self.active_dispute is None:
@@ -500,6 +564,10 @@ class DisputeView(BaseView):
     # ------------------------------------------------------------------
 
     def handle_event(self, event: pygame.event.Event) -> None:
+        # PT-M tutorial overlay consumes input while active.
+        if self._first_time_tip is not None and not self._first_time_tip.dismissed:
+            if self._first_time_tip.handle_event(event):
+                return
         if event.type == pygame_gui.UI_BUTTON_PRESSED:
             if event.ui_element == self.back_button:
                 if self.substate == DisputeSubstate.LIST:
@@ -540,8 +608,12 @@ class DisputeView(BaseView):
     # Tick + render
     # ------------------------------------------------------------------
 
-    def update(self, dt: float) -> None:  # pragma: no cover (pure pygame loop)
-        return
+    def update(self, dt: float) -> None:
+        # PT-M overlay tick.
+        if self._first_time_tip is not None:
+            self._first_time_tip.update(dt)
+            if self._first_time_tip.dismissed:
+                self._first_time_tip = None
 
     def render(self, screen: pygame.Surface) -> None:
         screen.fill(Colors.BG_DARK)
@@ -556,6 +628,9 @@ class DisputeView(BaseView):
             self._render_body_composer(screen)
         elif self.substate == DisputeSubstate.TALLY:
             self._render_body_tally(screen)
+        # PT-M overlay renders on top of pygame_gui content.
+        if self._first_time_tip is not None and not self._first_time_tip.dismissed:
+            self._first_time_tip.render(screen)
 
     # ------------------------------------------------------------------
     # Render helpers

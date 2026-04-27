@@ -1,0 +1,1083 @@
+{
+  "disputes": [
+    {
+      "id": "water_rights_phasing",
+      "headline": "Water Rights Phasing Bill",
+      "factions_affected": ["frontier_alliance", "science_collective"],
+      "base_difficulty": 4,
+      "round_count": 3,
+      "deadline_days": 10,
+      "is_campaign_arc": false,
+      "delegates": [
+        {
+          "delegate_id": "mayor_vance",
+          "name": "Mayor Cressida Vance",
+          "starting_visible_state": "wavering",
+          "position_vector": {
+            "modernization": 0.0,
+            "water_rights_change": 0.1,
+            "outside_influence": -0.3
+          },
+          "faction_loyalty": 0.6,
+          "prior_dispute_memory": -1,
+          "sub_faction_id": "verdant_council"
+        },
+        {
+          "delegate_id": "delegate_hask",
+          "name": "Ferron Hask",
+          "starting_visible_state": "leaning_no",
+          "position_vector": {
+            "modernization": -0.7,
+            "water_rights_change": -0.7,
+            "outside_influence": -0.6
+          },
+          "faction_loyalty": 0.7,
+          "prior_dispute_memory": -1,
+          "sub_faction_id": "verdant_council"
+        },
+        {
+          "delegate_id": "delegate_drift",
+          "name": "Samela Drift",
+          "starting_visible_state": "wavering",
+          "position_vector": {
+            "modernization": 0.6,
+            "water_rights_change": 0.3,
+            "outside_influence": 0.4
+          },
+          "faction_loyalty": 0.4,
+          "prior_dispute_memory": -1,
+          "sub_faction_id": "verdant_council"
+        },
+        {
+          "delegate_id": "delegate_marsh",
+          "name": "Ollo Marsh",
+          "starting_visible_state": "leaning_no",
+          "position_vector": {
+            "modernization": 0.0,
+            "water_rights_change": -0.8,
+            "outside_influence": -0.2
+          },
+          "faction_loyalty": 0.8,
+          "prior_dispute_memory": -1,
+          "sub_faction_id": "verdant_council"
+        }
+      ],
+      "eligible_framings": [
+        "data_precedent",
+        "soil_impact",
+        "frontier_autonomy",
+        "practical_cost",
+        "community_benefit"
+      ],
+      "eligible_evidence": [
+        "northern_aquifer_draw_report",
+        "verdant_soil_survey_2330",
+        "forgeworks_2324_partnership"
+      ],
+      "framing_modifiers": {
+        "data_precedent": 1,
+        "soil_impact": 1,
+        "frontier_autonomy": 1,
+        "practical_cost": 0,
+        "community_benefit": 0
+      },
+      "framing_target_dimensions": {
+        "data_precedent": "modernization",
+        "soil_impact": "water_rights_change",
+        "frontier_autonomy": "outside_influence",
+        "practical_cost": "modernization",
+        "community_benefit": "water_rights_change"
+      },
+      "counter_framings": {},
+      "outcome_matrix": {
+        "win": {
+          "rep_deltas": {"frontier_alliance": 5, "science_collective": -2},
+          "market_shifts": [
+            {"commodity_id": "fresh_water", "system_id": "verdant", "magnitude": 0.10, "duration_days": 30},
+            {"commodity_id": "hydroponics_yield", "system_id": "verdant", "magnitude": -0.08, "duration_days": 30}
+          ],
+          "mission_unlocks": [
+            "dispute_resolved_water_rights_phasing",
+            "coalition_won_water_rights_phasing"
+          ],
+          "mission_locks": [],
+          "news_headline": "Verdant council phases water rights; hydroponics shift expected, 30 days."
+        },
+        "partial_win_coalition_thin": {
+          "rep_deltas": {"frontier_alliance": 2, "science_collective": -1},
+          "market_shifts": [
+            {"commodity_id": "fresh_water", "system_id": "verdant", "magnitude": 0.05, "duration_days": 20}
+          ],
+          "mission_unlocks": ["dispute_resolved_water_rights_phasing"],
+          "mission_locks": [],
+          "news_headline": null
+        },
+        "partial_win_off_record": {
+          "rep_deltas": {"frontier_alliance": 3, "science_collective": -1},
+          "market_shifts": [
+            {"commodity_id": "fresh_water", "system_id": "verdant", "magnitude": 0.07, "duration_days": 25}
+          ],
+          "mission_unlocks": [
+            "dispute_resolved_water_rights_phasing",
+            "dispute_mediated_water_rights_phasing"
+          ],
+          "mission_locks": [],
+          "news_headline": null
+        },
+        "loss": {
+          "rep_deltas": {"frontier_alliance": -2, "science_collective": 2},
+          "market_shifts": [
+            {"commodity_id": "fresh_water", "system_id": "verdant", "magnitude": -0.10, "duration_days": 30}
+          ],
+          "mission_unlocks": [],
+          "mission_locks": ["dispute_resolved_water_rights_phasing"],
+          "news_headline": "Verdant council rejects water rights phasing bill; farmers' bloc holds."
+        }
+      }
+    },
+    {
+      "id": "aquifer_concession_renewal",
+      "headline": "Northern Aquifer Concession Renewal",
+      "factions_affected": ["frontier_alliance", "commerce_guild"],
+      "base_difficulty": 5,
+      "round_count": 3,
+      "deadline_days": 12,
+      "is_campaign_arc": false,
+      "delegates": [
+        {
+          "delegate_id": "mayor_vance",
+          "name": "Mayor Cressida Vance",
+          "starting_visible_state": "wavering",
+          "position_vector": {
+            "modernization": 0.0,
+            "water_rights_change": -0.2,
+            "outside_influence": -0.4
+          },
+          "faction_loyalty": 0.6,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "verdant_council"
+        },
+        {
+          "delegate_id": "delegate_hask",
+          "name": "Ferron Hask",
+          "starting_visible_state": "wavering",
+          "position_vector": {
+            "modernization": -0.4,
+            "water_rights_change": -0.5,
+            "outside_influence": -0.5
+          },
+          "faction_loyalty": 0.7,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "verdant_council"
+        },
+        {
+          "delegate_id": "delegate_drift",
+          "name": "Samela Drift",
+          "starting_visible_state": "wavering",
+          "position_vector": {
+            "modernization": 0.4,
+            "water_rights_change": 0.2,
+            "outside_influence": 0.3
+          },
+          "faction_loyalty": 0.4,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "verdant_council"
+        },
+        {
+          "delegate_id": "delegate_marsh",
+          "name": "Ollo Marsh",
+          "starting_visible_state": "leaning_no",
+          "position_vector": {
+            "modernization": 0.0,
+            "water_rights_change": -0.9,
+            "outside_influence": -0.4
+          },
+          "faction_loyalty": 0.8,
+          "prior_dispute_memory": -1,
+          "sub_faction_id": "verdant_council"
+        }
+      ],
+      "eligible_framings": [
+        "data_precedent",
+        "soil_impact",
+        "practical_cost",
+        "community_benefit",
+        "frontier_autonomy"
+      ],
+      "eligible_evidence": [
+        "northern_aquifer_draw_report",
+        "verdant_soil_survey_2330"
+      ],
+      "framing_modifiers": {
+        "data_precedent": 0,
+        "soil_impact": 1,
+        "practical_cost": 1,
+        "community_benefit": 0,
+        "frontier_autonomy": 1
+      },
+      "framing_target_dimensions": {
+        "data_precedent": "modernization",
+        "soil_impact": "water_rights_change",
+        "practical_cost": "modernization",
+        "community_benefit": "water_rights_change",
+        "frontier_autonomy": "outside_influence"
+      },
+      "counter_framings": {},
+      "outcome_matrix": {
+        "win": {
+          "rep_deltas": {"frontier_alliance": 4, "commerce_guild": -2},
+          "market_shifts": [
+            {"commodity_id": "fresh_water", "system_id": "verdant", "magnitude": 0.12, "duration_days": 30},
+            {"commodity_id": "hydroponics_yield", "system_id": "verdant", "magnitude": 0.05, "duration_days": 20}
+          ],
+          "mission_unlocks": [
+            "dispute_resolved_aquifer_concession_renewal",
+            "coalition_won_aquifer_concession_renewal"
+          ],
+          "mission_locks": [],
+          "news_headline": "Verdant renews aquifer concession on local terms; outside lease lapses."
+        },
+        "partial_win_coalition_thin": {
+          "rep_deltas": {"frontier_alliance": 1, "commerce_guild": -1},
+          "market_shifts": [
+            {"commodity_id": "fresh_water", "system_id": "verdant", "magnitude": 0.04, "duration_days": 20}
+          ],
+          "mission_unlocks": ["dispute_resolved_aquifer_concession_renewal"],
+          "mission_locks": [],
+          "news_headline": null
+        },
+        "partial_win_off_record": {
+          "rep_deltas": {"frontier_alliance": 2, "commerce_guild": -1},
+          "market_shifts": [
+            {"commodity_id": "fresh_water", "system_id": "verdant", "magnitude": 0.06, "duration_days": 22}
+          ],
+          "mission_unlocks": [
+            "dispute_resolved_aquifer_concession_renewal",
+            "dispute_mediated_aquifer_concession_renewal"
+          ],
+          "mission_locks": [],
+          "news_headline": null
+        },
+        "loss": {
+          "rep_deltas": {"frontier_alliance": -3, "commerce_guild": 3},
+          "market_shifts": [
+            {"commodity_id": "fresh_water", "system_id": "verdant", "magnitude": -0.12, "duration_days": 30},
+            {"commodity_id": "hydroponics_yield", "system_id": "verdant", "magnitude": -0.06, "duration_days": 25}
+          ],
+          "mission_unlocks": [],
+          "mission_locks": ["dispute_resolved_aquifer_concession_renewal"],
+          "news_headline": "Verdant signs outside concession on northern aquifer; price spike forecast."
+        }
+      }
+    },
+    {
+      "id": "infrastructure_co_op_vote",
+      "headline": "Infrastructure Co-op Modernization Vote",
+      "factions_affected": ["frontier_alliance", "commerce_guild"],
+      "base_difficulty": 4,
+      "round_count": 5,
+      "deadline_days": 18,
+      "is_campaign_arc": true,
+      "delegates": [
+        {
+          "delegate_id": "mayor_vance",
+          "name": "Mayor Cressida Vance",
+          "starting_visible_state": "wavering",
+          "position_vector": {
+            "modernization": 0.2,
+            "water_rights_change": 0.0,
+            "outside_influence": 0.0
+          },
+          "faction_loyalty": 0.6,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "verdant_council"
+        },
+        {
+          "delegate_id": "delegate_hask",
+          "name": "Ferron Hask",
+          "starting_visible_state": "leaning_no",
+          "position_vector": {
+            "modernization": -0.7,
+            "water_rights_change": -0.3,
+            "outside_influence": -0.5
+          },
+          "faction_loyalty": 0.7,
+          "prior_dispute_memory": -1,
+          "sub_faction_id": "verdant_council"
+        },
+        {
+          "delegate_id": "delegate_drift",
+          "name": "Samela Drift",
+          "starting_visible_state": "leaning_yes",
+          "position_vector": {
+            "modernization": 0.8,
+            "water_rights_change": 0.0,
+            "outside_influence": 0.4
+          },
+          "faction_loyalty": 0.4,
+          "prior_dispute_memory": 1,
+          "sub_faction_id": "verdant_council"
+        },
+        {
+          "delegate_id": "delegate_marsh",
+          "name": "Ollo Marsh",
+          "starting_visible_state": "wavering",
+          "position_vector": {
+            "modernization": 0.1,
+            "water_rights_change": 0.0,
+            "outside_influence": -0.3
+          },
+          "faction_loyalty": 0.8,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "verdant_council"
+        }
+      ],
+      "eligible_framings": [
+        "data_precedent",
+        "practical_cost",
+        "community_benefit",
+        "soil_impact",
+        "frontier_autonomy"
+      ],
+      "eligible_evidence": [
+        "forgeworks_2324_partnership",
+        "verdant_soil_survey_2330"
+      ],
+      "framing_modifiers": {
+        "data_precedent": 1,
+        "practical_cost": 1,
+        "community_benefit": 0,
+        "soil_impact": 0,
+        "frontier_autonomy": 1
+      },
+      "framing_target_dimensions": {
+        "data_precedent": "modernization",
+        "practical_cost": "modernization",
+        "community_benefit": "modernization",
+        "soil_impact": "water_rights_change",
+        "frontier_autonomy": "outside_influence"
+      },
+      "counter_framings": {
+        "delegate_hask": ["practical_cost", "modernization"],
+        "delegate_marsh": ["soil_impact", "water_rights_change"]
+      },
+      "outcome_matrix": {
+        "win": {
+          "rep_deltas": {"frontier_alliance": 4, "commerce_guild": 2},
+          "market_shifts": [
+            {"commodity_id": "machinery", "system_id": "verdant", "magnitude": 0.10, "duration_days": 30},
+            {"commodity_id": "hydroponics_yield", "system_id": "verdant", "magnitude": 0.06, "duration_days": 25}
+          ],
+          "mission_unlocks": [
+            "dispute_resolved_infrastructure_co_op_vote",
+            "coalition_won_infrastructure_co_op_vote"
+          ],
+          "mission_locks": [],
+          "news_headline": "Verdant council passes co-op infrastructure vote; Forgeworks contract live."
+        },
+        "partial_win_coalition_thin": {
+          "rep_deltas": {"frontier_alliance": 1, "commerce_guild": 1},
+          "market_shifts": [
+            {"commodity_id": "machinery", "system_id": "verdant", "magnitude": 0.04, "duration_days": 18}
+          ],
+          "mission_unlocks": ["dispute_resolved_infrastructure_co_op_vote"],
+          "mission_locks": [],
+          "news_headline": null
+        },
+        "partial_win_off_record": {
+          "rep_deltas": {"frontier_alliance": 2, "commerce_guild": 1},
+          "market_shifts": [
+            {"commodity_id": "machinery", "system_id": "verdant", "magnitude": 0.05, "duration_days": 20}
+          ],
+          "mission_unlocks": [
+            "dispute_resolved_infrastructure_co_op_vote",
+            "dispute_mediated_infrastructure_co_op_vote"
+          ],
+          "mission_locks": [],
+          "news_headline": null
+        },
+        "loss": {
+          "rep_deltas": {"frontier_alliance": -2, "commerce_guild": -3},
+          "market_shifts": [
+            {"commodity_id": "machinery", "system_id": "verdant", "magnitude": -0.08, "duration_days": 30}
+          ],
+          "mission_unlocks": [],
+          "mission_locks": ["dispute_resolved_infrastructure_co_op_vote"],
+          "news_headline": "Verdant council blocks co-op infrastructure vote; Forgeworks contract stalls."
+        }
+      }
+    },
+    {
+      "id": "forgeworks_partnership_extension",
+      "headline": "Forgeworks Partnership Extension",
+      "factions_affected": ["frontier_alliance", "commerce_guild"],
+      "base_difficulty": 4,
+      "round_count": 3,
+      "deadline_days": 12,
+      "is_campaign_arc": false,
+      "delegates": [
+        {
+          "delegate_id": "mayor_vance",
+          "name": "Mayor Cressida Vance",
+          "starting_visible_state": "wavering",
+          "position_vector": {
+            "modernization": 0.3,
+            "water_rights_change": 0.0,
+            "outside_influence": 0.1
+          },
+          "faction_loyalty": 0.6,
+          "prior_dispute_memory": 1,
+          "sub_faction_id": "verdant_council"
+        },
+        {
+          "delegate_id": "delegate_hask",
+          "name": "Ferron Hask",
+          "starting_visible_state": "leaning_no",
+          "position_vector": {
+            "modernization": -0.5,
+            "water_rights_change": -0.2,
+            "outside_influence": -0.5
+          },
+          "faction_loyalty": 0.7,
+          "prior_dispute_memory": -1,
+          "sub_faction_id": "verdant_council"
+        },
+        {
+          "delegate_id": "delegate_drift",
+          "name": "Samela Drift",
+          "starting_visible_state": "leaning_yes",
+          "position_vector": {
+            "modernization": 0.7,
+            "water_rights_change": 0.0,
+            "outside_influence": 0.5
+          },
+          "faction_loyalty": 0.4,
+          "prior_dispute_memory": 1,
+          "sub_faction_id": "verdant_council"
+        },
+        {
+          "delegate_id": "delegate_marsh",
+          "name": "Ollo Marsh",
+          "starting_visible_state": "wavering",
+          "position_vector": {
+            "modernization": 0.0,
+            "water_rights_change": -0.2,
+            "outside_influence": -0.2
+          },
+          "faction_loyalty": 0.8,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "verdant_council"
+        }
+      ],
+      "eligible_framings": [
+        "data_precedent",
+        "practical_cost",
+        "community_benefit",
+        "frontier_autonomy",
+        "soil_impact"
+      ],
+      "eligible_evidence": [
+        "forgeworks_2324_partnership"
+      ],
+      "framing_modifiers": {
+        "data_precedent": 1,
+        "practical_cost": 1,
+        "community_benefit": 0,
+        "frontier_autonomy": 0,
+        "soil_impact": 0
+      },
+      "framing_target_dimensions": {
+        "data_precedent": "modernization",
+        "practical_cost": "modernization",
+        "community_benefit": "modernization",
+        "frontier_autonomy": "outside_influence",
+        "soil_impact": "water_rights_change"
+      },
+      "counter_framings": {
+        "delegate_hask": ["frontier_autonomy", "outside_influence"]
+      },
+      "outcome_matrix": {
+        "win": {
+          "rep_deltas": {"frontier_alliance": 3, "commerce_guild": 3},
+          "market_shifts": [
+            {"commodity_id": "machinery", "system_id": "verdant", "magnitude": 0.08, "duration_days": 25},
+            {"commodity_id": "manufactured_goods", "system_id": "verdant", "magnitude": 0.05, "duration_days": 20}
+          ],
+          "mission_unlocks": [
+            "dispute_resolved_forgeworks_partnership_extension",
+            "coalition_won_forgeworks_partnership_extension"
+          ],
+          "mission_locks": [],
+          "news_headline": "Verdant extends Forgeworks partnership; equipment supply locks in for year."
+        },
+        "partial_win_coalition_thin": {
+          "rep_deltas": {"frontier_alliance": 1, "commerce_guild": 1},
+          "market_shifts": [],
+          "mission_unlocks": ["dispute_resolved_forgeworks_partnership_extension"],
+          "mission_locks": [],
+          "news_headline": null
+        },
+        "partial_win_off_record": {
+          "rep_deltas": {"frontier_alliance": 2, "commerce_guild": 1},
+          "market_shifts": [
+            {"commodity_id": "machinery", "system_id": "verdant", "magnitude": 0.04, "duration_days": 18}
+          ],
+          "mission_unlocks": [
+            "dispute_resolved_forgeworks_partnership_extension",
+            "dispute_mediated_forgeworks_partnership_extension"
+          ],
+          "mission_locks": [],
+          "news_headline": null
+        },
+        "loss": {
+          "rep_deltas": {"frontier_alliance": -1, "commerce_guild": -3},
+          "market_shifts": [
+            {"commodity_id": "machinery", "system_id": "verdant", "magnitude": -0.10, "duration_days": 30}
+          ],
+          "mission_unlocks": [],
+          "mission_locks": ["dispute_resolved_forgeworks_partnership_extension"],
+          "news_headline": "Verdant lets Forgeworks partnership lapse; equipment supply tightens."
+        }
+      }
+    },
+    {
+      "id": "co_op_dividend_distribution",
+      "headline": "Hydroponics Co-op Dividend Distribution",
+      "factions_affected": ["frontier_alliance"],
+      "base_difficulty": 3,
+      "round_count": 3,
+      "deadline_days": 10,
+      "is_campaign_arc": false,
+      "delegates": [
+        {
+          "delegate_id": "mayor_vance",
+          "name": "Mayor Cressida Vance",
+          "starting_visible_state": "wavering",
+          "position_vector": {
+            "modernization": 0.0,
+            "water_rights_change": 0.0,
+            "outside_influence": 0.0
+          },
+          "faction_loyalty": 0.6,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "verdant_council"
+        },
+        {
+          "delegate_id": "delegate_hask",
+          "name": "Ferron Hask",
+          "starting_visible_state": "wavering",
+          "position_vector": {
+            "modernization": -0.3,
+            "water_rights_change": -0.3,
+            "outside_influence": -0.3
+          },
+          "faction_loyalty": 0.7,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "verdant_council"
+        },
+        {
+          "delegate_id": "delegate_drift",
+          "name": "Samela Drift",
+          "starting_visible_state": "leaning_yes",
+          "position_vector": {
+            "modernization": 0.6,
+            "water_rights_change": 0.2,
+            "outside_influence": 0.2
+          },
+          "faction_loyalty": 0.4,
+          "prior_dispute_memory": 1,
+          "sub_faction_id": "verdant_council"
+        },
+        {
+          "delegate_id": "delegate_marsh",
+          "name": "Ollo Marsh",
+          "starting_visible_state": "leaning_no",
+          "position_vector": {
+            "modernization": 0.0,
+            "water_rights_change": -0.5,
+            "outside_influence": -0.1
+          },
+          "faction_loyalty": 0.8,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "verdant_council"
+        }
+      ],
+      "eligible_framings": [
+        "community_benefit",
+        "practical_cost",
+        "data_precedent",
+        "soil_impact",
+        "frontier_autonomy"
+      ],
+      "eligible_evidence": [
+        "verdant_soil_survey_2330"
+      ],
+      "framing_modifiers": {
+        "community_benefit": 1,
+        "practical_cost": 1,
+        "data_precedent": 0,
+        "soil_impact": 0,
+        "frontier_autonomy": 0
+      },
+      "framing_target_dimensions": {
+        "community_benefit": "modernization",
+        "practical_cost": "modernization",
+        "data_precedent": "modernization",
+        "soil_impact": "water_rights_change",
+        "frontier_autonomy": "outside_influence"
+      },
+      "counter_framings": {
+        "delegate_hask": ["practical_cost", "modernization"]
+      },
+      "outcome_matrix": {
+        "win": {
+          "rep_deltas": {"frontier_alliance": 3},
+          "market_shifts": [
+            {"commodity_id": "hydroponics_yield", "system_id": "verdant", "magnitude": 0.10, "duration_days": 28}
+          ],
+          "mission_unlocks": [
+            "dispute_resolved_co_op_dividend_distribution",
+            "coalition_won_co_op_dividend_distribution"
+          ],
+          "mission_locks": [],
+          "news_headline": "Verdant co-op approves dividend split; hydroponics output up across belts."
+        },
+        "partial_win_coalition_thin": {
+          "rep_deltas": {"frontier_alliance": 1},
+          "market_shifts": [
+            {"commodity_id": "hydroponics_yield", "system_id": "verdant", "magnitude": 0.04, "duration_days": 18}
+          ],
+          "mission_unlocks": ["dispute_resolved_co_op_dividend_distribution"],
+          "mission_locks": [],
+          "news_headline": null
+        },
+        "partial_win_off_record": {
+          "rep_deltas": {"frontier_alliance": 2},
+          "market_shifts": [
+            {"commodity_id": "hydroponics_yield", "system_id": "verdant", "magnitude": 0.05, "duration_days": 20}
+          ],
+          "mission_unlocks": [
+            "dispute_resolved_co_op_dividend_distribution",
+            "dispute_mediated_co_op_dividend_distribution"
+          ],
+          "mission_locks": [],
+          "news_headline": null
+        },
+        "loss": {
+          "rep_deltas": {"frontier_alliance": -2},
+          "market_shifts": [
+            {"commodity_id": "hydroponics_yield", "system_id": "verdant", "magnitude": -0.10, "duration_days": 30}
+          ],
+          "mission_unlocks": [],
+          "mission_locks": ["dispute_resolved_co_op_dividend_distribution"],
+          "news_headline": "Verdant co-op deadlocks on dividend split; hydroponics shipments slow."
+        }
+      }
+    },
+    {
+      "id": "hydroponics_yield_quota",
+      "headline": "Seasonal Hydroponics Yield Quota",
+      "factions_affected": ["frontier_alliance", "commerce_guild"],
+      "base_difficulty": 4,
+      "round_count": 3,
+      "deadline_days": 11,
+      "is_campaign_arc": false,
+      "delegates": [
+        {
+          "delegate_id": "mayor_vance",
+          "name": "Mayor Cressida Vance",
+          "starting_visible_state": "wavering",
+          "position_vector": {
+            "modernization": 0.1,
+            "water_rights_change": 0.0,
+            "outside_influence": -0.2
+          },
+          "faction_loyalty": 0.6,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "verdant_council"
+        },
+        {
+          "delegate_id": "delegate_hask",
+          "name": "Ferron Hask",
+          "starting_visible_state": "wavering",
+          "position_vector": {
+            "modernization": -0.3,
+            "water_rights_change": -0.4,
+            "outside_influence": -0.4
+          },
+          "faction_loyalty": 0.7,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "verdant_council"
+        },
+        {
+          "delegate_id": "delegate_drift",
+          "name": "Samela Drift",
+          "starting_visible_state": "leaning_yes",
+          "position_vector": {
+            "modernization": 0.6,
+            "water_rights_change": 0.2,
+            "outside_influence": 0.3
+          },
+          "faction_loyalty": 0.4,
+          "prior_dispute_memory": 1,
+          "sub_faction_id": "verdant_council"
+        },
+        {
+          "delegate_id": "delegate_marsh",
+          "name": "Ollo Marsh",
+          "starting_visible_state": "leaning_no",
+          "position_vector": {
+            "modernization": 0.0,
+            "water_rights_change": -0.7,
+            "outside_influence": -0.2
+          },
+          "faction_loyalty": 0.8,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "verdant_council"
+        }
+      ],
+      "eligible_framings": [
+        "data_precedent",
+        "practical_cost",
+        "community_benefit",
+        "soil_impact",
+        "frontier_autonomy"
+      ],
+      "eligible_evidence": [
+        "verdant_soil_survey_2330",
+        "northern_aquifer_draw_report"
+      ],
+      "framing_modifiers": {
+        "data_precedent": 1,
+        "practical_cost": 1,
+        "community_benefit": 0,
+        "soil_impact": 0,
+        "frontier_autonomy": 0
+      },
+      "framing_target_dimensions": {
+        "data_precedent": "modernization",
+        "practical_cost": "modernization",
+        "community_benefit": "water_rights_change",
+        "soil_impact": "water_rights_change",
+        "frontier_autonomy": "outside_influence"
+      },
+      "counter_framings": {},
+      "outcome_matrix": {
+        "win": {
+          "rep_deltas": {"frontier_alliance": 3, "commerce_guild": 1},
+          "market_shifts": [
+            {"commodity_id": "hydroponics_yield", "system_id": "verdant", "magnitude": 0.12, "duration_days": 30},
+            {"commodity_id": "fresh_water", "system_id": "verdant", "magnitude": -0.05, "duration_days": 20}
+          ],
+          "mission_unlocks": [
+            "dispute_resolved_hydroponics_yield_quota",
+            "coalition_won_hydroponics_yield_quota"
+          ],
+          "mission_locks": [],
+          "news_headline": "Verdant council raises hydroponics quota; outbound yield up next cycle."
+        },
+        "partial_win_coalition_thin": {
+          "rep_deltas": {"frontier_alliance": 1, "commerce_guild": 0},
+          "market_shifts": [
+            {"commodity_id": "hydroponics_yield", "system_id": "verdant", "magnitude": 0.05, "duration_days": 18}
+          ],
+          "mission_unlocks": ["dispute_resolved_hydroponics_yield_quota"],
+          "mission_locks": [],
+          "news_headline": null
+        },
+        "partial_win_off_record": {
+          "rep_deltas": {"frontier_alliance": 2, "commerce_guild": 0},
+          "market_shifts": [
+            {"commodity_id": "hydroponics_yield", "system_id": "verdant", "magnitude": 0.06, "duration_days": 20}
+          ],
+          "mission_unlocks": [
+            "dispute_resolved_hydroponics_yield_quota",
+            "dispute_mediated_hydroponics_yield_quota"
+          ],
+          "mission_locks": [],
+          "news_headline": null
+        },
+        "loss": {
+          "rep_deltas": {"frontier_alliance": -2, "commerce_guild": -1},
+          "market_shifts": [
+            {"commodity_id": "hydroponics_yield", "system_id": "verdant", "magnitude": -0.10, "duration_days": 28}
+          ],
+          "mission_unlocks": [],
+          "mission_locks": ["dispute_resolved_hydroponics_yield_quota"],
+          "news_headline": "Verdant council holds hydroponics quota flat; outbound stays last year's mark."
+        }
+      }
+    },
+    {
+      "id": "settler_food_credit_dispute",
+      "headline": "Settler Food Credit Dispute",
+      "factions_affected": ["frontier_alliance"],
+      "base_difficulty": 3,
+      "round_count": 3,
+      "deadline_days": 9,
+      "is_campaign_arc": false,
+      "delegates": [
+        {
+          "delegate_id": "mayor_vance",
+          "name": "Mayor Cressida Vance",
+          "starting_visible_state": "leaning_yes",
+          "position_vector": {
+            "modernization": 0.2,
+            "water_rights_change": 0.0,
+            "outside_influence": 0.1
+          },
+          "faction_loyalty": 0.6,
+          "prior_dispute_memory": 1,
+          "sub_faction_id": "verdant_council"
+        },
+        {
+          "delegate_id": "delegate_hask",
+          "name": "Ferron Hask",
+          "starting_visible_state": "leaning_no",
+          "position_vector": {
+            "modernization": -0.4,
+            "water_rights_change": -0.2,
+            "outside_influence": -0.6
+          },
+          "faction_loyalty": 0.7,
+          "prior_dispute_memory": -1,
+          "sub_faction_id": "verdant_council"
+        },
+        {
+          "delegate_id": "delegate_drift",
+          "name": "Samela Drift",
+          "starting_visible_state": "wavering",
+          "position_vector": {
+            "modernization": 0.4,
+            "water_rights_change": 0.0,
+            "outside_influence": 0.3
+          },
+          "faction_loyalty": 0.4,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "verdant_council"
+        },
+        {
+          "delegate_id": "delegate_marsh",
+          "name": "Ollo Marsh",
+          "starting_visible_state": "wavering",
+          "position_vector": {
+            "modernization": 0.0,
+            "water_rights_change": -0.3,
+            "outside_influence": -0.2
+          },
+          "faction_loyalty": 0.8,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "verdant_council"
+        }
+      ],
+      "eligible_framings": [
+        "community_benefit",
+        "practical_cost",
+        "data_precedent",
+        "soil_impact",
+        "frontier_autonomy"
+      ],
+      "eligible_evidence": [
+        "verdant_soil_survey_2330"
+      ],
+      "framing_modifiers": {
+        "community_benefit": 1,
+        "practical_cost": 1,
+        "data_precedent": 0,
+        "soil_impact": 0,
+        "frontier_autonomy": 0
+      },
+      "framing_target_dimensions": {
+        "community_benefit": "modernization",
+        "practical_cost": "modernization",
+        "data_precedent": "modernization",
+        "soil_impact": "water_rights_change",
+        "frontier_autonomy": "outside_influence"
+      },
+      "counter_framings": {
+        "delegate_hask": ["soil_impact", "water_rights_change"]
+      },
+      "outcome_matrix": {
+        "win": {
+          "rep_deltas": {"frontier_alliance": 3},
+          "market_shifts": [
+            {"commodity_id": "food", "system_id": "verdant", "magnitude": -0.08, "duration_days": 25},
+            {"commodity_id": "fresh_water", "system_id": "verdant", "magnitude": -0.04, "duration_days": 18}
+          ],
+          "mission_unlocks": [
+            "dispute_resolved_settler_food_credit_dispute",
+            "coalition_won_settler_food_credit_dispute"
+          ],
+          "mission_locks": [],
+          "news_headline": "Verdant approves settler food credit; outer-belt prices ease this season."
+        },
+        "partial_win_coalition_thin": {
+          "rep_deltas": {"frontier_alliance": 1},
+          "market_shifts": [
+            {"commodity_id": "food", "system_id": "verdant", "magnitude": -0.03, "duration_days": 18}
+          ],
+          "mission_unlocks": ["dispute_resolved_settler_food_credit_dispute"],
+          "mission_locks": [],
+          "news_headline": null
+        },
+        "partial_win_off_record": {
+          "rep_deltas": {"frontier_alliance": 2},
+          "market_shifts": [
+            {"commodity_id": "food", "system_id": "verdant", "magnitude": -0.05, "duration_days": 20}
+          ],
+          "mission_unlocks": [
+            "dispute_resolved_settler_food_credit_dispute",
+            "dispute_mediated_settler_food_credit_dispute"
+          ],
+          "mission_locks": [],
+          "news_headline": null
+        },
+        "loss": {
+          "rep_deltas": {"frontier_alliance": -2},
+          "market_shifts": [
+            {"commodity_id": "food", "system_id": "verdant", "magnitude": 0.10, "duration_days": 28}
+          ],
+          "mission_unlocks": [],
+          "mission_locks": ["dispute_resolved_settler_food_credit_dispute"],
+          "news_headline": "Verdant rejects settler food credit; outer-belt prices climb this quarter."
+        }
+      }
+    },
+    {
+      "id": "frontier_trade_route_levy",
+      "headline": "Frontier Trade Route Levy",
+      "factions_affected": ["frontier_alliance", "commerce_guild"],
+      "base_difficulty": 4,
+      "round_count": 5,
+      "deadline_days": 20,
+      "is_campaign_arc": true,
+      "delegates": [
+        {
+          "delegate_id": "mayor_vance",
+          "name": "Mayor Cressida Vance",
+          "starting_visible_state": "wavering",
+          "position_vector": {
+            "modernization": 0.0,
+            "water_rights_change": 0.0,
+            "outside_influence": -0.3
+          },
+          "faction_loyalty": 0.6,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "verdant_council"
+        },
+        {
+          "delegate_id": "delegate_hask",
+          "name": "Ferron Hask",
+          "starting_visible_state": "leaning_yes",
+          "position_vector": {
+            "modernization": -0.3,
+            "water_rights_change": -0.2,
+            "outside_influence": -0.7
+          },
+          "faction_loyalty": 0.7,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "verdant_council"
+        },
+        {
+          "delegate_id": "delegate_drift",
+          "name": "Samela Drift",
+          "starting_visible_state": "leaning_no",
+          "position_vector": {
+            "modernization": 0.5,
+            "water_rights_change": 0.0,
+            "outside_influence": 0.6
+          },
+          "faction_loyalty": 0.4,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "verdant_council"
+        },
+        {
+          "delegate_id": "delegate_marsh",
+          "name": "Ollo Marsh",
+          "starting_visible_state": "wavering",
+          "position_vector": {
+            "modernization": 0.0,
+            "water_rights_change": -0.1,
+            "outside_influence": -0.3
+          },
+          "faction_loyalty": 0.8,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "verdant_council"
+        }
+      ],
+      "eligible_framings": [
+        "frontier_autonomy",
+        "practical_cost",
+        "community_benefit",
+        "data_precedent",
+        "soil_impact"
+      ],
+      "eligible_evidence": [
+        "forgeworks_2324_partnership",
+        "northern_aquifer_draw_report"
+      ],
+      "framing_modifiers": {
+        "frontier_autonomy": 1,
+        "practical_cost": 1,
+        "community_benefit": 0,
+        "data_precedent": 0,
+        "soil_impact": 0
+      },
+      "framing_target_dimensions": {
+        "frontier_autonomy": "outside_influence",
+        "practical_cost": "modernization",
+        "community_benefit": "outside_influence",
+        "data_precedent": "modernization",
+        "soil_impact": "water_rights_change"
+      },
+      "counter_framings": {
+        "delegate_drift": ["data_precedent", "modernization"]
+      },
+      "outcome_matrix": {
+        "win": {
+          "rep_deltas": {"frontier_alliance": 4, "commerce_guild": -3},
+          "market_shifts": [
+            {"commodity_id": "manufactured_goods", "system_id": "verdant", "magnitude": 0.10, "duration_days": 30},
+            {"commodity_id": "food", "system_id": "verdant", "magnitude": 0.05, "duration_days": 25}
+          ],
+          "mission_unlocks": [
+            "dispute_resolved_frontier_trade_route_levy",
+            "coalition_won_frontier_trade_route_levy"
+          ],
+          "mission_locks": [],
+          "news_headline": "Verdant council enacts frontier trade levy; Guild routes face new tariff."
+        },
+        "partial_win_coalition_thin": {
+          "rep_deltas": {"frontier_alliance": 1, "commerce_guild": -1},
+          "market_shifts": [
+            {"commodity_id": "manufactured_goods", "system_id": "verdant", "magnitude": 0.04, "duration_days": 20}
+          ],
+          "mission_unlocks": ["dispute_resolved_frontier_trade_route_levy"],
+          "mission_locks": [],
+          "news_headline": null
+        },
+        "partial_win_off_record": {
+          "rep_deltas": {"frontier_alliance": 2, "commerce_guild": -1},
+          "market_shifts": [
+            {"commodity_id": "manufactured_goods", "system_id": "verdant", "magnitude": 0.05, "duration_days": 22}
+          ],
+          "mission_unlocks": [
+            "dispute_resolved_frontier_trade_route_levy",
+            "dispute_mediated_frontier_trade_route_levy"
+          ],
+          "mission_locks": [],
+          "news_headline": null
+        },
+        "loss": {
+          "rep_deltas": {"frontier_alliance": -2, "commerce_guild": 3},
+          "market_shifts": [
+            {"commodity_id": "manufactured_goods", "system_id": "verdant", "magnitude": -0.08, "duration_days": 28}
+          ],
+          "mission_unlocks": [],
+          "mission_locks": ["dispute_resolved_frontier_trade_route_levy"],
+          "news_headline": "Verdant council shelves frontier trade levy; Guild routes hold their margin."
+        }
+      }
+    }
+  ]
+}

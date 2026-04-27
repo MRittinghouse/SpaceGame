@@ -467,3 +467,194 @@ class TestPerformanceSmoke:
         mgr.submit_argument(dispute, argument)
         elapsed_ms = (time.perf_counter() - start) * 1000
         assert elapsed_ms < 100, f"submit_argument took {elapsed_ms:.2f}ms"
+
+
+# ---------------------------------------------------------------------------
+# SA-P3 — template-driven counter-framings (AC 8)
+# ---------------------------------------------------------------------------
+
+
+class TestCounterFramingTemplateLookup:
+    """SA-P3 generalizes ``_resolve_counter_argument`` to read per-delegate
+    counter-framings from the dispute template, with the SA-P2 default
+    preserved when the template omits the field.
+    """
+
+    def _build_modernization_template(
+        self,
+        counter_framings: dict[str, tuple[str, str]] | None = None,
+    ) -> PoliticsDisputeTemplate:
+        delegates = (
+            DelegateTemplate(
+                delegate_id="ferron_hask",
+                name="Ferron Hask",
+                starting_visible_state="leaning_no",
+                position_vector={"modernization": -0.6},
+                sub_faction_id="verdant_council",
+            ),
+            DelegateTemplate(
+                delegate_id="samela_drift",
+                name="Samela Drift",
+                starting_visible_state="wavering",
+                position_vector={"modernization": 0.5},
+                sub_faction_id="verdant_council",
+            ),
+        )
+        outcome_matrix = {
+            "win": OutcomeRow(rep_deltas={"frontier_alliance": 1}),
+            "partial_win_coalition_thin": OutcomeRow(
+                rep_deltas={"frontier_alliance": 0}, news_headline=None
+            ),
+            "partial_win_off_record": OutcomeRow(
+                rep_deltas={"frontier_alliance": 1}, news_headline=None
+            ),
+            "loss": OutcomeRow(rep_deltas={"frontier_alliance": -1}),
+        }
+        return PoliticsDisputeTemplate(
+            id="modernization_proposal",
+            headline="Modernization Proposal Vote",
+            factions_affected=("frontier_alliance",),
+            base_difficulty=4,
+            round_count=3,
+            deadline_days=10,
+            delegates=delegates,
+            eligible_framings=("data_precedent", "practical_cost", "soil_impact"),
+            eligible_evidence=(),
+            framing_modifiers={
+                "data_precedent": 1,
+                "practical_cost": 0,
+                "soil_impact": 1,
+            },
+            framing_target_dimensions={
+                "data_precedent": "modernization",
+                "practical_cost": "modernization",
+                "soil_impact": "modernization",
+            },
+            outcome_matrix=outcome_matrix,
+            counter_framings=counter_framings or {},
+        )
+
+    def test_template_with_per_delegate_counter_framing_fires_declared_framing(self) -> None:
+        """A template that declares ``counter_framings`` for the firing delegate
+        uses the declared framing rather than the SA-P2 default.
+        """
+        tpl = self._build_modernization_template(
+            counter_framings={"ferron_hask": ("practical_cost", "modernization")}
+        )
+
+        class _Stub:
+            def get_skill_level(self, _id: str) -> int:
+                return 5
+
+        class _Bonus:
+            def get_bonus(self, _key: str) -> float:
+                return 0.0
+
+        mgr = PoliticsDisputeManager(
+            templates={tpl.id: tpl},
+            crew_roster=_Bonus(),
+            progression=_Bonus(),
+            social_manager=_Stub(),
+        )
+        dispute = mgr.start_dispute(tpl.id, current_game_day=1)
+        # Argue Drift to provoke a counter from Hask (who starts leaning_no).
+        mgr.submit_argument(
+            dispute,
+            PoliticsArgument(
+                framing="data_precedent",
+                audience_delegate_id="samela_drift",
+            ),
+        )
+        pending = getattr(dispute, "_pending_counters", [])
+        assert len(pending) == 1
+        assert pending[0]["counter_id"] == "ferron_hask"
+        assert pending[0]["framing"] == "practical_cost"
+
+    def test_template_without_counter_framings_uses_sa_p2_default(self) -> None:
+        """A template that omits ``counter_framings`` preserves the SA-P2
+        default (``soil_impact`` / ``water_rights_change``).
+        """
+        tpl = self._build_modernization_template(counter_framings=None)
+
+        class _Stub:
+            def get_skill_level(self, _id: str) -> int:
+                return 5
+
+        class _Bonus:
+            def get_bonus(self, _key: str) -> float:
+                return 0.0
+
+        mgr = PoliticsDisputeManager(
+            templates={tpl.id: tpl},
+            crew_roster=_Bonus(),
+            progression=_Bonus(),
+            social_manager=_Stub(),
+        )
+        dispute = mgr.start_dispute(tpl.id, current_game_day=1)
+        mgr.submit_argument(
+            dispute,
+            PoliticsArgument(
+                framing="data_precedent",
+                audience_delegate_id="samela_drift",
+            ),
+        )
+        pending = getattr(dispute, "_pending_counters", [])
+        assert len(pending) == 1
+        assert pending[0]["counter_id"] == "ferron_hask"
+        assert pending[0]["framing"] == "soil_impact"
+
+    def test_data_loader_parses_counter_framings_field(self, tmp_path) -> None:
+        """The ``_parse_politics_dispute_template`` reads the optional
+        ``counter_framings`` field and exposes it on the parsed template.
+        """
+        import json
+
+        from spacegame.data_loader import DataLoader
+
+        politics_dir = tmp_path / "politics"
+        politics_dir.mkdir()
+        (politics_dir / "verdant_disputes.json").write_text(
+            json.dumps(
+                {
+                    "disputes": [
+                        {
+                            "id": "with_counter_framings",
+                            "headline": "With Counter Framings",
+                            "factions_affected": ["frontier_alliance"],
+                            "base_difficulty": 4,
+                            "round_count": 3,
+                            "deadline_days": 10,
+                            "delegates": [
+                                {
+                                    "delegate_id": "ferron_hask",
+                                    "name": "Ferron Hask",
+                                    "starting_visible_state": "leaning_no",
+                                    "position_vector": {"modernization": -0.6},
+                                    "sub_faction_id": "verdant_council",
+                                }
+                            ],
+                            "eligible_framings": ["practical_cost"],
+                            "eligible_evidence": [],
+                            "framing_modifiers": {"practical_cost": 0},
+                            "framing_target_dimensions": {"practical_cost": "modernization"},
+                            "counter_framings": {
+                                "ferron_hask": ["practical_cost", "modernization"]
+                            },
+                            "outcome_matrix": {
+                                "win": {"rep_deltas": {"frontier_alliance": 1}},
+                                "partial_win_coalition_thin": {"rep_deltas": {}},
+                                "partial_win_off_record": {"rep_deltas": {}},
+                                "loss": {"rep_deltas": {"frontier_alliance": -1}},
+                            },
+                        }
+                    ]
+                }
+            ),
+            encoding="utf-8",
+        )
+        loader = DataLoader(data_dir=tmp_path)
+        templates = loader.load_politics_disputes()
+        tpl = templates["with_counter_framings"]
+        assert tpl.counter_framings == {
+            "ferron_hask": ("practical_cost", "modernization")
+        }

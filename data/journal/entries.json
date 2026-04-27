@@ -265,6 +265,27 @@
       "trigger_flag": "investment_introduced",
       "system_id": "nexus_prime",
       "mission_id": "sa_v_investment_intro"
+    },
+    {
+      "entry_id": "auto_p3_first_dispute_attended",
+      "text": "First session at the Verdant council. Three delegates and a mayor, three different ideas of what the bill was about. The vote went the way it went. I came out of it with a clearer picture of who carries which piece of the room. Hask anchors the soil. Drift carries the data. Marsh holds the water number. Vance keeps the floor moving. I need to know which argument moved which delegate before I come back.",
+      "trigger_flag": "first_dispute_attended",
+      "system_id": "verdant",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_p3_first_partial_win",
+      "text": "Got the concession out before the vote. The bill failed on the floor. The delegate I worked in mediation came out of the session with a position that shifted two steps. Off the record, but it was real. The vote was not the only thing on the table tonight. Worth something next time the same room reopens.",
+      "trigger_flag": "first_partial_win",
+      "system_id": "verdant",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_p3_first_coalition_won",
+      "text": "Had the count before the session opened. Two pre-commits in the corridor, one of them quiet. The vote was the easy part. The work was in the conversations the delegates do not name on the record. The bill passed. The corridor work paid for the floor.",
+      "trigger_flag": "first_coalition_won",
+      "system_id": "verdant",
+      "mission_id": ""
     }
   ]
 }

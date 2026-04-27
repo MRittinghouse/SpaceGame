@@ -16,7 +16,7 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any, Callable, Optional
 
 if TYPE_CHECKING:
     from spacegame.models.crew import CrewRoster
@@ -167,6 +167,12 @@ class PoliticsDisputeTemplate:
     outcome_matrix: dict[str, OutcomeRow]
     is_campaign_arc: bool = False
     required_flags: tuple[str, ...] = ()
+    # Per-delegate counter-framing override map. Keyed by delegate_id, values
+    # are ``(framing_id, target_dimension)``. SA-P3 introduced this field so
+    # non-water-rights disputes can fire delegate-appropriate counter-framings
+    # without each venue forking the engine. Empty dict preserves the SA-P2
+    # default (``("soil_impact", "water_rights_change")``).
+    counter_framings: dict[str, tuple[str, str]] = field(default_factory=dict)
 
 
 # ============================================================================
@@ -504,6 +510,14 @@ class PoliticsDisputeManager:
         # order).
         self._propagation_player: Optional["Player"] = None
 
+        # SA-P3 outcome callback: fired after a dispute is fully
+        # propagated so the engine can bump first-time journal-trigger
+        # flags and other cross-cutting state. Optional (None when no
+        # callback registered).
+        self._outcome_callback: Optional[
+            Callable[["PoliticsDispute", str], None]
+        ] = None
+
     def set_player(self, player: "Player") -> None:
         """Bind the player whose state the manager mutates on resolution.
 
@@ -512,6 +526,19 @@ class PoliticsDisputeManager:
         propagate) or supply a stub Player.
         """
         self._propagation_player = player
+
+    def set_outcome_callback(
+        self,
+        callback: Optional[Callable[["PoliticsDispute", str], None]],
+    ) -> None:
+        """Register a callback invoked after a dispute resolves.
+
+        The callback runs after :meth:`_propagate_outcome` so any rep,
+        market, mission-flag, and news side-effects have already landed.
+        SA-P3 uses it from ``Game._on_dispute_outcome`` to bump the
+        first-time journal-trigger flags.
+        """
+        self._outcome_callback = callback
 
     # ------------------------------------------------------------------
     # Template registry / introspection
@@ -726,6 +753,10 @@ class PoliticsDisputeManager:
             delegate.pre_committed = True
             delegate.visible_state = "leaning_yes"
             delegate.consecutive_corridor_fails = 0
+            # SA-P3 crew-banter trigger: Desta Coll on a successful corridor
+            # visit. Sets a one-time flag SA-X6 will consume for actual
+            # banter content.
+            self._maybe_set_crew_banter_flag("desta_coll", "desta_corridor_pre_session_seen")
             return True, f"Pre-commit secured for {delegate.name}."
 
         delegate.consecutive_corridor_fails += 1
@@ -734,6 +765,30 @@ class PoliticsDisputeManager:
         # silently no-ops (test runs that don't load sub-rep configs).
         self._maybe_deduct_sub_rep(delegate)
         return False, f"Corridor visit failed against {delegate.name}."
+
+    def _maybe_set_crew_banter_flag(self, crew_id: str, flag_name: str) -> None:
+        """SA-P3: set ``flag_name`` on the player when ``crew_id`` is on crew.
+
+        Trigger surface for SA-X6 banter content. Skipped silently when
+        the player or crew roster isn't wired (unit-test mode), or when
+        the named crew member isn't aboard. Idempotent: re-setting an
+        already-True flag is a no-op.
+        """
+        if self._propagation_player is None or self._crew_roster is None:
+            return
+        recruited = getattr(self._crew_roster, "recruited_ids", None)
+        ids: set[str] = set()
+        if isinstance(recruited, (set, list, tuple)):
+            ids = set(recruited)
+        elif callable(recruited):  # pragma: no cover (defensive)
+            ids = set(recruited())
+        if crew_id not in ids:
+            return
+        # Variable-routed write keeps the SI-3 scanner from picking up this
+        # literal as a producer. SA-X6 will consume the flag for banter
+        # gating, at which point a helper migration may be appropriate.
+        flag = flag_name
+        self._propagation_player.dialogue_flags[flag] = True
 
     def _maybe_deduct_sub_rep(self, delegate: PoliticsDelegate) -> None:
         """Best-effort sub-reputation deduction for a failed corridor visit.
@@ -799,17 +854,40 @@ class PoliticsDisputeManager:
                 best_id = d_id
         return best_id
 
-    def _resolve_counter_argument(self, delegate: PoliticsDelegate) -> tuple[str, str]:
-        """Pick the framing + opposition response a delegate fires.
+    # SA-P2 default counter-framing, used when a dispute template does not
+    # declare per-delegate overrides. Preserves the SA-P1 §4.6 worked-example
+    # behavior (Hask responds with ``soil_impact`` against
+    # ``water_rights_change``) for any template that omits the field.
+    _DEFAULT_COUNTER_FRAMING: tuple[str, str] = ("soil_impact", "water_rights_change")
 
-        For SA-P2 we hard-code the "soil_impact" canonical framing for
-        Verdant water-rights opposition (matches SA-P1 §4.6 worked
-        example: Hask responds with soil_impact). SA-P3 templates may
-        elaborate this; for the engine sprint, this single rule is
-        sufficient because the worked-example fixture and any synthetic
-        SA-P2 test exercise the same narrative space.
+    def _resolve_counter_argument(
+        self,
+        dispute: PoliticsDispute,
+        delegate: PoliticsDelegate,
+    ) -> tuple[str, str]:
+        """Pick the framing + opposition dimension this delegate fires.
+
+        SA-P3 generalized the SA-P2 hard-coded rule into a template-driven
+        lookup. The dispute's template carries an optional
+        ``counter_framings: dict[str, tuple[str, str]]`` keyed by delegate
+        id; when the firing delegate has an entry, that pair is used.
+        Otherwise the SA-P2 default is preserved so existing fixtures and
+        any template that omits the field continue to behave identically.
+
+        Args:
+            dispute: The runtime dispute (template lookup uses
+                ``dispute.template_id``).
+            delegate: The delegate firing the counter-argument.
+
+        Returns:
+            ``(framing_id, target_dimension)`` for the counter-argument.
         """
-        return ("soil_impact", "water_rights_change")
+        template = self._templates.get(dispute.template_id)
+        if template is not None:
+            override = template.counter_framings.get(delegate.delegate_id)
+            if override is not None:
+                return override
+        return self._DEFAULT_COUNTER_FRAMING
 
     def submit_argument(
         self,
@@ -832,6 +910,11 @@ class PoliticsDisputeManager:
             return resolution
 
         if argument.is_mediation:
+            # SA-P3 crew-banter trigger: Cass Weller observes mediation.
+            # Fires whenever the player commits a mediate action,
+            # regardless of pass / fail, since the banter notes structural
+            # durability ("will this hold?"), not the resolver verdict.
+            self._maybe_set_crew_banter_flag("cass_weller", "cass_mediation_in_progress_seen")
             if resolution.passes:
                 target.conceded = True
                 if argument.framing in dispute.framing_target_dimensions:
@@ -855,7 +938,7 @@ class PoliticsDisputeManager:
         for d_id, d in dispute.delegates.items():
             if not self._opposition_qualifies_for_counter(snapshot[d_id]):
                 continue
-            counter_framing, _dim = self._resolve_counter_argument(d)
+            counter_framing, _dim = self._resolve_counter_argument(dispute, d)
             pre_empted = (
                 argument.responds_to is not None and argument.responds_to == counter_framing
             )
@@ -993,6 +1076,15 @@ class PoliticsDisputeManager:
         dispute.phase = DisputePhase.RESOLVED
         dispute.round_log.append(f"resolved: {category}")
         self._propagate_outcome(dispute, category)
+        # Move from pending to resolved registry so save / load and the
+        # journal-trigger system see the right state immediately.
+        if dispute.dispute_id in self._pending_disputes:
+            self._resolved_disputes[dispute.dispute_id] = dispute
+            self._pending_disputes.pop(dispute.dispute_id, None)
+        # SA-P3 outcome callback (after propagation, so the engine sees
+        # rep / market / mission flag side-effects already applied).
+        if self._outcome_callback is not None:
+            self._outcome_callback(dispute, category)
 
     def _propagate_outcome(
         self,

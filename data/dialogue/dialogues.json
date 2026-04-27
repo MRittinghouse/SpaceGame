@@ -8055,6 +8055,306 @@
                     "expression": "neutral"
                 }
             ]
+        },
+        {
+            "id": "mayor_vance_council_corridor",
+            "start_node_id": "start",
+            "nodes": [
+                {
+                    "id": "start",
+                    "speaker_id": "mayor_vance",
+                    "text": "Captain. You picked a busy week to ask for time. I can give you ten minutes before the next item, or you can sit through the session and see how Verdant runs the room.",
+                    "responses": [
+                        {
+                            "text": "Ten minutes. I want to make my case before the floor opens.",
+                            "next_node_id": "argue"
+                        },
+                        {
+                            "text": "I will sit through the session. Watch first, talk later.",
+                            "next_node_id": "farewell"
+                        }
+                    ],
+                    "expression": "confident"
+                },
+                {
+                    "id": "argue",
+                    "speaker_id": "mayor_vance",
+                    "text": "States her position before her reasoning. \"The Council does not vote on outside framing. State your case in Verdant terms or I will move on. What is the outcome you want, and who in this community is paying for it?\"",
+                    "responses": [
+                        {
+                            "text": "[Persuasion 3] Lay out the community case. Who benefits, who is asked to absorb the cost, why it lands inside Verdant's lane.",
+                            "next_node_id": "argue_success",
+                            "skill_check": {
+                                "skill": "persuasion",
+                                "difficulty": 3,
+                                "success_node_id": "argue_success",
+                                "failure_node_id": "argue_failure"
+                            }
+                        },
+                        {
+                            "text": "Push back. Tell her the Alliance is watching this vote.",
+                            "next_node_id": "argue_failure"
+                        }
+                    ],
+                    "expression": "stern"
+                },
+                {
+                    "id": "argue_success",
+                    "speaker_id": "mayor_vance",
+                    "text": "Brief pause. Then a nod. \"I understand the concern. Here is what I can do. I will hear your framing on the floor and let it stand on its own. The delegates will weigh in. That is the most I commit to before the session opens.\"",
+                    "responses": [
+                        {
+                            "text": "Thank you, Mayor.",
+                            "next_node_id": "farewell"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "argue_failure",
+                    "speaker_id": "mayor_vance",
+                    "text": "\"Verdant cannot absorb that right now. Bring it to the floor and let the delegates rule. That is what the floor is for. I am not going to negotiate the vote in a corridor.\"",
+                    "responses": [
+                        {
+                            "text": "Understood.",
+                            "next_node_id": "farewell"
+                        }
+                    ],
+                    "expression": "stern"
+                },
+                {
+                    "id": "farewell",
+                    "speaker_id": "mayor_vance",
+                    "text": "\"Good. The session opens in twenty. If we run long, we carry the third item to next session. That has happened twice before and we have survived it. See you on the floor, Captain.\"",
+                    "responses": [],
+                    "expression": "confident"
+                }
+            ]
+        },
+        {
+            "id": "delegate_hask_council_corridor",
+            "start_node_id": "start",
+            "nodes": [
+                {
+                    "id": "start",
+                    "speaker_id": "delegate_hask",
+                    "text": "He is reviewing a soil report when you walk in. Sets it down slowly. \"You are the captain everyone keeps mentioning. Sit. I have ten minutes before I am due back. What is on your manifest?\"",
+                    "responses": [
+                        {
+                            "text": "I want your read on the bill before the session.",
+                            "next_node_id": "argue"
+                        },
+                        {
+                            "text": "I will hear you out instead.",
+                            "next_node_id": "farewell"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "argue",
+                    "speaker_id": "delegate_hask",
+                    "text": "\"Show me the soil analysis. Bring me the page and the paragraph and the year. I have heard every version of 'this will be good for Verdant' and I have learned to wait for the part where it is not. Where is yours?\"",
+                    "responses": [
+                        {
+                            "text": "[Persuasion 3] Walk him through the soil survey, season by season, and where this proposal lands the moisture deficit.",
+                            "next_node_id": "argue_success",
+                            "skill_check": {
+                                "skill": "persuasion",
+                                "difficulty": 3,
+                                "success_node_id": "argue_success",
+                                "failure_node_id": "argue_failure"
+                            }
+                        },
+                        {
+                            "text": "The numbers run in the briefing packet. Read them for yourself.",
+                            "next_node_id": "argue_failure"
+                        }
+                    ],
+                    "expression": "stern"
+                },
+                {
+                    "id": "argue_success",
+                    "speaker_id": "delegate_hask",
+                    "text": "Long pause. He turns the page back to where he had been. \"That I can support. Phased, with community review before implementation. That is how it should work. Bring it to the floor in those words and I will not move against you.\"",
+                    "responses": [
+                        {
+                            "text": "Appreciate it, Delegate.",
+                            "next_node_id": "farewell"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "argue_failure",
+                    "speaker_id": "delegate_hask",
+                    "text": "\"We have heard this before. Different names, same proposal. The people who brought it last time were not sitting in their seats for the consequences. I will read the packet. I will not promise anything else.\"",
+                    "responses": [
+                        {
+                            "text": "Fair enough.",
+                            "next_node_id": "farewell"
+                        }
+                    ],
+                    "expression": "stern"
+                },
+                {
+                    "id": "farewell",
+                    "speaker_id": "delegate_hask",
+                    "text": "\"Northern belt is at eleven percent moisture deficit this month. That is the number I am carrying into the session. Whatever you bring, lay it next to that number and we will see if it survives.\"",
+                    "responses": [],
+                    "expression": "neutral"
+                }
+            ]
+        },
+        {
+            "id": "delegate_drift_council_corridor",
+            "start_node_id": "start",
+            "nodes": [
+                {
+                    "id": "start",
+                    "speaker_id": "delegate_drift",
+                    "text": "She is at her desk with three open binders and a half-finished cup of tea. \"Captain. I have been over the briefing. I have a list of objections I expect on the floor. Tell me which one you came to pre-empt.\"",
+                    "responses": [
+                        {
+                            "text": "Walk me through your list. I want to know what you are watching for.",
+                            "next_node_id": "argue"
+                        },
+                        {
+                            "text": "I will see how it lands in session.",
+                            "next_node_id": "farewell"
+                        }
+                    ],
+                    "expression": "happy"
+                },
+                {
+                    "id": "argue",
+                    "speaker_id": "delegate_drift",
+                    "text": "\"The data suggests the Forgeworks 2324 partnership is the cleanest precedent. I know what the concern will be. Outside money. Outside framing. I have pulled the trade outcomes. They are in your materials. What I do not have is community buy-in. That is what I am asking from you.\"",
+                    "responses": [
+                        {
+                            "text": "[Persuasion 3] Tell her how you would frame the buy-in case to Hask without losing the modernization line.",
+                            "next_node_id": "argue_success",
+                            "skill_check": {
+                                "skill": "persuasion",
+                                "difficulty": 3,
+                                "success_node_id": "argue_success",
+                                "failure_node_id": "argue_failure"
+                            }
+                        },
+                        {
+                            "text": "Tell her she is overprepared. The room will hear it.",
+                            "next_node_id": "argue_failure"
+                        }
+                    ],
+                    "expression": "confident"
+                },
+                {
+                    "id": "argue_success",
+                    "speaker_id": "delegate_drift",
+                    "text": "Visible satisfaction. Still professional. \"That works. I anticipated half of that. The other half is new. I will rework the opening line and lead with the community frame. If you can carry Hask, I will carry the data.\"",
+                    "responses": [
+                        {
+                            "text": "Then we have a session.",
+                            "next_node_id": "farewell"
+                        }
+                    ],
+                    "expression": "happy"
+                },
+                {
+                    "id": "argue_failure",
+                    "speaker_id": "delegate_drift",
+                    "text": "Brief pause. Then she continues, faster. \"I am picking my battles. The data suggests the floor will not accept that line cold. I will think about how to soften it. I do not have numbers on the seasonal impact for the northern belt yet. I should have. I will get them before the session.\"",
+                    "responses": [
+                        {
+                            "text": "Good luck on the floor.",
+                            "next_node_id": "farewell"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "farewell",
+                    "speaker_id": "delegate_drift",
+                    "text": "\"I will see you in session. According to the Forgeworks trade index from last quarter, we have a window. I am going to use it. Bring the community frame and I will not have to do it alone.\"",
+                    "responses": [],
+                    "expression": "happy"
+                }
+            ]
+        },
+        {
+            "id": "delegate_marsh_council_corridor",
+            "start_node_id": "start",
+            "nodes": [
+                {
+                    "id": "start",
+                    "speaker_id": "delegate_marsh",
+                    "text": "He is at a desk with the aquifer model running on a side terminal. He does not turn his head. \"What does this proposal do to the belt allocation? Lead with that. Everything else can wait.\"",
+                    "responses": [
+                        {
+                            "text": "Talk me through the model first. I want the same numbers you have.",
+                            "next_node_id": "argue"
+                        },
+                        {
+                            "text": "I will sit in session and listen.",
+                            "next_node_id": "farewell"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "argue",
+                    "speaker_id": "delegate_marsh",
+                    "text": "\"Current draw on the northern aquifer is three point four gigaliters per annum. The model shows stress above three point seven. We are not moving the limit. Tell me what you are asking for and where it sits inside that number.\"",
+                    "responses": [
+                        {
+                            "text": "[Persuasion 3] Lay out the proposal in his terms. Withdrawal numbers, season, residual margin.",
+                            "next_node_id": "argue_success",
+                            "skill_check": {
+                                "skill": "persuasion",
+                                "difficulty": 3,
+                                "success_node_id": "argue_success",
+                                "failure_node_id": "argue_failure"
+                            }
+                        },
+                        {
+                            "text": "Tell him the model is conservative. The actual margin is wider.",
+                            "next_node_id": "argue_failure"
+                        }
+                    ],
+                    "expression": "stern"
+                },
+                {
+                    "id": "argue_success",
+                    "speaker_id": "delegate_marsh",
+                    "text": "Brief warmth. He turns the chair to face you fully. \"That stays inside the model. I can vote with that number. On the water component, you have my support. On the rest, I follow Delegate Drift. That is not my lane.\"",
+                    "responses": [
+                        {
+                            "text": "Thank you, Delegate.",
+                            "next_node_id": "farewell"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "argue_failure",
+                    "speaker_id": "delegate_marsh",
+                    "text": "\"I understand the urgency. The aquifer draw is not a negotiating position. The model suggests concern. I am voting with the model. If you bring updated draw numbers, I will run them again. Until then, I am not moving.\"",
+                    "responses": [
+                        {
+                            "text": "Understood.",
+                            "next_node_id": "farewell"
+                        }
+                    ],
+                    "expression": "stern"
+                },
+                {
+                    "id": "farewell",
+                    "speaker_id": "delegate_marsh",
+                    "text": "\"I will see you in session. Bring the draw numbers if you have them. If you do not, the model is what I have.\"",
+                    "responses": [],
+                    "expression": "neutral"
+                }
+            ]
         }
     ]
 }

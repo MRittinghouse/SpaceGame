@@ -793,6 +793,32 @@
       "legality": "legal",
       "production_tags": [],
       "consumption_tags": []
+    },
+    {
+      "id": "fresh_water",
+      "name": "Fresh Water",
+      "category": "basic",
+      "description": "Northern-aquifer draw, settled and tested at the Verdant draw stations. Different stuff from a recycler ration; the difference shows up at every meal.",
+      "base_price": 30,
+      "variance_min": -0.18,
+      "variance_max": 0.22,
+      "volume_per_unit": 4,
+      "legality": "legal",
+      "production_tags": ["agricultural", "water"],
+      "consumption_tags": ["food_processing", "settlement_basic"]
+    },
+    {
+      "id": "hydroponics_yield",
+      "name": "Hydroponics Yield",
+      "category": "basic",
+      "description": "Greenhouse produce off Verdant's belt co-ops. Tied to the seasonal water allocation; the price moves the day the council talks about it.",
+      "base_price": 80,
+      "variance_min": -0.20,
+      "variance_max": 0.30,
+      "volume_per_unit": 3,
+      "legality": "legal",
+      "production_tags": ["agricultural", "advanced"],
+      "consumption_tags": ["food_processing", "luxury_ag"]
     }
   ]
 }
