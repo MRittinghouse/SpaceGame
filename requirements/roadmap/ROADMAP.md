@@ -912,7 +912,7 @@ The following decisions were locked during planning:
 
 #### SA-0 — Cluster A confirmation pass
 
-**Status**: in-progress (implementing)
+**Status**: in-progress (reviewing)
 **Phase**: Phase I | **Size**: S | **Effort**: 3-5 days
 **Depends on**: SA-PREP-2 | **Blocks**: none
 
@@ -987,24 +987,24 @@ The following decisions were locked during planning:
 - 2026-04-27 — added DCMC depth-tier branch to naveen_prakash_dialogue (2 nodes: dcmc_intelligence, dcmc_intelligence_reveal); NAS branch to yuki_signal_deep (2 nodes: nas_intelligence, nas_intelligence_reveal); journal entries auto_dcmc_intelligence and auto_nas_intelligence; all 35 scenario tests green
 - 2026-04-27 — SI-3 scanner: both flags appear as producer-only orphans due to 3 pre-existing scanner gaps (excluded_flags not scanned; journal trigger_flag not scanned; no-arg helpers not introspectable). Added to KNOWN_PRODUCER_ONLY_ORPHANS with DETECTOR MISS documentation. Scanner clean.
 - 2026-04-27 — Writing Bible scanner: all 31 tests pass (no em-dashes, no banned phrases, expressions valid). Full suite: 8533 passed / 98 skipped (baseline 8479 + 54 new). PHASE_OK
+- 2026-04-27 12:32 — harness: review phase starting (rework cycle 0)
+- 2026-04-27 15:45 — review complete; all 8 acceptance criteria verified, all 3 planner-folded polish items delivered, 8533/8479 tests passing, lint+format+Writing Bible+SI-3 all clean. Single observation: Yuki's closing line ("you seem like someone who pays attention") is evaluative-adjacent per aurelia_voice_examples.md example #1 — not a hard violation, minor second-pass candidate. No rework warranted. PHASE_OK
 
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-04-27 12:12
-- Completed: 2026-04-27 15:00
-- Files_changed: spacegame/constants/flags.py, tests/test_constants/__init__.py, tests/test_constants/test_flags.py, tests/test_scenarios/test_scenario_cluster_a_anchors.py, data/dialogue/dialogues.json, data/journal/entries.json, tests/test_data/test_dialogue_integrity.py
-- Commits: 42e57ed, ff86c69, 69632ef
-- Tests_added: 54
-- Tests_baseline: 8479
+- Started: 2026-04-27 12:32
+- Completed: 2026-04-27 15:45
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: none
 - Tests_passing: 8533
-- Tests_skipped: 98
-- Lint_clean: yes
-- Format_clean: yes
-- SI3_scanner_clean: yes
-- Writing_bible_clean: yes
-- Touch_zones_respected: yes
-- Notes: All 8 acceptance criteria satisfied. SL-1 elevation confirmed for all 3 Cluster A anchors. DCMC beat (Naveen/iron_depths) and NAS beat (Yuki/nova_research) authored, gated, voice-checked, save/load tested. Fulcrum confirmed-only scope documented in test module docstring. SI-3 allowlist updated with DETECTOR MISS classification for both new no-arg flags.
+- Acceptance_criteria_verified: 8/8
+- Polish_items_verified: 3/3
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 0
+- Single_tighten: Yuki's final line in nas_intelligence_reveal ("you seem like someone who pays attention") is evaluative-adjacent (aurelia_voice_examples.md example #1 anti-pattern); a grounded rewrite would anchor the observation in her witnessed behavior ("You asked about the restricted wing before I said anything") rather than assessing the player's character. Not a blocker.
+- Followup_sprints_added: none
+- Notes: All acceptance criteria met. SL-1 elevation confirmed for all 3 Cluster A anchors. DCMC/NAS depth-tier beats correctly gated, flag-set, journaled, and save/load tested. Fulcrum confirmation-only scope documented in test module docstring. +54 tests (35 scenario + 19 flag helpers).
 
 #### SA-1 — Wreckers' Guild Hall (Salvage Contracts)
 
