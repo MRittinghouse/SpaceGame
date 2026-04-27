@@ -104,9 +104,9 @@
       "hide_after_flag": "larsen_permit_complete"
     },
     {
-      "id": "delivery_merchant",
-      "name": "Cargo Broker",
-      "title": "Trade Courier",
+      "id": "odom_broker",
+      "name": "Odom",
+      "title": "Cargo Broker",
       "portrait_color": [
         80,
         130,

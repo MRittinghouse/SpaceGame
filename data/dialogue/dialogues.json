@@ -1000,7 +1000,7 @@
             "nodes": [
                 {
                     "id": "greet",
-                    "speaker_id": "delivery_merchant",
+                    "speaker_id": "odom_broker",
                     "text": "*A heavyset man flips through shipping manifests, muttering numbers under his breath. He holds up one finger without looking up.* One second. Three shipments behind today.",
                     "responses": [
                         {
@@ -1070,13 +1070,23 @@
                             "required_flags": [
                                 "broker_ore_sold"
                             ]
+                        },
+                        {
+                            "text": "Anything else you'd put in the ledger for me?",
+                            "next_node_id": "ongoing_greet",
+                            "required_flags": [
+                                "iron_ore_delivered"
+                            ],
+                            "excluded_flags": [
+                                "iron_delivery_failed"
+                            ]
                         }
                     ],
                     "expression": "neutral"
                 },
                 {
                     "id": "teach_intro",
-                    "speaker_id": "delivery_merchant",
+                    "speaker_id": "odom_broker",
                     "text": "*Odom sets the manifest down. Looks at you properly for the first time.* Fine. Quick. Any port's board gets its listings from brokers. People like me. We see what moves. We track what pays. You want to know who to ask, it's the people standing at terminals, not the ones staring at the board.",
                     "responses": [
                         {
@@ -1094,7 +1104,7 @@
                 },
                 {
                     "id": "teach_routes",
-                    "speaker_id": "delivery_merchant",
+                    "speaker_id": "odom_broker",
                     "text": "*He drums his fingers on the terminal.* Concord pays for coolant. Always. Union pays for grain, always. Fringe pays for weapons, never legally. You're green. Stick to Concord. Don't go Fringe. Don't ask about Union until you have papers. That's free. Next time, bring credits or cargo.",
                     "responses": [
                         {
@@ -1106,7 +1116,7 @@
                 },
                 {
                     "id": "offer",
-                    "speaker_id": "delivery_merchant",
+                    "speaker_id": "odom_broker",
                     "text": "You there. I'll give you 500 credits to ship this iron ore off to Forgeworks. I just bought it, and I've been told that my carrier is full up. I need it there within the week.",
                     "responses": [
                         {
@@ -1124,7 +1134,7 @@
                 },
                 {
                     "id": "details",
-                    "speaker_id": "delivery_merchant",
+                    "speaker_id": "odom_broker",
                     "text": "Ten units of iron ore to Forgeworks. My contact there is a clerk named Wren. Find him at the Neutral Ground when you land. Tell him Odom sent you and he'll handle the rest. I already had the ore put in your hold. Didn't figure you'd say no to easy money.",
                     "responses": [
                         {
@@ -1140,7 +1150,7 @@
                 },
                 {
                     "id": "waiting",
-                    "speaker_id": "delivery_merchant",
+                    "speaker_id": "odom_broker",
                     "text": "Still waiting on confirmation from Forgeworks. You do still have my ore, right? Ten units, don't go selling it off on me. I've got a buyer on the other end counting on this.",
                     "responses": [
                         {
@@ -1152,7 +1162,7 @@
                 },
                 {
                     "id": "thanks",
-                    "speaker_id": "delivery_merchant",
+                    "speaker_id": "odom_broker",
                     "text": "Forgeworks pinged me. All ten units, weighed and accepted. Credits are in your account already. You fly straight and you don't skim. I'll remember that.",
                     "responses": [
                         {
@@ -1164,7 +1174,7 @@
                 },
                 {
                     "id": "betrayal",
-                    "speaker_id": "delivery_merchant",
+                    "speaker_id": "odom_broker",
                     "text": "*Odom stops mid-count. His eyes drift to the cargo manifest on his terminal, then back to you. Something cold settles behind them.* Your hold's empty. I can see it right here on the docking log. Ten units of iron ore, consigned under my name, and your bay is reading zero.",
                     "responses": [
                         {
@@ -1176,7 +1186,7 @@
                 },
                 {
                     "id": "betrayal_rant",
-                    "speaker_id": "delivery_merchant",
+                    "speaker_id": "odom_broker",
                     "text": "You sold it. You actually sold my freight. Consigned cargo, with my name on the manifest, and you walked it over to the trading floor like it was yours to move. For what? Fifteen credits a unit? Twenty on a lucky day? I was paying you six hundred for that run. Six hundred credits, a clean entry on your shipping record, and a name that brokers actually return calls to. You traded all of that for scrap money.",
                     "responses": [
                         {
@@ -1192,7 +1202,7 @@
                 },
                 {
                     "id": "betrayal_end",
-                    "speaker_id": "delivery_merchant",
+                    "speaker_id": "odom_broker",
                     "text": "No. We're done talking. I've moved freight through this station for nineteen years, and I have never had a pilot sell consigned cargo out from under me. You are the first. Congratulations. I'm logging a freight violation against your permit, and every broker and dock clerk on Nexus Prime is going to hear about this by tomorrow. You just burned the easiest reputation you were ever going to build, and you did it for grocery money. Now get out of my face before I call station security.",
                     "responses": [
                         {
@@ -1213,7 +1223,7 @@
                 },
                 {
                     "id": "odom_arna_branch_a",
-                    "speaker_id": "delivery_merchant",
+                    "speaker_id": "odom_broker",
                     "text": "*Odom does not look up from the manifest. Keeps muttering numbers for a beat, then stops.* Your friend cleared out. Owed me seventy credits for a coolant run I fronted her last year. Figured she would. That kind does.",
                     "subtext": "He goes back to the manifest without waiting for a response.",
                     "responses": [
@@ -1227,7 +1237,7 @@
                 },
                 {
                     "id": "odom_arna_branch_b",
-                    "speaker_id": "delivery_merchant",
+                    "speaker_id": "odom_broker",
                     "text": "*Odom grunts without looking up.* Still at the desk, I hear. Good. Some people shouldn't fly. She still owes me seventy credits. I'll get it out of her next week.",
                     "responses": [
                         {
@@ -1240,7 +1250,7 @@
                 },
                 {
                     "id": "odom_arna_branch_c",
-                    "speaker_id": "delivery_merchant",
+                    "speaker_id": "odom_broker",
                     "text": "*Odom looks up for the first time. His face does not change.* Heard about your friend. She owed me seventy credits.",
                     "subtext": "He goes back to the manifest. He does not say anything else. He does not need to.",
                     "responses": [
@@ -1248,6 +1258,70 @@
                             "text": "[Leave it.]",
                             "next_node_id": null,
                             "set_flag": "odom_spoke_of_arna"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "ongoing_greet",
+                    "speaker_id": "odom_broker",
+                    "text": "*He glances up. The pause before going back to the manifest is slightly longer than usual.* Six hundred clean. You ran it inside the week. That counts. *He taps the stack of manifests in front of him.* Most pilots who walk through here are working the same short list their whole career. There's a longer ledger. Depends on whether you want to know what's in it.",
+                    "responses": [
+                        {
+                            "text": "What's in the longer ledger?",
+                            "next_node_id": "investment_intro",
+                            "excluded_flags": [
+                                "investment_introduced"
+                            ]
+                        },
+                        {
+                            "text": "What's in the longer ledger?",
+                            "next_node_id": "graduation_pointer",
+                            "required_flags": [
+                                "investment_introduced"
+                            ]
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "investment_intro",
+                    "speaker_id": "odom_broker",
+                    "text": "*He sets the manifest down. This part he has said before, but not to everyone.* You're hauling cargo. You make credits. Credits sit in your account until you spend them or haul more cargo. That's one side of the ledger. Other side: there are venues in this expanse that pay for capital parked in them. Investment positions. Structured returns. You put in two thousand credits, you get back two thousand and change over the next ten days without lifting a crate. Not every venue. Not every pilot. But if your account is sitting idle while you sleep, you are leaving money on the floor.",
+                    "responses": [
+                        {
+                            "text": "Which venues?",
+                            "next_node_id": "investment_intro_venues",
+                            "set_flag": "odom_explained_investment"
+                        },
+                        {
+                            "text": "I'll think about it.",
+                            "next_node_id": null,
+                            "set_flag": "odom_explained_investment"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "investment_intro_venues",
+                    "speaker_id": "odom_broker",
+                    "text": "Any station that shows an investment card on its board. You'll see them once you've earned the access. Terms are on the card. I don't take a cut. I'm telling you because haulers who understand the full book are worth working with.",
+                    "responses": [
+                        {
+                            "text": "Understood.",
+                            "next_node_id": null
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "graduation_pointer",
+                    "speaker_id": "odom_broker",
+                    "text": "*He does not look up from the manifest.* You've seen what the standard board looks like. There's a venue called Meridian. Runs a different class of financial product. The contact there is Ilse Vey. I don't make introductions, but I'm telling you the name.",
+                    "responses": [
+                        {
+                            "text": "Meridian. Ilse Vey.",
+                            "next_node_id": null
                         }
                     ],
                     "expression": "neutral"

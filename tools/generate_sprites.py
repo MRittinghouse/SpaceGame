@@ -437,7 +437,7 @@ PORTRAIT_PROMPTS: dict[str, str] = {
         "Professional, authoritative expression. Slight frown. "
         "Blue-silver color scheme. " + _PORTRAIT_STYLE
     ),
-    "delivery_merchant": (
+    "odom_broker": (
         "Pixel art portrait of a busy middle-aged merchant. " +
         _BUST_VIEW +
         "Weathered face, short beard, trade-worn clothing. "

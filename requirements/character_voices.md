@@ -454,7 +454,7 @@ He sounds like a conspiracy theorist who happens to be right.
 **Role**: Mission 02 first job, recurring trade mentor (SA-V to SA-F3)
 **Tonal register**: Working-capital pragmatism -- counts everything, forgets nothing, explains nothing he does not have to.
 
-Note on speaker_id: currently `delivery_merchant` in all dialogue trees. Rename to `odom_broker` is SA-V scope; not this sprint.
+Note on speaker_id: renamed to `odom_broker` in SA-V. Rename complete.
 
 ### Core Voice
 Odom speaks like someone who has processed a thousand transactions and has exactly as much patience as the transaction requires. Nineteen years on Nexus Prime have given him a working ledger of everyone who owes him something, everyone who has delivered, and everyone who has disappointed him once and will not get a second chance.
@@ -500,7 +500,7 @@ His voice is flat in the way that busy people's voices are flat -- not from cold
 5. **On an old debt**: "She owed me seventy credits. I'll get it out of her next week." *(Said of someone who has since been hospitalized. He does not modify the sentence.)*
 
 ### SA Arc Notes
-SA-V: Odom is the bridge to Meridian. He operates in the same register throughout but the relationship develops from transactional to something closer to a grudging professional mentor. He does not soften; he reveals more of the ledger. The speaker_id rename (`delivery_merchant` to `odom_broker`) happens in SA-V, not this sprint.
+SA-V: Odom is the bridge to Meridian. He operates in the same register throughout but the relationship develops from transactional to something closer to a grudging professional mentor. He does not soften; he reveals more of the ledger. The speaker_id rename to `odom_broker` was completed in SA-V.
 
 SA-F3: When the player graduates to Meridian, Odom's last interaction should make clear he considers this an expected outcome -- something he has been calibrating toward since the first delivery. His pride is expressed as the absence of surprise.
 
@@ -578,7 +578,7 @@ When drafting dialogue, verify each line against:
 
 Three existing speaker IDs require downstream attention; noted here so downstream sprints inherit a clear starting point rather than discovering the discrepancy mid-implementation.
 
-- `delivery_merchant` (Odom): rename to `odom_broker` is SA-V scope. Do not rename in this sprint.
+- `odom_broker` (Odom): rename from legacy id complete (SA-V).
 - `torres_memorial` (legacy `wrenchs_request` delivery NPC): retained as-is for backward compatibility. It is a side-mission delivery stand-in, not a literal memorial to Malia Torres. All new SA arc dialogue uses the canonical `malia_torres` speaker_id. No rename or merge needed. *Resolved: SA-1.*
 - `jez_okafor` (Jez Okafor, Iron Depths shift supervisor, Miners' Union): unrelated to the Okafor Institute's current director, Dr. Nadia Kweon. The two Okafor-named characters are distinct by design; no reconciliation needed.
 
@@ -588,7 +588,7 @@ Three existing speaker IDs require downstream attention; noted here so downstrea
 |-----|--------|-------------------|---------------------|
 | Malia Torres | existing (extend) | `malia_torres` | SA-1, SA-P5 |
 | Marcus Jin | existing (extend) | `marcus_jin` | SA-2 |
-| Odom (Cargo Broker) | existing (upgrade) | `delivery_merchant` | SA-V (rename deferred), SA-F3 |
+| Odom (Cargo Broker) | existing (upgrade) | `odom_broker` | SA-V (rename complete), SA-F3 |
 | Dr. Nadia Kweon (Okafor Institute director) | net-new | `kweon_director` | SA-R1, SA-R2 |
 | Sten Brygaard (Deep Shafts caretaker) | net-new | `sten_brygaard` | SA-2 |
 | Paz Reina (Wreck navigator) | net-new | `paz_reina` | SA-1 |
@@ -621,7 +621,7 @@ All deferred reconciliations noted with consuming sprint.
 |----------------|-----------|--------|------------------------|
 | Malia Torres | `malia_torres` | active | SA-P5: check whether arbitrator mode warrants a secondary speaker_id `torres_arbitrator` |
 | Marcus Jin | `marcus_jin` | active | none |
-| Odom (Cargo Broker) | `delivery_merchant` | active, rename deferred | SA-V: rename to `odom_broker` across all dialogue trees |
+| Odom (Cargo Broker) | `odom_broker` | active, rename complete (SA-V) | none |
 | Dr. Nadia Kweon | `kweon_director` | net-new, register at SA-R1 | none |
 | Sten Brygaard | `sten_brygaard` | net-new, register at SA-2 | none |
 | Paz Reina | `paz_reina` | net-new, register at SA-1 | none |

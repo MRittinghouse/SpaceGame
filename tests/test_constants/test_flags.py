@@ -16,7 +16,9 @@ from spacegame.constants.flags import (
     heard_nas_intelligence,
     investment_introduced,
     met_npc,
+    odom_explained_investment,
     seen_faction_tip,
+    seen_investment_tip,
     talked_to_npc,
     tutorial_bought_part,
 )
@@ -112,3 +114,36 @@ class TestSA0DepthTierFlags:
     def test_flags_are_distinct(self) -> None:
         """The two flag strings must not collide."""
         assert heard_dcmc_intelligence() != heard_nas_intelligence()
+
+
+class TestSAVCargoBrokerFlags:
+    """SA-V: canonical string verification for the two new Cargo Broker flags.
+
+    odom_explained_investment is set by the investment_intro dialogue node
+    and consumed by the_longer_ledger mission objective.
+    seen_investment_tip is set by the station_hub_view PT-M dismiss callback
+    and guards re-fire of the investment-card tip.
+    """
+
+    def test_odom_explained_investment_returns_canonical_string(self) -> None:
+        assert odom_explained_investment() == "odom_explained_investment"
+
+    def test_odom_explained_investment_is_no_arg_callable(self) -> None:
+        result = odom_explained_investment()
+        assert isinstance(result, str)
+
+    def test_seen_investment_tip_returns_canonical_string(self) -> None:
+        assert seen_investment_tip() == "seen_investment_tip"
+
+    def test_seen_investment_tip_is_no_arg_callable(self) -> None:
+        result = seen_investment_tip()
+        assert isinstance(result, str)
+
+    def test_sa_v_flags_are_distinct_from_each_other(self) -> None:
+        """The two SA-V flag strings must not collide."""
+        assert odom_explained_investment() != seen_investment_tip()
+
+    def test_sa_v_flags_do_not_collide_with_investment_introduced(self) -> None:
+        """SA-V helpers are distinct from the pre-existing investment_introduced flag."""
+        assert odom_explained_investment() != investment_introduced()
+        assert seen_investment_tip() != investment_introduced()

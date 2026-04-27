@@ -2434,7 +2434,7 @@ class Game:
                 self.dialogue_manager.set_flag("has_special_dialogue")
 
         # Detect if player sold the cargo broker's iron ore
-        if npc_id == "delivery_merchant" and self.mission_manager:
+        if npc_id == "odom_broker" and self.mission_manager:
             from spacegame.models.mission import MissionStatus
 
             iron_status = self.mission_manager.get_status("iron_delivery")

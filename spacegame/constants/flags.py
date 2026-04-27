@@ -407,6 +407,43 @@ def seen_deep_shafts_tip() -> str:
     return "seen_deep_shafts_tip"
 
 
+# ---------------------------------------------------------------------------
+# Cargo Broker (SA-V)
+# ---------------------------------------------------------------------------
+#
+# SA-V (requirements/roadmap/ROADMAP.md). Flags scoped to Odom's investment-
+# introduction arc at Nexus Prime. The speaker_id was renamed to odom_broker
+# in this sprint; these helpers carry the producer/consumer documentation
+# for the two new flags SA-V introduces.
+
+
+def odom_explained_investment() -> str:
+    """Flag set when the player exhausts Odom's investment_intro dialogue node.
+
+    Producer: ``data/dialogue/dialogues.json`` — ``set_flag`` on the
+    response that closes the ``investment_intro`` node in the
+    ``merchant_delivery`` dialogue tree.
+    Consumer: ``the_longer_ledger`` mission objective (``has_flag`` check
+    against this flag fires the mission-complete reward, which sets
+    ``investment_introduced``).
+    """
+    return "odom_explained_investment"
+
+
+def seen_investment_tip() -> str:
+    """Flag set when the player dismisses the first investment-card tip overlay.
+
+    Producer: :class:`spacegame.views.station_hub_view.StationHubView`'s
+    on-dismiss callback for the PT-M
+    :class:`spacegame.views.first_time_tip.FirstTimeTipOverlay` fired on
+    first click of any ``investment``-typed location card after
+    ``investment_introduced`` is set.
+    Consumer: the same view's first-click guard — the overlay never
+    re-fires across the playthrough once this flag is set.
+    """
+    return "seen_investment_tip"
+
+
 def pilgrimage_journal(n: int) -> str:
     """Flag set when the ``n``th Sora Takahashi journal entry unlocks.
 

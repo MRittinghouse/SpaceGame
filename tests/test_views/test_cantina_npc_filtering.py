@@ -49,7 +49,7 @@ class TestNpcAvailability:
 
     def test_npc_without_auto_trigger_always_visible(self) -> None:
         """NPCs without auto_trigger fields appear regardless of flags."""
-        npc = _make_npc(npc_id="delivery_merchant")
+        npc = _make_npc(npc_id="odom_broker")
         assert self._check_available(npc, {})
         assert self._check_available(npc, {"some_flag": True})
 
