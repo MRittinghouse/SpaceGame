@@ -93,7 +93,7 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 
 #### SA-PREP-1 — NPC voice-sheet audit
 
-**Status**: in-progress (implementing)
+**Status**: in-progress (reviewing)
 **Phase**: Phase 0 — Pre-arc Preparation | **Size**: M | **Effort**: 1-2 weeks
 **Depends on**: none | **Blocks**: SA-1, SA-2, SA-V, SA-P3, SA-P4, SA-P5, SA-B3, SA-B4, SA-R1, SA-F3
 
@@ -154,24 +154,23 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 - 2026-04-26 21:05 — planning confirmed; recovered plan verified against context docs; locked the last open question (Bidding rivals personas: old-money collector + Stellaris faction agent + cold-grudge rival captain); refreshed test-suite baseline (8304 → 8326) in task 10. PHASE_OK
 - 2026-04-26 20:50 — harness: implement phase starting (rework cycle 0)
 - 2026-04-26 21:30 — implementation complete; 21 NPC voice sheets authored; inventory table, speaker_id registry, tonal map, Voice Interactions extension committed; tests 8326/8326 baseline preserved; Writing Bible scanner 17/17 clean. PHASE_OK
+- 2026-04-26 21:15 — harness: review phase starting (rework cycle 0)
+- 2026-04-26 21:45 — review complete; all 6 acceptance criteria verified; 21 NPCs inventoried (18 net-new sheets + 3 extended); tonal register added to all sheets; speaker_id registry and Voice Interactions table (5 new pairings) confirmed; Writing Bible scanner 17/17 passing; 8326/8326 tests preserved; zero Unicode em-dashes in new body prose; no banned phrases, names, or parallel negation in SA arc additions. No findings requiring rework. PHASE_OK
 
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-04-26 20:50
-- Completed: 2026-04-26 21:30
-- Files_changed: requirements/character_voices.md
-- Commits: e028047
-- Tests_added: 0
-- Tests_baseline: 8326
+- Started: 2026-04-26 21:15
+- Completed: 2026-04-26 21:45
+- Files_changed: none
+- Commits: none
 - Tests_passing: 8326
-- Tests_skipped: 98
-- Lint_clean: n/a (markdown only)
-- Format_clean: n/a (markdown only)
-- SI3_scanner_clean: n/a (no flags added or modified)
-- Writing_bible_clean: yes (tests/test_writing_bible_compliance.py 17/17 passed; new content manually verified -- no em-dashes in body prose, no banned phrases, no parallel negation; headings use existing file em-dash convention which scanner does not cover)
-- Touch_zones_respected: yes (only requirements/character_voices.md modified)
-- Notes: 21 NPC voice sheets at full Elena-standard (six sections, 3+ sample lines each). Cargo Broker stub upgraded to full Odom sheet. SA Notes added to Malia Torres and Marcus Jin. Tonal register line added to all sheets (existing and new). Speaker_id registry and inventory table committed. Voice Interactions table extended with 5 new SA-relevant pairings. Deferred reconciliations (delivery_merchant to odom_broker) flagged as SA-V scope. All 6 acceptance criteria satisfied.
+- Acceptance_criteria_verified: 6/6
+- Polish_items_verified: n/a
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 0
+- Followup_sprints_added: none
+- Notes: All deliverables shipped. 18 net-new voice sheets at full Elena-standard; Odom upgraded from stub; SA Notes on Malia Torres and Marcus Jin; inventory table, speaker_id registry, and tonal map committed. Pre-existing Unicode em-dashes in original Elena/Marcus/Priya/Tomas body prose are out of scope; new SA arc body prose correctly uses ASCII double-hyphen convention. Writing Bible automated scanner (17/17) clean; manual scan of SA arc content confirmed zero banned phrases, banned names, or parallel negation in the 877 lines of new content.
 
 #### SA-PREP-2 — Existing-data audit
 
