@@ -793,7 +793,7 @@ The following decisions were locked during planning:
 - Started: 2026-04-27 11:07
 - Completed: 2026-04-27 11:42
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending
+- Commits: 11e3c85
 - New_sprints_proposed: none
 - Polish_items_folded_in: bonus-naming convention table; collision-check section; save-migration analysis; handoff checklist for SA-C2
 - Decisions_locked: 8
