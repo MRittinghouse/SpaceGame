@@ -274,7 +274,7 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 - Started: 2026-04-26 21:22
 - Completed: 2026-04-26 21:26
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending
+- Commits: 2690d52
 - New_sprints_proposed: none
 - Polish_items_folded_in: cross-reference-SA-PREP-1-speaker-id-registry; voice-check-tokenization-gotcha
 - Decisions_locked: 0 (all 7 decisions already locked in prior planning pass)
