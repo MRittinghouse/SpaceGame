@@ -368,7 +368,7 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 - Started: 2026-04-26 22:30
 - Completed: 2026-04-26 22:35
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending
+- Commits: a6448e4
 - New_sprints_proposed: none
 - Polish_items_folded_in: dwell-on-view-exit, dwell-on-replacement-click, telemetry-IO-error-robustness
 - Decisions_locked: 6 (reconfirmed from prior recovery cache; no new locks needed)
