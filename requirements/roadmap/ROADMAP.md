@@ -1540,7 +1540,7 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 - Started: 2026-04-27 15:19
 - Completed: 2026-04-27 15:55
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending (this phase commit)
+- Commits: 0189765
 - New_sprints_proposed: none
 - Polish_items_folded_in: PT-M tutorial tip flag spec (`seen_politics_venue_tip`, `seen_argument_composer_tip`) + draft tip text; three journal-entry slots (first-attended, first-partial, first-coalition-won); two crew-banter slots (Desta corridor, Cass mediation); news-ticker template format + headline threshold; empty / loading / locked / error UI states named in section 8
 - Decisions_locked: 9
