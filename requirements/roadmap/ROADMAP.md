@@ -691,7 +691,7 @@ The following decisions were locked during planning:
 
 #### SA-C1 — Skill tree extension design
 
-**Status**: in-progress (implementing)
+**Status**: in-progress (reviewing)
 **Phase**: Phase C | **Size**: S | **Effort**: 3-5 days
 **Depends on**: SA-PREP-2 | **Blocks**: SA-C2
 
@@ -788,24 +788,24 @@ The following decisions were locked during planning:
 - 2026-04-27 11:42 — planning complete; verified all 8 context-to-read paths exist (incl. `sa_crew_design.md` from SA-A1 done state); locked 8 decisions covering skill set count, tree placement, capstone count, naming collisions, magnitude bounds, max_level cap, save migration, and view code untouched; tightened acceptance criteria from 4 vague items to 10 mechanically verifiable ones; folded in 4 polish items (bonus-naming convention table, collision-check section, save-migration analysis, handoff checklist for SA-C2) into the deliverable rather than spawning new sprints; no scope expansion outside the SA-C1 design surface; no new sprints proposed. PHASE_OK
 - 2026-04-27 11:16 — harness: implement phase starting (rework cycle 0)
 - 2026-04-27 — implement: authored requirements/sa_skill_design.md; seven skill blocks complete with all required fields; bonus-naming table, collision check, tree-population analysis, capstone analysis, save-migration analysis, cross-reference matrix, and SA-C2 handoff checklist all authored; Writing Bible voice check clean; test suite 8430/98 unchanged. PHASE_OK
+- 2026-04-27 11:30 — harness: review phase starting (rework cycle 0)
+- 2026-04-27 11:34 — review complete; all 10 acceptance criteria verified against live code and data; 4/4 planner-folded polish items confirmed present; Writing Bible regex check clean; test suite 8430/98 at baseline; no findings critical; zero minor fixes needed. Single tighten: Section 8 handoff checklist (item 2) specifies progression model tests for coalition_size_bonus returning 0.5 at level 1, but does not flag that the consumer view's integer-floor of the stacked float needs a dedicated integration test — SA-C2 should add this when implementing the consuming view, otherwise the "level-1 skill alone yields +0 delegates" edge case goes untested. Not a blocker. PHASE_OK
 
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-04-27 11:16
-- Completed: 2026-04-27
-- Files_changed: requirements/sa_skill_design.md
-- Commits: b605f9e
-- Tests_added: 0
-- Tests_baseline: 8430
+- Started: 2026-04-27 11:30
+- Completed: 2026-04-27 11:34
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: none
 - Tests_passing: 8430
-- Tests_skipped: 98
-- Lint_clean: n/a (design-only sprint, no code changed)
-- Format_clean: n/a (design-only sprint, no code changed)
-- SI3_scanner_clean: n/a (no flags added or modified)
-- Writing_bible_clean: yes (manual regex check clean on sa_skill_design.md)
-- Touch_zones_respected: yes (only requirements/sa_skill_design.md created)
-- Notes: Seven new Tier 2 skill nodes designed (lot_appraiser, coalition_sway, delegate_reach, mediation_instinct, spread_trader, research_yield, research_oversight). All 10 acceptance criteria satisfied: skill blocks complete with all fields (AC 1); seven "both"-source bonus_type strings mapped 1-to-1 with sa_crew_design.md section 2 (AC 2); three binary intel bonus_type strings confirmed crew-only in v1 (AC 3); collision check explicit per ID and bonus_type (AC 4); tree-population table with pre/post counts (AC 5); capstone analysis confirms no new Tier 3 nodes and _CAPSTONE_IDS unchanged (AC 6); save-migration analysis confirms no _SKILL_MIGRATION_MAP entries needed (AC 7); cross-reference matrix plus SA-C2 handoff checklist (AC 8); Writing Bible voice check clean (AC 9); test suite at baseline 8430/98 (AC 10).
+- Acceptance_criteria_verified: 10/10
+- Polish_items_verified: 4/4
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 0
+- Single_tighten: Section 8 handoff checklist item 2 specifies progression model tests for coalition_size_bonus (returns 0.5 at level 1) but does not flag the consumer-view floor integration test needed to verify "level-1 alone yields +0 delegates" — SA-C2 should add this when building the consuming view.
+- Followup_sprints_added: none
+- Notes: Clean design sprint. All seven skill blocks accurate against live progression.py and crew_members.json. Prerequisite IDs verified present. Bonus type string spellings verified exact match in both directions.
 #### SA-C2 — Skill tree extension implementation
 
 **Status**: todo
