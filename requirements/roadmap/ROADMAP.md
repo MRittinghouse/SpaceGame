@@ -174,7 +174,7 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 
 #### SA-PREP-2 — Existing-data audit
 
-**Status**: in-progress (planning)
+**Status**: in-progress (implementing)
 **Phase**: Phase 0 | **Size**: S | **Effort**: 3-5 days
 **Depends on**: none | **Blocks**: SA-A1, SA-C1, SA-0
 
@@ -267,18 +267,28 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 - 2026-04-26 — plan content recovered; ready for re-pickup by harness (next plan phase will see substantive existing plan and confirm/refine)
 - 2026-04-26 21:22 — harness: plan phase starting
 - 2026-04-26 21:26 — planning confirmed; verified all 14 context-to-read paths exist (incl. 11 encounters files); refreshed test-suite baseline (8304 → 8326) in step 9 + acceptance criterion 9 to match SA-PREP-1 done state; added SA-PREP-1 speaker_id-registry cross-reference to step 2; added voice-check tokenization gotcha so the audit-doc author does not trip the ` -- ` regex on inline compound words. No scope expansion, no new sprints proposed. PHASE_OK
+- 2026-04-26 21:27 — harness: implement phase starting (rework cycle 0)
+- 2026-04-26 — implement: audited all 11 subjects across 10 data surfaces; key finding: all unique anchor location_ids are absent from encounter, dialogue, chatter, ambient, and news data; all references are system-level or speaker-home linkages
+- 2026-04-26 — implement: authored requirements/sa_audit_findings.md (640+ lines); 11 per-anchor sections, cross-cutting summary table, sub-faction catalog, 6-behavior regression checklist, 5-step save-state baseline procedure; voice-check clean (zero em-dashes, banned phrases, parallel negation)
+- 2026-04-26 — implement: test suite 8326 passed, 98 skipped; no regressions; lint/format n/a (docs-only sprint, no Python files touched). PHASE_OK
 
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-04-26 21:22
-- Completed: 2026-04-26 21:26
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 2690d52
-- New_sprints_proposed: none
-- Polish_items_folded_in: cross-reference-SA-PREP-1-speaker-id-registry; voice-check-tokenization-gotcha
-- Decisions_locked: 0 (all 7 decisions already locked in prior planning pass)
-- Notes: Sprint plan was fully built in a prior recovered planning pass (7 decisions locked, 11 audit subjects defined, per-anchor structure with gaps subsection, voice-check method, procedural save baseline). This pass confirms context-doc availability, refreshes the stale 8304 baseline to 8326, and threads SA-PREP-1's now-shipped speaker_id registry into step 2's NPC home-mapping task so the audit inherits the canonical IDs instead of re-deriving them. No scope changes; no new sprints needed.
+- Started: 2026-04-26 21:27
+- Completed: 2026-04-26 22:15
+- Files_changed: requirements/sa_audit_findings.md, requirements/roadmap/ROADMAP.md
+- Commits: (see below)
+- Tests_added: 0
+- Tests_baseline: 8326
+- Tests_passing: 8326
+- Tests_skipped: 98
+- Lint_clean: n/a (no Python files touched)
+- Format_clean: n/a (no Python files touched)
+- SI3_scanner_clean: n/a (no dialogue flags added or modified)
+- Writing_bible_clean: yes (zero em-dashes, zero banned phrases, zero parallel-negation patterns in sa_audit_findings.md)
+- Touch_zones_respected: yes (only requirements/sa_audit_findings.md created; ROADMAP.md activity log updated per instructions)
+- Notes: Audit doc covers all 11 subjects (10 unique anchor locations + Cargo Broker). Cross-cutting finding: unique anchor location_ids do not appear in any encounter, dialogue tree, chatter, ambient, or news content; all references are system-level or speaker-home. Sub-faction catalog confirms no membership infrastructure exists in code. Regression checklist has 6 behaviors spanning 5 anchor locations. Save-state baseline is a 5-step procedural recipe. All 9 acceptance criteria satisfied.
 
 #### SA-PREP-3 — Playtest baseline telemetry
 
