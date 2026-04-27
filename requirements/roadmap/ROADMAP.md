@@ -33,7 +33,7 @@ The SA-arc table below is **auto-regenerated** by the ralph harness from the spr
 | [SA-A2](#sa-a2--crew-template-implementation) | Crew template implementation | A | M | done | SA-A1 |
 | [SA-B-EXT-1](#sa-b-ext-1--sub-reputation-system) | Sub-reputation system | B | M | done | none |
 | [SA-C1](#sa-c1--skill-tree-extension-design) | Skill tree extension design | C | S | done | SA-PREP-2 |
-| [SA-C2](#sa-c2--skill-tree-extension-implementation) | Skill tree extension implementation | C | M | todo | SA-C1 |
+| [SA-C2](#sa-c2--skill-tree-extension-implementation) | Skill tree extension implementation | C | M | done | SA-C1 |
 | [SA-0](#sa-0--cluster-a-confirmation-pass) | Cluster A confirmation pass | I | S | todo | SA-PREP-2 |
 | [SA-1](#sa-1--wreckers-guild-hall-salvage-contracts) | Wreckers' Guild Hall (Salvage Contracts) | I | L | todo | SA-PREP-1, SA-A2, SA-B-EXT-1 |
 | [SA-2](#sa-2--deep-shafts-memorial--pilgrimage) | Deep Shafts memorial / pilgrimage | I | L | todo | SA-PREP-1 |
@@ -808,7 +808,7 @@ The following decisions were locked during planning:
 - Notes: Clean design sprint. All seven skill blocks accurate against live progression.py and crew_members.json. Prerequisite IDs verified present. Bonus type string spellings verified exact match in both directions.
 #### SA-C2 — Skill tree extension implementation
 
-**Status**: in-progress (reviewing)
+**Status**: done
 **Phase**: Phase C | **Size**: M | **Effort**: 5-7 days
 **Depends on**: SA-C1 | **Blocks**: SA-P1, SA-P2, SA-B2, SA-F1, SA-R1
 
@@ -892,7 +892,7 @@ The following decisions were locked during planning:
 - 2026-04-27 — Full suite: 8479 passed, 98 skipped (baseline 8430 + 49 new SA-C2 tests). Writing Bible: 17/17 passed. SI-3 scanner: 14/14 passed. All 10 ACs verified. PHASE_OK
 - 2026-04-27 11:59 — harness: review phase starting (rework cycle 0)
 - 2026-04-27 12:30 — review complete; all 10 ACs verified; no critical findings; no fixes applied. Single tighten noted (layout test replicates algorithm rather than calls it). PHASE_OK
-
+- 2026-04-27 12:05 — harness: review passed, marking done
 **Last phase report.**
 - Phase: review
 - Outcome: PHASE_OK
