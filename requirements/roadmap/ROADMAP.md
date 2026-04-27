@@ -1296,7 +1296,7 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 
 #### SA-V — Cargo Broker arc + Investment Introduction
 
-**Status**: in-progress (implementing)
+**Status**: in-progress (reviewing)
 **Phase**: Phase I | **Size**: M | **Effort**: 1.5 weeks
 **Depends on**: SA-PREP-1 | **Blocks**: SA-F3 (Meridian + Cargo Broker graduation)
 
@@ -1408,24 +1408,24 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 - 2026-04-27 15:40 — auto_sa_v_longer_ledger journal entry added; PT-M investment tip wired in station_hub_view; commit 76e42b5
 - 2026-04-27 15:50 — scenario test written (46 cases, all green); fix: literal legacy id in assertion replaced with runtime-concat; ruff format applied; commit 92bc37c, bf1af90
 - 2026-04-27 15:55 — full suite: 8769 passed (baseline 8716, +53), 98 skipped; lint clean; format clean; SI-3 clean; Writing Bible clean; all touch zones respected. PHASE_OK
+- 2026-04-27 15:10 — harness: review phase starting (rework cycle 0)
+- 2026-04-27 16:20 — review complete; 0 critical findings, 0 minor fixes; all 12 acceptance criteria verified. Single tighten noted (see report). PHASE_OK
 
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-04-27 14:50
-- Completed: 2026-04-27 15:55
-- Files_changed: spacegame/constants/flags.py, data/characters/npcs.json, data/dialogue/dialogues.json, spacegame/engine/game.py, tools/generate_sprites.py, tests/test_views/test_cantina_npc_filtering.py, requirements/character_voices.md, tests/test_constants/test_flags.py, tests/test_data/test_speaker_id_rename_complete.py, data/missions/sa_v_investment_intro.json, spacegame/data_loader.py, data/journal/entries.json, spacegame/views/station_hub_view.py, tests/test_scenarios/test_scenario_sa_v_investment_intro.py
-- Commits: e3849e1, 51c85fd, 76e42b5, 92bc37c, bf1af90
-- Tests_added: 53
-- Tests_baseline: 8716
+- Started: 2026-04-27 15:10
+- Completed: 2026-04-27 16:20
+- Files_changed: none
+- Commits: none
 - Tests_passing: 8769
-- Tests_skipped: 98
-- Lint_clean: yes
-- Format_clean: yes
-- SI3_scanner_clean: yes
-- Writing_bible_clean: yes
-- Touch_zones_respected: yes
-- Notes: Renamed delivery_merchant→odom_broker across all 6 consumers (npcs.json, dialogues.json x11, game.py, generate_sprites.py, test_cantina, character_voices.md). Added ongoing_greet/investment_intro/investment_intro_venues/graduation_pointer nodes + gated greet response. Created the_longer_ledger mission (auto_accept, has_flag objective, 25 XP + investment_introduced). Wired PT-M FirstTimeTipOverlay on first investment-card click (seen_investment_tip gate). Added auto_sa_v_longer_ledger journal entry. All 12 acceptance criteria satisfied by 53 new tests across flag/rename/scenario layers.
+- Acceptance_criteria_verified: 12/12
+- Polish_items_verified: 2/2
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 0
+- Single_tighten: In `ongoing_greet`, both response paths that lead to different nodes share the same player text ("What's in the longer ledger?"). After investment_introduced is set the player wouldn't ask the same question again — a distinct response like "You mentioned something called Meridian…" would better reflect their state. Not a blocker; flags and routing are correct.
+- Followup_sprints_added: none
+- Notes: All 12 ACs verified: NPC rename complete (zero delivery_merchant refs in source), iron-delivery regression green, 4 dialogue branches correctly gated, mission loads with correct prereqs/objective/rewards/auto_accept, all 10 investment systems unlock via flag at zero credits, graduation_pointer names Meridian+Ilse Vey with no new flags, PT-M tip fires-once semantics verified across 5 view-level cases, journal entry fields and voice register clean, SI-3 and Writing Bible scanners both pass. generate_sprites.py lint errors are pre-existing (SA-V changed one line there). Mypy errors in game.py and station_hub_view.py are pre-existing. +53 tests, baseline met.
 
 ### Phase II — Politics System
 
