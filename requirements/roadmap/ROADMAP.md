@@ -32,7 +32,7 @@ The SA-arc table below is **auto-regenerated** by the ralph harness from the spr
 | [SA-A1](#sa-a1--crew-specialization-design) | Crew specialization design | A | S | done | SA-PREP-2 |
 | [SA-A2](#sa-a2--crew-template-implementation) | Crew template implementation | A | M | done | SA-A1 |
 | [SA-B-EXT-1](#sa-b-ext-1--sub-reputation-system) | Sub-reputation system | B | M | done | none |
-| [SA-C1](#sa-c1--skill-tree-extension-design) | Skill tree extension design | C | S | todo | SA-PREP-2 |
+| [SA-C1](#sa-c1--skill-tree-extension-design) | Skill tree extension design | C | S | done | SA-PREP-2 |
 | [SA-C2](#sa-c2--skill-tree-extension-implementation) | Skill tree extension implementation | C | M | todo | SA-C1 |
 | [SA-0](#sa-0--cluster-a-confirmation-pass) | Cluster A confirmation pass | I | S | todo | SA-PREP-2 |
 | [SA-1](#sa-1--wreckers-guild-hall-salvage-contracts) | Wreckers' Guild Hall (Salvage Contracts) | I | L | todo | SA-PREP-1, SA-A2, SA-B-EXT-1 |
@@ -691,7 +691,7 @@ The following decisions were locked during planning:
 
 #### SA-C1 — Skill tree extension design
 
-**Status**: in-progress (reviewing)
+**Status**: done
 **Phase**: Phase C | **Size**: S | **Effort**: 3-5 days
 **Depends on**: SA-PREP-2 | **Blocks**: SA-C2
 
@@ -790,7 +790,7 @@ The following decisions were locked during planning:
 - 2026-04-27 — implement: authored requirements/sa_skill_design.md; seven skill blocks complete with all required fields; bonus-naming table, collision check, tree-population analysis, capstone analysis, save-migration analysis, cross-reference matrix, and SA-C2 handoff checklist all authored; Writing Bible voice check clean; test suite 8430/98 unchanged. PHASE_OK
 - 2026-04-27 11:30 — harness: review phase starting (rework cycle 0)
 - 2026-04-27 11:34 — review complete; all 10 acceptance criteria verified against live code and data; 4/4 planner-folded polish items confirmed present; Writing Bible regex check clean; test suite 8430/98 at baseline; no findings critical; zero minor fixes needed. Single tighten: Section 8 handoff checklist (item 2) specifies progression model tests for coalition_size_bonus returning 0.5 at level 1, but does not flag that the consumer view's integer-floor of the stacked float needs a dedicated integration test — SA-C2 should add this when implementing the consuming view, otherwise the "level-1 skill alone yields +0 delegates" edge case goes untested. Not a blocker. PHASE_OK
-
+- 2026-04-27 11:35 — harness: review passed, marking done
 **Last phase report.**
 - Phase: review
 - Outcome: PHASE_OK
