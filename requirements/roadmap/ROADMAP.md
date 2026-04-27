@@ -479,7 +479,7 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 
 #### SA-A2 — Crew template implementation
 
-**Status**: review
+**Status**: in-progress (reviewing)
 **Phase**: Phase A | **Size**: M | **Effort**: 5-7 days
 **Depends on**: SA-A1 | **Blocks**: SA-1, SA-P2, SA-B2, SA-X6
 
@@ -568,24 +568,23 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 - 2026-04-26 23:35 — planning complete; locked 6 decisions (no SA-A2 flag-gating, voice-sheet section/format, ambient banter quantity/contexts/anchors, JSON schema fidelity / no save migration, test coverage scope, bonus-string collision regression scope); folded in 4 polish items (DataLoader smoke test fold-in, cross-reference smoke tests for crew templates, bonus-string collision regression test, "Bonus Domain" footer on voice sheets); refined ACs from 5 to 13 to make every deliverable mechanically verifiable; expanded Touch zones to add `data/crew/ambient_dialogue.json` and `tests/test_data/test_cross_references.py`; verified all 12 Context-to-read entries exist on disk including the SA-A1 design doc. PHASE_OK
 - 2026-04-26 22:55 — harness: implement phase starting (rework cycle 0)
 - 2026-04-26 — implement phase: TDD red (TestSAArcSpecialists 17 tests, all failing KeyError/None); JSON 5 templates authored; tests turn green; voice sheets authored (Writing Bible clean); 25 ambient banter lines authored; TestCrewCrossReferences 2 tests added; pre-existing faction_id bug fixed (industrial_union -> miners_union in 4 existing templates, corrected count assertions in test_crew_data.py and test_crew_quests.py); full suite 8367/98 (baseline 8348/98, +19). All 13 ACs satisfied. PHASE_OK
+- 2026-04-26 23:13 — harness: review phase starting (rework cycle 0)
+- 2026-04-26 23:16 — review complete; all 13 ACs verified, all 4 planner polish items delivered, 0 critical findings, 0 minor findings. Writing Bible scanner 17/17. Full suite 8367/98. JSON data, tests, voice sheets, ambient banter all confirmed correct against SA-A1 spec. PHASE_OK
 
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-04-26 22:55
-- Completed: 2026-04-26 (same day)
-- Files_changed: data/crew/crew_members.json, data/crew/ambient_dialogue.json, requirements/character_voices.md, tests/test_models/test_crew.py, tests/test_data/test_cross_references.py, tests/test_data/test_crew_data.py (minor out-of-zone), tests/test_models/test_crew_quests.py (minor out-of-zone)
-- Commits: 860088a, b056baf, 4b1dece, d631829, 71d30d0
-- Tests_added: 19
-- Tests_baseline: 8348
+- Started: 2026-04-26 23:13
+- Completed: 2026-04-26 23:16
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: none
 - Tests_passing: 8367
-- Tests_skipped: 98
-- Lint_clean: yes
-- Format_clean: yes
-- SI3_scanner_clean: n/a
-- Writing_bible_clean: yes
-- Touch_zones_respected: yes (two small out-of-zone fixes noted: test_crew_data.py count assertions + test_crew_quests.py faction assertion, both 1-2 line corrections necessitated by data fix)
-- Notes: Five SA arc specialist crew templates (Sable Trent, Desta Coll, Cass Weller, Brix Tano, Nuri Solberg) implemented per SA-A1 spec. No Python model changes; existing crew.py / data_loader.py paths handle the new entries unchanged. TestSAArcSpecialists covers all 13 ACs. Pre-existing faction_id data bug (industrial_union does not exist in factions) discovered and fixed as part of cross-reference test authoring; fix is in touch-zone (crew_members.json).
+- Acceptance_criteria_verified: 13/13
+- Polish_items_verified: 4/4
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 0
+- Followup_sprints_added: none
+- Notes: All five SA arc specialist crew templates implement per SA-A1 spec with correct bonus types, magnitudes, home systems, and faction IDs. Voice sheets follow established character_voices.md convention. 25 ambient banter lines with correct context coverage. Pre-existing mypy and lint issues are unrelated to SA-A2 touch zones.
 ### Phase B — Sub-Reputation System Extension
 
 #### SA-B-EXT-1 — Sub-reputation system
