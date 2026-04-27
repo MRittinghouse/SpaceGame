@@ -41,7 +41,7 @@ The SA-arc table below is **auto-regenerated** by the ralph harness from the spr
 | [SA-P1](#sa-p1--politics-system-design) | Politics System Design | II | M | done | SA-PREP-1, SA-C2 |
 | [SA-P2](#sa-p2--politics-core) | Politics Core | II | XL | done | SA-P1, SA-A2, SA-C2, SA-B-EXT-1 |
 | [SA-P3](#sa-p3--mayors-council-chamber-verdant-venue) | Mayors' Council Chamber (Verdant Venue) | II | L | done | SA-P2 |
-| [SA-P4](#sa-p4--alliance-congress-hall-havens-rest-venue) | Alliance Congress Hall (Haven's Rest Venue) | II | L | todo | SA-P2, SA-P3 |
+| [SA-P4](#sa-p4--alliance-congress-hall-havens-rest-venue) | Alliance Congress Hall (Haven's Rest Venue) | II | L | done | SA-P2, SA-P3 |
 | [SA-P5](#sa-p5--wreckers-guild-gray-market-mediation-venue) | Wreckers' Guild gray-market mediation venue | II | M | todo | SA-P2, SA-1 |
 | [SA-P6](#sa-p6--politics-polish--tuning) | Politics polish + tuning | II | M | todo | SA-P3, SA-P4, SA-P5 |
 | [SA-B1](#sa-b1--bidding-system-design) | Bidding System Design | III | M | todo | SA-PREP-1 |
@@ -1939,7 +1939,7 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 - Notes: Clean implementation. All 20 acceptance criteria met. Eight Verdant dispute templates, four voice-consistent corridor dialogue trees, tutorial overlays byte-for-byte to spec, engine outcome flags idempotent, SA-P2 baseline preserved, Writing Bible and SI-3 scanners both clean.
 #### SA-P4 — Alliance Congress Hall (Haven's Rest Venue)
 
-**Status**: in-progress (reviewing)
+**Status**: done
 **Phase**: Phase II | **Size**: L | **Effort**: 2 weeks
 **Depends on**: SA-P2, SA-P3 | **Blocks**: SA-P6
 
@@ -2113,7 +2113,7 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 - 2026-04-27 19:30 — implementation complete; full suite green at 9024 passes (baseline 8948 → +76 new tests; skip count 98 unchanged); ruff format / check / scanner / writing-bible / dialogue-integrity all clean over touched files. PHASE_OK
 - 2026-04-27 18:33 — harness: review phase starting (rework cycle 0)
 - 2026-04-27 18:55 — review complete; all 23 acceptance criteria verified; 9024 tests passing (baseline 8948, +76 new); SA-P3 baseline 15 tests unchanged; ruff/Writing Bible/SI-3 scanners all clean; one minor narrative observation noted (single-tighten); zero critical findings. PHASE_OK
-
+- 2026-04-27 18:41 — harness: review passed, marking done
 **Last phase report.**
 - Phase: review
 - Outcome: PHASE_OK
