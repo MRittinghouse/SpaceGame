@@ -95,9 +95,7 @@ def _load_prompt_template(phase: Phase) -> str:
     return template_path.read_text(encoding="utf-8")
 
 
-def _build_prompt(
-    phase: Phase, sprint_id: str, context: Optional[PhaseContext] = None
-) -> str:
+def _build_prompt(phase: Phase, sprint_id: str, context: Optional[PhaseContext] = None) -> str:
     """Build the full prompt for a phase by substituting sprint context
     into the template. If `context` is provided, append a baseline
     addendum so the agent knows what the pre-sprint test state was.
@@ -238,9 +236,7 @@ def _scan_for_sentinels(text: str) -> list[tuple[Outcome, str]]:
             matches.append((Outcome.BLOCKED, reason or "agent reported blocked"))
         elif AGENT_OUTCOME_NEEDS_REWORK in line:
             reason = line.split(AGENT_OUTCOME_NEEDS_REWORK, 1)[-1].lstrip(": -").strip()
-            matches.append(
-                (Outcome.NEEDS_REWORK, reason or "agent reported rework needed")
-            )
+            matches.append((Outcome.NEEDS_REWORK, reason or "agent reported rework needed"))
     return matches
 
 
@@ -380,9 +376,7 @@ def _commits_since(sha: str, sprint_id: str) -> list[str]:
         return []
 
 
-def run_phase(
-    phase: Phase, sprint_id: str, context: Optional[PhaseContext] = None
-) -> PhaseResult:
+def run_phase(phase: Phase, sprint_id: str, context: Optional[PhaseContext] = None) -> PhaseResult:
     """Invoke the agent for the given phase against the given sprint.
 
     Wraps subprocess invocation with:
@@ -465,9 +459,7 @@ def run_phase(
             try:
                 roadmap_state.restore_roadmap(pre_snapshot)
                 with log_path.open("a", encoding="utf-8") as f:
-                    f.write(
-                        f"\n--- ROADMAP VALIDATION FAILURE — RESTORED SNAPSHOT ---\n{e}\n"
-                    )
+                    f.write(f"\n--- ROADMAP VALIDATION FAILURE — RESTORED SNAPSHOT ---\n{e}\n")
             except OSError as restore_err:
                 with log_path.open("a", encoding="utf-8") as f:
                     f.write(
@@ -492,12 +484,7 @@ def run_phase(
     # Sentinel cross-validation (item E): a PHASE_OK on a phase that
     # should have produced commits must show at least one. If no commit
     # references the sprint ID, override the OK to ERROR.
-    if (
-        outcome == Outcome.OK
-        and not DRY_RUN
-        and context is not None
-        and context.pre_phase_head
-    ):
+    if outcome == Outcome.OK and not DRY_RUN and context is not None and context.pre_phase_head:
         commits = _commits_since(context.pre_phase_head, sprint_id)
         if not commits:
             with log_path.open("a", encoding="utf-8") as f:

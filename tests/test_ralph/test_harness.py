@@ -163,6 +163,71 @@ class TestReconcileStaleState:
 
 
 # ---------------------------------------------------------------------------
+# Harness bookkeeping commits
+# ---------------------------------------------------------------------------
+
+
+class TestCommitHarnessBookkeeping:
+    """The helper commits ROADMAP.md drift the harness writes after the
+    agent's last commit (terminal status, post-sprint index regen, etc).
+    """
+
+    def test_no_op_when_roadmap_clean(self, isolated_roadmap) -> None:
+        # status --porcelain returns empty string -> nothing to commit.
+        with patch.object(harness, "_run_git") as mock_git:
+            mock_git.return_value = (0, "", "")
+            committed = harness._commit_harness_bookkeeping("SA-1", "test no-op")
+            assert committed is False
+            # Only `git status` should have been invoked.
+            assert mock_git.call_count == 1
+            assert mock_git.call_args.args[0][0] == "status"
+
+    def test_commits_when_roadmap_dirty(self, isolated_roadmap) -> None:
+        # status --porcelain shows ROADMAP modified -> add + commit.
+        responses = [
+            (0, " M requirements/roadmap/ROADMAP.md\n", ""),  # status
+            (0, "", ""),  # add
+            (0, "", ""),  # commit
+        ]
+        with patch.object(harness, "_run_git", side_effect=responses) as mock_git:
+            committed = harness._commit_harness_bookkeeping("SA-1", "finalize sprint")
+            assert committed is True
+            assert mock_git.call_count == 3
+            # Final call: git commit -m with our prefixed message.
+            commit_args = mock_git.call_args_list[2].args[0]
+            assert commit_args[0] == "commit"
+            assert commit_args[1] == "-m"
+            assert "ralph(harness)" in commit_args[2]
+            assert "SA-1" in commit_args[2]
+            assert "finalize sprint" in commit_args[2]
+
+    def test_returns_false_on_status_failure(self, isolated_roadmap) -> None:
+        with patch.object(harness, "_run_git") as mock_git:
+            mock_git.return_value = (1, "", "git error")
+            committed = harness._commit_harness_bookkeeping("SA-1", "test")
+            assert committed is False
+
+    def test_returns_false_on_add_failure(self, isolated_roadmap) -> None:
+        responses = [
+            (0, " M requirements/roadmap/ROADMAP.md\n", ""),  # status
+            (1, "", "add failed"),  # add
+        ]
+        with patch.object(harness, "_run_git", side_effect=responses):
+            committed = harness._commit_harness_bookkeeping("SA-1", "test")
+            assert committed is False
+
+    def test_returns_false_on_commit_failure(self, isolated_roadmap) -> None:
+        responses = [
+            (0, " M requirements/roadmap/ROADMAP.md\n", ""),  # status
+            (0, "", ""),  # add
+            (1, "", "commit failed"),  # commit
+        ]
+        with patch.object(harness, "_run_git", side_effect=responses):
+            committed = harness._commit_harness_bookkeeping("SA-1", "test")
+            assert committed is False
+
+
+# ---------------------------------------------------------------------------
 # Lock file
 # ---------------------------------------------------------------------------
 

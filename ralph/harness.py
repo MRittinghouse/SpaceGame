@@ -81,9 +81,7 @@ class HarnessState:
         if not STATE_FILE.exists():
             return cls()
         raw = json.loads(STATE_FILE.read_text(encoding="utf-8"))
-        sprints = {
-            sid: SprintState(**sd) for sid, sd in raw.get("sprints", {}).items()
-        }
+        sprints = {sid: SprintState(**sd) for sid, sd in raw.get("sprints", {}).items()}
         return cls(
             sprints=sprints,
             total_sprints_processed=raw.get("total_sprints_processed", 0),
@@ -96,9 +94,7 @@ class HarnessState:
             "total_sprints_processed": self.total_sprints_processed,
             "last_run_started_at": self.last_run_started_at,
         }
-        STATE_FILE.write_text(
-            json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8"
-        )
+        STATE_FILE.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
 
     def for_sprint(self, sprint_id: str) -> SprintState:
         if sprint_id not in self.sprints:
@@ -182,9 +178,7 @@ def execute_sprint(
     # ---- Phase 1: Plan ----
     log(f"{sprint_id}: phase=plan starting")
     roadmap_state.update_status(sprint_id, STATUS_PLANNING)
-    roadmap_state.append_activity_log(
-        sprint_id, "harness: plan phase starting"
-    )
+    roadmap_state.append_activity_log(sprint_id, "harness: plan phase starting")
     plan_result = agents.run_phase(Phase.PLAN, sprint_id, context=phase_context)
     sprint_state.plan_runs += 1
     sprint_state.last_phase = "plan"
@@ -205,9 +199,7 @@ def execute_sprint(
         return plan_result.outcome
 
     if should_stop():
-        roadmap_state.append_activity_log(
-            sprint_id, "harness: stop requested after plan phase"
-        )
+        roadmap_state.append_activity_log(sprint_id, "harness: stop requested after plan phase")
         return Outcome.OK  # Plan phase succeeded; stopping here is clean.
 
     # ---- Phase 2 + 3: Implement → Review (with bounded rework) ----
@@ -265,9 +257,7 @@ def execute_sprint(
 
         if review_result.outcome == Outcome.OK:
             roadmap_state.update_status(sprint_id, STATUS_DONE)
-            roadmap_state.append_activity_log(
-                sprint_id, "harness: review passed, marking done"
-            )
+            roadmap_state.append_activity_log(sprint_id, "harness: review passed, marking done")
             return Outcome.OK
 
         if review_result.outcome == Outcome.NEEDS_REWORK:
@@ -302,9 +292,7 @@ def execute_sprint(
 
     # Should be unreachable due to the cap-check above, but defend anyway.
     roadmap_state.update_status(sprint_id, STATUS_BLOCKED)
-    roadmap_state.append_activity_log(
-        sprint_id, "harness: rework loop exited unexpectedly"
-    )
+    roadmap_state.append_activity_log(sprint_id, "harness: rework loop exited unexpectedly")
     return Outcome.BLOCKED
 
 
@@ -426,9 +414,7 @@ def _preflight_checks(allow_dirty: bool, push_enabled: bool, probe_writes: bool)
         # 6. Origin remote configured.
         rc, _stdout, _stderr = _run_git(["remote", "get-url", "origin"], timeout=10)
         if rc != 0:
-            log(
-                "No 'origin' remote configured. Either add origin or pass --no-push."
-            )
+            log("No 'origin' remote configured. Either add origin or pass --no-push.")
             return 2
 
     # 7. Claude CLI available (best-effort).
@@ -573,9 +559,7 @@ def _probe_claude_write_permission() -> tuple[bool, str]:
                 f.write(f"\n--- claude CLI not found: {e} ---\n")
                 return False, f"claude CLI not found on PATH: {e}"
             except subprocess.TimeoutExpired:
-                f.write(
-                    f"\n--- TIMEOUT after {PROBE_TIMEOUT_SECONDS}s ---\n"
-                )
+                f.write(f"\n--- TIMEOUT after {PROBE_TIMEOUT_SECONDS}s ---\n")
                 return False, (
                     f"probe timed out after {PROBE_TIMEOUT_SECONDS}s. "
                     f"The agent did not respond — check {log_path}."
@@ -772,6 +756,43 @@ def _recover_stuck_sprints(state: "HarnessState") -> int:
     return recovered
 
 
+def _commit_harness_bookkeeping(sprint_id: str, summary: str) -> bool:
+    """Commit any pending harness-authored ROADMAP.md changes.
+
+    The harness writes to ROADMAP.md at phase transitions (status updates,
+    activity-log entries, index regeneration). When those writes happen
+    AFTER the last agent commit of a sprint, they otherwise sit
+    uncommitted and pollute the working tree of the next sprint. This
+    commits them with a `ralph(harness)` prefix so they're distinguishable
+    from agent commits.
+
+    Best-effort: returns True if a commit was made, False if there was
+    nothing to commit or the operation failed (logged on failure, never
+    raised).
+    """
+    roadmap_rel = ROADMAP_PATH.relative_to(PROJECT_ROOT).as_posix()
+    rc, status, _stderr = _run_git(["status", "--porcelain", "--", roadmap_rel], timeout=10)
+    if rc != 0:
+        log(f"{sprint_id}: harness bookkeeping git status failed; skipping commit")
+        return False
+    if not status.strip():
+        return False  # nothing to commit
+
+    rc, _stdout, stderr = _run_git(["add", "--", roadmap_rel], timeout=10)
+    if rc != 0:
+        log(f"{sprint_id}: harness bookkeeping git add failed: {stderr.strip()}")
+        return False
+
+    full_msg = f"ralph(harness): {sprint_id} -- {summary}"
+    rc, _stdout, stderr = _run_git(["commit", "-m", full_msg], timeout=30)
+    if rc != 0:
+        log(f"{sprint_id}: harness bookkeeping commit failed: {stderr.strip()}")
+        return False
+
+    log(f"{sprint_id}: committed harness bookkeeping ({summary})")
+    return True
+
+
 def _reconcile_stale_state(state: "HarnessState") -> int:
     """Clear stale `last_outcome` entries from state.json.
 
@@ -839,16 +860,10 @@ def _write_sprint_summary(
     if started:
         try:
             since_arg = started
-            rc, stdout, _stderr = _run_git(
-                ["log", "--oneline", f"--since={since_arg}"], timeout=10
-            )
+            rc, stdout, _stderr = _run_git(["log", "--oneline", f"--since={since_arg}"], timeout=10)
             if rc == 0:
                 # Filter for commits referencing this sprint ID.
-                relevant = [
-                    line
-                    for line in stdout.splitlines()
-                    if sprint_id in line
-                ]
+                relevant = [line for line in stdout.splitlines() if sprint_id in line]
                 if relevant:
                     commits_block = "\n".join(f"- {line}" for line in relevant)
         except Exception:
@@ -1005,9 +1020,20 @@ def main() -> int:
             recovered = _recover_stuck_sprints(state)
             if recovered:
                 log(f"Recovered {recovered} stuck sprint(s) from prior run.")
+                # Commit the recovery edits so they don't drift into
+                # the first agent's working tree.
+                try:
+                    _commit_harness_bookkeeping(
+                        "recovery",
+                        f"reset {recovered} stuck sprint(s) to todo",
+                    )
+                except Exception as e:
+                    log(f"recovery: harness bookkeeping commit failed: {e}")
             reconciled = _reconcile_stale_state(state)
             if reconciled:
-                log(f"Reconciled {reconciled} stale state entry/entries (todo in ROADMAP, error in state).")
+                log(
+                    f"Reconciled {reconciled} stale state entry/entries (todo in ROADMAP, error in state)."
+                )
 
         # Test baseline (item L). Captured once at startup; refreshed
         # after every successful sprint so the baseline tracks the
@@ -1016,9 +1042,7 @@ def main() -> int:
         if not args.dry_run and not DRY_RUN and not args.skip_baseline:
             log("Capturing test-suite baseline (this can take a minute)...")
             test_baseline = _capture_test_baseline()
-            log(
-                f"Baseline: {test_baseline[0]} passing, {test_baseline[1]} skipped."
-            )
+            log(f"Baseline: {test_baseline[0]} passing, {test_baseline[1]} skipped.")
 
         log(
             f"Harness starting. max_sprints={args.max_sprints} "
@@ -1048,14 +1072,10 @@ def main() -> int:
                     )
                     return 2
                 unmet = [
-                    d
-                    for d in target.depends_on
-                    if not sprints.get(d) or not sprints[d].is_done()
+                    d for d in target.depends_on if not sprints.get(d) or not sprints[d].is_done()
                 ]
                 if unmet:
-                    log(
-                        f"Forced sprint {args.sprint} has unmet dependencies: {unmet}. Aborting."
-                    )
+                    log(f"Forced sprint {args.sprint} has unmet dependencies: {unmet}. Aborting.")
                     return 2
                 picked = target
                 args.sprint = None
@@ -1067,9 +1087,7 @@ def main() -> int:
                 picked = eligible[0]
 
             log(f"Picking up sprint {picked.sprint_id}: {picked.title}")
-            outcome = execute_sprint(
-                picked.sprint_id, state, test_baseline=test_baseline
-            )
+            outcome = execute_sprint(picked.sprint_id, state, test_baseline=test_baseline)
             sprints_processed += 1
             state.total_sprints_processed += 1
             state.save()
@@ -1102,6 +1120,18 @@ def main() -> int:
                     log(f"{picked.sprint_id}: regenerated SA-arc index")
             except Exception as e:
                 log(f"{picked.sprint_id}: index regen failed: {e}")
+
+            # Commit harness bookkeeping (terminal status + index regen).
+            # Captures the post-agent ROADMAP edits the harness writes
+            # inline. Without this, those edits drift into the next
+            # sprint's working tree and trip the dirty-tree pre-flight.
+            try:
+                _commit_harness_bookkeeping(
+                    picked.sprint_id,
+                    f"finalize sprint (outcome={outcome.value})",
+                )
+            except Exception as e:
+                log(f"{picked.sprint_id}: harness bookkeeping commit failed: {e}")
 
             # Auto-push (item A) after sprint completion.
             _push_after_sprint(picked.sprint_id, outcome, push_enabled)

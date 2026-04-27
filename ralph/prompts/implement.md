@@ -41,6 +41,10 @@ Don't skip the failing-test step. The point is to know your test discriminates b
 - No emojis unless explicitly requested.
 - Cross-module flags go through `spacegame/constants/flags.py`.
 
+### Scope your formatter and linter calls
+
+When you run `ruff format` or `ruff check` during this phase, **target only the files you've changed in this sprint**, e.g. `ruff format spacegame/models/foo.py tests/test_models/test_foo.py`. Do **not** run `ruff format spacegame/ tests/` project-wide — that command from CLAUDE.md is for one-off human cleanup. In an agent context it can produce format diffs in files outside your touch zone, which sit uncommitted and pollute the working tree for the next sprint. If the project has any pre-existing drift, leave it alone; that's a separate sprint's concern.
+
 ### Touch zones
 
 Stay within the sprint's declared `Touch zones`. If you find you need to touch a file outside the declared zones:

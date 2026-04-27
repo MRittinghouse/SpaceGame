@@ -53,9 +53,7 @@ PHASE_TIMEOUT_REVIEW: int = int(os.environ.get("RALPH_TIMEOUT_REVIEW", 60 * 60))
 # Backward-compatible alias used by snapshot/restore error paths and
 # probe defaults — set to the largest of the three so anything keyed off
 # this value won't under-allocate.
-PHASE_TIMEOUT_SECONDS: int = max(
-    PHASE_TIMEOUT_PLAN, PHASE_TIMEOUT_IMPLEMENT, PHASE_TIMEOUT_REVIEW
-)
+PHASE_TIMEOUT_SECONDS: int = max(PHASE_TIMEOUT_PLAN, PHASE_TIMEOUT_IMPLEMENT, PHASE_TIMEOUT_REVIEW)
 
 # Sleep between sprint pickups to give the filesystem a moment to settle
 # (commits flushed, agent processes torn down). Seconds.
@@ -93,12 +91,8 @@ CLAUDE_CMD: list[str] = ["claude", "-p", "--dangerously-skip-permissions"]
 # Override per-phase via env vars (e.g., for a cost-saving run on a
 # small sprint backlog: RALPH_MODEL_PLAN=claude-sonnet-4-6).
 MODEL_PLAN: str = os.environ.get("RALPH_MODEL_PLAN", "claude-opus-4-7")
-MODEL_IMPLEMENT_DEFAULT: str = os.environ.get(
-    "RALPH_MODEL_IMPLEMENT_DEFAULT", "claude-sonnet-4-6"
-)
-MODEL_IMPLEMENT_HEAVY: str = os.environ.get(
-    "RALPH_MODEL_IMPLEMENT_HEAVY", "claude-opus-4-7"
-)
+MODEL_IMPLEMENT_DEFAULT: str = os.environ.get("RALPH_MODEL_IMPLEMENT_DEFAULT", "claude-sonnet-4-6")
+MODEL_IMPLEMENT_HEAVY: str = os.environ.get("RALPH_MODEL_IMPLEMENT_HEAVY", "claude-opus-4-7")
 MODEL_REVIEW: str = os.environ.get("RALPH_MODEL_REVIEW", "claude-sonnet-4-6")
 
 # Sprint sizes that bump the implement phase to the heavy model.

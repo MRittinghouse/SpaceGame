@@ -29,9 +29,7 @@ from ralph.config import ROADMAP_PATH, STATUS_DONE, STATUS_TODO
 # Writing Bible exempt design-doc context). The ID character class
 # (uppercase + digits + dashes) excludes phase-level headers like
 # `### Phase 0 — Pre-arc Preparation` because "Phase" contains lowercase.
-_SPRINT_HEADER_RE = re.compile(
-    r"^(####?) ([A-Z][A-Z0-9-]+)\s+—\s+(.+?)\s*$", re.MULTILINE
-)
+_SPRINT_HEADER_RE = re.compile(r"^(####?) ([A-Z][A-Z0-9-]+)\s+—\s+(.+?)\s*$", re.MULTILINE)
 
 # Status line within a sprint section. Must be on its own line, prefixed
 # with `**Status**:`. Captures the value (which may include parens for
@@ -117,9 +115,7 @@ def parse_sprints_from_text(content: str) -> dict[str, Sprint]:
         status_match = _STATUS_LINE_RE.search(section_text)
         status = status_match.group(1).strip() if status_match else "unknown"
 
-        depends_match = _DEPENDS_RE.search(section_text) or _DEPENDS_RE_END.search(
-            section_text
-        )
+        depends_match = _DEPENDS_RE.search(section_text) or _DEPENDS_RE_END.search(section_text)
         depends_on: list[str] = []
         if depends_match:
             raw = depends_match.group(1).strip()
@@ -208,13 +204,9 @@ def update_status(sprint_id: str, new_status: str) -> None:
         raise KeyError(f"Sprint {sprint_id} not found in roadmap")
 
     section_text = content[sprint.section_start : sprint.section_end]
-    new_section = _STATUS_LINE_RE.sub(
-        f"**Status**: {new_status}", section_text, count=1
-    )
+    new_section = _STATUS_LINE_RE.sub(f"**Status**: {new_status}", section_text, count=1)
 
-    new_content = (
-        content[: sprint.section_start] + new_section + content[sprint.section_end :]
-    )
+    new_content = content[: sprint.section_start] + new_section + content[sprint.section_end :]
     _write_roadmap(new_content)
 
 
@@ -240,9 +232,7 @@ def append_activity_log(sprint_id: str, line: str) -> None:
     if log_match is None:
         # Section doesn't have an Activity log block — append one at end.
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
-        new_section = section_text.rstrip() + (
-            f"\n\n**Activity log.**\n- {timestamp} — {line}\n"
-        )
+        new_section = section_text.rstrip() + (f"\n\n**Activity log.**\n- {timestamp} — {line}\n")
     else:
         # Find the end of the existing log block (continuous `- ` lines after the header).
         after_header = section_text[log_match.end() :]
@@ -267,9 +257,7 @@ def append_activity_log(sprint_id: str, line: str) -> None:
         else:
             new_section = section_text + f"\n- {timestamp} — {line}\n"
 
-    new_content = (
-        content[: sprint.section_start] + new_section + content[sprint.section_end :]
-    )
+    new_content = content[: sprint.section_start] + new_section + content[sprint.section_end :]
     _write_roadmap(new_content)
 
 
@@ -341,16 +329,12 @@ def validate_post_agent(
 
     # Check 2: claimed sprint still exists.
     if claimed_sprint_id not in curr_sprints:
-        raise RoadmapValidationError(
-            f"claimed sprint {claimed_sprint_id} disappeared from roadmap"
-        )
+        raise RoadmapValidationError(f"claimed sprint {claimed_sprint_id} disappeared from roadmap")
 
     # Check 4: no snapshot sprint was deleted.
     deleted = set(snap_sprints.keys()) - set(curr_sprints.keys())
     if deleted:
-        raise RoadmapValidationError(
-            f"sprints deleted by agent: {sorted(deleted)}"
-        )
+        raise RoadmapValidationError(f"sprints deleted by agent: {sorted(deleted)}")
 
     # Check 3: no non-claimed existing sprint was modified.
     # Compare section text after stripping trailing whitespace, because

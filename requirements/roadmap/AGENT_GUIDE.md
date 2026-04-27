@@ -107,6 +107,8 @@ Per `CLAUDE.md` at the repo root:
 - No em-dashes in user-facing content (Writing Bible).
 - Models contain data + logic. Views own UI lifecycle. DataLoader is a singleton.
 
+**Scope formatting and linting to your touched files.** When running `ruff format` or `ruff check` during a phase, target only the specific files you have changed: `ruff format spacegame/models/foo.py tests/test_models/test_foo.py`. Do **not** run `ruff format spacegame/ tests/` project-wide during a sprint — if the project has any drift (a previous agent's leftover, a Black-era file the formatter wants to re-flow), the project-wide command produces diffs in files outside your touch zone, which pollute the working tree and inflate your commit. The CLAUDE.md project-wide command is for humans doing one-off cleanup, not for sprint-scoped agent work.
+
 ### Worldbuilding
 
 Per `requirements/cultural_guide.md`, `requirements/dialogue_writing_guide.md`, and `requirements/aurelia_voice_examples.md`:
