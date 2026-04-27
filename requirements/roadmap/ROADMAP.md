@@ -1008,7 +1008,7 @@ The following decisions were locked during planning:
 
 #### SA-1 — Wreckers' Guild Hall (Salvage Contracts)
 
-**Status**: in-progress (planning)
+**Status**: in-progress (implementing)
 **Phase**: Phase I | **Size**: L | **Effort**: 2-3 weeks
 **Depends on**: SA-PREP-1, SA-A2, SA-B-EXT-1 | **Blocks**: SA-P5, SA-B4
 
@@ -1103,18 +1103,31 @@ The following decisions were locked during planning:
 - 2026-04-26 — todo (created)
 - 2026-04-27 12:38 — harness: plan phase starting
 - 2026-04-27 12:44 — planning complete; verified all 8 context-to-read paths exist (corrected `salvaging_view.py` typo to `salvage_view.py`); verified SA-PREP-1 / SA-A2 / SA-B-EXT-1 dependency outputs (Malia + Paz + Daro + Ife voice sheets present at `character_voices.md` 372-411 and 757-883; sub_reputation API at `models/sub_reputation.py` + `Player.modify_sub_reputation`); folded in 2 polish items (tutorial first-time tip overlay; 4 flag-gated journal entries) and explicitly deferred 5 polish items to their existing Phase VI sprints (crew banter SA-X6, achievements SA-X7, cross-anchor narrative SA-X1, rep-balance SA-X2, visual identity SA-X10, tutorial-pass refinement SA-X3); locked 7 decisions (default state unjoined, refresh cadence visit-triggered with 24-day window, no SalvageView modification, torres_memorial preserved, tier benefits payout+gating only, failure consequence -5/3-day/make-up, polish fold-in scope); refined acceptance criteria from 8 → 14 testable items; expanded Touch zones to include `data/journal/entries.json`, `views/station_hub_view.py`, and a new `tests/test_save_load/test_wreckers_save_load.py`; documented one OPEN-defer-to-implementation risk on escort-salvage authoring detail (graceful fallback to 5 contracts via `SA-1-FOLLOW-1`). No new sprints proposed. PHASE_OK
+- 2026-04-27 12:49 — harness: implement phase starting (rework cycle 0)
+- 2026-04-27 13:30 — flag helpers added (`enrolled_wreckers_guild`, `wreckers_promoted_tier`, `wreckers_made_up_apology`, `seen_wreckers_guild_tip`, `wreckers_contract_completed`, `wreckers_made_up_journal`); model authored with 6 contract templates spanning cleanup / recovery / escort-salvage / deep-derelict; 56 model tests green (red→green per TDD).
+- 2026-04-27 13:45 — Player.wreckers_guild_state field + save round-trip wired; legacy-save fixture loads as unjoined; 3 save-load tests green.
+- 2026-04-27 14:00 — `GameState.WRECKERS_GUILD` + `_ensure_wreckers_guild_view` factory + STATION_HUB ↔ WRECKERS_GUILD transition router; WreckersGuildView with contract board, accept/turn-in flow, lockout + make-up handling, PT-M first-time tip, promotion banner. Station hub Enter button added (Hall only — other unique cards keep close-only layout). 25 view tests + 5 Enter-button tests green.
+- 2026-04-27 14:15 — 4 flag-gated journal entries authored (`auto_wreckers_first_contract`, `auto_wreckers_promoted_journeyman`, `auto_wreckers_promoted_master`, `auto_wreckers_made_up`). Master entry retires the "kid" address per the SA Arc Note. Voice-checked.
+- 2026-04-27 14:25 — scenario test for full apprentice → master arc plus failure → make-up path; journal-trigger coverage for all 4 entries.
+- 2026-04-27 14:35 — validation chain: ruff format clean (touched files only), ruff check clean (touched files), mypy clean for new modules, full suite 8533 → 8625 (+92 tests, 0 new failures), Writing Bible scanner clean, SI-3 dialogue-integrity scanner clean, save-load coverage in place. PHASE_OK
 
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-04-27 12:38
-- Completed: 2026-04-27 12:44
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: fa2c033
-- New_sprints_proposed: none
-- Polish_items_folded_in: tutorial first-time tip overlay; 4 flag-gated journal entries (first contract, journeyman promotion, master promotion, failure-recovery)
-- Decisions_locked: 7
-- Notes: Verified all context-to-read docs exist (one path typo corrected). Sub-rep infrastructure from SA-B-EXT-1 covers everything SA-1 needs; voice sheets from SA-PREP-1 cover all four named NPCs. Fold-in stayed conservative — 2 polish items, not 6 — because SA-X1/X2/X3/X6/X7/X10 already own the rest. Plan is 10 tasks, TDD-first throughout.
+- Started: 2026-04-27 12:49
+- Completed: 2026-04-27 14:35
+- Files_changed: spacegame/constants/flags.py, spacegame/config.py, spacegame/models/player.py, spacegame/models/wreckers_guild.py, spacegame/save_manager.py, spacegame/views/station_hub_view.py, spacegame/views/wreckers_guild_view.py, spacegame/engine/game.py, data/journal/entries.json, tests/test_models/test_wreckers_guild.py, tests/test_models/test_save_load_wreckers.py, tests/test_views/test_wreckers_guild_view.py, tests/test_views/test_station_hub_view.py, tests/test_scenarios/test_scenario_wreckers_arc.py
+- Commits: 832a9b5, 6135701, dd65a75
+- Tests_added: 92
+- Tests_baseline: 8533
+- Tests_passing: 8625
+- Tests_skipped: 98
+- Lint_clean: yes
+- Format_clean: yes
+- SI3_scanner_clean: yes
+- Writing_bible_clean: yes
+- Touch_zones_respected: yes
+- Notes: All 14 acceptance criteria addressed. WreckersGuildView with contract board + first-time tip + lockout + make-up; 6 contract templates (2 cleanup / 2 recovery / 1 escort-salvage / 1 deep-derelict — escort-salvage shipped per plan, no SA-1-FOLLOW-1 needed); deterministic 24-day slot rolls; payout multipliers verified at 1000→1000/1100/1250 across tiers; sub-rep failure clamps at 0; legacy saves load as unjoined; full apprentice → master arc covered by scenario test. New flags wire through SI-3 scanner cleanly (all helpers in `spacegame/constants/flags.py`).
 
 #### SA-2 — Deep Shafts memorial / pilgrimage
 
