@@ -27,6 +27,7 @@ os.environ.setdefault("SDL_VIDEODRIVER", "dummy")
 import pygame
 import pytest
 
+from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH
 from spacegame.models.progression import PlayerProgression, SkillTreeType
 
 
@@ -36,8 +37,6 @@ def _pygame_init():
     if not pygame.get_init():
         pygame.init()
     if pygame.display.get_surface() is None:
-        from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT
-
         pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
     yield
 
@@ -102,9 +101,7 @@ def _compute_positions(
 class TestSAC2LayoutRegression:
     """Layout regression for the four SA-C2 affected trees at 720p."""
 
-    def test_all_skills_have_positions(
-        self, tree: SkillTreeType, expected_count: int
-    ) -> None:
+    def test_all_skills_have_positions(self, tree: SkillTreeType, expected_count: int) -> None:
         """Every skill in the tree must receive a position."""
         prog = PlayerProgression()
         skills = prog.get_skill_tree(tree)
@@ -115,9 +112,7 @@ class TestSAC2LayoutRegression:
         missing = [s.id for s in skills if s.id not in positions]
         assert not missing, f"{tree.value}: skills without positions: {missing}"
 
-    def test_all_positions_inside_bounds(
-        self, tree: SkillTreeType, expected_count: int
-    ) -> None:
+    def test_all_positions_inside_bounds(self, tree: SkillTreeType, expected_count: int) -> None:
         """Every position must be inside the layout rectangle."""
         from spacegame.views.skill_tree_view import (
             DETAIL_BOTTOM,
@@ -136,9 +131,7 @@ class TestSAC2LayoutRegression:
                 violations.append(f"{sid}=({x},{y})")
         assert not violations, f"{tree.value}: out-of-bounds positions: {violations}"
 
-    def test_no_column_overlap(
-        self, tree: SkillTreeType, expected_count: int
-    ) -> None:
+    def test_no_column_overlap(self, tree: SkillTreeType, expected_count: int) -> None:
         """Within each depth column, node centers must be >= 2*NODE_RADIUS apart."""
         from spacegame.views.skill_tree_view import NODE_RADIUS
 
@@ -160,6 +153,6 @@ class TestSAC2LayoutRegression:
                 if gap < min_gap:
                     violations.append(
                         f"column x={x_col}: gap {gap}px < {min_gap}px "
-                        f"between y={sorted_ys[i]} and y={sorted_ys[i+1]}"
+                        f"between y={sorted_ys[i]} and y={sorted_ys[i + 1]}"
                     )
         assert not violations, f"{tree.value}: node overlap in columns: {violations}"

@@ -134,7 +134,7 @@ class TestPrerequisiteChains:
                 visited.add(current)
                 current = skills[current].prerequisite_id
             if current is not None:
-                assert False, f"Circular prerequisite chain involving {skill_id}"
+                raise AssertionError(f"Circular prerequisite chain involving {skill_id}")
 
     def test_every_tree_has_root_skills(self) -> None:
         """Each tree should have at least one root skill (no prerequisite)."""

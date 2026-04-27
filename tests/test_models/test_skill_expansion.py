@@ -346,5 +346,5 @@ class TestBackwardCompatibility:
         }
         prog = PlayerProgression.from_dict(data)
         assert prog.level == 10
-        messages = prog.add_xp(2000)
+        prog.add_xp(2000)
         assert prog.level > 10

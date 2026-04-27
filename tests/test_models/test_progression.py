@@ -5,10 +5,10 @@ Tests for the player progression system.
 import pytest
 
 from spacegame.models.progression import (
+    _SKILL_MIGRATION_MAP,
     PlayerProgression,
     SkillNode,
     SkillTreeType,
-    _SKILL_MIGRATION_MAP,
     get_xp_threshold,
 )
 
@@ -40,7 +40,7 @@ class TestPlayerProgression:
 
     def test_multiple_level_ups(self):
         prog = PlayerProgression()
-        messages = prog.add_xp(get_xp_threshold(4))
+        prog.add_xp(get_xp_threshold(4))
         assert prog.level == 4
         assert prog.skill_points == 3
 
@@ -113,14 +113,14 @@ class TestSkillInvestment:
     def test_level_up_skill(self):
         prog = PlayerProgression()
         prog.add_xp(get_xp_threshold(2))  # Level 2, 1 skill point
-        success, msg = prog.level_up_skill("negotiator")
+        success, _msg = prog.level_up_skill("negotiator")
         assert success
         assert prog.skills["negotiator"].current_level == 1
         assert prog.get_available_skill_points() == 0
 
     def test_insufficient_points(self):
         prog = PlayerProgression()
-        success, msg = prog.level_up_skill("negotiator")
+        success, _msg = prog.level_up_skill("negotiator")
         assert not success
 
     def test_prerequisite_required(self):
@@ -134,7 +134,7 @@ class TestSkillInvestment:
         prog = PlayerProgression()
         prog.add_xp(get_xp_threshold(3))  # Level 3, 2 skill points
         prog.level_up_skill("negotiator")
-        success, msg = prog.level_up_skill("market_eye")
+        success, _msg = prog.level_up_skill("market_eye")
         assert success
 
     def test_maxed_skill(self):
@@ -403,7 +403,9 @@ class TestSACArcSkills:
         skill = prog.skills["coalition_sway"]
         assert skill.id == "coalition_sway"
         assert skill.name == "Coalition Sway"
-        assert skill.description == "+10% delegate persuasion modifier per level in Politics disputes"
+        assert (
+            skill.description == "+10% delegate persuasion modifier per level in Politics disputes"
+        )
         assert skill.tree == SkillTreeType.SOCIAL
         assert skill.prerequisite_id == "silver_tongue"
         assert skill.max_level == 2
@@ -415,7 +417,10 @@ class TestSACArcSkills:
         skill = prog.skills["delegate_reach"]
         assert skill.id == "delegate_reach"
         assert skill.name == "Delegate Reach"
-        assert skill.description == "+0.5 to delegate pre-commitment cap per level before a Politics vote"
+        assert (
+            skill.description
+            == "+0.5 to delegate pre-commitment cap per level before a Politics vote"
+        )
         assert skill.tree == SkillTreeType.LEADERSHIP
         assert skill.prerequisite_id == "give_the_word"
         assert skill.max_level == 2
@@ -463,7 +468,10 @@ class TestSACArcSkills:
         skill = prog.skills["research_oversight"]
         assert skill.id == "research_oversight"
         assert skill.name == "Research Oversight"
-        assert skill.description == "+5% project failure odds reduction per level at the Okafor Institute"
+        assert (
+            skill.description
+            == "+5% project failure odds reduction per level at the Okafor Institute"
+        )
         assert skill.tree == SkillTreeType.LEADERSHIP
         assert skill.prerequisite_id == "diplomatic_relations"
         assert skill.max_level == 2

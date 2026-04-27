@@ -200,7 +200,7 @@ class PlayerProgression:
     skill_points_spent: int = 0
     skills: Dict[str, SkillNode] = field(default_factory=dict)
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if not self.skills:
             self.skills = create_default_skills()
 
