@@ -2305,7 +2305,7 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 - Started: 2026-04-27 18:42
 - Completed: 2026-04-27 19:35
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending
+- Commits: f8862f3
 - New_sprints_proposed: none
 - Polish_items_folded_in: tier-gated Arbitration Chamber button (in `WreckersGuildView`); `LOCKED_NO_MEMBERSHIP` dispute-view substate; per-tier in-session action button gating (apprentice observer / journeyman participant / master arbiter); Reach-themed `_VENUE_THEMES` dict pulling the `ReachDarkLayout` palette; 1 new tutorial tip + 3 SA-P5 journal entries authored inline.
 - Decisions_locked: 12
