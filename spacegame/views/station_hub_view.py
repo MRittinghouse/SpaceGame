@@ -20,7 +20,7 @@ from spacegame.config import (
     scale_x,
     scale_y,
 )
-from spacegame.constants.flags import seen_faction_tip
+from spacegame.constants.flags import investment_introduced, seen_faction_tip, seen_investment_tip
 from spacegame.engine.activity_registry import ActivityRegistry
 from spacegame.engine.audio_manager import get_audio_manager
 from spacegame.engine.backgrounds import AnimatedBackground
@@ -247,6 +247,11 @@ class StationHubView(BaseView):
         # pieces of information on the same dock).
         self._faction_tip: Optional[FirstTimeTipOverlay] = None
 
+        # SA-V: one-time investment-card tip. Fires on first click of any
+        # investment-typed location card after investment_introduced is set.
+        # Gated on seen_investment_tip so it never re-fires.
+        self._investment_tip: Optional[FirstTimeTipOverlay] = None
+
         # Faction color for header accent
         self._faction_color = _FACTION_COLORS.get(system.faction, Colors.TEXT_HIGHLIGHT)
 
@@ -408,6 +413,35 @@ class StationHubView(BaseView):
     def _mark_faction_tip_seen(self, layout_key: str) -> None:
         """Persist the faction-tip-dismissed flag."""
         self.player.dialogue_flags[seen_faction_tip(layout_key)] = True
+
+    def _maybe_show_investment_tip(self) -> None:
+        """SA-V: fire the one-time investment-card tip, or skip.
+
+        Fires when:
+          - investment_introduced flag is set (player finished Odom's intro),
+          - seen_investment_tip flag is NOT set (overlay never dismissed before).
+
+        Never fires if the faction tip is currently active (avoid stacking).
+        """
+        if self.player.dialogue_flags.get(seen_investment_tip(), False):
+            return
+        if not self.player.dialogue_flags.get(investment_introduced(), False):
+            return
+        if self._faction_tip is not None and not self._faction_tip.dismissed:
+            return
+        self._investment_tip = FirstTimeTipOverlay(
+            title="Investment",
+            body=(
+                "Investment commits credits to a venue. "
+                "Returns drip in over time. "
+                "The card shows the terms."
+            ),
+            on_dismiss=self._mark_investment_tip_seen,
+        )
+
+    def _mark_investment_tip_seen(self) -> None:
+        """Persist the investment-tip-dismissed flag."""
+        self.player.dialogue_flags[seen_investment_tip()] = True
 
     def _emit_detail_dwell_if_open(self) -> None:
         """Emit anchor_detail_dwell for the currently-open detail panel, then clear state.
@@ -723,6 +757,11 @@ class StationHubView(BaseView):
             if self._faction_tip.handle_event(event):
                 return
 
+        # SA-V: investment-card tip is modal; process before view events.
+        if self._investment_tip is not None and not self._investment_tip.dismissed:
+            if self._investment_tip.handle_event(event):
+                return
+
         if event.type == pygame_gui.UI_BUTTON_PRESSED:
             if event.ui_element == self.back_button:
                 self._request_back()
@@ -809,6 +848,9 @@ class StationHubView(BaseView):
         """Activate a station zone (from click or keyboard shortcut)."""
         get_audio_manager().play_sfx("ui_confirm")
         self._select_location_type(zone.location.location_type)
+        if zone.location.location_type == "investment":
+            # SA-V: fire the one-time investment-card tip on first interaction.
+            self._maybe_show_investment_tip()
         if zone.location.location_type == "unique":
             # Emit dwell for any currently-open detail panel before replacing it
             self._emit_detail_dwell_if_open()
@@ -841,6 +883,11 @@ class StationHubView(BaseView):
             self._faction_tip.update(dt)
             if self._faction_tip.dismissed:
                 self._faction_tip = None
+        # SA-V: advance the investment-card tip's fade-in. Drop once dismissed.
+        if self._investment_tip is not None:
+            self._investment_tip.update(dt)
+            if self._investment_tip.dismissed:
+                self._investment_tip = None
 
     def render(self, screen: pygame.Surface) -> None:
         """Render station hub."""
@@ -893,6 +940,9 @@ class StationHubView(BaseView):
         # SL-5: faction-orientation tip overlay sits on top of everything.
         if self._faction_tip is not None and not self._faction_tip.dismissed:
             self._faction_tip.render(screen)
+        # SA-V: investment-card tip sits above faction tip (fires independently).
+        if self._investment_tip is not None and not self._investment_tip.dismissed:
+            self._investment_tip.render(screen)
 
     def _render_denied(self, screen: pygame.Surface) -> None:
         """Render docking denial overlay."""
