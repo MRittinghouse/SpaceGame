@@ -26,7 +26,7 @@ The SA-arc table below is **auto-regenerated** by the ralph harness from the spr
 <!-- AUTO_GENERATED_SA_INDEX_START -->
 | ID | Title | Phase | Size | Status | Depends on |
 |---|---|---|---|---|---|
-| [SA-PREP-1](#sa-prep-1--npc-voice-sheet-audit) | NPC voice-sheet audit | 0 | M | todo | none |
+| [SA-PREP-1](#sa-prep-1--npc-voice-sheet-audit) | NPC voice-sheet audit | 0 | M | done | none |
 | [SA-PREP-2](#sa-prep-2--existing-data-audit) | Existing-data audit | 0 | S | todo | none |
 | [SA-PREP-3](#sa-prep-3--playtest-baseline-telemetry) | Playtest baseline telemetry | 0 | S | todo | none |
 | [SA-A1](#sa-a1--crew-specialization-design) | Crew specialization design | A | S | todo | SA-PREP-2 |
@@ -93,7 +93,7 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 
 #### SA-PREP-1 — NPC voice-sheet audit
 
-**Status**: in-progress (reviewing)
+**Status**: done
 **Phase**: Phase 0 — Pre-arc Preparation | **Size**: M | **Effort**: 1-2 weeks
 **Depends on**: none | **Blocks**: SA-1, SA-2, SA-V, SA-P3, SA-P4, SA-P5, SA-B3, SA-B4, SA-R1, SA-F3
 
@@ -156,7 +156,7 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 - 2026-04-26 21:30 — implementation complete; 21 NPC voice sheets authored; inventory table, speaker_id registry, tonal map, Voice Interactions extension committed; tests 8326/8326 baseline preserved; Writing Bible scanner 17/17 clean. PHASE_OK
 - 2026-04-26 21:15 — harness: review phase starting (rework cycle 0)
 - 2026-04-26 21:45 — review complete; all 6 acceptance criteria verified; 21 NPCs inventoried (18 net-new sheets + 3 extended); tonal register added to all sheets; speaker_id registry and Voice Interactions table (5 new pairings) confirmed; Writing Bible scanner 17/17 passing; 8326/8326 tests preserved; zero Unicode em-dashes in new body prose; no banned phrases, names, or parallel negation in SA arc additions. No findings requiring rework. PHASE_OK
-
+- 2026-04-26 21:21 — harness: review passed, marking done
 **Last phase report.**
 - Phase: review
 - Outcome: PHASE_OK
@@ -174,7 +174,7 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 
 #### SA-PREP-2 — Existing-data audit
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Phase 0 | **Size**: S | **Effort**: 3-5 days
 **Depends on**: none | **Blocks**: SA-A1, SA-C1, SA-0
 
@@ -208,9 +208,9 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
    - Tests: none (research artifact).
    - Risk: vision-doc names like "Restricted Sector 7" may differ from `iron_depths_restricted_zone`. Catalog both forms so later greps do not miss content.
 
-2. **NPC home-mapping table.** Walk `data/characters/npcs.json` and tag each NPC by which anchor they operate at, joining on `home_system_id`. This is the linkage backbone since most anchor references are indirect via NPC speakers.
-   - Files: `data/characters/npcs.json` to audit doc.
-   - Risk: NPCs with no `home_system_id` should be flagged as `unhomed` so SA-PREP-1's voice-sheet audit knows to triage them.
+2. **NPC home-mapping table.** Walk `data/characters/npcs.json` and tag each NPC by which anchor they operate at, joining on `home_system_id`. This is the linkage backbone since most anchor references are indirect via NPC speakers. Cross-reference with the SA arc NPC inventory + speaker_id registry that SA-PREP-1 just shipped to `requirements/character_voices.md` so the audit's NPC list aligns with the registry's canonical ids.
+   - Files: `data/characters/npcs.json`, `requirements/character_voices.md` (read-only cross-reference) to audit doc.
+   - Risk: NPCs with no `home_system_id` should be flagged as `unhomed` so SA-PREP-1's voice-sheet audit triage list (already produced) can be reconciled. Note the `delivery_merchant` to `odom_broker` reconciliation is owned by SA-V; flag it but do not act.
 
 3. **Per-anchor reference walk: dialogue.** For each of the 11 subjects, enumerate dialogue trees that reference the anchor by direct name string OR by a `speaker_id` whose NPC homes at the anchor's system OR via `set_flag`/`requires_flag` patterns mentioning the anchor. Cite using `dialogues.json#tree_id:node_id`.
    - Files: `data/dialogue/dialogues.json`.
@@ -236,9 +236,10 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
    - Files: audit doc.
    - Gotcha: behaviors must be observable from normal play, not from internal log inspection. Keep them player-facing.
 
-9. **Voice-check + final pass.** Run the three patterns from `tests/test_writing_bible_compliance.py` against the entire `sa_audit_findings.md` text: em-dashes (U+2014, U+2013, ` -- `), banned phrases (`couldn't help but` / `a testament to`), parallel-negation (`no X, no Y`). Zero violations required. Run `pytest -n auto -q` and confirm pass count is at least 8304 (pre-phase baseline). Move sprint to `review`.
+9. **Voice-check + final pass.** Run the three patterns from `tests/test_writing_bible_compliance.py` against the entire `sa_audit_findings.md` text: em-dashes (U+2014, U+2013, ` -- `), banned phrases (`couldn't help but` / `a testament to`), parallel-negation (`no X, no Y`). Zero violations required. Run `pytest -n auto -q` and confirm pass count is at least 8326 (pre-phase baseline). Move sprint to `review`.
    - Files: audit doc; pytest invocation.
    - Gotcha: pre-existing voice violations in the data being audited are OUT OF SCOPE for this sprint. Catalog them in the doc but do not fix; that is downstream content work.
+   - Gotcha 2: the audit doc itself uses ASCII double-hyphen ` -- ` only between space-separated tokens (the regex requires surrounding spaces). Inline compound words like `multi-session` are unaffected. When in doubt, prefer a comma or sentence break.
 
 **Acceptance criteria.**
 1. `requirements/sa_audit_findings.md` exists and contains a cross-cutting summary table listing all 11 anchor subjects (10 `unique` locations + Cargo Broker character) with reference counts per content surface (dialogue, mission, journal, encounter, ambient/chatter, news).
@@ -249,7 +250,7 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 6. The regression checklist enumerates at least 5 distinct player-facing behaviors that SA changes must not break, spanning at least 3 different anchor locations (no single-location concentration).
 7. A save-state baseline is included as a documented manual smoke-test procedure (not a binary save file) that a tester can execute pre-SA-1 and post-SA-1 to verify no listed behavior regressed.
 8. The audit doc passes the three voice-check patterns from `tests/test_writing_bible_compliance.py` (em-dashes, banned phrases, parallel-negation) with zero violations. Pre-existing violations found in scanned data are documented but out of scope to fix.
-9. Full test suite passes at or above the pre-phase baseline of 8304 passing tests; no new failures.
+9. Full test suite passes at or above the pre-phase baseline of 8326 passing tests; no new failures.
 
 **Risks / open questions.**
 - **Locked: audit subject count = 11.** 10 unique-typed anchor locations plus the Cargo Broker character, since SA-V treats the Broker as an anchor-equivalent recurring NPC. Reason: leaving the Broker out would force a parallel mini-audit during SA-V planning.
@@ -264,6 +265,20 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 - 2026-04-26 — todo (created)
 - 2026-04-26 17:45 — plan phase ran in pilot but blocked by sandbox; planning content recovered from agent stdout and applied to this sprint section
 - 2026-04-26 — plan content recovered; ready for re-pickup by harness (next plan phase will see substantive existing plan and confirm/refine)
+- 2026-04-26 21:22 — harness: plan phase starting
+- 2026-04-26 21:26 — planning confirmed; verified all 14 context-to-read paths exist (incl. 11 encounters files); refreshed test-suite baseline (8304 → 8326) in step 9 + acceptance criterion 9 to match SA-PREP-1 done state; added SA-PREP-1 speaker_id-registry cross-reference to step 2; added voice-check tokenization gotcha so the audit-doc author does not trip the ` -- ` regex on inline compound words. No scope expansion, no new sprints proposed. PHASE_OK
+
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-04-26 21:22
+- Completed: 2026-04-26 21:26
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: pending
+- New_sprints_proposed: none
+- Polish_items_folded_in: cross-reference-SA-PREP-1-speaker-id-registry; voice-check-tokenization-gotcha
+- Decisions_locked: 0 (all 7 decisions already locked in prior planning pass)
+- Notes: Sprint plan was fully built in a prior recovered planning pass (7 decisions locked, 11 audit subjects defined, per-anchor structure with gaps subsection, voice-check method, procedural save baseline). This pass confirms context-doc availability, refreshes the stale 8304 baseline to 8326, and threads SA-PREP-1's now-shipped speaker_id registry into step 2's NPC home-mapping task so the audit inherits the canonical IDs instead of re-deriving them. No scope changes; no new sprints needed.
 
 #### SA-PREP-3 — Playtest baseline telemetry
 
