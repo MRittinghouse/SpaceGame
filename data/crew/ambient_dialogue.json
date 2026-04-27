@@ -1321,6 +1321,147 @@
       "text": "Processing complete. I have updated the manifest. We should talk about margins when you have a moment.",
       "context": "player_action",
       "action_type": "refine_complete"
+    },
+    {
+      "crew_id": "sable_trent",
+      "text": "Stellaris Port. I know the bid patterns on this floor better than most people know their own family. Six years of logs.",
+      "context": "home_system",
+      "system_id": "stellaris_port"
+    },
+    {
+      "crew_id": "sable_trent",
+      "text": "The tells are consistent across price tiers. People think the high-value lots are different. They aren't.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "sable_trent",
+      "text": "Ceiling came in where I said it would. The pattern was clear from the third counter.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "sable_trent",
+      "text": "Guild stations post their trading data honestly, which means I can cross-reference the bids against the public record. Most people don't.",
+      "context": "faction_territory",
+      "faction_id": "commerce_guild"
+    },
+    {
+      "crew_id": "sable_trent",
+      "text": "Reeves, you track fuel projections to the decimal. I track bid timing to the second. We would get along if either of us had more patience for the other's work.",
+      "context": "inter_crew",
+      "required_crew": "elena_reeves"
+    },
+    {
+      "crew_id": "desta_coll",
+      "text": "Haven's Rest. The Alliance politics here run on obligation. Who owes whom, going back three administrations. Takes time to map.",
+      "context": "home_system",
+      "system_id": "havens_rest"
+    },
+    {
+      "crew_id": "desta_coll",
+      "text": "Two confirmed, three soft, two I haven't reached yet. The count is where I expected it to be at this stage.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "desta_coll",
+      "text": "The vote isn't where the dispute is decided. The vote is the announcement. The work happens earlier.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "desta_coll",
+      "text": "Alliance space. The frontier settlements out here have been making deals without the Guild's paperwork for forty years. The obligation networks are dense.",
+      "context": "faction_territory",
+      "faction_id": "frontier_alliance"
+    },
+    {
+      "crew_id": "desta_coll",
+      "text": "Drifter, you know how to move in and out of a room without committing to anything. I respect that. It is a different skill than mine, but I respect it.",
+      "context": "inter_crew",
+      "required_crew": "tomas_drifter"
+    },
+    {
+      "crew_id": "cass_weller",
+      "text": "The Reach. Most of the disputes I worked out here were never filed. That was the point.",
+      "context": "home_system",
+      "system_id": "crimson_reach"
+    },
+    {
+      "crew_id": "cass_weller",
+      "text": "The question I ask in every session is the same: does this hold in three months? Most people are still arguing about who was right.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "cass_weller",
+      "text": "Both parties left the table unhappy. That usually means the outcome will hold. Satisfaction is a bad sign in mediation.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "cass_weller",
+      "text": "Doc, you approach data the way I approach a dispute: look for what the parties are not saying before you decide what they mean. We work similarly.",
+      "context": "inter_crew",
+      "required_crew": "dr_priya_osei"
+    },
+    {
+      "crew_id": "cass_weller",
+      "text": "Jin, I appreciate that you fix things so they stay fixed. That is exactly what good mediation does. Different substrate, same principle.",
+      "context": "inter_crew",
+      "required_crew": "marcus_jin"
+    },
+    {
+      "crew_id": "brix_tano",
+      "text": "Nexus Prime. I ran the Level Four desk for eleven years. The contracts here haven't changed. The people running them think they have.",
+      "context": "home_system",
+      "system_id": "nexus_prime"
+    },
+    {
+      "crew_id": "brix_tano",
+      "text": "The band was eighteen to twenty-four. It closed at twenty-one. Within range.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "brix_tano",
+      "text": "I can give you the range. I cannot give you the number. Anyone who gives you the number is guessing.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "brix_tano",
+      "text": "Guild floor here tracks the underlying data cleanly. Makes it easier to narrow the band when you have clean inputs.",
+      "context": "faction_territory",
+      "faction_id": "commerce_guild"
+    },
+    {
+      "crew_id": "brix_tano",
+      "text": "Reeves, you give fuel projections as ranges with buffer. I give contract positions as ranges with confidence. We are doing the same job in different domains.",
+      "context": "inter_crew",
+      "required_crew": "elena_reeves"
+    },
+    {
+      "crew_id": "nuri_solberg",
+      "text": "Axiom Labs. I reviewed proposals here for twelve years before I stopped letting the Collective decide which ones were worth funding.",
+      "context": "home_system",
+      "system_id": "axiom_labs"
+    },
+    {
+      "crew_id": "nuri_solberg",
+      "text": "The risk estimate on the last proposal was padded. The researcher knew the actual variance was higher. I asked for the real number.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "nuri_solberg",
+      "text": "Collective stations share their research data freely between member institutions. That part of the system still works.",
+      "context": "faction_territory",
+      "faction_id": "science_collective"
+    },
+    {
+      "crew_id": "nuri_solberg",
+      "text": "Doc, walk me through the protocol on that mineral analysis, not the results. I want to see where the assumptions are.",
+      "context": "inter_crew",
+      "required_crew": "dr_priya_osei"
+    },
+    {
+      "crew_id": "nuri_solberg",
+      "text": "Jin, I looked at your engine maintenance logs. Your methodology is sound. Every repair documented, every variance noted. That is the discipline that makes a project hold up.",
+      "context": "inter_crew",
+      "required_crew": "marcus_jin"
     }
   ]
 }
