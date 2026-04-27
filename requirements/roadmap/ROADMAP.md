@@ -35,7 +35,7 @@ The SA-arc table below is **auto-regenerated** by the ralph harness from the spr
 | [SA-C1](#sa-c1--skill-tree-extension-design) | Skill tree extension design | C | S | done | SA-PREP-2 |
 | [SA-C2](#sa-c2--skill-tree-extension-implementation) | Skill tree extension implementation | C | M | done | SA-C1 |
 | [SA-0](#sa-0--cluster-a-confirmation-pass) | Cluster A confirmation pass | I | S | done | SA-PREP-2 |
-| [SA-1](#sa-1--wreckers-guild-hall-salvage-contracts) | Wreckers' Guild Hall (Salvage Contracts) | I | L | todo | SA-PREP-1, SA-A2, SA-B-EXT-1 |
+| [SA-1](#sa-1--wreckers-guild-hall-salvage-contracts) | Wreckers' Guild Hall (Salvage Contracts) | I | L | done | SA-PREP-1, SA-A2, SA-B-EXT-1 |
 | [SA-2](#sa-2--deep-shafts-memorial--pilgrimage) | Deep Shafts memorial / pilgrimage | I | L | todo | SA-PREP-1 |
 | [SA-V](#sa-v--cargo-broker-arc--investment-introduction) | Cargo Broker arc + Investment Introduction | I | M | todo | SA-PREP-1 |
 | [SA-P1](#sa-p1--politics-system-design) | Politics System Design | II | M | todo | SA-PREP-1, SA-C2 |
@@ -1008,7 +1008,7 @@ The following decisions were locked during planning:
 
 #### SA-1 — Wreckers' Guild Hall (Salvage Contracts)
 
-**Status**: in-progress (reviewing)
+**Status**: done
 **Phase**: Phase I | **Size**: L | **Effort**: 2-3 weeks
 **Depends on**: SA-PREP-1, SA-A2, SA-B-EXT-1 | **Blocks**: SA-P5, SA-B4
 
@@ -1124,7 +1124,7 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 - 2026-04-27 14:20 — validation chain: ruff format clean (touched files), ruff check clean (touched files), mypy clean for touched files (pre-existing errors in unrelated modules unchanged), full suite 8625 → 8634 (+9 tests, 0 new failures, 98 skipped unchanged), Writing Bible scanner clean, SI-3 dialogue-integrity scanner clean. PHASE_OK
 - 2026-04-27 13:39 — harness: review phase starting (rework cycle 1)
 - 2026-04-27 15:10 — review complete (rework cycle 1); 1 minor finding fixed directly (`character_voices.md` torres_memorial reconciliation entry left open by implementer — Plan task 1 required closing it; updated to "Resolved: SA-1"); all 14 acceptance criteria verified, both polish fold-ins verified (tip overlay AC 10, journal entries AC 11); 96 SA-1-specific tests pass, full suite 8634 ≥ 8533. Single tighten: Paz's signoff line at `paz_reina_guild_hall/signoff` reads "who would otherwise have not been" — the inverted negation is audible as a register quirk but grammatically borderline; would re-order to "who would otherwise not have been" on a second pass. Not a blocker. PHASE_OK
-
+- 2026-04-27 13:45 — harness: review passed, marking done
 **Last phase report.**
 - Phase: review
 - Outcome: PHASE_OK
