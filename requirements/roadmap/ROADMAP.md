@@ -37,7 +37,7 @@ The SA-arc table below is **auto-regenerated** by the ralph harness from the spr
 | [SA-0](#sa-0--cluster-a-confirmation-pass) | Cluster A confirmation pass | I | S | done | SA-PREP-2 |
 | [SA-1](#sa-1--wreckers-guild-hall-salvage-contracts) | Wreckers' Guild Hall (Salvage Contracts) | I | L | done | SA-PREP-1, SA-A2, SA-B-EXT-1 |
 | [SA-2](#sa-2--deep-shafts-memorial--pilgrimage) | Deep Shafts memorial / pilgrimage | I | L | done | SA-PREP-1 |
-| [SA-V](#sa-v--cargo-broker-arc--investment-introduction) | Cargo Broker arc + Investment Introduction | I | M | todo | SA-PREP-1 |
+| [SA-V](#sa-v--cargo-broker-arc--investment-introduction) | Cargo Broker arc + Investment Introduction | I | M | done | SA-PREP-1 |
 | [SA-P1](#sa-p1--politics-system-design) | Politics System Design | II | M | todo | SA-PREP-1, SA-C2 |
 | [SA-P2](#sa-p2--politics-core) | Politics Core | II | XL | todo | SA-P1, SA-A2, SA-C2, SA-B-EXT-1 |
 | [SA-P3](#sa-p3--mayors-council-chamber-verdant-venue) | Mayors' Council Chamber (Verdant Venue) | II | L | todo | SA-P2 |
@@ -1296,7 +1296,7 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 
 #### SA-V — Cargo Broker arc + Investment Introduction
 
-**Status**: in-progress (reviewing)
+**Status**: done
 **Phase**: Phase I | **Size**: M | **Effort**: 1.5 weeks
 **Depends on**: SA-PREP-1 | **Blocks**: SA-F3 (Meridian + Cargo Broker graduation)
 
@@ -1410,7 +1410,7 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 - 2026-04-27 15:55 — full suite: 8769 passed (baseline 8716, +53), 98 skipped; lint clean; format clean; SI-3 clean; Writing Bible clean; all touch zones respected. PHASE_OK
 - 2026-04-27 15:10 — harness: review phase starting (rework cycle 0)
 - 2026-04-27 16:20 — review complete; 0 critical findings, 0 minor fixes; all 12 acceptance criteria verified. Single tighten noted (see report). PHASE_OK
-
+- 2026-04-27 15:18 — harness: review passed, marking done
 **Last phase report.**
 - Phase: review
 - Outcome: PHASE_OK
