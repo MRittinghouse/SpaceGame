@@ -388,7 +388,7 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 
 #### SA-A1 — Crew specialization design
 
-**Status**: in-progress (implementing)
+**Status**: in-progress (reviewing)
 **Phase**: Phase A | **Size**: S | **Effort**: 3-5 days
 **Depends on**: SA-PREP-2 | **Blocks**: SA-A2
 
@@ -459,24 +459,23 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 - 2026-04-26 22:55 — planning complete; locked 5 decisions (specialization set, naming-collision avoidance, net-new templates, dual crew+skill bonus reads, non-companion semantics); folded in 3 polish items (voice-sheet inventory update in `character_voices.md`, bonus-naming convention table as standalone section, cross-reference matrix); refined ACs from 3 → 10 to make every design-doc section mechanically verifiable; expanded Touch zones to include `character_voices.md` because the SA-PREP-1 inventory table is the canonical NPC registry. PHASE_OK
 - 2026-04-26 22:30 — harness: implement phase starting (rework cycle 0)
 - 2026-04-26 — implementation complete; authored requirements/sa_crew_design.md (218 lines: 5 specialization blocks, bonus-naming convention table, cross-reference matrix, 5 decisions, save-migration note, SA-A2 hand-off checklist); extended character_voices.md SA-PREP-1 inventory and speaker_id registry with 5 new rows (Sable Trent, Desta Coll, Cass Weller, Brix Tano, Nuri Solberg); all 10 new bonus_type strings confirmed unique; Writing Bible clean; test suite 8348 passed (no regressions). PHASE_OK
+- 2026-04-26 22:40 — harness: review phase starting (rework cycle 0)
+- 2026-04-26 23:15 — review complete; all 10 acceptance criteria verified: design doc exists and is complete, zero bonus_type or role-label collisions confirmed against live progression.py and crew_members.json, all 5 anchor systems covered, cross-reference matrix complete, decisions-locked section resolves all 5 risks, character_voices.md inventory table and speaker_id registry both extended with 5 rows, save-migration note explicit, Writing Bible clean (no em-dashes, no banned phrases, no banned NPC names). Test suite 8348 passed (matches baseline). All 3 planner-folded polish items shipped. No findings. PHASE_OK
 
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-04-26 22:30
-- Completed: 2026-04-26 23:00
-- Files_changed: requirements/sa_crew_design.md, requirements/character_voices.md
-- Commits: 69768d7
-- Tests_added: 0
-- Tests_baseline: 8348
+- Started: 2026-04-26 22:40
+- Completed: 2026-04-26 23:15
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: none
 - Tests_passing: 8348
-- Tests_skipped: 98
-- Lint_clean: n/a (no Python files touched)
-- Format_clean: n/a (no Python files touched)
-- SI3_scanner_clean: n/a (no flags added or modified)
-- Writing_bible_clean: yes
-- Touch_zones_respected: yes
-- Notes: Design-only sprint. Five specializations locked (Auction Reader, Coalition Builder, Arbiter, Speculator, Patron), 10 new bonus_type strings confirmed collision-free, character_voices.md SA-PREP-1 inventory and speaker_id registry extended with one row per net-new NPC. All 10 acceptance criteria satisfied.
+- Acceptance_criteria_verified: 10/10
+- Polish_items_verified: 3/3
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 0
+- Followup_sprints_added: none
+- Notes: Design-only sprint; no Python touched. All 10 bonus_type strings confirmed unique against both progression.py and crew_members.json. Character voices clean and consistent with working-galaxy tone.
 
 #### SA-A2 — Crew template implementation
 
