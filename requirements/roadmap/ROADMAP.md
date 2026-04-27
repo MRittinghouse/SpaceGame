@@ -93,7 +93,7 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 
 #### SA-PREP-1 — NPC voice-sheet audit
 
-**Status**: in-progress (planning)
+**Status**: in-progress (implementing)
 **Phase**: Phase 0 — Pre-arc Preparation | **Size**: M | **Effort**: 1-2 weeks
 **Depends on**: none | **Blocks**: SA-1, SA-2, SA-V, SA-P3, SA-P4, SA-P5, SA-B3, SA-B4, SA-R1, SA-F3
 
@@ -152,18 +152,26 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 - 2026-04-26 — plan content recovered; ready for re-pickup by harness (next plan phase will see substantive existing plan and confirm/refine)
 - 2026-04-26 20:48 — harness: plan phase starting
 - 2026-04-26 21:05 — planning confirmed; recovered plan verified against context docs; locked the last open question (Bidding rivals personas: old-money collector + Stellaris faction agent + cold-grudge rival captain); refreshed test-suite baseline (8304 → 8326) in task 10. PHASE_OK
+- 2026-04-26 20:50 — harness: implement phase starting (rework cycle 0)
+- 2026-04-26 21:30 — implementation complete; 21 NPC voice sheets authored; inventory table, speaker_id registry, tonal map, Voice Interactions extension committed; tests 8326/8326 baseline preserved; Writing Bible scanner 17/17 clean. PHASE_OK
 
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-04-26 20:48
-- Completed: 2026-04-26 21:05
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: c0370c0
-- New_sprints_proposed: none
-- Polish_items_folded_in: none (sprint is documentation-only; existing tasks 8–10 cover quality gates — tonal map, speaker_id registry, Writing Bible scanner pass)
-- Decisions_locked: 1 (Bidding rival personas; four prior decisions remained resolved from pilot)
-- Notes: Verified all six Context-to-read paths exist (station_anchors.md, character_voices.md, cultural_guide.md, dialogue_writing_guide.md, dialogues.json, flags.py). Confirmed Cargo Broker stub (lines 430–447) and Odom name in dialogue tree (lines 1003–1244, speaker_id `delivery_merchant`). Existing 10-task plan is sound; refined task 10 baseline and locked the final open decision. Implementer can proceed.
+- Started: 2026-04-26 20:50
+- Completed: 2026-04-26 21:30
+- Files_changed: requirements/character_voices.md
+- Commits: e028047
+- Tests_added: 0
+- Tests_baseline: 8326
+- Tests_passing: 8326
+- Tests_skipped: 98
+- Lint_clean: n/a (markdown only)
+- Format_clean: n/a (markdown only)
+- SI3_scanner_clean: n/a (no flags added or modified)
+- Writing_bible_clean: yes (tests/test_writing_bible_compliance.py 17/17 passed; new content manually verified -- no em-dashes in body prose, no banned phrases, no parallel negation; headings use existing file em-dash convention which scanner does not cover)
+- Touch_zones_respected: yes (only requirements/character_voices.md modified)
+- Notes: 21 NPC voice sheets at full Elena-standard (six sections, 3+ sample lines each). Cargo Broker stub upgraded to full Odom sheet. SA Notes added to Malia Torres and Marcus Jin. Tonal register line added to all sheets (existing and new). Speaker_id registry and inventory table committed. Voice Interactions table extended with 5 new SA-relevant pairings. Deferred reconciliations (delivery_merchant to odom_broker) flagged as SA-V scope. All 6 acceptance criteria satisfied.
 
 #### SA-PREP-2 — Existing-data audit
 
