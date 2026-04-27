@@ -1542,7 +1542,7 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 - Started: 2026-04-27 15:28
 - Completed: 2026-04-27 16:30
 - Files_changed: requirements/sa_politics_design.md
-- Commits: (pending -- see next commit)
+- Commits: 36ce939
 - Tests_added: 0
 - Tests_baseline: 8769
 - Tests_passing: 8769
