@@ -1008,7 +1008,7 @@ The following decisions were locked during planning:
 
 #### SA-1 — Wreckers' Guild Hall (Salvage Contracts)
 
-**Status**: in-progress (reviewing)
+**Status**: in-progress (implementing)
 **Phase**: Phase I | **Size**: L | **Effort**: 2-3 weeks
 **Depends on**: SA-PREP-1, SA-A2, SA-B-EXT-1 | **Blocks**: SA-P5, SA-B4
 
@@ -1116,22 +1116,29 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 - 2026-04-27 14:35 — validation chain: ruff format clean (touched files only), ruff check clean (touched files), mypy clean for new modules, full suite 8533 → 8625 (+92 tests, 0 new failures), Writing Bible scanner clean, SI-3 dialogue-integrity scanner clean, save-load coverage in place. PHASE_OK
 - 2026-04-27 13:19 — harness: review phase starting (rework cycle 0)
 - 2026-04-27 14:05 — review complete; 1 critical finding (Paz Reina / Daro Teck / Ife Obi not implemented as interactive speakers — named deliverable, Acceptance #12 unverifiable for secondary contacts), 1 minor finding (game.py format drift on touched file, pre-existing but uncleaned). Rework items R1-R2 added to Plan. PHASE_NEEDS_REWORK: secondary contacts (Paz, Daro, Ife) not implemented as interactive speakers; Acceptance criterion 12 unverifiable
-
+- 2026-04-27 13:27 — harness: review demanded rework (cycle 1/3). secondary contacts (Paz, Daro, Ife) not implemented as interactive speakers; Acceptance criterion 12 unverifiable
+- 2026-04-27 13:27 — harness: implement phase starting (rework cycle 1)
+- 2026-04-27 14:00 — R1 dialogue authoring: 3 dialogue trees (greeting → craft → signoff) authored in `data/dialogue/dialogues.json` for Paz Reina, Daro Teck, Ife Obi; voice-checked against character_voices.md 757-883 (spatial-precision / diagnostic-directness / indexing-curiosity registers held); 3 NPC entries added to `data/characters/npcs.json` (faction_id=frontier_alliance, home_system_id=crimson_reach).
+- 2026-04-27 14:10 — R1 view + tests: secondary-contacts dock in `WreckersGuildView` with 3 buttons + in-view dialogue panel (greeting → craft → signoff → close); `get_contact_speaker_ids`, `_open_contact_dialogue`, `_advance_dialogue`, `_close_active_dialogue`, `get_active_dialogue_node` exposed for tests; 8 red view tests written (TDD), then green; scenario test extended with full 3-contact arc and per-node Writing Bible compliance check (9 distinct authored strings asserted).
+- 2026-04-27 14:15 — R2: collapsed `register_state(GameState.WRECKERS_GUILD, ...)` from 3-line multi-arg call to single line in `spacegame/engine/game.py:2179`.
+- 2026-04-27 14:20 — validation chain: ruff format clean (touched files), ruff check clean (touched files), mypy clean for touched files (pre-existing errors in unrelated modules unchanged), full suite 8625 → 8634 (+9 tests, 0 new failures, 98 skipped unchanged), Writing Bible scanner clean, SI-3 dialogue-integrity scanner clean. PHASE_OK
 **Last phase report.**
-- Phase: review
-- Outcome: PHASE_NEEDS_REWORK: secondary contacts (Paz, Daro, Ife) not implemented as interactive speakers; Acceptance criterion 12 unverifiable
-- Started: 2026-04-27 13:19
-- Completed: 2026-04-27 14:05
-- Files_changed: none
-- Commits: none
-- Tests_passing: 8625
-- Acceptance_criteria_verified: 13/14
-- Polish_items_verified: 2/2
-- Findings_critical: 1
-- Findings_minor_fixed_directly: 0
-- Single_tighten: `_turn_in_active_contract()` in wreckers_guild_view.py:596-600 directly accesses MissionManager._status and ._progress as private attributes; a public `mark_completed(mission_id)` method on MissionManager would remove this fragile coupling.
-- Followup_sprints_added: none
-- Notes: Mechanical core fully implemented and tested (92 new tests, contract board, tier gating, payout math, save/load, journal entries, tip overlay, station hub Enter button all pass). Critical gap: three secondary contacts (Paz Reina, Daro Teck, Ife Obi) named in deliverables as standalone speakers with dialogue trees have zero interactive presence. game.py has pre-existing format drift that the implementer touched but did not clean.
+- Phase: implement
+- Outcome: PHASE_OK
+- Started: 2026-04-27 13:27
+- Completed: 2026-04-27 14:20
+- Files_changed: data/characters/npcs.json, data/dialogue/dialogues.json, spacegame/engine/game.py, spacegame/views/wreckers_guild_view.py, tests/test_scenarios/test_scenario_wreckers_arc.py, tests/test_views/test_wreckers_guild_view.py
+- Commits: 066c9dc, 821a64b, adade6c
+- Tests_added: 9
+- Tests_baseline: 8625
+- Tests_passing: 8634
+- Tests_skipped: 98
+- Lint_clean: yes
+- Format_clean: yes
+- SI3_scanner_clean: yes
+- Writing_bible_clean: yes
+- Touch_zones_respected: yes (note: planner referenced `data/galaxy/npcs.json` for NPC entries; canonical path is `data/characters/npcs.json` — used the canonical path)
+- Notes: Rework cycle 1 closes both review findings. R1 lands Paz Reina / Daro Teck / Ife Obi as interactive speakers with 3-node dialogue trees each, surfaced through a secondary-contacts dock below the contract board; each contact's voice register is preserved (Paz's confirmed/estimated tagging, Daro's assessment-then-reasoning, Ife's cataloging language). R2 collapses the 3-line `register_state` call onto one line. Acceptance criterion 12 now verifiable end-to-end via `test_secondary_contacts_walk_full_dialogues_after_enrollment`.
 
 #### SA-2 — Deep Shafts memorial / pilgrimage
 
