@@ -25,7 +25,7 @@ VALID_SYSTEMS = {
 
 VALID_FACTIONS = {
     "commerce_guild",
-    "industrial_union",
+    "miners_union",
     "science_collective",
     "frontier_alliance",
     "free_alliance",
@@ -48,7 +48,7 @@ class TestCrewTemplateData:
 
     def test_total_crew_count(self) -> None:
         templates = _load_crew_data()
-        assert len(templates) == 19  # 4 companions + 15 crew
+        assert len(templates) == 24  # 4 companions + 20 crew (includes 5 SA arc specialists)
 
     def test_companion_count(self) -> None:
         templates = _load_crew_data()
@@ -58,7 +58,7 @@ class TestCrewTemplateData:
     def test_crew_count(self) -> None:
         templates = _load_crew_data()
         crew = [t for t in templates if not t.get("is_companion", False)]
-        assert len(crew) == 15
+        assert len(crew) == 20  # includes 5 SA arc specialists added in SA-A2
 
     def test_all_have_required_fields(self) -> None:
         required = {"id", "name", "role", "description", "portrait_color"}

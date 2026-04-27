@@ -199,7 +199,7 @@ class TestCrewTemplateNewFields:
     def test_marcus_faction_and_home(self) -> None:
         loader = _load_all()
         template = loader.crew_templates["marcus_jin"]
-        assert template.faction_id == "industrial_union"
+        assert template.faction_id == "miners_union"
         assert template.home_system_id == "breakstone"
 
     def test_priya_faction_and_home(self) -> None:
