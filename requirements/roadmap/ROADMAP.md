@@ -1555,7 +1555,7 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 - Notes: Design doc is thorough and SA-P2-ready. The counter-argument inconsistency was the only substantive finding; corrected directly. All 15 locked decisions have rationales; two explicit deferred-to-SA-P2 items named. Worked example (Hask+Drift, 3 rounds) is usable as a SA-P2 unit test fixture.
 #### SA-P2 — Politics Core
 
-**Status**: in-progress (implementing)
+**Status**: in-progress (reviewing)
 **Phase**: Phase II | **Size**: XL | **Effort**: 2 weeks
 **Depends on**: SA-P1, SA-A2, SA-C2, SA-B-EXT-1 | **Blocks**: SA-P3, SA-P4, SA-P5
 
@@ -1739,24 +1739,24 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 - 2026-04-27 18:15 — task 13 done: scenario test walks the full §4.6 worked example end-to-end (3 rounds, all integration channels asserted including pre-empted counter-argument), plus alternate path that yields `partial_win_off_record` via mediation. Save/load round-trip asserted at three boundaries (ROUND_OPEN start, ROUND_PENDING mid-dispute, post-RESOLVING).
 - 2026-04-27 18:30 — task 14 done: perf smoke (`submit_argument` < 100 ms on worked example, asserted via `time.perf_counter`).
 - 2026-04-27 18:50 — task 15 done: ruff format + lint clean on touched files; SI-3 dialogue-integrity scanner clean (no new orphan flags — five SA-P2 helpers will be paired by SA-P3 content); Writing Bible scanner clean (no em-dashes / banned phrases in new player-facing strings); full suite 8901 passing vs 8769 baseline (+132 net new tests, zero regressions). Touch zones respected (one out-of-zone artifact: `ralph/.running` harness PID file accidentally committed in commit 1; left in place since the harness regenerates it). PHASE_OK
+- 2026-04-27 16:52 — harness: review phase starting (rework cycle 0)
+- 2026-04-27 17:05 — review complete; 1 minor finding fixed directly (AC 13: sub-rep deduction had no test exercising the actual -1 loss path — added TestSubRepDeduction with stub-config wiring to test_politics_delegate.py, commit 4ef4506). All 16 AC verified. 8903 passing post-fix. PHASE_OK
 
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-04-27 16:04
-- Completed: 2026-04-27 18:50
-- Files_changed: spacegame/config.py, spacegame/constants/flags.py, spacegame/data_loader.py, spacegame/engine/game.py, spacegame/models/market.py, spacegame/models/player.py, spacegame/models/politics_dispute.py (NEW), spacegame/save_manager.py, spacegame/views/dispute_view.py (NEW), spacegame/views/station_hub_view.py, tests/test_models/test_market_politics_shifts.py (NEW), tests/test_models/test_politics_argument.py (NEW), tests/test_models/test_politics_delegate.py (NEW), tests/test_models/test_politics_dispute.py (NEW), tests/test_models/test_politics_outcome_propagation.py (NEW), tests/test_scenarios/test_scenario_politics_loop.py (NEW), tests/test_views/test_dispute_view.py (NEW)
-- Commits: 69923d0, 512e4bd, 5dd46d8, eada467, 73cd5c5, 2fb7651, cf601dd
-- Tests_added: 132
-- Tests_baseline: 8769
-- Tests_passing: 8901
-- Tests_skipped: 98
-- Lint_clean: yes
-- Format_clean: yes
-- SI3_scanner_clean: yes
-- Writing_bible_clean: yes
-- Touch_zones_respected: yes (one artifact: `ralph/.running` harness lock committed in commit 1; not declared in zones but harmless)
-- Notes: All 16 acceptance criteria addressed. AC 1 (all input paths exercised in tests). AC 2 (resolution formula byte-for-byte; §4.6 + §6.3 worked examples reproduce). AC 3 (deterministic resolution; no random.* in resolution stage; verified by parameterized test). AC 4 (all four outcome categories reachable in tests including 60% threshold). AC 5 (all four propagation channels asserted with both branches of §7.6 news gate). AC 6 (save/load round-trip at three boundaries). AC 7 (0/1/2 pre-commits produce strictly different starting distributions). AC 8 (132 > 30-50 range). AC 9 (full suite green; ruff format / check / mypy clean). AC 10 (empty/locked/loading/error renders verified). AC 11 (live preview tested with four selection changes). AC 12 (flag helpers byte-for-byte). AC 13 (sub-rep deduction wired with consecutive-fail escalation). AC 14 (market shift stack rule verified with coexistence). AC 15 (Cass intel once-per-session). AC 16 (perf smoke <100ms).
+- Started: 2026-04-27 16:52
+- Completed: 2026-04-27 17:05
+- Files_changed: tests/test_models/test_politics_delegate.py
+- Commits: 4ef4506
+- Tests_passing: 8903
+- Acceptance_criteria_verified: 16/16
+- Polish_items_verified: n/a
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 1
+- Single_tighten: `_resolve_counter_argument` (politics_dispute.py:802) hard-codes "soil_impact" as the opposition counter-framing for all disputes — SA-P3 will need to extend this to read counter-framings from the template definition when adding non-Verdant venues.
+- Followup_sprints_added: none
+- Notes: AC 13 sub-rep deduction code was wired but untested; fixed by adding TestSubRepDeduction. All other AC verified against code and tests. Formula, determinism, save/load, flag strings, view substates, live preview, market shifts, Cass Weller gate all confirmed correct.
 
 #### SA-P3 — Mayors' Council Chamber (Verdant Venue)
 
