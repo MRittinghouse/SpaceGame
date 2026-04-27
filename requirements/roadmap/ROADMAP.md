@@ -42,7 +42,7 @@ The SA-arc table below is **auto-regenerated** by the ralph harness from the spr
 | [SA-P2](#sa-p2--politics-core) | Politics Core | II | XL | done | SA-P1, SA-A2, SA-C2, SA-B-EXT-1 |
 | [SA-P3](#sa-p3--mayors-council-chamber-verdant-venue) | Mayors' Council Chamber (Verdant Venue) | II | L | done | SA-P2 |
 | [SA-P4](#sa-p4--alliance-congress-hall-havens-rest-venue) | Alliance Congress Hall (Haven's Rest Venue) | II | L | done | SA-P2, SA-P3 |
-| [SA-P5](#sa-p5--wreckers-guild-gray-market-mediation-venue) | Wreckers' Guild gray-market mediation venue | II | M | review | SA-P2, SA-1 |
+| [SA-P5](#sa-p5--wreckers-guild-gray-market-mediation-venue) | Wreckers' Guild gray-market mediation venue | II | M | done | SA-P2, SA-1 |
 | [SA-P6](#sa-p6--politics-polish--tuning) | Politics polish + tuning | II | M | todo | SA-P3, SA-P4, SA-P5 |
 | [SA-B1](#sa-b1--bidding-system-design) | Bidding System Design | III | M | todo | SA-PREP-1 |
 | [SA-B2](#sa-b2--bidding-core) | Bidding Core | III | XL | todo | SA-B1, SA-A2, SA-C2 |
@@ -2131,7 +2131,7 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 - Notes: Clean sprint. All 23 acceptance criteria met across engine extensions (annual scheduling + predicate-dispatch betrayal), data content (8 templates, 4 dialogue trees, 3 journal entries), venue dispatch refactor, tutorial overlay, and sub-rep config. is_dispute_active takes 2 args (not 3 as spec'd) because last_resolved_day is manager-owned state — design improvement, behavior identical. SA-P4 introduced zero new mypy errors vs baseline. SA-P5 inherits _VENUE_REGISTRY without engine work.
 #### SA-P5 — Wreckers' Guild gray-market mediation venue
 
-**Status**: in-progress (reviewing)
+**Status**: done
 **Phase**: Phase II | **Size**: M | **Effort**: 1 week
 **Depends on**: SA-P2, SA-1 | **Blocks**: SA-P6
 
@@ -2302,7 +2302,7 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 - 2026-04-27 — implement phase complete; all deliverables shipped: 5 Reach dispute templates (reach_disputes.json); torres_arbitration dialogue tree (persuasion-keyed skill checks, 10 nodes, all reachable); 3 SA-P5 journal entries; crimson_reach faction added to factions.json; seen_gray_market_arbitration_tip flag helper; _VENUE_REGISTRY extended + WRECKERS_GUILD_CONFIG registered + _on_dispute_outcome extended for 3 SA-P5 flags; LOCKED_NO_MEMBERSHIP + VenueTheme + per-tier action gating + gray-market tip wired in dispute_view.py; Arbitration Chamber button in wreckers_guild_view.py; 60 new tests (32 data-validation + 12 dispute-view SA-P5 + 6 wreckers-guild-view + 2 venue-dispatch + 8 scenario); fixed [Social N] → [Persuasion N] skill prefix and expanded 4-word body to 7-word body per Writing Bible scanner; suite: 9084 passed / 98 skipped; ruff: 0 violations on touched files. PHASE_OK
 - 2026-04-27 19:25 — harness: review phase starting (rework cycle 0)
 - 2026-04-27 19:55 — review complete; 4 minor findings fixed directly: (1) ruff format applied to test_reach_disputes_data.py; (2) torres_arbitration voice fidelity gap — "kid" address missing from non-master nodes, added to `observing` and `argue_failure` per character_voices.md:380 + AC 17 register requirement; (3) test_politics_dispute.py extended with TestReachSubRepDeduction (3 new tests) covering AC 7 corridor-failure sub-rep deduction, independence from faction rep, and no-op when config absent; (4) scenario test assertion gaps for AC 18 fixed — added crimson_reach rep delta (-3 on loss) and market shift assertions to test_any_resolution_fires_first_reach_arbitration. All 21 acceptance criteria verified. Suite: 9087 passed / 98 skipped (+3 net vs implement baseline). Single tighten: the scenario test is model-only (no view-level navigation) — full navigation flow (station hub → guild hall → chamber button → dispute view) is covered by view tests individually but never exercised end-to-end in a single test. Acceptable for this sprint; SA-P6 owns integration polish. PHASE_OK
-
+- 2026-04-27 19:39 — harness: review passed, marking done
 **Last phase report.**
 - Phase: review
 - Outcome: PHASE_OK
