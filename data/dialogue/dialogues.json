@@ -8355,6 +8355,306 @@
                     "expression": "neutral"
                 }
             ]
+        },
+        {
+            "id": "councillor_wentworth_congress_corridor",
+            "start_node_id": "start",
+            "nodes": [
+                {
+                    "id": "start",
+                    "speaker_id": "councillor_wentworth",
+                    "text": "He sets down a folder when you enter, slowly. \"Captain. The session starts in an hour. I have time for one conversation. Tell me which proposal you came to discuss, and tell me whether you have read the precedent on it.\"",
+                    "responses": [
+                        {
+                            "text": "Walk me through your read on the proposal.",
+                            "next_node_id": "argue"
+                        },
+                        {
+                            "text": "I will sit through the session and watch first.",
+                            "next_node_id": "farewell"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "argue",
+                    "speaker_id": "councillor_wentworth",
+                    "text": "\"The last time the Congress moved this quickly was the 2318 defense compact. That one took three sessions to sort out the implementation review. I would like to know what we are proposing to do differently this time. Lay it out.\"",
+                    "responses": [
+                        {
+                            "text": "[Persuasion 3] Walk him through the implementation timeline and what makes it different this round.",
+                            "next_node_id": "argue_success",
+                            "skill_check": {
+                                "skill": "persuasion",
+                                "difficulty": 3,
+                                "success_node_id": "argue_success",
+                                "failure_node_id": "argue_failure"
+                            }
+                        },
+                        {
+                            "text": "Tell him the Reach cannot wait. The clock is the argument.",
+                            "next_node_id": "argue_failure"
+                        }
+                    ],
+                    "expression": "stern"
+                },
+                {
+                    "id": "argue_success",
+                    "speaker_id": "councillor_wentworth",
+                    "text": "Long pause. He turns the folder face down. \"Let me think about that. Yes. The implementation review built into the resolution is the difference. I have heard the case. I have read the precedents. Haven's Rest will support it.\"",
+                    "responses": [
+                        {
+                            "text": "Thank you, Councillor.",
+                            "next_node_id": "farewell"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "argue_failure",
+                    "speaker_id": "councillor_wentworth",
+                    "text": "\"I understand that this is pressing. I have heard that about six proposals this year. Two of them were. I would like to know which kind this is before we commit. Bring me the implementation timeline and we can have this conversation properly.\"",
+                    "responses": [
+                        {
+                            "text": "Understood.",
+                            "next_node_id": "farewell"
+                        }
+                    ],
+                    "expression": "stern"
+                },
+                {
+                    "id": "farewell",
+                    "speaker_id": "councillor_wentworth",
+                    "text": "\"Good. The session opens in an hour. If we run long, the third item carries to next session. That has happened twice in my time here. We have survived both.\"",
+                    "responses": [],
+                    "expression": "neutral"
+                }
+            ]
+        },
+        {
+            "id": "councillor_shirane_congress_corridor",
+            "start_node_id": "start",
+            "nodes": [
+                {
+                    "id": "start",
+                    "speaker_id": "councillor_shirane",
+                    "text": "She is at her desk with a draft amendment open and a ledger she keeps closed. \"Captain. Here is where we are: Verdant needs the water commitment in writing, Haven's Rest needs the implementation review, and the Reach needs to know who is paying. Which of those did you come to address?\"",
+                    "responses": [
+                        {
+                            "text": "Walk me through the draft. I want to find the deal.",
+                            "next_node_id": "argue"
+                        },
+                        {
+                            "text": "I will hear what surfaces in session.",
+                            "next_node_id": "farewell"
+                        }
+                    ],
+                    "expression": "happy"
+                },
+                {
+                    "id": "argue",
+                    "speaker_id": "councillor_shirane",
+                    "text": "\"What if we adjusted the timeline so the implementation review fires after the first cycle? That gives Wentworth the precedent he wants and gives Tejada something to take back. The pricing structure is the obstacle. Let us address that. What can move on your side?\"",
+                    "responses": [
+                        {
+                            "text": "[Persuasion 3] Name a concession that holds the structure but reads as a real shift.",
+                            "next_node_id": "argue_success",
+                            "skill_check": {
+                                "skill": "persuasion",
+                                "difficulty": 3,
+                                "success_node_id": "argue_success",
+                                "failure_node_id": "argue_failure"
+                            }
+                        },
+                        {
+                            "text": "Tell her the deal is fine as drafted. The room will catch up.",
+                            "next_node_id": "argue_failure"
+                        }
+                    ],
+                    "expression": "confident"
+                },
+                {
+                    "id": "argue_success",
+                    "speaker_id": "councillor_shirane",
+                    "text": "She nods, fast, and reaches for the draft. \"Workable. I think there is a deal here. I will rework the second clause and send it to Wentworth before the floor opens. If you can carry Tejada, I will carry the rest.\"",
+                    "responses": [
+                        {
+                            "text": "Then we have a session.",
+                            "next_node_id": "farewell"
+                        }
+                    ],
+                    "expression": "happy"
+                },
+                {
+                    "id": "argue_failure",
+                    "speaker_id": "councillor_shirane",
+                    "text": "Brief pause. She closes the draft folder. \"This does not need to be a crisis. We have been on this item for two sessions. I would like to understand what specific change would make this supportable. Bring me that and we can talk.\"",
+                    "responses": [
+                        {
+                            "text": "Fair enough.",
+                            "next_node_id": "farewell"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "farewell",
+                    "speaker_id": "councillor_shirane",
+                    "text": "\"I will see you on the floor. If we get the deal, the deal gets done. If we do not, we draft the next version tonight.\"",
+                    "responses": [],
+                    "expression": "happy"
+                }
+            ]
+        },
+        {
+            "id": "delegate_vasc_congress_corridor",
+            "start_node_id": "start",
+            "nodes": [
+                {
+                    "id": "start",
+                    "speaker_id": "delegate_vasc",
+                    "text": "She is reading the resolution text when you arrive. Sets it down. \"Captain. The Alliance was built on self-determination. Whatever you are about to ask me to support, that principle applies. State your case in those terms or do not waste my time.\"",
+                    "responses": [
+                        {
+                            "text": "Lay out the principle case. Tell me where the proposal lands against it.",
+                            "next_node_id": "argue"
+                        },
+                        {
+                            "text": "I will hear how you frame it on the floor.",
+                            "next_node_id": "farewell"
+                        }
+                    ],
+                    "expression": "stern"
+                },
+                {
+                    "id": "argue",
+                    "speaker_id": "delegate_vasc",
+                    "text": "\"Tell me what this proposal does to the people it affects. Not the projection. The actual settlement. The Alliance was built by people who decided they would rather be uncomfortable and free than comfortable and governed from outside. Where does this fall on that axis?\"",
+                    "responses": [
+                        {
+                            "text": "[Persuasion 3] Walk her through the autonomy clause and how it reads from a settlement floor.",
+                            "next_node_id": "argue_success",
+                            "skill_check": {
+                                "skill": "persuasion",
+                                "difficulty": 3,
+                                "success_node_id": "argue_success",
+                                "failure_node_id": "argue_failure"
+                            }
+                        },
+                        {
+                            "text": "Tell her the principle is fine. The vote is what matters.",
+                            "next_node_id": "argue_failure"
+                        }
+                    ],
+                    "expression": "stern"
+                },
+                {
+                    "id": "argue_success",
+                    "speaker_id": "delegate_vasc",
+                    "text": "Brief pause. She turns the page. \"Good. That preserves the principle. I can accept a compromise that preserves the principle. I cannot accept one that abandons it for a better implementation schedule. Bring it to the floor in those words.\"",
+                    "responses": [
+                        {
+                            "text": "Understood.",
+                            "next_node_id": "farewell"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "argue_failure",
+                    "speaker_id": "delegate_vasc",
+                    "text": "\"I want the record to show the concern. The principle applies here, and the proposal as drafted does not honor it. I am not going to win this round. I am also not going to drop the issue. Bring me a version that does honor it and we will have this conversation again.\"",
+                    "responses": [
+                        {
+                            "text": "Fair.",
+                            "next_node_id": "farewell"
+                        }
+                    ],
+                    "expression": "stern"
+                },
+                {
+                    "id": "farewell",
+                    "speaker_id": "delegate_vasc",
+                    "text": "\"I am speaking for myself on this one, not the settlement. Verdant's mandate is softer. I am not. I will see you in session.\"",
+                    "responses": [],
+                    "expression": "neutral"
+                }
+            ]
+        },
+        {
+            "id": "delegate_tejada_congress_corridor",
+            "start_node_id": "start",
+            "nodes": [
+                {
+                    "id": "start",
+                    "speaker_id": "delegate_tejada",
+                    "text": "He is at the door before you reach the desk. \"Captain. The Reach has eighteen hundred people who need this to work. I have ten minutes. What do you want?\"",
+                    "responses": [
+                        {
+                            "text": "Walk me through what changes your vote.",
+                            "next_node_id": "argue"
+                        },
+                        {
+                            "text": "I will see how it reads on the floor.",
+                            "next_node_id": "farewell"
+                        }
+                    ],
+                    "expression": "stern"
+                },
+                {
+                    "id": "argue",
+                    "speaker_id": "delegate_tejada",
+                    "text": "\"This is about pricing. Let me say what nobody wants to say. The Reach is not in the same position as Haven's Rest. What takes Haven's Rest two years to feel, we feel in two months. I need this resolution to account for that. Tell me how it does.\"",
+                    "responses": [
+                        {
+                            "text": "[Persuasion 3] Lay out the Reach-tier clause and what it costs the rest of the room.",
+                            "next_node_id": "argue_success",
+                            "skill_check": {
+                                "skill": "persuasion",
+                                "difficulty": 3,
+                                "success_node_id": "argue_success",
+                                "failure_node_id": "argue_failure"
+                            }
+                        },
+                        {
+                            "text": "Tell him the Reach can wait one more cycle. The pricing will land.",
+                            "next_node_id": "argue_failure"
+                        }
+                    ],
+                    "expression": "stern"
+                },
+                {
+                    "id": "argue_success",
+                    "speaker_id": "delegate_tejada",
+                    "text": "He nods once. Direct. \"That works. I will support it. The Reach is not in the same position as Haven's Rest, and this version reads that. We have disagreed on four of the five items today. That is fine. We are Alliance.\"",
+                    "responses": [
+                        {
+                            "text": "Then we have a session.",
+                            "next_node_id": "farewell"
+                        }
+                    ],
+                    "expression": "neutral"
+                },
+                {
+                    "id": "argue_failure",
+                    "speaker_id": "delegate_tejada",
+                    "text": "\"The Reach will not support this. Not as drafted. Who benefits from this taking six months? I want the answer on the record. I will take it back to the Reach, and I will not commit before I do.\"",
+                    "responses": [
+                        {
+                            "text": "Understood.",
+                            "next_node_id": "farewell"
+                        }
+                    ],
+                    "expression": "stern"
+                },
+                {
+                    "id": "farewell",
+                    "speaker_id": "delegate_tejada",
+                    "text": "\"I will see you on the floor. The Reach is not voting for procedure. We are voting for outcomes. Bring outcomes.\"",
+                    "responses": [],
+                    "expression": "neutral"
+                }
+            ]
         }
     ]
 }

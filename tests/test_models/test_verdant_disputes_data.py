@@ -58,9 +58,16 @@ def verdant_raw() -> list[dict]:
 
 @pytest.fixture(scope="module")
 def verdant_templates() -> dict[str, PoliticsDisputeTemplate]:
-    """Loader-parsed templates keyed by template id."""
+    """Loader-parsed Verdant templates keyed by template id.
+
+    SA-P4 added Alliance Congress templates that load through the same
+    ``data/politics`` directory; filter to the SA-P3 issue families so
+    these tests only assert against Verdant content.
+    """
     loader = DataLoader(data_dir=PROJECT_ROOT / "data")
-    return loader.load_politics_disputes()
+    all_templates = loader.load_politics_disputes()
+    verdant_ids = set().union(*ISSUE_FAMILIES.values())
+    return {tid: tpl for tid, tpl in all_templates.items() if tid in verdant_ids}
 
 
 @pytest.fixture(scope="module")

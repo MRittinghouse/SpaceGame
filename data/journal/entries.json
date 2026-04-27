@@ -286,6 +286,27 @@
       "trigger_flag": "first_coalition_won",
       "system_id": "verdant",
       "mission_id": ""
+    },
+    {
+      "entry_id": "auto_p4_first_alliance_congress_attended",
+      "text": "First session at the Alliance Congress in Haven's Rest. Four delegates and four different reads on the same resolution. Wentworth tracks precedent. Shirane drafts the deal. Vasc holds the principle. Tejada speaks for the Reach. The room runs slower than Verdant and the stakes scale across settlements. I need to know which delegate moves on which lever before I come back next year.",
+      "trigger_flag": "first_alliance_congress_attended",
+      "system_id": "havens_rest",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_p4_first_coalition_betrayal_handled",
+      "text": "Had a delegate locked before the session and watched the pre-commit break mid-arc. The room saw it. The vote went sideways for a round. I rebuilt what I could and walked out with something. Not the win I came for. Better than nothing. Note for the next cycle: a pre-commit is good for as long as the conditions that bought it hold.",
+      "trigger_flag": "first_coalition_betrayal_handled",
+      "system_id": "havens_rest",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_p4_first_alliance_wide_vote_won",
+      "text": "Carried a Congress vote that ripples beyond Haven's Rest. Markets at two settlements moved on the resolution. The work was building a coalition that held in two settlements at once, not one. The Alliance feels different from this side of a Congress win. Bigger room. Slower clock. The vote stays.",
+      "trigger_flag": "first_alliance_wide_vote_won",
+      "system_id": "havens_rest",
+      "mission_id": ""
     }
   ]
 }

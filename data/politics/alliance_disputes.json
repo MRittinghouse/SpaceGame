@@ -1,0 +1,1147 @@
+{
+  "disputes": [
+    {
+      "id": "cross_settlement_tariff_review",
+      "headline": "Cross-Settlement Tariff Review",
+      "factions_affected": ["frontier_alliance", "commerce_guild"],
+      "base_difficulty": 4,
+      "round_count": 3,
+      "deadline_days": 12,
+      "is_campaign_arc": false,
+      "is_annual_congress": false,
+      "issue_family": "inter_settlement_trade",
+      "delegates": [
+        {
+          "delegate_id": "councillor_wentworth",
+          "name": "Councillor Bram Wentworth",
+          "starting_visible_state": "wavering",
+          "position_vector": {
+            "process_fidelity": 0.5,
+            "trade_leverage": 0.0,
+            "frontier_autonomy_stance": 0.1,
+            "settlement_solidarity": 0.2
+          },
+          "faction_loyalty": 0.6,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "alliance_congress"
+        },
+        {
+          "delegate_id": "councillor_shirane",
+          "name": "Councillor Yuta Shirane",
+          "starting_visible_state": "leaning_yes",
+          "position_vector": {
+            "process_fidelity": 0.0,
+            "trade_leverage": 0.6,
+            "frontier_autonomy_stance": 0.0,
+            "settlement_solidarity": 0.3
+          },
+          "faction_loyalty": 0.5,
+          "prior_dispute_memory": 1,
+          "sub_faction_id": "alliance_congress"
+        },
+        {
+          "delegate_id": "delegate_vasc",
+          "name": "Delegate Petra Vasc",
+          "starting_visible_state": "wavering",
+          "position_vector": {
+            "process_fidelity": 0.2,
+            "trade_leverage": -0.2,
+            "frontier_autonomy_stance": 0.6,
+            "settlement_solidarity": 0.4
+          },
+          "faction_loyalty": 0.7,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "alliance_congress"
+        },
+        {
+          "delegate_id": "delegate_tejada",
+          "name": "Delegate Raul Tejada",
+          "starting_visible_state": "leaning_no",
+          "position_vector": {
+            "process_fidelity": -0.3,
+            "trade_leverage": -0.4,
+            "frontier_autonomy_stance": 0.2,
+            "settlement_solidarity": 0.5
+          },
+          "faction_loyalty": 0.6,
+          "prior_dispute_memory": -1,
+          "sub_faction_id": "alliance_congress"
+        }
+      ],
+      "eligible_framings": [
+        "trade_leverage",
+        "process_fidelity",
+        "frontier_autonomy_stance",
+        "settlement_solidarity"
+      ],
+      "eligible_evidence": [
+        "forgeworks_2324_partnership",
+        "northern_aquifer_draw_report"
+      ],
+      "framing_modifiers": {
+        "trade_leverage": 1,
+        "process_fidelity": 0,
+        "frontier_autonomy_stance": 1,
+        "settlement_solidarity": 0
+      },
+      "framing_target_dimensions": {
+        "trade_leverage": "trade_leverage",
+        "process_fidelity": "process_fidelity",
+        "frontier_autonomy_stance": "frontier_autonomy_stance",
+        "settlement_solidarity": "settlement_solidarity"
+      },
+      "counter_framings": {
+        "delegate_tejada": ["settlement_solidarity", "settlement_solidarity"],
+        "delegate_vasc": ["frontier_autonomy_stance", "frontier_autonomy_stance"]
+      },
+      "betrayal_conditions": {},
+      "outcome_matrix": {
+        "win": {
+          "rep_deltas": {"frontier_alliance": 4, "commerce_guild": -2},
+          "market_shifts": [
+            {"commodity_id": "manufactured_goods", "system_id": "havens_rest", "magnitude": 0.10, "duration_days": 30},
+            {"commodity_id": "food", "system_id": "verdant", "magnitude": -0.05, "duration_days": 25}
+          ],
+          "mission_unlocks": [
+            "dispute_resolved_cross_settlement_tariff_review",
+            "coalition_won_cross_settlement_tariff_review"
+          ],
+          "mission_locks": [],
+          "news_headline": "Congress passes cross-settlement tariff review; Guild routes face new schedule."
+        },
+        "partial_win_coalition_thin": {
+          "rep_deltas": {"frontier_alliance": 1, "commerce_guild": -1},
+          "market_shifts": [
+            {"commodity_id": "manufactured_goods", "system_id": "havens_rest", "magnitude": 0.04, "duration_days": 18}
+          ],
+          "mission_unlocks": ["dispute_resolved_cross_settlement_tariff_review"],
+          "mission_locks": [],
+          "news_headline": null
+        },
+        "partial_win_off_record": {
+          "rep_deltas": {"frontier_alliance": 2, "commerce_guild": -1},
+          "market_shifts": [
+            {"commodity_id": "manufactured_goods", "system_id": "havens_rest", "magnitude": 0.05, "duration_days": 22}
+          ],
+          "mission_unlocks": [
+            "dispute_resolved_cross_settlement_tariff_review",
+            "dispute_mediated_cross_settlement_tariff_review"
+          ],
+          "mission_locks": [],
+          "news_headline": null
+        },
+        "loss": {
+          "rep_deltas": {"frontier_alliance": -2, "commerce_guild": 2},
+          "market_shifts": [
+            {"commodity_id": "manufactured_goods", "system_id": "havens_rest", "magnitude": -0.08, "duration_days": 28}
+          ],
+          "mission_unlocks": [],
+          "mission_locks": ["dispute_resolved_cross_settlement_tariff_review"],
+          "news_headline": "Congress shelves cross-settlement tariff review; Guild routes hold their margin."
+        }
+      }
+    },
+    {
+      "id": "frontier_trade_unification_act",
+      "headline": "Frontier Trade Unification Act",
+      "factions_affected": ["frontier_alliance", "commerce_guild"],
+      "base_difficulty": 5,
+      "round_count": 5,
+      "deadline_days": 24,
+      "is_campaign_arc": true,
+      "is_annual_congress": false,
+      "issue_family": "inter_settlement_trade",
+      "required_flags": ["dispute_resolved_frontier_trade_route_levy"],
+      "delegates": [
+        {
+          "delegate_id": "councillor_wentworth",
+          "name": "Councillor Bram Wentworth",
+          "starting_visible_state": "wavering",
+          "position_vector": {
+            "process_fidelity": 0.6,
+            "trade_leverage": 0.2,
+            "frontier_autonomy_stance": 0.3,
+            "settlement_solidarity": 0.4
+          },
+          "faction_loyalty": 0.6,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "alliance_congress"
+        },
+        {
+          "delegate_id": "councillor_shirane",
+          "name": "Councillor Yuta Shirane",
+          "starting_visible_state": "leaning_yes",
+          "position_vector": {
+            "process_fidelity": 0.1,
+            "trade_leverage": 0.7,
+            "frontier_autonomy_stance": 0.2,
+            "settlement_solidarity": 0.4
+          },
+          "faction_loyalty": 0.5,
+          "prior_dispute_memory": 1,
+          "sub_faction_id": "alliance_congress"
+        },
+        {
+          "delegate_id": "delegate_vasc",
+          "name": "Delegate Petra Vasc",
+          "starting_visible_state": "wavering",
+          "position_vector": {
+            "process_fidelity": 0.3,
+            "trade_leverage": 0.1,
+            "frontier_autonomy_stance": 0.7,
+            "settlement_solidarity": 0.5
+          },
+          "faction_loyalty": 0.7,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "alliance_congress"
+        },
+        {
+          "delegate_id": "delegate_tejada",
+          "name": "Delegate Raul Tejada",
+          "starting_visible_state": "leaning_no",
+          "position_vector": {
+            "process_fidelity": -0.4,
+            "trade_leverage": -0.3,
+            "frontier_autonomy_stance": 0.3,
+            "settlement_solidarity": 0.6
+          },
+          "faction_loyalty": 0.7,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "alliance_congress"
+        }
+      ],
+      "eligible_framings": [
+        "trade_leverage",
+        "process_fidelity",
+        "frontier_autonomy_stance",
+        "settlement_solidarity"
+      ],
+      "eligible_evidence": [
+        "forgeworks_2324_partnership",
+        "verdant_soil_survey_2330",
+        "northern_aquifer_draw_report"
+      ],
+      "framing_modifiers": {
+        "trade_leverage": 1,
+        "process_fidelity": 1,
+        "frontier_autonomy_stance": 1,
+        "settlement_solidarity": 0
+      },
+      "framing_target_dimensions": {
+        "trade_leverage": "trade_leverage",
+        "process_fidelity": "process_fidelity",
+        "frontier_autonomy_stance": "frontier_autonomy_stance",
+        "settlement_solidarity": "settlement_solidarity"
+      },
+      "counter_framings": {
+        "delegate_tejada": ["settlement_solidarity", "settlement_solidarity"]
+      },
+      "betrayal_conditions": {
+        "delegate_tejada": "rep_dropped_below_25:commerce_guild"
+      },
+      "outcome_matrix": {
+        "win": {
+          "rep_deltas": {"frontier_alliance": 6, "commerce_guild": -3},
+          "market_shifts": [
+            {"commodity_id": "manufactured_goods", "system_id": "havens_rest", "magnitude": 0.12, "duration_days": 30},
+            {"commodity_id": "manufactured_goods", "system_id": "verdant", "magnitude": 0.08, "duration_days": 30},
+            {"commodity_id": "food", "system_id": "havens_rest", "magnitude": 0.05, "duration_days": 25}
+          ],
+          "mission_unlocks": [
+            "dispute_resolved_frontier_trade_unification_act",
+            "coalition_won_frontier_trade_unification_act"
+          ],
+          "mission_locks": [],
+          "news_headline": "Congress unifies frontier trade; Alliance settlements share one schedule."
+        },
+        "partial_win_coalition_thin": {
+          "rep_deltas": {"frontier_alliance": 2, "commerce_guild": -1},
+          "market_shifts": [
+            {"commodity_id": "manufactured_goods", "system_id": "havens_rest", "magnitude": 0.05, "duration_days": 20}
+          ],
+          "mission_unlocks": ["dispute_resolved_frontier_trade_unification_act"],
+          "mission_locks": [],
+          "news_headline": null
+        },
+        "partial_win_off_record": {
+          "rep_deltas": {"frontier_alliance": 3, "commerce_guild": -1},
+          "market_shifts": [
+            {"commodity_id": "manufactured_goods", "system_id": "havens_rest", "magnitude": 0.06, "duration_days": 22},
+            {"commodity_id": "manufactured_goods", "system_id": "verdant", "magnitude": 0.04, "duration_days": 22}
+          ],
+          "mission_unlocks": [
+            "dispute_resolved_frontier_trade_unification_act",
+            "dispute_mediated_frontier_trade_unification_act"
+          ],
+          "mission_locks": [],
+          "news_headline": null
+        },
+        "loss": {
+          "rep_deltas": {"frontier_alliance": -3, "commerce_guild": 3},
+          "market_shifts": [
+            {"commodity_id": "manufactured_goods", "system_id": "havens_rest", "magnitude": -0.10, "duration_days": 30}
+          ],
+          "mission_unlocks": [],
+          "mission_locks": ["dispute_resolved_frontier_trade_unification_act"],
+          "news_headline": "Congress fails trade unification; settlements stay on local schedules."
+        }
+      }
+    },
+    {
+      "id": "crimson_response_protocol_review",
+      "headline": "Crimson Response Protocol Review",
+      "factions_affected": ["frontier_alliance"],
+      "base_difficulty": 4,
+      "round_count": 3,
+      "deadline_days": 12,
+      "is_campaign_arc": false,
+      "is_annual_congress": false,
+      "issue_family": "defense_response",
+      "delegates": [
+        {
+          "delegate_id": "councillor_wentworth",
+          "name": "Councillor Bram Wentworth",
+          "starting_visible_state": "wavering",
+          "position_vector": {
+            "process_fidelity": 0.4,
+            "trade_leverage": 0.0,
+            "frontier_autonomy_stance": 0.1,
+            "settlement_solidarity": 0.3
+          },
+          "faction_loyalty": 0.6,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "alliance_congress"
+        },
+        {
+          "delegate_id": "councillor_shirane",
+          "name": "Councillor Yuta Shirane",
+          "starting_visible_state": "wavering",
+          "position_vector": {
+            "process_fidelity": 0.0,
+            "trade_leverage": 0.4,
+            "frontier_autonomy_stance": 0.1,
+            "settlement_solidarity": 0.4
+          },
+          "faction_loyalty": 0.5,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "alliance_congress"
+        },
+        {
+          "delegate_id": "delegate_vasc",
+          "name": "Delegate Petra Vasc",
+          "starting_visible_state": "leaning_no",
+          "position_vector": {
+            "process_fidelity": 0.4,
+            "trade_leverage": -0.1,
+            "frontier_autonomy_stance": 0.5,
+            "settlement_solidarity": 0.3
+          },
+          "faction_loyalty": 0.7,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "alliance_congress"
+        },
+        {
+          "delegate_id": "delegate_tejada",
+          "name": "Delegate Raul Tejada",
+          "starting_visible_state": "leaning_yes",
+          "position_vector": {
+            "process_fidelity": -0.3,
+            "trade_leverage": 0.0,
+            "frontier_autonomy_stance": 0.4,
+            "settlement_solidarity": 0.7
+          },
+          "faction_loyalty": 0.7,
+          "prior_dispute_memory": 1,
+          "sub_faction_id": "alliance_congress"
+        }
+      ],
+      "eligible_framings": [
+        "process_fidelity",
+        "settlement_solidarity",
+        "frontier_autonomy_stance",
+        "trade_leverage"
+      ],
+      "eligible_evidence": [
+        "forgeworks_2324_partnership"
+      ],
+      "framing_modifiers": {
+        "process_fidelity": 1,
+        "settlement_solidarity": 1,
+        "frontier_autonomy_stance": 0,
+        "trade_leverage": 0
+      },
+      "framing_target_dimensions": {
+        "process_fidelity": "process_fidelity",
+        "settlement_solidarity": "settlement_solidarity",
+        "frontier_autonomy_stance": "frontier_autonomy_stance",
+        "trade_leverage": "trade_leverage"
+      },
+      "counter_framings": {
+        "delegate_vasc": ["frontier_autonomy_stance", "frontier_autonomy_stance"]
+      },
+      "betrayal_conditions": {},
+      "outcome_matrix": {
+        "win": {
+          "rep_deltas": {"frontier_alliance": 4},
+          "market_shifts": [
+            {"commodity_id": "fuel", "system_id": "havens_rest", "magnitude": 0.08, "duration_days": 25},
+            {"commodity_id": "common_metals", "system_id": "crimson_reach", "magnitude": 0.05, "duration_days": 20}
+          ],
+          "mission_unlocks": [
+            "dispute_resolved_crimson_response_protocol_review",
+            "coalition_won_crimson_response_protocol_review"
+          ],
+          "mission_locks": [],
+          "news_headline": "Congress updates Crimson response protocol; outer-belt fuel reserves committed."
+        },
+        "partial_win_coalition_thin": {
+          "rep_deltas": {"frontier_alliance": 1},
+          "market_shifts": [
+            {"commodity_id": "fuel", "system_id": "havens_rest", "magnitude": 0.04, "duration_days": 18}
+          ],
+          "mission_unlocks": ["dispute_resolved_crimson_response_protocol_review"],
+          "mission_locks": [],
+          "news_headline": null
+        },
+        "partial_win_off_record": {
+          "rep_deltas": {"frontier_alliance": 2},
+          "market_shifts": [
+            {"commodity_id": "fuel", "system_id": "havens_rest", "magnitude": 0.05, "duration_days": 20}
+          ],
+          "mission_unlocks": [
+            "dispute_resolved_crimson_response_protocol_review",
+            "dispute_mediated_crimson_response_protocol_review"
+          ],
+          "mission_locks": [],
+          "news_headline": null
+        },
+        "loss": {
+          "rep_deltas": {"frontier_alliance": -2},
+          "market_shifts": [
+            {"commodity_id": "fuel", "system_id": "havens_rest", "magnitude": -0.06, "duration_days": 25}
+          ],
+          "mission_unlocks": [],
+          "mission_locks": ["dispute_resolved_crimson_response_protocol_review"],
+          "news_headline": "Congress shelves Crimson response review; old protocol stays in force."
+        }
+      }
+    },
+    {
+      "id": "frontier_security_compact",
+      "headline": "Frontier Security Compact",
+      "factions_affected": ["frontier_alliance", "miners_union"],
+      "base_difficulty": 5,
+      "round_count": 5,
+      "deadline_days": 22,
+      "is_campaign_arc": true,
+      "is_annual_congress": false,
+      "issue_family": "defense_response",
+      "delegates": [
+        {
+          "delegate_id": "councillor_wentworth",
+          "name": "Councillor Bram Wentworth",
+          "starting_visible_state": "wavering",
+          "position_vector": {
+            "process_fidelity": 0.6,
+            "trade_leverage": 0.0,
+            "frontier_autonomy_stance": 0.2,
+            "settlement_solidarity": 0.3
+          },
+          "faction_loyalty": 0.6,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "alliance_congress"
+        },
+        {
+          "delegate_id": "councillor_shirane",
+          "name": "Councillor Yuta Shirane",
+          "starting_visible_state": "wavering",
+          "position_vector": {
+            "process_fidelity": 0.0,
+            "trade_leverage": 0.4,
+            "frontier_autonomy_stance": 0.0,
+            "settlement_solidarity": 0.4
+          },
+          "faction_loyalty": 0.5,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "alliance_congress"
+        },
+        {
+          "delegate_id": "delegate_vasc",
+          "name": "Delegate Petra Vasc",
+          "starting_visible_state": "leaning_no",
+          "position_vector": {
+            "process_fidelity": 0.5,
+            "trade_leverage": -0.1,
+            "frontier_autonomy_stance": 0.6,
+            "settlement_solidarity": 0.4
+          },
+          "faction_loyalty": 0.7,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "alliance_congress"
+        },
+        {
+          "delegate_id": "delegate_tejada",
+          "name": "Delegate Raul Tejada",
+          "starting_visible_state": "leaning_yes",
+          "position_vector": {
+            "process_fidelity": -0.3,
+            "trade_leverage": 0.0,
+            "frontier_autonomy_stance": 0.4,
+            "settlement_solidarity": 0.8
+          },
+          "faction_loyalty": 0.7,
+          "prior_dispute_memory": 1,
+          "sub_faction_id": "alliance_congress"
+        }
+      ],
+      "eligible_framings": [
+        "process_fidelity",
+        "settlement_solidarity",
+        "frontier_autonomy_stance",
+        "trade_leverage"
+      ],
+      "eligible_evidence": [
+        "forgeworks_2324_partnership",
+        "northern_aquifer_draw_report"
+      ],
+      "framing_modifiers": {
+        "process_fidelity": 1,
+        "settlement_solidarity": 1,
+        "frontier_autonomy_stance": 0,
+        "trade_leverage": 0
+      },
+      "framing_target_dimensions": {
+        "process_fidelity": "process_fidelity",
+        "settlement_solidarity": "settlement_solidarity",
+        "frontier_autonomy_stance": "frontier_autonomy_stance",
+        "trade_leverage": "trade_leverage"
+      },
+      "counter_framings": {
+        "delegate_vasc": ["frontier_autonomy_stance", "frontier_autonomy_stance"]
+      },
+      "betrayal_conditions": {
+        "delegate_tejada": "rep_dropped_below_25:miners_union",
+        "delegate_vasc": "counter_framing_succeeded"
+      },
+      "outcome_matrix": {
+        "win": {
+          "rep_deltas": {"frontier_alliance": 5, "miners_union": 2},
+          "market_shifts": [
+            {"commodity_id": "common_metals", "system_id": "havens_rest", "magnitude": 0.10, "duration_days": 30},
+            {"commodity_id": "common_metals", "system_id": "crimson_reach", "magnitude": 0.08, "duration_days": 25},
+            {"commodity_id": "fuel", "system_id": "verdant", "magnitude": 0.05, "duration_days": 20}
+          ],
+          "mission_unlocks": [
+            "dispute_resolved_frontier_security_compact",
+            "coalition_won_frontier_security_compact"
+          ],
+          "mission_locks": [],
+          "news_headline": "Congress signs security compact; metal pools across Alliance belts."
+        },
+        "partial_win_coalition_thin": {
+          "rep_deltas": {"frontier_alliance": 1, "miners_union": 0},
+          "market_shifts": [
+            {"commodity_id": "common_metals", "system_id": "havens_rest", "magnitude": 0.04, "duration_days": 18}
+          ],
+          "mission_unlocks": ["dispute_resolved_frontier_security_compact"],
+          "mission_locks": [],
+          "news_headline": null
+        },
+        "partial_win_off_record": {
+          "rep_deltas": {"frontier_alliance": 2, "miners_union": 1},
+          "market_shifts": [
+            {"commodity_id": "common_metals", "system_id": "havens_rest", "magnitude": 0.06, "duration_days": 22},
+            {"commodity_id": "common_metals", "system_id": "crimson_reach", "magnitude": 0.04, "duration_days": 20}
+          ],
+          "mission_unlocks": [
+            "dispute_resolved_frontier_security_compact",
+            "dispute_mediated_frontier_security_compact"
+          ],
+          "mission_locks": [],
+          "news_headline": null
+        },
+        "loss": {
+          "rep_deltas": {"frontier_alliance": -3, "miners_union": -2},
+          "market_shifts": [
+            {"commodity_id": "common_metals", "system_id": "havens_rest", "magnitude": -0.08, "duration_days": 28}
+          ],
+          "mission_unlocks": [],
+          "mission_locks": ["dispute_resolved_frontier_security_compact"],
+          "news_headline": "Congress fails security compact; outer-belt response stays scattered."
+        }
+      }
+    },
+    {
+      "id": "infrastructure_capital_pool",
+      "headline": "Infrastructure Capital Pool",
+      "factions_affected": ["frontier_alliance", "commerce_guild"],
+      "base_difficulty": 4,
+      "round_count": 3,
+      "deadline_days": 14,
+      "is_campaign_arc": false,
+      "is_annual_congress": false,
+      "issue_family": "settlement_modernization",
+      "delegates": [
+        {
+          "delegate_id": "councillor_wentworth",
+          "name": "Councillor Bram Wentworth",
+          "starting_visible_state": "wavering",
+          "position_vector": {
+            "process_fidelity": 0.5,
+            "trade_leverage": 0.2,
+            "frontier_autonomy_stance": 0.0,
+            "settlement_solidarity": 0.3
+          },
+          "faction_loyalty": 0.6,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "alliance_congress"
+        },
+        {
+          "delegate_id": "councillor_shirane",
+          "name": "Councillor Yuta Shirane",
+          "starting_visible_state": "leaning_yes",
+          "position_vector": {
+            "process_fidelity": 0.1,
+            "trade_leverage": 0.6,
+            "frontier_autonomy_stance": 0.1,
+            "settlement_solidarity": 0.4
+          },
+          "faction_loyalty": 0.5,
+          "prior_dispute_memory": 1,
+          "sub_faction_id": "alliance_congress"
+        },
+        {
+          "delegate_id": "delegate_vasc",
+          "name": "Delegate Petra Vasc",
+          "starting_visible_state": "wavering",
+          "position_vector": {
+            "process_fidelity": 0.3,
+            "trade_leverage": -0.2,
+            "frontier_autonomy_stance": 0.5,
+            "settlement_solidarity": 0.5
+          },
+          "faction_loyalty": 0.7,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "alliance_congress"
+        },
+        {
+          "delegate_id": "delegate_tejada",
+          "name": "Delegate Raul Tejada",
+          "starting_visible_state": "leaning_no",
+          "position_vector": {
+            "process_fidelity": -0.4,
+            "trade_leverage": -0.3,
+            "frontier_autonomy_stance": 0.2,
+            "settlement_solidarity": 0.4
+          },
+          "faction_loyalty": 0.6,
+          "prior_dispute_memory": -1,
+          "sub_faction_id": "alliance_congress"
+        }
+      ],
+      "eligible_framings": [
+        "trade_leverage",
+        "process_fidelity",
+        "settlement_solidarity",
+        "frontier_autonomy_stance"
+      ],
+      "eligible_evidence": [
+        "forgeworks_2324_partnership",
+        "verdant_soil_survey_2330"
+      ],
+      "framing_modifiers": {
+        "trade_leverage": 1,
+        "process_fidelity": 1,
+        "settlement_solidarity": 0,
+        "frontier_autonomy_stance": 0
+      },
+      "framing_target_dimensions": {
+        "trade_leverage": "trade_leverage",
+        "process_fidelity": "process_fidelity",
+        "settlement_solidarity": "settlement_solidarity",
+        "frontier_autonomy_stance": "frontier_autonomy_stance"
+      },
+      "counter_framings": {
+        "delegate_tejada": ["settlement_solidarity", "settlement_solidarity"]
+      },
+      "betrayal_conditions": {},
+      "outcome_matrix": {
+        "win": {
+          "rep_deltas": {"frontier_alliance": 4, "commerce_guild": 2},
+          "market_shifts": [
+            {"commodity_id": "machinery", "system_id": "havens_rest", "magnitude": 0.10, "duration_days": 30},
+            {"commodity_id": "machinery", "system_id": "verdant", "magnitude": 0.06, "duration_days": 25}
+          ],
+          "mission_unlocks": [
+            "dispute_resolved_infrastructure_capital_pool",
+            "coalition_won_infrastructure_capital_pool"
+          ],
+          "mission_locks": [],
+          "news_headline": "Congress capitalizes infrastructure pool; equipment supply firms up."
+        },
+        "partial_win_coalition_thin": {
+          "rep_deltas": {"frontier_alliance": 1, "commerce_guild": 1},
+          "market_shifts": [
+            {"commodity_id": "machinery", "system_id": "havens_rest", "magnitude": 0.04, "duration_days": 18}
+          ],
+          "mission_unlocks": ["dispute_resolved_infrastructure_capital_pool"],
+          "mission_locks": [],
+          "news_headline": null
+        },
+        "partial_win_off_record": {
+          "rep_deltas": {"frontier_alliance": 2, "commerce_guild": 1},
+          "market_shifts": [
+            {"commodity_id": "machinery", "system_id": "havens_rest", "magnitude": 0.05, "duration_days": 20}
+          ],
+          "mission_unlocks": [
+            "dispute_resolved_infrastructure_capital_pool",
+            "dispute_mediated_infrastructure_capital_pool"
+          ],
+          "mission_locks": [],
+          "news_headline": null
+        },
+        "loss": {
+          "rep_deltas": {"frontier_alliance": -2, "commerce_guild": -2},
+          "market_shifts": [
+            {"commodity_id": "machinery", "system_id": "havens_rest", "magnitude": -0.08, "duration_days": 28}
+          ],
+          "mission_unlocks": [],
+          "mission_locks": ["dispute_resolved_infrastructure_capital_pool"],
+          "news_headline": "Congress drops infrastructure capital pool; equipment supply tightens."
+        }
+      }
+    },
+    {
+      "id": "cross_settlement_logistics_overhaul",
+      "headline": "Cross-Settlement Logistics Overhaul",
+      "factions_affected": ["frontier_alliance", "commerce_guild"],
+      "base_difficulty": 4,
+      "round_count": 3,
+      "deadline_days": 12,
+      "is_campaign_arc": false,
+      "is_annual_congress": false,
+      "issue_family": "settlement_modernization",
+      "delegates": [
+        {
+          "delegate_id": "councillor_wentworth",
+          "name": "Councillor Bram Wentworth",
+          "starting_visible_state": "wavering",
+          "position_vector": {
+            "process_fidelity": 0.4,
+            "trade_leverage": 0.3,
+            "frontier_autonomy_stance": 0.0,
+            "settlement_solidarity": 0.2
+          },
+          "faction_loyalty": 0.6,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "alliance_congress"
+        },
+        {
+          "delegate_id": "councillor_shirane",
+          "name": "Councillor Yuta Shirane",
+          "starting_visible_state": "leaning_yes",
+          "position_vector": {
+            "process_fidelity": 0.0,
+            "trade_leverage": 0.7,
+            "frontier_autonomy_stance": 0.1,
+            "settlement_solidarity": 0.3
+          },
+          "faction_loyalty": 0.5,
+          "prior_dispute_memory": 1,
+          "sub_faction_id": "alliance_congress"
+        },
+        {
+          "delegate_id": "delegate_vasc",
+          "name": "Delegate Petra Vasc",
+          "starting_visible_state": "wavering",
+          "position_vector": {
+            "process_fidelity": 0.2,
+            "trade_leverage": 0.1,
+            "frontier_autonomy_stance": 0.4,
+            "settlement_solidarity": 0.5
+          },
+          "faction_loyalty": 0.7,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "alliance_congress"
+        },
+        {
+          "delegate_id": "delegate_tejada",
+          "name": "Delegate Raul Tejada",
+          "starting_visible_state": "wavering",
+          "position_vector": {
+            "process_fidelity": -0.3,
+            "trade_leverage": 0.2,
+            "frontier_autonomy_stance": 0.3,
+            "settlement_solidarity": 0.6
+          },
+          "faction_loyalty": 0.6,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "alliance_congress"
+        }
+      ],
+      "eligible_framings": [
+        "trade_leverage",
+        "process_fidelity",
+        "settlement_solidarity",
+        "frontier_autonomy_stance"
+      ],
+      "eligible_evidence": [
+        "forgeworks_2324_partnership"
+      ],
+      "framing_modifiers": {
+        "trade_leverage": 1,
+        "process_fidelity": 0,
+        "settlement_solidarity": 1,
+        "frontier_autonomy_stance": 0
+      },
+      "framing_target_dimensions": {
+        "trade_leverage": "trade_leverage",
+        "process_fidelity": "process_fidelity",
+        "settlement_solidarity": "settlement_solidarity",
+        "frontier_autonomy_stance": "frontier_autonomy_stance"
+      },
+      "counter_framings": {
+        "councillor_wentworth": ["process_fidelity", "process_fidelity"]
+      },
+      "betrayal_conditions": {},
+      "outcome_matrix": {
+        "win": {
+          "rep_deltas": {"frontier_alliance": 3, "commerce_guild": 1},
+          "market_shifts": [
+            {"commodity_id": "manufactured_goods", "system_id": "havens_rest", "magnitude": 0.06, "duration_days": 22},
+            {"commodity_id": "manufactured_goods", "system_id": "verdant", "magnitude": 0.05, "duration_days": 22}
+          ],
+          "mission_unlocks": [
+            "dispute_resolved_cross_settlement_logistics_overhaul",
+            "coalition_won_cross_settlement_logistics_overhaul"
+          ],
+          "mission_locks": [],
+          "news_headline": "Congress overhauls logistics; settlements coordinate shipments next quarter."
+        },
+        "partial_win_coalition_thin": {
+          "rep_deltas": {"frontier_alliance": 1, "commerce_guild": 0},
+          "market_shifts": [
+            {"commodity_id": "manufactured_goods", "system_id": "havens_rest", "magnitude": 0.03, "duration_days": 18}
+          ],
+          "mission_unlocks": ["dispute_resolved_cross_settlement_logistics_overhaul"],
+          "mission_locks": [],
+          "news_headline": null
+        },
+        "partial_win_off_record": {
+          "rep_deltas": {"frontier_alliance": 2, "commerce_guild": 1},
+          "market_shifts": [
+            {"commodity_id": "manufactured_goods", "system_id": "havens_rest", "magnitude": 0.04, "duration_days": 20}
+          ],
+          "mission_unlocks": [
+            "dispute_resolved_cross_settlement_logistics_overhaul",
+            "dispute_mediated_cross_settlement_logistics_overhaul"
+          ],
+          "mission_locks": [],
+          "news_headline": null
+        },
+        "loss": {
+          "rep_deltas": {"frontier_alliance": -2, "commerce_guild": -1},
+          "market_shifts": [
+            {"commodity_id": "manufactured_goods", "system_id": "havens_rest", "magnitude": -0.05, "duration_days": 22}
+          ],
+          "mission_unlocks": [],
+          "mission_locks": ["dispute_resolved_cross_settlement_logistics_overhaul"],
+          "news_headline": "Congress shelves logistics overhaul; outbound shipments stay on local schedules."
+        }
+      }
+    },
+    {
+      "id": "cross_settlement_water_compact",
+      "headline": "Cross-Settlement Water Compact",
+      "factions_affected": ["frontier_alliance", "science_collective"],
+      "base_difficulty": 4,
+      "round_count": 3,
+      "deadline_days": 14,
+      "is_campaign_arc": false,
+      "is_annual_congress": false,
+      "issue_family": "cross_settlement_infrastructure",
+      "required_flags": ["dispute_resolved_aquifer_concession_renewal"],
+      "delegates": [
+        {
+          "delegate_id": "councillor_wentworth",
+          "name": "Councillor Bram Wentworth",
+          "starting_visible_state": "wavering",
+          "position_vector": {
+            "process_fidelity": 0.5,
+            "trade_leverage": 0.0,
+            "frontier_autonomy_stance": 0.2,
+            "settlement_solidarity": 0.4
+          },
+          "faction_loyalty": 0.6,
+          "prior_dispute_memory": 1,
+          "sub_faction_id": "alliance_congress"
+        },
+        {
+          "delegate_id": "councillor_shirane",
+          "name": "Councillor Yuta Shirane",
+          "starting_visible_state": "leaning_yes",
+          "position_vector": {
+            "process_fidelity": 0.0,
+            "trade_leverage": 0.4,
+            "frontier_autonomy_stance": 0.0,
+            "settlement_solidarity": 0.5
+          },
+          "faction_loyalty": 0.5,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "alliance_congress"
+        },
+        {
+          "delegate_id": "delegate_vasc",
+          "name": "Delegate Petra Vasc",
+          "starting_visible_state": "leaning_yes",
+          "position_vector": {
+            "process_fidelity": 0.3,
+            "trade_leverage": -0.2,
+            "frontier_autonomy_stance": 0.6,
+            "settlement_solidarity": 0.7
+          },
+          "faction_loyalty": 0.7,
+          "prior_dispute_memory": 1,
+          "sub_faction_id": "alliance_congress"
+        },
+        {
+          "delegate_id": "delegate_tejada",
+          "name": "Delegate Raul Tejada",
+          "starting_visible_state": "wavering",
+          "position_vector": {
+            "process_fidelity": -0.2,
+            "trade_leverage": 0.0,
+            "frontier_autonomy_stance": 0.3,
+            "settlement_solidarity": 0.5
+          },
+          "faction_loyalty": 0.6,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "alliance_congress"
+        }
+      ],
+      "eligible_framings": [
+        "settlement_solidarity",
+        "process_fidelity",
+        "frontier_autonomy_stance",
+        "trade_leverage"
+      ],
+      "eligible_evidence": [
+        "northern_aquifer_draw_report",
+        "verdant_soil_survey_2330"
+      ],
+      "framing_modifiers": {
+        "settlement_solidarity": 1,
+        "process_fidelity": 1,
+        "frontier_autonomy_stance": 0,
+        "trade_leverage": 0
+      },
+      "framing_target_dimensions": {
+        "settlement_solidarity": "settlement_solidarity",
+        "process_fidelity": "process_fidelity",
+        "frontier_autonomy_stance": "frontier_autonomy_stance",
+        "trade_leverage": "trade_leverage"
+      },
+      "counter_framings": {
+        "delegate_vasc": ["frontier_autonomy_stance", "frontier_autonomy_stance"]
+      },
+      "betrayal_conditions": {
+        "delegate_vasc": "rival_faction_unfavored"
+      },
+      "outcome_matrix": {
+        "win": {
+          "rep_deltas": {"frontier_alliance": 5, "science_collective": -2},
+          "market_shifts": [
+            {"commodity_id": "fresh_water", "system_id": "havens_rest", "magnitude": 0.10, "duration_days": 30},
+            {"commodity_id": "fresh_water", "system_id": "verdant", "magnitude": 0.08, "duration_days": 28},
+            {"commodity_id": "hydroponics_yield", "system_id": "verdant", "magnitude": 0.05, "duration_days": 25}
+          ],
+          "mission_unlocks": [
+            "dispute_resolved_cross_settlement_water_compact",
+            "coalition_won_cross_settlement_water_compact"
+          ],
+          "mission_locks": [],
+          "news_headline": "Congress signs water compact; settlements pool aquifer access this year."
+        },
+        "partial_win_coalition_thin": {
+          "rep_deltas": {"frontier_alliance": 2, "science_collective": -1},
+          "market_shifts": [
+            {"commodity_id": "fresh_water", "system_id": "havens_rest", "magnitude": 0.04, "duration_days": 18}
+          ],
+          "mission_unlocks": ["dispute_resolved_cross_settlement_water_compact"],
+          "mission_locks": [],
+          "news_headline": null
+        },
+        "partial_win_off_record": {
+          "rep_deltas": {"frontier_alliance": 3, "science_collective": -1},
+          "market_shifts": [
+            {"commodity_id": "fresh_water", "system_id": "havens_rest", "magnitude": 0.06, "duration_days": 22},
+            {"commodity_id": "fresh_water", "system_id": "verdant", "magnitude": 0.04, "duration_days": 22}
+          ],
+          "mission_unlocks": [
+            "dispute_resolved_cross_settlement_water_compact",
+            "dispute_mediated_cross_settlement_water_compact"
+          ],
+          "mission_locks": [],
+          "news_headline": null
+        },
+        "loss": {
+          "rep_deltas": {"frontier_alliance": -2, "science_collective": 2},
+          "market_shifts": [
+            {"commodity_id": "fresh_water", "system_id": "havens_rest", "magnitude": -0.08, "duration_days": 28}
+          ],
+          "mission_unlocks": [],
+          "mission_locks": ["dispute_resolved_cross_settlement_water_compact"],
+          "news_headline": "Congress drops water compact; settlements stay on independent aquifer leases."
+        }
+      }
+    },
+    {
+      "id": "annual_alliance_congress",
+      "headline": "Annual Alliance Congress",
+      "factions_affected": ["frontier_alliance"],
+      "base_difficulty": 5,
+      "round_count": 5,
+      "deadline_days": 28,
+      "is_campaign_arc": true,
+      "is_annual_congress": true,
+      "opens_on_day_offset": 0,
+      "next_congress_offset_days": 365,
+      "issue_family": "cross_settlement_infrastructure",
+      "delegates": [
+        {
+          "delegate_id": "councillor_wentworth",
+          "name": "Councillor Bram Wentworth",
+          "starting_visible_state": "wavering",
+          "position_vector": {
+            "process_fidelity": 0.7,
+            "trade_leverage": 0.0,
+            "frontier_autonomy_stance": 0.2,
+            "settlement_solidarity": 0.4
+          },
+          "faction_loyalty": 0.6,
+          "prior_dispute_memory": 1,
+          "sub_faction_id": "alliance_congress"
+        },
+        {
+          "delegate_id": "councillor_shirane",
+          "name": "Councillor Yuta Shirane",
+          "starting_visible_state": "wavering",
+          "position_vector": {
+            "process_fidelity": 0.1,
+            "trade_leverage": 0.5,
+            "frontier_autonomy_stance": 0.1,
+            "settlement_solidarity": 0.5
+          },
+          "faction_loyalty": 0.5,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "alliance_congress"
+        },
+        {
+          "delegate_id": "delegate_vasc",
+          "name": "Delegate Petra Vasc",
+          "starting_visible_state": "leaning_yes",
+          "position_vector": {
+            "process_fidelity": 0.4,
+            "trade_leverage": -0.2,
+            "frontier_autonomy_stance": 0.7,
+            "settlement_solidarity": 0.6
+          },
+          "faction_loyalty": 0.7,
+          "prior_dispute_memory": 1,
+          "sub_faction_id": "alliance_congress"
+        },
+        {
+          "delegate_id": "delegate_tejada",
+          "name": "Delegate Raul Tejada",
+          "starting_visible_state": "leaning_no",
+          "position_vector": {
+            "process_fidelity": -0.4,
+            "trade_leverage": 0.0,
+            "frontier_autonomy_stance": 0.3,
+            "settlement_solidarity": 0.7
+          },
+          "faction_loyalty": 0.7,
+          "prior_dispute_memory": 0,
+          "sub_faction_id": "alliance_congress"
+        }
+      ],
+      "eligible_framings": [
+        "process_fidelity",
+        "settlement_solidarity",
+        "frontier_autonomy_stance",
+        "trade_leverage"
+      ],
+      "eligible_evidence": [
+        "forgeworks_2324_partnership",
+        "verdant_soil_survey_2330",
+        "northern_aquifer_draw_report"
+      ],
+      "framing_modifiers": {
+        "process_fidelity": 1,
+        "settlement_solidarity": 1,
+        "frontier_autonomy_stance": 1,
+        "trade_leverage": 0
+      },
+      "framing_target_dimensions": {
+        "process_fidelity": "process_fidelity",
+        "settlement_solidarity": "settlement_solidarity",
+        "frontier_autonomy_stance": "frontier_autonomy_stance",
+        "trade_leverage": "trade_leverage"
+      },
+      "counter_framings": {
+        "delegate_tejada": ["settlement_solidarity", "settlement_solidarity"],
+        "delegate_vasc": ["frontier_autonomy_stance", "frontier_autonomy_stance"]
+      },
+      "betrayal_conditions": {
+        "delegate_tejada": "counter_framing_succeeded"
+      },
+      "outcome_matrix": {
+        "win": {
+          "rep_deltas": {"frontier_alliance": 8},
+          "market_shifts": [
+            {"commodity_id": "manufactured_goods", "system_id": "havens_rest", "magnitude": 0.12, "duration_days": 40},
+            {"commodity_id": "fresh_water", "system_id": "verdant", "magnitude": 0.06, "duration_days": 30},
+            {"commodity_id": "common_metals", "system_id": "crimson_reach", "magnitude": 0.06, "duration_days": 30}
+          ],
+          "mission_unlocks": [
+            "dispute_resolved_annual_alliance_congress",
+            "coalition_won_annual_alliance_congress"
+          ],
+          "mission_locks": [],
+          "news_headline": "Annual Congress passes joint resolution; settlements share the year's plan."
+        },
+        "partial_win_coalition_thin": {
+          "rep_deltas": {"frontier_alliance": 2},
+          "market_shifts": [
+            {"commodity_id": "manufactured_goods", "system_id": "havens_rest", "magnitude": 0.05, "duration_days": 22}
+          ],
+          "mission_unlocks": ["dispute_resolved_annual_alliance_congress"],
+          "mission_locks": [],
+          "news_headline": null
+        },
+        "partial_win_off_record": {
+          "rep_deltas": {"frontier_alliance": 4},
+          "market_shifts": [
+            {"commodity_id": "manufactured_goods", "system_id": "havens_rest", "magnitude": 0.06, "duration_days": 25},
+            {"commodity_id": "fresh_water", "system_id": "verdant", "magnitude": 0.04, "duration_days": 22}
+          ],
+          "mission_unlocks": [
+            "dispute_resolved_annual_alliance_congress",
+            "dispute_mediated_annual_alliance_congress"
+          ],
+          "mission_locks": [],
+          "news_headline": null
+        },
+        "loss": {
+          "rep_deltas": {"frontier_alliance": -4},
+          "market_shifts": [
+            {"commodity_id": "manufactured_goods", "system_id": "havens_rest", "magnitude": -0.10, "duration_days": 35}
+          ],
+          "mission_unlocks": [],
+          "mission_locks": ["dispute_resolved_annual_alliance_congress"],
+          "news_headline": "Annual Congress fails joint resolution; settlements scatter on next year's plan."
+        }
+      }
+    }
+  ]
+}
