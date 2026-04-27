@@ -2111,7 +2111,7 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 - Started: 2026-04-27 17:49
 - Completed: 2026-04-27 18:55
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending
+- Commits: 66a331d
 - New_sprints_proposed: none
 - Polish_items_folded_in: annual-Congress-tutorial-overlay, locked-out-annual-substate, 3-congress-journal-entries, tomas-banter-trigger-flag, cross-venue-cross-reference-gating
 - Decisions_locked: 12
