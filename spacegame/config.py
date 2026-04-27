@@ -325,6 +325,7 @@ class GameState(Enum):
     REPAIR_BAY = "repair_bay"
     CANTINA = "cantina"
     INVESTMENT = "investment"
+    WRECKERS_GUILD = "wreckers_guild"
 
     # Combat states
     COMBAT = "combat"

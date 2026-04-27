@@ -498,3 +498,112 @@ class TestStationHubTelemetryHooks:
         files = list(tmp_path.rglob("*.jsonl"))
         assert files == [], f"Telemetry wrote files when disabled: {files}"
         view.on_exit()
+
+
+class TestStationHubWreckersEnterButton:
+    """SA-1: Enter button on the Wreckers' Guild Hall detail panel.
+
+    Acceptance #1: clicking the Hall card opens a detail panel that has
+    BOTH a Close button and an Enter button. Clicking Enter sets
+    ``next_state = GameState.WRECKERS_GUILD``. Other unique anchors keep
+    their close-only layout — no regression.
+    """
+
+    def _make_view_entered(self, system_id: str = "crimson_reach") -> StationHubView:
+        manager, player, loader = _make_test_env(system_id)
+        system = loader.get_system(system_id)
+        locations = loader.get_locations_for_system(system_id)
+        registry = create_default_registry()
+        view = StationHubView(
+            ui_manager=manager,
+            player=player,
+            system=system,
+            locations=locations,
+            activity_registry=registry,
+            data_loader=loader,
+        )
+        view.on_enter()
+        return view
+
+    def _open_unique(self, view: StationHubView, location_id: str) -> None:
+        """Open the detail panel for a real unique location at the current system."""
+        loc = next(
+            (loc for loc in view.locations if loc.id == location_id),
+            None,
+        )
+        assert loc is not None, f"Fixture: {location_id} not in system locations"
+        view._detail_location = loc
+
+    def test_wreckers_card_renders_enter_button(self) -> None:
+        view = self._make_view_entered("crimson_reach")
+        self._open_unique(view, "crimson_wreckers_guild")
+        screen = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
+        view.render(screen)
+        assert view._detail_close_button is not None
+        assert view._detail_enter_button is not None
+        view.on_exit()
+
+    def test_other_unique_card_does_not_render_enter_button(self) -> None:
+        # Nexus Prime: pick any non-Hall unique. crimson_reach has only the
+        # Hall as a unique, so we exercise this with another system's anchors.
+        view = self._make_view_entered("nexus_prime")
+        non_hall_unique = next(
+            (loc for loc in view.locations if loc.location_type == "unique"),
+            None,
+        )
+        assert non_hall_unique is not None, "Fixture: nexus_prime should have unique anchors"
+        view._detail_location = non_hall_unique
+        screen = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
+        view.render(screen)
+        assert view._detail_close_button is not None
+        assert view._detail_enter_button is None
+        view.on_exit()
+
+    def test_enter_button_sets_wreckers_guild_state(self) -> None:
+        view = self._make_view_entered("crimson_reach")
+        self._open_unique(view, "crimson_wreckers_guild")
+        screen = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
+        view.render(screen)
+        enter_btn = view._detail_enter_button
+        assert enter_btn is not None
+        evt = pygame.event.Event(
+            pygame_gui.UI_BUTTON_PRESSED, {"ui_element": enter_btn}
+        )
+        view.handle_event(evt)
+        assert view.next_state == GameState.WRECKERS_GUILD
+        # Detail panel should also close on enter.
+        assert view._detail_location is None
+        view.on_exit()
+
+    def test_close_button_after_enter_button_present_kills_both(self) -> None:
+        view = self._make_view_entered("crimson_reach")
+        self._open_unique(view, "crimson_wreckers_guild")
+        screen = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
+        view.render(screen)
+        close_btn = view._detail_close_button
+        assert close_btn is not None
+        evt = pygame.event.Event(
+            pygame_gui.UI_BUTTON_PRESSED, {"ui_element": close_btn}
+        )
+        view.handle_event(evt)
+        assert view._detail_close_button is None
+        assert view._detail_enter_button is None
+        view.on_exit()
+
+    def test_switching_to_other_unique_card_kills_enter_button(self) -> None:
+        # Open Hall detail (with Enter), then switch to another anchor.
+        view = self._make_view_entered("crimson_reach")
+        self._open_unique(view, "crimson_wreckers_guild")
+        screen = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
+        view.render(screen)
+        assert view._detail_enter_button is not None
+        # Now switch to a non-Hall location at this system.
+        other = next(
+            (loc for loc in view.locations if loc.id != "crimson_wreckers_guild"),
+            None,
+        )
+        assert other is not None
+        view._detail_location = other
+        view.render(screen)
+        assert view._detail_enter_button is None
+        view.on_exit()

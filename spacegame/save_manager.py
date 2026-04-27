@@ -440,6 +440,11 @@ class SaveManager:
             "faction_reputation": player.faction_reputation,
             "faction_assignments": player.faction_assignments,
             "sub_reputation": player.sub_reputation,
+            "wreckers_guild_state": (
+                player.wreckers_guild_state.to_dict()
+                if player.wreckers_guild_state is not None
+                else None
+            ),
             "dialogue_flags": player.dialogue_flags,
             "captain_memory": {cid: mem.to_dict() for cid, mem in player.captain_memory.items()},
             "timed_thread_state": {
@@ -592,6 +597,16 @@ class SaveManager:
         player.faction_reputation = data.get("faction_reputation", {})
         player.faction_assignments = data.get("faction_assignments", {})
         player.sub_reputation = data.get("sub_reputation", {})
+
+        # SA-1: Wreckers' Guild Hall runtime state (None for legacy saves
+        # and for players who never docked at the Hall).
+        wreckers_data = data.get("wreckers_guild_state")
+        if wreckers_data:
+            from spacegame.models.wreckers_guild import WreckersGuildState
+
+            player.wreckers_guild_state = WreckersGuildState.from_dict(wreckers_data)
+        else:
+            player.wreckers_guild_state = None
 
         # Restore dialogue flags
         player.dialogue_flags = data.get("dialogue_flags", {})

@@ -282,6 +282,7 @@ class Game:
         self.ground_result_view = None
         self.investment_view = None
         self.cantina_view = None
+        self.wreckers_guild_view = None
 
         # Investment system
         from spacegame.models.investment import InvestmentManager
@@ -1853,6 +1854,15 @@ class Game:
                         self.state_manager.change_state(GameState.INVESTMENT)
 
                     self._start_transition(TransitionType.FADE, 0.3, _do)
+                elif next_state == GameState.WRECKERS_GUILD:
+                    # SA-1: route the Wreckers' Guild Hall unique anchor.
+                    self.station_hub_view.next_state = None
+
+                    def _do_wreckers():
+                        self._ensure_wreckers_guild_view()
+                        self.state_manager.change_state(GameState.WRECKERS_GUILD)
+
+                    self._start_transition(TransitionType.FADE, 0.3, _do_wreckers)
                 elif next_state == GameState.MINING:
                     self.station_hub_view.next_state = None
 
@@ -1934,6 +1944,19 @@ class Game:
                         self.state_manager.change_state(GameState.STATION_HUB)
 
                     self._start_transition(TransitionType.FADE, 0.3, _do)
+
+        # SA-1: Wreckers' Guild Hall view returns to STATION_HUB on back.
+        if hasattr(self, "wreckers_guild_view") and self.wreckers_guild_view:
+            if self.wreckers_guild_view.active:
+                next_state = self.wreckers_guild_view.get_next_state()
+                if next_state == GameState.STATION_HUB:
+                    self.wreckers_guild_view.next_state = None
+
+                    def _do_wreckers_back():
+                        self._ensure_station_hub_view()
+                        self.state_manager.change_state(GameState.STATION_HUB)
+
+                    self._start_transition(TransitionType.FADE, 0.3, _do_wreckers_back)
 
         # Check cantina view for transitions
         if hasattr(self, "cantina_view") and self.cantina_view:
@@ -2143,6 +2166,19 @@ class Game:
             system_id=self.player.current_system_id,
         )
         self.state_manager.register_state(GameState.INVESTMENT, self.investment_view)
+
+    def _ensure_wreckers_guild_view(self) -> None:
+        """SA-1: create or recreate the Wreckers' Guild Hall view."""
+        from spacegame.views.wreckers_guild_view import WreckersGuildView
+
+        self.wreckers_guild_view = WreckersGuildView(
+            ui_manager=self.ui_manager,
+            player=self.player,
+            mission_manager=self.mission_manager,
+        )
+        self.state_manager.register_state(
+            GameState.WRECKERS_GUILD, self.wreckers_guild_view
+        )
 
     def _ensure_mining_view(self) -> None:
         """Create or recreate mining view for current system."""

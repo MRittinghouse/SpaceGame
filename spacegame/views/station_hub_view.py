@@ -280,6 +280,11 @@ class StationHubView(BaseView):
         self._rep_teaser: Optional[dict] = None  # Reputation-locked mission teaser
         self.pending_contract_id: Optional[str] = None
         self._detail_close_button: Optional[pygame_gui.elements.UIButton] = None
+        # SA-1: "Enter" button on the Wreckers' Guild Hall detail panel.
+        # Only created when the active detail panel is the Hall card; other
+        # unique anchors keep their close-only layout. None at all other
+        # times so _destroy_ui can no-op safely.
+        self._detail_enter_button: Optional[pygame_gui.elements.UIButton] = None
 
         # Sprite manager for faction emblems
         self._sprite_mgr = get_sprite_manager()
@@ -556,6 +561,9 @@ class StationHubView(BaseView):
         if self._detail_close_button:
             self._detail_close_button.kill()
             self._detail_close_button = None
+        if self._detail_enter_button:
+            self._detail_enter_button.kill()
+            self._detail_enter_button = None
 
     def _destroy_npc_buttons(self) -> None:
         """Kill cantina NPC, re-recruit, hire, and contract buttons."""
@@ -718,6 +726,24 @@ class StationHubView(BaseView):
                 if self._detail_close_button:
                     self._detail_close_button.kill()
                     self._detail_close_button = None
+                if self._detail_enter_button:
+                    self._detail_enter_button.kill()
+                    self._detail_enter_button = None
+                return
+
+            # SA-1: Enter the Wreckers' Guild Hall.
+            if (
+                self._detail_enter_button is not None
+                and event.ui_element == self._detail_enter_button
+            ):
+                self._emit_detail_dwell_if_open()
+                self._detail_location = None
+                if self._detail_close_button:
+                    self._detail_close_button.kill()
+                    self._detail_close_button = None
+                self._detail_enter_button.kill()
+                self._detail_enter_button = None
+                self.next_state = GameState.WRECKERS_GUILD
                 return
 
             # Check NPC buttons
@@ -994,6 +1020,11 @@ class StationHubView(BaseView):
                 content_w - 24,
             )
 
+        # SA-1: Wreckers' Guild Hall card gets an "Enter" button alongside
+        # Close so the player can step into the new venue. Other unique
+        # anchors keep their close-only layout — no regression.
+        is_wreckers_hall = loc.id == "crimson_wreckers_guild"
+
         # Close button
         if not self._detail_close_button:
             self._detail_close_button = pygame_gui.elements.UIButton(
@@ -1006,6 +1037,23 @@ class StationHubView(BaseView):
                 text="Close",
                 manager=self.ui_manager,
             )
+
+        # Enter button (SA-1, Wreckers' Guild Hall only)
+        if is_wreckers_hall and not self._detail_enter_button:
+            self._detail_enter_button = pygame_gui.elements.UIButton(
+                relative_rect=pygame.Rect(
+                    DETAIL_PANEL_X + DETAIL_PANEL_W - 175,
+                    panel_y + panel_h - 40,
+                    80,
+                    30,
+                ),
+                text="Enter",
+                manager=self.ui_manager,
+            )
+        elif not is_wreckers_hall and self._detail_enter_button:
+            # Switching detail anchors — kill the Hall's enter button.
+            self._detail_enter_button.kill()
+            self._detail_enter_button = None
 
     def _render_wrapped_text(
         self,

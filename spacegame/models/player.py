@@ -35,6 +35,7 @@ from spacegame.models.timed_thread import TimedThreadState
 from spacegame.models.trade_route import PriceMemory, TradeRouteTracker
 from spacegame.models.upgrades import ShipUpgradeManager
 from spacegame.models.wreck_upgrade import WreckUpgradeState
+from spacegame.models.wreckers_guild import WreckersGuildState
 
 
 @dataclass
@@ -66,6 +67,13 @@ class Player:
     # under faction reputation.  Keyed by organization ID (e.g. "wreckers_guild").
     # Notification queue lives on _pending_sub_rep_deltas (non-serialized).
     sub_reputation: dict[str, int] = field(default_factory=dict)
+
+    # SA-1: Wreckers' Guild Hall runtime state. None for unenrolled players;
+    # the first conversation with Malia at the Hall flips it on. The
+    # standing value lives separately on ``sub_reputation["wreckers_guild"]``
+    # per the SA-B-EXT-1 contract — *enrolled* and *standing* are
+    # intentionally orthogonal.
+    wreckers_guild_state: Optional[WreckersGuildState] = None
 
     # Dialogue system
     dialogue_flags: dict[str, bool] = field(default_factory=dict)
