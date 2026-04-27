@@ -1406,7 +1406,7 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 - Started: 2026-04-27 14:38
 - Completed: 2026-04-27 15:05
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending
+- Commits: da275f4
 - New_sprints_proposed: none
 - Polish_items_folded_in: PT-M FirstTimeTipOverlay on first investment-card click; journal entry `auto_sa_v_longer_ledger` on `investment_introduced` trigger
 - Decisions_locked: 8
