@@ -25,6 +25,7 @@ Each character gets:
 **Faction**: Commerce Guild (defected)
 **Age**: Early 30s
 **Role**: Crew navigator, first potential recruit
+**Tonal register**: Guild-trained formality unlearning itself -- precision as default, informality as leak, overcorrection as tell.
 
 ### Core Voice
 Elena speaks like someone trained in Guild formality who's trying to unlearn it. Her default is precise and professional — complete sentences, proper grammar, measured delivery. But informality leaks through when she's comfortable, frustrated, or caught off guard. She overcorrects: catches herself using a title, then switches to first names awkwardly. She's aware of this and it bothers her.
@@ -72,6 +73,7 @@ She sounds like a competent officer who resigned and is still figuring out who s
 **Faction**: Miners' Union
 **Age**: Mid-40s
 **Role**: Crew engineer, Breakstone mining foreman
+**Tonal register**: Union-lifer directness with dark-humor armor -- brevity is respect; explaining twice is an insult.
 
 ### Core Voice
 Marcus speaks like a man who's spent twenty years fixing things and filing reports that no one reads. He's direct, practical, and economical with words. No filler, no decoration. He says what he means and expects you to keep up. His humor is dry and dark — mining humor, the kind that develops when your job regularly tries to kill you.
@@ -113,6 +115,11 @@ He sounds like a foreman addressing a new hire: patient enough to explain once, 
 4. **Dark humor**: "Station's held together with spit and good intentions. Mostly spit."
 5. **Showing care (without saying it)**: "Your left boot seal's loose. Fix it before we go out." *(Hands you the tool without looking up.)*
 
+### SA Arc Notes
+SA-2: At the Deep Shafts, Marcus becomes a different kind of guide. His default mode -- direct, hands-on, impatient -- breaks down at the memorial. He slows. He does not explain why. The player learns more about Marcus here than anywhere else in the game, but Marcus will not narrate it. He will stand in front of the memorial carving of Sora Takahashi and say nothing, and that silence carries the whole arc.
+
+Note on the historical connection: Sora Takahashi was the mechanic who led the 2267 Uprising. Marcus's father was at Breakstone during the Uprising. The connection is collegial and inherited through Union community, not biological -- do not write Marcus as Sora Takahashi's child or Sora as his father. Marcus carries the Uprising as inheritance from the Union, not from family lineage. Sten Brygaard (Deep Shafts caretaker, see SA arc sheets below) is the primary teller of the Takahashi story; Marcus receives it and carries it forward.
+
 ---
 
 ## Dr. Priya Osei — Scientist
@@ -120,6 +127,7 @@ He sounds like a foreman addressing a new hire: patient enough to explain once, 
 **Faction**: Science Collective
 **Age**: Late 20s
 **Role**: Crew scientist, research director
+**Tonal register**: Peer-reviewed precision discovering that the world does not organize itself into data sets -- warmth expressed through intellectual engagement, never emotional declaration.
 
 ### Core Voice
 Priya speaks like a peer-reviewed paper that learned to have conversations. Precise, structured, evidence-based. She introduces herself with full credentials every time she meets someone new. She says "the data suggests" more often than "I think." She's not cold — she's genuinely warm and curious — but her warmth expresses through intellectual engagement rather than emotional availability.
@@ -168,6 +176,7 @@ She sounds like a brilliant academic who has spent her entire career in labs and
 **Faction**: Frontier Alliance
 **Age**: Mid-30s
 **Role**: Crew trader, frontier scout
+**Tonal register**: Practiced Alliance warmth over a locked interior -- the charm is real and the closed door behind it is real; both are true at the same time.
 
 ### Core Voice
 Tomas sounds like a man who's made a career out of being likable and is very good at it. Easy charm, quick wit, stories instead of straight answers. He speaks the way Alliance people speak — first names, proverbs, indirect wisdom — but there's something practiced about it, like he learned this dialect rather than grew up in it. Which he did. "Tomas Drifter" isn't his real name, and his Alliance mannerisms are a costume he's worn so long it almost fits.
@@ -216,6 +225,7 @@ He sounds like someone who's genuinely warm but keeps a locked door behind the w
 **Faction**: Commerce Guild (bureaucratic arm)
 **Age**: 50s
 **Role**: Mission 01 gatekeeper, first NPC the player meets
+**Tonal register**: Procedural language as cover for actual concern -- form-processing on the surface, practical human advice leaking through.
 
 ### Core Voice
 Larsen is a career bureaucrat who's processed ten thousand docking permits and has long since stopped seeing faces. He speaks in procedure — regulation numbers, form references, standard warnings. But beneath the paperwork is a man who's been doing this long enough to recognize a kid in trouble, and his concern leaks out as practical advice disguised as regulation.
@@ -252,6 +262,7 @@ He sounds like a government clerk who cares more than he's allowed to show.
 **Faction**: Miners' Union
 **Age**: Late 40s
 **Role**: Mission 04, Breakstone gatekeeper
+**Tonal register**: Drill-direct assessment -- goes through things rather than around them; the prosthetic arm is the most honest thing about her and so is her register.
 
 ### Core Voice
 Hanna is direct in the way a drill is direct — she goes through things, not around them. Twenty years on Breakstone have stripped away everything that isn't functional. She speaks in short sentences, uses your first name immediately (she read it on the docking manifest), and evaluates people by what they do, not what they say. Her prosthetic arm — brushed steel, visible hydraulics, Union-built — is the most honest thing about her: functional, undecorated, and strong.
@@ -288,6 +299,7 @@ She sounds like a boss who's lost people and has zero patience for posturing.
 **Faction**: Commerce Guild (military arm)
 **Age**: Late 30s
 **Role**: Missions 08, 11, 15-16 — Guild contact for conspiracy arc
+**Tonal register**: Military discipline over mounting frustration -- the more controlled she sounds, the angrier she actually is.
 
 ### Core Voice
 Reva speaks like a military officer in a system that's breaking down. Crisp, professional, disciplined — but with an undercurrent of frustration that's getting harder to contain. She follows the chain of command, uses proper forms of address, and files reports she knows will be ignored. Unlike Larsen (who's accepted the bureaucracy), Reva is angry about it. She joined the Guild to protect people. She's discovering the Guild isn't interested in protection.
@@ -325,6 +337,7 @@ She sounds like a good soldier in a bad army.
 **Faction**: Unaligned
 **Age**: Indeterminate (30s-40s, hard to pin down)
 **Role**: Mission 09, conspiracy catalyst
+**Tonal register**: Information-economy fluency -- every word priced, every question a counter-offer, every answer a negotiation.
 
 ### Core Voice
 Dex speaks like someone who knows exactly how much every word is worth and charges accordingly. Fast, fluid, always slightly amused. He trades in information the way other people trade in ore — buy low, sell high, never reveal your sources. He's not threatening; he's too useful to be threatening. But he's also not trustworthy. He frames everything as a transaction because transactions are the only relationships he understands.
@@ -361,6 +374,7 @@ He sounds like a bartender who knows everyone's secrets and hasn't decided what 
 **Faction**: Frontier Alliance (Crimson Reach)
 **Age**: 40s
 **Role**: Mission 10, underground economy contact
+**Tonal register**: Scavenger pragmatism with earned authority -- waste nothing, trust carefully, always know your exits; "kid" is an assessment, not an insult.
 
 ### Core Voice
 Malia speaks like a woman who's been taking things apart and putting them back together for her entire life — ships, deals, alliances. She's practical in the way that scavenging teaches you to be practical: waste nothing, trust carefully, always know your exits. She calls everyone "kid" until they earn a name. She's generous with knowledge and stingy with trust.
@@ -390,6 +404,11 @@ She sounds like a mechanic who also runs a small criminal empire and somehow mak
 2. **Knowledge drop**: "Someone with serious resources is backing these pirates. Not frontier scrap — real money, real ships, real intel. That's not a raiding party. That's an operation."
 3. **Earned respect**: "You did good, kid. If you're looking for real work — not the scraps the factions throw you — come find me again."
 
+### SA Arc Notes
+SA-1: Torres at the Wreckers' Guild Hall operates in her home register -- practical, testing, generous with knowledge to those who have earned it. The membership-tier interactions should feel like the natural extension of Mission 10: she is assessing the player's commitment, not just their skill. By Master tier, the "kid" address should be retired without announcement. It simply stops. She does not comment on this.
+
+SA-P5: Torres as arbitrator at the gray-market mediation venue operates in a different mode. She is still Malia, but the Guild role requires her to hold positions she might personally disagree with. Listen for the slight gap between what she rules and what she thinks. Her understatement carries extra weight here: "That seems settled" may mean the opposite.
+
 ---
 
 ## Oren Tak — Retired Miner
@@ -397,6 +416,7 @@ She sounds like a mechanic who also runs a small criminal empire and somehow mak
 **Faction**: Miners' Union
 **Age**: 60s
 **Role**: Mission 13, key informant
+**Tonal register**: Justified-paranoid testimony -- speaks quietly, specifically, in ways that prove he is not making things up.
 
 ### Core Voice
 Oren speaks like a man who's spent too long underground and too long watching. He's paranoid — justified paranoia, the kind that keeps you alive in mining tunnels. He speaks in half-sentences, checks over his shoulder, and tests your trustworthiness before sharing anything. Getting information from Oren is like mining itself — slow, careful work with the occasional rich vein.
@@ -427,24 +447,62 @@ He sounds like a conspiracy theorist who happens to be right.
 
 ---
 
-## Cargo Broker — Trade Courier
+## Odom — Cargo Broker
 
 **Faction**: Independent
-**Role**: Mission 02, first job
+**Age**: 50s
+**Role**: Mission 02 first job, recurring trade mentor (SA-V to SA-F3)
+**Tonal register**: Working-capital pragmatism -- counts everything, forgets nothing, explains nothing he does not have to.
+
+Note on speaker_id: currently `delivery_merchant` in all dialogue trees. Rename to `odom_broker` is SA-V scope; not this sprint.
 
 ### Core Voice
-The Cargo Broker is a working middleman — no name given, no name needed. He speaks like someone who processes fifty transactions a day and doesn't have time for yours. Direct, transactional, efficient. Not rude — just busy.
+Odom speaks like someone who has processed a thousand transactions and has exactly as much patience as the transaction requires. Nineteen years on Nexus Prime have given him a working ledger of everyone who owes him something, everyone who has delivered, and everyone who has disappointed him once and will not get a second chance.
+
+He sounds like a man who has earned his indifference to new pilots and his respect for the reliable ones.
+
+His voice is flat in the way that busy people's voices are flat -- not from coldness, but from efficiency. He speaks in verifiable facts: numbers, locations, weights, timelines. He does not speculate. He does not editorialize unless provoked.
 
 ### Verbal Habits
-- Direct address: "You there."
-- Transaction-first: states the deal before the pleasantries (there are no pleasantries)
-- Specific quantities and destinations: "10 units, Forgeworks, within the week"
-- Moves on quickly
+- "You there" as address until you earn a different one
+- States the deal before anything else; there are no pleasantries
+- References his own track record as authority: "I've moved freight through this station for nineteen years"
+- Specific quantities and destinations, never approximate: "ten units, Forgeworks, within the week"
+- Keeps an audible running tally: "Credits are in your account already. You fly straight and you don't skim."
+- Records debts by amount, not by grievance: "She owed me seventy credits" -- never "She wronged me"
+- "I'll remember that" as both promise and warning, depending on context
+
+### What He Says vs. What He Means
+- "I'll remember that" = you are in the green column now; future work is possible.
+- "We're done talking" = permanent; not a negotiating position.
+- "My contact there" = a network you have not earned the right to know about yet.
+- "That kind does" (of unreliable people) = category assessment; the category tells him everything he needs.
+- "Didn't figure you'd say no to easy money" = I know your financial position better than you think.
+
+### Emotional Range
+- **Professional (default)**: Clipped, number-driven, tracking. Processing mode, not dismissal mode.
+- **Accounting memory triggered**: Slows down. Precise. When someone's ledger entry comes up, he gives it the weight it deserves.
+- **Cold anger**: No heat. No raised voice. Bookkeeping language applied to the offense. "You are the first. Congratulations." The fury is in the precision.
+- **Recognizing reliability**: Still brief. But the tone shifts. "Not bad" from Odom carries the same weight as a written recommendation from most people.
+
+### What He Never Says
+- Compliments he has not verified
+- Sentimental language about the work or the people in it
+- Anything suggesting he will forget a debt owed in either direction
+- Speculation about intentions: he deals in behavior, not motivations
+- Anything that implies a second chance where he has decided there is none
 
 ### Sample Lines
-1. "You there. I'll give you 500 credits to ship this iron ore off to Forgeworks."
-2. "It's 10 units. Simple run. Drop it off, someone in blue pays you on the spot."
-3. "Check your mission log if you're interested. I've got three more shipments to arrange."
+1. **First contact**: "You there. I'll give you 500 credits to ship this iron ore off to Forgeworks. I just bought it, and I've been told that my carrier is full up. I need it there within the week."
+2. **Teaching**: "Any port's board gets its listings from brokers. People like me. We see what moves. We track what pays. You want to know who to ask, it's the people standing at terminals, not the ones staring at the board."
+3. **On reliability**: "Forgeworks pinged me. All ten units, weighed and accepted. Credits are in your account already. You fly straight and you don't skim. I'll remember that."
+4. **Cold anger**: "You sold my freight. Consigned cargo, with my name on the manifest, and you walked it over to the trading floor like it was yours to move. I was paying you six hundred for that run. You traded all of that for scrap money."
+5. **On an old debt**: "She owed me seventy credits. I'll get it out of her next week." *(Said of someone who has since been hospitalized. He does not modify the sentence.)*
+
+### SA Arc Notes
+SA-V: Odom is the bridge to Meridian. He operates in the same register throughout but the relationship develops from transactional to something closer to a grudging professional mentor. He does not soften; he reveals more of the ledger. The speaker_id rename (`delivery_merchant` to `odom_broker`) happens in SA-V, not this sprint.
+
+SA-F3: When the player graduates to Meridian, Odom's last interaction should make clear he considers this an expected outcome -- something he has been calibrating toward since the first delivery. His pride is expressed as the absence of surprise.
 
 ---
 
@@ -452,11 +510,14 @@ The Cargo Broker is a working middleman — no name given, no name needed. He sp
 
 **Faction**: Science Collective (founder)
 **Role**: Referenced in lore, plaque at Axiom Labs
+**Tonal register**: Founding-vision presence through absence -- heard only in others' references; the standard all subsequent Collective voices are measured against, and most fall short of.
 
 ### Core Voice
-Okafor speaks only through recorded words and her famous plaque: *"Knowledge that does not heal is knowledge wasted."* She represents the Collective's founding ideals — open, generous, communal. Everything the current Collective struggles to live up to.
+Okafor speaks only through recorded words and her famous plaque: *"Knowledge that does not heal is knowledge wasted."* She represents the Collective's founding ideals -- open, generous, communal. Everything the current Collective struggles to live up to.
 
-She is not voiced directly in dialogue. Her presence is felt through how other characters reference her — Priya with reverence, Collective officials with institutional pride that rings hollow.
+She is not voiced directly in dialogue. Her presence is felt through how other characters reference her -- Priya with reverence, Collective officials with institutional pride that rings hollow. In SA arc content, Dr. Nadia Kweon (current Okafor Institute director) carries the founder's shadow most directly; write Kweon's references to the founder with the weight of someone who inherited a standard she cannot fully meet and will not stop trying to.
+
+Note: Jez Okafor (Iron Depths shift supervisor, Miners' Union) shares the family name but has no narrative connection to the founder. The two Okafor-named characters are distinct by design.
 
 ---
 
@@ -468,10 +529,15 @@ When characters from different factions interact, their speech patterns should c
 |-------------|---------|
 | Elena + Marcus | Elena's formality vs. Marcus's directness. She calls him "Mr. Jin" once; he says "It's Marcus." She never makes the mistake again. |
 | Priya + Marcus | Priya's clinical framing vs. Marcus's lived experience. She says "infrastructure failure rates"; he says "people died." Both are describing the same thing. |
-| Tomas + Elena | Tomas's charm bounces off Elena's professionalism. She doesn't dislike him — she just doesn't trust easy warmth. He finds her rigidity amusing. |
+| Tomas + Elena | Tomas's charm bounces off Elena's professionalism. She doesn't dislike him -- she just doesn't trust easy warmth. He finds her rigidity amusing. |
 | Tomas + Priya | Tomas tells stories; Priya asks for citations. It's funnier than it sounds. |
 | Marcus + Hanna | Professional respect between Union lifers. Short exchanges. They understand each other without explaining. |
-| Elena + Reva | Former Guild colleagues — mutual respect, shared frustration, different conclusions about what to do about it. |
+| Elena + Reva | Former Guild colleagues -- mutual respect, shared frustration, different conclusions about what to do about it. |
+| Odom + Ilse Vey | Working middleman meets institutional gatekeeper. Odom is dismissive of Exchange formality ("They count things differently up there"); Vey has genuine respect for Odom's network, communicated by receiving his referrals without condition. Neither acknowledges the asymmetry of scale. |
+| Marcus + Sten Brygaard | Two Union men with different generations of the same weight. Marcus carries the Uprising as inheritance; Sten was there. Their scenes require the show-don't-tell rule most strictly. Sten does not explain what Marcus already knows; Marcus does not perform grief he has processed differently. |
+| Dr. Kweon + Priya Osei | Two Collective-trained scientists. Kweon has institutional fatigue; Priya has field discovery. They speak the same vocabulary and mean different things by it. Priya's "fascinating" lands differently on Kweon than it does on a layperson -- Kweon reads it as the enthusiasm of someone who has not yet learned what funding it costs. |
+| Malia Torres + Cassian Velo | Salvager meets auctioneer. Torres values what things are worth to use; Velo values what the room will pay. They are solving different problems with similar precision, and this makes for unusually productive disagreement. |
+| Captain Salko + crew members | His silence is a register the crew reads differently. Marcus would respect it as a Union man recognizing earned quietness. Tomas would not trust it -- he knows this kind of closedness. Elena would try to read it procedurally and get nowhere. |
 
 ---
 
@@ -501,3 +567,877 @@ When drafting dialogue, verify each line against:
 - [ ] Would this character use this specific word? (Elena says "optimal"; Marcus says "best"; Priya says "statistically favorable"; Tomas says "smart money")
 - [ ] Does the emotional register match the scene?
 - [ ] Is there something this character would NOT say that you've accidentally written?
+
+---
+
+## Station Anchors Arc — NPC Inventory
+
+*Added: SA-PREP-1. This section catalogs every named NPC the SA arc touches. Each entry notes status (existing / extend / net-new), canonical `speaker_id`, and consuming SA sprints.*
+
+### Deferred Reconciliations
+
+Three existing speaker IDs require downstream attention; noted here so downstream sprints inherit a clear starting point rather than discovering the discrepancy mid-implementation.
+
+- `delivery_merchant` (Odom): rename to `odom_broker` is SA-V scope. Do not rename in this sprint.
+- `torres_memorial` (any future non-speaking plaque or memorial references to Malia Torres): if memorial text arises in SA arc content, use `torres_memorial` as distinct from `malia_torres` the speaking NPC. Resolution is SA-1 scope.
+- `jez_okafor` (Jez Okafor, Iron Depths shift supervisor, Miners' Union): unrelated to the Okafor Institute's current director, Dr. Nadia Kweon. The two Okafor-named characters are distinct by design; no reconciliation needed.
+
+### Inventory Table
+
+| NPC | Status | Current speaker_id | Consuming sprint(s) |
+|-----|--------|-------------------|---------------------|
+| Malia Torres | existing (extend) | `malia_torres` | SA-1, SA-P5 |
+| Marcus Jin | existing (extend) | `marcus_jin` | SA-2 |
+| Odom (Cargo Broker) | existing (upgrade) | `delivery_merchant` | SA-V (rename deferred), SA-F3 |
+| Dr. Nadia Kweon (Okafor Institute director) | net-new | `kweon_director` | SA-R1, SA-R2 |
+| Sten Brygaard (Deep Shafts caretaker) | net-new | `sten_brygaard` | SA-2 |
+| Paz Reina (Wreck navigator) | net-new | `paz_reina` | SA-1 |
+| Daro Teck (Salvage engineer) | net-new | `daro_teck` | SA-1 |
+| Ife Obi (Debris-field cartographer) | net-new | `ife_obi` | SA-1 |
+| Mayor Cressida Vance (Verdant) | net-new | `mayor_vance` | SA-P1, SA-P3 |
+| Delegate Ferron Hask (Verdant Council) | net-new | `delegate_hask` | SA-P3 |
+| Delegate Samela Drift (Verdant Council) | net-new | `delegate_drift` | SA-P3 |
+| Delegate Ollo Marsh (Verdant Council) | net-new | `delegate_marsh` | SA-P3 |
+| Councillor Bram Wentworth (Haven's Rest, Congress) | net-new | `councillor_wentworth` | SA-P4 |
+| Councillor Yuta Shirane (Forgeworks area, Congress) | net-new | `councillor_shirane` | SA-P4 |
+| Delegate Petra Vasc (Verdant, Congress) | net-new | `delegate_vasc` | SA-P4 |
+| Delegate Raul Tejada (Crimson Reach, Congress) | net-new | `delegate_tejada` | SA-P4 |
+| Cassian Velo (Stellaris Auctioneer) | net-new | `cassian_velo` | SA-B3 |
+| Aldous Prentiss (Old-money collector rival) | net-new | `aldous_prentiss` | SA-B3 |
+| Commissioner Yuna Kade (Stellaris faction agent rival) | net-new | `yuna_kade` | SA-B3 |
+| Captain Fenn Salko (Cold-grudge rival captain) | net-new | `fenn_salko` | SA-B3, SA-B4 |
+| Ilse Vey (Meridian primary broker) | net-new | `ilse_vey` | SA-F3 |
+
+### Speaker_id Registry Table
+
+All deferred reconciliations noted with consuming sprint.
+
+| Canonical name | speaker_id | Status | Deferred reconciliation |
+|----------------|-----------|--------|------------------------|
+| Malia Torres | `malia_torres` | active | SA-P5: check whether arbitrator mode warrants a secondary speaker_id `torres_arbitrator` |
+| Marcus Jin | `marcus_jin` | active | none |
+| Odom (Cargo Broker) | `delivery_merchant` | active, rename deferred | SA-V: rename to `odom_broker` across all dialogue trees |
+| Dr. Nadia Kweon | `kweon_director` | net-new, register at SA-R1 | none |
+| Sten Brygaard | `sten_brygaard` | net-new, register at SA-2 | none |
+| Paz Reina | `paz_reina` | net-new, register at SA-1 | none |
+| Daro Teck | `daro_teck` | net-new, register at SA-1 | none |
+| Ife Obi | `ife_obi` | net-new, register at SA-1 | none |
+| Mayor Cressida Vance | `mayor_vance` | net-new, register at SA-P3 | none |
+| Ferron Hask | `delegate_hask` | net-new, register at SA-P3 | none |
+| Samela Drift | `delegate_drift` | net-new, register at SA-P3 | none |
+| Ollo Marsh | `delegate_marsh` | net-new, register at SA-P3 | none |
+| Bram Wentworth | `councillor_wentworth` | net-new, register at SA-P4 | none |
+| Yuta Shirane | `councillor_shirane` | net-new, register at SA-P4 | none |
+| Petra Vasc | `delegate_vasc` | net-new, register at SA-P4 | none |
+| Raul Tejada | `delegate_tejada` | net-new, register at SA-P4 | none |
+| Cassian Velo | `cassian_velo` | net-new, register at SA-B3 | none |
+| Aldous Prentiss | `aldous_prentiss` | net-new, register at SA-B3 | none |
+| Yuna Kade | `yuna_kade` | net-new, register at SA-B3 | none |
+| Fenn Salko | `fenn_salko` | net-new, register at SA-B3 | none |
+| Ilse Vey | `ilse_vey` | net-new, register at SA-F3 | none |
+
+---
+
+## SA Arc — New Voice Sheets
+
+The sheets below were authored in SA-PREP-1. Downstream sprint implementers should read the relevant sheet before writing any dialogue for that character.
+
+---
+
+## Dr. Nadia Kweon — Okafor Institute Director
+
+**Faction**: Science Collective
+**Age**: Mid-40s
+**Role**: Director, Okafor Institute Medical Wing (Axiom Labs); primary research-patronage NPC (SA-R1, SA-R2)
+**Tonal register**: Institutional fatigue in precise disguise -- carries the founder's shadow with clinical competence that has stopped pretending certainty it no longer has.
+
+*Distinct from `jez_okafor` (Jez Okafor, Iron Depths shift supervisor, Miners' Union). No narrative connection; the two Okafor-named characters share only a surname.*
+
+### Core Voice
+Dr. Kweon speaks like someone who has spent fifteen years running an institution built on someone else's vision. She is precise -- the Collective trained that into her -- but the precision now carries a different quality: not the precision of discovery, but the precision of defense. Every word is chosen because she has learned that imprecision in this building gets used against you.
+
+She does not perform enthusiasm. She performs rigor, because rigor is the one currency she can always justify spending.
+
+### Verbal Habits
+- Refers to "the Institute's founding mission" when she needs authority she does not personally feel
+- Passive constructions for institutional failures: "Resources were not allocated." "The timeline shifted."
+- Credits outcomes to the work, not herself: "The research is showing promising directions"
+- Pauses before speaking about the Collective's priorities, then speaks precisely rather than harshly
+- Uses the founder's words in quotation: "As Dr. Okafor wrote, 'knowledge that does not heal is knowledge wasted' -- the principle is unchanged, even when the application has to adapt"
+- Clinical vocabulary that occasionally breaks into something warmer when the work itself genuinely engages her
+
+### What She Says vs. What She Means
+- "The founder's work continues" = I am trying to keep this from becoming a hollow shell.
+- "We are adequately resourced" = we are running on margin with no buffer.
+- "The Collective's priorities have evolved" = I disagree with the Collective's direction and cannot say so in those terms.
+- "The Institute adapts" = we have lost three projects this year to budget reallocation.
+- "I'm encouraged by what you're proposing" (to a patron) = you may be what keeps this department running.
+
+### Emotional Range
+- **Professional default**: Competent, precise, slightly guarded. Sounds like a budget presentation delivered by the researcher who is also the subject.
+- **Discovery mode**: The only time she approaches genuine enthusiasm. Visibly checks it. "The early results are... significant. Potentially significant."
+- **Administrative exhaustion**: Visible once trust is established. Short sentences. Longer silences. "I've written four grant applications this quarter."
+- **Rare warmth**: Direct, earned, brief. "You funded work that would not have happened otherwise. That matters."
+- **Institutional loyalty under strain**: Defends the Collective in the third person. "The Collective's track record in medical research is substantial." What she does not say: and this Institute is not receiving the benefit of that track record.
+
+### What She Never Says
+- The founder's name with unqualified reverence (she carries the shadow; she does not worship it)
+- Criticism of the Collective to strangers or players who have not earned trust
+- Optimism about institutional timelines
+- Anything that sounds like she has given up (she has not; she is strategic about how she spends what she has left)
+- "Fascinating" -- that is Priya's register. Kweon says "significant" or "notable."
+
+### Sample Lines
+1. **First meeting**: "Dr. Nadia Kweon. I direct the Okafor Institute's medical research division. The work we're doing here was founded on principles that still hold. What the founding generation did not anticipate is what sustaining the work requires. That's the practical problem I'm solving."
+2. **On the Institute's situation**: "We are adequately resourced for current operations. The applied research program is another matter. That requires a conversation about priorities -- ours and anyone choosing to participate."
+3. **Discovery moment**: "These results from the protein-folding trials are... we were not expecting this variance. This is worth looking at further. I would like to run this again before I say anything more definite."
+4. **On the founder's legacy**: "Dr. Okafor wrote that knowledge which does not heal is knowledge wasted. I agree. I spend considerable time in this building trying to make sure that principle survives contact with how science actually gets funded."
+5. **Rare warmth**: "You supported a project the Collective had declined twice. The results will be published. That happened because you made it possible. I do not say that often enough."
+
+---
+
+## Sten Brygaard — Deep Shafts Caretaker
+
+**Faction**: Miners' Union
+**Age**: 70s
+**Role**: Custodian of the Deep Shafts memorial; keeper of Sora Takahashi's story (SA-2)
+**Tonal register**: Weighted-time custodial -- speaks the way a place that has seen too much teaches you to speak: slowly, with space, without waste.
+
+### Core Voice
+Old Sten has been in the Deep Shafts since before the Uprising. He has outlasted three shift supervisors, two equipment overhauls, and one partial collapse that took fourteen people. He speaks like someone who has learned that words are limited and silence is honest.
+
+He is not unfriendly. He is slow to open, the way all deep-rock miners learn to be slow to trust a new sound. But if you have come to the Shafts in good faith, he knows it by the third sentence you say.
+
+### Verbal Habits
+- Refers to the Shafts as a living place with its own temperament: "She's been quiet this month"
+- Measures time in shifts, not years: "Four hundred shifts before the Uprising, give or take"
+- Uses "we" for collectives he was part of: "We walked out. All of us. Even the ones who weren't sure."
+- Offers tea at the beginning and end of important conversations -- does not explain why this matters
+- "That's worth knowing" signals a story is coming; states it before the story, not after
+- Does not explain what he means by certain references; you are expected to sit with them
+
+### What He Says vs. What He Means
+- "That's worth knowing" = I am going to tell you something now. Pay attention.
+- "She would have said..." = Sora Takahashi. He carries her name without always speaking it.
+- "The old shifts" = the time before the workers understood what was being done to them.
+- "The shaft remembers" = there is something physical about this place that holds its history; he is not being mystical, he is describing something he has observed over decades.
+- "Come back" (at the end of a visit) = you have done this right.
+
+### Emotional Range
+- **Custodial calm (default)**: Unhurried, grounded. A man who has made peace with staying.
+- **Memory state**: Slows further. Speaks as if reading something inscribed in rock. "Cargo Bay 7. Shift three. She stood on a shipping crate." He has said this before. He will say it again. It does not lose weight.
+- **Grief**: Does not perform it. Becomes matter-of-fact in a way that hits harder than any display. "Fourteen people. That was the collapse. I filed the report."
+- **Pride**: Reserved for the Union and the ones who stayed. Rare. Carries weight precisely because it is rare.
+
+### What He Never Says
+- That the Uprising was a simple victory (it was a beginning, and what followed was complicated and costly)
+- Simple answers to why things happened (the history is layered and he holds all of it)
+- Anything bitter about the Guild, even when bitterness would be warranted (the facts are enough)
+- That Marcus's father was a hero in the uncomplicated sense (the man was a worker, one of many; Sten insists on that)
+
+### Sample Lines
+1. **First meeting**: "You're the one that came with Jin. He told me you'd be along. He doesn't bring people here unless they're worth bringing. Come in. I'll put the kettle on."
+2. **Telling the story**: "Cargo Bay 7. Third shift, morning cycle. She climbed up on a shipping crate -- she was short, everyone always forgets how short she was -- and she said: we built this. All of it. And we are done letting other people decide what it is worth. Nineteen days later, the Guild signed."
+3. **On grief**: "Fourteen in the collapse. We got eleven names on that wall. Three were never recovered. I have their shift numbers. The wall doesn't, but I do."
+4. **On Marcus's father**: "He was at the walkout. He stayed the full nineteen days. That is the whole story. What happened after is between him and Marcus. I don't speak to what I don't know."
+5. **Closing**: "Come back when you're out this way again. The Shafts don't mind the company."
+
+---
+
+## Paz Reina — Wreck Navigator
+
+**Faction**: Frontier Alliance (Wreckers' Guild)
+**Age**: Late 30s
+**Role**: Wreckers' Guild secondary contact, wreck-approach specialist (SA-1)
+**Tonal register**: Spatial-precision efficiency -- reads debris fields the way navigators read charts; everything is relative position, drift rate, and approach window.
+
+### Core Voice
+Paz talks in coordinates and margins. She has navigated seventeen confirmed wreck-approach runs and one that was not confirmed and that she does not discuss. She is not cold; she is calibrated. Every word she says about a debris field is one she has verified. Everything else, she marks as estimate.
+
+She sounds like someone who has learned that imprecise guidance in a debris field gets people killed, and has structured her entire communication style around that lesson.
+
+### Verbal Habits
+- Distinguishes clearly between confirmed and estimated data: "That tumble rate is confirmed" vs. "That entry angle is estimated -- I'd add fifteen degrees of buffer"
+- Counts approach windows out loud as she identifies them
+- Uses bearing conventions even in casual conversation
+- Short directives in the field: "Hold. Wait for the tumble. Now."
+- "Check your margin" as a near-constant refrain; she says it even when the margin is fine
+
+### What She Says vs. What She Means
+- "That's manageable" = dangerous enough to require attention, but I have seen worse.
+- "Add buffer" = the estimate is shakier than I am letting on.
+- "We're not going in there" = a flat safety determination; she has made it and will not revisit it.
+- "Interesting wreck" = something unusual has changed the approach; she has noticed it; you should ask her what.
+
+### Emotional Range
+- **Operational (default)**: Tight, focused, numbers-first. She is working.
+- **Pre-approach briefing**: More deliberate. Checks each point twice. "I say everything twice before we go in."
+- **Post-run**: Brief conversation. Still precise, but softer. "That was cleaner than I expected."
+- **Refusal mode**: Flat. No elaboration beyond the safety assessment. "We are not going in there."
+
+### What She Never Says
+- Encouragement that is not earned by actual conditions
+- Estimates presented as confirmed data
+- Anything that understates a risk to make it more palatable
+
+### Sample Lines
+1. **Pre-approach**: "Entry window is fourteen minutes, starting in about three. Tumble rate on the main hull is six degrees per minute, confirmed. Approach vector is two-seven-zero bearing, and you want to stay above the plane -- there's debris scatter below that I haven't fully mapped."
+2. **In the field**: "Hold. Wait for the tumble." *(Beat.)* "Now. You've got about forty seconds before the secondary hull swings back around."
+3. **Post-run**: "That was clean. You held the line on the approach. Come back when you've got another contract and we'll run it again."
+
+---
+
+## Daro Teck — Salvage Engineer
+
+**Faction**: Frontier Alliance (Wreckers' Guild)
+**Age**: 40s
+**Role**: Wreckers' Guild secondary contact, salvageability assessments (SA-1)
+**Tonal register**: Diagnostic directness -- assesses everything by what it is, what it can become, and what that will cost.
+
+### Core Voice
+Daro speaks the way experienced repair technicians speak: with the confidence of someone who has seen enough breakdowns to know where every breakdown comes from, and the patience of someone who has learned that explaining it clearly once is faster than explaining it badly twice. He is blunt about assessments and generous with the reasoning.
+
+He sounds like a mechanic who has been doing this long enough that the problems have stopped surprising him, but he has not stopped caring about getting them right.
+
+### Verbal Habits
+- Gives the assessment first, reasoning second: "That's borderline salvageable. Here's why."
+- Refers to ship systems by function, not component name: "the breathing side of the engineering section"
+- Dark engineering humor: "If it still spins, we can work with it."
+- Asks questions before touching anything new: "What happened here? And when?"
+- Uses "we" for the Guild's collective: "We've worked worse than this."
+
+### What He Says vs. What He Means
+- "That's borderline" = this will be expensive and I want you to know before you commit.
+- "We've worked worse" = I am not turning this down, but I am not promising it will be clean.
+- "What happened here?" = the answer will tell me more than any inspection.
+- "Interesting problem" (said to himself) = something unexpected has caught his attention; do not interrupt.
+
+### Emotional Range
+- **Assessment mode (default)**: Systematic, unhurried, professional.
+- **Problem-solving**: Engaged, slightly faster, asking more questions.
+- **Teaching**: Patient, clear. Explains once properly. If asked again, shorter.
+- **Unsalvageable judgment**: Flat. "It's scrap. I can walk you through why if you want, but the answer is scrap."
+
+### What He Never Says
+- Optimistic assessments he cannot support with reasoning
+- Guild politics or interpersonal Wreckers' drama
+- That salvage is glamorous
+
+### Sample Lines
+1. **First assessment**: "Let me walk the frame before I tell you anything. I've made calls before I did that and regretted it. Give me twenty minutes."
+2. **On a borderline case**: "The drive housing is cracked but not shattered. The life support canisters are depleted but the system's intact. You've got maybe sixty percent of a ship here. Whether that's worth your time depends on what you need sixty percent of a ship for."
+3. **Teaching**: "You see that scoring on the hull plating? That's not combat damage. That's heat bleed from a failed cooling system. Means the drive was running hot for a while before whoever was flying it noticed. Always read the hull before you open anything."
+
+---
+
+## Ife Obi — Debris-Field Cartographer
+
+**Faction**: Frontier Alliance (Wreckers' Guild)
+**Age**: Early 30s
+**Role**: Wreckers' Guild secondary contact, debris-field mapping and cataloging (SA-1)
+**Tonal register**: Indexing curiosity -- turns the chaotic into the categorized; finds the pattern and names it before asking what it means.
+
+### Core Voice
+Ife speaks like someone whose natural mode is documentation. They see a debris field and their first instinct is to sort it: primary hull, secondary structure, scattered components, anomalous elements. They are genuinely interested in what they find, in the way that a librarian is interested in a new collection -- not romantically, but with the focused pleasure of encountering material that wants to be organized.
+
+They sound like the quietest person in any room, paying attention to things nobody else has thought to pay attention to.
+
+### Verbal Habits
+- Narrates observations as they make them: "That hull section over there -- the one with the orange scoring -- shouldn't be in this quadrant. It's from a different wreck entirely."
+- Uses cataloging language naturally: "That's a type-two scatter pattern," "I'd classify this as deliberate rather than impact debris"
+- Asks follow-up questions after discoveries: "Does that match what you saw on approach?"
+- Takes notes during conversation; writing while talking is their natural state
+- Prefers descriptive over evaluative: "notable" rather than "interesting," "significant" rather than "important"
+
+### What They Say vs. What They Mean
+- "That's worth noting" = this changes the picture in a way I have not fully worked out yet.
+- "I'd like to come back to that" = there is a discrepancy here and I want to resolve it properly.
+- "The pattern suggests..." = I have a theory; I am presenting it as data pending verification.
+- "Unusual" = either very rare or very wrong; I will tell you which once I have checked.
+
+### Emotional Range
+- **Cataloging mode (default)**: Focused, methodical, absorbed in the work.
+- **Discovery**: Pauses mid-sentence. Looks at something for a long moment. Then: "That shouldn't be there."
+- **When a pattern resolves**: Brief, specific satisfaction. Not excitement -- completion. "That accounts for the scatter on the approach. I can update the chart."
+- **When interrupted**: Polite, unhurried return. Does not perform impatience.
+
+### What They Never Say
+- Hasty conclusions: every claim is marked as confirmed, estimated, or pending
+- Dramatic language about what they find
+- Anything dismissive of a wreck that has not been fully catalogued
+
+### Sample Lines
+1. **At work**: "The secondary hull fragmentation on this one is unusual -- the scatter radius is too wide for the estimated impact velocity. Either something accelerated the debris after separation, or my impact estimate is wrong. I'd like to run the calculation again before we submit the chart."
+2. **Discovery**: "Wait. That component cluster -- see the thermal scoring? That's from a Collective-built drive assembly. This is not a Reach ship. I'd like to flag this before we log the recovery."
+3. **Summary**: "I've marked everything within the primary scatter zone. There are three anomalous elements that don't fit the wreck profile -- I've tagged them separately. You'll want to review those before deciding what to recover."
+
+---
+
+## Mayor Cressida Vance — Verdant Mayor
+
+**Faction**: Frontier Alliance
+**Age**: Late 50s
+**Role**: Council chair, Verdant system; primary political contact at Mayors' Council Chamber (SA-P3)
+**Tonal register**: Populist pragmatism -- knows what the room needs to hear and delivers it without losing her own position; governs by getting things done while others debate.
+
+### Core Voice
+Cressida Vance has governed Verdant for eleven years. She speaks with the particular precision of someone who has learned that in small-community politics, every word gets repeated at the next meal in the commissary. She does not make promises she has not verified. She does not start processes she cannot finish.
+
+She sounds like a good administrator in an impossible job, who has stopped apologizing for the limitations of what is possible and started working within them without announcement.
+
+### Verbal Habits
+- First names, but earned slowly: she is "Mayor Vance" until she decides you are Verdant people
+- States her position before her reasoning: "I'm not moving on the water allocation. Here's why."
+- Uses "Verdant" as collective noun: "Verdant can't absorb that right now"
+- Invokes precedent for decisions she has made before: "We've handled this kind of thing twice. Here's what worked."
+- Brief acknowledgments before pivoting: "I understand the concern. Here's what I can do."
+- Notes when she is operating outside her authority: "That's above the Council's lane. It belongs with the Congress."
+
+### What She Says vs. What She Means
+- "I need to think about that" = I have already thought about it; I want to check how the room is reading it before I say what I think.
+- "Verdant can't absorb that right now" = I won't absorb that; the community framing is protective.
+- "That's above the Council's lane" = I'm pushing this upstairs deliberately; I do not want it to die in committee here.
+- "The delegates will need to weigh in" = I've already spoken to the delegates; I know where this lands.
+
+### Emotional Range
+- **Administrative default**: Measured, efficient, attentive. The room reads itself in her reactions.
+- **Under external pressure**: Steadier than usual. External threats calm her -- internal disputes do not.
+- **Genuine concern**: Slows down. Drops the public framing. "I'm telling you this as a person, not as a mayor."
+- **Frustration (visible, rare)**: Shorter sentences. Crisper. "We've been through this."
+
+### What She Never Says
+- Promises without verification
+- Alliance doctrine as slogans (she lives it; she does not recite it)
+- Anything that sounds like she has given up on Verdant's prospects
+- Personal opinions about other factions' internal politics
+
+### Sample Lines
+1. **Council session**: "We have three items on the floor today. I'd like to be through all of them in two hours. I'll hold questions to the end of each item. If we run long, we carry the third item to next session -- that's happened twice before and we've survived it."
+2. **Resisting outside pressure**: "Verdant's water allocation is not a policy question for this table. It's an operational question for the communities it affects. I'll hear what you're proposing, and I'll take it to the communities, and they will tell you what they think."
+3. **Genuine moment**: "I've been running this council since before some of the delegates were old enough to vote. You want to know what I've learned? Nothing here gets done by one person. Everything here gets done when at least three people need it badly enough to make it everyone else's problem."
+
+---
+
+## Ferron Hask — Verdant Council Delegate
+
+**Faction**: Frontier Alliance
+**Age**: 60s
+**Role**: Verdant Council delegate, farmer and land-use advocate (SA-P3)
+**Tonal register**: Earned-suspicion pragmatism -- has attended enough sessions to know which outside proposals survive contact with Verdant soil and which ones do not.
+
+### Core Voice
+Ferron Hask has been a delegate for going on sixteen years. He has voted against more proposals than he has supported, and he considers this a good average. His concerns are always the same: how does this affect the soil, the water, the seasonal rotations? Everything else is someone else's problem.
+
+He sounds like a man who has heard every version of "this will be good for Verdant" and has learned to wait for the part where it is not.
+
+### Verbal Habits
+- References the current season and its agricultural implications in most conversations
+- "Show me the soil analysis" as his version of "I'll believe it when I see it"
+- Speaks slowly, with pauses that feel less like uncertainty and more like the pace at which decisions should be made
+- Uses "outside money" and "outside proposals" as category terms -- both suspicious by default
+- Has specific, verifiable memories: "The 2328 water-rights resolution. Page twelve. Paragraph four."
+
+### What He Says vs. What He Means
+- "Show me the soil analysis" = you have not thought this through to my satisfaction.
+- "That's not a Verdant question" = I am voting no.
+- "I'll take it under consideration" = I am going to talk to the farmers before I say anything.
+- "We've heard this before" = someone tried this, it failed, and they left before the consequences landed on us.
+
+### Emotional Range
+- **Skeptical default**: Slow, watchful. Not hostile -- evaluating.
+- **Farming season concern**: Gets more animated. This is the terrain he knows.
+- **Genuine agreement** (rare): Shorter sentences. A nod that means something. "That I can support."
+- **Angry**: Does not raise his voice. Gets more specific. Produces the page and paragraph number.
+
+### What He Never Says
+- Quick agreement on anything he has not had time to verify
+- Flattery for outside proposals
+- That he was wrong (though he will change his vote if the evidence changes, without announcing he was wrong)
+
+### Sample Lines
+1. **At the Council**: "You're asking Verdant to redirect water from the northern crop belt. In the fourth month. When the moisture deficit is already at eleven percent. Have you looked at the soil analysis? Bring me the soil analysis."
+2. **Resistance**: "We've heard this before. Different names, same proposal. I was sitting in this seat the last time. The people who brought it weren't sitting in it for the consequences."
+3. **Rare agreement**: "The dispute resolution process you're describing -- phased, with community review before implementation -- that's how it should work. I'll support that."
+
+---
+
+## Samela Drift — Verdant Council Delegate
+
+**Faction**: Frontier Alliance
+**Age**: Late 30s
+**Role**: Verdant Council delegate, modernization and infrastructure advocate (SA-P3)
+**Tonal register**: Research-forward earnestness -- over-prepared, has done more homework than the room expects, and has learned this is not always an advantage.
+
+### Core Voice
+Samela is the youngest delegate on the Verdant Council and the most thoroughly briefed. She comes to every session with a prepared analysis, three data points no one else has pulled, and a frustrating tendency to be right. She has learned, gradually, that being right is not the same as being persuasive.
+
+She sounds like someone who is slowly discovering that governance is a different skill than research, and who is adapting faster than she expected.
+
+### Verbal Habits
+- Pre-empts objections: "I know what Delegate Hask is going to say -- here's why this case is different"
+- Cites specific data: "According to the Forgeworks trade index from last quarter..."
+- Over-explains context she assumes others are missing
+- Asks follow-up questions that reveal she has thought about the topic more than the person she is asking
+- Short declarative position statement followed by extensive supporting material
+
+### What She Says vs. What She Means
+- "I know what the concern is" = I have pre-empted this objection three times in preparation and I will pre-empt it again.
+- "The data suggests..." = I am putting the data between me and this argument because I think it will make it more persuasive.
+- "I'd like to come back to the infrastructure question" = I spent three hours on the infrastructure question and I am not letting it go.
+- "I understand the Council's position" (when she disagrees) = I am picking my battles.
+
+### Emotional Range
+- **Prepared/default**: Energetic, specific, slightly over-fast.
+- **When her research pays off**: Visible satisfaction. Still professional, but pleased.
+- **When dismissed**: Brief pause. Then: continues. She is learning not to let it slow her down.
+- **Genuine uncertainty**: Slows. Acknowledges it directly. "I don't have data on that. I'll get it."
+
+### What She Never Says
+- That she was unprepared (she is always prepared; if she is wrong, she will say what she got wrong, specifically)
+- Slogans in place of arguments
+- Personal attacks, even when they would be warranted
+
+### Sample Lines
+1. **At the Council**: "I'd like to address the infrastructure proposal. I know the concern -- this is outside money and outside proposals have a pattern. But the Forgeworks infrastructure partnership in 2324 is a different case, and I've pulled the trade outcomes. They are in your materials."
+2. **Pre-empting objection**: "Before Delegate Hask asks for the soil analysis -- it's on page three. I anticipated that."
+3. **Genuine uncertainty**: "I don't have numbers on the seasonal impact for the northern belt. I should have. I'll get them before the next session."
+
+---
+
+## Ollo Marsh — Verdant Council Delegate
+
+**Faction**: Frontier Alliance
+**Age**: 50s
+**Role**: Verdant Council delegate, water-rights specialist (SA-P3)
+**Tonal register**: Single-axis precision -- everything is evaluated in terms of water allocation; outside that axis, he defers; within it, he does not negotiate.
+
+### Core Voice
+Ollo Marsh has exactly one area of deep expertise -- water allocation in Verdant's three agricultural belts -- and he brings it to bear on every council topic with the focus of someone who has learned that everything eventually connects to water. He is not obstructionist. He is specific.
+
+He sounds like a technical specialist who has ended up in a political role and has decided to treat politics as a technical problem.
+
+### Verbal Habits
+- Frames everything in terms of water: "What does this do to the belt allocation?"
+- Has specific numbers memorized: "Current draw on the northern aquifer is three point four gigaliters per annum"
+- Will defer on any topic that does not touch water: "That's outside my lane; I'll follow Delegate Drift"
+- Uses "the model suggests" to introduce projections he trusts
+- Signals when he is at his limit: "I'd need to bring in someone who does"
+
+### What He Says vs. What He Means
+- "What does this do to the belt allocation?" = this is my entry point for every proposal; you need to answer this before I vote.
+- "The model suggests concern" = I am voting no unless this changes.
+- "I'll need to run the numbers" = I am not going to be rushed on this.
+- "Outside my lane" = genuine deference, not false modesty.
+
+### Emotional Range
+- **Technical default**: Precise, focused, referencing numbers.
+- **When water rights are under pressure**: Sharper. "I need to be very clear about what you are asking for here."
+- **When correctly deferred to**: Brief warmth. Someone has acknowledged his expertise as relevant. This matters to him.
+- **On irrelevant proposals**: Patient disengagement. He waits for the thing that matters to him to surface.
+
+### What He Never Says
+- Quick agreement on water-related topics
+- Anything that understates the significance of water allocation
+- Personal opinions on non-water topics in session (he has them; he does not share them)
+
+### Sample Lines
+1. **His entry point**: "Before we proceed: what does this proposal do to the northern belt allocation? I want that number before we vote."
+2. **Under pressure**: "I understand the urgency. The aquifer draw is not a negotiating position. Three point four gigaliters is the current draw. The model shows stress above three point seven. We are not moving the limit."
+3. **Deference**: "I'm following Delegate Drift on the infrastructure question. That's not my lane. On the water component, come back to me."
+
+---
+
+## Councillor Bram Wentworth — Alliance Congress, Haven's Rest
+
+**Faction**: Frontier Alliance
+**Age**: 60s
+**Role**: Alliance Congress delegate, Haven's Rest representative; institutional memory of the Congress (SA-P4)
+**Tonal register**: Accumulated-caution authority -- has seen enough cycles to be skeptical of urgency, and has been wrong enough times to have earned that skepticism.
+
+### Core Voice
+Wentworth has been Haven's Rest's representative to the Alliance Congress for longer than most of the current delegates have been in Alliance politics. He has watched urgent things that turned out not to be urgent, and quiet things that turned out to be catastrophic, and he has developed a heuristic: slow down, listen to the room, check whether this has a precedent.
+
+He sounds like a man who has learned that the most dangerous word in governance is "finally."
+
+### Verbal Habits
+- References Congress history: "The last time the Congress moved this quickly was the 2318 defense compact"
+- Slows down when others are speeding up
+- Uses "precedent" as a weight: "There's no precedent for this; that concerns me"
+- Asks clarifying questions that reveal he has understood the proposal more carefully than his tone suggests
+- "Let me think about that" -- and he actually does, visibly, mid-conversation
+
+### What He Says vs. What He Means
+- "I need more time" = I am not going to be moved by urgency; present your case properly.
+- "There's no precedent" = I'm not saying no; I'm saying we need to be careful.
+- "The last time we moved this quickly..." = here is what happened. The implication is clear.
+- "Let me think about that" = he is about to say something that matters.
+
+### Emotional Range
+- **Deliberate default**: Measured, unhurried, seemingly in no rush to decide.
+- **When he decides**: Still calm. But the decision is communicated clearly.
+- **When alarmed** (rare): Speaks more quickly. This is the tell that something is actually wrong.
+- **When asked to move too fast**: Becomes more deliberate, not less.
+
+### What He Never Says
+- Quick commitments
+- Anything that sounds like he has been persuaded by a single argument
+- Personal opinions about other settlements' internal politics
+
+### Sample Lines
+1. **At Congress**: "Before we vote on this, I want to understand the implementation timeline. The last time the Congress passed a resolution with this scope and no implementation review, it took three sessions to sort out the jurisdictional question. I'd like to avoid that."
+2. **On urgency**: "I understand that this is pressing. I've heard that about six proposals this year. Two of them were. I'd like to know which kind this is before we commit."
+3. **When decided**: "I've heard the case. I've read the precedents. This is unusual, but the case is sound. Haven's Rest will support it."
+
+---
+
+## Councillor Yuta Shirane — Alliance Congress, Forgeworks Area
+
+**Faction**: Frontier Alliance
+**Age**: 50s
+**Role**: Alliance Congress delegate, Forgeworks-area representative; pragmatic deal-broker (SA-P4)
+**Tonal register**: Transactional pragmatism -- looks for the deal that gets done over the deal that wins; has brokered enough arrangements to believe most impasses are structural rather than principled.
+
+### Core Voice
+Yuta Shirane comes from the same cluster as the Forgeworks Compact, and has internalized that document's logic: both sides are going to be somewhat unhappy, and that is the sign of a fair agreement. She is the person who drafts the amended proposal. She is the person who finds the minimum change that gets the holdout vote.
+
+She sounds like a professional negotiator who became a politician and found the two jobs more similar than she expected.
+
+### Verbal Habits
+- Introduces modifications rather than objections: "What if we adjusted the timeline..."
+- Names the actual obstacle rather than talking around it: "The Reach is worried about the pricing structure. Let's address that."
+- Uses "workable" as her highest compliment for a proposal
+- Keeps track of who owes what across sessions: "Verdant supported the defense budget last year; it's time to call that in"
+- Brief, direct summaries: "Here's where we are: X, Y, Z. Which of those can move?"
+
+### What She Says vs. What She Means
+- "I think there's a deal here" = I have already identified it; I am checking whether the other party sees it.
+- "Workable" = this is not perfect but I can get votes for it.
+- "Let's address the actual concern" = you are negotiating around something; I am going to name the thing.
+- "This doesn't need to be a crisis" = you are making it a crisis; stop.
+
+### Emotional Range
+- **Problem-solving default**: Engaged, forward-leaning, thinking out loud.
+- **When a deal is close**: Faster, more energized.
+- **When someone blocks without substance**: Calm, direct, slightly pointed. "What would you need to support this?"
+- **Genuine frustration** (rare): "I understand the position. I'd like to hear the actual concern."
+
+### What She Never Says
+- That a deal is impossible (a failed deal is a temporary failure; she will find another structure)
+- Anything that attributes bad faith unless she has verified it
+- Optimistic predictions about timelines (she has made too many)
+
+### Sample Lines
+1. **Finding the deal**: "Here's what I'm hearing: Verdant needs the water commitment in writing before they'll move, and Haven's Rest needs the implementation review built into the resolution. Both of those are addressable. Let me draft something."
+2. **Naming the obstacle**: "Delegate Tejada, I think the concern here is the pricing structure, not the principle. Is that right? Because if it is, we can work with that."
+3. **Contained frustration**: "We've been on this item for two sessions. I understand the principle. I'd like to understand what specific change would make this supportable for Crimson Reach."
+
+---
+
+## Delegate Petra Vasc — Alliance Congress, Verdant Representative
+
+**Faction**: Frontier Alliance
+**Age**: Early 40s
+**Role**: Alliance Congress delegate, Verdant's congressional representative; principled idealist with a worked-out theory of the Alliance (SA-P4)
+**Tonal register**: Principled conviction -- measures every proposal against what the Alliance is supposed to be; can be moved by principle, not by expediency.
+
+### Core Voice
+Petra Vasc has a theory of what the Alliance is supposed to be, and she has held it long enough to have tested it against every kind of pressure. She is not naive -- she has compromised, she has lost votes, she has watched things she believed in fail for reasons she still considers insufficient. But she has not stopped applying the principle.
+
+She sounds like someone who genuinely believes that how you get there matters as much as where you arrive, and who has earned that belief the hard way.
+
+### Verbal Habits
+- States principles directly: "The Alliance was built on self-determination. That principle applies here."
+- Asks "what does this do to the people it affects?" as a consistent entry point
+- Acknowledges when she is in the minority: "I understand I'm not going to win this one. I want the record to show the concern."
+- Short, declarative position statements followed by careful reasoning
+- Distinguishes between her personal position and Verdant's mandate: "I'm speaking for myself here, not the settlement."
+
+### What She Says vs. What She Means
+- "I want the record to show the concern" = I am losing this vote but I am not dropping the issue.
+- "The principle applies here" = I am going to keep bringing this back until the room takes it seriously.
+- "I understand the expedient position" = I am about to reject it.
+- "I'm speaking for myself" = this is a harder position than Verdant's official mandate; I am taking it anyway.
+
+### Emotional Range
+- **Default**: Clear-eyed, prepared, direct.
+- **Principled opposition**: Steady, not heated. The principle is not in dispute for her; she is explaining it, not defending it.
+- **Loss**: Acknowledges it cleanly. "We lost this one. I want to understand why, because we'll have this argument again."
+- **Victory** (rare): Brief. "Good. That's how it should work."
+
+### What She Never Says
+- Rhetoric without reasoning (she does not use the Alliance's founding language as an argument by itself)
+- Personal attacks
+- That the principle does not matter because the vote is lost
+
+### Sample Lines
+1. **Position statement**: "The Alliance was built by people who decided they would rather be uncomfortable and free than comfortable and governed from outside. This proposal asks them to accept governance from outside in exchange for a material benefit. I oppose it on principle."
+2. **After losing**: "We lost. I'd like to understand the reasoning that carried the room, because I think we'll have a version of this argument in the next Congress."
+3. **On compromise**: "I can accept a compromise that preserves the principle. I cannot accept a compromise that abandons it in exchange for a better implementation schedule."
+
+---
+
+## Delegate Raul Tejada — Alliance Congress, Crimson Reach Representative
+
+**Faction**: Frontier Alliance (Crimson Reach chapter)
+**Age**: 40s
+**Role**: Alliance Congress delegate, Crimson Reach representative; skeptic of process, advocate for tangible outcomes (SA-P4)
+**Tonal register**: Rough-edge pragmatism -- impatient with procedure that defers decisions, loyal to results, says what others are thinking.
+
+### Core Voice
+Raul Tejada represents the Reach in a Congress full of people who use more words than he does. He is not anti-intellectual; he has done the reading. He is impatient with process that exists to defer decisions rather than make them. He has watched three cross-Congress resolutions die in implementation review and has developed a specific impatience for the vocabulary of governance that does not lead to anything.
+
+He sounds like the person who will say, in the middle of a procedural discussion, the thing everyone else has been thinking for an hour.
+
+### Verbal Habits
+- Short declarative sentences with no setup: "The Reach won't support this."
+- Names the thing: "This is about pricing. Let's talk about pricing."
+- References the Reach's situation concretely: "Crimson Reach has eighteen hundred people who need this to work."
+- Questions that sound blunt but are genuine: "Who benefits from this taking six months?"
+- Uses "the Reach" as collective noun, the way Vance uses "Verdant"
+
+### What He Says vs. What He Means
+- "The Reach won't support this" = I haven't decided yet; I'm telling you what changes my vote.
+- "Let's talk about pricing" = pricing is what nobody wants to say is the real issue.
+- "Who benefits from this taking six months?" = I believe this delay serves a specific interest and I want it on the record.
+- "I'll take it back to the Reach" = genuine consultation; he does not commit without checking.
+
+### Emotional Range
+- **Default**: Direct, impatient, paying attention.
+- **When he has what he needs**: Straightforward agreement. "That works. I'll support it."
+- **When something seems off**: Asks direct questions. Not accusatory -- investigative.
+- **Rare warmth**: Cross-settlement solidarity moments. "We've been at each other's throats for three sessions. But we're all Alliance. I want to remember that."
+
+### What He Never Says
+- Procedural language without substance beneath it
+- Polite objections when he means a direct one
+- That the Reach's needs are less urgent than other settlements'
+
+### Sample Lines
+1. **Opening position**: "I'm going to say what I said last session: the Reach is not in the same position as Haven's Rest. What takes Haven's Rest two years to feel, we feel in two months. I need this resolution to account for that."
+2. **Naming the thing**: "This is about pricing. Let's talk about pricing. I've sat through two hours of process language and I think the room knows where this lands. I'd rather get there now."
+3. **Alliance solidarity**: "We've disagreed on four of the five items today. That's fine. We're Alliance. We disagree and then we figure it out. That's the whole idea."
+
+---
+
+## Cassian Velo — Stellaris Auctioneer
+
+**Faction**: Commerce Guild (Stellaris Port chapter)
+**Age**: 50s
+**Role**: Stellaris Auction House auctioneer; recurring named NPC (SA-B3)
+**Tonal register**: Ceremonial precision -- the auction is a performance and Velo is its director; the verbal cadence has a rhythm listeners recognize without being able to name it.
+
+### Core Voice
+Cassian Velo has been running auctions at Stellaris for twenty-two years. He has developed a floor voice that is distinct from his off-floor voice in the same way a conductor's hands during a performance are distinct from their hands at dinner: both belong to the same person, but one is instrument, one is person.
+
+On the floor, Velo is the auction. His pacing is the bid tempo. His pauses are where the tension lives. He never rushes, because rushing is what an auctioneer does when they have lost control of the room. He has not lost control of a room in eleven years.
+
+Off the floor, he is quieter, more direct, still precise. He has opinions. He shares them in proportion to his assessment of the person he is sharing them with.
+
+### Verbal Habits (on the floor)
+- "The lot is open" / "The lot is closed" -- ceremonial markers that begin and end every sale; regular attendees will learn to listen for them
+- "We are at..." as a present-tense running narrative: "We are at two thousand. Do we have twenty-one?"
+- Pauses after each bid for exactly as long as the tension requires -- never longer, never shorter
+- Names each lot precisely and neutrally; never editorializes on value
+- Never predicts outcomes; reads the room and lets the room decide
+
+### Verbal Habits (off the floor)
+- Drops "we" and speaks as "I"
+- Shares information selectively but accurately
+- No urgency: everything can wait for the right moment
+
+### What He Says vs. What He Means
+- "Interesting bidders in the room today" = I am telling you something about the competition; read carefully.
+- "The lot was well-received" = it sold above estimate.
+- "A competitive session" = someone paid more than they should have; I do not know who yet.
+- "We have flexibility on scheduling" (off floor) = I can give you a preview of upcoming lots if the consideration is right.
+
+### Emotional Range
+- **On the floor (performance mode)**: Controlled, deliberate, reading the room continuously. This is skill developed over decades.
+- **Off the floor (genuine mode)**: Quieter, more specific, interested in the conversation. Treats competent buyers with genuine respect.
+- **Encountering poor sportsmanship**: On the floor -- ignores it; the lot is the lot. Off the floor -- notes it for future reference.
+- **A truly exceptional lot**: A fractional change in pace. Almost imperceptible. Regular attendees know it means something.
+
+### What He Never Says
+- His estimate for a lot (it would change the bidding; he will not do this)
+- Anything that favors one bidder over another on the floor
+- Sentimentality about specific lots, even the ones he finds remarkable
+
+### Sample Lines
+1. **Opening the floor**: "We have thirty-two lots this session. Standard terms apply. Lot one: twelve units of pre-Compact navigational equipment, Axiom-certified, origin documentation included. The lot is open."
+2. **During a bid**: "We are at forty-five hundred. The room has been very attentive to this one. Do we have forty-eight?"
+3. **Off the floor**: "The three rivals you've been watching all season have different ceilings. You can work out which one from how they bid in the middle range. I've been watching this for two years. You've been watching for three sessions. I'd learn from the sample size."
+
+---
+
+## Aldous Prentiss — Old-Money Collector
+
+**Faction**: Commerce Guild (heritage capital)
+**Age**: 70s
+**Role**: Recurring bidding rival at Stellaris Auction House (SA-B3)
+**Tonal register**: Heritage entitlement -- treats auctions as social occasions with commercial inconveniences; believes the right pieces find the right people because he is the right person.
+
+### Core Voice
+Prentiss has been attending Stellaris auctions since before the current room was built. He does not need to win every lot; he needs to win the lots that matter, and he has very specific opinions about which ones those are. His money is old enough to not need to announce itself.
+
+He sounds like someone who has never considered that his participation might not be welcome, because it has always been assumed welcome.
+
+### Verbal Habits
+- Speaks in first person singular with no preamble: "I'll have that."
+- References provenance: "Pre-Accord manufacture -- these are the authentic ones."
+- Social conversation that functions as competitive intelligence: "How long have you been attending? I don't believe we've been introduced."
+- Never raises his voice; his bid increments are small and certain
+- Refers to competitors by type rather than name: "the institutional buyer," "the captain"
+
+### What He Says vs. What He Means
+- "How long have you been attending?" = I am assessing whether you are competition or scenery.
+- "These are the authentic ones" = I am educating you about why my bid is correct and yours is not.
+- "I'll step aside on this one" = this lot does not meet my criteria; I am informing you of this as though it were an act of generosity.
+- "The Guild has always supported this kind of preservation" = my bid is ideologically justified.
+
+### Emotional Range
+- **Default**: Comfortable, assured. The room is his natural habitat.
+- **Competitive**: Slight attention. A fractional adjustment. He does not show urgency.
+- **Outbid**: Brief stillness. Then: continues. He is recalibrating, not angry.
+- **Losing a lot he wanted**: Genuine, controlled. Does not congratulate the winner. Makes a note. He remembers.
+
+### What He Never Says
+- That he lost because someone outbid him (always a strategic choice to step aside)
+- Anything about his ceiling
+- Praise for a lot that belonged to someone he knows socially
+
+### Sample Lines
+1. **At the auction**: "I'll go to six thousand. That lot has not been on the open market for fourteen years. The estimate is too conservative."
+2. **Social conversation (competitive)**: "You've been very active this season. I don't believe we've met. Aldous Prentiss. I've been attending these sessions since the current room was built. Are you collecting, or is this more of a market-research exercise?"
+3. **Being outbid**: "That's a fair price for that item." *(He does not look at the winner. He is already reading the next lot.)*
+
+---
+
+## Commissioner Yuna Kade — Stellaris Faction Agent
+
+**Faction**: Commerce Guild (institutional procurement)
+**Age**: 40s
+**Role**: Recurring bidding rival at Stellaris Auction House (SA-B3)
+**Tonal register**: Institutional neutrality -- polite, precise, impersonal; has acquisition targets and a reporting structure, and neither is visible in her manner.
+
+### Core Voice
+Yuna Kade bids on behalf of the Guild's logistics and operations division. She does not bid personally; she bids institutionally. This distinction matters to her and is visible in how she speaks: she uses "the Guild" or "procurement" as the subject of her bids, not "I."
+
+She sounds like someone who has been trained to be pleasant and has learned to use pleasantness the way a screen is used: it keeps things separate.
+
+### Verbal Habits
+- "The Guild's position is..." rather than "I'm bidding..."
+- Politely corrects misconceptions: "I think the reserve has been set differently this session -- you may want to confirm."
+- Does not discuss her ceiling: "I'm authorized to a certain amount; I won't say what that is."
+- Checks notes before major bids (consulting internal approval documents)
+- Brief, pleasant small talk that contains no usable information
+
+### What She Says vs. What She Means
+- "I'm not at liberty to say" = no; no exceptions.
+- "That's an interesting lot" = the Guild wants this; I am assessing the competition.
+- "I'll defer on this one" = this lot is not in my acquisition list; I have no discretion.
+- "The Guild's position is..." = I personally agree with this, but I am paid to represent institutional consensus.
+
+### Emotional Range
+- **Default**: Even, pleasant, unreadable. A professional manner, not a personal one.
+- **When a target lot appears**: Slightly more attentive. The pleasantness does not change. The attention does.
+- **Outbid on a target**: Consults notes. Still pleasant. "I see. Thank you." This means she will report the result and someone will review the ceiling.
+- **Genuine interest** (rare, off the floor): The institutional language drops slightly. She has opinions. She shares one, then returns to register.
+
+### What She Never Says
+- Her personal opinion on lots she is bidding on (only the Guild's position)
+- Her ceiling
+- Anything critical of the Guild's procurement priorities
+
+### Sample Lines
+1. **Bidding**: "The Guild bids forty-two hundred. We have reviewed the certification documentation."
+2. **On being asked her limit**: "I'm authorized to a certain amount on this lot. I won't share what that is -- I'm sure you understand."
+3. **Off the floor, genuine moment**: "Between sessions: the navigational array in lot eleven has a manufacturer's mark that was only used for three years. I noticed that. It's worth knowing for the provenance question." *(She returns to institutional register immediately after.)*
+
+---
+
+## Captain Fenn Salko — Cold-Grudge Rival
+
+**Faction**: Independent
+**Age**: 40s
+**Role**: Recurring bidding rival at Stellaris Auction House and Crimson Reach (SA-B3, SA-B4)
+**Tonal register**: Earned-quiet rivalry -- does not perform the history; does not explain it; behaves in the room in ways consistent with a specific past, and the player will feel that past without being told what it was.
+
+### Core Voice
+Fenn Salko does not introduce himself as a rival. He does not reference the history. He is simply present in the room in a way that feels specific -- his attention lands on you differently than it lands on Prentiss or Kade, and that difference has a weight to it.
+
+He is not theatrical. That would be the wrong register. The rivalry is quiet because it was earned in a way he has processed and you have not, or in a way you have both processed and do not discuss. Either reading should work from his behavior alone.
+
+He sounds like someone carrying a settled account, not an open one.
+
+### Verbal Habits
+- Acknowledges the player's presence briefly at the start of each session -- not warmly
+- Bids without preamble: a number, stated flatly
+- Does not engage in social conversation with other bidders; has brief, functional exchanges with Velo
+- Occasionally makes a comment that assumes shared context: "You know what this lot is."
+- Does not explain himself
+
+### What He Says vs. What He Means
+- "You know what this lot is" = I am telling you that I remember what this represents; I am not elaborating.
+- A flat bid with no reaction = I've decided; nothing the room does changes that.
+- "Still at it" (to the player, casually) = I see you. I know what you've been doing. I have no comment.
+- *(Long silence before bidding)* = he is not uncertain; he is letting the room understand he has decided.
+
+### Emotional Range
+- **Default**: Contained. Present. A specific quality of attention the player will learn to read.
+- **When outbid**: No reaction. Files it. He is building a picture of the player's interests.
+- **When he wins something significant**: Brief. A nod in the player's direction that can be read as acknowledgment or something else. Both interpretations should fit.
+- **Off the floor** (rare): Brief. "Good session." Not pleasant conversation -- an observation.
+
+### What He Never Says
+- An explanation of the history
+- Anything theatrical about the rivalry
+- Compliments that do not cost him anything
+
+### Sample Lines
+1. **At the session start**: *(He looks at you when you enter. Not long. Just enough.)* "You're back." *(He goes back to the catalogue.)*
+2. **Bidding against you**: "Eight thousand." *(Stated flatly, immediately after your bid.)*
+3. **After a session**: "You know what you wanted. You got it." *(He picks up his catalogue. That is all.)*
+
+---
+
+## Ilse Vey — Meridian Primary Broker
+
+**Faction**: Commerce Guild (Meridian Financial Exchange)
+**Age**: 50s
+**Role**: Primary broker at Meridian Financial Exchange; graduation point for the Cargo Broker arc (SA-F3)
+**Tonal register**: Institutional gatekeeping with polish -- the Exchange is doing you a favor by engaging with you; this is communicated through assumption, not arrogance.
+
+### Core Voice
+Ilse Vey speaks as someone who manages access to a system that most people never see. Her job is not to explain the Exchange; it is to assess whether you are ready for the Exchange, and to calibrate your introduction accordingly. She is not cold. She is precise about what you have earned and what you have not.
+
+She contrasts with Odom in a specific way: Odom is working capital -- he counts everything by number and remembers every deal by its delivery outcome. Vey is institutional capital -- she remembers every client by their file, their trajectory, what they represent to the Exchange's interests. Odom is a middleman. Vey is a gatekeeper.
+
+### Verbal Habits
+- "Your record" as a framing device: "Your record here suggests..."
+- Refers to the Exchange as a separate entity with its own interests: "The Exchange looks for certain things."
+- Uses "we" for the Exchange's collective: "We've seen this trajectory before."
+- Asks questions that are actually assessments: "What are you looking to hedge against?"
+- Formal but not cold: "I appreciate you coming in."
+
+### What She Says vs. What She Means
+- "The Exchange looks for certain things" = I am evaluating you against those things right now.
+- "Your record suggests you're ready for this" = I have decided to proceed; this is the announcement.
+- "We've seen this trajectory before" = I have classified your file; you fit a known pattern; I know what comes next.
+- "That's a reasonable starting position" = you have room to grow from here; I'm noting where you started.
+- "We appreciate the referral" (on Odom's introduction) = Odom vouched for you, and that carries weight in this building.
+
+### Emotional Range
+- **Default**: Calibrated warmth. Pleasant, precise, gatekeeper without announcing the gate.
+- **When a client is genuinely ready**: A slight openness. "This is the part of the work I find interesting."
+- **When a client is not ready**: Still pleasant. "I think you have some groundwork to complete. Here's what I'd suggest."
+- **When surprised by a client's assessment**: Brief pause. Recalibration. Then back to register.
+
+### What She Never Says
+- That you are not welcome (the Exchange does not say no; it says "not yet")
+- Anything that positions the Exchange as less consequential than Odom's operation (they are different scales and she knows it)
+- Rushed assessments
+
+### Sample Lines
+1. **Introduction**: "Ilse Vey. I'm one of the Exchange's primary brokers. Your record suggests you're ready for what we offer here -- or close to it. Odom's recommendation carries weight. Let's talk about what you're looking to accomplish."
+2. **On the Exchange**: "Meridian isn't the right fit for everyone. That's not a judgment -- it's a calibration question. The Exchange handles instruments that require a certain baseline of operating capital and a certain tolerance for structured risk. You're approaching that baseline."
+3. **On Odom**: "I've worked with people Odom has sent over for fifteen years. He doesn't send people he hasn't evaluated. He doesn't send them early. You're here because he decided you're ready. I take that seriously."
