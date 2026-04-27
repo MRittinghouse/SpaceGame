@@ -212,3 +212,46 @@ def encounter_seen(encounter_id: str) -> str:
     from the weighted-random pool once the flag is present).
     """
     return f"encounter_seen_{encounter_id}"
+
+
+# ---------------------------------------------------------------------------
+# SA-0 depth-tier intelligence beats (Cluster A anchors)
+# ---------------------------------------------------------------------------
+#
+# SA-0 (requirements/roadmap/ROADMAP.md). One-shot per save: set when
+# the player hears an insider intelligence beat at a Cluster A anchor
+# during a between-campaign-visit. The flag gates re-display of the
+# branch so the NPC does not repeat themselves on subsequent docks.
+#
+# Producers: ``data/dialogue/dialogues.json`` — response ``set_flag``
+#   on the final node of the depth-tier branch.
+# Consumers: ``data/dialogue/dialogues.json`` — ``excluded_flags`` on
+#   the response that offers the branch, preventing re-entry once heard.
+#   Also consumed by ``data/journal/entries.json`` via ``trigger_flag``
+#   to auto-add the corresponding journal entry.
+
+
+def heard_dcmc_intelligence() -> str:
+    """Flag set when player hears Naveen Prakash's DCMC depth-tier beat.
+
+    One-shot per save. Offered at iron_depths between campaign beats;
+    suppressed once heard and whenever iron_depths_investigation is active.
+
+    Producer: ``naveen_prakash_dialogue`` (dcmc_intelligence_reveal branch).
+    Consumer: ``naveen_prakash_dialogue`` (excluded_flag gate on greet response),
+        ``data/journal/entries.json`` (trigger_flag for auto_dcmc_intelligence).
+    """
+    return "heard_dcmc_intelligence"
+
+
+def heard_nas_intelligence() -> str:
+    """Flag set when player hears Yuki Tanaka's NAS depth-tier beat.
+
+    One-shot per save. Offered at nova_research between campaign beats;
+    suppressed once heard and whenever cargo_lost is active.
+
+    Producer: ``yuki_signal_deep`` (nas_intelligence_reveal branch).
+    Consumer: ``yuki_signal_deep`` (excluded_flag gate on start response),
+        ``data/journal/entries.json`` (trigger_flag for auto_nas_intelligence).
+    """
+    return "heard_nas_intelligence"
