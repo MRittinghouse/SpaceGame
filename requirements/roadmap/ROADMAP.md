@@ -27,7 +27,7 @@ The SA-arc table below is **auto-regenerated** by the ralph harness from the spr
 | ID | Title | Phase | Size | Status | Depends on |
 |---|---|---|---|---|---|
 | [SA-PREP-1](#sa-prep-1--npc-voice-sheet-audit) | NPC voice-sheet audit | 0 | M | done | none |
-| [SA-PREP-2](#sa-prep-2--existing-data-audit) | Existing-data audit | 0 | S | todo | none |
+| [SA-PREP-2](#sa-prep-2--existing-data-audit) | Existing-data audit | 0 | S | done | none |
 | [SA-PREP-3](#sa-prep-3--playtest-baseline-telemetry) | Playtest baseline telemetry | 0 | S | todo | none |
 | [SA-A1](#sa-a1--crew-specialization-design) | Crew specialization design | A | S | todo | SA-PREP-2 |
 | [SA-A2](#sa-a2--crew-template-implementation) | Crew template implementation | A | M | todo | SA-A1 |
@@ -174,7 +174,7 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 
 #### SA-PREP-2 — Existing-data audit
 
-**Status**: in-progress (reviewing)
+**Status**: done
 **Phase**: Phase 0 | **Size**: S | **Effort**: 3-5 days
 **Depends on**: none | **Blocks**: SA-A1, SA-C1, SA-0
 
@@ -273,7 +273,7 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 - 2026-04-26 — implement: test suite 8326 passed, 98 skipped; no regressions; lint/format n/a (docs-only sprint, no Python files touched). PHASE_OK
 - 2026-04-26 21:48 — harness: review phase starting (rework cycle 0)
 - 2026-04-26 22:30 — review complete; 2 minor findings fixed directly: (1) lira_feng incorrectly listed at breakstone (homes at forgeworks per npcs.json) -- removed from Section 3 named NPCs list and corrected summary table count 5 to 4; (2) dr_priya_osei (home_system_id=nexus_prime) not mentioned in Section 1 -- added clarifying note. All 9 acceptance criteria verified. Test suite 8326/8326. PHASE_OK
-
+- 2026-04-26 21:54 — harness: review passed, marking done
 **Last phase report.**
 - Phase: review
 - Outcome: PHASE_OK
@@ -291,7 +291,7 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 
 #### SA-PREP-3 — Playtest baseline telemetry
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Phase 0 | **Size**: S | **Effort**: 2-3 days
 **Depends on**: none | **Blocks**: (informational only — does not block subsequent sprints)
 
@@ -324,9 +324,10 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 1. `requirements/sa_baseline.md` exists and lists every `unique`-typed location (`nexus_financial_exchange`, `stellaris_auction_house`, `breakstone_deep_mines`, `iron_depths_restricted_zone`, `axiom_research_wing`, `nova_restricted_labs`, `havens_congress_hall`, `verdant_mayors_council`, `crimson_wreckers_guild`, `fulcrum_core`) plus SA-V's Cargo Broker. Each entry names at least 3 measurable behaviors (with derivation method) or marks them unmeasurable with stated reason.
 2. `spacegame/utils/telemetry.py` exposes `is_enabled() -> bool`, `record_event(event_type: str, **payload: object) -> None`, and `current_session_path() -> Path | None`. With `SPACEGAME_TELEMETRY` unset or set to `"0"`, all three are no-ops and no file is created.
 3. With `SPACEGAME_TELEMETRY=1`, `record_event(...)` appends one JSON object per call to `logs/telemetry/<session_id>.jsonl`. Each line parses with `json.loads`. Each event includes `event_type`, `timestamp_iso`, `session_id`, plus the supplied payload fields.
-4. `station_hub_view.py` emits an `anchor_card_clicked` event when a `unique`-typed location card is clicked, AND an `anchor_detail_dwell` event when the detail panel closes. Both events carry `anchor_id`. Both no-op when telemetry is disabled. Existing click behavior is unchanged (telemetry is purely additive).
-5. New tests in `tests/test_utils/test_telemetry.py` cover: disabled-by-default no-op (no file created), enabled `record_event` writes parseable JSONL, two events append two lines, event schema includes the required fields, malformed payload (non-JSON-serializable) logs a warning and does not raise. Tests use `monkeypatch.setenv` and `tmp_path` for isolation.
-6. Full test suite passes with pass count >= 8304 (the pre-phase baseline). New tests add to the count, not replace existing ones. `ruff format`, `ruff check`, `mypy spacegame/` all clean.
+4. `station_hub_view.py` emits an `anchor_card_clicked` event when a `unique`-typed location card is clicked, AND an `anchor_detail_dwell` event when the detail panel is dismissed by ANY of these paths: (a) detail close button pressed, (b) the player clicks a different `unique` card replacing the open one, (c) the player exits the station hub view (back button or any other navigation) while a detail is open. Both events carry `anchor_id`. Both no-op when telemetry is disabled. Existing click and navigation behavior is unchanged (telemetry is purely additive).
+5. New tests in `tests/test_utils/test_telemetry.py` cover: disabled-by-default no-op (no file created), enabled `record_event` writes parseable JSONL, two events append two lines, event schema includes the required fields, non-JSON-serializable payload logs a warning and does not raise, AND a simulated I/O error on append (e.g., output dir is unwritable) logs a warning and does not raise. Tests use `monkeypatch.setenv` and `tmp_path` for isolation.
+6. Telemetry-hook tests in `tests/test_views/test_station_hub_view.py` cover: click on `unique` card emits `anchor_card_clicked` with the documented payload; click on a non-`unique` card emits no event; closing the detail panel via the close button emits `anchor_detail_dwell`; clicking a second `unique` card while one detail is open emits `anchor_detail_dwell` for the first anchor; exiting the view (`on_exit`) while a detail is open emits `anchor_detail_dwell`; with telemetry disabled, no events are emitted from any path.
+7. Full test suite passes with pass count >= 8326 (the pre-phase baseline as of 2026-04-26). New tests add to the count, not replace existing ones. `ruff format`, `ruff check`, `mypy spacegame/` all clean.
 
 **Risks / open questions.**
 - ~~Default state: telemetry on or off by default?~~ **LOCKED** — off by default, opt-in via `SPACEGAME_TELEMETRY=1`. We have no central collection backend, and players running the game from source should not be surprised by behavior tracking.
@@ -342,22 +343,36 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 
 2. **Telemetry module — write failing tests first.** Create `tests/test_utils/__init__.py` (empty) and `tests/test_utils/test_telemetry.py`. Tests: (a) `is_enabled()` returns False with env unset; (b) disabled `record_event` is a no-op (no file created in `tmp_path`); (c) `is_enabled()` returns True with `SPACEGAME_TELEMETRY=1`; (d) enabled `record_event` writes one JSONL line with `event_type`, `timestamp_iso`, `session_id`, and the supplied payload; (e) two `record_event` calls append two parseable lines; (f) non-JSON-serializable payload logs a warning and does not raise. Use `monkeypatch.setenv` and `tmp_path` (override the output dir via a module constant or a constructor arg so tests do not write under repo `logs/`). *Gotcha*: env-var leakage between tests — `monkeypatch.setenv` scopes correctly; bare `os.environ[...]=` does not.
 
-3. **Implement telemetry module.** `spacegame/utils/telemetry.py`. Public API: `is_enabled() -> bool`, `record_event(event_type: str, **payload: object) -> None`, `current_session_path() -> Path | None`. Internals: lazy session_id (`YYYYMMDD_HHMMSS_<pid>`) generated on first enabled write; output dir defaults to `logs/telemetry/`, overridable via env (`SPACEGAME_TELEMETRY_DIR`) or test fixture; JSONL writer opens-appends-closes per event (or holds a file handle behind a module-level lock — keep it simple, open-per-event is fine for an S sprint); serialization errors caught and logged via `spacegame.utils.logger`. MyPy strict; no new dependencies. *Risk*: importing the module must not trigger file I/O. The output directory is created lazily on first enabled write only.
+3. **Implement telemetry module.** `spacegame/utils/telemetry.py`. Public API: `is_enabled() -> bool`, `record_event(event_type: str, **payload: object) -> None`, `current_session_path() -> Path | None`. Internals: lazy session_id (`YYYYMMDD_HHMMSS_<pid>`) generated on first enabled write; output dir defaults to `logs/telemetry/`, overridable via env (`SPACEGAME_TELEMETRY_DIR`) or test fixture; JSONL writer opens-appends-closes per event (open-per-event is fine for an S sprint); both serialization errors AND I/O errors (unwritable dir, disk full, permission denied) caught and logged via `spacegame.utils.logger.logger.warning(...)`. MyPy strict; no new dependencies. *Risk*: importing the module must not trigger file I/O. The output directory is created lazily on first enabled write only. A telemetry failure must never crash the game loop or a click handler.
 
 4. **Station hub click hook — write failing test first.** Extend `tests/test_views/test_station_hub_view.py` with a test that constructs the view, simulates a click on a `unique`-typed location card with telemetry enabled (via `monkeypatch.setenv` + `tmp_path` redirect of the output dir), and asserts `anchor_card_clicked` is recorded with `anchor_id`, `system_id`, `game_day`. Add a parallel test asserting no event is recorded when telemetry is disabled. *Gotcha*: existing station-hub tests do not import telemetry — keep imports lazy inside the test to avoid import-order surprises.
 
 5. **Implement click hook in `station_hub_view.py`.** Find the click handler for `unique`-typed location cards (around line 748: `if zone.location.location_type == "unique":`). After the existing branch resolves (whichever branch — open detail panel, navigate, etc.), call `telemetry.record_event("anchor_card_clicked", anchor_id=zone.location.id, system_id=self.system.id, game_day=self.player.game_day)`. Import `telemetry` at module top (cheap import). *Risk*: do not change existing click behavior — telemetry is purely additive. The hook fires regardless of click outcome.
 
-6. **Detail-panel dwell timer — failing test, then implementation.** Test: open the detail panel for a `unique` card, advance time, close the panel, assert `anchor_detail_dwell` event was recorded with `anchor_id` and `duration_ms >= 0`. Implementation: add `_detail_panel_opened_at: Optional[float]` to the view; set on detail-panel open; on close, compute `duration_ms = int((now - opened_at) * 1000)` and emit. *Gotcha*: the detail panel can be dismissed in multiple ways (click elsewhere, ESC, navigate away). Identify the close path that all dismissals funnel through, OR emit on the most common dismissal path and document the limitation in `sa_baseline.md`.
+6. **Detail-panel dwell timer — failing tests, then implementation.** Tests cover three dismissal paths: (a) close button (handler at `station_hub_view.py:693`, sets `_detail_location = None` and kills `_detail_close_button`); (b) replacement click (handler at `_activate_zone`, line 748, where a new `unique` card overwrites `_detail_location`); (c) view exit (`on_exit` at line 394 — emit before `_destroy_ui()` so the event still fires when the player navigates away with a detail open). All three tests open a detail panel, advance time via a fake clock or `time.monotonic` patch, trigger the dismissal path, and assert `anchor_detail_dwell` was recorded with the originally-opened `anchor_id` and `duration_ms >= 0`. Implementation: add `_detail_panel_opened_at: Optional[float]` and `_detail_panel_anchor_id: Optional[str]` to the view; set on detail-panel open (line 749); add a private `_emit_detail_dwell_if_open()` helper that emits and clears both fields; call it from each dismissal site. *Gotcha*: replacement-click overwrites `_detail_location` before the new click hook fires — emit dwell for the OLD anchor *before* assigning the new one. Use `_detail_panel_anchor_id` (not the new `_detail_location`) as the source-of-truth so the emitted event names the closed anchor, not the freshly-opened one.
 
 7. **Author `requirements/sa_baseline.md`.** Use the inventory from task 1. Per-anchor table with columns: `anchor_id`, system, content state, measurable-behaviors (with derivation source), unmeasurable-behaviors (with reason), regression seed. Plus a "How to enable telemetry" section (env var + log path + privacy posture). Plus a "Sample event shape" appendix with one captured JSONL line as a demonstration. *Risk*: do not duplicate SA-PREP-2's findings doc — this doc is about *measurement methods*, not *content references*.
 
-8. **Run full validation suite.** `ruff format spacegame/ tests/`, `ruff check spacegame/`, `mypy spacegame/`, `pytest -n auto -q`. Confirm pass count >= 8304 (pre-phase baseline) with new tests added to the count. Append validation lines to Activity log; commit; move Status to `review`.
+8. **Run full validation suite.** `ruff format spacegame/ tests/`, `ruff check spacegame/`, `mypy spacegame/`, `pytest -n auto -q`. Confirm pass count >= 8326 (pre-phase baseline as of 2026-04-26) with new tests added to the count. Append validation lines to Activity log; commit; move Status to `review`.
 
 **Activity log.**
 - 2026-04-26 — todo (created)
 - 2026-04-26 18:00 — plan phase ran in pilot but blocked by sandbox; planning content recovered from agent stdout and applied to this sprint section
 - 2026-04-26 — plan content recovered; ready for re-pickup by harness (next plan phase will see substantive existing plan and confirm/refine)
+- 2026-04-26 21:55 — harness: plan phase starting
+- 2026-04-26 22:35 — plan reconfirmed; folded in 3 polish items (dwell-on-view-exit, dwell-on-replacement-click, telemetry I/O error robustness); split AC into 7 (added explicit hook-coverage AC for station_hub_view tests); refreshed test baseline reference 8304 → 8326. PHASE_OK
+
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-04-26 22:30
+- Completed: 2026-04-26 22:35
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: pending
+- New_sprints_proposed: none
+- Polish_items_folded_in: dwell-on-view-exit, dwell-on-replacement-click, telemetry-IO-error-robustness
+- Decisions_locked: 6 (reconfirmed from prior recovery cache; no new locks needed)
+- Notes: Verified all 7 context targets exist; verified the 10 unique-typed location IDs match locations.json; confirmed no existing tests/test_utils/ directory; confirmed station_hub_view dismissal sites at lines 693 (close button), 749 (replacement), 394 (on_exit). Plan now names each dismissal path with line refs. AC6 split into AC6+AC7 to separate hook-coverage tests from telemetry-module tests. Test baseline refreshed from stale 8304 to current 8326. Scope holds at S; mission-acceptance-by-anchor remains deferred.
 
 ### Phase A — Crew Specialization Extension
 
