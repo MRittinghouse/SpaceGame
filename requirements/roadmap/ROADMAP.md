@@ -93,7 +93,7 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 
 #### SA-PREP-1 — NPC voice-sheet audit
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Phase 0 — Pre-arc Preparation | **Size**: M | **Effort**: 1-2 weeks
 **Depends on**: none | **Blocks**: SA-1, SA-2, SA-V, SA-P3, SA-P4, SA-P5, SA-B3, SA-B4, SA-R1, SA-F3
 
@@ -137,19 +137,33 @@ Strategic context: `requirements/station_anchors.md`. The arc upgrades the origi
 | 7 | Author Financial sheet: Meridian primary broker. Per SA-F3 the broker carries the Cargo Broker → Meridian graduation. Voice must contrast with Odom (Odom: working middleman; Meridian broker: institutional, polished, gatekeeper). | `requirements/character_voices.md` | One sheet at full standard. Voice contrast with Odom called out in SA Notes. | Easy to write Meridian broker as a Guild knock-off. Meridian is a financial exchange with its own register. |
 | 8 | Compile tonal map: per-NPC one-line distinguishing register feature appended to each sheet's header. Extend the `## Voice Interactions` table with ≥3 new SA-relevant pairings. | `requirements/character_voices.md` | Voice Interactions table grows by ≥3 rows. | Repeating "terse"/"warm" defeats the cohesion goal. Force unique adjectives per character. |
 | 9 | Compile speaker_id registry table: snake_case canonical id for each SA NPC. Flag deferred reconciliations. | `requirements/character_voices.md` | Diff between inventory table and registry: no NPC missing. | Missing registrations cause downstream drift. |
-| 10 | Writing Bible scanner pass on the new content. Fix violations. Re-read all new sheets aloud per dialogue guide §6 self-check. | `requirements/character_voices.md` | Scanner clean. Pass count from baseline (8304) preserved. | If a scanner flags a legitimate craft em-dash, document the exception inline; don't delete the line. |
+| 10 | Writing Bible scanner pass on the new content. Fix violations. Re-read all new sheets aloud per dialogue guide §6 self-check. | `requirements/character_voices.md` | Scanner clean. Pass count from baseline (8326) preserved. | If a scanner flags a legitimate craft em-dash, document the exception inline; don't delete the line. |
 
 **Risks / open questions.**
 - ~~Cargo Broker existing data~~ — RESOLVED: dialogue tree (lines around 1003-1243) names him **Odom**; voice sheet is the 3-line stub. Decision locked: canonical name = Odom. Speaker_id reconciliation deferred to SA-V.
 - ~~Whether to split per-character into a subdirectory~~ — RESOLVED: keep all sheets in `character_voices.md`. Revisit if file exceeds ~2000 lines after SA-PREP-1.
 - ~~Sheet standard~~ — RESOLVED: full Elena/Marcus/Priya/Tomas six-section structure, minimum 3 sample lines per sheet.
 - ~~Dr. Okafor's successor naming~~ — RESOLVED: must be distinct from existing `jez_okafor` (Breakstone deep-shafts shift supervisor); the successor runs Axiom Labs' Okafor Institute Medical Wing. Lock the successor's full name during task 4.
-- Open: which three personas for the Bidding rivals? Lock during task 6 so SA-B3 inherits a stable cast.
+- ~~Three personas for the Bidding rivals~~ — RESOLVED: (a) **Old-money collector** — heritage capital, condescending register, treats auctions as social ritual; (b) **Stellaris faction agent** — institutional buyer with internal procurement pressure, polite but inflexible, never personal; (c) **Cold-grudge rival captain** — independent, history with the player implied, no charm overlap with Tomas (this is the deliberate contrast: rivalry is earned and quiet, not theatrical). These three give SA-B3 distinct dramatic vectors (status, institution, history) without overlap. Lock the names during task 6.
 
 **Activity log.**
 - 2026-04-26 — todo (created)
 - 2026-04-26 17:32 — plan phase ran in pilot but blocked by sandbox; planning content recovered from agent stdout and applied to this sprint section
 - 2026-04-26 — plan content recovered; ready for re-pickup by harness (next plan phase will see substantive existing plan and confirm/refine)
+- 2026-04-26 20:48 — harness: plan phase starting
+- 2026-04-26 21:05 — planning confirmed; recovered plan verified against context docs; locked the last open question (Bidding rivals personas: old-money collector + Stellaris faction agent + cold-grudge rival captain); refreshed test-suite baseline (8304 → 8326) in task 10. PHASE_OK
+
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-04-26 20:48
+- Completed: 2026-04-26 21:05
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: pending
+- New_sprints_proposed: none
+- Polish_items_folded_in: none (sprint is documentation-only; existing tasks 8–10 cover quality gates — tonal map, speaker_id registry, Writing Bible scanner pass)
+- Decisions_locked: 1 (Bidding rival personas; four prior decisions remained resolved from pilot)
+- Notes: Verified all six Context-to-read paths exist (station_anchors.md, character_voices.md, cultural_guide.md, dialogue_writing_guide.md, dialogues.json, flags.py). Confirmed Cargo Broker stub (lines 430–447) and Odom name in dialogue tree (lines 1003–1244, speaker_id `delivery_merchant`). Existing 10-task plan is sound; refined task 10 baseline and locked the final open decision. Implementer can proceed.
 
 #### SA-PREP-2 — Existing-data audit
 
