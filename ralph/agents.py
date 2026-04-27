@@ -24,15 +24,15 @@ from ralph.config import (
     AGENT_OUTCOME_BLOCKED,
     AGENT_OUTCOME_NEEDS_REWORK,
     AGENT_OUTCOME_OK,
-    CLAUDE_CMD,
     CONVENTIONS_PATH,
     DRY_RUN,
     LOGS_DIR,
-    PHASE_TIMEOUT_SECONDS,
     PROJECT_ROOT,
     PROMPTS_DIR,
     ROADMAP_PATH,
     VALIDATE_ROADMAP_AFTER_AGENT,
+    build_claude_cmd,
+    timeout_for_phase,
 )
 from ralph import roadmap_state
 from ralph.roadmap_state import RoadmapValidationError
@@ -138,26 +138,37 @@ def _log_path_for(sprint_id: str, phase: Phase) -> Path:
     return sprint_dir / f"{phase.value}-{timestamp}.log"
 
 
-def _invoke_claude(prompt: str, log_path: Path) -> tuple[int, str, str]:
+def _invoke_claude(
+    prompt: str,
+    log_path: Path,
+    phase: Phase,
+    sprint_size: str = "",
+) -> tuple[int, str, str]:
     """Run the claude CLI with the prompt, capturing stdout+stderr to
     the log file. Returns (returncode, stdout, stderr).
 
+    The model is selected per phase + size; the timeout is selected
+    per phase (see ralph.config.model_for_phase / timeout_for_phase).
+
     Raises subprocess.TimeoutExpired on phase timeout.
     """
-    cmd = list(CLAUDE_CMD) + [prompt]
+    base_cmd = build_claude_cmd(phase.value, sprint_size)
+    cmd = base_cmd + [prompt]
+    timeout = timeout_for_phase(phase.value)
 
     if DRY_RUN:
         with log_path.open("w", encoding="utf-8") as f:
-            f.write(f"[DRY-RUN] Would have invoked: {cmd[0]} ...\n")
+            f.write(f"[DRY-RUN] Would have invoked: {' '.join(base_cmd)} <prompt>\n")
             f.write(f"\n--- PROMPT ---\n{prompt}\n--- END PROMPT ---\n")
         return 0, "[dry-run no-op]", ""
 
     with log_path.open("w", encoding="utf-8") as f:
         f.write(f"# Phase invocation\n")
         f.write(f"# Started: {datetime.now().isoformat()}\n")
-        f.write(f"# Command: {cmd[0]} {' '.join(cmd[1:-1])} <prompt>\n")
+        f.write(f"# Phase: {phase.value} | Sprint size: {sprint_size or '(unknown)'}\n")
+        f.write(f"# Command: {' '.join(base_cmd)} <prompt>\n")
         f.write(f"# Prompt length: {len(prompt)} chars\n")
-        f.write(f"# Timeout: {PHASE_TIMEOUT_SECONDS}s\n\n")
+        f.write(f"# Timeout: {timeout}s\n\n")
         f.write(f"--- PROMPT ---\n{prompt}\n--- END PROMPT ---\n\n")
         f.write(f"--- AGENT OUTPUT ---\n")
         f.flush()
@@ -168,7 +179,7 @@ def _invoke_claude(prompt: str, log_path: Path) -> tuple[int, str, str]:
                 cwd=str(PROJECT_ROOT),
                 capture_output=True,
                 text=True,
-                timeout=PHASE_TIMEOUT_SECONDS,
+                timeout=timeout,
                 encoding="utf-8",
                 errors="replace",
             )
@@ -178,7 +189,7 @@ def _invoke_claude(prompt: str, log_path: Path) -> tuple[int, str, str]:
             f.write(f"\n--- END (returncode {result.returncode}) ---\n")
             return result.returncode, result.stdout, result.stderr
         except subprocess.TimeoutExpired as e:
-            f.write(f"\n--- TIMEOUT after {PHASE_TIMEOUT_SECONDS}s ---\n")
+            f.write(f"\n--- TIMEOUT after {timeout}s ---\n")
             raise
 
 
@@ -398,11 +409,23 @@ def run_phase(
     if not context.pre_phase_head:
         context.pre_phase_head = _git_head_sha()
 
+    # Look up sprint size to drive model selection (heavy model for L/XL
+    # implements). Best-effort — if the sprint isn't in the roadmap yet
+    # (shouldn't happen — harness pre-checks), fall back to default.
+    sprint_size = ""
+    try:
+        sprint_obj = roadmap_state.get_sprint(sprint_id)
+        sprint_size = sprint_obj.size or ""
+    except Exception:
+        pass
+
     # Snapshot ROADMAP.md before the agent runs (item B + C).
     pre_snapshot = roadmap_state.snapshot_roadmap()
 
     try:
-        returncode, _stdout, _stderr = _invoke_claude(prompt, log_path)
+        returncode, _stdout, _stderr = _invoke_claude(
+            prompt, log_path, phase, sprint_size=sprint_size
+        )
     except subprocess.TimeoutExpired:
         # Best-effort snapshot restore — the agent may have done partial
         # writes before the timeout.
@@ -416,7 +439,7 @@ def run_phase(
             phase=phase,
             sprint_id=sprint_id,
             log_path=log_path,
-            reason=f"phase timed out after {PHASE_TIMEOUT_SECONDS}s",
+            reason=f"phase timed out after {timeout_for_phase(phase.value)}s",
         )
     except FileNotFoundError as e:
         return PhaseResult(

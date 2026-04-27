@@ -277,3 +277,103 @@ class TestPhaseAllowsNewSprints:
 
     def test_implement_cannot_add_sprints(self) -> None:
         assert Phase.IMPLEMENT not in _PHASE_ALLOWS_NEW_SPRINTS
+
+
+# ---------------------------------------------------------------------------
+# Model selection (agency upgrade)
+# ---------------------------------------------------------------------------
+
+
+class TestModelForPhase:
+    def test_plan_uses_opus(self) -> None:
+        from ralph.config import model_for_phase, MODEL_PLAN
+
+        assert model_for_phase("plan") == MODEL_PLAN
+        assert "opus" in MODEL_PLAN.lower()
+
+    def test_review_uses_sonnet(self) -> None:
+        from ralph.config import model_for_phase, MODEL_REVIEW
+
+        assert model_for_phase("review") == MODEL_REVIEW
+        assert "sonnet" in MODEL_REVIEW.lower()
+
+    def test_implement_small_uses_default(self) -> None:
+        from ralph.config import model_for_phase, MODEL_IMPLEMENT_DEFAULT
+
+        assert model_for_phase("implement", "S") == MODEL_IMPLEMENT_DEFAULT
+        assert model_for_phase("implement", "M") == MODEL_IMPLEMENT_DEFAULT
+
+    def test_implement_large_uses_heavy(self) -> None:
+        from ralph.config import model_for_phase, MODEL_IMPLEMENT_HEAVY
+
+        assert model_for_phase("implement", "L") == MODEL_IMPLEMENT_HEAVY
+        assert model_for_phase("implement", "XL") == MODEL_IMPLEMENT_HEAVY
+
+    def test_implement_unknown_size_uses_default(self) -> None:
+        from ralph.config import model_for_phase, MODEL_IMPLEMENT_DEFAULT
+
+        assert model_for_phase("implement", "") == MODEL_IMPLEMENT_DEFAULT
+        assert model_for_phase("implement", "?") == MODEL_IMPLEMENT_DEFAULT
+
+    def test_size_is_case_insensitive(self) -> None:
+        from ralph.config import model_for_phase, MODEL_IMPLEMENT_HEAVY
+
+        assert model_for_phase("implement", "l") == MODEL_IMPLEMENT_HEAVY
+        assert model_for_phase("implement", "xl") == MODEL_IMPLEMENT_HEAVY
+
+    def test_phase_is_case_insensitive(self) -> None:
+        from ralph.config import model_for_phase, MODEL_PLAN
+
+        assert model_for_phase("PLAN") == MODEL_PLAN
+        assert model_for_phase("Plan") == MODEL_PLAN
+
+
+class TestTimeoutForPhase:
+    def test_implement_longer_than_plan_or_review(self) -> None:
+        from ralph.config import timeout_for_phase
+
+        assert timeout_for_phase("implement") >= timeout_for_phase("plan")
+        assert timeout_for_phase("implement") >= timeout_for_phase("review")
+
+    def test_each_phase_has_positive_timeout(self) -> None:
+        from ralph.config import timeout_for_phase
+
+        for phase in ("plan", "implement", "review"):
+            assert timeout_for_phase(phase) > 0
+
+    def test_unknown_phase_falls_back(self) -> None:
+        from ralph.config import timeout_for_phase, PHASE_TIMEOUT_SECONDS
+
+        assert timeout_for_phase("nonsense") == PHASE_TIMEOUT_SECONDS
+
+
+class TestBuildClaudeCmd:
+    def test_includes_model_flag(self) -> None:
+        from ralph.config import build_claude_cmd
+
+        cmd = build_claude_cmd("plan")
+        assert "--model" in cmd
+        # The model arg follows --model.
+        idx = cmd.index("--model")
+        assert idx + 1 < len(cmd)
+        assert cmd[idx + 1].startswith("claude-")
+
+    def test_includes_dangerously_skip_permissions(self) -> None:
+        from ralph.config import build_claude_cmd
+
+        cmd = build_claude_cmd("plan")
+        assert "--dangerously-skip-permissions" in cmd
+
+    def test_implement_heavy_size_picks_heavy_model(self) -> None:
+        from ralph.config import build_claude_cmd, MODEL_IMPLEMENT_HEAVY
+
+        cmd = build_claude_cmd("implement", "L")
+        idx = cmd.index("--model")
+        assert cmd[idx + 1] == MODEL_IMPLEMENT_HEAVY
+
+    def test_implement_small_size_picks_default_model(self) -> None:
+        from ralph.config import build_claude_cmd, MODEL_IMPLEMENT_DEFAULT
+
+        cmd = build_claude_cmd("implement", "S")
+        idx = cmd.index("--model")
+        assert cmd[idx + 1] == MODEL_IMPLEMENT_DEFAULT

@@ -126,6 +126,17 @@ Cross-module flags go through `spacegame/constants/flags.py`. Per-view flags can
 - Smaller commits over larger when convenient for recovery.
 - Never push without explicit human approval — the agent commits locally.
 
+### Cost-conscious tool usage
+
+The harness gives you broad agency: Write/Edit, Bash, Task (subagents), WebFetch, WebSearch are all available. With agency comes a small obligation to use cheaper tools first.
+
+- **Read first, search second, delegate third.** If the answer is in a file you already know about, Read it. If you need to find a symbol, Grep it. Only spawn a Task subagent for parallel research that genuinely needs another context window (e.g., "audit 12 separate dialogue files for voice drift").
+- **Don't WebFetch what's in CLAUDE.md or `requirements/`.** Project conventions, character voices, the Writing Bible, the architecture map are all in the repo. Only WebFetch external library docs (pygame, pytest, libraries you didn't write).
+- **One Task subagent at a time, unless they're truly independent.** Three parallel subagents is great when each looks at a separate file set. Three subagents that all need the same context is a triple-cost duplicate.
+- **Don't loop a tool to brute-force.** If a Grep returns no matches, don't run 8 variations. Re-read the surrounding context first.
+
+These are guidance, not enforcement. The harness's per-phase timeout will eventually catch runaway loops, but the cost shows up earlier in your token budget.
+
 ---
 
 ## Sprint state machine — what to do when

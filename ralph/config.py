@@ -38,10 +38,24 @@ MAX_REWORK_CYCLES: int = 3
 # before exiting. Override per-run with `--max-sprints N`.
 DEFAULT_MAX_SPRINTS_PER_RUN: int = 10
 
-# Per-phase subprocess timeout. If a phase exceeds this, the agent
+# Per-phase subprocess timeouts. If a phase exceeds these, the agent
 # subprocess is killed and the sprint is marked blocked with reason
-# "timeout in <phase>". Override via `RALPH_PHASE_TIMEOUT_SECONDS` env.
-PHASE_TIMEOUT_SECONDS: int = int(os.environ.get("RALPH_PHASE_TIMEOUT_SECONDS", 60 * 60))
+# "timeout in <phase>".
+#
+# Plan and review are mostly synthesis + verification (under an hour
+# even for L sprints). Implement is the heavy lifter — bumping it to
+# 90 min keeps L/XL sprints from getting cut off mid-edit. Override via
+# RALPH_TIMEOUT_PLAN / RALPH_TIMEOUT_IMPLEMENT / RALPH_TIMEOUT_REVIEW.
+PHASE_TIMEOUT_PLAN: int = int(os.environ.get("RALPH_TIMEOUT_PLAN", 60 * 60))
+PHASE_TIMEOUT_IMPLEMENT: int = int(os.environ.get("RALPH_TIMEOUT_IMPLEMENT", 90 * 60))
+PHASE_TIMEOUT_REVIEW: int = int(os.environ.get("RALPH_TIMEOUT_REVIEW", 60 * 60))
+
+# Backward-compatible alias used by snapshot/restore error paths and
+# probe defaults — set to the largest of the three so anything keyed off
+# this value won't under-allocate.
+PHASE_TIMEOUT_SECONDS: int = max(
+    PHASE_TIMEOUT_PLAN, PHASE_TIMEOUT_IMPLEMENT, PHASE_TIMEOUT_REVIEW
+)
 
 # Sleep between sprint pickups to give the filesystem a moment to settle
 # (commits flushed, agent processes torn down). Seconds.
@@ -64,6 +78,68 @@ INTER_SPRINT_SLEEP: float = 1.0
 # exactly the contract we want for autonomous sprint execution against
 # our own roadmap.
 CLAUDE_CMD: list[str] = ["claude", "-p", "--dangerously-skip-permissions"]
+
+# Per-phase model selection. Mapping rationale:
+#   - Plan: Opus 4.7 (1M context). Planning is highest-leverage — a bad
+#     plan wastes the entire sprint. Worth the spend.
+#   - Implement (S/M sprints): Sonnet 4.6. Workhorse for routine
+#     implementation. Most sprints fall here.
+#   - Implement (L/XL sprints): Opus 4.7. Multi-system content-arc
+#     sprints (SA-1 Wreckers Hall, SA-2 Deep Shafts, etc.) need the
+#     larger context window and stronger synthesis.
+#   - Review: Sonnet 4.6. Verification is easier than synthesis. If
+#     review misses something subtle, the rework cycle catches it.
+#
+# Override per-phase via env vars (e.g., for a cost-saving run on a
+# small sprint backlog: RALPH_MODEL_PLAN=claude-sonnet-4-6).
+MODEL_PLAN: str = os.environ.get("RALPH_MODEL_PLAN", "claude-opus-4-7")
+MODEL_IMPLEMENT_DEFAULT: str = os.environ.get(
+    "RALPH_MODEL_IMPLEMENT_DEFAULT", "claude-sonnet-4-6"
+)
+MODEL_IMPLEMENT_HEAVY: str = os.environ.get(
+    "RALPH_MODEL_IMPLEMENT_HEAVY", "claude-opus-4-7"
+)
+MODEL_REVIEW: str = os.environ.get("RALPH_MODEL_REVIEW", "claude-sonnet-4-6")
+
+# Sprint sizes that bump the implement phase to the heavy model.
+HEAVY_SIZES: frozenset[str] = frozenset({"L", "XL"})
+
+
+def model_for_phase(phase: str, sprint_size: str = "") -> str:
+    """Return the claude `--model` value to use for the given phase.
+
+    For implement, sprint_size determines whether to use the heavy
+    model. Sizes follow CONVENTIONS.md: S, M, L, XL.
+    """
+    phase_l = phase.lower()
+    if phase_l == "plan":
+        return MODEL_PLAN
+    if phase_l == "review":
+        return MODEL_REVIEW
+    if phase_l == "implement":
+        if (sprint_size or "").upper() in HEAVY_SIZES:
+            return MODEL_IMPLEMENT_HEAVY
+        return MODEL_IMPLEMENT_DEFAULT
+    return MODEL_IMPLEMENT_DEFAULT
+
+
+def timeout_for_phase(phase: str) -> int:
+    """Return the subprocess timeout (seconds) for the given phase."""
+    return {
+        "plan": PHASE_TIMEOUT_PLAN,
+        "implement": PHASE_TIMEOUT_IMPLEMENT,
+        "review": PHASE_TIMEOUT_REVIEW,
+    }.get(phase.lower(), PHASE_TIMEOUT_SECONDS)
+
+
+def build_claude_cmd(phase: str, sprint_size: str = "") -> list[str]:
+    """Build the full claude CLI argv for a given phase + sprint size.
+
+    Returns CLAUDE_CMD with `--model <id>` appended. The harness adds
+    the prompt as the final positional argument.
+    """
+    return list(CLAUDE_CMD) + ["--model", model_for_phase(phase, sprint_size)]
+
 
 # Dry-run mode: log what would happen, don't actually invoke Claude.
 # Useful for testing the loop logic. Override via `RALPH_DRY_RUN=1`.

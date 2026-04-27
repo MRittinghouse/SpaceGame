@@ -460,56 +460,64 @@ def _preflight_checks(allow_dirty: bool, push_enabled: bool, probe_writes: bool)
                 f"The harness will still attempt invocation."
             )
 
-    # 8. Claude can actually write files (item 2). Catches sandbox/permission
-    # failures before any sprint time is wasted on silent write rejections.
+    # 8. Claude has agency (item 2 + agency upgrade): WRITE is required,
+    # TASK + WEBFETCH are tracked as warnings. Catches sandbox/permission
+    # failures and missing tools before any sprint time is wasted.
     if probe_writes and not DRY_RUN:
         ok, reason = _probe_claude_write_permission()
         if not ok:
-            log(f"Write-permission probe FAILED: {reason}")
+            log(f"Agency probe FAILED: {reason}")
             log(
                 "Aborting. The harness cannot drive agents that can't persist "
                 "files. To skip this check (e.g., known-good environment), "
-                "pass --skip-write-probe."
+                "pass --skip-agency-probe."
             )
             return 2
-        log("Write-permission probe passed.")
+        log(f"Agency probe passed: {reason}")
 
     log("Pre-flight checks passed.")
     return 0
 
 
 # ---------------------------------------------------------------------------
-# Claude write-permission probe (item 2)
+# Claude agency probe (item 2 + agency upgrade)
 # ---------------------------------------------------------------------------
 #
-# In `claude -p` non-interactive mode, file writes fail silently inside
-# the project tree without `--dangerously-skip-permissions`. The probe
-# verifies the agent can actually persist a tiny test write before we
-# commit any time to a real sprint. If the probe fails, every subsequent
-# agent will silently fail in the same way — better to abort and surface
-# the cause now.
+# Verifies the agent has the three capabilities the harness depends on:
+#   1. WRITE — can persist file edits inside PROJECT_ROOT (in `claude -p`
+#      mode, this fails silently without `--dangerously-skip-permissions`).
+#   2. TASK — can spawn subagents for parallel research / delegation.
+#   3. WEBFETCH — can pull external docs (pygame, library APIs).
+#
+# Single combined probe to keep the startup cost to one claude invocation.
+# WRITE failure is a hard abort; TASK/WEBFETCH failures are warnings (the
+# harness can still drive work without them, but quality drops).
 
-WRITE_PROBE_TOKEN = "WRITE_PROBE_OK"
-WRITE_PROBE_FILENAME = ".write_probe"
-WRITE_PROBE_TIMEOUT_SECONDS = 180
+PROBE_FILENAME = ".agency_probe"
+PROBE_TIMEOUT_SECONDS = 240
+PROBE_WRITE_TOKEN = "WRITE_OK"
+PROBE_TASK_TOKEN = "TASK_OK"
+PROBE_WEBFETCH_TOKEN = "WEBFETCH_OK"
+# A safe, stable URL for WebFetch verification. example.com is maintained
+# by IANA specifically for this kind of programmatic check.
+PROBE_WEBFETCH_URL = "https://example.com/"
 
 
 def _probe_claude_write_permission() -> tuple[bool, str]:
-    """Spawn a minimal claude subprocess to verify it can write files.
+    """Spawn a minimal claude subprocess to verify it has write, Task,
+    and WebFetch capabilities.
 
-    Returns (success, reason). On success, reason is "" or a brief note.
-    On failure, reason contains a human-readable diagnostic.
+    Returns (success, reason). Success requires WRITE; missing TASK or
+    WEBFETCH downgrades to a warning (logged) but does not fail the probe.
 
-    This is a real claude invocation (counts against quota), but tiny:
-    one prompt asking the agent to write a single token to a probe file.
-    Runs under WRITE_PROBE_TIMEOUT_SECONDS (default 180) to fail fast.
+    One real claude invocation. Bounded by PROBE_TIMEOUT_SECONDS.
     """
     from ralph.config import CLAUDE_CMD
 
     probe_dir = LOGS_DIR.parent  # ralph/
     probe_dir.mkdir(parents=True, exist_ok=True)
-    probe_path = probe_dir / WRITE_PROBE_FILENAME
-    log_path = LOGS_DIR / "_write_probe.log"
+    probe_path = probe_dir / PROBE_FILENAME
+    log_path = LOGS_DIR / "_agency_probe.log"
     LOGS_DIR.mkdir(parents=True, exist_ok=True)
 
     # Clean any stale probe file from a prior run.
@@ -519,26 +527,34 @@ def _probe_claude_write_permission() -> tuple[bool, str]:
     except OSError as e:
         return False, f"could not remove stale probe file at {probe_path}: {e}"
 
-    # Use the path relative to PROJECT_ROOT so the agent gets a sensible cwd
-    # reference. Agent runs with cwd=PROJECT_ROOT.
     rel_probe_path = probe_path.relative_to(PROJECT_ROOT).as_posix()
     prompt = (
-        f"Write the exact text `{WRITE_PROBE_TOKEN}` (no quotes, no newline) "
-        f"to the file `{rel_probe_path}` using the Write tool. "
-        f"This is a smoke test for the ralph harness — confirming you can "
-        f"actually persist files in this environment. Reply with 'done' "
-        f"after the write succeeds. If the Write tool reports a permission "
-        f"or sandbox error, reply with the exact error text instead."
+        f"This is a startup smoke test for the ralph harness. Verify three "
+        f"agent capabilities and write the result to `{rel_probe_path}`.\n\n"
+        f"Step 1 (WRITE): Use the Write tool to create the file "
+        f"`{rel_probe_path}` containing the single line `{PROBE_WRITE_TOKEN}`.\n\n"
+        f"Step 2 (TASK): Use the Task tool to spawn one Explore subagent "
+        f"with prompt 'glob *.md in this directory and report the count'. "
+        f"If the Task tool succeeds (whatever the subagent returns), use the "
+        f"Edit tool to append a new line `{PROBE_TASK_TOKEN}` to "
+        f"`{rel_probe_path}`. If the Task tool errors or is unavailable, "
+        f"append a line `TASK_FAIL: <error>` instead.\n\n"
+        f"Step 3 (WEBFETCH): Use the WebFetch tool on the URL "
+        f"`{PROBE_WEBFETCH_URL}` with the prompt 'is this page reachable'. "
+        f"If WebFetch returns content, append `{PROBE_WEBFETCH_TOKEN}` to "
+        f"`{rel_probe_path}`. If WebFetch errors or is unavailable, append "
+        f"`WEBFETCH_FAIL: <error>` instead.\n\n"
+        f"Reply with 'done' when all three steps are attempted."
     )
     cmd = list(CLAUDE_CMD) + [prompt]
 
-    log(f"Running write-permission probe (writes {rel_probe_path}, ~30-180s)...")
+    log(f"Running agency probe (writes {rel_probe_path}, ~60-240s)...")
     try:
         with log_path.open("w", encoding="utf-8") as f:
-            f.write(f"# Write-permission probe\n# Started: {datetime.now().isoformat()}\n")
+            f.write(f"# Agency probe\n# Started: {datetime.now().isoformat()}\n")
             f.write(f"# Command: {cmd[0]} {' '.join(cmd[1:-1])} <prompt>\n")
             f.write(f"# Probe file: {rel_probe_path}\n")
-            f.write(f"# Timeout: {WRITE_PROBE_TIMEOUT_SECONDS}s\n\n")
+            f.write(f"# Timeout: {PROBE_TIMEOUT_SECONDS}s\n\n")
             f.write(f"--- PROMPT ---\n{prompt}\n--- END PROMPT ---\n\n")
             f.write(f"--- AGENT OUTPUT ---\n")
             f.flush()
@@ -549,7 +565,7 @@ def _probe_claude_write_permission() -> tuple[bool, str]:
                     cwd=str(PROJECT_ROOT),
                     capture_output=True,
                     text=True,
-                    timeout=WRITE_PROBE_TIMEOUT_SECONDS,
+                    timeout=PROBE_TIMEOUT_SECONDS,
                     encoding="utf-8",
                     errors="replace",
                 )
@@ -558,10 +574,10 @@ def _probe_claude_write_permission() -> tuple[bool, str]:
                 return False, f"claude CLI not found on PATH: {e}"
             except subprocess.TimeoutExpired:
                 f.write(
-                    f"\n--- TIMEOUT after {WRITE_PROBE_TIMEOUT_SECONDS}s ---\n"
+                    f"\n--- TIMEOUT after {PROBE_TIMEOUT_SECONDS}s ---\n"
                 )
                 return False, (
-                    f"probe timed out after {WRITE_PROBE_TIMEOUT_SECONDS}s. "
+                    f"probe timed out after {PROBE_TIMEOUT_SECONDS}s. "
                     f"The agent did not respond — check {log_path}."
                 )
 
@@ -570,7 +586,7 @@ def _probe_claude_write_permission() -> tuple[bool, str]:
                 f.write(f"\n--- STDERR ---\n{result.stderr}\n")
             f.write(f"\n--- END (returncode {result.returncode}) ---\n")
 
-        # Verify the probe file was actually written with the expected token.
+        # Verify WRITE happened. Hard requirement.
         if not probe_path.exists():
             return False, (
                 f"probe file {rel_probe_path} was not created. The agent "
@@ -579,15 +595,34 @@ def _probe_claude_write_permission() -> tuple[bool, str]:
                 f"`--dangerously-skip-permissions` in CLAUDE_CMD (config.py)."
             )
         try:
-            content = probe_path.read_text(encoding="utf-8").strip()
+            content = probe_path.read_text(encoding="utf-8")
         except OSError as e:
             return False, f"probe file at {rel_probe_path} unreadable: {e}"
-        if content != WRITE_PROBE_TOKEN:
+        # Normalize for token detection.
+        content_stripped = content.strip()
+        has_write = PROBE_WRITE_TOKEN in content_stripped
+        has_task = PROBE_TASK_TOKEN in content_stripped
+        has_webfetch = PROBE_WEBFETCH_TOKEN in content_stripped
+
+        if not has_write:
             return False, (
-                f"probe file at {rel_probe_path} exists but content "
-                f"mismatch: got {content!r}, expected {WRITE_PROBE_TOKEN!r}. "
-                f"Agent wrote a file but didn't follow the prompt — "
-                f"unusual; check {log_path}."
+                f"probe file at {rel_probe_path} exists but missing "
+                f"{PROBE_WRITE_TOKEN!r} marker. Agent wrote a file but "
+                f"didn't follow the prompt — check {log_path}."
+            )
+
+        # WRITE is good. TASK / WEBFETCH are non-fatal; warn if missing.
+        warnings: list[str] = []
+        if not has_task:
+            warnings.append(
+                "Task tool unavailable or failed — agents won't be able to "
+                "spawn research subagents. Check claude CLI install."
+            )
+        if not has_webfetch:
+            warnings.append(
+                "WebFetch unavailable or failed — agents can't pull external "
+                "docs. Sandboxed/offline environments make this expected; "
+                "otherwise check claude CLI install or network access."
             )
 
         # Clean up the probe file. Best-effort.
@@ -595,9 +630,15 @@ def _probe_claude_write_permission() -> tuple[bool, str]:
             probe_path.unlink()
         except OSError:
             pass
-        return True, ""
+
+        for w in warnings:
+            log(f"Agency probe WARNING: {w}")
+
+        if warnings:
+            return True, "WRITE ok; degraded agency: " + " | ".join(warnings)
+        return True, "WRITE + TASK + WEBFETCH all ok"
     except OSError as e:
-        return False, f"could not run write-permission probe: {e}"
+        return False, f"could not run agency probe: {e}"
 
 
 # ---------------------------------------------------------------------------
@@ -871,14 +912,17 @@ def parse_args() -> argparse.Namespace:
         help="Don't capture pre-run test baseline. Faster startup; agents won't know the test count target.",
     )
     p.add_argument(
+        "--skip-agency-probe",
         "--skip-write-probe",
         action="store_true",
+        dest="skip_agency_probe",
         help=(
-            "Don't run the Claude write-permission probe at startup. "
-            "The probe is a tiny smoke-test that catches sandbox/permission "
-            "denials before sprint time is wasted. Skip only when you're "
+            "Don't run the Claude agency probe at startup. The probe is a "
+            "tiny smoke-test that verifies WRITE / Task / WebFetch are "
+            "available before sprint time is wasted. Skip only when you're "
             "sure the environment is good (e.g., immediately after a "
-            "successful probe, or in dry-run)."
+            "successful probe, or in dry-run). The legacy "
+            "--skip-write-probe alias is preserved."
         ),
     )
     return p.parse_args()
@@ -898,7 +942,7 @@ def main() -> int:
     rc = _preflight_checks(
         allow_dirty=args.allow_dirty,
         push_enabled=push_enabled,
-        probe_writes=not args.skip_write_probe,
+        probe_writes=not args.skip_agency_probe,
     )
     if rc != 0:
         return rc
