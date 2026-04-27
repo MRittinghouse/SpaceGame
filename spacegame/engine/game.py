@@ -2176,9 +2176,7 @@ class Game:
             player=self.player,
             mission_manager=self.mission_manager,
         )
-        self.state_manager.register_state(
-            GameState.WRECKERS_GUILD, self.wreckers_guild_view
-        )
+        self.state_manager.register_state(GameState.WRECKERS_GUILD, self.wreckers_guild_view)
 
     def _ensure_mining_view(self) -> None:
         """Create or recreate mining view for current system."""
