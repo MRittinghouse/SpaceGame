@@ -284,6 +284,8 @@ class Game:
         self.cantina_view = None
         self.wreckers_guild_view = None
         self.deep_shafts_view = None
+        # SA-P2: lazy-instantiated by _ensure_dispute_view().
+        self.dispute_view = None
 
         # Investment system
         from spacegame.models.investment import InvestmentManager
@@ -367,6 +369,12 @@ class Game:
         from spacegame.models.news_ticker import NewsTicker
 
         self.news_ticker: Optional[NewsTicker] = None
+
+        # SA-P2 venue dispute manager (initialized after the player and
+        # politics_manager are loaded so it can hook into them).
+        from spacegame.models.politics_dispute import PoliticsDisputeManager
+
+        self.politics_dispute_manager: Optional[PoliticsDisputeManager] = None
         self._pending_player_news: list[dict] = []
 
         # Milestone celebration overlay
@@ -578,6 +586,10 @@ class Game:
 
         # Initialize news ticker
         self._initialize_news_ticker()
+
+        # SA-P2: initialize the venue dispute manager after news_ticker
+        # and politics_manager are ready so it can hook into them.
+        self._initialize_politics_dispute_manager()
 
         # Initialize travel log
         self._initialize_travel_log()
@@ -1873,6 +1885,16 @@ class Game:
                         self.state_manager.change_state(GameState.DEEP_SHAFTS)
 
                     self._start_transition(TransitionType.FADE, 0.3, _do_deep_shafts)
+                elif next_state == GameState.DISPUTE:
+                    # SA-P2: route the Mayors' Council venue (and any
+                    # SA-P3/P4/P5 venues mapped to GameState.DISPUTE).
+                    self.station_hub_view.next_state = None
+
+                    def _do_dispute():
+                        self._ensure_dispute_view()
+                        self.state_manager.change_state(GameState.DISPUTE)
+
+                    self._start_transition(TransitionType.FADE, 0.3, _do_dispute)
                 elif next_state == GameState.MINING:
                     self.station_hub_view.next_state = None
 
@@ -1980,6 +2002,25 @@ class Game:
                         self.state_manager.change_state(GameState.STATION_HUB)
 
                     self._start_transition(TransitionType.FADE, 0.3, _do_deep_shafts_back)
+
+        # SA-P2: dispute view returns to STATION_HUB on back. Snapshot
+        # the manager's pending / resolved disputes onto the player so a
+        # mid-arc save survives session leave (round-boundary granularity).
+        if hasattr(self, "dispute_view") and self.dispute_view:
+            if self.dispute_view.active:
+                next_state = self.dispute_view.get_next_state()
+                if next_state == GameState.STATION_HUB:
+                    self.dispute_view.next_state = None
+                    if self.politics_dispute_manager and self.player:
+                        self.player.politics_dispute_state = (
+                            self.politics_dispute_manager.to_dict()
+                        )
+
+                    def _do_dispute_back():
+                        self._ensure_station_hub_view()
+                        self.state_manager.change_state(GameState.STATION_HUB)
+
+                    self._start_transition(TransitionType.FADE, 0.3, _do_dispute_back)
 
         # Check cantina view for transitions
         if hasattr(self, "cantina_view") and self.cantina_view:
@@ -2211,6 +2252,56 @@ class Game:
             crew_roster=self.crew_roster,
         )
         self.state_manager.register_state(GameState.DEEP_SHAFTS, self.deep_shafts_view)
+
+    def _initialize_politics_dispute_manager(self) -> None:
+        """SA-P2: bind the venue dispute manager to its dependencies.
+
+        Called after the player, politics_manager, news_ticker,
+        crew_roster, progression, and social_manager are wired so the
+        dispute manager can read all of them.
+        """
+        from spacegame.models.politics_dispute import PoliticsDisputeManager
+
+        def _market_lookup(system_id: str):
+            return self.markets.get(system_id) if hasattr(self, "markets") else None
+
+        self.politics_dispute_manager = PoliticsDisputeManager(
+            templates=dict(self.data_loader.politics_disputes),
+            politics_manager=self.politics_manager,
+            news_ticker=self.news_ticker,
+            crew_roster=self.crew_roster,
+            progression=self.player.progression if self.player else None,
+            social_manager=self.social_manager,
+            market_lookup=_market_lookup,
+        )
+        if self.player is not None:
+            self.politics_dispute_manager.set_player(self.player)
+            # SA-P2: restore any saved manager state (additive field;
+            # older saves carry an empty dict per the migration rule).
+            saved = self.player.politics_dispute_state or {}
+            if saved:
+                self.politics_dispute_manager.from_dict(saved)
+
+    def _ensure_dispute_view(self) -> None:
+        """SA-P2: create or recreate the venue dispute view.
+
+        SA-P3 / P4 / P5 swap the venue id and faction id per anchor;
+        the engine only ships the verdant_mayors_council route as the
+        end-to-end test surface.
+        """
+        from spacegame.views.dispute_view import DisputeView
+
+        if self.politics_dispute_manager is None:
+            self._initialize_politics_dispute_manager()
+        assert self.politics_dispute_manager is not None
+        self.dispute_view = DisputeView(
+            ui_manager=self.ui_manager,
+            player=self.player,
+            dispute_manager=self.politics_dispute_manager,
+            venue_id="verdant_mayors_council",
+            venue_faction_id="verdant",
+        )
+        self.state_manager.register_state(GameState.DISPUTE, self.dispute_view)
 
     def _ensure_mining_view(self) -> None:
         """Create or recreate mining view for current system."""

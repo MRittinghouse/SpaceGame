@@ -97,6 +97,7 @@ _LOCATION_LABELS: dict[str, str] = {
 UNIQUE_HALL_TARGETS: dict[str, GameState] = {
     "crimson_wreckers_guild": GameState.WRECKERS_GUILD,
     "breakstone_deep_mines": GameState.DEEP_SHAFTS,
+    "verdant_mayors_council": GameState.DISPUTE,
 }
 
 # Layout constants
