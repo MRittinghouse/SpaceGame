@@ -674,7 +674,7 @@ The following decisions were locked during planning:
 - Started: 2026-04-26 23:19
 - Completed: 2026-04-26 23:35
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending
+- Commits: 1d3238b
 - New_sprints_proposed: none
 - Polish_items_folded_in: none (foundation sprint; all polish belongs to consumer sprints SA-1, SA-B3, SA-B4)
 - Decisions_locked: 6 (carried forward from prior plan recovery — save chain reuse, 0-100 default range, frozen-dataclass configs, registry pattern, default-tier semantics, ephemeral notification queue)
