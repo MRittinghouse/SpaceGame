@@ -262,7 +262,7 @@ class TestVolleyCommander:
         ok2, _ = queue.add("cannon", 0, weapon)
         assert ok2, "Second use (Volley Commander) should succeed"
         # Third use should fail
-        ok3, msg = queue.add("cannon", 0, weapon)
+        ok3, _msg = queue.add("cannon", 0, weapon)
         assert not ok3, "Third use should be rejected"
 
     def test_no_extra_without_skill(self) -> None:
@@ -372,7 +372,7 @@ class TestGhostCapstone:
     def test_first_round_evasion(self) -> None:
         """On round 1, Ghost capstone adds +30 to evasion calculation."""
         prog = _prog_with(ghost_capstone=1)
-        engine, state = _combat(
+        _engine, state = _combat(
             prog=prog,
             player_evasion=20,
             defensive_identity="ghost",
@@ -457,7 +457,7 @@ class TestSocialSkillIntegration:
         # Try negotiate with base persuasion 0 → normally fails at diff 5
         # Peacemaker reduces by 2 → diff 3, still fails at level 0
         # But it verifies the difficulty reduction path
-        success, msg, _ = engine.attempt_negotiate("persuasion", sm)
+        _success, _msg, _ = engine.attempt_negotiate("persuasion", sm)
         # The attempt should have been made (not blocked)
         assert state.negotiate_used
 
@@ -607,11 +607,11 @@ class TestPointEconomy:
         assert prog.skill_points == 99
 
     def test_total_levels_vs_points(self) -> None:
-        """After NV-6.5: 146 total max levels (132 + 14 from 7 new
-        skill-axis skills at max_level=2). Full mastery needs level 147."""
+        """After SA-C2: 160 total max levels (146 NV-6.5 + 14 from 7 new
+        SA-arc skills at max_level=2). Full mastery needs level 161."""
         skills = create_default_skills()
         total_max = sum(s.max_level for s in skills.values())
-        assert total_max == 146
+        assert total_max == 160
 
 
 # ============================================================================
@@ -649,6 +649,18 @@ class TestNoOrphanedSkills:
             "technical_refining_bonus",
             "leadership_crew_bonus",
         }
+        # SA-C2 pending bonuses — SA-arc skill nodes defined ahead of their
+        # consuming views (SA-B3/B4, SA-P3/P4/P5, SA-R1/R2, SA-F2/F3).
+        # Track here until the consuming views are implemented.
+        sa_c2_pending = {
+            "auction_lot_appraisal_bonus",  # SA-B3/B4: auction_view.py
+            "coalition_sway_bonus",  # SA-P3/P4: politics_view.py / congress_view.py
+            "coalition_size_bonus",  # SA-P3/P4: politics_view.py / congress_view.py
+            "arbitration_neutrality_bonus",  # SA-P5: mediation_view.py
+            "speculator_premium_reduction",  # SA-F2/F3: financial_exchange_view.py
+            "research_yield_bonus",  # SA-R1/R2: okafor_view.py
+            "research_risk_reduction",  # SA-R1/R2: okafor_view.py
+        }
         # Skill read via direct attribute access, not get_bonus()
         direct_access = {
             "drone_slot",  # drone.py reads skills.get("drone_fleet") directly
@@ -663,7 +675,14 @@ class TestNoOrphanedSkills:
             "route_planner",  # Fuel cost display always active
         }
 
-        skip = dynamic_bonus_types | direct_access | deferred | by_design | nv_6_5_pending_variants
+        skip = (
+            dynamic_bonus_types
+            | direct_access
+            | deferred
+            | by_design
+            | nv_6_5_pending_variants
+            | sa_c2_pending
+        )
 
         missing = []
         for bt in sorted(bonus_types):
