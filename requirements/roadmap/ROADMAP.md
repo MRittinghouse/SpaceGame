@@ -912,35 +912,87 @@ The following decisions were locked during planning:
 
 #### SA-0 — Cluster A confirmation pass
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Phase I | **Size**: S | **Effort**: 3-5 days
 **Depends on**: SA-PREP-2 | **Blocks**: none
 
-**Goal.** Confirm Restricted Sector 7, Restricted Research Wing, Assembly Core surface correctly during their existing campaign beats post-SL-1 demotion. Author the optional depth tier for between-campaign-beat visits (intelligence opportunities at restricted sectors, espionage flavor).
+**Goal.** Confirm Restricted Sector 7 (`iron_depths_restricted_zone`), Restricted Research Wing (`nova_restricted_labs`), and Assembly Core (`fulcrum_core`) surface correctly during their existing campaign beats per the SL-1 conditional-demotion rule and the SL-3 mission-objective glow. Author a one-shot depth-tier intelligence beat at the two between-campaign-visitable anchors (iron_depths, nova_research) so a player who docks while no campaign mission is active gets a single piece of insider context, not silence. The Fulcrum is confirmation-only — it is a narrative endpoint, not a recurring venue.
 
 **Context to read.**
-- `requirements/station_legibility.md` (SL-1 conditional demotion rule)
+- `requirements/station_legibility.md` (SL-1 conditional demotion rule, SL-3 glow)
+- `requirements/station_anchors.md` (Cluster A scope; SA-0 line)
+- `requirements/sa_audit_findings.md` (anchor inventory, regression checklist)
+- `requirements/onboarding_design.md` (six teaching principles)
+- `requirements/aurelia_voice_examples.md` (paired wrong/right voice examples)
 - `data/galaxy/locations.json` (Cluster A entries)
-- `data/missions/missions.json` (campaign endpoints)
-- `requirements/sa_audit_findings.md`
+- `data/missions/missions.json`, `data/missions/side_missions.json`, `data/missions/crew_quests.json` (campaign + side endpoints at iron_depths / nova_research / the_fulcrum)
+- `data/characters/npcs.json` (Naveen Prakash @ iron_depths, Yuki Tanaka @ nova_research)
+- `data/dialogue/dialogues.json` (existing trees `naveen_prakash_dialogue`, `yuki_signal_deep`)
+- `spacegame/models/station_salience.py` (`is_system_mission_relevant`, `get_recommended_card`)
+- `spacegame/constants/flags.py` (helper conventions)
 
 **Touch zones.**
-- `data/dialogue/dialogues.json` (depth-tier dialogues)
+- `data/dialogue/dialogues.json` (extend `naveen_prakash_dialogue` + `yuki_signal_deep` with one depth-tier branch each)
+- `data/journal/entries.json` (two new flag-triggered entries)
+- `spacegame/constants/flags.py` (two no-arg helper functions)
 - `tests/test_scenarios/test_scenario_cluster_a_anchors.py` (NEW)
+- `tests/test_constants/test_flags.py` (extend with the two new helpers)
+- `tests/test_data/test_dialogue_integrity.py` (only if new flags trip the producer-only-orphan scanner per the SL-2 gap; no source change expected, but the `KNOWN_PRODUCER_ONLY_ORPHANS` allowlist may need an update — see Risks)
+
+**Plan.**
+1. **Verification scenario tests for SL-1 elevation across all three anchors.** Create `tests/test_scenarios/test_scenario_cluster_a_anchors.py`. For each `(system_id, anchor_location_id, campaign_mission_id)` tuple — `(iron_depths, iron_depths_restricted_zone, iron_depths_investigation)`, `(nova_research, nova_restricted_labs, cargo_lost)`, `(the_fulcrum, fulcrum_core, point_of_no_return)` — assert: with the mission ACTIVE, `is_system_mission_relevant(mm, system_id, npc_home_systems)` is True; constructing a `StationHubView` for that system passes the anchor into the elevated set (the `unique` card is NOT in the POI strip). With no missions active, the same construction demotes the anchor to the strip. Pattern after `test_scenario_investment_gating.py`. Risk: each campaign mission has prerequisites; tests use direct `MissionManager` start/activate or fixture flags rather than full prereq chains. Test surface: 3 systems × 2 states = 6 elevation assertions plus a parametrized happy-path version.
+2. **Add two flag helpers in `spacegame/constants/flags.py`.** `heard_dcmc_intelligence()` returns the canonical `"heard_dcmc_intelligence"` and `heard_nas_intelligence()` returns `"heard_nas_intelligence"`. Mirror the `investment_introduced()` pattern (no-arg, type-annotated, one-line docstring). Test: `tests/test_constants/test_flags.py` assertions on the canonical strings. Gotcha: per the SL-2 scanner-gap note, no-arg helpers aren't introspected by the SI-3 flag scanner; once dialogue producers exist (steps 3-4) the flag will look like a producer-only orphan. See task 7 for the resolution.
+3. **Author DCMC depth-tier beat at iron_depths.** Extend `data/dialogue/dialogues.json#naveen_prakash_dialogue` with one new branch `"dcmc_intelligence"`. Show condition: `not heard_dcmc_intelligence` AND no active mission targeting `iron_depths` (the between-campaign-visit gate; checked via dialogue's existing `requires_flag_not` / `requires_flag` machinery, not a new gate type). Action: set `heard_dcmc_intelligence`. Content: 2 beats. Naveen is a Compliance Auditor; voice is careful, hedged, "I shouldn't be telling you this." 80-180 words total. No em-dashes, no parallel-negation, no "couldn't help but," no "Captain" address (Aurelia voice doc). Voice-check against `aurelia_voice_examples.md`. Risk: dialogue JSON gating syntax — verify against an existing flag-gated branch (e.g., the SL-2 `investment_introduced` consumer or any `requires_flag` example in the file) before authoring.
+4. **Author NAS depth-tier beat at nova_research.** Extend `data/dialogue/dialogues.json#yuki_signal_deep` with one new branch `"nas_intelligence"`. Show condition: `not heard_nas_intelligence` AND no active mission targeting `nova_research`. Action: set `heard_nas_intelligence`. Yuki Tanaka is a Signal Analyst; voice is technical, hesitant about disclosure, slightly fascinated by what she's heard. 80-180 words. Same voice rules as task 3.
+5. **Add two journal entries.** In `data/journal/entries.json`: `auto_dcmc_intelligence` triggered by `heard_dcmc_intelligence`, `auto_nas_intelligence` triggered by `heard_nas_intelligence`. Mirror the existing `auto_m05_marcus` / `auto_m13_oren` shape. 1-2 sentence in-world log entries. Test: scenario test asserts journal entry exists post-flag-set.
+6. **Save/load round-trip in the scenario test.** Extend the new scenario test: trigger DCMC beat → save player via `_helpers.round_trip_save` → load → verify flag persists, journal still present, dialogue branch no longer offered (the show-condition is False on second visit). Same for NAS. Confirms the new flags survive the existing serialization path with no model changes (they're plain dialogue_flags entries, but assert it).
+7. **SI-3 flag-integrity scanner check.** Run `tests/test_data/test_dialogue_integrity.py`. The two new flags have producers (the dialogue branches' set-flag actions) and consumers (their own gate on the dialogue branches, plus the journal `trigger_flag`). Whether the scanner detects the consumer side depends on which path it reads: if it reads the JSON gate, the consumer is detected and no allowlist change is needed; if it relies on Python helpers (which the no-arg helpers can't be introspected for), the allowlist needs the two new flag strings added. Resolve empirically: run the test, take what it says. Document the call in the activity log so the reviewer sees the rationale.
+8. **Voice-check + Writing Bible compliance pass + full suite.** Run `pytest tests/test_writing_bible_compliance.py` and `pytest -n auto -q`. Confirm pre-phase baseline (8479 passing / 98 skipped) does not regress. New tests should net positive (target +12 to +16: 6 elevation + 2 flag-helper + 2 dialogue-set + 2 journal-trigger + 2 save-load).
 
 **Deliverables.**
-- Confirmation that SL-1's mission-objective elevation works for the 3 Cluster A anchors during their campaign beats.
-- Optional depth-tier content (intelligence-gathering dialogue) for between-campaign visits.
-- Scenario tests covering the campaign-elevation path.
+- Scenario test file `test_scenario_cluster_a_anchors.py` covering both elevation states for all 3 anchors and end-to-end depth-tier beat → flag → journal → save/load for the 2 visitable anchors.
+- Two no-arg flag helpers in `spacegame/constants/flags.py` (`heard_dcmc_intelligence`, `heard_nas_intelligence`).
+- One depth-tier dialogue branch on each of `naveen_prakash_dialogue` and `yuki_signal_deep`, gated on the new flags, voice-checked.
+- Two journal entries triggered by the new flags.
+- Confirmation pass that SL-1 elevation and SL-3 glow surface Cluster A anchors correctly during campaign beats.
+- The Fulcrum's confirmation-only scope explicitly documented in the test file.
 
 **Acceptance criteria.**
-1. Each Cluster A anchor stays in the action grid during its campaign mission, demoted otherwise.
-2. Between-campaign visits offer 1-2 depth-tier dialogue beats per anchor.
-3. Scenario tests pass for both elevation states.
-4. Writing Bible clear on new dialogue.
+1. With `iron_depths_investigation` active, `iron_depths_restricted_zone` is NOT in the StationHubView POI strip (it's elevated to the action grid). With no missions targeting `iron_depths`, it IS in the strip. Same shape verified for `nova_restricted_labs` (gated on `cargo_lost`) and `fulcrum_core` (gated on `point_of_no_return`).
+2. Naveen Prakash's dialogue at iron_depths offers exactly one DCMC-intelligence branch when `heard_dcmc_intelligence` is unset and no campaign mission targets the system; the branch is suppressed otherwise. Equivalent for Yuki Tanaka at nova_research with `heard_nas_intelligence` and no nova_research-targeting mission.
+3. Speaking either depth-tier branch sets the corresponding flag exactly once and records `auto_dcmc_intelligence` / `auto_nas_intelligence` in the player's journal.
+4. After save/load, both flags persist; both journal entries persist; neither dialogue branch re-offers.
+5. Both flag helpers exist in `spacegame/constants/flags.py`, are tested for canonical strings, and the SI-3 flag-integrity scanner is clean (with documented `KNOWN_PRODUCER_ONLY_ORPHANS` update if and only if step 7 finds the no-arg-helper introspection limitation triggers).
+6. Writing Bible scanner clean on the new dialogue + journal copy. Voice-checked against `aurelia_voice_examples.md` 16-item diagnostic.
+7. Full test suite passing: ≥ 8479 passing tests; pre-existing 98 skips unchanged.
+8. The Fulcrum's confirmation-only scope is documented (in the test file's module docstring) so future SA-X cohesion sprints don't re-litigate it.
+
+**Risks / open questions.**
+- ~~Should `the_fulcrum` get a depth tier?~~ **Resolved (locked)**: confirmation only. Fulcrum is a one-time narrative endpoint; pre-`point_of_no_return` the player can't dock there, post-`the_collapse` the Expanse has collapsed. There is no recurring between-beat visit state.
+- ~~Which NPC carries the DCMC intelligence beat at iron_depths?~~ **Resolved (locked)**: Naveen Prakash (Compliance Auditor) — best plausibility for insider DCMC information; existing dialogue tree `naveen_prakash_dialogue` is extendable. Sienna Vek and Jez Okafor stay untouched.
+- ~~Which NPC carries the NAS intelligence beat at nova_research?~~ **Resolved (locked)**: Yuki Tanaka (Signal Analyst) — existing tree `yuki_signal_deep` already touches restricted-research signal territory. Reva Sato and Amara Okonkwo stay untouched.
+- ~~Should depth-tier authoring create new NPCs or voice sheets?~~ **Resolved (locked)**: extend existing NPCs only. Adding new named NPCs / voice sheets is SA-PREP-1 territory and would balloon SA-0 past S sizing. The two chosen NPCs already have dialogue trees; we add one branch each.
+- ~~Are the depth-tier flags repeatable per save?~~ **Resolved (locked)**: one-shot per save. The branch is suppressed once the flag sets. Matches the regression-checklist pattern of `talked_to_cargo_broker` and similar single-fire gates.
+- SI-3 producer-only-orphan handling — whether the scanner needs an allowlist entry depends on which detection path it uses for the new flags. Plan task 7 resolves this empirically and documents the call. If the allowlist needs updating, the change is one line.
+- Dialogue JSON conditional-gate syntax — assumed from existing flag-gated branches; if the format diverges from what's in `merchant_delivery` or any other extant gated tree, the implementer should verify before authoring branches 3 and 4 to avoid an unparseable JSON commit.
+- Mission-objective glow (SL-3) is not separately exercised here — it shares the same `is_system_mission_relevant` data path with SL-1, and SL-3's own scenario tests already cover the glow render. SA-0's verification is at the demotion/elevation layer; the glow follows for free.
 
 **Activity log.**
 - 2026-04-26 — todo (created)
+- 2026-04-27 12:06 — harness: plan phase starting
+- 2026-04-27 13:30 — planning complete; verified all 8 context docs exist; locked 5 decisions (Fulcrum confirmation-only, NPC carriers Naveen/Yuki, no new voice sheets, one-shot flags); folded in 3 polish items (journal entries, save/load round-trip, SI-3 scanner check); 8-task plan keyed to specific files and tests; expected delta +12 to +16 tests, no scope creep beyond size S. PHASE_OK
+
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-04-27 12:06
+- Completed: 2026-04-27 13:30
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: pending
+- New_sprints_proposed: none
+- Polish_items_folded_in: journal-entries (per anchor), save/load-roundtrip, SI-3-flag-scanner-check
+- Decisions_locked: 5
+- Notes: Fulcrum is confirmation-only (narrative endpoint, no between-beat state). Depth tier authored via existing NPCs Naveen Prakash (iron_depths) and Yuki Tanaka (nova_research) — no new voice sheets in SA-0. Flag helpers `heard_dcmc_intelligence` / `heard_nas_intelligence` go through `flags.py` per the cross-module rule. Sprint stays size S; estimated +12 to +16 net tests.
 
 #### SA-1 — Wreckers' Guild Hall (Salvage Contracts)
 
