@@ -320,6 +320,8 @@ class Game:
         self.cantina_view = None
         self.wreckers_guild_view = None
         self.deep_shafts_view = None
+        # SA-B2: lazy-instantiated by _ensure_auction_view().
+        self.auction_view = None
         # SA-P2: lazy-instantiated by _ensure_dispute_view().
         self.dispute_view = None
 
@@ -2039,6 +2041,21 @@ class Game:
 
                     self._start_transition(TransitionType.FADE, 0.3, _do_deep_shafts_back)
 
+        # SA-B2: auction view returns to STATION_HUB on back. The
+        # auction state lives on Player.auction_state directly, so no
+        # snapshot is needed; the existing save_manager path handles it.
+        if hasattr(self, "auction_view") and self.auction_view:
+            if self.auction_view.active:
+                next_state = self.auction_view.get_next_state()
+                if next_state == GameState.STATION_HUB:
+                    self.auction_view.next_state = None
+
+                    def _do_auction_back():
+                        self._ensure_station_hub_view()
+                        self.state_manager.change_state(GameState.STATION_HUB)
+
+                    self._start_transition(TransitionType.FADE, 0.3, _do_auction_back)
+
         # SA-P2: dispute view returns to STATION_HUB on back. Snapshot
         # the manager's pending / resolved disputes onto the player so a
         # mid-arc save survives session leave (round-boundary granularity).
@@ -2286,6 +2303,95 @@ class Game:
             crew_roster=self.crew_roster,
         )
         self.state_manager.register_state(GameState.DEEP_SHAFTS, self.deep_shafts_view)
+
+    def _ensure_auction_view(self, venue_id: str = "stellaris") -> None:
+        """SA-B2: create or recreate the auction venue view.
+
+        SA-B3 / SA-B4 wire the actual station_hub navigation entries; this
+        helper exists so the lifecycle hooks (journal / news / achievement /
+        crew banter) can be installed in one place. Both venues share the
+        same view subclass; ``venue_id`` selects which display name shows.
+        """
+        from spacegame.constants.flags import (
+            auction_first_rivalry_formed,
+            auction_first_session_complete,
+            auction_first_win,
+            auction_rival_encountered,
+        )
+        from spacegame.models.bidding_persona import (
+            NAMED_RIVAL_IDS,
+        )
+        from spacegame.views.auction_view import AuctionView
+
+        venue_display = (
+            "Stellaris Auction House" if venue_id == "stellaris" else "Crimson Reach Black Market"
+        )
+        self.auction_view = AuctionView(
+            ui_manager=self.ui_manager,
+            player=self.player,
+            crew_roster=self.crew_roster,
+            progression=self.player.progression,
+            venue_id=venue_id,
+            venue_display_name=venue_display,
+        )
+        # Install lifecycle callbacks so journal entries, news headlines,
+        # and the crew-banter / achievement flags fire at the right moments.
+
+        def _on_session_complete() -> None:
+            flag = auction_first_session_complete()
+            if not self.player.dialogue_flags.get(flag):
+                self.player.dialogue_flags[flag] = True
+                if self.journal is not None:
+                    self.journal.trigger_auto_entry(
+                        flag, self.player.game_day, self.player.current_system_id
+                    )
+
+        def _on_lot_won(lot, sale_price: int) -> None:
+            flag = auction_first_win()
+            if not self.player.dialogue_flags.get(flag):
+                self.player.dialogue_flags[flag] = True
+                if self.journal is not None:
+                    self.journal.trigger_auto_entry(
+                        flag, self.player.game_day, self.player.current_system_id
+                    )
+
+        def _on_rivalry_formed(rival_id: str, lot) -> None:
+            flag = auction_first_rivalry_formed()
+            if not self.player.dialogue_flags.get(flag):
+                self.player.dialogue_flags[flag] = True
+                if self.journal is not None:
+                    self.journal.trigger_auto_entry(
+                        flag, self.player.game_day, self.player.current_system_id
+                    )
+
+        def _on_headliner_sold(lot, sale_price: int) -> None:
+            if self.news_ticker is None:
+                return
+            head = f"{lot.headline} sells at {venue_display}. Price undisclosed."
+            if len(head) <= 80:
+                self.news_ticker.add_headline(head)
+
+        def _on_headliner_withdrawn(lot) -> None:
+            if self.news_ticker is None:
+                return
+            head = f"{lot.headline} withdrawn from {venue_display} floor. Reserve not met."
+            if len(head) <= 80:
+                self.news_ticker.add_headline(head)
+
+        self.auction_view.on_session_complete = _on_session_complete
+        self.auction_view.on_lot_won = _on_lot_won
+        self.auction_view.on_rivalry_formed = _on_rivalry_formed
+        self.auction_view.on_headliner_sold = _on_headliner_sold
+        self.auction_view.on_headliner_withdrawn = _on_headliner_withdrawn
+
+        # Mark each named rival who shows up this session — banter trigger.
+        for persona_id in self.player.auction_state.session_personas:
+            if persona_id in NAMED_RIVAL_IDS:
+                flag = auction_rival_encountered(persona_id)
+                if not self.player.dialogue_flags.get(flag):
+                    self.player.dialogue_flags[flag] = True
+
+        self.state_manager.register_state(GameState.AUCTION, self.auction_view)
 
     def _initialize_politics_dispute_manager(self) -> None:
         """SA-P2: bind the venue dispute manager to its dependencies.

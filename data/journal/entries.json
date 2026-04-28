@@ -328,6 +328,27 @@
       "trigger_flag": "first_master_mediation_won",
       "system_id": "crimson_reach",
       "mission_id": ""
+    },
+    {
+      "entry_id": "auto_auction_first_session",
+      "text": "First session. Lot prices here move differently than the commodity floor. The ceiling is whatever the room will pay. Sable said two words the whole time. Both were correct.",
+      "trigger_flag": "auction_first_session_complete",
+      "system_id": "stellaris_port",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_auction_first_win",
+      "text": "Won my first lot. Took it at the price the room held. Filed the receipt. Next time I will know what that price meant.",
+      "trigger_flag": "auction_first_win",
+      "system_id": "stellaris_port",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_auction_first_rivalry",
+      "text": "A name showed up on the floor. They bid on the lot I wanted. Lost that one. I know what the lot was. I know who took it.",
+      "trigger_flag": "auction_first_rivalry_formed",
+      "system_id": "stellaris_port",
+      "mission_id": ""
     }
   ]
 }

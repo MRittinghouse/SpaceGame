@@ -46,6 +46,11 @@ VALID_STAT_KEYS = {
     "side_missions_completed",
     "crew_quests_completed",
     "encounters_survived",
+    # SA-B2: auction stub stat_keys (resolved via Player @property)
+    "auction_lots_won_total",
+    "auction_lots_won_stellaris",
+    "auction_rivals_retired",
+    "auction_perfect_reads",
 }
 
 VALID_REWARD_TYPES = {"xp", "credits", "skill_point"}

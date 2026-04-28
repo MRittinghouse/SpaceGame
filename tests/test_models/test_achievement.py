@@ -386,12 +386,12 @@ class TestMinigameAchievements:
     """Tests for new minigame-focused achievements."""
 
     def test_ten_new_achievements_loaded(self) -> None:
-        """Total achievement count should be 43 (40 existing + 3 smuggling)."""
+        """Total achievement count = 62 prior + 4 SA-B2 auction stubs = 66."""
         from spacegame.data_loader import get_data_loader
 
         dl = get_data_loader()
         dl.load_all()
-        assert len(dl.achievements) == 62
+        assert len(dl.achievements) == 66
 
     def test_deep_delver_triggers(self) -> None:
         """deep_delver should unlock when max_mining_depth >= 4."""

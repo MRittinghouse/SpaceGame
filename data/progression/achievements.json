@@ -681,6 +681,50 @@
       "reward_type": "skill_point",
       "reward_value": 2,
       "hidden": true
+    },
+    {
+      "id": "auction_first_win",
+      "name": "First Lot",
+      "description": "Win your first lot at any auction venue.",
+      "category": "economy",
+      "stat_key": "auction_lots_won_total",
+      "threshold": 1,
+      "reward_type": "credits",
+      "reward_value": 500,
+      "hidden": true
+    },
+    {
+      "id": "auction_champion",
+      "name": "Stellaris Champion",
+      "description": "Win five lots at the Stellaris Auction House.",
+      "category": "economy",
+      "stat_key": "auction_lots_won_stellaris",
+      "threshold": 5,
+      "reward_type": "credits",
+      "reward_value": 2500,
+      "hidden": true
+    },
+    {
+      "id": "auction_rival_retired",
+      "name": "Stopped Coming",
+      "description": "Outbid a recurring rival until they retire to the wanderer state.",
+      "category": "economy",
+      "stat_key": "auction_rivals_retired",
+      "threshold": 1,
+      "reward_type": "skill_point",
+      "reward_value": 1,
+      "hidden": true
+    },
+    {
+      "id": "auction_perfect_read",
+      "name": "Read the Room",
+      "description": "Win a lot within two percent of Sable's ceiling estimate.",
+      "category": "economy",
+      "stat_key": "auction_perfect_reads",
+      "threshold": 1,
+      "reward_type": "credits",
+      "reward_value": 1000,
+      "hidden": true
     }
   ]
 }
