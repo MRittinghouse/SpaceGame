@@ -31,7 +31,7 @@ from spacegame.config import (
     scale_x,
     scale_y,
 )
-from spacegame.constants.flags import seen_auction_first_session_tip
+from spacegame.constants.flags import auction_sable_ceiling_correct, seen_auction_first_session_tip
 from spacegame.engine.backgrounds import AnimatedBackground
 from spacegame.engine.draw_utils import draw_panel
 from spacegame.engine.fonts import (
@@ -44,6 +44,7 @@ from spacegame.engine.fonts import (
 )
 from spacegame.models.bidding import (
     PERFECT_READ_THRESHOLD,
+    SABLE_CEILING_CORRECT_THRESHOLD,
     AuctionLifecycle,
     post_win_valuation_message,
     reserve_band_for_preview,
@@ -342,10 +343,12 @@ class AuctionView(BaseView):
         if ui_element == self.advance_button:
             self.player.auction_state.advance_after_resolution()
             self._rebuild_ui_for_substate()
+            self._maybe_fire_session_complete()
             return
         if ui_element == self.next_lot_button:
             self.player.auction_state.advance_after_resolution()
             self._rebuild_ui_for_substate()
+            self._maybe_fire_session_complete()
             return
         if ui_element == self.raise_min_button:
             self._submit_min_raise()
@@ -381,6 +384,20 @@ class AuctionView(BaseView):
     # ------------------------------------------------------------------
     # Lot-resolution callback dispatch
     # ------------------------------------------------------------------
+
+    def _maybe_fire_session_complete(self) -> None:
+        """Fire on_session_complete if a session just reached SESSION_CLOSE.
+
+        Called from the button handler after advance_after_resolution so the
+        callback fires in the same event frame rather than relying on the
+        view's update-delta logic (handle_event runs before update, so the
+        history count is already incremented when update next checks it).
+        """
+        if (
+            self.player.auction_state.lifecycle == AuctionLifecycle.SESSION_CLOSE
+            and self.on_session_complete is not None
+        ):
+            self.on_session_complete()
 
     def _lookup_lot(self, lot_id: str) -> Optional[AuctionLot]:
         for lot in self.player.auction_state.active_session_lots:
@@ -428,6 +445,8 @@ class AuctionView(BaseView):
                 if ceiling_est <= 0:
                     continue
                 err = abs(actual - ceiling_est) / ceiling_est
+                if err <= SABLE_CEILING_CORRECT_THRESHOLD:
+                    self.player.dialogue_flags[auction_sable_ceiling_correct()] = True
                 if err <= PERFECT_READ_THRESHOLD:
                     self.player.auction_state.auction_perfect_reads += 1
                     break
