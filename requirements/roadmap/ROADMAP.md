@@ -2475,7 +2475,7 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 
 #### SA-B1 — Bidding System Design
 
-**Status**: in-progress (planning)
+**Status**: in-progress (implementing)
 **Phase**: Phase III | **Size**: M | **Effort**: 1 week
 **Depends on**: SA-PREP-1, SA-A2, SA-C2 | **Blocks**: SA-B2
 
@@ -2560,18 +2560,26 @@ These are the decisions to lock during planning execution. Recommendations recor
 - 2026-04-26 — todo (created)
 - 2026-04-27 20:42 — harness: plan phase starting
 - 2026-04-27 21:30 — planning complete; expanded sprint to a 12-section design doc covering lifecycle, lot schema, AI personas, player input, Captain Memory integration, crew/skill bonus contracts, save/load, and integration hooks. Added SA-A2 + SA-C2 as explicit dependencies (the design references content those sprints produced). Corrected `data/galaxy/modules.json` reference to `data/ships/modules.json`. Folded in tutorial / journal / news / crew-banter / achievement hook design. Locked 12 decisions with rationales. No new sprints proposed; SA-B2 through SA-B6 chain already covers downstream work. PHASE_OK
+- 2026-04-27 20:50 — harness: implement phase starting (rework cycle 0)
+- 2026-04-27 22:15 — implementation complete; authored requirements/sa_bidding_design.md (873 lines, 12 sections). All 15 acceptance criteria verified. Writing Bible scanner clean (17/17). Test baseline preserved (9447 passed, 98 skipped). PHASE_OK
 
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-04-27 20:42
-- Completed: 2026-04-27 21:30
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 8ff0543
-- New_sprints_proposed: none
-- Polish_items_folded_in: tutorial-FirstTimeTipOverlay-design, journal-entry-stubs, news-ticker-stubs, crew-banter-trigger-flags, achievement-stub-ids, save/load-schema, hand-off-map-to-downstream-sprints
-- Decisions_locked: 12 (round format, persona count, reserve mechanic, Captain Memory outcome constant, schedule cadence, time-pressure setting, lot pool refresh, faction tier mapping, market coexistence, legendary-modules rule, player-initiated mirroring, preview content)
-- Notes: Verified all 4 context paths; one path was wrong (`data/galaxy/modules.json` -> `data/ships/modules.json`) and I fixed it. SA-A2 and SA-C2 already wired the auction crew/skill bonus types (Sable Trent, lot_appraiser) so SA-B1 designs the consumption contract rather than introducing new bonus types. The four voiced rivals from SA-PREP-1/SA-A2 (Velo, Prentiss, Kade, Salko, Trent) carry the recurring-rival surface; AI persona model is grounded in their voice sheets rather than re-invented. Sprint stays Size M, single deliverable (design doc); polish items fold into doc sections rather than expanding touch zones or spawning new sprints.
+- Started: 2026-04-27 20:50
+- Completed: 2026-04-27 22:15
+- Files_changed: requirements/sa_bidding_design.md
+- Commits: 7346dd5
+- Tests_added: 0
+- Tests_baseline: 9447
+- Tests_passing: 9447
+- Tests_skipped: 98
+- Lint_clean: n/a
+- Format_clean: n/a
+- SI3_scanner_clean: n/a
+- Writing_bible_clean: yes
+- Touch_zones_respected: yes
+- Notes: Design doc authored with all 12 required sections. 12 locked decisions with rationales. Three worked-example lots (legendary module re-issue, faction-restricted commodity, Reach contraband). AI persona specs for Prentiss, Kade, Salko + two procedural archetypes. Save/load schema with full field list and migration discipline. Tutorial overlay, journal entry, news ticker, crew-banter flag, and achievement stub identifiers designed for SA-B2/B3/B4/B5/B6/SA-X5/X6/X7 downstream consumption.
 
 #### SA-B2 — Bidding Core
 
