@@ -2475,7 +2475,7 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 
 #### SA-B1 — Bidding System Design
 
-**Status**: in-progress (implementing)
+**Status**: in-progress (reviewing)
 **Phase**: Phase III | **Size**: M | **Effort**: 1 week
 **Depends on**: SA-PREP-1, SA-A2, SA-C2 | **Blocks**: SA-B2
 
@@ -2562,24 +2562,24 @@ These are the decisions to lock during planning execution. Recommendations recor
 - 2026-04-27 21:30 — planning complete; expanded sprint to a 12-section design doc covering lifecycle, lot schema, AI personas, player input, Captain Memory integration, crew/skill bonus contracts, save/load, and integration hooks. Added SA-A2 + SA-C2 as explicit dependencies (the design references content those sprints produced). Corrected `data/galaxy/modules.json` reference to `data/ships/modules.json`. Folded in tutorial / journal / news / crew-banter / achievement hook design. Locked 12 decisions with rationales. No new sprints proposed; SA-B2 through SA-B6 chain already covers downstream work. PHASE_OK
 - 2026-04-27 20:50 — harness: implement phase starting (rework cycle 0)
 - 2026-04-27 22:15 — implementation complete; authored requirements/sa_bidding_design.md (873 lines, 12 sections). All 15 acceptance criteria verified. Writing Bible scanner clean (17/17). Test baseline preserved (9447 passed, 98 skipped). PHASE_OK
+- 2026-04-27 21:02 — harness: review phase starting (rework cycle 0)
+- 2026-04-27 22:45 — review complete; 1 minor inconsistency fixed directly (section 5.6 appraisal bonus totals were 0.05 too high vs. section 7.2 and actual SA-A2/SA-C2 wiring; corrected to 0.15/0.20). All 15 acceptance criteria verified. Writing Bible scanner clean. Test baseline preserved. PHASE_OK
 
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-04-27 20:50
-- Completed: 2026-04-27 22:15
+- Started: 2026-04-27 21:02
+- Completed: 2026-04-27 22:45
 - Files_changed: requirements/sa_bidding_design.md
-- Commits: 7346dd5
-- Tests_added: 0
-- Tests_baseline: 9447
+- Commits: 60efbcf
 - Tests_passing: 9447
-- Tests_skipped: 98
-- Lint_clean: n/a
-- Format_clean: n/a
-- SI3_scanner_clean: n/a
-- Writing_bible_clean: yes
-- Touch_zones_respected: yes
-- Notes: Design doc authored with all 12 required sections. 12 locked decisions with rationales. Three worked-example lots (legendary module re-issue, faction-restricted commodity, Reach contraband). AI persona specs for Prentiss, Kade, Salko + two procedural archetypes. Save/load schema with full field list and migration discipline. Tutorial overlay, journal entry, news ticker, crew-banter flag, and achievement stub identifiers designed for SA-B2/B3/B4/B5/B6/SA-X5/X6/X7 downstream consumption.
+- Acceptance_criteria_verified: 15/15
+- Polish_items_verified: n/a
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 1
+- Single_tighten: Section 5.6 appraisal bonus totals (0.20/0.25) contradicted section 7.2 and actual code wiring (0.15/0.20); SA-B2 implementer relying solely on 5.6 would build wrong threshold checks — fixed directly.
+- Followup_sprints_added: none
+- Notes: Design doc is complete and implementation-ready. All 12 sections present, 12 locked decisions with rationales, three worked-example lots, persona specs keyed to voice sheets, save/load schema with migration discipline. SA-B2 can proceed.
 
 #### SA-B2 — Bidding Core
 
