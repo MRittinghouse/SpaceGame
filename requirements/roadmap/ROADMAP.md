@@ -2567,7 +2567,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 - Started: 2026-04-27 20:42
 - Completed: 2026-04-27 21:30
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending
+- Commits: 8ff0543
 - New_sprints_proposed: none
 - Polish_items_folded_in: tutorial-FirstTimeTipOverlay-design, journal-entry-stubs, news-ticker-stubs, crew-banter-trigger-flags, achievement-stub-ids, save/load-schema, hand-off-map-to-downstream-sprints
 - Decisions_locked: 12 (round format, persona count, reserve mechanic, Captain Memory outcome constant, schedule cadence, time-pressure setting, lot pool refresh, faction tier mapping, market coexistence, legendary-modules rule, player-initiated mirroring, preview content)
