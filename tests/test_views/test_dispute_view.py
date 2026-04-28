@@ -841,3 +841,163 @@ class TestGrayMarketArbitrationTip:
         assert view._first_time_tip is None
         assert player.dialogue_flags.get(seen_gray_market_arbitration_tip(), False) is False
         view.on_exit()
+
+
+# ---------------------------------------------------------------------------
+# SA-P6 — corridor intel reveal wiring (AC 6)
+# ---------------------------------------------------------------------------
+
+
+class TestSAP6CorridorIntel:
+    """open_corridor() calls try_reveal_intel() once and caches the result."""
+
+    def test_intel_cached_after_open_corridor(self) -> None:
+        """If try_reveal_intel returns data it is stored in _corridor_intel."""
+        from unittest.mock import patch
+
+        _manager, view, dispute_mgr = _build_view()
+        view.on_enter()
+        view.open_dispute("water_rights_phasing")
+        fake_intel = {"samela_drift": "Has voted consistently for quota caps."}
+        with patch.object(dispute_mgr, "try_reveal_intel", return_value=fake_intel) as mock_fn:
+            view.open_corridor()
+            assert mock_fn.call_count == 1
+            assert view._corridor_intel == fake_intel
+        view.on_exit()
+
+    def test_intel_not_overwritten_on_repeated_open_corridor(self) -> None:
+        """Second open_corridor() call must not re-call try_reveal_intel."""
+        from unittest.mock import patch
+
+        _manager, view, dispute_mgr = _build_view()
+        view.on_enter()
+        view.open_dispute("water_rights_phasing")
+        fake_intel = {"samela_drift": "Some intel."}
+        with patch.object(dispute_mgr, "try_reveal_intel", return_value=fake_intel):
+            view.open_corridor()
+        with patch.object(dispute_mgr, "try_reveal_intel", return_value=None) as mock2:
+            view.open_corridor()
+            assert mock2.call_count == 0
+        assert view._corridor_intel == fake_intel
+        view.on_exit()
+
+    def test_no_intel_when_try_reveal_returns_none(self) -> None:
+        """If try_reveal_intel returns None, _corridor_intel stays None."""
+        from unittest.mock import patch
+
+        _manager, view, dispute_mgr = _build_view()
+        view.on_enter()
+        view.open_dispute("water_rights_phasing")
+        with patch.object(dispute_mgr, "try_reveal_intel", return_value=None):
+            view.open_corridor()
+        assert view._corridor_intel is None
+        view.on_exit()
+
+
+# ---------------------------------------------------------------------------
+# SA-P6 — render body smoke tests (AC 2, AC 3, AC 4, AC 5)
+# ---------------------------------------------------------------------------
+
+
+def _all_tips_suppressed_player(
+    *,
+    faction_id: str = "verdant",
+    standing: int = 0,
+) -> Player:
+    from spacegame.constants.flags import (
+        seen_annual_congress_tip,
+        seen_argument_composer_tip,
+        seen_gray_market_arbitration_tip,
+        seen_politics_venue_tip,
+    )
+
+    p = _build_player(faction_id=faction_id, standing=standing)
+    for fn in (
+        seen_politics_venue_tip,
+        seen_argument_composer_tip,
+        seen_annual_congress_tip,
+        seen_gray_market_arbitration_tip,
+    ):
+        p.dialogue_flags[fn()] = True
+    return p
+
+
+class TestSAP6BodyRenderSmoke:
+    """Substate render bodies must not raise exceptions when called directly."""
+
+    def _make_screen(self) -> pygame.Surface:
+        return pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
+
+    def test_render_corridor_no_crash(self) -> None:
+        player = _all_tips_suppressed_player()
+        _manager, view, _ = _build_view(player)
+        view.on_enter()
+        view.open_dispute("water_rights_phasing")
+        view.open_corridor()
+        screen = self._make_screen()
+        view.render(screen)
+        view.on_exit()
+
+    def test_render_session_no_crash(self) -> None:
+        player = _all_tips_suppressed_player()
+        _manager, view, _ = _build_view(player)
+        view.on_enter()
+        view.open_dispute("water_rights_phasing")
+        screen = self._make_screen()
+        view.render(screen)
+        view.on_exit()
+
+    def test_render_composer_no_crash(self) -> None:
+        player = _all_tips_suppressed_player()
+        _manager, view, _ = _build_view(player)
+        view.on_enter()
+        view.open_dispute("water_rights_phasing")
+        view.open_composer()
+        screen = self._make_screen()
+        view.render(screen)
+        view.on_exit()
+
+    def test_render_list_empty_state_no_crash(self) -> None:
+        player = _all_tips_suppressed_player()
+        _manager, view, _ = _build_view(player, register_dispute=False)
+        view.on_enter()
+        screen = self._make_screen()
+        view.render(screen)
+        view.on_exit()
+
+    def test_corridor_render_with_intel_no_crash(self) -> None:
+        """Corridor render with cached intel must not raise."""
+        from unittest.mock import patch
+
+        player = _all_tips_suppressed_player()
+        _manager, view, dispute_mgr = _build_view(player)
+        view.on_enter()
+        view.open_dispute("water_rights_phasing")
+        fake_intel = {"samela_drift": "Has voted consistently for quota caps."}
+        with patch.object(dispute_mgr, "try_reveal_intel", return_value=fake_intel):
+            view.open_corridor()
+        assert view._corridor_intel is not None
+        screen = self._make_screen()
+        view.render(screen)
+        view.on_exit()
+
+    def test_render_tally_no_crash(self) -> None:
+        """Force dispute to resolved state via cast_vote and render the TALLY body."""
+        from spacegame.models.politics_dispute import DisputePhase
+
+        player = _all_tips_suppressed_player()
+        _manager, view, dispute_mgr = _build_view(player)
+        view.on_enter()
+        dispute = dispute_mgr.get_pending_dispute("water_rights_phasing")
+        assert dispute is not None
+        view.active_dispute = dispute
+        for d in dispute.delegates.values():
+            d.visible_state = "committed_yes"
+            d.pre_committed = True
+        dispute_mgr.cast_vote(dispute)
+        assert dispute.phase == DisputePhase.RESOLVED
+        # Directly invoke the tally render path (the view may not have switched to TALLY yet).
+        view._create_ui_tally()
+        screen = self._make_screen()
+        view._render_body_tally(screen)
+        view.on_exit()

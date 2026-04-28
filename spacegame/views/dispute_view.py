@@ -6,9 +6,11 @@ states render in the LIST substate. Argument composer carries a live
 "Effective N vs Difficulty M" preview that updates without rebuilding
 UI elements when selections change.
 
-Pixel-level layout deferred to SA-X10 / SA-P3 per design §11; this
-sprint commits to structure (substates, lifecycle, preview wiring,
-state-error coverage) only.
+SA-P6 additions: per-venue header titles; per-venue empty-state copy;
+render-body fill-out for CORRIDOR / SESSION / COMPOSER / TALLY;
+Cass Weller intel reveal wired into corridor delegate cards;
+dispute-list button text upgrade; layout-constant extraction per
+ui_design_standards.md §"Raw pixel spacing" anti-pattern (line 396).
 """
 
 from __future__ import annotations
@@ -34,7 +36,7 @@ from spacegame.constants.flags import (
     seen_politics_venue_tip,
 )
 from spacegame.engine.draw_utils import draw_panel, word_wrap
-from spacegame.engine.fonts import FONT_BODY, FONT_MD, FONT_TITLE, get_font
+from spacegame.engine.fonts import FONT_BODY, FONT_MD, FONT_MICRO, FONT_TITLE, get_font
 from spacegame.models.player import Player
 from spacegame.models.politics_dispute import (
     ArgumentResolution,
@@ -61,6 +63,54 @@ PANEL_TOP_Y = scale_y(20)
 HEADER_H = scale_y(110)
 BODY_TOP_Y = PANEL_TOP_Y + HEADER_H + scale_y(20)
 BODY_H = scale_y(420)
+
+# SA-P6: layout constants extracted from _create_ui_* / _render_body_* inline literals.
+# ui_design_standards.md §"Raw pixel spacing" anti-pattern (line 396):
+# pixel offsets in methods must consume named constants, not inline literals.
+BTN_W = scale_x(140)  # standard wide button (Leave, Submit, Continue)
+BTN_W_SM = scale_x(120)  # narrower back-navigation button
+BTN_H = scale_y(36)  # standard button height
+BTN_W_FULL = scale_x(220)  # full-column framing / evidence button
+BTN_W_AUD = scale_x(180)  # audience column button
+BTN_H_SM = scale_y(32)  # compact composer row button height
+CARD_H = scale_y(40)  # dispute list and corridor card height
+ROW_GAP = scale_y(50)  # vertical step between list / corridor cards
+ROW_GAP_SM = scale_y(36)  # vertical step between composer row buttons
+COL_ACTION_X_STEP = scale_x(150)  # horizontal step between session action buttons
+COL_AUDIENCE_X = scale_x(260)  # audience column X offset from PANEL_X
+COL_EVIDENCE_X = scale_x(460)  # evidence column X offset from PANEL_X
+CARD_MARGIN = scale_x(20)  # horizontal inset for cards within the panel
+CARD_W = PANEL_W - scale_x(40)  # card width = panel minus 2 * margin
+LIST_TOP = scale_y(20)  # top margin inside the list body for first card
+TEXT_TOP = scale_y(40)  # top margin for status / empty-state text
+LINE_GAP = scale_y(22)  # vertical line height for word-wrapped body text
+# Bottom action / submit row: BODY_H - scale_y(80) pixels from BODY_TOP_Y.
+_ACTION_Y_DELTA = BODY_H - scale_y(80)
+
+# SA-P6: per-venue header title map. Unknown venue ids fall back to "Dispute Chamber".
+_VENUE_TITLES: dict[str, str] = {
+    "verdant_mayors_council": "Mayors' Council",
+    "havens_congress_hall": "Congress Hall",
+    "crimson_wreckers_guild": "Arbitration Chamber",
+}
+
+# SA-P6: per-venue empty-state copy (DisputeListState.EMPTY).
+# Unknown venue ids fall back to "No active disputes."
+# Annual-recess copy continues via the existing LOCKED_OUT_ANNUAL branch.
+_VENUE_EMPTY_STATE_COPY: dict[str, str] = {
+    "verdant_mayors_council": "Council in recess. Next session opens when a delegate moves a motion.",
+    "havens_congress_hall": "Congress not in session. Wait for the floor to open.",
+    "crimson_wreckers_guild": "The Hall is quiet today. No disputes have surfaced.",
+}
+
+# SA-P6: outcome category display labels for the TALLY body render.
+# " | " separates logical parts; em-dash is banned in player-facing content.
+_OUTCOME_LABELS: dict[str, str] = {
+    "win": "WIN",
+    "partial_win_coalition_thin": "PARTIAL WIN | COALITION THIN",
+    "partial_win_off_record": "PARTIAL WIN | OFF-RECORD CONCESSION",
+    "loss": "LOSS",
+}
 
 # Faction-standing threshold for the "locked" state in the dispute list
 # (design §8.1 mock: "requires -25 or above"). SA-P3 may override per
@@ -147,6 +197,22 @@ _TIER_ACTION_ENABLE: dict[str, frozenset[str]] = {
     "master": frozenset({"argue", "mediate", "vote_now", "abstain"}),
 }
 
+# SA-P6: friendly sub-faction label lookup for corridor delegate cards.
+_SUB_FACTION_LABELS: dict[str, str] = {
+    "verdant_council": "Verdant Council",
+    "alliance_congress": "Congress Delegate",
+    "wreckers_guild": "Wreckers Guild",
+}
+
+# SA-P6: human-readable visible-state labels for corridor and session cards.
+_VISIBLE_STATE_LABELS: dict[str, str] = {
+    "committed_no": "Committed No",
+    "leaning_no": "Leaning No",
+    "wavering": "Wavering",
+    "leaning_yes": "Leaning Yes",
+    "committed_yes": "Committed Yes",
+}
+
 
 class DisputeSubstate(Enum):
     """Internal navigation states inside the venue view."""
@@ -213,6 +279,7 @@ class DisputeView(BaseView):
         self.title_font = get_font("header", FONT_TITLE)
         self.subtitle_font = get_font("dialogue", FONT_MD)
         self.body_font = get_font("dialogue", FONT_BODY)
+        self.micro_font = get_font("dialogue", FONT_MICRO)
 
         # Substate
         self.substate: DisputeSubstate = DisputeSubstate.LIST
@@ -224,6 +291,12 @@ class DisputeView(BaseView):
             framing="", audience_delegate_id=""
         )
         self.composer_resolution: Optional[ArgumentResolution] = None
+
+        # SA-P6: Cass intel reveal result cached on first corridor entry.
+        # Populated by open_corridor() via try_reveal_intel(); cleared on
+        # back_to_list() so the next corridor entry can re-fire if the
+        # session gate resets.
+        self._corridor_intel: Optional[dict[str, str]] = None
 
         # UI element references
         self.back_button: Optional[pygame_gui.elements.UIButton] = None
@@ -270,6 +343,7 @@ class DisputeView(BaseView):
         # Drop any active overlay reference so a re-entry constructs a
         # fresh one (the dismissal flag is what gates re-fire, not this).
         self._first_time_tip = None
+        self._corridor_intel = None
         self._destroy_ui()
         super().on_exit()
 
@@ -463,10 +537,10 @@ class DisputeView(BaseView):
         # The back button is always present.
         self.back_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
-                PANEL_X + PANEL_W - scale_x(140),
-                PANEL_TOP_Y + scale_y(20),
-                scale_x(120),
-                scale_y(36),
+                PANEL_X + PANEL_W - BTN_W,
+                PANEL_TOP_Y + BTN_H,
+                BTN_W_SM,
+                BTN_H,
             ),
             text="Leave",
             manager=self.ui_manager,
@@ -506,18 +580,48 @@ class DisputeView(BaseView):
             # Empty / locked / loading / error: only the back button is needed.
             return
         ids = self.dispute_manager.get_pending_dispute_ids()
+        game_day = getattr(self.player, "game_day", 0)
         for idx, dispute_id in enumerate(ids):
+            dispute = self.dispute_manager.get_pending_dispute(dispute_id)
+            label = self._dispute_button_label(dispute, dispute_id, game_day)
             btn = pygame_gui.elements.UIButton(
                 relative_rect=pygame.Rect(
-                    PANEL_X + scale_x(20),
-                    BODY_TOP_Y + scale_y(20 + idx * 50),
-                    PANEL_W - scale_x(40),
-                    scale_y(40),
+                    PANEL_X + CARD_MARGIN,
+                    BODY_TOP_Y + LIST_TOP + idx * ROW_GAP,
+                    CARD_W,
+                    CARD_H,
                 ),
-                text=f"Enter session: {dispute_id}",
+                text=label,
                 manager=self.ui_manager,
             )
             self._dispute_buttons[dispute_id] = btn
+
+    def _dispute_button_label(
+        self,
+        dispute: Optional[PoliticsDispute],
+        dispute_id: str,
+        game_day: int,
+    ) -> str:
+        """Build the dispute-list button label.
+
+        Format: ``"{headline} | Round {r}/{R} | {d}d"``
+        Headline truncated at 50 chars with ellipsis when longer.
+        The ``{d}d`` segment is omitted when no deadline is set.
+        No em-dashes in output.
+        """
+        if dispute is None:
+            return dispute_id
+        headline = dispute.headline
+        if len(headline) > 50:
+            headline = headline[:47] + "..."
+        r = dispute.current_round
+        total_r = dispute.round_count
+        label = f"{headline} | Round {r}/{total_r}"
+        closes = getattr(dispute, "closes_on_day", 0)
+        if closes and closes > 0:
+            days_left = max(0, closes - game_day)
+            label = f"{label} | {days_left}d"
+        return label
 
     def _create_ui_corridor(self) -> None:
         """CORRIDOR substate: per-delegate Talk buttons + back-to-list."""
@@ -526,10 +630,10 @@ class DisputeView(BaseView):
         for idx, (d_id, d) in enumerate(self.active_dispute.delegates.items()):
             btn = pygame_gui.elements.UIButton(
                 relative_rect=pygame.Rect(
-                    PANEL_X + scale_x(20),
-                    BODY_TOP_Y + scale_y(20 + idx * 50),
-                    PANEL_W - scale_x(40),
-                    scale_y(40),
+                    PANEL_X + CARD_MARGIN,
+                    BODY_TOP_Y + LIST_TOP + idx * ROW_GAP,
+                    CARD_W,
+                    CARD_H,
                 ),
                 text=f"Talk to {d.name} (D{self.dispute_manager.get_corridor_difficulty(self.active_dispute, d_id)})",
                 manager=self.ui_manager,
@@ -556,10 +660,10 @@ class DisputeView(BaseView):
         for idx, label in enumerate(labels):
             btn = pygame_gui.elements.UIButton(
                 relative_rect=pygame.Rect(
-                    PANEL_X + scale_x(20 + idx * 150),
-                    BODY_TOP_Y + scale_y(BODY_H - 80),
-                    scale_x(140),
-                    scale_y(40),
+                    PANEL_X + CARD_MARGIN + idx * COL_ACTION_X_STEP,
+                    BODY_TOP_Y + _ACTION_Y_DELTA,
+                    BTN_W,
+                    CARD_H,
                 ),
                 text=label,
                 manager=self.ui_manager,
@@ -578,10 +682,10 @@ class DisputeView(BaseView):
         for idx, framing in enumerate(self.active_dispute.eligible_framings):
             btn = pygame_gui.elements.UIButton(
                 relative_rect=pygame.Rect(
-                    PANEL_X + scale_x(20),
-                    BODY_TOP_Y + scale_y(20 + idx * 36),
-                    scale_x(220),
-                    scale_y(32),
+                    PANEL_X + CARD_MARGIN,
+                    BODY_TOP_Y + LIST_TOP + idx * ROW_GAP_SM,
+                    BTN_W_FULL,
+                    BTN_H_SM,
                 ),
                 text=f"Framing: {framing}",
                 manager=self.ui_manager,
@@ -591,10 +695,10 @@ class DisputeView(BaseView):
         for idx, (d_id, d) in enumerate(self.active_dispute.delegates.items()):
             btn = pygame_gui.elements.UIButton(
                 relative_rect=pygame.Rect(
-                    PANEL_X + scale_x(260),
-                    BODY_TOP_Y + scale_y(20 + idx * 36),
-                    scale_x(180),
-                    scale_y(32),
+                    PANEL_X + COL_AUDIENCE_X,
+                    BODY_TOP_Y + LIST_TOP + idx * ROW_GAP_SM,
+                    BTN_W_AUD,
+                    BTN_H_SM,
                 ),
                 text=f"Audience: {d.name}",
                 manager=self.ui_manager,
@@ -604,10 +708,10 @@ class DisputeView(BaseView):
         for idx, ev in enumerate(self.active_dispute.eligible_evidence):
             btn = pygame_gui.elements.UIButton(
                 relative_rect=pygame.Rect(
-                    PANEL_X + scale_x(460),
-                    BODY_TOP_Y + scale_y(20 + idx * 36),
-                    scale_x(220),
-                    scale_y(32),
+                    PANEL_X + COL_EVIDENCE_X,
+                    BODY_TOP_Y + LIST_TOP + idx * ROW_GAP_SM,
+                    BTN_W_FULL,
+                    BTN_H_SM,
                 ),
                 text=f"Evidence: {ev}",
                 manager=self.ui_manager,
@@ -616,20 +720,20 @@ class DisputeView(BaseView):
         # Submit button
         self._composer_buttons["submit"] = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
-                PANEL_X + PANEL_W - scale_x(140),
-                BODY_TOP_Y + scale_y(BODY_H - 80),
-                scale_x(120),
-                scale_y(36),
+                PANEL_X + PANEL_W - BTN_W,
+                BODY_TOP_Y + _ACTION_Y_DELTA,
+                BTN_W_SM,
+                BTN_H,
             ),
             text="Submit",
             manager=self.ui_manager,
         )
         self.preview_label = pygame_gui.elements.UILabel(
             relative_rect=pygame.Rect(
-                PANEL_X + scale_x(20),
-                BODY_TOP_Y + scale_y(BODY_H - 80),
-                scale_x(400),
-                scale_y(32),
+                PANEL_X + CARD_MARGIN,
+                BODY_TOP_Y + _ACTION_Y_DELTA,
+                PANEL_W - BTN_W - CARD_MARGIN,
+                BTN_H,
             ),
             text=self._compose_preview_text(),
             manager=self.ui_manager,
@@ -639,10 +743,10 @@ class DisputeView(BaseView):
         """TALLY substate: result panel + Continue."""
         self._action_buttons["continue"] = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
-                PANEL_X + PANEL_W - scale_x(140),
-                BODY_TOP_Y + scale_y(BODY_H - 80),
-                scale_x(120),
-                scale_y(36),
+                PANEL_X + PANEL_W - BTN_W,
+                BODY_TOP_Y + _ACTION_Y_DELTA,
+                BTN_W_SM,
+                BTN_H,
             ),
             text="Continue",
             manager=self.ui_manager,
@@ -718,6 +822,12 @@ class DisputeView(BaseView):
         self._switch_substate(DisputeSubstate.SESSION)
 
     def open_corridor(self) -> None:
+        # SA-P6: try_reveal_intel fires once per session; cache the result so
+        # the render body doesn't call it on every frame.
+        if self.active_dispute is not None and self._corridor_intel is None:
+            intel = self.dispute_manager.try_reveal_intel(self.active_dispute)
+            if intel is not None:
+                self._corridor_intel = intel
         self._switch_substate(DisputeSubstate.CORRIDOR)
 
     def open_composer(self, *, is_mediation: bool = False) -> None:
@@ -757,6 +867,7 @@ class DisputeView(BaseView):
 
     def back_to_list(self) -> None:
         self.active_dispute = None
+        self._corridor_intel = None
         self._refresh_list_state()
         self._switch_substate(DisputeSubstate.LIST, force_recreate=True)
 
@@ -768,6 +879,23 @@ class DisputeView(BaseView):
         # PT-M tutorial overlay consumes input while active.
         if self._first_time_tip is not None and not self._first_time_tip.dismissed:
             if self._first_time_tip.handle_event(event):
+                return
+        # SA-P6: keyboard shortcuts — Escape and Enter.
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                if self.substate == DisputeSubstate.LIST:
+                    self.next_state = GameState.STATION_HUB
+                else:
+                    self.back_to_list()
+                return
+            if event.key == pygame.K_RETURN:
+                if self.substate == DisputeSubstate.COMPOSER:
+                    if (
+                        self.composer_resolution is not None
+                        and not self.composer_resolution.error
+                        and self.composer_resolution.passes
+                    ):
+                        self.submit_composer()
                 return
         if event.type == pygame_gui.UI_BUTTON_PRESSED:
             if event.ui_element == self.back_button:
@@ -832,7 +960,7 @@ class DisputeView(BaseView):
         screen.blit(dim, (0, 0))
 
     def render(self, screen: pygame.Surface) -> None:
-        screen.fill(Colors.BG_DARK)
+        screen.fill(Colors.BLACK)
         self._apply_venue_theme(screen)
         self._render_header(screen)
         if self.substate == DisputeSubstate.LIST:
@@ -855,14 +983,16 @@ class DisputeView(BaseView):
 
     def _render_header(self, screen: pygame.Surface) -> None:
         draw_panel(screen, (PANEL_X, PANEL_TOP_Y, PANEL_W, HEADER_H), alpha=220)
-        title_text = "Council Chamber"
+        # SA-P6: look up per-venue header title; fall back to generic default.
+        title_text = _VENUE_TITLES.get(self.venue_id, "Dispute Chamber")
         title_surf = self.title_font.render(title_text, True, Colors.TEXT_HIGHLIGHT)
-        screen.blit(title_surf, (PANEL_X + scale_x(20), PANEL_TOP_Y + scale_y(14)))
+        screen.blit(title_surf, (PANEL_X + CARD_MARGIN, PANEL_TOP_Y + scale_y(14)))
 
     def _render_body_list(self, screen: pygame.Surface) -> None:
         draw_panel(screen, (PANEL_X, BODY_TOP_Y, PANEL_W, BODY_H), alpha=200)
         if self.list_state == DisputeListState.EMPTY:
-            text = "Council in recess. Next session in 3 days."
+            # SA-P6: per-venue empty-state copy; fall back to generic default.
+            text = _VENUE_EMPTY_STATE_COPY.get(self.venue_id, "No active disputes.")
         elif self.list_state == DisputeListState.LOCKED:
             text = "You don't have standing to participate in these sessions."
         elif self.list_state == DisputeListState.LOADING:
@@ -876,36 +1006,186 @@ class DisputeView(BaseView):
             text = LOCKED_NO_MEMBERSHIP_TEXT
         else:
             return
-        for i, line in enumerate(word_wrap(text, self.body_font, PANEL_W - scale_x(40))):
+        for i, line in enumerate(word_wrap(text, self.body_font, CARD_W)):
             surf = self.body_font.render(line, True, Colors.TEXT_PRIMARY)
             screen.blit(
                 surf,
-                (PANEL_X + scale_x(20), BODY_TOP_Y + scale_y(40 + i * 22)),
+                (PANEL_X + CARD_MARGIN, BODY_TOP_Y + TEXT_TOP + i * LINE_GAP),
             )
 
     def _render_body_session(self, screen: pygame.Surface) -> None:
+        """SESSION: delegate state cards + round log + round counter."""
         draw_panel(screen, (PANEL_X, BODY_TOP_Y, PANEL_W, BODY_H), alpha=200)
         if self.active_dispute is None:
             return
+        # Round counter in the header strip of the body panel.
         round_text = (
             f"Round {self.active_dispute.current_round} of {self.active_dispute.round_count}"
         )
         surf = self.subtitle_font.render(round_text, True, Colors.TEXT_HIGHLIGHT)
-        screen.blit(surf, (PANEL_X + scale_x(20), BODY_TOP_Y + scale_y(20)))
+        screen.blit(surf, (PANEL_X + CARD_MARGIN, BODY_TOP_Y + scale_y(8)))
+
+        # Delegate state cards: top half of the body.
+        card_top = BODY_TOP_Y + scale_y(40)
+        card_height = scale_y(50)
+        for col_idx, (_d_id, d) in enumerate(self.active_dispute.delegates.items()):
+            card_x = PANEL_X + CARD_MARGIN + col_idx * scale_x(180)
+            state_label = _VISIBLE_STATE_LABELS.get(d.visible_state, d.visible_state)
+            name_surf = self.body_font.render(d.name, True, Colors.TEXT_HIGHLIGHT)
+            screen.blit(name_surf, (card_x, card_top))
+            state_surf = self.micro_font.render(state_label, True, Colors.TEXT_SECONDARY)
+            screen.blit(state_surf, (card_x, card_top + scale_y(18)))
+            if d.pre_committed:
+                pre_surf = self.micro_font.render("[Pre-committed]", True, Colors.GREEN)
+                screen.blit(pre_surf, (card_x, card_top + scale_y(32)))
+
+        # Round log: bottom half — last 5 entries, scrolled to most recent.
+        log_top = BODY_TOP_Y + card_height + scale_y(60)
+        log_entries = self.active_dispute.round_log[-5:]
+        for i, entry in enumerate(log_entries):
+            for j, line in enumerate(word_wrap(entry, self.micro_font, CARD_W)[:2]):
+                log_surf = self.micro_font.render(line, True, Colors.TEXT_SECONDARY)
+                screen.blit(
+                    log_surf,
+                    (PANEL_X + CARD_MARGIN, log_top + (i * 2 + j) * scale_y(16)),
+                )
 
     def _render_body_corridor(self, screen: pygame.Surface) -> None:
-        draw_panel(screen, (PANEL_X, BODY_TOP_Y, PANEL_W, BODY_H), alpha=200)
-
-    def _render_body_composer(self, screen: pygame.Surface) -> None:
-        draw_panel(screen, (PANEL_X, BODY_TOP_Y, PANEL_W, BODY_H), alpha=200)
-
-    def _render_body_tally(self, screen: pygame.Surface) -> None:
+        """CORRIDOR: per-delegate cards with state indicators and Cass intel."""
         draw_panel(screen, (PANEL_X, BODY_TOP_Y, PANEL_W, BODY_H), alpha=200)
         if self.active_dispute is None:
             return
-        text = f"Outcome: {self.active_dispute.resolved_outcome}"
-        surf = self.subtitle_font.render(text, True, Colors.TEXT_HIGHLIGHT)
-        screen.blit(surf, (PANEL_X + scale_x(20), BODY_TOP_Y + scale_y(20)))
+        for row, (d_id, d) in enumerate(self.active_dispute.delegates.items()):
+            card_y = BODY_TOP_Y + LIST_TOP + row * scale_y(90)
+            # Name and sub-faction
+            name_text = d.name
+            if d.sub_faction_id:
+                faction_label = _SUB_FACTION_LABELS.get(d.sub_faction_id, d.sub_faction_id)
+                name_text = f"{d.name}  [{faction_label}]"
+            name_surf = self.body_font.render(name_text, True, Colors.TEXT_HIGHLIGHT)
+            screen.blit(name_surf, (PANEL_X + CARD_MARGIN, card_y))
+
+            # Difficulty, visible state, and status indicators on the second line
+            diff = self.dispute_manager.get_corridor_difficulty(self.active_dispute, d_id)
+            state_label = _VISIBLE_STATE_LABELS.get(d.visible_state, d.visible_state)
+            status_parts = [f"D{diff}", state_label]
+            if d.pre_committed:
+                status_parts.append("[Pre-committed]")
+            elif d.consecutive_corridor_fails > 0:
+                status_parts.append(f"(Approached {d.consecutive_corridor_fails}x)")
+            if d.visible_state == "committed_no" and not d.pre_committed:
+                status_parts.append("(Refuses)")
+            status_text = "  |  ".join(status_parts)
+            status_surf = self.micro_font.render(status_text, True, Colors.TEXT_SECONDARY)
+            screen.blit(status_surf, (PANEL_X + CARD_MARGIN, card_y + scale_y(18)))
+
+            # SA-P6: Cass intel line, if revealed this session for this delegate.
+            if self._corridor_intel is not None:
+                intel_text = self._corridor_intel.get(d_id)
+                if intel_text:
+                    intel_line = f"[Intel] {intel_text}"
+                    for k, line in enumerate(word_wrap(intel_line, self.micro_font, CARD_W)[:2]):
+                        intel_surf = self.micro_font.render(line, True, Colors.TEXT_SECONDARY)
+                        screen.blit(
+                            intel_surf,
+                            (
+                                PANEL_X + CARD_MARGIN,
+                                card_y + scale_y(34) + k * scale_y(15),
+                            ),
+                        )
+
+    def _render_body_composer(self, screen: pygame.Surface) -> None:
+        """COMPOSER: slot-status indicators + instruction above the pygame_gui buttons."""
+        draw_panel(screen, (PANEL_X, BODY_TOP_Y, PANEL_W, BODY_H), alpha=200)
+        if self.active_dispute is None:
+            return
+        # Slot status block: Framing / Evidence / Audience with selected values.
+        framing_val = self.composer_argument.framing or "—"
+        evidence_val = self.composer_argument.evidence or "—"
+        audience_val = "—"
+        aud_id = self.composer_argument.audience_delegate_id
+        if aud_id and aud_id in self.active_dispute.delegates:
+            audience_val = self.active_dispute.delegates[aud_id].name
+
+        slot_top = BODY_TOP_Y + _ACTION_Y_DELTA - scale_y(60)
+        slot_lines = [
+            f"Framing: {framing_val}",
+            f"Evidence: {evidence_val}",
+            f"Audience: {audience_val}",
+        ]
+        for i, slot_text in enumerate(slot_lines):
+            surf = self.body_font.render(slot_text, True, Colors.TEXT_PRIMARY)
+            screen.blit(surf, (PANEL_X + CARD_MARGIN, slot_top + i * LINE_GAP))
+
+        # One-line instruction below the slot block.
+        instr_surf = self.micro_font.render(
+            "Pick framing, evidence, audience. Submit when ready.",
+            True,
+            Colors.TEXT_SECONDARY,
+        )
+        screen.blit(
+            instr_surf,
+            (PANEL_X + CARD_MARGIN, slot_top + len(slot_lines) * LINE_GAP + scale_y(4)),
+        )
+
+    def _render_body_tally(self, screen: pygame.Surface) -> None:
+        """TALLY: outcome category, rep deltas, market shifts, news headline, prompt."""
+        draw_panel(screen, (PANEL_X, BODY_TOP_Y, PANEL_W, BODY_H), alpha=200)
+        if self.active_dispute is None:
+            return
+        outcome_key = self.active_dispute.resolved_outcome
+        outcome_label = _OUTCOME_LABELS.get(outcome_key or "", outcome_key or "OUTCOME")
+        y = BODY_TOP_Y + scale_y(20)
+
+        # Outcome category header.
+        outcome_surf = self.subtitle_font.render(outcome_label, True, Colors.TEXT_HIGHLIGHT)
+        screen.blit(outcome_surf, (PANEL_X + CARD_MARGIN, y))
+        y += scale_y(36)
+
+        # Rep delta summary.
+        outcome_row = self.active_dispute.outcome_matrix.get(outcome_key or "")
+        if outcome_row is not None:
+            for faction_id, delta in outcome_row.rep_deltas.items():
+                sign = "+" if delta >= 0 else ""
+                color = Colors.GREEN if delta >= 0 else Colors.RED
+                rep_surf = self.body_font.render(f"{faction_id}: {sign}{delta} rep", True, color)
+                screen.blit(rep_surf, (PANEL_X + CARD_MARGIN, y))
+                y += LINE_GAP
+
+            # Market shift summary.
+            if outcome_row.market_shifts:
+                y += scale_y(8)
+                mkt_header = self.micro_font.render("Market shifts:", True, Colors.TEXT_SECONDARY)
+                screen.blit(mkt_header, (PANEL_X + CARD_MARGIN, y))
+                y += scale_y(16)
+                for shift in outcome_row.market_shifts:
+                    sign = "+" if shift.magnitude >= 0 else ""
+                    mkt_text = (
+                        f"{shift.commodity_id} @ {shift.system_id}: "
+                        f"{sign}{shift.magnitude:.0%} for {shift.duration_days}d"
+                    )
+                    mkt_surf = self.micro_font.render(mkt_text, True, Colors.TEXT_SECONDARY)
+                    screen.blit(mkt_surf, (PANEL_X + CARD_MARGIN, y))
+                    y += scale_y(16)
+
+            # News headline (when emitted).
+            if outcome_row.news_headline:
+                y += scale_y(8)
+                for line in word_wrap(outcome_row.news_headline, self.micro_font, CARD_W):
+                    news_surf = self.micro_font.render(line, True, Colors.TEXT_SECONDARY)
+                    screen.blit(news_surf, (PANEL_X + CARD_MARGIN, y))
+                    y += scale_y(16)
+
+        # Continue prompt at the bottom.
+        prompt_surf = self.micro_font.render(
+            "Press Continue to return to the dispute list.",
+            True,
+            Colors.TEXT_SECONDARY,
+        )
+        screen.blit(
+            prompt_surf,
+            (PANEL_X + CARD_MARGIN, BODY_TOP_Y + _ACTION_Y_DELTA - scale_y(20)),
+        )
 
     # ------------------------------------------------------------------
     # Helpers used by Game.py
