@@ -2583,51 +2583,199 @@ These are the decisions to lock during planning execution. Recommendations recor
 
 #### SA-B2 — Bidding Core
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Phase III | **Size**: XL | **Effort**: 2 weeks
 **Depends on**: SA-B1, SA-A2, SA-C2 | **Blocks**: SA-B3, SA-B4, SA-B5
 
-**Goal.** Implement the Bidding system core: bid submission, AI counter-bid logic with multiple personas, round structure, live time-pressure UI, lot reveal/sale flow, win/loss outcomes. Venue-agnostic engine.
+**Goal.** Implement the venue-agnostic Bidding engine: lot/persona/round dataclasses, ascending-bid lifecycle state machine per `sa_bidding_design.md` §2.6, AI counter-bid logic with five personas (three named rivals, two procedural archetypes), snipe-window timer reset, lot reveal/sale flow, win/loss outcome propagation (CaptainMemory `OUTCOME_OUTBID`, journal entries, news headlines, crew-banter flags, achievement stubs), full save/load including mid-session boundaries, and the `auction_view.py` view with seven internal substates. SA-B3/B4/B5 layer venue content (lot catalogs, dialogue, schedules, navigation entries) on top of this engine without re-litigating any locked decision in `requirements/sa_bidding_design.md` §11.
 
 **Context to read.**
-- `requirements/sa_bidding_design.md`
-- `spacegame/models/captain_memory.py`
-- `spacegame/views/base_view.py`
+- `requirements/sa_bidding_design.md` (sections 1-11; SA-B2 reads everything per the §12 hand-off table)
+- `requirements/agent_principles.md`
+- `requirements/aurelia_voice_examples.md` (post-win valuation strings, journal entries, news headlines, FirstTimeTip overlay copy all need voice-check)
+- `requirements/onboarding_design.md` (PT-M overlay style for §9.1 tip; soft-break voice register for engine-emitted strings)
+- `requirements/character_voices.md` (Aldous Prentiss, Yuna Kade, Fenn Salko sections — informs persona behavior; not authored here)
+- `spacegame/models/captain_memory.py` (existing OUTCOME_/STATUS_ constants + `RESOLUTION_THRESHOLD = 3` + `record_encounter` threshold logic; SA-B2 adds `OUTCOME_OUTBID = "outbid"` constant — no new code path needed since the existing fall-through handles non-resolution outcomes)
+- `spacegame/models/progression.py` (`lot_appraiser` skill at lines 415-425; `bonus_type="auction_lot_appraisal_bonus"` already wired by SA-C2)
+- `spacegame/models/crew.py` and `data/crew/crew_members.json:705-715` (Sable Trent's `auction_bid_visibility` + `auction_lot_appraisal_bonus` already declared by SA-A2)
+- `spacegame/models/journal.py` (`trigger_auto_entry(trigger_flag, game_day, system_id)` API; data-driven from `data/journal/entries.json`)
+- `spacegame/models/news_ticker.py` (`add_headline(text, priority)` direct path)
+- `spacegame/models/achievement.py` (achievement registry pattern)
+- `spacegame/save_manager.py` (lines 440-447, 600-614 show additive `wreckers_guild_state` + `sub_reputation` pattern; SA-B2 mirrors)
+- `spacegame/views/base_view.py` and `spacegame/views/CLAUDE.md`
+- `spacegame/views/first_time_tip.py` (`FirstTimeTipOverlay` PT-M pattern; SA-B2 wires it inline in `auction_view.on_enter()` per §9.1)
+- `spacegame/constants/flags.py` (helper-function pattern; SA-B2 adds 8 helpers from §9.1 + §9.4)
+- `spacegame/config.py` (`GameState` enum at line 284; SA-B2 adds `AUCTION`)
+- `requirements/si3_flag_registry_cookbook.md`
 
 **Touch zones.**
-- `spacegame/models/bidding_lot.py` (NEW)
-- `spacegame/models/bidding_persona.py` (NEW)
-- `spacegame/models/bidding_round.py` (NEW)
-- `spacegame/models/bidding.py` (auction state)
-- `spacegame/models/player.py` (bidding_history field)
-- `spacegame/save_manager.py`
-- `spacegame/views/auction_view.py` (NEW)
-- `spacegame/engine/game.py`
-- `spacegame/config.py` (GameState.AUCTION)
-- `tests/test_models/test_bidding_*.py` (NEW)
-- `tests/test_views/test_auction_view.py` (NEW)
-- `tests/test_scenarios/test_scenario_auction_loop.py` (NEW)
+- `spacegame/models/bidding_lot.py` (NEW — `AuctionLot` frozen dataclass + 8 lot-category constants + `reserve_price` derived property)
+- `spacegame/models/bidding_persona.py` (NEW — `AIBidderPersona` frozen dataclass + 5 archetype factory functions + behavior-axis constants + value-function math)
+- `spacegame/models/bidding_round.py` (NEW — mutable `RoundState` dataclass + `RoundPhase` enum + `min_increment_for_appraisal()` four-tier scale + bid validation + snipe-window timer logic)
+- `spacegame/models/bidding.py` (NEW — `AuctionState` mutable dataclass per §8.1 schema + `AuctionLifecycle` enum + venue-agnostic state machine + AI counter-bid scheduling + lot pool generation)
+- `spacegame/models/captain_memory.py` (add `OUTCOME_OUTBID = "outbid"` constant; existing `record_encounter` threshold fall-through already handles it — no code-path change)
+- `spacegame/models/player.py` (add `auction_state: AuctionState` field with `field(default_factory=AuctionState)`)
+- `spacegame/save_manager.py` (serialize/deserialize `auction_state`; additive — no `SAVE_VERSION` bump)
+- `spacegame/views/auction_view.py` (NEW — `AuctionView` with PREVIEW/OPENING/LOT_OPEN/BID_WINDOW/ROUND_CLOSE/LOT_RESOLUTION/POST_SESSION substates + speed selector + bid-action panel + live time-pressure UI + FirstTimeTip overlay + empty/loading/error states)
+- `spacegame/engine/game.py` (`_ensure_auction_view()` factory + transition handler + journal/news/achievement hand-offs from auction lifecycle hooks)
+- `spacegame/config.py` (add `GameState.AUCTION`)
+- `spacegame/constants/flags.py` (add tip flag `seen_auction_first_session_tip` + 7 banter flags from §9.4)
+- `data/journal/entries.json` (add 3 auto-entry templates per §9.2)
+- `tests/test_models/test_bidding_lot.py` (NEW — schema, derived properties, frozen-dataclass compliance, round-trip)
+- `tests/test_models/test_bidding_persona.py` (NEW — value-function arithmetic against §4.5 worked specs, ceiling enforcement, behavior-axis effects)
+- `tests/test_models/test_bidding_round.py` (NEW — bid validation, min-increment scale across all four buckets, snipe-window single-reset rule, opening-bid floor)
+- `tests/test_models/test_bidding_state.py` (NEW — lifecycle state machine, lot pool generation determinism, save/load round-trip, banter-flag firings, post-win bonus stacking)
+- `tests/test_models/test_bidding_captain_memory.py` (NEW — `OUTCOME_OUTBID` accumulation, threshold-based auto-retire, player-win/fold suppression)
+- `tests/test_views/test_auction_view.py` (NEW — substate transitions, empty/loading/error renders, FirstTimeTip wiring, bid-action panel, pygame_gui leak test)
+- `tests/test_scenarios/test_scenario_auction_loop.py` (NEW — full Stellaris session end-to-end with 3 rivals + 2 speculators; alternate snipe-win-headliner path with Sable active)
 
 **Deliverables.**
-- Bidding data models (lot, persona, round, auction state).
-- AI bidder personas with hidden value functions and ceilings.
-- Round flow logic (ascending bid model per SA-B1 decision).
-- Live time-pressure UI with adjustable speed.
-- Lot reveal/sale flow with dramatic UI moments.
-- Win/loss outcome propagation.
-- 30+ tests across model, view, scenario layers.
+- Five new model modules with full TDD coverage (`bidding_lot`, `bidding_persona`, `bidding_round`, `bidding` state, plus the `OUTCOME_OUTBID` extension to `captain_memory`).
+- `AuctionState` manager implementing the §2.6 lifecycle state diagram with venue-agnostic `enter_venue(venue_id)`.
+- AI persona system: hidden value functions, four behavior axes (aggression / patience / signal_discipline / snipe_resistance), ceiling enforcement, five archetype factories (Prentiss, Kade, Salko, Stellaris Speculator, Reach Flavor) defined per §4.5.
+- Lot pool generation per §3.3: venue + rep tier + faction-gate filters; weighting with rep_tier_multiplier (+0.3 per tier above min), season_multiplier (2.0 if matched), headliner cap (one per session); `recently_seen_count >= 5` exclusion; draw without replacement to fill 6/8 (Stellaris) or 4 (Reach) slots.
+- Per-round ascending-bid state machine per §2.3 with snipe-window timer reset (one reset per round, no chain restarts).
+- `OUTCOME_OUTBID` constant on `captain_memory.py` + per-lot recording when a named rival outbids the player; threshold auto-retire to `STATUS_WANDERER` after 3 accumulated outbids.
+- Crew + skill bonus consumption: Sable's rival-name reveal + ceiling jitter formula (§7.1); five-row appraisal-bonus stacking table (§7.2); preview-phase reserve banding when `lot_appraiser` skill present (§7.2 preview clause).
+- `auction_view.py` BaseView subclass with seven substates, paired `_create_ui_*` / `_destroy_ui_*` methods, empty/loading/error states, speed selector (slow/normal/fast/asap), live time-pressure UI, FirstTimeTip overlay on first entry.
+- Save/load round-trip at every committed boundary including mid-session lot state per §8.2.
+- 8 flag helpers in `flags.py` (1 tip flag, 7 banter flags from §9.4).
+- 4 achievement stub IDs registered: `auction_first_win`, `auction_champion`, `auction_rival_retired`, `auction_perfect_read` (the `reach_debut` and `seller` stubs per §9.5 are deferred to SA-B4 and SA-B5 respectively).
+- 3 journal auto-entry templates per §9.2 wired via `trigger_flag` on `auction_first_session_complete` / `auction_first_win` / `auction_first_rivalry_formed`.
+- 2 news headline templates (§9.3) wired via `news_ticker.add_headline` direct call on headliner-sale and headliner-withdrawn.
+- 35-50+ new tests across model, view, scenario layers.
 
 **Acceptance criteria.**
-1. Synthetic auction with 3+ AI personas runs from open to close cleanly.
-2. Different player strategies (snipe, steady, aggressive) produce different outcomes.
-3. AI ceilings hidden but consistent (a persona never bids past their value function).
-4. Time pressure UI doesn't cause input lag.
-5. Save/load preserves auction state mid-round.
-6. Player loss propagates to Captain Memory if rival was involved.
-7. Full suite green.
+1. Synthetic Stellaris session fixture (in-test, 1 headliner + 5 standard lots, 3 named rivals + 2 speculators) runs from PREVIEW through SESSION_OPEN through every LOT_OPEN/BID_WINDOW/ROUND_CLOSE/LOT_RESOLUTION cycle to SESSION_CLOSE without raising. Verified by `tests/test_scenarios/test_scenario_auction_loop.py`.
+2. AI ceiling discipline: no AI persona ever submits a bid greater than its `compute_ceiling(lot, session_seed, vs_player=...)` result per §4.1. Asserted in a parameterized test that drives randomized rounds across all five archetypes with seed-controlled inputs.
+3. Behavior axes produce observably distinct play: parameterized test fixes the same lot + bid history but varies one persona's `aggression` axis across {0.2, 0.5, 0.9} and asserts that counter-bid timing falls into different §4.3 buckets (final-40%, mid-round 3-7s, immediate <1s). Same for `snipe_resistance` across {0.2, 0.6, 0.95} on a snipe-window bid.
+4. Different player strategies yield different outcomes: with seed-controlled AI, three player tactics ("snipe at T-2s every round," "raise-min every round from round 1," "fold round 1 + raise-custom round 2") each produce a distinct lot-resolution outcome on the same fixture (sale price diff > 0 OR distinct winning bidder).
+5. Player loss propagates to `CaptainMemory`: when a named rival was in the same session and won a lot the player also bid on, exactly one `OUTCOME_OUTBID` entry fires per lost lot. Three accumulated outbids against the same rival transition that captain to `STATUS_WANDERER`. Player wins suppress the entry. Player folds suppress the entry. Asserted per-rival per-lot.
+6. Save/load round-trips at three boundaries: (a) PREVIEW with `pending_lot_pool` populated, (b) mid-session at `BID_WINDOW` with one lot resolved + one in flight, (c) post-`SESSION_CLOSE` with `won_lots` populated and `next_auction_day` scheduled. Mid-round bid-input state (uncommitted text in custom-amount field) is intentionally NOT persisted; if the player leaves mid-lot, their position drops per §2.5.
+7. Legacy save loads cleanly: a player save predating SA-B2 (no `auction_state` key) deserializes with `Player.auction_state = AuctionState()` defaults (empty pools, `speed_setting="normal"`, no active session). Asserted via golden fixture.
+8. Crew + skill bonus stacking matches §7.2 byte-for-byte: all five rows of the post-win table produce the exact message format. Sable's ceiling jitter formula (§7.1 step 2) reproduces in tests with a seeded `session_signal_drift`. Preview-phase reserve banding fires only when `lot_appraiser` skill present (any level).
+9. Snipe-window mechanics: a bid submitted in the final N seconds (per speed setting: slow=5s / normal=5s / fast=3s / asap=2s) triggers exactly one timer reset to N seconds. A subsequent snipe bid in the same round does NOT trigger a second reset. Asserted per speed setting.
+10. Lot pool generation is deterministic given a seeded RNG. Filters apply in order (venue → rep tier → faction gate → recently-seen). Headliner cap enforced (at most one headliner per session). Worked example from §3.3 reproduces exactly when the seed and 12-candidate pool are fixed. `recently_seen_count >= 5` excludes a lot until sold (count resets to 0 on sale).
+11. Time-pressure UI: round-timer countdown, current-high-bid display, who-is-winning indicator (player or "another bidder" in default mode; specific rival names when `auction_bid_visibility` active), round-number/total-rounds, and "Reserve not met" / "Sold" / "Next round" overlays each render in their respective substates. Empty-state ("Next session in N days"), loading-state (during pool generation), and error-state (data-load failure) UIs render via fixture inputs.
+12. Tutorial integration: `FirstTimeTipOverlay` fires on the first entry to either venue, sets `seen_auction_first_session_tip` flag on dismiss, and never re-fires across the playthrough. Overlay copy is the §9.1 template byte-for-byte. Dismiss button reads "Got it." per `onboarding_design.md` category (a) style.
+13. Journal integration: §9.2 first-session entry fires once on first session entered (with conditional Sable line if Sable on crew); first-lot-won entry fires on first win across both venues with conditional Sable post-win text; first-rivalry entry fires on the first `OUTCOME_OUTBID` recorded against any named rival. All three entries voice-checked: no em-dashes, no banned phrases, no parallel-negation rhetoric, no "couldn't help but" / "a testament to."
+14. News headlines fire via `news_ticker.add_headline` in two cases per §9.3: headliner sold (template under 80 chars after substitution) and headliner withdrawn-reserve-not-met. No headline on standard-lot resolutions, by design.
+15. Crew banter flags: `auction_first_session_complete`, `auction_first_win`, `auction_rival_prentiss_encountered`, `auction_rival_kade_encountered`, `auction_rival_salko_encountered`, `auction_first_rivalry_formed`, `auction_sable_ceiling_correct` — all set at the moments specified in §9.4. Asserted by tests that drive each trigger condition.
+16. Achievement stubs registered: `auction_first_win`, `auction_champion` (5 wins at Stellaris), `auction_rival_retired` (any rival auto-retires to wanderer), `auction_perfect_read` (win lot within 2% of Sable's ceiling estimate when Sable active). The two cross-sprint stubs (`auction_reach_debut`, `auction_seller`) are NOT registered in this sprint.
+17. Performance: `AuctionState.tick(dt)` plus `auction_view.update(dt)` over a 30-round simulation completes in <16 ms per frame on the synthetic fixture (60-FPS budget). Bid-resolution path (`AuctionState.submit_bid`) completes in <10 ms on the same fixture. Asserted via `time.perf_counter()`.
+18. Pygame_gui element discipline: every `_create_ui_*` substate has a matching `_destroy_ui_*`; `on_exit()` calls the current-substate destroyer. Test creates + destroys each substate twice without leaking handles; `ui_manager` element count returns to baseline.
+19. 35-50+ new tests across the seven new test files, all passing. Pre-phase baseline of 9447 passing / 98 skipped is the floor; new failures vs. baseline block the sprint.
+20. Full suite green; `ruff format`, `ruff check`, `mypy` clean over the touched files only (per AGENT_GUIDE — do not run project-wide). Writing Bible scanner clean over all new player-facing strings (FirstTimeTip copy, journal entries, news headlines, post-win valuation messages, "Reserve not met" / "Sold" overlay strings).
+
+**Plan.**
+
+1. **Foundation scaffolding.** Add `GameState.AUCTION` to `config.py`. Add 8 helper functions to `spacegame/constants/flags.py` (the §9.1 tip flag plus the 7 banter flags from §9.4). Create empty skeleton modules `bidding_lot.py`, `bidding_persona.py`, `bidding_round.py`, `bidding.py`, `auction_view.py` with their public class names and a docstring. Add `OUTCOME_OUTBID = "outbid"` to `captain_memory.py` (the existing `record_encounter` threshold fall-through already handles non-resolution outcomes — no new code path).
+   - Files: `spacegame/config.py`, `spacegame/constants/flags.py`, `spacegame/models/bidding_lot.py` (new), `spacegame/models/bidding_persona.py` (new), `spacegame/models/bidding_round.py` (new), `spacegame/models/bidding.py` (new), `spacegame/models/captain_memory.py`, `spacegame/views/auction_view.py` (new).
+   - Tests: `tests/test_models/test_bidding_state.py` covers flag-helper string output (AC 15); `tests/test_models/test_bidding_captain_memory.py` covers `OUTCOME_OUTBID` constant value and accumulation behavior. Failing tests first per TDD.
+   - Risks: dataclass-table compliance scanner — `AuctionLot` and persona archetypes must be `@dataclass(frozen=True)` per CLAUDE.md row 6.
+
+2. **AuctionLot dataclass + categories (TDD red-first).** Implement `AuctionLot` as `@dataclass(frozen=True)` with all 14 required fields from §3.1, plus a `reserve_price` `@property`. Define the 8 lot-category constants from §3.2. Add `to_dict` / `from_dict` (lots are largely immutable, but `recently_seen_count` mutates via copy-with-update through `dataclasses.replace`).
+   - Files: `spacegame/models/bidding_lot.py`.
+   - Tests: `tests/test_models/test_bidding_lot.py` covers field shape (round-trip), `reserve_price` derived value (against the §3.4 worked examples — King's Repeater 0.75 × 28000 = 21000), category constants present, `dataclasses.replace` increments `recently_seen_count` correctly.
+   - Risks: counter mutation via copy-with-replace; document the convention in the module docstring so SA-B3/B4 implementers do not try to mutate the frozen field.
+
+3. **AIBidderPersona + five archetypes + value function.** Implement `AIBidderPersona` as `@dataclass(frozen=True)` with `desire_multipliers: dict[str, float]`, `ceiling_ratio: float`, four behavior-axis floats, `persona_id: str`, and a Salko-specific `vs_player_ceiling_ratio: Optional[float]` override. Implement `compute_effective_value(lot, session_seed) -> int` per §4.1 with deterministic seeded `session_signal_drift` from `f"{session_id}_{persona_id}"`. Implement `compute_ceiling(lot, session_seed, *, vs_player: bool) -> int`. Build five archetype factories: `make_prentiss()`, `make_kade()`, `make_salko()`, `make_stellaris_speculator(elevated_category)`, `make_reach_flavor()` — each parameterized exactly per §4.5 worked specs.
+   - Files: `spacegame/models/bidding_persona.py`.
+   - Tests: `tests/test_models/test_bidding_persona.py` reproduces §4.5 worked specs: Prentiss antiquity at base 10000 → effective `10000 * 1.40 * (1 + drift)`, ceiling at 1.10×; Kade non-list lot → effective 0 → does not bid; Salko vs_player ceiling override 0.90 → 1.15.
+   - Risks: floating-point accumulation — use `pytest.approx` per CLAUDE.md; Salko's `player_target_escalation` requires `recent_bid_categories` from `AuctionState` (cross-module read; lock as constructor injection).
+
+4. **Lot pool generation.** Implement `generate_lot_pool(venue, player, candidate_lots, session_id) -> list[AuctionLot]` per §3.3. Apply four filters in order (venue → rep tier → faction gate → recently-seen exclusion at count >= 5). Compute `draw_weight = base_weight * rep_tier_multiplier * season_multiplier * headliner_cap` for each candidate. Draw without replacement until session is filled (Stellaris standard 6, Stellaris headliner 8, Reach 4). Reuse a seeded RNG from `f"{session_id}_lot_pool"` for determinism.
+   - Files: `spacegame/models/bidding.py` (helper at module level).
+   - Tests: `tests/test_models/test_bidding_state.py::test_lot_pool_generation` reproduces the §3.3 worked example with a fixed seed and 12-candidate pool, asserts headliner cap (only one drawn), `recently_seen_count >= 5` exclusion, faction-gate filter on positive standing, empty candidate pool returns `[]` without error.
+   - Risks: weight floats summing to 0 after filters — return `[]` rather than raise.
+
+5. **RoundState + bid validation + min increment.** `bidding_round.py`: define `RoundPhase` enum (`OPEN_CALL` / `BID_WINDOW` / `ROUND_CLOSE` / `LOT_RESOLUTION`). Mutable `RoundState` dataclass with `current_high_bid`, `current_high_bidder_id`, `round_number`, `phase`, `time_remaining`, `snipe_reset_used: bool`, `snipe_window_seconds`, `round_duration_seconds`. Implement `min_increment_for_appraisal(base_appraisal: int) -> int` per §5.2 four-tier scale (50 / 200 / 500 / 1000). Implement `submit_bid(bidder_id, amount) -> tuple[bool, str]` validating: phase is `BID_WINDOW`; amount >= `current_high_bid + min_increment`; bidder is not already current high bidder. Implement `tick(dt)` decrementing `time_remaining` and applying snipe-window reset rules per §5.3 (one reset per round, no chains).
+   - Files: `spacegame/models/bidding_round.py`.
+   - Tests: `tests/test_models/test_bidding_round.py` covers bid validation success/failure paths (returning `tuple[bool, str]` per CLAUDE.md), min-increment scale across all four buckets including boundaries (2000 vs 2001, 10000 vs 10001), snipe-window single-fire-per-round, opening-bid floor lock decision (`reserve_price + min_increment_for_appraisal(base_appraisal)`).
+   - Risks: timer accuracy — `dt` arrives in seconds; clamp `time_remaining` to >= 0.
+
+6. **AuctionState manager (lifecycle state machine).** `bidding.py`: `AuctionLifecycle` enum (`SCHEDULED` / `PREVIEW` / `SESSION_OPEN` / `LOT_OPEN` / `BID_WINDOW` / `ROUND_CLOSE` / `LOT_RESOLUTION` / `SESSION_CLOSE`) per §2.6. `AuctionState` mutable dataclass with all 12 fields from §8.1. Methods: `enter_venue(venue_id)`, `open_session()`, `advance_round()`, `close_lot()` (reserve check; if winning bid >= `reserve_price` → SOLD + credit transfer + record win; else → WITHDRAWN + return lot to pool with `recently_seen_count + 1`), `close_session()` (schedule next per §2.1 cadence rule: Stellaris 5-7 game-days, Reach demand-driven). `tick(dt)` advances timers and dispatches AI counter-bid scheduling.
+   - Files: `spacegame/models/bidding.py`.
+   - Tests: `tests/test_models/test_bidding_state.py` covers lifecycle transitions (each phase's allowed exits), full-cycle walkthrough with a single lot, reserve-not-met returns lot to pool, reserve-met records sale and credits player.
+   - Risks: state-transition ordering — ensure no race where AI bid lands after timer hits zero; `submit_bid` validates `phase == BID_WINDOW`.
+
+7. **AI counter-bid timing + snipe response.** Implement `_step_ai_bidders(dt, round_state)` in `AuctionState`. For each persona: compute counter-bid timing per §4.3 (aggression-based: >= 0.7 fires within 1 s of last bid; 0.4-0.7 fires 3-7 s; < 0.4 fires in final 40% of round). At asap speed, compress proportionally (minimum 0.5 s spacing). On snipe-window bid by player: only personas with `snipe_resistance >= 0.5` may counter; counter must arrive before reset window expires; persona never bids past its ceiling.
+   - Files: `spacegame/models/bidding.py`.
+   - Tests: `tests/test_models/test_bidding_persona.py` parameterized over aggression {0.2, 0.5, 0.9} and snipe_resistance {0.2, 0.6, 0.95} asserts behavior per §4.3 timing rules; assert no AI bid is submitted past `compute_ceiling()`.
+   - Risks: real-time stochastic timing is flaky — use a deterministic `dt`-step harness in tests; seed AI per-round randomness from `f"{session_id}_{persona_id}_{round_number}"`.
+
+8. **Captain Memory integration.** Implement `_record_rival_outcomes(closed_lot, session_rivals)` called on each `LOT_RESOLUTION`. For each named rival in the session: if rival bid on the lot AND rival won the lot AND the player also bid on the lot, call `captain_memory.record_encounter(captain_id, OUTCOME_OUTBID, game_day)`. Skip when player won; skip when player folded; skip when rival did not bid on that specific lot. The existing `record_encounter` threshold fall-through auto-retires the captain to `STATUS_WANDERER` after 3 accumulated outbids — verify this behavior end-to-end without modifying `record_encounter`.
+   - Files: `spacegame/models/bidding.py`, `spacegame/models/captain_memory.py` (constant addition only — done in task 1).
+   - Tests: `tests/test_models/test_bidding_captain_memory.py` covers single outbid record, three-outbid auto-retire, player-win suppression, player-fold suppression, multi-lot session producing N records.
+   - Risks: distinguishing "rival bid" from "rival was high bidder at any point" — track per-lot bid-history (set of bidder_ids who submitted at least one accepted bid).
+
+9. **Crew + skill bonus consumption.** Read `crew_roster.get_bonus("auction_bid_visibility")` to determine if Sable is active; reveal rival names + ceiling estimate in the rival panel per §7.1 (jitter formula `persona.ceiling + persona.session_signal_drift * persona.ceiling * 0.15`, integer-rounded). Read `progression.get_bonus("auction_lot_appraisal_bonus") + crew_roster.get_bonus("auction_lot_appraisal_bonus")` to compute total appraisal bonus; map to one of the five §7.2 stacking rows for the post-win message format. Preview-phase reserve banding fires only when `lot_appraiser` skill present (any level): `X = base_appraisal * (reserve_pct - 0.10)`, `Y = base_appraisal * (reserve_pct + 0.10)`.
+   - Files: `spacegame/views/auction_view.py`, `spacegame/models/bidding.py`.
+   - Tests: `tests/test_models/test_bidding_state.py` parameterized over the five §7.2 stacking rows asserts post-win message format; preview-phase reserve banding asserted with and without `lot_appraiser`.
+   - Risks: bonus-stacking floats — use `pytest.approx`; the §7.2 totals (0.10 / 0.15 / 0.20) reflect SA-B1's review fix to §5.6 — do not regress to the earlier 0.20 / 0.25 typo.
+
+10. **Save / load round-trip.** Add `auction_state: AuctionState` field to `Player` with `field(default_factory=AuctionState)`. Implement `AuctionState.to_dict()` / `from_dict()` covering all 12 §8.1 fields plus per-lot state per §8.2. In `save_manager.py` mirror the SA-1 `wreckers_guild_state` pattern (lines 443-447, 607-613): serialize/deserialize via `data.get("auction_state", {})`. No `SAVE_VERSION` bump (additive). Legacy saves load with default empty `AuctionState`.
+    - Files: `spacegame/models/player.py`, `spacegame/models/bidding.py`, `spacegame/save_manager.py`.
+    - Tests: `tests/test_models/test_bidding_state.py::test_save_load_round_trip` covers three boundaries (PREVIEW, mid-session BID_WINDOW, post-SESSION_CLOSE) and a legacy-save fixture (no `auction_state` key).
+    - Risks: omitting a field in `to_dict` is silent regression — write the round-trip test BEFORE adding new fields, asserting the deserialized object equals the pre-serialization state field-by-field.
+
+11. **`auction_view.py` substates + UI lifecycle.** Single `BaseView` subclass with internal substate enum (`PREVIEW` / `OPENING` / `LOT_OPEN` / `BID_WINDOW` / `ROUND_CLOSE` / `LOT_RESOLUTION` / `POST_SESSION`). Each substate has paired `_create_ui_*` / `_destroy_ui_*` methods; switching substate destroys the previous UI and rebuilds. Empty / loading / error states render in PREVIEW substate. Speed selector (slow / normal / fast / asap radio panel) accessible from PREVIEW. Bid-action panel: Raise-min / Raise-custom (modal credit input) / Hold / Fold buttons in BID_WINDOW. Live time-pressure UI: round timer, current-high-bid, who-is-winning, round-number/total-rounds. Post-win valuation message overlay in LOT_RESOLUTION (text varies per crew/skill bonus per §7.2).
+    - Files: `spacegame/views/auction_view.py`.
+    - Tests: `tests/test_views/test_auction_view.py` exercises substate transitions (drive UI events programmatically), each empty/loading/error render path, every bid-action path, post-win message variants. Pygame_gui leak test: create + destroy each substate twice, assert no `RuntimeError` and `ui_manager` element count returns to baseline.
+    - Risks: pygame_gui element leakage — every `_create_ui_*` MUST have a matching `_destroy_ui_*`; `on_exit()` calls the current-substate destroyer.
+
+12. **Tutorial overlay + journal + news + achievement + crew-banter wiring.** In `auction_view.on_enter()`: check `seen_auction_first_session_tip` flag; if unset, fire `FirstTimeTipOverlay` with §9.1 copy verbatim, set the flag on dismiss. In `bidding.py` lifecycle hooks: set `auction_first_session_complete` on SESSION_CLOSE; set `auction_first_win` on first lot won; set `auction_rival_*_encountered` on session open per rival in the roster; set `auction_first_rivalry_formed` on first OUTCOME_OUTBID; set `auction_sable_ceiling_correct` if Sable active and the post-session ceiling check is within 5%. Trigger journal entries §9.2 via `journal_manager.trigger_auto_entry(flag, game_day, system_id)`; entry templates added to `data/journal/entries.json` with `trigger_flag` matching `auction_first_session_complete` / `auction_first_win` / `auction_first_rivalry_formed`. Conditional Sable lines branch on the crew-flag check at trigger time. Fire news headlines via `news_ticker.add_headline` with §9.3 templates on headliner sale and headliner withdrawn (enforce 80-char limit). Register four achievement stub IDs (`auction_first_win`, `auction_champion`, `auction_rival_retired`, `auction_perfect_read`); content authoring (titles, descriptions) deferred to SA-X7.
+    - Files: `spacegame/views/auction_view.py`, `spacegame/models/bidding.py`, `spacegame/engine/game.py`, `data/journal/entries.json`, achievement registry data file.
+    - Tests: `tests/test_views/test_auction_view.py` covers FirstTimeTip fire-once behavior; `tests/test_models/test_bidding_state.py` covers each crew-banter flag set at the right lifecycle moment; `tests/test_scenarios/test_scenario_auction_loop.py` asserts journal entries fire (exact title) and news headlines fire on the headliner-sold path.
+    - Risks: journal entry copy is player-facing — voice-check before commit (no em-dashes; the §9.2 copy was already cleared in SA-B1 review). News headlines must stay under 80 chars after substitution — assert the template-format result against a worst-case lot headline.
+
+13. **Game.py wiring + scenario test + perf smoke + lint.** Add `_ensure_auction_view()` factory in `engine/game.py` mirroring `_ensure_dispute_view()`. The auction-state lives on `Player.auction_state`, so the factory hands the view + state-handling helpers handles to `crew_roster`, `progression`, `news_ticker`, `journal_manager`, `achievement_manager`, `captain_memory_store`. Add transition handler (FADE 0.3 s mirroring Deep Shafts at game.py line ~1867). NOTE: station_hub_view → AUCTION wiring is intentionally NOT done in this sprint — SA-B3 (Stellaris) and SA-B4 (Reach) wire the actual `UNIQUE_HALL_TARGETS` venue entries. Build `tests/test_scenarios/test_scenario_auction_loop.py`: synthetic Stellaris fixture (1 headliner + 5 standard, 3 named rivals + 2 speculators); drive end-to-end through manager + view; assert every integration channel after each lot resolution. Alternate path: snipe-win the headliner with Sable active, assert `achievement_auction_perfect_read` fires within the 2% threshold. Performance smoke: `time.perf_counter()` around `state.tick(dt)` + `view.update(dt)` over 30 simulated rounds, assert <16 ms per frame; assert `state.submit_bid()` <10 ms. Run `ruff format` + `ruff check` + `mypy` over touched files only (per AGENT_GUIDE).
+    - Files: `spacegame/engine/game.py`, `tests/test_scenarios/test_scenario_auction_loop.py`.
+    - Risks: state-transition ordering — `auction_state` is initialized via `field(default_factory=AuctionState)` on Player construct, so first-frame `tick(dt)` is safe even before any session. Writing Bible scanner over new player-facing strings before commit.
+
+**Decisions locked in this planning phase.**
+1. **Module layout lock.** Five new model files exactly as design doc §1.6: `bidding_lot.py`, `bidding_persona.py`, `bidding_round.py`, `bidding.py`, `auction_view.py`. No further consolidation. Rationale: matches the design doc's hand-off table; SA-B3/B4/B5/B6 read by named module.
+2. **GameState lock.** Single `GameState.AUCTION` covers both venues. Venue identity travels via `AuctionState.active_auction_id`. Per-venue visual identity is SA-X10. Mirrors SA-P2 decision 3.
+3. **Save migration lock.** `auction_state` is additive on `Player`. No `SAVE_VERSION` bump. `from_dict` uses `data.get("auction_state", {})`. Mirrors SA-P2 decision 6 + the SA-1 `wreckers_guild_state` pattern in `save_manager.py:607-613`.
+4. **OUTCOME_OUTBID semantic lock.** Defined in `captain_memory.py` per design §6.1. Behaves identically to `OUTCOME_DEFEAT` and `OUTCOME_FLED`: increments `encounter_count`, updates `last_seen_day`, sets `last_outcome`, but triggers no immediate status transition. The existing `record_encounter` threshold fall-through auto-retires after 3 accumulated outbids — no code-path change needed.
+5. **Tutorial overlay scope lock.** SA-B2 wires the `FirstTimeTipOverlay` inside `auction_view.on_enter()` directly (gated by `seen_auction_first_session_tip`). SA-B3/B4 are responsible only for the station_hub_view navigation entry; the overlay fires automatically once the venue is reachable. Rationale: design doc §9.1 explicitly assigns the flag and the trigger to SA-B2; consistent with SA-1's pattern (its venue view owns its tip).
+6. **Speed setting persistence lock.** `speed_setting` lives on `AuctionState` (per §8.1 schema), not on a global Player config field. Default `"normal"`. Persists across sessions via the auction-state save/load. Rationale: matches design schema; one less migration surface.
+7. **Salko escalation tracking period lock.** "Last 3 sessions" per design doc §4.5 + §10.9. Tunable later (SA-B6 playtest); SA-B2 ships with the constant `SALKO_ESCALATION_WINDOW = 3`.
+8. **Opening-bid floor lock.** Opening bid for each lot is `reserve_price + min_increment_for_appraisal(base_appraisal)`. Per design doc §10.3 recommendation. AI personas with `effective_value` below this opening-bid value sit out the lot per §4.1.
+9. **Synthetic-fixture lock.** SA-B2 builds in-test Python fixtures only (`_make_synthetic_stellaris_session()`, `_make_synthetic_reach_session()`); NO content lands in `data/auctions/*.json` this sprint. SA-B3 owns Stellaris content; SA-B4 owns Reach content. Mirrors SA-P2 decision 8.
+10. **AI counter-bid determinism lock.** AI bid timing within a round uses a deterministic seeded RNG per `f"{session_id}_{persona_id}_{round_number}"`. No wall-clock randomness in the manager. Rationale: deterministic outputs are testable; matches SA-P2's decision 3 on resolution-stage purity.
+11. **Audio hook stub lock.** SA-B2 marks audio call sites with `# TODO(SA-X9): play_sound("bid_land")` comments only; no real audio system is wired this sprint. Rationale: design doc §10.7 defers audio to SA-X9; comments keep the call sites discoverable without committing a placeholder API.
+12. **Sable ceiling-jitter formula lock.** `displayed_ceiling = round(persona.ceiling + persona.session_signal_drift * persona.ceiling * 0.15)` (banker's rounding via Python's built-in `round()`). The 0.15 multiplier represents Sable's larger-than-actual estimation error.
+13. **OUTCOME_OUTCOMPETED deferral.** Design doc §10.5 asks whether to introduce `OUTCOME_OUTCOMPETED` for player win streaks. Locked: NOT introduced in SA-B2. Rationale: the auto-retire-at-threshold path is sufficient for SA-B2's first ship; if playtest shows the rivalry-resolution loop too lopsided, SA-B6 adds the constant. Avoids semantic creep before SA-B3 content lands.
+14. **News-headline scope lock.** SA-B2 wires only the two §9.3 templates (headliner sold; headliner withdrawn-reserve-not-met). Standard-lot resolutions do NOT emit headlines. SA-X5 expands to full ticker content later.
+15. **Achievement registration scope lock.** SA-B2 registers four stub IDs: `auction_first_win`, `auction_champion`, `auction_rival_retired`, `auction_perfect_read`. The two cross-sprint stubs (`auction_reach_debut` for SA-B4, `auction_seller` for SA-B5) are NOT registered here. Rationale: per design doc §9.5 + dependency hygiene (don't register an achievement whose unlock condition lives in code that doesn't exist yet).
+
+**Risks / open questions.**
+- ~~Whether SA-B2 introduces `OUTCOME_OUTBID` or reuses `OUTCOME_DEFEAT`.~~ **Resolved.** Design doc §11 decision 4 + §6.1 lock the new constant; SA-B1 review confirmed.
+- ~~Whether the `FirstTimeTipOverlay` fires from `auction_view` or from `station_hub_view`.~~ **Resolved (this phase).** From `auction_view.on_enter()`, mirroring SA-1's pattern. Decision 5 above.
+- ~~Whether to add `OUTCOME_OUTCOMPETED` for player win streaks.~~ **Resolved (this phase).** Deferred to SA-B6 post-playtest. Decision 13 above.
+- **Performance**: 60-FPS budget (16 ms per frame) is captured as AC 17 (perf smoke). Bid-resolution <10 ms is the second perf target. If view rendering drops below budget under realistic asset counts, raise as an SA-B6 follow-up rather than blocking SA-B2 review.
+- **Scenario-test brittleness**: scenario tests assert observable contract (player credits, captain-memory state, journal/news/achievement firings, save/load round-trip), not internal manager fields, to survive future refactors.
+- **Test count uncertainty**: 35-50+ is the AC range. The plan implies roughly: 6 (flags + GameState) + 8 (lot schema + categories) + 10 (persona value function + behavior axes + 5 archetype factories) + 6 (lot pool generation) + 8 (round + min-increment + snipe + opening-bid lock) + 10 (lifecycle state machine) + 6 (AI counter-bid timing) + 6 (captain memory) + 6 (crew + skill bonus stacking) + 4 (save/load round-trip) + 8 (view substates + tip + leak) + 6 (banter flags + journal + news + achievement) + 4 (scenario) + 2 (perf) ≈ 90 parameterized cases / 40-55 test functions. If under 35 functions, the implementer adds edge cases rather than artificially splitting.
+- **Player-facing string voice-check**: tip overlay copy (§9.1), journal entries (§9.2), news headlines (§9.3), and post-win valuation messages (§7.2) all need the Writing Bible scanner at commit time. SA-B1 cleared the design-doc copy; SA-B2 must keep parity when implementing.
+- **Cross-module read for Salko escalation**: Salko's `player_target_escalation` references `recent_bid_categories` on `AuctionState`. Pass `AuctionState` by reference (not value) into `compute_effective_value` so updates between sessions are visible. Locked at decision 10's determinism boundary: the seed varies per session but not per call.
 
 **Activity log.**
 - 2026-04-26 — todo (created)
+- 2026-04-27 21:09 — harness: plan phase starting
+- 2026-04-27 21:45 — planning complete; verified all 3 context docs exist (`requirements/sa_bidding_design.md`, `spacegame/models/captain_memory.py`, `spacegame/views/base_view.py`); confirmed crew + skill bonus types already wired by SA-A2 (`auction_bid_visibility` + `auction_lot_appraisal_bonus` on Sable Trent at `data/crew/crew_members.json:705-715`) and SA-C2 (`lot_appraiser` skill at `spacegame/models/progression.py:415-425`); folded design-doc §9 polish items (FirstTimeTip overlay, 3 journal entries, 2 news headlines, 7 banter flags, 4 achievement stubs) into this sprint rather than spilling forward; locked 15 decisions; proposed no new sprints. PHASE_OK
+
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-04-27 21:09
+- Completed: 2026-04-27 21:45
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: pending
+- New_sprints_proposed: none
+- Polish_items_folded_in: PT-M FirstTimeTipOverlay on first-venue entry (§9.1); 3 journal entry templates (§9.2); 2 news headline templates (§9.3); 7 crew-banter trigger flags (§9.4); 4 achievement stub IDs (§9.5); empty/loading/error UI states; performance smoke (60-FPS budget + bid-resolution <10 ms); pygame_gui leak test
+- Decisions_locked: 15
+- Notes: SA-B2 builds the venue-agnostic Bidding engine. All polish items from design doc §9 fold into this sprint rather than spilling forward into B3/B4. SA-B3/B4 own venue-specific content (lot catalogs, dialogue, schedules, station_hub navigation entries); SA-B5 mirrors the engine for player-as-seller; SA-B6 tunes balance, adds achievement metadata + post-playtest constants, and may introduce `OUTCOME_OUTCOMPETED` for win-streak resolution. No new sprints proposed.
 
 #### SA-B3 — Stellaris Auction House (primary venue)
 
