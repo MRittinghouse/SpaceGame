@@ -2583,7 +2583,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 
 #### SA-B2 — Bidding Core
 
-**Status**: in-progress (planning)
+**Status**: in-progress (implementing)
 **Phase**: Phase III | **Size**: XL | **Effort**: 2 weeks
 **Depends on**: SA-B1, SA-A2, SA-C2 | **Blocks**: SA-B3, SA-B4, SA-B5
 
@@ -2764,18 +2764,30 @@ These are the decisions to lock during planning execution. Recommendations recor
 - 2026-04-26 — todo (created)
 - 2026-04-27 21:09 — harness: plan phase starting
 - 2026-04-27 21:45 — planning complete; verified all 3 context docs exist (`requirements/sa_bidding_design.md`, `spacegame/models/captain_memory.py`, `spacegame/views/base_view.py`); confirmed crew + skill bonus types already wired by SA-A2 (`auction_bid_visibility` + `auction_lot_appraisal_bonus` on Sable Trent at `data/crew/crew_members.json:705-715`) and SA-C2 (`lot_appraiser` skill at `spacegame/models/progression.py:415-425`); folded design-doc §9 polish items (FirstTimeTip overlay, 3 journal entries, 2 news headlines, 7 banter flags, 4 achievement stubs) into this sprint rather than spilling forward; locked 15 decisions; proposed no new sprints. PHASE_OK
+- 2026-04-27 21:23 — harness: implement phase starting (rework cycle 0)
+- 2026-04-27 22:05 — engine core landed: bidding_lot.py + bidding_persona.py + bidding_round.py + bidding.py with 149 tests covering schema round-trip, persona value functions and behavior axes, lot pool determinism, lifecycle state machine, captain memory threshold auto-retire, and §7.2 bonus stacking. Commit 4311c35.
+- 2026-04-27 22:15 — Player.auction_state field + save_manager wiring + 6 save/load tests (preview, mid-session BID_WINDOW, post-SESSION_CLOSE, legacy-save fixture, speed_setting persistence). Commit 194883a.
+- 2026-04-27 22:25 — auction_view.py with 7 substates + FirstTimeTip + scenario test + perf smoke (tick <16 ms, bid <10 ms). 18 view tests + 7 scenario tests. Commit 2b4df58.
+- 2026-04-27 22:35 — game.py _ensure_auction_view + 3 journal entries + 4 achievement stubs + 2 news headlines + crew-banter flag fan-out. Bumped 4 pre-existing achievement-count tests from 62 -> 66. Commit ac87972.
+- 2026-04-27 22:42 — full suite green: 9627 passed / 98 skipped (baseline 9447 / 98). Touched-files ruff + ruff format + mypy clean. Writing Bible scanner clean. Dialogue-integrity scanner clean. PHASE_OK
 
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-04-27 21:09
-- Completed: 2026-04-27 21:45
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: b15fa57
-- New_sprints_proposed: none
-- Polish_items_folded_in: PT-M FirstTimeTipOverlay on first-venue entry (§9.1); 3 journal entry templates (§9.2); 2 news headline templates (§9.3); 7 crew-banter trigger flags (§9.4); 4 achievement stub IDs (§9.5); empty/loading/error UI states; performance smoke (60-FPS budget + bid-resolution <10 ms); pygame_gui leak test
-- Decisions_locked: 15
-- Notes: SA-B2 builds the venue-agnostic Bidding engine. All polish items from design doc §9 fold into this sprint rather than spilling forward into B3/B4. SA-B3/B4 own venue-specific content (lot catalogs, dialogue, schedules, station_hub navigation entries); SA-B5 mirrors the engine for player-as-seller; SA-B6 tunes balance, adds achievement metadata + post-playtest constants, and may introduce `OUTCOME_OUTCOMPETED` for win-streak resolution. No new sprints proposed.
+- Started: 2026-04-27 21:23
+- Completed: 2026-04-27 22:42
+- Files_changed: spacegame/config.py, spacegame/constants/flags.py, spacegame/models/captain_memory.py, spacegame/models/bidding_lot.py (new), spacegame/models/bidding_persona.py (new), spacegame/models/bidding_round.py (new), spacegame/models/bidding.py (new), spacegame/models/player.py, spacegame/save_manager.py, spacegame/views/auction_view.py (new), spacegame/engine/game.py, data/journal/entries.json, data/progression/achievements.json, tests/test_models/test_bidding_lot.py (new), tests/test_models/test_bidding_persona.py (new), tests/test_models/test_bidding_round.py (new), tests/test_models/test_bidding_state.py (new), tests/test_models/test_bidding_captain_memory.py (new), tests/test_models/test_save_load_auction.py (new), tests/test_views/test_auction_view.py (new), tests/test_scenarios/test_scenario_auction_loop.py (new), tests/test_data/test_new_achievements.py, tests/test_models/test_achievement.py, tests/test_models/test_cycle_e_polish.py, tests/test_models/test_ground_achievements.py
+- Commits: 4311c35, 194883a, 2b4df58, ac87972
+- Tests_added: 180
+- Tests_baseline: 9447
+- Tests_passing: 9627
+- Tests_skipped: 98
+- Lint_clean: yes
+- Format_clean: yes
+- SI3_scanner_clean: yes
+- Writing_bible_clean: yes
+- Touch_zones_respected: yes (small allowlist updates to 4 pre-existing achievement-count tests so the new 4 stubs validate; counted as in-zone since they belong to the achievement registry change set)
+- Notes: Full SA-B2 implementation per the planner's §1-13 plan. Bidding engine + AuctionView + lifecycle hooks (journal / news / achievement / banter) wired end-to-end. Twenty acceptance criteria addressed: synthetic Stellaris session runs full lifecycle (AC 1); AI ceiling discipline observed in scenario fixture (AC 2); behavior-axis test coverage spans timing buckets and snipe-resistance gates (AC 3, 9); player strategies produce distinct outcomes (AC 4); OUTCOME_OUTBID accumulation + 3-threshold auto-retire (AC 5); save/load round-trip at three boundaries + legacy-save default (AC 6, 7); §7.1 jitter + §7.2 stacking byte-for-byte (AC 8); deterministic lot pool generation with all four filters + headliner cap (AC 10); time-pressure UI rendered through the BID_WINDOW substate plus empty/loading/error renders (AC 11); FirstTimeTipOverlay fires once with §9.1 copy (AC 12); 3 journal templates + Sable post-win conditional message paths (AC 13); 2 news headlines under 80 chars (AC 14); 7 crew-banter flags wired (AC 15); 4 achievement stubs registered (AC 16); perf smoke <16 ms tick / <10 ms bid (AC 17); pygame_gui no-leak (AC 18); 180 new tests vs 35-50 minimum (AC 19); full validation green (AC 20).
 
 #### SA-B3 — Stellaris Auction House (primary venue)
 
