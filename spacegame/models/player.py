@@ -7,6 +7,7 @@ Tracks player credits, location, ship, and game progress.
 from dataclasses import dataclass, field
 from typing import Optional
 
+from spacegame.models.bidding import AuctionState
 from spacegame.models.captain_memory import CaptainMemory
 from spacegame.models.deep_core import DeepCoreUpgradeState
 from spacegame.models.deep_shafts import DeepShaftsState
@@ -81,6 +82,12 @@ class Player:
     # ``faction_reputation["miners_union"]`` via the existing API; this
     # state tracks the cap and cooldown bookkeeping.
     deep_shafts_state: Optional[DeepShaftsState] = None
+
+    # SA-B2: Auction system state (Bidding Core). Default is an empty
+    # AuctionState — first-time players have no scheduled sessions, no
+    # pending lot pool, and the default ``"normal"`` speed setting.
+    # See :class:`spacegame.models.bidding.AuctionState`.
+    auction_state: AuctionState = field(default_factory=AuctionState)
 
     # Dialogue system
     dialogue_flags: dict[str, bool] = field(default_factory=dict)
@@ -679,6 +686,30 @@ class Player:
     def display_ship_name(self) -> str:
         """Get the display name for the player's ship."""
         return self.ship_name if self.ship_name else self.ship.name
+
+    # ------------------------------------------------------------------
+    # SA-B2: auction stat keys (read by AchievementManager via getattr)
+    # ------------------------------------------------------------------
+
+    @property
+    def auction_lots_won_total(self) -> int:
+        """Total lots won across both auction venues (achievement stat)."""
+        return self.auction_state.auction_lots_won_total
+
+    @property
+    def auction_lots_won_stellaris(self) -> int:
+        """Lots won at Stellaris specifically (champion achievement stat)."""
+        return self.auction_state.auction_lots_won_stellaris
+
+    @property
+    def auction_rivals_retired(self) -> int:
+        """Named rivals auto-retired via 3 OUTCOME_OUTBID accumulations."""
+        return self.auction_state.auction_rivals_retired
+
+    @property
+    def auction_perfect_reads(self) -> int:
+        """Lots won within 2% of Sable's ceiling estimate."""
+        return self.auction_state.auction_perfect_reads
 
     def _identity_stats(self) -> dict[str, int]:
         """Get stats used for identity calculations."""

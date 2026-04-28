@@ -448,6 +448,10 @@ class SaveManager:
             "deep_shafts_state": (
                 player.deep_shafts_state.to_dict() if player.deep_shafts_state is not None else None
             ),
+            # SA-B2: bidding system state. Always serialized (default
+            # AuctionState() is the empty state). Additive — no
+            # SAVE_VERSION bump per locked decision §SA-B2.3.
+            "auction_state": player.auction_state.to_dict(),
             "dialogue_flags": player.dialogue_flags,
             "captain_memory": {cid: mem.to_dict() for cid, mem in player.captain_memory.items()},
             "timed_thread_state": {
@@ -621,6 +625,18 @@ class SaveManager:
             player.deep_shafts_state = DeepShaftsState.from_dict(deep_shafts_data)
         else:
             player.deep_shafts_state = None
+
+        # SA-B2: bidding system state. Legacy saves predating SA-B2 have
+        # no ``auction_state`` key and load with the default empty state.
+        auction_data = data.get("auction_state")
+        if auction_data:
+            from spacegame.models.bidding import AuctionState
+
+            player.auction_state = AuctionState.from_dict(auction_data)
+        else:
+            from spacegame.models.bidding import AuctionState
+
+            player.auction_state = AuctionState()
 
         # Restore dialogue flags
         player.dialogue_flags = data.get("dialogue_flags", {})
