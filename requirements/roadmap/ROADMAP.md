@@ -45,7 +45,7 @@ The SA-arc table below is **auto-regenerated** by the ralph harness from the spr
 | [SA-P5](#sa-p5--wreckers-guild-gray-market-mediation-venue) | Wreckers' Guild gray-market mediation venue | II | M | done | SA-P2, SA-1 |
 | [SA-P6](#sa-p6--politics-polish--tuning) | Politics polish + tuning | II | M | done | SA-P3, SA-P4, SA-P5 |
 | [SA-B1](#sa-b1--bidding-system-design) | Bidding System Design | III | M | done | SA-PREP-1, SA-A2, SA-C2 |
-| [SA-B2](#sa-b2--bidding-core) | Bidding Core | III | XL | todo | SA-B1, SA-A2, SA-C2 |
+| [SA-B2](#sa-b2--bidding-core) | Bidding Core | III | XL | done | SA-B1, SA-A2, SA-C2 |
 | [SA-B3](#sa-b3--stellaris-auction-house-primary-venue) | Stellaris Auction House (primary venue) | III | L | todo | SA-B2 |
 | [SA-B4](#sa-b4--crimson-reach-black-market-auctions) | Crimson Reach Black Market auctions | III | L | todo | SA-B2, SA-1 |
 | [SA-B5](#sa-b5--player-initiated-auctions) | Player-Initiated Auctions | III | L | todo | SA-B2 |
@@ -2583,7 +2583,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 
 #### SA-B2 — Bidding Core
 
-**Status**: in-progress (reviewing)
+**Status**: done
 **Phase**: Phase III | **Size**: XL | **Effort**: 2 weeks
 **Depends on**: SA-B1, SA-A2, SA-C2 | **Blocks**: SA-B3, SA-B4, SA-B5
 
@@ -2772,7 +2772,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 - 2026-04-27 22:42 — full suite green: 9627 passed / 98 skipped (baseline 9447 / 98). Touched-files ruff + ruff format + mypy clean. Writing Bible scanner clean. Dialogue-integrity scanner clean. PHASE_OK
 - 2026-04-27 21:58 — harness: review phase starting (rework cycle 0)
 - 2026-04-27 22:55 — review complete; 3 findings fixed directly: (1) `auction_sable_ceiling_correct` flag was defined in flags.py but never set — wired in `_fire_lot_callbacks` (auction_view.py) when `err <= SABLE_CEILING_CORRECT_THRESHOLD`; (2) `on_session_complete` callback was dead code due to game-loop ordering (`handle_event` before `update` means session_history is already incremented when the delta check runs) — added `_maybe_fire_session_complete()` called from `_handle_button`; (3) AC 15 requires tests for each trigger condition — added `TestBanterFlags` (4 tests). Suite: 9631 passed / 98 skipped. Commit ccca4d8. PHASE_OK
-
+- 2026-04-27 22:14 — harness: review passed, marking done
 **Last phase report.**
 - Phase: review
 - Outcome: PHASE_OK
