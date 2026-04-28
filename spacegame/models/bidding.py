@@ -1,0 +1,981 @@
+"""SA-B2: Auction lifecycle state machine.
+
+``AuctionState`` lives as a field on ``Player`` and runs the venue-
+agnostic auction loop: schedule -> preview -> session open -> per-lot
+ascending-bid rounds -> session close. The view layer drives ``tick``
+and ``submit_bid`` directly; AI counter-bidding fires inside ``tick``.
+
+All randomness is seeded from the active session id so saves and tests
+both reproduce the same outcomes deterministically.
+
+See ``requirements/sa_bidding_design.md`` §2 (lifecycle), §3 (lot pool),
+§4 (AI), §6 (captain memory), §7 (crew/skill bonuses), §8 (save schema),
+§9 (hooks).
+"""
+
+from __future__ import annotations
+
+import hashlib
+import random
+import struct
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import TYPE_CHECKING, Any, Callable, Iterable, Optional
+
+from spacegame.models.bidding_lot import (
+    AuctionLot,
+    rep_tier_at_least,
+)
+from spacegame.models.bidding_persona import (
+    NAMED_RIVAL_IDS,
+    SALKO_ESCALATION_WINDOW,
+    AIBidderPersona,
+)
+from spacegame.models.bidding_round import (
+    DEFAULT_SPEED_SETTING,
+    SPEED_AI_MULTIPLIER,
+    SPEED_SETTINGS,
+    RoundPhase,
+    RoundState,
+    min_increment_for_appraisal,
+    opening_bid_for_lot,
+)
+
+if TYPE_CHECKING:  # pragma: no cover - import-time type hints only.
+    from spacegame.models.captain_memory import CaptainMemory
+
+
+class AuctionLifecycle(str, Enum):
+    """Top-level auction lifecycle per design doc §2.6."""
+
+    SCHEDULED = "scheduled"
+    PREVIEW = "preview"
+    SESSION_OPEN = "session_open"
+    LOT_OPEN = "lot_open"
+    BID_WINDOW = "bid_window"
+    ROUND_CLOSE = "round_close"
+    LOT_RESOLUTION = "lot_resolution"
+    SESSION_CLOSE = "session_close"
+
+
+# Lifecycle states where the player can leave the venue without
+# forfeiting any in-progress lot. Outside these the player drops their
+# position on the live lot per §2.5.
+SAFE_EXIT_STATES: frozenset[AuctionLifecycle] = frozenset(
+    {
+        AuctionLifecycle.SCHEDULED,
+        AuctionLifecycle.PREVIEW,
+        AuctionLifecycle.SESSION_CLOSE,
+    }
+)
+
+
+# Session sizing. Stellaris standard 6, headliner 8; Reach 4. SA-B3 / B4
+# may override these via venue config; SA-B2 ships with the defaults so
+# the synthetic fixture works out of the box.
+STELLARIS_STANDARD_SESSION_SIZE = 6
+STELLARIS_HEADLINER_SESSION_SIZE = 8
+REACH_SESSION_SIZE = 4
+
+# Cadence for next-session scheduling (Stellaris). Reach is demand-driven
+# so SA-B4 will override this. Fixed range here; AuctionState picks
+# deterministically from the seed.
+STELLARIS_CADENCE_MIN_DAYS = 5
+STELLARIS_CADENCE_MAX_DAYS = 7
+
+# Lot-pool exclusion: lots seen in 5 consecutive sessions without a sale
+# are excluded from the next draw (resets to 0 when sold).
+RECENTLY_SEEN_EXCLUSION = 5
+
+# Headliner cap per session: at most one headliner.
+HEADLINER_CAP_PER_SESSION = 1
+
+# Sable's ceiling-jitter multiplier (§7.1, decision §11.12). Sable's
+# *displayed* estimate is wider than the actual ceiling variance.
+SABLE_CEILING_JITTER_FACTOR = 0.15
+
+# Sable post-session "ceiling correct" trigger threshold (§9.4 banter
+# flag). 5% averaged across rivals seen this session.
+SABLE_CEILING_CORRECT_THRESHOLD = 0.05
+
+# Achievement: perfect read = win lot within 2% of Sable's estimate.
+PERFECT_READ_THRESHOLD = 0.02
+
+# Achievement: champion = 5 wins at Stellaris.
+CHAMPION_WINS_AT_STELLARIS = 5
+
+
+# Appraisal-bonus stacking thresholds (§7.2). Sum of crew + skill
+# auction_lot_appraisal_bonus values determines the post-win message.
+APPRAISAL_BONUS_LEVEL_1 = 0.05  # lot_appraiser L1 only.
+APPRAISAL_BONUS_LEVEL_2 = 0.10  # Sable only OR lot_appraiser L2.
+APPRAISAL_BONUS_LEVEL_3 = 0.15  # Sable + lot_appraiser L1.
+APPRAISAL_BONUS_LEVEL_4 = 0.20  # Sable + lot_appraiser L2.
+
+
+@dataclass
+class _LotResultRecord:
+    """Per-lot session-history record."""
+
+    lot_id: str
+    sold: bool
+    winner_id: Optional[str] = None
+    sale_price: int = 0
+    player_bid: bool = False
+    rivals_bid: list[str] = field(default_factory=list)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "lot_id": self.lot_id,
+            "sold": self.sold,
+            "winner_id": self.winner_id,
+            "sale_price": self.sale_price,
+            "player_bid": self.player_bid,
+            "rivals_bid": list(self.rivals_bid),
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "_LotResultRecord":
+        return cls(
+            lot_id=data["lot_id"],
+            sold=bool(data.get("sold", False)),
+            winner_id=data.get("winner_id"),
+            sale_price=int(data.get("sale_price", 0)),
+            player_bid=bool(data.get("player_bid", False)),
+            rivals_bid=list(data.get("rivals_bid", [])),
+        )
+
+
+@dataclass
+class _SessionHistoryEntry:
+    """Per-session history record stored on AuctionState."""
+
+    session_id: str
+    venue_id: str
+    closed_on_day: int
+    lot_results: list[_LotResultRecord] = field(default_factory=list)
+    rival_ids: list[str] = field(default_factory=list)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "session_id": self.session_id,
+            "venue_id": self.venue_id,
+            "closed_on_day": self.closed_on_day,
+            "lot_results": [r.to_dict() for r in self.lot_results],
+            "rival_ids": list(self.rival_ids),
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "_SessionHistoryEntry":
+        return cls(
+            session_id=data["session_id"],
+            venue_id=data["venue_id"],
+            closed_on_day=int(data.get("closed_on_day", 0)),
+            lot_results=[_LotResultRecord.from_dict(r) for r in data.get("lot_results", [])],
+            rival_ids=list(data.get("rival_ids", [])),
+        )
+
+
+# --------------------------------------------------------------------------
+# Bonus stacking helpers
+# --------------------------------------------------------------------------
+
+
+def appraisal_band_for_bonus(total_bonus: float, base_appraisal: int) -> tuple[int, int]:
+    """Return the (low, high) credit band for a post-win valuation message.
+
+    Maps the design doc §7.2 stacking rows:
+
+    - 0.20 (Sable + lot_appraiser L2) -> (exact, exact)
+    - 0.15 (Sable + lot_appraiser L1) -> ±8% band
+    - 0.10 (Sable only OR lot_appraiser L2) -> ±15% band (Sable wording)
+                                              or ±12% (no Sable wording)
+    - 0.05 (lot_appraiser L1 only) -> ±20% band
+    - 0.00 -> (0, 0) sentinel (caller skips message)
+    """
+    if total_bonus >= APPRAISAL_BONUS_LEVEL_4 - 0.0001:
+        return (base_appraisal, base_appraisal)
+    if total_bonus >= APPRAISAL_BONUS_LEVEL_3 - 0.0001:
+        spread = round(base_appraisal * 0.08)
+        return (base_appraisal - spread, base_appraisal + spread)
+    if total_bonus >= APPRAISAL_BONUS_LEVEL_2 - 0.0001:
+        spread = round(base_appraisal * 0.15)
+        return (base_appraisal - spread, base_appraisal + spread)
+    if total_bonus >= APPRAISAL_BONUS_LEVEL_1 - 0.0001:
+        spread = round(base_appraisal * 0.20)
+        return (base_appraisal - spread, base_appraisal + spread)
+    return (0, 0)
+
+
+def post_win_valuation_message(
+    total_bonus: float,
+    base_appraisal: int,
+    *,
+    sable_active: bool,
+) -> str:
+    """Format the post-win valuation message per §7.2.
+
+    Returns an empty string when the player has no appraisal bonus.
+    """
+    low, high = appraisal_band_for_bonus(total_bonus, base_appraisal)
+    if low == 0 and high == 0:
+        return ""
+    if total_bonus >= APPRAISAL_BONUS_LEVEL_4 - 0.0001:
+        return f"Fair market value: {base_appraisal:,} credits."
+    if total_bonus >= APPRAISAL_BONUS_LEVEL_3 - 0.0001:
+        return f"Fair market value: {low:,} to {high:,} credits."
+    if total_bonus >= APPRAISAL_BONUS_LEVEL_2 - 0.0001:
+        if sable_active:
+            return f"Fair market value: approx. {base_appraisal:,} credits."
+        return f"Estimate: {low:,} to {high:,} credits."
+    return f"Estimate: {low:,} to {high:,} credits."
+
+
+def reserve_band_for_preview(base_appraisal: int, reserve_pct: float) -> tuple[int, int]:
+    """Reserve banded estimate shown in preview when ``lot_appraiser`` is present.
+
+    ``X = base_appraisal * (reserve_pct - 0.10)``,
+    ``Y = base_appraisal * (reserve_pct + 0.10)`` per §7.2 preview clause.
+    """
+    low_pct = max(0.0, reserve_pct - 0.10)
+    high_pct = min(1.0, reserve_pct + 0.10)
+    low = round(base_appraisal * low_pct)
+    high = round(base_appraisal * high_pct)
+    return (low, high)
+
+
+def sable_displayed_ceiling(
+    persona: AIBidderPersona,
+    lot: AuctionLot,
+    session_id: str,
+    *,
+    vs_player: bool = False,
+    recent_player_categories: tuple[str, ...] = (),
+) -> int:
+    """Return Sable's displayed ceiling estimate per §7.1 step 2.
+
+    ``displayed = round(persona.ceiling + persona.session_signal_drift *
+    persona.ceiling * SABLE_CEILING_JITTER_FACTOR)`` (banker's rounding
+    via Python's built-in ``round``).
+    """
+    actual = persona.compute_ceiling(
+        lot,
+        session_id,
+        vs_player=vs_player,
+        recent_player_categories=recent_player_categories,
+    )
+    if actual <= 0:
+        return 0
+    drift = persona.session_signal_drift(session_id)
+    jitter = drift * actual * SABLE_CEILING_JITTER_FACTOR
+    return round(actual + jitter)
+
+
+# --------------------------------------------------------------------------
+# Lot pool generation
+# --------------------------------------------------------------------------
+
+
+def _seeded_rng(seed_token: str) -> random.Random:
+    """Return a ``random.Random`` instance keyed off ``seed_token``."""
+    digest = hashlib.sha256(seed_token.encode("utf-8")).digest()
+    seed_int = struct.unpack(">Q", digest[:8])[0]
+    return random.Random(seed_int)
+
+
+def _player_rep_tier_for_venue(
+    *,
+    venue_id: str,
+    stellaris_tier: str = "patron",
+    wreckers_tier: str = "veteran",
+) -> str:
+    """Map a venue id + caller-provided tier strings into the lot tier ladder.
+
+    Stellaris uses Port standing (apprentice/regular/certified/patron).
+    Reach uses Wreckers' Guild membership (apprentice/journeyman/master/
+    veteran). The Reach lot-tier ladder is independent of Stellaris's;
+    SA-B4 owns Reach content. SA-B2 falls through to ``"patron"`` as the
+    most-permissive Stellaris tier so the synthetic fixture sees every
+    lot regardless of standing — content sprints lock the actual mapping.
+    """
+    if venue_id == "stellaris":
+        return stellaris_tier
+    return wreckers_tier
+
+
+def generate_lot_pool(
+    candidates: Iterable[AuctionLot],
+    *,
+    venue_id: str,
+    player_rep_tier: str,
+    player_faction_standing: dict[str, int],
+    season_tag: Optional[str],
+    session_id: str,
+    target_size: int,
+) -> list[AuctionLot]:
+    """Draw a deterministic lot pool for a session per design doc §3.3.
+
+    Filters apply in order: venue, rep tier, faction gate (positive
+    standing only), recently-seen exclusion. The remaining candidates
+    are weighted (rep-tier multiplier, season multiplier, headliner cap)
+    and drawn without replacement up to ``target_size``.
+
+    Args:
+        candidates: All lots known for this venue (already venue-tagged).
+        venue_id: Venue identifier (filters by lot.venue).
+        player_rep_tier: Player's standing tier string for the venue.
+        player_faction_standing: Faction id -> int. Lots gated on a
+            faction require positive standing (>= 0).
+        season_tag: Active season tag, or ``None``. Lots with a matching
+            ``season_tag`` get a 2x weight bonus.
+        session_id: Stable session identifier; seeds the draw RNG.
+        target_size: Number of lots to draw.
+
+    Returns:
+        Drawn lots, in selection order. May be shorter than
+        ``target_size`` if the candidate pool runs out.
+    """
+    # Step 1: venue filter.
+    pool = [lot for lot in candidates if lot.venue == venue_id]
+    # Step 2: rep tier filter.
+    pool = [lot for lot in pool if rep_tier_at_least(player_rep_tier, lot.rep_tier_required)]
+
+    # Step 3: faction gate filter.
+    def _passes_faction_gate(lot: AuctionLot) -> bool:
+        if lot.faction_gate is None:
+            return True
+        return player_faction_standing.get(lot.faction_gate, 0) >= 0
+
+    pool = [lot for lot in pool if _passes_faction_gate(lot)]
+    # Step 4: recently-seen exclusion.
+    pool = [lot for lot in pool if lot.recently_seen_count < RECENTLY_SEEN_EXCLUSION]
+    if not pool:
+        return []
+
+    rng = _seeded_rng(f"{session_id}_lot_pool")
+    drawn: list[AuctionLot] = []
+    headliner_drawn = 0
+
+    # Helper: compute current weight for ``lot`` given which headliners
+    # have already been picked.
+    def _weight_for(lot: AuctionLot) -> float:
+        base_weight = 1.0
+        # Rep tier multiplier: +0.3 per tier above the lot's required
+        # tier. ``"none"`` requirement = 0 distance.
+        rep_distance = _tier_distance(player_rep_tier, lot.rep_tier_required)
+        rep_mult = 1.0 + 0.3 * rep_distance
+        season_mult = 2.0 if (season_tag and lot.season_tag == season_tag) else 1.0
+        if lot.is_headliner and headliner_drawn >= HEADLINER_CAP_PER_SESSION:
+            return 0.0
+        return base_weight * rep_mult * season_mult
+
+    remaining = list(pool)
+    while remaining and len(drawn) < target_size:
+        weights = [_weight_for(lot) for lot in remaining]
+        total = sum(weights)
+        if total <= 0:
+            break
+        r = rng.uniform(0, total)
+        upto = 0.0
+        chosen_idx = len(remaining) - 1
+        for i, w in enumerate(weights):
+            upto += w
+            if upto >= r:
+                chosen_idx = i
+                break
+        chosen = remaining.pop(chosen_idx)
+        drawn.append(chosen)
+        if chosen.is_headliner:
+            headliner_drawn += 1
+    return drawn
+
+
+def _tier_distance(player_tier: str, required_tier: str) -> int:
+    """Return positions between ``player_tier`` and ``required_tier`` on the ladder.
+
+    Negative if player is below required (filter would have excluded the
+    lot before this is called); 0 if equal. Falls back to 0 for unknown
+    tier strings to avoid runaway weights.
+    """
+    ladder = ("none", "apprentice", "regular", "certified", "patron")
+    try:
+        p = ladder.index(player_tier)
+    except ValueError:
+        p = 0
+    try:
+        r = ladder.index(required_tier)
+    except ValueError:
+        r = 0
+    return max(0, p - r)
+
+
+# --------------------------------------------------------------------------
+# AuctionState
+# --------------------------------------------------------------------------
+
+
+@dataclass
+class AuctionState:
+    """Player's auction-system state, serialized as a Player field.
+
+    Mutable. The view drives ``tick``/``submit_bid``; the lifecycle
+    moves through :class:`AuctionLifecycle` states. AI counter-bidding
+    happens inside ``tick`` so the same call advances both timers and
+    AI activity.
+
+    The 12 schema fields below match design doc §8.1.
+    """
+
+    pending_lot_pool: list[AuctionLot] = field(default_factory=list)
+    active_auction_id: Optional[str] = None
+    active_session_id: Optional[str] = None
+    active_session_lots: list[AuctionLot] = field(default_factory=list)
+    active_round: int = 0
+    active_lot_index: int = 0
+    session_history: list[_SessionHistoryEntry] = field(default_factory=list)
+    last_auction_day: dict[str, int] = field(default_factory=dict)
+    next_auction_day: dict[str, int] = field(default_factory=dict)
+    recent_bid_categories: list[str] = field(default_factory=list)
+    rival_session_attendance: dict[str, list[str]] = field(default_factory=dict)
+    won_lots: list[str] = field(default_factory=list)
+    speed_setting: str = DEFAULT_SPEED_SETTING
+
+    # Runtime-only fields not part of the §8.1 schema but persisted to
+    # keep mid-session save/load deterministic. Ignored by save migration
+    # if absent.
+    lifecycle: AuctionLifecycle = AuctionLifecycle.SCHEDULED
+    round_state: Optional[RoundState] = None
+    session_personas: list[str] = field(default_factory=list)
+    session_lot_results: list[_LotResultRecord] = field(default_factory=list)
+    seconds_since_last_bid: float = 0.0
+    pending_ai_actions: dict[str, float] = field(default_factory=dict)
+
+    # Achievement counters mirrored on Player for AchievementManager. We
+    # keep them in sync on the Player object via ``apply_lot_resolution``.
+    auction_lots_won_total: int = 0
+    auction_lots_won_stellaris: int = 0
+    auction_rivals_retired: int = 0
+    auction_perfect_reads: int = 0
+
+    # ------------------------------------------------------------------
+    # Lifecycle entry / scheduling
+    # ------------------------------------------------------------------
+
+    def schedule_session(self, venue_id: str, day: int) -> None:
+        """Record the next-session day for ``venue_id``."""
+        self.next_auction_day[venue_id] = day
+
+    def is_session_due(self, venue_id: str, current_day: int) -> bool:
+        """True if a session is scheduled and the current day has reached it."""
+        scheduled = self.next_auction_day.get(venue_id)
+        return scheduled is not None and current_day >= scheduled
+
+    def enter_preview(
+        self,
+        venue_id: str,
+        session_lots: list[AuctionLot],
+        rival_ids: Iterable[str],
+        session_id: str,
+    ) -> None:
+        """Move to PREVIEW with a session lot list ready for the player to inspect.
+
+        Idempotent if already in PREVIEW for the same session_id; calling
+        it again with a new session id replaces the lot list.
+        """
+        self.active_auction_id = venue_id
+        self.active_session_id = session_id
+        self.active_session_lots = list(session_lots)
+        self.session_personas = list(rival_ids)
+        self.lifecycle = AuctionLifecycle.PREVIEW
+        self.active_lot_index = 0
+        self.active_round = 0
+        self.session_lot_results = []
+        self.round_state = None
+        self.seconds_since_last_bid = 0.0
+        self.pending_ai_actions = {}
+        self.rival_session_attendance[session_id] = [
+            rid for rid in rival_ids if rid in NAMED_RIVAL_IDS
+        ]
+
+    def open_session(self) -> None:
+        """Transition PREVIEW -> SESSION_OPEN -> first LOT_OPEN."""
+        if self.lifecycle != AuctionLifecycle.PREVIEW:
+            return
+        self.lifecycle = AuctionLifecycle.SESSION_OPEN
+        self._open_next_lot()
+
+    # ------------------------------------------------------------------
+    # Per-lot lifecycle
+    # ------------------------------------------------------------------
+
+    def _open_next_lot(self) -> None:
+        if self.active_lot_index >= len(self.active_session_lots):
+            self._close_session()
+            return
+        lot = self.active_session_lots[self.active_lot_index]
+        rounds_for_lot = 3 if lot.is_headliner else 2
+        round_dur, snipe_w = SPEED_SETTINGS.get(
+            self.speed_setting, SPEED_SETTINGS[DEFAULT_SPEED_SETTING]
+        )
+        rs = RoundState(
+            bidders_active={"player", *self.session_personas},
+            round_min_increment=min_increment_for_appraisal(lot.base_appraisal),
+        )
+        # Drop personas whose effective_value is below the opening floor.
+        # (We only know personas by id here; the caller wires the actual
+        # AIBidderPersona objects in via ``set_session_personas``.)
+        rs.current_high_bid = opening_bid_for_lot(lot.base_appraisal, lot.reserve_price)
+        rs.open_round(
+            round_number=1,
+            round_duration_seconds=round_dur,
+            snipe_window_seconds=snipe_w,
+            round_min_increment=min_increment_for_appraisal(lot.base_appraisal),
+        )
+        # Opening price counts as the floor; nobody is yet "leading" --
+        # we treat it as an unfilled floor by leaving current_high_bidder_id
+        # as None so the first bid registers normally.
+        rs.current_high_bidder_id = None
+        self.round_state = rs
+        self.active_round = 1
+        self.lifecycle = AuctionLifecycle.BID_WINDOW
+        self.seconds_since_last_bid = 0.0
+        # Stash the round count for closure logic.
+        self._rounds_for_active_lot = rounds_for_lot
+
+    # The view supplies live AIBidderPersona objects; we keep them
+    # mutable on the state machine so AI counter-bid logic can inspect
+    # axes / ceilings without re-loading from data.
+    def set_session_personas(self, personas: list[AIBidderPersona]) -> None:
+        """Provide the live persona objects for the active session."""
+        self._live_personas: dict[str, AIBidderPersona] = {p.persona_id: p for p in personas}
+
+    def get_persona(self, persona_id: str) -> Optional[AIBidderPersona]:
+        return getattr(self, "_live_personas", {}).get(persona_id)
+
+    # ------------------------------------------------------------------
+    # Player input
+    # ------------------------------------------------------------------
+
+    def submit_player_bid(self, amount: int) -> tuple[bool, str]:
+        """Submit a bid as the player.
+
+        Triggers a snipe-window reset where applicable, records the
+        category for Salko escalation, and transitions to BID_WINDOW
+        bookkeeping.
+        """
+        if self.round_state is None or self.lifecycle != AuctionLifecycle.BID_WINDOW:
+            return (False, "No active round.")
+        ok, msg = self.round_state.submit_bid("player", amount)
+        if ok:
+            lot = self.active_session_lots[self.active_lot_index]
+            cat = lot.category
+            # Track recent bid categories (last N sessions, capped — we
+            # track per-session to keep the list bounded).
+            if cat not in self.recent_bid_categories:
+                self.recent_bid_categories.append(cat)
+                # Keep the list to a reasonable length. SALKO_ESCALATION_WINDOW
+                # is "sessions"; since each session may generate multiple
+                # categories, we keep up to ``window * 4`` distinct entries.
+                cap = SALKO_ESCALATION_WINDOW * 4
+                if len(self.recent_bid_categories) > cap:
+                    self.recent_bid_categories = self.recent_bid_categories[-cap:]
+            self.seconds_since_last_bid = 0.0
+            self._record_bidder("player")
+        return (ok, msg)
+
+    def player_fold(self) -> tuple[bool, str]:
+        """Fold the player out of the current lot for its remaining rounds."""
+        if self.round_state is None:
+            return (False, "No active round.")
+        return self.round_state.fold("player")
+
+    def player_hold(self) -> tuple[bool, str]:
+        """Player passes this round; no bid submitted."""
+        if self.round_state is None:
+            return (False, "No active round.")
+        return (True, "Player holds this round.")
+
+    def player_min_raise_amount(self) -> int:
+        """Compute the next-min bid amount the player can submit, or 0."""
+        if self.round_state is None:
+            return 0
+        return self.round_state.current_high_bid + self.round_state.round_min_increment
+
+    # ------------------------------------------------------------------
+    # AI counter-bid scheduling
+    # ------------------------------------------------------------------
+
+    def _record_bidder(self, bidder_id: str) -> None:
+        """Track which bidders have placed bids on the active lot."""
+        if not hasattr(self, "_active_lot_bidders"):
+            self._active_lot_bidders: set[str] = set()
+        self._active_lot_bidders.add(bidder_id)
+
+    def _step_ai_bidders(self, dt: float) -> list[str]:
+        """Drive AI counter-bidding for a single tick.
+
+        Returns a list of human-readable feedback strings for any AI
+        actions taken this tick. Pure determinism: persona timing comes
+        from the seeded delay + the elapsed time since the last bid.
+        """
+        messages: list[str] = []
+        rs = self.round_state
+        if rs is None or rs.phase != RoundPhase.BID_WINDOW:
+            return messages
+        live = getattr(self, "_live_personas", {})
+        if not live:
+            return messages
+        speed_mult = SPEED_AI_MULTIPLIER.get(self.speed_setting, 1.0)
+        lot = self.active_session_lots[self.active_lot_index]
+        recent_cats = tuple(self.recent_bid_categories[-SALKO_ESCALATION_WINDOW * 4 :])
+        for persona_id, persona in live.items():
+            if persona_id not in rs.bidders_active:
+                continue
+            if persona_id == rs.current_high_bidder_id:
+                continue
+            # Snipe gate: if currently inside the snipe window, only
+            # high-snipe-resistance personas may counter.
+            if rs.is_in_snipe_window() and not persona.will_counter_snipe():
+                continue
+            ceiling = persona.compute_ceiling(
+                lot,
+                self.active_session_id or "_",
+                vs_player=(rs.current_high_bidder_id == "player"),
+                recent_player_categories=recent_cats,
+            )
+            if ceiling <= 0:
+                continue
+            # Persona's planned counter-delay for this round.
+            delay = persona.counter_bid_delay(
+                self.active_session_id or "_",
+                round_number=rs.round_number,
+                round_duration_seconds=rs.round_duration_seconds,
+                speed_multiplier=speed_mult,
+            )
+            # Once the elapsed time since the last bid exceeds the
+            # persona's planned delay, the persona acts.
+            if self.seconds_since_last_bid + dt < delay:
+                continue
+            next_bid = rs.current_high_bid + rs.round_min_increment
+            if next_bid > ceiling:
+                continue  # Persona never bids past ceiling.
+            ok, msg = rs.submit_bid(persona_id, next_bid)
+            if ok:
+                self._record_bidder(persona_id)
+                self.seconds_since_last_bid = 0.0
+                messages.append(msg)
+                # One AI action per tick keeps the simulation well-paced.
+                return messages
+        return messages
+
+    # ------------------------------------------------------------------
+    # Tick + round close + lot resolution
+    # ------------------------------------------------------------------
+
+    def tick(self, dt: float) -> list[str]:
+        """Advance the round timer + AI activity for ``dt`` seconds.
+
+        Returns a list of feedback strings (AI bid landed, round closed,
+        lot resolved) so the view can route them to its message queue.
+        """
+        messages: list[str] = []
+        if self.lifecycle != AuctionLifecycle.BID_WINDOW or self.round_state is None:
+            return messages
+        # Step AI before the timer so the AI's last reaction can still
+        # land in the same tick the timer would have expired.
+        messages.extend(self._step_ai_bidders(dt))
+        self.seconds_since_last_bid += dt
+        self.round_state.tick(dt)
+        if self.round_state.phase == RoundPhase.ROUND_CLOSE:
+            messages.append(self._handle_round_close())
+        return messages
+
+    def _handle_round_close(self) -> str:
+        """Resolve the just-closed round: open the next round, or close the lot."""
+        if self.round_state is None:
+            return ""
+        rounds_left = max(
+            0, getattr(self, "_rounds_for_active_lot", 2) - self.round_state.round_number
+        )
+        if rounds_left > 0 and self.round_state.current_high_bidder_id is not None:
+            # Carry the high bid forward into the next round.
+            old = self.round_state
+            self.round_state = RoundState(
+                bidders_active=set(old.bidders_active),
+                round_min_increment=old.round_min_increment,
+            )
+            self.round_state.current_high_bid = old.current_high_bid
+            self.round_state.current_high_bidder_id = old.current_high_bidder_id
+            round_dur, snipe_w = SPEED_SETTINGS.get(
+                self.speed_setting, SPEED_SETTINGS[DEFAULT_SPEED_SETTING]
+            )
+            self.round_state.open_round(
+                round_number=old.round_number + 1,
+                round_duration_seconds=round_dur,
+                snipe_window_seconds=snipe_w,
+                round_min_increment=old.round_min_increment,
+            )
+            self.active_round = self.round_state.round_number
+            self.lifecycle = AuctionLifecycle.BID_WINDOW
+            self.seconds_since_last_bid = 0.0
+            return f"Round {old.round_number} closed; advancing to round {self.round_state.round_number}."
+        return self._resolve_lot()
+
+    def _resolve_lot(self) -> str:
+        if self.round_state is None:
+            return ""
+        lot = self.active_session_lots[self.active_lot_index]
+        winning_bid = self.round_state.current_high_bid
+        winner = self.round_state.current_high_bidder_id
+        bidders = sorted(getattr(self, "_active_lot_bidders", set()))
+        rivals_bid = [b for b in bidders if b in NAMED_RIVAL_IDS]
+        player_bid = "player" in bidders
+        sold = winner is not None and winning_bid >= lot.reserve_price
+        record = _LotResultRecord(
+            lot_id=lot.id,
+            sold=sold,
+            winner_id=winner if sold else None,
+            sale_price=winning_bid if sold else 0,
+            player_bid=player_bid,
+            rivals_bid=rivals_bid,
+        )
+        self.session_lot_results.append(record)
+        if sold:
+            if winner == "player":
+                self.won_lots.append(lot.id)
+                self.auction_lots_won_total += 1
+                if lot.venue == "stellaris":
+                    self.auction_lots_won_stellaris += 1
+            # Reset recently_seen_count on sale; replace lot in pool.
+            self.active_session_lots[self.active_lot_index] = lot.with_recently_seen(0)
+            msg = f"Sold: {lot.headline} at {winning_bid:,} credits."
+        else:
+            # Withdraw: bump recently_seen_count, return to pool.
+            new_seen = lot.recently_seen_count + 1
+            self.active_session_lots[self.active_lot_index] = lot.with_recently_seen(new_seen)
+            msg = "Reserve not met. The lot is withdrawn."
+        # Advance to next lot.
+        self.lifecycle = AuctionLifecycle.LOT_RESOLUTION
+        self.active_lot_index += 1
+        if hasattr(self, "_active_lot_bidders"):
+            self._active_lot_bidders = set()
+        return msg
+
+    def advance_after_resolution(self) -> Optional[str]:
+        """Move from LOT_RESOLUTION to the next LOT_OPEN or SESSION_CLOSE.
+
+        Returns the next-lot announcement message, or ``None`` when the
+        session has closed.
+        """
+        if self.lifecycle != AuctionLifecycle.LOT_RESOLUTION:
+            return None
+        if self.active_lot_index >= len(self.active_session_lots):
+            self._close_session()
+            return None
+        self._open_next_lot()
+        next_lot = self.active_session_lots[self.active_lot_index - 0]
+        return f"Next lot: {next_lot.headline}."
+
+    # ------------------------------------------------------------------
+    # Session close
+    # ------------------------------------------------------------------
+
+    def _close_session(self) -> None:
+        if self.active_auction_id is None or self.active_session_id is None:
+            self.lifecycle = AuctionLifecycle.SESSION_CLOSE
+            return
+        history = _SessionHistoryEntry(
+            session_id=self.active_session_id,
+            venue_id=self.active_auction_id,
+            closed_on_day=0,  # caller fills via close_session_for_day
+            lot_results=list(self.session_lot_results),
+            rival_ids=list(self.rival_session_attendance.get(self.active_session_id, [])),
+        )
+        self.session_history.append(history)
+        self.lifecycle = AuctionLifecycle.SESSION_CLOSE
+
+    def close_session_for_day(self, current_day: int) -> None:
+        """Stamp ``current_day`` on the most recent session and schedule the next.
+
+        Idempotent: calling twice does not re-stamp prior sessions.
+        """
+        if self.session_history:
+            last = self.session_history[-1]
+            if last.closed_on_day == 0:
+                last.closed_on_day = current_day
+        if self.active_auction_id is not None:
+            self.last_auction_day[self.active_auction_id] = current_day
+            # Stellaris cadence: 5-7 days; Reach is demand-driven (SA-B4
+            # owns Reach scheduling so we leave next_auction_day alone).
+            if self.active_auction_id == "stellaris":
+                seed = _seeded_rng(
+                    f"{self.active_session_id}_next_cadence_{self.active_auction_id}"
+                )
+                gap = seed.randint(STELLARIS_CADENCE_MIN_DAYS, STELLARIS_CADENCE_MAX_DAYS)
+                self.next_auction_day[self.active_auction_id] = current_day + gap
+
+    # ------------------------------------------------------------------
+    # Helpers consumed by the view
+    # ------------------------------------------------------------------
+
+    def current_lot(self) -> Optional[AuctionLot]:
+        """Return the lot the round_state is bidding on, or ``None``."""
+        if self.round_state is None:
+            return None
+        if 0 <= self.active_lot_index < len(self.active_session_lots):
+            return self.active_session_lots[self.active_lot_index]
+        return None
+
+    def player_won(self, lot_id: str) -> bool:
+        return lot_id in self.won_lots
+
+    # ------------------------------------------------------------------
+    # Captain memory hand-off
+    # ------------------------------------------------------------------
+
+    def collect_outbid_records(
+        self, captain_memory: dict[str, "CaptainMemory"], game_day: int
+    ) -> list[str]:
+        """Iterate the just-closed session's lot results and apply OUTCOME_OUTBID.
+
+        Records exactly one entry per (rival, lot) where:
+        * the rival was in the session,
+        * the rival won the lot,
+        * the player also bid on the lot.
+
+        Returns the ids of rivals whose status crossed to ``STATUS_WANDERER``
+        on this call (achievement + flag wiring on the caller side).
+        """
+        from spacegame.models.captain_memory import (
+            OUTCOME_OUTBID,
+            STATUS_WANDERER,
+            CaptainMemory,
+        )
+
+        retired_ids: list[str] = []
+        if not self.session_history:
+            return retired_ids
+        last = self.session_history[-1]
+        for record in last.lot_results:
+            if not record.sold or not record.player_bid:
+                continue
+            if record.winner_id is None or record.winner_id not in NAMED_RIVAL_IDS:
+                continue
+            rival_id = record.winner_id
+            mem = captain_memory.get(rival_id)
+            if mem is None:
+                mem = CaptainMemory(captain_id=rival_id)
+                captain_memory[rival_id] = mem
+            previous_status = mem.status
+            mem.record_encounter(OUTCOME_OUTBID, game_day)
+            if previous_status != STATUS_WANDERER and mem.status == STATUS_WANDERER:
+                retired_ids.append(rival_id)
+                self.auction_rivals_retired += 1
+        return retired_ids
+
+    # ------------------------------------------------------------------
+    # Serialization
+    # ------------------------------------------------------------------
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "pending_lot_pool": [lot.to_dict() for lot in self.pending_lot_pool],
+            "active_auction_id": self.active_auction_id,
+            "active_session_id": self.active_session_id,
+            "active_session_lots": [lot.to_dict() for lot in self.active_session_lots],
+            "active_round": self.active_round,
+            "active_lot_index": self.active_lot_index,
+            "session_history": [s.to_dict() for s in self.session_history],
+            "last_auction_day": dict(self.last_auction_day),
+            "next_auction_day": dict(self.next_auction_day),
+            "recent_bid_categories": list(self.recent_bid_categories),
+            "rival_session_attendance": {
+                k: list(v) for k, v in self.rival_session_attendance.items()
+            },
+            "won_lots": list(self.won_lots),
+            "speed_setting": self.speed_setting,
+            "lifecycle": self.lifecycle.value,
+            "round_state": self.round_state.to_dict() if self.round_state else None,
+            "session_personas": list(self.session_personas),
+            "session_lot_results": [r.to_dict() for r in self.session_lot_results],
+            "seconds_since_last_bid": self.seconds_since_last_bid,
+            "auction_lots_won_total": self.auction_lots_won_total,
+            "auction_lots_won_stellaris": self.auction_lots_won_stellaris,
+            "auction_rivals_retired": self.auction_rivals_retired,
+            "auction_perfect_reads": self.auction_perfect_reads,
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "AuctionState":
+        lifecycle_value = data.get("lifecycle", AuctionLifecycle.SCHEDULED.value)
+        try:
+            lifecycle = AuctionLifecycle(lifecycle_value)
+        except ValueError:
+            lifecycle = AuctionLifecycle.SCHEDULED
+        rs_data = data.get("round_state")
+        rs = RoundState.from_dict(rs_data) if rs_data else None
+        return cls(
+            pending_lot_pool=[AuctionLot.from_dict(d) for d in data.get("pending_lot_pool", [])],
+            active_auction_id=data.get("active_auction_id"),
+            active_session_id=data.get("active_session_id"),
+            active_session_lots=[
+                AuctionLot.from_dict(d) for d in data.get("active_session_lots", [])
+            ],
+            active_round=int(data.get("active_round", 0)),
+            active_lot_index=int(data.get("active_lot_index", 0)),
+            session_history=[
+                _SessionHistoryEntry.from_dict(d) for d in data.get("session_history", [])
+            ],
+            last_auction_day=dict(data.get("last_auction_day", {})),
+            next_auction_day=dict(data.get("next_auction_day", {})),
+            recent_bid_categories=list(data.get("recent_bid_categories", [])),
+            rival_session_attendance={
+                k: list(v) for k, v in data.get("rival_session_attendance", {}).items()
+            },
+            won_lots=list(data.get("won_lots", [])),
+            speed_setting=str(data.get("speed_setting", DEFAULT_SPEED_SETTING)),
+            lifecycle=lifecycle,
+            round_state=rs,
+            session_personas=list(data.get("session_personas", [])),
+            session_lot_results=[
+                _LotResultRecord.from_dict(d) for d in data.get("session_lot_results", [])
+            ],
+            seconds_since_last_bid=float(data.get("seconds_since_last_bid", 0.0)),
+            auction_lots_won_total=int(data.get("auction_lots_won_total", 0)),
+            auction_lots_won_stellaris=int(data.get("auction_lots_won_stellaris", 0)),
+            auction_rivals_retired=int(data.get("auction_rivals_retired", 0)),
+            auction_perfect_reads=int(data.get("auction_perfect_reads", 0)),
+        )
+
+
+# Type alias used by the game.py wiring for the journal/news/achievement
+# hand-off callbacks. Callbacks are optional; the AuctionState defaults
+# to no-ops when the engine isn't supplying them (e.g., in scenario tests).
+LifecycleHook = Callable[[str, dict[str, Any]], None]
+
+
+__all__ = [
+    "APPRAISAL_BONUS_LEVEL_1",
+    "APPRAISAL_BONUS_LEVEL_2",
+    "APPRAISAL_BONUS_LEVEL_3",
+    "APPRAISAL_BONUS_LEVEL_4",
+    "CHAMPION_WINS_AT_STELLARIS",
+    "HEADLINER_CAP_PER_SESSION",
+    "PERFECT_READ_THRESHOLD",
+    "REACH_SESSION_SIZE",
+    "RECENTLY_SEEN_EXCLUSION",
+    "SABLE_CEILING_CORRECT_THRESHOLD",
+    "SABLE_CEILING_JITTER_FACTOR",
+    "SAFE_EXIT_STATES",
+    "STELLARIS_CADENCE_MAX_DAYS",
+    "STELLARIS_CADENCE_MIN_DAYS",
+    "STELLARIS_HEADLINER_SESSION_SIZE",
+    "STELLARIS_STANDARD_SESSION_SIZE",
+    "AuctionLifecycle",
+    "AuctionState",
+    "appraisal_band_for_bonus",
+    "generate_lot_pool",
+    "post_win_valuation_message",
+    "reserve_band_for_preview",
+    "sable_displayed_ceiling",
+]

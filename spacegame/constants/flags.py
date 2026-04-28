@@ -601,3 +601,82 @@ def seen_gray_market_arbitration_tip() -> str:
     SA-P3/P4 LOCKED convention for tutorial flags.
     """
     return "seen_gray_market_arbitration_tip"
+
+
+# ---------------------------------------------------------------------------
+# Bidding venues (SA-B2)
+# ---------------------------------------------------------------------------
+#
+# SA-B2 (requirements/sa_bidding_design.md, sections 9.1 + 9.4). Tutorial
+# tip flag and crew-banter trigger flags for the auction system. SA-B2
+# both produces and consumes the tip flag; the banter flags are produced
+# by the auction lifecycle and consumed by SA-X6 crew banter content.
+
+
+def seen_auction_first_session_tip() -> str:
+    """Flag set after the player dismisses the first-auction tip overlay.
+
+    One-shot per save. Producer: :class:`spacegame.views.auction_view.AuctionView`
+    on-dismiss callback for the
+    :class:`spacegame.views.first_time_tip.FirstTimeTipOverlay` fired on
+    first entry to either auction venue. Consumer: the same view's
+    first-entry guard. The overlay explains the ascending-bid format and
+    the reserve-not-met outcome (see design doc §9.1).
+    """
+    return "seen_auction_first_session_tip"
+
+
+def auction_first_session_complete() -> str:
+    """Banter trigger: player completed their first auction session.
+
+    Producer: :class:`spacegame.models.bidding.AuctionState` on
+    SESSION_CLOSE for the first session in any venue. Consumer: SA-X6
+    crew-banter content (not authored in SA-B2).
+    """
+    return "auction_first_session_complete"
+
+
+def auction_first_win() -> str:
+    """Banter trigger: player won their first lot at any auction venue.
+
+    Producer: :class:`spacegame.models.bidding.AuctionState` on the first
+    LOT_RESOLUTION where the player is the winning bidder. Consumer:
+    SA-X6 crew-banter content; SA-X7 ``auction_first_win`` achievement.
+    """
+    return "auction_first_win"
+
+
+def auction_rival_encountered(rival_id: str) -> str:
+    """Banter trigger: a named rival appeared in the same session as the player.
+
+    Fires once per rival per save. Producer:
+    :class:`spacegame.models.bidding.AuctionState` on SESSION_OPEN for
+    each named rival in the roster (Prentiss, Kade, Salko). Consumer:
+    SA-X6 crew-banter content.
+
+    ``rival_id`` is the canonical persona identifier (``"aldous_prentiss"``,
+    ``"yuna_kade"``, ``"fenn_salko"``).
+    """
+    return f"auction_rival_{rival_id}_encountered"
+
+
+def auction_first_rivalry_formed() -> str:
+    """Banter trigger: first OUTCOME_OUTBID recorded against any named rival.
+
+    Producer: :class:`spacegame.models.bidding.AuctionState` on the first
+    LOT_RESOLUTION where a named rival outbids the player. Consumer:
+    SA-X6 crew-banter content; SA-B2 journal trigger for the
+    "[rival] Was There" entry.
+    """
+    return "auction_first_rivalry_formed"
+
+
+def auction_sable_ceiling_correct() -> str:
+    """Banter trigger: Sable's ceiling estimate was within 5% of the actual.
+
+    Producer: :class:`spacegame.models.bidding.AuctionState` on
+    SESSION_CLOSE when Sable is active and the per-rival ceiling estimate
+    error is at or below 5% averaged across the session. Consumer: SA-X6
+    crew-banter content.
+    """
+    return "auction_sable_ceiling_correct"

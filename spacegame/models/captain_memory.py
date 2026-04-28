@@ -49,6 +49,10 @@ OUTCOME_DEFEAT = "defeat"
 OUTCOME_NEGOTIATED = "negotiated"
 OUTCOME_BRIBED = "bribed"
 OUTCOME_FLED = "fled"
+# SA-B2: auction loss (rival outbids player on a contested lot). Behaves like
+# DEFEAT/FLED in the resolution logic — accumulates toward RESOLUTION_THRESHOLD,
+# never triggers a one-step status transition.
+OUTCOME_OUTBID = "outbid"
 
 # Encounters before an unresolved rivalry auto-retires.
 RESOLUTION_THRESHOLD = 3
