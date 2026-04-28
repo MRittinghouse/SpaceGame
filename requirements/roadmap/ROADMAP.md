@@ -43,7 +43,7 @@ The SA-arc table below is **auto-regenerated** by the ralph harness from the spr
 | [SA-P3](#sa-p3--mayors-council-chamber-verdant-venue) | Mayors' Council Chamber (Verdant Venue) | II | L | done | SA-P2 |
 | [SA-P4](#sa-p4--alliance-congress-hall-havens-rest-venue) | Alliance Congress Hall (Haven's Rest Venue) | II | L | done | SA-P2, SA-P3 |
 | [SA-P5](#sa-p5--wreckers-guild-gray-market-mediation-venue) | Wreckers' Guild gray-market mediation venue | II | M | done | SA-P2, SA-1 |
-| [SA-P6](#sa-p6--politics-polish--tuning) | Politics polish + tuning | II | M | todo | SA-P3, SA-P4, SA-P5 |
+| [SA-P6](#sa-p6--politics-polish--tuning) | Politics polish + tuning | II | M | done | SA-P3, SA-P4, SA-P5 |
 | [SA-B1](#sa-b1--bidding-system-design) | Bidding System Design | III | M | todo | SA-PREP-1 |
 | [SA-B2](#sa-b2--bidding-core) | Bidding Core | III | XL | todo | SA-B1, SA-A2, SA-C2 |
 | [SA-B3](#sa-b3--stellaris-auction-house-primary-venue) | Stellaris Auction House (primary venue) | III | L | todo | SA-B2 |
@@ -2320,7 +2320,7 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 - Notes: Voice fidelity, test coverage gaps (sub-rep deduction + AC 18 market/rep assertions), and a format violation were the four issues. All fixed directly in this phase. SA-P3/P4 baselines untouched.
 #### SA-P6 — Politics polish + tuning
 
-**Status**: in-progress (reviewing)
+**Status**: done
 **Phase**: Phase II | **Size**: M | **Effort**: 1 week
 **Depends on**: SA-P3, SA-P4, SA-P5 | **Blocks**: SA-X1, SA-X2, SA-X4, SA-X5, SA-X6, SA-X7, SA-X8, SA-X9
 
@@ -2455,7 +2455,7 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 - 2026-04-27 21:05 — implement phase complete; all 19 AC satisfied; 357 new tests; 9444 passing / 98 skipped; ruff clean; mypy clean on dispute_view.py; BG_DARK color bug found and fixed (Colors.BG_DARK → Colors.BLACK in render()); one pre-existing data note (forgeworks partial_win_coalition_thin has no market shifts — deferred to tuning report §4a); PHASE_OK
 - 2026-04-27 20:28 — harness: review phase starting (rework cycle 0)
 - 2026-04-27 21:20 — review complete (rework cycle 0); 4 minor findings fixed directly: (1) AC 6 — em-dash U+2014 used as empty-slot placeholder in _render_body_composer ("—" → "(none)"); (2) AC 9 — tuning report §3 missing the design §6.3 worked-example formula and operational metric; (3) AC 10 — test_dispute_view_ui_standards.py covered 7 useful items but not the 7 items AC 10 specified; added source-grep tests for pygame.font.Font(None,) (10a), inline RGB tuples outside VenueTheme (10b), and Enter-key-in-COMPOSER (10f); (4) AC 12 — nav chain test called mgr.cast_vote() directly and monkey-patched _switch_substate_impl; replaced with view.cast_vote(), removed monkey-patch, added substate==TALLY + rep-delta + next_state==STATION_HUB assertions. All 19 AC verified met after fixes. Single tighten: _render_body_* methods retain ~15 inline scale_x()/scale_y() calls that AC 16 called for extracting to module-top constants; the pixel-spacing test confirms named constants exist and are positive but doesn't grep for these inline render-body calls — a future style pass would complete the extraction. PHASE_OK
-
+- 2026-04-27 20:41 — harness: review passed, marking done
 **Last phase report.**
 - Phase: review (rework cycle 0)
 - Outcome: PHASE_OK
