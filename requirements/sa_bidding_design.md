@@ -553,8 +553,8 @@ With `auction_bid_visibility` crew bonus (Sable Trent):
 With `auction_lot_appraisal_bonus` (Sable Trent crew + lot_appraiser skill, stacked):
 - Post-auction valuation report fires after each lot closes
 - Level 1 (Sable only, 0.10 bonus): "Fair market value: approx. X" (within 15% of base_appraisal)
-- Level 2 (Sable + lot_appraiser L1, 0.20 total): "Fair market value: X to Y" (within 8%)
-- Level 3 (Sable + lot_appraiser L2, 0.25 total): "Fair market value: X" (exact base_appraisal disclosed)
+- Level 2 (Sable + lot_appraiser L1, 0.15 total): "Fair market value: X to Y" (within 8%)
+- Level 3 (Sable + lot_appraiser L2, 0.20 total): "Fair market value: X" (exact base_appraisal disclosed)
 
 See section 7 for full stacking rules.
 
