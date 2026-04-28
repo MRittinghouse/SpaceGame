@@ -1100,9 +1100,10 @@ class DisputeView(BaseView):
         if self.active_dispute is None:
             return
         # Slot status block: Framing / Evidence / Audience with selected values.
-        framing_val = self.composer_argument.framing or "—"
-        evidence_val = self.composer_argument.evidence or "—"
-        audience_val = "—"
+        # "(none)" avoids the em-dash banned by the Writing Bible for player-facing text.
+        framing_val = self.composer_argument.framing or "(none)"
+        evidence_val = self.composer_argument.evidence or "(none)"
+        audience_val = "(none)"
         aud_id = self.composer_argument.audience_delegate_id
         if aud_id and aud_id in self.active_dispute.delegates:
             audience_val = self.active_dispute.delegates[aud_id].name

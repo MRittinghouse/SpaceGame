@@ -63,6 +63,14 @@ Three values exceeded the initial spec ranges. All three are intentional design 
 
 ## 3. Locked Balance Baseline
 
+**Design §6.3 worked-example math (canonical fairness baseline):**
+
+> Persuasion 3 + framing-match (+1) + neutral disposition (0) + no crew bonus (0) + no skill bonus (0)
+> = `floor(3 + 1 + 0 + 0 + 0) = 4`
+> A base_difficulty-4 argument passes exactly at threshold.
+
+**Operational acceptance metric:** A Persuasion-3 / no-crew player with a framing-match must be able to pass a base_difficulty-4 argument under neutral disposition. No template may ship with base_difficulty > 5 unless at least one framing in `eligible_framings` offers a +1 modifier path for the primary framing dimension.
+
 The following ranges are the validated baseline after SA-P6. Any value outside these ranges introduced by future content must be called out in a new tuning report entry.
 
 | Property | Standard templates | Campaign arcs | Annual Congress |

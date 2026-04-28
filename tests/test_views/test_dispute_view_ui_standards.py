@@ -427,3 +427,87 @@ class TestKeyboardEscapeHandling:
         view.handle_event(self._escape_event())
         assert view.next_state == GameState.STATION_HUB
         view.on_exit()
+
+    def test_enter_key_in_composer_submits_when_composable(self) -> None:
+        """AC 10f: Enter in COMPOSER triggers submit_composer() when the argument is composable."""
+        _mgr, view, _ = self._build_view_no_tips()
+        view.on_enter()
+        view.open_dispute("water_rights_phasing")
+        view.open_composer()
+        assert view.substate == DisputeSubstate.COMPOSER
+        assert view.active_dispute is not None
+
+        # Select a framing, evidence, and audience so the preview reports composable.
+        framing = view.active_dispute.eligible_framings[0]
+        evidence = view.active_dispute.eligible_evidence[0]
+        audience_id = next(iter(view.active_dispute.delegates))
+        view.update_composer_selection(
+            framing=framing, evidence=evidence, audience_delegate_id=audience_id
+        )
+
+        if view.composer_resolution is not None and view.composer_resolution.passes:
+            enter_event = pygame.event.Event(
+                pygame.KEYDOWN,
+                {"key": pygame.K_RETURN, "mod": 0, "unicode": "", "scancode": 0},
+            )
+            view.handle_event(enter_event)
+            # After submitting the composer must move to SESSION or TALLY.
+            assert view.substate in (DisputeSubstate.SESSION, DisputeSubstate.TALLY)
+        view.on_exit()
+
+
+# ---------------------------------------------------------------------------
+# 8. Source-grep anti-pattern guards (AC 10a, 10b)
+# ---------------------------------------------------------------------------
+
+
+class TestSourceAntiPatterns:
+    """Grep-based regression guards so future edits don't introduce banned patterns."""
+
+    _SOURCE = open(
+        __import__("pathlib").Path(__file__).parent.parent.parent
+        / "spacegame"
+        / "views"
+        / "dispute_view.py",
+        encoding="utf-8",
+    ).read()
+
+    def test_no_raw_font_constructor_calls(self) -> None:
+        """AC 10a: dispute_view.py must never use pygame.font.Font(None, ...).
+        All fonts must route through get_font() per ui_design_standards.md.
+        """
+        assert "pygame.font.Font(None," not in self._SOURCE, (
+            "dispute_view.py contains pygame.font.Font(None, ...) — "
+            "all fonts must be created via get_font() from spacegame.engine.fonts"
+        )
+
+    def test_no_inline_rgb_tuples_outside_venue_theme(self) -> None:
+        """AC 10b: RGB tuple literals must only appear in VenueTheme declarations.
+        Any hardcoded (R, G, B) outside those blocks bypasses the palette-role system.
+        """
+        import re
+
+        # Find all RGB-tuple candidates: three consecutive integer literals in parens.
+        rgb_pattern = re.compile(r"\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*\)")
+        # Lines belonging to the VenueTheme block are explicitly allowed.
+        # Identify those by the presence of accent_color / bg_dim_alpha / panel_bg_color keys
+        # or by the _DEFAULT_VENUE_THEME / _REACH_VENUE_THEME assignments and the
+        # _apply_venue_theme screen.fill call which includes alpha (4-tuple).
+        allowed_contexts = {
+            "accent_color=",
+            "panel_bg_color=",
+            "_apply_venue_theme",
+        }
+        for i, line in enumerate(self._SOURCE.splitlines(), 1):
+            stripped = line.strip()
+            if rgb_pattern.search(stripped):
+                # Skip if the line is part of an allowed VenueTheme context.
+                if any(ctx in stripped for ctx in allowed_contexts):
+                    continue
+                # Skip comment lines.
+                if stripped.startswith("#"):
+                    continue
+                raise AssertionError(
+                    f"dispute_view.py line {i} contains an inline RGB tuple "
+                    f"outside the VenueTheme declarations: {stripped!r}"
+                )

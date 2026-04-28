@@ -435,7 +435,7 @@ class TestFullNavigationChainReachToOutcome:
         import pygame
         import pygame_gui
 
-        from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH
+        from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH, GameState
         from spacegame.models.politics_dispute import DisputePhase
         from spacegame.models.wreckers_guild import WRECKERS_GUILD_CONFIG
         from spacegame.views.dispute_view import DisputeSubstate, DisputeView
@@ -495,25 +495,44 @@ class TestFullNavigationChainReachToOutcome:
         view.back_to_list()
         assert view.substate == DisputeSubstate.LIST
 
-        # --- 5. Re-open → SESSION → force a win outcome → TALLY.
+        # --- 5. Re-open → SESSION → force model state → call view.cast_vote() → TALLY.
         view.open_dispute(tpl_id)
         assert view.substate == DisputeSubstate.SESSION
         for d in dispute.delegates.values():
             d.visible_state = "committed_yes"
             d.pre_committed = True
         dispute.resolved_via = "mediate"  # type: ignore[attr-defined]
-        mgr.cast_vote(dispute)
+        # Use view.cast_vote() (not manager directly) so the view-level transition fires.
+        view.cast_vote()
         assert dispute.phase == DisputePhase.RESOLVED
         assert dispute.resolved_outcome == "win"
+        # View transitions to TALLY via _switch_substate (not bypassed).
+        assert view.substate == DisputeSubstate.TALLY
 
-        # --- 6. Outcome callback fires the SA-P5 journal flags.
+        # --- 6. Outcome callbacks fire the SA-P5 journal flags.
         assert player.dialogue_flags.get("first_reach_arbitration") is True
         assert player.dialogue_flags.get("first_master_mediation_won") is True
 
-        # --- 7. View switches to TALLY; render must not raise.
-        view._switch_substate_impl = lambda substate: None  # type: ignore[assignment]
-        view._create_ui_tally()
+        # --- 7. Rep deltas committed to the player.
+        assert player.faction_reputation.get("crimson_reach", 0) != 0, (
+            "Win outcome must apply a non-zero crimson_reach rep delta"
+        )
+
+        # --- 8. Render TALLY without error.
         screen = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
-        view._render_body_tally(screen)
+        view.render(screen)
+
+        # --- 9. Continue → back to list; Escape from LIST → STATION_HUB.
+        view.back_to_list()
+        assert view.substate == DisputeSubstate.LIST
+
+        escape_event = pygame.event.Event(
+            pygame.KEYDOWN,
+            {"key": pygame.K_ESCAPE, "mod": 0, "unicode": "", "scancode": 0},
+        )
+        view.handle_event(escape_event)
+        assert view.next_state == GameState.STATION_HUB, (
+            "Escape from LIST must set next_state = STATION_HUB"
+        )
 
         view.on_exit()
