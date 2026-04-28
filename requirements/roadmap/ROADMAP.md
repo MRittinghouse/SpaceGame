@@ -2583,7 +2583,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 
 #### SA-B2 — Bidding Core
 
-**Status**: in-progress (implementing)
+**Status**: in-progress (reviewing)
 **Phase**: Phase III | **Size**: XL | **Effort**: 2 weeks
 **Depends on**: SA-B1, SA-A2, SA-C2 | **Blocks**: SA-B3, SA-B4, SA-B5
 
@@ -2770,24 +2770,24 @@ These are the decisions to lock during planning execution. Recommendations recor
 - 2026-04-27 22:25 — auction_view.py with 7 substates + FirstTimeTip + scenario test + perf smoke (tick <16 ms, bid <10 ms). 18 view tests + 7 scenario tests. Commit 2b4df58.
 - 2026-04-27 22:35 — game.py _ensure_auction_view + 3 journal entries + 4 achievement stubs + 2 news headlines + crew-banter flag fan-out. Bumped 4 pre-existing achievement-count tests from 62 -> 66. Commit ac87972.
 - 2026-04-27 22:42 — full suite green: 9627 passed / 98 skipped (baseline 9447 / 98). Touched-files ruff + ruff format + mypy clean. Writing Bible scanner clean. Dialogue-integrity scanner clean. PHASE_OK
+- 2026-04-27 21:58 — harness: review phase starting (rework cycle 0)
+- 2026-04-27 22:55 — review complete; 3 findings fixed directly: (1) `auction_sable_ceiling_correct` flag was defined in flags.py but never set — wired in `_fire_lot_callbacks` (auction_view.py) when `err <= SABLE_CEILING_CORRECT_THRESHOLD`; (2) `on_session_complete` callback was dead code due to game-loop ordering (`handle_event` before `update` means session_history is already incremented when the delta check runs) — added `_maybe_fire_session_complete()` called from `_handle_button`; (3) AC 15 requires tests for each trigger condition — added `TestBanterFlags` (4 tests). Suite: 9631 passed / 98 skipped. Commit ccca4d8. PHASE_OK
 
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-04-27 21:23
-- Completed: 2026-04-27 22:42
-- Files_changed: spacegame/config.py, spacegame/constants/flags.py, spacegame/models/captain_memory.py, spacegame/models/bidding_lot.py (new), spacegame/models/bidding_persona.py (new), spacegame/models/bidding_round.py (new), spacegame/models/bidding.py (new), spacegame/models/player.py, spacegame/save_manager.py, spacegame/views/auction_view.py (new), spacegame/engine/game.py, data/journal/entries.json, data/progression/achievements.json, tests/test_models/test_bidding_lot.py (new), tests/test_models/test_bidding_persona.py (new), tests/test_models/test_bidding_round.py (new), tests/test_models/test_bidding_state.py (new), tests/test_models/test_bidding_captain_memory.py (new), tests/test_models/test_save_load_auction.py (new), tests/test_views/test_auction_view.py (new), tests/test_scenarios/test_scenario_auction_loop.py (new), tests/test_data/test_new_achievements.py, tests/test_models/test_achievement.py, tests/test_models/test_cycle_e_polish.py, tests/test_models/test_ground_achievements.py
-- Commits: 4311c35, 194883a, 2b4df58, ac87972
-- Tests_added: 180
-- Tests_baseline: 9447
-- Tests_passing: 9627
-- Tests_skipped: 98
-- Lint_clean: yes
-- Format_clean: yes
-- SI3_scanner_clean: yes
-- Writing_bible_clean: yes
-- Touch_zones_respected: yes (small allowlist updates to 4 pre-existing achievement-count tests so the new 4 stubs validate; counted as in-zone since they belong to the achievement registry change set)
-- Notes: Full SA-B2 implementation per the planner's §1-13 plan. Bidding engine + AuctionView + lifecycle hooks (journal / news / achievement / banter) wired end-to-end. Twenty acceptance criteria addressed: synthetic Stellaris session runs full lifecycle (AC 1); AI ceiling discipline observed in scenario fixture (AC 2); behavior-axis test coverage spans timing buckets and snipe-resistance gates (AC 3, 9); player strategies produce distinct outcomes (AC 4); OUTCOME_OUTBID accumulation + 3-threshold auto-retire (AC 5); save/load round-trip at three boundaries + legacy-save default (AC 6, 7); §7.1 jitter + §7.2 stacking byte-for-byte (AC 8); deterministic lot pool generation with all four filters + headliner cap (AC 10); time-pressure UI rendered through the BID_WINDOW substate plus empty/loading/error renders (AC 11); FirstTimeTipOverlay fires once with §9.1 copy (AC 12); 3 journal templates + Sable post-win conditional message paths (AC 13); 2 news headlines under 80 chars (AC 14); 7 crew-banter flags wired (AC 15); 4 achievement stubs registered (AC 16); perf smoke <16 ms tick / <10 ms bid (AC 17); pygame_gui no-leak (AC 18); 180 new tests vs 35-50 minimum (AC 19); full validation green (AC 20).
+- Started: 2026-04-27 21:58
+- Completed: 2026-04-27 22:55
+- Files_changed: spacegame/views/auction_view.py, tests/test_views/test_auction_view.py
+- Commits: ccca4d8
+- Tests_passing: 9631
+- Acceptance_criteria_verified: 20/20
+- Polish_items_verified: 5/5
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 3
+- Single_tighten: The `on_session_complete` delta-detection in `view.update()` at line 272 is now unreachable dead code (the fix routes through `_handle_button`); should be removed on a second pass rather than silently duplicating the check.
+- Followup_sprints_added: none
+- Notes: Three minor issues fixed: missing `auction_sable_ceiling_correct` flag wiring, dead `on_session_complete` callback path due to game-loop event ordering, and missing banter-flag test coverage required by AC 15. Core bidding engine, AuctionView, save/load, journal/news/achievement hooks, and all other 20 acceptance criteria verified clean.
 
 #### SA-B3 — Stellaris Auction House (primary venue)
 
