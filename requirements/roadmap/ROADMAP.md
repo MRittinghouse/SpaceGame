@@ -44,7 +44,7 @@ The SA-arc table below is **auto-regenerated** by the ralph harness from the spr
 | [SA-P4](#sa-p4--alliance-congress-hall-havens-rest-venue) | Alliance Congress Hall (Haven's Rest Venue) | II | L | done | SA-P2, SA-P3 |
 | [SA-P5](#sa-p5--wreckers-guild-gray-market-mediation-venue) | Wreckers' Guild gray-market mediation venue | II | M | done | SA-P2, SA-1 |
 | [SA-P6](#sa-p6--politics-polish--tuning) | Politics polish + tuning | II | M | done | SA-P3, SA-P4, SA-P5 |
-| [SA-B1](#sa-b1--bidding-system-design) | Bidding System Design | III | M | todo | SA-PREP-1 |
+| [SA-B1](#sa-b1--bidding-system-design) | Bidding System Design | III | M | in-progress | SA-PREP-1, SA-A2, SA-C2 |
 | [SA-B2](#sa-b2--bidding-core) | Bidding Core | III | XL | todo | SA-B1, SA-A2, SA-C2 |
 | [SA-B3](#sa-b3--stellaris-auction-house-primary-venue) | Stellaris Auction House (primary venue) | III | L | todo | SA-B2 |
 | [SA-B4](#sa-b4--crimson-reach-black-market-auctions) | Crimson Reach Black Market auctions | III | L | todo | SA-B2, SA-1 |
@@ -2475,33 +2475,103 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 
 #### SA-B1 — Bidding System Design
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Phase III | **Size**: M | **Effort**: 1 week
-**Depends on**: SA-PREP-1 | **Blocks**: SA-B2
+**Depends on**: SA-PREP-1, SA-A2, SA-C2 | **Blocks**: SA-B2
 
-**Goal.** Design doc + prototyping for the Bidding system. Locks lot generation rules, AI bidder behavior with multiple personas, bid round structure, time pressure, faction-restricted lots, recurring rival design.
+**Goal.** Author the single source-of-truth design doc for the Aurelia Bidding system. Locks auction lifecycle, ascending-bid round structure, time-pressure model, lot schema and generation algorithm, AI bidder persona model, hidden value functions and ceilings, reserve-price mechanics, faction-restricted lot tiers, recurring-rival integration via Captain Memory, crew/skill bonus consumption contracts, save/load schema, and tutorial/journal/news integration hooks. SA-B2 reads sections 1-8 before writing code; SA-B3/B4/B5 read content-relevant sections; SA-B6 reads tuning sections.
 
 **Context to read.**
-- `requirements/station_anchors.md` (Phase III)
-- `requirements/character_voices.md` (Auctioneer + rivals, post-SA-PREP-1)
-- `spacegame/models/captain_memory.py` (recurring rival pattern)
-- `data/galaxy/modules.json` (legendary modules — auction lot candidates)
+- `requirements/station_anchors.md` (Phase III, Bidding integration commitments)
+- `requirements/character_voices.md` (Cassian Velo, Aldous Prentiss, Yuna Kade, Fenn Salko, Sable Trent — voice sheets exist post-SA-PREP-1/SA-A2)
+- `requirements/sa_politics_design.md` (SA-P1 design doc, used as structural template — sections, decision-locking discipline, hand-off mapping)
+- `requirements/agent_principles.md` and `requirements/aurelia_voice_examples.md` (judgment + voice floor)
+- `requirements/onboarding_design.md` (six teaching principles, FirstTimeTipOverlay pattern for tutorial hook design)
+- `spacegame/models/captain_memory.py` (recurring rival pattern; SA-B1 designs how lost auctions feed `record_encounter`)
+- `spacegame/models/progression.py` (`lot_appraiser` skill at line 416 — `auction_lot_appraisal_bonus`, established by SA-C2)
+- `data/crew/crew_members.json` (Sable Trent — `auction_bid_visibility` + `auction_lot_appraisal_bonus`, established by SA-A2)
+- `data/ships/modules.json` (six legendary modules at lines 162-166 — auction lot candidates per Bidding integration commitment)
+- `data/galaxy/locations.json` (`stellaris_auction_house` line 79, `crimson_market` line 438 — venues)
 
 **Touch zones.**
-- `requirements/sa_bidding_design.md` (NEW)
+- `requirements/sa_bidding_design.md` (NEW — single deliverable)
 
 **Deliverables.**
-- Design doc covering: lot generation, AI bidder personas (collectors, speculators, faction agents, rival captains), value functions and hidden ceilings, round structure (decision: ascending/sealed/dutch), time pressure with adjustable speed, faction-restricted lot tiers.
-- Locked decisions on: round format (recommendation: ascending), AI persona count (4-5), reserve-price mechanics.
+- Design doc at `requirements/sa_bidding_design.md` with the section structure below. Each section locks decisions concretely with worked examples; "TBD" is not a valid value for any locked field.
+  1. **Scope and relationship to existing systems** — auctions are venue-based; coexist with commodity market simulation without altering it; relationship to Wreckers' Guild membership for Reach access.
+  2. **Auction lifecycle and round structure** — schedule cadence, preview phase, ascending-bid round model, per-round time pressure, lot reveal/sale flow, post-auction social phase, multi-session persistence at the auction-boundary granularity.
+  3. **Lot schema and generation algorithm** — frozen-dataclass lot template fields, lot pool composition by venue, weighted draw (player rep tier + recently-seen lots + season modifier), worked examples for at least one legendary module, one faction-restricted commodity, one Reach contraband lot.
+  4. **AI bidder persona model** — value-function shape (base appraisal + persona desire multiplier), ceiling distribution, behavior axes (aggression, patience, signal-discipline), counter-bid timing, snipe-resistance. Worked examples grounded in the four voiced rivals (Velo is auctioneer, not bidder; Prentiss/Kade/Salko + one procedural archetype slot for ambient bidders).
+  5. **Player input model** — bid increments, hold/fold actions, snipe window, reserve-price interaction, what the player can and cannot see by default vs. with crew/skills.
+  6. **Captain Memory integration** — when an auction loss creates or escalates a rival; which `OUTCOME_*` constant a bidding loss maps to (proposed: introduce a new outcome constant or reuse an existing one — locked in section 11); rivalry resolution paths in the auction context.
+  7. **Crew and skill bonus consumption** — contract for `auction_bid_visibility` (Sable Trent) and `auction_lot_appraisal_bonus` (Sable Trent + lot_appraiser skill); how each bonus changes what the UI surfaces or how outcomes are computed; stacking rules.
+  8. **Save/load schema** — auction state at session boundary, scheduled-lot pool, persona memory, recurring-rival state via Captain Memory, with `data.get("field", default)` migration discipline per CLAUDE.md.
+  9. **Tutorial, journal, news, and crew-banter hooks** — first-auction `FirstTimeTipOverlay` copy and trigger flag; journal entry templates for first-auction / first-win / first-rivalry-formed; news ticker template stubs for headliner outcomes (full content in SA-X5); crew-banter trigger flags (full content in SA-X6); achievement stub identifiers (full content in SA-X7).
+  10. **Open items deferred to SA-B2** — explicit list of UI specifics, exact balance numbers, animation timings, sound design that the design doc deliberately leaves to implementation phase.
+  11. **Locked decisions** — at least 10 numbered, each with a one-line rationale (see Risks / open questions below for the starting set).
+  12. **Hand-off map** — table mapping each downstream sprint (SA-B2/B3/B4/B5/B6) to the section numbers it must read.
 
 **Acceptance criteria.**
-1. AI bidder personas concretely specified with named value-function shapes.
-2. Lot generation algorithm specified — what makes a lot for the auction tonight.
-3. Decisions locked.
-4. Doc voice-checked.
+1. `requirements/sa_bidding_design.md` exists and contains all 12 sections above.
+2. Round format locked = ascending; rationale recorded.
+3. Lot schema is a complete field list (no "TBD" values), with at least three worked-example lots covering legendary module + faction-restricted commodity + Reach contraband.
+4. Lot generation algorithm is specified concretely enough that SA-B2 can implement without re-litigating: input signals, weighting, refresh cadence, exclusion rules.
+5. AI persona model defines the value-function shape, ceiling distribution, and behavior axes as concrete fields/formulas. The three voiced rivals (Prentiss, Kade, Salko) each have a worked-example persona spec keyed to their voice sheets.
+6. Reserve-price mechanic locked: every lot has a hidden reserve; lots that fail reserve do not sell; player visibility into reserves is specified (default = none; with crew/skill = banded estimate).
+7. Time-pressure model specified: per-round countdown, player-adjustable speed (slow/normal/fast/asap), default = normal, what happens on timeout.
+8. Captain Memory integration specifies (a) which outcome constant a bidding loss records, (b) how the auction venue triggers a rival appearance, (c) when a recurring rival auto-retires per existing `RESOLUTION_THRESHOLD` semantics.
+9. Crew bonus contract specifies what `auction_bid_visibility` and `auction_lot_appraisal_bonus` change in the UI/outcome path. Skill bonus contract specifies the same for `lot_appraiser`. SA-B2 can wire both bonus types without ambiguity.
+10. Save/load schema is a field-by-field list with default values for migration.
+11. Tutorial / journal / news / crew-banter / achievement hooks are designed: each has a stable trigger flag name and a one-line copy stub or content owner pointer. Player-facing copy stubs pass the Writing Bible scanner.
+12. At least 10 locked decisions are numbered, each with a one-line rationale.
+13. Hand-off table maps SA-B2 / SA-B3 / SA-B4 / SA-B5 / SA-B6 to section numbers.
+14. `python -m pytest tests/test_writing_bible_compliance.py` passes (no banned phrases or em-dashes in the design doc's player-facing copy stubs).
+15. Full pre-phase test baseline preserved: pass count >= 9447, no new failures.
+
+**Plan.**
+1. Read SA-P1 design doc (`requirements/sa_politics_design.md`) end to end as the structural template; note its decision-locking discipline, worked-example density, and hand-off table format. Read the four voiced-rival sheets in `character_voices.md` (lines 1232-1502 cover Velo, Prentiss, Kade, Salko, Trent).
+2. Author Section 1 (Scope) and Section 2 (Lifecycle and round structure). Decide and document: schedule cadence (recommendation: every 5-7 game-days at Stellaris, irregular at Reach per Wreckers' Guild flavor); preview phase length; ascending-bid round model with explicit per-round phase order (open call -> bid -> counter -> next round or close).
+3. Author Section 3 (Lot schema + generation algorithm). Define the frozen-dataclass schema fields (id, headline, category, base_appraisal, reserve_band, faction_gate, rep_tier_required, etc.). Specify the lot-pool generation: weighted draw, player rep tier filtering, recently-seen exclusion window, season/headliner overrides. Author at least three worked-example lots covering legendary module (e.g., re-issue or alternate of `legendary_kings_repeater`), faction-restricted commodity (e.g., Alliance-only navigational equipment), and Reach contraband (smuggled goods).
+4. Author Section 4 (AI persona model). Define the value-function shape (e.g., `effective_value = base_appraisal * persona_desire_mult * (1 + signal_drift)`), the ceiling distribution per persona, and behavior axes (aggression, patience, signal-discipline, snipe-resistance). Tie the worked examples to the voiced rivals: Prentiss (heritage-collector — high desire on antiquities, low patience for "new money"), Kade (institutional — flat ceilings, no signal leak, rigid framing), Salko (cold-grudge — low desire baseline, sharp escalation on lots Salko knows the player wants). Add one procedural archetype for ambient room (Stellaris speculator pool).
+5. Author Section 5 (Player input model). Specify bid actions (raise by minimum increment, raise by custom amount, hold, fold), snipe-window definition, reserve-price interaction, what the player sees by default (other bidders' bids, current price, time remaining) vs. what crew/skill bonuses unlock (Sable Trent: estimated ceilings; lot_appraiser: post-auction valuation accuracy).
+6. Author Section 6 (Captain Memory integration) and Section 7 (Crew + skill bonus consumption). For Captain Memory: lock whether auction losses use an existing `OUTCOME_*` constant or whether SA-B2 introduces `OUTCOME_OUTBID` (recommendation: new constant, since auction loss is not combat). For crew/skill: precisely state how each bonus changes outputs. Confirm bonus contracts already wired by SA-A2/SA-C2 are sufficient; flag any gap as an SA-B2 follow-up rather than expanding scope here.
+7. Author Section 8 (Save/load schema). List every field with type and default. Apply CLAUDE.md migration discipline (`data.get("field", default)`). Cover auction-in-progress state, scheduled-lot pool, persona memory between sessions, recurring-rival state.
+8. Author Section 9 (Tutorial / journal / news / crew-banter / achievement hooks). Author one-line stub copy for first-auction `FirstTimeTipOverlay`, first-auction journal entry, first-win journal entry, first-rivalry-formed journal entry, two news headline templates (won-headliner, lost-headliner). Voice-check each stub against `aurelia_voice_examples.md` examples #15-19 (tutorial), #20-23 (journal), #24-27 (ambient/news).
+9. Author Section 10 (Open items deferred to SA-B2), Section 11 (Locked decisions, numbered, each with rationale), Section 12 (Hand-off map). Run `python -m pytest tests/test_writing_bible_compliance.py` over the design doc; iterate any voice-flag until clean. Validate every acceptance criterion; record the validation in the Activity log.
+
+**Risks / open questions.**
+
+These are the decisions to lock during planning execution. Recommendations recorded; SA-B1 implementer makes the final call and records rationale.
+
+1. **Round format.** *Recommendation: ascending* (per `station_anchors.md` decision #5). Most game-feel-friendly; lets the player feel time pressure mounting; pairs naturally with auctioneer cadence (Velo's voice sheet is built for ascending). **Lock during execution.**
+2. **AI persona count.** *Recommendation: 4-5 archetypes* — three named rivals (Prentiss, Kade, Salko) carry the recurring-rival surface; one procedural Stellaris speculator archetype fills ambient room; one Reach-flavored archetype for SA-B4. **Lock during execution.**
+3. **Reserve-price mechanic.** *Recommendation: every lot has a hidden reserve; lots that fail reserve do not sell.* Player visibility = none by default; banded estimate with `lot_appraiser` skill. **Lock during execution.**
+4. **Captain Memory outcome constant for auction loss.** *Recommendation: introduce `OUTCOME_OUTBID` in SA-B2.* Reusing `OUTCOME_DEFEAT` would confuse semantics (combat vs. social). The new constant is a small, additive change that SA-B2 owns; SA-B1 just records the decision. **Lock during execution.**
+5. **Auction schedule cadence.** *Recommendation: every 5-7 game-days at Stellaris (per station_anchors.md Bidding spec); irregular at Reach (driven by inventory rather than calendar).* **Lock during execution.**
+6. **Time pressure speed setting.** *Recommendation: player-adjustable (slow / normal / fast / asap), default normal.* Accessibility-friendly; matches existing skill_check display preference patterns. **Lock during execution.**
+7. **Lot pool refresh strategy.** *Recommendation: each scheduled auction draws fresh from the pool with a recently-seen exclusion window of N auctions.* **Lock during execution; pick N.**
+8. **Faction-restricted lot tier mapping.** Recommendation: map Stellaris Port standing tiers to lot accessibility (apprentice / regular / certified / patron). Reach uses Wreckers' Guild membership tier. **Lock during execution; produce the table.**
+9. **Coexistence with commodity market.** *Recommendation: orthogonal — auction outcomes do not shift commodity prices.* Auctions trade in unique items, modules, and contraband, not bulk commodities. Avoids cross-system simulation drift. **Lock during execution.**
+10. **Legendary modules in auctions vs. boss drops.** Per station_anchors.md commitment "Modules: Legendary modules become primarily auction-acquired, supplementing the boss-drop pipeline." Recommendation: auctions surface re-issues / alternate variants of existing legendary modules; the existing six boss-drop modules remain boss-acquirable. SA-B3 authors the specific lot catalog; SA-B1 records the rule. **Lock during execution.**
+11. **Player-initiated auctions (SA-B5).** Recommendation: same engine, mirrored direction (player as seller, AI buyer pool). SA-B1 covers the design surface; SA-B5 implements. **Lock during execution.**
+12. **Pre-auction preview content.** Recommendation: lots visible during preview window; estimated price range hidden unless `lot_appraiser` skill present. **Lock during execution.**
 
 **Activity log.**
 - 2026-04-26 — todo (created)
+- 2026-04-27 20:42 — harness: plan phase starting
+- 2026-04-27 21:30 — planning complete; expanded sprint to a 12-section design doc covering lifecycle, lot schema, AI personas, player input, Captain Memory integration, crew/skill bonus contracts, save/load, and integration hooks. Added SA-A2 + SA-C2 as explicit dependencies (the design references content those sprints produced). Corrected `data/galaxy/modules.json` reference to `data/ships/modules.json`. Folded in tutorial / journal / news / crew-banter / achievement hook design. Locked 12 decisions with rationales. No new sprints proposed; SA-B2 through SA-B6 chain already covers downstream work. PHASE_OK
+
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-04-27 20:42
+- Completed: 2026-04-27 21:30
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: pending
+- New_sprints_proposed: none
+- Polish_items_folded_in: tutorial-FirstTimeTipOverlay-design, journal-entry-stubs, news-ticker-stubs, crew-banter-trigger-flags, achievement-stub-ids, save/load-schema, hand-off-map-to-downstream-sprints
+- Decisions_locked: 12 (round format, persona count, reserve mechanic, Captain Memory outcome constant, schedule cadence, time-pressure setting, lot pool refresh, faction tier mapping, market coexistence, legendary-modules rule, player-initiated mirroring, preview content)
+- Notes: Verified all 4 context paths; one path was wrong (`data/galaxy/modules.json` -> `data/ships/modules.json`) and I fixed it. SA-A2 and SA-C2 already wired the auction crew/skill bonus types (Sable Trent, lot_appraiser) so SA-B1 designs the consumption contract rather than introducing new bonus types. The four voiced rivals from SA-PREP-1/SA-A2 (Velo, Prentiss, Kade, Salko, Trent) carry the recurring-rival surface; AI persona model is grounded in their voice sheets rather than re-invented. Sprint stays Size M, single deliverable (design doc); polish items fold into doc sections rather than expanding touch zones or spawning new sprints.
 
 #### SA-B2 — Bidding Core
 
