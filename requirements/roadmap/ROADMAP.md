@@ -2771,7 +2771,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 - Started: 2026-04-27 21:09
 - Completed: 2026-04-27 21:45
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending
+- Commits: b15fa57
 - New_sprints_proposed: none
 - Polish_items_folded_in: PT-M FirstTimeTipOverlay on first-venue entry (§9.1); 3 journal entry templates (§9.2); 2 news headline templates (§9.3); 7 crew-banter trigger flags (§9.4); 4 achievement stub IDs (§9.5); empty/loading/error UI states; performance smoke (60-FPS budget + bid-resolution <10 ms); pygame_gui leak test
 - Decisions_locked: 15
