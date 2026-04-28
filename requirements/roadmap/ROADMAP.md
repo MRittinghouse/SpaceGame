@@ -44,7 +44,7 @@ The SA-arc table below is **auto-regenerated** by the ralph harness from the spr
 | [SA-P4](#sa-p4--alliance-congress-hall-havens-rest-venue) | Alliance Congress Hall (Haven's Rest Venue) | II | L | done | SA-P2, SA-P3 |
 | [SA-P5](#sa-p5--wreckers-guild-gray-market-mediation-venue) | Wreckers' Guild gray-market mediation venue | II | M | done | SA-P2, SA-1 |
 | [SA-P6](#sa-p6--politics-polish--tuning) | Politics polish + tuning | II | M | done | SA-P3, SA-P4, SA-P5 |
-| [SA-B1](#sa-b1--bidding-system-design) | Bidding System Design | III | M | in-progress | SA-PREP-1, SA-A2, SA-C2 |
+| [SA-B1](#sa-b1--bidding-system-design) | Bidding System Design | III | M | done | SA-PREP-1, SA-A2, SA-C2 |
 | [SA-B2](#sa-b2--bidding-core) | Bidding Core | III | XL | todo | SA-B1, SA-A2, SA-C2 |
 | [SA-B3](#sa-b3--stellaris-auction-house-primary-venue) | Stellaris Auction House (primary venue) | III | L | todo | SA-B2 |
 | [SA-B4](#sa-b4--crimson-reach-black-market-auctions) | Crimson Reach Black Market auctions | III | L | todo | SA-B2, SA-1 |
@@ -2475,7 +2475,7 @@ R2. **Fix `spacegame/engine/game.py` format drift (~5 min).** The `register_stat
 
 #### SA-B1 — Bidding System Design
 
-**Status**: in-progress (reviewing)
+**Status**: done
 **Phase**: Phase III | **Size**: M | **Effort**: 1 week
 **Depends on**: SA-PREP-1, SA-A2, SA-C2 | **Blocks**: SA-B2
 
@@ -2564,7 +2564,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 - 2026-04-27 22:15 — implementation complete; authored requirements/sa_bidding_design.md (873 lines, 12 sections). All 15 acceptance criteria verified. Writing Bible scanner clean (17/17). Test baseline preserved (9447 passed, 98 skipped). PHASE_OK
 - 2026-04-27 21:02 — harness: review phase starting (rework cycle 0)
 - 2026-04-27 22:45 — review complete; 1 minor inconsistency fixed directly (section 5.6 appraisal bonus totals were 0.05 too high vs. section 7.2 and actual SA-A2/SA-C2 wiring; corrected to 0.15/0.20). All 15 acceptance criteria verified. Writing Bible scanner clean. Test baseline preserved. PHASE_OK
-
+- 2026-04-27 21:08 — harness: review passed, marking done
 **Last phase report.**
 - Phase: review
 - Outcome: PHASE_OK
