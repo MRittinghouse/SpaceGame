@@ -4736,7 +4736,7 @@ Open question (reviewer judgment, not blocking implementation):
 
 ### CB-2 — Crew Banter implementation
 
-**Status**: in-progress (reviewing)
+**Status**: done
 **Source**: `requirements/cb_scope.md` (CB-1 design contract, 2026-04-29)
 **Size**: M | **Effort**: 5-8 days
 **Depends on**: CB-1 | **Blocks**: SA-X6 (which authors anchor-specific lines using CB-2's extended infrastructure)
@@ -4883,7 +4883,7 @@ Open question (reviewer judgment, not blocking implementation):
 - 2026-04-29 — implementation complete. Schema extension: AmbientLine gains required_flags / excluded_flags (field(default_factory=list)); get_all_matching gains player_flags: Optional[dict[str, bool]] = None filter block; backward-compat: flag filter is no-op when player_flags is None. combat_after API: last_combat_day: Optional[int] = None state; mark_combat(game_day); get_combat_after_line(recruited_ids, loyalty_map, current_day, recent_window_days=3); serialized via to_dict / load_state. check_flag_lines: iterates flag_triggered context with player_flags filter. Data loader: required_flags / excluded_flags parsed from JSON with .get defaults. Engine wiring: mark_combat called at single shared combat-resolution point before VICTORY/FLED/DEFEAT/NEGOTIATED branch; warp-arrival appends get_combat_after_line + check_flag_lines results to _mission_notifications. Content: 64 new lines authored (12 home_system, 12 faction_territory, 15 inter_crew, 10 flag_triggered with 5 distinct flags, 5 combat_after, 10 idle); all 5 content-floor tests pass. Writing-bible scanner extended: test_no_banned_phrases_in_ambient + test_no_parallel_negation_in_ambient added. SI-3 scanner extended: ambient consumer block in _collect_all_flag_uses; 4 flags removed from KNOWN_PRODUCER_ONLY_ORPHANS (marcus_uprising_inheritance_seen, attended_silent_shaft, heard_dcmc_intelligence, heard_nas_intelligence). Test suite: 10310 passed, 98 skipped (42 net new). All acceptance criteria 1-22 met. PHASE_OK
 - 2026-04-29 18:02 — harness: review phase starting (rework cycle 0)
 - 2026-04-29 — review complete. Found one gap: criteria 8 and 9 required engine integration tests for the mark_combat and warp-arrival wiring; the implement phase wrote thorough model-level unit tests but omitted the two engine-level tests specified in the plan. Fixed directly: added TestCB2CombatMarkerWiring and TestCB2WarpArrivalBanterWiring to tests/test_engine/test_mission_notifications.py using the project's established mock-stub pattern; also fixed a pre-existing RUF005 lint issue in that file. All 20 acceptance criteria now verified. 10312 passing (98 skipped). Voice scan: 64 new lines checked against character_voices.md and aurelia_voice_examples.md; no GenAI tells; register markers present for all four primary crew. Writing Bible and SI-3 scanner clean. PHASE_OK
-
+- 2026-04-29 18:14 — harness: review passed, marking done
 **Last phase report.**
 - Phase: review
 - Outcome: PHASE_OK
