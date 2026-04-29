@@ -59,9 +59,11 @@ from spacegame.engine.fonts import (
 from spacegame.models.dialogue import DialogueNode, DialogueTree
 from spacegame.models.okafor_research import (
     SELL_LUMP_SUM_RATE,
+    TEAM_FUND_MAX_COLLABORATORS,
     OkaforResearchState,
     PatentHolding,
     compute_team_fund_cost,
+    compute_team_fund_duration,
     fund_project,
     get_template,
     pending_legacy_beat,
@@ -211,6 +213,15 @@ class OkaforView(BaseView):
         # Cached offer ids for the current visit.
         self._offer_template_ids: list[str] = []
 
+        # Team-fund collaborator picker state (SA-R3 SA-R1-FOLLOW-2 closure).
+        self._picker_active: bool = False
+        self._picker_template_id: Optional[str] = None
+        self._picker_selected: list[str] = []
+        # Picker pygame_gui elements (created in _create_picker_ui, killed in _destroy_ui).
+        self._picker_checkbox_buttons: dict[str, pygame_gui.elements.UIButton] = {}
+        self._picker_confirm_button: Optional[pygame_gui.elements.UIButton] = None
+        self._picker_cancel_button: Optional[pygame_gui.elements.UIButton] = None
+
         # Background — quiet, low-light institutional register.
         self.background = AnimatedBackground("station", WINDOW_WIDTH, WINDOW_HEIGHT, seed=8842)
         self._bg_dim = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
@@ -239,6 +250,9 @@ class OkaforView(BaseView):
         self._active_dialogue_tree = None
         self._active_dialogue_node_id = None
         self._active_dialogue_is_failure_debrief = False
+        self._picker_active = False
+        self._picker_template_id = None
+        self._picker_selected = []
         super().on_exit()
 
     def _refresh_failure_debrief_pending(self) -> None:
@@ -367,6 +381,10 @@ class OkaforView(BaseView):
             )
             self._sell_buttons[holding.holding_id] = sell_btn
 
+        # Picker overlay replaces the project board when active (SA-R3).
+        if self._picker_active:
+            self._create_picker_ui()
+
     def _create_npc_dock_buttons(self) -> None:
         """Place one button per visible speaker in the Kweon dock area."""
         entries = self._dock_entries()
@@ -429,6 +447,136 @@ class OkaforView(BaseView):
         for btn in self._npc_buttons.values():
             btn.kill()
         self._npc_buttons.clear()
+        self._destroy_picker_ui()
+
+    # ------------------------------------------------------------------
+    # Team-fund collaborator picker (SA-R3, SA-R1-FOLLOW-2 closure)
+    # ------------------------------------------------------------------
+
+    def _destroy_picker_ui(self) -> None:
+        """Kill all picker pygame_gui elements."""
+        for btn in self._picker_checkbox_buttons.values():
+            btn.kill()
+        self._picker_checkbox_buttons.clear()
+        if self._picker_confirm_button is not None:
+            self._picker_confirm_button.kill()
+            self._picker_confirm_button = None
+        if self._picker_cancel_button is not None:
+            self._picker_cancel_button.kill()
+            self._picker_cancel_button = None
+
+    def _open_team_fund_picker(self, template_id: str) -> None:
+        """Open the collaborator picker for a team-fund action.
+
+        Initialises picker state and triggers a UI refresh so the picker
+        panel replaces the project board until Confirm or Cancel is pressed.
+        """
+        self._picker_active = True
+        self._picker_template_id = template_id
+        self._picker_selected = []
+        self._create_ui()
+
+    def _picker_toggle(self, researcher_id: str) -> None:
+        """Toggle a researcher's selection in the picker.
+
+        Blocks the toggle when 2 researchers are already selected and the
+        caller tries to add a third (SA-R3 Decision 4, cap-at-2). Shows a
+        status message instead.
+        """
+        if researcher_id in self._picker_selected:
+            self._picker_selected.remove(researcher_id)
+        elif len(self._picker_selected) < TEAM_FUND_MAX_COLLABORATORS:
+            self._picker_selected.append(researcher_id)
+        else:
+            self._show_message("Limit 2.")
+
+    def _picker_confirm(self) -> None:
+        """Confirm the picker selection and fund the project.
+
+        Zero selections → solo fund. Closes the picker on success or
+        insufficient credits (the fund-flow already shows an error message).
+        """
+        if self._picker_template_id is None:
+            return
+        template_id = self._picker_template_id
+        collaborators = list(self._picker_selected)
+        self._picker_active = False
+        self._picker_template_id = None
+        self._picker_selected = []
+        self._fund_project(template_id, collaborators=collaborators)
+
+    def _picker_cancel(self) -> None:
+        """Cancel the picker without funding."""
+        self._picker_active = False
+        self._picker_template_id = None
+        self._picker_selected = []
+        self._create_ui()
+
+    def _picker_live_math(self) -> tuple[int, int]:
+        """Return (cost, duration) for the current picker selection count.
+
+        Used by the renderer to display live cost / duration as checkboxes toggle.
+        Returns (0, 0) if no template is active (safe boundary value).
+        """
+        if self._picker_template_id is None:
+            return 0, 0
+        template = get_template(self._picker_template_id)
+        if template is None:
+            return 0, 0
+        n = len(self._picker_selected)
+        cost = compute_team_fund_cost(template.base_cost_credits, n)
+        duration = compute_team_fund_duration(template.base_duration_days, n)
+        return cost, duration
+
+    def _create_picker_ui(self) -> None:
+        """Create pygame_gui elements for the picker panel.
+
+        Renders 3 researcher rows + optional Nuri row, a live math display,
+        and Confirm / Cancel buttons in the right-board area.
+        """
+        if not self._picker_active or self._picker_template_id is None:
+            return
+        researchers: list[tuple[str, str, str]] = list(RESEARCHER_DOCK)
+        if self._is_nuri_in_crew():
+            researchers.append(("nuri_solberg", "Nuri Solberg", "Independent Patron"))
+
+        btn_w = scale_x(200)
+        btn_h = scale_y(34)
+        gap = scale_y(8)
+        start_y = BODY_TOP_Y + scale_y(60)
+
+        for idx, (researcher_id, name, role) in enumerate(researchers):
+            selected_marker = "[X] " if researcher_id in self._picker_selected else "[ ] "
+            label = f"{selected_marker}{name}"
+            btn = pygame_gui.elements.UIButton(
+                relative_rect=pygame.Rect(
+                    RIGHT_X + scale_x(10),
+                    start_y + idx * (btn_h + gap),
+                    btn_w,
+                    btn_h,
+                ),
+                text=label,
+                manager=self.ui_manager,
+            )
+            self._picker_checkbox_buttons[researcher_id] = btn
+
+        # Confirm + Cancel buttons below the checkbox rows.
+        n_rows = len(researchers)
+        btn_row_y = start_y + n_rows * (btn_h + gap) + scale_y(12)
+        n_selected = len(self._picker_selected)
+        confirm_label = "Fund Solo" if n_selected == 0 else f"Fund with {n_selected}"
+        self._picker_confirm_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(RIGHT_X + scale_x(10), btn_row_y, scale_x(120), btn_h),
+            text=confirm_label,
+            manager=self.ui_manager,
+        )
+        self._picker_cancel_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(
+                RIGHT_X + scale_x(140), btn_row_y, scale_x(80), btn_h
+            ),
+            text="Cancel",
+            manager=self.ui_manager,
+        )
 
     # ------------------------------------------------------------------
     # First-time tip
@@ -724,11 +872,20 @@ class OkaforView(BaseView):
                     return
             for tid, btn in list(self._team_fund_buttons.items()):
                 if event.ui_element == btn:
-                    # Default team-fund pick: Nuri Solberg if available,
-                    # else the senior clinical lead. The full collaborator
-                    # picker is left as a follow-up surface (SA-R1-FOLLOW-2).
-                    self._fund_project(tid, collaborators=["dr_iris_navarro"])
+                    self._open_team_fund_picker(tid)
                     return
+            for researcher_id, btn in list(self._picker_checkbox_buttons.items()):
+                if event.ui_element == btn:
+                    self._picker_toggle(researcher_id)
+                    self._create_ui()
+                    return
+            if self._picker_confirm_button is not None and event.ui_element == self._picker_confirm_button:
+                self._picker_confirm()
+                self._create_ui()
+                return
+            if self._picker_cancel_button is not None and event.ui_element == self._picker_cancel_button:
+                self._picker_cancel()
+                return
             for hid, btn in list(self._license_buttons.items()):
                 if event.ui_element == btn:
                     self._license_patent(hid)

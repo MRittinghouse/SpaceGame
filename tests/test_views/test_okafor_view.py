@@ -745,3 +745,176 @@ class TestPostClinicRunCallbackRouting:
         assert result == "kweon_legacy_first_heal", (
             f"Arc beat should surface once callback dismissed, got {result!r}"
         )
+
+
+# ============================================================================
+# SA-R3: Team-fund collaborator picker modal (AC #9)
+# ============================================================================
+
+
+class TestTeamFundPicker:
+    """SA-R3 AC #9 — team-fund picker opens, manages selection, and funds correctly."""
+
+    def _setup(self, credits: int = 500_000) -> tuple[OkaforView, "Player"]:
+        manager, player = _make_env(credits=credits)
+        view = _make_view(player, manager)
+        view.on_enter()
+        return view, player
+
+    def test_open_picker_sets_active_state(self) -> None:
+        view, player = self._setup()
+        tpl_id = _low_risk_template_id()
+        view._open_team_fund_picker(tpl_id)
+        assert view._picker_active is True
+        assert view._picker_template_id == tpl_id
+        view.on_exit()
+
+    def test_picker_starts_with_empty_selection(self) -> None:
+        view, player = self._setup()
+        tpl_id = _low_risk_template_id()
+        view._open_team_fund_picker(tpl_id)
+        assert view._picker_selected == []
+        view.on_exit()
+
+    def test_picker_toggle_adds_researcher(self) -> None:
+        view, player = self._setup()
+        tpl_id = _low_risk_template_id()
+        view._open_team_fund_picker(tpl_id)
+        view._picker_toggle("dr_iris_navarro")
+        assert "dr_iris_navarro" in view._picker_selected
+        view.on_exit()
+
+    def test_picker_toggle_removes_researcher(self) -> None:
+        view, player = self._setup()
+        tpl_id = _low_risk_template_id()
+        view._open_team_fund_picker(tpl_id)
+        view._picker_toggle("dr_iris_navarro")
+        view._picker_toggle("dr_iris_navarro")
+        assert "dr_iris_navarro" not in view._picker_selected
+        view.on_exit()
+
+    def test_picker_blocks_third_selection(self) -> None:
+        view, player = self._setup()
+        tpl_id = _low_risk_template_id()
+        view._open_team_fund_picker(tpl_id)
+        view._picker_toggle("dr_iris_navarro")
+        view._picker_toggle("theo_brandt")
+        # Third toggle is blocked when 2 already selected
+        view._picker_toggle("sana_dey")
+        assert "sana_dey" not in view._picker_selected
+        assert len(view._picker_selected) == 2
+        view.on_exit()
+
+    def test_picker_confirm_zero_selection_solo_funds(self) -> None:
+        view, player = self._setup()
+        tpl_id = _low_risk_template_id()
+        tpl = get_template(tpl_id)
+        assert tpl is not None
+        starting = player.credits
+        view._open_team_fund_picker(tpl_id)
+        # Confirm with 0 → solo fund
+        view._picker_confirm()
+        assert not view._picker_active
+        state = player.okafor_research_state
+        assert state is not None
+        assert tpl_id in state.active_projects
+        # Solo cost = base cost (no collaborators)
+        assert player.credits == starting - tpl.base_cost_credits
+        view.on_exit()
+
+    def test_picker_confirm_one_selection_funds_with_one(self) -> None:
+        view, player = self._setup()
+        tpl_id = _low_risk_template_id()
+        tpl = get_template(tpl_id)
+        assert tpl is not None
+        starting = player.credits
+        view._open_team_fund_picker(tpl_id)
+        view._picker_toggle("dr_iris_navarro")
+        view._picker_confirm()
+        assert not view._picker_active
+        state = player.okafor_research_state
+        assert state is not None
+        assert tpl_id in state.active_projects
+        expected_cost = compute_team_fund_cost(tpl.base_cost_credits, 1)
+        assert player.credits == starting - expected_cost
+        assert player.dialogue_flags.get(okafor_collaborator_share("dr_iris_navarro")) is True
+        view.on_exit()
+
+    def test_picker_confirm_two_selections_funds_with_two(self) -> None:
+        view, player = self._setup()
+        tpl_id = _low_risk_template_id()
+        tpl = get_template(tpl_id)
+        assert tpl is not None
+        starting = player.credits
+        view._open_team_fund_picker(tpl_id)
+        view._picker_toggle("dr_iris_navarro")
+        view._picker_toggle("theo_brandt")
+        view._picker_confirm()
+        state = player.okafor_research_state
+        assert state is not None
+        assert tpl_id in state.active_projects
+        expected_cost = compute_team_fund_cost(tpl.base_cost_credits, 2)
+        assert player.credits == starting - expected_cost
+        view.on_exit()
+
+    def test_picker_cancel_does_not_fund(self) -> None:
+        view, player = self._setup()
+        tpl_id = _low_risk_template_id()
+        starting = player.credits
+        view._open_team_fund_picker(tpl_id)
+        view._picker_toggle("dr_iris_navarro")
+        view._picker_cancel()
+        assert not view._picker_active
+        # No credits deducted, no active project
+        assert player.credits == starting
+        assert (
+            player.okafor_research_state is None
+            or tpl_id not in player.okafor_research_state.active_projects
+        )
+        view.on_exit()
+
+    def test_picker_cancel_clears_selection(self) -> None:
+        view, player = self._setup()
+        tpl_id = _low_risk_template_id()
+        view._open_team_fund_picker(tpl_id)
+        view._picker_toggle("dr_iris_navarro")
+        view._picker_cancel()
+        assert view._picker_selected == []
+        assert view._picker_template_id is None
+        view.on_exit()
+
+    def test_live_cost_math_at_zero(self) -> None:
+        view, player = self._setup()
+        tpl_id = _low_risk_template_id()
+        tpl = get_template(tpl_id)
+        assert tpl is not None
+        view._open_team_fund_picker(tpl_id)
+        cost, dur = view._picker_live_math()
+        assert cost == tpl.base_cost_credits
+        assert dur == tpl.base_duration_days
+        view.on_exit()
+
+    def test_live_cost_math_at_one(self) -> None:
+        view, player = self._setup()
+        tpl_id = _low_risk_template_id()
+        tpl = get_template(tpl_id)
+        assert tpl is not None
+        view._open_team_fund_picker(tpl_id)
+        view._picker_toggle("dr_iris_navarro")
+        cost, dur = view._picker_live_math()
+        assert cost == compute_team_fund_cost(tpl.base_cost_credits, 1)
+        assert dur == compute_team_fund_duration(tpl.base_duration_days, 1)
+        view.on_exit()
+
+    def test_live_cost_math_at_two(self) -> None:
+        view, player = self._setup()
+        tpl_id = _low_risk_template_id()
+        tpl = get_template(tpl_id)
+        assert tpl is not None
+        view._open_team_fund_picker(tpl_id)
+        view._picker_toggle("dr_iris_navarro")
+        view._picker_toggle("theo_brandt")
+        cost, dur = view._picker_live_math()
+        assert cost == compute_team_fund_cost(tpl.base_cost_credits, 2)
+        assert dur == compute_team_fund_duration(tpl.base_duration_days, 2)
+        view.on_exit()
