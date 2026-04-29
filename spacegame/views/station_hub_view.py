@@ -100,6 +100,16 @@ UNIQUE_HALL_TARGETS: dict[str, GameState] = {
     "verdant_mayors_council": GameState.DISPUTE,
     "havens_congress_hall": GameState.DISPUTE,
     "stellaris_auction_house": GameState.AUCTION,
+    "crimson_black_market": GameState.AUCTION,
+}
+
+# SA-B4: locations that route to GameState.AUCTION but live at venues
+# other than Stellaris. Engine reads this map after Enter to choose the
+# right ``_prepare_*_session`` helper. Stellaris is the default for
+# anchors not listed here so SA-B3 wiring stays intact.
+AUCTION_VENUE_BY_LOCATION_ID: dict[str, str] = {
+    "stellaris_auction_house": "stellaris",
+    "crimson_black_market": "crimson_reach",
 }
 
 # Layout constants
@@ -305,6 +315,14 @@ class StationHubView(BaseView):
         # panel. Only created when the active detail panel is that anchor and
         # Cassian Velo is registered as an NPC at this system.
         self._detail_talk_velo_button: Optional[pygame_gui.elements.UIButton] = None
+        # SA-B4: "Talk to Floor Manager" button on the Reach Black Market
+        # detail panel. Mirrors the Velo affordance; surfaces for all tiers
+        # so unjoined players still hear Vex turn them away in his own voice.
+        self._detail_talk_floor_manager_button: Optional[pygame_gui.elements.UIButton] = None
+        # SA-B4: venue id pulled from AUCTION_VENUE_BY_LOCATION_ID when the
+        # player presses Enter on a venue card. The engine reads this in its
+        # GameState.AUCTION handler to pick the right _prepare_*_session.
+        self.pending_auction_venue_id: Optional[str] = None
 
         # Sprite manager for faction emblems
         self._sprite_mgr = get_sprite_manager()
@@ -616,6 +634,9 @@ class StationHubView(BaseView):
         if self._detail_talk_velo_button:
             self._detail_talk_velo_button.kill()
             self._detail_talk_velo_button = None
+        if self._detail_talk_floor_manager_button:
+            self._detail_talk_floor_manager_button.kill()
+            self._detail_talk_floor_manager_button = None
 
     def _destroy_npc_buttons(self) -> None:
         """Kill cantina NPC, re-recruit, hire, and contract buttons."""
@@ -789,6 +810,9 @@ class StationHubView(BaseView):
                 if self._detail_talk_velo_button:
                     self._detail_talk_velo_button.kill()
                     self._detail_talk_velo_button = None
+                if self._detail_talk_floor_manager_button:
+                    self._detail_talk_floor_manager_button.kill()
+                    self._detail_talk_floor_manager_button = None
                 return
 
             # SA-B3: Talk-to-Velo button on the Stellaris Auction House detail
@@ -807,6 +831,9 @@ class StationHubView(BaseView):
                     self._detail_enter_button = None
                 self._detail_talk_velo_button.kill()
                 self._detail_talk_velo_button = None
+                if self._detail_talk_floor_manager_button:
+                    self._detail_talk_floor_manager_button.kill()
+                    self._detail_talk_floor_manager_button = None
                 self.pending_npc_id = "cassian_velo"
                 self.next_state = GameState.DIALOGUE
                 return
@@ -817,11 +844,16 @@ class StationHubView(BaseView):
                 self._detail_enter_button is not None
                 and event.ui_element == self._detail_enter_button
             ):
-                target_state = (
-                    UNIQUE_HALL_TARGETS.get(self._detail_location.id)
-                    if self._detail_location is not None
-                    else None
+                active_loc_id = (
+                    self._detail_location.id if self._detail_location is not None else None
                 )
+                target_state = UNIQUE_HALL_TARGETS.get(active_loc_id) if active_loc_id else None
+                # SA-B4: AUCTION targets pick venue id from the hub map so
+                # the engine routes Stellaris vs Reach correctly.
+                if target_state == GameState.AUCTION and active_loc_id:
+                    self.pending_auction_venue_id = AUCTION_VENUE_BY_LOCATION_ID.get(
+                        active_loc_id, "stellaris"
+                    )
                 self._emit_detail_dwell_if_open()
                 self._detail_location = None
                 if self._detail_close_button:
@@ -832,8 +864,36 @@ class StationHubView(BaseView):
                 if self._detail_talk_velo_button:
                     self._detail_talk_velo_button.kill()
                     self._detail_talk_velo_button = None
+                if self._detail_talk_floor_manager_button:
+                    self._detail_talk_floor_manager_button.kill()
+                    self._detail_talk_floor_manager_button = None
                 if target_state is not None:
                     self.next_state = target_state
+                return
+
+            # SA-B4: Talk-to-Floor-Manager button surfaces Vex Tarn's
+            # off-floor dialogue. Routes to the dialogue view; the
+            # tier-locked branch fires for unjoined players via the
+            # dialogue tree's branch logic.
+            if (
+                self._detail_talk_floor_manager_button is not None
+                and event.ui_element == self._detail_talk_floor_manager_button
+            ):
+                self._emit_detail_dwell_if_open()
+                self._detail_location = None
+                if self._detail_close_button:
+                    self._detail_close_button.kill()
+                    self._detail_close_button = None
+                if self._detail_enter_button:
+                    self._detail_enter_button.kill()
+                    self._detail_enter_button = None
+                if self._detail_talk_velo_button:
+                    self._detail_talk_velo_button.kill()
+                    self._detail_talk_velo_button = None
+                self._detail_talk_floor_manager_button.kill()
+                self._detail_talk_floor_manager_button = None
+                self.pending_npc_id = "reach_floor_manager"
+                self.next_state = GameState.DIALOGUE
                 return
 
             # Check NPC buttons
@@ -1126,6 +1186,27 @@ class StationHubView(BaseView):
         # Other unique anchors keep their close-only layout (no regression).
         is_unique_hall = loc.id in UNIQUE_HALL_TARGETS
 
+        # SA-B4: Reach Black Market gates Enter on Wreckers' Guild
+        # membership tier. Unjoined players see a tier-locked message
+        # line and no Enter button (the Talk-to-Floor-Manager affordance
+        # still surfaces so they hear Vex turn them away in his voice).
+        reach_tier_locked = False
+        if loc.id == "crimson_black_market":
+            from spacegame.models.bidding import wreckers_tier_for_membership
+
+            reach_tier_locked = wreckers_tier_for_membership(self.player) == "unjoined"
+            if reach_tier_locked:
+                tier_locked_template = self._reach_tier_locked_template()
+                self._render_wrapped_text(
+                    screen,
+                    tier_locked_template,
+                    self.detail_font,
+                    accent,
+                    content_x,
+                    panel_y + panel_h - 80,
+                    content_w,
+                )
+
         # Close button
         if not self._detail_close_button:
             self._detail_close_button = pygame_gui.elements.UIButton(
@@ -1139,8 +1220,10 @@ class StationHubView(BaseView):
                 manager=self.ui_manager,
             )
 
-        # Enter button (unique-hall venues only)
-        if is_unique_hall and not self._detail_enter_button:
+        # Enter button (unique-hall venues only). Suppressed when the
+        # Reach tier gate fails.
+        show_enter_button = is_unique_hall and not reach_tier_locked
+        if show_enter_button and not self._detail_enter_button:
             self._detail_enter_button = pygame_gui.elements.UIButton(
                 relative_rect=pygame.Rect(
                     DETAIL_PANEL_X + DETAIL_PANEL_W - 175,
@@ -1151,7 +1234,7 @@ class StationHubView(BaseView):
                 text="Enter",
                 manager=self.ui_manager,
             )
-        elif not is_unique_hall and self._detail_enter_button:
+        elif not show_enter_button and self._detail_enter_button:
             # Switching detail anchors — kill the prior venue's enter button.
             self._detail_enter_button.kill()
             self._detail_enter_button = None
@@ -1178,6 +1261,46 @@ class StationHubView(BaseView):
         elif not show_velo_button and self._detail_talk_velo_button:
             self._detail_talk_velo_button.kill()
             self._detail_talk_velo_button = None
+
+        # SA-B4: Talk-to-Floor-Manager button on the Reach Black Market
+        # detail panel. Surfaces for all tiers; unjoined players still
+        # hear Vex turn them away in his voice via the tier-locked
+        # dialogue branch (locked decision §B4.5).
+        show_floor_manager_button = (
+            loc.id == "crimson_black_market"
+            and getattr(self.data_loader, "get_npc", None) is not None
+            and self.data_loader.get_npc("reach_floor_manager") is not None
+        )
+        if show_floor_manager_button and not self._detail_talk_floor_manager_button:
+            self._detail_talk_floor_manager_button = pygame_gui.elements.UIButton(
+                relative_rect=pygame.Rect(
+                    DETAIL_PANEL_X + DETAIL_PANEL_W - 350,
+                    panel_y + panel_h - 40,
+                    160,
+                    30,
+                ),
+                text="Talk to Floor Manager",
+                manager=self.ui_manager,
+            )
+        elif not show_floor_manager_button and self._detail_talk_floor_manager_button:
+            self._detail_talk_floor_manager_button.kill()
+            self._detail_talk_floor_manager_button = None
+
+    def _reach_tier_locked_template(self) -> str:
+        """Return the Reach tier-locked message line.
+
+        Reads the ``tier_locked`` template from the Reach voice file
+        when available; falls back to the design-doc default string if
+        the file is missing or the data loader is offline.
+        """
+        getter = getattr(self.data_loader, "get_auction_voices", None)
+        if getter is not None:
+            voices = getter("crimson_reach")
+            if isinstance(voices, dict):
+                template = voices.get("tier_locked")
+                if isinstance(template, str) and template:
+                    return template
+        return "The floor is for members. Talk to the Guild first."
 
     def _render_wrapped_text(
         self,

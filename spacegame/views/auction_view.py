@@ -205,7 +205,17 @@ class AuctionView(BaseView):
         self.background = AnimatedBackground("trade_routes", WINDOW_WIDTH, WINDOW_HEIGHT, seed=8642)
         self._bg_dim = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
         self._bg_dim.fill((0, 0, 0))
-        self._bg_dim.set_alpha(150)
+        # SA-B4 (locked decision §B4.12): the Reach floor reads dimmer
+        # than Stellaris. Alpha 180 vs 150. Accent color sourced from
+        # ReachDarkLayout so future palette refinements flow through.
+        if venue_id == "crimson_reach":
+            from spacegame.views.station_layouts import ReachDarkLayout
+
+            self._bg_dim.set_alpha(180)
+            self.venue_accent_color: tuple[int, int, int] = ReachDarkLayout.accent_color
+        else:
+            self._bg_dim.set_alpha(150)
+            self.venue_accent_color = Colors.UI_BORDER
 
     # ------------------------------------------------------------------
     # External setters (engine wiring)
@@ -771,18 +781,26 @@ class AuctionView(BaseView):
             self._render_sable_panel(screen, x, y, lot)
 
     def _velo_running_commentary(self, lot: AuctionLot, rs: Any) -> str:
-        """Return Velo's running-commentary line for the active round.
+        """Return the auctioneer's running-commentary line for the active round.
 
         On round 1 with no high bidder yet, fires the lot-open template.
         Otherwise updates with the "we are at" template each time the
         current high bid changes.
+
+        SA-B4 (locked decision §B4.6): reads ``auctioneer_lines`` first
+        and falls back to ``velo_lines`` so SA-B3's Stellaris voice file
+        keeps working unchanged. New venues author the venue-neutral
+        ``auctioneer_lines`` key.
         """
-        templates = self._voice_templates.get("velo_lines") if self._voice_templates else None
-        velo: dict[str, str] = templates if isinstance(templates, dict) else {}
+        templates_dict = self._voice_templates if self._voice_templates else {}
+        auctioneer = templates_dict.get("auctioneer_lines")
+        if not isinstance(auctioneer, dict):
+            auctioneer = templates_dict.get("velo_lines")
+        lines: dict[str, str] = auctioneer if isinstance(auctioneer, dict) else {}
         if rs.current_high_bidder_id is None:
-            template = velo.get("lot_open", "The lot is open. {lot_headline}.")
+            template = lines.get("lot_open", "The lot is open. {lot_headline}.")
             return template.format(lot_headline=lot.headline)
-        template = velo.get("we_are_at", "We are at {current_high_bid}. Do we hear more?")
+        template = lines.get("we_are_at", "We are at {current_high_bid}. Do we hear more?")
         return template.format(
             current_high_bid=f"{rs.current_high_bid:,}",
             lot_headline=lot.headline,

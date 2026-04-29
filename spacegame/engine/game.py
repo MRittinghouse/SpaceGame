@@ -31,7 +31,7 @@ to the game state diagram. Both are kept in this file because they access
 import sys
 import time
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
 import pygame
 import pygame_gui
@@ -129,6 +129,41 @@ def _resolve_venue_config(player: Optional[Player]) -> tuple[str, str]:
     if system_id in _VENUE_REGISTRY:
         return _VENUE_REGISTRY[system_id]
     return _DEFAULT_VENUE_CONFIG
+
+
+def _apply_reach_legality_penalty(player: Any, lot: Any) -> None:
+    """SA-B4: apply the Reach legality penalty for a winning lot.
+
+    Locked decision §B4.8 magnitudes (constants live in
+    ``spacegame.models.bidding``):
+
+    * ``contraband`` -> ``REACH_CONTRABAND_REP_PENALTY`` (-2)
+    * ``restricted_weapon`` -> ``REACH_RESTRICTED_WEAPON_REP_PENALTY`` (-1)
+    * ``salvage_lot`` / ``faction_commodity`` -> 0
+
+    The penalty modifies ``stellaris_commerce_guild`` rep via
+    ``Player.modify_reputation`` so the standard rep clamp (-100..100)
+    and ``_pending_faction_deltas`` notification queue both fire (the
+    queue surfaces the rep change in the next frame's hub UI).
+    Module-level so the unit test can exercise the math without
+    instantiating ``Game``.
+    """
+    from spacegame.models.bidding import (
+        REACH_CONTRABAND_REP_PENALTY,
+        REACH_RESTRICTED_WEAPON_REP_PENALTY,
+    )
+    from spacegame.models.bidding_lot import (
+        LOT_CATEGORY_CONTRABAND,
+        LOT_CATEGORY_RESTRICTED_WEAPON,
+    )
+
+    delta = 0
+    if lot.category == LOT_CATEGORY_CONTRABAND:
+        delta = REACH_CONTRABAND_REP_PENALTY
+    elif lot.category == LOT_CATEGORY_RESTRICTED_WEAPON:
+        delta = REACH_RESTRICTED_WEAPON_REP_PENALTY
+    if delta != 0:
+        player.modify_reputation("stellaris_commerce_guild", delta)
 
 
 class Game:
@@ -1934,12 +1969,22 @@ class Game:
 
                     self._start_transition(TransitionType.FADE, 0.3, _do_dispute)
                 elif next_state == GameState.AUCTION:
-                    # SA-B3: route the Stellaris Auction House.
+                    # SA-B3 + SA-B4: route the Auction venue. Hub view sets
+                    # pending_auction_venue_id when Enter is pressed; we
+                    # fall back to "stellaris" for legacy callers.
                     self.station_hub_view.next_state = None
+                    pending_venue = (
+                        getattr(self.station_hub_view, "pending_auction_venue_id", None)
+                        or "stellaris"
+                    )
+                    self.station_hub_view.pending_auction_venue_id = None
 
-                    def _do_auction():
-                        self._prepare_stellaris_session()
-                        self._ensure_auction_view(venue_id="stellaris")
+                    def _do_auction(venue_id: str = pending_venue) -> None:
+                        if venue_id == "crimson_reach":
+                            self._prepare_reach_session()
+                        else:
+                            self._prepare_stellaris_session()
+                        self._ensure_auction_view(venue_id=venue_id)
                         self.state_manager.change_state(GameState.AUCTION)
 
                     self._start_transition(TransitionType.FADE, 0.3, _do_auction)
@@ -2323,19 +2368,21 @@ class Game:
         same view subclass; ``venue_id`` selects which display name shows.
         """
         from spacegame.constants.flags import (
+            auction_first_contraband_win,
             auction_first_rivalry_formed,
             auction_first_session_complete,
             auction_first_win,
             auction_rival_encountered,
+        )
+        from spacegame.models.bidding_lot import (
+            LOT_CATEGORY_CONTRABAND,
         )
         from spacegame.models.bidding_persona import (
             NAMED_RIVAL_IDS,
         )
         from spacegame.views.auction_view import AuctionView
 
-        venue_display = (
-            "Stellaris Auction House" if venue_id == "stellaris" else "Crimson Reach Black Market"
-        )
+        venue_display = "Stellaris Auction House" if venue_id == "stellaris" else "The Reach Floor"
         self.auction_view = AuctionView(
             ui_manager=self.ui_manager,
             player=self.player,
@@ -2355,8 +2402,40 @@ class Game:
                     self.journal.trigger_auto_entry(
                         flag, self.player.game_day, self.player.current_system_id
                     )
+            # SA-B4: first-Reach-session journal/banter trigger.
+            if venue_id == "crimson_reach":
+                from spacegame.constants.flags import auction_first_reach_session
+
+                reach_flag = auction_first_reach_session()
+                if not self.player.dialogue_flags.get(reach_flag):
+                    self.player.dialogue_flags[reach_flag] = True
+                    if self.journal is not None:
+                        self.journal.trigger_auto_entry(
+                            reach_flag,
+                            self.player.game_day,
+                            self.player.current_system_id,
+                        )
 
         def _on_lot_won(lot, sale_price: int) -> None:
+            # SA-B4: Reach venue applies the legality penalty BEFORE the
+            # auction_first_win flag is set, so the journal auto-entry
+            # sees the post-penalty rep value (locked decision §B4.8).
+            if venue_id == "crimson_reach":
+                _apply_reach_legality_penalty(self.player, lot)
+                # First contraband-win banter trigger flag + journal entry.
+                if lot.category == LOT_CATEGORY_CONTRABAND:
+                    contraband_flag = auction_first_contraband_win()
+                    if not self.player.dialogue_flags.get(contraband_flag):
+                        self.player.dialogue_flags[contraband_flag] = True
+                        if self.journal is not None:
+                            self.journal.trigger_auto_entry(
+                                contraband_flag,
+                                self.player.game_day,
+                                self.player.current_system_id,
+                            )
+                # Reach-debut achievement stub (SA-X7 owns the metadata;
+                # SA-B4 owns the unlock condition).
+                self._mark_auction_reach_debut_if_first(lot)
             flag = auction_first_win()
             if not self.player.dialogue_flags.get(flag):
                 self.player.dialogue_flags[flag] = True
@@ -2414,6 +2493,107 @@ class Game:
         self.auction_view.set_voice_templates(self.data_loader.get_auction_voices(venue_id))
 
         self.state_manager.register_state(GameState.AUCTION, self.auction_view)
+
+    def _mark_auction_reach_debut_if_first(self, lot: Any) -> None:
+        """SA-B4: register the achievement_auction_reach_debut stub on first Reach win.
+
+        The achievement metadata + display copy land in SA-X7; SA-B4
+        owns the unlock condition. Stub is recorded as a dialogue flag
+        of the same name so the achievement layer can read it without a
+        new persistence path.
+        """
+        from spacegame.models.bidding import ACHIEVEMENT_AUCTION_REACH_DEBUT
+
+        flag = ACHIEVEMENT_AUCTION_REACH_DEBUT
+        if not self.player.dialogue_flags.get(flag):
+            self.player.dialogue_flags[flag] = True
+
+    def _prepare_reach_session(self) -> None:
+        """SA-B4: ready the Reach Black Market state on hub-entry.
+
+        Demand-driven cadence per locked decision §B4.4: each elapsed
+        game-day (since the last advance pass) advances the pending-
+        arrivals counter with probability ``REACH_DEMAND_PROBABILITY``.
+        A session is due when the counter reaches ``REACH_SESSION_SIZE``
+        OR ``REACH_DEMAND_MAX_GAP_DAYS`` game-days have elapsed since
+        the last close. When due, generate the lot pool against the
+        Wreckers' Guild tier ladder and transition the auction state
+        into PREVIEW with Salko + 3 ambient Reach Buyer personas.
+
+        Salko attends every Reach session the player walks into per
+        decision §B4.7. No new named rival is introduced for Reach.
+        """
+        from spacegame.models.bidding import (
+            REACH_SESSION_SIZE,
+            AuctionLifecycle,
+            generate_lot_pool,
+            reach_advance_demand,
+            reach_session_due,
+            wreckers_tier_for_membership,
+        )
+        from spacegame.models.bidding_persona import (
+            make_reach_flavor,
+            make_salko,
+        )
+
+        if self.player is None:
+            return
+        venue_id = "crimson_reach"
+        state = self.player.auction_state
+        current_day = self.player.game_day
+        # Advance demand for any elapsed days since the last advance
+        # pass. Idempotent across reload via ``last_advance_day`` key.
+        reach_advance_demand(state, current_day)
+        # Already in PREVIEW or live for this venue: do nothing (idempotent).
+        if (
+            state.lifecycle
+            in (
+                AuctionLifecycle.PREVIEW,
+                AuctionLifecycle.SESSION_OPEN,
+                AuctionLifecycle.LOT_OPEN,
+                AuctionLifecycle.BID_WINDOW,
+                AuctionLifecycle.ROUND_CLOSE,
+                AuctionLifecycle.LOT_RESOLUTION,
+            )
+            and state.active_auction_id == venue_id
+        ):
+            return
+        # If a session is not due yet, leave the state in SCHEDULED so
+        # the empty-state Floor Manager line renders.
+        if not reach_session_due(state, current_day):
+            state.lifecycle = AuctionLifecycle.SCHEDULED
+            state.active_auction_id = venue_id
+            return
+        catalog = self.data_loader.get_auction_lots(venue_id)
+        tier = wreckers_tier_for_membership(self.player)
+        session_id = f"reach_session_{current_day}"
+        candidate_pool = generate_lot_pool(
+            catalog,
+            venue_id=venue_id,
+            player_rep_tier=tier,
+            player_faction_standing=dict(self.player.faction_reputation),
+            season_tag=None,
+            session_id=session_id,
+            target_size=REACH_SESSION_SIZE,
+        )
+        if not candidate_pool:
+            # No eligible lots; keep the state SCHEDULED (empty state).
+            state.lifecycle = AuctionLifecycle.SCHEDULED
+            state.active_auction_id = venue_id
+            return
+        session_lots = candidate_pool[:REACH_SESSION_SIZE]
+        # Persona pool: Salko + 3 ambient Reach Buyers (locked §B4.7).
+        salko = make_salko()
+        buyers = [make_reach_flavor(instance_index=i) for i in (1, 2, 3)]
+        all_personas = [salko, *buyers]
+        rival_ids = [p.persona_id for p in all_personas]
+        state.enter_preview(
+            venue_id=venue_id,
+            session_lots=session_lots,
+            rival_ids=rival_ids,
+            session_id=session_id,
+        )
+        state.set_session_personas(all_personas)
 
     def _prepare_stellaris_session(self) -> None:
         """SA-B3: ready the Stellaris auction state on hub-entry.
