@@ -3369,7 +3369,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 - Notes: Both gaps (AC #14 journal callback, AC #5 floor guard) fixed directly with tests. All 21 criteria verified. Voice content, engine wiring, scenario pipeline, and save/load all solid.
 #### SA-B6 — Bidding polish + tuning
 
-**Status**: in-progress (implementing)
+**Status**: in-progress (reviewing)
 **Phase**: Phase III | **Size**: M | **Effort**: 1 week
 **Depends on**: SA-B3, SA-B4, SA-B5 | **Blocks**: SA-X1, SA-X2, SA-X4, SA-X5, SA-X6, SA-X7, SA-X8, SA-X9
 
@@ -3518,24 +3518,24 @@ These are the decisions to lock during planning execution. Recommendations recor
 - 2026-04-29 15:00 — green: Salko buckets expanded to 3 lines each; voice-checked against cold-grudge/terse/present-tense register; Writing Bible scanner clean; reach voice compliance clean. 5 new Salko bucket tests passing. Committed 88a3780.
 - 2026-04-29 15:20 — requirements/sa_bidding_tuning_notes.md authored (methodology + 5-category signal + all-skipped decisions + accessibility audit pass). Committed 196c03b.
 - 2026-04-29 15:30 — full suite: 9897 passed, 98 skipped (baseline 9881, +16 new tests). Lint clean, format clean, SI-3 scanner clean, Writing Bible scanner clean, reach compliance scanner clean. All 12 acceptance criteria satisfied. PHASE_OK
+- 2026-04-29 13:11 — harness: review phase starting (rework cycle 0)
+- 2026-04-29 14:00 — review complete; zero critical findings; no fixes needed. All 12 AC verified: OUTCOME_OUTCOMPETED constant wired symmetrically to collect_outbid_records pattern (tests exercising model layer correctly); _seed_index() rotation live in _post_session_lines() with 3 rotation tests passing; dead-code block fully removed from auction_view.update() with test asserting update() does not fire on_session_complete; all four Salko buckets expanded to 3 lines each with first-line preserved byte-for-byte; tuning notes doc meets 5-section spec with explicit skip decisions for all 5 constant categories; accessibility audit pass documented with 4 explicit checks. Writing Bible scanner 17 passed. Format and lint clean on Python touched files (JSON data files are correctly excluded from ruff format per CLAUDE.md conventions — ruff trailing-comma reformatting would invalidate them). Single tighten: both collect_outbid_records and collect_player_win_records exist only at the model layer and are called only from tests; the live engine path does not invoke either, so the three-session auto-retire dynamic exists in tests but not in live gameplay. This is a pre-existing SA-B2 gap (not a SA-B6 regression) — collect_outbid_records has been unwired since SA-B2 with no prior reviewer flag; SA-B6 is symmetric to it. Not a blocker; but a phase VI engine-wiring pass may want to add a post-session hook that calls both methods. PHASE_OK
 
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-04-29 12:58
-- Completed: 2026-04-29 15:30
-- Files_changed: spacegame/models/captain_memory.py, spacegame/models/bidding.py, spacegame/views/auction_view.py, data/auctions/crimson_reach_voices.json, requirements/sa_bidding_tuning_notes.md, tests/test_models/test_bidding_captain_memory.py, tests/test_models/test_bidding_state.py, tests/test_views/test_auction_view.py, tests/test_views/test_auction_view_reach.py, tests/test_data_integrity/test_reach_voice_compliance.py
-- Commits: 9b5e12b, 88a3780, 196c03b
-- Tests_added: 16
-- Tests_baseline: 9881
+- Started: 2026-04-29 13:11
+- Completed: 2026-04-29 14:00
+- Files_changed: none
+- Commits: none
 - Tests_passing: 9897
-- Tests_skipped: 98
-- Lint_clean: yes
-- Format_clean: yes
-- SI3_scanner_clean: yes
-- Writing_bible_clean: yes
-- Touch_zones_respected: yes
-- Notes: All 12 AC satisfied. OUTCOME_OUTCOMPETED symmetric rivalry (8 tests), post-session rotation via _seed_index hash (4 tests), dead-code removal (1 test), Salko bucket expansion to 3-line arrays (5 tests). Tuning analysis concluded no constant changes warranted; all 5 categories within target range. Accessibility audit found no violations. No new sprints proposed.
+- Acceptance_criteria_verified: 12/12
+- Polish_items_verified: 6/6
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 0
+- Single_tighten: collect_outbid_records and collect_player_win_records are both model-layer only — called from tests but not from the live engine; the auto-retire rivalry dynamic exists in tests but not in actual gameplay. Pre-existing SA-B2 gap, not a SA-B6 regression; flag for a Phase VI engine-wiring pass.
+- Followup_sprints_added: none
+- Notes: Clean pass. All 12 criteria verified directly against code and test output. Salko voice content meets cold-grudge register. Post-session rotation hash distributes all authored lines. Dead-code block and tracking variable fully removed. Tuning notes satisfy the 5-section spec with explicit skip decisions.
 
 ### Phase IV — Research Patronage
 
