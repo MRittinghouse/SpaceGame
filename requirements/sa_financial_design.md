@@ -798,7 +798,7 @@ The following decisions are locked. SA-F2 and all downstream sprints do not re-l
 
 2. **Contract granularity: per-(commodity, system) integer-unit with a 20-unit minimum.**
    Rationale: matches `market.py`'s per-commodity per-system integer-quantity model. Fractional units would introduce bookkeeping mismatches. The 20-unit minimum prevents trivial fishing contracts.
-   Source: `spacegame/models/market.py:115` (integer-unit trading throughout).
+   Source: `spacegame/models/market.py:425` (`record_buy(commodity_id: str, quantity: int)` -- quantities are integers throughout the market trading surface).
 
 3. **Insurance premium formula: multiplicative product of ship_value, base_rate, combat_record_modifier, faction_standing_modifier.**
    Rationale: the three-axis model reflects the three integration commitments from `requirements/station_anchors.md:180-186` ("Tied to ship value, combat record, and faction standing"). A single-axis premium would underuse the existing combat record and faction standing systems.
