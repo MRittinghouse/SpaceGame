@@ -3664,7 +3664,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 - Started: 2026-04-29 13:20
 - Completed: 2026-04-29 14:25
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending
+- Commits: 3452627
 - New_sprints_proposed: none
 - Polish_items_folded_in: first-time-tip-overlay, four-flag-gated-journal-entries, save-load-round-trip
 - Decisions_locked: 9
