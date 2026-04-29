@@ -69,4 +69,7 @@ spacegame/data/_theme_scaled.json
 ralph/logs/*
 !ralph/logs/.gitkeep
 ralph/state.json
+ralph/.running
+ralph/.write_probe
+ralph/.agency_probe
 STOP
