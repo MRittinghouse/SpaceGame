@@ -36,6 +36,7 @@ from spacegame.models.sub_reputation import (
 from spacegame.models.timed_thread import TimedThreadState
 from spacegame.models.trade_route import PriceMemory, TradeRouteTracker
 from spacegame.models.upgrades import ShipUpgradeManager
+from spacegame.models.okafor_research import OkaforResearchState
 from spacegame.models.wreck_upgrade import WreckUpgradeState
 from spacegame.models.wreckers_guild import WreckersGuildState
 
@@ -82,6 +83,12 @@ class Player:
     # ``faction_reputation["miners_union"]`` via the existing API; this
     # state tracks the cap and cooldown bookkeeping.
     deep_shafts_state: Optional[DeepShaftsState] = None
+
+    # SA-R1: Okafor Institute Medical Wing research-patronage state.
+    # None until the player first funds a project at the venue.
+    # Kweon's relationship arc lives on ``kweon_relationship_value``
+    # inside this dataclass (locked decision: not a sub-rep tier).
+    okafor_research_state: Optional[OkaforResearchState] = None
 
     # SA-B2: Auction system state (Bidding Core). Default is an empty
     # AuctionState — first-time players have no scheduled sessions, no

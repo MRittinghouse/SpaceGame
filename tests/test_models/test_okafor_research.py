@@ -27,10 +27,12 @@ from spacegame.models.okafor_research import (
     OkaforProjectTemplate,
     OkaforResearchState,
     PatentHolding,
+    ProjectOutcome,
     compute_team_fund_cost,
     compute_team_fund_duration,
     fund_project,
     get_template,
+    resolve_completed_projects,
     resolve_completion,
     roll_offers,
     seed_for_window,
@@ -398,6 +400,100 @@ class TestSerialization:
         assert state.holdings == []
         assert state.kweon_relationship_value == 0
         assert state.slot_seed_window == -1
+
+
+class TestResolveCompletedProjects:
+    """Game-day tick entry point — resolves and removes completed projects."""
+
+    def _low_risk_template(self) -> OkaforProjectTemplate:
+        for tpl in OKAFOR_PROJECT_TEMPLATES:
+            if tpl.risk_tier == "low":
+                return tpl
+        pytest.fail("No low-risk template authored")
+        raise AssertionError
+
+    def test_no_active_projects_returns_empty(self) -> None:
+        state = OkaforResearchState()
+        outcomes = resolve_completed_projects(state, 50, "captain", 0.0, 0.0)
+        assert outcomes == []
+
+    def test_project_not_yet_due_remains_active(self) -> None:
+        state = OkaforResearchState()
+        tpl = self._low_risk_template()
+        fund_project(state, tpl, accept_day=10, collaborators=[])
+        outcomes = resolve_completed_projects(state, current_day=10, player_seed_token="navi",
+                                              yield_bonus_total=0.0, risk_reduction_total=0.0)
+        assert outcomes == []
+        assert tpl.id in state.active_projects
+
+    def test_project_completes_on_due_day_and_is_removed(self) -> None:
+        state = OkaforResearchState()
+        tpl = self._low_risk_template()
+        fund_project(state, tpl, accept_day=10, collaborators=[])
+        completion_day = 10 + tpl.base_duration_days
+        outcomes = resolve_completed_projects(
+            state, completion_day, "navi", yield_bonus_total=0.0, risk_reduction_total=0.0,
+        )
+        assert len(outcomes) == 1
+        assert outcomes[0].template_id == tpl.id
+        assert tpl.id not in state.active_projects
+
+    def test_success_appends_held_holding(self) -> None:
+        state = OkaforResearchState()
+        tpl = self._low_risk_template()
+        # Probe seeds to find a success.
+        for accept_day in range(0, 20):
+            state2 = OkaforResearchState()
+            fund_project(state2, tpl, accept_day=accept_day, collaborators=[])
+            completion_day = accept_day + tpl.base_duration_days
+            outcomes = resolve_completed_projects(
+                state2, completion_day, "captain", 0.0, 0.0,
+            )
+            if outcomes and outcomes[0].success:
+                assert len(state2.holdings) == 1
+                holding = state2.holdings[0]
+                assert holding.state == "held"
+                assert holding.template_id == tpl.id
+                assert holding.success_payout == outcomes[0].payout
+                assert state2.completed_count == 1
+                assert state2.kweon_relationship_value == 1
+                return
+        pytest.fail("No success outcome found in 20 trials")
+
+    def test_failure_does_not_append_holding(self) -> None:
+        state = OkaforResearchState()
+        # Use mid-tier — higher failure odds = easier to find a failure.
+        for tpl in OKAFOR_PROJECT_TEMPLATES:
+            if tpl.risk_tier != "mid":
+                continue
+            for accept_day in range(0, 200):
+                state2 = OkaforResearchState()
+                fund_project(state2, tpl, accept_day=accept_day, collaborators=[])
+                completion_day = accept_day + tpl.base_duration_days
+                outcomes = resolve_completed_projects(
+                    state2, completion_day, "captain", 0.0, 0.0,
+                )
+                if outcomes and not outcomes[0].success:
+                    assert state2.holdings == []
+                    assert state2.failed_count == 1
+                    return
+            pytest.fail("No failure outcome found in 200 trials at mid-risk")
+
+    def test_two_saves_produce_identical_outcomes(self) -> None:
+        """Acceptance #5 — same scenario, same RNG seed, same result."""
+        outcomes_a: list[bool] = []
+        outcomes_b: list[bool] = []
+        for run, sink in ((0, outcomes_a), (1, outcomes_b)):
+            state = OkaforResearchState()
+            for i, tpl in enumerate(OKAFOR_PROJECT_TEMPLATES[:5]):
+                # Use unique accept days so each project gets a unique seed
+                # and active_projects dict has distinct keys.
+                fund_project(state, tpl, accept_day=10 + i, collaborators=[])
+            # Tick to a day past every completion day.
+            outcomes = resolve_completed_projects(state, 200, "captain", 0.0, 0.0)
+            for o in outcomes:
+                sink.append(o.success)
+        assert outcomes_a == outcomes_b, "Two runs of the same scenario must match"
 
 
 class TestKweonRelationshipValue:

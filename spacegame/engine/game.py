@@ -5125,6 +5125,71 @@ class Game:
             self._mission_notifications.append(msg)
         logger.info(f"Builder discovery: {discovery_type} '{item_id}'")
 
+    def _tick_okafor_projects(self, current_day: int) -> None:
+        """SA-R1: resolve completed Okafor projects + drain royalty payouts.
+
+        Runs once per day-advance. Reads research_yield_bonus +
+        research_risk_reduction off the standard crew + skill stack
+        (locked decision: stack via the
+        ``crew_roster.get_bonus(...) + progression.get_bonus(...)``
+        pattern). Surfaces a notification per resolved project and one
+        more per royalty drain.
+        """
+        from spacegame.constants.flags import (
+            okafor_first_failure_seen,
+            okafor_project_completed_first,
+            okafor_project_failed_first,
+        )
+        from spacegame.models.okafor_research import (
+            OkaforResearchState,
+            get_template,
+            resolve_completed_projects,
+            tick_royalties,
+        )
+
+        if not self.player or self.player.okafor_research_state is None:
+            return
+        state: OkaforResearchState = self.player.okafor_research_state
+
+        yield_bonus = self.player.progression.get_bonus("research_yield_bonus")
+        risk_reduction = self.player.progression.get_bonus("research_risk_reduction")
+        if self.crew_roster is not None:
+            yield_bonus += self.crew_roster.get_bonus("research_yield_bonus")
+            risk_reduction += self.crew_roster.get_bonus("research_risk_reduction")
+
+        outcomes = resolve_completed_projects(
+            state,
+            current_day=current_day,
+            player_seed_token=self.player.name,
+            yield_bonus_total=yield_bonus,
+            risk_reduction_total=risk_reduction,
+        )
+        for outcome in outcomes:
+            template = get_template(outcome.template_id)
+            display_name = template.name if template else outcome.template_id
+            if outcome.success:
+                self.player.add_credits(outcome.payout)
+                if not self.player.dialogue_flags.get(okafor_project_completed_first()):
+                    self.player.dialogue_flags[okafor_project_completed_first()] = True
+                self._mission_notifications.append(
+                    f"Okafor: {display_name} succeeded. +{outcome.payout:,} CR."
+                )
+            else:
+                self.player.add_credits(outcome.payout)
+                if not self.player.dialogue_flags.get(okafor_project_failed_first()):
+                    self.player.dialogue_flags[okafor_project_failed_first()] = True
+                self.player.dialogue_flags[okafor_first_failure_seen()] = True
+                self._mission_notifications.append(
+                    f"Okafor: {display_name} did not hold. Refund: {outcome.payout:,} CR."
+                )
+
+        royalty_payout = tick_royalties(state, current_day)
+        if royalty_payout > 0:
+            self.player.add_credits(royalty_payout)
+            self._mission_notifications.append(
+                f"Okafor royalties: +{royalty_payout:,} CR."
+            )
+
     def _check_day_advance(self) -> None:
         """Check if game day advanced and trigger market event generation.
 
@@ -5295,6 +5360,13 @@ class Game:
             )
             for msg in notifications:
                 self._mission_notifications.append(msg)
+
+        # SA-R1: Okafor Institute research-patronage tick. Resolves any
+        # active project whose completion day has arrived (deterministic
+        # seeded outcome) and pays out scheduled royalties on licensed
+        # patents. Runs once per day-advance, after the other per-day
+        # systems so the player's notification feed lands grouped.
+        self._tick_okafor_projects(current_day)
 
         # Crew departure checks
         if self.crew_roster:

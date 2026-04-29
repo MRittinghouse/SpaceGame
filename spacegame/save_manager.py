@@ -448,6 +448,11 @@ class SaveManager:
             "deep_shafts_state": (
                 player.deep_shafts_state.to_dict() if player.deep_shafts_state is not None else None
             ),
+            "okafor_research_state": (
+                player.okafor_research_state.to_dict()
+                if player.okafor_research_state is not None
+                else None
+            ),
             # SA-B2: bidding system state. Always serialized (default
             # AuctionState() is the empty state). Additive — no
             # SAVE_VERSION bump per locked decision §SA-B2.3.
@@ -625,6 +630,16 @@ class SaveManager:
             player.deep_shafts_state = DeepShaftsState.from_dict(deep_shafts_data)
         else:
             player.deep_shafts_state = None
+
+        # SA-R1: Okafor Institute research-patronage state (None for
+        # legacy saves and for players who have not yet funded a project).
+        okafor_data = data.get("okafor_research_state")
+        if okafor_data:
+            from spacegame.models.okafor_research import OkaforResearchState
+
+            player.okafor_research_state = OkaforResearchState.from_dict(okafor_data)
+        else:
+            player.okafor_research_state = None
 
         # SA-B2: bidding system state. Legacy saves predating SA-B2 have
         # no ``auction_state`` key and load with the default empty state.

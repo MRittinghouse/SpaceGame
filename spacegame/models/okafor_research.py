@@ -852,3 +852,117 @@ def fund_project(
 def make_holding_id(template_id: str, accept_day: int) -> str:
     """Stable holding id constructor — used by the view at success time."""
     return f"{template_id}_{accept_day}"
+
+
+# ---------------------------------------------------------------------------
+# Project-resolution sweep (game-day tick entry point)
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class ProjectOutcome:
+    """Side-effect record from resolving a completed project.
+
+    Returned by :func:`resolve_completed_projects` so the caller can
+    apply credits, set journal flags, and surface notifications without
+    re-deriving any of the math.
+
+    Attributes:
+        template_id: The source template's id.
+        accept_day: The active project's ``accept_day`` (preserved for
+            holding-id construction and display).
+        success: Whether the project succeeded.
+        payout: Credits to award to the player. On success, the
+            yield-bonus-adjusted success payout. On failure, the 30%
+            refund of cost_paid.
+        holding_id: Non-empty on success; empty on failure.
+    """
+
+    template_id: str
+    accept_day: int
+    success: bool
+    payout: int
+    holding_id: str = ""
+
+
+def resolve_completed_projects(
+    state: OkaforResearchState,
+    current_day: int,
+    player_seed_token: str,
+    yield_bonus_total: float,
+    risk_reduction_total: float,
+) -> list[ProjectOutcome]:
+    """Resolve every active project whose completion day has arrived.
+
+    Mutates ``state``: removes resolved projects from
+    ``active_projects``, appends a :class:`PatentHolding` (state =
+    ``"held"``) for each success, increments ``completed_count`` or
+    ``failed_count`` accordingly, and bumps Kweon's relationship value
+    (+1 on success, -1 on failure).
+
+    Args:
+        state: The research state to advance.
+        current_day: The player's current ``game_day``.
+        player_seed_token: Stable per-save player token (the player
+            name is fine).
+        yield_bonus_total: Sum of crew + skill yield bonuses.
+        risk_reduction_total: Sum of crew + skill risk reductions.
+
+    Returns:
+        A list of :class:`ProjectOutcome` describing each resolved
+        project. The list is in deterministic order (sorted by
+        template id) so the caller's notification feed is stable.
+    """
+    completed_ids: list[str] = []
+    for template_id, active in state.active_projects.items():
+        if active.completion_day <= current_day:
+            completed_ids.append(template_id)
+    completed_ids.sort()
+
+    outcomes: list[ProjectOutcome] = []
+    for template_id in completed_ids:
+        active = state.active_projects[template_id]
+        template = get_template(template_id)
+        if template is None:
+            # Stale active project pointing at a removed template — drop
+            # it without payout. Defensive against a content rename.
+            del state.active_projects[template_id]
+            continue
+        success, payout = resolve_completion(
+            template, active, player_seed_token, yield_bonus_total, risk_reduction_total
+        )
+        if success:
+            holding_id = make_holding_id(template_id, active.accept_day)
+            state.holdings.append(
+                PatentHolding(
+                    holding_id=holding_id,
+                    template_id=template_id,
+                    state="held",
+                    success_payout=payout,
+                )
+            )
+            state.completed_count += 1
+            state.bump_relationship(1)
+            outcomes.append(
+                ProjectOutcome(
+                    template_id=template_id,
+                    accept_day=active.accept_day,
+                    success=True,
+                    payout=payout,
+                    holding_id=holding_id,
+                )
+            )
+        else:
+            state.failed_count += 1
+            state.bump_relationship(-1)
+            outcomes.append(
+                ProjectOutcome(
+                    template_id=template_id,
+                    accept_day=active.accept_day,
+                    success=False,
+                    payout=payout,
+                    holding_id="",
+                )
+            )
+        del state.active_projects[template_id]
+    return outcomes
