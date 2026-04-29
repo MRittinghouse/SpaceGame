@@ -296,3 +296,23 @@ class TestFloorManagerDialogueIntegrity:
         assert npc is not None, "reach_floor_manager NPC must be registered"
         assert npc.dialogue_id == "reach_floor_manager_main"
         assert npc.home_system_id == "crimson_reach"
+
+
+class TestSalkoBucketShape:
+    """SA-B6 AC#5: structural assertion that each Salko bucket has >= 2 options."""
+
+    _BUCKETS = ("rival_won", "player_won", "no_overlap", "absent_retired")
+
+    def test_salko_buckets_offer_variety(self) -> None:
+        path = Path(PROJECT_ROOT) / "data" / "auctions" / "crimson_reach_voices.json"
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        salko = data.get("post_session", {}).get("fenn_salko", {})
+        report: list[str] = []
+        for bucket in self._BUCKETS:
+            entries = salko.get(bucket, [])
+            if len(entries) < 2:
+                report.append(
+                    f"post_session.fenn_salko.{bucket} has {len(entries)} entries — need >= 2 for rotation"
+                )
+        assert not report, "Salko bucket expansion check failed:\n" + "\n".join(report)

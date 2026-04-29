@@ -17,6 +17,7 @@ ceiling estimates use the locked banker's-rounding formula from §11.12.
 
 from __future__ import annotations
 
+import hashlib
 from enum import Enum
 from typing import Any, Callable, Optional
 
@@ -63,6 +64,18 @@ from spacegame.models.progression import PlayerProgression
 from spacegame.utils.logger import logger
 from spacegame.views.base_view import BaseView
 from spacegame.views.first_time_tip import FirstTimeTipOverlay
+
+
+def _seed_index(session_id: str, rival_id: str, bucket: str) -> int:
+    """Map the (session_id, rival_id, bucket) triple to a non-negative int.
+
+    Used to rotate post-session voice lines across sessions deterministically:
+    the same triple always returns the same index so save/load reproduces the
+    same line; different session_ids produce different spreads across the bucket.
+    """
+    token = f"{session_id}|{rival_id}|{bucket}"
+    return int(hashlib.sha1(token.encode()).hexdigest()[:8], 16)
+
 
 # --- Tutorial overlay copy (design doc §9.1, byte-for-byte) -----------
 TIP_TITLE = "Auction Floor"
@@ -292,7 +305,6 @@ class AuctionView(BaseView):
         st = self.player.auction_state
         prior_lifecycle = st.lifecycle
         prior_won_lots = list(st.won_lots)
-        prior_history_count = len(st.session_history)
         prior_resolved_count = len(st.session_lot_results)
         prior_round_state = st.round_state
         prior_high_bidder = (
@@ -332,8 +344,9 @@ class AuctionView(BaseView):
                 self.on_lot_won(
                     lot, st.session_lot_results[-1].sale_price if st.session_lot_results else 0
                 )
-        if len(st.session_history) > prior_history_count and self.on_session_complete is not None:
-            self.on_session_complete()
+        # on_session_complete fires from _handle_button via _maybe_fire_session_complete,
+        # not from update() — the session_history grows in advance_after_resolution which
+        # is called only from button handling, never during tick().
         # Substate-driven UI rebuild.
         new_substate = _lifecycle_to_substate(st.lifecycle)
         if new_substate != self._built_substate:
@@ -1118,7 +1131,8 @@ class AuctionView(BaseView):
             rival_lines = post_table.get(rival_id, {}) if isinstance(post_table, dict) else {}
             options = rival_lines.get(bucket, []) if isinstance(rival_lines, dict) else []
             if options:
-                lines.append(options[0])
+                idx = _seed_index(st.active_session_id or "", rival_id, bucket) % len(options)
+                lines.append(options[idx])
             else:
                 lines.append(self._default_post_session_line(display, bucket))
         # Sable read line (if Sable on crew).

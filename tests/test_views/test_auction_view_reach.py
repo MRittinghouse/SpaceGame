@@ -268,3 +268,63 @@ class TestStationHubReachTierGating:
         # Voice file template: "The floor is for members. Talk to the Guild first."
         assert "members" in line.lower()
         assert "guild" in line.lower()
+
+
+# ---------------------------------------------------------------------------
+# SA-B6: Reach Salko post-session bucket expansion
+# ---------------------------------------------------------------------------
+
+
+class TestSalkoBucketExpansion:
+    """SA-B6 AC#5: each Salko post-session bucket has >= 2 entries after expansion."""
+
+    _BUCKETS = ("rival_won", "player_won", "no_overlap", "absent_retired")
+
+    def _salko_post(self) -> dict:
+        voices = _reach_voices()
+        return voices.get("post_session", {}).get("fenn_salko", {})
+
+    def test_all_salko_buckets_have_at_least_two_entries(self) -> None:
+        salko = self._salko_post()
+        report: list[str] = []
+        for bucket in self._BUCKETS:
+            entries = salko.get(bucket, [])
+            if len(entries) < 2:
+                report.append(f"bucket '{bucket}' has {len(entries)} entries (need >= 2)")
+        assert not report, "Salko bucket expansion failures:\n" + "\n".join(report)
+
+    def test_first_entry_preserved_for_determinism(self) -> None:
+        """The SA-B4 first line in each bucket stays at index [0]."""
+        salko = self._salko_post()
+        sa_b4_first = {
+            "rival_won": "Salko picks up his catalogue.",
+            "player_won": "Salko sets the catalogue down.",
+            "no_overlap": "Salko sat through the session.",
+            "absent_retired": "Salko was not in the room today.",
+        }
+        for bucket, prefix in sa_b4_first.items():
+            entries = salko.get(bucket, [])
+            assert entries, f"Bucket '{bucket}' is empty"
+            assert entries[0].startswith(prefix), (
+                f"Bucket '{bucket}' first entry must start with {prefix!r}; got {entries[0]!r}"
+            )
+
+    def test_rotation_works_across_reach_sessions(self) -> None:
+        """With >= 2 options, the rotation should yield both across distinct session ids."""
+        manager, player, crew_roster = _make_env()
+        view = _make_reach_view(manager, player, crew_roster)
+        view.set_voice_templates(_reach_voices())
+        rival_id = "fenn_salko"
+        seen: set[str] = set()
+        for i in range(20):
+            session_id = f"reach_sess_{i:04d}"
+            player.auction_state.active_session_id = session_id
+            player.auction_state.rival_session_attendance[session_id] = [rival_id]
+            player.auction_state.session_lot_results = []
+            lines = view._post_session_lines()
+            if lines:
+                seen.add(lines[0])
+        salko_options = _reach_voices()["post_session"]["fenn_salko"]["no_overlap"]
+        assert len(seen) >= 2, (
+            f"Rotation across 20 reach sessions should hit >= 2 of {len(salko_options)} options; got {seen}"
+        )

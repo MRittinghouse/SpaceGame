@@ -491,3 +491,105 @@ class TestBanterFlags:
             "auction_sable_ceiling_correct must be set when player wins within 5% of Sable's ceiling"
         )
         view.on_exit()
+
+
+# ---------------------------------------------------------------------------
+# SA-B6: Post-session line rotation
+# ---------------------------------------------------------------------------
+
+
+class TestPostSessionRotation:
+    """SA-B6 AC#4: _post_session_lines() rotates across sessions deterministically."""
+
+    _RIVAL_ID = "fenn_salko"
+    _OPTIONS = ["Alpha line.", "Bravo line.", "Charlie line."]
+
+    def _make_view_with_templates(self) -> tuple[AuctionView, Player, pygame_gui.UIManager]:
+        manager, player, cr, prog = _make_env()
+        view = _make_view(manager, player, cr, prog)
+        # Inject a voice-template dict with a 3-option no_overlap bucket for fenn_salko.
+        templates = {
+            "post_session": {
+                self._RIVAL_ID: {
+                    "no_overlap": self._OPTIONS[:],
+                }
+            }
+        }
+        view.set_voice_templates(templates)
+        return view, player, manager
+
+    def _set_session(self, player: Player, session_id: str) -> None:
+        """Wire state so fenn_salko attends the given session with no contested lots."""
+        player.auction_state.active_session_id = session_id
+        player.auction_state.rival_session_attendance[session_id] = [self._RIVAL_ID]
+        # No session_lot_results -> bucket falls through to "no_overlap".
+        player.auction_state.session_lot_results = []
+
+    def test_rotation_deterministic_within_session(self) -> None:
+        """Same session_id returns the same line on two consecutive calls."""
+        view, player, _manager = self._make_view_with_templates()
+        self._set_session(player, "sess_determinism")
+        first = view._post_session_lines()
+        second = view._post_session_lines()
+        assert first == second, "Same session_id must yield the same post-session selection"
+
+    def test_rotation_varies_across_sessions(self) -> None:
+        """Three distinct session ids against a 3-option bucket select all 3 lines."""
+        view, player, _manager = self._make_view_with_templates()
+        seen: set[str] = set()
+        for i in range(30):
+            self._set_session(player, f"session_{i:04d}")
+            lines = view._post_session_lines()
+            if lines:
+                seen.add(lines[0])
+        assert len(seen) == 3, (
+            f"Expected all 3 option lines to appear across 30 sessions; got {seen}"
+        )
+
+    def test_existing_first_line_still_reachable(self) -> None:
+        """The options[0] line is reachable for at least one session id."""
+        view, player, _manager = self._make_view_with_templates()
+        found_first = False
+        for i in range(30):
+            self._set_session(player, f"session_{i:04d}")
+            lines = view._post_session_lines()
+            if lines and lines[0] == self._OPTIONS[0]:
+                found_first = True
+                break
+        assert found_first, (
+            "options[0] ('Alpha line.') must be selectable by at least one session id"
+        )
+
+
+# ---------------------------------------------------------------------------
+# SA-B6: Dead-code removal — on_session_complete must fire from _handle_button only
+# ---------------------------------------------------------------------------
+
+
+class TestSessionCompleteDeadCodeRemoval:
+    """SA-B6 AC#6: on_session_complete callback does NOT fire from update()."""
+
+    def test_callback_not_fired_by_update_when_session_already_closed(self) -> None:
+        """update() does NOT call on_session_complete even when lifecycle==SESSION_CLOSE."""
+        manager, player, cr, prog = _make_env()
+        player.auction_state.enter_preview(
+            VENUE_STELLARIS, [_module_lot("dc1")], rival_ids=[], session_id="dc_test"
+        )
+        player.auction_state.set_session_personas([])
+        player.auction_state.open_session()
+        # Drive to SESSION_CLOSE via tick (timer expires, no bidder contests).
+        for _ in range(80):
+            player.auction_state.tick(5.0)
+            if player.auction_state.lifecycle == AuctionLifecycle.LOT_RESOLUTION:
+                player.auction_state.advance_after_resolution()
+            if player.auction_state.lifecycle == AuctionLifecycle.SESSION_CLOSE:
+                break
+        assert player.auction_state.lifecycle == AuctionLifecycle.SESSION_CLOSE
+        view = _make_view(manager, player, cr, prog)
+        view.on_enter()
+        fired: list[bool] = []
+        view.on_session_complete = lambda: fired.append(True)
+        # update() should NOT call on_session_complete — dead code is gone.
+        view.update(0.016)
+        assert not fired, "update() must not call on_session_complete directly"
+        view.on_exit()

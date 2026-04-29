@@ -14,16 +14,24 @@
   "post_session": {
     "fenn_salko": {
       "rival_won": [
-        "Salko picks up his catalogue. He logs the price. That is all."
+        "Salko picks up his catalogue. He logs the price. That is all.",
+        "Salko marks the lot. He closes the book without looking up.",
+        "He won what he came for. He does not acknowledge it."
       ],
       "player_won": [
-        "Salko sets the catalogue down. He files it. He does not look up."
+        "Salko sets the catalogue down. He files it. He does not look up.",
+        "Salko crosses out the lot. He keeps the pen moving.",
+        "He watched the close. He says nothing."
       ],
       "no_overlap": [
-        "Salko sat through the session. He bid where he chose. The lots that brought him were not yours."
+        "Salko sat through the session. He bid where he chose. The lots that brought him were not yours.",
+        "He moved through the session on his own schedule.",
+        "Salko bid on other lots today. He did not cross your path."
       ],
       "absent_retired": [
-        "Salko was not in the room today. The seat he prefers stayed open."
+        "Salko was not in the room today. The seat he prefers stayed open.",
+        "He did not show. The floor ran without him.",
+        "No sign of Salko. His usual lots went to other buyers."
       ]
     },
     "reach_buyer": [
