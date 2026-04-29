@@ -1755,3 +1755,144 @@ She does not care about prestige. She cares about whether the project produces s
 5. **On why she left the Collective**: "They stopped funding the projects where the outcome wasn't guaranteed. Those are the only projects worth funding."
 
 **Bonus Domain**: `research_yield_bonus`, `research_risk_reduction` -- SA-R1, SA-R2
+
+## Dr. Iris Navarro -- Okafor Institute Clinical Lead
+
+**Faction**: Science Collective
+**Age**: Late 30s
+**Role**: Senior clinical-trial methodologist at the Okafor Institute Medical Wing; SA-R1 team-fund collaborator; speaker_id `dr_iris_navarro`
+**Tonal register**: Methodology rigor at close range -- the researcher inside the trial, not the patron evaluating it from outside.
+
+### Core Voice
+Iris ran her first independent trial at twenty-eight. By thirty-five she was the methodologist the Institute trusted with the protocols that had to hold up under outside review. She does not evaluate; she executes. The difference matters. Nuri Solberg reads a proposal and tells you whether the methodology survives contact with reality. Iris is the one who makes the methodology survive contact with reality.
+
+She speaks in process. She names the step she is working on now, the step she is concerned about, and the step that is locked in. She does not editorialize about the field. She has a trial running.
+
+### Verbal Habits
+- Locates the work in time: "I'm at the bench through Thursday." "Day six is when we will know."
+- Names the protocol step rather than the abstract goal: "We are at the wash phase." "The third measurement window opens in two days."
+- Uses "the data" as her primary subject, not "we": "The data is showing what the modeling predicted at the lower bound."
+- Distinguishes between provisional and confirmed: "Provisionally, yes. I want a second pass before I commit to that."
+- Concedes uncertainty without softening: "I do not know yet. I will know on day nine."
+
+### What She Says vs. What She Means
+- "The protocol is holding" = no surprises so far; the variance is inside the design tolerance.
+- "I'm at the bench through Thursday" = do not interrupt.
+- "Day six is when we will know" = the trial's outcome is decided at the day-six measurement, not at funding.
+- "Provisionally, yes" = the data supports it but a single trial is not a result; I need replication before I will say so without the qualifier.
+- "I would like a clean replication" = the first run had a confound I did not flag in the briefing; do not cite the result yet.
+
+### Emotional Range
+- **Bench-mode default**: Direct, present-tense, narrow focus. Talks about the trial in front of her, not the field around it.
+- **When the data behaves**: Quiet engagement. "This is the third measurement and the variance is below the design threshold. The methodology holds."
+- **When the data does not behave**: Calm and methodical. Identifies the next experiment rather than defending the last one. "We have a confound on step three. The next run will isolate it."
+- **At the funder hand-off**: Briefly more formal. Reports the result. Does not pitch the next round; that is Kweon's work.
+
+### What She Never Says
+- Anything that softens a methodological flaw to keep a sponsor comfortable
+- "We are confident" without naming the measurement that will test the confidence
+- That a trial is a sure thing (nothing is)
+- Field-level commentary about the Collective's funding priorities (not her register; she runs trials)
+
+### Sample Lines
+1. **First meeting at the team-fund modal**: "Iris Navarro. Clinical methodology. I run the trial. If you are funding the second-stage replication, the protocol is already drafted; we can be on the bench by the end of the week."
+2. **Mid-trial check-in**: "Day six. The variance on step three is inside the design threshold. The next measurement window is on day nine. Provisionally, the protocol is holding."
+3. **On a successful debrief**: "The trial held. The methodology is documented; the result replicates; the paper is in draft. The work is done."
+4. **On a failure debrief**: "The trial did not hold at the third measurement. The confound is identifiable. The next run will isolate it. I would like to write that up before the funder conversation."
+5. **On a team-fund offer she takes**: "I will take the slot. The protocol you are funding has the right shape. I want to be the one running the trial."
+
+**Bonus Context**: Iris's clinical-trial expertise threads into SA-R2's ethics arc -- when the player funds the high-risk synthesis projects, Iris is the researcher whose name is on the trial. SA-R2 can use her perspective to surface the working scientist's view of the heal-vs-profit question that Kweon negotiates at the institutional level.
+
+## Theo Brandt -- Okafor Institute Bench Engineer
+
+**Faction**: Science Collective
+**Age**: Mid-40s
+**Role**: Senior bench engineer / instrument specialist at the Okafor Institute; SA-R1 team-fund collaborator; speaker_id `theo_brandt`
+**Tonal register**: Hands-on, equipment-aware, blue-collar science -- the person who keeps the rigs running so the methodology can hold up.
+
+### Core Voice
+Theo was a mining-rig technician on Breakstone before the Institute hired him. Two decades on, he has built half the bench rigs in the building from spare parts and the Collective's reluctant procurement budget. He talks about science the way a competent mechanic talks about an engine: the abstractions are someone else's job; he is interested in whether the part holds tolerance and whether the seal will last another shift.
+
+He is concrete. He names parts. He estimates timelines in shift units. He respects Kweon and Iris because they ask him questions he can answer.
+
+### Verbal Habits
+- Names the part: "The seal on the centrifuge head." "The third coil." "The calibration jig."
+- Estimates in shifts: "Two shifts to run it. Three if the spare parts come through."
+- Diagnoses by symptom: "The variance on that measurement is the rig, not the chemistry."
+- Avoids field-level abstraction: skips "the literature" entirely; speaks in "what the rig is doing."
+- Brief on success, brief on failure: "It held." "It did not hold."
+
+### What He Says vs. What He Means
+- "The rig is fine" = I rebuilt it last month; it is fine because I made it fine.
+- "Two shifts" = if nothing breaks; do not commit on my behalf.
+- "The variance is the rig" = the methodology is not at fault; the bench equipment is producing the noise.
+- "We need a second one" = the spec calls for redundancy; I am not asking for budget I do not need.
+- "It held" = the run produced clean data; the rig and the protocol both worked.
+
+### Emotional Range
+- **Workshop default**: Practical, concrete, slightly amused at how complicated abstractions get when the actual work is just keeping the rigs running.
+- **When something genuinely impresses him**: Brief and sincere. "Iris's protocol is built right. The rig will hold for it."
+- **When something is wrong with the equipment**: Calm, focused. "I'll take the rig down for half a shift. We will be running again before Iris's window."
+- **With Kweon**: Respectful. Theo answers questions; Kweon writes the proposals. They have a working understanding.
+
+### What He Never Says
+- "The literature suggests" (not his register)
+- Apologetic hedging about timelines (he gives an honest estimate; if the parts are late he says so)
+- Anything dismissive of the methodologists; his job depends on theirs and he knows it
+- Promises he cannot keep on parts procurement
+
+### Sample Lines
+1. **First meeting at the team-fund modal**: "Theo Brandt. Bench. I keep the rigs running for Iris and the rest of them. If you are funding a project that needs the spare-parts budget unlocked, my work happens before the trial does."
+2. **On a project he is excited about**: "The third-step yield run needs the new calibration jig. I built one last month. It holds tolerance to the fourth decimal. Iris's protocol will run clean on it."
+3. **Diagnosing a failure**: "The variance is the rig, not the chemistry. I'll take the centrifuge head off after this shift and look at the seal. Two shifts to fix; one to recalibrate. We will be back on the bench by Tuesday."
+4. **On a successful debrief**: "It held. Iris will write it up. The rig will be ready for the next one."
+5. **On declining a slot**: "Not this one. The protocol is fine. The rig I have for that wavelength is on its last legs and I do not want to be the variance in someone else's trial."
+
+**Bonus Context**: Theo's perspective threads into SA-R2 as the working-class voice inside the Institute. He has watched the founder-era equipment age past spec while the Collective's budget priorities shifted; SA-R2 can use him to surface the "what gets cut first" question from the maintenance budget's perspective rather than the principal investigator's.
+
+## Sana Dey -- Okafor Institute Junior Researcher
+
+**Faction**: Science Collective
+**Age**: Mid-20s
+**Role**: Junior researcher at the Okafor Institute, working on her first independent contribution; SA-R1 team-fund collaborator; speaker_id `sana_dey`
+**Tonal register**: Earnest, second-generation -- a researcher who knows the founder's reputation only through the building, not the person.
+
+### Core Voice
+Sana grew up in a Collective cohort that read Dr. Okafor's papers in their first-year ethics module and walked past the bronze plaque in the Institute's lobby every morning of her postgraduate year. She has the founder's words in her head as a rule, not as a memory. She is good. She is younger than the work feels, and she knows it.
+
+She speaks with care. She is conscious that she is the youngest person in most rooms she enters. She compensates by being prepared. She is the researcher who has read the source paper before the meeting and brings the question that turns out to be the right one.
+
+### Verbal Habits
+- Cites the source: "In the original Okafor paper, the second appendix..."
+- Frames her uncertainty as the question, not the answer: "I am not sure whether..."
+- Defers without retreating: "I would defer to Iris on the methodology, but the data point I noticed was..."
+- Notices what others overlook: "The third sub-trial in that decade-old replication had the same variance. I think the field has been treating it as noise."
+- Earnest pleasure in small finds: "The footnote on page nine actually addresses this directly."
+
+### What She Says vs. What She Means
+- "I would defer to Iris" = I have read the protocol carefully and I believe the methodology is sound, but I am still earning my place in this conversation.
+- "In the original Okafor paper" = I have done my reading; here is the source.
+- "I am not sure whether" = I have a question that I think matters; I am phrasing it as uncertainty so I am not stepping out of my lane.
+- "The footnote on page nine" = small, specific, real; I am paying attention to the work.
+- "I would like to be on this trial" = please let me earn it; I am ready.
+
+### Emotional Range
+- **Eager-default**: Prepared, careful, interested. Slightly over-cited because she would rather be over-prepared than caught short.
+- **When asked to lead a small piece**: Visible quiet pleasure. Does not perform it. Gets to work.
+- **When called on something she missed**: Owns it cleanly. "I missed that. I will look at it again."
+- **In the founder's shadow**: Aware. Reads the founder's principles as standing instructions, not as historical artifacts. The bronze plaque in the lobby is part of how she thinks about the work.
+
+### What She Never Says
+- The founder's name with the unqualified reverence the older cohort sometimes uses (she did not know the person; she has the principles)
+- Field-level cynicism (not yet earned; she is still figuring out where she stands)
+- Cynical asides about the Collective (Iris and Theo can; she has not been here long enough)
+- Promises about timelines that depend on other people's work
+
+### Sample Lines
+1. **First meeting at the team-fund modal**: "Sana Dey. I am working on the protein-folding replication strand under Iris. If you are funding a project that includes a bench junior, I would like to be considered. I have read the protocol."
+2. **Bringing a citation**: "In the second appendix of the original Okafor paper, the methodology section addresses this exact concern. I think it answers what we were just trying to derive from scratch."
+3. **On a successful debrief**: "The result holds. I want to thank you for the slot. The methodology was Iris's, but I learned what I came here to learn."
+4. **On a failure debrief**: "We did not get the result. I learned what to flag earlier in the next run. I would like to be on the next trial when it spins up."
+5. **On the founder's plaque**: "Knowledge that does not heal is knowledge wasted. I did not know him. I read the papers. The principle holds for me, even at this distance."
+
+**Bonus Context**: Sana's second-generation perspective is the SA-R2 lever for the founder's-legacy question. She inherits the principles without the personal history that made them costly for the founder. SA-R2 can use her arc to ask whether the principles, held at second hand, still mean what they meant when Okafor wrote them, or whether they have become a brand the Institute lives under.
