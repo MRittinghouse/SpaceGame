@@ -658,8 +658,10 @@ class TestNoOrphanedSkills:
             "coalition_size_bonus",  # SA-P3/P4: politics_view.py / congress_view.py
             "arbitration_neutrality_bonus",  # SA-P5: mediation_view.py
             "speculator_premium_reduction",  # SA-F2/F3: financial_exchange_view.py
-            "research_yield_bonus",  # SA-R1/R2: okafor_view.py
-            "research_risk_reduction",  # SA-R1/R2: okafor_view.py
+            # SA-R1 shipped the consumers in engine/game.py
+            # (_tick_okafor_projects) and views/okafor_view.py — both
+            # ``research_yield_bonus`` and ``research_risk_reduction`` are
+            # now real consumers and no longer pending.
         }
         # Skill read via direct attribute access, not get_bonus()
         direct_access = {

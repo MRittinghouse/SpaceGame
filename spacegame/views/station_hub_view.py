@@ -101,6 +101,7 @@ UNIQUE_HALL_TARGETS: dict[str, GameState] = {
     "havens_congress_hall": GameState.DISPUTE,
     "stellaris_auction_house": GameState.AUCTION,
     "crimson_black_market": GameState.AUCTION,
+    "axiom_research_wing": GameState.OKAFOR,
 }
 
 # SA-B4: locations that route to GameState.AUCTION but live at venues

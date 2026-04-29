@@ -1960,6 +1960,15 @@ class Game:
                         self.state_manager.change_state(GameState.DEEP_SHAFTS)
 
                     self._start_transition(TransitionType.FADE, 0.3, _do_deep_shafts)
+                elif next_state == GameState.OKAFOR:
+                    # SA-R1: route the Okafor Institute Medical Wing anchor.
+                    self.station_hub_view.next_state = None
+
+                    def _do_okafor():
+                        self._ensure_okafor_view()
+                        self.state_manager.change_state(GameState.OKAFOR)
+
+                    self._start_transition(TransitionType.FADE, 0.3, _do_okafor)
                 elif next_state == GameState.DISPUTE:
                     # SA-P2: route the Mayors' Council venue (and any
                     # SA-P3/P4/P5 venues mapped to GameState.DISPUTE).
@@ -2386,6 +2395,17 @@ class Game:
             crew_roster=self.crew_roster,
         )
         self.state_manager.register_state(GameState.DEEP_SHAFTS, self.deep_shafts_view)
+
+    def _ensure_okafor_view(self) -> None:
+        """SA-R1: create or recreate the Okafor Institute Medical Wing view."""
+        from spacegame.views.okafor_view import OkaforView
+
+        self.okafor_view = OkaforView(
+            ui_manager=self.ui_manager,
+            player=self.player,
+            crew_roster=self.crew_roster,
+        )
+        self.state_manager.register_state(GameState.OKAFOR, self.okafor_view)
 
     def _ensure_sell_lot_view(self) -> None:
         """SA-B5: lazy-create the SellLotView for the player-listing flow.
