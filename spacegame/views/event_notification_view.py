@@ -11,7 +11,7 @@ import pygame
 import pygame_gui
 
 from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH, Colors, scale_x, scale_y
-from spacegame.engine.fonts import FONT_BODY, FONT_LG, FONT_SECTION, FONT_SUBTITLE, get_font
+from spacegame.engine.fonts import FONT_LG, FONT_SECTION, FONT_SUBTITLE, get_font
 from spacegame.models.event import MarketEvent
 from spacegame.utils.logger import logger
 from spacegame.views.base_view import BaseView

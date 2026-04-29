@@ -15,7 +15,6 @@ from spacegame.engine.backgrounds import AnimatedBackground
 from spacegame.engine.fonts import (
     FONT_DISPLAY,
     FONT_LG,
-    FONT_MD,
     FONT_TITLE,
     FONT_XL,
     FONT_XL2,

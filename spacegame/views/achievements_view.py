@@ -15,7 +15,6 @@ from spacegame.engine.backgrounds import AnimatedBackground
 from spacegame.engine.draw_utils import draw_bar, draw_panel
 from spacegame.engine.fonts import (
     FONT_LG,
-    FONT_MD,
     FONT_SECTION,
     FONT_SM,
     FONT_SUBTITLE,

@@ -16,7 +16,6 @@ from spacegame.engine.draw_utils import draw_bar, draw_panel
 from spacegame.engine.fonts import (
     FONT_BODY,
     FONT_LG,
-    FONT_MD,
     FONT_SM,
     FONT_XL2,
     FONT_XS,

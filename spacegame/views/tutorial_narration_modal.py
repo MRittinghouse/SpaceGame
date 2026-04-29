@@ -19,7 +19,7 @@ from typing import Callable, Optional
 
 import pygame
 
-from spacegame.config import Colors, WINDOW_HEIGHT, WINDOW_WIDTH, scale_x, scale_y
+from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH, Colors, scale_x, scale_y
 from spacegame.engine.draw_utils import draw_panel, word_wrap
 from spacegame.engine.fonts import FONT_XS, get_font
 from spacegame.views.first_time_tip import FADE_IN_DURATION, FirstTimeTipOverlay

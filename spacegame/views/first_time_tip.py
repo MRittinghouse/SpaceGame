@@ -22,10 +22,9 @@ from typing import Callable, Optional
 
 import pygame
 
-from spacegame.config import Colors, WINDOW_HEIGHT, WINDOW_WIDTH, scale_x, scale_y
+from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH, Colors, scale_x, scale_y
 from spacegame.engine.draw_utils import draw_panel, word_wrap
 from spacegame.engine.fonts import FONT_MD, FONT_SM, get_font
-
 
 # 250ms fade-in. Short enough that the player isn't waiting, long enough
 # that the overlay feels composed instead of popped.

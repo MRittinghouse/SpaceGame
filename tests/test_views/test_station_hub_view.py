@@ -566,9 +566,7 @@ class TestStationHubWreckersEnterButton:
         view.render(screen)
         enter_btn = view._detail_enter_button
         assert enter_btn is not None
-        evt = pygame.event.Event(
-            pygame_gui.UI_BUTTON_PRESSED, {"ui_element": enter_btn}
-        )
+        evt = pygame.event.Event(pygame_gui.UI_BUTTON_PRESSED, {"ui_element": enter_btn})
         view.handle_event(evt)
         assert view.next_state == GameState.WRECKERS_GUILD
         # Detail panel should also close on enter.
@@ -582,9 +580,7 @@ class TestStationHubWreckersEnterButton:
         view.render(screen)
         close_btn = view._detail_close_button
         assert close_btn is not None
-        evt = pygame.event.Event(
-            pygame_gui.UI_BUTTON_PRESSED, {"ui_element": close_btn}
-        )
+        evt = pygame.event.Event(pygame_gui.UI_BUTTON_PRESSED, {"ui_element": close_btn})
         view.handle_event(evt)
         assert view._detail_close_button is None
         assert view._detail_enter_button is None

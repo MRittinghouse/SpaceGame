@@ -13,7 +13,7 @@ import pygame_gui
 from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH, Colors, GameState, scale_y
 from spacegame.engine.backgrounds import AnimatedBackground
 from spacegame.engine.draw_utils import draw_bar, draw_panel
-from spacegame.engine.fonts import FONT_BODY, FONT_LG, FONT_MD, FONT_SECTION, FONT_XL, get_font
+from spacegame.engine.fonts import FONT_BODY, FONT_LG, FONT_SECTION, FONT_XL, get_font
 from spacegame.engine.sprites import AnimatedSprite, get_sprite_manager, res_scale
 from spacegame.models.attributes import ATTRIBUTE_DEFINITIONS, AttributeId
 from spacegame.models.crew import CrewRoster, CrewTemplate

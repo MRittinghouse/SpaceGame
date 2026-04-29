@@ -281,11 +281,7 @@ class TestFilterHarnessManagedDirty:
 
     def test_mixed_dirty_keeps_only_real(self) -> None:
         # The realistic mid-development case: harness artifacts + real changes.
-        porcelain = (
-            "D  ralph/.running\n"
-            " M spacegame/models/foo.py\n"
-            "?? ralph/logs/SA-1/run.log\n"
-        )
+        porcelain = "D  ralph/.running\n M spacegame/models/foo.py\n?? ralph/logs/SA-1/run.log\n"
         filtered, removed = harness._filter_harness_managed_dirty(porcelain)
         assert "spacegame/models/foo.py" in filtered
         assert "ralph/" not in filtered
