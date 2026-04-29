@@ -49,7 +49,7 @@ The SA-arc table below is **auto-regenerated** by the ralph harness from the spr
 | [SA-B3](#sa-b3--stellaris-auction-house-primary-venue) | Stellaris Auction House (primary venue) | III | L | done | SA-B2 |
 | [SA-B4](#sa-b4--crimson-reach-black-market-auctions) | Crimson Reach Black Market auctions | III | L | done | SA-B2, SA-1 |
 | [SA-B5](#sa-b5--player-initiated-auctions) | Player-Initiated Auctions | III | L | done | SA-B2 |
-| [SA-B6](#sa-b6--bidding-polish--tuning) | Bidding polish + tuning | III | M | todo | SA-B3, SA-B4, SA-B5 |
+| [SA-B6](#sa-b6--bidding-polish--tuning) | Bidding polish + tuning | III | M | done | SA-B3, SA-B4, SA-B5 |
 | [SA-R1](#sa-r1--okafor-institute-research-patronage) | Okafor Institute (Research Patronage) | IV | L | todo | SA-PREP-1, SA-C2 |
 | [SA-R2](#sa-r2--dr-okafors-legacy-narrative-arc) | Dr. Okafor's Legacy Narrative Arc | IV | M | todo | SA-R1 |
 | [SA-R3](#sa-r3--research-patronage-polish) | Research Patronage polish | IV | S | todo | SA-R1, SA-R2 |
@@ -3369,7 +3369,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 - Notes: Both gaps (AC #14 journal callback, AC #5 floor guard) fixed directly with tests. All 21 criteria verified. Voice content, engine wiring, scenario pipeline, and save/load all solid.
 #### SA-B6 — Bidding polish + tuning
 
-**Status**: in-progress (reviewing)
+**Status**: done
 **Phase**: Phase III | **Size**: M | **Effort**: 1 week
 **Depends on**: SA-B3, SA-B4, SA-B5 | **Blocks**: SA-X1, SA-X2, SA-X4, SA-X5, SA-X6, SA-X7, SA-X8, SA-X9
 
@@ -3520,7 +3520,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 - 2026-04-29 15:30 — full suite: 9897 passed, 98 skipped (baseline 9881, +16 new tests). Lint clean, format clean, SI-3 scanner clean, Writing Bible scanner clean, reach compliance scanner clean. All 12 acceptance criteria satisfied. PHASE_OK
 - 2026-04-29 13:11 — harness: review phase starting (rework cycle 0)
 - 2026-04-29 14:00 — review complete; zero critical findings; no fixes needed. All 12 AC verified: OUTCOME_OUTCOMPETED constant wired symmetrically to collect_outbid_records pattern (tests exercising model layer correctly); _seed_index() rotation live in _post_session_lines() with 3 rotation tests passing; dead-code block fully removed from auction_view.update() with test asserting update() does not fire on_session_complete; all four Salko buckets expanded to 3 lines each with first-line preserved byte-for-byte; tuning notes doc meets 5-section spec with explicit skip decisions for all 5 constant categories; accessibility audit pass documented with 4 explicit checks. Writing Bible scanner 17 passed. Format and lint clean on Python touched files (JSON data files are correctly excluded from ruff format per CLAUDE.md conventions — ruff trailing-comma reformatting would invalidate them). Single tighten: both collect_outbid_records and collect_player_win_records exist only at the model layer and are called only from tests; the live engine path does not invoke either, so the three-session auto-retire dynamic exists in tests but not in live gameplay. This is a pre-existing SA-B2 gap (not a SA-B6 regression) — collect_outbid_records has been unwired since SA-B2 with no prior reviewer flag; SA-B6 is symmetric to it. Not a blocker; but a phase VI engine-wiring pass may want to add a post-session hook that calls both methods. PHASE_OK
-
+- 2026-04-29 13:19 — harness: review passed, marking done
 **Last phase report.**
 - Phase: review
 - Outcome: PHASE_OK
