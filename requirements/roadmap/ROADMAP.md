@@ -52,7 +52,7 @@ The SA-arc table below is **auto-regenerated** by the ralph harness from the spr
 | [SA-B6](#sa-b6--bidding-polish--tuning) | Bidding polish + tuning | III | M | done | SA-B3, SA-B4, SA-B5 |
 | [SA-R1](#sa-r1--okafor-institute-research-patronage) | Okafor Institute (Research Patronage) | IV | L | done | SA-PREP-1, SA-C2 |
 | [SA-R2](#sa-r2--dr-okafors-legacy-narrative-arc) | Dr. Okafor's Legacy Narrative Arc | IV | M | done | SA-R1 |
-| [SA-R3](#sa-r3--research-patronage-polish) | Research Patronage polish | IV | S | review | SA-R1, SA-R2 |
+| [SA-R3](#sa-r3--research-patronage-polish) | Research Patronage polish | IV | S | done | SA-R1, SA-R2 |
 | [SA-F1](#sa-f1--financial-exchange-design) | Financial Exchange Design | V | M | todo | SA-PREP-1, SA-C2, SA-V |
 | [SA-F2](#sa-f2--futures-core) | Futures Core | V | XL | todo | SA-F1 |
 | [SA-F3](#sa-f3--meridian-venue--cargo-broker-graduation) | Meridian Venue + Cargo Broker graduation | V | L | todo | SA-F2, SA-V |
@@ -3846,7 +3846,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 
 #### SA-R3 — Research Patronage polish
 
-**Status**: in-progress (reviewing)
+**Status**: done
 **Phase**: Phase IV | **Size**: S | **Effort**: 3-5 days
 **Depends on**: SA-R1, SA-R2 | **Blocks**: SA-X1, SA-X2, SA-X4, SA-X5, SA-X6, SA-X7, SA-X9
 
@@ -3975,7 +3975,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 - 2026-04-29 — implement phase complete (rework cycle 0); 160 net-new tests (10107 → 10267 passing, 98 skipped); all 13 acceptance criteria met. Key work: tier-aware failure refund (8 tests in TestTierAwareFailureRefund), template numeric-audit data-validation test (126 tests in TestOkaforTemplateBalance), kweon_relationship mission reward (6 tests in TestKweonRelationshipReward + 2 scenario tests in TestClinicRunMissionReward), kweon_legacy_post_clinic_run dialogue tree + flag helper + view routing (5 tests in TestPostClinicRunCallbackRouting + okafor_legacy_clinic_callback_seen flag helper + _LEGACY_ARC_TREE_TO_FLAG extension + priority-chain update), team-fund collaborator picker modal (13 tests in TestTeamFundPicker, _picker_confirm bug fixed, handle_event wired, _create_picker_ui hooked into _create_ui). Lint fixes: B007 (_role rename), dialogues.json restored from HEAD after ruff format corrupted it, kweon_relationship added to VALID_REWARD_TYPES. All scanners green (SI-3 dialogue integrity, test_data suite). PHASE_OK
 - 2026-04-29 16:07 — harness: review phase starting (rework cycle 0)
 - 2026-04-29 — review complete; 4 minor findings fixed directly: (1) ESC handler in OkaforView did not check `_picker_active` before exiting to STATION_HUB — AC #9 gap, fixed with a 3-line guard + 1 new test (test_esc_during_picker_closes_picker_not_view); (2) lint in test_mission.py (I001 + F401 unused pytest import); (3) lint in test_okafor_template_balance.py (C420 × 2 dict-comprehension anti-pattern); (4) lint in test_okafor_view.py (RUF059 × 12 unused `player` unpacks in TestPostClinicRunCallbackRouting + TestTeamFundPicker) + lint in test_scenario_okafor_legacy.py (I001). Tuning report skip list expanded to include the 5 examined-but-not-adjusted categories (project costs / duration days / royalty rate+interval / sell lump-sum rate / team-fund multipliers) with per-row rationale, and the SA-X2 hand-off sentence. All 13 AC verified; 10268 passing (≥ 10107 baseline), 98 skipped. PHASE_OK
-
+- 2026-04-29 16:18 — harness: review passed, marking done
 **Last phase report.**
 - Phase: review
 - Outcome: PHASE_OK
