@@ -2791,43 +2791,205 @@ These are the decisions to lock during planning execution. Recommendations recor
 
 #### SA-B3 — Stellaris Auction House (primary venue)
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Phase III | **Size**: L | **Effort**: 2 weeks
 **Depends on**: SA-B2 | **Blocks**: SA-B6
 
-**Goal.** Primary Bidding venue. Auctioneer NPC. Scheduled auctions every 5-7 game-days with seasonal headliner events. 6-8 lot categories. 3-5 recurring rival bidders integrated with Captain Memory. Pre-auction preview period. Post-auction social moments.
+**Goal.** Layer Stellaris-specific content and integrations on top of SA-B2's venue-agnostic Bidding engine. Wire the Stellaris Auction House into the station hub, author 18-24 candidate lots across 5 design-doc-locked categories with rep-tier and seasonal coverage, register Cassian Velo as a recurring NPC with full off-floor dialogue, configure the three named rivals (Prentiss, Kade, Salko) and two Stellaris Speculator slots with locked attendance rules, drive 5-7 game-day session scheduling against the game-day clock, populate Velo's auctioneer running commentary plus per-rival flat-bid lines, render the post-auction social phase with rival commentary and Sable's read, and ship Stellaris Port standing → tier gating with locked thresholds. SA-B4 and SA-B5 inherit the venue-content patterns established here.
 
 **Context to read.**
-- `requirements/sa_bidding_design.md`
-- SA-B2 implementation
-- `requirements/character_voices.md` (Auctioneer + rivals)
+- `requirements/sa_bidding_design.md` (sections 2, 3, 4, 5, 7, 9, 11 per §12 hand-off table; §1.3 venue table; §1.5 standing tier map; §3.4 worked-example lots; §4.5 persona specs; §6.2 attendance design intent)
+- `requirements/agent_principles.md`
+- `requirements/aurelia_voice_examples.md` (auctioneer ceremonial register; rival flat-bid voice; post-session social register)
+- `requirements/character_voices.md` (Cassian Velo lines 1232-1280; Aldous Prentiss 1282-1322; Yuna Kade 1325-1365; Fenn Salko 1368-1410; Sable Trent 1457-1503)
+- `requirements/station_anchors.md` (Phase III SA-B3 deliverable line 149; Bidding integration commitments lines 154-160)
+- `requirements/onboarding_design.md` (empty-state register; soft-break voice for engine-emitted strings)
+- `requirements/dialogue_writing_guide.md` (NPC dialogue tree authoring conventions)
+- `requirements/cultural_guide.md` (Aurelia Expanse setting; Stellaris Port = Stellaris Commerce Guild capital)
+- `spacegame/models/bidding.py` (`AuctionState.enter_preview` / `open_session` / `schedule_session` / `is_session_due` / `set_session_personas`; `STELLARIS_CADENCE_MIN_DAYS=5` / `_MAX_DAYS=7`; `RECENTLY_SEEN_EXCLUSION=5`; `HEADLINER_CAP_PER_SESSION=1`; `STELLARIS_STANDARD_SESSION_SIZE=6` / `_HEADLINER_SESSION_SIZE=8`; `generate_lot_pool` line 306)
+- `spacegame/models/bidding_lot.py` (`AuctionLot` frozen dataclass + `to_dict`/`from_dict` + 8 category constants + `VENUE_STELLARIS`)
+- `spacegame/models/bidding_persona.py` (`make_prentiss` / `make_kade` / `make_salko` / `make_stellaris_speculator(elevated_category, instance_index)` factories; `NAMED_RIVAL_IDS`)
+- `spacegame/views/auction_view.py` (seven substates; `set_active_personas`; lifecycle callbacks `on_session_complete` / `on_lot_won` / `on_rivalry_formed` / `on_headliner_sold` / `on_headliner_withdrawn`; `_lifecycle_to_substate` map at line 97; PREVIEW empty/loading/error rendering paths)
+- `spacegame/views/station_hub_view.py` (`UNIQUE_HALL_TARGETS` dict at lines 97-102 — currently no `stellaris_auction_house` entry)
+- `spacegame/engine/game.py` (`_ensure_auction_view` at line 2307; AUCTION transition wiring; day-advance entry points)
+- `spacegame/data_loader.py` (`load_npcs` line 1145 reads `data/characters/npcs.json`; `load_all` order line 169; pattern for new loaders)
+- `spacegame/models/player.py` (`faction_reputation` dict at line 65; `get_reputation(faction_id)` at line 965 — clamps -100..100)
+- `spacegame/models/captain_memory.py` (existing `STATUS_WANDERER` / `OUTCOME_OUTBID` / `RESOLUTION_THRESHOLD=3`; `record_encounter` threshold logic)
+- `data/galaxy/locations.json` lines 78-84 (`stellaris_auction_house` location stub — bare description; no NPC links)
+- `data/galaxy/systems.json` line 276 (`Stellaris Commerce Guild` faction owns Stellaris Port)
+- `data/journal/entries.json` lines 333-355 (existing 3 SA-B2 auction journal entries: `auto_auction_first_session`, `auto_auction_first_win`, `auto_auction_first_rivalry`)
+- `data/characters/npcs.json` (NPC schema: id / name / title / portrait_color / home_system_id / dialogue_id; multi-state pattern at `dialogue_states[]`)
+- `requirements/si3_flag_registry_cookbook.md` (cross-module flag helper conventions; `seen_first_velo_encounter` will land here)
 
 **Touch zones.**
-- `data/auctions/stellaris_lots.json` (NEW — lot pool)
-- `data/dialogue/dialogues.json` (Auctioneer + rivals)
-- `data/galaxy/npcs.json` (rival bidder NPCs)
-- `spacegame/models/bidding.py` (Stellaris venue logic)
-- `spacegame/views/auction_view.py` (Stellaris-themed)
-- `tests/test_scenarios/test_scenario_stellaris_auction.py` (NEW)
+- `data/auctions/stellaris_lots.json` (NEW — Stellaris candidate lot catalog, 18-24 lots)
+- `data/auctions/stellaris_voices.json` (NEW — Velo auctioneer line templates, rival flat-bid templates, post-session social lines, empty-state Velo flavor, retired-rival flavor)
+- `data/dialogue/dialogues.json` (Cassian Velo off-floor dialogue tree; lot-preview hint dialogue; first-encounter dialogue)
+- `data/characters/npcs.json` (`cassian_velo` NPC entry with home_system_id=`stellaris_port`)
+- `data/journal/entries.json` (1 new auto-entry: `auto_auction_first_velo_encounter` keyed on `seen_first_velo_encounter` flag)
+- `spacegame/data_loader.py` (`load_auction_lots` + `load_auction_voices` methods; `_safe_load` calls; `get_auction_lots(venue)` accessor)
+- `spacegame/models/bidding.py` (Stellaris standing→tier helper `stellaris_tier_for_standing(rep:int)->str`; per-rival attendance helper `pick_stellaris_rival_attendance(player, session_id, rng_seed) -> list[str]`; season helper `current_season_tag(game_day:int) -> Optional[str]`; integration glue for hub-navigation entry-point session generation)
+- `spacegame/models/captain_memory.py` (no schema change — read-only access to detect rival auto-retire flavor)
+- `spacegame/views/auction_view.py` (Velo running-commentary line in BID_WINDOW header; rival flat-bid line in bid log; PREVIEW empty-state line keyed to `is_session_due`; POST_SESSION substate populated with rival comments + Sable read + retired-rival aside; voice content read from `data_loader.get_auction_voices`)
+- `spacegame/views/station_hub_view.py` (add `"stellaris_auction_house": GameState.AUCTION` to `UNIQUE_HALL_TARGETS`; ensure detail-panel "Enter" button routes correctly)
+- `spacegame/engine/game.py` (on game-day advance: trigger Stellaris session scheduling and lot-pool generation when `is_session_due`; talk-to-Velo NPC dispatch from `stellaris_auction_house` location panel)
+- `spacegame/constants/flags.py` (add `seen_first_velo_encounter` helper for the new journal entry trigger)
+- `tests/test_models/test_bidding_stellaris.py` (NEW — tier mapping, attendance rules, season mapping, lot catalog data integrity, lot-pool determinism with locked seed)
+- `tests/test_models/test_data_loader_auctions.py` (NEW — auction lot/voice loaders, missing-file fallback, schema validation)
+- `tests/test_views/test_auction_view_stellaris.py` (NEW — POST_SESSION social UI rendering, empty-state Velo flavor, rival flat-bid display, Sable read line variants)
+- `tests/test_scenarios/test_scenario_stellaris_auction.py` (NEW — full Stellaris session end-to-end: schedule → preview → 6 lots with 1 headliner → post-session social → close → next-day schedule)
+- `tests/test_data_integrity/test_stellaris_voice_compliance.py` (NEW — Writing Bible scan over `stellaris_voices.json` + `stellaris_lots.json` + Velo dialogue tree + new journal entry)
 
 **Deliverables.**
-- 6-8 lot categories: legendary modules, art, faction-restricted commodities, rare upgrades, antiquities, derelict-recovery rights, smuggled goods, faction-perk-equivalent unlocks.
-- Auctioneer NPC with full voice sheet.
-- 3-5 recurring rival bidders with backstories, distinct value functions, Captain Memory integration.
-- Auction scheduling (5-7 game-day cadence, seasonal headliners).
-- Pre-auction preview UI; post-auction social UI.
-- Reputation gating: Stellaris Port standing controls lot tier access.
+- **Stellaris lot catalog** — 18-24 candidate lots across 5 design-doc-locked categories (`module`, `antiquity`, `faction_commodity`, `rare_upgrade`, `derelict_rights`); covers all 4 rep tiers (apprentice / regular / certified / patron); 3-5 lots flagged `is_headliner=True`; 8-12 lots tagged with one of three season tags (`provenance_week`, `axiom_export_window`, `salvage_circuit`); module re-issues use `source_module_id` linking to the 6 legendary modules in `data/ships/modules.json`; each lot's headline + description voice-checked.
+- **Stellaris voice file** — `data/auctions/stellaris_voices.json` containing: 8 Velo auctioneer line templates (lot-open, "we are at X", lot-closed-sold, lot-closed-withdrawn, session-open, session-close, snipe-window-extended, exceptional-lot-pause); 3 rival flat-bid templates (Prentiss heritage register, Kade institutional register, Salko flat number); 12 post-session social lines (3 per rival × 4 outcome buckets: rival-won-vs-player / player-won-vs-rival / rival-bid-no-overlap / rival-absent-via-retire); 4 Sable post-session read templates (ceiling-correct / ceiling-off / no-rivals-attended / sable-not-on-crew sentinel); 1 PREVIEW empty-state Velo flavor line; 1 retired-rival aside template.
+- **Cassian Velo NPC** — entry in `data/characters/npcs.json` with `home_system_id=stellaris_port`, dialogue tree in `data/dialogue/dialogues.json` with at least 4 off-floor branches (preview hints if `lot_appraiser` skill present, rival readings keyed to active session attendance, 1 lore branch about Stellaris floor history, generic exit line).
+- **Three recurring rivals + two ambient personas** — locked attendance rules implemented: Prentiss attends 70% of eligible Stellaris sessions (deterministic seeded per session id); Kade attends only when ≥1 Kade-target lot is in the session pool; Salko attends every Stellaris session the player attends; two Stellaris Speculator personas drawn per session via `make_stellaris_speculator(elevated_category, instance_index)` with `elevated_category` cycled per session id from the design doc §4.5 pool.
+- **Schedule integration** — game-day advance triggers `auction_state.is_session_due("stellaris", current_day)` check; first-time entry seeds the next-session day deterministically 5-7 days out; session-due triggers `generate_lot_pool` + `enter_preview` so the venue is auction-ready when the player enters; cadence is calendar-only (Reach demand-driven cadence is SA-B4's problem).
+- **Stellaris Port standing → tier gating** — `stellaris_tier_for_standing(rep)` lock thresholds: rep < 0 → "apprentice"; 0-25 → "regular"; 26-75 → "certified"; 76-100 → "patron"; passed into `generate_lot_pool` so `rep_tier_required` filter applies; rep tier multiplier (`+0.3` per tier above min) carries through the existing weighting.
+- **Headliner + season concept** — minimal: simple game-day → season_tag mapping (cycle through 3 tags every ~30 game-days); season multiplier 2.0× already implemented in SA-B2 lot-pool generator; verify season-tagged lots draw measurably more often when their tag is active.
+- **Pre-auction preview UI fill-out** — populate the existing PREVIEW substate with: lot list with headlines and descriptions; reserve banded estimate when `lot_appraiser` skill present (re-uses `reserve_band_for_preview`); empty-state ("Next session in N days") with Velo flavor line; loading-state (during pool generation, ≤1 frame in practice).
+- **Post-session social UI** — populate the existing POST_SESSION substate: 1 line per attending named rival keyed to outcome bucket; 1 Sable read line if Sable on crew; retired-rival aside if a rival auto-retired this session.
+- **Captain Memory integration** — verified end-to-end at Stellaris: enter_preview seeds named-rival CaptainMemory entries (already wired by SA-B2); OUTCOME_OUTBID accumulates per design §6.3; rival auto-retire to STATUS_WANDERER fires per §6.4; venue surface emits the §6.2 retired-rival aside.
+- **Hub navigation** — `UNIQUE_HALL_TARGETS["stellaris_auction_house"] = GameState.AUCTION` plus engine transition; talk-to-Velo NPC accessible from the location detail panel between sessions.
+- **Journal entry** — 1 new auto-entry (first Velo encounter), voice-checked; SA-B2's three existing auction journal entries continue firing unchanged.
+- **Tests** — 4 new test files, ~25-35 new test functions covering tier mapping, attendance determinism, season mapping, lot catalog data integrity, data-loader fallback paths, POST_SESSION social UI variants, full scenario end-to-end, voice-bible compliance for new content.
 
 **Acceptance criteria.**
-1. Auctions fire on schedule with appropriate lots for player rep tier.
-2. Lot pool refreshes between auctions.
-3. Recurring rivals remember outcomes (Captain Memory).
-4. Voice sheets satisfied; Writing Bible clear.
-5. Headliner events differ measurably from regular auctions.
-6. Full suite green.
+1. Player navigates from Stellaris Port station hub → "Stellaris Auction House" detail panel → "Enter" button → AuctionView at venue_id="stellaris". `UNIQUE_HALL_TARGETS["stellaris_auction_house"]` is set to `GameState.AUCTION`. Verified by `tests/test_views/test_auction_view_stellaris.py`.
+2. `stellaris_tier_for_standing(rep)` returns "apprentice" for rep < 0, "regular" for 0 ≤ rep ≤ 25, "certified" for 26 ≤ rep ≤ 75, "patron" for 76 ≤ rep ≤ 100. Boundary values 0, 25, 26, 75, 76 each tested. Pool generation respects the resulting tier — a `regular` player draws no `certified`-or-higher lots; weight multiplier `+0.3` per tier above min applies as documented.
+3. Stellaris lot catalog (`data/auctions/stellaris_lots.json`) contains 18 to 24 lots, exclusively `venue="stellaris"`, exclusively from the 5 design-doc-locked Stellaris categories. At least 3 lots per category. At least 3 and at most 5 lots have `is_headliner=True`. At least 8 lots carry one of the three season tags. All `source_module_id` references resolve to existing IDs in `data/ships/modules.json`.
+4. Auction voice file (`data/auctions/stellaris_voices.json`) loads via the new data-loader method; structure validates against the locked schema (8 Velo line templates, 3 rival flat-bid templates, 12 post-session lines × 3 rivals × 4 buckets, 4 Sable templates, 1 empty-state line, 1 retired-rival template). Missing file → loader logs warning and returns empty dict; auction view falls back to design-doc-default strings without crashing.
+5. Cassian Velo registered in `data/characters/npcs.json`; off-floor dialogue tree contains at least 4 branches per the deliverable spec; player can `talk` to Velo from the auction house detail panel between sessions; first-encounter sets `seen_first_velo_encounter` flag and triggers the new journal entry.
+6. Per-rival attendance: with seed-controlled session IDs, Prentiss attends ~70% of Stellaris sessions (7/10 ± 1 in a deterministic 10-session test); Kade attends iff ≥1 Kade-target lot is in the session pool (zero false negatives, zero false positives across a parameterized 12-lot fixture); Salko attends 100% of Stellaris sessions the player enters. Asserted across 10 deterministic session ids per persona.
+7. Two Stellaris Speculator instances are drawn per session via `make_stellaris_speculator(elevated_category, instance_index=N)`; `elevated_category` cycles deterministically across sessions through the design doc §4.5 pool (`module`, `antiquity`, `faction_commodity`, `rare_upgrade`, `derelict_rights`); persona_ids are unique within a single session.
+8. Session schedule: on first Stellaris entry without prior schedule, `auction_state.next_auction_day["stellaris"]` is set deterministically 5-7 game-days out from `current_day` (seeded by `f"{current_day}_stellaris_initial"`). `is_session_due` returns False before that day and True at or after; on True, `enter_preview` fires with the generated lot pool. Subsequent sessions reschedule on `_close_session` (existing SA-B2 behavior).
+9. Headliner cap: a session is headliner iff a lot with `is_headliner=True` is drawn into it; in headliner sessions session size is 8 (per `STELLARIS_HEADLINER_SESSION_SIZE`); standard sessions size 6 (per `STELLARIS_STANDARD_SESSION_SIZE`); existing `HEADLINER_CAP_PER_SESSION=1` is honored. Across 20 deterministic sessions with the locked catalog, a headliner appears in at least 3 and at most 8 sessions.
+10. Season mapping: `current_season_tag(game_day)` returns the active tag deterministically — game days 0-30 → `"provenance_week"`, 30-60 → `"axiom_export_window"`, 60-90 → `"salvage_circuit"`, then cycles. Lots tagged with the current season draw measurably more often: in a 1000-trial Monte Carlo with a fixed candidate pool, season-tagged lots' selection rate is at least 1.5× the rate when their tag is inactive (the 2.0× multiplier in expectation, with sampling tolerance).
+11. Pre-auction preview UI in the PREVIEW substate renders: lot list (headline + description); reserve band ("Reserve likely: X to Y") when `lot_appraiser` skill present at any level; empty-state ("Next session in N days") with Velo flavor when no session is due; loading-state during pool generation. Each path verified by view test.
+12. Post-session social UI in the POST_SESSION substate renders: one line per attending named rival keyed to one of four outcome buckets (player won lot rival also bid on / rival won lot player also bid on / rival bid but no overlap / rival absent because retired); one Sable read line if Sable on crew (chosen between ceiling-correct vs. ceiling-off based on the existing `auction_sable_ceiling_correct` flag firing logic from SA-B2); retired-rival aside if any named rival auto-retired this session. All lines are voice-checked and read from `stellaris_voices.json`.
+13. Velo auctioneer running commentary appears in the BID_WINDOW substate header strip: lot-open template fires on first round of each lot; "we are at X" template updates each tick the high bid changes; lot-closed-sold and lot-closed-withdrawn fire on LOT_RESOLUTION. Templates are read from voice file; `{lot_headline}` and `{current_high_bid}` substitutions render correctly.
+14. Rival flat-bid lines display in the bid log when a named rival bids: Prentiss "I'll go to {amount}." (heritage register, no preamble); Kade "The Guild bids {amount}." (institutional register); Salko "{amount}." (flat number, stated alone). Templates honor the design-doc voice sheets.
+15. Captain Memory at Stellaris: across a deterministic 20-session run with the locked catalog and seeded RNG, named rivals accumulate `OUTCOME_OUTBID` per the design doc rules; at least one named rival auto-retires to `STATUS_WANDERER` after 3 unresolved outbids; the retired-rival aside fires in the next session the player enters. Player wins / folds / no-overlap correctly suppress the outcome.
+16. New journal entry `auto_auction_first_velo_encounter` fires once on first Velo dialogue exchange; `trigger_flag` on `seen_first_velo_encounter`; subsequent Velo conversations do not re-fire. Voice-checked against `aurelia_voice_examples.md`.
+17. Writing Bible scan clean over: `data/auctions/stellaris_lots.json` (headlines + descriptions); `data/auctions/stellaris_voices.json` (all templates); Velo dialogue tree; new journal entry. No em-dashes; no banned NPC names; no "couldn't help but"; no "a testament to"; no parallel-negation rhetoric in player-facing copy.
+18. Full Stellaris session scenario (`tests/test_scenarios/test_scenario_stellaris_auction.py`): with locked seed and seeded player input, the 6-lot session runs end-to-end through schedule → preview → SESSION_OPEN → 6 × LOT_OPEN/BID_WINDOW/LOT_RESOLUTION → POST_SESSION → SESSION_CLOSE; assert next-day schedule lands 5-7 days out; assert journal/news/achievement firings consistent with SA-B2's contract; assert post-session social UI renders ≥1 rival line; assert no UI element leaks.
+19. Pre-phase test baseline preserved: pass count >= 9631; no new failures vs. baseline. New tests bring the count to roughly 9656-9670 passing. Touched-files-only `ruff format` + `ruff check` + `mypy` clean. Dialogue-integrity scanner clean.
+20. SA-B2's locked decisions (15 total) are NOT re-litigated. SA-B3 only adds new Stellaris-specific decisions and content; engine code in `bidding.py` / `bidding_persona.py` / `bidding_round.py` / `bidding_lot.py` is read-only-extended (helper functions added; existing schemas and contracts unchanged).
+
+**Plan.**
+
+1. **Hub navigation + transition wiring.** Add `"stellaris_auction_house": GameState.AUCTION` to `UNIQUE_HALL_TARGETS` in `spacegame/views/station_hub_view.py:97-102`. Verify `_ensure_auction_view` already handles `venue_id="stellaris"` (it does — see `engine/game.py:2307`). Add a small detail-panel branch so the talk-to-Velo button surfaces when a Velo NPC is present at the location.
+   - Files: `spacegame/views/station_hub_view.py`, `spacegame/engine/game.py`.
+   - Tests: `tests/test_views/test_auction_view_stellaris.py::test_hub_navigation_routes_to_auction_view`.
+   - Risks: existing detail-panel rendering may not handle this location's auction-specific affordances yet — check rendering pathway end-to-end.
+
+2. **Stellaris standing → tier helper + season helper + attendance helper (TDD red-first).** Add three module-level helpers in `spacegame/models/bidding.py`: `stellaris_tier_for_standing(rep:int)->str`; `current_season_tag(game_day:int)->Optional[str]`; `pick_stellaris_rival_attendance(player, session_id:str, rng_seed:str) -> list[str]`. None of these touch existing schemas. Write the tier-boundary test, season-rotation test, and attendance-determinism test first; then implement.
+   - Files: `spacegame/models/bidding.py` (additive only).
+   - Tests: `tests/test_models/test_bidding_stellaris.py::TestStandingTier`, `::TestSeasonTag`, `::TestRivalAttendance`.
+   - Risks: rep clamp at -100..100 — boundary 0 is `regular` not `apprentice`; rep < 0 → `apprentice` (lock the boundary).
+
+3. **DataLoader: auction lots + voices.** Add `load_auction_lots()` and `load_auction_voices()` to `spacegame/data_loader.py` mirroring the `load_npcs` pattern (`_safe_load`, file-missing warning + empty fallback). Expose `get_auction_lots(venue:str)` and `get_auction_voices(venue:str)` accessors. Wire into `load_all` between `load_npcs` and `load_journal_entries` (or the closest alphabetical home). Schema validation in the loader (warn on missing required fields; skip malformed entries).
+   - Files: `spacegame/data_loader.py`.
+   - Tests: `tests/test_models/test_data_loader_auctions.py` covers happy path, missing-file fallback, malformed-entry skip, accessor return types.
+   - Risks: data-loader singleton — call `get_data_loader()` not `DataLoader()`.
+
+4. **Stellaris lot catalog (data).** Author `data/auctions/stellaris_lots.json` with 18-24 lots distributed across the 5 locked categories. Use the §3.4 worked-example lots as the model: King's Repeater re-issue (headliner, certified, season `provenance_week`); Axiom navigation array (regular, faction_commodity); plus 16-22 more across the rest of the design space. Use `source_module_id` exactly when category is `module`. Voice-check headlines/descriptions against Velo's neutral cataloguing register and the design doc §3.4 examples.
+   - Files: `data/auctions/stellaris_lots.json` (NEW).
+   - Tests: `tests/test_models/test_bidding_stellaris.py::TestLotCatalog` validates count, category mix, tier coverage, headliner count, season-tag count, `source_module_id` resolution.
+   - Risks: Writing Bible violations in description text — run scanner before commit; module re-issue source IDs must match `data/ships/modules.json` exactly.
+
+5. **Stellaris voice content (data).** Author `data/auctions/stellaris_voices.json` per the deliverable schema. All Velo lines in his ceremonial register from `character_voices.md` (lot-open / "we are at" / lot-closed); rival flat-bid templates honor each persona's verbal habits (Prentiss minimum-increment small certain bids; Kade institutional "the Guild bids X"; Salko flat number stated alone); post-session social lines split into 4 outcome buckets per rival; Sable read templates split into 4 contexts; empty-state line in Velo's off-floor register; retired-rival aside ("[name] hasn't been in for a while.").
+   - Files: `data/auctions/stellaris_voices.json` (NEW).
+   - Tests: `tests/test_models/test_data_loader_auctions.py::test_voice_schema_validates`; `tests/test_data_integrity/test_stellaris_voice_compliance.py` runs Writing Bible scanner over every string.
+   - Risks: parallel-negation rhetoric, "couldn't help but," and em-dashes are easy to slip in here. Voice-check during authoring; do not paste from earlier drafts without re-scanning.
+
+6. **Cassian Velo NPC + dialogue tree.** Add `cassian_velo` to `data/characters/npcs.json` (id, name "Cassian Velo", title "Stellaris Auctioneer", `home_system_id="stellaris_port"`, `dialogue_id="cassian_velo_main"`). Author dialogue tree in `data/dialogue/dialogues.json` with 4 branches: (a) preview hints if `lot_appraiser` skill present (banded reserve estimate framed as Velo's "interesting bidders" register); (b) rival readings keyed to current-session attendance (`if has_flag('auction_rival_prentiss_encountered')` etc.); (c) Stellaris floor history lore branch; (d) generic exit. Use Velo's off-floor register from voice sheet lines 1253-1274. Add `seen_first_velo_encounter` helper to `spacegame/constants/flags.py` and add the journal trigger entry to `data/journal/entries.json`.
+   - Files: `data/characters/npcs.json`, `data/dialogue/dialogues.json`, `spacegame/constants/flags.py`, `data/journal/entries.json`.
+   - Tests: `tests/test_data_integrity/test_stellaris_voice_compliance.py` covers Velo dialogue + new journal entry; existing dialogue-integrity scanner verifies state references resolve.
+   - Risks: dialogue-integrity test will fail if any flag/state reference is dangling — run the existing scanner before commit; off-floor Velo register MUST sound different from on-floor (he drops "we" for "I").
+
+7. **Stellaris session scheduling integration.** In `spacegame/engine/game.py`, on game-day advance (existing day-advance handlers), check `is_session_due("stellaris", current_day)`; if due AND `lifecycle == SCHEDULED`, generate the lot pool (`generate_lot_pool` with the loaded catalog + tier from helper + faction_reputation['stellaris_commerce_guild']) and call `enter_preview`. On first Stellaris entry without a prior schedule, seed initial session day deterministically 5-7 days out via `f"{current_day}_stellaris_initial"`. Hand the resulting personas list to `auction_view.set_active_personas(...)` from the existing factory `_ensure_auction_view`.
+   - Files: `spacegame/engine/game.py`, possibly small additions in `spacegame/models/bidding.py` for the "schedule initial" helper.
+   - Tests: `tests/test_models/test_bidding_stellaris.py::TestSchedule` (initial schedule, is_session_due true/false, deterministic seed); `tests/test_scenarios/test_scenario_stellaris_auction.py` covers integration end-to-end.
+   - Risks: day-advance is invoked from multiple paths (travel completion, sleep at hotel, mission completion) — find the canonical advance hook rather than wiring every entry point.
+
+8. **Auction view: render Velo + rival lines, fill PREVIEW + POST_SESSION.** In `spacegame/views/auction_view.py`:
+   - BID_WINDOW: render Velo's running-commentary line in the header (read template from `data_loader.get_auction_voices("stellaris")`; substitute `{lot_headline}` / `{current_high_bid}`).
+   - Bid log: when a named rival's persona submits a bid, render the persona-specific flat-bid template.
+   - PREVIEW empty-state: when no session is active, render "Next session in {N} days" with Velo flavor template; `N = next_auction_day - current_day`.
+   - POST_SESSION: for each named rival in `session_personas` (or `rival_session_attendance[session_id]`), pick the outcome bucket from session_lot_results and render the corresponding line template; if Sable on crew, render Sable read line keyed to existing `auction_sable_ceiling_correct` flag firing this session; if any rival auto-retired, render the retired-rival aside.
+   - Voice content fallback: if data_loader returned empty, fall back to design-doc default strings (not crash).
+   - Files: `spacegame/views/auction_view.py`.
+   - Tests: `tests/test_views/test_auction_view_stellaris.py` exercises each rendering path; pygame_gui leak test continues to pass.
+   - Risks: substate UI lifecycle — every new UI element MUST be paired with destroy; do NOT touch the lifecycle map at line 97 (SA-B2 locked it).
+
+9. **End-to-end scenario test.** `tests/test_scenarios/test_scenario_stellaris_auction.py`: stand up Player + AuctionView + crew_roster + progression; lock the seed; advance game-day to trigger a session; verify the full flow: hub navigation → preview → session_open → 6 × lot resolution → post-session social → session_close → next schedule. Assert: `won_lots` populated, `session_history` length 1, `next_auction_day["stellaris"]` is 5-7 days from now, journal entries fired (existing SA-B2 ones for first session/win/rivalry plus new Velo encounter), POST_SESSION social UI rendered at least 1 rival line, no pygame_gui handle leaks.
+   - Files: `tests/test_scenarios/test_scenario_stellaris_auction.py`.
+   - Risks: scenario tests are brittle to internal field names — assert observable contract (player credits, won_lots, schedule day, UI string presence), not internal state.
+
+10. **Voice compliance scanner + lint + full suite.** Run `tests/test_data_integrity/test_stellaris_voice_compliance.py` (the new test file) plus the existing `test_writing_bible_compliance.py` and `test_dialogue_integrity.py` scanners. Run touched-files-only `ruff format` + `ruff check` + `mypy`. Run `pytest -n auto -q`; assert pass count ≥ 9631; record delta in Activity log.
+    - Files: tests only.
+    - Risks: a typo in a voice template can fail the writing-bible scanner; iterate to clean.
+
+**Decisions locked in this planning phase.**
+
+1. **Stellaris categories shipped: 5, not 8.** SA-B3 ships the design-doc-locked Stellaris categories (`module`, `antiquity`, `faction_commodity`, `rare_upgrade`, `derelict_rights`) per `sa_bidding_design.md` §1.3 venue table. The original sprint goal listed "art" and "smuggled goods" and "faction-perk-equivalent unlocks"; these are folded as: art lots use category `antiquity` (no new constant); smuggled goods are Reach-only per design doc §1.3 (SA-B4 ships them); faction-perk-equivalent unlocks fold into `rare_upgrade` (mechanically equivalent; lot effects authored in lot data not new categories). Rationale: SA-B2's category constants are the locked schema; adding a constant requires a touched zone in `bidding_lot.py` outside SA-B3's bonus-content scope.
+
+2. **Stellaris Port standing → tier thresholds.** `stellaris_tier_for_standing(rep:int) -> str` thresholds: rep < 0 → `"apprentice"`; 0 ≤ rep ≤ 25 → `"regular"`; 26 ≤ rep ≤ 75 → `"certified"`; 76 ≤ rep ≤ 100 → `"patron"`. Faction id: `stellaris_commerce_guild` per `data/galaxy/systems.json:276`. Rationale: the rep system clamps to -100..100; these thresholds give roughly equal tier widths and place "certified" at the level where a player has earned faction-trust (above 25 reflects active engagement).
+
+3. **Per-rival attendance frequencies.** Prentiss attends 70% of eligible Stellaris sessions (deterministic by seeded RNG keyed `f"{session_id}_prentiss_attendance"`); Kade attends iff ≥1 of her target lots is in the session pool (target list: lots with category `faction_commodity` AND `faction_gate IN {commerce_guild, axiom_research, stellaris_commerce_guild}` — author this list directly in `bidding.py`, not in JSON, since it's a persona behavior); Salko attends every Stellaris session the player attends (per design doc §4.5 player_target_escalation); two Stellaris Speculator personas per session always present. Rationale: matches design doc §6.2 design intent ("Prentiss attends 70%; Kade only when target lot present; Salko always when player attends"); deterministic seeding lets tests reproduce attendance.
+
+4. **Lot catalog size: 18-24 lots in the master catalog.** Rationale: 6 lots per standard session × 5-session exclusion window → ≥30 lot-slots before a lot can repeat. With 20 lots, the catalog must rotate every ~4 sessions, which produces enough repeat exposure to recognize lots without overwhelming variety. 18-24 is the comfortable band for Stellaris.
+
+5. **Headliner counts: 3-5 in the catalog.** Rationale: with a lot pool of 18-24 and 1-headliner-per-session cap, 3-5 headliners means roughly every 4th-6th session is a headliner — matches the "seasonal" framing in the goal without making them feel routine.
+
+6. **Season concept: minimal — 3 fixed tags, 30-day cycles.** `provenance_week` (days 0-29 of cycle), `axiom_export_window` (30-59), `salvage_circuit` (60-89); cycle repeats. `current_season_tag(game_day) = TAGS[(game_day // 30) % 3]`. SA-B6 may extend with "no season" gaps; SA-B3 ships unconditional rotation. Rationale: SA-B3 doesn't own a generic season system; this is a tunable lot-pool weighting hook scoped to bidding.
+
+7. **Voice content lives in data, not code.** `data/auctions/stellaris_voices.json` holds Velo line templates, rival flat-bid templates, post-session social lines, and Sable templates. AuctionView reads via DataLoader; falls back to design-doc default strings if file missing. SA-B4 mirrors the pattern with `data/auctions/reach_voices.json`. Rationale: keeps player-facing strings out of `.py` files (per project convention); allows Writing Bible scanner to run as data validation.
+
+8. **Auction lot catalog ships as JSON, not generated.** `data/auctions/stellaris_lots.json` is hand-authored (18-24 lots). AuctionLot's existing `to_dict`/`from_dict` round-trips cleanly through DataLoader. Rationale: SA-B6 polish and SA-B3 reviewers can edit lot data without code changes; matches CLAUDE.md "Adding New Content" recipe.
+
+9. **Cassian Velo is an NPC + dialogue tree, not just an in-engine string.** Velo gets a full `data/characters/npcs.json` entry plus a `data/dialogue/dialogues.json` tree so the player can talk to Velo from the auction house location panel between sessions. Rationale: `station_anchors.md:149` lists "Auctioneer NPC with full voice sheet (named, recurring, characterful)"; reducing Velo to a string emitter would underdeliver against the vision.
+
+10. **Stellaris-specific test files, not extensions to SA-B2 tests.** SA-B3 adds 4 new test files (`test_bidding_stellaris.py`, `test_data_loader_auctions.py`, `test_auction_view_stellaris.py`, `test_scenario_stellaris_auction.py`, `test_stellaris_voice_compliance.py`); does NOT modify SA-B2's test files. Rationale: keeps the engine vs. content boundary clean; SA-B4 can mirror with `_reach.py` siblings.
+
+11. **No new categories or persona archetypes.** SA-B3 uses only existing `LOT_CATEGORY_*` constants and the existing 5 persona archetype factories. New behavior comes via lot data and attendance/season helpers. Rationale: SA-B2's locked decisions on module layout (Decision 1) and persona count (Decision §11.2) hold; SA-B3 is content-and-integration, not engine extension.
+
+12. **Headliner session size: defer to SA-B2 constants.** Standard sessions = 6 lots; headliner sessions = 8 lots; constants live in `bidding.py:76-77` (`STELLARIS_STANDARD_SESSION_SIZE` / `_HEADLINER_SESSION_SIZE`). SA-B3 does NOT change these; pool generation reads them. Rationale: SA-B6 polish phase tunes session sizes after playtest.
+
+13. **`seen_first_velo_encounter` is a flag helper.** Added to `spacegame/constants/flags.py` per `requirements/si3_flag_registry_cookbook.md`; cross-module read by both the journal manager and the dialogue tree. Rationale: any flag read across two modules MUST go through the helper layer per SI-3 conventions.
+
+14. **No save schema bump.** Lot catalog and voice file are read-only data; `Player.auction_state` schema is unchanged from SA-B2. Rationale: SA-B2 already accommodated `pending_lot_pool` in `AuctionState`; SA-B3 just feeds it real data.
+
+15. **Talk-to-Velo from station hub, not from within the auction view.** The talk-to-NPC affordance lives in the station hub location detail panel (next to the "Enter" button); the AuctionView itself remains focused on the bidding session. Rationale: separation of concerns; matches existing per-anchor patterns (Wreckers' Guild Master is reachable from station hub at `crimson_wreckers_guild`, not from within the guild hall view).
+
+**Risks / open questions.**
+
+- **Stellaris detail-panel "Enter" + "Talk to Velo" affordance**: The current `station_hub_view.py` detail panel for unique locations has a single "Enter" button (line ~790). Adding a parallel "Talk to Velo" requires checking whether the location has an NPC at `home_system_id` and surfacing the talk affordance. SA-B3 implementer should verify the existing dialogue-NPC station-hub talking pattern (e.g., how do players talk to Marcus Jin or Malia Torres from the hub today?) and mirror it. If no such pattern exists in station_hub_view, scope this addition tightly: a single button, not a generalized refactor.
+- **Cadence determinism**: `STELLARIS_CADENCE_MIN_DAYS=5` and `_MAX_DAYS=7` are constants; the actual draw between 5 and 7 must be deterministic per the existing seeding pattern. Confirm by reading `_close_session` in `bidding.py` — if SA-B2 didn't seed the per-cadence draw, SA-B3 must. (Likely SA-B2 already seeded; verify before assuming.)
+- **Catalog Writing Bible compliance**: the lot catalog has 18-24 lots × ~50-word descriptions = ~1000-1200 words of new player-facing copy. The scanner catches mechanical tells but not structural ones (universal-wisdom NPCs, "Captain" default address, reverence-of-the-ordinary). Author with `aurelia_voice_examples.md` open; keep descriptions concrete and specific to the lot, not gestural.
+- **Velo dialogue depth**: 4 branches is the floor. If implementer feels Velo needs more (e.g., 6-8 branches with meaningful state-gating), expand within scope. Velo is a recurring NPC — depth is fair. If expansion would push past 2 weeks, raise as SA-X1 (cross-anchor narrative threading) follow-up rather than blocking this sprint.
+- **Season-tag drift across SA-B4**: SA-B3 owns season tags `provenance_week` / `axiom_export_window` / `salvage_circuit`. SA-B4 (Reach) may want venue-specific seasons; if so, design `current_season_tag(game_day, venue:str)` to dispatch per venue. SA-B3 implementer can leave the venue parameter for SA-B4 to add; SA-B3 ships the Stellaris-only signature.
+- **Achievement threshold ranges**: "champion = 5 wins at Stellaris" (SA-B2 stub) trips on `auction_lots_won_stellaris >= CHAMPION_WINS_AT_STELLARIS=5` (`bidding.py:105`). Verify the counter increments for Stellaris wins specifically (not just total auction wins). Fix in SA-B3 if SA-B2's wiring conflated venues.
+- **Performance**: lot catalog of 18-24 lots × 5 filters × season weighting = sub-millisecond. No perf risk. Scenario test asserts no regression vs. SA-B2's 16ms tick budget.
 
 **Activity log.**
 - 2026-04-26 — todo (created)
+- 2026-04-29 09:44 — harness: plan phase starting
+- 2026-04-29 10:30 — planning complete; verified all 4 context-to-read docs exist (sa_bidding_design.md, character_voices.md, station_anchors.md, SA-B2 implementation in spacegame/models/bidding.py + bidding_persona.py + bidding_lot.py + auction_view.py). Mapped what SA-B2 already shipped vs. what SA-B3 must add: engine is venue-agnostic and complete; SA-B3 layers Stellaris content (lot catalog, voice content, NPC + dialogue, schedule integration, hub navigation, Stellaris standing→tier helper, season helper, attendance rules, post-session social UI fill-out, empty-state Velo flavor). Expanded touch zones from 6 to 17 entries (added voice-data file, NPC entry, journal entry, data-loader changes, hub nav, schedule integration, 4 new test files). Tightened acceptance from 6 vague criteria to 20 mechanically-verifiable criteria. Locked 15 Stellaris-specific decisions (categories, tier thresholds, attendance frequencies, catalog size, headliner count, season concept, voice-as-data, lot-as-data, Velo-as-NPC, test-file boundary, no-engine-changes, session-size constants, flag helper, no-save-bump, talk-to-Velo from hub). Folded in polish items: post-session social UI (vision-required), empty-state Velo flavor, retired-rival aside, talk-to-Velo dialogue tree, new journal entry. No new sprints proposed; SA-B3 scope is well-bounded by the design doc and SA-B2's engine surface. PHASE_OK
+
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-04-29 09:44
+- Completed: 2026-04-29 10:30
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: 4225150
+- New_sprints_proposed: none
+- Polish_items_folded_in: post-session social UI (rival commentary + Sable read + retired-rival aside), empty-state Velo flavor line, talk-to-Velo NPC + dialogue tree, first-Velo-encounter journal entry, season-tag rotation
+- Decisions_locked: 15
+- Notes: Verified all 4 context docs exist and read deeply. SA-B2 engine is complete and venue-agnostic; SA-B3 layers Stellaris content. Touch-zone list expanded from 6 to 17 entries to reflect the realistic surface (voice file, NPC, journal, data-loader, hub nav, schedule integration, 4 new tests). Acceptance criteria tightened from 6 vague to 20 mechanically-verifiable. Five lots in the categories list reduced from the original goal's 8 (art folded into antiquity; contraband moved to SA-B4; faction-perk-equivalent into rare_upgrade) per design doc §1.3.
 
 #### SA-B4 — Crimson Reach Black Market auctions
 
