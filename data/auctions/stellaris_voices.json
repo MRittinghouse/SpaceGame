@@ -1,0 +1,94 @@
+{
+  "_comment": "SA-B3 Stellaris Auction House voice content. Velo lines on the floor (ceremonial register, present tense, names lots neutrally). Rival flat-bid templates honor each persona's voice sheet. Post-session lines split by attendance and outcome. Voice-checked against character_voices.md and dialogue_writing_guide.md.",
+  "velo_lines": {
+    "lot_open": "The lot is open. {lot_headline}.",
+    "we_are_at": "We are at {current_high_bid}. Do we hear more?",
+    "lot_closed_sold": "Sold. {lot_headline}, at {current_high_bid}.",
+    "lot_closed_withdrawn": "The reserve is not met. The lot is withdrawn.",
+    "session_open": "We have lots prepared for the floor today. Standard terms apply. The session is open.",
+    "session_close": "The session is closed. Thank you for attending.",
+    "snipe_window_extended": "We hold the floor a moment longer. The lot remains open.",
+    "exceptional_lot_pause": "A pause on this one. The lot is open."
+  },
+  "rival_bids": {
+    "aldous_prentiss": "I'll go to {amount}.",
+    "yuna_kade": "The Guild bids {amount}.",
+    "fenn_salko": "{amount}."
+  },
+  "post_session": {
+    "aldous_prentiss": {
+      "rival_won": [
+        "Prentiss takes the lot at the price the room held. He does not look at you.",
+        "Prentiss closes on the lot. He notes the page in his catalogue and turns it.",
+        "Prentiss carries it. The bid was small and certain, and the lot was his."
+      ],
+      "player_won": [
+        "Prentiss does not congratulate you. He marks the lot in his catalogue and moves on.",
+        "Prentiss reads the next entry. He does not look up.",
+        "Prentiss accepts the result. The recalibration is internal."
+      ],
+      "no_overlap": [
+        "Prentiss attended. He did not bid against you on the lots you wanted.",
+        "Prentiss watched the floor. His attention rested elsewhere this session.",
+        "Prentiss attended the session. The lots that drew him were not yours."
+      ],
+      "absent_retired": [
+        "Prentiss has not been on the floor for a while.",
+        "Prentiss did not attend. The seat he prefers stayed empty.",
+        "Prentiss was not in the room today."
+      ]
+    },
+    "yuna_kade": {
+      "rival_won": [
+        "Kade closes on the lot. She consults her notes once, then logs the price.",
+        "The Guild takes the lot. Kade is already reviewing the next entry.",
+        "Kade carries it for procurement. She thanks Velo and steps back."
+      ],
+      "player_won": [
+        "Kade nods once. She marks the result and steps back.",
+        "Kade logs the outcome and reaches for her case. She will report the ceiling.",
+        "Kade accepts the result without comment. The Guild will review."
+      ],
+      "no_overlap": [
+        "Kade attended. The session offered nothing on her acquisition list this round.",
+        "Kade was present. Her ceiling was not engaged on the lots in front of you.",
+        "Kade reviewed the catalogue. The Guild's interests sat with other entries."
+      ],
+      "absent_retired": [
+        "Kade has not been on the floor in a while.",
+        "Kade did not attend. Procurement sent no representative this session.",
+        "Kade was not in the room today."
+      ]
+    },
+    "fenn_salko": {
+      "rival_won": [
+        "Salko picks up his catalogue. That is all.",
+        "Salko takes the lot. He does not look at you.",
+        "Salko logs the price. Brief. Settled."
+      ],
+      "player_won": [
+        "Salko sets the catalogue down. He files it.",
+        "Salko nods once and turns the page. He is building a picture.",
+        "Salko gives no reaction. The session is in the ledger."
+      ],
+      "no_overlap": [
+        "Salko was here. He bid where he chose.",
+        "Salko attended. The lots that brought him were not the ones in front of you.",
+        "Salko sat through the session. He did not engage on the lots you wanted."
+      ],
+      "absent_retired": [
+        "Salko has not been on the floor in a while.",
+        "Salko did not show. His seat was open.",
+        "Salko was not in the room today."
+      ]
+    }
+  },
+  "sable_reads": {
+    "ceiling_correct": "Ceilings landed within the band I called. The room is reading clean.",
+    "ceiling_off": "Two of the ceilings ran past my call. I will adjust for next session.",
+    "no_rivals_attended": "No named rivals on the floor today. The reads are quieter without them.",
+    "sable_not_on_crew": ""
+  },
+  "empty_state": "Velo: \"The next session is in {gap_days} days. The floor is quiet between sessions.\"",
+  "retired_rival": "{display_name} has not been on the floor in a while."
+}

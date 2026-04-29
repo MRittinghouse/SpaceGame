@@ -1,0 +1,238 @@
+{
+  "_comment": "SA-B3 Stellaris Auction House lot catalog. 20 lots across 5 design-doc categories. Voice-checked against character_voices.md (Cassian Velo neutral cataloguing register) and dialogue_writing_guide.md.",
+  "lots": [
+    {
+      "id": "stellaris_module_kings_repeater_reissue",
+      "headline": "King's Repeater (Re-issue, Documented)",
+      "description": "A factory re-issue of the limited heavy-launcher production run. Provenance certificate present. Original drift studs replaced; the rest is to spec.",
+      "category": "module",
+      "venue": "stellaris",
+      "base_appraisal": 28000,
+      "reserve_pct": 0.75,
+      "rep_tier_required": "certified",
+      "is_headliner": true,
+      "season_tag": "provenance_week",
+      "source_module_id": "torpedo_tube_rk"
+    },
+    {
+      "id": "stellaris_module_overcharged_core_reissue",
+      "headline": "Overcharged Core (Sealed Re-issue)",
+      "description": "Talon-stamped reactor core, factory-sealed, with the original test-run logs included. Runs hot. Buyer assumes thermal handling.",
+      "category": "module",
+      "venue": "stellaris",
+      "base_appraisal": 22000,
+      "reserve_pct": 0.72,
+      "rep_tier_required": "regular",
+      "is_headliner": false,
+      "source_module_id": "overcharged_core_talon"
+    },
+    {
+      "id": "stellaris_module_capital_reactor_reissue",
+      "headline": "Capital Reactor (Re-issue)",
+      "description": "Foundry capital reactor, late-production batch. Documentation traces every pour. Buyer covers transit and certification.",
+      "category": "module",
+      "venue": "stellaris",
+      "base_appraisal": 32000,
+      "reserve_pct": 0.78,
+      "rep_tier_required": "patron",
+      "is_headliner": true,
+      "source_module_id": "capital_reactor_foundry"
+    },
+    {
+      "id": "stellaris_module_drone_bay_reissue",
+      "headline": "Drone Bay (Re-issue, Tested)",
+      "description": "Reyes-Kowalski drone bay re-pulled from the original tooling. Bench-tested by an independent hand. Receipts attached.",
+      "category": "module",
+      "venue": "stellaris",
+      "base_appraisal": 8500,
+      "reserve_pct": 0.68,
+      "rep_tier_required": "regular",
+      "season_tag": "axiom_export_window",
+      "source_module_id": "drone_bay_rk"
+    },
+    {
+      "id": "stellaris_module_broadside_battery_reissue",
+      "headline": "Broadside Battery (Re-issue, Late Production)",
+      "description": "Foundry broadside, last batch of the late production run. Mounting flanges trued by the workshop that sourced the lot.",
+      "category": "module",
+      "venue": "stellaris",
+      "base_appraisal": 12000,
+      "reserve_pct": 0.7,
+      "rep_tier_required": "certified",
+      "source_module_id": "broadside_battery_foundry"
+    },
+    {
+      "id": "stellaris_antiquity_pre_compact_astrolabe",
+      "headline": "Pre-Compact Astrolabe",
+      "description": "A working astrolabe from the era before the Compact. Brass plates, ivory hands, navigational lines still readable. Functional.",
+      "category": "antiquity",
+      "venue": "stellaris",
+      "base_appraisal": 14000,
+      "reserve_pct": 0.7,
+      "rep_tier_required": "regular",
+      "season_tag": "provenance_week"
+    },
+    {
+      "id": "stellaris_antiquity_founders_charter_fragment",
+      "headline": "Founders' Charter Fragment",
+      "description": "A signed page from the original Stellaris Charter, framed under sealed glass. Authentication on file at the Guild library.",
+      "category": "antiquity",
+      "venue": "stellaris",
+      "base_appraisal": 9000,
+      "reserve_pct": 0.7,
+      "rep_tier_required": "regular",
+      "season_tag": "provenance_week"
+    },
+    {
+      "id": "stellaris_antiquity_aurelian_war_diary",
+      "headline": "Aurelian Officer's War Diary",
+      "description": "A bound personal diary from a Frontier Alliance officer during the Reach campaigns. Pages annotated. Authenticated handwriting.",
+      "category": "antiquity",
+      "venue": "stellaris",
+      "base_appraisal": 7500,
+      "reserve_pct": 0.65
+    },
+    {
+      "id": "stellaris_antiquity_signed_compact_print",
+      "headline": "Signed Compact-Era Star Chart",
+      "description": "A printer's first edition of the Compact-era trade lanes, signed and dated by the chartmaker. Two minor folds, one corrected entry.",
+      "category": "antiquity",
+      "venue": "stellaris",
+      "base_appraisal": 5500,
+      "reserve_pct": 0.65,
+      "rep_tier_required": "regular",
+      "season_tag": "provenance_week"
+    },
+    {
+      "id": "stellaris_antiquity_pre_accord_silver_set",
+      "headline": "Pre-Accord Silver Service",
+      "description": "A complete dining service in Stellaris silver, pre-Accord hallmarks intact. Twelve settings, plus a serving piece.",
+      "category": "antiquity",
+      "venue": "stellaris",
+      "base_appraisal": 6000,
+      "reserve_pct": 0.7,
+      "is_headliner": true
+    },
+    {
+      "id": "stellaris_faction_axiom_navigation_array",
+      "headline": "Axiom Navigation Array",
+      "description": "Standard export license. Core navigational unit. The array carries Axiom Research's stamp and a current calibration certificate.",
+      "category": "faction_commodity",
+      "venue": "stellaris",
+      "base_appraisal": 8500,
+      "reserve_pct": 0.82,
+      "faction_gate": "commerce_guild",
+      "rep_tier_required": "regular",
+      "season_tag": "axiom_export_window"
+    },
+    {
+      "id": "stellaris_faction_guild_dispatch_crate",
+      "headline": "Guild Dispatch Crate (Sealed, Logged)",
+      "description": "A sealed Commerce Guild dispatch crate, contents itemized, transit logs attached. Re-sale permitted under standard procurement rules.",
+      "category": "faction_commodity",
+      "venue": "stellaris",
+      "base_appraisal": 6500,
+      "reserve_pct": 0.78,
+      "faction_gate": "commerce_guild",
+      "rep_tier_required": "apprentice",
+      "season_tag": "axiom_export_window"
+    },
+    {
+      "id": "stellaris_faction_axiom_research_kit",
+      "headline": "Axiom Survey Kit (Field Issue)",
+      "description": "A field-issue survey kit from Axiom Research's outer-system office. Sealed. Reserve floor reflects the manufacturer's licensing terms.",
+      "category": "faction_commodity",
+      "venue": "stellaris",
+      "base_appraisal": 7200,
+      "reserve_pct": 0.8,
+      "faction_gate": "axiom_research",
+      "rep_tier_required": "regular"
+    },
+    {
+      "id": "stellaris_faction_collective_data_index",
+      "headline": "Science Collective Data Index",
+      "description": "A current-quarter data index of public-distribution Collective findings. Licensed for re-sale under the Collective's open-access terms.",
+      "category": "faction_commodity",
+      "venue": "stellaris",
+      "base_appraisal": 4500,
+      "reserve_pct": 0.75,
+      "faction_gate": "science_collective",
+      "rep_tier_required": "regular"
+    },
+    {
+      "id": "stellaris_upgrade_tuned_plasma_thruster",
+      "headline": "Tuned Plasma Thruster",
+      "description": "Workshop-tuned plasma thruster from a Reyes-Kowalski racing-program donor. Bench numbers attached, signed by the tuner.",
+      "category": "rare_upgrade",
+      "venue": "stellaris",
+      "base_appraisal": 11000,
+      "reserve_pct": 0.7,
+      "rep_tier_required": "regular",
+      "season_tag": "axiom_export_window"
+    },
+    {
+      "id": "stellaris_upgrade_calibrated_targeting_suite",
+      "headline": "Calibrated Targeting Suite",
+      "description": "A fleet-issue targeting suite, calibrated to a known-good baseline by an independent shop. Calibration record runs three pages.",
+      "category": "rare_upgrade",
+      "venue": "stellaris",
+      "base_appraisal": 13000,
+      "reserve_pct": 0.72,
+      "rep_tier_required": "certified"
+    },
+    {
+      "id": "stellaris_upgrade_hardened_shield_capacitor",
+      "headline": "Hardened Shield Capacitor",
+      "description": "A high-cycle shield capacitor with the original burn-in logs. Reserve floor reflects the capacitor's documented service hours.",
+      "category": "rare_upgrade",
+      "venue": "stellaris",
+      "base_appraisal": 9500,
+      "reserve_pct": 0.68,
+      "rep_tier_required": "regular",
+      "season_tag": "axiom_export_window"
+    },
+    {
+      "id": "stellaris_upgrade_signal_dampener",
+      "headline": "Inline Signal Dampener",
+      "description": "A signal-dampener mod legal under the current Stellaris license. Workshop-installed. Removal instructions included with the package.",
+      "category": "rare_upgrade",
+      "venue": "stellaris",
+      "base_appraisal": 8800,
+      "reserve_pct": 0.7
+    },
+    {
+      "id": "stellaris_derelict_outer_belt_claim",
+      "headline": "Outer Belt Wreck Claim",
+      "description": "Filed claim on a Compact-era hull adrift in the outer belt. Recovery rights transfer at hammer fall. Survey log attached.",
+      "category": "derelict_rights",
+      "venue": "stellaris",
+      "base_appraisal": 18000,
+      "reserve_pct": 0.65,
+      "rep_tier_required": "certified",
+      "is_headliner": true,
+      "season_tag": "salvage_circuit"
+    },
+    {
+      "id": "stellaris_derelict_inner_lane_tug_rights",
+      "headline": "Inner Lane Tug Rights, Lot 14",
+      "description": "Recovery rights to a derelict freighter on the inner lane. Tug authorization current. Buyer assumes the standing notices on file.",
+      "category": "derelict_rights",
+      "venue": "stellaris",
+      "base_appraisal": 9000,
+      "reserve_pct": 0.68,
+      "rep_tier_required": "regular",
+      "season_tag": "salvage_circuit"
+    },
+    {
+      "id": "stellaris_derelict_anchor_station_lien",
+      "headline": "Anchor Station Recovery Lien",
+      "description": "A held lien on the anchor structure of a quiet station section. Salvage rights bundled. Reserve floor reflects the lien holder's documented expenses.",
+      "category": "derelict_rights",
+      "venue": "stellaris",
+      "base_appraisal": 11500,
+      "reserve_pct": 0.7,
+      "rep_tier_required": "regular",
+      "season_tag": "salvage_circuit"
+    }
+  ]
+}
