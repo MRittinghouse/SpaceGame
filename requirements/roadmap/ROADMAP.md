@@ -4960,7 +4960,7 @@ Open question (reviewer judgment, not blocking implementation):
 - Started: 2026-04-29 18:15
 - Completed: 2026-04-29 18:30
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending (planner about to commit)
+- Commits: 98b6398
 - New_sprints_proposed: none
 - Polish_items_folded_in: none new (prior planning run already folded in coverage-sanity test, allowlist-pinning unit test, and the manual injection check; this run confirmed those remain appropriate)
 - Decisions_locked: 0 new (3 prior locks confirmed: discovery via `__subclasses__()`; allowlist honored via `_find_violations()`; empty taglines skipped)
