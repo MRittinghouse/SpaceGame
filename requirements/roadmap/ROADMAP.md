@@ -53,7 +53,7 @@ The SA-arc table below is **auto-regenerated** by the ralph harness from the spr
 | [SA-R1](#sa-r1--okafor-institute-research-patronage) | Okafor Institute (Research Patronage) | IV | L | done | SA-PREP-1, SA-C2 |
 | [SA-R2](#sa-r2--dr-okafors-legacy-narrative-arc) | Dr. Okafor's Legacy Narrative Arc | IV | M | done | SA-R1 |
 | [SA-R3](#sa-r3--research-patronage-polish) | Research Patronage polish | IV | S | done | SA-R1, SA-R2 |
-| [SA-F1](#sa-f1--financial-exchange-design) | Financial Exchange Design | V | M | todo | SA-PREP-1, SA-C2, SA-V |
+| [SA-F1](#sa-f1--financial-exchange-design) | Financial Exchange Design | V | M | done | SA-PREP-1, SA-C2, SA-V |
 | [SA-F2](#sa-f2--futures-core) | Futures Core | V | XL | todo | SA-F1 |
 | [SA-F3](#sa-f3--meridian-venue--cargo-broker-graduation) | Meridian Venue + Cargo Broker graduation | V | L | todo | SA-F2, SA-V |
 | [SA-F4](#sa-f4--shipping-contracts-sub-system) | Shipping Contracts sub-system | V | L | todo | SA-F2 |
@@ -3995,7 +3995,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 
 #### SA-F1 — Financial Exchange Design
 
-**Status**: in-progress (reviewing)
+**Status**: done
 **Phase**: Phase V | **Size**: M | **Effort**: 1 week
 **Depends on**: SA-PREP-1, SA-C2, SA-V | **Blocks**: SA-F2
 
@@ -4100,7 +4100,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 - 2026-04-29 — implement phase: `requirements/sa_financial_design.md` authored (851 lines); all 15 acceptance criteria verified by script; Writing Bible scanner clean; SI-3 dialogue integrity scanner clean; test suite 10268/98 (baseline unchanged). PHASE_OK
 - 2026-04-29 16:43 — harness: review phase starting (rework cycle 0)
 - 2026-04-29 17:30 — review complete; 1 minor finding fixed directly (market.py:115 citation in Section 11 Decision 2 pointed to PriceHistory deserialization rather than trading surface; corrected to :425 record_buy); all 15 acceptance criteria met; test suite 10268/98 (baseline unchanged); voice content clean on manual review; Writing Bible scanner 17/17 pass. PHASE_OK
-
+- 2026-04-29 16:49 — harness: review passed, marking done
 **Last phase report.**
 - Phase: review
 - Outcome: PHASE_OK
