@@ -3175,7 +3175,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 - Started: 2026-04-29 10:39
 - Completed: 2026-04-29 11:55
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending
+- Commits: 8e8c5b4
 - New_sprints_proposed: none
 - Polish_items_folded_in: 3 flag-gated journal entries, 2 banter trigger flags, 1 achievement stub (`auction_reach_debut`), Reach Floor Manager voice sheet authoring (essential per design §10.6), tier-locked station-hub message via `tier_locked` template, ReachDarkLayout dim-tint application, voice-distinctness static scan acceptance criterion
 - Decisions_locked: 15
