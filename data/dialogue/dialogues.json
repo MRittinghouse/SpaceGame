@@ -9607,6 +9607,60 @@
           "expression": "neutral"
         }
       ]
+    },
+    {
+      "id": "kweon_legacy_post_clinic_run",
+      "start_node_id": "greeting",
+      "nodes": [
+        {
+          "id": "greeting",
+          "speaker_id": "kweon_director",
+          "text": "The field clinic in Haven's Rest confirmed delivery. The coordinator sent a notation through the Alliance channel. The supplies reached the intake bay before the next scheduled rotation. That is the best outcome we could have had from the run.",
+          "responses": [
+            {
+              "text": "The window was closing. It seemed worth moving.",
+              "next_node_id": "reflection"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "reflection",
+          "speaker_id": "kweon_director",
+          "text": "The Collective's logistics window was already closed when the order was placed. You moved it anyway. The annotation in the record reads: exception to standard channel. That is the correct annotation. The gap was real and it has been addressed. The work circulates through what is available when what is usual is not.",
+          "responses": [
+            {
+              "text": "Will the clinic have what it needs going forward?",
+              "next_node_id": "quiet_warmth"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "quiet_warmth",
+          "speaker_id": "kweon_director",
+          "text": "I do not typically name something useful when the account already shows it. The clinic's intake register is the record and it is clear. What I want to say is that I noticed, and that is harder to annotate than tonnage.",
+          "responses": [
+            {
+              "text": "[Understood. I will keep watching the board.]",
+              "next_node_id": "close"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "close",
+          "speaker_id": "kweon_director",
+          "text": "The board rotates on schedule. Come back when you are ready.",
+          "responses": [
+            {
+              "text": "[Leave.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
     }
   ]
 }

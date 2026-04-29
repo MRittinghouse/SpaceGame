@@ -1025,8 +1025,21 @@ def okafor_legacy_mission_completed() -> str:
 
     Producer: mission reward chain for ``okafor_legacy_clinic_run``
     (``reward_type: set_flag`` entry in ``data/missions/sa_r2_okafor_legacy.json``).
-    Consumer: SA-X1 cross-anchor narrative threading (deferred). Listed in
-    :data:`tests.test_data.test_dialogue_integrity.KNOWN_PRODUCER_ONLY_ORPHANS`
-    until SA-X1 wires a consumer.
+    Consumer: ``OkaforView._kweon_dialogue_id()`` post-clinic-run callback
+    routing guard (SA-R3). Removed from KNOWN_PRODUCER_ONLY_ORPHANS in SA-R3.
     """
     return "okafor_legacy_mission_completed"
+
+
+def okafor_legacy_clinic_callback_seen() -> str:
+    """Flag set when the post-clinic-run Kweon callback dialogue is dismissed.
+
+    Producer: ``OkaforView._close_active_dialogue()`` via the
+    ``_LEGACY_ARC_TREE_TO_FLAG`` mapping when the
+    ``kweon_legacy_post_clinic_run`` tree closes.
+    Consumer: ``OkaforView._kweon_dialogue_id()`` routing guard — once set,
+    the callback beat no longer surfaces and normal arc routing resumes.
+    Both producer and consumer land in SA-R3 — no KNOWN_PRODUCER_ONLY_ORPHANS
+    registration needed.
+    """
+    return "okafor_legacy_clinic_callback_seen"

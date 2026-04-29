@@ -925,12 +925,6 @@ KNOWN_PRODUCER_ONLY_ORPHANS: set[str] = {
     "okafor_collaborator_share_theo_brandt",
     "okafor_collaborator_share_sana_dey",
     "okafor_collaborator_share_nuri_solberg",
-    # === SA-R2 Okafor legacy mission — consumer deferred to SA-R2-FOLLOW-1 ===
-    # ``okafor_legacy_mission_completed`` is SET as a mission reward when the
-    # player completes the okafor_legacy_clinic_run delivery. The consumer
-    # (a Kweon callback dialogue line acknowledging the run) is deferred to
-    # SA-R2-FOLLOW-1 per the SA-R2 locked decision on kweon_relationship_value.
-    "okafor_legacy_mission_completed",
     # === SA-R2 DETECTOR MISS — consumed via pending_legacy_beat variable dispatch ===
     # ``okafor_legacy_mission_offered`` is SET by the dialogue response's
     # set_flag field (detectable). The real consumer is ``pending_legacy_beat``
@@ -938,6 +932,14 @@ KNOWN_PRODUCER_ONLY_ORPHANS: set[str] = {
     # ``name`` being a variable — not a string literal the scanner can match.
     # The OkaforView close-handler also reads it through the same helper.
     "okafor_legacy_mission_offered",
+    # === SA-R3 DETECTOR MISS — no-arg helper consumer in OkaforView routing ===
+    # ``okafor_legacy_mission_completed`` is SET as a mission reward (real producer).
+    # Consumer: ``OkaforView._kweon_dialogue_id()`` reads it via
+    # ``flags.get(okafor_legacy_mission_completed())`` — a no-arg helper call.
+    # The scanner's _helper_access_patterns() cannot generate regex patterns for
+    # no-arg helpers (same detection gap as ``heard_dcmc_intelligence``). The
+    # consumer is real and wired; this is a scanner blind spot, not an orphan.
+    "okafor_legacy_mission_completed",
 }
 
 

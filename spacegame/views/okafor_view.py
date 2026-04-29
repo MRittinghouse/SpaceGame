@@ -33,10 +33,12 @@ from spacegame.constants.flags import (
     okafor_collaborator_share,
     okafor_failure_debrief_shown,
     okafor_first_failure_seen,
+    okafor_legacy_clinic_callback_seen,
     okafor_legacy_first_heal_seen,
     okafor_legacy_first_profit_seen,
     okafor_legacy_heal_ending_seen,
     okafor_legacy_heal_pattern_seen,
+    okafor_legacy_mission_completed,
     okafor_legacy_profit_ending_seen,
     okafor_legacy_profit_pattern_seen,
     okafor_patent_disposed_first,
@@ -127,7 +129,7 @@ RESEARCHER_DOCK_ENTRIES: tuple[tuple[str, str, str, str], ...] = (
     ("sana_dey", "Sana Dey", "Junior Researcher", "sana_dey_okafor"),
 )
 
-# SA-R2: map each arc-beat tree id → (seen_flag_fn, optional_ending_value).
+# SA-R2/SA-R3: map each arc-beat tree id → (seen_flag_fn, optional_ending_value).
 # The close-handler uses this for O(1) flag dispatch without branching on
 # tree id inline. Ending entries carry a non-empty string; others carry "".
 _LEGACY_ARC_TREE_TO_FLAG: dict[str, tuple[str, str]] = {
@@ -137,6 +139,8 @@ _LEGACY_ARC_TREE_TO_FLAG: dict[str, tuple[str, str]] = {
     "kweon_legacy_profit_pattern": (okafor_legacy_profit_pattern_seen(), ""),
     "kweon_legacy_heal_ending": (okafor_legacy_heal_ending_seen(), "heal"),
     "kweon_legacy_profit_ending": (okafor_legacy_profit_ending_seen(), "profit"),
+    # SA-R3: post-clinic-run callback — non-terminal, empty ending value.
+    "kweon_legacy_post_clinic_run": (okafor_legacy_clinic_callback_seen(), ""),
 }
 
 
@@ -507,18 +511,25 @@ class OkaforView(BaseView):
     def _kweon_dialogue_id(self) -> str:
         """Pick the Kweon tree based on state.
 
-        Priority (SA-R2 Decision 4):
+        Priority (SA-R3 update of SA-R2 Decision 4):
           1. ``kweon_failure_debrief`` — a project has failed and the
              debrief tree has not yet been dismissed.
-          2. Next pending legacy-arc beat from :func:`pending_legacy_beat`
+          2. ``kweon_legacy_post_clinic_run`` — the clinic-run mission is
+             completed and the callback has not yet been seen.
+          3. Next pending legacy-arc beat from :func:`pending_legacy_beat`
              — ethics counter thresholds met and beat not yet seen.
-          3. ``kweon_okafor_intro`` — ambient greeting.
+          4. ``kweon_okafor_intro`` — ambient greeting.
         """
         if self._failure_debrief_pending:
             return "kweon_failure_debrief"
+        flags = self.player.dialogue_flags
+        if flags.get(okafor_legacy_mission_completed()) and not flags.get(
+            okafor_legacy_clinic_callback_seen()
+        ):
+            return "kweon_legacy_post_clinic_run"
         state = self.player.okafor_research_state
         if state is not None:
-            beat = pending_legacy_beat(state, self.player.dialogue_flags)
+            beat = pending_legacy_beat(state, flags)
             if beat is not None:
                 return beat
         return KWEON_DOCK_ENTRY[3]

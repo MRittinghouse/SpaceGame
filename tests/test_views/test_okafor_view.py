@@ -27,10 +27,12 @@ from spacegame.constants.flags import (
     okafor_collaborator_share,
     okafor_failure_debrief_shown,
     okafor_first_failure_seen,
+    okafor_legacy_clinic_callback_seen,
     okafor_legacy_first_heal_seen,
     okafor_legacy_first_profit_seen,
     okafor_legacy_heal_ending_seen,
     okafor_legacy_heal_pattern_seen,
+    okafor_legacy_mission_completed,
     okafor_legacy_profit_ending_seen,
     okafor_legacy_profit_pattern_seen,
     okafor_patent_disposed_first,
@@ -654,3 +656,92 @@ class TestCloseHandlerSetsArcBeatFlags:
         result = view._kweon_dialogue_id()
         assert result in ("kweon_okafor_intro", "kweon_legacy_heal_ending")
         view.on_exit()
+
+
+# ============================================================================
+# SA-R3: Post-clinic-run callback routing + close-handler flag
+# ============================================================================
+
+
+class TestPostClinicRunCallbackRouting:
+    """SA-R3 AC #7 and #8 — post-clinic-run callback in the priority chain."""
+
+    def _setup_view_post_clinic(
+        self,
+        callback_seen: bool = False,
+        arc_beat_pending: bool = False,
+    ) -> tuple[OkaforView, "Player"]:
+        manager, player = _make_env()
+        player.okafor_research_state = OkaforResearchState()
+        # Mark clinic run completed
+        player.dialogue_flags[okafor_legacy_mission_completed()] = True
+        if callback_seen:
+            player.dialogue_flags[okafor_legacy_clinic_callback_seen()] = True
+        if arc_beat_pending:
+            # Set up a pending first-heal beat
+            player.okafor_research_state.legacy_heal_completed = 1
+        view = _make_view(player, manager)
+        view.on_enter()
+        return view, player
+
+    def test_post_clinic_run_callback_fires_when_mission_completed_and_not_seen(
+        self,
+    ) -> None:
+        view, player = self._setup_view_post_clinic(callback_seen=False)
+        result = view._kweon_dialogue_id()
+        assert result == "kweon_legacy_post_clinic_run", (
+            f"Expected post-clinic-run callback, got {result!r}"
+        )
+        view.on_exit()
+
+    def test_ambient_returns_when_callback_already_seen(self) -> None:
+        view, player = self._setup_view_post_clinic(callback_seen=True)
+        # No arc beat pending, callback already seen -> ambient
+        result = view._kweon_dialogue_id()
+        assert result == "kweon_okafor_intro", (
+            f"Expected ambient after callback seen, got {result!r}"
+        )
+        view.on_exit()
+
+    def test_failure_debrief_beats_post_clinic_run(self) -> None:
+        manager, player = _make_env()
+        player.okafor_research_state = OkaforResearchState()
+        player.dialogue_flags[okafor_legacy_mission_completed()] = True
+        view = _make_view(player, manager)
+        view.on_enter()
+        # Force failure-debrief pending
+        view._failure_debrief_pending = True
+        result = view._kweon_dialogue_id()
+        assert result == "kweon_failure_debrief", (
+            f"failure_debrief must beat post-clinic-run, got {result!r}"
+        )
+        view.on_exit()
+
+    def test_closing_callback_tree_sets_seen_flag(self) -> None:
+        view, player = self._setup_view_post_clinic(callback_seen=False)
+        dl = get_data_loader()
+        tree = dl.get_dialogue("kweon_legacy_post_clinic_run")
+        assert tree is not None, "kweon_legacy_post_clinic_run dialogue tree must exist"
+        view._active_dialogue_tree = tree
+        view._active_dialogue_node_id = tree.start_node_id
+        view._active_dialogue_is_failure_debrief = False
+
+        assert not player.dialogue_flags.get(okafor_legacy_clinic_callback_seen())
+        view._close_active_dialogue()
+        assert player.dialogue_flags.get(okafor_legacy_clinic_callback_seen()) is True, (
+            "closing the post-clinic-run tree must set the seen flag"
+        )
+        # The callback is non-terminal — legacy_ending must NOT be set
+        assert player.okafor_research_state.legacy_ending == "", (
+            "post-clinic-run callback must not set legacy_ending"
+        )
+        view.on_exit()
+
+    def test_arc_beat_fires_after_callback_dismissed(self) -> None:
+        """Once the callback is seen, pending arc beats surface normally."""
+        view, player = self._setup_view_post_clinic(callback_seen=True, arc_beat_pending=True)
+        # callback seen, arc beat pending → arc beat should surface
+        result = view._kweon_dialogue_id()
+        assert result == "kweon_legacy_first_heal", (
+            f"Arc beat should surface once callback dismissed, got {result!r}"
+        )
