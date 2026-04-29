@@ -3191,7 +3191,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 
 #### SA-B5 — Player-Initiated Auctions
 
-**Status**: in-progress (planning)
+**Status**: in-progress (implementing)
 **Phase**: Phase III | **Size**: L | **Effort**: 1.5 weeks
 **Depends on**: SA-B2 | **Blocks**: SA-B6
 
@@ -3341,7 +3341,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 - 2026-04-26 — todo (created)
 - 2026-04-29 11:47 — harness: plan phase starting
 - 2026-04-29 12:35 — planning complete; verified all 2 originally-listed Context-to-read entries (`requirements/station_anchors.md` + SA-B2 implementation surface) exist and read-through confirmed; expanded Context-to-read from 2 entries to 22 to cover the full SA-B3/B4 patterning surface (the design doc sections 2/3/5/8/11 per the §12 hand-off table; agent_principles.md + aurelia_voice_examples.md + character_voices.md + cultural_guide.md; onboarding_design.md for the FirstTimeTipOverlay pattern; the bidding engine surface — `bidding.py` AuctionState + `bidding_lot.py` AuctionLot + `bidding_persona.py` reused unchanged; `player.py` inventory accessors; `auction_view.py` PREVIEW + BID_WINDOW substates; `engine/game.py` `_prepare_stellaris_session` + `_ensure_auction_view` + hub→auction routing; `data_loader.py` voice file plumbing; `constants/flags.py` SI-3 cookbook conventions; `config.py` GameState enum + listing economics constants). Touch zones expanded from 5 originally-listed entries to 16 (added the `seller_id` field on AuctionLot, the SellLotView net-new view, GameState + economics constants in config.py, voice file extension, 3 journal entries, achievement stub, 4 new flag helpers, the engine `_ensure_sell_lot_view` factory + `_prepare_stellaris_session` listing-prepend extension + 2 new lifecycle callbacks, and 5 new test files). Tightened acceptance from 6 vague criteria to 21 mechanically-verifiable criteria. Locked 13 SA-B5-specific decisions including the 4 hardest design questions (listable item set, venue scope, session integration model, listing fee structure). Folded in 4 polish items: 3 flag-gated journal entries (first listing created, first sale, first listing withdrawn), 3 banter trigger flags for SA-X6 consumption, 1 achievement stub `auction_seller` per design §9.5 hand-off note, and 1 first-time tip overlay (FirstTimeTipOverlay pattern shared with SL-5 / SA-B3). Removed the originally-listed `data/auctions/buyer_personas.json` (NEW) touch zone — locked decision §B5.3 reuses SA-B2's existing personas unchanged because their value functions read `lot.category` + `lot.base_appraisal` bilaterally, so no new persona file is needed; recorded as a positive scope-reduction. Deferred 6 polish items to their existing Phase VI sprints (crew banter SA-X6, achievement metadata SA-X7, per-venue visual identity SA-X10, tutorial-pass refinement SA-X3, cross-anchor narrative SA-X1, reputation-balance SA-X2) plus 1 to SA-B6 (Reach player-listing variant). 2 OPEN-defer-to-implementation risks documented (deterministic-prepend vs. draw-weight session integration; cancellation window beyond pre-session). No new sprints proposed; SA-B5 scope is well-bounded by the design doc §11.11 same-engine commitment and SA-B3's content-and-integration template. PHASE_OK
-
+- 2026-04-29 12:02 — harness: implement phase starting (rework cycle 0)
 **Last phase report.**
 - Phase: plan
 - Outcome: PHASE_OK

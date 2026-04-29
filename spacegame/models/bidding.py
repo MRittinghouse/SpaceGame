@@ -23,6 +23,8 @@ from enum import Enum
 from typing import TYPE_CHECKING, Any, Callable, Iterable, Optional
 
 from spacegame.models.bidding_lot import (
+    REP_TIER_REGULAR,
+    VENUE_STELLARIS,
     AuctionLot,
 )
 from spacegame.models.bidding_persona import (
@@ -122,6 +124,27 @@ REACH_RESTRICTED_WEAPON_REP_PENALTY = -1
 # SA-B4: achievement stub id (decision §B4.14). Metadata + display copy
 # land in SA-X7; this constant is the canonical id consumers reference.
 ACHIEVEMENT_AUCTION_REACH_DEBUT = "auction_reach_debut"
+
+
+# SA-B5: Stellaris-only player-listing acceptance contract (locked
+# decision §B5.2). Player listings consign at the Stellaris Auction
+# House; Crimson Reach is buyer-side only in SA-B5.
+PLAYER_LISTING_VENUE = "stellaris"
+PLAYER_SELLER_ID = "player"
+
+
+def compute_listing_fee(declared_appraisal: int) -> int:
+    """Return the listing fee for a declared appraisal in credits.
+
+    Locked decision §B5.4: ``fee = max(LISTING_FEE_FLOOR, int(declared *
+    LISTING_FEE_RATE))``. Negative or zero appraisals collapse to the
+    floor — the validator on ``create_listing`` handles the eligibility
+    check separately, so this helper stays a pure formula.
+    """
+    from spacegame.config import LISTING_FEE_FLOOR, LISTING_FEE_RATE
+
+    raw = int(max(0, declared_appraisal) * LISTING_FEE_RATE)
+    return max(LISTING_FEE_FLOOR, raw)
 
 
 # SA-B3: Stellaris Port standing -> tier ladder thresholds (decision §B3.2).
@@ -705,6 +728,110 @@ def reach_session_due(state: "AuctionState", current_day: int) -> bool:
 
 
 # --------------------------------------------------------------------------
+# SA-B5: Player-initiated listings
+# --------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class _PlayerListing:
+    """A consignment the player has listed at the Stellaris Auction House.
+
+    Frozen so the in-flight listing data can be safely shared between
+    ``AuctionState.active_listings`` and the converted ``AuctionLot``
+    handed to the session. The fields capture exactly the inputs the
+    player chose plus the listing-time bookkeeping the engine needs to
+    return the item to inventory if the lot withdraws.
+
+    Attributes:
+        listing_id: Unique listing identifier. Stable across save/load.
+        item_kind: ``"commodity"`` (cargo) or ``"part"`` (parts inventory).
+        item_id: Canonical id in the corresponding inventory keyspace.
+        quantity: How many units the player is consigning.
+        declared_appraisal: Player's declared fair-market value, in
+            credits. The 5% listing fee is computed off this value.
+        reserve_pct: Player-chosen reserve, in [0.50, 0.95]. Hidden from
+            AI buyers (mirrors §5.4); the lot's ``reserve_price`` derives
+            from ``declared_appraisal * reserve_pct``.
+        listing_fee_paid: Credits already deducted at listing time. Not
+            refunded under any outcome (locked decision §B5.4).
+        listed_on_day: Game-day stamp. Used by
+            ``eligible_listings_for_session`` to gate session inclusion.
+        headline: Display name shown on the floor (anonymized).
+        description: Short flavor text shown in preview.
+        category: Lot category from the standard set; mirrors ``AuctionLot``.
+    """
+
+    listing_id: str
+    item_kind: str
+    item_id: str
+    quantity: int
+    declared_appraisal: int
+    reserve_pct: float
+    listing_fee_paid: int
+    listed_on_day: int
+    headline: str
+    description: str
+    category: str
+
+    def to_auction_lot(self) -> AuctionLot:
+        """Return the ``AuctionLot`` the session machinery sees.
+
+        Decision §B5.2 / §B5.3: ``venue=stellaris``, ``seller_id="player"``,
+        ``contraband=False`` (SA-B5 ships only non-contraband listings),
+        ``rep_tier_required=REP_TIER_REGULAR`` (mirrors the listing
+        tier-gate so the lot pool filter is consistent with eligibility).
+        """
+        return AuctionLot(
+            id=f"player_listing_{self.listing_id}",
+            headline=self.headline,
+            description=self.description,
+            category=self.category,
+            venue=VENUE_STELLARIS,
+            base_appraisal=self.declared_appraisal,
+            reserve_pct=self.reserve_pct,
+            faction_gate=None,
+            rep_tier_required=REP_TIER_REGULAR,
+            is_headliner=False,
+            season_tag=None,
+            contraband=False,
+            source_module_id=None,
+            recently_seen_count=0,
+            seller_id=PLAYER_SELLER_ID,
+        )
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "listing_id": self.listing_id,
+            "item_kind": self.item_kind,
+            "item_id": self.item_id,
+            "quantity": self.quantity,
+            "declared_appraisal": self.declared_appraisal,
+            "reserve_pct": self.reserve_pct,
+            "listing_fee_paid": self.listing_fee_paid,
+            "listed_on_day": self.listed_on_day,
+            "headline": self.headline,
+            "description": self.description,
+            "category": self.category,
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "_PlayerListing":
+        return cls(
+            listing_id=str(data["listing_id"]),
+            item_kind=str(data["item_kind"]),
+            item_id=str(data["item_id"]),
+            quantity=int(data.get("quantity", 1)),
+            declared_appraisal=int(data["declared_appraisal"]),
+            reserve_pct=float(data["reserve_pct"]),
+            listing_fee_paid=int(data.get("listing_fee_paid", 0)),
+            listed_on_day=int(data.get("listed_on_day", 0)),
+            headline=str(data.get("headline", "")),
+            description=str(data.get("description", "")),
+            category=str(data.get("category", "faction_commodity")),
+        )
+
+
+# --------------------------------------------------------------------------
 # AuctionState
 # --------------------------------------------------------------------------
 
@@ -755,6 +882,17 @@ class AuctionState:
     auction_lots_won_reach: int = 0
     auction_rivals_retired: int = 0
     auction_perfect_reads: int = 0
+
+    # SA-B5: Player-initiated auctions. ``active_listings`` holds open
+    # consignments awaiting a session; ``listing_history`` archives past
+    # outcomes (one dict per resolved listing). The 3 counters mirror
+    # SA-B2's lots-won pattern and are read by AchievementManager via the
+    # Player property mirror.
+    active_listings: list[_PlayerListing] = field(default_factory=list)
+    listing_history: list[dict[str, Any]] = field(default_factory=list)
+    auction_listings_sold: int = 0
+    auction_listings_attempted: int = 0
+    auction_listing_fees_paid: int = 0
 
     # ------------------------------------------------------------------
     # Lifecycle entry / scheduling
@@ -850,6 +988,207 @@ class AuctionState:
 
     def get_persona(self, persona_id: str) -> Optional[AIBidderPersona]:
         return getattr(self, "_live_personas", {}).get(persona_id)
+
+    # ------------------------------------------------------------------
+    # SA-B5: Player-initiated listings
+    # ------------------------------------------------------------------
+
+    def create_listing(
+        self,
+        *,
+        player: Any,
+        item_kind: str,
+        item_id: str,
+        quantity: int,
+        declared_appraisal: int,
+        reserve_pct: float,
+        current_day: int,
+        headline: Optional[str] = None,
+        description: Optional[str] = None,
+        category: str = "faction_commodity",
+    ) -> tuple[bool, str, Optional[_PlayerListing]]:
+        """Validate and register a player consignment.
+
+        Returns ``(ok, message, listing)``. On success the fee is
+        deducted from credits, the item is removed from the player's
+        cargo or parts inventory, the listing is appended to
+        ``active_listings``, and the attempt counter is incremented.
+        On failure no state mutates and ``listing`` is ``None``.
+        """
+        from spacegame.config import (
+            LISTING_RESERVE_PCT_MAX,
+            LISTING_RESERVE_PCT_MIN,
+            LISTING_TIER_REQUIRED,
+            MAX_ACTIVE_LISTINGS,
+        )
+
+        if item_kind not in ("commodity", "part"):
+            return (False, "Item kind must be commodity or part.", None)
+        if quantity <= 0:
+            return (False, "Quantity must be at least 1.", None)
+        if declared_appraisal <= 0:
+            return (False, "Declared appraisal must be greater than zero.", None)
+        if not (LISTING_RESERVE_PCT_MIN <= reserve_pct <= LISTING_RESERVE_PCT_MAX):
+            return (
+                False,
+                (
+                    f"Reserve must be between {LISTING_RESERVE_PCT_MIN:.0%} "
+                    f"and {LISTING_RESERVE_PCT_MAX:.0%} of the appraisal."
+                ),
+                None,
+            )
+        if len(self.active_listings) >= MAX_ACTIVE_LISTINGS:
+            return (
+                False,
+                f"You already have {MAX_ACTIVE_LISTINGS} active listings on the floor.",
+                None,
+            )
+        # Tier check (defence in depth — view also gates the entry).
+        rep = player.faction_reputation.get("stellaris_commerce_guild", 0)
+        tier = stellaris_tier_for_standing(rep)
+        if tier == "apprentice" or tier == "none":
+            return (
+                False,
+                "Listing requires Stellaris regular standing or above.",
+                None,
+            )
+        # Inventory check.
+        if item_kind == "commodity":
+            held = player.ship.get_cargo_quantity(item_id)
+        else:
+            held = player.parts_inventory.get(item_id, 0)
+        if held < quantity:
+            return (
+                False,
+                f"You do not have {quantity} of '{item_id}' in inventory.",
+                None,
+            )
+        fee = compute_listing_fee(declared_appraisal)
+        if player.credits < fee:
+            return (
+                False,
+                f"Listing fee is {fee:,} credits; you have {player.credits:,}.",
+                None,
+            )
+        listing_id = f"l_{current_day}_{len(self.active_listings)}_{item_id}"
+        listing_headline = headline or self._default_listing_headline(item_kind, item_id, quantity)
+        listing_description = description or self._default_listing_description(
+            item_kind, item_id, quantity
+        )
+        listing = _PlayerListing(
+            listing_id=listing_id,
+            item_kind=item_kind,
+            item_id=item_id,
+            quantity=quantity,
+            declared_appraisal=declared_appraisal,
+            reserve_pct=reserve_pct,
+            listing_fee_paid=fee,
+            listed_on_day=current_day,
+            headline=listing_headline,
+            description=listing_description,
+            category=category,
+        )
+        # Mutations only after every check passes.
+        player.credits -= fee
+        if item_kind == "commodity":
+            player.ship.remove_cargo(item_id, quantity)
+        else:
+            player.parts_inventory[item_id] = held - quantity
+            if player.parts_inventory[item_id] <= 0:
+                del player.parts_inventory[item_id]
+        self.active_listings.append(listing)
+        self.auction_listings_attempted += 1
+        self.auction_listing_fees_paid += fee
+        return (True, "Listing accepted.", listing)
+
+    def cancel_listing(self, listing_id: str, player: Any) -> tuple[bool, str]:
+        """Pull an active listing back. Returns the item; the fee is forfeit.
+
+        Cancellation is only allowed while the listing is still in
+        ``active_listings`` (decision §B5.6). Once a listing is pulled
+        into a live session it cannot be cancelled — the player must
+        wait for the lot to resolve.
+        """
+        for i, listing in enumerate(self.active_listings):
+            if listing.listing_id == listing_id:
+                # Return the item to inventory.
+                if listing.item_kind == "commodity":
+                    player.ship.add_cargo(listing.item_id, listing.quantity, price_per_unit=0)
+                else:
+                    player.parts_inventory[listing.item_id] = (
+                        player.parts_inventory.get(listing.item_id, 0) + listing.quantity
+                    )
+                del self.active_listings[i]
+                return (True, "Listing cancelled. The item is back in your hold.")
+        return (False, "Listing not found.")
+
+    def eligible_listings_for_session(self, current_day: int) -> list[_PlayerListing]:
+        """Return up to ``MAX_ACTIVE_LISTINGS`` listings ready for the next session.
+
+        A listing is eligible when ``listed_on_day <= current_day``.
+        Listings already on a live session lot are tracked in
+        ``active_listings`` until resolution, so they're excluded only
+        when ``_resolve_lot`` archives them. The cap mirrors the slot
+        count so a session never carries more than 3 player lots.
+        """
+        from spacegame.config import MAX_ACTIVE_LISTINGS
+
+        eligible = [l for l in self.active_listings if l.listed_on_day <= current_day]
+        return eligible[:MAX_ACTIVE_LISTINGS]
+
+    def _default_listing_headline(self, item_kind: str, item_id: str, quantity: int) -> str:
+        """Anonymous headline when the caller didn't supply one."""
+        nice = item_id.replace("_", " ").title()
+        if quantity == 1:
+            return f"Consigned: {nice}"
+        return f"Consigned: {nice} ({quantity} units)"
+
+    def _default_listing_description(self, item_kind: str, item_id: str, quantity: int) -> str:
+        """Anonymous flavor when the caller didn't supply one."""
+        if item_kind == "commodity":
+            return "A consigned commodity. Provenance held by the seller."
+        return "A consigned ship part. Listed by a private hand."
+
+    def _find_active_listing_for_lot(self, lot: AuctionLot) -> Optional[_PlayerListing]:
+        """Return the listing whose ``to_auction_lot()`` produced ``lot``.
+
+        Lookup keys on the lot id (``"player_listing_<listing_id>"``) so
+        the lookup survives session round-trips.
+        """
+        prefix = "player_listing_"
+        if not lot.id.startswith(prefix):
+            return None
+        listing_id = lot.id[len(prefix) :]
+        for l in self.active_listings:
+            if l.listing_id == listing_id:
+                return l
+        return None
+
+    def _archive_player_listing(
+        self,
+        listing: _PlayerListing,
+        *,
+        outcome: str,
+        sale_price: int,
+        closed_on_day: int,
+    ) -> dict[str, Any]:
+        """Move a player listing from active to history with the resolution data.
+
+        Returns the archived entry dict so the engine callback can read
+        it without scanning the history list.
+        """
+        archived = listing.to_dict()
+        archived["outcome"] = outcome
+        archived["sale_price"] = sale_price
+        archived["closed_on_day"] = closed_on_day
+        self.listing_history.append(archived)
+        # Drop the matching listing from active.
+        self.active_listings = [
+            l for l in self.active_listings if l.listing_id != listing.listing_id
+        ]
+        if outcome == "sold":
+            self.auction_listings_sold += 1
+        return archived
 
     # ------------------------------------------------------------------
     # Player input
@@ -1039,7 +1378,26 @@ class AuctionState:
             rivals_bid=rivals_bid,
         )
         self.session_lot_results.append(record)
-        if sold:
+        # SA-B5: player-seller lots route through listing_history rather
+        # than the lots-won counters. Catalog lots (seller_id is None)
+        # keep the original behavior unchanged.
+        if lot.seller_id == PLAYER_SELLER_ID:
+            listing = self._find_active_listing_for_lot(lot)
+            outcome = "sold" if sold else "withdrawn"
+            archive_price = winning_bid if sold else 0
+            if listing is not None:
+                self._archive_player_listing(
+                    listing,
+                    outcome=outcome,
+                    sale_price=archive_price,
+                    closed_on_day=0,  # caller stamps via close_session_for_day
+                )
+            self.active_session_lots[self.active_lot_index] = lot.with_recently_seen(0)
+            if sold:
+                msg = f"Sold: {lot.headline} at {winning_bid:,} credits."
+            else:
+                msg = "Reserve not met. The lot returns to your hold."
+        elif sold:
             if winner == "player":
                 self.won_lots.append(lot.id)
                 self.auction_lots_won_total += 1
@@ -1212,6 +1570,13 @@ class AuctionState:
             "auction_lots_won_reach": self.auction_lots_won_reach,
             "auction_rivals_retired": self.auction_rivals_retired,
             "auction_perfect_reads": self.auction_perfect_reads,
+            # SA-B5: player-listing schema. Old saves (no SA-B5 fields)
+            # round-trip cleanly via the from_dict defaults.
+            "active_listings": [l.to_dict() for l in self.active_listings],
+            "listing_history": [dict(entry) for entry in self.listing_history],
+            "auction_listings_sold": self.auction_listings_sold,
+            "auction_listings_attempted": self.auction_listings_attempted,
+            "auction_listing_fees_paid": self.auction_listing_fees_paid,
         }
 
     @classmethod
@@ -1257,6 +1622,15 @@ class AuctionState:
             auction_lots_won_reach=int(data.get("auction_lots_won_reach", 0)),
             auction_rivals_retired=int(data.get("auction_rivals_retired", 0)),
             auction_perfect_reads=int(data.get("auction_perfect_reads", 0)),
+            # SA-B5: defaults to empty / zero for saves authored before
+            # SA-B5 (decision §B5 / design doc §8.3 migration discipline).
+            active_listings=[
+                _PlayerListing.from_dict(d) for d in data.get("active_listings", [])
+            ],
+            listing_history=[dict(entry) for entry in data.get("listing_history", [])],
+            auction_listings_sold=int(data.get("auction_listings_sold", 0)),
+            auction_listings_attempted=int(data.get("auction_listings_attempted", 0)),
+            auction_listing_fees_paid=int(data.get("auction_listing_fees_paid", 0)),
         )
 
 

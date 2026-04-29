@@ -711,6 +711,11 @@ class Player:
         """Lots won within 2% of Sable's ceiling estimate."""
         return self.auction_state.auction_perfect_reads
 
+    @property
+    def auction_listings_sold(self) -> int:
+        """SA-B5: Player-listed lots sold at the Stellaris Auction House."""
+        return self.auction_state.auction_listings_sold
+
     def _identity_stats(self) -> dict[str, int]:
         """Get stats used for identity calculations."""
         return {

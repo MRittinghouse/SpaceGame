@@ -745,3 +745,70 @@ def auction_first_contraband_win() -> str:
     ``auto_auction_first_contraband_lesson`` journal auto-entry.
     """
     return "auction_first_contraband_win"
+
+
+# ---------------------------------------------------------------------------
+# Player-initiated auctions (SA-B5)
+# ---------------------------------------------------------------------------
+#
+# SA-B5 (requirements/sa_bidding_design.md, §11.11 same-engine commitment).
+# One first-time tip flag and three banter trigger / journal trigger flags
+# for the player-as-seller side of the Stellaris Auction House. Producers
+# and consumers all live inside the SA-B5 surface (sell_lot_view,
+# auction_state, engine/game callbacks); centralizing the strings keeps
+# the SI-3 dialogue-integrity scanner stable across producer/consumer
+# pairs even when the surface spans model + view + engine.
+
+
+def seen_first_listing_tip() -> str:
+    """Flag set after the player dismisses the first SellLotView tip overlay.
+
+    One-shot per save. Producer:
+    :class:`spacegame.views.sell_lot_view.SellLotView` on-dismiss callback
+    for the :class:`spacegame.views.first_time_tip.FirstTimeTipOverlay`
+    fired on first entry to the consignment screen. Consumer: the same
+    view's first-entry guard — the tip explains that the listing fee is
+    non-refundable and that the reserve is the player's "no thanks"
+    floor (see locked decision §B5.11).
+    """
+    return "seen_first_listing_tip"
+
+
+def auction_first_listing_created() -> str:
+    """Banter / journal trigger: player consigned their first lot.
+
+    Producer: :func:`spacegame.engine.game.Game._ensure_sell_lot_view`'s
+    on-confirm callback (or the SellLotView's confirm path when running
+    standalone). Set once per save on the first successful
+    ``AuctionState.create_listing`` call. Consumers:
+    ``data/journal/entries.json`` (``trigger_flag`` for the
+    ``auto_auction_first_listing_created`` auto-entry) and SA-X6
+    crew-banter content.
+    """
+    return "auction_first_listing_created"
+
+
+def auction_first_sale() -> str:
+    """Banter / journal trigger: a player-listed lot sold for the first time.
+
+    Producer: :func:`spacegame.engine.game.Game._ensure_auction_view`'s
+    ``on_player_lot_sold`` callback. Set once per save on the first
+    player-seller resolution where the lot resolves with
+    ``outcome="sold"``. Consumers: ``data/journal/entries.json``
+    (``trigger_flag`` for the ``auto_auction_first_sale`` auto-entry)
+    and SA-X6 crew-banter content.
+    """
+    return "auction_first_sale"
+
+
+def auction_first_listing_withdrawn() -> str:
+    """Banter / journal trigger: a player-listed lot was withdrawn at session.
+
+    Producer: :func:`spacegame.engine.game.Game._ensure_auction_view`'s
+    ``on_player_lot_withdrawn`` callback. Set once per save on the first
+    player-seller resolution where the reserve is not met. Consumers:
+    ``data/journal/entries.json`` (``trigger_flag`` for the
+    ``auto_auction_first_listing_withdrawn`` auto-entry) and SA-X6
+    crew-banter content.
+    """
+    return "auction_first_listing_withdrawn"

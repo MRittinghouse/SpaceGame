@@ -87,6 +87,10 @@ class AuctionLot:
         recently_seen_count: How many sessions this lot has spent in the
             pool unsold. ``>= 5`` excludes the lot from the next draw;
             resets to 0 when the lot sells.
+        seller_id: ``None`` for catalog lots authored under SA-B3 / SA-B4;
+            ``"player"`` for SA-B5 player consignments. The field is
+            omitted from ``to_dict`` when ``None`` so prior catalogs
+            round-trip byte-for-byte.
     """
 
     id: str
@@ -103,6 +107,7 @@ class AuctionLot:
     contraband: bool = False
     source_module_id: Optional[str] = None
     recently_seen_count: int = 0
+    seller_id: Optional[str] = None
 
     @property
     def reserve_price(self) -> int:
@@ -121,7 +126,7 @@ class AuctionLot:
         don't emit ``reserve_price`` because it's derived; the consumer
         can compute it on demand.
         """
-        return {
+        out: dict[str, Any] = {
             "id": self.id,
             "headline": self.headline,
             "description": self.description,
@@ -137,6 +142,11 @@ class AuctionLot:
             "source_module_id": self.source_module_id,
             "recently_seen_count": self.recently_seen_count,
         }
+        # SA-B5: emit ``seller_id`` only when non-None so SA-B3/B4 lot
+        # catalogs round-trip byte-for-byte through to_dict / from_dict.
+        if self.seller_id is not None:
+            out["seller_id"] = self.seller_id
+        return out
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "AuctionLot":
@@ -162,6 +172,7 @@ class AuctionLot:
             contraband=bool(data.get("contraband", False)),
             source_module_id=data.get("source_module_id"),
             recently_seen_count=int(data.get("recently_seen_count", 0)),
+            seller_id=data.get("seller_id"),
         )
 
     def with_recently_seen(self, new_count: int) -> "AuctionLot":

@@ -329,6 +329,7 @@ class GameState(Enum):
     DEEP_SHAFTS = "deep_shafts"
     DISPUTE = "dispute"
     AUCTION = "auction"
+    SELL_LOT = "sell_lot"
 
     # Combat states
     COMBAT = "combat"
@@ -529,6 +530,22 @@ GALAXY_EVENT_MAX_DURATION = 8
 EMBARGO_INSPECTION_MULTIPLIER = 2.0  # Double inspection chance during embargo
 MAJOR_TRADE_PROFIT_THRESHOLD = 500  # CR profit to trigger travel log entry
 NEWS_TICKER_BUFFER_SIZE = 8
+
+# ============================================================================
+# PLAYER-INITIATED AUCTIONS (SA-B5)
+# ============================================================================
+#
+# Listing economics for the Stellaris Auction House player-seller side.
+# All values are locked in SA-B5 (decisions §B5.4 / §B5.5 / §B5.6 /
+# §B5.10). SA-B6 may tune after playtest.
+
+MAX_ACTIVE_LISTINGS = 3
+LISTING_FEE_RATE = 0.05  # 5% of declared appraisal
+LISTING_FEE_FLOOR = 100  # Minimum fee in credits
+LISTING_RESERVE_PCT_MIN = 0.50
+LISTING_RESERVE_PCT_MAX = 0.95
+LISTING_RESERVE_PCT_DEFAULT = 0.70
+LISTING_TIER_REQUIRED = "regular"
 
 # ============================================================================
 # CREW RE-RECRUITMENT COSTS
