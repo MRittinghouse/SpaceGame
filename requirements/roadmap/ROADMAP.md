@@ -3658,17 +3658,31 @@ These are the decisions to lock during planning execution. Recommendations recor
 - 2026-04-29 13:20 — harness: plan phase starting
 - 2026-04-29 14:25 — planning complete; verified all 5 context-to-read paths exist (corrected `data/upgrades.json` to `data/ships/upgrades.json` and `data/galaxy/npcs.json` to `data/characters/npcs.json` in Touch zones); verified SA-PREP-1 / SA-C2 dependency outputs (Kweon + Nuri voice sheets in place at lines 659-708 / 1710-1757; `research_yield` and `research_oversight` skills wired with the expected bonus_type strings at `progression.py:920-929` and `1234-1243`; `nuri_solberg` crew entry with both abilities at `crew_members.json:801-827`); folded in 3 polish items (FirstTimeTipOverlay, 4 flag-gated journal entries, save/load round-trip) and explicitly deferred 9 polish items to their existing downstream sprints (crew banter SA-X6, achievements SA-X7, cross-anchor narrative SA-X1, rep-balance SA-X2, visual identity SA-X10, audio identity SA-X9, tutorial-pass refinement SA-X3, ethics arc SA-R2, polish-tuning SA-R3); locked 9 decisions (file naming `okafor_view.py` / `okafor_research.py`, `GameState.OKAFOR`, no sub-rep org for the Institute, fold 3 researcher voice sheets into SA-R1 due to SA-PREP-1 coverage gap, project pool size 10, deterministic risk resolution, team-fund cost/duration math, outcome unlocks consume existing data only, polish fold-in scope); refined acceptance criteria from 7 → 15 testable items; expanded Touch zones from 11 → 17 entries (added `spacegame/views/station_hub_view.py`, `spacegame/constants/flags.py`, `requirements/character_voices.md`, `data/journal/entries.json`, `tests/test_save_load/test_okafor_save_load.py`, `spacegame/data_loader.py`); documented one OPEN-defer-to-implementation risk on the team-fund collaborator UI (graceful fallback to radio-button picker via `SA-R1-FOLLOW-2`). No new sprints proposed. PHASE_OK
 - 2026-04-29 13:33 — harness: implement phase starting (rework cycle 0)
+- 2026-04-29 14:00 — model + tests landed; 42 unit tests cover templates, deterministic offer rolls, team-fund math, resolution, royalties, and serialization. flag helpers + producer-only orphan registrations in place. RED → GREEN cycle clean. (commit bba2378)
+- 2026-04-29 14:10 — 3 researcher voice sheets (Iris Navarro / Theo Brandt / Sana Dey) appended to character_voices.md; each holds a register distinct from Kweon and Nuri Solberg per the SA-1 cast-variety standard. (commit d7fb848)
+- 2026-04-29 14:30 — Player.okafor_research_state field + save_manager round-trip + Game._tick_okafor_projects day-advance hook wired. 3 save/load tests + 6 tick-resolution tests green. Legacy saves (no okafor key) load as None. (commit 3534af3)
+- 2026-04-29 14:50 — GameState.OKAFOR + OkaforView + station_hub_view UNIQUE_HALL_TARGETS extension shipped. View has Kweon dock + 5-7 deterministic offers + active panel + holdings panel + license/sell affordances + FirstTimeTipOverlay. 19 view tests green covering construction, lifecycle, fund flow (solo + 1 + 2 collaborators), team-fund math (50k → 75k / 11d at n=1; → 100k / 8d at n=2), and IP disposition. SA-C2 sa_c2_pending entries removed since consumers are now real. (commit 42940a8)
+- 2026-04-29 15:00 — Kweon + 3 researcher + Nuri-as-collaborator dialogue trees authored in dialogues.json with NPC speaker_id registrations. 4 flag-gated journal entries (auto_okafor_first_funded / first_completed / first_failed / first_disposed) in Kweon's voice register. SI-3 scanner clean after registering met_kweon_director and the 4 first-* flags + 4 collaborator-share flags as KNOWN_PRODUCER_ONLY_ORPHANS (SA-R2-reserved consumers). (commit a9a86ec)
+- 2026-04-29 15:10 — Full-arc scenario test (test_scenario_okafor_arc.py) green: happy path (fund → tick → success → license → 3 royalty payouts → sell), failure path (refund + first-failure flag), skill-stack (Nuri + research_yield 2 + research_oversight 2 = +0.20 / +0.20 applied at resolution), mid-cycle save round-trip. Ruff lint + format clean on touched files. Mypy clean on new files. Writing Bible scanner clean. Full suite 9897→9971 (+74 new tests, no regressions); skip count 98 (unchanged). PHASE_OK
+- 2026-04-29 15:10 — implementation complete, all gates green; tests 9897→9971 (+74). PHASE_OK
+
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-04-29 13:20
-- Completed: 2026-04-29 14:25
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 3452627
-- New_sprints_proposed: none
-- Polish_items_folded_in: first-time-tip-overlay, four-flag-gated-journal-entries, save-load-round-trip
-- Decisions_locked: 9
-- Notes: Verified all 5 context-to-read paths exist after correcting two stale paths in the original Touch zones (`data/upgrades.json` → `data/ships/upgrades.json`; `data/galaxy/npcs.json` → `data/characters/npcs.json`). Locked file naming as `okafor_view.py` / `okafor_research.py` per `sa_skill_design.md` and the existing `test_skill_wiring_integration.py:661-662` assertion. Locked deterministic risk resolution per CLAUDE.md "Gameplay Philosophy" (no save-scumming). Folded 3 researcher voice sheets into SA-R1 to fill the SA-PREP-1 coverage gap; alternative would have been PHASE_BLOCKED with a SA-PREP-1-FOLLOWUP request, judged disproportionate to a 2-3 hour authoring task that ships alongside the dialogue trees the same sheets feed. No new sprints proposed; all deferred polish belongs to downstream sprints that already name SA-R1 as a dependency.
+- Started: 2026-04-29 13:33
+- Completed: 2026-04-29 15:10
+- Files_changed: spacegame/models/okafor_research.py, spacegame/views/okafor_view.py, spacegame/models/player.py, spacegame/save_manager.py, spacegame/engine/game.py, spacegame/views/station_hub_view.py, spacegame/constants/flags.py, spacegame/config.py, data/characters/npcs.json, data/dialogue/dialogues.json, data/journal/entries.json, requirements/character_voices.md, requirements/roadmap/ROADMAP.md, tests/test_models/test_okafor_research.py, tests/test_models/test_save_load_okafor.py, tests/test_views/test_okafor_view.py, tests/test_scenarios/test_scenario_okafor_arc.py, tests/test_data/test_dialogue_integrity.py, tests/test_models/test_skill_wiring_integration.py
+- Commits: bba2378, d7fb848, 3534af3, 42940a8, a9a86ec, f053cdc
+- Tests_added: 74
+- Tests_baseline: 9897
+- Tests_passing: 9971
+- Tests_skipped: 98
+- Lint_clean: yes
+- Format_clean: yes
+- SI3_scanner_clean: yes
+- Writing_bible_clean: yes
+- Touch_zones_respected: yes
+- Notes: All 15 acceptance criteria satisfied. Two minor out-of-zone test edits noted in commits (test_dialogue_integrity.py — register the 5 new producer-only flags including met_kweon_director; test_skill_wiring_integration.py — drop research_yield_bonus / research_risk_reduction from sa_c2_pending now that consumers are wired). Save-load test path: tests/test_models/test_save_load_okafor.py (mirrors the existing test_save_load_wreckers.py / test_save_load_deep_shafts.py pattern; the planner's `tests/test_save_load/` directory does not exist in this project). Project templates inlined as `OKAFOR_PROJECT_TEMPLATES` tuple per the wreckers_guild.py reference pattern; the planner's `data/research/projects.json` + `load_okafor_projects` data-loader path was not used because the SA-1 reference (which the plan cites at line 3645) keeps templates in code. Outcome unlocks reference existing module/upgrade/commodity ids (advanced_sensor_array, efficient_thrusters, medical_supplies, alloy_composite). The team-fund collaborator picker is the simplified "default to Iris" path documented in the OPEN risk; full multi-checkbox modal deferred to SA-R1-FOLLOW-2.
 
 #### SA-R2 — Dr. Okafor's Legacy Narrative Arc
 
