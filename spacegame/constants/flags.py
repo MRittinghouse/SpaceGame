@@ -693,3 +693,55 @@ def auction_sable_ceiling_correct() -> str:
     crew-banter content.
     """
     return "auction_sable_ceiling_correct"
+
+
+# ---------------------------------------------------------------------------
+# Bidding venue: Crimson Reach Black Market (SA-B4)
+# ---------------------------------------------------------------------------
+#
+# SA-B4 (requirements/sa_bidding_design.md, sections 1.4 + 4.5 + 9.4 + 9.5).
+# One first-encounter flag for the Reach Floor Manager (Vex Tarn) and two
+# banter trigger flags for the Reach session-and-contraband milestones.
+# Producer locations: Floor Manager dialogue tree (set_flag actions) and
+# the auction-state lifecycle hooks wired in ``engine/game.py``.
+# Consumers: ``data/journal/entries.json`` auto-entries (today) and
+# SA-X6 crew-banter content (later sprint).
+
+
+def seen_first_floor_manager_encounter() -> str:
+    """Flag set the first time the player exchanges dialogue with Vex Tarn.
+
+    SA-B4 (decision §B4.5). Producer: the Floor Manager dialogue tree
+    (``reach_floor_manager_main`` in ``data/dialogue/dialogues.json``)
+    sets the flag via ``set_flag`` on the greeting node responses.
+    Consumer: ``data/journal/entries.json``
+    (``trigger_flag`` for the
+    ``auto_auction_first_floor_manager_encounter`` auto-entry).
+    Subsequent dialogue exchanges do not re-fire the entry.
+    """
+    return "seen_first_floor_manager_encounter"
+
+
+def auction_first_reach_session() -> str:
+    """Banter trigger: player completed (or entered) their first Reach session.
+
+    Producer: :class:`spacegame.models.bidding.AuctionState` on
+    SESSION_OPEN at the Reach venue, surfaced by the engine's
+    ``_prepare_reach_session`` helper. Consumers: SA-X6 crew-banter
+    content (later sprint) and the
+    ``auto_auction_first_reach_session`` journal auto-entry.
+    """
+    return "auction_first_reach_session"
+
+
+def auction_first_contraband_win() -> str:
+    """Banter trigger: player won their first contraband lot at any Reach session.
+
+    Producer: ``engine/game.py``'s ``on_lot_won`` callback when
+    ``venue_id == "crimson_reach"`` and ``lot.category == "contraband"``.
+    The flag is set after the legality penalty is applied so the journal
+    auto-entry sees the post-penalty rep value.
+    Consumers: SA-X6 crew-banter content (later sprint) and the
+    ``auto_auction_first_contraband_lesson`` journal auto-entry.
+    """
+    return "auction_first_contraband_win"

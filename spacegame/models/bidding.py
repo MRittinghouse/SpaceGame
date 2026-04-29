@@ -24,7 +24,6 @@ from typing import TYPE_CHECKING, Any, Callable, Iterable, Optional
 
 from spacegame.models.bidding_lot import (
     AuctionLot,
-    rep_tier_at_least,
 )
 from spacegame.models.bidding_persona import (
     NAMED_RIVAL_IDS,
@@ -103,6 +102,26 @@ PERFECT_READ_THRESHOLD = 0.02
 
 # Achievement: champion = 5 wins at Stellaris.
 CHAMPION_WINS_AT_STELLARIS = 5
+
+
+# SA-B4: Reach demand-driven cadence (locked decision §B4.4). The pending-
+# arrivals counter stamps a per-game-day chance of advancing; a session
+# fires once the counter reaches REACH_SESSION_SIZE OR the gap-cap days
+# elapse since the last Reach close. Counter resets on session close.
+REACH_DEMAND_PROBABILITY = 0.35
+REACH_DEMAND_MAX_GAP_DAYS = 8
+
+# SA-B4: faction-rep penalty magnitudes for Reach legality consequences
+# (locked decision §B4.8). Applied against ``stellaris_commerce_guild``
+# rep when the player wins a contraband or restricted_weapon lot at the
+# Reach. Engine wires these in via ``_ensure_auction_view``'s on_lot_won
+# callback (see ``spacegame/engine/game.py``).
+REACH_CONTRABAND_REP_PENALTY = -2
+REACH_RESTRICTED_WEAPON_REP_PENALTY = -1
+
+# SA-B4: achievement stub id (decision §B4.14). Metadata + display copy
+# land in SA-X7; this constant is the canonical id consumers reference.
+ACHIEVEMENT_AUCTION_REACH_DEBUT = "auction_reach_debut"
 
 
 # SA-B3: Stellaris Port standing -> tier ladder thresholds (decision §B3.2).
@@ -478,8 +497,12 @@ def generate_lot_pool(
     """
     # Step 1: venue filter.
     pool = [lot for lot in candidates if lot.venue == venue_id]
-    # Step 2: rep tier filter.
-    pool = [lot for lot in pool if rep_tier_at_least(player_rep_tier, lot.rep_tier_required)]
+    # Step 2: rep tier filter (venue-aware ladder per locked decision §B4.3).
+    pool = [
+        lot
+        for lot in pool
+        if _player_meets_tier_for_venue(player_rep_tier, lot.rep_tier_required, venue_id)
+    ]
 
     # Step 3: faction gate filter.
     def _passes_faction_gate(lot: AuctionLot) -> bool:
@@ -503,7 +526,7 @@ def generate_lot_pool(
         base_weight = 1.0
         # Rep tier multiplier: +0.3 per tier above the lot's required
         # tier. ``"none"`` requirement = 0 distance.
-        rep_distance = _tier_distance(player_rep_tier, lot.rep_tier_required)
+        rep_distance = _tier_distance(player_rep_tier, lot.rep_tier_required, venue_id=venue_id)
         rep_mult = 1.0 + 0.3 * rep_distance
         season_mult = 2.0 if (season_tag and lot.season_tag == season_tag) else 1.0
         if lot.is_headliner and headliner_drawn >= HEADLINER_CAP_PER_SESSION:
@@ -531,14 +554,53 @@ def generate_lot_pool(
     return drawn
 
 
-def _tier_distance(player_tier: str, required_tier: str) -> int:
+_STELLARIS_TIER_LADDER: tuple[str, ...] = (
+    "none",
+    "apprentice",
+    "regular",
+    "certified",
+    "patron",
+)
+_REACH_TIER_LADDER: tuple[str, ...] = (
+    "none",
+    "apprentice",
+    "journeyman",
+    "master",
+)
+
+
+def tier_ladder_for_venue(venue_id: str) -> tuple[str, ...]:
+    """Return the rep-tier ladder strings for ``venue_id``.
+
+    Stellaris uses Port standing (apprentice / regular / certified /
+    patron); Reach uses Wreckers' Guild membership (apprentice /
+    journeyman / master). Unknown venue ids fall back to the Stellaris
+    ladder so SA-B3 callers that never pass ``venue_id`` keep their
+    behavior (locked decision §B4.3).
+    """
+    if venue_id == "crimson_reach":
+        return _REACH_TIER_LADDER
+    return _STELLARIS_TIER_LADDER
+
+
+def _tier_distance(
+    player_tier: str,
+    required_tier: str,
+    *,
+    venue_id: str = "stellaris",
+) -> int:
     """Return positions between ``player_tier`` and ``required_tier`` on the ladder.
 
-    Negative if player is below required (filter would have excluded the
-    lot before this is called); 0 if equal. Falls back to 0 for unknown
-    tier strings to avoid runaway weights.
+    Returns 0 if the player is at or below the required tier (the rep-
+    tier filter excludes the lot before this is called for "below"
+    cases, so the weight multiplier never sees a negative value). Falls
+    back to 0 for unknown tier strings to avoid runaway weights.
+
+    SA-B4 (locked decision §B4.3): ``venue_id`` selects the ladder.
+    Stellaris ladder is the legacy default so SA-B3 callers without the
+    keyword keep their behavior.
     """
-    ladder = ("none", "apprentice", "regular", "certified", "patron")
+    ladder = tier_ladder_for_venue(venue_id)
     try:
         p = ladder.index(player_tier)
     except ValueError:
@@ -548,6 +610,98 @@ def _tier_distance(player_tier: str, required_tier: str) -> int:
     except ValueError:
         r = 0
     return max(0, p - r)
+
+
+def _player_meets_tier_for_venue(player_tier: str, required_tier: str, venue_id: str) -> bool:
+    """True if ``player_tier`` meets or exceeds ``required_tier`` on the venue ladder.
+
+    SA-B4: venue-aware replacement for the lot-pool tier-gate filter.
+    Reach's "journeyman" / "master" tiers and Stellaris's "regular" /
+    "certified" / "patron" tiers live on disjoint ladders; this helper
+    keeps the comparison correct regardless of which venue is drawing.
+    """
+    ladder = tier_ladder_for_venue(venue_id)
+    try:
+        player_idx = ladder.index(player_tier)
+    except ValueError:
+        # Unknown player tier: only "none" requirements pass.
+        player_idx = 0
+    try:
+        required_idx = ladder.index(required_tier)
+    except ValueError:
+        # Unknown required tier on the venue ladder: gate fails closed.
+        return False
+    return player_idx >= required_idx
+
+
+# --------------------------------------------------------------------------
+# SA-B4: Reach-specific helpers (additive only; no schema changes)
+# --------------------------------------------------------------------------
+
+
+def wreckers_tier_for_membership(player: Any) -> str:
+    """Return the player's Wreckers' Guild tier id.
+
+    Delegates to ``Player.get_sub_reputation_tier("wreckers_guild",
+    WRECKERS_GUILD_CONFIG)`` so SA-1 stays the canonical source for the
+    Wreckers' tier ladder. Returns ``"unjoined"`` when the player has
+    never engaged with the Guild (sub_reputation defaults to 0 -> the
+    lowest tier, ``unjoined``).
+    """
+    from spacegame.models.wreckers_guild import WRECKERS_GUILD_CONFIG
+
+    tier = player.get_sub_reputation_tier("wreckers_guild", WRECKERS_GUILD_CONFIG)
+    return tier.id
+
+
+def reach_advance_demand(state: "AuctionState", current_day: int) -> int:
+    """Advance the Reach pending-arrivals counter up to ``current_day``.
+
+    Locked decision §B4.4: per-game-day deterministic draw on
+    ``f"{day}_reach_arrivals"`` against ``REACH_DEMAND_PROBABILITY``.
+    Idempotent across reload because the seed is fixed by the game day
+    and the helper rolls only for days strictly greater than
+    ``next_auction_day["crimson_reach_last_advance_day"]``. Counter is
+    stored on ``AuctionState.next_auction_day`` under
+    ``"crimson_reach_pending"`` so the existing save schema is unchanged.
+
+    Args:
+        state: The player's auction state.
+        current_day: Game day we are advancing the counter to. Multiple
+            calls with non-decreasing days advance once per day total;
+            calling at a non-advancing day is a no-op.
+
+    Returns:
+        New pending-arrivals counter value after any draws.
+    """
+    last_advance = state.next_auction_day.get("crimson_reach_last_advance_day", -1)
+    counter = state.next_auction_day.get("crimson_reach_pending", 0)
+    day = last_advance + 1
+    while day <= current_day:
+        unit = _seeded_unit_from_token(f"{day}_reach_arrivals")
+        if unit < REACH_DEMAND_PROBABILITY:
+            counter += 1
+        day += 1
+    state.next_auction_day["crimson_reach_pending"] = counter
+    state.next_auction_day["crimson_reach_last_advance_day"] = current_day
+    return counter
+
+
+def reach_session_due(state: "AuctionState", current_day: int) -> bool:
+    """Return True if a Reach session should fire on ``current_day``.
+
+    Locked decision §B4.4: a session is due when (a) the pending-
+    arrivals counter has reached ``REACH_SESSION_SIZE`` OR (b)
+    ``REACH_DEMAND_MAX_GAP_DAYS`` game-days have elapsed since the last
+    Reach session close. Fresh saves (no ``last_auction_day`` entry)
+    treat day 0 as the reference, so the cap path still fires once the
+    cap elapses on a fresh save.
+    """
+    counter = state.next_auction_day.get("crimson_reach_pending", 0)
+    if isinstance(counter, int) and counter >= REACH_SESSION_SIZE:
+        return True
+    last_day = state.last_auction_day.get("crimson_reach", 0)
+    return (current_day - last_day) >= REACH_DEMAND_MAX_GAP_DAYS
 
 
 # --------------------------------------------------------------------------
@@ -595,6 +749,10 @@ class AuctionState:
     # keep them in sync on the Player object via ``apply_lot_resolution``.
     auction_lots_won_total: int = 0
     auction_lots_won_stellaris: int = 0
+    # SA-B4: Reach win counter for the achievement_auction_reach_debut
+    # stub (locked decision §B4.14). SA-X7 wires the achievement metadata
+    # to this stat key.
+    auction_lots_won_reach: int = 0
     auction_rivals_retired: int = 0
     auction_perfect_reads: int = 0
 
@@ -887,6 +1045,8 @@ class AuctionState:
                 self.auction_lots_won_total += 1
                 if lot.venue == "stellaris":
                     self.auction_lots_won_stellaris += 1
+                elif lot.venue == "crimson_reach":
+                    self.auction_lots_won_reach += 1
             # Reset recently_seen_count on sale; replace lot in pool.
             self.active_session_lots[self.active_lot_index] = lot.with_recently_seen(0)
             msg = f"Sold: {lot.headline} at {winning_bid:,} credits."
@@ -946,14 +1106,21 @@ class AuctionState:
                 last.closed_on_day = current_day
         if self.active_auction_id is not None:
             self.last_auction_day[self.active_auction_id] = current_day
-            # Stellaris cadence: 5-7 days; Reach is demand-driven (SA-B4
-            # owns Reach scheduling so we leave next_auction_day alone).
+            # Stellaris cadence: 5-7 days; Reach is demand-driven (locked
+            # decision §B4.4 — counter resets on close so the next session
+            # accumulates from zero).
             if self.active_auction_id == "stellaris":
                 seed = _seeded_rng(
                     f"{self.active_session_id}_next_cadence_{self.active_auction_id}"
                 )
                 gap = seed.randint(STELLARIS_CADENCE_MIN_DAYS, STELLARIS_CADENCE_MAX_DAYS)
                 self.next_auction_day[self.active_auction_id] = current_day + gap
+            elif self.active_auction_id == "crimson_reach":
+                self.next_auction_day["crimson_reach_pending"] = 0
+                # Roll forward last_advance_day so the next demand pass
+                # accumulates from the just-closed day rather than re-
+                # rolling history.
+                self.next_auction_day["crimson_reach_last_advance_day"] = current_day
 
     # ------------------------------------------------------------------
     # Helpers consumed by the view
@@ -1042,6 +1209,7 @@ class AuctionState:
             "seconds_since_last_bid": self.seconds_since_last_bid,
             "auction_lots_won_total": self.auction_lots_won_total,
             "auction_lots_won_stellaris": self.auction_lots_won_stellaris,
+            "auction_lots_won_reach": self.auction_lots_won_reach,
             "auction_rivals_retired": self.auction_rivals_retired,
             "auction_perfect_reads": self.auction_perfect_reads,
         }
@@ -1084,6 +1252,9 @@ class AuctionState:
             seconds_since_last_bid=float(data.get("seconds_since_last_bid", 0.0)),
             auction_lots_won_total=int(data.get("auction_lots_won_total", 0)),
             auction_lots_won_stellaris=int(data.get("auction_lots_won_stellaris", 0)),
+            # SA-B4: defaults to 0 when loading saves authored before
+            # SA-B4 lands (no migration needed).
+            auction_lots_won_reach=int(data.get("auction_lots_won_reach", 0)),
             auction_rivals_retired=int(data.get("auction_rivals_retired", 0)),
             auction_perfect_reads=int(data.get("auction_perfect_reads", 0)),
         )

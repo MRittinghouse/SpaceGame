@@ -150,6 +150,127 @@ class TestLoadAuctionVoices:
         assert loader.get_auction_voices(VENUE_STELLARIS) == {}
 
 
+class TestReachAuctionFiles:
+    """SA-B4: parametric coverage for the Reach lot catalog and voices.
+
+    Mirrors TestLoadAuctionLots / TestLoadAuctionVoices for the
+    crimson_reach venue. SA-B3's classes are not modified.
+    """
+
+    def test_singleton_loads_reach_catalog(self) -> None:
+        from spacegame.models.bidding_lot import VENUE_CRIMSON_REACH
+
+        dl = get_data_loader()
+        dl.load_all()
+        lots = dl.get_auction_lots(VENUE_CRIMSON_REACH)
+        assert isinstance(lots, list)
+        assert len(lots) >= 12
+        for lot in lots:
+            assert isinstance(lot, AuctionLot)
+            assert lot.venue == VENUE_CRIMSON_REACH
+
+    def test_singleton_loads_reach_voices(self) -> None:
+        from spacegame.models.bidding_lot import VENUE_CRIMSON_REACH
+
+        dl = get_data_loader()
+        dl.load_all()
+        voices = dl.get_auction_voices(VENUE_CRIMSON_REACH)
+        assert isinstance(voices, dict)
+        # SA-B4 schema: auctioneer_lines (Floor Manager) + rival_bids
+        # (Salko-only) + post_session (Salko outcome buckets + ambient
+        # reach_buyer pool) + sable_reads + empty_state + retired_rival
+        # + tier_locked.
+        for key in (
+            "auctioneer_lines",
+            "rival_bids",
+            "post_session",
+            "sable_reads",
+            "empty_state",
+            "retired_rival",
+            "tier_locked",
+        ):
+            assert key in voices, f"Reach voice file missing key: {key}"
+
+    def test_reach_auctioneer_line_templates_complete(self) -> None:
+        from spacegame.models.bidding_lot import VENUE_CRIMSON_REACH
+
+        dl = get_data_loader()
+        dl.load_all()
+        voices = dl.get_auction_voices(VENUE_CRIMSON_REACH)
+        auctioneer = voices["auctioneer_lines"]
+        for slot in (
+            "lot_open",
+            "we_are_at",
+            "lot_closed_sold",
+            "lot_closed_withdrawn",
+            "session_open",
+            "session_close",
+        ):
+            assert slot in auctioneer, f"Reach auctioneer template missing: {slot}"
+            assert isinstance(auctioneer[slot], str)
+
+    def test_reach_rival_bid_template_salko(self) -> None:
+        from spacegame.models.bidding_lot import VENUE_CRIMSON_REACH
+
+        dl = get_data_loader()
+        dl.load_all()
+        voices = dl.get_auction_voices(VENUE_CRIMSON_REACH)
+        rivals = voices["rival_bids"]
+        # Reach session pool is Salko + 3 ambient reach_buyers; the only
+        # named rival we authored a flat-bid template for is Salko.
+        assert "fenn_salko" in rivals
+        assert "{amount}" in rivals["fenn_salko"]
+
+    def test_reach_post_session_salko_buckets(self) -> None:
+        from spacegame.models.bidding_lot import VENUE_CRIMSON_REACH
+
+        dl = get_data_loader()
+        dl.load_all()
+        voices = dl.get_auction_voices(VENUE_CRIMSON_REACH)
+        post = voices["post_session"]
+        assert "fenn_salko" in post
+        for bucket in ("rival_won", "player_won", "no_overlap", "absent_retired"):
+            assert bucket in post["fenn_salko"]
+
+    def test_reach_post_session_reach_buyer_ambient(self) -> None:
+        from spacegame.models.bidding_lot import VENUE_CRIMSON_REACH
+
+        dl = get_data_loader()
+        dl.load_all()
+        voices = dl.get_auction_voices(VENUE_CRIMSON_REACH)
+        post = voices["post_session"]
+        assert "reach_buyer" in post
+        ambient = post["reach_buyer"]
+        # Locked decision §B4-deliverables: 4 ambient post-session lines.
+        assert isinstance(ambient, list)
+        assert len(ambient) >= 4
+
+    def test_reach_sable_reads_complete(self) -> None:
+        from spacegame.models.bidding_lot import VENUE_CRIMSON_REACH
+
+        dl = get_data_loader()
+        dl.load_all()
+        voices = dl.get_auction_voices(VENUE_CRIMSON_REACH)
+        sable = voices["sable_reads"]
+        # 4 Sable reads (mirrors Stellaris schema).
+        for variant in (
+            "ceiling_correct",
+            "ceiling_off",
+            "no_rivals_attended",
+            "sable_not_on_crew",
+        ):
+            assert variant in sable
+
+    def test_reach_tier_locked_template_present(self) -> None:
+        from spacegame.models.bidding_lot import VENUE_CRIMSON_REACH
+
+        dl = get_data_loader()
+        dl.load_all()
+        voices = dl.get_auction_voices(VENUE_CRIMSON_REACH)
+        tier_locked = voices["tier_locked"]
+        assert isinstance(tier_locked, str) and tier_locked
+
+
 class TestLoadOrder:
     def test_get_auction_lots_safe_before_load_all(self) -> None:
         loader = DataLoader()
