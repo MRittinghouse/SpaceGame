@@ -51,7 +51,7 @@ The SA-arc table below is **auto-regenerated** by the ralph harness from the spr
 | [SA-B5](#sa-b5--player-initiated-auctions) | Player-Initiated Auctions | III | L | done | SA-B2 |
 | [SA-B6](#sa-b6--bidding-polish--tuning) | Bidding polish + tuning | III | M | done | SA-B3, SA-B4, SA-B5 |
 | [SA-R1](#sa-r1--okafor-institute-research-patronage) | Okafor Institute (Research Patronage) | IV | L | done | SA-PREP-1, SA-C2 |
-| [SA-R2](#sa-r2--dr-okafors-legacy-narrative-arc) | Dr. Okafor's Legacy Narrative Arc | IV | M | todo | SA-R1 |
+| [SA-R2](#sa-r2--dr-okafors-legacy-narrative-arc) | Dr. Okafor's Legacy Narrative Arc | IV | M | review | SA-R1 |
 | [SA-R3](#sa-r3--research-patronage-polish) | Research Patronage polish | IV | S | todo | SA-R1, SA-R2 |
 | [SA-F1](#sa-f1--financial-exchange-design) | Financial Exchange Design | V | M | todo | SA-PREP-1, SA-C2, SA-V |
 | [SA-F2](#sa-f2--futures-core) | Futures Core | V | XL | todo | SA-F1 |
@@ -3704,7 +3704,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 
 #### SA-R2 — Dr. Okafor's Legacy Narrative Arc
 
-**Status**: in-progress (planning)
+**Status**: review
 **Phase**: Phase IV | **Size**: M | **Effort**: 1 week
 **Depends on**: SA-R1 | **Blocks**: SA-R3
 
@@ -3823,18 +3823,22 @@ These are the decisions to lock during planning execution. Recommendations recor
 - 2026-04-26 — todo (created)
 - 2026-04-29 14:37 — harness: plan phase starting
 - 2026-04-29 15:30 — planning complete; verified all 14 context-to-read paths exist (corrected the sprint draft's `data/journal/research.json` to canonical `data/journal/entries.json` per `data_loader.py:1864`, and `data/missions/research_arc.json` to `data/missions/sa_r2_okafor_legacy.json` per the SA-arc mission file convention at `data_loader.py:1355-1361`); verified SA-R1 surfaces are stable and reachable from `OkaforView` (3 Kweon trees at `dialogues.json:9041,9083,9101`, 4 journal entries at `entries.json:228-254`, `_kweon_dialogue_id()` routing at `okafor_view.py:488-498`, engine tick at `game.py:5190-5196`, `OkaforResearchState` at `okafor_research.py:717-805`); folded in 3 polish items (save/load round-trip, voice-check pass, scenario test) and explicitly deferred 6 polish items to their existing downstream sprints (crew banter SA-X6, achievements SA-X7, cross-anchor narrative SA-X1, audio identity SA-X9, tutorial-pass refinement SA-X3, polish-tuning SA-R3); locked 9 decisions (ethics-tag storage as separate lookup table; project ethics map 3 heal / 4 profit / 3 neutral; 6 arc beats; beat priority endings > patterns > firsts with heal-ties-default-to-heal; 4 journal entries first-heal / first-profit / heal-ending / profit-ending; 1 heal-side optional mission; `okafor_collaborator_share` consumers explicitly OUT of scope for SA-R2; polish fold-in scope; touch-zone naming corrections); refined acceptance criteria from 4 → 12 testable items; expanded touch zones from 4 → 12 entries (added `spacegame/models/okafor_research.py`, `spacegame/views/okafor_view.py`, `spacegame/engine/game.py`, `spacegame/constants/flags.py`, `spacegame/data_loader.py`, four extended test files plus one new data test file); documented one OPEN-defer-to-implementation risk on the heal-pattern mission destination system (implementer picks any frontier-aligned system with `medical_supplies` market). No new sprints proposed. PHASE_OK
-
+- 2026-04-29 14:48 — harness: implement phase starting (rework cycle 0)
+- 2026-04-29 16:57 — implementation complete; all 12 acceptance criteria met; 119 net-new tests (9988 baseline → 10107 passing); 12 files changed across models, views, engine, constants, data, and tests; 1 pre-existing F841 lint issue fixed in `refining_view.py` while running validation chain; 3 flag-scanner exceptions registered (okafor_legacy_heal_pattern_seen DETECTOR MISS on producer, okafor_legacy_mission_offered DETECTOR MISS on consumer, okafor_legacy_mission_completed pending SA-R2-FOLLOW-1 consumer); mission credit ceiling exception registered for `okafor_legacy_clinic_run` (8000 credits, gated behind 3 heal completions); kweon_relationship_value reward type for mission deferred to SA-R2-FOLLOW-1 (no reward type exists; flag-only stopgap used); haven_pastoral_alliance destination chosen for clinic run (havens_rest system). Status → review. PHASE_OK
 **Last phase report.**
-- Phase: plan
+- Phase: implement (rework cycle 0)
 - Outcome: PHASE_OK
-- Started: 2026-04-29 14:37
-- Completed: 2026-04-29 15:30
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: ba01a47
-- New_sprints_proposed: none
-- Polish_items_folded_in: save/load round-trip, voice-check pass on every authored line, scenario test covering both endings + mixed case + mid-arc save/load
-- Decisions_locked: 9
-- Notes: Verified all 14 context-to-read paths exist; corrected two file-naming mistakes in the sprint draft (canonical journal file is `entries.json` not `research.json`; mission file follows SA-arc convention `sa_r2_okafor_legacy.json` not `research_arc.json`). The arc structure locks at 6 Kweon dialogue beats (first-heal/first-profit, heal-pattern/profit-pattern at 3 completions each, heal-ending/profit-ending at +5 spread with 6+ on the dominant side) plus 1 heal-side optional mission. Project ethics tagging lives in a module-level lookup, leaving SA-R1's frozen template dataclass untouched. `okafor_collaborator_share_<researcher_id>` orphan consumers explicitly deferred — that's a different narrative axis (collaborator history) than this sprint's ethics axis.
+- Started: 2026-04-29 14:48
+- Completed: 2026-04-29 16:57
+- Files_changed: spacegame/constants/flags.py, spacegame/models/okafor_research.py, spacegame/views/okafor_view.py, spacegame/engine/game.py, spacegame/data_loader.py, spacegame/views/refining_view.py, data/dialogue/dialogues.json, data/journal/entries.json, data/missions/sa_r2_okafor_legacy.json (NEW), tests/test_models/test_okafor_research.py, tests/test_models/test_save_load_okafor.py, tests/test_views/test_okafor_view.py, tests/test_scenarios/test_scenario_okafor_legacy.py (NEW), tests/test_data/test_research_arc_data.py (NEW), tests/test_data/test_dialogue_integrity.py, tests/test_data/test_cross_references.py, tests/test_data/test_side_mission_data.py
+- Commits: 3e3315e, 314beb0, eecfae9, 64abe29, 19e0589 (+ final commit from this session)
+- Tests_baseline: 9988 passing / 98 skipped
+- Tests_final: 10107 passing / 98 skipped
+- Net_new_tests: 119
+- New_sprints_proposed: SA-R2-FOLLOW-1 (kweon_relationship_value reward type for clinic-run mission; brief, wires the pending kweon_relationship_value increment that the mission stopgap omits)
+- Followup_sprints_added: none (SA-R2-FOLLOW-1 noted for human to evaluate)
+- Decisions_deferred_to_implementation: clinic-run destination = havens_rest (frontier-aligned, Frontier Alliance faction; heal-arc thematically consistent); kweon_relationship_value mission reward deferred (no reward type in mission.py; flag-only stopgap: credits + xp + set_flag)
+- Notes: All 12 acceptance criteria met. kweon_legacy_heal_pattern_seen set via _LEGACY_ARC_TREE_TO_FLAG variable dispatch in OkaforView — scanner can't detect variable-mediated producers; registered as DETECTOR MISS in KNOWN_CONSUMER_ONLY_ORPHANS and KNOWN_ENGINE_FLAGS. okafor_legacy_mission_offered set by dialogue set_flag (detectable) and consumed in pending_legacy_beat via variable dispatch (not detectable); registered as DETECTOR MISS in KNOWN_PRODUCER_ONLY_ORPHANS. The arc structure is complete: 6 Kweon beats, 1 heal-side mission, 4 journal entries, all three test tiers (unit / scenario / data). Writing Bible scanner clean on all authored dialogue, journal, and mission strings.
 
 #### SA-R3 — Research Patronage polish
 

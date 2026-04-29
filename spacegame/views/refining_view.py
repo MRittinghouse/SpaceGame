@@ -1517,7 +1517,7 @@ class RefiningView(BaseView):
 
         pip_size = scale_y(8)
         pip_gap = 2
-        cost_x = panel_x + panel_w - scale_x(50)
+        _cost_x = panel_x + panel_w - scale_x(50)
 
         for uid, definition in forge_upgrades.items():
             if y > WINDOW_HEIGHT - 70:

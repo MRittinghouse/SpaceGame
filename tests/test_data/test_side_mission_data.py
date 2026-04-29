@@ -248,13 +248,18 @@ class TestSideMissionRewards:
         """
         # Onboarding mission (PT-H) and Arna branch-A climax (AR-4) both
         # pay above the standard side-mission ceiling. Explicit exceptions.
+        # SA-R2: okafor_legacy_clinic_run pays 8000 (Axiom Labs range, gated
+        # behind 3 heal completions + heal-pattern beat).
         onboarding_exceptions = {"coolant_run", "arna_05b_clean_pull"}
         arna_climax_exceptions = {"arna_05a_last_freight_out"}
+        okafor_exceptions = {"okafor_legacy_clinic_run"}
         for m in _load_side():
             if m.id in arna_climax_exceptions:
                 ceiling = 5000
             elif m.id in onboarding_exceptions:
                 ceiling = 2500
+            elif m.id in okafor_exceptions:
+                ceiling = 10_000
             else:
                 ceiling = 1000
             for r in m.rewards:

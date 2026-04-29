@@ -377,6 +377,10 @@ class TestFlagReachability:
             "talked_to_officer_larsen",
             # Combat outcome flags set by encounter/combat resolution
             "escape_combat_survived",
+            # SA-R2: set via _LEGACY_ARC_TREE_TO_FLAG dispatch in OkaforView
+            # close-handler — the scanner only detects string-literal assignments,
+            # not variable-mediated ones.
+            "okafor_legacy_heal_pattern_seen",
         }
 
     def test_mission_required_flags_are_settable(self) -> None:

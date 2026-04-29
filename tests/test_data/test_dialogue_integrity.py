@@ -699,6 +699,14 @@ KNOWN_CONSUMER_ONLY_ORPHANS: set[str] = {
     "under_fire_ambush",
     "whistleblower_resolved",
     "wrench_request_resolved",
+    # === SA-R2 DETECTOR MISS — set via _LEGACY_ARC_TREE_TO_FLAG dispatch ===
+    # ``okafor_legacy_heal_pattern_seen`` is SET by the OkaforView
+    # ``_close_active_dialogue`` close-handler, which looks up the flag name
+    # from the ``_LEGACY_ARC_TREE_TO_FLAG`` module-level dict and writes it via
+    # ``player.dialogue_flags[flag] = True``. The scanner only detects
+    # string-literal assignments and misses variable-mediated ones.
+    # Real consumer: ``mission:okafor_legacy_clinic_run:required``.
+    "okafor_legacy_heal_pattern_seen",
 }
 
 # Net producer-only set, regenerated 2026-04-21 from current data state.
@@ -917,6 +925,19 @@ KNOWN_PRODUCER_ONLY_ORPHANS: set[str] = {
     "okafor_collaborator_share_theo_brandt",
     "okafor_collaborator_share_sana_dey",
     "okafor_collaborator_share_nuri_solberg",
+    # === SA-R2 Okafor legacy mission — consumer deferred to SA-R2-FOLLOW-1 ===
+    # ``okafor_legacy_mission_completed`` is SET as a mission reward when the
+    # player completes the okafor_legacy_clinic_run delivery. The consumer
+    # (a Kweon callback dialogue line acknowledging the run) is deferred to
+    # SA-R2-FOLLOW-1 per the SA-R2 locked decision on kweon_relationship_value.
+    "okafor_legacy_mission_completed",
+    # === SA-R2 DETECTOR MISS — consumed via pending_legacy_beat variable dispatch ===
+    # ``okafor_legacy_mission_offered`` is SET by the dialogue response's
+    # set_flag field (detectable). The real consumer is ``pending_legacy_beat``
+    # in ``okafor_research.py``, which calls ``dialogue_flags.get(name)`` with
+    # ``name`` being a variable — not a string literal the scanner can match.
+    # The OkaforView close-handler also reads it through the same helper.
+    "okafor_legacy_mission_offered",
 }
 
 
