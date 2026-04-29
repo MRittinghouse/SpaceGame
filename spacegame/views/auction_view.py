@@ -49,6 +49,7 @@ from spacegame.models.bidding import (
     post_win_valuation_message,
     reserve_band_for_preview,
     sable_displayed_ceiling,
+    stellaris_tier_for_standing,
 )
 from spacegame.models.bidding_lot import AuctionLot
 from spacegame.models.bidding_persona import (
@@ -151,6 +152,8 @@ class AuctionView(BaseView):
         self.raise_custom_button: Optional[pygame_gui.elements.UIButton] = None
         self.hold_button: Optional[pygame_gui.elements.UIButton] = None
         self.fold_button: Optional[pygame_gui.elements.UIButton] = None
+        # SA-B5: PREVIEW affordance for the player-as-seller side.
+        self.list_a_lot_button: Optional[pygame_gui.elements.UIButton] = None
         self._speed_buttons: dict[str, pygame_gui.elements.UIButton] = {}
         self._dialog: Optional[pygame_gui.windows.UIConfirmationDialog] = None
         self._custom_amount_text: Optional[pygame_gui.elements.UITextEntryLine] = None
@@ -200,6 +203,9 @@ class AuctionView(BaseView):
         self.on_rivalry_formed: Optional[Callable[[str, AuctionLot], None]] = None
         self.on_headliner_sold: Optional[Callable[[AuctionLot, int], None]] = None
         self.on_headliner_withdrawn: Optional[Callable[[AuctionLot], None]] = None
+        # SA-B5: player-listing resolution callbacks.
+        self.on_player_lot_sold: Optional[Callable[[Any, int], None]] = None
+        self.on_player_lot_withdrawn: Optional[Callable[[Any], None]] = None
 
         # Background — venue-neutral starfield; SA-X10 owns per-venue identity.
         self.background = AnimatedBackground("trade_routes", WINDOW_WIDTH, WINDOW_HEIGHT, seed=8642)
@@ -397,6 +403,12 @@ class AuctionView(BaseView):
             self.player.auction_state.open_session()
             self._rebuild_ui_for_substate()
             return
+        if ui_element == self.list_a_lot_button:
+            # SA-B5: route to the SellLotView. The engine creates the
+            # view in _ensure_sell_lot_view and routes confirm/back back
+            # here.
+            self.next_state = GameState.SELL_LOT
+            return
         if ui_element == self.advance_button:
             self.player.auction_state.advance_after_resolution()
             self._rebuild_ui_for_substate()
@@ -465,6 +477,20 @@ class AuctionView(BaseView):
     def _fire_lot_callbacks(self, record: Any) -> None:
         lot = self._lookup_lot(record.lot_id)
         if lot is None:
+            return
+        # SA-B5: player-seller lot resolution callback. Fired BEFORE the
+        # standard rivalry/headliner/perfect-read paths because the lot
+        # is the player's own consignment — none of the buyer-side
+        # callbacks apply.
+        if lot.seller_id == "player":
+            if record.sold and self.on_player_lot_sold is not None:
+                # Pull the matching archived listing out of history so the
+                # callback can return the item if needed (commodity vs part).
+                archived = self._archived_listing_for_lot(lot.id)
+                self.on_player_lot_sold(archived, record.sale_price)
+            elif not record.sold and self.on_player_lot_withdrawn is not None:
+                archived = self._archived_listing_for_lot(lot.id)
+                self.on_player_lot_withdrawn(archived)
             return
         # First rivalry formed: any rival in rivals_bid won the lot
         # while the player also bid -> trigger.
@@ -545,6 +571,7 @@ class AuctionView(BaseView):
             self.raise_custom_button,
             self.hold_button,
             self.fold_button,
+            self.list_a_lot_button,
         ]
         elements.extend(self._speed_buttons.values())
         for elem in elements:
@@ -558,8 +585,132 @@ class AuctionView(BaseView):
         self.raise_custom_button = None
         self.hold_button = None
         self.fold_button = None
+        self.list_a_lot_button = None
         self._speed_buttons = {}
         self._built_substate = None
+
+    # ------------------------------------------------------------------
+    # SA-B5: player-seller helpers
+    # ------------------------------------------------------------------
+
+    def _player_can_list_at_venue(self) -> bool:
+        """True iff the player may consign at the active venue.
+
+        Stellaris-only (decision §B5.2) and gated to regular+ standing
+        (decision §B5.10). Apprentice and lower see no button at all to
+        keep the affordance honest.
+        """
+        if self.venue_id != "stellaris":
+            return False
+        rep = self.player.faction_reputation.get("stellaris_commerce_guild", 0)
+        tier = stellaris_tier_for_standing(rep)
+        return tier not in ("apprentice", "none")
+
+    def _active_lot_is_player_seller(self) -> bool:
+        """True iff the lot the round_state is bidding on has seller_id=player."""
+        lot = self.player.auction_state.current_lot()
+        return lot is not None and lot.seller_id == "player"
+
+    def active_listing_rows(self) -> list[dict[str, Any]]:
+        """Return a one-row-per-listing summary of ``auction_state.active_listings``.
+
+        Used by the PREVIEW "Active Listings" subsection. Each row carries
+        a short label, the declared appraisal, and the reserve_pct so the
+        view renderer can show the player exactly what's on the floor for
+        them.
+        """
+        rows: list[dict[str, Any]] = []
+        for listing in self.player.auction_state.active_listings:
+            rows.append(
+                {
+                    "listing_id": listing.listing_id,
+                    "headline": listing.headline,
+                    "declared_appraisal": listing.declared_appraisal,
+                    "reserve_pct": listing.reserve_pct,
+                }
+            )
+        return rows
+
+    def player_seller_banner_text(self) -> str:
+        """Return the BID_WINDOW banner shown over the player's own consigned lot."""
+        return "Your lot — watching the floor."
+
+    def _lot_resolution_message_for_player_lot(
+        self, *, sold: bool, sale_price: int
+    ) -> str:
+        """Render the LOT_RESOLUTION line variant for player-seller lots."""
+        if sold:
+            return f"Sold for {sale_price:,} credits."
+        return "Reserve not met. The lot returns to your hold."
+
+    def _archived_listing_for_lot(self, lot_id: str) -> Optional[dict[str, Any]]:
+        """Return the listing-history entry that matches ``lot_id``.
+
+        Lookup keys on the lot id prefix; player consignments serialize
+        with id ``player_listing_<listing_id>``. Returns the most recent
+        match, or ``None`` if no match is found.
+        """
+        prefix = "player_listing_"
+        if not lot_id.startswith(prefix):
+            return None
+        listing_id = lot_id[len(prefix) :]
+        st = self.player.auction_state
+        for entry in reversed(st.listing_history):
+            if entry.get("listing_id") == listing_id:
+                return entry
+        return None
+
+    def _most_recent_player_listing_resolution(self) -> Optional[dict[str, Any]]:
+        """Return the most recent player-listing entry resolved this session.
+
+        Returns ``None`` when no listing has resolved this session. Used
+        by the POST_SESSION renderer to decide whether Sable's
+        ``player_listing_post_session`` line should fire.
+        """
+        st = self.player.auction_state
+        if not st.session_history:
+            return None
+        last_session = st.session_history[-1]
+        # Pick the most recent listing whose closed_on_day matches this
+        # session's close day. listing_history is the authoritative log.
+        if not st.listing_history:
+            return None
+        for entry in reversed(st.listing_history):
+            closed = entry.get("closed_on_day", 0)
+            if closed == last_session.closed_on_day or closed == 0:
+                return entry
+        return None
+
+    def _sable_player_listing_line(
+        self,
+        *,
+        outcome: Optional[str],
+        sale_price: int,
+        reserve_price: int,
+        sable_active: bool,
+    ) -> str:
+        """Pick a Sable post-session read line for a player-listing outcome.
+
+        Buckets: ``sold_above_reserve`` / ``sold_near_reserve`` /
+        ``withdrawn_no_bids`` / ``withdrawn_bids_below_reserve``. Returns
+        the empty string when no listing resolved this session OR when
+        Sable is not on crew.
+        """
+        if not sable_active or outcome is None:
+            return ""
+        block = self._voice_templates.get("player_listing_post_session") or {}
+        if not isinstance(block, dict):
+            return ""
+        if outcome == "sold":
+            if reserve_price > 0 and sale_price <= int(reserve_price * 1.05):
+                key = "sold_near_reserve"
+            else:
+                key = "sold_above_reserve"
+        else:
+            # outcome == "withdrawn"
+            key = "withdrawn_no_bids" if sale_price == 0 else "withdrawn_bids_below_reserve"
+        line = block.get(key, "")
+        return str(line) if line else ""
 
     def _make_back_button(self) -> None:
         rect = pygame.Rect(
@@ -612,6 +763,19 @@ class AuctionView(BaseView):
                 text="Open Session",
                 manager=self.ui_manager,
             )
+        # SA-B5: "List a Lot" button — Stellaris-only, regular+ standing.
+        if self._player_can_list_at_venue():
+            list_rect = pygame.Rect(
+                PANEL_X + PANEL_W - BTN_W - scale_x(20),
+                PANEL_TOP_Y + scale_y(20) + BTN_H + scale_y(8),
+                BTN_W,
+                BTN_H,
+            )
+            self.list_a_lot_button = pygame_gui.elements.UIButton(
+                relative_rect=list_rect,
+                text="List a Lot",
+                manager=self.ui_manager,
+            )
 
     def _create_ui_opening(self) -> None:
         self._make_back_button()
@@ -623,6 +787,11 @@ class AuctionView(BaseView):
 
     def _create_ui_bid_window(self) -> None:
         self._make_back_button()
+        # SA-B5: when the active lot has seller_id="player", the player
+        # cannot bid on their own consignment. Suppress the bid action
+        # buttons entirely; the AI bidders still drive the auction.
+        if self._active_lot_is_player_seller():
+            return
         x0 = PANEL_X + scale_x(20)
         y0 = PANEL_TOP_Y + HEADER_H + scale_y(360)
         gap = scale_x(8)
@@ -721,6 +890,26 @@ class AuctionView(BaseView):
         )
         screen.blit(header, (x, body_y))
         body_y += scale_y(36)
+        # SA-B5: surface the player's active listings before the catalog
+        # so the player can see exactly what's queued from their side.
+        rows = self.active_listing_rows()
+        if rows:
+            sub = self.label_font.render(
+                f"Active listings: {len(rows)}",
+                True,
+                Colors.TEXT_HIGHLIGHT,
+            )
+            screen.blit(sub, (x, body_y))
+            body_y += scale_y(22)
+            for row in rows:
+                self._draw_text(
+                    screen,
+                    f"  {row['headline']} (reserve {int(row['reserve_pct'] * 100)}%)",
+                    (x + scale_x(8), body_y),
+                    color=Colors.TEXT_SECONDARY,
+                )
+                body_y += scale_y(18)
+            body_y += scale_y(6)
         appraiser_active = self.progression.get_bonus("auction_lot_appraisal_bonus") > 0.0
         for lot in st.active_session_lots[:6]:
             head_line = f"{lot.headline}  ({lot.category})"
@@ -766,6 +955,16 @@ class AuctionView(BaseView):
         y += scale_y(20)
         self._draw_text(screen, lot.headline, (x, y))
         y += scale_y(28)
+        # SA-B5: surface the "your lot — watching" banner when the player
+        # owns this consignment so they aren't looking for a bid action.
+        if lot.seller_id == "player":
+            self._draw_text(
+                screen,
+                self.player_seller_banner_text(),
+                (x, y),
+                color=Colors.TEXT_HIGHLIGHT,
+            )
+            y += scale_y(28)
         # SA-B3: Velo running commentary above the timer. Reads template
         # from voice content; falls back to a tight default when missing.
         velo_line = self._velo_running_commentary(lot, rs)
@@ -845,6 +1044,16 @@ class AuctionView(BaseView):
         record = st.session_lot_results[-1]
         x = PANEL_X + scale_x(20)
         y = BODY_TOP_Y
+        # SA-B5: player-seller variant overrides the generic message
+        # because the sale is a credit FOR the player rather than against.
+        resolved_lot = self._lookup_lot(record.lot_id)
+        if resolved_lot is not None and resolved_lot.seller_id == "player":
+            line = self._lot_resolution_message_for_player_lot(
+                sold=record.sold, sale_price=record.sale_price
+            )
+            color = Colors.TEXT_PRIMARY if record.sold else Colors.YELLOW
+            self._draw_text(screen, line, (x, y), color=color)
+            return
         if record.sold:
             line = f"Sold at {record.sale_price:,} credits."
             self._draw_text(screen, line, (x, y))
@@ -936,6 +1145,21 @@ class AuctionView(BaseView):
                 )
             if line:
                 lines.append(line)
+        # SA-B5: Sable's read on the player's resolved listing, if any.
+        if sable_active:
+            recent_listing = self._most_recent_player_listing_resolution()
+            if recent_listing is not None:
+                line = self._sable_player_listing_line(
+                    outcome=recent_listing.get("outcome"),
+                    sale_price=int(recent_listing.get("sale_price", 0)),
+                    reserve_price=int(
+                        recent_listing.get("declared_appraisal", 0)
+                        * recent_listing.get("reserve_pct", 0)
+                    ),
+                    sable_active=True,
+                )
+                if line:
+                    lines.append(line)
         # Retired-rival aside (if any named rival auto-retired this session).
         retired = self._retired_rivals_this_session()
         if retired:
