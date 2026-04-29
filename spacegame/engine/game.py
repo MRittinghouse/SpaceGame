@@ -1933,6 +1933,16 @@ class Game:
                         self.state_manager.change_state(GameState.DISPUTE)
 
                     self._start_transition(TransitionType.FADE, 0.3, _do_dispute)
+                elif next_state == GameState.AUCTION:
+                    # SA-B3: route the Stellaris Auction House.
+                    self.station_hub_view.next_state = None
+
+                    def _do_auction():
+                        self._prepare_stellaris_session()
+                        self._ensure_auction_view(venue_id="stellaris")
+                        self.state_manager.change_state(GameState.AUCTION)
+
+                    self._start_transition(TransitionType.FADE, 0.3, _do_auction)
                 elif next_state == GameState.MINING:
                     self.station_hub_view.next_state = None
 
@@ -2391,7 +2401,140 @@ class Game:
                 if not self.player.dialogue_flags.get(flag):
                     self.player.dialogue_flags[flag] = True
 
+        # SA-B3: hand the live personas (built by _prepare_stellaris_session)
+        # to the view so Sable's panel and the rival flat-bid log can
+        # render display names and run ceiling math.
+        live_personas = list(getattr(self.player.auction_state, "_live_personas", {}).values())
+        if live_personas:
+            self.auction_view.set_active_personas(live_personas)
+
+        # SA-B3: wire the data-loader voices into the view so the BID_WINDOW
+        # header strip, post-session social UI, and PREVIEW empty-state can
+        # read voice templates instead of hardcoded fallbacks.
+        self.auction_view.set_voice_templates(self.data_loader.get_auction_voices(venue_id))
+
         self.state_manager.register_state(GameState.AUCTION, self.auction_view)
+
+    def _prepare_stellaris_session(self) -> None:
+        """SA-B3: ready the Stellaris auction state on hub-entry.
+
+        On first entry without a prior schedule, seed the next-session
+        day deterministically 5-7 days out. If a session is currently
+        due (calendar reached), generate the lot pool from the loaded
+        catalog using the player's Stellaris standing tier and seasonal
+        rotation, then transition the auction state into PREVIEW with
+        the session personas wired (3 named rivals filtered by the
+        attendance helper, plus 2 Stellaris Speculators with rotating
+        elevated categories).
+        """
+        from spacegame.models.bidding import (
+            STELLARIS_HEADLINER_SESSION_SIZE,
+            STELLARIS_STANDARD_SESSION_SIZE,
+            AuctionLifecycle,
+            current_season_tag,
+            generate_lot_pool,
+            pick_stellaris_rival_attendance,
+            stellaris_initial_session_day,
+            stellaris_tier_for_standing,
+        )
+        from spacegame.models.bidding_persona import (
+            PERSONA_KADE,
+            PERSONA_PRENTISS,
+            PERSONA_SALKO,
+            make_kade,
+            make_prentiss,
+            make_salko,
+            make_stellaris_speculator,
+        )
+
+        if self.player is None:
+            return
+        venue_id = "stellaris"
+        state = self.player.auction_state
+        current_day = self.player.game_day
+        # First-time seed.
+        if venue_id not in state.next_auction_day:
+            state.schedule_session(venue_id, stellaris_initial_session_day(current_day))
+        # If a session is not due yet, leave the state in SCHEDULED so
+        # the empty-state Velo line renders.
+        if not state.is_session_due(venue_id, current_day):
+            state.lifecycle = AuctionLifecycle.SCHEDULED
+            state.active_auction_id = venue_id
+            return
+        # Already in PREVIEW or live for this venue: do nothing (idempotent).
+        if state.lifecycle in (
+            AuctionLifecycle.PREVIEW,
+            AuctionLifecycle.SESSION_OPEN,
+            AuctionLifecycle.LOT_OPEN,
+            AuctionLifecycle.BID_WINDOW,
+            AuctionLifecycle.ROUND_CLOSE,
+            AuctionLifecycle.LOT_RESOLUTION,
+        ):
+            return
+        catalog = self.data_loader.get_auction_lots(venue_id)
+        rep = self.player.faction_reputation.get("stellaris_commerce_guild", 0)
+        tier = stellaris_tier_for_standing(rep)
+        season = current_season_tag(current_day)
+        session_id = f"stellaris_session_{current_day}"
+        # Seed pool generation with a sample size large enough to surface
+        # a headliner if drawn; the actual session size is decided by
+        # whether a headliner is in the draw.
+        candidate_pool = generate_lot_pool(
+            catalog,
+            venue_id=venue_id,
+            player_rep_tier=tier,
+            player_faction_standing=dict(self.player.faction_reputation),
+            season_tag=season,
+            session_id=session_id,
+            target_size=STELLARIS_HEADLINER_SESSION_SIZE,
+        )
+        if not candidate_pool:
+            # No eligible lots; keep the state SCHEDULED (empty state).
+            state.lifecycle = AuctionLifecycle.SCHEDULED
+            state.active_auction_id = venue_id
+            return
+        is_headliner_session = any(lot.is_headliner for lot in candidate_pool)
+        target = (
+            STELLARIS_HEADLINER_SESSION_SIZE
+            if is_headliner_session
+            else STELLARIS_STANDARD_SESSION_SIZE
+        )
+        session_lots = candidate_pool[:target]
+        # Pick named-rival attendance for this session pool.
+        attending = pick_stellaris_rival_attendance(
+            session_id=session_id,
+            lot_pool=session_lots,
+        )
+        # Two Stellaris Speculators per session; elevated_category cycles
+        # across the design-doc pool by session id.
+        speculator_categories = (
+            "module",
+            "antiquity",
+            "faction_commodity",
+            "rare_upgrade",
+            "derelict_rights",
+        )
+        cycle_index = current_day % len(speculator_categories)
+        spec1_cat = speculator_categories[cycle_index]
+        spec2_cat = speculator_categories[(cycle_index + 1) % len(speculator_categories)]
+        speculator1 = make_stellaris_speculator(spec1_cat, instance_index=1)
+        speculator2 = make_stellaris_speculator(spec2_cat, instance_index=2)
+        all_personas = []
+        if PERSONA_PRENTISS in attending:
+            all_personas.append(make_prentiss())
+        if PERSONA_KADE in attending:
+            all_personas.append(make_kade())
+        if PERSONA_SALKO in attending:
+            all_personas.append(make_salko())
+        all_personas.extend([speculator1, speculator2])
+        rival_ids = [p.persona_id for p in all_personas]
+        state.enter_preview(
+            venue_id=venue_id,
+            session_lots=session_lots,
+            rival_ids=rival_ids,
+            session_id=session_id,
+        )
+        state.set_session_personas(all_personas)
 
     def _initialize_politics_dispute_manager(self) -> None:
         """SA-P2: bind the venue dispute manager to its dependencies.
@@ -4712,6 +4855,30 @@ class Game:
 
         # Decay criminal heat (1 point per day)
         self.player.decay_criminal_heat(1)
+
+        # SA-B3: keep the Stellaris session calendar primed so the
+        # auction venue is ready when the player walks in. We seed the
+        # initial day on first ever day-advance and re-prepare a session
+        # the moment the cadence ticks over, so empty-state vs. live
+        # is determined the moment the player chooses to enter.
+        try:
+            from spacegame.models.bidding import (
+                AuctionLifecycle,
+                stellaris_initial_session_day,
+            )
+
+            state = self.player.auction_state
+            if "stellaris" not in state.next_auction_day:
+                state.schedule_session("stellaris", stellaris_initial_session_day(current_day))
+            elif state.is_session_due("stellaris", current_day) and state.lifecycle in (
+                AuctionLifecycle.SCHEDULED,
+                AuctionLifecycle.SESSION_CLOSE,
+            ):
+                # Lazy: defer pool generation to hub-entry so the view
+                # picks up the freshest reputation/season values.
+                pass
+        except (AttributeError, ImportError):
+            pass
 
         # TW: evaluate timed threads for drift transitions. Any newly
         # entered drift state emits a DriftEvent; we surface journal

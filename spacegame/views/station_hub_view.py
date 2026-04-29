@@ -99,6 +99,7 @@ UNIQUE_HALL_TARGETS: dict[str, GameState] = {
     "breakstone_deep_mines": GameState.DEEP_SHAFTS,
     "verdant_mayors_council": GameState.DISPUTE,
     "havens_congress_hall": GameState.DISPUTE,
+    "stellaris_auction_house": GameState.AUCTION,
 }
 
 # Layout constants
@@ -300,6 +301,10 @@ class StationHubView(BaseView):
         # unique anchors keep their close-only layout. None at all other
         # times so _destroy_ui can no-op safely.
         self._detail_enter_button: Optional[pygame_gui.elements.UIButton] = None
+        # SA-B3: "Talk to Velo" button on the Stellaris Auction House detail
+        # panel. Only created when the active detail panel is that anchor and
+        # Cassian Velo is registered as an NPC at this system.
+        self._detail_talk_velo_button: Optional[pygame_gui.elements.UIButton] = None
 
         # Sprite manager for faction emblems
         self._sprite_mgr = get_sprite_manager()
@@ -608,6 +613,9 @@ class StationHubView(BaseView):
         if self._detail_enter_button:
             self._detail_enter_button.kill()
             self._detail_enter_button = None
+        if self._detail_talk_velo_button:
+            self._detail_talk_velo_button.kill()
+            self._detail_talk_velo_button = None
 
     def _destroy_npc_buttons(self) -> None:
         """Kill cantina NPC, re-recruit, hire, and contract buttons."""
@@ -778,6 +786,29 @@ class StationHubView(BaseView):
                 if self._detail_enter_button:
                     self._detail_enter_button.kill()
                     self._detail_enter_button = None
+                if self._detail_talk_velo_button:
+                    self._detail_talk_velo_button.kill()
+                    self._detail_talk_velo_button = None
+                return
+
+            # SA-B3: Talk-to-Velo button on the Stellaris Auction House detail
+            # panel routes to the dialogue view with Cassian Velo selected.
+            if (
+                self._detail_talk_velo_button is not None
+                and event.ui_element == self._detail_talk_velo_button
+            ):
+                self._emit_detail_dwell_if_open()
+                self._detail_location = None
+                if self._detail_close_button:
+                    self._detail_close_button.kill()
+                    self._detail_close_button = None
+                if self._detail_enter_button:
+                    self._detail_enter_button.kill()
+                    self._detail_enter_button = None
+                self._detail_talk_velo_button.kill()
+                self._detail_talk_velo_button = None
+                self.pending_npc_id = "cassian_velo"
+                self.next_state = GameState.DIALOGUE
                 return
 
             # SA-1 / SA-2: dispatch the Enter button to the right venue
@@ -798,6 +829,9 @@ class StationHubView(BaseView):
                     self._detail_close_button = None
                 self._detail_enter_button.kill()
                 self._detail_enter_button = None
+                if self._detail_talk_velo_button:
+                    self._detail_talk_velo_button.kill()
+                    self._detail_talk_velo_button = None
                 if target_state is not None:
                     self.next_state = target_state
                 return
@@ -1121,6 +1155,29 @@ class StationHubView(BaseView):
             # Switching detail anchors — kill the prior venue's enter button.
             self._detail_enter_button.kill()
             self._detail_enter_button = None
+
+        # SA-B3: Talk-to-Velo button only on the Stellaris Auction House
+        # detail panel. Surfaces alongside Enter so the player can
+        # converse with Velo between sessions per decision §B3.15.
+        show_velo_button = (
+            loc.id == "stellaris_auction_house"
+            and getattr(self.data_loader, "get_npc", None) is not None
+            and self.data_loader.get_npc("cassian_velo") is not None
+        )
+        if show_velo_button and not self._detail_talk_velo_button:
+            self._detail_talk_velo_button = pygame_gui.elements.UIButton(
+                relative_rect=pygame.Rect(
+                    DETAIL_PANEL_X + DETAIL_PANEL_W - 280,
+                    panel_y + panel_h - 40,
+                    100,
+                    30,
+                ),
+                text="Talk to Velo",
+                manager=self.ui_manager,
+            )
+        elif not show_velo_button and self._detail_talk_velo_button:
+            self._detail_talk_velo_button.kill()
+            self._detail_talk_velo_button = None
 
     def _render_wrapped_text(
         self,

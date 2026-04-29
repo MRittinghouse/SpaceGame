@@ -53,6 +53,7 @@ from spacegame.models.bidding import (
 from spacegame.models.bidding_lot import AuctionLot
 from spacegame.models.bidding_persona import (
     NAMED_RIVAL_IDS,
+    RIVAL_DISPLAY_NAMES,
     AIBidderPersona,
 )
 from spacegame.models.crew import CrewRoster
@@ -173,6 +174,20 @@ class AuctionView(BaseView):
         # Custom bid input — gathered via the modal credit-input dialog.
         self._pending_custom_amount: Optional[int] = None
 
+        # SA-B3: voice content (lot-open, "we are at", post-session social,
+        # empty-state, retired-rival aside). Populated by the engine via
+        # set_voice_templates from data_loader.get_auction_voices(venue).
+        # Empty dict falls back to the design-doc default strings already
+        # authored inline in the render helpers.
+        self._voice_templates: dict[str, Any] = {}
+        # Track the high-bid value last announced so the BID_WINDOW Velo
+        # commentary updates when the high bid changes.
+        self._last_announced_high_bid: int = -1
+        # Track which rival ids we've already filed an outbid line for in
+        # the active lot. Prevents the bid log from re-announcing the same
+        # rival on every tick.
+        self._announced_rival_bids: set[str] = set()
+
         # Substate tracking — last substate we built UI for; recreates
         # when the model lifecycle moves into a different substate.
         self._built_substate: Optional[AuctionSubstate] = None
@@ -205,6 +220,16 @@ class AuctionView(BaseView):
     def set_active_personas(self, personas: list[AIBidderPersona]) -> None:
         self._live_personas = list(personas)
         self.player.auction_state.set_session_personas(personas)
+
+    def set_voice_templates(self, templates: dict[str, Any]) -> None:
+        """SA-B3: install Velo / rival / Sable / empty-state voice templates.
+
+        Templates are loaded by the engine from
+        ``data_loader.get_auction_voices(venue)``. Missing keys fall back
+        to design-doc default strings inline in the render helpers, so
+        the view never crashes on incomplete content.
+        """
+        self._voice_templates = dict(templates) if templates else {}
 
     # ------------------------------------------------------------------
     # Lifecycle
@@ -253,9 +278,31 @@ class AuctionView(BaseView):
         prior_won_lots = list(st.won_lots)
         prior_history_count = len(st.session_history)
         prior_resolved_count = len(st.session_lot_results)
+        prior_round_state = st.round_state
+        prior_high_bidder = (
+            prior_round_state.current_high_bidder_id if prior_round_state is not None else None
+        )
         if st.lifecycle == AuctionLifecycle.BID_WINDOW:
             new_msgs = st.tick(dt)
             self.messages.extend(new_msgs)
+            # SA-B3: when a named rival just placed a bid, replace the
+            # generic AI message with the persona's voice-template line.
+            new_rs = st.round_state
+            if new_rs is not None:
+                new_high = new_rs.current_high_bidder_id
+                if (
+                    new_high is not None
+                    and new_high != prior_high_bidder
+                    and new_high in NAMED_RIVAL_IDS
+                ):
+                    line = self._format_rival_bid_line(new_high, new_rs.current_high_bid)
+                    if line:
+                        # Drop the generic "X now leads..." line emitted
+                        # this tick, surface the rival voice line instead.
+                        if self.messages and new_high in self.messages[-1]:
+                            self.messages[-1] = line
+                        else:
+                            self.messages.append(line)
         # If a lot just resolved this tick, fire callbacks BEFORE we
         # advance past LOT_RESOLUTION.
         new_resolved = len(st.session_lot_results) - prior_resolved_count
@@ -637,7 +684,14 @@ class AuctionView(BaseView):
             current_day = self.player.game_day
             if scheduled is not None and scheduled > current_day:
                 gap = scheduled - current_day
-                line = f"Next session in {gap} day{'s' if gap != 1 else ''}."
+                # SA-B3: prefer the data-driven empty-state template
+                # (Velo flavor) when present; fall back to the bare
+                # countdown line when the voice file is missing.
+                template = self._voice_templates.get("empty_state") if self._voice_templates else ""
+                if template:
+                    line = template.format(gap_days=gap)
+                else:
+                    line = f"Next session in {gap} day{'s' if gap != 1 else ''}."
             else:
                 line = "No session scheduled. The floor is quiet."
             self._draw_text(screen, line, (x, body_y))
@@ -695,6 +749,12 @@ class AuctionView(BaseView):
         y += scale_y(20)
         self._draw_text(screen, lot.headline, (x, y))
         y += scale_y(28)
+        # SA-B3: Velo running commentary above the timer. Reads template
+        # from voice content; falls back to a tight default when missing.
+        velo_line = self._velo_running_commentary(lot, rs)
+        if velo_line:
+            self._draw_text(screen, velo_line, (x, y), color=Colors.TEXT_HIGHLIGHT)
+            y += scale_y(20)
         timer_str = f"Round {rs.round_number}: {rs.time_remaining:.1f}s remaining"
         self._draw_text(screen, timer_str, (x, y))
         y += scale_y(20)
@@ -709,6 +769,42 @@ class AuctionView(BaseView):
         # Sable visibility panel
         if self.crew_roster.get_bonus("auction_bid_visibility") > 0.0:
             self._render_sable_panel(screen, x, y, lot)
+
+    def _velo_running_commentary(self, lot: AuctionLot, rs: Any) -> str:
+        """Return Velo's running-commentary line for the active round.
+
+        On round 1 with no high bidder yet, fires the lot-open template.
+        Otherwise updates with the "we are at" template each time the
+        current high bid changes.
+        """
+        templates = self._voice_templates.get("velo_lines") if self._voice_templates else None
+        velo: dict[str, str] = templates if isinstance(templates, dict) else {}
+        if rs.current_high_bidder_id is None:
+            template = velo.get("lot_open", "The lot is open. {lot_headline}.")
+            return template.format(lot_headline=lot.headline)
+        template = velo.get("we_are_at", "We are at {current_high_bid}. Do we hear more?")
+        return template.format(
+            current_high_bid=f"{rs.current_high_bid:,}",
+            lot_headline=lot.headline,
+        )
+
+    def _format_rival_bid_line(self, persona_id: str, amount: int) -> Optional[str]:
+        """Format a rival's flat-bid line per voice templates.
+
+        Returns ``None`` if the persona is not a named rival or no
+        template is registered.
+        """
+        if persona_id not in NAMED_RIVAL_IDS:
+            return None
+        rival_templates = self._voice_templates.get("rival_bids") if self._voice_templates else None
+        bids: dict[str, str] = rival_templates if isinstance(rival_templates, dict) else {}
+        template = bids.get(persona_id)
+        if not template:
+            # Default flat number prefixed with display name to keep the
+            # bid-log informative without voice content.
+            display = RIVAL_DISPLAY_NAMES.get(persona_id, persona_id)
+            return f"{display}: {amount:,}."
+        return template.format(amount=f"{amount:,}")
 
     def _render_body_round_close(self, screen: pygame.Surface) -> None:
         self._draw_text(
@@ -764,6 +860,118 @@ class AuctionView(BaseView):
             f"Session closed. {sold} lots sold, {wins} taken by you.",
             (x, y),
         )
+        y += scale_y(28)
+        # SA-B3: rival commentary, Sable read, retired-rival aside.
+        for line in self._post_session_lines():
+            self._draw_text(screen, line, (x, y), color=Colors.TEXT_SECONDARY)
+            y += scale_y(20)
+
+    def _post_session_lines(self) -> list[str]:
+        """Compose post-session social UI lines.
+
+        One per attending named rival (outcome bucket selected from
+        session_lot_results), one Sable read line if Sable on crew, one
+        retired-rival aside if any named rival auto-retired this session.
+        Returns voice-template lines when present; falls back to design-
+        doc default strings otherwise.
+        """
+        st = self.player.auction_state
+        lines: list[str] = []
+        rival_attendees = list(st.rival_session_attendance.get(st.active_session_id or "", []))
+        post_block = self._voice_templates.get("post_session") if self._voice_templates else None
+        post_table: dict[str, dict] = post_block if isinstance(post_block, dict) else {}
+        for rival_id in rival_attendees:
+            bucket = self._post_session_bucket_for_rival(rival_id)
+            display = RIVAL_DISPLAY_NAMES.get(rival_id, rival_id)
+            rival_lines = post_table.get(rival_id, {}) if isinstance(post_table, dict) else {}
+            options = rival_lines.get(bucket, []) if isinstance(rival_lines, dict) else []
+            if options:
+                lines.append(options[0])
+            else:
+                lines.append(self._default_post_session_line(display, bucket))
+        # Sable read line (if Sable on crew).
+        sable_active = self.crew_roster.get_bonus("auction_bid_visibility") > 0.0
+        sable_block = self._voice_templates.get("sable_reads") if self._voice_templates else None
+        sable_table: dict[str, str] = sable_block if isinstance(sable_block, dict) else {}
+        if sable_active:
+            if not rival_attendees:
+                line = sable_table.get(
+                    "no_rivals_attended",
+                    "No named rivals on the floor today.",
+                )
+            elif self.player.dialogue_flags.get(auction_sable_ceiling_correct()):
+                line = sable_table.get(
+                    "ceiling_correct",
+                    "Ceilings landed within the band I called.",
+                )
+            else:
+                line = sable_table.get(
+                    "ceiling_off",
+                    "Two of the ceilings ran past my call. I will adjust.",
+                )
+            if line:
+                lines.append(line)
+        # Retired-rival aside (if any named rival auto-retired this session).
+        retired = self._retired_rivals_this_session()
+        if retired:
+            template = self._voice_templates.get("retired_rival") if self._voice_templates else None
+            for rival_id in retired:
+                display = RIVAL_DISPLAY_NAMES.get(rival_id, rival_id)
+                if isinstance(template, str) and template:
+                    lines.append(template.format(display_name=display))
+                else:
+                    lines.append(f"{display} has not been on the floor in a while.")
+        return lines
+
+    def _post_session_bucket_for_rival(self, rival_id: str) -> str:
+        """Pick the outcome bucket for a rival's post-session commentary.
+
+        Buckets per voice schema:
+        * ``rival_won`` — rival won at least one lot the player also bid on.
+        * ``player_won`` — player won at least one lot the rival also bid on.
+        * ``no_overlap`` — rival attended but did not engage on player lots.
+        * ``absent_retired`` — rival was retired and did not attend.
+        """
+        st = self.player.auction_state
+        if rival_id in self._retired_rivals_this_session():
+            return "absent_retired"
+        for record in st.session_lot_results:
+            if record.winner_id == rival_id and record.player_bid:
+                return "rival_won"
+        for record in st.session_lot_results:
+            if record.winner_id == "player" and rival_id in record.rivals_bid:
+                return "player_won"
+        return "no_overlap"
+
+    def _retired_rivals_this_session(self) -> list[str]:
+        """Return rival ids whose status is STATUS_WANDERER on the player record.
+
+        Read-only: the captain memory snapshot is queried via the player's
+        ``captain_memory`` dict. Empty when the snapshot is unavailable.
+        """
+        memory = getattr(self.player, "captain_memory", None)
+        if not memory or not isinstance(memory, dict):
+            return []
+        try:
+            from spacegame.models.captain_memory import STATUS_WANDERER
+        except ImportError:  # pragma: no cover - module always exists.
+            return []
+        retired: list[str] = []
+        for rival_id in NAMED_RIVAL_IDS:
+            entry = memory.get(rival_id)
+            if entry is not None and getattr(entry, "status", None) == STATUS_WANDERER:
+                retired.append(rival_id)
+        return retired
+
+    def _default_post_session_line(self, display: str, bucket: str) -> str:
+        """Fallback post-session line when no voice template is loaded."""
+        if bucket == "rival_won":
+            return f"{display} closed on a lot you bid on."
+        if bucket == "player_won":
+            return f"{display} watched you take the lot."
+        if bucket == "absent_retired":
+            return f"{display} did not attend."
+        return f"{display} attended without overlap."
 
     def _render_loading_state(self, screen: pygame.Surface) -> None:
         self._draw_text(
