@@ -46,7 +46,7 @@ The SA-arc table below is **auto-regenerated** by the ralph harness from the spr
 | [SA-P6](#sa-p6--politics-polish--tuning) | Politics polish + tuning | II | M | done | SA-P3, SA-P4, SA-P5 |
 | [SA-B1](#sa-b1--bidding-system-design) | Bidding System Design | III | M | done | SA-PREP-1, SA-A2, SA-C2 |
 | [SA-B2](#sa-b2--bidding-core) | Bidding Core | III | XL | done | SA-B1, SA-A2, SA-C2 |
-| [SA-B3](#sa-b3--stellaris-auction-house-primary-venue) | Stellaris Auction House (primary venue) | III | L | todo | SA-B2 |
+| [SA-B3](#sa-b3--stellaris-auction-house-primary-venue) | Stellaris Auction House (primary venue) | III | L | done | SA-B2 |
 | [SA-B4](#sa-b4--crimson-reach-black-market-auctions) | Crimson Reach Black Market auctions | III | L | todo | SA-B2, SA-1 |
 | [SA-B5](#sa-b5--player-initiated-auctions) | Player-Initiated Auctions | III | L | todo | SA-B2 |
 | [SA-B6](#sa-b6--bidding-polish--tuning) | Bidding polish + tuning | III | M | todo | SA-B3, SA-B4, SA-B5 |
@@ -2791,7 +2791,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 
 #### SA-B3 — Stellaris Auction House (primary venue)
 
-**Status**: in-progress (reviewing)
+**Status**: done
 **Phase**: Phase III | **Size**: L | **Effort**: 2 weeks
 **Depends on**: SA-B2 | **Blocks**: SA-B6
 
@@ -2986,7 +2986,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 - 2026-04-29 10:55 — Full validation green. Tests: 9714 pass / 98 skipped (baseline 9631 → +83 SA-B3 tests, 0 regressions). Touched-files lint + format clean. mypy clean on touched files (preexisting forward-reference noise in data_loader.py untouched). Writing-Bible scanner clean over all new content. Dialogue-integrity scanner clean. PHASE_OK
 - 2026-04-29 10:25 — harness: review phase starting (rework cycle 0)
 - 2026-04-29 11:20 — review complete. Full test suite: 9714 pass / 98 skip (baseline 9631, +83 SA-B3 tests, 0 regressions). Lint, format, Writing Bible, dialogue-integrity scans: all clean. All 20 acceptance criteria verified substantively met. Lot catalog: 21 lots across 5 categories, 4 headliners, 12 season-tagged, all source_module_id references resolve in modules.json. Voice file: 8 Velo templates + 3 rival bids + 36 post-session lines + 4 Sable + 1 empty-state + 1 retired-rival. Velo NPC wired at stellaris_port with 4-branch dialogue tree; `seen_first_velo_encounter` flag helper per SI-3; journal entry fires once. Tier/season/attendance helpers all deterministic; scenario test drives full lifecycle end-to-end. Post-session social UI renders rival outcome lines + Sable read + retired-rival aside from voice templates. Minor observations (none blocking): AC18 scenario test verifies lifecycle and schedule but leaves journal/social-UI assertions to the view-test suite (those paths are covered there); post-session `options[0]` always used from each 3-line bucket array (2/3 authored variety never shown; flagged for SA-B6 polish). Single tighten: `_post_session_lines()` in auction_view.py always selects `options[0]` from each rival bucket's 3-option array; SA-B6 should seed-rotate per session to surface the authored variety. PHASE_OK
-
+- 2026-04-29 10:38 — harness: review passed, marking done
 **Last phase report.**
 - Phase: review
 - Outcome: PHASE_OK
