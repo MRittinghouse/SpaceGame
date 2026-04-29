@@ -1,0 +1,45 @@
+{
+  "missions": [
+    {
+      "id": "okafor_legacy_clinic_run",
+      "name": "The Clinic Run",
+      "description": "Kweon named the destination when she offered the run: Haven's Rest. The field clinic there placed an order through the Institute three weeks ago. The Collective's logistics window closed before the order could be filled. The cargo is medical supplies. Kweon does not have a ship. You do.",
+      "hint": "Deliver the medical cargo to Haven's Rest. The clinic coordinator is waiting.",
+      "discovery_text": "Kweon asked me to make a run to Haven's Rest. Field clinic there has been waiting on a medical supply order for three weeks. The Collective's logistics window closed. She needs a ship.",
+      "prerequisites": [],
+      "required_flags": [
+        "okafor_legacy_heal_pattern_seen"
+      ],
+      "objectives": [
+        {
+          "type": "reach_system",
+          "target_id": "havens_rest",
+          "target_quantity": 1,
+          "description": "Reach Haven's Rest to complete the medical cargo delivery"
+        }
+      ],
+      "rewards": [
+        {
+          "reward_type": "credits",
+          "amount": 8000
+        },
+        {
+          "reward_type": "xp",
+          "amount": 30
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "okafor_legacy_mission_completed"
+        }
+      ],
+      "mission_type": "side",
+      "available_at": [
+        "axiom_labs"
+      ],
+      "discovery_method": "npc",
+      "auto_accept": true,
+      "repeatable": false
+    }
+  ]
+}

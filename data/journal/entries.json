@@ -426,6 +426,34 @@
       "trigger_flag": "auction_first_listing_withdrawn",
       "system_id": "stellaris_port",
       "mission_id": ""
+    },
+    {
+      "entry_id": "auto_okafor_legacy_first_heal",
+      "text": "The project that came out of the Institute this cycle was clinical work. Pediatric methodology, field clinic logistics, something that goes toward patients instead of a balance sheet. Kweon said: this is what the building was for. She said it once, and then the conversation moved on.",
+      "trigger_flag": "okafor_legacy_first_heal_seen",
+      "system_id": "axiom_labs",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_okafor_legacy_first_profit",
+      "text": "First project out of the Institute on the commercial side. Propulsion efficiency or industrial analysis, one of the ones that pays well and publishes in sector trade journals. Kweon said: the Institute's accounting does not separate concern from yield. Both pay for the same bench time. She did not say she approved.",
+      "trigger_flag": "okafor_legacy_first_profit_seen",
+      "system_id": "axiom_labs",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_okafor_legacy_heal_ending",
+      "text": "Kweon sat me down and named the pattern. Heal-aligned completions running well ahead of the rest across a long run of funding. She said: you funded work that would not have happened otherwise. That matters. She said it directly, which is not how she usually talks. The pediatric data is published. The field clinic supply chain is in the archive. The vaccine synthesis holds.",
+      "trigger_flag": "okafor_legacy_heal_ending_seen",
+      "system_id": "axiom_labs",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_okafor_legacy_profit_ending",
+      "text": "Kweon named what the funding history looks like from her side. Commercial and industrial outcomes running ahead of clinical work over a long run. She did not say she regretted working with the resources available. She said: the pediatric cohort study sat unfunded for two cycles. The field clinic work was deferred once. That is the cost. She knows it by name.",
+      "trigger_flag": "okafor_legacy_profit_ending_seen",
+      "system_id": "axiom_labs",
+      "mission_id": ""
     }
   ]
 }
