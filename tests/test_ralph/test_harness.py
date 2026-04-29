@@ -228,6 +228,81 @@ class TestCommitHarnessBookkeeping:
 
 
 # ---------------------------------------------------------------------------
+# Harness-managed dirty filter
+# ---------------------------------------------------------------------------
+
+
+class TestFilterHarnessManagedDirty:
+    """The pre-flight clean-tree check filters lifecycle artifacts the
+    harness owns. Without this, an accidentally-tracked lock file or a
+    leaked state.json bricks the harness for everyone in the project.
+    """
+
+    def test_empty_porcelain_passes_through(self) -> None:
+        filtered, removed = harness._filter_harness_managed_dirty("")
+        assert filtered == ""
+        assert removed == []
+
+    def test_filters_running_lock_file(self) -> None:
+        # The exact case the operator hit: ralph/.running deleted.
+        filtered, removed = harness._filter_harness_managed_dirty("D  ralph/.running\n")
+        assert filtered == ""
+        assert removed == ["ralph/.running"]
+
+    def test_filters_state_json(self) -> None:
+        filtered, removed = harness._filter_harness_managed_dirty(" M ralph/state.json\n")
+        assert filtered == ""
+        assert "ralph/state.json" in removed
+
+    def test_filters_logs_subdirectory(self) -> None:
+        porcelain = "?? ralph/logs/SA-1/plan-20260429-100000.log\n"
+        filtered, removed = harness._filter_harness_managed_dirty(porcelain)
+        assert filtered == ""
+        assert removed == ["ralph/logs/SA-1/plan-20260429-100000.log"]
+
+    def test_filters_probe_artifacts(self) -> None:
+        porcelain = "?? ralph/.agency_probe\n?? ralph/.write_probe\n"
+        filtered, removed = harness._filter_harness_managed_dirty(porcelain)
+        assert filtered == ""
+        assert "ralph/.agency_probe" in removed
+        assert "ralph/.write_probe" in removed
+
+    def test_filters_stop_file(self) -> None:
+        filtered, removed = harness._filter_harness_managed_dirty("?? STOP\n")
+        assert filtered == ""
+        assert removed == ["STOP"]
+
+    def test_keeps_real_dirty_changes(self) -> None:
+        porcelain = " M spacegame/models/foo.py\n?? new_test.py\n"
+        filtered, removed = harness._filter_harness_managed_dirty(porcelain)
+        assert "spacegame/models/foo.py" in filtered
+        assert "new_test.py" in filtered
+        assert removed == []
+
+    def test_mixed_dirty_keeps_only_real(self) -> None:
+        # The realistic mid-development case: harness artifacts + real changes.
+        porcelain = (
+            "D  ralph/.running\n"
+            " M spacegame/models/foo.py\n"
+            "?? ralph/logs/SA-1/run.log\n"
+        )
+        filtered, removed = harness._filter_harness_managed_dirty(porcelain)
+        assert "spacegame/models/foo.py" in filtered
+        assert "ralph/" not in filtered
+        assert "ralph/.running" in removed
+        assert "ralph/logs/SA-1/run.log" in removed
+
+    def test_does_not_filter_ralph_source_files(self) -> None:
+        # ralph/harness.py is real source — must NOT be filtered out even
+        # though it lives under ralph/.
+        porcelain = " M ralph/harness.py\n M ralph/agents.py\n"
+        filtered, removed = harness._filter_harness_managed_dirty(porcelain)
+        assert "ralph/harness.py" in filtered
+        assert "ralph/agents.py" in filtered
+        assert removed == []
+
+
+# ---------------------------------------------------------------------------
 # Lock file
 # ---------------------------------------------------------------------------
 

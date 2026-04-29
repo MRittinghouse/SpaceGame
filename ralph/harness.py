@@ -341,6 +341,49 @@ def _capture_test_baseline() -> tuple[int, int]:
     return pass_count, skip_count
 
 
+_HARNESS_MANAGED_RUNTIME_FILES: tuple[str, ...] = (
+    "ralph/.running",
+    "ralph/state.json",
+    "ralph/.write_probe",
+    "ralph/.agency_probe",
+    "STOP",
+)
+_HARNESS_MANAGED_RUNTIME_PREFIXES: tuple[str, ...] = ("ralph/logs/",)
+
+
+def _filter_harness_managed_dirty(porcelain_text: str) -> tuple[str, list[str]]:
+    """Strip git-status-porcelain lines whose paths are harness-managed.
+
+    The harness creates and removes runtime artifacts (lock file, state,
+    logs, probe files, STOP) as part of its normal lifecycle. Their
+    presence or absence in git status should never block a sprint. This
+    helper separates them from real working-tree changes.
+
+    Returns (filtered_porcelain, removed_paths). Empty filtered_porcelain
+    means the only dirty entries were harness-internal — the working tree
+    is effectively clean from the operator's perspective.
+    """
+    kept_lines: list[str] = []
+    removed_paths: list[str] = []
+    for line in porcelain_text.splitlines():
+        if not line:
+            continue
+        if len(line) < 4:
+            kept_lines.append(line)
+            continue
+        # Porcelain format: "XY <path>" or "XY <old> -> <new>" for renames.
+        path_part = line[3:]
+        first_path = path_part.split(" -> ", 1)[0].strip().strip('"')
+        is_managed = first_path in _HARNESS_MANAGED_RUNTIME_FILES or any(
+            first_path.startswith(p) for p in _HARNESS_MANAGED_RUNTIME_PREFIXES
+        )
+        if is_managed:
+            removed_paths.append(first_path)
+        else:
+            kept_lines.append(line)
+    return "\n".join(kept_lines), removed_paths
+
+
 def _run_git(args: list[str], timeout: int = 30) -> tuple[int, str, str]:
     """Run a git subcommand at the project root. Returns (rc, stdout, stderr)."""
     try:
@@ -392,13 +435,21 @@ def _preflight_checks(allow_dirty: bool, push_enabled: bool, probe_writes: bool)
         if rc != 0:
             log("git status failed. Aborting.")
             return 2
-        if stdout.strip():
+        # Filter out harness-managed runtime artifacts (lock file, state,
+        # logs, probe files, STOP). The harness owns those paths and their
+        # presence/absence is normal lifecycle, not a project-state concern.
+        # Without this, a leaked-tracked-artifact (e.g., .running once got
+        # accidentally committed) bricks the pre-flight permanently.
+        filtered, removed = _filter_harness_managed_dirty(stdout)
+        if removed:
+            log(f"Note: ignoring harness-managed dirty entries: {removed}")
+        if filtered.strip():
             log(
                 "Working tree is dirty. Agents will commit during phases; "
                 "mixing in unrelated changes pollutes sprint history. "
                 "Commit or stash, OR pass --allow-dirty to override."
             )
-            log(f"Dirty files:\n{stdout}")
+            log(f"Dirty files:\n{filtered}")
             return 2
 
     # 5. On a branch (not detached HEAD) — required for push.
