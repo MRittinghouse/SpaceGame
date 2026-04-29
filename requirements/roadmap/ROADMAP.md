@@ -3348,7 +3348,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 - Started: 2026-04-29 11:47
 - Completed: 2026-04-29 12:35
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending
+- Commits: a2d4567
 - New_sprints_proposed: none
 - Polish_items_folded_in: first-time-tip-overlay (FirstTimeTipOverlay on first SellLotView entry), 3-journal-entries (first listing created, first sale, first listing withdrawn), 3-banter-trigger-flags (for SA-X6 consumption), achievement-stub (`auction_seller` per design §9.5)
 - Decisions_locked: 13
