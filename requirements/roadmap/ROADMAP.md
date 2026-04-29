@@ -3830,7 +3830,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 - Started: 2026-04-29 14:37
 - Completed: 2026-04-29 15:30
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 05c1d74
+- Commits: ba01a47
 - New_sprints_proposed: none
 - Polish_items_folded_in: save/load round-trip, voice-check pass on every authored line, scenario test covering both endings + mixed case + mid-arc save/load
 - Decisions_locked: 9
