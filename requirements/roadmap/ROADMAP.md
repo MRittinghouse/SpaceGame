@@ -3517,7 +3517,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 - Started: 2026-04-29 12:46
 - Completed: 2026-04-29 13:55
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending
+- Commits: 9a5227f
 - New_sprints_proposed: none
 - Polish_items_folded_in: tuning-notes-doc (NEW), post-session-line-rotation, Reach-Salko-bucket-expansion, dead-code-removal, OUTCOME_OUTCOMPETED-symmetric-resolution, accessibility-audit
 - Decisions_locked: 12
