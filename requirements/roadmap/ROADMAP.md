@@ -3995,7 +3995,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 
 #### SA-F1 — Financial Exchange Design
 
-**Status**: in-progress (planning)
+**Status**: in-progress (implementing)
 **Phase**: Phase V | **Size**: M | **Effort**: 1 week
 **Depends on**: SA-PREP-1, SA-C2, SA-V | **Blocks**: SA-F2
 
@@ -4096,18 +4096,26 @@ These are the decisions to lock during planning execution. Recommendations recor
 - 2026-04-26 — todo (created)
 - 2026-04-29 16:20 — harness: plan phase starting
 - 2026-04-29 17:10 — planning complete; verified all 4 context-to-read paths exist (`requirements/station_anchors.md`, `requirements/investment_rewards_design.md`, `spacegame/models/market.py`, plus the SA-V section in this roadmap which is `done` so its outputs are real); read sister design docs (SA-P1 sa_politics_design.md and SA-B1 sa_bidding_design.md) for the 12-section design-doc precedent; confirmed dependency outputs are in place — SA-PREP-1 produced Ilse Vey voice sheet at `character_voices.md:1470-1511`; SA-C2 produced `spread_trader` Commerce skill with `speculator_premium_reduction` bonus; SA-V produced Odom's `graduation_pointer` dialogue node naming Ilse Vey at Meridian (`data/dialogue/dialogues.json:1331-1340`); SA-A2 produced Brix Tano speculator crew at nexus_prime. Locked 10 decisions (futures pricing data source = real market.get_price() at maturity; contract granularity = per-(commodity, system) integer-unit; insurance premium = ship_value × base_rate × combat_record_modifier × faction_standing_modifier; financial-crisis event = generated under conditions with one tutorial-scripted first-fire; existing per-system investment.py = unchanged, Meridian is parallel higher tier; speculator skill + crew = additive cap -0.25; reputation gating = Nexus Prime tiers mirroring SA-B1 Stellaris-Port pattern; settlement window = 7-21 game-days; market manipulation taxonomy = extend GalaxyEvent via MARKET_MANIPULATION enum + subtype field; investment_rewards_design.md open threads = explicitly out of SA-F scope, stay in the stub doc). Refined acceptance criteria from 3 → 15 mechanically testable items. Expanded touch zones list with rich context-to-read entries (15 sources). Folded in 1 polish item — Section 9 tutorial / journal / news / crew-banter / achievement stubs (mirroring SA-B1 sections 9.1-9.5) — so downstream sprints (SA-F2 / F3 / F4 / F5 / F6 / F7 / SA-X1 / X3 / X5 / X6 / X7) can pick up stubs without re-litigating the design. Documented two OPEN-defer-to-implementation items (numeric tuning of insurance base rate and crisis trigger thresholds; sample journal exact wording). No new sprints proposed — the existing SA-F2 through SA-F7 chain plus the Phase VI cohesion sprints cover the full Phase V vision; SA-F1 is correctly scoped as a docs-only design pass. PHASE_OK
+- 2026-04-29 16:30 — harness: implement phase starting (rework cycle 0)
+- 2026-04-29 — implement phase: `requirements/sa_financial_design.md` authored (851 lines); all 15 acceptance criteria verified by script; Writing Bible scanner clean; SI-3 dialogue integrity scanner clean; test suite 10268/98 (baseline unchanged). PHASE_OK
 
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-04-29 16:20
-- Completed: 2026-04-29 17:10
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 71ab8bc
-- New_sprints_proposed: none
-- Polish_items_folded_in: tutorial-overlay-stubs (per sub-system FirstTimeTipOverlay flag + copy); journal-entry-templates (3 per sub-system, voice-checked); news-ticker-headline-templates (3 per sub-system); crew-banter-trigger-flags (set by SA-F2/F4/F5/F6, banter authored in SA-X6); stub-achievement-IDs (authored in SA-X7) — all collected into Section 9 of the design doc per the SA-B1 9.1-9.5 precedent so downstream sprints have hooks ready
-- Decisions_locked: 10
-- Notes: Verified all 4 context-to-read paths exist. Read sister design docs (SA-P1, SA-B1) to mirror the 12-section structure. SA-F1 is a docs-only sprint; the deliverable is `requirements/sa_financial_design.md`. Acceptance criteria expanded from 3 vague items to 15 mechanically verifiable items. Risks/open-questions section locked 10 decisions; two items remain OPEN (deferred to implementation) — exact numeric tuning and exact sample-string wording. No code changes. No new sprints proposed.
+- Started: 2026-04-29 16:30
+- Completed: 2026-04-29 17:30
+- Files_changed: requirements/sa_financial_design.md
+- Commits: a8bd35a
+- Tests_added: 0
+- Tests_baseline: 10268
+- Tests_passing: 10268
+- Tests_skipped: 98
+- Lint_clean: n/a
+- Format_clean: n/a
+- SI3_scanner_clean: yes
+- Writing_bible_clean: yes
+- Touch_zones_respected: yes
+- Notes: Docs-only sprint. Authored 12-section sa_financial_design.md: futures lifecycle + concrete pricing formula with 3 worked examples (7/14/21-day durations; production-tag and consumption-tag commodities; LONG and SHORT positions); 8 market manipulation templates; 7 cross-system integration commitments; save/load contract with literal from_dict snippets; tutorial/journal/news/banter/achievement stubs for all 4 sub-systems; 10 locked decisions; 12 deferred items; hand-off map for SA-F2 through SA-F7 + SA-X1/X3/X5/X6/X7. All 15 acceptance criteria confirmed by automated script.
 #### SA-F2 — Futures Core
 
 **Status**: todo
