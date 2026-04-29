@@ -139,7 +139,7 @@ Secondary crew (non-primary specialists) are exempt from the per-type floor but 
 
 ## 6. Sample Entries
 
-Five entries demonstrating the locked schema. Each is voice-checked against `requirements/character_voices.md` and the Writing Bible (no em-dashes, no banned phrases, no parallel-negation).
+Five entries demonstrating the locked schema. Each is voice-checked against `requirements/character_voices.md` and the Writing Bible (no em-dashes, no banned phrases, no parallel-negation). Flag names in these samples are **illustrative** — CB-2 must use actual production flag values registered in `spacegame/constants/flags.py`.
 
 **Entry 1 — Elena Reeves, flag_triggered**
 ```json
