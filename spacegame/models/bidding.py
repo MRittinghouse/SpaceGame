@@ -105,6 +105,32 @@ PERFECT_READ_THRESHOLD = 0.02
 CHAMPION_WINS_AT_STELLARIS = 5
 
 
+# SA-B3: Stellaris Port standing -> tier ladder thresholds (decision §B3.2).
+# Faction id is ``stellaris_commerce_guild``; rep clamps to -100..100.
+STELLARIS_TIER_APPRENTICE_MAX = -1
+STELLARIS_TIER_REGULAR_MAX = 25
+STELLARIS_TIER_CERTIFIED_MAX = 75
+# Anything above STELLARIS_TIER_CERTIFIED_MAX is patron.
+
+# SA-B3: Season rotation (decision §B3.6). Three locked tags rotate on a
+# 30-game-day cycle. SA-B6 may layer "no season" gaps; SA-B3 ships
+# unconditional rotation.
+STELLARIS_SEASON_TAGS: tuple[str, str, str] = (
+    "provenance_week",
+    "axiom_export_window",
+    "salvage_circuit",
+)
+STELLARIS_SEASON_CYCLE_DAYS = 30
+
+# SA-B3: Per-rival attendance frequencies (decision §B3.3). Prentiss is
+# stochastic-deterministic at 70%; Kade conditional on a faction
+# commodity gated to a Stellaris-aligned faction; Salko unconditional.
+STELLARIS_PRENTISS_ATTENDANCE_RATE = 0.70
+STELLARIS_KADE_TARGET_FACTIONS: frozenset[str] = frozenset(
+    {"commerce_guild", "axiom_research", "stellaris_commerce_guild"}
+)
+
+
 # Appraisal-bonus stacking thresholds (§7.2). Sum of crew + skill
 # auction_lot_appraisal_bonus values determines the post-win message.
 APPRAISAL_BONUS_LEVEL_1 = 0.05  # lot_appraiser L1 only.
@@ -301,6 +327,121 @@ def _player_rep_tier_for_venue(
     if venue_id == "stellaris":
         return stellaris_tier
     return wreckers_tier
+
+
+# --------------------------------------------------------------------------
+# SA-B3: Stellaris-specific helpers (additive only; no schema changes)
+# --------------------------------------------------------------------------
+
+
+def stellaris_tier_for_standing(rep: int) -> str:
+    """Return the Stellaris Port tier string for ``rep`` faction standing.
+
+    Decision §B3.2 thresholds:
+
+    * ``rep < 0`` -> ``"apprentice"``
+    * ``0 <= rep <= 25`` -> ``"regular"``
+    * ``26 <= rep <= 75`` -> ``"certified"``
+    * ``76 <= rep <= 100`` -> ``"patron"``
+
+    Faction id is ``stellaris_commerce_guild``. Reputation clamps to
+    -100..100 elsewhere; this function tolerates any int and never raises.
+    """
+    if rep <= STELLARIS_TIER_APPRENTICE_MAX:
+        return "apprentice"
+    if rep <= STELLARIS_TIER_REGULAR_MAX:
+        return "regular"
+    if rep <= STELLARIS_TIER_CERTIFIED_MAX:
+        return "certified"
+    return "patron"
+
+
+def current_season_tag(game_day: int) -> Optional[str]:
+    """Return the active Stellaris season tag for ``game_day``.
+
+    Decision §B3.6: 3 tags rotate on a 30-day cycle. ``game_day``
+    expected to be a non-negative game-day counter; negative inputs
+    treat day 0 as the first day of the cycle (mirror modulo).
+    """
+    if game_day < 0:
+        return STELLARIS_SEASON_TAGS[0]
+    bucket = (game_day // STELLARIS_SEASON_CYCLE_DAYS) % len(STELLARIS_SEASON_TAGS)
+    return STELLARIS_SEASON_TAGS[bucket]
+
+
+def stellaris_initial_session_day(current_day: int) -> int:
+    """Pick the first Stellaris session day for a fresh save.
+
+    Deterministic per ``current_day`` so the schedule survives reload
+    without drift. Returns a calendar day in the locked 5-7 day cadence
+    band.
+    """
+    rng = _seeded_rng(f"{current_day}_stellaris_initial")
+    gap = rng.randint(STELLARIS_CADENCE_MIN_DAYS, STELLARIS_CADENCE_MAX_DAYS)
+    return current_day + gap
+
+
+def _kade_targets_in_pool(lot_pool: Iterable[AuctionLot]) -> bool:
+    """True if any lot in ``lot_pool`` matches Kade's mandate.
+
+    Kade attends only when at least one ``faction_commodity`` lot is
+    gated to a Stellaris-aligned faction (decision §B3.3). The author-
+    side rule lives in code, not data, because it's persona behavior.
+    """
+    for lot in lot_pool:
+        if lot.category != "faction_commodity":
+            continue
+        if lot.faction_gate is None:
+            continue
+        if lot.faction_gate in STELLARIS_KADE_TARGET_FACTIONS:
+            return True
+    return False
+
+
+def pick_stellaris_rival_attendance(
+    *,
+    session_id: str,
+    lot_pool: Iterable[AuctionLot],
+) -> list[str]:
+    """Return the list of named-rival ids attending the given session.
+
+    Decision §B3.3 attendance rules:
+
+    * Prentiss: 70% deterministic via seeded hash on ``session_id``.
+    * Kade: present iff the pool contains a Stellaris-aligned
+      ``faction_commodity`` lot.
+    * Salko: always attends a Stellaris session the player walks into.
+
+    Args:
+        session_id: Stable identifier for the session; seeds the RNG.
+        lot_pool: Lots already drawn for the session (for Kade gate).
+
+    Returns:
+        Persona ids of the named rivals attending, in stable order
+        (Prentiss, Kade, Salko).
+    """
+    pool_list = list(lot_pool)
+    attendees: list[str] = []
+    prentiss_unit = _seeded_unit_from_token(f"{session_id}_prentiss_attendance")
+    if prentiss_unit < STELLARIS_PRENTISS_ATTENDANCE_RATE:
+        from spacegame.models.bidding_persona import PERSONA_PRENTISS
+
+        attendees.append(PERSONA_PRENTISS)
+    if _kade_targets_in_pool(pool_list):
+        from spacegame.models.bidding_persona import PERSONA_KADE
+
+        attendees.append(PERSONA_KADE)
+    from spacegame.models.bidding_persona import PERSONA_SALKO
+
+    attendees.append(PERSONA_SALKO)
+    return attendees
+
+
+def _seeded_unit_from_token(token: str) -> float:
+    """Return a deterministic float in [0, 1) keyed by ``token``."""
+    digest = hashlib.sha256(token.encode("utf-8")).digest()
+    raw: int = struct.unpack(">Q", digest[:8])[0]
+    return raw / float(1 << 64)
 
 
 def generate_lot_pool(
@@ -970,12 +1111,23 @@ __all__ = [
     "STELLARIS_CADENCE_MAX_DAYS",
     "STELLARIS_CADENCE_MIN_DAYS",
     "STELLARIS_HEADLINER_SESSION_SIZE",
+    "STELLARIS_KADE_TARGET_FACTIONS",
+    "STELLARIS_PRENTISS_ATTENDANCE_RATE",
+    "STELLARIS_SEASON_CYCLE_DAYS",
+    "STELLARIS_SEASON_TAGS",
     "STELLARIS_STANDARD_SESSION_SIZE",
+    "STELLARIS_TIER_APPRENTICE_MAX",
+    "STELLARIS_TIER_CERTIFIED_MAX",
+    "STELLARIS_TIER_REGULAR_MAX",
     "AuctionLifecycle",
     "AuctionState",
     "appraisal_band_for_bonus",
+    "current_season_tag",
     "generate_lot_pool",
+    "pick_stellaris_rival_attendance",
     "post_win_valuation_message",
     "reserve_band_for_preview",
     "sable_displayed_ceiling",
+    "stellaris_initial_session_day",
+    "stellaris_tier_for_standing",
 ]

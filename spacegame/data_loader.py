@@ -128,6 +128,12 @@ class DataLoader:
         self.slot_definitions: Dict[str, "SlotDefinition"] = {}
         self.ship_parts: Dict[str, "ShipPart"] = {}
         self.drydock_catalogs: Dict[str, dict] = {}
+        # SA-B3: per-venue auction lot catalog and voice content.
+        # Outer key is venue id ("stellaris" / "crimson_reach"); inner
+        # value is the parsed payload. Stays empty when files are absent
+        # so SA-B2's synthetic-fixture tests keep working unchanged.
+        self.auction_lots: Dict[str, list] = {}
+        self.auction_voices: Dict[str, dict] = {}
 
     def _safe_load(self, loader_name: str, loader_fn) -> None:
         """Call a loader function with error handling and context.
@@ -167,6 +173,8 @@ class DataLoader:
         self._safe_load("achievements", self.load_achievements)
         self._safe_load("factions", self.load_factions)
         self._safe_load("npcs", self.load_npcs)
+        self._safe_load("auction_lots", self.load_auction_lots)
+        self._safe_load("auction_voices", self.load_auction_voices)
         self._safe_load("dialogues", self.load_dialogues)
         self._safe_load("missions", self.load_missions)
         self._safe_load("crew_templates", self.load_crew_templates)
@@ -1183,6 +1191,77 @@ class DataLoader:
 
         logger.info(f"Loaded {len(self.npcs)} NPCs")
         return self.npcs
+
+    def load_auction_lots(self) -> Dict[str, list]:
+        """SA-B3: Load auction lot catalogs for each venue.
+
+        Reads ``data/auctions/<venue>_lots.json`` for each known venue.
+        Missing files log a warning and yield an empty list for that
+        venue (SA-B2's synthetic tests remain unaffected). Malformed
+        entries are skipped with a warning.
+
+        Returns:
+            Dict keyed by venue id, value is a list of ``AuctionLot``.
+        """
+        from spacegame.models.bidding_lot import AuctionLot
+
+        auctions_dir = self.data_dir / "auctions"
+        self.auction_lots.clear()
+        for venue_id in ("stellaris", "crimson_reach"):
+            file_path = auctions_dir / f"{venue_id}_lots.json"
+            if not file_path.exists():
+                logger.warning(f"Auction lots not found for venue '{venue_id}': {file_path}")
+                self.auction_lots[venue_id] = []
+                continue
+            with open(file_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            entries: list[AuctionLot] = []
+            for raw in data.get("lots", []):
+                try:
+                    lot = AuctionLot.from_dict(raw)
+                except (KeyError, TypeError, ValueError) as exc:
+                    logger.warning(
+                        f"Skipping malformed auction lot in {venue_id}: "
+                        f"{raw.get('id', '<unknown>')}: {exc}"
+                    )
+                    continue
+                entries.append(lot)
+            self.auction_lots[venue_id] = entries
+            logger.info(f"Loaded {len(entries)} auction lots for venue '{venue_id}'")
+        return self.auction_lots
+
+    def load_auction_voices(self) -> Dict[str, dict]:
+        """SA-B3: Load voice-content templates for each auction venue.
+
+        Reads ``data/auctions/<venue>_voices.json`` for each venue.
+        Missing files log a warning and yield ``{}`` for that venue;
+        the AuctionView falls back to design-doc default strings if the
+        file is absent.
+
+        Returns:
+            Dict keyed by venue id, value is the raw JSON dict.
+        """
+        auctions_dir = self.data_dir / "auctions"
+        self.auction_voices.clear()
+        for venue_id in ("stellaris", "crimson_reach"):
+            file_path = auctions_dir / f"{venue_id}_voices.json"
+            if not file_path.exists():
+                logger.warning(f"Auction voices not found for venue '{venue_id}': {file_path}")
+                self.auction_voices[venue_id] = {}
+                continue
+            with open(file_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            self.auction_voices[venue_id] = dict(data)
+            logger.info(f"Loaded auction voice templates for venue '{venue_id}'")
+        return self.auction_voices
+
+    def get_auction_lots(self, venue_id: str) -> list:
+        """Return the parsed lot catalog for ``venue_id``, or ``[]``."""
+        return list(self.auction_lots.get(venue_id, []))
+
+    def get_auction_voices(self, venue_id: str) -> dict:
+        """Return the parsed voice templates for ``venue_id``, or ``{}``."""
+        return dict(self.auction_voices.get(venue_id, {}))
 
     def load_dialogues(self) -> Dict[str, DialogueTree]:
         """Load dialogue trees from JSON files."""
