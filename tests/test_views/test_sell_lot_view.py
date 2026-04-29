@@ -135,9 +135,7 @@ class TestEligibilityFiltering:
         view = _make_view(manager, player)
         view.on_enter()
         items = view.get_eligible_items()
-        assert any(
-            i["item_id"] == "mining_laser_mk2" and i["item_kind"] == "part" for i in items
-        )
+        assert any(i["item_id"] == "mining_laser_mk2" and i["item_kind"] == "part" for i in items)
 
     def test_excludes_unlocked_modules(self) -> None:
         manager, player = _make_view_env()
@@ -160,7 +158,7 @@ class TestEmptyState:
         view.set_voice_templates(
             {
                 "consigned_lot_lines": {
-                    "empty_inventory": "Velo: \"There is nothing on consignment from your hand today.\""
+                    "empty_inventory": 'Velo: "There is nothing on consignment from your hand today."'
                 }
             }
         )

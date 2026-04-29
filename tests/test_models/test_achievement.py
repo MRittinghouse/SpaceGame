@@ -392,7 +392,8 @@ class TestMinigameAchievements:
         dl = get_data_loader()
         dl.load_all()
         # SA-B4 added auction_reach_debut stub (locked decision §B4.14).
-        assert len(dl.achievements) == 67
+        # SA-B5 added auction_seller stub (locked decision §B5.12).
+        assert len(dl.achievements) == 68
 
     def test_deep_delver_triggers(self) -> None:
         """deep_delver should unlock when max_mining_depth >= 4."""

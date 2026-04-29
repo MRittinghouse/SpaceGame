@@ -1018,7 +1018,6 @@ class AuctionState:
         from spacegame.config import (
             LISTING_RESERVE_PCT_MAX,
             LISTING_RESERVE_PCT_MIN,
-            LISTING_TIER_REQUIRED,
             MAX_ACTIVE_LISTINGS,
         )
 
@@ -1624,9 +1623,7 @@ class AuctionState:
             auction_perfect_reads=int(data.get("auction_perfect_reads", 0)),
             # SA-B5: defaults to empty / zero for saves authored before
             # SA-B5 (decision §B5 / design doc §8.3 migration discipline).
-            active_listings=[
-                _PlayerListing.from_dict(d) for d in data.get("active_listings", [])
-            ],
+            active_listings=[_PlayerListing.from_dict(d) for d in data.get("active_listings", [])],
             listing_history=[dict(entry) for entry in data.get("listing_history", [])],
             auction_listings_sold=int(data.get("auction_listings_sold", 0)),
             auction_listings_attempted=int(data.get("auction_listings_attempted", 0)),

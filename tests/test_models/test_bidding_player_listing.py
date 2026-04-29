@@ -33,7 +33,6 @@ from spacegame.models.bidding_lot import (
 from spacegame.models.player import Player
 from spacegame.models.ship import Ship, ShipType
 
-
 # ---------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------
@@ -291,7 +290,7 @@ class TestCreateListingValidation:
     def test_invalid_kind_returns_false(self) -> None:
         player = _make_player()
         state = player.auction_state
-        ok, msg, listing = state.create_listing(
+        ok, msg, _listing = state.create_listing(
             player=player,
             item_kind="weapon",
             item_id="axiom_circuit",
@@ -302,7 +301,7 @@ class TestCreateListingValidation:
         )
         assert not ok
         assert "kind" in msg.lower() or "item kind" in msg.lower()
-        assert listing is None
+        assert _listing is None
         # No state mutation.
         assert player.credits == 100_000
         assert state.active_listings == []
@@ -311,7 +310,7 @@ class TestCreateListingValidation:
     def test_missing_inventory_returns_false(self) -> None:
         player = _make_player()
         state = player.auction_state
-        ok, msg, listing = state.create_listing(
+        ok, msg, _listing = state.create_listing(
             player=player,
             item_kind="commodity",
             item_id="axiom_circuit",
@@ -322,12 +321,12 @@ class TestCreateListingValidation:
         )
         assert not ok
         assert "inventory" in msg.lower() or "not enough" in msg.lower()
-        assert listing is None
+        assert _listing is None
 
     def test_appraisal_must_be_positive(self) -> None:
         player = _make_player()
         state = player.auction_state
-        ok, msg, listing = state.create_listing(
+        ok, msg, _listing = state.create_listing(
             player=player,
             item_kind="commodity",
             item_id="axiom_circuit",

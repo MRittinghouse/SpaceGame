@@ -78,7 +78,13 @@ class TestConsignedLotLinesVoice:
         voices = _load_voices()
         block = voices.get("consigned_lot_lines")
         assert isinstance(block, dict)
-        for key in ("lot_open", "we_are_at", "lot_closed_sold", "lot_closed_withdrawn", "empty_inventory"):
+        for key in (
+            "lot_open",
+            "we_are_at",
+            "lot_closed_sold",
+            "lot_closed_withdrawn",
+            "empty_inventory",
+        ):
             assert key in block, f"missing consigned_lot_lines.{key}"
 
     def test_no_em_dashes(self) -> None:

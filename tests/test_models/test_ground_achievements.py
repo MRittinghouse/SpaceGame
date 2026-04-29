@@ -296,12 +296,12 @@ class TestGroundAchievementData:
     """Ground achievements should load from achievements.json."""
 
     def test_total_achievement_count(self) -> None:
-        """Total achievement count = 62 prior + 4 SA-B2 + 1 SA-B4 = 67."""
+        """Total achievement count = 62 prior + 4 SA-B2 + 1 SA-B4 + 1 SA-B5 = 68."""
         from spacegame.data_loader import get_data_loader
 
         dl = get_data_loader()
         dl.load_all()
-        assert len(dl.achievements) == 67
+        assert len(dl.achievements) == 68
 
     def test_ground_category_achievements_loaded(self) -> None:
         """Should have 7 ground-category achievements."""

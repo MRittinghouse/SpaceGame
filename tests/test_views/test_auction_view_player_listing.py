@@ -18,15 +18,12 @@ from spacegame.config import (
     GameState,
 )
 from spacegame.data_loader import get_data_loader
-from spacegame.models.bidding import (
-    AuctionLifecycle,
-)
 from spacegame.models.bidding_lot import LOT_CATEGORY_FACTION_COMMODITY, AuctionLot
 from spacegame.models.crew import CrewRoster
 from spacegame.models.player import Player
 from spacegame.models.progression import PlayerProgression
 from spacegame.models.ship import Ship
-from spacegame.views.auction_view import AuctionSubstate, AuctionView
+from spacegame.views.auction_view import AuctionView
 
 
 def _make_env(*, stellaris_rep: int = 10) -> tuple[pygame_gui.UIManager, Player]:

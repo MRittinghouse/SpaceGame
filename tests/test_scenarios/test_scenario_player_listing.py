@@ -21,12 +21,9 @@ from spacegame.config import (
 )
 from spacegame.constants.flags import (
     auction_first_listing_created,
-    auction_first_listing_withdrawn,
-    auction_first_sale,
 )
 from spacegame.data_loader import get_data_loader
 from spacegame.models.bidding import (
-    AuctionLifecycle,
     AuctionState,
     compute_listing_fee,
 )
@@ -200,9 +197,7 @@ class TestWithdrawnBranch:
         assert rs is not None
         rs.bidders_active.add("ai_buyer_alpha")
         # AI bid lands but stays under reserve.
-        ok, _ = rs.submit_bid(
-            "ai_buyer_alpha", rs.current_high_bid + rs.round_min_increment
-        )
+        ok, _ = rs.submit_bid("ai_buyer_alpha", rs.current_high_bid + rs.round_min_increment)
         assert ok
         rs.current_high_bid = lot.reserve_price - 1
         msg = state._resolve_lot()
@@ -214,9 +209,7 @@ class TestWithdrawnBranch:
         # Engine callback returns the item: simulate the inventory restore.
         archived = state.listing_history[-1]
         if archived["item_kind"] == "commodity":
-            player.ship.add_cargo(
-                archived["item_id"], int(archived["quantity"]), price_per_unit=0
-            )
+            player.ship.add_cargo(archived["item_id"], int(archived["quantity"]), price_per_unit=0)
         # The fee is gone, the item is back.
         assert player.ship.get_cargo_quantity("axiom_circuit") == cargo_before_session + 1
 

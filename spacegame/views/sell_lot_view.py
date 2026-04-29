@@ -55,13 +55,9 @@ from spacegame.utils.logger import logger
 from spacegame.views.base_view import BaseView
 from spacegame.views.first_time_tip import FirstTimeTipOverlay
 
-
 # --- Tutorial overlay copy (decision §B5.11) -------------------------
 TIP_TITLE = "Consign a Lot"
-TIP_BODY = (
-    "Listing fee is charged whether the lot sells or not. "
-    "Set a reserve to refuse low bids."
-)
+TIP_BODY = "Listing fee is charged whether the lot sells or not. Set a reserve to refuse low bids."
 
 
 # --- Layout constants ------------------------------------------------
@@ -108,9 +104,7 @@ class SellLotView(BaseView):
         self.appraisal_field: Optional[pygame_gui.elements.UITextEntryLine] = None
         self.reserve_down_button: Optional[pygame_gui.elements.UIButton] = None
         self.reserve_up_button: Optional[pygame_gui.elements.UIButton] = None
-        self._item_buttons: list[
-            tuple[dict[str, Any], pygame_gui.elements.UIButton]
-        ] = []
+        self._item_buttons: list[tuple[dict[str, Any], pygame_gui.elements.UIButton]] = []
 
         # Form state
         self.declared_appraisal: int = 0
@@ -125,9 +119,7 @@ class SellLotView(BaseView):
         self._voice_templates: dict[str, Any] = {}
 
         # Background — neutral station theme.
-        self.background = AnimatedBackground(
-            "trade_routes", WINDOW_WIDTH, WINDOW_HEIGHT, seed=8643
-        )
+        self.background = AnimatedBackground("trade_routes", WINDOW_WIDTH, WINDOW_HEIGHT, seed=8643)
         self._bg_dim = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
         self._bg_dim.fill((0, 0, 0))
         self._bg_dim.set_alpha(150)
@@ -201,7 +193,7 @@ class SellLotView(BaseView):
                 }
             )
         # Parts inventory — excluding any boss-drop legendary modules.
-        unlocked = getattr(self.player, "unlocked_modules", set())
+        unlocked: set[str] = getattr(self.player, "unlocked_modules", set())
         for pid, qty in self.player.parts_inventory.items():
             if qty <= 0:
                 continue
@@ -338,9 +330,7 @@ class SellLotView(BaseView):
         list_y = BODY_TOP_Y + scale_y(40)
         for row in self.get_eligible_items():
             btn = pygame_gui.elements.UIButton(
-                relative_rect=pygame.Rect(
-                    list_x, list_y, LIST_PANE_W, scale_y(28)
-                ),
+                relative_rect=pygame.Rect(list_x, list_y, LIST_PANE_W, scale_y(28)),
                 text=row["label"],
                 manager=self.ui_manager,
             )
@@ -363,17 +353,13 @@ class SellLotView(BaseView):
             manager=self.ui_manager,
         )
         self.reserve_up_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(
-                form_x + scale_x(140), reserve_y, scale_x(40), BTN_H
-            ),
+            relative_rect=pygame.Rect(form_x + scale_x(140), reserve_y, scale_x(40), BTN_H),
             text="+",
             manager=self.ui_manager,
         )
         # Confirm button (bottom right).
         self.confirm_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(
-                form_x, reserve_y + scale_y(120), BTN_W, BTN_H
-            ),
+            relative_rect=pygame.Rect(form_x, reserve_y + scale_y(120), BTN_W, BTN_H),
             text="Confirm Listing",
             manager=self.ui_manager,
         )
@@ -447,9 +433,7 @@ class SellLotView(BaseView):
             (PANEL_X, PANEL_TOP_Y, PANEL_W, WINDOW_HEIGHT - PANEL_TOP_Y * 2),
             alpha=200,
         )
-        title = self.title_font.render(
-            "Consign a Lot", True, Colors.TEXT_HIGHLIGHT
-        )
+        title = self.title_font.render("Consign a Lot", True, Colors.TEXT_HIGHLIGHT)
         screen.blit(title, (PANEL_X + scale_x(20), PANEL_TOP_Y + scale_y(70)))
 
     def _render_tier_locked(self, screen: pygame.Surface) -> None:
@@ -463,9 +447,7 @@ class SellLotView(BaseView):
         y = BODY_TOP_Y
         self._draw_text(screen, self.empty_state_line(), (x, y))
 
-    def _render_item_list_header(
-        self, screen: pygame.Surface, items: list[dict[str, Any]]
-    ) -> None:
+    def _render_item_list_header(self, screen: pygame.Surface, items: list[dict[str, Any]]) -> None:
         x = PANEL_X + scale_x(20)
         y = BODY_TOP_Y
         header = self.subtitle_font.render(
