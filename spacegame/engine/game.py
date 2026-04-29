@@ -357,6 +357,8 @@ class Game:
         self.deep_shafts_view = None
         # SA-B2: lazy-instantiated by _ensure_auction_view().
         self.auction_view = None
+        # SA-B5: lazy-instantiated by _ensure_sell_lot_view().
+        self.sell_lot_view = None
         # SA-P2: lazy-instantiated by _ensure_dispute_view().
         self.dispute_view = None
 
@@ -2110,6 +2112,32 @@ class Game:
                         self.state_manager.change_state(GameState.STATION_HUB)
 
                     self._start_transition(TransitionType.FADE, 0.3, _do_auction_back)
+                elif next_state == GameState.SELL_LOT:
+                    # SA-B5: route to the SellLotView. The view tears
+                    # down on confirm/back and the auction view persists
+                    # untouched, so this is a clean state push.
+                    self.auction_view.next_state = None
+
+                    def _do_sell_lot_open():
+                        self._ensure_sell_lot_view()
+                        self.state_manager.change_state(GameState.SELL_LOT)
+
+                    self._start_transition(TransitionType.FADE, 0.3, _do_sell_lot_open)
+
+        # SA-B5: SellLotView routes back to GameState.AUCTION on confirm
+        # or back. The AuctionView is still registered with its existing
+        # session state, so we can flip back without re-preparing.
+        if hasattr(self, "sell_lot_view") and self.sell_lot_view:
+            if self.sell_lot_view.active:
+                next_state = self.sell_lot_view.get_next_state()
+                if next_state == GameState.AUCTION:
+                    self.sell_lot_view.next_state = None
+
+                    def _do_sell_lot_back():
+                        self._ensure_auction_view(venue_id="stellaris")
+                        self.state_manager.change_state(GameState.AUCTION)
+
+                    self._start_transition(TransitionType.FADE, 0.3, _do_sell_lot_back)
 
         # SA-P2: dispute view returns to STATION_HUB on back. Snapshot
         # the manager's pending / resolved disputes onto the player so a
@@ -2359,6 +2387,26 @@ class Game:
         )
         self.state_manager.register_state(GameState.DEEP_SHAFTS, self.deep_shafts_view)
 
+    def _ensure_sell_lot_view(self) -> None:
+        """SA-B5: lazy-create the SellLotView for the player-listing flow.
+
+        Mirrors ``_ensure_auction_view`` — registers the view with the
+        state manager and wires the voice templates the engine loads.
+        """
+        from spacegame.views.sell_lot_view import SellLotView
+
+        if self.player is None:
+            return
+        self.sell_lot_view = SellLotView(
+            ui_manager=self.ui_manager,
+            player=self.player,
+        )
+        # Voice templates for the empty-state line.
+        if self.data_loader is not None:
+            voices = self.data_loader.get_auction_voices("stellaris")
+            self.sell_lot_view.set_voice_templates(voices)
+        self.state_manager.register_state(GameState.SELL_LOT, self.sell_lot_view)
+
     def _ensure_auction_view(self, venue_id: str = "stellaris") -> None:
         """SA-B2: create or recreate the auction venue view.
 
@@ -2467,11 +2515,70 @@ class Game:
             if len(head) <= 80:
                 self.news_ticker.add_headline(head)
 
+        # SA-B5: player-listing resolution callbacks. Wire here so the
+        # auction view fires them inline with its lifecycle hooks. The
+        # callbacks credit the player on sale, return inventory on
+        # withdrawal, and set the journal/banter trigger flags on first
+        # event.
+        from spacegame.constants.flags import (
+            auction_first_listing_withdrawn,
+            auction_first_sale,
+        )
+
+        def _on_player_lot_sold(archived: Optional[dict[str, Any]], sale_price: int) -> None:
+            if self.player is None or archived is None:
+                return
+            # Credit the player at the hammer price. The listing fee was
+            # already deducted at create_listing time and is non-refundable.
+            self.player.credits += sale_price
+            # First-sale journal/banter trigger flag.
+            sale_flag = auction_first_sale()
+            if not self.player.dialogue_flags.get(sale_flag):
+                self.player.dialogue_flags[sale_flag] = True
+                if self.journal is not None:
+                    self.journal.trigger_auto_entry(
+                        sale_flag,
+                        self.player.game_day,
+                        self.player.current_system_id,
+                    )
+            # News ticker for high-value player sales (>= 50k).
+            if self.news_ticker is not None and sale_price >= 50_000:
+                self.news_ticker.add_headline(
+                    "A consigned lot sells at Stellaris Auction House. Price undisclosed."
+                )
+
+        def _on_player_lot_withdrawn(archived: Optional[dict[str, Any]]) -> None:
+            if self.player is None or archived is None:
+                return
+            # Return the item to inventory.
+            kind = archived.get("item_kind")
+            item_id = str(archived.get("item_id", ""))
+            quantity = int(archived.get("quantity", 0))
+            if quantity <= 0:
+                return
+            if kind == "commodity":
+                self.player.ship.add_cargo(item_id, quantity, price_per_unit=0)
+            elif kind == "part":
+                self.player.parts_inventory[item_id] = (
+                    self.player.parts_inventory.get(item_id, 0) + quantity
+                )
+            withdraw_flag = auction_first_listing_withdrawn()
+            if not self.player.dialogue_flags.get(withdraw_flag):
+                self.player.dialogue_flags[withdraw_flag] = True
+                if self.journal is not None:
+                    self.journal.trigger_auto_entry(
+                        withdraw_flag,
+                        self.player.game_day,
+                        self.player.current_system_id,
+                    )
+
         self.auction_view.on_session_complete = _on_session_complete
         self.auction_view.on_lot_won = _on_lot_won
         self.auction_view.on_rivalry_formed = _on_rivalry_formed
         self.auction_view.on_headliner_sold = _on_headliner_sold
         self.auction_view.on_headliner_withdrawn = _on_headliner_withdrawn
+        self.auction_view.on_player_lot_sold = _on_player_lot_sold
+        self.auction_view.on_player_lot_withdrawn = _on_player_lot_withdrawn
 
         # Mark each named rival who shows up this session — banter trigger.
         for persona_id in self.player.auction_state.session_personas:
@@ -2679,7 +2786,15 @@ class Game:
             if is_headliner_session
             else STELLARIS_STANDARD_SESSION_SIZE
         )
-        session_lots = candidate_pool[:target]
+        # SA-B5: prepend eligible player listings to the session lot
+        # list. Locked decision §B5.3 — player lots come first so the
+        # player isn't waiting through 6 catalog lots before their own
+        # consignment, and the size target stays the same (catalog tail
+        # drops to make room).
+        player_listings = state.eligible_listings_for_session(current_day)
+        player_lots = [listing.to_auction_lot() for listing in player_listings]
+        catalog_lots = candidate_pool[: max(0, target - len(player_lots))]
+        session_lots = player_lots + catalog_lots
         # Pick named-rival attendance for this session pool.
         attending = pick_stellaris_rival_attendance(
             session_id=session_id,
