@@ -377,6 +377,27 @@
       "trigger_flag": "auction_first_contraband_win",
       "system_id": "crimson_reach",
       "mission_id": ""
+    },
+    {
+      "entry_id": "auto_auction_first_listing_created",
+      "text": "Filed my first consignment at the Stellaris floor. Paid the listing fee at the desk. The fee is gone whether the lot moves or not. The crate goes onto the catalogue under a number, not my name. That is the deal.",
+      "trigger_flag": "auction_first_listing_created",
+      "system_id": "stellaris_port",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_auction_first_sale",
+      "text": "Sold my first lot from the seller side. Hammer landed above the reserve. Velo read the price and the catalogue moved on. Credits cleared into the account by the time I left the floor.",
+      "trigger_flag": "auction_first_sale",
+      "system_id": "stellaris_port",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_auction_first_listing_withdrawn",
+      "text": "Reserve was not met. The lot returns to my hold. The fee stays with the floor. The room had its limit and I had mine, and the two did not meet. I will set the reserve closer next time.",
+      "trigger_flag": "auction_first_listing_withdrawn",
+      "system_id": "stellaris_port",
+      "mission_id": ""
     }
   ]
 }

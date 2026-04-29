@@ -736,6 +736,17 @@
       "reward_type": "credits",
       "reward_value": 500,
       "hidden": true
+    },
+    {
+      "id": "auction_seller",
+      "name": "Consignment",
+      "description": "List and sell a lot at the Stellaris Auction House.",
+      "category": "economy",
+      "stat_key": "auction_listings_sold",
+      "threshold": 1,
+      "reward_type": "credits",
+      "reward_value": 500,
+      "hidden": true
     }
   ]
 }

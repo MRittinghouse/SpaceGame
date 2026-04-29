@@ -90,5 +90,18 @@
     "sable_not_on_crew": ""
   },
   "empty_state": "Velo: \"The next session is in {gap_days} days. The floor is quiet between sessions.\"",
-  "retired_rival": "{display_name} has not been on the floor in a while."
+  "retired_rival": "{display_name} has not been on the floor in a while.",
+  "consigned_lot_lines": {
+    "lot_open": "The lot is open. {lot_headline}. Provenance held by the consignor.",
+    "we_are_at": "We are at {current_high_bid}. The reserve has not yet been called.",
+    "lot_closed_sold": "Sold. {lot_headline}, at {current_high_bid}. Credits to the consignor.",
+    "lot_closed_withdrawn": "The reserve is not met. The lot returns to the consignor.",
+    "empty_inventory": "Velo: \"There is nothing on consignment from your hand today.\""
+  },
+  "player_listing_post_session": {
+    "sold_above_reserve": "The room paid past the reserve. The lot read true and the credits cleared.",
+    "sold_near_reserve": "Hammer landed near the reserve. The room held the price you set.",
+    "withdrawn_no_bids": "No buyers stepped to the floor. The catalogue carried other lots.",
+    "withdrawn_bids_below_reserve": "Bids came in. None reached the reserve. The room held its limit."
+  }
 }
