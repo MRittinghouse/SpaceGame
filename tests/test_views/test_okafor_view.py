@@ -17,9 +17,9 @@ Covers:
 
 from __future__ import annotations
 
-import pytest
 import pygame
 import pygame_gui
+import pytest
 
 from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH
 from spacegame.constants.flags import (
