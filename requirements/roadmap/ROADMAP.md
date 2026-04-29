@@ -3846,7 +3846,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 
 #### SA-R3 — Research Patronage polish
 
-**Status**: review
+**Status**: in-progress (reviewing)
 **Phase**: Phase IV | **Size**: S | **Effort**: 3-5 days
 **Depends on**: SA-R1, SA-R2 | **Blocks**: SA-X1, SA-X2, SA-X4, SA-X5, SA-X6, SA-X7, SA-X9
 
@@ -3973,17 +3973,24 @@ These are the decisions to lock during planning execution. Recommendations recor
 - 2026-04-29 16:30 — planning complete; verified all 17 context-to-read paths exist (no missing context — all SA-R1 / SA-R2 outputs in place: model at `okafor_research.py`, view at `okafor_view.py`, mission at `sa_r2_okafor_legacy.json`, 12 dialogue trees in `dialogues.json` ranging 9041-9609, 8 journal entries in `entries.json`, 2 follow-up surfaces SA-R1-FOLLOW-2 picker + SA-R2-FOLLOW-1 mission reward type both fold into this sprint). Folded in 6 polish items: tuning report, tier-aware failure refund (low/mid/high → 0.50/0.30/0.20), template numeric-audit data-validation test, `kweon_relationship` mission reward type closing SA-R2-FOLLOW-1, `kweon_legacy_post_clinic_run` callback tree closing the deferred consumer for `okafor_legacy_mission_completed`, team-fund collaborator picker modal closing SA-R1-FOLLOW-2. Explicitly deferred 6 polish items to existing downstream sprints (Patron-of-Research achievement → SA-X7; crew banter → SA-X6; news ticker → SA-X5; cross-anchor reputation balance → SA-X2; tutorial-pass refinement → SA-X3; journal-copy iteration → SA-X4). Locked 12 decisions (refund-rate calibration shape; cost / duration / payout numeric ranges audit-only no-edit; royalty / sell rates unchanged; picker UI as full modal vs. radio fallback; picker Confirm-with-zero-selections is solo-fund; reward-type specificity `kweon_relationship` not generic `relationship`; `okafor_research_state is None` defensive no-op; Kweon callback voice register stays institutional-fatigue not rare-warmth; post-clinic-run beat priority above legacy arc-beats; achievement / banter / news-ticker out-of-scope). Refined acceptance criteria from 2 → 13 testable items. Expanded touch zones from 2 → 11 entries. No new sprints proposed (SA-R1-FOLLOW-2 + SA-R2-FOLLOW-1 close inside this sprint). PHASE_OK
 - 2026-04-29 15:42 — harness: implement phase starting (rework cycle 0)
 - 2026-04-29 — implement phase complete (rework cycle 0); 160 net-new tests (10107 → 10267 passing, 98 skipped); all 13 acceptance criteria met. Key work: tier-aware failure refund (8 tests in TestTierAwareFailureRefund), template numeric-audit data-validation test (126 tests in TestOkaforTemplateBalance), kweon_relationship mission reward (6 tests in TestKweonRelationshipReward + 2 scenario tests in TestClinicRunMissionReward), kweon_legacy_post_clinic_run dialogue tree + flag helper + view routing (5 tests in TestPostClinicRunCallbackRouting + okafor_legacy_clinic_callback_seen flag helper + _LEGACY_ARC_TREE_TO_FLAG extension + priority-chain update), team-fund collaborator picker modal (13 tests in TestTeamFundPicker, _picker_confirm bug fixed, handle_event wired, _create_picker_ui hooked into _create_ui). Lint fixes: B007 (_role rename), dialogues.json restored from HEAD after ruff format corrupted it, kweon_relationship added to VALID_REWARD_TYPES. All scanners green (SI-3 dialogue integrity, test_data suite). PHASE_OK
+- 2026-04-29 16:07 — harness: review phase starting (rework cycle 0)
+- 2026-04-29 — review complete; 4 minor findings fixed directly: (1) ESC handler in OkaforView did not check `_picker_active` before exiting to STATION_HUB — AC #9 gap, fixed with a 3-line guard + 1 new test (test_esc_during_picker_closes_picker_not_view); (2) lint in test_mission.py (I001 + F401 unused pytest import); (3) lint in test_okafor_template_balance.py (C420 × 2 dict-comprehension anti-pattern); (4) lint in test_okafor_view.py (RUF059 × 12 unused `player` unpacks in TestPostClinicRunCallbackRouting + TestTeamFundPicker) + lint in test_scenario_okafor_legacy.py (I001). Tuning report skip list expanded to include the 5 examined-but-not-adjusted categories (project costs / duration days / royalty rate+interval / sell lump-sum rate / team-fund multipliers) with per-row rationale, and the SA-X2 hand-off sentence. All 13 AC verified; 10268 passing (≥ 10107 baseline), 98 skipped. PHASE_OK
+
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-04-29 15:42
+- Started: 2026-04-29 16:07
 - Completed: 2026-04-29
-- Files_changed: spacegame/models/okafor_research.py, spacegame/models/mission.py, spacegame/views/okafor_view.py, spacegame/constants/flags.py, data/missions/sa_r2_okafor_legacy.json, data/dialogue/dialogues.json, tests/test_models/test_okafor_research.py, tests/test_models/test_okafor_template_balance.py (NEW), tests/test_models/test_mission.py, tests/test_views/test_okafor_view.py, tests/test_scenarios/test_scenario_okafor_legacy.py, tests/test_data/test_dialogue_integrity.py, tests/test_data/test_side_mission_data.py, requirements/sa_research_tuning_report.md (NEW)
-- Commits: 5 (tier-aware refund + template balance test; kweon_relationship reward; kweon callback tree + flag + routing; picker modal; tuning report; lint/scanner pass)
-- New_sprints_proposed: none
-- Followup_items_closed: SA-R1-FOLLOW-2 (picker modal), SA-R2-FOLLOW-1 (kweon_relationship reward type)
-- Test_delta: +160 passing (10107 → 10267), skip unchanged at 98
-- Notes: dialogues.json was corrupted mid-sprint by ruff format treating JSON as Python (trailing commas added throughout). Restored from HEAD. Added safeguard: only format .py files explicitly; never pass .json to ruff format. kweon_relationship required adding to test_side_mission_data.py VALID_REWARD_TYPES set — a data-validation test gap. All 13 AC verified; sprint moves to review.
+- Files_changed: spacegame/views/okafor_view.py, tests/test_views/test_okafor_view.py, tests/test_models/test_mission.py, tests/test_models/test_okafor_template_balance.py, tests/test_scenarios/test_scenario_okafor_legacy.py, requirements/sa_research_tuning_report.md
+- Commits: SA-R3: review — ESC picker fix + lint fixes + tuning report skip list
+- Tests_passing: 10268
+- Acceptance_criteria_verified: 13/13
+- Polish_items_verified: 6/6
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 4
+- Single_tighten: The `kweon_legacy_post_clinic_run` dialogue voice is clean and registers are distinct. The single tighten: the `reflection` node ends with "The work circulates through what is available when what is usual is not." — the final clause is slightly tortured syntax. On a second pass, "The work moves through what is available when the usual channels are not" reads more cleanly without changing the register. Not a blocker.
+- Followup_sprints_added: none
+- Notes: ESC handler was missing the picker guard (AC #9 gap); fixed directly. Lint issues in 4 test files fixed. Tuning report skip list was missing the 5 numerically-examined categories — expanded with rationale rows and SA-X2 hand-off sentence. All scanners green.
 ### Phase V — Financial Exchange
 
 #### SA-F1 — Financial Exchange Design

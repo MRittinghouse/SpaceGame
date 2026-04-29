@@ -160,7 +160,7 @@ class TestTemplateTotals:
         )
 
     def test_tier_tally_is_4_4_2(self) -> None:
-        counts: dict[str, int] = {t: 0 for t in LEGAL_RISK_TIERS}
+        counts: dict[str, int] = dict.fromkeys(LEGAL_RISK_TIERS, 0)
         for tpl in OKAFOR_PROJECT_TEMPLATES:
             counts[tpl.risk_tier] += 1
         assert counts == EXPECTED_TIER_TALLY, (
@@ -181,7 +181,7 @@ class TestTemplateTotals:
         )
 
     def test_ethics_tally_is_3_heal_4_profit_3_neutral(self) -> None:
-        counts: dict[str, int] = {t: 0 for t in LEGAL_ETHICS_TAGS}
+        counts: dict[str, int] = dict.fromkeys(LEGAL_ETHICS_TAGS, 0)
         for tag in OKAFOR_PROJECT_ETHICS.values():
             counts[tag] += 1
         assert counts == EXPECTED_ETHICS_TALLY, (

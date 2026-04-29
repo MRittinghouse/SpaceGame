@@ -900,9 +900,12 @@ class OkaforView(BaseView):
                     return
 
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-            # Close an open dialogue panel first; only then exit the view.
+            # Dismiss layers innermost-first: dialogue → picker → exit view.
             if self._active_dialogue_tree is not None:
                 self._close_active_dialogue()
+                return
+            if self._picker_active:
+                self._picker_cancel()
                 return
             self.next_state = GameState.STATION_HUB
 

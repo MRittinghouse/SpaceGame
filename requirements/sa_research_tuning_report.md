@@ -136,12 +136,22 @@ passive income if game-time horizon exceeds ~4 months in-game.
 
 ## 5. Skip List
 
-The following audit items were intentionally skipped and are deferred to the
-sprint that implements SA-R1 outcome unlocks.
+### 5.1 Numeric categories examined, no adjustments made
+
+| Category | Decision | Rationale |
+|----------|----------|-----------|
+| Project costs (`base_cost_credits`) | Locked at SA-R1 ranges; no change | All 10 templates within locked bands ([5k–15k] / [20k–35k] / [70k–125k]); SA-X2 owns the cross-anchor balance pass. |
+| Duration days (`base_duration_days`) | Locked; no change | Deterministic resolution math (slot-window length, royalty cadence) depends on these values; changing them without a coordinated balance pass would shift the whole passive-income curve. |
+| Royalty rate / interval (`ROYALTY_RATE = 0.05`, `ROYALTY_INTERVAL_DAYS = 10`) | Locked; no change | Passive-income economy is intentionally slow (120-day break-even vs. lump-sum). SA-X2 owns any deeper royalty tuning. |
+| Sell lump-sum rate (`SELL_LUMP_SUM_RATE = 0.60`) | Locked; no change | Matches the "immediate cash vs. patient income" intentional curve; lump-sum at 60% payout preserves the trade-off without a playtest signal to justify movement. |
+| Team-fund cost / duration multipliers (`TEAM_FUND_COST_PER_COLLABORATOR = 0.50`, `TEAM_FUND_DURATION_PER_COLLABORATOR = 0.70`) | Locked at SA-R1 values; no change | The picker UI delivered this sprint exposes the previously-unreachable 2-collaborator math; the multipliers are now reachable and can be playtested before SA-X2 considers adjustment. |
+
+**Hand-off to SA-X2.** Cross-anchor reputation balance, including any global review of the Research Patronage numeric ranges in the context of all other anchors (Politics, Bidding, Wreckers' Guild, Deep Shafts), is owned by SA-X2.
+
+### 5.2 Test coverage deferred
 
 | Item | Affected templates | Blocking reason |
 |------|-------------------|-----------------|
 | `outcome_unlock_id` data-existence check | mid_neural_synthesis_protocol, mid_orbital_propulsion_efficiency, mid_field_clinic_supply_chain, mid_alloy_corrosion_mining_belt, high_quantum_sensor_capstone, high_post_outbreak_vaccine_synthesis | SA-R1 stub IDs (advanced_sensor_array, efficient_thrusters, medical_supplies, alloy_composite) do not yet exist in data files. Test would check `get_data_loader().modules`, `.upgrades`, `.commodities` — none of those registries have been populated for these IDs. |
 
-No numeric adjustments were deferred. All 10 templates are within locked ranges
-as shipped.
+All 10 templates are within locked ranges as shipped; no numeric adjustments were made beyond the tier-aware failure-refund map (section 3.1).

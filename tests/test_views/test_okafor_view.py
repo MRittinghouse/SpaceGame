@@ -687,7 +687,7 @@ class TestPostClinicRunCallbackRouting:
     def test_post_clinic_run_callback_fires_when_mission_completed_and_not_seen(
         self,
     ) -> None:
-        view, player = self._setup_view_post_clinic(callback_seen=False)
+        view, _player = self._setup_view_post_clinic(callback_seen=False)
         result = view._kweon_dialogue_id()
         assert result == "kweon_legacy_post_clinic_run", (
             f"Expected post-clinic-run callback, got {result!r}"
@@ -695,7 +695,7 @@ class TestPostClinicRunCallbackRouting:
         view.on_exit()
 
     def test_ambient_returns_when_callback_already_seen(self) -> None:
-        view, player = self._setup_view_post_clinic(callback_seen=True)
+        view, _player = self._setup_view_post_clinic(callback_seen=True)
         # No arc beat pending, callback already seen -> ambient
         result = view._kweon_dialogue_id()
         assert result == "kweon_okafor_intro", (
@@ -739,7 +739,7 @@ class TestPostClinicRunCallbackRouting:
 
     def test_arc_beat_fires_after_callback_dismissed(self) -> None:
         """Once the callback is seen, pending arc beats surface normally."""
-        view, player = self._setup_view_post_clinic(callback_seen=True, arc_beat_pending=True)
+        view, _player = self._setup_view_post_clinic(callback_seen=True, arc_beat_pending=True)
         # callback seen, arc beat pending → arc beat should surface
         result = view._kweon_dialogue_id()
         assert result == "kweon_legacy_first_heal", (
@@ -762,7 +762,7 @@ class TestTeamFundPicker:
         return view, player
 
     def test_open_picker_sets_active_state(self) -> None:
-        view, player = self._setup()
+        view, _player = self._setup()
         tpl_id = _low_risk_template_id()
         view._open_team_fund_picker(tpl_id)
         assert view._picker_active is True
@@ -770,14 +770,14 @@ class TestTeamFundPicker:
         view.on_exit()
 
     def test_picker_starts_with_empty_selection(self) -> None:
-        view, player = self._setup()
+        view, _player = self._setup()
         tpl_id = _low_risk_template_id()
         view._open_team_fund_picker(tpl_id)
         assert view._picker_selected == []
         view.on_exit()
 
     def test_picker_toggle_adds_researcher(self) -> None:
-        view, player = self._setup()
+        view, _player = self._setup()
         tpl_id = _low_risk_template_id()
         view._open_team_fund_picker(tpl_id)
         view._picker_toggle("dr_iris_navarro")
@@ -785,7 +785,7 @@ class TestTeamFundPicker:
         view.on_exit()
 
     def test_picker_toggle_removes_researcher(self) -> None:
-        view, player = self._setup()
+        view, _player = self._setup()
         tpl_id = _low_risk_template_id()
         view._open_team_fund_picker(tpl_id)
         view._picker_toggle("dr_iris_navarro")
@@ -794,7 +794,7 @@ class TestTeamFundPicker:
         view.on_exit()
 
     def test_picker_blocks_third_selection(self) -> None:
-        view, player = self._setup()
+        view, _player = self._setup()
         tpl_id = _low_risk_template_id()
         view._open_team_fund_picker(tpl_id)
         view._picker_toggle("dr_iris_navarro")
@@ -874,7 +874,7 @@ class TestTeamFundPicker:
         view.on_exit()
 
     def test_picker_cancel_clears_selection(self) -> None:
-        view, player = self._setup()
+        view, _player = self._setup()
         tpl_id = _low_risk_template_id()
         view._open_team_fund_picker(tpl_id)
         view._picker_toggle("dr_iris_navarro")
@@ -884,7 +884,7 @@ class TestTeamFundPicker:
         view.on_exit()
 
     def test_live_cost_math_at_zero(self) -> None:
-        view, player = self._setup()
+        view, _player = self._setup()
         tpl_id = _low_risk_template_id()
         tpl = get_template(tpl_id)
         assert tpl is not None
@@ -895,7 +895,7 @@ class TestTeamFundPicker:
         view.on_exit()
 
     def test_live_cost_math_at_one(self) -> None:
-        view, player = self._setup()
+        view, _player = self._setup()
         tpl_id = _low_risk_template_id()
         tpl = get_template(tpl_id)
         assert tpl is not None
@@ -907,7 +907,7 @@ class TestTeamFundPicker:
         view.on_exit()
 
     def test_live_cost_math_at_two(self) -> None:
-        view, player = self._setup()
+        view, _player = self._setup()
         tpl_id = _low_risk_template_id()
         tpl = get_template(tpl_id)
         assert tpl is not None
@@ -917,4 +917,24 @@ class TestTeamFundPicker:
         cost, dur = view._picker_live_math()
         assert cost == compute_team_fund_cost(tpl.base_cost_credits, 2)
         assert dur == compute_team_fund_duration(tpl.base_duration_days, 2)
+        view.on_exit()
+
+    def test_esc_during_picker_closes_picker_not_view(self) -> None:
+        """ESC while the picker is open must dismiss the picker, not exit the view."""
+        # Pre-set the seen-tip flag so the tip overlay is not created during
+        # on_enter (the overlay has modal semantics and would eat the ESC key).
+        manager, player = _make_env(credits=500_000)
+        player.dialogue_flags[seen_okafor_tip()] = True
+        view = _make_view(player, manager)
+        view.on_enter()
+
+        tpl_id = _low_risk_template_id()
+        view._open_team_fund_picker(tpl_id)
+        assert view._picker_active is True
+
+        esc_event = pygame.event.Event(pygame.KEYDOWN, key=pygame.K_ESCAPE, mod=0, unicode="\x1b")
+        view.handle_event(esc_event)
+
+        assert view._picker_active is False, "ESC must close the picker"
+        assert view.next_state is None, "ESC on picker must not navigate away from the view"
         view.on_exit()

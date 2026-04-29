@@ -17,11 +17,11 @@ Scenarios:
 from __future__ import annotations
 
 from spacegame.constants.flags import (
-    okafor_legacy_mission_completed,
     okafor_legacy_first_heal_seen,
     okafor_legacy_first_profit_seen,
     okafor_legacy_heal_ending_seen,
     okafor_legacy_heal_pattern_seen,
+    okafor_legacy_mission_completed,
     okafor_legacy_mission_offered,
     okafor_legacy_profit_ending_seen,
     okafor_legacy_profit_pattern_seen,

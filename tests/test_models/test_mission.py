@@ -1,16 +1,15 @@
 """Tests for mission system models."""
 
-import pytest
-from spacegame.models.okafor_research import OkaforResearchState
 from spacegame.models.mission import (
-    ObjectiveType,
-    MissionStatus,
-    MissionObjective,
-    MissionReward,
+    ForcedEncounter,
     Mission,
     MissionManager,
-    ForcedEncounter,
+    MissionObjective,
+    MissionReward,
+    MissionStatus,
+    ObjectiveType,
 )
+from spacegame.models.okafor_research import OkaforResearchState
 from spacegame.models.player import Player
 from spacegame.models.ship import Ship, ShipType
 
