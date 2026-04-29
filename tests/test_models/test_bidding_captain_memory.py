@@ -255,3 +255,198 @@ class TestLifecycleHandoff:
             st.session_history.append(history)
             st.collect_outbid_records(captain_memory, game_day=10 + sess)
         assert st.auction_rivals_retired == 1
+
+
+# ---------------------------------------------------------------------------
+# SA-B6: OUTCOME_OUTCOMPETED — symmetric rivalry resolution
+# ---------------------------------------------------------------------------
+
+
+class TestOutcomeOutcompeted:
+    """SA-B6: symmetric player-win accumulation via OUTCOME_OUTCOMPETED."""
+
+    def test_constant_value(self) -> None:
+        from spacegame.models.captain_memory import OUTCOME_OUTCOMPETED
+
+        assert OUTCOME_OUTCOMPETED == "outcompeted"
+
+    def test_constant_distinct_from_outbid(self) -> None:
+        from spacegame.models.captain_memory import OUTCOME_OUTBID, OUTCOME_OUTCOMPETED
+
+        assert OUTCOME_OUTCOMPETED != OUTCOME_OUTBID
+
+    def _state_with_player_winning_lot(self, rival_id: str = PERSONA_SALKO) -> AuctionState:
+        """Craft a session_history entry where the player wins a lot a rival also bid on."""
+        from spacegame.models.bidding import _SessionHistoryEntry
+
+        st = AuctionState()
+        st.active_auction_id = VENUE_STELLARIS
+        st.active_session_id = "player_win_sess"
+        history = _SessionHistoryEntry(
+            session_id="player_win_sess",
+            venue_id=VENUE_STELLARIS,
+            closed_on_day=10,
+            lot_results=[
+                _LotResultRecord(
+                    lot_id="lot_p",
+                    sold=True,
+                    winner_id="player",
+                    sale_price=12000,
+                    player_bid=True,
+                    rivals_bid=[rival_id],
+                ),
+            ],
+            rival_ids=[rival_id],
+        )
+        st.session_history.append(history)
+        return st
+
+    def test_single_player_win_records_outcompeted(self) -> None:
+        st = self._state_with_player_winning_lot()
+        captain_memory: dict = {}
+        st.collect_player_win_records(captain_memory, game_day=10)
+        assert PERSONA_SALKO in captain_memory
+        assert captain_memory[PERSONA_SALKO].encounter_count == 1
+        from spacegame.models.captain_memory import OUTCOME_OUTCOMPETED
+
+        assert captain_memory[PERSONA_SALKO].last_outcome == OUTCOME_OUTCOMPETED
+        assert captain_memory[PERSONA_SALKO].status == STATUS_ACTIVE
+
+    def test_three_wins_auto_retire_to_wanderer(self) -> None:
+        captain_memory: dict = {}
+        for sess in range(3):
+            from spacegame.models.bidding import _SessionHistoryEntry
+
+            st = AuctionState()
+            st.active_auction_id = VENUE_STELLARIS
+            st.active_session_id = f"pw_sess_{sess}"
+            history = _SessionHistoryEntry(
+                session_id=f"pw_sess_{sess}",
+                venue_id=VENUE_STELLARIS,
+                closed_on_day=10 + sess,
+                lot_results=[
+                    _LotResultRecord(
+                        lot_id=f"lot_pw_{sess}",
+                        sold=True,
+                        winner_id="player",
+                        sale_price=12000,
+                        player_bid=True,
+                        rivals_bid=[PERSONA_SALKO],
+                    ),
+                ],
+                rival_ids=[PERSONA_SALKO],
+            )
+            st.session_history.append(history)
+            st.collect_player_win_records(captain_memory, game_day=10 + sess)
+        assert captain_memory[PERSONA_SALKO].status == STATUS_WANDERER
+
+    def test_player_abstention_suppresses_entry(self) -> None:
+        """Player did not bid (player_bid=False); entry must not fire."""
+        from spacegame.models.bidding import _SessionHistoryEntry
+
+        st = AuctionState()
+        st.active_auction_id = VENUE_STELLARIS
+        st.active_session_id = "abstain_sess"
+        history = _SessionHistoryEntry(
+            session_id="abstain_sess",
+            venue_id=VENUE_STELLARIS,
+            closed_on_day=10,
+            lot_results=[
+                _LotResultRecord(
+                    lot_id="lot_abs",
+                    sold=True,
+                    winner_id="player",
+                    sale_price=12000,
+                    player_bid=False,  # player abstained
+                    rivals_bid=[PERSONA_SALKO],
+                ),
+            ],
+            rival_ids=[PERSONA_SALKO],
+        )
+        st.session_history.append(history)
+        captain_memory: dict = {}
+        st.collect_player_win_records(captain_memory, game_day=10)
+        assert PERSONA_SALKO not in captain_memory
+
+    def test_mixed_outcomes_aggregate_against_threshold(self) -> None:
+        """1 OUTBID + 2 OUTCOMPETED against same rival -> STATUS_WANDERER."""
+        from spacegame.models.bidding import _SessionHistoryEntry
+
+        captain_memory: dict = {}
+        # Session 1: rival wins (OUTBID)
+        st1 = AuctionState()
+        st1.active_auction_id = VENUE_STELLARIS
+        st1.active_session_id = "mix_sess_1"
+        hist1 = _SessionHistoryEntry(
+            session_id="mix_sess_1",
+            venue_id=VENUE_STELLARIS,
+            closed_on_day=10,
+            lot_results=[
+                _LotResultRecord(
+                    lot_id="lot_m1",
+                    sold=True,
+                    winner_id=PERSONA_SALKO,
+                    sale_price=12000,
+                    player_bid=True,
+                    rivals_bid=[PERSONA_SALKO],
+                ),
+            ],
+            rival_ids=[PERSONA_SALKO],
+        )
+        st1.session_history.append(hist1)
+        st1.collect_outbid_records(captain_memory, game_day=10)
+        assert captain_memory[PERSONA_SALKO].status == STATUS_ACTIVE
+
+        # Sessions 2 & 3: player wins (OUTCOMPETED)
+        for sess in range(2, 4):
+            st = AuctionState()
+            st.active_auction_id = VENUE_STELLARIS
+            st.active_session_id = f"mix_sess_{sess}"
+            hist = _SessionHistoryEntry(
+                session_id=f"mix_sess_{sess}",
+                venue_id=VENUE_STELLARIS,
+                closed_on_day=10 + sess,
+                lot_results=[
+                    _LotResultRecord(
+                        lot_id=f"lot_m{sess}",
+                        sold=True,
+                        winner_id="player",
+                        sale_price=12000,
+                        player_bid=True,
+                        rivals_bid=[PERSONA_SALKO],
+                    ),
+                ],
+                rival_ids=[PERSONA_SALKO],
+            )
+            st.session_history.append(hist)
+            st.collect_player_win_records(captain_memory, game_day=10 + sess)
+        assert captain_memory[PERSONA_SALKO].status == STATUS_WANDERER
+
+    def test_other_rival_unaffected(self) -> None:
+        """Only the rival who bid on the won lot accumulates; others are unaffected."""
+        from spacegame.models.bidding import _SessionHistoryEntry
+
+        st = AuctionState()
+        st.active_auction_id = VENUE_STELLARIS
+        st.active_session_id = "other_sess"
+        history = _SessionHistoryEntry(
+            session_id="other_sess",
+            venue_id=VENUE_STELLARIS,
+            closed_on_day=10,
+            lot_results=[
+                _LotResultRecord(
+                    lot_id="lot_o",
+                    sold=True,
+                    winner_id="player",
+                    sale_price=12000,
+                    player_bid=True,
+                    rivals_bid=[PERSONA_SALKO],  # only Salko bid
+                ),
+            ],
+            rival_ids=[PERSONA_SALKO, PERSONA_PRENTISS],
+        )
+        st.session_history.append(history)
+        captain_memory: dict = {}
+        st.collect_player_win_records(captain_memory, game_day=10)
+        assert PERSONA_SALKO in captain_memory
+        assert PERSONA_PRENTISS not in captain_memory

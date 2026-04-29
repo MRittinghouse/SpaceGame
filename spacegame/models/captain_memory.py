@@ -53,6 +53,10 @@ OUTCOME_FLED = "fled"
 # DEFEAT/FLED in the resolution logic — accumulates toward RESOLUTION_THRESHOLD,
 # never triggers a one-step status transition.
 OUTCOME_OUTBID = "outbid"
+# SA-B6: symmetric player-win (player beats a named rival on a contested lot).
+# Behaves identically to OUTCOME_OUTBID from record_encounter's perspective —
+# accumulates toward RESOLUTION_THRESHOLD, auto-retires to STATUS_WANDERER.
+OUTCOME_OUTCOMPETED = "outcompeted"
 
 # Encounters before an unresolved rivalry auto-retires.
 RESOLUTION_THRESHOLD = 3

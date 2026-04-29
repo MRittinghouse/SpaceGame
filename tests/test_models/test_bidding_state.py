@@ -455,6 +455,36 @@ class TestCaptainMemoryIntegration:
         if st.session_lot_results[0].winner_id == "player":
             assert PERSONA_PRENTISS not in captain_memory
 
+    def test_player_win_streak_via_collect_player_win_records(self) -> None:
+        """SA-B6: three consecutive player wins against Salko auto-retire to WANDERER."""
+        from spacegame.models.bidding import _LotResultRecord, _SessionHistoryEntry
+        from spacegame.models.captain_memory import STATUS_WANDERER
+
+        captain_memory: dict = {}
+        for sess in range(3):
+            st = AuctionState()
+            st.active_auction_id = VENUE_STELLARIS
+            st.active_session_id = f"streak_{sess}"
+            history = _SessionHistoryEntry(
+                session_id=f"streak_{sess}",
+                venue_id=VENUE_STELLARIS,
+                closed_on_day=10 + sess,
+                lot_results=[
+                    _LotResultRecord(
+                        lot_id=f"lot_streak_{sess}",
+                        sold=True,
+                        winner_id="player",
+                        sale_price=13000,
+                        player_bid=True,
+                        rivals_bid=[PERSONA_SALKO],
+                    ),
+                ],
+                rival_ids=[PERSONA_SALKO],
+            )
+            st.session_history.append(history)
+            st.collect_player_win_records(captain_memory, game_day=10 + sess)
+        assert captain_memory[PERSONA_SALKO].status == STATUS_WANDERER
+
 
 # --------------------------------------------------------------------------
 # Sable ceiling jitter formula

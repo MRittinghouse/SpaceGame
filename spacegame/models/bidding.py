@@ -1547,6 +1547,48 @@ class AuctionState:
                 self.auction_rivals_retired += 1
         return retired_ids
 
+    def collect_player_win_records(
+        self, captain_memory: dict[str, "CaptainMemory"], game_day: int
+    ) -> list[str]:
+        """Apply OUTCOME_OUTCOMPETED for lots the player won over named rivals.
+
+        Records exactly one entry per (rival, lot) where:
+        * the player won the lot (winner_id == "player"),
+        * the player bid on the lot (player_bid is True),
+        * the named rival also bid on that lot (rival_id in rivals_bid).
+
+        Symmetric to ``collect_outbid_records``; both share RESOLUTION_THRESHOLD.
+        Returns the ids of rivals who crossed to ``STATUS_WANDERER`` this call.
+        """
+        from spacegame.models.captain_memory import (
+            OUTCOME_OUTCOMPETED,
+            STATUS_WANDERER,
+            CaptainMemory,
+        )
+
+        retired_ids: list[str] = []
+        if not self.session_history:
+            return retired_ids
+        last = self.session_history[-1]
+        for record in last.lot_results:
+            if not record.sold or not record.player_bid:
+                continue
+            if record.winner_id != "player":
+                continue
+            for rival_id in record.rivals_bid:
+                if rival_id not in NAMED_RIVAL_IDS:
+                    continue
+                mem = captain_memory.get(rival_id)
+                if mem is None:
+                    mem = CaptainMemory(captain_id=rival_id)
+                    captain_memory[rival_id] = mem
+                previous_status = mem.status
+                mem.record_encounter(OUTCOME_OUTCOMPETED, game_day)
+                if previous_status != STATUS_WANDERER and mem.status == STATUS_WANDERER:
+                    retired_ids.append(rival_id)
+                    self.auction_rivals_retired += 1
+        return retired_ids
+
     # ------------------------------------------------------------------
     # Serialization
     # ------------------------------------------------------------------
