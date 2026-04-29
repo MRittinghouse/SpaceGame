@@ -3541,7 +3541,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 
 #### SA-R1 — Okafor Institute (Research Patronage)
 
-**Status**: in-progress (reviewing)
+**Status**: in-progress (implementing)
 **Phase**: Phase IV | **Size**: L | **Effort**: 2-3 weeks
 **Depends on**: SA-PREP-1, SA-C2 | **Blocks**: SA-R2, SA-R3
 
@@ -3677,22 +3677,30 @@ These are the decisions to lock during planning execution. Recommendations recor
 - 2026-04-29 15:10 — implementation complete, all gates green; tests 9897→9971 (+74). PHASE_OK
 - 2026-04-29 14:06 — harness: review phase starting (rework cycle 0)
 - 2026-04-29 14:30 — review complete (rework cycle 0); 1 critical finding: OkaforView is missing the NPC dialogue panel present in both reference implementations (WreckersGuildView: 24 wiring instances; DeepShaftsView: 23; OkaforView: 0). All 11 authored dialogue trees (6 Kweon branches, 3 researchers, Nuri-as-collaborator) are unreachable from the view. Direct consequence: AC #9 ("triggers Kweon's failure-debrief dialogue exactly once") is not met; `_failure_debrief_pending` is never set True (test_first_failure_flag_recorded_on_view_open_after_tick passes vacuously). All other work — model, save/load, skill stacking, IP state machine, deterministic resolution, flags, journal entries, voice sheets, dialogue content, Writing Bible, lint, format, SI-3 — is correct and clean (9971 passed, 98 skipped, baseline 9897). Rework task 13 added to Plan with exact implementation spec. PHASE_NEEDS_REWORK: NPC dialogue panel missing from OkaforView — all dialogue trees unreachable; AC #9 failure-debrief trigger not implemented; vacuous test.
+- 2026-04-29 14:18 — harness: review demanded rework (cycle 1/3). NPC dialogue panel missing from OkaforView — all dialogue trees unreachable; AC #9 failure-debrief trigger not implemented; vacuous test.
+- 2026-04-29 14:18 — harness: implement phase starting (rework cycle 1)
+- 2026-04-29 16:05 — rework task 13 RED: added 14 new view tests + rewrote the vacuous `test_first_failure_flag_recorded_on_view_open_after_tick` into 3 discriminating assertions on `_failure_debrief_pending`; added flag helper `okafor_failure_debrief_shown()` to `spacegame/constants/flags.py`. New tests fail in the expected way (no NPC buttons, no dialogue panel, debrief-pending always False).
+- 2026-04-29 16:25 — rework task 13 GREEN: ported the WreckersGuildView / DeepShaftsView dock + dialogue-panel pattern into OkaforView. `get_visible_dock_speaker_ids()` returns Kweon + 3 researchers + Nuri (when crewed); `_open_npc_dialogue` / `_advance_dialogue` / `_close_active_dialogue` drive an in-view dialogue panel that swaps with the dock on `_create_ui`. Kweon routes to `kweon_failure_debrief` when `okafor_first_failure_seen` is set and `okafor_failure_debrief_shown` is not; otherwise to `kweon_okafor_intro`. Dismissing the failure-debrief tree sets `okafor_failure_debrief_shown` and refreshes the pending flag. ESC closes an open dialogue before exiting the view. All 36 view tests green. (commit a785445)
+- 2026-04-29 16:35 — rework cycle 1 validation: full suite 9988 passed / 98 skipped (baseline 9897, +91 sprint-total). Lint + format clean on touched files. Mypy clean on touched modules (pre-existing errors in unrelated files unchanged). SI-3 dialogue-integrity scanner clean (`okafor_failure_debrief_shown` is a real producer + consumer pair in the same view, no orphan registration needed). Writing Bible scanner clean. AC #9 (Kweon's failure-debrief dialogue exactly once) is now satisfied via `_kweon_dialogue_id()` routing + `okafor_failure_debrief_shown` gate. AC #2 (every authored dialogue tree reachable from the view) now satisfied — dock surfaces all 5 speakers with the correct trees. PHASE_OK
+- 2026-04-29 16:35 — implementation complete (rework cycle 1), all gates green; tests 9897→9988 (+91 sprint-total, +17 in this rework cycle). PHASE_OK
 
 **Last phase report.**
-- Phase: review
-- Outcome: PHASE_NEEDS_REWORK: NPC dialogue panel missing from OkaforView — all dialogue trees unreachable; AC #9 failure-debrief trigger not implemented; vacuous test.
-- Started: 2026-04-29 14:06
-- Completed: 2026-04-29 14:30
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: none
-- Tests_passing: 9971
-- Acceptance_criteria_verified: 14/15
-- Polish_items_verified: 3/3
-- Findings_critical: 1
-- Findings_minor_fixed_directly: 0
-- Single_tighten: `_failure_debrief_pending` at okafor_view.py:147 is declared and reset to False in on_enter:169 but is never set to True anywhere in the file — dead code with a misleading comment ("fires once per save when the game-day tick toggles okafor_first_failure_seen"). The test that validates it (test_first_failure_flag_recorded_on_view_open_after_tick) passes vacuously. This is the implementation-visible symptom of the missing NPC dialogue panel; both should be fixed together in rework task 13.
-- Followup_sprints_added: none
-- Notes: All model/save/skill/IP/flag/journal/voice/compliance work is correct and clean. The sole failing is the view's interactive NPC layer — the Kweon dock renders static text only, no click buttons, no dialogue-panel state machine. Both cited reference implementations (WreckersGuildView, DeepShaftsView) have this layer; OkaforView omitted it. Rework task 13 provides the exact fix spec. SA-R3's touch zones reference data/research/projects.json and spacegame/models/research.py, neither of which exist (templates are inlined in okafor_research.py per the wreckers_guild.py pattern) — SA-R3 planner will need to update its touch zones before planning.
+- Phase: implement
+- Outcome: PHASE_OK
+- Started: 2026-04-29 14:18
+- Completed: 2026-04-29 16:35
+- Files_changed: spacegame/constants/flags.py, spacegame/views/okafor_view.py, tests/test_views/test_okafor_view.py, requirements/roadmap/ROADMAP.md
+- Commits: a785445
+- Tests_added: 17 (14 new dialogue-panel tests + 3 discriminating failure-debrief tests replacing 1 vacuous test)
+- Tests_baseline: 9897
+- Tests_passing: 9988
+- Tests_skipped: 98
+- Lint_clean: yes
+- Format_clean: yes
+- SI3_scanner_clean: yes
+- Writing_bible_clean: yes
+- Touch_zones_respected: yes
+- Notes: Rework cycle 1 closed the NPC dialogue panel gap. OkaforView now mirrors the WreckersGuildView / DeepShaftsView dock + dialogue-panel pattern: 5 speaker buttons (Kweon + 3 researchers always; Nuri when crewed), in-view dialogue node panel, Continue button, ESC-closes-dialogue-first behavior. Kweon routes to the failure-debrief tree when `okafor_first_failure_seen` is set and the new `okafor_failure_debrief_shown` flag is not, then drops back to the intro tree post-dismiss. The previous vacuous `_failure_debrief_pending` test is replaced by three positive/negative cases. All 11 authored dialogue trees from rework cycle 0 are now reachable from the view.
 
 #### SA-R2 — Dr. Okafor's Legacy Narrative Arc
 
