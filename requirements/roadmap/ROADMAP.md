@@ -4625,7 +4625,7 @@ Smaller deferred items pulled from prior sprint findings. Each is independently 
 
 ### CB-1 — Crew Banter scope (scoping)
 
-**Status**: in-progress (reviewing)
+**Status**: done
 **Source**: Living Universe Arc deferral; `requirements/living_universe_arc.md` Phase 5 design carries the as-imagined CB scope.
 **Size**: S | **Effort**: 3-5 days
 **Depends on**: none | **Blocks**: CB-2
@@ -4717,7 +4717,7 @@ Open question (reviewer judgment, not blocking implementation):
 - 2026-04-29 — implementation: verified 249 lines/24 crew_ids/5 contexts via Python one-liner; tabulated primary crew (elena 32, marcus 36, dr_priya_osei 30, tomas 29), secondary 20 specialists; confirmed AmbientDialogueManager fields and shown-set semantics; mapped all 6 Phase 5 trigger types against existing coverage; locked Option A (extend); authored requirements/cb_scope.md (235 lines, 8 sections, 5 voice-checked sample entries). Test suite: 10268 passed, 98 skipped. PHASE_OK
 - 2026-04-29 17:11 — harness: review phase starting (rework cycle 0)
 - 2026-04-29 — review complete; all 8 acceptance criteria verified against actual source data (249 lines confirmed, line citations spot-checked against game.py/data_loader.py, gap analysis verified against living_universe_arc.md trigger types, voice samples cross-checked against character_voices.md); 1 minor finding fixed directly: added disclaimer in section 6 that sample flag names are illustrative (not production values) to prevent CB-2 copy-paste hazard. PHASE_OK
-
+- 2026-04-29 17:18 — harness: review passed, marking done
 **Last phase report.**
 - Phase: review
 - Outcome: PHASE_OK
