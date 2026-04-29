@@ -31,10 +31,9 @@ from spacegame.data_loader import get_data_loader
 from spacegame.models.okafor_research import (
     OKAFOR_PROJECT_TEMPLATES,
     ROYALTY_INTERVAL_DAYS,
-    ActiveProject,
+    SELL_LUMP_SUM_RATE,
     OkaforResearchState,
     PatentHolding,
-    SELL_LUMP_SUM_RATE,
     compute_team_fund_cost,
     compute_team_fund_duration,
     get_template,
@@ -232,7 +231,9 @@ class TestFundFlow:
         tpl_id = _low_risk_template_id()
         funded = view._fund_project(tpl_id, collaborators=[])
         assert funded is False
-        assert player.okafor_research_state is None or not player.okafor_research_state.active_projects
+        assert (
+            player.okafor_research_state is None or not player.okafor_research_state.active_projects
+        )
         view.on_exit()
 
     def test_fund_sets_first_funded_flag(self) -> None:

@@ -486,7 +486,7 @@ def compute_team_fund_cost(base_cost: int, n_collaborators: int) -> int:
     """
     n = max(0, min(n_collaborators, TEAM_FUND_MAX_COLLABORATORS))
     factor = 1.0 + TEAM_FUND_COST_PER_COLLABORATOR * n
-    return int(round(base_cost * factor))
+    return round(base_cost * factor)
 
 
 def compute_team_fund_duration(base_days: int, n_collaborators: int) -> int:
@@ -498,7 +498,7 @@ def compute_team_fund_duration(base_days: int, n_collaborators: int) -> int:
     n = max(0, min(n_collaborators, TEAM_FUND_MAX_COLLABORATORS))
     factor = TEAM_FUND_DURATION_PER_COLLABORATOR**n
     factor = max(factor, TEAM_FUND_DURATION_FLOOR if n > 0 else 1.0)
-    return max(1, int(math.ceil(base_days * factor)))
+    return max(1, math.ceil(base_days * factor))
 
 
 # ---------------------------------------------------------------------------
@@ -658,9 +658,9 @@ def resolve_completion(
     effective_odds = max(0.0, min(base_odds, base_odds - risk_reduction_total))
     is_success = roll >= effective_odds
     if is_success:
-        payout = int(round(template.base_success_payout * (1.0 + yield_bonus_total)))
+        payout = round(template.base_success_payout * (1.0 + yield_bonus_total))
         return True, payout
-    refund = int(round(active.cost_paid * FAILURE_REFUND_RATE))
+    refund = round(active.cost_paid * FAILURE_REFUND_RATE)
     return False, refund
 
 
@@ -687,7 +687,7 @@ def transition_patent_to_sold(holding: PatentHolding) -> int:
     """
     holding.state = "sold"
     holding.next_royalty_day = 0
-    return int(round(holding.success_payout * SELL_LUMP_SUM_RATE))
+    return round(holding.success_payout * SELL_LUMP_SUM_RATE)
 
 
 def tick_royalties(state: "OkaforResearchState", current_day: int) -> int:
@@ -702,7 +702,7 @@ def tick_royalties(state: "OkaforResearchState", current_day: int) -> int:
     for holding in state.holdings:
         if holding.state != "licensed":
             continue
-        per_payout = int(round(holding.success_payout * ROYALTY_RATE))
+        per_payout = round(holding.success_payout * ROYALTY_RATE)
         while holding.next_royalty_day != 0 and holding.next_royalty_day <= current_day:
             total += per_payout
             holding.next_royalty_day += ROYALTY_INTERVAL_DAYS
@@ -791,9 +791,7 @@ class OkaforResearchState:
     def from_dict(cls, data: dict[str, Any]) -> "OkaforResearchState":
         """Restore from save data with safe defaults for missing keys."""
         active_data = data.get("active_projects", {}) or {}
-        active_projects = {
-            str(k): ActiveProject.from_dict(v) for k, v in active_data.items()
-        }
+        active_projects = {str(k): ActiveProject.from_dict(v) for k, v in active_data.items()}
         holdings_data = data.get("holdings", []) or []
         holdings = [PatentHolding.from_dict(h) for h in holdings_data]
         return cls(

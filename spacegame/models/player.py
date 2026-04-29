@@ -15,6 +15,7 @@ from spacegame.models.drone import MiningDroneFleet
 from spacegame.models.faction import ReputationTier, get_reputation_tier
 from spacegame.models.forge_buffer import ForgeBufferManager
 from spacegame.models.forge_upgrade import ForgeUpgradeState
+from spacegame.models.okafor_research import OkaforResearchState
 from spacegame.models.ore_silo import OreSiloManager
 from spacegame.models.player_identity import (
     get_all_titles,
@@ -36,7 +37,6 @@ from spacegame.models.sub_reputation import (
 from spacegame.models.timed_thread import TimedThreadState
 from spacegame.models.trade_route import PriceMemory, TradeRouteTracker
 from spacegame.models.upgrades import ShipUpgradeManager
-from spacegame.models.okafor_research import OkaforResearchState
 from spacegame.models.wreck_upgrade import WreckUpgradeState
 from spacegame.models.wreckers_guild import WreckersGuildState
 

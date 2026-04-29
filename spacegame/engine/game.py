@@ -5206,9 +5206,7 @@ class Game:
         royalty_payout = tick_royalties(state, current_day)
         if royalty_payout > 0:
             self.player.add_credits(royalty_payout)
-            self._mission_notifications.append(
-                f"Okafor royalties: +{royalty_payout:,} CR."
-            )
+            self._mission_notifications.append(f"Okafor royalties: +{royalty_payout:,} CR.")
 
     def _check_day_advance(self) -> None:
         """Check if game day advanced and trigger market event generation.

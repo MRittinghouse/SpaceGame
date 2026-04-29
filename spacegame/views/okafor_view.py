@@ -31,7 +31,6 @@ from spacegame.config import (
 from spacegame.constants.flags import (
     met_npc,
     okafor_collaborator_share,
-    okafor_first_failure_seen,
     okafor_patent_disposed_first,
     okafor_project_funded_first,
     seen_okafor_tip,
@@ -47,13 +46,10 @@ from spacegame.engine.fonts import (
     get_font,
 )
 from spacegame.models.okafor_research import (
-    OKAFOR_PROJECT_TEMPLATES,
-    OkaforProjectTemplate,
+    SELL_LUMP_SUM_RATE,
     OkaforResearchState,
     PatentHolding,
-    SELL_LUMP_SUM_RATE,
     compute_team_fund_cost,
-    compute_team_fund_duration,
     fund_project,
     get_template,
     roll_offers,
@@ -154,9 +150,7 @@ class OkaforView(BaseView):
         self._offer_template_ids: list[str] = []
 
         # Background — quiet, low-light institutional register.
-        self.background = AnimatedBackground(
-            "station", WINDOW_WIDTH, WINDOW_HEIGHT, seed=8842
-        )
+        self.background = AnimatedBackground("station", WINDOW_WIDTH, WINDOW_HEIGHT, seed=8842)
         self._bg_dim = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
         self._bg_dim.fill((0, 0, 0))
         self._bg_dim.set_alpha(170)
@@ -212,9 +206,7 @@ class OkaforView(BaseView):
             state.slot_seed_window = window
             state.slot_offers = offers
         active_ids = set(state.active_projects.keys())
-        self._offer_template_ids = [
-            tid for tid in state.slot_offers if tid not in active_ids
-        ]
+        self._offer_template_ids = [tid for tid in state.slot_offers if tid not in active_ids]
 
     def get_offered_template_ids(self) -> list[str]:
         """Return cached offer template ids for tests + the renderer."""
@@ -376,8 +368,7 @@ class OkaforView(BaseView):
         self._refresh_offers()
         self._create_ui()
         self._show_message(
-            f"Funded: {template.name}. {cost:,} CR. Resolves day "
-            f"{active.completion_day}."
+            f"Funded: {template.name}. {cost:,} CR. Resolves day {active.completion_day}."
         )
         return True
 
@@ -395,9 +386,7 @@ class OkaforView(BaseView):
         if not self.player.dialogue_flags.get(okafor_patent_disposed_first()):
             self.player.dialogue_flags[okafor_patent_disposed_first()] = True
         self._create_ui()
-        self._show_message(
-            f"Patent licensed. Royalties begin day {holding.next_royalty_day}."
-        )
+        self._show_message(f"Patent licensed. Royalties begin day {holding.next_royalty_day}.")
         return True
 
     def _sell_patent(self, holding_id: str) -> bool:
@@ -567,9 +556,7 @@ class OkaforView(BaseView):
         screen.blit(active_label, (x, y))
         y += scale_y(22)
         if not state.active_projects:
-            empty = self.body_font.render(
-                "No projects in progress.", True, Colors.TEXT_SECONDARY
-            )
+            empty = self.body_font.render("No projects in progress.", True, Colors.TEXT_SECONDARY)
             screen.blit(empty, (x, y))
         else:
             for active in list(state.active_projects.values())[:3]:
@@ -589,9 +576,7 @@ class OkaforView(BaseView):
         screen.blit(holdings_label, (hx, hy))
         hy += scale_y(22)
         if not state.holdings:
-            empty = self.body_font.render(
-                "No patents on file.", True, Colors.TEXT_SECONDARY
-            )
+            empty = self.body_font.render("No patents on file.", True, Colors.TEXT_SECONDARY)
             screen.blit(empty, (hx, hy))
         else:
             for holding in state.holdings[:3]:

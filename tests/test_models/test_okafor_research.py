@@ -27,7 +27,6 @@ from spacegame.models.okafor_research import (
     OkaforProjectTemplate,
     OkaforResearchState,
     PatentHolding,
-    ProjectOutcome,
     compute_team_fund_cost,
     compute_team_fund_duration,
     fund_project,
@@ -81,8 +80,10 @@ class TestProjectTemplates:
         assert get_template("nonexistent_template") is None
 
     def test_template_is_frozen(self) -> None:
+        from dataclasses import FrozenInstanceError
+
         tpl = OKAFOR_PROJECT_TEMPLATES[0]
-        with pytest.raises(Exception):
+        with pytest.raises(FrozenInstanceError):
             tpl.id = "mutated"  # type: ignore[misc]
 
 
@@ -172,7 +173,9 @@ class TestFundProject:
     def test_fund_records_collaborator_count_in_duration(self) -> None:
         state = OkaforResearchState()
         tpl = self._low_risk_template()
-        active = fund_project(state, tpl, accept_day=10, collaborators=["nuri_solberg", "theo_brandt"])
+        active = fund_project(
+            state, tpl, accept_day=10, collaborators=["nuri_solberg", "theo_brandt"]
+        )
         assert active.duration_days == compute_team_fund_duration(tpl.base_duration_days, 2)
 
 
@@ -200,7 +203,10 @@ class TestResolveCompletion:
         outcomes = set()
         for accept_day in range(1, 80):
             active = ActiveProject(
-                template_id=tpl.id, accept_day=accept_day, duration_days=15, cost_paid=50_000,
+                template_id=tpl.id,
+                accept_day=accept_day,
+                duration_days=15,
+                cost_paid=50_000,
                 collaborators=[],
             )
             success, _ = resolve_completion(tpl, active, "captain_navi", 0.0, 0.0)
@@ -209,17 +215,18 @@ class TestResolveCompletion:
 
     def test_success_payout_scales_with_yield_bonus(self) -> None:
         tpl = self._mid_risk_template()
-        active = ActiveProject(
-            template_id=tpl.id, accept_day=42, duration_days=15, cost_paid=tpl.base_cost_credits,
-            collaborators=[],
-        )
         # Probe many seeds to find a success path with bonus = 0.
         success_seed = None
-        for candidate in range(0, 200):
-            success, payout = resolve_completion(
+        for candidate in range(200):
+            success, _payout = resolve_completion(
                 tpl,
-                ActiveProject(template_id=tpl.id, accept_day=candidate, duration_days=15,
-                              cost_paid=tpl.base_cost_credits, collaborators=[]),
+                ActiveProject(
+                    template_id=tpl.id,
+                    accept_day=candidate,
+                    duration_days=15,
+                    cost_paid=tpl.base_cost_credits,
+                    collaborators=[],
+                ),
                 "captain_navi",
                 0.0,
                 0.0,
@@ -229,8 +236,11 @@ class TestResolveCompletion:
                 break
         assert success_seed is not None, "Must find at least one success in 200 trials"
         active_for_success = ActiveProject(
-            template_id=tpl.id, accept_day=success_seed, duration_days=15,
-            cost_paid=tpl.base_cost_credits, collaborators=[],
+            template_id=tpl.id,
+            accept_day=success_seed,
+            duration_days=15,
+            cost_paid=tpl.base_cost_credits,
+            collaborators=[],
         )
         _, baseline_payout = resolve_completion(tpl, active_for_success, "captain_navi", 0.0, 0.0)
         _, boosted_payout = resolve_completion(tpl, active_for_success, "captain_navi", 0.20, 0.0)
@@ -241,9 +251,12 @@ class TestResolveCompletion:
         tpl = self._mid_risk_template()
         # Force a failure: high risk_reduction subtracted from base via negative cap.
         # Use base_failure_odds tier high to find a failure.
-        for candidate in range(0, 200):
+        for candidate in range(200):
             active = ActiveProject(
-                template_id=tpl.id, accept_day=candidate, duration_days=15, cost_paid=50_000,
+                template_id=tpl.id,
+                accept_day=candidate,
+                duration_days=15,
+                cost_paid=50_000,
                 collaborators=[],
             )
             success, payout = resolve_completion(tpl, active, "captain_navi", 0.0, 0.0)
@@ -261,13 +274,20 @@ class TestResolveCompletion:
                 continue
             for accept_day in range(1, 60):
                 active = ActiveProject(
-                    template_id=tpl.id, accept_day=accept_day, duration_days=15,
-                    cost_paid=tpl.base_cost_credits, collaborators=[],
+                    template_id=tpl.id,
+                    accept_day=accept_day,
+                    duration_days=15,
+                    cost_paid=tpl.base_cost_credits,
+                    collaborators=[],
                 )
                 success, _ = resolve_completion(
-                    tpl, active, "captain_navi", 0.0, tpl.base_failure_odds + 0.5,
+                    tpl,
+                    active,
+                    "captain_navi",
+                    0.0,
+                    tpl.base_failure_odds + 0.5,
                 )
-                assert success, f"Risk reduction over the threshold must guarantee success"
+                assert success, "Risk reduction over the threshold must guarantee success"
             return
 
     def test_skill_and_crew_stack_to_full_bonus(self) -> None:
@@ -275,10 +295,13 @@ class TestResolveCompletion:
         # The model resolves payouts and refunds using totals computed by the caller.
         # Verify that when totals are 0.20 / 0.20, results behave correctly.
         tpl = self._mid_risk_template()
-        for candidate in range(0, 200):
+        for candidate in range(200):
             active = ActiveProject(
-                template_id=tpl.id, accept_day=candidate, duration_days=15,
-                cost_paid=tpl.base_cost_credits, collaborators=[],
+                template_id=tpl.id,
+                accept_day=candidate,
+                duration_days=15,
+                cost_paid=tpl.base_cost_credits,
+                collaborators=[],
             )
             success, payout = resolve_completion(tpl, active, "navi", 0.20, 0.20)
             if success:
@@ -310,8 +333,11 @@ class TestPatentStateMachine:
     def test_tick_royalties_pays_per_interval(self) -> None:
         state = OkaforResearchState()
         h = PatentHolding(
-            holding_id="x", template_id="t", state="licensed",
-            success_payout=100_000, license_start_day=0,
+            holding_id="x",
+            template_id="t",
+            state="licensed",
+            success_payout=100_000,
+            license_start_day=0,
             next_royalty_day=ROYALTY_INTERVAL_DAYS,
         )
         state.holdings.append(h)
@@ -323,8 +349,11 @@ class TestPatentStateMachine:
     def test_tick_royalties_can_pay_multiple_intervals(self) -> None:
         state = OkaforResearchState()
         h = PatentHolding(
-            holding_id="x", template_id="t", state="licensed",
-            success_payout=100_000, license_start_day=0,
+            holding_id="x",
+            template_id="t",
+            state="licensed",
+            success_payout=100_000,
+            license_start_day=0,
             next_royalty_day=ROYALTY_INTERVAL_DAYS,
         )
         state.holdings.append(h)
@@ -348,7 +377,10 @@ class TestSerialization:
 
     def test_active_project_round_trip(self) -> None:
         active = ActiveProject(
-            template_id="x", accept_day=10, duration_days=15, cost_paid=50_000,
+            template_id="x",
+            accept_day=10,
+            duration_days=15,
+            cost_paid=50_000,
             collaborators=["nuri_solberg"],
         )
         restored = ActiveProject.from_dict(active.to_dict())
@@ -356,8 +388,12 @@ class TestSerialization:
 
     def test_patent_holding_round_trip(self) -> None:
         h = PatentHolding(
-            holding_id="x_10", template_id="x", state="licensed",
-            success_payout=120_000, license_start_day=50, next_royalty_day=60,
+            holding_id="x_10",
+            template_id="x",
+            state="licensed",
+            success_payout=120_000,
+            license_start_day=50,
+            next_royalty_day=60,
         )
         restored = PatentHolding.from_dict(h.to_dict())
         assert restored == h
@@ -366,22 +402,34 @@ class TestSerialization:
         state = OkaforResearchState(
             active_projects={
                 "mid_a": ActiveProject(
-                    template_id="mid_a", accept_day=10, duration_days=15,
-                    cost_paid=50_000, collaborators=["nuri_solberg"],
+                    template_id="mid_a",
+                    accept_day=10,
+                    duration_days=15,
+                    cost_paid=50_000,
+                    collaborators=["nuri_solberg"],
                 ),
                 "high_b": ActiveProject(
-                    template_id="high_b", accept_day=20, duration_days=25,
-                    cost_paid=100_000, collaborators=[],
+                    template_id="high_b",
+                    accept_day=20,
+                    duration_days=25,
+                    cost_paid=100_000,
+                    collaborators=[],
                 ),
             },
             holdings=[
                 PatentHolding(
-                    holding_id="held_1", template_id="x", state="held",
+                    holding_id="held_1",
+                    template_id="x",
+                    state="held",
                     success_payout=100_000,
                 ),
                 PatentHolding(
-                    holding_id="lic_1", template_id="y", state="licensed",
-                    success_payout=200_000, license_start_day=15, next_royalty_day=25,
+                    holding_id="lic_1",
+                    template_id="y",
+                    state="licensed",
+                    success_payout=200_000,
+                    license_start_day=15,
+                    next_royalty_day=25,
                 ),
             ],
             kweon_relationship_value=3,
@@ -421,8 +469,13 @@ class TestResolveCompletedProjects:
         state = OkaforResearchState()
         tpl = self._low_risk_template()
         fund_project(state, tpl, accept_day=10, collaborators=[])
-        outcomes = resolve_completed_projects(state, current_day=10, player_seed_token="navi",
-                                              yield_bonus_total=0.0, risk_reduction_total=0.0)
+        outcomes = resolve_completed_projects(
+            state,
+            current_day=10,
+            player_seed_token="navi",
+            yield_bonus_total=0.0,
+            risk_reduction_total=0.0,
+        )
         assert outcomes == []
         assert tpl.id in state.active_projects
 
@@ -432,22 +485,29 @@ class TestResolveCompletedProjects:
         fund_project(state, tpl, accept_day=10, collaborators=[])
         completion_day = 10 + tpl.base_duration_days
         outcomes = resolve_completed_projects(
-            state, completion_day, "navi", yield_bonus_total=0.0, risk_reduction_total=0.0,
+            state,
+            completion_day,
+            "navi",
+            yield_bonus_total=0.0,
+            risk_reduction_total=0.0,
         )
         assert len(outcomes) == 1
         assert outcomes[0].template_id == tpl.id
         assert tpl.id not in state.active_projects
 
     def test_success_appends_held_holding(self) -> None:
-        state = OkaforResearchState()
         tpl = self._low_risk_template()
         # Probe seeds to find a success.
-        for accept_day in range(0, 20):
+        for accept_day in range(20):
             state2 = OkaforResearchState()
             fund_project(state2, tpl, accept_day=accept_day, collaborators=[])
             completion_day = accept_day + tpl.base_duration_days
             outcomes = resolve_completed_projects(
-                state2, completion_day, "captain", 0.0, 0.0,
+                state2,
+                completion_day,
+                "captain",
+                0.0,
+                0.0,
             )
             if outcomes and outcomes[0].success:
                 assert len(state2.holdings) == 1
@@ -461,17 +521,20 @@ class TestResolveCompletedProjects:
         pytest.fail("No success outcome found in 20 trials")
 
     def test_failure_does_not_append_holding(self) -> None:
-        state = OkaforResearchState()
         # Use mid-tier — higher failure odds = easier to find a failure.
         for tpl in OKAFOR_PROJECT_TEMPLATES:
             if tpl.risk_tier != "mid":
                 continue
-            for accept_day in range(0, 200):
+            for accept_day in range(200):
                 state2 = OkaforResearchState()
                 fund_project(state2, tpl, accept_day=accept_day, collaborators=[])
                 completion_day = accept_day + tpl.base_duration_days
                 outcomes = resolve_completed_projects(
-                    state2, completion_day, "captain", 0.0, 0.0,
+                    state2,
+                    completion_day,
+                    "captain",
+                    0.0,
+                    0.0,
                 )
                 if outcomes and not outcomes[0].success:
                     assert state2.holdings == []
@@ -483,7 +546,7 @@ class TestResolveCompletedProjects:
         """Acceptance #5 — same scenario, same RNG seed, same result."""
         outcomes_a: list[bool] = []
         outcomes_b: list[bool] = []
-        for run, sink in ((0, outcomes_a), (1, outcomes_b)):
+        for _run, sink in ((0, outcomes_a), (1, outcomes_b)):
             state = OkaforResearchState()
             for i, tpl in enumerate(OKAFOR_PROJECT_TEMPLATES[:5]):
                 # Use unique accept days so each project gets a unique seed
