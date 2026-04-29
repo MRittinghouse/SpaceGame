@@ -48,7 +48,7 @@ The SA-arc table below is **auto-regenerated** by the ralph harness from the spr
 | [SA-B2](#sa-b2--bidding-core) | Bidding Core | III | XL | done | SA-B1, SA-A2, SA-C2 |
 | [SA-B3](#sa-b3--stellaris-auction-house-primary-venue) | Stellaris Auction House (primary venue) | III | L | done | SA-B2 |
 | [SA-B4](#sa-b4--crimson-reach-black-market-auctions) | Crimson Reach Black Market auctions | III | L | done | SA-B2, SA-1 |
-| [SA-B5](#sa-b5--player-initiated-auctions) | Player-Initiated Auctions | III | L | todo | SA-B2 |
+| [SA-B5](#sa-b5--player-initiated-auctions) | Player-Initiated Auctions | III | L | done | SA-B2 |
 | [SA-B6](#sa-b6--bidding-polish--tuning) | Bidding polish + tuning | III | M | todo | SA-B3, SA-B4, SA-B5 |
 | [SA-R1](#sa-r1--okafor-institute-research-patronage) | Okafor Institute (Research Patronage) | IV | L | todo | SA-PREP-1, SA-C2 |
 | [SA-R2](#sa-r2--dr-okafors-legacy-narrative-arc) | Dr. Okafor's Legacy Narrative Arc | IV | M | todo | SA-R1 |
@@ -3191,7 +3191,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 
 #### SA-B5 — Player-Initiated Auctions
 
-**Status**: in-progress (reviewing)
+**Status**: done
 **Phase**: Phase III | **Size**: L | **Effort**: 1.5 weeks
 **Depends on**: SA-B2 | **Blocks**: SA-B6
 
@@ -3351,7 +3351,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 - 2026-04-29 13:30 — validation chain: `python -m ruff format --check` clean on touched files (13 files); `python -m ruff check` clean; full pytest -n auto -q reports 9879 passed / 98 skipped vs. the 9780 baseline (+99 net tests). 4 pre-existing achievement-count assertions updated for the new `auction_seller` stub (67→68 across `test_cycle_e_polish.py`, `test_achievement.py`, `test_ground_achievements.py`); `auction_listings_sold` added to the VALID_STAT_KEYS allowlist in `test_new_achievements.py`. Writing Bible scanner clean (17 passed). SI-3 dialogue-integrity scanner clean (14 passed). New SA-B5 voice-content scanner clean (20 passed). PHASE_OK
 - 2026-04-29 12:32 — harness: review phase starting (rework cycle 0)
 - 2026-04-29 13:45 — review complete. Two gaps found and fixed directly (Option B): (1) AC #14: SellLotView set the `auction_first_listing_created` flag but had no `on_listing_created` callback, so the `auto_auction_first_listing_created` journal entry was never fired — fixed by adding callback attribute + wiring in `_ensure_sell_lot_view`. (2) AC #5: `cancel_listing` had no guard for listings already converted to a session lot on the active floor, and the "Listing is already on the auction floor; cannot cancel." failure path was neither implemented nor tested — fixed by scanning `active_session_lots` before cancellation and adding `TestCancelListing::test_cancel_blocked_when_lot_on_active_floor`. All 21 acceptance criteria verified. 9881 passed / 98 skipped (+101 vs. 9780 baseline). Writing Bible scanner clean. Format + lint clean. Single tighten: `cancel_listing` comment at bidding.py:1107 says "Once a listing is pulled into a live session it cannot be cancelled" but the original implementation didn't enforce it — fixed in this phase, but the comment was already correct (the doc described the intended behavior, not the actual behavior). PHASE_OK
-
+- 2026-04-29 12:45 — harness: review passed, marking done
 **Last phase report.**
 - Phase: review
 - Outcome: PHASE_OK
