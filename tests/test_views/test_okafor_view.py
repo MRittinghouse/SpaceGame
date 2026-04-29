@@ -1,4 +1,4 @@
-"""Tests for OkaforView (SA-R1).
+"""Tests for OkaforView (SA-R1 / SA-R2).
 
 Covers:
   - Construction with synthetic state
@@ -11,10 +11,13 @@ Covers:
   - IP-disposition (held → licensed sets schedule; held → sold removes holding)
   - First-failure flag fires only once
   - Insufficient credits is rejected gracefully
+  - SA-R2: _kweon_dialogue_id() routing (failure_debrief > arc_beat > ambient)
+  - SA-R2: _close_active_dialogue() sets arc-beat seen-flags + legacy_ending
 """
 
 from __future__ import annotations
 
+import pytest
 import pygame
 import pygame_gui
 
@@ -24,6 +27,12 @@ from spacegame.constants.flags import (
     okafor_collaborator_share,
     okafor_failure_debrief_shown,
     okafor_first_failure_seen,
+    okafor_legacy_first_heal_seen,
+    okafor_legacy_first_profit_seen,
+    okafor_legacy_heal_ending_seen,
+    okafor_legacy_heal_pattern_seen,
+    okafor_legacy_profit_ending_seen,
+    okafor_legacy_profit_pattern_seen,
     okafor_patent_disposed_first,
     okafor_project_funded_first,
     seen_okafor_tip,
@@ -491,4 +500,157 @@ class TestNpcDock:
         view._open_npc_dialogue("kweon_director")
         assert view._active_dialogue_tree is not None
         assert view._active_dialogue_tree.id == "kweon_okafor_intro"
+        view.on_exit()
+
+
+# ---------------------------------------------------------------------------
+# SA-R2 — _kweon_dialogue_id() routing and close-handler arc-beat flags
+# ---------------------------------------------------------------------------
+
+
+def _make_state_with_heal(n: int) -> OkaforResearchState:
+    return OkaforResearchState(legacy_heal_completed=n)
+
+
+def _make_state_with_profit(n: int) -> OkaforResearchState:
+    return OkaforResearchState(legacy_profit_completed=n)
+
+
+class TestKweonDialogueIdRouting:
+    """Acceptance #5 — _kweon_dialogue_id() priority order."""
+
+    def test_failure_debrief_beats_arc_beat(self) -> None:
+        """failure_debrief_pending takes top priority."""
+        manager, player = _make_env()
+        player.dialogue_flags[okafor_first_failure_seen()] = True
+        # Arc beat is also due (1 heal completed, first_heal not seen)
+        player.okafor_research_state = _make_state_with_heal(1)
+        view = _make_view(player, manager)
+        view.on_enter()
+        assert view._kweon_dialogue_id() == "kweon_failure_debrief"
+        view.on_exit()
+
+    def test_arc_beat_beats_ambient_when_pending(self) -> None:
+        """Arc beat fires ahead of the ambient greeting."""
+        manager, player = _make_env()
+        player.okafor_research_state = _make_state_with_heal(1)
+        view = _make_view(player, manager)
+        view.on_enter()
+        result = view._kweon_dialogue_id()
+        assert result == "kweon_legacy_first_heal"
+        view.on_exit()
+
+    def test_ambient_returned_when_no_beat_pending(self) -> None:
+        """Falls through to ambient intro when no arc beat is due."""
+        manager, player = _make_env()
+        player.okafor_research_state = OkaforResearchState()
+        view = _make_view(player, manager)
+        view.on_enter()
+        assert view._kweon_dialogue_id() == "kweon_okafor_intro"
+        view.on_exit()
+
+    def test_profit_beat_routes_correctly(self) -> None:
+        manager, player = _make_env()
+        player.okafor_research_state = _make_state_with_profit(1)
+        view = _make_view(player, manager)
+        view.on_enter()
+        assert view._kweon_dialogue_id() == "kweon_legacy_first_profit"
+        view.on_exit()
+
+    def test_heal_pattern_routes_at_three(self) -> None:
+        manager, player = _make_env()
+        player.okafor_research_state = _make_state_with_heal(3)
+        player.dialogue_flags[okafor_legacy_first_heal_seen()] = True
+        view = _make_view(player, manager)
+        view.on_enter()
+        assert view._kweon_dialogue_id() == "kweon_legacy_heal_pattern"
+        view.on_exit()
+
+    def test_heal_ending_routes_at_spread(self) -> None:
+        manager, player = _make_env()
+        player.okafor_research_state = OkaforResearchState(
+            legacy_heal_completed=6, legacy_profit_completed=1
+        )
+        player.dialogue_flags[okafor_legacy_first_heal_seen()] = True
+        player.dialogue_flags[okafor_legacy_heal_pattern_seen()] = True
+        view = _make_view(player, manager)
+        view.on_enter()
+        assert view._kweon_dialogue_id() == "kweon_legacy_heal_ending"
+        view.on_exit()
+
+
+class TestCloseHandlerSetsArcBeatFlags:
+    """Acceptance #6 — closing an arc-beat tree sets the matching seen-flag."""
+
+    def _open_arc_tree(self, view: OkaforView, tree_id: str) -> None:
+        """Directly open a specific dialogue tree (bypasses routing)."""
+        dl = get_data_loader()
+        tree = dl.get_dialogue(tree_id)
+        assert tree is not None, f"Tree {tree_id!r} not found in data"
+        view._active_dialogue_tree = tree
+        view._active_dialogue_node_id = tree.start_node_id
+        view._active_dialogue_is_failure_debrief = False
+
+    @pytest.mark.parametrize(
+        "tree_id,flag_fn",
+        [
+            ("kweon_legacy_first_heal", okafor_legacy_first_heal_seen),
+            ("kweon_legacy_first_profit", okafor_legacy_first_profit_seen),
+            ("kweon_legacy_heal_pattern", okafor_legacy_heal_pattern_seen),
+            ("kweon_legacy_profit_pattern", okafor_legacy_profit_pattern_seen),
+        ],
+    )
+    def test_closing_arc_tree_sets_seen_flag(
+        self,
+        tree_id: str,
+        flag_fn: object,
+    ) -> None:
+        manager, player = _make_env()
+        player.okafor_research_state = OkaforResearchState()
+        view = _make_view(player, manager)
+        view.on_enter()
+        self._open_arc_tree(view, tree_id)
+        assert not player.dialogue_flags.get(flag_fn())  # type: ignore[operator]
+        view._close_active_dialogue()
+        assert player.dialogue_flags.get(flag_fn()) is True  # type: ignore[operator]
+        view.on_exit()
+
+    def test_closing_heal_ending_sets_legacy_ending(self) -> None:
+        manager, player = _make_env()
+        player.okafor_research_state = OkaforResearchState()
+        view = _make_view(player, manager)
+        view.on_enter()
+        self._open_arc_tree(view, "kweon_legacy_heal_ending")
+        view._close_active_dialogue()
+        assert player.dialogue_flags.get(okafor_legacy_heal_ending_seen()) is True
+        assert player.okafor_research_state.legacy_ending == "heal"
+        view.on_exit()
+
+    def test_closing_profit_ending_sets_legacy_ending(self) -> None:
+        manager, player = _make_env()
+        player.okafor_research_state = OkaforResearchState()
+        view = _make_view(player, manager)
+        view.on_enter()
+        self._open_arc_tree(view, "kweon_legacy_profit_ending")
+        view._close_active_dialogue()
+        assert player.dialogue_flags.get(okafor_legacy_profit_ending_seen()) is True
+        assert player.okafor_research_state.legacy_ending == "profit"
+        view.on_exit()
+
+    def test_after_pattern_close_ambient_returns_next_or_ambient(self) -> None:
+        """After closing the heal-pattern beat, re-routing gives next beat or ambient."""
+        manager, player = _make_env()
+        player.okafor_research_state = _make_state_with_heal(3)
+        player.dialogue_flags[okafor_legacy_first_heal_seen()] = True
+        view = _make_view(player, manager)
+        view.on_enter()
+        # Pattern beat fires
+        assert view._kweon_dialogue_id() == "kweon_legacy_heal_pattern"
+        # Simulate dismissal
+        self._open_arc_tree(view, "kweon_legacy_heal_pattern")
+        view._close_active_dialogue()
+        assert player.dialogue_flags.get(okafor_legacy_heal_pattern_seen()) is True
+        # Now routing should return ambient (no more pending beats)
+        result = view._kweon_dialogue_id()
+        assert result in ("kweon_okafor_intro", "kweon_legacy_heal_ending")
         view.on_exit()

@@ -33,6 +33,12 @@ from spacegame.constants.flags import (
     okafor_collaborator_share,
     okafor_failure_debrief_shown,
     okafor_first_failure_seen,
+    okafor_legacy_first_heal_seen,
+    okafor_legacy_first_profit_seen,
+    okafor_legacy_heal_ending_seen,
+    okafor_legacy_heal_pattern_seen,
+    okafor_legacy_profit_ending_seen,
+    okafor_legacy_profit_pattern_seen,
     okafor_patent_disposed_first,
     okafor_project_funded_first,
     seen_okafor_tip,
@@ -56,6 +62,7 @@ from spacegame.models.okafor_research import (
     compute_team_fund_cost,
     fund_project,
     get_template,
+    pending_legacy_beat,
     roll_offers,
     seed_for_window,
     transition_patent_to_licensed,
@@ -119,6 +126,18 @@ RESEARCHER_DOCK_ENTRIES: tuple[tuple[str, str, str, str], ...] = (
     ("theo_brandt", "Theo Brandt", "Bench Engineer", "theo_brandt_okafor"),
     ("sana_dey", "Sana Dey", "Junior Researcher", "sana_dey_okafor"),
 )
+
+# SA-R2: map each arc-beat tree id → (seen_flag_fn, optional_ending_value).
+# The close-handler uses this for O(1) flag dispatch without branching on
+# tree id inline. Ending entries carry a non-empty string; others carry "".
+_LEGACY_ARC_TREE_TO_FLAG: dict[str, tuple[str, str]] = {
+    "kweon_legacy_first_heal": (okafor_legacy_first_heal_seen(), ""),
+    "kweon_legacy_first_profit": (okafor_legacy_first_profit_seen(), ""),
+    "kweon_legacy_heal_pattern": (okafor_legacy_heal_pattern_seen(), ""),
+    "kweon_legacy_profit_pattern": (okafor_legacy_profit_pattern_seen(), ""),
+    "kweon_legacy_heal_ending": (okafor_legacy_heal_ending_seen(), "heal"),
+    "kweon_legacy_profit_ending": (okafor_legacy_profit_ending_seen(), "profit"),
+}
 
 
 class OkaforView(BaseView):
@@ -486,15 +505,22 @@ class OkaforView(BaseView):
         return None
 
     def _kweon_dialogue_id(self) -> str:
-        """Pick the Kweon tree based on the failure-debrief state.
+        """Pick the Kweon tree based on state.
 
-        Order:
-          1. ``kweon_failure_debrief`` when a project has failed and the
+        Priority (SA-R2 Decision 4):
+          1. ``kweon_failure_debrief`` — a project has failed and the
              debrief tree has not yet been dismissed.
-          2. ``kweon_okafor_intro`` as the ambient greeting otherwise.
+          2. Next pending legacy-arc beat from :func:`pending_legacy_beat`
+             — ethics counter thresholds met and beat not yet seen.
+          3. ``kweon_okafor_intro`` — ambient greeting.
         """
         if self._failure_debrief_pending:
             return "kweon_failure_debrief"
+        state = self.player.okafor_research_state
+        if state is not None:
+            beat = pending_legacy_beat(state, self.player.dialogue_flags)
+            if beat is not None:
+                return beat
         return KWEON_DOCK_ENTRY[3]
 
     @staticmethod
@@ -553,10 +579,22 @@ class OkaforView(BaseView):
         self._active_dialogue_node_id = next_id
 
     def _close_active_dialogue(self) -> None:
-        """Clear the active dialogue. Sets the debrief-shown flag if applicable."""
+        """Clear the active dialogue. Sets the debrief-shown flag if applicable.
+
+        SA-R2: also sets the matching ``okafor_legacy_*_seen`` flag when an
+        arc-beat tree closes, and writes ``legacy_ending`` for ending trees.
+        """
         if self._active_dialogue_is_failure_debrief:
             self.player.dialogue_flags[okafor_failure_debrief_shown()] = True
             self._refresh_failure_debrief_pending()
+        elif self._active_dialogue_tree is not None:
+            tree_id = self._active_dialogue_tree.id
+            entry = _LEGACY_ARC_TREE_TO_FLAG.get(tree_id)
+            if entry is not None:
+                seen_flag, ending = entry
+                self.player.dialogue_flags[seen_flag] = True
+                if ending and self.player.okafor_research_state is not None:
+                    self.player.okafor_research_state.legacy_ending = ending
         self._active_dialogue_tree = None
         self._active_dialogue_node_id = None
         self._active_dialogue_is_failure_debrief = False
