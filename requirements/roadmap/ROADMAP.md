@@ -4888,7 +4888,7 @@ Open question (reviewer judgment, not blocking implementation):
 - Started: 2026-04-29 17:30
 - Completed: 2026-04-29
 - Files_changed: spacegame/models/ambient_dialogue.py, spacegame/data_loader.py, spacegame/engine/game.py, data/crew/ambient_dialogue.json, tests/test_models/test_ambient_dialogue.py, tests/test_writing_bible_compliance.py, tests/test_data/test_dialogue_integrity.py, requirements/roadmap/ROADMAP.md
-- Commits: (pending final commit)
+- Commits: 25a698f
 - New_sprints_proposed: none
 - Decisions_locked: combat-marker fires at single shared resolution point (before branch dispatch); flag candidates used: marcus_uprising_inheritance_seen / attended_silent_shaft / heard_dcmc_intelligence / heard_nas_intelligence / marcus_father_connection_seen (all have existing producers); SI-3 producer-only orphan list shortened by 4.
 - Notes: Open question (single vs dual combat-marker call site) resolved: game.py has a single shared resolution path before the VICTORY/FLED/DEFEAT/NEGOTIATED branch; one mark_combat call suffices. All 20 acceptance criteria verified mechanically via test suite (10310 passed). Backward compatibility confirmed: 249 pre-existing lines still resolve; save files missing last_combat_day load cleanly with None default. Voice checks: all 64 new lines reviewed against character_voices.md before commit. Writing-bible and SI-3 scanner violations: zero.
