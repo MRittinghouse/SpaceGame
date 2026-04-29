@@ -2791,7 +2791,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 
 #### SA-B3 — Stellaris Auction House (primary venue)
 
-**Status**: in-progress (planning)
+**Status**: in-progress (implementing)
 **Phase**: Phase III | **Size**: L | **Effort**: 2 weeks
 **Depends on**: SA-B2 | **Blocks**: SA-B6
 
@@ -2978,18 +2978,29 @@ These are the decisions to lock during planning execution. Recommendations recor
 - 2026-04-26 — todo (created)
 - 2026-04-29 09:44 — harness: plan phase starting
 - 2026-04-29 10:30 — planning complete; verified all 4 context-to-read docs exist (sa_bidding_design.md, character_voices.md, station_anchors.md, SA-B2 implementation in spacegame/models/bidding.py + bidding_persona.py + bidding_lot.py + auction_view.py). Mapped what SA-B2 already shipped vs. what SA-B3 must add: engine is venue-agnostic and complete; SA-B3 layers Stellaris content (lot catalog, voice content, NPC + dialogue, schedule integration, hub navigation, Stellaris standing→tier helper, season helper, attendance rules, post-session social UI fill-out, empty-state Velo flavor). Expanded touch zones from 6 to 17 entries (added voice-data file, NPC entry, journal entry, data-loader changes, hub nav, schedule integration, 4 new test files). Tightened acceptance from 6 vague criteria to 20 mechanically-verifiable criteria. Locked 15 Stellaris-specific decisions (categories, tier thresholds, attendance frequencies, catalog size, headliner count, season concept, voice-as-data, lot-as-data, Velo-as-NPC, test-file boundary, no-engine-changes, session-size constants, flag helper, no-save-bump, talk-to-Velo from hub). Folded in polish items: post-session social UI (vision-required), empty-state Velo flavor, retired-rival aside, talk-to-Velo dialogue tree, new journal entry. No new sprints proposed; SA-B3 scope is well-bounded by the design doc and SA-B2's engine surface. PHASE_OK
-
+- 2026-04-29 09:58 — harness: implement phase starting (rework cycle 0)
+- 2026-04-29 10:10 — Stellaris bidding helpers (`stellaris_tier_for_standing`, `current_season_tag`, `pick_stellaris_rival_attendance`, `stellaris_initial_session_day`) + DataLoader auction lot/voice loaders + accessors landed; helper test red→green confirmed; commit e5806d1.
+- 2026-04-29 10:25 — Stellaris content data files authored: `data/auctions/stellaris_lots.json` (20 lots across 5 categories, 4 headliners, 12 season-tagged, all module re-issues resolve in modules.json), `data/auctions/stellaris_voices.json` (Velo + rival + post-session + Sable + empty-state + retired-rival templates per locked schema). Voice-checked against character_voices.md. Lot catalog tests green. Commit 4e42898.
+- 2026-04-29 10:35 — Cassian Velo registered: NPC entry at stellaris_port (cassian_velo_main dialogue), 4-branch off-floor dialogue tree (preview hints / rival readings / floor history / exit), `seen_first_velo_encounter` flag helper added per SI-3 cookbook, `auto_auction_first_velo_encounter` journal entry keyed on the new flag. Voice-compliance scanner clean over Velo's content + the journal entry. Dialogue-integrity scanner: flag added to KNOWN_PRODUCER_ONLY_ORPHANS (one-line documented reason: scanner does not crawl journal trigger_flag). Commit 38a92ed.
+- 2026-04-29 10:50 — Hub navigation + view rendering: `UNIQUE_HALL_TARGETS["stellaris_auction_house"]` -> `GameState.AUCTION`; "Talk to Velo" button surfaces alongside "Enter" only when the location is the auction house and Velo is registered. Engine `_prepare_stellaris_session` seeds the calendar, generates the pool from loaded catalog using rep tier + season + attendance helpers, wires 2 Stellaris Speculators with rotating elevated categories, hands the live personas + voice templates to the AuctionView. Auction view: PREVIEW empty-state uses Velo flavor template (with fallback), BID_WINDOW renders Velo running commentary in the header, rival flat-bid templates land in the bid log when a named rival bids, POST_SESSION social UI renders rival outcome buckets + Sable read variant + retired-rival aside. Commits 6b75943.
+- 2026-04-29 10:55 — Full validation green. Tests: 9714 pass / 98 skipped (baseline 9631 → +83 SA-B3 tests, 0 regressions). Touched-files lint + format clean. mypy clean on touched files (preexisting forward-reference noise in data_loader.py untouched). Writing-Bible scanner clean over all new content. Dialogue-integrity scanner clean. PHASE_OK
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-04-29 09:44
-- Completed: 2026-04-29 10:30
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 4225150
-- New_sprints_proposed: none
-- Polish_items_folded_in: post-session social UI (rival commentary + Sable read + retired-rival aside), empty-state Velo flavor line, talk-to-Velo NPC + dialogue tree, first-Velo-encounter journal entry, season-tag rotation
-- Decisions_locked: 15
-- Notes: Verified all 4 context docs exist and read deeply. SA-B2 engine is complete and venue-agnostic; SA-B3 layers Stellaris content. Touch-zone list expanded from 6 to 17 entries to reflect the realistic surface (voice file, NPC, journal, data-loader, hub nav, schedule integration, 4 new tests). Acceptance criteria tightened from 6 vague to 20 mechanically-verifiable. Five lots in the categories list reduced from the original goal's 8 (art folded into antiquity; contraband moved to SA-B4; faction-perk-equivalent into rare_upgrade) per design doc §1.3.
+- Started: 2026-04-29 09:58
+- Completed: 2026-04-29 10:55
+- Files_changed: spacegame/models/bidding.py, spacegame/data_loader.py, spacegame/views/auction_view.py, spacegame/views/station_hub_view.py, spacegame/engine/game.py, spacegame/constants/flags.py, data/auctions/stellaris_lots.json, data/auctions/stellaris_voices.json, data/characters/npcs.json, data/dialogue/dialogues.json, data/journal/entries.json, tests/test_models/test_bidding_stellaris.py, tests/test_models/test_data_loader_auctions.py, tests/test_views/test_auction_view_stellaris.py, tests/test_scenarios/test_scenario_stellaris_auction.py, tests/test_data/test_stellaris_voice_compliance.py, tests/test_data/test_dialogue_integrity.py
+- Commits: e5806d1, 4e42898, 38a92ed, 6b75943
+- Tests_added: 83
+- Tests_baseline: 9631
+- Tests_passing: 9714
+- Tests_skipped: 98
+- Lint_clean: yes
+- Format_clean: yes
+- SI3_scanner_clean: yes
+- Writing_bible_clean: yes
+- Touch_zones_respected: yes (one out-of-zone line in tests/test_data/test_dialogue_integrity.py — added `seen_first_velo_encounter` to `KNOWN_PRODUCER_ONLY_ORPHANS` with documented reason; small additive change noted in commit message)
+- Notes: SA-B3 layers Stellaris content on top of SA-B2's venue-agnostic engine. 20-lot catalog + voice file + Velo NPC + dialogue tree + first-encounter journal + tier/season/attendance helpers + hub navigation + auction view voice rendering all in scope. All 20 acceptance criteria addressed by the new tests; engine-side bidding model schema unchanged.
 
 #### SA-B4 — Crimson Reach Black Market auctions
 
