@@ -4901,7 +4901,7 @@ Open question (reviewer judgment, not blocking implementation):
 - Notes: Implement phase missed the two engine integration tests for criteria 8 and 9 (plan steps 10 and 11). Fixed directly. All other criteria met; code wiring correct; content volume and voice quality solid.
 ### WB-1 — Station tagline scanner coverage
 
-**Status**: in-progress (reviewing)
+**Status**: done
 **Source**: `requirements/writing_bible_scanner_gaps.md` Gap 1
 **Size**: S | **Effort**: 3-5 days
 **Depends on**: none | **Blocks**: WB-2
@@ -4957,7 +4957,7 @@ Open question (reviewer judgment, not blocking implementation):
 - 2026-04-29 — implementation complete, all gates green; tests 10312→10317 (+5). PHASE_OK
 - 2026-04-29 18:22 — harness: review phase starting (rework cycle 0)
 - 2026-04-29 19:00 — review complete; all 6 acceptance criteria verified. Live injection check confirmed em-dash detection bites. Test count 10317 >= 10312 baseline. Lint/format clean. One minor observation on docstring accuracy (see single-tighten in phase report); not a blocker. PHASE_OK
-
+- 2026-04-29 18:26 — harness: review passed, marking done
 **Last phase report.**
 - Phase: review
 - Outcome: PHASE_OK
