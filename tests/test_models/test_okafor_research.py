@@ -15,6 +15,7 @@ import pytest
 from spacegame.models.okafor_research import (
     FAILURE_ODDS,
     FAILURE_REFUND_RATE,
+    FAILURE_REFUND_RATES,
     OKAFOR_PROJECT_ETHICS,
     OKAFOR_PROJECT_TEMPLATES,
     ROYALTY_INTERVAL_DAYS,
@@ -941,3 +942,86 @@ class TestEthicsCounterIncrement:
         self._apply_ethics_counters(state, outcomes[0].template_id, outcomes[0].success)
         assert state.legacy_heal_completed == 0
         assert state.legacy_profit_completed == 0
+
+
+# ---------------------------------------------------------------------------
+# SA-R3 — Tier-aware failure refund
+# ---------------------------------------------------------------------------
+
+
+class TestTierAwareFailureRefund:
+    """SA-R3 AC #2 — low/mid/high tiers refund 50%/30%/20% respectively."""
+
+    def _find_failure(
+        self, template_id: str, player_seed: str = "refund_tester"
+    ) -> tuple[OkaforProjectTemplate, ActiveProject]:
+        """Return a (template, active) pair whose deterministic outcome is failure."""
+        template = get_template(template_id)
+        assert template is not None, f"Template {template_id!r} not found"
+        for accept_day in range(300):
+            active = ActiveProject(
+                template_id=template_id,
+                accept_day=accept_day,
+                duration_days=template.base_duration_days,
+                cost_paid=template.base_cost_credits,
+                collaborators=[],
+            )
+            success, _ = resolve_completion(template, active, player_seed, 0.0, 0.0)
+            if not success:
+                return template, active
+        pytest.fail(f"No failure outcome found for {template_id!r} in 300 trials")
+        raise AssertionError
+
+    def test_failure_refund_rates_dict_exists(self) -> None:
+        assert FAILURE_REFUND_RATES == {"low": 0.50, "mid": 0.30, "high": 0.20}
+
+    def test_low_risk_failure_refunds_50_percent(self) -> None:
+        template, active = self._find_failure("low_protein_folding_replication")
+        assert template.risk_tier == "low"
+        _, payout = resolve_completion(template, active, "refund_tester", 0.0, 0.0)
+        expected = round(active.cost_paid * 0.50)
+        assert payout == expected, (
+            f"Low-risk failure must refund 50% of cost_paid; "
+            f"expected {expected}, got {payout}"
+        )
+
+    def test_mid_risk_failure_refunds_30_percent(self) -> None:
+        template, active = self._find_failure("mid_neural_synthesis_protocol")
+        assert template.risk_tier == "mid"
+        _, payout = resolve_completion(template, active, "refund_tester", 0.0, 0.0)
+        expected = round(active.cost_paid * 0.30)
+        assert payout == expected, (
+            f"Mid-risk failure must refund 30% of cost_paid; "
+            f"expected {expected}, got {payout}"
+        )
+
+    def test_high_risk_failure_refunds_20_percent(self) -> None:
+        template, active = self._find_failure("high_quantum_sensor_capstone")
+        assert template.risk_tier == "high"
+        _, payout = resolve_completion(template, active, "refund_tester", 0.0, 0.0)
+        expected = round(active.cost_paid * 0.20)
+        assert payout == expected, (
+            f"High-risk failure must refund 20% of cost_paid; "
+            f"expected {expected}, got {payout}"
+        )
+
+    def test_mid_refund_matches_deprecation_alias(self) -> None:
+        # FAILURE_REFUND_RATE (alias) must still equal the mid-tier rate.
+        assert FAILURE_REFUND_RATE == FAILURE_REFUND_RATES["mid"]
+
+    @pytest.mark.parametrize(
+        "tier,expected_rate",
+        [("low", 0.50), ("mid", 0.30), ("high", 0.20)],
+    )
+    def test_all_tiers_parametric(self, tier: str, expected_rate: float) -> None:
+        """Parametric: every tier produces the locked rate."""
+        tier_template_id: dict[str, str] = {
+            "low": "low_industrial_dust_filtration",
+            "mid": "mid_alloy_corrosion_mining_belt",
+            "high": "high_post_outbreak_vaccine_synthesis",
+        }
+        template, active = self._find_failure(tier_template_id[tier])
+        assert template.risk_tier == tier
+        _, payout = resolve_completion(template, active, "refund_tester", 0.0, 0.0)
+        expected = round(active.cost_paid * expected_rate)
+        assert payout == expected

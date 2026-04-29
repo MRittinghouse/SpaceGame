@@ -40,8 +40,14 @@ FAILURE_ODDS: dict[str, float] = {
     "high": 0.35,
 }
 
-# Failure path refunds 30% of paid capital.
-FAILURE_REFUND_RATE: float = 0.30
+# Tier-aware failure refunds: proportional to risk — low-risk projects rarely
+# fail and refund more capital when they do; high-risk projects bet bigger and
+# sting more on loss. SA-R3 Decision 1.
+FAILURE_REFUND_RATES: dict[str, float] = {"low": 0.50, "mid": 0.30, "high": 0.20}
+
+# Deprecation alias — external consumers that imported FAILURE_REFUND_RATE
+# directly still work. New code should use FAILURE_REFUND_RATES.
+FAILURE_REFUND_RATE: float = FAILURE_REFUND_RATES["mid"]
 
 # Patent / IP economy (acceptance #8).
 ROYALTY_INTERVAL_DAYS: int = 10
@@ -666,7 +672,7 @@ def resolve_completion(
     Effective failure odds clamp to ``[0, base_failure_odds]`` so a very
     high ``risk_reduction_total`` cannot drive odds negative; the success
     payout is multiplied by ``(1 + yield_bonus_total)``; failure refunds
-    :data:`FAILURE_REFUND_RATE` of ``active.cost_paid``.
+    :data:`FAILURE_REFUND_RATES` of ``active.cost_paid`` (tier-keyed).
 
     Args:
         template: The source template.
@@ -691,7 +697,8 @@ def resolve_completion(
     if is_success:
         payout = round(template.base_success_payout * (1.0 + yield_bonus_total))
         return True, payout
-    refund = round(active.cost_paid * FAILURE_REFUND_RATE)
+    refund_rate = FAILURE_REFUND_RATES.get(template.risk_tier, 0.30)
+    refund = round(active.cost_paid * refund_rate)
     return False, refund
 
 
