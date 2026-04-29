@@ -51,7 +51,7 @@ The SA-arc table below is **auto-regenerated** by the ralph harness from the spr
 | [SA-B5](#sa-b5--player-initiated-auctions) | Player-Initiated Auctions | III | L | done | SA-B2 |
 | [SA-B6](#sa-b6--bidding-polish--tuning) | Bidding polish + tuning | III | M | done | SA-B3, SA-B4, SA-B5 |
 | [SA-R1](#sa-r1--okafor-institute-research-patronage) | Okafor Institute (Research Patronage) | IV | L | done | SA-PREP-1, SA-C2 |
-| [SA-R2](#sa-r2--dr-okafors-legacy-narrative-arc) | Dr. Okafor's Legacy Narrative Arc | IV | M | review | SA-R1 |
+| [SA-R2](#sa-r2--dr-okafors-legacy-narrative-arc) | Dr. Okafor's Legacy Narrative Arc | IV | M | done | SA-R1 |
 | [SA-R3](#sa-r3--research-patronage-polish) | Research Patronage polish | IV | S | todo | SA-R1, SA-R2 |
 | [SA-F1](#sa-f1--financial-exchange-design) | Financial Exchange Design | V | M | todo | SA-PREP-1, SA-C2, SA-V |
 | [SA-F2](#sa-f2--futures-core) | Futures Core | V | XL | todo | SA-F1 |
@@ -3704,7 +3704,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 
 #### SA-R2 — Dr. Okafor's Legacy Narrative Arc
 
-**Status**: in-progress (reviewing)
+**Status**: done
 **Phase**: Phase IV | **Size**: M | **Effort**: 1 week
 **Depends on**: SA-R1 | **Blocks**: SA-R3
 
@@ -3827,7 +3827,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 - 2026-04-29 16:57 — implementation complete; all 12 acceptance criteria met; 119 net-new tests (9988 baseline → 10107 passing); 12 files changed across models, views, engine, constants, data, and tests; 1 pre-existing F841 lint issue fixed in `refining_view.py` while running validation chain; 3 flag-scanner exceptions registered (okafor_legacy_heal_pattern_seen DETECTOR MISS on producer, okafor_legacy_mission_offered DETECTOR MISS on consumer, okafor_legacy_mission_completed pending SA-R2-FOLLOW-1 consumer); mission credit ceiling exception registered for `okafor_legacy_clinic_run` (8000 credits, gated behind 3 heal completions); kweon_relationship_value reward type for mission deferred to SA-R2-FOLLOW-1 (no reward type exists; flag-only stopgap used); haven_pastoral_alliance destination chosen for clinic run (havens_rest system). Status → review. PHASE_OK
 - 2026-04-29 15:21 — harness: review phase starting (rework cycle 0)
 - 2026-04-29 17:00 — review complete; 1 minor finding fixed directly (import sort I001 in test_okafor_view.py); all 12 acceptance criteria verified; 3/3 polish items verified; AC8 kweon_relationship_value deferral noted as pre-authorized by plan task 8, SA-R2-FOLLOW-1 flagged for human evaluation. PHASE_OK
-
+- 2026-04-29 15:28 — harness: review passed, marking done
 **Last phase report.**
 - Phase: review
 - Outcome: PHASE_OK
