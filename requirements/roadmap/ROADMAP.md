@@ -47,7 +47,7 @@ The SA-arc table below is **auto-regenerated** by the ralph harness from the spr
 | [SA-B1](#sa-b1--bidding-system-design) | Bidding System Design | III | M | done | SA-PREP-1, SA-A2, SA-C2 |
 | [SA-B2](#sa-b2--bidding-core) | Bidding Core | III | XL | done | SA-B1, SA-A2, SA-C2 |
 | [SA-B3](#sa-b3--stellaris-auction-house-primary-venue) | Stellaris Auction House (primary venue) | III | L | done | SA-B2 |
-| [SA-B4](#sa-b4--crimson-reach-black-market-auctions) | Crimson Reach Black Market auctions | III | L | todo | SA-B2, SA-1 |
+| [SA-B4](#sa-b4--crimson-reach-black-market-auctions) | Crimson Reach Black Market auctions | III | L | done | SA-B2, SA-1 |
 | [SA-B5](#sa-b5--player-initiated-auctions) | Player-Initiated Auctions | III | L | todo | SA-B2 |
 | [SA-B6](#sa-b6--bidding-polish--tuning) | Bidding polish + tuning | III | M | todo | SA-B3, SA-B4, SA-B5 |
 | [SA-R1](#sa-r1--okafor-institute-research-patronage) | Okafor Institute (Research Patronage) | IV | L | todo | SA-PREP-1, SA-C2 |
@@ -3005,7 +3005,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 
 #### SA-B4 — Crimson Reach Black Market auctions
 
-**Status**: in-progress (reviewing)
+**Status**: done
 **Phase**: Phase III | **Size**: L | **Effort**: 1.5 weeks
 **Depends on**: SA-B2, SA-1 | **Blocks**: SA-B6
 
@@ -3172,7 +3172,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 - 2026-04-29 12:00 — implementation complete; tests 9714→9779 (+65); lint+format+writing-bible+SI3-scanner clean. Bidding engine extended with `tier_ladder_for_venue`, venue-aware `_tier_distance`, `reach_session_due`, `reach_advance_demand`, `wreckers_tier_for_membership`; legality penalty constants (-2 contraband, -1 restricted_weapon); `auction_lots_won_reach` counter on AuctionState with backward-compatible save default. Three flag helpers registered. Vex Tarn (Reach Floor Manager) authored end-to-end: voice sheet at `requirements/character_voices.md`, NPC entry, four-branch dialogue tree, voice-distinctness scanner. 14-lot Reach catalog covers all four locked categories (contraband / restricted_weapon / salvage_lot / faction_commodity) with 1 headliner, zero season tags, Wreckers' tier coverage. Voice file ships 6 Floor Manager `auctioneer_lines` templates, Salko's flat-bid template, post-session Salko buckets + ambient Reach Buyer pool, four Sable reads, empty-state, retired-rival, tier-locked. `crimson_black_market` ("The Reach Floor") added to locations.json; station hub gates Enter on Wreckers' tier and surfaces Talk-to-Floor-Manager for all tiers (unjoined branch fires in Vex's voice). AuctionView reads `auctioneer_lines` first (with `velo_lines` fallback); Reach dim alpha 180 vs. Stellaris 150; `venue_accent_color` sourced from ReachDarkLayout. `_prepare_reach_session` and `_apply_reach_legality_penalty` wired in `engine/game.py`; hub-entry routes via `pending_auction_venue_id` + `AUCTION_VENUE_BY_LOCATION_ID`. Three journal auto-entries fire on the locked flags (auction_first_reach_session, seen_first_floor_manager_encounter, auction_first_contraband_win). Achievement stub `auction_reach_debut` registered with `stat_key=auction_lots_won_reach`. PHASE_OK
 - 2026-04-29 11:31 — harness: review phase starting (rework cycle 0)
 - 2026-04-29 12:30 — review complete; 1 minor finding fixed directly (AC13 rendering gap), 1 minor observation noted (AC17 Captain Memory test absent), 21/22 acceptance criteria directly verified + 1 fixed. PHASE_OK
-
+- 2026-04-29 11:46 — harness: review passed, marking done
 **Last phase report.**
 - Phase: review
 - Outcome: PHASE_OK
