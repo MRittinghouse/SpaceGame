@@ -787,3 +787,157 @@ class TestPendingLegacyBeat:
         state = OkaforResearchState(legacy_heal_completed=1, legacy_profit_completed=1)
         result = pending_legacy_beat(state, {})
         assert result == "kweon_legacy_first_heal"
+
+
+class TestEthicsCounterIncrement:
+    """Acceptance #3 — SA-R2 ethics counter increments on the success branch only.
+
+    These tests verify the logic that game.py._tick_okafor_projects applies
+    after calling resolve_completed_projects: look up the ethics tag for each
+    successful outcome and bump the matching counter on OkaforResearchState.
+    Failures and neutral-tagged successes must not bump either counter.
+    """
+
+    def _find_success_accept_day(self, template_id: str, player_seed: str = "TestCaptain") -> int:
+        """Find an accept_day that the seeded RNG resolves to success."""
+        from spacegame.models.okafor_research import resolve_completion
+
+        template = get_template(template_id)
+        assert template is not None
+        for accept_day in range(200):
+            active = ActiveProject(
+                template_id=template_id,
+                accept_day=accept_day,
+                duration_days=template.base_duration_days,
+                cost_paid=template.base_cost_credits,
+                collaborators=[],
+            )
+            success, _ = resolve_completion(template, active, player_seed, 0.0, 0.0)
+            if success:
+                return accept_day
+        pytest.fail(f"No success outcome found for {template_id} in 200 trials")
+        raise AssertionError
+
+    def _find_failure_accept_day(self, template_id: str, player_seed: str = "TestCaptain") -> int:
+        """Find an accept_day that the seeded RNG resolves to failure."""
+        from spacegame.models.okafor_research import resolve_completion
+
+        template = get_template(template_id)
+        assert template is not None
+        for accept_day in range(200):
+            active = ActiveProject(
+                template_id=template_id,
+                accept_day=accept_day,
+                duration_days=template.base_duration_days,
+                cost_paid=template.base_cost_credits,
+                collaborators=[],
+            )
+            success, _ = resolve_completion(template, active, player_seed, 0.0, 0.0)
+            if not success:
+                return accept_day
+        pytest.fail(f"No failure outcome found for {template_id} in 200 trials")
+        raise AssertionError
+
+    def _apply_ethics_counters(
+        self,
+        state: OkaforResearchState,
+        template_id: str,
+        success: bool,
+    ) -> None:
+        """Simulate the 4-line increment that game.py._tick_okafor_projects applies."""
+        if not success:
+            return
+        tag = OKAFOR_PROJECT_ETHICS.get(template_id, "neutral")
+        if tag == "heal":
+            state.legacy_heal_completed += 1
+        elif tag == "profit":
+            state.legacy_profit_completed += 1
+
+    @pytest.mark.parametrize(
+        "template_id,expected_heal,expected_profit",
+        [
+            ("low_meta_analysis_pediatric", 1, 0),
+            ("mid_field_clinic_supply_chain", 1, 0),
+            ("high_post_outbreak_vaccine_synthesis", 1, 0),
+        ],
+    )
+    def test_heal_success_increments_heal_counter(
+        self,
+        template_id: str,
+        expected_heal: int,
+        expected_profit: int,
+    ) -> None:
+        state = OkaforResearchState()
+        accept_day = self._find_success_accept_day(template_id)
+        template = get_template(template_id)
+        assert template is not None
+        fund_project(state, template, accept_day, collaborators=[])
+        outcomes = resolve_completed_projects(
+            state, accept_day + template.base_duration_days, "TestCaptain", 0.0, 0.0
+        )
+        assert len(outcomes) == 1 and outcomes[0].success
+        self._apply_ethics_counters(state, outcomes[0].template_id, outcomes[0].success)
+        assert state.legacy_heal_completed == expected_heal
+        assert state.legacy_profit_completed == expected_profit
+
+    @pytest.mark.parametrize(
+        "template_id",
+        [
+            "low_industrial_dust_filtration",
+            "mid_orbital_propulsion_efficiency",
+            "mid_alloy_corrosion_mining_belt",
+            "high_quantum_sensor_capstone",
+        ],
+    )
+    def test_profit_success_increments_profit_counter(self, template_id: str) -> None:
+        state = OkaforResearchState()
+        accept_day = self._find_success_accept_day(template_id)
+        template = get_template(template_id)
+        assert template is not None
+        fund_project(state, template, accept_day, collaborators=[])
+        outcomes = resolve_completed_projects(
+            state, accept_day + template.base_duration_days, "TestCaptain", 0.0, 0.0
+        )
+        assert len(outcomes) == 1 and outcomes[0].success
+        self._apply_ethics_counters(state, outcomes[0].template_id, outcomes[0].success)
+        assert state.legacy_heal_completed == 0
+        assert state.legacy_profit_completed == 1
+
+    @pytest.mark.parametrize(
+        "template_id",
+        [
+            "low_protein_folding_replication",
+            "low_archive_recovery",
+            "mid_neural_synthesis_protocol",
+        ],
+    )
+    def test_neutral_success_bumps_neither_counter(self, template_id: str) -> None:
+        state = OkaforResearchState()
+        accept_day = self._find_success_accept_day(template_id)
+        template = get_template(template_id)
+        assert template is not None
+        fund_project(state, template, accept_day, collaborators=[])
+        outcomes = resolve_completed_projects(
+            state, accept_day + template.base_duration_days, "TestCaptain", 0.0, 0.0
+        )
+        assert len(outcomes) == 1 and outcomes[0].success
+        self._apply_ethics_counters(state, outcomes[0].template_id, outcomes[0].success)
+        assert state.legacy_heal_completed == 0
+        assert state.legacy_profit_completed == 0
+
+    def test_failure_bumps_neither_counter_regardless_of_ethics_tag(self) -> None:
+        # Use a heal-tagged template but cause it to fail — counter must not increment.
+        # low_meta_analysis_pediatric has low failure odds; use mid risk for more failures.
+        template_id = "mid_field_clinic_supply_chain"
+        state = OkaforResearchState()
+        accept_day = self._find_failure_accept_day(template_id)
+        template = get_template(template_id)
+        assert template is not None
+        fund_project(state, template, accept_day, collaborators=[])
+        outcomes = resolve_completed_projects(
+            state, accept_day + template.base_duration_days, "TestCaptain", 0.0, 0.0
+        )
+        assert len(outcomes) == 1 and not outcomes[0].success
+        self._apply_ethics_counters(state, outcomes[0].template_id, outcomes[0].success)
+        assert state.legacy_heal_completed == 0
+        assert state.legacy_profit_completed == 0

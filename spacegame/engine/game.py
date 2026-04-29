@@ -5161,6 +5161,7 @@ class Game:
             okafor_project_failed_first,
         )
         from spacegame.models.okafor_research import (
+            OKAFOR_PROJECT_ETHICS,
             OkaforResearchState,
             get_template,
             resolve_completed_projects,
@@ -5191,6 +5192,12 @@ class Game:
                 self.player.add_credits(outcome.payout)
                 if not self.player.dialogue_flags.get(okafor_project_completed_first()):
                     self.player.dialogue_flags[okafor_project_completed_first()] = True
+                # SA-R2: increment ethics counter based on project's ethics tag.
+                ethics_tag = OKAFOR_PROJECT_ETHICS.get(outcome.template_id, "neutral")
+                if ethics_tag == "heal":
+                    state.legacy_heal_completed += 1
+                elif ethics_tag == "profit":
+                    state.legacy_profit_completed += 1
                 self._mission_notifications.append(
                     f"Okafor: {display_name} succeeded. +{outcome.payout:,} CR."
                 )
