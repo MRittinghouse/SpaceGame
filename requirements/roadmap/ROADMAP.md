@@ -3369,7 +3369,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 - Notes: Both gaps (AC #14 journal callback, AC #5 floor guard) fixed directly with tests. All 21 criteria verified. Voice content, engine wiring, scenario pipeline, and save/load all solid.
 #### SA-B6 — Bidding polish + tuning
 
-**Status**: in-progress (planning)
+**Status**: in-progress (implementing)
 **Phase**: Phase III | **Size**: M | **Effort**: 1 week
 **Depends on**: SA-B3, SA-B4, SA-B5 | **Blocks**: SA-X1, SA-X2, SA-X4, SA-X5, SA-X6, SA-X7, SA-X8, SA-X9
 
@@ -3510,18 +3510,32 @@ These are the decisions to lock during planning execution. Recommendations recor
 - 2026-04-26 — todo (created)
 - 2026-04-29 12:46 — harness: plan phase starting
 - 2026-04-29 13:55 — planning complete; verified the single Context-to-read entry ("All SA-B1 through SA-B5 deliverables") expanded into 17 concrete read-targets covering the bidding design doc tuning sections, agent_principles + voice examples + writing guide for content additions, ui_design_standards for the accessibility audit, the SA-B2/B3/B4 review single-tightens (dead on_session_complete block, post-session options[0] rotation, Reach Salko 1-line buckets), the SA-B5 review's floor-guard fix as the final cancellation contract, and the engine surfaces (`bidding.py::_record_rival_outcomes`, `captain_memory.py` outcome constants, `auction_view._post_session_lines`, persona archetype factories). Touch zones expanded from 3 vague entries to 13 concrete files (NEW tuning notes doc; Reach voice file extension; OUTCOME_OUTCOMPETED in captain_memory.py; symmetric record path in bidding.py; rotation + dead-code in auction_view.py; possible constant tuning in bidding_persona.py / config.py / bidding_round.py / bidding.py; 5 test files extended). Tightened acceptance from 4 vague criteria to 12 mechanically-verifiable criteria. Locked 12 SA-B6-specific decisions: scope boundary, Reach player-listing permanently deferred, listing cancellation window pre-session-only, listing draw-weight deterministic prepend, OUTCOME_OUTCOMPETED implemented, voice-key rename closed-out, Reach demand cadence tunable not redesigned, Reach season tags not added, three single-tighten polish items in scope, no new sprints, test-file discipline additive-only, tuning-notes register exempt from scanner. Folded in 6 polish items: tuning notes (NEW deliverable), post-session line rotation (SA-B3 single tighten), Reach Salko bucket expansion (SA-B4 single tighten), dead-code removal (SA-B2 single tighten), OUTCOME_OUTCOMPETED for symmetric rivalry resolution (design-doc §10.5 deferred item), accessibility audit. No new sprints proposed. PHASE_OK
+- 2026-04-29 12:58 — harness: implement phase starting (rework cycle 0)
+- 2026-04-29 14:10 — red: TestOutcomeOutcompeted (7 tests) failing in test_bidding_captain_memory.py; test_player_win_streak failing in test_bidding_state.py
+- 2026-04-29 14:20 — green: OUTCOME_OUTCOMPETED constant added to captain_memory.py; collect_player_win_records() added to AuctionState symmetric to collect_outbid_records(). All 8 new tests passing. Committed 9b5e12b.
+- 2026-04-29 14:35 — red: TestPostSessionRotation.test_rotation_varies_across_sessions failing (options[0] always returned)
+- 2026-04-29 14:45 — green: _seed_index() module helper added; _post_session_lines() rotation wired; dead on_session_complete block removed from update(). 4 new rotation/dead-code tests passing. Salko bucket tests failing (1 line each).
+- 2026-04-29 15:00 — green: Salko buckets expanded to 3 lines each; voice-checked against cold-grudge/terse/present-tense register; Writing Bible scanner clean; reach voice compliance clean. 5 new Salko bucket tests passing. Committed 88a3780.
+- 2026-04-29 15:20 — requirements/sa_bidding_tuning_notes.md authored (methodology + 5-category signal + all-skipped decisions + accessibility audit pass). Committed 196c03b.
+- 2026-04-29 15:30 — full suite: 9897 passed, 98 skipped (baseline 9881, +16 new tests). Lint clean, format clean, SI-3 scanner clean, Writing Bible scanner clean, reach compliance scanner clean. All 12 acceptance criteria satisfied. PHASE_OK
 
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-04-29 12:46
-- Completed: 2026-04-29 13:55
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 9a5227f
-- New_sprints_proposed: none
-- Polish_items_folded_in: tuning-notes-doc (NEW), post-session-line-rotation, Reach-Salko-bucket-expansion, dead-code-removal, OUTCOME_OUTCOMPETED-symmetric-resolution, accessibility-audit
-- Decisions_locked: 12
-- Notes: All Context-to-read targets verified to exist (sa_bidding_design.md, character_voices.md, ui_design_standards.md, all SA-B2-B5 source artefacts in spacegame/models and spacegame/views). Sprint scope tightened to fit M-sized boundary: tuning + closing single-tightens + closing deferred design-doc questions. Reach player-listing permanently deferred (rationale: design intent, not workaround); cancellation window stays pre-session-only; voice-key rename closed-out as alias-is-permanent. OUTCOME_OUTCOMPETED is the one engine extension folded in — symmetric rivalry resolution is a fairness contract that fits a tuning sprint. No new sprints proposed; SA-B6 is a close-out for the SA-B series.
+- Started: 2026-04-29 12:58
+- Completed: 2026-04-29 15:30
+- Files_changed: spacegame/models/captain_memory.py, spacegame/models/bidding.py, spacegame/views/auction_view.py, data/auctions/crimson_reach_voices.json, requirements/sa_bidding_tuning_notes.md, tests/test_models/test_bidding_captain_memory.py, tests/test_models/test_bidding_state.py, tests/test_views/test_auction_view.py, tests/test_views/test_auction_view_reach.py, tests/test_data_integrity/test_reach_voice_compliance.py
+- Commits: 9b5e12b, 88a3780, 196c03b
+- Tests_added: 16
+- Tests_baseline: 9881
+- Tests_passing: 9897
+- Tests_skipped: 98
+- Lint_clean: yes
+- Format_clean: yes
+- SI3_scanner_clean: yes
+- Writing_bible_clean: yes
+- Touch_zones_respected: yes
+- Notes: All 12 AC satisfied. OUTCOME_OUTCOMPETED symmetric rivalry (8 tests), post-session rotation via _seed_index hash (4 tests), dead-code removal (1 test), Salko bucket expansion to 3-line arrays (5 tests). Tuning analysis concluded no constant changes warranted; all 5 categories within target range. Accessibility audit found no violations. No new sprints proposed.
 
 ### Phase IV — Research Patronage
 
