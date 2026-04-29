@@ -4901,7 +4901,7 @@ Open question (reviewer judgment, not blocking implementation):
 - Notes: Implement phase missed the two engine integration tests for criteria 8 and 9 (plan steps 10 and 11). Fixed directly. All other criteria met; code wiring correct; content volume and voice quality solid.
 ### WB-1 — Station tagline scanner coverage
 
-**Status**: in-progress (planning)
+**Status**: in-progress (implementing)
 **Source**: `requirements/writing_bible_scanner_gaps.md` Gap 1
 **Size**: S | **Effort**: 3-5 days
 **Depends on**: none | **Blocks**: WB-2
@@ -4953,18 +4953,26 @@ Open question (reviewer judgment, not blocking implementation):
 - 2026-04-26 — plan content recovered; ready for re-pickup by harness (next plan phase will see substantive existing plan and confirm/refine)
 - 2026-04-29 18:15 — harness: plan phase starting
 - 2026-04-29 18:30 — planner: re-verified all 3 context docs exist; confirmed 5 `StationLayout` subclasses still declare `faction_tagline` (lines 602/646/773/881/973 of `station_layouts.py`); confirmed Reach tagline still in `_PARALLEL_NEGATION_ALLOWLIST` at lines 78-86 of `tests/test_writing_bible_compliance.py`; confirmed `_find_violations()` (line 89) is the right call site. Refreshed acceptance #6 baseline from 8304 to current pre-phase baseline of 10312. All decisions remain locked from prior planning run; sprint is implementation-ready. PHASE_OK
+- 2026-04-29 18:17 — harness: implement phase starting (rework cycle 0)
+- 2026-04-29 — implementation complete, all gates green; tests 10312→10317 (+5). PHASE_OK
 
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-04-29 18:15
-- Completed: 2026-04-29 18:30
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 98b6398
-- New_sprints_proposed: none
-- Polish_items_folded_in: none new (prior planning run already folded in coverage-sanity test, allowlist-pinning unit test, and the manual injection check; this run confirmed those remain appropriate)
-- Decisions_locked: 0 new (3 prior locks confirmed: discovery via `__subclasses__()`; allowlist honored via `_find_violations()`; empty taglines skipped)
-- Notes: Re-validation of an already-substantively-planned sprint. Only material edit: refreshed test-baseline number in acceptance #6 and Plan step 6 to match the current 10312 pre-phase baseline. No new sprints proposed (Gap 2 stays with WB-2 per source doc). Touch zone unchanged: a single test file. Voice check: no player-facing strings added by this sprint, so Writing Bible exposure is zero.
+- Started: 2026-04-29 18:17
+- Completed: 2026-04-29 18:45
+- Files_changed: tests/test_writing_bible_compliance.py
+- Commits: 5ac345e
+- Tests_added: 5
+- Tests_baseline: 10312
+- Tests_passing: 10317
+- Tests_skipped: 98
+- Lint_clean: yes
+- Format_clean: yes
+- SI3_scanner_clean: n/a
+- Writing_bible_clean: n/a
+- Touch_zones_respected: yes
+- Notes: Added _extract_tagline_strings() extractor (uses StationLayout.__subclasses__()) and TestStationTaglineWritingBible with 5 tests covering em-dashes, banned phrases, parallel-negation (allowlist-honored), coverage sanity, and allowlist-pinning unit test. Manual injection checks confirmed detection bites. All 6 acceptance criteria satisfied.
 
 ### WB-2 — Parallel-negation regex broadening
 
