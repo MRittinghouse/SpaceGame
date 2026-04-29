@@ -52,7 +52,7 @@ The SA-arc table below is **auto-regenerated** by the ralph harness from the spr
 | [SA-B6](#sa-b6--bidding-polish--tuning) | Bidding polish + tuning | III | M | done | SA-B3, SA-B4, SA-B5 |
 | [SA-R1](#sa-r1--okafor-institute-research-patronage) | Okafor Institute (Research Patronage) | IV | L | done | SA-PREP-1, SA-C2 |
 | [SA-R2](#sa-r2--dr-okafors-legacy-narrative-arc) | Dr. Okafor's Legacy Narrative Arc | IV | M | done | SA-R1 |
-| [SA-R3](#sa-r3--research-patronage-polish) | Research Patronage polish | IV | S | todo | SA-R1, SA-R2 |
+| [SA-R3](#sa-r3--research-patronage-polish) | Research Patronage polish | IV | S | review | SA-R1, SA-R2 |
 | [SA-F1](#sa-f1--financial-exchange-design) | Financial Exchange Design | V | M | todo | SA-PREP-1, SA-C2, SA-V |
 | [SA-F2](#sa-f2--futures-core) | Futures Core | V | XL | todo | SA-F1 |
 | [SA-F3](#sa-f3--meridian-venue--cargo-broker-graduation) | Meridian Venue + Cargo Broker graduation | V | L | todo | SA-F2, SA-V |
@@ -3846,7 +3846,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 
 #### SA-R3 — Research Patronage polish
 
-**Status**: in-progress (planning)
+**Status**: review
 **Phase**: Phase IV | **Size**: S | **Effort**: 3-5 days
 **Depends on**: SA-R1, SA-R2 | **Blocks**: SA-X1, SA-X2, SA-X4, SA-X5, SA-X6, SA-X7, SA-X9
 
@@ -3971,18 +3971,19 @@ These are the decisions to lock during planning execution. Recommendations recor
 - 2026-04-26 — todo (created)
 - 2026-04-29 15:29 — harness: plan phase starting
 - 2026-04-29 16:30 — planning complete; verified all 17 context-to-read paths exist (no missing context — all SA-R1 / SA-R2 outputs in place: model at `okafor_research.py`, view at `okafor_view.py`, mission at `sa_r2_okafor_legacy.json`, 12 dialogue trees in `dialogues.json` ranging 9041-9609, 8 journal entries in `entries.json`, 2 follow-up surfaces SA-R1-FOLLOW-2 picker + SA-R2-FOLLOW-1 mission reward type both fold into this sprint). Folded in 6 polish items: tuning report, tier-aware failure refund (low/mid/high → 0.50/0.30/0.20), template numeric-audit data-validation test, `kweon_relationship` mission reward type closing SA-R2-FOLLOW-1, `kweon_legacy_post_clinic_run` callback tree closing the deferred consumer for `okafor_legacy_mission_completed`, team-fund collaborator picker modal closing SA-R1-FOLLOW-2. Explicitly deferred 6 polish items to existing downstream sprints (Patron-of-Research achievement → SA-X7; crew banter → SA-X6; news ticker → SA-X5; cross-anchor reputation balance → SA-X2; tutorial-pass refinement → SA-X3; journal-copy iteration → SA-X4). Locked 12 decisions (refund-rate calibration shape; cost / duration / payout numeric ranges audit-only no-edit; royalty / sell rates unchanged; picker UI as full modal vs. radio fallback; picker Confirm-with-zero-selections is solo-fund; reward-type specificity `kweon_relationship` not generic `relationship`; `okafor_research_state is None` defensive no-op; Kweon callback voice register stays institutional-fatigue not rare-warmth; post-clinic-run beat priority above legacy arc-beats; achievement / banter / news-ticker out-of-scope). Refined acceptance criteria from 2 → 13 testable items. Expanded touch zones from 2 → 11 entries. No new sprints proposed (SA-R1-FOLLOW-2 + SA-R2-FOLLOW-1 close inside this sprint). PHASE_OK
-
+- 2026-04-29 15:42 — harness: implement phase starting (rework cycle 0)
+- 2026-04-29 — implement phase complete (rework cycle 0); 160 net-new tests (10107 → 10267 passing, 98 skipped); all 13 acceptance criteria met. Key work: tier-aware failure refund (8 tests in TestTierAwareFailureRefund), template numeric-audit data-validation test (126 tests in TestOkaforTemplateBalance), kweon_relationship mission reward (6 tests in TestKweonRelationshipReward + 2 scenario tests in TestClinicRunMissionReward), kweon_legacy_post_clinic_run dialogue tree + flag helper + view routing (5 tests in TestPostClinicRunCallbackRouting + okafor_legacy_clinic_callback_seen flag helper + _LEGACY_ARC_TREE_TO_FLAG extension + priority-chain update), team-fund collaborator picker modal (13 tests in TestTeamFundPicker, _picker_confirm bug fixed, handle_event wired, _create_picker_ui hooked into _create_ui). Lint fixes: B007 (_role rename), dialogues.json restored from HEAD after ruff format corrupted it, kweon_relationship added to VALID_REWARD_TYPES. All scanners green (SI-3 dialogue integrity, test_data suite). PHASE_OK
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-04-29 15:29
-- Completed: 2026-04-29 16:30
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending
+- Started: 2026-04-29 15:42
+- Completed: 2026-04-29
+- Files_changed: spacegame/models/okafor_research.py, spacegame/models/mission.py, spacegame/views/okafor_view.py, spacegame/constants/flags.py, data/missions/sa_r2_okafor_legacy.json, data/dialogue/dialogues.json, tests/test_models/test_okafor_research.py, tests/test_models/test_okafor_template_balance.py (NEW), tests/test_models/test_mission.py, tests/test_views/test_okafor_view.py, tests/test_scenarios/test_scenario_okafor_legacy.py, tests/test_data/test_dialogue_integrity.py, tests/test_data/test_side_mission_data.py, requirements/sa_research_tuning_report.md (NEW)
+- Commits: 5 (tier-aware refund + template balance test; kweon_relationship reward; kweon callback tree + flag + routing; picker modal; tuning report; lint/scanner pass)
 - New_sprints_proposed: none
-- Polish_items_folded_in: tuning-report, tier-aware-failure-refund, template-balance-data-validation, kweon-relationship-reward-type (SA-R2-FOLLOW-1), kweon-post-clinic-run-callback (SA-R2 deferred consumer), team-fund-collaborator-picker (SA-R1-FOLLOW-2)
-- Decisions_locked: 12
-- Notes: Verified all 17 context-to-read paths; SA-R1 + SA-R2 surfaces are stable. Two known follow-ups (SA-R1-FOLLOW-2 picker, SA-R2-FOLLOW-1 mission reward type) fold into this sprint as natural polish closures. Six items deferred to existing X-series sprints with explicit rationale per item. Tier-aware failure refund (0.50/0.30/0.20) is the load-bearing tuning change; everything else is finish-the-feature polish on existing surfaces.
+- Followup_items_closed: SA-R1-FOLLOW-2 (picker modal), SA-R2-FOLLOW-1 (kweon_relationship reward type)
+- Test_delta: +160 passing (10107 → 10267), skip unchanged at 98
+- Notes: dialogues.json was corrupted mid-sprint by ruff format treating JSON as Python (trailing commas added throughout). Restored from HEAD. Added safeguard: only format .py files explicitly; never pass .json to ruff format. kweon_relationship required adding to test_side_mission_data.py VALID_REWARD_TYPES set — a data-validation test gap. All 13 AC verified; sprint moves to review.
 ### Phase V — Financial Exchange
 
 #### SA-F1 — Financial Exchange Design
