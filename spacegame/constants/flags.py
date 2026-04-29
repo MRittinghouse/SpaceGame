@@ -486,6 +486,17 @@ def okafor_first_failure_seen() -> str:
     return "okafor_first_failure_seen"
 
 
+def okafor_failure_debrief_shown() -> str:
+    """Flag set after the player dismisses Kweon's first-failure debrief tree.
+
+    Producer: :class:`spacegame.views.okafor_view.OkaforView`'s Kweon
+    dialogue dismiss handler — set when the failure-debrief branch ends.
+    Consumer: same view's Kweon-routing guard. Once set, Kweon's button
+    routes back to the ambient ``kweon_okafor_intro`` tree.
+    """
+    return "okafor_failure_debrief_shown"
+
+
 def okafor_collaborator_share(researcher_id: str) -> str:
     """Flag set per researcher when the player team-funds with their slot.
 

@@ -31,10 +31,13 @@ from spacegame.config import (
 from spacegame.constants.flags import (
     met_npc,
     okafor_collaborator_share,
+    okafor_failure_debrief_shown,
+    okafor_first_failure_seen,
     okafor_patent_disposed_first,
     okafor_project_funded_first,
     seen_okafor_tip,
 )
+from spacegame.data_loader import get_data_loader
 from spacegame.engine.backgrounds import AnimatedBackground
 from spacegame.engine.draw_utils import draw_panel, word_wrap
 from spacegame.engine.fonts import (
@@ -45,6 +48,7 @@ from spacegame.engine.fonts import (
     FONT_TITLE,
     get_font,
 )
+from spacegame.models.dialogue import DialogueNode, DialogueTree
 from spacegame.models.okafor_research import (
     SELL_LUMP_SUM_RATE,
     OkaforResearchState,
@@ -94,6 +98,28 @@ RESEARCHER_DOCK: tuple[tuple[str, str, str], ...] = (
     ("sana_dey", "Sana Dey", "Junior Researcher"),
 )
 
+# NPC dock entries: (speaker_id, display_name, role, default_dialogue_id).
+# Kweon's dialogue id is overridden by :meth:`_kweon_dialogue_id` based on
+# the failure-debrief state. Nuri is conditionally surfaced when she is in
+# the active crew.
+KWEON_DOCK_ENTRY: tuple[str, str, str, str] = (
+    "kweon_director",
+    "Dr. Nadia Kweon",
+    "Director",
+    "kweon_okafor_intro",
+)
+NURI_DOCK_ENTRY: tuple[str, str, str, str] = (
+    "nuri_solberg",
+    "Nuri Solberg",
+    "Independent Patron",
+    "nuri_solberg_okafor_collaborator",
+)
+RESEARCHER_DOCK_ENTRIES: tuple[tuple[str, str, str, str], ...] = (
+    ("dr_iris_navarro", "Dr. Iris Navarro", "Clinical Lead", "iris_navarro_okafor"),
+    ("theo_brandt", "Theo Brandt", "Bench Engineer", "theo_brandt_okafor"),
+    ("sana_dey", "Sana Dey", "Junior Researcher", "sana_dey_okafor"),
+)
+
 
 class OkaforView(BaseView):
     """Project board + Kweon dock for the Okafor Institute Medical Wing."""
@@ -134,6 +160,18 @@ class OkaforView(BaseView):
         self._team_fund_buttons: dict[str, pygame_gui.elements.UIButton] = {}
         self._license_buttons: dict[str, pygame_gui.elements.UIButton] = {}
         self._sell_buttons: dict[str, pygame_gui.elements.UIButton] = {}
+        # Per-speaker NPC dock buttons (Kweon, 3 researchers, Nuri-when-crewed).
+        self._npc_buttons: dict[str, pygame_gui.elements.UIButton] = {}
+        self._dialogue_continue_button: Optional[pygame_gui.elements.UIButton] = None
+
+        # In-view dialogue panel state. When ``_active_dialogue_tree`` is
+        # non-None, the Kweon dock area is occupied by a dialogue node
+        # rather than the static dock chrome.
+        self._active_dialogue_tree: Optional[DialogueTree] = None
+        self._active_dialogue_node_id: Optional[str] = None
+        # Tracks whether the currently-open Kweon tree is the failure
+        # debrief, so the dismiss handler can set the seen flag.
+        self._active_dialogue_is_failure_debrief: bool = False
 
         # Status / feedback
         self.message: Optional[str] = None
@@ -142,8 +180,9 @@ class OkaforView(BaseView):
         # First-time tip overlay (PT-M pattern)
         self._tip_overlay: Optional[FirstTimeTipOverlay] = None
 
-        # First-failure debrief banner — fires once per save when the
-        # game-day tick toggles ``okafor_first_failure_seen``.
+        # First-failure debrief banner — True when the failure tick has
+        # set ``okafor_first_failure_seen`` and Kweon's debrief tree has
+        # not yet been dismissed (``okafor_failure_debrief_shown``).
         self._failure_debrief_pending: bool = False
 
         # Cached offer ids for the current visit.
@@ -165,8 +204,7 @@ class OkaforView(BaseView):
         logger.info("Entered Okafor Institute Medical Wing")
         # Mark Kweon as met if some other path hasn't already done so.
         self.player.dialogue_flags.setdefault(met_npc("kweon_director"), True)
-        # Cache failure-debrief intent before we mutate any state.
-        self._failure_debrief_pending = False
+        self._refresh_failure_debrief_pending()
         self._refresh_offers()
         self._create_ui()
         self._maybe_show_tip()
@@ -175,7 +213,17 @@ class OkaforView(BaseView):
         """Deactivate the view and tear down UI."""
         self._destroy_ui()
         self._tip_overlay = None
+        self._active_dialogue_tree = None
+        self._active_dialogue_node_id = None
+        self._active_dialogue_is_failure_debrief = False
         super().on_exit()
+
+    def _refresh_failure_debrief_pending(self) -> None:
+        """Pending = first failure has occurred AND debrief tree not yet shown."""
+        flags = self.player.dialogue_flags
+        self._failure_debrief_pending = bool(
+            flags.get(okafor_first_failure_seen()) and not flags.get(okafor_failure_debrief_shown())
+        )
 
     # ------------------------------------------------------------------
     # State management
@@ -231,6 +279,12 @@ class OkaforView(BaseView):
             text="Back to Station",
             manager=self.ui_manager,
         )
+
+        # NPC dock or dialogue-panel continue button.
+        if self._active_dialogue_tree is None:
+            self._create_npc_dock_buttons()
+        else:
+            self._create_dialogue_continue_button()
 
         # Fund buttons — one per visible offer.
         card_h = scale_y(50)
@@ -290,11 +344,53 @@ class OkaforView(BaseView):
             )
             self._sell_buttons[holding.holding_id] = sell_btn
 
+    def _create_npc_dock_buttons(self) -> None:
+        """Place one button per visible speaker in the Kweon dock area."""
+        entries = self._dock_entries()
+        if not entries:
+            return
+        x = PANEL_X + scale_x(16)
+        # Stack the buttons vertically inside the left dock panel under
+        # Kweon's name + introductory line. Top of the button column sits
+        # roughly two-thirds down the dock.
+        y = BODY_TOP_Y + scale_y(160)
+        button_h = scale_y(34)
+        button_w = LEFT_W - scale_x(32)
+        gap = scale_y(6)
+        for idx, (speaker_id, name, role, _dialogue_id) in enumerate(entries):
+            btn = pygame_gui.elements.UIButton(
+                relative_rect=pygame.Rect(
+                    x,
+                    y + idx * (button_h + gap),
+                    button_w,
+                    button_h,
+                ),
+                text=f"{name} · {role}",
+                manager=self.ui_manager,
+            )
+            self._npc_buttons[speaker_id] = btn
+
+    def _create_dialogue_continue_button(self) -> None:
+        """Single Continue button while an NPC dialogue is open."""
+        self._dialogue_continue_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(
+                PANEL_X + LEFT_W - scale_x(140),
+                BODY_TOP_Y + BODY_H - scale_y(48),
+                scale_x(124),
+                scale_y(34),
+            ),
+            text="Continue",
+            manager=self.ui_manager,
+        )
+
     def _destroy_ui(self) -> None:
         """Kill all pygame_gui elements (CLAUDE.md lifecycle invariant)."""
         if self.back_button is not None:
             self.back_button.kill()
         self.back_button = None
+        if self._dialogue_continue_button is not None:
+            self._dialogue_continue_button.kill()
+        self._dialogue_continue_button = None
         for btn in self._fund_buttons.values():
             btn.kill()
         self._fund_buttons.clear()
@@ -307,6 +403,9 @@ class OkaforView(BaseView):
         for btn in self._sell_buttons.values():
             btn.kill()
         self._sell_buttons.clear()
+        for btn in self._npc_buttons.values():
+            btn.kill()
+        self._npc_buttons.clear()
 
     # ------------------------------------------------------------------
     # First-time tip
@@ -328,6 +427,148 @@ class OkaforView(BaseView):
             ),
             on_dismiss=_on_dismiss,
         )
+
+    # ------------------------------------------------------------------
+    # NPC dock + dialogue panel
+    # ------------------------------------------------------------------
+
+    def _is_nuri_in_crew(self) -> bool:
+        """Return True when Nuri Solberg is in the player's active crew.
+
+        Tries the canonical CrewRoster path first; falls back to the
+        flat ``player.crew_state.get("active", [])`` list used by tests.
+        """
+        if self._crew_roster is not None and hasattr(self._crew_roster, "get_recruited_members"):
+            try:
+                return any(
+                    template.id == "nuri_solberg"
+                    for template, _state in self._crew_roster.get_recruited_members()
+                )
+            except (AttributeError, TypeError):
+                pass
+        active = self.player.crew_state.get("active", []) if self.player.crew_state else []
+        return "nuri_solberg" in active
+
+    def get_visible_dock_speaker_ids(self) -> list[str]:
+        """Return speaker_ids surfaced by the Kweon dock for the current state.
+
+        Kweon and the three Institute researchers are always present.
+        Nuri Solberg is gated on active-crew membership.
+        """
+        ids = [KWEON_DOCK_ENTRY[0]]
+        ids.extend(speaker_id for speaker_id, _n, _r, _did in RESEARCHER_DOCK_ENTRIES)
+        if self._is_nuri_in_crew():
+            ids.append(NURI_DOCK_ENTRY[0])
+        return ids
+
+    def _dock_entries(self) -> list[tuple[str, str, str, str]]:
+        """Return the dock-entry tuples for the currently-visible speakers."""
+        visible = set(self.get_visible_dock_speaker_ids())
+        entries: list[tuple[str, str, str, str]] = []
+        if KWEON_DOCK_ENTRY[0] in visible:
+            entries.append(KWEON_DOCK_ENTRY)
+        for entry in RESEARCHER_DOCK_ENTRIES:
+            if entry[0] in visible:
+                entries.append(entry)
+        if NURI_DOCK_ENTRY[0] in visible:
+            entries.append(NURI_DOCK_ENTRY)
+        return entries
+
+    def _dialogue_id_for_speaker(self, speaker_id: str) -> Optional[str]:
+        """Resolve which authored dialogue tree to open for a speaker."""
+        if speaker_id == KWEON_DOCK_ENTRY[0]:
+            return self._kweon_dialogue_id()
+        for sid, _name, _role, dialogue_id in RESEARCHER_DOCK_ENTRIES:
+            if sid == speaker_id:
+                return dialogue_id
+        if speaker_id == NURI_DOCK_ENTRY[0]:
+            return NURI_DOCK_ENTRY[3]
+        return None
+
+    def _kweon_dialogue_id(self) -> str:
+        """Pick the Kweon tree based on the failure-debrief state.
+
+        Order:
+          1. ``kweon_failure_debrief`` when a project has failed and the
+             debrief tree has not yet been dismissed.
+          2. ``kweon_okafor_intro`` as the ambient greeting otherwise.
+        """
+        if self._failure_debrief_pending:
+            return "kweon_failure_debrief"
+        return KWEON_DOCK_ENTRY[3]
+
+    @staticmethod
+    def _name_for_speaker(speaker_id: str) -> str:
+        if speaker_id == KWEON_DOCK_ENTRY[0]:
+            return KWEON_DOCK_ENTRY[1]
+        for sid, name, _role, _did in RESEARCHER_DOCK_ENTRIES:
+            if sid == speaker_id:
+                return name
+        if speaker_id == NURI_DOCK_ENTRY[0]:
+            return NURI_DOCK_ENTRY[1]
+        return speaker_id
+
+    def _open_npc_dialogue(self, speaker_id: str) -> None:
+        """Begin a venue dialogue at the tree's start node.
+
+        No-op for unknown ids (safe boundary handling).
+        """
+        dialogue_id = self._dialogue_id_for_speaker(speaker_id)
+        if dialogue_id is None:
+            return
+        tree = get_data_loader().get_dialogue(dialogue_id)
+        if tree is None:
+            logger.warning("Okafor dialogue '%s' not found", dialogue_id)
+            return
+        self._active_dialogue_tree = tree
+        self._active_dialogue_node_id = tree.start_node_id
+        self._active_dialogue_is_failure_debrief = dialogue_id == "kweon_failure_debrief"
+        # First-meeting handshake — Kweon is always met on view entry, so
+        # this is mostly defensive for direct-call test paths.
+        if speaker_id == KWEON_DOCK_ENTRY[0]:
+            self.player.dialogue_flags.setdefault(met_npc("kweon_director"), True)
+        self._create_ui()
+
+    def _advance_dialogue(self) -> None:
+        """Follow the first response's next_node_id; close on null/missing."""
+        tree = self._active_dialogue_tree
+        node_id = self._active_dialogue_node_id
+        if tree is None or node_id is None:
+            return
+        node = tree.nodes.get(node_id)
+        if node is None or not node.responses:
+            self._close_active_dialogue()
+            return
+        response = node.responses[0]
+        if response.set_flag:
+            self.player.dialogue_flags[response.set_flag] = True
+        next_id = response.next_node_id
+        if not next_id:
+            self._close_active_dialogue()
+            return
+        if next_id not in tree.nodes:
+            logger.warning("Okafor dialogue: missing next_node '%s'", next_id)
+            self._close_active_dialogue()
+            return
+        self._active_dialogue_node_id = next_id
+
+    def _close_active_dialogue(self) -> None:
+        """Clear the active dialogue. Sets the debrief-shown flag if applicable."""
+        if self._active_dialogue_is_failure_debrief:
+            self.player.dialogue_flags[okafor_failure_debrief_shown()] = True
+            self._refresh_failure_debrief_pending()
+        self._active_dialogue_tree = None
+        self._active_dialogue_node_id = None
+        self._active_dialogue_is_failure_debrief = False
+        self._create_ui()
+
+    def get_active_dialogue_node(self) -> Optional[DialogueNode]:
+        """Expose the active node for tests + the renderer."""
+        tree = self._active_dialogue_tree
+        node_id = self._active_dialogue_node_id
+        if tree is None or node_id is None:
+            return None
+        return tree.nodes.get(node_id)
 
     # ------------------------------------------------------------------
     # Fund flow
@@ -418,6 +659,16 @@ class OkaforView(BaseView):
             if event.ui_element == self.back_button:
                 self.next_state = GameState.STATION_HUB
                 return
+            if (
+                self._dialogue_continue_button is not None
+                and event.ui_element == self._dialogue_continue_button
+            ):
+                self._advance_dialogue()
+                return
+            for speaker_id, btn in list(self._npc_buttons.items()):
+                if event.ui_element == btn:
+                    self._open_npc_dialogue(speaker_id)
+                    return
             for tid, btn in list(self._fund_buttons.items()):
                 if event.ui_element == btn:
                     self._fund_project(tid, collaborators=[])
@@ -439,6 +690,10 @@ class OkaforView(BaseView):
                     return
 
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+            # Close an open dialogue panel first; only then exit the view.
+            if self._active_dialogue_tree is not None:
+                self._close_active_dialogue()
+                return
             self.next_state = GameState.STATION_HUB
 
     # ------------------------------------------------------------------
@@ -504,16 +759,39 @@ class OkaforView(BaseView):
 
     def _render_kweon_dock(self, screen: pygame.Surface) -> None:
         draw_panel(screen, (PANEL_X, BODY_TOP_Y, LEFT_W, BODY_H), alpha=210)
+        if self._active_dialogue_tree is not None:
+            self._render_dialogue_panel(screen)
+            return
         x = PANEL_X + scale_x(16)
         y = BODY_TOP_Y + scale_y(14)
-        title = self.label_font.render("DR. NADIA KWEON", True, ACCENT_COLOR)
+        title = self.label_font.render("AT THE INSTITUTE", True, ACCENT_COLOR)
         screen.blit(title, (x, y))
         y += scale_y(28)
-        body = (
-            "Director, Medical Research Division. The work continues. "
-            "What sustains the work is what we are negotiating today."
-        )
+        if self._failure_debrief_pending:
+            body = "Kweon is at the bench. She is waiting on the project debrief."
+        else:
+            body = (
+                "Director's office, the floor's bench engineers, the cataloging room. "
+                "Speak with whoever is on shift today."
+            )
         for line in word_wrap(body, self.body_font, LEFT_W - scale_x(32)):
+            surf = self.body_font.render(line, True, Colors.TEXT_PRIMARY)
+            screen.blit(surf, (x, y))
+            y += self.body_font.get_linesize()
+
+    def _render_dialogue_panel(self, screen: pygame.Surface) -> None:
+        """Render the active speaker's current dialogue node inside the dock panel."""
+        node = self.get_active_dialogue_node()
+        if node is None:
+            return
+        x = PANEL_X + scale_x(16)
+        y = BODY_TOP_Y + scale_y(14)
+        speaker = self._name_for_speaker(node.speaker_id)
+        header = self.label_font.render(speaker.upper(), True, ACCENT_COLOR)
+        screen.blit(header, (x, y))
+        y += scale_y(28)
+        body_w = LEFT_W - scale_x(32)
+        for line in word_wrap(node.text, self.body_font, body_w):
             surf = self.body_font.render(line, True, Colors.TEXT_PRIMARY)
             screen.blit(surf, (x, y))
             y += self.body_font.get_linesize()

@@ -22,6 +22,7 @@ from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH
 from spacegame.constants.flags import (
     met_npc,
     okafor_collaborator_share,
+    okafor_failure_debrief_shown,
     okafor_first_failure_seen,
     okafor_patent_disposed_first,
     okafor_project_funded_first,
@@ -300,17 +301,194 @@ class TestPatentDisposition:
 
 
 class TestFailureDebrief:
-    def test_first_failure_flag_recorded_on_view_open_after_tick(self) -> None:
-        """The view surfaces the first-failure debrief when seen flag toggles."""
-        # The Game._tick_okafor_projects sets okafor_first_failure_seen.
-        # Here we simulate that the flag was already set from a prior tick
-        # and verify the view exposes the debrief copy without re-firing.
+    def test_failure_debrief_pending_when_flag_set_and_unseen(self) -> None:
+        """Pending = True when failure happened and the debrief tree has not played."""
         manager, player = _make_env()
-        # Pretend the tick fired the failure flag earlier this play session.
+        player.dialogue_flags[okafor_first_failure_seen()] = True
+        # Debrief has not been shown yet — the Kweon button must route to the debrief.
+        view = _make_view(player, manager)
+        view.on_enter()
+        assert view._failure_debrief_pending is True
+        view.on_exit()
+
+    def test_failure_debrief_pending_false_after_shown(self) -> None:
+        """Pending = False once the debrief tree has been dismissed."""
+        manager, player = _make_env()
+        player.dialogue_flags[okafor_first_failure_seen()] = True
+        player.dialogue_flags[okafor_failure_debrief_shown()] = True
+        view = _make_view(player, manager)
+        view.on_enter()
+        assert view._failure_debrief_pending is False
+        view.on_exit()
+
+    def test_failure_debrief_pending_false_when_no_failure_yet(self) -> None:
+        """Pending = False before any project failure has occurred."""
+        manager, player = _make_env()
+        view = _make_view(player, manager)
+        view.on_enter()
+        assert view._failure_debrief_pending is False
+        view.on_exit()
+
+
+class TestNpcDock:
+    """Acceptance #2 + rework task 13: every authored dialogue tree is reachable."""
+
+    def test_dock_speaker_ids_includes_kweon_and_three_researchers(self) -> None:
+        manager, player = _make_env()
+        view = _make_view(player, manager)
+        view.on_enter()
+        ids = view.get_visible_dock_speaker_ids()
+        assert "kweon_director" in ids
+        assert "dr_iris_navarro" in ids
+        assert "theo_brandt" in ids
+        assert "sana_dey" in ids
+        view.on_exit()
+
+    def test_dock_excludes_nuri_when_not_in_crew(self) -> None:
+        manager, player = _make_env()
+        # No crew_state — Nuri is not surfaced.
+        view = _make_view(player, manager)
+        view.on_enter()
+        assert "nuri_solberg" not in view.get_visible_dock_speaker_ids()
+        view.on_exit()
+
+    def test_dock_includes_nuri_when_in_crew(self) -> None:
+        manager, player = _make_env()
+        player.crew_state = {"active": ["nuri_solberg"]}
+        view = _make_view(player, manager)
+        view.on_enter()
+        assert "nuri_solberg" in view.get_visible_dock_speaker_ids()
+        view.on_exit()
+
+    def test_npc_buttons_created_for_each_visible_speaker(self) -> None:
+        manager, player = _make_env()
+        view = _make_view(player, manager)
+        view.on_enter()
+        for speaker_id in view.get_visible_dock_speaker_ids():
+            assert speaker_id in view._npc_buttons, f"Missing button for speaker '{speaker_id}'"
+        view.on_exit()
+
+    def test_destroy_ui_clears_npc_buttons(self) -> None:
+        manager, player = _make_env()
+        view = _make_view(player, manager)
+        view.on_enter()
+        assert view._npc_buttons
+        view.on_exit()
+        assert not view._npc_buttons
+
+    def test_kweon_button_opens_intro_tree(self) -> None:
+        manager, player = _make_env()
+        view = _make_view(player, manager)
+        view.on_enter()
+        view._open_npc_dialogue("kweon_director")
+        node = view.get_active_dialogue_node()
+        assert node is not None
+        assert node.speaker_id == "kweon_director"
+        # The intro tree starts at "greeting".
+        assert view._active_dialogue_node_id == "greeting"
+        assert view._active_dialogue_tree is not None
+        assert view._active_dialogue_tree.id == "kweon_okafor_intro"
+        view.on_exit()
+
+    def test_iris_button_opens_iris_tree(self) -> None:
+        manager, player = _make_env()
+        view = _make_view(player, manager)
+        view.on_enter()
+        view._open_npc_dialogue("dr_iris_navarro")
+        node = view.get_active_dialogue_node()
+        assert node is not None
+        assert node.speaker_id == "dr_iris_navarro"
+        assert view._active_dialogue_tree is not None
+        assert view._active_dialogue_tree.id == "iris_navarro_okafor"
+        view.on_exit()
+
+    def test_theo_and_sana_buttons_open_their_trees(self) -> None:
+        manager, player = _make_env()
+        view = _make_view(player, manager)
+        view.on_enter()
+        view._open_npc_dialogue("theo_brandt")
+        assert view._active_dialogue_tree is not None
+        assert view._active_dialogue_tree.id == "theo_brandt_okafor"
+        view._close_active_dialogue()
+        view._open_npc_dialogue("sana_dey")
+        assert view._active_dialogue_tree is not None
+        assert view._active_dialogue_tree.id == "sana_dey_okafor"
+        view.on_exit()
+
+    def test_nuri_button_opens_collaborator_tree_when_in_crew(self) -> None:
+        manager, player = _make_env()
+        player.crew_state = {"active": ["nuri_solberg"]}
+        view = _make_view(player, manager)
+        view.on_enter()
+        view._open_npc_dialogue("nuri_solberg")
+        assert view._active_dialogue_tree is not None
+        assert view._active_dialogue_tree.id == "nuri_solberg_okafor_collaborator"
+        view.on_exit()
+
+    def test_advance_dialogue_walks_to_next_node(self) -> None:
+        manager, player = _make_env()
+        view = _make_view(player, manager)
+        view.on_enter()
+        view._open_npc_dialogue("kweon_director")
+        assert view._active_dialogue_node_id == "greeting"
+        view._advance_dialogue()
+        # greeting → board_pitch (first response).
+        assert view._active_dialogue_node_id == "board_pitch"
+        view.on_exit()
+
+    def test_advance_dialogue_to_terminal_closes_panel(self) -> None:
+        manager, player = _make_env()
+        view = _make_view(player, manager)
+        view.on_enter()
+        view._open_npc_dialogue("kweon_director")
+        # Walk: greeting → board_pitch → ip_explanation → null (close).
+        view._advance_dialogue()
+        view._advance_dialogue()
+        view._advance_dialogue()
+        assert view._active_dialogue_tree is None
+        assert view._active_dialogue_node_id is None
+        view.on_exit()
+
+    def test_open_unknown_speaker_is_noop(self) -> None:
+        manager, player = _make_env()
+        view = _make_view(player, manager)
+        view.on_enter()
+        view._open_npc_dialogue("does_not_exist")
+        assert view.get_active_dialogue_node() is None
+        view.on_exit()
+
+    def test_kweon_routes_to_failure_debrief_when_pending(self) -> None:
+        """Kweon's button opens the failure-debrief tree after the first failure."""
+        manager, player = _make_env()
         player.dialogue_flags[okafor_first_failure_seen()] = True
         view = _make_view(player, manager)
         view.on_enter()
-        # _failure_debrief_pending should be False once the flag is already
-        # set (so the debrief banner shows once and not again).
-        assert view._failure_debrief_pending is False
+        view._open_npc_dialogue("kweon_director")
+        assert view._active_dialogue_tree is not None
+        assert view._active_dialogue_tree.id == "kweon_failure_debrief"
+        view.on_exit()
+
+    def test_kweon_failure_debrief_dismiss_sets_shown_flag(self) -> None:
+        """Walking through the failure-debrief tree marks the shown flag."""
+        manager, player = _make_env()
+        player.dialogue_flags[okafor_first_failure_seen()] = True
+        view = _make_view(player, manager)
+        view.on_enter()
+        view._open_npc_dialogue("kweon_director")
+        # Single-node tree → advance closes and sets the shown flag.
+        view._advance_dialogue()
+        assert view._active_dialogue_tree is None
+        assert player.dialogue_flags.get(okafor_failure_debrief_shown()) is True
+        view.on_exit()
+
+    def test_kweon_routes_to_intro_after_debrief_shown(self) -> None:
+        """Once the failure-debrief is dismissed, Kweon returns to the intro tree."""
+        manager, player = _make_env()
+        player.dialogue_flags[okafor_first_failure_seen()] = True
+        player.dialogue_flags[okafor_failure_debrief_shown()] = True
+        view = _make_view(player, manager)
+        view.on_enter()
+        view._open_npc_dialogue("kweon_director")
+        assert view._active_dialogue_tree is not None
+        assert view._active_dialogue_tree.id == "kweon_okafor_intro"
         view.on_exit()
