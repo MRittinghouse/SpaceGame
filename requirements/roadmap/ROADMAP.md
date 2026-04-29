@@ -4625,7 +4625,7 @@ Smaller deferred items pulled from prior sprint findings. Each is independently 
 
 ### CB-1 — Crew Banter scope (scoping)
 
-**Status**: in-progress (planning)
+**Status**: in-progress (implementing)
 **Source**: Living Universe Arc deferral; `requirements/living_universe_arc.md` Phase 5 design carries the as-imagined CB scope.
 **Size**: S | **Effort**: 3-5 days
 **Depends on**: none | **Blocks**: CB-2
@@ -4713,18 +4713,26 @@ Open question (reviewer judgment, not blocking implementation):
 - 2026-04-26 — plan content recovered; ready for re-pickup by harness (next plan phase will see substantive existing plan and confirm/refine)
 - 2026-04-29 17:03 — harness: plan phase starting
 - 2026-04-29 21:05 — planning re-confirmed; verified all 7 context-to-read paths exist; corrected line-count claim from 224 → 249 and the crew dimensionality (24 distinct `crew_id`s, not just the 4 primary); refreshed stale `game.py` line citations against current source (constructor 405-407 + 618-621, warp 1167-1191, player_action 4129-4138, save bind/load 4685 + 4871-4872, idle 5406-5413); added `data_loader.py:1496` to context-to-read for completeness; tightened acceptance criterion #1 to require explicit primary-vs-secondary crew tabulation; clarified the "shown_indices" mechanism is set-based not time-based. 5 prior decisions remain locked. PHASE_OK
+- 2026-04-29 17:06 — harness: implement phase starting (rework cycle 0)
+- 2026-04-29 — implementation: verified 249 lines/24 crew_ids/5 contexts via Python one-liner; tabulated primary crew (elena 32, marcus 36, dr_priya_osei 30, tomas 29), secondary 20 specialists; confirmed AmbientDialogueManager fields and shown-set semantics; mapped all 6 Phase 5 trigger types against existing coverage; locked Option A (extend); authored requirements/cb_scope.md (235 lines, 8 sections, 5 voice-checked sample entries). Test suite: 10268 passed, 98 skipped. PHASE_OK
 
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-04-29 17:03
-- Completed: 2026-04-29 21:05
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: e69c0c0
-- New_sprints_proposed: none
-- Polish_items_folded_in: long-tail-crew dimension surfaced for the gap-mapping and quota sections (24 crew_ids, not 4); shown-indices vs. time-cooldown clarification for Architecture Decision section
-- Decisions_locked: 0 new (5 prior decisions confirmed)
-- Notes: Re-pickup of an already-planned sprint. Verified the live state of `data/crew/ambient_dialogue.json` (249 lines, 24 crew_ids, 5 contexts) and the integration points in `spacegame/engine/game.py`. Stale citations refreshed; criterion #1 tightened. No scope expansion or new sprints. CB-1 is implementation-ready.
+- Started: 2026-04-29 17:06
+- Completed: 2026-04-29
+- Files_changed: requirements/cb_scope.md
+- Commits: 65e3b68
+- Tests_added: 0
+- Tests_baseline: 10268
+- Tests_passing: 10268
+- Tests_skipped: 98
+- Lint_clean: n/a
+- Format_clean: n/a
+- SI3_scanner_clean: n/a
+- Writing_bible_clean: n/a
+- Touch_zones_respected: yes
+- Notes: Documentation-only sprint. requirements/cb_scope.md authored with all 8 acceptance-criteria sections. Option A (extend AmbientDialogueManager) locked; SA-X6 boundary declared sibling; CB-2 authoring quota set (>=60 entries, per-type floors); 5 voice-checked sample entries embedded. No code changes; test suite unchanged at baseline.
 
 ### CB-2 — Crew Banter implementation
 
