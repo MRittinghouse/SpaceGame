@@ -3005,7 +3005,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 
 #### SA-B4 — Crimson Reach Black Market auctions
 
-**Status**: in-progress (planning)
+**Status**: in-progress (implementing)
 **Phase**: Phase III | **Size**: L | **Effort**: 1.5 weeks
 **Depends on**: SA-B2, SA-1 | **Blocks**: SA-B6
 
@@ -3168,18 +3168,25 @@ These are the decisions to lock during planning execution. Recommendations recor
 - 2026-04-26 — todo (created)
 - 2026-04-29 10:39 — harness: plan phase starting
 - 2026-04-29 11:55 — planning complete; verified all 3 context-to-read entries exist (`requirements/sa_bidding_design.md`, SA-1's `spacegame/models/wreckers_guild.py` + ROADMAP section, `data/galaxy/locations.json`); expanded Context-to-read from 3 to 22 entries to cover the full SA-B3 patterning surface, character voice sheets (Salko + Sable + Malia + the SA-PREP-1 NPC inventory marking `reach_floor_manager` net-new), the bidding engine surface (helpers, ladder, generate_lot_pool, AuctionState), the data-loader (already wired for crimson_reach files), the auction view venue plumbing (set_active_personas / set_voice_templates / dim tint hooks), the station hub UNIQUE_HALL_TARGETS, the engine `_prepare_stellaris_session` mirror, ReachDarkLayout color palette, and the SI-3 cookbook. Touch zones expanded from 5 to 17 entries (added Reach voice sheet authoring at character_voices.md, NPC + dialogue + journal + locations data files, flag helpers, the `_prepare_reach_session` engine helper, the `_tier_distance` venue dispatch, dim-tint application in auction_view, station-hub tier-locked branch, and 4 new test files + 1 additive test class). Tightened acceptance from 4 vague criteria to 22 mechanically-verifiable criteria. Locked 15 Reach-specific decisions. Folded in 3 polish items: 3 flag-gated journal entries (first Reach session, first Floor Manager encounter, first contraband lesson), 2 banter trigger flags for SA-X6 consumption, 1 achievement stub `achievement_auction_reach_debut` per design §9.5. Deferred 6 polish items to their existing Phase VI sprints (crew banter SA-X6, achievement metadata SA-X7, per-venue visual identity refinement SA-X10, tutorial-pass refinement SA-X3, cross-anchor narrative SA-X1, reputation-balance SA-X2). 2 OPEN-defer-to-implementation risks documented (Floor Manager branch count beyond 4; whether legality consequences surface in dialogue or only as rep-delta notification). No new sprints proposed; SA-B4 scope is well-bounded by the design doc and SA-B3's content-and-integration template. PHASE_OK
-
+- 2026-04-29 10:55 — harness: implement phase starting (rework cycle 0)
+- 2026-04-29 12:00 — implementation complete; tests 9714→9779 (+65); lint+format+writing-bible+SI3-scanner clean. Bidding engine extended with `tier_ladder_for_venue`, venue-aware `_tier_distance`, `reach_session_due`, `reach_advance_demand`, `wreckers_tier_for_membership`; legality penalty constants (-2 contraband, -1 restricted_weapon); `auction_lots_won_reach` counter on AuctionState with backward-compatible save default. Three flag helpers registered. Vex Tarn (Reach Floor Manager) authored end-to-end: voice sheet at `requirements/character_voices.md`, NPC entry, four-branch dialogue tree, voice-distinctness scanner. 14-lot Reach catalog covers all four locked categories (contraband / restricted_weapon / salvage_lot / faction_commodity) with 1 headliner, zero season tags, Wreckers' tier coverage. Voice file ships 6 Floor Manager `auctioneer_lines` templates, Salko's flat-bid template, post-session Salko buckets + ambient Reach Buyer pool, four Sable reads, empty-state, retired-rival, tier-locked. `crimson_black_market` ("The Reach Floor") added to locations.json; station hub gates Enter on Wreckers' tier and surfaces Talk-to-Floor-Manager for all tiers (unjoined branch fires in Vex's voice). AuctionView reads `auctioneer_lines` first (with `velo_lines` fallback); Reach dim alpha 180 vs. Stellaris 150; `venue_accent_color` sourced from ReachDarkLayout. `_prepare_reach_session` and `_apply_reach_legality_penalty` wired in `engine/game.py`; hub-entry routes via `pending_auction_venue_id` + `AUCTION_VENUE_BY_LOCATION_ID`. Three journal auto-entries fire on the locked flags (auction_first_reach_session, seen_first_floor_manager_encounter, auction_first_contraband_win). Achievement stub `auction_reach_debut` registered with `stat_key=auction_lots_won_reach`. PHASE_OK
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-04-29 10:39
-- Completed: 2026-04-29 11:55
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 8e8c5b4
-- New_sprints_proposed: none
-- Polish_items_folded_in: 3 flag-gated journal entries, 2 banter trigger flags, 1 achievement stub (`auction_reach_debut`), Reach Floor Manager voice sheet authoring (essential per design §10.6), tier-locked station-hub message via `tier_locked` template, ReachDarkLayout dim-tint application, voice-distinctness static scan acceptance criterion
-- Decisions_locked: 15
-- Notes: Verified all 3 context-to-read entries exist. Folded in essential Reach Floor Manager voice authoring per design doc §10.6 (net-new NPC, voice sheet, dialogue tree). Locked 15 decisions including the `_tier_distance` venue-aware ladder dispatch (additive engine extension preserving SA-B3 behavior), demand-driven cadence parameters, legality-consequence magnitudes, and the voice-key alias contract. Reach catalog at 12-16 lots, 1-2 headliners, no season tags. Salko + 3 ambient Reach Buyers; no new named rival. Tier gating routes through SA-1's canonical Wreckers' Guild config. Tip overlay shared with Stellaris. Acceptance criteria expanded from 4 to 22; touch zones expanded from 5 to 17. PHASE_OK.
+- Started: 2026-04-29 10:55
+- Completed: 2026-04-29 12:00
+- Files_changed: spacegame/models/bidding.py, spacegame/constants/flags.py, spacegame/engine/game.py, spacegame/views/auction_view.py, spacegame/views/station_hub_view.py, data/auctions/crimson_reach_lots.json, data/auctions/crimson_reach_voices.json, data/characters/npcs.json, data/dialogue/dialogues.json, data/galaxy/locations.json, data/journal/entries.json, data/progression/achievements.json, requirements/character_voices.md, tests/test_models/test_bidding_reach.py, tests/test_data_integrity/test_reach_voice_compliance.py, tests/test_models/test_data_loader_auctions.py, tests/test_views/test_auction_view_reach.py, tests/test_scenarios/test_scenario_reach_blackmarket.py, tests/test_data/test_dialogue_integrity.py, tests/test_data/test_new_achievements.py, tests/test_models/test_achievement.py, tests/test_models/test_cycle_e_polish.py, tests/test_models/test_ground_achievements.py
+- Commits: a527d16, dabc0df, efebbdd, 817b828
+- Tests_added: 65
+- Tests_baseline: 9714
+- Tests_passing: 9779
+- Tests_skipped: 98
+- Lint_clean: yes
+- Format_clean: yes
+- SI3_scanner_clean: yes
+- Writing_bible_clean: yes
+- Touch_zones_respected: yes (count-bump tests in test_achievement.py / test_cycle_e_polish.py / test_ground_achievements.py / test_new_achievements.py / test_dialogue_integrity.py are minor adjustments to project counters introduced by the new achievement stub + journal entries; commit 817b828)
+- Notes: All 22 acceptance criteria addressed. SA-B3 artifacts (stellaris_lots.json, stellaris_voices.json, Cassian Velo entry) read-only. Vex Tarn voice-distinct from Velo by every static measure (avg sentence length, ceremonial keyword scan, honorific register). Reach demand-driven cadence deterministic across reload via `crimson_reach_last_advance_day` key in next_auction_day dict (no save schema bump). Salko + 3 ambient Reach Buyers; Prentiss / Kade do NOT attend Reach. Tier gating routes through SA-1's canonical WRECKERS_GUILD_CONFIG. Four progressive commits for clean recovery.
 
 #### SA-B5 — Player-Initiated Auctions
 
