@@ -408,6 +408,99 @@ def seen_deep_shafts_tip() -> str:
 
 
 # ---------------------------------------------------------------------------
+# Okafor Institute (SA-R1)
+# ---------------------------------------------------------------------------
+#
+# SA-R1 (requirements/roadmap/ROADMAP.md). Flags scoped to the Okafor
+# Institute Medical Wing venue at Axiom Labs. Producers and consumers
+# all live inside the SA-R1 surface (view, dialogue, journal triggers);
+# centralizing the strings here keeps the SI-3 dialogue-integrity
+# scanner stable across producer / consumer pairs.
+
+
+def seen_okafor_tip() -> str:
+    """Flag set after the player dismisses the first-visit tip overlay.
+
+    Producer: :class:`spacegame.views.okafor_view.OkaforView`'s
+    on-dismiss callback for the
+    :class:`spacegame.views.first_time_tip.FirstTimeTipOverlay`.
+    Consumer: the same view's first-entry guard. The PT-M overlay never
+    re-fires once this flag is set.
+    """
+    return "seen_okafor_tip"
+
+
+def okafor_project_funded_first() -> str:
+    """Flag set the first time the player funds an Okafor research project.
+
+    Producer: :class:`spacegame.views.okafor_view.OkaforView`'s fund flow.
+    Consumer: ``data/journal/entries.json`` (trigger_flag for the
+    first-funding entry). Subsequent fund actions never refire the
+    journal entry because the journal manager dedupes by trigger_flag.
+    """
+    return "okafor_project_funded_first"
+
+
+def okafor_project_completed_first() -> str:
+    """Flag set the first time an Okafor project resolves to success.
+
+    Producer: :func:`spacegame.engine.game.Game._tick_okafor_projects`
+    when a project reaches its completion day with a successful roll.
+    Consumer: ``data/journal/entries.json`` (trigger_flag for the
+    first-completion entry).
+    """
+    return "okafor_project_completed_first"
+
+
+def okafor_project_failed_first() -> str:
+    """Flag set the first time an Okafor project resolves to failure.
+
+    Producer: :func:`spacegame.engine.game.Game._tick_okafor_projects`
+    when a project reaches its completion day with a failure roll.
+    Consumer: ``data/journal/entries.json`` (trigger_flag for the
+    first-failure entry).
+    """
+    return "okafor_project_failed_first"
+
+
+def okafor_patent_disposed_first() -> str:
+    """Flag set the first time the player licenses or sells a patent.
+
+    Producer: :class:`spacegame.views.okafor_view.OkaforView`'s IP
+    disposition flow (fires on either license OR sell on the first
+    disposition only).
+    Consumer: ``data/journal/entries.json`` (trigger_flag for the
+    first-disposition entry; one body covers either path).
+    """
+    return "okafor_patent_disposed_first"
+
+
+def okafor_first_failure_seen() -> str:
+    """Flag set after Kweon's first-failure debrief plays.
+
+    Producer: :class:`spacegame.views.okafor_view.OkaforView`'s failure
+    debrief flow on the first failure encountered. Subsequent failures
+    do not re-trigger the debrief.
+    Consumer: same view's failure-debrief gate.
+    """
+    return "okafor_first_failure_seen"
+
+
+def okafor_collaborator_share(researcher_id: str) -> str:
+    """Flag set per researcher when the player team-funds with their slot.
+
+    Producer: :class:`spacegame.views.okafor_view.OkaforView` when a
+    project is accepted with that researcher in a collaborator slot.
+    Consumer: SA-R2 narrative arc (Kweon's dialogue references which
+    Institute staff the player has worked with). Listed in
+    :data:`KNOWN_PRODUCER_ONLY_ORPHANS` until SA-R2 wires consumers.
+
+    ``researcher_id`` is the snake_case speaker_id of the collaborator.
+    """
+    return f"okafor_collaborator_share_{researcher_id}"
+
+
+# ---------------------------------------------------------------------------
 # Cargo Broker (SA-V)
 # ---------------------------------------------------------------------------
 #

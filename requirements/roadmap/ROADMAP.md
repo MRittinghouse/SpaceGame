@@ -3541,7 +3541,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 
 #### SA-R1 — Okafor Institute (Research Patronage)
 
-**Status**: in-progress (planning)
+**Status**: in-progress
 **Phase**: Phase IV | **Size**: L | **Effort**: 2-3 weeks
 **Depends on**: SA-PREP-1, SA-C2 | **Blocks**: SA-R2, SA-R3
 
@@ -3657,7 +3657,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 - 2026-04-26 — todo (created)
 - 2026-04-29 13:20 — harness: plan phase starting
 - 2026-04-29 14:25 — planning complete; verified all 5 context-to-read paths exist (corrected `data/upgrades.json` to `data/ships/upgrades.json` and `data/galaxy/npcs.json` to `data/characters/npcs.json` in Touch zones); verified SA-PREP-1 / SA-C2 dependency outputs (Kweon + Nuri voice sheets in place at lines 659-708 / 1710-1757; `research_yield` and `research_oversight` skills wired with the expected bonus_type strings at `progression.py:920-929` and `1234-1243`; `nuri_solberg` crew entry with both abilities at `crew_members.json:801-827`); folded in 3 polish items (FirstTimeTipOverlay, 4 flag-gated journal entries, save/load round-trip) and explicitly deferred 9 polish items to their existing downstream sprints (crew banter SA-X6, achievements SA-X7, cross-anchor narrative SA-X1, rep-balance SA-X2, visual identity SA-X10, audio identity SA-X9, tutorial-pass refinement SA-X3, ethics arc SA-R2, polish-tuning SA-R3); locked 9 decisions (file naming `okafor_view.py` / `okafor_research.py`, `GameState.OKAFOR`, no sub-rep org for the Institute, fold 3 researcher voice sheets into SA-R1 due to SA-PREP-1 coverage gap, project pool size 10, deterministic risk resolution, team-fund cost/duration math, outcome unlocks consume existing data only, polish fold-in scope); refined acceptance criteria from 7 → 15 testable items; expanded Touch zones from 11 → 17 entries (added `spacegame/views/station_hub_view.py`, `spacegame/constants/flags.py`, `requirements/character_voices.md`, `data/journal/entries.json`, `tests/test_save_load/test_okafor_save_load.py`, `spacegame/data_loader.py`); documented one OPEN-defer-to-implementation risk on the team-fund collaborator UI (graceful fallback to radio-button picker via `SA-R1-FOLLOW-2`). No new sprints proposed. PHASE_OK
-
+- 2026-04-29 13:33 — harness: implement phase starting (rework cycle 0)
 **Last phase report.**
 - Phase: plan
 - Outcome: PHASE_OK

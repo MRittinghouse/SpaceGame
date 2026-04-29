@@ -891,6 +891,27 @@ KNOWN_PRODUCER_ONLY_ORPHANS: set[str] = {
     # ``auto_auction_first_floor_manager_encounter`` journal entry. Same
     # scanner-blind-spot as the Velo entry above.
     "seen_first_floor_manager_encounter",
+    # === SA-R1 Okafor Institute — journal trigger consumers ===
+    # The four "first" flags below are SET by the Okafor view / game-day
+    # tick (real producers in code) and consumed by ``data/journal/entries.json``
+    # ``trigger_flag`` entries (``auto_okafor_*``). The scanner does not
+    # crawl journal trigger_flag, so the flags appear producer-only here
+    # despite real consumers existing in the journal data.
+    "okafor_project_funded_first",
+    "okafor_project_completed_first",
+    "okafor_project_failed_first",
+    "okafor_patent_disposed_first",
+    # === SA-R1 Okafor team-fund collaborator share — SA-R2 reserved ===
+    # ``okafor_collaborator_share_<researcher_id>`` is SET by the Okafor
+    # view team-fund flow when the player adds a researcher to a project.
+    # Consumers are explicitly deferred to SA-R2 (Dr. Okafor's Legacy
+    # Narrative Arc), per the locked decision in the SA-R1 plan. They
+    # preserve narrative state so future SA-R2 dialogue can reference
+    # which Institute staff the player has worked with.
+    "okafor_collaborator_share_dr_iris_navarro",
+    "okafor_collaborator_share_theo_brandt",
+    "okafor_collaborator_share_sana_dey",
+    "okafor_collaborator_share_nuri_solberg",
 }
 
 
