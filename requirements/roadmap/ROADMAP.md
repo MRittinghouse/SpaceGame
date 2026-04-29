@@ -4103,7 +4103,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 - Started: 2026-04-29 16:20
 - Completed: 2026-04-29 17:10
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending
+- Commits: 71ab8bc
 - New_sprints_proposed: none
 - Polish_items_folded_in: tutorial-overlay-stubs (per sub-system FirstTimeTipOverlay flag + copy); journal-entry-templates (3 per sub-system, voice-checked); news-ticker-headline-templates (3 per sub-system); crew-banter-trigger-flags (set by SA-F2/F4/F5/F6, banter authored in SA-X6); stub-achievement-IDs (authored in SA-X7) — all collected into Section 9 of the design doc per the SA-B1 9.1-9.5 precedent so downstream sprints have hooks ready
 - Decisions_locked: 10
