@@ -1515,6 +1515,8 @@ class DataLoader:
                     required_crew=line_data.get("required_crew", ""),
                     min_loyalty=line_data.get("min_loyalty", 0),
                     action_type=line_data.get("action_type", ""),
+                    required_flags=line_data.get("required_flags", []),
+                    excluded_flags=line_data.get("excluded_flags", []),
                 )
             )
 
