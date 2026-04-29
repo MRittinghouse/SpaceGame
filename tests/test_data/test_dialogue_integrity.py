@@ -901,6 +901,11 @@ KNOWN_PRODUCER_ONLY_ORPHANS: set[str] = {
     "okafor_project_completed_first",
     "okafor_project_failed_first",
     "okafor_patent_disposed_first",
+    # === SA-R1 Okafor met_npc — SA-R2 reserved ===
+    # ``met_kweon_director`` is SET by the OkaforView on first entry
+    # (via ``met_npc("kweon_director")`` setdefault). No consumer yet;
+    # SA-R2 will gate Kweon's returning-greeting branches on this flag.
+    "met_kweon_director",
     # === SA-R1 Okafor team-fund collaborator share — SA-R2 reserved ===
     # ``okafor_collaborator_share_<researcher_id>`` is SET by the Okafor
     # view team-fund flow when the player adds a researcher to a project.

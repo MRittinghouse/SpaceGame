@@ -9036,6 +9036,252 @@
           "expression": "neutral"
         }
       ]
+    },
+    {
+      "id": "kweon_okafor_intro",
+      "start_node_id": "greeting",
+      "nodes": [
+        {
+          "id": "greeting",
+          "speaker_id": "kweon_director",
+          "text": "Dr. Nadia Kweon. I direct the Okafor Institute's medical research division. The work we are doing here was founded on principles that still hold. What the founding generation did not anticipate is what sustaining the work requires. That is the practical problem I am solving. You are here because you can help with the practical problem.",
+          "responses": [
+            {
+              "text": "Walk me through the project board.",
+              "next_node_id": "board_pitch"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "board_pitch",
+          "speaker_id": "kweon_director",
+          "text": "Six to seven projects rotate on the board at any given time. Low-risk replication and meta-analysis work, mid-risk applied research, and the occasional capstone trial. Each carries a published failure rate. Funding closes on the day the project resolves. The principle Dr. Okafor wrote, knowledge that does not heal is knowledge wasted, applies to all of it. The application has to adapt. The principle does not.",
+          "responses": [
+            {
+              "text": "What about the patents?",
+              "next_node_id": "ip_explanation"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "ip_explanation",
+          "speaker_id": "kweon_director",
+          "text": "A successful project produces a patent. You hold it, license it for royalty income while it stands, or sell it as a lump sum. The choice is yours each time. The Institute's preference is licensing because the work continues to circulate. The Institute's preferences are not the only ones that matter.",
+          "responses": [
+            {
+              "text": "Understood. I will look at the board.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "kweon_success_debrief",
+      "start_node_id": "debrief",
+      "nodes": [
+        {
+          "id": "debrief",
+          "speaker_id": "kweon_director",
+          "text": "The trial held. The methodology survived contact with the data. The result is publishable in its current form. You supported a project the field needed. I do not say that often enough. The patent is filed in your name; the disposition is yours.",
+          "responses": [
+            {
+              "text": "Acknowledged.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "kweon_failure_debrief",
+      "start_node_id": "debrief",
+      "nodes": [
+        {
+          "id": "debrief",
+          "speaker_id": "kweon_director",
+          "text": "The trial did not hold. The methodology was sound; the result was not what the modeling predicted. Resources were not allocated for a second cycle this quarter. The variance data is in the file, where the next iteration can find it. A portion of the capital returns to your account. That is the structure. I would rather it were otherwise.",
+          "responses": [
+            {
+              "text": "Understood.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "iris_navarro_okafor",
+      "start_node_id": "greeting",
+      "nodes": [
+        {
+          "id": "greeting",
+          "speaker_id": "dr_iris_navarro",
+          "text": "Iris Navarro. Clinical methodology. I am at the bench through Thursday on the third-step yield run. If you are here about a project that is funded with my slot, the protocol is drafted; we can be on the bench by the end of the week.",
+          "responses": [
+            {
+              "text": "What does your bench week look like?",
+              "next_node_id": "bench"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "bench",
+          "speaker_id": "dr_iris_navarro",
+          "text": "Day six is when we will know. The variance on step three is inside the design threshold so far. Provisionally, the protocol is holding. I would like a clean replication before I commit to that without the qualifier.",
+          "responses": [
+            {
+              "text": "Good luck on the trial.",
+              "next_node_id": "signoff"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "signoff",
+          "speaker_id": "dr_iris_navarro",
+          "text": "Luck is not what trials run on. Methodology is. I will be at the bench. Find me here when you have the next slot to discuss.",
+          "responses": [
+            {
+              "text": "[Leave.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "theo_brandt_okafor",
+      "start_node_id": "greeting",
+      "nodes": [
+        {
+          "id": "greeting",
+          "speaker_id": "theo_brandt",
+          "text": "Theo Brandt. Bench. I keep the rigs running for Iris and the rest of them. Centrifuge head on the third bench is on its last legs. I built a replacement jig last month. Holds tolerance to the fourth decimal. Iris's protocol will run clean on it.",
+          "responses": [
+            {
+              "text": "What is the rig you wish you had?",
+              "next_node_id": "wishlist"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "wishlist",
+          "speaker_id": "theo_brandt",
+          "text": "A second calibration jig. The current one runs hot if Iris and Sana are both on it the same shift. Two shifts to build a backup, if the spare-parts budget unlocks. Keep that in mind when you fund a project that needs the bench. Equipment is the boring part of the budget. It is also the part that decides whether the trial happens.",
+          "responses": [
+            {
+              "text": "I will keep it in mind.",
+              "next_node_id": "signoff"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "signoff",
+          "speaker_id": "theo_brandt",
+          "text": "I will be in the workshop. If something on the bench is not working, I am the one to find. If something on the bench is working, I am also the one to find. Either way.",
+          "responses": [
+            {
+              "text": "[Leave.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "sana_dey_okafor",
+      "start_node_id": "greeting",
+      "nodes": [
+        {
+          "id": "greeting",
+          "speaker_id": "sana_dey",
+          "text": "Sana Dey. I am working on the protein-folding replication strand under Iris. If you are funding a project that includes a bench junior, I would like to be considered. I have read the protocol. I have read the original Okafor paper. I think the second appendix actually addresses what we were trying to derive from scratch in this morning's meeting.",
+          "responses": [
+            {
+              "text": "Tell me about the appendix.",
+              "next_node_id": "appendix"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "appendix",
+          "speaker_id": "sana_dey",
+          "text": "Page nine, second column, the methodology section. It walks through the exact concern Iris flagged at the meeting. I would defer to her on whether it transfers cleanly to the current substrate, but the framework is there. I think it answers a question we were treating as open.",
+          "responses": [
+            {
+              "text": "Useful catch.",
+              "next_node_id": "signoff"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "signoff",
+          "speaker_id": "sana_dey",
+          "text": "Thank you. I will be in the cataloging room if Iris needs me. Knowledge that does not heal is knowledge wasted. I did not know him. I read the papers. The principle holds for me, even at this distance.",
+          "responses": [
+            {
+              "text": "[Leave.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "nuri_solberg_okafor_collaborator",
+      "start_node_id": "greeting",
+      "nodes": [
+        {
+          "id": "greeting",
+          "speaker_id": "nuri_solberg",
+          "text": "Nuri Solberg. Independent patronage. The Institute pulled me in for the day to look at the project board with you. I read methodology, not abstracts. If the protocol you are funding holds up, the conversation is short. If it does not, the conversation is also short, in a different direction.",
+          "responses": [
+            {
+              "text": "What do you think of the current board?",
+              "next_node_id": "evaluation"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "evaluation",
+          "speaker_id": "nuri_solberg",
+          "text": "The mid-tier projects are honest. The methodology survives a careful read. The high-risk pair are the ones I would push you on. The capstone sensor trial is the work; the failure rate is the failure rate. Do not fund it expecting the modeling to be conservative. The modeling is at the edge of what theory supports. That is what makes it interesting.",
+          "responses": [
+            {
+              "text": "And the low-risk projects?",
+              "next_node_id": "low_risk"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "low_risk",
+          "speaker_id": "nuri_solberg",
+          "text": "Low-risk pays for the lights. It also keeps the bench juniors employed and the methodology current. You cannot run the capstone work if the bench is empty. Fund accordingly. I will be on the floor through end-of-shift if you have a specific project you want me to walk through.",
+          "responses": [
+            {
+              "text": "[Leave.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
     }
   ]
 }

@@ -225,6 +225,34 @@
       "mission_id": ""
     },
     {
+      "entry_id": "auto_okafor_first_funded",
+      "text": "Funded my first project at the Okafor Institute. Kweon walked me through the board, named the failure rate on every line, and said the principle is unchanged even when the application has to adapt. The capital is committed. The trial decides.",
+      "trigger_flag": "okafor_project_funded_first",
+      "system_id": "axiom_labs",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_okafor_first_completed",
+      "text": "First project resolved. The trial held. Kweon said the methodology survived contact with the data and the result is publishable in its current form. The patent is filed in my name; the disposition is mine. She added that she does not say it often enough that she is grateful.",
+      "trigger_flag": "okafor_project_completed_first",
+      "system_id": "axiom_labs",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_okafor_first_failed",
+      "text": "First failed project at the Institute. Kweon delivered the debrief in the same register she delivers the successes. The methodology was sound; the result was not what the modeling predicted. Resources were not allocated for a second cycle this quarter. The variance data is in the file. A portion of the capital came back. The rest is the cost of the answer.",
+      "trigger_flag": "okafor_project_failed_first",
+      "system_id": "axiom_labs",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_okafor_first_disposed",
+      "text": "First patent moved off held. The disposition is on file. Either the patent stays in circulation under license, or the lump sum is in the account. Either way, the work is done and the next cycle starts with the bench cleared.",
+      "trigger_flag": "okafor_patent_disposed_first",
+      "system_id": "axiom_labs",
+      "mission_id": ""
+    },
+    {
       "entry_id": "pilgrimage_journal_1",
       "text": "Sten Brygaard told the story the way he tells it. Cargo Bay 7. Third shift, morning cycle. Sora Takahashi climbed up on a shipping crate. She was short. Everyone forgets how short she was, he said. She told the bay: we built this, all of it, and we are done letting other people decide what it is worth. That was the speech. Sten said it twice, the second time for me to hear it.",
       "trigger_flag": "pilgrimage_journal_1",

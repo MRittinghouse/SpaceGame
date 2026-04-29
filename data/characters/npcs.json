@@ -639,6 +639,58 @@
       "faction_id": "frontier_alliance"
     },
     {
+      "id": "kweon_director",
+      "name": "Dr. Nadia Kweon",
+      "title": "Director, Okafor Institute Medical Wing",
+      "portrait_color": [
+        140,
+        170,
+        220
+      ],
+      "home_system_id": "axiom_labs",
+      "dialogue_id": "kweon_okafor_intro",
+      "faction_id": "science_collective"
+    },
+    {
+      "id": "dr_iris_navarro",
+      "name": "Dr. Iris Navarro",
+      "title": "Clinical Lead",
+      "portrait_color": [
+        160,
+        180,
+        210
+      ],
+      "home_system_id": "axiom_labs",
+      "dialogue_id": "iris_navarro_okafor",
+      "faction_id": "science_collective"
+    },
+    {
+      "id": "theo_brandt",
+      "name": "Theo Brandt",
+      "title": "Bench Engineer",
+      "portrait_color": [
+        180,
+        160,
+        130
+      ],
+      "home_system_id": "axiom_labs",
+      "dialogue_id": "theo_brandt_okafor",
+      "faction_id": "science_collective"
+    },
+    {
+      "id": "sana_dey",
+      "name": "Sana Dey",
+      "title": "Junior Researcher",
+      "portrait_color": [
+        170,
+        200,
+        190
+      ],
+      "home_system_id": "axiom_labs",
+      "dialogue_id": "sana_dey_okafor",
+      "faction_id": "science_collective"
+    },
+    {
       "id": "jez_okafor",
       "name": "Jez Okafor",
       "title": "Shift Supervisor",
