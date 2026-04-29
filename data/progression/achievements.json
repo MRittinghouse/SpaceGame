@@ -725,6 +725,17 @@
       "reward_type": "credits",
       "reward_value": 1000,
       "hidden": true
+    },
+    {
+      "id": "auction_reach_debut",
+      "name": "Reach Debut",
+      "description": "Win your first lot at the Crimson Reach Black Market.",
+      "category": "economy",
+      "stat_key": "auction_lots_won_reach",
+      "threshold": 1,
+      "reward_type": "credits",
+      "reward_value": 500,
+      "hidden": true
     }
   ]
 }

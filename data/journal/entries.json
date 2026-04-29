@@ -356,6 +356,27 @@
       "trigger_flag": "seen_first_velo_encounter",
       "system_id": "stellaris_port",
       "mission_id": ""
+    },
+    {
+      "entry_id": "auto_auction_first_reach_session",
+      "text": "First session at the Reach Floor. The crates came in off a flatbed and the Floor Manager called the lots in three sentences. There are no records here. The reserve is the reserve.",
+      "trigger_flag": "auction_first_reach_session",
+      "system_id": "crimson_reach",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_auction_first_floor_manager_encounter",
+      "text": "Met the Floor Manager. Vex Tarn. He runs the floor. He does not run a conversation. He told me how the floor opens and what he does not take returns on. That was the meeting.",
+      "trigger_flag": "seen_first_floor_manager_encounter",
+      "system_id": "crimson_reach",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_auction_first_contraband_lesson",
+      "text": "Won a lot the Stellaris Commerce Guild would not have signed off on. Two points off the standing ledger. Vex did not comment. The crate was already on the trolley when I noticed.",
+      "trigger_flag": "auction_first_contraband_win",
+      "system_id": "crimson_reach",
+      "mission_id": ""
     }
   ]
 }

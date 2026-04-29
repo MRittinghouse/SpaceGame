@@ -51,6 +51,8 @@ VALID_STAT_KEYS = {
     "auction_lots_won_stellaris",
     "auction_rivals_retired",
     "auction_perfect_reads",
+    # SA-B4: Reach venue counter for the auction_reach_debut stub.
+    "auction_lots_won_reach",
 }
 
 VALID_REWARD_TYPES = {"xp", "credits", "skill_point"}

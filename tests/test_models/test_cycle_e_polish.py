@@ -59,5 +59,5 @@ class TestNewAchievements:
 
         loader = DataLoader()
         loader.load_all()
-        # 43 original + 19 cycle E + 4 SA-B2 auction stubs = 66
-        assert len(loader.achievements) == 66
+        # 43 original + 19 cycle E + 4 SA-B2 + 1 SA-B4 auction stubs = 67
+        assert len(loader.achievements) == 67

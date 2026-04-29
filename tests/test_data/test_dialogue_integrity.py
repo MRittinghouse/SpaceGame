@@ -885,6 +885,12 @@ KNOWN_PRODUCER_ONLY_ORPHANS: set[str] = {
     # so the flag appears producer-only here despite a real consumer
     # existing in ``data/journal/entries.json``.
     "seen_first_velo_encounter",
+    # === SA-B4 Floor Manager first encounter — journal trigger consumer ===
+    # ``seen_first_floor_manager_encounter`` is set by Vex's dialogue tree
+    # (``reach_floor_manager_main``) and consumed by the
+    # ``auto_auction_first_floor_manager_encounter`` journal entry. Same
+    # scanner-blind-spot as the Velo entry above.
+    "seen_first_floor_manager_encounter",
 }
 
 
