@@ -519,6 +519,13 @@ def _collect_all_flag_uses() -> tuple[dict[str, set[str]], dict[str, set[str]]]:
         for flag in getattr(line, "forbidden_flags", []) or []:
             consumers[flag].add(f"chatter:{line.id}:forbidden")
 
+    # --- Consumers: ambient dialogue (CB-2) ---
+    for i, line in enumerate(loader.ambient_lines):
+        for flag in getattr(line, "required_flags", []) or []:
+            consumers[flag].add(f"ambient:{i}:{line.crew_id}")
+        for flag in getattr(line, "excluded_flags", []) or []:
+            consumers[flag].add(f"ambient:{i}:{line.crew_id}:excluded")
+
     # --- Consumers + producers: encounters (raw JSON since model may not preserve all) ---
     encounters_dir = project_root / "data" / "encounters"
     if encounters_dir.exists():
@@ -864,27 +871,11 @@ KNOWN_PRODUCER_ONLY_ORPHANS: set[str] = {
     # Narrative state flag — post-branch-A, Reach watches the player. No
     # mechanical gating yet; future encounter / journal content may consume.
     "reach_hunts_player",
-    # === SA-0 depth-tier flags — DETECTOR MISS on two consumer paths ===
-    # heard_dcmc_intelligence + heard_nas_intelligence each have two consumers:
-    #   1. excluded_flags on dialogue responses (scanner only checks forbidden_flags)
-    #   2. trigger_flag in data/journal/entries.json (scanner doesn't scan journal)
-    # Additionally, these are no-arg helpers; the introspection in
-    # _helper_access_patterns() can't call them with a sentinel arg and so
-    # generates no regex patterns to detect code-side accesses.
-    # All three detection gaps are pre-existing scanner limitations, not gaps
-    # in the flags' wiring. Both flags have real consumers; they are not orphans.
-    "heard_dcmc_intelligence",
-    "heard_nas_intelligence",
-    # === SA-2 Deep Shafts — narrative-state flags reserved for SA-X1 ===
-    # These flags are SET by the SA-2 venue dialogue + mission but their
-    # consumers are explicitly deferred to SA-X1 (cross-anchor narrative
-    # threading) per the locked decision in the SA-2 plan. They preserve
-    # narrative state (player attended the silent shaft beat; player
-    # heard Marcus's Uprising-inheritance branch) so future cross-anchor
-    # callbacks (Marcus journal beats at other Cluster B anchors, news
-    # reactions to the pilgrimage) can fire on the right player.
-    "attended_silent_shaft",
-    "marcus_uprising_inheritance_seen",
+    # CB-2 (2026-04-29): heard_dcmc_intelligence, heard_nas_intelligence,
+    # attended_silent_shaft, and marcus_uprising_inheritance_seen were removed
+    # from this list. CB-2 authored ambient required_flags consumers for all four,
+    # so the scanner now detects them via the ambient consumer block added to
+    # _collect_all_flag_uses(). No longer orphaned.
     # === SA-B3 Velo first encounter — journal trigger consumer ===
     # ``seen_first_velo_encounter`` is set by Velo's dialogue tree
     # (``cassian_velo_main``) and consumed by the

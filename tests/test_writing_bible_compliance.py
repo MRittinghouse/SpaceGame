@@ -408,6 +408,25 @@ class TestDialogueAndAmbientWritingBible:
             offenders[:20]
         )
 
+    def test_no_banned_phrases_in_ambient(self) -> None:
+        offenders: list[str] = []
+        for loc, text in _extract_ambient_strings():
+            lowered = text.lower()
+            for phrase in _BANNED_PHRASES:
+                if phrase in lowered:
+                    offenders.append(f"{loc}: {phrase!r} in {text[:100]!r}")
+        assert not offenders, "Banned phrases in ambient content:\n  " + "\n  ".join(offenders[:20])
+
+    def test_no_parallel_negation_in_ambient(self) -> None:
+        offenders = [
+            f"{loc}: {text[:100]!r}"
+            for loc, text in _extract_ambient_strings()
+            if _PARALLEL_NEGATION.search(text) and text.strip() not in _PARALLEL_NEGATION_ALLOWLIST
+        ]
+        assert not offenders, "Parallel-negation in ambient content:\n  " + "\n  ".join(
+            offenders[:20]
+        )
+
     def test_no_em_dashes_in_encounters(self) -> None:
         """CE-4: encounter content held to the same Writing Bible rules."""
         offenders = [

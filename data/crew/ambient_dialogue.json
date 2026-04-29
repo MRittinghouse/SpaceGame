@@ -1462,6 +1462,380 @@
       "text": "Jin, I looked at your engine maintenance logs. Your methodology is sound. Every repair documented, every variance noted. That is the discipline that makes a project hold up.",
       "context": "inter_crew",
       "required_crew": "marcus_jin"
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "The Guild docking fee schedule here runs in 15-minute increments. I memorized the rate table my first year. It is still accurate.",
+      "context": "home_system",
+      "system_id": "stellaris_port"
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "The NAS antenna array at Stellaris runs three channels I was not supposed to know about. The pricing signals are cleaner if you factor them in.",
+      "context": "home_system",
+      "system_id": "stellaris_port",
+      "required_flags": ["heard_nas_intelligence"]
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "Section Twelve went cold last winter. Pipe failure on the primary heat exchanger. Nobody in maintenance had read the maintenance contract.",
+      "context": "home_system",
+      "system_id": "breakstone"
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "The Silent Shaft memorial went up the year after I left. I never saw the dedication. Someone sent me a photograph. I keep it with the Section Nine incident reports.",
+      "context": "home_system",
+      "system_id": "breakstone",
+      "required_flags": ["attended_silent_shaft"]
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "text": "The Institute publication review cycle is documented at ninety days. In practice it runs a hundred and forty. The gap is never on record anywhere.",
+      "context": "home_system",
+      "system_id": "axiom_labs"
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "text": "The Uprising data the Collective keeps at Axiom is categorized as historical incident analysis. The recategorization happened in the same month I started asking questions.",
+      "context": "home_system",
+      "system_id": "axiom_labs",
+      "required_flags": ["marcus_uprising_inheritance_seen"]
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "text": "Way I see it, Haven's Rest is the one station in the Expanse where you can say you're broke and someone feeds you. That is worth something.",
+      "context": "home_system",
+      "system_id": "havens_rest"
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "text": "The dockmaster here owes me three favors from my last run through. I cleared two on the way in. Kept the last one in reserve.",
+      "context": "home_system",
+      "system_id": "havens_rest"
+    },
+    {
+      "crew_id": "kai_torren",
+      "text": "The Guild bonded warehouses here run tight inventory. They count to the crate. I count to the kilogram.",
+      "context": "home_system",
+      "system_id": "nexus_prime"
+    },
+    {
+      "crew_id": "sgt_harkov",
+      "text": "I ran perimeter security here for two years before the company folded. Same corners, same sightlines. Memory like that does not fade.",
+      "context": "home_system",
+      "system_id": "crimson_reach"
+    },
+    {
+      "crew_id": "nadia_sokolov",
+      "text": "Iron Depths. The ore here runs in seams twenty meters wide. I drilled three of them. The Union data underreports the yield by eight percent.",
+      "context": "home_system",
+      "system_id": "iron_depths"
+    },
+    {
+      "crew_id": "tova_engstrom",
+      "text": "The Nova Research basement archives have not been indexed since 2314. I have a working catalog now. No one has asked for it yet.",
+      "context": "home_system",
+      "system_id": "nova_research"
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "Collective stations keep fuel costs within 4 percent of consortium average. It is one of the few pricing benchmarks that is actually enforced.",
+      "context": "faction_territory",
+      "faction_id": "science_collective"
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "The Collective infrastructure documentation I have seen references the same construction project Marcus's father worked. The records go further back than I expected.",
+      "context": "faction_territory",
+      "faction_id": "science_collective",
+      "required_flags": ["marcus_father_connection_seen"]
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "Union maintenance contracts specify torque tolerances to the newton-meter. Most outfitters ignore the spec. That is why their drives fail at the midpoint.",
+      "context": "faction_territory",
+      "faction_id": "industrial_union"
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "DCMC accident reports get filed under Union compliance review. I know because I have read the real ones. The version they publish is missing paragraphs.",
+      "context": "faction_territory",
+      "faction_id": "industrial_union",
+      "required_flags": ["heard_dcmc_intelligence"]
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "text": "The Guild requires inspection documentation at every transfer point. The forms are thorough. The inspectors are not.",
+      "context": "faction_territory",
+      "faction_id": "commerce_guild"
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "text": "Guild stations maintain public price records going back forty years. The data is clean. The analysis requires a different skill set.",
+      "context": "faction_territory",
+      "faction_id": "commerce_guild"
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "text": "Way I see it, the Union runs good stations and bad politics. The quality control on the machine shops is better than anything in Commerce Guild territory.",
+      "context": "faction_territory",
+      "faction_id": "industrial_union"
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "text": "The Collective stations charge a research surcharge on every docked vessel. It shows up as station maintenance on the receipt. I have been reading receipts for years.",
+      "context": "faction_territory",
+      "faction_id": "science_collective"
+    },
+    {
+      "crew_id": "sgt_harkov",
+      "text": "Free Alliance security contracts are verbal most of the time. The handshake culture means you need to know who is standing behind the person you shake with.",
+      "context": "faction_territory",
+      "faction_id": "free_alliance"
+    },
+    {
+      "crew_id": "zero",
+      "text": "Free Alliance stations operate without central oversight. The way they stay functional is not something I have been able to fully model.",
+      "context": "faction_territory",
+      "faction_id": "free_alliance"
+    },
+    {
+      "crew_id": "tova_engstrom",
+      "text": "Collective network archives are indexed differently at each station. The cross-reference gaps are where the interesting data lives.",
+      "context": "faction_territory",
+      "faction_id": "science_collective"
+    },
+    {
+      "crew_id": "brix_tano",
+      "text": "Alliance contracts run on trust and obligation. The risk premium is real, but so is the loyalty once you have held up your end.",
+      "context": "faction_territory",
+      "faction_id": "frontier_alliance"
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "Jin, you stripped the port thruster housing without filing a maintenance log. I cannot track service intervals on work nobody recorded.",
+      "context": "inter_crew",
+      "required_crew": "marcus_jin"
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "Reeves, you filed a deviation report on my thruster swap. It passed certification. The deviation was unnecessary.",
+      "context": "inter_crew",
+      "required_crew": "elena_reeves"
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "Priya, the sensor array you were running last night pulled 340 watts of unallocated power. That is 3.4 percent of our reserve capacity.",
+      "context": "inter_crew",
+      "required_crew": "dr_priya_osei"
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "text": "Elena, I am aware of the power draw. I factored it into the analysis window. The data required sustained observation.",
+      "context": "inter_crew",
+      "required_crew": "elena_reeves"
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "Drifter, the contract window you agreed to on Stellaris gives us eleven days. If we detour through Alliance space that drops to six.",
+      "context": "inter_crew",
+      "required_crew": "tomas_drifter"
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "text": "Reeves, the Alliance detour adds two contacts who can move our cargo at a 15-credit premium. Run those numbers against your six-day deadline.",
+      "context": "inter_crew",
+      "required_crew": "elena_reeves"
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "Doc, your sample containers are not rated for the pressure differential in cargo bay three. I re-secured them. Do not put them back.",
+      "context": "inter_crew",
+      "required_crew": "dr_priya_osei"
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "text": "Marcus, I appreciate the re-securing. I was not aware bay three ran a different pressure cycle. That is useful operational data.",
+      "context": "inter_crew",
+      "required_crew": "marcus_jin"
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "Drifter, you negotiated a three-day delivery window for a four-day route. Either the math works or it does not.",
+      "context": "inter_crew",
+      "required_crew": "tomas_drifter"
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "text": "Marcus, the math works when you know which docks skip the queue for regular customers. I know two on the route. You are welcome.",
+      "context": "inter_crew",
+      "required_crew": "marcus_jin"
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "text": "Tomas, the cargo you logged as miscellaneous components appears on record as restricted biological precursors. I need an explanation.",
+      "context": "inter_crew",
+      "required_crew": "tomas_drifter"
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "text": "Priya, the buyers know what they are buying. The classification is a paperwork issue, not a safety one.",
+      "context": "inter_crew",
+      "required_crew": "dr_priya_osei"
+    },
+    {
+      "crew_id": "sgt_harkov",
+      "text": "Jin, your combat spacing on the last engagement was too tight. You were in my firing line twice. Do not let it be three.",
+      "context": "inter_crew",
+      "required_crew": "marcus_jin"
+    },
+    {
+      "crew_id": "kai_torren",
+      "text": "Reeves, the hold manifest says forty crates. I count thirty-eight. Someone needs to resolve that before we dock.",
+      "context": "inter_crew",
+      "required_crew": "elena_reeves"
+    },
+    {
+      "crew_id": "zero",
+      "text": "Doc, you have been watching me work. I will assume professional curiosity. The answer is: careful, and I do not leave evidence.",
+      "context": "inter_crew",
+      "required_crew": "dr_priya_osei"
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "You looked into the Uprising inheritance records. That data touches four Guild infrastructure contracts still active today. Worth knowing what connects them.",
+      "context": "flag_triggered",
+      "required_flags": ["marcus_uprising_inheritance_seen"]
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "The inheritance records from the Uprising. I have seen that documentation before. The Section Four survivors' trust was folded into a Guild holding company within a year.",
+      "context": "flag_triggered",
+      "required_flags": ["marcus_uprising_inheritance_seen"]
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "Silent Shaft. I know what the memorial leaves out. You have been there now. Some things you cannot read on a plaque.",
+      "context": "flag_triggered",
+      "required_flags": ["attended_silent_shaft"]
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "text": "The Silent Shaft ceremony was something else. Way I see it, places that remember their dead honestly are the ones that do not repeat the same mistakes.",
+      "context": "flag_triggered",
+      "required_flags": ["attended_silent_shaft"]
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "text": "The DCMC data you retrieved. I cross-referenced it against published incident reports. Twelve entries do not appear on the public record at all.",
+      "context": "flag_triggered",
+      "required_flags": ["heard_dcmc_intelligence"]
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "Those DCMC numbers you pulled. The gap in the safety maintenance contracts covers the same period as the Section Six collapse. That is not coincidence.",
+      "context": "flag_triggered",
+      "required_flags": ["heard_dcmc_intelligence"]
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "The NAS signals you tracked. Three of the pricing nodes on this route feed from the same antenna cluster. I have adjusted our timing windows accordingly.",
+      "context": "flag_triggered",
+      "required_flags": ["heard_nas_intelligence"]
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "text": "The NAS intelligence data is consistent with what the Collective analysis suggested, though the Collective version was significantly redacted before distribution.",
+      "context": "flag_triggered",
+      "required_flags": ["heard_nas_intelligence"]
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "You know about my father's project. The full scope of it took me years to piece together. I am still not sure I have all of it.",
+      "context": "flag_triggered",
+      "required_flags": ["marcus_father_connection_seen"]
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "What Marcus's father was working on. The infrastructure logs I have found connect to five of the current deep-route waypoints. The man built things meant to last.",
+      "context": "flag_triggered",
+      "required_flags": ["marcus_father_connection_seen"]
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "Hull stress report from that engagement: four panel seams need re-welding, and the port thruster ran 11 percent over rated load for 40 seconds. I have logged it.",
+      "context": "combat_after"
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "Good fight. Check the coupling on the dorsal gun mount before the next jump. I heard it rattle during the engagement.",
+      "context": "combat_after"
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "text": "I have documented the engagement parameters. The data on ship response time under sustained fire will inform my next set of recommendations.",
+      "context": "combat_after"
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "text": "We walked out. That is the only metric I care about when combat is over. Everything else is salvage.",
+      "context": "combat_after"
+    },
+    {
+      "crew_id": "sgt_harkov",
+      "text": "Weapons ran clean. Hull took three hits. I want twenty minutes with the targeting system before we jump again.",
+      "context": "combat_after"
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "I have been running fuel projections for the next three jumps. The margin is tighter than I would like. I will file the variance report tonight.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "Preventative maintenance schedule is running six hours behind. Not ideal. I will cover it overnight.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "text": "I have been reviewing the Collective published data on wormhole transit effects. The Institute methodology is dated but the core findings hold up.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "text": "Way I see it, the best route is not always the fastest one. Sometimes it is the one with the best cantina at the midpoint.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "We are carrying 4 tons of cargo that is earning nothing. I have flagged three buyers on the next approach vector.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "Drive coupling on the starboard side is showing micro-fatigue. I checked the maintenance contract. It is within tolerance, but I am watching it.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "text": "The samples I have been running have one result I cannot explain. In my experience, unexplainable results are rarely nothing.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "text": "I have a contact on the next station who owes me a favor from three runs ago. Marcus, remind me not to forget.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "sgt_harkov",
+      "text": "I ran a threat assessment on the patrol vessels we passed. Three were undermanned. Good to know.",
+      "context": "idle"
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "text": "I keep a running log of crew health indicators. Nothing alarming. But some of the fatigue patterns are worth monitoring on longer routes.",
+      "context": "idle"
     }
   ]
 }
