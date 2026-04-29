@@ -1,11 +1,11 @@
-"""SA-R1: Tests for the Okafor Institute research-patronage model.
+"""SA-R1/SA-R2: Tests for the Okafor Institute research-patronage model.
 
 Covers project templates, deterministic offer rolls on a 30-day window,
 fund-flow math (solo + team-fund collaborators), tick-flow with the
 seeded RNG resolution, success-payout scaling with research_yield_bonus,
 failure refunds with research_risk_reduction, the patent state machine
 (held → licensed → tick royalties; held → sold → holding removed),
-and round-trip serialization.
+round-trip serialization, and SA-R2 legacy-arc ethics tracking.
 """
 
 from __future__ import annotations
@@ -15,6 +15,7 @@ import pytest
 from spacegame.models.okafor_research import (
     FAILURE_ODDS,
     FAILURE_REFUND_RATE,
+    OKAFOR_PROJECT_ETHICS,
     OKAFOR_PROJECT_TEMPLATES,
     ROYALTY_INTERVAL_DAYS,
     ROYALTY_RATE,
@@ -31,6 +32,7 @@ from spacegame.models.okafor_research import (
     compute_team_fund_duration,
     fund_project,
     get_template,
+    pending_legacy_beat,
     resolve_completed_projects,
     resolve_completion,
     roll_offers,
@@ -580,3 +582,208 @@ class TestKweonRelationshipValue:
         state = OkaforResearchState(kweon_relationship_value=2)
         state.bump_relationship(1)
         assert state.kweon_relationship_value == 3
+
+
+# ---------------------------------------------------------------------------
+# SA-R2 — Ethics map + legacy-arc state
+# ---------------------------------------------------------------------------
+
+
+class TestOkaforProjectEthics:
+    """Acceptance #1 — OKAFOR_PROJECT_ETHICS covers all 10 templates."""
+
+    def test_ethics_keyset_matches_templates(self) -> None:
+        template_ids = {tpl.id for tpl in OKAFOR_PROJECT_TEMPLATES}
+        ethics_ids = set(OKAFOR_PROJECT_ETHICS.keys())
+        assert ethics_ids == template_ids, (
+            f"Ethics map keys must match template ids.\n"
+            f"Extra in ethics: {ethics_ids - template_ids}\n"
+            f"Missing from ethics: {template_ids - ethics_ids}"
+        )
+
+    def test_ethics_values_are_legal_strings(self) -> None:
+        legal = {"heal", "profit", "neutral"}
+        for tid, tag in OKAFOR_PROJECT_ETHICS.items():
+            assert tag in legal, f"{tid} has illegal ethics tag: {tag!r}"
+
+    def test_ethics_tally_is_3_heal_4_profit_3_neutral(self) -> None:
+        counts: dict[str, int] = {"heal": 0, "profit": 0, "neutral": 0}
+        for tag in OKAFOR_PROJECT_ETHICS.values():
+            counts[tag] += 1
+        assert counts == {"heal": 3, "profit": 4, "neutral": 3}, (
+            f"Expected 3 heal / 4 profit / 3 neutral per Decision 2, got {counts}"
+        )
+
+    @pytest.mark.parametrize(
+        "template_id,expected",
+        [
+            ("low_meta_analysis_pediatric", "heal"),
+            ("mid_field_clinic_supply_chain", "heal"),
+            ("high_post_outbreak_vaccine_synthesis", "heal"),
+            ("low_industrial_dust_filtration", "profit"),
+            ("mid_orbital_propulsion_efficiency", "profit"),
+            ("mid_alloy_corrosion_mining_belt", "profit"),
+            ("high_quantum_sensor_capstone", "profit"),
+            ("low_protein_folding_replication", "neutral"),
+            ("low_archive_recovery", "neutral"),
+            ("mid_neural_synthesis_protocol", "neutral"),
+        ],
+    )
+    def test_locked_categorization(self, template_id: str, expected: str) -> None:
+        assert OKAFOR_PROJECT_ETHICS[template_id] == expected, (
+            f"{template_id} should be {expected!r} per Decision 2"
+        )
+
+
+class TestOkaforResearchStateLegacyFields:
+    """Acceptance #2 — new fields default to zero / empty; round-trip clean."""
+
+    def test_defaults_are_zero(self) -> None:
+        state = OkaforResearchState()
+        assert state.legacy_heal_completed == 0
+        assert state.legacy_profit_completed == 0
+        assert state.legacy_ending == ""
+
+    def test_round_trip_with_legacy_counters(self) -> None:
+        state = OkaforResearchState(
+            legacy_heal_completed=4,
+            legacy_profit_completed=2,
+            legacy_ending="",
+        )
+        restored = OkaforResearchState.from_dict(state.to_dict())
+        assert restored.legacy_heal_completed == 4
+        assert restored.legacy_profit_completed == 2
+        assert restored.legacy_ending == ""
+
+    def test_round_trip_with_heal_ending(self) -> None:
+        state = OkaforResearchState(
+            legacy_heal_completed=8,
+            legacy_profit_completed=2,
+            legacy_ending="heal",
+        )
+        restored = OkaforResearchState.from_dict(state.to_dict())
+        assert restored.legacy_ending == "heal"
+        assert restored.legacy_heal_completed == 8
+
+    def test_legacy_save_missing_fields_loads_with_defaults(self) -> None:
+        # Simulates an SA-R1 save that predates SA-R2 fields.
+        raw: dict = {
+            "active_projects": {},
+            "holdings": [],
+            "kweon_relationship_value": 3,
+            "slot_seed_window": -1,
+            "slot_offers": [],
+            "completed_count": 5,
+            "failed_count": 1,
+        }
+        state = OkaforResearchState.from_dict(raw)
+        assert state.legacy_heal_completed == 0
+        assert state.legacy_profit_completed == 0
+        assert state.legacy_ending == ""
+
+
+class TestPendingLegacyBeat:
+    """Acceptance #4 — pending_legacy_beat priority and gating."""
+
+    def _flags(self, **kwargs: bool) -> dict[str, bool]:
+        return dict(**kwargs)
+
+    def test_no_completions_returns_none(self) -> None:
+        state = OkaforResearchState()
+        assert pending_legacy_beat(state, {}) is None
+
+    def test_one_heal_returns_first_heal(self) -> None:
+        state = OkaforResearchState(legacy_heal_completed=1)
+        assert pending_legacy_beat(state, {}) == "kweon_legacy_first_heal"
+
+    def test_one_heal_already_seen_returns_none(self) -> None:
+        state = OkaforResearchState(legacy_heal_completed=1)
+        flags = {"okafor_legacy_first_heal_seen": True}
+        assert pending_legacy_beat(state, flags) is None
+
+    def test_one_profit_returns_first_profit(self) -> None:
+        state = OkaforResearchState(legacy_profit_completed=1)
+        assert pending_legacy_beat(state, {}) == "kweon_legacy_first_profit"
+
+    def test_one_profit_already_seen_returns_none(self) -> None:
+        state = OkaforResearchState(legacy_profit_completed=1)
+        flags = {"okafor_legacy_first_profit_seen": True}
+        assert pending_legacy_beat(state, flags) is None
+
+    def test_three_heals_returns_heal_pattern(self) -> None:
+        state = OkaforResearchState(legacy_heal_completed=3)
+        flags = {"okafor_legacy_first_heal_seen": True}
+        assert pending_legacy_beat(state, flags) == "kweon_legacy_heal_pattern"
+
+    def test_three_profits_returns_profit_pattern(self) -> None:
+        state = OkaforResearchState(legacy_profit_completed=3)
+        flags = {"okafor_legacy_first_profit_seen": True}
+        assert pending_legacy_beat(state, flags) == "kweon_legacy_profit_pattern"
+
+    def test_pattern_seen_does_not_repeat(self) -> None:
+        state = OkaforResearchState(legacy_heal_completed=5)
+        flags = {
+            "okafor_legacy_first_heal_seen": True,
+            "okafor_legacy_heal_pattern_seen": True,
+        }
+        assert pending_legacy_beat(state, flags) is None
+
+    def test_heal_ending_at_five_spread_six_heals(self) -> None:
+        state = OkaforResearchState(legacy_heal_completed=6, legacy_profit_completed=1)
+        flags = {
+            "okafor_legacy_first_heal_seen": True,
+            "okafor_legacy_heal_pattern_seen": True,
+        }
+        assert pending_legacy_beat(state, flags) == "kweon_legacy_heal_ending"
+
+    def test_heal_ending_requires_six_heals_minimum(self) -> None:
+        # spread >= 5 but only 5 heals — not enough
+        state = OkaforResearchState(legacy_heal_completed=5, legacy_profit_completed=0)
+        flags = {
+            "okafor_legacy_first_heal_seen": True,
+            "okafor_legacy_heal_pattern_seen": True,
+        }
+        assert pending_legacy_beat(state, flags) is None
+
+    def test_profit_ending_at_five_spread_six_profits(self) -> None:
+        state = OkaforResearchState(legacy_heal_completed=1, legacy_profit_completed=6)
+        flags = {
+            "okafor_legacy_first_profit_seen": True,
+            "okafor_legacy_profit_pattern_seen": True,
+        }
+        assert pending_legacy_beat(state, flags) == "kweon_legacy_profit_ending"
+
+    def test_endings_beat_patterns_in_priority(self) -> None:
+        # heal_completed=6, profit=1 → ending threshold reached
+        # but also heal_pattern not yet seen (both could fire)
+        # endings should win
+        state = OkaforResearchState(legacy_heal_completed=6, legacy_profit_completed=1)
+        flags = {"okafor_legacy_first_heal_seen": True}
+        result = pending_legacy_beat(state, flags)
+        assert result == "kweon_legacy_heal_ending"
+
+    def test_legacy_ending_set_returns_none(self) -> None:
+        # Once an ending fires, arc is terminal
+        state = OkaforResearchState(
+            legacy_heal_completed=8,
+            legacy_profit_completed=2,
+            legacy_ending="heal",
+        )
+        assert pending_legacy_beat(state, {}) is None
+
+    def test_mixed_no_ending_three_plus_three(self) -> None:
+        # 3 heal + 3 profit — both pattern beats due but no ending
+        state = OkaforResearchState(legacy_heal_completed=3, legacy_profit_completed=3)
+        flags = {
+            "okafor_legacy_first_heal_seen": True,
+            "okafor_legacy_first_profit_seen": True,
+        }
+        result = pending_legacy_beat(state, flags)
+        # heal pattern fires first (heal-ties-default-to-heal rule)
+        assert result == "kweon_legacy_heal_pattern"
+
+    def test_heal_side_first_when_tied_in_patterns(self) -> None:
+        # Both first-beat conditions met with equal completions → heal first
+        state = OkaforResearchState(legacy_heal_completed=1, legacy_profit_completed=1)
+        result = pending_legacy_beat(state, {})
+        assert result == "kweon_legacy_first_heal"

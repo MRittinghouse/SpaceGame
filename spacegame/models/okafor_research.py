@@ -425,6 +425,37 @@ OKAFOR_PROJECT_TEMPLATES: tuple[OkaforProjectTemplate, ...] = (
 
 
 # ---------------------------------------------------------------------------
+# SA-R2 — project ethics map (locked: Decision 2)
+# ---------------------------------------------------------------------------
+#
+# Module-level lookup, NOT a new field on the frozen OkaforProjectTemplate
+# (see SA-R2 plan Decision 1 rationale — keeps categorization separate from
+# SA-R1's content schema). Keyset must equal the keyset of
+# OKAFOR_PROJECT_TEMPLATES; values are one of "heal" | "profit" | "neutral".
+#
+# Heal: directly serves clinical / public-health outcomes per Dr. Okafor's
+# founding principle ("knowledge that does not heal is knowledge wasted").
+# Profit: serves industrial / commercial / sensor-network outcomes.
+# Neutral: basic-science work that doesn't cleanly belong to either side.
+
+OKAFOR_PROJECT_ETHICS: dict[str, str] = {
+    # Low risk (4)
+    "low_protein_folding_replication": "neutral",
+    "low_archive_recovery": "neutral",
+    "low_meta_analysis_pediatric": "heal",
+    "low_industrial_dust_filtration": "profit",
+    # Mid risk (4)
+    "mid_neural_synthesis_protocol": "neutral",
+    "mid_orbital_propulsion_efficiency": "profit",
+    "mid_field_clinic_supply_chain": "heal",
+    "mid_alloy_corrosion_mining_belt": "profit",
+    # High risk (2)
+    "high_quantum_sensor_capstone": "profit",
+    "high_post_outbreak_vaccine_synthesis": "heal",
+}
+
+
+# ---------------------------------------------------------------------------
 # Helpers (pure)
 # ---------------------------------------------------------------------------
 
@@ -737,6 +768,14 @@ class OkaforResearchState:
         slot_offers: Cached template ids for the current window.
         completed_count: Lifetime successful completions.
         failed_count: Lifetime failures.
+        legacy_heal_completed: SA-R2 — count of successfully completed
+            heal-tagged projects (per :data:`OKAFOR_PROJECT_ETHICS`).
+            Gates Kweon's ethics arc beats. 0 on legacy saves.
+        legacy_profit_completed: SA-R2 — count of successfully completed
+            profit-tagged projects. 0 on legacy saves.
+        legacy_ending: SA-R2 — ``"heal"`` or ``"profit"`` once the
+            spread-based ending beat fires; ``""`` until then. Terminal
+            arc state: once set, :func:`pending_legacy_beat` returns None.
     """
 
     active_projects: dict[str, ActiveProject] = field(default_factory=dict)
@@ -746,6 +785,10 @@ class OkaforResearchState:
     slot_offers: list[str] = field(default_factory=list)
     completed_count: int = 0
     failed_count: int = 0
+    # SA-R2 legacy-arc tracking
+    legacy_heal_completed: int = 0
+    legacy_profit_completed: int = 0
+    legacy_ending: str = ""
 
     # ---- Relationship arc ----
 
@@ -785,6 +828,10 @@ class OkaforResearchState:
             "slot_offers": list(self.slot_offers),
             "completed_count": self.completed_count,
             "failed_count": self.failed_count,
+            # SA-R2 fields
+            "legacy_heal_completed": self.legacy_heal_completed,
+            "legacy_profit_completed": self.legacy_profit_completed,
+            "legacy_ending": self.legacy_ending,
         }
 
     @classmethod
@@ -802,7 +849,66 @@ class OkaforResearchState:
             slot_offers=list(data.get("slot_offers", [])),
             completed_count=int(data.get("completed_count", 0)),
             failed_count=int(data.get("failed_count", 0)),
+            # SA-R2 fields — default to 0 / "" on legacy saves
+            legacy_heal_completed=int(data.get("legacy_heal_completed", 0)),
+            legacy_profit_completed=int(data.get("legacy_profit_completed", 0)),
+            legacy_ending=str(data.get("legacy_ending", "")),
         )
+
+
+# ---------------------------------------------------------------------------
+# SA-R2 — arc-beat routing helper
+# ---------------------------------------------------------------------------
+
+
+def pending_legacy_beat(
+    state: OkaforResearchState, dialogue_flags: dict[str, bool]
+) -> Optional[str]:
+    """Return the dialogue tree id of the next due Kweon legacy-arc beat, or None.
+
+    Priority (Decision 4 — locked): endings beat patterns beat firsts; within
+    each tier, heal side checked first (heal-ties-default-to-heal rule reflects
+    the founder's principle as the institution's stated north star).
+
+    The arc is terminal once ``state.legacy_ending`` is non-empty; all
+    subsequent calls return ``None``.
+
+    Args:
+        state: The player's current ``OkaforResearchState``.
+        dialogue_flags: The player's flat flag dict (``player.dialogue_flags``).
+
+    Returns:
+        A dialogue tree id string, or ``None`` if no beat is due.
+    """
+    # Terminal: ending already fired
+    if state.legacy_ending:
+        return None
+
+    heal = state.legacy_heal_completed
+    profit = state.legacy_profit_completed
+
+    def flag(name: str) -> bool:
+        return bool(dialogue_flags.get(name))
+
+    # --- Endings (spread >= 5 AND dominant side >= 6) ---
+    if heal - profit >= 5 and heal >= 6 and not flag("okafor_legacy_heal_ending_seen"):
+        return "kweon_legacy_heal_ending"
+    if profit - heal >= 5 and profit >= 6 and not flag("okafor_legacy_profit_ending_seen"):
+        return "kweon_legacy_profit_ending"
+
+    # --- Patterns (3+ on the dominant side, pattern not yet seen) ---
+    if heal >= 3 and not flag("okafor_legacy_heal_pattern_seen"):
+        return "kweon_legacy_heal_pattern"
+    if profit >= 3 and not flag("okafor_legacy_profit_pattern_seen"):
+        return "kweon_legacy_profit_pattern"
+
+    # --- Firsts (1+ on the dominant side, first not yet seen) ---
+    if heal >= 1 and not flag("okafor_legacy_first_heal_seen"):
+        return "kweon_legacy_first_heal"
+    if profit >= 1 and not flag("okafor_legacy_first_profit_seen"):
+        return "kweon_legacy_first_profit"
+
+    return None
 
 
 # ---------------------------------------------------------------------------

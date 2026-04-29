@@ -916,3 +916,117 @@ def auction_first_listing_withdrawn() -> str:
     crew-banter content.
     """
     return "auction_first_listing_withdrawn"
+
+
+# ---------------------------------------------------------------------------
+# Okafor legacy arc (SA-R2) — Dr. Okafor's Legacy Narrative Arc
+# ---------------------------------------------------------------------------
+#
+# SA-R2 (requirements/roadmap/ROADMAP.md). Flags scoped to the ethics-in-
+# research narrative thread that Dr. Kweon carries on top of SA-R1's project-
+# patronage venue. Each flag is produced when the matching Kweon arc-beat
+# dialogue tree closes in OkaforView; consumers are the view's routing guard,
+# journal trigger_flag entries, and the optional mission gate.
+
+
+def okafor_legacy_first_heal_seen() -> str:
+    """Flag set when the player dismisses the first-heal arc-beat tree.
+
+    Producer: :class:`spacegame.views.okafor_view.OkaforView`'s
+    ``_close_active_dialogue`` handler when the ``kweon_legacy_first_heal``
+    tree closes.
+    Consumers: ``OkaforView._kweon_dialogue_id()`` routing guard (beat
+    must not repeat); ``data/journal/entries.json`` trigger_flag for the
+    ``auto_okafor_legacy_first_heal`` entry.
+    """
+    return "okafor_legacy_first_heal_seen"
+
+
+def okafor_legacy_first_profit_seen() -> str:
+    """Flag set when the player dismisses the first-profit arc-beat tree.
+
+    Producer: :class:`spacegame.views.okafor_view.OkaforView`'s
+    ``_close_active_dialogue`` handler when the ``kweon_legacy_first_profit``
+    tree closes.
+    Consumers: ``OkaforView._kweon_dialogue_id()`` routing guard (beat
+    must not repeat); ``data/journal/entries.json`` trigger_flag for the
+    ``auto_okafor_legacy_first_profit`` entry.
+    """
+    return "okafor_legacy_first_profit_seen"
+
+
+def okafor_legacy_heal_pattern_seen() -> str:
+    """Flag set when the player dismisses the heal-pattern arc-beat tree.
+
+    Producer: :class:`spacegame.views.okafor_view.OkaforView`'s
+    ``_close_active_dialogue`` handler when the ``kweon_legacy_heal_pattern``
+    tree closes.
+    Consumers: ``OkaforView._kweon_dialogue_id()`` routing guard; mission
+    ``required_flags`` gate for ``okafor_legacy_clinic_run`` (the optional
+    heal-side delivery mission that becomes available after this beat).
+    """
+    return "okafor_legacy_heal_pattern_seen"
+
+
+def okafor_legacy_profit_pattern_seen() -> str:
+    """Flag set when the player dismisses the profit-pattern arc-beat tree.
+
+    Producer: :class:`spacegame.views.okafor_view.OkaforView`'s
+    ``_close_active_dialogue`` handler when the ``kweon_legacy_profit_pattern``
+    tree closes.
+    Consumer: ``OkaforView._kweon_dialogue_id()`` routing guard (beat must
+    not repeat). No mission consumer on the profit side per Decision 6.
+    """
+    return "okafor_legacy_profit_pattern_seen"
+
+
+def okafor_legacy_heal_ending_seen() -> str:
+    """Flag set when the player dismisses the heal-ending arc-beat tree.
+
+    Producer: :class:`spacegame.views.okafor_view.OkaforView`'s
+    ``_close_active_dialogue`` handler when the ``kweon_legacy_heal_ending``
+    tree closes. Also triggers setting ``OkaforResearchState.legacy_ending``
+    to ``"heal"`` (terminal arc state).
+    Consumers: ``OkaforView._kweon_dialogue_id()`` routing guard (arc
+    terminal — all subsequent beats return None); ``data/journal/entries.json``
+    trigger_flag for the ``auto_okafor_legacy_heal_ending`` entry.
+    """
+    return "okafor_legacy_heal_ending_seen"
+
+
+def okafor_legacy_profit_ending_seen() -> str:
+    """Flag set when the player dismisses the profit-ending arc-beat tree.
+
+    Producer: :class:`spacegame.views.okafor_view.OkaforView`'s
+    ``_close_active_dialogue`` handler when the ``kweon_legacy_profit_ending``
+    tree closes. Also triggers setting ``OkaforResearchState.legacy_ending``
+    to ``"profit"`` (terminal arc state).
+    Consumers: ``OkaforView._kweon_dialogue_id()`` routing guard (arc
+    terminal); ``data/journal/entries.json`` trigger_flag for the
+    ``auto_okafor_legacy_profit_ending`` entry.
+    """
+    return "okafor_legacy_profit_ending_seen"
+
+
+def okafor_legacy_mission_offered() -> str:
+    """Flag set when Kweon offers the optional clinic-run mission in the heal-pattern beat.
+
+    Producer: ``kweon_legacy_heal_pattern`` dialogue tree — a response
+    ``set_flag`` on the node that names the destination system; set when the
+    player advances through that response in OkaforView.
+    Consumer: mission system (``okafor_legacy_clinic_run`` uses this flag
+    for one-shot gating so the offer line never repeats).
+    """
+    return "okafor_legacy_mission_offered"
+
+
+def okafor_legacy_mission_completed() -> str:
+    """Flag set when the player completes the optional clinic-run mission.
+
+    Producer: mission reward chain for ``okafor_legacy_clinic_run``
+    (``reward_type: set_flag`` entry in ``data/missions/sa_r2_okafor_legacy.json``).
+    Consumer: SA-X1 cross-anchor narrative threading (deferred). Listed in
+    :data:`tests.test_data.test_dialogue_integrity.KNOWN_PRODUCER_ONLY_ORPHANS`
+    until SA-X1 wires a consumer.
+    """
+    return "okafor_legacy_mission_completed"
