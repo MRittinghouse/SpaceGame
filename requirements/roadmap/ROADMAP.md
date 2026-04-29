@@ -4901,7 +4901,7 @@ Open question (reviewer judgment, not blocking implementation):
 - Notes: Implement phase missed the two engine integration tests for criteria 8 and 9 (plan steps 10 and 11). Fixed directly. All other criteria met; code wiring correct; content volume and voice quality solid.
 ### WB-1 — Station tagline scanner coverage
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Source**: `requirements/writing_bible_scanner_gaps.md` Gap 1
 **Size**: S | **Effort**: 3-5 days
 **Depends on**: none | **Blocks**: WB-2
@@ -4927,7 +4927,7 @@ Open question (reviewer judgment, not blocking implementation):
 3. `TestStationTaglineWritingBible.test_no_banned_phrases_in_taglines` would fail if any tagline contained `"couldn't help but"` or `"a testament to"`.
 4. `TestStationTaglineWritingBible.test_no_parallel_negation_in_taglines` flags comma-form parallel-negation taglines, but the existing `_PARALLEL_NEGATION_ALLOWLIST` (containing the Reach tagline) still suppresses any allowlisted entry — confirmed by a small unit test that asserts `_find_violations("No laws. No mercy. No refunds.")` returns no parallel-negation entry, and that `_find_violations("No laws, no mercy.")` (a synthetic non-allowlisted string) does flag it.
 5. `TestStationTaglineWritingBible.test_tagline_scanner_finds_content` asserts `len(_extract_tagline_strings()) >= 5` so removal of the extractor or accidental import failure surfaces immediately.
-6. `python -m pytest -n auto -q tests/test_writing_bible_compliance.py` passes; full suite stays at >= 8304 passing.
+6. `python -m pytest -n auto -q tests/test_writing_bible_compliance.py` passes; full suite stays at >= 10312 passing (current pre-phase baseline; 98 skipped is fine).
 
 **Risks / open questions.**
 - ~~Discovery method: `__subclasses__()` introspection vs. hardcoded import list vs. AST parsing.~~ **Locked**: use `StationLayout.__subclasses__()` so future faction layouts are auto-discovered without touching the test file. The trade-off (subclasses must be imported before introspection runs) is satisfied by importing `spacegame.views.station_layouts` at extractor-call time.
@@ -4945,12 +4945,26 @@ Open question (reviewer judgment, not blocking implementation):
    All three pass against current content (Guild/Union/Collective/Frontier/Reach taglines are clean under the existing comma-only regex; Reach tagline is also explicitly allowlisted). Test surface: `tests/test_writing_bible_compliance.py::TestStationTaglineWritingBible`.
 4. **Add the allowlist-honored unit test.** Inside the same class, add `test_allowlist_suppresses_reach_tagline` that calls `_find_violations("No laws. No mercy. No refunds.")` and asserts the result contains no parallel-negation entry, then calls `_find_violations("No laws, no mercy.")` (a synthetic non-allowlisted string in comma form) and asserts the result *does* contain a parallel-negation entry. This pins both the allowlist behavior and the regex behavior in a single unit test, satisfying acceptance #4 today and forward-defending against WB-2's regex broadening.
 5. **Manual injection check (verifies acceptance #2 + #3).** Temporarily edit `GuildDeckLayout.faction_tagline` to include an em-dash. Run `pytest tests/test_writing_bible_compliance.py::TestStationTaglineWritingBible -q`. Confirm `test_no_em_dashes_in_taglines` fails with a clear offender report. Revert. Repeat with a banned phrase. Note the result in the Activity log so the implementation phase has evidence the tests bite.
-6. **Run full suite.** `python -m pytest -n auto -q`. Confirm pass count stays at >= 8304 and no new failures. Lint with `ruff check tests/test_writing_bible_compliance.py` and format with `ruff format tests/test_writing_bible_compliance.py`. Commit with sprint ID in the message.
+6. **Run full suite.** `python -m pytest -n auto -q`. Confirm pass count stays at >= 10312 and no new failures. Lint with `ruff check tests/test_writing_bible_compliance.py` and format with `ruff format tests/test_writing_bible_compliance.py`. Commit with sprint ID in the message.
 
 **Activity log.**
 - 2026-04-26 — todo (created)
 - 2026-04-26 18:36 — plan phase ran in pilot but blocked by sandbox; planning content recovered from agent stdout and applied to this sprint section
 - 2026-04-26 — plan content recovered; ready for re-pickup by harness (next plan phase will see substantive existing plan and confirm/refine)
+- 2026-04-29 18:15 — harness: plan phase starting
+- 2026-04-29 18:30 — planner: re-verified all 3 context docs exist; confirmed 5 `StationLayout` subclasses still declare `faction_tagline` (lines 602/646/773/881/973 of `station_layouts.py`); confirmed Reach tagline still in `_PARALLEL_NEGATION_ALLOWLIST` at lines 78-86 of `tests/test_writing_bible_compliance.py`; confirmed `_find_violations()` (line 89) is the right call site. Refreshed acceptance #6 baseline from 8304 to current pre-phase baseline of 10312. All decisions remain locked from prior planning run; sprint is implementation-ready. PHASE_OK
+
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-04-29 18:15
+- Completed: 2026-04-29 18:30
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: pending (planner about to commit)
+- New_sprints_proposed: none
+- Polish_items_folded_in: none new (prior planning run already folded in coverage-sanity test, allowlist-pinning unit test, and the manual injection check; this run confirmed those remain appropriate)
+- Decisions_locked: 0 new (3 prior locks confirmed: discovery via `__subclasses__()`; allowlist honored via `_find_violations()`; empty taglines skipped)
+- Notes: Re-validation of an already-substantively-planned sprint. Only material edit: refreshed test-baseline number in acceptance #6 and Plan step 6 to match the current 10312 pre-phase baseline. No new sprints proposed (Gap 2 stays with WB-2 per source doc). Touch zone unchanged: a single test file. Voice check: no player-facing strings added by this sprint, so Writing Bible exposure is zero.
 
 ### WB-2 — Parallel-negation regex broadening
 
