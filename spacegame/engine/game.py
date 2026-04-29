@@ -2405,6 +2405,19 @@ class Game:
         if self.data_loader is not None:
             voices = self.data_loader.get_auction_voices("stellaris")
             self.sell_lot_view.set_voice_templates(voices)
+
+        # Journal callback fired on first successful listing (AC #14).
+        from spacegame.constants.flags import auction_first_listing_created
+
+        def _on_listing_created() -> None:
+            if self.player is not None and self.journal is not None:
+                self.journal.trigger_auto_entry(
+                    auction_first_listing_created(),
+                    self.player.game_day,
+                    self.player.current_system_id,
+                )
+
+        self.sell_lot_view.on_listing_created = _on_listing_created
         self.state_manager.register_state(GameState.SELL_LOT, self.sell_lot_view)
 
     def _ensure_auction_view(self, venue_id: str = "stellaris") -> None:

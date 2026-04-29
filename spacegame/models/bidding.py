@@ -1110,6 +1110,15 @@ class AuctionState:
         """
         for i, listing in enumerate(self.active_listings):
             if listing.listing_id == listing_id:
+                # Guard against cancellation once the lot is on the floor.
+                # The lot id is deterministic: "player_listing_{listing_id}".
+                lot_id_on_floor = f"player_listing_{listing.listing_id}"
+                for session_lot in self.active_session_lots:
+                    if session_lot.id == lot_id_on_floor:
+                        return (
+                            False,
+                            "Listing is already on the auction floor; cannot cancel.",
+                        )
                 # Return the item to inventory.
                 if listing.item_kind == "commodity":
                     player.ship.add_cargo(listing.item_id, listing.quantity, price_per_unit=0)

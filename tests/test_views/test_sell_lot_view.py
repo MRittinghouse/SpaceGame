@@ -222,6 +222,26 @@ class TestConfirmFlow:
         assert player.dialogue_flags.get(auction_first_listing_created()) is True
         assert view.next_state == GameState.AUCTION
 
+    def test_confirm_fires_on_listing_created_callback_on_first_listing(self) -> None:
+        """on_listing_created callback fires exactly once on first listing (AC #14)."""
+        manager, player = _make_view_env()
+        view = _make_view(manager, player)
+        view.on_enter()
+        self._select_first_eligible(view)
+        view.set_declared_appraisal(8000)
+        calls: list[int] = []
+        view.on_listing_created = lambda: calls.append(1)
+        ok, _ = view.confirm_listing()
+        assert ok
+        assert len(calls) == 1
+        # Second listing does not re-fire the callback.
+        items = view.get_eligible_items()
+        if items:
+            view.select_item(items[0]["item_kind"], items[0]["item_id"])
+            view.set_declared_appraisal(8000)
+            view.confirm_listing()
+        assert len(calls) == 1
+
     def test_confirm_fails_with_error_message(self) -> None:
         manager, player = _make_view_env(credits=10)  # too poor to pay fee.
         view = _make_view(manager, player)

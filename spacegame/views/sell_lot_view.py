@@ -115,6 +115,11 @@ class SellLotView(BaseView):
         # First-time tip overlay (PT-M pattern, mirrors AuctionView).
         self._tip_overlay: Optional[FirstTimeTipOverlay] = None
 
+        # Engine callback fired on first successful listing (mirrors
+        # on_player_lot_sold in AuctionView). The engine uses this to
+        # trigger the auto_auction_first_listing_created journal entry.
+        self.on_listing_created: Optional[Any] = None
+
         # Voice templates injected by the engine.
         self._voice_templates: dict[str, Any] = {}
 
@@ -294,9 +299,11 @@ class SellLotView(BaseView):
         if not ok:
             self.error_message = msg
             return (False, msg)
-        # First-listing journal/banter trigger flag.
+        # First-listing flag + engine callback (journal/banter trigger).
         if not self.player.dialogue_flags.get(auction_first_listing_created()):
             self.player.dialogue_flags[auction_first_listing_created()] = True
+            if self.on_listing_created is not None:
+                self.on_listing_created()
         self.error_message = None
         self.next_state = GameState.AUCTION
         return (True, msg)

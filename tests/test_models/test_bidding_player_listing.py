@@ -498,6 +498,32 @@ class TestCancelListing:
         assert not ok
         assert "not found" in msg.lower() or "no such" in msg.lower()
 
+    def test_cancel_blocked_when_lot_on_active_floor(self) -> None:
+        """Listing already converted to a session lot cannot be cancelled (AC #5)."""
+        player = _make_player()
+        state = player.auction_state
+        ok, _, listing = state.create_listing(
+            player=player,
+            item_kind="commodity",
+            item_id="axiom_circuit",
+            quantity=1,
+            declared_appraisal=8000,
+            reserve_pct=0.70,
+            current_day=1,
+        )
+        assert listing is not None
+        # Simulate the listing being pulled into a live session by adding
+        # the converted lot to active_session_lots directly.
+
+        floor_lot = listing.to_auction_lot()
+        state.active_session_lots.append(floor_lot)
+        # Cancellation must now fail with the "on floor" message.
+        ok, msg = state.cancel_listing(listing.listing_id, player)
+        assert not ok
+        assert "auction floor" in msg.lower() or "cannot cancel" in msg.lower()
+        # The listing must remain in active_listings (not returned early).
+        assert any(l.listing_id == listing.listing_id for l in state.active_listings)
+
 
 class TestEligibleListings:
     def test_returns_listings_listed_on_or_before_current_day(self) -> None:
