@@ -671,6 +671,19 @@ def auction_first_rivalry_formed() -> str:
     return "auction_first_rivalry_formed"
 
 
+def seen_first_velo_encounter() -> str:
+    """Flag set the first time the player exchanges dialogue with Cassian Velo.
+
+    SA-B3 (decision §B3.13). Producer: Velo's dialogue tree
+    (``cassian_velo_main`` in ``data/dialogue/dialogues.json``) sets the
+    flag via ``set_flag`` on the greeting node response.
+    Consumer: ``data/journal/entries.json``
+    (``trigger_flag`` for the ``auto_auction_first_velo_encounter``
+    auto-entry). Subsequent dialogue exchanges do not re-fire the entry.
+    """
+    return "seen_first_velo_encounter"
+
+
 def auction_sable_ceiling_correct() -> str:
     """Banter trigger: Sable's ceiling estimate was within 5% of the actual.
 

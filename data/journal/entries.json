@@ -349,6 +349,13 @@
       "trigger_flag": "auction_first_rivalry_formed",
       "system_id": "stellaris_port",
       "mission_id": ""
+    },
+    {
+      "entry_id": "auto_auction_first_velo_encounter",
+      "text": "Talked to the auctioneer between sessions. Cassian Velo. Off the floor he is quieter. He will not give me a reserve. He will tell me what the catalogue rewards. I think that is a fair trade.",
+      "trigger_flag": "seen_first_velo_encounter",
+      "system_id": "stellaris_port",
+      "mission_id": ""
     }
   ]
 }

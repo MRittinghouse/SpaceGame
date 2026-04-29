@@ -8882,6 +8882,83 @@
           "expression": "neutral"
         }
       ]
+    },
+    {
+      "id": "cassian_velo_main",
+      "start_node_id": "greet",
+      "nodes": [
+        {
+          "id": "greet",
+          "speaker_id": "cassian_velo",
+          "text": "Off the floor I am quieter. What can I tell you between sessions?",
+          "responses": [
+            {
+              "text": "What can you say about the upcoming lots?",
+              "next_node_id": "preview_hints",
+              "set_flag": "seen_first_velo_encounter"
+            },
+            {
+              "text": "Anyone interesting on the floor lately?",
+              "next_node_id": "rival_readings",
+              "set_flag": "seen_first_velo_encounter"
+            },
+            {
+              "text": "How long has the floor been here?",
+              "next_node_id": "floor_history",
+              "set_flag": "seen_first_velo_encounter"
+            },
+            {
+              "text": "I'll see you at the next session.",
+              "next_node_id": "farewell",
+              "set_flag": "seen_first_velo_encounter"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "preview_hints",
+          "speaker_id": "cassian_velo",
+          "text": "I will not name the reserves. I will tell you the catalogue rewards careful reading. The provenance documents are filed for anyone who asks. Read the certificates the way you would read a contract.",
+          "responses": [
+            {
+              "text": "Got it. Anything else?",
+              "next_node_id": "greet"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "rival_readings",
+          "speaker_id": "cassian_velo",
+          "text": "The three you have been watching all season have different ceilings. You can work out which one from how they bid in the middle range. I have been watching this for two years. You have been watching for a few sessions. I would learn from the sample size.",
+          "responses": [
+            {
+              "text": "That helps. Thank you.",
+              "next_node_id": "greet"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "floor_history",
+          "speaker_id": "cassian_velo",
+          "text": "This room has run a public floor since before the current Stellaris Charter was signed. The Compact-era benches went out in the 2310s. The current room kept the gavel and the chair. Everything else was replaced.",
+          "responses": [
+            {
+              "text": "Useful to know.",
+              "next_node_id": "greet"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "farewell",
+          "speaker_id": "cassian_velo",
+          "text": "We will be ready for the next session. Bring your reading.",
+          "responses": [],
+          "expression": "neutral"
+        }
+      ]
     }
   ]
 }

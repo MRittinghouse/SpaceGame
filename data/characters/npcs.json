@@ -912,6 +912,19 @@
       "home_system_id": "breakstone",
       "dialogue_id": "sten_brygaard_deep_shafts",
       "faction_id": "miners_union"
+    },
+    {
+      "id": "cassian_velo",
+      "name": "Cassian Velo",
+      "title": "Stellaris Auctioneer",
+      "portrait_color": [
+        180,
+        160,
+        130
+      ],
+      "home_system_id": "stellaris_port",
+      "dialogue_id": "cassian_velo_main",
+      "faction_id": "commerce_guild"
     }
   ]
 }

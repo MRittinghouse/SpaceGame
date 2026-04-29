@@ -877,6 +877,14 @@ KNOWN_PRODUCER_ONLY_ORPHANS: set[str] = {
     # reactions to the pilgrimage) can fire on the right player.
     "attended_silent_shaft",
     "marcus_uprising_inheritance_seen",
+    # === SA-B3 Velo first encounter — journal trigger consumer ===
+    # ``seen_first_velo_encounter`` is set by Velo's dialogue tree
+    # (``cassian_velo_main``) and consumed by the
+    # ``auto_auction_first_velo_encounter`` journal entry's
+    # ``trigger_flag``. The scanner does not crawl journal trigger_flag,
+    # so the flag appears producer-only here despite a real consumer
+    # existing in ``data/journal/entries.json``.
+    "seen_first_velo_encounter",
 }
 
 
