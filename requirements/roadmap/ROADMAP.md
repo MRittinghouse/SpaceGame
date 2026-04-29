@@ -54,7 +54,7 @@ The SA-arc table below is **auto-regenerated** by the ralph harness from the spr
 | [SA-R2](#sa-r2--dr-okafors-legacy-narrative-arc) | Dr. Okafor's Legacy Narrative Arc | IV | M | done | SA-R1 |
 | [SA-R3](#sa-r3--research-patronage-polish) | Research Patronage polish | IV | S | done | SA-R1, SA-R2 |
 | [SA-F1](#sa-f1--financial-exchange-design) | Financial Exchange Design | V | M | done | SA-PREP-1, SA-C2, SA-V |
-| [SA-F2](#sa-f2--futures-core) | Futures Core | V | XL | todo | SA-F1 |
+| [SA-F2](#sa-f2--futures-core) | Futures Core | V | XL | blocked | SA-F1 |
 | [SA-F3](#sa-f3--meridian-venue--cargo-broker-graduation) | Meridian Venue + Cargo Broker graduation | V | L | todo | SA-F2, SA-V |
 | [SA-F4](#sa-f4--shipping-contracts-sub-system) | Shipping Contracts sub-system | V | L | todo | SA-F2 |
 | [SA-F5](#sa-f5--insurance-sub-system) | Insurance sub-system | V | M | todo | SA-F2 |
@@ -4118,7 +4118,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 - Notes: Docs-only sprint delivered cleanly. Section 7 has 8 integration subsections (the AC says "seven" -- minor AC wording typo, the extra subsection is 7.8 News which is correctly included). All 10 locked decisions cover the required topics with rationale and citations. Section 9 player-facing strings pass manual voice review and Writing Bible scanner.
 #### SA-F2 — Futures Core
 
-**Status**: todo
+**Status**: blocked
 **Phase**: Phase V | **Size**: XL | **Effort**: 2 weeks
 **Depends on**: SA-F1 | **Blocks**: SA-F3, SA-F4, SA-F5, SA-F6, SA-F7
 
@@ -4152,7 +4152,8 @@ These are the decisions to lock during planning execution. Recommendations recor
 
 **Activity log.**
 - 2026-04-26 — todo (created)
-
+- 2026-04-29 16:51 — harness: plan phase starting
+- 2026-04-29 17:03 — harness: plan phase outcome=error, marking blocked. agent exited with returncode 1; commits referencing SA-F2: 0; agent stdout was short (135 chars) — likely an early bail; no sentinel in ROADMAP.md or in agent stdout
 #### SA-F3 — Meridian Venue + Cargo Broker graduation
 
 **Status**: todo
