@@ -4625,7 +4625,7 @@ Smaller deferred items pulled from prior sprint findings. Each is independently 
 
 ### CB-1 — Crew Banter scope (scoping)
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Source**: Living Universe Arc deferral; `requirements/living_universe_arc.md` Phase 5 design carries the as-imagined CB scope.
 **Size**: S | **Effort**: 3-5 days
 **Depends on**: none | **Blocks**: CB-2
@@ -4636,9 +4636,10 @@ Smaller deferred items pulled from prior sprint findings. Each is independently 
 - `requirements/living_universe_arc.md` — Phase 5 (CB) section, lines ~793-940. The originally-designed CB architecture (BanterEntry, BanterTrigger, BanterEngine, Ship Log menu, sub-sprint breakdown CB-1 through CB-9). Treat as the maximalist starting point; CB-1 trims it to a shippable contract.
 - `requirements/character_voices.md` — voice sheets for Elena, Marcus, Priya, Tomas. Sample entries authored in this sprint must pass these voice rules.
 - `requirements/station_anchors.md` — SA-X6 description (line ~197) and the cohesion claim (line ~228, "Without crew reactions, the player navigates anchor systems alone"). Determines CB / SA-X6 boundary.
-- `data/crew/ambient_dialogue.json` — 224 existing ambient lines (home_system / faction_territory / idle / inter_crew / player_action). Note: the original sprint listed `data/crew/banter.json`, which does not exist; the existing crew-banter content lives in `ambient_dialogue.json` and is managed by `AmbientDialogueManager`. The absence of `banter.json` is itself a finding for the scope doc.
-- `spacegame/models/ambient_dialogue.py` — `AmbientLine` and `AmbientDialogueManager`. The existing engine. Decision: extend it, or replace it.
-- `spacegame/engine/game.py` — points where ambient_dialogue fires (warp, idle counter, player_action). Lines ~328, ~536, ~1080-1110, ~3192-3201, ~4370-4380.
+- `data/crew/ambient_dialogue.json` — 249 existing ambient lines across 24 distinct `crew_id`s (verified via `python -c "import json; d=json.load(open('data/crew/ambient_dialogue.json')); ..."` 2026-04-29). Contexts split: idle 93 / player_action 60 / inter_crew 52 / home_system 24 / faction_territory 20. Top-level key is `ambient_lines`. Note: the original sprint listed `data/crew/banter.json`, which does not exist; the existing crew-banter content lives in `ambient_dialogue.json` and is managed by `AmbientDialogueManager`. The absence of `banter.json` is itself a finding for the scope doc.
+- `spacegame/models/ambient_dialogue.py` — `AmbientLine` (`@dataclass`, fields: `crew_id`, `text`, `context`, `system_id`, `faction_id`, `required_crew`, `min_loyalty`, `action_type`) and `AmbientDialogueManager` (selection: `get_line` / `get_random_idle` / `get_player_action_line`; "cooldown" is a single `_shown: set[int]` of indices, not time-based; save state via `to_dict` / `load_state`). The existing engine. Decision: extend it, or replace it.
+- `spacegame/data_loader.py` — `load_ambient_dialogue()` at line 1496 and `ambient_lines` collection at line 91; CB-2's data wiring extends through here.
+- `spacegame/engine/game.py` — points where ambient_dialogue fires (verified 2026-04-29): construction at lines 405-407 + 618-621; warp arrival home/faction lines at 1167-1191; player_action triggers at 4129-4138; save bind/load at 4685 and 4871-4872; idle counter at 5406-5413.
 - `requirements/onboarding_design.md` — six-principle framing; banter must obey "voice-check everything" (principle 6).
 
 **Touch zones.**
@@ -4649,7 +4650,7 @@ Smaller deferred items pulled from prior sprint findings. Each is independently 
 - 3-5 sample banter entries (in the locked schema) embedded in the doc as voice-checked exemplars.
 
 **Acceptance criteria.**
-1. **Current Coverage section** enumerates crew banter that exists today: speaker by context tabulation derived from `data/crew/ambient_dialogue.json`, plus a one-line description of `AmbientDialogueManager`'s selection / cooldown / save-state semantics. Include line-of-evidence pointers (file path, key class, key methods).
+1. **Current Coverage section** enumerates crew banter that exists today: speaker x context tabulation derived from `data/crew/ambient_dialogue.json` (249 lines across 24 `crew_id`s and 5 contexts as of 2026-04-29), explicitly distinguishing the four primary crew (Elena, Marcus, Priya, Tomas) from the ~20 secondary specialists with 5-9 lines each. Plus a one-line description of `AmbientDialogueManager`'s selection / shown-once tracking / save-state semantics (note: existing "cooldown" is a `set[int]` of shown indices, not time-based). Include line-of-evidence pointers (file path, key class, key methods).
 2. **Gap Analysis section** maps each Living Universe Arc Phase 5 trigger type — `destination`, `crew_pair`, `flag`, `combat_after`, `rival_seen`, `idle` — to existing coverage as **covered / partial / missing**, with a one-sentence justification each.
 3. **Architecture Decision section** locks one of: (A) extend `AmbientDialogueManager` with new context types and trigger fields; (B) introduce `BanterEntry` / `BanterEngine` per Phase 5 design, deprecating `AmbientDialogueManager`; or (C) sister-system that shares the data file. Rationale must address save-migration cost, the 224 existing entries, scanner integration, and CB-2 implementation complexity.
 4. **SA-X6 Boundary section** explicitly states whether SA-X6 is (a) a subset of CB-2 (anchor-specific trigger category), (b) a sibling sprint that runs after CB-2 ships infrastructure, or (c) merged into CB-2 with SA-X6 retired. The `data/crew/banter.json` reference in SA-X6's touch zones must be reconciled (renamed or annotated).
@@ -4660,9 +4661,9 @@ Smaller deferred items pulled from prior sprint findings. Each is independently 
 
 **Plan.**
 
-1. **Catalog current banter coverage.** Read `data/crew/ambient_dialogue.json` end-to-end. Tabulate by `crew_id` x `context`. Note the 224 lines split across 5 contexts. Confirm `station_chatter.json` is non-crew (NPC overheard / announcement / atmosphere) and `crew_members.json` is metadata only. Output: Current Coverage section.
+1. **Catalog current banter coverage.** Read `data/crew/ambient_dialogue.json` end-to-end. Tabulate by `crew_id` x `context`. The file holds 249 lines split across 5 contexts (idle 93 / player_action 60 / inter_crew 52 / home_system 24 / faction_territory 20) and 24 distinct `crew_id`s — primary crew (Elena Reeves 32, Marcus Jin 36, Priya Osei 30, Tomas Drifter 29) plus ~20 secondary specialists with 5-9 lines each. Confirm `station_chatter.json` is non-crew (NPC overheard / announcement / atmosphere) and `crew_members.json` is metadata only. Output: Current Coverage section.
    - Touches: read-only on `data/crew/*.json` and `spacegame/models/ambient_dialogue.py`. No tests at this step.
-   - Risk: tabulation must match the file exactly. Use a small Python one-liner or the data_loader rather than eyeballing.
+   - Risk: tabulation must match the file exactly. Use a small Python one-liner or the data_loader rather than eyeballing. The doc must surface the long-tail-crew dimension (24 ids, not just the 4 primary), so quotas and gap-mapping aren't blind to secondary specialists.
 
 2. **Gap-map against Phase 5.** For each Living Universe Arc Phase 5 trigger type, classify existing coverage. Expected mapping: `destination` (partial, since `home_system` and `faction_territory` overlap, but per-destination weighting is missing), `crew_pair` (partial, since `inter_crew` exists but lines are single-speaker, not multi-line dialogues), `flag` (missing, no dialogue_flag conditions), `combat_after` (missing, no combat-recency trigger), `rival_seen` (missing, no rival/RC integration), `idle` (covered).
    - Touches: read-only.
@@ -4710,6 +4711,20 @@ Open question (reviewer judgment, not blocking implementation):
 - 2026-04-26 — todo (created)
 - 2026-04-26 18:25 — plan phase ran in pilot but blocked by sandbox; planning content recovered from agent stdout and applied to this sprint section
 - 2026-04-26 — plan content recovered; ready for re-pickup by harness (next plan phase will see substantive existing plan and confirm/refine)
+- 2026-04-29 17:03 — harness: plan phase starting
+- 2026-04-29 21:05 — planning re-confirmed; verified all 7 context-to-read paths exist; corrected line-count claim from 224 → 249 and the crew dimensionality (24 distinct `crew_id`s, not just the 4 primary); refreshed stale `game.py` line citations against current source (constructor 405-407 + 618-621, warp 1167-1191, player_action 4129-4138, save bind/load 4685 + 4871-4872, idle 5406-5413); added `data_loader.py:1496` to context-to-read for completeness; tightened acceptance criterion #1 to require explicit primary-vs-secondary crew tabulation; clarified the "shown_indices" mechanism is set-based not time-based. 5 prior decisions remain locked. PHASE_OK
+
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-04-29 17:03
+- Completed: 2026-04-29 21:05
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: pending
+- New_sprints_proposed: none
+- Polish_items_folded_in: long-tail-crew dimension surfaced for the gap-mapping and quota sections (24 crew_ids, not 4); shown-indices vs. time-cooldown clarification for Architecture Decision section
+- Decisions_locked: 0 new (5 prior decisions confirmed)
+- Notes: Re-pickup of an already-planned sprint. Verified the live state of `data/crew/ambient_dialogue.json` (249 lines, 24 crew_ids, 5 contexts) and the integration points in `spacegame/engine/game.py`. Stale citations refreshed; criterion #1 tightened. No scope expansion or new sprints. CB-1 is implementation-ready.
 
 ### CB-2 — Crew Banter implementation
 
