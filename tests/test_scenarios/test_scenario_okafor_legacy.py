@@ -17,6 +17,7 @@ Scenarios:
 from __future__ import annotations
 
 from spacegame.constants.flags import (
+    okafor_legacy_mission_completed,
     okafor_legacy_first_heal_seen,
     okafor_legacy_first_profit_seen,
     okafor_legacy_heal_ending_seen,
@@ -25,6 +26,8 @@ from spacegame.constants.flags import (
     okafor_legacy_profit_ending_seen,
     okafor_legacy_profit_pattern_seen,
 )
+from spacegame.data_loader import get_data_loader
+from spacegame.models.mission import MissionManager
 from spacegame.models.okafor_research import (
     OKAFOR_PROJECT_ETHICS,
     OkaforResearchState,
@@ -375,3 +378,67 @@ class TestMidArcSaveLoad:
         assert rs.legacy_heal_completed == 6
         assert rflags.get(okafor_legacy_heal_ending_seen())
         assert pending_legacy_beat(rs, rflags) is None, "arc should be terminal after restore"
+
+
+# ---------------------------------------------------------------------------
+# SA-R3: Clinic-run mission kweon_relationship reward (AC #5)
+# ---------------------------------------------------------------------------
+
+
+class TestClinicRunMissionReward:
+    """SA-R3 AC #5 — completing clinic run bumps kweon_relationship_value by 1."""
+
+    def test_clinic_run_completion_bumps_kweon_relationship(self) -> None:
+        dl = get_data_loader()
+        dl.load_all()
+
+        mission = dl.get_mission("okafor_legacy_clinic_run")
+        assert mission is not None, "okafor_legacy_clinic_run must be loadable"
+        # Confirm four rewards exist
+        assert len(mission.rewards) == 4, (
+            f"Expected 4 rewards (credits/xp/set_flag/kweon_relationship), "
+            f"got {len(mission.rewards)}"
+        )
+        reward_types = [r.reward_type for r in mission.rewards]
+        assert "kweon_relationship" in reward_types, (
+            f"kweon_relationship reward not found in {reward_types}"
+        )
+
+        # Build a player with okafor_research_state already initialised.
+        player = fresh_player(name="ClinicPilot", credits=50_000, system_id="havens_rest")
+        player.okafor_research_state = OkaforResearchState(kweon_relationship_value=2)
+        pre_value = player.okafor_research_state.kweon_relationship_value
+
+        # Set the required flag so the mission is available.
+        player.dialogue_flags["okafor_legacy_heal_pattern_seen"] = True
+
+        mgr = MissionManager([mission])
+        mgr.accept_mission("okafor_legacy_clinic_run")
+        mgr.apply_rewards("okafor_legacy_clinic_run", player)
+
+        post_value = player.okafor_research_state.kweon_relationship_value
+        assert post_value == pre_value + 1, (
+            f"kweon_relationship_value should increase by 1 on clinic run completion; "
+            f"was {pre_value}, now {post_value}"
+        )
+        assert player.dialogue_flags.get(okafor_legacy_mission_completed()), (
+            "okafor_legacy_mission_completed flag must be set by set_flag reward"
+        )
+
+    def test_clinic_run_relationship_clamped_if_already_at_max(self) -> None:
+        dl = get_data_loader()
+        dl.load_all()
+
+        mission = dl.get_mission("okafor_legacy_clinic_run")
+        assert mission is not None
+
+        player = fresh_player(name="ClinicPilot", credits=50_000, system_id="havens_rest")
+        player.okafor_research_state = OkaforResearchState(kweon_relationship_value=10)
+
+        mgr = MissionManager([mission])
+        mgr.accept_mission("okafor_legacy_clinic_run")
+        mgr.apply_rewards("okafor_legacy_clinic_run", player)
+
+        assert player.okafor_research_state.kweon_relationship_value == 10, (
+            "kweon_relationship_value must stay clamped at 10"
+        )

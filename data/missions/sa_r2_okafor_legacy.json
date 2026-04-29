@@ -31,6 +31,10 @@
           "reward_type": "set_flag",
           "amount": 0,
           "target_id": "okafor_legacy_mission_completed"
+        },
+        {
+          "reward_type": "kweon_relationship",
+          "amount": 1
         }
       ],
       "mission_type": "side",
