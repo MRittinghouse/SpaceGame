@@ -4720,7 +4720,7 @@ Open question (reviewer judgment, not blocking implementation):
 - Started: 2026-04-29 17:03
 - Completed: 2026-04-29 21:05
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending
+- Commits: e69c0c0
 - New_sprints_proposed: none
 - Polish_items_folded_in: long-tail-crew dimension surfaced for the gap-mapping and quota sections (24 crew_ids, not 4); shown-indices vs. time-cooldown clarification for Architecture Decision section
 - Decisions_locked: 0 new (5 prior decisions confirmed)
