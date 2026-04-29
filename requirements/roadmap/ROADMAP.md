@@ -50,7 +50,7 @@ The SA-arc table below is **auto-regenerated** by the ralph harness from the spr
 | [SA-B4](#sa-b4--crimson-reach-black-market-auctions) | Crimson Reach Black Market auctions | III | L | done | SA-B2, SA-1 |
 | [SA-B5](#sa-b5--player-initiated-auctions) | Player-Initiated Auctions | III | L | done | SA-B2 |
 | [SA-B6](#sa-b6--bidding-polish--tuning) | Bidding polish + tuning | III | M | done | SA-B3, SA-B4, SA-B5 |
-| [SA-R1](#sa-r1--okafor-institute-research-patronage) | Okafor Institute (Research Patronage) | IV | L | todo | SA-PREP-1, SA-C2 |
+| [SA-R1](#sa-r1--okafor-institute-research-patronage) | Okafor Institute (Research Patronage) | IV | L | done | SA-PREP-1, SA-C2 |
 | [SA-R2](#sa-r2--dr-okafors-legacy-narrative-arc) | Dr. Okafor's Legacy Narrative Arc | IV | M | todo | SA-R1 |
 | [SA-R3](#sa-r3--research-patronage-polish) | Research Patronage polish | IV | S | todo | SA-R1, SA-R2 |
 | [SA-F1](#sa-f1--financial-exchange-design) | Financial Exchange Design | V | M | todo | SA-PREP-1, SA-C2, SA-V |
@@ -3541,7 +3541,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 
 #### SA-R1 — Okafor Institute (Research Patronage)
 
-**Status**: in-progress (reviewing)
+**Status**: done
 **Phase**: Phase IV | **Size**: L | **Effort**: 2-3 weeks
 **Depends on**: SA-PREP-1, SA-C2 | **Blocks**: SA-R2, SA-R3
 
@@ -3685,7 +3685,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 - 2026-04-29 16:35 — implementation complete (rework cycle 1), all gates green; tests 9897→9988 (+91 sprint-total, +17 in this rework cycle). PHASE_OK
 - 2026-04-29 14:29 — harness: review phase starting (rework cycle 1)
 - 2026-04-29 15:45 — review complete (rework cycle 1); all 15 AC verified, no critical findings, no minor fixes needed. Test suite 9988 passed / 98 skipped (≥ 9897 baseline). Lint + format clean. SI-3 scanner clean. Writing Bible scanner clean. Detailed notes: (1) `_create_ui` calls `_destroy_ui` at top — no element leak when dialogue opens/closes; (2) `_is_nuri_in_crew` dual-path (canonical CrewRoster API + flat crew_state fallback in try/except) is pragmatic for test compatibility; (3) game-day tick correctly wired via central `_check_day_advance` in game loop rather than directly at travel/rest call sites — covers both paths; (4) 3 discriminating failure-debrief tests replace the prior vacuous assertion, AC #9 now fully satisfied; (5) all 4 journal entries pass Writing Bible scanner and hold Kweon's institutional-fatigue register. Single tighten noted below. PHASE_OK
-
+- 2026-04-29 14:36 — harness: review passed, marking done
 **Last phase report.**
 - Phase: review
 - Outcome: PHASE_OK
