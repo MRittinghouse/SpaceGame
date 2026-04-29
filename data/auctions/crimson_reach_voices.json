@@ -1,0 +1,45 @@
+{
+  "_comment": "SA-B4 Crimson Reach Black Market voice content. Floor Manager (Vex Tarn) auctioneer-lines in his impatient, declarative register (the antithesis of Velo's ceremonial cadence). Salko's flat-bid template mirrors the SA-B3 Stellaris file verbatim; Reach reads its own file so the venue separation stays clean. Reach Buyer ambient post-session lines for the 3 ambient personas. Sable reads register the floor's sharper rhythm. Voice-checked against character_voices.md and dialogue_writing_guide.md; no ceremonial keywords; average sentence length <= 10 words across the auctioneer_lines surface (locked decision §B4.5).",
+  "auctioneer_lines": {
+    "lot_open": "{lot_headline}. Reserve's set.",
+    "we_are_at": "Bid stands at {current_high_bid}. Going.",
+    "lot_closed_sold": "Sold. {current_high_bid}. Crate's by the door.",
+    "lot_closed_withdrawn": "Reserve isn't met. Pulled.",
+    "session_open": "Floor's open. Standard rules.",
+    "session_close": "That's the floor. See you."
+  },
+  "rival_bids": {
+    "fenn_salko": "{amount}."
+  },
+  "post_session": {
+    "fenn_salko": {
+      "rival_won": [
+        "Salko picks up his catalogue. He logs the price. That is all."
+      ],
+      "player_won": [
+        "Salko sets the catalogue down. He files it. He does not look up."
+      ],
+      "no_overlap": [
+        "Salko sat through the session. He bid where he chose. The lots that brought him were not yours."
+      ],
+      "absent_retired": [
+        "Salko was not in the room today. The seat he prefers stayed open."
+      ]
+    },
+    "reach_buyer": [
+      "A buyer counts crates against a manifest. She closes the manifest and walks out without speaking.",
+      "A buyer pays in stamped credits and a sealed envelope. Vex takes both without looking at the envelope.",
+      "Two buyers exchange a glance over the last lot. Neither bid on it. Neither volunteers why.",
+      "A buyer leaves the floor with a handcart and a tarp. The tarp is the same color as the crate beneath it."
+    ]
+  },
+  "sable_reads": {
+    "ceiling_correct": "The room reads cleaner here. The bids land where I called them.",
+    "ceiling_off": "I missed the read on two ceilings. The Reach moves faster than the Port. I will adjust.",
+    "no_rivals_attended": "No named rivals on the floor. The room ran on ambient buyers tonight.",
+    "sable_not_on_crew": ""
+  },
+  "empty_state": "Vex: \"Floor opens when there's enough on it. Won't be long. Check back.\"",
+  "retired_rival": "{display_name} has not been on the floor in a while.",
+  "tier_locked": "The floor is for members. Talk to the Guild first."
+}

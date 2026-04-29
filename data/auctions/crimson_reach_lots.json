@@ -1,0 +1,149 @@
+{
+  "_comment": "SA-B4 Crimson Reach Black Market lot catalog. 14 lots across the 4 design-doc-locked Reach categories (contraband, restricted_weapon, salvage_lot, faction_commodity). Wreckers' Guild tier coverage (apprentice/journeyman/master). 1 headliner. Zero season tags (locked decision §B4.11). Headlines and descriptions in Reach register: terse, declarative, specific to the lot. Voice-checked against character_voices.md and dialogue_writing_guide.md.",
+  "lots": [
+    {
+      "id": "reach_contraband_unstamped_fuel_additives",
+      "headline": "Unstamped Fuel Additives, Twelve Drums",
+      "description": "Twelve drums of high-grade burn additive. No customs stamps. Compatible with most frontier reactors. Buyer handles transit.",
+      "category": "contraband",
+      "venue": "crimson_reach",
+      "base_appraisal": 5400,
+      "reserve_pct": 0.7,
+      "rep_tier_required": "apprentice"
+    },
+    {
+      "id": "reach_contraband_unmarked_med_supplies",
+      "headline": "Unmarked Medical Supplies, Sealed Crate",
+      "description": "Field medic kits and trauma packs. No batch numbers. Sealed by the original courier. Pulled from a wreck before the patrol arrived.",
+      "category": "contraband",
+      "venue": "crimson_reach",
+      "base_appraisal": 7200,
+      "reserve_pct": 0.72,
+      "rep_tier_required": "apprentice"
+    },
+    {
+      "id": "reach_contraband_silenced_runner_drones",
+      "headline": "Silenced Runner Drones, Pair",
+      "description": "Two short-range courier drones with their transponders pulled. Quiet engines. Will not respond to a Guild ping.",
+      "category": "contraband",
+      "venue": "crimson_reach",
+      "base_appraisal": 9800,
+      "reserve_pct": 0.74,
+      "rep_tier_required": "journeyman"
+    },
+    {
+      "id": "reach_contraband_executive_data_cores",
+      "headline": "Executive Data Cores, Three Units",
+      "description": "Sealed executive data cores from a defunct corporate run. Encrypted. The keys are not for sale here.",
+      "category": "contraband",
+      "venue": "crimson_reach",
+      "base_appraisal": 18000,
+      "reserve_pct": 0.78,
+      "rep_tier_required": "master",
+      "is_headliner": true
+    },
+    {
+      "id": "reach_restricted_weapon_pulse_carbine_lot",
+      "headline": "Pulse Carbines, Lot of Six",
+      "description": "Six factory-issue pulse carbines. Serial numbers ground off. Cleaned and tested by the seller. Ammunition not included.",
+      "category": "restricted_weapon",
+      "venue": "crimson_reach",
+      "base_appraisal": 11000,
+      "reserve_pct": 0.75,
+      "rep_tier_required": "journeyman"
+    },
+    {
+      "id": "reach_restricted_weapon_breach_charge_set",
+      "headline": "Breach Charge Set, Sealed",
+      "description": "A boarding crew's breach kit. Shaped charges, primer cord, the works. Sealed since the previous owner stopped breathing.",
+      "category": "restricted_weapon",
+      "venue": "crimson_reach",
+      "base_appraisal": 8500,
+      "reserve_pct": 0.72,
+      "rep_tier_required": "journeyman"
+    },
+    {
+      "id": "reach_restricted_weapon_marksman_rifles",
+      "headline": "Marksman Rifles, Pair",
+      "description": "Two long-barrel marksman rifles. Optics intact. Locked under Frontier Alliance prohibition for three years now.",
+      "category": "restricted_weapon",
+      "venue": "crimson_reach",
+      "base_appraisal": 14000,
+      "reserve_pct": 0.76,
+      "rep_tier_required": "master"
+    },
+    {
+      "id": "reach_salvage_lot_corporate_shuttle_hulk",
+      "headline": "Corporate Shuttle Hulk",
+      "description": "A gutted corporate shuttle. Engines pulled. The frame and fittings are still good. The Guild tagged the wreck and the salvage rights came with the lot.",
+      "category": "salvage_lot",
+      "venue": "crimson_reach",
+      "base_appraisal": 6000,
+      "reserve_pct": 0.65,
+      "rep_tier_required": "apprentice"
+    },
+    {
+      "id": "reach_salvage_lot_mining_rig_parts",
+      "headline": "Mining Rig Parts, Mixed",
+      "description": "A mixed lot of cutter heads, hopper plates, and torch rigs from a stripped mining rig. Surface rust. Working condition.",
+      "category": "salvage_lot",
+      "venue": "crimson_reach",
+      "base_appraisal": 4200,
+      "reserve_pct": 0.62,
+      "rep_tier_required": "apprentice"
+    },
+    {
+      "id": "reach_salvage_lot_jump_capacitors",
+      "headline": "Jump Capacitors, Crate of Eight",
+      "description": "Eight jump capacitors, salvaged from a derelict freighter. Tested at the Junction. Two read low. The other six are clean.",
+      "category": "salvage_lot",
+      "venue": "crimson_reach",
+      "base_appraisal": 7800,
+      "reserve_pct": 0.7,
+      "rep_tier_required": "journeyman"
+    },
+    {
+      "id": "reach_salvage_lot_capital_armor_plating",
+      "headline": "Capital Armor Plating, Sectioned",
+      "description": "Four sections of capital-grade armor plating, cut clean and bench-flat. Provenance is a Guild battlewreck. The receipts are with Torres.",
+      "category": "salvage_lot",
+      "venue": "crimson_reach",
+      "base_appraisal": 13000,
+      "reserve_pct": 0.74,
+      "rep_tier_required": "master"
+    },
+    {
+      "id": "reach_faction_commodity_axiom_gel_sealed",
+      "headline": "Axiom Sample Gel, Sealed Vials",
+      "description": "Twelve sealed sample vials of Axiom-grade research gel. The originating lab is no longer in operation. The seals are intact.",
+      "category": "faction_commodity",
+      "venue": "crimson_reach",
+      "base_appraisal": 9500,
+      "reserve_pct": 0.74,
+      "rep_tier_required": "journeyman",
+      "faction_gate": "axiom_research"
+    },
+    {
+      "id": "reach_faction_commodity_miners_rare_earth",
+      "headline": "Miners' Union Rare Earth, Pallet",
+      "description": "A pallet of rare earth concentrate. The Union stamp is on every brick. The chain of custody breaks at the loading dock.",
+      "category": "faction_commodity",
+      "venue": "crimson_reach",
+      "base_appraisal": 8800,
+      "reserve_pct": 0.72,
+      "rep_tier_required": "journeyman",
+      "faction_gate": "miners_union"
+    },
+    {
+      "id": "reach_faction_commodity_alliance_grain_pallets",
+      "headline": "Frontier Grain, Six Pallets",
+      "description": "Six pallets of subsidized Frontier Alliance grain. The pallets are still sealed. The manifest says Verdant. The pallets say otherwise.",
+      "category": "faction_commodity",
+      "venue": "crimson_reach",
+      "base_appraisal": 5200,
+      "reserve_pct": 0.66,
+      "rep_tier_required": "apprentice",
+      "faction_gate": "frontier_alliance"
+    }
+  ]
+}

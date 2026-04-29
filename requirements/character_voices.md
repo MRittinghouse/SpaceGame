@@ -606,6 +606,7 @@ Three existing speaker IDs require downstream attention; noted here so downstrea
 | Aldous Prentiss (Old-money collector rival) | net-new | `aldous_prentiss` | SA-B3 |
 | Commissioner Yuna Kade (Stellaris faction agent rival) | net-new | `yuna_kade` | SA-B3 |
 | Captain Fenn Salko (Cold-grudge rival captain) | net-new | `fenn_salko` | SA-B3, SA-B4 |
+| Vex Tarn (Reach Floor Manager) | net-new | `reach_floor_manager` | SA-B4 |
 | Ilse Vey (Meridian primary broker) | net-new | `ilse_vey` | SA-F3 |
 | Sable Trent (Auction Reader specialist) | net-new | `sable_trent` | SA-A2 (authoring), SA-B3, SA-B4 |
 | Desta Coll (Coalition Builder specialist) | net-new | `desta_coll` | SA-A2 (authoring), SA-P3, SA-P4 |
@@ -639,6 +640,7 @@ All deferred reconciliations noted with consuming sprint.
 | Aldous Prentiss | `aldous_prentiss` | net-new, register at SA-B3 | none |
 | Yuna Kade | `yuna_kade` | net-new, register at SA-B3 | none |
 | Fenn Salko | `fenn_salko` | net-new, register at SA-B3 | none |
+| Vex Tarn | `reach_floor_manager` | active, registered (SA-B4) | none |
 | Ilse Vey | `ilse_vey` | net-new, register at SA-F3 | none |
 | Sable Trent | `sable_trent` | net-new, register at SA-A2 | none |
 | Desta Coll | `desta_coll` | net-new, register at SA-A2 | none |
@@ -1362,6 +1364,61 @@ She sounds like someone who has been trained to be pleasant and has learned to u
 1. **Bidding**: "The Guild bids forty-two hundred. We have reviewed the certification documentation."
 2. **On being asked her limit**: "I'm authorized to a certain amount on this lot. I won't share what that is -- I'm sure you understand."
 3. **Off the floor, genuine moment**: "Between sessions: the navigational array in lot eleven has a manufacturer's mark that was only used for three years. I noticed that. It's worth knowing for the provenance question." *(She returns to institutional register immediately after.)*
+
+---
+
+## Vex Tarn — Reach Floor Manager
+
+**Faction**: Independent (Crimson Reach; Wreckers' Guild member)
+**Age**: 50s
+**Role**: Floor Manager at the Reach Black Market auction venue (SA-B4)
+**Tonal register**: Impatient, declarative, "no questions asked." The antithesis of Cassian Velo's ceremonial cadence. The floor is a transaction, not a ceremony.
+
+### Core Voice
+Vex Tarn ran a salvage crew for twelve years before he took a knee injury and a slot on the Reach Floor. He runs the auction the way he ran the crew: short sentences, clear prices, no surprise costs. He treats the floor as work, not theater. He does not wrap conversations; he ends them. He calls lots by what they are, not by their provenance, because the provenance is rarely flattering and the buyers do not need to be told.
+
+He sounds like a foreman who has decided you are wasting his time, except when you have not. When you have not, he sounds like a foreman who would rather be on the floor than off it.
+
+### Verbal Habits
+- Terse declaratives. Most lines end in periods, not questions.
+- No honorifics. No "we." No third-person plural for the room.
+- Calls lots by category and condition: "Six crates. Sealed. Reserve is three."
+- Ends conversations rather than wrapping them: "That's the floor. Anything else, see Torres."
+- Never explains himself; tells you what is happening and what comes next.
+- "Members only" or "Talk to the Guild first" for outsiders. He does not soften the door.
+
+### What He Says vs. What He Means
+- "The floor opens when there's enough on it" = the cadence is demand-driven; do not ask again.
+- "I don't take returns" = once it sells, the buyer assumes everything.
+- "Talk to Torres" = this is above my pay grade; the Guild handles it.
+- *(He looks past you to the crate stack.)* = he is done with the conversation; you should be too.
+
+### Emotional Range
+- **Default**: Working. Impatient if you are slow; not unkind.
+- **When the floor is full**: Brief. Counts the lots in his head. Does not stop moving.
+- **When a buyer pushes back on the rules**: Cold. The rules are the rules. He will not argue them.
+- **Off the floor (rare, brief)**: Slightly looser. Acknowledges crew that earned it. Does not chat.
+
+### What He Never Says
+- "Ladies and gentlemen." Anything ceremonial.
+- "We are at." Anything that sounds like Velo.
+- A pitch. He does not sell the lot.
+- An apology for a withdrawn lot. The reserve is the reserve.
+
+### Sample Lines
+1. **Greeting an apprentice member**: "You're new. Floor opens when it opens. Pay attention."
+2. **Tier-locked outsider**: "Members only. Talk to the Guild first."
+3. **Lot opening**: "Six crates. Sealed. Reserve's three."
+4. **Lot closed sold**: "Sold. Three thousand. Crate's by the door."
+5. **Lot withdrawn**: "Reserve isn't met. Pulled."
+6. **Session opening**: "Floor's open. Standard rules."
+7. **Session closing**: "That's the floor. See you."
+8. **Demand cadence**: "Floor opens when there's enough on it. Won't be long."
+9. **About a contraband lot**: "Take it or don't. I don't keep records."
+10. **End of conversation**: "Anything else, see Torres."
+
+### SA Arc Notes
+SA-B4: Vex is the Floor Manager and only the Floor Manager. He does not narrate the player's arc. He does not develop a relationship with the player across the SA campaign. The player's contraband choices are visible to him in the sense that he sees every winning bid; he does not comment on them. Voice-distinct from Velo by every coarse static measure (sentence length, ceremonial keywords, honorifics) — design doc §10.6 + locked decision §B4.5.
 
 ---
 

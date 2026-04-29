@@ -925,6 +925,19 @@
       "home_system_id": "stellaris_port",
       "dialogue_id": "cassian_velo_main",
       "faction_id": "commerce_guild"
+    },
+    {
+      "id": "reach_floor_manager",
+      "name": "Vex Tarn",
+      "title": "Reach Floor Manager",
+      "portrait_color": [
+        140,
+        80,
+        70
+      ],
+      "home_system_id": "crimson_reach",
+      "dialogue_id": "reach_floor_manager_main",
+      "faction_id": "crimson_reach"
     }
   ]
 }

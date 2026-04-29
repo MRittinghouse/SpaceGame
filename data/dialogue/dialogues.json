@@ -8884,6 +8884,83 @@
       ]
     },
     {
+      "id": "reach_floor_manager_main",
+      "start_node_id": "greet",
+      "nodes": [
+        {
+          "id": "greet",
+          "speaker_id": "reach_floor_manager",
+          "text": "Vex. Floor Manager. What.",
+          "responses": [
+            {
+              "text": "When does the floor open?",
+              "next_node_id": "demand_cadence",
+              "set_flag": "seen_first_floor_manager_encounter"
+            },
+            {
+              "text": "How does this place run?",
+              "next_node_id": "house_rules",
+              "set_flag": "seen_first_floor_manager_encounter"
+            },
+            {
+              "text": "I'm not in the Guild yet.",
+              "next_node_id": "tier_locked",
+              "set_flag": "seen_first_floor_manager_encounter"
+            },
+            {
+              "text": "Right. I'll go.",
+              "next_node_id": "farewell",
+              "set_flag": "seen_first_floor_manager_encounter"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "demand_cadence",
+          "speaker_id": "reach_floor_manager",
+          "text": "Floor opens when there's enough on it. Crews bring crates in. Once the count's right, we run a session. Won't be long. Check back.",
+          "responses": [
+            {
+              "text": "Got it.",
+              "next_node_id": "greet"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "house_rules",
+          "speaker_id": "reach_floor_manager",
+          "text": "Standard rules. Reserve's a reserve. If it doesn't meet, I pull it. Once you win it, it's yours. I don't take returns. I don't keep records. Anything else, see Torres.",
+          "responses": [
+            {
+              "text": "Understood.",
+              "next_node_id": "greet"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "tier_locked",
+          "speaker_id": "reach_floor_manager",
+          "text": "Members only. Talk to the Guild first. Torres runs intake. Come back when you've got a card.",
+          "responses": [
+            {
+              "text": "Right.",
+              "next_node_id": "farewell"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "farewell",
+          "speaker_id": "reach_floor_manager",
+          "text": "That's the floor. See you.",
+          "responses": [],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
       "id": "cassian_velo_main",
       "start_node_id": "greet",
       "nodes": [

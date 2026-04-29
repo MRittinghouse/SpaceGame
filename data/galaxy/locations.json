@@ -476,6 +476,13 @@
         "location_type": "investment",
         "description": "Sponsor a salvage crew working the debris fields. Returns paid in scrap metal.",
         "flavor_text": "The crew captain spreads a star chart across the bar, circling derelict sites with a grease pencil. Every wreck out there is money waiting to be claimed."
+      },
+      {
+        "id": "crimson_black_market",
+        "name": "The Reach Floor",
+        "location_type": "unique",
+        "description": "An auction floor run out of a converted shipyard bay. The Wreckers' Guild gates entry; Vex Tarn runs the room. Crates come off the trucks and onto the block.",
+        "flavor_text": "No catalogue. No provenance. The reserve is the reserve."
       }
     ],
     "the_fulcrum": [
