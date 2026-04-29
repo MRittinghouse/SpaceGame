@@ -57,7 +57,7 @@ def _make_game_with_prereq_completed(
 
     # Build manager with prereq already completed
     prereq = _make_mission(prereq_id, "Prereq")
-    all_missions = [prereq] + unlocked_missions
+    all_missions = [prereq, *unlocked_missions]
     manager = MissionManager(all_missions)
     # Force prereq to COMPLETED state so update_availability fires for dependents
     manager._status[prereq_id] = MissionStatus.COMPLETED
@@ -219,3 +219,140 @@ class TestConsolidatedMissionNotifications:
         entries = game.journal.get_entries(tag_filter="goals")
         assert len(entries) == 1
         assert entries[0].text == "Spotted a notice on the board."
+
+
+# ============================================================================
+# CB-2 engine integration: combat marker + warp-arrival banter wiring
+# ============================================================================
+
+
+class TestCB2CombatMarkerWiring:
+    """CB-2 criterion 8: _apply_combat_result calls ambient_dialogue.mark_combat."""
+
+    def test_apply_combat_result_marks_combat_day(self) -> None:
+        """combat marker is set to player.game_day after combat resolves."""
+        from spacegame.engine.game import Game
+        from spacegame.models.ambient_dialogue import AmbientDialogueManager
+        from spacegame.models.combat import CombatResult
+
+        with patch.object(Game, "__init__", lambda self: None):
+            game = Game()
+
+        game.ambient_dialogue = AmbientDialogueManager([])
+        game.player = MagicMock()
+        game.player.game_day = 3
+        game.player.current_system_id = "nexus_prime"
+
+        mock_state = MagicMock()
+        mock_state.result = CombatResult.DEFEAT  # Simple branch — no loot/XP logic
+        mock_state.player.hull = 80
+        mock_state.player.shields = 20
+        game.combat_view = MagicMock()
+        game.combat_view.engine.get_state.return_value = mock_state
+
+        game._apply_combat_result()
+
+        assert game.ambient_dialogue.last_combat_day == 3, (
+            "_apply_combat_result must call mark_combat(player.game_day)"
+        )
+
+
+class TestCB2WarpArrivalBanterWiring:
+    """CB-2 criterion 9: warp arrival queues combat_after banter in _mission_notifications."""
+
+    # All view attributes that _handle_state_transitions reads with `if self.X` guards.
+    # Setting them to None causes those blocks to be skipped entirely.
+    _ALL_VIEWS = (
+        "main_menu_view",
+        "name_input_view",
+        "character_creation_view",
+        "journal_view",
+        "crew_roster_view",
+        "character_view",
+        "trading_view",
+        "combat_view",
+        "encounter_view",
+        "mining_view",
+        "salvage_view",
+        "refining_view",
+        "station_hub_view",
+        "ship_builder_view",
+        "shipyard_view",
+        "repair_bay_view",
+        "skill_tree_view",
+        "cantina_view",
+        "deep_shafts_view",
+        "dispute_view",
+        "auction_view",
+        "sell_lot_view",
+        "wreckers_guild_view",
+        "investment_view",
+        "mission_log_view",
+        "statistics_view",
+        "achievements_view",
+        "ground_briefing_view",
+        "ground_exploration_view",
+        "ground_result_view",
+        "dialogue_view",
+    )
+
+    def test_warp_arrival_queues_combat_after_notification(self) -> None:
+        """After combat + warp, a combat_after line appears in _mission_notifications."""
+        from spacegame.engine.game import Game
+        from spacegame.models.ambient_dialogue import AmbientDialogueManager, AmbientLine
+
+        with patch.object(Game, "__init__", lambda self: None):
+            game = Game()
+
+        # Null all views so _handle_state_transitions skips their blocks
+        for view_attr in self._ALL_VIEWS:
+            setattr(game, view_attr, None)
+
+        # Real AmbientDialogueManager with one combat_after line
+        ca_line = AmbientLine(
+            crew_id="marcus_jin",
+            text="Drive seals took a hit. Check them before the next jump.",
+            context="combat_after",
+        )
+        game.ambient_dialogue = AmbientDialogueManager([ca_line])
+        game.ambient_dialogue.mark_combat(0)  # Combat happened on day 0
+
+        game.player = MagicMock()
+        game.player.game_day = 1  # Within 3-day window of day-0 combat
+        game.player.current_system_id = "breakstone"
+        game.player.dialogue_flags = {}
+        game.player.systems_visited = []
+
+        mock_template = MagicMock()
+        mock_template.id = "marcus_jin"
+        mock_template.name = "Marcus Jin"
+        mock_template.home_system_id = "other_system"
+        mock_template.faction_id = ""
+        game.crew_roster = MagicMock()
+        game.crew_roster.get_recruited_members.return_value = [(mock_template, None)]
+        game.crew_roster.get_member_state.return_value = {"loyalty": 50}
+        game.crew_roster.get_template.return_value = mock_template
+
+        game.data_loader = MagicMock()
+        game.data_loader.get_system.return_value = MagicMock(faction="")
+
+        # Galaxy map view with an arrival message — simulates warp-arrival trigger
+        game.galaxy_map_view = MagicMock()
+        game.galaxy_map_view.active = True
+        game.galaxy_map_view.save_requested = False
+        game.galaxy_map_view.arrival_message = "Arrived at Breakstone."
+
+        game.transition_manager = MagicMock()
+        game.transition_manager.active = False
+        game.travel_log = None
+        game.journal = None
+        game._last_visited_count = 0
+        game._mission_notifications = []
+        game._check_auto_triggers = MagicMock()
+
+        game._handle_state_transitions()
+
+        ca_msgs = [n for n in game._mission_notifications if "Drive seals" in n]
+        assert len(ca_msgs) == 1, (
+            "Warp arrival must queue combat_after banter within the recency window"
+        )
