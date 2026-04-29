@@ -1197,6 +1197,30 @@ class Game:
                             if line:
                                 self._mission_notifications.append(f'{template.name}: "{line}"')
 
+                    # CB-2: combat_after banter — fires within 3 days of last combat
+                    ca_result = self.ambient_dialogue.get_combat_after_line(
+                        recruited_ids=recruited,
+                        loyalty_map=loyalty_map,
+                        current_day=self.player.game_day,
+                    )
+                    if ca_result:
+                        ca_crew_id, ca_text = ca_result
+                        ca_template = self.crew_roster.get_template(ca_crew_id)
+                        ca_name = ca_template.name if ca_template else ca_crew_id
+                        self._mission_notifications.append(f'{ca_name}: "{ca_text}"')
+
+                    # CB-2: flag_triggered banter — fires once per flag per save
+                    ft_result = self.ambient_dialogue.check_flag_lines(
+                        player_flags=self.player.dialogue_flags,
+                        recruited_ids=recruited,
+                        loyalty_map=loyalty_map,
+                    )
+                    if ft_result:
+                        ft_crew_id, ft_text = ft_result
+                        ft_template = self.crew_roster.get_template(ft_crew_id)
+                        ft_name = ft_template.name if ft_template else ft_crew_id
+                        self._mission_notifications.append(f'{ft_name}: "{ft_text}"')
+
             # Check for NPC auto-trigger dialogues at current system
             self._check_auto_triggers()
             if self.dialogue_view and self.dialogue_view.active:
@@ -4017,6 +4041,10 @@ class Game:
         # Sync hull/shields back to player's ship
         self.player.ship.current_hull = state.player.hull
         self.player.ship.current_shields = state.player.shields
+
+        # CB-2: record that combat occurred so combat_after banter can fire
+        if self.ambient_dialogue and self.player:
+            self.ambient_dialogue.mark_combat(self.player.game_day)
 
         if result == CombatResult.VICTORY:
             self.player.combats_won += 1
