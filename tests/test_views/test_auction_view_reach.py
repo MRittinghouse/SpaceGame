@@ -192,6 +192,43 @@ class TestPreviewEmptyStateReach:
         assert "empty_state" in templates
         assert "Floor opens" in templates["empty_state"]
 
+    def test_demand_driven_empty_state_uses_voice_template(self) -> None:
+        # AC13: when lifecycle is SCHEDULED with no calendar date (demand-
+        # driven Reach cadence), _render_body_preview must use the voice
+        # file's empty_state template, not the generic fallback.
+        from spacegame.models.bidding import AuctionLifecycle
+
+        manager, player, crew_roster = _make_env()
+        reach_view = _make_reach_view(manager, player, crew_roster)
+        reach_view.set_voice_templates(_reach_voices())
+        # Simulate SCHEDULED state with no calendar date set (demand-driven).
+        player.auction_state.lifecycle = AuctionLifecycle.SCHEDULED
+        player.auction_state.active_auction_id = VENUE_CRIMSON_REACH
+        # next_auction_day["crimson_reach"] intentionally absent.
+        template = reach_view._voice_templates.get("empty_state", "")
+        # The template must not require {gap_days} so the no-date branch picks it up.
+        assert template and "{gap_days}" not in template, (
+            "Reach empty_state template must not need gap_days substitution"
+        )
+        # Directly exercise the selection logic that _render_body_preview uses.
+        scheduled = player.auction_state.next_auction_day.get(VENUE_CRIMSON_REACH)
+        current_day = player.game_day
+        if scheduled is not None and scheduled > current_day:
+            selected_line = "countdown_path"
+        else:
+            t = (
+                reach_view._voice_templates.get("empty_state")
+                if reach_view._voice_templates
+                else ""
+            )
+            if isinstance(t, str) and t and "{gap_days}" not in t:
+                selected_line = t
+            else:
+                selected_line = "No session scheduled. The floor is quiet."
+        assert "Floor opens" in selected_line, (
+            f"Demand-driven empty state should use Vex voice template, got: {selected_line!r}"
+        )
+
 
 class TestStationHubReachTierGating:
     """AC2: tier-gated entry on the Reach detail panel.

@@ -703,7 +703,14 @@ class AuctionView(BaseView):
                 else:
                     line = f"Next session in {gap} day{'s' if gap != 1 else ''}."
             else:
-                line = "No session scheduled. The floor is quiet."
+                # SA-B4: demand-driven venues (Reach) have no calendar
+                # date; use the venue's empty_state voice template when
+                # it doesn't need a {gap_days} substitution.
+                template = self._voice_templates.get("empty_state") if self._voice_templates else ""
+                if isinstance(template, str) and template and "{gap_days}" not in template:
+                    line = template
+                else:
+                    line = "No session scheduled. The floor is quiet."
             self._draw_text(screen, line, (x, body_y))
             return
         # PREVIEW with lots loaded.
