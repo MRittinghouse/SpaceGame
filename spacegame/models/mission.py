@@ -718,6 +718,13 @@ class MissionManager:
             elif reward.reward_type == "black_market_access":
                 player.grant_black_market_access(reward.target_id)
                 messages.append(f"Black Market Access: {reward.target_id}")
+            elif reward.reward_type == "kweon_relationship":
+                # Bump Kweon trust counter. If state is None (player has never
+                # visited Okafor), the bump is a no-op rather than creating
+                # an empty state — SA-R3 Decision 7.
+                if player.okafor_research_state is not None:
+                    player.okafor_research_state.bump_relationship(reward.amount)
+                messages.append(f"Kweon trust +{reward.amount}")
         return messages
 
     def get_mission(self, mission_id: str) -> Optional[Mission]:

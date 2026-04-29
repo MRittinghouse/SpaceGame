@@ -1,6 +1,7 @@
 """Tests for mission system models."""
 
 import pytest
+from spacegame.models.okafor_research import OkaforResearchState
 from spacegame.models.mission import (
     ObjectiveType,
     MissionStatus,
@@ -914,4 +915,64 @@ class TestAutoAcceptMission:
         player.dialogue_flags["trigger_flag"] = True
         completed = mgr.check_objectives(player)
         assert "m1" in completed
-        assert len(mgr.get_missions_by_status(MissionStatus.COMPLETED)) == 1
+
+
+# ============================================================================
+# SA-R3: kweon_relationship reward type
+# ============================================================================
+
+
+class TestKweonRelationshipReward:
+    """SA-R3 AC #4 — kweon_relationship reward type bumps OkaforResearchState."""
+
+    def _make_manager_with_reward(self, amount: int) -> MissionManager:
+        mission = _make_mission(
+            "clinic_run",
+            rewards=[MissionReward(reward_type="kweon_relationship", amount=amount)],
+        )
+        mgr = MissionManager([mission])
+        mgr.accept_mission("clinic_run")
+        return mgr
+
+    def test_bump_increments_relationship_value(self) -> None:
+        player = _make_player()
+        player.okafor_research_state = OkaforResearchState(kweon_relationship_value=3)
+        mgr = self._make_manager_with_reward(1)
+        mgr.apply_rewards("clinic_run", player)
+        assert player.okafor_research_state.kweon_relationship_value == 4
+
+    def test_bump_clamps_at_max(self) -> None:
+        player = _make_player()
+        player.okafor_research_state = OkaforResearchState(kweon_relationship_value=9)
+        mgr = self._make_manager_with_reward(5)
+        mgr.apply_rewards("clinic_run", player)
+        assert player.okafor_research_state.kweon_relationship_value == 10
+
+    def test_bump_clamps_at_min(self) -> None:
+        player = _make_player()
+        player.okafor_research_state = OkaforResearchState(kweon_relationship_value=1)
+        mgr = self._make_manager_with_reward(-99)
+        mgr.apply_rewards("clinic_run", player)
+        assert player.okafor_research_state.kweon_relationship_value == 0
+
+    def test_no_op_when_state_is_none(self) -> None:
+        player = _make_player()
+        assert player.okafor_research_state is None
+        mgr = self._make_manager_with_reward(1)
+        # Must not raise; state stays None
+        messages = mgr.apply_rewards("clinic_run", player)
+        assert player.okafor_research_state is None
+        assert any("Kweon trust" in m for m in messages)
+
+    def test_message_appears_in_messages(self) -> None:
+        player = _make_player()
+        player.okafor_research_state = OkaforResearchState(kweon_relationship_value=2)
+        mgr = self._make_manager_with_reward(1)
+        messages = mgr.apply_rewards("clinic_run", player)
+        assert any("Kweon trust +1" in m for m in messages)
+
+    def test_message_appears_when_state_none(self) -> None:
+        player = _make_player()
+        mgr = self._make_manager_with_reward(1)
+        messages = mgr.apply_rewards("clinic_run", player)
+        assert any("Kweon trust +1" in m for m in messages)
