@@ -4901,7 +4901,7 @@ Open question (reviewer judgment, not blocking implementation):
 - Notes: Implement phase missed the two engine integration tests for criteria 8 and 9 (plan steps 10 and 11). Fixed directly. All other criteria met; code wiring correct; content volume and voice quality solid.
 ### WB-1 — Station tagline scanner coverage
 
-**Status**: in-progress (implementing)
+**Status**: in-progress (reviewing)
 **Source**: `requirements/writing_bible_scanner_gaps.md` Gap 1
 **Size**: S | **Effort**: 3-5 days
 **Depends on**: none | **Blocks**: WB-2
@@ -4955,24 +4955,24 @@ Open question (reviewer judgment, not blocking implementation):
 - 2026-04-29 18:30 — planner: re-verified all 3 context docs exist; confirmed 5 `StationLayout` subclasses still declare `faction_tagline` (lines 602/646/773/881/973 of `station_layouts.py`); confirmed Reach tagline still in `_PARALLEL_NEGATION_ALLOWLIST` at lines 78-86 of `tests/test_writing_bible_compliance.py`; confirmed `_find_violations()` (line 89) is the right call site. Refreshed acceptance #6 baseline from 8304 to current pre-phase baseline of 10312. All decisions remain locked from prior planning run; sprint is implementation-ready. PHASE_OK
 - 2026-04-29 18:17 — harness: implement phase starting (rework cycle 0)
 - 2026-04-29 — implementation complete, all gates green; tests 10312→10317 (+5). PHASE_OK
+- 2026-04-29 18:22 — harness: review phase starting (rework cycle 0)
+- 2026-04-29 19:00 — review complete; all 6 acceptance criteria verified. Live injection check confirmed em-dash detection bites. Test count 10317 >= 10312 baseline. Lint/format clean. One minor observation on docstring accuracy (see single-tighten in phase report); not a blocker. PHASE_OK
 
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-04-29 18:17
-- Completed: 2026-04-29 18:45
-- Files_changed: tests/test_writing_bible_compliance.py
-- Commits: 5ac345e
-- Tests_added: 5
-- Tests_baseline: 10312
+- Started: 2026-04-29 18:22
+- Completed: 2026-04-29 19:00
+- Files_changed: none
+- Commits: none
 - Tests_passing: 10317
-- Tests_skipped: 98
-- Lint_clean: yes
-- Format_clean: yes
-- SI3_scanner_clean: n/a
-- Writing_bible_clean: n/a
-- Touch_zones_respected: yes
-- Notes: Added _extract_tagline_strings() extractor (uses StationLayout.__subclasses__()) and TestStationTaglineWritingBible with 5 tests covering em-dashes, banned phrases, parallel-negation (allowlist-honored), coverage sanity, and allowlist-pinning unit test. Manual injection checks confirmed detection bites. All 6 acceptance criteria satisfied.
+- Acceptance_criteria_verified: 6/6
+- Polish_items_verified: n/a
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 0
+- Single_tighten: `test_allowlist_suppresses_reach_tagline` docstring says "Allowlist suppresses the Reach tagline" but the Reach tagline uses period parallelism and never matches the current comma-form regex — the allowlist is not actually invoked. The inline comment correctly acknowledges this ("won't trip the current regex"), but the docstring misleads on a quick read. Would change to "Reach tagline bypasses regex (period form); allowlist is forward-defensive; comma-form synthetic string is flagged." Not a blocker.
+- Followup_sprints_added: none
+- Notes: Clean implementation. Extractor uses __subclasses__() pattern as specified; 5 taglines discovered. Parallel-negation test correctly routes through _find_violations() (allowlist-honored path). Coverage-sanity threshold at 5 matches the actual subclass count, which is tight — a 6th faction layout would pass fine, but removal of any existing one would not surface until the count dropped below 5.
 
 ### WB-2 — Parallel-negation regex broadening
 
