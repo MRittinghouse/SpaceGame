@@ -292,6 +292,23 @@ def _extract_ambient_strings() -> list[tuple[str, str]]:
     return entries
 
 
+def _extract_tagline_strings() -> list[tuple[str, str]]:
+    """Return (loc, tagline) for every non-empty faction_tagline on a StationLayout subclass.
+
+    Importing ``spacegame.views.station_layouts`` registers all subclass definitions
+    so ``StationLayout.__subclasses__()`` returns the full faction set.
+    Empty or whitespace-only taglines (the base-class default) are skipped.
+    """
+    import spacegame.views.station_layouts as _sl
+
+    entries: list[tuple[str, str]] = []
+    for cls in _sl.StationLayout.__subclasses__():
+        tagline: str = getattr(cls, "faction_tagline", "")
+        if tagline.strip():
+            entries.append((f"tagline:{cls.__name__}", tagline))
+    return entries
+
+
 # ---------------------------------------------------------------------------
 # Tests — view source
 # ---------------------------------------------------------------------------
@@ -495,3 +512,71 @@ class TestCoverageSanity:
     def test_dialogue_scanner_finds_content(self) -> None:
         entries = _extract_dialogue_strings()
         assert len(entries) > 50
+
+
+# ---------------------------------------------------------------------------
+# Tests — station tagline content
+# ---------------------------------------------------------------------------
+
+
+class TestStationTaglineWritingBible:
+    """Station faction taglines must comply with the Writing Bible."""
+
+    def test_tagline_scanner_finds_content(self) -> None:
+        """Extractor must return >= 5 taglines (one per faction layout)."""
+        entries = _extract_tagline_strings()
+        assert len(entries) >= 5, (
+            f"Tagline scanner found only {len(entries)} taglines. "
+            "Extractor may have broken or subclasses failed to import."
+        )
+
+    def test_no_em_dashes_in_taglines(self) -> None:
+        """No em-dashes, en-dashes, or double-hyphens in faction taglines."""
+        offenders: list[str] = []
+        for loc, text in _extract_tagline_strings():
+            for dash in _EM_DASHES:
+                if dash in text:
+                    offenders.append(f"{loc}: {text!r}")
+                    break
+        if offenders:
+            report = "\n  ".join(offenders)
+            pytest.fail(f"Em-dashes in faction taglines:\n  {report}")
+
+    def test_no_banned_phrases_in_taglines(self) -> None:
+        """No 'couldn't help but' or 'a testament to' in faction taglines."""
+        offenders: list[str] = []
+        for loc, text in _extract_tagline_strings():
+            lowered = text.lower()
+            for phrase in _BANNED_PHRASES:
+                if phrase in lowered:
+                    offenders.append(f"{loc}: {phrase!r} in {text!r}")
+        assert not offenders, "Banned phrases in faction taglines:\n  " + "\n  ".join(offenders)
+
+    def test_no_parallel_negation_in_taglines(self) -> None:
+        """No comma-form 'no X, no Y' rhetoric in faction taglines (allowlist honored)."""
+        offenders: list[str] = []
+        for loc, text in _extract_tagline_strings():
+            violations = _find_violations(text)
+            pn_violations = [v for v in violations if "parallel-negation" in v]
+            if pn_violations:
+                offenders.append(f"{loc}: {text!r}")
+        assert not offenders, "Parallel-negation in faction taglines:\n  " + "\n  ".join(offenders)
+
+    def test_allowlist_suppresses_reach_tagline(self) -> None:
+        """Allowlist suppresses the Reach tagline; comma-form synthetic string is flagged."""
+        # The Reach tagline uses period parallelism, not comma — won't trip the current regex.
+        # But it IS in the allowlist as forward-defense; confirm _find_violations returns nothing.
+        reach_tagline = "No laws. No mercy. No refunds."
+        violations = _find_violations(reach_tagline)
+        pn_violations = [v for v in violations if "parallel-negation" in v]
+        assert not pn_violations, (
+            f"Allowlist should suppress Reach tagline but got: {pn_violations}"
+        )
+
+        # A synthetic comma-form string NOT in the allowlist must be flagged.
+        synthetic = "No laws, no mercy."
+        synthetic_violations = _find_violations(synthetic)
+        synthetic_pn = [v for v in synthetic_violations if "parallel-negation" in v]
+        assert synthetic_pn, (
+            "Comma-form parallel-negation 'No laws, no mercy.' should be flagged but wasn't."
+        )
