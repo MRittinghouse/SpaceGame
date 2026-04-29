@@ -9282,6 +9282,331 @@
           "expression": "neutral"
         }
       ]
+    },
+    {
+      "id": "kweon_legacy_first_heal",
+      "start_node_id": "observe",
+      "nodes": [
+        {
+          "id": "observe",
+          "speaker_id": "kweon_director",
+          "text": "The trial resolved as a public-health outcome. Pediatric care data, in this case. The field has needed that methodology for some time. I am noting it because the result is the kind the Institute was founded to produce. It does not always work out that way. This time it did.",
+          "responses": [
+            {
+              "text": "Does it matter, as long as the trial holds?",
+              "next_node_id": "matter"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "matter",
+          "speaker_id": "kweon_director",
+          "text": "It matters to the researchers who spend their careers here. The outcome type shapes what work is possible next. Clinical and public-health results open collaboration channels the Institute could not otherwise reach. That is the practical answer. There is also a less practical one, but it is harder to put in a budget line.",
+          "responses": [
+            {
+              "text": "What is the less practical answer?",
+              "next_node_id": "principle"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "principle",
+          "speaker_id": "kweon_director",
+          "text": "That this is what the building was for. It does not always produce outcomes that fit that description. It did this time. I wanted to say so directly. The board is open when you are ready for the next project.",
+          "responses": [
+            {
+              "text": "Understood.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "kweon_legacy_first_profit",
+      "start_node_id": "observe",
+      "nodes": [
+        {
+          "id": "observe",
+          "speaker_id": "kweon_director",
+          "text": "The propulsion efficiency trial held. The methodology was sound; the yield is in the account. I want to be straightforward with you: that outcome funds two cycles of the lower-risk clinical work. Resources do not arrive cleanly labeled by type. This one arrived labeled by its application, which is industrial.",
+          "responses": [
+            {
+              "text": "Does the application type concern you?",
+              "next_node_id": "concern"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "concern",
+          "speaker_id": "kweon_director",
+          "text": "The Institute's accounting does not separate concern from yield. Both pay for the same bench time. What I can say is that the research circulates, the techniques publish, and the methodology is available to work that uses it differently. Whether that is sufficient is a question I have spent considerable time not answering aloud.",
+          "responses": [
+            {
+              "text": "I will keep an eye on the board.",
+              "next_node_id": "close"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "close",
+          "speaker_id": "kweon_director",
+          "text": "That is all I ask. The board refreshes on schedule. The work continues.",
+          "responses": [
+            {
+              "text": "[Leave.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "kweon_legacy_heal_pattern",
+      "start_node_id": "pattern",
+      "nodes": [
+        {
+          "id": "pattern",
+          "speaker_id": "kweon_director",
+          "text": "I want to name something. Three heal-aligned completions. Pediatric data, the field clinic supply chain, the vaccine synthesis. Each was a legitimate project on its own. Together they describe a funding pattern. I have been watching for it.",
+          "responses": [
+            {
+              "text": "What does the pattern mean to you?",
+              "next_node_id": "okafor_principle"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "okafor_principle",
+          "speaker_id": "kweon_director",
+          "text": "Dr. Okafor wrote, 'Knowledge that does not heal is knowledge wasted.' I quote it carefully because I do not quote it often. The principle is real. The difficulty is that maintaining the conditions under which that principle can operate requires resources that do not arrive labeled by principle. You have been funding the principle directly. That is not nothing.",
+          "responses": [
+            {
+              "text": "Is that unusual here?",
+              "next_node_id": "unusual"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "unusual",
+          "speaker_id": "kweon_director",
+          "text": "Patrons select for yield, which is rational. Yield and principle do not always point the same direction. The last three times they have pointed the same direction because of which projects you funded. I want you to understand that I have noticed. The Institute's direction over the next cycle will reflect it.",
+          "responses": [
+            {
+              "text": "What do you need from me next?",
+              "next_node_id": "mission_offer"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "mission_offer",
+          "speaker_id": "kweon_director",
+          "text": "There is a supply run the Institute cannot staff from here. Medical cargo to Haven's Rest. Field clinic there has been waiting three weeks. The Collective's logistics window closed before the order could be filled. If you have cargo capacity and that system on your route, the clinic coordinator expects the delivery. The work is already done. The cargo just needs to arrive.",
+          "responses": [
+            {
+              "text": "I will make the run.",
+              "set_flag": "okafor_legacy_mission_offered",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "kweon_legacy_profit_pattern",
+      "start_node_id": "pattern",
+      "nodes": [
+        {
+          "id": "pattern",
+          "speaker_id": "kweon_director",
+          "text": "Three completions on the industrial and commercial side. Propulsion efficiency, alloy corrosion analysis, the sensor capstone. Each held. The yield is in the account. I have been thinking about what I want to say here and the honest answer is that I am still working on the phrasing.",
+          "responses": [
+            {
+              "text": "Say what you are actually thinking.",
+              "next_node_id": "honest"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "honest",
+          "speaker_id": "kweon_director",
+          "text": "Dr. Okafor's principle is unchanged. The application adapts. This is the part where I tell you that industrial outcomes fund clinical work, and that is true. The funding chain runs through whatever pays the bench, and right now you are part of that chain. I would rather the Institute not depend on that chain for its core mission. That preference is noted and not always actionable.",
+          "responses": [
+            {
+              "text": "The Institute is still running.",
+              "next_node_id": "still_running"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "still_running",
+          "speaker_id": "kweon_director",
+          "text": "It is. Resources were not cut this quarter. The bench is staffed. I am not ungrateful for what funds that. I am precise about what it costs the long-term shape of the program. The two things can be true at once.",
+          "responses": [
+            {
+              "text": "Understood. I will keep watching the board.",
+              "next_node_id": "close"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "close",
+          "speaker_id": "kweon_director",
+          "text": "That is what I need. The board rotates on schedule. The work continues to circulate through whatever channel is open.",
+          "responses": [
+            {
+              "text": "[Leave.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "kweon_legacy_heal_ending",
+      "start_node_id": "recognition",
+      "nodes": [
+        {
+          "id": "recognition",
+          "speaker_id": "kweon_director",
+          "text": "I want to have a different kind of conversation. The spread on your funding history is significant. Heal-aligned completions running well ahead of the commercial side. That is not chance at this point. That is a choice made repeatedly over a long run.",
+          "responses": [
+            {
+              "text": "It is the work I think matters.",
+              "next_node_id": "matters"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "matters",
+          "speaker_id": "kweon_director",
+          "text": "Yes. And what matters gets funded or it does not survive. The Collective's founding generation understood that. The current institution understands it imperfectly. What you have been doing is the practical version of the principle Dr. Okafor wrote. The Institute needed someone doing that. It was not guaranteed anyone would.",
+          "responses": [
+            {
+              "text": "Has it made a difference?",
+              "next_node_id": "difference"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "difference",
+          "speaker_id": "kweon_director",
+          "text": "The pediatric data is published. The field clinic supply chain is documented and replicable. The vaccine synthesis is in the archive. Three pieces of work that would not exist without your funding. That is the difference. It is measurable.",
+          "responses": [
+            {
+              "text": "The Institute did the work.",
+              "next_node_id": "credit"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "credit",
+          "speaker_id": "kweon_director",
+          "text": "The Institute did the work. You funded work that would not have happened otherwise. That matters. I do not say that often enough.",
+          "responses": [
+            {
+              "text": "I will keep watching the board.",
+              "next_node_id": "close"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "close",
+          "speaker_id": "kweon_director",
+          "text": "The board is open. The principle holds.",
+          "responses": [
+            {
+              "text": "[Leave.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "kweon_legacy_profit_ending",
+      "start_node_id": "recognition",
+      "nodes": [
+        {
+          "id": "recognition",
+          "speaker_id": "kweon_director",
+          "text": "I want to be direct with you about what I am looking at. Commercial and industrial completions running significantly ahead of clinical and public-health work. The spread is consistent and it has held over a long run. That is a funding pattern with a shape.",
+          "responses": [
+            {
+              "text": "The yields were real.",
+              "next_node_id": "yields"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "yields",
+          "speaker_id": "kweon_director",
+          "text": "The yields were real. The Institute is better resourced than it was before your involvement. I am not contesting that. What I am naming is that the work the Institute was founded to do has been funded at a lower rate than the work that pays best. Both things are true.",
+          "responses": [
+            {
+              "text": "The Institute kept running.",
+              "next_node_id": "kept_running"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "kept_running",
+          "speaker_id": "kweon_director",
+          "text": "The Institute kept running. The bench remained staffed. Resources were not cut. I made choices along the way about which projects to offer, knowing which direction you tended to fund. That is also true. I do not regret those choices. I am strategic about what I spend what I have left.",
+          "responses": [
+            {
+              "text": "What did it cost?",
+              "next_node_id": "cost"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "cost",
+          "speaker_id": "kweon_director",
+          "text": "The pediatric cohort study sat unfunded for two cycles. The field clinic supply chain work was deferred once. The projects that would not pay were the ones most likely not to happen. That is the cost. I know it by name. I choose to work within it rather than name it publicly, because the alternative is a closed institute.",
+          "responses": [
+            {
+              "text": "I understand.",
+              "next_node_id": "close"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "close",
+          "speaker_id": "kweon_director",
+          "text": "The board is open. The work continues. That is what I have to say.",
+          "responses": [
+            {
+              "text": "[Leave.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
     }
   ]
 }
