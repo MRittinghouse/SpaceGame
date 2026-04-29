@@ -3191,7 +3191,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 
 #### SA-B5 — Player-Initiated Auctions
 
-**Status**: in-progress (implementing)
+**Status**: in-progress (reviewing)
 **Phase**: Phase III | **Size**: L | **Effort**: 1.5 weeks
 **Depends on**: SA-B2 | **Blocks**: SA-B6
 
@@ -3349,24 +3349,24 @@ These are the decisions to lock during planning execution. Recommendations recor
 - 2026-04-29 13:05 — engine wiring: new `_ensure_sell_lot_view` factory mirrors `_ensure_auction_view`; AuctionView's `next_state == SELL_LOT` routes to the new view; SellLotView returns to `GameState.AUCTION` on confirm/back. `_ensure_auction_view` installs `_on_player_lot_sold` (credits player at hammer price + sets `auction_first_sale` + fires journal + emits 50k+ news headline) and `_on_player_lot_withdrawn` (returns commodity via `ship.add_cargo` or part via `parts_inventory[id]+=qty` + sets `auction_first_listing_withdrawn` + fires journal). `_prepare_stellaris_session` calls `state.eligible_listings_for_session(current_day)` and prepends converted player lots to `session_lots` (player lots first; catalog tail drops to make room within the session-size cap).
 - 2026-04-29 13:15 — full scenario test: 6 scenarios covering session preparation prepending behavior, sold-above-reserve branch (consign → fee deducted → AI lands above reserve → counter increments → history archives), withdrawn branch (consign → AI bids stay below reserve → item returned via simulated callback → fee gone), save/load round-trip preserves listings, and the Player property mirrors the state counter.
 - 2026-04-29 13:30 — validation chain: `python -m ruff format --check` clean on touched files (13 files); `python -m ruff check` clean; full pytest -n auto -q reports 9879 passed / 98 skipped vs. the 9780 baseline (+99 net tests). 4 pre-existing achievement-count assertions updated for the new `auction_seller` stub (67→68 across `test_cycle_e_polish.py`, `test_achievement.py`, `test_ground_achievements.py`); `auction_listings_sold` added to the VALID_STAT_KEYS allowlist in `test_new_achievements.py`. Writing Bible scanner clean (17 passed). SI-3 dialogue-integrity scanner clean (14 passed). New SA-B5 voice-content scanner clean (20 passed). PHASE_OK
+- 2026-04-29 12:32 — harness: review phase starting (rework cycle 0)
+- 2026-04-29 13:45 — review complete. Two gaps found and fixed directly (Option B): (1) AC #14: SellLotView set the `auction_first_listing_created` flag but had no `on_listing_created` callback, so the `auto_auction_first_listing_created` journal entry was never fired — fixed by adding callback attribute + wiring in `_ensure_sell_lot_view`. (2) AC #5: `cancel_listing` had no guard for listings already converted to a session lot on the active floor, and the "Listing is already on the auction floor; cannot cancel." failure path was neither implemented nor tested — fixed by scanning `active_session_lots` before cancellation and adding `TestCancelListing::test_cancel_blocked_when_lot_on_active_floor`. All 21 acceptance criteria verified. 9881 passed / 98 skipped (+101 vs. 9780 baseline). Writing Bible scanner clean. Format + lint clean. Single tighten: `cancel_listing` comment at bidding.py:1107 says "Once a listing is pulled into a live session it cannot be cancelled" but the original implementation didn't enforce it — fixed in this phase, but the comment was already correct (the doc described the intended behavior, not the actual behavior). PHASE_OK
 
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-04-29 12:02
-- Completed: 2026-04-29 13:30
-- Files_changed: spacegame/config.py, spacegame/constants/flags.py, spacegame/models/bidding.py, spacegame/models/bidding_lot.py, spacegame/models/player.py, spacegame/views/sell_lot_view.py (NEW), spacegame/views/auction_view.py, spacegame/engine/game.py, data/auctions/stellaris_voices.json, data/journal/entries.json, data/progression/achievements.json, tests/test_models/test_bidding_player_listing.py (NEW), tests/test_views/test_sell_lot_view.py (NEW), tests/test_views/test_auction_view_player_listing.py (NEW), tests/test_scenarios/test_scenario_player_listing.py (NEW), tests/test_data_integrity/test_player_listing_voice.py (NEW), tests/test_data/test_new_achievements.py (small fix), tests/test_models/test_achievement.py (small fix), tests/test_models/test_cycle_e_polish.py (small fix), tests/test_models/test_ground_achievements.py (small fix)
-- Commits: e38180c, a9292c4, bae5826, 160b941, ff2a7f6, e864803, 2e6520a
-- Tests_added: 99
-- Tests_baseline: 9780
-- Tests_passing: 9879
-- Tests_skipped: 98
-- Lint_clean: yes
-- Format_clean: yes
-- SI3_scanner_clean: yes
-- Writing_bible_clean: yes
-- Touch_zones_respected: yes (4 small adjacent test files outside declared zones — count assertions updated for the new auction_seller achievement; per agent guide and CLAUDE.md cross-cutting concerns, these are required when adding an achievement)
-- Notes: All 21 acceptance criteria addressed. AuctionLot.seller_id field round-trips clean (#1, #2). create_listing validates 7 failure paths + success (#3, #4); listing fee math boundary-tested at 0/1/1999/2000/50k/1M (#4). cancel_listing returns item without refund (#5). eligible_listings_for_session caps at MAX_ACTIVE_LISTINGS (#6). _resolve_lot routes player-seller lots through listing_history (#7). _prepare_stellaris_session prepends player lots (#8). PREVIEW List-a-Lot button gated correctly + Active Listings subsection (#9). BID_WINDOW suppresses bid buttons + renders banner (#10). LOT_RESOLUTION variant messages (#11). POST_SESSION Sable line (#12). SellLotView lifecycle + tier-lock + empty state + tip (#13). Form validation + clamping + fee preview + confirm gating (#14). Engine callbacks credit player + return inventory + set flags + fire journal (#15). News ticker high-value headline (#16). Voice content registered Velo / Sable register checks (#17). Achievement stub registered (#18). Full scenario green (#19). SA-B2/B3/B4 locked decisions not re-litigated (#20). Pre-phase test baseline preserved (#21).
+- Started: 2026-04-29 13:32
+- Completed: 2026-04-29 13:45
+- Files_changed: spacegame/models/bidding.py, spacegame/views/sell_lot_view.py, spacegame/engine/game.py, tests/test_models/test_bidding_player_listing.py, tests/test_views/test_sell_lot_view.py
+- Commits: 0e71150
+- Tests_passing: 9881
+- Acceptance_criteria_verified: 21/21
+- Polish_items_verified: 4/4
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 2
+- Single_tighten: cancel_listing comment described the intended guard correctly but the code didn't enforce it; the comment was accurate as spec, the implementation was behind it — now aligned.
+- Followup_sprints_added: none
+- Notes: Both gaps (AC #14 journal callback, AC #5 floor guard) fixed directly with tests. All 21 criteria verified. Voice content, engine wiring, scenario pipeline, and save/load all solid.
 #### SA-B6 — Bidding polish + tuning
 
 **Status**: todo
