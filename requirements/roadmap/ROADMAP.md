@@ -4625,7 +4625,7 @@ Smaller deferred items pulled from prior sprint findings. Each is independently 
 
 ### CB-1 — Crew Banter scope (scoping)
 
-**Status**: in-progress (implementing)
+**Status**: in-progress (reviewing)
 **Source**: Living Universe Arc deferral; `requirements/living_universe_arc.md` Phase 5 design carries the as-imagined CB scope.
 **Size**: S | **Effort**: 3-5 days
 **Depends on**: none | **Blocks**: CB-2
@@ -4715,24 +4715,24 @@ Open question (reviewer judgment, not blocking implementation):
 - 2026-04-29 21:05 — planning re-confirmed; verified all 7 context-to-read paths exist; corrected line-count claim from 224 → 249 and the crew dimensionality (24 distinct `crew_id`s, not just the 4 primary); refreshed stale `game.py` line citations against current source (constructor 405-407 + 618-621, warp 1167-1191, player_action 4129-4138, save bind/load 4685 + 4871-4872, idle 5406-5413); added `data_loader.py:1496` to context-to-read for completeness; tightened acceptance criterion #1 to require explicit primary-vs-secondary crew tabulation; clarified the "shown_indices" mechanism is set-based not time-based. 5 prior decisions remain locked. PHASE_OK
 - 2026-04-29 17:06 — harness: implement phase starting (rework cycle 0)
 - 2026-04-29 — implementation: verified 249 lines/24 crew_ids/5 contexts via Python one-liner; tabulated primary crew (elena 32, marcus 36, dr_priya_osei 30, tomas 29), secondary 20 specialists; confirmed AmbientDialogueManager fields and shown-set semantics; mapped all 6 Phase 5 trigger types against existing coverage; locked Option A (extend); authored requirements/cb_scope.md (235 lines, 8 sections, 5 voice-checked sample entries). Test suite: 10268 passed, 98 skipped. PHASE_OK
+- 2026-04-29 17:11 — harness: review phase starting (rework cycle 0)
+- 2026-04-29 — review complete; all 8 acceptance criteria verified against actual source data (249 lines confirmed, line citations spot-checked against game.py/data_loader.py, gap analysis verified against living_universe_arc.md trigger types, voice samples cross-checked against character_voices.md); 1 minor finding fixed directly: added disclaimer in section 6 that sample flag names are illustrative (not production values) to prevent CB-2 copy-paste hazard. PHASE_OK
 
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-04-29 17:06
+- Started: 2026-04-29 17:11
 - Completed: 2026-04-29
 - Files_changed: requirements/cb_scope.md
-- Commits: 65e3b68
-- Tests_added: 0
-- Tests_baseline: 10268
+- Commits: 44b1dda
 - Tests_passing: 10268
-- Tests_skipped: 98
-- Lint_clean: n/a
-- Format_clean: n/a
-- SI3_scanner_clean: n/a
-- Writing_bible_clean: n/a
-- Touch_zones_respected: yes
-- Notes: Documentation-only sprint. requirements/cb_scope.md authored with all 8 acceptance-criteria sections. Option A (extend AmbientDialogueManager) locked; SA-X6 boundary declared sibling; CB-2 authoring quota set (>=60 entries, per-type floors); 5 voice-checked sample entries embedded. No code changes; test suite unchanged at baseline.
+- Acceptance_criteria_verified: 8/8
+- Polish_items_verified: n/a
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 1
+- Single_tighten: Section 6 sample flag names (`guild_removed_equipment`, `sa_r1_research_patron_completed`) exist nowhere in the codebase; without a disclaimer, CB-2 risks copy-pasting them into ambient_dialogue.json and failing its own flag-integrity scanner. Added one-sentence note clarifying they are illustrative.
+- Followup_sprints_added: none
+- Notes: Documentation-only sprint passes review cleanly. All statistics verified against live data. Line citations accurate. Voice samples consistent with character_voices.md. Minor flag-name disclaimer added directly.
 
 ### CB-2 — Crew Banter implementation
 
