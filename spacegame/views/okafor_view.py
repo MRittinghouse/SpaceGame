@@ -545,7 +545,7 @@ class OkaforView(BaseView):
         gap = scale_y(8)
         start_y = BODY_TOP_Y + scale_y(60)
 
-        for idx, (researcher_id, name, role) in enumerate(researchers):
+        for idx, (researcher_id, name, _role) in enumerate(researchers):
             selected_marker = "[X] " if researcher_id in self._picker_selected else "[ ] "
             label = f"{selected_marker}{name}"
             btn = pygame_gui.elements.UIButton(
@@ -571,9 +571,7 @@ class OkaforView(BaseView):
             manager=self.ui_manager,
         )
         self._picker_cancel_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(
-                RIGHT_X + scale_x(140), btn_row_y, scale_x(80), btn_h
-            ),
+            relative_rect=pygame.Rect(RIGHT_X + scale_x(140), btn_row_y, scale_x(80), btn_h),
             text="Cancel",
             manager=self.ui_manager,
         )
@@ -879,11 +877,17 @@ class OkaforView(BaseView):
                     self._picker_toggle(researcher_id)
                     self._create_ui()
                     return
-            if self._picker_confirm_button is not None and event.ui_element == self._picker_confirm_button:
+            if (
+                self._picker_confirm_button is not None
+                and event.ui_element == self._picker_confirm_button
+            ):
                 self._picker_confirm()
                 self._create_ui()
                 return
-            if self._picker_cancel_button is not None and event.ui_element == self._picker_cancel_button:
+            if (
+                self._picker_cancel_button is not None
+                and event.ui_element == self._picker_cancel_button
+            ):
                 self._picker_cancel()
                 return
             for hid, btn in list(self._license_buttons.items()):

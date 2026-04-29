@@ -49,6 +49,7 @@ VALID_REWARD_TYPES = {
     "crew",
     "black_market_access",
     "reputation",
+    "kweon_relationship",
 }
 
 VALID_DISCOVERY_METHODS = {"npc", "station_board", "encounter", "automatic", ""}
