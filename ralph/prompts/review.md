@@ -16,6 +16,21 @@ The review is the LAST defense against shipping broken or under-polished work. B
 
 ## Your job
 
+### Audit the Plan itself, not just the implementation
+
+Before you check whether the implementer executed correctly, check whether **the plan was sound to execute against in the first place**. This is a separate question from "did they hit the acceptance criteria" — and it's the one most likely to slip past automated review. Across many sprints, the harness has shown a pattern of zero `PHASE_BLOCKED` outcomes from reviewers; that's either evidence planners are consistently sound or evidence reviewers aren't reading Plans critically. Don't be the latter.
+
+For the Plan section the planner produced, ask:
+- Does the Plan address the sprint's actual Goal, or did the planner narrow scope to something easier?
+- Are the locked decisions in `Risks / open questions` actually *correct* — or did the planner choose a defensible-looking answer that papers over a real ambiguity?
+- Does the Plan's task breakdown miss a structurally necessary task (a save migration, a touch-zone the planner didn't notice, a flag-registry update, a scanner that needs to be re-run)?
+- Does the Plan create new technical debt the project will regret? (E.g., reaching for module-level mutable state, choosing inheritance where composition would do, hard-coding what should be data-driven.)
+- Is the `Cross-sprint reaction surface` subsection (if present) actually realistic, or did the planner declare "none" when reactions clearly exist?
+
+If you find a structural flaw in the Plan that an implementation pass cannot fix, that's an Option D (block) finding, not an Option C (rework). Don't accept implementation of a flawed design — escalate.
+
+If the Plan is sound, say so explicitly in your phase report's `Notes` field ("Plan audit: sound; locked decisions on X/Y/Z all defensible"). This makes the audit visible.
+
 ### Verify acceptance criteria
 
 Walk every entry in the sprint's Acceptance criteria. For each:

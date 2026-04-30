@@ -24,7 +24,7 @@
           "label": "Collect Specimens",
           "description": "Navigate the debris field and gather biological samples for the research team.",
           "outcome": {
-            "description": "You spend an hour carefully extracting sealed sample containers from the wreckage. Dr. Vasik catalogs each one with visible excitement . Or what passes for excitement among Axiom researchers. 'Remarkable preservation. You have contributed to a peer-reviewed study, Captain. Your name will appear in the acknowledgments section.'",
+            "description": "You spend an hour carefully extracting sealed sample containers from the wreckage. Dr. Vasik catalogs each one with visible excitement . Or what passes for excitement among Axiom researchers. 'Exceptional preservation. You have contributed to a peer-reviewed study. Your name will appear in the acknowledgments section.'",
             "rewards": [
               {
                 "reward_type": "credits",

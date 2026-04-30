@@ -277,7 +277,7 @@
           "label": "Pay the Machine",
           "description": "Transfer credits to a robot pirate. This is your life now.",
           "outcome": {
-            "description": "You transfer the credits. The autopilot responds: 'Thank you for your payment! A receipt has been transmitted to your comms. Please note: robbery satisfaction surveys are available at the following frequency. We value your feedback! Have a wonderful day!' The ship cheerfully peels away to find its next victim. You stare at the receipt. It has a customer loyalty stamp. Four more robberies and you get one free.",
+            "description": "You transfer the credits. The autopilot responds: 'Thank you for your payment! A receipt has been transmitted to your comms. Please note: robbery satisfaction surveys are available at the following frequency. We value your feedback! Have a great day!' The ship cheerfully peels away to find its next victim. You stare at the receipt. It has a customer loyalty stamp. Four more robberies and you get one free.",
             "rewards": [
               {
                 "reward_type": "credits",

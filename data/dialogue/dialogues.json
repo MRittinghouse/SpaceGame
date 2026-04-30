@@ -4823,7 +4823,7 @@
         {
           "id": "accept",
           "speaker_id": "nova_researcher",
-          "text": "Wonderful! Here are the deployment coordinates and the amplifier unit. It's self-calibrating, just release it at the marked position and it will orient itself toward the signal source. Be careful in the debris field, and keep your comms open. I'll be monitoring from Nova Research. This is going to be remarkable, Captain. I can feel it.",
+          "text": "Good. Here are the deployment coordinates and the amplifier unit. It's self-calibrating, just release it at the marked position and it will orient itself toward the signal source. Be careful in the debris field, and keep your comms open. I'll be monitoring from Nova Research. The variance bands on what we'll see are wider than I'd like. I'm hoping the data narrows them.",
           "responses": [
             {
               "text": "Let's find out what's out there.",

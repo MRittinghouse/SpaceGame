@@ -36,6 +36,35 @@ Trust internal code. Trust framework guarantees. Validate at boundaries (user in
 
 If you find yourself thinking "but what if this returns None?" and the answer is "it can't, the upstream code guarantees it," don't add the None check. Add a comment if the invariant is non-obvious. That's it.
 
+## Don't lazy-init dataclass fields with hasattr guards
+
+Across the existing codebase you will find patterns like this — they exist because past additions copied each other, and they should NOT be replicated:
+
+```python
+# ANTI-PATTERN — do not copy this even though older models use it
+def modify_sub_reputation(self, ...):
+    if not hasattr(self, "_pending_deltas"):
+        self._pending_deltas = []
+    self._pending_deltas.append(...)
+```
+
+The `hasattr` guard implies "this field might not exist." But on a `@dataclass`, every field is guaranteed to exist after `__init__`. The guard is defending against an impossible case — the same anti-pattern as the principle above, in the specific shape that bites Aurelia.
+
+The correct shape: declare the field on the dataclass.
+
+```python
+# CORRECT — field is part of the contract, not a runtime surprise
+@dataclass
+class Player:
+    ...
+    _pending_deltas: list[SubReputationDelta] = field(default_factory=list)
+
+def modify_sub_reputation(self, ...):
+    self._pending_deltas.append(...)
+```
+
+If the field shouldn't be serialized (ephemeral UI queue, in-memory caches), use `field(repr=False, compare=False)` or omit it from `to_dict`/`from_dict` — the answer is **never** `hasattr`. If you spot the existing pattern in code you're touching and have time, fix it as part of your sprint. If not, leave it alone and don't propagate it into the new code you write.
+
 ## Comments only for WHY, not WHAT
 
 Well-named code already explains what. **Only add a comment when the WHY is non-obvious**: a hidden constraint, a subtle invariant, a workaround for a specific bug, behavior that would surprise a reader. If removing the comment wouldn't confuse a future reader, don't write it.

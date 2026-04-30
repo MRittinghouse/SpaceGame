@@ -168,7 +168,7 @@
       "id": "lore_charter_fragment_01",
       "encounter_type": "derelict",
       "name": "The Charter Hull",
-      "description": "A drifting hull segment, barely three meters across, tumbles slowly through your flight path. Your sensors flag it as non-hazardous. The fuel reads empty, power is out, life signs flat. But a closer scan reveals something remarkable: the inner surface has been etched with text. Deep, precise cuts in the metal, filled with a polymer sealant that has survived vacuum and radiation for over a century. The words are from the Aurelia Charter, the founding document of the Expanse. 'All who board the Aurelia share equally in what we find. What belongs to all shall not be claimed by any nation, corporation, or creed.' Someone carved this into a ship hull and set it adrift. A message in a bottle for anyone willing to read it.",
+      "description": "A drifting hull segment, barely three meters across, tumbles slowly through your flight path. Your sensors flag it as non-hazardous. The fuel reads empty, power is out, life signs flat. But a closer scan reveals something carved into the inner surface: text. Deep, precise cuts in the metal, filled with a polymer sealant that has survived vacuum and radiation for over a century. The words are from the Aurelia Charter, the founding document of the Expanse. 'All who board the Aurelia share equally in what we find. What belongs to all shall not be claimed by any nation, corporation, or creed.' Someone carved this into a ship hull and set it adrift. A message in a bottle for anyone willing to read it.",
       "icon_color": [
         200,
         180,

@@ -46,6 +46,21 @@ This is a hard rule. Planning around guesses about missing context produces spri
    - The test surface (which test files, what to assert)
    - Any risks or gotchas
 
+7. **Cross-sprint reaction surface**. This is the failure mode the harness is structurally bad at: each agent sees only its own sprint, so cross-sprint integration is no single agent's responsibility. Make it yours.
+
+   Ask explicitly: does this sprint's content create events, locations, or decisions that should trigger reactions in **existing** crew, NPCs, missions, or systems elsewhere in the project? Examples of reactions worth flagging:
+   - A crew member with a personal stake in the sprint's content (e.g., a sprint visiting a memorial connected to a crew member's backstory) should have a unique banter line, not generic crew commentary.
+   - A faction NPC whose status the sprint changes should reference that change in subsequent dialogue.
+   - A system the sprint hooks into (auctions, politics, research) should produce flavor that acknowledges the sprint's outcomes.
+   - News/ambient content should reflect the sprint's existence in the world.
+
+   List the candidate reactions in the sprint's `Plan` section under a **`Cross-sprint reactions to author`** subsection. Format: `(target_file_or_system) — (the reaction) — (when it should fire)`. Example:
+   - `data/crew/ambient_dialogue.json` — Marcus-specific line at the Deep Shafts memorial — fires when Marcus is on crew AND `attended_silent_shaft` flag set.
+
+   The harness will not author these reactions automatically — they belong to follow-up content sprints (or to this sprint's scope if small enough to bundle). Flagging them surfaces what would otherwise be invisible cohesion gaps.
+
+   If this sprint genuinely has no cross-sprint reaction surface (e.g., a foundational typed module with no player-facing content), say so explicitly: `Cross-sprint reactions to author: none (foundational module, no player-facing surface).`
+
 ## How to update the roadmap
 
 Edit `{ROADMAP_PATH}` directly. Modify ONLY the section for sprint `{SPRINT_ID}` and (if you propose new sprints) add new `<h3>` sections + matching index-table rows for them.

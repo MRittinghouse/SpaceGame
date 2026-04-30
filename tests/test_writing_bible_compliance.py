@@ -60,7 +60,19 @@ _EM_DASHES = {_EM_DASH, "\u2013", " -- "}  # em-dash, en-dash, double-hyphen
 _BANNED_PHRASES = [
     "couldn't help but",
     "a testament to",
+    # AI register markers (see requirements/aurelia_voice_examples.md
+    # diagnostic #4). Almost always cuttable in player-facing content.
+    # If a future line genuinely needs one of these — earned moment, a
+    # specific character whose voice sheet permits it — add a per-string
+    # exemption to _BANNED_PHRASES_ALLOWLIST below.
+    "remarkable",
+    "wonderful",
 ]
+
+# Strings explicitly exempted from the banned-phrase check. Each entry
+# requires a documented design rationale. Whole-string equality after
+# `.strip().lower()`, NOT substring — exemptions don't leak.
+_BANNED_PHRASES_ALLOWLIST: frozenset[str] = frozenset()
 
 _PARALLEL_NEGATION = re.compile(r"\bno \w+\s*[,.\-—–]+\s*no \w+", re.IGNORECASE)
 
@@ -94,9 +106,11 @@ def _find_violations(text: str) -> list[str]:
             violations.append(f"em-dash/en-dash ({dash!r})")
             break  # One em-dash report per block is enough.
     lowered = text.lower()
-    for phrase in _BANNED_PHRASES:
-        if phrase in lowered:
-            violations.append(f"banned phrase {phrase!r}")
+    is_phrase_allowlisted = lowered.strip() in _BANNED_PHRASES_ALLOWLIST
+    if not is_phrase_allowlisted:
+        for phrase in _BANNED_PHRASES:
+            if phrase in lowered:
+                violations.append(f"banned phrase {phrase!r}")
     if _PARALLEL_NEGATION.search(text) and text.strip() not in _PARALLEL_NEGATION_ALLOWLIST:
         violations.append("parallel-negation rhetoric ('no X, no Y')")
     return violations
