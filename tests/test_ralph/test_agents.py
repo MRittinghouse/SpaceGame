@@ -217,6 +217,60 @@ class TestNoSentinelDiagnostic:
         assert "short" in reason
 
 
+class TestInfraErrorDetection:
+    """`_looks_like_infra_error` distinguishes CLI/network/auth failures
+    (transient, re-runnable) from agent disobedience or scope failures
+    (terminal, needs human review).
+    """
+
+    def test_clean_exit_is_not_infra(self) -> None:
+        # Returncode 0 means the agent finished cleanly. Even with infra
+        # patterns in stdout, this isn't an infra error.
+        stdout = "API Error: socket connection was closed unexpectedly"
+        assert not agents._looks_like_infra_error(returncode=0, stdout=stdout)
+
+    def test_empty_stdout_is_not_infra(self) -> None:
+        # No positive signal — leave as ERROR.
+        assert not agents._looks_like_infra_error(returncode=1, stdout="")
+
+    def test_long_stdout_is_not_infra(self) -> None:
+        # Agent ran meaningfully before failing — that's a sprint problem.
+        long_stdout = "x" * (agents._INFRA_ERROR_STDOUT_THRESHOLD + 100)
+        long_stdout += "\nAPI Error: connection closed unexpectedly"
+        assert not agents._looks_like_infra_error(returncode=1, stdout=long_stdout)
+
+    def test_socket_error_short_stdout_is_infra(self) -> None:
+        # The exact SA-F2 scenario.
+        stdout = "API Error: The socket connection was closed unexpectedly."
+        assert agents._looks_like_infra_error(returncode=1, stdout=stdout)
+
+    def test_auth_403_is_infra(self) -> None:
+        # The exact UI-BOUNDS-1 scenario.
+        stdout = (
+            "Failed to authenticate. API Error: 403 "
+            '{"error":"Account is no longer a member of the organization"}'
+        )
+        assert agents._looks_like_infra_error(returncode=1, stdout=stdout)
+
+    def test_rate_limit_is_infra(self) -> None:
+        stdout = "Error: rate limit exceeded; please retry"
+        assert agents._looks_like_infra_error(returncode=1, stdout=stdout)
+
+    def test_generic_failure_is_not_infra(self) -> None:
+        # No infra pattern matches — even with non-zero returncode and
+        # short stdout, this is a regular ERROR.
+        stdout = "TypeError: object is not subscriptable"
+        assert not agents._looks_like_infra_error(returncode=1, stdout=stdout)
+
+    def test_detect_outcome_returns_infra_error(self, roadmap_factory) -> None:
+        roadmap_factory(_ROADMAP_NO_SENTINEL)
+        stdout = "API Error: socket connection was closed unexpectedly"
+        outcome, reason = agents._detect_outcome("SA-1", returncode=1, stdout=stdout)
+        assert outcome == Outcome.INFRA_ERROR
+        # Reason still describes the diagnostic; just the classification flips.
+        assert "no sentinel" in reason
+
+
 # ---------------------------------------------------------------------------
 # Prompt building
 # ---------------------------------------------------------------------------

@@ -163,6 +163,165 @@ class TestReconcileStaleState:
 
 
 # ---------------------------------------------------------------------------
+# Terminal outcome marking — INFRA_ERROR vs other non-OK outcomes
+# ---------------------------------------------------------------------------
+
+
+class TestMarkTerminalOutcome:
+    """`_mark_terminal_outcome` resets INFRA_ERROR sprints to todo for
+    re-run; all other non-OK outcomes mark the sprint blocked.
+    """
+
+    def test_infra_error_resets_to_todo(self, isolated_roadmap) -> None:
+        from ralph.agents import Outcome
+
+        # SA-2 starts as todo; mark it back as a no-op essentially, but
+        # the activity log should record the infra-error reason.
+        harness._mark_terminal_outcome("SA-2", "plan", Outcome.INFRA_ERROR, "auth 403 from CLI")
+        sprints = roadmap_state.parse_sprints()
+        assert sprints["SA-2"].status == "todo"
+        # Activity log carries the reason. Read from the patched roadmap
+        # path that the isolated_roadmap fixture wired up.
+        content = roadmap_state.ROADMAP_PATH.read_text(encoding="utf-8")
+        assert "infra_error" in content
+        assert "re-runnable" in content
+        assert "auth 403" in content
+
+    def test_blocked_outcome_marks_blocked(self, isolated_roadmap) -> None:
+        from ralph.agents import Outcome
+
+        harness._mark_terminal_outcome("SA-2", "plan", Outcome.BLOCKED, "missing context doc")
+        sprints = roadmap_state.parse_sprints()
+        assert sprints["SA-2"].status == "blocked"
+
+    def test_error_outcome_marks_blocked(self, isolated_roadmap) -> None:
+        from ralph.agents import Outcome
+
+        harness._mark_terminal_outcome("SA-2", "plan", Outcome.ERROR, "no sentinel")
+        sprints = roadmap_state.parse_sprints()
+        assert sprints["SA-2"].status == "blocked"
+
+    def test_timeout_outcome_marks_blocked(self, isolated_roadmap) -> None:
+        from ralph.agents import Outcome
+
+        harness._mark_terminal_outcome("SA-2", "implement", Outcome.TIMEOUT, "phase timed out")
+        sprints = roadmap_state.parse_sprints()
+        assert sprints["SA-2"].status == "blocked"
+
+
+# ---------------------------------------------------------------------------
+# Phase-report telemetry — item 6
+# ---------------------------------------------------------------------------
+
+
+class TestSafeParsePhaseReport:
+    """`_safe_parse_phase_report` is best-effort. Failures don't crash."""
+
+    def test_returns_empty_for_unknown_sprint(self, isolated_roadmap) -> None:
+        result = harness._safe_parse_phase_report("NONEXISTENT")
+        assert result == {}
+
+    def test_returns_empty_for_sprint_without_report(self, isolated_roadmap) -> None:
+        # SA-1 in the fixture has no Last phase report block.
+        result = harness._safe_parse_phase_report("SA-1")
+        assert result == {}
+
+    def test_extracts_fields_when_report_present(self, isolated_roadmap) -> None:
+        # Append a phase report to SA-2's section.
+        from ralph.config import ROADMAP_PATH
+
+        # Patched ROADMAP_PATH from fixture.
+        path = roadmap_state.ROADMAP_PATH
+        content = path.read_text(encoding="utf-8")
+        content += (
+            "\n**Last phase report.**\n"
+            "- Phase: review\n"
+            "- Outcome: PHASE_OK\n"
+            "- Tests_passing: 100\n"
+            "- Findings_critical: 0\n"
+            "- Single_tighten: Module follows established pattern.\n"
+        )
+        # Append to the SA-2 section by replacing its end.
+        # Simpler: just write it after the existing SA-2 section.
+        # The fixture's roadmap has SA-2 as the last sprint so appending
+        # to the file places the report in SA-2's section.
+        path.write_text(content, encoding="utf-8")
+
+        result = harness._safe_parse_phase_report("SA-2")
+        assert result.get("phase") == "review"
+        assert result.get("outcome") == "PHASE_OK"
+        assert result.get("findings_critical") == "0"
+        assert "established pattern" in result.get("single_tighten", "")
+
+
+class TestSprintStatePhaseReports:
+    """SprintState carries per-phase report dicts; HarnessState load
+    handles missing fields in older state.json files."""
+
+    def test_default_reports_are_empty_dicts(self) -> None:
+        s = SprintState(sprint_id="SA-1")
+        assert s.last_plan_report == {}
+        assert s.last_implement_report == {}
+        assert s.last_review_report == {}
+
+    def test_load_tolerates_missing_report_fields(self, isolated_roadmap, tmp_path) -> None:
+        # Old-format state.json without the new fields.
+        import json
+        from ralph import config
+
+        state_file = tmp_path / "state.json"
+        state_file.write_text(
+            json.dumps(
+                {
+                    "sprints": {
+                        "SA-1": {
+                            "sprint_id": "SA-1",
+                            "plan_runs": 1,
+                            "last_outcome": "ok",
+                        }
+                    },
+                    "total_sprints_processed": 1,
+                }
+            ),
+            encoding="utf-8",
+        )
+        with patch.object(harness, "STATE_FILE", state_file):
+            with patch.object(config, "STATE_FILE", state_file):
+                state = harness.HarnessState.load()
+        assert "SA-1" in state.sprints
+        assert state.sprints["SA-1"].plan_runs == 1
+        # New fields default cleanly.
+        assert state.sprints["SA-1"].last_plan_report == {}
+
+    def test_load_tolerates_unknown_keys(self, isolated_roadmap, tmp_path) -> None:
+        # Future-format state.json with unknown extra fields.
+        import json
+        from ralph import config
+
+        state_file = tmp_path / "state.json"
+        state_file.write_text(
+            json.dumps(
+                {
+                    "sprints": {
+                        "SA-1": {
+                            "sprint_id": "SA-1",
+                            "plan_runs": 1,
+                            "future_field_we_dont_know": "value",
+                        }
+                    },
+                }
+            ),
+            encoding="utf-8",
+        )
+        with patch.object(harness, "STATE_FILE", state_file):
+            with patch.object(config, "STATE_FILE", state_file):
+                state = harness.HarnessState.load()
+        assert "SA-1" in state.sprints
+        assert state.sprints["SA-1"].plan_runs == 1
+        # Unknown field is silently dropped, not raised.
+
+
+# ---------------------------------------------------------------------------
 # Harness bookkeeping commits
 # ---------------------------------------------------------------------------
 

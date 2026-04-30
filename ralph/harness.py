@@ -16,7 +16,7 @@ import signal
 import subprocess
 import sys
 import time
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass, field, fields as dataclass_fields
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
@@ -66,6 +66,14 @@ class SprintState:
     last_outcome: Optional[str] = None
     started_at: Optional[str] = None
     last_touched_at: Optional[str] = None
+    # Telemetry: structured `**Last phase report.**` fields parsed from
+    # ROADMAP after each phase. Lets future runs aggregate review-quality
+    # patterns (single_tighten history, findings counts, rework triggers)
+    # without scraping markdown. Empty dicts mean "no report yet" or
+    # "report parsing failed gracefully".
+    last_plan_report: dict[str, str] = field(default_factory=dict)
+    last_implement_report: dict[str, str] = field(default_factory=dict)
+    last_review_report: dict[str, str] = field(default_factory=dict)
 
 
 @dataclass
@@ -81,7 +89,14 @@ class HarnessState:
         if not STATE_FILE.exists():
             return cls()
         raw = json.loads(STATE_FILE.read_text(encoding="utf-8"))
-        sprints = {sid: SprintState(**sd) for sid, sd in raw.get("sprints", {}).items()}
+        # Filter unknown keys so older state.json files (missing
+        # last_*_report fields, etc.) still load. New fields default
+        # via the dataclass.
+        valid_keys = {f.name for f in dataclass_fields(SprintState)}
+        sprints: dict[str, SprintState] = {}
+        for sid, sd in raw.get("sprints", {}).items():
+            filtered = {k: v for k, v in sd.items() if k in valid_keys}
+            sprints[sid] = SprintState(**filtered)
         return cls(
             sprints=sprints,
             total_sprints_processed=raw.get("total_sprints_processed", 0),
@@ -152,6 +167,42 @@ def log(msg: str) -> None:
 # ---------------------------------------------------------------------------
 
 
+def _safe_parse_phase_report(sprint_id: str) -> dict[str, str]:
+    """Best-effort parse of the sprint's `**Last phase report.**` block.
+
+    Returns empty dict on any failure (sprint missing, file unreadable,
+    no report block). Telemetry is nice-to-have — never let parsing
+    failure crash a phase transition.
+    """
+    try:
+        return roadmap_state.parse_last_phase_report(sprint_id)
+    except Exception:
+        return {}
+
+
+def _mark_terminal_outcome(sprint_id: str, phase: str, outcome: Outcome, reason: str) -> None:
+    """Set ROADMAP status + activity log for a non-OK phase outcome.
+
+    INFRA_ERROR is special: the agent never meaningfully executed (CLI/
+    network/auth failed). Reset to `todo` so the next harness run picks
+    the sprint up cleanly. All other non-OK outcomes mark the sprint
+    blocked for human attention.
+    """
+    if outcome == Outcome.INFRA_ERROR:
+        roadmap_state.update_status(sprint_id, STATUS_TODO)
+        roadmap_state.append_activity_log(
+            sprint_id,
+            f"harness: {phase} phase outcome=infra_error, resetting to todo "
+            f"(re-runnable). {reason}",
+        )
+        return
+    roadmap_state.update_status(sprint_id, STATUS_BLOCKED)
+    roadmap_state.append_activity_log(
+        sprint_id,
+        f"harness: {phase} phase outcome={outcome.value}, marking blocked. {reason}",
+    )
+
+
 def execute_sprint(
     sprint_id: str,
     state: HarnessState,
@@ -184,6 +235,7 @@ def execute_sprint(
     sprint_state.last_phase = "plan"
     sprint_state.last_outcome = plan_result.outcome.value
     sprint_state.last_touched_at = datetime.now().isoformat()
+    sprint_state.last_plan_report = _safe_parse_phase_report(sprint_id)
     state.save()
     log(
         f"{sprint_id}: phase=plan outcome={plan_result.outcome.value} "
@@ -191,11 +243,7 @@ def execute_sprint(
     )
 
     if plan_result.outcome != Outcome.OK:
-        roadmap_state.update_status(sprint_id, STATUS_BLOCKED)
-        roadmap_state.append_activity_log(
-            sprint_id,
-            f"harness: plan phase outcome={plan_result.outcome.value}, marking blocked. {plan_result.reason}",
-        )
+        _mark_terminal_outcome(sprint_id, "plan", plan_result.outcome, plan_result.reason)
         return plan_result.outcome
 
     if should_stop():
@@ -216,6 +264,7 @@ def execute_sprint(
         sprint_state.last_phase = "implement"
         sprint_state.last_outcome = impl_result.outcome.value
         sprint_state.last_touched_at = datetime.now().isoformat()
+        sprint_state.last_implement_report = _safe_parse_phase_report(sprint_id)
         state.save()
         log(
             f"{sprint_id}: phase=implement outcome={impl_result.outcome.value} "
@@ -223,11 +272,7 @@ def execute_sprint(
         )
 
         if impl_result.outcome != Outcome.OK:
-            roadmap_state.update_status(sprint_id, STATUS_BLOCKED)
-            roadmap_state.append_activity_log(
-                sprint_id,
-                f"harness: implement phase outcome={impl_result.outcome.value}, marking blocked. {impl_result.reason}",
-            )
+            _mark_terminal_outcome(sprint_id, "implement", impl_result.outcome, impl_result.reason)
             return impl_result.outcome
 
         if should_stop():
@@ -249,6 +294,7 @@ def execute_sprint(
         sprint_state.last_phase = "review"
         sprint_state.last_outcome = review_result.outcome.value
         sprint_state.last_touched_at = datetime.now().isoformat()
+        sprint_state.last_review_report = _safe_parse_phase_report(sprint_id)
         state.save()
         log(
             f"{sprint_id}: phase=review outcome={review_result.outcome.value} "
@@ -282,12 +328,8 @@ def execute_sprint(
             # Loop back to implement.
             continue
 
-        # BLOCKED, TIMEOUT, ERROR
-        roadmap_state.update_status(sprint_id, STATUS_BLOCKED)
-        roadmap_state.append_activity_log(
-            sprint_id,
-            f"harness: review phase outcome={review_result.outcome.value}, marking blocked. {review_result.reason}",
-        )
+        # BLOCKED, TIMEOUT, ERROR, INFRA_ERROR
+        _mark_terminal_outcome(sprint_id, "review", review_result.outcome, review_result.reason)
         return review_result.outcome
 
     # Should be unreachable due to the cap-check above, but defend anyway.

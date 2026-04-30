@@ -57,6 +57,34 @@ class Outcome(Enum):
     NEEDS_REWORK = "needs_rework"
     TIMEOUT = "timeout"
     ERROR = "error"
+    # INFRA_ERROR is for CLI/network/auth failures that prevented the
+    # agent from meaningfully running. The agent never assessed scope —
+    # this is a transient operational issue, not a sprint-blocker.
+    # Sprints with this outcome are reset to `todo` so the next harness
+    # run picks them up cleanly.
+    INFRA_ERROR = "infra_error"
+
+
+# Patterns that indicate the CLI/network/auth failed before the agent
+# could meaningfully execute. Combined with a non-zero returncode and
+# short stdout, these flip the outcome from ERROR to INFRA_ERROR.
+_INFRA_ERROR_PATTERNS: tuple[str, ...] = (
+    "authentication failed",
+    "permission_error",
+    "api error",
+    "connection closed unexpectedly",
+    "socket connection was closed",
+    "network is unreachable",
+    "connection refused",
+    "name or service not known",
+    "no longer a member of the organization",
+    "invalid api key",
+    "rate limit",
+    "503 service unavailable",
+    "502 bad gateway",
+    "504 gateway timeout",
+)
+_INFRA_ERROR_STDOUT_THRESHOLD: int = 500
 
 
 @dataclass
@@ -326,7 +354,31 @@ def _detect_outcome(
             return outcome, f"{reason} {qualifier}".strip()
 
     reason = _diagnose_no_sentinel(sprint_id, returncode, stdout, pre_phase_head)
+    if _looks_like_infra_error(returncode, stdout):
+        return Outcome.INFRA_ERROR, reason
     return Outcome.ERROR, reason
+
+
+def _looks_like_infra_error(returncode: int, stdout: str) -> bool:
+    """Heuristic: returncode != 0, short stdout, and a known infra pattern.
+
+    The combination distinguishes "the CLI/network/auth failed before the
+    agent could meaningfully run" from "the agent ran but went off-script".
+    Only a high-confidence positive flips the outcome to INFRA_ERROR; the
+    default remains ERROR.
+    """
+    if returncode == 0:
+        return False
+    if not stdout:
+        # Empty stdout: no positive signal. Leave as ERROR.
+        return False
+    if len(stdout) > _INFRA_ERROR_STDOUT_THRESHOLD:
+        # Long stdout means the agent ran meaningfully before failing —
+        # that's a sprint problem, not infrastructure. Mark as ERROR so
+        # a human reviews what happened rather than auto-retrying.
+        return False
+    lowered = stdout.lower()
+    return any(pattern in lowered for pattern in _INFRA_ERROR_PATTERNS)
 
 
 # ---------------------------------------------------------------------------

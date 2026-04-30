@@ -304,3 +304,73 @@ class TestUpdateStatus:
     def test_unknown_sprint_raises(self, roadmap_in_tmp) -> None:
         with pytest.raises(KeyError):
             roadmap_state.update_status("SA-MISSING", "todo")
+
+
+# ---------------------------------------------------------------------------
+# parse_last_phase_report (item 6 — telemetry)
+# ---------------------------------------------------------------------------
+
+
+class TestParseLastPhaseReport:
+    """Extract structured `**Last phase report.**` fields for cross-run telemetry."""
+
+    _SECTION_WITH_REPORT = """\
+### SA-1 — First sprint
+
+**Status**: done
+
+**Activity log.**
+- 2026-04-26 — todo
+- 2026-04-26 14:00 — review complete. PHASE_OK
+
+**Last phase report.**
+- Phase: review
+- Outcome: PHASE_OK
+- Started: 2026-04-26 13:30
+- Completed: 2026-04-26 14:00
+- Files_changed: spacegame/models/foo.py
+- Commits: abc1234
+- Tests_passing: 8420
+- Acceptance_criteria_verified: 8/8
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 1
+- Single_tighten: Comment at file.py:115 explains WHAT, not WHY.
+- Notes: clean review
+"""
+
+    _SECTION_NO_REPORT = """\
+### SA-1 — First
+
+**Status**: todo
+
+**Activity log.**
+- 2026-04-26 — todo (created)
+"""
+
+    def test_parses_all_fields(self) -> None:
+        fields = roadmap_state._parse_phase_report_from_section(self._SECTION_WITH_REPORT)
+        assert fields["phase"] == "review"
+        assert fields["outcome"] == "PHASE_OK"
+        assert fields["tests_passing"] == "8420"
+        assert fields["acceptance_criteria_verified"] == "8/8"
+        assert fields["findings_critical"] == "0"
+        assert fields["findings_minor_fixed_directly"] == "1"
+        assert "WHAT" in fields["single_tighten"]
+        assert fields["notes"] == "clean review"
+
+    def test_normalizes_field_names(self) -> None:
+        # "Findings_critical" -> "findings_critical", "Files_changed" -> "files_changed"
+        fields = roadmap_state._parse_phase_report_from_section(self._SECTION_WITH_REPORT)
+        assert "files_changed" in fields
+        assert "findings_critical" in fields
+        # No uppercase keys leaked through.
+        assert all(k == k.lower() for k in fields)
+
+    def test_returns_empty_when_no_report(self) -> None:
+        fields = roadmap_state._parse_phase_report_from_section(self._SECTION_NO_REPORT)
+        assert fields == {}
+
+    def test_returns_empty_for_missing_sprint(self, roadmap_in_tmp) -> None:
+        # Sprint that doesn't exist — should return empty dict, not raise.
+        fields = roadmap_state.parse_last_phase_report("NONEXISTENT")
+        assert fields == {}

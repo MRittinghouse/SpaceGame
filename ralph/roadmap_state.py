@@ -278,6 +278,65 @@ def roadmap_exists() -> bool:
 
 
 # ---------------------------------------------------------------------------
+# Last phase report parsing (item 6 — telemetry)
+# ---------------------------------------------------------------------------
+
+# The agents are instructed to append a `**Last phase report.**` block at
+# the end of each phase. The block has structured `- key: value` fields.
+# We parse it so the harness can persist these fields in state.json for
+# cross-run telemetry without scraping markdown after the fact.
+
+_PHASE_REPORT_HEADER_RE = re.compile(r"^\*\*Last phase report\.\*\*\s*$", re.MULTILINE)
+_PHASE_REPORT_FIELD_RE = re.compile(r"^-\s+([A-Za-z_][A-Za-z0-9_ ]*?)\s*:\s*(.+?)\s*$")
+
+
+def parse_last_phase_report(sprint_id: str) -> dict[str, str]:
+    """Extract the **Last phase report.** block fields for a sprint.
+
+    Returns a dict of `{field_name_normalized: value}` where field names are
+    lowercased and have spaces replaced with underscores (so "Findings_critical"
+    becomes "findings_critical"). Returns empty dict if no report block.
+
+    Field names are kept loose because agents have varied slightly (the
+    same field appears as "Findings_critical", "Findings critical", etc.
+    across runs). The normalization swallows that variance.
+    """
+    try:
+        sprint = get_sprint(sprint_id)
+    except KeyError:
+        return {}
+    content = _read_roadmap()
+    section = content[sprint.section_start : sprint.section_end]
+    return _parse_phase_report_from_section(section)
+
+
+def _parse_phase_report_from_section(section_text: str) -> dict[str, str]:
+    """Pure-function variant for testability (takes section text directly)."""
+    headers = list(_PHASE_REPORT_HEADER_RE.finditer(section_text))
+    if not headers:
+        return {}
+    # Use the LAST header — the agent prompts say to overwrite prior reports,
+    # but if multiple slipped through we want the most recent.
+    last_header = headers[-1]
+    after_header = section_text[last_header.end() :]
+    fields: dict[str, str] = {}
+    for line in after_header.splitlines():
+        if not line.strip():
+            # Empty line — could be intentional whitespace before the next block.
+            # Continue scanning rather than break, since some agents leave a
+            # blank line between fields.
+            continue
+        if not line.startswith("-"):
+            # Hit non-field content; stop parsing this report.
+            break
+        m = _PHASE_REPORT_FIELD_RE.match(line)
+        if m:
+            key = m.group(1).strip().lower().replace(" ", "_")
+            fields[key] = m.group(2).strip()
+    return fields
+
+
+# ---------------------------------------------------------------------------
 # Snapshot + validation (items B + C)
 # ---------------------------------------------------------------------------
 
