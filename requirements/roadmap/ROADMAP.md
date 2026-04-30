@@ -5176,7 +5176,7 @@ Open question (reviewer judgment, not blocking implementation):
 - Started: 2026-04-29 20:40
 - Completed: 2026-04-29 21:00
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: <pending>
+- Commits: d2d6137
 - New_sprints_proposed: none
 - Polish_items_folded_in: local-alias-regex-broadening, mandatory-allowlist-sweep, default-arg-helper-guard
 - Decisions_locked: 3
