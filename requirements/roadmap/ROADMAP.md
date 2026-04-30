@@ -5083,7 +5083,7 @@ Open question (reviewer judgment, not blocking implementation):
 - Notes: All 8 acceptance criteria met. Two violations in non-scanned files (enemies.json, locations.json) fixed directly; these were outside declared touch zones and not in the planning audit scope. Suite stable at 10328.
 ### SI3-FOLLOW-1 — No-arg helper introspection (flag scanner)
 
-**Status**: in-progress (planning)
+**Status**: done
 **Source**: SL-2 disclosure (`requirements/station_legibility.md`)
 **Size**: S | **Effort**: 3-5 days
 **Depends on**: none | **Blocks**: none
@@ -5169,7 +5169,9 @@ Open question (reviewer judgment, not blocking implementation):
 - 2026-04-26 — todo (created)
 - 2026-04-29 20:40 — harness: plan phase starting
 - 2026-04-29 21:00 — planning complete; expanded scope to include local-alias regex broadening + orphan-list sweep, locked 3 decisions (consumer regex broadening, producer regex broadening, mandatory allowlist sweep), tightened 7-criteria acceptance bar, drafted 9-step plan. PHASE_OK
-
+- 2026-04-29 20:45 — harness: implement phase starting (rework cycle 0)
+- 2026-04-29 21:06 — harness: review phase starting (rework cycle 0)
+- 2026-04-29 21:07 — harness: review passed, marking done
 **Last phase report.**
 - Phase: plan
 - Outcome: PHASE_OK
