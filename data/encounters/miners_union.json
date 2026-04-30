@@ -192,7 +192,7 @@
           "label": "Accept Rations",
           "description": "Take what's offered . No shame in need.",
           "outcome": {
-            "description": "Dev loads a crate of rations into your cargo bay without a second glance. 'That's what it's here for. Pass it on when you can.' Simple as that. No ledger, no debt. Just community.",
+            "description": "Dev loads a crate of rations into your cargo bay without a second glance. 'That's what it's here for. Pass it on when you can.' Simple as that. Nothing gets written down. Just community.",
             "rewards": [
               {
                 "reward_type": "credits",

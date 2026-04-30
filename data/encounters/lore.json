@@ -168,7 +168,7 @@
       "id": "lore_charter_fragment_01",
       "encounter_type": "derelict",
       "name": "The Charter Hull",
-      "description": "A drifting hull segment, barely three meters across, tumbles slowly through your flight path. Your sensors flag it as non-hazardous . No fuel, no power, no life signs. But a closer scan reveals something remarkable: the inner surface has been etched with text. Deep, precise cuts in the metal, filled with a polymer sealant that has survived vacuum and radiation for over a century. The words are from the Aurelia Charter, the founding document of the Expanse. 'All who board the Aurelia share equally in what we find. No nation, no corporation, no creed shall claim dominion over what belongs to all.' Someone carved this into a ship's hull and set it adrift . A message in a bottle for anyone willing to read it.",
+      "description": "A drifting hull segment, barely three meters across, tumbles slowly through your flight path. Your sensors flag it as non-hazardous. The fuel reads empty, power is out, life signs flat. But a closer scan reveals something remarkable: the inner surface has been etched with text. Deep, precise cuts in the metal, filled with a polymer sealant that has survived vacuum and radiation for over a century. The words are from the Aurelia Charter, the founding document of the Expanse. 'All who board the Aurelia share equally in what we find. What belongs to all shall not be claimed by any nation, corporation, or creed.' Someone carved this into a ship hull and set it adrift. A message in a bottle for anyone willing to read it.",
       "icon_color": [
         200,
         180,
@@ -188,7 +188,7 @@
           "label": "Bring It Aboard",
           "description": "Grapple the fragment and store it in your cargo bay.",
           "outcome": {
-            "description": "The hull segment barely fits through your cargo door. Up close, you can see the care that went into the engraving . Every letter precise, every word deliberate. Beneath the Charter text, in smaller script, someone has added: 'We forgot this once. We must not forget it again.' There is no signature, no date. Just the words and the void they were meant to survive.",
+            "description": "The hull segment barely fits through your cargo door. Up close, you can see the care that went into the engraving . Every letter precise, every word deliberate. Beneath the Charter text, in smaller script, someone has added: 'We forgot this once. We must not forget it again.' It is unsigned and undated. Just the words and the void they were meant to survive.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -410,7 +410,7 @@
       "id": "lore_generation_ship_01",
       "encounter_type": "derelict",
       "name": "The Ship That Never Arrived",
-      "description": "It emerges from the sensor haze like a cathedral . A generation ship, easily ten times the mass of anything currently flying the Expanse. The hull is intact but dark. No power signatures, no heat, no movement. Your database returns no match for the vessel's configuration, but the general design is unmistakable: this was built to carry thousands of people across interstellar distances. It never reached its destination. The name on the bow, still legible beneath a patina of dust and radiation scarring, reads: COVENANT OF DAWN. You have never heard of it. No one in the Expanse has.",
+      "description": "It emerges from the sensor haze like a cathedral . A generation ship, easily ten times the mass of anything currently flying the Expanse. The hull is intact but dark. Power signatures absent, hull temperature at void ambient, nothing moving inside. Your database returns no match for the vessel's configuration, but the general design is unmistakable: this was built to carry thousands of people across interstellar distances. It never reached its destination. The name on the bow, still legible beneath a patina of dust and radiation scarring, reads: COVENANT OF DAWN. You have never heard of it. No one in the Expanse has.",
       "icon_color": [
         140,
         120,
@@ -430,7 +430,7 @@
           "label": "Board and Investigate",
           "description": "Dock with the Covenant of Dawn. Find out what happened.",
           "outcome": {
-            "description": "The airlock responds to manual override. Inside, the corridors are pristine . No damage, no signs of struggle. The ship simply stopped. In the command center, the passenger manifest glows faintly on a backup display: 4,217 names. Families, specialists, children. The final log entry is dated 2194, nine years before Earth's abandonment. The captain's voice, digitized and flat: 'Drive failure is total. No repair possible. We are committing all remaining power to cryo-preservation and broadcasting our position. If anyone hears this, we are here. We are waiting.' The cryo-bays are dark. The power ran out long ago.",
+            "description": "The airlock responds to manual override. Inside, the corridors are pristine . The walls are clean, the floors undisturbed, nothing to suggest the ending was violent. The ship simply stopped. In the command center, the passenger manifest glows faintly on a backup display: 4,217 names. Families, specialists, children. The final log entry is dated 2194, nine years before Earth's abandonment. The captain's voice, digitized and flat: 'Drive failure is total. No repair possible. We are committing all remaining power to cryo-preservation and broadcasting our position. If anyone hears this, we are here. We are waiting.' The cryo-bays are dark. The power ran out long ago.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -488,7 +488,7 @@
       "id": "lore_earth_song_01",
       "encounter_type": "comm_intercept",
       "name": "The Annual Broadcast",
-      "description": "Your comms pick up an open-channel transmission . No encryption, no identifiers, just music. A single voice singing in an old Earth language, accompanied by a stringed instrument. The melody is simple and slow, the kind of song that sounds like it was written to be sung around a fire. You trace the source: a battered cargo shuttle, stationary, running lights dimmed to almost nothing. The pilot is broadcasting to no one in particular. Your ship's calendar confirms the date . It's the anniversary of Earth's final evacuation, when the last transports lifted off and the planet was left to its wounds.",
+      "description": "Your comms pick up an open-channel transmission . Unencrypted and unidentified: just music. A single voice singing in an old Earth language, accompanied by a stringed instrument. The melody is simple and slow, the kind of song that sounds like it was written to be sung around a fire. You trace the source: a battered cargo shuttle, stationary, running lights dimmed to almost nothing. The pilot is broadcasting to no one in particular. Your ship's calendar confirms the date . It's the anniversary of Earth's final evacuation, when the last transports lifted off and the planet was left to its wounds.",
       "icon_color": [
         140,
         180,

@@ -114,7 +114,7 @@
           "label": "Investigate the Contact",
           "description": "Divert to the last known coordinates. Something was there.",
           "outcome": {
-            "description": "You sweep the area with every sensor you have. Nothing . No wreckage, no residual energy, no explanation. But your nav computer logs a curious detail: the ghost contact was broadcasting a Guild transponder code that was decommissioned two weeks ago. Sato's code. Someone is either using her identity or her ship survived. Either way, someone wants you to notice.",
+            "description": "You sweep the area with every sensor you have. The results come back empty. Not a scrap of wreckage, not a residual energy reading, nothing to explain what you saw. But your nav computer logs a curious detail: the ghost contact was broadcasting a Guild transponder code that was decommissioned two weeks ago. Sato's code. Someone is either using her identity or her ship survived. Either way, someone wants you to notice.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -745,7 +745,7 @@
       "id": "campaign_refugee_testimony_01",
       "encounter_type": "refugee",
       "name": "Displaced Voices",
-      "description": "A cluster of civilian transports drifts at the edge of a transit lane . Overcrowded, under-fueled, broadcasting a general assistance request. When you hail the lead ship, the captain identifies them as settlers from Voss Station, a mining outpost. 'The Guild called it a relocation program. Said the station needed structural repairs and we'd be back in six months. That was a year ago. They sealed the docking bays and told us to find new berths elsewhere. No compensation. No timeline. We've heard the same story from three other stations.'",
+      "description": "A cluster of civilian transports drifts at the edge of a transit lane . Overcrowded, under-fueled, broadcasting a general assistance request. When you hail the lead ship, the captain identifies them as settlers from Voss Station, a mining outpost. 'The Guild called it a relocation program. Said the station needed structural repairs and we'd be back in six months. That was a year ago. They sealed the docking bays and told us to find new berths elsewhere. Without compensation. Without a timeline. We've heard the same story from three other stations.'",
       "icon_color": [
         100,
         180,

@@ -513,7 +513,10 @@
       ],
       "tone": "aggressive",
       "category": "generic",
-      "complication_ids": ["shield_harmonic", "battle_damage_marker"],
+      "complication_ids": [
+        "shield_harmonic",
+        "battle_damage_marker"
+      ],
       "choices": [
         {
           "id": "pay",
@@ -1105,7 +1108,7 @@
       "id": "smuggler_offer_01",
       "encounter_type": "smuggler",
       "name": "Backchanel Deal",
-      "description": "A nondescript freighter matches your velocity, running dark . No transponder, no hail frequency, just a tight-beam text burst: 'Got surplus. Good prices. No manifests. Interested?'",
+      "description": "A nondescript freighter matches your velocity, running dark. The transponder is silent. Hail frequencies dead. Then a tight-beam text burst arrives: 'Got surplus. Good prices. No manifests. Interested?'",
       "icon_color": [
         180,
         80,
@@ -1121,9 +1124,9 @@
         {
           "id": "buy",
           "label": "Dock Dark and Browse",
-          "description": "No transponders, no manifests. The prices are good because the provenance is bad.",
+          "description": "Transponders dark, manifests blank. The prices are good because the provenance is bad.",
           "outcome": {
-            "description": "You dock in silence . No names, no pleasantries. The goods are quality, probably lifted from a Guild shipment. You pay a fraction of market rate and part ways with a nod. What the manifest doesn't show won't hurt it.",
+            "description": "You dock in silence. Nobody exchanges names. The goods are quality, probably lifted from a Guild shipment. You pay a fraction of market rate and part ways with a nod. What the manifest does not show will not hurt it.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -1251,7 +1254,7 @@
         {
           "id": "barter",
           "label": "Haggle Over the Airlock",
-          "description": "Goods for goods, no banks, no fees. The old way of doing business out here.",
+          "description": "Goods for goods, skipping the banks and their fees. The old way of doing business out here.",
           "outcome": {
             "description": "After twenty minutes of good-natured haggling, you swap cargo holds. You're not sure who got the better deal, but the hauler captain seems pleased. He seals it with a handshake through the airlock.",
             "rewards": [
@@ -1293,7 +1296,9 @@
       ],
       "tone": "aggressive",
       "category": "generic",
-      "complication_ids": ["shield_harmonic"],
+      "complication_ids": [
+        "shield_harmonic"
+      ],
       "choices": [
         {
           "id": "intervene",

@@ -607,7 +607,7 @@
       "id": "derelict_civilian_wreck_01",
       "encounter_type": "derelict_encounter",
       "name": "Civilian Freighter, No Beacon",
-      "description": "A civilian freighter drifts dark. No beacon, no transponder, no answer to hails. The hull is intact enough that the cargo bay might still be sealed. The cockpit has a smear across the viewport that you don't want to look at long.",
+      "description": "A civilian freighter drifts dark. The beacon is offline. The transponder silent. Hails go unanswered. The hull is intact enough that the cargo bay might still be sealed. The cockpit has a smear across the viewport that you don't want to look at long.",
       "icon_color": [
         160,
         140,
