@@ -4976,7 +4976,7 @@ Open question (reviewer judgment, not blocking implementation):
 
 ### WB-2 — Parallel-negation regex broadening
 
-**Status**: in-progress (planning)
+**Status**: in-progress (implementing)
 **Source**: `requirements/writing_bible_scanner_gaps.md` Gap 2
 **Size**: S | **Effort**: 3-5 days
 **Depends on**: WB-1 | **Blocks**: none
@@ -5059,18 +5059,28 @@ Open question (reviewer judgment, not blocking implementation):
 - 2026-04-29 20:20 — planner: verified all 4 context-doc paths exist (`writing_bible_scanner_gaps.md`, `dialogue_writing_guide.md`, `tests/test_writing_bible_compliance.py`, the 7 referenced JSON content files). Confirmed WB-1 dependency is `done` (line 4904) and the `_PARALLEL_NEGATION_ALLOWLIST` + `_find_violations()` infrastructure WB-1 standardized is in place at lines 78-86 / 89-102.
 - 2026-04-29 20:25 — planner: ran content audit with the proposed broadened regex (`\bno \w+\s*[,.\-—–]+\s*no \w+`, case-insensitive) against 4216 narrative surfaces. Found 15 hits across 7 JSON files: 1 dialogue node (arna_post_ambush:come_clean), 14 encounter strings (campaign, ce4_variety, frontier_alliance, generic, lore, miners_union). Zero hits in missions, journal, ambient, chatter, crew interjections, view source, taglines. Zero false positives on unrelated `no X` sentences. The canonical writing-guide AI-tell example ("No beacon, no transponder...") is one of the 14 encounter hits.
 - 2026-04-29 20:30 — planner: locked 5 decisions (regex form, three-chain handling, surface scope, audit-fix policy, allowlist mechanism) — see Risks / open questions. Folded scope expansion to cover all 5 narrative surfaces and 15 content rewrites; sprint stays at S/3-5 days because each new test is ~6 lines and each rewrite is ~1 sentence. PHASE_OK
+- 2026-04-29 20:16 — harness: implement phase starting (rework cycle 0)
+- 2026-04-29 21:00 — implementer: added TestParallelNegationRegex (6 tests); confirmed 4 fail (period/em-dash/en-dash/double-hyphen) before regex change. Broadened regex at line 65. All 6 regex self-tests green; existing tagline tests unaffected.
+- 2026-04-29 21:10 — implementer: committed regex broadening (ff2fafd). Fixed 16 violations across 7 JSON files (16 not 15 — planner missed lore_charter_fragment_01 charter-quote "No nation, no corporation, no creed" which also trips broadened regex). Committed content fixes (c4fb0ff).
+- 2026-04-29 21:20 — implementer: added 5 surface-extension tests + refreshed test_allowlist_suppresses_reach_tagline. All 35 Writing Bible tests green. Full suite: 10317→10328 (+11). Lint clean. PHASE_OK
 
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-04-29 20:10
-- Completed: 2026-04-29 20:30
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: fdc9674
-- New_sprints_proposed: none
-- Polish_items_folded_in: extend parallel-negation tests to missions / journal / dialogue / encounter / crew interjection surfaces (5 new tests); refresh `test_allowlist_suppresses_reach_tagline` to exercise the broadened regex; content audit + 15 rewordings across 7 JSON files
-- Decisions_locked: 5
-- Notes: Audit during planning surfaced 15 existing parallel-negation violations in encounter / dialogue content — including the canonical writing-guide AI-tell example. Sprint expanded from "regex + audit on currently-scanned surfaces" to "regex + extend tests across all narrative surfaces + content fixes." Scope expansion stays within S sizing because the work is shallow (one regex change, 5 short test methods, 15 short rewrites). Reach tagline allowlist mechanism is unchanged; only its test docstring is updated to reflect that the broadened regex now matches it (and the allowlist suppresses it as designed).
+- Started: 2026-04-29 20:16
+- Completed: 2026-04-29 21:25
+- Files_changed: tests/test_writing_bible_compliance.py, data/encounters/generic.json, data/encounters/campaign.json, data/encounters/ce4_variety.json, data/encounters/frontier_alliance.json, data/encounters/lore.json, data/encounters/miners_union.json, data/dialogue/dialogues.json
+- Commits: ff2fafd, c4fb0ff, 4688286
+- Tests_added: 11
+- Tests_baseline: 10317
+- Tests_passing: 10328
+- Tests_skipped: 98
+- Lint_clean: yes
+- Format_clean: yes
+- SI3_scanner_clean: n/a
+- Writing_bible_clean: yes
+- Touch_zones_respected: yes
+- Notes: Implemented per plan. Planner counted 15 violations but actual audit surfaced 16 (lore_charter_fragment_01 charter-quote "No nation, no corporation, no creed" was missed in planning; fixed by paraphrasing the quote). All 8 acceptance criteria satisfied; no new allowlist entries.
 ### SI3-FOLLOW-1 — No-arg helper introspection (flag scanner)
 
 **Status**: todo
