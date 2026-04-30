@@ -579,39 +579,54 @@ def _collect_all_flag_uses() -> tuple[dict[str, set[str]], dict[str, set[str]]]:
             producers[m.group(1)].add(f"code:{rel}")
         for m in consumed_pat.finditer(text):
             consumers[m.group(1)].add(f"code:{rel}")
-        for prefix, suffix, producer_re, consumer_re in helper_patterns:
+        for prefix, suffix, producer_re, consumer_re, is_parameterized in helper_patterns:
             for m in producer_re.finditer(text):
-                arg = m.group(1) or m.group(2)
-                producers[f"{prefix}{arg}{suffix}"].add(f"code:{rel}")
+                if is_parameterized:
+                    arg = m.group(1) or m.group(2)
+                    full_flag = f"{prefix}{arg}{suffix}"
+                else:
+                    full_flag = prefix
+                producers[full_flag].add(f"code:{rel}")
             for m in consumer_re.finditer(text):
-                arg = m.group(1) or m.group(2)
-                consumers[f"{prefix}{arg}{suffix}"].add(f"code:{rel}")
+                if is_parameterized:
+                    arg = m.group(1) or m.group(2)
+                    full_flag = f"{prefix}{arg}{suffix}"
+                else:
+                    full_flag = prefix
+                consumers[full_flag].add(f"code:{rel}")
 
     return producers, consumers
 
 
-def _helper_access_patterns() -> list[tuple[str, str, "re.Pattern[str]", "re.Pattern[str]"]]:
-    """Build (prefix, suffix, producer_regex, consumer_regex) for each
-    parameterized setter helper in ``spacegame.constants.flags``.
+def _helper_access_patterns() -> (
+    list[tuple[str, str, "re.Pattern[str]", "re.Pattern[str]", bool]]
+):
+    """Build (prefix, suffix, producer_re, consumer_re, is_parameterized) for each
+    helper in ``spacegame.constants.flags``.
 
-    Discovery is runtime-introspective: call each non-private,
-    non-``extract_*`` helper with a sentinel value; if it returns a
-    string containing the sentinel, the prefix is text before the
-    substitution and the suffix is text after. The ``suffix`` matters
-    for helpers that sandwich the arg (e.g.
-    ``f"dual_tech_{tech_id}_revealed"``) — without it, scanners would
-    over-match unrelated strings.
+    Discovery is runtime-introspective using ``inspect.signature``:
 
-    The integrity scanner consumes the returned list to recognize both:
-      - ``dialogue_flags[helper("x")] = True``  (producer)
-      - ``dialogue_flags.get(helper("x"))``     (consumer)
+    - **No-arg helpers** (zero parameters): call ``obj()`` to get the flag string.
+      Entry is ``(flag_string, "", producer_re, consumer_re, False)``.
+    - **Parameterized helpers**: call with a sentinel value; if it returns a
+      string containing the sentinel, the prefix is text before the substitution
+      and the suffix is text after. Entry is
+      ``(prefix, suffix, producer_re, consumer_re, True)``.
+
+    The ``is_parameterized`` bool tells the consumer loop whether to extract a
+    capture group (True) or use the prefix directly (False).
+
+    Both producer and consumer regexes match the local-alias rebinding pattern
+    ``flags = self.player.dialogue_flags`` that views use for legibility:
+      - producer: ``(?:dialogue_)?flags[helper(...)] = ...``
+      - consumer: ``(?:has_flag|(?:dialogue_)?flags.get|(?:dialogue_)?flags.pop)(helper(...))``
     """
     import inspect
     import re as _re
 
     from spacegame.constants import flags
 
-    patterns: list[tuple[str, str, _re.Pattern[str], _re.Pattern[str]]] = []
+    patterns: list[tuple[str, str, _re.Pattern[str], _re.Pattern[str], bool]] = []
     string_sentinel = "__SI3_FLAG_SENTINEL__"
     int_sentinel = 123456789
     arg_pat = r'["\']([a-z_][a-z0-9_]*)["\']|(\d+)'
@@ -621,26 +636,45 @@ def _helper_access_patterns() -> list[tuple[str, str, "re.Pattern[str]", "re.Pat
             continue
         if not callable(obj):
             continue
-        prefix: str | None = None
-        suffix: str = ""
-        for sentinel in (string_sentinel, int_sentinel):
+        params = inspect.signature(obj).parameters
+        if len(params) == 0:
+            # No-arg helper: flag string is a constant; call once to retrieve it.
             try:
-                result = obj(sentinel)
+                result = obj()
             except Exception:
                 continue
-            if isinstance(result, str) and str(sentinel) in result:
-                idx = result.index(str(sentinel))
-                prefix = result[:idx]
-                suffix = result[idx + len(str(sentinel)) :]
-                break
-        if prefix is None:
-            continue
-        helper_call = rf"{_re.escape(name)}\(\s*(?:{arg_pat})\s*\)"
-        producer_re = _re.compile(rf"dialogue_flags\[\s*{helper_call}\s*\]\s*=")
-        consumer_re = _re.compile(
-            rf"(?:has_flag|dialogue_flags\.get|dialogue_flags\.pop)\(\s*{helper_call}"
-        )
-        patterns.append((prefix, suffix, producer_re, consumer_re))
+            if not isinstance(result, str):
+                continue
+            helper_call = rf"{_re.escape(name)}\(\s*\)"
+            producer_re = _re.compile(rf"(?:dialogue_)?flags\[\s*{helper_call}\s*\]\s*=")
+            consumer_re = _re.compile(
+                rf"(?:has_flag|(?:dialogue_)?flags\.get|(?:dialogue_)?flags\.pop)"
+                rf"\(\s*{helper_call}"
+            )
+            patterns.append((result, "", producer_re, consumer_re, False))
+        else:
+            # Parameterized helper: discover prefix/suffix via sentinel substitution.
+            prefix: str | None = None
+            suffix: str = ""
+            for sentinel in (string_sentinel, int_sentinel):
+                try:
+                    result = obj(sentinel)
+                except Exception:
+                    continue
+                if isinstance(result, str) and str(sentinel) in result:
+                    idx = result.index(str(sentinel))
+                    prefix = result[:idx]
+                    suffix = result[idx + len(str(sentinel)) :]
+                    break
+            if prefix is None:
+                continue
+            helper_call = rf"{_re.escape(name)}\(\s*(?:{arg_pat})\s*\)"
+            producer_re = _re.compile(rf"(?:dialogue_)?flags\[\s*{helper_call}\s*\]\s*=")
+            consumer_re = _re.compile(
+                rf"(?:has_flag|(?:dialogue_)?flags\.get|(?:dialogue_)?flags\.pop)"
+                rf"\(\s*{helper_call}"
+            )
+            patterns.append((prefix, suffix, producer_re, consumer_re, True))
     return patterns
 
 
@@ -714,6 +748,13 @@ KNOWN_CONSUMER_ONLY_ORPHANS: set[str] = {
     # string-literal assignments and misses variable-mediated ones.
     # Real consumer: ``mission:okafor_legacy_clinic_run:required``.
     "okafor_legacy_heal_pattern_seen",
+    # === SA-R3 DETECTOR MISS — set via _LEGACY_ARC_TREE_TO_FLAG variable dispatch ===
+    # ``okafor_legacy_clinic_callback_seen`` is SET by OkaforView._close_active_dialogue
+    # through the same _LEGACY_ARC_TREE_TO_FLAG mechanism as okafor_legacy_heal_pattern_seen
+    # above (variable-mediated ``player.dialogue_flags[seen_flag] = True``).
+    # Consumer: OkaforView._kweon_dialogue_id() routing guard — now detected by the
+    # SI3-FOLLOW-1 no-arg consumer regex. Producer remains a scanner blind spot.
+    "okafor_legacy_clinic_callback_seen",
 }
 
 # Net producer-only set, regenerated 2026-04-21 from current data state.
@@ -890,16 +931,6 @@ KNOWN_PRODUCER_ONLY_ORPHANS: set[str] = {
     # ``auto_auction_first_floor_manager_encounter`` journal entry. Same
     # scanner-blind-spot as the Velo entry above.
     "seen_first_floor_manager_encounter",
-    # === SA-R1 Okafor Institute — journal trigger consumers ===
-    # The four "first" flags below are SET by the Okafor view / game-day
-    # tick (real producers in code) and consumed by ``data/journal/entries.json``
-    # ``trigger_flag`` entries (``auto_okafor_*``). The scanner does not
-    # crawl journal trigger_flag, so the flags appear producer-only here
-    # despite real consumers existing in the journal data.
-    "okafor_project_funded_first",
-    "okafor_project_completed_first",
-    "okafor_project_failed_first",
-    "okafor_patent_disposed_first",
     # === SA-R1 Okafor met_npc — SA-R2 reserved ===
     # ``met_kweon_director`` is SET by the OkaforView on first entry
     # (via ``met_npc("kweon_director")`` setdefault). No consumer yet;
@@ -923,14 +954,28 @@ KNOWN_PRODUCER_ONLY_ORPHANS: set[str] = {
     # ``name`` being a variable — not a string literal the scanner can match.
     # The OkaforView close-handler also reads it through the same helper.
     "okafor_legacy_mission_offered",
-    # === SA-R3 DETECTOR MISS — no-arg helper consumer in OkaforView routing ===
-    # ``okafor_legacy_mission_completed`` is SET as a mission reward (real producer).
-    # Consumer: ``OkaforView._kweon_dialogue_id()`` reads it via
-    # ``flags.get(okafor_legacy_mission_completed())`` — a no-arg helper call.
-    # The scanner's _helper_access_patterns() cannot generate regex patterns for
-    # no-arg helpers (same detection gap as ``heard_dcmc_intelligence``). The
-    # consumer is real and wired; this is a scanner blind spot, not an orphan.
-    "okafor_legacy_mission_completed",
+    # === SI3-FOLLOW-1: Net-new producer orphans surfaced by no-arg helper detection ===
+    # Before SI3-FOLLOW-1, the scanner's producer regex matched only string-literal
+    # ``dialogue_flags["flag"]`` assignments and missed helper-call forms like
+    # ``dialogue_flags[enrolled_wreckers_guild()] = True``. The extended no-arg
+    # producer regex now detects these, surfacing 4 previously invisible producers.
+    #
+    # Triage (2026-04-29):
+    #   enrolled_wreckers_guild — SET on enroll in WreckersGuildView. No wired consumer
+    #     yet; enrollment state is read via sub_reputation model attribute, not this flag.
+    #     Narrative state marker for future dialogue gates (SA-X1 cross-anchor).
+    "enrolled_wreckers_guild",
+    #   received_miners_blessing_first — SET in DeepShaftsView._apply_rep_grant on first
+    #     visit. Future consumer planned (SA-X1). First-visit gate logic reads
+    #     DeepShaftsState.scripted_scene_played, not this flag, so no code consumer.
+    "received_miners_blessing_first",
+    #   wreckers_contract_completed — DETECTOR MISS: consumed by data/journal/entries.json
+    #     trigger_flag (``auto_wreckers_contract_completed``). Scanner does not crawl
+    #     journal trigger_flag entries.
+    "wreckers_contract_completed",
+    #   wreckers_made_up_journal — DETECTOR MISS: same pattern — consumed by
+    #     data/journal/entries.json trigger_flag. Scanner blind spot.
+    "wreckers_made_up_journal",
 }
 
 
@@ -987,3 +1032,107 @@ class TestDialogueFlagAudit:
                 f"consumer — remove from the set: {sorted(stale_producer)}"
             )
         assert not msgs, "\n".join(msgs)
+
+
+# ---------------------------------------------------------------------------
+# SI3-FOLLOW-1: No-arg helper introspection unit tests
+# ---------------------------------------------------------------------------
+
+
+class TestNoArgHelperIntrospection:
+    """Unit tests verifying _helper_access_patterns() detects no-arg helpers.
+
+    AC-3: patterns include no-arg entries with prefix == flag string, suffix == "".
+    AC-4: parameterized helpers still round-trip correctly.
+    AC-5: helpers with any parameters (required or default) are not misclassified as no-arg.
+    """
+
+    def test_no_arg_helper_returns_full_flag_as_prefix(self) -> None:
+        """investment_introduced appears as a no-arg entry with flag string as prefix."""
+        patterns = _helper_access_patterns()
+        entry = next((p for p in patterns if p[0] == "investment_introduced"), None)
+        assert entry is not None, (
+            "'investment_introduced' no-arg helper not found in _helper_access_patterns() output"
+        )
+        assert entry[1] == "", "No-arg helper should have empty suffix"
+        assert not entry[4], "investment_introduced should be is_parameterized=False"
+
+    def test_no_arg_helper_consumer_regex_matches_dialogue_flags_get(self) -> None:
+        """Consumer regex for investment_introduced matches dialogue_flags.get(...)."""
+        patterns = _helper_access_patterns()
+        entry = next((p for p in patterns if p[0] == "investment_introduced"), None)
+        assert entry is not None, "'investment_introduced' not in patterns"
+        consumer_re = entry[3]
+        snippet = "dialogue_flags.get(investment_introduced(), False)"
+        assert consumer_re.search(snippet), (
+            f"Consumer regex {consumer_re.pattern!r} did not match: {snippet!r}"
+        )
+
+    def test_no_arg_helper_consumer_regex_matches_local_alias_flags_get(self) -> None:
+        """Consumer regex matches local-alias flags.get(okafor_legacy_mission_completed())."""
+        patterns = _helper_access_patterns()
+        entry = next(
+            (p for p in patterns if p[0] == "okafor_legacy_mission_completed"), None
+        )
+        assert entry is not None, "'okafor_legacy_mission_completed' not in patterns"
+        consumer_re = entry[3]
+        snippet = "flags.get(okafor_legacy_mission_completed())"
+        assert consumer_re.search(snippet), (
+            f"Consumer regex {consumer_re.pattern!r} did not match local-alias: {snippet!r}"
+        )
+
+    def test_parameterized_helper_still_detected(self) -> None:
+        """Parameterized helpers (met_npc, talked_to_npc, tutorial_bought_part,
+        dual_tech_revealed) still produce correct producer regex matches."""
+        patterns = _helper_access_patterns()
+        cases = [
+            ("met_", 'dialogue_flags[met_npc("marcus_jin")] = True', True),
+            ("talked_to_", 'dialogue_flags[talked_to_npc("cargo_broker")] = True', True),
+            ("tutorial_bought_part_", 'dialogue_flags[tutorial_bought_part("engine")] = True', True),
+            ("dual_tech_", 'dialogue_flags[dual_tech_revealed("ionic_burst")] = True', True),
+        ]
+        for prefix, snippet, expected_is_param in cases:
+            entry = next((p for p in patterns if p[0] == prefix), None)
+            assert entry is not None, f"Parameterized helper with prefix '{prefix}' not found"
+            assert entry[4] == expected_is_param, (
+                f"Helper with prefix '{prefix}' has wrong is_parameterized={entry[4]}"
+            )
+            producer_re = entry[2]
+            assert producer_re.search(snippet), (
+                f"Producer regex for prefix '{prefix}' did not match: {snippet!r}"
+            )
+
+    def test_default_arg_helper_guard_no_misclassification(self) -> None:
+        """Every no-arg entry corresponds to a genuine zero-parameter helper (AC-5).
+
+        Guards against a future helper like ``def f(x: str = "y")`` being
+        misclassified as no-arg. Verified by confirming that for every
+        is_parameterized=False entry, a zero-parameter helper in flags.py
+        returns the same string.
+        """
+        import inspect
+
+        from spacegame.constants import flags as flags_module
+
+        patterns = _helper_access_patterns()
+        no_arg_entries = [p for p in patterns if not p[4]]
+
+        for prefix, suffix, _prod, _cons, _is_param in no_arg_entries:
+            found_zero_param_helper = False
+            for name, obj in inspect.getmembers(flags_module):
+                if name.startswith(("_", "extract_")) or not callable(obj):
+                    continue
+                sig = inspect.signature(obj)
+                if len(sig.parameters) != 0:
+                    continue
+                try:
+                    result = obj()
+                    if result == prefix:
+                        found_zero_param_helper = True
+                        break
+                except Exception:
+                    pass
+            assert found_zero_param_helper, (
+                f"No-arg entry with prefix '{prefix}' has no matching zero-parameter "
+                f"helper in flags.py — possible misclassification of a default-arg helper"
+            )
