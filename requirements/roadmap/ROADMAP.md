@@ -4976,7 +4976,7 @@ Open question (reviewer judgment, not blocking implementation):
 
 ### WB-2 — Parallel-negation regex broadening
 
-**Status**: in-progress (reviewing)
+**Status**: done
 **Source**: `requirements/writing_bible_scanner_gaps.md` Gap 2
 **Size**: S | **Effort**: 3-5 days
 **Depends on**: WB-1 | **Blocks**: none
@@ -5065,7 +5065,7 @@ Open question (reviewer judgment, not blocking implementation):
 - 2026-04-29 21:20 — implementer: added 5 surface-extension tests + refreshed test_allowlist_suppresses_reach_tagline. All 35 Writing Bible tests green. Full suite: 10317→10328 (+11). Lint clean. PHASE_OK
 - 2026-04-29 20:28 — harness: review phase starting (rework cycle 0)
 - 2026-04-29 21:30 — reviewer: all 8 ACs verified. Regex confirmed against every separator form (comma/period/em-dash/en-dash/double-hyphen) and negative case via direct Python invocation. Full suite 10328 passed / 98 skipped (matches implementer baseline). All 35 Writing Bible tests green. Lint clean. Content rewrites voice-checked against `aurelia_voice_examples.md` — all 16 rewrites in voice. Two additional violations found in non-scanned files (`data/combat/enemies.json: "no signature, no quarter"` comma-form pre-existing; `data/galaxy/locations.json: "No catalogue. No provenance."` period-form newly revealed by broadened regex) — both in files outside the scanner's extractors and outside the sprint's declared touch zones. Fixed directly (Option B). Committed (see below). PHASE_OK
-
+- 2026-04-29 20:39 — harness: review passed, marking done
 **Last phase report.**
 - Phase: review
 - Outcome: PHASE_OK
