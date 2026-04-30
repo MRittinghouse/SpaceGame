@@ -5185,7 +5185,7 @@ Open question (reviewer judgment, not blocking implementation):
 - Notes: Verified all 5 context docs exist (test file, flags.py, station_legibility.md §SL-2, station_salience.py, okafor_view.py). The scope tightened by one critical addition: the SA-R3 SAFETY-NET case (`flags.get(okafor_legacy_mission_completed())` via local alias) cannot be detected without broadening the consumer regex beyond literal `dialogue_flags.get`. Folded that into the same sprint since it is a one-line fix and required to satisfy AC-2. Identified at least one allowlist entry that must be removed (`okafor_legacy_mission_completed`); implementer runs the orphan tests to find any others empirically.
 ### UI-BOUNDS-1 — station_hub_view in subprocess bounds harness
 
-**Status**: todo
+**Status**: blocked
 **Source**: SL-1 deferral (`requirements/station_legibility.md`)
 **Size**: S | **Effort**: 3-5 days
 **Depends on**: none | **Blocks**: none
@@ -5215,3 +5215,5 @@ Open question (reviewer judgment, not blocking implementation):
 
 **Activity log.**
 - 2026-04-26 — todo (created)
+- 2026-04-29 21:08 — harness: plan phase starting
+- 2026-04-29 21:08 — harness: plan phase outcome=error, marking blocked. agent exited with returncode 1; commits referencing UI-BOUNDS-1: 0; no sentinel in ROADMAP.md or in agent stdout
