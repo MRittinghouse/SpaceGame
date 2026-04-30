@@ -5066,7 +5066,7 @@ Open question (reviewer judgment, not blocking implementation):
 - Started: 2026-04-29 20:10
 - Completed: 2026-04-29 20:30
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: <hash filled in at commit time>
+- Commits: fdc9674
 - New_sprints_proposed: none
 - Polish_items_folded_in: extend parallel-negation tests to missions / journal / dialogue / encounter / crew interjection surfaces (5 new tests); refresh `test_allowlist_suppresses_reach_tagline` to exercise the broadened regex; content audit + 15 rewordings across 7 JSON files
 - Decisions_locked: 5
