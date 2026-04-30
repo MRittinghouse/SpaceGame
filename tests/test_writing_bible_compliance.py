@@ -62,7 +62,7 @@ _BANNED_PHRASES = [
     "a testament to",
 ]
 
-_PARALLEL_NEGATION = re.compile(r"\bno \w+,\s*no \w+", re.IGNORECASE)
+_PARALLEL_NEGATION = re.compile(r"\bno \w+\s*[,.\-—–]+\s*no \w+", re.IGNORECASE)
 
 # Strings explicitly exempted from parallel-negation enforcement. Each entry
 # requires a documented design rationale in a requirements doc. The check is
@@ -100,6 +100,47 @@ def _find_violations(text: str) -> list[str]:
     if _PARALLEL_NEGATION.search(text) and text.strip() not in _PARALLEL_NEGATION_ALLOWLIST:
         violations.append("parallel-negation rhetoric ('no X, no Y')")
     return violations
+
+
+# ---------------------------------------------------------------------------
+# Tests — _PARALLEL_NEGATION regex self-tests
+# ---------------------------------------------------------------------------
+
+
+class TestParallelNegationRegex:
+    """Unit tests for the _PARALLEL_NEGATION regex across all separator forms.
+
+    These tests pin the regex behavior and must be updated if the pattern changes.
+    """
+
+    def test_matches_comma_form(self) -> None:
+        """Comma-separated 'no X, no Y' is the original caught form."""
+        assert _PARALLEL_NEGATION.search("No laws, no mercy.")
+
+    def test_matches_period_form(self) -> None:
+        """Period-separated 'No X. No Y.' must also be caught."""
+        assert _PARALLEL_NEGATION.search("No beacon. No transponder.")
+
+    def test_matches_em_dash_form(self) -> None:
+        """Em-dash-separated 'No X — no Y' must be caught."""
+        assert _PARALLEL_NEGATION.search("No middlemen — no fees.")
+
+    def test_matches_en_dash_form(self) -> None:
+        """En-dash-separated 'No X – no Y' must be caught."""
+        assert _PARALLEL_NEGATION.search("No signal – no response.")
+
+    def test_matches_double_hyphen_form(self) -> None:
+        """Double-hyphen-separated 'No X -- no Y' must be caught."""
+        assert _PARALLEL_NEGATION.search("No power -- no heat.")
+
+    def test_does_not_match_unrelated_no_clauses(self) -> None:
+        """Two unrelated 'no X' clauses far apart must NOT match.
+
+        The bounded gap in the regex prevents cross-sentence false positives
+        where two unrelated negations happen to appear in the same paragraph.
+        """
+        text = "There is no captain. The ship has no crew problems."
+        assert not _PARALLEL_NEGATION.search(text)
 
 
 # ---------------------------------------------------------------------------
