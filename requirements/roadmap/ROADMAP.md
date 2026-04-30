@@ -5072,7 +5072,7 @@ Open question (reviewer judgment, not blocking implementation):
 - Started: 2026-04-29 21:30
 - Completed: 2026-04-29 22:00
 - Files_changed: data/combat/enemies.json, data/galaxy/locations.json
-- Commits: TBD
+- Commits: 08dec6d
 - Tests_passing: 10328
 - Acceptance_criteria_verified: 8/8
 - Polish_items_verified: n/a
