@@ -5147,7 +5147,7 @@
     {
       "id": "rogue_ace",
       "name": "Rogue Ace",
-      "description": "A Frontier Alliance ace gone off-script. Voltaic weapons, no signature, no quarter.",
+      "description": "A Frontier Alliance ace gone off-script. Voltaic weapons, running dark, no quarter.",
       "behavior": "aggressive",
       "hull": 260,
       "shields": 40,

@@ -4976,7 +4976,7 @@ Open question (reviewer judgment, not blocking implementation):
 
 ### WB-2 — Parallel-negation regex broadening
 
-**Status**: in-progress (implementing)
+**Status**: in-progress (reviewing)
 **Source**: `requirements/writing_bible_scanner_gaps.md` Gap 2
 **Size**: S | **Effort**: 3-5 days
 **Depends on**: WB-1 | **Blocks**: none
@@ -5063,24 +5063,24 @@ Open question (reviewer judgment, not blocking implementation):
 - 2026-04-29 21:00 — implementer: added TestParallelNegationRegex (6 tests); confirmed 4 fail (period/em-dash/en-dash/double-hyphen) before regex change. Broadened regex at line 65. All 6 regex self-tests green; existing tagline tests unaffected.
 - 2026-04-29 21:10 — implementer: committed regex broadening (ff2fafd). Fixed 16 violations across 7 JSON files (16 not 15 — planner missed lore_charter_fragment_01 charter-quote "No nation, no corporation, no creed" which also trips broadened regex). Committed content fixes (c4fb0ff).
 - 2026-04-29 21:20 — implementer: added 5 surface-extension tests + refreshed test_allowlist_suppresses_reach_tagline. All 35 Writing Bible tests green. Full suite: 10317→10328 (+11). Lint clean. PHASE_OK
+- 2026-04-29 20:28 — harness: review phase starting (rework cycle 0)
+- 2026-04-29 21:30 — reviewer: all 8 ACs verified. Regex confirmed against every separator form (comma/period/em-dash/en-dash/double-hyphen) and negative case via direct Python invocation. Full suite 10328 passed / 98 skipped (matches implementer baseline). All 35 Writing Bible tests green. Lint clean. Content rewrites voice-checked against `aurelia_voice_examples.md` — all 16 rewrites in voice. Two additional violations found in non-scanned files (`data/combat/enemies.json: "no signature, no quarter"` comma-form pre-existing; `data/galaxy/locations.json: "No catalogue. No provenance."` period-form newly revealed by broadened regex) — both in files outside the scanner's extractors and outside the sprint's declared touch zones. Fixed directly (Option B). Committed (see below). PHASE_OK
 
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-04-29 20:16
-- Completed: 2026-04-29 21:25
-- Files_changed: tests/test_writing_bible_compliance.py, data/encounters/generic.json, data/encounters/campaign.json, data/encounters/ce4_variety.json, data/encounters/frontier_alliance.json, data/encounters/lore.json, data/encounters/miners_union.json, data/dialogue/dialogues.json
-- Commits: ff2fafd, c4fb0ff, 4688286
-- Tests_added: 11
-- Tests_baseline: 10317
+- Started: 2026-04-29 21:30
+- Completed: 2026-04-29 22:00
+- Files_changed: data/combat/enemies.json, data/galaxy/locations.json
+- Commits: TBD
 - Tests_passing: 10328
-- Tests_skipped: 98
-- Lint_clean: yes
-- Format_clean: yes
-- SI3_scanner_clean: n/a
-- Writing_bible_clean: yes
-- Touch_zones_respected: yes
-- Notes: Implemented per plan. Planner counted 15 violations but actual audit surfaced 16 (lore_charter_fragment_01 charter-quote "No nation, no corporation, no creed" was missed in planning; fixed by paraphrasing the quote). All 8 acceptance criteria satisfied; no new allowlist entries.
+- Acceptance_criteria_verified: 8/8
+- Polish_items_verified: n/a
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 2
+- Single_tighten: Planning audit claimed "zero false positives on 4216 surfaces" but missed violations in enemies.json and locations.json because those files are not in any extractor's scope. The planning audit implicitly defined "surfaces" as only what the DataLoader extractors surface; the blind spot is real and affects future broadened-regex work. Not a blocker — violations were minor and fixed directly.
+- Followup_sprints_added: none
+- Notes: All 8 acceptance criteria met. Two violations in non-scanned files (enemies.json, locations.json) fixed directly; these were outside declared touch zones and not in the planning audit scope. Suite stable at 10328.
 ### SI3-FOLLOW-1 — No-arg helper introspection (flag scanner)
 
 **Status**: todo
