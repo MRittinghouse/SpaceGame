@@ -4976,36 +4976,101 @@ Open question (reviewer judgment, not blocking implementation):
 
 ### WB-2 — Parallel-negation regex broadening
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Source**: `requirements/writing_bible_scanner_gaps.md` Gap 2
 **Size**: S | **Effort**: 3-5 days
 **Depends on**: WB-1 | **Blocks**: none
 
-**Goal.** Broaden the `_PARALLEL_NEGATION` regex to catch period-parallelism ("No X. No Y.") and dash-parallelism ("No X — no Y"), not just comma-parallelism. The Writing Bible's intent is broader than the current regex captures.
+**Goal.** Broaden the `_PARALLEL_NEGATION` regex to catch period-parallelism ("No X. No Y.") and dash-parallelism ("No X — no Y"), not just comma-parallelism. The Writing Bible's intent is broader than the current regex captures (per `requirements/dialogue_writing_guide.md` §"Sentence Construction Tells", which calls "No X, no Y, just Z" a signature AI construction regardless of separator). Extend parallel-negation enforcement beyond the three currently-covered surfaces (view source, ambient, taglines) to the rest of the narrative content stack — missions, journals, dialogue, encounters, crew interjections — and clean up violations that surface in the resulting audit. After WB-2 lands, the scanner enforces the parallel-negation rule wherever the writing guide expects it.
 
 **Context to read.**
-- `requirements/writing_bible_scanner_gaps.md`
-- `tests/test_writing_bible_compliance.py`
+- `requirements/writing_bible_scanner_gaps.md` (Gap 2)
+- `requirements/dialogue_writing_guide.md` §"Sentence Construction Tells" (the rule's intent)
+- `tests/test_writing_bible_compliance.py` (existing scanner, allowlist, current regex at line 65, `_find_violations` at line 89, surface-specific test classes)
+- `data/encounters/campaign.json`, `data/encounters/ce4_variety.json`, `data/encounters/frontier_alliance.json`, `data/encounters/generic.json`, `data/encounters/lore.json`, `data/encounters/miners_union.json` (encounter content with audit hits — see Plan task 3)
+- `data/dialogue/dialogues.json` (one dialogue node hit: `arna_post_ambush:come_clean`)
 
 **Touch zones.**
-- `tests/test_writing_bible_compliance.py` (regex update)
+- `tests/test_writing_bible_compliance.py` (regex broadening, regex-self-test additions, new parallel-negation tests for mission / journal / dialogue / encounter / interjection surfaces, refresh `test_allowlist_suppresses_reach_tagline` to cover the broadened regex)
+- `data/encounters/campaign.json` (rewords for `campaign_sato_ghost_01`, `campaign_refugee_testimony_01`)
+- `data/encounters/ce4_variety.json` (rewords for `smuggler_offer_01` and its choice descriptions)
+- `data/encounters/frontier_alliance.json` (rewords for `alliance_barter_01`, `merchant_barter_01`)
+- `data/encounters/generic.json` (reword for `derelict_civilian_wreck_01` — the canonical AI-tell example from the writing guide)
+- `data/encounters/lore.json` (rewords for `lore_charter_fragment_01`, `lore_generation_ship_01`, `lore_earth_song_01`)
+- `data/encounters/miners_union.json` (reword for `union_mutual_aid_01:take_rations` outcome)
+- `data/dialogue/dialogues.json` (reword for `arna_post_ambush:come_clean`)
 
 **Deliverables.**
-- Updated regex catches all three separator styles.
-- Audit pass on existing scanned content for newly-detected violations.
-- Reach tagline still suppressed via allowlist.
+- Broadened `_PARALLEL_NEGATION` regex that matches `\bno \w+` followed by a separator drawn from `[, . — – -]` (comma, period, em-dash, en-dash, hyphen / double-hyphen) within a bounded gap, then a second `no \w+`. Case-insensitive. The bounded gap (`{1,5}` whitespace + separator chars) suppresses cross-paragraph false positives where two unrelated `no X` sentences happen to be far apart.
+- New regex-self-tests inside `test_writing_bible_compliance.py` that pin behavior across all separator forms and at least one negative case (two unrelated `no X` clauses separated by a long sentence boundary should NOT match).
+- Five new parallel-negation tests, one per narrative surface that lacks one today: `test_no_parallel_negation_in_missions`, `test_no_parallel_negation_in_journal`, `test_no_parallel_negation_in_dialogue`, `test_no_parallel_negation_in_encounters`, `test_no_parallel_negation_in_crew_interjections`. All route through `_find_violations()` so the existing allowlist is honored. Mission/journal go on `TestMissionAndJournalWritingBible`; dialogue/encounter/interjection go on `TestDialogueAndAmbientWritingBible` (matches existing class organization).
+- Refreshed `test_allowlist_suppresses_reach_tagline`: the existing test predates the regex broadening and notes the Reach tagline "won't trip the current regex." After WB-2, the Reach tagline (period form) DOES trip the broadened regex and the allowlist is what suppresses it. Update the test (and its docstring/inline comment) to assert exactly that, plus a non-allowlisted period-form synthetic that confirms the broadened regex catches period parallelism.
+- Audit fixes: 15 known content violations across 7 JSON files, listed in the Plan section. Each gets reworded per the writing-guide pattern ("Restructure the sentence entirely"). No new allowlist entries are added — the Reach faction tagline remains the sole exemption per WB-1's locked policy.
+- Reach tagline allowlist still honored: `test_no_parallel_negation_in_taglines` still passes; the allowlist whole-string-equality check in `_find_violations()` is unchanged.
 
 **Acceptance criteria.**
-1. Test cases for each separator pattern.
-2. Existing content audit identifies any new violations and addresses them (fix or allowlist with documented rationale).
-3. Full suite green.
+1. The broadened `_PARALLEL_NEGATION` regex flags all of: `"No laws, no mercy."` (comma), `"No beacon. No transponder."` (period), `"No middlemen — no fees."` (em-dash), `"No power -- no heat."` (double-hyphen), `"No signal – no response."` (en-dash). A direct unit test in `test_writing_bible_compliance.py` enumerates each form and asserts `_PARALLEL_NEGATION.search(text)` returns a match.
+2. The broadened regex does NOT flag the negative case `"There is no captain. The ship has no crew problems."` (two `no X` mentions separated by ~30 chars of unrelated sentence content). A negative unit test pins this.
+3. `test_allowlist_suppresses_reach_tagline` (1) confirms the broadened regex matches the Reach tagline (`_PARALLEL_NEGATION.search("No laws. No mercy. No refunds.")` is truthy), (2) confirms the allowlist suppresses it via `_find_violations()` (no parallel-negation entry returned), and (3) confirms a non-allowlisted period-form synthetic (`"No power. No heat."`) IS flagged via `_find_violations()`.
+4. New tests exist for missions, journal, dialogue, encounters, crew interjections — each named `test_no_parallel_negation_in_<surface>` and each calling `_find_violations(text)` via the existing extractor for that surface. After audit fixes land, all five tests pass.
+5. The 15 audit hits enumerated in the Plan are each reworded; no new allowlist entries are added; spot-check that each rewording reads cleanly and stays in voice with the surrounding encounter/dialogue (per `requirements/aurelia_voice_examples.md`). The audit-hit count after fixes is zero across all surfaces.
+6. `test_no_parallel_negation_in_taglines` still passes (Guild / Union / Collective / Frontier taglines are clean; Reach is allowlisted). The `tagline:` extractor is untouched.
+7. `python -m pytest -n auto -q` passes; total passing count ≥ 10317 (pre-phase baseline). 98 skipped is fine. New tests add to the count, not subtract.
+8. `ruff check` and `ruff format` pass on touched files. Run scoped to `tests/test_writing_bible_compliance.py` and the touched `data/**.json` files (no formatter for JSON; just confirm valid JSON via `python -m json.tool`).
 
 **Risks / open questions.**
-- Risk: tightening the regex may catch existing content. Treat detection as a content audit, not a scanner regression.
+- ~~Regex form: bounded-gap separator class vs. sentence-window vs. AST-aware.~~ **Locked**: bounded-gap separator class. Pattern: `\bno \w+\s*[,.\-—–]+\s*no \w+` (case-insensitive). Rationale: simplest implementation, false-positive rate is acceptable per the audit (zero false positives observed on 4216 surfaces during planning), and it matches the writing-guide rule's actual shape ("no X, no Y" in any separator form). A sentence-window heuristic was considered but rejected — adds complexity without changing match results on real content.
+- ~~Should the new regex catch three-or-more negation chains ("No X, no Y, no Z")?~~ **Locked**: the regex naturally matches the first adjacent pair, so three-chains trip on the X/Y pair before reaching Z. No special handling needed; the test report shows the offending substring and the implementer reads the surrounding sentence.
+- ~~Scope: extend parallel-negation tests to mission / journal / dialogue / encounter / interjection surfaces, or only update the regex used by the existing three surfaces?~~ **Locked**: extend to all five new surfaces. Rationale: leaving the regex broadened but only running on view source / ambient / taglines defeats the sprint's premise. The audit found 15 violations on encounter/dialogue surfaces alone; without test coverage there, future content can reintroduce the AI tells silently. Extension keeps the sprint at S sizing because each new test is ~6 lines.
+- ~~Audit-fix policy: rewording vs. allowlisting in-character outlaw/smuggler dialogue.~~ **Locked**: reword. Per WB-1's locked policy, the Reach faction tagline is the SOLE allowlist entry. Smuggler/encounter narrative descriptions ("No transponder, no hail frequency, just a tight-beam") are exactly the AI-tell pattern the writing guide names — they get reworded, not exempted. The exception bar is "in-world bravado used as a public-facing slogan with documented design rationale," which Reach meets and individual narrative beats do not.
+- ~~Reach tagline cross-form coverage: after broadening, does the existing allowlist still work?~~ **Locked**: yes. The allowlist is whole-string equality on `text.strip()` against `_PARALLEL_NEGATION_ALLOWLIST`, and the Reach tagline's exact string is in the set. The allowlist mechanism is independent of which regex form matched. The refreshed `test_allowlist_suppresses_reach_tagline` now also asserts this directly.
+
+**Plan.**
+1. **Add the failing regex-self-tests first (TDD).** In `tests/test_writing_bible_compliance.py`, add a new `TestParallelNegationRegex` class with: `test_matches_comma_form`, `test_matches_period_form`, `test_matches_em_dash_form`, `test_matches_en_dash_form`, `test_matches_double_hyphen_form`, `test_does_not_match_unrelated_no_clauses` (negative case from acceptance #2). All tests should fail initially because the current regex catches only the comma form. Test surface: `tests/test_writing_bible_compliance.py::TestParallelNegationRegex`.
+2. **Broaden the regex** at `tests/test_writing_bible_compliance.py:65`. Change `r"\bno \w+,\s*no \w+"` to `r"\bno \w+\s*[,.\-—–]+\s*no \w+"`. Re-run `TestParallelNegationRegex`; confirm all six tests pass. Re-run the full file; confirm `TestStationTaglineWritingBible::test_no_parallel_negation_in_taglines` still passes (allowlist suppresses Reach tagline that newly matches), and `test_view_source_*` / `test_ambient_*` parallel-negation tests still pass (no new view-source or ambient hits per the planning audit). Gotcha: the regex character class `[,.\-—–]` includes a literal hyphen — keep it escaped or position it last in the class to avoid accidental range parsing.
+3. **Run the audit-hit fixes**, in any order. The 15 hits surfaced during planning, with the rewording approach for each:
+   - `data/encounters/generic.json` → `derelict_civilian_wreck_01.description`: replace `"No beacon, no transponder, no answer to hails."` with prose that lists the three failures as separate beats. (This is the canonical writing-guide example; the rewrite should read as a model.)
+   - `data/encounters/campaign.json` → `campaign_sato_ghost_01` `investigate` outcome: rewrite `"No wreckage, no residual energy, no explanation."` as separate sentences or a single sentence without the no-X parallelism.
+   - `data/encounters/campaign.json` → `campaign_refugee_testimony_01.description`: rewrite `"No compensation. No timeline."` (in-character refugee speech, but the pattern is the AI tell).
+   - `data/encounters/ce4_variety.json` → `smuggler_offer_01.description`, `:buy.description`, `:buy.outcome.description`: three separate rewords for `"No transponder, no hail frequency, just a tight-beam."` and the two follow-on lines (`"No transponders, no manifests."`, `"No names, no pleasantries."`). Smuggler voice can stay terse — reword to specifics, not parallelism.
+   - `data/encounters/frontier_alliance.json` → `alliance_barter_01.description`, `merchant_barter_01:barter.description`: rewords for `"No middlemen, no Guild fees."` and `"Goods for goods, no banks, no fees."` Barter pitches can use direct claims instead of negation parallelism.
+   - `data/encounters/lore.json` → `lore_charter_fragment_01.description` and `:recover.outcome`: rewords for `"No fuel, no power, no life signs."` and `"There is no signature, no date."`
+   - `data/encounters/lore.json` → `lore_generation_ship_01.description` and `:board.outcome`: rewords for `"No power signatures, no heat, no movement."` and `"No damage, no signs of struggle."`
+   - `data/encounters/lore.json` → `lore_earth_song_01.description`: reword for `"No encryption, no identifiers, just music."`
+   - `data/encounters/miners_union.json` → `union_mutual_aid_01:take_rations.outcome`: reword for `"No ledger, no debt."` (Union mutual-aid voice — keep the warmth, drop the parallelism).
+   - `data/dialogue/dialogues.json` → `arna_post_ambush:come_clean`: reword for `"No manifest. No registration. No customs stamp."` (period parallelism in dialogue).
+   For each rewrite: re-load the data via the test scanner (or run the full surface audit script in Plan task 6) to confirm the violation is gone. Voice-check against `requirements/aurelia_voice_examples.md` paired examples — the Reach-bravado register (the one allowlisted form) should NOT bleed into other rewrites; encounter narrative is a different register.
+4. **Refresh `test_allowlist_suppresses_reach_tagline`.** Replace its body so it (a) asserts the broadened regex does match the Reach tagline (`_PARALLEL_NEGATION.search("No laws. No mercy. No refunds.")` is truthy) — this verifies the regex broadening actually happened, (b) asserts `_find_violations("No laws. No mercy. No refunds.")` returns no parallel-negation entry — the allowlist suppresses the now-matched tagline, (c) asserts `_find_violations("No power. No heat.")` (a synthetic period-form non-allowlisted string) DOES return a parallel-negation entry — the broadened regex catches period form on non-allowlisted content. Update the docstring and inline comments accordingly. Test surface: `tests/test_writing_bible_compliance.py::TestStationTaglineWritingBible::test_allowlist_suppresses_reach_tagline`.
+5. **Add the five surface-extension tests.** Mirror the pattern of `test_no_parallel_negation_in_ambient` but against the existing extractors:
+   - `TestMissionAndJournalWritingBible.test_no_parallel_negation_in_missions` — uses `_extract_mission_strings()`, calls `_find_violations(text)` for each entry, fails on any parallel-negation hit not in allowlist.
+   - `TestMissionAndJournalWritingBible.test_no_parallel_negation_in_journal` — uses `_extract_journal_strings()`.
+   - `TestDialogueAndAmbientWritingBible.test_no_parallel_negation_in_dialogue` — uses `_extract_dialogue_strings()`.
+   - `TestDialogueAndAmbientWritingBible.test_no_parallel_negation_in_encounters` — uses `_extract_encounter_strings()`.
+   - `TestDialogueAndAmbientWritingBible.test_no_parallel_negation_in_crew_interjections` — uses `_extract_interjection_strings()`.
+   Each test follows the existing pattern: collect offenders into a list (truncated for report), assert empty, message includes `loc: text` for each offender. After Plan task 3 fixes land, all five tests pass. (Gotcha: `_find_violations()` already honors the allowlist, so no separate allowlist branch is needed inside each test.)
+6. **Run the audit script one more time** as a sanity check (the script used during planning is `python -c` with the broadened regex; the implementer can paste it from this section's planning audit or recreate from `_extract_*` calls). Confirm zero hits across all surfaces before proceeding. If any hit remains, fix or escalate.
+7. **Run lint + format on touched files.** `ruff format tests/test_writing_bible_compliance.py` and `ruff check tests/test_writing_bible_compliance.py`. Validate JSON for each touched encounter/dialogue file: `python -m json.tool data/encounters/<file>.json > /dev/null` (catches typos in rewrites). Do NOT run repo-wide formatter — scope to touched files only per `requirements/roadmap/AGENT_GUIDE.md`.
+8. **Run the full test suite.** `python -m pytest -n auto -q`. Confirm pass count ≥ 10317 (pre-phase baseline) and that the 6 new regex-self-tests + 5 new surface tests + refreshed allowlist test contribute net-positive to the count. Record the new pass count in the Activity log. No regressions.
+9. **Commit** with sprint-ID prefix per the conventions: `WB-2: broaden parallel-negation regex + extend surface coverage + content fixes`. Smaller commits are fine if the implementer prefers (e.g., one for the regex + tests, one per content file). Sprint-ID prefix is required on all of them.
 
 **Activity log.**
 - 2026-04-26 — todo (created)
+- 2026-04-29 20:10 — harness: plan phase starting
+- 2026-04-29 20:20 — planner: verified all 4 context-doc paths exist (`writing_bible_scanner_gaps.md`, `dialogue_writing_guide.md`, `tests/test_writing_bible_compliance.py`, the 7 referenced JSON content files). Confirmed WB-1 dependency is `done` (line 4904) and the `_PARALLEL_NEGATION_ALLOWLIST` + `_find_violations()` infrastructure WB-1 standardized is in place at lines 78-86 / 89-102.
+- 2026-04-29 20:25 — planner: ran content audit with the proposed broadened regex (`\bno \w+\s*[,.\-—–]+\s*no \w+`, case-insensitive) against 4216 narrative surfaces. Found 15 hits across 7 JSON files: 1 dialogue node (arna_post_ambush:come_clean), 14 encounter strings (campaign, ce4_variety, frontier_alliance, generic, lore, miners_union). Zero hits in missions, journal, ambient, chatter, crew interjections, view source, taglines. Zero false positives on unrelated `no X` sentences. The canonical writing-guide AI-tell example ("No beacon, no transponder...") is one of the 14 encounter hits.
+- 2026-04-29 20:30 — planner: locked 5 decisions (regex form, three-chain handling, surface scope, audit-fix policy, allowlist mechanism) — see Risks / open questions. Folded scope expansion to cover all 5 narrative surfaces and 15 content rewrites; sprint stays at S/3-5 days because each new test is ~6 lines and each rewrite is ~1 sentence. PHASE_OK
 
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-04-29 20:10
+- Completed: 2026-04-29 20:30
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: <hash filled in at commit time>
+- New_sprints_proposed: none
+- Polish_items_folded_in: extend parallel-negation tests to missions / journal / dialogue / encounter / crew interjection surfaces (5 new tests); refresh `test_allowlist_suppresses_reach_tagline` to exercise the broadened regex; content audit + 15 rewordings across 7 JSON files
+- Decisions_locked: 5
+- Notes: Audit during planning surfaced 15 existing parallel-negation violations in encounter / dialogue content — including the canonical writing-guide AI-tell example. Sprint expanded from "regex + audit on currently-scanned surfaces" to "regex + extend tests across all narrative surfaces + content fixes." Scope expansion stays within S sizing because the work is shallow (one regex change, 5 short test methods, 15 short rewrites). Reach tagline allowlist mechanism is unchanged; only its test docstring is updated to reflect that the broadened regex now matches it (and the allowlist suppresses it as designed).
 ### SI3-FOLLOW-1 — No-arg helper introspection (flag scanner)
 
 **Status**: todo
