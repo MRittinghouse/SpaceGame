@@ -5083,7 +5083,7 @@ Open question (reviewer judgment, not blocking implementation):
 - Notes: All 8 acceptance criteria met. Two violations in non-scanned files (enemies.json, locations.json) fixed directly; these were outside declared touch zones and not in the planning audit scope. Suite stable at 10328.
 ### SI3-FOLLOW-1 — No-arg helper introspection (flag scanner)
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Source**: SL-2 disclosure (`requirements/station_legibility.md`)
 **Size**: S | **Effort**: 3-5 days
 **Depends on**: none | **Blocks**: none
@@ -5091,25 +5091,96 @@ Open question (reviewer judgment, not blocking implementation):
 **Goal.** Extend the SI-3 flag-integrity scanner in `tests/test_data/test_dialogue_integrity.py` to recognize no-arg helpers like `investment_introduced()`. Current `_helper_access_patterns` calls each helper with sentinel args; no-arg helpers raise TypeError and get silently skipped, leaving consumers invisible to the scanner.
 
 **Context to read.**
-- `tests/test_data/test_dialogue_integrity.py` (`_helper_access_patterns`)
-- `spacegame/constants/flags.py` (current parameterized + no-arg helpers)
-- `requirements/station_legibility.md` (SL-2 scanner gap section)
+- `tests/test_data/test_dialogue_integrity.py` (`_helper_access_patterns`, `_collect_all_flag_uses`, `KNOWN_PRODUCER_ONLY_ORPHANS`, `KNOWN_CONSUMER_ONLY_ORPHANS`)
+- `spacegame/constants/flags.py` (parameterized + no-arg helpers — both forms coexist in this module)
+- `requirements/station_legibility.md` §SL-2 (scanner-gap disclosure paragraph at line 229)
+- `spacegame/models/station_salience.py` (`is_investment_unlocked` — canonical no-arg consumer call site)
+- `spacegame/views/okafor_view.py` (`_kweon_dialogue_id` — second canonical consumer using a `flags = self.player.dialogue_flags` local alias)
 
 **Touch zones.**
 - `tests/test_data/test_dialogue_integrity.py`
 
 **Deliverables.**
-- Updated `_helper_access_patterns` handles no-arg helpers (try `obj()` first; if it returns a literal string, treat as a fixed-flag helper without sentinel substitution).
-- Producer/consumer regex variants for fixed-flag helpers.
+- Updated `_helper_access_patterns` returns entries for both parameterized and no-arg helpers. For no-arg helpers, the prefix carries the full flag string and the suffix is empty.
+- Producer/consumer regex variants for no-arg helpers (`helper_name()` with no captured argument).
+- Scanner consumer/producer loop in `_collect_all_flag_uses` updated so no-arg matches register `prefix` directly without an arg substitution.
+- Consumer regex broadened from literal `dialogue_flags.get` / `.pop` to also match local-alias `flags.get` / `.pop` (the `flags = self.player.dialogue_flags` rebinding is a load-bearing pattern in views; without it, no-arg helpers stay invisible at the SA-R3 call site).
+- `KNOWN_PRODUCER_ONLY_ORPHANS` / `KNOWN_CONSUMER_ONLY_ORPHANS` sweep: any entry whose comment cites "no-arg helper consumer" or similar scanner-blind-spot rationale must be removed from the allowlist if the extension now sees both producer and consumer. The `test_known_orphan_lists_stay_meaningful` check enforces this.
 
 **Acceptance criteria.**
-1. `investment_introduced` flag now detected as both producer (when present in mission JSON) and consumer (in `is_investment_unlocked`).
-2. No regression: existing parameterized helpers still detected correctly.
-3. Full suite green; orphan reports remain accurate.
+1. `investment_introduced` is detected as a CONSUMER (via `dialogue_flags.get(investment_introduced(), False)` in `is_investment_unlocked`) AND as a PRODUCER (mission JSON `set_flag` in `data/missions/sa_v_investment_intro.json` and `set_flag` actions in `data/dialogue/dialogues.json`). The flag does NOT appear on either net-new orphan list.
+2. `okafor_legacy_mission_completed` is detected as a CONSUMER via the `flags.get(okafor_legacy_mission_completed())` call in `okafor_view._kweon_dialogue_id`, and removed from `KNOWN_PRODUCER_ONLY_ORPHANS`. The `test_known_orphan_lists_stay_meaningful` test passes.
+3. `_helper_access_patterns()` returns at least one no-arg entry — verified by a new unit test that asserts `investment_introduced` (full string, empty suffix) is in the returned list.
+4. No regression on parameterized helpers: a new unit test asserts that `met_npc`, `talked_to_npc`, `tutorial_bought_part`, and `dual_tech_revealed` continue to round-trip a sentinel argument through their producer/consumer regexes.
+5. Helpers with default-argument signatures (e.g., a hypothetical `def foo(x: str = "y") -> str`) are NOT misclassified as no-arg. The introspection inspects `inspect.signature(obj).parameters` and only treats helpers with ZERO required parameters AND zero optional parameters as no-arg. (Today no such default-arg helper exists; the guard prevents a future trap.)
+6. Full test suite passes at >= 10328 (pre-phase baseline) with the existing 98 skips. No new failures.
+7. The three SI-3 orphan tests (`test_no_new_consumer_only_flags`, `test_no_new_producer_only_flags`, `test_known_orphan_lists_stay_meaningful`) all pass after the allowlist sweep.
+
+**Risks / open questions.**
+- ~~Should the consumer regex broaden to match local-alias `flags.get` calls?~~ **LOCKED 2026-04-29 (decision §SI3F1.1):** YES. The okafor_view SA-R3 call site demonstrates that views routinely rebind `flags = self.player.dialogue_flags` for legibility, and several other views do the same (`cantina_view`, `deep_shafts_view`, `station_hub_view`, `trading_view`, `engine/game.py`). Pattern: `(?:has_flag|(?:dialogue_)?flags\.get|(?:dialogue_)?flags\.pop)`. The helper-call inner regex still requires a known helper name, so over-matching on unrelated `flags.get(...)` calls is bounded — the inner pattern provides the discrimination.
+- ~~Should the producer regex broaden similarly to match `flags[helper()] = True` rebindings?~~ **LOCKED 2026-04-29 (decision §SI3F1.2):** YES, mirror the consumer broadening. Producer regex becomes `(?:dialogue_)?flags\[\s*{helper_call}\s*\]\s*=`. Symmetry keeps producer/consumer detection consistent.
+- ~~Sweep KNOWN_*_ORPHANS for stale entries post-extension?~~ **LOCKED 2026-04-29 (decision §SI3F1.3):** YES, mandatory. The `test_known_orphan_lists_stay_meaningful` test will fail otherwise. Implementer runs the orphan tests, identifies any flag whose detection now produces both producer and consumer, and removes those entries with a one-line commit-rationale comment in the diff. Documented candidates: `okafor_legacy_mission_completed` (explicit "no-arg helper consumer" comment in current allowlist). Other no-arg-routed flags (e.g., `attended_silent_shaft`, `marcus_*_seen` series) may already be detected through dialogue/journal paths and are NOT expected to move; verify empirically rather than guessing.
+- Default-argument helper guard: a future helper with `def f(x: str = "default")` would be silently misclassified by a naive `try obj() except` approach (the call would succeed and return a literal-looking string). Guard with `inspect.signature(obj).parameters` empty check before classifying as no-arg.
+- The introspection tries `obj()` first (no-arg branch). If the helper has required parameters, this raises TypeError, which is caught and the loop falls through to the existing string/int sentinel branch. Order matters: no-arg attempt MUST come first because the existing sentinel loop only catches TypeError implicitly via the bare `except Exception` and would never reach the no-arg branch otherwise.
+
+**Plan.**
+1. **Read the scanner in full and the canonical no-arg call sites.** Open `tests/test_data/test_dialogue_integrity.py:560-645` (the `_collect_all_flag_uses` consumer/producer loop and `_helper_access_patterns`). Open `spacegame/constants/flags.py` and enumerate every helper with no parameters (currently ~30+ helpers, e.g., `investment_introduced`, `heard_dcmc_intelligence`, `attended_silent_shaft`, the `marcus_*_seen` trio, all `seen_*_tip` flags, `auction_first_*`, `okafor_legacy_*_seen`). Read `spacegame/models/station_salience.py:128` and `spacegame/views/okafor_view.py:670-674` to confirm the two regex shapes (`dialogue_flags.get` direct vs. `flags.get` local-alias).
+
+2. **Write the failing tests FIRST (TDD).** Add a new test class `TestNoArgHelperIntrospection` to `tests/test_data/test_dialogue_integrity.py` with three tests:
+   - `test_no_arg_helper_returns_full_flag_as_prefix` — calls `_helper_access_patterns()` and asserts that the entry for `investment_introduced` has `prefix="investment_introduced"`, `suffix=""`.
+   - `test_no_arg_helper_consumer_regex_matches_dialogue_flags_get` — runs the consumer regex against a literal snippet `dialogue_flags.get(investment_introduced(), False)` and asserts the match.
+   - `test_no_arg_helper_consumer_regex_matches_local_alias_flags_get` — runs the consumer regex against `flags.get(okafor_legacy_mission_completed())` and asserts the match. (This is the SA-R3 pattern.)
+   - `test_parameterized_helper_still_detected` — sanity check: feed `dialogue_flags[met_npc("marcus_jin")] = True` and assert `met_marcus_jin` registers as producer.
+   - Confirm all four tests fail at the right step before implementation.
+
+3. **Extend `_helper_access_patterns()`.** Modify the introspection loop:
+   - Skip helpers where `inspect.signature(obj).parameters` is non-empty (these MUST be parameterized; we'll handle them in the existing branch).
+   - Wait — re-read: the current loop iterates ALL non-private callables, then attempts sentinels. The cleanest extension: first inspect the signature; if zero parameters, take the no-arg branch (`result = obj()`, prefix = result, suffix = "", regex omits arg capture). Else, fall through to the existing sentinel loop.
+   - For the no-arg branch, build:
+     - `producer_re = re.compile(rf"(?:dialogue_)?flags\[\s*{re.escape(name)}\(\s*\)\s*\]\s*=")`
+     - `consumer_re = re.compile(rf"(?:has_flag|(?:dialogue_)?flags\.get|(?:dialogue_)?flags\.pop)\(\s*{re.escape(name)}\(\s*\)")`
+   - Append `(prefix, "", producer_re, consumer_re, is_parameterized=False)` — the tuple gains a 5th element so the consumer/producer loop knows whether to extract a capture group.
+
+4. **Update the tuple shape and the loop in `_collect_all_flag_uses`.** Bump the tuple from 4-element to 5-element (add `is_parameterized: bool`). Update the loop at lines 582-588:
+   ```python
+   for prefix, suffix, producer_re, consumer_re, is_parameterized in helper_patterns:
+       for m in producer_re.finditer(text):
+           if is_parameterized:
+               arg = m.group(1) or m.group(2)
+               full_flag = f"{prefix}{arg}{suffix}"
+           else:
+               full_flag = prefix
+           producers[full_flag].add(f"code:{rel}")
+       # mirror for consumer_re
+   ```
+   Apply the same tuple-shape change to the existing parameterized branch (existing entries become `(prefix, suffix, producer_re, consumer_re, True)`).
+
+5. **Broaden the parameterized-helper consumer regex too.** While we're touching it, mirror the local-alias broadening on the parameterized branch so a `flags = self.player.dialogue_flags; flags.get(met_npc(npc_id))` rebinding is also detected. Producer regex similarly. This is symmetry, not new scope. Run the orphan tests after; if any flag moves out of the allowlist due to THIS broadening (rather than the no-arg branch), that's expected and good. Confirm with a quick scan that no false-positive matches against unrelated `.flags.` paths emerge.
+
+6. **Run the orphan-list sweep.** Run `pytest tests/test_data/test_dialogue_integrity.py -v`. The `test_known_orphan_lists_stay_meaningful` test will fail and tell us which flags now have both producer and consumer. For each flag flagged stale, REMOVE it from the relevant `KNOWN_*_ORPHANS` set with a one-line comment explaining it is now scanner-detected (e.g., `# Now detected: no-arg helper consumer wired in OkaforView (SI3-FOLLOW-1)`). Expected at minimum: `okafor_legacy_mission_completed`. Possibly others — verify empirically.
+
+7. **Run the full suite.** `python -m pytest -n auto -q`. Expect `>=10328` passing, `98` skipped, no new failures. If any net-new orphan surfaces (unrelated to the sweep), STOP and inspect — the broadened regex may have caught a previously hidden orphan that needs a real producer/consumer wired or an allowlist entry with rationale. Don't reflexively allowlist; treat each as a triage decision and capture in the Activity log.
+
+8. **Lint + format the touched file only.** `ruff format tests/test_data/test_dialogue_integrity.py && ruff check tests/test_data/test_dialogue_integrity.py`. Per AGENT_GUIDE.md, scope formatting to touched files — do not run project-wide.
+
+9. **Status to review + activity log entry.** Set `Status` to `review`, append a timestamped entry summarizing: helpers added to detection, orphans removed from allowlist, test count delta. Commit with `SI3-FOLLOW-1: ...` prefix.
 
 **Activity log.**
 - 2026-04-26 — todo (created)
+- 2026-04-29 20:40 — harness: plan phase starting
+- 2026-04-29 21:00 — planning complete; expanded scope to include local-alias regex broadening + orphan-list sweep, locked 3 decisions (consumer regex broadening, producer regex broadening, mandatory allowlist sweep), tightened 7-criteria acceptance bar, drafted 9-step plan. PHASE_OK
 
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-04-29 20:40
+- Completed: 2026-04-29 21:00
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: <pending>
+- New_sprints_proposed: none
+- Polish_items_folded_in: local-alias-regex-broadening, mandatory-allowlist-sweep, default-arg-helper-guard
+- Decisions_locked: 3
+- Notes: Verified all 5 context docs exist (test file, flags.py, station_legibility.md §SL-2, station_salience.py, okafor_view.py). The scope tightened by one critical addition: the SA-R3 SAFETY-NET case (`flags.get(okafor_legacy_mission_completed())` via local alias) cannot be detected without broadening the consumer regex beyond literal `dialogue_flags.get`. Folded that into the same sprint since it is a one-line fix and required to satisfy AC-2. Identified at least one allowlist entry that must be removed (`okafor_legacy_mission_completed`); implementer runs the orphan tests to find any others empirically.
 ### UI-BOUNDS-1 — station_hub_view in subprocess bounds harness
 
 **Status**: todo
