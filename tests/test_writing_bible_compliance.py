@@ -433,6 +433,28 @@ class TestMissionAndJournalWritingBible:
                     offenders.append(f"{loc}: {phrase!r} in {text[:100]!r}")
         assert not offenders, "Banned phrases in journal content:\n  " + "\n  ".join(offenders[:20])
 
+    def test_no_parallel_negation_in_missions(self) -> None:
+        """No parallel-negation rhetoric in mission content (allowlist honored)."""
+        offenders: list[str] = []
+        for loc, text in _extract_mission_strings():
+            pn = [v for v in _find_violations(text) if "parallel-negation" in v]
+            if pn:
+                offenders.append(f"{loc}: {text[:100]!r}")
+        assert not offenders, "Parallel-negation in mission content:\n  " + "\n  ".join(
+            offenders[:20]
+        )
+
+    def test_no_parallel_negation_in_journal(self) -> None:
+        """No parallel-negation rhetoric in journal content (allowlist honored)."""
+        offenders: list[str] = []
+        for loc, text in _extract_journal_strings():
+            pn = [v for v in _find_violations(text) if "parallel-negation" in v]
+            if pn:
+                offenders.append(f"{loc}: {text[:100]!r}")
+        assert not offenders, "Parallel-negation in journal content:\n  " + "\n  ".join(
+            offenders[:20]
+        )
+
 
 # ---------------------------------------------------------------------------
 # Tests — dialogue + ambient content (looser register, advisory)
@@ -526,6 +548,39 @@ class TestDialogueAndAmbientWritingBible:
             offenders[:20]
         )
 
+    def test_no_parallel_negation_in_dialogue(self) -> None:
+        """No parallel-negation rhetoric in dialogue content (allowlist honored)."""
+        offenders: list[str] = []
+        for loc, text in _extract_dialogue_strings():
+            pn = [v for v in _find_violations(text) if "parallel-negation" in v]
+            if pn:
+                offenders.append(f"{loc}: {text[:100]!r}")
+        assert not offenders, "Parallel-negation in dialogue content:\n  " + "\n  ".join(
+            offenders[:20]
+        )
+
+    def test_no_parallel_negation_in_encounters(self) -> None:
+        """No parallel-negation rhetoric in encounter content (allowlist honored)."""
+        offenders: list[str] = []
+        for loc, text in _extract_encounter_strings():
+            pn = [v for v in _find_violations(text) if "parallel-negation" in v]
+            if pn:
+                offenders.append(f"{loc}: {text[:100]!r}")
+        assert not offenders, "Parallel-negation in encounter content:\n  " + "\n  ".join(
+            offenders[:20]
+        )
+
+    def test_no_parallel_negation_in_crew_interjections(self) -> None:
+        """No parallel-negation rhetoric in crew interjection content (allowlist honored)."""
+        offenders: list[str] = []
+        for loc, text in _extract_interjection_strings():
+            pn = [v for v in _find_violations(text) if "parallel-negation" in v]
+            if pn:
+                offenders.append(f"{loc}: {text[:100]!r}")
+        assert not offenders, "Parallel-negation in crew interjection content:\n  " + "\n  ".join(
+            offenders[:20]
+        )
+
 
 # ---------------------------------------------------------------------------
 # Tests — structural invariants + catalog coverage sanity
@@ -604,20 +659,32 @@ class TestStationTaglineWritingBible:
         assert not offenders, "Parallel-negation in faction taglines:\n  " + "\n  ".join(offenders)
 
     def test_allowlist_suppresses_reach_tagline(self) -> None:
-        """Allowlist suppresses the Reach tagline; comma-form synthetic string is flagged."""
-        # The Reach tagline uses period parallelism, not comma — won't trip the current regex.
-        # But it IS in the allowlist as forward-defense; confirm _find_violations returns nothing.
+        """Broadened regex matches Reach tagline (period form); allowlist still suppresses it.
+
+        After WB-2, the broadened _PARALLEL_NEGATION regex catches period-separated forms,
+        so 'No laws. No mercy. No refunds.' now matches the regex. The allowlist is what
+        prevents it from appearing as a violation. This test asserts all three properties:
+        (1) the regex matches, (2) the allowlist suppresses, (3) a non-allowlisted period-form
+        string IS flagged.
+        """
         reach_tagline = "No laws. No mercy. No refunds."
+
+        # (1) The broadened regex now matches the Reach tagline's period form.
+        assert _PARALLEL_NEGATION.search(reach_tagline), (
+            "Broadened regex must match the Reach tagline period form 'No laws. No mercy. ...'"
+        )
+
+        # (2) The allowlist suppresses it — _find_violations returns no parallel-negation entry.
         violations = _find_violations(reach_tagline)
         pn_violations = [v for v in violations if "parallel-negation" in v]
         assert not pn_violations, (
             f"Allowlist should suppress Reach tagline but got: {pn_violations}"
         )
 
-        # A synthetic comma-form string NOT in the allowlist must be flagged.
-        synthetic = "No laws, no mercy."
+        # (3) A period-form synthetic NOT in the allowlist must be flagged.
+        synthetic = "No power. No heat."
         synthetic_violations = _find_violations(synthetic)
         synthetic_pn = [v for v in synthetic_violations if "parallel-negation" in v]
         assert synthetic_pn, (
-            "Comma-form parallel-negation 'No laws, no mercy.' should be flagged but wasn't."
+            "Period-form parallel-negation 'No power. No heat.' should be flagged but wasn't."
         )
