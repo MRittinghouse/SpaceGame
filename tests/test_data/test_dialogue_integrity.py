@@ -598,9 +598,7 @@ def _collect_all_flag_uses() -> tuple[dict[str, set[str]], dict[str, set[str]]]:
     return producers, consumers
 
 
-def _helper_access_patterns() -> (
-    list[tuple[str, str, "re.Pattern[str]", "re.Pattern[str]", bool]]
-):
+def _helper_access_patterns() -> list[tuple[str, str, "re.Pattern[str]", "re.Pattern[str]", bool]]:
     """Build (prefix, suffix, producer_re, consumer_re, is_parameterized) for each
     helper in ``spacegame.constants.flags``.
 
@@ -1071,9 +1069,7 @@ class TestNoArgHelperIntrospection:
     def test_no_arg_helper_consumer_regex_matches_local_alias_flags_get(self) -> None:
         """Consumer regex matches local-alias flags.get(okafor_legacy_mission_completed())."""
         patterns = _helper_access_patterns()
-        entry = next(
-            (p for p in patterns if p[0] == "okafor_legacy_mission_completed"), None
-        )
+        entry = next((p for p in patterns if p[0] == "okafor_legacy_mission_completed"), None)
         assert entry is not None, "'okafor_legacy_mission_completed' not in patterns"
         consumer_re = entry[3]
         snippet = "flags.get(okafor_legacy_mission_completed())"
@@ -1088,7 +1084,11 @@ class TestNoArgHelperIntrospection:
         cases = [
             ("met_", 'dialogue_flags[met_npc("marcus_jin")] = True', True),
             ("talked_to_", 'dialogue_flags[talked_to_npc("cargo_broker")] = True', True),
-            ("tutorial_bought_part_", 'dialogue_flags[tutorial_bought_part("engine")] = True', True),
+            (
+                "tutorial_bought_part_",
+                'dialogue_flags[tutorial_bought_part("engine")] = True',
+                True,
+            ),
             ("dual_tech_", 'dialogue_flags[dual_tech_revealed("ionic_burst")] = True', True),
         ]
         for prefix, snippet, expected_is_param in cases:
@@ -1117,7 +1117,7 @@ class TestNoArgHelperIntrospection:
         patterns = _helper_access_patterns()
         no_arg_entries = [p for p in patterns if not p[4]]
 
-        for prefix, suffix, _prod, _cons, _is_param in no_arg_entries:
+        for prefix, _suffix, _prod, _cons, _is_param in no_arg_entries:
             found_zero_param_helper = False
             for name, obj in inspect.getmembers(flags_module):
                 if name.startswith(("_", "extract_")) or not callable(obj):
