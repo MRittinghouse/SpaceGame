@@ -586,7 +586,7 @@ class TradingView(BaseView):
         self._refresh_button_states()
 
     def _refresh_button_states(self) -> None:
-        """Enable or disable Buy/Sell/Max buttons based on current state.
+        """Enable or disable Buy/Sell/Max/Sell-All buttons based on state.
 
         Disabled buttons carry a ``tool_tip_text`` that surfaces the reason
         on hover. This preempts the click-then-error pattern for the most
@@ -623,6 +623,18 @@ class TradingView(BaseView):
                     self.sell_max_button.enable()
                     self.sell_max_button.tool_tip_text = None
 
+        if self.sell_all_button:
+            # Sell All has its own gating: it operates on the whole cargo
+            # hold, so it does not depend on which row is selected the way
+            # Sell does. Only disable when there's no permit or no cargo.
+            reason = self._why_cannot_sell_all()
+            if reason is not None:
+                self.sell_all_button.disable()
+                self.sell_all_button.tool_tip_text = reason
+            else:
+                self.sell_all_button.enable()
+                self.sell_all_button.tool_tip_text = None
+
     def _why_cannot_buy(self) -> Optional[str]:
         """Return an in-voice reason Buy is disabled, or None if valid."""
         if not self._has_trade_permit():
@@ -658,6 +670,20 @@ class TradingView(BaseView):
         qty = self.player.ship.get_cargo_quantity(commodity_id)
         if qty <= 0:
             return "Nothing of that kind aboard."
+        return None
+
+    def _why_cannot_sell_all(self) -> Optional[str]:
+        """Return an in-voice reason Sell All is disabled, or None if valid.
+
+        Sell All sells every cargo entry at once, so unlike Sell it doesn't
+        require a cargo-list selection — only that the player has a permit
+        and that there is something aboard to sell.
+        """
+        if not self._has_trade_permit():
+            return "No trade permit here."
+        cargo = self.player.ship.current_cargo
+        if not any(qty > 0 for qty in cargo.values()):
+            return "Nothing to sell."
         return None
 
     def _get_selected_market_commodity(self) -> Optional[str]:
@@ -1217,10 +1243,7 @@ class TradingView(BaseView):
                 sell_price = self._get_black_market_sell_price(commodity_id)
             else:
                 sell_price = self.market.get_sell_price(commodity_id)
-            commodity_volumes = {c.id: c.volume_per_unit for c in self.commodities.values()}
-            success, _msg = self.player.sell_commodity(
-                commodity_id, quantity, sell_price, commodity_volumes
-            )
+            success, _msg = self.player.sell_commodity(commodity_id, quantity, sell_price)
             if success:
                 total_credits += sell_price * quantity
                 total_items += quantity

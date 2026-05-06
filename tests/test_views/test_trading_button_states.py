@@ -74,6 +74,9 @@ def _make_trading_view(
     view.buy_max_button = pygame_gui.elements.UIButton(pygame.Rect(0, 30, 100, 30), "MAX", ui)
     view.sell_button = pygame_gui.elements.UIButton(pygame.Rect(0, 60, 100, 30), "SELL", ui)
     view.sell_max_button = pygame_gui.elements.UIButton(pygame.Rect(0, 90, 100, 30), "MAX", ui)
+    view.sell_all_button = pygame_gui.elements.UIButton(
+        pygame.Rect(0, 120, 100, 30), "SELL ALL", ui
+    )
 
     # Selection helpers
     view._selected_market_id: str | None = "food"
@@ -164,6 +167,50 @@ class TestSellReasons:
         view._refresh_button_states()
         assert not view.sell_button.is_enabled
         assert "nothing" in view.sell_button.tool_tip_text.lower()
+
+
+class TestSellAllReasons:
+    """Each Sell-All-disable reason fires correctly.
+
+    Sell All gates differently from Sell: it operates on the whole cargo
+    hold, so it does not require a row selection — only a permit and at
+    least one unit aboard. Before this gating the button stayed clickable
+    with empty cargo, which surfaced the playtester confusion that led to
+    the underlying crash report (and the click-with-no-cargo no-op path).
+    """
+
+    def test_enabled_when_permit_and_cargo_present(self) -> None:
+        view = _make_trading_view(cargo={"food": 5})
+        view._refresh_button_states()
+        assert view.sell_all_button.is_enabled
+        assert view.sell_all_button.tool_tip_text is None
+
+    def test_enabled_without_cargo_selection(self) -> None:
+        # Selection independence is the whole point of Sell All. The
+        # button must stay enabled even with nothing highlighted on the
+        # cargo side, as long as cargo exists.
+        view = _make_trading_view(cargo={"food": 5})
+        view._selected_cargo_id = None
+        view._refresh_button_states()
+        assert view.sell_all_button.is_enabled
+
+    def test_disabled_when_no_permit(self) -> None:
+        view = _make_trading_view(has_permit=False, cargo={"food": 5})
+        view._refresh_button_states()
+        assert not view.sell_all_button.is_enabled
+        assert "permit" in view.sell_all_button.tool_tip_text.lower()
+
+    def test_disabled_when_cargo_empty(self) -> None:
+        view = _make_trading_view(cargo={})
+        view._refresh_button_states()
+        assert not view.sell_all_button.is_enabled
+        assert "nothing" in view.sell_all_button.tool_tip_text.lower()
+
+    def test_disabled_when_only_zero_qty_entries(self) -> None:
+        # A cargo dict with stale zero entries should still count as empty.
+        view = _make_trading_view(cargo={"food": 0, "water": 0})
+        view._refresh_button_states()
+        assert not view.sell_all_button.is_enabled
 
 
 class TestStateTransitions:
