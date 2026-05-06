@@ -5,10 +5,21 @@ Professional launcher with environment detection, dependency checking,
 and helpful error messages.
 """
 
-import sys
+import re
 import subprocess
+import sys
+import tomllib
 from pathlib import Path
 from typing import Optional, Tuple
+
+# Map PyPI dist names to importable module names where they differ.
+# pip dist names use hyphens; Python imports use underscores. The two are
+# mostly interchangeable, except where the project name and module name are
+# semantically unrelated (the pygame-ce → pygame case).
+_DIST_TO_IMPORT_NAME: dict[str, str] = {
+    "pygame-ce": "pygame",
+    "pygame-gui": "pygame_gui",
+}
 
 
 class Colors:
@@ -120,9 +131,46 @@ def find_python_executable() -> Tuple[Optional[Path], str]:
     return Path(sys.executable), "system Python"
 
 
+def load_runtime_dependencies() -> list[tuple[str, str]]:
+    """Read [project].dependencies from pyproject.toml.
+
+    Returns:
+        A list of (dist_name, import_name) pairs. ``dist_name`` is what pip
+        installs (e.g., ``pygame-ce``, ``numpy``); ``import_name`` is what
+        Python imports (e.g., ``pygame``). The two differ for some packages,
+        so dependency checking needs both.
+
+    Raises:
+        FileNotFoundError: pyproject.toml does not exist at the project root.
+        KeyError: pyproject.toml is missing the [project].dependencies table.
+        ValueError: a dependency string cannot be parsed for its name.
+    """
+    pyproject = get_project_root() / "pyproject.toml"
+    with open(pyproject, "rb") as f:
+        data = tomllib.load(f)
+
+    deps_raw = data["project"]["dependencies"]
+    pairs: list[tuple[str, str]] = []
+    for spec in deps_raw:
+        # PEP 508 dependency string: name[extras] (op version)? (; markers)?
+        # We only need the leading distribution name; everything after is
+        # version specifier or environment marker.
+        match = re.match(r"^[A-Za-z0-9_.\-]+", spec)
+        if not match:
+            raise ValueError(f"Could not parse dependency name from: {spec!r}")
+        dist_name = match.group(0)
+        import_name = _DIST_TO_IMPORT_NAME.get(dist_name, dist_name.replace("-", "_"))
+        pairs.append((dist_name, import_name))
+    return pairs
+
+
 def check_dependencies(python_exe: Path) -> bool:
     """
     Check if required dependencies are installed.
+
+    The required-packages list is derived from pyproject.toml's
+    ``[project].dependencies`` so the launcher and the project metadata
+    cannot silently drift apart.
 
     Args:
         python_exe: Path to Python executable
@@ -132,31 +180,37 @@ def check_dependencies(python_exe: Path) -> bool:
     """
     print_info("Checking dependencies...")
 
-    required_packages = ["pygame", "pygame_gui"]
-    missing_packages = []
+    try:
+        required = load_runtime_dependencies()
+    except (FileNotFoundError, KeyError, ValueError) as e:
+        print_error(f"Could not read dependencies from pyproject.toml: {e}")
+        return False
 
-    for package in required_packages:
+    missing_dist_names: list[str] = []
+
+    for dist_name, import_name in required:
         try:
             result = subprocess.run(
-                [str(python_exe), "-c", f"import {package}"],
+                [str(python_exe), "-c", f"import {import_name}"],
                 capture_output=True,
                 timeout=5
             )
             if result.returncode == 0:
-                print_success(f"{package} is installed")
+                print_success(f"{dist_name} is installed")
             else:
-                missing_packages.append(package)
-                print_error(f"{package} is NOT installed")
+                missing_dist_names.append(dist_name)
+                print_error(f"{dist_name} is NOT installed")
         except Exception as e:
-            print_warning(f"Could not check {package}: {e}")
-            missing_packages.append(package)
+            print_warning(f"Could not check {dist_name}: {e}")
+            missing_dist_names.append(dist_name)
 
-    if missing_packages:
+    if missing_dist_names:
         print_error("\nMissing required dependencies!")
         print("\nTo install missing dependencies, run:")
-        print(f"{Colors.YELLOW}  pip install {' '.join(missing_packages)}{Colors.ENDC}")
+        print(f"{Colors.YELLOW}  pip install {' '.join(missing_dist_names)}{Colors.ENDC}")
+        all_dist_names = " ".join(dist for dist, _ in required)
         print("\nOr install all dependencies with:")
-        print(f"{Colors.YELLOW}  pip install pygame pygame-gui{Colors.ENDC}")
+        print(f"{Colors.YELLOW}  pip install {all_dist_names}{Colors.ENDC}")
         return False
 
     print_success("All dependencies are installed!")
