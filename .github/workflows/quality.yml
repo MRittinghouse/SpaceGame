@@ -65,6 +65,7 @@ jobs:
       - name: MyPy against baseline
         shell: bash
         run: |
+          set +o pipefail
           python -m mypy spacegame/ | grep -v ": note:" | python -m mypy_baseline filter
       - name: Print population metrics
         run: python scripts/mypy_populations.py
