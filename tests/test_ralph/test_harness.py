@@ -557,7 +557,7 @@ class TestRunQualityGates:
         )
 
     def test_all_pass_returns_none(self) -> None:
-        """When all three gates pass, returns None (no regression)."""
+        """When all four gates pass, returns None (no regression)."""
         with patch(
             "ralph.harness.subprocess.run",
             side_effect=[
@@ -567,10 +567,35 @@ class TestRunQualityGates:
                     1, stdout="spacegame/foo.py:12: error: old error"
                 ),  # mypy (existing errors OK)
                 self._cp(0),  # mypy_baseline filter: all in baseline → clean
+                self._cp(0),  # mypy tools/crawler --follow-imports=silent
             ],
         ):
             result = harness._run_quality_gates()
         assert result is None
+
+    def test_crawler_mypy_fails_returns_mypy_crawler_tuple(self) -> None:
+        """tools/crawler is gated at zero tolerance, with no baseline escape.
+
+        spacegame/ may carry baselined errors; the crawler may not. A new error
+        there must block the sprint rather than be absorbed.
+        """
+        with patch(
+            "ralph.harness.subprocess.run",
+            side_effect=[
+                self._cp(0),  # ruff check passes
+                self._cp(0),  # ruff format passes
+                self._cp(1, stdout="spacegame/foo.py:12: error: old error"),  # mypy
+                self._cp(0),  # baseline filter: clean
+                self._cp(
+                    1, stdout="tools/crawler/crawler.py:9: error: new error"
+                ),  # crawler gate fails
+            ],
+        ):
+            result = harness._run_quality_gates()
+        assert result is not None
+        gate, err = result
+        assert gate == "mypy-crawler"
+        assert "tools/crawler" in err
 
     def test_ruff_check_fails_returns_ruff_tuple(self) -> None:
         """ruff check non-zero exit → ('ruff', error_text)."""

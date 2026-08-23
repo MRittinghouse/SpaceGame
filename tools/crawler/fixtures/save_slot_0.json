@@ -1,8 +1,8 @@
 {
   "version": "1.0",
   "metadata": {
-    "name": "Save 2026-08-23T19:51:58.030431",
-    "timestamp": "2026-08-23T19:51:58.030431",
+    "name": "Save 2026-08-23T19:55:27.021554",
+    "timestamp": "2026-08-23T19:55:27.021554",
     "credits": 833000,
     "location": "Nexus Prime",
     "playtime_seconds": 3,
@@ -415,18 +415,18 @@
     "trades_completed": 0,
     "total_profit": 0,
     "systems_visited": [
+      "herons_mark",
       "forgeworks",
-      "iron_depths",
-      "nova_research",
-      "havens_rest",
       "nexus_prime",
-      "axiom_labs",
       "breakstone",
       "crimson_reach",
-      "the_fulcrum",
+      "havens_rest",
+      "iron_depths",
+      "axiom_labs",
       "verdant",
+      "nova_research",
       "stellaris_port",
-      "herons_mark"
+      "the_fulcrum"
     ],
     "credits_earned_lifetime": 0,
     "credits_spent_lifetime": 0,
@@ -1143,8 +1143,8 @@
     "skipped": false,
     "active": false,
     "hints_dismissed": [
-      "builder_welcome",
-      "builder_module_confirm"
+      "builder_module_confirm",
+      "builder_welcome"
     ],
     "tutorial_approach": "story"
   },
