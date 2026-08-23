@@ -4648,7 +4648,7 @@ executing any QF sprint; it carries the evidence and the reasoning these sprints
 
 ### QF-1 — Quality gate infrastructure
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Source**: Spec A, Sections 1 and 2
 **Size**: S | **Effort**: 1 day
 **Depends on**: none | **Blocks**: QF-2
@@ -4845,29 +4845,24 @@ tests/test_views/test_trading_actions.py
 **Activity log.**
 - 2026-08-23 — todo (created from Spec A)
 - 2026-08-23 14:45 — harness: plan phase starting
-- 2026-08-23 15:15 — planning complete; verified all 4 context docs exist; confirmed 4 drifting
-- 2026-08-23 14:50 — harness: plan phase outcome=error, marking blocked. agent exited cleanly; commits referencing QF-1: 2; no sentinel in ROADMAP.md or in agent stdout
-  files (enumerated in touch zones); locked 8 decisions (chief among them: `ruff check` scoped to
-  `spacegame/` only, since tests/ has 874 pre-existing findings and Spec A's "already clean" claim
-  only holds for spacegame/); no scope expansion, no new sprints proposed; folded in 6 CI polish
-  items; cross-sprint reaction surface: none. PHASE_OK
+- 2026-08-23 14:50 — harness: plan phase outcome=error (sentinel-detection bug on wrapped log entries, later fixed in commit bfe1082); marking blocked
+- 2026-08-23 15:04 — harness: plan phase starting (retry)
+- 2026-08-23 15:15 — planning complete (commit e2e98c8); verified all 4 context docs exist; confirmed 4 drifting files (enumerated in touch zones); locked 8 decisions (chief: `ruff check` scoped to `spacegame/` only, since tests/ has 874 pre-existing findings and Spec A's "already clean" claim only holds for spacegame/); no scope expansion, no new sprints proposed; folded in 6 CI polish items; cross-sprint reaction surface: none. PHASE_OK
+- 2026-08-23 15:30 — harness: plan phase starting (re-verification after sentinel-detection fix)
+- 2026-08-23 15:35 — re-verified plan still valid: 4 drifting files unchanged, `.pre-commit-config.yaml` and `.github/workflows/quality.yml` still absent, `ruff check spacegame/` still clean, tests/ still has 874 findings; test baseline 10373/98 unchanged since prior plan; no scope changes needed, no new sprints proposed. PHASE_OK
 
 **Last phase report.**
 - Phase: plan
 - Outcome: PHASE_OK
-- Started: 2026-08-23 14:45
-- Completed: 2026-08-23 15:15
+- Started: 2026-08-23 15:30
+- Completed: 2026-08-23 15:35
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: e2e98c8
+- Commits: <pending>
 - New_sprints_proposed: none
-- Polish_items_folded_in: pip-cache, fail-fast-false, concurrency-group, tools.build-reuse,
-  default-language-version, format-then-retest-drifting-files
-- Decisions_locked: 8
-- Notes: The sprint is scope-appropriate as written. Key clarification: `ruff check` in the hook and
-  CI is scoped to `spacegame/` only — the "already clean" claim in Spec A is only true for that
-  path; tests/ has 874 pre-existing findings, out of scope for QF-1. Touch zones updated to
-  enumerate the exact 4 drifting test files (previously listed 2 by name plus "+2 further"). Plan
-  breaks into 11 steps across 3 commits.
+- Polish_items_folded_in: pip-cache, fail-fast-false, concurrency-group, tools.build-reuse, default-language-version, format-then-retest-drifting-files (all held over from 15:15 plan)
+- Decisions_locked: 8 (held over from 15:15 plan; no new decisions this pass)
+- Notes: Re-verification pass after harness sentinel-detection fix (bfe1082). Prior comprehensive plan (commit e2e98c8) is still valid — all four preconditions still hold in the tree. Cleaned up the fragmented/interleaved activity log so the PHASE_OK sentinel is on its own single line. Sprint remains ready for implementer. Key clarification (unchanged): `ruff check` in the hook and CI is scoped to `spacegame/` only. Touch zones enumerate the exact 4 drifting test files; plan breaks into 11 steps across 3 commits.
+
 ### QF-2 — MyPy baseline + population metrics
 
 **Status**: todo
