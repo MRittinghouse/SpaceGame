@@ -5116,7 +5116,7 @@ tests/test_compliance/test_import_boundaries.py     (NEW)
   lines). No cross-sprint reactions (foundational; no player-facing surface).
 ### QF-5 — Extract `Game.step()` from `Game.run()`
 
-**Status**: in-progress (planning)
+**Status**: blocked
 **Source**: Spec A, Section 3
 **Size**: M | **Effort**: 2-3 days
 **Depends on**: none | **Blocks**: QF-6
@@ -5298,6 +5298,7 @@ The direct downstream consumer is QF-6, which builds the crawler on top of `step
 - 2026-08-23 — todo (created from Spec A)
 - 2026-08-23 14:54 — harness: plan phase starting
 - 2026-08-23 15:20 — planning complete; 7 decisions locked, 8 implementation tasks defined,
+- 2026-08-23 14:58 — harness: plan phase outcome=error, marking blocked. agent exited cleanly; commits referencing QF-5: 2; no sentinel in ROADMAP.md or in agent stdout
   acceptance criteria tightened from 4 vague to 7 mechanically verifiable, no new sprints
   proposed, no polish items applicable (foundational refactor). PHASE_OK
 
