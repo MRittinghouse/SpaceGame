@@ -5660,7 +5660,7 @@ those are dependency wiring, not reactions.
 
 ### QF-7 — Crawler CI gate + state screenshots
 
-**Status**: in-progress (planning)
+**Status**: in-progress (implementing)
 **Source**: Spec A, Section 3
 **Size**: M | **Effort**: 3-5 days
 **Depends on**: QF-6 | **Blocks**: none
@@ -6017,6 +6017,7 @@ dependencies, not narrative reactions.
 - 2026-08-23 — todo (created from Spec A)
 - 2026-08-23 16:13 — harness: plan phase starting
 - 2026-08-23 20:15 — planning complete; verified both context docs (Spec A section 3 and
+- 2026-08-23 16:19 — harness: implement phase starting (rework cycle 0)
   quality.yml from QF-1) exist; audited QF-6 crawler surfaces (`_instrument_state_manager`,
   `step_once`, `write_reports`, `report_dict`) as extension points; expanded touch zones from
   2 broad entries to 10 precise paths; expanded acceptance criteria from 4 vague to 9
@@ -6026,18 +6027,33 @@ dependencies, not narrative reactions.
   (`--write-crash-baseline` flag, `$GITHUB_STEP_SUMMARY` emission, `note` field for baseline
   entries to double as a triage document); no new sprints proposed; cross-sprint reactions:
   none (foundational tooling). PHASE_OK
+- 2026-08-23 20:32 — implement phase: all tasks complete. Tasks 1-6 committed (b792b45): screenshot
+  hook in crawler.py using `_screenshotted_states` set (coverage tracker already records visit by
+  the time step_once bottom runs, so independent tracking was needed); baseline.py module with
+  load/compare/write + include_from aggregation; 3 new CLI flags with argparse mutual-exclusion
+  group; __main__.py wires flags + GITHUB_STEP_SUMMARY emission; quality.yml crawl_short job;
+  crawl_nightly.yml workflow. Task 7 committed as isolated commit (c9e1ea6): 6-session sweep
+  (3 checkpoints x 2 seeds x 5000 actions) found 0 crashes; baseline.json has empty signatures
+  array meaning all future crashes will fail the gate. Lint/format fixes committed (0cdc9f7).
+  Full suite: 10463 passed, 98 skipped (+28 vs baseline 10435). All 9 ACs satisfied. PHASE_OK
 
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-08-23 16:13
-- Completed: 2026-08-23 20:15
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: fd77f0d
-- New_sprints_proposed: none
-- Polish_items_folded_in: --write-crash-baseline flag for manual baseline regen; GITHUB_STEP_SUMMARY markdown emission with new-signature callouts; per-entry `note` field on baseline entries so the file reads as a triage doc rather than a fingerprint dump; 30-day artifact retention (below the 90-day default); explicit `if: always()` on artifact upload so failed runs still surface their artifact
-- Decisions_locked: 11
-- Notes: Both context docs verified present. Sprint core scope (crawl_short + screenshots + nightly sweep + coverage-in-summary) matches Spec A Section 3 verbatim. Key expansion: introduced a checked-in `crash_baseline.json` (mypy-baseline pattern) as the mechanism for AC 3 ("newly introduced crash fails the job"), because without a baseline either every crash fails or none do — Spec A projected "hundreds" of crashes on first real run. Both push and nightly jobs gate on the same baseline so a PR can't slip a new reachable crash to master before the nightly catches it. Task 7 seeds the baseline in-sprint via a 6-session sweep so QF-8 has a concrete file to prioritize against.
+- Started: 2026-08-23 20:20
+- Completed: 2026-08-23 20:45
+- Files_changed: tools/crawler/crawler.py, tools/crawler/cli.py, tools/crawler/__main__.py, tools/crawler/baseline.py, tools/crawler/crash_baseline.json, tests/test_crawler/test_baseline.py, tests/test_crawler/test_screenshots.py, tests/test_crawler/test_cli.py, tests/test_crawler/test_ci_summary.py, .github/workflows/quality.yml, .github/workflows/crawl_nightly.yml
+- Commits: b792b45, c9e1ea6, 0cdc9f7
+- Tests_added: 28
+- Tests_baseline: 10435
+- Tests_passing: 10463
+- Tests_skipped: 98
+- Lint_clean: yes
+- Format_clean: yes
+- SI3_scanner_clean: n/a
+- Writing_bible_clean: n/a
+- Touch_zones_respected: yes
+- Notes: All 9 acceptance criteria satisfied. Screenshot hook uses independent `_screenshotted_states` set because `_instrument_state_manager` records visits during game.step() before step_once bottom runs. Baseline is empty (0 signatures) because 6-session sweep found no crashes -- game is stable on all 3 checkpoints. Future crashes will fail the CI gate immediately.
 ### QF-8 — Population A burndown outside game.py
 
 **Status**: blocked
