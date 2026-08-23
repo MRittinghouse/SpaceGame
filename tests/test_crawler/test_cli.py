@@ -48,27 +48,46 @@ class TestCLINewFlagsQF7:
         assert ns.screenshot_dir is None
 
     def test_cli_accepts_crash_baseline(self) -> None:
-        ns = parse_args([
-            "--seed", "42", "--actions", "10",
-            "--crash-baseline", "tools/crawler/crash_baseline.json",
-        ])
+        ns = parse_args(
+            [
+                "--seed",
+                "42",
+                "--actions",
+                "10",
+                "--crash-baseline",
+                "tools/crawler/crash_baseline.json",
+            ]
+        )
         assert ns.crash_baseline == "tools/crawler/crash_baseline.json"
 
     def test_cli_accepts_write_crash_baseline(self) -> None:
-        ns = parse_args([
-            "--seed", "42", "--actions", "10",
-            "--write-crash-baseline", "/tmp/baseline.json",
-        ])
+        ns = parse_args(
+            [
+                "--seed",
+                "42",
+                "--actions",
+                "10",
+                "--write-crash-baseline",
+                "/tmp/baseline.json",
+            ]
+        )
         assert ns.write_crash_baseline == "/tmp/baseline.json"
 
     def test_cli_rejects_both_baseline_flags(self) -> None:
         """Passing --crash-baseline and --write-crash-baseline together should fail."""
         with pytest.raises(SystemExit):
-            parse_args([
-                "--seed", "42", "--actions", "10",
-                "--crash-baseline", "a.json",
-                "--write-crash-baseline", "b.json",
-            ])
+            parse_args(
+                [
+                    "--seed",
+                    "42",
+                    "--actions",
+                    "10",
+                    "--crash-baseline",
+                    "a.json",
+                    "--write-crash-baseline",
+                    "b.json",
+                ]
+            )
 
     def test_cli_crash_baseline_defaults_to_none(self) -> None:
         ns = parse_args(["--seed", "42", "--actions", "10"])

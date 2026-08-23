@@ -7,8 +7,6 @@ import os
 from pathlib import Path
 from typing import Any
 
-import pytest
-
 os.environ.setdefault("SDL_VIDEODRIVER", "dummy")
 os.environ.setdefault("SDL_AUDIODRIVER", "dummy")
 
@@ -61,9 +59,7 @@ class TestCISummary:
 
         game = MinimalGame()
         fixtures = CrawlerFixtures(game_factory=lambda: game)
-        crawler = Crawler(
-            seed=42, actions=10, output_dir=str(tmp_path / "runs"), fixtures=fixtures
-        )
+        crawler = Crawler(seed=42, actions=10, output_dir=str(tmp_path / "runs"), fixtures=fixtures)
         crawler.run()
         return crawler
 
@@ -79,8 +75,6 @@ class TestCISummary:
         fixtures = CrawlerFixtures(game_factory=lambda: game)
 
         # Patch the Crawler constructor to use our fake game.
-        original_crawler = __main__.Crawler
-
         class PatchedCrawler(Crawler):
             def __init__(self, **kwargs: Any) -> None:
                 kwargs.setdefault("output_dir", str(tmp_path / "runs"))
@@ -107,8 +101,6 @@ class TestCISummary:
 
         game = MinimalGame()
         fixtures = CrawlerFixtures(game_factory=lambda: game)
-
-        original_crawler = __main__.Crawler
 
         class PatchedCrawler(Crawler):
             def __init__(self, **kwargs: Any) -> None:
@@ -138,10 +130,16 @@ class TestCLIBaselineWiring:
                 super().__init__(**kwargs, fixtures=fixtures)
 
         monkeypatch.setattr(__main__, "Crawler", PatchedCrawler)
-        result = __main__.main([
-            "--seed", "42", "--actions", "10",
-            "--write-crash-baseline", str(baseline_path),
-        ])
+        result = __main__.main(
+            [
+                "--seed",
+                "42",
+                "--actions",
+                "10",
+                "--write-crash-baseline",
+                str(baseline_path),
+            ]
+        )
         assert result == 0
         assert baseline_path.exists(), "baseline file should be written"
         data = json.loads(baseline_path.read_text())
@@ -166,17 +164,29 @@ class TestCLIBaselineWiring:
 
         # Write a baseline first.
         baseline_path = tmp_path / "baseline.json"
-        result_write = __main__.main([
-            "--seed", "42", "--actions", "10",
-            "--write-crash-baseline", str(baseline_path),
-        ])
+        result_write = __main__.main(
+            [
+                "--seed",
+                "42",
+                "--actions",
+                "10",
+                "--write-crash-baseline",
+                str(baseline_path),
+            ]
+        )
         assert result_write == 0
 
         # Compare against that baseline — all crashes are known, so exit 0.
-        result_compare = __main__.main([
-            "--seed", "42", "--actions", "10",
-            "--crash-baseline", str(baseline_path),
-        ])
+        result_compare = __main__.main(
+            [
+                "--seed",
+                "42",
+                "--actions",
+                "10",
+                "--crash-baseline",
+                str(baseline_path),
+            ]
+        )
         assert result_compare == 0
 
     def test_compare_baseline_exits_1_on_novel_crash(
@@ -199,7 +209,9 @@ class TestCLIBaselineWiring:
         # Write an EMPTY baseline so any crash would be novel.
         baseline_path = tmp_path / "baseline.json"
         baseline_path.write_text(
-            json.dumps({"generated_at": "2026-08-23T00:00:00Z", "generated_from": [], "signatures": []})
+            json.dumps(
+                {"generated_at": "2026-08-23T00:00:00Z", "generated_from": [], "signatures": []}
+            )
         )
 
         # Inject a crash into the crawler via pre_step_hook.
@@ -221,10 +233,16 @@ class TestCLIBaselineWiring:
                 super().__init__(**kwargs, fixtures=fixtures2)
 
         monkeypatch.setattr(__main__, "Crawler", CrashingCrawler)
-        result = __main__.main([
-            "--seed", "42", "--actions", "10",
-            "--crash-baseline", str(baseline_path),
-        ])
+        result = __main__.main(
+            [
+                "--seed",
+                "42",
+                "--actions",
+                "10",
+                "--crash-baseline",
+                str(baseline_path),
+            ]
+        )
         # If the crawler found a crash not in baseline, expect exit 1.
         # (If no crash happened, the test should still exit 0; we assert based on
         # whether any crashes were recorded.)

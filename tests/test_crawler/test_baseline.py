@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import json
 import os
-import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -44,7 +43,7 @@ class TestLoadBaseline:
 
         bad = tmp_path / "bad.json"
         bad.write_text("not valid json {{{{")
-        with pytest.raises(Exception):
+        with pytest.raises(json.JSONDecodeError):
             load_baseline(str(bad))
 
     def test_load_valid_baseline_returns_signature_set(self, tmp_path: Path) -> None:
@@ -244,6 +243,13 @@ class TestBaselineFileIsWellformed:
         assert isinstance(data["signatures"], list)
         assert len(data["signatures"]) == 1
         entry = data["signatures"][0]
-        for field in ("signature", "exception_class", "oracle", "state_at_crash",
-                      "first_seed", "first_action_index", "occurrence_count"):
+        for field in (
+            "signature",
+            "exception_class",
+            "oracle",
+            "state_at_crash",
+            "first_seed",
+            "first_action_index",
+            "occurrence_count",
+        ):
             assert field in entry, f"missing field {field!r} in baseline entry"

@@ -3,11 +3,8 @@
 from __future__ import annotations
 
 import os
-import time
 from pathlib import Path
 from typing import Any
-
-import pytest
 
 os.environ.setdefault("SDL_VIDEODRIVER", "dummy")
 os.environ.setdefault("SDL_AUDIODRIVER", "dummy")
@@ -92,13 +89,14 @@ class TestScreenshotCapture:
         crawler.run()
         run_dir = crawler.write_reports()
         screenshots_dir = run_dir / "screenshots"
-        assert not screenshots_dir.exists(), "screenshots dir should not exist when screenshot_dir=None"
+        assert not screenshots_dir.exists(), (
+            "screenshots dir should not exist when screenshot_dir=None"
+        )
 
     def test_screenshot_capture_writes_one_png_per_reached_state(self, tmp_path: Path) -> None:
         from spacegame.config import GameState
         from tools.crawler.crawler import Crawler, CrawlerFixtures
 
-        visited_states: list[GameState] = []
         game_instance = ScreenshotCapturingGame()
 
         all_states = list(GameState)
@@ -128,7 +126,9 @@ class TestScreenshotCapture:
         assert screenshots_dir.exists(), "screenshots directory should be created"
 
         # Every reached state should have exactly one PNG.
-        reached = {name for name, was_reached in crawler.coverage.states_reached.items() if was_reached}
+        reached = {
+            name for name, was_reached in crawler.coverage.states_reached.items() if was_reached
+        }
         assert len(reached) > 0, "crawler should have reached at least one state"
 
         for name in reached:
@@ -136,7 +136,9 @@ class TestScreenshotCapture:
             assert png.exists(), f"Expected screenshot for reached state {name!r}"
 
         # No PNG for unreached states.
-        not_reached = {name for name, was_reached in crawler.coverage.states_reached.items() if not was_reached}
+        not_reached = {
+            name for name, was_reached in crawler.coverage.states_reached.items() if not was_reached
+        }
         for name in not_reached:
             png = screenshots_dir / f"{name}.png"
             assert not png.exists(), f"Should not have screenshot for unreached state {name!r}"
@@ -176,7 +178,9 @@ class TestScreenshotCapture:
         # Only one file should exist with that name (no duplicates, no collision).
         all_pngs = list(screenshots_dir.glob("*.png"))
         matching = [p for p in all_pngs if p.stem == target_state.name]
-        assert len(matching) == 1, f"Expected exactly 1 PNG for {target_state.name}, got {len(matching)}"
+        assert len(matching) == 1, (
+            f"Expected exactly 1 PNG for {target_state.name}, got {len(matching)}"
+        )
 
         # The file should have been written only once: its size > 0.
         assert png.stat().st_size > 0, "PNG file should not be empty"

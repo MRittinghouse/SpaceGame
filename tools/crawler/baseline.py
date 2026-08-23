@@ -76,7 +76,7 @@ def write_baseline(
     merged: dict[str, CrashRecord] = dict(crashes)
 
     # Merge any additional crashes.json files.
-    for extra_path in (include_from or []):
+    for extra_path in include_from or []:
         p = Path(extra_path)
         if not p.exists():
             print(f"include_from path not found: {extra_path!r}", file=sys.stderr)
