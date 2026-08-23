@@ -121,6 +121,7 @@ class CrawlerConfig:
     debug_credits: int = 0
     output_dir: Optional[str] = None
     verbose: bool = False
+    screenshot_dir: Optional[str] = None
 
 
 @dataclass
@@ -155,6 +156,7 @@ class Crawler:
         debug_credits: int = 0,
         output_dir: Optional[str] = None,
         verbose: bool = False,
+        screenshot_dir: Optional[str] = None,
         *,
         fixtures: Optional[CrawlerFixtures] = None,
     ) -> None:
@@ -168,6 +170,8 @@ class Crawler:
             output_dir: Directory to write crawler_runs output to (defaults
                 to ``crawler_runs`` under CWD).
             verbose: If True, record the full action trace to disk.
+            screenshot_dir: Subdirectory name under the run dir for screenshots.
+                When None or empty, screenshots are disabled.
             fixtures: Optional test-only hooks. Not used in production.
         """
         self.config = CrawlerConfig(
@@ -177,6 +181,7 @@ class Crawler:
             debug_credits=debug_credits,
             output_dir=output_dir,
             verbose=verbose,
+            screenshot_dir=screenshot_dir,
         )
         self._fixtures = fixtures or CrawlerFixtures()
 
@@ -193,6 +198,12 @@ class Crawler:
 
         self.game: Any = None
         self._is_running_boot = False
+
+        # Lazy-initialised run directory (set on first write or first screenshot).
+        self._run_dir: Optional[Path] = None
+
+        # States for which a screenshot has already been saved this session.
+        self._screenshotted_states: set[str] = set()
 
     # ------------------------------------------------------------------
     # Boot / shutdown
@@ -503,6 +514,8 @@ class Crawler:
         # Track visits (in case something other than change_state moved us).
         current = getattr(self.game.state_manager, "current_state", None)
         if current is not None:
+            # Screenshot hook: capture on first visit, before recording the visit.
+            self._maybe_screenshot(current)
             self.coverage.record_visit(current)
 
         _ = recorded  # kept for verbose logger
@@ -783,6 +796,40 @@ class Crawler:
         return None
 
     # ------------------------------------------------------------------
+    # Screenshot capture
+    # ------------------------------------------------------------------
+
+    def _maybe_screenshot(self, state: Any) -> None:
+        """Capture a screenshot of the current frame if this is the first visit.
+
+        Uses an independent ``_screenshotted_states`` set rather than
+        ``coverage.states_reached`` because the coverage tracker may have
+        already recorded this visit (via the instrumented ``change_state``
+        that fires mid-step), making the coverage check always-true by the
+        time this method runs.
+
+        Args:
+            state: Current GameState value (checked for first-visit status).
+        """
+        if not self.config.screenshot_dir:
+            return
+        state_name = state.name if isinstance(state, GameState) else str(state)
+        if state_name in self._screenshotted_states:
+            return  # already screenshotted in this session
+        self._screenshotted_states.add(state_name)
+        screen = getattr(self.game, "screen", None)
+        if not isinstance(screen, pygame.Surface):
+            return  # no valid surface (e.g. crash path)
+        run_dir = self._get_run_dir()
+        screenshots_path = run_dir / self.config.screenshot_dir
+        screenshots_path.mkdir(parents=True, exist_ok=True)
+        dest = screenshots_path / f"{state_name}.png"
+        try:
+            pygame.image.save(screen, str(dest))
+        except Exception:
+            pass  # screenshot failure is non-fatal; crash record carries state name
+
+    # ------------------------------------------------------------------
     # Reporting
     # ------------------------------------------------------------------
 
@@ -800,16 +847,29 @@ class Crawler:
             "crashes": [c.to_dict() for c in self.crashes.values()],
         }
 
+    def _get_run_dir(self) -> Path:
+        """Return (and lazily create) the run output directory.
+
+        The directory is created once and reused for both screenshots and
+        written reports so all artifacts land in the same timestamped folder.
+
+        Returns:
+            Path to the run directory.
+        """
+        if self._run_dir is None:
+            base = self.config.output_dir or "crawler_runs"
+            ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+            self._run_dir = Path(base) / f"{self.config.seed}-{ts}"
+            self._run_dir.mkdir(parents=True, exist_ok=True)
+        return self._run_dir
+
     def write_reports(self) -> Path:
         """Persist coverage.json + crashes.json to the run output directory.
 
         Returns:
             The Path to the run directory.
         """
-        base = self.config.output_dir or "crawler_runs"
-        ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-        run_dir = Path(base) / f"{self.config.seed}-{ts}"
-        run_dir.mkdir(parents=True, exist_ok=True)
+        run_dir = self._get_run_dir()
 
         coverage_path = run_dir / "coverage.json"
         crashes_path = run_dir / "crashes.json"

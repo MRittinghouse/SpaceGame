@@ -55,6 +55,37 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help="Directory to write crawler_runs output to (defaults to CWD/crawler_runs).",
     )
+    parser.add_argument(
+        "--screenshot-dir",
+        type=str,
+        default=None,
+        dest="screenshot_dir",
+        help=(
+            "Subdirectory under the run directory to write per-state screenshots. "
+            "When absent or empty, screenshots are disabled."
+        ),
+    )
+    baseline_group = parser.add_mutually_exclusive_group()
+    baseline_group.add_argument(
+        "--crash-baseline",
+        type=str,
+        default=None,
+        dest="crash_baseline",
+        help=(
+            "Path to a crash-baseline JSON file. "
+            "After the run, exit 1 if any crash signature is not in the baseline."
+        ),
+    )
+    baseline_group.add_argument(
+        "--write-crash-baseline",
+        type=str,
+        default=None,
+        dest="write_crash_baseline",
+        help=(
+            "Write the current session's crash signatures to PATH (sorted; overwrites). "
+            "Used for manual baseline regeneration. Mutually exclusive with --crash-baseline."
+        ),
+    )
     return parser
 
 
