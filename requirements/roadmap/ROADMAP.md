@@ -5154,9 +5154,11 @@ tests/test_engine/test_game.py
   a headless smoke frame, and a determinism assertion using seeded RNG samples.
 
 **Acceptance criteria.**
-1. `Game.step(dt: float, events: list[pygame.event.Event]) -> None` exists on `Game`; `Game.run()`'s
-   body is exactly `while self.running: dt = self.clock.tick(FPS_TARGET) / 1000.0; events =
-   pygame.event.get(); self.step(dt, events)` plus the pre-loop logger call and post-loop `quit()`.
+1. `Game.step(dt: float, events: list[pygame.event.Event]) -> None` exists on `Game`. `Game.run()`'s
+   body contains only: the pre-loop `logger.info("Starting main game loop...")` call, `self.running
+   = True`, a `while self.running:` loop whose body is exactly `dt = self.clock.tick(FPS_TARGET) /
+   1000.0; events = pygame.event.get(); self.step(dt, events)`, then a post-loop
+   `logger.info("Game loop ended")` and `self.quit()`.
 2. Calling `game.step(1/60.0, [])` on an initialized `Game` (with `initialize_states()` invoked)
    completes without exception under `SDL_VIDEODRIVER=dummy` and `SDL_AUDIODRIVER=dummy`.
 3. Calling `game.step(1/60.0, [pygame.event.Event(pygame.QUIT)])` sets `game.running = False`.
@@ -5165,7 +5167,8 @@ tests/test_engine/test_game.py
 5. Two `Game()` instances, each seeded with `seed_rngs(42)`, `initialize_states()`, driven with an
    identical synthetic event sequence of N `step()` calls, agree on `state_manager.current_state`
    and on the next `random.random()` sample drawn after the final step.
-6. Full pytest suite pass count `>= 10370` (the pre-phase baseline). No new failures introduced.
+6. Full pytest suite pass count `>= 10375` (the pre-phase baseline recorded by the harness for this
+   sprint). No new failures introduced. Pre-existing 98 skips are fine.
 7. Existing tests in `tests/test_engine/test_game.py` continue to pass with no modification (parity
    check for the extraction).
 
@@ -5278,8 +5281,8 @@ Task 6 — Implement `Game.seed_rngs(seed)`.
 - Test surface: `test_seed_rngs_reproduces_random`, `test_seed_rngs_signature`.
 
 Task 7 — Full-suite validation and behaviour parity.
-- Run `pytest -n auto -q` from repo root. Confirm pass count `>= 10370` (baseline). Any new failure
-  is a regression — fix or block.
+- Run `pytest -n auto -q` from repo root. Confirm pass count `>= 10375` (baseline recorded for this
+  sprint). Any new failure is a regression — fix or block.
 - Run `ruff format spacegame/engine/game.py tests/test_engine/test_game.py` and
   `ruff check spacegame/engine/game.py tests/test_engine/test_game.py` (scoped, per AGENT_GUIDE
   line 110).
@@ -5303,31 +5306,44 @@ The direct downstream consumer is QF-6, which builds the crawler on top of `step
 **Activity log.**
 - 2026-08-23 — todo (created from Spec A)
 - 2026-08-23 14:54 — harness: plan phase starting
+- 2026-08-23 14:58 — harness: plan phase outcome=error, marking blocked. agent exited cleanly;
+  commits referencing QF-5: 2; no sentinel in ROADMAP.md or in agent stdout (root cause: wrapped
+  activity-log entries hid the sentinel; sentinel detector later fixed in bfe1082)
 - 2026-08-23 15:20 — planning complete; 7 decisions locked, 8 implementation tasks defined,
-- 2026-08-23 14:58 — harness: plan phase outcome=error, marking blocked. agent exited cleanly; commits referencing QF-5: 2; no sentinel in ROADMAP.md or in agent stdout
   acceptance criteria tightened from 4 vague to 7 mechanically verifiable, no new sprints
   proposed, no polish items applicable (foundational refactor). PHASE_OK
+- 2026-08-23 15:21 — harness: plan phase starting (re-run after harness finalize=error)
+- 2026-08-23 16:30 — re-verification pass: all 3 context docs still present, game.py still
+  6549 lines with run() at 6243 and FPS caption at 6528 (line references stable), numpy/random
+  not imported in game.py (Task 6 add still required), tests/test_engine/ still lacks conftest
+  (module-level SDL setup still needed). Corrections applied: Status field synced with index
+  (in-progress-parenthetical -> todo), AC #6 and Task 7 baseline updated 10370 -> 10375 to
+  match pre-phase count, AC #1 tightened to enumerate all pre/post-loop elements of run() body.
+  Plan and locked decisions unchanged. PHASE_OK
 
 **Last phase report.**
 - Phase: plan
 - Outcome: PHASE_OK
-- Started: 2026-08-23 14:54
-- Completed: 2026-08-23 15:20
+- Started: 2026-08-23 16:15
+- Completed: 2026-08-23 16:30
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 20d18a7
+- Commits: pending (this phase)
 - New_sprints_proposed: none
 - Polish_items_folded_in: none (foundational engine refactor; no player-facing surface, no
   narrative, no save/load, no tutorial, no achievements applicable)
-- Decisions_locked: 7
-- Notes: All three context docs verified present (spec, game.py, state_manager.py). Sprint scope
-  is a pure code extraction of ~270 lines from `Game.run()` into `Game.step(dt, events)` plus a
-  new `Game.seed_rngs(seed)` entry point. Locked decisions clarify signature, what stays in run
-  vs. step, quit-flag handling, and that seeding is opt-in (not called during
-  `initialize_new_game`) to preserve the "no gameplay change" acceptance criterion. Determinism
-  criterion uses observable surrogates (current_state + next random sample) rather than brittle
-  full-state equality. Acknowledged out-of-scope: `market.py:298,307`
-  `random.seed`/`random.seed()` pattern perturbs global state — noted for QF-6 or QF-8, not this
-  sprint. Cross-sprint reactions: none (no player-facing content).
+- Decisions_locked: 7 (unchanged from prior planning run)
+- Notes: Second planning run over QF-5. Prior run (commit 20d18a7) produced a sound plan but the
+  harness marked it error due to a sentinel-detection bug (fixed in bfe1082) that could not
+  parse the wrapped activity-log line. This re-verification confirms all context docs still
+  exist, all cited line numbers in game.py still hold (6243/6262/6267/6528), and neither `random`
+  nor `numpy` is imported at game.py module top (Task 6 must add both). Three small corrections:
+  Status parenthetical reduced to plain `todo` (matches index), baseline pass count updated
+  10370 -> 10375 in AC #6 and Task 7 (real pre-phase baseline per harness), AC #1 tightened to
+  spell out every element retained in `run()` (pre-loop logger + running=True; while body;
+  post-loop logger + quit()) so the reviewer can grep-check exactly what stays. Cross-sprint
+  reactions: none (no player-facing content). Acknowledged out-of-scope: market.py:298,307
+  `random.seed`/`random.seed()` reset-to-entropy pattern perturbs global state — noted for
+  QF-6/QF-8, not this sprint.
 ### QF-6 — Play-harness crawler core
 
 **Status**: todo
