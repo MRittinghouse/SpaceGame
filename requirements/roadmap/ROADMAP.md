@@ -5122,7 +5122,7 @@ tests/test_compliance/test_import_boundaries.py     (NEW)
 - Notes: Plan audit: sound; D1/D2/D3 all defensible and correctly implemented. AST-based scanner is clean, deterministic, and fully self-verified. No regressions.
 ### QF-5 — Extract `Game.step()` from `Game.run()`
 
-**Status**: todo
+**Status**: in-progress (implementing)
 **Source**: Spec A, Section 3
 **Size**: M | **Effort**: 2-3 days
 **Depends on**: none | **Blocks**: QF-6
@@ -5307,6 +5307,7 @@ The direct downstream consumer is QF-6, which builds the crawler on top of `step
 - 2026-08-23 — todo (created from Spec A)
 - 2026-08-23 14:54 — harness: plan phase starting
 - 2026-08-23 14:58 — harness: plan phase outcome=error, marking blocked. agent exited cleanly;
+- 2026-08-23 15:25 — harness: implement phase starting (rework cycle 0)
   commits referencing QF-5: 2; no sentinel in ROADMAP.md or in agent stdout (root cause: wrapped
   activity-log entries hid the sentinel; sentinel detector later fixed in bfe1082)
 - 2026-08-23 15:20 — planning complete; 7 decisions locked, 8 implementation tasks defined,
@@ -5320,30 +5321,31 @@ The direct downstream consumer is QF-6, which builds the crawler on top of `step
   (in-progress-parenthetical -> todo), AC #6 and Task 7 baseline updated 10370 -> 10375 to
   match pre-phase count, AC #1 tightened to enumerate all pre/post-loop elements of run() body.
   Plan and locked decisions unchanged. PHASE_OK
+- 2026-08-23 15:26 — implementation: wrote 6 failing tests (step signature, headless smoke,
+  QUIT exit, seed_rngs signature, RNG reproducibility, step determinism); confirmed all 6 failed
+  against unmodified game.py.
+- 2026-08-23 15:26 — implementation: extracted Game.step() verbatim from Game.run(); slimmed
+  run() to timing shell; added Game.seed_rngs(seed); added import random + numpy as np.
+- 2026-08-23 15:26 — all 9 tests green (3 prior + 6 new); full suite 10382 passed (baseline
+  10375, +7); lint clean; format clean; touch zones respected. PHASE_OK
 
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-08-23 16:15
-- Completed: 2026-08-23 16:30
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 126872a
-- New_sprints_proposed: none
-- Polish_items_folded_in: none (foundational engine refactor; no player-facing surface, no
-  narrative, no save/load, no tutorial, no achievements applicable)
-- Decisions_locked: 7 (unchanged from prior planning run)
-- Notes: Second planning run over QF-5. Prior run (commit 20d18a7) produced a sound plan but the
-  harness marked it error due to a sentinel-detection bug (fixed in bfe1082) that could not
-  parse the wrapped activity-log line. This re-verification confirms all context docs still
-  exist, all cited line numbers in game.py still hold (6243/6262/6267/6528), and neither `random`
-  nor `numpy` is imported at game.py module top (Task 6 must add both). Three small corrections:
-  Status parenthetical reduced to plain `todo` (matches index), baseline pass count updated
-  10370 -> 10375 in AC #6 and Task 7 (real pre-phase baseline per harness), AC #1 tightened to
-  spell out every element retained in `run()` (pre-loop logger + running=True; while body;
-  post-loop logger + quit()) so the reviewer can grep-check exactly what stays. Cross-sprint
-  reactions: none (no player-facing content). Acknowledged out-of-scope: market.py:298,307
-  `random.seed`/`random.seed()` reset-to-entropy pattern perturbs global state — noted for
-  QF-6/QF-8, not this sprint.
+- Started: 2026-08-23 15:25
+- Completed: 2026-08-23 15:26
+- Files_changed: spacegame/engine/game.py, tests/test_engine/test_game.py
+- Commits: a27fe06, f9ebfb9, 8dadf7b
+- Tests_added: 6
+- Tests_baseline: 10375
+- Tests_passing: 10382
+- Tests_skipped: 98
+- Lint_clean: yes
+- Format_clean: yes
+- SI3_scanner_clean: n/a
+- Writing_bible_clean: n/a
+- Touch_zones_respected: yes
+- Notes: Game.step() extracted verbatim from Game.run(); run() reduced to timing shell; Game.seed_rngs(seed) added seeding both stdlib random and numpy.random. All 7 acceptance criteria satisfied.
 ### QF-6 — Play-harness crawler core
 
 **Status**: todo
