@@ -9,12 +9,12 @@ from typing import Any
 os.environ.setdefault("SDL_VIDEODRIVER", "dummy")
 os.environ.setdefault("SDL_AUDIODRIVER", "dummy")
 
-import pygame  # noqa: E402
-import pygame_gui  # noqa: E402
+import pygame
+import pygame_gui
 
-from spacegame.config import GameState  # noqa: E402
-from spacegame.engine.input_handler import InputHandler  # noqa: E402
-from tools.crawler.crawler import Crawler, CrawlerFixtures  # noqa: E402
+from spacegame.config import GameState
+from spacegame.engine.input_handler import InputHandler
+from tools.crawler.crawler import Crawler, CrawlerFixtures
 
 
 class _SM:

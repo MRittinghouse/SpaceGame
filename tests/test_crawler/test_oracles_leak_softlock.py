@@ -8,11 +8,11 @@ from typing import Any
 os.environ.setdefault("SDL_VIDEODRIVER", "dummy")
 os.environ.setdefault("SDL_AUDIODRIVER", "dummy")
 
-import pygame  # noqa: E402
-import pygame_gui  # noqa: E402
+import pygame
+import pygame_gui
 
-from spacegame.config import GameState  # noqa: E402
-from spacegame.engine.input_handler import InputHandler  # noqa: E402
+from spacegame.config import GameState
+from spacegame.engine.input_handler import InputHandler
 from tools.crawler.crawler import Crawler, CrawlerFixtures
 
 
@@ -126,7 +126,7 @@ class TestSoftlockOracle:
         # For a true softlock scenario, we clear that too by clearing the
         # bound_escape_keys via monkeypatch:
         original = crawler.bound_escape_keys
-        crawler.bound_escape_keys = lambda: []  # type: ignore[assignment]
+        crawler.bound_escape_keys = list  # type: ignore[assignment]
         try:
             crawler.step_once()
         finally:
@@ -144,7 +144,7 @@ class TestSoftlockOracle:
             fixtures=CrawlerFixtures(game_factory=lambda: game),
         )
         crawler.boot()
-        crawler.bound_escape_keys = lambda: []  # type: ignore[assignment]
+        crawler.bound_escape_keys = list  # type: ignore[assignment]
         crawler.step_once()
         softlocks = [c for c in crawler.crashes.values() if c.oracle == "softlock"]
         assert not softlocks, "MAIN_MENU is exempt from softlock oracle"

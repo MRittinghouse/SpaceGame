@@ -8,8 +8,8 @@ from typing import Any
 os.environ.setdefault("SDL_VIDEODRIVER", "dummy")
 os.environ.setdefault("SDL_AUDIODRIVER", "dummy")
 
-import pygame  # noqa: E402
-import pygame_gui  # noqa: E402
+import pygame
+import pygame_gui
 
 from tools.crawler.crawler import Crawler, CrawlerFixtures
 
@@ -124,9 +124,7 @@ class TestInvariantOracle:
         )
         crawler.run()
         assert any(c.oracle == "invariant" for c in crawler.crashes.values())
-        assert any(
-            "NegativeCredits" in c.exception_class for c in crawler.crashes.values()
-        )
+        assert any("NegativeCredits" in c.exception_class for c in crawler.crashes.values())
 
     def test_invariant_oracle_detects_fuel_overflow(self) -> None:
         game = ControllableGame()
@@ -144,9 +142,7 @@ class TestInvariantOracle:
             ),
         )
         crawler.run()
-        assert any(
-            "FuelOverflow" in c.exception_class for c in crawler.crashes.values()
-        )
+        assert any("FuelOverflow" in c.exception_class for c in crawler.crashes.values())
 
     def test_invariant_oracle_detects_cargo_overflow(self) -> None:
         game = ControllableGame()
@@ -164,6 +160,4 @@ class TestInvariantOracle:
             ),
         )
         crawler.run()
-        assert any(
-            "CargoOverflow" in c.exception_class for c in crawler.crashes.values()
-        )
+        assert any("CargoOverflow" in c.exception_class for c in crawler.crashes.values())

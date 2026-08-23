@@ -8,10 +8,9 @@ from pathlib import Path
 os.environ.setdefault("SDL_VIDEODRIVER", "dummy")
 os.environ.setdefault("SDL_AUDIODRIVER", "dummy")
 
-import pytest  # noqa: E402
+import pytest
 
-from spacegame.save_manager import SaveManager  # noqa: E402
-
+from spacegame.save_manager import SaveManager
 
 FIXTURES_DIR = Path(__file__).resolve().parents[2] / "tools" / "crawler" / "fixtures"
 

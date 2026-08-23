@@ -33,7 +33,6 @@ from spacegame.models.player import Player  # noqa: E402
 from spacegame.models.ship import Ship  # noqa: E402
 from spacegame.save_manager import SaveManager  # noqa: E402
 
-
 FIXTURES_DIR = _HERE
 
 

@@ -63,9 +63,7 @@ class TestWriteStub:
         target = tmp_path / "stubs"
         path = write_stub(record, target_dir=target)
 
-        spec = importlib.util.spec_from_file_location(
-            "generated_stub_test", str(path)
-        )
+        spec = importlib.util.spec_from_file_location("generated_stub_test", str(path))
         assert spec is not None
         module = importlib.util.module_from_spec(spec)
         assert spec.loader is not None
@@ -97,9 +95,7 @@ class TestWriteStub:
         target = tmp_path / "stubs"
         path = write_stub(record, target_dir=target)
 
-        spec = importlib.util.spec_from_file_location(
-            "generated_stub_test_pass", str(path)
-        )
+        spec = importlib.util.spec_from_file_location("generated_stub_test_pass", str(path))
         assert spec is not None
         module = importlib.util.module_from_spec(spec)
         assert spec.loader is not None

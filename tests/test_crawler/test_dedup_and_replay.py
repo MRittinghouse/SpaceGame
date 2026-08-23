@@ -8,13 +8,13 @@ from typing import Any
 os.environ.setdefault("SDL_VIDEODRIVER", "dummy")
 os.environ.setdefault("SDL_AUDIODRIVER", "dummy")
 
-import pygame  # noqa: E402
-import pygame_gui  # noqa: E402
+import pygame
+import pygame_gui
 
-from spacegame.config import GameState  # noqa: E402
-from spacegame.engine.input_handler import InputHandler  # noqa: E402
-from tools.crawler.crash_record import normalized_signature  # noqa: E402
-from tools.crawler.crawler import Crawler, CrawlerFixtures  # noqa: E402
+from spacegame.config import GameState
+from spacegame.engine.input_handler import InputHandler
+from tools.crawler.crash_record import normalized_signature
+from tools.crawler.crawler import Crawler, CrawlerFixtures
 
 
 class _SM:
@@ -155,9 +155,7 @@ class TestReplay:
             g = RepeatCrashGame()
             counter = {"n": 0}
 
-            def step_that_raises_at_3(
-                dt: float, events: list[pygame.event.Event]
-            ) -> None:
+            def step_that_raises_at_3(dt: float, events: list[pygame.event.Event]) -> None:
                 n = counter["n"]
                 counter["n"] = n + 1
                 if n == 3:

@@ -12,8 +12,8 @@ import sys
 os.environ.setdefault("SDL_VIDEODRIVER", "dummy")
 os.environ.setdefault("SDL_AUDIODRIVER", "dummy")
 
-from tools.crawler.cli import parse_args  # noqa: E402
-from tools.crawler.crawler import Crawler  # noqa: E402
+from tools.crawler.cli import parse_args
+from tools.crawler.crawler import Crawler
 
 
 def main(argv: list[str] | None = None) -> int:

@@ -21,7 +21,7 @@ import os
 import random
 import re
 import traceback
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Optional
@@ -30,9 +30,8 @@ from typing import Any, Callable, Optional
 os.environ.setdefault("SDL_VIDEODRIVER", "dummy")
 os.environ.setdefault("SDL_AUDIODRIVER", "dummy")
 
-import pygame  # noqa: E402
-import pygame_gui  # noqa: E402
-from pygame_gui.elements import (  # noqa: E402
+import pygame
+from pygame_gui.elements import (
     UIButton,
     UIDropDownMenu,
     UIHorizontalSlider,
@@ -41,9 +40,9 @@ from pygame_gui.elements import (  # noqa: E402
     UITextEntryLine,
 )
 
-from spacegame.config import GameState  # noqa: E402
-from tools.crawler.coverage import CoverageTracker  # noqa: E402
-from tools.crawler.crash_record import (  # noqa: E402
+from spacegame.config import GameState
+from tools.crawler.coverage import CoverageTracker
+from tools.crawler.crash_record import (
     CrashRecord,
     normalized_signature,
     signature_from_exception,
@@ -489,7 +488,7 @@ class Crawler:
 
         try:
             self.game.step(1.0 / 60.0, events)
-        except Exception as exc:  # noqa: BLE001 — crawler is the observer
+        except Exception as exc:
             self._record_exception(exc, action_index)
 
         if self._fixtures.post_step_hook is not None:

@@ -23,9 +23,9 @@ import random
 os.environ.setdefault("SDL_VIDEODRIVER", "dummy")
 os.environ.setdefault("SDL_AUDIODRIVER", "dummy")
 
-import numpy as np  # noqa: E402
+import numpy as np
 
-from tools.crawler.crawler import Crawler  # noqa: E402
+from tools.crawler.crawler import Crawler
 
 
 def _trailing_random_samples() -> tuple[float, float]:
