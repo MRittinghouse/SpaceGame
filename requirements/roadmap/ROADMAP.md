@@ -5660,7 +5660,7 @@ those are dependency wiring, not reactions.
 
 ### QF-7 — Crawler CI gate + state screenshots
 
-**Status**: in-progress (reviewing)
+**Status**: done
 **Source**: Spec A, Section 3
 **Size**: M | **Effort**: 3-5 days
 **Depends on**: QF-6 | **Blocks**: none
@@ -6019,6 +6019,7 @@ dependencies, not narrative reactions.
 - 2026-08-23 20:15 — planning complete; verified both context docs (Spec A section 3 and
 - 2026-08-23 16:19 — harness: implement phase starting (rework cycle 0)
 - 2026-08-23 16:38 — harness: review phase starting (rework cycle 0)
+- 2026-08-23 16:50 — harness: review passed, marking done
   quality.yml from QF-1) exist; audited QF-6 crawler surfaces (`_instrument_state_manager`,
   `step_once`, `write_reports`, `report_dict`) as extension points; expanded touch zones from
   2 broad entries to 10 precise paths; expanded acceptance criteria from 4 vague to 9
