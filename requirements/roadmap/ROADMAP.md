@@ -5104,7 +5104,7 @@ tests/test_compliance/test_import_boundaries.py     (NEW)
 - Started: 2026-08-23 14:50
 - Completed: 2026-08-23 14:55
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: (pending)
+- Commits: 470f2ad
 - New_sprints_proposed: none
 - Polish_items_folded_in: scan-roots-live guard test, synthetic-violation self-test, deterministic
   sorted output, submodule-and-alias coverage in acceptance criteria
