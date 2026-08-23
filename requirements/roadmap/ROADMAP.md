@@ -6033,7 +6033,7 @@ dependencies, not narrative reactions.
 - Started: 2026-08-23 16:13
 - Completed: 2026-08-23 20:15
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: (to be filled by commit step)
+- Commits: fd77f0d
 - New_sprints_proposed: none
 - Polish_items_folded_in: --write-crash-baseline flag for manual baseline regen; GITHUB_STEP_SUMMARY markdown emission with new-signature callouts; per-entry `note` field on baseline entries so the file reads as a triage doc rather than a fingerprint dump; 30-day artifact retention (below the 90-day default); explicit `if: always()` on artifact upload so failed runs still surface their artifact
 - Decisions_locked: 11
