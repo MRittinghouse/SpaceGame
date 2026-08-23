@@ -5223,7 +5223,7 @@ surface).
 
 ### QF-3 — Ralph quality-gate integration
 
-**Status**: in-progress (reviewing)
+**Status**: done
 **Source**: Spec A, Section 2
 **Size**: S | **Effort**: 1 day
 **Depends on**: QF-2 | **Blocks**: none
@@ -5435,6 +5435,7 @@ surface).
 - 2026-08-23 17:40 — planning complete (commit 6efbdca); verified all 3 context docs exist and
 - 2026-08-23 17:41 — harness: implement phase starting (rework cycle 0)
 - 2026-08-23 17:56 — harness: review phase starting (rework cycle 0)
+- 2026-08-23 17:59 — harness: review passed, marking done
   added 4 references (`ralph/agents.py`, `.pre-commit-config.yaml`, `.github/workflows/quality.yml`,
   `tests/test_ralph/test_harness.py`) so implementer mirrors exact command shapes and existing
   test conventions; locked 7 decisions (gate scope, timing, pipe portability, DRY_RUN behavior,
