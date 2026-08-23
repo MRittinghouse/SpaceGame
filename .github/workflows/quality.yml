@@ -1,0 +1,74 @@
+name: quality
+
+on:
+  push:
+    branches: [master]
+    tags: ['v*']
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: 'pip'
+          cache-dependency-path: pyproject.toml
+      - run: pip install -e ".[dev]"
+      # ruff check scoped to spacegame/ only: tests/ has 874 pre-existing violations
+      # that are out of QF-1 scope (see ROADMAP.md QF-1 Decision 1).
+      - run: python -m ruff check spacegame/
+      - run: python -m ruff format --check spacegame/ tests/
+
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+      fail-fast: false
+    runs-on: ${{ matrix.os }}
+    env:
+      SDL_VIDEODRIVER: dummy
+      SDL_AUDIODRIVER: dummy
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: 'pip'
+          cache-dependency-path: pyproject.toml
+      - name: Install SDL runtime (Linux only)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libsdl2-2.0-0 libsdl2-image-2.0-0 libsdl2-mixer-2.0-0 libsdl2-ttf-2.0-0
+      - run: pip install -e ".[dev]"
+      - run: python -m pytest -n auto
+
+  # types:
+  #   QF-2 will fill in this job once mypy-baseline.txt is committed.
+  #   Placeholder left here so QF-2's implementer knows where to add it.
+
+  build:
+    runs-on: windows-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: 'pip'
+          cache-dependency-path: pyproject.toml
+      - run: pip install -e ".[dev]"
+      - run: python -m tools.build --skip-tests
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Aurelia-${{ github.ref_name }}
+          path: dist/Aurelia/
