@@ -4959,7 +4959,7 @@ tests/test_ralph/
 
 ### QF-4 — Import-boundary guard
 
-**Status**: in-progress (planning)
+**Status**: blocked
 **Source**: Spec A (additional deliverable)
 **Size**: S | **Effort**: half day
 **Depends on**: none | **Blocks**: none
@@ -5095,6 +5095,7 @@ tests/test_compliance/test_import_boundaries.py     (NEW)
 - 2026-08-23 — todo (created from Spec A)
 - 2026-08-23 14:50 — harness: plan phase starting
 - 2026-08-23 14:55 — planning complete; verified both scan roots are pygame-free today; locked 3
+- 2026-08-23 14:54 — harness: plan phase outcome=error, marking blocked. agent exited cleanly; commits referencing QF-4: 2; no sentinel in ROADMAP.md or in agent stdout
   decisions (TYPE_CHECKING banned, no allowlist, direct-import only); folded in scan-roots-live
   guard and synthetic-violation self-test as polish; no scope expansion needed. PHASE_OK
 
