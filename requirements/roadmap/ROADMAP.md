@@ -83,6 +83,26 @@ The SA-arc table below is **auto-regenerated** by the ralph harness from the spr
 | [SI3-FOLLOW-1](#si3-follow-1--no-arg-helper-introspection) | No-arg helper introspection (flag scanner) | SL-2 disclosure | S | todo | none |
 | [UI-BOUNDS-1](#ui-bounds-1--station_hub_view-in-bounds-harness) | station_hub_view in subprocess bounds harness | SL-1 deferral | S | todo | none |
 
+### QF Arc — Quality Foundation
+
+Source: `docs/superpowers/specs/2026-08-23-quality-foundation-design.md` (Spec A).
+
+| ID | Title | Source | Size | Status | Depends on |
+|---|---|---|---|---|---|
+| [QF-1](#qf-1--quality-gate-infrastructure) | Quality gate infrastructure | Spec A S1/S2 | S | todo | none |
+| [QF-2](#qf-2--mypy-baseline--population-metrics) | MyPy baseline + population metrics | Spec A S1 | S | todo | QF-1 |
+| [QF-3](#qf-3--ralph-quality-gate-integration) | Ralph quality-gate integration | Spec A S2 | S | todo | QF-2 |
+| [QF-4](#qf-4--import-boundary-guard) | Import-boundary guard (models/constants pygame-free) | Spec A | S | todo | none |
+| [QF-5](#qf-5--extract-gamestep-from-gamerun) | Extract `Game.step()` from `Game.run()` | Spec A S3 | M | todo | none |
+| [QF-6](#qf-6--play-harness-crawler-core) | Play-harness crawler core | Spec A S3 | L | todo | QF-5 |
+| [QF-7](#qf-7--crawler-ci-gate--state-screenshots) | Crawler CI gate + state screenshots | Spec A S3 | M | todo | QF-6 |
+| [QF-8](#qf-8--population-a-burndown-outside-gamepy) | Population A burndown outside game.py | Spec A S4 | L | blocked | QF-6 |
+| [QF-9](#qf-9--population-b-burndown-type-blindness) | Population B burndown (type blindness) | Spec A S4 | L | blocked | QF-8 |
+
+QF-8 and QF-9 are deliberately `blocked`, not `todo`. They change runtime behaviour and must not be
+picked up before a human has reviewed Spec A and the crawler's reachability data exists. Unblock by
+hand.
+
 ---
 
 ## SA Arc — Station Anchors
@@ -4618,6 +4638,400 @@ These are the decisions to lock during planning execution. Recommendations recor
 - 2026-04-26 — todo (created)
 
 ---
+
+---
+
+## QF Arc — Quality Foundation
+
+Implements `docs/superpowers/specs/2026-08-23-quality-foundation-design.md`. Read the spec before
+executing any QF sprint; it carries the evidence and the reasoning these sprints assume.
+
+### QF-1 — Quality gate infrastructure
+
+**Status**: todo
+**Source**: Spec A, Sections 1 and 2
+**Size**: S | **Effort**: 1 day
+**Depends on**: none | **Blocks**: QF-2
+
+**Goal.** Turn on the gates that are already at zero and give the repo a CI pipeline. `ruff check`
+already passes clean; only `ruff format` drifts, on 4 files. There is no CI at all. This sprint makes
+lint, format, and tests enforced for every author (human, Claude, ralph) and gives tagged commits a
+Windows build artifact. MyPy is deliberately NOT wired here; it needs a baseline first (QF-2).
+
+**Context to read.**
+- `docs/superpowers/specs/2026-08-23-quality-foundation-design.md` (Sections 1 and 2)
+- `pyproject.toml`
+- `spacegame.spec`, `tools/build.py`
+
+**Touch zones.**
+```
+.pre-commit-config.yaml                     (NEW)
+.github/workflows/quality.yml               (NEW)
+pyproject.toml
+tests/test_models/test_okafor_template_balance.py
+tests/test_views/test_trading_actions.py
+(+2 further ruff-format-drifting test files)
+```
+
+**Deliverables.**
+- `ruff format` applied to the 4 drifting files so the tree is format-clean.
+- `.pre-commit-config.yaml` running `ruff check` and `ruff format --check`. Uses the `pre-commit`
+  framework, NOT a raw `.git/hooks` script and NOT a Claude Code hook, because it must fire for every
+  author. Do NOT put pytest in the hook: 70s per commit is how hooks get bypassed.
+- `.github/workflows/quality.yml` with jobs `lint` (ubuntu), `test` (matrix ubuntu + windows), and
+  `build` (windows, tag-triggered, PyInstaller via `spacegame.spec`, uploads the artifact).
+- CI pinned to **Python 3.13**, matching `pyproject.toml`. Do not chase the local 3.14.
+- Leave a placeholder `types` job stub, commented, for QF-2 to fill in.
+
+**Acceptance criteria.**
+1. `ruff format --check spacegame/ tests/` exits 0 on a clean tree.
+2. `pre-commit run --all-files` passes.
+3. A commit deliberately introducing a lint error is rejected by the hook.
+4. Workflow file is valid YAML and its job graph parses (`actionlint` or equivalent if available).
+5. Full suite green: 10,370 passed.
+
+**Risks / open questions.**
+- Headless pygame-ce on ubuntu runners may need SDL system packages. If wheels do not bundle what is
+  needed, add the apt step rather than dropping the ubuntu test job.
+
+**Activity log.**
+- 2026-08-23 — todo (created from Spec A)
+
+### QF-2 — MyPy baseline + population metrics
+
+**Status**: todo
+**Source**: Spec A, Section 1
+**Size**: S | **Effort**: 1 day
+**Depends on**: QF-1 | **Blocks**: QF-3
+
+**Goal.** `mypy spacegame/` reports 768 errors and nothing runs it. Turning it on at zero tolerance
+would block all commits for weeks. Install a ratchet: baseline today's errors, fail on anything new,
+and report the two population metrics that actually track progress.
+
+**Context to read.**
+- `docs/superpowers/specs/2026-08-23-quality-foundation-design.md` (Section 1 and Section 4)
+- `pyproject.toml` `[tool.mypy]`
+
+**Touch zones.**
+```
+mypy-baseline.txt                           (NEW)
+scripts/mypy_populations.py                 (NEW)
+.pre-commit-config.yaml
+.github/workflows/quality.yml
+pyproject.toml
+```
+
+**Deliverables.**
+- `mypy-baseline` added as a dev dependency; `mypy-baseline.txt` generated and committed.
+- Baseline fingerprints on `(file, error-code, message-text)`, **never line number**, so unrelated
+  edits do not churn it.
+- `scripts/mypy_populations.py` printing the three populations from Spec A Section 4:
+  - Population A (union-attr + `"None" has no attribute`), currently 196, **excluding game.py's 72**
+    from the tracked figure, with the exclusion reason written in the script docstring.
+  - Population B (`"object" has no attribute` + name-defined), currently 234.
+  - Population C (everything else), currently 338.
+- `types` CI job wired; prints A and B on every run.
+- `mypy` added to the pre-commit hook (measured 0.4s warm, 13.8s cold).
+- A header comment in `mypy-baseline.txt` recording that regeneration is permitted ONLY in a commit
+  touching nothing but annotations and None-guards.
+
+**Acceptance criteria.**
+1. `mypy` with the baseline exits 0 on the current tree.
+2. Introducing a new type error in any file fails both the hook and the `types` CI job.
+3. `python scripts/mypy_populations.py` prints A=124 (excluding game.py), B=234, C=338.
+4. Full suite green.
+
+**Risks / open questions.**
+- Expect the TOTAL to rise later when Population B is fixed; the ratchet must not treat that as
+  regression. Spec A Section 1 says so explicitly. Do not add a total-count gate.
+
+**Activity log.**
+- 2026-08-23 — todo (created from Spec A)
+
+### QF-3 — Ralph quality-gate integration
+
+**Status**: todo
+**Source**: Spec A, Section 2
+**Size**: S | **Effort**: 1 day
+**Depends on**: QF-2 | **Blocks**: none
+
+**Goal.** `ralph/harness.py:360` runs pytest and nothing else. The autonomous loop is a major source
+of commit volume and it is ungated for types and lint. Give ralph the same gate the human gets.
+
+**Context to read.**
+- `docs/superpowers/specs/2026-08-23-quality-foundation-design.md` (Section 2)
+- `ralph/harness.py` (particularly the pytest baseline capture and `_mark_terminal_outcome`)
+- `ralph/README.md`
+
+**Touch zones.**
+```
+ralph/harness.py
+tests/test_ralph/
+```
+
+**Deliverables.**
+- Ralph's verify path runs `ruff check`, `ruff format --check`, and `mypy` against baseline in
+  addition to pytest.
+- A type or lint regression marks the sprint `blocked` through the existing `Outcome` enum and
+  `_mark_terminal_outcome`, exactly as a test failure does.
+- Failure reason recorded in the sprint's Activity log with the offending error text.
+- Tests in `tests/test_ralph/` covering: clean run passes, new type error blocks, new lint error blocks.
+
+**Acceptance criteria.**
+1. A sprint whose implementation introduces a type error ends `blocked`, not `review`.
+2. The Activity log entry names the specific error.
+3. Existing ralph tests still pass.
+4. Full suite green.
+
+**Activity log.**
+- 2026-08-23 — todo (created from Spec A)
+
+### QF-4 — Import-boundary guard
+
+**Status**: todo
+**Source**: Spec A (additional deliverable)
+**Size**: S | **Effort**: half day
+**Depends on**: none | **Blocks**: none
+
+**Goal.** `spacegame/models/` (39,815 LOC) and `spacegame/constants/` (1,052 LOC) currently contain
+zero pygame imports. That property is the only reason a future engine port is conceivable, and
+nothing enforces it. Enforce it.
+
+**Context to read.**
+- `docs/superpowers/specs/2026-08-23-quality-foundation-design.md` (Additional deliverable)
+- `tests/test_compliance/test_flag_string_discipline.py` (follow this scanner's style)
+
+**Touch zones.**
+```
+tests/test_compliance/test_import_boundaries.py     (NEW)
+```
+
+**Deliverables.**
+- An auto-discovering scanner test asserting no module under `spacegame/models/` or
+  `spacegame/constants/` imports pygame or pygame_gui, directly or via `from ... import`.
+- Failure message names the offending file and the import line.
+- Docstring explaining WHY the boundary exists (port optionality), so a future reader does not delete
+  it as pointless.
+
+**Acceptance criteria.**
+1. Test passes on the current tree.
+2. Adding `import pygame` to any file under `models/` fails the test with a useful message.
+3. Uses AST parsing, not a regex over source text.
+4. Full suite green.
+
+**Activity log.**
+- 2026-08-23 — todo (created from Spec A)
+
+### QF-5 — Extract `Game.step()` from `Game.run()`
+
+**Status**: todo
+**Source**: Spec A, Section 3
+**Size**: M | **Effort**: 2-3 days
+**Depends on**: none | **Blocks**: QF-6
+
+**Goal.** `Game.run()` (line 6243) is `while self.running: dt = self.clock.tick(FPS_TARGET)/1000.0`.
+Wall-clock `dt` makes the game impossible to drive deterministically, which blocks the entire play
+harness. Extract the loop body into `Game.step(dt, events)` so a caller can supply a fixed timestep
+and synthetic events. This is the ONLY place Spec A touches `game.py`.
+
+**Context to read.**
+- `docs/superpowers/specs/2026-08-23-quality-foundation-design.md` (Section 3)
+- `spacegame/engine/game.py` lines 6243-6400 (the run loop and its event cascade)
+- `spacegame/engine/state_manager.py`
+
+**Touch zones.**
+```
+spacegame/engine/game.py
+tests/test_engine/test_game.py
+```
+
+**Deliverables.**
+- `Game.step(dt: float, events: list[pygame.event.Event]) -> None` containing the current loop body.
+- `Game.run()` reduced to the timing loop plus a `step()` call. Behaviour identical.
+- A seeding entry point that makes a session reproducible (global `random` plus numpy; 50 modules use
+  `random`, 2 use numpy random).
+- Tests driving `step()` directly with a fixed dt and synthetic events.
+
+**Acceptance criteria.**
+1. `run()` and `step()` produce identical behaviour; no gameplay change.
+2. `step()` is callable headless with a fixed dt and no wall-clock dependency.
+3. Two runs with the same seed and same synthetic event sequence produce identical state.
+4. Full suite green: 10,370 passed.
+
+**Risks / open questions.**
+- `game.py` is 6,549 lines and the event cascade in the loop has ~10 conditional branches. This is a
+  pure extraction: do NOT restructure the cascade, do NOT fix the 106 type errors in this file, do
+  NOT begin Spec B's decomposition. Move code, change nothing else.
+- If the extraction cannot be done without behaviour change, mark `blocked` and explain. Do not
+  improvise a partial refactor.
+
+**Activity log.**
+- 2026-08-23 — todo (created from Spec A)
+
+### QF-6 — Play-harness crawler core
+
+**Status**: todo
+**Source**: Spec A, Section 3
+**Size**: L | **Effort**: 1-2 weeks
+**Depends on**: QF-5 | **Blocks**: QF-7, QF-8
+
+**Goal.** Build the deterministic headless crawler that drives the real `Game` object through real
+event dispatch. 10,370 tests pass while playtesters hit crashes in combat and trading; the suite has
+5,622 model tests and 34 integration tests. This closes that gap.
+
+**Context to read.**
+- `docs/superpowers/specs/2026-08-23-quality-foundation-design.md` (Section 3 in full)
+- `tests/test_scenarios/_view_harness.py` (existing headless harness; reuse its leak check)
+- `spacegame/engine/state_manager.py`, `spacegame/config.py` (`GameState`, 41 members)
+- `spacegame/save_manager.py` (checkpoint seeding)
+
+**Touch zones.**
+```
+tools/crawler/                              (NEW package)
+tests/test_crawler/                         (NEW)
+```
+
+**Deliverables.**
+- Headless crawler booting a real `Game`, seeding all RNG, stepping via `Game.step()`.
+- Element enumeration via `ui_manager.get_sprite_group().sprites()` filtered to interactive widgets.
+  Note `LayeredGUIGroup` is NOT directly iterable; `.sprites()` is required.
+- Seeded action selection: click an enabled element, press a bound key, or advance time. Synthesize
+  real `MOUSEBUTTONDOWN`/`MOUSEBUTTONUP` events (verified to produce `UI_BUTTON_PRESSED`).
+- **Four oracles**: unhandled exception; pygame_gui element leak on state exit; softlock (zero enabled
+  interactive elements and no keybind escape); invariant violation (negative credits,
+  `fuel > max_fuel`, cargo over capacity).
+- Crash records carrying `(seed, action_index)` and the full action trace; replay by seed.
+- Deduplication by normalized traceback signature.
+- Generator turning a deduped crash into a pytest regression stub.
+- Coverage report over the 41 `GameState` members and the transitions fired.
+- Reachability mitigations: checkpoint-save seeding (early/mid/late) via `save_manager.py`, action
+  weighting toward unvisited states, and a debug hook granting credits.
+
+**Acceptance criteria.**
+1. Crawler runs headless with no display and completes a 2,000-action session.
+2. Same seed produces an identical action trace and identical final state across runs.
+3. Any crash it finds is reproducible from `(seed, action_index)` alone.
+4. A deliberately introduced softlock is detected by oracle 3.
+5. Coverage report names which of the 41 states were reached.
+6. Crash dedup collapses N occurrences of one traceback into one record.
+7. Full suite green.
+
+**Risks / open questions.**
+- Uniform-random exploration will not reach the late game; the reachability mitigations above are
+  mandatory scope, not optional polish.
+- The first real run may surface hundreds of distinct crashes. Do NOT attempt to fix them in this
+  sprint. Record them, dedup them, and hand them to QF-8. This sprint builds the instrument; it does
+  not do the repair work.
+
+**Activity log.**
+- 2026-08-23 — todo (created from Spec A)
+
+### QF-7 — Crawler CI gate + state screenshots
+
+**Status**: todo
+**Source**: Spec A, Section 3
+**Size**: M | **Effort**: 3-5 days
+**Depends on**: QF-6 | **Blocks**: none
+
+**Goal.** Make the crawler a standing gate rather than a tool someone remembers to run, and capture a
+screenshot of every reachable state as a build artifact. The screenshot gallery is the input to Spec
+C's legibility review; capture only, no review, in this sprint.
+
+**Context to read.**
+- `docs/superpowers/specs/2026-08-23-quality-foundation-design.md` (Section 3, Outputs)
+- `.github/workflows/quality.yml` (from QF-1)
+
+**Touch zones.**
+```
+tools/crawler/
+.github/workflows/quality.yml
+```
+
+**Deliverables.**
+- A short seeded crawl (~2,000 actions, ~30s) as a push-triggered CI job.
+- Screenshot capture on first visit to each state (`pygame.image.save`, measured 20.6ms; roughly
+  0.85s for the whole game), uploaded as a CI artifact.
+- Nightly or dispatch-triggered long run with multi-seed sweep, failing loudly on new crash
+  signatures.
+- Coverage number surfaced in the CI summary.
+
+**Acceptance criteria.**
+1. The crawl job runs on push and completes within its budget.
+2. Screenshot artifact contains one PNG per reached state, named by `GameState`.
+3. A newly introduced crash on a reachable path fails the job.
+4. Full suite green.
+
+**Activity log.**
+- 2026-08-23 — todo (created from Spec A)
+
+### QF-8 — Population A burndown outside game.py
+
+**Status**: blocked
+**Source**: Spec A, Section 4
+**Size**: L | **Effort**: 2-3 weeks
+**Depends on**: QF-6 | **Blocks**: QF-9
+
+**Goal.** Eliminate the 124 unguarded-None-access errors that live outside `game.py`. These are real
+crash risk in code Spec B will not touch.
+
+**Notes.** Deliberately `blocked`, not `todo`. This sprint changes runtime behaviour and must not be
+picked up autonomously before (a) a human has reviewed Spec A and (b) QF-6 has produced reachability
+data so the fixes are ordered by what players actually hit. Unblock by hand.
+
+**Context to read.**
+- `docs/superpowers/specs/2026-08-23-quality-foundation-design.md` (Section 4)
+- Crawler coverage output from QF-6
+
+**Deliverables.**
+- Population A outside `game.py` driven to 0, prioritized by crawler reachability.
+- Fixes applied by root-cause cluster, not file by file: `Market | None` (26),
+  `SalvageSession | None` (25), UI element Optionals (14), `MiningSession | None` (11),
+  `RefiningSession | None` (5).
+- Regression tests for any fix on a crawler-reachable path.
+- `game.py`'s 72 remain baselined and untouched; that is Spec B's work.
+
+**Acceptance criteria.**
+1. `scripts/mypy_populations.py` reports Population A (excluding game.py) = 0.
+2. No `# type: ignore` added without a one-line justification comment.
+3. Full suite green.
+
+**Activity log.**
+- 2026-08-23 — blocked (created from Spec A; awaiting human review + QF-6 reachability data)
+
+### QF-9 — Population B burndown (type blindness)
+
+**Status**: blocked
+**Source**: Spec A, Section 4
+**Size**: L | **Effort**: 2-3 weeks
+**Depends on**: QF-8 | **Blocks**: none
+
+**Goal.** Close the 234 holes where type checking silently does nothing: 167 bare-`object`
+annotations and 67 unresolvable forward references. These are not bugs; they are the reason bugs like
+the Sell All arity mismatch can be authored without complaint.
+
+**Notes.** Deliberately `blocked`. Fixing these RAISES the total error count as MyPy begins seeing
+previously invisible code. That is expected and is not a regression; see Spec A Section 1. Unblock by
+hand once QF-8 is done.
+
+**Context to read.**
+- `docs/superpowers/specs/2026-08-23-quality-foundation-design.md` (Section 4)
+
+**Deliverables.**
+- The 41 bare-`object` annotations in `views/` replaced with real types (use `TYPE_CHECKING` imports
+  where a runtime import would be circular).
+- The 67 quoted forward references resolved by importing the referenced names.
+- Newly revealed errors triaged: crash-risk ones fixed, hygiene ones baselined.
+- `disallow_untyped_defs` reconsidered: it is currently the only strict flag and it is what created
+  the incentive to annotate as `object`. Propose the next flags to enable in the sprint notes; do NOT
+  enable them unilaterally.
+
+**Acceptance criteria.**
+1. `scripts/mypy_populations.py` reports Population B = 0.
+2. Total error count may have risen; Population A (excluding game.py) has NOT risen.
+3. Full suite green.
+
+**Activity log.**
+- 2026-08-23 — blocked (created from Spec A; depends on QF-8)
 
 ## Followups
 
