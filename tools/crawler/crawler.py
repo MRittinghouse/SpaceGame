@@ -19,6 +19,7 @@ from __future__ import annotations
 import json
 import os
 import random
+import re
 import traceback
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -390,7 +391,10 @@ class Crawler:
 
         Returns:
             2.0 when the element's text/object_id hints at an unvisited state,
-            else 1.0.
+            else 1.0. Matching is word-boundary: "shipyard" matches "Shipyard"
+            but not "shipbuilder"; substring collisions are avoided so that a
+            visited target does not incidentally get boosted by another
+            keyword's presence in the same string.
         """
         text = ""
         try:
@@ -404,8 +408,11 @@ class Crawler:
         except Exception:
             pass
         combined = " ".join([text, *object_ids])
+        # Split into word tokens to prevent "shipyard" boosting via the
+        # broader "ship" keyword. Punctuation is stripped by isalnum walk.
+        tokens = set(re.findall(r"[a-z0-9]+", combined))
         for keyword, gs in NAV_KEYWORDS.items():
-            if keyword in combined:
+            if keyword in tokens:
                 if not self.coverage.states_reached.get(gs.name, False):
                     return 2.0
         return 1.0
