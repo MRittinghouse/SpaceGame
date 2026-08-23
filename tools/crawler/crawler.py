@@ -193,6 +193,15 @@ class Crawler:
         # reproducible without touching the game's global random state.
         self._action_rng = random.Random(seed)
 
+        # Two-frame UI-event handshake: pygame_gui posts UI_BUTTON_PRESSED (and
+        # other synthetic events) to the global pygame queue during
+        # ui_manager.process_events() inside Game.step(). Game.run() sees those
+        # in the *next* pygame.event.get() call at the top of the following
+        # frame. step_once() must reproduce this contract. After each
+        # Game.step() call we drain whatever pygame_gui posted into this buffer
+        # and prepend it to the *next* step's event list.
+        self._pending_events: list[pygame.event.Event] = []
+
         # UI-leak oracle bookkeeping — set once game is up.
         self._ui_leak_baseline: int = 0
 
@@ -486,13 +495,23 @@ class Crawler:
     # ------------------------------------------------------------------
 
     def step_once(self) -> None:
-        """Execute one crawler step: select → synthesize → step → oracles."""
+        """Execute one crawler step: select → synthesize → step → oracles.
+
+        Two-frame UI-event handshake: pygame_gui posts UI_BUTTON_PRESSED to the
+        global pygame event queue inside Game.step(). This method drains that
+        queue after each step and carries the events into the *next* call, exactly
+        reproducing the frame cycle Game.run() gets for free. Any events still
+        pending in the queue at session end can be inspected for diagnostics.
+        """
         action_index = len(self.action_trace)
         action = self._select_action()
         # Store a serialization-safe copy of the action.
         recorded = self._record_action_trace(action)
 
-        events = self.synthesize_events(action)
+        # Prepend UI events that pygame_gui posted in the previous frame.
+        synthesized = self.synthesize_events(action)
+        events = self._pending_events + synthesized
+        self._pending_events = []
 
         if self._fixtures.pre_step_hook is not None:
             self._fixtures.pre_step_hook(action_index, action)
@@ -501,6 +520,10 @@ class Crawler:
             self.game.step(1.0 / 60.0, events)
         except Exception as exc:
             self._record_exception(exc, action_index)
+
+        # Drain UI events pygame_gui posted during this step so they arrive
+        # in the next frame's event list — mirrors Game.run()'s event.get() loop.
+        self._pending_events = list(pygame.event.get())
 
         if self._fixtures.post_step_hook is not None:
             self._fixtures.post_step_hook(action_index, action)
