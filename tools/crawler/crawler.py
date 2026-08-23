@@ -316,6 +316,11 @@ class Crawler:
     def bound_escape_keys(self) -> list[int]:
         """Return the set of pygame key codes usable to escape the current view.
 
+        Per the locked softlock definition (ROADMAP QF-6): ESCAPE opens the
+        pause menu, F11 toggles fullscreen, and any view-registered keys
+        count. If none are bound and the state has no interactive elements,
+        the softlock oracle fires.
+
         Returns:
             List of pygame key constants. Empty if no escape route exists.
         """
@@ -341,6 +346,15 @@ class Crawler:
             pass
         return keys
 
+    def _selectable_escape_keys(self) -> list[int]:
+        """Return escape keys safe to synthesize as an action.
+
+        Excludes F11 because triggering a display-mode switch under
+        ``SDL_VIDEODRIVER=dummy`` can raise a native access violation on
+        some platforms. F11 still counts toward the softlock oracle.
+        """
+        return [k for k in self.bound_escape_keys() if k != pygame.K_F11]
+
     # ------------------------------------------------------------------
     # Action selection
     # ------------------------------------------------------------------
@@ -355,20 +369,20 @@ class Crawler:
         """
         rng = self._action_rng
         interactive = self.enumerate_interactive()
-        escape_keys = self.bound_escape_keys()
+        selectable_keys = self._selectable_escape_keys()
 
         roll = rng.random()
         if roll < 0.6 and interactive:
             element = self._weighted_element_choice(interactive)
             return ("click", element)
-        if roll < 0.8 and escape_keys:
-            key = rng.choice(escape_keys)
+        if roll < 0.8 and selectable_keys:
+            key = rng.choice(selectable_keys)
             return ("keypress", key)
         if interactive:
             element = self._weighted_element_choice(interactive)
             return ("click", element)
-        if escape_keys:
-            key = rng.choice(escape_keys)
+        if selectable_keys:
+            key = rng.choice(selectable_keys)
             return ("keypress", key)
         return ("advance_time",)
 
